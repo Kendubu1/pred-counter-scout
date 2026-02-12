@@ -715,6 +715,12 @@ function renderOverview() {
         html += `<div class="augment-info">`;
         html += `<div class="aug-name">${esc(a.name)}</div>`;
         if (desc) html += `<div class="aug-desc">${esc(desc)}</div>`;
+        if (tags.length || shift) {
+          html += '<div class="aug-tags">';
+          tags.forEach(t => html += `<span class="aug-tag">${esc(traitLabel(t))}</span>`);
+          if (shift && !tags.includes(shift)) html += `<span class="aug-tag shift">+${esc(traitLabel(shift))}</span>`;
+          html += '</div>';
+        }
         // Playstyle tip
         const playstyleNote = profileAug ? augmentPlaystyleNote(profileAug) : '';
         if (playstyleNote) html += `<div style="color:var(--accent);font-size:0.75rem;margin-top:0.2rem;font-style:italic">💡 ${esc(playstyleNote)}</div>`;
