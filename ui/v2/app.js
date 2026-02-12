@@ -179,6 +179,25 @@ const TAG_GLOSSARY = {
   'Ally-Heal':     { icon: '💖', desc: 'Heals teammates. Keeps their carry alive through fights. Changes how long the enemy team can stay in combat.', tips: 'Anti-heal the target being healed, not the healer. Or burst the healer first to remove the sustain.' },
   'Self-Shield':   { icon: '🛡️', desc: 'Generates a shield on themselves. Effectively extra HP during trades and all-ins.', tips: 'Wait out the shield before committing cooldowns. Their effective HP drops when it expires.' },
   'Ally-Shield':   { icon: '🛡️💖', desc: 'Shields teammates. Adds effective HP to their carry or frontline in fights. Game-changing in teamfights.', tips: 'Burst through the shield or wait it out. Focusing the shielder removes the team-wide protection.' },
+  // Augment trait tags
+  'DoT':           { icon: '🔥', desc: 'Damage over Time. Applies sustained damage that ticks over several seconds. Wears down targets between fights.', tips: 'Sustain and regen help outlast the damage. Healing and shields mitigate it.' },
+  'AS Boost':      { icon: '⚡', desc: 'Attack Speed steroid. Temporarily or passively increases auto-attack speed, ramping DPS in extended fights.', tips: 'Keep trades short. They get stronger the longer the fight goes.' },
+  'On-Hit':        { icon: '🎯', desc: 'On-Hit effects. Triggers bonus damage or effects with each basic attack. Scales with attack speed items.', tips: 'Avoid extended trades. Armor and short burst trades limit on-hit value.' },
+  'CC':            { icon: '🔒', desc: 'Crowd Control. Stuns, roots, slows, or displacements that lock down enemies. The strongest tool in team fights.', tips: 'Tenacity items reduce CC duration. Positioning and cleanse abilities counter it.' },
+  'AoE':           { icon: '💫', desc: 'Area of Effect. Abilities that hit multiple targets in an area. Strong in team fights and wave clear.', tips: 'Spread out so one ability doesn\'t hit your whole team.' },
+  'Healing':       { icon: '💚', desc: 'Heals self or allies. Extends fight duration and sustain in lane. Key trait for supports and bruisers.', tips: 'Anti-heal items (any Tainted item) cut healing by 45%.' },
+  'Sustain':       { icon: '🩹', desc: 'General sustain through healing, regen, or lifesteal. Stays healthy in lane and during fights.', tips: 'Anti-heal and burst damage counter sustain. Don\'t let them heal back up between trades.' },
+  'Mobility':      { icon: '💨', desc: 'Movement abilities like dashes, blinks, or speed boosts. Hard to pin down or escape from.', tips: 'Save your CC for after they dash. Slows and roots counter mobility.' },
+  'Execute':       { icon: '🎯', desc: 'Deals bonus damage or kills targets below a health threshold. Punishes low-HP targets.', tips: 'Don\'t linger at low HP. Back off or heal up before you hit their kill range.' },
+  'Stealth':       { icon: '👁️', desc: 'Can go invisible. Used for flanks, escapes, or repositioning. Hard to track without detection.', tips: 'Buy wards and detection. Stay grouped so they can\'t pick you off.' },
+  'Shield':        { icon: '🛡️', desc: 'Grants a temporary shield that absorbs damage. Adds effective HP for a short window.', tips: 'Wait out the shield before committing cooldowns, or burst through it.' },
+  'Global':        { icon: '🌍', desc: 'Ability that impacts the entire map. Can assist or threaten from anywhere on the map.', tips: 'Watch the minimap. Play safer when their global is up.' },
+  'Anti-Heal':     { icon: '🚫', desc: 'Reduces enemy healing. Shuts down sustain-heavy champions and healers.', tips: 'YOUR healing is less effective in this matchup. Adjust your build accordingly.' },
+  'CD Reset':      { icon: '🔄', desc: 'Cooldown resets or major reduction. Lets them cycle abilities faster in fights.', tips: 'Expect abilities more often than normal. Bait cooldowns before engaging.' },
+  'Crit':          { icon: '💥', desc: 'Critical strike chance or amplification. Massive auto-attack damage spikes.', tips: 'Armor items reduce crit damage. Keep trades short against crit builders.' },
+  'Pen':           { icon: '🔧', desc: 'Armor or magic penetration. Cuts through defensive stats, making tanks less effective.', tips: 'Stacking one type of defense is less effective. HP items help since pen doesn\'t reduce max HP.' },
+  'Stacking':      { icon: '📈', desc: 'Gains power over time through stacks. Gets stronger the longer the game goes or with repeated hits.', tips: 'End early or don\'t let them stack freely. Pressure them before they ramp up.' },
+  'Summons':       { icon: '👥', desc: 'Summons units or creatures that fight alongside them. Adds extra damage and zone control.', tips: 'Kill the summons or ignore them and focus the hero. AoE clears summons fast.' },
 };
 
 function renderArchetypeTags(profile) {
@@ -717,8 +736,8 @@ function renderOverview() {
         if (desc) html += `<div class="aug-desc">${esc(desc)}</div>`;
         if (tags.length || shift) {
           html += '<div class="aug-tags">';
-          tags.forEach(t => html += `<span class="aug-tag">${esc(traitLabel(t))}</span>`);
-          if (shift && !tags.includes(shift)) html += `<span class="aug-tag shift">+${esc(traitLabel(shift))}</span>`;
+          tags.forEach(t => html += `<span class="aug-tag" data-tag-label="${esc(traitLabel(t))}" style="cursor:pointer">${esc(traitLabel(t))}</span>`);
+          if (shift && !tags.includes(shift)) html += `<span class="aug-tag shift" data-tag-label="${esc(traitLabel(shift))}" style="cursor:pointer">+${esc(traitLabel(shift))}</span>`;
           html += '</div>';
         }
         // Playstyle tip
