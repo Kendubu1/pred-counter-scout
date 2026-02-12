@@ -743,6 +743,9 @@ function renderOverview() {
           if (shift && !tags.includes(shift)) html += `<span class="aug-tag shift" data-tag-label="${esc(traitLabel(shift))}" style="cursor:pointer">+${esc(traitLabel(shift))}</span>`;
           html += '</div>';
         }
+        // Playstyle tip
+        const playstyleNote = profileAug ? augmentPlaystyleNote(profileAug) : '';
+        if (playstyleNote) html += `<div style="color:var(--accent);font-size:0.75rem;margin-top:0.2rem;font-style:italic">💡 ${esc(playstyleNote)}</div>`;
         html += `</div>`;
         html += `<div class="augment-stats"><span class="${wrClass(wr)}">${a.winRate||'—'}</span><br><span style="color:var(--text-2);font-size:0.72rem">${a.matches||'?'} games</span></div>`;
         html += `</div>`;
