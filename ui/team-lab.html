@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Predecessor Scout - Team Lab</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Team Lab specific styles */
+    .team-lab-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .team-lab-subtitle {
+      color: var(--text-2);
+      font-size: 0.9rem;
+      font-weight: 400;
+      margin-left: 0.5rem;
+    }
+
+    .collapse-icon {
+      display: inline-block;
+      width: 1em;
+      font-size: 0.75em;
+      transition: transform 0.15s;
+    }
+    .combo-grid {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .combo-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .combo-card:hover {
+      border-color: var(--accent);
+      background: var(--bg-3);
+    }
+    .combo-card.expanded {
+      border-color: var(--accent);
+    }
+
+    .combo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .combo-heroes {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .combo-hero {
+      font-weight: 600;
+      color: var(--text-0);
+    }
+    .combo-vs {
+      color: var(--text-2);
+      font-size: 0.9rem;
+    }
+    .combo-score {
+      background: var(--accent);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .combo-tags {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .role-tag {
+      background: var(--bg-3);
+      color: var(--text-1);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .combo-details {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      display: none;
+    }
+    .combo-card.expanded .combo-details {
+      display: block;
+    }
+
+    .combo-section {
+      margin-bottom: 1rem;
+    }
+    .combo-section h4 {
+      color: var(--text-1);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .combo-reasons {
+      list-style: none;
+      padding: 0;
+    }
+    .combo-reasons li {
+      color: var(--text-0);
+      font-size: 0.85rem;
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .build-suggestions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .hero-build {
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.75rem;
+    }
+    .hero-build h5 {
+      color: var(--text-0);
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .build-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+    .build-item {
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.3rem 0.5rem;
+      font-size: 0.7rem;
+      color: var(--text-1);
+    }
+
+    .comp-grid {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .comp-style {
+      margin-bottom: 2rem;
+    }
+    .comp-style h3 {
+      color: var(--text-0);
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .comp-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .comp-card:hover {
+      border-color: var(--accent);
+      background: var(--bg-3);
+    }
+    .comp-card.expanded {
+      border-color: var(--accent);
+    }
+
+    .comp-heroes {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .comp-hero {
+      text-align: center;
+    }
+    .comp-hero-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-0);
+    }
+    .comp-hero-role {
+      font-size: 0.65rem;
+      color: var(--text-2);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .comp-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .comp-stat {
+      text-align: center;
+      background: var(--bg-3);
+      padding: 0.4rem;
+      border-radius: 4px;
+    }
+    .comp-stat-value {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-0);
+    }
+    .comp-stat-label {
+      font-size: 0.65rem;
+      color: var(--text-2);
+      text-transform: uppercase;
+    }
+
+    .damage-split {
+      display: flex;
+      height: 20px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 0.25rem;
+    }
+    .damage-physical {
+      background: var(--red);
+    }
+    .damage-magical {
+      background: var(--accent);
+    }
+
+    .comp-details {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      display: none;
+    }
+    .comp-card.expanded .comp-details {
+      display: block;
+    }
+
+    .comp-strengths-weaknesses {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .stack-builder {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .role-selectors {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .role-selector {
+      text-align: center;
+    }
+    .role-selector label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-1);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .role-selector select {
+      width: 100%;
+    }
+
+    .team-analysis {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    .team-stats {
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+
+    .team-builds {
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .hero-build-section {
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-build-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    .strengths-weaknesses {
+      margin-top: 1rem;
+    }
+    .trait-list {
+      list-style: none;
+      padding: 0;
+    }
+    .trait-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.3rem;
+      font-size: 0.85rem;
+    }
+    .strength {
+      color: var(--green);
+    }
+    .weakness {
+      color: var(--red);
+    }
+
+    .counter-analysis {
+      background: var(--red-dim);
+      border: 1px solid var(--red);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    .counter-analysis h4 {
+      color: var(--red);
+      margin-bottom: 0.75rem;
+    }
+
+    .loading {
+      text-align: center;
+      color: var(--text-2);
+      padding: 2rem;
+    }
+
+    @media (max-width: 1200px) {
+      .team-analysis {
+        grid-template-columns: 1fr;
+      }
+      .role-selectors {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .build-suggestions {
+        grid-template-columns: 1fr;
+      }
+      .comp-heroes {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .comp-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .role-selectors {
+        grid-template-columns: 1fr;
+      }
+      .comp-strengths-weaknesses {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <h1 class="logo" style="cursor:pointer" onclick="location.href='v2/'">⚔ Predecessor Scout</h1>
+      <div class="header-links">
+        <a href="v2/" class="header-link">← Home</a>
+        <a href="https://github.com/Kendubu1/predecessor-tool" target="_blank" class="header-link">GitHub</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="app">
+    <div class="team-lab-header">
+      <h1>🧪 Team Lab</h1>
+      <span class="team-lab-subtitle">Pre-game team planning for your 5-stack</span>
+    </div>
+
+    <!-- Section 1: Duo Lane Combos -->
+    <section class="card" style="margin-bottom: 2rem;">
+      <h2>🔥 Duo Lane Combos</h2>
+      <p class="section-desc" style="color: var(--text-2); margin-bottom: 1rem; font-size: 0.85rem;">
+        Top-rated duo lane combinations ranked by synergy score. Click to see full breakdown including builds.
+      </p>
+      
+      <div class="loading" id="duoLoading">⏳ Analyzing hero synergies...</div>
+      
+      <div id="duoCombos" style="display: none;">
+        <div id="duoCarrySupport" style="margin-top: 1rem;">
+          <h3 class="collapsible collapsed" onclick="toggleSection(this)" style="color: var(--text-0); margin-bottom: 0; cursor: pointer; user-select: none;"><span class="collapse-icon">▶</span> ⚔️ Carry + Support</h3>
+          <p style="color: var(--text-2); font-size: 0.82rem; margin: 0.25rem 0 0.5rem 1.5rem; font-style: italic;">Best bot lane duos — CC chains, peel, and kill potential.</p>
+          <div class="collapsible-content" style="display: none;">
+            <div id="carrySupport" class="combo-grid" style="margin-top: 0.5rem;"></div>
+          </div>
+        </div>
+        
+        <div id="duoJungleOfflane" style="margin-top: 2rem;">
+          <h3 class="collapsible collapsed" onclick="toggleSection(this)" style="color: var(--text-0); margin-bottom: 0; cursor: pointer; user-select: none;"><span class="collapse-icon">▶</span> 🌲 Jungle + Offlane</h3>
+          <p style="color: var(--text-2); font-size: 0.82rem; margin: 0.25rem 0 0.5rem 1.5rem; font-style: italic;">Gank synergy — jungler rotates in, offlaner locks them down.</p>
+          <div class="collapsible-content" style="display: none;">
+            <div id="jungleOfflaneDuos" class="combo-grid" style="margin-top: 0.5rem;"></div>
+          </div>
+        </div>
+        
+        <div id="duoMidJungle" style="margin-top: 2rem;">
+          <h3 class="collapsible collapsed" onclick="toggleSection(this)" style="color: var(--text-0); margin-bottom: 0; cursor: pointer; user-select: none;"><span class="collapse-icon">▶</span> 🌀 Mid + Jungle</h3>
+          <p style="color: var(--text-2); font-size: 0.82rem; margin: 0.25rem 0 0.5rem 1.5rem; font-style: italic;">Roam combos — mid and jungle team up for early picks.</p>
+          <div class="collapsible-content" style="display: none;">
+            <div id="midJungleDuos" class="combo-grid" style="margin-top: 0.5rem;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Pre-Built Team Comps -->
+    <section class="card" style="margin-bottom: 2rem;">
+      <h2>🌐 Pre-Built Team Comps</h2>
+      <p class="section-desc" style="color: var(--text-2); margin-bottom: 1rem; font-size: 0.85rem;">
+        Complete 5-man team compositions optimized for different playstyles. Click to expand for builds.
+      </p>
+      
+      <div class="loading" id="compsLoading">⏳ Generating team compositions...</div>
+      
+      <div id="teamComps" style="display: none;"></div>
+    </section>
+
+    <!-- Section 3: Build Your Stack -->
+    <section class="card">
+      <h2>🛠️ Build Your Stack</h2>
+      <p class="section-desc" style="color: var(--text-2); margin-bottom: 1rem; font-size: 0.85rem;">
+        Create your own team composition and get analysis, builds, and counter information.
+      </p>
+      
+      <div class="stack-builder">
+        <div class="role-selectors">
+          <div class="role-selector">
+            <label for="offlaneSelect">Offlane</label>
+            <select id="offlaneSelect">
+              <option value="">Select hero...</option>
+            </select>
+          </div>
+          <div class="role-selector">
+            <label for="jungleSelect">Jungle</label>
+            <select id="jungleSelect">
+              <option value="">Select hero...</option>
+            </select>
+          </div>
+          <div class="role-selector">
+            <label for="midlaneSelect">Midlane</label>
+            <select id="midlaneSelect">
+              <option value="">Select hero...</option>
+            </select>
+          </div>
+          <div class="role-selector">
+            <label for="carrySelect">Carry</label>
+            <select id="carrySelect">
+              <option value="">Select hero...</option>
+            </select>
+          </div>
+          <div class="role-selector">
+            <label for="supportSelect">Support</label>
+            <select id="supportSelect">
+              <option value="">Select hero...</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="teamAnalysis" style="display: none;">
+          <div class="team-analysis">
+            <div class="team-stats">
+              <h3 style="color: var(--text-0); margin-bottom: 1rem;">📊 Team Analysis</h3>
+              <div id="teamStatsContent"></div>
+              
+              <div class="strengths-weaknesses">
+                <div style="margin-bottom: 1rem;">
+                  <h4 style="color: var(--green); font-size: 0.8rem; margin-bottom: 0.5rem;">STRENGTHS</h4>
+                  <ul id="teamStrengths" class="trait-list"></ul>
+                </div>
+                <div>
+                  <h4 style="color: var(--red); font-size: 0.8rem; margin-bottom: 0.5rem;">WEAKNESSES</h4>
+                  <ul id="teamWeaknesses" class="trait-list"></ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="team-builds">
+              <h3 style="color: var(--text-0); margin-bottom: 1rem;">⚔️ Recommended Builds</h3>
+              <div id="teamBuildsContent"></div>
+            </div>
+          </div>
+
+          <div id="counterAnalysis" class="counter-analysis" style="display: none;">
+            <h4>⚠️ What Beats This Comp</h4>
+            <div id="counterContent"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="item-utils.js?v=20"></script>
+  <script src="ability-interactions.js?v=20"></script>
+  <script src="matchup-engine.js?v=20"></script>
+  <script src="combo-engine.js?v=21"></script>
+  <script src="support-synergy.js?v=22"></script>
+  
+  <script>
+    // Team Lab main application
+    const TeamLab = (() => {
+      // Data loading - using the same pattern as app.js
+      const DATA_BASE = '../data';
+      const CACHE_BUST = '?v=' + Date.now();
+      
+      let currentVersion = null;
+      let heroAbilities = null;
+      let heroProfiles = null;
+      let duoSynergies = null;
+      let heroCache = {};
+      
+      // Data loading functions - copied from app.js
+      async function findLatestVersion() {
+        // Search recent dates, checking both folder formats.
+        // Pick the folder whose heroes.json has the highest heroCount.
+        const today = new Date();
+        const gameVersions = [
+          '1.11.2', '1.11.1', '1.11.0',
+          '1.10.2', '1.10.1', '1.10.0',
+          '1.9.0', '1.8.0',
+        ];
+
+        for (let i = 0; i < 30; i++) {
+          const d = new Date(today);
+          d.setDate(d.getDate() - i);
+          const dateStr = d.toISOString().slice(0, 10);
+
+          // Collect all candidate folders for this date
+          const candidates = [];
+          for (const gv of gameVersions) {
+            candidates.push(`${gv}_${dateStr}`);
+          }
+          candidates.push(dateStr);
+
+          let best = null;
+          let bestCount = 0;
+
+          for (const folder of candidates) {
+            try {
+              const res = await fetch(`${DATA_BASE}/${folder}/heroes.json${CACHE_BUST}`);
+              if (res.ok) {
+                const data = await res.json();
+                const count = data.heroCount || (data.heroes ? data.heroes.length : 0);
+                if (count > bestCount) {
+                  bestCount = count;
+                  best = folder;
+                }
+              }
+            } catch {}
+          }
+
+          if (best && bestCount >= 10) return best;
+        }
+        return null;
+      }
+
+      async function loadHeroIndex(version) {
+        const res = await fetch(`${DATA_BASE}/${version}/heroes.json${CACHE_BUST}`);
+        const data = await res.json();
+        return { version, ...data };
+      }
+
+      async function loadHeroData(version, slug) {
+        if (heroCache[slug]) return heroCache[slug];
+        const res = await fetch(`${DATA_BASE}/${version}/${slug}.json${CACHE_BUST}`);
+        const hero = await res.json();
+        heroCache[slug] = hero;
+        return hero;
+      }
+      
+      // Hero data helpers
+      // Damage types derived from actual ability scaling data in hero-abilities.json
+      // physical = >60% physical scaling, magical = <40% physical, hybrid = 40-60%
+      const DAMAGE_TYPE_MAP = {
+        // Physical (>60% physical scaling)
+        'akeron': 'physical', 'bayle': 'physical', 'crunch': 'physical',
+        'drongo': 'physical', 'eden': 'physical', 'feng-mao': 'physical',
+        'greystone': 'physical', 'grim-exe': 'physical', 'grux': 'physical',
+        'kallari': 'physical', 'khaimera': 'physical', 'kira': 'physical',
+        'murdock': 'physical', 'rampage': 'physical', 'revenant': 'physical',
+        'serath': 'physical', 'skylar': 'physical', 'sparrow': 'physical',
+        'terra': 'physical', 'yin': 'physical', 'yurei': 'physical',
+        'zarus': 'physical',
+        // Magical (<40% physical scaling)
+        'argus': 'magical', 'aurora': 'magical', 'countess': 'magical',
+        'dekker': 'magical', 'gadget': 'magical', 'gideon': 'magical',
+        'howitzer': 'magical', 'iggy-scorch': 'magical', 'kwang': 'magical',
+        'lt-belica': 'magical', 'maco': 'magical', 'morigesh': 'magical',
+        'mourn': 'magical', 'muriel': 'magical', 'phase': 'magical',
+        'renna': 'magical', 'sevarog': 'magical', 'shinbi': 'magical',
+        'steel': 'magical', 'the-fey': 'magical', 'wukong': 'magical',
+        'zinx': 'magical',
+        // Hybrid (40-60% physical scaling)
+        'boris': 'hybrid', 'narbash': 'hybrid', 'riktor': 'hybrid',
+        'twinblast': 'hybrid', 'wraith': 'hybrid'
+      };
+
+      const SPLIT_PUSH_HEROES = ['wukong', 'greystone', 'kallari', 'serath', 'wraith'];
+      const LATE_SCALERS = ['murdock', 'sparrow', 'twinblast', 'revenant', 'serath', 'fey', 'gideon'];
+      const EARLY_GAME_HEROES = ['riktor', 'steel', 'dekker', 'grux', 'rampage', 'khai', 'crunch'];
+
+      // Load all required data
+      async function loadData() {
+        try {
+          // Step 1: Find the latest version folder 
+          console.log('Finding latest data version...');
+          currentVersion = await findLatestVersion();
+          console.log('Found version:', currentVersion);
+          
+          if (!currentVersion) {
+            throw new Error('No data version found');
+          }
+
+          // Step 2: Load game-data files (these are always in the same place)
+          console.log('Loading game data files...');
+          const [abilitiesRes, profilesRes, synergiesRes] = await Promise.all([
+            fetch(`${DATA_BASE}/game-data/hero-abilities.json${CACHE_BUST}`),
+            fetch(`${DATA_BASE}/game-data/hero-profiles.json${CACHE_BUST}`),
+            fetch(`${DATA_BASE}/game-data/duo-synergies.json${CACHE_BUST}`)
+          ]);
+          
+          heroAbilities = await abilitiesRes.json();
+          heroProfiles = await profilesRes.json();
+          duoSynergies = await synergiesRes.json();
+          
+          console.log('Loaded hero abilities for', Object.keys(heroAbilities).length, 'heroes');
+          console.log('Loaded profiles for', heroProfiles.length, 'heroes');
+          
+          // Step 3: Initialize external modules that depend on loaded data
+          if (SupportSynergy) {
+            console.log('Loading SupportSynergy module...');
+            await SupportSynergy.load();
+          }
+          if (ComboEngine) {
+            console.log('Loading ComboEngine module...');
+            await ComboEngine.load();
+          }
+          if (MatchupEngine) {
+            console.log('Loading MatchupEngine module...');
+            await MatchupEngine.init(DATA_BASE);
+          }
+          
+          console.log('All data loaded successfully');
+        } catch (error) {
+          console.error('Failed to load data:', error);
+          throw error;
+        }
+      }
+
+      // Utility functions
+      function getHeroProfile(slug) {
+        return heroProfiles?.find(p => p.slug === slug) || null;
+      }
+
+      function getHeroRoles(slug) {
+        const profile = getHeroProfile(slug);
+        return profile?.roles || [];
+      }
+
+      function isRole(slug, role) {
+        return getHeroRoles(slug).map(r => r.toLowerCase()).includes(role.toLowerCase());
+      }
+
+      function getDamageType(slug) {
+        return DAMAGE_TYPE_MAP[slug] || 'physical';
+      }
+
+      async function getHeroBuild(slug, role) {
+        try {
+          const heroData = await loadHeroData(currentVersion, slug);
+          const roleLower = role.toLowerCase();
+          if (!heroData?.roles?.[roleLower]?.buildTabs) return null;
+          
+          const buildTab = heroData.roles[roleLower].buildTabs[0]; // Use first build tab
+          return {
+            name: buildTab.name,
+            items: buildTab.items || [],
+            winRate: buildTab.winRate,
+            matches: buildTab.matches
+          };
+        } catch (error) {
+          console.warn('Failed to load build for', slug, role, error);
+          return null;
+        }
+      }
+
+      // Section 1: Generate Duo Combos
+      async function generateDuoCombos() {
+        const combos = {
+          carrySupport: [],
+          midJungle: [],
+          jungleOfflane: []
+        };
+
+        // Get all heroes by role
+        const supports = heroProfiles.filter(h => isRole(h.slug, 'support'));
+        const carries = heroProfiles.filter(h => isRole(h.slug, 'carry'));
+        const offlaners = heroProfiles.filter(h => isRole(h.slug, 'offlane'));
+        const mids = heroProfiles.filter(h => isRole(h.slug, 'midlane'));
+        const junglers = heroProfiles.filter(h => isRole(h.slug, 'jungle'));
+
+        console.log('Generating duo combos...');
+        console.log('Found roles:', { 
+          supports: supports.length, 
+          carries: carries.length, 
+          offlaners: offlaners.length, 
+          mids: mids.length, 
+          junglers: junglers.length 
+        });
+
+        // Generate carry+support combos
+        if (SupportSynergy && SupportSynergy.getTopDuos) {
+          console.log('Generating carry+support combos...');
+          for (const support of supports) { // Show all supports — even low-pick heroes like Zinx
+            try {
+              const topDuos = SupportSynergy.getTopDuos(support.slug, 5);
+              for (const duo of topDuos || []) {
+                if (isRole(duo.partner.slug, 'carry')) {
+                  combos.carrySupport.push({
+                    hero1: support.slug,
+                    hero2: duo.partner.slug,
+                    score: duo.score,
+                    reasons: duo.reasons || [],
+                    combos: duo.combos || [],
+                    combinedCC: duo.combinedHardCC || 0
+                  });
+                }
+              }
+            } catch (error) {
+              console.warn('Error generating duo for support', support.slug, error);
+            }
+          }
+        }
+
+        // Generate mid+jungle combos (roam synergy)
+        console.log('Generating mid+jungle combos...');
+        for (const mid of mids) {
+          for (const jungler of junglers) {
+            if (SupportSynergy && SupportSynergy.analyzeDuo) {
+              try {
+                const analysis = SupportSynergy.analyzeDuo(mid.slug, jungler.slug);
+                if (analysis && analysis.score > 5) {
+                  combos.midJungle.push({
+                    hero1: mid.slug,
+                    hero2: jungler.slug,
+                    score: analysis.score,
+                    reasons: analysis.reasons || [],
+                    combos: analysis.combos || [],
+                    combinedCC: analysis.combinedHardCC || 0
+                  });
+                }
+              } catch (error) {
+                console.warn('Error analyzing mid+jungle duo', mid.slug, jungler.slug, error);
+              }
+            }
+          }
+        }
+
+        // Generate jungle+offlane combos (gank synergy)
+        console.log('Generating jungle+offlane combos...');
+        for (const jungler of junglers) {
+          for (const offlaner of offlaners) {
+            if (SupportSynergy && SupportSynergy.analyzeDuo) {
+              try {
+                const analysis = SupportSynergy.analyzeDuo(jungler.slug, offlaner.slug);
+                if (analysis && analysis.score > 5) {
+                  combos.jungleOfflane.push({
+                    hero1: jungler.slug,
+                    hero2: offlaner.slug,
+                    score: analysis.score,
+                    reasons: analysis.reasons || [],
+                    combos: analysis.combos || [],
+                    combinedCC: analysis.combinedHardCC || 0
+                  });
+                }
+              } catch (error) {
+                console.warn('Error analyzing jungle+offlane duo', jungler.slug, offlaner.slug, error);
+              }
+            }
+          }
+        }
+
+        // Sort all combo arrays by score
+        combos.carrySupport.sort((a, b) => b.score - a.score);
+        combos.midJungle.sort((a, b) => b.score - a.score);
+        combos.jungleOfflane.sort((a, b) => b.score - a.score);
+
+        // Limit results
+        // Show all combos — let players find niche picks like Zinx
+        combos.carrySupport = combos.carrySupport.slice(0, 50);
+        combos.midJungle = combos.midJungle.slice(0, 30);
+        combos.jungleOfflane = combos.jungleOfflane.slice(0, 30);
+
+        console.log('Generated combos:', {
+          carrySupport: combos.carrySupport.length,
+          midJungle: combos.midJungle.length,
+          jungleOfflane: combos.jungleOfflane.length
+        });
+
+        return combos;
+      }
+
+      async function renderDuoCombo(combo) {
+        const hero1 = getHeroProfile(combo.hero1);
+        const hero2 = getHeroProfile(combo.hero2);
+        
+        const hero1Roles = getHeroRoles(combo.hero1);
+        const hero2Roles = getHeroRoles(combo.hero2);
+
+        // Load builds asynchronously
+        const build1 = await getHeroBuild(combo.hero1, hero1Roles[0]);
+        const build2 = await getHeroBuild(combo.hero2, hero2Roles[0]);
+
+        return `
+          <div class="combo-card" onclick="toggleCombo(this)">
+            <div class="combo-header">
+              <div class="combo-heroes">
+                <span class="combo-hero">${hero1?.name || combo.hero1}</span>
+                <span class="combo-vs">+</span>
+                <span class="combo-hero">${hero2?.name || combo.hero2}</span>
+              </div>
+              <div class="combo-score">${Math.round(combo.score)}%</div>
+            </div>
+            
+            <div class="combo-tags">
+              ${hero1Roles.map(role => `<span class="role-tag">${role}</span>`).join('')}
+              ${hero2Roles.map(role => `<span class="role-tag">${role}</span>`).join('')}
+            </div>
+
+            <div class="combo-details">
+              <div class="combo-section">
+                <h4>Why It Works</h4>
+                <ul class="combo-reasons">
+                  ${combo.reasons.map(reason => `<li><span>${reason}</span></li>`).join('')}
+                  ${combo.reasons.length === 0 ? '<li><span>Strong synergy potential</span></li>' : ''}
+                </ul>
+              </div>
+
+              ${combo.combinedCC > 0 ? `
+                <div class="combo-section">
+                  <h4>CC Chain Duration</h4>
+                  <div style="color: var(--accent); font-weight: 600;">${combo.combinedCC.toFixed(1)}s total lockdown</div>
+                </div>
+              ` : ''}
+
+              <div class="combo-section">
+                <h4>Suggested Builds</h4>
+                <div class="build-suggestions">
+                  <div class="hero-build">
+                    <h5>${hero1?.name || combo.hero1}</h5>
+                    <div class="build-items">
+                      ${build1?.items?.slice(0, 4).map(item => `<span class="build-item">${item}</span>`).join('') || '<span class="build-item">Loading...</span>'}
+                    </div>
+                  </div>
+                  <div class="hero-build">
+                    <h5>${hero2?.name || combo.hero2}</h5>
+                    <div class="build-items">
+                      ${build2?.items?.slice(0, 4).map(item => `<span class="build-item">${item}</span>`).join('') || '<span class="build-item">Loading...</span>'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      async function loadDuoCombos() {
+        try {
+          console.log('Loading duo combos...');
+          const combos = await generateDuoCombos();
+          
+          // Render all combos (with async build loading)
+          const carrySupport = await Promise.all(combos.carrySupport.map(renderDuoCombo));
+          const jungleOfflaneDuos = await Promise.all(combos.jungleOfflane.map(renderDuoCombo));
+          const midJungleDuos = await Promise.all(combos.midJungle.map(renderDuoCombo));
+          
+          document.getElementById('carrySupport').innerHTML = carrySupport.join('');
+          document.getElementById('jungleOfflaneDuos').innerHTML = jungleOfflaneDuos.join('');
+          document.getElementById('midJungleDuos').innerHTML = midJungleDuos.join('');
+
+          document.getElementById('duoLoading').style.display = 'none';
+          document.getElementById('duoCombos').style.display = 'block';
+          console.log('Duo combos loaded successfully');
+        } catch (error) {
+          console.error('Failed to load duo combos:', error);
+          document.getElementById('duoLoading').innerHTML = '❌ Failed to load duo combos';
+        }
+      }
+
+      // Section 2: Generate Team Compositions
+      function generateTeamComps() {
+        const compStyles = {
+          wombo: { name: 'Wombo Combo', icon: '💥', shortDesc: 'Group up, lock down, blow up. Win teamfights.', description: 'Stack AoE crowd control and damage — group them up, lock them down, blow them up. Win teamfights decisively.' },
+          pick: { name: 'Pick Comp', icon: '🎯', shortDesc: 'Catch someone out, burst them, take objectives.', description: 'Catch one enemy out of position, burst them instantly, then take objectives with the numbers advantage. Punish bad rotations.' },
+          deathball: { name: 'Deathball', icon: '⚡', shortDesc: 'Group as 5 early, push hard, end before they scale.', description: 'Group up early, push as 5, and end the game before the enemy scales. Overwhelming early pressure with heals and shields to sustain.' },
+          splitpush: { name: 'Split Push', icon: '🔀', shortDesc: 'Pressure multiple lanes. Split-pusher + strong 4v4 core.', description: 'Apply pressure in multiple lanes simultaneously. Your split-pusher draws attention while the main group fights 4v4 or takes objectives.' },
+          latescale: { name: 'Late Scale', icon: '⏰', shortDesc: 'Survive early, farm up, become unstoppable late.', description: 'Survive the early game, farm up, and become unstoppable. Your carries hit harder than anyone else once they\'re full build.' }
+        };
+
+        const comps = {};
+        
+        // Generate 3 comps per style
+        for (const [style, info] of Object.entries(compStyles)) {
+          comps[style] = generateCompsForStyle(style, 3);
+        }
+
+        return { styles: compStyles, comps };
+      }
+
+      function generateCompsForStyle(style, count) {
+        const comps = [];
+        const allHeroes = heroProfiles.slice(); // Copy array
+
+        // Get heroes suitable for each role
+        const roleHeroes = {
+          offlane: allHeroes.filter(h => isRole(h.slug, 'offlane')),
+          jungle: allHeroes.filter(h => isRole(h.slug, 'jungle')),
+          midlane: allHeroes.filter(h => isRole(h.slug, 'midlane')),
+          carry: allHeroes.filter(h => isRole(h.slug, 'carry')),
+          support: allHeroes.filter(h => isRole(h.slug, 'support'))
+        };
+
+        // Generate comps based on style
+        for (let i = 0; i < count; i++) {
+          const comp = generateSingleComp(style, roleHeroes, i);
+          if (comp) {
+            comps.push(comp);
+          }
+        }
+
+        return comps.sort((a, b) => b.score - a.score);
+      }
+
+      function generateSingleComp(style, roleHeroes, variation) {
+        let heroes = {};
+        
+        // Select heroes based on style and variation
+        switch (style) {
+          case 'wombo':
+            heroes = selectWomboHeroes(roleHeroes, variation);
+            break;
+          case 'pick':
+            heroes = selectPickHeroes(roleHeroes, variation);
+            break;
+          case 'deathball':
+            heroes = selectDeathballHeroes(roleHeroes, variation);
+            break;
+          case 'splitpush':
+            heroes = selectSplitpushHeroes(roleHeroes, variation);
+            break;
+          case 'latescale':
+            heroes = selectLateScaleHeroes(roleHeroes, variation);
+            break;
+        }
+
+        if (Object.keys(heroes).length !== 5) return null;
+
+        // Calculate team stats
+        const stats = calculateTeamStats(heroes);
+        const strengths = analyzeTeamStrengths(heroes, style);
+        const weaknesses = analyzeTeamWeaknesses(heroes, style);
+
+        return {
+          heroes,
+          score: stats.synergyScore,
+          damagePhysical: stats.physicalPercent,
+          damageMagical: stats.magicalPercent,
+          totalCC: stats.totalCC,
+          strengths,
+          weaknesses
+        };
+      }
+
+      function selectWomboHeroes(roleHeroes, variation) {
+        // Prioritize heroes with AoE CC
+        const aoeSupports = ['riktor', 'steel', 'dekker', 'narbash'];
+        const aoeMids = ['gideon', 'howitzer', 'fey', 'iggy-scorch'];
+        const aoeJunglers = ['rampage', 'grux', 'khai'];
+        
+        return {
+          support: getRandomFromList(aoeSupports, roleHeroes.support, variation),
+          midlane: getRandomFromList(aoeMids, roleHeroes.midlane, variation),
+          jungle: getRandomFromList(aoeJunglers, roleHeroes.jungle, variation),
+          carry: getRandomHero(roleHeroes.carry, variation),
+          offlane: getRandomHero(roleHeroes.offlane, variation)
+        };
+      }
+
+      function selectPickHeroes(roleHeroes, variation) {
+        // Prioritize single-target CC + burst
+        const pickSupports = ['riktor', 'dekker', 'phase'];
+        const burstMids = ['countess', 'gideon', 'shinbi'];
+        
+        return {
+          support: getRandomFromList(pickSupports, roleHeroes.support, variation),
+          midlane: getRandomFromList(burstMids, roleHeroes.midlane, variation),
+          jungle: getRandomHero(roleHeroes.jungle, variation),
+          carry: getRandomHero(roleHeroes.carry, variation),
+          offlane: getRandomHero(roleHeroes.offlane, variation)
+        };
+      }
+
+      function selectDeathballHeroes(roleHeroes, variation) {
+        // Early game heroes with grouping power
+        const healSupports = ['muriel', 'narbash', 'zinx'];
+        
+        return {
+          support: getRandomFromList(healSupports, roleHeroes.support, variation),
+          midlane: getRandomFromList(EARLY_GAME_HEROES.filter(h => isRole(h, 'midlane')), roleHeroes.midlane, variation),
+          jungle: getRandomFromList(EARLY_GAME_HEROES.filter(h => isRole(h, 'jungle')), roleHeroes.jungle, variation),
+          carry: getRandomHero(roleHeroes.carry, variation),
+          offlane: getRandomFromList(EARLY_GAME_HEROES.filter(h => isRole(h, 'offlane')), roleHeroes.offlane, variation)
+        };
+      }
+
+      function selectSplitpushHeroes(roleHeroes, variation) {
+        // Include a splitpusher + strong 4v4
+        const splitpushers = SPLIT_PUSH_HEROES.filter(h => 
+          isRole(h, 'offlane') || isRole(h, 'carry')
+        );
+        
+        const offlaner = splitpushers.find(h => isRole(h, 'offlane'));
+        
+        return {
+          offlane: offlaner || getRandomHero(roleHeroes.offlane, variation),
+          jungle: getRandomHero(roleHeroes.jungle, variation),
+          midlane: getRandomHero(roleHeroes.midlane, variation),
+          carry: getRandomHero(roleHeroes.carry, variation),
+          support: getRandomHero(roleHeroes.support, variation)
+        };
+      }
+
+      function selectLateScaleHeroes(roleHeroes, variation) {
+        // Prioritize scaling heroes
+        return {
+          carry: getRandomFromList(LATE_SCALERS.filter(h => isRole(h, 'carry')), roleHeroes.carry, variation),
+          midlane: getRandomFromList(LATE_SCALERS.filter(h => isRole(h, 'midlane')), roleHeroes.midlane, variation),
+          jungle: getRandomHero(roleHeroes.jungle, variation),
+          offlane: getRandomHero(roleHeroes.offlane, variation),
+          support: getRandomHero(roleHeroes.support, variation)
+        };
+      }
+
+      function getRandomFromList(preferredSlugs, roleHeroes, variation) {
+        const available = roleHeroes.filter(h => preferredSlugs.includes(h.slug));
+        if (available.length === 0) return getRandomHero(roleHeroes, variation);
+        
+        const index = variation % available.length;
+        return available[index].slug;
+      }
+
+      function getRandomHero(roleHeroes, variation) {
+        if (roleHeroes.length === 0) return null;
+        const index = variation % roleHeroes.length;
+        return roleHeroes[index].slug;
+      }
+
+      function calculateTeamStats(heroes) {
+        let totalSynergy = 0;
+        let totalCC = 0;
+        let physicalDamage = 0;
+        let magicalDamage = 0;
+        
+        const heroList = Object.values(heroes);
+        
+        // Calculate pairwise synergies (simplified)
+        for (let i = 0; i < heroList.length; i++) {
+          for (let j = i + 1; j < heroList.length; j++) {
+            if (SupportSynergy && SupportSynergy.analyzeDuo) {
+              try {
+                const analysis = SupportSynergy.analyzeDuo(heroList[i], heroList[j]);
+                if (analysis) {
+                  totalSynergy += analysis.score * 0.1; // Scale down
+                  totalCC += analysis.combinedHardCC || 0;
+                }
+              } catch (error) {
+                // Skip failed analysis
+              }
+            }
+          }
+        }
+
+        // Calculate damage split (weighted: physical=1.0, hybrid=0.5, magical=0.0)
+        for (const heroSlug of heroList) {
+          const damageType = getDamageType(heroSlug);
+          if (damageType === 'physical') {
+            physicalDamage += 1.0;
+          } else if (damageType === 'hybrid') {
+            physicalDamage += 0.5;
+            magicalDamage += 0.5;
+          } else {
+            magicalDamage += 1.0;
+          }
+        }
+
+        const total = physicalDamage + magicalDamage;
+        const physicalPercent = Math.round((physicalDamage / total) * 100);
+        const magicalPercent = 100 - physicalPercent;
+
+        return {
+          synergyScore: Math.round(totalSynergy),
+          totalCC: Math.round(totalCC * 10) / 10,
+          physicalPercent,
+          magicalPercent
+        };
+      }
+
+      function analyzeTeamStrengths(heroes, style) {
+        const strengths = [];
+        const heroList = Object.values(heroes);
+        
+        let ccCount = 0;
+        let sustainCount = 0;
+        let mobilityCount = 0;
+        let tankCount = 0;
+        let totalCC = 0;
+        let hasPeel = false;
+        let hasEngage = false;
+        
+        for (const heroSlug of heroList) {
+          if (SupportSynergy && SupportSynergy.getHeroKit) {
+            try {
+              const kit = SupportSynergy.getHeroKit(heroSlug);
+              if (kit?.totalHardCC > 1) ccCount++;
+              if (kit?.totalHardCC) totalCC += kit.totalHardCC;
+              if (kit?.hasHeal || kit?.hasShield) sustainCount++;
+              if (kit?.hasMobility) mobilityCount++;
+              if (kit?.hasPeel) hasPeel = true;
+              if (kit?.hasEngage) hasEngage = true;
+            } catch {}
+          }
+          const profile = getHeroProfile(heroSlug);
+          if (profile?.attributes?.durability >= 7) tankCount++;
+        }
+
+        // Damage balance
+        const stats = calculateTeamStats(heroes);
+        if (stats.physicalPercent >= 30 && stats.physicalPercent <= 70) {
+          strengths.push('✨ Balanced damage split — enemies can\'t stack one armor type');
+        }
+
+        // CC
+        if (ccCount >= 3) strengths.push('🔒 Strong CC chain — ' + totalCC.toFixed(1) + 's+ of lockdown potential');
+        else if (ccCount >= 2) strengths.push('🔒 Decent CC — enough to win picks');
+
+        // Frontline
+        if (tankCount >= 2) strengths.push('🛡️ Strong frontline — two or more durable heroes to absorb damage');
+
+        // Sustain
+        if (sustainCount >= 2) strengths.push('💚 Good sustain — heals/shields keep the team in fights longer');
+
+        // Engage/Peel
+        if (hasEngage) strengths.push('⚡ Has engage — can start fights on your terms');
+        if (hasPeel) strengths.push('🛡️ Has peel — can protect carries from divers');
+
+        // Mobility
+        if (mobilityCount >= 3) strengths.push('💨 High mobility — can rotate and reposition quickly');
+
+        // Style-specific
+        if (style === 'wombo') strengths.push('💥 Devastating teamfight AoE combo potential');
+        if (style === 'pick') strengths.push('🎯 Strong pick potential — catch enemies out of position');
+        if (style === 'deathball') strengths.push('⚡ Early aggression — group up and overwhelm before enemies scale');
+        if (style === 'splitpush') strengths.push('🔀 Multi-lane pressure — force enemies to split');
+        if (style === 'latescale') strengths.push('⏰ Scales hard — late game your damage is unmatched');
+
+        return strengths;
+      }
+
+      function analyzeTeamWeaknesses(heroes, style) {
+        const weaknesses = [];
+        const heroList = Object.values(heroes);
+        
+        // Check damage balance
+        const stats = calculateTeamStats(heroes);
+        if (stats.physicalPercent >= 80) weaknesses.push('⚠️ Heavily physical damage — enemies can stack armor and nullify your team. Consider magic pen items.');
+        else if (stats.physicalPercent >= 70) weaknesses.push('⚠️ Skews physical — enemies building armor will be effective. One magic damage threat helps.');
+        if (stats.magicalPercent >= 80) weaknesses.push('⚠️ Heavily magical damage — enemies can stack magic resist cheaply. Consider physical carries.');
+        else if (stats.magicalPercent >= 70) weaknesses.push('⚠️ Skews magical — magic resist stacking will hurt. Physical damage items can help.');
+        
+        // Frontline check
+        let tankCount = 0;
+        let ccCount = 0;
+        let sustainCount = 0;
+        let mobilityCount = 0;
+        
+        for (const heroSlug of heroList) {
+          const profile = getHeroProfile(heroSlug);
+          if (profile?.attributes?.durability >= 7) tankCount++;
+          if (SupportSynergy && SupportSynergy.getHeroKit) {
+            try {
+              const kit = SupportSynergy.getHeroKit(heroSlug);
+              if (kit?.totalHardCC > 1) ccCount++;
+              if (kit?.hasHeal || kit?.hasShield) sustainCount++;
+              if (kit?.hasMobility) mobilityCount++;
+            } catch {}
+          }
+        }
+        
+        if (tankCount === 0) weaknesses.push('🚨 No frontline — no one to absorb damage. Your carries will get dove on.');
+        
+        if (ccCount <= 1) weaknesses.push('⚠️ Low CC — hard to lock down enemies or peel for carries. They can run you over.');
+        
+        if (sustainCount === 0) weaknesses.push('⚠️ No sustain — no heals or shields means you lose attrition fights.');
+
+        if (mobilityCount <= 1) weaknesses.push('⚠️ Low mobility — slow rotations and hard to escape ganks.');
+        
+        // Check for early game weakness
+        let earlyGameHeroes = 0;
+        for (const heroSlug of heroList) {
+          if (EARLY_GAME_HEROES.includes(heroSlug)) earlyGameHeroes++;
+        }
+        
+        if (style !== 'latescale' && earlyGameHeroes <= 1 && heroList.length >= 4) {
+          weaknesses.push('⚠️ Weak early game — need to farm safely and avoid early fights.');
+        }
+        
+        // Style-specific weaknesses
+        if (style === 'latescale') weaknesses.push('⏰ Vulnerable early — survive to 25+ min or risk losing before you scale.');
+        if (style === 'deathball') weaknesses.push('⏰ Falls off late — if you don\'t snowball early, you\'ll get outscaled.');
+        if (style === 'splitpush') weaknesses.push('🗣️ Needs coordination — if your splitpusher dies alone, you\'re 4v5.');
+
+        return weaknesses;
+      }
+
+      async function renderTeamComp(comp, style) {
+        const heroNames = {};
+        const heroRoles = {};
+        
+        for (const [role, slug] of Object.entries(comp.heroes)) {
+          const profile = getHeroProfile(slug);
+          heroNames[role] = profile?.name || slug;
+          heroRoles[role] = role;
+        }
+
+        return `
+          <div class="comp-card" onclick="toggleComp(this)">
+            <div class="comp-heroes">
+              ${Object.entries(heroNames).map(([role, name]) => `
+                <div class="comp-hero">
+                  <div class="comp-hero-name">${name}</div>
+                  <div class="comp-hero-role">${role}</div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="comp-stats">
+              <div class="comp-stat">
+                <div class="comp-stat-value">${Math.min(100, Math.round(comp.score * 100 / 130))}%</div>
+                <div class="comp-stat-label">Synergy</div>
+              </div>
+              <div class="comp-stat">
+                <div class="comp-stat-value">${comp.totalCC}s</div>
+                <div class="comp-stat-label">Total CC</div>
+              </div>
+              <div class="comp-stat">
+                <div class="comp-stat-value">
+                  <div class="damage-split">
+                    <div class="damage-physical" style="width: ${comp.damagePhysical}%"></div>
+                    <div class="damage-magical" style="width: ${comp.damageMagical}%"></div>
+                  </div>
+                </div>
+                <div class="comp-stat-label">Damage</div>
+              </div>
+              <div class="comp-stat">
+                <div class="comp-stat-value">${comp.damagePhysical}% / ${comp.damageMagical}%</div>
+                <div class="comp-stat-label">Phys/Mag</div>
+              </div>
+            </div>
+
+            <div class="comp-details">
+              <div class="comp-strengths-weaknesses">
+                <div>
+                  <h4 style="color: var(--green); font-size: 0.8rem; margin-bottom: 0.5rem;">STRENGTHS</h4>
+                  <ul class="trait-list">
+                    ${comp.strengths.map(s => `<li class="strength">✓ ${s}</li>`).join('')}
+                  </ul>
+                </div>
+                <div>
+                  <h4 style="color: var(--red); font-size: 0.8rem; margin-bottom: 0.5rem;">WEAKNESSES</h4>
+                  <ul class="trait-list">
+                    ${comp.weaknesses.map(w => `<li class="weakness">✗ ${w}</li>`).join('')}
+                  </ul>
+                </div>
+              </div>
+              
+              <div style="margin-top: 1rem;">
+                <h4 style="color: var(--text-1); font-size: 0.8rem; margin-bottom: 0.5rem;">BUILDS</h4>
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem;">
+                  ${Object.entries(comp.heroes).map(([role, slug]) => `
+                    <div class="hero-build">
+                      <h5>${heroNames[role]}</h5>
+                      <div class="build-items">
+                        <span class="build-item">Loading...</span>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      async function loadTeamComps() {
+        try {
+          console.log('Generating team compositions...');
+          const { styles, comps } = generateTeamComps();
+          
+          let html = '';
+          for (const [styleKey, styleInfo] of Object.entries(styles)) {
+            const compHtml = await Promise.all(comps[styleKey].map(comp => renderTeamComp(comp, styleKey)));
+            html += `
+              <div class="comp-style" style="margin-bottom: 1.5rem;">
+                <h3 class="collapsible collapsed" onclick="toggleSection(this)" style="cursor: pointer; user-select: none; margin-bottom: 0;"><span class="collapse-icon">▶</span> ${styleInfo.icon} ${styleInfo.name}</h3>
+                <p style="color: var(--text-2); font-size: 0.82rem; margin: 0.25rem 0 0.5rem 1.5rem; font-style: italic;">${styleInfo.shortDesc || styleInfo.description}</p>
+                <div class="collapsible-content" style="display: none;">
+                  <div class="comp-grid">
+                    ${compHtml.join('')}
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+
+          document.getElementById('teamComps').innerHTML = html;
+          document.getElementById('compsLoading').style.display = 'none';
+          document.getElementById('teamComps').style.display = 'block';
+          console.log('Team compositions loaded successfully');
+        } catch (error) {
+          console.error('Failed to load team comps:', error);
+          document.getElementById('compsLoading').innerHTML = '❌ Failed to load team compositions';
+        }
+      }
+
+      // Section 3: Build Your Stack
+      function initStackBuilder() {
+        // Populate hero selects
+        const roles = ['offlane', 'jungle', 'midlane', 'carry', 'support'];
+        
+        roles.forEach(role => {
+          const select = document.getElementById(`${role}Select`);
+          const roleHeroes = heroProfiles.filter(h => isRole(h.slug, role));
+          
+          select.innerHTML = '<option value="">Select hero...</option>' +
+            roleHeroes.map(h => `<option value="${h.slug}">${h.name}</option>`).join('');
+          
+          select.addEventListener('change', updateStackAnalysis);
+        });
+      }
+
+      function calculateTeamGrade(stats, strengths, weaknesses, heroCount) {
+        let score = 50; // Start at C
+        
+        // Damage balance (huge factor)
+        if (stats.physicalPercent >= 30 && stats.physicalPercent <= 70) score += 15;
+        else if (stats.physicalPercent >= 20 && stats.physicalPercent <= 80) score += 5;
+        else score -= 10;
+        
+        // Strengths add points
+        score += Math.min(25, strengths.length * 5);
+        
+        // Weaknesses subtract (but contextual ones less so)
+        const criticalWeaknesses = weaknesses.filter(w => w.includes('🚨')).length;
+        const warningWeaknesses = weaknesses.filter(w => w.includes('⚠️')).length;
+        score -= criticalWeaknesses * 12;
+        score -= warningWeaknesses * 4;
+        
+        // CC bonus
+        if (stats.totalCC >= 4) score += 8;
+        else if (stats.totalCC >= 2) score += 4;
+        
+        // Synergy bonus
+        score += Math.min(15, stats.synergyScore * 0.15);
+        
+        // Incomplete team penalty
+        if (heroCount < 5) score -= (5 - heroCount) * 5;
+        
+        return Math.max(0, Math.min(100, Math.round(score)));
+      }
+
+      function getProgressiveContext(selectedHeroes, selectedCount, stats) {
+        const heroList = Object.values(selectedHeroes);
+        const roleEntries = Object.entries(selectedHeroes);
+        const filledRoles = Object.keys(selectedHeroes);
+        const allRoles = ['offlane', 'jungle', 'midlane', 'carry', 'support'];
+        const missingRoles = allRoles.filter(r => !filledRoles.includes(r));
+
+        if (selectedCount === 1) {
+          const [role, slug] = roleEntries[0];
+          const profile = getHeroProfile(slug);
+          const dmgType = getDamageType(slug);
+          let kitInfo = '';
+          if (SupportSynergy && SupportSynergy.getHeroKit) {
+            try {
+              const kit = SupportSynergy.getHeroKit(slug);
+              const traits = [];
+              if (kit?.totalHardCC > 0) traits.push(`${kit.totalHardCC.toFixed(1)}s hard CC`);
+              if (kit?.hasHeal) traits.push('healing');
+              if (kit?.hasShield) traits.push('shielding');
+              if (kit?.hasMobility) traits.push('mobility');
+              if (kit?.hasEngage) traits.push('engage');
+              if (kit?.hasPeel) traits.push('peel');
+              if (traits.length) kitInfo = `<div style="margin-top:0.5rem;color:var(--text-1);font-size:0.85rem;">Kit: ${traits.join(' · ')}</div>`;
+            } catch {}
+          }
+          return `<div style="background:var(--bg-3);border-radius:6px;padding:0.75rem;margin-bottom:1rem;">
+            <div style="font-size:0.9rem;color:var(--text-0);font-weight:600;">Starting with ${profile?.name || slug} (${role})</div>
+            <div style="margin-top:0.25rem;color:var(--text-2);font-size:0.85rem;">${dmgType} damage dealer · Still need: ${missingRoles.join(', ')}</div>
+            ${kitInfo}
+          </div>`;
+        }
+
+        if (selectedCount === 2) {
+          return `<div style="background:var(--bg-3);border-radius:6px;padding:0.75rem;margin-bottom:1rem;">
+            <div style="font-size:0.9rem;color:var(--text-0);font-weight:600;">Duo Analysis</div>
+            <div style="margin-top:0.25rem;color:var(--text-2);font-size:0.85rem;">Damage split: ${stats.physicalPercent}% physical / ${stats.magicalPercent}% magical · Missing: ${missingRoles.join(', ')}</div>
+          </div>`;
+        }
+
+        if (selectedCount === 3) {
+          return `<div style="background:var(--bg-3);border-radius:6px;padding:0.75rem;margin-bottom:1rem;">
+            <div style="font-size:0.9rem;color:var(--text-0);font-weight:600;">Core Forming (3/5)</div>
+            <div style="margin-top:0.25rem;color:var(--text-2);font-size:0.85rem;">Still need: ${missingRoles.join(' and ')}</div>
+          </div>`;
+        }
+
+        if (selectedCount === 4) {
+          const missing = missingRoles[0];
+          // Suggest what to look for in the last pick
+          let suggestion = '';
+          if (stats.physicalPercent >= 75) suggestion = 'Consider a magical damage dealer.';
+          else if (stats.magicalPercent >= 75) suggestion = 'Consider a physical damage dealer.';
+          else {
+            let hasTank = false;
+            let hasCC = false;
+            for (const slug of heroList) {
+              const profile = getHeroProfile(slug);
+              if (profile?.attributes?.durability >= 7) hasTank = true;
+              if (SupportSynergy && SupportSynergy.getHeroKit) {
+                try { const kit = SupportSynergy.getHeroKit(slug); if (kit?.totalHardCC > 1) hasCC = true; } catch {}
+              }
+            }
+            if (!hasTank) suggestion = 'You lack frontline — pick someone durable.';
+            else if (!hasCC) suggestion = 'Consider more CC for your last pick.';
+            else suggestion = 'Round out your comp with a strong ' + missing + '.';
+          }
+          return `<div style="background:var(--bg-3);border-radius:6px;padding:0.75rem;margin-bottom:1rem;">
+            <div style="font-size:0.9rem;color:var(--text-0);font-weight:600;">Almost There (4/5) — Need ${missing}</div>
+            <div style="margin-top:0.25rem;color:var(--text-2);font-size:0.85rem;">${suggestion}</div>
+          </div>`;
+        }
+
+        return ''; // 5 heroes — no extra context needed
+      }
+
+      function updateStackAnalysis() {
+        const selectedHeroes = {};
+        const roles = ['offlane', 'jungle', 'midlane', 'carry', 'support'];
+        let selectedCount = 0;
+        
+        roles.forEach(role => {
+          const select = document.getElementById(`${role}Select`);
+          if (select.value) {
+            selectedHeroes[role] = select.value;
+            selectedCount++;
+          }
+        });
+
+        if (selectedCount < 1) {
+          document.getElementById('teamAnalysis').style.display = 'none';
+          return;
+        }
+
+        // Show analysis
+        document.getElementById('teamAnalysis').style.display = 'block';
+        
+        // Calculate team stats
+        const stats = calculateTeamStats(selectedHeroes);
+        const strengths = analyzeTeamStrengths(selectedHeroes, 'custom');
+        const weaknesses = analyzeTeamWeaknesses(selectedHeroes, 'custom');
+        
+        // Progressive context message
+        const progressiveCtx = getProgressiveContext(selectedHeroes, selectedCount, stats);
+        
+        // Grade display — only show letter grade for 3+ heroes
+        let gradeHtml = '';
+        if (selectedCount >= 3) {
+          const gradeScore = calculateTeamGrade(stats, strengths, weaknesses, selectedCount);
+          const gradeLetter = gradeScore >= 90 ? 'S' : gradeScore >= 80 ? 'A' : gradeScore >= 70 ? 'B' : gradeScore >= 55 ? 'C' : gradeScore >= 40 ? 'D' : 'F';
+          const gradeColor = gradeScore >= 80 ? 'var(--green)' : gradeScore >= 55 ? 'var(--gold)' : 'var(--red)';
+          const gradeLabel = selectedCount < 5 ? `Draft Grade (${selectedCount}/5)` : 'Team Grade';
+          gradeHtml = `
+            <div style="text-align:center;margin-bottom:1rem;">
+              <div style="font-size:2.5rem;font-weight:800;color:${gradeColor}">${gradeLetter}</div>
+              <div style="font-size:0.75rem;color:var(--text-2);text-transform:uppercase">${gradeLabel}</div>
+            </div>`;
+        }
+        
+        // Render team stats
+        document.getElementById('teamStatsContent').innerHTML = `
+          ${progressiveCtx}
+          ${gradeHtml}
+          <div class="comp-stats">
+            <div class="comp-stat">
+              <div class="comp-stat-value">${selectedCount >= 2 ? Math.min(100, Math.round(stats.synergyScore * 100 / 130)) + '%' : '—'}</div>
+              <div class="comp-stat-label">Team Synergy</div>
+            </div>
+            <div class="comp-stat">
+              <div class="comp-stat-value">${stats.totalCC}s</div>
+              <div class="comp-stat-label">Total CC</div>
+            </div>
+            <div class="comp-stat">
+              <div class="comp-stat-value">
+                <div class="damage-split">
+                  <div class="damage-physical" style="width: ${stats.physicalPercent}%"></div>
+                  <div class="damage-magical" style="width: ${stats.magicalPercent}%"></div>
+                </div>
+              </div>
+              <div class="comp-stat-label">Damage Split</div>
+            </div>
+            <div class="comp-stat">
+              <div class="comp-stat-value">${stats.physicalPercent}% / ${stats.magicalPercent}%</div>
+              <div class="comp-stat-label">Physical/Magical</div>
+            </div>
+          </div>
+        `;
+        
+        // Adapt strengths/weaknesses labels for partial teams
+        const strengthLabel = selectedCount < 5 ? 'LOOKING GOOD' : 'STRENGTHS';
+        const weaknessLabel = selectedCount < 5 ? 'WATCH OUT' : 'WEAKNESSES';
+        
+        // For partial teams, add missing-role warnings to weaknesses
+        const allRoles = ['offlane', 'jungle', 'midlane', 'carry', 'support'];
+        const missingRoles = allRoles.filter(r => !Object.keys(selectedHeroes).includes(r));
+        const partialWeaknesses = [...weaknesses];
+        if (selectedCount >= 2 && selectedCount < 5) {
+          partialWeaknesses.push(`📋 Missing roles: ${missingRoles.join(', ')} — analysis will improve as you fill slots`);
+        }
+        
+        document.getElementById('teamStrengths').innerHTML = 
+          strengths.length > 0 ? strengths.map(s => `<li class="strength">✓ ${s}</li>`).join('') :
+          `<li style="color:var(--text-2);font-size:0.85rem;">Add more heroes to see strengths</li>`;
+        document.getElementById('teamWeaknesses').innerHTML = 
+          partialWeaknesses.map(w => `<li class="weakness">✗ ${w}</li>`).join('');
+
+        // Update section headers for partial teams
+        const strengthHeader = document.querySelector('#teamStrengths')?.parentElement?.querySelector('h4');
+        const weaknessHeader = document.querySelector('#teamWeaknesses')?.parentElement?.querySelector('h4');
+        if (strengthHeader) strengthHeader.textContent = strengthLabel;
+        if (weaknessHeader) weaknessHeader.textContent = weaknessLabel;
+        
+        // Render builds asynchronously
+        renderBuildsAsync(selectedHeroes);
+        
+        // Show counters if we have 4+ heroes
+        if (selectedCount >= 4) {
+          showCounterAnalysis(selectedHeroes);
+        } else {
+          document.getElementById('counterAnalysis').style.display = 'none';
+        }
+      }
+
+      async function renderBuildsAsync(selectedHeroes) {
+        let buildsHtml = '';
+        
+        for (const [role, slug] of Object.entries(selectedHeroes)) {
+          const profile = getHeroProfile(slug);
+          buildsHtml += `
+            <div class="hero-build-section">
+              <h5>${profile?.name || slug} (${role.charAt(0).toUpperCase() + role.slice(1)})</h5>
+              <div class="build-items" id="build-${slug}-${role}">
+                <span class="build-item">Loading build...</span>
+              </div>
+            </div>
+          `;
+        }
+        
+        document.getElementById('teamBuildsContent').innerHTML = buildsHtml;
+        
+        // Load builds asynchronously
+        for (const [role, slug] of Object.entries(selectedHeroes)) {
+          try {
+            const build = await getHeroBuild(slug, role);
+            const items = build?.items || ['No build data'];
+            const buildContainer = document.getElementById(`build-${slug}-${role}`);
+            if (buildContainer) {
+              buildContainer.innerHTML = items.slice(0, 6).map(item => 
+                `<span class="build-item">${item}</span>`
+              ).join('');
+            }
+          } catch (error) {
+            console.warn('Failed to load build for', slug, role, error);
+            const buildContainer = document.getElementById(`build-${slug}-${role}`);
+            if (buildContainer) {
+              buildContainer.innerHTML = '<span class="build-item">Build unavailable</span>';
+            }
+          }
+        }
+      }
+
+      function showCounterAnalysis(selectedHeroes) {
+        // Simple counter analysis - heroes that perform well against the selected team
+        const counters = [];
+        const selectedList = Object.values(selectedHeroes);
+        
+        // Check all heroes for counter potential
+        for (const hero of heroProfiles) {
+          if (selectedList.includes(hero.slug)) continue;
+          
+          let counterScore = 0;
+          
+          // Basic counter logic (simplified)
+          if (isRole(hero.slug, 'support') && hero.slug === 'muriel') {
+            // Muriel counters burst comps
+            counterScore += 15;
+          }
+          if (isRole(hero.slug, 'carry') && LATE_SCALERS.includes(hero.slug)) {
+            // Late scalers counter early comps
+            const earlyGameCount = selectedList.filter(h => EARLY_GAME_HEROES.includes(h)).length;
+            counterScore += earlyGameCount * 8;
+          }
+          
+          if (counterScore > 20) {
+            counters.push({ hero: hero.slug, name: hero.name, score: counterScore });
+          }
+        }
+        
+        counters.sort((a, b) => b.score - a.score);
+        
+        if (counters.length > 0) {
+          document.getElementById('counterAnalysis').style.display = 'block';
+          document.getElementById('counterContent').innerHTML = `
+            <p style="margin-bottom: 1rem; color: var(--text-1);">Top heroes that counter your composition:</p>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+              ${counters.slice(0, 3).map(counter => `
+                <div class="build-item" style="text-align: center;">
+                  <strong>${counter.name}</strong><br>
+                  <small>Threat: ${counter.score}</small>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else {
+          document.getElementById('counterAnalysis').style.display = 'none';
+        }
+      }
+
+      // Global functions for onclick handlers
+      window.toggleCombo = function(element) {
+        element.classList.toggle('expanded');
+      };
+
+      window.toggleComp = function(element) {
+        element.classList.toggle('expanded');
+      };
+
+      window.toggleSection = function(header) {
+        // Find the collapsible-content sibling (may not be immediately next due to <p> descriptions)
+        let content = header.nextElementSibling;
+        while (content && !content.classList.contains('collapsible-content')) {
+          content = content.nextElementSibling;
+        }
+        const icon = header.querySelector('.collapse-icon');
+        if (content) {
+          const isHidden = content.style.display === 'none';
+          content.style.display = isHidden ? '' : 'none';
+          if (icon) icon.textContent = isHidden ? '▼' : '▶';
+          header.classList.toggle('collapsed', !isHidden);
+        }
+      };
+
+      // Initialize the application
+      async function init() {
+        try {
+          console.log('Initializing Team Lab...');
+          await loadData();
+          
+          // Load all sections
+          await loadDuoCombos();
+          await loadTeamComps();
+          initStackBuilder();
+
+          // All sections stay collapsed by default
+          
+          console.log('Team Lab initialized successfully!');
+        } catch (error) {
+          console.error('Failed to initialize Team Lab:', error);
+          document.body.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: var(--text-0);">
+              <h1>❌ Team Lab Failed to Load</h1>
+              <p>Error: ${error.message}</p>
+              <p>Check the console for more details.</p>
+            </div>
+          `;
+        }
+      }
+
+      return { init };
+    })();
+
+    // Start the application
+    document.addEventListener('DOMContentLoaded', TeamLab.init);
+  </script>
+</body>
+</html>

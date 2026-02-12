@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Predecessor Scout - Patch Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .patch-notes { max-width: 800px; margin: 0 auto; }
+    .patch-entry { margin-bottom: 2rem; }
+    .patch-date {
+      font-size: 0.75rem;
+      color: var(--text-2);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+    .patch-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-0);
+      margin-bottom: 0.75rem;
+    }
+    .patch-items { list-style: none; padding: 0; }
+    .patch-items li {
+      font-size: 0.88rem;
+      color: var(--text-1);
+      margin-bottom: 0.4rem;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+    .patch-items li::before {
+      position: absolute;
+      left: 0;
+    }
+    .patch-items li.added::before { content: '✅'; }
+    .patch-items li.fixed::before { content: '🔧'; }
+    .patch-items li.changed::before { content: '🔄'; }
+    .patch-items li.removed::before { content: '❌'; }
+    .patch-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <h1 class="logo">⚔ Predecessor Scout</h1>
+      <div class="header-links">
+        <a href="index.html" class="header-link">v1</a>
+        <a href="v2/" class="header-link">v2</a>
+        <a href="v3/" class="header-link" style="color:#7c6cf0;font-weight:600">✨ v3</a>
+        <a href="team-lab.html" class="header-link">🧪 Team Lab</a>
+        <a href="https://github.com/Kendubu1/predecessor-tool" target="_blank" class="header-link">GitHub</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="app">
+    <div class="patch-notes">
+      <h1 style="margin-bottom: 0.25rem;">📋 Patch Notes</h1>
+      <p style="color: var(--text-2); margin-bottom: 2rem; font-size: 0.9rem;">What's new, fixed, and changed in Predecessor Scout.</p>
+
+      <!-- ADD NEW ENTRIES AT THE TOP -->
+
+      <div class="patch-entry card">
+        <div class="patch-date">February 9, 2026</div>
+        <div class="patch-title">Team Lab Accuracy + V2 Audit</div>
+        <ul class="patch-items">
+          <li class="fixed"><strong>Damage type detection</strong> — Rewrote hero damage classification using actual ability scaling data. Previously used a hardcoded map with major errors (Countess listed as physical, Wukong as physical, Kwang as physical, Steel as physical — all are actually magical). Now 49 heroes correctly categorized as physical/magical/hybrid.</li>
+          <li class="added"><strong>Team strengths</strong> — Team Lab now shows what's GOOD about your comp, not just weaknesses. Shows balanced damage, CC chains, frontline, sustain, mobility, engage, and peel analysis.</li>
+          <li class="added"><strong>Team grade</strong> — Build Your Stack now shows an overall letter grade (S/A/B/C/D/F) so you get a quick read on your comp.</li>
+          <li class="changed"><strong>Weakness context</strong> — Weaknesses now explain WHY something is a problem and what you can do about it (e.g., "Heavily physical damage — enemies can stack armor and nullify your team").</li>
+          <li class="changed"><strong>Hybrid damage handling</strong> — Heroes like TwinBlast, Wraith, Narbash, Riktor, and Boris now count as 50/50 split instead of being forced into one category.</li>
+          <li class="added"><strong>Patch Notes page</strong> — You're looking at it.</li>
+        </ul>
+      </div>
+
+      <hr class="patch-divider">
+
+      <div class="patch-entry card">
+        <div class="patch-date">February 8, 2026</div>
+        <div class="patch-title">V3 Launch</div>
+        <ul class="patch-items">
+          <li class="added"><strong>V3 UI</strong> — Brand new hero grid interface with Quick Pick and Draft Helper modes.</li>
+          <li class="added"><strong>Quick Pick</strong> — Click any hero for instant counter-pick suggestions, builds, and matchup data.</li>
+          <li class="added"><strong>Draft Helper</strong> — Full draft simulator that tracks bans, picks, and recommends optimal choices based on team comp.</li>
+          <li class="added"><strong>Share links</strong> — Share your draft state via URL.</li>
+        </ul>
+      </div>
+
+      <hr class="patch-divider">
+
+      <div class="patch-entry card">
+        <div class="patch-date">February 2026</div>
+        <div class="patch-title">V2 Features</div>
+        <ul class="patch-items">
+          <li class="added"><strong>Solo/Duo toggle</strong> — Matchups tab now supports both solo and duo lane analysis.</li>
+          <li class="added"><strong>Duo matchup analysis</strong> — Select two allies and two enemies for full duo lane counter builds, synergy analysis, and tips.</li>
+          <li class="added"><strong>Lane partners</strong> — Overview shows best lane partners with synergy scores, CC chain durations, and win rates.</li>
+          <li class="added"><strong>Ability matchup tips</strong> — CC interactions, cooldown windows, and healing counter advice for each matchup.</li>
+          <li class="added"><strong>Counter build paths</strong> — Matchup-specific builds with reasoning for each item swap vs the meta build.</li>
+          <li class="added"><strong>Archetype tags</strong> — Heroes show tags like "Burst Mage", "CC Tank", "On-Hit DPS" for quick classification.</li>
+        </ul>
+      </div>
+
+      <hr class="patch-divider">
+
+      <div class="patch-entry card">
+        <div class="patch-date">February 2026</div>
+        <div class="patch-title">Team Lab</div>
+        <ul class="patch-items">
+          <li class="added"><strong>Duo Lane Combos</strong> — Top-rated Carry+Support, Jungle+Offlane, and Mid+Jungle combinations ranked by synergy score.</li>
+          <li class="added"><strong>Pre-built Team Comps</strong> — Complete 5-man compositions for Wombo Combo, Pick, Deathball, Split Push, and Late Scale strategies.</li>
+          <li class="added"><strong>Build Your Stack</strong> — Custom team builder with analysis, recommended builds per role, and counter-comp warnings.</li>
+        </ul>
+      </div>
+
+      <hr class="patch-divider">
+
+      <div class="patch-entry card">
+        <div class="patch-date">January–February 2026</div>
+        <div class="patch-title">Core Engine & Data</div>
+        <ul class="patch-items">
+          <li class="added"><strong>Matchup Engine</strong> — Analyzes hero kits, build paths, and win rate data to generate counter-build recommendations.</li>
+          <li class="added"><strong>Combo Engine</strong> — Generates ability combos, DPS rotations, usage guides, and mana budgets for every hero.</li>
+          <li class="added"><strong>Support Synergy Engine</strong> — Evaluates duo lane synergies based on CC chains, heals/shields, engage, peel, and damage amplification.</li>
+          <li class="added"><strong>Ability Interactions</strong> — Tracks cleanse interactions, CC immunity windows, cooldown advantages, and anti-heal matchups.</li>
+          <li class="fixed"><strong>Crest WR double-%</strong> — Fixed crests showing "52.3%%" instead of "52.3%".</li>
+          <li class="changed"><strong>Manifest.json optimization</strong> — Faster loading with combined data manifest instead of individual file checks.</li>
+          <li class="added"><strong>Item images</strong> — All items now show inline icons from game data.</li>
+          <li class="added"><strong>Hero profiles</strong> — Damage type, attack type, classes, and attribute bars from game data.</li>
+        </ul>
+      </div>
+
+    </div>
+  </main>
+</body>
+</html>

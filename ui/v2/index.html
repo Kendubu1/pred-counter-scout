@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Predecessor Scout</title>
+  <base href="../">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="v2/style.css?v=16">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="header-left">
+        <h1 class="logo" id="homeBtn" style="cursor:pointer">⚔ Predecessor Scout</h1>
+      </div>
+      <div class="header-links">
+        <span id="patchBadge" style="font-size:0.7rem;color:var(--text-2);white-space:nowrap"></span>
+        <a href="team-lab.html" class="header-link">Team Lab</a>
+        <a href="#about" class="header-link" id="aboutLink">About</a>
+        <a href="https://github.com/Kendubu1/predecessor-tool" target="_blank" class="header-link">GitHub</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Breadcrumb Navigation -->
+  <nav class="breadcrumb-bar" id="breadcrumbBar" style="display:none">
+    <div class="breadcrumb-inner">
+      <button class="breadcrumb-home" id="breadcrumbHome">🏠 Home</button>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current" id="breadcrumbText"></span>
+    </div>
+  </nav>
+
+  <main id="app">
+    <!-- Landing Page -->
+    <div id="landingPage" class="landing-page">
+      <div class="landing-hero">
+        <h2>What do you need?</h2>
+        <p class="landing-sub">Your Predecessor companion for builds, counters, and draft strategy</p>
+      </div>
+      <div class="landing-cards">
+        <button class="landing-card" data-flow="learn">
+          <div class="landing-card-icon">🎯</div>
+          <div class="landing-card-title">Learn a Hero</div>
+          <div class="landing-card-desc">Pick your hero to see builds, abilities, combos, and synergies</div>
+        </button>
+        <button class="landing-card" data-flow="counter">
+          <div class="landing-card-icon">⚔️</div>
+          <div class="landing-card-title">Counter a Hero</div>
+          <div class="landing-card-desc">Enemy picked someone? Find the best counter picks</div>
+        </button>
+        <button class="landing-card" data-flow="draft">
+          <div class="landing-card-icon">🏟️</div>
+          <div class="landing-card-title">Draft Helper</div>
+          <div class="landing-card-desc">Build your draft with real-time suggestions</div>
+        </button>
+        <button class="landing-card" data-flow="build">
+          <div class="landing-card-icon">🔧</div>
+          <div class="landing-card-title">Build Lab</div>
+          <div class="landing-card-desc">Theorycraft builds, check synergies, and learn what works</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Hero Grid Picker (reused by Learn + Counter flows) -->
+    <div id="heroGridPage" class="page hidden">
+      <div class="hero-grid-header">
+        <h2 id="heroGridTitle">Choose a Hero</h2>
+        <div class="hero-grid-filters">
+          <input type="text" id="heroGridSearch" placeholder="Search heroes…" class="hero-grid-search">
+          <div class="role-filters" id="roleFilters">
+            <button class="role-btn active" data-role="all">All</button>
+            <button class="role-btn" data-role="offlane">Offlane</button>
+            <button class="role-btn" data-role="jungle">Jungle</button>
+            <button class="role-btn" data-role="midlane">Mid</button>
+            <button class="role-btn" data-role="carry">Carry</button>
+            <button class="role-btn" data-role="support">Support</button>
+          </div>
+        </div>
+      </div>
+      <div class="hero-grid" id="heroGrid"></div>
+    </div>
+
+    <!-- Learn a Hero Detail Page -->
+    <div id="learnPage" class="page hidden">
+      <div class="learn-hero-header" id="learnHeroHeader"></div>
+      <div class="learn-role-bar">
+        <label class="hero-bar-label">Role</label>
+        <select id="learnRoleSelect">
+          <option value="offlane">Offlane</option>
+          <option value="jungle">Jungle</option>
+          <option value="midlane">Midlane</option>
+          <option value="carry">Carry</option>
+          <option value="support">Support</option>
+        </select>
+      </div>
+      <nav class="tab-bar" id="learnTabBar">
+        <button class="tab active" data-tab="overview">📋 Overview</button>
+        <button class="tab" data-tab="abilities">🎯 Abilities</button>
+        <!-- Matchups merged into Counters -->
+        <button class="tab" data-tab="counters">🔍 Counters</button>
+        <button class="tab" data-tab="synergy">🤝 Synergy</button>
+        <button class="tab" data-tab="stats">📊 Stats</button>
+      </nav>
+      <div id="learnTabPanels" class="tab-panels">
+        <section id="panel-overview" class="tab-panel active"><div id="overviewContent"></div></section>
+        <section id="panel-abilities" class="tab-panel"><div id="abilitiesContent"></div></section>
+        <section id="panel-matchups" class="tab-panel">
+          <div class="matchup-mode-bar">
+            <button class="matchup-mode-tab active" data-mode="solo">Solo</button>
+            <button class="matchup-mode-tab" data-mode="duo">Duo Lane</button>
+          </div>
+          <div id="matchupSolo">
+            <div class="matchup-enemy-bar">
+              <select id="enemySelect"><option value="">Select enemy... (optional)</option></select>
+            </div>
+            <div id="matchupContent">
+              <div class="matchup-empty">
+                <p>🎯 Select an enemy hero to get matchup-specific builds, ability tips, and counter strategies.</p>
+              </div>
+            </div>
+          </div>
+          <div id="matchupDuo" class="hidden">
+            <div class="duo-inputs">
+              <div class="duo-row">
+                <div class="duo-hero-group"><label>Ally 1</label><select id="duoAlly1Hero"><option value="">Select hero…</option></select><select id="duoAlly1Role"><option value="carry">Carry</option><option value="support">Support</option><option value="offlane">Offlane</option><option value="midlane">Midlane</option><option value="jungle">Jungle</option></select></div>
+                <div class="duo-hero-group"><label>Ally 2</label><select id="duoAlly2Hero"><option value="">Select hero…</option></select><select id="duoAlly2Role"><option value="support" selected>Support</option><option value="carry">Carry</option><option value="offlane">Offlane</option><option value="midlane">Midlane</option><option value="jungle">Jungle</option></select></div>
+              </div>
+              <div class="duo-row">
+                <div class="duo-hero-group"><label>Enemy 1</label><select id="duoEnemy1Hero"><option value="">Select hero…</option></select></div>
+                <div class="duo-hero-group"><label>Enemy 2 <span style="color:var(--text-2)">(optional)</span></label><select id="duoEnemy2Hero"><option value="">Select hero…</option></select></div>
+              </div>
+              <button id="duoAnalyzeBtn" class="btn-accent" style="margin-top:0.5rem">⚔️ Analyze Duo Lane</button>
+            </div>
+            <div id="duoResults"></div>
+          </div>
+        </section>
+        <section id="panel-counters" class="tab-panel"><div id="countersContent"></div></section>
+        <section id="panel-synergy" class="tab-panel"><div id="synergyContent"></div></section>
+        <section id="panel-stats" class="tab-panel"><div id="statsContent"></div></section>
+      </div>
+      <div class="teaser" id="counterTeaser">
+        ⚔️ Want to counter a specific enemy? <a class="tab-link" id="counterTeaserLink">Go to Counter a Hero →</a>
+      </div>
+    </div>
+
+    <!-- Counter a Hero Detail Page -->
+    <div id="counterPage" class="page hidden">
+      <div id="counterContent"></div>
+    </div>
+
+    <!-- Draft Helper Page -->
+    <div id="draftPage" class="page hidden">
+      <h2 class="draft-title">🏟️ Draft Helper</h2>
+      <div class="draft-layout">
+        <div class="draft-team">
+          <h3 class="draft-team-label your-team">Your Team</h3>
+          <div class="draft-slots" id="draftYourSlots"></div>
+        </div>
+        <div class="draft-vs">VS</div>
+        <div class="draft-team">
+          <h3 class="draft-team-label enemy-team">Enemy Team</h3>
+          <div class="draft-slots" id="draftEnemySlots"></div>
+        </div>
+      </div>
+      <div class="draft-actions">
+        <button class="btn-accent btn-sm" id="draftClearBtn">🗑️ Clear All</button>
+      </div>
+      <div id="draftTeamAnalysis"></div>
+      <div id="draftEnemyAnalysis"></div>
+      <div class="draft-suggestions" id="draftSuggestions">
+        <h3>💡 Suggestions</h3>
+        <p class="draft-suggestions-hint">Add enemy heroes to get counter-pick suggestions</p>
+        <div id="draftSuggestionsList"></div>
+      </div>
+      <!-- Draft hero picker modal -->
+      <div class="draft-modal hidden" id="draftModal">
+        <div class="draft-modal-content">
+          <div class="draft-modal-header">
+            <h3 id="draftModalTitle">Pick a Hero</h3>
+            <button class="draft-modal-close" id="draftModalClose">✕</button>
+          </div>
+          <input type="text" id="draftModalSearch" placeholder="Search heroes…" class="hero-grid-search">
+          <div class="role-filters" id="draftRoleFilters">
+            <button class="role-btn active" data-role="all">All</button>
+            <button class="role-btn" data-role="offlane">Offlane</button>
+            <button class="role-btn" data-role="jungle">Jungle</button>
+            <button class="role-btn" data-role="midlane">Mid</button>
+            <button class="role-btn" data-role="carry">Carry</button>
+            <button class="role-btn" data-role="support">Support</button>
+          </div>
+          <div class="hero-grid draft-hero-grid" id="draftHeroGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Match Review removed — saved for future 5v5 analysis feature -->
+
+    <!-- Build Lab Page -->
+    <div id="buildPage" class="page hidden">
+      <div class="build-lab-header">
+        <h2>🔧 Build Lab</h2>
+        <p class="build-lab-sub">Theorycraft builds, check synergies, and learn what works together</p>
+      </div>
+
+      <!-- Optional Hero Context -->
+      <div class="card build-hero-context">
+        <div class="build-hero-select-row">
+          <label>Hero (optional):</label>
+          <select id="buildHeroSelect">
+            <option value="">-- No hero selected --</option>
+          </select>
+          <button id="buildLoadPreset" class="btn-sm" style="display:none">Load Top Build</button>
+          <button id="buildClearAll" class="btn-sm btn-outline">Clear All</button>
+        </div>
+        <div id="buildHeroInfo" class="build-hero-info"></div>
+      </div>
+
+      <!-- Item Slots -->
+      <div class="card">
+        <h3>Your Build</h3>
+        <div class="build-slots" id="buildItemSlots">
+          <div class="build-slot empty" data-slot="0"><span class="build-slot-label">1</span></div>
+          <div class="build-slot empty" data-slot="1"><span class="build-slot-label">2</span></div>
+          <div class="build-slot empty" data-slot="2"><span class="build-slot-label">3</span></div>
+          <div class="build-slot empty" data-slot="3"><span class="build-slot-label">4</span></div>
+          <div class="build-slot empty" data-slot="4"><span class="build-slot-label">5</span></div>
+          <div class="build-slot empty" data-slot="5"><span class="build-slot-label">6</span></div>
+        </div>
+        <div class="build-crest-row">
+          <h4>Crest</h4>
+          <div class="build-slot build-crest-slot empty" data-slot="crest"><span class="build-slot-label">C</span></div>
+        </div>
+      </div>
+
+      <!-- Total Stats -->
+      <div class="card">
+        <h3>📊 Total Stats</h3>
+        <div class="build-stats-grid" id="buildStatsGrid">
+          <p class="text-muted">Add items to see total stats</p>
+        </div>
+      </div>
+
+      <!-- Build Feedback -->
+      <div class="card">
+        <h3>🧠 Build Feedback</h3>
+        <div id="buildFeedback">
+          <p class="text-muted">Add items to get build feedback</p>
+        </div>
+      </div>
+
+      <!-- Item Picker -->
+      <div class="card">
+        <h3>🛒 Item Shop</h3>
+        <div class="build-picker-controls">
+          <input type="text" id="buildItemSearch" placeholder="Search items..." class="hero-grid-search">
+          <div class="build-category-tabs" id="buildCategoryTabs">
+            <button class="build-cat-btn active" data-cat="all">All</button>
+            <button class="build-cat-btn" data-cat="damage">Damage</button>
+            <button class="build-cat-btn" data-cat="defense">Defense</button>
+            <button class="build-cat-btn" data-cat="sustain">Sustain</button>
+            <button class="build-cat-btn" data-cat="utility">Utility</button>
+            <button class="build-cat-btn" data-cat="anti-heal">Anti-Heal</button>
+            <button class="build-cat-btn" data-cat="pen">Pen</button>
+            <button class="build-cat-btn" data-cat="crit">Crit</button>
+            <button class="build-cat-btn" data-cat="on-hit">On-Hit</button>
+            <button class="build-cat-btn" data-cat="crest">Crests</button>
+          </div>
+          <div class="build-tier-filter" id="buildTierFilter">
+            <button class="build-tier-btn active" data-tier="3">T3</button>
+            <button class="build-tier-btn" data-tier="2">T2</button>
+            <button class="build-tier-btn" data-tier="1">T1</button>
+          </div>
+        </div>
+        <div class="build-item-grid" id="buildItemGrid"></div>
+      </div>
+
+      <!-- Crest picker merged into main item shop -->
+    </div>
+
+    <!-- About Page -->
+    <div id="aboutPage" class="page hidden">
+      <div class="card">
+        <h2>👋 About This Tool</h2>
+        <p style="line-height:1.8">Built by <strong>Kendrick</strong> (<a href="https://www.youtube.com/@saint_kendrick" target="_blank" style="color:var(--accent)">@saint_kendrick</a>). Dad, gamer, tinkerer, mid lane main.</p>
+
+        <p style="color:var(--text-2);line-height:1.8;margin-top:0.75rem">I came into Predecessor fresh after my Paragon buddies put me on. After getting more friends into the game, one thing was obvious: the learning curve is steep. Game timers, objectives, builds, matchups... there's a LOT to absorb. I started building tools for my friend group (a Discord bot for game timers, spreadsheets, you name it) and this is the next step.</p>
+
+        <p style="color:var(--text-2);line-height:1.8;margin-top:0.75rem">I'm 400+ hours in and still Gold 1. Losing a match is tough, but it's what you take away from it that matters. That's the gap this tool is trying to fill: help you understand <em>what went wrong</em>, give you a heads up for what to look out for, and help you get better without needing to grind hundreds of hours first.</p>
+
+        <p style="color:var(--text-2);line-height:1.8;margin-top:0.75rem">This isn't meant to replace sites like pred.gg. It's meant to supplement them. We want to go deeper: hero counters, matchup breakdowns, theorycrafting, team composition, and really diving into how augments and abilities come together to make or break a team outside of just the build.</p>
+
+        <p style="color:var(--text-2);line-height:1.8;margin-top:0.75rem">It's also just fun. Come up with crazy team comps. Test builds that are unconventional or look terrible on paper. Learn something new. That's the point.</p>
+
+        <p style="margin-top:1rem">
+          <a href="https://buymeacoffee.com/saint_kendrick" target="_blank" style="background:var(--accent);color:#fff;padding:0.5rem 1rem;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block">☕ Buy Me a Coffee</a>
+          <a href="https://github.com/Kendubu1/predecessor-tool" target="_blank" style="color:var(--accent);margin-left:1rem;text-decoration:underline">GitHub</a>
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>📊 How It Works</h2>
+        <p style="line-height:1.6">Everything here is <strong>statistically derived</strong> from real match data. No opinions, no tier lists from streamers, no "trust me bro."</p>
+        <ul style="color:var(--text-2);line-height:1.8;padding-left:1.2rem">
+          <li><strong>Win rates</strong> from thousands of real matches per hero, per role</li>
+          <li><strong>Counter picks</strong> ranked by head-to-head win rates (20+ match minimum)</li>
+          <li><strong>Builds</strong> are the highest win-rate item paths with enough games to be reliable</li>
+          <li><strong>Augments</strong> show real win rates per choice, plus hand-curated playstyle notes</li>
+          <li><strong>Hero profiles</strong> (tags, traits, archetypes) derived from ability data and curated for accuracy</li>
+          <li><strong>Item tooltips</strong> with buy tips, counter tips, and synergy tags for every T3 item and crest</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>🔍 Data Source</h2>
+        <p style="line-height:1.6">Match stats scraped from <a href="https://pred.gg" target="_blank" style="color:var(--accent)">pred.gg</a>, which aggregates Predecessor's API. Re-analyzed to generate counter picks, build paths, and matchup insights that don't exist anywhere else.</p>
+        <p style="color:var(--text-2);line-height:1.6;margin-top:0.5rem">Data refreshed each patch. Currently using all-ranks data for maximum sample size. Rank filtering is on the roadmap.</p>
+      </div>
+
+      <div class="card">
+        <h2>❓ FAQ</h2>
+        <div style="line-height:1.6">
+          <p><strong>Why is [hero] missing data for [role]?</strong><br>
+          <span style="color:var(--text-2)">We skip roles with under 20 games. Bad data is worse than no data.</span></p>
+
+          <p style="margin-top:0.75rem"><strong>How are counter picks ranked?</strong><br>
+          <span style="color:var(--text-2)">Pure head-to-head win rate with a 20-match minimum. If Hero A beats Hero B 58% of the time across 200+ games, that's a counter.</span></p>
+
+          <p style="margin-top:0.75rem"><strong>What are the archetype tags?</strong><br>
+          <span style="color:var(--text-2)">Tags like "Burst Mage" or "Sustain Fighter" are derived from stats and abilities. Tap any tag for explanation and counter tips.</span></p>
+
+          <p style="margin-top:0.75rem"><strong>Is this affiliated with Omeda Studios?</strong><br>
+          <span style="color:var(--text-2)">Nope. Just a player who wanted better tools.</span></p>
+
+          <p style="margin-top:0.75rem"><strong>Can I help?</strong><br>
+          <span style="color:var(--text-2)">Yes! <a href="https://github.com/Kendubu1/predecessor-tool" target="_blank" style="color:var(--accent)">Open source on GitHub</a>. File issues, submit PRs, or just tell me what sucks.</span></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>⚠️ Things to Be Aware Of</h2>
+        <p style="color:var(--text-2);line-height:1.6;margin-bottom:0.5rem">The data and tagging system are extensive but not perfect. Here's what to keep in mind:</p>
+        <ul style="color:var(--text-2);line-height:1.8;padding-left:1.2rem">
+          <li><strong>CC shows up everywhere.</strong> Crowd control is the strongest counter to almost everything in Predecessor. If you see "has CC" as a reason a lot, that's not a bug. CC is king in this game.</li>
+          <li><strong>Tags are hand-curated, not perfect.</strong> We manually classified 49 hero kits, 147 augments, and 188 items. If a tag feels wrong or a definition is off, let us know. Some edge cases are genuinely debatable.</li>
+          <li><strong>All-ranks data.</strong> Currently using data across all ranks. A counter that stomps in Gold might not work the same in Diamond. Rank filtering is on the roadmap.</li>
+          <li><strong>Win rates need context.</strong> A 60% win rate on 25 matches is less reliable than 53% on 500. We enforce a 20-match minimum, but smaller sample sizes still exist for niche picks.</li>
+          <li><strong>Archetype tags are derived, not official.</strong> "Burst Mage" or "Sustain Fighter" come from our stat and trait analysis. Omeda doesn't label heroes this way. You might disagree with some classifications.</li>
+          <li><strong>Augments can shift everything.</strong> A hero's base kit gets one set of tags, but augments can change their playstyle entirely. We account for this, but some augment interactions are complex and may not be fully captured yet.</li>
+          <li><strong>Build Lab is new.</strong> The validation rules are solid but still growing. If it flags something that's actually fine (or misses something that's bad), that's feedback we want.</li>
+        </ul>
+        <p style="color:var(--text-2);line-height:1.6;margin-top:0.75rem">If you spot a tagging mistake, a definition that's off, or a counter that doesn't make sense, we want to hear about it. This tool gets better with community input.</p>
+        <p style="margin-top:0.75rem"><a href="https://forms.gle/hS9bXZvqiGFruSjy5" target="_blank" style="color:var(--accent);font-weight:600">📝 Submit Feedback</a></p>
+      </div>
+
+      <div class="card">
+        <h2>🎯 Where This Is Going</h2>
+        <ul style="color:var(--text-2);line-height:1.8;padding-left:1.2rem">
+          <li><strong>Deeper matchup breakdowns</strong>: not just "who counters who" but WHY and what to do about it</li>
+          <li><strong>Augment + ability synergy engine</strong>: how augments and abilities really come together to make or break a team</li>
+          <li><strong>Item reasoning</strong>: "buy Pestilence because Rampage heals 40% HP with his ult"</li>
+          <li><strong>Beginner guides</strong>: game timers, objective priorities, role breakdowns for new players</li>
+          <li><strong>Rank-specific data</strong>: filter by diamond+, plat+, etc.</li>
+          <li><strong>Whatever you ask for</strong>: this is community-driven. Tell me what sucks and what you need.</li>
+        </ul>
+      </div>
+    </div>
+
+  </main>
+
+  <footer style="text-align:center;padding:1.5rem 1rem;color:var(--text-3,#555);font-size:0.8rem;border-top:1px solid var(--border,#222);margin-top:2rem">
+    <p>Built by <a href="https://www.youtube.com/@saint_kendrick" target="_blank" style="color:var(--accent)">@saint_kendrick</a> · <a href="https://buymeacoffee.com/saint_kendrick" target="_blank" style="color:var(--accent)">☕ Buy Me a Coffee</a> · <a href="https://github.com/Kendubu1/predecessor-tool" target="_blank" style="color:var(--accent)">GitHub</a> · <a href="https://forms.gle/hS9bXZvqiGFruSjy5" target="_blank" style="color:var(--accent)">📝 Feedback</a></p>
+    <p style="margin-top:0.3rem">Not affiliated with Omeda Studios. Data from <a href="https://pred.gg" target="_blank" style="color:var(--text-3)">pred.gg</a>.</p>
+  </footer>
+
+  <script src="item-utils.js?v=31"></script>
+  <script src="ability-interactions.js?v=31"></script>
+  <script src="matchup-engine.js?v=31"></script>
+  <script src="combo-engine.js?v=32"></script>
+  <script src="support-synergy.js?v=31"></script>
+  <!-- match-review.js removed — saved for future -->
+  <script src="table-sort.js?v=31"></script>
+  <script src="v2/item-data.js?v=1"></script>
+  <script src="v2/item-tips.js?v=1"></script>
+  <script src="v2/crest-data.js?v=1"></script>
+  <script src="v2/crest-tips.js?v=1"></script>
+  <script src="v2/app.js?v=69"></script>
+</body>
+</html>
