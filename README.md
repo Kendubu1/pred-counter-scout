@@ -10,11 +10,11 @@
 
 ## Why This Exists
 
-Every stat site tells you WHAT to build and WHO to pick but never WHY.
+Every tool out there tells you WHAT to build and WHO to pick. Suggestions are everywhere. But nobody tells you WHY.
 
-I came into Predecessor after my Paragon buddies put me on. 400+ hours later, still Gold 1, and the learning curve is steep. Most tools throw stats at you without explaining anything. Console players can't alt-tab during draft. pred.gg's counter page has been broken.
+I came into Predecessor after my Paragon buddies put me on. 400+ hours later, still Gold 1, and the learning curve is steep. Most tools throw stats at you without explaining anything. Console players can't alt-tab during draft to look stuff up.
 
-This supplements existing tools by going deeper into the WHY behind counters, builds, matchups, and team comp.
+I want to help fill the gap between "pick this" and actually understanding why it works.
 
 ## What We're Building
 
