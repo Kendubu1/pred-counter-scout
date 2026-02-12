@@ -697,29 +697,7 @@ function renderOverview() {
 
   let html = '';
 
-  // Top 3 builds (moved to top with descriptions)
-  const builds = (rd.buildTabs || []).sort((a, b) => parseFloat(b.winRate) - parseFloat(a.winRate));
-  if (builds.length) {
-    html += '<div class="card"><h2>🏆 Top Builds</h2>';
-    html += '<div class="grid-3" id="buildCards">';
-    builds.slice(0, 3).forEach((b, i) => {
-      const medal = ['🥇','🥈','🥉'][i];
-      const wr = parseFloat(b.winRate) || 0;
-      const desc = describeBuild(b.name);
-      html += `<div class="build-card${i===0?' active':''}" data-build-idx="${i}">`;
-      html += `<div class="build-card-header"><span class="build-card-name">${medal} ${esc(b.name || 'Build '+(i+1))}</span>`;
-      html += `<span class="${wrClass(wr)}">${esc(b.winRate||'—')}</span></div>`;
-      if (desc) html += `<div style="color:var(--text-2);font-size:0.8rem;margin:0.25rem 0 0.4rem;font-style:italic">${esc(desc)}</div>`;
-      html += `<div class="build-card-items">${b.items.map(n => `<span>${itemWithImg(n)}</span>`).join('<span class="build-arrow">→</span>')}</div>`;
-      html += `<div style="color:var(--text-2);font-size:0.75rem;margin-top:0.3rem">${esc(b.matches||'')}</div>`;
-      html += '</div>';
-    });
-    html += '</div>';
-    html += '<div id="buildItemSlots"></div>';
-    html += '</div>';
-  }
-
-  // Augments & Crests (moved above attributes)
+  // Augments & Crests (top of overview)
   const augments = (rd.augments||[]).sort((a,b) => parseFloat(b.winRate) - parseFloat(a.winRate)).slice(0,3);
   const crests = (rd.crests||[]).sort((a,b) => parseFloat(b.winRate) - parseFloat(a.winRate)).slice(0,3);
   if (augments.length || crests.length) {
@@ -764,6 +742,28 @@ function renderOverview() {
       });
       html += '</div>';
     }
+    html += '</div>';
+  }
+
+  // Top 3 builds
+  const builds = (rd.buildTabs || []).sort((a, b) => parseFloat(b.winRate) - parseFloat(a.winRate));
+  if (builds.length) {
+    html += '<div class="card"><h2>🏆 Top Builds</h2>';
+    html += '<div class="grid-3" id="buildCards">';
+    builds.slice(0, 3).forEach((b, i) => {
+      const medal = ['🥇','🥈','🥉'][i];
+      const wr = parseFloat(b.winRate) || 0;
+      const desc = describeBuild(b.name);
+      html += `<div class="build-card${i===0?' active':''}" data-build-idx="${i}">`;
+      html += `<div class="build-card-header"><span class="build-card-name">${medal} ${esc(b.name || 'Build '+(i+1))}</span>`;
+      html += `<span class="${wrClass(wr)}">${esc(b.winRate||'—')}</span></div>`;
+      if (desc) html += `<div style="color:var(--text-2);font-size:0.8rem;margin:0.25rem 0 0.4rem;font-style:italic">${esc(desc)}</div>`;
+      html += `<div class="build-card-items">${b.items.map(n => `<span>${itemWithImg(n)}</span>`).join('<span class="build-arrow">→</span>')}</div>`;
+      html += `<div style="color:var(--text-2);font-size:0.75rem;margin-top:0.3rem">${esc(b.matches||'')}</div>`;
+      html += '</div>';
+    });
+    html += '</div>';
+    html += '<div id="buildItemSlots"></div>';
     html += '</div>';
   }
 
