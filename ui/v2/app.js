@@ -734,7 +734,7 @@ function renderOverview() {
       html += '<div class="card"><h2>🛡️ Best Crests</h2>';
       crests.forEach(c => {
         const wr = parseFloat(c.winRate)||0;
-        html += `<div class="augment-row">`;
+        html += `<div class="augment-row" style="cursor:pointer" onclick="showItemModal('${esc(c.name).replace(/'/g,"\\'")}')">`;
         html += crestImg(c.name);
         html += `<div class="augment-info"><div class="aug-name">${esc(c.name)}</div></div>`;
         html += `<div class="augment-stats"><span class="${wrClass(wr)}">${c.winRate||'—'}</span><br><span style="color:var(--text-2);font-size:0.72rem">${c.matches||'?'} games</span></div>`;
