@@ -2837,7 +2837,8 @@ const buildState = {
 
 // Item categories for filtering (stat-based)
 const ITEM_CATEGORIES = {
-  'phys-atk': ['PHYSICAL_POWER','ATTACK_SPEED','CRITICAL_CHANCE','PHYSICAL_PENETRATION'],
+  'phys-atk': ['PHYSICAL_POWER','CRITICAL_CHANCE','PHYSICAL_PENETRATION'],
+  'atk-spd': ['ATTACK_SPEED'],
   'magic-atk': ['MAGICAL_POWER','MAGICAL_PENETRATION','ABILITY_HASTE'],
   'phys-def': ['PHYSICAL_ARMOR'],
   'magic-def': ['MAGICAL_ARMOR'],
