@@ -836,36 +836,50 @@ function abilityKeyOrder(key) {
   const order = { PASSIVE:0, BASIC:1, ALTERNATE:2, PRIMARY:3, SECONDARY:4, ULTIMATE:5 };
   return order[key] ?? 9;
 }
+const AUGMENT_PLAYSTYLE_TIPS = {
+  healing: 'You gain sustain in fights. Play more aggressive in trades knowing you can heal back up',
+  self_heal: 'You can self-sustain now. Take longer trades and force the enemy to commit resources to finish you',
+  ally_heal: 'You can keep teammates alive. Position near your carry and save your healing for key moments',
+  self_shield: 'Extra survivability. Use the shield window to take trades you normally wouldn\'t win',
+  ally_shield: 'You can shield teammates through burst. Watch for enemy combos and time your shield to absorb the big hit',
+  health_sustain: 'You can stay in lane longer. Use this to out-farm and out-trade opponents who have to back',
+  mana_sustain: 'You won\'t run dry. Spam abilities to pressure and zone without worrying about mana',
+  execute: 'You have kill pressure on low-HP targets. Track enemy health bars and commit when they\'re in range',
+  stealth: 'You can go invisible for plays. Use it to reposition, flank, or escape. Enemy wards counter this',
+  team_stealth: 'Your whole team can go unseen. Coordinate ganks and rotations with the stealth window',
+  shield: 'You get a shield for survivability. Time it before taking damage, not after',
+  burst_amp: 'Your burst gets stronger. Look for one-shot windows on squishy targets',
+  cd_reset: 'Your abilities come back faster. You can cycle through rotations more in extended fights',
+  range_ext: 'You outrange more matchups now. Abuse the extra distance to poke safely',
+  damage_reduction: 'You\'re tankier in fights. You can front-line more and absorb cooldowns for your team',
+  armor_shred: 'You shred armor. Focus the tankiest target since your damage cuts through their defenses',
+  anti_heal: 'You apply anti-heal. Prioritize hitting enemy healers or sustain-heavy targets first',
+  unstoppable: 'You can\'t be interrupted. Use this to force engages through CC-heavy teams',
+  zone_control: 'You control space better. Place abilities to cut off escape routes and force fights on your terms',
+  isolation: 'You punish lone targets. Look for picks on enemies who split from their team',
+  mobility: 'You\'re harder to pin down. Use the extra movement to dodge skillshots and reposition in fights',
+  scaling: 'You scale harder into late game. Farm up and don\'t force early fights you don\'t need',
+  cc: 'More crowd control in your kit. Layer CC with your team for longer lockdowns',
+  on_hit: 'On-hit synergy unlocked. Build attack speed items to maximize procs per fight',
+  as_steroid: 'You ramp up in extended trades. Stick to targets and let your attack speed do the work',
+  cleanse: 'You can cleanse CC. Save it for the big stun or root, don\'t waste it on slows',
+  global: 'You can impact the whole map. Watch for cross-map opportunities and plays in other lanes',
+  dot: 'Damage over time wears enemies down. Poke and rotate, let the DoT do work between fights',
+  poke: 'Better poke from range. Whittle them down before committing to an all-in',
+  displacement: 'You can reposition enemies. Use it to peel for carries or pull targets into your team',
+  true_damage: 'True damage ignores all armor and magic resist. Focus tanks since they can\'t itemize against it',
+  spam: 'Ability spam unlocked. Keep the pressure constant and overwhelm with volume',
+  economy: 'Extra gold generation. This compounds over time so play safe and farm efficiently',
+};
+
 function augmentPlaystyleNote(aug) {
   const t = (aug.traits || []);
   const shift = aug.playstyleShift;
   const notes = [];
-  if (t.includes('healing')) notes.push('Adds healing to your kit');
-  if (t.includes('execute')) notes.push('Gives you execute potential');
-  if (t.includes('stealth')) notes.push('Adds stealth for plays');
-  if (t.includes('shield')) notes.push('Adds a shield for survivability');
-  if (t.includes('burst_amp')) notes.push('Amplifies your burst damage');
-  if (t.includes('cd_reset')) notes.push('Lets you spam abilities faster');
-  if (t.includes('range_ext')) notes.push('Extends your reach');
-  if (t.includes('damage_reduction')) notes.push('Makes you harder to kill');
-  if (t.includes('anti_heal')) notes.push('Cuts enemy healing');
-  if (t.includes('unstoppable')) notes.push('Can\'t be interrupted');
-  if (t.includes('zone_control')) notes.push('Better area control');
-  if (t.includes('isolation')) notes.push('Punishes isolated targets');
-  if (t.includes('mobility')) notes.push('More mobility');
-  if (t.includes('cc')) notes.push('More crowd control');
-  if (t.includes('on_hit')) notes.push('Adds on-hit synergy');
-  if (t.includes('as_steroid')) notes.push('Attack speed boost');
-  if (t.includes('cleanse')) notes.push('Cleanses CC');
-  if (t.includes('poke')) notes.push('Better poke from range');
-  if (t.includes('displacement')) notes.push('Repositions enemies');
-  if (t.includes('true_damage')) notes.push('Deals true damage (ignores armor)');
-  if (t.includes('health_sustain')) notes.push('Health sustain in lane');
-  if (t.includes('mana_sustain')) notes.push('Mana sustain so you never run dry');
-  if (t.includes('scaling')) notes.push('Scales harder into late game');
-  if (t.includes('spam')) notes.push('Lets you spam abilities');
-  if (t.includes('economy')) notes.push('Helps with gold income');
-  if (shift) notes.push('Shifts playstyle toward ' + shift);
+  for (const trait of t) {
+    if (AUGMENT_PLAYSTYLE_TIPS[trait]) { notes.push(AUGMENT_PLAYSTYLE_TIPS[trait]); break; } // show most impactful one
+  }
+  if (!notes.length && shift) notes.push('Shifts your playstyle toward ' + shift);
   if (!notes.length && t.length) return t.map(x => titleCase(x.replace(/_/g,' '))).join(', ');
   return notes.join('. ');
 }
