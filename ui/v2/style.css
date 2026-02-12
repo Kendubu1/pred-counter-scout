@@ -737,14 +737,14 @@ details[open] .match-review-toggle::before { transform: rotate(90deg); }
 
 /* Build Slots */
 .build-slots {
-  display: grid; grid-template-columns: repeat(6, 48px); gap: 0.5rem;
-  margin-bottom: 0.75rem; max-width: 360px;
+  display: flex; gap: 0.35rem; flex-wrap: nowrap;
+  margin-bottom: 0.5rem;
 }
 .build-slot {
-  width: 48px; height: 48px; background: var(--bg-1); border: 2px dashed var(--border);
+  width: 42px; height: 42px; background: var(--bg-1); border: 2px dashed var(--border);
   border-radius: 8px; display: flex; align-items: center; justify-content: center;
   cursor: pointer; position: relative; transition: border-color 0.2s;
-  min-width: 0;
+  min-width: 0; flex-shrink: 0;
 }
 .build-slot:hover { border-color: var(--accent); }
 .build-slot.filled { border-style: solid; border-color: var(--accent-dim, #333); }
@@ -762,8 +762,8 @@ details[open] .match-review-toggle::before { transform: rotate(90deg); }
 }
 .build-slot.filled:hover .build-slot-clear { display: flex; }
 
-.build-crest-row { display: flex; align-items: center; gap: 0.75rem; }
-.build-crest-row h4 { color: var(--text-2); font-size: 0.85rem; margin: 0; }
+.build-crest-row { display: none; }
+.build-crest-row h4 { display: none; }
 .build-crest-slot { width: 42px; height: 42px; flex-shrink: 0; }
 
 /* Build Stats Grid */
@@ -830,6 +830,6 @@ details[open] .match-review-toggle::before { transform: rotate(90deg); }
 
 /* Mobile: 4 columns for item slots on small screens */
 @media (max-width: 480px) {
-  .build-slots { grid-template-columns: repeat(3, 48px); }
+  .build-slots { gap: 0.25rem; }
   .build-item-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); }
 }
