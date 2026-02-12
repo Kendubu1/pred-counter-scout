@@ -2,7 +2,7 @@
 
 **A free counter-pick, matchup, and build companion for [Predecessor](https://www.predecessorgame.com/).**
 
-🔗 **Try it:** [https://kendubu1.github.io/Pred-Scout/ui/v2/](https://kendubu1.github.io/Pred-Scout/ui/v2/)
+🔗 **Try it:** [https://kendubu1.github.io/pred-counter-scout/ui/v2/](https://kendubu1.github.io/pred-counter-scout/ui/v2/)
 
 ☕ **Support:** [Buy Me a Coffee](https://buymeacoffee.com/saint_kendrick)
 
@@ -48,8 +48,8 @@ If something feels off, [tell us](https://forms.gle/hS9bXZvqiGFruSjy5). This get
 
 ## Links
 
-- [Predecessor Scout](https://kendubu1.github.io/Pred-Scout/ui/v2/) - main tool
-- [Team Lab](https://kendubu1.github.io/Pred-Scout/ui/team-lab.html) - team comp builder
+- [Predecessor Scout](https://kendubu1.github.io/pred-counter-scout/ui/v2/) - main tool
+- [Team Lab](https://kendubu1.github.io/pred-counter-scout/ui/team-lab.html) - team comp builder
 - [Buy Me a Coffee](https://buymeacoffee.com/saint_kendrick) - support the project
 - [Feedback Form](https://forms.gle/hS9bXZvqiGFruSjy5) - tell me what sucks
 - [YouTube](https://www.youtube.com/@saint_kendrick) - gaming content
