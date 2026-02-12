@@ -70,6 +70,7 @@
   window.itemSlug = itemSlug;
   window.augmentImg = augmentImg;
   window.augmentWithImg = augmentWithImg;
+  window.crestSlug = crestSlug;
   window.crestImg = crestImg;
   window.crestWithImg = crestWithImg;
 })();

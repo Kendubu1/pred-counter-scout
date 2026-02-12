@@ -317,6 +317,19 @@ function showItemModal(name) {
     html += `</div>`;
   }
 
+  // Check if on build page
+  const onBuildPage = !document.getElementById('buildPage')?.classList.contains('hidden');
+  if (onBuildPage) {
+    const isCrest = buildCrests.find(c => c.name === name);
+    const alreadyInBuild = isCrest ? buildState.crest?.name === name : buildState.items.some(i => i?.name === name);
+    const buildFull = isCrest ? !!buildState.crest : !buildState.items.includes(null);
+    if (!alreadyInBuild && !buildFull) {
+      html += `<button onclick="addItemToBuild('${esc(name).replace(/'/g, "\\'")}'); this.closest('.tag-modal-overlay').remove();" style="width:100%;margin-top:0.75rem;padding:0.6rem;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:0.9rem;font-weight:600;cursor:pointer">Add to Build</button>`;
+    } else if (alreadyInBuild) {
+      html += `<div style="text-align:center;margin-top:0.5rem;color:var(--text-2);font-size:0.8rem">Already in build</div>`;
+    }
+  }
+
   html += `</div></div>`;
   document.body.insertAdjacentHTML('beforeend', html);
 }
@@ -2810,9 +2823,13 @@ const buildState = {
 
 // Item categories for filtering (stat-based)
 const ITEM_CATEGORIES = {
-  damage: ['PHYSICAL_POWER','MAGICAL_POWER','CRITICAL_CHANCE','PHYSICAL_PENETRATION','MAGICAL_PENETRATION','ATTACK_SPEED'],
-  defense: ['PHYSICAL_ARMOR','MAGICAL_ARMOR','HEALTH','TENACITY'],
+  'phys-atk': ['PHYSICAL_POWER','ATTACK_SPEED','CRITICAL_CHANCE','PHYSICAL_PENETRATION'],
+  'magic-atk': ['MAGICAL_POWER','MAGICAL_PENETRATION','ABILITY_HASTE'],
+  'phys-def': ['PHYSICAL_ARMOR'],
+  'magic-def': ['MAGICAL_ARMOR'],
   sustain: ['LIFESTEAL','MAGICAL_LIFESTEAL','OMNIVAMP','HEAL_AND_SHIELD_POWER','BASE_HEALTH_REGENERATION'],
+  lifesteal: ['LIFESTEAL'],
+  omnivamp: ['OMNIVAMP','MAGICAL_LIFESTEAL'],
   utility: ['ABILITY_HASTE','MOVEMENT_SPEED','MANA','BASE_MANA_REGENERATION','GOLD_PER_SECOND'],
 };
 
@@ -2896,14 +2913,6 @@ function initBuildLab() {
       const btn = e.target.closest('.build-cat-btn');
       if (!btn) return;
       document.querySelectorAll('.build-cat-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderBuildItemGrid();
-    };
-    // Tier filter
-    document.getElementById('buildTierFilter').onclick = (e) => {
-      const btn = e.target.closest('.build-tier-btn');
-      if (!btn) return;
-      document.querySelectorAll('.build-tier-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       renderBuildItemGrid();
     };
@@ -3012,7 +3021,7 @@ function renderBuildItemGrid() {
   const container = document.getElementById('buildItemGrid');
   const search = document.getElementById('buildItemSearch').value.toLowerCase().trim();
   const activeCat = document.querySelector('.build-cat-btn.active')?.dataset.cat || 'all';
-  const activeTier = parseInt(document.querySelector('.build-tier-btn.active')?.dataset.tier || '3');
+  const activeTier = 3;
   const inBuild = new Set(buildState.items.filter(Boolean).map(i => i.name));
   const allItemsFilled = buildState.items.every(i => i !== null);
 
@@ -3336,6 +3345,11 @@ function updateBuildFeedback() {
     feedback.push({ type: 'suggestion', text: `💡 Need anti-heal? If the enemy has healers, any Tainted item applies 45% healing reduction. Serrated Blade (T2) is a cheap option.` });
   }
 
+  // 16. No hero selected hint
+  if (!hero && items.length >= 1) {
+    feedback.push({ type: 'suggestion', text: `💡 Select a hero above for personalized feedback on your build.` });
+  }
+
   // 15. Vamp education
   if ((totals.LIFESTEAL || 0) > 0 || (totals.OMNIVAMP || 0) > 0 || (totals.MAGICAL_LIFESTEAL || 0) > 0) {
     const vampTypes = [];
@@ -3365,7 +3379,7 @@ function updateBuildHeroInfo() {
 async function loadBuildPreset() {
   if (!buildState.hero) return;
   const slug = buildState.hero;
-  const data = await loadHeroData(slug);
+  const data = await loadHeroData(currentVersion, slug);
   if (!data) return;
 
   // Get the first role's data
@@ -3395,6 +3409,20 @@ async function loadBuildPreset() {
         const item = buildItems.find(it => it.name.toLowerCase() === name.toLowerCase());
         if (item) buildState.items[i] = item;
       });
+    }
+  }
+
+  // Fill remaining empty slots from roleData.items (non-crest, sorted by matches)
+  const usedNames = new Set(buildState.items.filter(Boolean).map(i => i.name.toLowerCase()));
+  const extraItems = (roleData?.items || [])
+    .filter(i => i.slot !== 'crest' && !usedNames.has(i.name.toLowerCase()))
+    .sort((a, b) => (b.matches || 0) - (a.matches || 0));
+  for (const ei of extraItems) {
+    const emptyIdx = buildState.items.indexOf(null);
+    if (emptyIdx === -1) break;
+    const item = buildItems.find(it => it.name.toLowerCase() === ei.name.toLowerCase());
+    if (item) {
+      buildState.items[emptyIdx] = item;
     }
   }
 

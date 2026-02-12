@@ -737,11 +737,11 @@ details[open] .match-review-toggle::before { transform: rotate(90deg); }
 
 /* Build Slots */
 .build-slots {
-  display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.5rem;
-  margin-bottom: 0.75rem;
+  display: grid; grid-template-columns: repeat(6, 48px); gap: 0.5rem;
+  margin-bottom: 0.75rem; max-width: 360px;
 }
 .build-slot {
-  aspect-ratio: 1; background: var(--bg-1); border: 2px dashed var(--border);
+  width: 48px; height: 48px; background: var(--bg-1); border: 2px dashed var(--border);
   border-radius: 8px; display: flex; align-items: center; justify-content: center;
   cursor: pointer; position: relative; transition: border-color 0.2s;
   min-width: 0;
@@ -764,7 +764,7 @@ details[open] .match-review-toggle::before { transform: rotate(90deg); }
 
 .build-crest-row { display: flex; align-items: center; gap: 0.75rem; }
 .build-crest-row h4 { color: var(--text-2); font-size: 0.85rem; margin: 0; }
-.build-crest-slot { width: 56px; height: 56px; flex-shrink: 0; }
+.build-crest-slot { width: 42px; height: 42px; flex-shrink: 0; }
 
 /* Build Stats Grid */
 .build-stats-grid {
@@ -812,7 +812,7 @@ details[open] .match-review-toggle::before { transform: rotate(90deg); }
 }
 .build-shop-item:hover { border-color: var(--accent); }
 .build-shop-item.in-build { opacity: 0.4; }
-.build-shop-item img { width: 48px; height: 48px; border-radius: 4px; object-fit: cover; }
+.build-shop-item img { width: 36px; height: 36px; border-radius: 4px; object-fit: cover; }
 .build-shop-item-name { font-size: 0.65rem; color: var(--text-2); text-align: center; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
 .build-shop-item-price { font-size: 0.6rem; color: var(--text-3, #666); }
 .build-shop-item-add {
@@ -830,6 +830,6 @@ details[open] .match-review-toggle::before { transform: rotate(90deg); }
 
 /* Mobile: 4 columns for item slots on small screens */
 @media (max-width: 480px) {
-  .build-slots { grid-template-columns: repeat(3, 1fr); }
+  .build-slots { grid-template-columns: repeat(3, 48px); }
   .build-item-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); }
 }
