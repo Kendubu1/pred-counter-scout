@@ -19,11 +19,11 @@ I want to help fill the gap between "pick this" and actually understanding why i
 ## What We're Building
 
 - **Counter reasoning**: not just "pick X into Y" but why it works and what to do in the matchup
-- **Build education**: a lab where you can slot items and learn what works together (and what doesn't)
 - **Augment context**: how augments shift a hero's playstyle and what that means for you or against you
 - **Draft helper**: team analysis and suggestions as you fill slots
 - **Mobile first**: built for your phone during draft, not a responsive afterthought
 - **Tap to learn**: tags, items, augments, crests. tap anything for explanation and tips
+- **Build education** (early): a lab where you can slot items and learn what works together (and what doesn't)
 
 ## The Approach
 
