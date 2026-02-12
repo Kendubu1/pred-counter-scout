@@ -23,9 +23,6 @@ this isn't meant to replace pred.gg. it supplements it by going deeper into the 
 ### counters that explain WHY, not just who
 every other tool says "pick Riktor into Kallari." we tell you WHY: his CC catches her out of stealth and he's too tanky to burst. every counter comes with reasoning you can actually use in game.
 
-### self-heal vs ally-heal (nobody else does this)
-"buy anti-heal" is lazy advice. against Rampage? build Pestilence yourself to duel him. against Phase? anti-heal the carry she's keeping alive, not Phase. the tool tags these separately because they're completely different problems with different solutions.
-
 ### Build Lab catches your mistakes
 slot items in and get real feedback:
 - stacking Tainted items? anti-heal passive doesn't stack, you're wasting gold
