@@ -343,7 +343,7 @@ function showItemModal(name) {
     const alreadyInBuild = isCrest ? buildState.crest?.name === name : buildState.items.some(i => i?.name === name);
     const buildFull = isCrest ? !!buildState.crest : !buildState.items.includes(null);
     if (!alreadyInBuild && !buildFull) {
-      html += `<button onclick="addItemToBuild('${esc(name).replace(/'/g, "\\'")}'); this.closest('.tag-modal-overlay').remove();" style="width:100%;margin-top:0.75rem;padding:0.6rem;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:0.9rem;font-weight:600;cursor:pointer">Add to Build</button>`;
+      html += `<button onclick="addItemToBuild('${esc(name).replace(/'/g, "\\'")}'); document.querySelector('.tag-modal-overlay')?.remove();" style="width:100%;margin-top:0.75rem;padding:0.6rem;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:0.9rem;font-weight:600;cursor:pointer">Add to Build</button>`;
     } else if (alreadyInBuild) {
       html += `<div style="text-align:center;margin-top:0.5rem;color:var(--text-2);font-size:0.8rem">Already in build</div>`;
     }
@@ -2964,46 +2964,45 @@ function initBuildLab() {
   renderBuildItemGrid();
   updateBuildStats();
   updateBuildFeedback();
+  // Safety: re-render if grid is empty (race condition on first load)
+  setTimeout(() => {
+    if (!document.getElementById('buildItemGrid')?.children.length) {
+      parseBuildItems();
+      renderBuildItemGrid();
+    }
+  }, 100);
 }
 
 function wireSlotClicks() {
   document.getElementById('buildItemSlots').onclick = (e) => {
     const slot = e.target.closest('.build-slot');
     if (!slot) return;
-    const idx = parseInt(slot.dataset.slot);
     const clear = e.target.closest('.build-slot-clear');
+    const isCrest = slot.dataset.slot === 'crest';
+
     if (clear) {
-      buildState.items[idx] = null;
+      if (isCrest) { buildState.crest = null; }
+      else { buildState.items[parseInt(slot.dataset.slot)] = null; }
       renderBuildSlots();
       updateBuildStats();
       updateBuildFeedback();
       renderBuildItemGrid();
       return;
     }
-    // Scroll to item picker
-    document.getElementById('buildItemGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-  document.querySelector('.build-crest-slot').onclick = (e) => {
-    const clear = e.target.closest('.build-slot-clear');
-    if (clear) {
-      buildState.crest = null;
-      renderBuildSlots();
-      updateBuildStats();
-      updateBuildFeedback();
+
+    if (isCrest) {
+      // Switch to crest category and scroll to shop
+      document.querySelectorAll('.build-cat-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.build-cat-btn[data-cat="crest"]').classList.add('active');
       renderBuildItemGrid();
-      return;
     }
-    // Switch to crest category and scroll to shop
-    document.querySelectorAll('.build-cat-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector('.build-cat-btn[data-cat="crest"]').classList.add('active');
-    renderBuildItemGrid();
     document.getElementById('buildItemGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 }
 
 function renderBuildSlots() {
   const slotsEl = document.getElementById('buildItemSlots');
-  slotsEl.innerHTML = buildState.items.map((item, i) => {
+  let html = buildState.items.map((item, i) => {
     if (item) {
       const imgSrc = getItemImgSrc(item.name);
       return `<div class="build-slot filled" data-slot="${i}">
@@ -3014,18 +3013,15 @@ function renderBuildSlots() {
     return `<div class="build-slot empty" data-slot="${i}"><span class="build-slot-label">${i + 1}</span></div>`;
   }).join('');
 
-  // Crest slot
-  const crestSlot = document.querySelector('.build-crest-slot');
+  // Divider + crest slot inline
+  html += '<div style="width:1px;background:var(--border);margin:0 0.15rem;align-self:stretch"></div>';
   if (buildState.crest) {
     const imgSrc = getCrestImgSrc(buildState.crest.name);
-    crestSlot.innerHTML = `<img src="${imgSrc}" alt="${esc(buildState.crest.name)}" title="${esc(buildState.crest.name)}"><button class="build-slot-clear">&times;</button>`;
-    crestSlot.classList.add('filled');
-    crestSlot.classList.remove('empty');
+    html += `<div class="build-slot build-crest-slot filled" data-slot="crest"><img src="${imgSrc}" alt="${esc(buildState.crest.name)}" title="${esc(buildState.crest.name)}"><button class="build-slot-clear">&times;</button></div>`;
   } else {
-    crestSlot.innerHTML = '<span class="build-slot-label">C</span>';
-    crestSlot.classList.remove('filled');
-    crestSlot.classList.add('empty');
+    html += '<div class="build-slot build-crest-slot empty" data-slot="crest"><span class="build-slot-label">C</span></div>';
   }
+  slotsEl.innerHTML = html;
 
   // Gold total
   let existingGold = document.querySelector('.build-gold-total');
