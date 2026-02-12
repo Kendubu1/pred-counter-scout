@@ -551,7 +551,15 @@
       
       // Data loading functions - copied from app.js
       async function findLatestVersion() {
-        // Search recent dates, checking both folder formats.
+        // Try manifest first (fast, no 404 spam)
+        try {
+          const mRes = await fetch(`${DATA_BASE}/manifest.json${CACHE_BUST}`);
+          if (mRes.ok) {
+            const manifest = await mRes.json();
+            if (manifest.latest) return manifest.latest;
+          }
+        } catch {}
+        // Fallback: Search recent dates, checking both folder formats.
         // Pick the folder whose heroes.json has the highest heroCount.
         const today = new Date();
         const gameVersions = [
