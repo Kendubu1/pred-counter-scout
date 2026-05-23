@@ -93,6 +93,50 @@ function metaTrendBadge(slug, opts = {}) {
   const text = opts.compact ? icon : `${icon} ${label}${patch}`;
   return `<span class="meta-badge ${cls}" title="${esc(title)}">${text}</span>`;
 }
+// Render the home "Meta Movers" panel (combined buff/nerf view for the patch).
+function renderMetaMovers() {
+  const host = document.getElementById('metaMovers');
+  if (!host) return;
+  const heroes = heroPatchState?.heroes;
+  if (!heroes) { host.innerHTML = ''; return; }
+
+  const nameOf = slug => heroProfiles[slug]?.name || slug;
+  const byName = (a, b) => nameOf(a[0]).localeCompare(nameOf(b[0]));
+  const entries = Object.entries(heroes);
+  const buffed = entries.filter(([, v]) => v.trend === 'buff').sort(byName);
+  const nerfed = entries.filter(([, v]) => v.trend === 'nerf').sort(byName);
+  if (!buffed.length && !nerfed.length) { host.innerHTML = ''; return; }
+
+  const chip = ([slug, st]) => {
+    const name = nameOf(slug);
+    const note = (st.changes || []).join(' • ');
+    return `<button class="mover-chip" data-slug="${esc(slug)}" title="${esc(note)}">`
+      + `<img src="img/heroes/${esc(slug)}.webp" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+      + `<span class="mover-fallback" style="display:none">⚔</span>`
+      + `<span class="mover-name">${esc(name)}</span></button>`;
+  };
+  const col = (label, cls, icon, list) =>
+    `<div class="mover-col ${cls}">`
+    + `<div class="mover-head">${icon} ${label} <span class="mover-count">${list.length}</span></div>`
+    + `<div class="mover-chips">${list.map(chip).join('') || '<span class="mover-empty">No changes</span>'}</div>`
+    + `</div>`;
+
+  const patches = (heroPatchState.appliedPatches && heroPatchState.appliedPatches.length)
+    ? heroPatchState.appliedPatches.join(' + ')
+    : (heroPatchState.patch || '');
+
+  host.innerHTML =
+    `<div class="mover-card">`
+    + `<div class="mover-title">⚡ Meta Movers${patches ? ` <span class="mover-patch">Patch ${esc(patches)}</span>` : ''}</div>`
+    + `<div class="mover-cols">`
+    + col('Buffed', 'up', '▲', buffed)
+    + col('Nerfed', 'down', '▼', nerfed)
+    + `</div></div>`;
+
+  host.querySelectorAll('.mover-chip').forEach(b => {
+    b.onclick = () => navigate('learn', b.dataset.slug);
+  });
+}
 function heroDisplayName(n) {
   if (NAME_FIX[n]) return NAME_FIX[n];
   const p = heroProfiles[n]; if (p) return p.name;
@@ -2856,6 +2900,9 @@ async function init() {
   document.querySelectorAll('.landing-card').forEach(card => {
     card.onclick = () => navigate(card.dataset.flow);
   });
+
+  // Home "Meta Movers" panel
+  renderMetaMovers();
 
   // Home button / breadcrumb
   document.getElementById('homeBtn').onclick = () => navigate(null);
