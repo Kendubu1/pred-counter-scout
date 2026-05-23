@@ -129,9 +129,9 @@ main {
 .landing-sub { color: var(--text-2); font-size: 1rem; }
 .landing-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.25rem;
-  max-width: 900px;
+  max-width: 680px;
   margin: 0 auto;
 }
 .landing-card {
@@ -153,6 +153,34 @@ main {
 .landing-card-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
 .landing-card-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; }
 .landing-card-desc { color: var(--text-2); font-size: 0.88rem; line-height: 1.4; }
+
+/* ── Home: Meta Movers (combined buff/nerf view) ── */
+.meta-movers { max-width: 900px; margin: 0 auto 1.25rem; }
+.mover-card { background: var(--bg-1); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.25rem; }
+.mover-title { display: flex; align-items: center; gap: 0.5rem; font-size: 1.05rem; font-weight: 700; color: var(--text-0); margin-bottom: 0.9rem; }
+.mover-patch { font-size: 0.7rem; font-weight: 600; color: var(--text-2); background: var(--bg-3); border: 1px solid var(--border); border-radius: 999px; padding: 0.12rem 0.6rem; }
+.mover-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.mover-col { min-width: 0; }
+.mover-head { display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.6rem; }
+.mover-col.up .mover-head { color: var(--green); }
+.mover-col.down .mover-head { color: var(--red); }
+.mover-count { font-size: 0.7rem; color: var(--text-2); background: var(--bg-3); border-radius: 999px; padding: 0 0.4rem; }
+.mover-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.mover-chip { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--bg-2); border: 1px solid var(--border); border-radius: 999px; padding: 0.2rem 0.6rem 0.2rem 0.2rem; cursor: pointer; font-family: inherit; color: var(--text-0); font-size: 0.8rem; font-weight: 600; transition: border-color 0.15s, transform 0.15s; }
+.mover-chip:hover { transform: translateY(-1px); }
+.mover-col.up .mover-chip:hover { border-color: var(--green); }
+.mover-col.down .mover-chip:hover { border-color: var(--red); }
+.mover-chip img, .mover-chip .mover-fallback { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; flex: none; }
+.mover-chip .mover-fallback { align-items: center; justify-content: center; background: var(--bg-3); color: var(--text-2); font-size: 0.7rem; }
+.mover-empty { font-size: 0.8rem; color: var(--text-2); }
+
+/* ── Home: Learn Eternals banner ── */
+.eternals-banner { display: flex; align-items: center; gap: 0.7rem; max-width: 900px; margin: 0 auto 2rem; padding: 0.8rem 1.1rem; background: var(--accent-dim); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); border-radius: 12px; text-decoration: none; color: var(--text-0); transition: border-color 0.15s, transform 0.15s; }
+.eternals-banner:hover { border-color: var(--accent); transform: translateY(-1px); }
+.eternals-banner-icon { font-size: 1.25rem; flex: none; }
+.eternals-banner-text { font-size: 0.9rem; color: var(--text-1); line-height: 1.4; }
+.eternals-banner-text b { color: var(--text-0); }
+.eternals-banner-arrow { margin-left: auto; color: var(--accent); font-weight: 700; flex: none; }
 
 /* ── Hero Grid ── */
 .hero-grid-header { margin-bottom: 1.25rem; }
@@ -642,7 +670,8 @@ details[open] .match-review-toggle::before { transform: rotate(90deg); }
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-  .landing-cards { grid-template-columns: 1fr; max-width: 400px; }
+  .landing-cards { grid-template-columns: repeat(2, 1fr); max-width: 520px; gap: 0.8rem; }
+  .mover-cols { grid-template-columns: 1fr; gap: 0.9rem; }
   .grid-2, .grid-3, .matchup-builds { grid-template-columns: 1fr; }
   .hero-grid { grid-template-columns: repeat(4, 1fr); }
   .tab { padding: 0.6rem 0.65rem; font-size: 0.78rem; }
