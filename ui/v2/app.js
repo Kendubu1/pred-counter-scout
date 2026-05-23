@@ -58,6 +58,7 @@ let heroIndex = [];
 let heroCache = {};
 let heroProfiles = {};
 let duoSynergies = {};
+let heroPatchState = { patch: null, heroes: {} };
 let currentHero = null;
 let currentRole = null;
 let currentVersion = null;
@@ -77,6 +78,20 @@ function wrClass(wr) {
 }
 function wrColor(wr) {
   if (wr >= 52) return '#00c48c'; if (wr <= 48) return '#ff5a5a'; return '#f0b429';
+}
+// Patch trend for a hero, e.g. { trend, changes, patch } or null.
+function patchStateOf(slug) { return heroPatchState?.heroes?.[slug] || null; }
+// Compact meta-trend badge HTML for a hero, or '' if unchanged/unknown.
+function metaTrendBadge(slug, opts = {}) {
+  const st = patchStateOf(slug);
+  if (!st || (st.trend !== 'buff' && st.trend !== 'nerf')) return '';
+  const cls = st.trend === 'buff' ? 'meta-buff' : 'meta-nerf';
+  const icon = st.trend === 'buff' ? '▲' : '▼';
+  const label = st.trend === 'buff' ? 'Buffed' : 'Nerfed';
+  const patch = heroPatchState.patch ? ` ${esc(heroPatchState.patch)}` : '';
+  const title = (st.changes || []).join(' • ');
+  const text = opts.compact ? icon : `${icon} ${label}${patch}`;
+  return `<span class="meta-badge ${cls}" title="${esc(title)}">${text}</span>`;
 }
 function heroDisplayName(n) {
   if (NAME_FIX[n]) return NAME_FIX[n];
@@ -522,6 +537,8 @@ function renderHeroGrid(containerId, onClick, opts = {}) {
     html += `<div class="${cls}" data-slug="${esc(slug)}" data-name="${esc(name.toLowerCase())}" data-roles="${roles}">`;
     html += `<img class="hero-portrait" src="img/heroes/${slug}.webp" alt="${esc(name)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`;
     html += `<div class="hero-portrait-fallback" style="display:none">⚔</div>`;
+    const trend = metaTrendBadge(slug, { compact: true });
+    if (trend) html += `<div class="hero-grid-trend">${trend}</div>`;
     html += `<div class="hero-grid-name">${esc(name)}</div>`;
     html += '</div>';
   });
@@ -611,10 +628,14 @@ function renderLearnHeader() {
   const profile = heroProfiles[hero.slug];
   let html = `<img class="learn-hero-portrait" src="img/heroes/${hero.slug}.webp" alt="${esc(hero.name)}" onerror="this.style.display='none'">`;
   html += '<div>';
-  html += `<h2 style="font-size:1.4rem;margin-bottom:0.25rem">${esc(hero.name)}</h2>`;
+  html += `<h2 style="font-size:1.4rem;margin-bottom:0.25rem;display:inline-flex;align-items:center;gap:0.5rem">${esc(hero.name)} ${metaTrendBadge(hero.slug)}</h2>`;
   if (profile) {
     html += renderProfileBadges(profile);
     html += renderArchetypeTags(profile);
+  }
+  const st = patchStateOf(hero.slug);
+  if (st && (st.changes || []).length) {
+    html += `<div class="meta-changes">${st.changes.map(c => `<span class="meta-change">${esc(c)}</span>`).join('')}</div>`;
   }
   html += '</div>';
   el.innerHTML = html;
@@ -2741,6 +2762,12 @@ async function init() {
   try {
     const dsRes = await fetch(`${DATA_BASE}/game-data/duo-synergies.json${CACHE_BUST}`);
     if (dsRes.ok) duoSynergies = await dsRes.json();
+  } catch {}
+
+  // Load patch state (buff/nerf trends from scripts/apply-patch.js)
+  try {
+    const psRes = await fetch(`${DATA_BASE}/game-data/hero-patch-state.json${CACHE_BUST}`);
+    if (psRes.ok) heroPatchState = await psRes.json();
   } catch {}
 
   // Load engines
