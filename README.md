@@ -50,6 +50,7 @@ If something feels off, [tell us](https://forms.gle/hS9bXZvqiGFruSjy5). This get
 
 - [Predecessor Scout](https://kendubu1.github.io/pred-counter-scout/ui/v2/) - main tool
 - [Team Lab](https://kendubu1.github.io/pred-counter-scout/ui/team-lab.html) - team comp builder
+- [Learn Eternals](https://kendubu1.github.io/pred-counter-scout/ui/learn-eternals.html) - the Eternals system explained, with when to pick each
 - [Buy Me a Coffee](https://buymeacoffee.com/saint_kendrick) - support the project
 - [Feedback Form](https://forms.gle/hS9bXZvqiGFruSjy5) - tell me what sucks
 - [YouTube](https://www.youtube.com/@saint_kendrick) - gaming content

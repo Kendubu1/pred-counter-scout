@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Predecessor Scout - Learn Eternals</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .le-wrap { max-width: 920px; margin: 0 auto; }
+    .le-lead { color: var(--text-1); font-size: 1rem; line-height: 1.6; margin-bottom: 1.5rem; max-width: 70ch; }
+    .le-h2 { font-size: 1.05rem; font-weight: 700; color: var(--text-0); margin: 2rem 0 0.85rem; display: flex; align-items: center; gap: 0.5rem; }
+    .le-h2 .bar { width: 3px; height: 1.1em; background: var(--accent); border-radius: 2px; }
+
+    /* What are Eternals — fact list */
+    .le-facts { display: grid; gap: 0.6rem; }
+    @media (min-width: 620px) { .le-facts { grid-template-columns: 1fr 1fr; } }
+    .le-fact { background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.8rem 0.9rem; }
+    .le-fact b { color: var(--text-0); font-size: 0.9rem; }
+    .le-fact p { color: var(--text-1); font-size: 0.85rem; line-height: 1.5; margin: 0.2rem 0 0; }
+
+    /* How to choose — steps */
+    .le-steps { counter-reset: step; display: grid; gap: 0.5rem; }
+    .le-step { position: relative; padding: 0.7rem 0.9rem 0.7rem 2.6rem; background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-1); font-size: 0.9rem; line-height: 1.5; }
+    .le-step::before { counter-increment: step; content: counter(step); position: absolute; left: 0.7rem; top: 0.7rem; width: 1.4rem; height: 1.4rem; background: var(--accent-dim); color: var(--accent); border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 0.8rem; }
+    .le-step b { color: var(--text-0); }
+
+    /* Families */
+    .le-family { margin-top: 1.6rem; border-left: 3px solid var(--fam, var(--accent)); padding-left: 0.9rem; }
+    .le-family-name { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
+    .le-family-name h3 { font-size: 1.05rem; font-weight: 700; color: var(--fam, var(--text-0)); margin: 0; }
+    .le-family-name .tag { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-2); }
+    .le-family-blurb { color: var(--text-1); font-size: 0.87rem; line-height: 1.5; margin: 0.3rem 0 0.85rem; max-width: 75ch; }
+
+    .le-cards { display: grid; gap: 0.7rem; }
+    @media (min-width: 620px) { .le-cards { grid-template-columns: 1fr 1fr; } }
+    .le-card { background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.9rem; }
+    .le-card-head { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+    .le-card-head h4 { font-size: 1rem; font-weight: 700; color: var(--text-0); margin: 0; }
+    .le-arch { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; color: var(--fam, var(--accent)); background: color-mix(in srgb, var(--fam, var(--accent)) 14%, transparent); border-radius: 999px; padding: 0.12rem 0.5rem; }
+    .le-roles { margin-left: auto; font-size: 0.7rem; color: var(--text-2); }
+    .le-pick { font-size: 0.88rem; line-height: 1.55; color: var(--text-0); background: var(--bg-2); border-radius: 8px; padding: 0.55rem 0.7rem; margin-bottom: 0.55rem; }
+    .le-pick b { color: var(--green); }
+    .le-major { font-size: 0.82rem; color: var(--text-1); line-height: 1.5; margin-bottom: 0.5rem; }
+    .le-major .k { color: var(--text-2); font-weight: 600; text-transform: uppercase; font-size: 0.66rem; letter-spacing: 0.04em; display: block; margin-bottom: 0.15rem; }
+    .le-minors { font-size: 0.78rem; color: var(--text-2); }
+    .le-minors b { color: var(--text-1); font-weight: 600; }
+
+    .le-cta { margin-top: 2.2rem; background: var(--accent-dim); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); border-radius: var(--radius); padding: 1.1rem 1.2rem; text-align: center; }
+    .le-cta p { color: var(--text-1); font-size: 0.92rem; margin: 0 0 0.7rem; }
+    .le-cta a.btn { display: inline-block; background: var(--accent); color: #fff; font-weight: 600; font-size: 0.9rem; padding: 0.5rem 1.1rem; border-radius: 8px; text-decoration: none; }
+    .le-note { font-size: 0.78rem; color: var(--text-2); font-style: italic; margin-top: 0.6rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="header-left">
+        <h1 class="logo">⚔ Predecessor Scout</h1>
+      </div>
+      <div class="header-links">
+        <a href="v2/" class="header-link">Tool</a>
+        <a href="team-lab.html" class="header-link">Team Lab</a>
+        <a href="patch-notes.html" class="header-link">Patch Notes</a>
+        <a href="https://github.com/Kendubu1/pred-counter-scout" target="_blank" class="header-link">GitHub</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="app">
+    <div class="le-wrap">
+      <h1 style="margin-bottom:0.3rem">Learn Eternals</h1>
+      <p class="le-lead">Eternals are the deity blessings introduced in patch 1.14 (they replaced Minor Augments). They can feel cryptic, so here's the plain version: what they are, how the picks work, and a simple "pick this when…" for all 12.</p>
+
+      <h2 class="le-h2"><span class="bar"></span>What is an Eternal?</h2>
+      <div class="le-facts">
+        <div class="le-fact"><b>One blessing, three choices</b><p>Each Eternal gives a locked <b>Major Blessing</b> (its signature effect) plus <b>2 Minor Blessings</b> — you pick 1 from each of two slots (3 options each).</p></div>
+        <div class="le-fact"><b>Chosen before the match</b><p>Set them in the draft / loadout phase. They unlock at level 10 in-game.</p></div>
+        <div class="le-fact"><b>Saved per hero &amp; role</b><p>Your choice sticks to that hero in that role and can be changed any time.</p></div>
+        <div class="le-fact"><b>Pick by kit fit</b><p>They're new, so there's no win-rate data yet — choose based on how the effect synergizes with your hero's stats, kit, and role.</p></div>
+      </div>
+
+      <h2 class="le-h2"><span class="bar"></span>How to choose (in 4 steps)</h2>
+      <div class="le-steps">
+        <div class="le-step"><b>Name your goal.</b> Do you want to dive, tank, burst people down, enable allies, or hyper-scale?</div>
+        <div class="le-step"><b>Pick the family</b> (the 6 deity types below) that matches that goal.</div>
+        <div class="le-step"><b>Pick the Eternal</b> in that family whose Major fits your damage type and playstyle.</div>
+        <div class="le-step"><b>Add 2 Minors</b> that double down on your plan — or patch your biggest weakness.</div>
+      </div>
+
+      <h2 class="le-h2"><span class="bar"></span>The 6 families &amp; when to pick each Eternal</h2>
+
+      <!-- Harbingers -->
+      <section class="le-family" style="--fam:#ff7a5a">
+        <div class="le-family-name"><h3>Harbingers</h3><span class="tag">Relentless damage</span></div>
+        <p class="le-family-blurb">Reward staying on a target — grinding tanks down and bloodthirsty low-HP brawling. Choose when your damage comes from sustained pressure, not one big burst.</p>
+        <div class="le-cards">
+          <div class="le-card">
+            <div class="le-card-head"><h4>Vermis</h4><span class="le-arch">Auto-Attack / Anti-Tank</span><span class="le-roles">Carry · Jungle</span></div>
+            <div class="le-pick"><b>Pick when</b> you auto-attack a lot and enemies stack health — every 3rd hit on the same target chunks their max HP.</div>
+            <div class="le-major"><span class="k">Major</span>Every 3rd consecutive Basic Attack on the same hero (within 2.5s) deals 3% (+0.25%/lvl) of their Max Health as bonus Physical Damage.</div>
+            <div class="le-minors"><b>Good minors:</b> Serration + Melting Point</div>
+          </div>
+          <div class="le-card">
+            <div class="le-card-head"><h4>Marrow</h4><span class="le-arch">Lifesteal Bruiser</span><span class="le-roles">Jungle · Offlane</span></div>
+            <div class="le-pick"><b>Pick when</b> you dive in and fight from low health — omnivamp ramps the lower you get and doubles after a kill.</div>
+            <div class="le-major"><span class="k">Major</span>Gain 0.5% (+0.05%/lvl) Omnivamp per 5% Missing Health. Doubles for 8s after killing an Enemy Hero.</div>
+            <div class="le-minors"><b>Good minors:</b> Blood Bank + Leech</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Primarchs -->
+      <section class="le-family" style="--fam:#f0b429">
+        <div class="le-family-name"><h3>Primarchs</h3><span class="tag">Raw strength</span></div>
+        <p class="le-family-blurb">Dive into the fray with a healthy mix of durability and damage. Choose when you fight in the thick of it and want to come out on top.</p>
+        <div class="le-cards">
+          <div class="le-card">
+            <div class="le-card-head"><h4>Thraex</h4><span class="le-arch">Sustained Duelist</span><span class="le-roles">Carry · Offlane</span></div>
+            <div class="le-pick"><b>Pick when</b> you want to win drawn-out 1v1s and side-lane duels — mark a target to deal more and take less from them.</div>
+            <div class="le-major"><span class="k">Major</span>Mark the last hero you Basic Attacked for 3s: +3% (+0.5%/lvl) damage to them, and −1.5% (+0.4%/lvl) damage from them.</div>
+            <div class="le-minors"><b>Good minors:</b> Savage Strikes + Ferocity</div>
+          </div>
+          <div class="le-card">
+            <div class="le-card-head"><h4>Nihil</h4><span class="le-arch">Extended-Fight Fighter</span><span class="le-roles">Offlane · Jungle</span></div>
+            <div class="le-pick"><b>Pick when</b> fights go long and you snowball — stack adaptive power &amp; armor (Doom) that permanently grows on kills and level-ups.</div>
+            <div class="le-major"><span class="k">Major</span>Damaging a hero grants Doom: +1 Phys / +2 Mag Power &amp; +1/+1 Armor per 3s it persists. Kills/level-ups raise Doom's stats by 20% permanently.</div>
+            <div class="le-minors"><b>Good minors:</b> From the Abyss + Adaptive Plating</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Dreadnoughts -->
+      <section class="le-family" style="--fam:#4d9fff">
+        <div class="le-family-name"><h3>Dreadnoughts</h3><span class="tag">Resilience &amp; disruption</span></div>
+        <p class="le-family-blurb">Boundless durability and crowd control — the immovable frontline. Choose when your job is to soak damage, peel for carries, and hold space.</p>
+        <div class="le-cards">
+          <div class="le-card">
+            <div class="le-card-head"><h4>Krix</h4><span class="le-arch">Health-Stacking Tank</span><span class="le-roles">Support · Offlane</span></div>
+            <div class="le-pick"><b>Pick when</b> you want to be an enormous, hard-to-kill HP frontline that anchors every fight.</div>
+            <div class="le-major"><span class="k">Major</span>Gain 10% (+1%/lvl) increased Maximum Health, plus bonus size equal to 0.5% of your Max Health.</div>
+            <div class="le-minors"><b>Good minors:</b> Festering Wounds + Cannibalism</div>
+          </div>
+          <div class="le-card">
+            <div class="le-card-head"><h4>Idrisil</h4><span class="le-arch">Armor Tank</span><span class="le-roles">Offlane · Support</span></div>
+            <div class="le-pick"><b>Pick when</b> the enemy is heavy burst — bonus armor that converts into a big shield the moment you drop below 30% HP.</div>
+            <div class="le-major"><span class="k">Major</span>Above 30% HP, gain 15% increased Armor. Dropping below 30% consumes it for a 4s Shield = 150% of your total Armor.</div>
+            <div class="le-minors"><b>Good minors:</b> Mending + Glacier</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sovereigns -->
+      <section class="le-family" style="--fam:#6c5ce7">
+        <div class="le-family-name"><h3>Sovereigns</h3><span class="tag">Ability power &amp; burst</span></div>
+        <p class="le-family-blurb">Amplify ability damage and burst potential. Choose when you do your killing with spells (or want to hyper-scale your damage).</p>
+        <div class="le-cards">
+          <div class="le-card">
+            <div class="le-card-head"><h4>Vesh</h4><span class="le-arch">Ability Damage Mage</span><span class="le-roles">Midlane · Support</span></div>
+            <div class="le-pick"><b>Pick when</b> you're an ability-based mage — your spells leave a DoT that scales the entire game.</div>
+            <div class="le-major"><span class="k">Major</span>Damaging a hero with an ability deals 6% (+0.5% per minute) of that damage again as a DoT over 3s.</div>
+            <div class="le-minors"><b>Good minors:</b> Tithe of Death + Mind Rot</div>
+          </div>
+          <div class="le-card">
+            <div class="le-card-head"><h4>Xyris</h4><span class="le-arch">Scaling Carry</span><span class="le-roles">Carry · Midlane</span></div>
+            <div class="le-pick"><b>Pick when</b> you can farm safely and want to hyper-scale — permanent bonus damage for every batch of units you kill.</div>
+            <div class="le-major"><span class="k">Major</span>Permanently gain 0.75% Bonus Damage per 10 Units killed.</div>
+            <div class="le-minors"><b>Good minors:</b> Furor + Bone Collector</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Divines -->
+      <section class="le-family" style="--fam:#00c48c">
+        <div class="le-family-name"><h3>Divines</h3><span class="tag">Empower &amp; sustain</span></div>
+        <p class="le-family-blurb">Preservation and empowerment — sustain and buff yourself or your allies. Choose for enchanter/utility play, or when you just want a safe all-rounder.</p>
+        <div class="le-cards">
+          <div class="le-card">
+            <div class="le-card-head"><h4>Exarch</h4><span class="le-arch">Empowerment Support</span><span class="le-roles">Support · Midlane</span></div>
+            <div class="le-pick"><b>Pick when</b> you heal or shield allies — your heals/shields buff their attack speed and add on-hit magic damage.</div>
+            <div class="le-major"><span class="k">Major</span>Healing or Shielding a target grants them 10% Total Attack Speed and +10% bonus Magical Damage On-Hit for 4s.</div>
+            <div class="le-minors"><b>Good minors:</b> Revelation + Fervour</div>
+          </div>
+          <div class="le-card">
+            <div class="le-card-head"><h4>Lotus</h4><span class="le-arch">Adaptive Flex</span><span class="le-roles">Any role</span></div>
+            <div class="le-pick"><b>Pick when</b> you're unsure or want a safe, flexible option — random useful stats that pile up over time and fit almost any hero.</div>
+            <div class="le-major"><span class="k">Major</span>Every 2 minutes and every Takedown, randomly gain +1.75% Damage, +4 Ability Haste, +0.75% Move Speed, or +2% Max Health.</div>
+            <div class="le-minors"><b>Good minors:</b> Masterpiece + Prima Donna</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Anomalies -->
+      <section class="le-family" style="--fam:#19c5c5">
+        <div class="le-family-name"><h3>Anomalies</h3><span class="tag">Unconventional</span></div>
+        <p class="le-family-blurb">Rule-bending, specialized effects. Choose when you want a build-around payoff that rewards a specific playstyle.</p>
+        <div class="le-cards">
+          <div class="le-card">
+            <div class="le-card-head"><h4>Aion</h4><span class="le-arch">Mana / Economy Mage</span><span class="le-roles">Midlane · Support</span></div>
+            <div class="le-pick"><b>Pick when</b> you spam abilities and want a gold + mana snowball off your spell damage.</div>
+            <div class="le-major"><span class="k">Major</span>Casting a spell grants 1 Mana Regen for 8s (stacks 5x), and your spells grant gold equal to 8% of damage dealt to heroes.</div>
+            <div class="le-minors"><b>Good minors:</b> Philosopher + Runic Focus</div>
+          </div>
+          <div class="le-card">
+            <div class="le-card-head"><h4>Demiurge</h4><span class="le-arch">Item Scaling</span><span class="le-roles">Carry · Midlane</span></div>
+            <div class="le-pick"><b>Pick when</b> you build a full 6-item carry — weak early, but it scales harder than anything once your build is online.</div>
+            <div class="le-major"><span class="k">Major</span>Increase stats gained from Items by 12%, and damage dealt by Item Effects by 10%.</div>
+            <div class="le-minors"><b>Good minors:</b> Bloatware + Construct</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="le-cta">
+        <p>Still unsure which fits your hero? Open any hero in the tool — the <b>Eternals tab recommends the best pick for that hero and role</b>, with the reasoning spelled out.</p>
+        <a class="btn" href="v2/">Open Predecessor Scout</a>
+        <p class="le-note">Eternal effects current to patch 1.14.1. They're new, so this is kit-synergy guidance, not win-rate data.</p>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
