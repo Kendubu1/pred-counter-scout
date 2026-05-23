@@ -596,6 +596,7 @@ async function loadLearnHero(slug) {
   renderLearnHeader();
   renderOverview();
   renderAbilities();
+  renderEternals();
   renderCounters();
   renderSynergy();
   renderStats();
@@ -1006,6 +1007,93 @@ function renderAbilities() {
       renderAbilities();
     };
   });
+}
+
+// ── ETERNALS TAB ──
+function renderEternals() {
+  const el = document.getElementById('eternalsContent');
+  if (!el) return;
+  if (!currentHero) { el.innerHTML = ''; return; }
+  const profile = heroProfiles[currentHero.slug];
+
+  if (typeof EternalsEngine === 'undefined' || !EternalsEngine.isReady()) {
+    el.innerHTML = '<div class="card"><p style="color:var(--text-2)">Eternals data is still loading or unavailable.</p></div>';
+    return;
+  }
+  if (!profile) {
+    el.innerHTML = '<div class="card"><p style="color:var(--text-2)">No hero profile available to recommend Eternals.</p></div>';
+    return;
+  }
+
+  const result = EternalsEngine.recommend(profile, currentRole);
+  const ranked = result.ranked || [];
+  if (!ranked.length) { el.innerHTML = '<div class="card"><p style="color:var(--text-2)">No Eternals data.</p></div>'; return; }
+
+  const sys = EternalsEngine.getSystemInfo();
+  let html = '';
+
+  // Intro / how-it-works note
+  html += '<div class="card eternals-intro">';
+  html += `<h2>🔮 Eternals for ${esc(currentHero.name)} <span style="color:var(--text-2);font-weight:400;font-size:0.85rem">· ${esc(_roleLabelUI(currentRole))}</span></h2>`;
+  if (sys?.structure) html += `<p style="color:var(--text-2);font-size:0.85rem;margin-top:0.25rem">${esc(sys.structure)}</p>`;
+  html += `<p style="color:var(--gold);font-size:0.78rem;margin-top:0.4rem;font-style:italic">⚠️ Eternals are new this patch — no win-rate data exists yet. These picks are ranked by how each blessing synergizes with this hero's kit, stats, and role.</p>`;
+  html += '</div>';
+
+  const top = ranked[0];
+  // Top recommendation — full detail card
+  html += '<div class="card eternal-top">';
+  html += `<div class="eternal-top-head"><span class="eternal-rank-badge best">⭐ Best Pick</span><h2 style="margin:0">${esc(top.name)}</h2><span class="eternal-deity">${esc(top.archetype)}</span></div>`;
+  html += `<div class="eternal-major">${esc(top.major)}</div>`;
+  if (top.reasons?.length) {
+    html += '<div class="eternal-reasons">';
+    top.reasons.forEach(r => { html += `<span class="eternal-reason">✓ ${esc(r.text)}</span>`; });
+    html += '</div>';
+  }
+  // Recommended minor blessings (one from each slot)
+  if (top.recommend) {
+    html += '<div class="eternal-minors-rec">';
+    html += '<div class="eternal-minors-label">Recommended blessings:</div>';
+    (top.recommend.default || []).forEach((mname, i) => {
+      const slot = i === 0 ? top.minorSlot1 : top.minorSlot2;
+      const m = (slot || []).find(x => x.name === mname);
+      html += '<div class="eternal-minor-row">';
+      html += `<span class="eternal-minor-slot">Minor ${i + 1}</span>`;
+      html += `<span class="eternal-minor-name">${esc(mname)}</span>`;
+      if (m?.desc) html += `<span class="eternal-minor-desc">${esc(m.desc)}</span>`;
+      html += '</div>';
+    });
+    if (top.recommend.note) html += `<div class="eternal-note">💡 ${esc(top.recommend.note)}</div>`;
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // Full ranked list
+  html += '<div class="card"><h2>📋 All Eternals, ranked for this hero</h2>';
+  html += '<div class="eternal-list">';
+  ranked.forEach((et, idx) => {
+    html += `<div class="eternal-row tier-${et.tier}">`;
+    html += `<div class="eternal-row-rank">${idx + 1}</div>`;
+    html += '<div class="eternal-row-main">';
+    html += `<div class="eternal-row-head"><span class="eternal-row-name">${esc(et.name)}</span><span class="eternal-tier-pill tier-${et.tier}">${et.tier === 'best' ? 'Best' : et.tier === 'good' ? 'Good' : 'Situational'}</span><span class="eternal-row-arch">${esc(et.archetype)}</span></div>`;
+    html += `<div class="eternal-row-major">${esc(et.major)}</div>`;
+    if (et.reasons?.length) {
+      html += '<div class="eternal-reasons">';
+      et.reasons.forEach(r => { html += `<span class="eternal-reason">✓ ${esc(r.text)}</span>`; });
+      html += '</div>';
+    }
+    if (et.recommend?.note) {
+      html += `<div class="eternal-note">💡 ${esc(et.recommend.note)}</div>`;
+    }
+    html += '</div></div>';
+  });
+  html += '</div></div>';
+
+  el.innerHTML = html;
+}
+
+function _roleLabelUI(role) {
+  const map = { offlane: 'Offlane', jungle: 'Jungle', midlane: 'Midlane', carry: 'Carry', support: 'Support' };
+  return map[role] || role;
 }
 
 // ── MATCHUPS TAB ── (same as original)
@@ -2625,6 +2713,7 @@ async function init() {
   try { if (typeof ComboEngine !== 'undefined') await ComboEngine.load(); } catch {}
   try { if (typeof SupportSynergy !== 'undefined') await SupportSynergy.load(); } catch {}
   try { if (typeof MatchupEngine !== 'undefined') await MatchupEngine.init(DATA_BASE); } catch {}
+  try { if (typeof EternalsEngine !== 'undefined') await EternalsEngine.init(DATA_BASE); } catch {}
   try { if (typeof AbilityInteractions !== 'undefined') await AbilityInteractions.init(DATA_BASE); } catch {}
 
   // Find data
@@ -2733,6 +2822,7 @@ async function init() {
       renderOverview();
       renderMatchup();
       renderAbilities();
+      renderEternals();
       renderCounters();
       renderStats();
       renderSynergy();
