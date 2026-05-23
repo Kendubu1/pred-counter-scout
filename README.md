@@ -20,6 +20,7 @@ I want to help fill the gap between "pick this" and actually understanding why i
 
 - **Counter reasoning**: not just "pick X into Y" but why it works and what to do in the matchup
 - **Augment context**: how augments shift a hero's playstyle and what that means for you or against you
+- **Eternals recommendations**: per-hero, per-role picks for the new Eternals system (1 Major + 2 Minor blessings) with the reasoning behind each — current to patch 1.14.1
 - **Draft helper**: team analysis and suggestions as you fill slots
 - **Mobile first**: built for your phone during draft, not a responsive afterthought
 - **Tap to learn**: tags, items, augments, crests. tap anything for explanation and tips
@@ -31,6 +32,7 @@ Everything is statistically derived from real match data, then layered with hand
 
 - 49 hero kits analyzed with trait profiles (heal/shield subtypes, combat patterns, archetypes)
 - 147 augments manually classified with playstyle and counter tips
+- 12 Eternals mapped to hero kits, with recommended Major + Minor blessings per role (patch 1.14.1)
 - 188 items and 48 crests tagged with buy tips, counter tips, and synergy info
 - Counter picks ranked by head-to-head win rate (20-match minimum)
 - No black box ML. Transparent scoring you can verify
