@@ -1096,6 +1096,31 @@ function _roleLabelUI(role) {
   return map[role] || role;
 }
 
+// Most-played role for a loaded hero (by total build matches), with fallbacks.
+function primaryRoleOf(heroData, fallback) {
+  if (heroData?.roles) {
+    let best = null, bestMatches = -1;
+    for (const [role, rd] of Object.entries(heroData.roles)) {
+      if (role === 'all') continue;
+      const m = (rd.buildTabs || []).reduce((s, b) => s + (parseInt(String(b.matches).replace(/\D/g, '')) || 0), 0);
+      if (m > bestMatches) { bestMatches = m; best = role; }
+    }
+    if (best) return best;
+  }
+  return heroData?.activeRoles?.[0] || fallback || 'midlane';
+}
+
+// Predict the Eternal an enemy is most likely running, for counter-prep.
+function predictEnemyEternal(enemySlug, enemyData, enemyProfile) {
+  if (typeof EternalsEngine === 'undefined' || !EternalsEngine.isReady()) return null;
+  const profile = enemyProfile || heroProfiles[enemySlug];
+  if (!profile) return null;
+  const role = primaryRoleOf(enemyData, currentRole);
+  const result = EternalsEngine.recommend(profile, role);
+  if (!result.ranked?.length) return null;
+  return { ...result.ranked[0], role };
+}
+
 // ── MATCHUPS TAB ── (same as original)
 async function renderMatchup() {
   const el = document.getElementById('matchupContent');
@@ -1515,9 +1540,18 @@ async function renderCountersMatchup(enemySlug) {
     const hasAbilityTips = typeof AbilityInteractions !== 'undefined' && AbilityInteractions.isReady();
     const abilityTips = hasAbilityTips ? AbilityInteractions.generateTips(currentHero.slug, enemySlug) : [];
     const hasAugments = enemyProfile?.augments?.length > 0;
+    const enemyEternal = predictEnemyEternal(enemySlug, heroDataMap[enemySlug], enemyProfile);
 
-    if (hasAugments || abilityTips.length) {
+    if (hasAugments || abilityTips.length || enemyEternal) {
       html += '<div class="card"><h3>⚔️ Matchup Intel</h3>';
+      if (enemyEternal) {
+        html += '<div class="enemy-eternal">';
+        html += `<div class="enemy-eternal-head">🔮 Likely Eternal: <strong>${esc(enemyEternal.name)}</strong> <span class="enemy-eternal-arch">${esc(enemyEternal.archetype)}</span></div>`;
+        html += `<div class="enemy-eternal-major">${esc(enemyEternal.major)}</div>`;
+        if (enemyEternal.counterTip) html += `<div class="enemy-eternal-counter">🛡️ ${esc(enemyEternal.counterTip)}</div>`;
+        html += '<div class="enemy-eternal-note">Predicted from their kit — not a confirmed pick.</div>';
+        html += '</div>';
+      }
       if (hasAugments) {
         const enemyRd = heroDataMap[enemySlug] ? getRoleData(heroDataMap[enemySlug], currentRole) : null;
         const topAugs = (enemyRd?.augments || []).sort((a,b) => parseFloat(b.winRate) - parseFloat(a.winRate));
