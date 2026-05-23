@@ -1,0 +1,351 @@
+{
+  "patch": "1.14",
+  "updated": "2026-05-23",
+  "system": {
+    "name": "Eternals",
+    "replaces": "Minor Augments",
+    "unlockLevel": 10,
+    "summary": "Eternals are deity blessings chosen in the draft phase. Pick one Eternal, then one blessing from each of its two minor slots (1 Major + 2 Minors). Choices are saved per hero/role and can be changed any time.",
+    "structure": "1 Major Blessing + 1 blessing from Minor Slot 1 + 1 blessing from Minor Slot 2.",
+    "note": "Eternals are brand new this patch, so there is no win-rate data yet. These recommendations are based on how each Eternal's effects synergize with a hero's stat profile, traits, damage type, and role."
+  },
+  "eternals": [
+    {
+      "id": "vesh",
+      "name": "Vesh",
+      "deity": "Sovereigns",
+      "archetype": "Ability Damage Mage",
+      "major": "Damaging an Enemy Hero with an ability deals 6% (+0.5% per minute) of the damage as a DoT over 3s.",
+      "minorSlot1": [
+        { "name": "Lich", "desc": "Gain 8% (+0.5% per Level) Magical Lifesteal." },
+        { "name": "Tithe of Death", "desc": "Takedowns grant 2 Ability Haste." },
+        { "name": "The Tenth Seal", "desc": "At Level 10, gain 5% Ultimate Damage and 25 Ultimate Ability Haste." }
+      ],
+      "minorSlot2": [
+        { "name": "Mind Rot", "desc": "The major also deals 2% of the target's current health as bonus damage." },
+        { "name": "Phylactery", "desc": "After your Ultimate, gain a shield equal to 15% of Max Mana for 4s." },
+        { "name": "Millennia", "desc": "Every 60s, increase your Ultimate Ability Damage by 1%." }
+      ],
+      "recommend": {
+        "default": ["Tithe of Death", "Mind Rot"],
+        "note": "Spread DoTs across the enemy team; Mind Rot makes the major bite into tanks and the per-minute scaling makes you a late-game teamfight monster."
+      },
+      "counterTip": "Their ability hits leave a scaling DoT behind — itemize health regen/tenacity and avoid eating full combos.",
+      "fit": {
+        "attrs": { "abilityPower": 1.0, "attackPower": -0.3 },
+        "traits": { "dot": 0.6, "aoe": 0.5, "poke": 0.4, "burst": 0.3 },
+        "roles": { "midlane": 0.6, "support": 0.1 },
+        "damageType": { "magical": 0.5, "hybrid": 0.3 }
+      }
+    },
+    {
+      "id": "aion",
+      "name": "Aion",
+      "deity": "Anomalies",
+      "archetype": "Mana / Economy Mage",
+      "major": "Casting a spell grants 1 Mana Regeneration for 8s (stacks 5x). Spells also grant gold equal to 8% of damage dealt to Enemy Heroes.",
+      "minorSlot1": [
+        { "name": "Philosopher", "desc": "Every 10s, generate 5 gold (faster with Ability Haste)." },
+        { "name": "Sacrifice", "desc": "Killing an Enemy Unit grants +2 Mana Regen for 5s (30x on hero kills)." },
+        { "name": "Bottomless Vial", "desc": "Killing a River Buff restores a Potion charge and grants +4 Magical Power permanently." }
+      ],
+      "minorSlot2": [
+        { "name": "Arcane Resonance", "desc": "Basic ability cooldowns and Philosopher progress 1% faster per 1 Mana Regen." },
+        { "name": "Perfection", "desc": "While above 90% Health, gain 30 Ability Haste." },
+        { "name": "Runic Focus", "desc": "Gain 0.15% increased Magical Power per 1% current Mana." }
+      ],
+      "recommend": {
+        "default": ["Philosopher", "Runic Focus"],
+        "note": "Snowball gold from spell damage and convert your big mana pool into power — ideal for ability-spam mages who poke constantly."
+      },
+      "counterTip": "They snowball gold and mana off spell damage — deny poke trades and punish them when their abilities are on cooldown.",
+      "fit": {
+        "attrs": { "abilityPower": 0.9, "attackPower": -0.3 },
+        "traits": { "poke": 0.5, "dot": 0.3, "aoe": 0.3, "stacking": 0.2 },
+        "roles": { "midlane": 0.6, "support": 0.3 },
+        "damageType": { "magical": 0.4, "hybrid": 0.3 }
+      }
+    },
+    {
+      "id": "vermis",
+      "name": "Vermis",
+      "deity": "Harbingers",
+      "archetype": "Auto-Attack / Anti-Tank",
+      "major": "Every 3rd consecutive Basic Attack on the same Enemy Hero within 2.5s deals 3% (+0.25% per Level) of their Max Health as bonus Physical Damage.",
+      "minorSlot1": [
+        { "name": "Serration", "desc": "The major is 65% more effective on Basic Attacks that Critically Strike." },
+        { "name": "Crush", "desc": "Immobilizing an Enemy Hero deals 5% of their Max Health as bonus Physical Damage." },
+        { "name": "Cauterize", "desc": "When damaged by a DoT, gain 2 (+0.5 per level) Health Regeneration for 1s." }
+      ],
+      "minorSlot2": [
+        { "name": "Melting Point", "desc": "Deal 10% bonus damage to targets with more than 125 Physical Armor." },
+        { "name": "Breach", "desc": "Damaging a hero with your Ultimate reduces their Physical Armor by 30%." },
+        { "name": "Sub-Surface", "desc": "Take 10% less damage from AoE Abilities." }
+      ],
+      "recommend": {
+        "default": ["Serration", "Melting Point"],
+        "note": "Crit-amplify the max-HP proc and shred tanks — the classic on-hit carry anti-tank package."
+      },
+      "counterTip": "They ramp damage every 3rd auto on the same target — break their rhythm by juking or trading then disengaging, and stack armor.",
+      "fit": {
+        "attrs": { "attackPower": 1.0, "abilityPower": -0.2 },
+        "traits": { "on_hit": 0.5, "stacking": 0.3, "crit": 0.4, "lifesteal": 0.3 },
+        "roles": { "carry": 0.7, "jungle": 0.3, "offlane": 0.2 },
+        "damageType": { "physical": 0.4 }
+      }
+    },
+    {
+      "id": "conquest",
+      "name": "Conquest",
+      "deity": "Primarchs",
+      "archetype": "Sustained Duelist",
+      "major": "Mark the last Enemy Hero damaged by your Basic Attack for 3s, increasing your damage against them by 3% (+0.5% per level).",
+      "minorSlot1": [
+        { "name": "Alpha's Court", "desc": "Deal 6% bonus damage when no allied hero is within 800 units." },
+        { "name": "Savage Strikes", "desc": "Deal 1.5 (+0.4 per level) physical damage On-Hit, +100% for 3s vs heroes." },
+        { "name": "The King", "desc": "Basic Attacks against Enemy Heroes grant you 7 gold." }
+      ],
+      "minorSlot2": [
+        { "name": "Ferocity", "desc": "Gain 2% Total Attack Speed per 1s in Hero Combat, stacking infinitely." },
+        { "name": "Rallying Roar", "desc": "Casting your Ultimate grants you and nearby allies 20% movement speed." },
+        { "name": "Golden Mane", "desc": "Take 12% less damage from non-AoE abilities." }
+      ],
+      "recommend": {
+        "default": ["Savage Strikes", "Ferocity"],
+        "note": "On-hit pressure plus infinitely-stacking attack speed — wins extended duels and splitpush fights."
+      },
+      "counterTip": "They mark their last auto target for bonus damage — don't sit still in their range; make them re-acquire the mark.",
+      "fit": {
+        "attrs": { "attackPower": 1.0 },
+        "traits": { "on_hit": 0.5, "stacking": 0.3, "dueling": 0.3, "mobility": 0.2, "lifesteal": 0.3 },
+        "roles": { "carry": 0.6, "offlane": 0.5, "jungle": 0.3 },
+        "damageType": { "physical": 0.3 }
+      }
+    },
+    {
+      "id": "carnage",
+      "name": "Carnage",
+      "deity": "Harbingers",
+      "archetype": "Lifesteal Bruiser",
+      "major": "Gain 0.5% (+0.05% per level) Omnivamp per 5% Missing Health. This doubles for 8s upon killing an Enemy Hero.",
+      "minorSlot1": [
+        { "name": "The Maw", "desc": "Critical Strikes deal 20% bonus True Damage to targets below 25% Max Health." },
+        { "name": "Blood Bank", "desc": "Gain charges equal to damage dealt to heroes; +1% Lifesteal per 100 charges." },
+        { "name": "Taste of Iron", "desc": "Damaging a hero with a DoT increases your damage by 6% for 3s." }
+      ],
+      "minorSlot2": [
+        { "name": "Roses", "desc": "Takedowns grant 20 bonus gold per previous takedown." },
+        { "name": "Jealousy", "desc": "Deal 10% bonus damage vs heroes with more current health than you." },
+        { "name": "Leech", "desc": "Enemy heroes within 400 units have base Health Regen reduced by 100%." }
+      ],
+      "recommend": {
+        "default": ["Blood Bank", "Leech"],
+        "note": "Stack lifesteal as you fight and shut off their passive regen — built for divers who go low and live."
+      },
+      "counterTip": "They heal more the lower they get and double it on kills — burst them fast or apply anti-heal (grievous wounds).",
+      "fit": {
+        "attrs": { "attackPower": 0.7, "durability": 0.5 },
+        "traits": { "sustain": 0.5, "lifesteal": 0.5, "healing": 0.3, "self_heal": 0.3, "mobility": 0.3, "dive": 0.3 },
+        "roles": { "jungle": 0.7, "offlane": 0.5, "carry": 0.3 },
+        "damageType": { "physical": 0.3 }
+      }
+    },
+    {
+      "id": "xyris",
+      "name": "Xyris",
+      "deity": "Sovereigns",
+      "archetype": "Scaling Carry",
+      "major": "Permanently gain 0.75% Bonus Damage per 10 Units killed.",
+      "minorSlot1": [
+        { "name": "Furor", "desc": "Entering Hero Combat grants 20% Total Attack Speed for 4s." },
+        { "name": "Dominance", "desc": "Takedowns heal you for 50 (+15% Missing Health)." },
+        { "name": "Iron Will", "desc": "Heal for 12% of the damage dealt by your Critical Strikes." }
+      ],
+      "minorSlot2": [
+        { "name": "Cull the Weak", "desc": "Deal +10% bonus damage to Minions and Monsters." },
+        { "name": "Bone Collector", "desc": "Takedowns grant +1.5 Physical / +3 Magical Power permanently (caps 20)." },
+        { "name": "Eviscerate", "desc": "Deal +20% bonus damage to targets above 85% Health." }
+      ],
+      "recommend": {
+        "default": ["Furor", "Bone Collector"],
+        "note": "Farm hard, stack permanent power off takedowns, and burst with combat attack speed — the late-game hyper-carry path."
+      },
+      "counterTip": "They scale off farm — invade and deny CS, and try to end before they spike.",
+      "fit": {
+        "attrs": { "attackPower": 0.7, "abilityPower": 0.4 },
+        "traits": { "stacking": 0.4, "scaling": 0.4, "crit": 0.3, "on_hit": 0.3, "lifesteal": 0.3 },
+        "roles": { "carry": 1.0, "midlane": 0.4, "jungle": 0.3 },
+        "damageType": { "physical": 0.2 }
+      }
+    },
+    {
+      "id": "demiurge",
+      "name": "Demiurge",
+      "deity": "Anomalies",
+      "archetype": "Item Scaling",
+      "major": "Increase stats gained from Items (not passives/crests) by 15%, and damage dealt by Item Effects by 12%.",
+      "minorSlot1": [
+        { "name": "Tri-Core", "desc": "Deal 6% bonus damage On-Hit, randomly Physical/Magical/True." },
+        { "name": "Bloatware", "desc": "Gain +1% Increased Damage and +1% Damage Reduction per item owned." },
+        { "name": "Bio-Mechanical Fusion", "desc": "Gain +1 Physical Power per 5 Magical Power you possess." }
+      ],
+      "minorSlot2": [
+        { "name": "Cursed Corrupted", "desc": "Convert each 1% Crit Chance into 1 Ability Haste (you lose the crit stat)." },
+        { "name": "Memory Leak", "desc": "On cast, gain 6% of the mana cost as permanent Max Mana; +5% MS at 600." },
+        { "name": "Construct", "desc": "Gain +1% Base Health/Mana/Physical Power and equal growth." }
+      ],
+      "recommend": {
+        "default": ["Bloatware", "Construct"],
+        "note": "Rewards a full 6-item build — weak early, but scales harder than anything once the build comes online."
+      },
+      "counterTip": "They scale off completed items — pressure them early before the build is online.",
+      "fit": {
+        "attrs": { "attackPower": 0.4, "abilityPower": 0.4 },
+        "traits": { "scaling": 0.5, "stacking": 0.3 },
+        "roles": { "carry": 0.6, "midlane": 0.5, "jungle": 0.2 },
+        "damageType": {}
+      }
+    },
+    {
+      "id": "dominion",
+      "name": "Dominion",
+      "deity": "Primarchs",
+      "archetype": "Extended-Fight Fighter",
+      "major": "Damage a hero to gain Doom for 3s. Doom grants 1 Physical Power, 2 Magical Power, 1 Physical Armor & 1 Magical Armor for every 3s it persists.",
+      "minorSlot1": [
+        { "name": "Growing Threat", "desc": "At 18 minutes, gain +15% Bonus Damage permanently." },
+        { "name": "From the Abyss", "desc": "Restore 0.6% Max Health/s while in Hero Combat or out of enemy vision." },
+        { "name": "Mana Siphon", "desc": "Hitting a hero with an ability steals 10 (+1% Max Mana) Mana." }
+      ],
+      "minorSlot2": [
+        { "name": "Adaptive Plating", "desc": "Taking damage grants matching Armor (1% per hit, stacks 8x)." },
+        { "name": "Inescapable", "desc": "Enemies within 800u that dash/leap/blink are slowed 20% for 1.5s." },
+        { "name": "Terror", "desc": "Minions/Monsters deal 30% less damage to you; Towers 15% less." }
+      ],
+      "recommend": {
+        "default": ["From the Abyss", "Adaptive Plating"],
+        "note": "Sustain and scaling armor keep Doom stacking through long brawls — strong on bruisers that never leave the fight."
+      },
+      "counterTip": "They stack power and armor the longer a fight runs — burst them early or disengage extended brawls.",
+      "fit": {
+        "attrs": { "durability": 0.6, "attackPower": 0.4, "abilityPower": 0.4 },
+        "traits": { "stacking": 0.6, "sustain": 0.3, "cc": 0.2 },
+        "roles": { "offlane": 0.7, "jungle": 0.4, "support": 0.2 },
+        "damageType": { "hybrid": 0.4 }
+      }
+    },
+    {
+      "id": "exarch",
+      "name": "Exarch",
+      "deity": "Divines",
+      "archetype": "Empowerment Support",
+      "major": "Healing or Shielding a target (including yourself) grants them 10% Total Attack Speed.",
+      "minorSlot1": [
+        { "name": "Illumination", "desc": "Gain Health Regeneration equal to your Bonus Mana Regeneration." },
+        { "name": "Preservation", "desc": "Any healing or shielding you receive is increased by 15%." },
+        { "name": "Revelation", "desc": "Casting an Ability reduces current Basic Ability Cooldowns by 0.3s." }
+      ],
+      "minorSlot2": [
+        { "name": "Fervour", "desc": "Basic Attacks vs heroes heal you and nearby allies for 2 (+0.5/lvl)(+6% MP)." },
+        { "name": "Omnipresent", "desc": "Gain 8% Movement Speed when out of combat." },
+        { "name": "Delayed Fate", "desc": "25% of ability damage taken is stored and dealt to you as a DoT instead." }
+      ],
+      "recommend": {
+        "default": ["Revelation", "Fervour"],
+        "note": "More casts = more empower uptime on your carry; Fervour adds passive team healing on top."
+      },
+      "counterTip": "Their heals/shields buff allies' attack speed — apply anti-heal and focus the empowered carry, not the support.",
+      "fit": {
+        "attrs": { "abilityPower": 0.2, "durability": 0.2 },
+        "traits": { "healing": 0.7, "ally_heal": 0.6, "shield": 0.6, "enchant": 0.5, "self_shield": 0.2 },
+        "roles": { "support": 1.0, "midlane": 0.1 },
+        "damageType": {}
+      }
+    },
+    {
+      "id": "krix",
+      "name": "Krix",
+      "deity": "Dreadnoughts",
+      "archetype": "Health-Stacking Tank",
+      "major": "Gain 10% (+1% per Level) increased Maximum Health, and bonus size equal to 0.5% of your Maximum Health.",
+      "minorSlot1": [
+        { "name": "Voracity", "desc": "Killing an Enemy Unit restores 1.25% of your Maximum Health." },
+        { "name": "Regenerative Tissue", "desc": "After 8s without hero damage, regen 0.6% Max Health/s." },
+        { "name": "Festering Wounds", "desc": "Enemies hit by your DoT effects receive 45% less healing for 2s." }
+      ],
+      "minorSlot2": [
+        { "name": "Cannibalism", "desc": "Takedowns permanently increase your Maximum Health by 30." },
+        { "name": "Feeding Frenzy", "desc": "Gain +12% Attack Speed per Enemy Hero within 1500 units." },
+        { "name": "Predator", "desc": "Camp Leader kills grant 8% Bonus Damage for 20s (2x on Epic Monsters)." }
+      ],
+      "recommend": {
+        "default": ["Festering Wounds", "Cannibalism"],
+        "note": "Stack permanent health and grievous-wound the enemy team — an unkillable frontline anchor."
+      },
+      "counterTip": "They stack max health (and hitbox) — bring % max-health damage and anti-heal.",
+      "fit": {
+        "attrs": { "durability": 1.0, "abilityPower": -0.2, "attackPower": -0.2 },
+        "traits": { "cc": 0.4, "shield": 0.3, "self_shield": 0.2 },
+        "roles": { "support": 0.6, "offlane": 0.6, "jungle": 0.2 },
+        "damageType": {}
+      }
+    },
+    {
+      "id": "idrisil",
+      "name": "Idrisil",
+      "deity": "Dreadnoughts",
+      "archetype": "Armor Tank",
+      "major": "While off cooldown and above 30% Max Health, gain 15% increased Physical and Magical Armor.",
+      "minorSlot1": [
+        { "name": "Cold Hearted", "desc": "Enemies that basic attack you lose 2% movement speed for 2s (stacks 5x)." },
+        { "name": "Mending", "desc": "After taking hero damage, restore 8% of your missing health over 3s." },
+        { "name": "Frost Snap", "desc": "Deal 10% Bonus Damage to Immobilized Targets." }
+      ],
+      "minorSlot2": [
+        { "name": "Icy Touch", "desc": "Your Basic Attacks reduce enemy Attack Speed by 3% for 3s (stacks 4x)." },
+        { "name": "Glacier", "desc": "Permanently gain 1 Magical Armor per 300 total gold earned." },
+        { "name": "Diamond Tip", "desc": "Gain 4% increased Physical and Magical Penetration per finished item." }
+      ],
+      "recommend": {
+        "default": ["Mending", "Glacier"],
+        "note": "Layer armor with passive self-sustain to anchor the frontline through poke and pokes."
+      },
+      "counterTip": "They get bonus armor above 30% HP — % penetration or magical damage gets through better; burst them below 30%.",
+      "fit": {
+        "attrs": { "durability": 0.9 },
+        "traits": { "cc": 0.3, "shield": 0.2, "self_shield": 0.2 },
+        "roles": { "offlane": 0.6, "support": 0.5, "jungle": 0.2 },
+        "damageType": {}
+      }
+    },
+    {
+      "id": "lotus",
+      "name": "Lotus",
+      "deity": "Divines",
+      "archetype": "Adaptive Flex",
+      "major": "Every 2 minutes and every Takedown randomly grants +1.75% Damage, +4 Ability Haste, +0.75% Move Speed, or +2% Max Health.",
+      "minorSlot1": [
+        { "name": "Early Bloom", "desc": "Gain an additional Level upon reaching Level 10." },
+        { "name": "Flawless", "desc": "Damaging a hero with an ability heals you and nearby allies for 8." },
+        { "name": "Masterpiece", "desc": "Kills grant +5% Damage and +6% Move Speed for 12s (stacks 5x)." }
+      ],
+      "minorSlot2": [
+        { "name": "Immaculate", "desc": "Gain 35% Damage Reduction above 90% current health." },
+        { "name": "Prima Donna", "desc": "Deal 14% increased damage to heroes, but take 7% increased damage." },
+        { "name": "Fragrance", "desc": "Your True Damage is increased 15% vs heroes within 800 units." }
+      ],
+      "recommend": {
+        "default": ["Masterpiece", "Prima Donna"],
+        "note": "A safe, flexible pick that fits almost any hero — snowball off kills and lean into the damage amp when ahead."
+      },
+      "counterTip": "Unpredictable buff timing — play around their cooldowns and deny kills so Masterpiece never stacks.",
+      "fit": {
+        "baseline": 1.2,
+        "attrs": { "mobility": 0.3 },
+        "traits": { "mobility": 0.2 },
+        "roles": {},
+        "damageType": {}
+      }
+    }
+  ]
+}
