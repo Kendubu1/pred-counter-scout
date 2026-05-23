@@ -1,17 +1,24 @@
 #!/usr/bin/env node
-// Apply a patch digest to hero state and report who needs updating.
+// Apply patch digests to hero state and report who needs updating.
 //
-//   node scripts/apply-patch.js [version]   (default: latest under data/patches)
+//   node scripts/apply-patch.js [maxVersion]
 //
-// Reads data/patches/<version>.json (a structured capture of the patch notes)
-// and data/game-data/hero-profiles.json, then writes
-// data/game-data/hero-patch-state.json keyed by slug, and prints a report of:
-//   - buffed / nerfed heroes this patch
-//   - heroes flagged for manual review (a change implies a trait/attribute
-//     edit the curated profile doesn't reflect yet, or a slug mismatch)
+// Reads every data/patches/*.json digest in ascending version order plus
+// data/game-data/hero-profiles.json, then writes
+// data/game-data/hero-patch-state.json keyed by slug.
 //
-// To onboard a new patch: copy the notes into data/patches/<version>.json in
-// the same shape, then re-run this script.
+// Patches STACK: later patches layer on top of earlier ones, and when a hero
+// appears in more than one patch the most recent trend/notes win (e.g. a hero
+// buffed in 1.14 then nerfed in the 1.14.1 hotfix ends up nerfed). Pass an
+// optional maxVersion to stop stacking at a given patch. Top-level patch notes
+// (global/items/source) reflect the most recent applied patch.
+//
+// The report lists buffed/nerfed heroes, trend flips between patches, heroes
+// flagged for manual review (a digest trait hint the curated profile lacks),
+// and digest slugs that don't exist in hero-profiles.json.
+//
+// To onboard a new patch: add data/patches/<version>.json in the same shape,
+// then re-run this script.
 
 const fs = require('fs');
 const path = require('path');
@@ -23,82 +30,104 @@ const OUT = path.join(ROOT, 'data', 'game-data', 'hero-patch-state.json');
 
 function fail(msg) { console.error('✗ ' + msg); process.exit(1); }
 
-function resolveVersion(arg) {
-  if (arg) return arg;
+function listVersions() {
   if (!fs.existsSync(PATCH_DIR)) fail(`No patch directory at ${PATCH_DIR}`);
-  const versions = fs.readdirSync(PATCH_DIR)
+  return fs.readdirSync(PATCH_DIR)
     .filter(f => f.endsWith('.json'))
     .map(f => f.replace(/\.json$/, ''))
     .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-  if (!versions.length) fail('No patch files found');
-  return versions[versions.length - 1];
 }
 
 function main() {
-  const version = resolveVersion(process.argv[2]);
-  const patchPath = path.join(PATCH_DIR, `${version}.json`);
-  if (!fs.existsSync(patchPath)) fail(`Patch digest not found: ${patchPath}`);
+  const maxVersion = process.argv[2];
+  let versions = listVersions();
+  if (!versions.length) fail('No patch files found');
+  if (maxVersion) {
+    if (!versions.includes(maxVersion)) fail(`Patch digest not found: ${maxVersion}`);
+    versions = versions.filter(v => v.localeCompare(maxVersion, undefined, { numeric: true }) <= 0);
+  }
 
-  const digest = JSON.parse(fs.readFileSync(patchPath, 'utf8'));
   const profiles = JSON.parse(fs.readFileSync(PROFILES, 'utf8'));
   const bySlug = Object.fromEntries(profiles.map(p => [p.slug, p]));
 
-  const heroes = {};
-  const buffed = [], nerfed = [], mixed = [], review = [], missing = [];
+  const heroes = {};      // slug -> latest entry (later patches overwrite)
+  const flips = [];       // { slug, from, fromPatch, to, toPatch }
+  const missing = {};     // slug -> first patch version it was missing in
+  let last = null;
 
-  for (const h of (digest.heroes || [])) {
-    const profile = bySlug[h.slug];
-    if (!profile) { missing.push(h.slug); continue; }
+  for (const version of versions) {
+    const digest = JSON.parse(fs.readFileSync(path.join(PATCH_DIR, `${version}.json`), 'utf8'));
+    last = digest;
 
-    // A change is flagged for review when the digest hints a trait the curated
-    // profile doesn't have yet — that's a signal the kit synergy data is stale.
-    const have = new Set(profile.baseTraits || []);
-    const missingTraits = (h.traitHints || []).filter(t => !have.has(t));
-    const reviewReasons = missingTraits.map(t => `consider adding trait: ${t}`);
-    const reviewNeeded = reviewReasons.length > 0;
+    for (const h of (digest.heroes || [])) {
+      if (!bySlug[h.slug]) {
+        if (!(h.slug in missing)) missing[h.slug] = version;
+        continue;
+      }
 
-    heroes[h.slug] = {
-      patch: version,
-      trend: h.trend,
-      changes: h.changes || [],
-      reviewNeeded,
-      reviewReasons,
-    };
+      const prev = heroes[h.slug];
+      if (prev && prev.trend !== h.trend) {
+        flips.push({ slug: h.slug, from: prev.trend, fromPatch: prev.patch, to: h.trend, toPatch: version });
+      }
 
-    if (h.trend === 'buff') buffed.push(h.slug);
-    else if (h.trend === 'nerf') nerfed.push(h.slug);
-    else mixed.push(h.slug);
-    if (reviewNeeded) review.push({ slug: h.slug, reasons: reviewReasons });
+      // Flag for review when a digest trait hint isn't in the curated profile
+      // yet — a signal the kit synergy data is stale.
+      const have = new Set(bySlug[h.slug].baseTraits || []);
+      const reviewReasons = (h.traitHints || [])
+        .filter(t => !have.has(t))
+        .map(t => `consider adding trait: ${t}`);
+
+      heroes[h.slug] = {
+        patch: version,
+        trend: h.trend,
+        changes: h.changes || [],
+        reviewNeeded: reviewReasons.length > 0,
+        reviewReasons,
+      };
+    }
   }
 
+  const latest = versions[versions.length - 1];
   const out = {
-    patch: version,
+    patch: latest,
+    appliedPatches: versions,
     generated: new Date().toISOString(),
-    source: digest.source || null,
-    global: digest.global || [],
-    items: digest.items || [],
+    source: last.source || null,
+    global: last.global || [],
+    items: last.items || [],
     heroes,
   };
   fs.writeFileSync(OUT, JSON.stringify(out, null, 2) + '\n');
 
   // ── Report ──
+  const buffed = [], nerfed = [], mixed = [], review = [];
+  for (const [slug, v] of Object.entries(heroes)) {
+    if (v.trend === 'buff') buffed.push(slug);
+    else if (v.trend === 'nerf') nerfed.push(slug);
+    else mixed.push(slug);
+    if (v.reviewNeeded) review.push({ slug, reasons: v.reviewReasons });
+  }
+
   const line = '─'.repeat(52);
-  console.log(`\n${line}\n  Patch ${version} applied to hero state\n${line}`);
+  console.log(`\n${line}\n  Patch state — stacked ${versions.join(' + ')}\n${line}`);
   console.log(`  Heroes annotated : ${Object.keys(heroes).length}`);
   console.log(`  Buffed (${buffed.length}): ${buffed.join(', ') || '—'}`);
   console.log(`  Nerfed (${nerfed.length}): ${nerfed.join(', ') || '—'}`);
   if (mixed.length) console.log(`  Mixed/Other (${mixed.length}): ${mixed.join(', ')}`);
 
-  console.log(`\n  ⚠ Needs manual review (${review.length}):`);
-  if (review.length) {
-    review.forEach(r => console.log(`     - ${r.slug}: ${r.reasons.join('; ')}`));
-  } else {
-    console.log('     none');
+  if (flips.length) {
+    console.log(`\n  ↺ Trend flips across patches (${flips.length}):`);
+    flips.forEach(f => console.log(`     - ${f.slug}: ${f.from} (${f.fromPatch}) -> ${f.to} (${f.toPatch})`));
   }
 
-  if (missing.length) {
-    console.log(`\n  ✗ Digest slugs not found in hero-profiles.json (${missing.length}):`);
-    console.log(`     ${missing.join(', ')}`);
+  console.log(`\n  ⚠ Needs manual review (${review.length}):`);
+  if (review.length) review.forEach(r => console.log(`     - ${r.slug}: ${r.reasons.join('; ')}`));
+  else console.log('     none');
+
+  const missingSlugs = Object.keys(missing);
+  if (missingSlugs.length) {
+    console.log(`\n  ✗ Digest slugs not found in hero-profiles.json (${missingSlugs.length}):`);
+    missingSlugs.forEach(s => console.log(`     - ${s} (first seen in ${missing[s]})`));
   }
 
   console.log(`\n  Wrote: ${path.relative(ROOT, OUT)}\n`);
