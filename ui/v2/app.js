@@ -18,6 +18,8 @@ const TRAIT_LABELS = {
   stacking:'Stacking', healing:'Healing', sustain:'Sustain', mobility:'Mobility',
   execute:'Execute', stealth:'Stealth', shield:'Shield', global:'Global',
   summons:'Summons', anti_heal:'Anti-Heal', cd_reset:'CD Reset', pen:'Pen', crit:'Crit',
+  lifesteal:'Lifesteal', self_heal:'Self-Heal', ally_heal:'Ally Heal',
+  self_shield:'Self-Shield', ally_shield:'Ally Shield',
 };
 function traitLabel(t) { return TRAIT_LABELS[t] || t; }
 
@@ -58,6 +60,7 @@ let heroIndex = [];
 let heroCache = {};
 let heroProfiles = {};
 let duoSynergies = {};
+let heroTips = { heroes: {} };
 let heroPatchState = { patch: null, heroes: {} };
 let currentHero = null;
 let currentRole = null;
@@ -772,6 +775,37 @@ function describeBuild(buildName) {
   return null;
 }
 
+// "Keep in Mind" card: curated tactical notes + where each trait comes from.
+function renderHeroTips(slug) {
+  const tips = heroTips?.heroes?.[slug];
+  if (!tips) return '';
+  const notes = tips.notes || [];
+  const sources = tips.traitSources || {};
+  const srcKeys = Object.keys(sources);
+  if (!notes.length && !srcKeys.length) return '';
+
+  let h = `<div class="card hero-keepinmind"><h2>${notes.length ? '🧠 Keep in Mind' : '🔎 Kit at a Glance'}</h2>`;
+
+  if (notes.length) {
+    h += '<ul class="tip-list">';
+    notes.forEach(n => { h += `<li>${esc(n)}</li>`; });
+    h += '</ul>';
+  }
+
+  if (srcKeys.length) {
+    h += `<div class="trait-sources"><span class="ts-label">Where it comes from</span><div class="ts-items">`;
+    srcKeys.forEach(trait => {
+      const src = (sources[trait] || [])[0];
+      if (!src) return;
+      h += `<span class="ts-item"><b>${esc(traitLabel(trait))}</b><span class="ts-arrow">←</span>${esc(src.ability)}</span>`;
+    });
+    h += '</div></div>';
+  }
+
+  h += '</div>';
+  return h;
+}
+
 function renderOverview() {
   const el = document.getElementById('overviewContent');
   if (!currentHero) { el.innerHTML = ''; return; }
@@ -781,6 +815,7 @@ function renderOverview() {
   if (!rd) { el.innerHTML = '<p style="color:var(--text-2)">No data for this role</p>'; return; }
 
   let html = '';
+  html += renderHeroTips(hero.slug);
 
   // Augments & Crests (top of overview)
   const augments = (rd.augments||[]).sort((a,b) => parseFloat(b.winRate) - parseFloat(a.winRate)).slice(0,3);
@@ -2812,6 +2847,12 @@ async function init() {
   try {
     const psRes = await fetch(`${DATA_BASE}/game-data/hero-patch-state.json${CACHE_BUST}`);
     if (psRes.ok) heroPatchState = await psRes.json();
+  } catch {}
+
+  // Load hero tips (trait sources from scripts/generate-hero-tips.js + curated notes)
+  try {
+    const htRes = await fetch(`${DATA_BASE}/game-data/hero-tips.json${CACHE_BUST}`);
+    if (htRes.ok) heroTips = await htRes.json();
   } catch {}
 
   // Load engines
