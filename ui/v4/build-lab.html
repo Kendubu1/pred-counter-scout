@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Build Lab — Predecessor Scout v4</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="design.css">
+  <style>
+    /* Build Lab — mobile-first; kit-aligned build from build-engine.js */
+    .bl-controls { display: grid; gap: var(--s2); grid-template-columns: 1fr; margin-bottom: var(--s4); }
+    @media (min-width: 540px) { .bl-controls { grid-template-columns: 2fr 1fr; } }
+    .bl-sel { position: relative; }
+    .bl-sel select {
+      width: 100%; appearance: none; -webkit-appearance: none;
+      padding: 14px 40px 14px 14px; font: 600 var(--t-md) var(--body); color: var(--text);
+      background: var(--panel); border: 1px solid var(--stroke-2); border-radius: var(--r);
+    }
+    .bl-sel::after { content: ""; position: absolute; right: 16px; top: 50%; width: 8px; height: 8px; border-right: 2px solid var(--cyan); border-bottom: 2px solid var(--cyan); transform: translateY(-65%) rotate(45deg); pointer-events: none; }
+
+    .bl-hero { display: flex; align-items: center; gap: var(--s3); padding: var(--s4); border: 1px solid var(--stroke); border-radius: var(--r); background: var(--panel); backdrop-filter: blur(16px); }
+    .bl-hero img { width: 64px; height: 64px; border-radius: 12px; object-fit: cover; border: 1px solid var(--stroke-2); flex: none; }
+    .bl-hero .nm { font-family: var(--disp); font-size: var(--t-xl); line-height: 1; }
+    .bl-hero .sub { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+    .chip { font-size: var(--t-xs); font-weight: 600; padding: 3px 8px; border-radius: var(--pill); background: var(--panel-2); border: 1px solid var(--stroke-2); color: var(--text-2); text-transform: capitalize; }
+    .chip.dmg { color: var(--cyan); border-color: rgba(46,233,246,.4); background: rgba(46,233,246,.08); }
+
+    .bl-attrs { display: grid; grid-template-columns: repeat(4,1fr); gap: var(--s2); margin-top: var(--s3); }
+    .bl-attr .lab { display: flex; justify-content: space-between; font-size: var(--t-xs); color: var(--text-3); margin-bottom: 3px; }
+    .bl-attr .lab b { color: var(--text); font-family: var(--mono); }
+    .bl-attr .bar { height: 5px; border-radius: var(--pill); background: rgba(255,255,255,.08); overflow: hidden; }
+    .bl-attr .bar i { display: block; height: 100%; background: var(--grad); border-radius: var(--pill); }
+
+    .bl-list { display: grid; gap: var(--s2); }
+    .bl-card { border: 1px solid var(--stroke); border-radius: var(--r); background: var(--panel); overflow: hidden; }
+    .bl-card.crest { border-color: rgba(46,233,246,.35); }
+    .bl-row { display: flex; align-items: center; gap: var(--s3); padding: var(--s3); }
+    .bl-ico { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 1px solid var(--stroke-2); background: var(--bg-2); flex: none; display: grid; place-items: center; font-family: var(--disp); color: var(--text-3); }
+    .bl-meta { min-width: 0; flex: 1; }
+    .bl-nm { font-family: var(--disp); font-size: var(--t-md); display: flex; align-items: center; gap: var(--s2); }
+    .bl-slot { font-size: 0.6rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--cyan); }
+    .bl-stats { font-size: var(--t-xs); color: var(--text-3); margin-top: 2px; font-family: var(--mono); }
+    details.bl-why { border-top: 1px solid var(--stroke); }
+    details.bl-why > summary { list-style: none; cursor: pointer; padding: 9px var(--s3); font-size: var(--t-sm); font-weight: 600; color: var(--cyan); display: flex; align-items: center; gap: 6px; }
+    details.bl-why > summary::-webkit-details-marker { display: none; }
+    details.bl-why > summary::before { content: "›"; transition: transform .15s; font-size: 1.1em; }
+    details.bl-why[open] > summary::before { transform: rotate(90deg); }
+    .bl-reasons { padding: 0 var(--s3) var(--s3); display: grid; gap: 5px; }
+    .bl-reasons li { list-style: none; font-size: var(--t-sm); color: var(--text-2); line-height: 1.4; padding-left: 16px; position: relative; }
+    .bl-reasons li::before { content: ""; position: absolute; left: 3px; top: 8px; width: 5px; height: 5px; border-radius: 50%; background: var(--cyan); }
+
+    .bl-note { margin-top: var(--s4); padding: var(--s3) var(--s4); border-left: 3px solid var(--violet); background: var(--grad-soft); border-radius: var(--r-sm); font-size: var(--t-sm); color: var(--text-2); line-height: 1.5; }
+    .bl-loading { color: var(--text-3); text-align: center; padding: var(--s6); font-family: var(--mono); }
+  </style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-arrow" viewBox="0 0 24 24"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></symbol>
+  <symbol id="i-beaker" viewBox="0 0 24 24"><path d="M9 3h6"/><path d="M10 3v6l-5.2 9A2 2 0 0 0 6.6 21h10.8a2 2 0 0 0 1.8-3L14 9V3"/><line x1="8" y1="14" x2="16" y2="14"/></symbol>
+</svg>
+
+<header class="topbar">
+  <div class="brand"><span class="mark"><svg class="icon" style="width:16px;height:16px"><use href="#i-beaker"/></svg></span> Build Lab</div>
+  <a class="patch" href="index.html" style="margin-left:auto;text-decoration:none">‹ v4</a>
+</header>
+
+<main class="wrap">
+  <div class="bl-controls">
+    <div class="bl-sel"><select id="heroSel"></select></div>
+    <div class="bl-sel"><select id="roleSel"></select></div>
+  </div>
+
+  <div id="heroBox"></div>
+
+  <div class="eyebrow"><svg class="icon" style="width:13px;height:13px;color:var(--cyan)"><use href="#i-beaker"/></svg> Built for the kit</div>
+  <div id="buildBox" class="bl-list"><div class="bl-loading">Loading engine…</div></div>
+
+  <p class="bl-note">This build is scored from <b>this hero's own kit</b> — its attributes, damage type, and traits matched against item stats — <b>not</b> the most-played build. Tap <span style="color:var(--cyan)">Why</span> on any item to see the reasoning.</p>
+</main>
+
+<script src="../build-engine.js"></script>
+<script>
+const DATA = '../../data/game-data';
+let profiles = {}, profileList = [], items = [], itemImg = {};
+
+const esc = s => { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+const slugify = s => String(s).toLowerCase().replace(/['’.]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+
+async function boot() {
+  try {
+    const [p, it, im] = await Promise.all([
+      fetch(`${DATA}/hero-profiles.json`).then(r => r.json()),
+      fetch(`${DATA}/items.json`).then(r => r.json()),
+      fetch(`${DATA}/item-images.json`).then(r => r.json()).catch(() => ({})),
+    ]);
+    profileList = p.sort((a, b) => a.name.localeCompare(b.name));
+    profileList.forEach(h => profiles[h.slug] = h);
+    items = it.items || it;
+    itemImg = im || {};
+    BuildEngine.items = items;
+
+    const hSel = document.getElementById('heroSel');
+    hSel.innerHTML = profileList.map(h => `<option value="${h.slug}">${esc(h.name)}</option>`).join('');
+    hSel.value = 'wraith';
+    hSel.onchange = onHero;
+    document.getElementById('roleSel').onchange = render;
+    onHero();
+  } catch (e) {
+    document.getElementById('buildBox').innerHTML = `<div class="bl-loading">Couldn't load data — serve this over http (e.g. <code>python3 -m http.server</code>), not file://</div>`;
+  }
+}
+
+function onHero() {
+  const hero = profiles[document.getElementById('heroSel').value];
+  const rSel = document.getElementById('roleSel');
+  const roles = (hero.roles || ['ALL']);
+  rSel.innerHTML = roles.map(r => `<option value="${r}">${r[0] + r.slice(1).toLowerCase()}</option>`).join('');
+  render();
+}
+
+function itemIconHTML(it) {
+  const src = `../img/items/${slugify(it.name)}.webp`;
+  const initials = it.name.split(' ').map(w => w[0]).slice(0, 2).join('');
+  return `<img class="bl-ico" src="${src}" alt="" loading="lazy" onerror="this.outerHTML='<span class=&quot;bl-ico&quot;>${esc(initials)}</span>'">`;
+}
+
+function cardHTML(it, slot) {
+  const reasons = (it.why || []).map(w => `<li>${esc(w)}</li>`).join('');
+  return `<div class="bl-card${slot === 'CREST' ? ' crest' : ''}">
+    <div class="bl-row">
+      ${itemIconHTML(it)}
+      <div class="bl-meta">
+        <div class="bl-nm">${esc(it.name)} ${slot ? `<span class="bl-slot">${slot}</span>` : ''}</div>
+        <div class="bl-stats">${esc((it.stats || []).join(' · '))}</div>
+      </div>
+    </div>
+    ${reasons ? `<details class="bl-why"><summary>Why</summary><ul class="bl-reasons">${reasons}</ul></details>` : ''}
+  </div>`;
+}
+
+function render() {
+  const hero = profiles[document.getElementById('heroSel').value];
+  const role = document.getElementById('roleSel').value;
+  const r = BuildEngine.recommend(hero, role, items);
+  const a = hero.attributes || {};
+
+  const bar = (label, v) => `<div class="bl-attr"><div class="lab">${label} <b>${v}</b></div><div class="bar"><i style="width:${(v/10)*100}%"></i></div></div>`;
+  const traits = (hero.baseTraits || []).map(t => `<span class="chip">${esc(t.replace(/_/g,' '))}</span>`).join('');
+
+  document.getElementById('heroBox').innerHTML = `
+    <div class="bl-hero">
+      <img src="../img/heroes/${hero.slug}.webp" alt="" onerror="this.style.visibility='hidden'">
+      <div style="min-width:0;flex:1">
+        <div class="nm">${esc(hero.name)}</div>
+        <div class="sub"><span class="chip dmg">${esc(hero.damageType)}</span>${traits}</div>
+        <div class="bl-attrs">
+          ${bar('ATK', a.attackPower || 0)}${bar('ABL', a.abilityPower || 0)}${bar('DUR', a.durability || 0)}${bar('MOB', a.mobility || 0)}
+        </div>
+      </div>
+    </div>`;
+
+  let html = '';
+  if (r.crest) html += cardHTML(r.crest, 'CREST');
+  html += (r.items || []).map(it => cardHTML(it, null)).join('');
+  document.getElementById('buildBox').innerHTML = html || '<div class="bl-loading">No build found.</div>';
+}
+
+boot();
+</script>
+</body>
+</html>
