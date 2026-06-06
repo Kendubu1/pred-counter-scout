@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Design Review — Predecessor Scout</title>
+  <meta name="theme-color" content="#000000">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000;
+      --surface: #0d0d0c;
+      --hairline: rgba(255, 255, 255, 0.10);
+      --hairline-2: rgba(255, 255, 255, 0.20);
+      --text: #f4ede0;
+      --text-2: #8a8478;
+      --text-3: #5a544a;
+      --gold: #f5c130;
+      --gold-dim: rgba(245, 193, 48, 0.10);
+      --up: #8fb87a;
+      --down: #d7715f;
+      --disp: "Anton", "Bebas Neue", system-ui, sans-serif;
+      --body: "Inter", system-ui, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--bg); color: var(--text); }
+    body { font: 400 0.92rem/1.55 var(--body); -webkit-font-smoothing: antialiased; padding-bottom: 60px; }
+    a { color: var(--gold); text-decoration: none; }
+    a:active { opacity: 0.7; }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 24px 18px; }
+
+    .top { padding: 36px 0 24px; border-bottom: 1px solid var(--hairline); }
+    .top .eyebrow { font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-3); font-weight: 600; }
+    .top h1 { font-family: var(--disp); font-size: clamp(2.4rem, 8vw, 3.5rem); line-height: 0.95; letter-spacing: 0.02em; text-transform: uppercase; margin: 6px 0 12px; }
+    .top p { color: var(--text-2); max-width: 56ch; }
+
+    h2 { font-family: var(--disp); font-size: 1.5rem; letter-spacing: 0.04em; text-transform: uppercase; margin: 36px 0 12px; padding-top: 8px; }
+    h3 { font-family: var(--disp); font-size: 1.1rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--gold); margin: 18px 0 6px; }
+    p { color: var(--text-2); margin-bottom: 12px; max-width: 60ch; }
+    p b, li b { color: var(--text); font-weight: 600; }
+
+    /* Version blocks */
+    .group { margin: 18px 0 8px; padding: 16px 0 18px; border-top: 1px solid var(--hairline); }
+    .group-label { font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-3); font-weight: 600; margin-bottom: 4px; }
+    .v { display: block; padding: 14px 0; border-bottom: 1px dashed var(--hairline); }
+    .v:last-child { border-bottom: none; }
+    .v-name { font-family: var(--disp); font-size: 1.3rem; letter-spacing: 0.03em; text-transform: uppercase; color: var(--gold); display: flex; align-items: baseline; gap: 10px; }
+    .v-tag { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.18em; color: var(--text-3); }
+    .v-tag.live { color: var(--up); }
+    .v-desc { color: var(--text-2); margin: 4px 0 8px; font-size: 0.88rem; }
+    .v-look { color: var(--text); font-size: 0.84rem; }
+    .v-look b { color: var(--gold); font-family: var(--mono); font-size: 0.78rem; font-weight: 500; letter-spacing: 0.04em; }
+
+    /* Criterion list */
+    .crit { padding: 12px 0; border-bottom: 1px solid var(--hairline); }
+    .crit:last-child { border-bottom: none; }
+    .crit-name { font-family: var(--disp); font-size: 1rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text); margin-bottom: 4px; }
+    .crit-q { color: var(--text-2); font-size: 0.86rem; }
+    .crit-q::before { content: "→ "; color: var(--gold); }
+
+    /* Flow comparison table */
+    .flow { display: grid; grid-template-columns: 1fr auto; gap: 1px; background: var(--hairline); border: 1px solid var(--hairline); margin: 12px 0; }
+    .flow .cell { background: var(--bg); padding: 12px 14px; }
+    .flow .cell.h { background: var(--surface); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3); }
+    .flow .ver { color: var(--text); font-weight: 600; }
+    .flow .taps { font-family: var(--mono); color: var(--gold); text-align: right; }
+
+    /* Take blocks */
+    .take { padding: 14px 0 12px; border-bottom: 1px solid var(--hairline); }
+    .take:last-child { border-bottom: none; }
+    .take-head { font-family: var(--disp); font-size: 0.95rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold); }
+    .take p { margin-top: 4px; font-size: 0.88rem; }
+
+    /* Recommendation block */
+    .reco { border-left: 3px solid var(--gold); padding: 14px 16px; background: var(--gold-dim); margin: 16px 0; }
+    .reco-head { font-family: var(--disp); font-size: 1rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold); }
+    .reco p { color: var(--text); margin-top: 6px; font-size: 0.92rem; }
+    .reco .key { color: var(--gold); font-weight: 700; }
+
+    /* Fork block */
+    .fork { display: grid; gap: 12px; grid-template-columns: 1fr; margin: 12px 0; }
+    @media (min-width: 600px) { .fork { grid-template-columns: 1fr 1fr; } }
+    .fork-card { padding: 14px; border: 1px solid var(--hairline); }
+    .fork-card.preferred { border-color: rgba(245, 193, 48, 0.4); background: var(--gold-dim); }
+    .fork-card h4 { font-family: var(--disp); font-size: 1rem; letter-spacing: 0.06em; text-transform: uppercase; }
+    .fork-card.preferred h4 { color: var(--gold); }
+    .fork-card .meta { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3); margin: 6px 0 8px; }
+    .fork-card p { font-size: 0.84rem; color: var(--text-2); }
+
+    .footer { margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--hairline); font-size: 0.66rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3); display: flex; justify-content: space-between; }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="top">
+    <div class="eyebrow">Predecessor Scout · Design Review</div>
+    <h1>Pick the<br>direction</h1>
+    <p>Every iteration, one tap away. Open each, spend 30 seconds, come back here for the framework and my honest read. Read on a phone — that's the audience.</p>
+  </header>
+
+  <h2>How to use this</h2>
+  <p>Open each version in a new tab. Don't read — just feel the first 5 seconds. Then come back, look at the framework, and judge them against the five lenses. The honest take is at the bottom; resist reading it first.</p>
+
+  <!-- ════════════ VERSION LINKS ════════════ -->
+  <h2>The versions</h2>
+
+  <div class="group">
+    <div class="group-label">Live now · Production</div>
+
+    <a class="v" href="v2/" target="_blank" rel="noopener">
+      <div class="v-name">V2 <span class="v-tag live">● LIVE PROD</span></div>
+      <div class="v-desc">The working app. Dark functional MOBA tool aesthetic. Has every feature: counters, builds, hero learn, eternals, team lab.</div>
+      <div class="v-look"><b>look for:</b> visual hierarchy, info density on home, the new Meta Movers + Eternals banner, the 2×2 menu.</div>
+    </a>
+
+    <a class="v" href="patch-notes.html" target="_blank" rel="noopener">
+      <div class="v-name">Patch notes <span class="v-tag live">● LIVE</span></div>
+      <div class="v-desc">The changelog page.</div>
+      <div class="v-look"><b>look for:</b> tone, how it reads as a "build in public" artifact.</div>
+    </a>
+
+    <a class="v" href="team-lab.html" target="_blank" rel="noopener">
+      <div class="v-name">Team Lab <span class="v-tag live">● LIVE</span></div>
+      <div class="v-desc">Team-comp builder with damage-type / strength analysis.</div>
+      <div class="v-look"><b>look for:</b> how it teaches comp logic vs just listing heroes.</div>
+    </a>
+
+    <a class="v" href="learn-eternals.html" target="_blank" rel="noopener">
+      <div class="v-name">Learn Eternals (V2) <span class="v-tag live">● LIVE</span></div>
+      <div class="v-desc">Plain-language explainer for the 1.14 Eternals system, all 12 cards.</div>
+      <div class="v-look"><b>look for:</b> educational tone, families-first structure.</div>
+    </a>
+  </div>
+
+  <div class="group">
+    <div class="group-label">V3 · Clean dashboard prototype</div>
+
+    <a class="v" href="v3/" target="_blank" rel="noopener">
+      <div class="v-name">V3 prototype</div>
+      <div class="v-desc">Dark, dense, mobile-first dashboard with a blue accent. Meant to be "clean but data-dense."</div>
+      <div class="v-look"><b>look for:</b> hierarchy under density, the meta-movers card, bottom-nav UX on phone.</div>
+    </a>
+
+    <a class="v" href="v3/learn-eternals.html" target="_blank" rel="noopener">
+      <div class="v-name">V3 Learn Eternals</div>
+      <div class="v-desc">Same content as the V2 version but in the V3 system.</div>
+      <div class="v-look"><b>look for:</b> readability vs V2 — same info, different language.</div>
+    </a>
+  </div>
+
+  <div class="group">
+    <div class="group-label">V4 · Esports glass prototype</div>
+
+    <a class="v" href="v4/" target="_blank" rel="noopener">
+      <div class="v-name">V4 prototype</div>
+      <div class="v-desc">Sci-fi / esports look: cyan + violet gradients, glass tiles, Rajdhani display, bento layout.</div>
+      <div class="v-look"><b>look for:</b> personality, but check if the glass effects fight the data.</div>
+    </a>
+
+    <a class="v" href="v4/build-lab.html" target="_blank" rel="noopener">
+      <div class="v-name">V4 Build Lab</div>
+      <div class="v-desc">The differentiator: kit-aligned build engine, live. Real "Why" expander per item.</div>
+      <div class="v-look"><b>look for:</b> change the hero — feel the speed-to-answer. This is the new flow model.</div>
+    </a>
+  </div>
+
+  <div class="group">
+    <div class="group-label">V5 · Editorial mustard prototype</div>
+
+    <a class="v" href="v5/build-lab.html" target="_blank" rel="noopener">
+      <div class="v-name">V5 Build Lab</div>
+      <div class="v-desc">A24-inspired editorial: pure black, mustard accent, condensed Anton display, sharp grid. Same engine, different identity.</div>
+      <div class="v-look"><b>look for:</b> the attribute block (huge mono numerals), gold-as-data discipline, the "WHY" expander. Same hero in V4 vs V5 — which one do you remember 10 minutes later?</div>
+    </a>
+  </div>
+
+  <!-- ════════════ FRAMEWORK ════════════ -->
+  <h2>The five lenses</h2>
+  <p>Score each version 1–5 in your head against these. They translate directly to the audience's actual job — 30 seconds before a draft, on a phone, on the couch.</p>
+
+  <div class="crit">
+    <div class="crit-name">1. Audience fit</div>
+    <div class="crit-q">Does this feel made for a Predecessor player, or any MOBA tool?</div>
+  </div>
+  <div class="crit">
+    <div class="crit-name">2. Quick to digest</div>
+    <div class="crit-q">Can you understand the screen in 5 seconds without reading? Hierarchy doing the work?</div>
+  </div>
+  <div class="crit">
+    <div class="crit-name">3. Dense + meaningful</div>
+    <div class="crit-q">Every element earning its place — or decoration competing with data?</div>
+  </div>
+  <div class="crit">
+    <div class="crit-name">4. Linear flow, fewer taps</div>
+    <div class="crit-q">How many taps from "open" to the answer? Anything optional you can cut?</div>
+  </div>
+  <div class="crit">
+    <div class="crit-name">5. Identity (the bonus lens)</div>
+    <div class="crit-q">Could you describe the brand in one word after closing the tab? If yes — what's the word?</div>
+  </div>
+
+  <!-- ════════════ FLOW COMPARISON ════════════ -->
+  <h2>Same job, different versions</h2>
+  <p><b>Task:</b> open the app, see Wraith's recommended build, expand a "why." Count the taps. Lower is better.</p>
+
+  <div class="flow">
+    <div class="cell h">Version</div>
+    <div class="cell h">Taps</div>
+
+    <div class="cell ver">V2 production (Learn → Wraith → Overview)</div>
+    <div class="cell taps">4–5</div>
+
+    <div class="cell ver">V3 prototype</div>
+    <div class="cell taps">3–4</div>
+
+    <div class="cell ver">V4 home → Learn → hero pick</div>
+    <div class="cell taps">3</div>
+
+    <div class="cell ver">V4 Build Lab (direct)</div>
+    <div class="cell taps">2</div>
+
+    <div class="cell ver">V5 Build Lab (direct)</div>
+    <div class="cell taps">2</div>
+  </div>
+  <p>The Build Lab pattern (V4 / V5) is the model: <b>hero + role pickers at the top, the answer right below.</b> No "What do you need?" gate. The rest of the app should adopt this.</p>
+
+  <!-- ════════════ HONEST TAKE ════════════ -->
+  <h2>My honest take</h2>
+
+  <div class="take">
+    <div class="take-head">V2 — Working baseline</div>
+    <p>Functional. Has every feature. Visually it could be any other MOBA tool — that's the problem. The home page works too hard with too many competing cards. <b>Strength:</b> completeness. <b>Weakness:</b> no identity, leans on win rates (which we want to drop).</p>
+  </div>
+
+  <div class="take">
+    <div class="take-head">V3 — Generic dashboard</div>
+    <p>Cleaner than V2 but doesn't earn its existence. Same conventions, slightly tidier. <b>Verdict:</b> retire it. Whichever direction you pick, V3 is not it.</p>
+  </div>
+
+  <div class="take">
+    <div class="take-head">V4 — Real personality, borrowed tropes</div>
+    <p>The glass + gradient + clip-cut tiles are <b>well executed</b> — but they're also what every esports tool from 2023 onward looks like. Cyan/violet says "futuristic gaming" without saying which game. The Build Lab proves the engine works; the visual treatment slightly fights the precision. <b>Strength:</b> familiar, gaming-fluent. <b>Risk:</b> dated quickly, easy to mistake for any other tool.</p>
+  </div>
+
+  <div class="take">
+    <div class="take-head">V5 — Distinctive point of view</div>
+    <p>The editorial restraint reads <b>curated, not generated</b>. Mustard on black has actual identity — you'd recognise a screenshot. Gold-as-data discipline keeps it honest. The risk is the opposite of V4: editorial demands content commitment — fewer items, more meaning. Right now V5's at ~70% A24's air; for a draft companion, compress to ~50%. <b>Strength:</b> identity, premium feel, fits "we teach, not stat-dump" positioning. <b>Watch:</b> doesn't sacrifice density.</p>
+  </div>
+
+  <!-- ════════════ RECOMMENDATION ════════════ -->
+  <h2>What I'd do</h2>
+
+  <div class="reco">
+    <div class="reco-head">Direction</div>
+    <p><span class="key">Take V5's identity, push it to V4's density.</span> The editorial palette + Anton/mono pair is the right brand. Compress the row paddings and shrink the display scale by ~30% so a phone shows 4–5 build rows on first scroll instead of 2–3. Keep the gold-as-data discipline.</p>
+    <p>Apply the <span class="key">Build Lab pattern</span> (pickers on top → answer below) to every primary screen — home, hero detail, counters. Kill the "What do you need?" gate.</p>
+    <p>Don't keep V3. <span class="key">Retire V4's home</span> once V5's home exists; keep V4's Build Lab for comparison until V5 covers all primary screens.</p>
+  </div>
+
+  <h2>The fork — pick now</h2>
+  <p>If you only adopt one thing from this review, it's this:</p>
+
+  <div class="fork">
+    <div class="fork-card preferred">
+      <h4>V5 → density-tuned</h4>
+      <div class="meta">Editorial · Mustard · Compressed</div>
+      <p>Strongest identity, most ownable, fits "teach not dump" positioning. Needs density tuning before the full app rolls out.</p>
+    </div>
+    <div class="fork-card">
+      <h4>V4 → polished</h4>
+      <div class="meta">Esports · Glass · Refined</div>
+      <p>Safer / more conventional. Lower identity ceiling. Easier to ship without surprises.</p>
+    </div>
+  </div>
+
+  <p style="margin-top: 24px; color: var(--text-2); font-size: 0.85rem;">When you've clicked through and have a gut answer, tell me the word that came to mind for V4 and the word for V5. That's usually how to choose.</p>
+
+  <div class="footer">
+    <span>Predecessor Scout</span>
+    <span>Design Review · 2026.06</span>
+  </div>
+
+</div>
+
+</body>
+</html>
