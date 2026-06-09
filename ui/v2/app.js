@@ -1313,7 +1313,7 @@ function renderEternals() {
   const top = ranked[0];
   // Top recommendation — full detail card
   html += '<div class="card eternal-top">';
-  html += `<div class="eternal-top-head"><span class="eternal-rank-badge best">⭐ Best Pick</span><h2 style="margin:0">${esc(top.name)}</h2><span class="eternal-deity">${esc(top.archetype)}</span></div>`;
+  html += `<div class="eternal-top-head"><img class="eternal-icon eternal-icon-lg" src="img/eternals/${esc(top.id)}.webp" alt="${esc(top.name)}" loading="lazy" onerror="this.style.display='none'"><span class="eternal-rank-badge best">⭐ Best Pick</span><h2 style="margin:0">${esc(top.name)}</h2><span class="eternal-deity">${esc(top.archetype)}</span></div>`;
   html += `<div class="eternal-major">${esc(top.major)}</div>`;
   if (top.reasons?.length) {
     html += '<div class="eternal-reasons">';
@@ -1344,6 +1344,7 @@ function renderEternals() {
   ranked.forEach((et, idx) => {
     html += `<div class="eternal-row tier-${et.tier}">`;
     html += `<div class="eternal-row-rank">${idx + 1}</div>`;
+    html += `<img class="eternal-icon" src="img/eternals/${esc(et.id)}.webp" alt="${esc(et.name)}" loading="lazy" onerror="this.style.display='none'">`;
     html += '<div class="eternal-row-main">';
     html += `<div class="eternal-row-head"><span class="eternal-row-name">${esc(et.name)}</span><span class="eternal-tier-pill tier-${et.tier}">${et.tier === 'best' ? 'Best' : et.tier === 'good' ? 'Good' : 'Situational'}</span><span class="eternal-row-arch">${esc(et.archetype)}</span></div>`;
     html += `<div class="eternal-row-major">${esc(et.major)}</div>`;
