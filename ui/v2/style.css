@@ -970,11 +970,18 @@ details[open] .match-review-toggle::before { transform: rotate(90deg); }
 .mover-breakdown:hover { text-decoration: underline; }
 
 /* ── Patch page (full digestible breakdown) ── */
-.patchpage { max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.6rem; }
-.pp-head h1 { font-size: 1.5rem; font-weight: 800; margin: 0 0 0.4rem; color: var(--text-0); }
+.patchpage { max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.4rem; }
+.pp-head h1 { font-size: 1.5rem; font-weight: 800; margin: 0 0 0.4rem; color: var(--text-0); line-height: 1.2; overflow-wrap: anywhere; }
+.pp-head-tag { display: inline-block; margin-left: 0.5rem; font-size: 0.78rem; font-weight: 600; color: var(--text-2); background: var(--bg-2); border: 1px solid var(--border); border-radius: 999px; padding: 0.14rem 0.6rem; vertical-align: middle; white-space: nowrap; }
 .pp-sub { font-size: 0.9rem; line-height: 1.55; color: var(--text-2); margin: 0; }
 .pp-sub a { color: var(--accent); }
+.pp-jump { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.pp-jump-link { font-family: inherit; font-size: 0.8rem; font-weight: 600; color: var(--text-1); background: var(--bg-2); border: 1px solid var(--border); border-radius: 999px; padding: 0.35rem 0.75rem; cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+.pp-jump-link:hover { border-color: var(--accent); color: var(--accent); }
+.pp-section { scroll-margin-top: 100px; }
 .pp-section > h2 { font-size: 1.1rem; font-weight: 700; margin: 0 0 0.8rem; color: var(--text-0); }
+.pp-bullets { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.pp-bullets li { font-size: 0.9rem; line-height: 1.5; color: var(--text-1); }
 .pp-cards { display: grid; gap: 0.7rem; }
 .pp-card { background: var(--bg-1); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 10px; padding: 0.8rem 0.95rem; font-size: 0.9rem; line-height: 1.55; color: var(--text-1); }
 .pp-card.pp-eternal { border-left-color: var(--gold); }
@@ -1004,4 +1011,8 @@ details[open] .match-review-toggle::before { transform: rotate(90deg); }
 .pp-items li { font-size: 0.86rem; line-height: 1.5; color: var(--text-1); }
 .pp-items li b { color: var(--text-0); }
 .pp-foot { font-size: 0.8rem; color: var(--text-2); line-height: 1.5; }
-@media (max-width: 640px) { .pp-herogrid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  .pp-herogrid { grid-template-columns: 1fr; }
+  .pp-head h1 { font-size: 1.2rem; }
+  .pp-head-tag { display: block; margin: 0.35rem 0 0; }
+}
