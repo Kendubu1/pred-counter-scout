@@ -755,6 +755,26 @@ function renderPatchNotes() {
   el.innerHTML = html;
 }
 
+// Eternal deity families — colours and one-line tags mirror the Learn Eternals
+// page so the patch view stays visually consistent. Eternals are new and their
+// names don't stick yet, so the family colour + portrait carry recognition.
+const ETERNAL_FAMILIES = [
+  { name: 'Harbingers',   color: '#ff7a5a', tag: 'Relentless damage' },
+  { name: 'Primarchs',    color: '#f0b429', tag: 'Raw strength' },
+  { name: 'Dreadnoughts', color: '#4d9fff', tag: 'Resilience & disruption' },
+  { name: 'Sovereigns',   color: '#6c5ce7', tag: 'Ability power & burst' },
+  { name: 'Divines',      color: '#00c48c', tag: 'Empower & sustain' },
+  { name: 'Anomalies',    color: '#19c5c5', tag: 'Unconventional' },
+];
+const ETERNAL_FAMILY = {
+  vermis: 'Harbingers', marrow: 'Harbingers',
+  thraex: 'Primarchs', nihil: 'Primarchs',
+  krix: 'Dreadnoughts', idrisil: 'Dreadnoughts',
+  vesh: 'Sovereigns', xyris: 'Sovereigns',
+  exarch: 'Divines', lotus: 'Divines',
+  aion: 'Anomalies', demiurge: 'Anomalies',
+};
+
 // Rough "how big is this change" heuristic so the patch page can float the
 // heaviest buffs/nerfs to the top and let minor tweaks settle to the bottom.
 // No magnitude data exists in the notes, so we infer it from the wording:
@@ -828,27 +848,44 @@ function renderPatchPage(anchorSlug) {
   }
 
   // ── Eternals reworks ──
+  // Eternals are brand new, so the names don't stick yet — the portrait and the
+  // deity-family colour are what people remember. Mirror the Learn Eternals page:
+  // group the reworks by family, themed in that family's colour, with the icon
+  // leading each card. Inside a family, keep the biggest changes on top.
   if (ps.eternals && (ps.eternals.changes || []).length) {
     html += `<section class="pp-section" id="pp-sec-eternals"><h2>✨ Eternals reworks</h2>`;
     if (ps.eternals.summary) html += `<p class="pp-sub" style="margin-bottom:0.85rem">${esc(ps.eternals.summary)}</p>`;
-    html += `<div class="pp-cards">`;
-    const etChanges = [...ps.eternals.changes].sort(
-      (a, b) => _changeImpact(`${b.change || ''} ${b.meaning || ''}`) - _changeImpact(`${a.change || ''} ${a.meaning || ''}`)
-    );
-    const ETERNAL_IDS = new Set(['vermis', 'marrow', 'thraex', 'nihil', 'krix', 'idrisil', 'vesh', 'xyris', 'exarch', 'lotus', 'aion', 'demiurge']);
-    etChanges.forEach(c => {
+
+    // Resolve each rework to its Eternal id + deity family.
+    const resolved = ps.eternals.changes.map(c => {
       // Names are usually just the Eternal ("Vermis") but can be "Blessing (Eternal)";
-      // pick whichever word matches a known Eternal so the icon resolves either way.
-      const eid = ((c.name || '').toLowerCase().match(/[a-z]+/g) || []).find(w => ETERNAL_IDS.has(w)) || '';
-      const icon = eid ? `<img class="pp-eternal-icon" src="img/eternals/${esc(eid)}.webp" alt="" loading="lazy" onerror="this.style.display='none'">` : '';
-      html += `<div class="pp-card pp-eternal"><div class="pp-eternal-name">`
+      // pick whichever word matches a known Eternal so the icon/family resolve either way.
+      const eid = ((c.name || '').toLowerCase().match(/[a-z]+/g) || []).find(w => ETERNAL_FAMILY[w]) || '';
+      return { ...c, eid, family: ETERNAL_FAMILY[eid] || null };
+    });
+
+    const renderEternalCard = c => {
+      const icon = c.eid ? `<img class="pp-eternal-icon" src="img/eternals/${esc(c.eid)}.webp" alt="" loading="lazy" onerror="this.style.display='none'">` : '';
+      return `<div class="pp-card pp-eternal"><div class="pp-eternal-name">`
         + icon
         + `<span>${esc(c.name)}</span></div>`
         + (c.change ? `<div class="pp-eternal-change">${esc(c.change)}</div>` : '')
         + (c.meaning ? `<div class="pp-eternal-meaning"><b>What it means:</b> ${esc(c.meaning)}</div>` : '')
         + `</div>`;
+    };
+    const byImpactCard = (a, b) => _changeImpact(`${b.change || ''} ${b.meaning || ''}`) - _changeImpact(`${a.change || ''} ${a.meaning || ''}`);
+
+    ETERNAL_FAMILIES.forEach(fam => {
+      const list = resolved.filter(r => r.family === fam.name).sort(byImpactCard);
+      if (!list.length) return;
+      html += `<div class="pp-etfam" style="--fam:${fam.color}">`
+        + `<div class="pp-etfam-head"><span class="pp-etfam-name">${esc(fam.name)}</span><span class="pp-etfam-tag">${esc(fam.tag)}</span></div>`
+        + `<div class="pp-cards">${list.map(renderEternalCard).join('')}</div></div>`;
     });
-    html += `</div>`;
+    // Anything that didn't map to a family (shouldn't happen) still gets shown.
+    const orphans = resolved.filter(r => !r.family).sort(byImpactCard);
+    if (orphans.length) html += `<div class="pp-cards" style="margin-top:0.7rem">${orphans.map(renderEternalCard).join('')}</div>`;
+
     html += `<p class="pp-foot" style="margin-top:0.65rem">New to Eternals? <a href="learn-eternals.html">Learn the system →</a></p>`;
     html += `</section>`;
   }

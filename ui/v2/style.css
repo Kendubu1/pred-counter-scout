@@ -987,6 +987,17 @@ details[open] .match-review-toggle::before { transform: rotate(90deg); }
 .pp-cards { display: grid; gap: 0.7rem; }
 .pp-card { background: var(--bg-1); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 10px; padding: 0.8rem 0.95rem; font-size: 0.9rem; line-height: 1.55; color: var(--text-1); }
 .pp-card.pp-eternal { border-left-color: var(--gold); }
+
+/* Eternal reworks grouped by deity family, themed in the family colour. */
+.pp-etfam { margin-top: 1.2rem; border-left: 3px solid var(--fam, var(--accent)); padding-left: 0.85rem; }
+.pp-etfam:first-of-type { margin-top: 0.2rem; }
+.pp-etfam-head { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.55rem; }
+.pp-etfam-name { font-weight: 700; font-size: 1rem; color: var(--fam, var(--text-0)); }
+.pp-etfam-tag { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-2); }
+.pp-etfam .pp-card.pp-eternal { border-left-color: var(--fam, var(--gold)); }
+.pp-etfam .pp-eternal-icon { border-color: color-mix(in srgb, var(--fam, var(--border)) 60%, var(--border)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--fam, transparent) 28%, transparent); }
+.pp-etfam .pp-eternal-name { color: var(--fam, var(--text-0)); }
+@media (min-width: 620px) { .pp-etfam .pp-cards { grid-template-columns: 1fr 1fr; } }
 .pp-eternal-name { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 0.92rem; color: var(--text-0); margin-bottom: 0.3rem; }
 .pp-eternal-icon { width: 34px; height: 34px; border-radius: 7px; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; }
 .pp-eternal-change { font-size: 0.85rem; line-height: 1.5; color: var(--text-1); }
