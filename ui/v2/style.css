@@ -964,3 +964,39 @@ details[open] .match-review-toggle::before { transform: rotate(90deg); }
 .patch-raw li { font-size: 0.84rem; line-height: 1.45; color: var(--text-1); }
 .patch-foot { font-size: 0.76rem; color: var(--text-2); line-height: 1.5; margin: 0; }
 @media (max-width: 640px) { .patch-grid { grid-template-columns: 1fr; } }
+
+/* ── "Full breakdown" link in the Meta Movers header ── */
+.mover-breakdown { margin-left: auto; font-family: inherit; font-size: 0.74rem; font-weight: 700; color: var(--accent); background: none; border: none; cursor: pointer; padding: 0; }
+.mover-breakdown:hover { text-decoration: underline; }
+
+/* ── Patch page (full digestible breakdown) ── */
+.patchpage { max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.6rem; }
+.pp-head h1 { font-size: 1.5rem; font-weight: 800; margin: 0 0 0.4rem; color: var(--text-0); }
+.pp-sub { font-size: 0.9rem; line-height: 1.55; color: var(--text-2); margin: 0; }
+.pp-sub a { color: var(--accent); }
+.pp-section > h2 { font-size: 1.1rem; font-weight: 700; margin: 0 0 0.8rem; color: var(--text-0); }
+.pp-cards { display: grid; gap: 0.7rem; }
+.pp-card { background: var(--bg-1); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 10px; padding: 0.8rem 0.95rem; font-size: 0.9rem; line-height: 1.55; color: var(--text-1); }
+.pp-herogroup { margin-bottom: 1.1rem; }
+.pp-herogroup h3 { display: flex; align-items: center; gap: 0.45rem; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 0.6rem; }
+.pp-herogroup.pp-buff h3 { color: var(--green); }
+.pp-herogroup.pp-nerf h3 { color: var(--red); }
+.pp-herogroup.pp-mixed h3 { color: var(--accent); }
+.pp-count { font-size: 0.7rem; color: var(--text-2); background: var(--bg-3); border-radius: 999px; padding: 0 0.45rem; }
+.pp-herogrid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+.pp-hero { display: flex; gap: 0.6rem; align-items: flex-start; text-align: left; background: var(--bg-1); border: 1px solid var(--border); border-radius: 10px; padding: 0.65rem 0.75rem; cursor: pointer; font-family: inherit; color: var(--text-0); transition: border-color 0.15s, transform 0.15s; }
+.pp-hero:hover { transform: translateY(-1px); border-color: var(--accent); }
+.pp-hero img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; flex: none; }
+.pp-hero-body { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.pp-hero-name { font-weight: 700; font-size: 0.86rem; }
+.pp-hero-sum { font-size: 0.76rem; line-height: 1.4; color: var(--text-2); }
+.pp-buff .pp-hero { border-left: 3px solid var(--green); }
+.pp-nerf .pp-hero { border-left: 3px solid var(--red); }
+.pp-mixed .pp-hero { border-left: 3px solid var(--accent); }
+.pp-hero-flash { animation: ppflash 1.6s ease; }
+@keyframes ppflash { 0%, 100% { box-shadow: none; } 25% { box-shadow: 0 0 0 3px var(--accent); } }
+.pp-items { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.pp-items li { font-size: 0.86rem; line-height: 1.5; color: var(--text-1); }
+.pp-items li b { color: var(--text-0); }
+.pp-foot { font-size: 0.8rem; color: var(--text-2); line-height: 1.5; }
+@media (max-width: 640px) { .pp-herogrid { grid-template-columns: 1fr; } }
