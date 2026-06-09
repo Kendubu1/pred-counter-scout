@@ -81,6 +81,8 @@ function main() {
         patch: version,
         trend: h.trend,
         changes: h.changes || [],
+        // Plain-language teaching notes (optional): { summary, playing, facing }.
+        analysis: h.analysis || null,
         reviewNeeded: reviewReasons.length > 0,
         reviewReasons,
       };
