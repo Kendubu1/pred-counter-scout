@@ -137,7 +137,7 @@ function renderMetaMovers() {
     + `</div></div>`;
 
   host.querySelectorAll('.mover-chip').forEach(b => {
-    b.onclick = () => navigate('learn', b.dataset.slug);
+    b.onclick = () => navigate('learn', b.dataset.slug, { tab: 'patch' });
   });
 }
 function heroDisplayName(n) {
@@ -483,7 +483,7 @@ function showPage(pageId) {
   if (pageId === 'landingPage') el.classList.remove('hidden'); // landingPage isn't .page
 }
 
-function navigate(flow, heroSlug) {
+function navigate(flow, heroSlug, opts = {}) {
   window.scrollTo(0, 0);
   currentFlow = flow;
   const bar = document.getElementById('breadcrumbBar');
@@ -512,8 +512,8 @@ function navigate(flow, heroSlug) {
     const name = heroProfiles[heroSlug]?.name || heroSlug;
     text.textContent = `Learn: ${name}`;
     showPage('learnPage');
-    loadLearnHero(heroSlug);
-    location.hash = `#learn/${heroSlug}`;
+    loadLearnHero(heroSlug, opts.tab || 'overview');
+    location.hash = (opts.tab && opts.tab !== 'overview') ? `#learn/${heroSlug}/${opts.tab}` : `#learn/${heroSlug}`;
   } else if (flow === 'counter' && !heroSlug) {
     text.textContent = 'Counter a Hero';
     showPage('heroGridPage');
@@ -551,7 +551,7 @@ function handleHashRoute() {
   if (!hash) { navigate(null); return; }
   const parts = hash.split('/');
   if (parts[0] === 'learn') {
-    if (parts[1]) navigate('learn', parts[1]);
+    if (parts[1]) navigate('learn', parts[1], { tab: parts[2] });
     else navigate('learn');
   } else if (parts[0] === 'counter') {
     if (parts[1]) navigate('counter', parts[1]);
@@ -640,7 +640,7 @@ function filterGrid(grid, searchText, role) {
 // FLOW 1: LEARN A HERO
 // ══════════════════════════════════════════
 
-async function loadLearnHero(slug) {
+async function loadLearnHero(slug, initialTab = 'overview') {
   currentHero = await loadHeroData(currentVersion, slug);
   // Auto-detect most played role (highest total matches)
   if (currentHero.roles) {
@@ -656,9 +656,9 @@ async function loadLearnHero(slug) {
   }
   document.getElementById('learnRoleSelect').value = currentRole;
 
-  switchLearnTab('overview'); // Always start on Overview
   renderLearnHeader();
   renderOverview();
+  renderPatchNotes(); // also shows/hides the Patch tab based on data
   renderAbilities();
   renderEternals();
   renderCounters();
@@ -667,6 +667,9 @@ async function loadLearnHero(slug) {
   // Reset matchup
   document.getElementById('enemySelect').value = '';
   renderMatchup();
+  // Open the requested tab; fall back to Overview if Patch was asked for but absent
+  const hasPatch = !!(currentHero && patchStateOf(currentHero.slug));
+  switchLearnTab(initialTab === 'patch' && !hasPatch ? 'overview' : initialTab);
 }
 
 function renderLearnHeader() {
@@ -681,10 +684,64 @@ function renderLearnHeader() {
     html += renderArchetypeTags(profile);
   }
   const st = patchStateOf(hero.slug);
-  if (st && (st.changes || []).length) {
-    html += `<div class="meta-changes">${st.changes.map(c => `<span class="meta-change">${esc(c)}</span>`).join('')}</div>`;
+  if (st && ((st.changes || []).length || st.analysis)) {
+    const label = st.trend === 'buff' ? 'Buffed' : st.trend === 'nerf' ? 'Nerfed' : 'Reworked';
+    const p = st.patch ? ` ${esc(st.patch)}` : '';
+    html += `<button type="button" class="patch-pill patch-pill-${esc(st.trend)}" onclick="switchLearnTab('patch')">⚡ ${label}${p} — see what changed →</button>`;
   }
   html += '</div>';
+  el.innerHTML = html;
+}
+
+// ── PATCH TAB ──
+// Plain-language "what changed this patch" for the current hero — written for
+// learning and competitive play. Sourced from the patch digest carried into
+// hero-patch-state.json. Also toggles the Patch tab button's visibility.
+function renderPatchNotes() {
+  const btn = document.getElementById('patchTabBtn');
+  const el = document.getElementById('patchContent');
+  if (!el) return;
+  const hero = currentHero;
+  const st = hero ? patchStateOf(hero.slug) : null;
+  if (!st || (!(st.changes || []).length && !st.analysis)) {
+    if (btn) btn.style.display = 'none';
+    el.innerHTML = '';
+    return;
+  }
+  if (btn) btn.style.display = '';
+
+  const name = esc(hero.name);
+  const patch = st.patch ? esc(st.patch) : (heroPatchState.patch ? esc(heroPatchState.patch) : '');
+  const verdict = st.trend === 'buff' ? { cls: 'patch-buff', icon: '▲', label: 'Buffed' }
+    : st.trend === 'nerf' ? { cls: 'patch-nerf', icon: '▼', label: 'Nerfed' }
+    : { cls: 'patch-mixed', icon: '◆', label: 'Reworked / Mixed' };
+  const a = st.analysis || {};
+
+  let html = `<div class="patch-wrap">`;
+  html += `<div class="patch-verdict ${verdict.cls}"><span class="pv-icon">${verdict.icon}</span>`
+    + `<span>${name} was <b>${verdict.label}</b>${patch ? ` in Patch ${patch}` : ''}</span></div>`;
+
+  if (a.summary) html += `<p class="patch-tldr">${esc(a.summary)}</p>`;
+
+  if (a.playing || a.facing) {
+    html += `<div class="patch-grid">`;
+    if (a.playing) html += `<div class="patch-card patch-you"><h3>🎮 If you play ${name}</h3><p>${esc(a.playing)}</p></div>`;
+    if (a.facing)  html += `<div class="patch-card patch-vs"><h3>🛡️ If you face ${name}</h3><p>${esc(a.facing)}</p></div>`;
+    html += `</div>`;
+  }
+
+  if ((st.changes || []).length) {
+    html += `<div class="patch-raw"><h3>📋 Exact changes${patch ? ` <span class="patch-raw-tag">Patch ${patch}</span>` : ''}</h3><ul>`;
+    st.changes.forEach(c => { html += `<li>${esc(c)}</li>`; });
+    html += `</ul></div>`;
+  }
+
+  if (!a.summary && !a.playing && !a.facing) {
+    html += `<p class="patch-foot">Plain-language notes for this hero are still being written — the exact changes above are from the official patch notes.</p>`;
+  } else {
+    html += `<p class="patch-foot">A plain-language read of the official patch notes — meant for learning, not pro-level certainty. Tap any <span class="tab-link" onclick="switchLearnTab('abilities')">ability</span> or <span class="tab-link" onclick="switchLearnTab('eternals')">Eternal</span> tab for the full kit.</p>`;
+  }
+  html += `</div>`;
   el.innerHTML = html;
 }
 
