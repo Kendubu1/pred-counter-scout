@@ -781,6 +781,22 @@ function renderPatchPage(anchorSlug) {
     html += `</div></section>`;
   }
 
+  // ── Eternals reworks ──
+  if (ps.eternals && (ps.eternals.changes || []).length) {
+    html += `<section class="pp-section"><h2>✨ Eternals reworks</h2>`;
+    if (ps.eternals.summary) html += `<p class="pp-sub" style="margin-bottom:0.85rem">${esc(ps.eternals.summary)}</p>`;
+    html += `<div class="pp-cards">`;
+    ps.eternals.changes.forEach(c => {
+      html += `<div class="pp-card pp-eternal"><div class="pp-eternal-name">${esc(c.name)}</div>`
+        + (c.change ? `<div class="pp-eternal-change">${esc(c.change)}</div>` : '')
+        + (c.meaning ? `<div class="pp-eternal-meaning"><b>What it means:</b> ${esc(c.meaning)}</div>` : '')
+        + `</div>`;
+    });
+    html += `</div>`;
+    html += `<p class="pp-foot" style="margin-top:0.65rem">New to Eternals? <a href="learn-eternals.html">Learn the system →</a></p>`;
+    html += `</section>`;
+  }
+
   // ── Heroes ──
   const heroBlock = (label, cls, list) => {
     if (!list.length) return '';
