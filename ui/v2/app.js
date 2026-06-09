@@ -768,22 +768,38 @@ function renderPatchPage(anchorSlug) {
   const byName = (a, b) => nameOf(a[0]).localeCompare(nameOf(b[0]));
   const group = t => entries.filter(([, v]) => v.trend === t).sort(byName);
 
+  const hasGlobal = (ps.global || []).length;
+  const hasEternals = ps.eternals && (ps.eternals.changes || []).length;
+  const hasItems = (ps.items || []).length;
+
   let html = `<div class="patchpage">`;
-  html += `<header class="pp-head"><h1>Patch ${patch}: The Quick Version</h1>`
-    + `<p class="pp-sub">A fast, plain-language read of what changed — gameplay first, then heroes and items.`
-    + (ps.source ? ` For the exact numbers, see the <a href="${esc(ps.source)}" target="_blank" rel="noopener">official notes ↗</a>.` : '')
+  html += `<header class="pp-head"><h1>Patch ${patch}<span class="pp-head-tag">The Quick Version</span></h1>`
+    + `<p class="pp-sub">A fast, plain-language read of what changed.`
+    + (ps.source ? ` For exact numbers, see the <a href="${esc(ps.source)}" target="_blank" rel="noopener">official notes ↗</a>.` : '')
     + `</p></header>`;
 
-  // ── Gameplay / meta ──
-  if ((ps.global || []).length) {
-    html += `<section class="pp-section"><h2>🎮 What changed for your games</h2><div class="pp-cards">`;
-    ps.global.forEach(g => { html += `<div class="pp-card">${esc(g)}</div>`; });
-    html += `</div></section>`;
+  // ── Quick-jump nav ──
+  const jumps = [];
+  if (hasGlobal) jumps.push(['pp-sec-gameplay', '🎮 Gameplay']);
+  if (hasEternals) jumps.push(['pp-sec-eternals', '✨ Eternals']);
+  if (entries.length) jumps.push(['pp-sec-heroes', '🦸 Heroes']);
+  if (hasItems) jumps.push(['pp-sec-items', '🛡️ Items']);
+  if (jumps.length > 1) {
+    html += `<nav class="pp-jump">`
+      + jumps.map(([id, label]) => `<button type="button" class="pp-jump-link" onclick="document.getElementById('${id}').scrollIntoView({behavior:'smooth',block:'start'})">${label}</button>`).join('')
+      + `</nav>`;
+  }
+
+  // ── Gameplay / meta (bullets) ──
+  if (hasGlobal) {
+    html += `<section class="pp-section" id="pp-sec-gameplay"><h2>🎮 What changed for your games</h2><ul class="pp-bullets">`;
+    ps.global.forEach(g => { html += `<li>${esc(g)}</li>`; });
+    html += `</ul></section>`;
   }
 
   // ── Eternals reworks ──
   if (ps.eternals && (ps.eternals.changes || []).length) {
-    html += `<section class="pp-section"><h2>✨ Eternals reworks</h2>`;
+    html += `<section class="pp-section" id="pp-sec-eternals"><h2>✨ Eternals reworks</h2>`;
     if (ps.eternals.summary) html += `<p class="pp-sub" style="margin-bottom:0.85rem">${esc(ps.eternals.summary)}</p>`;
     html += `<div class="pp-cards">`;
     ps.eternals.changes.forEach(c => {
@@ -811,7 +827,7 @@ function renderPatchPage(anchorSlug) {
     return h + `</div></div>`;
   };
   if (entries.length) {
-    html += `<section class="pp-section"><h2>🦸 Heroes</h2>`
+    html += `<section class="pp-section" id="pp-sec-heroes"><h2>🦸 Heroes</h2>`
       + heroBlock('▲ Buffed', 'buff', group('buff'))
       + heroBlock('▼ Nerfed', 'nerf', group('nerf'))
       + heroBlock('◆ Reworked', 'mixed', group('mixed'))
@@ -820,7 +836,7 @@ function renderPatchPage(anchorSlug) {
 
   // ── Items ──
   if ((ps.items || []).length) {
-    html += `<section class="pp-section"><h2>🛡️ Items &amp; Crests</h2><ul class="pp-items">`;
+    html += `<section class="pp-section" id="pp-sec-items"><h2>🛡️ Items &amp; Crests</h2><ul class="pp-items">`;
     ps.items.forEach(it => {
       const i = it.indexOf(': ');
       if (i > 0 && i < 28) html += `<li><b>${esc(it.slice(0, i))}:</b> ${esc(it.slice(i + 2))}</li>`;
