@@ -87,10 +87,10 @@ function patchStateOf(slug) { return heroPatchState?.heroes?.[slug] || null; }
 // Compact meta-trend badge HTML for a hero, or '' if unchanged/unknown.
 function metaTrendBadge(slug, opts = {}) {
   const st = patchStateOf(slug);
-  if (!st || (st.trend !== 'buff' && st.trend !== 'nerf')) return '';
-  const cls = st.trend === 'buff' ? 'meta-buff' : 'meta-nerf';
-  const icon = st.trend === 'buff' ? '▲' : '▼';
-  const label = st.trend === 'buff' ? 'Buffed' : 'Nerfed';
+  if (!st || !['buff', 'nerf', 'mixed'].includes(st.trend)) return '';
+  const cls = st.trend === 'buff' ? 'meta-buff' : st.trend === 'nerf' ? 'meta-nerf' : 'meta-mixed';
+  const icon = st.trend === 'buff' ? '▲' : st.trend === 'nerf' ? '▼' : '◆';
+  const label = st.trend === 'buff' ? 'Buffed' : st.trend === 'nerf' ? 'Nerfed' : 'Reworked';
   const patch = heroPatchState.patch ? ` ${esc(heroPatchState.patch)}` : '';
   const title = (st.changes || []).join(' • ');
   const text = opts.compact ? icon : `${icon} ${label}${patch}`;
@@ -108,7 +108,8 @@ function renderMetaMovers() {
   const entries = Object.entries(heroes);
   const buffed = entries.filter(([, v]) => v.trend === 'buff').sort(byName);
   const nerfed = entries.filter(([, v]) => v.trend === 'nerf').sort(byName);
-  if (!buffed.length && !nerfed.length) { host.innerHTML = ''; return; }
+  const mixed = entries.filter(([, v]) => v.trend === 'mixed').sort(byName);
+  if (!buffed.length && !nerfed.length && !mixed.length) { host.innerHTML = ''; return; }
 
   const chip = ([slug, st]) => {
     const name = nameOf(slug);
@@ -131,9 +132,10 @@ function renderMetaMovers() {
   host.innerHTML =
     `<div class="mover-card">`
     + `<div class="mover-title">⚡ Meta Movers${patches ? ` <span class="mover-patch">Patch ${esc(patches)}</span>` : ''}</div>`
-    + `<div class="mover-cols">`
+    + `<div class="mover-cols${mixed.length ? ' has-mixed' : ''}">`
     + col('Buffed', 'up', '▲', buffed)
     + col('Nerfed', 'down', '▼', nerfed)
+    + (mixed.length ? col('Reworked', 'mixed', '◆', mixed) : '')
     + `</div></div>`;
 
   host.querySelectorAll('.mover-chip').forEach(b => {
