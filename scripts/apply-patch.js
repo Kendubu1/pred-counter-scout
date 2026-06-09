@@ -97,6 +97,7 @@ function main() {
     source: last.source || null,
     global: last.global || [],
     items: last.items || [],
+    eternals: last.eternals || null,
     heroes,
   };
   fs.writeFileSync(OUT, JSON.stringify(out, null, 2) + '\n');
