@@ -87,10 +87,10 @@ function patchStateOf(slug) { return heroPatchState?.heroes?.[slug] || null; }
 // Compact meta-trend badge HTML for a hero, or '' if unchanged/unknown.
 function metaTrendBadge(slug, opts = {}) {
   const st = patchStateOf(slug);
-  if (!st || (st.trend !== 'buff' && st.trend !== 'nerf')) return '';
-  const cls = st.trend === 'buff' ? 'meta-buff' : 'meta-nerf';
-  const icon = st.trend === 'buff' ? '▲' : '▼';
-  const label = st.trend === 'buff' ? 'Buffed' : 'Nerfed';
+  if (!st || !['buff', 'nerf', 'mixed'].includes(st.trend)) return '';
+  const cls = st.trend === 'buff' ? 'meta-buff' : st.trend === 'nerf' ? 'meta-nerf' : 'meta-mixed';
+  const icon = st.trend === 'buff' ? '▲' : st.trend === 'nerf' ? '▼' : '◆';
+  const label = st.trend === 'buff' ? 'Buffed' : st.trend === 'nerf' ? 'Nerfed' : 'Reworked';
   const patch = heroPatchState.patch ? ` ${esc(heroPatchState.patch)}` : '';
   const title = (st.changes || []).join(' • ');
   const text = opts.compact ? icon : `${icon} ${label}${patch}`;
@@ -108,7 +108,8 @@ function renderMetaMovers() {
   const entries = Object.entries(heroes);
   const buffed = entries.filter(([, v]) => v.trend === 'buff').sort(byName);
   const nerfed = entries.filter(([, v]) => v.trend === 'nerf').sort(byName);
-  if (!buffed.length && !nerfed.length) { host.innerHTML = ''; return; }
+  const mixed = entries.filter(([, v]) => v.trend === 'mixed').sort(byName);
+  if (!buffed.length && !nerfed.length && !mixed.length) { host.innerHTML = ''; return; }
 
   const chip = ([slug, st]) => {
     const name = nameOf(slug);
@@ -130,14 +131,16 @@ function renderMetaMovers() {
 
   host.innerHTML =
     `<div class="mover-card">`
-    + `<div class="mover-title">⚡ Meta Movers${patches ? ` <span class="mover-patch">Patch ${esc(patches)}</span>` : ''}</div>`
-    + `<div class="mover-cols">`
+    + `<div class="mover-title">⚡ Meta Movers${patches ? ` <span class="mover-patch">Patch ${esc(patches)}</span>` : ''}`
+    + `<button type="button" class="mover-breakdown" onclick="navigate('patch')">Full breakdown →</button></div>`
+    + `<div class="mover-cols${mixed.length ? ' has-mixed' : ''}">`
     + col('Buffed', 'up', '▲', buffed)
     + col('Nerfed', 'down', '▼', nerfed)
+    + (mixed.length ? col('Reworked', 'mixed', '◆', mixed) : '')
     + `</div></div>`;
 
   host.querySelectorAll('.mover-chip').forEach(b => {
-    b.onclick = () => navigate('learn', b.dataset.slug, { tab: 'patch' });
+    b.onclick = () => navigate('patch', b.dataset.slug);
   });
 }
 function heroDisplayName(n) {
@@ -543,6 +546,11 @@ function navigate(flow, heroSlug, opts = {}) {
     text.textContent = 'About';
     showPage('aboutPage');
     location.hash = '#about';
+  } else if (flow === 'patch') {
+    text.textContent = `Patch ${heroPatchState.patch || ''}`.trim();
+    showPage('patchPage');
+    renderPatchPage(heroSlug || null);
+    location.hash = heroSlug ? `#patch/${heroSlug}` : '#patch';
   }
 }
 
@@ -562,6 +570,8 @@ function handleHashRoute() {
     navigate('build');
   } else if (parts[0] === 'about') {
     navigate('about');
+  } else if (parts[0] === 'patch') {
+    navigate('patch', parts[1] || null);
   } else {
     navigate(null);
   }
@@ -687,7 +697,7 @@ function renderLearnHeader() {
   if (st && ((st.changes || []).length || st.analysis)) {
     const label = st.trend === 'buff' ? 'Buffed' : st.trend === 'nerf' ? 'Nerfed' : 'Reworked';
     const p = st.patch ? ` ${esc(st.patch)}` : '';
-    html += `<button type="button" class="patch-pill patch-pill-${esc(st.trend)}" onclick="switchLearnTab('patch')">⚡ ${label}${p} — see what changed →</button>`;
+    html += `<button type="button" class="patch-pill patch-pill-${esc(st.trend)}" onclick="navigate('patch','${esc(hero.slug)}')">⚡ ${label}${p} — see what changed →</button>`;
   }
   html += '</div>';
   el.innerHTML = html;
@@ -743,6 +753,78 @@ function renderPatchNotes() {
   }
   html += `</div>`;
   el.innerHTML = html;
+}
+
+// ── PATCH PAGE (full, digestible breakdown of the whole patch) ──
+// Single page: gameplay/meta first, then heroes (grouped by trend), then items.
+// Reads everything from hero-patch-state.json so future patches populate it too.
+function renderPatchPage(anchorSlug) {
+  const el = document.getElementById('patchPageContent');
+  if (!el) return;
+  const ps = heroPatchState || {};
+  const patch = ps.patch ? esc(ps.patch) : '';
+  const entries = Object.entries(ps.heroes || {});
+  const nameOf = slug => heroProfiles[slug]?.name || slug;
+  const byName = (a, b) => nameOf(a[0]).localeCompare(nameOf(b[0]));
+  const group = t => entries.filter(([, v]) => v.trend === t).sort(byName);
+
+  let html = `<div class="patchpage">`;
+  html += `<header class="pp-head"><h1>Patch ${patch}: The Quick Version</h1>`
+    + `<p class="pp-sub">A fast, plain-language read of what changed — gameplay first, then heroes and items.`
+    + (ps.source ? ` For the exact numbers, see the <a href="${esc(ps.source)}" target="_blank" rel="noopener">official notes ↗</a>.` : '')
+    + `</p></header>`;
+
+  // ── Gameplay / meta ──
+  if ((ps.global || []).length) {
+    html += `<section class="pp-section"><h2>🎮 What changed for your games</h2><div class="pp-cards">`;
+    ps.global.forEach(g => { html += `<div class="pp-card">${esc(g)}</div>`; });
+    html += `</div></section>`;
+  }
+
+  // ── Heroes ──
+  const heroBlock = (label, cls, list) => {
+    if (!list.length) return '';
+    let h = `<div class="pp-herogroup pp-${cls}"><h3>${label} <span class="pp-count">${list.length}</span></h3><div class="pp-herogrid">`;
+    list.forEach(([slug, v]) => {
+      const sum = v.analysis && v.analysis.summary ? v.analysis.summary : (v.changes || []).join(' • ');
+      h += `<button type="button" class="pp-hero" id="pp-${esc(slug)}" data-slug="${esc(slug)}">`
+        + `<img src="img/heroes/${esc(slug)}.webp" alt="" loading="lazy" onerror="this.style.display='none'">`
+        + `<span class="pp-hero-body"><span class="pp-hero-name">${esc(nameOf(slug))}</span>`
+        + `<span class="pp-hero-sum">${esc(sum)}</span></span></button>`;
+    });
+    return h + `</div></div>`;
+  };
+  if (entries.length) {
+    html += `<section class="pp-section"><h2>🦸 Heroes</h2>`
+      + heroBlock('▲ Buffed', 'buff', group('buff'))
+      + heroBlock('▼ Nerfed', 'nerf', group('nerf'))
+      + heroBlock('◆ Reworked', 'mixed', group('mixed'))
+      + `</section>`;
+  }
+
+  // ── Items ──
+  if ((ps.items || []).length) {
+    html += `<section class="pp-section"><h2>🛡️ Items &amp; Crests</h2><ul class="pp-items">`;
+    ps.items.forEach(it => {
+      const i = it.indexOf(': ');
+      if (i > 0 && i < 28) html += `<li><b>${esc(it.slice(0, i))}:</b> ${esc(it.slice(i + 2))}</li>`;
+      else html += `<li>${esc(it)}</li>`;
+    });
+    html += `</ul></section>`;
+  }
+
+  html += `<p class="pp-foot">Tap any hero for their full per-hero breakdown, or open <span class="tab-link" onclick="navigate('learn')">Learn a Hero</span> to dig into kits and builds.</p>`;
+  html += `</div>`;
+  el.innerHTML = html;
+
+  el.querySelectorAll('.pp-hero').forEach(b => {
+    b.onclick = () => navigate('learn', b.dataset.slug, { tab: 'patch' });
+  });
+
+  if (anchorSlug) {
+    const t = document.getElementById('pp-' + anchorSlug);
+    if (t) { t.scrollIntoView({ behavior: 'smooth', block: 'center' }); t.classList.add('pp-hero-flash'); }
+  }
 }
 
 function switchLearnTab(tabId) {
