@@ -5,6 +5,8 @@ const MatchupEngine = (() => {
   let heroProfiles = null;  // slug → profile
   let itemIndex = null;     // indexed items
   let augmentDescriptions = {};  // lowercase name → description
+  let heroAbilities = null; // slug → { abilities: [...] } with per-rank damage + scaling
+  let kitPhaseCache = null; // slug → { phases: {early,mid,late}, reasons }
 
   // ── Item Index (ported from item-index.js) ──
 
@@ -143,6 +145,16 @@ const MatchupEngine = (() => {
   function parseWinRate(str) { return parseFloat(String(str)) || 0; }
   function parseMatchCount(str) { const m = String(str).match(/(\d+)/); return m ? parseInt(m[1]) : 0; }
 
+  /**
+   * Bayesian-shrunk win rate: pulls small samples toward the 50% prior so a
+   * 65% WR over 12 games doesn't outrank a 58% WR over 300 games.
+   * K is the prior weight (in matches).
+   */
+  function adjustedWinRate(wr, matches, K = 25) {
+    const n = matches || 0;
+    return (wr * n + 50 * K) / (n + K);
+  }
+
   // ── Core Engine ──
 
   function getHighestWRBuild(heroData, role, minMatches = 2) {
@@ -156,7 +168,7 @@ const MatchupEngine = (() => {
         const wr = parseWinRate(build.winRate);
         const matches = parseMatchCount(build.matches);
         if (matches < minMatches) continue;
-        const score = wr * Math.log2(matches + 1);
+        const score = adjustedWinRate(wr, matches);
         if (score > bestScore) {
           bestScore = score;
           best = { role: r, name: build.name, items: build.items, winRate: wr, matches, augments: rd.augments || [], crests: rd.crests || [] };
@@ -249,7 +261,7 @@ const MatchupEngine = (() => {
     const scored = roleData.augments.map(aug => {
       const wr = parseWinRate(aug.winRate);
       const matches = parseMatchCount(aug.matches || 0);
-      let score = wr * Math.log2(matches + 1);
+      let score = adjustedWinRate(wr, matches);
       const nl = (aug.name || '').toLowerCase().trim();
       if (buildAnalysis?.hasSustain && (nl.includes('tainted') || nl.includes('anti-heal') || nl.includes('grievous'))) score *= 1.8;
       if (buildAnalysis?.threatProfile?.includes('hard to kill') && (nl.includes('shred') || nl.includes('pen') || nl.includes('break'))) score *= 1.5;
@@ -401,6 +413,196 @@ const MatchupEngine = (() => {
     return tips;
   }
 
+  // ── Game Phase Analysis (early / mid / late) ──
+
+  function _clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+  /**
+   * Derive every hero's early/mid/late kit power from ability data:
+   * - rank-1 base damage → early lane pressure (strong before items exist)
+   * - base damage growth across ranks → mid-game level spikes
+   * - scaling % ratios → late game (items multiply their damage)
+   * Plus curated traits/attributes (durability, stacking, crit-class, …).
+   * Scores are normalized across the whole roster so 70 vs 45 is meaningful.
+   */
+  function computeKitPhaseProfiles() {
+    if (kitPhaseCache) return kitPhaseCache;
+    if (!heroAbilities || !heroProfiles) return null;
+
+    const raw = {};
+    for (const [slug, h] of Object.entries(heroAbilities)) {
+      let base1 = 0, growth = 0, scalingSum = 0;
+      for (const ab of (h.abilities || [])) {
+        if (!ab.damage?.length) continue;
+        // Strongest damage entry per ability — avoids multi-hit inflation
+        let best = null;
+        for (const d of ab.damage) {
+          const v = d.values || [];
+          if (!v.length) continue;
+          if (!best || v[0] > best.values[0]) best = d;
+        }
+        if (!best) continue;
+        const v = best.values;
+        const w = ab.key === 'BASIC' ? 0.5 : 1;
+        base1 += v[0] * w;
+        growth += (v[v.length - 1] - v[0]) * w;
+        scalingSum += (best.scaling || 0) * w;
+      }
+      raw[slug] = { base1, growth, scalingSum };
+    }
+
+    // Min-max normalize each component across the roster
+    const makeNorm = (key) => {
+      const vals = Object.values(raw).map(r => r[key]);
+      const min = Math.min(...vals), max = Math.max(...vals);
+      return v => max > min ? (v - min) / (max - min) : 0.5;
+    };
+    const nBase = makeNorm('base1'), nGrowth = makeNorm('growth'), nScale = makeNorm('scalingSum');
+
+    const profiles = {};
+    for (const [slug, r] of Object.entries(raw)) {
+      const p = heroProfiles[slug] || {};
+      const a = p.attributes || {};
+      const t = new Set(p.baseTraits || []);
+      const classes = (p.classes || []).map(c => String(c).toUpperCase());
+      const reasons = { early: [], mid: [], late: [] };
+
+      const baseN = nBase(r.base1), growthN = nGrowth(r.growth), scaleN = nScale(r.scalingSum);
+
+      let early = baseN * 55 + (a.durability || 0) * 2.5;
+      if (p.attackType === 'melee' && (a.durability || 0) >= 6) early += 6;
+      if (t.has('cc')) early += 4;
+      if (t.has('dot')) early += 3;
+      if (t.has('self_heal') || t.has('healing')) early += 3;
+      if (baseN >= 0.65) reasons.early.push('high rank-1 ability damage — hits hard before anyone has items');
+      if ((a.durability || 0) >= 7) reasons.early.push('durable base stats — wins extended early trades');
+      if (t.has('cc') && baseN >= 0.5) reasons.early.push('CC + base damage enables early kill pressure');
+
+      let mid = growthN * 45 + (a.mobility || 0) * 2.5 + Math.max(a.attackPower || 0, a.abilityPower || 0) * 1.5;
+      if (t.has('execute')) mid += 5;
+      if (t.has('mobility')) mid += 3;
+      if (t.has('global')) mid += 4;
+      if (growthN >= 0.65) reasons.mid.push('big per-rank damage growth — spikes hard with levels');
+      if ((a.mobility || 0) >= 7) reasons.mid.push('high mobility — dominates mid-game skirmishes and rotations');
+      if (t.has('global')) reasons.mid.push('global presence — punishes map-wide in mid game');
+
+      let late = scaleN * 55;
+      if (t.has('stacking')) late += 10;
+      if (t.has('as_steroid')) late += 8;
+      if (t.has('on_hit')) late += 6;
+      if (t.has('execute')) late += 4;
+      if (classes.includes('SHARPSHOOTER') || classes.includes('EXECUTIONER')) late += 8;
+      if (scaleN >= 0.65) reasons.late.push('high scaling ratios — items multiply their damage');
+      if (t.has('stacking')) reasons.late.push('stacking passive — gets stronger the longer the game goes');
+      if (t.has('as_steroid') || t.has('on_hit')) reasons.late.push('attack-speed/on-hit kit — full build turns them into a DPS machine');
+
+      profiles[slug] = { early, mid, late, reasons };
+    }
+
+    // Normalize each phase across the roster to a 20–95 scale
+    for (const ph of ['early', 'mid', 'late']) {
+      const vals = Object.values(profiles).map(p => p[ph]);
+      const min = Math.min(...vals), max = Math.max(...vals);
+      for (const p of Object.values(profiles)) {
+        p[ph] = max > min ? Math.round(20 + ((p[ph] - min) / (max - min)) * 75) : 55;
+      }
+    }
+
+    kitPhaseCache = profiles;
+    return profiles;
+  }
+
+  /**
+   * How a specific build shifts a hero's power curve:
+   * - cheap 3-item core → online sooner (early/mid lean)
+   * - expensive core, crit/on-hit/stacking items → late lean
+   */
+  function buildPhaseLean(items) {
+    const lean = { early: 0, mid: 0, late: 0 };
+    let coreGold = 0;
+    (items || []).slice(0, 6).forEach((name, i) => {
+      const it = itemIndex?.get(name);
+      if (!it) return;
+      if (i < 3) coreGold += it.data.totalPrice || 0;
+      const tags = it.tags || [];
+      if (tags.includes('crit')) lean.late += 4;
+      if (tags.includes('attack_speed')) lean.late += 2;
+      if (tags.includes('on_hit')) lean.late += 2;
+      if (tags.includes('percent_health')) lean.late += 2;
+      if (tags.includes('pen')) lean.mid += 3;
+      if (tags.includes('burst')) lean.mid += 2;
+      if (tags.includes('sustain')) lean.early += 2;
+      if (it.statCategories.includes('defense_physical') || it.statCategories.includes('defense_magical')) lean.early += 1.5;
+    });
+    // Completed cores run ~8400–10000g; cheap cores spike sooner
+    if (coreGold > 0 && coreGold <= 8700) { lean.early += 4; lean.mid += 5; }
+    else if (coreGold >= 9400) { lean.late += 6; }
+    return {
+      lean: { early: _clamp(lean.early, 0, 12), mid: _clamp(lean.mid, 0, 12), late: _clamp(lean.late, 0, 12) },
+      coreGold,
+    };
+  }
+
+  /**
+   * Early/mid/late matchup comparison: kit phase power (roster-normalized)
+   * adjusted by each side's actual build. Returns per-phase scores, verdicts,
+   * and a strategic gameplan ("snowball before X" / "survive until Y").
+   */
+  function comparePhases(yourSlug, yourItems, enemySlug, enemyItems) {
+    const kit = computeKitPhaseProfiles();
+    if (!kit || !kit[yourSlug] || !kit[enemySlug]) return null;
+    const yourName = heroProfiles[yourSlug]?.name || yourSlug;
+    const enemyName = heroProfiles[enemySlug]?.name || enemySlug;
+    const yb = buildPhaseLean(yourItems);
+    const eb = buildPhaseLean(enemyItems);
+
+    const phases = ['early', 'mid', 'late'].map(ph => {
+      const you = _clamp(kit[yourSlug][ph] + yb.lean[ph], 5, 100);
+      const enemy = _clamp(kit[enemySlug][ph] + eb.lean[ph], 5, 100);
+      const diff = you - enemy;
+      const verdict = diff > 7 ? 'you' : diff < -7 ? 'enemy' : 'even';
+      return {
+        phase: ph,
+        you: Math.round(you),
+        enemy: Math.round(enemy),
+        verdict,
+        whyYou: kit[yourSlug].reasons[ph],
+        whyEnemy: kit[enemySlug].reasons[ph],
+      };
+    });
+
+    const [e, m, l] = phases;
+    const gameplan = [];
+    const fmtGold = g => g >= 1000 ? ` (~${(g / 1000).toFixed(1).replace(/\.0$/, '')}k gold)` : '';
+    if (e.verdict === 'you' && l.verdict === 'enemy') {
+      gameplan.push(`⏱️ Snowball window: you're strongest before ${enemyName}'s core completes${fmtGold(eb.coreGold)}. Force trades, lane prio, and early objectives — don't let it go long.`);
+    } else if (e.verdict === 'enemy' && l.verdict === 'you') {
+      gameplan.push(`🛡️ Weather the storm: ${enemyName} wins early exchanges. Farm safe, skip coin-flip trades, and take over once your core is online${fmtGold(yb.coreGold)}.`);
+    } else if (e.verdict === 'you' && m.verdict !== 'enemy' && l.verdict !== 'enemy') {
+      gameplan.push(`🟢 You're favored at every stage — play confident, but don't gift a comeback with greedy dives.`);
+    } else if (e.verdict === 'enemy' && m.verdict !== 'you' && l.verdict !== 'you') {
+      gameplan.push(`🔴 Uphill at every stage — treat it as "don't lose lane". Ask for jungle attention and win through farm and teamfights, not 1v1s.`);
+    }
+    if (m.verdict === 'you' && e.verdict !== 'you' && !gameplan.length) {
+      gameplan.push(`⚡ Your window is mid game (2 items / levels 7–12) — group, rotate, and force fights before ${enemyName} reaches full build.`);
+    }
+    if (m.verdict === 'enemy' && gameplan.length < 2) {
+      gameplan.push(`⚠️ Respect ${enemyName}'s mid-game spike — track their item count before committing to fights.`);
+    }
+    if (!gameplan.length) {
+      gameplan.push(`⚖️ Even power curve — this one comes down to mechanics, wave control, and jungle pressure rather than scaling.`);
+    }
+
+    return {
+      yourHero: yourName,
+      enemyHero: enemyName,
+      phases,
+      yourCoreGold: yb.coreGold,
+      enemyCoreGold: eb.coreGold,
+      gameplan,
+    };
+  }
+
   // ── Shared Counter Data Lookup ──
 
   /**
@@ -422,7 +624,7 @@ const MatchupEngine = (() => {
       const rd = yourData.roles[yourRole] || yourData.roles[yourData.activeRoles?.[0]] || Object.values(yourData.roles)[0];
       if (rd?.counters) {
         const match = rd.counters.find(c => c.hero.toLowerCase() === enemyName.toLowerCase());
-        if (match && match.matches >= 1) {
+        if (match && match.matches >= 5) {
           yourVsEnemy = { winRate: match.winRate, matches: match.matches };
         }
       }
@@ -433,7 +635,7 @@ const MatchupEngine = (() => {
       for (const rd of Object.values(enemyData.roles)) {
         if (!rd?.counters) continue;
         const match = rd.counters.find(c => c.hero.toLowerCase() === yourName.toLowerCase());
-        if (match && match.matches >= 1) {
+        if (match && match.matches >= 5) {
           // Enemy's WR vs you — so your WR is (100 - enemyWR) approximately
           enemyVsYou = { enemyWinRate: match.winRate, matches: match.matches };
           break;
@@ -515,13 +717,19 @@ const MatchupEngine = (() => {
 
   async function init(dataBase) {
     const cb = '?v=' + Date.now();
-    const [itemsRes, profilesRes] = await Promise.all([
+    const [itemsRes, profilesRes, abilitiesRes] = await Promise.all([
       fetch(`${dataBase}/game-data/items.json${cb}`),
       fetch(`${dataBase}/game-data/hero-profiles.json${cb}`),
+      fetch(`${dataBase}/game-data/hero-abilities.json${cb}`).catch(() => null),
     ]);
     const itemsRaw = await itemsRes.json();
     itemsData = itemsRaw.items || itemsRaw;
     itemIndex = buildItemIndex(itemsData);
+
+    // Phase analysis is optional — engine still works without ability data
+    try {
+      if (abilitiesRes?.ok) { heroAbilities = await abilitiesRes.json(); kitPhaseCache = null; }
+    } catch (e) { heroAbilities = null; }
 
     const profilesRaw = await profilesRes.json();
     heroProfiles = {};
@@ -557,7 +765,10 @@ const MatchupEngine = (() => {
     const counterData = lookupCounterData(yourSlug, enemySlug, effectiveRole, heroDataMap);
 
     const enemyData = heroDataMap[enemySlug];
-    const enemyBuild = getHighestWRBuild(enemyData, null);
+    // Prefer the enemy's build for the mirrored lane role (offlane vs offlane,
+    // mid vs mid, …) — falls back to their best build across all roles.
+    const enemyRole = enemyData?.activeRoles?.includes(effectiveRole) ? effectiveRole : null;
+    const enemyBuild = getHighestWRBuild(enemyData, enemyRole) || getHighestWRBuild(enemyData, null);
     if (!enemyBuild) return { error: `No build data for ${enemyProfile.name}` };
 
     const buildAnalysis = analyzeBuild(enemyBuild.items, enemyProfile);
@@ -696,6 +907,9 @@ const MatchupEngine = (() => {
     // ── Meta diff: what changed and why ──
     const metaDiff = metaBuild ? _generateMetaDiff(metaBuild.items, counterFullItems, buildAnalysis, enemyProfile) : null;
 
+    // ── Early / mid / late power-curve comparison ──
+    const phaseComparison = comparePhases(yourSlug, counterFullItems, enemySlug, enemyBuild.items);
+
     return {
       yourHero: { name: yourProfile.name, slug: yourSlug, role: effectiveRole, damageType: yourProfile.damageType },
       roleInfo,
@@ -724,6 +938,7 @@ const MatchupEngine = (() => {
       altCrests,
       enemyAugmentWarnings: enemyAugmentNotes,
       enemyBuildAnalysis: { threats: buildAnalysis.threatProfile, weaknesses: buildAnalysis.weaknesses, hasSustain: buildAnalysis.hasSustain, hasCrit: buildAnalysis.hasCrit, hasOnHit: buildAnalysis.hasOnHit },
+      phaseComparison,
       tips: generateMatchupTips(buildAnalysis, yourProfile, enemyProfile),
     };
   }
@@ -989,13 +1204,8 @@ const MatchupEngine = (() => {
       }
     }
 
-    // Sort by WR (confidence-gated: 30+ matches first, then rest)
-    allBuilds.sort((a, b) => {
-      const aConf = a.matches >= 30 ? 1 : 0;
-      const bConf = b.matches >= 30 ? 1 : 0;
-      if (aConf !== bConf) return bConf - aConf;
-      return b.winRate - a.winRate;
-    });
+    // Sort by confidence-adjusted WR (small samples shrink toward 50%)
+    allBuilds.sort((a, b) => adjustedWinRate(b.winRate, b.matches) - adjustedWinRate(a.winRate, a.matches));
     const topBuilds = allBuilds.slice(0, 2);
 
     if (!topBuilds.length) return { error: `No build data for ${enemyProfile.name}` };
@@ -1160,7 +1370,7 @@ const MatchupEngine = (() => {
         .map(si => {
           const wr = parseWinRate(si.winRate);
           const matches = si.matches || parseMatchCount(si.matches);
-          let score = wr * Math.log2(matches + 1);
+          let score = adjustedWinRate(wr, matches);
 
           // Family diversity
           const fam = getItemFamily(si.name);
@@ -1231,5 +1441,5 @@ const MatchupEngine = (() => {
     };
   }
 
-  return { init, isReady, getProfile, getAugmentDesc, counterBuildPath, duoCounterBuild, counterHeroAnalysis, lookupCounterData, resolveRole, getScrapedCounterBuild };
+  return { init, isReady, getProfile, getAugmentDesc, counterBuildPath, duoCounterBuild, counterHeroAnalysis, lookupCounterData, resolveRole, getScrapedCounterBuild, comparePhases, adjustedWinRate };
 })();

@@ -1486,6 +1486,36 @@ function predictEnemyEternal(enemySlug, enemyData, enemyProfile) {
 }
 
 // ── MATCHUPS TAB ── (same as original)
+// ── Early/Mid/Late power-curve card (shared by both matchup views) ──
+function renderPhaseComparisonHtml(pc) {
+  if (!pc?.phases?.length) return '';
+  const labels = { early: '🌅 Early (lvl 1–6)', mid: '⚔️ Mid (lvl 7–12)', late: '🌃 Late (lvl 13+)' };
+  let html = '<div class="card"><h3>📈 Power Curve — Who Wins Each Phase</h3>';
+  html += '<p style="color:var(--text-2);font-size:0.78rem;margin-bottom:0.5rem">From ability base damage, scaling ratios, and each build\'s gold curve</p>';
+  pc.phases.forEach(p => {
+    const youPct = Math.round((p.you / (p.you + p.enemy)) * 100);
+    const color = p.verdict === 'you' ? 'var(--green)' : p.verdict === 'enemy' ? 'var(--red)' : 'var(--text-2)';
+    const verdictText = p.verdict === 'you' ? `✅ ${pc.yourHero} favored` : p.verdict === 'enemy' ? `⚠️ ${pc.enemyHero} favored` : '⚖️ Even';
+    html += '<div style="margin:0.55rem 0">';
+    html += `<div style="display:flex;justify-content:space-between;align-items:baseline;font-size:0.8rem;margin-bottom:0.2rem"><span style="font-weight:600;color:var(--text-1)">${esc(labels[p.phase] || p.phase)}</span><span style="font-weight:600;color:${color}">${esc(verdictText)}</span></div>`;
+    html += '<div style="display:flex;height:9px;border-radius:5px;overflow:hidden;background:var(--bg-3)">';
+    html += `<div style="width:${youPct}%;background:var(--accent)"></div>`;
+    html += `<div style="width:${100 - youPct}%;background:var(--bg-3)"></div>`;
+    html += '</div>';
+    html += `<div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--text-2);margin-top:0.15rem"><span>${esc(pc.yourHero)} ${p.you}</span><span>${esc(pc.enemyHero)} ${p.enemy}</span></div>`;
+    const why = p.verdict === 'you' ? p.whyYou : p.verdict === 'enemy' ? p.whyEnemy : null;
+    if (why?.length) {
+      html += `<div style="font-size:0.72rem;color:var(--text-2);margin-top:0.15rem;font-style:italic">${esc(why[0])}</div>`;
+    }
+    html += '</div>';
+  });
+  (pc.gameplan || []).forEach(g => {
+    html += `<div style="font-size:0.82rem;color:var(--text-1);margin-top:0.45rem;padding:0.45rem;border-radius:8px;background:var(--bg-2);border:1px solid var(--border)">${esc(g)}</div>`;
+  });
+  html += '</div>';
+  return html;
+}
+
 async function renderMatchup() {
   const el = document.getElementById('matchupContent');
   const enemySlug = document.getElementById('enemySelect').value;
@@ -1536,6 +1566,9 @@ async function renderMatchup() {
     });
     html += '</div>';
   }
+
+  // Early/Mid/Late power curve
+  html += renderPhaseComparisonHtml(result.phaseComparison);
 
   // Combined Matchup Intel: Augment Scouting + Ability Tips
   {
@@ -1750,8 +1783,12 @@ async function renderCounters() {
     if (!heroMap[key] || c.matches > heroMap[key].matches) heroMap[key] = c;
   });
   const filtered = Object.values(heroMap);
-  const beatsYou = filtered.filter(c => c.winRate < 50).sort((a,b) => a.winRate - b.winRate);
-  const youBeat = filtered.filter(c => c.winRate >= 50).sort((a,b) => b.winRate - a.winRate);
+  // Sort by confidence-adjusted WR (small samples shrink toward 50%) so a
+  // 65% WR over 22 games doesn't outrank a 58% WR over 300 games
+  const adjWR = c => (typeof MatchupEngine !== 'undefined' && MatchupEngine.adjustedWinRate)
+    ? MatchupEngine.adjustedWinRate(c.winRate, c.matches) : c.winRate;
+  const beatsYou = filtered.filter(c => c.winRate < 50).sort((a,b) => adjWR(a) - adjWR(b));
+  const youBeat = filtered.filter(c => c.winRate >= 50).sort((a,b) => adjWR(b) - adjWR(a));
 
   let html = '';
 
@@ -1897,6 +1934,9 @@ async function renderCountersMatchup(enemySlug) {
     });
     html += '</div>';
   }
+
+  // Early/Mid/Late power curve
+  html += renderPhaseComparisonHtml(result.phaseComparison);
 
   // Combined Matchup Intel
   {
