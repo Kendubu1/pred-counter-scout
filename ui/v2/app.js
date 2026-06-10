@@ -872,13 +872,13 @@ function renderPatchPage(anchorSlug) {
 
     const renderEternalCard = c => {
       const icon = c.eid ? `<img class="pp-eternal-icon" src="img/eternals/${esc(c.eid)}.webp" alt="" loading="lazy" onerror="this.style.display='none'">` : '';
-      // Lead with the plain-language takeaway; tuck the exact numbers behind a
-      // toggle so the grid stays scannable instead of a wall of text.
+      // Show the change inline — collapsing it hides whether a change is big or
+      // small, which is exactly what you want to see at a glance.
       return `<div class="pp-card pp-eternal"><div class="pp-eternal-name">`
         + icon
         + `<span>${esc(c.name)}</span></div>`
-        + (c.meaning ? `<div class="pp-eternal-meaning">${esc(c.meaning)}</div>` : '')
-        + (c.change ? `<details class="pp-eternal-details"><summary>What changed</summary><div class="pp-eternal-change">${esc(c.change)}</div></details>` : '')
+        + (c.change ? `<div class="pp-eternal-change">${esc(c.change)}</div>` : '')
+        + (c.meaning ? `<div class="pp-eternal-meaning"><b>What it means:</b> ${esc(c.meaning)}</div>` : '')
         + `</div>`;
     };
     const byImpactCard = (a, b) => _changeImpact(`${b.change || ''} ${b.meaning || ''}`) - _changeImpact(`${a.change || ''} ${a.meaning || ''}`);
