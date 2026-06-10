@@ -755,6 +755,59 @@ function renderPatchNotes() {
   el.innerHTML = html;
 }
 
+// Eternal deity families — colours and one-line tags mirror the Learn Eternals
+// page so the patch view stays visually consistent. Eternals are new and their
+// names don't stick yet, so the family colour + portrait carry recognition.
+const ETERNAL_FAMILIES = [
+  { name: 'Harbingers',   color: '#ff7a5a', tag: 'Relentless damage' },
+  { name: 'Primarchs',    color: '#f0b429', tag: 'Raw strength' },
+  { name: 'Dreadnoughts', color: '#4d9fff', tag: 'Resilience & disruption' },
+  { name: 'Sovereigns',   color: '#6c5ce7', tag: 'Ability power & burst' },
+  { name: 'Divines',      color: '#00c48c', tag: 'Empower & sustain' },
+  { name: 'Anomalies',    color: '#19c5c5', tag: 'Unconventional' },
+];
+const ETERNAL_FAMILY = {
+  vermis: 'Harbingers', marrow: 'Harbingers',
+  thraex: 'Primarchs', nihil: 'Primarchs',
+  krix: 'Dreadnoughts', idrisil: 'Dreadnoughts',
+  vesh: 'Sovereigns', xyris: 'Sovereigns',
+  exarch: 'Divines', lotus: 'Divines',
+  aion: 'Anomalies', demiurge: 'Anomalies',
+};
+// Family colour for an Eternal, by deity name or by Eternal id — used to tint
+// the recommendation cards so they read consistently with the patch page.
+function _familyColor(deityOrId) {
+  const name = ETERNAL_FAMILY[deityOrId] || deityOrId;
+  return (ETERNAL_FAMILIES.find(f => f.name === name) || {}).color || null;
+}
+
+// Rough "how big is this change" heuristic so the patch page can float the
+// heaviest buffs/nerfs to the top and let minor tweaks settle to the bottom.
+// No magnitude data exists in the notes, so we infer it from the wording:
+// structural reworks outweigh number tweaks, and bigger/more numerous numeric
+// deltas outweigh small ones.
+function _changeImpact(text) {
+  const t = (text || '').toLowerCase();
+  let score = 0;
+  // Build-defining / structural changes dominate any stat tweak.
+  const structural = ['rework', 'redesign', 'remov', 'no longer', 'replac', 'swap',
+    'overhaul', 'delet', 'brand new', 'new minor', 'now triggers', 'now applies', 'reverted'];
+  structural.forEach(k => { if (t.includes(k)) score += 30; });
+  // Each "a -> b" is one stat change; more changes ⇒ heavier entry.
+  const arrows = text.match(/-?\d+(?:\.\d+)?\s*(?:->|→)\s*-?\d+(?:\.\d+)?/g) || [];
+  score += arrows.length * 8;
+  // Magnitude of each numeric change, relative to where it started.
+  const re = /(-?\d+(?:\.\d+)?)\s*(?:->|→)\s*(-?\d+(?:\.\d+)?)/g;
+  let m;
+  while ((m = re.exec(text))) {
+    const a = Math.abs(parseFloat(m[1])), b = Math.abs(parseFloat(m[2]));
+    if (a > 0) score += Math.min(35, Math.abs(b - a) / a * 50);
+  }
+  // Tiebreaker: longer descriptions tend to cover more ground.
+  score += Math.min(12, text.length / 80);
+  return score;
+}
+
 // ── PATCH PAGE (full, digestible breakdown of the whole patch) ──
 // Single page: gameplay/meta first, then heroes (grouped by trend), then items.
 // Reads everything from hero-patch-state.json so future patches populate it too.
@@ -765,8 +818,11 @@ function renderPatchPage(anchorSlug) {
   const patch = ps.patch ? esc(ps.patch) : '';
   const entries = Object.entries(ps.heroes || {});
   const nameOf = slug => heroProfiles[slug]?.name || slug;
-  const byName = (a, b) => nameOf(a[0]).localeCompare(nameOf(b[0]));
-  const group = t => entries.filter(([, v]) => v.trend === t).sort(byName);
+  // Order each buff/nerf group biggest-change-first, minor tweaks toward the
+  // bottom; fall back to alphabetical when two heroes score the same.
+  const impactOf = ([, v]) => _changeImpact((v.changes || []).join(' ') + ' ' + (v.analysis?.summary || ''));
+  const byImpact = (a, b) => impactOf(b) - impactOf(a) || nameOf(a[0]).localeCompare(nameOf(b[0]));
+  const group = t => entries.filter(([, v]) => v.trend === t).sort(byImpact);
 
   const hasGlobal = (ps.global || []).length;
   const hasEternals = ps.eternals && (ps.eternals.changes || []).length;
@@ -798,17 +854,46 @@ function renderPatchPage(anchorSlug) {
   }
 
   // ── Eternals reworks ──
+  // Eternals are brand new, so the names don't stick yet — the portrait and the
+  // deity-family colour are what people remember. Mirror the Learn Eternals page:
+  // group the reworks by family, themed in that family's colour, with the icon
+  // leading each card. Inside a family, keep the biggest changes on top.
   if (ps.eternals && (ps.eternals.changes || []).length) {
     html += `<section class="pp-section" id="pp-sec-eternals"><h2>✨ Eternals reworks</h2>`;
     if (ps.eternals.summary) html += `<p class="pp-sub" style="margin-bottom:0.85rem">${esc(ps.eternals.summary)}</p>`;
-    html += `<div class="pp-cards">`;
-    ps.eternals.changes.forEach(c => {
-      html += `<div class="pp-card pp-eternal"><div class="pp-eternal-name">${esc(c.name)}</div>`
-        + (c.change ? `<div class="pp-eternal-change">${esc(c.change)}</div>` : '')
-        + (c.meaning ? `<div class="pp-eternal-meaning"><b>What it means:</b> ${esc(c.meaning)}</div>` : '')
-        + `</div>`;
+
+    // Resolve each rework to its Eternal id + deity family.
+    const resolved = ps.eternals.changes.map(c => {
+      // Names are usually just the Eternal ("Vermis") but can be "Blessing (Eternal)";
+      // pick whichever word matches a known Eternal so the icon/family resolve either way.
+      const eid = ((c.name || '').toLowerCase().match(/[a-z]+/g) || []).find(w => ETERNAL_FAMILY[w]) || '';
+      return { ...c, eid, family: ETERNAL_FAMILY[eid] || null };
     });
-    html += `</div>`;
+
+    const renderEternalCard = c => {
+      const icon = c.eid ? `<img class="pp-eternal-icon" src="img/eternals/${esc(c.eid)}.webp" alt="" loading="lazy" onerror="this.style.display='none'">` : '';
+      // Lead with the plain-language takeaway; tuck the exact numbers behind a
+      // toggle so the grid stays scannable instead of a wall of text.
+      return `<div class="pp-card pp-eternal"><div class="pp-eternal-name">`
+        + icon
+        + `<span>${esc(c.name)}</span></div>`
+        + (c.meaning ? `<div class="pp-eternal-meaning">${esc(c.meaning)}</div>` : '')
+        + (c.change ? `<details class="pp-eternal-details"><summary>What changed</summary><div class="pp-eternal-change">${esc(c.change)}</div></details>` : '')
+        + `</div>`;
+    };
+    const byImpactCard = (a, b) => _changeImpact(`${b.change || ''} ${b.meaning || ''}`) - _changeImpact(`${a.change || ''} ${a.meaning || ''}`);
+
+    ETERNAL_FAMILIES.forEach(fam => {
+      const list = resolved.filter(r => r.family === fam.name).sort(byImpactCard);
+      if (!list.length) return;
+      html += `<div class="pp-etfam" style="--fam:${fam.color}">`
+        + `<div class="pp-etfam-head"><span class="pp-etfam-name">${esc(fam.name)}</span><span class="pp-etfam-tag">${esc(fam.tag)}</span></div>`
+        + `<div class="pp-cards">${list.map(renderEternalCard).join('')}</div></div>`;
+    });
+    // Anything that didn't map to a family (shouldn't happen) still gets shown.
+    const orphans = resolved.filter(r => !r.family).sort(byImpactCard);
+    if (orphans.length) html += `<div class="pp-cards" style="margin-top:0.7rem">${orphans.map(renderEternalCard).join('')}</div>`;
+
     html += `<p class="pp-foot" style="margin-top:0.65rem">New to Eternals? <a href="learn-eternals.html">Learn the system →</a></p>`;
     html += `</section>`;
   }
@@ -837,7 +922,8 @@ function renderPatchPage(anchorSlug) {
   // ── Items ──
   if ((ps.items || []).length) {
     html += `<section class="pp-section" id="pp-sec-items"><h2>🛡️ Items &amp; Crests</h2><ul class="pp-items">`;
-    ps.items.forEach(it => {
+    const items = [...ps.items].sort((a, b) => _changeImpact(b) - _changeImpact(a));
+    items.forEach(it => {
       const i = it.indexOf(': ');
       if (i > 0 && i < 28) html += `<li><b>${esc(it.slice(0, i))}:</b> ${esc(it.slice(i + 2))}</li>`;
       else html += `<li>${esc(it)}</li>`;
@@ -1311,9 +1397,12 @@ function renderEternals() {
   html += '</div>';
 
   const top = ranked[0];
-  // Top recommendation — full detail card
-  html += '<div class="card eternal-top">';
-  html += `<div class="eternal-top-head"><img class="eternal-icon eternal-icon-lg" src="img/eternals/${esc(top.id)}.webp" alt="${esc(top.name)}" loading="lazy" onerror="this.style.display='none'"><span class="eternal-rank-badge best">⭐ Best Pick</span><h2 style="margin:0">${esc(top.name)}</h2><span class="eternal-deity">${esc(top.archetype)}</span></div>`;
+  // Top recommendation — full detail card, tinted in its deity-family colour.
+  const topColor = _familyColor(top.deity || top.id);
+  html += `<div class="card eternal-top"${topColor ? ` style="--fam:${topColor}"` : ''}>`;
+  html += `<div class="eternal-top-head"><img class="eternal-icon eternal-icon-lg" src="img/eternals/${esc(top.id)}.webp" alt="${esc(top.name)}" loading="lazy" onerror="this.style.display='none'"><span class="eternal-rank-badge best">⭐ Best Pick</span><h2 style="margin:0">${esc(top.name)}</h2>`
+    + (top.deity ? `<span class="eternal-family-tag">${esc(top.deity)}</span>` : '')
+    + `<span class="eternal-deity">${esc(top.archetype)}</span></div>`;
   html += `<div class="eternal-major">${esc(top.major)}</div>`;
   if (top.reasons?.length) {
     html += '<div class="eternal-reasons">';
@@ -1342,11 +1431,14 @@ function renderEternals() {
   html += '<div class="card"><h2>📋 All Eternals, ranked for this hero</h2>';
   html += '<div class="eternal-list">';
   ranked.forEach((et, idx) => {
-    html += `<div class="eternal-row tier-${et.tier}">`;
+    const fc = _familyColor(et.deity || et.id);
+    html += `<div class="eternal-row tier-${et.tier}"${fc ? ` style="--fam:${fc}"` : ''}>`;
     html += `<div class="eternal-row-rank">${idx + 1}</div>`;
     html += `<img class="eternal-icon" src="img/eternals/${esc(et.id)}.webp" alt="${esc(et.name)}" loading="lazy" onerror="this.style.display='none'">`;
     html += '<div class="eternal-row-main">';
-    html += `<div class="eternal-row-head"><span class="eternal-row-name">${esc(et.name)}</span><span class="eternal-tier-pill tier-${et.tier}">${et.tier === 'best' ? 'Best' : et.tier === 'good' ? 'Good' : 'Situational'}</span><span class="eternal-row-arch">${esc(et.archetype)}</span></div>`;
+    html += `<div class="eternal-row-head"><span class="eternal-row-name">${esc(et.name)}</span>`
+      + (et.deity ? `<span class="eternal-family-tag">${esc(et.deity)}</span>` : '')
+      + `<span class="eternal-tier-pill tier-${et.tier}">${et.tier === 'best' ? 'Best' : et.tier === 'good' ? 'Good' : 'Situational'}</span><span class="eternal-row-arch">${esc(et.archetype)}</span></div>`;
     html += `<div class="eternal-row-major">${esc(et.major)}</div>`;
     if (et.reasons?.length) {
       html += '<div class="eternal-reasons">';

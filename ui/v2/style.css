@@ -903,6 +903,12 @@ details[open] .match-review-toggle::before { transform: rotate(90deg); }
 .eternal-list { display: flex; flex-direction: column; gap: 0.5rem; }
 .eternal-icon { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; }
 .eternal-icon-lg { width: 56px; height: 56px; border-radius: 10px; }
+/* Family-colour treatment so the recommendation list reads like the patch page.
+   Ancestor-qualified so the family left-stripe wins over the tier border colour;
+   tier strength still reads from the pill and the remaining card border. */
+.card.eternal-top[style*="--fam"], .eternal-list .eternal-row[style*="--fam"] { border-left: 3px solid var(--fam); }
+.card.eternal-top[style*="--fam"] .eternal-icon, .eternal-list .eternal-row[style*="--fam"] .eternal-icon { border-color: color-mix(in srgb, var(--fam) 60%, var(--border)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--fam) 28%, transparent); }
+.eternal-family-tag { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--fam, var(--text-2)); }
 .eternal-row { display: flex; align-items: center; gap: 0.6rem; background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.7rem; }
 .eternal-row.tier-best { border-color: var(--green); }
 .eternal-row.tier-good { border-color: var(--gold); }
@@ -987,10 +993,27 @@ details[open] .match-review-toggle::before { transform: rotate(90deg); }
 .pp-cards { display: grid; gap: 0.7rem; }
 .pp-card { background: var(--bg-1); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 10px; padding: 0.8rem 0.95rem; font-size: 0.9rem; line-height: 1.55; color: var(--text-1); }
 .pp-card.pp-eternal { border-left-color: var(--gold); }
-.pp-eternal-name { font-weight: 700; font-size: 0.92rem; color: var(--text-0); margin-bottom: 0.3rem; }
-.pp-eternal-change { font-size: 0.85rem; line-height: 1.5; color: var(--text-1); }
-.pp-eternal-meaning { font-size: 0.83rem; line-height: 1.5; color: var(--text-2); margin-top: 0.35rem; }
-.pp-eternal-meaning b { color: var(--gold); }
+
+/* Eternal reworks grouped by deity family, themed in the family colour. */
+.pp-etfam { margin-top: 1.2rem; border-left: 3px solid var(--fam, var(--accent)); padding-left: 0.85rem; }
+.pp-etfam:first-of-type { margin-top: 0.2rem; }
+.pp-etfam-head { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.55rem; }
+.pp-etfam-name { font-weight: 700; font-size: 1rem; color: var(--fam, var(--text-0)); }
+.pp-etfam-tag { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-2); }
+.pp-etfam .pp-card.pp-eternal { border-left-color: var(--fam, var(--gold)); }
+.pp-etfam .pp-eternal-icon { border-color: color-mix(in srgb, var(--fam, var(--border)) 60%, var(--border)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--fam, transparent) 28%, transparent); }
+.pp-etfam .pp-eternal-name { color: var(--fam, var(--text-0)); }
+@media (min-width: 620px) { .pp-etfam .pp-cards { grid-template-columns: 1fr 1fr; } }
+.pp-eternal-name { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 0.92rem; color: var(--text-0); margin-bottom: 0.3rem; }
+.pp-eternal-icon { width: 34px; height: 34px; border-radius: 7px; object-fit: cover; border: 1px solid var(--border); flex-shrink: 0; }
+.pp-eternal-meaning { font-size: 0.84rem; line-height: 1.5; color: var(--text-1); }
+.pp-eternal-details { margin-top: 0.45rem; }
+.pp-eternal-details > summary { cursor: pointer; list-style: none; user-select: none; display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-2); }
+.pp-eternal-details > summary::-webkit-details-marker { display: none; }
+.pp-eternal-details > summary::before { content: '▸'; font-size: 0.85em; transition: transform 0.15s ease; }
+.pp-eternal-details[open] > summary::before { transform: rotate(90deg); }
+.pp-eternal-details > summary:hover { color: var(--fam, var(--text-1)); }
+.pp-eternal-change { font-size: 0.84rem; line-height: 1.5; color: var(--text-2); margin-top: 0.35rem; }
 .pp-herogroup { margin-bottom: 1.1rem; }
 .pp-herogroup h3 { display: flex; align-items: center; gap: 0.45rem; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin: 0 0 0.6rem; }
 .pp-herogroup.pp-buff h3 { color: var(--green); }
