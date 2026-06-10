@@ -256,6 +256,10 @@ const MatchupEngine = (() => {
     return parts.join('/');
   }
 
+  // An augment that shifts toward what the hero's kit already does amplifies
+  // their playstyle — map augment playstyleShift values to derived tags.
+  const SHIFT_TO_PLAYSTYLE = { healing: 'sustain', burst: 'burst', on_hit: 'sustained_dps', cc: 'cc_heavy', mobility: 'dive' };
+
   function _pickAugment(roleData, buildAnalysis, yourProfile) {
     if (!roleData?.augments?.length) return { recommended: null, alternatives: [], note: 'No augment data' };
     const scored = roleData.augments.map(aug => {
@@ -267,12 +271,20 @@ const MatchupEngine = (() => {
       if (buildAnalysis?.threatProfile?.includes('hard to kill') && (nl.includes('shred') || nl.includes('pen') || nl.includes('break'))) score *= 1.5;
       if (yourProfile?.playstyle?.includes('sustained_dps') && (nl.includes('hit') || nl.includes('attack'))) score *= 1.3;
       if (yourProfile?.playstyle?.includes('burst') && (nl.includes('burst') || nl.includes('soul') || nl.includes('limit break'))) score *= 1.3;
-      return { ...aug, score };
+      // Curated augment metadata: boost shifts that lean into the derived playstyle
+      const profAug = (yourProfile?.augments || []).find(pa => (pa.name || '').trim().toLowerCase() === nl);
+      let playstyleFit = false;
+      if (profAug?.playstyleShift) {
+        const tag = SHIFT_TO_PLAYSTYLE[profAug.playstyleShift] || profAug.playstyleShift;
+        if (yourProfile?.playstyle?.includes(tag)) { score *= 1.2; playstyleFit = true; }
+      }
+      return { ...aug, score, playstyleFit };
     }).sort((a, b) => b.score - a.score);
     const top = scored[0];
     let reason = `${top.winRate} WR across ${top.matches || '?'} matches`;
     const tl = (top.name || '').toLowerCase().trim();
     if (buildAnalysis?.hasSustain && (tl.includes('tainted') || tl.includes('anti-heal'))) reason += ' — adds anti-heal pressure';
+    if (top.playstyleFit) reason += ' — amplifies your natural playstyle';
     return {
       recommended: { name: (top.name || '').trim(), winRate: top.winRate, matches: top.matches, reason },
       alternatives: scored.slice(1, 3).map(a => ({ name: (a.name || '').trim(), winRate: a.winRate, matches: a.matches })),
@@ -418,98 +430,18 @@ const MatchupEngine = (() => {
   function _clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
   /**
-   * Derive every hero's early/mid/late kit power from ability data:
-   * - rank-1 base damage → early lane pressure (strong before items exist)
-   * - base damage growth across ranks → mid-game level spikes
-   * - scaling % ratios → late game (items multiply their damage)
-   * Plus curated traits/attributes (durability, stacking, crit-class, …).
-   * Scores are normalized across the whole roster so 70 vs 45 is meaningful.
+   * Hero early/mid/late kit power — delegated to KitEngine, which derives
+   * it from ability rank-1 damage, growth, scaling ratios, cooldown uptime,
+   * CC payloads, and curated traits, normalized across the roster.
    */
   function computeKitPhaseProfiles() {
     if (kitPhaseCache) return kitPhaseCache;
-    if (!heroAbilities || !heroProfiles) return null;
-
-    const raw = {};
-    for (const [slug, h] of Object.entries(heroAbilities)) {
-      let base1 = 0, growth = 0, scalingSum = 0;
-      for (const ab of (h.abilities || [])) {
-        if (!ab.damage?.length) continue;
-        // Strongest damage entry per ability — avoids multi-hit inflation
-        let best = null;
-        for (const d of ab.damage) {
-          const v = d.values || [];
-          if (!v.length) continue;
-          if (!best || v[0] > best.values[0]) best = d;
-        }
-        if (!best) continue;
-        const v = best.values;
-        const w = ab.key === 'BASIC' ? 0.5 : 1;
-        base1 += v[0] * w;
-        growth += (v[v.length - 1] - v[0]) * w;
-        scalingSum += (best.scaling || 0) * w;
-      }
-      raw[slug] = { base1, growth, scalingSum };
+    if (typeof KitEngine === 'undefined' || !KitEngine.isReady()) return null;
+    kitPhaseCache = {};
+    for (const [slug, k] of Object.entries(KitEngine.getAllProfiles() || {})) {
+      kitPhaseCache[slug] = { early: k.phases.early, mid: k.phases.mid, late: k.phases.late, reasons: k.phaseReasons };
     }
-
-    // Min-max normalize each component across the roster
-    const makeNorm = (key) => {
-      const vals = Object.values(raw).map(r => r[key]);
-      const min = Math.min(...vals), max = Math.max(...vals);
-      return v => max > min ? (v - min) / (max - min) : 0.5;
-    };
-    const nBase = makeNorm('base1'), nGrowth = makeNorm('growth'), nScale = makeNorm('scalingSum');
-
-    const profiles = {};
-    for (const [slug, r] of Object.entries(raw)) {
-      const p = heroProfiles[slug] || {};
-      const a = p.attributes || {};
-      const t = new Set(p.baseTraits || []);
-      const classes = (p.classes || []).map(c => String(c).toUpperCase());
-      const reasons = { early: [], mid: [], late: [] };
-
-      const baseN = nBase(r.base1), growthN = nGrowth(r.growth), scaleN = nScale(r.scalingSum);
-
-      let early = baseN * 55 + (a.durability || 0) * 2.5;
-      if (p.attackType === 'melee' && (a.durability || 0) >= 6) early += 6;
-      if (t.has('cc')) early += 4;
-      if (t.has('dot')) early += 3;
-      if (t.has('self_heal') || t.has('healing')) early += 3;
-      if (baseN >= 0.65) reasons.early.push('high rank-1 ability damage — hits hard before anyone has items');
-      if ((a.durability || 0) >= 7) reasons.early.push('durable base stats — wins extended early trades');
-      if (t.has('cc') && baseN >= 0.5) reasons.early.push('CC + base damage enables early kill pressure');
-
-      let mid = growthN * 45 + (a.mobility || 0) * 2.5 + Math.max(a.attackPower || 0, a.abilityPower || 0) * 1.5;
-      if (t.has('execute')) mid += 5;
-      if (t.has('mobility')) mid += 3;
-      if (t.has('global')) mid += 4;
-      if (growthN >= 0.65) reasons.mid.push('big per-rank damage growth — spikes hard with levels');
-      if ((a.mobility || 0) >= 7) reasons.mid.push('high mobility — dominates mid-game skirmishes and rotations');
-      if (t.has('global')) reasons.mid.push('global presence — punishes map-wide in mid game');
-
-      let late = scaleN * 55;
-      if (t.has('stacking')) late += 10;
-      if (t.has('as_steroid')) late += 8;
-      if (t.has('on_hit')) late += 6;
-      if (t.has('execute')) late += 4;
-      if (classes.includes('SHARPSHOOTER') || classes.includes('EXECUTIONER')) late += 8;
-      if (scaleN >= 0.65) reasons.late.push('high scaling ratios — items multiply their damage');
-      if (t.has('stacking')) reasons.late.push('stacking passive — gets stronger the longer the game goes');
-      if (t.has('as_steroid') || t.has('on_hit')) reasons.late.push('attack-speed/on-hit kit — full build turns them into a DPS machine');
-
-      profiles[slug] = { early, mid, late, reasons };
-    }
-
-    // Normalize each phase across the roster to a 20–95 scale
-    for (const ph of ['early', 'mid', 'late']) {
-      const vals = Object.values(profiles).map(p => p[ph]);
-      const min = Math.min(...vals), max = Math.max(...vals);
-      for (const p of Object.values(profiles)) {
-        p[ph] = max > min ? Math.round(20 + ((p[ph] - min) / (max - min)) * 75) : 55;
-      }
-    }
-
-    kitPhaseCache = profiles;
-    return profiles;
+    return kitPhaseCache;
   }
 
   /**
@@ -726,7 +658,7 @@ const MatchupEngine = (() => {
     itemsData = itemsRaw.items || itemsRaw;
     itemIndex = buildItemIndex(itemsData);
 
-    // Phase analysis is optional — engine still works without ability data
+    // Phase/playstyle analysis is optional — engine works without ability data
     try {
       if (abilitiesRes?.ok) { heroAbilities = await abilitiesRes.json(); kitPhaseCache = null; }
     } catch (e) { heroAbilities = null; }
@@ -738,6 +670,18 @@ const MatchupEngine = (() => {
       heroProfiles[p.slug] = p;
       for (const a of (p.augments || [])) {
         augmentDescriptions[a.name.trim().toLowerCase()] = cleanGameText(a.description || '');
+      }
+    }
+
+    // Initialize KitEngine and merge derived playstyle tags into profiles —
+    // this activates playstyle-aware augment, tip, and synergy logic.
+    if (typeof KitEngine !== 'undefined') {
+      if (!KitEngine.isReady() && heroAbilities) KitEngine.init(profilesRaw, heroAbilities);
+      if (KitEngine.isReady()) {
+        for (const p of Object.values(heroProfiles)) {
+          const kit = KitEngine.getProfile(p.slug);
+          if (kit) p.playstyle = kit.playstyle;
+        }
       }
     }
   }
@@ -763,6 +707,11 @@ const MatchupEngine = (() => {
 
     // ── Counter Data Lookup ──
     const counterData = lookupCounterData(yourSlug, enemySlug, effectiveRole, heroDataMap);
+    // No observed head-to-head data → fall back to the kit-only forecast
+    // (weak model, surfaced as low-confidence — see KitEngine.MATCHUP_MODEL)
+    if (!counterData.hasDirectData && typeof KitEngine !== 'undefined' && KitEngine.isReady()) {
+      counterData.kitForecast = KitEngine.predictMatchup(yourSlug, enemySlug);
+    }
 
     const enemyData = heroDataMap[enemySlug];
     // Prefer the enemy's build for the mirrored lane role (offlane vs offlane,

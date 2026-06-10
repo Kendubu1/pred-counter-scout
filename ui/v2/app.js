@@ -82,6 +82,40 @@ function wrClass(wr) {
 function wrColor(wr) {
   if (wr >= 52) return '#00c48c'; if (wr <= 48) return '#ff5a5a'; return '#f0b429';
 }
+// ── KitEngine bootstrap: loads kit-derived profiles (playstyle, phases,
+// matchup forecast) and merges playstyle tags into heroProfiles so
+// playstyle-aware logic (eternals, augments, tips) can use them.
+let kitPlaystyleMerged = false;
+async function ensureKitEngine() {
+  if (typeof KitEngine === 'undefined') return false;
+  if (!KitEngine.isReady()) {
+    try { await KitEngine.loadFrom(DATA_BASE); } catch (e) { console.warn('KitEngine load failed', e); }
+  }
+  if (KitEngine.isReady() && !kitPlaystyleMerged) {
+    for (const [slug, p] of Object.entries(heroProfiles || {})) {
+      const kit = KitEngine.getProfile(slug);
+      if (kit && !p.playstyle) p.playstyle = kit.playstyle;
+    }
+    kitPlaystyleMerged = true;
+  }
+  return typeof KitEngine !== 'undefined' && KitEngine.isReady();
+}
+
+// Compact E/M/L phase-edge chips for "you vs them", kit-only.
+// Green = your phase, red = theirs, neutral = even.
+function phaseChipsVs(yourSlug, enemySlug) {
+  if (typeof KitEngine === 'undefined' || !KitEngine.isReady()) return '';
+  const a = KitEngine.getProfile(yourSlug), b = KitEngine.getProfile(enemySlug);
+  if (!a || !b) return '';
+  const chips = [['E', 'early'], ['M', 'mid'], ['L', 'late']].map(([label, ph]) => {
+    const diff = a.phases[ph] - b.phases[ph];
+    const color = diff > 7 ? 'var(--green)' : diff < -7 ? 'var(--red)' : 'var(--text-2)';
+    const title = `${ph} game: you ${a.phases[ph]} vs ${b.phases[ph]}`;
+    return `<span title="${esc(title)}" style="display:inline-block;width:18px;text-align:center;font-size:0.65rem;font-weight:700;border-radius:4px;padding:1px 0;background:var(--bg-3);color:${color}">${label}</span>`;
+  });
+  return `<span style="display:inline-flex;gap:2px;margin-left:0.4rem;vertical-align:middle" title="Phase edge vs this hero (kit-based)">${chips.join('')}</span>`;
+}
+
 // Patch trend for a hero, e.g. { trend, changes, patch } or null.
 function patchStateOf(slug) { return heroPatchState?.heroes?.[slug] || null; }
 // Compact meta-trend badge HTML for a hero, or '' if unchanged/unknown.
@@ -1063,16 +1097,61 @@ function renderHeroTips(slug) {
   return h;
 }
 
-function renderOverview() {
+// ── Kit Identity card: playstyle, power curve, skill spike — all derived
+// from ability data (rank-1 damage, scaling, cooldowns, CC), no win rates.
+function renderKitIdentityCard(slug, rd) {
+  if (typeof KitEngine === 'undefined' || !KitEngine.isReady()) return '';
+  const kit = KitEngine.getProfile(slug);
+  if (!kit) return '';
+
+  let html = '<div class="card"><h2>🧬 Kit Identity</h2>';
+  html += '<p style="color:var(--text-2);font-size:0.78rem;margin-bottom:0.5rem">Derived from ability damage, scaling, cooldowns, and CC — independent of win rates</p>';
+
+  // Playstyle chips
+  html += '<div style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.6rem">';
+  kit.playstyle.forEach(tag => {
+    const label = KitEngine.playstyleLabel(tag);
+    const [head, ...rest] = label.split(' — ');
+    html += `<span class="trait-pill" title="${esc(rest.join(' — '))}" style="border-color:var(--accent)">${esc(head)}</span>`;
+  });
+  html += '</div>';
+
+  // Power curve bars (roster-normalized 20–95)
+  const phaseLabels = { early: '🌅 Early', mid: '⚔️ Mid', late: '🌃 Late' };
+  html += '<div style="display:grid;grid-template-columns:auto 1fr auto;gap:0.3rem 0.5rem;align-items:center;margin-bottom:0.5rem">';
+  for (const ph of ['early', 'mid', 'late']) {
+    const v = kit.phases[ph];
+    const color = v >= 62 ? 'var(--green)' : v >= 45 ? 'var(--gold)' : 'var(--red)';
+    html += `<span style="font-size:0.78rem;color:var(--text-1)">${phaseLabels[ph]}</span>`;
+    html += `<div style="height:8px;border-radius:4px;background:var(--bg-3);overflow:hidden"><div style="width:${v}%;height:100%;background:${color}"></div></div>`;
+    html += `<span style="font-size:0.72rem;color:var(--text-2)">${v}</span>`;
+  }
+  html += '</div>';
+  const topPhase = ['early', 'mid', 'late'].sort((a, b) => kit.phases[b] - kit.phases[a])[0];
+  const topReason = (kit.phaseReasons[topPhase] || [])[0];
+  if (topReason) html += `<div style="font-size:0.75rem;color:var(--text-2);font-style:italic;margin-bottom:0.5rem">${esc(topReason)}</div>`;
+
+  // What they max first (per-role scraped skill order)
+  const spike = KitEngine.skillSpike(rd);
+  if (spike) {
+    html += `<div style="font-size:0.8rem;color:var(--text-1);padding:0.4rem;border-radius:8px;background:var(--bg-2);border:1px solid var(--border)">📈 ${esc(spike.note)}</div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+async function renderOverview() {
   const el = document.getElementById('overviewContent');
   if (!currentHero) { el.innerHTML = ''; return; }
   const hero = currentHero;
   const profile = heroProfiles[hero.slug];
   const rd = getRoleData(hero, currentRole);
   if (!rd) { el.innerHTML = '<p style="color:var(--text-2)">No data for this role</p>'; return; }
+  await ensureKitEngine();
 
   let html = '';
   html += renderHeroTips(hero.slug);
+  html += renderKitIdentityCard(hero.slug, rd);
 
   // Augments & Crests (top of overview)
   const augments = (rd.augments||[]).sort((a,b) => parseFloat(b.winRate) - parseFloat(a.winRate)).slice(0,3);
@@ -1367,10 +1446,13 @@ function renderAbilities() {
 }
 
 // ── ETERNALS TAB ──
-function renderEternals() {
+async function renderEternals() {
   const el = document.getElementById('eternalsContent');
   if (!el) return;
   if (!currentHero) { el.innerHTML = ''; return; }
+  // Merge kit-derived playstyle tags first — they activate playstyle fits
+  // (burst/poke/dive/crit/scaling…) in the Eternals scoring
+  await ensureKitEngine();
   const profile = heroProfiles[currentHero.slug];
 
   if (typeof EternalsEngine === 'undefined' || !EternalsEngine.isReady()) {
@@ -1525,6 +1607,7 @@ async function renderMatchup() {
   }
 
   el.innerHTML = '<p style="color:var(--text-2)">Analyzing…</p>';
+  await ensureKitEngine();
 
   if (typeof MatchupEngine !== 'undefined' && !MatchupEngine.isReady()) {
     try { await MatchupEngine.init(DATA_BASE); } catch(e) { console.warn('MatchupEngine init failed', e); }
@@ -1555,7 +1638,13 @@ async function renderMatchup() {
     const yourWR = (100 - cd.enemyWinRate).toFixed(1);
     warnings.push({ type: parseFloat(yourWR)>=50?'positive':'negative', icon:'📊', text:`${esc(result.vsEnemy.name)} has ${cd.enemyWinRate.toFixed(1)}% WR vs you (≈ <span class="${wrClass(parseFloat(yourWR))}" style="font-weight:600">${yourWR}%</span> for you)` });
   } else {
-    warnings.push({ type:'warning', icon:'⚠️', text:'No direct matchup data — based on kit analysis' });
+    const kf = result.counterData?.kitForecast;
+    if (kf) {
+      const driverTxt = (kf.drivers || []).map(d => `${d.helps ? '+' : '−'} ${d.label}`).join(', ');
+      warnings.push({ type:'warning', icon:'🧪', text:`No matchup data — kit forecast: ~${kf.predictedWR}% for you <span style="color:var(--text-2)">(low confidence${driverTxt ? ' · ' + esc(driverTxt) : ''})</span>` });
+    } else {
+      warnings.push({ type:'warning', icon:'⚠️', text:'No direct matchup data — based on kit analysis' });
+    }
   }
 
   if (warnings.length) {
@@ -1739,6 +1828,7 @@ async function renderCounters() {
   const el = document.getElementById('countersContent');
   if (!currentHero) { el.innerHTML = ''; return; }
   const hero = currentHero;
+  await ensureKitEngine();
 
   // Build enemy selector at the top
   let headerHtml = '<div class="card" style="margin-bottom:1rem">';
@@ -1807,6 +1897,7 @@ async function renderCounters() {
       const emoji = roleEmoji[c.role] || '';
       h += ` <span style="font-size:0.7rem;font-weight:400;padding:1px 6px;border-radius:8px;background:var(--bg-3);color:var(--text-2)">${emoji} ${titleCase(c.role)}</span>`;
     }
+    h += phaseChipsVs(heroSlug, enemySlug);
     h += '</div>';
     if (profile) h += renderArchetypeTags(profile);
     h += '</div>';
@@ -1892,6 +1983,7 @@ async function renderCountersMatchup(enemySlug) {
 
   // Reuse the existing renderMatchup logic but target countersMatchupContent
   el.innerHTML = '<p style="color:var(--text-2)">Analyzing…</p>';
+  await ensureKitEngine();
 
   if (typeof MatchupEngine !== 'undefined' && !MatchupEngine.isReady()) {
     try { await MatchupEngine.init(DATA_BASE); } catch(e) { console.warn('MatchupEngine init failed', e); }
@@ -1923,7 +2015,13 @@ async function renderCountersMatchup(enemySlug) {
     const yourWR = (100 - cd.enemyWinRate).toFixed(1);
     warnings.push({ type: parseFloat(yourWR)>=50?'positive':'negative', icon:'📊', text:`${esc(result.vsEnemy.name)} has ${cd.enemyWinRate.toFixed(1)}% WR vs you (≈ <span class="${wrClass(parseFloat(yourWR))}" style="font-weight:600">${yourWR}%</span> for you)` });
   } else {
-    warnings.push({ type:'warning', icon:'⚠️', text:'No direct matchup data — based on kit analysis' });
+    const kf = result.counterData?.kitForecast;
+    if (kf) {
+      const driverTxt = (kf.drivers || []).map(d => `${d.helps ? '+' : '−'} ${d.label}`).join(', ');
+      warnings.push({ type:'warning', icon:'🧪', text:`No matchup data — kit forecast: ~${kf.predictedWR}% for you <span style="color:var(--text-2)">(low confidence${driverTxt ? ' · ' + esc(driverTxt) : ''})</span>` });
+    } else {
+      warnings.push({ type:'warning', icon:'⚠️', text:'No direct matchup data — based on kit analysis' });
+    }
   }
 
   if (warnings.length) {
@@ -2772,6 +2870,7 @@ function getKitAwareReasons(heroSlug, enemies, yours) {
 }
 
 async function updateDraftSuggestions() {
+  await ensureKitEngine();
   renderDraftTeamAnalysis();
   renderEnemyTeamAnalysis();
   const sugEl = document.getElementById('draftSuggestionsList');
@@ -2802,28 +2901,65 @@ async function updateDraftSuggestions() {
     let counterScore = 0;
     let counterReasons = [];
 
-    // 60% counter value
+    // 50% counter value — scan ALL enemy roles, keep the biggest-sample
+    // entry, and shrink small samples toward 50% before scoring
+    const adjWRDraft = (wr, m) => (typeof MatchupEngine !== 'undefined' && MatchupEngine.adjustedWinRate)
+      ? MatchupEngine.adjustedWinRate(wr, m) : wr;
     for (const enemySlug of enemies) {
       const enemyData = heroDataMap[enemySlug];
       if (!enemyData) continue;
-      const rd = getRoleData(enemyData, enemyData.activeRoles?.[0] || 'all');
-      if (!rd?.counters) continue;
       const heroName = heroDisplayName(h.slug);
-      const match = rd.counters.find(c => {
-        const cName = heroDisplayName(c.hero);
-        return cName === heroName || c.hero === h.slug || heroSlugFromName(c.hero) === h.slug;
-      });
+      let match = null;
+      for (const rd of Object.values(enemyData.roles || {})) {
+        const m = (rd?.counters || []).find(c => {
+          const cName = heroDisplayName(c.hero);
+          return cName === heroName || c.hero === h.slug || heroSlugFromName(c.hero) === h.slug;
+        });
+        if (m && (!match || (m.matches || 0) > (match.matches || 0))) match = m;
+      }
       if (match) {
-        const advantage = 50 - match.winRate;
+        const advantage = 50 - adjWRDraft(match.winRate, match.matches || 0);
         counterScore += advantage;
         if (advantage > 2) {
           const enemyName = heroProfiles[enemySlug]?.name || enemySlug;
-          counterReasons.push(`${(50 + advantage).toFixed(0)}% WR vs ${enemyName}`);
+          counterReasons.push(`${(50 + advantage).toFixed(0)}% WR vs ${enemyName} (${match.matches || '?'}g)`);
         }
       }
     }
 
-    // 40% team fit
+    // 20% power-curve fit — phase edge vs enemy picks + patching the
+    // weakest phase of your current comp (kit-derived, no win rates)
+    let phaseScore = 0;
+    let phaseReasons = [];
+    const kitReady = typeof KitEngine !== 'undefined' && KitEngine.isReady();
+    const candKit = kitReady ? KitEngine.getProfile(h.slug) : null;
+    if (candKit) {
+      let diffSum = 0, diffN = 0;
+      for (const enemySlug of enemies) {
+        const ek = KitEngine.getProfile(enemySlug);
+        if (!ek) continue;
+        for (const ph of ['early', 'mid', 'late']) { diffSum += candKit.phases[ph] - ek.phases[ph]; diffN++; }
+      }
+      if (diffN) phaseScore += Math.max(-8, Math.min(8, (diffSum / diffN) / 4));
+      // Comp patching: boost candidates strong in your team's weakest phase
+      const teamKits = yours.map(s => KitEngine.getProfile(s)).filter(Boolean);
+      if (teamKits.length >= 2) {
+        const teamAvg = ph => teamKits.reduce((s, k) => s + k.phases[ph], 0) / teamKits.length;
+        const weakest = ['early', 'mid', 'late'].sort((a, b) => teamAvg(a) - teamAvg(b))[0];
+        if (teamAvg(weakest) < 50 && candKit.phases[weakest] >= 60) {
+          phaseScore += 6;
+          phaseReasons.push(`Patches your weak ${weakest} game`);
+        }
+      }
+    }
+
+    // Patch trend — curated buff/nerf state, no win-rate lag
+    let trendScore = 0;
+    const trend = patchStateOf(h.slug);
+    if (trend?.trend === 'buff') { trendScore = 3; phaseReasons.push(`▲ Buffed in ${heroPatchState.patch}`); }
+    else if (trend?.trend === 'nerf') trendScore = -3;
+
+    // 30% team fit
     let fitScore = 0;
     let fitReasons = [];
     const heroProfile = heroProfiles[h.slug];
@@ -2860,11 +2996,11 @@ async function updateDraftSuggestions() {
     // Get kit-aware reasons (replaces generic "Adds CC", "Adds magic damage")
     const kitReasons = getKitAwareReasons(h.slug, enemies, yours);
 
-    const totalScore = counterScore * 0.6 + fitScore * 0.4;
-    // Prefer kit-aware reasons, fall back to WR reasons, then fit reasons
+    const totalScore = counterScore * 0.5 + fitScore * 0.3 + phaseScore + trendScore;
+    // Prefer kit-aware reasons, fall back to WR reasons, then fit/phase reasons
     const reasons = kitReasons.length
-      ? [...kitReasons, ...counterReasons].slice(0, 3)
-      : [...counterReasons, ...fitReasons].slice(0, 3);
+      ? [...kitReasons, ...counterReasons, ...phaseReasons].slice(0, 3)
+      : [...counterReasons, ...phaseReasons, ...fitReasons].slice(0, 3);
 
     if (totalScore > 0 || !enemies.length) {
       scores.push({ slug: h.slug, score: totalScore, reasons });
@@ -2879,14 +3015,29 @@ async function updateDraftSuggestions() {
     return;
   }
 
+  // Enemy-team average phases, for per-suggestion phase-edge chips
+  const enemyKits = (typeof KitEngine !== 'undefined' && KitEngine.isReady())
+    ? enemies.map(s => KitEngine.getProfile(s)).filter(Boolean) : [];
+  const enemyPhaseAvg = ph => enemyKits.length ? enemyKits.reduce((s, k) => s + k.phases[ph], 0) / enemyKits.length : null;
+
   let html = '';
   topSuggestions.forEach(s => {
     const name = heroProfiles[s.slug]?.name || s.slug;
     const scoreColor = s.score >= 10 ? 'var(--green)' : s.score >= 5 ? 'var(--gold)' : 'var(--text-1)';
+    let chips = '';
+    const sk = (typeof KitEngine !== 'undefined' && KitEngine.isReady()) ? KitEngine.getProfile(s.slug) : null;
+    if (sk && enemyKits.length) {
+      chips = '<span style="display:inline-flex;gap:2px;margin-left:0.35rem;vertical-align:middle" title="Phase edge vs enemy team (kit-based)">' +
+        [['E', 'early'], ['M', 'mid'], ['L', 'late']].map(([label, ph]) => {
+          const diff = sk.phases[ph] - enemyPhaseAvg(ph);
+          const color = diff > 7 ? 'var(--green)' : diff < -7 ? 'var(--red)' : 'var(--text-2)';
+          return `<span style="display:inline-block;width:16px;text-align:center;font-size:0.62rem;font-weight:700;border-radius:4px;padding:1px 0;background:var(--bg-3);color:${color}">${label}</span>`;
+        }).join('') + '</span>';
+    }
     html += `<div class="draft-suggestion-item" data-slug="${esc(s.slug)}">`;
     html += `<img class="draft-suggestion-img" src="img/heroes/${s.slug}.webp" alt="${esc(name)}" onerror="this.style.display='none'">`;
     html += `<div class="draft-suggestion-info">`;
-    html += `<div class="draft-suggestion-name">${esc(name)}</div>`;
+    html += `<div class="draft-suggestion-name">${esc(name)}${chips}</div>`;
     html += `<div class="draft-suggestion-reason">${s.reasons.map(esc).join(' • ') || 'Solid pick'}</div>`;
     html += `</div>`;
     html += `<div class="draft-suggestion-score" style="color:${scoreColor}">${s.score > 0 ? '+' + s.score.toFixed(0) : '—'}</div>`;
@@ -3080,8 +3231,45 @@ function renderDraftTeamAnalysis() {
     }
   }
 
+  html += renderTeamPowerCurve(heroes, draftState.enemy.filter(Boolean));
+
   html += '</div>';
   el.innerHTML = html;
+}
+
+// Team-vs-team power curve (kit-derived): average phase power of your picks
+// vs enemy picks, with a win-condition note.
+function renderTeamPowerCurve(yourSlugs, enemySlugs) {
+  if (typeof KitEngine === 'undefined' || !KitEngine.isReady()) return '';
+  const kitsOf = slugs => slugs.map(s => KitEngine.getProfile(s)).filter(Boolean);
+  const yourKits = kitsOf(yourSlugs);
+  if (yourKits.length < 2) return '';
+  const enemyKits = kitsOf(enemySlugs);
+  const avg = (kits, ph) => Math.round(kits.reduce((s, k) => s + k.phases[ph], 0) / kits.length);
+  const labels = { early: '🌅 Early', mid: '⚔️ Mid', late: '🌃 Late' };
+
+  let html = '<div style="margin-top:0.75rem"><div style="font-size:0.75rem;font-weight:600;color:var(--text-2);text-transform:uppercase;margin-bottom:0.3rem">Power Curve' + (enemyKits.length ? ' vs Enemy' : '') + '</div>';
+  const verdicts = {};
+  for (const ph of ['early', 'mid', 'late']) {
+    const you = avg(yourKits, ph);
+    const them = enemyKits.length ? avg(enemyKits, ph) : null;
+    const diff = them === null ? 0 : you - them;
+    verdicts[ph] = diff;
+    const color = them === null ? 'var(--text-2)' : diff > 5 ? 'var(--green)' : diff < -5 ? 'var(--red)' : 'var(--gold)';
+    html += `<div style="display:flex;align-items:center;gap:0.5rem;margin:0.2rem 0;font-size:0.78rem">`;
+    html += `<span style="width:62px;color:var(--text-1)">${labels[ph]}</span>`;
+    html += `<div style="flex:1;height:7px;border-radius:4px;background:var(--bg-3);overflow:hidden"><div style="width:${you}%;height:100%;background:var(--accent)"></div></div>`;
+    html += `<span style="width:60px;text-align:right;color:${color}">${you}${them !== null ? ' vs ' + them : ''}</span>`;
+    html += '</div>';
+  }
+  if (enemyKits.length >= 2) {
+    const e = verdicts.early, l = verdicts.late;
+    if (e > 5 && l < -5) html += '<div style="font-size:0.78rem;color:var(--text-1);margin-top:0.3rem">⏱️ Your comp peaks earlier — force objectives before full build, don\'t stall.</div>';
+    else if (e < -5 && l > 5) html += '<div style="font-size:0.78rem;color:var(--text-1);margin-top:0.3rem">🛡️ You outscale — play safe early, win the 25+ minute game.</div>';
+    else if (e < -5 && l < -5) html += '<div style="font-size:0.78rem;color:var(--red,#ef4444);margin-top:0.3rem">⚠️ Enemy comp is favored at most stages — you\'ll need draft or macro edges.</div>';
+  }
+  html += '</div>';
+  return html;
 }
 
 // ══════════════════════════════════════════

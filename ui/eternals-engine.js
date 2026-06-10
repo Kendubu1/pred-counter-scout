@@ -59,8 +59,10 @@ const EternalsEngine = (() => {
       });
     }
 
-    // Trait contributions.
-    const heroTraits = new Set(profile?.baseTraits || []);
+    // Trait contributions — includes kit-derived playstyle tags (burst, poke,
+    // dive, dueling, crit, scaling, sustain, enchant…) when KitEngine has
+    // merged them into the profile, activating those fits in eternals.json.
+    const heroTraits = new Set([...(profile?.baseTraits || []), ...(profile?.playstyle || [])]);
     const matched = [];
     let traitWeight = 0;
     for (const [trait, weight] of Object.entries(fit.traits || {})) {
