@@ -648,7 +648,7 @@ const MatchupEngine = (() => {
   // ── Public API ──
 
   async function init(dataBase) {
-    const cb = '?v=' + Date.now();
+    const cb = '?v=' + new Date().toISOString().slice(0, 10); // daily cache key — was Date.now(), which defeated caching entirely
     const [itemsRes, profilesRes, abilitiesRes] = await Promise.all([
       fetch(`${dataBase}/game-data/items.json${cb}`),
       fetch(`${dataBase}/game-data/hero-profiles.json${cb}`),

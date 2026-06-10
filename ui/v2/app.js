@@ -1,7 +1,7 @@
 // app.js — Predecessor Scout v2 Flagship
 
 const DATA_BASE = '../data';
-const CACHE_BUST = '?v=' + Date.now();
+const CACHE_BUST = '?v=' + new Date().toISOString().slice(0, 10); // daily cache key — Date.now() forced ~1MB of JSON re-downloads every visit
 function titleCase(s) { return s ? s.split(/[\s_-]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ') : ''; }
 
 // ── Name fix map ──

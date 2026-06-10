@@ -17,8 +17,8 @@ const SupportSynergy = (() => {
   async function load() {
     if (heroAbilities && heroProfiles) return;
     const [aRes, pRes] = await Promise.all([
-      fetch('../data/game-data/hero-abilities.json?v=' + Date.now()),
-      fetch('../data/game-data/hero-profiles.json?v=' + Date.now()),
+      fetch('../data/game-data/hero-abilities.json?v=' + new Date().toISOString().slice(0, 10)),
+      fetch('../data/game-data/hero-profiles.json?v=' + new Date().toISOString().slice(0, 10)),
     ]);
     heroAbilities = await aRes.json();
     heroProfiles = await pRes.json();

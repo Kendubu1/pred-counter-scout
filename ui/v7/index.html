@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Predecessor Scout — V7</title>
+  <base href="../">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="v7/design.css?v=7.0.0">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand" id="brandHome">Predecessor <b>Scout</b> <span class="patch-tag">V7</span></div>
+    <div class="topbar-spacer"></div>
+    <button class="topbar-link" id="navDraft">Draft</button>
+    <a class="topbar-link" href="team-lab.html">Team Lab</a>
+    <a class="topbar-link" href="learn-eternals.html">Eternals</a>
+    <span class="patch-tag" id="patchTag"></span>
+  </header>
+
+  <main class="wrap" id="app">
+    <!-- Landing: the hero grid IS the home page. Search focused, answer 2 taps away. -->
+    <section id="viewGrid">
+      <div class="movers" id="movers"></div>
+      <div class="grid-controls">
+        <input type="search" class="search" id="search" placeholder="Search heroes…" autocomplete="off">
+        <div class="seg" id="roleSeg">
+          <button class="seg-btn active" data-role="all">All</button>
+          <button class="seg-btn" data-role="offlane">Off</button>
+          <button class="seg-btn" data-role="jungle">Jng</button>
+          <button class="seg-btn" data-role="midlane">Mid</button>
+          <button class="seg-btn" data-role="carry">Carry</button>
+          <button class="seg-btn" data-role="support">Supp</button>
+        </div>
+      </div>
+      <div class="hero-grid" id="heroGrid"></div>
+    </section>
+
+    <!-- Hero view: Build / Matchups / Learn -->
+    <section id="viewHero" class="hidden">
+      <div class="hero-head" id="heroHead"></div>
+      <div class="kit-strip" id="kitStrip"></div>
+      <nav class="tabs" id="heroTabs">
+        <button class="tab active" data-tab="build">Build</button>
+        <button class="tab" data-tab="matchups">Matchups</button>
+        <button class="tab" data-tab="learn">Learn</button>
+      </nav>
+      <div id="tab-build"></div>
+      <div id="tab-matchups" class="hidden"></div>
+      <div id="tab-learn" class="hidden"></div>
+    </section>
+
+    <!-- Draft view -->
+    <section id="viewDraft" class="hidden">
+      <div class="draft-teams">
+        <div>
+          <div class="draft-col-label you">Your Team</div>
+          <div id="draftYour"></div>
+        </div>
+        <div class="draft-vs">VS</div>
+        <div>
+          <div class="draft-col-label them">Enemy Team</div>
+          <div id="draftEnemy"></div>
+        </div>
+      </div>
+      <div id="draftAnalysis"></div>
+      <div class="h-section">Suggestions <span class="h-note" id="sugHint">add enemy picks to get counters</span></div>
+      <div id="draftSuggestions"></div>
+    </section>
+  </main>
+
+  <div class="modal hidden" id="pickModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <span class="disp" id="pickTitle">Pick a hero</span>
+        <button class="x" id="pickClose">✕</button>
+      </div>
+      <input type="search" class="search" id="pickSearch" placeholder="Search…" autocomplete="off" style="max-width:none;margin-bottom:12px">
+      <div class="hero-grid" id="pickGrid"></div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    Predecessor Scout V7 — kit-engine powered · not affiliated with Omeda Studios
+  </footer>
+
+  <script src="item-utils.js?v=31"></script>
+  <script src="kit-engine.js?v=2"></script>
+  <script src="matchup-engine.js?v=34"></script>
+  <script src="eternals-engine.js?v=3"></script>
+  <script src="v7/app.js?v=7.0.0"></script>
+</body>
+</html>

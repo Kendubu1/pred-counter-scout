@@ -65,6 +65,7 @@
 
   let profiles = null;   // slug → curated profile
   let kits = null;       // slug → computed kit profile
+  let abilitiesRaw = null; // slug → { abilities } as loaded (for UI consumers)
   let ready = false;
   let loading = null;
 
@@ -346,6 +347,7 @@
     if (!profilesArr || !abilitiesMap) return false;
     profiles = {};
     for (const p of profilesArr) profiles[p.slug] = p;
+    abilitiesRaw = abilitiesMap;
     kits = buildKits(profilesArr, abilitiesMap);
     ready = true;
     return true;
@@ -357,7 +359,7 @@
     if (loading) return loading;
     loading = (async () => {
       try {
-        const cb = '?v=' + Date.now();
+        const cb = '?v=' + new Date().toISOString().slice(0, 10); // daily cache key — was Date.now(), which defeated caching entirely
         const [pRes, aRes] = await Promise.all([
           fetch(`${dataBase}/game-data/hero-profiles.json${cb}`),
           fetch(`${dataBase}/game-data/hero-abilities.json${cb}`),
@@ -375,9 +377,10 @@
   function isReady() { return ready; }
   function getProfile(slug) { return kits?.[slug] || null; }
   function getAllProfiles() { return kits; }
+  function getAbilities(slug) { return abilitiesRaw?.[slug]?.abilities || null; }
   function playstyleLabel(tag) { return PLAYSTYLE_LABELS[tag] || tag; }
 
-  const api = { init, loadFrom, isReady, getProfile, getAllProfiles, playstyleLabel, skillSpike, predictMatchup, matchupFeatures, KIT_POWER_WEIGHTS, PLAYSTYLE_LABELS, MATCHUP_MODEL };
+  const api = { init, loadFrom, isReady, getProfile, getAllProfiles, getAbilities, playstyleLabel, skillSpike, predictMatchup, matchupFeatures, KIT_POWER_WEIGHTS, PLAYSTYLE_LABELS, MATCHUP_MODEL };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.KitEngine = api;

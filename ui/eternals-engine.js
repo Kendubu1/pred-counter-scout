@@ -17,7 +17,7 @@ const EternalsEngine = (() => {
   async function init(dataBase) {
     if (ready) return true;
     try {
-      const res = await fetch(`${dataBase}/game-data/eternals.json?v=${Date.now()}`);
+      const res = await fetch(`${dataBase}/game-data/eternals.json?v=${new Date().toISOString().slice(0, 10)}`);
       if (!res.ok) return false;
       catalog = await res.json();
       eternals = catalog.eternals || [];
