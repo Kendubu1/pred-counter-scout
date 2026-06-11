@@ -223,11 +223,34 @@ export function rotationDamage(kit: HeroKit, opts: SimOptions, t: ItemStats, win
     const cd = abilityCooldown(ab, rank, t, eff);
     const casts = 1 + Math.floor(windowSec / cd);
     const amp = ampFactorAbilities(eff, ab.key === 'ULTIMATE', isBurst, profile, t);
-    total += mitigate(abilityHit(ab, rank, t) * amp, ab.damageType, profile, t, eff, windowSec) * casts;
+    const maxHpBonus = ab.pctMaxHealth && profile ? (ab.pctMaxHealth / 100) * profile.health : 0;
+    total += mitigate((abilityHit(ab, rank, t) + maxHpBonus) * amp, ab.damageType, profile, t, eff, windowSec) * casts;
     for (const p of eff.onAbilityProcs) {
       const procs = procCount(casts, windowSec, p.icdSeconds) * rampFactor(windowSec, p.rampSeconds);
       total += mitigate(procDamage(p, t, profile, kit, isBurst, eff), p.damageType, profile, t, eff, windowSec) * procs;
     }
+  }
+  return total;
+}
+
+/**
+ * Total mitigated damage over a short engagement window: ability rotation
+ * plus basic attacks. The matchup engine's kill-window numerator.
+ */
+export function combatDamage(kit: HeroKit, items: Item[], opts: SimOptions, cal: Calibration, windowSec: number): number {
+  const eff = opts.effects ?? emptyEffects();
+  const t = effectiveTotals(items, eff);
+  const profile = opts.profile ?? null;
+  const critMult = (cal.constants.critMultiplier?.value as number) ?? 1.75;
+  const isBurst = windowSec <= BURST_WINDOW;
+  let total = rotationDamage(kit, opts, t, windowSec);
+  const aps = attacksPerSecond(kit, opts.level, t);
+  const hits = aps * windowSec;
+  const amp = ampFactorBasics(eff, isBurst, profile);
+  total += mitigate(basicHit(kit, opts.level, t, critMult) * amp, 'physical', profile, t, eff, windowSec) * hits;
+  for (const p of eff.onHitProcs) {
+    const procs = Math.min(hits / p.everyN, p.icdSeconds > 0 ? windowSec / p.icdSeconds : hits / p.everyN);
+    total += mitigate(procDamage(p, t, profile, kit, isBurst, eff), p.damageType, profile, t, eff, windowSec) * procs;
   }
   return total;
 }
@@ -246,7 +269,8 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
     const rank = ranks.get(ab.key) ?? 0;
     if (rank <= 0 || !ab.damagePerRank.length) continue;
     const amp = ampFactorAbilities(eff, ab.key === 'ULTIMATE', true, profile, t);
-    burst += mitigate(abilityHit(ab, rank, t) * amp, ab.damageType, profile, t, eff, BURST_WINDOW);
+    const maxHpBonus = ab.pctMaxHealth && profile ? (ab.pctMaxHealth / 100) * profile.health : 0;
+    burst += mitigate((abilityHit(ab, rank, t) + maxHpBonus) * amp, ab.damageType, profile, t, eff, BURST_WINDOW);
     for (const p of eff.onAbilityProcs) {
       const procs = procCount(1, BURST_WINDOW, p.icdSeconds) * rampFactor(BURST_WINDOW, p.rampSeconds);
       burst += mitigate(procDamage(p, t, profile, kit, true, eff), p.damageType, profile, t, eff, BURST_WINDOW) * procs;

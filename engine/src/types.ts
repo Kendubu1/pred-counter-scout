@@ -13,6 +13,7 @@ export interface AbilityDef {
   name: string;
   damagePerRank: number[];      // best damage entry per rank
   scalingPct: number;            // ratio applied to bonus power, in percent
+  pctMaxHealth?: number;         // bonus damage as % of target max health
   damageType: 'physical' | 'magical' | 'true';
   cooldowns: number[];           // per rank, seconds
   costs: number[];               // mana per rank

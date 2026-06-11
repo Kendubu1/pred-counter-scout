@@ -6,6 +6,7 @@ import { loadCalibration, unverifiedConstants, simulate, skillPriority } from '.
 import { generateBuilds } from './search.js';
 import { rankBlessings } from './eternals.js';
 import { heroGames, itemPlayRate } from './aggregates.js';
+import { matchupCheckpoints } from './matchup.js';
 
 const args = process.argv.slice(2);
 const slug = args.find((a) => !a.startsWith('--'));
@@ -81,6 +82,35 @@ if (top) {
   }
   const unmodeled = ranked.filter((r) => !r.modeled);
   if (unmodeled.length) console.log(`  no math yet (honest list): ${unmodeled.map((r) => r.name.replace(' (Major)', '')).join(', ')}`);
+}
+
+// Matchup checkpoints: --vs <enemy-slug>
+const vsSlug = (() => {
+  const i = args.indexOf('--vs');
+  return i >= 0 ? args[i + 1] : undefined;
+})();
+if (vsSlug && top) {
+  const enemy = data.kits.get(vsSlug);
+  if (!enemy) {
+    console.error(`\nUnknown enemy slug "${vsSlug}"`);
+  } else {
+    const enemyBuilds = generateBuilds(enemy, completedItems(data), cal, { level, beamWidth: 8 });
+    const enemyTop = enemyBuilds[0]!;
+    const report = matchupCheckpoints(
+      { kit, build: top.items.map((n) => data.items.get(n)!), role: kit.roles[0] ?? 'midlane' },
+      { kit: enemy, build: enemyTop.items.map((n) => data.items.get(n)!), role: enemy.roles[0] ?? 'midlane' },
+      cal,
+    );
+    console.log(`\n## vs ${enemy.name} (their sim build: ${enemyTop.items.join(', ')})`);
+    console.log('your spikes:', report.spikes.you.map((s) => `${s.item}@${s.minute ?? '30+'}m`).join('  '));
+    console.log('their spikes:', report.spikes.enemy.map((s) => `${s.item}@${s.minute ?? '30+'}m`).join('  '));
+    for (const c of report.checkpoints) {
+      const chip = c.verdict === 'you' ? 'YOU  ' : c.verdict === 'enemy' ? 'THEM ' : 'even ';
+      console.log(`  min ${String(c.minute).padStart(2)} [${chip}] you ${c.you.items.length} items/${c.you.hp}hp vs ${c.enemy.items.length} items/${c.enemy.hp}hp — ${c.driver}`);
+    }
+    console.log(`gameplan: ${report.gameplan}`);
+    console.log(`flags: ${report.flags.join(' | ')}`);
+  }
 }
 
 const noItems = simulate(kit, [], { level, profile: cal.referenceProfiles.squishy }, cal);

@@ -62,19 +62,35 @@ const OMEDA_KEY_MAP: Record<string, AbilityDef['key']> = {
   RMB: 'ALTERNATE', Q: 'PRIMARY', E: 'SECONDARY', R: 'ULTIMATE',
 };
 
-// Parse "dealing 60/85/110/135/160 <AttackDamageText>(+75%" from ability
-// text. Per-rank scaling arrays ("+110/115/.../130%") use the mean.
-function parseDamage(md: string): { values: number[]; scaling: number; damageType: 'physical' | 'magical' } | null {
-  const m = md.match(/deal(?:ing|s)?\s+([\d][\d./]*)\s*<(AttackDamageText|AbilityPowerText)>\(\+([\d./]+)%/);
-  if (!m) return null;
-  const values = m[1]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
-  const scalingParts = m[3]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
-  if (!values.length || !scalingParts.length) return null;
-  return {
-    values,
-    scaling: scalingParts.reduce((s, n) => s + n, 0) / scalingParts.length,
-    damageType: m[2] === 'AbilityPowerText' ? 'magical' : 'physical',
-  };
+// Parse ability damage from text. Pattern A: "dealing 60/85/110/135/160
+// <AttackDamageText>(+75%" (power ratio adjacent to a stat tag). Pattern B
+// covers ults like Countess: "deals 135/185/235 (+5% ... of the target's
+// maximum health) magical damage" (percent-max-health scaling; any inner
+// power ratio on the percentage itself is conservatively dropped).
+// Per-rank scaling arrays ("+110/115/.../130%") use the mean.
+function parseDamage(md: string): { values: number[]; scaling: number; pctMaxHealth?: number; damageType: 'physical' | 'magical' } | null {
+  const a = md.match(/deal(?:ing|s)?\s+([\d][\d./]*)\s*<(AttackDamageText|AbilityPowerText)>\(\+([\d./]+)%/);
+  if (a) {
+    const values = a[1]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
+    const scalingParts = a[3]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
+    if (!values.length || !scalingParts.length) return null;
+    return {
+      values,
+      scaling: scalingParts.reduce((s, n) => s + n, 0) / scalingParts.length,
+      damageType: a[2] === 'AbilityPowerText' ? 'magical' : 'physical',
+    };
+  }
+  const b = md.match(/deal(?:ing|s)?\s+([\d][\d./]*)\s*\(\+([\d.]+)%/);
+  if (!b) return null;
+  const values = b[1]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
+  if (!values.length) return null;
+  const tail = md.slice(b.index! + b[0].length, b.index! + b[0].length + 250);
+  const typeMatch = tail.match(/(magical|physical)\s+damage/i);
+  const damageType = typeMatch ? (typeMatch[1]!.toLowerCase() as 'physical' | 'magical') : 'physical';
+  if (/maximum health/i.test(tail.slice(0, 150))) {
+    return { values, scaling: 0, pctMaxHealth: Number(b[2]), damageType };
+  }
+  return { values, scaling: Number(b[2]), damageType };
 }
 
 function bestOwnedDamage(ab: OwnedAbility) {
@@ -139,6 +155,7 @@ export function loadData(): LoadedData {
           name: omAb?.display_name ?? owned?.name ?? key,
           damagePerRank: parsed.values,
           scalingPct: parsed.scaling,
+          pctMaxHealth: parsed.pctMaxHealth,
           damageType: parsed.damageType,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,

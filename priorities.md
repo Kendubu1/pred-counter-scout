@@ -23,21 +23,33 @@ by measured ones (levels stay provisional, they are not in the feed);
 play rates are surfaced in the CLI for the off-meta gate; harness green
 with aggregate sanity tests; design doc + lessons.md updated; committed.
 
-## 3. CALIBRATION GATE (STOP) — checklist delivered 2026-06-11, awaiting measurements (engine/fixtures/CALIBRATION-CHECKLIST.md)
+## 3. CALIBRATION GATE — checklist delivered 2026-06-11 (engine/fixtures/CALIBRATION-CHECKLIST.md); maintainer deferred measurements same day
 
-Stop here. Produce a practice-mode measurement checklist for the 6
-unverified constants (mitigation, abilityHaste, critMultiplier,
-attackSpeedFormula, abilityScalingUsesBonusPowerOnly, ultRankLevels) plus
-the level-by-minute table. Deliver it to the maintainer and wait for
-measured values. Do not estimate any of them (autonomy policy rule 2).
+Open until the maintainer measures. Per autonomy rule 2 the constants
+stay unverified, every dependent output stays THEORY, and work continues
+on items that do not require them. Re-check this gate each session.
 
-## Backlog after the gate (from docs/v5-engine-design.md, reprioritize then)
+## 4. [DONE 2026-06-11] Matchup checkpoint engine (includes purchase-order optimization)
 
-- Matchup checkpoint engine: kill windows at minute checkpoints using
-  measured gold curves (design doc component E).
-- Statistical evidence layer: hierarchical shrinkage over own aggregates,
-  patch-partitioned (component D).
-- Artifact generation pipeline + Zone 1 hero-page prototype (Concept A,
-  section 8).
-- LLM copy pass with ground-check verifier.
-- Purchase-order optimization (gold-curve-aware item ordering).
+Done when: builds get a gold-curve-aware purchase order with a measured
+spike timeline (item completion minutes from the aggregate gold curves);
+matchups are evaluated at the calibration checkpoints with both sides'
+real base stats + build prefixes (kill-window ratios, per-phase verdicts
+with drivers); levels-provisional and THEORY flags propagate to output;
+CLI --vs <enemy>; harness green; design doc + lessons.md updated;
+committed.
+
+## 5. Statistical evidence layer v0
+
+Done when: the aggregator records per-hero per-item win counts; shrunk
+item-on-hero winrate deltas (empirical Bayes toward the hero-role mean)
+are computable and surfaced as evidence (never a generator input); CLI
+shows evidence next to play rates; harness green; docs updated; committed.
+
+## 6. Artifact pipeline + Zone 1 hero-page prototype (Concept A, section 8)
+
+Done when: a build step emits per-hero JSON artifacts (builds, eternals,
+matchup checkpoints, off-meta proofs, confidence flags) and a static
+prototype page renders The Answer zone from them.
+
+## 7. LLM copy pass with ground-check verifier.

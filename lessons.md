@@ -2,6 +2,25 @@
 
 Append-only. One entry per backlog item or significant finding.
 
+## 2026-06-11: Matchup checkpoint engine (backlog item 4; gate deferred by maintainer)
+
+- A matchup framework is only as good as the weaker kit's data. The first
+  Gideon-vs-Countess run showed a false all-game edge because Countess's
+  ult had not parsed (percent-max-health phrasing). Coach-sense review of
+  real pairs is a mandatory step after any matchup change; it found what
+  45 unit tests did not.
+- Percent-max-health ult parsing (pattern B) lifted damaging-ult coverage
+  from 35 to 37 of 52 kits; 15 remain, mostly genuine utility ults plus 7
+  harder formats (wukong, zinx, legion, boris, adele, crunch, sparrow)
+  now tracked as a known gap.
+- Measured gold curves make spike timelines blunt and honest: with an
+  18k full build and ~12k median gold at minute 30, items 5 and 6 land
+  "30+min" for most roles. Recommendations should optimize the first
+  three to four purchases; the rest is aspiration in a normal game.
+- Gameplan text must be derived from the verdict pattern, not from a
+  coarse branch: "you win everywhere" and "your edge peaks early then
+  levels off" are different coaching instructions.
+
 ## 2026-06-11: Match-feed aggregates (backlog item 2)
 
 - gold_earned_at_interval is per-minute cumulative gold (array length
