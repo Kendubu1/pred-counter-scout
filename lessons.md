@@ -2,6 +2,19 @@
 
 Append-only. One entry per backlog item or significant finding.
 
+## 2026-06-11: Artifact pipeline + Zone 1 prototype (backlog item 6)
+
+- The whole roster renders from precomputed JSON: 52 artifacts in 74s on
+  a laptop-class runner, so the Concept A static model holds with room
+  to spare for matchup variants.
+- Off-meta proof semantics need care in copy: the 8%+ edge is build vs
+  most-played-items build on a named objective, not the single item's
+  marginal contribution. The page wording reflects that; the marginal
+  attribution version needs leave-one-out evals (cheap, next pass).
+- A coach line assembled from computed values (spike minutes, eternal
+  deltas) reads surprisingly well without an LLM; the copy pass becomes
+  polish, not load-bearing, which keeps the verifier's job small.
+
 ## 2026-06-11: Statistical evidence layer v0 (backlog item 5)
 
 - Item-presence winrates from finished inventories carry survivorship

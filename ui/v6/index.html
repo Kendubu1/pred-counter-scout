@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Predecessor Scout — Answer prototype</title>
+<style>
+  :root {
+    --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --border:#2a2a3a;
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#6a6a80;
+    --accent:#6c5ce7; --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7;
+  }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--bg-0); color:var(--text-0); font:14px/1.5 Inter,system-ui,sans-serif; padding:1.25rem; }
+  .wrap { max-width:880px; margin:0 auto; }
+  .muted { color:var(--text-1); } .dim { color:var(--text-2); font-size:.78rem; }
+  .card { background:var(--bg-1); border:1px solid var(--border); border-radius:10px; padding:1rem 1.25rem; margin-top:1rem; }
+  header.hero { display:flex; gap:1rem; align-items:center; margin-top:.5rem; }
+  header.hero img { width:72px; height:72px; border-radius:10px; border:1px solid var(--border); object-fit:cover; }
+  h1 { font-size:1.6rem; } h2 { font-size:1.02rem; margin-bottom:.5rem; color:var(--accent); }
+  .chips { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.3rem; }
+  .chip { background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.1rem .6rem; font-size:.78rem; color:var(--text-1); }
+  .chip.theory { border-color:var(--blue); color:var(--blue); cursor:help; }
+  .items { display:flex; gap:.5rem; flex-wrap:wrap; margin:.6rem 0; }
+  .item { background:var(--bg-2); border:1px solid var(--border); border-radius:8px; padding:.5rem .7rem; min-width:118px; }
+  .item b { display:block; font-size:.84rem; }
+  .item .spike { color:var(--gold); font-size:.74rem; }
+  .item .ev { font-size:.72rem; color:var(--text-2); }
+  .item.underexplored { border-color:var(--gold); }
+  .coach { font-size:1.02rem; margin-top:.4rem; }
+  .proofs { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.7rem; }
+  .proof { background:var(--bg-2); border-radius:8px; padding:.45rem .7rem; font-size:.8rem; border-left:3px solid var(--accent); }
+  .proof.evidence { border-left-color:var(--green); }
+  .proof.playrate { border-left-color:var(--gold); }
+  .mu { display:flex; gap:.6rem; align-items:baseline; flex-wrap:wrap; margin:.35rem 0; }
+  .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:2px; }
+  .dot.you { background:var(--green); } .dot.even { background:var(--text-2); } .dot.enemy { background:var(--red); }
+  .flags { margin-top:1rem; }
+  select { background:var(--bg-2); color:var(--text-0); border:1px solid var(--border); border-radius:6px; padding:.3rem .5rem; }
+  a { color:var(--blue); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="dim">Zone 1 prototype (design doc section 8). Static render of precomputed engine artifacts. Crest, augments, matchup swapping: next iterations.</div>
+  <div style="margin-top:.6rem">
+    <label class="muted">Hero: </label><select id="pick"></select>
+  </div>
+  <div id="page"></div>
+</div>
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+async function loadIndex() {
+  const res = await fetch('../../data/artifacts/index.json');
+  const idx = await res.json();
+  const pick = $('#pick');
+  pick.innerHTML = idx.heroes.map((h) => `<option value="${h.slug}">${esc(h.name)} (${h.role})</option>`).join('');
+  const initial = new URLSearchParams(location.search).get('hero') || 'gideon';
+  pick.value = initial;
+  pick.onchange = () => { history.replaceState(null, '', `?hero=${pick.value}`); render(pick.value); };
+  render(pick.value);
+}
+
+async function render(slug) {
+  const a = await (await fetch(`../../data/artifacts/${slug}.json`)).json();
+  const verdictDots = (cps) => cps.map((c) => `<span class="dot ${c.verdict}" title="min ${c.minute}: ${c.verdict}"></span>`).join('');
+  const itemCard = (i) => `
+    <div class="item${i.playRatePct !== null && i.playRatePct < 2 ? ' underexplored' : ''}">
+      <b>${esc(i.name)}</b>
+      <span class="spike">${i.spikeMinute ? `~min ${i.spikeMinute}` : '30+ min'}</span>
+      <div class="ev">${i.playRatePct === null ? '' : `${i.playRatePct}% play`}${i.evidenceDeltaWr === null ? '' : ` · ${i.evidenceDeltaWr > 0 ? '+' : ''}${i.evidenceDeltaWr}wr n=${i.evidenceN}`}</div>
+    </div>`;
+  const o = a.build.objectives;
+  $('#page').innerHTML = `
+    <header class="hero">
+      <img src="../img/heroes/${esc(a.slug)}.webp" onerror="this.style.display='none'">
+      <div>
+        <h1>${esc(a.name)}</h1>
+        <div class="chips">
+          <span class="chip">${esc(a.role)}</span>
+          <span class="chip">${esc(a.damageType)} · ${esc(a.attackType)}</span>
+          ${a.build.archetypes.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}
+          <span class="chip theory" title="${esc(a.confidence.notes.join('\n'))}\nunverified: ${esc(a.confidence.unverifiedConstants.join(', '))}">THEORY</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="card">
+      <h2>The build — patch ${esc(a.patch)}</h2>
+      <div class="items">${a.build.items.map(itemCard).join('')}</div>
+      <div class="coach">${esc(a.coachLine)}</div>
+      <div class="proofs">
+        <span class="proof">sim: burst ${Math.round(o.burstVsSquishy)} · 20s vs bruiser ${Math.round(o.rot20VsBruiser)} · auto DPS ${Math.round(o.autoDps10VsSquishy)}</span>
+        ${a.build.items.filter((i) => i.evidenceDeltaWr !== null && i.evidenceN >= 100).slice(0, 1).map((i) =>
+          `<span class="proof evidence">evidence: ${esc(i.name)} ${i.evidenceDeltaWr > 0 ? '+' : ''}${i.evidenceDeltaWr}wr over ${i.evidenceN} games (biased: finished inventories)</span>`).join('')}
+        ${a.build.items.filter((i) => i.playRatePct !== null && i.playRatePct < 2).slice(0, 1).map((i) =>
+          `<span class="proof playrate">underexplored: ${esc(i.name)} in ${i.playRatePct}% of games</span>`).join('')}
+      </div>
+      ${a.build.manaFeasible ? '' : '<div class="dim" style="margin-top:.5rem">⚠ rotation is mana-hungry; expect to weave autos</div>'}
+    </div>
+
+    <div class="card">
+      <h2>Eternal</h2>
+      ${a.eternals.top.map((e, i) => `<div class="mu"><b>${i === 0 ? '★ ' : ''}${esc(e.name)}</b><span class="muted">headline +${e.headlinePct}% · burst +${e.burstPct}% · 20s +${e.rot20Pct}% · eHP +${e.ehpPct}% (min 15)</span></div>`).join('')}
+      <div class="dim">no math yet: ${esc(a.eternals.unmodeled.join(', '))}</div>
+    </div>
+
+    <div class="card">
+      <h2>Lane checkpoints (most-played ${esc(a.role)} opponents)</h2>
+      ${a.matchups.map((m) => `<div class="mu"><span>${verdictDots(m.checkpoints)}</span><b>vs ${esc(m.enemy)}</b><span class="muted">${esc(m.gameplan)}</span></div>`).join('') || '<div class="dim">no same-role opponents with enough games</div>'}
+      <div class="dim">dots are 5-minute checkpoints, green = your kill window is better</div>
+    </div>
+
+    <div class="card">
+      <h2>Off-meta lab</h2>
+      ${a.offMeta.candidates.length
+        ? a.offMeta.candidates.map((c) => `<div class="mu"><b>${esc(c.item)}</b><span class="muted">${c.playRatePct}% play rate; sits in a build that beats the most-played items by ${c.edgeVsPopularPct}% on ${esc(c.bestObjective)}</span></div>`).join('')
+        : `<div class="muted">${esc(a.offMeta.honestAbsence)}</div>`}
+    </div>
+
+    <div class="flags dim">${a.flags.map(esc).join(' · ')} · generated ${esc(a.generatedAt.slice(0, 16))}</div>
+  `;
+}
+loadIndex();
+</script>
+</body>
+</html>

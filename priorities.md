@@ -46,7 +46,7 @@ item-on-hero winrate deltas (empirical Bayes toward the hero-role mean)
 are computable and surfaced as evidence (never a generator input); CLI
 shows evidence next to play rates; harness green; docs updated; committed.
 
-## 6. Artifact pipeline + Zone 1 hero-page prototype (Concept A, section 8)
+## 6. [DONE 2026-06-11] Artifact pipeline + Zone 1 hero-page prototype (Concept A, section 8)
 
 Done when: a build step emits per-hero JSON artifacts (builds, eternals,
 matchup checkpoints, off-meta proofs, confidence flags) and a static
