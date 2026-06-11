@@ -1,0 +1,64 @@
+{
+  "_readme": "Measured or assumed game constants the simulator depends on. Every entry carries verified:true only after an in-game practice-mode measurement (record date + method in source). The harness lists unverified fixtures on every run and refuses to stamp any artifact 'Proven' while a constant it used is unverified. See docs/v5-engine-design.md, component A.",
+  "patch": "1.14.4",
+  "constants": {
+    "mitigation": {
+      "formula": "damage * 100 / (100 + armor)",
+      "verified": false,
+      "source": "Assumed standard MOBA formula. Measure: practice mode, fixed-damage ability vs known-armor target."
+    },
+    "percentPenMultiplicative": {
+      "value": true,
+      "verified": true,
+      "source": "Patch 1.14 notes: percent armor penetration now multiplicative (predecessorgame.com, May 19 2026)."
+    },
+    "abilityHaste": {
+      "formula": "cooldown * 100 / (100 + haste)",
+      "verified": false,
+      "source": "Assumed LoL-style ability haste. Measure: Timewarp + known-CD ability, stopwatch."
+    },
+    "critMultiplier": {
+      "value": 1.75,
+      "verified": false,
+      "source": "Assumed. Measure: largest_critical_strike vs basic hit on same target, or practice mode."
+    },
+    "attackSpeedFormula": {
+      "formula": "attacksPerSecond = base_attack_speed[level] * (1 + item_attack_speed / 100)",
+      "verified": false,
+      "source": "Assumed. base_stats.attack_speed is per-level attacks/sec (omeda.city heroes.json); item attack_speed treated as percent."
+    },
+    "abilityScalingUsesBonusPowerOnly": {
+      "value": true,
+      "verified": false,
+      "source": "base_stats.physical_power equals the basic-attack per-level damage line, so displayed ratios are read as applying to item-granted power only. Measure: ability damage with 0 vs 1 power item."
+    },
+    "ultRankLevels": {
+      "value": [6, 11, 16],
+      "verified": false,
+      "source": "Assumed standard ult rank-up levels. Verify in game."
+    },
+    "maxLevel": {
+      "value": 18,
+      "verified": true,
+      "source": "18-entry base stat arrays across all heroes (omeda.city heroes.json, patch 1.14.4)."
+    }
+  },
+  "checkpoints": {
+    "_note": "Minute -> typical level and item gold by role. PLACEHOLDER values, to be replaced by aggregates over gold_earned_at_interval + level from match ingest (field confirmed live, June 11 2026 probe).",
+    "verified": false,
+    "table": [
+      { "minute": 5, "level": 5, "gold": { "carry": 2200, "midlane": 2100, "offlane": 2100, "jungle": 2300, "support": 1500 } },
+      { "minute": 10, "level": 8, "gold": { "carry": 4600, "midlane": 4400, "offlane": 4400, "jungle": 4700, "support": 3000 } },
+      { "minute": 15, "level": 11, "gold": { "carry": 7200, "midlane": 7000, "offlane": 6900, "jungle": 7200, "support": 4600 } },
+      { "minute": 20, "level": 13, "gold": { "carry": 9900, "midlane": 9600, "offlane": 9400, "jungle": 9800, "support": 6300 } },
+      { "minute": 25, "level": 15, "gold": { "carry": 12700, "midlane": 12300, "offlane": 12000, "jungle": 12500, "support": 8100 } },
+      { "minute": 30, "level": 17, "gold": { "carry": 15600, "midlane": 15100, "offlane": 14700, "jungle": 15300, "support": 10000 } }
+    ]
+  },
+  "referenceProfiles": {
+    "_note": "Enemy defense profiles for damage objectives, level-13 ballpark: squishy = mage/carry base armor + no defense items; bruiser = fighter base + one defensive item; tank = warden base + two defensive items + HP. Derived from omeda.city base_stats at level 13.",
+    "squishy": { "health": 1900, "physicalArmor": 85, "magicalArmor": 48 },
+    "bruiser": { "health": 2700, "physicalArmor": 140, "magicalArmor": 90 },
+    "tank": { "health": 3600, "physicalArmor": 210, "magicalArmor": 150 }
+  }
+}
