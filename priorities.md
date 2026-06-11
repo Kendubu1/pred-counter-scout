@@ -3,7 +3,7 @@
 Worked top to bottom under the autonomy policy in CLAUDE.md. Future
 sessions: pick up at the first item not marked done.
 
-## 1. Item effect schema: passives, Eternals, augments into the math
+## 1. [DONE 2026-06-11] Item effect schema: passives, Eternals, augments into the math
 
 Done when: a typed, curated effect schema (`engine/fixtures/effects.json`)
 encodes the mathematically tractable item passives, the 12 Eternal majors
@@ -13,7 +13,7 @@ reported, uncodable effects are listed as unmodeled rather than guessed;
 harness green with new effect tests; design doc + lessons.md updated;
 committed.
 
-## 2. Match-feed aggregates: real gold curves and play rates
+## 2. [DONE 2026-06-11] Match-feed aggregates: real gold curves and play rates
 
 Done when: an ingest script aggregates a recent window of pvp+ranked
 matches (timestamp-driven, polite rates) into a committed snapshot with
@@ -23,7 +23,7 @@ by measured ones (levels stay provisional, they are not in the feed);
 play rates are surfaced in the CLI for the off-meta gate; harness green
 with aggregate sanity tests; design doc + lessons.md updated; committed.
 
-## 3. CALIBRATION GATE (STOP)
+## 3. CALIBRATION GATE (STOP) — checklist delivered 2026-06-11, awaiting measurements (engine/fixtures/CALIBRATION-CHECKLIST.md)
 
 Stop here. Produce a practice-mode measurement checklist for the 6
 unverified constants (mitigation, abilityHaste, critMultiplier,
