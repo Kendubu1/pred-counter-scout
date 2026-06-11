@@ -39,7 +39,7 @@ with drivers); levels-provisional and THEORY flags propagate to output;
 CLI --vs <enemy>; harness green; design doc + lessons.md updated;
 committed.
 
-## 5. Statistical evidence layer v0
+## 5. [DONE 2026-06-11] Statistical evidence layer v0
 
 Done when: the aggregator records per-hero per-item win counts; shrunk
 item-on-hero winrate deltas (empirical Bayes toward the hero-role mean)

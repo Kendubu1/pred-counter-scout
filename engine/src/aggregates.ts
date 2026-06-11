@@ -11,7 +11,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 export interface AggregateSnapshot {
   meta: { generatedAt: string; matches: number; playerRows: number; patchNote: string };
   goldByMinute: Record<string, Record<string, { p25: number; p50: number; p75: number; n: number }>>;
-  heroes: Record<string, { games: number; wins: number; roles: Record<string, number>; items: Record<string, number> }>;
+  heroes: Record<string, { games: number; wins: number; roles: Record<string, number>; items: Record<string, { n: number; w: number }> }>;
 }
 
 let cached: AggregateSnapshot | null | undefined;
@@ -42,7 +42,7 @@ export function itemPlayRate(heroSlug: string, itemGameId: number | null, agg = 
   if (!agg || itemGameId == null) return null;
   const h = agg.heroes[heroSlug];
   if (!h || h.games < 30) return null;
-  return (h.items[String(itemGameId)] ?? 0) / h.games;
+  return (h.items[String(itemGameId)]?.n ?? 0) / h.games;
 }
 
 export function heroGames(heroSlug: string, agg = loadAggregates()): number {

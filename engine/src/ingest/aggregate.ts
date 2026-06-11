@@ -62,8 +62,11 @@ async function main() {
 
   // gold[role][minute] = list of cumulative gold values
   const gold = new Map<string, Map<number, number[]>>();
-  // heroes[hero_id] = { games, wins, roles: {}, items: {gameId: count} }
-  const heroes = new Map<number, { games: number; wins: number; roles: Record<string, number>; items: Record<number, number> }>();
+  // heroes[hero_id] = { games, wins, roles: {}, items: {gameId: {n, w}} }
+  // n = appearances in finished inventories, w = of those, games won.
+  // Known bias, documented for all consumers: winners finish more items
+  // (gold lead), so presence-winrate is inflated for late/expensive items.
+  const heroes = new Map<number, { games: number; wins: number; roles: Record<string, number>; items: Record<number, { n: number; w: number }> }>();
 
   let url: string | null = `https://omeda.city/matches.json?per_page=100&timestamp=${startTs}`;
   let pages = 0, matches = 0, players = 0;
@@ -94,10 +97,14 @@ async function main() {
         let h = heroes.get(p.hero_id);
         if (!h) { h = { games: 0, wins: 0, roles: {}, items: {} }; heroes.set(p.hero_id, h); }
         h.games++;
-        if (p.team === m.winning_team) h.wins++;
+        const won = p.team === m.winning_team;
+        if (won) h.wins++;
         h.roles[role] = (h.roles[role] ?? 0) + 1;
-        for (const itemId of p.inventory_data ?? []) {
-          if (itemId) h.items[itemId] = (h.items[itemId] ?? 0) + 1;
+        for (const itemId of new Set(p.inventory_data ?? [])) {
+          if (!itemId) continue;
+          const cell = (h.items[itemId] ??= { n: 0, w: 0 });
+          cell.n++;
+          if (won) cell.w++;
         }
       }
     }
@@ -124,10 +131,10 @@ async function main() {
     }
   }
 
-  const heroStats: Record<string, { games: number; wins: number; roles: Record<string, number>; items: Record<string, number> }> = {};
+  const heroStats: Record<string, { games: number; wins: number; roles: Record<string, number>; items: Record<string, { n: number; w: number }> }> = {};
   for (const [id, h] of heroes) {
     const slug = idToSlug.get(id) ?? `hero_id:${id}`;
-    heroStats[slug] = { games: h.games, wins: h.wins, roles: h.roles, items: Object.fromEntries(Object.entries(h.items)) };
+    heroStats[slug] = { games: h.games, wins: h.wins, roles: h.roles, items: h.items as Record<string, { n: number; w: number }> };
   }
 
   const out = {

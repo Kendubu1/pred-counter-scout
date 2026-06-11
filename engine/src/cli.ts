@@ -6,6 +6,7 @@ import { loadCalibration, unverifiedConstants, simulate, skillPriority } from '.
 import { generateBuilds } from './search.js';
 import { rankBlessings } from './eternals.js';
 import { heroGames, itemPlayRate } from './aggregates.js';
+import { itemWinDelta } from './evidence.js';
 import { matchupCheckpoints } from './matchup.js';
 
 const args = process.argv.slice(2);
@@ -60,14 +61,17 @@ for (const b of builds.slice(0, 6)) {
   );
 }
 
-// Play rates: the off-meta gate's "underexplored" signal (live data).
+// Play rates + shrunk evidence: the off-meta gate's signals (live data).
 const games = heroGames(slug);
 if (games >= 30 && builds[0]) {
   const rates = builds[0].items.map((n) => {
-    const r = itemPlayRate(slug, data.items.get(n)?.gameId ?? null);
-    return r == null ? `${n} (?)` : `${n} (${(r * 100).toFixed(0)}%${r < 0.02 ? ' UNDEREXPLORED' : ''})`;
+    const gameId = data.items.get(n)?.gameId ?? null;
+    const r = itemPlayRate(slug, gameId);
+    const ev = itemWinDelta(slug, gameId);
+    const evTxt = ev ? ` ${ev.delta >= 0 ? '+' : ''}${(ev.delta * 100).toFixed(1)}wr n=${ev.n}` : '';
+    return r == null ? `${n} (?)` : `${n} (${(r * 100).toFixed(0)}%${evTxt}${r < 0.02 ? ' UNDEREXPLORED' : ''})`;
   });
-  console.log(`play rates on ${kit.name}, ${games} games this patch: ${rates.join(', ')}\n`);
+  console.log(`play rates + shrunk WR delta on ${kit.name}, ${games} games this patch (evidence only; finished-inventory bias skews deltas positive):\n  ${rates.join(', ')}\n`);
 }
 
 // Eternals: marginal math on top of the headline build.

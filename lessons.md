@@ -2,6 +2,21 @@
 
 Append-only. One entry per backlog item or significant finding.
 
+## 2026-06-11: Statistical evidence layer v0 (backlog item 5)
+
+- Item-presence winrates from finished inventories carry survivorship
+  bias (winners finish more items). The bias cannot be removed at this
+  aggregation level, so it is labeled on every output and deltas are
+  read comparatively, never absolutely. Fix path: condition on game
+  duration or slot index.
+- Method-of-moments empirical Bayes beats hand-picked K: the prior
+  strength comes from the spread of the cells themselves, and the same
+  10-line estimator serves hero-level and item-level shrinkage.
+- First sim-vs-evidence disagreement logged: the generator likes Noxia
+  on Gideon (max-health proc vs bruisers); shrunk evidence reads -0.5wr
+  over 92 games. Neither is conclusive; this is the discovery loop the
+  design wanted, now running on real numbers.
+
 ## 2026-06-11: Matchup checkpoint engine (backlog item 4; gate deferred by maintainer)
 
 - A matchup framework is only as good as the weaker kit's data. The first
