@@ -52,4 +52,10 @@ Done when: a build step emits per-hero JSON artifacts (builds, eternals,
 matchup checkpoints, off-meta proofs, confidence flags) and a static
 prototype page renders The Answer zone from them.
 
-## 7. LLM copy pass with ground-check verifier.
+## 7. LLM copy pass with ground-check verifier — BLOCKED 2026-06-11
+
+Blocked: no ANTHROPIC_API_KEY in the execution environment. Needs the
+maintainer to add the secret (repo/environment settings) or run the pass
+locally. Recommended: claude-haiku-4-5, prompts assembled from artifact
+JSON, verifier rejects any number not present in the source artifact.
+The template coach lines shipped in item 6 carry the page until then.
