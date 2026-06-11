@@ -89,6 +89,7 @@ export interface SimResult {
   manaFeasible: boolean;
   ehpPhysical: number;
   ehpMagical: number;
+  notes?: { applied: string[]; unmodeled: string[]; provisional: boolean };
 }
 
 export interface BuildEval {

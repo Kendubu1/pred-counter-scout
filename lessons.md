@@ -2,6 +2,24 @@
 
 Append-only. One entry per backlog item or significant finding.
 
+## 2026-06-11: Item effect schema (backlog item 1)
+
+- Tag-stripped effect text loses which stat a "(+X%)" scales from; the
+  stat is in the surrounding markup tag (AttackDamageText vs
+  AbilityPowerText vs an icon id). Curate from raw markup, never from
+  cleaned text. This disambiguated Deathstalker's Onslaught: attack speed
+  equal to 100% of physical penetration, a real cross-stat conversion.
+- About 60% of effect targets were cleanly encodable from stated numbers;
+  the rest are stack-cadence, positioning, or RNG dependent. Declaring
+  them kind:"unmodeled" with a note costs nothing and keeps the registry
+  honest; 5 of 12 Eternal majors are in that bucket pending telemetry.
+- Marginal-gain ranking surfaces real time dynamics: Vesh's per-minute
+  scaling overtakes Demiurge for Gideon around minute 14. Eternal advice
+  must be game-time-aware, which no winrate table could express.
+- First ranking pass put Krix (+18% eHP) above damage Eternals for a
+  ranged mage; survivability weights need kit-context discounting. Coach
+  sanity checks on real output catch what unit tests do not.
+
 ## 2026-06-11: Engine v0.1 (simulator, search, harness)
 
 - The owned ability scrape has holes: 33/49 heroes had castable slots with

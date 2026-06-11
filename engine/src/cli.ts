@@ -4,6 +4,7 @@
 import { loadData, completedItems } from './data.js';
 import { loadCalibration, unverifiedConstants, simulate, skillPriority } from './sim.js';
 import { generateBuilds } from './search.js';
+import { rankBlessings } from './eternals.js';
 
 const args = process.argv.slice(2);
 const slug = args.find((a) => !a.startsWith('--'));
@@ -57,5 +58,19 @@ for (const b of builds.slice(0, 6)) {
   );
 }
 
+// Eternals: marginal math on top of the headline build.
+const top = builds[0];
+if (top) {
+  const topItems = top.items.map((n) => data.items.get(n)!).filter(Boolean);
+  const ranked = rankBlessings(kit, topItems, level, cal, { minute: opt('minute') });
+  console.log('Eternal majors, math-ranked on the headline build' + (opt('minute') == null ? ' (minute 0; pass --minute for time scaling)' : '') + ':');
+  for (const r of ranked.filter((r) => r.modeled).slice(0, 3)) {
+    const d = r.deltas!;
+    console.log(`  ${r.name}: headline ${d.rot10Pct >= d.autoDpsPct ? `rot10 +${d.rot10Pct.toFixed(1)}%` : `autoDPS +${d.autoDpsPct.toFixed(1)}%`} | burst +${d.burstPct.toFixed(1)}% | rot20 +${d.rot20Pct.toFixed(1)}% | eHP +${d.ehpPct.toFixed(1)}%`);
+  }
+  const unmodeled = ranked.filter((r) => !r.modeled);
+  if (unmodeled.length) console.log(`  no math yet (honest list): ${unmodeled.map((r) => r.name.replace(' (Major)', '')).join(', ')}`);
+}
+
 const noItems = simulate(kit, [], { level, profile: cal.referenceProfiles.squishy }, cal);
-console.log(`baseline (no items): burst ${noItems.burstCombo.toFixed(0)}, mana pool ${noItems.manaPool.toFixed(0)}`);
+console.log(`\nbaseline (no items): burst ${noItems.burstCombo.toFixed(0)}, mana pool ${noItems.manaPool.toFixed(0)}`);
