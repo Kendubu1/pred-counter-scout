@@ -2,10 +2,10 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { loadData, completedItems, type LoadedData } from '../src/data.js';
 import {
   loadCalibration, unverifiedConstants, itemTotals, rotationDamage,
-  abilityHit, simulate, type Calibration,
+  simulate, type Calibration,
 } from '../src/sim.js';
 import { generateBuilds, paretoFront } from '../src/search.js';
-import type { Item } from '../src/types.js';
+import type { HeroKit, Item } from '../src/types.js';
 
 let data: LoadedData;
 let cal: Calibration;
@@ -32,26 +32,46 @@ describe('fixtures (Concept B layer 1: mechanics gates)', () => {
   });
 });
 
-describe('data joins', () => {
-  it('joins owned kits with omeda base stats for the full owned roster', () => {
-    expect(data.kits.size).toBe(49);
-    expect(data.missingFromOwned).toEqual(['adele', 'legion', 'neon']);
+describe('data joins and patch currency', () => {
+  it('covers the full 52-hero roster, deriving profiles where owned data lacks them', () => {
+    expect(data.kits.size).toBe(52);
+    expect(data.derivedProfiles).toEqual(['adele', 'legion', 'neon']);
   });
 
-  it('every kit has 18-level base stat arrays and at least one damaging ability', () => {
+  it('PATCH GATE: Gideon Void Breach matches the 1.14.4 digest (95-235, post-1.14 cooldowns)', () => {
+    // data/patches/1.14.4.json records "Void Breach damage 85-225 -> 95-235".
+    // Stale pre-1.14 sources show 90-230 with 9s-7s cooldowns; this gate
+    // fails if the loader ever regresses to them.
+    const vb = data.kits.get('gideon')!.abilities.find((a) => a.key === 'ALTERNATE')!;
+    expect(vb.damagePerRank).toEqual([95, 130, 165, 200, 235]);
+    expect(vb.cooldowns).toEqual([11, 10.5, 10, 9.5, 9]);
+  });
+
+  it('every kit has 18-level base stats and at least one damaging ability', () => {
     for (const kit of data.kits.values()) {
       expect(kit.baseStats.max_health.length, kit.slug).toBe(18);
       expect(kit.abilities.length, kit.slug).toBeGreaterThan(0);
     }
   });
 
-  it('Crunch falls back to omeda text parsing (owned damage entries are empty)', () => {
-    const crunch = data.kits.get('crunch')!;
-    expect(crunch.abilitySource).toBe('omeda-text');
-    expect(crunch.abilities.length).toBeGreaterThanOrEqual(3);
-    const left = crunch.abilities.find((a) => a.key === 'PRIMARY')!;
-    expect(left.damagePerRank).toEqual([20, 35, 50, 65, 80]);
-    expect(left.scalingPct).toBe(120); // mean of 110/115/120/125/130
+  it('stale owned fallbacks are tracked, not silent', () => {
+    // Abilities whose current text does not parse fall back to stale owned
+    // numbers and must be visible for the copy layer to caveat.
+    for (const s of data.staleFallbacks) {
+      expect(data.kits.get(s.slug)?.abilitySource, s.slug).toBe('mixed');
+    }
+    console.warn(`stale-number fallbacks: ${data.staleFallbacks.length} ability slots`);
+  });
+
+  it('derived-profile heroes get sane attack types', () => {
+    expect(data.kits.get('legion')!.attackType).toBe('ranged');
+    expect(data.kits.get('neon')!.attackType).toBe('ranged');
+  });
+
+  it('Crunch and Murdock recover abilities the owned scrape missed', () => {
+    const left = data.kits.get('crunch')!.abilities.find((a) => a.key === 'PRIMARY')!;
+    expect(left.damagePerRank.length).toBe(5);
+    expect(data.kits.get('murdock')!.abilities.some((a) => a.name === 'Buckshot')).toBe(true);
   });
 
   it('Eden is resourceless and never flagged mana-infeasible', () => {
@@ -63,48 +83,93 @@ describe('data joins', () => {
   it('completed item pool is usable and game-id mapped', () => {
     const pool = completedItems(data);
     expect(pool.length).toBeGreaterThan(60);
-    const mapped = pool.filter((i) => i.gameId !== null);
-    expect(mapped.length / pool.length).toBeGreaterThan(0.9);
+    expect(pool.every((i) => i.gameId !== null)).toBe(true);
   });
 });
 
-describe('simulator regression: the Gideon worked example (design doc, component B)', () => {
-  // Pure item-stat math, mitigation off, rank-5 abilities, matching the
-  // worked example in docs/v5-engine-design.md exactly.
-  const ranks = new Map([['ALTERNATE', 5], ['PRIMARY', 5]]);
+describe('simulator exact math (synthetic fixtures, immune to data refreshes)', () => {
+  const kit: HeroKit = {
+    slug: 'synthetic', name: 'Synthetic', attackType: 'ranged', damageType: 'magical',
+    roles: ['midlane'], resource: 'mana', basicScalingPct: 50,
+    baseStats: {
+      max_health: Array(18).fill(1000), physical_armor: Array(18).fill(50),
+      magical_armor: Array(18).fill(50), max_mana: Array(18).fill(500),
+      attack_speed: Array(18).fill(1), physical_power: Array(18).fill(60),
+      attack_range: [1500], basic_attack_time: [1],
+    },
+    abilities: [{
+      key: 'PRIMARY', name: 'Bolt', damagePerRank: [100, 150, 200, 250, 300],
+      scalingPct: 50, damageType: 'magical', cooldowns: [10, 9, 8, 7, 6], costs: [50, 50, 50, 50, 50], maxRank: 5,
+    }],
+    abilitySource: 'omeda',
+  };
+  const mpItem = (mp: number, haste = 0): Item => ({
+    slug: `mp${mp}`, name: `MP${mp}`, gameId: 1, totalPrice: 3000, rarity: 'EPIC', slotType: 'PASSIVE',
+    stats: {
+      physical_power: 0, magical_power: mp, attack_speed: 0, critical_chance: 0,
+      physical_penetration: 0, magical_penetration: 0, ability_haste: haste,
+      health: 0, physical_armor: 0, magical_armor: 0, max_mana: 0, lifesteal: 0, omnivamp: 0,
+    },
+    family: null, antiHeal: false, heroClass: null,
+  });
+
+  it('hit = base + ratio * bonus power; casts = 1 + floor(window/cd)', () => {
+    // Rank 5 Bolt, 200 MP: hit = 300 + 0.5*200 = 400. cd 6s.
+    // 10s window: 1 + floor(10/6) = 2 casts -> 800.
+    const t = itemTotals([mpItem(200)]);
+    const ranks = new Map([['PRIMARY', 5]]);
+    expect(rotationDamage(kit, { level: 13, ranks, profile: null }, t, 10)).toBe(800);
+    // 100 haste halves cd to 3s: 1 + floor(10/3) = 4 casts -> 1600.
+    const t2 = itemTotals([mpItem(200, 100)]);
+    expect(rotationDamage(kit, { level: 13, ranks, profile: null }, t2, 10)).toBe(1600);
+  });
+
+  it('mitigation: 100 armor halves damage; flat pen restores it', () => {
+    const ranks = new Map([['PRIMARY', 5]]);
+    const profile = { health: 1000, physicalArmor: 0, magicalArmor: 100 };
+    const open = rotationDamage(kit, { level: 13, ranks, profile: null }, itemTotals([mpItem(200)]), 1);
+    const walled = rotationDamage(kit, { level: 13, ranks, profile }, itemTotals([mpItem(200)]), 1);
+    expect(walled).toBeCloseTo(open / 2, 6);
+  });
+
+  it('mana feasibility: pool bounds the 10s rotation', () => {
+    // 2 casts in 10s at 50 mana = 100 <= 500 pool: feasible.
+    const r = simulate(kit, [mpItem(200)], { level: 13, ranks: new Map([['PRIMARY', 5]]), profile: null }, cal);
+    expect(r.manaSpent10s).toBe(100);
+    expect(r.manaFeasible).toBe(true);
+  });
+});
+
+describe('the Gideon tradeoff (live current-patch data, relational)', () => {
+  // The design-doc worked example, restated as invariants so it survives
+  // balance patches: haste cores out-rotate pure power in long windows,
+  // pure power keeps the better one-shot.
   const get = (name: string): Item => {
     const i = data.items.get(name);
     if (!i) throw new Error(`item missing: ${name}`);
     return i;
   };
 
-  it('pure-MP core: burst 976, rot10 1952, rot20 2928', () => {
+  it('haste advantage grows with window length; pure MP keeps the burst', () => {
+    // Patch-sensitive detail, caught June 11: pre-1.14 data had haste
+    // winning from 10s; the 1.14 global cooldown increase moved the
+    // crossover to ~15s. The robust invariants are monotone: the haste
+    // build's relative damage never shrinks as windows lengthen, and the
+    // higher-MP build always one-shots harder.
     const kit = data.kits.get('gideon')!;
-    const A = [get('Oblivion Crown'), get('Wraith Leggings'), get('Amulet Of Chaos')];
-    const t = itemTotals(A);
-    expect(t.magical_power).toBe(285);
-    const vb = kit.abilities.find((a) => a.key === 'ALTERNATE')!;
-    const cr = kit.abilities.find((a) => a.key === 'PRIMARY')!;
-    expect(abilityHit(vb, 5, t) + abilityHit(cr, 5, t)).toBeCloseTo(976, 0);
+    const ranks = new Map([['ALTERNATE', 5], ['PRIMARY', 5]]);
+    const pureMP = itemTotals([get('Oblivion Crown'), get('Wraith Leggings'), get('Amulet Of Chaos')]);
+    const haste = itemTotals([get('Timewarp'), get('Noxia'), get('Astral Catalyst')]);
+    expect(haste.ability_haste).toBeGreaterThanOrEqual(45);
     const opts = { level: 13, ranks, profile: null };
-    expect(rotationDamage(kit, opts, t, 10)).toBeCloseTo(1952, 0);
-    expect(rotationDamage(kit, opts, t, 20)).toBeCloseTo(2928, 0);
-  });
-
-  it('haste core out-rotates pure MP at 10s+ but loses the one-shot', () => {
-    const kit = data.kits.get('gideon')!;
-    const A = itemTotals([get('Oblivion Crown'), get('Wraith Leggings'), get('Amulet Of Chaos')]);
-    const B = itemTotals([get('Timewarp'), get('Noxia'), get('Astral Catalyst')]);
-    expect(B.magical_power).toBe(235);
-    expect(B.ability_haste).toBe(65);
-    const opts = { level: 13, ranks, profile: null };
-    const burst = (t: typeof A) =>
-      abilityHit(kit.abilities.find((a) => a.key === 'ALTERNATE')!, 5, t) +
-      abilityHit(kit.abilities.find((a) => a.key === 'PRIMARY')!, 5, t);
-    expect(burst(A)).toBeGreaterThan(burst(B));
-    expect(rotationDamage(kit, opts, B, 10)).toBeCloseTo(2688, 0);
-    expect(rotationDamage(kit, opts, B, 20)).toBeCloseTo(4480, 0);
-    expect(rotationDamage(kit, opts, B, 10)).toBeGreaterThan(rotationDamage(kit, opts, A, 10) * 1.3);
+    const ratio = (w: number) =>
+      rotationDamage(kit, opts, haste, w) / rotationDamage(kit, opts, pureMP, w);
+    expect(rotationDamage(kit, opts, pureMP, 0.1)).toBeGreaterThan(rotationDamage(kit, opts, haste, 0.1));
+    expect(ratio(20)).toBeGreaterThanOrEqual(ratio(0.1));
+    expect(ratio(60)).toBeGreaterThanOrEqual(ratio(20));
+    // Golden conclusion at current patch: haste wins long fights outright.
+    // If a patch breaks this, the gate fires and a human reviews the copy.
+    expect(ratio(60)).toBeGreaterThan(1.2);
   });
 });
 
@@ -119,7 +184,7 @@ describe('sanity invariants (Concept B layer 3)', () => {
     );
   });
 
-  it('mitigation reduces damage and true damage ignores it', () => {
+  it('mitigation reduces damage vs tanks', () => {
     const kit = data.kits.get('gideon')!;
     const items = [data.items.get('Oblivion Crown')!];
     const open = simulate(kit, items, { level: 13, profile: null }, cal);
@@ -127,15 +192,8 @@ describe('sanity invariants (Concept B layer 3)', () => {
     expect(vsTank.burstCombo).toBeLessThan(open.burstCombo);
   });
 
-  it('mana feasibility uses real base pools', () => {
-    const kit = data.kits.get('gideon')!;
-    const r = simulate(kit, [], { level: 13, profile: null }, cal);
-    expect(r.manaPool).toBeGreaterThan(500);
-    expect(typeof r.manaFeasible).toBe('boolean');
-  });
-
   it('pareto front contains no dominated builds', () => {
-    const kit = data.kits.get('murdock') ?? data.kits.get('sparrow')!;
+    const kit = data.kits.get('murdock')!;
     const builds = generateBuilds(kit, completedItems(data), cal, { beamWidth: 10 });
     const front = paretoFront(builds);
     expect(front.length).toBe(builds.length);
@@ -151,8 +209,7 @@ describe('golden scenarios (Concept B layer 2)', () => {
     });
     expect(builds.length).toBeGreaterThan(0);
     for (const b of builds) {
-      const firstThree = b.items.slice(0, 3);
-      expect(firstThree.some((n) => n.startsWith('Tainted ')), b.items.join(',')).toBe(true);
+      expect(b.items.slice(0, 3).some((n) => n.startsWith('Tainted ')), b.items.join(',')).toBe(true);
     }
   });
 
@@ -163,8 +220,7 @@ describe('golden scenarios (Concept B layer 2)', () => {
       scenario: { requireAntiHeal: true },
     });
     for (const b of builds) {
-      const tainted = b.items.filter((n) => n.startsWith('Tainted '));
-      expect(tainted.length, b.items.join(',')).toBeLessThanOrEqual(1);
+      expect(b.items.filter((n) => n.startsWith('Tainted ')).length, b.items.join(',')).toBeLessThanOrEqual(1);
     }
   });
 

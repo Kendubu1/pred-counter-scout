@@ -21,14 +21,22 @@ const data = loadData();
 const cal = loadCalibration();
 const kit = data.kits.get(slug);
 if (!kit) {
-  console.error(`No kit for "${slug}". Missing from owned data: ${data.missingFromOwned.join(', ')}`);
+  console.error(`No kit for "${slug}". Known slugs include: ${[...data.kits.keys()].slice(0, 8).join(', ')}…`);
   process.exit(1);
 }
 
 const level = opt('level') ?? 13;
 const unverified = unverifiedConstants(cal);
 console.log(`# ${kit.name} (${kit.damageType}, ${kit.attackType}) — level ${level}, patch ${cal.patch}`);
-console.log(`confidence: THEORY (sim-only; unverified constants in play: ${unverified.join(', ')})\n`);
+console.log(`confidence: THEORY (sim-only; unverified constants in play: ${unverified.join(', ')})`);
+if (kit.abilitySource === 'mixed') {
+  const stale = data.staleFallbacks.filter((s) => s.slug === slug).map((s) => s.key);
+  console.log(`data note: ${stale.join(', ')} use stale owned numbers (current text did not parse)`);
+}
+if (data.derivedProfiles.includes(slug)) {
+  console.log('data note: profile derived from omeda data (no curated owned profile yet)');
+}
+console.log('');
 
 const prio = skillPriority(kit);
 console.log(`skill max order: ${prio.map((a) => a.name).join(' > ')} (ult at 6/11/16)`);

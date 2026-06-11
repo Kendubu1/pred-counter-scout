@@ -40,8 +40,9 @@ export interface HeroKit {
   basicScalingPct: number;       // basic-attack ratio on bonus power, percent
   baseStats: BaseStats;
   abilities: AbilityDef[];       // damaging, castable abilities only
-  // owned = structured scrape; omeda-text = parsed fallback; merged = both.
-  abilitySource: 'owned' | 'omeda-text' | 'merged';
+  // omeda = all numbers current-patch; mixed = some slots fell back to
+  // stale owned data (see LoadedData.staleFallbacks).
+  abilitySource: 'omeda' | 'mixed';
 }
 
 export interface ItemStats {

@@ -19,10 +19,12 @@ npm run snapshot              # refresh data/omeda/ after a balance patch
 
 ## What exists (vertical slice, June 2026)
 
-- `src/data.ts` joins owned per-rank ability data with the omeda.city
-  snapshot (18-level base stats, item game IDs). Falls back to parsing
-  omeda ability text where the owned scrape has gaps (Crunch, Murdock's
-  Buckshot, 30+ other ability slots).
+- `src/data.ts` loads all numbers (ability damage, cooldowns, costs, item
+  stats) from the omeda snapshot, which tracks the live patch; owned data
+  supplies curated profiles and last-resort fallbacks. Validation against
+  the repo's own 1.14.4 digest showed the owned ability data carries
+  pre-1.14 numbers (`npm run drift` for the report). Full 52-hero roster,
+  including derived profiles for adele, legion, neon.
 - `src/sim.ts` closed-form combat math: burst, rotation windows, auto DPS
   with attack speed and crit, mitigation vs reference profiles, mana
   feasibility from real base pools, effective HP. Every constant lives in
