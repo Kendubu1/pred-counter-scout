@@ -5,6 +5,7 @@ import { loadData, completedItems } from './data.js';
 import { loadCalibration, unverifiedConstants, simulate, skillPriority } from './sim.js';
 import { generateBuilds } from './search.js';
 import { rankBlessings } from './eternals.js';
+import { heroGames, itemPlayRate } from './aggregates.js';
 
 const args = process.argv.slice(2);
 const slug = args.find((a) => !a.startsWith('--'));
@@ -56,6 +57,16 @@ for (const b of builds.slice(0, 6)) {
     `  burst ${o.burstVsSquishy.toFixed(0)} | rot10 ${o.rot10VsSquishy.toFixed(0)} | rot20-vs-bruiser ${o.rot20VsBruiser.toFixed(0)}` +
     ` | autoDPS ${o.autoDps10VsSquishy.toFixed(0)} | eHP ${o.ehpPhysical.toFixed(0)}/${o.ehpMagical.toFixed(0)}\n`,
   );
+}
+
+// Play rates: the off-meta gate's "underexplored" signal (live data).
+const games = heroGames(slug);
+if (games >= 30 && builds[0]) {
+  const rates = builds[0].items.map((n) => {
+    const r = itemPlayRate(slug, data.items.get(n)?.gameId ?? null);
+    return r == null ? `${n} (?)` : `${n} (${(r * 100).toFixed(0)}%${r < 0.02 ? ' UNDEREXPLORED' : ''})`;
+  });
+  console.log(`play rates on ${kit.name}, ${games} games this patch: ${rates.join(', ')}\n`);
 }
 
 // Eternals: marginal math on top of the headline build.

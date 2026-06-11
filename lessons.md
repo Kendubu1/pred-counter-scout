@@ -2,6 +2,23 @@
 
 Append-only. One entry per backlog item or significant finding.
 
+## 2026-06-11: Match-feed aggregates (backlog item 2)
+
+- gold_earned_at_interval is per-minute cumulative gold (array length
+  matches duration; final entry matches gold_earned), with ~2-3 pregame
+  entries at the front. Verify interval semantics against a second field
+  before trusting any time series.
+- The placeholder gold economy was ~2x too rich (assumed 4.6k carry gold
+  at minute 10; measured median is 2,473 over 16k samples). Affordability
+  and spike-timing math built on the guess would have been badly wrong.
+  Measure before modeling, even for "obvious" constants.
+- The mode field is a zoo (pvp, ranked, custom, solo, TEAM_VS_TEAM_RUSH,
+  brawl). Whitelist modes explicitly; never blacklist.
+- 120 polite pages (~4 min) yields 8k matches and 160k+ gold samples per
+  minute mark: ample for medians. The off-meta play-rate gate found its
+  first real candidate on day one (Magnify on Gideon: Pareto-optimal vs
+  bruisers, 0% play rate in 1,736 games).
+
 ## 2026-06-11: Item effect schema (backlog item 1)
 
 - Tag-stripped effect text loses which stat a "(+X%)" scales from; the

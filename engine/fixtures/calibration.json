@@ -44,15 +44,18 @@
     }
   },
   "checkpoints": {
-    "_note": "Minute -> typical level and item gold by role. PLACEHOLDER values, to be replaced by aggregates over gold_earned_at_interval + level from match ingest (field confirmed live, June 11 2026 probe).",
+    "_note": "Minute -> typical level and item gold by role. GOLD is MEASURED: per-role medians over 8,033 pvp+ranked matches (160k+ samples/minute), patch 1.14.4 window, data/aggregates/2026-06-11.json. Caveat: gold_earned_at_interval includes ~2-3 pregame entries, so values may lag true game-minute by up to ~2-3 minutes. LEVELS remain PROVISIONAL: the feed has no level timeline (autonomy policy rule: flagged, not estimated).",
+    "goldVerified": true,
+    "goldSource": "data/aggregates/2026-06-11.json (npm run aggregate)",
+    "levelVerified": false,
     "verified": false,
     "table": [
-      { "minute": 5, "level": 5, "gold": { "carry": 2200, "midlane": 2100, "offlane": 2100, "jungle": 2300, "support": 1500 } },
-      { "minute": 10, "level": 8, "gold": { "carry": 4600, "midlane": 4400, "offlane": 4400, "jungle": 4700, "support": 3000 } },
-      { "minute": 15, "level": 11, "gold": { "carry": 7200, "midlane": 7000, "offlane": 6900, "jungle": 7200, "support": 4600 } },
-      { "minute": 20, "level": 13, "gold": { "carry": 9900, "midlane": 9600, "offlane": 9400, "jungle": 9800, "support": 6300 } },
-      { "minute": 25, "level": 15, "gold": { "carry": 12700, "midlane": 12300, "offlane": 12000, "jungle": 12500, "support": 8100 } },
-      { "minute": 30, "level": 17, "gold": { "carry": 15600, "midlane": 15100, "offlane": 14700, "jungle": 15300, "support": 10000 } }
+      { "minute": 5, "level": 5, "gold": { "carry": 640, "midlane": 660, "offlane": 630, "jungle": 740, "support": 560 } },
+      { "minute": 10, "level": 8, "gold": { "carry": 2470, "midlane": 2490, "offlane": 2380, "jungle": 2610, "support": 1970 } },
+      { "minute": 15, "level": 11, "gold": { "carry": 4530, "midlane": 4560, "offlane": 4360, "jungle": 4670, "support": 3630 } },
+      { "minute": 20, "level": 13, "gold": { "carry": 6900, "midlane": 6910, "offlane": 6680, "jungle": 6990, "support": 5720 } },
+      { "minute": 25, "level": 15, "gold": { "carry": 9480, "midlane": 9550, "offlane": 9250, "jungle": 9460, "support": 7980 } },
+      { "minute": 30, "level": 17, "gold": { "carry": 12230, "midlane": 12250, "offlane": 11860, "jungle": 11930, "support": 10370 } }
     ]
   },
   "referenceProfiles": {
