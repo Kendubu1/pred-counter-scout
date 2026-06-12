@@ -2,6 +2,26 @@
 
 Append-only. One entry per backlog item or significant finding.
 
+## 2026-06-12: Calibration from live data
+
+- One constant fell to data alone: ultRankLevels verified via pred.gg's
+  in-game recommendedSkills arrays (ULTIMATE at positions 6/11/16).
+  Check whether the game publishes a fact before scheduling a
+  measurement session for it.
+- The crit envelope (largest_critical_strike / predicted max basic over
+  6,657 crit builders) double-pays: its densest bins (1.6-1.8) are
+  consistent with the assumed 1.75 multiplier AND discriminate the
+  scaling basis, since the total-power reading would imply an absurd
+  1.2x crit. Joint inference from one distribution.
+- The mitigation fit raised a real warning instead of a confirmation:
+  implied K rises 122->150 with armor, the signature of shields/DR
+  contaminating total_damage_mitigated. If true K exceeds 100, EHP
+  outputs currently overvalue armor; the practice-mode mitigation
+  measurement is now the single highest-priority item on the checklist.
+- Aggregate fields verify SOME constants but each needs a mechanism
+  argument for why the statistic identifies the constant; where the
+  field is contaminated, record the evidence and keep the flag red.
+
 ## 2026-06-12: Meta builds explained + the ledger POV
 
 - The sim explaining evidence is the project thesis landing: pred.gg's

@@ -5,7 +5,7 @@
     "mitigation": {
       "formula": "damage * 100 / (100 + armor)",
       "verified": false,
-      "source": "Assumed standard MOBA formula. Measure: practice mode, fixed-damage ability vs known-armor target."
+      "source": "Assumed standard 100/(100+armor). DATA WARNING 2026-06-12: implied K from total_damage_mitigated rises 122->150 with armor (n=23k players), meaning the field includes shields/DR and the formula cannot be verified from aggregates; if true K > 100, current EHP outputs OVERVALUE armor. Measure in practice mode (highest-priority measurement)."
     },
     "percentPenMultiplicative": {
       "value": true,
@@ -20,7 +20,7 @@
     "critMultiplier": {
       "value": 1.75,
       "verified": false,
-      "source": "Assumed. Measure: largest_critical_strike vs basic hit on same target, or practice mode."
+      "source": "Assumed 1.75. DATA EVIDENCE 2026-06-12: largest_critical_strike envelope over 6,657 crit builders, densest ratio bins 1.6-1.8 under bonus-only scaling (consistent with 1.75; confounded by crit-damage modifiers and possible post-mitigation recording). Confirm in practice mode."
     },
     "attackSpeedFormula": {
       "formula": "attacksPerSecond = base_attack_speed[level] * (1 + item_attack_speed / 100)",
@@ -30,7 +30,7 @@
     "abilityScalingUsesBonusPowerOnly": {
       "value": true,
       "verified": false,
-      "source": "base_stats.physical_power equals the basic-attack per-level damage line, so displayed ratios are read as applying to item-granted power only. Measure: ability damage with 0 vs 1 power item."
+      "source": "base_stats.physical_power equals the basic-attack per-level damage line. DATA EVIDENCE 2026-06-12: the crit envelope is only plausible under bonus-only scaling (mode 1.6-1.8); total-power reading implies an absurd 1.2x crit multiplier. Confirm in practice mode."
     },
     "ultRankLevels": {
       "value": [
@@ -38,8 +38,8 @@
         11,
         16
       ],
-      "verified": false,
-      "source": "Assumed standard ult rank-up levels. Verify in game."
+      "verified": true,
+      "source": "VERIFIED 2026-06-12 from pred.gg recommendedSkills (in-game data): 18-entry skill orders place ULTIMATE at positions 6/11/16 for gideon, greystone, sparrow."
     },
     "maxLevel": {
       "value": 18,
