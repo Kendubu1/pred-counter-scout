@@ -1,0 +1,4248 @@
+{
+ "generatedAt": "2026-06-12T19:24:06.923Z",
+ "source": "pred.gg simpleBuild perk statistics (gameModes RANKED+STANDARD), per hero-role with 300+ field games in our aggregates",
+ "note": "augment = the hero-specific perk locked in the first ~20s; winrates are observational evidence, not engine math; augment mechanical modeling is still open (priorities item 9)",
+ "catalog": {
+  "12": {
+   "name": "Frozen Fury",
+   "description": "Frost Storm grants 10-34% Attack Speed while active. Increases with Hero Level.",
+   "hero": "aurora"
+  },
+  "14": {
+   "name": "Atomised Artillery",
+   "description": "Atomiser fires 3 blasts in succession, each dealing 60% of the original damage.",
+   "hero": "skylar"
+  },
+  "15": {
+   "name": "Plasma Barrage",
+   "description": "Plasma Grenade reduces its own Cooldown by 3.5s when attaching to an Enemy Hero.",
+   "hero": "skylar"
+  },
+  "17": {
+   "name": "Bolster Bearicade",
+   "description": "While Tesseract Core is active, gain 15% increased Armors.",
+   "hero": "boris"
+  },
+  "18": {
+   "name": "Savage Shred",
+   "description": "Detection Protocol's Mark Shreds 35% Physical Armor for 5s when consumed.",
+   "hero": "boris"
+  },
+  "19": {
+   "name": "Apex Hunter",
+   "description": "Chrono Swipe deals 70% more damage to Heroes below 20% Max Health.",
+   "hero": "boris"
+  },
+  "20": {
+   "name": "Blood Well",
+   "description": "Takedowns summon a pool of blood with 18 charges for 120s. While standing in the pool, Countess consumes a charge to restore 2% Max Health and 2.5% Max Mana every 0.25s.",
+   "hero": "countess"
+  },
+  "21": {
+   "name": "Sanguine Slash",
+   "description": "Blade Siphon deals 20% more damage to Isolated Targets.",
+   "hero": "countess"
+  },
+  "23": {
+   "name": "Combo Crunch",
+   "description": "Dealing damage with Cross Crunch grants 6% Total Attack Speed for 3s, stacking up to 5 times.",
+   "hero": "crunch"
+  },
+  "24": {
+   "name": "Lunge Crunch",
+   "description": "Forward Crunch travels 10% further.",
+   "hero": "crunch"
+  },
+  "25": {
+   "name": "Falcon Crunch",
+   "description": "Empowered Right Crunch deals 10% increased damage and launches Crunch 4x higher when used mid-air. Its Cooldown is 30% longer when this occurs.",
+   "hero": "crunch"
+  },
+  "28": {
+   "name": "Photon Efficiency",
+   "description": "Photon Disruptor deals 10% more damage and its Cooldown is reduced by 15% when it hits a Hero.",
+   "hero": "dekker"
+  },
+  "29": {
+   "name": "Bring The Boom",
+   "description": "Rad Rounds deals 60% of its damage to nearby Enemies upon exploding.",
+   "hero": "drongo"
+  },
+  "30": {
+   "name": "Shred Spree",
+   "description": "Shrapnel Cannon's Cooldown is reduced by 85%, but it deals 60% less damage.",
+   "hero": "drongo"
+  },
+  "31": {
+   "name": "Smog Therapy",
+   "description": "While standing in Gag Grenade, Yourself and Allied Heroes restore for 10/55/100/145/190 <AttackDamageText>(+105%</><img id=\"ADIconOrange\"></><AttackDamageText>)</><AbilityPowerText>(+120%</><img id=\"APIconBlue\"></><AbilityPowerText>)</> Health over its lifetime.",
+   "hero": "drongo"
+  },
+  "32": {
+   "name": "Mana Catalyst",
+   "description": "Restore Mana equal to 10% of damage dealt to Heroes, reduced to 1.5% for Non-Heroes. Basic Attacks restore 2x more.",
+   "hero": "argus"
+  },
+  "33": {
+   "name": "Arcane Engine",
+   "description": "Dealing Ability Damage to Heroes grants you 1.75% Movement Speed for 1.5s, stacking infinitely - 0.15s CD.",
+   "hero": "argus"
+  },
+  "34": {
+   "name": "Infinite Obliteration",
+   "description": "Synaptic Obliterator's projectile now have infinite range, travel 25% faster, and Slow for 50% longer.",
+   "hero": "argus"
+  },
+  "35": {
+   "name": "Imperial Duelist",
+   "description": "Your Basic Attacks debuff Targets for 3s. Against debuffed Targets, deal 5% more damage and take 5% less damage.",
+   "hero": "feng-mao"
+  },
+  "36": {
+   "name": "Ichorous Glaive",
+   "description": "Killing Enemy Units restores 4% of Missing Health, increased to 35% for Earth Shatter Executions.",
+   "hero": "feng-mao"
+  },
+  "37": {
+   "name": "Seismic Smash",
+   "description": "Earth Shatter also Knocks Up Enemies and Stuns for a short duration.",
+   "hero": "feng-mao"
+  },
+  "38": {
+   "name": "Verdant Embrace",
+   "description": "Untamed Growth also Heals Yourself and Allies for 30 <AbilityPowerText>(+24%</><img id=\"APIconBlue\"></><AbilityPowerText>)</> over its duration. Healing repeats on Explosion.",
+   "hero": "the-fey"
+  },
+  "39": {
+   "name": "Wild Growth",
+   "description": "Bramble Patch has 30% more range.",
+   "hero": "the-fey"
+  },
+  "40": {
+   "name": "Natural Infusion",
+   "description": "Damaging Heroes with Harvest Nettles grants 10 Ability Haste for 6s, stacking infinitely.",
+   "hero": "the-fey"
+  },
+  "41": {
+   "name": "Instant Reload",
+   "description": "GTFO now Executes Heroes that fall below 5% Max Health. When this occurs, GTFO may be re-cast for 8s.",
+   "hero": "grim-exe"
+  },
+  "42": {
+   "name": "Reboot.exe",
+   "description": "Triggering Pulsefire reduces your Current Basic Ability Cooldowns by 10%, increased to 25% against Heroes.",
+   "hero": "grim-exe"
+  },
+  "43": {
+   "name": "System Restore",
+   "description": "Blocking an Ability with Energy Shield restores 20 <HealthText>(+10%</><img id=\"HealthIconGreen\"></><HealthText>)</> Health and grants 20% Decaying Movement Speed over 2s.",
+   "hero": "grim-exe"
+  },
+  "44": {
+   "name": "Auto-Lock Amp",
+   "description": "Seek and Destroy's homing speed is increased by 25%.",
+   "hero": "gadget"
+  },
+  "45": {
+   "name": "Blast Zone",
+   "description": "Sticky Mine's explosion radius is increased by 35%. Enhancing a Mine on an Enemy Hero grants 3 additional FDA stacks.",
+   "hero": "gadget"
+  },
+  "47": {
+   "name": "Abyssal Mantle",
+   "description": "Upon activating Black Hole, gain a 50 <AbilityPowerText>(+75%</><img id=\"APIconBlue\"></><AbilityPowerText>)</> Shield for 4s.",
+   "hero": "gideon"
+  },
+  "48": {
+   "name": "Event Horizon",
+   "description": "Cosmic Rift deals an additional <HealthText>(+5% Target's Max Health)</> damage to Enemies in the center.",
+   "hero": "gideon"
+  },
+  "49": {
+   "name": "Infinite Impact",
+   "description": "Void Breach has infinite range.",
+   "hero": "gideon"
+  },
+  "50": {
+   "name": "Tainted Oath ",
+   "description": "Sacred Oath applies 50% Blight to Enemies for 4.5s.",
+   "hero": "greystone"
+  },
+  "51": {
+   "name": "Imperial Soul",
+   "description": "Stone Forged Soul deals 12% more damage and its radius is 20% larger. ",
+   "hero": "greystone"
+  },
+  "52": {
+   "name": "Close Cut",
+   "description": "Make Way deals 20% increased damage to the nearest Enemy Unit.",
+   "hero": "greystone"
+  },
+  "53": {
+   "name": "Chieftain's Blink",
+   "description": "Reduce your Blink Cooldown by 35%.",
+   "hero": "grux"
+  },
+  "54": {
+   "name": "Lust For Blood",
+   "description": "Heal for 5-11.3% of damage dealt to Enemies afflicted with Max Bloodlust stacks. Increases with Hero Level.",
+   "hero": "grux"
+  },
+  "56": {
+   "name": "Blast Off!",
+   "description": "Land Mine's cooldown is 12% lower and blasts Targets 30% further. ",
+   "hero": "howitzer"
+  },
+  "57": {
+   "name": "Combat Thrusters",
+   "description": "Gain 40%/70%/130% Movement Speed during Make It Rain.",
+   "hero": "howitzer"
+  },
+  "58": {
+   "name": "Sniper Shells",
+   "description": "Howitzer's Basic Attacks grant him 4% Total Attack Speed and 2% Omnivamp for 4.5s, stacking up to 5 times.",
+   "hero": "howitzer"
+  },
+  "59": {
+   "name": "Bringer Of Mercy",
+   "description": "Mercy costs 10 less Mana and reduces Kira's Current Ability Cooldowns by 0.75s upon dealing damage.",
+   "hero": "kira"
+  },
+  "60": {
+   "name": "Siphoning Purge",
+   "description": "Purge Heals for 25% of its damage dealt to Heroes.",
+   "hero": "kira"
+  },
+  "62": {
+   "name": "Badlands Belch",
+   "description": "Belch deals an additional <HealthText>(+7/8.5/10% Target's Missing Health)</> damage and Knocks Back 30% further.",
+   "hero": "iggy-scorch"
+  },
+  "63": {
+   "name": "Hold This!",
+   "description": "Molotov permanently gains +5 Explosion Damage against Heroes each time its Explosion hits one.",
+   "hero": "iggy-scorch"
+  },
+  "64": {
+   "name": "Turret Maniac",
+   "description": "Increase your Maximum Number of Turrets to 4, but they have 20% less Health.",
+   "hero": "iggy-scorch"
+  },
+  "65": {
+   "name": "Critical Override",
+   "description": "Kallari's Abilities can Critically Strike, but her Critical Damage is decreased by 35%.",
+   "hero": "kallari"
+  },
+  "66": {
+   "name": "Execution Mandate",
+   "description": "Takedowns reduce Current Basic Ability Cooldowns by 40%.",
+   "hero": "kallari"
+  },
+  "67": {
+   "name": "Deadly Finesse",
+   "description": "If Crippling Dagger hits a Hero or kills an Enemy Unit, reduce its Cooldown by 1.5s. Hero hits also restore 20 Mana.",
+   "hero": "kallari"
+  },
+  "68": {
+   "name": "Feral Ambush",
+   "description": "Ambush's range is increased by 10%.",
+   "hero": "khaimera"
+  },
+  "69": {
+   "name": "Jungle Invasion",
+   "description": "Based on Hero Level, gain 3-17 Physical Power while in the Jungle. Increases to 6-34 in the Enemy Jungle.",
+   "hero": "khaimera"
+  },
+  "70": {
+   "name": "Lane Lurker",
+   "description": "Ancestral Fury also grants Rage against Minions, but its Health Regen is reduced by 25%/15%/5%/0% (at level 1/6/11/16).",
+   "hero": "khaimera"
+  },
+  "71": {
+   "name": "Heavenly Tactician",
+   "description": "Fury of the Heavens' Cooldown is reduced by 20s and Kwang no longer retrieves his Heavenly Blade upon Recalling.",
+   "hero": "kwang"
+  },
+  "72": {
+   "name": "Aura of the Heavens",
+   "description": "Gain 5% Omnivamp. Nearby Allied Heroes gain 4% Omnivamp.",
+   "hero": "kwang"
+  },
+  "73": {
+   "name": "Slayer of the Heavens",
+   "description": "Strike of the Heavens deals 25% more damage and reduces Cooldowns by 25% more.",
+   "hero": "kwang"
+  },
+  "74": {
+   "name": "Flow State",
+   "description": "Evade's Cooldown is 15% lower and its Cooldown resets on Takedown.",
+   "hero": "zarus"
+  },
+  "75": {
+   "name": "Master Of Spears",
+   "description": "Spear Of Nyr's Cooldown is only 50% longer when thrown.",
+   "hero": "zarus"
+  },
+  "76": {
+   "name": "The Ascended",
+   "description": "Gain <HealthText>+5 Health</> and <AttackDamageText>+1 Physical Power</> every minute.",
+   "hero": "zarus"
+  },
+  "77": {
+   "name": "Devastating Bombs",
+   "description": "Void Bomb deals 15% more damage to Isolated Targets.",
+   "hero": "lt-belica"
+  },
+  "78": {
+   "name": "Pulsefire Rounds",
+   "description": "Lt. Belica's Basic Attacks also deal <AbilityPowerText>(+10%</><img id=\"APIconBlue\"></><AbilityPowerText>)</><AttackDamageText>(+12%</><img id=\"ADIconOrange\"></><AttackDamageText>)</> <AbilityPowerText>Damage</> On-Hit.",
+   "hero": "lt-belica"
+  },
+  "79": {
+   "name": "Combat Veteran",
+   "description": "Passively gain <EffectText>+0.1-3 Experience</> each second. Increases with Hero Level.",
+   "hero": "lt-belica"
+  },
+  "80": {
+   "name": "Cursed Infestation",
+   "description": "Hive deals 12% more damage and has 10% increased range.",
+   "hero": "morigesh"
+  },
+  "81": {
+   "name": "Ritual Of Death",
+   "description": "Curse heals Morigesh for 70%/80%/90% of damage dealt. Takedowns also decrease Curse's Cooldown by 20s.",
+   "hero": "morigesh"
+  },
+  "82": {
+   "name": "Spirit Shred",
+   "description": "Morigesh's Basic Attacks Shred 3.5% Magical Armor for 4s, stacking up to 5 times.",
+   "hero": "morigesh"
+  },
+  "83": {
+   "name": "Justice's Reach",
+   "description": "Shots Fired now pierces units and has +300 additional range.",
+   "hero": "murdock"
+  },
+  "84": {
+   "name": "Sting Operation",
+   "description": "Murdock gains 2 additional Max Static Trap Charges and Static Traps are 20% larger.",
+   "hero": "murdock"
+  },
+  "85": {
+   "name": "Martial Law",
+   "description": "Long Arm Of The Law deals 12% more damage and grants <AbilityName>+50g</> on Hero Kill.",
+   "hero": "murdock"
+  },
+  "86": {
+   "name": "Circuit Reset",
+   "description": "Upon Shielding a Hero with Alacrity, reduce their Current Ability Cooldowns by 1.5s.",
+   "hero": "muriel"
+  },
+  "87": {
+   "name": "Essence Nullifier",
+   "description": "Serenity's Max Charge Damage also drains 10 <AbilityPowerText>(+3/4.5/6/7.5/9% Target's Current Mana)</> Mana, dealing it as true damage.",
+   "hero": "muriel"
+  },
+  "90": {
+   "name": "Percussive Tear",
+   "description": "Each hit of Crash Bang Boom! Shreds 2.5% Armors for 3s.",
+   "hero": "narbash"
+  },
+  "92": {
+   "name": "Psychic Support",
+   "description": "Essence Catalyst also restores your Linked Ally's Mana by <AbilityPowerText>(+12% Target's Missing Mana)</> over the duration.",
+   "hero": "phase"
+  },
+  "93": {
+   "name": "Kindred Surge",
+   "description": "Hyperflux grants 10% more Movement Speed and <HealthText>(+1.2% </><img id=\"HealthIconGreen\"></><HealthText>)</> Health Regen for its duration.",
+   "hero": "phase"
+  },
+  "94": {
+   "name": "Final Flash",
+   "description": "Energy Lance is 30% shorter but deals 20/30/40/50/70% more damage.",
+   "hero": "phase"
+  },
+  "95": {
+   "name": "Rock & Awe",
+   "description": "Boulder Throw deals 0-100% more damage, based on distance thrown (capped at 6000 units).",
+   "hero": "rampage"
+  },
+  "96": {
+   "name": "The Rumbling",
+   "description": "Rumble's Cooldown is refunded when it deals damage,  but it deals 35% less damage, costs 10 more Mana, and Slows Rampage by 60% while active.",
+   "hero": "rampage"
+  },
+  "97": {
+   "name": "Tiny Titan",
+   "description": "Behemoth shrinks Rampage instead, granting him no Combat Penalty and 35/40/45% Total Attack Speed, but he receives 45% more damage.",
+   "hero": "rampage"
+  },
+  "98": {
+   "name": "Quickdraw",
+   "description": "Revenant reloads 35% faster and jumps 25% higher.",
+   "hero": "revenant"
+  },
+  "99": {
+   "name": "Hellfire Blast",
+   "description": "Helllfire Rounds' Fourth Shot deals 7% more damage and ignores 30% Bonus Physical Armor.",
+   "hero": "revenant"
+  },
+  "100": {
+   "name": "Spectral Bounty",
+   "description": "Reckoning now grants 3x Bounty Hunter gold and 4 (+25% of stolen stats) Physical & Magical Power on Kill.",
+   "hero": "revenant"
+  },
+  "103": {
+   "name": "Wanton Warden",
+   "description": "Regenerate Health equal to 4-7% of damage taken over 5s. Increases with Hero Level.",
+   "hero": "riktor"
+  },
+  "104": {
+   "name": "Crushing Descent",
+   "description": "Ascend now Stuns for 0.2s when it deals damage.",
+   "hero": "serath"
+  },
+  "105": {
+   "name": "Vital Resonance",
+   "description": "Fallen Grace's Visages restore <AttackDamageText>(+170%</><img id=\"ADIconOrange\"></><AttackDamageText>)</> Health on pick-up.",
+   "hero": "serath"
+  },
+  "107": {
+   "name": "Gravebreaker",
+   "description": "Colossal Blow's Knock Back is 15% stronger. Each Soul Tier increases this by 30% more.",
+   "hero": "sevarog"
+  },
+  "108": {
+   "name": "Unholy Pursuit",
+   "description": "Phantom Rush grants 2 Souls when it damages a Hero. Its Cooldown also resets when Colossal Blow hits a Hero.",
+   "hero": "sevarog"
+  },
+  "109": {
+   "name": "Grim Harvest",
+   "description": "Siphon now Executes Enemies that fall below 6% Max Health.",
+   "hero": "sevarog"
+  },
+  "113": {
+   "name": "Endless Hunt",
+   "description": "Takedowns reset Sparrow's Basic Ability Cooldowns and permanently grant 1 Physical Penetration.",
+   "hero": "sparrow"
+  },
+  "115": {
+   "name": "Inner Fury",
+   "description": "Inner Fire now releases a fan of 5 arrows, has 8% more range, and fires 2 more volleys.",
+   "hero": "sparrow"
+  },
+  "116": {
+   "name": "Adaptive Force",
+   "description": "Force Shield's Cooldown is 3s lower and now has 2 charges, but is reduced in size.",
+   "hero": "steel"
+  },
+  "118": {
+   "name": "Colossal Crash",
+   "description": "Shield Slam's has 10% longer range, its area of effect is 10% larger, and Knocks Back Enemies on impact instead.",
+   "hero": "steel"
+  },
+  "119": {
+   "name": "Axe Retrieval",
+   "description": "Highland Hurl can be picked up, reducing its Cooldown by 45%.",
+   "hero": "terra"
+  },
+  "120": {
+   "name": "Iron Resolve",
+   "description": "Wild Rush grants 30/33/36/39/42% Damage Reduction while it is Channeling.",
+   "hero": "terra"
+  },
+  "121": {
+   "name": "Hersir's Will",
+   "description": "While Unstoppable Force is active, gain a stack of Hersir every 0.6s.",
+   "hero": "terra"
+  },
+  "122": {
+   "name": "Soul Weaver",
+   "description": "Soul Storm grants 20% <EffectText>(+5% per Hero Hit)</> Damage Reduction while active, and its Cooldown is 8% lower.",
+   "hero": "yurei"
+  },
+  "123": {
+   "name": "Hallowed Reverberation",
+   "description": "Hallowed Strikes gains 150 additional range and bounces 2 more times.",
+   "hero": "yurei"
+  },
+  "124": {
+   "name": "Ephemeral Surge",
+   "description": "Destroying Torn Spirits restores 3% of your Maximum Mana and grants 35% Decaying Movement Speed over 2.5s.",
+   "hero": "yurei"
+  },
+  "125": {
+   "name": "Amplified Burst",
+   "description": "Vaporize has 15% more range.",
+   "hero": "twinblast"
+  },
+  "126": {
+   "name": "Grenadier",
+   "description": "Vortex Grenades has 1 additional Max Charge. Rocket Dash grants 1 charge on use.",
+   "hero": "twinblast"
+  },
+  "129": {
+   "name": "Nightmare Extractor",
+   "description": "Casting an Ability reduces the Cooldown of Extract by 20%.",
+   "hero": "mourn"
+  },
+  "130": {
+   "name": "Dreadful Roots",
+   "description": "If Abduct hits Terrain, Mourn pulls himself towards it.",
+   "hero": "mourn"
+  },
+  "131": {
+   "name": "Mystic Marksman",
+   "description": "Knock, Knock! deals Magical Damage instead.",
+   "hero": "wraith"
+  },
+  "132": {
+   "name": "Sniper's Bounty",
+   "description": "Killing Blows from Knock Knock! grant <AbilityName>+6g</>, increased to <AbilityName>+40g</> for Heroes.",
+   "hero": "wraith"
+  },
+  "133": {
+   "name": "Illusionist",
+   "description": "Surprise, Surprise! grants its effects to nearby Allied Heroes, but its Cooldown is 20% higher. ",
+   "hero": "wraith"
+  },
+  "134": {
+   "name": "Prosperous Path",
+   "description": "Body Stance: Kills grant <AbilityName>+4g</>.\nSpirit Stance: Kills restore <HealthText>+2.5% Missing Health</>.",
+   "hero": "wukong"
+  },
+  "135": {
+   "name": "Masterful Mimicry",
+   "description": "Gain 1 more Max Clone and generate a stack of Hair every 5.5s.",
+   "hero": "wukong"
+  },
+  "136": {
+   "name": "From Up High",
+   "description": "High Impact's Height Damage is no longer capped to 1500u, now dealing more damage at greater heights.",
+   "hero": "wukong"
+  },
+  "137": {
+   "name": "Energy Transfer",
+   "description": "Deflecting a projectile grants 20% Decaying Movement Speed over 2s and a 44-350 Shield for 3s.",
+   "hero": "yin"
+  },
+  "138": {
+   "name": "Storm of Salvation",
+   "description": "Windburn lasts for 1s longer and grants <HealthText>(+0.75% Missing Health)</> Healing On-Hit while active. Healing is 20% effective against Non-Heroes.",
+   "hero": "yin"
+  },
+  "139": {
+   "name": "Serpent's Blessing",
+   "description": "Lash Kick's Cooldown is reduced by 50% when used on Terrain.",
+   "hero": "yin"
+  },
+  "140": {
+   "name": "Disc Of Demise",
+   "description": "Ricochet bounces 25% further and each hit reduces its Current Cooldown by 5%, increased to 10% for Heroes.",
+   "hero": "zinx"
+  },
+  "141": {
+   "name": "Heal Matrix",
+   "description": "Infuse now has 2 charges but heals 15% less.",
+   "hero": "zinx"
+  },
+  "142": {
+   "name": "Terminal Treatment",
+   "description": "Refibrillator's On-Hit damage increases by 0-60%, based on Target's Missing Health.",
+   "hero": "zinx"
+  },
+  "143": {
+   "name": "Netherward",
+   "description": "Upon using Soulfire, gain a 40 <AbilityPowerText>(+40%</><img id=\"APIconBlue\"></><AbilityPowerText>)</> Shield for 2s.",
+   "hero": "renna"
+  },
+  "144": {
+   "name": "Vital Essence",
+   "description": "Picking up Essence grants <AbilityName>+4g</> and restores 3.5% Missing Health and Mana.",
+   "hero": "renna"
+  },
+  "145": {
+   "name": "Communion",
+   "description": "Mortal Coil no longer Executes but has 20% increased Radius. Ally Heroes now heal themselves upon damaging targets in its area, at 100% effectiveness.",
+   "hero": "renna"
+  },
+  "146": {
+   "name": "Death From Above",
+   "description": "Akeron can fire an additional web projectile from the wall or ground once, allowing him to leap from surface to surface or to Root from where he hangs.",
+   "hero": "akeron"
+  },
+  "147": {
+   "name": "Roar of Torment",
+   "description": "Consume now Pushes instead of Pulls and deals 200% increased tick damage, but can no longer bite.",
+   "hero": "akeron"
+  },
+  "149": {
+   "name": "Frenzied Fighter",
+   "description": "Berserk has no cooldown and can remain on indefinitely while under the Health threshold.",
+   "hero": "bayle"
+  },
+  "150": {
+   "name": "Betrayer's Reqiuem",
+   "description": "Kingslayer uppercuts all Enemies in an area around the initial Target. Additionally, Kingslayer's Cooldown is reduced by 15%.",
+   "hero": "bayle"
+  },
+  "151": {
+   "name": "Swift Strikes",
+   "description": "After casting an ability, Bayle gains 45% Attack Speed for one attack. Additionally, he automatically starts with the 3rd attack in his Basic Attack chain, but it always deals 25% decreased damage.",
+   "hero": "bayle"
+  },
+  "152": {
+   "name": "Focal Lens",
+   "description": "Hitting an enemy Hero with Tachyon Lance shreds their Physical Armor by 20% for 4s and reduces the cooldown by 1s.",
+   "hero": "eden"
+  },
+  "153": {
+   "name": "Kinetic Waltz",
+   "description": "Axiom Strike deals 90% damage, has 30% reduced cooldown and grants 35% movement speed for 1.5s when damaging Enemy Heroes.",
+   "hero": "eden"
+  },
+  "154": {
+   "name": "Limit Break: Echo",
+   "description": "After casting Limit Break, the cooldowns of your basic abilities in your current stance are instantly refreshed.",
+   "hero": "eden"
+  },
+  "155": {
+   "name": "Ferocious Flight",
+   "description": "For each Enemy hit by Maco Fly, Maco gains 30/50/70/90/110 <AbilityPowerText>(+10%</><img id=\"APIconBlue\"></><AbilityPowerText>)</><HealthText>(+1.25%</><img id=\"HealthIconGreen\"></><HealthText>)</> additional Shielding and the ability's Cooldown is reduced by 1s. This effect also occurs on non-Heroes, but is reduced by 80%.",
+   "hero": "maco"
+  },
+  "156": {
+   "name": "Longshot",
+   "description": "Maco Sparkle's damage scales linearly based on how far it travels from 100% to 200% damage.",
+   "hero": "maco"
+  },
+  "157": {
+   "name": "Shatterbloom",
+   "description": "Maco Strike creates a Healing field at the explosion location that Heals 15/25/35 <AbilityPowerText>(+4%</><img id=\"APIconBlue\"></><AbilityPowerText>)</> every 0.25s for 5s.",
+   "hero": "maco"
+  },
+  "158": {
+   "name": "Ghost in the Machine",
+   "description": "After dashing with Erase Vector, become invisible for 1s.",
+   "hero": "neon"
+  },
+  "159": {
+   "name": "Dox",
+   "description": "Replace your trinket with Dox, granting you 5% increased Magical Power & 15% increased Maximum Mana. Activating it allows you to see nearby Enemy Heroes within 3000u for 4s.",
+   "hero": "neon"
+  },
+  "160": {
+   "name": "RAM",
+   "description": "Gain 5 Magical Power and 25% Base Mana Regen on takedown, stacking infinitely. At 3 stacks gain 5% Movement Speed. Upon death, lost 50% of stacks rounded up.",
+   "hero": "neon"
+  },
+  "161": {
+   "name": "Lenore",
+   "description": "Shadow Glide refreshes the cooldown of Nevermore and it deals <AttackDamageText>(+30%</><img id=\"ADIconOrange\"></><AttackDamageText>)</> bonus <AttackDamageText>Damage</>.",
+   "hero": "kira"
+  },
+  "162": {
+   "name": "Nightstalker",
+   "description": "Eclipse's bonus Movement Speed is increased to 70%/120%/200%.",
+   "hero": "mourn"
+  },
+  "163": {
+   "name": "War Anthem",
+   "description": "Song Of My People and March no longer heal. Instead, they each grant +8/7.5/10/12.5/15% Physical Power while active.",
+   "hero": "narbash"
+  },
+  "164": {
+   "name": "Sun Shards",
+   "description": "Sparrow's basic attacks ricochet 1/2/3/4 times, dealing <AttackDamageText>(+20%</><img id=\"ADIconOrange\"></><AttackDamageText>) Damage</> and applying On-Hit effects at <EffectText>35%</> effectiveness.",
+   "hero": "sparrow"
+  },
+  "165": {
+   "name": "Crescendo",
+   "description": "Shinbi’s final Basic Attack within her chain deals Magical Damage and 15 <AbilityPowerText>(+35%</><img id=\"APIconBlue\"></><AbilityPowerText>)</><AttackDamageText>(+30%</><img id=\"ADIconOrange\"></><AttackDamageText>)</> bonus damage.",
+   "hero": "shinbi"
+  },
+  "166": {
+   "name": "Heavy Metal",
+   "description": "Heavy Punches and Shield Bash deal Bonus Magical Damage On-Hit equal to 10% of your Total Physical Armor and Magical Armor.",
+   "hero": "steel"
+  },
+  "167": {
+   "name": "Glacial Thorns",
+   "description": "Glacial Charge spawns Hoarfrost Crystals at its base that deal 40/60/80/100/120 <AbilityPowerText>(+20%</><img id=\"APIconBlue\"></><AbilityPowerText>)</> Damage and Root for 0.5s.",
+   "hero": "aurora"
+  },
+  "168": {
+   "name": "Zap O' 9-Chains",
+   "description": "On Ability Cast, Riktor’s next Basic Attack within 3s zaps 9 nearby Enemies, dealing 15 (+4 per Level)<AbilityPowerText>(+25%</> <img id=\"APIconBlue\"></><AbilityPowerText>)</><AttackDamageText>(+30%</><img id=\"ADIconOrange\"></><AttackDamageText>)</> <AbilityPowerText>Damage</>.",
+   "hero": "riktor"
+  },
+  "169": {
+   "name": "Assault MK-II ",
+   "description": "Air Assault hovers for 0.5s longer and fires an additional missile with each attack.",
+   "hero": "skylar"
+  },
+  "170": {
+   "name": "Red Mist",
+   "description": "Gain 10% Total Attack Speed per Enemy Hero or Camp Leader with Bloodlust applied within 1800 units.",
+   "hero": "grux"
+  },
+  "171": {
+   "name": "Sacrosanct",
+   "description": "Casting Reversal of Fortune on an Allied Hero immediately creates a Consecrated Ground at the current level at the target location.",
+   "hero": "muriel"
+  },
+  "172": {
+   "name": "Encore",
+   "description": "If a Target dies while being damaged by All Kill, the Cooldown is reset.",
+   "hero": "shinbi"
+  },
+  "173": {
+   "name": "Hypothermia",
+   "description": "Damaging Enemy Heroes with Boreal Sweep shreds 15% Physical Armor and Magical Armor and slows Attack Speed by 20% for 3s.",
+   "hero": "aurora"
+  },
+  "174": {
+   "name": "Trapdoor Demon",
+   "description": "Akeron becomes camouflaged when attaching to terrain, gaining 1.5% Max Health Regen and generating 8 Hunger per second while he remains there.",
+   "hero": "akeron"
+  },
+  "175": {
+   "name": "Eureka!",
+   "description": "At 200 FDA stacks, gain a level. At 500 FDA stacks, gain +60% Jump Height.",
+   "hero": "gadget"
+  },
+  "176": {
+   "name": "Warden's Leash",
+   "description": "Riplash now also hooks Allies, refunding 60% of its Cooldown and 60% of its Cost on Ally hit.",
+   "hero": "riktor"
+  },
+  "177": {
+   "name": "Shadow Echo",
+   "description": "Repeat Shadow Slip's damage effect at your current location when swapping places with your Shadow.",
+   "hero": "countess"
+  },
+  "178": {
+   "name": "Nothin' But Net",
+   "description": "Stasis Bomb grants <GoldText>+25g</> and <AbilityPowerText>+2 Magical Power</> when it damages a Hero.",
+   "hero": "dekker"
+  },
+  "179": {
+   "name": "Polarity Strike",
+   "description": "Ion Strike also grants a 150/250/350 <AbilityPowerText>(+50%</><img id=\"APIconBlue\"></><AbilityPowerText>)</><HealthText>(+10% Target's Missing Health)</> Shield to Allied Heroes for 3.5s.",
+   "hero": "dekker"
+  },
+  "180": {
+   "name": "Spray 'N Pray",
+   "description": "Ventilate deals 50% more damage, but has reduced accuracy at longer ranges.",
+   "hero": "twinblast"
+  },
+  "181": {
+   "name": "Thonk",
+   "description": "Thunk falls to the floor if it hits an Enemy. If Narbash picks it up he refunds 35% of its Cooldown and 50% of its Mana Cost.",
+   "hero": "narbash"
+  },
+  "182": {
+   "name": "Wrath Unleashed",
+   "description": "Applying an On-Hit Effect to an Enemy Hero grants +0.75% Attack Speed for 3s, stacking infinitely.",
+   "hero": "serath"
+  },
+  "183": {
+   "name": "Allegro",
+   "description": "Rushing Beat’s Cooldown is 20% lower.",
+   "hero": "shinbi"
+  },
+  "184": {
+   "name": "Court of Roses",
+   "description": "Iron Rose grants nearest Ally a 5s barrier with 15% Damage Reduction and attaches Thorned Vines to nearby Enemy Heroes dealing 50% damage.",
+   "hero": "adele"
+  },
+  "186": {
+   "name": "Tyrant of Thorns",
+   "description": "Adele triggers Crown of Thorns at 250% effectiveness. \nRoyal Flourish has 9/8.5/8/7.5/7 Cooldown and provides 50% Movement Speed, but no longer Mesmerizes.",
+   "hero": "adele"
+  },
+  "193": {
+   "name": "Seeds of Dominion",
+   "description": "Imperial Lash spawns a Thornbush under the dash target, reducing its Cooldown by 12%. Enemies are Slowed 10% and take 2/2.5/3/3.5/4 True Damage per 35u moved inside the Thornbush.",
+   "hero": "adele"
+  },
+  "634": {
+   "name": "DNT - Some Title",
+   "description": "Placeholder - Does nothing",
+   "hero": null
+  },
+  "635": {
+   "name": "Press the Advantage",
+   "description": "Upon achieving a Takedown, a Rally Point is spawned at the dead Targets location. Rally Point no longer grants Health Regeneration but increases Legions Rate of Fire by 12/18/22/26/30% and grants Allies 10/12.5/15/17.5/20% Attack Speed.",
+   "hero": "legion"
+  },
+  "636": {
+   "name": "Scorched Earth",
+   "description": "Frag Order and Saturation Charge Mines create Napalm zones upon exploding and Orbital Sanction creates one every 0.5s. Napalm zones deal 5 (+6% Bonus Physical Power) Physical Damage per 0.5s and last 3s.",
+   "hero": "legion"
+  },
+  "637": {
+   "name": "DNT - Some Title",
+   "description": "Placeholder - Does nothing",
+   "hero": null
+  },
+  "661": {
+   "name": "Heavy Caliber",
+   "description": "Basic Attack Timer is increased to 0.75s, but deal 310% damage and have 100 increased range. Magazine Size is decreased to 6.",
+   "hero": "legion"
+  },
+  "723": {
+   "name": "Radiant Reprise",
+   "description": "Twirl Flurry's Final Strike also grants an Enhance Basic Attack, but they deal 50% less bonus damage and restore 0% less Energy.",
+   "hero": null
+  },
+  "736": {
+   "name": "Volcaic Slam",
+   "description": "Scarlet's Enhanced Basic leaves behind a fiery rupture in a line that erupt after 0.5s. Eruption deals  <EffectText>10</> <AttackDamageText>(+20</> <img id=\"ADIconOrange\"></><AttackDamageText>)</>  <EffectText>Damage</> and Knocks up Enemies for 0.5s.",
+   "hero": null
+  },
+  "737": {
+   "name": "Cascade",
+   "description": "Brine  now applies on-hits at 100% effectiveness and damaging Enemy Targets with abilities grants 12% Bonus Attack Speed for 4s, once per ability, stacking up to 4 times.",
+   "hero": null
+  }
+ },
+ "heroes": {
+  "adele": {
+   "support": {
+    "augments": [
+     {
+      "id": "184",
+      "name": "Court of Roses",
+      "n": 91131,
+      "w": 47243
+     },
+     {
+      "id": "193",
+      "name": "Seeds of Dominion",
+      "n": 68081,
+      "w": 38092
+     },
+     {
+      "id": "186",
+      "name": "Tyrant of Thorns",
+      "n": 3965,
+      "w": 1964
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Krix",
+      "n": 35825,
+      "w": 19235
+     },
+     {
+      "name": "Lotus",
+      "n": 9979,
+      "w": 5720
+     },
+     {
+      "name": "Idrisil",
+      "n": 7555,
+      "w": 4061
+     },
+     {
+      "name": "Exarch",
+      "n": 781,
+      "w": 377
+     },
+     {
+      "name": "Vermis",
+      "n": 612,
+      "w": 305
+     }
+    ]
+   },
+   "offlane": {
+    "augments": [
+     {
+      "id": "186",
+      "name": "Tyrant of Thorns",
+      "n": 54539,
+      "w": 26234
+     },
+     {
+      "id": "193",
+      "name": "Seeds of Dominion",
+      "n": 46668,
+      "w": 23319
+     },
+     {
+      "id": "184",
+      "name": "Court of Roses",
+      "n": 1876,
+      "w": 851
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Krix",
+      "n": 21256,
+      "w": 10714
+     },
+     {
+      "name": "Lotus",
+      "n": 3354,
+      "w": 1783
+     },
+     {
+      "name": "Idrisil",
+      "n": 2799,
+      "w": 1343
+     },
+     {
+      "name": "Thraex",
+      "n": 1269,
+      "w": 585
+     },
+     {
+      "name": "Nihil",
+      "n": 600,
+      "w": 293
+     }
+    ]
+   }
+  },
+  "akeron": {
+   "offlane": {
+    "augments": [
+     {
+      "id": "146",
+      "name": "Death From Above",
+      "n": 110584,
+      "w": 54827
+     },
+     {
+      "id": "174",
+      "name": "Trapdoor Demon",
+      "n": 17810,
+      "w": 8465
+     },
+     {
+      "id": "147",
+      "name": "Roar of Torment",
+      "n": 14718,
+      "w": 6959
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Krix",
+      "n": 8937,
+      "w": 3994
+     },
+     {
+      "name": "Vesh",
+      "n": 1351,
+      "w": 635
+     },
+     {
+      "name": "Nihil",
+      "n": 1184,
+      "w": 621
+     },
+     {
+      "name": "Idrisil",
+      "n": 903,
+      "w": 422
+     },
+     {
+      "name": "Lotus",
+      "n": 790,
+      "w": 437
+     }
+    ]
+   }
+  },
+  "argus": {
+   "midlane": {
+    "augments": [
+     {
+      "id": "32",
+      "name": "Mana Catalyst",
+      "n": 195745,
+      "w": 101943
+     },
+     {
+      "id": "33",
+      "name": "Arcane Engine",
+      "n": 173843,
+      "w": 86081
+     },
+     {
+      "id": "34",
+      "name": "Infinite Obliteration",
+      "n": 69791,
+      "w": 35220
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 23424,
+      "w": 11776
+     },
+     {
+      "name": "Aion",
+      "n": 8722,
+      "w": 4621
+     },
+     {
+      "name": "Lotus",
+      "n": 1288,
+      "w": 701
+     },
+     {
+      "name": "Demiurge",
+      "n": 1078,
+      "w": 567
+     },
+     {
+      "name": "Xyris",
+      "n": 743,
+      "w": 371
+     }
+    ]
+   },
+   "support": {
+    "augments": [
+     {
+      "id": "32",
+      "name": "Mana Catalyst",
+      "n": 252448,
+      "w": 117338
+     },
+     {
+      "id": "34",
+      "name": "Infinite Obliteration",
+      "n": 65510,
+      "w": 30480
+     },
+     {
+      "id": "33",
+      "name": "Arcane Engine",
+      "n": 32275,
+      "w": 15036
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 18719,
+      "w": 8380
+     },
+     {
+      "name": "Aion",
+      "n": 4136,
+      "w": 1964
+     },
+     {
+      "name": "Lotus",
+      "n": 1076,
+      "w": 511
+     },
+     {
+      "name": "Demiurge",
+      "n": 531,
+      "w": 230
+     },
+     {
+      "name": "Exarch",
+      "n": 350,
+      "w": 132
+     }
+    ]
+   }
+  },
+  "aurora": {
+   "offlane": {
+    "augments": [
+     {
+      "id": "12",
+      "name": "Frozen Fury",
+      "n": 291807,
+      "w": 147493
+     },
+     {
+      "id": "173",
+      "name": "Hypothermia",
+      "n": 58722,
+      "w": 30967
+     },
+     {
+      "id": "167",
+      "name": "Glacial Thorns",
+      "n": 47572,
+      "w": 25396
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Krix",
+      "n": 15839,
+      "w": 8065
+     },
+     {
+      "name": "Vesh",
+      "n": 4048,
+      "w": 2075
+     },
+     {
+      "name": "Idrisil",
+      "n": 2403,
+      "w": 1267
+     },
+     {
+      "name": "Xyris",
+      "n": 1426,
+      "w": 788
+     },
+     {
+      "name": "Thraex",
+      "n": 1136,
+      "w": 612
+     }
+    ]
+   },
+   "jungle": {
+    "augments": [
+     {
+      "id": "12",
+      "name": "Frozen Fury",
+      "n": 146901,
+      "w": 72790
+     },
+     {
+      "id": "167",
+      "name": "Glacial Thorns",
+      "n": 68214,
+      "w": 37716
+     },
+     {
+      "id": "173",
+      "name": "Hypothermia",
+      "n": 18254,
+      "w": 9490
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Krix",
+      "n": 10592,
+      "w": 5443
+     },
+     {
+      "name": "Vesh",
+      "n": 4363,
+      "w": 2202
+     },
+     {
+      "name": "Xyris",
+      "n": 2405,
+      "w": 1438
+     },
+     {
+      "name": "Lotus",
+      "n": 1892,
+      "w": 1156
+     },
+     {
+      "name": "Idrisil",
+      "n": 1815,
+      "w": 971
+     }
+    ]
+   }
+  },
+  "bayle": {
+   "offlane": {
+    "augments": [
+     {
+      "id": "149",
+      "name": "Frenzied Fighter",
+      "n": 256642,
+      "w": 128121
+     },
+     {
+      "id": "150",
+      "name": "Betrayer's Reqiuem",
+      "n": 98443,
+      "w": 48529
+     },
+     {
+      "id": "151",
+      "name": "Swift Strikes",
+      "n": 46103,
+      "w": 21493
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Thraex",
+      "n": 33324,
+      "w": 16848
+     },
+     {
+      "name": "Marrow",
+      "n": 4603,
+      "w": 2401
+     },
+     {
+      "name": "Krix",
+      "n": 2041,
+      "w": 1019
+     },
+     {
+      "name": "Idrisil",
+      "n": 1345,
+      "w": 669
+     },
+     {
+      "name": "Vermis",
+      "n": 1299,
+      "w": 615
+     }
+    ]
+   },
+   "jungle": {
+    "augments": [
+     {
+      "id": "150",
+      "name": "Betrayer's Reqiuem",
+      "n": 122172,
+      "w": 56143
+     },
+     {
+      "id": "149",
+      "name": "Frenzied Fighter",
+      "n": 55182,
+      "w": 26818
+     },
+     {
+      "id": "151",
+      "name": "Swift Strikes",
+      "n": 23692,
+      "w": 10420
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Thraex",
+      "n": 12214,
+      "w": 5662
+     },
+     {
+      "name": "Xyris",
+      "n": 2779,
+      "w": 1416
+     },
+     {
+      "name": "Marrow",
+      "n": 1564,
+      "w": 782
+     },
+     {
+      "name": "Krix",
+      "n": 948,
+      "w": 467
+     },
+     {
+      "name": "Lotus",
+      "n": 906,
+      "w": 492
+     }
+    ]
+   }
+  },
+  "boris": {
+   "jungle": {
+    "augments": [
+     {
+      "id": "19",
+      "name": "Apex Hunter",
+      "n": 701110,
+      "w": 374399
+     },
+     {
+      "id": "17",
+      "name": "Bolster Bearicade",
+      "n": 85343,
+      "w": 45968
+     },
+     {
+      "id": "18",
+      "name": "Savage Shred",
+      "n": 52588,
+      "w": 27491
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Thraex",
+      "n": 54159,
+      "w": 29639
+     },
+     {
+      "name": "Exarch",
+      "n": 7214,
+      "w": 4555
+     },
+     {
+      "name": "Marrow",
+      "n": 6332,
+      "w": 3285
+     },
+     {
+      "name": "Demiurge",
+      "n": 4045,
+      "w": 2408
+     },
+     {
+      "name": "Lotus",
+      "n": 2610,
+      "w": 1598
+     }
+    ]
+   }
+  },
+  "countess": {
+   "offlane": {
+    "augments": [
+     {
+      "id": "21",
+      "name": "Sanguine Slash",
+      "n": 152959,
+      "w": 73466
+     },
+     {
+      "id": "20",
+      "name": "Blood Well",
+      "n": 65856,
+      "w": 33505
+     },
+     {
+      "id": "177",
+      "name": "Shadow Echo",
+      "n": 22483,
+      "w": 11835
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 17100,
+      "w": 8356
+     },
+     {
+      "name": "Lotus",
+      "n": 1712,
+      "w": 949
+     },
+     {
+      "name": "Aion",
+      "n": 1354,
+      "w": 702
+     },
+     {
+      "name": "Xyris",
+      "n": 566,
+      "w": 258
+     },
+     {
+      "name": "Marrow",
+      "n": 561,
+      "w": 274
+     }
+    ]
+   },
+   "midlane": {
+    "augments": [
+     {
+      "id": "20",
+      "name": "Blood Well",
+      "n": 86901,
+      "w": 43841
+     },
+     {
+      "id": "21",
+      "name": "Sanguine Slash",
+      "n": 85515,
+      "w": 42775
+     },
+     {
+      "id": "177",
+      "name": "Shadow Echo",
+      "n": 61998,
+      "w": 31187
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 25626,
+      "w": 12853
+     },
+     {
+      "name": "Lotus",
+      "n": 2979,
+      "w": 1702
+     },
+     {
+      "name": "Aion",
+      "n": 1793,
+      "w": 970
+     },
+     {
+      "name": "Marrow",
+      "n": 696,
+      "w": 331
+     },
+     {
+      "name": "Xyris",
+      "n": 679,
+      "w": 357
+     }
+    ]
+   },
+   "jungle": {
+    "augments": [
+     {
+      "id": "20",
+      "name": "Blood Well",
+      "n": 84740,
+      "w": 39092
+     },
+     {
+      "id": "21",
+      "name": "Sanguine Slash",
+      "n": 60430,
+      "w": 28732
+     },
+     {
+      "id": "177",
+      "name": "Shadow Echo",
+      "n": 17131,
+      "w": 7816
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 13591,
+      "w": 5941
+     },
+     {
+      "name": "Lotus",
+      "n": 1995,
+      "w": 1098
+     },
+     {
+      "name": "Xyris",
+      "n": 635,
+      "w": 288
+     },
+     {
+      "name": "Marrow",
+      "n": 550,
+      "w": 235
+     },
+     {
+      "name": "Demiurge",
+      "n": 479,
+      "w": 215
+     }
+    ]
+   }
+  },
+  "crunch": {
+   "jungle": {
+    "augments": [
+     {
+      "id": "24",
+      "name": "Lunge Crunch",
+      "n": 129438,
+      "w": 62626
+     },
+     {
+      "id": "23",
+      "name": "Combo Crunch",
+      "n": 119125,
+      "w": 59422
+     },
+     {
+      "id": "25",
+      "name": "Falcon Crunch",
+      "n": 19369,
+      "w": 9060
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Thraex",
+      "n": 10358,
+      "w": 4705
+     },
+     {
+      "name": "Demiurge",
+      "n": 1537,
+      "w": 751
+     },
+     {
+      "name": "Lotus",
+      "n": 1327,
+      "w": 688
+     },
+     {
+      "name": "Nihil",
+      "n": 672,
+      "w": 303
+     },
+     {
+      "name": "Vermis",
+      "n": 643,
+      "w": 282
+     }
+    ]
+   },
+   "offlane": {
+    "augments": [
+     {
+      "id": "23",
+      "name": "Combo Crunch",
+      "n": 246789,
+      "w": 117819
+     },
+     {
+      "id": "24",
+      "name": "Lunge Crunch",
+      "n": 43596,
+      "w": 21874
+     },
+     {
+      "id": "25",
+      "name": "Falcon Crunch",
+      "n": 21593,
+      "w": 9817
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Thraex",
+      "n": 14337,
+      "w": 6534
+     },
+     {
+      "name": "Demiurge",
+      "n": 1470,
+      "w": 660
+     },
+     {
+      "name": "Nihil",
+      "n": 1315,
+      "w": 612
+     },
+     {
+      "name": "Lotus",
+      "n": 886,
+      "w": 451
+     },
+     {
+      "name": "Krix",
+      "n": 785,
+      "w": 346
+     }
+    ]
+   }
+  },
+  "dekker": {
+   "support": {
+    "augments": [
+     {
+      "id": "28",
+      "name": "Photon Efficiency",
+      "n": 460787,
+      "w": 229598
+     },
+     {
+      "id": "178",
+      "name": "Nothin' But Net",
+      "n": 55497,
+      "w": 27576
+     },
+     {
+      "id": "179",
+      "name": "Polarity Strike",
+      "n": 12796,
+      "w": 6131
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 41805,
+      "w": 19873
+     },
+     {
+      "name": "Aion",
+      "n": 9140,
+      "w": 4596
+     },
+     {
+      "name": "Lotus",
+      "n": 5475,
+      "w": 2900
+     },
+     {
+      "name": "Demiurge",
+      "n": 1358,
+      "w": 690
+     },
+     {
+      "name": "Exarch",
+      "n": 1289,
+      "w": 624
+     }
+    ]
+   }
+  },
+  "drongo": {
+   "carry": {
+    "augments": [
+     {
+      "id": "29",
+      "name": "Bring The Boom",
+      "n": 586369,
+      "w": 294395
+     },
+     {
+      "id": "30",
+      "name": "Shred Spree",
+      "n": 79923,
+      "w": 40597
+     },
+     {
+      "id": "31",
+      "name": "Smog Therapy",
+      "n": 62220,
+      "w": 30954
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vermis",
+      "n": 19565,
+      "w": 8989
+     },
+     {
+      "name": "Thraex",
+      "n": 4189,
+      "w": 2168
+     },
+     {
+      "name": "Demiurge",
+      "n": 1708,
+      "w": 848
+     },
+     {
+      "name": "Marrow",
+      "n": 1703,
+      "w": 856
+     },
+     {
+      "name": "Xyris",
+      "n": 1437,
+      "w": 736
+     }
+    ]
+   }
+  },
+  "eden": {
+   "carry": {
+    "augments": [
+     {
+      "id": "152",
+      "name": "Focal Lens",
+      "n": 294238,
+      "w": 151121
+     },
+     {
+      "id": "153",
+      "name": "Kinetic Waltz",
+      "n": 85659,
+      "w": 43911
+     },
+     {
+      "id": "154",
+      "name": "Limit Break: Echo",
+      "n": 54684,
+      "w": 29426
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vermis",
+      "n": 22747,
+      "w": 10040
+     },
+     {
+      "name": "Thraex",
+      "n": 4113,
+      "w": 2080
+     },
+     {
+      "name": "Demiurge",
+      "n": 3021,
+      "w": 1529
+     },
+     {
+      "name": "Marrow",
+      "n": 2450,
+      "w": 1168
+     },
+     {
+      "name": "Lotus",
+      "n": 1967,
+      "w": 1102
+     }
+    ]
+   }
+  },
+  "feng-mao": {
+   "jungle": {
+    "augments": [
+     {
+      "id": "35",
+      "name": "Imperial Duelist",
+      "n": 137194,
+      "w": 67064
+     },
+     {
+      "id": "36",
+      "name": "Ichorous Glaive",
+      "n": 134145,
+      "w": 61599
+     },
+     {
+      "id": "37",
+      "name": "Seismic Smash",
+      "n": 55311,
+      "w": 26723
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Lotus",
+      "n": 9011,
+      "w": 4806
+     },
+     {
+      "name": "Vesh",
+      "n": 7967,
+      "w": 3391
+     },
+     {
+      "name": "Demiurge",
+      "n": 2658,
+      "w": 1341
+     },
+     {
+      "name": "Thraex",
+      "n": 1615,
+      "w": 762
+     },
+     {
+      "name": "Xyris",
+      "n": 1562,
+      "w": 736
+     }
+    ]
+   }
+  },
+  "gadget": {
+   "midlane": {
+    "augments": [
+     {
+      "id": "44",
+      "name": "Auto-Lock Amp",
+      "n": 260303,
+      "w": 130854
+     },
+     {
+      "id": "45",
+      "name": "Blast Zone",
+      "n": 256395,
+      "w": 123560
+     },
+     {
+      "id": "175",
+      "name": "Eureka!",
+      "n": 9900,
+      "w": 4870
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 25889,
+      "w": 12380
+     },
+     {
+      "name": "Aion",
+      "n": 8120,
+      "w": 4069
+     },
+     {
+      "name": "Lotus",
+      "n": 4240,
+      "w": 2246
+     },
+     {
+      "name": "Xyris",
+      "n": 1901,
+      "w": 936
+     },
+     {
+      "name": "Demiurge",
+      "n": 1230,
+      "w": 595
+     }
+    ]
+   }
+  },
+  "gideon": {
+   "midlane": {
+    "augments": [
+     {
+      "id": "48",
+      "name": "Event Horizon",
+      "n": 475059,
+      "w": 231217
+     },
+     {
+      "id": "49",
+      "name": "Infinite Impact",
+      "n": 452926,
+      "w": 225713
+     },
+     {
+      "id": "47",
+      "name": "Abyssal Mantle",
+      "n": 100857,
+      "w": 50771
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 50661,
+      "w": 24479
+     },
+     {
+      "name": "Aion",
+      "n": 7629,
+      "w": 3742
+     },
+     {
+      "name": "Demiurge",
+      "n": 3899,
+      "w": 2035
+     },
+     {
+      "name": "Lotus",
+      "n": 1921,
+      "w": 1023
+     },
+     {
+      "name": "Xyris",
+      "n": 1553,
+      "w": 799
+     }
+    ]
+   }
+  },
+  "greystone": {
+   "jungle": {
+    "augments": [
+     {
+      "id": "52",
+      "name": "Close Cut",
+      "n": 148351,
+      "w": 69930
+     },
+     {
+      "id": "50",
+      "name": "Tainted Oath ",
+      "n": 43982,
+      "w": 21992
+     },
+     {
+      "id": "51",
+      "name": "Imperial Soul",
+      "n": 41550,
+      "w": 20650
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Thraex",
+      "n": 10112,
+      "w": 4277
+     },
+     {
+      "name": "Krix",
+      "n": 2172,
+      "w": 1076
+     },
+     {
+      "name": "Idrisil",
+      "n": 598,
+      "w": 265
+     },
+     {
+      "name": "Lotus",
+      "n": 557,
+      "w": 283
+     },
+     {
+      "name": "Xyris",
+      "n": 439,
+      "w": 204
+     }
+    ]
+   },
+   "offlane": {
+    "augments": [
+     {
+      "id": "52",
+      "name": "Close Cut",
+      "n": 583483,
+      "w": 303746
+     },
+     {
+      "id": "50",
+      "name": "Tainted Oath ",
+      "n": 244233,
+      "w": 131822
+     },
+     {
+      "id": "51",
+      "name": "Imperial Soul",
+      "n": 135690,
+      "w": 71997
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Thraex",
+      "n": 45441,
+      "w": 22559
+     },
+     {
+      "name": "Krix",
+      "n": 16816,
+      "w": 8889
+     },
+     {
+      "name": "Idrisil",
+      "n": 3460,
+      "w": 1727
+     },
+     {
+      "name": "Nihil",
+      "n": 1852,
+      "w": 925
+     },
+     {
+      "name": "Marrow",
+      "n": 1214,
+      "w": 622
+     }
+    ]
+   }
+  },
+  "grim-exe": {
+   "carry": {
+    "augments": [
+     {
+      "id": "43",
+      "name": "System Restore",
+      "n": 171956,
+      "w": 87654
+     },
+     {
+      "id": "41",
+      "name": "Instant Reload",
+      "n": 122164,
+      "w": 59310
+     },
+     {
+      "id": "42",
+      "name": "Reboot.exe",
+      "n": 36951,
+      "w": 18077
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vermis",
+      "n": 8566,
+      "w": 3983
+     },
+     {
+      "name": "Demiurge",
+      "n": 1638,
+      "w": 848
+     },
+     {
+      "name": "Xyris",
+      "n": 1224,
+      "w": 685
+     },
+     {
+      "name": "Thraex",
+      "n": 1198,
+      "w": 665
+     },
+     {
+      "name": "Vesh",
+      "n": 1121,
+      "w": 464
+     }
+    ]
+   }
+  },
+  "grux": {
+   "offlane": {
+    "augments": [
+     {
+      "id": "54",
+      "name": "Lust For Blood",
+      "n": 585551,
+      "w": 296513
+     },
+     {
+      "id": "170",
+      "name": "Red Mist",
+      "n": 34602,
+      "w": 18763
+     },
+     {
+      "id": "53",
+      "name": "Chieftain's Blink",
+      "n": 17932,
+      "w": 9242
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Thraex",
+      "n": 51717,
+      "w": 27191
+     },
+     {
+      "name": "Marrow",
+      "n": 5099,
+      "w": 2654
+     },
+     {
+      "name": "Krix",
+      "n": 2603,
+      "w": 1321
+     },
+     {
+      "name": "Vermis",
+      "n": 1560,
+      "w": 759
+     },
+     {
+      "name": "Demiurge",
+      "n": 1435,
+      "w": 757
+     }
+    ]
+   },
+   "jungle": {
+    "augments": [
+     {
+      "id": "54",
+      "name": "Lust For Blood",
+      "n": 142060,
+      "w": 71155
+     },
+     {
+      "id": "170",
+      "name": "Red Mist",
+      "n": 50893,
+      "w": 26580
+     },
+     {
+      "id": "53",
+      "name": "Chieftain's Blink",
+      "n": 28229,
+      "w": 13636
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vermis",
+      "n": 13570,
+      "w": 6065
+     },
+     {
+      "name": "Thraex",
+      "n": 7207,
+      "w": 3749
+     },
+     {
+      "name": "Marrow",
+      "n": 2570,
+      "w": 1285
+     },
+     {
+      "name": "Krix",
+      "n": 1467,
+      "w": 765
+     },
+     {
+      "name": "Demiurge",
+      "n": 1417,
+      "w": 775
+     }
+    ]
+   }
+  },
+  "howitzer": {
+   "midlane": {
+    "augments": [
+     {
+      "id": "57",
+      "name": "Combat Thrusters",
+      "n": 187893,
+      "w": 99589
+     },
+     {
+      "id": "58",
+      "name": "Sniper Shells",
+      "n": 143058,
+      "w": 70407
+     },
+     {
+      "id": "56",
+      "name": "Blast Off!",
+      "n": 124441,
+      "w": 59296
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 15374,
+      "w": 7193
+     },
+     {
+      "name": "Aion",
+      "n": 2034,
+      "w": 990
+     },
+     {
+      "name": "Xyris",
+      "n": 1856,
+      "w": 939
+     },
+     {
+      "name": "Thraex",
+      "n": 1628,
+      "w": 871
+     },
+     {
+      "name": "Demiurge",
+      "n": 1315,
+      "w": 681
+     }
+    ]
+   }
+  },
+  "iggy-scorch": {
+   "midlane": {
+    "augments": [
+     {
+      "id": "64",
+      "name": "Turret Maniac",
+      "n": 359352,
+      "w": 185393
+     },
+     {
+      "id": "63",
+      "name": "Hold This!",
+      "n": 179778,
+      "w": 93774
+     },
+     {
+      "id": "62",
+      "name": "Badlands Belch",
+      "n": 83609,
+      "w": 43925
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 35221,
+      "w": 18308
+     },
+     {
+      "name": "Aion",
+      "n": 5955,
+      "w": 3166
+     },
+     {
+      "name": "Xyris",
+      "n": 2207,
+      "w": 1105
+     },
+     {
+      "name": "Lotus",
+      "n": 1850,
+      "w": 1036
+     },
+     {
+      "name": "Demiurge",
+      "n": 1286,
+      "w": 680
+     }
+    ]
+   },
+   "offlane": {
+    "augments": [
+     {
+      "id": "64",
+      "name": "Turret Maniac",
+      "n": 116918,
+      "w": 62291
+     },
+     {
+      "id": "63",
+      "name": "Hold This!",
+      "n": 35488,
+      "w": 18738
+     },
+     {
+      "id": "62",
+      "name": "Badlands Belch",
+      "n": 17982,
+      "w": 9599
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 10521,
+      "w": 5607
+     },
+     {
+      "name": "Aion",
+      "n": 1646,
+      "w": 873
+     },
+     {
+      "name": "Lotus",
+      "n": 816,
+      "w": 463
+     },
+     {
+      "name": "Xyris",
+      "n": 563,
+      "w": 278
+     },
+     {
+      "name": "Demiurge",
+      "n": 434,
+      "w": 218
+     }
+    ]
+   }
+  },
+  "kallari": {
+   "jungle": {
+    "augments": [
+     {
+      "id": "66",
+      "name": "Execution Mandate",
+      "n": 155566,
+      "w": 73756
+     },
+     {
+      "id": "67",
+      "name": "Deadly Finesse",
+      "n": 115684,
+      "w": 57927
+     },
+     {
+      "id": "65",
+      "name": "Critical Override",
+      "n": 83888,
+      "w": 42186
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 13331,
+      "w": 6096
+     },
+     {
+      "name": "Lotus",
+      "n": 6575,
+      "w": 3906
+     },
+     {
+      "name": "Demiurge",
+      "n": 1973,
+      "w": 1059
+     },
+     {
+      "name": "Vermis",
+      "n": 1766,
+      "w": 836
+     },
+     {
+      "name": "Xyris",
+      "n": 1699,
+      "w": 895
+     }
+    ]
+   }
+  },
+  "khaimera": {
+   "jungle": {
+    "augments": [
+     {
+      "id": "68",
+      "name": "Feral Ambush",
+      "n": 884649,
+      "w": 465492
+     },
+     {
+      "id": "69",
+      "name": "Jungle Invasion",
+      "n": 470346,
+      "w": 263470
+     },
+     {
+      "id": "70",
+      "name": "Lane Lurker",
+      "n": 39698,
+      "w": 20318
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Thraex",
+      "n": 65072,
+      "w": 31585
+     },
+     {
+      "name": "Krix",
+      "n": 6243,
+      "w": 3016
+     },
+     {
+      "name": "Marrow",
+      "n": 4199,
+      "w": 2098
+     },
+     {
+      "name": "Vermis",
+      "n": 4123,
+      "w": 2000
+     },
+     {
+      "name": "Demiurge",
+      "n": 3382,
+      "w": 1802
+     }
+    ]
+   }
+  },
+  "kira": {
+   "carry": {
+    "augments": [
+     {
+      "id": "60",
+      "name": "Siphoning Purge",
+      "n": 309331,
+      "w": 151510
+     },
+     {
+      "id": "59",
+      "name": "Bringer Of Mercy",
+      "n": 196318,
+      "w": 99782
+     },
+     {
+      "id": "161",
+      "name": "Lenore",
+      "n": 48942,
+      "w": 24785
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vermis",
+      "n": 25282,
+      "w": 11563
+     },
+     {
+      "name": "Lotus",
+      "n": 4985,
+      "w": 2910
+     },
+     {
+      "name": "Demiurge",
+      "n": 4076,
+      "w": 2183
+     },
+     {
+      "name": "Thraex",
+      "n": 3540,
+      "w": 1793
+     },
+     {
+      "name": "Marrow",
+      "n": 2636,
+      "w": 1315
+     }
+    ]
+   }
+  },
+  "kwang": {
+   "jungle": {
+    "augments": [
+     {
+      "id": "73",
+      "name": "Slayer of the Heavens",
+      "n": 155394,
+      "w": 71842
+     },
+     {
+      "id": "72",
+      "name": "Aura of the Heavens",
+      "n": 16921,
+      "w": 7468
+     },
+     {
+      "id": "71",
+      "name": "Heavenly Tactician",
+      "n": 7688,
+      "w": 3319
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 6418,
+      "w": 2743
+     },
+     {
+      "name": "Demiurge",
+      "n": 763,
+      "w": 350
+     },
+     {
+      "name": "Exarch",
+      "n": 758,
+      "w": 330
+     },
+     {
+      "name": "Lotus",
+      "n": 719,
+      "w": 390
+     },
+     {
+      "name": "Xyris",
+      "n": 583,
+      "w": 270
+     }
+    ]
+   },
+   "offlane": {
+    "augments": [
+     {
+      "id": "73",
+      "name": "Slayer of the Heavens",
+      "n": 294535,
+      "w": 143499
+     },
+     {
+      "id": "72",
+      "name": "Aura of the Heavens",
+      "n": 37646,
+      "w": 18053
+     },
+     {
+      "id": "71",
+      "name": "Heavenly Tactician",
+      "n": 23653,
+      "w": 11476
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 12085,
+      "w": 5585
+     },
+     {
+      "name": "Exarch",
+      "n": 1556,
+      "w": 773
+     },
+     {
+      "name": "Demiurge",
+      "n": 999,
+      "w": 472
+     },
+     {
+      "name": "Aion",
+      "n": 804,
+      "w": 396
+     },
+     {
+      "name": "Krix",
+      "n": 705,
+      "w": 322
+     }
+    ]
+   }
+  },
+  "lt-belica": {
+   "support": {
+    "augments": [
+     {
+      "id": "79",
+      "name": "Combat Veteran",
+      "n": 178447,
+      "w": 84263
+     },
+     {
+      "id": "78",
+      "name": "Pulsefire Rounds",
+      "n": 151771,
+      "w": 71276
+     },
+     {
+      "id": "77",
+      "name": "Devastating Bombs",
+      "n": 58849,
+      "w": 28554
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 19294,
+      "w": 8742
+     },
+     {
+      "name": "Aion",
+      "n": 2945,
+      "w": 1408
+     },
+     {
+      "name": "Lotus",
+      "n": 2709,
+      "w": 1364
+     },
+     {
+      "name": "Thraex",
+      "n": 1924,
+      "w": 896
+     },
+     {
+      "name": "Demiurge",
+      "n": 1310,
+      "w": 580
+     }
+    ]
+   },
+   "midlane": {
+    "augments": [
+     {
+      "id": "78",
+      "name": "Pulsefire Rounds",
+      "n": 271895,
+      "w": 137973
+     },
+     {
+      "id": "77",
+      "name": "Devastating Bombs",
+      "n": 235463,
+      "w": 115525
+     },
+     {
+      "id": "79",
+      "name": "Combat Veteran",
+      "n": 29044,
+      "w": 14598
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 20115,
+      "w": 9403
+     },
+     {
+      "name": "Lotus",
+      "n": 4596,
+      "w": 2562
+     },
+     {
+      "name": "Aion",
+      "n": 3175,
+      "w": 1590
+     },
+     {
+      "name": "Thraex",
+      "n": 3015,
+      "w": 1548
+     },
+     {
+      "name": "Demiurge",
+      "n": 2870,
+      "w": 1445
+     }
+    ]
+   }
+  },
+  "maco": {
+   "support": {
+    "augments": [
+     {
+      "id": "155",
+      "name": "Ferocious Flight",
+      "n": 119950,
+      "w": 60352
+     },
+     {
+      "id": "157",
+      "name": "Shatterbloom",
+      "n": 102565,
+      "w": 48483
+     },
+     {
+      "id": "156",
+      "name": "Longshot",
+      "n": 39280,
+      "w": 20242
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Exarch",
+      "n": 17408,
+      "w": 8061
+     },
+     {
+      "name": "Aion",
+      "n": 2189,
+      "w": 1101
+     },
+     {
+      "name": "Lotus",
+      "n": 1479,
+      "w": 772
+     },
+     {
+      "name": "Demiurge",
+      "n": 1032,
+      "w": 483
+     },
+     {
+      "name": "Vesh",
+      "n": 888,
+      "w": 416
+     }
+    ]
+   }
+  },
+  "morigesh": {
+   "midlane": {
+    "augments": [
+     {
+      "id": "80",
+      "name": "Cursed Infestation",
+      "n": 333124,
+      "w": 156391
+     },
+     {
+      "id": "81",
+      "name": "Ritual Of Death",
+      "n": 106971,
+      "w": 51562
+     },
+     {
+      "id": "82",
+      "name": "Spirit Shred",
+      "n": 94281,
+      "w": 46084
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 23783,
+      "w": 10669
+     },
+     {
+      "name": "Aion",
+      "n": 2131,
+      "w": 1032
+     },
+     {
+      "name": "Lotus",
+      "n": 1480,
+      "w": 789
+     },
+     {
+      "name": "Marrow",
+      "n": 562,
+      "w": 252
+     },
+     {
+      "name": "Xyris",
+      "n": 529,
+      "w": 234
+     }
+    ]
+   }
+  },
+  "mourn": {
+   "support": {
+    "augments": [
+     {
+      "id": "162",
+      "name": "Nightstalker",
+      "n": 113024,
+      "w": 59740
+     },
+     {
+      "id": "129",
+      "name": "Nightmare Extractor",
+      "n": 83995,
+      "w": 43672
+     },
+     {
+      "id": "130",
+      "name": "Dreadful Roots",
+      "n": 30051,
+      "w": 15243
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Exarch",
+      "n": 18594,
+      "w": 9554
+     },
+     {
+      "name": "Krix",
+      "n": 5796,
+      "w": 3057
+     },
+     {
+      "name": "Lotus",
+      "n": 3868,
+      "w": 2200
+     },
+     {
+      "name": "Vesh",
+      "n": 3620,
+      "w": 1905
+     },
+     {
+      "name": "Aion",
+      "n": 2315,
+      "w": 1232
+     }
+    ]
+   }
+  },
+  "murdock": {
+   "carry": {
+    "augments": [
+     {
+      "id": "85",
+      "name": "Martial Law",
+      "n": 445998,
+      "w": 213676
+     },
+     {
+      "id": "83",
+      "name": "Justice's Reach",
+      "n": 376806,
+      "w": 193504
+     },
+     {
+      "id": "84",
+      "name": "Sting Operation",
+      "n": 130753,
+      "w": 65286
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vermis",
+      "n": 34419,
+      "w": 15951
+     },
+     {
+      "name": "Thraex",
+      "n": 6012,
+      "w": 3182
+     },
+     {
+      "name": "Demiurge",
+      "n": 3606,
+      "w": 1958
+     },
+     {
+      "name": "Xyris",
+      "n": 2941,
+      "w": 1553
+     },
+     {
+      "name": "Lotus",
+      "n": 1888,
+      "w": 1054
+     }
+    ]
+   }
+  },
+  "muriel": {
+   "support": {
+    "augments": [
+     {
+      "id": "87",
+      "name": "Essence Nullifier",
+      "n": 116281,
+      "w": 59444
+     },
+     {
+      "id": "86",
+      "name": "Circuit Reset",
+      "n": 113609,
+      "w": 59084
+     },
+     {
+      "id": "171",
+      "name": "Sacrosanct",
+      "n": 76745,
+      "w": 38780
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Exarch",
+      "n": 22031,
+      "w": 11348
+     },
+     {
+      "name": "Aion",
+      "n": 1030,
+      "w": 519
+     },
+     {
+      "name": "Lotus",
+      "n": 980,
+      "w": 525
+     },
+     {
+      "name": "Vesh",
+      "n": 479,
+      "w": 252
+     },
+     {
+      "name": "Demiurge",
+      "n": 275,
+      "w": 132
+     }
+    ]
+   }
+  },
+  "narbash": {
+   "support": {
+    "augments": [
+     {
+      "id": "90",
+      "name": "Percussive Tear",
+      "n": 109231,
+      "w": 54388
+     },
+     {
+      "id": "181",
+      "name": "Thonk",
+      "n": 26405,
+      "w": 13097
+     },
+     {
+      "id": "163",
+      "name": "War Anthem",
+      "n": 10847,
+      "w": 4604
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Exarch",
+      "n": 43929,
+      "w": 23199
+     },
+     {
+      "name": "Krix",
+      "n": 1836,
+      "w": 886
+     },
+     {
+      "name": "Idrisil",
+      "n": 1138,
+      "w": 544
+     },
+     {
+      "name": "Lotus",
+      "n": 1083,
+      "w": 543
+     },
+     {
+      "name": "Aion",
+      "n": 600,
+      "w": 290
+     }
+    ]
+   }
+  },
+  "neon": {
+   "midlane": {
+    "augments": [
+     {
+      "id": "158",
+      "name": "Ghost in the Machine",
+      "n": 96616,
+      "w": 44094
+     },
+     {
+      "id": "160",
+      "name": "RAM",
+      "n": 94269,
+      "w": 45939
+     },
+     {
+      "id": "159",
+      "name": "Dox",
+      "n": 60853,
+      "w": 29563
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 21366,
+      "w": 9456
+     },
+     {
+      "name": "Aion",
+      "n": 5159,
+      "w": 2349
+     },
+     {
+      "name": "Lotus",
+      "n": 4508,
+      "w": 2252
+     },
+     {
+      "name": "Demiurge",
+      "n": 1211,
+      "w": 572
+     },
+     {
+      "name": "Xyris",
+      "n": 905,
+      "w": 401
+     }
+    ]
+   }
+  },
+  "phase": {
+   "support": {
+    "augments": [
+     {
+      "id": "93",
+      "name": "Kindred Surge",
+      "n": 533941,
+      "w": 273095
+     },
+     {
+      "id": "92",
+      "name": "Psychic Support",
+      "n": 157875,
+      "w": 81933
+     },
+     {
+      "id": "94",
+      "name": "Final Flash",
+      "n": 40697,
+      "w": 19836
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Exarch",
+      "n": 46285,
+      "w": 24490
+     },
+     {
+      "name": "Aion",
+      "n": 3492,
+      "w": 1716
+     },
+     {
+      "name": "Lotus",
+      "n": 3283,
+      "w": 1803
+     },
+     {
+      "name": "Vesh",
+      "n": 1734,
+      "w": 880
+     },
+     {
+      "name": "Thraex",
+      "n": 1406,
+      "w": 713
+     }
+    ]
+   }
+  },
+  "rampage": {
+   "jungle": {
+    "augments": [
+     {
+      "id": "95",
+      "name": "Rock & Awe",
+      "n": 148829,
+      "w": 72752
+     },
+     {
+      "id": "97",
+      "name": "Tiny Titan",
+      "n": 134736,
+      "w": 72002
+     },
+     {
+      "id": "96",
+      "name": "The Rumbling",
+      "n": 65113,
+      "w": 32399
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Krix",
+      "n": 24854,
+      "w": 13216
+     },
+     {
+      "name": "Idrisil",
+      "n": 1373,
+      "w": 666
+     },
+     {
+      "name": "Thraex",
+      "n": 915,
+      "w": 434
+     },
+     {
+      "name": "Nihil",
+      "n": 549,
+      "w": 235
+     },
+     {
+      "name": "Lotus",
+      "n": 441,
+      "w": 234
+     }
+    ]
+   }
+  },
+  "renna": {
+   "midlane": {
+    "augments": [
+     {
+      "id": "143",
+      "name": "Netherward",
+      "n": 589007,
+      "w": 308408
+     },
+     {
+      "id": "144",
+      "name": "Vital Essence",
+      "n": 251936,
+      "w": 134158
+     },
+     {
+      "id": "145",
+      "name": "Communion",
+      "n": 13990,
+      "w": 6661
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 56928,
+      "w": 29993
+     },
+     {
+      "name": "Lotus",
+      "n": 8554,
+      "w": 4935
+     },
+     {
+      "name": "Aion",
+      "n": 6525,
+      "w": 3358
+     },
+     {
+      "name": "Xyris",
+      "n": 2797,
+      "w": 1470
+     },
+     {
+      "name": "Krix",
+      "n": 2007,
+      "w": 970
+     }
+    ]
+   }
+  },
+  "revenant": {
+   "carry": {
+    "augments": [
+     {
+      "id": "99",
+      "name": "Hellfire Blast",
+      "n": 349393,
+      "w": 170752
+     },
+     {
+      "id": "98",
+      "name": "Quickdraw",
+      "n": 230454,
+      "w": 107786
+     },
+     {
+      "id": "100",
+      "name": "Spectral Bounty",
+      "n": 140107,
+      "w": 69410
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vermis",
+      "n": 23168,
+      "w": 10073
+     },
+     {
+      "name": "Xyris",
+      "n": 6734,
+      "w": 3406
+     },
+     {
+      "name": "Demiurge",
+      "n": 5823,
+      "w": 2909
+     },
+     {
+      "name": "Marrow",
+      "n": 3103,
+      "w": 1515
+     },
+     {
+      "name": "Lotus",
+      "n": 2453,
+      "w": 1366
+     }
+    ]
+   }
+  },
+  "riktor": {
+   "support": {
+    "augments": [
+     {
+      "id": "103",
+      "name": "Wanton Warden",
+      "n": 318662,
+      "w": 158407
+     },
+     {
+      "id": "168",
+      "name": "Zap O' 9-Chains",
+      "n": 40517,
+      "w": 20449
+     },
+     {
+      "id": "176",
+      "name": "Warden's Leash",
+      "n": 24619,
+      "w": 11659
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Krix",
+      "n": 37815,
+      "w": 18629
+     },
+     {
+      "name": "Idrisil",
+      "n": 9019,
+      "w": 4453
+     },
+     {
+      "name": "Lotus",
+      "n": 2531,
+      "w": 1325
+     },
+     {
+      "name": "Exarch",
+      "n": 1080,
+      "w": 484
+     },
+     {
+      "name": "Vesh",
+      "n": 619,
+      "w": 283
+     }
+    ]
+   }
+  },
+  "serath": {
+   "offlane": {
+    "augments": [
+     {
+      "id": "104",
+      "name": "Crushing Descent",
+      "n": 111830,
+      "w": 50786
+     },
+     {
+      "id": "182",
+      "name": "Wrath Unleashed",
+      "n": 23194,
+      "w": 10663
+     },
+     {
+      "id": "105",
+      "name": "Vital Resonance",
+      "n": 22514,
+      "w": 10381
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Thraex",
+      "n": 12913,
+      "w": 6396
+     },
+     {
+      "name": "Demiurge",
+      "n": 619,
+      "w": 294
+     },
+     {
+      "name": "Marrow",
+      "n": 473,
+      "w": 228
+     },
+     {
+      "name": "Krix",
+      "n": 449,
+      "w": 189
+     },
+     {
+      "name": "Vermis",
+      "n": 436,
+      "w": 172
+     }
+    ]
+   },
+   "jungle": {
+    "augments": [
+     {
+      "id": "104",
+      "name": "Crushing Descent",
+      "n": 371986,
+      "w": 194199
+     },
+     {
+      "id": "105",
+      "name": "Vital Resonance",
+      "n": 119558,
+      "w": 63148
+     },
+     {
+      "id": "182",
+      "name": "Wrath Unleashed",
+      "n": 46297,
+      "w": 23829
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Thraex",
+      "n": 44946,
+      "w": 24252
+     },
+     {
+      "name": "Demiurge",
+      "n": 7106,
+      "w": 4009
+     },
+     {
+      "name": "Lotus",
+      "n": 4600,
+      "w": 2817
+     },
+     {
+      "name": "Xyris",
+      "n": 3547,
+      "w": 1874
+     },
+     {
+      "name": "Marrow",
+      "n": 3386,
+      "w": 1706
+     }
+    ]
+   }
+  },
+  "sevarog": {
+   "offlane": {
+    "augments": [
+     {
+      "id": "109",
+      "name": "Grim Harvest",
+      "n": 228418,
+      "w": 107855
+     },
+     {
+      "id": "108",
+      "name": "Unholy Pursuit",
+      "n": 127272,
+      "w": 64523
+     },
+     {
+      "id": "107",
+      "name": "Gravebreaker",
+      "n": 25425,
+      "w": 11811
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Krix",
+      "n": 36037,
+      "w": 17690
+     },
+     {
+      "name": "Idrisil",
+      "n": 1914,
+      "w": 910
+     },
+     {
+      "name": "Nihil",
+      "n": 341,
+      "w": 181
+     },
+     {
+      "name": "Thraex",
+      "n": 279,
+      "w": 130
+     },
+     {
+      "name": "Vesh",
+      "n": 271,
+      "w": 122
+     }
+    ]
+   }
+  },
+  "shinbi": {
+   "offlane": {
+    "augments": [
+     {
+      "id": "183",
+      "name": "Allegro",
+      "n": 56790,
+      "w": 28407
+     },
+     {
+      "id": "165",
+      "name": "Crescendo",
+      "n": 39071,
+      "w": 19752
+     },
+     {
+      "id": "172",
+      "name": "Encore",
+      "n": 34733,
+      "w": 17981
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 16771,
+      "w": 8281
+     },
+     {
+      "name": "Aion",
+      "n": 2768,
+      "w": 1523
+     },
+     {
+      "name": "Lotus",
+      "n": 1433,
+      "w": 809
+     },
+     {
+      "name": "Demiurge",
+      "n": 997,
+      "w": 531
+     },
+     {
+      "name": "Xyris",
+      "n": 966,
+      "w": 491
+     }
+    ]
+   }
+  },
+  "skylar": {
+   "carry": {
+    "augments": [
+     {
+      "id": "169",
+      "name": "Assault MK-II ",
+      "n": 171735,
+      "w": 85052
+     },
+     {
+      "id": "14",
+      "name": "Atomised Artillery",
+      "n": 101176,
+      "w": 48837
+     },
+     {
+      "id": "15",
+      "name": "Plasma Barrage",
+      "n": 96030,
+      "w": 47878
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vermis",
+      "n": 23310,
+      "w": 10719
+     },
+     {
+      "name": "Demiurge",
+      "n": 4224,
+      "w": 1961
+     },
+     {
+      "name": "Thraex",
+      "n": 3436,
+      "w": 1857
+     },
+     {
+      "name": "Lotus",
+      "n": 2310,
+      "w": 1288
+     },
+     {
+      "name": "Xyris",
+      "n": 1935,
+      "w": 970
+     }
+    ]
+   }
+  },
+  "sparrow": {
+   "carry": {
+    "augments": [
+     {
+      "id": "115",
+      "name": "Inner Fury",
+      "n": 436241,
+      "w": 231237
+     },
+     {
+      "id": "164",
+      "name": "Sun Shards",
+      "n": 280244,
+      "w": 152308
+     },
+     {
+      "id": "113",
+      "name": "Endless Hunt",
+      "n": 144528,
+      "w": 77536
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vermis",
+      "n": 61156,
+      "w": 31004
+     },
+     {
+      "name": "Thraex",
+      "n": 20573,
+      "w": 12100
+     },
+     {
+      "name": "Demiurge",
+      "n": 9680,
+      "w": 5452
+     },
+     {
+      "name": "Lotus",
+      "n": 5141,
+      "w": 3152
+     },
+     {
+      "name": "Xyris",
+      "n": 4188,
+      "w": 2291
+     }
+    ]
+   }
+  },
+  "steel": {
+   "support": {
+    "augments": [
+     {
+      "id": "166",
+      "name": "Heavy Metal",
+      "n": 245582,
+      "w": 128574
+     },
+     {
+      "id": "118",
+      "name": "Colossal Crash",
+      "n": 48155,
+      "w": 23498
+     },
+     {
+      "id": "116",
+      "name": "Adaptive Force",
+      "n": 34237,
+      "w": 17251
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Krix",
+      "n": 44623,
+      "w": 23245
+     },
+     {
+      "name": "Idrisil",
+      "n": 13195,
+      "w": 6776
+     },
+     {
+      "name": "Vermis",
+      "n": 1313,
+      "w": 650
+     },
+     {
+      "name": "Lotus",
+      "n": 1112,
+      "w": 610
+     },
+     {
+      "name": "Exarch",
+      "n": 570,
+      "w": 250
+     }
+    ]
+   },
+   "offlane": {
+    "augments": [
+     {
+      "id": "166",
+      "name": "Heavy Metal",
+      "n": 116231,
+      "w": 58847
+     },
+     {
+      "id": "118",
+      "name": "Colossal Crash",
+      "n": 10848,
+      "w": 4999
+     },
+     {
+      "id": "116",
+      "name": "Adaptive Force",
+      "n": 2588,
+      "w": 1188
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Krix",
+      "n": 16762,
+      "w": 8515
+     },
+     {
+      "name": "Idrisil",
+      "n": 4575,
+      "w": 2299
+     },
+     {
+      "name": "Vermis",
+      "n": 2967,
+      "w": 1523
+     },
+     {
+      "name": "Thraex",
+      "n": 943,
+      "w": 440
+     },
+     {
+      "name": "Demiurge",
+      "n": 665,
+      "w": 293
+     }
+    ]
+   }
+  },
+  "terra": {
+   "offlane": {
+    "augments": [
+     {
+      "id": "120",
+      "name": "Iron Resolve",
+      "n": 115457,
+      "w": 56023
+     },
+     {
+      "id": "119",
+      "name": "Axe Retrieval",
+      "n": 95030,
+      "w": 43085
+     },
+     {
+      "id": "121",
+      "name": "Hersir's Will",
+      "n": 70794,
+      "w": 34017
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Krix",
+      "n": 12905,
+      "w": 6126
+     },
+     {
+      "name": "Idrisil",
+      "n": 12492,
+      "w": 6490
+     },
+     {
+      "name": "Nihil",
+      "n": 986,
+      "w": 491
+     },
+     {
+      "name": "Thraex",
+      "n": 742,
+      "w": 354
+     },
+     {
+      "name": "Lotus",
+      "n": 347,
+      "w": 180
+     }
+    ]
+   }
+  },
+  "the-fey": {
+   "midlane": {
+    "augments": [
+     {
+      "id": "39",
+      "name": "Wild Growth",
+      "n": 463250,
+      "w": 236647
+     },
+     {
+      "id": "40",
+      "name": "Natural Infusion",
+      "n": 136040,
+      "w": 69988
+     },
+     {
+      "id": "38",
+      "name": "Verdant Embrace",
+      "n": 84481,
+      "w": 44847
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 34673,
+      "w": 17601
+     },
+     {
+      "name": "Aion",
+      "n": 8363,
+      "w": 4516
+     },
+     {
+      "name": "Lotus",
+      "n": 7381,
+      "w": 4227
+     },
+     {
+      "name": "Demiurge",
+      "n": 1369,
+      "w": 724
+     },
+     {
+      "name": "Xyris",
+      "n": 1279,
+      "w": 671
+     }
+    ]
+   }
+  },
+  "twinblast": {
+   "carry": {
+    "augments": [
+     {
+      "id": "125",
+      "name": "Amplified Burst",
+      "n": 408387,
+      "w": 194115
+     },
+     {
+      "id": "126",
+      "name": "Grenadier",
+      "n": 300130,
+      "w": 148528
+     },
+     {
+      "id": "180",
+      "name": "Spray 'N Pray",
+      "n": 8562,
+      "w": 3773
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vermis",
+      "n": 24647,
+      "w": 11079
+     },
+     {
+      "name": "Thraex",
+      "n": 3708,
+      "w": 1851
+     },
+     {
+      "name": "Demiurge",
+      "n": 2938,
+      "w": 1406
+     },
+     {
+      "name": "Xyris",
+      "n": 1360,
+      "w": 683
+     },
+     {
+      "name": "Lotus",
+      "n": 1140,
+      "w": 599
+     }
+    ]
+   }
+  },
+  "wraith": {
+   "carry": {
+    "augments": [
+     {
+      "id": "132",
+      "name": "Sniper's Bounty",
+      "n": 123162,
+      "w": 53765
+     },
+     {
+      "id": "131",
+      "name": "Mystic Marksman",
+      "n": 29816,
+      "w": 12693
+     },
+     {
+      "id": "133",
+      "name": "Illusionist",
+      "n": 12937,
+      "w": 5602
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 6893,
+      "w": 2858
+     },
+     {
+      "name": "Demiurge",
+      "n": 3671,
+      "w": 1731
+     },
+     {
+      "name": "Lotus",
+      "n": 1598,
+      "w": 799
+     },
+     {
+      "name": "Xyris",
+      "n": 906,
+      "w": 400
+     },
+     {
+      "name": "Aion",
+      "n": 651,
+      "w": 325
+     }
+    ]
+   },
+   "midlane": {
+    "augments": [
+     {
+      "id": "131",
+      "name": "Mystic Marksman",
+      "n": 185225,
+      "w": 78138
+     },
+     {
+      "id": "132",
+      "name": "Sniper's Bounty",
+      "n": 128377,
+      "w": 58515
+     },
+     {
+      "id": "133",
+      "name": "Illusionist",
+      "n": 6703,
+      "w": 2734
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 18519,
+      "w": 7922
+     },
+     {
+      "name": "Demiurge",
+      "n": 10665,
+      "w": 5174
+     },
+     {
+      "name": "Lotus",
+      "n": 4118,
+      "w": 2185
+     },
+     {
+      "name": "Aion",
+      "n": 2762,
+      "w": 1225
+     },
+     {
+      "name": "Xyris",
+      "n": 2436,
+      "w": 1149
+     }
+    ]
+   }
+  },
+  "wukong": {
+   "jungle": {
+    "augments": [
+     {
+      "id": "135",
+      "name": "Masterful Mimicry",
+      "n": 155967,
+      "w": 71371
+     },
+     {
+      "id": "136",
+      "name": "From Up High",
+      "n": 15971,
+      "w": 7080
+     },
+     {
+      "id": "134",
+      "name": "Prosperous Path",
+      "n": 14470,
+      "w": 6242
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Thraex",
+      "n": 8131,
+      "w": 3318
+     },
+     {
+      "name": "Lotus",
+      "n": 1780,
+      "w": 902
+     },
+     {
+      "name": "Demiurge",
+      "n": 1723,
+      "w": 884
+     },
+     {
+      "name": "Xyris",
+      "n": 980,
+      "w": 453
+     },
+     {
+      "name": "Vermis",
+      "n": 513,
+      "w": 221
+     }
+    ]
+   }
+  },
+  "yin": {
+   "jungle": {
+    "augments": [
+     {
+      "id": "138",
+      "name": "Storm of Salvation",
+      "n": 274725,
+      "w": 141449
+     },
+     {
+      "id": "139",
+      "name": "Serpent's Blessing",
+      "n": 19947,
+      "w": 9847
+     },
+     {
+      "id": "137",
+      "name": "Energy Transfer",
+      "n": 12406,
+      "w": 6607
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vermis",
+      "n": 21516,
+      "w": 10776
+     },
+     {
+      "name": "Thraex",
+      "n": 6807,
+      "w": 4005
+     },
+     {
+      "name": "Demiurge",
+      "n": 6018,
+      "w": 3736
+     },
+     {
+      "name": "Marrow",
+      "n": 4707,
+      "w": 2606
+     },
+     {
+      "name": "Lotus",
+      "n": 3237,
+      "w": 2034
+     }
+    ]
+   },
+   "offlane": {
+    "augments": [
+     {
+      "id": "138",
+      "name": "Storm of Salvation",
+      "n": 104410,
+      "w": 54337
+     },
+     {
+      "id": "139",
+      "name": "Serpent's Blessing",
+      "n": 6675,
+      "w": 3375
+     },
+     {
+      "id": "137",
+      "name": "Energy Transfer",
+      "n": 3416,
+      "w": 1754
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vermis",
+      "n": 4877,
+      "w": 2549
+     },
+     {
+      "name": "Thraex",
+      "n": 3912,
+      "w": 2307
+     },
+     {
+      "name": "Marrow",
+      "n": 1140,
+      "w": 635
+     },
+     {
+      "name": "Demiurge",
+      "n": 737,
+      "w": 412
+     },
+     {
+      "name": "Xyris",
+      "n": 703,
+      "w": 394
+     }
+    ]
+   }
+  },
+  "yurei": {
+   "jungle": {
+    "augments": [
+     {
+      "id": "122",
+      "name": "Soul Weaver",
+      "n": 275815,
+      "w": 124705
+     },
+     {
+      "id": "123",
+      "name": "Hallowed Reverberation",
+      "n": 115669,
+      "w": 54333
+     },
+     {
+      "id": "124",
+      "name": "Ephemeral Surge",
+      "n": 48143,
+      "w": 22675
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Vesh",
+      "n": 13107,
+      "w": 5525
+     },
+     {
+      "name": "Lotus",
+      "n": 3533,
+      "w": 1926
+     },
+     {
+      "name": "Demiurge",
+      "n": 2660,
+      "w": 1286
+     },
+     {
+      "name": "Xyris",
+      "n": 1370,
+      "w": 655
+     },
+     {
+      "name": "Marrow",
+      "n": 1369,
+      "w": 602
+     }
+    ]
+   }
+  },
+  "zarus": {
+   "offlane": {
+    "augments": [
+     {
+      "id": "76",
+      "name": "The Ascended",
+      "n": 142426,
+      "w": 70320
+     },
+     {
+      "id": "75",
+      "name": "Master Of Spears",
+      "n": 124252,
+      "w": 56908
+     },
+     {
+      "id": "74",
+      "name": "Flow State",
+      "n": 29671,
+      "w": 14076
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Thraex",
+      "n": 12998,
+      "w": 6052
+     },
+     {
+      "name": "Krix",
+      "n": 960,
+      "w": 455
+     },
+     {
+      "name": "Lotus",
+      "n": 891,
+      "w": 465
+     },
+     {
+      "name": "Nihil",
+      "n": 829,
+      "w": 372
+     },
+     {
+      "name": "Demiurge",
+      "n": 614,
+      "w": 280
+     }
+    ]
+   },
+   "jungle": {
+    "augments": [
+     {
+      "id": "76",
+      "name": "The Ascended",
+      "n": 168355,
+      "w": 88245
+     },
+     {
+      "id": "74",
+      "name": "Flow State",
+      "n": 142223,
+      "w": 69675
+     },
+     {
+      "id": "75",
+      "name": "Master Of Spears",
+      "n": 22578,
+      "w": 10847
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Thraex",
+      "n": 11900,
+      "w": 5327
+     },
+     {
+      "name": "Lotus",
+      "n": 3468,
+      "w": 1938
+     },
+     {
+      "name": "Demiurge",
+      "n": 1526,
+      "w": 769
+     },
+     {
+      "name": "Xyris",
+      "n": 1087,
+      "w": 519
+     },
+     {
+      "name": "Krix",
+      "n": 964,
+      "w": 461
+     }
+    ]
+   }
+  },
+  "zinx": {
+   "support": {
+    "augments": [
+     {
+      "id": "140",
+      "name": "Disc Of Demise",
+      "n": 330459,
+      "w": 160076
+     },
+     {
+      "id": "142",
+      "name": "Terminal Treatment",
+      "n": 134401,
+      "w": 66087
+     },
+     {
+      "id": "141",
+      "name": "Heal Matrix",
+      "n": 100907,
+      "w": 48775
+     }
+    ],
+    "eternals": [
+     {
+      "name": "Exarch",
+      "n": 34415,
+      "w": 16483
+     },
+     {
+      "name": "Thraex",
+      "n": 5404,
+      "w": 2679
+     },
+     {
+      "name": "Lotus",
+      "n": 3400,
+      "w": 1731
+     },
+     {
+      "name": "Aion",
+      "n": 2286,
+      "w": 1104
+     },
+     {
+      "name": "Vesh",
+      "n": 1772,
+      "w": 856
+     }
+    ]
+   }
+  }
+ }
+}

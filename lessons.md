@@ -464,3 +464,24 @@ Append-only. One entry per backlog item or significant finding.
   side) never had artifacts fetched for that lane. The pick-first
   trouble note now derives from the all-pairs matrix vs the DISPLAYED
   lane's meta — full coverage, label retired.
+
+## 2026-06-12 (night, cont. 5): augments found — pred.gg's perk system
+
+- "Sim coverage" question resolved: the kit-math sims DO cover all
+  1,326 hero pairs (the matrix); the old label was a UI fetch-scope bug,
+  already retired this session.
+- The augment source item 9 was waiting for: pred.gg models augments as
+  perks (slot HERO_SPECIFIC_1) with a full catalog (161 augments, names
+  + mechanical descriptions) and per-hero per-role win statistics via
+  hero.simpleBuild(filter).perks(slot:). Eternal evidence rides the same
+  endpoint (slot ETERNAL_1). npm run augments snapshots both (136 calls,
+  real-5v5 filter, roles with 300+ field games).
+- Hero page now leads with the augment choice — the first lock-in of the
+  match — role-aware (?role= carried from the lane room, switcher for
+  multi-role heroes like Steel support/offlane). The Eternal block
+  compares our augment-blind sim against the field's top-winrate Eternal
+  per role and says when they disagree (Steel offlane: sim Demiurge vs
+  field Vermis) instead of pretending one answer.
+- Lesson: when the maintainer says "I think provider X has this data,"
+  introspect the schema before restating that we lack a source — the
+  earlier item-9 writeup said "no source" after checking only omeda.

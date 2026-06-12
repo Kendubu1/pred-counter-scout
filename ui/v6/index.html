@@ -490,7 +490,7 @@ async function renderLaneDetail() {
   });
   const fx = box.querySelector('#flexEnemy');
   if (fx) fx.onchange = () => { if (fx.value) { laneEnemy = fx.value; renderLaneDetail(); } };
-  box.querySelectorAll('.lrow').forEach((r) => { r.onclick = () => nav(r.dataset.slug); });
+  box.querySelectorAll('.lrow').forEach((r) => { r.onclick = () => nav(r.dataset.slug, false, role); });
   buildSubnav();
 }
 function renderMetaboard() {
@@ -560,7 +560,7 @@ function itile(i, idx) {
     </div>`;
 }
 
-function renderHero(a) {
+function renderHero(a, roleParam) {
   const o = a.build.objectives;
   const evidenceProof = a.build.items.filter((i) => i.evidenceDeltaWr !== null && i.evidenceN >= 100)
     .sort((x, y) => Math.abs(y.evidenceDeltaWr) - Math.abs(x.evidenceDeltaWr))[0];
@@ -591,7 +591,31 @@ function renderHero(a) {
     </header>
 
     <section class="card">
-      <h2>At the gate · your 20-second pick <span class="hint">Eternal first — the build follows from it</span></h2>
+      <h2>At the gate · your 20-second picks <span class="hint">augment first, then Eternal — the build follows</span></h2>
+      ${(() => {
+        const hr = AUGS && AUGS.heroes[a.slug];
+        if (!hr) return '<div class="muted" style="margin-bottom:.8rem">no augment evidence for this hero yet (thin field sample)</div>';
+        const roles = Object.keys(hr);
+        const role = roleParam && hr[roleParam] ? roleParam : (hr[a.role] ? a.role : roles[0]);
+        const cell = hr[role];
+        const ranked = [...cell.augments].sort((x, y) => (y.w / y.n) - (x.w / x.n));
+        const fieldEt = cell.eternals[0] ? [...cell.eternals].sort((x, y) => (y.w / y.n) - (x.w / x.n)).filter((e) => e.n >= 500)[0] : null;
+        window.__fieldEternal = fieldEt ? fieldEt.name : null;
+        return `
+        <div style="font-size:.74rem;color:var(--text-2);margin-bottom:.45rem">augment · field evidence as <b style="text-transform:capitalize">${esc(role)}</b>${roles.length > 1 ? ` · view as: ${roles.map((r) => r === role ? `<b style="text-transform:capitalize">${esc(r)}</b>` : `<a href="?hero=${esc(a.slug)}&role=${esc(r)}" style="text-transform:capitalize">${esc(r)}</a>`).join(' / ')}` : ''}</div>
+        ${ranked.map((g, i) => {
+          const wr = g.w / g.n;
+          const desc = (AUGS.catalog[g.id]?.description || '').replace(/<[^>]+>/g, '');
+          return `
+          <div style="display:flex;gap:.6rem;align-items:baseline;padding:.3rem 0;border-bottom:1px ${i === ranked.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
+            <span style="font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${i === 0 ? '✓ ' : ''}${esc(g.name)}</span>
+            <span style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(wr * 100).toFixed(1)}%</span>
+            <span style="font-size:.7rem;color:var(--text-2)">${g.n.toLocaleString()} games</span>
+            <span style="font-size:.7rem;color:var(--text-2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(desc)}">${esc(desc)}</span>
+          </div>`;
+        }).join('')}
+        <div style="font-size:.7rem;color:var(--text-2);margin:.35rem 0 .9rem">winrates are field evidence (ranked + standard), not engine math — the augment's mechanics aren't in the simulator yet, so the Eternal sim below is augment-blind</div>`;
+      })()}
       ${top ? `
       <div class="eternal-row">
         <img src="${IMG.eternal(top.id)}" alt="" onerror="this.style.visibility='hidden'">
@@ -610,9 +634,12 @@ function renderHero(a) {
       </div>
       <div class="eternal-alts">
         ${a.eternals.top.slice(1).map((e) => `<span class="alt"><img src="${IMG.eternal(e.id)}" alt=""> ${esc(e.name)} +${Math.max(e.headlinePct, e.ehpPct)}%</span>`).join('')}
-      </div>` : '<div class="muted">no modeled Eternal clears the bar for this kit yet</div>'}
+      </div>
+      ${window.__fieldEternal && window.__fieldEternal !== top.name
+        ? `<div style="margin-top:.5rem;font-size:.74rem;color:var(--gold)">⚖ the field most often wins with <b>${esc(window.__fieldEternal)}</b> in this role — our sim (augment-blind) prefers ${esc(top.name)}; until augment math lands, treat this as a coin worth flipping toward the field</div>`
+        : window.__fieldEternal ? `<div style="margin-top:.5rem;font-size:.74rem;color:var(--text-2)">field evidence agrees: ${esc(window.__fieldEternal)} is also the top-winrate Eternal in this role</div>` : ''}` : '<div class="muted">no modeled Eternal clears the bar for this kit yet</div>'}
       <div style="margin-top:.6rem; font-size:.74rem; color:var(--text-2)">
-        ⚠ <b>Augments are the other half of this pick</b> — the three hero augments change which build is right (a damage build and a support build are different heroes in practice). Augment data isn't in any source we hold yet, so the builds below assume the kit's baseline: treat them as starting points per playstyle, not one flat answer. No math yet for: ${esc(a.eternals.unmodeled.join(', '))} — see Depth below.
+        ⚠ <b>Why no single flat build:</b> the augment changes which build is right (a damage build and a support build are different heroes in practice). The augment winrates above are field evidence; their mechanics aren't in the simulator yet, so the build below assumes the kit's baseline — treat it as the starting point for your augment and playstyle. No Eternal math yet for: ${esc(a.eternals.unmodeled.join(', '))} — see Depth below.
       </div>
     </section>
 
@@ -691,18 +718,26 @@ function renderHero(a) {
 }
 
 /* ── routing ── */
-async function nav(slug, replace = false) {
-  const url = slug ? `?hero=${slug}` : location.pathname;
+async function nav(slug, replace = false, role = null) {
+  const url = slug ? `?hero=${slug}${role ? `&role=${role}` : ''}` : location.pathname;
   (replace ? history.replaceState : history.pushState).call(history, { slug }, '', url);
   await route();
   window.scrollTo({ top: 0 });
 }
+let AUGS = null;
+async function getAugs() {
+  if (!AUGS) AUGS = await getJson('../../data/aggregates/predgg-augments.json').catch(() => null);
+  return AUGS;
+}
+
 async function route() {
-  const slug = new URLSearchParams(location.search).get('hero');
+  const params = new URLSearchParams(location.search);
+  const slug = params.get('hero');
   if (!slug) { show('landing'); renderGrid(); buildSubnav(); return; }
   try {
     const a = await getJson(`../../data/artifacts/${slug}.json`);
-    renderHero(a);
+    await getAugs();
+    renderHero(a, params.get('role'));
     show('hero');
     buildSubnav();
     document.title = `${a.name} — Predecessor Scout Build Lab`;

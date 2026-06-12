@@ -1,0 +1,82 @@
+// Hero augment (HERO_SPECIFIC_1 perk) + Eternal evidence per hero per
+// role, from pred.gg's simpleBuild statistics. This is the data source
+// backlog item 9 was waiting for: the catalog carries mechanical
+// descriptions (engine modeling still open), the stats carry per-role
+// win evidence — a damage-augment Zinx and a support-augment Zinx are
+// different builds, so the hero page leads with this choice.
+//
+// Queried roles per hero = roles with >=300 field games in our own
+// aggregates (typically 1-3), keeping the batch polite.
+//
+//   PREDGG_CLIENT_ID=... PREDGG_CLIENT_SECRET=... npm run augments
+
+import { writeFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { gql, hasCredentials } from './predgg.js';
+import { loadAggregates } from '../aggregates.js';
+import { loadData } from '../data.js';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
+
+interface PerkRow { matchesPlayed: number; matchesWon: number; perk: { id: string; data: { displayName: string } | null } | null }
+
+async function slotStats(slug: string, role: string, slot: string): Promise<PerkRow[]> {
+  const d = await gql<{ hero: { simpleBuild: { perks: PerkRow[] } } }>(
+    `{ hero(by: { slug: "${slug}" }) {
+      simpleBuild(filter: { roles: [${role}], gameModes: [RANKED, STANDARD] }) {
+        perks(slot: ${slot}) { matchesPlayed matchesWon perk { id data { displayName } } }
+      } } }`);
+  return d.hero.simpleBuild.perks.filter((p) => p.perk?.data?.displayName);
+}
+
+async function main() {
+  if (!hasCredentials()) { console.error('needs PREDGG_CLIENT_ID/SECRET in env'); process.exit(1); }
+  const agg = loadAggregates();
+  if (!agg) { console.error('no aggregates loaded'); process.exit(1); }
+  const data = loadData();
+
+  // augment catalog: names + mechanical descriptions, keyed by perk id
+  const cat = await gql<{ perks: { id: string; data: { slot: string; displayName: string; description: string; hero: { slug: string } | null } | null }[] }>(
+    '{ perks { id data { slot displayName description hero { slug } } } }');
+  const catalog: Record<string, { name: string; description: string; hero: string | null }> = {};
+  for (const p of cat.perks) {
+    if (p.data?.slot === 'HERO_SPECIFIC_1') {
+      catalog[p.id] = { name: p.data.displayName, description: p.data.description, hero: p.data.hero?.slug ?? null };
+    }
+  }
+
+  const heroes: Record<string, Record<string, { augments: { id: string; name: string; n: number; w: number }[]; eternals: { name: string; n: number; w: number }[] }>> = {};
+  let calls = 0;
+  for (const slug of [...data.kits.keys()].sort()) {
+    const byRole = agg.heroes[slug]?.byRole ?? {};
+    const roles = Object.entries(byRole).filter(([, v]) => (v as { n: number }).n >= 300).map(([r]) => r);
+    if (!roles.length) continue;
+    heroes[slug] = {};
+    for (const role of roles) {
+      const aug = await slotStats(slug, role.toUpperCase(), 'HERO_SPECIFIC_1');
+      const et = await slotStats(slug, role.toUpperCase(), 'ETERNAL_1');
+      calls += 2;
+      heroes[slug][role] = {
+        augments: aug.map((p) => ({ id: p.perk!.id, name: p.perk!.data!.displayName, n: p.matchesPlayed, w: p.matchesWon }))
+          .sort((a, b) => b.n - a.n),
+        eternals: et.map((p) => ({ name: p.perk!.data!.displayName, n: p.matchesPlayed, w: p.matchesWon }))
+          .sort((a, b) => b.n - a.n).slice(0, 5),
+      };
+      await new Promise((r) => setTimeout(r, 120));
+    }
+    process.stdout.write('.');
+  }
+
+  const out = {
+    generatedAt: new Date().toISOString(),
+    source: 'pred.gg simpleBuild perk statistics (gameModes RANKED+STANDARD), per hero-role with 300+ field games in our aggregates',
+    note: 'augment = the hero-specific perk locked in the first ~20s; winrates are observational evidence, not engine math; augment mechanical modeling is still open (priorities item 9)',
+    catalog,
+    heroes,
+  };
+  writeFileSync(path.join(ROOT, 'data/aggregates/predgg-augments.json'), JSON.stringify(out, null, 1));
+  console.log(`\n${calls} stat calls -> data/aggregates/predgg-augments.json (${Object.keys(heroes).length} heroes)`);
+}
+
+main().catch((e) => { console.error(e); process.exit(1); });
