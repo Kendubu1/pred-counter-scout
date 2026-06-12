@@ -59,8 +59,10 @@
   .rolemini .bar { height:7px; border-radius:99px; background:var(--bg-3); overflow:hidden; }
   .rolemini .bar i { display:block; height:100%; background:var(--accent); border-radius:99px; }
   .rolemini .n { text-align:right; color:var(--text-2); font-variant-numeric:tabular-nums; }
-  .who { display:flex; gap:.6rem; flex-wrap:wrap; }
-  .pick { display:flex; align-items:center; gap:.4rem; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.3rem .8rem; font-size:.82rem; cursor:pointer; user-select:none; }
+  .who { display:flex; gap:.45rem; flex-wrap:wrap; }
+  .plansplit { display:grid; grid-template-columns:1fr auto; gap:1rem; align-items:start; padding-bottom:.7rem; border-bottom:1px dashed var(--border); }
+  .grouplabel { font-size:.62rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--text-2); margin-bottom:.35rem; }
+  .pick { display:flex; align-items:center; gap:.35rem; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.24rem .6rem; font-size:.78rem; cursor:pointer; user-select:none; }
   button.pick { -webkit-appearance:none; appearance:none; font:inherit; font-size:.82rem; color:var(--text-0); }
   .pick input { accent-color:var(--accent); }
   .planseat { display:grid; grid-template-columns:84px 1fr auto; gap:.7rem; align-items:center; padding:.4rem 0; border-bottom:1px solid var(--border); font-size:.86rem; }
@@ -99,7 +101,8 @@
     .move { font-size:.56rem; }
 
     /* planner */
-    .pick { font-size:.74rem; padding:.24rem .6rem; }
+    .plansplit { grid-template-columns:1fr; gap:.55rem; }
+    .pick { font-size:.7rem; padding:.18rem .5rem; }
     .planseat { grid-template-columns:64px 1fr; gap:.1rem .5rem; padding:.45rem 0; font-size:.8rem; }
     .planseat .picks-mini { grid-column:1 / -1; font-size:.68rem; }
 
@@ -155,7 +158,7 @@ const plink = (uuid, name) => uuid
   const lead = s.members[0];
   const leadAssigned = s.assignment.find((a) => a.uuid === s.lead);
   document.getElementById('page').innerHTML = `
-    <div class="scope">📊 <b>Data scope:</b> pred.gg public profiles — career, ranked splits, last 40 matches each · field baselines: ${META ? META.matches.toLocaleString() + ' matches, patch ' + esc(META.patch) : 'current-patch matches'}, all ranks · combat math is THEORY pending in-game calibration · generated ${esc(s.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
+    <div class="scope">📊 <b>Data scope:</b> pred.gg public profiles — career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked splits, last 40 matches each · field baselines: ${META ? META.matches.toLocaleString() + ' matches, patch ' + esc(META.patch) : 'current-patch matches'}, all ranks · combat math is THEORY pending in-game calibration · generated ${esc(s.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
     <h1>The five stack</h1>
     <div class="sub">${s.members.map((m) => `<span class="chip">${pav(m.uuid)}${plink(m.uuid, m.name)}${m.current ? ` · ${esc(m.current.rank)} ${m.current.points}VP` : ''}</span>`).join('')}</div>
 
@@ -177,14 +180,25 @@ const plink = (uuid, name) => uuid
     </div>
 
     <div class="card">
-      <h2>Tonight's stack · pick who's queueing, choose your flavor</h2>
-      <div class="who" id="who">
-        ${s.members.map((m) => `<label class="pick"><input type="checkbox" data-uuid="${m.uuid}" checked> ${esc(m.name)}</label>`).join('')}
-      </div>
-      <div class="who" id="mode" style="margin-top:.55rem">
-        <label class="pick"><input type="radio" name="mode" value="wheel" checked> 🏠 our wheelhouse</label>
-        <label class="pick"><input type="radio" name="mode" value="meta"> 🔥 meta team</label>
-        <button id="shuffle" class="pick">🎲 shuffle roles & heroes</button>
+      <h2>Tonight's stack</h2>
+      <div class="plansplit">
+        <div>
+          <div class="grouplabel">who's queueing</div>
+          <div class="who" id="who">
+            ${s.members.map((m) => {
+              const short = m.name.split(' ')[0];
+              return `<label class="pick"><input type="checkbox" data-uuid="${m.uuid}" checked> ${esc(short.length > 9 ? short.slice(0, 8) + '…' : short)}</label>`;
+            }).join('')}
+          </div>
+        </div>
+        <div>
+          <div class="grouplabel">flavor</div>
+          <div class="who" id="mode">
+            <label class="pick"><input type="radio" name="mode" value="wheel" checked> 🏠 wheelhouse</label>
+            <label class="pick"><input type="radio" name="mode" value="meta"> 🔥 meta</label>
+            <button id="shuffle" class="pick">🎲 shuffle</button>
+          </div>
+        </div>
       </div>
       <div id="planOut"></div>
     </div>

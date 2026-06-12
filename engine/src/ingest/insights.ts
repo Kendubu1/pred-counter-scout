@@ -236,13 +236,21 @@ export function computeInsights(m: DeepMember, base: SquadBaselines, bestPair?: 
   }
 
   // ── one earned flex, if they have it ──
-  if (g.pentaKills > 0 || g.maxKillingSpree >= 12) {
+  // g.* counts real 5v5s only (ranked + standard). Casual-mode pentas are
+  // attributed, not blended — one member's "20 pentas" was 17 ARAM ones.
+  const casualPentas = (m.raw.gamemodeStatistics?.results ?? [])
+    .filter((r) => !['RANKED', 'STANDARD'].includes(r.gameMode))
+    .reduce((s, r) => s + r.pentaKills, 0);
+  if (g.pentaKills > 0 || g.maxKillingSpree >= 12 || casualPentas > 0) {
+    const casualTail = casualPentas > 0 ? ` (plus ${casualPentas} more in ARAM and brawls — the group chat can rule on whether those count)` : '';
     out.push({
       title: 'For the group chat',
       finding: g.pentaKills > 0
-        ? `${g.pentaKills} pentakill${g.pentaKills > 1 ? 's' : ''} on record and a ${g.maxKillingSpree}-kill spree. ${first} has receipts.`
-        : `A ${g.maxKillingSpree}-kill spree on record. ${first} has receipts.`,
-      receipt: `${Math.round(g.totalTime / 3600).toLocaleString()} hours played`,
+        ? `${g.pentaKills} pentakill${g.pentaKills > 1 ? 's' : ''} in real 5v5s and a ${g.maxKillingSpree}-kill spree${casualTail}. ${first} has receipts.`
+        : g.maxKillingSpree >= 12
+          ? `A ${g.maxKillingSpree}-kill spree in real 5v5s${casualTail}. ${first} has receipts.`
+          : `${casualPentas} pentakill${casualPentas > 1 ? 's' : ''} — every one in ARAM or brawls. The group chat decides if those count.`,
+      receipt: `${Math.round(g.totalTime / 3600).toLocaleString()} hours in real 5v5s`,
       salience: 0.02,
     });
   }

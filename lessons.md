@@ -393,3 +393,19 @@ Append-only. One entry per backlog item or significant finding.
   only by screenshot review, again.
 - Coach lean-into cards now carry the full engineCoachLine (spike
   timing + eternal why) instead of a bare "take X".
+
+## 2026-06-12 (night, cont.): game-mode attribution — "no way Cuban has 20 pentas"
+
+- He didn't: 17 were ARAM, 1 Rush, 2 ranked. pred.gg generalStatistic /
+  heroStatistics default to ALL modes — more than half of one member's
+  "career games" were ARAM. Every profile pull now filters
+  gameModes: [RANKED, STANDARD] (real 5v5s), with gamemodeStatistics
+  pulled unfiltered so casual flexes are attributed, not blended
+  ("2 pentakills in real 5v5s — plus 18 in ARAM, the group chat can
+  rule on those"). Scope banners state the exclusion.
+- Third attribution bug in one day, same shape: a stat that LOOKS like
+  one population (ranked 5v5) silently includes others (lanes, modes).
+  New default: before surfacing any aggregate from an API, ask what
+  populations it pools and filter to the one the page claims.
+- Squad planner controls compacted into a labeled split (who's queueing /
+  flavor) with short names: 5 rows of chips down to ~2 on mobile.
