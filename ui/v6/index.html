@@ -613,15 +613,15 @@ function renderHero(a, roleParam) {
           <div style="padding:.4rem 0;border-bottom:1px ${i === ranked.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
             <div style="display:flex;gap:.6rem;align-items:center">
               <img src="../img/augments/${esc(g.id)}.webp" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;padding:3px;${i === 0 ? 'box-shadow:0 0 0 2px var(--green)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'">
-              <span style="font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${i === 0 ? '✓ ' : ''}${esc(g.name)}</span>
+              <span style="font-size:.88rem;font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${i === 0 ? '✓ ' : ''}${esc(g.name)}</span>
               <span style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(wr * 100).toFixed(1)}%</span>
               <span style="font-size:.7rem;color:var(--text-2)">${g.n.toLocaleString()} games</span>
             </div>
-            <div style="font-size:.72rem;color:var(--text-2);margin:.25rem 0 0 2.35rem">${esc(desc)}</div>
+            <div style="font-size:.68rem;line-height:1.45;color:var(--text-2);margin:.2rem 0 0 2.35rem">${esc(desc)}</div>
             ${(() => {
               const ai = REVIEWS && REVIEWS.heroes && REVIEWS.heroes[a.slug] && REVIEWS.heroes[a.slug][role] && REVIEWS.heroes[a.slug][role][g.id];
-              if (ai) return `<div style="font-size:.72rem;color:${i === 0 ? 'var(--green)' : 'var(--text-1)'};margin:.15rem 0 0 2.35rem">🧠 ${esc(ai)}</div>`;
-              return i === 0 && adv !== null && adv >= 0.3 ? `<div style="font-size:.72rem;color:var(--green);margin:.15rem 0 0 2.35rem">why: as ${esc(role)} it wins about ${adv.toFixed(1)} more games per 100 than ${esc(ranked[1].name)} — the field has voted</div>` : '';
+              if (ai) return `<div style="font-size:.68rem;line-height:1.45;color:${i === 0 ? 'var(--green)' : 'var(--text-1)'};margin:.12rem 0 0 2.35rem">🧠 ${esc(ai)}</div>`;
+              return i === 0 && adv !== null && adv >= 0.3 ? `<div style="font-size:.68rem;color:var(--green);margin:.12rem 0 0 2.35rem">why: as ${esc(role)} it wins about ${adv.toFixed(1)} more games per 100 than ${esc(ranked[1].name)} — the field has voted</div>` : '';
             })()}
           </div>`;
         }).join('')}
@@ -636,11 +636,11 @@ function renderHero(a, roleParam) {
           <div style="padding:.35rem 0;border-bottom:1px ${i === ets.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
             <div style="display:flex;gap:.6rem;align-items:center">
               <img src="${IMG.eternal(e.name.toLowerCase())}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;${i === 0 ? 'box-shadow:0 0 0 2px var(--green)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'">
-              <span style="font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${i === 0 ? '✓ ' : ''}${esc(e.name)}</span>
+              <span style="font-size:.88rem;font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${i === 0 ? '✓ ' : ''}${esc(e.name)}</span>
               <span style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(wr * 100).toFixed(1)}%</span>
               <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
             </div>
-            <div style="font-size:.7rem;color:var(--text-2);margin:.2rem 0 0 2.35rem">${why}</div>
+            <div style="font-size:.68rem;color:var(--text-2);margin:.18rem 0 0 2.35rem">${why}</div>
           </div>`;
         }).join('') : '<div class="muted">no Eternal sample for this role yet</div>'}
         ${top && ets.length && top.name.toLowerCase() !== ets[0].name.toLowerCase()
