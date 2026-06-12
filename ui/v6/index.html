@@ -52,6 +52,12 @@
     border-radius:99px; padding:.7rem 1.1rem; font:inherit; outline:none;
   }
   .searchbar input:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  .suggest { position:absolute; top:calc(100% + 6px); left:0; right:0; background:var(--bg-1); border:1px solid var(--border); border-radius:14px; overflow:hidden; z-index:20; box-shadow:0 12px 32px rgba(0,0,0,.5); text-align:left; }
+  .suggest:empty { display:none; }
+  .suggest .srow { display:flex; align-items:center; gap:.6rem; padding:.45rem .8rem; cursor:pointer; }
+  .suggest .srow:hover, .suggest .srow.sel { background:var(--bg-2); }
+  .suggest .srow img { width:30px; height:30px; border-radius:8px; object-fit:cover; background:var(--bg-2); }
+  .suggest .srow .sr { margin-left:auto; font-size:.7rem; color:var(--text-2); text-transform:capitalize; }
   .rolebar { display:flex; gap:.45rem; justify-content:center; flex-wrap:wrap; margin-top:.9rem; }
   .rolebar button {
     background:var(--bg-1); color:var(--text-1); border:1px solid var(--border);
@@ -270,7 +276,7 @@
     <div class="landing-hero">
       <h1>Who are you playing?</h1>
       <p>What to build, when it spikes, and why — from kit math and real match data, not copied winrates.</p>
-      <div class="searchbar"><input id="search" placeholder="Search heroes…" autocomplete="off"></div>
+      <div class="searchbar"><input id="search" placeholder="Search heroes…" autocomplete="off"><div class="suggest" id="suggest"></div></div>
       <div class="rolebar" id="rolebar"></div>
       <div class="receipt">
         <b>How this works:</b> a simulator scores every viable item set against your kit's ability ratios,
@@ -534,8 +540,10 @@ function renderMetaboard() {
 
 function renderGrid() {
   const q = ($('#search').value || '').toLowerCase();
+  // a typed query searches ALL heroes regardless of the lane filter —
+  // otherwise a hero outside the selected lane is unfindable
   const heroes = INDEX.heroes.filter((h) =>
-    (roleFilter === 'all' || h.role === roleFilter) && h.name.toLowerCase().includes(q));
+    q ? h.name.toLowerCase().includes(q) : (roleFilter === 'all' || h.role === roleFilter));
   $('#heroGrid').innerHTML = heroes.map((h) => `
     <div class="hcard" data-slug="${h.slug}">
       <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph',style:'aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:var(--text-2)',textContent:'⚔'}))">
@@ -767,7 +775,33 @@ window.onpopstate = route;
   $('#patchPill').textContent = `patch ${INDEX.patch}`;
   renderRolebar();
   renderMetaboard();
-  $('#search').oninput = renderGrid;
+  let selIdx = -1;
+  function suggestions() {
+    const q = ($('#search').value || '').toLowerCase().trim();
+    if (!q) return [];
+    return INDEX.heroes.filter((h) => h.name.toLowerCase().includes(q)).slice(0, 8);
+  }
+  function renderSuggest() {
+    const list = suggestions();
+    selIdx = Math.min(selIdx, list.length - 1);
+    $('#suggest').innerHTML = list.map((h, i) => `
+      <div class="srow ${i === selIdx ? 'sel' : ''}" data-slug="${h.slug}">
+        <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
+        <span>${esc(h.name)}</span><span class="sr">${esc(h.role)}</span>
+      </div>`).join('');
+    document.querySelectorAll('#suggest .srow').forEach((r) => {
+      r.onmousedown = (e) => { e.preventDefault(); $('#search').value = ''; $('#suggest').innerHTML = ''; nav(r.dataset.slug); };
+    });
+  }
+  $('#search').oninput = () => { selIdx = -1; renderGrid(); renderSuggest(); };
+  $('#search').onkeydown = (e) => {
+    const list = suggestions();
+    if (e.key === 'ArrowDown') { selIdx = Math.min(selIdx + 1, list.length - 1); renderSuggest(); e.preventDefault(); }
+    else if (e.key === 'ArrowUp') { selIdx = Math.max(selIdx - 1, -1); renderSuggest(); e.preventDefault(); }
+    else if (e.key === 'Enter' && list.length) { const h = list[Math.max(selIdx, 0)]; $('#search').value = ''; $('#suggest').innerHTML = ''; nav(h.slug); }
+    else if (e.key === 'Escape') { $('#suggest').innerHTML = ''; }
+  };
+  $('#search').onblur = () => setTimeout(() => { $('#suggest').innerHTML = ''; }, 150);
   await route();
 })();
 </script>

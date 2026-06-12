@@ -584,3 +584,12 @@ Append-only. One entry per backlog item or significant finding.
   it meant twice and then said it wasn't important enough to tag. The
   inline sentence carries it now. A label that needs a glossary twice
   should become a sentence the third time.
+
+## 2026-06-12 (night, cont. 12): unfindable heroes were a filter interaction
+
+- "We don't have all the heroes in this list" — all 52 were in the
+  index; search was AND-ed with the lane filter, so any hero outside
+  the selected lane was unfindable by typing. A typed query now searches
+  the whole roster regardless of filter, with an autocomplete dropdown
+  (portrait + role, arrow keys, Enter to open). When a user says data
+  is missing, check the query path before the data.
