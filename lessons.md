@@ -2,6 +2,21 @@
 
 Append-only. One entry per backlog item or significant finding.
 
+## 2026-06-12: Squad report (five-stack coaching)
+
+- commonPlayers with a RANKED filter finds a five-stack unambiguously:
+  the games-together distribution cliffs from 289 to 6. Thresholds can
+  be lazy when the signal is this bimodal.
+- Solo-optimal and squad-optimal are different answers: the lead's best
+  solo role (jungle) loses the seat in the stack because a teammate
+  holds it with better numbers, so the optimizer reseats the lead on
+  their 355-game support. Surfacing that tension explicitly (both are
+  right, different questions) is better coaching than hiding either.
+- Brute force is fine at this scale: 120 permutations of
+  confidence-weighted shrunk role winrates, no cleverness needed.
+- Private profiles appear as null names but keep full stats; render a
+  placeholder, never drop the seat.
+
 ## 2026-06-12: Coach report + freshness sweep
 
 - Freshness audit cost 3 API calls: the omeda snapshot is byte-identical
