@@ -618,7 +618,11 @@ function renderHero(a, roleParam) {
               <span style="font-size:.7rem;color:var(--text-2)">${g.n.toLocaleString()} games</span>
             </div>
             <div style="font-size:.72rem;color:var(--text-2);margin:.25rem 0 0 2.35rem">${esc(desc)}</div>
-            ${i === 0 && adv !== null && adv >= 0.3 ? `<div style="font-size:.72rem;color:var(--green);margin:.15rem 0 0 2.35rem">why: as ${esc(role)} it wins about ${adv.toFixed(1)} more games per 100 than ${esc(ranked[1].name)} — the field has voted</div>` : ''}
+            ${(() => {
+              const ai = REVIEWS && REVIEWS.heroes && REVIEWS.heroes[a.slug] && REVIEWS.heroes[a.slug][role] && REVIEWS.heroes[a.slug][role][g.id];
+              if (ai) return `<div style="font-size:.72rem;color:${i === 0 ? 'var(--green)' : 'var(--text-1)'};margin:.15rem 0 0 2.35rem">🧠 ${esc(ai)}</div>`;
+              return i === 0 && adv !== null && adv >= 0.3 ? `<div style="font-size:.72rem;color:var(--green);margin:.15rem 0 0 2.35rem">why: as ${esc(role)} it wins about ${adv.toFixed(1)} more games per 100 than ${esc(ranked[1].name)} — the field has voted</div>` : '';
+            })()}
           </div>`;
         }).join('')}
         <div style="font-size:.74rem;color:var(--text-2);margin:.7rem 0 .45rem"><b style="letter-spacing:.06em">ETERNAL</b> · top 3 as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
@@ -643,7 +647,7 @@ function renderHero(a, roleParam) {
           ? `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">⚖ our augment-blind kit math prefers ${esc(top.name)} (+${top.headlinePct}% headline) — when math and field disagree, weight the field for this role until augment mechanics land in the simulator</div>` : ''}`;
       })()}
       <div style="margin-top:.6rem; font-size:.74rem; color:var(--text-2)">
-        ⚠ <b>Why no single flat build:</b> the augment changes which build is right (a damage build and a support build are different heroes in practice). The augment winrates above are field evidence; their mechanics aren't in the simulator yet, so the build below assumes the kit's baseline — treat it as the starting point for your augment and playstyle. No Eternal math yet for: ${esc(a.eternals.unmodeled.join(', '))} — see Depth below.
+        ⚠ <b>Why no single flat build:</b> the augment changes which build is right (a damage build and a support build are different heroes in practice). The augment winrates above are field evidence; their mechanics aren't in the simulator yet, so the build below assumes the kit's baseline — treat it as the starting point for your augment and playstyle. 🧠 lines are AI-written from the mechanics and evidence shown, with every number machine-verified against the source data. No Eternal math yet for: ${esc(a.eternals.unmodeled.join(', '))} — see Depth below.
       </div>
     </section>
 
@@ -728,9 +732,14 @@ async function nav(slug, replace = false, role = null) {
   await route();
   window.scrollTo({ top: 0 });
 }
-let AUGS = null;
+let AUGS = null, REVIEWS = null;
 async function getAugs() {
-  if (!AUGS) AUGS = await getJson('../../data/aggregates/predgg-augments.json').catch(() => null);
+  if (!AUGS) {
+    [AUGS, REVIEWS] = await Promise.all([
+      getJson('../../data/aggregates/predgg-augments.json').catch(() => null),
+      getJson('../../data/aggregates/augment-reviews.json').catch(() => null),
+    ]);
+  }
   return AUGS;
 }
 

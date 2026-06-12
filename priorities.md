@@ -81,10 +81,13 @@ the Eternal sim. Uncodable augments listed as unmodeled, never guessed.
   player's top hero is a low-meta pick, quantify when to keep it vs flex
   to a meta hero, and how to counter-pick around keeping it.
 
-## 8. LLM copy pass with ground-check verifier — BLOCKED 2026-06-11
+## 8. LLM copy pass — UNBLOCKED 2026-06-12 (maintainer supplied key); augment pass shipped
 
-Blocked: no ANTHROPIC_API_KEY in the execution environment. Needs the
-maintainer to add the secret (repo/environment settings) or run the pass
-locally. Recommended: claude-haiku-4-5, prompts assembled from artifact
-JSON, verifier rejects any number not present in the source artifact.
-The template coach lines shipped in item 6 carry the page until then.
+First pass shipped: npm run review (claude-haiku-4-5) writes one
+grounded when/why line per augment per role from the catalog mechanics
++ field evidence ONLY; a verifier rejects any line whose numbers are
+absent from the source cell (2 of 288 rejected). Output committed at
+data/aggregates/augment-reviews.json; hero pages render the lines with
+🧠 provenance. Key lives in env only — never committed; secrets grep
+now covers the sk-ant- prefix. REMAINING: the original scope (hero-page
+coach lines + squad/coach report copy through the same verifier).
