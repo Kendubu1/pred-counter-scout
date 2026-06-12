@@ -1,6 +1,11 @@
 # Practice-mode calibration checklist
 
-Six unverified constants gate the engine's confidence at THEORY. Each
+Five unverified constants remain (ultRankLevels was verified from data
+on 2026-06-12; crit multiplier and bonus-only scaling now carry strong
+data evidence but want a 10-minute confirmation; the MITIGATION
+measurement is now the highest priority because live data hints armor
+may be worth less than the assumed formula says). Six constants
+originally gated the engine's confidence at THEORY. Each
 section says what to do in game, what to write down, and where the value
 goes in `engine/fixtures/calibration.json`. After editing the fixture, run
 `cd engine && npm test`: the harness re-checks everything and the
@@ -94,7 +99,13 @@ Record: both observations in
 `constants.abilityScalingUsesBonusPowerOnly.source`; set `value`
 accordingly (true = bonus-only) and flip verified.
 
-## 6. ultRankLevels
+## 6. ultRankLevels — DONE (verified from data, 2026-06-12)
+
+Verified without practice mode: pred.gg's in-game recommended skill
+orders place ultimate points at levels 6/11/16 across heroes. Skip this
+one.
+
+## ~~6. ultRankLevels~~ (original instructions, no longer needed)
 
 What to verify: ultimates can be ranked at levels 6 / 11 / 16 (assumed).
 
