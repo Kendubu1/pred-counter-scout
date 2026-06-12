@@ -120,6 +120,20 @@ describe('hero artifacts (Concept A engine stage)', () => {
     }
   });
 
+  it('augment evidence covers every hero and every clickable meta-board cell', () => {
+    const augs = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/predgg-augments.json'), 'utf8'));
+    const meta = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/meta.json'), 'utf8'));
+    const index = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/index.json'), 'utf8'));
+    for (const h of index.heroes) {
+      expect(Object.keys(augs.heroes[h.slug] ?? {}).length, `${h.slug} has no augment cells`).toBeGreaterThan(0);
+    }
+    for (const [role, list] of Object.entries(meta.roles) as [string, { slug: string }[]][]) {
+      for (const h of list) {
+        expect(augs.heroes[h.slug]?.[role], `meta board links ${h.slug} as ${role} but no augment cell exists`).toBeDefined();
+      }
+    }
+  });
+
   it('archetypes: squad members carry distinct identities with plain-language receipts', () => {
     const squad = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/squad.json'), 'utf8'));
     const archetypes = squad.members.map((m: { archetype: { label: string; receipt: string } | null }) => m.archetype);

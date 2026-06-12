@@ -66,7 +66,12 @@ async function main() {
   let calls = 0;
   for (const slug of [...data.kits.keys()].sort()) {
     const byRole = agg.heroes[slug]?.byRole ?? {};
-    const roles = Object.entries(byRole).filter(([, v]) => (v as { n: number }).n >= 150).map(([r]) => r);
+    // every role the site can link to must have a cell: byRole >=100 field
+    // games (the meta board's tail sits above this) plus the hero's primary
+    // role as a floor so no hero ships with zero augment evidence
+    const roles = Object.entries(byRole).filter(([, v]) => (v as { n: number }).n >= 100).map(([r]) => r);
+    const primary = data.kits.get(slug)?.roles[0]?.toLowerCase();
+    if (primary && !roles.includes(primary)) roles.push(primary);
     if (!roles.length) continue;
     heroes[slug] = {};
     for (const role of roles) {
@@ -86,7 +91,7 @@ async function main() {
 
   const out = {
     generatedAt: new Date().toISOString(),
-    source: 'pred.gg simpleBuild perk statistics (gameModes RANKED+STANDARD), per hero-role with 150+ field games in our aggregates',
+    source: 'pred.gg simpleBuild perk statistics (gameModes RANKED+STANDARD), per hero-role with 100+ field games in our aggregates, plus every hero’s primary role',
     note: 'augment = the hero-specific perk locked in the first ~20s; winrates are observational evidence, not engine math; augment mechanical modeling is still open (priorities item 9)',
     catalog,
     heroes,
