@@ -485,3 +485,16 @@ Append-only. One entry per backlog item or significant finding.
 - Lesson: when the maintainer says "I think provider X has this data,"
   introspect the schema before restating that we lack a source — the
   earlier item-9 writeup said "no source" after checking only omeda.
+
+## 2026-06-12 (night, cont. 6): augment icons + shuffle placement
+
+- Perk icon hashes from the pred.gg catalog resolve at
+  https://pred.gg/assets/<hash>.webp (found by scraping a hero page for
+  16-hex asset URLs after guessing CDN paths failed). npm run augments
+  now snapshots the 160 augment icons to ui/img/augments/<perkId>.webp
+  (skip-if-exists, sequential, UA-identified) — same zero-API-at-render
+  pattern as hero portraits.
+- The gate section's augment rows carry their icons (top pick ringed
+  green); the shuffle button moved out of the planner's flavor group to
+  the card's top-right, where an action that re-deals the whole card
+  reads as belonging to the card, not to one option row.

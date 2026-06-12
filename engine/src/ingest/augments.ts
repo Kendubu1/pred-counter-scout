@@ -10,7 +10,7 @@
 //
 //   PREDGG_CLIENT_ID=... PREDGG_CLIENT_SECRET=... npm run augments
 
-import { writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gql, hasCredentials } from './predgg.js';
@@ -37,14 +37,30 @@ async function main() {
   const data = loadData();
 
   // augment catalog: names + mechanical descriptions, keyed by perk id
-  const cat = await gql<{ perks: { id: string; data: { slot: string; displayName: string; description: string; hero: { slug: string } | null } | null }[] }>(
-    '{ perks { id data { slot displayName description hero { slug } } } }');
+  const cat = await gql<{ perks: { id: string; data: { slot: string; displayName: string; description: string; icon: string | null; hero: { slug: string } | null } | null }[] }>(
+    '{ perks { id data { slot displayName description icon hero { slug } } } }');
   const catalog: Record<string, { name: string; description: string; hero: string | null }> = {};
+  const icons: Record<string, string> = {};
   for (const p of cat.perks) {
     if (p.data?.slot === 'HERO_SPECIFIC_1') {
       catalog[p.id] = { name: p.data.displayName, description: p.data.description, hero: p.data.hero?.slug ?? null };
+      if (p.data.icon) icons[p.id] = p.data.icon;
     }
   }
+
+  // one-time icon snapshot (same pattern as hero/item portraits): the
+  // catalog's icon hashes resolve at https://pred.gg/assets/<hash>.webp
+  const iconDir = path.join(ROOT, 'ui/img/augments');
+  mkdirSync(iconDir, { recursive: true });
+  let fetched = 0;
+  for (const [id, hash] of Object.entries(icons)) {
+    const dest = path.join(iconDir, `${id}.webp`);
+    if (existsSync(dest)) continue;
+    const res = await fetch(`https://pred.gg/assets/${hash}.webp`, { headers: { 'User-Agent': 'pred-counter-scout (github.com/Kendubu1/pred-counter-scout)' } });
+    if (res.ok) { writeFileSync(dest, Buffer.from(await res.arrayBuffer())); fetched++; }
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  console.log(`icons: ${fetched} fetched -> ui/img/augments/`);
 
   const heroes: Record<string, Record<string, { augments: { id: string; name: string; n: number; w: number }[]; eternals: { name: string; n: number; w: number }[] }>> = {};
   let calls = 0;
