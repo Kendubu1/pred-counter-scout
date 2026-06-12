@@ -190,8 +190,10 @@ async function main() {
   // the field plays Zinx — and it surfaces honest off-meta flexes (a carry
   // hero a player genuinely wins with in offlane qualifies for offlane).
   function ownRolePicks(uuid: string, m: AnalyzedPlayer, role: string) {
+    // floor of 10 role-tracked games; the UI shows the count under 20 so
+    // thin samples read as thin instead of hiding the role entirely
     return (heroRolesByUuid.get(uuid) ?? [])
-      .filter((c) => c.role === role && c.n >= 20)
+      .filter((c) => c.role === role && c.n >= 10)
       .map((c) => ({
         slug: c.slug,
         name: data.kits.get(c.slug)?.name ?? c.slug,
@@ -219,7 +221,7 @@ async function main() {
     uuid: m.uuid, name: m.name,
     scores: Object.fromEntries(ROLES.map((role) => {
       const rs = roleScore(m, role);
-      const picks = ownRolePicks(m.uuid, m, role).map((h) => ({ slug: h.slug, name: h.name, shrunkWr: h.shrunkWr }));
+      const picks = ownRolePicks(m.uuid, m, role).map((h) => ({ slug: h.slug, name: h.name, shrunkWr: h.shrunkWr, games: h.games }));
       return [role, { score: rs.score, wr: rs.wr, games: rs.games, picks }];
     })),
   }));
@@ -272,7 +274,7 @@ async function main() {
       'role winrates are career-wide and shrunk toward each player’s own average',
       'pair winrates count ranked games where both were allies; they include games with randoms filling the rest',
       'trio records come from a recent-match window, not all-time history',
-      'hero suggestions require 20+ of the player’s own games on the hero in that exact role (role-tracked matches only)',
+      'hero suggestions require 10+ of the player’s own games on the hero in that exact role (real 5v5s only); samples under 20 games show their count',
     ],
   };
   writeFileSync(path.join(ROOT, 'data/artifacts/squad.json'), JSON.stringify(out, null, 1));

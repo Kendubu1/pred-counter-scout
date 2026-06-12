@@ -409,3 +409,21 @@ Append-only. One entry per backlog item or significant finding.
   populations it pools and filter to the one the page claims.
 - Squad planner controls compacted into a labeled split (who's queueing /
   flavor) with short names: 5 rows of chips down to ~2 on mobile.
+
+## 2026-06-12 (night, cont. 2): thresholds should degrade, not hide
+
+- "Why no mid suggestion for Meat?" — because the wheelhouse floor (20
+  role-true games) silently hid everything below it. The real samples:
+  Goldilocks offlane Wukong 13/Aurora 11 (worth showing, thinly), Meat
+  midlane Bright 8/Fey 6 (genuinely nothing). Floor lowered to 10 and
+  thin samples (<20) display their game count instead of vanishing —
+  a threshold should change how confidently a number is shown, not
+  whether the row exists.
+- uuid→name mapping must be read from data, not memory: first probe
+  attributed Xeebs' Greystone-offlane record to Goldilocks by assuming
+  uuid order. Verify identity joins before reporting per-person numbers.
+- Planner gains an 'any lane hero' mode (shuffle deals from the lane's
+  whole tracked roster with field winrates) and the meta-mode "you:"
+  note now says "(all lanes)" — that number is whole-hero, not
+  role-split, and claiming otherwise would repeat today's attribution
+  bug in miniature.
