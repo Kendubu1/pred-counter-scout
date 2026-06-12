@@ -122,6 +122,11 @@
   .proof.evidence { border-left-color:var(--green); }
   .proof.playrate { border-left-color:var(--gold); }
   .warn { margin-top:.7rem; font-size:.8rem; color:var(--gold); }
+  .caveat {
+    margin:-.2rem 0 .9rem; font-size:.82rem; color:var(--gold);
+    border:1px solid rgba(240,180,41,.4); background:rgba(240,180,41,.07);
+    border-radius:8px; padding:.5rem .75rem;
+  }
 
   .eternal-row { display:flex; gap:.8rem; align-items:center; }
   .eternal-row > img { width:40px; height:40px; border-radius:50%; border:2px solid var(--accent); object-fit:cover; background:var(--bg-2); flex:none; }
@@ -329,6 +334,7 @@ function renderHero(a) {
 
     <section class="card answer">
       <h2>The build <span class="hint">patch ${esc(a.patch)} · ${a.build.gold.toLocaleString()}g full</span></h2>
+      ${a.roleCaveat ? `<div class="caveat">⚠ ${esc(a.roleCaveat)}</div>` : ''}
       <div class="rail">${a.build.items.map(itile).join('')}</div>
       <div class="coach">${esc(a.coachLine)}</div>
       <div class="proofs">
