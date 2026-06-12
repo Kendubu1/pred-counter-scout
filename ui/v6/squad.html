@@ -182,7 +182,7 @@ const plink = (uuid, name) => uuid
             <span class="sgames">${a.roleGames} games in role</span>
           </div>
           <div class="picks">${a.heroPicks.map((h) => `<a href="./?hero=${esc(h.slug)}"><img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">${esc(h.name)} ${pct(h.shrunkWr, 0)}%${h.games != null && h.games < 20 ? ` <span style="color:var(--gold)">· ${h.games} games</span>` : ''}</a>`).join('') || '<span style="color:var(--text-2);font-size:.74rem">no proven hero here yet — use meta mode below</span>'}</div>
-          ${a.isMove && a.favRole ? `<div class="snote">usually queues ${esc(a.favRole)} — the move is worth it: ${pct(a.roleWr)}% here over ${a.roleGames} games</div>` : ''}
+          ${a.isMove && a.favRole ? `<div class="snote"><b style="color:var(--gold)">off-role</b> = not their usual queue: they normally play ${esc(a.favRole)}, but the team wins more with them here — ${pct(a.roleWr)}% over ${a.roleGames} games in ${esc(a.role)}</div>` : ''}
         </div>`).join('')}
       <div class="snote" style="margin-top:.7rem">Seats are scored as a set, not one at a time — someone can look stronger in a seat they didn't get, but moving them there would give up more wins in the role they'd leave than it adds. The lineup above is the combination that wins the most as a team.</div>
     </div>
