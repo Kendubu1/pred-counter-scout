@@ -36,6 +36,15 @@ npm run snapshot              # refresh data/omeda/ after a balance patch
 - `test/engine.test.ts` the Concept B gates: fixture checks, data joins,
   the Gideon worked-example regression, sanity invariants, golden scenarios.
 
+## pred.gg API (optional, credentialed)
+
+Set `PREDGG_CLIENT_ID` and `PREDGG_CLIENT_SECRET` (dev-portal app) in the
+environment and `npm run artifacts` will also pull the ranked-split top
+players per lane into `meta.json` (plus future build/matchup statistic
+scopes). Token flow: GET pred.gg/auth/token with HTTP Basic, ~30-min JWT,
+Bearer on pred.gg/gql. Never commit credentials; the harness gates on the
+feature's presence in the committed meta.json.
+
 ## Known gaps (deliberate, tracked)
 
 - Fixture constants are assumed, not measured: mitigation formula, crit

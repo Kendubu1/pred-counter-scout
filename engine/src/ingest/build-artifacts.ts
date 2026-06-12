@@ -10,6 +10,7 @@ import { buildHeroArtifact } from '../artifacts.js';
 import { loadCalibration } from '../sim.js';
 import { loadAggregates } from '../aggregates.js';
 import { momPriorStrength } from '../evidence.js';
+import { hasCredentials, topPlayersPerLane } from './predgg.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const OUT = path.join(ROOT, 'data/artifacts');
@@ -55,12 +56,28 @@ if (agg) {
         shrunkWr: Math.round(((cell.w + k * 0.5) / (cell.n + k)) * 1000) / 1000,
       }));
   }
+  // Top ranked pilots per lane from the pred.gg split leaderboard.
+  // Env-gated: without PREDGG_* credentials the board ships without them.
+  let topPlayers: Awaited<ReturnType<typeof topPlayersPerLane>> = null;
+  if (hasCredentials()) {
+    try {
+      topPlayers = await topPlayersPerLane(5);
+      console.log('top players per lane fetched from pred.gg');
+    } catch (e) {
+      console.error('pred.gg leaderboard fetch failed, shipping without:', (e as Error).message);
+    }
+  } else {
+    console.log('no PREDGG_CLIENT_ID/SECRET in env; meta.json ships without top players');
+  }
+
   writeFileSync(path.join(OUT, 'meta.json'), JSON.stringify({
     patch: cal.patch,
     generatedAt: new Date().toISOString(),
     matches: agg.meta.matches,
     note: 'most played per lane, shrunk winrate (method-of-moments EB toward 50%); all ranks, current-patch window',
     roles,
+    topPlayers,
+    topPlayersNote: topPlayers ? 'current ranked split leaderboard via the pred.gg API (favRole filter); VP = victory points' : null,
   }, null, 1));
   console.log('meta.json written');
 }

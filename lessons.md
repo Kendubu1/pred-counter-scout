@@ -2,6 +2,28 @@
 
 Append-only. One entry per backlog item or significant finding.
 
+## 2026-06-12: pred.gg API access (authenticated)
+
+- Auth flow discovered by probing: GET https://pred.gg/auth/token with
+  HTTP Basic (client_id:client_secret) returns a ~30-min JWT; /gql takes
+  it as a Bearer. The 405-not-404 on POST was the tell that the route
+  existed. POSTing forms to a SvelteKit app gets CSRF-blocked; that error
+  fingerprinted the framework.
+- The GraphQL schema is rich and largely public-read: versions (a full
+  patch registry with exact release timestamps, including a staged
+  unreleased build), heroes/items, matches, players. Credentialed scopes
+  add leaderboards and build_statistic/matchup_statistic reads: the data
+  the old site scraped from pages is now available sanctioned.
+- pred.gg hero names are internal codenames (Weaver=N3ON, Trooper=Legion)
+  but their slugs align with omeda's; join on slug, map display names
+  locally.
+- hero_id 75 deepens: omeda publishes ids 70-74 and 77 but not 75, while
+  75 plays 4.5k+ games in the feed. Likely tied to the staged version
+  row. Still open.
+- Secrets live in PREDGG_CLIENT_ID/SECRET env vars only; the pipeline
+  degrades gracefully without them, and a meta.json gate fails loudly if
+  the feature silently vanishes from a credless regeneration.
+
 ## 2026-06-12: The Adele question (support caveat)
 
 - A user spotted assassin items on a support in one glance. Root cause:

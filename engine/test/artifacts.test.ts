@@ -71,4 +71,18 @@ describe('hero artifacts (Concept A engine stage)', () => {
       for (let i = 1; i < lane.length; i++) expect(lane[i].games).toBeLessThanOrEqual(lane[i - 1].games);
     }
   });
+
+  it('top pilots per lane ship in meta.json (regenerate with PREDGG_* creds if this fires)', () => {
+    const meta = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/meta.json'), 'utf8'));
+    expect(meta.topPlayers, 'meta.json was generated without pred.gg credentials').not.toBeNull();
+    for (const role of ['carry', 'midlane', 'offlane', 'jungle', 'support']) {
+      const pilots = meta.topPlayers[role];
+      expect(pilots.length, role).toBeGreaterThanOrEqual(3);
+      for (const p of pilots) {
+        expect(p.name.length).toBeGreaterThan(0);
+        expect(p.points).toBeGreaterThan(500);
+        expect(p.ranking).toBeGreaterThanOrEqual(1);
+      }
+    }
+  });
 });
