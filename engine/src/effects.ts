@@ -68,7 +68,7 @@ const Primitive = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('percent_pen'), pct: z.number(), damageType: z.enum(['physical', 'magical', 'both']), perItemPct: z.number().optional() }),
   z.object({ kind: z.literal('flat_pen'), amount: z.number(), damageType: z.enum(['physical', 'magical']), rampSeconds: z.number().optional() }),
   z.object({ kind: z.literal('armor_shred'), pct: z.number().optional(), flat: z.number().optional(), damageType: z.enum(['physical', 'magical']), rampSeconds: z.number().optional() }),
-  z.object({ kind: z.literal('health_multiplier'), pct: z.number(), perLevelPct: z.number().optional() }),
+  z.object({ kind: z.literal('health_multiplier'), pct: z.number(), perLevelPct: z.number().optional(), perMinutePct: z.number().optional() }),
   z.object({ kind: z.literal('armor_multiplier'), pct: z.number() }),
   z.object({ kind: z.literal('shield_per_fight'), base: z.number(), maxAtLevel18: z.number().optional() }),
   z.object({ kind: z.literal('anti_heal'), pct: z.number() }),
@@ -296,7 +296,7 @@ export function resolveEntries(keys: string[], ctx: ResolveCtx, registry: Effect
           out.shredPct.rampSeconds = Math.max(out.shredPct.rampSeconds, fx.rampSeconds ?? 0);
           break;
         case 'health_multiplier':
-          out.healthMultiplier *= 1 + (fx.pct + (fx.perLevelPct ?? 0) * lvl) / 100;
+          out.healthMultiplier *= 1 + (fx.pct + (fx.perLevelPct ?? 0) * lvl + (fx.perMinutePct ?? 0) * minute) / 100;
           break;
         case 'armor_multiplier':
           out.armorMultiplier *= 1 + fx.pct / 100;

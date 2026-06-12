@@ -15,6 +15,7 @@ import { fileURLToPath } from 'node:url';
 import { loadData } from '../data.js';
 import { loadEffects } from '../effects.js';
 import { buildAllowed, verifyLine, winrateNumbers } from '../copy-verify.js';
+import { momPriorStrength } from '../evidence.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const KEY = process.env.ANTHROPIC_API_KEY;
@@ -62,11 +63,18 @@ function eternalMechanics(name: string): string {
   return entry.sourceText + (unmodeled.length ? ` (not in our sim: ${unmodeled.join('; ')})` : '');
 }
 
-/** The same top-3 the hero page shows: n >= floor, by field winrate. */
+/** The same top-3 the hero page shows: n >= floor, by SHRUNK winrate
+ *  (Eternal pick shares are asymmetric; raw ordering crowns lucky
+ *  minority picks). */
 function topEternals(cell: AugCell) {
-  return [...(cell.eternals ?? [])]
+  const all = cell.eternals ?? [];
+  const totN = all.reduce((s, e) => s + e.n, 0);
+  const mean = totN ? all.reduce((s, e) => s + e.w, 0) / totN : 0.5;
+  const k = momPriorStrength(all, mean);
+  return all
     .filter((e) => e.n >= ETERNAL_MIN_GAMES)
-    .sort((x, y) => y.w / y.n - x.w / x.n)
+    .map((e) => ({ ...e, shrunk: (e.w + k * mean) / (e.n + k) }))
+    .sort((x, y) => y.shrunk - x.shrunk)
     .slice(0, 3);
 }
 

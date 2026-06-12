@@ -150,12 +150,29 @@ describe('effects on live data', () => {
     const vesh = ranked.find((r) => r.id.startsWith('vesh'))!;
     expect(vesh.modeled).toBe(true);
     expect(vesh.deltas!.rot10Pct).toBeGreaterThan(5); // 11% amp at minute 10, abilities dominate Gideon
+    // Lotus joined the modeled set 2026-06-12 (EV per-minute encoding).
     const lotus = ranked.find((r) => r.id.startsWith('lotus'))!;
-    expect(lotus.modeled).toBe(false);
-    expect(lotus.unmodeledNotes.length).toBeGreaterThan(0);
+    expect(lotus.modeled).toBe(true);
+    expect(lotus.deltas!.rot10Pct).toBeGreaterThan(0);
+    const marrow = ranked.find((r) => r.id.startsWith('marrow'))!;
+    expect(marrow.modeled).toBe(false);
+    expect(marrow.unmodeledNotes.length).toBeGreaterThan(0);
     // every modeled entry outranks every unmodeled entry in the sort
     const firstUnmodeled = ranked.findIndex((r) => !r.modeled);
     expect(ranked.slice(0, firstUnmodeled).every((r) => r.modeled)).toBe(true);
+  });
+
+  it('Lotus major: expected-value per-minute encoding (takedown procs excluded)', () => {
+    // One proc per 2 min, uniform over +1.5% dmg / +4 AH / +0.75% MS / +1.5% maxHP.
+    const fx = resolveEntries(['eternal:lotus:major'], { level: 13, minute: 20 });
+    expect(fx.ampAllPct).toBeCloseTo(3.75, 6);            // 0.1875%/min * 20
+    expect(fx.statFlat.ability_haste).toBeCloseTo(10, 6); // 0.5/min * 20
+    expect(fx.statFlat.movement_speed).toBeCloseTo(1.875, 6);
+    expect(fx.healthMultiplier).toBeCloseTo(1.0375, 6);
+    expect(fx.unmodeled.join(' ')).toMatch(/takedown/i);  // the floor caveat rides along
+    // minute 0 (pre-game math): no procs yet, nothing credited
+    const t0 = resolveEntries(['eternal:lotus:major'], { level: 13, minute: 0 });
+    expect(t0.ampAllPct).toBe(0);
   });
 
   it('provisional sources propagate (Kallari ability-crit bakes the unverified crit multiplier)', () => {

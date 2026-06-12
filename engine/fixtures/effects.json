@@ -556,12 +556,12 @@
   },
   "eternal:nihil:major": {
    "name": "Nihil (Major)",
-   "sourceText": "Doom stacks grant permanent stats on level-up/takedown.",
+   "sourceText": "Damage a hero to gain Doom for 3s. Doom grants 1 PP, 2 MP, 1 phys & 1 mag armor per 3s it persists; on level-up or Takedown the granted stats permanently increase by 20%.",
    "source": "owned eternals.json, synced 1.14.4",
    "effects": [
     {
      "kind": "unmodeled",
-     "note": "combat-uptime and takedown-dependent permanent stacking; needs match telemetry"
+     "note": "accrual rate depends on combat uptime (how long Doom persists per fight), which the closed-form sim cannot observe"
     }
    ]
   },
@@ -578,23 +578,48 @@
   },
   "eternal:exarch:major": {
    "name": "Exarch (Major)",
-   "sourceText": "Healing/shielding grants the target attack speed and on-hit magical damage.",
+   "sourceText": "Healing or Shielding a target (including yourself) grants them 10% Total Attack Speed and empowers their Basic Attacks to deal 10% bonus Magical Damage On-Hit for 4s.",
    "source": "owned eternals.json, synced 1.14.4",
    "effects": [
     {
      "kind": "unmodeled",
-     "note": "requires heal/shield output objectives (enchanter support model, backlog)"
+     "note": "buffs the HEAL TARGET (usually an ally) — team-side value outside the single-hero sim; self-heal uptime depends on heal cadence vs the 4s window"
     }
    ]
   },
   "eternal:lotus:major": {
    "name": "Lotus (Major)",
-   "sourceText": "Every 2 minutes and every takedown, randomly grants one of four small permanent buffs.",
-   "source": "owned eternals.json, synced 1.14.4",
+   "sourceText": "Every 2 minutes and every Takedown randomly grants +1.5% Damage, +4 Ability Haste, +0.75% Move Speed, or +1.5% Max Health.",
+   "source": "owned eternals.json (1.14 Eternals system); encoded 2026-06-12 as expected value per proc (uniform over the four stated buffs), time-driven procs only (1 per 2 minutes)",
+   "provisional": false,
    "effects": [
     {
+     "kind": "damage_amp",
+     "pct": 0,
+     "perMinutePct": 0.1875,
+     "scope": "all",
+     "appliesWhen": "always"
+    },
+    {
+     "kind": "stat_flat",
+     "stat": "ability_haste",
+     "base": 0,
+     "perMinute": 0.5
+    },
+    {
+     "kind": "stat_flat",
+     "stat": "movement_speed",
+     "base": 0,
+     "perMinute": 0.09375
+    },
+    {
+     "kind": "health_multiplier",
+     "pct": 0,
+     "perMinutePct": 0.1875
+    },
+    {
      "kind": "unmodeled",
-     "note": "random grant distribution unstated; refusing to assume uniform"
+     "note": "takedown-triggered procs excluded (no takedown model) — the encoding is a floor; in real games Lotus stacks faster, especially when ahead"
     }
    ]
   }

@@ -602,7 +602,27 @@ function renderHero(a, roleParam) {
         const ranked = [...cell.augments].sort((x, y) => (y.w / y.n) - (x.w / x.n));
         const adv = ranked[1] ? ((ranked[0].w / ranked[0].n) - (ranked[1].w / ranked[1].n)) * 100 : null;
         const simBy = new Map(a.eternals.top.map((e) => [e.name.toLowerCase(), e]));
-        const ets = [...cell.eternals].filter((e) => e.n >= 300).sort((x, y) => (y.w / y.n) - (x.w / x.n)).slice(0, 3);
+        // Order by SHRUNK winrate (method-of-moments prior toward the
+        // cell's pick-weighted mean): Eternal pick shares are wildly
+        // asymmetric, and raw-winrate ordering let lucky minority picks
+        // top every list (the flaw-4 mistake, rediscovered via Lotus).
+        const ets = (() => {
+          const all = cell.eternals || [];
+          const totN = all.reduce((s, e) => s + e.n, 0);
+          const mean = totN ? all.reduce((s, e) => s + e.w, 0) / totN : 0.5;
+          const usable = all.filter((c) => c.n >= 5);
+          let k = 50;
+          if (usable.length >= 5) {
+            const rates = usable.map((c) => c.w / c.n);
+            const m = rates.reduce((s, r) => s + r, 0) / rates.length;
+            const varObs = rates.reduce((s, r) => s + (r - m) ** 2, 0) / rates.length;
+            const noise = usable.reduce((s, c) => s + (mean * (1 - mean)) / c.n, 0) / usable.length;
+            k = Math.min(Math.max((mean * (1 - mean)) / Math.max(varObs - noise, 1e-5) - 1, 10), 500);
+          }
+          return all.filter((e) => e.n >= 300)
+            .map((e) => ({ ...e, shrunk: (e.w + k * mean) / (e.n + k) }))
+            .sort((x, y) => y.shrunk - x.shrunk).slice(0, 3);
+        })();
         return `
         ${roles.length > 1 ? `<div class="echips" style="margin:.1rem 0 .55rem">${roles.map((r) => r === role
           ? `<span class="echip" style="border-color:var(--accent);background:var(--accent-soft);color:var(--text-0);text-transform:capitalize">${esc(r)}</span>`
@@ -653,7 +673,7 @@ function renderHero(a, roleParam) {
             <div style="display:flex;gap:.6rem;align-items:center">
               <img src="${IMG.eternal(e.name.toLowerCase())}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;${i === 0 ? 'box-shadow:0 0 0 2px var(--green)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'">
               <span style="font-size:.88rem;font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${i === 0 ? '✓ ' : ''}${esc(e.name)}</span>
-              <span style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(wr * 100).toFixed(1)}%</span>
+              <span title="raw ${(wr * 100).toFixed(1)}% — shown shrunk toward the role's pick-weighted mean (small samples get less benefit of the doubt)" style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(e.shrunk * 100).toFixed(1)}%</span>
               <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
             </div>
             <div style="font-size:.68rem;color:var(--text-2);margin:.18rem 0 0 2.35rem">${why}</div>
