@@ -67,7 +67,7 @@
   .planseat:last-of-type { border-bottom:none; }
   .planseat .r { font-weight:800; text-transform:capitalize; color:var(--accent); }
   .planseat .picks-mini { font-size:.74rem; color:var(--text-2); }
-  .pairrow { display:grid; grid-template-columns:minmax(170px, 240px) 1fr 96px; gap:.7rem; align-items:center; padding:.3rem 0; font-size:.82rem; }
+  .pairrow { display:grid; grid-template-columns:minmax(170px, 310px) 1fr 96px; gap:.7rem; align-items:center; padding:.3rem 0; font-size:.82rem; }
   .pairrow .names { color:var(--text-1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .pairrow .bar { height:8px; border-radius:99px; background:var(--bg-2); overflow:hidden; }
   .pairrow .bar i { display:block; height:100%; border-radius:99px; }
@@ -300,8 +300,9 @@ const plink = (uuid, name) => uuid
   // ── queued-together card: duo / trio toggle ──
   function renderSyn() {
     const mode = document.querySelector('#synmode input[name=syn]:checked')?.value ?? 'duo';
+    // trio rows use first names so three of them fit without truncating
     const rows = mode === 'trio' && s.trios
-      ? s.trios.map((t) => ({ who: t.members.map((u, i) => `${pav(u)}${plink(u, t.names[i])}`).join(' + '), winrate: t.winrate, games: t.games }))
+      ? s.trios.map((t) => ({ who: t.members.map((u, i) => `${pav(u)}${plink(u, t.names[i].split(' ')[0])}`).join(' + '), winrate: t.winrate, games: t.games }))
       : s.pairs.map((p) => ({ who: `${pav(p.a)}${plink(p.a, p.aName)} + ${pav(p.b)}${plink(p.b, p.bName)}`, winrate: p.winrate, games: p.games }));
     document.getElementById('synOut').innerHTML = rows.map((r) => `
       <div class="pairrow">
