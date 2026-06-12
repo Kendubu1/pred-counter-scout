@@ -2,6 +2,26 @@
 
 Append-only. One entry per backlog item or significant finding.
 
+## 2026-06-12: Coach report + freshness sweep
+
+- Freshness audit cost 3 API calls: the omeda snapshot is byte-identical
+  to live (1.14.4 still current, version 150 still staged), so the right
+  move was to verify and NOT re-crawl. Cheap verification before
+  expensive refresh should be the standing pattern.
+- The personal coach report writes itself from two API calls joined with
+  local baselines. The strongest coaching signals were structural, not
+  mechanical: best-role winrate gap (jungle +2.8 over overall), a role
+  actively costing VP (offlane 43.4% over 159g), pool width (top three
+  heroes only 38% of games), and an all-time peak that already touched
+  the target tier. None of these need bracket-specific baselines.
+- Shrinkage emptied the "park these" list that raw winrates would have
+  filled: 44-46% over 30-60 games is not credible evidence of a bad
+  hero. The honest version of tough love is quieter than the raw
+  numbers suggest.
+- Player-filtered statistics (timeframe/rating) return null on app-only
+  tokens; likely needs user-delegated consent (the authorize flow with
+  the callback). Career + per-split ratings carry the report fine.
+
 ## 2026-06-12: pred.gg API access (authenticated)
 
 - Auth flow discovered by probing: GET https://pred.gg/auth/token with
