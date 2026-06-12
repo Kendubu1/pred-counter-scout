@@ -59,6 +59,7 @@ const LANES = ['CARRY', 'MIDLANE', 'OFFLANE', 'JUNGLE', 'SUPPORT'] as const;
 export interface TopPlayer {
   ranking: number;
   name: string;
+  uuid: string | null;   // links to pred.gg/players/<uuid>
   points: number;
   rank: string;
   heroName: string | null;
@@ -90,12 +91,12 @@ export async function topPlayersPerLane(limit = 5): Promise<Record<string, TopPl
         results: {
           ranking: number; points: number;
           rank: { name: string } | null;
-          player: { name: string | null; favHero: { name: string; slug: string } | null } | null;
+          player: { name: string | null; uuid: string | null; favHero: { name: string; slug: string } | null } | null;
         }[];
       };
     }>(
       `{ leaderboardPaginated(ratingId: "${ratingId}", limit: ${limit + 5}, filter: { favRole: ${lane} }) {
-        results { ranking points rank { name } player { name favHero { name slug } } }
+        results { ranking points rank { name } player { name uuid favHero { name slug } } }
       } }`,
     );
     out[lane.toLowerCase()] = d.leaderboardPaginated.results
@@ -104,6 +105,7 @@ export async function topPlayersPerLane(limit = 5): Promise<Record<string, TopPl
       .map((r) => ({
         ranking: r.ranking,
         name: r.player!.name!,
+        uuid: r.player!.uuid ?? null,
         points: Math.round(r.points),
         rank: r.rank?.name ?? '',
         heroName: r.player!.favHero?.name ?? null,

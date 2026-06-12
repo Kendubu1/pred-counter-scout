@@ -90,26 +90,48 @@ export const shrink = (w: number, n: number, prior: number, k: number) => (w + k
 
 export const PLATINUM_VP = 900; // Platinum III ratingMin, pred.gg rank table, Season 1 Split 4
 
+const ROLE_NOUN: Record<string, string> = {
+  jungle: 'Jungler', midlane: 'Midlaner', offlane: 'Offlaner', carry: 'Carry', support: 'Support',
+};
+
 /**
  * Data-derived player archetype: a crisp identity with its receipt.
- * Deterministic rules, first match wins; every label cites numbers.
+ * Leads with the player's sharpest secret (hero edge first, role edge
+ * second) so no two squadmates read the same. First match wins.
  */
 export function archetype(a: AnalyzedPlayer): { label: string; receipt: string } {
   const deep = a.roles.filter((r) => r.games >= 100);
+  const best = deep[0];
   const totalRoleGames = a.roles.reduce((s, r) => s + r.games, 0) || 1;
   const topShare = (a.roles.slice().sort((x, y) => y.games - x.games)[0]?.games ?? 0) / totalRoleGames;
   const top3Share = a.pool.slice(0, 3).reduce((s, h) => s + h.games, 0) / Math.max(a.career.games, 1);
   const spread = deep.length ? Math.max(...deep.map((r) => r.shrunkWr)) - Math.min(...deep.map((r) => r.shrunkWr)) : 0;
+  const sig = a.pool
+    .filter((h) => h.games >= 75 && (h.edge ?? -1) >= 0.03)
+    .sort((x, y) => (y.edge ?? 0) - (x.edge ?? 0))[0];
 
-  // 4 points of SHRUNK spread is large; shrinkage compresses raw gaps.
-  if (deep.length >= 4 && spread >= 0.04) {
-    return { label: 'The Flex With A Secret', receipt: `${deep.length} roles at 100+ games, but a ${(spread * 100).toFixed(1)}-point winrate gap between best and worst — versatility is hiding a specialty.` };
+  // hero-level secret beats role-level secret when it is the sharper edge
+  if (sig && (sig.edge ?? 0) >= spread) {
+    return {
+      label: `Closet ${sig.name} Main`,
+      receipt: `${(sig.shrunkWr * 100).toFixed(1)}% over ${sig.games} games on ${sig.name}, +${((sig.edge ?? 0) * 100).toFixed(1)} points over the field — the wide pool hides a weapon.`,
+    };
+  }
+  if (deep.length >= 4 && spread >= 0.04 && best) {
+    return {
+      label: `The Secret ${ROLE_NOUN[best.role] ?? best.role}`,
+      receipt: `${deep.length} roles at 100+ games, but ${best.role} (${(best.shrunkWr * 100).toFixed(1)}%/${best.games}g) wins ${(spread * 100).toFixed(1)} points more than the worst — versatility is hiding a specialty.`,
+    };
   }
   if (deep.length >= 4) {
     return { label: 'The True Flex', receipt: `${deep.length} roles at 100+ games within ${(spread * 100).toFixed(1)} points of each other — genuinely fill-proof.` };
   }
   if (topShare >= 0.5 && top3Share >= 0.5) {
-    return { label: 'The Specialist', receipt: `${(topShare * 100).toFixed(0)}% of games in one role, ${(top3Share * 100).toFixed(0)}% on three heroes — a sharpened edge.` };
+    const main = a.roles.slice().sort((x, y) => y.games - x.games)[0]!;
+    return {
+      label: `The ${ROLE_NOUN[main.role] ?? main.role} Specialist`,
+      receipt: `${(topShare * 100).toFixed(0)}% of games in ${main.role}, ${(top3Share * 100).toFixed(0)}% on three heroes — a sharpened edge.`,
+    };
   }
   if (top3Share < 0.4) {
     return { label: 'The Wanderer', receipt: `top three heroes are only ${(top3Share * 100).toFixed(0)}% of ${a.career.games} games — breadth tax in every queue.` };
