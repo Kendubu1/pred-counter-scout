@@ -90,7 +90,7 @@ function affordablePrefix(build: OrderedBuild, gold: number): Item[] {
   return out;
 }
 
-function defenseOf(kit: HeroKit, items: Item[], level: number): DefenseProfile {
+export function defenseOf(kit: HeroKit, items: Item[], level: number): DefenseProfile {
   const eff = resolveItemEffects(items, { level });
   const t = effectiveTotals(items, eff);
   return {

@@ -11,7 +11,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gql, hasCredentials } from './predgg.js';
-import { analyzeProfile, buildCoachReport, pullProfile, type AnalyzedPlayer } from './playerProfile.js';
+import { analyzeProfile, archetype, buildCoachReport, pullProfile, type AnalyzedPlayer } from './playerProfile.js';
 import { loadData } from '../data.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -123,8 +123,16 @@ async function main() {
     })),
   }));
 
+  // The lineup's worth, priced in the ledger currency: optimal assignment
+  // vs everyone queueing their habitual favRole.
+  const favTotal = members.reduce((s, m) => s + roleScore(m, m.favRole?.toLowerCase() ?? ROLES[0]!).score, 0);
+  const lineupGainPer100 = Math.round(((best!.total - favTotal) / members.length) * 1000) / 10;
+
   const notes: string[] = [];
   const leadM = members[0]!;
+  if (lineupGainPer100 >= 0.5) {
+    notes.unshift(`The lineup above is worth about +${lineupGainPer100} wins per 100 team games versus everyone queueing their usual role.`);
+  }
   for (const a of assignment) {
     if (a.isMove && a.roleGames >= 100) {
       notes.push(`${a.name} moves to ${a.role}: ${(a.roleWr * 100).toFixed(1)}% over ${a.roleGames} games beats their queue habit (${a.favRole ?? 'none'}).`);
@@ -143,6 +151,7 @@ async function main() {
     lead: leadM.uuid,
     members: members.map((m) => ({
       uuid: m.uuid, name: m.name, isPrivate: m.isPrivate, favRole: m.favRole,
+      archetype: archetype(m),
       current: m.current, peakAllTime: m.peakAllTime,
       career: m.career,
       together: m.together ?? null,
@@ -151,6 +160,7 @@ async function main() {
     })),
     assignment,
     assignmentNote: 'optimal lineup by confidence-weighted shrunk role winrates, all 120 permutations scored',
+    lineupGainPer100,
     pairs,
     roleScores,
     notes,

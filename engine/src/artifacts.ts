@@ -4,14 +4,31 @@
 // template over computed values (the LLM copy pass is backlog item 7).
 
 import { z } from 'zod';
+import { readFileSync, existsSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { completedItems, type LoadedData } from './data.js';
 import { generateBuilds, headlineObjective } from './search.js';
-import { evaluateBuild, loadCalibration, unverifiedConstants, type Calibration } from './sim.js';
+import { combatDamage, evaluateBuild, loadCalibration, unverifiedConstants, type Calibration } from './sim.js';
 import { rankBlessings } from './eternals.js';
 import { heroGames, itemPlayRate, loadAggregates } from './aggregates.js';
-import { itemWinDelta } from './evidence.js';
-import { matchupCheckpoints, orderBuild, spikeTimeline } from './matchup.js';
+import { itemWinDelta, momPriorStrength } from './evidence.js';
+import { defenseOf, matchupCheckpoints, orderBuild, spikeTimeline } from './matchup.js';
+import { resolveItemEffects } from './effects.js';
 import type { HeroKit, Item } from './types.js';
+
+const ARTIFACTS_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+
+interface PredggBuilds {
+  heroes: Record<string, { core: string[]; coreSlugs: (string | null)[]; n: number; w: number }[]>;
+}
+let predggBuildsCache: PredggBuilds | null | undefined;
+function loadPredggBuilds(): PredggBuilds | null {
+  if (predggBuildsCache !== undefined) return predggBuildsCache;
+  const p = path.join(ARTIFACTS_ROOT, 'data/aggregates/predgg-builds.json');
+  predggBuildsCache = existsSync(p) ? (JSON.parse(readFileSync(p, 'utf8')) as PredggBuilds) : null;
+  return predggBuildsCache;
+}
 
 export const HeroArtifact = z.object({
   slug: z.string(),
@@ -64,11 +81,29 @@ export const HeroArtifact = z.object({
     })),
     honestAbsence: z.string().nullable(),
   }),
+  metaBuilds: z.array(z.object({
+    items: z.array(z.object({ name: z.string(), slug: z.string().nullable() })),
+    n: z.number(),
+    shrunkWr: z.number(),
+    coreGold: z.number().nullable(),
+    spikeMinute: z.number().nullable(),
+    bestObjective: z.string().nullable(),
+    whyLine: z.string(),
+    optimizer: z.string().nullable(),
+  })),
   matchups: z.array(z.object({
     enemy: z.string(),
     enemySlug: z.string(),
     gameplan: z.string(),
     checkpoints: z.array(z.object({ minute: z.number(), verdict: z.enum(['you', 'even', 'enemy']) })),
+    counterSwap: z.object({
+      out: z.string(),
+      in: z.string(),
+      inSlug: z.string(),
+      survivalGainPct: z.number(),
+      offenseLossPct: z.number(),
+      line: z.string(),
+    }).nullable(),
   })),
   flags: z.array(z.string()),
 });
@@ -83,6 +118,51 @@ const OBJECTIVE_LABELS: Record<string, string> = {
   ehpPhysical: 'physical survivability',
   ehpMagical: 'magical survivability',
 };
+
+/**
+ * Quick counter swap: the single defensive substitution (3rd purchase)
+ * that most blunts THIS enemy's 3-second all-in at the two-item stage,
+ * sim-verified, with the offense cost stated. Null when nothing clears
+ * a 10% survival gain.
+ */
+function counterSwap(kit: HeroKit, items: Item[], enemy: HeroKit, enemyItems: Item[], pool: Item[], cal: Calibration) {
+  const level = 13;
+  const prefix = items.slice(0, 3);
+  const enemyPrefix = enemyItems.slice(0, 3);
+  const stat: 'physical_armor' | 'magical_armor' | 'health' =
+    enemy.damageType === 'physical' ? 'physical_armor' : enemy.damageType === 'magical' ? 'magical_armor' : 'health';
+  const candidates = pool
+    .filter((i) => i.stats[stat] > 0 && !prefix.some((p) => p.slug === i.slug))
+    .sort((a, b) => b.stats[stat] - a.stats[stat])
+    .slice(0, 3);
+  if (!candidates.length || prefix.length < 3) return null;
+
+  const enemyFx = resolveItemEffects(enemyPrefix, { level });
+  const threat = (defenders: Item[]) =>
+    combatDamage(enemy, enemyPrefix, { level, profile: defenseOf(kit, defenders, level), effects: enemyFx }, cal, 3) /
+    defenseOf(kit, defenders, level).health;
+  const myDamage = (own: Item[]) =>
+    combatDamage(kit, own, { level, profile: defenseOf(enemy, enemyPrefix, level), effects: resolveItemEffects(own, { level }) }, cal, 3);
+
+  const before = threat(prefix);
+  const myBefore = myDamage(prefix);
+  let best: { item: Item; gain: number; loss: number } | null = null;
+  for (const cand of candidates) {
+    const swapped = [prefix[0]!, prefix[1]!, cand];
+    const gain = (before - threat(swapped)) / Math.max(before, 1e-9);
+    const loss = (myBefore - myDamage(swapped)) / Math.max(myBefore, 1e-9);
+    if (gain >= 0.1 && (!best || gain - loss * 0.5 > best.gain - best.loss * 0.5)) best = { item: cand, gain, loss };
+  }
+  if (!best) return null;
+  return {
+    out: prefix[2]!.name,
+    in: best.item.name,
+    inSlug: best.item.slug,
+    survivalGainPct: Math.round(best.gain * 100),
+    offenseLossPct: Math.round(best.loss * 100),
+    line: `Losing lane? Third item ${best.item.name} instead of ${prefix[2]!.name}: their 3s all-in loses ${Math.round(best.gain * 100)}% of its bite for ${Math.round(best.loss * 100)}% of your damage.`,
+  };
+}
 
 const headlineBuildCache = new Map<string, ReturnType<typeof generateBuilds>[number]>();
 
@@ -185,10 +265,10 @@ export function buildHeroArtifact(
     .sort((a, b) => heroGames(b.slug, agg) - heroGames(a.slug, agg))
     .slice(0, opts.matchupEnemies ?? 2);
   const matchups = enemies.map((enemy) => {
-    const eTop = headlineBuild(enemy, pool, cal, 8);
+    const enemyItems = headlineBuild(enemy, pool, cal, 8).items.map((n) => data.items.get(n)!);
     const report = matchupCheckpoints(
       { kit, build: items, role },
-      { kit: enemy, build: eTop.items.map((n) => data.items.get(n)!), role: enemy.roles[0] ?? role },
+      { kit: enemy, build: enemyItems, role: enemy.roles[0] ?? role },
       cal,
     );
     return {
@@ -196,6 +276,82 @@ export function buildHeroArtifact(
       enemySlug: enemy.slug,
       gameplan: report.gameplan,
       checkpoints: report.checkpoints.map((c) => ({ minute: c.minute, verdict: c.verdict })),
+      counterSwap: counterSwap(kit, items, enemy, enemyItems, pool, cal),
+    };
+  });
+
+  // Meta builds, explained: pred.gg's most-played cores run through the
+  // simulator so the page can say WHY each one wins and whether the
+  // optimizer sees an upgrade.
+  const evidence = loadPredggBuilds()?.heroes[kit.slug] ?? [];
+  const cores = evidence.slice(0, 5);
+  const coreCells = cores.map((c) => ({ n: c.n, w: c.w }));
+  const coreMean = coreCells.reduce((s, c) => s + c.w, 0) / Math.max(coreCells.reduce((s, c) => s + c.n, 0), 1);
+  const kCore = momPriorStrength(coreCells, coreMean || 0.5);
+  const OBJ_LABELS: Record<string, string> = {
+    burstVsSquishy: 'one-combo burst', rot10VsSquishy: '10s rotation damage',
+    rot20VsBruiser: 'extended fights vs bruisers', autoDps10VsSquishy: 'sustained auto DPS',
+    ehpPhysical: 'physical survivability', ehpMagical: 'magical survivability',
+  };
+  const evaluated = cores.map((c) => {
+    const coreItems = c.coreSlugs.every(Boolean) ? c.coreSlugs.map((s) => data.itemsBySlug.get(s!)).filter((x): x is Item => !!x) : null;
+    const ev = coreItems && coreItems.length === 3 ? evaluateBuild(kit, coreItems, 13, cal) : null;
+    const gold = coreItems ? coreItems.reduce((s, i) => s + i.totalPrice, 0) : null;
+    let spikeMinute: number | null = null;
+    if (coreItems) {
+      const cum = coreItems.map((_, i) => coreItems.slice(0, i + 1).reduce((s, x) => s + x.totalPrice, 0));
+      spikeMinute = spikeTimeline(role, { ordered: coreItems, cumulativeGold: cum })[2]?.minute ?? null;
+    }
+    return { c, ev, gold, spikeMinute };
+  });
+  // An objective only explains a core if it separates the meta cores at
+  // all (>=5% spread); otherwise every core would claim it on a tie.
+  const objMax: Record<string, number> = {};
+  const objDiscriminates: Record<string, boolean> = {};
+  for (const key of Object.keys(OBJ_LABELS)) {
+    const vals = evaluated.map((e) => e.ev?.objectives[key as keyof typeof e.ev.objectives] ?? 0).filter((v) => v > 0);
+    objMax[key] = Math.max(...vals, 1e-9);
+    objDiscriminates[key] = vals.length >= 2 && Math.max(...vals) / Math.max(Math.min(...vals), 1e-9) >= 1.05;
+  }
+  const headlineKey = headlineObjective(kit);
+  const ourCoreEval = evaluateBuild(kit, ordered.ordered.slice(0, 3), 13, cal);
+  const metaBuilds = evaluated.slice(0, 3).map(({ c, ev, gold, spikeMinute }) => {
+    const shrunkWr = (c.w + kCore * (coreMean || 0.5)) / (c.n + kCore);
+    let bestObjective: string | null = null;
+    let whyLine: string;
+    let optimizer: string | null = null;
+    if (ev) {
+      let bestKey = '';
+      let bestRel = -1;
+      for (const key of Object.keys(OBJ_LABELS)) {
+        if (!objDiscriminates[key]) continue;
+        const rel = (ev.objectives[key as keyof typeof ev.objectives] ?? 0) / objMax[key]!;
+        if (rel > bestRel) { bestRel = rel; bestKey = key; }
+      }
+      if (!bestKey) bestKey = headlineKey;
+      bestObjective = OBJ_LABELS[bestKey]!;
+      whyLine = `Strongest meta core for ${bestObjective}${spikeMinute ? `, online around minute ${spikeMinute}` : ''}. The sim rates it ${Math.round(ev.objectives[bestKey as keyof typeof ev.objectives] ?? 0)} there.`;
+      const ours = ourCoreEval.objectives[bestKey as keyof typeof ourCoreEval.objectives] ?? 0;
+      const theirs = ev.objectives[bestKey as keyof typeof ev.objectives] ?? 0;
+      const edge = theirs > 0 ? ((ours - theirs) / theirs) * 100 : 0;
+      const diffIdx = c.coreSlugs.findIndex((s, i) => s !== (ordered.ordered[i]?.slug ?? null));
+      if (edge >= 8 && diffIdx >= 0) {
+        optimizer = `Optimizer sees +${edge.toFixed(0)}% on ${bestObjective}: try ${ordered.ordered[diffIdx]!.name} over ${c.core[diffIdx]} (sim-only, test it).`;
+      } else if (Math.abs(edge) < 8) {
+        optimizer = `Optimizer agrees: within ${Math.abs(edge).toFixed(0)}% of our best core on ${bestObjective}. The winrate is earned, not luck.`;
+      }
+    } else {
+      whyLine = 'Evidence-only: one item in this core is not in our mechanics data yet, so the sim cannot decompose it.';
+    }
+    return {
+      items: c.core.map((name, i) => ({ name, slug: c.coreSlugs[i] ?? null })),
+      n: c.n,
+      shrunkWr: Math.round(shrunkWr * 1000) / 1000,
+      coreGold: gold,
+      spikeMinute,
+      bestObjective,
+      whyLine,
+      optimizer,
     };
   });
 
@@ -242,6 +398,7 @@ export function buildHeroArtifact(
       candidates,
       honestAbsence: candidates.length ? null : 'no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)',
     },
+    metaBuilds,
     matchups,
     flags: [
       'THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md',
