@@ -36,6 +36,7 @@ export function itemTotals(items: Item[]): ItemStats {
     physical_power: 0, magical_power: 0, attack_speed: 0, critical_chance: 0,
     physical_penetration: 0, magical_penetration: 0, ability_haste: 0,
     health: 0, physical_armor: 0, magical_armor: 0, max_mana: 0, lifesteal: 0, omnivamp: 0,
+    heal_shield_increase: 0, gold_per_second: 0, tenacity: 0, movement_speed: 0,
   };
   for (const i of items) {
     for (const k of Object.keys(t) as (keyof ItemStats)[]) t[k] += i.stats[k];
@@ -69,13 +70,17 @@ export function effectiveTotals(items: Item[], eff: ResolvedEffects): ItemStats 
 
 const ULT_LEVELS = [6, 11, 16];
 
-/** Damage growth per rank divided by mid-rank cooldown: the max-first heuristic. */
+/** Damage-or-heal growth per rank divided by mid-rank cooldown: the
+ *  max-first heuristic. Heal/shield growth counts so a support's bread
+ *  ability is not ranked last just because it deals no damage. */
 export function skillPriority(kit: HeroKit): AbilityDef[] {
   const basics = kit.abilities.filter((a) => a.key !== 'ULTIMATE');
   return [...basics].sort((a, b) => {
-    const growth = (x: AbilityDef) =>
-      ((x.damagePerRank[x.damagePerRank.length - 1] ?? 0) - (x.damagePerRank[0] ?? 0)) /
-      Math.max(x.cooldowns[Math.floor(x.cooldowns.length / 2)] ?? 10, 3);
+    const growth = (x: AbilityDef) => {
+      const span = (vals: number[]) => (vals[vals.length - 1] ?? 0) - (vals[0] ?? 0);
+      const payload = span(x.damagePerRank) + (x.healing ?? []).reduce((s, h) => s + span(h.valuesPerRank), 0);
+      return payload / Math.max(x.cooldowns[Math.floor(x.cooldowns.length / 2)] ?? 10, 3);
+    };
     return growth(b) - growth(a);
   });
 }
@@ -234,6 +239,31 @@ export function rotationDamage(kit: HeroKit, opts: SimOptions, t: ItemStats, win
 }
 
 /**
+ * Heal + shield output over a window: 1 cast up front + recasts off
+ * cooldown, amount = per-cast total + ratio on bonus power, amplified by
+ * heal_shield_increase. Output convention (support model v0): one
+ * beneficiary even for AoE heals, no overheal model, target-side
+ * received-healing amps not counted.
+ */
+export function healShieldOutput(kit: HeroKit, opts: SimOptions, t: ItemStats, windowSec: number): number {
+  const eff = opts.effects ?? emptyEffects();
+  const ranks = opts.ranks ?? ranksAtLevel(kit, opts.level);
+  let total = 0;
+  for (const ab of kit.abilities) {
+    const rank = ranks.get(ab.key) ?? 0;
+    if (rank <= 0 || !ab.healing?.length) continue;
+    const cd = abilityCooldown(ab, rank, t, eff);
+    const casts = 1 + Math.floor(windowSec / cd);
+    for (const h of ab.healing) {
+      const base = h.valuesPerRank[Math.min(rank, h.valuesPerRank.length) - 1] ?? 0;
+      const power = h.powerType === 'magical' ? t.magical_power : t.physical_power;
+      total += (base + (h.scalingPct / 100) * power) * casts;
+    }
+  }
+  return total * (1 + t.heal_shield_increase / 100);
+}
+
+/**
  * Total mitigated damage over a short engagement window: ability rotation
  * plus basic attacks. The matchup engine's kill-window numerator.
  */
@@ -318,6 +348,7 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
     burstCombo: burst,
     rotation,
     autoDps,
+    healShield10s: healShieldOutput(kit, { ...opts, ranks, effects: eff }, t, 10),
     manaSpent10s,
     manaPool,
     manaFeasible: manaSpent10s <= manaPool,
@@ -335,6 +366,7 @@ export function evaluateBuild(kit: HeroKit, items: Item[], level: number, cal: C
   const bruiser = cal.referenceProfiles.bruiser!;
   const vsSquishy = simulate(kit, items, { level, profile: squishy, effects: eff }, cal);
   const vsBruiser = simulate(kit, items, { level, profile: bruiser, effects: eff }, cal);
+  const totals = effectiveTotals(items, eff);
   return {
     items: items.map((i) => i.name),
     gold: items.reduce((s, i) => s + i.totalPrice, 0),
@@ -345,6 +377,8 @@ export function evaluateBuild(kit: HeroKit, items: Item[], level: number, cal: C
       autoDps10VsSquishy: vsSquishy.autoDps,
       ehpPhysical: vsSquishy.ehpPhysical,
       ehpMagical: vsSquishy.ehpMagical,
+      healShield10s: vsSquishy.healShield10s,
+      utility: totals.movement_speed + totals.tenacity,
     },
     manaFeasible: vsSquishy.manaFeasible,
   };

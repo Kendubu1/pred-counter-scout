@@ -26,6 +26,7 @@ const StatKey = z.enum([
   'physical_power', 'magical_power', 'attack_speed', 'critical_chance',
   'physical_penetration', 'magical_penetration', 'ability_haste',
   'health', 'physical_armor', 'magical_armor', 'max_mana', 'lifesteal', 'omnivamp',
+  'heal_shield_increase', 'gold_per_second', 'tenacity', 'movement_speed',
 ]);
 
 const DmgType = z.enum(['physical', 'magical', 'true']);

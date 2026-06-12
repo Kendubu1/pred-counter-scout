@@ -41,7 +41,8 @@ export function orderBuild(kit: HeroKit, items: Item[], level: number, cal: Cali
       const gain =
         (ev.objectives.rot10VsSquishy - base.objectives.rot10VsSquishy) +
         (ev.objectives.autoDps10VsSquishy - base.objectives.autoDps10VsSquishy) * 5 +
-        (ev.objectives.ehpPhysical - base.objectives.ehpPhysical) * 0.1;
+        (ev.objectives.ehpPhysical - base.objectives.ehpPhysical) * 0.1 +
+        (ev.objectives.healShield10s - base.objectives.healShield10s);
       const score = gain / Math.max(cand.totalPrice, 1);
       if (score > bestScore) { bestScore = score; best = cand; }
     }

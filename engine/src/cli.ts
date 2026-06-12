@@ -1,5 +1,5 @@
 // CLI: print The Answer artifact for a hero. Usage:
-//   npm run answer -- gideon [--level 13] [--anti-heal] [--budget 12000]
+//   npm run answer -- gideon [--level 13] [--anti-heal] [--budget 12000] [--role support]
 
 import { loadData, completedItems } from './data.js';
 import { loadCalibration, unverifiedConstants, simulate, skillPriority } from './sim.js';
@@ -30,8 +30,16 @@ if (!kit) {
 }
 
 const level = opt('level') ?? 13;
+const strOpt = (name: string) => {
+  const i = args.indexOf(`--${name}`);
+  return i >= 0 ? args[i + 1] : undefined;
+};
+const role = strOpt('role') ?? kit.roles[0] ?? 'midlane';
 const unverified = unverifiedConstants(cal);
-console.log(`# ${kit.name} (${kit.damageType}, ${kit.attackType}) — level ${level}, patch ${cal.patch}`);
+console.log(`# ${kit.name} (${kit.damageType}, ${kit.attackType}) — ${role}, level ${level}, patch ${cal.patch}`);
+if (role === 'support') {
+  console.log('support objectives in play: heal/shield output, survivability, poke, utility (one-beneficiary convention; passive heals not counted)');
+}
 console.log(`confidence: THEORY (sim-only; unverified constants in play: ${unverified.join(', ')})`);
 if (kit.abilitySource === 'mixed') {
   const stale = data.staleFallbacks.filter((s) => s.slug === slug).map((s) => s.key);
@@ -47,6 +55,7 @@ console.log(`skill max order: ${prio.map((a) => a.name).join(' > ')} (ult at 6/1
 
 const builds = generateBuilds(kit, completedItems(data), cal, {
   level,
+  role,
   scenario: { requireAntiHeal: flag('anti-heal'), goldBudget: opt('budget') },
 });
 
@@ -55,9 +64,12 @@ for (const b of builds.slice(0, 6)) {
   console.log(`[${b.archetypes.join(', ') || 'balanced'}] ${b.gold}g${b.manaFeasible ? '' : '  ⚠ mana-infeasible rotation'}`);
   console.log(`  ${b.items.join(' > ')}`);
   const o = b.objectives;
+  const supportCols = role === 'support'
+    ? ` | heal+shield10s ${o.healShield10s.toFixed(0)} | utility ${o.utility.toFixed(0)}`
+    : '';
   console.log(
     `  burst ${o.burstVsSquishy.toFixed(0)} | rot10 ${o.rot10VsSquishy.toFixed(0)} | rot20-vs-bruiser ${o.rot20VsBruiser.toFixed(0)}` +
-    ` | autoDPS ${o.autoDps10VsSquishy.toFixed(0)} | eHP ${o.ehpPhysical.toFixed(0)}/${o.ehpMagical.toFixed(0)}\n`,
+    ` | autoDPS ${o.autoDps10VsSquishy.toFixed(0)} | eHP ${o.ehpPhysical.toFixed(0)}/${o.ehpMagical.toFixed(0)}${supportCols}\n`,
   );
 }
 
@@ -101,7 +113,7 @@ if (vsSlug && top) {
     const enemyBuilds = generateBuilds(enemy, completedItems(data), cal, { level, beamWidth: 8 });
     const enemyTop = enemyBuilds[0]!;
     const report = matchupCheckpoints(
-      { kit, build: top.items.map((n) => data.items.get(n)!), role: kit.roles[0] ?? 'midlane' },
+      { kit, build: top.items.map((n) => data.items.get(n)!), role },
       { kit: enemy, build: enemyTop.items.map((n) => data.items.get(n)!), role: enemy.roles[0] ?? 'midlane' },
       cal,
     );

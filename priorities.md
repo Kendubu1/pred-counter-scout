@@ -52,7 +52,7 @@ Done when: a build step emits per-hero JSON artifacts (builds, eternals,
 matchup checkpoints, off-meta proofs, confidence flags) and a static
 prototype page renders The Answer zone from them.
 
-## 7. Support output model
+## 7. [DONE 2026-06-12] Support output model
 
 Done when: heal/shield amounts and ratios parse from ability text the way
 damage does; the simulator gains heal/shield-output and utility objectives;
@@ -61,6 +61,12 @@ movement_speed) enter the item model; support-role generation optimizes the
 support objective vector and the max-damage-only caveat comes off; golden
 scenario: an enchanter support is never handed a crit/lethality core;
 harness green; docs + lessons updated; committed.
+
+Residual gaps, listed not guessed: heals delivered by hero passives are
+outside the kit model (Phase is the big one), Narbash's toggle regen and
+HealthText-scaled shields are skipped, output counts one beneficiary, and
+CC/damage-reduction utility is unscored. All carried in the support
+artifacts' confidence notes.
 
 ## 9. Hero augments — source FOUND + evidence shipped 2026-06-12; mechanics still open
 

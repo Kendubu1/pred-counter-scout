@@ -19,6 +19,7 @@ const mkItem = (slug: string, stats: Partial<ItemStats>): Item => ({
     physical_power: 0, magical_power: 0, attack_speed: 0, critical_chance: 0,
     physical_penetration: 0, magical_penetration: 0, ability_haste: 0,
     health: 0, physical_armor: 0, magical_armor: 0, max_mana: 0, lifesteal: 0, omnivamp: 0,
+    heal_shield_increase: 0, gold_per_second: 0, tenacity: 0, movement_speed: 0,
     ...stats,
   },
   family: null, antiHeal: false, heroClass: null,

@@ -2,11 +2,11 @@
  "slug": "mourn",
  "name": "Mourn",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:41:55.401Z",
+ "generatedAt": "2026-06-12T21:56:49.982Z",
  "role": "support",
  "damageType": "hybrid",
  "attackType": "melee",
- "roleCaveat": "This is Mourn's maximum-damage build, not a support build. Heal/shield output, auras, and income items are not in the model yet (support model is on the backlog) — in a real game, support itemization comes first.",
+ "roleCaveat": null,
  "confidence": {
   "level": "THEORY",
   "unverifiedConstants": [
@@ -19,7 +19,8 @@
   "notes": [
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
-   "evidence deltas carry finished-inventory survivorship bias"
+   "evidence deltas carry finished-inventory survivorship bias",
+   "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)"
   ]
  },
  "build": {
@@ -33,71 +34,72 @@
     "evidenceN": 12
    },
    {
-    "name": "Soulbinder",
-    "slug": "soulbinder",
+    "name": "Lifecore",
+    "slug": "lifecore",
     "spikeMinute": 21,
-    "playRatePct": 8.4,
-    "evidenceDeltaWr": 6.8,
-    "evidenceN": 92
+    "playRatePct": 2.1,
+    "evidenceDeltaWr": 1,
+    "evidenceN": 23
    },
    {
-    "name": "Tainted Scepter",
-    "slug": "tainted-scepter",
-    "spikeMinute": 28,
-    "playRatePct": 13.1,
-    "evidenceDeltaWr": 6.8,
-    "evidenceN": 144
-   },
-   {
-    "name": "Combustion",
-    "slug": "combustion",
-    "spikeMinute": 34,
-    "playRatePct": 2.6,
-    "evidenceDeltaWr": 5.2,
-    "evidenceN": 29
+    "name": "Lunaria",
+    "slug": "lunaria",
+    "spikeMinute": 27,
+    "playRatePct": 0.7,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
    },
    {
     "name": "Oblivion Crown",
     "slug": "oblivion-crown",
-    "spikeMinute": 41,
+    "spikeMinute": 34,
     "playRatePct": 2.5,
     "evidenceDeltaWr": 11.1,
     "evidenceN": 27
    },
    {
-    "name": "Caustica",
-    "slug": "caustica",
-    "spikeMinute": 46,
-    "playRatePct": 0.9,
-    "evidenceDeltaWr": 1,
-    "evidenceN": 10
+    "name": "Wraith Leggings",
+    "slug": "wraith-leggings",
+    "spikeMinute": 40,
+    "playRatePct": 2.3,
+    "evidenceDeltaWr": 5.6,
+    "evidenceN": 25
+   },
+   {
+    "name": "Windcaller",
+    "slug": "windcaller",
+    "spikeMinute": 44,
+    "playRatePct": 1.7,
+    "evidenceDeltaWr": -0.1,
+    "evidenceN": 19
    }
   ],
-  "gold": 18350,
+  "gold": 17350,
   "archetypes": [
-   "skirmish uptime",
-   "extended fights"
+   "heal/shield output"
   ],
   "objectives": {
-   "burstVsSquishy": 2041.2767505639847,
-   "rot10VsSquishy": 3741.816693944353,
-   "rot20VsBruiser": 5291.13712374582,
+   "burstVsSquishy": 1381.4501380942988,
+   "rot10VsSquishy": 2056.204379562044,
+   "rot20VsBruiser": 2752.0600558659216,
    "autoDps10VsSquishy": 82.28296368243241,
-   "ehpPhysical": 4240.0534375,
-   "ehpMagical": 3530.4161875000004
+   "ehpPhysical": 3876.1784374999997,
+   "ehpMagical": 3227.4411875000005,
+   "healShield10s": 872.5725000000001,
+   "utility": 7
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for skirmish uptime and extended fights: first spike lands around minute 14 (Noxia), third item by minute 28. Take Demiurge: +12.7% on 20-second fights at minute 15.",
+ "coachLine": "Sim-optimal for heal/shield output: first spike lands around minute 14 (Noxia), third item by minute 27. Take Demiurge: +33.8% on your damage rotation at minute 15.",
  "eternals": {
   "top": [
    {
     "name": "Demiurge",
     "id": "demiurge",
-    "headlinePct": 11.9,
-    "burstPct": 11.3,
-    "rot20Pct": 12.7,
-    "ehpPct": 1
+    "headlinePct": 33.8,
+    "burstPct": 8.5,
+    "rot20Pct": 24.5,
+    "ehpPct": 0
    },
    {
     "name": "Krix",
@@ -110,9 +112,9 @@
    {
     "name": "Vesh",
     "id": "vesh",
-    "headlinePct": 8.5,
-    "burstPct": 7.8,
-    "rot20Pct": 7.8,
+    "headlinePct": 10.8,
+    "burstPct": 9.9,
+    "rot20Pct": 10.8,
     "ehpPct": 0
    }
   ],
@@ -129,14 +131,20 @@
    {
     "item": "Noxia",
     "playRatePct": 1.1,
-    "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 381.3
+    "bestObjective": "heal/shield output",
+    "edgeVsPopularPct": 245.2
    },
    {
-    "item": "Caustica",
-    "playRatePct": 0.9,
-    "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 381.3
+    "item": "Lunaria",
+    "playRatePct": 0.7,
+    "bestObjective": "heal/shield output",
+    "edgeVsPopularPct": 245.2
+   },
+   {
+    "item": "Windcaller",
+    "playRatePct": 1.7,
+    "bestObjective": "heal/shield output",
+    "edgeVsPopularPct": 245.2
    }
   ],
   "honestAbsence": null
@@ -186,7 +194,7 @@
    "spikeMinute": 27,
    "bestObjective": "one-combo burst",
    "whyLine": "Strongest meta core for one-combo burst, online around minute 27 — about 681 damage in one combo in the sim.",
-   "optimizer": "Optimizer sees +38% more one-combo burst: try Noxia over Megacosm (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "optimizer": "Optimizer sees +33% more one-combo burst: try Noxia over Megacosm (sim-only — the popular pick may carry utility the sim can't see; test it)."
   },
   {
    "items": [
@@ -247,9 +255,9 @@
     "out": "Oblivion Crown",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 29,
-    "offenseLossPct": 18,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 29% of its bite; you give up 18% of your damage."
+    "survivalGainPct": 28,
+    "offenseLossPct": 16,
+    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 28% of its bite; you give up 16% of your damage."
    }
   },
   {
@@ -279,22 +287,22 @@
     },
     {
      "minute": 30,
-     "verdict": "even"
+     "verdict": "you"
     }
    ],
    "counterSwap": {
     "out": "Oblivion Crown",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 39,
-    "offenseLossPct": 18,
-    "line": "Losing lane? Third item Warden's Faith instead of Oblivion Crown: their 3s all-in loses 39% of its bite; you give up 18% of your damage."
+    "survivalGainPct": 37,
+    "offenseLossPct": 13,
+    "line": "Losing lane? Third item Warden's Faith instead of Oblivion Crown: their 3s all-in loses 37% of its bite; you give up 13% of your damage."
    }
   },
   {
    "enemy": "Riktor",
    "enemySlug": "riktor",
-   "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover.",
+   "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention.",
    "checkpoints": [
     {
      "minute": 5,
@@ -306,34 +314,34 @@
     },
     {
      "minute": 15,
-     "verdict": "enemy"
+     "verdict": "you"
     },
     {
      "minute": 20,
-     "verdict": "enemy"
+     "verdict": "you"
     },
     {
      "minute": 25,
-     "verdict": "enemy"
+     "verdict": "you"
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
     "out": "Oblivion Crown",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 20,
-    "offenseLossPct": 18,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Oblivion Crown: their 3s all-in loses 20% of its bite; you give up 18% of your damage."
+    "survivalGainPct": 25,
+    "offenseLossPct": 13,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Oblivion Crown: their 3s all-in loses 25% of its bite; you give up 13% of your damage."
    }
   },
   {
    "enemy": "Dekker",
    "enemySlug": "dekker",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+   "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale.",
    "checkpoints": [
     {
      "minute": 5,
@@ -345,28 +353,28 @@
     },
     {
      "minute": 15,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 20,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 25,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
     "out": "Oblivion Crown",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 31,
-    "offenseLossPct": 18,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 31% of its bite; you give up 18% of your damage."
+    "survivalGainPct": 29,
+    "offenseLossPct": 13,
+    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 29% of its bite; you give up 13% of your damage."
    }
   },
   {
@@ -392,26 +400,26 @@
     },
     {
      "minute": 25,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 30,
-     "verdict": "even"
+     "verdict": "you"
     }
    ],
    "counterSwap": {
     "out": "Oblivion Crown",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 31,
-    "offenseLossPct": 19,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 31% of its bite; you give up 19% of your damage."
+    "survivalGainPct": 27,
+    "offenseLossPct": 13,
+    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 27% of its bite; you give up 13% of your damage."
    }
   },
   {
    "enemy": "Narbash",
    "enemySlug": "narbash",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+   "gameplan": "Even kill threat throughout: this lane is decided by mechanics and wave control, not scaling.",
    "checkpoints": [
     {
      "minute": 5,
@@ -423,28 +431,28 @@
     },
     {
      "minute": 15,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 20,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 25,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
     "out": "Oblivion Crown",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 19,
-    "offenseLossPct": 18,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Oblivion Crown: their 3s all-in loses 19% of its bite; you give up 18% of your damage."
+    "in": "Void Helm",
+    "inSlug": "void-helm",
+    "survivalGainPct": 27,
+    "offenseLossPct": 16,
+    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 27% of its bite; you give up 16% of your damage."
    }
   }
  ],

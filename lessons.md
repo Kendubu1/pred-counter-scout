@@ -584,3 +584,37 @@ Append-only. One entry per backlog item or significant finding.
   it meant twice and then said it wasn't important enough to tag. The
   inline sentence carries it now. A label that needs a glossary twice
   should become a sentence the third time.
+
+## 2026-06-12 (night, cont. 12): the support model — backlog item 7
+
+- Heal/shield parsing reused the damage parser's shape: find every
+  "values <PowerTag>(+ratio%" group, classify by context (restore/heal
+  verb before, "Shield" after), fold tick cadences ("every 0.5s for 3s"
+  = 6 ticks) into per-cast totals. Pure heal/shield abilities (Muriel's
+  Alacrity) now enter the kit model with an empty damage line, and
+  current-text healing rides along even where damage numbers fell back
+  to stale owned data. Conservative skips, listed not guessed:
+  HealthText-scaled shields, passive-delivered heals (Phase!), Narbash's
+  toggle regen.
+- The golden scenario earned its keep on day one: with support weight
+  vectors alone, Equinox (80 tenacity carrying 20% crit) made Muriel's
+  front via the utility corner — she's hybrid, so the damage-type pool
+  filter waved it through. The fix is a pool constraint (no crit, no
+  lethality in support searches), not weight tuning: those stats feed no
+  support objective, so their gold is dead weight by construction.
+- The field agrees with math it never saw: Muriel's generated support
+  core picked Crystal Tear and Windcaller — her two most-played items
+  (39% each) — purely from heal ratios and heal_shield_increase math.
+  Dekker (no parsed heal) correctly gets a tank/utility answer led by
+  effective HP instead of a fake heal build.
+- Archetype labels need a "best > 0" guard: when an objective's front
+  best is zero, every build is within 98% of it, and a heal-less kit got
+  the heal/shield label on its whole front.
+- Regenerating artifacts without PREDGG creds used to wipe meta.json's
+  topPlayers (a harness gate). build-artifacts now carries the committed
+  leaderboard over when creds are absent — same zero-API-regeneration
+  principle as the rest of the pipeline.
+- Wording matters at the seams between models: a support page's
+  "headline output" is heal/shield, but Eternal deltas are damage math —
+  the coach line now says "your damage rotation" for supports so the
+  Eternal claim can't be read as a healing buff.
