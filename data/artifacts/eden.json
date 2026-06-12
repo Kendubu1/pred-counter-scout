@@ -2,7 +2,7 @@
  "slug": "eden",
  "name": "Eden",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:41:45.267Z",
+ "generatedAt": "2026-06-12T23:30:56.821Z",
  "role": "carry",
  "damageType": "physical",
  "attackType": "melee",
@@ -14,12 +14,14 @@
    "abilityHaste",
    "critMultiplier",
    "attackSpeedFormula",
-   "abilityScalingUsesBonusPowerOnly"
+   "abilityScalingUsesBonusPowerOnly",
+   "attackSpeedCap"
   ],
   "notes": [
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
-   "evidence deltas carry finished-inventory survivorship bias"
+   "evidence deltas carry finished-inventory survivorship bias",
+   "this build stacks over +100% attack speed and the sim has NO measured attack-speed cap (calibration checklist 7) — sustained-DPS numbers are optimistic until the cap is measured"
   ]
  },
  "build": {
@@ -49,60 +51,63 @@
     "evidenceN": 149
    },
    {
-    "name": "Vanquisher",
-    "slug": "vanquisher",
-    "spikeMinute": 30,
-    "playRatePct": 68.2,
-    "evidenceDeltaWr": 1.1,
-    "evidenceN": 976
-   },
-   {
     "name": "Tainted Rounds",
     "slug": "tainted-rounds",
-    "spikeMinute": 35,
+    "spikeMinute": 30,
     "playRatePct": 19,
     "evidenceDeltaWr": 2.2,
     "evidenceN": 272
    },
    {
+    "name": "Imperator",
+    "slug": "imperator",
+    "spikeMinute": 36,
+    "playRatePct": 33.6,
+    "evidenceDeltaWr": 6.1,
+    "evidenceN": 481
+   },
+   {
     "name": "Onixian Quiver",
     "slug": "onixian-quiver",
-    "spikeMinute": 40,
+    "spikeMinute": 41,
     "playRatePct": 8.2,
     "evidenceDeltaWr": -1.8,
     "evidenceN": 118
    }
   ],
-  "gold": 17600,
+  "gold": 17900,
   "archetypes": [
    "sustained DPS"
   ],
   "objectives": {
-   "burstVsSquishy": 1045.543046357616,
-   "rot10VsSquishy": 1287.841059602649,
-   "rot20VsBruiser": 1592.1407766990292,
-   "autoDps10VsSquishy": 581.5184105960267,
+   "burstVsSquishy": 1056.0932515337424,
+   "rot10VsSquishy": 1240.80981595092,
+   "rot20VsBruiser": 1564.176605504587,
+   "autoDps10VsSquishy": 614.2518404907977,
    "ehpPhysical": 3822.163125,
-   "ehpMagical": 2828.5035624999996
+   "ehpMagical": 2828.5035624999996,
+   "healShield10s": 0,
+   "utility": 0,
+   "sustain10s": 761.5806192660551
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for sustained DPS: first spike lands around minute 12 (Sky Splitter), third item by minute 24. Take Demiurge: +19.5% on your headline output at minute 15.",
+ "coachLine": "Sim-optimal for sustained DPS: first spike lands around minute 12 (Sky Splitter), third item by minute 24. Take Demiurge: +19.3% on your headline output at minute 15.",
  "eternals": {
   "top": [
    {
     "name": "Demiurge",
     "id": "demiurge",
-    "headlinePct": 19.5,
-    "burstPct": 9,
-    "rot20Pct": 8.1,
+    "headlinePct": 19.3,
+    "burstPct": 8.6,
+    "rot20Pct": 7.4,
     "ehpPct": 0
    },
    {
     "name": "Vermis",
     "id": "vermis",
-    "headlinePct": 14.1,
-    "burstPct": 5,
+    "headlinePct": 11.9,
+    "burstPct": 4.6,
     "rot20Pct": 0,
     "ehpPct": 0
    },
@@ -119,17 +124,61 @@
    "Marrow",
    "Nihil",
    "Aion",
-   "Exarch",
-   "Lotus"
-  ]
+   "Exarch"
+  ],
+  "augmentAware": "Focal Lens"
  },
+ "augments": [
+  {
+   "id": "152",
+   "name": "Focal Lens",
+   "modeled": true,
+   "provisional": false,
+   "headlinePct": 11.6,
+   "burstPct": 7.5,
+   "rot20Pct": 36.2,
+   "ehpPct": 0,
+   "healShieldPct": 0,
+   "healShieldAbs": 0,
+   "note": null,
+   "buildShift": null
+  },
+  {
+   "id": "153",
+   "name": "Kinetic Waltz",
+   "modeled": true,
+   "provisional": false,
+   "headlinePct": 0,
+   "burstPct": -1.8,
+   "rot20Pct": 15.5,
+   "ehpPct": 0,
+   "healShieldPct": 0,
+   "healShieldAbs": 0,
+   "note": "applies to the Axiom Strike stance of the shared slot; movement speed not scored",
+   "buildShift": null
+  },
+  {
+   "id": "154",
+   "name": "Limit Break: Echo",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "Echo: full basic-cooldown refresh on ult cast; rotation restructure, no tractable closed form yet",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
   "candidates": [
    {
     "item": "Deathstalker",
     "playRatePct": 0.6,
-    "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 167.3
+    "bestObjective": "lifesteal sustain",
+    "edgeVsPopularPct": 97.9
    }
   ],
   "honestAbsence": null
@@ -154,9 +203,9 @@
    "shrunkWr": 0.506,
    "coreGold": 9200,
    "spikeMinute": 25,
-   "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 624 damage in one combo in the sim.",
-   "optimizer": "Optimizer sees +15% more one-combo burst: try Sky Splitter over Vanquisher (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "bestObjective": "lifesteal sustain",
+   "whyLine": "Strongest meta core for lifesteal sustain, online around minute 25 — about 136 HP drained back over a 10s fight in the sim.",
+   "optimizer": "Optimizer sees +38% more lifesteal sustain: try Sky Splitter over Vanquisher (sim-only — the popular pick may carry utility the sim can't see; test it)."
   },
   {
    "items": [
@@ -200,9 +249,9 @@
    "shrunkWr": 0.482,
    "coreGold": 9450,
    "spikeMinute": 25,
-   "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 631 damage in one combo in the sim.",
-   "optimizer": "Optimizer sees +14% more one-combo burst: try Sky Splitter over Vanquisher (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "bestObjective": "sustained auto DPS",
+   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 25 — about 146 auto-attack DPS in the sim.",
+   "optimizer": "Optimizer sees +83% more sustained auto DPS: try Sky Splitter over Vanquisher (sim-only — the popular pick may carry utility the sim can't see; test it)."
   }
  ],
  "matchups": [
@@ -233,7 +282,7 @@
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
@@ -279,9 +328,9 @@
     "out": "Onixian Quiver",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 22,
+    "survivalGainPct": 25,
     "offenseLossPct": 21,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Onixian Quiver: their 3s all-in loses 22% of its bite; you give up 21% of your damage."
+    "line": "Losing lane? Third item Raiment of Renewal instead of Onixian Quiver: their 3s all-in loses 25% of its bite; you give up 21% of your damage."
    }
   },
   {
@@ -318,9 +367,9 @@
     "out": "Onixian Quiver",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 22,
+    "survivalGainPct": 25,
     "offenseLossPct": 21,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Onixian Quiver: their 3s all-in loses 22% of its bite; you give up 21% of your damage."
+    "line": "Losing lane? Third item Raiment of Renewal instead of Onixian Quiver: their 3s all-in loses 25% of its bite; you give up 21% of your damage."
    }
   },
   {
@@ -350,16 +399,16 @@
     },
     {
      "minute": 30,
-     "verdict": "even"
+     "verdict": "you"
     }
    ],
    "counterSwap": {
     "out": "Onixian Quiver",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 21,
+    "survivalGainPct": 25,
     "offenseLossPct": 21,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Onixian Quiver: their 3s all-in loses 21% of its bite; you give up 21% of your damage."
+    "line": "Losing lane? Third item Raiment of Renewal instead of Onixian Quiver: their 3s all-in loses 25% of its bite; you give up 21% of your damage."
    }
   },
   {
@@ -381,7 +430,7 @@
     },
     {
      "minute": 20,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 25,
@@ -389,22 +438,22 @@
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
     "out": "Onixian Quiver",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 21,
+    "survivalGainPct": 25,
     "offenseLossPct": 21,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Onixian Quiver: their 3s all-in loses 21% of its bite; you give up 21% of your damage."
+    "line": "Losing lane? Third item Raiment of Renewal instead of Onixian Quiver: their 3s all-in loses 25% of its bite; you give up 21% of your damage."
    }
   },
   {
    "enemy": "TwinBlast",
    "enemySlug": "twinblast",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+   "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover.",
    "checkpoints": [
     {
      "minute": 5,
@@ -416,7 +465,7 @@
     },
     {
      "minute": 15,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 20,
@@ -424,7 +473,7 @@
     },
     {
      "minute": 25,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 30,
@@ -435,14 +484,14 @@
     "out": "Onixian Quiver",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 20,
+    "survivalGainPct": 25,
     "offenseLossPct": 21,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Onixian Quiver: their 3s all-in loses 20% of its bite; you give up 21% of your damage."
+    "line": "Losing lane? Third item Raiment of Renewal instead of Onixian Quiver: their 3s all-in loses 25% of its bite; you give up 21% of your damage."
    }
   }
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }

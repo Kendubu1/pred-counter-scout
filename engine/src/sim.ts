@@ -36,6 +36,7 @@ export function itemTotals(items: Item[]): ItemStats {
     physical_power: 0, magical_power: 0, attack_speed: 0, critical_chance: 0,
     physical_penetration: 0, magical_penetration: 0, ability_haste: 0,
     health: 0, physical_armor: 0, magical_armor: 0, max_mana: 0, lifesteal: 0, omnivamp: 0,
+    heal_shield_increase: 0, gold_per_second: 0, tenacity: 0, movement_speed: 0,
   };
   for (const i of items) {
     for (const k of Object.keys(t) as (keyof ItemStats)[]) t[k] += i.stats[k];
@@ -69,13 +70,17 @@ export function effectiveTotals(items: Item[], eff: ResolvedEffects): ItemStats 
 
 const ULT_LEVELS = [6, 11, 16];
 
-/** Damage growth per rank divided by mid-rank cooldown: the max-first heuristic. */
+/** Damage-or-heal growth per rank divided by mid-rank cooldown: the
+ *  max-first heuristic. Heal/shield growth counts so a support's bread
+ *  ability is not ranked last just because it deals no damage. */
 export function skillPriority(kit: HeroKit): AbilityDef[] {
   const basics = kit.abilities.filter((a) => a.key !== 'ULTIMATE');
   return [...basics].sort((a, b) => {
-    const growth = (x: AbilityDef) =>
-      ((x.damagePerRank[x.damagePerRank.length - 1] ?? 0) - (x.damagePerRank[0] ?? 0)) /
-      Math.max(x.cooldowns[Math.floor(x.cooldowns.length / 2)] ?? 10, 3);
+    const growth = (x: AbilityDef) => {
+      const span = (vals: number[]) => (vals[vals.length - 1] ?? 0) - (vals[0] ?? 0);
+      const payload = span(x.damagePerRank) + (x.healing ?? []).reduce((s, h) => s + span(h.valuesPerRank), 0);
+      return payload / Math.max(x.cooldowns[Math.floor(x.cooldowns.length / 2)] ?? 10, 3);
+    };
     return growth(b) - growth(a);
   });
 }
@@ -141,17 +146,36 @@ function mitigate(
   return raw * (100 / (100 + effective));
 }
 
-function ampFactorAbilities(eff: ResolvedEffects, isUlt: boolean, isBurst: boolean, profile: DefenseProfile | null, t: ItemStats): number {
+function ampFactorAbilities(eff: ResolvedEffects, ab: AbilityDef, isBurst: boolean, profile: DefenseProfile | null, t: ItemStats): number {
   let pct = eff.ampAbilitiesPct + eff.ampAllPct;
   if (!isBurst) pct += eff.ampAllWindowPct;
   if (isBurst) pct += eff.ampAbilitiesBurstPct;
-  if (isUlt) pct += eff.ampUltPct;
+  if (ab.key === 'ULTIMATE') pct += eff.ampUltPct;
+  pct += eff.abilityAmpPct[ab.key] ?? 0;
   if (eff.ampAbilitiesFromCrit) {
     const { minPct, maxPct } = eff.ampAbilitiesFromCrit;
     pct += minPct + (maxPct - minPct) * (t.critical_chance / 100);
   }
   if (profile && profile.physicalArmor > 125) pct += eff.ampVsArmorGt125Pct;
   return 1 + pct / 100;
+}
+
+/** Per-cast bonus damage from ability-scoped effects (augments). */
+function abilityBonusDamage(eff: ResolvedEffects, ab: AbilityDef, rank: number, t: ItemStats, profile: DefenseProfile | null): { raw: number; damageType: 'physical' | 'magical' | 'true' }[] {
+  const out: { raw: number; damageType: 'physical' | 'magical' | 'true' }[] = [];
+  for (const b of eff.abilityBonuses) {
+    if (b.abilityKey !== ab.key) continue;
+    let raw = b.flat + (b.valuesPerRank[Math.min(rank, b.valuesPerRank.length) - 1] ?? 0);
+    if (b.scaleStat && b.scalingPct) raw += (b.scalingPct / 100) * t[b.scaleStat];
+    if (b.pctTargetHealth && profile) raw += (b.pctTargetHealth / 100) * profile.health;
+    if (raw > 0) out.push({ raw, damageType: b.damageType });
+  }
+  return out;
+}
+
+/** Shields that scale with build stats (e.g. Abyssal Mantle's +75% MP). */
+export function resolvedShieldFlat(eff: ResolvedEffects, t: ItemStats): number {
+  return eff.shieldFlat + eff.shieldScaling.reduce((s, e) => s + (e.pct / 100) * t[e.stat], 0);
 }
 
 function ampFactorBasics(eff: ResolvedEffects, isBurst: boolean, profile: DefenseProfile | null): number {
@@ -202,7 +226,9 @@ function abilityCooldown(ab: AbilityDef, rank: number, t: ItemStats, eff: Resolv
   const haste = t.ability_haste + (ab.key === 'ULTIMATE' ? eff.ultHaste : 0);
   let cd = hastedCooldown(base, haste);
   if (ab.key !== 'ULTIMATE' && eff.cooldownRateNonUlt > 0) cd /= 1 + eff.cooldownRateNonUlt;
-  return cd;
+  const mod = eff.abilityCooldownMods[ab.key];
+  if (mod) cd = cd * (1 - mod.pct / 100) - mod.flatSeconds;
+  return Math.max(cd, 0.5);
 }
 
 function procCount(casts: number, windowSec: number, icdSeconds: number): number {
@@ -217,20 +243,59 @@ export function rotationDamage(kit: HeroKit, opts: SimOptions, t: ItemStats, win
   const profile = opts.profile ?? null;
   const isBurst = windowSec <= BURST_WINDOW;
   let total = 0;
+  let totalCasts = 0;
   for (const ab of kit.abilities) {
     const rank = ranks.get(ab.key) ?? 0;
     if (rank <= 0 || !ab.damagePerRank.length) continue;
     const cd = abilityCooldown(ab, rank, t, eff);
     const casts = 1 + Math.floor(windowSec / cd);
-    const amp = ampFactorAbilities(eff, ab.key === 'ULTIMATE', isBurst, profile, t);
+    totalCasts += casts;
+    const amp = ampFactorAbilities(eff, ab, isBurst, profile, t);
     const maxHpBonus = ab.pctMaxHealth && profile ? (ab.pctMaxHealth / 100) * profile.health : 0;
     total += mitigate((abilityHit(ab, rank, t) + maxHpBonus) * amp, ab.damageType, profile, t, eff, windowSec) * casts;
-    for (const p of eff.onAbilityProcs) {
-      const procs = procCount(casts, windowSec, p.icdSeconds) * rampFactor(windowSec, p.rampSeconds);
-      total += mitigate(procDamage(p, t, profile, kit, isBurst, eff), p.damageType, profile, t, eff, windowSec) * procs;
+    for (const b of abilityBonusDamage(eff, ab, rank, t, profile)) {
+      total += mitigate(b.raw, b.damageType, profile, t, eff, windowSec) * casts;
     }
   }
+  // Item ICDs are global, not per-ability: crediting procs inside the
+  // ability loop let a 4-ability kit collect 4x the procs an 8s ICD
+  // allows (the Noxia audit finding, 2026-06-12).
+  for (const p of eff.onAbilityProcs) {
+    const procs = procCount(totalCasts, windowSec, p.icdSeconds) * rampFactor(windowSec, p.rampSeconds);
+    total += mitigate(procDamage(p, t, profile, kit, isBurst, eff), p.damageType, profile, t, eff, windowSec) * procs;
+  }
   return total;
+}
+
+/**
+ * Heal + shield output over a window: 1 cast up front + recasts off
+ * cooldown, amount = per-cast total + ratio on bonus power, amplified by
+ * heal_shield_increase. Output convention (support model v0): one
+ * beneficiary even for AoE heals, no overheal model, target-side
+ * received-healing amps not counted.
+ */
+export function healShieldOutput(kit: HeroKit, opts: SimOptions, t: ItemStats, windowSec: number): number {
+  const eff = opts.effects ?? emptyEffects();
+  const ranks = opts.ranks ?? ranksAtLevel(kit, opts.level);
+  let total = 0;
+  for (const ab of kit.abilities) {
+    const rank = ranks.get(ab.key) ?? 0;
+    const augHeals = eff.abilityHeals.filter((h) => h.abilityKey === ab.key);
+    if (rank <= 0 || (!ab.healing?.length && !augHeals.length)) continue;
+    const cd = abilityCooldown(ab, rank, t, eff);
+    const casts = 1 + Math.floor(windowSec / cd);
+    for (const h of ab.healing ?? []) {
+      const base = h.valuesPerRank[Math.min(rank, h.valuesPerRank.length) - 1] ?? 0;
+      const power = h.powerType === 'magical' ? t.magical_power : t.physical_power;
+      total += (base + (h.scalingPct / 100) * power) * casts;
+    }
+    for (const h of augHeals) {
+      let amount = h.flat + (h.valuesPerRank[Math.min(rank, h.valuesPerRank.length) - 1] ?? 0);
+      if (h.scaleStat && h.scalingPct) amount += (h.scalingPct / 100) * t[h.scaleStat];
+      total += amount * casts;
+    }
+  }
+  return total * (1 + t.heal_shield_increase / 100);
 }
 
 /**
@@ -241,7 +306,7 @@ export function combatDamage(kit: HeroKit, items: Item[], opts: SimOptions, cal:
   const eff = opts.effects ?? emptyEffects();
   const t = effectiveTotals(items, eff);
   const profile = opts.profile ?? null;
-  const critMult = (cal.constants.critMultiplier?.value as number) ?? 1.75;
+  const critMult = (((cal.constants.critMultiplier?.value as number) ?? 1.75)) * (1 + eff.critDamageAmpPct / 100);
   const isBurst = windowSec <= BURST_WINDOW;
   let total = rotationDamage(kit, opts, t, windowSec);
   const aps = attacksPerSecond(kit, opts.level, t);
@@ -260,21 +325,29 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
   const t = effectiveTotals(items, eff);
   const ranks = opts.ranks ?? ranksAtLevel(kit, opts.level);
   const profile = opts.profile ?? null;
-  const critMult = (cal.constants.critMultiplier?.value as number) ?? 1.75;
+  // Imperator-style effects multiply the (unverified) crit multiplier.
+  const critMult = (((cal.constants.critMultiplier?.value as number) ?? 1.75)) * (1 + eff.critDamageAmpPct / 100);
   const lvl = opts.level;
 
   // Burst: every ability once plus woven basics, burst-window semantics.
   let burst = 0;
+  let burstCasts = 0;
   for (const ab of kit.abilities) {
     const rank = ranks.get(ab.key) ?? 0;
     if (rank <= 0 || !ab.damagePerRank.length) continue;
-    const amp = ampFactorAbilities(eff, ab.key === 'ULTIMATE', true, profile, t);
+    burstCasts++;
+    const amp = ampFactorAbilities(eff, ab, true, profile, t);
     const maxHpBonus = ab.pctMaxHealth && profile ? (ab.pctMaxHealth / 100) * profile.health : 0;
     burst += mitigate((abilityHit(ab, rank, t) + maxHpBonus) * amp, ab.damageType, profile, t, eff, BURST_WINDOW);
-    for (const p of eff.onAbilityProcs) {
-      const procs = procCount(1, BURST_WINDOW, p.icdSeconds) * rampFactor(BURST_WINDOW, p.rampSeconds);
-      burst += mitigate(procDamage(p, t, profile, kit, true, eff), p.damageType, profile, t, eff, BURST_WINDOW) * procs;
+    for (const b of abilityBonusDamage(eff, ab, rank, t, profile)) {
+      burst += mitigate(b.raw, b.damageType, profile, t, eff, BURST_WINDOW);
     }
+  }
+  // Global item ICDs: one proc budget for the whole combo, not one per
+  // ability (see rotationDamage).
+  for (const p of eff.onAbilityProcs) {
+    const procs = procCount(burstCasts, BURST_WINDOW, p.icdSeconds) * rampFactor(BURST_WINDOW, p.rampSeconds);
+    burst += mitigate(procDamage(p, t, profile, kit, true, eff), p.damageType, profile, t, eff, BURST_WINDOW) * procs;
   }
   const basics = opts.burstBasics ?? 2;
   const basicAmpBurst = ampFactorBasics(eff, true, profile);
@@ -310,14 +383,23 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
     : Number.POSITIVE_INFINITY;
 
   // Own effective HP under the fixture mitigation model.
-  const hp = ((kit.baseStats.max_health[lvl - 1] ?? 0) + t.health) * eff.healthMultiplier + eff.shieldFlat;
+  const hp = ((kit.baseStats.max_health[lvl - 1] ?? 0) + t.health) * eff.healthMultiplier + resolvedShieldFlat(eff, t);
   const pArmor = ((kit.baseStats.physical_armor[lvl - 1] ?? 0) + t.physical_armor) * eff.armorMultiplier;
   const mArmor = ((kit.baseStats.magical_armor[lvl - 1] ?? 0) + t.magical_armor) * eff.armorMultiplier;
+
+  // Sustain (component C's drain objective): self-heal from lifesteal on
+  // basics and omnivamp on everything, over the 10s engagement. Heals
+  // credit off mitigated damage dealt; proc lifesteal interactions are
+  // not modeled.
+  const sustain10s = (t.lifesteal / 100) * autoDps * 10
+    + (t.omnivamp / 100) * (autoDps * 10 + (rotation[10] ?? 0));
 
   return {
     burstCombo: burst,
     rotation,
     autoDps,
+    healShield10s: healShieldOutput(kit, { ...opts, ranks, effects: eff }, t, 10),
+    sustain10s,
     manaSpent10s,
     manaPool,
     manaFeasible: manaSpent10s <= manaPool,
@@ -335,6 +417,7 @@ export function evaluateBuild(kit: HeroKit, items: Item[], level: number, cal: C
   const bruiser = cal.referenceProfiles.bruiser!;
   const vsSquishy = simulate(kit, items, { level, profile: squishy, effects: eff }, cal);
   const vsBruiser = simulate(kit, items, { level, profile: bruiser, effects: eff }, cal);
+  const totals = effectiveTotals(items, eff);
   return {
     items: items.map((i) => i.name),
     gold: items.reduce((s, i) => s + i.totalPrice, 0),
@@ -345,6 +428,9 @@ export function evaluateBuild(kit: HeroKit, items: Item[], level: number, cal: C
       autoDps10VsSquishy: vsSquishy.autoDps,
       ehpPhysical: vsSquishy.ehpPhysical,
       ehpMagical: vsSquishy.ehpMagical,
+      healShield10s: vsSquishy.healShield10s,
+      utility: totals.movement_speed + totals.tenacity,
+      sustain10s: vsBruiser.sustain10s, // drain value shows in longer fights
     },
     manaFeasible: vsSquishy.manaFeasible,
   };

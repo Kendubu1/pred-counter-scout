@@ -2,7 +2,7 @@
  "slug": "argus",
  "name": "Argus",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:41:34.480Z",
+ "generatedAt": "2026-06-12T23:30:00.958Z",
  "role": "midlane",
  "damageType": "hybrid",
  "attackType": "ranged",
@@ -14,7 +14,8 @@
    "abilityHaste",
    "critMultiplier",
    "attackSpeedFormula",
-   "abilityScalingUsesBonusPowerOnly"
+   "abilityScalingUsesBonusPowerOnly",
+   "attackSpeedCap"
   ],
   "notes": [
    "all combat numbers are simulator output on unverified constants",
@@ -33,17 +34,9 @@
     "evidenceN": 58
    },
    {
-    "name": "Combustion",
-    "slug": "combustion",
-    "spikeMinute": 19,
-    "playRatePct": 26.9,
-    "evidenceDeltaWr": 1,
-    "evidenceN": 459
-   },
-   {
     "name": "Tainted Scepter",
     "slug": "tainted-scepter",
-    "spikeMinute": 24,
+    "spikeMinute": 19,
     "playRatePct": 30.9,
     "evidenceDeltaWr": -0.9,
     "evidenceN": 527
@@ -51,10 +44,18 @@
    {
     "name": "Oblivion Crown",
     "slug": "oblivion-crown",
-    "spikeMinute": 31,
+    "spikeMinute": 25,
     "playRatePct": 18.1,
     "evidenceDeltaWr": 2.8,
     "evidenceN": 308
+   },
+   {
+    "name": "Combustion",
+    "slug": "combustion",
+    "spikeMinute": 31,
+    "playRatePct": 26.9,
+    "evidenceDeltaWr": 1,
+    "evidenceN": 459
    },
    {
     "name": "Timewarp",
@@ -75,44 +76,46 @@
   ],
   "gold": 18450,
   "archetypes": [
-   "skirmish uptime",
-   "extended fights"
+   "skirmish uptime"
   ],
   "objectives": {
-   "burstVsSquishy": 1794.3452133817716,
-   "rot10VsSquishy": 4116.121589085073,
-   "rot20VsBruiser": 6579.626623376622,
+   "burstVsSquishy": 1179.2233522296299,
+   "rot10VsSquishy": 3264.697030497592,
+   "rot20VsBruiser": 5312.012987012988,
    "autoDps10VsSquishy": 63.801070945945945,
    "ehpPhysical": 4477.46225,
-   "ehpMagical": 3595.8506953124997
+   "ehpMagical": 3595.8506953124997,
+   "healShield10s": 0,
+   "utility": 0,
+   "sustain10s": 319.55742725243505
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for skirmish uptime and extended fights: first spike lands around minute 12 (Noxia), third item by minute 24. Take Demiurge: +17% on 20-second fights at minute 15.",
+ "coachLine": "Sim-optimal for skirmish uptime: first spike lands around minute 12 (Noxia), third item by minute 25. Take Demiurge: +17.2% on 20-second fights at minute 15.",
  "eternals": {
   "top": [
    {
     "name": "Demiurge",
     "id": "demiurge",
-    "headlinePct": 13,
-    "burstPct": 11.9,
-    "rot20Pct": 17,
+    "headlinePct": 12.4,
+    "burstPct": 9.6,
+    "rot20Pct": 17.2,
     "ehpPct": 2.4
    },
    {
     "name": "Vesh",
     "id": "vesh",
-    "headlinePct": 7.2,
-    "burstPct": 6.3,
-    "rot20Pct": 6.9,
+    "headlinePct": 9.1,
+    "burstPct": 9.5,
+    "rot20Pct": 8.2,
     "ehpPct": 0
    },
    {
     "name": "Thraex",
     "id": "thraex",
-    "headlinePct": 5.1,
+    "headlinePct": 6.4,
     "burstPct": 0,
-    "rot20Pct": 4.8,
+    "rot20Pct": 5.8,
     "ehpPct": 0
    }
   ],
@@ -120,10 +123,54 @@
    "Marrow",
    "Nihil",
    "Aion",
-   "Exarch",
-   "Lotus"
-  ]
+   "Exarch"
+  ],
+  "augmentAware": null
  },
+ "augments": [
+  {
+   "id": "32",
+   "name": "Mana Catalyst",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "mana restoration from damage; resource economy not in the combat model",
+   "buildShift": null
+  },
+  {
+   "id": "33",
+   "name": "Arcane Engine",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "stacking movement speed; cadence and uptime unobservable",
+   "buildShift": null
+  },
+  {
+   "id": "34",
+   "name": "Infinite Obliteration",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "projectile range/speed/slow utility; no damage change",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
   "candidates": [],
   "honestAbsence": "no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)"
@@ -150,7 +197,7 @@
    "spikeMinute": 25,
    "bestObjective": "10s rotation damage",
    "whyLine": "Strongest meta core for 10s rotation damage, online around minute 25 — about 1,014 damage over a 10s rotation in the sim.",
-   "optimizer": "Optimizer sees 2.0× the 10s rotation damage: try Noxia over Azure Core (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "optimizer": "Optimizer sees +56% more 10s rotation damage: try Noxia over Azure Core (sim-only — the popular pick may carry utility the sim can't see; test it)."
   },
   {
    "items": [
@@ -172,8 +219,8 @@
    "coreGold": 9100,
    "spikeMinute": 25,
    "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 950 damage in one combo in the sim.",
-   "optimizer": "Optimizer sees +29% more one-combo burst: try Noxia over Azure Core (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 725 damage in one combo in the sim.",
+   "optimizer": "Optimizer agrees: within 4% of our best core on one-combo burst. The winrate is earned, not luck."
   },
   {
    "items": [
@@ -203,7 +250,7 @@
   {
    "enemy": "Renna",
    "enemySlug": "renna",
-   "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands.",
+   "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale.",
    "checkpoints": [
     {
      "minute": 5,
@@ -219,7 +266,7 @@
     },
     {
      "minute": 20,
-     "verdict": "you"
+     "verdict": "even"
     },
     {
      "minute": 25,
@@ -227,16 +274,16 @@
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Tainted Scepter",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 32,
-    "offenseLossPct": 18,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 32% of its bite; you give up 18% of your damage."
+    "survivalGainPct": 24,
+    "offenseLossPct": 14,
+    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 24% of its bite; you give up 14% of your damage."
    }
   },
   {
@@ -270,12 +317,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Tainted Scepter",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 34,
-    "offenseLossPct": 18,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 34% of its bite; you give up 18% of your damage."
+    "survivalGainPct": 31,
+    "offenseLossPct": 14,
+    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 31% of its bite; you give up 14% of your damage."
    }
   },
   {
@@ -309,12 +356,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Tainted Scepter",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 34,
-    "offenseLossPct": 18,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 34% of its bite; you give up 18% of your damage."
+    "survivalGainPct": 26,
+    "offenseLossPct": 14,
+    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 26% of its bite; you give up 14% of your damage."
    }
   },
   {
@@ -348,12 +395,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Tainted Scepter",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 33,
-    "offenseLossPct": 17,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 33% of its bite; you give up 17% of your damage."
+    "survivalGainPct": 27,
+    "offenseLossPct": 14,
+    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 27% of its bite; you give up 14% of your damage."
    }
   },
   {
@@ -387,12 +434,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Tainted Scepter",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 35,
-    "offenseLossPct": 18,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 35% of its bite; you give up 18% of your damage."
+    "survivalGainPct": 26,
+    "offenseLossPct": 14,
+    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 26% of its bite; you give up 14% of your damage."
    }
   },
   {
@@ -426,17 +473,17 @@
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Tainted Scepter",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 29,
-    "offenseLossPct": 17,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 29% of its bite; you give up 17% of your damage."
+    "survivalGainPct": 24,
+    "offenseLossPct": 14,
+    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 24% of its bite; you give up 14% of your damage."
    }
   }
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }

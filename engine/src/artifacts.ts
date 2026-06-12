@@ -9,12 +9,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { completedItems, type LoadedData } from './data.js';
 import { generateBuilds, headlineObjective } from './search.js';
-import { combatDamage, evaluateBuild, loadCalibration, unverifiedConstants, type Calibration } from './sim.js';
-import { rankBlessings } from './eternals.js';
+import { combatDamage, evaluateBuild, itemTotals, loadCalibration, unverifiedConstants, type Calibration } from './sim.js';
+import { rankAugments, rankBlessings } from './eternals.js';
 import { heroGames, itemPlayRate, loadAggregates } from './aggregates.js';
 import { itemWinDelta, momPriorStrength } from './evidence.js';
 import { defenseOf, matchupCheckpoints, orderBuild, spikeTimeline } from './matchup.js';
-import { resolveItemEffects } from './effects.js';
+import { resolveEntries, resolveItemEffects } from './effects.js';
 import type { HeroKit, Item } from './types.js';
 
 const ARTIFACTS_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -28,6 +28,17 @@ function loadPredggBuilds(): PredggBuilds | null {
   const p = path.join(ARTIFACTS_ROOT, 'data/aggregates/predgg-builds.json');
   predggBuildsCache = existsSync(p) ? (JSON.parse(readFileSync(p, 'utf8')) as PredggBuilds) : null;
   return predggBuildsCache;
+}
+
+interface PredggAugments {
+  heroes: Record<string, Record<string, { augments: { id: string; name: string; n: number; w: number }[] }>>;
+}
+let predggAugmentsCache: PredggAugments | null | undefined;
+function loadPredggAugments(): PredggAugments | null {
+  if (predggAugmentsCache !== undefined) return predggAugmentsCache;
+  const p = path.join(ARTIFACTS_ROOT, 'data/aggregates/predgg-augments.json');
+  predggAugmentsCache = existsSync(p) ? (JSON.parse(readFileSync(p, 'utf8')) as PredggAugments) : null;
+  return predggAugmentsCache;
 }
 
 export const HeroArtifact = z.object({
@@ -71,7 +82,24 @@ export const HeroArtifact = z.object({
       ehpPct: z.number(),
     })),
     unmodeled: z.array(z.string()),
+    // when set, the Eternal deltas were computed WITH this augment's
+    // modeled mechanics merged in (the augment-blind caveat is off)
+    augmentAware: z.string().nullable(),
   }),
+  augments: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    modeled: z.boolean(),
+    provisional: z.boolean(),
+    headlinePct: z.number().nullable(),
+    burstPct: z.number().nullable(),
+    rot20Pct: z.number().nullable(),
+    ehpPct: z.number().nullable(),
+    healShieldPct: z.number().nullable(),
+    healShieldAbs: z.number().nullable(), // HP/10s, for kits with zero baseline heal
+    note: z.string().nullable(),       // why unmodeled / modeling caveat
+    buildShift: z.object({ in: z.array(z.string()), out: z.array(z.string()) }).nullable(),
+  })),
   offMeta: z.object({
     candidates: z.array(z.object({
       item: z.string(),
@@ -117,6 +145,13 @@ const OBJECTIVE_LABELS: Record<string, string> = {
   autoDps10VsSquishy: 'sustained auto DPS',
   ehpPhysical: 'physical survivability',
   ehpMagical: 'magical survivability',
+  sustain10s: 'lifesteal sustain',
+};
+// Support pages additionally explain builds through heal/shield output.
+// (utility stays out of the label maps: "12 utility" is not a sentence.)
+const SUPPORT_OBJECTIVE_LABELS: Record<string, string> = {
+  ...OBJECTIVE_LABELS,
+  healShield10s: 'heal/shield output',
 };
 
 /**
@@ -215,6 +250,8 @@ export function buildHeroArtifact(
     };
   });
 
+  const objectiveLabels = role === 'support' ? SUPPORT_OBJECTIVE_LABELS : OBJECTIVE_LABELS;
+
   // Off-meta: underexplored items in the sim build, with the named
   // objective where the sim build beats the popularity build.
   const popular = popularBuild(kit, pool);
@@ -223,9 +260,15 @@ export function buildHeroArtifact(
   if (popularEval) {
     for (const bi of buildItems) {
       if (bi.playRatePct == null || bi.playRatePct >= 2) continue;
+      // Evidence gate (design doc, off-meta promotion): a candidate is
+      // promoted only if the evidence layer does not contradict it. A
+      // negative shrunk delta on a real sample means the field tried it
+      // and lost — that is a sim blind-spot flag, not a find
+      // (Deathstalker's uncapped-AS valuation was caught exactly here).
+      if (bi.evidenceDeltaWr != null && bi.evidenceDeltaWr < 0 && (bi.evidenceN ?? 0) >= 20) continue;
       let bestObjective = '';
       let bestEdge = 0;
-      for (const [key, label] of Object.entries(OBJECTIVE_LABELS)) {
+      for (const [key, label] of Object.entries(objectiveLabels)) {
         const ours = top.objectives[key as keyof typeof top.objectives];
         const theirs = popularEval.objectives[key as keyof typeof popularEval.objectives];
         if (theirs > 0) {
@@ -244,18 +287,61 @@ export function buildHeroArtifact(
     }
   }
 
-  // Eternals on the headline build.
-  const blessings = rankBlessings(kit, items, 13, cal, { minute: 15 });
+  // Hero augments: marginal sim deltas on the headline build, plus the
+  // build the optimizer would switch to with the augment locked in.
+  const r1 = (x: number | undefined) => Math.round((x ?? 0) * 10) / 10;
+  const augRankings = rankAugments(kit, items, 13, cal, { minute: 15 });
+  const baseTop8 = augRankings.some((r) => r.modeled)
+    ? generateBuilds(kit, pool, cal, { beamWidth: 8, role })[0] ?? null
+    : null;
+  const augments = augRankings.map((r) => {
+    const id = r.id.split(':')[1] ?? r.id; // r.id = '<hero>:<catalog-id>'
+    let buildShift: { in: string[]; out: string[] } | null = null;
+    if (r.modeled && baseTop8) {
+      const fx = resolveEntries([`augment:${kit.slug}:${id}`], { level: 13, minute: 15 });
+      const augTop = generateBuilds(kit, pool, cal, { beamWidth: 8, role, extraEffects: fx })[0];
+      if (augTop) {
+        const baseSet = new Set(baseTop8.items);
+        const augSet = new Set(augTop.items);
+        const swapIn = augTop.items.filter((n) => !baseSet.has(n));
+        const swapOut = baseTop8.items.filter((n) => !augSet.has(n));
+        if (swapIn.length) buildShift = { in: swapIn, out: swapOut };
+      }
+    }
+    return {
+      id,
+      name: r.name.includes(' / ') ? r.name.split(' / ').slice(1).join(' / ') : r.name,
+      modeled: r.modeled,
+      provisional: r.provisional,
+      headlinePct: r.modeled ? r1(r.headlinePct) : null,
+      burstPct: r.modeled ? r1(r.deltas?.burstPct) : null,
+      rot20Pct: r.modeled ? r1(r.deltas?.rot20Pct) : null,
+      ehpPct: r.modeled ? r1(r.deltas?.ehpPct) : null,
+      healShieldPct: r.modeled ? r1(r.deltas?.healShieldPct) : null,
+      healShieldAbs: r.modeled ? Math.round(r.deltas?.healShieldAbs ?? 0) : null,
+      note: r.unmodeledNotes[0]?.replace(/^[^:]+: /, '') ?? null,
+      buildShift,
+    };
+  });
+
+  // Eternals on the headline build — computed WITH the field's most-played
+  // augment for this role whenever its mechanics are modeled, so the
+  // sim-vs-field comparison is no longer augment-blind.
+  const fieldAug = loadPredggAugments()?.heroes[kit.slug]?.[role]?.augments?.[0] ?? null;
+  const fieldAugFx = fieldAug ? resolveEntries([`augment:${kit.slug}:${fieldAug.id}`], { level: 13, minute: 15 }) : null;
+  const augmentAware = fieldAugFx?.applied.length ? fieldAug!.name : null;
+  const blessings = rankBlessings(kit, items, 13, cal, { minute: 15, extraEffects: augmentAware ? fieldAugFx! : undefined });
   const eternals = {
     top: blessings.filter((r) => r.modeled).slice(0, 3).map((r) => ({
       name: r.name.replace(' (Major)', ''),
       id: r.id.split(':')[0] ?? r.id,
-      headlinePct: Math.round((r.headlinePct ?? 0) * 10) / 10,
-      burstPct: Math.round((r.deltas?.burstPct ?? 0) * 10) / 10,
-      rot20Pct: Math.round((r.deltas?.rot20Pct ?? 0) * 10) / 10,
-      ehpPct: Math.round((r.deltas?.ehpPct ?? 0) * 10) / 10,
+      headlinePct: r1(r.headlinePct),
+      burstPct: r1(r.deltas?.burstPct),
+      rot20Pct: r1(r.deltas?.rot20Pct),
+      ehpPct: r1(r.deltas?.ehpPct),
     })),
     unmodeled: blessings.filter((r) => !r.modeled).map((r) => r.name.replace(' (Major)', '')),
+    augmentAware,
   };
 
   // Matchups: most-played same-role heroes as default enemies.
@@ -292,6 +378,8 @@ export function buildHeroArtifact(
     burstVsSquishy: 'one-combo burst', rot10VsSquishy: '10s rotation damage',
     rot20VsBruiser: 'extended fights vs bruisers', autoDps10VsSquishy: 'sustained auto DPS',
     ehpPhysical: 'physical survivability', ehpMagical: 'magical survivability',
+    sustain10s: 'lifesteal sustain',
+    ...(role === 'support' ? { healShield10s: 'heal/shield output' } : {}),
   };
   const evaluated = cores.map((c) => {
     const coreItems = c.coreSlugs.every(Boolean) ? c.coreSlugs.map((s) => data.itemsBySlug.get(s!)).filter((x): x is Item => !!x) : null;
@@ -313,7 +401,7 @@ export function buildHeroArtifact(
     objMax[key] = Math.max(...vals, 1e-9);
     objDiscriminates[key] = vals.length >= 2 && Math.max(...vals) / Math.max(Math.min(...vals), 1e-9) >= 1.05;
   }
-  const headlineKey = headlineObjective(kit);
+  const headlineKey = headlineObjective(kit, role);
   const ourCoreEval = evaluateBuild(kit, ordered.ordered.slice(0, 3), 13, cal);
   const metaBuilds = evaluated.slice(0, 3).map(({ c, ev, gold, spikeMinute }) => {
     const shrunkWr = (c.w + kCore * (coreMean || 0.5)) / (c.n + kCore);
@@ -334,6 +422,8 @@ export function buildHeroArtifact(
         burstVsSquishy: 'damage in one combo', rot10VsSquishy: 'damage over a 10s rotation',
         rot20VsBruiser: 'damage over a 20s fight', autoDps10VsSquishy: 'auto-attack DPS',
         ehpPhysical: 'effective HP vs physical', ehpMagical: 'effective HP vs magical',
+        healShield10s: 'HP healed or shielded over 10s',
+        sustain10s: 'HP drained back over a 10s fight',
       };
       whyLine = `Strongest meta core for ${bestObjective}${spikeMinute ? `, online around minute ${spikeMinute}` : ''} — about ${Math.round(ev.objectives[bestKey as keyof typeof ev.objectives] ?? 0).toLocaleString('en-US')} ${OBJ_UNITS[bestKey] ?? ''} in the sim.`;
       const ours = ourCoreEval.objectives[bestKey as keyof typeof ourCoreEval.objectives] ?? 0;
@@ -364,13 +454,16 @@ export function buildHeroArtifact(
   });
 
   const firstSpike = spikes.find((s) => s.minute != null);
-  const headline = OBJECTIVE_LABELS[headlineObjective(kit)] ?? 'damage';
+  const headline = objectiveLabels[headlineKey] ?? 'damage';
   const archList = top.archetypes.length > 2
     ? `${top.archetypes.slice(0, -1).join(', ')} and ${top.archetypes[top.archetypes.length - 1]}`
     : top.archetypes.join(' and ');
   const e0 = eternals.top[0];
+  // Eternal deltas are damage/EHP math; on a support page "headline
+  // output" would read as heal/shield, which Eternals do not touch.
+  const e0headlineLabel = role === 'support' ? 'your damage rotation' : 'your headline output';
   const e0best = e0
-    ? ([[e0.headlinePct, 'your headline output'], [e0.burstPct, 'your burst combo'], [e0.rot20Pct, '20-second fights'], [e0.ehpPct, 'your effective HP']] as [number, string][])
+    ? ([[e0.headlinePct, e0headlineLabel], [e0.burstPct, 'your burst combo'], [e0.rot20Pct, '20-second fights'], [e0.ehpPct, 'your effective HP']] as [number, string][])
         .sort((x, y) => y[0] - x[0])[0]!
     : null;
   const coachLine =
@@ -381,9 +474,11 @@ export function buildHeroArtifact(
       ? ` Take ${e0.name}: +${e0best[0]}% on ${e0best[1]} at minute 15.`
       : ` No modeled Eternal moves this kit's numbers much — check the field's pick on the page.`) : '');
 
-  const roleCaveat = role === 'support'
-    ? `This is ${kit.name}'s maximum-damage build, not a support build. Heal/shield output, auras, and income items are not in the model yet (support model is on the backlog) — in a real game, support itemization comes first.`
-    : null;
+  // The max-damage-only caveat came off with the support output model
+  // (backlog item 7): support builds now optimize heal/shield output,
+  // survivability, poke, and utility. Remaining limits ride in
+  // confidence.notes instead of a page-level warning.
+  const roleCaveat = null;
 
   return HeroArtifact.parse({
     slug: kit.slug,
@@ -401,6 +496,12 @@ export function buildHeroArtifact(
         'all combat numbers are simulator output on unverified constants',
         'checkpoint levels are provisional (no level timeline in the match feed)',
         'evidence deltas carry finished-inventory survivorship bias',
+        ...(role === 'support'
+          ? ['support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)']
+          : []),
+        ...(itemTotals(items).attack_speed > 100
+          ? ['this build stacks over +100% attack speed and the sim has NO measured attack-speed cap (calibration checklist 7) — sustained-DPS numbers are optimistic until the cap is measured']
+          : []),
       ],
     },
     build: {
@@ -412,6 +513,7 @@ export function buildHeroArtifact(
     },
     coachLine,
     eternals,
+    augments,
     offMeta: {
       candidates,
       honestAbsence: candidates.length ? null : 'no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)',
@@ -420,7 +522,7 @@ export function buildHeroArtifact(
     matchups,
     flags: [
       'THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md',
-      'crest, augments, and consumables not yet in the build model',
+      'crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled',
     ],
   });
 }

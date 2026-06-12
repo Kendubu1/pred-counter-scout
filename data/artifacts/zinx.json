@@ -2,11 +2,11 @@
  "slug": "zinx",
  "name": "Zinx",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:42:05.187Z",
+ "generatedAt": "2026-06-12T23:33:10.561Z",
  "role": "support",
  "damageType": "hybrid",
  "attackType": "ranged",
- "roleCaveat": "This is Zinx's maximum-damage build, not a support build. Heal/shield output, auras, and income items are not in the model yet (support model is on the backlog) — in a real game, support itemization comes first.",
+ "roleCaveat": null,
  "confidence": {
   "level": "THEORY",
   "unverifiedConstants": [
@@ -14,105 +14,109 @@
    "abilityHaste",
    "critMultiplier",
    "attackSpeedFormula",
-   "abilityScalingUsesBonusPowerOnly"
+   "abilityScalingUsesBonusPowerOnly",
+   "attackSpeedCap"
   ],
   "notes": [
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
-   "evidence deltas carry finished-inventory survivorship bias"
+   "evidence deltas carry finished-inventory survivorship bias",
+   "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)"
   ]
  },
  "build": {
   "items": [
    {
-    "name": "Noxia",
-    "slug": "noxia",
-    "spikeMinute": 14,
-    "playRatePct": 0.6,
-    "evidenceDeltaWr": 1.3,
-    "evidenceN": 15
-   },
-   {
     "name": "Timewarp",
     "slug": "timewarp",
-    "spikeMinute": 21,
+    "spikeMinute": 14,
     "playRatePct": 3.3,
     "evidenceDeltaWr": 0.7,
     "evidenceN": 77
    },
    {
-    "name": "Magnify",
-    "slug": "magnify",
-    "spikeMinute": 28,
-    "playRatePct": 6.9,
-    "evidenceDeltaWr": 5.9,
-    "evidenceN": 162
-   },
-   {
-    "name": "Combustion",
-    "slug": "combustion",
-    "spikeMinute": 34,
-    "playRatePct": 1.1,
-    "evidenceDeltaWr": -1.6,
-    "evidenceN": 26
-   },
-   {
-    "name": "Tainted Scepter",
-    "slug": "tainted-scepter",
-    "spikeMinute": 40,
-    "playRatePct": 5.2,
-    "evidenceDeltaWr": -1.9,
-    "evidenceN": 122
-   },
-   {
     "name": "Oblivion Crown",
     "slug": "oblivion-crown",
-    "spikeMinute": 46,
+    "spikeMinute": 22,
     "playRatePct": 1.7,
     "evidenceDeltaWr": 0.6,
     "evidenceN": 40
+   },
+   {
+    "name": "Lunaria",
+    "slug": "lunaria",
+    "spikeMinute": 28,
+    "playRatePct": 20.5,
+    "evidenceDeltaWr": 0.5,
+    "evidenceN": 480
+   },
+   {
+    "name": "Noxia",
+    "slug": "noxia",
+    "spikeMinute": 34,
+    "playRatePct": 0.6,
+    "evidenceDeltaWr": 1.3,
+    "evidenceN": 15
+   },
+   {
+    "name": "Lifecore",
+    "slug": "lifecore",
+    "spikeMinute": 39,
+    "playRatePct": 5.8,
+    "evidenceDeltaWr": 0.5,
+    "evidenceN": 135
+   },
+   {
+    "name": "Soulbinder",
+    "slug": "soulbinder",
+    "spikeMinute": 45,
+    "playRatePct": 0.2,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
    }
   ],
-  "gold": 18450,
+  "gold": 17900,
   "archetypes": [
-   "skirmish uptime",
-   "extended fights"
+   "heal/shield output"
   ],
   "objectives": {
-   "burstVsSquishy": 1114.3372190506605,
-   "rot10VsSquishy": 2886.8378812199035,
-   "rot20VsBruiser": 4346.347402597403,
+   "burstVsSquishy": 644.0270270270271,
+   "rot10VsSquishy": 1613.5135135135138,
+   "rot20VsBruiser": 2361.052631578947,
    "autoDps10VsSquishy": 56.82758445945947,
-   "ehpPhysical": 4765.9584374999995,
-   "ehpMagical": 3738.948890625
+   "ehpPhysical": 3864.0834375,
+   "ehpMagical": 3031.417640625,
+   "healShield10s": 4033.8375,
+   "utility": 0,
+   "sustain10s": 0
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for skirmish uptime and extended fights: first spike lands around minute 14 (Noxia), third item by minute 28. Take Demiurge: +12.5% on 20-second fights at minute 15.",
+ "coachLine": "Sim-optimal for heal/shield output: first spike lands around minute 14 (Timewarp), third item by minute 28. Take Vesh: +12.4% on 20-second fights at minute 15.",
  "eternals": {
   "top": [
    {
-    "name": "Demiurge",
-    "id": "demiurge",
-    "headlinePct": 11.7,
-    "burstPct": 10.9,
-    "rot20Pct": 12.5,
-    "ehpPct": 2.3
-   },
-   {
     "name": "Vesh",
     "id": "vesh",
-    "headlinePct": 8.8,
-    "burstPct": 7.1,
-    "rot20Pct": 8.2,
+    "headlinePct": 12.2,
+    "burstPct": 9.9,
+    "rot20Pct": 12.4,
+    "ehpPct": 0
+   },
+   {
+    "name": "Demiurge",
+    "id": "demiurge",
+    "headlinePct": 8.6,
+    "burstPct": 7.6,
+    "rot20Pct": 8.5,
     "ehpPct": 0
    },
    {
     "name": "Thraex",
     "id": "thraex",
-    "headlinePct": 6.2,
+    "headlinePct": 8.6,
     "burstPct": 0,
-    "rot20Pct": 5.8,
+    "rot20Pct": 8.8,
     "ehpPct": 0
    }
   ],
@@ -120,29 +124,73 @@
    "Marrow",
    "Nihil",
    "Aion",
-   "Exarch",
-   "Lotus"
-  ]
+   "Exarch"
+  ],
+  "augmentAware": "Disc Of Demise"
  },
+ "augments": [
+  {
+   "id": "140",
+   "name": "Disc Of Demise",
+   "modeled": true,
+   "provisional": false,
+   "headlinePct": 0,
+   "burstPct": 0,
+   "rot20Pct": 0,
+   "ehpPct": 0,
+   "healShieldPct": 0,
+   "healShieldAbs": 0,
+   "note": "credits the minimum one hero hit per cast; extra bounce hits not counted",
+   "buildShift": null
+  },
+  {
+   "id": "141",
+   "name": "Heal Matrix",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "charge semantics (2 charges, -15% heal): burst-vs-throughput trade not mappable onto cooldown math",
+   "buildShift": null
+  },
+  {
+   "id": "142",
+   "name": "Terminal Treatment",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "targets passive on-hit damage, missing-health scaled; outside the kit model",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
   "candidates": [
    {
-    "item": "Noxia",
-    "playRatePct": 0.6,
-    "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 281.8
-   },
-   {
-    "item": "Combustion",
-    "playRatePct": 1.1,
-    "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 281.8
-   },
-   {
     "item": "Oblivion Crown",
     "playRatePct": 1.7,
-    "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 281.8
+    "bestObjective": "10s rotation vs squishies",
+    "edgeVsPopularPct": 164.2
+   },
+   {
+    "item": "Noxia",
+    "playRatePct": 0.6,
+    "bestObjective": "10s rotation vs squishies",
+    "edgeVsPopularPct": 164.2
+   },
+   {
+    "item": "Soulbinder",
+    "playRatePct": 0.2,
+    "bestObjective": "10s rotation vs squishies",
+    "edgeVsPopularPct": 164.2
    }
   ],
   "honestAbsence": null
@@ -167,9 +215,9 @@
    "shrunkWr": 0.519,
    "coreGold": 8650,
    "spikeMinute": 27,
-   "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 27 — about 374 damage in one combo in the sim.",
-   "optimizer": "Optimizer sees +54% more one-combo burst: try Noxia over Prophecy (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "bestObjective": "sustained auto DPS",
+   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 27 — about 166 auto-attack DPS in the sim.",
+   "optimizer": null
   },
   {
    "items": [
@@ -191,7 +239,7 @@
    "coreGold": 8950,
    "spikeMinute": 28,
    "bestObjective": "sustained auto DPS",
-   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 28 — about 115 auto-attack DPS in the sim.",
+   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 28 — about 180 auto-attack DPS in the sim.",
    "optimizer": null
   },
   {
@@ -230,11 +278,11 @@
     },
     {
      "minute": 10,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 15,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 20,
@@ -246,16 +294,16 @@
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
-    "out": "Timewarp",
+    "out": "Lifecore",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 39,
-    "offenseLossPct": 7,
-    "line": "Losing lane? Third item Warden's Faith instead of Timewarp: their 3s all-in loses 39% of its bite; you give up 7% of your damage."
+    "survivalGainPct": 37,
+    "offenseLossPct": 11,
+    "line": "Losing lane? Third item Warden's Faith instead of Lifecore: their 3s all-in loses 37% of its bite; you give up 11% of your damage."
    }
   },
   {
@@ -289,12 +337,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Timewarp",
+    "out": "Lifecore",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 20,
-    "offenseLossPct": 7,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Timewarp: their 3s all-in loses 20% of its bite; you give up 7% of your damage."
+    "survivalGainPct": 25,
+    "offenseLossPct": 11,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Lifecore: their 3s all-in loses 25% of its bite; you give up 11% of your damage."
    }
   },
   {
@@ -328,12 +376,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Timewarp",
+    "out": "Lifecore",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 33,
-    "offenseLossPct": 7,
-    "line": "Losing lane? Third item Void Helm instead of Timewarp: their 3s all-in loses 33% of its bite; you give up 7% of your damage."
+    "survivalGainPct": 29,
+    "offenseLossPct": 11,
+    "line": "Losing lane? Third item Void Helm instead of Lifecore: their 3s all-in loses 29% of its bite; you give up 11% of your damage."
    }
   },
   {
@@ -367,12 +415,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Timewarp",
+    "out": "Lifecore",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 32,
-    "offenseLossPct": 8,
-    "line": "Losing lane? Third item Void Helm instead of Timewarp: their 3s all-in loses 32% of its bite; you give up 8% of your damage."
+    "survivalGainPct": 28,
+    "offenseLossPct": 11,
+    "line": "Losing lane? Third item Void Helm instead of Lifecore: their 3s all-in loses 28% of its bite; you give up 11% of your damage."
    }
   },
   {
@@ -406,12 +454,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Timewarp",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 19,
-    "offenseLossPct": 7,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Timewarp: their 3s all-in loses 19% of its bite; you give up 7% of your damage."
+    "out": "Lifecore",
+    "in": "Void Helm",
+    "inSlug": "void-helm",
+    "survivalGainPct": 28,
+    "offenseLossPct": 12,
+    "line": "Losing lane? Third item Void Helm instead of Lifecore: their 3s all-in loses 28% of its bite; you give up 12% of your damage."
    }
   },
   {
@@ -445,17 +493,17 @@
     }
    ],
    "counterSwap": {
-    "out": "Timewarp",
+    "out": "Lifecore",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 32,
-    "offenseLossPct": 7,
-    "line": "Losing lane? Third item Void Helm instead of Timewarp: their 3s all-in loses 32% of its bite; you give up 7% of your damage."
+    "survivalGainPct": 30,
+    "offenseLossPct": 12,
+    "line": "Losing lane? Third item Void Helm instead of Lifecore: their 3s all-in loses 30% of its bite; you give up 12% of your damage."
    }
   }
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }

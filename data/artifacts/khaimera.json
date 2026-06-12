@@ -2,7 +2,7 @@
  "slug": "khaimera",
  "name": "Khaimera",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:41:50.661Z",
+ "generatedAt": "2026-06-12T23:31:31.481Z",
  "role": "jungle",
  "damageType": "physical",
  "attackType": "melee",
@@ -14,7 +14,8 @@
    "abilityHaste",
    "critMultiplier",
    "attackSpeedFormula",
-   "abilityScalingUsesBonusPowerOnly"
+   "abilityScalingUsesBonusPowerOnly",
+   "attackSpeedCap"
   ],
   "notes": [
    "all combat numbers are simulator output on unverified constants",
@@ -79,24 +80,27 @@
    "extended fights"
   ],
   "objectives": {
-   "burstVsSquishy": 2019.831140350877,
-   "rot10VsSquishy": 1844,
-   "rot20VsBruiser": 1464.935064935065,
+   "burstVsSquishy": 2074.0416666666665,
+   "rot10VsSquishy": 1967.6,
+   "rot20VsBruiser": 1585.3246753246751,
    "autoDps10VsSquishy": 987.4876451343746,
    "ehpPhysical": 3878.4234375,
-   "ehpMagical": 4430.54203125
+   "ehpMagical": 4430.54203125,
+   "healShield10s": 0,
+   "utility": 3,
+   "sustain10s": 0
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for skirmish uptime and extended fights: first spike lands around minute 11 (Deathstalker), third item by minute 25. Take Vesh: +13.5% on your headline output at minute 15.",
+ "coachLine": "Sim-optimal for skirmish uptime and extended fights: first spike lands around minute 11 (Deathstalker), third item by minute 25. Take Vesh: +12.7% on your headline output at minute 15.",
  "eternals": {
   "top": [
    {
     "name": "Vesh",
     "id": "vesh",
-    "headlinePct": 13.5,
-    "burstPct": 8.4,
-    "rot20Pct": 13.5,
+    "headlinePct": 12.7,
+    "burstPct": 8.2,
+    "rot20Pct": 12.5,
     "ehpPct": 0
    },
    {
@@ -110,9 +114,9 @@
    {
     "name": "Thraex",
     "id": "thraex",
-    "headlinePct": 9.5,
+    "headlinePct": 8.9,
     "burstPct": 0,
-    "rot20Pct": 9.5,
+    "rot20Pct": 8.8,
     "ehpPct": 0
    }
   ],
@@ -120,10 +124,54 @@
    "Marrow",
    "Nihil",
    "Aion",
-   "Exarch",
-   "Lotus"
-  ]
+   "Exarch"
+  ],
+  "augmentAware": null
  },
+ "augments": [
+  {
+   "id": "68",
+   "name": "Feral Ambush",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "dash range utility",
+   "buildShift": null
+  },
+  {
+   "id": "69",
+   "name": "Jungle Invasion",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "jungle-location-conditional power",
+   "buildShift": null
+  },
+  {
+   "id": "70",
+   "name": "Lane Lurker",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "passive trade-off vs minions with regen penalty; lane-state dependent",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
   "candidates": [
    {
@@ -204,7 +252,7 @@
    "spikeMinute": 24,
    "bestObjective": "one-combo burst",
    "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 719 damage in one combo in the sim.",
-   "optimizer": "Optimizer sees +53% more one-combo burst: try Deathstalker over Overlord (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "optimizer": "Optimizer sees +58% more one-combo burst: try Deathstalker over Overlord (sim-only — the popular pick may carry utility the sim can't see; test it)."
   },
   {
    "items": [
@@ -254,7 +302,7 @@
     },
     {
      "minute": 25,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 30,
@@ -265,9 +313,9 @@
     "out": "Vanquisher",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 41,
+    "survivalGainPct": 42,
     "offenseLossPct": 32,
-    "line": "Losing lane? Third item Warden's Faith instead of Vanquisher: their 3s all-in loses 41% of its bite; you give up 32% of your damage."
+    "line": "Losing lane? Third item Warden's Faith instead of Vanquisher: their 3s all-in loses 42% of its bite; you give up 32% of your damage."
    }
   },
   {
@@ -302,11 +350,11 @@
    ],
    "counterSwap": {
     "out": "Vanquisher",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 23,
+    "in": "Raiment of Renewal",
+    "inSlug": "raiment-of-renewal",
+    "survivalGainPct": 22,
     "offenseLossPct": 32,
-    "line": "Losing lane? Third item Void Helm instead of Vanquisher: their 3s all-in loses 23% of its bite; you give up 32% of your damage."
+    "line": "Losing lane? Third item Raiment of Renewal instead of Vanquisher: their 3s all-in loses 22% of its bite; you give up 32% of your damage."
    }
   },
   {
@@ -336,22 +384,22 @@
     },
     {
      "minute": 30,
-     "verdict": "you"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
     "out": "Vanquisher",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 45,
-    "offenseLossPct": 33,
-    "line": "Losing lane? Third item Warden's Faith instead of Vanquisher: their 3s all-in loses 45% of its bite; you give up 33% of your damage."
+    "survivalGainPct": 44,
+    "offenseLossPct": 32,
+    "line": "Losing lane? Third item Warden's Faith instead of Vanquisher: their 3s all-in loses 44% of its bite; you give up 32% of your damage."
    }
   },
   {
    "enemy": "Feng Mao",
    "enemySlug": "feng-mao",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+   "gameplan": "Even kill threat throughout: this lane is decided by mechanics and wave control, not scaling.",
    "checkpoints": [
     {
      "minute": 5,
@@ -375,7 +423,7 @@
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
@@ -421,9 +469,9 @@
     "out": "Vanquisher",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 20,
+    "survivalGainPct": 22,
     "offenseLossPct": 32,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Vanquisher: their 3s all-in loses 20% of its bite; you give up 32% of your damage."
+    "line": "Losing lane? Third item Raiment of Renewal instead of Vanquisher: their 3s all-in loses 22% of its bite; you give up 32% of your damage."
    }
   },
   {
@@ -460,14 +508,14 @@
     "out": "Vanquisher",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 21,
+    "survivalGainPct": 23,
     "offenseLossPct": 32,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Vanquisher: their 3s all-in loses 21% of its bite; you give up 32% of your damage."
+    "line": "Losing lane? Third item Raiment of Renewal instead of Vanquisher: their 3s all-in loses 23% of its bite; you give up 32% of your damage."
    }
   }
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }

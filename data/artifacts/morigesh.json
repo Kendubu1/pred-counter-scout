@@ -2,7 +2,7 @@
  "slug": "morigesh",
  "name": "Morigesh",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:41:55.393Z",
+ "generatedAt": "2026-06-12T23:32:02.970Z",
  "role": "midlane",
  "damageType": "hybrid",
  "attackType": "ranged",
@@ -14,7 +14,8 @@
    "abilityHaste",
    "critMultiplier",
    "attackSpeedFormula",
-   "abilityScalingUsesBonusPowerOnly"
+   "abilityScalingUsesBonusPowerOnly",
+   "attackSpeedCap"
   ],
   "notes": [
    "all combat numbers are simulator output on unverified constants",
@@ -33,86 +34,89 @@
     "evidenceN": 92
    },
    {
-    "name": "Combustion",
-    "slug": "combustion",
-    "spikeMinute": 19,
-    "playRatePct": 50.2,
-    "evidenceDeltaWr": -1,
-    "evidenceN": 422
-   },
-   {
-    "name": "Caustica",
-    "slug": "caustica",
-    "spikeMinute": 24,
-    "playRatePct": 12.2,
-    "evidenceDeltaWr": 0.6,
-    "evidenceN": 103
-   },
-   {
     "name": "Oblivion Crown",
     "slug": "oblivion-crown",
-    "spikeMinute": 31,
+    "spikeMinute": 20,
     "playRatePct": 17.2,
     "evidenceDeltaWr": 3.3,
     "evidenceN": 145
    },
    {
-    "name": "Amulet Of Chaos",
-    "slug": "amulet-of-chaos",
-    "spikeMinute": 36,
-    "playRatePct": 1.2,
-    "evidenceDeltaWr": 0.2,
-    "evidenceN": 10
+    "name": "Timewarp",
+    "slug": "timewarp",
+    "spikeMinute": 25,
+    "playRatePct": 15.1,
+    "evidenceDeltaWr": 0.6,
+    "evidenceN": 127
    },
    {
-    "name": "Wraith Leggings",
-    "slug": "wraith-leggings",
+    "name": "Tainted Scepter",
+    "slug": "tainted-scepter",
+    "spikeMinute": 31,
+    "playRatePct": 23.7,
+    "evidenceDeltaWr": 2.3,
+    "evidenceN": 199
+   },
+   {
+    "name": "Magnify",
+    "slug": "magnify",
+    "spikeMinute": 36,
+    "playRatePct": 8,
+    "evidenceDeltaWr": 1.1,
+    "evidenceN": 67
+   },
+   {
+    "name": "Spirit Of Amir",
+    "slug": "spirit-of-amir",
     "spikeMinute": 41,
-    "playRatePct": 22.8,
-    "evidenceDeltaWr": 3.3,
-    "evidenceN": 192
+    "playRatePct": 0.7,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
    }
   ],
-  "gold": 18450,
+  "gold": 18400,
   "archetypes": [
-   "burst",
-   "skirmish uptime"
+   "skirmish uptime",
+   "extended fights"
   ],
   "objectives": {
-   "burstVsSquishy": 4049.0580595565625,
-   "rot10VsSquishy": 5767.215568862274,
-   "rot20VsBruiser": 7308.627450980392,
+   "burstVsSquishy": 2103.9850505527365,
+   "rot10VsSquishy": 5147.511848341233,
+   "rot20VsBruiser": 7366.826923076924,
    "autoDps10VsSquishy": 73.26012499999996,
-   "ehpPhysical": 3699.0246875,
-   "ehpMagical": 2967.739828125
+   "ehpPhysical": 4933.6496875,
+   "ehpMagical": 3958.2835781249996,
+   "healShield10s": 865,
+   "utility": 0,
+   "sustain10s": 480.3655771233975
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for burst and skirmish uptime: first spike lands around minute 12 (Noxia), third item by minute 24. Take Vesh: +10.2% on your headline output at minute 15.",
+ "coachLine": "Sim-optimal for skirmish uptime and extended fights: first spike lands around minute 12 (Noxia), third item by minute 25. Take Vesh: +11.7% on your burst combo at minute 15.",
  "eternals": {
   "top": [
    {
     "name": "Vesh",
     "id": "vesh",
-    "headlinePct": 10.2,
-    "burstPct": 9.3,
-    "rot20Pct": 10.1,
+    "headlinePct": 11,
+    "burstPct": 11.7,
+    "rot20Pct": 10.4,
     "ehpPct": 0
    },
    {
     "name": "Demiurge",
     "id": "demiurge",
-    "headlinePct": 10,
-    "burstPct": 10.3,
-    "rot20Pct": 10.3,
-    "ehpPct": 0
+    "headlinePct": 10.1,
+    "burstPct": 8.3,
+    "rot20Pct": 10.9,
+    "ehpPct": 3
    },
    {
     "name": "Thraex",
     "id": "thraex",
-    "headlinePct": 7.2,
+    "headlinePct": 7.8,
     "burstPct": 0,
-    "rot20Pct": 7.1,
+    "rot20Pct": 7.3,
     "ehpPct": 0
    }
   ],
@@ -120,17 +124,61 @@
    "Marrow",
    "Nihil",
    "Aion",
-   "Exarch",
-   "Lotus"
-  ]
+   "Exarch"
+  ],
+  "augmentAware": "Cursed Infestation"
  },
+ "augments": [
+  {
+   "id": "82",
+   "name": "Spirit Shred",
+   "modeled": true,
+   "provisional": false,
+   "headlinePct": 7.1,
+   "burstPct": 1.5,
+   "rot20Pct": 7.1,
+   "ehpPct": 0,
+   "healShieldPct": 0,
+   "healShieldAbs": 0,
+   "note": "5 stacks x 3.5%; ramp assumes one stack per second of basic attacks",
+   "buildShift": null
+  },
+  {
+   "id": "80",
+   "name": "Cursed Infestation",
+   "modeled": true,
+   "provisional": false,
+   "headlinePct": 3.7,
+   "burstPct": 2.8,
+   "rot20Pct": 3.5,
+   "ehpPct": 0,
+   "healShieldPct": 0,
+   "healShieldAbs": 0,
+   "note": "10% range not scored",
+   "buildShift": null
+  },
+  {
+   "id": "81",
+   "name": "Ritual Of Death",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "heals 70-90% of ult damage dealt (damage-coupled) and takedown cooldown refund; not yet modeled",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
   "candidates": [
    {
-    "item": "Amulet Of Chaos",
-    "playRatePct": 1.2,
-    "bestObjective": "burst vs squishies",
-    "edgeVsPopularPct": 95
+    "item": "Spirit Of Amir",
+    "playRatePct": 0.7,
+    "bestObjective": "20s fight vs bruisers",
+    "edgeVsPopularPct": 39.6
    }
   ],
   "honestAbsence": null
@@ -156,8 +204,8 @@
    "coreGold": 8800,
    "spikeMinute": 24,
    "bestObjective": "10s rotation damage",
-   "whyLine": "Strongest meta core for 10s rotation damage, online around minute 24 — about 1,980 damage over a 10s rotation in the sim.",
-   "optimizer": "Optimizer sees +46% more 10s rotation damage: try Noxia over Combustion (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "whyLine": "Strongest meta core for 10s rotation damage, online around minute 24 — about 1,919 damage over a 10s rotation in the sim.",
+   "optimizer": "Optimizer sees +21% more 10s rotation damage: try Noxia over Combustion (sim-only — the popular pick may carry utility the sim can't see; test it)."
   }
  ],
  "matchups": [
@@ -192,18 +240,18 @@
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Timewarp",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 32,
-    "offenseLossPct": 21,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 32% of its bite; you give up 21% of your damage."
+    "survivalGainPct": 29,
+    "offenseLossPct": 12,
+    "line": "Losing lane? Third item Void Helm instead of Timewarp: their 3s all-in loses 29% of its bite; you give up 12% of your damage."
    }
   },
   {
    "enemy": "Iggy & Scorch",
    "enemySlug": "iggy-scorch",
-   "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover.",
+   "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange.",
    "checkpoints": [
     {
      "minute": 5,
@@ -219,6 +267,84 @@
     },
     {
      "minute": 20,
+     "verdict": "even"
+    },
+    {
+     "minute": 25,
+     "verdict": "even"
+    },
+    {
+     "minute": 30,
+     "verdict": "even"
+    }
+   ],
+   "counterSwap": {
+    "out": "Timewarp",
+    "in": "Void Helm",
+    "inSlug": "void-helm",
+    "survivalGainPct": 36,
+    "offenseLossPct": 12,
+    "line": "Losing lane? Third item Void Helm instead of Timewarp: their 3s all-in loses 36% of its bite; you give up 12% of your damage."
+   }
+  },
+  {
+   "enemy": "The Fey",
+   "enemySlug": "the-fey",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 10,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 15,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 20,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 25,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 30,
+     "verdict": "enemy"
+    }
+   ],
+   "counterSwap": {
+    "out": "Timewarp",
+    "in": "Void Helm",
+    "inSlug": "void-helm",
+    "survivalGainPct": 32,
+    "offenseLossPct": 12,
+    "line": "Losing lane? Third item Void Helm instead of Timewarp: their 3s all-in loses 32% of its bite; you give up 12% of your damage."
+   }
+  },
+  {
+   "enemy": "Lt. Belica",
+   "enemySlug": "lt-belica",
+   "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "you"
+    },
+    {
+     "minute": 10,
+     "verdict": "you"
+    },
+    {
+     "minute": 15,
+     "verdict": "you"
+    },
+    {
+     "minute": 20,
      "verdict": "you"
     },
     {
@@ -227,21 +353,21 @@
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Timewarp",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 34,
-    "offenseLossPct": 21,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 34% of its bite; you give up 21% of your damage."
+    "survivalGainPct": 32,
+    "offenseLossPct": 12,
+    "line": "Losing lane? Third item Void Helm instead of Timewarp: their 3s all-in loses 32% of its bite; you give up 12% of your damage."
    }
   },
   {
-   "enemy": "The Fey",
-   "enemySlug": "the-fey",
+   "enemy": "Gideon",
+   "enemySlug": "gideon",
    "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
    "checkpoints": [
     {
@@ -258,7 +384,7 @@
     },
     {
      "minute": 20,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 25,
@@ -270,96 +396,18 @@
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Timewarp",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 34,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 34% of its bite; you give up 20% of your damage."
-   }
-  },
-  {
-   "enemy": "Lt. Belica",
-   "enemySlug": "lt-belica",
-   "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "you"
-    },
-    {
-     "minute": 10,
-     "verdict": "you"
-    },
-    {
-     "minute": 15,
-     "verdict": "you"
-    },
-    {
-     "minute": 20,
-     "verdict": "even"
-    },
-    {
-     "minute": 25,
-     "verdict": "even"
-    },
-    {
-     "minute": 30,
-     "verdict": "even"
-    }
-   ],
-   "counterSwap": {
-    "out": "Oblivion Crown",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 32,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 32% of its bite; you give up 20% of your damage."
-   }
-  },
-  {
-   "enemy": "Gideon",
-   "enemySlug": "gideon",
-   "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "even"
-    },
-    {
-     "minute": 10,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 15,
-     "verdict": "even"
-    },
-    {
-     "minute": 20,
-     "verdict": "even"
-    },
-    {
-     "minute": 25,
-     "verdict": "even"
-    },
-    {
-     "minute": 30,
-     "verdict": "even"
-    }
-   ],
-   "counterSwap": {
-    "out": "Oblivion Crown",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 34,
-    "offenseLossPct": 21,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 34% of its bite; you give up 21% of your damage."
+    "survivalGainPct": 31,
+    "offenseLossPct": 12,
+    "line": "Losing lane? Third item Void Helm instead of Timewarp: their 3s all-in loses 31% of its bite; you give up 12% of your damage."
    }
   },
   {
    "enemy": "Countess",
    "enemySlug": "countess",
-   "gameplan": "Even kill threat throughout: this lane is decided by mechanics and wave control, not scaling.",
+   "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention.",
    "checkpoints": [
     {
      "minute": 5,
@@ -371,33 +419,33 @@
     },
     {
      "minute": 15,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 20,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 25,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 30,
-     "verdict": "even"
+     "verdict": "you"
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Timewarp",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 28,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 28% of its bite; you give up 20% of your damage."
+    "survivalGainPct": 29,
+    "offenseLossPct": 12,
+    "line": "Losing lane? Third item Void Helm instead of Timewarp: their 3s all-in loses 29% of its bite; you give up 12% of your damage."
    }
   }
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }

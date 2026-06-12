@@ -1,143 +1,148 @@
 {
-  "_readme": "Measured or assumed game constants the simulator depends on. Every entry carries verified:true only after an in-game practice-mode measurement (record date + method in source). The harness lists unverified fixtures on every run and refuses to stamp any artifact 'Proven' while a constant it used is unverified. See docs/v5-engine-design.md, component A.",
-  "patch": "1.14.4",
-  "constants": {
-    "mitigation": {
-      "formula": "damage * 100 / (100 + armor)",
-      "verified": false,
-      "source": "Assumed standard 100/(100+armor). DATA WARNING 2026-06-12: implied K from total_damage_mitigated rises 122->150 with armor (n=23k players), meaning the field includes shields/DR and the formula cannot be verified from aggregates; if true K > 100, current EHP outputs OVERVALUE armor. Measure in practice mode (highest-priority measurement)."
-    },
-    "percentPenMultiplicative": {
-      "value": true,
-      "verified": true,
-      "source": "Patch 1.14 notes: percent armor penetration now multiplicative (predecessorgame.com, May 19 2026)."
-    },
-    "abilityHaste": {
-      "formula": "cooldown * 100 / (100 + haste)",
-      "verified": false,
-      "source": "Assumed LoL-style ability haste. Measure: Timewarp + known-CD ability, stopwatch."
-    },
-    "critMultiplier": {
-      "value": 1.75,
-      "verified": false,
-      "source": "Assumed 1.75. DATA EVIDENCE 2026-06-12: largest_critical_strike envelope over 6,657 crit builders, densest ratio bins 1.6-1.8 under bonus-only scaling (consistent with 1.75; confounded by crit-damage modifiers and possible post-mitigation recording). Confirm in practice mode."
-    },
-    "attackSpeedFormula": {
-      "formula": "attacksPerSecond = base_attack_speed[level] * (1 + item_attack_speed / 100)",
-      "verified": false,
-      "source": "Assumed. base_stats.attack_speed is per-level attacks/sec (omeda.city heroes.json); item attack_speed treated as percent."
-    },
-    "abilityScalingUsesBonusPowerOnly": {
-      "value": true,
-      "verified": false,
-      "source": "base_stats.physical_power equals the basic-attack per-level damage line. DATA EVIDENCE 2026-06-12: the crit envelope is only plausible under bonus-only scaling (mode 1.6-1.8); total-power reading implies an absurd 1.2x crit multiplier. Confirm in practice mode."
-    },
-    "ultRankLevels": {
-      "value": [
-        6,
-        11,
-        16
-      ],
-      "verified": true,
-      "source": "VERIFIED 2026-06-12 from pred.gg recommendedSkills (in-game data): 18-entry skill orders place ULTIMATE at positions 6/11/16 for gideon, greystone, sparrow."
-    },
-    "maxLevel": {
-      "value": 18,
-      "verified": true,
-      "source": "18-entry base stat arrays across all heroes (omeda.city heroes.json, patch 1.14.4)."
-    }
+ "_readme": "Measured or assumed game constants the simulator depends on. Every entry carries verified:true only after an in-game practice-mode measurement (record date + method in source). The harness lists unverified fixtures on every run and refuses to stamp any artifact 'Proven' while a constant it used is unverified. See docs/v5-engine-design.md, component A.",
+ "patch": "1.14.4",
+ "constants": {
+  "mitigation": {
+   "formula": "damage * 100 / (100 + armor)",
+   "verified": false,
+   "source": "Assumed standard 100/(100+armor). DATA WARNING 2026-06-12: implied K from total_damage_mitigated rises 122->150 with armor (n=23k players), meaning the field includes shields/DR and the formula cannot be verified from aggregates; if true K > 100, current EHP outputs OVERVALUE armor. Measure in practice mode (highest-priority measurement)."
   },
-  "checkpoints": {
-    "_note": "Minute -> typical level and item gold by role. GOLD is MEASURED: per-role medians over 8,162 pvp+ranked matches (160k+ samples/minute), patch 1.14.4 window, data/aggregates/2026-06-12.json. Caveat: gold_earned_at_interval includes ~2-3 pregame entries, so values may lag true game-minute by up to ~2-3 minutes. LEVELS remain PROVISIONAL: the feed has no level timeline (autonomy policy rule: flagged, not estimated).",
-    "goldVerified": true,
-    "goldSource": "data/aggregates/2026-06-12.json (npm run aggregate)",
-    "levelVerified": false,
-    "verified": false,
-    "table": [
-      {
-        "minute": 5,
-        "level": 5,
-        "gold": {
-          "carry": 640,
-          "midlane": 660,
-          "offlane": 630,
-          "jungle": 740,
-          "support": 560
-        }
-      },
-      {
-        "minute": 10,
-        "level": 8,
-        "gold": {
-          "carry": 2470,
-          "midlane": 2480,
-          "offlane": 2380,
-          "jungle": 2610,
-          "support": 1970
-        }
-      },
-      {
-        "minute": 15,
-        "level": 11,
-        "gold": {
-          "carry": 4520,
-          "midlane": 4550,
-          "offlane": 4360,
-          "jungle": 4660,
-          "support": 3620
-        }
-      },
-      {
-        "minute": 20,
-        "level": 13,
-        "gold": {
-          "carry": 6880,
-          "midlane": 6900,
-          "offlane": 6680,
-          "jungle": 6980,
-          "support": 5700
-        }
-      },
-      {
-        "minute": 25,
-        "level": 15,
-        "gold": {
-          "carry": 9450,
-          "midlane": 9540,
-          "offlane": 9230,
-          "jungle": 9440,
-          "support": 7960
-        }
-      },
-      {
-        "minute": 30,
-        "level": 17,
-        "gold": {
-          "carry": 12180,
-          "midlane": 12230,
-          "offlane": 11850,
-          "jungle": 11920,
-          "support": 10350
-        }
-      }
-    ]
+  "percentPenMultiplicative": {
+   "value": true,
+   "verified": true,
+   "source": "Patch 1.14 notes: percent armor penetration now multiplicative (predecessorgame.com, May 19 2026)."
   },
-  "referenceProfiles": {
-    "_note": "Enemy defense profiles for damage objectives, level-13 ballpark: squishy = mage/carry base armor + no defense items; bruiser = fighter base + one defensive item; tank = warden base + two defensive items + HP. Derived from omeda.city base_stats at level 13.",
-    "squishy": {
-      "health": 1900,
-      "physicalArmor": 85,
-      "magicalArmor": 48
-    },
-    "bruiser": {
-      "health": 2700,
-      "physicalArmor": 140,
-      "magicalArmor": 90
-    },
-    "tank": {
-      "health": 3600,
-      "physicalArmor": 210,
-      "magicalArmor": 150
-    }
+  "abilityHaste": {
+   "formula": "cooldown * 100 / (100 + haste)",
+   "verified": false,
+   "source": "Assumed LoL-style ability haste. Measure: Timewarp + known-CD ability, stopwatch."
+  },
+  "critMultiplier": {
+   "value": 1.75,
+   "verified": false,
+   "source": "Assumed 1.75. DATA EVIDENCE 2026-06-12: largest_critical_strike envelope over 6,657 crit builders, densest ratio bins 1.6-1.8 under bonus-only scaling (consistent with 1.75; confounded by crit-damage modifiers and possible post-mitigation recording). Confirm in practice mode."
+  },
+  "attackSpeedFormula": {
+   "formula": "attacksPerSecond = base_attack_speed[level] * (1 + item_attack_speed / 100)",
+   "verified": false,
+   "source": "Assumed. base_stats.attack_speed is per-level attacks/sec (omeda.city heroes.json); item attack_speed treated as percent."
+  },
+  "abilityScalingUsesBonusPowerOnly": {
+   "value": true,
+   "verified": false,
+   "source": "base_stats.physical_power equals the basic-attack per-level damage line. DATA EVIDENCE 2026-06-12: the crit envelope is only plausible under bonus-only scaling (mode 1.6-1.8); total-power reading implies an absurd 1.2x crit multiplier. Confirm in practice mode."
+  },
+  "ultRankLevels": {
+   "value": [
+    6,
+    11,
+    16
+   ],
+   "verified": true,
+   "source": "VERIFIED 2026-06-12 from pred.gg recommendedSkills (in-game data): 18-entry skill orders place ULTIMATE at positions 6/11/16 for gideon, greystone, sparrow."
+  },
+  "maxLevel": {
+   "value": 18,
+   "verified": true,
+   "source": "18-entry base stat arrays across all heroes (omeda.city heroes.json, patch 1.14.4)."
+  },
+  "attackSpeedCap": {
+   "value": null,
+   "verified": false,
+   "source": "UNMEASURED. The sim currently applies NO attack-speed cap; pen-stacked Deathstalker builds reach 3.5+ attacks/sec, which the field evidence contradicts (0.6% median play, negative win deltas). Measure the cap in practice mode (see checklist 7) — until then, heavy-AS sim output is optimistic."
   }
+ },
+ "checkpoints": {
+  "_note": "Minute -> typical level and item gold by role. GOLD is MEASURED: per-role medians over 8,162 pvp+ranked matches (160k+ samples/minute), patch 1.14.4 window, data/aggregates/2026-06-12.json. Caveat: gold_earned_at_interval includes ~2-3 pregame entries, so values may lag true game-minute by up to ~2-3 minutes. LEVELS remain PROVISIONAL: the feed has no level timeline (autonomy policy rule: flagged, not estimated).",
+  "goldVerified": true,
+  "goldSource": "data/aggregates/2026-06-12.json (npm run aggregate)",
+  "levelVerified": false,
+  "verified": false,
+  "table": [
+   {
+    "minute": 5,
+    "level": 5,
+    "gold": {
+     "carry": 640,
+     "midlane": 660,
+     "offlane": 630,
+     "jungle": 740,
+     "support": 560
+    }
+   },
+   {
+    "minute": 10,
+    "level": 8,
+    "gold": {
+     "carry": 2470,
+     "midlane": 2480,
+     "offlane": 2380,
+     "jungle": 2610,
+     "support": 1970
+    }
+   },
+   {
+    "minute": 15,
+    "level": 11,
+    "gold": {
+     "carry": 4520,
+     "midlane": 4550,
+     "offlane": 4360,
+     "jungle": 4660,
+     "support": 3620
+    }
+   },
+   {
+    "minute": 20,
+    "level": 13,
+    "gold": {
+     "carry": 6880,
+     "midlane": 6900,
+     "offlane": 6680,
+     "jungle": 6980,
+     "support": 5700
+    }
+   },
+   {
+    "minute": 25,
+    "level": 15,
+    "gold": {
+     "carry": 9450,
+     "midlane": 9540,
+     "offlane": 9230,
+     "jungle": 9440,
+     "support": 7960
+    }
+   },
+   {
+    "minute": 30,
+    "level": 17,
+    "gold": {
+     "carry": 12180,
+     "midlane": 12230,
+     "offlane": 11850,
+     "jungle": 11920,
+     "support": 10350
+    }
+   }
+  ]
+ },
+ "referenceProfiles": {
+  "_note": "Enemy defense profiles for damage objectives, level-13 ballpark: squishy = mage/carry base armor + no defense items; bruiser = fighter base + one defensive item; tank = warden base + two defensive items + HP. Derived from omeda.city base_stats at level 13.",
+  "squishy": {
+   "health": 1900,
+   "physicalArmor": 85,
+   "magicalArmor": 48
+  },
+  "bruiser": {
+   "health": 2700,
+   "physicalArmor": 140,
+   "magicalArmor": 90
+  },
+  "tank": {
+   "health": 3600,
+   "physicalArmor": 210,
+   "magicalArmor": 150
+  }
+ }
 }

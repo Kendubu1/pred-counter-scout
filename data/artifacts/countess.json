@@ -2,7 +2,7 @@
  "slug": "countess",
  "name": "Countess",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:41:39.867Z",
+ "generatedAt": "2026-06-12T23:30:32.336Z",
  "role": "midlane",
  "damageType": "hybrid",
  "attackType": "melee",
@@ -14,7 +14,8 @@
    "abilityHaste",
    "critMultiplier",
    "attackSpeedFormula",
-   "abilityScalingUsesBonusPowerOnly"
+   "abilityScalingUsesBonusPowerOnly",
+   "attackSpeedCap"
   ],
   "notes": [
    "all combat numbers are simulator output on unverified constants",
@@ -25,78 +26,82 @@
  "build": {
   "items": [
    {
-    "name": "Noxia",
-    "slug": "noxia",
+    "name": "Timewarp",
+    "slug": "timewarp",
     "spikeMinute": 12,
-    "playRatePct": 48.3,
-    "evidenceDeltaWr": 2.1,
-    "evidenceN": 835
-   },
-   {
-    "name": "Combustion",
-    "slug": "combustion",
-    "spikeMinute": 19,
-    "playRatePct": 37.7,
-    "evidenceDeltaWr": -0.8,
-    "evidenceN": 651
-   },
-   {
-    "name": "Magnify",
-    "slug": "magnify",
-    "spikeMinute": 24,
-    "playRatePct": 6.8,
-    "evidenceDeltaWr": -2.3,
-    "evidenceN": 117
-   },
-   {
-    "name": "Tainted Scepter",
-    "slug": "tainted-scepter",
-    "spikeMinute": 30,
-    "playRatePct": 24.5,
-    "evidenceDeltaWr": 1.6,
-    "evidenceN": 424
+    "playRatePct": 10.3,
+    "evidenceDeltaWr": -0.4,
+    "evidenceN": 178
    },
    {
     "name": "Oblivion Crown",
     "slug": "oblivion-crown",
-    "spikeMinute": 36,
+    "spikeMinute": 20,
     "playRatePct": 15.8,
     "evidenceDeltaWr": 8.3,
     "evidenceN": 273
    },
    {
-    "name": "Wraith Leggings",
-    "slug": "wraith-leggings",
+    "name": "Tainted Scepter",
+    "slug": "tainted-scepter",
+    "spikeMinute": 25,
+    "playRatePct": 24.5,
+    "evidenceDeltaWr": 1.6,
+    "evidenceN": 424
+   },
+   {
+    "name": "Magnify",
+    "slug": "magnify",
+    "spikeMinute": 31,
+    "playRatePct": 6.8,
+    "evidenceDeltaWr": -2.3,
+    "evidenceN": 117
+   },
+   {
+    "name": "Noxia",
+    "slug": "noxia",
+    "spikeMinute": 36,
+    "playRatePct": 48.3,
+    "evidenceDeltaWr": 2.1,
+    "evidenceN": 835
+   },
+   {
+    "name": "Soulbinder",
+    "slug": "soulbinder",
     "spikeMinute": 41,
-    "playRatePct": 38.2,
-    "evidenceDeltaWr": 2.8,
-    "evidenceN": 660
+    "playRatePct": 0.2,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
    }
   ],
-  "gold": 18550,
+  "gold": 18450,
   "archetypes": [
-   "skirmish uptime"
+   "skirmish uptime",
+   "extended fights"
   ],
   "objectives": {
-   "burstVsSquishy": 2631.1677891718077,
-   "rot10VsSquishy": 5920.224471830987,
-   "rot20VsBruiser": 8411.451048951049,
+   "burstVsSquishy": 1536.5773283671483,
+   "rot10VsSquishy": 5437.312874251496,
+   "rot20VsBruiser": 8039.532208588957,
    "autoDps10VsSquishy": 69.53629729729731,
    "ehpPhysical": 4699.8393750000005,
-   "ehpMagical": 3984.20859375
+   "ehpMagical": 3984.20859375,
+   "healShield10s": 300.5,
+   "utility": 0,
+   "sustain10s": 507.60396331799603
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for skirmish uptime: first spike lands around minute 12 (Noxia), third item by minute 24. Take Demiurge: +13.4% on 20-second fights at minute 15.",
+ "coachLine": "Sim-optimal for skirmish uptime and extended fights: first spike lands around minute 12 (Timewarp), third item by minute 25. Take Vesh: +11.5% on your headline output at minute 15.",
  "eternals": {
   "top": [
    {
-    "name": "Demiurge",
-    "id": "demiurge",
-    "headlinePct": 12.7,
-    "burstPct": 12.1,
-    "rot20Pct": 13.4,
-    "ehpPct": 2.3
+    "name": "Vesh",
+    "id": "vesh",
+    "headlinePct": 11.5,
+    "burstPct": 11.5,
+    "rot20Pct": 10.9,
+    "ehpPct": 0
    },
    {
     "name": "Krix",
@@ -107,25 +112,76 @@
     "ehpPct": 18
    },
    {
-    "name": "Vesh",
-    "id": "vesh",
-    "headlinePct": 9.5,
-    "burstPct": 8,
-    "rot20Pct": 9.1,
-    "ehpPct": 0
+    "name": "Demiurge",
+    "id": "demiurge",
+    "headlinePct": 9.3,
+    "burstPct": 7.1,
+    "rot20Pct": 10,
+    "ehpPct": 2.3
    }
   ],
   "unmodeled": [
    "Marrow",
    "Nihil",
    "Aion",
-   "Exarch",
-   "Lotus"
-  ]
+   "Exarch"
+  ],
+  "augmentAware": null
  },
+ "augments": [
+  {
+   "id": "177",
+   "name": "Shadow Echo",
+   "modeled": true,
+   "provisional": false,
+   "headlinePct": 7.2,
+   "burstPct": 11.8,
+   "rot20Pct": 6.1,
+   "ehpPct": 0,
+   "healShieldPct": 0,
+   "healShieldAbs": 0,
+   "note": "assumes the Shadow Slip swap recast is taken every cast (the damage repeat is the point of the augment)",
+   "buildShift": null
+  },
+  {
+   "id": "21",
+   "name": "Sanguine Slash",
+   "modeled": true,
+   "provisional": false,
+   "headlinePct": 6.3,
+   "burstPct": 5.2,
+   "rot20Pct": 6.2,
+   "ehpPct": 0,
+   "healShieldPct": 0,
+   "healShieldAbs": 0,
+   "note": "isolated-target condition modeled as met: kill-window sims are 1v1",
+   "buildShift": null
+  },
+  {
+   "id": "20",
+   "name": "Blood Well",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "takedown-conditional pool sustain; out-of-combat economy",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
-  "candidates": [],
-  "honestAbsence": "no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)"
+  "candidates": [
+   {
+    "item": "Soulbinder",
+    "playRatePct": 0.2,
+    "bestObjective": "20s fight vs bruisers",
+    "edgeVsPopularPct": 49.1
+   }
+  ],
+  "honestAbsence": null
  },
  "metaBuilds": [
   {
@@ -148,7 +204,7 @@
    "coreGold": 9100,
    "spikeMinute": 25,
    "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 1,762 damage in one combo in the sim.",
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 1,261 damage in one combo in the sim.",
    "optimizer": null
   },
   {
@@ -172,7 +228,7 @@
    "spikeMinute": 25,
    "bestObjective": "physical survivability",
    "whyLine": "Strongest meta core for physical survivability, online around minute 25 — about 4,157 effective HP vs physical in the sim.",
-   "optimizer": "Optimizer agrees: within 4% of our best core on physical survivability. The winrate is earned, not luck."
+   "optimizer": "Optimizer agrees: within 0% of our best core on physical survivability. The winrate is earned, not luck."
   },
   {
    "items": [
@@ -193,9 +249,9 @@
    "shrunkWr": 0.508,
    "coreGold": 9200,
    "spikeMinute": 25,
-   "bestObjective": "physical survivability",
-   "whyLine": "Strongest meta core for physical survivability, online around minute 25 — about 3,796 effective HP vs physical in the sim.",
-   "optimizer": "Optimizer sees +14% more physical survivability: try Noxia over Combustion (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "bestObjective": "one-combo burst",
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 1,235 damage in one combo in the sim.",
+   "optimizer": null
   }
  ],
  "matchups": [
@@ -230,18 +286,18 @@
     }
    ],
    "counterSwap": {
-    "out": "Tainted Scepter",
+    "out": "Magnify",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 25,
+    "survivalGainPct": 20,
     "offenseLossPct": 9,
-    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 25% of its bite; you give up 9% of your damage."
+    "line": "Losing lane? Third item Void Helm instead of Magnify: their 3s all-in loses 20% of its bite; you give up 9% of your damage."
    }
   },
   {
    "enemy": "Iggy & Scorch",
    "enemySlug": "iggy-scorch",
-   "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange.",
+   "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover.",
    "checkpoints": [
     {
      "minute": 5,
@@ -253,28 +309,28 @@
     },
     {
      "minute": 15,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 20,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 25,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 30,
-     "verdict": "even"
+     "verdict": "enemy"
     }
    ],
    "counterSwap": {
-    "out": "Tainted Scepter",
+    "out": "Magnify",
     "in": "Void Helm",
     "inSlug": "void-helm",
     "survivalGainPct": 26,
     "offenseLossPct": 9,
-    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 26% of its bite; you give up 9% of your damage."
+    "line": "Losing lane? Third item Void Helm instead of Magnify: their 3s all-in loses 26% of its bite; you give up 9% of your damage."
    }
   },
   {
@@ -296,11 +352,11 @@
     },
     {
      "minute": 20,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 25,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 30,
@@ -308,12 +364,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Tainted Scepter",
+    "out": "Magnify",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 27,
+    "survivalGainPct": 22,
     "offenseLossPct": 9,
-    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 27% of its bite; you give up 9% of your damage."
+    "line": "Losing lane? Third item Void Helm instead of Magnify: their 3s all-in loses 22% of its bite; you give up 9% of your damage."
    }
   },
   {
@@ -347,18 +403,18 @@
     }
    ],
    "counterSwap": {
-    "out": "Tainted Scepter",
+    "out": "Magnify",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 26,
-    "offenseLossPct": 8,
-    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 26% of its bite; you give up 8% of your damage."
+    "survivalGainPct": 23,
+    "offenseLossPct": 9,
+    "line": "Losing lane? Third item Void Helm instead of Magnify: their 3s all-in loses 23% of its bite; you give up 9% of your damage."
    }
   },
   {
    "enemy": "Gideon",
    "enemySlug": "gideon",
-   "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale.",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
    "checkpoints": [
     {
      "minute": 5,
@@ -374,24 +430,24 @@
     },
     {
      "minute": 20,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 25,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 30,
-     "verdict": "even"
+     "verdict": "enemy"
     }
    ],
    "counterSwap": {
-    "out": "Tainted Scepter",
+    "out": "Magnify",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 27,
+    "survivalGainPct": 22,
     "offenseLossPct": 9,
-    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 27% of its bite; you give up 9% of your damage."
+    "line": "Losing lane? Third item Void Helm instead of Magnify: their 3s all-in loses 22% of its bite; you give up 9% of your damage."
    }
   },
   {
@@ -425,17 +481,17 @@
     }
    ],
    "counterSwap": {
-    "out": "Tainted Scepter",
+    "out": "Magnify",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 25,
+    "survivalGainPct": 21,
     "offenseLossPct": 9,
-    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 25% of its bite; you give up 9% of your damage."
+    "line": "Losing lane? Third item Void Helm instead of Magnify: their 3s all-in loses 21% of its bite; you give up 9% of your damage."
    }
   }
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }

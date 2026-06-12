@@ -13,7 +13,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import type { AbilityDef, BaseStats, HeroKit, Item, ItemStats } from './types.js';
+import type { AbilityDef, BaseStats, HealEntry, HeroKit, Item, ItemStats } from './types.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -93,6 +93,42 @@ function parseDamage(md: string): { values: number[]; scaling: number; pctMaxHea
   return { values, scaling: Number(b[2]), damageType };
 }
 
+// Parse heal/shield output the way damage is parsed: find every
+// "<values> <PowerTag>(+<ratio>%" group, classify by context (a
+// restore/heal verb before it, or "Shield" right after it), and fold
+// tick cadences ("every 0.5s for 3s") into per-cast totals. Only
+// power-tagged amounts are encoded; HealthText-scaled shields and
+// passives are skipped (conservative), never guessed.
+function parseHealing(md: string): HealEntry[] {
+  const out: HealEntry[] = [];
+  const re = /([\d][\d./]*)\s*<(AttackDamageText|AbilityPowerText)>\(\+([\d./]+)%/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(md))) {
+    const before = md.slice(Math.max(0, m.index - 60), m.index);
+    const afterPlain = md
+      .slice(m.index + m[0].length, m.index + m[0].length + 200)
+      .replace(/<[^>]*>/g, '')
+      .trimStart();
+    let kind: HealEntry['kind'] | null = null;
+    if (/(?:restor\w*|heal\w*)[^.]{0,30}$/i.test(before)) kind = 'heal';
+    else if (/^\)?\s*shield/i.test(afterPlain)) kind = 'shield';
+    else if (/^\)?\s*health\b/i.test(afterPlain) && /restor|heal|regen/i.test(before)) kind = 'heal';
+    if (!kind) continue;
+    const values = m[1]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
+    const ratios = m[3]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
+    if (!values.length || !ratios.length) continue;
+    const tick = afterPlain.match(/every\s+([\d.]+)s\s+(?:for|over)\s+([\d.]+)s/i);
+    const ticks = tick ? Math.max(1, Math.floor(Number(tick[2]) / Number(tick[1]))) : 1;
+    out.push({
+      kind,
+      valuesPerRank: values.map((v) => v * ticks),
+      scalingPct: (ratios.reduce((s, n) => s + n, 0) / ratios.length) * ticks,
+      powerType: m[2] === 'AbilityPowerText' ? 'magical' : 'physical',
+    });
+  }
+  return out;
+}
+
 function bestOwnedDamage(ab: OwnedAbility) {
   let best: { values: number[]; scaling?: number; damageType?: string } | null = null;
   for (const d of ab.damage ?? []) {
@@ -146,6 +182,7 @@ export function loadData(): LoadedData {
       const omAb = omAbs.get(key);
       const owned = ownedByKey.get(key);
       const parsed = omAb?.menu_description ? parseDamage(omAb.menu_description) : null;
+      const healing = omAb?.menu_description ? parseHealing(omAb.menu_description) : [];
       const ownedDmg = owned ? bestOwnedDamage(owned) : null;
       const cooldowns = omAb?.cooldown?.length ? omAb.cooldown : owned?.cooldowns ?? [];
       const costs = omAb?.cost?.length ? omAb.cost : owned?.costs ?? [];
@@ -157,6 +194,7 @@ export function loadData(): LoadedData {
           scalingPct: parsed.scaling,
           pctMaxHealth: parsed.pctMaxHealth,
           damageType: parsed.damageType,
+          healing: healing.length ? healing : undefined,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
         });
@@ -169,6 +207,20 @@ export function loadData(): LoadedData {
           damagePerRank: ownedDmg.values,
           scalingPct: ownedDmg.scaling ?? 0,
           damageType: ownedDmg.damageType === 'magical' ? 'magical' : ownedDmg.damageType === 'true' ? 'true' : 'physical',
+          healing: healing.length ? healing : undefined,
+          cooldowns, costs,
+          maxRank: key === 'ULTIMATE' ? 3 : 5,
+        });
+      } else if (healing.length) {
+        // Pure heal/shield ability (e.g. Muriel's Alacrity): no damage to
+        // parse, but it is the support model's whole point.
+        defs.push({
+          key,
+          name: omAb?.display_name ?? owned?.name ?? key,
+          damagePerRank: [],
+          scalingPct: 0,
+          damageType: healing[0]!.powerType,
+          healing,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
         });
@@ -205,9 +257,8 @@ export function loadData(): LoadedData {
   }
 
   // Items: omeda only. Current-patch stats, direct snake_case keys.
-  // Unmodeled keys (tenacity, movement_speed, regen, gold_per_second,
-  // heal_shield_increase, magical_lifesteal) are dropped until the effect
-  // schema lands.
+  // Still-unmodeled keys (mana/health regeneration, magical_lifesteal)
+  // are dropped; the support stats entered the model with backlog item 7.
   const items = new Map<string, Item>();
   const itemsBySlug = new Map<string, Item>();
   for (const raw of omedaItems) {
@@ -227,6 +278,10 @@ export function loadData(): LoadedData {
       max_mana: s.max_mana ?? 0,
       lifesteal: s.lifesteal ?? 0,
       omnivamp: s.omnivamp ?? 0,
+      heal_shield_increase: s.heal_shield_increase ?? 0,
+      gold_per_second: s.gold_per_second ?? 0,
+      tenacity: s.tenacity ?? 0,
+      movement_speed: s.movement_speed ?? 0,
     };
     const item: Item = {
       slug: raw.slug,
@@ -248,7 +303,15 @@ export function loadData(): LoadedData {
 }
 
 export function completedItems(data: LoadedData): Item[] {
-  return [...data.items.values()].filter(
-    (i) => (i.rarity === 'EPIC' || i.rarity === 'LEGENDARY') && (i.slotType === 'PASSIVE' || i.slotType === 'ACTIVE') && i.totalPrice > 0,
-  );
+  return [...data.items.values()].filter((i) => {
+    if (!(i.rarity === 'EPIC' || i.rarity === 'LEGENDARY')) return false;
+    if (!(i.slotType === 'PASSIVE' || i.slotType === 'ACTIVE')) return false;
+    if (i.totalPrice <= 0) return false;
+    // Statless cheap actives (Divine Potion, 250g) are inventory slots,
+    // not build slots: with no stats and no curated effects they carry
+    // zero sim value but used to dilute the popular-build baseline.
+    const hasStats = Object.values(i.stats).some((v) => v !== 0);
+    if (!hasStats && i.totalPrice < 1000) return false;
+    return true;
+  });
 }

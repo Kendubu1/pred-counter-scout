@@ -564,12 +564,15 @@ function renderGrid() {
 /* ── hero page ── */
 function itile(i, idx) {
   const under = i.playRatePct !== null && i.playRatePct < 2;
+  // Low play + negative evidence on a real sample: the field tried this
+  // and lost — present it as a sim opinion under review, not a find.
+  const disputed = under && i.evidenceDeltaWr !== null && i.evidenceDeltaWr < 0 && i.evidenceN >= 20;
   const ev = i.evidenceDeltaWr === null ? '' :
     `<span class="${i.evidenceDeltaWr >= 0 ? 'pos' : 'neg'}">${i.evidenceDeltaWr > 0 ? '+' : ''}${i.evidenceDeltaWr}wr</span> n=${i.evidenceN}`;
   return `
-    <div class="itile${under ? ' gold' : ''}" title="${esc(i.name)}${i.playRatePct === null ? '' : ` — in ${i.playRatePct}% of games`}">
+    <div class="itile${under && !disputed ? ' gold' : ''}" title="${esc(i.name)}${i.playRatePct === null ? '' : ` — in ${i.playRatePct}% of games`}${disputed ? ' — the sim rates this higher than the field’s results do; unverified constants (attack-speed cap) may flatter it' : ''}">
       <span class="ord">${idx + 1}</span>
-      ${under ? '<span class="tag">OFF-META</span>' : ''}
+      ${disputed ? '<span class="tag" style="color:var(--gold)">SIM-ONLY ⚠</span>' : under ? '<span class="tag">OFF-META</span>' : ''}
       <img loading="lazy" src="${IMG.item(i.slug)}" alt="" onerror="this.style.visibility='hidden'">
       <div class="nm">${esc(i.name)}</div>
       <div class="spike">${i.spikeMinute ? `spike ~${i.spikeMinute}'` : 'late game'}</div>
@@ -625,7 +628,27 @@ function renderHero(a, roleParam) {
         const ranked = [...cell.augments].sort((x, y) => (y.w / y.n) - (x.w / x.n));
         const adv = ranked[1] ? ((ranked[0].w / ranked[0].n) - (ranked[1].w / ranked[1].n)) * 100 : null;
         const simBy = new Map(a.eternals.top.map((e) => [e.name.toLowerCase(), e]));
-        const ets = [...cell.eternals].filter((e) => e.n >= 300).sort((x, y) => (y.w / y.n) - (x.w / x.n)).slice(0, 3);
+        // Order by SHRUNK winrate (method-of-moments prior toward the
+        // cell's pick-weighted mean): Eternal pick shares are wildly
+        // asymmetric, and raw-winrate ordering let lucky minority picks
+        // top every list (the flaw-4 mistake, rediscovered via Lotus).
+        const ets = (() => {
+          const all = cell.eternals || [];
+          const totN = all.reduce((s, e) => s + e.n, 0);
+          const mean = totN ? all.reduce((s, e) => s + e.w, 0) / totN : 0.5;
+          const usable = all.filter((c) => c.n >= 5);
+          let k = 50;
+          if (usable.length >= 5) {
+            const rates = usable.map((c) => c.w / c.n);
+            const m = rates.reduce((s, r) => s + r, 0) / rates.length;
+            const varObs = rates.reduce((s, r) => s + (r - m) ** 2, 0) / rates.length;
+            const noise = usable.reduce((s, c) => s + (mean * (1 - mean)) / c.n, 0) / usable.length;
+            k = Math.min(Math.max((mean * (1 - mean)) / Math.max(varObs - noise, 1e-5) - 1, 10), 500);
+          }
+          return all.filter((e) => e.n >= 300)
+            .map((e) => ({ ...e, shrunk: (e.w + k * mean) / (e.n + k) }))
+            .sort((x, y) => y.shrunk - x.shrunk).slice(0, 3);
+        })();
         return `
         ${roles.length > 1 ? `<div class="echips" style="margin:.1rem 0 .55rem">${roles.map((r) => r === role
           ? `<span class="echip" style="border-color:var(--accent);background:var(--accent-soft);color:var(--text-0);text-transform:capitalize">${esc(r)}</span>`
@@ -649,6 +672,19 @@ function renderHero(a, roleParam) {
               if (ai) return `<div style="font-size:.68rem;line-height:1.45;color:${i === 0 ? 'var(--green)' : 'var(--text-1)'};margin:.12rem 0 0 2.35rem">🧠 ${esc(ai)}</div>`;
               return i === 0 && adv !== null && adv >= 0.3 ? `<div style="font-size:.68rem;color:var(--green);margin:.12rem 0 0 2.35rem">why: as ${esc(role)} it wins about ${adv.toFixed(1)} more games per 100 than ${esc(ranked[1].name)} — the field has voted</div>` : '';
             })()}
+            ${(() => {
+              const sa = (a.augments || []).find((x) => x.id === g.id);
+              if (!sa) return '';
+              if (!sa.modeled) return `<div style="font-size:.66rem;color:var(--text-2);margin:.12rem 0 0 2.35rem">🔬 not in the sim: ${esc(sa.note || 'no tractable math')}</div>`;
+              const parts = [];
+              if (sa.rot20Pct) parts.push(`20s fights ${sa.rot20Pct > 0 ? '+' : ''}${sa.rot20Pct}%`);
+              if (sa.burstPct) parts.push(`burst ${sa.burstPct > 0 ? '+' : ''}${sa.burstPct}%`);
+              if (sa.ehpPct) parts.push(`eHP ${sa.ehpPct > 0 ? '+' : ''}${sa.ehpPct}%`);
+              if (sa.healShieldPct) parts.push(`heal/shield ${sa.healShieldPct > 0 ? '+' : ''}${sa.healShieldPct}%`);
+              else if (sa.healShieldAbs) parts.push(`adds ~${sa.healShieldAbs.toLocaleString()} HP of heal/shield per 10s`);
+              const shift = sa.buildShift ? ` · build shifts: ${sa.buildShift.in.map(esc).join(', ')} over ${sa.buildShift.out.map(esc).join(', ')}` : '';
+              return `<div style="font-size:.66rem;color:var(--accent);margin:.12rem 0 0 2.35rem">⚙ in the sim: ${parts.length ? esc(parts.join(' · ')) : 'no headline change'}${shift}${sa.provisional ? ' (provisional constant)' : ''}</div>`;
+            })()}
           </div>`;
         }).join('')}
         <div style="font-size:.74rem;color:var(--text-2);margin:.7rem 0 .45rem"><b style="letter-spacing:.06em">ETERNAL</b> · top 3 as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
@@ -663,14 +699,21 @@ function renderHero(a, roleParam) {
             <div style="display:flex;gap:.6rem;align-items:center">
               <img src="${IMG.eternal(e.name.toLowerCase())}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;${i === 0 ? 'box-shadow:0 0 0 2px var(--green)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'">
               <span style="font-size:.88rem;font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${i === 0 ? '✓ ' : ''}${esc(e.name)}</span>
-              <span style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(wr * 100).toFixed(1)}%</span>
+              <span title="raw ${(wr * 100).toFixed(1)}% — shown shrunk toward the role's pick-weighted mean (small samples get less benefit of the doubt)" style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(e.shrunk * 100).toFixed(1)}%</span>
               <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
             </div>
             <div style="font-size:.68rem;color:var(--text-2);margin:.18rem 0 0 2.35rem">${why}</div>
+            ${(() => {
+              const ai = REVIEWS && REVIEWS.eternals && REVIEWS.eternals[a.slug] && REVIEWS.eternals[a.slug][role] && REVIEWS.eternals[a.slug][role][e.name];
+              return ai ? `<div style="font-size:.68rem;line-height:1.45;color:${i === 0 ? 'var(--green)' : 'var(--text-1)'};margin:.12rem 0 0 2.35rem">🧠 ${esc(ai)}</div>` : '';
+            })()}
           </div>`;
         }).join('') : '<div class="muted">no Eternal sample for this role yet</div>'}
         ${top && ets.length && top.name.toLowerCase() !== ets[0].name.toLowerCase()
-          ? `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">⚖ our augment-blind kit math prefers ${esc(top.name)} (+${top.headlinePct}% headline) — when math and field disagree, weight the field for this role until augment mechanics land in the simulator</div>` : ''}
+          ? (a.eternals.augmentAware
+            ? `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">⚖ our kit math — run with ${esc(a.eternals.augmentAware)} modeled — prefers ${esc(top.name)} (+${top.headlinePct}% headline); when math and field disagree, the field's sample is the safer default for this role</div>`
+            : `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">⚖ our kit math prefers ${esc(top.name)} (+${top.headlinePct}% headline), but the field's top augment for this role isn't in the simulator, so this comparison is augment-blind — weight the field</div>`)
+          : ''}
         ${(() => {
           const crs = (cell.crests || []).filter((c) => c.n >= 300).sort((x, y) => (y.w / y.n) - (x.w / x.n)).slice(0, 3);
           if (!crs.length) return '';
@@ -687,7 +730,7 @@ function renderHero(a, roleParam) {
         })()}`;
       })()}
       <div style="margin-top:.6rem; font-size:.74rem; color:var(--text-2)">
-        ⚠ <b>Why no single flat build:</b> the augment changes which build is right (a damage build and a support build are different heroes in practice). The augment winrates above are field evidence; their mechanics aren't in the simulator yet, so the build below assumes the kit's baseline — treat it as the starting point for your augment and playstyle. 🧠 lines are AI-written from the mechanics and evidence shown, with every number machine-verified against the source data. No Eternal math yet for: ${esc(a.eternals.unmodeled.join(', '))} — see Depth below.
+        ⚠ <b>Why no single flat build:</b> the augment changes which build is right (a damage build and a support build are different heroes in practice). Augments marked ⚙ have their mechanics in the simulator — including the build shift the optimizer would make; 🔬 augments are field evidence only, with the reason stated. The build below assumes the kit's baseline. 🧠 lines are AI-written from the mechanics and evidence shown, with every number machine-verified against the source data. No Eternal math yet for: ${esc(a.eternals.unmodeled.join(', '))} — see Depth below.
       </div>
     </section>
 
@@ -710,7 +753,7 @@ function renderHero(a, roleParam) {
       <div class="rail">${a.build.items.map(itile).join('')}</div>
       <div class="coach">${esc(a.coachLine)}</div>
       <div class="proofs">
-        <span class="proof"><b>sim</b> · burst ${Math.round(o.burstVsSquishy)} · 20s vs bruiser ${Math.round(o.rot20VsBruiser)} · auto DPS ${Math.round(o.autoDps10VsSquishy)}</span>
+        <span class="proof"><b>sim</b> · ${a.role === 'support' && o.healShield10s ? `heal/shield ${Math.round(o.healShield10s).toLocaleString()} over 10s · ` : ''}burst ${Math.round(o.burstVsSquishy)} · 20s vs bruiser ${Math.round(o.rot20VsBruiser)} · auto DPS ${Math.round(o.autoDps10VsSquishy)}</span>
         ${evidenceProof ? `<span class="proof evidence"><b>evidence</b> · ${esc(evidenceProof.name)} ${evidenceProof.evidenceDeltaWr > 0 ? '+' : ''}${evidenceProof.evidenceDeltaWr}wr over ${evidenceProof.evidenceN} games</span>` : ''}
         ${underProof ? `<span class="proof playrate"><b>underexplored</b> · ${esc(underProof.name)} in ${underProof.playRatePct}% of ${esc(a.name)} games</span>` : ''}
       </div>

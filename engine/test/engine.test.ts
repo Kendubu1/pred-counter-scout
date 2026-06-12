@@ -4,7 +4,8 @@ import {
   loadCalibration, unverifiedConstants, itemTotals, rotationDamage,
   simulate, type Calibration,
 } from '../src/sim.js';
-import { generateBuilds, paretoFront } from '../src/search.js';
+import { generateBuilds, paretoFront, kitHeals } from '../src/search.js';
+import { rankAugments } from '../src/eternals.js';
 import type { HeroKit, Item } from '../src/types.js';
 
 let data: LoadedData;
@@ -109,6 +110,7 @@ describe('simulator exact math (synthetic fixtures, immune to data refreshes)', 
       physical_power: 0, magical_power: mp, attack_speed: 0, critical_chance: 0,
       physical_penetration: 0, magical_penetration: 0, ability_haste: haste,
       health: 0, physical_armor: 0, magical_armor: 0, max_mana: 0, lifesteal: 0, omnivamp: 0,
+    heal_shield_increase: 0, gold_per_second: 0, tenacity: 0, movement_speed: 0,
     },
     family: null, antiHeal: false, heroClass: null,
   });
@@ -137,6 +139,49 @@ describe('simulator exact math (synthetic fixtures, immune to data refreshes)', 
     const r = simulate(kit, [mpItem(200)], { level: 13, ranks: new Map([['PRIMARY', 5]]), profile: null }, cal);
     expect(r.manaSpent10s).toBe(100);
     expect(r.manaFeasible).toBe(true);
+  });
+
+  it('heal output: base + ratio * power per cast, casts off cooldown, heal_shield_increase amps', () => {
+    const healer: HeroKit = {
+      ...kit,
+      slug: 'synthetic-healer',
+      abilities: [{
+        key: 'PRIMARY', name: 'Mend', damagePerRank: [], scalingPct: 0, damageType: 'magical',
+        healing: [{ kind: 'heal', valuesPerRank: [100, 150, 200, 250, 300], scalingPct: 50, powerType: 'magical' }],
+        cooldowns: [10, 9, 8, 7, 6], costs: [50, 50, 50, 50, 50], maxRank: 5,
+      }],
+    };
+    // Rank 5, 200 MP: per cast 300 + 0.5*200 = 400. cd 6s -> 2 casts in 10s -> 800.
+    const ranks = new Map([['PRIMARY', 5]]);
+    const r = simulate(healer, [mpItem(200)], { level: 13, ranks, profile: null }, cal);
+    expect(r.healShield10s).toBe(800);
+    // +20% heal_shield_increase multiplies the whole output: 960.
+    const hsi: Item = { ...mpItem(200), slug: 'hsi', name: 'HSI', stats: { ...mpItem(200).stats, heal_shield_increase: 20 } };
+    const amped = simulate(healer, [hsi], { level: 13, ranks, profile: null }, cal);
+    expect(amped.healShield10s).toBeCloseTo(960, 6);
+  });
+});
+
+describe('heal/shield parsing (live current-patch data)', () => {
+  it('covers the enchanter supports', () => {
+    for (const slug of ['muriel', 'zinx', 'mourn', 'maco', 'narbash']) {
+      expect(kitHeals(data.kits.get(slug)!), slug).toBe(true);
+    }
+  });
+
+  it('Muriel ult shield parses from current text even where damage fell back to stale numbers', () => {
+    const ult = data.kits.get('muriel')!.abilities.find((a) => a.key === 'ULTIMATE')!;
+    const shield = (ult.healing ?? []).find((h) => h.kind === 'shield')!;
+    expect(shield.valuesPerRank).toEqual([280, 480, 680]);
+    expect(shield.scalingPct).toBe(100);
+    expect(shield.powerType).toBe('magical');
+  });
+
+  it('tick cadences fold into per-cast totals (Mourn: 3..15 every 0.5s for 3s = 6 ticks)', () => {
+    const q = data.kits.get('mourn')!.abilities.find((a) => a.healing?.length)!;
+    const heal = q.healing![0]!;
+    expect(heal.valuesPerRank).toEqual([18, 36, 54, 72, 90]);
+    expect(heal.scalingPct).toBeCloseTo(42, 6);
   });
 });
 
@@ -232,5 +277,42 @@ describe('golden scenarios (Concept B layer 2)', () => {
       scenario: { goldBudget: 9000 },
     });
     for (const b of builds) expect(b.gold).toBeLessThanOrEqual(9000);
+  });
+
+  it('an enchanter support is never handed a crit/lethality core', () => {
+    for (const slug of ['muriel', 'narbash', 'zinx']) {
+      const kit = data.kits.get(slug)!;
+      const builds = generateBuilds(kit, completedItems(data), cal, { beamWidth: 8, role: 'support' });
+      expect(builds.length, slug).toBeGreaterThan(0);
+      for (const b of builds) {
+        const items = b.items.map((n) => data.items.get(n)!);
+        expect(
+          items.some((i) => i.stats.critical_chance > 0 || i.stats.physical_penetration > 0),
+          `${slug}: ${b.items.join(', ')}`,
+        ).toBe(false);
+      }
+    }
+  });
+
+  it('augment golden: stated multipliers move the right windows', () => {
+    // Skylar / Atomised Artillery: 3 blasts x 60% = +80% ult damage.
+    const skylar = data.kits.get('skylar')!;
+    const aa = rankAugments(skylar, [], 13, cal).find((r) => r.name.includes('Atomised'))!;
+    expect(aa.modeled).toBe(true);
+    expect(aa.deltas!.rot20Pct).toBeGreaterThan(10);
+    // Dekker / Polarity Strike: 150/250/350 (+50% MP) ally shield on ult —
+    // a kit with zero baseline heal output gains absolute shield output.
+    const dekker = data.kits.get('dekker')!;
+    const ps = rankAugments(dekker, [], 13, cal).find((r) => r.name.includes('Polarity'))!;
+    expect(ps.modeled).toBe(true);
+    expect(ps.deltas!.healShieldAbs).toBeGreaterThan(200);
+  });
+
+  it('the support answer out-heals the same kit\'s damage build and is labeled for it', () => {
+    const kit = data.kits.get('muriel')!;
+    const support = generateBuilds(kit, completedItems(data), cal, { beamWidth: 8, role: 'support' })[0]!;
+    const damage = generateBuilds(kit, completedItems(data), cal, { beamWidth: 8, role: 'midlane' })[0]!;
+    expect(support.objectives.healShield10s).toBeGreaterThan(damage.objectives.healShield10s);
+    expect(support.archetypes).toContain('heal/shield output');
   });
 });

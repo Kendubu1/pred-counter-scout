@@ -2,7 +2,7 @@
  "slug": "terra",
  "name": "Terra",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:42:03.293Z",
+ "generatedAt": "2026-06-12T23:32:51.009Z",
  "role": "offlane",
  "damageType": "hybrid",
  "attackType": "melee",
@@ -14,28 +14,22 @@
    "abilityHaste",
    "critMultiplier",
    "attackSpeedFormula",
-   "abilityScalingUsesBonusPowerOnly"
+   "abilityScalingUsesBonusPowerOnly",
+   "attackSpeedCap"
   ],
   "notes": [
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
-   "evidence deltas carry finished-inventory survivorship bias"
+   "evidence deltas carry finished-inventory survivorship bias",
+   "this build stacks over +100% attack speed and the sim has NO measured attack-speed cap (calibration checklist 7) — sustained-DPS numbers are optimistic until the cap is measured"
   ]
  },
  "build": {
   "items": [
    {
-    "name": "Sky Splitter",
-    "slug": "sky-splitter",
-    "spikeMinute": 12,
-    "playRatePct": 3.1,
-    "evidenceDeltaWr": -0.8,
-    "evidenceN": 21
-   },
-   {
     "name": "Deathstalker",
     "slug": "deathstalker",
-    "spikeMinute": 19,
+    "spikeMinute": 12,
     "playRatePct": 0,
     "evidenceDeltaWr": null,
     "evidenceN": null
@@ -43,7 +37,23 @@
    {
     "name": "Necrosis",
     "slug": "necrosis",
-    "spikeMinute": 25,
+    "spikeMinute": 19,
+    "playRatePct": 0.1,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
+   },
+   {
+    "name": "Imperator",
+    "slug": "imperator",
+    "spikeMinute": 26,
+    "playRatePct": 0,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
+   },
+   {
+    "name": "Tainted Rounds",
+    "slug": "tainted-rounds",
+    "spikeMinute": 31,
     "playRatePct": 0.1,
     "evidenceDeltaWr": null,
     "evidenceN": null
@@ -51,15 +61,7 @@
    {
     "name": "Vanquisher",
     "slug": "vanquisher",
-    "spikeMinute": 31,
-    "playRatePct": 0.1,
-    "evidenceDeltaWr": null,
-    "evidenceN": null
-   },
-   {
-    "name": "Tainted Rounds",
-    "slug": "tainted-rounds",
-    "spikeMinute": 36,
+    "spikeMinute": 37,
     "playRatePct": 0.1,
     "evidenceDeltaWr": null,
     "evidenceN": null
@@ -67,35 +69,38 @@
    {
     "name": "Lightning Hawk",
     "slug": "lightning-hawk",
-    "spikeMinute": 42,
+    "spikeMinute": 43,
     "playRatePct": 0.1,
     "evidenceDeltaWr": null,
     "evidenceN": null
    }
   ],
-  "gold": 18200,
+  "gold": 18500,
   "archetypes": [
    "sustained DPS"
   ],
   "objectives": {
-   "burstVsSquishy": 1624.7184535528909,
-   "rot10VsSquishy": 1085.2514766422053,
-   "rot20VsBruiser": 1286.4716402657127,
-   "autoDps10VsSquishy": 1710.197929470199,
+   "burstVsSquishy": 1935.6137350098447,
+   "rot10VsSquishy": 1128.2978342580993,
+   "rot20VsBruiser": 1338.6561062851301,
+   "autoDps10VsSquishy": 2005.2361122826992,
    "ehpPhysical": 4068.0431250000006,
-   "ehpMagical": 3217.2157812500004
+   "ehpMagical": 3217.2157812500004,
+   "healShield10s": 0,
+   "utility": 0,
+   "sustain10s": 0
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for sustained DPS: first spike lands around minute 12 (Sky Splitter), third item by minute 25. Take Demiurge: +23.7% on your headline output at minute 15.",
+ "coachLine": "Sim-optimal for sustained DPS: first spike lands around minute 12 (Deathstalker), third item by minute 26. Take Demiurge: +18.5% on your headline output at minute 15.",
  "eternals": {
   "top": [
    {
     "name": "Demiurge",
     "id": "demiurge",
-    "headlinePct": 23.7,
-    "burstPct": 11.9,
-    "rot20Pct": 6.6,
+    "headlinePct": 18.5,
+    "burstPct": 9.7,
+    "rot20Pct": 6.9,
     "ehpPct": 0
    },
    {
@@ -109,7 +114,7 @@
    {
     "name": "Thraex",
     "id": "thraex",
-    "headlinePct": 8.1,
+    "headlinePct": 9.2,
     "burstPct": 0,
     "rot20Pct": 9.5,
     "ehpPct": 0
@@ -119,41 +124,91 @@
    "Marrow",
    "Nihil",
    "Aion",
-   "Exarch",
-   "Lotus"
-  ]
+   "Exarch"
+  ],
+  "augmentAware": null
  },
+ "augments": [
+  {
+   "id": "119",
+   "name": "Axe Retrieval",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "pickup-conditional cooldown refund; positional",
+   "buildShift": null
+  },
+  {
+   "id": "120",
+   "name": "Iron Resolve",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "damage reduction while channeling; uptime-bound",
+   "buildShift": null
+  },
+  {
+   "id": "121",
+   "name": "Hersir's Will",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "passive stack generation during ult; stack economy",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
   "candidates": [
    {
     "item": "Deathstalker",
     "playRatePct": 0,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 1865.1
+    "edgeVsPopularPct": 2204.1
    },
    {
     "item": "Necrosis",
     "playRatePct": 0.1,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 1865.1
+    "edgeVsPopularPct": 2204.1
    },
    {
-    "item": "Vanquisher",
-    "playRatePct": 0.1,
+    "item": "Imperator",
+    "playRatePct": 0,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 1865.1
+    "edgeVsPopularPct": 2204.1
    },
    {
     "item": "Tainted Rounds",
     "playRatePct": 0.1,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 1865.1
+    "edgeVsPopularPct": 2204.1
+   },
+   {
+    "item": "Vanquisher",
+    "playRatePct": 0.1,
+    "bestObjective": "sustained auto DPS",
+    "edgeVsPopularPct": 2204.1
    },
    {
     "item": "Lightning Hawk",
     "playRatePct": 0.1,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 1865.1
+    "edgeVsPopularPct": 2204.1
    }
   ],
   "honestAbsence": null
@@ -203,7 +258,7 @@
    "spikeMinute": 25,
    "bestObjective": "extended fights vs bruisers",
    "whyLine": "Strongest meta core for extended fights vs bruisers, online around minute 25 — about 762 damage over a 20s fight in the sim.",
-   "optimizer": "Optimizer sees +26% more extended fights vs bruisers: try Sky Splitter over Tainted Guard (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "optimizer": "Optimizer sees +32% more extended fights vs bruisers: try Deathstalker over Tainted Guard (sim-only — the popular pick may carry utility the sim can't see; test it)."
   },
   {
    "items": [
@@ -253,7 +308,7 @@
     },
     {
      "minute": 25,
-     "verdict": "you"
+     "verdict": "even"
     },
     {
      "minute": 30,
@@ -261,18 +316,18 @@
     }
    ],
    "counterSwap": {
-    "out": "Necrosis",
+    "out": "Tainted Rounds",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 41,
-    "offenseLossPct": 30,
-    "line": "Losing lane? Third item Warden's Faith instead of Necrosis: their 3s all-in loses 41% of its bite; you give up 30% of your damage."
+    "survivalGainPct": 40,
+    "offenseLossPct": 35,
+    "line": "Losing lane? Third item Warden's Faith instead of Tainted Rounds: their 3s all-in loses 40% of its bite; you give up 35% of your damage."
    }
   },
   {
    "enemy": "Greystone",
    "enemySlug": "greystone",
-   "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands.",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
    "checkpoints": [
     {
      "minute": 5,
@@ -284,7 +339,7 @@
     },
     {
      "minute": 15,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 20,
@@ -292,20 +347,20 @@
     },
     {
      "minute": 25,
-     "verdict": "you"
+     "verdict": "enemy"
     },
     {
      "minute": 30,
-     "verdict": "even"
+     "verdict": "enemy"
     }
    ],
    "counterSwap": {
-    "out": "Necrosis",
+    "out": "Tainted Rounds",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 40,
-    "offenseLossPct": 30,
-    "line": "Losing lane? Third item Warden's Faith instead of Necrosis: their 3s all-in loses 40% of its bite; you give up 30% of your damage."
+    "offenseLossPct": 34,
+    "line": "Losing lane? Third item Warden's Faith instead of Tainted Rounds: their 3s all-in loses 40% of its bite; you give up 34% of your damage."
    }
   },
   {
@@ -339,12 +394,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Necrosis",
+    "out": "Tainted Rounds",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 31,
-    "offenseLossPct": 30,
-    "line": "Losing lane? Third item Void Helm instead of Necrosis: their 3s all-in loses 31% of its bite; you give up 30% of your damage."
+    "survivalGainPct": 29,
+    "offenseLossPct": 34,
+    "line": "Losing lane? Third item Void Helm instead of Tainted Rounds: their 3s all-in loses 29% of its bite; you give up 34% of your damage."
    }
   },
   {
@@ -362,7 +417,7 @@
     },
     {
      "minute": 15,
-     "verdict": "you"
+     "verdict": "even"
     },
     {
      "minute": 20,
@@ -370,7 +425,7 @@
     },
     {
      "minute": 25,
-     "verdict": "you"
+     "verdict": "even"
     },
     {
      "minute": 30,
@@ -378,12 +433,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Necrosis",
+    "out": "Tainted Rounds",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 41,
-    "offenseLossPct": 30,
-    "line": "Losing lane? Third item Warden's Faith instead of Necrosis: their 3s all-in loses 41% of its bite; you give up 30% of your damage."
+    "offenseLossPct": 34,
+    "line": "Losing lane? Third item Warden's Faith instead of Tainted Rounds: their 3s all-in loses 41% of its bite; you give up 34% of your damage."
    }
   },
   {
@@ -409,7 +464,7 @@
     },
     {
      "minute": 25,
-     "verdict": "you"
+     "verdict": "even"
     },
     {
      "minute": 30,
@@ -417,18 +472,18 @@
     }
    ],
    "counterSwap": {
-    "out": "Necrosis",
+    "out": "Tainted Rounds",
     "in": "Void Helm",
     "inSlug": "void-helm",
     "survivalGainPct": 31,
-    "offenseLossPct": 30,
-    "line": "Losing lane? Third item Void Helm instead of Necrosis: their 3s all-in loses 31% of its bite; you give up 30% of your damage."
+    "offenseLossPct": 34,
+    "line": "Losing lane? Third item Void Helm instead of Tainted Rounds: their 3s all-in loses 31% of its bite; you give up 34% of your damage."
    }
   },
   {
    "enemy": "Zarus",
    "enemySlug": "zarus",
-   "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention.",
+   "gameplan": "Even kill threat throughout: this lane is decided by mechanics and wave control, not scaling.",
    "checkpoints": [
     {
      "minute": 5,
@@ -448,7 +503,7 @@
     },
     {
      "minute": 25,
-     "verdict": "you"
+     "verdict": "enemy"
     },
     {
      "minute": 30,
@@ -456,17 +511,17 @@
     }
    ],
    "counterSwap": {
-    "out": "Necrosis",
+    "out": "Tainted Rounds",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 41,
-    "offenseLossPct": 30,
-    "line": "Losing lane? Third item Warden's Faith instead of Necrosis: their 3s all-in loses 41% of its bite; you give up 30% of your damage."
+    "offenseLossPct": 34,
+    "line": "Losing lane? Third item Warden's Faith instead of Tainted Rounds: their 3s all-in loses 41% of its bite; you give up 34% of your damage."
    }
   }
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }

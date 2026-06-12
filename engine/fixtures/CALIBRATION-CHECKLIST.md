@@ -115,6 +115,23 @@ the ult accepts a skill point (first, second, third rank).
 Record: the three levels in `constants.ultRankLevels.value`; flip
 verified.
 
+## 7. attackSpeedCap (added 2026-06-12 — the Deathstalker finding)
+
+What to verify: whether attacks/sec stops scaling at some cap. The sim
+currently has NO cap, and pen-stacked Deathstalker builds (Onslaught
+converts total flat pen to attack speed) reach 3.5+ attacks/sec — which
+the field refuses to play (0.6% median play rate, negative win deltas).
+
+How:
+1. Murdock, practice mode. Buy attack-speed items past +150% total
+   (Deathstalker + Sky Splitter + Necrosis works).
+2. Count attacks over 20s at +100%, +150%, and max purchasable AS.
+3. If counts stop rising, the plateau is the cap.
+
+Record: the (AS%, attacks/sec) pairs in `constants.attackSpeedCap.source`;
+set `value` to the cap (attacks/sec) and flip verified. If there is
+genuinely no cap, set value to null, verified true, and the sim stands.
+
 ## Optional, cannot be measured in practice mode
 
 Level-by-minute table (`checkpoints.table[].level`, currently provisional):

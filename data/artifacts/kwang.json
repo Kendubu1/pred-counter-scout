@@ -2,7 +2,7 @@
  "slug": "kwang",
  "name": "Kwang",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:41:51.739Z",
+ "generatedAt": "2026-06-12T23:31:40.204Z",
  "role": "jungle",
  "damageType": "hybrid",
  "attackType": "melee",
@@ -14,12 +14,14 @@
    "abilityHaste",
    "critMultiplier",
    "attackSpeedFormula",
-   "abilityScalingUsesBonusPowerOnly"
+   "abilityScalingUsesBonusPowerOnly",
+   "attackSpeedCap"
   ],
   "notes": [
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
-   "evidence deltas carry finished-inventory survivorship bias"
+   "evidence deltas carry finished-inventory survivorship bias",
+   "this build stacks over +100% attack speed and the sim has NO measured attack-speed cap (calibration checklist 7) — sustained-DPS numbers are optimistic until the cap is measured"
   ]
  },
  "build": {
@@ -57,44 +59,47 @@
     "evidenceN": null
    },
    {
-    "name": "Vanquisher",
-    "slug": "vanquisher",
-    "spikeMinute": 37,
-    "playRatePct": 0.1,
+    "name": "Imperator",
+    "slug": "imperator",
+    "spikeMinute": 38,
+    "playRatePct": 0.2,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
    {
-    "name": "Lightning Hawk",
-    "slug": "lightning-hawk",
-    "spikeMinute": 43,
-    "playRatePct": 0,
+    "name": "Vanquisher",
+    "slug": "vanquisher",
+    "spikeMinute": 44,
+    "playRatePct": 0.1,
     "evidenceDeltaWr": null,
     "evidenceN": null
    }
   ],
-  "gold": 18200,
+  "gold": 18500,
   "archetypes": [
    "sustained DPS"
   ],
   "objectives": {
-   "burstVsSquishy": 1496.1285126185792,
+   "burstVsSquishy": 1715.1218901020225,
    "rot10VsSquishy": 730.4054054054054,
    "rot20VsBruiser": 818.9473684210526,
-   "autoDps10VsSquishy": 1449.0257453642384,
+   "autoDps10VsSquishy": 1635.7277614569532,
    "ehpPhysical": 4169.32734375,
-   "ehpMagical": 3335.1866718750002
+   "ehpMagical": 3335.1866718750002,
+   "healShield10s": 0,
+   "utility": 0,
+   "sustain10s": 999.7734461359223
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for sustained DPS: first spike lands around minute 12 (Sky Splitter), third item by minute 25. Take Demiurge: +23.7% on your headline output at minute 15.",
+ "coachLine": "Sim-optimal for sustained DPS: first spike lands around minute 12 (Sky Splitter), third item by minute 25. Take Demiurge: +24.8% on your headline output at minute 15.",
  "eternals": {
   "top": [
    {
     "name": "Demiurge",
     "id": "demiurge",
-    "headlinePct": 23.7,
-    "burstPct": 9.1,
+    "headlinePct": 24.8,
+    "burstPct": 10.9,
     "rot20Pct": 0,
     "ehpPct": 0
    },
@@ -109,7 +114,7 @@
    {
     "name": "Thraex",
     "id": "thraex",
-    "headlinePct": 7.9,
+    "headlinePct": 8.2,
     "burstPct": 0,
     "rot20Pct": 9.2,
     "ehpPct": 0
@@ -119,47 +124,91 @@
    "Marrow",
    "Nihil",
    "Aion",
-   "Exarch",
-   "Lotus"
-  ]
+   "Exarch"
+  ],
+  "augmentAware": null
  },
+ "augments": [
+  {
+   "id": "71",
+   "name": "Heavenly Tactician",
+   "modeled": true,
+   "provisional": false,
+   "headlinePct": 0,
+   "burstPct": 0,
+   "rot20Pct": 0,
+   "ehpPct": 0,
+   "healShieldPct": 0,
+   "healShieldAbs": 0,
+   "note": "blade-retrieval change not scored",
+   "buildShift": null
+  },
+  {
+   "id": "72",
+   "name": "Aura of the Heavens",
+   "modeled": true,
+   "provisional": false,
+   "headlinePct": 0,
+   "burstPct": 0,
+   "rot20Pct": 0,
+   "ehpPct": 0,
+   "healShieldPct": 0,
+   "healShieldAbs": 0,
+   "note": "ally aura share is team-side, not scored",
+   "buildShift": null
+  },
+  {
+   "id": "73",
+   "name": "Slayer of the Heavens",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "targets passive Strike of the Heavens, which is outside the kit model",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
   "candidates": [
    {
     "item": "Sky Splitter",
     "playRatePct": 1.3,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 1403.8
+    "edgeVsPopularPct": 686.8
    },
    {
     "item": "Necrosis",
     "playRatePct": 0,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 1403.8
+    "edgeVsPopularPct": 686.8
    },
    {
     "item": "Deathstalker",
     "playRatePct": 0.1,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 1403.8
+    "edgeVsPopularPct": 686.8
    },
    {
     "item": "Tainted Rounds",
     "playRatePct": 0.1,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 1403.8
+    "edgeVsPopularPct": 686.8
+   },
+   {
+    "item": "Imperator",
+    "playRatePct": 0.2,
+    "bestObjective": "sustained auto DPS",
+    "edgeVsPopularPct": 686.8
    },
    {
     "item": "Vanquisher",
     "playRatePct": 0.1,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 1403.8
-   },
-   {
-    "item": "Lightning Hawk",
-    "playRatePct": 0,
-    "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 1403.8
+    "edgeVsPopularPct": 686.8
    }
   ],
   "honestAbsence": null
@@ -267,12 +316,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Necrosis",
+    "out": "Imperator",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 41,
-    "offenseLossPct": 27,
-    "line": "Losing lane? Third item Warden's Faith instead of Necrosis: their 3s all-in loses 41% of its bite; you give up 27% of your damage."
+    "offenseLossPct": 25,
+    "line": "Losing lane? Third item Warden's Faith instead of Imperator: their 3s all-in loses 41% of its bite; you give up 25% of your damage."
    }
   },
   {
@@ -306,12 +355,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Necrosis",
+    "out": "Imperator",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 38,
-    "offenseLossPct": 26,
-    "line": "Losing lane? Third item Warden's Faith instead of Necrosis: their 3s all-in loses 38% of its bite; you give up 26% of your damage."
+    "survivalGainPct": 39,
+    "offenseLossPct": 24,
+    "line": "Losing lane? Third item Warden's Faith instead of Imperator: their 3s all-in loses 39% of its bite; you give up 24% of your damage."
    }
   },
   {
@@ -345,12 +394,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Necrosis",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 23,
-    "offenseLossPct": 26,
-    "line": "Losing lane? Third item Void Helm instead of Necrosis: their 3s all-in loses 23% of its bite; you give up 26% of your damage."
+    "out": "Imperator",
+    "in": "Raiment of Renewal",
+    "inSlug": "raiment-of-renewal",
+    "survivalGainPct": 21,
+    "offenseLossPct": 25,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Imperator: their 3s all-in loses 21% of its bite; you give up 25% of your damage."
    }
   },
   {
@@ -384,12 +433,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Necrosis",
+    "out": "Imperator",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 41,
-    "offenseLossPct": 27,
-    "line": "Losing lane? Third item Warden's Faith instead of Necrosis: their 3s all-in loses 41% of its bite; you give up 27% of your damage."
+    "survivalGainPct": 40,
+    "offenseLossPct": 24,
+    "line": "Losing lane? Third item Warden's Faith instead of Imperator: their 3s all-in loses 40% of its bite; you give up 24% of your damage."
    }
   },
   {
@@ -423,12 +472,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Necrosis",
+    "out": "Imperator",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 39,
-    "offenseLossPct": 26,
-    "line": "Losing lane? Third item Warden's Faith instead of Necrosis: their 3s all-in loses 39% of its bite; you give up 26% of your damage."
+    "offenseLossPct": 24,
+    "line": "Losing lane? Third item Warden's Faith instead of Imperator: their 3s all-in loses 39% of its bite; you give up 24% of your damage."
    }
   },
   {
@@ -462,17 +511,17 @@
     }
    ],
    "counterSwap": {
-    "out": "Necrosis",
+    "out": "Imperator",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 19,
-    "offenseLossPct": 27,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Necrosis: their 3s all-in loses 19% of its bite; you give up 27% of your damage."
+    "survivalGainPct": 21,
+    "offenseLossPct": 24,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Imperator: their 3s all-in loses 21% of its bite; you give up 24% of your damage."
    }
   }
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }

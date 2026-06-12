@@ -19,6 +19,7 @@ const mkItem = (slug: string, stats: Partial<ItemStats>): Item => ({
     physical_power: 0, magical_power: 0, attack_speed: 0, critical_chance: 0,
     physical_penetration: 0, magical_penetration: 0, ability_haste: 0,
     health: 0, physical_armor: 0, magical_armor: 0, max_mana: 0, lifesteal: 0, omnivamp: 0,
+    heal_shield_increase: 0, gold_per_second: 0, tenacity: 0, movement_speed: 0,
     ...stats,
   },
   family: null, antiHeal: false, heroClass: null,
@@ -149,18 +150,132 @@ describe('effects on live data', () => {
     const vesh = ranked.find((r) => r.id.startsWith('vesh'))!;
     expect(vesh.modeled).toBe(true);
     expect(vesh.deltas!.rot10Pct).toBeGreaterThan(5); // 11% amp at minute 10, abilities dominate Gideon
+    // Lotus joined the modeled set 2026-06-12 (EV per-minute encoding).
     const lotus = ranked.find((r) => r.id.startsWith('lotus'))!;
-    expect(lotus.modeled).toBe(false);
-    expect(lotus.unmodeledNotes.length).toBeGreaterThan(0);
+    expect(lotus.modeled).toBe(true);
+    expect(lotus.deltas!.rot10Pct).toBeGreaterThan(0);
+    const marrow = ranked.find((r) => r.id.startsWith('marrow'))!;
+    expect(marrow.modeled).toBe(false);
+    expect(marrow.unmodeledNotes.length).toBeGreaterThan(0);
     // every modeled entry outranks every unmodeled entry in the sort
     const firstUnmodeled = ranked.findIndex((r) => !r.modeled);
     expect(ranked.slice(0, firstUnmodeled).every((r) => r.modeled)).toBe(true);
   });
 
-  it('provisional sources propagate (Gideon augment from stale scrape)', () => {
-    const fx = resolveEntries(['augment:gideon:abyssal-mantle'], { level: 13 });
+  it('Lotus major: expected-value per-minute encoding (takedown procs excluded)', () => {
+    // One proc per 2 min, uniform over +1.5% dmg / +4 AH / +0.75% MS / +1.5% maxHP.
+    const fx = resolveEntries(['eternal:lotus:major'], { level: 13, minute: 20 });
+    expect(fx.ampAllPct).toBeCloseTo(3.75, 6);            // 0.1875%/min * 20
+    expect(fx.statFlat.ability_haste).toBeCloseTo(10, 6); // 0.5/min * 20
+    expect(fx.statFlat.movement_speed).toBeCloseTo(1.875, 6);
+    expect(fx.healthMultiplier).toBeCloseTo(1.0375, 6);
+    expect(fx.unmodeled.join(' ')).toMatch(/takedown/i);  // the floor caveat rides along
+    // minute 0 (pre-game math): no procs yet, nothing credited
+    const t0 = resolveEntries(['eternal:lotus:major'], { level: 13, minute: 0 });
+    expect(t0.ampAllPct).toBe(0);
+  });
+
+  it('crit_damage_amp multiplies the crit hit (Imperator), sustain values lifesteal', () => {
+    const reg = {
+      targets: {
+        'item:imp': {
+          name: 'Imp', sourceText: 'Critical Strikes deal 30% more damage.', source: 'synthetic', provisional: false,
+          effects: [{ kind: 'crit_damage_amp' as const, pct: 30 }],
+        },
+      },
+    };
+    const crit = mkItem('crit', { critical_chance: 100 });
+    const base = simulate(synthKit, [crit], { level: 13, profile: null }, cal);
+    const amped = simulate(synthKit, [crit], { level: 13, profile: null, effects: resolveEntries(['item:imp'], { level: 13 }, reg) }, cal);
+    // at 100% crit, every hit is a crit: 1.75x -> 2.275x = +30% auto DPS
+    expect(amped.autoDps / base.autoDps).toBeCloseTo(2.275 / 1.75, 6);
+
+    // sustain: 10% lifesteal on 60-damage basics at 1.0 attacks/sec = 60 HP/10s
+    const ls = simulate(synthKit, [mkItem('ls', { lifesteal: 10 })], { level: 13, profile: null }, cal);
+    expect(ls.sustain10s).toBeCloseTo(60, 6);
+  });
+
+  it('item ICDs are global across abilities (the Noxia audit finding)', () => {
+    // 6% max-health proc, 8s ICD: a 2-ability kit casting both in 10s
+    // gets at most 2 procs total, never 2 per ability.
+    const reg = {
+      targets: {
+        'item:noxlike': {
+          name: 'Noxlike', sourceText: 'Deal 6% of Target Max Health; 8s ICD.', source: 'synthetic', provisional: false,
+          effects: [{ kind: 'on_ability_hit' as const, pctTargetHealth: 6, healthBasis: 'max' as const, damageType: 'magical' as const, icdSeconds: 8 }],
+        },
+      },
+    };
+    const fx = resolveEntries(['item:noxlike'], { level: 13 }, reg);
+    const t = itemTotals([]);
+    const ranks = new Map([['PRIMARY', 5], ['ULTIMATE', 3]]);
+    const profile = { health: 1000, physicalArmor: 0, magicalArmor: 0 };
+    const bare = rotationDamage(synthKit, { level: 18, ranks, profile }, t, 10);
+    const withProc = rotationDamage(synthKit, { level: 18, ranks, profile, effects: fx }, t, 10);
+    // PRIMARY cd 9 -> 2 casts, ULT cd 80 -> 1 cast = 3 casts; 8s ICD in a
+    // 10s window allows 2 procs of 60 = 120 (per-ability counting gave 3).
+    expect(withProc - bare).toBeCloseTo(120, 6);
+  });
+
+  it('provisional sources propagate (Kallari ability-crit bakes the unverified crit multiplier)', () => {
+    const fx = resolveEntries(['augment:kallari:65'], { level: 13 });
     expect(fx.provisional).toBe(true);
-    expect(fx.shieldFlat).toBe(50);
+    expect(fx.ampAbilitiesFromCrit).toEqual({ minPct: 0, maxPct: 40 });
+  });
+
+  it('ability-scoped amp touches only the targeted ability', () => {
+    const reg = {
+      targets: {
+        'augment:x:1': {
+          name: 'X / Amp', sourceText: 'Bolt deals 50% more damage.', source: 'synthetic', provisional: false,
+          effects: [{ kind: 'ability_damage_amp' as const, abilityKey: 'PRIMARY' as const, pct: 50 }],
+        },
+      },
+    };
+    const fx = resolveEntries(['augment:x:1'], { level: 13 }, reg);
+    const t = itemTotals([]);
+    const ranks = new Map([['PRIMARY', 5], ['ULTIMATE', 3]]);
+    // 0.1s window = single cast each: PRIMARY 300 * 1.5 + ULT 800 untouched.
+    expect(rotationDamage(synthKit, { level: 18, ranks, profile: null, effects: fx }, t, 0.1))
+      .toBeCloseTo(300 * 1.5 + 800, 6);
+  });
+
+  it('ability cooldown mods change cast counts', () => {
+    const reg = {
+      targets: {
+        'augment:x:2': {
+          name: 'X / CD', sourceText: 'Bolt cooldown reduced by 4s.', source: 'synthetic', provisional: false,
+          effects: [{ kind: 'ability_cooldown' as const, abilityKey: 'PRIMARY' as const, flatSeconds: 4 }],
+        },
+      },
+    };
+    const fx = resolveEntries(['augment:x:2'], { level: 13 }, reg);
+    const t = itemTotals([]);
+    const ranks = new Map([['PRIMARY', 5]]);
+    // cd 9 -> 5: 1+floor(10/5) = 3 casts of 300 = 900 (vs 2 casts = 600).
+    expect(rotationDamage(synthKit, { level: 18, ranks, profile: null, effects: fx }, t, 10)).toBe(900);
+  });
+
+  it('ability_heal and shield_on_cast feed heal output and EHP', () => {
+    const reg = {
+      targets: {
+        'augment:x:3': {
+          name: 'X / Heal', sourceText: 'Bolt also shields for 100 (+50% MP); casting grants a 40 (+40% MP) shield.', source: 'synthetic', provisional: false,
+          effects: [
+            { kind: 'ability_heal' as const, abilityKey: 'PRIMARY' as const, healKind: 'shield' as const, flat: 100, scalingPct: 50, scaleStat: 'magical_power' as const },
+            { kind: 'shield_on_cast' as const, flat: 40, scalingPct: 40, scaleStat: 'magical_power' as const },
+          ],
+        },
+      },
+    };
+    const fx = resolveEntries(['augment:x:3'], { level: 13 }, reg);
+    const mp = mkItem('mp', { magical_power: 200 });
+    const ranks = new Map([['PRIMARY', 5]]);
+    const r = simulate(synthKit, [mp], { level: 13, ranks, profile: null, effects: fx }, cal);
+    // cd 9s -> 2 casts in 10s; per cast 100 + 0.5*200 = 200 -> 400 shielded.
+    expect(r.healShield10s).toBeCloseTo(400, 6);
+    // EHP shield: 40 + 0.4*200 = 120 on top of 1000 HP, at 50 armor.
+    expect(r.ehpPhysical).toBeCloseTo((1000 + 120) * 1.5, 6);
   });
 
   it('effects never break monotonicity: a damage item still never lowers output', () => {

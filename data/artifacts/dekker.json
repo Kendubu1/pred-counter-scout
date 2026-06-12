@@ -2,11 +2,11 @@
  "slug": "dekker",
  "name": "Dekker",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:41:39.884Z",
+ "generatedAt": "2026-06-12T23:30:34.460Z",
  "role": "support",
  "damageType": "hybrid",
  "attackType": "ranged",
- "roleCaveat": "This is Dekker's maximum-damage build, not a support build. Heal/shield output, auras, and income items are not in the model yet (support model is on the backlog) — in a real game, support itemization comes first.",
+ "roleCaveat": null,
  "confidence": {
   "level": "THEORY",
   "unverifiedConstants": [
@@ -14,104 +14,109 @@
    "abilityHaste",
    "critMultiplier",
    "attackSpeedFormula",
-   "abilityScalingUsesBonusPowerOnly"
+   "abilityScalingUsesBonusPowerOnly",
+   "attackSpeedCap"
   ],
   "notes": [
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
-   "evidence deltas carry finished-inventory survivorship bias"
+   "evidence deltas carry finished-inventory survivorship bias",
+   "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)"
   ]
  },
  "build": {
   "items": [
    {
-    "name": "Noxia",
-    "slug": "noxia",
+    "name": "Warden's Faith",
+    "slug": "wardens-faith",
     "spikeMinute": 14,
-    "playRatePct": 4,
-    "evidenceDeltaWr": 0.4,
-    "evidenceN": 70
+    "playRatePct": 0.3,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
    },
    {
-    "name": "Magnify",
-    "slug": "magnify",
-    "spikeMinute": 21,
-    "playRatePct": 1.4,
-    "evidenceDeltaWr": 0.6,
-    "evidenceN": 24
-   },
-   {
-    "name": "Combustion",
-    "slug": "combustion",
-    "spikeMinute": 28,
-    "playRatePct": 6.9,
+    "name": "Raiment of Renewal",
+    "slug": "raiment-of-renewal",
+    "spikeMinute": 22,
+    "playRatePct": 2.7,
     "evidenceDeltaWr": 0.8,
-    "evidenceN": 120
+    "evidenceN": 46
    },
    {
-    "name": "Timewarp",
-    "slug": "timewarp",
+    "name": "Vainglory",
+    "slug": "vainglory",
+    "spikeMinute": 28,
+    "playRatePct": 0.5,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
+   },
+   {
+    "name": "Frostguard",
+    "slug": "frostguard",
     "spikeMinute": 34,
-    "playRatePct": 54.2,
-    "evidenceDeltaWr": 0.3,
-    "evidenceN": 939
+    "playRatePct": 0.6,
+    "evidenceDeltaWr": -0.2,
+    "evidenceN": 10
    },
    {
-    "name": "Oblivion Crown",
-    "slug": "oblivion-crown",
-    "spikeMinute": 41,
-    "playRatePct": 4.3,
-    "evidenceDeltaWr": 1.2,
-    "evidenceN": 75
+    "name": "Unbroken Will",
+    "slug": "unbroken-will",
+    "spikeMinute": 40,
+    "playRatePct": 0.1,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
    },
    {
-    "name": "Wraith Leggings",
-    "slug": "wraith-leggings",
-    "spikeMinute": 47,
-    "playRatePct": 5.8,
-    "evidenceDeltaWr": 1.7,
-    "evidenceN": 101
+    "name": "Void Helm",
+    "slug": "void-helm",
+    "spikeMinute": 45,
+    "playRatePct": 0.2,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
    }
   ],
-  "gold": 18550,
+  "gold": 18000,
   "archetypes": [
-   "skirmish uptime"
+   "physical survival"
   ],
   "objectives": {
-   "burstVsSquishy": 2474.8945641783266,
-   "rot10VsSquishy": 4563.380281690141,
-   "rot20VsBruiser": 5674.562937062936,
+   "burstVsSquishy": 607.7837837837837,
+   "rot10VsSquishy": 655.4054054054054,
+   "rot20VsBruiser": 731.578947368421,
    "autoDps10VsSquishy": 80.69302702702704,
-   "ehpPhysical": 4571.71284375,
-   "ehpMagical": 3502.1028046875
+   "ehpPhysical": 14862.54409375,
+   "ehpMagical": 13409.2653046875,
+   "healShield10s": 0,
+   "utility": 155,
+   "sustain10s": 0
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for skirmish uptime: first spike lands around minute 14 (Noxia), third item by minute 28. Take Demiurge: +11.8% on 20-second fights at minute 15.",
+ "coachLine": "Sim-optimal for physical survival: first spike lands around minute 14 (Warden's Faith), third item by minute 28. Take Lotus: +19.8% on your damage rotation at minute 15.",
  "eternals": {
   "top": [
    {
-    "name": "Demiurge",
-    "id": "demiurge",
-    "headlinePct": 11.6,
-    "burstPct": 11.6,
-    "rot20Pct": 11.8,
-    "ehpPct": 1.5
+    "name": "Lotus",
+    "id": "lotus",
+    "headlinePct": 19.8,
+    "burstPct": 2.7,
+    "rot20Pct": 12.7,
+    "ehpPct": 2.8
    },
    {
     "name": "Vesh",
     "id": "vesh",
-    "headlinePct": 10.7,
-    "burstPct": 9.1,
-    "rot20Pct": 10.6,
+    "headlinePct": 12.8,
+    "burstPct": 10.5,
+    "rot20Pct": 12.7,
     "ehpPct": 0
    },
    {
     "name": "Thraex",
     "id": "thraex",
-    "headlinePct": 7.5,
+    "headlinePct": 9,
     "burstPct": 0,
-    "rot20Pct": 7.5,
+    "rot20Pct": 9,
     "ehpPct": 0
    }
   ],
@@ -119,17 +124,92 @@
    "Marrow",
    "Nihil",
    "Aion",
-   "Exarch",
-   "Lotus"
-  ]
+   "Exarch"
+  ],
+  "augmentAware": "Photon Efficiency"
  },
+ "augments": [
+  {
+   "id": "28",
+   "name": "Photon Efficiency",
+   "modeled": true,
+   "provisional": false,
+   "headlinePct": 5.2,
+   "burstPct": 2.8,
+   "rot20Pct": 25.2,
+   "ehpPct": 0,
+   "healShieldPct": 0,
+   "healShieldAbs": 0,
+   "note": null,
+   "buildShift": null
+  },
+  {
+   "id": "179",
+   "name": "Polarity Strike",
+   "modeled": true,
+   "provisional": false,
+   "headlinePct": 0,
+   "burstPct": 0,
+   "rot20Pct": 0,
+   "ehpPct": 0,
+   "healShieldPct": 0,
+   "healShieldAbs": 250,
+   "note": "missing-health bonus shield not counted (target state unknown); one-beneficiary convention",
+   "buildShift": {
+    "in": [
+     "Crystalline Cuirass"
+    ],
+    "out": [
+     "Void Helm"
+    ]
+   }
+  },
+  {
+   "id": "178",
+   "name": "Nothin' But Net",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "per-hit gold and Magical Power grants; stack duration unstated, economy not scored",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
   "candidates": [
    {
-    "item": "Magnify",
-    "playRatePct": 1.4,
-    "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 161.3
+    "item": "Warden's Faith",
+    "playRatePct": 0.3,
+    "bestObjective": "magical survivability",
+    "edgeVsPopularPct": 162
+   },
+   {
+    "item": "Vainglory",
+    "playRatePct": 0.5,
+    "bestObjective": "magical survivability",
+    "edgeVsPopularPct": 162
+   },
+   {
+    "item": "Frostguard",
+    "playRatePct": 0.6,
+    "bestObjective": "magical survivability",
+    "edgeVsPopularPct": 162
+   },
+   {
+    "item": "Unbroken Will",
+    "playRatePct": 0.1,
+    "bestObjective": "magical survivability",
+    "edgeVsPopularPct": 162
+   },
+   {
+    "item": "Void Helm",
+    "playRatePct": 0.2,
+    "bestObjective": "magical survivability",
+    "edgeVsPopularPct": 162
    }
   ],
   "honestAbsence": null
@@ -156,7 +236,7 @@
    "spikeMinute": 25,
    "bestObjective": "physical survivability",
    "whyLine": "Strongest meta core for physical survivability, online around minute 25 — about 5,190 effective HP vs physical in the sim.",
-   "optimizer": null
+   "optimizer": "Optimizer sees +95% more physical survivability: try Warden's Faith over Crescelia (sim-only — the popular pick may carry utility the sim can't see; test it)."
   },
   {
    "items": [
@@ -177,9 +257,9 @@
    "shrunkWr": 0.467,
    "coreGold": 8450,
    "spikeMinute": 27,
-   "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 27 — about 892 damage in one combo in the sim.",
-   "optimizer": "Optimizer sees +64% more one-combo burst: try Noxia over Crescelia (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "bestObjective": "10s rotation damage",
+   "whyLine": "Strongest meta core for 10s rotation damage, online around minute 27 — about 1,322 damage over a 10s rotation in the sim.",
+   "optimizer": null
   },
   {
    "items": [
@@ -202,7 +282,7 @@
    "spikeMinute": 25,
    "bestObjective": "physical survivability",
    "whyLine": "Strongest meta core for physical survivability, online around minute 25 — about 5,610 effective HP vs physical in the sim.",
-   "optimizer": null
+   "optimizer": "Optimizer sees +80% more physical survivability: try Warden's Faith over Crescelia (sim-only — the popular pick may carry utility the sim can't see; test it)."
   }
  ],
  "matchups": [
@@ -236,14 +316,7 @@
      "verdict": "you"
     }
    ],
-   "counterSwap": {
-    "out": "Oblivion Crown",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 30,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 30% of its bite; you give up 20% of your damage."
-   }
+   "counterSwap": null
   },
   {
    "enemy": "Adele",
@@ -276,18 +349,18 @@
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Frostguard",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 38,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Warden's Faith instead of Oblivion Crown: their 3s all-in loses 38% of its bite; you give up 20% of your damage."
+    "survivalGainPct": 14,
+    "offenseLossPct": 0,
+    "line": "Losing lane? Third item Warden's Faith instead of Frostguard: their 3s all-in loses 14% of its bite; you give up 0% of your damage."
    }
   },
   {
    "enemy": "Riktor",
    "enemySlug": "riktor",
-   "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover.",
+   "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention.",
    "checkpoints": [
     {
      "minute": 5,
@@ -299,29 +372,22 @@
     },
     {
      "minute": 15,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 20,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 25,
-     "verdict": "enemy"
+     "verdict": "you"
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "you"
     }
    ],
-   "counterSwap": {
-    "out": "Oblivion Crown",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 19,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Oblivion Crown: their 3s all-in loses 19% of its bite; you give up 20% of your damage."
-   }
+   "counterSwap": null
   },
   {
    "enemy": "Phase",
@@ -353,23 +419,16 @@
      "verdict": "you"
     }
    ],
-   "counterSwap": {
-    "out": "Oblivion Crown",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 32,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 32% of its bite; you give up 20% of your damage."
-   }
+   "counterSwap": null
   },
   {
    "enemy": "Narbash",
    "enemySlug": "narbash",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+   "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention.",
    "checkpoints": [
     {
      "minute": 5,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 10,
@@ -377,29 +436,22 @@
     },
     {
      "minute": 15,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 20,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 25,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "you"
     }
    ],
-   "counterSwap": {
-    "out": "Oblivion Crown",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 19,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Oblivion Crown: their 3s all-in loses 19% of its bite; you give up 20% of your damage."
-   }
+   "counterSwap": null
   },
   {
    "enemy": "Mourn",
@@ -431,18 +483,11 @@
      "verdict": "you"
     }
    ],
-   "counterSwap": {
-    "out": "Oblivion Crown",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 31,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 31% of its bite; you give up 20% of your damage."
-   }
+   "counterSwap": null
   }
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }

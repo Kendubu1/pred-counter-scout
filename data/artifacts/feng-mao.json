@@ -2,7 +2,7 @@
  "slug": "feng-mao",
  "name": "Feng Mao",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:41:45.276Z",
+ "generatedAt": "2026-06-12T23:30:59.371Z",
  "role": "jungle",
  "damageType": "physical",
  "attackType": "melee",
@@ -14,7 +14,8 @@
    "abilityHaste",
    "critMultiplier",
    "attackSpeedFormula",
-   "abilityScalingUsesBonusPowerOnly"
+   "abilityScalingUsesBonusPowerOnly",
+   "attackSpeedCap"
   ],
   "notes": [
    "all combat numbers are simulator output on unverified constants",
@@ -33,25 +34,17 @@
     "evidenceN": 42
    },
    {
-    "name": "Nuclear Rounds",
-    "slug": "nuclear-rounds",
+    "name": "Penumbra",
+    "slug": "penumbra",
     "spikeMinute": 18,
-    "playRatePct": 0.2,
-    "evidenceDeltaWr": null,
-    "evidenceN": null
-   },
-   {
-    "name": "Vanquisher",
-    "slug": "vanquisher",
-    "spikeMinute": 24,
-    "playRatePct": 1.9,
-    "evidenceDeltaWr": -1.8,
-    "evidenceN": 18
+    "playRatePct": 5.1,
+    "evidenceDeltaWr": 1.6,
+    "evidenceN": 49
    },
    {
     "name": "Painweaver",
     "slug": "painweaver",
-    "spikeMinute": 30,
+    "spikeMinute": 24,
     "playRatePct": 33.6,
     "evidenceDeltaWr": 0.1,
     "evidenceN": 325
@@ -59,52 +52,55 @@
    {
     "name": "Dread",
     "slug": "dread",
-    "spikeMinute": 36,
+    "spikeMinute": 30,
     "playRatePct": 2.2,
     "evidenceDeltaWr": 4.9,
     "evidenceN": 21
    },
    {
-    "name": "Penumbra",
-    "slug": "penumbra",
+    "name": "Alternata",
+    "slug": "alternata",
+    "spikeMinute": 36,
+    "playRatePct": 0.1,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
+   },
+   {
+    "name": "Spear Of Desolation",
+    "slug": "spear-of-desolation",
     "spikeMinute": 42,
-    "playRatePct": 5.1,
-    "evidenceDeltaWr": 1.6,
-    "evidenceN": 49
+    "playRatePct": 1,
+    "evidenceDeltaWr": 0.7,
+    "evidenceN": 10
    }
   ],
-  "gold": 17550,
+  "gold": 17700,
   "archetypes": [
    "skirmish uptime"
   ],
   "objectives": {
-   "burstVsSquishy": 1301.58984375,
-   "rot10VsSquishy": 1438.619469026549,
-   "rot20VsBruiser": 1382.9285714285716,
-   "autoDps10VsSquishy": 899.339080544801,
+   "burstVsSquishy": 1325.6465517241377,
+   "rot10VsSquishy": 1587.1287128712872,
+   "rot20VsBruiser": 1476.6025641025642,
+   "autoDps10VsSquishy": 701.966974009901,
    "ehpPhysical": 4541.004,
-   "ehpMagical": 4645.00803125
+   "ehpMagical": 4645.00803125,
+   "healShield10s": 0,
+   "utility": 3,
+   "sustain10s": 0
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for skirmish uptime: first spike lands around minute 11 (Deathstalker), third item by minute 24. Take Vesh: +11.8% on your headline output at minute 15.",
+ "coachLine": "Sim-optimal for skirmish uptime: first spike lands around minute 11 (Deathstalker), third item by minute 24. Take Vesh: +12.3% on your headline output at minute 15.",
  "eternals": {
   "top": [
    {
     "name": "Vesh",
     "id": "vesh",
-    "headlinePct": 11.8,
-    "burstPct": 6.6,
-    "rot20Pct": 11.8,
+    "headlinePct": 12.3,
+    "burstPct": 7.3,
+    "rot20Pct": 12.3,
     "ehpPct": 0
-   },
-   {
-    "name": "Demiurge",
-    "id": "demiurge",
-    "headlinePct": 11.8,
-    "burstPct": 13.2,
-    "rot20Pct": 12,
-    "ehpPct": 1
    },
    {
     "name": "Krix",
@@ -113,29 +109,81 @@
     "burstPct": 0,
     "rot20Pct": 0,
     "ehpPct": 18
+   },
+   {
+    "name": "Thraex",
+    "id": "thraex",
+    "headlinePct": 8.7,
+    "burstPct": 0,
+    "rot20Pct": 8.7,
+    "ehpPct": 0
    }
   ],
   "unmodeled": [
    "Marrow",
    "Nihil",
    "Aion",
-   "Exarch",
-   "Lotus"
-  ]
+   "Exarch"
+  ],
+  "augmentAware": "Imperial Duelist"
  },
+ "augments": [
+  {
+   "id": "35",
+   "name": "Imperial Duelist",
+   "modeled": true,
+   "provisional": false,
+   "headlinePct": 4.8,
+   "burstPct": 4.9,
+   "rot20Pct": 4.8,
+   "ehpPct": 0,
+   "healShieldPct": 0,
+   "healShieldAbs": 0,
+   "note": "assumes the basic-attack debuff is maintained in combat; the 5% damage-taken reduction is not scored",
+   "buildShift": null
+  },
+  {
+   "id": "36",
+   "name": "Ichorous Glaive",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "kill-conditional missing-health restore; execution economy",
+   "buildShift": null
+  },
+  {
+   "id": "37",
+   "name": "Seismic Smash",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "knock-up/stun utility; CC not scored",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
   "candidates": [
    {
-    "item": "Nuclear Rounds",
-    "playRatePct": 0.2,
+    "item": "Alternata",
+    "playRatePct": 0.1,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 174
+    "edgeVsPopularPct": 113.9
    },
    {
-    "item": "Vanquisher",
-    "playRatePct": 1.9,
+    "item": "Spear Of Desolation",
+    "playRatePct": 1,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 174
+    "edgeVsPopularPct": 113.9
    }
   ],
   "honestAbsence": null
@@ -185,7 +233,7 @@
    "spikeMinute": 24,
    "bestObjective": "one-combo burst",
    "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 718 damage in one combo in the sim.",
-   "optimizer": "Optimizer agrees: within 5% of our best core on one-combo burst. The winrate is earned, not luck."
+   "optimizer": "Optimizer agrees: within 1% of our best core on one-combo burst. The winrate is earned, not luck."
   },
   {
    "items": [
@@ -208,14 +256,14 @@
    "spikeMinute": 25,
    "bestObjective": "extended fights vs bruisers",
    "whyLine": "Strongest meta core for extended fights vs bruisers, online around minute 25 — about 702 damage over a 20s fight in the sim.",
-   "optimizer": "Optimizer agrees: within 4% of our best core on extended fights vs bruisers. The winrate is earned, not luck."
+   "optimizer": "Optimizer sees +11% more extended fights vs bruisers: try Deathstalker over Malady (sim-only — the popular pick may carry utility the sim can't see; test it)."
   }
  ],
  "matchups": [
   {
    "enemy": "Khaimera",
    "enemySlug": "khaimera",
-   "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention.",
+   "gameplan": "Even kill threat throughout: this lane is decided by mechanics and wave control, not scaling.",
    "checkpoints": [
     {
      "minute": 5,
@@ -239,22 +287,22 @@
     },
     {
      "minute": 30,
-     "verdict": "you"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
-    "out": "Deathstalker",
+    "out": "Penumbra",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 41,
-    "offenseLossPct": 37,
-    "line": "Losing lane? Third item Warden's Faith instead of Deathstalker: their 3s all-in loses 41% of its bite; you give up 37% of your damage."
+    "survivalGainPct": 36,
+    "offenseLossPct": 19,
+    "line": "Losing lane? Third item Warden's Faith instead of Penumbra: their 3s all-in loses 36% of its bite; you give up 19% of your damage."
    }
   },
   {
    "enemy": "Serath",
    "enemySlug": "serath",
-   "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands.",
+   "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale.",
    "checkpoints": [
     {
      "minute": 5,
@@ -274,7 +322,7 @@
     },
     {
      "minute": 25,
-     "verdict": "you"
+     "verdict": "even"
     },
     {
      "minute": 30,
@@ -282,12 +330,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Deathstalker",
+    "out": "Penumbra",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 37,
-    "offenseLossPct": 36,
-    "line": "Losing lane? Third item Warden's Faith instead of Deathstalker: their 3s all-in loses 37% of its bite; you give up 36% of your damage."
+    "survivalGainPct": 34,
+    "offenseLossPct": 18,
+    "line": "Losing lane? Third item Warden's Faith instead of Penumbra: their 3s all-in loses 34% of its bite; you give up 18% of your damage."
    }
   },
   {
@@ -321,12 +369,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Deathstalker",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 22,
-    "offenseLossPct": 36,
-    "line": "Losing lane? Third item Void Helm instead of Deathstalker: their 3s all-in loses 22% of its bite; you give up 36% of your damage."
+    "out": "Penumbra",
+    "in": "Raiment of Renewal",
+    "inSlug": "raiment-of-renewal",
+    "survivalGainPct": 15,
+    "offenseLossPct": 18,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Penumbra: their 3s all-in loses 15% of its bite; you give up 18% of your damage."
    }
   },
   {
@@ -360,12 +408,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Deathstalker",
+    "out": "Penumbra",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 41,
-    "offenseLossPct": 36,
-    "line": "Losing lane? Third item Warden's Faith instead of Deathstalker: their 3s all-in loses 41% of its bite; you give up 36% of your damage."
+    "survivalGainPct": 35,
+    "offenseLossPct": 18,
+    "line": "Losing lane? Third item Warden's Faith instead of Penumbra: their 3s all-in loses 35% of its bite; you give up 18% of your damage."
    }
   },
   {
@@ -399,12 +447,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Deathstalker",
+    "out": "Penumbra",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 18,
-    "offenseLossPct": 36,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their 3s all-in loses 18% of its bite; you give up 36% of your damage."
+    "survivalGainPct": 14,
+    "offenseLossPct": 18,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Penumbra: their 3s all-in loses 14% of its bite; you give up 18% of your damage."
    }
   },
   {
@@ -438,17 +486,17 @@
     }
    ],
    "counterSwap": {
-    "out": "Deathstalker",
+    "out": "Penumbra",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 18,
-    "offenseLossPct": 36,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their 3s all-in loses 18% of its bite; you give up 36% of your damage."
+    "survivalGainPct": 15,
+    "offenseLossPct": 18,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Penumbra: their 3s all-in loses 15% of its bite; you give up 18% of your damage."
    }
   }
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }
