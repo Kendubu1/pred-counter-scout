@@ -340,3 +340,20 @@ Append-only. One entry per backlog item or significant finding.
 - Pattern reinforced: when a number could be attributed multiple ways
   (hero x role, here), check whose attribution the source uses before
   presenting it as the player's.
+
+## 2026-06-12 (evening): the lane room — pick-first vs counter flow
+
+- The landing page's lane filter was a grid filter, not a decision tool.
+  Reframed as a "lane room": choosing a lane opens a panel with the full
+  lane meta (annotated with each hero's worst sim matchup as blind-pick
+  safety) and a countering mode — lock the enemy's pick, get the lane's
+  answers ranked by kill-window checkpoints. All client-side from
+  committed artifacts; zero API at view time.
+- Counter coverage doubled for free by reading matchups in BOTH
+  directions: hero A's artifact row vs B serves B's counter view with
+  verdicts inverted. 6 matchups per hero (up from 2) cost 50s of sim
+  time for all 52 artifacts.
+- Hero augments: confirmed absent from every source we hold (omeda
+  heroes.json has no augment fields). Backlog item 9 written — needs
+  source research before any encoding; per the no-estimates rule the
+  hero pages stay augment-silent rather than guessing.

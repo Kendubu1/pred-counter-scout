@@ -173,6 +173,30 @@
   th { color:var(--text-2); font-weight:600; }
   td.num { text-align:right; font-variant-numeric:tabular-nums; color:var(--text-0); }
 
+  /* ── lane detail panel ── */
+  .lanepanel { margin-top:1.4rem; background:var(--bg-1); border:1px solid var(--border); border-radius:14px; padding:1rem 1.1rem; }
+  .lanepanel h2 { font-size:1rem; font-weight:800; }
+  .lanepanel .lp-sub { font-size:.72rem; color:var(--text-2); margin-top:.15rem; }
+  .lmode { display:flex; gap:.5rem; margin:.7rem 0 .8rem; flex-wrap:wrap; }
+  .lmode button { background:var(--bg-2); border:1px solid var(--border); color:var(--text-1); border-radius:99px; padding:.3rem .9rem; font-size:.8rem; }
+  .lmode button.active { background:var(--accent-soft); border-color:var(--accent); color:var(--text-0); }
+  .lrow { display:grid; grid-template-columns:auto 1fr auto; gap:.7rem; align-items:center; padding:.45rem 0; border-bottom:1px solid var(--border); cursor:pointer; }
+  .lrow:last-of-type { border-bottom:none; }
+  .lrow img { width:34px; height:34px; border-radius:8px; object-fit:cover; }
+  .lrow .sub { font-size:.7rem; color:var(--text-2); }
+  .lrow .wrr { font-weight:800; font-variant-numeric:tabular-nums; font-size:.86rem; }
+  .echips { display:flex; gap:.4rem; flex-wrap:wrap; margin:.3rem 0 .7rem; }
+  .echip { display:flex; align-items:center; gap:.3rem; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.18rem .55rem; font-size:.74rem; cursor:pointer; color:var(--text-1); }
+  .echip img { width:20px; height:20px; border-radius:50%; object-fit:cover; }
+  .echip.active { border-color:var(--red); color:var(--text-0); background:rgba(255,90,90,.1); }
+  .lanepanel .pilots-line { font-size:.72rem; color:var(--text-2); margin-top:.7rem; border-top:1px dashed var(--border); padding-top:.6rem; }
+  .lanepanel .pilots-line a { color:var(--blue); }
+  @media (max-width:600px) {
+    .lanepanel { padding:.8rem .8rem; }
+    .lrow { grid-template-columns:28px 1fr auto; gap:.5rem; }
+    .lrow img { width:28px; height:28px; }
+  }
+
   /* ── meta board ── */
   .metaboard { margin-top:2rem; }
   .metaboard .mb-head { display:flex; align-items:baseline; gap:.7rem; flex-wrap:wrap; }
@@ -242,6 +266,7 @@
         play rates and winrate deltas come from thousands of current-patch matches via the official API.
       </div>
     </div>
+    <div id="lanedetail"></div>
     <div class="metaboard" id="metaboard"></div>
     <div class="grid" id="heroGrid"></div>
   </div>
@@ -276,8 +301,113 @@ function renderRolebar() {
   $('#rolebar').innerHTML = ROLES.map((r) =>
     `<button data-r="${r}" class="${r === roleFilter ? 'active' : ''}">${r === 'all' ? 'All roles' : r}</button>`).join('');
   document.querySelectorAll('#rolebar button').forEach((b) => {
-    b.onclick = () => { roleFilter = b.dataset.r; renderRolebar(); renderGrid(); };
+    b.onclick = () => { roleFilter = b.dataset.r; laneEnemy = null; renderRolebar(); renderGrid(); renderLaneDetail(); };
   });
+}
+
+/* ── lane detail: pick-first vs counter flow ── */
+let laneMode = 'first';
+let laneEnemy = null;
+const ART = new Map();
+async function getArtifact(slug) {
+  if (!ART.has(slug)) ART.set(slug, getJson(`../../data/artifacts/${slug}.json`).catch(() => null));
+  return ART.get(slug);
+}
+const vdots = (cps) => `<div class="dots">${cps.map((c) =>
+  `<div class="dotwrap"><div class="dot ${c.verdict}" title="minute ${c.minute}: ${c.verdict === 'you' ? 'your kill window is better' : c.verdict === 'enemy' ? 'their kill window is better' : 'even'}"></div><div class="m">${c.minute}</div></div>`).join('')}</div>`;
+const invertV = (v) => (v === 'you' ? 'enemy' : v === 'enemy' ? 'you' : 'even');
+const phaseLine = (cps) => {
+  const w = (arr) => arr.filter((c) => c.verdict === 'you').length - arr.filter((c) => c.verdict === 'enemy').length;
+  const e = w(cps.slice(0, 2)), l = w(cps.slice(-2));
+  if (e > 0 && l > 0) return 'sim favors you at every checkpoint';
+  if (e > 0 && l <= 0) return 'win it early — the sim flips late';
+  if (e <= 0 && l > 0) return 'survive early; you take over late';
+  if (e < 0 && l < 0) return 'uphill at every checkpoint — consider another pick';
+  return 'even by the sim — comfort decides';
+};
+
+async function renderLaneDetail() {
+  const box = $('#lanedetail');
+  if (roleFilter === 'all' || !META) { box.innerHTML = ''; return; }
+  const role = roleFilter;
+  const laneMeta = META.roles[role] || [];
+  const laneSlugs = INDEX.heroes.filter((h) => h.role === role).map((h) => h.slug);
+  box.innerHTML = '<div class="lanepanel">loading lane sims…</div>';
+  const arts = new Map();
+  await Promise.all(laneSlugs.map(async (s) => { const a = await getArtifact(s); if (a) arts.set(s, a); }));
+  if (roleFilter !== role) return; // user switched lanes while loading
+
+  const nameOf = (slug) => (INDEX.heroes.find((h) => h.slug === slug) || {}).name || slug;
+  let body = '';
+  if (laneMode === 'first') {
+    body = laneMeta.map((h, i) => {
+      const a = arts.get(h.slug);
+      let trouble = '';
+      if (a && a.matchups.length >= 3) {
+        const worst = a.matchups.map((m) => ({ m, bad: m.checkpoints.filter((c) => c.verdict === 'enemy').length }))
+          .sort((x, y) => y.bad - x.bad)[0];
+        trouble = worst.bad >= 4 ? `gets out-simmed by ${worst.m.enemy} — dodge or respect that lane`
+          : worst.bad >= 2 ? `closest fight in lane: ${worst.m.enemy}` : 'no losing sim in this lane — safe blind pick';
+      }
+      return `
+      <div class="lrow" data-slug="${h.slug}">
+        <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
+        <span><b>${i === 0 ? '👑 ' : ''}${esc(h.name)}</b>${h.badge ? ` <span style="color:var(--gold)">${h.badge === 'sleeper' ? '💤 sleeper' : '⚠ popular but losing'}</span>` : ''}
+          <div class="sub">${trouble ? esc(trouble) : 'sim coverage building'}</div></span>
+        <span class="wrr">${(h.shrunkWr * 100).toFixed(1)}%<div class="sub" style="text-align:right">${h.games} games</div></span>
+      </div>`;
+    }).join('');
+    body += `<div class="lp-sub" style="margin-top:.6rem">ordered by meta score (pick presence + winrate, percentile-averaged) · "out-simmed" = the kit-math kill-window sim, THEORY until calibrated · tap a hero for the full build page</div>`;
+  } else {
+    const chips = laneMeta.map((h) => `
+      <span class="echip ${laneEnemy === h.slug ? 'active' : ''}" data-slug="${h.slug}">
+        <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">${esc(h.name)}</span>`).join('');
+    body = `<div class="lp-sub">they locked in:</div><div class="echips">${chips}</div>`;
+    if (laneEnemy) {
+      const rows = [];
+      const noSim = [];
+      for (const our of laneSlugs) {
+        if (our === laneEnemy) continue;
+        const direct = arts.get(our)?.matchups.find((m) => m.enemySlug === laneEnemy);
+        const rev = arts.get(laneEnemy)?.matchups.find((m) => m.enemySlug === our);
+        const cps = direct ? direct.checkpoints
+          : rev ? rev.checkpoints.map((c) => ({ minute: c.minute, verdict: invertV(c.verdict) })) : null;
+        if (!cps) { noSim.push(nameOf(our)); continue; }
+        const score = cps.filter((c) => c.verdict === 'you').length - cps.filter((c) => c.verdict === 'enemy').length;
+        const line = direct?.gameplan ?? phaseLine(cps);
+        rows.push({ our, cps, score, line });
+      }
+      rows.sort((x, y) => y.score - x.score);
+      body += rows.map((r) => `
+        <div class="lrow" data-slug="${r.our}">
+          <img loading="lazy" src="${IMG.hero(r.our)}" alt="" onerror="this.style.visibility='hidden'">
+          <span><b>${esc(nameOf(r.our))}</b><div class="sub">${esc(r.line)}</div></span>
+          ${vdots(r.cps)}
+        </div>`).join('');
+      body += noSim.length ? `<div class="lp-sub" style="margin-top:.5rem">no sim vs ${esc(nameOf(laneEnemy))} yet: ${noSim.map(esc).join(', ')}</div>` : '';
+      body += `<div class="lp-sub" style="margin-top:.4rem">ranked by kill-window checkpoints from the kit-math sim (THEORY until calibrated) — green dots = your windows · this is not head-to-head match data</div>`;
+    } else {
+      body += '<div class="lp-sub">pick the enemy hero to see who answers them best</div>';
+    }
+  }
+
+  const pilots = META.topPlayers && META.topPlayers[role];
+  box.innerHTML = `
+    <div class="lanepanel">
+      <h2>${LANE_LABELS[role]} · lane room</h2>
+      <div class="lp-sub">${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</div>
+      <div class="lmode">
+        <button data-m="first" class="${laneMode === 'first' ? 'active' : ''}">⚔ picking first</button>
+        <button data-m="counter" class="${laneMode === 'counter' ? 'active' : ''}">🛡 countering their pick</button>
+      </div>
+      ${body}
+      ${pilots && pilots.length ? `<div class="pilots-line">🏆 top ${LANE_LABELS[role].toLowerCase()} pilots this split: ${pilots.slice(0, 3).map((p) => p.uuid
+        ? `<a href="https://pred.gg/players/${esc(p.uuid)}" target="_blank" rel="noopener">#${p.ranking} ${esc(p.name)}</a>${p.heroName ? ` (${esc(p.heroName)})` : ''}`
+        : `#${p.ranking} ${esc(p.name)}`).join(' · ')} — the ladder's highest-rated players who main this lane; names open their pred.gg match history to study real builds</div>` : ''}
+    </div>`;
+  box.querySelectorAll('.lmode button').forEach((b) => { b.onclick = () => { laneMode = b.dataset.m; renderLaneDetail(); }; });
+  box.querySelectorAll('.echip').forEach((c) => { c.onclick = () => { laneEnemy = c.dataset.slug; renderLaneDetail(); }; });
+  box.querySelectorAll('.lrow').forEach((r) => { r.onclick = () => nav(r.dataset.slug); });
 }
 function renderMetaboard() {
   if (!META) { $('#metaboard').innerHTML = ''; return; }

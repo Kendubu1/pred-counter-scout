@@ -62,6 +62,18 @@ support objective vector and the max-damage-only caveat comes off; golden
 scenario: an enchanter support is never handed a crit/lethality core;
 harness green; docs + lessons updated; committed.
 
+## 9. Hero augments (requested by maintainer 2026-06-12)
+
+Hero pages carry Eternals but not the three per-hero augments, which
+change builds as much as role does (damage Zinx vs support Zinx). No
+augment data exists in any snapshot we hold (omeda heroes.json: zero
+fields; effects.json: one hand-encoded hero from item 1). Done when:
+an augment source is identified (omeda.city API field, pred.gg schema,
+or manual curation from the game client), all 52 heroes' augments are
+encoded with their mechanical effects, the simulator consumes the
+tractable ones, and the hero page shows builds per augment choice where
+they diverge; uncodable augments listed as unmodeled, never guessed.
+
 ## Parked ideas (not yet scheduled)
 
 - Comfort-vs-meta flex logic (parked by maintainer 2026-06-12): when a
