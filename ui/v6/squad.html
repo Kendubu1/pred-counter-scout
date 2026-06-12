@@ -14,11 +14,19 @@
   * { box-sizing:border-box; margin:0; }
   body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
   a { color:var(--blue); text-decoration:none; }
-  .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(10px); background:rgba(10,10,15,.82); border-bottom:1px solid var(--border); }
-  .top-inner { max-width:920px; margin:0 auto; padding:.65rem 1rem; display:flex; align-items:center; gap:.8rem; }
+  .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:rgba(10,10,15,.78); border-bottom:1px solid var(--border); }
+  .top-inner { max-width:920px; margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
   .wordmark { font-weight:800; color:var(--text-0); }
-  .wordmark .beta { color:var(--accent); font-size:.7rem; vertical-align:super; margin-left:.2rem; }
   .spacer { flex:1; }
+  .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
+  .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .navlink:hover { color:var(--text-0); }
+  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:920px; margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .subnav::-webkit-scrollbar { display:none; }
+  .subnav:empty { display:none; }
+  .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; -webkit-appearance:none; appearance:none; }
+  .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
+  .card { scroll-margin-top:96px; }
   .wrap { max-width:920px; margin:0 auto; padding:1.25rem 1rem 4rem; }
   .scope {
     font-size:.7rem; color:var(--text-2); border:1px solid var(--border);
@@ -121,11 +129,12 @@
 </head>
 <body>
 <div class="top"><div class="top-inner">
-  <span class="wordmark">⚔ Predecessor Scout<span class="beta">SQUAD</span></span>
+  <a class="wordmark" href="./">⚔ Predecessor Scout</a>
   <span class="spacer"></span>
-  <a href="coach.html">coach reports</a>
-  <a href="./">build lab →</a>
-</div></div>
+  <a class="navlink" href="./">build lab</a>
+  <a class="navlink active" href="squad.html">squad</a>
+  <a class="navlink" href="coach.html">coach</a>
+</div><div class="subnav" id="subnav"></div></div>
 <div class="wrap" id="page">loading…</div>
 <script>
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -333,7 +342,32 @@ const plink = (uuid, name) => uuid
   }
   document.querySelectorAll('#synmode input').forEach((i) => { i.onchange = renderSyn; });
   renderSyn();
+  buildSubnav();
 })();
+
+// Sticky section jumper: pills generated from the page's section headers,
+// scrollspy keeps the current one highlighted as you scroll.
+function buildSubnav() {
+  const host = document.getElementById('subnav');
+  const cards = [...document.querySelectorAll('.wrap .card')].filter((c) => c.querySelector('h2'));
+  host.innerHTML = cards.map((c, i) => {
+    c.id = c.id || 'sec' + i;
+    const h = c.querySelector('h2');
+    const label = (h.childNodes[0]?.textContent || h.textContent).split('·')[0].trim().toLowerCase();
+    return `<button class="snpill" data-t="${c.id}">${esc(label)}</button>`;
+  }).join('');
+  const pills = [...host.querySelectorAll('.snpill')];
+  pills.forEach((p) => { p.onclick = () => document.getElementById(p.dataset.t)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  const byId = new Map(pills.map((p) => [p.dataset.t, p]));
+  const io = new IntersectionObserver((es) => {
+    for (const e of es) {
+      if (!e.isIntersecting) continue;
+      pills.forEach((p) => p.classList.toggle('active', p.dataset.t === e.target.id));
+      byId.get(e.target.id)?.scrollIntoView({ inline: 'center', block: 'nearest' });
+    }
+  }, { rootMargin: '-15% 0px -75% 0px' });
+  cards.forEach((c) => io.observe(c));
+}
 </script>
 </body>
 </html>

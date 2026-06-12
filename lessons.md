@@ -448,3 +448,19 @@ Append-only. One entry per backlog item or significant finding.
   player-facing artifacts for the Ng pattern, so the abbreviation can't
   ship again. Validating enum values against the API (not guessing) and
   banning ambiguous units are now both gated, not remembered.
+
+## 2026-06-12 (night, cont. 4): navigation as a system
+
+- Top nav unified across all three pages: wordmark links home (build
+  lab), three destinations as pills with the active page highlighted —
+  page identity moved from a superscript beta tag into the nav state
+  itself. Below it, a frozen glassy subnav (backdrop blur, horizontal
+  scroll, no scrollbar) generated from each page's section headers, with
+  an IntersectionObserver scrollspy highlighting the section in view and
+  auto-centering its pill. One builder function per page, labels derived
+  from h2 text before the '·' separator, so new cards self-register.
+- "sim coverage building" was a coverage gap wearing a friendly label:
+  lane-flex heroes (Zinx listed in midlane, artifact written support-
+  side) never had artifacts fetched for that lane. The pick-first
+  trouble note now derives from the all-pairs matrix vs the DISPLAYED
+  lane's meta — full coverage, label retired.

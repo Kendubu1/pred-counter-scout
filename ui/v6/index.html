@@ -21,13 +21,21 @@
   button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
 
   .top {
-    position:sticky; top:0; z-index:10; backdrop-filter:blur(10px);
-    background:rgba(10,10,15,.82); border-bottom:1px solid var(--border);
+    position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    background:rgba(10,10,15,.78); border-bottom:1px solid var(--border);
   }
-  .top-inner { max-width:980px; margin:0 auto; padding:.65rem 1rem; display:flex; align-items:center; gap:.8rem; }
+  .top-inner { max-width:980px; margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
   .wordmark { font-weight:800; letter-spacing:.02em; color:var(--text-0); }
-  .wordmark .beta { color:var(--accent); font-size:.7rem; vertical-align:super; margin-left:.2rem; }
   .top .spacer { flex:1; }
+  .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
+  .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .navlink:hover { color:var(--text-0); }
+  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:980px; margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .subnav::-webkit-scrollbar { display:none; }
+  .subnav:empty { display:none; }
+  .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; }
+  .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
+  section.card, .lanepanel, .metaboard { scroll-margin-top:96px; }
   .patch-pill { font-size:.74rem; color:var(--text-1); border:1px solid var(--border); border-radius:99px; padding:.15rem .6rem; }
   .top a.classic { font-size:.8rem; color:var(--text-2); }
   .top a.classic:hover { color:var(--text-1); }
@@ -247,12 +255,14 @@
 <body>
 <div class="top">
   <div class="top-inner">
-    <span class="wordmark">⚔ Predecessor Scout<span class="beta">BUILD LAB</span></span>
+    <a class="wordmark" href="./">⚔ Predecessor Scout</a>
     <span class="spacer"></span>
     <span class="patch-pill" id="patchPill">patch —</span>
-    <a class="classic" href="coach.html">coach</a>
-    <a class="classic" href="../v2/">classic site →</a>
+    <a class="navlink active" href="./">build lab</a>
+    <a class="navlink" href="squad.html">squad</a>
+    <a class="navlink" href="coach.html">coach</a>
   </div>
+  <div class="subnav" id="subnav"></div>
 </div>
 
 <div class="wrap">
@@ -296,6 +306,34 @@ async function getJson(path) { return (await fetch(path)).json(); }
 function show(view) {
   $('#landing').classList.toggle('hidden', view !== 'landing');
   $('#hero').classList.toggle('hidden', view !== 'hero');
+}
+
+// Sticky section jumper: pills from the visible view's section headers,
+// scrollspy highlights the one you're in. Rebuilt on every view change.
+let subnavIO = null;
+function buildSubnav() {
+  const host = $('#subnav');
+  if (subnavIO) { subnavIO.disconnect(); subnavIO = null; }
+  const view = $('#hero').classList.contains('hidden') ? '#landing' : '#hero';
+  const secs = [...document.querySelectorAll(`${view} section.card, ${view} .lanepanel, ${view} .metaboard`)]
+    .filter((c) => c.querySelector('h2'));
+  host.innerHTML = secs.map((c, i) => {
+    c.id = c.id || 'sec' + i;
+    const h = c.querySelector('h2');
+    const label = (h.childNodes[0]?.textContent || h.textContent).split('·')[0].trim().toLowerCase();
+    return `<button class="snpill" data-t="${c.id}">${esc(label)}</button>`;
+  }).join('');
+  const pills = [...host.querySelectorAll('.snpill')];
+  pills.forEach((p) => { p.onclick = () => document.getElementById(p.dataset.t)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  const byId = new Map(pills.map((p) => [p.dataset.t, p]));
+  subnavIO = new IntersectionObserver((es) => {
+    for (const e of es) {
+      if (!e.isIntersecting) continue;
+      pills.forEach((p) => p.classList.toggle('active', p.dataset.t === e.target.id));
+      byId.get(e.target.id)?.scrollIntoView({ inline: 'center', block: 'nearest' });
+    }
+  }, { rootMargin: '-15% 0px -75% 0px' });
+  secs.forEach((c) => subnavIO.observe(c));
 }
 
 /* ── landing ── */
@@ -360,20 +398,25 @@ async function renderLaneDetail() {
   const nameOf = (slug) => (INDEX.heroes.find((h) => h.slug === slug) || {}).name || slug;
   let body = '';
   if (laneMode === 'first') {
+    const mx = await getMatrix();
     body = laneMeta.map((h, i) => {
-      const a = arts.get(h.slug);
+      // blind-pick safety vs the heroes actually in THIS lane's meta,
+      // from the all-pairs matrix (artifact matchups are primary-role only)
       let trouble = '';
-      if (a && a.matchups.length >= 3) {
-        const worst = a.matchups.map((m) => ({ m, bad: m.checkpoints.filter((c) => c.verdict === 'enemy').length }))
+      if (mx) {
+        const worst = laneMeta.filter((o) => o.slug !== h.slug)
+          .map((o) => ({ o, bad: (matrixCps(mx, h.slug, o.slug) || []).filter((c) => c.verdict === 'enemy').length }))
           .sort((x, y) => y.bad - x.bad)[0];
-        trouble = worst.bad >= 4 ? `gets out-simmed by ${worst.m.enemy} — dodge or respect that lane`
-          : worst.bad >= 2 ? `closest fight in lane: ${worst.m.enemy}` : 'no losing sim in this lane — safe blind pick';
+        if (worst) {
+          trouble = worst.bad >= 4 ? `gets out-simmed by ${worst.o.name} — dodge or respect that lane`
+            : worst.bad >= 2 ? `closest fight in lane: ${worst.o.name}` : 'no losing sim in this lane — safe blind pick';
+        }
       }
       return `
       <div class="lrow" data-slug="${h.slug}">
         <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
         <span><b>${i === 0 ? '👑 ' : ''}${esc(h.name)}</b>${h.badge ? ` <span style="color:var(--gold)">${h.badge === 'sleeper' ? '💤 sleeper' : '⚠ popular but losing'}</span>` : ''}
-          <div class="sub">${trouble ? esc(trouble) : 'sim coverage building'}</div></span>
+          <div class="sub">${trouble ? esc(trouble) : 'no sim data for this hero'}</div></span>
         <span class="wrr">${(h.shrunkWr * 100).toFixed(1)}%<div class="sub" style="text-align:right">${h.games} games</div></span>
       </div>`;
     }).join('');
@@ -448,6 +491,7 @@ async function renderLaneDetail() {
   const fx = box.querySelector('#flexEnemy');
   if (fx) fx.onchange = () => { if (fx.value) { laneEnemy = fx.value; renderLaneDetail(); } };
   box.querySelectorAll('.lrow').forEach((r) => { r.onclick = () => nav(r.dataset.slug); });
+  buildSubnav();
 }
 function renderMetaboard() {
   if (!META) { $('#metaboard').innerHTML = ''; return; }
@@ -655,13 +699,14 @@ async function nav(slug, replace = false) {
 }
 async function route() {
   const slug = new URLSearchParams(location.search).get('hero');
-  if (!slug) { show('landing'); renderGrid(); return; }
+  if (!slug) { show('landing'); renderGrid(); buildSubnav(); return; }
   try {
     const a = await getJson(`../../data/artifacts/${slug}.json`);
     renderHero(a);
     show('hero');
+    buildSubnav();
     document.title = `${a.name} — Predecessor Scout Build Lab`;
-  } catch { show('landing'); renderGrid(); }
+  } catch { show('landing'); renderGrid(); buildSubnav(); }
 }
 window.onpopstate = route;
 
