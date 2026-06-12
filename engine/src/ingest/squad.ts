@@ -76,7 +76,7 @@ async function main() {
   const heroRolesByUuid = new Map<string, HeroRoleCell[]>();
   for (const uuid of uuids) {
     const raw = await pullProfile(uuid);
-    const matches = await pullRecentMatches(uuid, 40);
+    const matches = await pullRecentMatches(uuid, 50);
     const heroRoles = await pullHeroRoleStats(uuid);
     heroRolesByUuid.set(uuid, heroRoles);
     const profile = analyzeProfile(uuid, raw, data, heroRoles);

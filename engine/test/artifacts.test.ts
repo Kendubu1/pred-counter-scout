@@ -109,6 +109,17 @@ describe('hero artifacts (Concept A engine stage)', () => {
     }
   });
 
+  it('player-facing copy never abbreviates games as "g" (reads as gold)', () => {
+    const files = [
+      ...readdirSync(path.join(ROOT, 'data/artifacts/players')).map((f) => `data/artifacts/players/${f}`),
+      'data/artifacts/squad.json', 'data/artifacts/coach.json',
+    ];
+    for (const f of files) {
+      const hits = readFileSync(path.join(ROOT, f), 'utf8').match(/[0-9]+g[^a-z0-9]/g);
+      expect(hits, `${f} contains a Ng abbreviation: ${hits?.join(', ')}`).toBeNull();
+    }
+  });
+
   it('archetypes: squad members carry distinct identities with plain-language receipts', () => {
     const squad = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/squad.json'), 'utf8'));
     const archetypes = squad.members.map((m: { archetype: { label: string; receipt: string } | null }) => m.archetype);

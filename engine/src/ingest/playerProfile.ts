@@ -73,8 +73,11 @@ export async function pullRecentMatches(uuid: string, limit = 40): Promise<Recen
       hero { slug }
       match { duration winningTeam startTime gameMode }
     } } } }`);
+  // Real 5v5s only. The enum is RANKED/STANDARD/ARAM/... — an earlier
+  // 'pvp' guess matched nothing, silently dropping standard games from
+  // the film-room sample (ARAM was excluded by luck, not design).
   return d.player.matchesPaginated.results
-    .filter((r) => ['pvp', 'ranked', 'PVP', 'RANKED'].includes(r.match.gameMode))
+    .filter((r) => ['RANKED', 'STANDARD'].includes(r.match.gameMode))
     .map((r) => ({
       won: r.team === r.match.winningTeam,
       duration: r.match.duration,
@@ -256,7 +259,7 @@ export function buildLedger(a: AnalyzedPlayer) {
     entries.push({
       change: `Spend marginal games on ${hero.name}`,
       winsPer100: Math.round((hero.shrunkWr - overall) * 1000) / 10,
-      receipt: `${(hero.shrunkWr * 100).toFixed(1)}% on ${hero.name} (${hero.games}g) vs ${(overall * 100).toFixed(1)}% overall`,
+      receipt: `${(hero.shrunkWr * 100).toFixed(1)}% over ${hero.games} games on ${hero.name} vs ${(overall * 100).toFixed(1)}% overall`,
     });
   }
   return {
