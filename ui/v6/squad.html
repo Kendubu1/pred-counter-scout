@@ -50,7 +50,6 @@
   .seathead .role { font-weight:800; text-transform:capitalize; color:var(--accent); min-width:64px; }
   .seathead .rwr { font-weight:800; font-variant-numeric:tabular-nums; }
   .seathead .sgames { margin-left:auto; color:var(--text-2); font-size:.72rem; font-variant-numeric:tabular-nums; }
-  .move { display:inline-block; background:rgba(240,180,41,.12); border:1px solid var(--gold); color:var(--gold); border-radius:6px; font-size:.62rem; font-weight:800; padding:.05rem .35rem; vertical-align:middle; }
   .seat .picks { margin-top:.4rem; }
   .snote { margin-top:.3rem; font-size:.7rem; color:var(--text-2); }
   .picks { display:flex; gap:.5rem; }
@@ -105,7 +104,6 @@
     .picks { flex-wrap:wrap; gap:.35rem; }
     .picks a { font-size:.7rem; padding:.16rem .4rem; }
     .picks img { width:18px; height:18px; }
-    .move { font-size:.56rem; }
 
     /* planner */
     .plansplit { grid-template-columns:1fr; gap:.55rem; }
@@ -164,32 +162,14 @@ const plink = (uuid, name) => uuid
   };
 
   const lead = s.members[0];
-  const leadAssigned = s.assignment.find((a) => a.uuid === s.lead);
   document.getElementById('page').innerHTML = `
     <div class="scope">📊 <b>Data scope:</b> pred.gg public profiles — career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked splits, last 40 matches each · field baselines: ${META ? META.matches.toLocaleString() + ' matches, patch ' + esc(META.patch) : 'current-patch matches'}, all ranks · combat math is THEORY pending in-game calibration · generated ${esc(s.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
     <h1>The five stack</h1>
     <div class="sub">${s.members.map((m) => `<span class="chip">${pav(m.uuid)}${plink(m.uuid, m.name)}${m.current ? ` · ${esc(m.current.rank)} ${m.current.points}VP` : ''}</span>`).join('')}</div>
 
     <div class="card">
-      <h2>Optimal lineup · all 120 permutations scored${typeof s.lineupGainPer100 === 'number' && s.lineupGainPer100 >= 0.5 ? ` · <span style="color:var(--green)">worth +${s.lineupGainPer100} wins/100 vs queue habits</span>` : ''}</h2>
-      ${s.assignment.map((a) => `
-        <div class="seat">
-          <div class="seathead">
-            <span class="role">${esc(a.role)}</span>
-            <span class="rwr">${pct(a.roleWr)}%</span>
-            ${pav(a.uuid)}${plink(a.uuid, a.name)}
-            ${a.isMove ? '<span class="move" title="this seat differs from the role they usually queue — the note below prices why it is worth it">OFF-ROLE</span>' : ''}
-            <span class="sgames">${a.roleGames} games in role</span>
-          </div>
-          <div class="picks">${a.heroPicks.map((h) => `<a href="./?hero=${esc(h.slug)}"><img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">${esc(h.name)} ${pct(h.shrunkWr, 0)}%${h.games != null && h.games < 20 ? ` <span style="color:var(--gold)">· ${h.games} games</span>` : ''}</a>`).join('') || '<span style="color:var(--text-2);font-size:.74rem">no proven hero here yet — use meta mode below</span>'}</div>
-          ${a.isMove && a.favRole ? `<div class="snote"><b style="color:var(--gold)">off-role</b> = not their usual queue: they normally play ${esc(a.favRole)}, but the team wins more with them here — ${pct(a.roleWr)}% over ${a.roleGames} games in ${esc(a.role)}</div>` : ''}
-        </div>`).join('')}
-      <div class="snote" style="margin-top:.7rem">Seats are scored as a set, not one at a time — someone can look stronger in a seat they didn't get, but moving them there would give up more wins in the role they'd leave than it adds. The lineup above is the combination that wins the most as a team.</div>
-    </div>
-
-    <div class="card">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.6rem">
-        <h2>Tonight's stack</h2>
+        <h2>The lineup · pick who's queueing</h2>
         <button id="shuffle" class="pick" style="margin-top:-.2rem">🎲 shuffle</button>
       </div>
       <div class="plansplit">
@@ -286,6 +266,7 @@ const plink = (uuid, name) => uuid
     return `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} <span style="color:var(--text-2)">${note}</span>`;
   }
 
+  const memberBy = new Map(s.members.map((m) => [m.uuid, m]));
   function renderPlan() {
     const selected = [...document.querySelectorAll('#who input[type=checkbox]:checked')].map((i) => i.dataset.uuid);
     const mode = document.querySelector('#mode input[name=mode]:checked').value;
@@ -294,14 +275,46 @@ const plink = (uuid, name) => uuid
     const options = solveTop(selected, 3);
     if (!options) { out.innerHTML = '<div style="color:var(--text-2);font-size:.82rem;margin-top:.6rem">pick at least two players</div>'; return; }
     const bestAvg = options[0].total / options[0].seats.length;
+    const isOptimal = selected.length === s.members.length && mode === 'wheel' && shuffleSeed % 3 === 0;
+    const picksFor = (seat, oi, si) => mode === 'meta' ? lanePickFor(seat, oi, si, 5)
+      : mode === 'any' ? lanePickFor(seat, oi, si, 99)
+      : (seat.picks.map((h) => `<a href="./?hero=${esc(h.slug)}&role=${esc(seat.role)}"><img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">${esc(h.name)} ${pct(h.shrunkWr, 0)}%${h.games != null && h.games < 20 ? ` <span style="color:var(--gold)">· ${h.games} games</span>` : ''}</a>`).join('') || '<span style="color:var(--gold);font-size:.74rem">no 10+ game hero in this exact role — try meta or any-hero mode</span>');
     out.innerHTML = options.map((opt, oi) => {
       const avg = opt.total / opt.seats.length;
-      const delta = Math.abs(Math.round((avg - bestAvg) * 1000) / 10); // per-100 gap vs option A
-      const vsA = delta < 0.05 ? 'even with A' : `about ${delta.toFixed(1)} fewer wins per 100 than A`;
+      const delta = Math.abs(Math.round((avg - bestAvg) * 1000) / 10); // per-100 gap vs the top option
+      const vsA = delta < 0.05 ? 'even with the top option' : `about ${delta.toFixed(1)} fewer wins per 100 than the top option`;
+      if (oi === 0) {
+        // the winning option, rendered rich — this IS the optimal lineup
+        // when everyone is in, wheelhouse, unshuffled
+        const head = isOptimal
+          ? `OPTIMAL LINEUP · all ${[1, 2, 6, 24, 120][opt.seats.length - 1] ?? ''} permutations scored${typeof s.lineupGainPer100 === 'number' && s.lineupGainPer100 >= 0.5 ? ` · <span style="color:var(--green)">worth +${s.lineupGainPer100} wins/100 vs queue habits</span>` : ''}`
+          : `${shuffleSeed % 3 === 0 ? 'BEST FOR THIS GROUP' : '🎲 SHUFFLED SET'} · seats average ${pct(avg)}%`;
+        return `
+      <div style="margin-top:.8rem">
+        <div style="font-size:.74rem; font-weight:800; color:var(--green); letter-spacing:.06em">${head}</div>
+        ${opt.seats.map((seat, si) => {
+          const m = memberBy.get(seat.uuid);
+          const fav = m && m.favRole ? m.favRole.toLowerCase() : null;
+          const isMove = fav && fav !== seat.role;
+          return `
+        <div class="seat">
+          <div class="seathead">
+            <span class="role">${esc(seat.role)}</span>
+            <span class="rwr">${pct(seat.wr)}%</span>
+            ${pav(seat.uuid)}${plink(seat.uuid, seat.name)}
+            <span class="sgames">${seat.games} games in role</span>
+          </div>
+          <div class="picks">${picksFor(seat, oi, si)}</div>
+          ${isMove ? `<div class="snote">not their usual queue — they normally play ${esc(fav)}, but the team wins more with them here (${pct(seat.wr)}% over ${seat.games} games in ${esc(seat.role)})</div>` : ''}
+        </div>`;
+        }).join('')}
+        ${opt.seats.length >= 3 ? '<div class="snote" style="margin-top:.5rem">Seats are scored as a set — someone can look stronger in a seat they did not get, but moving them would give up more wins in the role they leave than it adds.</div>' : ''}
+      </div>`;
+      }
       return `
-      <div style="margin-top:.8rem; ${oi > 0 ? 'opacity:.88' : ''}">
-        <div style="font-size:.74rem; font-weight:800; color:${oi === 0 ? 'var(--green)' : 'var(--text-2)'}; letter-spacing:.06em">
-          ${shuffleSeed % 3 === 0 ? '' : '🎲 '}OPTION ${'ABC'[oi]} · seats average ${pct(avg)}%${oi > 0 ? ` · ${vsA}` : (shuffleSeed % 3 === 0 ? ' · best' : ' · shuffled set')}
+      <div style="margin-top:.8rem; opacity:.88">
+        <div style="font-size:.74rem; font-weight:800; color:var(--text-2); letter-spacing:.06em">
+          ${shuffleSeed % 3 === 0 ? '' : '🎲 '}ALSO WORKS · seats average ${pct(avg)}% · ${vsA}
         </div>
         ${opt.seats.map((seat, si) => `
           <div class="planseat">
@@ -309,7 +322,7 @@ const plink = (uuid, name) => uuid
             <span>${plink(seat.uuid, seat.name.split(' ')[0])} <span style="color:var(--text-2);font-size:.76rem">${pct(seat.wr)}% · ${seat.games} games</span></span>
             <span class="picks-mini">${mode === 'meta' ? lanePickFor(seat, oi, si, 5)
               : mode === 'any' ? lanePickFor(seat, oi, si, 99)
-              : (seat.picks.map((h) => `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} ${pct(h.shrunkWr, 0)}%${h.games != null && h.games < 20 ? ` <span style="color:var(--gold)">· only ${h.games} games</span>` : ''}`).join(' · ') || '<span style="color:var(--gold)">no 10+ game hero in this exact role — try meta or any-hero mode</span>')}</span>
+              : (seat.picks.map((h) => `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} ${pct(h.shrunkWr, 0)}%`).join(' · ') || '<span style="color:var(--gold)">no 10+ game hero here</span>')}</span>
           </div>`).join('')}
       </div>`;
     }).join('') + `
