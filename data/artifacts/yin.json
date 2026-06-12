@@ -2,7 +2,7 @@
  "slug": "yin",
  "name": "Yin",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:42:04.188Z",
+ "generatedAt": "2026-06-12T23:33:01.122Z",
  "role": "jungle",
  "damageType": "physical",
  "attackType": "melee",
@@ -14,7 +14,8 @@
    "abilityHaste",
    "critMultiplier",
    "attackSpeedFormula",
-   "abilityScalingUsesBonusPowerOnly"
+   "abilityScalingUsesBonusPowerOnly",
+   "attackSpeedCap"
   ],
   "notes": [
    "all combat numbers are simulator output on unverified constants",
@@ -41,17 +42,9 @@
     "evidenceN": null
    },
    {
-    "name": "Vanquisher",
-    "slug": "vanquisher",
-    "spikeMinute": 25,
-    "playRatePct": 3.1,
-    "evidenceDeltaWr": 13.6,
-    "evidenceN": 51
-   },
-   {
     "name": "Painweaver",
     "slug": "painweaver",
-    "spikeMinute": 31,
+    "spikeMinute": 25,
     "playRatePct": 0.1,
     "evidenceDeltaWr": null,
     "evidenceN": null
@@ -59,43 +52,55 @@
    {
     "name": "Dread",
     "slug": "dread",
-    "spikeMinute": 37,
+    "spikeMinute": 30,
     "playRatePct": 0.1,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
    {
-    "name": "Mesmer",
-    "slug": "mesmer",
+    "name": "Malady",
+    "slug": "malady",
+    "spikeMinute": 36,
+    "playRatePct": 0.1,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
+   },
+   {
+    "name": "Omen",
+    "slug": "omen",
     "spikeMinute": 43,
-    "playRatePct": 0.2,
+    "playRatePct": 0.1,
     "evidenceDeltaWr": null,
     "evidenceN": null
    }
   ],
-  "gold": 17850,
+  "gold": 17800,
   "archetypes": [
-   "skirmish uptime"
+   "skirmish uptime",
+   "extended fights"
   ],
   "objectives": {
-   "burstVsSquishy": 1487.0888157894738,
-   "rot10VsSquishy": 1920,
-   "rot20VsBruiser": 1870.1298701298701,
-   "autoDps10VsSquishy": 826.557226171875,
-   "ehpPhysical": 4124.52875,
-   "ehpMagical": 4314.857328125
+   "burstVsSquishy": 1455.372807017544,
+   "rot10VsSquishy": 2054.5,
+   "rot20VsBruiser": 2385.714285714286,
+   "autoDps10VsSquishy": 710.3143828125,
+   "ehpPhysical": 3690.7787500000004,
+   "ehpMagical": 3861.091703125,
+   "healShield10s": 0,
+   "utility": 3,
+   "sustain10s": 0
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for skirmish uptime: first spike lands around minute 11 (Deathstalker), third item by minute 25. Take Vesh: +13.5% on your headline output at minute 15.",
+ "coachLine": "Sim-optimal for skirmish uptime and extended fights: first spike lands around minute 11 (Deathstalker), third item by minute 25. Take Vesh: +12.5% on your headline output at minute 15.",
  "eternals": {
   "top": [
    {
     "name": "Vesh",
     "id": "vesh",
-    "headlinePct": 13.5,
-    "burstPct": 7.6,
-    "rot20Pct": 13.5,
+    "headlinePct": 12.5,
+    "burstPct": 7.7,
+    "rot20Pct": 12.4,
     "ehpPct": 0
    },
    {
@@ -109,9 +114,9 @@
    {
     "name": "Thraex",
     "id": "thraex",
-    "headlinePct": 9.5,
+    "headlinePct": 8.8,
     "burstPct": 0,
-    "rot20Pct": 9.5,
+    "rot20Pct": 8.7,
     "ehpPct": 0
    }
   ],
@@ -119,41 +124,91 @@
    "Marrow",
    "Nihil",
    "Aion",
-   "Exarch",
-   "Lotus"
-  ]
+   "Exarch"
+  ],
+  "augmentAware": null
  },
+ "augments": [
+  {
+   "id": "137",
+   "name": "Energy Transfer",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "deflect-conditional shield/speed; reactive",
+   "buildShift": null
+  },
+  {
+   "id": "138",
+   "name": "Storm of Salvation",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "own-missing-health on-hit healing during Windburn; health-state conditional",
+   "buildShift": null
+  },
+  {
+   "id": "139",
+   "name": "Serpent's Blessing",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "terrain-conditional cooldown reduction; positional",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
   "candidates": [
    {
     "item": "Deathstalker",
     "playRatePct": 0.6,
     "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 179.7
+    "edgeVsPopularPct": 199.3
    },
    {
     "item": "Alternata",
     "playRatePct": 0,
     "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 179.7
+    "edgeVsPopularPct": 199.3
    },
    {
     "item": "Painweaver",
     "playRatePct": 0.1,
     "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 179.7
+    "edgeVsPopularPct": 199.3
    },
    {
     "item": "Dread",
     "playRatePct": 0.1,
     "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 179.7
+    "edgeVsPopularPct": 199.3
    },
    {
-    "item": "Mesmer",
-    "playRatePct": 0.2,
+    "item": "Malady",
+    "playRatePct": 0.1,
     "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 179.7
+    "edgeVsPopularPct": 199.3
+   },
+   {
+    "item": "Omen",
+    "playRatePct": 0.1,
+    "bestObjective": "10s rotation vs squishies",
+    "edgeVsPopularPct": 199.3
    }
   ],
   "honestAbsence": null
@@ -178,8 +233,8 @@
    "shrunkWr": 0.581,
    "coreGold": 8950,
    "spikeMinute": 24,
-   "bestObjective": "sustained auto DPS",
-   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 397 auto-attack DPS in the sim.",
+   "bestObjective": "lifesteal sustain",
+   "whyLine": "Strongest meta core for lifesteal sustain, online around minute 24 — about 515 HP drained back over a 10s fight in the sim.",
    "optimizer": null
   },
   {
@@ -203,7 +258,7 @@
    "spikeMinute": 25,
    "bestObjective": "one-combo burst",
    "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 711 damage in one combo in the sim.",
-   "optimizer": "Optimizer sees +9% more one-combo burst: try Deathstalker over Sky Splitter (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "optimizer": "Optimizer agrees: within 4% of our best core on one-combo burst. The winrate is earned, not luck."
   },
   {
    "items": [
@@ -224,8 +279,8 @@
    "shrunkWr": 0.584,
    "coreGold": 8850,
    "spikeMinute": 24,
-   "bestObjective": "sustained auto DPS",
-   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 361 auto-attack DPS in the sim.",
+   "bestObjective": "lifesteal sustain",
+   "whyLine": "Strongest meta core for lifesteal sustain, online around minute 24 — about 475 HP drained back over a 10s fight in the sim.",
    "optimizer": null
   }
  ],
@@ -257,16 +312,16 @@
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
-    "out": "Vanquisher",
+    "out": "Painweaver",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 43,
-    "offenseLossPct": 35,
-    "line": "Losing lane? Third item Warden's Faith instead of Vanquisher: their 3s all-in loses 43% of its bite; you give up 35% of your damage."
+    "offenseLossPct": 26,
+    "line": "Losing lane? Third item Warden's Faith instead of Painweaver: their 3s all-in loses 43% of its bite; you give up 26% of your damage."
    }
   },
   {
@@ -288,11 +343,11 @@
     },
     {
      "minute": 20,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 25,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 30,
@@ -300,12 +355,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Vanquisher",
+    "out": "Painweaver",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 40,
-    "offenseLossPct": 34,
-    "line": "Losing lane? Third item Warden's Faith instead of Vanquisher: their 3s all-in loses 40% of its bite; you give up 34% of your damage."
+    "survivalGainPct": 41,
+    "offenseLossPct": 25,
+    "line": "Losing lane? Third item Warden's Faith instead of Painweaver: their 3s all-in loses 41% of its bite; you give up 25% of your damage."
    }
   },
   {
@@ -327,11 +382,11 @@
     },
     {
      "minute": 20,
-     "verdict": "you"
+     "verdict": "even"
     },
     {
      "minute": 25,
-     "verdict": "you"
+     "verdict": "even"
     },
     {
      "minute": 30,
@@ -339,12 +394,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Vanquisher",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 24,
-    "offenseLossPct": 34,
-    "line": "Losing lane? Third item Void Helm instead of Vanquisher: their 3s all-in loses 24% of its bite; you give up 34% of your damage."
+    "out": "Painweaver",
+    "in": "Raiment of Renewal",
+    "inSlug": "raiment-of-renewal",
+    "survivalGainPct": 22,
+    "offenseLossPct": 25,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Painweaver: their 3s all-in loses 22% of its bite; you give up 25% of your damage."
    }
   },
   {
@@ -378,12 +433,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Vanquisher",
+    "out": "Painweaver",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 41,
-    "offenseLossPct": 34,
-    "line": "Losing lane? Third item Warden's Faith instead of Vanquisher: their 3s all-in loses 41% of its bite; you give up 34% of your damage."
+    "offenseLossPct": 25,
+    "line": "Losing lane? Third item Warden's Faith instead of Painweaver: their 3s all-in loses 41% of its bite; you give up 25% of your damage."
    }
   },
   {
@@ -417,18 +472,18 @@
     }
    ],
    "counterSwap": {
-    "out": "Vanquisher",
+    "out": "Painweaver",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 20,
-    "offenseLossPct": 34,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Vanquisher: their 3s all-in loses 20% of its bite; you give up 34% of your damage."
+    "survivalGainPct": 21,
+    "offenseLossPct": 25,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Painweaver: their 3s all-in loses 21% of its bite; you give up 25% of your damage."
    }
   },
   {
    "enemy": "Rampage",
    "enemySlug": "rampage",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+   "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale.",
    "checkpoints": [
     {
      "minute": 5,
@@ -452,21 +507,21 @@
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
-    "out": "Vanquisher",
+    "out": "Painweaver",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 20,
-    "offenseLossPct": 34,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Vanquisher: their 3s all-in loses 20% of its bite; you give up 34% of your damage."
+    "survivalGainPct": 22,
+    "offenseLossPct": 25,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Painweaver: their 3s all-in loses 22% of its bite; you give up 25% of your damage."
    }
   }
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }

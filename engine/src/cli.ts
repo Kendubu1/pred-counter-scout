@@ -1,10 +1,10 @@
 // CLI: print The Answer artifact for a hero. Usage:
-//   npm run answer -- gideon [--level 13] [--anti-heal] [--budget 12000]
+//   npm run answer -- gideon [--level 13] [--anti-heal] [--budget 12000] [--role support]
 
 import { loadData, completedItems } from './data.js';
 import { loadCalibration, unverifiedConstants, simulate, skillPriority } from './sim.js';
 import { generateBuilds } from './search.js';
-import { rankBlessings } from './eternals.js';
+import { rankAugments, rankBlessings } from './eternals.js';
 import { heroGames, itemPlayRate } from './aggregates.js';
 import { itemWinDelta } from './evidence.js';
 import { matchupCheckpoints } from './matchup.js';
@@ -30,8 +30,16 @@ if (!kit) {
 }
 
 const level = opt('level') ?? 13;
+const strOpt = (name: string) => {
+  const i = args.indexOf(`--${name}`);
+  return i >= 0 ? args[i + 1] : undefined;
+};
+const role = strOpt('role') ?? kit.roles[0] ?? 'midlane';
 const unverified = unverifiedConstants(cal);
-console.log(`# ${kit.name} (${kit.damageType}, ${kit.attackType}) — level ${level}, patch ${cal.patch}`);
+console.log(`# ${kit.name} (${kit.damageType}, ${kit.attackType}) — ${role}, level ${level}, patch ${cal.patch}`);
+if (role === 'support') {
+  console.log('support objectives in play: heal/shield output, survivability, poke, utility (one-beneficiary convention; passive heals not counted)');
+}
 console.log(`confidence: THEORY (sim-only; unverified constants in play: ${unverified.join(', ')})`);
 if (kit.abilitySource === 'mixed') {
   const stale = data.staleFallbacks.filter((s) => s.slug === slug).map((s) => s.key);
@@ -47,6 +55,7 @@ console.log(`skill max order: ${prio.map((a) => a.name).join(' > ')} (ult at 6/1
 
 const builds = generateBuilds(kit, completedItems(data), cal, {
   level,
+  role,
   scenario: { requireAntiHeal: flag('anti-heal'), goldBudget: opt('budget') },
 });
 
@@ -55,9 +64,12 @@ for (const b of builds.slice(0, 6)) {
   console.log(`[${b.archetypes.join(', ') || 'balanced'}] ${b.gold}g${b.manaFeasible ? '' : '  ⚠ mana-infeasible rotation'}`);
   console.log(`  ${b.items.join(' > ')}`);
   const o = b.objectives;
+  const supportCols = role === 'support'
+    ? ` | heal+shield10s ${o.healShield10s.toFixed(0)} | utility ${o.utility.toFixed(0)}`
+    : '';
   console.log(
     `  burst ${o.burstVsSquishy.toFixed(0)} | rot10 ${o.rot10VsSquishy.toFixed(0)} | rot20-vs-bruiser ${o.rot20VsBruiser.toFixed(0)}` +
-    ` | autoDPS ${o.autoDps10VsSquishy.toFixed(0)} | eHP ${o.ehpPhysical.toFixed(0)}/${o.ehpMagical.toFixed(0)}\n`,
+    ` | autoDPS ${o.autoDps10VsSquishy.toFixed(0)} | eHP ${o.ehpPhysical.toFixed(0)}/${o.ehpMagical.toFixed(0)}${supportCols}\n`,
   );
 }
 
@@ -86,6 +98,21 @@ if (top) {
   }
   const unmodeled = ranked.filter((r) => !r.modeled);
   if (unmodeled.length) console.log(`  no math yet (honest list): ${unmodeled.map((r) => r.name.replace(' (Major)', '')).join(', ')}`);
+
+  // Hero augments: same marginal math over the curated catalog encodings.
+  const augs = rankAugments(kit, topItems, level, cal, { minute: opt('minute') });
+  if (augs.length) {
+    console.log('\nHero augments, math-ranked on the headline build:');
+    for (const a of augs.filter((x) => x.modeled)) {
+      const d = a.deltas!;
+      const best = ([[d.rot10Pct, 'rot10'], [d.rot20Pct, 'rot20'], [d.burstPct, 'burst'], [d.autoDpsPct, 'autoDPS'], [d.ehpPct, 'eHP'], [d.healShieldPct, 'heal/shield']] as [number, string][])
+        .sort((x, y) => y[0] - x[0])[0]!;
+      const shieldAbs = d.healShieldPct === 0 && d.healShieldAbs > 0 ? ` | adds ~${Math.round(d.healShieldAbs)} HP of heal/shield per 10s` : '';
+      console.log(`  ${a.name}: ${best[1]} ${best[0] >= 0 ? '+' : ''}${best[0].toFixed(1)}%${shieldAbs}${a.provisional ? ' (provisional)' : ''}`);
+    }
+    const noMath = augs.filter((x) => !x.modeled);
+    if (noMath.length) console.log(`  not in the sim (honest list): ${noMath.map((x) => x.name.split(' / ').pop()).join(', ')}`);
+  }
 }
 
 // Matchup checkpoints: --vs <enemy-slug>
@@ -101,7 +128,7 @@ if (vsSlug && top) {
     const enemyBuilds = generateBuilds(enemy, completedItems(data), cal, { level, beamWidth: 8 });
     const enemyTop = enemyBuilds[0]!;
     const report = matchupCheckpoints(
-      { kit, build: top.items.map((n) => data.items.get(n)!), role: kit.roles[0] ?? 'midlane' },
+      { kit, build: top.items.map((n) => data.items.get(n)!), role },
       { kit: enemy, build: enemyTop.items.map((n) => data.items.get(n)!), role: enemy.roles[0] ?? 'midlane' },
       cal,
     );

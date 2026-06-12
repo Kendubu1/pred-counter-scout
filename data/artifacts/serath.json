@@ -2,7 +2,7 @@
  "slug": "serath",
  "name": "Serath",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:41:57.538Z",
+ "generatedAt": "2026-06-12T23:32:22.026Z",
  "role": "jungle",
  "damageType": "physical",
  "attackType": "melee",
@@ -14,7 +14,8 @@
    "abilityHaste",
    "critMultiplier",
    "attackSpeedFormula",
-   "abilityScalingUsesBonusPowerOnly"
+   "abilityScalingUsesBonusPowerOnly",
+   "attackSpeedCap"
   ],
   "notes": [
    "all combat numbers are simulator output on unverified constants",
@@ -57,55 +58,58 @@
     "evidenceN": null
    },
    {
-    "name": "Ruination",
-    "slug": "ruination",
-    "spikeMinute": 36,
-    "playRatePct": 0.6,
-    "evidenceDeltaWr": 4.5,
-    "evidenceN": 13
-   },
-   {
     "name": "Alternata",
     "slug": "alternata",
-    "spikeMinute": 42,
+    "spikeMinute": 36,
     "playRatePct": 0,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
+   },
+   {
+    "name": "Spear Of Desolation",
+    "slug": "spear-of-desolation",
+    "spikeMinute": 42,
+    "playRatePct": 0.1,
     "evidenceDeltaWr": null,
     "evidenceN": null
    }
   ],
-  "gold": 17550,
+  "gold": 17450,
   "archetypes": [
    "skirmish uptime",
    "extended fights"
   ],
   "objectives": {
-   "burstVsSquishy": 1328.082142857143,
-   "rot10VsSquishy": 1838.5920000000003,
-   "rot20VsBruiser": 1973.466666666667,
-   "autoDps10VsSquishy": 749.13689045,
+   "burstVsSquishy": 1333.248046875,
+   "rot10VsSquishy": 2024.464601769912,
+   "rot20VsBruiser": 2115.7113095238096,
+   "autoDps10VsSquishy": 724.2419594634956,
    "ehpPhysical": 4416.048,
-   "ehpMagical": 3573.5901250000006
+   "ehpMagical": 3573.5901250000006,
+   "healShield10s": 0,
+   "utility": 3,
+   "sustain10s": 0
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for skirmish uptime and extended fights: first spike lands around minute 11 (Deathstalker), third item by minute 24. Take Vesh: +11.8% on your headline output at minute 15.",
+ "coachLine": "Sim-optimal for skirmish uptime and extended fights: first spike lands around minute 11 (Deathstalker), third item by minute 24. Take Demiurge: +13% on your burst combo at minute 15.",
  "eternals": {
   "top": [
    {
-    "name": "Vesh",
-    "id": "vesh",
-    "headlinePct": 11.8,
-    "burstPct": 7.3,
-    "rot20Pct": 11.8,
-    "ehpPct": 0
-   },
-   {
     "name": "Demiurge",
     "id": "demiurge",
-    "headlinePct": 10.8,
-    "burstPct": 12.4,
-    "rot20Pct": 10.7,
+    "headlinePct": 12.2,
+    "burstPct": 13,
+    "rot20Pct": 12.1,
     "ehpPct": 1
+   },
+   {
+    "name": "Vesh",
+    "id": "vesh",
+    "headlinePct": 11.3,
+    "burstPct": 7.6,
+    "rot20Pct": 11.3,
+    "ehpPct": 0
    },
    {
     "name": "Krix",
@@ -120,47 +124,91 @@
    "Marrow",
    "Nihil",
    "Aion",
-   "Exarch",
-   "Lotus"
-  ]
+   "Exarch"
+  ],
+  "augmentAware": null
  },
+ "augments": [
+  {
+   "id": "104",
+   "name": "Crushing Descent",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "adds a stun; CC not scored",
+   "buildShift": null
+  },
+  {
+   "id": "105",
+   "name": "Vital Resonance",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "pickup-conditional healing; positional",
+   "buildShift": null
+  },
+  {
+   "id": "182",
+   "name": "Wrath Unleashed",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "infinite on-hit AS stacking; cadence unobservable",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
   "candidates": [
    {
     "item": "Deathstalker",
     "playRatePct": 0.6,
     "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 192.6
+    "edgeVsPopularPct": 222.2
    },
    {
     "item": "Painweaver",
     "playRatePct": 0,
     "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 192.6
+    "edgeVsPopularPct": 222.2
    },
    {
     "item": "Nuclear Rounds",
     "playRatePct": 1.6,
     "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 192.6
+    "edgeVsPopularPct": 222.2
    },
    {
     "item": "Penumbra",
     "playRatePct": 0.4,
     "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 192.6
-   },
-   {
-    "item": "Ruination",
-    "playRatePct": 0.6,
-    "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 192.6
+    "edgeVsPopularPct": 222.2
    },
    {
     "item": "Alternata",
     "playRatePct": 0,
     "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 192.6
+    "edgeVsPopularPct": 222.2
+   },
+   {
+    "item": "Spear Of Desolation",
+    "playRatePct": 0.1,
+    "bestObjective": "10s rotation vs squishies",
+    "edgeVsPopularPct": 222.2
    }
   ],
   "honestAbsence": null
@@ -260,7 +308,7 @@
     },
     {
      "minute": 25,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 30,
@@ -272,8 +320,8 @@
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 36,
-    "offenseLossPct": 19,
-    "line": "Losing lane? Third item Warden's Faith instead of Penumbra: their 3s all-in loses 36% of its bite; you give up 19% of your damage."
+    "offenseLossPct": 20,
+    "line": "Losing lane? Third item Warden's Faith instead of Penumbra: their 3s all-in loses 36% of its bite; you give up 20% of your damage."
    }
   },
   {
@@ -295,7 +343,7 @@
     },
     {
      "minute": 20,
-     "verdict": "you"
+     "verdict": "even"
     },
     {
      "minute": 25,
@@ -308,11 +356,11 @@
    ],
    "counterSwap": {
     "out": "Penumbra",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 18,
-    "offenseLossPct": 19,
-    "line": "Losing lane? Third item Void Helm instead of Penumbra: their 3s all-in loses 18% of its bite; you give up 19% of your damage."
+    "in": "Raiment of Renewal",
+    "inSlug": "raiment-of-renewal",
+    "survivalGainPct": 15,
+    "offenseLossPct": 20,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Penumbra: their 3s all-in loses 15% of its bite; you give up 20% of your damage."
    }
   },
   {
@@ -334,11 +382,11 @@
     },
     {
      "minute": 20,
-     "verdict": "you"
+     "verdict": "even"
     },
     {
      "minute": 25,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 30,
@@ -349,15 +397,15 @@
     "out": "Penumbra",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 36,
-    "offenseLossPct": 19,
-    "line": "Losing lane? Third item Warden's Faith instead of Penumbra: their 3s all-in loses 36% of its bite; you give up 19% of your damage."
+    "survivalGainPct": 35,
+    "offenseLossPct": 20,
+    "line": "Losing lane? Third item Warden's Faith instead of Penumbra: their 3s all-in loses 35% of its bite; you give up 20% of your damage."
    }
   },
   {
    "enemy": "Feng Mao",
    "enemySlug": "feng-mao",
-   "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover.",
+   "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange.",
    "checkpoints": [
     {
      "minute": 5,
@@ -377,7 +425,7 @@
     },
     {
      "minute": 25,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 30,
@@ -389,8 +437,8 @@
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 34,
-    "offenseLossPct": 19,
-    "line": "Losing lane? Third item Warden's Faith instead of Penumbra: their 3s all-in loses 34% of its bite; you give up 19% of your damage."
+    "offenseLossPct": 20,
+    "line": "Losing lane? Third item Warden's Faith instead of Penumbra: their 3s all-in loses 34% of its bite; you give up 20% of your damage."
    }
   },
   {
@@ -427,9 +475,9 @@
     "out": "Penumbra",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 14,
-    "offenseLossPct": 19,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Penumbra: their 3s all-in loses 14% of its bite; you give up 19% of your damage."
+    "survivalGainPct": 15,
+    "offenseLossPct": 20,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Penumbra: their 3s all-in loses 15% of its bite; you give up 20% of your damage."
    }
   },
   {
@@ -466,14 +514,14 @@
     "out": "Penumbra",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 14,
-    "offenseLossPct": 19,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Penumbra: their 3s all-in loses 14% of its bite; you give up 19% of your damage."
+    "survivalGainPct": 15,
+    "offenseLossPct": 20,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Penumbra: their 3s all-in loses 15% of its bite; you give up 20% of your damage."
    }
   }
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }

@@ -8,6 +8,19 @@ export const DamageEntry = z.object({
 
 export type DamageEntryT = z.infer<typeof DamageEntry>;
 
+/**
+ * Heal or shield applied by one cast, parsed from ability text the same
+ * way damage is. Multi-tick effects ("X every 0.5s for 3s") are folded
+ * into per-cast totals at parse time. Output convention: one beneficiary,
+ * even for AoE heals (documented in sim.ts).
+ */
+export interface HealEntry {
+  kind: 'heal' | 'shield';
+  valuesPerRank: number[];       // total per cast, per rank
+  scalingPct: number;            // total per cast, on bonus power, percent
+  powerType: 'physical' | 'magical';
+}
+
 export interface AbilityDef {
   key: 'PRIMARY' | 'SECONDARY' | 'ALTERNATE' | 'ULTIMATE';
   name: string;
@@ -15,6 +28,7 @@ export interface AbilityDef {
   scalingPct: number;            // ratio applied to bonus power, in percent
   pctMaxHealth?: number;         // bonus damage as % of target max health
   damageType: 'physical' | 'magical' | 'true';
+  healing?: HealEntry[];         // heal/shield output per cast (may be the only payload)
   cooldowns: number[];           // per rank, seconds
   costs: number[];               // mana per rank
   maxRank: number;
@@ -60,6 +74,10 @@ export interface ItemStats {
   max_mana: number;
   lifesteal: number;
   omnivamp: number;
+  heal_shield_increase: number;  // % amp on outgoing heals/shields
+  gold_per_second: number;       // support-crest income (crests are 0-price)
+  tenacity: number;              // % CC-duration reduction
+  movement_speed: number;        // % move speed
 }
 
 export interface Item {
@@ -85,6 +103,8 @@ export interface SimResult {
   burstCombo: number;            // one cast of each ability + 2 basics, mitigated
   rotation: Record<number, number>; // window seconds -> mitigated damage
   autoDps: number;               // sustained basic-attack DPS, mitigated
+  healShield10s: number;         // heal+shield output over 10s, one beneficiary
+  sustain10s: number;            // self-heal from lifesteal/omnivamp over a 10s fight
   manaSpent10s: number;
   manaPool: number;
   manaFeasible: boolean;
@@ -103,6 +123,9 @@ export interface BuildEval {
     autoDps10VsSquishy: number;
     ehpPhysical: number;
     ehpMagical: number;
+    healShield10s: number;       // support output objective
+    utility: number;             // movement_speed + tenacity points in the build
+    sustain10s: number;          // drain-tank objective (design doc component C)
   };
   manaFeasible: boolean;
 }

@@ -2,7 +2,7 @@
  "slug": "sevarog",
  "name": "Sevarog",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:41:58.750Z",
+ "generatedAt": "2026-06-12T23:32:25.502Z",
  "role": "offlane",
  "damageType": "hybrid",
  "attackType": "melee",
@@ -14,7 +14,8 @@
    "abilityHaste",
    "critMultiplier",
    "attackSpeedFormula",
-   "abilityScalingUsesBonusPowerOnly"
+   "abilityScalingUsesBonusPowerOnly",
+   "attackSpeedCap"
   ],
   "notes": [
    "all combat numbers are simulator output on unverified constants",
@@ -33,9 +34,17 @@
     "evidenceN": null
    },
    {
+    "name": "Tainted Scepter",
+    "slug": "tainted-scepter",
+    "spikeMinute": 19,
+    "playRatePct": 0.6,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
+   },
+   {
     "name": "Combustion",
     "slug": "combustion",
-    "spikeMinute": 19,
+    "spikeMinute": 25,
     "playRatePct": 0,
     "evidenceDeltaWr": null,
     "evidenceN": null
@@ -43,15 +52,15 @@
    {
     "name": "Caustica",
     "slug": "caustica",
-    "spikeMinute": 25,
+    "spikeMinute": 31,
     "playRatePct": 0.1,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
    {
-    "name": "Amulet Of Chaos",
-    "slug": "amulet-of-chaos",
-    "spikeMinute": 31,
+    "name": "Oblivion Crown",
+    "slug": "oblivion-crown",
+    "spikeMinute": 37,
     "playRatePct": 0.1,
     "evidenceDeltaWr": null,
     "evidenceN": null
@@ -59,38 +68,40 @@
    {
     "name": "Wraith Leggings",
     "slug": "wraith-leggings",
-    "spikeMinute": 36,
-    "playRatePct": 0.2,
-    "evidenceDeltaWr": null,
-    "evidenceN": null
-   },
-   {
-    "name": "Oblivion Crown",
-    "slug": "oblivion-crown",
     "spikeMinute": 43,
-    "playRatePct": 0.1,
+    "playRatePct": 0.2,
     "evidenceDeltaWr": null,
     "evidenceN": null
    }
   ],
   "gold": 18450,
   "archetypes": [
-   "burst",
    "skirmish uptime"
   ],
   "objectives": {
-   "burstVsSquishy": 2360.927631224038,
-   "rot10VsSquishy": 2727.7944111776446,
-   "rot20VsBruiser": 3252.6960784313724,
+   "burstVsSquishy": 1629.790759284464,
+   "rot10VsSquishy": 2193.794964028777,
+   "rot20VsBruiser": 2757.175090252708,
    "autoDps10VsSquishy": 75.26518454391892,
-   "ehpPhysical": 3415.839,
-   "ehpMagical": 2762.298375
+   "ehpPhysical": 3788.2389999999996,
+   "ehpMagical": 3063.448375,
+   "healShield10s": 0,
+   "utility": 4,
+   "sustain10s": 0
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for burst and skirmish uptime: first spike lands around minute 12 (Noxia), third item by minute 25. Take Krix: +18% on your effective HP at minute 15.",
+ "coachLine": "Sim-optimal for skirmish uptime: first spike lands around minute 12 (Noxia), third item by minute 25. Take Demiurge: +13.9% on 20-second fights at minute 15.",
  "eternals": {
   "top": [
+   {
+    "name": "Demiurge",
+    "id": "demiurge",
+    "headlinePct": 12.9,
+    "burstPct": 10.6,
+    "rot20Pct": 13.9,
+    "ehpPct": 1.2
+   },
    {
     "name": "Krix",
     "id": "krix",
@@ -100,19 +111,11 @@
     "ehpPct": 18
    },
    {
-    "name": "Demiurge",
-    "id": "demiurge",
-    "headlinePct": 10.6,
-    "burstPct": 10.3,
-    "rot20Pct": 10.9,
-    "ehpPct": 0
-   },
-   {
     "name": "Vesh",
     "id": "vesh",
-    "headlinePct": 8.6,
-    "burstPct": 7.8,
-    "rot20Pct": 8,
+    "headlinePct": 9.4,
+    "burstPct": 10,
+    "rot20Pct": 8.2,
     "ehpPct": 0
    }
   ],
@@ -120,47 +123,91 @@
    "Marrow",
    "Nihil",
    "Aion",
-   "Exarch",
-   "Lotus"
-  ]
+   "Exarch"
+  ],
+  "augmentAware": null
  },
+ "augments": [
+  {
+   "id": "107",
+   "name": "Gravebreaker",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "knockback strength; CC utility",
+   "buildShift": null
+  },
+  {
+   "id": "108",
+   "name": "Unholy Pursuit",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "soul economy and conditional cooldown reset",
+   "buildShift": null
+  },
+  {
+   "id": "109",
+   "name": "Grim Harvest",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "execute threshold; kill-conditional",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
   "candidates": [
    {
     "item": "Noxia",
     "playRatePct": 0.1,
     "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 610.4
+    "edgeVsPopularPct": 502.1
+   },
+   {
+    "item": "Tainted Scepter",
+    "playRatePct": 0.6,
+    "bestObjective": "20s fight vs bruisers",
+    "edgeVsPopularPct": 502.1
    },
    {
     "item": "Combustion",
     "playRatePct": 0,
     "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 610.4
+    "edgeVsPopularPct": 502.1
    },
    {
     "item": "Caustica",
     "playRatePct": 0.1,
     "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 610.4
-   },
-   {
-    "item": "Amulet Of Chaos",
-    "playRatePct": 0.1,
-    "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 610.4
-   },
-   {
-    "item": "Wraith Leggings",
-    "playRatePct": 0.2,
-    "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 610.4
+    "edgeVsPopularPct": 502.1
    },
    {
     "item": "Oblivion Crown",
     "playRatePct": 0.1,
     "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 610.4
+    "edgeVsPopularPct": 502.1
+   },
+   {
+    "item": "Wraith Leggings",
+    "playRatePct": 0.2,
+    "bestObjective": "20s fight vs bruisers",
+    "edgeVsPopularPct": 502.1
    }
   ],
   "honestAbsence": null
@@ -229,11 +276,11 @@
     },
     {
      "minute": 15,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 20,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 25,
@@ -241,16 +288,16 @@
     },
     {
      "minute": 30,
-     "verdict": "even"
+     "verdict": "enemy"
     }
    ],
    "counterSwap": {
     "out": "Oblivion Crown",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 43,
+    "survivalGainPct": 42,
     "offenseLossPct": 16,
-    "line": "Losing lane? Third item Warden's Faith instead of Oblivion Crown: their 3s all-in loses 43% of its bite; you give up 16% of your damage."
+    "line": "Losing lane? Third item Warden's Faith instead of Oblivion Crown: their 3s all-in loses 42% of its bite; you give up 16% of your damage."
    }
   },
   {
@@ -311,24 +358,24 @@
     },
     {
      "minute": 20,
-     "verdict": "even"
-    },
-    {
-     "minute": 25,
      "verdict": "enemy"
     },
     {
-     "minute": 30,
+     "minute": 25,
      "verdict": "even"
+    },
+    {
+     "minute": 30,
+     "verdict": "enemy"
     }
    ],
    "counterSwap": {
     "out": "Oblivion Crown",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 33,
+    "survivalGainPct": 31,
     "offenseLossPct": 17,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 33% of its bite; you give up 17% of your damage."
+    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 31% of its bite; you give up 17% of your damage."
    }
   },
   {
@@ -346,7 +393,7 @@
     },
     {
      "minute": 15,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 20,
@@ -358,7 +405,7 @@
     },
     {
      "minute": 30,
-     "verdict": "even"
+     "verdict": "enemy"
     }
    ],
    "counterSwap": {
@@ -366,8 +413,8 @@
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 42,
-    "offenseLossPct": 16,
-    "line": "Losing lane? Third item Warden's Faith instead of Oblivion Crown: their 3s all-in loses 42% of its bite; you give up 16% of your damage."
+    "offenseLossPct": 17,
+    "line": "Losing lane? Third item Warden's Faith instead of Oblivion Crown: their 3s all-in loses 42% of its bite; you give up 17% of your damage."
    }
   },
   {
@@ -404,9 +451,9 @@
     "out": "Oblivion Crown",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 33,
-    "offenseLossPct": 16,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 33% of its bite; you give up 16% of your damage."
+    "survivalGainPct": 32,
+    "offenseLossPct": 17,
+    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 32% of its bite; you give up 17% of your damage."
    }
   },
   {
@@ -444,13 +491,13 @@
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 43,
-    "offenseLossPct": 16,
-    "line": "Losing lane? Third item Warden's Faith instead of Oblivion Crown: their 3s all-in loses 43% of its bite; you give up 16% of your damage."
+    "offenseLossPct": 17,
+    "line": "Losing lane? Third item Warden's Faith instead of Oblivion Crown: their 3s all-in loses 43% of its bite; you give up 17% of your damage."
    }
   }
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }

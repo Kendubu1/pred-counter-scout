@@ -2,7 +2,7 @@
  "slug": "howitzer",
  "name": "Howitzer",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:41:49.635Z",
+ "generatedAt": "2026-06-12T23:31:25.741Z",
  "role": "midlane",
  "damageType": "hybrid",
  "attackType": "ranged",
@@ -14,7 +14,8 @@
    "abilityHaste",
    "critMultiplier",
    "attackSpeedFormula",
-   "abilityScalingUsesBonusPowerOnly"
+   "abilityScalingUsesBonusPowerOnly",
+   "attackSpeedCap"
   ],
   "notes": [
    "all combat numbers are simulator output on unverified constants",
@@ -25,28 +26,28 @@
  "build": {
   "items": [
    {
-    "name": "Noxia",
-    "slug": "noxia",
+    "name": "Timewarp",
+    "slug": "timewarp",
     "spikeMinute": 12,
-    "playRatePct": 24.1,
-    "evidenceDeltaWr": -1,
-    "evidenceN": 239
-   },
-   {
-    "name": "Combustion",
-    "slug": "combustion",
-    "spikeMinute": 19,
-    "playRatePct": 51.3,
-    "evidenceDeltaWr": -2.5,
-    "evidenceN": 509
+    "playRatePct": 5.2,
+    "evidenceDeltaWr": -2.4,
+    "evidenceN": 52
    },
    {
     "name": "Oblivion Crown",
     "slug": "oblivion-crown",
-    "spikeMinute": 25,
+    "spikeMinute": 20,
     "playRatePct": 15.5,
     "evidenceDeltaWr": 1.9,
     "evidenceN": 154
+   },
+   {
+    "name": "Caustica",
+    "slug": "caustica",
+    "spikeMinute": 25,
+    "playRatePct": 11.9,
+    "evidenceDeltaWr": -0.9,
+    "evidenceN": 118
    },
    {
     "name": "Wraith Leggings",
@@ -57,61 +58,64 @@
     "evidenceN": 385
    },
    {
-    "name": "Magnify",
-    "slug": "magnify",
+    "name": "Amulet Of Chaos",
+    "slug": "amulet-of-chaos",
     "spikeMinute": 36,
-    "playRatePct": 1.7,
-    "evidenceDeltaWr": -1,
-    "evidenceN": 17
+    "playRatePct": 0.4,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
    },
    {
-    "name": "Tainted Scepter",
-    "slug": "tainted-scepter",
+    "name": "Combustion",
+    "slug": "combustion",
     "spikeMinute": 41,
-    "playRatePct": 13.6,
-    "evidenceDeltaWr": 3.4,
-    "evidenceN": 135
+    "playRatePct": 51.3,
+    "evidenceDeltaWr": -2.5,
+    "evidenceN": 509
    }
   ],
-  "gold": 18550,
+  "gold": 18450,
   "archetypes": [
    "skirmish uptime"
   ],
   "objectives": {
-   "burstVsSquishy": 4176.357347701399,
-   "rot10VsSquishy": 6894.366197183099,
-   "rot20VsBruiser": 8507.430069930067,
+   "burstVsSquishy": 4234.19264174354,
+   "rot10VsSquishy": 6216.067864271456,
+   "rot20VsBruiser": 6856.666666666667,
    "autoDps10VsSquishy": 73.03982094594595,
-   "ehpPhysical": 5050.3287265625,
-   "ehpMagical": 3853.7458359374996
+   "ehpPhysical": 4123.1099765625,
+   "ehpMagical": 3146.2145859374996,
+   "healShield10s": 0,
+   "utility": 4,
+   "sustain10s": 0
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for skirmish uptime: first spike lands around minute 12 (Noxia), third item by minute 25. Take Demiurge: +13.3% on 20-second fights at minute 15.",
+ "coachLine": "Sim-optimal for skirmish uptime: first spike lands around minute 12 (Timewarp), third item by minute 25. Take Vesh: +13.1% on your headline output at minute 15.",
  "eternals": {
   "top": [
    {
-    "name": "Demiurge",
-    "id": "demiurge",
-    "headlinePct": 12.6,
-    "burstPct": 11.9,
-    "rot20Pct": 13.3,
-    "ehpPct": 2.2
-   },
-   {
     "name": "Vesh",
     "id": "vesh",
-    "headlinePct": 10.2,
-    "burstPct": 10,
-    "rot20Pct": 9.4,
+    "headlinePct": 13.1,
+    "burstPct": 12.6,
+    "rot20Pct": 13,
     "ehpPct": 0
    },
    {
     "name": "Thraex",
     "id": "thraex",
-    "headlinePct": 7.2,
+    "headlinePct": 9.2,
     "burstPct": 0,
-    "rot20Pct": 6.6,
+    "rot20Pct": 9.1,
+    "ehpPct": 0
+   },
+   {
+    "name": "Demiurge",
+    "id": "demiurge",
+    "headlinePct": 8.8,
+    "burstPct": 8.8,
+    "rot20Pct": 9,
     "ehpPct": 0
    }
   ],
@@ -119,17 +123,61 @@
    "Marrow",
    "Nihil",
    "Aion",
-   "Exarch",
-   "Lotus"
-  ]
+   "Exarch"
+  ],
+  "augmentAware": null
  },
+ "augments": [
+  {
+   "id": "56",
+   "name": "Blast Off!",
+   "modeled": true,
+   "provisional": false,
+   "headlinePct": 0,
+   "burstPct": 0,
+   "rot20Pct": 0,
+   "ehpPct": 0,
+   "healShieldPct": 0,
+   "healShieldAbs": 0,
+   "note": "stronger knockback not scored",
+   "buildShift": null
+  },
+  {
+   "id": "57",
+   "name": "Combat Thrusters",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "movement speed during ult; mobility utility",
+   "buildShift": null
+  },
+  {
+   "id": "58",
+   "name": "Sniper Shells",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "on-hit AS/omnivamp stacking; cadence unobservable",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
   "candidates": [
    {
-    "item": "Magnify",
-    "playRatePct": 1.7,
+    "item": "Amulet Of Chaos",
+    "playRatePct": 0.4,
     "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 69
+    "edgeVsPopularPct": 26.3
    }
   ],
   "honestAbsence": null
@@ -154,9 +202,9 @@
    "shrunkWr": 0.539,
    "coreGold": 9100,
    "spikeMinute": 25,
-   "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 2,583 damage in one combo in the sim.",
-   "optimizer": "Optimizer agrees: within 5% of our best core on one-combo burst. The winrate is earned, not luck."
+   "bestObjective": "10s rotation damage",
+   "whyLine": "Strongest meta core for 10s rotation damage, online around minute 25 — about 2,673 damage over a 10s rotation in the sim.",
+   "optimizer": "Optimizer sees +12% more 10s rotation damage: try Timewarp over Combustion (sim-only — the popular pick may carry utility the sim can't see; test it)."
   },
   {
    "items": [
@@ -178,8 +226,8 @@
    "coreGold": 9200,
    "spikeMinute": 25,
    "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 2,347 damage in one combo in the sim.",
-   "optimizer": "Optimizer sees +15% more one-combo burst: try Noxia over Combustion (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 2,101 damage in one combo in the sim.",
+   "optimizer": "Optimizer agrees: within 2% of our best core on one-combo burst. The winrate is earned, not luck."
   },
   {
    "items": [
@@ -201,7 +249,7 @@
    "coreGold": 8900,
    "spikeMinute": 24,
    "bestObjective": "sustained auto DPS",
-   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 192 auto-attack DPS in the sim.",
+   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 258 auto-attack DPS in the sim.",
    "optimizer": null
   }
  ],
@@ -237,12 +285,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Caustica",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 31,
-    "offenseLossPct": 23,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 31% of its bite; you give up 23% of your damage."
+    "survivalGainPct": 30,
+    "offenseLossPct": 21,
+    "line": "Losing lane? Third item Void Helm instead of Caustica: their 3s all-in loses 30% of its bite; you give up 21% of your damage."
    }
   },
   {
@@ -272,22 +320,22 @@
     },
     {
      "minute": 30,
-     "verdict": "even"
+     "verdict": "you"
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Caustica",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 33,
-    "offenseLossPct": 23,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 33% of its bite; you give up 23% of your damage."
+    "survivalGainPct": 36,
+    "offenseLossPct": 21,
+    "line": "Losing lane? Third item Void Helm instead of Caustica: their 3s all-in loses 36% of its bite; you give up 21% of your damage."
    }
   },
   {
    "enemy": "The Fey",
    "enemySlug": "the-fey",
-   "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention.",
+   "gameplan": "Even kill threat throughout: this lane is decided by mechanics and wave control, not scaling.",
    "checkpoints": [
     {
      "minute": 5,
@@ -303,11 +351,11 @@
     },
     {
      "minute": 20,
-     "verdict": "you"
+     "verdict": "even"
     },
     {
      "minute": 25,
-     "verdict": "you"
+     "verdict": "even"
     },
     {
      "minute": 30,
@@ -315,12 +363,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Caustica",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 34,
-    "offenseLossPct": 23,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 34% of its bite; you give up 23% of your damage."
+    "survivalGainPct": 32,
+    "offenseLossPct": 21,
+    "line": "Losing lane? Third item Void Helm instead of Caustica: their 3s all-in loses 32% of its bite; you give up 21% of your damage."
    }
   },
   {
@@ -354,12 +402,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Caustica",
     "in": "Void Helm",
     "inSlug": "void-helm",
     "survivalGainPct": 32,
-    "offenseLossPct": 23,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 32% of its bite; you give up 23% of your damage."
+    "offenseLossPct": 22,
+    "line": "Losing lane? Third item Void Helm instead of Caustica: their 3s all-in loses 32% of its bite; you give up 22% of your damage."
    }
   },
   {
@@ -381,7 +429,7 @@
     },
     {
      "minute": 20,
-     "verdict": "you"
+     "verdict": "even"
     },
     {
      "minute": 25,
@@ -389,16 +437,16 @@
     },
     {
      "minute": 30,
-     "verdict": "you"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Caustica",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 34,
-    "offenseLossPct": 23,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 34% of its bite; you give up 23% of your damage."
+    "survivalGainPct": 32,
+    "offenseLossPct": 21,
+    "line": "Losing lane? Third item Void Helm instead of Caustica: their 3s all-in loses 32% of its bite; you give up 21% of your damage."
    }
   },
   {
@@ -432,17 +480,17 @@
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Caustica",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 28,
-    "offenseLossPct": 22,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 28% of its bite; you give up 22% of your damage."
+    "survivalGainPct": 29,
+    "offenseLossPct": 23,
+    "line": "Losing lane? Third item Void Helm instead of Caustica: their 3s all-in loses 29% of its bite; you give up 23% of your damage."
    }
   }
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }

@@ -2,7 +2,7 @@
 //   npm run artifacts             (all heroes)
 //   npm run artifacts -- gideon murdock
 
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { loadData } from '../data.js';
@@ -82,7 +82,15 @@ if (agg) {
       console.error('pred.gg leaderboard fetch failed, shipping without:', (e as Error).message);
     }
   } else {
-    console.log('no PREDGG_CLIENT_ID/SECRET in env; meta.json ships without top players');
+    // No credentials here: carry over the committed leaderboard rather
+    // than wiping it, so zero-API regeneration stays harness-green.
+    const metaPath = path.join(OUT, 'meta.json');
+    if (existsSync(metaPath)) {
+      topPlayers = (JSON.parse(readFileSync(metaPath, 'utf8')) as { topPlayers: typeof topPlayers }).topPlayers ?? null;
+    }
+    console.log(topPlayers
+      ? 'no PREDGG_CLIENT_ID/SECRET in env; carried over committed top players'
+      : 'no PREDGG_CLIENT_ID/SECRET in env; meta.json ships without top players');
   }
 
   writeFileSync(path.join(OUT, 'meta.json'), JSON.stringify({

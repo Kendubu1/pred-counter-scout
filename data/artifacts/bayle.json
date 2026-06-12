@@ -2,7 +2,7 @@
  "slug": "bayle",
  "name": "Bayle",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:41:35.170Z",
+ "generatedAt": "2026-06-12T23:30:10.638Z",
  "role": "offlane",
  "damageType": "physical",
  "attackType": "melee",
@@ -14,7 +14,8 @@
    "abilityHaste",
    "critMultiplier",
    "attackSpeedFormula",
-   "abilityScalingUsesBonusPowerOnly"
+   "abilityScalingUsesBonusPowerOnly",
+   "attackSpeedCap"
   ],
   "notes": [
    "all combat numbers are simulator output on unverified constants",
@@ -76,27 +77,31 @@
   "gold": 17750,
   "archetypes": [
    "skirmish uptime",
-   "extended fights"
+   "extended fights",
+   "magical survival"
   ],
   "objectives": {
-   "burstVsSquishy": 1525.7758620689656,
-   "rot10VsSquishy": 2073.6633663366338,
-   "rot20VsBruiser": 2023.0128205128206,
+   "burstVsSquishy": 1602.1982758620688,
+   "rot10VsSquishy": 2249.207920792079,
+   "rot20VsBruiser": 2193.4935897435903,
    "autoDps10VsSquishy": 936.3204356435643,
    "ehpPhysical": 4340.625,
-   "ehpMagical": 4487.98828125
+   "ehpMagical": 4487.98828125,
+   "healShield10s": 0,
+   "utility": 3,
+   "sustain10s": 0
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for skirmish uptime and extended fights: first spike lands around minute 12 (Deathstalker), third item by minute 25. Take Vesh: +13.5% on your headline output at minute 15.",
+ "coachLine": "Sim-optimal for skirmish uptime, extended fights and magical survival: first spike lands around minute 12 (Deathstalker), third item by minute 25. Take Vesh: +12.5% on 20-second fights at minute 15.",
  "eternals": {
   "top": [
    {
     "name": "Vesh",
     "id": "vesh",
-    "headlinePct": 13.5,
-    "burstPct": 9,
-    "rot20Pct": 13.5,
+    "headlinePct": 12.4,
+    "burstPct": 8.5,
+    "rot20Pct": 12.5,
     "ehpPct": 0
    },
    {
@@ -110,9 +115,9 @@
    {
     "name": "Thraex",
     "id": "thraex",
-    "headlinePct": 9.5,
+    "headlinePct": 8.8,
     "burstPct": 0,
-    "rot20Pct": 9.5,
+    "rot20Pct": 8.8,
     "ehpPct": 0
    }
   ],
@@ -120,47 +125,91 @@
    "Marrow",
    "Nihil",
    "Aion",
-   "Exarch",
-   "Lotus"
-  ]
+   "Exarch"
+  ],
+  "augmentAware": null
  },
+ "augments": [
+  {
+   "id": "150",
+   "name": "Betrayer's Reqiuem",
+   "modeled": true,
+   "provisional": false,
+   "headlinePct": 0,
+   "burstPct": 0,
+   "rot20Pct": 0,
+   "ehpPct": 0,
+   "healShieldPct": 0,
+   "healShieldAbs": 0,
+   "note": "area uppercut is multi-target value; no single-target change",
+   "buildShift": null
+  },
+  {
+   "id": "149",
+   "name": "Frenzied Fighter",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "removes Berserk cooldown below a health threshold; uptime-conditional",
+   "buildShift": null
+  },
+  {
+   "id": "151",
+   "name": "Swift Strikes",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "one-attack AS windows and chain restructure; cadence unobservable",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
   "candidates": [
    {
     "item": "Deathstalker",
     "playRatePct": 0.9,
     "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 170.9
+    "edgeVsPopularPct": 193.9
    },
    {
     "item": "Alternata",
     "playRatePct": 0,
     "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 170.9
+    "edgeVsPopularPct": 193.9
    },
    {
     "item": "Painweaver",
     "playRatePct": 0.2,
     "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 170.9
+    "edgeVsPopularPct": 193.9
    },
    {
     "item": "Omen",
     "playRatePct": 0,
     "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 170.9
+    "edgeVsPopularPct": 193.9
    },
    {
     "item": "Dread",
     "playRatePct": 0.3,
     "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 170.9
+    "edgeVsPopularPct": 193.9
    },
    {
     "item": "Mesmer",
     "playRatePct": 0,
     "bestObjective": "10s rotation vs squishies",
-    "edgeVsPopularPct": 170.9
+    "edgeVsPopularPct": 193.9
    }
   ],
   "honestAbsence": null
@@ -210,7 +259,7 @@
    "spikeMinute": 25,
    "bestObjective": "10s rotation damage",
    "whyLine": "Strongest meta core for 10s rotation damage, online around minute 25 — about 697 damage over a 10s rotation in the sim.",
-   "optimizer": "Optimizer sees +30% more 10s rotation damage: try Deathstalker over Earthshaker (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "optimizer": "Optimizer sees +44% more 10s rotation damage: try Deathstalker over Earthshaker (sim-only — the popular pick may carry utility the sim can't see; test it)."
   },
   {
    "items": [
@@ -233,7 +282,7 @@
    "spikeMinute": 25,
    "bestObjective": "one-combo burst",
    "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 591 damage in one combo in the sim.",
-   "optimizer": "Optimizer sees +35% more one-combo burst: try Deathstalker over Overlord (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "optimizer": "Optimizer sees +42% more one-combo burst: try Deathstalker over Overlord (sim-only — the popular pick may carry utility the sim can't see; test it)."
   }
  ],
  "matchups": [
@@ -268,12 +317,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Deathstalker",
+    "out": "Omen",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 42,
-    "offenseLossPct": 42,
-    "line": "Losing lane? Third item Warden's Faith instead of Deathstalker: their 3s all-in loses 42% of its bite; you give up 42% of your damage."
+    "survivalGainPct": 41,
+    "offenseLossPct": 25,
+    "line": "Losing lane? Third item Warden's Faith instead of Omen: their 3s all-in loses 41% of its bite; you give up 25% of your damage."
    }
   },
   {
@@ -307,18 +356,18 @@
     }
    ],
    "counterSwap": {
-    "out": "Deathstalker",
+    "out": "Omen",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 41,
-    "offenseLossPct": 42,
-    "line": "Losing lane? Third item Warden's Faith instead of Deathstalker: their 3s all-in loses 41% of its bite; you give up 42% of your damage."
+    "offenseLossPct": 25,
+    "line": "Losing lane? Third item Warden's Faith instead of Omen: their 3s all-in loses 41% of its bite; you give up 25% of your damage."
    }
   },
   {
    "enemy": "Steel",
    "enemySlug": "steel",
-   "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale.",
+   "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands.",
    "checkpoints": [
     {
      "minute": 5,
@@ -330,15 +379,15 @@
     },
     {
      "minute": 15,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 20,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 25,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 30,
@@ -346,18 +395,18 @@
     }
    ],
    "counterSwap": {
-    "out": "Deathstalker",
+    "out": "Omen",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 31,
-    "offenseLossPct": 42,
-    "line": "Losing lane? Third item Void Helm instead of Deathstalker: their 3s all-in loses 31% of its bite; you give up 42% of your damage."
+    "survivalGainPct": 29,
+    "offenseLossPct": 25,
+    "line": "Losing lane? Third item Void Helm instead of Omen: their 3s all-in loses 29% of its bite; you give up 25% of your damage."
    }
   },
   {
    "enemy": "Aurora",
    "enemySlug": "aurora",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+   "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands.",
    "checkpoints": [
     {
      "minute": 5,
@@ -369,28 +418,28 @@
     },
     {
      "minute": 15,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 20,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 25,
      "verdict": "even"
     },
     {
+     "minute": 20,
+     "verdict": "even"
+    },
+    {
+     "minute": 25,
+     "verdict": "you"
+    },
+    {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
-    "out": "Deathstalker",
+    "out": "Omen",
     "in": "Void Helm",
     "inSlug": "void-helm",
     "survivalGainPct": 31,
-    "offenseLossPct": 43,
-    "line": "Losing lane? Third item Void Helm instead of Deathstalker: their 3s all-in loses 31% of its bite; you give up 43% of your damage."
+    "offenseLossPct": 25,
+    "line": "Losing lane? Third item Void Helm instead of Omen: their 3s all-in loses 31% of its bite; you give up 25% of your damage."
    }
   },
   {
@@ -424,18 +473,18 @@
     }
    ],
    "counterSwap": {
-    "out": "Deathstalker",
+    "out": "Omen",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 42,
-    "offenseLossPct": 42,
-    "line": "Losing lane? Third item Warden's Faith instead of Deathstalker: their 3s all-in loses 42% of its bite; you give up 42% of your damage."
+    "offenseLossPct": 25,
+    "line": "Losing lane? Third item Warden's Faith instead of Omen: their 3s all-in loses 42% of its bite; you give up 25% of your damage."
    }
   },
   {
    "enemy": "Crunch",
    "enemySlug": "crunch",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+   "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention.",
    "checkpoints": [
     {
      "minute": 5,
@@ -443,37 +492,37 @@
     },
     {
      "minute": 10,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 15,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 20,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 25,
-     "verdict": "enemy"
+     "verdict": "you"
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
-    "out": "Deathstalker",
+    "out": "Omen",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 20,
-    "offenseLossPct": 42,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their 3s all-in loses 20% of its bite; you give up 42% of your damage."
+    "survivalGainPct": 25,
+    "offenseLossPct": 25,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Omen: their 3s all-in loses 25% of its bite; you give up 25% of your damage."
    }
   }
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }

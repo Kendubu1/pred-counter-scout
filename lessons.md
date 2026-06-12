@@ -614,3 +614,164 @@ Append-only. One entry per backlog item or significant finding.
 - The evidence immediately earned its place: Steel supports buy Rift
   Walkers 3x more than Leafsong, but Leafsong wins 2 more games per 100.
   Popularity-vs-winrate gaps are exactly what this site exists to show.
+
+## 2026-06-12 (night, cont. 12): the support model — backlog item 7
+
+- Heal/shield parsing reused the damage parser's shape: find every
+  "values <PowerTag>(+ratio%" group, classify by context (restore/heal
+  verb before, "Shield" after), fold tick cadences ("every 0.5s for 3s"
+  = 6 ticks) into per-cast totals. Pure heal/shield abilities (Muriel's
+  Alacrity) now enter the kit model with an empty damage line, and
+  current-text healing rides along even where damage numbers fell back
+  to stale owned data. Conservative skips, listed not guessed:
+  HealthText-scaled shields, passive-delivered heals (Phase!), Narbash's
+  toggle regen.
+- The golden scenario earned its keep on day one: with support weight
+  vectors alone, Equinox (80 tenacity carrying 20% crit) made Muriel's
+  front via the utility corner — she's hybrid, so the damage-type pool
+  filter waved it through. The fix is a pool constraint (no crit, no
+  lethality in support searches), not weight tuning: those stats feed no
+  support objective, so their gold is dead weight by construction.
+- The field agrees with math it never saw: Muriel's generated support
+  core picked Crystal Tear and Windcaller — her two most-played items
+  (39% each) — purely from heal ratios and heal_shield_increase math.
+  Dekker (no parsed heal) correctly gets a tank/utility answer led by
+  effective HP instead of a fake heal build.
+- Archetype labels need a "best > 0" guard: when an objective's front
+  best is zero, every build is within 98% of it, and a heal-less kit got
+  the heal/shield label on its whole front.
+- Regenerating artifacts without PREDGG creds used to wipe meta.json's
+  topPlayers (a harness gate). build-artifacts now carries the committed
+  leaderboard over when creds are absent — same zero-API-regeneration
+  principle as the rest of the pipeline.
+- Wording matters at the seams between models: a support page's
+  "headline output" is heal/shield, but Eternal deltas are damage math —
+  the coach line now says "your damage rotation" for supports so the
+  Eternal claim can't be read as a healing buff.
+
+## 2026-06-12 (night, cont. 13): augment mechanics in the simulator — item 9 closed
+
+- The 161-augment catalog curated by hand into a second registry file
+  (engine/fixtures/augments.json), keyed augment:<hero>:<catalog-id> so
+  the field evidence joins for free. 46 augments got typed effects via
+  new ability-scoped primitives (per-ability damage amps and cooldown
+  mods, per-cast bonus damage, on-cast heals/shields with stat scaling,
+  per-minute growth); 110 are unmodeled with the reason stated. A
+  harness gate asserts every rostered augment has an entry, so a patch
+  that adds augments fails loudly instead of silently shrinking
+  coverage.
+- Targeting by ability KEY, not name, was the right call: Muriel's E is
+  'Alacrity' in current text but 'Serenity' in the stale owned fallback
+  her def happens to use — names drift, slots don't.
+- Curation conventions that kept honesty cheap: hit-conditional effects
+  are modeled (the sim already assumes casts hit); isolated/nearest
+  conditions are satisfied by 1v1 kill-window sims by construction;
+  pickup/terrain/stack-cadence/team-side effects are unmodeled, always
+  with the reason in the note. Kallari's 'abilities can crit' is the one
+  provisional entry - its +40% ceiling bakes the unverified 1.75 crit
+  multiplier.
+- Percent deltas lie when the baseline is zero: Dekker + Polarity
+  Strike is +0% heal output forever because she has none without it.
+  Absolute deltas (healShieldAbs) carry that case.
+- The cast-count floor makes cooldown augments lumpy: Plasma Barrage's
+  -3.5s reads +0% in a 10s window (2 casts either way) but +7.8% at 20s.
+  Always check the window before calling a cooldown effect worthless.
+- The payoff reads mechanically true: Kallari's Critical Override pulls
+  a crit item into her build, Aurora's Hypothermia pulls Magnify (shred
+  stacking), Maco's shield augments pull Crystal Tear - 9 heroes' builds
+  shift with the augment locked in, and 16 heroes' Eternal sims now run
+  with the field's top augment modeled instead of the blanket
+  'augment-blind' caveat.
+
+## 2026-06-12 (night, cont. 14): Eternal when/why lines — pipeline before prose
+
+- The maintainer asked whether Eternal explanations were in the backlog:
+  they weren't — the 🧠 pass covered augments only. Shipped the pipeline
+  half tonight: npm run review now writes one grounded line per top
+  field Eternal per role, with mechanics sourced from the effect
+  registry's sourceText (including its honest 'not in our sim' notes,
+  which the prompt forbids embellishing) and the same numeric verifier.
+- The verifier core moved to src/copy-verify.ts as pure functions so the
+  ground-check itself is unit-tested without an API key — including the
+  comma/decimal renderings and the pairwise winrate deltas that earlier
+  passes allowed implicitly. A new gate also asserts every Eternal name
+  in the field evidence joins a curated registry entry.
+- This environment carries no ANTHROPIC_API_KEY, so the run is pending
+  wherever the key lives. Pipeline-then-run beats hand-writing ~200
+  lines in-session: the verifier, not the author, is what makes the
+  copy trustworthy, and the unattended path is what survives patches.
+
+## 2026-06-12 (night, cont. 15): Lotus and Deathstalker — two 'everywhere' mysteries, two different answers
+
+- "Why is Lotus everywhere": because the field really does win with it.
+  Shrinkage (now applied to the Eternal ordering — raw-winrate sorting
+  was flaw 4 rediscovered) flips only 7 of 96 cells; pooled across 175k
+  games Lotus wins 55.8% while the mass picks sit at 48-52%. The
+  mechanism is now in the kit math: all four buff numbers were stated in
+  owned eternals.json, so Lotus is encoded as expected value per
+  2-minute proc (takedown procs excluded — the encoding is a floor).
+  Honest residual: minority-pick selection bias can't be decomposed
+  without rank covariates.
+- "Why is Deathstalker everywhere": because the sim has no attack-speed
+  cap. Onslaught (attack speed equal to total flat pen — the encoding is
+  textually faithful) makes it superlinear with every pen item, and
+  uncapped builds reach 3.5+ attacks/sec. The field's verdict: 0.6%
+  median play, negative deltas where tried. Same shape, opposite
+  conclusion: Lotus disagreement = sim too blind, Deathstalker
+  disagreement = sim too credulous. The evidence layer is the tiebreak,
+  exactly as component D intended.
+- Shipped: attackSpeedCap flagged unverified (checklist 7 has the
+  10-minute measurement), the design doc's off-meta evidence gate is now
+  actually enforced (negative-evidence candidates are never promoted),
+  the UI marks low-play negative-evidence items SIM-ONLY ⚠ instead of
+  gold OFF-META, and builds stacking >100% AS carry an explicit
+  optimism warning. The generator stays evidence-blind by design; the
+  fix when the cap is measured will fall out of the math.
+
+## 2026-06-12 (night, cont. 16): the Eternal lines, written in-session
+
+- Maintainer directive: no API key — the copy pass runs in-session, the
+  way the copy audit did (lesson cont. 10). 284 Eternal when/why lines
+  (every hero-role cell's shrunk top-3) written in-session and merged
+  through the SAME machine verifier as the API pipeline: 284 written, 0
+  rejected. Provenance recorded as an in-session pass in the artifact.
+- What made zero rejections possible: the lines cite mechanics numbers
+  (which are in each cell's allowed set via the registry sourceText) and
+  exact game counts, never winrates — the displayed winrates are shrunk
+  and the verifier's allowed set carries raw ones. Where the field and
+  our sim disagree (Neon/Wraith/Shinbi Demiurge), the line says so
+  instead of picking a side silently.
+- The page now explains its Eternal rows three ways: field evidence
+  (shrunk, ordered honestly), sim deltas where modeled, and a grounded
+  when/why line — the thing the maintainer asked for at the start of the
+  night.
+
+## 2026-06-12 (night, cont. 17): the item audit — Noxia's ICD and the sim's blind spots
+
+- "Noxia shows up often" was a real sim bug: on-ability procs were
+  credited inside the per-ability loop, so an item ICD applied per
+  ability instead of globally — a 4-ability kit collected 4x the Noxia
+  procs an 8s ICD allows (up to 48% of target max health from one
+  item). Fixed: one global proc budget per window. Noxia 23 -> ~16-18
+  builds; its residual appeal (90 MP + 20 haste + a now-honest 2 procs)
+  is legitimate math.
+- The systematic audit (sim usage vs field play vs evidence, both
+  directions) found the deeper shape: SEVEN high-play field staples had
+  no effect entries at all. Imperator (34% field play, crits +30%) went
+  0 -> 13 sim builds the moment its primitive existed. Prophecy and
+  Megacosm are now encoded; Overlord/Terminus/Fire Blossom carry honest
+  unmodeled notes. Divine Potion (a 250g statless potion upgrade, 24.6%
+  'play rate') was diluting every popular-build baseline — statless
+  cheap actives are now excluded from the build pool.
+- Sustain was in the design doc's objective vector (component C) and
+  never implemented — lifesteal/omnivamp were worth literally zero to
+  the optimizer, which is why the field's drain items lost every corner
+  to pen stat-sticks. sustain10s is now an objective with a drain
+  corner; Terminus is still outcompeted, but it is outcompeted on real
+  math now instead of being invisible.
+- What remains and why: the pen/attack-speed cluster (Deathstalker 27,
+  Painweaver 15, Alternata 14) all hangs on the unmeasured attack-speed
+  cap — the single highest-value practice-mode measurement on the
+  checklist. The audit method (usage-vs-field both directions) should
+  rerun after every snapshot; it found a bug, seven missing encodings, a
+  missing objective, and a pool hygiene hole in one pass.

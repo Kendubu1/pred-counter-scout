@@ -2,7 +2,7 @@
  "slug": "revenant",
  "name": "Revenant",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:41:57.523Z",
+ "generatedAt": "2026-06-12T23:32:20.722Z",
  "role": "carry",
  "damageType": "hybrid",
  "attackType": "ranged",
@@ -14,28 +14,22 @@
    "abilityHaste",
    "critMultiplier",
    "attackSpeedFormula",
-   "abilityScalingUsesBonusPowerOnly"
+   "abilityScalingUsesBonusPowerOnly",
+   "attackSpeedCap"
   ],
   "notes": [
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
-   "evidence deltas carry finished-inventory survivorship bias"
+   "evidence deltas carry finished-inventory survivorship bias",
+   "this build stacks over +100% attack speed and the sim has NO measured attack-speed cap (calibration checklist 7) — sustained-DPS numbers are optimistic until the cap is measured"
   ]
  },
  "build": {
   "items": [
    {
-    "name": "Sky Splitter",
-    "slug": "sky-splitter",
-    "spikeMinute": 12,
-    "playRatePct": 1.4,
-    "evidenceDeltaWr": 0,
-    "evidenceN": 20
-   },
-   {
     "name": "Deathstalker",
     "slug": "deathstalker",
-    "spikeMinute": 19,
+    "spikeMinute": 12,
     "playRatePct": 0.2,
     "evidenceDeltaWr": null,
     "evidenceN": null
@@ -43,15 +37,23 @@
    {
     "name": "Necrosis",
     "slug": "necrosis",
-    "spikeMinute": 25,
+    "spikeMinute": 19,
     "playRatePct": 1.2,
     "evidenceDeltaWr": 0.2,
     "evidenceN": 18
    },
    {
+    "name": "Imperator",
+    "slug": "imperator",
+    "spikeMinute": 25,
+    "playRatePct": 70,
+    "evidenceDeltaWr": 3,
+    "evidenceN": 1020
+   },
+   {
     "name": "Tainted Rounds",
     "slug": "tainted-rounds",
-    "spikeMinute": 30,
+    "spikeMinute": 31,
     "playRatePct": 12,
     "evidenceDeltaWr": 0.3,
     "evidenceN": 175
@@ -67,41 +69,44 @@
    {
     "name": "Lightning Hawk",
     "slug": "lightning-hawk",
-    "spikeMinute": 41,
+    "spikeMinute": 42,
     "playRatePct": 5.8,
     "evidenceDeltaWr": 0.5,
     "evidenceN": 84
    }
   ],
-  "gold": 18200,
+  "gold": 18500,
   "archetypes": [
    "sustained DPS"
   ],
   "objectives": {
-   "burstVsSquishy": 1013.1589403973511,
-   "rot10VsSquishy": 385.9271523178808,
-   "rot20VsBruiser": 442.4757281553398,
-   "autoDps10VsSquishy": 1018.9544370860929,
+   "burstVsSquishy": 1288.4511589403976,
+   "rot10VsSquishy": 408.2781456953643,
+   "rot20VsBruiser": 467.9611650485437,
+   "autoDps10VsSquishy": 1227.6497019867554,
    "ehpPhysical": 4054.1779062499995,
-   "ehpMagical": 3107.123484375
+   "ehpMagical": 3107.123484375,
+   "healShield10s": 0,
+   "utility": 0,
+   "sustain10s": 0
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for sustained DPS: first spike lands around minute 12 (Sky Splitter), third item by minute 25. Take Demiurge: +24.1% on your headline output at minute 15.",
+ "coachLine": "Sim-optimal for sustained DPS: first spike lands around minute 12 (Deathstalker), third item by minute 25. Take Demiurge: +18.8% on your headline output at minute 15.",
  "eternals": {
   "top": [
    {
     "name": "Demiurge",
     "id": "demiurge",
-    "headlinePct": 24.1,
-    "burstPct": 14.1,
-    "rot20Pct": 9.2,
+    "headlinePct": 18.8,
+    "burstPct": 10.9,
+    "rot20Pct": 9.5,
     "ehpPct": 0
    },
    {
     "name": "Thraex",
     "id": "thraex",
-    "headlinePct": 8.2,
+    "headlinePct": 9.2,
     "burstPct": 0,
     "rot20Pct": 9.5,
     "ehpPct": 0
@@ -119,29 +124,67 @@
    "Marrow",
    "Nihil",
    "Aion",
-   "Exarch",
-   "Lotus"
-  ]
+   "Exarch"
+  ],
+  "augmentAware": null
  },
+ "augments": [
+  {
+   "id": "98",
+   "name": "Quickdraw",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "reload speed and jump height; cadence utility",
+   "buildShift": null
+  },
+  {
+   "id": "99",
+   "name": "Hellfire Blast",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "fourth-shot-only amp and bonus-armor bypass; ~1.75% mean basic amp is below the modeling floor",
+   "buildShift": null
+  },
+  {
+   "id": "100",
+   "name": "Spectral Bounty",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "kill-conditional bounty gold and stat steal; economy",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
   "candidates": [
-   {
-    "item": "Sky Splitter",
-    "playRatePct": 1.4,
-    "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 197.6
-   },
    {
     "item": "Deathstalker",
     "playRatePct": 0.2,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 197.6
+    "edgeVsPopularPct": 87.7
    },
    {
     "item": "Necrosis",
     "playRatePct": 1.2,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 197.6
+    "edgeVsPopularPct": 87.7
    }
   ],
   "honestAbsence": null
@@ -167,7 +210,7 @@
    "coreGold": 9650,
    "spikeMinute": 26,
    "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 26 — about 555 damage in one combo in the sim.",
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 26 — about 642 damage in one combo in the sim.",
    "optimizer": null
   },
   {
@@ -191,7 +234,7 @@
    "spikeMinute": 26,
    "bestObjective": "extended fights vs bruisers",
    "whyLine": "Strongest meta core for extended fights vs bruisers, online around minute 26 — about 303 damage over a 20s fight in the sim.",
-   "optimizer": "Optimizer agrees: within 7% of our best core on extended fights vs bruisers. The winrate is earned, not luck."
+   "optimizer": "Optimizer agrees: within 1% of our best core on extended fights vs bruisers. The winrate is earned, not luck."
   },
   {
    "items": [
@@ -212,9 +255,9 @@
    "shrunkWr": 0.493,
    "coreGold": 9650,
    "spikeMinute": 26,
-   "bestObjective": "extended fights vs bruisers",
-   "whyLine": "Strongest meta core for extended fights vs bruisers, online around minute 26 — about 305 damage over a 20s fight in the sim.",
-   "optimizer": "Optimizer agrees: within 7% of our best core on extended fights vs bruisers. The winrate is earned, not luck."
+   "bestObjective": "lifesteal sustain",
+   "whyLine": "Strongest meta core for lifesteal sustain, online around minute 26 — about 338 HP drained back over a 10s fight in the sim.",
+   "optimizer": null
   }
  ],
  "matchups": [
@@ -253,8 +296,8 @@
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 38,
-    "offenseLossPct": 33,
-    "line": "Losing lane? Third item Warden's Faith instead of Tainted Rounds: their 3s all-in loses 38% of its bite; you give up 33% of your damage."
+    "offenseLossPct": 39,
+    "line": "Losing lane? Third item Warden's Faith instead of Tainted Rounds: their 3s all-in loses 38% of its bite; you give up 39% of your damage."
    }
   },
   {
@@ -291,9 +334,9 @@
     "out": "Tainted Rounds",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 21,
-    "offenseLossPct": 33,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Rounds: their 3s all-in loses 21% of its bite; you give up 33% of your damage."
+    "survivalGainPct": 24,
+    "offenseLossPct": 39,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Rounds: their 3s all-in loses 24% of its bite; you give up 39% of your damage."
    }
   },
   {
@@ -330,9 +373,9 @@
     "out": "Tainted Rounds",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 21,
-    "offenseLossPct": 33,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Rounds: their 3s all-in loses 21% of its bite; you give up 33% of your damage."
+    "survivalGainPct": 24,
+    "offenseLossPct": 39,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Rounds: their 3s all-in loses 24% of its bite; you give up 39% of your damage."
    }
   },
   {
@@ -362,7 +405,7 @@
     },
     {
      "minute": 30,
-     "verdict": "even"
+     "verdict": "enemy"
     }
    ],
    "counterSwap": {
@@ -370,8 +413,8 @@
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 34,
-    "offenseLossPct": 33,
-    "line": "Losing lane? Third item Warden's Faith instead of Tainted Rounds: their 3s all-in loses 34% of its bite; you give up 33% of your damage."
+    "offenseLossPct": 39,
+    "line": "Losing lane? Third item Warden's Faith instead of Tainted Rounds: their 3s all-in loses 34% of its bite; you give up 39% of your damage."
    }
   },
   {
@@ -408,9 +451,9 @@
     "out": "Tainted Rounds",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 20,
-    "offenseLossPct": 33,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Rounds: their 3s all-in loses 20% of its bite; you give up 33% of your damage."
+    "survivalGainPct": 24,
+    "offenseLossPct": 39,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Rounds: their 3s all-in loses 24% of its bite; you give up 39% of your damage."
    }
   },
   {
@@ -447,14 +490,14 @@
     "out": "Tainted Rounds",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 18,
-    "offenseLossPct": 33,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Rounds: their 3s all-in loses 18% of its bite; you give up 33% of your damage."
+    "survivalGainPct": 24,
+    "offenseLossPct": 39,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Rounds: their 3s all-in loses 24% of its bite; you give up 39% of your damage."
    }
   }
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }

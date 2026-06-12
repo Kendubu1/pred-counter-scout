@@ -2,7 +2,7 @@
  "slug": "neon",
  "name": "Neon",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T20:41:57.490Z",
+ "generatedAt": "2026-06-12T23:32:15.759Z",
  "role": "midlane",
  "damageType": "magical",
  "attackType": "ranged",
@@ -14,7 +14,8 @@
    "abilityHaste",
    "critMultiplier",
    "attackSpeedFormula",
-   "abilityScalingUsesBonusPowerOnly"
+   "abilityScalingUsesBonusPowerOnly",
+   "attackSpeedCap"
   ],
   "notes": [
    "all combat numbers are simulator output on unverified constants",
@@ -33,36 +34,36 @@
     "evidenceN": 225
    },
    {
-    "name": "Magnify",
-    "slug": "magnify",
-    "spikeMinute": 19,
-    "playRatePct": 0.9,
-    "evidenceDeltaWr": null,
-    "evidenceN": null
-   },
-   {
-    "name": "Combustion",
-    "slug": "combustion",
-    "spikeMinute": 24,
-    "playRatePct": 70.8,
-    "evidenceDeltaWr": -0.6,
-    "evidenceN": 704
-   },
-   {
     "name": "Tainted Scepter",
     "slug": "tainted-scepter",
-    "spikeMinute": 30,
+    "spikeMinute": 19,
     "playRatePct": 23.3,
     "evidenceDeltaWr": 3.8,
     "evidenceN": 232
    },
    {
+    "name": "Magnify",
+    "slug": "magnify",
+    "spikeMinute": 24,
+    "playRatePct": 0.9,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
+   },
+   {
     "name": "Oblivion Crown",
     "slug": "oblivion-crown",
-    "spikeMinute": 36,
+    "spikeMinute": 31,
     "playRatePct": 23.3,
     "evidenceDeltaWr": 5.6,
     "evidenceN": 232
+   },
+   {
+    "name": "Combustion",
+    "slug": "combustion",
+    "spikeMinute": 36,
+    "playRatePct": 70.8,
+    "evidenceDeltaWr": -0.6,
+    "evidenceN": 704
    },
    {
     "name": "Wraith Leggings",
@@ -78,40 +79,43 @@
    "skirmish uptime"
   ],
   "objectives": {
-   "burstVsSquishy": 2641.285619622838,
-   "rot10VsSquishy": 4701.52948943662,
-   "rot20VsBruiser": 6409.9213286713275,
+   "burstVsSquishy": 1958.20684148779,
+   "rot10VsSquishy": 3853.1580105633802,
+   "rot20VsBruiser": 5138.417832167832,
    "autoDps10VsSquishy": 68.16625760135135,
    "ehpPhysical": 4613.13625,
-   "ehpMagical": 3704.8105078124995
+   "ehpMagical": 3704.8105078124995,
+   "healShield10s": 0,
+   "utility": 4,
+   "sustain10s": 365.355138253023
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for skirmish uptime: first spike lands around minute 12 (Noxia), third item by minute 24. Take Demiurge: +14.2% on 20-second fights at minute 15.",
+ "coachLine": "Sim-optimal for skirmish uptime: first spike lands around minute 12 (Noxia), third item by minute 24. Take Demiurge: +13.5% on 20-second fights at minute 15.",
  "eternals": {
   "top": [
    {
     "name": "Demiurge",
     "id": "demiurge",
-    "headlinePct": 13.5,
-    "burstPct": 12.8,
-    "rot20Pct": 14.2,
+    "headlinePct": 12.7,
+    "burstPct": 11,
+    "rot20Pct": 13.5,
     "ehpPct": 2.3
    },
    {
     "name": "Vesh",
     "id": "vesh",
-    "headlinePct": 8.6,
-    "burstPct": 8.1,
-    "rot20Pct": 8,
+    "headlinePct": 10.5,
+    "burstPct": 10.9,
+    "rot20Pct": 9.7,
     "ehpPct": 0
    },
    {
     "name": "Thraex",
     "id": "thraex",
-    "headlinePct": 6.1,
+    "headlinePct": 7.4,
     "burstPct": 0,
-    "rot20Pct": 5.6,
+    "rot20Pct": 6.8,
     "ehpPct": 0
    }
   ],
@@ -119,17 +123,61 @@
    "Marrow",
    "Nihil",
    "Aion",
-   "Exarch",
-   "Lotus"
-  ]
+   "Exarch"
+  ],
+  "augmentAware": null
  },
+ "augments": [
+  {
+   "id": "159",
+   "name": "Dox",
+   "modeled": true,
+   "provisional": false,
+   "headlinePct": 3.3,
+   "burstPct": 3.1,
+   "rot20Pct": 3.4,
+   "ehpPct": 0,
+   "healShieldPct": 0,
+   "healShieldAbs": 0,
+   "note": "replaces the trinket; active vision not scored",
+   "buildShift": null
+  },
+  {
+   "id": "158",
+   "name": "Ghost in the Machine",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "invisibility utility",
+   "buildShift": null
+  },
+  {
+   "id": "160",
+   "name": "RAM",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "takedown stacking with death decay; game-state economy",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
   "candidates": [
    {
     "item": "Magnify",
     "playRatePct": 0.9,
-    "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 112.7
+    "bestObjective": "10s rotation vs squishies",
+    "edgeVsPopularPct": 49.6
    }
   ],
   "honestAbsence": null
@@ -154,9 +202,9 @@
    "shrunkWr": 0.53,
    "coreGold": 9100,
    "spikeMinute": 25,
-   "bestObjective": "physical survivability",
-   "whyLine": "Strongest meta core for physical survivability, online around minute 25 — about 3,732 effective HP vs physical in the sim.",
-   "optimizer": "Optimizer sees +14% more physical survivability: try Noxia over Combustion (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "bestObjective": "one-combo burst",
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 1,202 damage in one combo in the sim.",
+   "optimizer": null
   },
   {
    "items": [
@@ -178,7 +226,7 @@
    "coreGold": 9000,
    "spikeMinute": 24,
    "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 1,677 damage in one combo in the sim.",
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 1,179 damage in one combo in the sim.",
    "optimizer": null
   },
   {
@@ -202,7 +250,7 @@
    "spikeMinute": 24,
    "bestObjective": "physical survivability",
    "whyLine": "Strongest meta core for physical survivability, online around minute 24 — about 3,732 effective HP vs physical in the sim.",
-   "optimizer": "Optimizer sees +14% more physical survivability: try Noxia over Azure Core (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "optimizer": "Optimizer sees +24% more physical survivability: try Noxia over Azure Core (sim-only — the popular pick may carry utility the sim can't see; test it)."
   }
  ],
  "matchups": [
@@ -221,7 +269,7 @@
     },
     {
      "minute": 15,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 20,
@@ -237,12 +285,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Tainted Scepter",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 32,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 32% of its bite; you give up 20% of your damage."
+    "survivalGainPct": 24,
+    "offenseLossPct": 14,
+    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 24% of its bite; you give up 14% of your damage."
    }
   },
   {
@@ -268,7 +316,7 @@
     },
     {
      "minute": 25,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 30,
@@ -276,12 +324,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Tainted Scepter",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 34,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 34% of its bite; you give up 20% of your damage."
+    "survivalGainPct": 30,
+    "offenseLossPct": 14,
+    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 30% of its bite; you give up 14% of your damage."
    }
   },
   {
@@ -315,18 +363,18 @@
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Tainted Scepter",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 34,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 34% of its bite; you give up 20% of your damage."
+    "survivalGainPct": 26,
+    "offenseLossPct": 13,
+    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 26% of its bite; you give up 13% of your damage."
    }
   },
   {
    "enemy": "Lt. Belica",
    "enemySlug": "lt-belica",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+   "gameplan": "Even kill threat throughout: this lane is decided by mechanics and wave control, not scaling.",
    "checkpoints": [
     {
      "minute": 5,
@@ -342,7 +390,7 @@
     },
     {
      "minute": 20,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 25,
@@ -354,12 +402,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Tainted Scepter",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 32,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 32% of its bite; you give up 20% of your damage."
+    "survivalGainPct": 27,
+    "offenseLossPct": 13,
+    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 27% of its bite; you give up 13% of your damage."
    }
   },
   {
@@ -389,22 +437,22 @@
     },
     {
      "minute": 30,
-     "verdict": "even"
+     "verdict": "enemy"
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Tainted Scepter",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 34,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 34% of its bite; you give up 20% of your damage."
+    "survivalGainPct": 26,
+    "offenseLossPct": 14,
+    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 26% of its bite; you give up 14% of your damage."
    }
   },
   {
    "enemy": "Countess",
    "enemySlug": "countess",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+   "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale.",
    "checkpoints": [
     {
      "minute": 5,
@@ -420,7 +468,7 @@
     },
     {
      "minute": 20,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 25,
@@ -432,17 +480,17 @@
     }
    ],
    "counterSwap": {
-    "out": "Oblivion Crown",
+    "out": "Tainted Scepter",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 28,
-    "offenseLossPct": 19,
-    "line": "Losing lane? Third item Void Helm instead of Oblivion Crown: their 3s all-in loses 28% of its bite; you give up 19% of your damage."
+    "survivalGainPct": 24,
+    "offenseLossPct": 13,
+    "line": "Losing lane? Third item Void Helm instead of Tainted Scepter: their 3s all-in loses 24% of its bite; you give up 13% of your damage."
    }
   }
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }
