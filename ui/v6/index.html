@@ -506,7 +506,7 @@ function renderMetaboard() {
         <div class="lane">
           <h3>${LANE_LABELS[role]}</h3>
           ${(META.roles[role] || []).slice(0, 5).map((h, i) => `
-            <div class="mp" data-slug="${h.slug}" title="${esc(h.name)}: ${h.games} ${role} games, ${(h.shrunkWr * 100).toFixed(1)}% shrunk winrate, meta score ${(h.metaScore * 100).toFixed(0)}${h.badge ? ' — ' + esc(h.badge) : ''}">
+            <div class="mp" data-slug="${h.slug}" data-role="${role}" title="${esc(h.name)}: ${h.games} ${role} games, ${(h.shrunkWr * 100).toFixed(1)}% shrunk winrate, meta score ${(h.metaScore * 100).toFixed(0)}${h.badge ? ' — ' + esc(h.badge) : ''}">
               <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
               <span class="n">${i === 0 ? '👑 ' : ''}${esc(h.name)}${h.badge === 'sleeper' ? ' 💤' : h.badge ? ' ⚠' : ''}<span class="g">${h.games} games</span></span>
               <span class="wr ${wrClass(h.shrunkWr)}">${(h.shrunkWr * 100).toFixed(1)}%</span>
@@ -529,7 +529,7 @@ function renderMetaboard() {
             </div>` : ''}
         </div>`).join('')}
     </div>`;
-  document.querySelectorAll('.mp').forEach((c) => { c.onclick = () => nav(c.dataset.slug); });
+  document.querySelectorAll('.mp').forEach((c) => { c.onclick = () => nav(c.dataset.slug, false, c.dataset.role); });
 }
 
 function renderGrid() {
@@ -541,7 +541,7 @@ function renderGrid() {
       <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph',style:'aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:var(--text-2)',textContent:'⚔'}))">
       <div class="nm">${esc(h.name)}</div><div class="rl">${esc(h.role)}</div>
     </div>`).join('');
-  document.querySelectorAll('.hcard').forEach((c) => { c.onclick = () => nav(c.dataset.slug); });
+  document.querySelectorAll('.hcard').forEach((c) => { c.onclick = () => nav(c.dataset.slug, false, roleFilter !== 'all' ? roleFilter : null); });
 }
 
 /* ── hero page ── */
@@ -594,51 +594,54 @@ function renderHero(a, roleParam) {
       <h2>At the gate · your 20-second picks <span class="hint">augment first, then Eternal — the build follows</span></h2>
       ${(() => {
         const hr = AUGS && AUGS.heroes[a.slug];
-        if (!hr) return '<div class="muted" style="margin-bottom:.8rem">no augment evidence for this hero yet (thin field sample)</div>';
+        if (!hr) return `<div class="muted" style="margin-bottom:.8rem">no augment field evidence for this hero yet (thin sample)${top ? ` · kit-math Eternal pick: <b>${esc(top.name)}</b> +${top.headlinePct}% headline` : ''}</div>`;
         const roles = Object.keys(hr);
         const role = roleParam && hr[roleParam] ? roleParam : (hr[a.role] ? a.role : roles[0]);
+        const mismatch = roleParam && !hr[roleParam];
         const cell = hr[role];
         const ranked = [...cell.augments].sort((x, y) => (y.w / y.n) - (x.w / x.n));
-        const fieldEt = cell.eternals[0] ? [...cell.eternals].sort((x, y) => (y.w / y.n) - (x.w / x.n)).filter((e) => e.n >= 500)[0] : null;
-        window.__fieldEternal = fieldEt ? fieldEt.name : null;
+        const adv = ranked[1] ? ((ranked[0].w / ranked[0].n) - (ranked[1].w / ranked[1].n)) * 100 : null;
+        const simBy = new Map(a.eternals.top.map((e) => [e.name.toLowerCase(), e]));
+        const ets = [...cell.eternals].filter((e) => e.n >= 300).sort((x, y) => (y.w / y.n) - (x.w / x.n)).slice(0, 3);
         return `
         <div style="font-size:.74rem;color:var(--text-2);margin-bottom:.45rem">augment · field evidence as <b style="text-transform:capitalize">${esc(role)}</b>${roles.length > 1 ? ` · view as: ${roles.map((r) => r === role ? `<b style="text-transform:capitalize">${esc(r)}</b>` : `<a href="?hero=${esc(a.slug)}&role=${esc(r)}" style="text-transform:capitalize">${esc(r)}</a>`).join(' / ')}` : ''}</div>
+        ${mismatch ? `<div style="font-size:.72rem;color:var(--gold);margin-bottom:.45rem">you came here as ${esc(roleParam)}, but the field sample for ${esc(a.name)} ${esc(roleParam)} is too thin — showing ${esc(role)} evidence instead</div>` : ''}
         ${ranked.map((g, i) => {
           const wr = g.w / g.n;
           const desc = (AUGS.catalog[g.id]?.description || '').replace(/<[^>]+>/g, '');
           return `
-          <div style="display:flex;gap:.6rem;align-items:center;padding:.3rem 0;border-bottom:1px ${i === ranked.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
-            <img src="../img/augments/${esc(g.id)}.webp" alt="" style="width:30px;height:30px;border-radius:8px;object-fit:cover;background:var(--bg-2);${i === 0 ? 'box-shadow:0 0 0 2px var(--green)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'">
-            <span style="font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${i === 0 ? '✓ ' : ''}${esc(g.name)}</span>
-            <span style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(wr * 100).toFixed(1)}%</span>
-            <span style="font-size:.7rem;color:var(--text-2)">${g.n.toLocaleString()} games</span>
-            <span style="font-size:.7rem;color:var(--text-2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(desc)}">${esc(desc)}</span>
+          <div style="padding:.4rem 0;border-bottom:1px ${i === ranked.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
+            <div style="display:flex;gap:.6rem;align-items:center">
+              <img src="../img/augments/${esc(g.id)}.webp" alt="" style="width:32px;height:32px;border-radius:8px;object-fit:cover;background:var(--bg-2);flex:none;${i === 0 ? 'box-shadow:0 0 0 2px var(--green)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'">
+              <span style="font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${i === 0 ? '✓ ' : ''}${esc(g.name)}</span>
+              <span style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(wr * 100).toFixed(1)}%</span>
+              <span style="font-size:.7rem;color:var(--text-2)">${g.n.toLocaleString()} games</span>
+            </div>
+            <div style="font-size:.72rem;color:var(--text-2);margin:.25rem 0 0 2.6rem">${esc(desc)}</div>
+            ${i === 0 && adv !== null && adv >= 0.3 ? `<div style="font-size:.72rem;color:var(--green);margin:.15rem 0 0 2.6rem">why: as ${esc(role)} it wins about ${adv.toFixed(1)} more games per 100 than ${esc(ranked[1].name)} — the field has voted</div>` : ''}
           </div>`;
         }).join('')}
-        <div style="font-size:.7rem;color:var(--text-2);margin:.35rem 0 .9rem">winrates are field evidence (ranked + standard), not engine math — the augment's mechanics aren't in the simulator yet, so the Eternal sim below is augment-blind</div>`;
+        <div style="font-size:.74rem;color:var(--text-2);margin:.7rem 0 .45rem"><b style="letter-spacing:.06em">ETERNAL</b> · top 3 as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
+        ${ets.length ? ets.map((e, i) => {
+          const wr = e.w / e.n;
+          const sim = simBy.get(e.name.toLowerCase());
+          const why = sim
+            ? `our kit math: headline +${sim.headlinePct}% · burst +${sim.burstPct}% · 20s fights +${sim.rot20Pct}% · eHP +${sim.ehpPct}%`
+            : 'field evidence only — this Eternal isn’t in our kit math yet';
+          return `
+          <div style="padding:.35rem 0;border-bottom:1px ${i === ets.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
+            <div style="display:flex;gap:.6rem;align-items:center">
+              <img src="${IMG.eternal(e.name.toLowerCase())}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;${i === 0 ? 'box-shadow:0 0 0 2px var(--green)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'">
+              <span style="font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${i === 0 ? '✓ ' : ''}${esc(e.name)}</span>
+              <span style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(wr * 100).toFixed(1)}%</span>
+              <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
+            </div>
+            <div style="font-size:.7rem;color:var(--text-2);margin:.2rem 0 0 2.35rem">${why}</div>
+          </div>`;
+        }).join('') : '<div class="muted">no Eternal sample for this role yet</div>'}
+        ${top && ets.length && top.name.toLowerCase() !== ets[0].name.toLowerCase()
+          ? `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">⚖ our augment-blind kit math prefers ${esc(top.name)} (+${top.headlinePct}% headline) — when math and field disagree, weight the field for this role until augment mechanics land in the simulator</div>` : ''}`;
       })()}
-      ${top ? `
-      <div class="eternal-row">
-        <img src="${IMG.eternal(top.id)}" alt="" onerror="this.style.visibility='hidden'">
-        <div>
-          <b>${esc(top.name)}</b>
-          <div class="deltas">${(() => {
-            const styles = [
-              { v: top.burstPct, line: `your all-in combo hits ${top.burstPct}% harder — an assassination playstyle: look for picks, not extended trades` },
-              { v: top.rot20Pct, line: `${top.rot20Pct}% more output over a 20-second fight — a skirmish playstyle: stay in the fight, win the long trade` },
-              { v: top.ehpPct, line: `${top.ehpPct}% more effective HP — a frontline playstyle: soak the engage, let the carries clean up` },
-            ].sort((x, y) => y.v - x.v);
-            return esc(styles[0].v > 0 ? styles[0].line : `+${top.headlinePct}% on this kit's headline output at minute 15`);
-          })()}</div>
-          <div class="deltas" style="margin-top:.2rem">full math: headline +${top.headlinePct}% · burst +${top.burstPct}% · 20s fights +${top.rot20Pct}% · eHP +${top.ehpPct}%</div>
-        </div>
-      </div>
-      <div class="eternal-alts">
-        ${a.eternals.top.slice(1).map((e) => `<span class="alt"><img src="${IMG.eternal(e.id)}" alt=""> ${esc(e.name)} +${Math.max(e.headlinePct, e.ehpPct)}%</span>`).join('')}
-      </div>
-      ${window.__fieldEternal && window.__fieldEternal !== top.name
-        ? `<div style="margin-top:.5rem;font-size:.74rem;color:var(--gold)">⚖ the field most often wins with <b>${esc(window.__fieldEternal)}</b> in this role — our sim (augment-blind) prefers ${esc(top.name)}; until augment math lands, treat this as a coin worth flipping toward the field</div>`
-        : window.__fieldEternal ? `<div style="margin-top:.5rem;font-size:.74rem;color:var(--text-2)">field evidence agrees: ${esc(window.__fieldEternal)} is also the top-winrate Eternal in this role</div>` : ''}` : '<div class="muted">no modeled Eternal clears the bar for this kit yet</div>'}
       <div style="margin-top:.6rem; font-size:.74rem; color:var(--text-2)">
         ⚠ <b>Why no single flat build:</b> the augment changes which build is right (a damage build and a support build are different heroes in practice). The augment winrates above are field evidence; their mechanics aren't in the simulator yet, so the build below assumes the kit's baseline — treat it as the starting point for your augment and playstyle. No Eternal math yet for: ${esc(a.eternals.unmodeled.join(', '))} — see Depth below.
       </div>
@@ -657,6 +660,20 @@ function renderHero(a, roleParam) {
       ${a.build.manaFeasible ? '' : '<div class="warn">⚠ mana-hungry rotation — weave basic attacks between casts</div>'}
     </section>
 
+    ${a.metaBuilds && a.metaBuilds.length ? `
+    <section class="card">
+      <h2>Meta builds, explained <span class="hint">pred.gg evidence × our simulator</span></h2>
+      ${a.metaBuilds.map((m) => `
+        <div class="metabuild">
+          <div class="mb-row">
+            <span class="mb-items">${m.items.map((i) => i.slug ? `<img loading="lazy" src="../img/items/${esc(i.slug)}.webp" title="${esc(i.name)}" onerror="this.style.visibility='hidden'">` : `<span class="chip">${esc(i.name)}</span>`).join('<span class="arrow">→</span>')}</span>
+            <span class="mb-wr ${m.shrunkWr >= 0.53 ? 'up' : m.shrunkWr <= 0.5 ? 'down' : 'flat'}">${(m.shrunkWr * 100).toFixed(1)}%</span>
+            <span class="mb-n">${m.n} games</span>
+          </div>
+          <div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div>
+        </div>`).join('')}
+    </section>` : ''}
+
     <section class="card">
       <h2>Lane checkpoints <span class="hint">vs most-played ${esc(a.role)} opponents · green = your kill window</span></h2>
       ${a.matchups.length ? a.matchups.map((m) => `
@@ -666,20 +683,6 @@ function renderHero(a, roleParam) {
           <span class="plan">${esc(m.gameplan)}${m.counterSwap ? `<br><span class="cswap">⚙ ${esc(m.counterSwap.line)}</span>` : ''}</span>
         </div>`).join('') : '<div style="color:var(--text-2)">no same-role opponents with enough games this patch</div>'}
     </section>
-
-    ${a.metaBuilds && a.metaBuilds.length ? `
-    <section class="card">
-      <h2>Meta builds, explained <span class="hint">pred.gg evidence × our simulator</span></h2>
-      ${a.metaBuilds.map((m) => `
-        <div class="metabuild">
-          <div class="mb-row">
-            <span class="mb-items">${m.items.map((i) => i.slug ? `<img loading="lazy" src="../img/items/${esc(i.slug)}.webp" title="${esc(i.name)}" onerror="this.style.visibility='hidden'">` : `<span class="chip">${esc(i.name)}</span>`).join('<span class="arrow">→</span>')}</span>
-            <span class="mb-wr ${m.shrunkWr >= 0.53 ? 'up' : m.shrunkWr <= 0.5 ? 'down' : 'flat'}">${(m.shrunkWr * 100).toFixed(1)}%</span>
-            <span class="mb-n">${m.n}g</span>
-          </div>
-          <div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div>
-        </div>`).join('')}
-    </section>` : ''}
 
     <details>
       <summary>Off-meta lab</summary>

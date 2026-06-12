@@ -66,7 +66,7 @@ async function main() {
   let calls = 0;
   for (const slug of [...data.kits.keys()].sort()) {
     const byRole = agg.heroes[slug]?.byRole ?? {};
-    const roles = Object.entries(byRole).filter(([, v]) => (v as { n: number }).n >= 300).map(([r]) => r);
+    const roles = Object.entries(byRole).filter(([, v]) => (v as { n: number }).n >= 150).map(([r]) => r);
     if (!roles.length) continue;
     heroes[slug] = {};
     for (const role of roles) {
@@ -86,7 +86,7 @@ async function main() {
 
   const out = {
     generatedAt: new Date().toISOString(),
-    source: 'pred.gg simpleBuild perk statistics (gameModes RANKED+STANDARD), per hero-role with 300+ field games in our aggregates',
+    source: 'pred.gg simpleBuild perk statistics (gameModes RANKED+STANDARD), per hero-role with 150+ field games in our aggregates',
     note: 'augment = the hero-specific perk locked in the first ~20s; winrates are observational evidence, not engine math; augment mechanical modeling is still open (priorities item 9)',
     catalog,
     heroes,
