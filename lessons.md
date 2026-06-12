@@ -427,3 +427,24 @@ Append-only. One entry per backlog item or significant finding.
   note now says "(all lanes)" — that number is whole-hero, not
   role-split, and claiming otherwise would repeat today's attribution
   bug in miniature.
+
+## 2026-06-12 (night, cont. 3): the mode audit the maintainer asked for
+
+- Full five-stack audit of what each surface pools. Career/hero/role
+  pulls were already clean (real 5v5s) after the penta fix, but
+  pullRecentMatches filtered on a GUESSED enum value ('pvp') that the
+  API never returns (it's STANDARD) — standard games were silently
+  dropped from the film-room sample while ARAM was excluded by luck.
+  Filter fixed to RANKED+STANDARD, pull depth raised to the API cap
+  (50). Magnitude of the cleanup per member (casual games previously
+  in scope): Cuban 960 (57% of his total), Mr_Meat31 977, Xeebs 648,
+  Willy 407, Goldilocks 340.
+- Recent-form reality check: Cuban's last 50 matches are 42 ARAM /
+  8 ranked — his temporal insights now rest on few real games and the
+  n-gates suppress them rather than fake them. That is the system
+  working.
+- One ledger receipt still printed "(164g)" — the maintainer read "87g"
+  as gold elsewhere too. Fixed at source and the harness now greps all
+  player-facing artifacts for the Ng pattern, so the abbreviation can't
+  ship again. Validating enum values against the API (not guessing) and
+  banning ambiguous units are now both gated, not remembered.
