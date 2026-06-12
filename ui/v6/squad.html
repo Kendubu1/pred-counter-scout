@@ -283,14 +283,14 @@ const plink = (uuid, name) => uuid
             <span>${pav(seat.uuid)}${plink(seat.uuid, seat.name)} <span style="color:var(--text-2);font-size:.76rem">${pct(seat.wr)}% · ${seat.games} games</span></span>
             <span class="picks-mini">${mode === 'meta'
               ? metaPickFor(seat, oi, si)
-              : (seat.picks.map((h) => `${esc(h.name)} ${pct(h.shrunkWr, 0)}%`).join(' · ') || '<span style="color:var(--gold)">no 30+ game hero here — flip to meta mode</span>')}</span>
+              : (seat.picks.map((h) => `${esc(h.name)} ${pct(h.shrunkWr, 0)}%`).join(' · ') || '<span style="color:var(--gold)">no 20+ game hero in this exact role — flip to meta mode</span>')}</span>
           </div>`).join('')}
       </div>`;
     }).join('') + `
       <div style="font-size:.7rem;color:var(--text-2);margin-top:.4rem">
         ${mode === 'meta'
           ? 'meta mode: heroes from the current patch meta board per lane; “new to you” = under 30 games on it, the seat winrate shown is still your role record'
-          : 'wheelhouse mode: only heroes with 30+ of your own games in that role'}
+          : 'wheelhouse mode: only heroes with 20+ of your own games in that exact role'}
         · seat assignments maximize confidence-weighted role winrates</div>`;
   }
   document.querySelectorAll('#who input, #mode input').forEach((i) => { i.onchange = renderPlan; });

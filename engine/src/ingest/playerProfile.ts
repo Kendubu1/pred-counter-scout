@@ -80,6 +80,31 @@ export async function pullRecentMatches(uuid: string, limit = 40): Promise<Recen
     .sort((a, b) => a.startTime.localeCompare(b.startTime));
 }
 
+export interface HeroRoleCell { role: string; slug: string; n: number; w: number }
+
+/**
+ * The player's own hero record split by role (one query per role). This
+ * is what seat suggestions must use: a hero's whole-profile winrate can
+ * blend lanes (e.g. Zinx played both mid and support), and the field's
+ * primary role for a hero says nothing about where THIS player wins on
+ * it. Role rows only cover matches with role tracking, so per-role
+ * counts can sum below the hero total.
+ */
+export async function pullHeroRoleStats(uuid: string): Promise<HeroRoleCell[]> {
+  const ROLES = ['CARRY', 'MIDLANE', 'OFFLANE', 'JUNGLE', 'SUPPORT'];
+  const out: HeroRoleCell[] = [];
+  for (const role of ROLES) {
+    const d = await gql<{ player: { heroStatistics: { results: { hero: { slug: string }; matchesPlayed: number; matchesWon: number }[] } } }>(
+      `{ player(by: { uuid: "${uuid}" }) { heroStatistics(filter: { roles: [${role}] }) {
+        results { hero { slug } matchesPlayed matchesWon } } } }`);
+    for (const r of d.player.heroStatistics.results) {
+      out.push({ role: role.toLowerCase(), slug: r.hero.slug, n: r.matchesPlayed, w: r.matchesWon });
+    }
+    await new Promise((r) => setTimeout(r, 150));
+  }
+  return out;
+}
+
 // Maintainer-supplied display names for API-private profiles (the API
 // returns null for their name; the stats are unaffected).
 export const NAME_OVERRIDES: Record<string, string> = {
@@ -302,10 +327,11 @@ export interface AnalyzedPlayer {
     slug: string; name: string; games: number; rawWr: number; shrunkWr: number;
     kda: number; deathsPerGame: number; fieldWr: number | null; edge: number | null;
     primaryRole: string | null; engineEternal: string | null; engineCoachLine: string | null;
+    myRoles: { role: string; games: number; rawWr: number }[];
   }[];
 }
 
-export function analyzeProfile(uuid: string, p: RawProfile, data: LoadedData = loadData()): AnalyzedPlayer {
+export function analyzeProfile(uuid: string, p: RawProfile, data: LoadedData = loadData(), heroRoleCells: HeroRoleCell[] = []): AnalyzedPlayer {
   const g = p.generalStatistic.result;
   const overallWr = g.matchesWon / Math.max(g.matchesPlayed, 1);
   const agg = loadAggregates();
@@ -335,6 +361,12 @@ export function analyzeProfile(uuid: string, p: RawProfile, data: LoadedData = l
         primaryRole: fh ? Object.entries(fh.byRole ?? {}).sort((a, b) => b[1].n - a[1].n)[0]?.[0] ?? null : data.kits.get(h.hero.slug)?.roles[0] ?? null,
         engineEternal: artifact?.eternals?.top?.[0]?.name ?? null,
         engineCoachLine: artifact?.coachLine ?? null,
+        // where THIS player actually plays the hero (role-tracked matches only)
+        myRoles: heroRoleCells
+          .filter((c) => c.slug === h.hero.slug && c.n >= 10)
+          .sort((a, b) => b.n - a.n)
+          .slice(0, 2)
+          .map((c) => ({ role: c.role, games: c.n, rawWr: c.w / c.n })),
       };
     })
     .sort((a, b) => b.games - a.games);

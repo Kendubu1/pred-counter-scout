@@ -11,7 +11,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gql, hasCredentials } from './predgg.js';
-import { analyzeProfile, assignDistinctArchetypes, buildCoachReport, pullProfile, pullRecentMatches, type AnalyzedPlayer, type RawProfile, type RecentMatch } from './playerProfile.js';
+import { analyzeProfile, assignDistinctArchetypes, buildCoachReport, pullHeroRoleStats, pullProfile, pullRecentMatches, shrink, type AnalyzedPlayer, type HeroRoleCell, type RawProfile, type RecentMatch } from './playerProfile.js';
 import { computeInsights, squadBaselines, type DeepMember } from './insights.js';
 import { loadData } from '../data.js';
 
@@ -73,10 +73,13 @@ async function main() {
   const commonByMember = new Map<string, CommonRow[]>([[lead, leadCommon]]);
   const deep: DeepMember[] = [];
   const rawByUuid = new Map<string, { raw: RawProfile; matches: RecentMatch[] }>();
+  const heroRolesByUuid = new Map<string, HeroRoleCell[]>();
   for (const uuid of uuids) {
     const raw = await pullProfile(uuid);
     const matches = await pullRecentMatches(uuid, 40);
-    const profile = analyzeProfile(uuid, raw, data);
+    const heroRoles = await pullHeroRoleStats(uuid);
+    heroRolesByUuid.set(uuid, heroRoles);
+    const profile = analyzeProfile(uuid, raw, data, heroRoles);
     const t = mates.find((m) => m.player.uuid === uuid);
     members.push({ ...profile, together: t ? { games: t.matchesPlayed, winrate: t.matchesWon / t.matchesPlayed } : undefined });
     deep.push({ analyzed: profile, raw, matches });
@@ -181,6 +184,24 @@ async function main() {
     const total = order.reduce((s, role, i) => s + roleScore(members[i]!, role).score, 0);
     if (!best || total > best.total) best = { order, total };
   }
+  // Seat picks come from the player's OWN record on the hero in that exact
+  // role (≥20 role-tracked games), not from the field's primary role for
+  // the hero. This credits a 58%-support Zinx to support, not to wherever
+  // the field plays Zinx — and it surfaces honest off-meta flexes (a carry
+  // hero a player genuinely wins with in offlane qualifies for offlane).
+  function ownRolePicks(uuid: string, m: AnalyzedPlayer, role: string) {
+    return (heroRolesByUuid.get(uuid) ?? [])
+      .filter((c) => c.role === role && c.n >= 20)
+      .map((c) => ({
+        slug: c.slug,
+        name: data.kits.get(c.slug)?.name ?? c.slug,
+        shrunkWr: shrink(c.w, c.n, m.career.winrate, 25),
+        games: c.n,
+      }))
+      .sort((a, b) => b.shrunkWr - a.shrunkWr)
+      .slice(0, 2);
+  }
+
   const assignment = best!.order.map((role, i) => {
     const m = members[i]!;
     const rs = roleScore(m, role);
@@ -189,11 +210,7 @@ async function main() {
       roleWr: rs.wr, roleGames: rs.games,
       favRole: m.favRole?.toLowerCase() ?? null,
       isMove: (m.favRole?.toLowerCase() ?? null) !== role,
-      heroPicks: m.pool
-        .filter((h) => h.primaryRole === role && h.games >= 30)
-        .sort((a, b) => (b.edge ?? -1) - (a.edge ?? -1))
-        .slice(0, 2)
-        .map((h) => ({ slug: h.slug, name: h.name, shrunkWr: h.shrunkWr, games: h.games, edge: h.edge })),
+      heroPicks: ownRolePicks(m.uuid, m, role),
     };
   });
 
@@ -202,11 +219,7 @@ async function main() {
     uuid: m.uuid, name: m.name,
     scores: Object.fromEntries(ROLES.map((role) => {
       const rs = roleScore(m, role);
-      const picks = m.pool
-        .filter((h) => h.primaryRole === role && h.games >= 30)
-        .sort((a, b) => (b.edge ?? -1) - (a.edge ?? -1))
-        .slice(0, 2)
-        .map((h) => ({ slug: h.slug, name: h.name, shrunkWr: h.shrunkWr }));
+      const picks = ownRolePicks(m.uuid, m, role).map((h) => ({ slug: h.slug, name: h.name, shrunkWr: h.shrunkWr }));
       return [role, { score: rs.score, wr: rs.wr, games: rs.games, picks }];
     })),
   }));
@@ -259,7 +272,7 @@ async function main() {
       'role winrates are career-wide and shrunk toward each player’s own average',
       'pair winrates count ranked games where both were allies; they include games with randoms filling the rest',
       'trio records come from a recent-match window, not all-time history',
-      'hero suggestions require 30+ games on the hero in its primary role',
+      'hero suggestions require 20+ of the player’s own games on the hero in that exact role (role-tracked matches only)',
     ],
   };
   writeFileSync(path.join(ROOT, 'data/artifacts/squad.json'), JSON.stringify(out, null, 1));
