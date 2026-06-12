@@ -165,7 +165,6 @@ const plink = (uuid, name) => uuid
   document.getElementById('page').innerHTML = `
     <div class="scope">📊 <b>Data scope:</b> pred.gg public profiles — career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked splits, last 40 matches each · field baselines: ${META ? META.matches.toLocaleString() + ' matches, patch ' + esc(META.patch) : 'current-patch matches'}, all ranks · combat math is THEORY pending in-game calibration · generated ${esc(s.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
     <h1>The five stack</h1>
-    <div class="sub">${s.members.map((m) => `<span class="chip">${pav(m.uuid)}${plink(m.uuid, m.name)}${m.current ? ` · ${esc(m.current.rank)} ${m.current.points}VP` : ''}</span>`).join('')}</div>
 
     <div class="card">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.6rem">
