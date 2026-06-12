@@ -36,6 +36,19 @@ function roleScore(p: AnalyzedPlayer, role: string): { score: number; games: num
 
 interface CommonRow { matchesPlayed: number; matchesWon: number; player: { uuid: string } }
 
+interface RosterRow {
+  match: { uuid: string; winningTeam: string; startTime: string; matchPlayers: { team: string; player: { uuid: string } | null }[] };
+}
+
+/** Last page (50) of a member's ranked matches with full rosters; the
+ *  union across all five members is the trio-record sample window. */
+async function recentRankedRosters(uuid: string): Promise<RosterRow[]> {
+  const d = await gql<{ player: { matchesPaginated: { results: RosterRow[] } } }>(
+    `{ player(by: { uuid: "${uuid}" }) { matchesPaginated(limit: 50, filter: { gameModes: [RANKED] }) {
+      results { match { uuid winningTeam startTime matchPlayers { team player { uuid } } } } } } }`);
+  return d.player.matchesPaginated.results;
+}
+
 async function commonAllies(uuid: string): Promise<CommonRow[]> {
   const d = await gql<{ player: { commonPlayers: { results: CommonRow[] } } }>(
     `{ player(by: { uuid: "${uuid}" }) { commonPlayers(isAlly: true, limit: 12, filter: { gameModes: [RANKED] }) {
@@ -89,6 +102,53 @@ async function main() {
     }
   }
   pairs.sort((x, y) => y.winrate - x.winrate);
+
+  // Trio records mined from actual shared matches (the API's commonPlayers
+  // is pairwise-only). Union of every member's last 50 ranked rosters,
+  // deduped by match; a trio counts when all three were on the same team.
+  const matchMap = new Map<string, { winningTeam: string; startTime: string; byTeam: Map<string, Set<string>> }>();
+  for (const uuid of uuids) {
+    for (const r of await recentRankedRosters(uuid)) {
+      let m = matchMap.get(r.match.uuid);
+      if (!m) {
+        m = { winningTeam: r.match.winningTeam, startTime: r.match.startTime, byTeam: new Map() };
+        matchMap.set(r.match.uuid, m);
+      }
+      for (const mp of r.match.matchPlayers) {
+        if (!mp.player || !inStack.has(mp.player.uuid)) continue;
+        if (!m.byTeam.has(mp.team)) m.byTeam.set(mp.team, new Set());
+        m.byTeam.get(mp.team)!.add(mp.player.uuid);
+      }
+    }
+    await new Promise((r) => setTimeout(r, 200));
+  }
+  const trioCount = new Map<string, { games: number; wins: number }>();
+  let trioWindowStart: string | null = null;
+  for (const m of matchMap.values()) {
+    if (!trioWindowStart || m.startTime < trioWindowStart) trioWindowStart = m.startTime;
+    for (const [team, set] of m.byTeam) {
+      const arr = [...set].sort();
+      if (arr.length < 3) continue;
+      for (let i = 0; i < arr.length; i++) for (let j = i + 1; j < arr.length; j++) for (let k = j + 1; k < arr.length; k++) {
+        const key = `${arr[i]}|${arr[j]}|${arr[k]}`;
+        const t = trioCount.get(key) ?? { games: 0, wins: 0 };
+        t.games++;
+        if (team === m.winningTeam) t.wins++;
+        trioCount.set(key, t);
+      }
+    }
+  }
+  const nameOf = new Map(members.map((m) => [m.uuid, m.name]));
+  const trios = [...trioCount.entries()]
+    .map(([key, v]) => ({
+      members: key.split('|'),
+      names: key.split('|').map((u) => nameOf.get(u) ?? 'unknown'),
+      games: v.games,
+      winrate: v.wins / v.games,
+    }))
+    .filter((t) => t.games >= 5)
+    .sort((x, y) => y.winrate - x.winrate);
+  console.log(`  trios: ${trios.length} combos with 5+ shared games (sample: ${matchMap.size} matches since ${trioWindowStart?.slice(0, 10)})`);
 
   // The film room: per-member insights vs squad-relative baselines, each
   // member fed their strongest pairing from the matrix.
@@ -191,11 +251,14 @@ async function main() {
     assignmentNote: 'optimal lineup by confidence-weighted shrunk role winrates, all 120 permutations scored',
     lineupGainPer100,
     pairs,
+    trios,
+    triosNote: `from each member's last 50 ranked matches (${matchMap.size} distinct matches since ${trioWindowStart?.slice(0, 10) ?? 'n/a'}); older trio games are outside this window — duos are all-time`,
     roleScores,
     notes,
     honesty: [
       'role winrates are career-wide and shrunk toward each player’s own average',
       'pair winrates count ranked games where both were allies; they include games with randoms filling the rest',
+      'trio records come from a recent-match window, not all-time history',
       'hero suggestions require 30+ games on the hero in its primary role',
     ],
   };

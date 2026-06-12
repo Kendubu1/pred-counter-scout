@@ -300,3 +300,24 @@ Append-only. One entry per backlog item or significant finding.
 - The coach report told Willy "queue jungle as primary" while the meta
   card showed only his volume roles — cross-card coherence needs the
   same role-selection logic everywhere (union of plan-primary + volume).
+
+## 2026-06-12 (later): Trio synergy + killing the case-by-case "why" text
+
+- The per-seat opportunity-cost receipts ("X is the better support — so
+  why Y?") died after three rewrites: factual, third-person, plain
+  language, and the maintainer still cut them. The lesson is about
+  placement, not phrasing — a roster card is for decisions, and three
+  sentences of optimizer justification per seat is explanation debt.
+  One general principle line ("seats are scored as a set...") carries
+  the same trust with none of the noise. Receipts belong on demand
+  (hover, coach page), not inline.
+- pred.gg commonPlayers is pairwise-only, but Match.matchPlayers exposes
+  full rosters, so trio records are minable: union of each member's last
+  50 ranked matches (matchesPaginated caps a page at 50), dedupe by match
+  uuid, count 3-subsets per team side. 97 distinct matches gave all 10
+  trios 27+ games. Window-vs-all-time mismatch is labeled in the UI note
+  and honesty list rather than hidden.
+- Internal links beat external ones when both exist: player names now go
+  to their own coach pages (pred.gg stays one hop away in the page
+  header). External-profile links on every name made the site feel like
+  a directory for someone else's product.

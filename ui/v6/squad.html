@@ -67,7 +67,6 @@
   .planseat .r { font-weight:800; text-transform:capitalize; color:var(--accent); }
   .planseat .picks-mini { font-size:.74rem; color:var(--text-2); }
   .plansyn { margin-top:.6rem; font-size:.76rem; color:var(--gold); }
-  .whyline { margin-top:.55rem; font-size:.76rem; color:var(--text-1); background:var(--bg-2); border:1px dashed var(--border); border-radius:8px; padding:.45rem .65rem; }
   .pairrow { display:grid; grid-template-columns:minmax(170px, 240px) 1fr 96px; gap:.7rem; align-items:center; padding:.3rem 0; font-size:.82rem; }
   .pairrow .names { color:var(--text-1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .pairrow .bar { height:8px; border-radius:99px; background:var(--bg-2); overflow:hidden; }
@@ -89,7 +88,6 @@
     .card { padding:.8rem .8rem; }
     .card h2 { font-size:.7rem; }
     .verdict { font-size:.84rem; padding:.4rem .7rem; }
-    .whyline { font-size:.7rem; padding:.4rem .55rem; }
 
     .seathead { gap:.45rem; }
     .seathead .role { min-width:0; font-size:.82rem; }
@@ -107,7 +105,7 @@
 
     /* duo synergy rows */
     .pairrow { grid-template-columns:1fr 84px; gap:.2rem .5rem; }
-    .pairrow .names { grid-column:1 / -1; font-size:.76rem; }
+    .pairrow .names { grid-column:1 / -1; font-size:.76rem; white-space:normal; overflow:visible; line-height:1.8; }
     .pairrow .n { font-size:.68rem; }
 
     /* member cards */
@@ -131,7 +129,7 @@
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct = (x, d = 1) => (x * 100).toFixed(d);
 const plink = (uuid, name) => uuid
-  ? `<a class="plink" href="https://pred.gg/players/${esc(uuid)}" target="_blank" rel="noopener">${esc(name)}</a>`
+  ? `<a class="plink" href="coach.html?player=${esc(uuid)}">${esc(name)}</a>`
   : esc(name);
 (async () => {
   let s, coach = null, META = null;
@@ -175,7 +173,7 @@ const plink = (uuid, name) => uuid
           <div class="picks">${a.heroPicks.map((h) => `<a href="./?hero=${esc(h.slug)}"><img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">${esc(h.name)} ${pct(h.shrunkWr, 0)}%</a>`).join('') || '<span style="color:var(--text-2);font-size:.74rem">no proven hero here yet — use meta mode below</span>'}</div>
           ${a.isMove && a.favRole ? `<div class="snote">usually queues ${esc(a.favRole)} — the move is worth it: ${pct(a.roleWr)}% here over ${a.roleGames} games</div>` : ''}
         </div>`).join('')}
-      <div id="fullWhys"></div>
+      <div class="snote" style="margin-top:.7rem">Seats are scored as a set, not one at a time — someone can look stronger in a seat they didn't get, but moving them there would give up more wins in the role they'd leave than it adds. The lineup above is the combination that wins the most as a team.</div>
     </div>
 
     <div class="card">
@@ -193,13 +191,13 @@ const plink = (uuid, name) => uuid
 
     <div class="card">
       <h2>Queued together · record as ranked teammates</h2>
-      ${s.pairs.map((p) => `
-        <div class="pairrow">
-          <span class="names">${pav(p.a)}${plink(p.a, p.aName)} + ${pav(p.b)}${plink(p.b, p.bName)}</span>
-          <span class="bar"><i style="width:${Math.max(4, ((p.winrate - 0.4) / 0.2) * 100)}%; background:${p.winrate >= 0.53 ? 'var(--green)' : p.winrate <= 0.50 ? 'var(--red)' : 'var(--accent)'}"></i></span>
-          <span class="n">${pct(p.winrate, 0)}% · ${p.games} games</span>
-        </div>`).join('')}
-      <div style="font-size:.72rem;color:var(--text-2);margin-top:.5rem">counts any ranked match where both were on the same team, in any lanes (not duo lane); the other three seats may have been randoms</div>
+      ${s.trios && s.trios.length ? `
+      <div class="who" id="synmode" style="margin-bottom:.6rem">
+        <label class="pick"><input type="radio" name="syn" value="duo" checked> duos</label>
+        <label class="pick"><input type="radio" name="syn" value="trio"> trios</label>
+      </div>` : ''}
+      <div id="synOut"></div>
+      <div id="synNote" style="font-size:.72rem;color:var(--text-2);margin-top:.5rem"></div>
     </div>
 
     <div class="card">
@@ -229,35 +227,6 @@ const plink = (uuid, name) => uuid
       Data: pred.gg public profiles, ranked common-teammate records (${esc(s.generatedAt.slice(0, 10))}).<br>
       ${s.honesty.map(esc).join(' · ')}
     </footer>`;
-
-  // ── the "why": opportunity-cost receipts for contested seats ──
-  // A seat is contested when another selected player has a higher record
-  // in that role. The receipt shows what the obvious swap would cost.
-  const scoreOf = (uuid, role) => s.roleScores.find((r) => r.uuid === uuid).scores[role];
-  function whyLines(seats) {
-    const lines = [];
-    for (const seat of seats) {
-      const mine = scoreOf(seat.uuid, seat.role);
-      let top = null;
-      for (const other of seats) {
-        if (other.uuid === seat.uuid) continue;
-        const theirs = scoreOf(other.uuid, seat.role);
-        if (theirs.wr > mine.wr + 0.002 && (!top || theirs.wr > scoreOf(top.uuid, seat.role).wr)) top = other;
-      }
-      if (!top) continue;
-      const cur = mine.score + scoreOf(top.uuid, top.role).score;
-      const swapped = scoreOf(seat.uuid, top.role).score + scoreOf(top.uuid, seat.role).score;
-      const cost = (cur - swapped) * 100;
-      if (cost <= 0) continue; // the optimizer would have swapped already
-      const t = scoreOf(top.uuid, seat.role);
-      const tHome = scoreOf(top.uuid, top.role);
-      const meAfter = scoreOf(seat.uuid, top.role);
-      const sn = seat.name.split(' ')[0];
-      const tn = top.name.split(' ')[0];
-      lines.push(`${tn} is the better ${seat.role} (${pct(t.wr)}% vs ${sn}'s ${pct(mine.wr)}%) — so why ${sn}? Because the swap is two moves, not one: ${tn} would leave ${top.role}, where they win ${pct(tHome.wr)}% (${tHome.games} games), and ${sn} would take over ${top.role} at only ${pct(meAfter.wr)}%. Net effect: the team wins about ${cost.toFixed(1)} fewer games per 100. ${sn} stays.`);
-    }
-    return lines;
-  }
 
   // ── partial-stack planner: best roles for whoever is queueing tonight ──
   const ROLES = ['carry', 'midlane', 'offlane', 'jungle', 'support'];
@@ -319,7 +288,6 @@ const plink = (uuid, name) => uuid
           </div>`).join('')}
       </div>`;
     }).join('') + `
-      ${whyLines(options[0].seats).map((l) => `<div class="whyline">🧾 ${esc(l)}</div>`).join('')}
       ${synPairs.length ? `<div class="plansyn">duos in this group: ${synPairs.map((p) => `${esc(p.aName.split(' ')[0])}+${esc(p.bName.split(' ')[0])} ${pct(p.winrate, 0)}% in ${p.games} games`).join(' · ')}</div>` : ''}
       <div style="font-size:.7rem;color:var(--text-2);margin-top:.4rem">
         ${mode === 'meta'
@@ -331,10 +299,24 @@ const plink = (uuid, name) => uuid
   document.getElementById('shuffle').onclick = () => { shuffleSeed++; renderPlan(); };
   renderPlan();
 
-  // Receipts for the full five-stack lineup above.
-  const fullSeats = s.assignment.map((a) => ({ uuid: a.uuid, name: a.name, role: a.role }));
-  document.getElementById('fullWhys').innerHTML =
-    whyLines(fullSeats).map((l) => `<div class="whyline">🧾 ${esc(l)}</div>`).join('');
+  // ── queued-together card: duo / trio toggle ──
+  function renderSyn() {
+    const mode = document.querySelector('#synmode input[name=syn]:checked')?.value ?? 'duo';
+    const rows = mode === 'trio' && s.trios
+      ? s.trios.map((t) => ({ who: t.members.map((u, i) => `${pav(u)}${plink(u, t.names[i])}`).join(' + '), winrate: t.winrate, games: t.games }))
+      : s.pairs.map((p) => ({ who: `${pav(p.a)}${plink(p.a, p.aName)} + ${pav(p.b)}${plink(p.b, p.bName)}`, winrate: p.winrate, games: p.games }));
+    document.getElementById('synOut').innerHTML = rows.map((r) => `
+      <div class="pairrow">
+        <span class="names">${r.who}</span>
+        <span class="bar"><i style="width:${Math.min(100, Math.max(4, ((r.winrate - 0.4) / 0.2) * 100))}%; background:${r.winrate >= 0.53 ? 'var(--green)' : r.winrate <= 0.50 ? 'var(--red)' : 'var(--accent)'}"></i></span>
+        <span class="n">${pct(r.winrate, 0)}% · ${r.games} games</span>
+      </div>`).join('');
+    document.getElementById('synNote').textContent = mode === 'trio'
+      ? `counts ranked matches with all three on the same team, in any lanes; the other two seats may have been randoms or other members · ${s.triosNote ?? ''}`
+      : 'counts any ranked match where both were on the same team, in any lanes (not duo lane); the other three seats may have been randoms';
+  }
+  document.querySelectorAll('#synmode input').forEach((i) => { i.onchange = renderSyn; });
+  renderSyn();
 })();
 </script>
 </body>
