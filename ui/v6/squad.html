@@ -61,12 +61,12 @@
   .rolemini .n { text-align:right; color:var(--text-2); font-variant-numeric:tabular-nums; }
   .who { display:flex; gap:.6rem; flex-wrap:wrap; }
   .pick { display:flex; align-items:center; gap:.4rem; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.3rem .8rem; font-size:.82rem; cursor:pointer; user-select:none; }
+  button.pick { -webkit-appearance:none; appearance:none; font:inherit; font-size:.82rem; color:var(--text-0); }
   .pick input { accent-color:var(--accent); }
   .planseat { display:grid; grid-template-columns:84px 1fr auto; gap:.7rem; align-items:center; padding:.4rem 0; border-bottom:1px solid var(--border); font-size:.86rem; }
   .planseat:last-of-type { border-bottom:none; }
   .planseat .r { font-weight:800; text-transform:capitalize; color:var(--accent); }
   .planseat .picks-mini { font-size:.74rem; color:var(--text-2); }
-  .plansyn { margin-top:.6rem; font-size:.76rem; color:var(--gold); }
   .pairrow { display:grid; grid-template-columns:minmax(170px, 240px) 1fr 96px; gap:.7rem; align-items:center; padding:.3rem 0; font-size:.82rem; }
   .pairrow .names { color:var(--text-1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .pairrow .bar { height:8px; border-radius:99px; background:var(--bg-2); overflow:hidden; }
@@ -101,7 +101,6 @@
     .pick { font-size:.74rem; padding:.24rem .6rem; }
     .planseat { grid-template-columns:64px 1fr; gap:.1rem .5rem; padding:.45rem 0; font-size:.8rem; }
     .planseat .picks-mini { grid-column:1 / -1; font-size:.68rem; }
-    .plansyn { font-size:.68rem; }
 
     /* duo synergy rows */
     .pairrow { grid-template-columns:1fr 84px; gap:.2rem .5rem; }
@@ -268,15 +267,15 @@ const plink = (uuid, name) => uuid
     const out = document.getElementById('planOut');
     const options = solveTop(selected, 3);
     if (!options) { out.innerHTML = '<div style="color:var(--text-2);font-size:.82rem;margin-top:.6rem">pick at least two players</div>'; return; }
-    const synPairs = s.pairs.filter((p) => selected.includes(p.a) && selected.includes(p.b));
     const bestAvg = options[0].total / options[0].seats.length;
     out.innerHTML = options.map((opt, oi) => {
       const avg = opt.total / opt.seats.length;
-      const delta = Math.round((avg - bestAvg) * 1000) / 10 || 0; // || 0 normalizes -0 after rounding
+      const delta = Math.abs(Math.round((avg - bestAvg) * 1000) / 10); // per-100 gap vs option A
+      const vsA = delta < 0.05 ? 'even with A' : `about ${delta.toFixed(1)} fewer wins per 100 than A`;
       return `
       <div style="margin-top:.8rem; ${oi > 0 ? 'opacity:.88' : ''}">
         <div style="font-size:.74rem; font-weight:800; color:${oi === 0 ? 'var(--green)' : 'var(--text-2)'}; letter-spacing:.06em">
-          ${shuffleSeed % 3 === 0 ? '' : '🎲 '}OPTION ${'ABC'[oi]} · avg seat ${pct(avg)}%${oi > 0 ? ` (${delta.toFixed(1)} vs A)` : (shuffleSeed % 3 === 0 ? ' · best' : ' · shuffled set')}
+          ${shuffleSeed % 3 === 0 ? '' : '🎲 '}OPTION ${'ABC'[oi]} · seats average ${pct(avg)}%${oi > 0 ? ` · ${vsA}` : (shuffleSeed % 3 === 0 ? ' · best' : ' · shuffled set')}
         </div>
         ${opt.seats.map((seat, si) => `
           <div class="planseat">
@@ -288,7 +287,6 @@ const plink = (uuid, name) => uuid
           </div>`).join('')}
       </div>`;
     }).join('') + `
-      ${synPairs.length ? `<div class="plansyn">duos in this group: ${synPairs.map((p) => `${esc(p.aName.split(' ')[0])}+${esc(p.bName.split(' ')[0])} ${pct(p.winrate, 0)}% in ${p.games} games`).join(' · ')}</div>` : ''}
       <div style="font-size:.7rem;color:var(--text-2);margin-top:.4rem">
         ${mode === 'meta'
           ? 'meta mode: heroes from the current patch meta board per lane; “new to you” = under 30 games on it, the seat winrate shown is still your role record'
