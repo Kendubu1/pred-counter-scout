@@ -29,6 +29,7 @@ export const HeroArtifact = z.object({
   build: z.object({
     items: z.array(z.object({
       name: z.string(),
+      slug: z.string(),
       spikeMinute: z.number().nullable(),
       playRatePct: z.number().nullable(),
       evidenceDeltaWr: z.number().nullable(),
@@ -43,6 +44,7 @@ export const HeroArtifact = z.object({
   eternals: z.object({
     top: z.array(z.object({
       name: z.string(),
+      id: z.string(),
       headlinePct: z.number(),
       burstPct: z.number(),
       rot20Pct: z.number(),
@@ -122,6 +124,7 @@ export function buildHeroArtifact(
     const ev = itemWinDelta(kit.slug, item.gameId);
     return {
       name: item.name,
+      slug: item.slug,
       spikeMinute: spikes[idx]!.minute,
       playRatePct: r == null ? null : Math.round(r * 1000) / 10,
       evidenceDeltaWr: ev ? Math.round(ev.delta * 1000) / 10 : null,
@@ -163,6 +166,7 @@ export function buildHeroArtifact(
   const eternals = {
     top: blessings.filter((r) => r.modeled).slice(0, 3).map((r) => ({
       name: r.name.replace(' (Major)', ''),
+      id: r.id.split(':')[0] ?? r.id,
       headlinePct: Math.round((r.headlinePct ?? 0) * 10) / 10,
       burstPct: Math.round((r.deltas?.burstPct ?? 0) * 10) / 10,
       rot20Pct: Math.round((r.deltas?.rot20Pct ?? 0) * 10) / 10,
