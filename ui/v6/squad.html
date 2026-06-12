@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Squad report — Predecessor Scout</title>
+<style>
+  :root {
+    --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#6a6a80;
+    --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
+    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px;
+  }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  a { color:var(--blue); text-decoration:none; }
+  .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(10px); background:rgba(10,10,15,.82); border-bottom:1px solid var(--border); }
+  .top-inner { max-width:920px; margin:0 auto; padding:.65rem 1rem; display:flex; align-items:center; gap:.8rem; }
+  .wordmark { font-weight:800; color:var(--text-0); }
+  .wordmark .beta { color:var(--accent); font-size:.7rem; vertical-align:super; margin-left:.2rem; }
+  .spacer { flex:1; }
+  .wrap { max-width:920px; margin:0 auto; padding:1.25rem 1rem 4rem; }
+  h1 { font-size:1.7rem; font-weight:800; }
+  .sub { color:var(--text-1); margin-top:.3rem; display:flex; gap:.4rem; flex-wrap:wrap; }
+  .chip { background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.13rem .62rem; font-size:.76rem; color:var(--text-1); }
+  .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; }
+  .card h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.8rem; }
+  .verdict { font-size:1rem; border-left:3px solid var(--accent); padding:.5rem .9rem; background:var(--accent-soft); border-radius:0 8px 8px 0; margin-top:.8rem; color:var(--text-1); }
+  .verdict b { color:var(--text-0); }
+
+  .lineup { width:100%; border-collapse:collapse; }
+  .lineup td, .lineup th { padding:.55rem .5rem; border-bottom:1px solid var(--border); text-align:left; vertical-align:middle; }
+  .lineup th { color:var(--text-2); font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; }
+  .lineup .role { font-weight:800; text-transform:capitalize; color:var(--accent); }
+  .lineup .move { display:inline-block; background:rgba(240,180,41,.12); border:1px solid var(--gold); color:var(--gold); border-radius:6px; font-size:.62rem; font-weight:800; padding:.05rem .35rem; margin-left:.4rem; vertical-align:middle; }
+  .lineup .nums { color:var(--text-1); font-size:.8rem; font-variant-numeric:tabular-nums; }
+  .picks { display:flex; gap:.5rem; }
+  .picks a { display:flex; align-items:center; gap:.35rem; font-size:.76rem; color:var(--text-1); background:var(--bg-2); border:1px solid var(--border); border-radius:8px; padding:.2rem .5rem; }
+  .picks a:hover { border-color:var(--accent); color:var(--text-0); }
+  .picks img { width:22px; height:22px; border-radius:6px; object-fit:cover; }
+
+  .members { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:.7rem; }
+  .member { background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:.8rem; }
+  .member .nm { font-weight:800; }
+  .member .meta { font-size:.72rem; color:var(--text-2); margin-top:.1rem; }
+  .member .together { font-size:.74rem; color:var(--gold); margin-top:.3rem; }
+  .rolemini { display:grid; grid-template-columns:74px 1fr 96px; gap:.5rem; align-items:center; font-size:.74rem; margin-top:.3rem; }
+  .rolemini .bar { height:7px; border-radius:99px; background:var(--bg-3); overflow:hidden; }
+  .rolemini .bar i { display:block; height:100%; background:var(--accent); border-radius:99px; }
+  .rolemini .n { text-align:right; color:var(--text-2); font-variant-numeric:tabular-nums; }
+  ul.notes { padding-left:1.1rem; }
+  ul.notes li { margin:.45rem 0; color:var(--text-1); }
+  footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <span class="wordmark">⚔ Predecessor Scout<span class="beta">SQUAD</span></span>
+  <span class="spacer"></span>
+  <a href="coach.html">solo coach</a>
+  <a href="./">build lab →</a>
+</div></div>
+<div class="wrap" id="page">loading…</div>
+<script>
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pct = (x, d = 1) => (x * 100).toFixed(d);
+(async () => {
+  let s, coach = null;
+  try { s = await (await fetch('../../data/artifacts/squad.json')).json(); }
+  catch { document.getElementById('page').textContent = 'no squad report generated yet'; return; }
+  try { coach = await (await fetch('../../data/artifacts/coach.json')).json(); } catch {}
+
+  const lead = s.members[0];
+  const leadAssigned = s.assignment.find((a) => a.uuid === s.lead);
+  let tension = '';
+  if (coach && leadAssigned) {
+    const soloBest = coach.roles.filter((r) => r.games >= 100)[0];
+    if (soloBest && soloBest.role !== leadAssigned.role) {
+      const mate = s.assignment.find((a) => a.role === soloBest.role);
+      tension = `Solo plan vs stack plan: alone, your best seat is <b>${esc(soloBest.role)}</b> (${pct(soloBest.shrunkWr)}%). In this stack, <b>${esc(mate ? mate.name : '?')}</b> holds that seat with better numbers (${mate ? pct(mate.roleWr) + '% over ' + mate.roleGames + 'g' : ''}), so the lineup scores highest with you on <b>${esc(leadAssigned.role)}</b> (${pct(leadAssigned.roleWr)}% over ${leadAssigned.roleGames}g). Both are right; they answer different questions.`;
+    }
+  }
+
+  document.getElementById('page').innerHTML = `
+    <h1>The five stack</h1>
+    <div class="sub">${s.members.map((m) => `<span class="chip">${esc(m.name)}${m.current ? ` · ${esc(m.current.rank)} ${m.current.points}VP` : ''}</span>`).join('')}</div>
+
+    <div class="card">
+      <h2>Optimal lineup · all 120 permutations scored</h2>
+      <table class="lineup">
+        <tr><th>seat</th><th>player</th><th>role record</th><th>play these</th></tr>
+        ${s.assignment.map((a) => `
+          <tr>
+            <td class="role">${esc(a.role)}</td>
+            <td>${esc(a.name)}${a.isMove ? '<span class="move">MOVE</span>' : ''}</td>
+            <td class="nums">${pct(a.roleWr)}% · ${a.roleGames}g${a.isMove && a.favRole ? `<br><span style="font-size:.68rem">queues ${esc(a.favRole)} today</span>` : ''}</td>
+            <td><div class="picks">${a.heroPicks.map((h) => `<a href="./?hero=${esc(h.slug)}"><img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">${esc(h.name)} ${pct(h.shrunkWr, 0)}%</a>`).join('') || '<span style="color:var(--text-2);font-size:.74rem">no 30+ game hero in role — pick from the meta board</span>'}</div></td>
+          </tr>`).join('')}
+      </table>
+      ${tension ? `<div class="verdict">${tension}</div>` : ''}
+    </div>
+
+    <div class="card">
+      <h2>The members</h2>
+      <div class="members">
+        ${s.members.map((m) => `
+          <div class="member">
+            <div class="nm">${esc(m.name)}</div>
+            <div class="meta">${m.career.games.toLocaleString()} games · ${pct(m.career.winrate)}% career · KDA ${m.career.kda.toFixed(2)}${m.peakAllTime ? ` · peak ${m.peakAllTime} VP` : ''}</div>
+            ${m.together ? `<div class="together">${m.together.games} ranked games with ${esc(lead.name)} · ${pct(m.together.winrate, 0)}% together</div>` : '<div class="together">stack lead</div>'}
+            ${m.roles.slice(0, 3).map((r) => `
+              <div class="rolemini"><span style="text-transform:capitalize">${esc(r.role)}</span>
+                <span class="bar"><i style="width:${Math.min(100, (r.shrunkWr / 0.6) * 100)}%"></i></span>
+                <span class="n">${pct(r.shrunkWr)}% · ${r.games}g</span></div>`).join('')}
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Coach notes</h2>
+      <ul class="notes">${s.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>
+    </div>
+
+    <footer>
+      Data: pred.gg public profiles, ranked common-teammate records (${esc(s.generatedAt.slice(0, 10))}).<br>
+      ${s.honesty.map(esc).join(' · ')}
+    </footer>`;
+})();
+</script>
+</body>
+</html>
