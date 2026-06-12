@@ -79,10 +79,19 @@
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct = (x, d = 1) => (x * 100).toFixed(d);
 (async () => {
-  let s, coach = null;
+  let s, coach = null, META = null;
   try { s = await (await fetch('../../data/artifacts/squad.json')).json(); }
   catch { document.getElementById('page').textContent = 'no squad report generated yet'; return; }
   try { coach = await (await fetch('../../data/artifacts/coach.json')).json(); } catch {}
+  try { META = await (await fetch('../../data/artifacts/meta.json')).json(); } catch {}
+  // full hero pools per member, for honest meta-pick annotations (static files, no API)
+  const POOLS = new Map();
+  await Promise.all(s.members.map(async (m) => {
+    try {
+      const p = await (await fetch(`../../data/artifacts/players/${m.uuid}.json`)).json();
+      POOLS.set(m.uuid, new Map(p.pool.map((h) => [h.slug, h])));
+    } catch { POOLS.set(m.uuid, new Map()); }
+  }));
 
   const lead = s.members[0];
   const leadAssigned = s.assignment.find((a) => a.uuid === s.lead);
@@ -116,9 +125,14 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
     </div>
 
     <div class="card">
-      <h2>Tonight's stack · pick who's queueing</h2>
+      <h2>Tonight's stack · pick who's queueing, choose your flavor</h2>
       <div class="who" id="who">
         ${s.members.map((m) => `<label class="pick"><input type="checkbox" data-uuid="${m.uuid}" checked> ${esc(m.name)}</label>`).join('')}
+      </div>
+      <div class="who" id="mode" style="margin-top:.55rem">
+        <label class="pick"><input type="radio" name="mode" value="wheel" checked> 🏠 our wheelhouse</label>
+        <label class="pick"><input type="radio" name="mode" value="meta"> 🔥 meta team</label>
+        <button id="shuffle" class="pick" style="display:none">🎲 shuffle</button>
       </div>
       <div id="planOut"></div>
     </div>
@@ -194,37 +208,69 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
   const perms = (arr, k) => k === 0 ? [[]] :
     arr.flatMap((x, i) => perms([...arr.slice(0, i), ...arr.slice(i + 1)], k - 1).map((rest) => [x, ...rest]));
 
-  function solve(selected) {
+  function solveTop(selected, k = 3) {
     const ms = s.roleScores.filter((r) => selected.includes(r.uuid));
     if (ms.length < 2) return null;
-    let best = null;
-    for (const order of perms(ROLES, ms.length)) {
-      const total = order.reduce((sum, role, i) => sum + ms[i].scores[role].score, 0);
-      if (!best || total > best.total) best = { order, total };
-    }
-    return ms.map((m, i) => ({ name: m.name, uuid: m.uuid, role: best.order[i], ...m.scores[best.order[i]] }));
+    const all = perms(ROLES, ms.length).map((order) => ({
+      order,
+      total: order.reduce((sum, role, i) => sum + ms[i].scores[role].score, 0),
+    })).sort((a, b) => b.total - a.total);
+    return all.slice(0, k).map((opt) => ({
+      total: opt.total,
+      seats: ms.map((m, i) => ({ name: m.name, uuid: m.uuid, role: opt.order[i], ...m.scores[opt.order[i]] })),
+    }));
+  }
+
+  let shuffleSeed = 0;
+  function metaPickFor(seat, optIdx, seatIdx) {
+    const lane = (META && META.roles[seat.role]) || [];
+    if (!lane.length) return '<span style="color:var(--text-2)">no meta data</span>';
+    const pickIdx = (optIdx + seatIdx + shuffleSeed) % Math.min(lane.length, 5);
+    const h = lane[pickIdx];
+    const mine = (POOLS.get(seat.uuid) || new Map()).get(h.slug);
+    const note = mine && mine.games >= 30
+      ? `you: ${pct(mine.shrunkWr, 0)}%/${mine.games}g`
+      : `field ${pct(h.shrunkWr, 0)}% · <span style="color:var(--gold)">new to you</span>`;
+    return `${esc(h.name)} <span style="color:var(--text-2)">${note}</span>`;
   }
 
   function renderPlan() {
-    const selected = [...document.querySelectorAll('#who input:checked')].map((i) => i.dataset.uuid);
+    const selected = [...document.querySelectorAll('#who input[type=checkbox]:checked')].map((i) => i.dataset.uuid);
+    const mode = document.querySelector('#mode input[name=mode]:checked').value;
+    document.getElementById('shuffle').style.display = mode === 'meta' ? '' : 'none';
     const out = document.getElementById('planOut');
-    const seats = solve(selected);
-    if (!seats) { out.innerHTML = '<div style="color:var(--text-2);font-size:.82rem;margin-top:.6rem">pick at least two players</div>'; return; }
+    const options = solveTop(selected, 3);
+    if (!options) { out.innerHTML = '<div style="color:var(--text-2);font-size:.82rem;margin-top:.6rem">pick at least two players</div>'; return; }
     const synPairs = s.pairs.filter((p) => selected.includes(p.a) && selected.includes(p.b));
-    out.innerHTML = `
-      <div style="margin-top:.7rem">
-        ${seats.map((seat) => `
+    const bestAvg = options[0].total / options[0].seats.length;
+    out.innerHTML = options.map((opt, oi) => {
+      const avg = opt.total / opt.seats.length;
+      const delta = (avg - bestAvg) * 100;
+      return `
+      <div style="margin-top:.8rem; ${oi > 0 ? 'opacity:.88' : ''}">
+        <div style="font-size:.74rem; font-weight:800; color:${oi === 0 ? 'var(--green)' : 'var(--text-2)'}; letter-spacing:.06em">
+          OPTION ${'ABC'[oi]} · avg seat ${pct(avg)}%${oi > 0 ? ` (${delta.toFixed(1)} vs A)` : ' · best'}
+        </div>
+        ${opt.seats.map((seat, si) => `
           <div class="planseat">
             <span class="r">${esc(seat.role)}</span>
             <span>${esc(seat.name)} <span style="color:var(--text-2);font-size:.76rem">${pct(seat.wr)}% · ${seat.games}g</span></span>
-            <span class="picks-mini">${seat.picks.map((h) => `${esc(h.name)} ${pct(h.shrunkWr, 0)}%`).join(' · ') || 'pick from meta board'}</span>
+            <span class="picks-mini">${mode === 'meta'
+              ? metaPickFor(seat, oi, si)
+              : (seat.picks.map((h) => `${esc(h.name)} ${pct(h.shrunkWr, 0)}%`).join(' · ') || '<span style="color:var(--gold)">no 30+ game hero here — flip to meta mode</span>')}</span>
           </div>`).join('')}
-      </div>
-      ${whyLines(seats).map((l) => `<div class="whyline">🧾 ${esc(l)}</div>`).join('')}
+      </div>`;
+    }).join('') + `
+      ${whyLines(options[0].seats).map((l) => `<div class="whyline">🧾 ${esc(l)}</div>`).join('')}
       ${synPairs.length ? `<div class="plansyn">duos in this group: ${synPairs.map((p) => `${esc(p.aName.split(' ')[0])}+${esc(p.bName.split(' ')[0])} ${pct(p.winrate, 0)}%/${p.games}g`).join(' · ')}</div>` : ''}
-      <div style="font-size:.7rem;color:var(--text-2);margin-top:.4rem">remaining seats go to randoms; lineup maximizes confidence-weighted role winrates over ${perms(ROLES, seats.length).length} options</div>`;
+      <div style="font-size:.7rem;color:var(--text-2);margin-top:.4rem">
+        ${mode === 'meta'
+          ? 'meta mode: heroes from the current patch meta board per lane; “new to you” = under 30 games on it, the seat winrate shown is still your role record'
+          : 'wheelhouse mode: only heroes with 30+ of your own games in that role'}
+        · seat assignments maximize confidence-weighted role winrates</div>`;
   }
-  document.querySelectorAll('#who input').forEach((i) => { i.onchange = renderPlan; });
+  document.querySelectorAll('#who input, #mode input').forEach((i) => { i.onchange = renderPlan; });
+  document.getElementById('shuffle').onclick = () => { shuffleSeed++; renderPlan(); };
   renderPlan();
 
   // Receipts for the full five-stack lineup above.
