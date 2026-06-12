@@ -498,3 +498,25 @@ Append-only. One entry per backlog item or significant finding.
   green); the shuffle button moved out of the planner's flavor group to
   the card's top-right, where an action that re-deals the whole card
   reads as belonging to the card, not to one option row.
+
+## 2026-06-12 (night, cont. 7): role context is part of the user journey
+
+- "I clicked Zinx from the midlane and got support" — the meta board and
+  hero grid dropped the lane context the user had already expressed.
+  Every hero link now carries ?role= (meta board column, lane room rows,
+  role-filtered grid), and the augment snapshot's role floor came down
+  to 150 field games so flex lanes like Zinx mid (262 games) have cells.
+  When a requested role's sample is still too thin, the page says so
+  explicitly instead of silently substituting.
+- Gate section v2: full mechanical description under every augment, a
+  data-derived why on the top pick ("wins about 3.8 more games per 100
+  than Disc of Demise — the field has voted"), and the Eternal block is
+  now the role's field top-3 with our sim deltas attached per row —
+  format matches the augment block, and the sim-vs-field disagreement is
+  stated rather than resolved silently. Deeper per-augment reasoning
+  (Phase's mana augment vs an Eden pairing) needs either the augment
+  mechanics in the sim (item 9) or the LLM copy pass (item 8, still
+  blocked on ANTHROPIC_API_KEY).
+- Meta builds moved above lane checkpoints; the last UI 'Ng' ('${m.n}g'
+  in meta builds) became 'games' — the artifact gate can't see UI
+  templates, so UI strings still need eyes.
