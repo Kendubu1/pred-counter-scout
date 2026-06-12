@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coach report — Predecessor Scout</title>
+<style>
+  :root {
+    --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#6a6a80;
+    --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
+    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px;
+  }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  a { color:var(--blue); text-decoration:none; }
+  .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(10px); background:rgba(10,10,15,.82); border-bottom:1px solid var(--border); }
+  .top-inner { max-width:880px; margin:0 auto; padding:.65rem 1rem; display:flex; align-items:center; gap:.8rem; }
+  .wordmark { font-weight:800; color:var(--text-0); }
+  .wordmark .beta { color:var(--accent); font-size:.7rem; vertical-align:super; margin-left:.2rem; }
+  .spacer { flex:1; }
+  .wrap { max-width:880px; margin:0 auto; padding:1.25rem 1rem 4rem; }
+  .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; }
+  .card h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.8rem; }
+  h1 { font-size:1.7rem; font-weight:800; }
+  .sub { color:var(--text-1); margin-top:.2rem; }
+  .chip { background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.13rem .62rem; font-size:.76rem; color:var(--text-1); }
+  .chip.rank { background:var(--accent-soft); border-color:var(--accent); color:var(--text-0); font-weight:700; }
+
+  .goal { margin-top:.9rem; }
+  .goalbar { position:relative; height:14px; border-radius:99px; background:var(--bg-2); border:1px solid var(--border); overflow:visible; }
+  .goalbar .fill { height:100%; border-radius:99px; background:linear-gradient(90deg, var(--accent), var(--blue)); }
+  .goalbar .peak { position:absolute; top:-5px; width:2px; height:24px; background:var(--gold); }
+  .goalbar .peak::after { content:"peak"; position:absolute; top:-16px; left:-12px; font-size:.6rem; color:var(--gold); }
+  .goal .lbl { display:flex; justify-content:space-between; font-size:.74rem; color:var(--text-2); margin-top:.45rem; }
+
+  .verdict { font-size:1.05rem; border-left:3px solid var(--accent); padding:.5rem .9rem; background:var(--accent-soft); border-radius:0 8px 8px 0; margin-top:1rem; }
+
+  .rolerow { display:grid; grid-template-columns:88px 1fr 120px; gap:.7rem; align-items:center; padding:.32rem 0; font-size:.85rem; }
+  .rolerow .bar { height:9px; border-radius:99px; background:var(--bg-2); overflow:hidden; }
+  .rolerow .bar i { display:block; height:100%; border-radius:99px; background:var(--accent); }
+  .rolerow.best .bar i { background:var(--green); }
+  .rolerow.worst .bar i { background:var(--red); }
+  .rolerow .nums { text-align:right; color:var(--text-1); font-variant-numeric:tabular-nums; font-size:.78rem; }
+
+  .lean { display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:.7rem; }
+  .lcard { background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:.8rem; }
+  .lcard .head { display:flex; gap:.6rem; align-items:center; }
+  .lcard img { width:44px; height:44px; border-radius:10px; object-fit:cover; }
+  .lcard b { font-size:.95rem; }
+  .lcard .edge { margin-left:auto; color:var(--green); font-weight:800; font-size:.9rem; }
+  .lcard .stats { font-size:.74rem; color:var(--text-1); margin-top:.5rem; line-height:1.6; }
+  .lcard .eng { font-size:.72rem; color:var(--text-2); margin-top:.4rem; border-top:1px dashed var(--border); padding-top:.4rem; }
+  .lcard a.build { font-size:.76rem; }
+
+  ol.plan { padding-left:1.2rem; }
+  ol.plan li { margin:.55rem 0; color:var(--text-1); }
+  ol.plan li::marker { color:var(--accent); font-weight:700; }
+  .splits { width:100%; border-collapse:collapse; font-size:.8rem; }
+  .splits td, .splits th { padding:.3rem .4rem; border-bottom:1px solid var(--border); text-align:left; }
+  .splits th { color:var(--text-2); }
+  .splits td.n { text-align:right; font-variant-numeric:tabular-nums; }
+  footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <span class="wordmark">⚔ Predecessor Scout<span class="beta">COACH</span></span>
+  <span class="spacer"></span>
+  <a href="./">build lab →</a>
+</div></div>
+<div class="wrap" id="page">loading…</div>
+<script>
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pct = (x, d = 1) => (x * 100).toFixed(d);
+(async () => {
+  let c;
+  try { c = await (await fetch('../../data/artifacts/coach.json')).json(); }
+  catch { document.getElementById('page').textContent = 'no coach report generated yet'; return; }
+  const p = c.player;
+  const fillPct = Math.min(100, (p.current.points / c.goal.vp) * 100);
+  const peakPct = Math.min(100, (c.goal.peakAllTime / c.goal.vp) * 100);
+  const maxRoleWr = Math.max(...c.roles.map((r) => r.shrunkWr));
+  const best = c.roles.filter((r) => r.games >= 100)[0];
+  const worst = [...c.roles].filter((r) => r.games >= 100).sort((a, b) => a.shrunkWr - b.shrunkWr)[0];
+
+  document.getElementById('page').innerHTML = `
+    <h1>${esc(p.name)}</h1>
+    <div class="sub">
+      <span class="chip rank">${esc(p.current.rank)} · ${p.current.points} VP</span>
+      <span class="chip">${p.career.games.toLocaleString()} career games</span>
+      <span class="chip">${pct(p.career.winrate)}% winrate</span>
+      <span class="chip">KDA ${p.career.kda.toFixed(2)}</span>
+    </div>
+
+    <div class="card">
+      <h2>The road to Platinum</h2>
+      <div class="goal">
+        <div class="goalbar"><div class="fill" style="width:${fillPct}%"></div><div class="peak" style="left:${peakPct}%"></div></div>
+        <div class="lbl"><span>${p.current.points} VP now</span><span>gap: ${c.goal.gapVp} VP</span><span>Platinum III at ${c.goal.vp} VP</span></div>
+      </div>
+      <div class="verdict">${esc(c.plan[c.plan.length - 1])}</div>
+      <table class="splits" style="margin-top:.9rem">
+        <tr><th>split</th><th style="text-align:right">finish</th><th style="text-align:right">peak</th><th>rank</th></tr>
+        ${p.ratings.map((r) => `<tr><td>${esc(r.split)}</td><td class="n">${r.points}</td><td class="n">${r.peak}</td><td>${esc(r.rank)}</td></tr>`).join('')}
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Role focus · shrunk winrate per role</h2>
+      ${c.roles.map((r) => `
+        <div class="rolerow ${best && r.role === best.role ? 'best' : ''} ${worst && r.role === worst.role ? 'worst' : ''}">
+          <span style="text-transform:capitalize">${esc(r.role)}</span>
+          <span class="bar"><i style="width:${(r.shrunkWr / maxRoleWr) * 100}%"></i></span>
+          <span class="nums">${pct(r.shrunkWr)}% · ${r.games}g</span>
+        </div>`).join('')}
+      <div style="font-size:.74rem; color:var(--text-2); margin-top:.5rem">green = queue this as primary · red = costing you VP</div>
+    </div>
+
+    <div class="card">
+      <h2>Lean into these · your winrate vs the field</h2>
+      <div class="lean">
+        ${c.leanInto.map((h) => `
+          <div class="lcard">
+            <div class="head">
+              <img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">
+              <div><b>${esc(h.name)}</b><div style="font-size:.7rem;color:var(--text-2);text-transform:capitalize">${esc(h.primaryRole ?? '')}</div></div>
+              <span class="edge">+${pct(h.edge)}</span>
+            </div>
+            <div class="stats">
+              you: <b>${pct(h.shrunkWr)}%</b> over ${h.games} games · field: ${pct(h.fieldWr)}%<br>
+              KDA ${h.kda.toFixed(1)} · ${h.deathsPerGame.toFixed(1)} deaths/game
+            </div>
+            <div class="eng">${h.engineEternal ? `engine: take <b>${esc(h.engineEternal)}</b> · ` : ''}<a class="build" href="./?hero=${esc(h.slug)}">current-patch build →</a></div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>The plan</h2>
+      <ol class="plan">${c.plan.map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
+    </div>
+
+    <footer>
+      Data: pred.gg public profile (${esc(c.generatedAt.slice(0, 10))}) joined with Predecessor Scout aggregate baselines.<br>
+      ${c.honesty.map(esc).join(' · ')}
+    </footer>`;
+})();
+</script>
+</body>
+</html>
