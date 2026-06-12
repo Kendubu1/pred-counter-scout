@@ -48,6 +48,19 @@
   .rolemini .bar { height:7px; border-radius:99px; background:var(--bg-3); overflow:hidden; }
   .rolemini .bar i { display:block; height:100%; background:var(--accent); border-radius:99px; }
   .rolemini .n { text-align:right; color:var(--text-2); font-variant-numeric:tabular-nums; }
+  .who { display:flex; gap:.6rem; flex-wrap:wrap; }
+  .pick { display:flex; align-items:center; gap:.4rem; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.3rem .8rem; font-size:.82rem; cursor:pointer; user-select:none; }
+  .pick input { accent-color:var(--accent); }
+  .planseat { display:grid; grid-template-columns:84px 1fr auto; gap:.7rem; align-items:center; padding:.4rem 0; border-bottom:1px solid var(--border); font-size:.86rem; }
+  .planseat:last-of-type { border-bottom:none; }
+  .planseat .r { font-weight:800; text-transform:capitalize; color:var(--accent); }
+  .planseat .picks-mini { font-size:.74rem; color:var(--text-2); }
+  .plansyn { margin-top:.6rem; font-size:.76rem; color:var(--gold); }
+  .pairrow { display:grid; grid-template-columns:minmax(170px, 240px) 1fr 96px; gap:.7rem; align-items:center; padding:.3rem 0; font-size:.82rem; }
+  .pairrow .names { color:var(--text-1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pairrow .bar { height:8px; border-radius:99px; background:var(--bg-2); overflow:hidden; }
+  .pairrow .bar i { display:block; height:100%; border-radius:99px; }
+  .pairrow .n { text-align:right; color:var(--text-2); font-variant-numeric:tabular-nums; font-size:.76rem; }
   ul.notes { padding-left:1.1rem; }
   ul.notes li { margin:.45rem 0; color:var(--text-1); }
   footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
@@ -101,11 +114,30 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
     </div>
 
     <div class="card">
+      <h2>Tonight's stack · pick who's queueing</h2>
+      <div class="who" id="who">
+        ${s.members.map((m) => `<label class="pick"><input type="checkbox" data-uuid="${m.uuid}" checked> ${esc(m.name)}</label>`).join('')}
+      </div>
+      <div id="planOut"></div>
+    </div>
+
+    <div class="card">
+      <h2>Duo synergy · ranked games together</h2>
+      ${s.pairs.map((p) => `
+        <div class="pairrow">
+          <span class="names">${esc(p.aName)} + ${esc(p.bName)}</span>
+          <span class="bar"><i style="width:${Math.max(4, ((p.winrate - 0.4) / 0.2) * 100)}%; background:${p.winrate >= 0.53 ? 'var(--green)' : p.winrate <= 0.50 ? 'var(--red)' : 'var(--accent)'}"></i></span>
+          <span class="n">${pct(p.winrate, 0)}% · ${p.games}g</span>
+        </div>`).join('')}
+      <div style="font-size:.72rem;color:var(--text-2);margin-top:.5rem">pair games include matches where the other seats were randoms</div>
+    </div>
+
+    <div class="card">
       <h2>The members</h2>
       <div class="members">
         ${s.members.map((m) => `
           <div class="member">
-            <div class="nm">${esc(m.name)}</div>
+            <div class="nm"><a href="coach.html?player=${esc(m.uuid)}">${esc(m.name)} →</a></div>
             <div class="meta">${m.career.games.toLocaleString()} games · ${pct(m.career.winrate)}% career · KDA ${m.career.kda.toFixed(2)}${m.peakAllTime ? ` · peak ${m.peakAllTime} VP` : ''}</div>
             ${m.together ? `<div class="together">${m.together.games} ranked games with ${esc(lead.name)} · ${pct(m.together.winrate, 0)}% together</div>` : '<div class="together">stack lead</div>'}
             ${m.roles.slice(0, 3).map((r) => `
@@ -125,6 +157,43 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
       Data: pred.gg public profiles, ranked common-teammate records (${esc(s.generatedAt.slice(0, 10))}).<br>
       ${s.honesty.map(esc).join(' · ')}
     </footer>`;
+
+  // ── partial-stack planner: best roles for whoever is queueing tonight ──
+  const ROLES = ['carry', 'midlane', 'offlane', 'jungle', 'support'];
+  const perms = (arr, k) => k === 0 ? [[]] :
+    arr.flatMap((x, i) => perms([...arr.slice(0, i), ...arr.slice(i + 1)], k - 1).map((rest) => [x, ...rest]));
+
+  function solve(selected) {
+    const ms = s.roleScores.filter((r) => selected.includes(r.uuid));
+    if (ms.length < 2) return null;
+    let best = null;
+    for (const order of perms(ROLES, ms.length)) {
+      const total = order.reduce((sum, role, i) => sum + ms[i].scores[role].score, 0);
+      if (!best || total > best.total) best = { order, total };
+    }
+    return ms.map((m, i) => ({ name: m.name, uuid: m.uuid, role: best.order[i], ...m.scores[best.order[i]] }));
+  }
+
+  function renderPlan() {
+    const selected = [...document.querySelectorAll('#who input:checked')].map((i) => i.dataset.uuid);
+    const out = document.getElementById('planOut');
+    const seats = solve(selected);
+    if (!seats) { out.innerHTML = '<div style="color:var(--text-2);font-size:.82rem;margin-top:.6rem">pick at least two players</div>'; return; }
+    const synPairs = s.pairs.filter((p) => selected.includes(p.a) && selected.includes(p.b));
+    out.innerHTML = `
+      <div style="margin-top:.7rem">
+        ${seats.map((seat) => `
+          <div class="planseat">
+            <span class="r">${esc(seat.role)}</span>
+            <span>${esc(seat.name)} <span style="color:var(--text-2);font-size:.76rem">${pct(seat.wr)}% · ${seat.games}g</span></span>
+            <span class="picks-mini">${seat.picks.map((h) => `${esc(h.name)} ${pct(h.shrunkWr, 0)}%`).join(' · ') || 'pick from meta board'}</span>
+          </div>`).join('')}
+      </div>
+      ${synPairs.length ? `<div class="plansyn">duos in this group: ${synPairs.map((p) => `${esc(p.aName.split(' ')[0])}+${esc(p.bName.split(' ')[0])} ${pct(p.winrate, 0)}%/${p.games}g`).join(' · ')}</div>` : ''}
+      <div style="font-size:.7rem;color:var(--text-2);margin-top:.4rem">remaining seats go to randoms; lineup maximizes confidence-weighted role winrates over ${perms(ROLES, seats.length).length} options</div>`;
+  }
+  document.querySelectorAll('#who input').forEach((i) => { i.onchange = renderPlan; });
+  renderPlan();
 })();
 </script>
 </body>

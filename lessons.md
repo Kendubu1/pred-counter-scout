@@ -2,6 +2,21 @@
 
 Append-only. One entry per backlog item or significant finding.
 
+## 2026-06-12: Squad v2 — synergy matrix, member reports, partial-stack planner
+
+- The full pairwise matrix (5 commonPlayers calls) immediately produced
+  the day's best coaching fact: the most-played duo (lead + Xeebs, 405
+  games) is the stack's WEAKEST pair at 51%, while the strongest pair
+  (56% over 193g) rarely anchors the lineup. Volume and synergy are
+  different axes; show both.
+- The partial-stack planner validates the optimizer's logic: remove the
+  better jungler from the selection and the lead correctly reclaims the
+  jungle seat. Context-dependent recommendations need the context to be
+  a user input, not a baked assumption.
+- One report builder shared by coach.json and players/<uuid>.json keeps
+  every page's numbers in agreement; per-member pages then cost zero
+  extra API calls because squad.ts already holds the profiles.
+
 ## 2026-06-12: Squad report (five-stack coaching)
 
 - commonPlayers with a RANKED filter finds a five-stack unambiguously:
