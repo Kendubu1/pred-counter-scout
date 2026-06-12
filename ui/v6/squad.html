@@ -178,7 +178,7 @@ const plink = (uuid, name) => uuid
             <span class="role">${esc(a.role)}</span>
             <span class="rwr">${pct(a.roleWr)}%</span>
             ${pav(a.uuid)}${plink(a.uuid, a.name)}
-            ${a.isMove ? '<span class="move">MOVE</span>' : ''}
+            ${a.isMove ? '<span class="move" title="this seat differs from the role they usually queue — the note below prices why it is worth it">OFF-ROLE</span>' : ''}
             <span class="sgames">${a.roleGames} games in role</span>
           </div>
           <div class="picks">${a.heroPicks.map((h) => `<a href="./?hero=${esc(h.slug)}"><img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">${esc(h.name)} ${pct(h.shrunkWr, 0)}%${h.games != null && h.games < 20 ? ` <span style="color:var(--gold)">· ${h.games} games</span>` : ''}</a>`).join('') || '<span style="color:var(--text-2);font-size:.74rem">no proven hero here yet — use meta mode below</span>'}</div>
