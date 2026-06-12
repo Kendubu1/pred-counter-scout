@@ -123,24 +123,24 @@
   .proof.playrate { border-left-color:var(--gold); }
   .warn { margin-top:.7rem; font-size:.8rem; color:var(--gold); }
 
-  .eternal-row { display:flex; gap:.9rem; align-items:center; }
-  .eternal-row img { width:52px; height:52px; border-radius:50%; border:2px solid var(--accent); object-fit:cover; background:var(--bg-2); }
-  .eternal-row .alt img { width:34px; height:34px; border-width:1px; border-color:var(--border); }
+  .eternal-row { display:flex; gap:.8rem; align-items:center; }
+  .eternal-row > img { width:40px; height:40px; border-radius:50%; border:2px solid var(--accent); object-fit:cover; background:var(--bg-2); flex:none; }
   .eternal-row .deltas { font-size:.8rem; color:var(--text-1); }
-  .eternal-alts { display:flex; gap:1rem; margin-top:.8rem; }
-  .eternal-alts .alt { display:flex; gap:.5rem; align-items:center; font-size:.78rem; color:var(--text-1); }
+  .eternal-alts { display:flex; gap:1rem; margin-top:.7rem; flex-wrap:wrap; }
+  .eternal-alts .alt { display:flex; gap:.45rem; align-items:center; font-size:.78rem; color:var(--text-1); }
+  .eternal-alts .alt img { width:24px; height:24px; border-radius:50%; border:1px solid var(--border); object-fit:cover; background:var(--bg-2); flex:none; }
 
-  .murow { display:flex; gap:.8rem; align-items:center; padding:.55rem 0; border-top:1px solid var(--border); }
+  .murow { display:grid; grid-template-columns:44px 1fr; gap:.3rem .85rem; padding:.65rem 0; border-top:1px solid var(--border); align-items:start; }
   .murow:first-of-type { border-top:none; }
-  .murow img { width:44px; height:44px; border-radius:10px; object-fit:cover; border:1px solid var(--border); }
-  .murow .who { min-width:104px; font-weight:600; font-size:.88rem; }
-  .dots { display:flex; gap:.32rem; align-items:center; }
+  .murow img { grid-row:1 / span 2; width:44px; height:44px; border-radius:10px; object-fit:cover; border:1px solid var(--border); }
+  .murow .head { display:flex; gap:.9rem; align-items:center; flex-wrap:wrap; }
+  .murow .who { font-weight:600; font-size:.88rem; }
+  .dots { display:flex; gap:.34rem; align-items:flex-start; }
   .dotwrap { text-align:center; }
-  .dot { width:12px; height:12px; border-radius:50%; }
+  .dot { width:12px; height:12px; border-radius:50%; margin:0 auto; }
   .dot.you { background:var(--green); } .dot.even { background:var(--bg-3); border:1px solid var(--text-2); } .dot.enemy { background:var(--red); }
   .dotwrap .m { font-size:.56rem; color:var(--text-2); margin-top:.15rem; }
-  .murow .plan { font-size:.78rem; color:var(--text-1); flex:1; min-width:200px; }
-  @media (max-width:680px) { .murow { flex-wrap:wrap; } .murow .plan { min-width:100%; } }
+  .murow .plan { grid-column:2; font-size:.78rem; color:var(--text-1); }
 
   details { border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-1); margin-top:.7rem; overflow:hidden; }
   details summary {
@@ -155,6 +155,29 @@
   td, th { text-align:left; padding:.35rem .4rem; border-bottom:1px solid var(--border); }
   th { color:var(--text-2); font-weight:600; }
   td.num { text-align:right; font-variant-numeric:tabular-nums; color:var(--text-0); }
+
+  /* ── meta board ── */
+  .metaboard { margin-top:2rem; }
+  .metaboard .mb-head { display:flex; align-items:baseline; gap:.7rem; flex-wrap:wrap; }
+  .metaboard h2 { font-size:1.05rem; font-weight:800; }
+  .metaboard .mb-sub { font-size:.74rem; color:var(--text-2); }
+  .lanes { display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:.7rem; margin-top:.8rem; }
+  .lane { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:.7rem .75rem; }
+  .lane h3 { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.45rem; }
+  .mp { display:flex; align-items:center; gap:.5rem; padding:.26rem .3rem; border-radius:8px; cursor:pointer; }
+  .mp:hover { background:var(--bg-2); }
+  .mp img { width:30px; height:30px; border-radius:8px; object-fit:cover; background:var(--bg-2); flex:none; }
+  .mp .n { flex:1; font-size:.8rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .mp .wr { font-size:.74rem; font-variant-numeric:tabular-nums; font-weight:700; }
+  .wr.up { color:var(--green); } .wr.down { color:var(--red); } .wr.flat { color:var(--text-2); }
+  .mp .g { display:block; font-size:.62rem; color:var(--text-2); font-weight:400; }
+
+  @media (max-width:560px) {
+    .wordmark { font-size:.86rem; }
+    .patch-pill { display:none; }
+    .hero-head img { width:72px; height:72px; }
+    .hero-head h1 { font-size:1.35rem; }
+  }
 
   footer { margin-top:2.2rem; font-size:.74rem; color:var(--text-2); line-height:1.7; }
   .hidden { display:none; }
@@ -186,6 +209,7 @@
         play rates and winrate deltas come from thousands of current-patch matches via the official API.
       </div>
     </div>
+    <div class="metaboard" id="metaboard"></div>
     <div class="grid" id="heroGrid"></div>
   </div>
 
@@ -202,7 +226,9 @@ const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const IMG = { hero: (s) => `../img/heroes/${s}.webp`, item: (s) => `../img/items/${s}.webp`, eternal: (s) => `../img/eternals/${s}.webp` };
 const ROLES = ['all', 'carry', 'midlane', 'offlane', 'jungle', 'support'];
+const LANE_LABELS = { carry: 'Carry', midlane: 'Midlane', offlane: 'Offlane', jungle: 'Jungle', support: 'Support' };
 let INDEX = null;
+let META = null;
 let roleFilter = 'all';
 
 async function getJson(path) { return (await fetch(path)).json(); }
@@ -220,6 +246,29 @@ function renderRolebar() {
     b.onclick = () => { roleFilter = b.dataset.r; renderRolebar(); renderGrid(); };
   });
 }
+function renderMetaboard() {
+  if (!META) { $('#metaboard').innerHTML = ''; return; }
+  const wrClass = (wr) => (wr >= 0.52 ? 'up' : wr <= 0.48 ? 'down' : 'flat');
+  $('#metaboard').innerHTML = `
+    <div class="mb-head">
+      <h2>The meta board</h2>
+      <span class="mb-sub">most played per lane · shrunk winrate over ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
+    </div>
+    <div class="lanes">
+      ${Object.keys(LANE_LABELS).map((role) => `
+        <div class="lane">
+          <h3>${LANE_LABELS[role]}</h3>
+          ${(META.roles[role] || []).slice(0, 5).map((h, i) => `
+            <div class="mp" data-slug="${h.slug}" title="${esc(h.name)}: ${h.games} ${role} games, ${(h.shrunkWr * 100).toFixed(1)}% shrunk winrate">
+              <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
+              <span class="n">${i === 0 ? '👑 ' : ''}${esc(h.name)}<span class="g">${h.games} games</span></span>
+              <span class="wr ${wrClass(h.shrunkWr)}">${(h.shrunkWr * 100).toFixed(1)}%</span>
+            </div>`).join('')}
+        </div>`).join('')}
+    </div>`;
+  document.querySelectorAll('.mp').forEach((c) => { c.onclick = () => nav(c.dataset.slug); });
+}
+
 function renderGrid() {
   const q = ($('#search').value || '').toLowerCase();
   const heroes = INDEX.heroes.filter((h) =>
@@ -266,6 +315,11 @@ function renderHero(a) {
         <h1>${esc(a.name)}</h1>
         <div class="chips">
           <span class="chip role">${esc(a.role)}</span>
+          ${(() => {
+            const lane = META && META.roles[a.role];
+            const idx = lane ? lane.findIndex((h) => h.slug === a.slug) : -1;
+            return idx >= 0 ? `<span class="chip" style="border-color:var(--gold); color:var(--gold)">${idx === 0 ? '👑 meta pick' : `#${idx + 1} most played ${esc(a.role)}`}</span>` : '';
+          })()}
           <span class="chip">${esc(a.damageType)} · ${esc(a.attackType)}</span>
           ${a.build.archetypes.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}
           <span class="badge theory" title="Simulator output on constants not yet measured in-game:&#10;${esc(a.confidence.unverifiedConstants.join(', '))}&#10;&#10;${esc(a.confidence.notes.join('&#10;'))}">THEORY</span>
@@ -306,8 +360,7 @@ function renderHero(a) {
       ${a.matchups.length ? a.matchups.map((m) => `
         <div class="murow">
           <img src="${IMG.hero(m.enemySlug)}" alt="" onerror="this.style.visibility='hidden'">
-          <span class="who">${esc(m.enemy)}</span>
-          ${dots(m.checkpoints)}
+          <div class="head"><span class="who">${esc(m.enemy)}</span>${dots(m.checkpoints)}</div>
           <span class="plan">${esc(m.gameplan)}</span>
         </div>`).join('') : '<div style="color:var(--text-2)">no same-role opponents with enough games this patch</div>'}
     </section>
@@ -370,8 +423,10 @@ window.onpopstate = route;
 
 (async function init() {
   INDEX = await getJson('../../data/artifacts/index.json');
+  META = await getJson('../../data/artifacts/meta.json').catch(() => null);
   $('#patchPill').textContent = `patch ${INDEX.patch}`;
   renderRolebar();
+  renderMetaboard();
   $('#search').oninput = renderGrid;
   await route();
 })();

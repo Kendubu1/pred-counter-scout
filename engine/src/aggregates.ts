@@ -11,7 +11,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 export interface AggregateSnapshot {
   meta: { generatedAt: string; matches: number; playerRows: number; patchNote: string };
   goldByMinute: Record<string, Record<string, { p25: number; p50: number; p75: number; n: number }>>;
-  heroes: Record<string, { games: number; wins: number; roles: Record<string, number>; items: Record<string, { n: number; w: number }> }>;
+  heroes: Record<string, { games: number; wins: number; byRole: Record<string, { n: number; w: number }>; items: Record<string, { n: number; w: number }> }>;
 }
 
 let cached: AggregateSnapshot | null | undefined;
