@@ -532,3 +532,20 @@ Append-only. One entry per backlog item or significant finding.
   hero's primary role always queried. The audit is now a harness gate,
   so the invariant ("if the site links it, evidence exists for it")
   survives future snapshots.
+
+## 2026-06-12 (night, cont. 9): the LLM copy pass, finally — augments first
+
+- Maintainer supplied the ANTHROPIC_API_KEY (env-only, never committed;
+  the secrets grep now covers sk-ant-). Item 8's design held up: prompts
+  assembled strictly from owned data (augment mechanics + per-role win
+  evidence), claude-haiku-4-5 writes one when/why line per augment per
+  role, and a numeric verifier drops any line citing a number absent
+  from its source cell — 286 of 288 lines passed.
+- The grounding worked where it mattered: Phase support's Psychic
+  Support line ("take when your Linked Ally is mana-dependent") encodes
+  the maintainer's Eden case without ever being told it; mechanics +
+  evidence were enough context.
+- Pattern for future passes (coach lines, squad copy): same shape —
+  single-source prompt, strict JSON out, machine verification against
+  the prompt's own numbers, silent fallback to template copy on
+  rejection. AI copy is additive, never load-bearing.
