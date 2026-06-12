@@ -246,7 +246,7 @@ async function main() {
     notes.push(`Strongest duo: ${top.aName} + ${top.bName} at ${(top.winrate * 100).toFixed(0)}% over ${top.games} ranked games. When only two queue, prefer this pair.`);
   }
   const avgTogether = members.slice(1).reduce((s, m) => s + (m.together?.winrate ?? 0), 0) / Math.max(members.length - 1, 1);
-  notes.push(`Stack synergy: you average ${(avgTogether * 100).toFixed(0)}% together vs ${(leadM.career.winrate * 100).toFixed(0)}% solo-ish baseline — ${avgTogether > leadM.career.winrate + 0.01 ? 'the stack is worth real VP, queue together' : 'no measurable stack bonus yet; the lineup below is where it comes from'}.`);
+  notes.push(`Stack synergy: queued together the stack averages ${(avgTogether * 100).toFixed(0)}%, against a ${(leadM.career.winrate * 100).toFixed(0)}% career baseline — ${avgTogether > leadM.career.winrate + 0.01 ? 'queueing as a stack is worth real wins' : 'no measurable stack bonus yet; the lineup above is where the edge comes from'}.`);
 
   const out = {
     generatedAt: new Date().toISOString(),
