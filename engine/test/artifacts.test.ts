@@ -36,7 +36,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
 
   it('the committed artifact set covers the full roster and parses', () => {
     const dir = path.join(ROOT, 'data/artifacts');
-    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && f !== 'index.json');
+    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && f !== 'index.json' && f !== 'meta.json');
     expect(files.length).toBe(52);
     for (const f of files.slice(0, 8)) {
       const parsed = HeroArtifact.safeParse(JSON.parse(readFileSync(path.join(dir, f), 'utf8')));
@@ -45,5 +45,22 @@ describe('hero artifacts (Concept A engine stage)', () => {
     const index = JSON.parse(readFileSync(path.join(dir, 'index.json'), 'utf8'));
     expect(index.heroes.length).toBe(52);
     expect(index.patch).toBe(cal.patch);
+  });
+
+  it('meta board: five lanes of most-played heroes with sane shrunk winrates', () => {
+    const meta = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/meta.json'), 'utf8'));
+    expect(meta.patch).toBe(cal.patch);
+    for (const role of ['carry', 'midlane', 'offlane', 'jungle', 'support']) {
+      const lane = meta.roles[role];
+      expect(lane.length, role).toBeGreaterThanOrEqual(5);
+      expect(lane[0].games, role).toBeGreaterThan(100);
+      for (const h of lane) {
+        expect(h.shrunkWr, `${role}/${h.slug}`).toBeGreaterThan(0.35);
+        expect(h.shrunkWr, `${role}/${h.slug}`).toBeLessThan(0.65);
+        expect(data.kits.has(h.slug), `${role}/${h.slug} renders a portrait`).toBe(true);
+      }
+      // sorted by play, the meta-pick criterion
+      for (let i = 1; i < lane.length; i++) expect(lane[i].games).toBeLessThanOrEqual(lane[i - 1].games);
+    }
   });
 });

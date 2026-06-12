@@ -2,6 +2,23 @@
 
 Append-only. One entry per backlog item or significant finding.
 
+## 2026-06-12: Visual test pass + meta board
+
+- A headless-browser screenshot reviewed by eye caught what no unit test
+  could: a CSS selector typo (.eternal-row .alt img vs .eternal-alts
+  .alt img) rendered Eternal icons at full image size, and the matchup
+  gameplan collapsed to a one-word column on mobile. Screenshots are now
+  a scripted step (npx tsx src/ingest/screenshot.ts) and belong in every
+  UI change before publish.
+- OPEN QUESTION: hero_id 75 has 4,570 games in the current window with
+  ~50% WR but is absent from omeda's live heroes.json (52 entries).
+  Possibly a newer hero not yet exposed, or a mode-specific id. Excluded
+  from the meta board (no kit, no portrait); revisit on next snapshot.
+- Aggregate snapshots are date-named; a UTC midnight rollover created a
+  second file and the fixture-binding gate fired on a 19g drift. The
+  gate worked exactly as designed: regenerating aggregates forces a
+  conscious fixture re-derivation.
+
 ## 2026-06-11: Artifact pipeline + Zone 1 prototype (backlog item 6)
 
 - The whole roster renders from precomputed JSON: 52 artifacts in 74s on

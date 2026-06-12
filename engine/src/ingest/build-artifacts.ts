@@ -8,6 +8,8 @@ import path from 'node:path';
 import { loadData } from '../data.js';
 import { buildHeroArtifact } from '../artifacts.js';
 import { loadCalibration } from '../sim.js';
+import { loadAggregates } from '../aggregates.js';
+import { momPriorStrength } from '../evidence.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const OUT = path.join(ROOT, 'data/artifacts');
@@ -29,4 +31,37 @@ for (const slug of slugs) {
   process.stdout.write('.');
 }
 writeFileSync(path.join(OUT, 'index.json'), JSON.stringify({ patch: cal.patch, generatedAt: new Date().toISOString(), heroes: index }, null, 1));
+
+// Meta board: most played per lane with empirical-Bayes shrunk winrates.
+// Pure evidence display for the landing page; never feeds the generator.
+const agg = loadAggregates();
+if (agg) {
+  const roles: Record<string, { slug: string; name: string; games: number; rawWr: number; shrunkWr: number }[]> = {};
+  for (const role of ['carry', 'midlane', 'offlane', 'jungle', 'support']) {
+    const cells = Object.entries(agg.heroes)
+      // unmapped hero_id:* entries are excluded: no kit, no portrait, no
+      // page to link to (one such id is tracked in lessons.md)
+      .map(([slug, h]) => ({ slug, cell: h.byRole?.[role] }))
+      .filter((x): x is { slug: string; cell: { n: number; w: number } } => data.kits.has(x.slug) && !!x.cell && x.cell.n >= 30);
+    const k = momPriorStrength(cells.map((c) => c.cell), 0.5);
+    roles[role] = cells
+      .sort((a, b) => b.cell.n - a.cell.n)
+      .slice(0, 8)
+      .map(({ slug, cell }) => ({
+        slug,
+        name: data.kits.get(slug)?.name ?? slug,
+        games: cell.n,
+        rawWr: Math.round((cell.w / cell.n) * 1000) / 1000,
+        shrunkWr: Math.round(((cell.w + k * 0.5) / (cell.n + k)) * 1000) / 1000,
+      }));
+  }
+  writeFileSync(path.join(OUT, 'meta.json'), JSON.stringify({
+    patch: cal.patch,
+    generatedAt: new Date().toISOString(),
+    matches: agg.meta.matches,
+    note: 'most played per lane, shrunk winrate (method-of-moments EB toward 50%); all ranks, current-patch window',
+    roles,
+  }, null, 1));
+  console.log('meta.json written');
+}
 console.log(`\n${index.length} artifacts in ${((Date.now() - t0) / 1000).toFixed(0)}s -> ${OUT}`);
