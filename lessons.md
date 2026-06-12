@@ -569,3 +569,18 @@ Append-only. One entry per backlog item or significant finding.
   dropped "solo-ish" and second person.
 - The audit list itself (208 templates) is the reusable artifact; the
   next pass only needs to diff new templates against it.
+
+## 2026-06-12 (night, cont. 11): one lineup, not two
+
+- The maintainer called the redundancy: the "Optimal lineup" card was
+  just the planner's top option with all five selected. Merged into a
+  single "The lineup" card — controls on top, the winning option
+  rendered rich (avatars, role-true hero chips, plain off-role notes
+  instead of a badge), alternatives compact below as "ALSO WORKS". The
+  header is honest about state: "OPTIMAL LINEUP · all 120 permutations
+  scored · worth +N wins/100" only when everyone is in, wheelhouse,
+  unshuffled; otherwise "BEST FOR THIS GROUP" or "SHUFFLED SET".
+- The OFF-ROLE badge died after two renames: the maintainer asked what
+  it meant twice and then said it wasn't important enough to tag. The
+  inline sentence carries it now. A label that needs a glossary twice
+  should become a sentence the third time.
