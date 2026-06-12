@@ -652,3 +652,21 @@ Append-only. One entry per backlog item or significant finding.
   shift with the augment locked in, and 16 heroes' Eternal sims now run
   with the field's top augment modeled instead of the blanket
   'augment-blind' caveat.
+
+## 2026-06-12 (night, cont. 14): Eternal when/why lines — pipeline before prose
+
+- The maintainer asked whether Eternal explanations were in the backlog:
+  they weren't — the 🧠 pass covered augments only. Shipped the pipeline
+  half tonight: npm run review now writes one grounded line per top
+  field Eternal per role, with mechanics sourced from the effect
+  registry's sourceText (including its honest 'not in our sim' notes,
+  which the prompt forbids embellishing) and the same numeric verifier.
+- The verifier core moved to src/copy-verify.ts as pure functions so the
+  ground-check itself is unit-tested without an API key — including the
+  comma/decimal renderings and the pairwise winrate deltas that earlier
+  passes allowed implicitly. A new gate also asserts every Eternal name
+  in the field evidence joins a curated registry entry.
+- This environment carries no ANTHROPIC_API_KEY, so the run is pending
+  wherever the key lives. Pipeline-then-run beats hand-writing ~200
+  lines in-session: the verifier, not the author, is what makes the
+  copy trustworthy, and the unattended path is what survives patches.

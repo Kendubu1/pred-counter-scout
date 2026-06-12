@@ -101,8 +101,16 @@ grounded when/why line per augment per role from the catalog mechanics
 absent from the source cell (2 of 288 rejected). Output committed at
 data/aggregates/augment-reviews.json; hero pages render the lines with
 🧠 provenance. Key lives in env only — never committed; secrets grep
-now covers the sk-ant- prefix. REMAINING: the original scope (hero-page
-coach lines + squad/coach report copy through the same verifier), plus
-Eternal when/why lines (maintainer asked 2026-06-12: the augment pass
-covered augments only; Eternals have field evidence + sim deltas but no
-grounded prose — same single-source prompt + numeric verifier shape).
+now covers the sk-ant- prefix.
+
+Eternal when/why lines (maintainer asked 2026-06-12): pipeline SHIPPED
+same day — npm run review now also writes one grounded line per top
+field Eternal per role (mechanics from the effect registry + field
+evidence only, same numeric verifier; core factored into
+src/copy-verify.ts with unit tests; hero page renders 🧠 on Eternal
+rows when present). The RUN is pending: this session's environment has
+no ANTHROPIC_API_KEY — run `npm run review` wherever the key lives and
+commit the refreshed augment-reviews.json.
+
+REMAINING: the original scope (hero-page coach lines + squad/coach
+report copy through the same verifier).

@@ -1,10 +1,11 @@
-// AI copy pass over the hero augments (priorities item 8, scoped to the
-// maintainer's ask): one grounded "when to take it" line per augment per
-// role, written by claude-haiku-4-5 from ONLY the catalog mechanics +
-// field evidence, then ground-checked — every number in a line must
-// appear in the source data for that cell (winrates, game counts,
-// description values, or the precomputed per-100 deltas). Lines that
-// fail verification are dropped; the page falls back to mechanics-only.
+// AI copy pass over the hero augments AND Eternals (priorities item 8):
+// one grounded "when to take it" line per augment per role, and one per
+// top field Eternal per role (maintainer ask, 2026-06-12), written by
+// claude-haiku-4-5 from ONLY the catalog/registry mechanics + field
+// evidence, then ground-checked — every number in a line must appear in
+// the source data for that cell (winrates, game counts, description
+// values, or the precomputed per-100 deltas). Lines that fail
+// verification are dropped; the page falls back to mechanics-only.
 //
 //   ANTHROPIC_API_KEY=... npm run review
 
@@ -12,13 +13,17 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadData } from '../data.js';
+import { loadEffects } from '../effects.js';
+import { buildAllowed, verifyLine, winrateNumbers } from '../copy-verify.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const KEY = process.env.ANTHROPIC_API_KEY;
 if (!KEY) { console.error('needs ANTHROPIC_API_KEY in env'); process.exit(1); }
 
-interface AugCell { augments: { id: string; name: string; n: number; w: number }[] }
+interface AugCell { augments: { id: string; name: string; n: number; w: number }[]; eternals?: { name: string; n: number; w: number }[] }
 interface AugFile { catalog: Record<string, { name: string; description: string }>; heroes: Record<string, Record<string, AugCell>> }
+
+const ETERNAL_MIN_GAMES = 300; // matches the hero page's display filter
 
 const augs = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/predgg-augments.json'), 'utf8')) as AugFile;
 const data = loadData();
@@ -39,36 +44,36 @@ async function ask(prompt: string): Promise<string> {
   throw new Error('anthropic: retries exhausted');
 }
 
-/** Allowed numeric tokens for a cell: data numbers in every common rendering. */
+/** Allowed numeric tokens for an augment cell (shared verifier core). */
 function allowedNumbers(cell: AugCell, catalog: AugFile['catalog']): Set<string> {
-  const out = new Set<string>();
-  const add = (x: number) => {
-    out.add(String(x));
-    out.add(x.toFixed(1));
-    out.add(String(Math.round(x)));
-    out.add(x.toLocaleString('en-US'));
-  };
-  const wrs = cell.augments.map((g) => g.w / g.n * 100);
-  for (const [i, g] of cell.augments.entries()) {
-    add(g.n); add(wrs[i]!);
-    for (const m of (catalog[g.id]?.description ?? '').matchAll(/\d+(?:\.\d+)?/g)) add(parseFloat(m[0]));
-  }
-  for (const a of wrs) for (const b of wrs) if (a !== b) add(Math.abs(a - b));
-  add(100); add(5); // "per 100 games", "5v5"
-  return out;
+  return buildAllowed(
+    winrateNumbers(cell.augments),
+    cell.augments.map((g) => catalog[g.id]?.description ?? ''),
+  );
 }
 
-function verify(line: string, allowed: Set<string>): boolean {
-  for (const m of line.matchAll(/\d+(?:,\d{3})*(?:\.\d+)?/g)) {
-    const tok = m[0].replace(/,/g, '');
-    if (!allowed.has(tok) && !allowed.has(parseFloat(tok).toFixed(1)) && !allowed.has(String(parseFloat(tok)))) return false;
-  }
-  return true;
+const verify = verifyLine;
+
+/** Eternal mechanics live in the curated effect registry (sourceText). */
+function eternalMechanics(name: string): string {
+  const entry = loadEffects().targets[`eternal:${name.toLowerCase()}:major`];
+  if (!entry) return 'mechanics not in the curated registry';
+  const unmodeled = entry.effects.filter((fx) => fx.kind === 'unmodeled').map((fx) => (fx as { note: string }).note);
+  return entry.sourceText + (unmodeled.length ? ` (not in our sim: ${unmodeled.join('; ')})` : '');
+}
+
+/** The same top-3 the hero page shows: n >= floor, by field winrate. */
+function topEternals(cell: AugCell) {
+  return [...(cell.eternals ?? [])]
+    .filter((e) => e.n >= ETERNAL_MIN_GAMES)
+    .sort((x, y) => y.w / y.n - x.w / x.n)
+    .slice(0, 3);
 }
 
 async function main() {
   const reviews: Record<string, Record<string, Record<string, string>>> = {};
-  let written = 0, rejected = 0;
+  const eternalReviews: Record<string, Record<string, Record<string, string>>> = {};
+  let written = 0, rejected = 0, etWritten = 0, etRejected = 0;
   for (const [slug, cells] of Object.entries(augs.heroes)) {
     const name = data.kits.get(slug)?.name ?? slug;
     const lines: string[] = [];
@@ -105,15 +110,59 @@ Return strict JSON only, shaped: {"<role>": {"<id>": "<sentence>", ...}, ...}`;
       process.stdout.write('x');
     }
     await new Promise((r) => setTimeout(r, 200));
+
+    // Eternal pass (same hero, second call): when/why for the role's
+    // field top-3, grounded in registry mechanics + field evidence only.
+    const etPromptLines: string[] = [];
+    for (const [role, cell] of Object.entries(cells)) {
+      const ets = topEternals(cell);
+      if (!ets.length) continue;
+      etPromptLines.push(`ROLE ${role}:`);
+      for (const e of ets) {
+        etPromptLines.push(`- "${e.name}": ${(e.w / e.n * 100).toFixed(1)}% winrate over ${e.n.toLocaleString('en-US')} games. Mechanics: ${eternalMechanics(e.name)}`);
+      }
+    }
+    if (etPromptLines.length) {
+      const etPrompt = `You write one-line Eternal guidance for the Predecessor (MOBA) hero ${name}. Eternals are pre-game blessings. The data below is the ONLY source of truth.
+
+${etPromptLines.join('\n')}
+
+For each Eternal in each role, write ONE sentence (max 26 words) on when/why to take it on this hero in that role: tie the mechanics to the role's job, and let the evidence settle disagreements. Plain language; never use the word "points" for winrate; you may only use numbers that appear in the data above. Where mechanics say "not in our sim", do not invent mechanical claims beyond the stated text.
+
+Return strict JSON only, shaped: {"<role>": {"<eternal name>": "<sentence>", ...}, ...}`;
+      try {
+        const raw = (await ask(etPrompt)).trim().replace(/^```json?\s*|```$/g, '');
+        const parsed = JSON.parse(raw) as Record<string, Record<string, string>>;
+        for (const [role, cell] of Object.entries(cells)) {
+          const ets = topEternals(cell);
+          if (!ets.length) continue;
+          const allowed = buildAllowed(winrateNumbers(ets), ets.map((e) => eternalMechanics(e.name)));
+          for (const e of ets) {
+            const line = parsed[role]?.[e.name];
+            if (!line) continue;
+            if (verify(line, allowed)) {
+              ((eternalReviews[slug] ??= {})[role] ??= {})[e.name] = line;
+              etWritten++;
+            } else etRejected++;
+          }
+        }
+        process.stdout.write(':');
+      } catch (e) {
+        process.stdout.write('x');
+      }
+      await new Promise((r) => setTimeout(r, 200));
+    }
   }
   const out = {
     generatedAt: new Date().toISOString(),
-    source: 'claude-haiku-4-5 over data/aggregates/predgg-augments.json only; every number ground-checked against the source cell, failing lines dropped',
+    source: 'claude-haiku-4-5 over data/aggregates/predgg-augments.json (+ effect-registry Eternal mechanics) only; every number ground-checked against the source cell, failing lines dropped',
     written, rejected,
+    eternalsWritten: etWritten, eternalsRejected: etRejected,
     heroes: reviews,
+    eternals: eternalReviews,
   };
   writeFileSync(path.join(ROOT, 'data/aggregates/augment-reviews.json'), JSON.stringify(out, null, 1));
-  console.log(`\n${written} lines written, ${rejected} rejected by the verifier -> data/aggregates/augment-reviews.json`);
+  console.log(`\n${written} augment lines (+${etWritten} Eternal lines) written, ${rejected + etRejected} rejected by the verifier -> data/aggregates/augment-reviews.json`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

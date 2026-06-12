@@ -657,6 +657,10 @@ function renderHero(a, roleParam) {
               <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
             </div>
             <div style="font-size:.68rem;color:var(--text-2);margin:.18rem 0 0 2.35rem">${why}</div>
+            ${(() => {
+              const ai = REVIEWS && REVIEWS.eternals && REVIEWS.eternals[a.slug] && REVIEWS.eternals[a.slug][role] && REVIEWS.eternals[a.slug][role][e.name];
+              return ai ? `<div style="font-size:.68rem;line-height:1.45;color:${i === 0 ? 'var(--green)' : 'var(--text-1)'};margin:.12rem 0 0 2.35rem">🧠 ${esc(ai)}</div>` : '';
+            })()}
           </div>`;
         }).join('') : '<div class="muted">no Eternal sample for this role yet</div>'}
         ${top && ets.length && top.name.toLowerCase() !== ets[0].name.toLowerCase()
