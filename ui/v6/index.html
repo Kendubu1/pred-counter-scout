@@ -547,12 +547,15 @@ function renderGrid() {
 /* ── hero page ── */
 function itile(i, idx) {
   const under = i.playRatePct !== null && i.playRatePct < 2;
+  // Low play + negative evidence on a real sample: the field tried this
+  // and lost — present it as a sim opinion under review, not a find.
+  const disputed = under && i.evidenceDeltaWr !== null && i.evidenceDeltaWr < 0 && i.evidenceN >= 20;
   const ev = i.evidenceDeltaWr === null ? '' :
     `<span class="${i.evidenceDeltaWr >= 0 ? 'pos' : 'neg'}">${i.evidenceDeltaWr > 0 ? '+' : ''}${i.evidenceDeltaWr}wr</span> n=${i.evidenceN}`;
   return `
-    <div class="itile${under ? ' gold' : ''}" title="${esc(i.name)}${i.playRatePct === null ? '' : ` — in ${i.playRatePct}% of games`}">
+    <div class="itile${under && !disputed ? ' gold' : ''}" title="${esc(i.name)}${i.playRatePct === null ? '' : ` — in ${i.playRatePct}% of games`}${disputed ? ' — the sim rates this higher than the field’s results do; unverified constants (attack-speed cap) may flatter it' : ''}">
       <span class="ord">${idx + 1}</span>
-      ${under ? '<span class="tag">OFF-META</span>' : ''}
+      ${disputed ? '<span class="tag" style="color:var(--gold)">SIM-ONLY ⚠</span>' : under ? '<span class="tag">OFF-META</span>' : ''}
       <img loading="lazy" src="${IMG.item(i.slug)}" alt="" onerror="this.style.visibility='hidden'">
       <div class="nm">${esc(i.name)}</div>
       <div class="spike">${i.spikeMinute ? `spike ~${i.spikeMinute}'` : 'late game'}</div>

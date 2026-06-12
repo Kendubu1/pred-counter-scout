@@ -125,6 +125,23 @@ describe('hero artifacts (Concept A engine stage)', () => {
     }
   });
 
+  it('off-meta promotion respects the evidence gate: no negative-evidence finds', () => {
+    const dir = path.join(ROOT, 'data/artifacts');
+    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json'].includes(f));
+    for (const f of files) {
+      const a = JSON.parse(readFileSync(path.join(dir, f), 'utf8')) as {
+        offMeta: { candidates: { item: string }[] };
+        build: { items: { name: string; evidenceDeltaWr: number | null; evidenceN: number | null }[] };
+      };
+      for (const c of a.offMeta.candidates) {
+        const bi = a.build.items.find((i) => i.name === c.item);
+        if (bi && bi.evidenceDeltaWr != null && (bi.evidenceN ?? 0) >= 20) {
+          expect(bi.evidenceDeltaWr, `${f}: ${c.item} promoted with negative evidence`).toBeGreaterThanOrEqual(0);
+        }
+      }
+    }
+  });
+
   it('every catalog augment for a rostered hero has a curated effect entry (modeled or honestly unmodeled)', () => {
     const augs = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/predgg-augments.json'), 'utf8')) as {
       catalog: Record<string, { hero: string | null; name: string }>;

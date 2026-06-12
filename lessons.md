@@ -670,3 +670,30 @@ Append-only. One entry per backlog item or significant finding.
   wherever the key lives. Pipeline-then-run beats hand-writing ~200
   lines in-session: the verifier, not the author, is what makes the
   copy trustworthy, and the unattended path is what survives patches.
+
+## 2026-06-12 (night, cont. 15): Lotus and Deathstalker — two 'everywhere' mysteries, two different answers
+
+- "Why is Lotus everywhere": because the field really does win with it.
+  Shrinkage (now applied to the Eternal ordering — raw-winrate sorting
+  was flaw 4 rediscovered) flips only 7 of 96 cells; pooled across 175k
+  games Lotus wins 55.8% while the mass picks sit at 48-52%. The
+  mechanism is now in the kit math: all four buff numbers were stated in
+  owned eternals.json, so Lotus is encoded as expected value per
+  2-minute proc (takedown procs excluded — the encoding is a floor).
+  Honest residual: minority-pick selection bias can't be decomposed
+  without rank covariates.
+- "Why is Deathstalker everywhere": because the sim has no attack-speed
+  cap. Onslaught (attack speed equal to total flat pen — the encoding is
+  textually faithful) makes it superlinear with every pen item, and
+  uncapped builds reach 3.5+ attacks/sec. The field's verdict: 0.6%
+  median play, negative deltas where tried. Same shape, opposite
+  conclusion: Lotus disagreement = sim too blind, Deathstalker
+  disagreement = sim too credulous. The evidence layer is the tiebreak,
+  exactly as component D intended.
+- Shipped: attackSpeedCap flagged unverified (checklist 7 has the
+  10-minute measurement), the design doc's off-meta evidence gate is now
+  actually enforced (negative-evidence candidates are never promoted),
+  the UI marks low-play negative-evidence items SIM-ONLY ⚠ instead of
+  gold OFF-META, and builds stacking >100% AS carry an explicit
+  optimism warning. The generator stays evidence-blind by design; the
+  fix when the cap is measured will fall out of the math.

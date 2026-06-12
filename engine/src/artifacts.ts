@@ -9,7 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { completedItems, type LoadedData } from './data.js';
 import { generateBuilds, headlineObjective } from './search.js';
-import { combatDamage, evaluateBuild, loadCalibration, unverifiedConstants, type Calibration } from './sim.js';
+import { combatDamage, evaluateBuild, itemTotals, loadCalibration, unverifiedConstants, type Calibration } from './sim.js';
 import { rankAugments, rankBlessings } from './eternals.js';
 import { heroGames, itemPlayRate, loadAggregates } from './aggregates.js';
 import { itemWinDelta, momPriorStrength } from './evidence.js';
@@ -259,6 +259,12 @@ export function buildHeroArtifact(
   if (popularEval) {
     for (const bi of buildItems) {
       if (bi.playRatePct == null || bi.playRatePct >= 2) continue;
+      // Evidence gate (design doc, off-meta promotion): a candidate is
+      // promoted only if the evidence layer does not contradict it. A
+      // negative shrunk delta on a real sample means the field tried it
+      // and lost — that is a sim blind-spot flag, not a find
+      // (Deathstalker's uncapped-AS valuation was caught exactly here).
+      if (bi.evidenceDeltaWr != null && bi.evidenceDeltaWr < 0 && (bi.evidenceN ?? 0) >= 20) continue;
       let bestObjective = '';
       let bestEdge = 0;
       for (const [key, label] of Object.entries(objectiveLabels)) {
@@ -489,6 +495,9 @@ export function buildHeroArtifact(
         'evidence deltas carry finished-inventory survivorship bias',
         ...(role === 'support'
           ? ['support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)']
+          : []),
+        ...(itemTotals(items).attack_speed > 100
+          ? ['this build stacks over +100% attack speed and the sim has NO measured attack-speed cap (calibration checklist 7) — sustained-DPS numbers are optimistic until the cap is measured']
           : []),
       ],
     },
