@@ -520,3 +520,15 @@ Append-only. One entry per backlog item or significant finding.
 - Meta builds moved above lane checkpoints; the last UI 'Ng' ('${m.n}g'
   in meta builds) became 'games' — the artifact gate can't see UI
   templates, so UI strings still need eyes.
+
+## 2026-06-12 (night, cont. 8): coverage audits beat spot fixes
+
+- "Did the Zinx fix cover Steel too?" — the right answer is an audit,
+  not a yes. Scripted check of every clickable hero-role combination
+  (meta board cells × augment cells, every hero × at least one cell)
+  found two real gaps the spot fix missed: Zinx-carry (121 field games,
+  under the 150 floor but still on the meta board) and Legion (no
+  qualifying role at all). Rule fixed structurally: floor 100 plus every
+  hero's primary role always queried. The audit is now a harness gate,
+  so the invariant ("if the site links it, evidence exists for it")
+  survives future snapshots.
