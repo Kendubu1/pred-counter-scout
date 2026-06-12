@@ -109,6 +109,15 @@
   .card h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.8rem; }
   .card h2 .hint { float:right; letter-spacing:0; text-transform:none; font-weight:400; }
 
+  .htabs { display:flex; gap:.4rem; margin-top:1rem; }
+  .htab { background:var(--bg-1); color:var(--text-1); border:1px solid var(--border); border-radius:99px; padding:.32rem 1rem; font-size:.84rem; }
+  .htab.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .abil { display:flex; gap:.7rem; padding:.55rem 0; border-bottom:1px solid var(--border); align-items:flex-start; }
+  .abil:last-of-type { border-bottom:none; }
+  .abil img { width:44px; height:44px; border-radius:10px; object-fit:cover; background:var(--bg-2); border:1px solid var(--border); flex:none; }
+  .abil .akey { display:inline-block; background:var(--bg-2); border:1px solid var(--border); border-radius:6px; font-size:.64rem; font-weight:800; padding:.04rem .4rem; color:var(--text-1); vertical-align:middle; margin-left:.35rem; }
+  .abil .ameta { font-size:.7rem; color:var(--gold); margin-top:.1rem; }
+  .abil .adesc { font-size:.74rem; color:var(--text-1); margin-top:.25rem; line-height:1.5; }
   .answer { border-color:#3b3470; background:linear-gradient(180deg, rgba(108,92,231,.07), rgba(18,18,26,0) 55%), var(--bg-1); }
   .rail { display:grid; grid-template-columns:repeat(6, 1fr); gap:.6rem; }
   @media (max-width:680px) { .rail { grid-template-columns:repeat(3, 1fr); } }
@@ -322,7 +331,7 @@ function buildSubnav() {
   if (subnavIO) { subnavIO.disconnect(); subnavIO = null; }
   const view = $('#hero').classList.contains('hidden') ? '#landing' : '#hero';
   const secs = [...document.querySelectorAll(`${view} section.card, ${view} .lanepanel, ${view} .metaboard`)]
-    .filter((c) => c.querySelector('h2'));
+    .filter((c) => c.querySelector('h2') && c.offsetParent !== null);
   host.innerHTML = secs.map((c, i) => {
     c.id = c.id || 'sec' + i;
     const h = c.querySelector('h2');
@@ -598,6 +607,12 @@ function renderHero(a, roleParam) {
       </div>
     </header>
 
+    <div class="htabs">
+      <button class="htab active" data-tab="play">Game plan</button>
+      <button class="htab" data-tab="learn">Learn the hero</button>
+    </div>
+
+    <div id="tabPlay">
     <section class="card">
       <h2>At the gate · your 20-second picks <span class="hint">augment first, then Eternal — the build follows</span></h2>
       ${(() => {
@@ -732,8 +747,59 @@ function renderHero(a, roleParam) {
         <p style="margin-top:.5rem">Generated ${esc(a.generatedAt.slice(0, 16).replace('T', ' '))} UTC · patch ${esc(a.patch)}</p>
       </div>
     </details>
+    </div>
+    <div id="tabLearn" class="hidden"></div>
   `;
   $('#back').onclick = () => nav(null);
+  document.querySelectorAll('.htab').forEach((b) => {
+    b.onclick = async () => {
+      document.querySelectorAll('.htab').forEach((x) => x.classList.toggle('active', x === b));
+      const learn = b.dataset.tab === 'learn';
+      $('#tabPlay').classList.toggle('hidden', learn);
+      $('#tabLearn').classList.toggle('hidden', !learn);
+      if (learn && !$('#tabLearn').innerHTML) $('#tabLearn').innerHTML = await renderLearn(a);
+      buildSubnav();
+      window.scrollTo({ top: 0 });
+    };
+  });
+}
+
+let HEROES_RAW = null;
+async function renderLearn(a) {
+  if (!HEROES_RAW) {
+    const raw = await getJson('../../data/omeda/heroes.json').catch(() => null);
+    HEROES_RAW = Array.isArray(raw) ? raw : raw?.heroes ?? [];
+  }
+  const hero = HEROES_RAW.find((h) => h.slug === a.slug);
+  if (!hero) return '<section class="card"><h2>Learn the hero</h2><div class="muted">no kit data found</div></section>';
+  const ORDER = { LMB: 0, RMB: 1, Q: 2, E: 3, R: 4 };
+  const abilities = [...(hero.abilities || [])].sort((x, y) => (ORDER[x.key] ?? 9) - (ORDER[y.key] ?? 9));
+  const clean = (t) => (t || '').replace(/<br\s*\/?>(\n)?/g, ' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  const fmtArr = (arr, unit) => Array.isArray(arr) && arr.length ? `${arr.join(' / ')}${unit}` : null;
+  return `
+    <section class="card">
+      <h2>The kit <span class="hint">official ability data, patch ${esc(a.patch)}</span></h2>
+      ${abilities.map((ab) => {
+        const hash = (ab.image || '').split('/').pop();
+        const cd = fmtArr(ab.cooldown, 's cooldown by rank');
+        const cost = fmtArr(ab.cost, ' mana by rank');
+        return `
+        <div class="abil">
+          ${hash ? `<img loading="lazy" src="../img/abilities/${esc(hash)}" alt="" onerror="this.style.visibility='hidden'">` : ''}
+          <div style="min-width:0">
+            <b style="font-size:.92rem">${esc(ab.display_name)}</b>${ab.key ? `<span class="akey">${esc(ab.key)}</span>` : ''}${ab.key === 'R' ? '<span class="akey" style="color:var(--gold);border-color:var(--gold)">ULT · rank at 6 / 11 / 16</span>' : ''}
+            ${cd || cost ? `<div class="ameta">${[cd, cost].filter(Boolean).join(' · ')}</div>` : ''}
+            <div class="adesc">${esc(clean(ab.menu_description || ab.game_description))}</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </section>
+    <section class="card">
+      <h2>How this kit wants to play <span class="hint">from the sim + field evidence</span></h2>
+      <div style="font-size:.86rem;color:var(--text-1);line-height:1.6">${esc(a.coachLine)}</div>
+      ${a.build.archetypes.length ? `<div class="chips" style="margin-top:.6rem">${a.build.archetypes.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>` : ''}
+      <div style="margin-top:.6rem;font-size:.72rem;color:var(--text-2)">ult rank levels 6 / 11 / 16 are verified from pred.gg recommended skill orders · combat numbers remain THEORY until in-game calibration · for augment-specific tips see the 🧠 lines on the Game plan tab</div>
+    </section>`;
 }
 
 /* ── routing ── */
