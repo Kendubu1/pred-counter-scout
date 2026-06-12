@@ -172,7 +172,7 @@ const plink = (uuid, name) => uuid
             ${a.isMove ? '<span class="move">MOVE</span>' : ''}
             <span class="sgames">${a.roleGames} games in role</span>
           </div>
-          <div class="picks">${a.heroPicks.map((h) => `<a href="./?hero=${esc(h.slug)}"><img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">${esc(h.name)} ${pct(h.shrunkWr, 0)}%</a>`).join('') || '<span style="color:var(--text-2);font-size:.74rem">no proven hero here yet — use meta mode below</span>'}</div>
+          <div class="picks">${a.heroPicks.map((h) => `<a href="./?hero=${esc(h.slug)}"><img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">${esc(h.name)} ${pct(h.shrunkWr, 0)}%${h.games != null && h.games < 20 ? ` <span style="color:var(--gold)">· ${h.games} games</span>` : ''}</a>`).join('') || '<span style="color:var(--text-2);font-size:.74rem">no proven hero here yet — use meta mode below</span>'}</div>
           ${a.isMove && a.favRole ? `<div class="snote">usually queues ${esc(a.favRole)} — the move is worth it: ${pct(a.roleWr)}% here over ${a.roleGames} games</div>` : ''}
         </div>`).join('')}
       <div class="snote" style="margin-top:.7rem">Seats are scored as a set, not one at a time — someone can look stronger in a seat they didn't get, but moving them there would give up more wins in the role they'd leave than it adds. The lineup above is the combination that wins the most as a team.</div>
@@ -195,6 +195,7 @@ const plink = (uuid, name) => uuid
           <div class="who" id="mode">
             <label class="pick"><input type="radio" name="mode" value="wheel" checked> 🏠 wheelhouse</label>
             <label class="pick"><input type="radio" name="mode" value="meta"> 🔥 meta</label>
+            <label class="pick"><input type="radio" name="mode" value="any"> 🌊 any lane hero</label>
             <button id="shuffle" class="pick">🎲 shuffle</button>
           </div>
         </div>
@@ -261,14 +262,15 @@ const plink = (uuid, name) => uuid
   }
 
   let shuffleSeed = 0;
-  function metaPickFor(seat, optIdx, seatIdx) {
+  function lanePickFor(seat, optIdx, seatIdx, depth) {
     const lane = (META && META.roles[seat.role]) || [];
     if (!lane.length) return '<span style="color:var(--text-2)">no meta data</span>';
-    const pickIdx = (optIdx + seatIdx + shuffleSeed) % Math.min(lane.length, 5);
+    const window = Math.min(lane.length, depth);
+    const pickIdx = (optIdx + seatIdx + shuffleSeed) % window;
     const h = lane[pickIdx];
     const mine = (POOLS.get(seat.uuid) || new Map()).get(h.slug);
     const note = mine && mine.games >= 30
-      ? `you: ${pct(mine.shrunkWr, 0)}% · ${mine.games} games`
+      ? `you: ${pct(mine.shrunkWr, 0)}% · ${mine.games} games on the hero (all lanes)`
       : `field ${pct(h.shrunkWr, 0)}% · <span style="color:var(--gold)">new to you</span>`;
     return `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} <span style="color:var(--text-2)">${note}</span>`;
   }
@@ -294,16 +296,18 @@ const plink = (uuid, name) => uuid
           <div class="planseat">
             <span class="r">${esc(seat.role)}</span>
             <span>${plink(seat.uuid, seat.name.split(' ')[0])} <span style="color:var(--text-2);font-size:.76rem">${pct(seat.wr)}% · ${seat.games} games</span></span>
-            <span class="picks-mini">${mode === 'meta'
-              ? metaPickFor(seat, oi, si)
-              : (seat.picks.map((h) => `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} ${pct(h.shrunkWr, 0)}%`).join(' · ') || '<span style="color:var(--gold)">no 20+ game hero in this exact role — flip to meta mode</span>')}</span>
+            <span class="picks-mini">${mode === 'meta' ? lanePickFor(seat, oi, si, 5)
+              : mode === 'any' ? lanePickFor(seat, oi, si, 99)
+              : (seat.picks.map((h) => `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} ${pct(h.shrunkWr, 0)}%${h.games != null && h.games < 20 ? ` <span style="color:var(--gold)">· only ${h.games} games</span>` : ''}`).join(' · ') || '<span style="color:var(--gold)">no 10+ game hero in this exact role — try meta or any-hero mode</span>')}</span>
           </div>`).join('')}
       </div>`;
     }).join('') + `
       <div style="font-size:.7rem;color:var(--text-2);margin-top:.4rem">
         ${mode === 'meta'
-          ? 'meta mode: heroes from the current patch meta board per lane; “new to you” = under 30 games on it, the seat winrate shown is still your role record'
-          : 'wheelhouse mode: only heroes with 20+ of your own games in that exact role'}
+          ? 'meta mode: the lane’s top-5 meta heroes; “new to you” = under 30 of your games on it; the seat winrate shown is still your role record'
+          : mode === 'any'
+            ? 'any-hero mode: shuffle deals from the lane’s whole tracked roster with field winrates — comfort and meta rules off'
+            : 'wheelhouse mode: heroes with 10+ of your own games in that exact role (real 5v5s); thin samples under 20 games say so'}
         · seat assignments maximize confidence-weighted role winrates</div>`;
   }
   document.querySelectorAll('#who input, #mode input').forEach((i) => { i.onchange = renderPlan; });
