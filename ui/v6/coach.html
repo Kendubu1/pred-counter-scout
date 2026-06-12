@@ -233,7 +233,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
             </div>
             <div class="stats">
               you: <b>${pct(h.shrunkWr)}%</b> over ${h.games} games · field: ${pct(h.fieldWr)}%<br>
-              KDA ${h.kda.toFixed(1)} · ${h.deathsPerGame.toFixed(1)} deaths/game
+              KDA ${h.kda.toFixed(1)} · ${h.deathsPerGame.toFixed(1)} deaths/game${h.myRoles && h.myRoles.length ? `<br>where you play it: ${h.myRoles.map((r) => `${esc(r.role)} ${pct(r.rawWr, 0)}% · ${r.games} games`).join(' / ')}` : ''}
             </div>
             <div class="eng">${h.engineEternal ? `engine: take <b>${esc(h.engineEternal)}</b> · ` : ''}<a class="build" href="./?hero=${esc(h.slug)}">current-patch build →</a></div>
           </div>`).join('')}

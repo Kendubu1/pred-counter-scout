@@ -321,3 +321,22 @@ Append-only. One entry per backlog item or significant finding.
   to their own coach pages (pred.gg stays one hop away in the page
   header). External-profile links on every name made the site feel like
   a directory for someone else's product.
+
+## 2026-06-12 (later still): role attribution for hero suggestions
+
+- Maintainer caught a real attribution flaw via one example (Cuban's
+  Zinx): seat suggestions tagged each hero with the FIELD's primary role
+  and credited the player's whole-hero winrate to that seat, silently
+  blending lanes. pred.gg heroStatistics accepts filter { roles: [...] },
+  so the player's own per-role record is queryable (5 light queries per
+  player). Seat picks now require 20+ of the player's own games on the
+  hero in that exact role.
+- Two payoffs beyond correctness: honest off-meta flexes surface
+  (Mr_Meat31's Murdock OFFLANE, 65% over 57 games, was invisible because
+  the field plays Murdock carry), and the coach lean-into cards can show
+  "where you play it" splits (Cuban's Zinx: support 56%/32, mid 52%/29).
+- Caveat carried in the honesty list: per-role rows only cover
+  role-tracked matches, so role counts sum below the hero's total games.
+- Pattern reinforced: when a number could be attributed multiple ways
+  (hero x role, here), check whose attribution the source uses before
+  presenting it as the player's.
