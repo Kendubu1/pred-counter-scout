@@ -2,6 +2,23 @@
 
 Append-only. One entry per backlog item or significant finding.
 
+## 2026-06-12: The film room (genuine per-player insights)
+
+- "Not genuine" was accurate user feedback about template plans: five
+  people, five identical bullet shapes. The fix was new DATA, not new
+  prose: per-player recent-match histories (tilt, game-length splits,
+  form, death trends) and squad-relative identity stats (vision,
+  objectives, damage dealt/soaked) make findings personal by
+  construction.
+- Significance gates cut both ways: they kept Willy's temporal section
+  honest (no fake form story) but left two members with only a flex
+  line. The fix is breadth of insight TYPES plus a floored fallback
+  (mildest distinctive trait), never loosened gates.
+- A genuineness gate now lives in the harness: no two members may ship
+  identical insight lists.
+- pred.gg threw a transient 504 mid-run; the client now retries 5xx/429
+  with backoff. Any client without retry is a latent pipeline failure.
+
 ## 2026-06-12: Calibration from live data
 
 - One constant fell to data alone: ultRankLevels verified via pred.gg's

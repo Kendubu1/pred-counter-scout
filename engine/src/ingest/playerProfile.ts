@@ -15,7 +15,14 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.
 export interface RawProfile {
   name: string | null; favRole: string | null; lastPlayedAt: string;
   ratings: { rating: { id: string; name: string }; points: number; ranking: number; percentile: number | null; rank: { name: string } | null; peakPoints: number }[];
-  generalStatistic: { result: { matchesPlayed: number; matchesWon: number; mostPlayedRole: string | null; totalKills: number; totalDeaths: number; totalAssists: number } };
+  generalStatistic: { result: {
+    matchesPlayed: number; matchesWon: number; mostPlayedRole: string | null;
+    totalKills: number; totalDeaths: number; totalAssists: number;
+    totalWardsPlaced: number; totalWardsDestroyed: number;
+    structureDamage: number; objectiveDamage: number;
+    totalMinionsKilled: number; totalHeroDamage: number; totalHeroDamageTaken: number;
+    totalTime: number; pentaKills: number; quadraKills: number; maxKillingSpree: number;
+  } };
   roleStatistics: { results: { role: string; matchesPlayed: number; matchesWon: number }[] };
   heroStatistics: { results: { hero: { slug: string; name: string }; matchesPlayed: number; matchesWon: number; totalKills: number; totalDeaths: number; totalAssists: number; totalHeroDamage: number }[] };
 }
@@ -24,11 +31,53 @@ export async function pullProfile(uuid: string): Promise<RawProfile> {
   const d = await gql<{ player: RawProfile }>(`{ player(by: { uuid: "${uuid}" }) {
     name favRole lastPlayedAt
     ratings { rating { id name } points ranking percentile rank { name } peakPoints }
-    generalStatistic { result { matchesPlayed matchesWon mostPlayedRole totalKills totalDeaths totalAssists } }
+    generalStatistic { result {
+      matchesPlayed matchesWon mostPlayedRole totalKills totalDeaths totalAssists
+      totalWardsPlaced totalWardsDestroyed structureDamage objectiveDamage
+      totalMinionsKilled totalHeroDamage totalHeroDamageTaken
+      totalTime pentaKills quadraKills maxKillingSpree
+    } }
     roleStatistics { results { role matchesPlayed matchesWon } }
     heroStatistics { results { hero { slug name } matchesPlayed matchesWon totalKills totalDeaths totalAssists totalHeroDamage } }
   } }`);
   return d.player;
+}
+
+export interface RecentMatch {
+  won: boolean;
+  duration: number;        // seconds
+  startTime: string;
+  role: string | null;
+  heroSlug: string | null;
+  kills: number; deaths: number; assists: number;
+  heroDamage: number;
+  wardsPlaced: number;
+}
+
+export async function pullRecentMatches(uuid: string, limit = 40): Promise<RecentMatch[]> {
+  const d = await gql<{ player: { matchesPaginated: { results: {
+    kills: number; deaths: number; assists: number; team: string; role: string | null;
+    heroDamage: number; wardsPlaced: number;
+    hero: { slug: string } | null;
+    match: { duration: number; winningTeam: string; startTime: string; gameMode: string };
+  }[] } } }>(`{ player(by: { uuid: "${uuid}" }) { matchesPaginated(limit: ${limit}) { results {
+      kills deaths assists team role heroDamage wardsPlaced
+      hero { slug }
+      match { duration winningTeam startTime gameMode }
+    } } } }`);
+  return d.player.matchesPaginated.results
+    .filter((r) => ['pvp', 'ranked', 'PVP', 'RANKED'].includes(r.match.gameMode))
+    .map((r) => ({
+      won: r.team === r.match.winningTeam,
+      duration: r.match.duration,
+      startTime: r.match.startTime,
+      role: r.role?.toLowerCase() ?? null,
+      heroSlug: r.hero?.slug ?? null,
+      kills: r.kills, deaths: r.deaths, assists: r.assists,
+      heroDamage: r.heroDamage,
+      wardsPlaced: r.wardsPlaced,
+    }))
+    .sort((a, b) => a.startTime.localeCompare(b.startTime));
 }
 
 // Maintainer-supplied display names for API-private profiles (the API

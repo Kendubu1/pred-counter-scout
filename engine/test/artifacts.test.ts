@@ -77,6 +77,28 @@ describe('hero artifacts (Concept A engine stage)', () => {
     }
   });
 
+  it('film room: every squad member report carries 3+ receipted insights', () => {
+    const dir = path.join(ROOT, 'data/artifacts/players');
+    const files = readdirSync(dir).filter((f) => f.endsWith('.json'));
+    expect(files.length).toBeGreaterThanOrEqual(5);
+    const allTitles: string[][] = [];
+    for (const f of files) {
+      const p = JSON.parse(readFileSync(path.join(dir, f), 'utf8'));
+      expect(p.insights.length, f).toBeGreaterThanOrEqual(3);
+      for (const i of p.insights) {
+        expect(i.title.length, f).toBeGreaterThan(5);
+        expect(i.receipt.length, f).toBeGreaterThan(10);
+      }
+      allTitles.push(p.insights.map((i: { title: string }) => i.title));
+    }
+    // genuineness gate: no two members share an identical insight list
+    for (let i = 0; i < allTitles.length; i++) {
+      for (let j = i + 1; j < allTitles.length; j++) {
+        expect(allTitles[i]!.join('|'), 'two members got identical insight lists').not.toBe(allTitles[j]!.join('|'));
+      }
+    }
+  });
+
   it('top pilots per lane ship in meta.json (regenerate with PREDGG_* creds if this fires)', () => {
     const meta = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/meta.json'), 'utf8'));
     expect(meta.topPlayers, 'meta.json was generated without pred.gg credentials').not.toBeNull();
