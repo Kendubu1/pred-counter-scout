@@ -12,6 +12,19 @@ Two halves:
   All numbers come from the `data/omeda/` snapshot (current patch, official
   API via omeda.city). This is where active work happens.
 
+## Data policy (permanent, set by the maintainer 2026-06-12)
+
+Pull from external APIs (pred.gg, omeda.city) ONLY when genuinely needed:
+a scheduled refresh, a patch drop, or a new data requirement that cannot
+be served from what we hold. Everything the site renders must be static
+committed snapshots or computed by our own engine from them. Before any
+API work: check whether committed data already answers the question
+(verify-before-refresh); batch and alias queries; sequential requests
+with delays and retry/backoff; identify ourselves via User-Agent. UI
+features should be built against committed artifacts (zero-API) by
+default. The 2026-06-12 provider outage proved the architecture: the
+site served uninterrupted while both upstreams were down.
+
 ## Autonomy policy (permanent, set by the maintainer)
 
 1. Work the backlog in `priorities.md` top to bottom. After finishing each

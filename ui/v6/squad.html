@@ -65,6 +65,51 @@
   ul.notes { padding-left:1.1rem; }
   ul.notes li { margin:.45rem 0; color:var(--text-1); }
   footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
+
+  /* ── mobile: smaller, stacked, nothing bleeds ── */
+  @media (max-width:600px) {
+    body { font-size:13.5px; }
+    .wrap { padding:.9rem .7rem 3rem; }
+    h1 { font-size:1.35rem; }
+    .sub .chip { font-size:.66rem; padding:.1rem .5rem; }
+    .card { padding:.8rem .8rem; }
+    .card h2 { font-size:.7rem; }
+    .verdict { font-size:.84rem; padding:.4rem .7rem; }
+    .whyline { font-size:.7rem; padding:.4rem .55rem; }
+
+    /* lineup table -> stacked seat cards */
+    .lineup .lu-head { display:none; }
+    .lineup, .lineup tbody { display:block; }
+    .lineup tr { display:grid; grid-template-columns:auto 1fr; gap:.05rem .6rem; padding:.55rem 0; border-bottom:1px solid var(--border); align-items:baseline; }
+    .lineup tr:last-child { border-bottom:none; }
+    .lineup td { display:block; padding:0; border:none; }
+    .lineup td.role { font-size:.8rem; }
+    .lineup td.lu-player { font-size:.86rem; }
+    .lineup td.lu-record { grid-column:2; font-size:.72rem; text-align:left; }
+    .lineup td.lu-picks { grid-column:1 / -1; margin-top:.3rem; }
+    .picks { flex-wrap:wrap; gap:.35rem; }
+    .picks a { font-size:.7rem; padding:.16rem .4rem; }
+    .picks img { width:18px; height:18px; }
+    .move { font-size:.56rem; }
+
+    /* planner */
+    .pick { font-size:.74rem; padding:.24rem .6rem; }
+    .planseat { grid-template-columns:64px 1fr; gap:.1rem .5rem; padding:.45rem 0; font-size:.8rem; }
+    .planseat .picks-mini { grid-column:1 / -1; font-size:.68rem; }
+    .plansyn { font-size:.68rem; }
+
+    /* duo synergy rows */
+    .pairrow { grid-template-columns:1fr 84px; gap:.2rem .5rem; }
+    .pairrow .names { grid-column:1 / -1; font-size:.76rem; }
+    .pairrow .n { font-size:.68rem; }
+
+    /* member cards */
+    .members { grid-template-columns:1fr; gap:.55rem; }
+    .member { padding:.65rem; }
+    .member .nm { font-size:.92rem; }
+    .rolemini { grid-template-columns:62px 1fr 86px; font-size:.68rem; }
+    ul.notes li { font-size:.8rem; }
+  }
 </style>
 </head>
 <body>
@@ -111,13 +156,13 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
     <div class="card">
       <h2>Optimal lineup · all 120 permutations scored${typeof s.lineupGainPer100 === 'number' && s.lineupGainPer100 >= 0.5 ? ` · <span style="color:var(--green)">worth +${s.lineupGainPer100} wins/100 vs queue habits</span>` : ''}</h2>
       <table class="lineup">
-        <tr><th>seat</th><th>player</th><th>role record</th><th>play these</th></tr>
+        <tr class="lu-head"><th>seat</th><th>player</th><th>role record</th><th>play these</th></tr>
         ${s.assignment.map((a) => `
           <tr>
             <td class="role">${esc(a.role)}</td>
-            <td>${esc(a.name)}${a.isMove ? '<span class="move">MOVE</span>' : ''}</td>
-            <td class="nums">${pct(a.roleWr)}% · ${a.roleGames}g${a.isMove && a.favRole ? `<br><span style="font-size:.68rem">queues ${esc(a.favRole)} today</span>` : ''}</td>
-            <td><div class="picks">${a.heroPicks.map((h) => `<a href="./?hero=${esc(h.slug)}"><img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">${esc(h.name)} ${pct(h.shrunkWr, 0)}%</a>`).join('') || '<span style="color:var(--text-2);font-size:.74rem">no 30+ game hero in role — pick from the meta board</span>'}</div></td>
+            <td class="lu-player">${esc(a.name)}${a.isMove ? '<span class="move">MOVE</span>' : ''}</td>
+            <td class="nums lu-record">${pct(a.roleWr)}% · ${a.roleGames}g${a.isMove && a.favRole ? `<br><span style="font-size:.68rem">queues ${esc(a.favRole)} today</span>` : ''}</td>
+            <td class="lu-picks"><div class="picks">${a.heroPicks.map((h) => `<a href="./?hero=${esc(h.slug)}"><img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">${esc(h.name)} ${pct(h.shrunkWr, 0)}%</a>`).join('') || '<span style="color:var(--text-2);font-size:.74rem">no 30+ game hero in role — pick from the meta board</span>'}</div></td>
           </tr>`).join('')}
       </table>
       ${tension ? `<div class="verdict">${tension}</div>` : ''}
