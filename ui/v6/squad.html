@@ -56,6 +56,7 @@
   .planseat .r { font-weight:800; text-transform:capitalize; color:var(--accent); }
   .planseat .picks-mini { font-size:.74rem; color:var(--text-2); }
   .plansyn { margin-top:.6rem; font-size:.76rem; color:var(--gold); }
+  .whyline { margin-top:.55rem; font-size:.76rem; color:var(--text-1); background:var(--bg-2); border:1px dashed var(--border); border-radius:8px; padding:.45rem .65rem; }
   .pairrow { display:grid; grid-template-columns:minmax(170px, 240px) 1fr 96px; gap:.7rem; align-items:center; padding:.3rem 0; font-size:.82rem; }
   .pairrow .names { color:var(--text-1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .pairrow .bar { height:8px; border-radius:99px; background:var(--bg-2); overflow:hidden; }
@@ -111,6 +112,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
           </tr>`).join('')}
       </table>
       ${tension ? `<div class="verdict">${tension}</div>` : ''}
+      <div id="fullWhys"></div>
     </div>
 
     <div class="card">
@@ -159,6 +161,33 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
       ${s.honesty.map(esc).join(' · ')}
     </footer>`;
 
+  // ── the "why": opportunity-cost receipts for contested seats ──
+  // A seat is contested when another selected player has a higher record
+  // in that role. The receipt shows what the obvious swap would cost.
+  const scoreOf = (uuid, role) => s.roleScores.find((r) => r.uuid === uuid).scores[role];
+  function whyLines(seats) {
+    const lines = [];
+    for (const seat of seats) {
+      const mine = scoreOf(seat.uuid, seat.role);
+      let top = null;
+      for (const other of seats) {
+        if (other.uuid === seat.uuid) continue;
+        const theirs = scoreOf(other.uuid, seat.role);
+        if (theirs.wr > mine.wr + 0.002 && (!top || theirs.wr > scoreOf(top.uuid, seat.role).wr)) top = other;
+      }
+      if (!top) continue;
+      const cur = mine.score + scoreOf(top.uuid, top.role).score;
+      const swapped = scoreOf(seat.uuid, top.role).score + scoreOf(top.uuid, seat.role).score;
+      const cost = (cur - swapped) * 100;
+      if (cost <= 0) continue; // the optimizer would have swapped already
+      const t = scoreOf(top.uuid, seat.role);
+      const tHome = scoreOf(top.uuid, top.role);
+      const meAfter = scoreOf(seat.uuid, top.role);
+      lines.push(`Why ${seat.name.split(' ')[0]} on ${seat.role} and not ${top.name.split(' ')[0]} (${pct(t.wr)}% vs ${pct(mine.wr)}%)? The swap costs ${cost.toFixed(1)} combined points: ${top.name.split(' ')[0]} leaves their ${pct(tHome.wr)}% ${top.role} (${tHome.games}g) and ${seat.name.split(' ')[0]} falls to ${pct(meAfter.wr)}% ${top.role}.`);
+    }
+    return lines;
+  }
+
   // ── partial-stack planner: best roles for whoever is queueing tonight ──
   const ROLES = ['carry', 'midlane', 'offlane', 'jungle', 'support'];
   const perms = (arr, k) => k === 0 ? [[]] :
@@ -190,11 +219,17 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
             <span class="picks-mini">${seat.picks.map((h) => `${esc(h.name)} ${pct(h.shrunkWr, 0)}%`).join(' · ') || 'pick from meta board'}</span>
           </div>`).join('')}
       </div>
+      ${whyLines(seats).map((l) => `<div class="whyline">🧾 ${esc(l)}</div>`).join('')}
       ${synPairs.length ? `<div class="plansyn">duos in this group: ${synPairs.map((p) => `${esc(p.aName.split(' ')[0])}+${esc(p.bName.split(' ')[0])} ${pct(p.winrate, 0)}%/${p.games}g`).join(' · ')}</div>` : ''}
       <div style="font-size:.7rem;color:var(--text-2);margin-top:.4rem">remaining seats go to randoms; lineup maximizes confidence-weighted role winrates over ${perms(ROLES, seats.length).length} options</div>`;
   }
   document.querySelectorAll('#who input').forEach((i) => { i.onchange = renderPlan; });
   renderPlan();
+
+  // Receipts for the full five-stack lineup above.
+  const fullSeats = s.assignment.map((a) => ({ uuid: a.uuid, name: a.name, role: a.role }));
+  document.getElementById('fullWhys').innerHTML =
+    whyLines(fullSeats).map((l) => `<div class="whyline">🧾 ${esc(l)}</div>`).join('');
 })();
 </script>
 </body>
