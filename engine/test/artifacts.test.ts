@@ -67,8 +67,13 @@ describe('hero artifacts (Concept A engine stage)', () => {
         expect(h.shrunkWr, `${role}/${h.slug}`).toBeLessThan(0.65);
         expect(data.kits.has(h.slug), `${role}/${h.slug} renders a portrait`).toBe(true);
       }
-      // sorted by play, the meta-pick criterion
-      for (let i = 1; i < lane.length; i++) expect(lane[i].games).toBeLessThanOrEqual(lane[i - 1].games);
+      // sorted by combined meta score (pick + winrate percentiles)
+      for (let i = 1; i < lane.length; i++) expect(lane[i].metaScore).toBeLessThanOrEqual(lane[i - 1].metaScore);
+      for (const h of lane) {
+        expect(h.metaScore).toBeGreaterThanOrEqual(0);
+        expect(h.metaScore).toBeLessThanOrEqual(1);
+        expect([null, 'sleeper', 'popular but losing']).toContain(h.badge);
+      }
     }
   });
 
