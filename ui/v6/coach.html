@@ -41,6 +41,10 @@
   .ledg:last-of-type { border-bottom:none; }
   .ledg .lv { font-size:1.3rem; font-weight:800; color:var(--green); font-variant-numeric:tabular-nums; }
   .ledg .lr { font-size:.74rem; color:var(--text-2); }
+  .insight { padding:.6rem 0; border-bottom:1px solid var(--border); font-size:.88rem; color:var(--text-1); }
+  .insight:last-of-type { border-bottom:none; }
+  .insight b { color:var(--text-0); display:block; margin-bottom:.15rem; }
+  .insight .ir { font-size:.72rem; color:var(--text-2); margin-top:.25rem; }
 
   .rolerow { display:grid; grid-template-columns:88px 1fr 120px; gap:.7rem; align-items:center; padding:.32rem 0; font-size:.85rem; }
   .rolerow .bar { height:9px; border-radius:99px; background:var(--bg-2); overflow:hidden; }
@@ -126,6 +130,17 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
           <span><b>${esc(e.change)}</b><br><span class="lr">${esc(e.receipt)}</span></span>
         </div>`).join('')}
       <div style="font-size:.72rem;color:var(--text-2);margin-top:.5rem">${esc(c.ledger.note)}</div>
+    </div>` : ''}
+
+    ${c.insights && c.insights.length ? `
+    <div class="card">
+      <h2>The film room · what your games actually say</h2>
+      ${c.insights.map((i) => `
+        <div class="insight">
+          <b>${esc(i.title)}</b>
+          <div>${esc(i.finding)}</div>
+          <div class="ir">🧾 ${esc(i.receipt)}</div>
+        </div>`).join('')}
     </div>` : ''}
 
     <div class="card">

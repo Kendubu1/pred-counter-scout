@@ -30,19 +30,28 @@ export async function getToken(): Promise<string | null> {
 
 export async function gql<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
   const token = await getToken();
-  const res = await fetch(`${BASE}/gql`, {
-    method: 'POST',
-    headers: {
-      ...UA,
-      'content-type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify({ query, variables }),
-  });
-  if (!res.ok) throw new Error(`pred.gg gql: HTTP ${res.status}`);
-  const body = (await res.json()) as { data?: T; errors?: { message: string }[] };
-  if (body.errors?.length) throw new Error(`pred.gg gql: ${body.errors.map((e) => e.message).join('; ')}`);
-  return body.data as T;
+  let lastErr: Error | null = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (attempt > 0) await new Promise((r) => setTimeout(r, 1500 * attempt));
+    const res = await fetch(`${BASE}/gql`, {
+      method: 'POST',
+      headers: {
+        ...UA,
+        'content-type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ query, variables }),
+    });
+    if (res.status >= 500 || res.status === 429) {
+      lastErr = new Error(`pred.gg gql: HTTP ${res.status}`);
+      continue; // transient; back off and retry
+    }
+    if (!res.ok) throw new Error(`pred.gg gql: HTTP ${res.status}`);
+    const body = (await res.json()) as { data?: T; errors?: { message: string }[] };
+    if (body.errors?.length) throw new Error(`pred.gg gql: ${body.errors.map((e) => e.message).join('; ')}`);
+    return body.data as T;
+  }
+  throw lastErr ?? new Error('pred.gg gql: retries exhausted');
 }
 
 const LANES = ['CARRY', 'MIDLANE', 'OFFLANE', 'JUNGLE', 'SUPPORT'] as const;

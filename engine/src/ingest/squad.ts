@@ -11,7 +11,8 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gql, hasCredentials } from './predgg.js';
-import { analyzeProfile, archetype, buildCoachReport, pullProfile, type AnalyzedPlayer } from './playerProfile.js';
+import { analyzeProfile, archetype, buildCoachReport, pullProfile, pullRecentMatches, type AnalyzedPlayer, type RawProfile, type RecentMatch } from './playerProfile.js';
+import { computeInsights, squadBaselines, type DeepMember } from './insights.js';
 import { loadData } from '../data.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -57,16 +58,18 @@ async function main() {
 
   const members: (AnalyzedPlayer & { together?: { games: number; winrate: number } })[] = [];
   const commonByMember = new Map<string, CommonRow[]>([[lead, leadCommon]]);
+  const deep: DeepMember[] = [];
+  const rawByUuid = new Map<string, { raw: RawProfile; matches: RecentMatch[] }>();
   for (const uuid of uuids) {
     const raw = await pullProfile(uuid);
+    const matches = await pullRecentMatches(uuid, 40);
     const profile = analyzeProfile(uuid, raw, data);
     const t = mates.find((m) => m.player.uuid === uuid);
     members.push({ ...profile, together: t ? { games: t.matchesPlayed, winrate: t.matchesWon / t.matchesPlayed } : undefined });
-    writeFileSync(path.join(playersDir, `${uuid}.json`), JSON.stringify(buildCoachReport(profile, raw.lastPlayedAt), null, 1));
-    if (uuid !== lead) {
-      commonByMember.set(uuid, await commonAllies(uuid));
-      await new Promise((r) => setTimeout(r, 200));
-    }
+    deep.push({ analyzed: profile, raw, matches });
+    rawByUuid.set(uuid, { raw, matches });
+    if (uuid !== lead) commonByMember.set(uuid, await commonAllies(uuid));
+    await new Promise((r) => setTimeout(r, 200));
   }
 
   // Pairwise synergy matrix among stack members (both directions agree by
@@ -86,6 +89,24 @@ async function main() {
     }
   }
   pairs.sort((x, y) => y.winrate - x.winrate);
+
+  // The film room: per-member insights vs squad-relative baselines, each
+  // member fed their strongest pairing from the matrix.
+  const base = squadBaselines(deep);
+  const insightsByUuid = new Map(deep.map((d) => {
+    const mine = pairs.filter((p) => (p.a === d.analyzed.uuid || p.b === d.analyzed.uuid) && p.games >= 100);
+    const bp = mine.sort((x, y) => y.winrate - x.winrate)[0];
+    const bestPair = bp ? { partner: bp.a === d.analyzed.uuid ? bp.bName : bp.aName, games: bp.games, winrate: bp.winrate } : null;
+    return [d.analyzed.uuid, computeInsights(d, base, bestPair)] as const;
+  }));
+  for (const uuid of uuids) {
+    const { raw } = rawByUuid.get(uuid)!;
+    const profile = deep.find((d) => d.analyzed.uuid === uuid)!.analyzed;
+    const report = { ...buildCoachReport(profile, raw.lastPlayedAt), insights: insightsByUuid.get(uuid) ?? [] };
+    writeFileSync(path.join(playersDir, `${uuid}.json`), JSON.stringify(report, null, 1));
+    // the lead's standalone coach.json gets the same insight-bearing report
+    if (uuid === lead) writeFileSync(path.join(ROOT, 'data/artifacts/coach.json'), JSON.stringify(report, null, 1));
+  }
 
   // Full-stack optimal lineup.
   let best: { order: string[]; total: number } | null = null;
@@ -152,6 +173,7 @@ async function main() {
     members: members.map((m) => ({
       uuid: m.uuid, name: m.name, isPrivate: m.isPrivate, favRole: m.favRole,
       archetype: archetype(m),
+      topInsight: (insightsByUuid.get(m.uuid) ?? [])[0] ?? null,
       current: m.current, peakAllTime: m.peakAllTime,
       career: m.career,
       together: m.together ?? null,
