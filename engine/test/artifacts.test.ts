@@ -34,6 +34,14 @@ describe('hero artifacts (Concept A engine stage)', () => {
     expect(a.matchups.length).toBeGreaterThanOrEqual(1);
   });
 
+  it('support-role heroes carry the max-damage-only caveat (no support model yet)', () => {
+    const adele = buildHeroArtifact(data.kits.get('adele')!, data, cal, { beamWidth: 6, matchupEnemies: 1 });
+    expect(adele.role).toBe('support');
+    expect(adele.roleCaveat).toMatch(/maximum-damage build, not a support build/);
+    const gideon = buildHeroArtifact(data.kits.get('gideon')!, data, cal, { beamWidth: 6, matchupEnemies: 1 });
+    expect(gideon.roleCaveat).toBeNull();
+  });
+
   it('the committed artifact set covers the full roster and parses', () => {
     const dir = path.join(ROOT, 'data/artifacts');
     const files = readdirSync(dir).filter((f) => f.endsWith('.json') && f !== 'index.json' && f !== 'meta.json');

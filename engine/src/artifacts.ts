@@ -21,6 +21,9 @@ export const HeroArtifact = z.object({
   role: z.string(),
   damageType: z.string(),
   attackType: z.string(),
+  // Honest limitation surfaced on the page (e.g. supports: the model has
+  // no heal/shield/aura objectives yet, so the build is max-damage only).
+  roleCaveat: z.string().nullable(),
   confidence: z.object({
     level: z.literal('THEORY'),
     unverifiedConstants: z.array(z.string()),
@@ -204,6 +207,10 @@ export function buildHeroArtifact(
     `third item by ${spikes[2]?.minute != null ? `minute ${spikes[2]!.minute}` : 'the 30+ minute mark'}.` +
     (eternals.top[0] ? ` Take ${eternals.top[0].name}: +${eternals.top[0].headlinePct}% on your headline output at minute 15.` : '');
 
+  const roleCaveat = role === 'support'
+    ? `This is ${kit.name}'s maximum-damage build, not a support build. Heal/shield output, auras, and income items are not in the model yet (support model is on the backlog) — in a real game, support itemization comes first.`
+    : null;
+
   return HeroArtifact.parse({
     slug: kit.slug,
     name: kit.name,
@@ -212,6 +219,7 @@ export function buildHeroArtifact(
     role,
     damageType: kit.damageType,
     attackType: kit.attackType,
+    roleCaveat,
     confidence: {
       level: 'THEORY',
       unverifiedConstants: unverifiedConstants(cal),

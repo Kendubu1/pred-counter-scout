@@ -2,6 +2,21 @@
 
 Append-only. One entry per backlog item or significant finding.
 
+## 2026-06-12: The Adele question (support caveat)
+
+- A user spotted assassin items on a support in one glance. Root cause:
+  the objective vector measures only damage and self-EHP, and the loader
+  drops the very stats support items are made of, so support items can
+  never win a slot. For supports the engine was answering a different
+  question than the page implied.
+- The fix that respects the no-vibes rule is labeling, not fabrication:
+  a support build without heal/shield math would be exactly the
+  hand-waving this project exists to replace. Support-role pages now
+  carry an explicit max-damage-only caveat until the support model ships
+  (now backlog item 7).
+- Every model has an implicit question it answers; the page must state
+  that question, or users will assume a different one.
+
 ## 2026-06-12: Visual test pass + meta board
 
 - A headless-browser screenshot reviewed by eye caught what no unit test

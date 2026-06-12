@@ -52,7 +52,17 @@ Done when: a build step emits per-hero JSON artifacts (builds, eternals,
 matchup checkpoints, off-meta proofs, confidence flags) and a static
 prototype page renders The Answer zone from them.
 
-## 7. LLM copy pass with ground-check verifier — BLOCKED 2026-06-11
+## 7. Support output model
+
+Done when: heal/shield amounts and ratios parse from ability text the way
+damage does; the simulator gains heal/shield-output and utility objectives;
+the dropped support stats (heal_shield_increase, gold_per_second, tenacity,
+movement_speed) enter the item model; support-role generation optimizes the
+support objective vector and the max-damage-only caveat comes off; golden
+scenario: an enchanter support is never handed a crit/lethality core;
+harness green; docs + lessons updated; committed.
+
+## 8. LLM copy pass with ground-check verifier — BLOCKED 2026-06-11
 
 Blocked: no ANTHROPIC_API_KEY in the execution environment. Needs the
 maintainer to add the secret (repo/environment settings) or run the pass
