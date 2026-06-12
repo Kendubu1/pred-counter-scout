@@ -166,7 +166,7 @@ function counterSwap(kit: HeroKit, items: Item[], enemy: HeroKit, enemyItems: It
 
 const headlineBuildCache = new Map<string, ReturnType<typeof generateBuilds>[number]>();
 
-function headlineBuild(kit: HeroKit, pool: Item[], cal: Calibration, beamWidth: number) {
+export function headlineBuild(kit: HeroKit, pool: Item[], cal: Calibration, beamWidth: number) {
   let b = headlineBuildCache.get(kit.slug);
   if (!b) {
     b = generateBuilds(kit, pool, cal, { beamWidth })[0]!;

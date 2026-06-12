@@ -45,7 +45,8 @@ site served uninterrupted while both upstreams were down.
   `npm run answer -- <hero-slug>` (build generation),
   `npm run drift` (owned-data staleness report),
   `npm run snapshot` (refresh data/omeda after a balance patch),
-  `npm run probe` (live match-feed field check).
+  `npm run probe` (live match-feed field check),
+  `npm run matrix` (all-pairs matchup matrix; rerun after snapshot/artifacts).
 - Confidence rule: any output touching an unverified fixture constant is
   THEORY at best. The harness prints unverified constants on every run.
 - The omeda.city match feed is oldest-first by default; always drive it

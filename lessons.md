@@ -357,3 +357,20 @@ Append-only. One entry per backlog item or significant finding.
   heroes.json has no augment fields). Backlog item 9 written — needs
   source research before any encoding; per the no-estimates rule the
   hero pages stay augment-silent rather than guessing.
+
+## 2026-06-12 (late): all-pairs matchup matrix
+
+- Maintainer's "how do I counter an Iggy offlane" exposed the structural
+  limit of per-artifact matchups: same-primary-role only, so off-meta
+  flexes are invisible on both sides of the counter view. Fix: a batch
+  all-pairs matrix (npm run matrix) — 1,326 unordered hero pairs in ~1s
+  because the closed-form sims are cheap once headline builds are cached
+  (beam search dominates cost). 34KB compact artifact (y/e/= verdict
+  strings), UI inverts for the reverse direction.
+- Counter view now takes ANY enemy via a flex dropdown; honest caveat
+  carried: matrix sims assume each kit's standard build and primary-role
+  income, so a flexed enemy's gold may run leaner than modeled.
+- The Iggy answer the sim gives: he owns the late checkpoints against
+  nearly the whole offlane roster; counters are early-window heroes who
+  must close the game before the flip (Greystone, Zarus), or Terra who
+  holds both ends.

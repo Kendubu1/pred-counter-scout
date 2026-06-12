@@ -44,7 +44,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
 
   it('the committed artifact set covers the full roster and parses', () => {
     const dir = path.join(ROOT, 'data/artifacts');
-    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json'].includes(f));
+    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json'].includes(f));
     expect(files.length).toBe(52);
     for (const f of files.slice(0, 8)) {
       const parsed = HeroArtifact.safeParse(JSON.parse(readFileSync(path.join(dir, f), 'utf8')));
@@ -96,6 +96,16 @@ describe('hero artifacts (Concept A engine stage)', () => {
       for (let j = i + 1; j < allTitles.length; j++) {
         expect(allTitles[i]!.join('|'), 'two members got identical insight lists').not.toBe(allTitles[j]!.join('|'));
       }
+    }
+  });
+
+  it('the all-pairs matchup matrix covers every hero pair with valid verdict codes', () => {
+    const mx = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/matchup-matrix.json'), 'utf8'));
+    const n = 52;
+    expect(Object.keys(mx.pairs).length).toBe((n * (n - 1)) / 2);
+    expect(mx.minutes.length).toBeGreaterThanOrEqual(4);
+    for (const v of Object.values(mx.pairs)) {
+      expect(v).toMatch(new RegExp(`^[ye=]{${mx.minutes.length}}$`));
     }
   });
 

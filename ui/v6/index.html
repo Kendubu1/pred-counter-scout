@@ -313,6 +313,24 @@ async function getArtifact(slug) {
   if (!ART.has(slug)) ART.set(slug, getJson(`../../data/artifacts/${slug}.json`).catch(() => null));
   return ART.get(slug);
 }
+let MATRIX = null;
+async function getMatrix() {
+  if (!MATRIX) MATRIX = getJson('../../data/artifacts/matchup-matrix.json').catch(() => null);
+  return MATRIX;
+}
+/** Verdicts for our-vs-enemy from the all-pairs matrix (y/e/= coded,
+ *  first-named hero's perspective; invert when we're second-named). */
+function matrixCps(mx, our, enemy) {
+  if (!mx) return null;
+  const [a, b] = [our, enemy].sort();
+  const code = mx.pairs[`${a}|${b}`];
+  if (!code) return null;
+  const flip = a !== our;
+  return [...code].map((ch, i) => ({
+    minute: mx.minutes[i],
+    verdict: ch === '=' ? 'even' : (ch === 'y') === !flip ? 'you' : 'enemy',
+  }));
+}
 const vdots = (cps) => `<div class="dots">${cps.map((c) =>
   `<div class="dotwrap"><div class="dot ${c.verdict}" title="minute ${c.minute}: ${c.verdict === 'you' ? 'your kill window is better' : c.verdict === 'enemy' ? 'their kill window is better' : 'even'}"></div><div class="m">${c.minute}</div></div>`).join('')}</div>`;
 const invertV = (v) => (v === 'you' ? 'enemy' : v === 'enemy' ? 'you' : 'even');
@@ -359,25 +377,31 @@ async function renderLaneDetail() {
     }).join('');
     body += `<div class="lp-sub" style="margin-top:.6rem">ordered by meta score (pick presence + winrate, percentile-averaged) · "out-simmed" = the kit-math kill-window sim, THEORY until calibrated · tap a hero for the full build page</div>`;
   } else {
+    const mx = await getMatrix();
+    const metaSlugs = new Set(laneMeta.map((h) => h.slug));
+    const flexes = INDEX.heroes.filter((h) => !metaSlugs.has(h.slug)).sort((a, b) => a.name.localeCompare(b.name));
     const chips = laneMeta.map((h) => `
       <span class="echip ${laneEnemy === h.slug ? 'active' : ''}" data-slug="${h.slug}">
         <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">${esc(h.name)}</span>`).join('');
-    body = `<div class="lp-sub">they locked in:</div><div class="echips">${chips}</div>`;
+    const flexSel = `<select id="flexEnemy" style="background:var(--bg-2);color:var(--text-1);border:1px solid var(--border);border-radius:99px;padding:.18rem .55rem;font:inherit;font-size:.74rem">
+      <option value="">off-meta flex pick…</option>
+      ${flexes.map((h) => `<option value="${h.slug}" ${laneEnemy === h.slug ? 'selected' : ''}>${esc(h.name)} (${esc(h.role)})</option>`).join('')}
+    </select>`;
+    body = `<div class="lp-sub">they locked in:</div><div class="echips">${chips}${flexSel}</div>`;
     if (laneEnemy) {
       const rows = [];
       const noSim = [];
       for (const our of laneSlugs) {
         if (our === laneEnemy) continue;
         const direct = arts.get(our)?.matchups.find((m) => m.enemySlug === laneEnemy);
-        const rev = arts.get(laneEnemy)?.matchups.find((m) => m.enemySlug === our);
-        const cps = direct ? direct.checkpoints
-          : rev ? rev.checkpoints.map((c) => ({ minute: c.minute, verdict: invertV(c.verdict) })) : null;
+        const cps = direct ? direct.checkpoints : matrixCps(mx, our, laneEnemy);
         if (!cps) { noSim.push(nameOf(our)); continue; }
         const score = cps.filter((c) => c.verdict === 'you').length - cps.filter((c) => c.verdict === 'enemy').length;
         const line = direct?.gameplan ?? phaseLine(cps);
         rows.push({ our, cps, score, line });
       }
       rows.sort((x, y) => y.score - x.score);
+      body += `<div class="lp-sub" style="margin:.2rem 0 .4rem">vs <b>${esc(nameOf(laneEnemy))}</b> in ${LANE_LABELS[role].toLowerCase()} — your lane's answers, best first:</div>`;
       body += rows.map((r) => `
         <div class="lrow" data-slug="${r.our}">
           <img loading="lazy" src="${IMG.hero(r.our)}" alt="" onerror="this.style.visibility='hidden'">
@@ -385,9 +409,9 @@ async function renderLaneDetail() {
           ${vdots(r.cps)}
         </div>`).join('');
       body += noSim.length ? `<div class="lp-sub" style="margin-top:.5rem">no sim vs ${esc(nameOf(laneEnemy))} yet: ${noSim.map(esc).join(', ')}</div>` : '';
-      body += `<div class="lp-sub" style="margin-top:.4rem">ranked by kill-window checkpoints from the kit-math sim (THEORY until calibrated) — green dots = your windows · this is not head-to-head match data</div>`;
+      body += `<div class="lp-sub" style="margin-top:.4rem">ranked by kill-window checkpoints from the kit-math sim (THEORY until calibrated) — green dots = your windows · sims assume each kit's standard build and primary-role income, so a flexed enemy's gold may run leaner than modeled · not head-to-head match data</div>`;
     } else {
-      body += '<div class="lp-sub">pick the enemy hero to see who answers them best</div>';
+      body += '<div class="lp-sub">pick the enemy hero — including an off-meta flex via the dropdown — to see who answers them best</div>';
     }
   }
 
@@ -407,6 +431,8 @@ async function renderLaneDetail() {
     </div>`;
   box.querySelectorAll('.lmode button').forEach((b) => { b.onclick = () => { laneMode = b.dataset.m; renderLaneDetail(); }; });
   box.querySelectorAll('.echip').forEach((c) => { c.onclick = () => { laneEnemy = c.dataset.slug; renderLaneDetail(); }; });
+  const fx = box.querySelector('#flexEnemy');
+  if (fx) fx.onchange = () => { if (fx.value) { laneEnemy = fx.value; renderLaneDetail(); } };
   box.querySelectorAll('.lrow').forEach((r) => { r.onclick = () => nav(r.dataset.slug); });
 }
 function renderMetaboard() {
