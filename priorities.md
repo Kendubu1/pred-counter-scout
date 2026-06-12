@@ -62,17 +62,18 @@ support objective vector and the max-damage-only caveat comes off; golden
 scenario: an enchanter support is never handed a crit/lethality core;
 harness green; docs + lessons updated; committed.
 
-## 9. Hero augments (requested by maintainer 2026-06-12)
+## 9. Hero augments — source FOUND + evidence shipped 2026-06-12; mechanics still open
 
-Hero pages carry Eternals but not the three per-hero augments, which
-change builds as much as role does (damage Zinx vs support Zinx). No
-augment data exists in any snapshot we hold (omeda heroes.json: zero
-fields; effects.json: one hand-encoded hero from item 1). Done when:
-an augment source is identified (omeda.city API field, pred.gg schema,
-or manual curation from the game client), all 52 heroes' augments are
-encoded with their mechanical effects, the simulator consumes the
-tractable ones, and the hero page shows builds per augment choice where
-they diverge; uncodable augments listed as unmodeled, never guessed.
+Source: pred.gg perk system (slot HERO_SPECIFIC_1) + simpleBuild perk
+statistics. Shipped: data/aggregates/predgg-augments.json (catalog with
+mechanical descriptions + per-hero per-role augment AND Eternal win
+evidence, real 5v5s only, npm run augments) and the hero page now leads
+with the augment choice (role-aware via ?role=, journey-carried from the
+lane room), with a sim-vs-field Eternal comparison line. STILL OPEN
+(the engine half): parse the 161 augment descriptions into the effect
+schema, make the simulator consume the tractable ones, emit per-augment
+builds where they diverge, and replace the 'augment-blind' caveat on
+the Eternal sim. Uncodable augments listed as unmodeled, never guessed.
 
 ## Parked ideas (not yet scheduled)
 
