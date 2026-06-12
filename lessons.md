@@ -618,3 +618,37 @@ Append-only. One entry per backlog item or significant finding.
   "headline output" is heal/shield, but Eternal deltas are damage math —
   the coach line now says "your damage rotation" for supports so the
   Eternal claim can't be read as a healing buff.
+
+## 2026-06-12 (night, cont. 13): augment mechanics in the simulator — item 9 closed
+
+- The 161-augment catalog curated by hand into a second registry file
+  (engine/fixtures/augments.json), keyed augment:<hero>:<catalog-id> so
+  the field evidence joins for free. 46 augments got typed effects via
+  new ability-scoped primitives (per-ability damage amps and cooldown
+  mods, per-cast bonus damage, on-cast heals/shields with stat scaling,
+  per-minute growth); 110 are unmodeled with the reason stated. A
+  harness gate asserts every rostered augment has an entry, so a patch
+  that adds augments fails loudly instead of silently shrinking
+  coverage.
+- Targeting by ability KEY, not name, was the right call: Muriel's E is
+  'Alacrity' in current text but 'Serenity' in the stale owned fallback
+  her def happens to use — names drift, slots don't.
+- Curation conventions that kept honesty cheap: hit-conditional effects
+  are modeled (the sim already assumes casts hit); isolated/nearest
+  conditions are satisfied by 1v1 kill-window sims by construction;
+  pickup/terrain/stack-cadence/team-side effects are unmodeled, always
+  with the reason in the note. Kallari's 'abilities can crit' is the one
+  provisional entry - its +40% ceiling bakes the unverified 1.75 crit
+  multiplier.
+- Percent deltas lie when the baseline is zero: Dekker + Polarity
+  Strike is +0% heal output forever because she has none without it.
+  Absolute deltas (healShieldAbs) carry that case.
+- The cast-count floor makes cooldown augments lumpy: Plasma Barrage's
+  -3.5s reads +0% in a 10s window (2 casts either way) but +7.8% at 20s.
+  Always check the window before calling a cooldown effect worthless.
+- The payoff reads mechanically true: Kallari's Critical Override pulls
+  a crit item into her build, Aurora's Hypothermia pulls Magnify (shred
+  stacking), Maco's shield augments pull Crystal Tear - 9 heroes' builds
+  shift with the augment locked in, and 16 heroes' Eternal sims now run
+  with the field's top augment modeled instead of the blanket
+  'augment-blind' caveat.

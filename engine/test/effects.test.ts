@@ -158,10 +158,65 @@ describe('effects on live data', () => {
     expect(ranked.slice(0, firstUnmodeled).every((r) => r.modeled)).toBe(true);
   });
 
-  it('provisional sources propagate (Gideon augment from stale scrape)', () => {
-    const fx = resolveEntries(['augment:gideon:abyssal-mantle'], { level: 13 });
+  it('provisional sources propagate (Kallari ability-crit bakes the unverified crit multiplier)', () => {
+    const fx = resolveEntries(['augment:kallari:65'], { level: 13 });
     expect(fx.provisional).toBe(true);
-    expect(fx.shieldFlat).toBe(50);
+    expect(fx.ampAbilitiesFromCrit).toEqual({ minPct: 0, maxPct: 40 });
+  });
+
+  it('ability-scoped amp touches only the targeted ability', () => {
+    const reg = {
+      targets: {
+        'augment:x:1': {
+          name: 'X / Amp', sourceText: 'Bolt deals 50% more damage.', source: 'synthetic', provisional: false,
+          effects: [{ kind: 'ability_damage_amp' as const, abilityKey: 'PRIMARY' as const, pct: 50 }],
+        },
+      },
+    };
+    const fx = resolveEntries(['augment:x:1'], { level: 13 }, reg);
+    const t = itemTotals([]);
+    const ranks = new Map([['PRIMARY', 5], ['ULTIMATE', 3]]);
+    // 0.1s window = single cast each: PRIMARY 300 * 1.5 + ULT 800 untouched.
+    expect(rotationDamage(synthKit, { level: 18, ranks, profile: null, effects: fx }, t, 0.1))
+      .toBeCloseTo(300 * 1.5 + 800, 6);
+  });
+
+  it('ability cooldown mods change cast counts', () => {
+    const reg = {
+      targets: {
+        'augment:x:2': {
+          name: 'X / CD', sourceText: 'Bolt cooldown reduced by 4s.', source: 'synthetic', provisional: false,
+          effects: [{ kind: 'ability_cooldown' as const, abilityKey: 'PRIMARY' as const, flatSeconds: 4 }],
+        },
+      },
+    };
+    const fx = resolveEntries(['augment:x:2'], { level: 13 }, reg);
+    const t = itemTotals([]);
+    const ranks = new Map([['PRIMARY', 5]]);
+    // cd 9 -> 5: 1+floor(10/5) = 3 casts of 300 = 900 (vs 2 casts = 600).
+    expect(rotationDamage(synthKit, { level: 18, ranks, profile: null, effects: fx }, t, 10)).toBe(900);
+  });
+
+  it('ability_heal and shield_on_cast feed heal output and EHP', () => {
+    const reg = {
+      targets: {
+        'augment:x:3': {
+          name: 'X / Heal', sourceText: 'Bolt also shields for 100 (+50% MP); casting grants a 40 (+40% MP) shield.', source: 'synthetic', provisional: false,
+          effects: [
+            { kind: 'ability_heal' as const, abilityKey: 'PRIMARY' as const, healKind: 'shield' as const, flat: 100, scalingPct: 50, scaleStat: 'magical_power' as const },
+            { kind: 'shield_on_cast' as const, flat: 40, scalingPct: 40, scaleStat: 'magical_power' as const },
+          ],
+        },
+      },
+    };
+    const fx = resolveEntries(['augment:x:3'], { level: 13 }, reg);
+    const mp = mkItem('mp', { magical_power: 200 });
+    const ranks = new Map([['PRIMARY', 5]]);
+    const r = simulate(synthKit, [mp], { level: 13, ranks, profile: null, effects: fx }, cal);
+    // cd 9s -> 2 casts in 10s; per cast 100 + 0.5*200 = 200 -> 400 shielded.
+    expect(r.healShield10s).toBeCloseTo(400, 6);
+    // EHP shield: 40 + 0.4*200 = 120 on top of 1000 HP, at 50 armor.
+    expect(r.ehpPhysical).toBeCloseTo((1000 + 120) * 1.5, 6);
   });
 
   it('effects never break monotonicity: a damage item still never lowers output', () => {

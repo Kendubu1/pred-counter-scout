@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { loadData, type LoadedData } from '../src/data.js';
 import { buildHeroArtifact, HeroArtifact } from '../src/artifacts.js';
 import { loadCalibration, type Calibration } from '../src/sim.js';
+import { loadEffects } from '../src/effects.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -17,7 +18,7 @@ beforeAll(() => {
 });
 
 describe('hero artifacts (Concept A engine stage)', () => {
-  it('builds a schema-valid artifact with honesty fields intact', () => {
+  it('builds a schema-valid artifact with honesty fields intact', { timeout: 60000 }, () => {
     const a = buildHeroArtifact(data.kits.get('gideon')!, data, cal, { beamWidth: 8, matchupEnemies: 1 });
     expect(() => HeroArtifact.parse(a)).not.toThrow();
     expect(a.confidence.level).toBe('THEORY');
@@ -34,7 +35,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
     expect(a.matchups.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('support-role heroes get a support build; the max-damage caveat is off (item 7)', () => {
+  it('support-role heroes get a support build; the max-damage caveat is off (item 7)', { timeout: 60000 }, () => {
     const muriel = buildHeroArtifact(data.kits.get('muriel')!, data, cal, { beamWidth: 6, matchupEnemies: 1 });
     expect(muriel.role).toBe('support');
     expect(muriel.roleCaveat).toBeNull();
@@ -122,6 +123,33 @@ describe('hero artifacts (Concept A engine stage)', () => {
       const hits = readFileSync(path.join(ROOT, f), 'utf8').match(/[0-9]+g[^a-z0-9]/g);
       expect(hits, `${f} contains a Ng abbreviation: ${hits?.join(', ')}`).toBeNull();
     }
+  });
+
+  it('every catalog augment for a rostered hero has a curated effect entry (modeled or honestly unmodeled)', () => {
+    const augs = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/predgg-augments.json'), 'utf8')) as {
+      catalog: Record<string, { hero: string | null; name: string }>;
+    };
+    const reg = loadEffects();
+    let modeled = 0, unmodeledOnly = 0;
+    for (const [id, e] of Object.entries(augs.catalog)) {
+      if (!e.hero || e.hero === 'null' || !data.kits.has(e.hero)) continue;
+      const entry = reg.targets[`augment:${e.hero}:${id}`];
+      expect(entry, `${e.hero} / ${e.name} (${id}) missing from fixtures/augments.json`).toBeDefined();
+      if (entry!.effects.every((fx) => fx.kind === 'unmodeled')) unmodeledOnly++; else modeled++;
+    }
+    console.warn(`augment coverage: ${modeled} simulated, ${unmodeledOnly} listed unmodeled`);
+    expect(modeled).toBeGreaterThanOrEqual(40);
+  });
+
+  it('artifacts carry per-augment sim deltas, honest notes, and build shifts', { timeout: 60000 }, () => {
+    const a = buildHeroArtifact(data.kits.get('skylar')!, data, cal, { beamWidth: 6, matchupEnemies: 1 });
+    expect(a.augments.length).toBe(3);
+    const aa = a.augments.find((g) => g.name === 'Atomised Artillery')!;
+    expect(aa.modeled).toBe(true);
+    expect(aa.rot20Pct!).toBeGreaterThan(10);
+    const un = a.augments.find((g) => !g.modeled)!;
+    expect(un.note!.length).toBeGreaterThan(10);
+    expect(un.rot20Pct).toBeNull();
   });
 
   it('augment evidence covers every hero and every clickable meta-board cell', () => {

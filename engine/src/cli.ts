@@ -4,7 +4,7 @@
 import { loadData, completedItems } from './data.js';
 import { loadCalibration, unverifiedConstants, simulate, skillPriority } from './sim.js';
 import { generateBuilds } from './search.js';
-import { rankBlessings } from './eternals.js';
+import { rankAugments, rankBlessings } from './eternals.js';
 import { heroGames, itemPlayRate } from './aggregates.js';
 import { itemWinDelta } from './evidence.js';
 import { matchupCheckpoints } from './matchup.js';
@@ -98,6 +98,21 @@ if (top) {
   }
   const unmodeled = ranked.filter((r) => !r.modeled);
   if (unmodeled.length) console.log(`  no math yet (honest list): ${unmodeled.map((r) => r.name.replace(' (Major)', '')).join(', ')}`);
+
+  // Hero augments: same marginal math over the curated catalog encodings.
+  const augs = rankAugments(kit, topItems, level, cal, { minute: opt('minute') });
+  if (augs.length) {
+    console.log('\nHero augments, math-ranked on the headline build:');
+    for (const a of augs.filter((x) => x.modeled)) {
+      const d = a.deltas!;
+      const best = ([[d.rot10Pct, 'rot10'], [d.rot20Pct, 'rot20'], [d.burstPct, 'burst'], [d.autoDpsPct, 'autoDPS'], [d.ehpPct, 'eHP'], [d.healShieldPct, 'heal/shield']] as [number, string][])
+        .sort((x, y) => y[0] - x[0])[0]!;
+      const shieldAbs = d.healShieldPct === 0 && d.healShieldAbs > 0 ? ` | adds ~${Math.round(d.healShieldAbs)} HP of heal/shield per 10s` : '';
+      console.log(`  ${a.name}: ${best[1]} ${best[0] >= 0 ? '+' : ''}${best[0].toFixed(1)}%${shieldAbs}${a.provisional ? ' (provisional)' : ''}`);
+    }
+    const noMath = augs.filter((x) => !x.modeled);
+    if (noMath.length) console.log(`  not in the sim (honest list): ${noMath.map((x) => x.name.split(' / ').pop()).join(', ')}`);
+  }
 }
 
 // Matchup checkpoints: --vs <enemy-slug>

@@ -5,6 +5,7 @@ import {
   simulate, type Calibration,
 } from '../src/sim.js';
 import { generateBuilds, paretoFront, kitHeals } from '../src/search.js';
+import { rankAugments } from '../src/eternals.js';
 import type { HeroKit, Item } from '../src/types.js';
 
 let data: LoadedData;
@@ -291,6 +292,20 @@ describe('golden scenarios (Concept B layer 2)', () => {
         ).toBe(false);
       }
     }
+  });
+
+  it('augment golden: stated multipliers move the right windows', () => {
+    // Skylar / Atomised Artillery: 3 blasts x 60% = +80% ult damage.
+    const skylar = data.kits.get('skylar')!;
+    const aa = rankAugments(skylar, [], 13, cal).find((r) => r.name.includes('Atomised'))!;
+    expect(aa.modeled).toBe(true);
+    expect(aa.deltas!.rot20Pct).toBeGreaterThan(10);
+    // Dekker / Polarity Strike: 150/250/350 (+50% MP) ally shield on ult —
+    // a kit with zero baseline heal output gains absolute shield output.
+    const dekker = data.kits.get('dekker')!;
+    const ps = rankAugments(dekker, [], 13, cal).find((r) => r.name.includes('Polarity'))!;
+    expect(ps.modeled).toBe(true);
+    expect(ps.deltas!.healShieldAbs).toBeGreaterThan(200);
   });
 
   it('the support answer out-heals the same kit\'s damage build and is labeled for it', () => {

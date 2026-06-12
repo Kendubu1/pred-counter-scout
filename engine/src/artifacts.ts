@@ -10,11 +10,11 @@ import { fileURLToPath } from 'node:url';
 import { completedItems, type LoadedData } from './data.js';
 import { generateBuilds, headlineObjective } from './search.js';
 import { combatDamage, evaluateBuild, loadCalibration, unverifiedConstants, type Calibration } from './sim.js';
-import { rankBlessings } from './eternals.js';
+import { rankAugments, rankBlessings } from './eternals.js';
 import { heroGames, itemPlayRate, loadAggregates } from './aggregates.js';
 import { itemWinDelta, momPriorStrength } from './evidence.js';
 import { defenseOf, matchupCheckpoints, orderBuild, spikeTimeline } from './matchup.js';
-import { resolveItemEffects } from './effects.js';
+import { resolveEntries, resolveItemEffects } from './effects.js';
 import type { HeroKit, Item } from './types.js';
 
 const ARTIFACTS_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -28,6 +28,17 @@ function loadPredggBuilds(): PredggBuilds | null {
   const p = path.join(ARTIFACTS_ROOT, 'data/aggregates/predgg-builds.json');
   predggBuildsCache = existsSync(p) ? (JSON.parse(readFileSync(p, 'utf8')) as PredggBuilds) : null;
   return predggBuildsCache;
+}
+
+interface PredggAugments {
+  heroes: Record<string, Record<string, { augments: { id: string; name: string; n: number; w: number }[] }>>;
+}
+let predggAugmentsCache: PredggAugments | null | undefined;
+function loadPredggAugments(): PredggAugments | null {
+  if (predggAugmentsCache !== undefined) return predggAugmentsCache;
+  const p = path.join(ARTIFACTS_ROOT, 'data/aggregates/predgg-augments.json');
+  predggAugmentsCache = existsSync(p) ? (JSON.parse(readFileSync(p, 'utf8')) as PredggAugments) : null;
+  return predggAugmentsCache;
 }
 
 export const HeroArtifact = z.object({
@@ -71,7 +82,24 @@ export const HeroArtifact = z.object({
       ehpPct: z.number(),
     })),
     unmodeled: z.array(z.string()),
+    // when set, the Eternal deltas were computed WITH this augment's
+    // modeled mechanics merged in (the augment-blind caveat is off)
+    augmentAware: z.string().nullable(),
   }),
+  augments: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    modeled: z.boolean(),
+    provisional: z.boolean(),
+    headlinePct: z.number().nullable(),
+    burstPct: z.number().nullable(),
+    rot20Pct: z.number().nullable(),
+    ehpPct: z.number().nullable(),
+    healShieldPct: z.number().nullable(),
+    healShieldAbs: z.number().nullable(), // HP/10s, for kits with zero baseline heal
+    note: z.string().nullable(),       // why unmodeled / modeling caveat
+    buildShift: z.object({ in: z.array(z.string()), out: z.array(z.string()) }).nullable(),
+  })),
   offMeta: z.object({
     candidates: z.array(z.object({
       item: z.string(),
@@ -252,18 +280,61 @@ export function buildHeroArtifact(
     }
   }
 
-  // Eternals on the headline build.
-  const blessings = rankBlessings(kit, items, 13, cal, { minute: 15 });
+  // Hero augments: marginal sim deltas on the headline build, plus the
+  // build the optimizer would switch to with the augment locked in.
+  const r1 = (x: number | undefined) => Math.round((x ?? 0) * 10) / 10;
+  const augRankings = rankAugments(kit, items, 13, cal, { minute: 15 });
+  const baseTop8 = augRankings.some((r) => r.modeled)
+    ? generateBuilds(kit, pool, cal, { beamWidth: 8, role })[0] ?? null
+    : null;
+  const augments = augRankings.map((r) => {
+    const id = r.id.split(':')[1] ?? r.id; // r.id = '<hero>:<catalog-id>'
+    let buildShift: { in: string[]; out: string[] } | null = null;
+    if (r.modeled && baseTop8) {
+      const fx = resolveEntries([`augment:${kit.slug}:${id}`], { level: 13, minute: 15 });
+      const augTop = generateBuilds(kit, pool, cal, { beamWidth: 8, role, extraEffects: fx })[0];
+      if (augTop) {
+        const baseSet = new Set(baseTop8.items);
+        const augSet = new Set(augTop.items);
+        const swapIn = augTop.items.filter((n) => !baseSet.has(n));
+        const swapOut = baseTop8.items.filter((n) => !augSet.has(n));
+        if (swapIn.length) buildShift = { in: swapIn, out: swapOut };
+      }
+    }
+    return {
+      id,
+      name: r.name.includes(' / ') ? r.name.split(' / ').slice(1).join(' / ') : r.name,
+      modeled: r.modeled,
+      provisional: r.provisional,
+      headlinePct: r.modeled ? r1(r.headlinePct) : null,
+      burstPct: r.modeled ? r1(r.deltas?.burstPct) : null,
+      rot20Pct: r.modeled ? r1(r.deltas?.rot20Pct) : null,
+      ehpPct: r.modeled ? r1(r.deltas?.ehpPct) : null,
+      healShieldPct: r.modeled ? r1(r.deltas?.healShieldPct) : null,
+      healShieldAbs: r.modeled ? Math.round(r.deltas?.healShieldAbs ?? 0) : null,
+      note: r.unmodeledNotes[0]?.replace(/^[^:]+: /, '') ?? null,
+      buildShift,
+    };
+  });
+
+  // Eternals on the headline build — computed WITH the field's most-played
+  // augment for this role whenever its mechanics are modeled, so the
+  // sim-vs-field comparison is no longer augment-blind.
+  const fieldAug = loadPredggAugments()?.heroes[kit.slug]?.[role]?.augments?.[0] ?? null;
+  const fieldAugFx = fieldAug ? resolveEntries([`augment:${kit.slug}:${fieldAug.id}`], { level: 13, minute: 15 }) : null;
+  const augmentAware = fieldAugFx?.applied.length ? fieldAug!.name : null;
+  const blessings = rankBlessings(kit, items, 13, cal, { minute: 15, extraEffects: augmentAware ? fieldAugFx! : undefined });
   const eternals = {
     top: blessings.filter((r) => r.modeled).slice(0, 3).map((r) => ({
       name: r.name.replace(' (Major)', ''),
       id: r.id.split(':')[0] ?? r.id,
-      headlinePct: Math.round((r.headlinePct ?? 0) * 10) / 10,
-      burstPct: Math.round((r.deltas?.burstPct ?? 0) * 10) / 10,
-      rot20Pct: Math.round((r.deltas?.rot20Pct ?? 0) * 10) / 10,
-      ehpPct: Math.round((r.deltas?.ehpPct ?? 0) * 10) / 10,
+      headlinePct: r1(r.headlinePct),
+      burstPct: r1(r.deltas?.burstPct),
+      rot20Pct: r1(r.deltas?.rot20Pct),
+      ehpPct: r1(r.deltas?.ehpPct),
     })),
     unmodeled: blessings.filter((r) => !r.modeled).map((r) => r.name.replace(' (Major)', '')),
+    augmentAware,
   };
 
   // Matchups: most-played same-role heroes as default enemies.
@@ -430,6 +501,7 @@ export function buildHeroArtifact(
     },
     coachLine,
     eternals,
+    augments,
     offMeta: {
       candidates,
       honestAbsence: candidates.length ? null : 'no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)',
@@ -438,7 +510,7 @@ export function buildHeroArtifact(
     matchups,
     flags: [
       'THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md',
-      'crest, augments, and consumables not yet in the build model',
+      'crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled',
     ],
   });
 }

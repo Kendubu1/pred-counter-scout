@@ -9,7 +9,7 @@
 
 import { goldAt, loadAggregates } from './aggregates.js';
 import { resolveItemEffects } from './effects.js';
-import { combatDamage, evaluateBuild, loadCalibration, effectiveTotals, type Calibration } from './sim.js';
+import { combatDamage, evaluateBuild, loadCalibration, effectiveTotals, resolvedShieldFlat, type Calibration } from './sim.js';
 import type { DefenseProfile, HeroKit, Item } from './types.js';
 
 const KILL_WINDOW_SEC = 3;     // a committed all-in: full combo + ~3s of swings
@@ -95,7 +95,7 @@ export function defenseOf(kit: HeroKit, items: Item[], level: number): DefensePr
   const eff = resolveItemEffects(items, { level });
   const t = effectiveTotals(items, eff);
   return {
-    health: ((kit.baseStats.max_health[level - 1] ?? 0) + t.health) * eff.healthMultiplier + eff.shieldFlat,
+    health: ((kit.baseStats.max_health[level - 1] ?? 0) + t.health) * eff.healthMultiplier + resolvedShieldFlat(eff, t),
     physicalArmor: ((kit.baseStats.physical_armor[level - 1] ?? 0) + t.physical_armor) * eff.armorMultiplier,
     magicalArmor: ((kit.baseStats.magical_armor[level - 1] ?? 0) + t.magical_armor) * eff.armorMultiplier,
   };

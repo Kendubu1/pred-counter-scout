@@ -68,18 +68,24 @@ HealthText-scaled shields are skipped, output counts one beneficiary, and
 CC/damage-reduction utility is unscored. All carried in the support
 artifacts' confidence notes.
 
-## 9. Hero augments — source FOUND + evidence shipped 2026-06-12; mechanics still open
+## 9. [DONE 2026-06-12] Hero augments — evidence + mechanics in the engine
 
 Source: pred.gg perk system (slot HERO_SPECIFIC_1) + simpleBuild perk
 statistics. Shipped: data/aggregates/predgg-augments.json (catalog with
 mechanical descriptions + per-hero per-role augment AND Eternal win
 evidence, real 5v5s only, npm run augments) and the hero page now leads
 with the augment choice (role-aware via ?role=, journey-carried from the
-lane room), with a sim-vs-field Eternal comparison line. STILL OPEN
-(the engine half): parse the 161 augment descriptions into the effect
-schema, make the simulator consume the tractable ones, emit per-augment
-builds where they diverge, and replace the 'augment-blind' caveat on
-the Eternal sim. Uncodable augments listed as unmodeled, never guessed.
+lane room), with a sim-vs-field Eternal comparison line.
+
+Engine half done 2026-06-12: all 156 rostered-hero augments curated into
+engine/fixtures/augments.json (46 with typed ability-scoped effects, 110
+unmodeled with stated reasons — coverage is a harness gate); the
+simulator consumes per-ability amps/cooldowns/heals/shields; per-augment
+build shifts ship in the artifacts (9 heroes diverge); Eternal rankings
+run augment-aware where the field's top augment is modeled (16 heroes),
+and the blanket 'augment-blind' caveat is retired. After a patch: rerun
+npm run augments, then diff new catalog descriptions against the
+fixture's sourceText (the fixture is hand-curated, not regenerated).
 
 ## Parked ideas (not yet scheduled)
 
@@ -96,4 +102,7 @@ absent from the source cell (2 of 288 rejected). Output committed at
 data/aggregates/augment-reviews.json; hero pages render the lines with
 🧠 provenance. Key lives in env only — never committed; secrets grep
 now covers the sk-ant- prefix. REMAINING: the original scope (hero-page
-coach lines + squad/coach report copy through the same verifier).
+coach lines + squad/coach report copy through the same verifier), plus
+Eternal when/why lines (maintainer asked 2026-06-12: the augment pass
+covered augments only; Eternals have field evidence + sim deltas but no
+grounded prose — same single-source prompt + numeric verifier shape).

@@ -2,7 +2,7 @@
  "slug": "maco",
  "name": "Maco",
  "patch": "1.14.4",
- "generatedAt": "2026-06-12T21:56:47.960Z",
+ "generatedAt": "2026-06-12T22:22:48.903Z",
  "role": "support",
  "damageType": "hybrid",
  "attackType": "ranged",
@@ -90,23 +90,23 @@
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for heal/shield output: first spike lands around minute 14 (Noxia), third item by minute 29. Take Vesh: +11.6% on 20-second fights at minute 15.",
+ "coachLine": "Sim-optimal for heal/shield output: first spike lands around minute 14 (Noxia), third item by minute 29. Take Demiurge: +21.3% on your damage rotation at minute 15.",
  "eternals": {
   "top": [
+   {
+    "name": "Demiurge",
+    "id": "demiurge",
+    "headlinePct": 21.3,
+    "burstPct": 7.8,
+    "rot20Pct": 15.9,
+    "ehpPct": 0
+   },
    {
     "name": "Vesh",
     "id": "vesh",
     "headlinePct": 11.3,
     "burstPct": 10,
     "rot20Pct": 11.6,
-    "ehpPct": 0
-   },
-   {
-    "name": "Demiurge",
-    "id": "demiurge",
-    "headlinePct": 8,
-    "burstPct": 7.8,
-    "rot20Pct": 7.9,
     "ehpPct": 0
    },
    {
@@ -124,8 +124,67 @@
    "Aion",
    "Exarch",
    "Lotus"
-  ]
+  ],
+  "augmentAware": "Ferocious Flight"
  },
+ "augments": [
+  {
+   "id": "157",
+   "name": "Shatterbloom",
+   "modeled": true,
+   "provisional": false,
+   "headlinePct": 0,
+   "burstPct": 0,
+   "rot20Pct": 0,
+   "ehpPct": 0,
+   "healShieldPct": 74.5,
+   "healShieldAbs": 1348,
+   "note": "20 ticks x 15/25/35 (+4% MP each) folded to per-cast totals; assumes full field uptime, one beneficiary",
+   "buildShift": {
+    "in": [
+     "Crystal Tear"
+    ],
+    "out": [
+     "Noxia"
+    ]
+   }
+  },
+  {
+   "id": "155",
+   "name": "Ferocious Flight",
+   "modeled": true,
+   "provisional": false,
+   "headlinePct": 0,
+   "burstPct": 0,
+   "rot20Pct": 0,
+   "ehpPct": 0,
+   "healShieldPct": 25.9,
+   "healShieldAbs": 469,
+   "note": "counted for one enemy hit (single-target convention); own-max-health shield scaling not counted (base health outside item stats)",
+   "buildShift": {
+    "in": [
+     "Crystal Tear"
+    ],
+    "out": [
+     "Windcaller"
+    ]
+   }
+  },
+  {
+   "id": "156",
+   "name": "Longshot",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "damage scales with projectile travel distance; positional",
+   "buildShift": null
+  }
+ ],
  "offMeta": {
   "candidates": [
    {
@@ -423,6 +482,6 @@
  ],
  "flags": [
   "THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md",
-  "crest, augments, and consumables not yet in the build model"
+  "crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled"
  ]
 }

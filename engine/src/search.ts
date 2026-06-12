@@ -4,6 +4,7 @@
 
 import type { BuildEval, HeroKit, Item } from './types.js';
 import { evaluateBuild, type Calibration } from './sim.js';
+import { mergeEffects, resolveItemEffects, type ResolvedEffects } from './effects.js';
 
 export interface Scenario {
   requireAntiHeal?: boolean;   // enemy comp is sustain-heavy
@@ -101,7 +102,7 @@ export function generateBuilds(
   kit: HeroKit,
   pool: Item[],
   cal: Calibration,
-  opts: { level?: number; buildSize?: number; beamWidth?: number; scenario?: Scenario; role?: string } = {},
+  opts: { level?: number; buildSize?: number; beamWidth?: number; scenario?: Scenario; role?: string; extraEffects?: ResolvedEffects } = {},
 ): GeneratedBuild[] {
   const level = opts.level ?? 13;
   const buildSize = opts.buildSize ?? 6;
@@ -111,10 +112,15 @@ export function generateBuilds(
   const objectiveKeys = role === 'support' ? SUPPORT_KEYS : COMBAT_KEYS;
   const weightVectors = role === 'support' ? SUPPORT_VECTORS : COMBAT_VECTORS;
   const candidates = relevantPool(kit, pool, role);
+  // Non-item effects (an augment under evaluation) merge with each
+  // candidate set's own item effects.
+  const evalBuild = (items: Item[]) => opts.extraEffects
+    ? evaluateBuild(kit, items, level, cal, mergeEffects(resolveItemEffects(items, { level }), opts.extraEffects))
+    : evaluateBuild(kit, items, level, cal);
 
   // Normalizers so weight vectors compare across objective scales: the best
   // single-item value per objective.
-  const singleEvals = candidates.map((i) => ({ item: i, ev: evaluateBuild(kit, [i], level, cal) }));
+  const singleEvals = candidates.map((i) => ({ item: i, ev: evalBuild([i]) }));
   const scale: Partial<Record<ObjKey, number>> = {};
   for (const k of objectiveKeys) {
     scale[k] = Math.max(...singleEvals.map((s) => s.ev.objectives[k]), 1);
@@ -122,7 +128,7 @@ export function generateBuilds(
   const score = (ev: BuildEval, w: Weights) =>
     objectiveKeys.reduce((s, k) => s + (w[k] ?? 0) * (ev.objectives[k] / scale[k]!), 0);
 
-  let beam: { items: Item[]; ev: BuildEval }[] = [{ items: [], ev: evaluateBuild(kit, [], level, cal) }];
+  let beam: { items: Item[]; ev: BuildEval }[] = [{ items: [], ev: evalBuild([]) }];
   const complete: { items: Item[]; ev: BuildEval }[] = [];
 
   for (let depth = 0; depth < buildSize; depth++) {
@@ -141,7 +147,7 @@ export function generateBuilds(
         const key = items.map((i) => i.slug).sort().join('|');
         if (seen.has(key)) continue;
         seen.add(key);
-        next.push({ items, ev: evaluateBuild(kit, items, level, cal) });
+        next.push({ items, ev: evalBuild(items) });
       }
     }
     // Keep the top of the beam under each corner weighting.

@@ -31,9 +31,15 @@ const StatKey = z.enum([
 
 const DmgType = z.enum(['physical', 'magical', 'true']);
 
+// Ability-scoped effects (hero augments) target the kit slot, not the
+// display name: names drift between sources (and stale fallbacks), keys
+// do not. The name->key mapping is resolved once, at curation time.
+const AbilityKey = z.enum(['PRIMARY', 'SECONDARY', 'ALTERNATE', 'ULTIMATE']);
+export type AbilityKeyT = z.infer<typeof AbilityKey>;
+
 const Primitive = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('stat_multiplier'), stat: StatKey, pct: z.number() }),
-  z.object({ kind: z.literal('stat_flat'), stat: StatKey, base: z.number(), perLevel: z.number().optional() }),
+  z.object({ kind: z.literal('stat_flat'), stat: StatKey, base: z.number(), perLevel: z.number().optional(), perMinute: z.number().optional() }),
   z.object({ kind: z.literal('stat_conversion'), from: StatKey, to: StatKey, pct: z.number(), consumesSource: z.boolean().optional() }),
   z.object({
     kind: z.literal('damage_amp'), pct: z.number(), perLevelPct: z.number().optional(), perMinutePct: z.number().optional(),
@@ -52,7 +58,7 @@ const Primitive = z.discriminatedUnion('kind', [
     damageType: DmgType, icdSeconds: z.number().optional(), everyN: z.number().optional(),
   }),
   z.object({
-    kind: z.literal('on_ability_hit'), flat: z.number().optional(),
+    kind: z.literal('on_ability_hit'), flat: z.number().optional(), perLevelFlat: z.number().optional(),
     scalingPct: z.number().optional(), scaleStat: StatKey.optional(),
     pctTargetHealth: z.number().optional(), healthBasis: z.enum(['max', 'current']).optional(),
     damageType: DmgType, icdSeconds: z.number().optional(), rampSeconds: z.number().optional(),
@@ -67,6 +73,21 @@ const Primitive = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('shield_per_fight'), base: z.number(), maxAtLevel18: z.number().optional() }),
   z.object({ kind: z.literal('anti_heal'), pct: z.number() }),
   z.object({ kind: z.literal('as_ramp'), pctPerSecond: z.number() }),
+  // ── ability-scoped primitives (hero augments) ──
+  z.object({ kind: z.literal('ability_damage_amp'), abilityKey: AbilityKey, pct: z.number() }),
+  z.object({ kind: z.literal('ability_cooldown'), abilityKey: AbilityKey, pct: z.number().optional(), flatSeconds: z.number().optional() }),
+  z.object({
+    kind: z.literal('ability_bonus_damage'), abilityKey: AbilityKey,
+    flat: z.number().optional(), perLevelFlat: z.number().optional(), valuesPerRank: z.array(z.number()).optional(),
+    scalingPct: z.number().optional(), scaleStat: StatKey.optional(),
+    pctTargetHealth: z.number().optional(), damageType: DmgType,
+  }),
+  z.object({
+    kind: z.literal('ability_heal'), abilityKey: AbilityKey, healKind: z.enum(['heal', 'shield']),
+    valuesPerRank: z.array(z.number()).optional(), flat: z.number().optional(),
+    scalingPct: z.number().optional(), scaleStat: StatKey.optional(),
+  }),
+  z.object({ kind: z.literal('shield_on_cast'), flat: z.number(), scalingPct: z.number().optional(), scaleStat: StatKey.optional() }),
   z.object({ kind: z.literal('unmodeled'), note: z.string() }),
 ]);
 
@@ -88,9 +109,18 @@ export type EffectRegistry = z.infer<typeof Registry>;
 
 let cached: EffectRegistry | null = null;
 
+/** Items/Eternals live in effects.json; the hero-augment catalog encoding
+ *  lives in augments.json (keyed augment:<hero>:<catalog-id> so field
+ *  evidence joins directly). Both share the schema and one registry. */
 export function loadEffects(): EffectRegistry {
   if (!cached) {
-    cached = Registry.parse(JSON.parse(readFileSync(path.join(ROOT, 'engine/fixtures/effects.json'), 'utf8')));
+    const base = Registry.parse(JSON.parse(readFileSync(path.join(ROOT, 'engine/fixtures/effects.json'), 'utf8')));
+    const augments = Registry.parse(JSON.parse(readFileSync(path.join(ROOT, 'engine/fixtures/augments.json'), 'utf8')));
+    for (const [k, v] of Object.entries(augments.targets)) {
+      if (base.targets[k]) throw new Error(`effect registry key collision: ${k}`);
+      base.targets[k] = v;
+    }
+    cached = base;
   }
   return cached;
 }
@@ -134,8 +164,21 @@ export interface ResolvedEffects {
   healthMultiplier: number;
   armorMultiplier: number;
   shieldFlat: number;
+  shieldScaling: { stat: keyof ItemStats; pct: number }[]; // shields that scale with build stats
   antiHealPct: number;
   asRampPctPerSecond: number;
+  // ── ability-scoped (hero augments) ──
+  abilityAmpPct: Partial<Record<AbilityKeyT, number>>;
+  abilityCooldownMods: Partial<Record<AbilityKeyT, { pct: number; flatSeconds: number }>>;
+  abilityBonuses: {
+    abilityKey: AbilityKeyT; flat: number; valuesPerRank: number[];
+    scalingPct: number; scaleStat: keyof ItemStats | null;
+    pctTargetHealth: number; damageType: 'physical' | 'magical' | 'true';
+  }[];
+  abilityHeals: {
+    abilityKey: AbilityKeyT; healKind: 'heal' | 'shield'; valuesPerRank: number[];
+    flat: number; scalingPct: number; scaleStat: keyof ItemStats | null;
+  }[];
   provisional: boolean;
   applied: string[];
   unmodeled: string[];
@@ -151,8 +194,10 @@ export function emptyEffects(): ResolvedEffects {
     flatPen: { physical: 0, magical: 0, rampSeconds: 0 },
     shredPct: { physical: 0, magical: 0, rampSeconds: 0 },
     onHitProcs: [], onAbilityProcs: [],
-    healthMultiplier: 1, armorMultiplier: 1, shieldFlat: 0, antiHealPct: 0,
-    asRampPctPerSecond: 0, provisional: false, applied: [], unmodeled: [],
+    healthMultiplier: 1, armorMultiplier: 1, shieldFlat: 0, shieldScaling: [], antiHealPct: 0,
+    asRampPctPerSecond: 0,
+    abilityAmpPct: {}, abilityCooldownMods: {}, abilityBonuses: [], abilityHeals: [],
+    provisional: false, applied: [], unmodeled: [],
   };
 }
 
@@ -182,7 +227,7 @@ export function resolveEntries(keys: string[], ctx: ResolveCtx, registry: Effect
           out.statMultipliers[fx.stat] = (out.statMultipliers[fx.stat] ?? 1) * (1 + fx.pct / 100);
           break;
         case 'stat_flat':
-          out.statFlat[fx.stat] = (out.statFlat[fx.stat] ?? 0) + fx.base + (fx.perLevel ?? 0) * lvl;
+          out.statFlat[fx.stat] = (out.statFlat[fx.stat] ?? 0) + fx.base + (fx.perLevel ?? 0) * lvl + (fx.perMinute ?? 0) * minute;
           break;
         case 'stat_conversion':
           out.conversions.push({ from: fx.from, to: fx.to, pct: fx.pct, consumesSource: fx.consumesSource ?? false });
@@ -267,6 +312,40 @@ export function resolveEntries(keys: string[], ctx: ResolveCtx, registry: Effect
         case 'as_ramp':
           out.asRampPctPerSecond += fx.pctPerSecond;
           break;
+        case 'ability_damage_amp':
+          out.abilityAmpPct[fx.abilityKey] = (out.abilityAmpPct[fx.abilityKey] ?? 0) + fx.pct;
+          break;
+        case 'ability_cooldown': {
+          const mod = out.abilityCooldownMods[fx.abilityKey] ?? { pct: 0, flatSeconds: 0 };
+          mod.pct += fx.pct ?? 0;
+          mod.flatSeconds += fx.flatSeconds ?? 0;
+          out.abilityCooldownMods[fx.abilityKey] = mod;
+          break;
+        }
+        case 'ability_bonus_damage':
+          out.abilityBonuses.push({
+            abilityKey: fx.abilityKey,
+            flat: (fx.flat ?? 0) + (fx.perLevelFlat ?? 0) * lvl,
+            valuesPerRank: fx.valuesPerRank ?? [],
+            scalingPct: fx.scalingPct ?? 0,
+            scaleStat: fx.scaleStat ?? null,
+            pctTargetHealth: fx.pctTargetHealth ?? 0,
+            damageType: fx.damageType,
+          });
+          break;
+        case 'ability_heal':
+          out.abilityHeals.push({
+            abilityKey: fx.abilityKey, healKind: fx.healKind,
+            valuesPerRank: fx.valuesPerRank ?? [],
+            flat: fx.flat ?? 0,
+            scalingPct: fx.scalingPct ?? 0,
+            scaleStat: fx.scaleStat ?? null,
+          });
+          break;
+        case 'shield_on_cast':
+          out.shieldFlat += fx.flat;
+          if (fx.scalingPct && fx.scaleStat) out.shieldScaling.push({ stat: fx.scaleStat, pct: fx.scalingPct });
+          break;
       }
       modeledAny = true;
     }
@@ -301,8 +380,19 @@ export function mergeEffects(a: ResolvedEffects, b: ResolvedEffects): ResolvedEf
     out.onHitProcs.push(...e.onHitProcs); out.onAbilityProcs.push(...e.onAbilityProcs);
     out.healthMultiplier *= e.healthMultiplier; out.armorMultiplier *= e.armorMultiplier;
     out.shieldFlat += e.shieldFlat;
+    out.shieldScaling.push(...e.shieldScaling);
     out.antiHealPct = Math.max(out.antiHealPct, e.antiHealPct);
     out.asRampPctPerSecond += e.asRampPctPerSecond;
+    for (const [k, v] of Object.entries(e.abilityAmpPct)) {
+      out.abilityAmpPct[k as AbilityKeyT] = (out.abilityAmpPct[k as AbilityKeyT] ?? 0) + v;
+    }
+    for (const [k, v] of Object.entries(e.abilityCooldownMods)) {
+      const mod = out.abilityCooldownMods[k as AbilityKeyT] ?? { pct: 0, flatSeconds: 0 };
+      mod.pct += v.pct; mod.flatSeconds += v.flatSeconds;
+      out.abilityCooldownMods[k as AbilityKeyT] = mod;
+    }
+    out.abilityBonuses.push(...e.abilityBonuses);
+    out.abilityHeals.push(...e.abilityHeals);
     out.provisional = out.provisional || e.provisional;
     out.applied.push(...e.applied); out.unmodeled.push(...e.unmodeled);
   }

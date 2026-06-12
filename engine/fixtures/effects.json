@@ -1,298 +1,602 @@
 {
-  "_readme": "Curated effect encodings. Only stated numbers; anything context-dependent is kind:unmodeled with a note. sourceText quotes the stated effect. provisional:true marks entries whose source vintage is not current-patch-verified (owned augment scrape). Keys: item:<slug> | eternal:<id>:major | eternal:<id>:<minor> | augment:<hero>:<slug>.",
-  "targets": {
-    "item:oblivion-crown": {
-      "name": "Oblivion Crown / Eradicate",
-      "sourceText": "Increase your Magical Power by 25%.",
-      "source": "omeda items.json 1.14.4",
-      "effects": [{ "kind": "stat_multiplier", "stat": "magical_power", "pct": 25 }]
-    },
-    "item:timewarp": {
-      "name": "Timewarp / Chime",
-      "sourceText": "Every 8s: subtract 1s from Non-Ultimate Cooldowns.",
-      "source": "omeda items.json 1.14.4",
-      "effects": [{ "kind": "cooldown_rate", "bonus": 0.125, "scope": "non_ultimate" }]
-    },
-    "item:necrosis": {
-      "name": "Necrosis / Necro's Edge + Matter Disruptor",
-      "sourceText": "Gain 25 Ultimate Haste. Your Ultimate Ability deals 15% more damage.",
-      "source": "omeda items.json 1.14.4",
-      "effects": [
-        { "kind": "haste", "amount": 25, "scope": "ultimate" },
-        { "kind": "damage_amp", "pct": 15, "scope": "ultimate" }
-      ]
-    },
-    "item:nuclear-rounds": {
-      "name": "Nuclear Rounds / Havoc",
-      "sourceText": "Increase Ability Damage by 10-20%, based on Critical Strike Chance.",
-      "source": "omeda items.json 1.14.4",
-      "effects": [{ "kind": "damage_amp_from_crit", "minPct": 10, "maxPct": 20, "scope": "abilities" }]
-    },
-    "item:caustica": {
-      "name": "Caustica / Magus",
-      "sourceText": "Ignore 35% of Magical Armor. (Arcane Might: conditional on target armor and health, unmodeled.)",
-      "source": "omeda items.json 1.14.4",
-      "effects": [
-        { "kind": "percent_pen", "pct": 35, "damageType": "magical" },
-        { "kind": "unmodeled", "note": "Arcane Might: +0.2% damage per point of target bonus Magical Armor while above 50% health" }
-      ]
-    },
-    "item:combustion": {
-      "name": "Combustion / Pyro",
-      "sourceText": "On dealing Ability Damage (15s CD): deal 50 (+18% MP) magical damage to target and nearby enemies. Pyromaniac CD reduction unmodeled.",
-      "source": "omeda items.json 1.14.4",
-      "effects": [
-        { "kind": "on_ability_hit", "flat": 50, "scalingPct": 18, "scaleStat": "magical_power", "damageType": "magical", "icdSeconds": 15 },
-        { "kind": "unmodeled", "note": "Pyromaniac: damaging heroes reduces Pyro cooldown by 0.5s per hit" }
-      ]
-    },
-    "item:tainted-scepter": {
-      "name": "Tainted Scepter / Blighted Spells + Malice",
-      "sourceText": "On magical damage: reduce target healing 45% for 4s. Malice: 15 stacks (1/s), ability hits deal 1.5 (+1% MP) per stack; encoded at full stacks (22.5 +15% MP) with 15s ramp.",
-      "source": "omeda items.json 1.14.4",
-      "effects": [
-        { "kind": "anti_heal", "pct": 45 },
-        { "kind": "on_ability_hit", "flat": 22.5, "scalingPct": 15, "scaleStat": "magical_power", "damageType": "magical", "rampSeconds": 15 }
-      ]
-    },
-    "item:tainted-rounds": {
-      "name": "Tainted Rounds / Blighted Strikes",
-      "sourceText": "On basic attacks: reduce target healing 45% for 3s; deal (+10% AD) on-hit (second stated scaling has a stripped stat icon and the up-to-100% missing-health amp is execution-dependent: unmodeled).",
-      "source": "omeda items.json 1.14.4",
-      "effects": [
-        { "kind": "anti_heal", "pct": 45 },
-        { "kind": "on_hit", "scalingPct": 10, "scaleStat": "physical_power", "damageType": "physical" },
-        { "kind": "unmodeled", "note": "second on-hit scaling term (icon-ambiguous) and missing-health amplification up to +100%" }
-      ]
-    },
-    "item:tainted-guard": {
-      "name": "Tainted Guard / Blighted Thorns",
-      "sourceText": "On being hit by a basic attack: reduce source healing 45% for 3s; bleed 30 (+30%) over 3s (thorns are incoming-attack-dependent: unmodeled).",
-      "source": "omeda items.json 1.14.4",
-      "effects": [
-        { "kind": "anti_heal", "pct": 45 },
-        { "kind": "unmodeled", "note": "Bleed thorns require incoming basic attacks; no incoming-attack model yet" }
-      ]
-    },
-    "item:sky-splitter": {
-      "name": "Sky Splitter / Rend",
-      "sourceText": "On-hit: 5.5% of target current health (3.5% for ranged heroes), minimum 12.",
-      "source": "omeda items.json 1.14.4",
-      "effects": [{
-        "kind": "on_hit", "pctTargetHealth": 5.5, "pctTargetHealthRanged": 3.5,
-        "healthBasis": "current", "minDamage": 12, "damageType": "physical"
-      }]
-    },
-    "item:noxia": {
-      "name": "Noxia / Evil Eye + Dark Matter",
-      "sourceText": "Mark on ability damage; hitting a marked hero with a separate ability (8s CD) deals 6% of target max health bonus damage. Requires a 2+ ability kit; encoded as an 8s-ICD ability proc.",
-      "source": "omeda items.json 1.14.4",
-      "effects": [{ "kind": "on_ability_hit", "pctTargetHealth": 6, "healthBasis": "max", "damageType": "magical", "icdSeconds": 8 }]
-    },
-    "item:deathstalker": {
-      "name": "Deathstalker / Virulent Strikes + Onslaught",
-      "sourceText": "Basic attacks shred 3 physical armor for 3s, stacks 4x (12 flat, ~3s ramp). Onslaught: gain attack speed equal to 100% of Physical Penetration (PhysPen icon).",
-      "source": "omeda items.json 1.14.4",
-      "effects": [
-        { "kind": "armor_shred", "flat": 12, "damageType": "physical", "rampSeconds": 3 },
-        { "kind": "stat_conversion", "from": "physical_penetration", "to": "attack_speed", "pct": 100 }
-      ]
-    },
-    "item:equinox": {
-      "name": "Equinox / Adamance",
-      "sourceText": "On going below 40% health (90s CD): gain a 350-750 shield (by level) for 4s. Credited once per fight as flat EHP.",
-      "source": "omeda items.json 1.14.4",
-      "effects": [{ "kind": "shield_per_fight", "base": 350, "maxAtLevel18": 750 }]
-    },
-    "item:magnify": {
-      "name": "Magnify / Shredding Spells",
-      "sourceText": "Ability hits reduce target magical armor 6% for 3.5s, stacks 5x (30% at full stacks; ramp depends on hit cadence, encoded 8s).",
-      "source": "omeda items.json 1.14.4",
-      "effects": [{ "kind": "armor_shred", "pct": 30, "damageType": "magical", "rampSeconds": 8 }]
-    },
-    "item:painweaver": {
-      "name": "Painweaver / Splice",
-      "sourceText": "On ability cast: +2 physical pen for 4s, stacks 4x (8 flat at full stacks; ramp depends on cast cadence, encoded 8s). Movement speed unmodeled.",
-      "source": "omeda items.json 1.14.4",
-      "effects": [{ "kind": "flat_pen", "amount": 8, "damageType": "physical", "rampSeconds": 8 }]
-    },
-    "item:wraith-leggings": {
-      "name": "Wraith Leggings / Carnage",
-      "sourceText": "Abilities deal 12% bonus magical damage vs heroes below 40% health.",
-      "source": "omeda items.json 1.14.4",
-      "effects": [{ "kind": "unmodeled", "note": "execute-window amp (target below 40%); no execute objective yet" }]
-    },
-    "item:scattershot": {
-      "name": "Scattershot / Scatter",
-      "sourceText": "On-hit: 2 homing projectiles, each (+30% AD), on-hit at 50% effectiveness; whether they can strike the original target is unverified.",
-      "source": "omeda items.json 1.14.4",
-      "effects": [{ "kind": "unmodeled", "note": "multi-target projectiles; single-target value unverified" }]
-    },
-    "item:lightning-hawk": {
-      "name": "Lightning Hawk / Chilling Momentum",
-      "sourceText": "At 100 Momentum stacks, next basic deals 40 (+20% AD) and slows; stack generation cadence unstated.",
-      "source": "omeda items.json 1.14.4",
-      "effects": [{ "kind": "unmodeled", "note": "stack cadence (movement + hits) unstated; proc rate unknowable from text" }]
-    },
-
-    "eternal:vesh:major": {
-      "name": "Vesh (Major)",
-      "sourceText": "Ability damage on heroes deals 6% (+0.5% per minute) of the damage as a DoT over 3s.",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [{ "kind": "damage_amp", "pct": 6, "perMinutePct": 0.5, "scope": "abilities", "dotSeconds": 3 }]
-    },
-    "eternal:vesh:the-tenth-seal": {
-      "name": "Vesh / The Tenth Seal",
-      "sourceText": "At Level 10, gain 5% Ultimate Damage and 25 Ultimate Ability Haste.",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [
-        { "kind": "damage_amp", "pct": 5, "scope": "ultimate", "appliesWhen": "level_gte_10" },
-        { "kind": "haste", "amount": 25, "scope": "ultimate" }
-      ]
-    },
-    "eternal:vesh:mind-rot": {
-      "name": "Vesh / Mind Rot",
-      "sourceText": "The major also deals 2% of the target's current health as bonus damage.",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [{ "kind": "on_ability_hit", "pctTargetHealth": 2, "healthBasis": "current", "damageType": "magical" }]
-    },
-    "eternal:xyris:major": {
-      "name": "Xyris (Major)",
-      "sourceText": "Gain 4% Bonus Damage, increased by 0.6% per 10 Units killed. Encoded at base; CS scaling needs match context.",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [
-        { "kind": "damage_amp", "pct": 4, "scope": "all" },
-        { "kind": "unmodeled", "note": "+0.6% per 10 units killed; needs CS-by-minute data (backlog item 2+)" }
-      ]
-    },
-    "eternal:xyris:eviscerate": {
-      "name": "Xyris / Eviscerate",
-      "sourceText": "Deal +15% bonus damage to targets above 80% Health.",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [{ "kind": "damage_amp", "pct": 15, "scope": "all", "appliesWhen": "burst_only" }]
-    },
-    "eternal:thraex:major": {
-      "name": "Thraex (Major)",
-      "sourceText": "Mark last basic-attacked hero 3s: +3% (+0.5% per level) damage to them, they deal less to you. Credited in sustained windows only (mark requires an opening hit).",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [{ "kind": "damage_amp", "pct": 3, "perLevelPct": 0.5, "scope": "all", "appliesWhen": "window_only" }]
-    },
-    "eternal:thraex:savage-strikes": {
-      "name": "Thraex / Savage Strikes",
-      "sourceText": "On-hit 1.5 (+0.4 per level) physical, +100% for 3s vs heroes (encoded at the vs-hero doubled value).",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [{ "kind": "on_hit", "flat": 3, "perLevelFlat": 0.8, "damageType": "physical" }]
-    },
-    "eternal:thraex:ferocity": {
-      "name": "Thraex / Ferocity",
-      "sourceText": "Gain 1.5% Total Attack Speed per 1s in Hero Combat, stacking infinitely.",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [{ "kind": "as_ramp", "pctPerSecond": 1.5 }]
-    },
-    "eternal:vermis:major": {
-      "name": "Vermis (Major)",
-      "sourceText": "Every 3rd consecutive basic on the same hero within 2.5s deals 3% (+0.25% per level) max health physical (credited 1/3 per hit, assumes maintained cadence).",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [{ "kind": "on_hit", "pctTargetHealth": 3, "perLevelPctTargetHealth": 0.25, "healthBasis": "max", "damageType": "physical", "everyN": 3 }]
-    },
-    "eternal:vermis:melting-point": {
-      "name": "Vermis / Melting Point",
-      "sourceText": "Deal 10% bonus damage to targets with more than 125 Physical Armor.",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [{ "kind": "damage_amp", "pct": 10, "scope": "all", "appliesWhen": "target_armor_gt_125" }]
-    },
-    "eternal:krix:major": {
-      "name": "Krix (Major)",
-      "sourceText": "Gain 5% (+1% per Level) increased Maximum Health.",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [{ "kind": "health_multiplier", "pct": 5, "perLevelPct": 1 }]
-    },
-    "eternal:idrisil:major": {
-      "name": "Idrisil (Major)",
-      "sourceText": "While off cooldown and above 30% health: +15% Physical and Magical Armor (shield-on-break unmodeled).",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [
-        { "kind": "armor_multiplier", "pct": 15 },
-        { "kind": "unmodeled", "note": "below-30% conversion to a 150%-of-armor shield, 75s+ CD" }
-      ]
-    },
-    "eternal:idrisil:diamond-tip": {
-      "name": "Idrisil / Diamond Tip",
-      "sourceText": "Gain 4% increased Physical and Magical Penetration per finished item.",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [{ "kind": "percent_pen", "pct": 0, "perItemPct": 4, "damageType": "both" }]
-    },
-    "eternal:demiurge:major": {
-      "name": "Demiurge (Major)",
-      "sourceText": "Increase stats gained from Items by 12%, and damage dealt by Item Effects by 10%.",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [
-        { "kind": "stat_multiplier", "stat": "physical_power", "pct": 12 },
-        { "kind": "stat_multiplier", "stat": "magical_power", "pct": 12 },
-        { "kind": "stat_multiplier", "stat": "attack_speed", "pct": 12 },
-        { "kind": "stat_multiplier", "stat": "critical_chance", "pct": 12 },
-        { "kind": "stat_multiplier", "stat": "physical_penetration", "pct": 12 },
-        { "kind": "stat_multiplier", "stat": "magical_penetration", "pct": 12 },
-        { "kind": "stat_multiplier", "stat": "ability_haste", "pct": 12 },
-        { "kind": "stat_multiplier", "stat": "health", "pct": 12 },
-        { "kind": "stat_multiplier", "stat": "physical_armor", "pct": 12 },
-        { "kind": "stat_multiplier", "stat": "magical_armor", "pct": 12 },
-        { "kind": "stat_multiplier", "stat": "max_mana", "pct": 12 },
-        { "kind": "item_proc_amp", "pct": 10 }
-      ]
-    },
-    "eternal:demiurge:construct": {
-      "name": "Demiurge / Construct",
-      "sourceText": "Gain +10 Health and +1.25 Ability Haste per Level.",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [
-        { "kind": "stat_flat", "stat": "health", "base": 0, "perLevel": 10 },
-        { "kind": "stat_flat", "stat": "ability_haste", "base": 0, "perLevel": 1.25 }
-      ]
-    },
-    "eternal:demiurge:cursed-corrupted": {
-      "name": "Demiurge / Cursed Corrupted",
-      "sourceText": "Convert each 1% Crit Chance into 1 Ability Haste (you lose the crit stat).",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [{ "kind": "stat_conversion", "from": "critical_chance", "to": "ability_haste", "pct": 100, "consumesSource": true }]
-    },
-    "eternal:marrow:major": {
-      "name": "Marrow (Major)",
-      "sourceText": "Omnivamp scaling with missing health, doubled on kill.",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [{ "kind": "unmodeled", "note": "missing-health-dependent omnivamp; no sustain-uptime model yet" }]
-    },
-    "eternal:nihil:major": {
-      "name": "Nihil (Major)",
-      "sourceText": "Doom stacks grant permanent stats on level-up/takedown.",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [{ "kind": "unmodeled", "note": "combat-uptime and takedown-dependent permanent stacking; needs match telemetry" }]
-    },
-    "eternal:aion:major": {
-      "name": "Aion (Major)",
-      "sourceText": "Mana regen stacking on cast; gold from spell damage.",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [{ "kind": "unmodeled", "note": "economy effect; valuable but outside combat objectives (revisit with gold curves)" }]
-    },
-    "eternal:exarch:major": {
-      "name": "Exarch (Major)",
-      "sourceText": "Healing/shielding grants the target attack speed and on-hit magical damage.",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [{ "kind": "unmodeled", "note": "requires heal/shield output objectives (enchanter support model, backlog)" }]
-    },
-    "eternal:lotus:major": {
-      "name": "Lotus (Major)",
-      "sourceText": "Every 2 minutes and every takedown, randomly grants one of four small permanent buffs.",
-      "source": "owned eternals.json, synced 1.14.4",
-      "effects": [{ "kind": "unmodeled", "note": "random grant distribution unstated; refusing to assume uniform" }]
-    },
-
-    "augment:gideon:abyssal-mantle": {
-      "name": "Gideon / Abyssal Mantle",
-      "sourceText": "Upon activating Black Hole, gain a 50 (+75% MP) shield for 4s.",
-      "source": "owned hero-profiles.json augment scrape; vintage not current-patch-verified",
-      "provisional": true,
-      "effects": [{ "kind": "shield_per_fight", "base": 50 }, { "kind": "unmodeled", "note": "shield MP scaling (+75%) needs build context; flat base credited, scaling added in sim via scaleStat support later" }]
+ "_readme": "Curated effect encodings. Only stated numbers; anything context-dependent is kind:unmodeled with a note. sourceText quotes the stated effect. provisional:true marks entries whose source vintage is not current-patch-verified (owned augment scrape). Keys: item:<slug> | eternal:<id>:major | eternal:<id>:<minor> | augment:<hero>:<catalog-id> (hero augments live in augments.json, same schema; ids join the pred.gg field evidence). Ability-scoped effects target kit slots (PRIMARY/SECONDARY/ALTERNATE/ULTIMATE), mapped from ability names at curation time. Conventions for augments: hit-conditional effects (\"when it hits a Hero\") are modeled because the sim already assumes casts hit; positioning/pickup/terrain conditions are unmodeled; \"isolated\"/\"nearest enemy\" amps are modeled because kill-window sims are 1v1 by construction; per-rank amp arrays use the mean (the damage parser convention); tick cadences fold into per-cast totals.",
+ "targets": {
+  "item:oblivion-crown": {
+   "name": "Oblivion Crown / Eradicate",
+   "sourceText": "Increase your Magical Power by 25%.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "stat_multiplier",
+     "stat": "magical_power",
+     "pct": 25
     }
+   ]
+  },
+  "item:timewarp": {
+   "name": "Timewarp / Chime",
+   "sourceText": "Every 8s: subtract 1s from Non-Ultimate Cooldowns.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "cooldown_rate",
+     "bonus": 0.125,
+     "scope": "non_ultimate"
+    }
+   ]
+  },
+  "item:necrosis": {
+   "name": "Necrosis / Necro's Edge + Matter Disruptor",
+   "sourceText": "Gain 25 Ultimate Haste. Your Ultimate Ability deals 15% more damage.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "haste",
+     "amount": 25,
+     "scope": "ultimate"
+    },
+    {
+     "kind": "damage_amp",
+     "pct": 15,
+     "scope": "ultimate"
+    }
+   ]
+  },
+  "item:nuclear-rounds": {
+   "name": "Nuclear Rounds / Havoc",
+   "sourceText": "Increase Ability Damage by 10-20%, based on Critical Strike Chance.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "damage_amp_from_crit",
+     "minPct": 10,
+     "maxPct": 20,
+     "scope": "abilities"
+    }
+   ]
+  },
+  "item:caustica": {
+   "name": "Caustica / Magus",
+   "sourceText": "Ignore 35% of Magical Armor. (Arcane Might: conditional on target armor and health, unmodeled.)",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "percent_pen",
+     "pct": 35,
+     "damageType": "magical"
+    },
+    {
+     "kind": "unmodeled",
+     "note": "Arcane Might: +0.2% damage per point of target bonus Magical Armor while above 50% health"
+    }
+   ]
+  },
+  "item:combustion": {
+   "name": "Combustion / Pyro",
+   "sourceText": "On dealing Ability Damage (15s CD): deal 50 (+18% MP) magical damage to target and nearby enemies. Pyromaniac CD reduction unmodeled.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "on_ability_hit",
+     "flat": 50,
+     "scalingPct": 18,
+     "scaleStat": "magical_power",
+     "damageType": "magical",
+     "icdSeconds": 15
+    },
+    {
+     "kind": "unmodeled",
+     "note": "Pyromaniac: damaging heroes reduces Pyro cooldown by 0.5s per hit"
+    }
+   ]
+  },
+  "item:tainted-scepter": {
+   "name": "Tainted Scepter / Blighted Spells + Malice",
+   "sourceText": "On magical damage: reduce target healing 45% for 4s. Malice: 15 stacks (1/s), ability hits deal 1.5 (+1% MP) per stack; encoded at full stacks (22.5 +15% MP) with 15s ramp.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "anti_heal",
+     "pct": 45
+    },
+    {
+     "kind": "on_ability_hit",
+     "flat": 22.5,
+     "scalingPct": 15,
+     "scaleStat": "magical_power",
+     "damageType": "magical",
+     "rampSeconds": 15
+    }
+   ]
+  },
+  "item:tainted-rounds": {
+   "name": "Tainted Rounds / Blighted Strikes",
+   "sourceText": "On basic attacks: reduce target healing 45% for 3s; deal (+10% AD) on-hit (second stated scaling has a stripped stat icon and the up-to-100% missing-health amp is execution-dependent: unmodeled).",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "anti_heal",
+     "pct": 45
+    },
+    {
+     "kind": "on_hit",
+     "scalingPct": 10,
+     "scaleStat": "physical_power",
+     "damageType": "physical"
+    },
+    {
+     "kind": "unmodeled",
+     "note": "second on-hit scaling term (icon-ambiguous) and missing-health amplification up to +100%"
+    }
+   ]
+  },
+  "item:tainted-guard": {
+   "name": "Tainted Guard / Blighted Thorns",
+   "sourceText": "On being hit by a basic attack: reduce source healing 45% for 3s; bleed 30 (+30%) over 3s (thorns are incoming-attack-dependent: unmodeled).",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "anti_heal",
+     "pct": 45
+    },
+    {
+     "kind": "unmodeled",
+     "note": "Bleed thorns require incoming basic attacks; no incoming-attack model yet"
+    }
+   ]
+  },
+  "item:sky-splitter": {
+   "name": "Sky Splitter / Rend",
+   "sourceText": "On-hit: 5.5% of target current health (3.5% for ranged heroes), minimum 12.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "on_hit",
+     "pctTargetHealth": 5.5,
+     "pctTargetHealthRanged": 3.5,
+     "healthBasis": "current",
+     "minDamage": 12,
+     "damageType": "physical"
+    }
+   ]
+  },
+  "item:noxia": {
+   "name": "Noxia / Evil Eye + Dark Matter",
+   "sourceText": "Mark on ability damage; hitting a marked hero with a separate ability (8s CD) deals 6% of target max health bonus damage. Requires a 2+ ability kit; encoded as an 8s-ICD ability proc.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "on_ability_hit",
+     "pctTargetHealth": 6,
+     "healthBasis": "max",
+     "damageType": "magical",
+     "icdSeconds": 8
+    }
+   ]
+  },
+  "item:deathstalker": {
+   "name": "Deathstalker / Virulent Strikes + Onslaught",
+   "sourceText": "Basic attacks shred 3 physical armor for 3s, stacks 4x (12 flat, ~3s ramp). Onslaught: gain attack speed equal to 100% of Physical Penetration (PhysPen icon).",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "armor_shred",
+     "flat": 12,
+     "damageType": "physical",
+     "rampSeconds": 3
+    },
+    {
+     "kind": "stat_conversion",
+     "from": "physical_penetration",
+     "to": "attack_speed",
+     "pct": 100
+    }
+   ]
+  },
+  "item:equinox": {
+   "name": "Equinox / Adamance",
+   "sourceText": "On going below 40% health (90s CD): gain a 350-750 shield (by level) for 4s. Credited once per fight as flat EHP.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "shield_per_fight",
+     "base": 350,
+     "maxAtLevel18": 750
+    }
+   ]
+  },
+  "item:magnify": {
+   "name": "Magnify / Shredding Spells",
+   "sourceText": "Ability hits reduce target magical armor 6% for 3.5s, stacks 5x (30% at full stacks; ramp depends on hit cadence, encoded 8s).",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "armor_shred",
+     "pct": 30,
+     "damageType": "magical",
+     "rampSeconds": 8
+    }
+   ]
+  },
+  "item:painweaver": {
+   "name": "Painweaver / Splice",
+   "sourceText": "On ability cast: +2 physical pen for 4s, stacks 4x (8 flat at full stacks; ramp depends on cast cadence, encoded 8s). Movement speed unmodeled.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "flat_pen",
+     "amount": 8,
+     "damageType": "physical",
+     "rampSeconds": 8
+    }
+   ]
+  },
+  "item:wraith-leggings": {
+   "name": "Wraith Leggings / Carnage",
+   "sourceText": "Abilities deal 12% bonus magical damage vs heroes below 40% health.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "execute-window amp (target below 40%); no execute objective yet"
+    }
+   ]
+  },
+  "item:scattershot": {
+   "name": "Scattershot / Scatter",
+   "sourceText": "On-hit: 2 homing projectiles, each (+30% AD), on-hit at 50% effectiveness; whether they can strike the original target is unverified.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "multi-target projectiles; single-target value unverified"
+    }
+   ]
+  },
+  "item:lightning-hawk": {
+   "name": "Lightning Hawk / Chilling Momentum",
+   "sourceText": "At 100 Momentum stacks, next basic deals 40 (+20% AD) and slows; stack generation cadence unstated.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "stack cadence (movement + hits) unstated; proc rate unknowable from text"
+    }
+   ]
+  },
+  "eternal:vesh:major": {
+   "name": "Vesh (Major)",
+   "sourceText": "Ability damage on heroes deals 6% (+0.5% per minute) of the damage as a DoT over 3s.",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "damage_amp",
+     "pct": 6,
+     "perMinutePct": 0.5,
+     "scope": "abilities",
+     "dotSeconds": 3
+    }
+   ]
+  },
+  "eternal:vesh:the-tenth-seal": {
+   "name": "Vesh / The Tenth Seal",
+   "sourceText": "At Level 10, gain 5% Ultimate Damage and 25 Ultimate Ability Haste.",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "damage_amp",
+     "pct": 5,
+     "scope": "ultimate",
+     "appliesWhen": "level_gte_10"
+    },
+    {
+     "kind": "haste",
+     "amount": 25,
+     "scope": "ultimate"
+    }
+   ]
+  },
+  "eternal:vesh:mind-rot": {
+   "name": "Vesh / Mind Rot",
+   "sourceText": "The major also deals 2% of the target's current health as bonus damage.",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "on_ability_hit",
+     "pctTargetHealth": 2,
+     "healthBasis": "current",
+     "damageType": "magical"
+    }
+   ]
+  },
+  "eternal:xyris:major": {
+   "name": "Xyris (Major)",
+   "sourceText": "Gain 4% Bonus Damage, increased by 0.6% per 10 Units killed. Encoded at base; CS scaling needs match context.",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "damage_amp",
+     "pct": 4,
+     "scope": "all"
+    },
+    {
+     "kind": "unmodeled",
+     "note": "+0.6% per 10 units killed; needs CS-by-minute data (backlog item 2+)"
+    }
+   ]
+  },
+  "eternal:xyris:eviscerate": {
+   "name": "Xyris / Eviscerate",
+   "sourceText": "Deal +15% bonus damage to targets above 80% Health.",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "damage_amp",
+     "pct": 15,
+     "scope": "all",
+     "appliesWhen": "burst_only"
+    }
+   ]
+  },
+  "eternal:thraex:major": {
+   "name": "Thraex (Major)",
+   "sourceText": "Mark last basic-attacked hero 3s: +3% (+0.5% per level) damage to them, they deal less to you. Credited in sustained windows only (mark requires an opening hit).",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "damage_amp",
+     "pct": 3,
+     "perLevelPct": 0.5,
+     "scope": "all",
+     "appliesWhen": "window_only"
+    }
+   ]
+  },
+  "eternal:thraex:savage-strikes": {
+   "name": "Thraex / Savage Strikes",
+   "sourceText": "On-hit 1.5 (+0.4 per level) physical, +100% for 3s vs heroes (encoded at the vs-hero doubled value).",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "on_hit",
+     "flat": 3,
+     "perLevelFlat": 0.8,
+     "damageType": "physical"
+    }
+   ]
+  },
+  "eternal:thraex:ferocity": {
+   "name": "Thraex / Ferocity",
+   "sourceText": "Gain 1.5% Total Attack Speed per 1s in Hero Combat, stacking infinitely.",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "as_ramp",
+     "pctPerSecond": 1.5
+    }
+   ]
+  },
+  "eternal:vermis:major": {
+   "name": "Vermis (Major)",
+   "sourceText": "Every 3rd consecutive basic on the same hero within 2.5s deals 3% (+0.25% per level) max health physical (credited 1/3 per hit, assumes maintained cadence).",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "on_hit",
+     "pctTargetHealth": 3,
+     "perLevelPctTargetHealth": 0.25,
+     "healthBasis": "max",
+     "damageType": "physical",
+     "everyN": 3
+    }
+   ]
+  },
+  "eternal:vermis:melting-point": {
+   "name": "Vermis / Melting Point",
+   "sourceText": "Deal 10% bonus damage to targets with more than 125 Physical Armor.",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "damage_amp",
+     "pct": 10,
+     "scope": "all",
+     "appliesWhen": "target_armor_gt_125"
+    }
+   ]
+  },
+  "eternal:krix:major": {
+   "name": "Krix (Major)",
+   "sourceText": "Gain 5% (+1% per Level) increased Maximum Health.",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "health_multiplier",
+     "pct": 5,
+     "perLevelPct": 1
+    }
+   ]
+  },
+  "eternal:idrisil:major": {
+   "name": "Idrisil (Major)",
+   "sourceText": "While off cooldown and above 30% health: +15% Physical and Magical Armor (shield-on-break unmodeled).",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "armor_multiplier",
+     "pct": 15
+    },
+    {
+     "kind": "unmodeled",
+     "note": "below-30% conversion to a 150%-of-armor shield, 75s+ CD"
+    }
+   ]
+  },
+  "eternal:idrisil:diamond-tip": {
+   "name": "Idrisil / Diamond Tip",
+   "sourceText": "Gain 4% increased Physical and Magical Penetration per finished item.",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "percent_pen",
+     "pct": 0,
+     "perItemPct": 4,
+     "damageType": "both"
+    }
+   ]
+  },
+  "eternal:demiurge:major": {
+   "name": "Demiurge (Major)",
+   "sourceText": "Increase stats gained from Items by 12%, and damage dealt by Item Effects by 10%.",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "stat_multiplier",
+     "stat": "physical_power",
+     "pct": 12
+    },
+    {
+     "kind": "stat_multiplier",
+     "stat": "magical_power",
+     "pct": 12
+    },
+    {
+     "kind": "stat_multiplier",
+     "stat": "attack_speed",
+     "pct": 12
+    },
+    {
+     "kind": "stat_multiplier",
+     "stat": "critical_chance",
+     "pct": 12
+    },
+    {
+     "kind": "stat_multiplier",
+     "stat": "physical_penetration",
+     "pct": 12
+    },
+    {
+     "kind": "stat_multiplier",
+     "stat": "magical_penetration",
+     "pct": 12
+    },
+    {
+     "kind": "stat_multiplier",
+     "stat": "ability_haste",
+     "pct": 12
+    },
+    {
+     "kind": "stat_multiplier",
+     "stat": "health",
+     "pct": 12
+    },
+    {
+     "kind": "stat_multiplier",
+     "stat": "physical_armor",
+     "pct": 12
+    },
+    {
+     "kind": "stat_multiplier",
+     "stat": "magical_armor",
+     "pct": 12
+    },
+    {
+     "kind": "stat_multiplier",
+     "stat": "max_mana",
+     "pct": 12
+    },
+    {
+     "kind": "item_proc_amp",
+     "pct": 10
+    }
+   ]
+  },
+  "eternal:demiurge:construct": {
+   "name": "Demiurge / Construct",
+   "sourceText": "Gain +10 Health and +1.25 Ability Haste per Level.",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "stat_flat",
+     "stat": "health",
+     "base": 0,
+     "perLevel": 10
+    },
+    {
+     "kind": "stat_flat",
+     "stat": "ability_haste",
+     "base": 0,
+     "perLevel": 1.25
+    }
+   ]
+  },
+  "eternal:demiurge:cursed-corrupted": {
+   "name": "Demiurge / Cursed Corrupted",
+   "sourceText": "Convert each 1% Crit Chance into 1 Ability Haste (you lose the crit stat).",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "stat_conversion",
+     "from": "critical_chance",
+     "to": "ability_haste",
+     "pct": 100,
+     "consumesSource": true
+    }
+   ]
+  },
+  "eternal:marrow:major": {
+   "name": "Marrow (Major)",
+   "sourceText": "Omnivamp scaling with missing health, doubled on kill.",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "missing-health-dependent omnivamp; no sustain-uptime model yet"
+    }
+   ]
+  },
+  "eternal:nihil:major": {
+   "name": "Nihil (Major)",
+   "sourceText": "Doom stacks grant permanent stats on level-up/takedown.",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "combat-uptime and takedown-dependent permanent stacking; needs match telemetry"
+    }
+   ]
+  },
+  "eternal:aion:major": {
+   "name": "Aion (Major)",
+   "sourceText": "Mana regen stacking on cast; gold from spell damage.",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "economy effect; valuable but outside combat objectives (revisit with gold curves)"
+    }
+   ]
+  },
+  "eternal:exarch:major": {
+   "name": "Exarch (Major)",
+   "sourceText": "Healing/shielding grants the target attack speed and on-hit magical damage.",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "requires heal/shield output objectives (enchanter support model, backlog)"
+    }
+   ]
+  },
+  "eternal:lotus:major": {
+   "name": "Lotus (Major)",
+   "sourceText": "Every 2 minutes and every takedown, randomly grants one of four small permanent buffs.",
+   "source": "owned eternals.json, synced 1.14.4",
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "random grant distribution unstated; refusing to assume uniform"
+    }
+   ]
   }
+ }
 }
