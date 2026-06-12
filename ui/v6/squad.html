@@ -20,6 +20,13 @@
   .wordmark .beta { color:var(--accent); font-size:.7rem; vertical-align:super; margin-left:.2rem; }
   .spacer { flex:1; }
   .wrap { max-width:920px; margin:0 auto; padding:1.25rem 1rem 4rem; }
+  .scope {
+    font-size:.7rem; color:var(--text-2); border:1px solid var(--border);
+    background:var(--bg-1); border-radius:8px; padding:.45rem .7rem; margin-bottom:1rem; line-height:1.5;
+  }
+  .scope b { color:var(--text-1); }
+  a.plink { color:inherit; text-decoration:none; border-bottom:1px dotted var(--blue); }
+  a.plink:hover { color:var(--blue); }
   h1 { font-size:1.7rem; font-weight:800; }
   .sub { color:var(--text-1); margin-top:.3rem; display:flex; gap:.4rem; flex-wrap:wrap; }
   .chip { background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.13rem .62rem; font-size:.76rem; color:var(--text-1); }
@@ -145,13 +152,16 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
     const soloBest = coach.roles.filter((r) => r.games >= 100)[0];
     if (soloBest && soloBest.role !== leadAssigned.role) {
       const mate = s.assignment.find((a) => a.role === soloBest.role);
-      tension = `Solo plan vs stack plan: alone, your best seat is <b>${esc(soloBest.role)}</b> (${pct(soloBest.shrunkWr)}%). In this stack, <b>${esc(mate ? mate.name : '?')}</b> holds that seat with better numbers (${mate ? pct(mate.roleWr) + '% over ' + mate.roleGames + 'g' : ''}), so the lineup scores highest with you on <b>${esc(leadAssigned.role)}</b> (${pct(leadAssigned.roleWr)}% over ${leadAssigned.roleGames}g). Both are right; they answer different questions.`;
+      tension = `<b>Solo queue → ${esc(soloBest.role)}.</b> It is your best role (${pct(soloBest.shrunkWr)}%). <b>Five-stack → ${esc(leadAssigned.role)}.</b> ${esc(mate ? mate.name : '?')} out-records you in ${esc(soloBest.role)} (${mate ? pct(mate.roleWr) + '% over ' + mate.roleGames + 'g' : ''}), so the team wins more with you covering ${esc(leadAssigned.role)} (${pct(leadAssigned.roleWr)}% over ${leadAssigned.roleGames}g).`;
     }
   }
 
+  const plink = (uuid, name) => `<a class="plink" href="coach.html?player=${esc(uuid)}">${esc(name)}</a>`;
+
   document.getElementById('page').innerHTML = `
+    <div class="scope">📊 <b>Data scope:</b> pred.gg public profiles — career, ranked splits, last 40 matches each · field baselines: ${META ? META.matches.toLocaleString() + ' matches, patch ' + esc(META.patch) : 'current-patch matches'}, all ranks · combat math is THEORY pending in-game calibration · generated ${esc(s.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
     <h1>The five stack</h1>
-    <div class="sub">${s.members.map((m) => `<span class="chip">${esc(m.name)}${m.current ? ` · ${esc(m.current.rank)} ${m.current.points}VP` : ''}</span>`).join('')}</div>
+    <div class="sub">${s.members.map((m) => `<span class="chip">${plink(m.uuid, m.name)}${m.current ? ` · ${esc(m.current.rank)} ${m.current.points}VP` : ''}</span>`).join('')}</div>
 
     <div class="card">
       <h2>Optimal lineup · all 120 permutations scored${typeof s.lineupGainPer100 === 'number' && s.lineupGainPer100 >= 0.5 ? ` · <span style="color:var(--green)">worth +${s.lineupGainPer100} wins/100 vs queue habits</span>` : ''}</h2>
@@ -160,7 +170,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
         ${s.assignment.map((a) => `
           <tr>
             <td class="role">${esc(a.role)}</td>
-            <td class="lu-player">${esc(a.name)}${a.isMove ? '<span class="move">MOVE</span>' : ''}</td>
+            <td class="lu-player">${plink(a.uuid, a.name)}${a.isMove ? '<span class="move">MOVE</span>' : ''}</td>
             <td class="nums lu-record">${pct(a.roleWr)}% · ${a.roleGames}g${a.isMove && a.favRole ? `<br><span style="font-size:.68rem">queues ${esc(a.favRole)} today</span>` : ''}</td>
             <td class="lu-picks"><div class="picks">${a.heroPicks.map((h) => `<a href="./?hero=${esc(h.slug)}"><img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">${esc(h.name)} ${pct(h.shrunkWr, 0)}%</a>`).join('') || '<span style="color:var(--text-2);font-size:.74rem">no 30+ game hero in role — pick from the meta board</span>'}</div></td>
           </tr>`).join('')}
@@ -186,7 +196,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
       <h2>Duo synergy · ranked games together</h2>
       ${s.pairs.map((p) => `
         <div class="pairrow">
-          <span class="names">${esc(p.aName)} + ${esc(p.bName)}</span>
+          <span class="names">${plink(p.a, p.aName)} + ${plink(p.b, p.bName)}</span>
           <span class="bar"><i style="width:${Math.max(4, ((p.winrate - 0.4) / 0.2) * 100)}%; background:${p.winrate >= 0.53 ? 'var(--green)' : p.winrate <= 0.50 ? 'var(--red)' : 'var(--accent)'}"></i></span>
           <span class="n">${pct(p.winrate, 0)}% · ${p.games}g</span>
         </div>`).join('')}
@@ -243,7 +253,9 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
       const t = scoreOf(top.uuid, seat.role);
       const tHome = scoreOf(top.uuid, top.role);
       const meAfter = scoreOf(seat.uuid, top.role);
-      lines.push(`Why ${seat.name.split(' ')[0]} on ${seat.role} and not ${top.name.split(' ')[0]} (${pct(t.wr)}% vs ${pct(mine.wr)}%)? The swap costs ${cost.toFixed(1)} combined points: ${top.name.split(' ')[0]} leaves their ${pct(tHome.wr)}% ${top.role} (${tHome.games}g) and ${seat.name.split(' ')[0]} falls to ${pct(meAfter.wr)}% ${top.role}.`);
+      const sn = seat.name.split(' ')[0];
+      const tn = top.name.split(' ')[0];
+      lines.push(`${tn} is the better ${seat.role} (${pct(t.wr)}% vs ${sn}'s ${pct(mine.wr)}%) — so why ${sn}? Because the swap is two moves, not one: ${tn} would leave ${top.role}, where they're ${pct(tHome.wr)}% (${tHome.games}g), and ${sn} would take over ${top.role} at only ${pct(meAfter.wr)}%. Net for the team: −${cost.toFixed(1)} points. ${sn} stays.`);
     }
     return lines;
   }
@@ -299,7 +311,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
         ${opt.seats.map((seat, si) => `
           <div class="planseat">
             <span class="r">${esc(seat.role)}</span>
-            <span>${esc(seat.name)} <span style="color:var(--text-2);font-size:.76rem">${pct(seat.wr)}% · ${seat.games}g</span></span>
+            <span>${plink(seat.uuid, seat.name)} <span style="color:var(--text-2);font-size:.76rem">${pct(seat.wr)}% · ${seat.games}g</span></span>
             <span class="picks-mini">${mode === 'meta'
               ? metaPickFor(seat, oi, si)
               : (seat.picks.map((h) => `${esc(h.name)} ${pct(h.shrunkWr, 0)}%`).join(' · ') || '<span style="color:var(--gold)">no 30+ game hero here — flip to meta mode</span>')}</span>

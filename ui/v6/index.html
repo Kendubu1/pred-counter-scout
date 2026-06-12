@@ -191,6 +191,7 @@
   .pilots { margin-top:.55rem; padding-top:.5rem; border-top:1px dashed var(--border); }
   .pilots h4 { font-size:.6rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.3rem; }
   .pilot { display:flex; align-items:center; gap:.45rem; padding:.16rem .3rem; font-size:.72rem; color:var(--text-1); border-radius:6px; }
+  a.pilot { color:var(--text-1); } a.pilot:hover { background:var(--bg-3); }
   .pilot img { width:18px; height:18px; border-radius:5px; object-fit:cover; background:var(--bg-2); flex:none; }
   .pilot .pn { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .pilot .vp { color:var(--text-2); font-variant-numeric:tabular-nums; }
@@ -294,13 +295,15 @@ function renderMetaboard() {
               <h4>Top pilots · ranked split</h4>
               ${META.topPlayers[role].slice(0, 3).map((p) => {
                 const main = (INDEX.heroes.find((h) => h.slug === p.heroSlug) || {}).name || p.heroName;
+                const tag = p.uuid ? 'a' : 'div';
+                const href = p.uuid ? ` href="https://pred.gg/players/${esc(p.uuid)}" target="_blank" rel="noopener"` : '';
                 return `
-                <div class="pilot" title="#${p.ranking} ${esc(p.name)} — ${p.points} VP, ${esc(p.rank)}${main ? ', mains ' + esc(main) : ''}">
+                <${tag} class="pilot"${href} title="#${p.ranking} ${esc(p.name)} — ${p.points} VP, ${esc(p.rank)}${main ? ', mains ' + esc(main) : ''}">
                   <span class="rk">#${p.ranking}</span>
                   ${p.heroSlug ? `<img loading="lazy" src="${IMG.hero(p.heroSlug)}" alt="" onerror="this.style.visibility='hidden'">` : ''}
                   <span class="pn">${esc(p.name)}</span>
                   <span class="vp">${p.points}</span>
-                </div>`;
+                </${tag}>`;
               }).join('')}
             </div>` : ''}
         </div>`).join('')}

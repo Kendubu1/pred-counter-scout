@@ -20,6 +20,12 @@
   .wordmark .beta { color:var(--accent); font-size:.7rem; vertical-align:super; margin-left:.2rem; }
   .spacer { flex:1; }
   .wrap { max-width:880px; margin:0 auto; padding:1.25rem 1rem 4rem; }
+  .scope {
+    font-size:.7rem; color:var(--text-2); border:1px solid var(--border);
+    background:var(--bg-1); border-radius:8px; padding:.45rem .7rem; margin-bottom:1rem; line-height:1.5;
+  }
+  .scope b { color:var(--text-1); }
+  h1 .ext { font-size:.7rem; vertical-align:middle; font-weight:400; }
   .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; }
   .card h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.8rem; }
   h1 { font-size:1.7rem; font-weight:800; }
@@ -119,8 +125,12 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
   const best = c.roles.filter((r) => r.games >= 100)[0];
   const worst = [...c.roles].filter((r) => r.games >= 100).sort((a, b) => a.shrunkWr - b.shrunkWr)[0];
 
+  let metaInfo = null;
+  try { metaInfo = await (await fetch('../../data/artifacts/meta.json')).json(); } catch {}
+
   document.getElementById('page').innerHTML = `
-    <h1>${esc(p.name)}</h1>
+    <div class="scope">📊 <b>Data scope:</b> this player's pred.gg public profile — career totals, ranked split history, last 40 matches · field baselines: ${metaInfo ? metaInfo.matches.toLocaleString() + ' matches, patch ' + esc(metaInfo.patch) : 'current-patch matches'}, all ranks · winrates shrunk toward the player's own average · combat math is THEORY pending in-game calibration · generated ${esc(c.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
+    <h1>${esc(p.name)} <a class="ext" href="https://pred.gg/players/${esc(p.uuid)}" target="_blank" rel="noopener">pred.gg ↗</a></h1>
     ${c.archetype ? `<div class="arch">“${esc(c.archetype.label)}” <span class="arch-r">${esc(c.archetype.receipt)}</span></div>` : ''}
     <div class="sub">
       <span class="chip rank">${esc(p.current.rank)} · ${p.current.points} VP</span>
