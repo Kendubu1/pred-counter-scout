@@ -31,6 +31,12 @@ export async function pullProfile(uuid: string): Promise<RawProfile> {
   return d.player;
 }
 
+// Maintainer-supplied display names for API-private profiles (the API
+// returns null for their name; the stats are unaffected).
+export const NAME_OVERRIDES: Record<string, string> = {
+  'a0c393cc-1437-4bdc-8168-64676ce2166c': 'Cuban Noobster',
+};
+
 export const shrink = (w: number, n: number, prior: number, k: number) => (w + k * prior) / (n + k);
 
 export const PLATINUM_VP = 900; // Platinum III ratingMin, pred.gg rank table, Season 1 Split 4
@@ -219,7 +225,7 @@ export function analyzeProfile(uuid: string, p: RawProfile, data: LoadedData = l
   const current = p.ratings.length ? p.ratings[p.ratings.length - 1]! : null;
   return {
     uuid,
-    name: p.name ?? 'Private player',
+    name: p.name ?? NAME_OVERRIDES[uuid] ?? 'Private player',
     isPrivate: !p.name,
     favRole: p.favRole,
     career: {
