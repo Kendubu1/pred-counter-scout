@@ -612,13 +612,13 @@ function renderHero(a, roleParam) {
           return `
           <div style="padding:.4rem 0;border-bottom:1px ${i === ranked.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
             <div style="display:flex;gap:.6rem;align-items:center">
-              <img src="../img/augments/${esc(g.id)}.webp" alt="" style="width:32px;height:32px;border-radius:8px;object-fit:cover;background:var(--bg-2);flex:none;${i === 0 ? 'box-shadow:0 0 0 2px var(--green)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'">
+              <img src="../img/augments/${esc(g.id)}.webp" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;padding:3px;${i === 0 ? 'box-shadow:0 0 0 2px var(--green)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'">
               <span style="font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${i === 0 ? '✓ ' : ''}${esc(g.name)}</span>
               <span style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(wr * 100).toFixed(1)}%</span>
               <span style="font-size:.7rem;color:var(--text-2)">${g.n.toLocaleString()} games</span>
             </div>
-            <div style="font-size:.72rem;color:var(--text-2);margin:.25rem 0 0 2.6rem">${esc(desc)}</div>
-            ${i === 0 && adv !== null && adv >= 0.3 ? `<div style="font-size:.72rem;color:var(--green);margin:.15rem 0 0 2.6rem">why: as ${esc(role)} it wins about ${adv.toFixed(1)} more games per 100 than ${esc(ranked[1].name)} — the field has voted</div>` : ''}
+            <div style="font-size:.72rem;color:var(--text-2);margin:.25rem 0 0 2.35rem">${esc(desc)}</div>
+            ${i === 0 && adv !== null && adv >= 0.3 ? `<div style="font-size:.72rem;color:var(--green);margin:.15rem 0 0 2.35rem">why: as ${esc(role)} it wins about ${adv.toFixed(1)} more games per 100 than ${esc(ranked[1].name)} — the field has voted</div>` : ''}
           </div>`;
         }).join('')}
         <div style="font-size:.74rem;color:var(--text-2);margin:.7rem 0 .45rem"><b style="letter-spacing:.06em">ETERNAL</b> · top 3 as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
