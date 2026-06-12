@@ -27,20 +27,24 @@
   .scope b { color:var(--text-1); }
   a.plink { color:inherit; text-decoration:none; border-bottom:1px dotted var(--blue); }
   a.plink:hover { color:var(--blue); }
+  img.pav { width:20px; height:20px; border-radius:50%; object-fit:cover; border:1px solid var(--border); vertical-align:-5px; margin-right:.1rem; align-self:center; }
   h1 { font-size:1.7rem; font-weight:800; }
   .sub { color:var(--text-1); margin-top:.3rem; display:flex; gap:.4rem; flex-wrap:wrap; }
-  .chip { background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.13rem .62rem; font-size:.76rem; color:var(--text-1); }
+  .chip { white-space:nowrap; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.13rem .62rem; font-size:.76rem; color:var(--text-1); }
   .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; }
   .card h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.8rem; }
   .verdict { font-size:1rem; border-left:3px solid var(--accent); padding:.5rem .9rem; background:var(--accent-soft); border-radius:0 8px 8px 0; margin-top:.8rem; color:var(--text-1); }
   .verdict b { color:var(--text-0); }
 
-  .lineup { width:100%; border-collapse:collapse; }
-  .lineup td, .lineup th { padding:.55rem .5rem; border-bottom:1px solid var(--border); text-align:left; vertical-align:middle; }
-  .lineup th { color:var(--text-2); font-size:.72rem; text-transform:uppercase; letter-spacing:.1em; }
-  .lineup .role { font-weight:800; text-transform:capitalize; color:var(--accent); }
-  .lineup .move { display:inline-block; background:rgba(240,180,41,.12); border:1px solid var(--gold); color:var(--gold); border-radius:6px; font-size:.62rem; font-weight:800; padding:.05rem .35rem; margin-left:.4rem; vertical-align:middle; }
-  .lineup .nums { color:var(--text-1); font-size:.8rem; font-variant-numeric:tabular-nums; }
+  .seat { padding:.6rem 0; border-bottom:1px solid var(--border); }
+  .seat:last-of-type { border-bottom:none; }
+  .seathead { display:flex; align-items:baseline; gap:.55rem; flex-wrap:wrap; }
+  .seathead .role { font-weight:800; text-transform:capitalize; color:var(--accent); min-width:64px; }
+  .seathead .rwr { font-weight:800; font-variant-numeric:tabular-nums; }
+  .seathead .sgames { margin-left:auto; color:var(--text-2); font-size:.72rem; font-variant-numeric:tabular-nums; }
+  .move { display:inline-block; background:rgba(240,180,41,.12); border:1px solid var(--gold); color:var(--gold); border-radius:6px; font-size:.62rem; font-weight:800; padding:.05rem .35rem; vertical-align:middle; }
+  .seat .picks { margin-top:.4rem; }
+  .snote { margin-top:.3rem; font-size:.7rem; color:var(--text-2); }
   .picks { display:flex; gap:.5rem; }
   .picks a { display:flex; align-items:center; gap:.35rem; font-size:.76rem; color:var(--text-1); background:var(--bg-2); border:1px solid var(--border); border-radius:8px; padding:.2rem .5rem; }
   .picks a:hover { border-color:var(--accent); color:var(--text-0); }
@@ -76,6 +80,9 @@
   /* ── mobile: smaller, stacked, nothing bleeds ── */
   @media (max-width:600px) {
     body { font-size:13.5px; }
+    .top-inner { padding:.5rem .7rem; gap:.55rem; }
+    .wordmark { font-size:.82rem; white-space:nowrap; }
+    .top-inner a { font-size:.72rem; white-space:nowrap; }
     .wrap { padding:.9rem .7rem 3rem; }
     h1 { font-size:1.35rem; }
     .sub .chip { font-size:.66rem; padding:.1rem .5rem; }
@@ -84,16 +91,9 @@
     .verdict { font-size:.84rem; padding:.4rem .7rem; }
     .whyline { font-size:.7rem; padding:.4rem .55rem; }
 
-    /* lineup table -> stacked seat cards */
-    .lineup .lu-head { display:none; }
-    .lineup, .lineup tbody { display:block; }
-    .lineup tr { display:grid; grid-template-columns:auto 1fr; gap:.05rem .6rem; padding:.55rem 0; border-bottom:1px solid var(--border); align-items:baseline; }
-    .lineup tr:last-child { border-bottom:none; }
-    .lineup td { display:block; padding:0; border:none; }
-    .lineup td.role { font-size:.8rem; }
-    .lineup td.lu-player { font-size:.86rem; }
-    .lineup td.lu-record { grid-column:2; font-size:.72rem; text-align:left; }
-    .lineup td.lu-picks { grid-column:1 / -1; margin-top:.3rem; }
+    .seathead { gap:.45rem; }
+    .seathead .role { min-width:0; font-size:.82rem; }
+    .seathead .sgames { flex-basis:100%; margin-left:0; }
     .picks { flex-wrap:wrap; gap:.35rem; }
     .picks a { font-size:.7rem; padding:.16rem .4rem; }
     .picks img { width:18px; height:18px; }
@@ -123,13 +123,16 @@
 <div class="top"><div class="top-inner">
   <span class="wordmark">⚔ Predecessor Scout<span class="beta">SQUAD</span></span>
   <span class="spacer"></span>
-  <a href="coach.html">solo coach</a>
+  <a href="coach.html">coach reports</a>
   <a href="./">build lab →</a>
 </div></div>
 <div class="wrap" id="page">loading…</div>
 <script>
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct = (x, d = 1) => (x * 100).toFixed(d);
+const plink = (uuid, name) => uuid
+  ? `<a class="plink" href="https://pred.gg/players/${esc(uuid)}" target="_blank" rel="noopener">${esc(name)}</a>`
+  : esc(name);
 (async () => {
   let s, coach = null, META = null;
   try { s = await (await fetch('../../data/artifacts/squad.json')).json(); }
@@ -144,38 +147,34 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
       POOLS.set(m.uuid, new Map(p.pool.map((h) => [h.slug, h])));
     } catch { POOLS.set(m.uuid, new Map()); }
   }));
+  // signature-hero portrait shown next to each player's name (most-played hero)
+  const AVATAR = new Map(s.members.map((m) => [m.uuid, m.topHeroes?.[0]?.slug ?? null]));
+  const pav = (uuid) => {
+    const slug = AVATAR.get(uuid);
+    return slug ? `<img class="pav" src="../img/heroes/${esc(slug)}.webp" alt="" onerror="this.remove()">` : '';
+  };
 
   const lead = s.members[0];
   const leadAssigned = s.assignment.find((a) => a.uuid === s.lead);
-  let tension = '';
-  if (coach && leadAssigned) {
-    const soloBest = coach.roles.filter((r) => r.games >= 100)[0];
-    if (soloBest && soloBest.role !== leadAssigned.role) {
-      const mate = s.assignment.find((a) => a.role === soloBest.role);
-      tension = `<b>Solo queue → ${esc(soloBest.role)}.</b> It is your best role (${pct(soloBest.shrunkWr)}%). <b>Five-stack → ${esc(leadAssigned.role)}.</b> ${esc(mate ? mate.name : '?')} out-records you in ${esc(soloBest.role)} (${mate ? pct(mate.roleWr) + '% over ' + mate.roleGames + 'g' : ''}), so the team wins more with you covering ${esc(leadAssigned.role)} (${pct(leadAssigned.roleWr)}% over ${leadAssigned.roleGames}g).`;
-    }
-  }
-
-  const plink = (uuid, name) => `<a class="plink" href="coach.html?player=${esc(uuid)}">${esc(name)}</a>`;
-
   document.getElementById('page').innerHTML = `
     <div class="scope">📊 <b>Data scope:</b> pred.gg public profiles — career, ranked splits, last 40 matches each · field baselines: ${META ? META.matches.toLocaleString() + ' matches, patch ' + esc(META.patch) : 'current-patch matches'}, all ranks · combat math is THEORY pending in-game calibration · generated ${esc(s.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
     <h1>The five stack</h1>
-    <div class="sub">${s.members.map((m) => `<span class="chip">${plink(m.uuid, m.name)}${m.current ? ` · ${esc(m.current.rank)} ${m.current.points}VP` : ''}</span>`).join('')}</div>
+    <div class="sub">${s.members.map((m) => `<span class="chip">${pav(m.uuid)}${plink(m.uuid, m.name)}${m.current ? ` · ${esc(m.current.rank)} ${m.current.points}VP` : ''}</span>`).join('')}</div>
 
     <div class="card">
       <h2>Optimal lineup · all 120 permutations scored${typeof s.lineupGainPer100 === 'number' && s.lineupGainPer100 >= 0.5 ? ` · <span style="color:var(--green)">worth +${s.lineupGainPer100} wins/100 vs queue habits</span>` : ''}</h2>
-      <table class="lineup">
-        <tr class="lu-head"><th>seat</th><th>player</th><th>role record</th><th>play these</th></tr>
-        ${s.assignment.map((a) => `
-          <tr>
-            <td class="role">${esc(a.role)}</td>
-            <td class="lu-player">${plink(a.uuid, a.name)}${a.isMove ? '<span class="move">MOVE</span>' : ''}</td>
-            <td class="nums lu-record">${pct(a.roleWr)}% · ${a.roleGames}g${a.isMove && a.favRole ? `<br><span style="font-size:.68rem">queues ${esc(a.favRole)} today</span>` : ''}</td>
-            <td class="lu-picks"><div class="picks">${a.heroPicks.map((h) => `<a href="./?hero=${esc(h.slug)}"><img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">${esc(h.name)} ${pct(h.shrunkWr, 0)}%</a>`).join('') || '<span style="color:var(--text-2);font-size:.74rem">no 30+ game hero in role — pick from the meta board</span>'}</div></td>
-          </tr>`).join('')}
-      </table>
-      ${tension ? `<div class="verdict">${tension}</div>` : ''}
+      ${s.assignment.map((a) => `
+        <div class="seat">
+          <div class="seathead">
+            <span class="role">${esc(a.role)}</span>
+            <span class="rwr">${pct(a.roleWr)}%</span>
+            ${pav(a.uuid)}${plink(a.uuid, a.name)}
+            ${a.isMove ? '<span class="move">MOVE</span>' : ''}
+            <span class="sgames">${a.roleGames} games in role</span>
+          </div>
+          <div class="picks">${a.heroPicks.map((h) => `<a href="./?hero=${esc(h.slug)}"><img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">${esc(h.name)} ${pct(h.shrunkWr, 0)}%</a>`).join('') || '<span style="color:var(--text-2);font-size:.74rem">no proven hero here yet — use meta mode below</span>'}</div>
+          ${a.isMove && a.favRole ? `<div class="snote">usually queues ${esc(a.favRole)} — the move is worth it: ${pct(a.roleWr)}% here over ${a.roleGames} games</div>` : ''}
+        </div>`).join('')}
       <div id="fullWhys"></div>
     </div>
 
@@ -187,20 +186,20 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
       <div class="who" id="mode" style="margin-top:.55rem">
         <label class="pick"><input type="radio" name="mode" value="wheel" checked> 🏠 our wheelhouse</label>
         <label class="pick"><input type="radio" name="mode" value="meta"> 🔥 meta team</label>
-        <button id="shuffle" class="pick" style="display:none">🎲 shuffle</button>
+        <button id="shuffle" class="pick">🎲 shuffle roles & heroes</button>
       </div>
       <div id="planOut"></div>
     </div>
 
     <div class="card">
-      <h2>Duo synergy · ranked games together</h2>
+      <h2>Queued together · record as ranked teammates</h2>
       ${s.pairs.map((p) => `
         <div class="pairrow">
-          <span class="names">${plink(p.a, p.aName)} + ${plink(p.b, p.bName)}</span>
+          <span class="names">${pav(p.a)}${plink(p.a, p.aName)} + ${pav(p.b)}${plink(p.b, p.bName)}</span>
           <span class="bar"><i style="width:${Math.max(4, ((p.winrate - 0.4) / 0.2) * 100)}%; background:${p.winrate >= 0.53 ? 'var(--green)' : p.winrate <= 0.50 ? 'var(--red)' : 'var(--accent)'}"></i></span>
-          <span class="n">${pct(p.winrate, 0)}% · ${p.games}g</span>
+          <span class="n">${pct(p.winrate, 0)}% · ${p.games} games</span>
         </div>`).join('')}
-      <div style="font-size:.72rem;color:var(--text-2);margin-top:.5rem">pair games include matches where the other seats were randoms</div>
+      <div style="font-size:.72rem;color:var(--text-2);margin-top:.5rem">counts any ranked match where both were on the same team, in any lanes (not duo lane); the other three seats may have been randoms</div>
     </div>
 
     <div class="card">
@@ -208,7 +207,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
       <div class="members">
         ${s.members.map((m) => `
           <div class="member">
-            <div class="nm"><a href="coach.html?player=${esc(m.uuid)}">${esc(m.name)} →</a></div>
+            <div class="nm">${pav(m.uuid)}<a href="coach.html?player=${esc(m.uuid)}">${esc(m.name)} →</a></div>
             ${m.archetype ? `<div style="color:var(--gold);font-size:.72rem;font-weight:700" title="${esc(m.archetype.receipt)}">“${esc(m.archetype.label)}”</div>` : ''}
             ${m.topInsight ? `<div style="font-size:.72rem;color:var(--text-1);margin-top:.25rem" title="${esc(m.topInsight.receipt)}">🎬 ${esc(m.topInsight.title)}</div>` : ''}
             <div class="meta">${m.career.games.toLocaleString()} games · ${pct(m.career.winrate)}% career · KDA ${m.career.kda.toFixed(2)}${m.peakAllTime ? ` · peak ${m.peakAllTime} VP` : ''}</div>
@@ -216,7 +215,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
             ${m.roles.slice(0, 3).map((r) => `
               <div class="rolemini"><span style="text-transform:capitalize">${esc(r.role)}</span>
                 <span class="bar"><i style="width:${Math.min(100, (r.shrunkWr / 0.6) * 100)}%"></i></span>
-                <span class="n">${pct(r.shrunkWr)}% · ${r.games}g</span></div>`).join('')}
+                <span class="n">${pct(r.shrunkWr)}% · ${r.games} games</span></div>`).join('')}
           </div>`).join('')}
       </div>
     </div>
@@ -255,7 +254,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
       const meAfter = scoreOf(seat.uuid, top.role);
       const sn = seat.name.split(' ')[0];
       const tn = top.name.split(' ')[0];
-      lines.push(`${tn} is the better ${seat.role} (${pct(t.wr)}% vs ${sn}'s ${pct(mine.wr)}%) — so why ${sn}? Because the swap is two moves, not one: ${tn} would leave ${top.role}, where they're ${pct(tHome.wr)}% (${tHome.games}g), and ${sn} would take over ${top.role} at only ${pct(meAfter.wr)}%. Net for the team: −${cost.toFixed(1)} points. ${sn} stays.`);
+      lines.push(`${tn} is the better ${seat.role} (${pct(t.wr)}% vs ${sn}'s ${pct(mine.wr)}%) — so why ${sn}? Because the swap is two moves, not one: ${tn} would leave ${top.role}, where they win ${pct(tHome.wr)}% (${tHome.games} games), and ${sn} would take over ${top.role} at only ${pct(meAfter.wr)}%. Net effect: the team wins about ${cost.toFixed(1)} fewer games per 100. ${sn} stays.`);
     }
     return lines;
   }
@@ -272,7 +271,9 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
       order,
       total: order.reduce((sum, role, i) => sum + ms[i].scores[role].score, 0),
     })).sort((a, b) => b.total - a.total);
-    return all.slice(0, k).map((opt) => ({
+    const pool = all.slice(0, 9);
+    const start = (shuffleSeed * k) % Math.max(pool.length - k + 1, 1);
+    return pool.slice(start, start + k).map((opt) => ({
       total: opt.total,
       seats: ms.map((m, i) => ({ name: m.name, uuid: m.uuid, role: opt.order[i], ...m.scores[opt.order[i]] })),
     }));
@@ -286,7 +287,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
     const h = lane[pickIdx];
     const mine = (POOLS.get(seat.uuid) || new Map()).get(h.slug);
     const note = mine && mine.games >= 30
-      ? `you: ${pct(mine.shrunkWr, 0)}%/${mine.games}g`
+      ? `you: ${pct(mine.shrunkWr, 0)}% · ${mine.games} games`
       : `field ${pct(h.shrunkWr, 0)}% · <span style="color:var(--gold)">new to you</span>`;
     return `${esc(h.name)} <span style="color:var(--text-2)">${note}</span>`;
   }
@@ -294,7 +295,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
   function renderPlan() {
     const selected = [...document.querySelectorAll('#who input[type=checkbox]:checked')].map((i) => i.dataset.uuid);
     const mode = document.querySelector('#mode input[name=mode]:checked').value;
-    document.getElementById('shuffle').style.display = mode === 'meta' ? '' : 'none';
+    document.getElementById('shuffle').style.display = '';
     const out = document.getElementById('planOut');
     const options = solveTop(selected, 3);
     if (!options) { out.innerHTML = '<div style="color:var(--text-2);font-size:.82rem;margin-top:.6rem">pick at least two players</div>'; return; }
@@ -302,16 +303,16 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
     const bestAvg = options[0].total / options[0].seats.length;
     out.innerHTML = options.map((opt, oi) => {
       const avg = opt.total / opt.seats.length;
-      const delta = (avg - bestAvg) * 100;
+      const delta = Math.round((avg - bestAvg) * 1000) / 10 || 0; // || 0 normalizes -0 after rounding
       return `
       <div style="margin-top:.8rem; ${oi > 0 ? 'opacity:.88' : ''}">
         <div style="font-size:.74rem; font-weight:800; color:${oi === 0 ? 'var(--green)' : 'var(--text-2)'}; letter-spacing:.06em">
-          OPTION ${'ABC'[oi]} · avg seat ${pct(avg)}%${oi > 0 ? ` (${delta.toFixed(1)} vs A)` : ' · best'}
+          ${shuffleSeed % 3 === 0 ? '' : '🎲 '}OPTION ${'ABC'[oi]} · avg seat ${pct(avg)}%${oi > 0 ? ` (${delta.toFixed(1)} vs A)` : (shuffleSeed % 3 === 0 ? ' · best' : ' · shuffled set')}
         </div>
         ${opt.seats.map((seat, si) => `
           <div class="planseat">
             <span class="r">${esc(seat.role)}</span>
-            <span>${plink(seat.uuid, seat.name)} <span style="color:var(--text-2);font-size:.76rem">${pct(seat.wr)}% · ${seat.games}g</span></span>
+            <span>${pav(seat.uuid)}${plink(seat.uuid, seat.name)} <span style="color:var(--text-2);font-size:.76rem">${pct(seat.wr)}% · ${seat.games} games</span></span>
             <span class="picks-mini">${mode === 'meta'
               ? metaPickFor(seat, oi, si)
               : (seat.picks.map((h) => `${esc(h.name)} ${pct(h.shrunkWr, 0)}%`).join(' · ') || '<span style="color:var(--gold)">no 30+ game hero here — flip to meta mode</span>')}</span>
@@ -319,7 +320,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
       </div>`;
     }).join('') + `
       ${whyLines(options[0].seats).map((l) => `<div class="whyline">🧾 ${esc(l)}</div>`).join('')}
-      ${synPairs.length ? `<div class="plansyn">duos in this group: ${synPairs.map((p) => `${esc(p.aName.split(' ')[0])}+${esc(p.bName.split(' ')[0])} ${pct(p.winrate, 0)}%/${p.games}g`).join(' · ')}</div>` : ''}
+      ${synPairs.length ? `<div class="plansyn">duos in this group: ${synPairs.map((p) => `${esc(p.aName.split(' ')[0])}+${esc(p.bName.split(' ')[0])} ${pct(p.winrate, 0)}% in ${p.games} games`).join(' · ')}</div>` : ''}
       <div style="font-size:.7rem;color:var(--text-2);margin-top:.4rem">
         ${mode === 'meta'
           ? 'meta mode: heroes from the current patch meta board per lane; “new to you” = under 30 games on it, the seat winrate shown is still your role record'

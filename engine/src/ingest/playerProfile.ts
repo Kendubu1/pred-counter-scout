@@ -94,49 +94,105 @@ const ROLE_NOUN: Record<string, string> = {
   jungle: 'Jungler', midlane: 'Midlaner', offlane: 'Offlaner', carry: 'Carry', support: 'Support',
 };
 
+export interface ArchetypeCandidate { kind: string; strength: number; label: string; receipt: string }
+
+/** "wins N more games per 100" phrasing for a winrate delta (no jargon). */
+const per100 = (delta: number) => `${Math.abs(Math.round(delta * 1000) / 10)}`;
+
 /**
- * Data-derived player archetype: a crisp identity with its receipt.
- * Leads with the player's sharpest secret (hero edge first, role edge
- * second) so no two squadmates read the same. First match wins.
+ * Every data-backed identity this player could honestly carry, strongest
+ * first. Each receipt states only facts from the profile, in plain
+ * wins-per-100 language. Strengths are winrate-delta-shaped so kinds are
+ * comparable; share-based kinds get fixed mid/low strengths.
  */
-export function archetype(a: AnalyzedPlayer): { label: string; receipt: string } {
+export function archetypeCandidates(a: AnalyzedPlayer): ArchetypeCandidate[] {
+  const out: ArchetypeCandidate[] = [];
   const deep = a.roles.filter((r) => r.games >= 100);
   const best = deep[0];
   const totalRoleGames = a.roles.reduce((s, r) => s + r.games, 0) || 1;
   const topShare = (a.roles.slice().sort((x, y) => y.games - x.games)[0]?.games ?? 0) / totalRoleGames;
   const top3Share = a.pool.slice(0, 3).reduce((s, h) => s + h.games, 0) / Math.max(a.career.games, 1);
   const spread = deep.length ? Math.max(...deep.map((r) => r.shrunkWr)) - Math.min(...deep.map((r) => r.shrunkWr)) : 0;
-  const sig = a.pool
+  const sigs = a.pool
     .filter((h) => h.games >= 75 && (h.edge ?? -1) >= 0.03)
-    .sort((x, y) => (y.edge ?? 0) - (x.edge ?? 0))[0];
+    .sort((x, y) => (y.edge ?? 0) - (x.edge ?? 0));
+  const sig = sigs[0];
 
-  // hero-level secret beats role-level secret when it is the sharper edge
-  if (sig && (sig.edge ?? 0) >= spread) {
-    return {
+  if (sig) {
+    out.push({
+      kind: 'closet-main', strength: sig.edge ?? 0,
       label: `Closet ${sig.name} Main`,
-      receipt: `${(sig.shrunkWr * 100).toFixed(1)}% over ${sig.games} games on ${sig.name}, +${((sig.edge ?? 0) * 100).toFixed(1)} points over the field — the wide pool hides a weapon.`,
-    };
+      receipt: `${(sig.shrunkWr * 100).toFixed(1)}% over ${sig.games} games on ${sig.name} — about ${per100(sig.edge ?? 0)} more wins per 100 games than the average ${sig.name} player. The wide pool hides a weapon.`,
+    });
+  }
+  if (sigs.length >= 2) {
+    const [h1, h2] = sigs as [typeof sigs[0], typeof sigs[0]];
+    out.push({
+      kind: 'two-trick', strength: h2.edge ?? 0,
+      label: `The ${h1.name} & ${h2.name} Two-Trick`,
+      receipt: `two heroes beat the field: ${h1.name} (${(h1.shrunkWr * 100).toFixed(1)}% over ${h1.games} games) and ${h2.name} (${(h2.shrunkWr * 100).toFixed(1)}% over ${h2.games} games) — each worth extra wins vs the average player on them.`,
+    });
   }
   if (deep.length >= 4 && spread >= 0.04 && best) {
-    return {
+    out.push({
+      kind: 'secret-role', strength: spread,
       label: `The Secret ${ROLE_NOUN[best.role] ?? best.role}`,
-      receipt: `${deep.length} roles at 100+ games, but ${best.role} (${(best.shrunkWr * 100).toFixed(1)}%/${best.games}g) wins ${(spread * 100).toFixed(1)} points more than the worst — versatility is hiding a specialty.`,
-    };
+      receipt: `${deep.length} roles at 100+ games, but ${best.role} (${(best.shrunkWr * 100).toFixed(1)}% over ${best.games} games) wins about ${per100(spread)} more games per 100 than the weakest role — versatility is hiding a specialty.`,
+    });
   }
-  if (deep.length >= 4) {
-    return { label: 'The True Flex', receipt: `${deep.length} roles at 100+ games within ${(spread * 100).toFixed(1)} points of each other — genuinely fill-proof.` };
+  if (deep.length >= 4 && spread < 0.04) {
+    out.push({
+      kind: 'true-flex', strength: 0.025,
+      label: 'The True Flex',
+      receipt: `${deep.length} roles at 100+ games, all within ${per100(spread)} wins per 100 of each other — genuinely fill-proof.`,
+    });
   }
   if (topShare >= 0.5 && top3Share >= 0.5) {
     const main = a.roles.slice().sort((x, y) => y.games - x.games)[0]!;
-    return {
+    out.push({
+      kind: 'specialist', strength: 0.02 + (topShare - 0.5) * 0.04,
       label: `The ${ROLE_NOUN[main.role] ?? main.role} Specialist`,
       receipt: `${(topShare * 100).toFixed(0)}% of games in ${main.role}, ${(top3Share * 100).toFixed(0)}% on three heroes — a sharpened edge.`,
-    };
+    });
   }
   if (top3Share < 0.4) {
-    return { label: 'The Wanderer', receipt: `top three heroes are only ${(top3Share * 100).toFixed(0)}% of ${a.career.games} games — breadth tax in every queue.` };
+    out.push({
+      kind: 'wanderer', strength: 0.015,
+      label: 'The Wanderer',
+      receipt: `top three heroes are only ${(top3Share * 100).toFixed(0)}% of ${a.career.games} games — spreading games this thin slows the climb in every queue.`,
+    });
   }
-  return { label: 'The Grinder', receipt: `${a.career.games} games of steady volume at ${(a.career.winrate * 100).toFixed(1)}% — the climb is about where the games go, not how many.` };
+  out.push({
+    kind: 'grinder', strength: 0.005,
+    label: 'The Grinder',
+    receipt: `${a.career.games} games of steady volume at ${(a.career.winrate * 100).toFixed(1)}% — the climb is about where the games go, not how many.`,
+  });
+  return out.sort((x, y) => y.strength - x.strength);
+}
+
+/** Standalone reports lead with the strongest identity. */
+export function archetype(a: AnalyzedPlayer): { label: string; receipt: string } {
+  const top = archetypeCandidates(a)[0]!;
+  return { label: top.label, receipt: top.receipt };
+}
+
+/**
+ * Squad-level assignment: strongest claims pick first, and no two members
+ * share the same archetype kind while an unused honest alternative exists.
+ * Every receipt stays factual — this only chooses which true trait leads.
+ */
+export function assignDistinctArchetypes(players: AnalyzedPlayer[]): Map<string, { label: string; receipt: string }> {
+  const ranked = players
+    .map((p) => ({ uuid: p.uuid, list: archetypeCandidates(p) }))
+    .sort((x, y) => (y.list[0]?.strength ?? 0) - (x.list[0]?.strength ?? 0));
+  const used = new Set<string>();
+  const out = new Map<string, { label: string; receipt: string }>();
+  for (const m of ranked) {
+    const pick = m.list.find((c) => !used.has(c.kind)) ?? m.list[0]!;
+    used.add(pick.kind);
+    out.set(m.uuid, { label: pick.label, receipt: pick.receipt });
+  }
+  return out;
 }
 
 /**
@@ -198,7 +254,7 @@ export function buildCoachReport(a: AnalyzedPlayer, lastPlayedAt: string) {
     plan.push(`Stop queueing ${worstRole.role}: ${(worstRole.rawWr * 100).toFixed(1)}% over ${worstRole.games} games is costing real VP. When auto-filled there, play your safest comfort pick, not a learning pick.`);
   }
   if (leanInto.length) {
-    plan.push(`Two-hero rule for the climb: ${leanInto.slice(0, 2).map((h) => h.name).join(' and ')}. You beat the field on them by ${leanInto.slice(0, 2).map((h) => `+${((h.edge ?? 0) * 100).toFixed(1)}`).join(' and ')} points of winrate.`);
+    plan.push(`Two-hero rule for the climb: ${leanInto.slice(0, 2).map((h) => h.name).join(' and ')}. Compared with the average player on the same hero, you win about ${leanInto.slice(0, 2).map((h) => `${(Math.abs(h.edge ?? 0) * 100).toFixed(1)}`).join(' and ')} more games per 100 on them.`);
   }
   plan.push(`Your champion pool is ${a.pool.length}+ heroes wide and your top three are only ${(top3Share * 100).toFixed(0)}% of your games. Gold-to-Platinum climbs are almost always pool-narrowing stories: aim for 70%+ of games on your top three.`);
   if (park.length) {

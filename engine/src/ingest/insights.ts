@@ -228,7 +228,7 @@ export function computeInsights(m: DeepMember, base: SquadBaselines, bestPair?: 
     out.push({
       title: `${vol.name} is the long-term relationship`,
       finding: vsField != null && vsField > 0.015
-        ? `${vol.games} games and you genuinely out-pilot the field on ${vol.name} (+${(vsField * 100).toFixed(1)} points). The hours show.`
+        ? `${vol.games} games and you genuinely out-pilot the field on ${vol.name} — about ${(Math.abs(vsField) * 100).toFixed(1)} more wins per 100 games than the average ${vol.name} player. The hours show.`
         : `${vol.games} games on ${vol.name} at ${pct(vol.shrunkWr, 1)}% — the field averages ${pct(vol.fieldWr ?? 0.5, 1)}%. The comfort is real; the edge is ${vsField != null && vsField < -0.01 ? 'not there yet — worth studying top builds' : 'roughly neutral'}.`,
       receipt: `${vol.games} games, KDA ${vol.kda.toFixed(1)}, ${vol.deathsPerGame.toFixed(1)} deaths/game`,
       salience: 0.03 + Math.abs(vsField ?? 0) * 0.5,

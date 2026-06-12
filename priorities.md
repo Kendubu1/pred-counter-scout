@@ -62,6 +62,12 @@ support objective vector and the max-damage-only caveat comes off; golden
 scenario: an enchanter support is never handed a crit/lethality core;
 harness green; docs + lessons updated; committed.
 
+## Parked ideas (not yet scheduled)
+
+- Comfort-vs-meta flex logic (parked by maintainer 2026-06-12): when a
+  player's top hero is a low-meta pick, quantify when to keep it vs flex
+  to a meta hero, and how to counter-pick around keeping it.
+
 ## 8. LLM copy pass with ground-check verifier — BLOCKED 2026-06-11
 
 Blocked: no ANTHROPIC_API_KEY in the execution environment. Needs the
