@@ -195,13 +195,13 @@ export function archetypeCandidates(a: AnalyzedPlayer): ArchetypeCandidate[] {
     out.push({
       kind: 'wanderer', strength: 0.015,
       label: 'The Wanderer',
-      receipt: `top three heroes are only ${(top3Share * 100).toFixed(0)}% of ${a.career.games} games — spreading games this thin slows the climb in every queue.`,
+      receipt: `top three heroes are only ${(top3Share * 100).toFixed(0)}% of ${a.career.games.toLocaleString('en-US')} games — spreading games this thin slows the climb in every queue.`,
     });
   }
   out.push({
     kind: 'grinder', strength: 0.005,
     label: 'The Grinder',
-    receipt: `${a.career.games} games of steady volume at ${(a.career.winrate * 100).toFixed(1)}% — the climb is about where the games go, not how many.`,
+    receipt: `${a.career.games.toLocaleString('en-US')} games of steady volume at ${(a.career.winrate * 100).toFixed(1)}% — the climb is about where the games go, not how many.`,
   });
   return out.sort((x, y) => y.strength - x.strength);
 }
@@ -284,13 +284,19 @@ export function buildCoachReport(a: AnalyzedPlayer, lastPlayedAt: string) {
 
   const plan: string[] = [];
   if (bestRole) {
-    plan.push(`Queue ${bestRole.role} as primary. It is your best role at ${(bestRole.shrunkWr * 100).toFixed(1)}% over ${bestRole.games} games (your overall is ${(overallWr * 100).toFixed(1)}%). Set ${a.favRole?.toLowerCase() ?? 'your current fav'} as secondary, not the other way around.`);
+    const fav = a.favRole?.toLowerCase();
+    plan.push(fav === bestRole.role
+      ? `Keep queueing ${bestRole.role} as primary — it is already your usual queue AND your best role at ${(bestRole.shrunkWr * 100).toFixed(1)}% over ${bestRole.games} games (your overall is ${(overallWr * 100).toFixed(1)}%).`
+      : `Queue ${bestRole.role} as primary. It is your best role at ${(bestRole.shrunkWr * 100).toFixed(1)}% over ${bestRole.games} games (your overall is ${(overallWr * 100).toFixed(1)}%). Set ${fav ?? 'your current fav'} as secondary, not the other way around.`);
   }
   if (worstRole && worstRole.shrunkWr < overallWr - 0.02) {
     plan.push(`Stop queueing ${worstRole.role}: ${(worstRole.rawWr * 100).toFixed(1)}% over ${worstRole.games} games is costing real VP. When auto-filled there, play your safest comfort pick, not a learning pick.`);
   }
   if (leanInto.length) {
-    plan.push(`Two-hero rule for the climb: ${leanInto.slice(0, 2).map((h) => h.name).join(' and ')}. Compared with the average player on the same hero, you win about ${leanInto.slice(0, 2).map((h) => `${(Math.abs(h.edge ?? 0) * 100).toFixed(1)}`).join(' and ')} more games per 100 on them.`);
+    const lean2 = leanInto.slice(0, 2);
+    plan.push(lean2.length === 1
+      ? `Comfort-hero rule for the climb: ${lean2[0]!.name}. Compared with the average player on the same hero, you win about ${(Math.abs(lean2[0]!.edge ?? 0) * 100).toFixed(1)} more games per 100 on it.`
+      : `Two-hero rule for the climb: ${lean2.map((h) => h.name).join(' and ')}. Compared with the average player on the same hero, you win about ${lean2.map((h) => `${(Math.abs(h.edge ?? 0) * 100).toFixed(1)}`).join(' and ')} more games per 100 on them.`);
   }
   plan.push(`Your champion pool is ${a.pool.length}+ heroes wide and your top three are only ${(top3Share * 100).toFixed(0)}% of your games. Gold-to-Platinum climbs are almost always pool-narrowing stories: aim for 70%+ of games on your top three.`);
   if (park.length) {

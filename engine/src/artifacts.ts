@@ -160,7 +160,7 @@ function counterSwap(kit: HeroKit, items: Item[], enemy: HeroKit, enemyItems: It
     inSlug: best.item.slug,
     survivalGainPct: Math.round(best.gain * 100),
     offenseLossPct: Math.round(best.loss * 100),
-    line: `Losing lane? Third item ${best.item.name} instead of ${prefix[2]!.name}: their 3s all-in loses ${Math.round(best.gain * 100)}% of its bite for ${Math.round(best.loss * 100)}% of your damage.`,
+    line: `Losing lane? Third item ${best.item.name} instead of ${prefix[2]!.name}: their 3s all-in loses ${Math.round(best.gain * 100)}% of its bite; you give up ${Math.round(best.loss * 100)}% of your damage.`,
   };
 }
 
@@ -330,13 +330,21 @@ export function buildHeroArtifact(
       }
       if (!bestKey) bestKey = headlineKey;
       bestObjective = OBJ_LABELS[bestKey]!;
-      whyLine = `Strongest meta core for ${bestObjective}${spikeMinute ? `, online around minute ${spikeMinute}` : ''}. The sim rates it ${Math.round(ev.objectives[bestKey as keyof typeof ev.objectives] ?? 0)} there.`;
+      const OBJ_UNITS: Record<string, string> = {
+        burstVsSquishy: 'damage in one combo', rot10VsSquishy: 'damage over a 10s rotation',
+        rot20VsBruiser: 'damage over a 20s fight', autoDps10VsSquishy: 'auto-attack DPS',
+        ehpPhysical: 'effective HP vs physical', ehpMagical: 'effective HP vs magical',
+      };
+      whyLine = `Strongest meta core for ${bestObjective}${spikeMinute ? `, online around minute ${spikeMinute}` : ''} — about ${Math.round(ev.objectives[bestKey as keyof typeof ev.objectives] ?? 0).toLocaleString('en-US')} ${OBJ_UNITS[bestKey] ?? ''} in the sim.`;
       const ours = ourCoreEval.objectives[bestKey as keyof typeof ourCoreEval.objectives] ?? 0;
       const theirs = ev.objectives[bestKey as keyof typeof ev.objectives] ?? 0;
       const edge = theirs > 0 ? ((ours - theirs) / theirs) * 100 : 0;
       const diffIdx = c.coreSlugs.findIndex((s, i) => s !== (ordered.ordered[i]?.slug ?? null));
       if (edge >= 8 && diffIdx >= 0) {
-        optimizer = `Optimizer sees +${edge.toFixed(0)}% on ${bestObjective}: try ${ordered.ordered[diffIdx]!.name} over ${c.core[diffIdx]} (sim-only, test it).`;
+        const overName = (c.coreSlugs[diffIdx] && data.itemsBySlug.get(c.coreSlugs[diffIdx]!)?.name)
+          ?? c.core[diffIdx]!.replace(/([a-z])([A-Z])/g, '$1 $2');
+        const gain = edge >= 100 ? `${(edge / 100 + 1).toFixed(1)}× the` : `+${edge.toFixed(0)}% more`;
+        optimizer = `Optimizer sees ${gain} ${bestObjective}: try ${ordered.ordered[diffIdx]!.name} over ${overName} (sim-only — the popular pick may carry utility the sim can't see; test it).`;
       } else if (Math.abs(edge) < 8) {
         optimizer = `Optimizer agrees: within ${Math.abs(edge).toFixed(0)}% of our best core on ${bestObjective}. The winrate is earned, not luck.`;
       }
@@ -357,11 +365,21 @@ export function buildHeroArtifact(
 
   const firstSpike = spikes.find((s) => s.minute != null);
   const headline = OBJECTIVE_LABELS[headlineObjective(kit)] ?? 'damage';
+  const archList = top.archetypes.length > 2
+    ? `${top.archetypes.slice(0, -1).join(', ')} and ${top.archetypes[top.archetypes.length - 1]}`
+    : top.archetypes.join(' and ');
+  const e0 = eternals.top[0];
+  const e0best = e0
+    ? ([[e0.headlinePct, 'your headline output'], [e0.burstPct, 'your burst combo'], [e0.rot20Pct, '20-second fights'], [e0.ehpPct, 'your effective HP']] as [number, string][])
+        .sort((x, y) => y[0] - x[0])[0]!
+    : null;
   const coachLine =
-    `Sim-optimal for ${top.archetypes.length ? top.archetypes.join(' and ') : headline}: ` +
+    `Sim-optimal for ${top.archetypes.length ? archList : headline}: ` +
     `first spike ${firstSpike ? `lands around minute ${firstSpike.minute} (${firstSpike.item})` : 'is late'}, ` +
     `third item by ${spikes[2]?.minute != null ? `minute ${spikes[2]!.minute}` : 'the 30+ minute mark'}.` +
-    (eternals.top[0] ? ` Take ${eternals.top[0].name}: +${eternals.top[0].headlinePct}% on your headline output at minute 15.` : '');
+    (e0 && e0best ? (e0best[0] > 0
+      ? ` Take ${e0.name}: +${e0best[0]}% on ${e0best[1]} at minute 15.`
+      : ` No modeled Eternal moves this kit's numbers much — check the field's pick on the page.`) : '');
 
   const roleCaveat = role === 'support'
     ? `This is ${kit.name}'s maximum-damage build, not a support build. Heal/shield output, auras, and income items are not in the model yet (support model is on the backlog) — in a real game, support itemization comes first.`

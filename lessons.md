@@ -549,3 +549,23 @@ Append-only. One entry per backlog item or significant finding.
   single-source prompt, strict JSON out, machine verification against
   the prompt's own numbers, silent fallback to template copy on
   rejection. AI copy is additive, never load-bearing.
+
+## 2026-06-12 (night, cont. 10): the copy audit — in-session beats API
+
+- The maintainer asked for the LLM check over all our whys, then asked
+  why it costs API tokens when a Claude session is already paid for. It
+  doesn't have to: a one-off audit runs in-session at zero API cost; the
+  API pipeline is only for unattended runs (post-patch GitHub Action).
+- Method that made it cheap: dedupe all player-facing strings into
+  template families (numbers → N) — 208 uniques covered every line on
+  the site. Findings fixed at the generation sites: naked sim ratings
+  now carry units ("about 2,465 damage over a 10s rotation"), optimizer
+  lines cap absurd deltas ("2.4× the" instead of "+378%") and de-smash
+  item names (Azure Core), the self-contradicting primary/secondary
+  plan line gets a same-role variant, "Two-hero rule" has a singular
+  form, +0% Eternal recommendations fall back honestly, counter-swap
+  trades read as give/take, damage receipts name their stat, "a 18-kill
+  spree" became "a longest spree of 18", and the squad synergy note
+  dropped "solo-ish" and second person.
+- The audit list itself (208 templates) is the reusable artifact; the
+  next pass only needs to diff new templates against it.

@@ -106,7 +106,7 @@ export function computeInsights(m: DeepMember, base: SquadBaselines, bestPair?: 
           finding: gap > 0
             ? `Games under 28 minutes: ${pct(wrS)}%. Past 32: ${pct(wrL)}%. Press early leads and call objectives; do not let games drift.`
             : `Past 32 minutes you win ${pct(wrL)}% vs ${pct(wrS)}% in short games. Scaling comps and patience suit you; avoid coin-flip early all-ins.`,
-          receipt: `${short.filter((x) => x.won).length}/${short.length} short vs ${long.filter((x) => x.won).length}/${long.length} long, recent games`,
+          receipt: `wins ${short.filter((x) => x.won).length} of ${short.length} short games vs ${long.filter((x) => x.won).length} of ${long.length} long ones, recent sample`,
           salience: Math.abs(gap),
         });
       }
@@ -246,9 +246,9 @@ export function computeInsights(m: DeepMember, base: SquadBaselines, bestPair?: 
     out.push({
       title: 'For the group chat',
       finding: g.pentaKills > 0
-        ? `${g.pentaKills} pentakill${g.pentaKills > 1 ? 's' : ''} in real 5v5s and a ${g.maxKillingSpree}-kill spree${casualTail}. ${first} has receipts.`
+        ? `${g.pentaKills} pentakill${g.pentaKills > 1 ? 's' : ''} in real 5v5s and a longest spree of ${g.maxKillingSpree}${casualTail}. ${first} has receipts.`
         : g.maxKillingSpree >= 12
-          ? `A ${g.maxKillingSpree}-kill spree in real 5v5s${casualTail}. ${first} has receipts.`
+          ? `A longest killing spree of ${g.maxKillingSpree} in real 5v5s${casualTail}. ${first} has receipts.`
           : `${casualPentas} pentakill${casualPentas > 1 ? 's' : ''} — every one in ARAM or brawls. The group chat decides if those count.`,
       receipt: `${Math.round(g.totalTime / 3600).toLocaleString()} hours in real 5v5s`,
       salience: 0.02,
@@ -262,9 +262,9 @@ export function computeInsights(m: DeepMember, base: SquadBaselines, bestPair?: 
   if (substantive.length < 3) {
     const traits: [string, number, string][] = [
       ['vision work', wardsPg / Math.max(base.wardsPerGame, 0.01), `${wardsPg.toFixed(1)} wards/game vs squad ${base.wardsPerGame.toFixed(1)}`],
-      ['objective damage', objPg / Math.max(base.objSharePerGame, 1), `${Math.round(objPg).toLocaleString()}/game vs squad ${Math.round(base.objSharePerGame).toLocaleString()}`],
-      ['damage dealt', dealtPg / Math.max(base.dmgPerGame, 1), `${Math.round(dealtPg).toLocaleString()}/game vs squad ${Math.round(base.dmgPerGame).toLocaleString()}`],
-      ['damage soaked', takenPg / Math.max(base.takenPerGame, 1), `${Math.round(takenPg).toLocaleString()}/game vs squad ${Math.round(base.takenPerGame).toLocaleString()}`],
+      ['objective damage', objPg / Math.max(base.objSharePerGame, 1), `${Math.round(objPg).toLocaleString()} objective damage/game vs squad ${Math.round(base.objSharePerGame).toLocaleString()}`],
+      ['damage dealt', dealtPg / Math.max(base.dmgPerGame, 1), `${Math.round(dealtPg).toLocaleString()} hero damage/game vs squad ${Math.round(base.dmgPerGame).toLocaleString()}`],
+      ['damage soaked', takenPg / Math.max(base.takenPerGame, 1), `${Math.round(takenPg).toLocaleString()} damage taken/game vs squad ${Math.round(base.takenPerGame).toLocaleString()}`],
     ];
     const most = traits.sort((a, b) => Math.abs(b[1] - 1) - Math.abs(a[1] - 1))[0]!;
     out.push({
