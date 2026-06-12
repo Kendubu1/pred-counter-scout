@@ -33,6 +33,62 @@ export async function pullProfile(uuid: string): Promise<RawProfile> {
 
 export const shrink = (w: number, n: number, prior: number, k: number) => (w + k * prior) / (n + k);
 
+export const PLATINUM_VP = 900; // Platinum III ratingMin, pred.gg rank table, Season 1 Split 4
+
+/** The full coach-report object rendered by ui/v6/coach.html. Shared so
+ *  the lead's coach.json and every squad member's report agree. */
+export function buildCoachReport(a: AnalyzedPlayer, lastPlayedAt: string) {
+  const overallWr = a.career.winrate;
+  const leanInto = a.pool
+    .filter((h) => h.games >= 75 && h.edge != null && h.edge >= 0.02 && h.shrunkWr >= 0.52)
+    .sort((x, y) => (y.edge! * Math.log(y.games)) - (x.edge! * Math.log(x.games)))
+    .slice(0, 4);
+  const park = a.pool.filter((h) => h.games >= 30 && h.shrunkWr <= 0.47).slice(0, 4);
+  const bestRole = a.roles.filter((r) => r.games >= 100)[0] ?? a.roles[0];
+  const worstRole = [...a.roles].filter((r) => r.games >= 100).sort((x, y) => x.shrunkWr - y.shrunkWr)[0] ?? null;
+  const top3Share = a.pool.slice(0, 3).reduce((s, h) => s + h.games, 0) / Math.max(a.career.games, 1);
+  const current = a.current ?? { points: 0, rank: null, split: 'unranked' };
+
+  const plan: string[] = [];
+  if (bestRole) {
+    plan.push(`Queue ${bestRole.role} as primary. It is your best role at ${(bestRole.shrunkWr * 100).toFixed(1)}% over ${bestRole.games} games (your overall is ${(overallWr * 100).toFixed(1)}%). Set ${a.favRole?.toLowerCase() ?? 'your current fav'} as secondary, not the other way around.`);
+  }
+  if (worstRole && worstRole.shrunkWr < overallWr - 0.02) {
+    plan.push(`Stop queueing ${worstRole.role}: ${(worstRole.rawWr * 100).toFixed(1)}% over ${worstRole.games} games is costing real VP. When auto-filled there, play your safest comfort pick, not a learning pick.`);
+  }
+  if (leanInto.length) {
+    plan.push(`Two-hero rule for the climb: ${leanInto.slice(0, 2).map((h) => h.name).join(' and ')}. You beat the field on them by ${leanInto.slice(0, 2).map((h) => `+${((h.edge ?? 0) * 100).toFixed(1)}`).join(' and ')} points of winrate.`);
+  }
+  plan.push(`Your champion pool is ${a.pool.length}+ heroes wide and your top three are only ${(top3Share * 100).toFixed(0)}% of your games. Gold-to-Platinum climbs are almost always pool-narrowing stories: aim for 70%+ of games on your top three.`);
+  if (park.length) {
+    plan.push(`Park ${park.map((h) => h.name).join(', ')} for ranked: ${park.map((h) => `${(h.rawWr * 100).toFixed(0)}% over ${h.games}`).join('; ')}. Keep them for normals.`);
+  }
+  plan.push(`The math: you are at ${current.points} VP; Platinum III starts at ${PLATINUM_VP}. Your all-time peak is ${a.peakAllTime}${a.peakAllTime >= PLATINUM_VP ? ' — you have already touched Platinum-level rating once; this is a consistency problem, not a ceiling problem' : ''}.`);
+
+  return {
+    generatedAt: new Date().toISOString(),
+    source: 'pred.gg public profile + own aggregate baselines',
+    player: {
+      name: a.name, uuid: a.uuid, favRole: a.favRole, lastPlayedAt,
+      career: a.career,
+      ratings: a.ratings.map((r) => ({ ...r, percentile: null as number | null })),
+      current,
+    },
+    goal: { tier: 'Platinum III', vp: PLATINUM_VP, gapVp: Math.max(0, PLATINUM_VP - current.points), peakAllTime: a.peakAllTime },
+    roles: a.roles,
+    pool: a.pool,
+    leanInto,
+    park,
+    poolWidth: { heroesPlayed20Plus: a.pool.length, top3Share },
+    plan,
+    honesty: [
+      'personal winrates are shrunk toward your own average (small heater samples do not count as mains)',
+      'field baselines are all-ranks aggregates from our current-patch match sample, not Gold-bracket-specific yet',
+      'winrate edges are observational; they say where you win, not why',
+    ],
+  };
+}
+
 export interface AnalyzedPlayer {
   uuid: string;
   name: string;            // 'Private player' when hidden

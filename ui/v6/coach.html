@@ -76,8 +76,11 @@ const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'
 const pct = (x, d = 1) => (x * 100).toFixed(d);
 (async () => {
   let c;
-  try { c = await (await fetch('../../data/artifacts/coach.json')).json(); }
+  const who = new URLSearchParams(location.search).get('player');
+  const src = who ? `../../data/artifacts/players/${who}.json` : '../../data/artifacts/coach.json';
+  try { c = await (await fetch(src)).json(); }
   catch { document.getElementById('page').textContent = 'no coach report generated yet'; return; }
+  document.title = `${c.player.name} — coach report`;
   const p = c.player;
   const fillPct = Math.min(100, (p.current.points / c.goal.vp) * 100);
   const peakPct = Math.min(100, (c.goal.peakAllTime / c.goal.vp) * 100);
