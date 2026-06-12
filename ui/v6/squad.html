@@ -67,6 +67,7 @@
   .planseat:last-of-type { border-bottom:none; }
   .planseat .r { font-weight:800; text-transform:capitalize; color:var(--accent); }
   .planseat .picks-mini { font-size:.74rem; color:var(--text-2); }
+  .picks-mini .hico { width:20px; height:20px; border-radius:5px; object-fit:cover; vertical-align:-5px; margin-right:.25rem; }
   .pairrow { display:grid; grid-template-columns:minmax(170px, 310px) 1fr 96px; gap:.7rem; align-items:center; padding:.3rem 0; font-size:.82rem; }
   .pairrow .names { color:var(--text-1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .pairrow .bar { height:8px; border-radius:99px; background:var(--bg-2); overflow:hidden; }
@@ -257,7 +258,7 @@ const plink = (uuid, name) => uuid
     const note = mine && mine.games >= 30
       ? `you: ${pct(mine.shrunkWr, 0)}% · ${mine.games} games`
       : `field ${pct(h.shrunkWr, 0)}% · <span style="color:var(--gold)">new to you</span>`;
-    return `${esc(h.name)} <span style="color:var(--text-2)">${note}</span>`;
+    return `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} <span style="color:var(--text-2)">${note}</span>`;
   }
 
   function renderPlan() {
@@ -280,10 +281,10 @@ const plink = (uuid, name) => uuid
         ${opt.seats.map((seat, si) => `
           <div class="planseat">
             <span class="r">${esc(seat.role)}</span>
-            <span>${pav(seat.uuid)}${plink(seat.uuid, seat.name)} <span style="color:var(--text-2);font-size:.76rem">${pct(seat.wr)}% · ${seat.games} games</span></span>
+            <span>${plink(seat.uuid, seat.name.split(' ')[0])} <span style="color:var(--text-2);font-size:.76rem">${pct(seat.wr)}% · ${seat.games} games</span></span>
             <span class="picks-mini">${mode === 'meta'
               ? metaPickFor(seat, oi, si)
-              : (seat.picks.map((h) => `${esc(h.name)} ${pct(h.shrunkWr, 0)}%`).join(' · ') || '<span style="color:var(--gold)">no 20+ game hero in this exact role — flip to meta mode</span>')}</span>
+              : (seat.picks.map((h) => `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} ${pct(h.shrunkWr, 0)}%`).join(' · ') || '<span style="color:var(--gold)">no 20+ game hero in this exact role — flip to meta mode</span>')}</span>
           </div>`).join('')}
       </div>`;
     }).join('') + `
