@@ -593,3 +593,14 @@ Append-only. One entry per backlog item or significant finding.
   the whole roster regardless of filter, with an autocomplete dropdown
   (portrait + role, arrow keys, Enter to open). When a user says data
   is missing, check the query path before the data.
+
+## 2026-06-12 (night, cont. 13): the hero page learns to teach
+
+- Hero pages split into tabs: "Game plan" (gate picks, builds, counters)
+  and "Learn the hero" — the full kit from the official ability data
+  (per-rank cooldowns and mana, real damage numbers, key bindings) with
+  all 312 ability icons snapshotted from omeda's asset CDN (1.3MB,
+  zero API at render). Ult rank levels carry their verified 6/11/16.
+- The subnav needed a visibility filter (offsetParent !== null) once
+  tabs existed — hidden sections were getting pills. Generated nav must
+  re-derive from what is actually visible, not what exists in the DOM.
