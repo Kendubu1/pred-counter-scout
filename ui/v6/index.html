@@ -129,6 +129,7 @@
   }
 
   .eternal-row { display:flex; gap:.8rem; align-items:center; }
+  .eternal-row > div { flex:1; min-width:0; }
   .eternal-row > img { width:40px; height:40px; border-radius:50%; border:2px solid var(--accent); object-fit:cover; background:var(--bg-2); flex:none; }
   .eternal-row .deltas { font-size:.8rem; color:var(--text-1); }
   .eternal-alts { display:flex; gap:1rem; margin-top:.7rem; flex-wrap:wrap; }
@@ -192,6 +193,7 @@
   .lanepanel .pilots-line { font-size:.72rem; color:var(--text-2); margin-top:.7rem; border-top:1px dashed var(--border); padding-top:.6rem; }
   .lanepanel .pilots-line a { color:var(--blue); }
   @media (max-width:600px) {
+    .card h2 .hint { float:none; display:block; margin-top:.15rem; }
     .lanepanel { padding:.8rem .8rem; }
     .lrow { grid-template-columns:28px 1fr auto; gap:.5rem; }
     .lrow img { width:28px; height:28px; }
@@ -375,6 +377,13 @@ async function renderLaneDetail() {
         <span class="wrr">${(h.shrunkWr * 100).toFixed(1)}%<div class="sub" style="text-align:right">${h.games} games</div></span>
       </div>`;
     }).join('');
+    const metaSet = new Set(laneMeta.map((h) => h.slug));
+    const rest = INDEX.heroes.filter((h) => h.role === role && !metaSet.has(h.slug));
+    if (rest.length) {
+      body += `<div class="lp-sub" style="margin-top:.6rem">rest of the lane:</div><div class="echips">${rest.map((h) => `
+        <span class="echip" data-slug="${h.slug}" data-go="hero">
+          <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">${esc(h.name)}</span>`).join('')}</div>`;
+    }
     body += `<div class="lp-sub" style="margin-top:.6rem">ordered by meta score (pick presence + winrate, percentile-averaged) · "out-simmed" = the kit-math kill-window sim, THEORY until calibrated · tap a hero for the full build page</div>`;
   } else {
     const mx = await getMatrix();
@@ -430,7 +439,12 @@ async function renderLaneDetail() {
         : `#${p.ranking} ${esc(p.name)}`).join(' · ')} — the ladder's highest-rated players who main this lane; names open their pred.gg match history to study real builds</div>` : ''}
     </div>`;
   box.querySelectorAll('.lmode button').forEach((b) => { b.onclick = () => { laneMode = b.dataset.m; renderLaneDetail(); }; });
-  box.querySelectorAll('.echip').forEach((c) => { c.onclick = () => { laneEnemy = c.dataset.slug; renderLaneDetail(); }; });
+  box.querySelectorAll('.echip').forEach((c) => {
+    c.onclick = () => {
+      if (c.dataset.go === 'hero') { nav(c.dataset.slug); return; }
+      laneEnemy = c.dataset.slug; renderLaneDetail();
+    };
+  });
   const fx = box.querySelector('#flexEnemy');
   if (fx) fx.onchange = () => { if (fx.value) { laneEnemy = fx.value; renderLaneDetail(); } };
   box.querySelectorAll('.lrow').forEach((r) => { r.onclick = () => nav(r.dataset.slug); });
@@ -532,8 +546,34 @@ function renderHero(a) {
       </div>
     </header>
 
+    <section class="card">
+      <h2>At the gate · your 20-second pick <span class="hint">Eternal first — the build follows from it</span></h2>
+      ${top ? `
+      <div class="eternal-row">
+        <img src="${IMG.eternal(top.id)}" alt="" onerror="this.style.visibility='hidden'">
+        <div>
+          <b>${esc(top.name)}</b>
+          <div class="deltas">${(() => {
+            const styles = [
+              { v: top.burstPct, line: `your all-in combo hits ${top.burstPct}% harder — an assassination playstyle: look for picks, not extended trades` },
+              { v: top.rot20Pct, line: `${top.rot20Pct}% more output over a 20-second fight — a skirmish playstyle: stay in the fight, win the long trade` },
+              { v: top.ehpPct, line: `${top.ehpPct}% more effective HP — a frontline playstyle: soak the engage, let the carries clean up` },
+            ].sort((x, y) => y.v - x.v);
+            return esc(styles[0].v > 0 ? styles[0].line : `+${top.headlinePct}% on this kit's headline output at minute 15`);
+          })()}</div>
+          <div class="deltas" style="margin-top:.2rem">full math: headline +${top.headlinePct}% · burst +${top.burstPct}% · 20s fights +${top.rot20Pct}% · eHP +${top.ehpPct}%</div>
+        </div>
+      </div>
+      <div class="eternal-alts">
+        ${a.eternals.top.slice(1).map((e) => `<span class="alt"><img src="${IMG.eternal(e.id)}" alt=""> ${esc(e.name)} +${Math.max(e.headlinePct, e.ehpPct)}%</span>`).join('')}
+      </div>` : '<div class="muted">no modeled Eternal clears the bar for this kit yet</div>'}
+      <div style="margin-top:.6rem; font-size:.74rem; color:var(--text-2)">
+        ⚠ <b>Augments are the other half of this pick</b> — the three hero augments change which build is right (a damage build and a support build are different heroes in practice). Augment data isn't in any source we hold yet, so the builds below assume the kit's baseline: treat them as starting points per playstyle, not one flat answer. No math yet for: ${esc(a.eternals.unmodeled.join(', '))} — see Depth below.
+      </div>
+    </section>
+
     <section class="card answer">
-      <h2>The build <span class="hint">patch ${esc(a.patch)} · ${a.build.gold.toLocaleString()}g full</span></h2>
+      <h2>The optimizer's build <span class="hint">patch ${esc(a.patch)} · ${a.build.gold.toLocaleString()}g full · meta builds below for comparison</span></h2>
       ${a.roleCaveat ? `<div class="caveat">⚠ ${esc(a.roleCaveat)}</div>` : ''}
       <div class="rail">${a.build.items.map(itile).join('')}</div>
       <div class="coach">${esc(a.coachLine)}</div>
@@ -543,22 +583,6 @@ function renderHero(a) {
         ${underProof ? `<span class="proof playrate"><b>underexplored</b> · ${esc(underProof.name)} in ${underProof.playRatePct}% of ${esc(a.name)} games</span>` : ''}
       </div>
       ${a.build.manaFeasible ? '' : '<div class="warn">⚠ mana-hungry rotation — weave basic attacks between casts</div>'}
-    </section>
-
-    <section class="card">
-      <h2>Eternal <span class="hint">marginal gain at minute 15, math only</span></h2>
-      ${top ? `
-      <div class="eternal-row">
-        <img src="${IMG.eternal(top.id)}" alt="" onerror="this.style.visibility='hidden'">
-        <div>
-          <b>${esc(top.name)}</b>
-          <div class="deltas">headline +${top.headlinePct}% · burst +${top.burstPct}% · 20s fights +${top.rot20Pct}% · eHP +${top.ehpPct}%</div>
-        </div>
-      </div>
-      <div class="eternal-alts">
-        ${a.eternals.top.slice(1).map((e) => `<span class="alt"><img src="${IMG.eternal(e.id)}" alt=""> ${esc(e.name)} +${Math.max(e.headlinePct, e.ehpPct)}%</span>`).join('')}
-      </div>` : '<div class="muted">no modeled Eternal clears the bar for this kit yet</div>'}
-      <div style="margin-top:.6rem; font-size:.74rem; color:var(--text-2)">no math yet for: ${esc(a.eternals.unmodeled.join(', '))} — see Depth below</div>
     </section>
 
     <section class="card">

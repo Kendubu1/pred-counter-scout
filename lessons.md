@@ -374,3 +374,22 @@ Append-only. One entry per backlog item or significant finding.
   nearly the whole offlane roster; counters are early-window heroes who
   must close the game before the flip (Greystone, Zarus), or Terra who
   holds both ends.
+
+## 2026-06-12 (night): lead with the 20-second decision
+
+- The hero page led with the build, but the first in-game decision is
+  the Eternal (locked within ~20s of spawn) and the augment — and the
+  augment changes which build is right. Page reordered: "At the gate"
+  section first (Eternal + derived playstyle sentence from whichever
+  sim delta dominates: burst→assassination, 20s-rotation→skirmish,
+  eHP→frontline), build second and renamed "the optimizer's build" so
+  the meta builds below read as comparisons, not corrections.
+- Augment honesty carried at the decision point itself: the gate
+  section says augments are the missing half and why builds are
+  per-style starting points (data still absent; backlog item 9).
+- A float:right h2 hint squeezed adjacent line boxes to ~80px on
+  mobile (one word per line) — floats extend below their box and
+  shorten neighboring line boxes. Mobile now unfloats hints. Caught
+  only by screenshot review, again.
+- Coach lean-into cards now carry the full engineCoachLine (spike
+  timing + eternal why) instead of a bare "take X".
