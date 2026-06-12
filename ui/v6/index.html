@@ -3,127 +3,378 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Predecessor Scout — Answer prototype</title>
+<title>Predecessor Scout — Build Lab</title>
+<meta name="description" content="Kit-math builds for Predecessor: what to build, when it spikes, and why — derived from ability math and real match data, not copied winrates.">
 <style>
   :root {
-    --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --border:#2a2a3a;
+    --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
     --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#6a6a80;
-    --accent:#6c5ce7; --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7;
+    --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
+    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7;
+    --radius:12px;
   }
-  * { box-sizing:border-box; margin:0; }
-  body { background:var(--bg-0); color:var(--text-0); font:14px/1.5 Inter,system-ui,sans-serif; padding:1.25rem; }
-  .wrap { max-width:880px; margin:0 auto; }
-  .muted { color:var(--text-1); } .dim { color:var(--text-2); font-size:.78rem; }
-  .card { background:var(--bg-1); border:1px solid var(--border); border-radius:10px; padding:1rem 1.25rem; margin-top:1rem; }
-  header.hero { display:flex; gap:1rem; align-items:center; margin-top:.5rem; }
-  header.hero img { width:72px; height:72px; border-radius:10px; border:1px solid var(--border); object-fit:cover; }
-  h1 { font-size:1.6rem; } h2 { font-size:1.02rem; margin-bottom:.5rem; color:var(--accent); }
-  .chips { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.3rem; }
-  .chip { background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.1rem .6rem; font-size:.78rem; color:var(--text-1); }
-  .chip.theory { border-color:var(--blue); color:var(--blue); cursor:help; }
-  .items { display:flex; gap:.5rem; flex-wrap:wrap; margin:.6rem 0; }
-  .item { background:var(--bg-2); border:1px solid var(--border); border-radius:8px; padding:.5rem .7rem; min-width:118px; }
-  .item b { display:block; font-size:.84rem; }
-  .item .spike { color:var(--gold); font-size:.74rem; }
-  .item .ev { font-size:.72rem; color:var(--text-2); }
-  .item.underexplored { border-color:var(--gold); }
-  .coach { font-size:1.02rem; margin-top:.4rem; }
-  .proofs { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.7rem; }
-  .proof { background:var(--bg-2); border-radius:8px; padding:.45rem .7rem; font-size:.8rem; border-left:3px solid var(--accent); }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  a { color:var(--blue); text-decoration:none; }
+  img { display:block; }
+  button { font:inherit; cursor:pointer; }
+
+  .top {
+    position:sticky; top:0; z-index:10; backdrop-filter:blur(10px);
+    background:rgba(10,10,15,.82); border-bottom:1px solid var(--border);
+  }
+  .top-inner { max-width:980px; margin:0 auto; padding:.65rem 1rem; display:flex; align-items:center; gap:.8rem; }
+  .wordmark { font-weight:800; letter-spacing:.02em; color:var(--text-0); }
+  .wordmark .beta { color:var(--accent); font-size:.7rem; vertical-align:super; margin-left:.2rem; }
+  .top .spacer { flex:1; }
+  .patch-pill { font-size:.74rem; color:var(--text-1); border:1px solid var(--border); border-radius:99px; padding:.15rem .6rem; }
+  .top a.classic { font-size:.8rem; color:var(--text-2); }
+  .top a.classic:hover { color:var(--text-1); }
+
+  .wrap { max-width:980px; margin:0 auto; padding:1.25rem 1rem 4rem; }
+
+  /* ── landing ── */
+  .landing-hero { text-align:center; padding:2.2rem 0 1.4rem; }
+  .landing-hero h1 { font-size:1.9rem; font-weight:800; }
+  .landing-hero p { color:var(--text-1); margin-top:.4rem; }
+  .searchbar { max-width:460px; margin:1.2rem auto 0; position:relative; }
+  .searchbar input {
+    width:100%; background:var(--bg-1); color:var(--text-0); border:1px solid var(--border);
+    border-radius:99px; padding:.7rem 1.1rem; font:inherit; outline:none;
+  }
+  .searchbar input:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  .rolebar { display:flex; gap:.45rem; justify-content:center; flex-wrap:wrap; margin-top:.9rem; }
+  .rolebar button {
+    background:var(--bg-1); color:var(--text-1); border:1px solid var(--border);
+    border-radius:99px; padding:.28rem .85rem; font-size:.82rem;
+  }
+  .rolebar button.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .receipt {
+    max-width:640px; margin:1.1rem auto 0; font-size:.8rem; color:var(--text-2);
+    border:1px dashed var(--border); border-radius:var(--radius); padding:.6rem .9rem;
+  }
+  .receipt b { color:var(--blue); font-weight:600; }
+  .grid {
+    margin-top:1.6rem; display:grid; gap:.7rem;
+    grid-template-columns:repeat(auto-fill, minmax(108px, 1fr));
+  }
+  .hcard {
+    background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius);
+    overflow:hidden; cursor:pointer; transition:transform .12s ease, border-color .12s ease;
+  }
+  .hcard:hover { transform:translateY(-2px); border-color:var(--accent); }
+  .hcard img { width:100%; aspect-ratio:1; object-fit:cover; background:var(--bg-2); }
+  .hcard .nm { padding:.4rem .5rem .15rem; font-size:.82rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .hcard .rl { padding:0 .5rem .45rem; font-size:.68rem; color:var(--text-2); text-transform:capitalize; }
+
+  /* ── hero page ── */
+  .backrow { display:flex; align-items:center; gap:.7rem; margin-bottom:1rem; }
+  .backrow button { background:var(--bg-1); border:1px solid var(--border); color:var(--text-1); border-radius:8px; padding:.3rem .7rem; font-size:.82rem; }
+  .backrow button:hover { color:var(--text-0); border-color:var(--accent); }
+
+  .hero-head { display:flex; gap:1.1rem; align-items:center; }
+  .hero-head img {
+    width:96px; height:96px; border-radius:16px; object-fit:cover;
+    border:1px solid var(--border); box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  .hero-head h1 { font-size:1.75rem; font-weight:800; line-height:1.2; }
+  .chips { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.45rem; }
+  .chip {
+    background:var(--bg-2); border:1px solid var(--border); border-radius:99px;
+    padding:.13rem .62rem; font-size:.76rem; color:var(--text-1); text-transform:capitalize;
+  }
+  .chip.role { background:var(--accent-soft); border-color:var(--accent); color:var(--text-0); }
+  .badge {
+    border-radius:99px; padding:.13rem .62rem; font-size:.74rem; font-weight:700;
+    letter-spacing:.04em; cursor:help; border:1px solid;
+  }
+  .badge.theory { color:var(--blue); border-color:var(--blue); background:rgba(77,171,247,.1); }
+
+  .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1.1rem; }
+  .card h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.8rem; }
+  .card h2 .hint { float:right; letter-spacing:0; text-transform:none; font-weight:400; }
+
+  .answer { border-color:#3b3470; background:linear-gradient(180deg, rgba(108,92,231,.07), rgba(18,18,26,0) 55%), var(--bg-1); }
+  .rail { display:grid; grid-template-columns:repeat(6, 1fr); gap:.6rem; }
+  @media (max-width:680px) { .rail { grid-template-columns:repeat(3, 1fr); } }
+  .itile { position:relative; background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:.5rem; text-align:center; }
+  .itile.gold { border-color:var(--gold); box-shadow:0 0 0 2px rgba(240,180,41,.15); }
+  .itile img { width:54px; height:54px; margin:0 auto; border-radius:8px; object-fit:cover; background:var(--bg-3); }
+  .itile .ord {
+    position:absolute; top:-7px; left:-7px; width:20px; height:20px; border-radius:50%;
+    background:var(--accent); color:#fff; font-size:.7rem; font-weight:700;
+    display:flex; align-items:center; justify-content:center; border:2px solid var(--bg-1);
+  }
+  .itile .nm { font-size:.7rem; font-weight:600; margin-top:.4rem; line-height:1.25; }
+  .itile .spike { font-size:.68rem; color:var(--gold); margin-top:.1rem; }
+  .itile .meta { font-size:.64rem; color:var(--text-2); margin-top:.15rem; min-height:.9rem; }
+  .itile .meta .pos { color:var(--green); } .itile .meta .neg { color:var(--red); }
+  .itile .tag { position:absolute; top:-8px; right:-6px; background:var(--gold); color:#1a1405; font-size:.56rem; font-weight:800; border-radius:6px; padding:.05rem .3rem; letter-spacing:.03em; }
+
+  .coach {
+    margin-top:1rem; font-size:1.04rem; border-left:3px solid var(--accent);
+    padding:.45rem .9rem; background:var(--accent-soft); border-radius:0 8px 8px 0;
+  }
+  .proofs { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.8rem; }
+  .proof { background:var(--bg-2); border-radius:8px; padding:.42rem .7rem; font-size:.78rem; border-left:3px solid var(--accent); color:var(--text-1); }
+  .proof b { color:var(--text-0); }
   .proof.evidence { border-left-color:var(--green); }
   .proof.playrate { border-left-color:var(--gold); }
-  .mu { display:flex; gap:.6rem; align-items:baseline; flex-wrap:wrap; margin:.35rem 0; }
-  .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:2px; }
-  .dot.you { background:var(--green); } .dot.even { background:var(--text-2); } .dot.enemy { background:var(--red); }
-  .flags { margin-top:1rem; }
-  select { background:var(--bg-2); color:var(--text-0); border:1px solid var(--border); border-radius:6px; padding:.3rem .5rem; }
-  a { color:var(--blue); }
+  .warn { margin-top:.7rem; font-size:.8rem; color:var(--gold); }
+
+  .eternal-row { display:flex; gap:.9rem; align-items:center; }
+  .eternal-row img { width:52px; height:52px; border-radius:50%; border:2px solid var(--accent); object-fit:cover; background:var(--bg-2); }
+  .eternal-row .alt img { width:34px; height:34px; border-width:1px; border-color:var(--border); }
+  .eternal-row .deltas { font-size:.8rem; color:var(--text-1); }
+  .eternal-alts { display:flex; gap:1rem; margin-top:.8rem; }
+  .eternal-alts .alt { display:flex; gap:.5rem; align-items:center; font-size:.78rem; color:var(--text-1); }
+
+  .murow { display:flex; gap:.8rem; align-items:center; padding:.55rem 0; border-top:1px solid var(--border); }
+  .murow:first-of-type { border-top:none; }
+  .murow img { width:44px; height:44px; border-radius:10px; object-fit:cover; border:1px solid var(--border); }
+  .murow .who { min-width:104px; font-weight:600; font-size:.88rem; }
+  .dots { display:flex; gap:.32rem; align-items:center; }
+  .dotwrap { text-align:center; }
+  .dot { width:12px; height:12px; border-radius:50%; }
+  .dot.you { background:var(--green); } .dot.even { background:var(--bg-3); border:1px solid var(--text-2); } .dot.enemy { background:var(--red); }
+  .dotwrap .m { font-size:.56rem; color:var(--text-2); margin-top:.15rem; }
+  .murow .plan { font-size:.78rem; color:var(--text-1); flex:1; min-width:200px; }
+  @media (max-width:680px) { .murow { flex-wrap:wrap; } .murow .plan { min-width:100%; } }
+
+  details { border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-1); margin-top:.7rem; overflow:hidden; }
+  details summary {
+    cursor:pointer; padding:.75rem 1.1rem; font-weight:600; font-size:.9rem; color:var(--text-1);
+    list-style:none; display:flex; align-items:center; gap:.5rem;
+  }
+  details summary::before { content:"▸"; color:var(--accent); transition:transform .15s; }
+  details[open] summary::before { transform:rotate(90deg); }
+  details summary:hover { color:var(--text-0); }
+  details .body { padding:0 1.1rem 1rem; font-size:.85rem; color:var(--text-1); }
+  table { width:100%; border-collapse:collapse; font-size:.82rem; }
+  td, th { text-align:left; padding:.35rem .4rem; border-bottom:1px solid var(--border); }
+  th { color:var(--text-2); font-weight:600; }
+  td.num { text-align:right; font-variant-numeric:tabular-nums; color:var(--text-0); }
+
+  footer { margin-top:2.2rem; font-size:.74rem; color:var(--text-2); line-height:1.7; }
+  .hidden { display:none; }
+  .fade { animation:fade .18s ease; }
+  @keyframes fade { from { opacity:0; transform:translateY(4px); } to { opacity:1; } }
+  @media (prefers-reduced-motion:reduce) { .fade, .hcard { animation:none; transition:none; } }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="dim">Zone 1 prototype (design doc section 8). Static render of precomputed engine artifacts. Crest, augments, matchup swapping: next iterations.</div>
-  <div style="margin-top:.6rem">
-    <label class="muted">Hero: </label><select id="pick"></select>
+<div class="top">
+  <div class="top-inner">
+    <span class="wordmark">⚔ Predecessor Scout<span class="beta">BUILD LAB</span></span>
+    <span class="spacer"></span>
+    <span class="patch-pill" id="patchPill">patch —</span>
+    <a class="classic" href="../v2/">classic site →</a>
   </div>
-  <div id="page"></div>
 </div>
+
+<div class="wrap">
+  <div id="landing" class="hidden fade">
+    <div class="landing-hero">
+      <h1>Who are you playing?</h1>
+      <p>What to build, when it spikes, and why — from kit math and real match data, not copied winrates.</p>
+      <div class="searchbar"><input id="search" placeholder="Search heroes…" autocomplete="off"></div>
+      <div class="rolebar" id="rolebar"></div>
+      <div class="receipt">
+        <b>How this works:</b> a simulator scores every viable item set against your kit's ability ratios,
+        cooldowns and the current patch economy. Numbers labeled <b>THEORY</b> await in-game calibration;
+        play rates and winrate deltas come from thousands of current-patch matches via the official API.
+      </div>
+    </div>
+    <div class="grid" id="heroGrid"></div>
+  </div>
+
+  <div id="hero" class="hidden fade"></div>
+
+  <footer>
+    Built on the official Omeda Studios public API via omeda.city · not affiliated with Omeda Studios.<br>
+    THEORY = simulator output on constants not yet measured in-game. Evidence deltas carry finished-inventory bias and are comparative, not absolute.
+  </footer>
+</div>
+
 <script>
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const IMG = { hero: (s) => `../img/heroes/${s}.webp`, item: (s) => `../img/items/${s}.webp`, eternal: (s) => `../img/eternals/${s}.webp` };
+const ROLES = ['all', 'carry', 'midlane', 'offlane', 'jungle', 'support'];
+let INDEX = null;
+let roleFilter = 'all';
 
-async function loadIndex() {
-  const res = await fetch('../../data/artifacts/index.json');
-  const idx = await res.json();
-  const pick = $('#pick');
-  pick.innerHTML = idx.heroes.map((h) => `<option value="${h.slug}">${esc(h.name)} (${h.role})</option>`).join('');
-  const initial = new URLSearchParams(location.search).get('hero') || 'gideon';
-  pick.value = initial;
-  pick.onchange = () => { history.replaceState(null, '', `?hero=${pick.value}`); render(pick.value); };
-  render(pick.value);
+async function getJson(path) { return (await fetch(path)).json(); }
+
+function show(view) {
+  $('#landing').classList.toggle('hidden', view !== 'landing');
+  $('#hero').classList.toggle('hidden', view !== 'hero');
 }
 
-async function render(slug) {
-  const a = await (await fetch(`../../data/artifacts/${slug}.json`)).json();
-  const verdictDots = (cps) => cps.map((c) => `<span class="dot ${c.verdict}" title="min ${c.minute}: ${c.verdict}"></span>`).join('');
-  const itemCard = (i) => `
-    <div class="item${i.playRatePct !== null && i.playRatePct < 2 ? ' underexplored' : ''}">
-      <b>${esc(i.name)}</b>
-      <span class="spike">${i.spikeMinute ? `~min ${i.spikeMinute}` : '30+ min'}</span>
-      <div class="ev">${i.playRatePct === null ? '' : `${i.playRatePct}% play`}${i.evidenceDeltaWr === null ? '' : ` · ${i.evidenceDeltaWr > 0 ? '+' : ''}${i.evidenceDeltaWr}wr n=${i.evidenceN}`}</div>
+/* ── landing ── */
+function renderRolebar() {
+  $('#rolebar').innerHTML = ROLES.map((r) =>
+    `<button data-r="${r}" class="${r === roleFilter ? 'active' : ''}">${r === 'all' ? 'All roles' : r}</button>`).join('');
+  document.querySelectorAll('#rolebar button').forEach((b) => {
+    b.onclick = () => { roleFilter = b.dataset.r; renderRolebar(); renderGrid(); };
+  });
+}
+function renderGrid() {
+  const q = ($('#search').value || '').toLowerCase();
+  const heroes = INDEX.heroes.filter((h) =>
+    (roleFilter === 'all' || h.role === roleFilter) && h.name.toLowerCase().includes(q));
+  $('#heroGrid').innerHTML = heroes.map((h) => `
+    <div class="hcard" data-slug="${h.slug}">
+      <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph',style:'aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:var(--text-2)',textContent:'⚔'}))">
+      <div class="nm">${esc(h.name)}</div><div class="rl">${esc(h.role)}</div>
+    </div>`).join('');
+  document.querySelectorAll('.hcard').forEach((c) => { c.onclick = () => nav(c.dataset.slug); });
+}
+
+/* ── hero page ── */
+function itile(i, idx) {
+  const under = i.playRatePct !== null && i.playRatePct < 2;
+  const ev = i.evidenceDeltaWr === null ? '' :
+    `<span class="${i.evidenceDeltaWr >= 0 ? 'pos' : 'neg'}">${i.evidenceDeltaWr > 0 ? '+' : ''}${i.evidenceDeltaWr}wr</span> n=${i.evidenceN}`;
+  return `
+    <div class="itile${under ? ' gold' : ''}" title="${esc(i.name)}${i.playRatePct === null ? '' : ` — in ${i.playRatePct}% of games`}">
+      <span class="ord">${idx + 1}</span>
+      ${under ? '<span class="tag">OFF-META</span>' : ''}
+      <img loading="lazy" src="${IMG.item(i.slug)}" alt="" onerror="this.style.visibility='hidden'">
+      <div class="nm">${esc(i.name)}</div>
+      <div class="spike">${i.spikeMinute ? `spike ~${i.spikeMinute}'` : 'late game'}</div>
+      <div class="meta">${i.playRatePct === null ? '' : `${i.playRatePct}% play`}${ev ? ' · ' + ev : ''}</div>
     </div>`;
+}
+
+function renderHero(a) {
   const o = a.build.objectives;
-  $('#page').innerHTML = `
-    <header class="hero">
-      <img src="../img/heroes/${esc(a.slug)}.webp" onerror="this.style.display='none'">
+  const evidenceProof = a.build.items.filter((i) => i.evidenceDeltaWr !== null && i.evidenceN >= 100)
+    .sort((x, y) => Math.abs(y.evidenceDeltaWr) - Math.abs(x.evidenceDeltaWr))[0];
+  const underProof = a.build.items.find((i) => i.playRatePct !== null && i.playRatePct < 2);
+  const top = a.eternals.top[0];
+  const dots = (cps) => `<div class="dots">${cps.map((c) =>
+    `<div class="dotwrap"><div class="dot ${c.verdict}" title="minute ${c.minute}: ${c.verdict === 'you' ? 'your kill window is better' : c.verdict === 'enemy' ? 'their kill window is better' : 'even'}"></div><div class="m">${c.minute}</div></div>`).join('')}</div>`;
+
+  $('#hero').innerHTML = `
+    <div class="backrow"><button id="back">← all heroes</button></div>
+
+    <header class="hero-head">
+      <img src="${IMG.hero(a.slug)}" alt="" onerror="this.style.visibility='hidden'">
       <div>
         <h1>${esc(a.name)}</h1>
         <div class="chips">
-          <span class="chip">${esc(a.role)}</span>
+          <span class="chip role">${esc(a.role)}</span>
           <span class="chip">${esc(a.damageType)} · ${esc(a.attackType)}</span>
           ${a.build.archetypes.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}
-          <span class="chip theory" title="${esc(a.confidence.notes.join('\n'))}\nunverified: ${esc(a.confidence.unverifiedConstants.join(', '))}">THEORY</span>
+          <span class="badge theory" title="Simulator output on constants not yet measured in-game:&#10;${esc(a.confidence.unverifiedConstants.join(', '))}&#10;&#10;${esc(a.confidence.notes.join('&#10;'))}">THEORY</span>
         </div>
       </div>
     </header>
 
-    <div class="card">
-      <h2>The build — patch ${esc(a.patch)}</h2>
-      <div class="items">${a.build.items.map(itemCard).join('')}</div>
+    <section class="card answer">
+      <h2>The build <span class="hint">patch ${esc(a.patch)} · ${a.build.gold.toLocaleString()}g full</span></h2>
+      <div class="rail">${a.build.items.map(itile).join('')}</div>
       <div class="coach">${esc(a.coachLine)}</div>
       <div class="proofs">
-        <span class="proof">sim: burst ${Math.round(o.burstVsSquishy)} · 20s vs bruiser ${Math.round(o.rot20VsBruiser)} · auto DPS ${Math.round(o.autoDps10VsSquishy)}</span>
-        ${a.build.items.filter((i) => i.evidenceDeltaWr !== null && i.evidenceN >= 100).slice(0, 1).map((i) =>
-          `<span class="proof evidence">evidence: ${esc(i.name)} ${i.evidenceDeltaWr > 0 ? '+' : ''}${i.evidenceDeltaWr}wr over ${i.evidenceN} games (biased: finished inventories)</span>`).join('')}
-        ${a.build.items.filter((i) => i.playRatePct !== null && i.playRatePct < 2).slice(0, 1).map((i) =>
-          `<span class="proof playrate">underexplored: ${esc(i.name)} in ${i.playRatePct}% of games</span>`).join('')}
+        <span class="proof"><b>sim</b> · burst ${Math.round(o.burstVsSquishy)} · 20s vs bruiser ${Math.round(o.rot20VsBruiser)} · auto DPS ${Math.round(o.autoDps10VsSquishy)}</span>
+        ${evidenceProof ? `<span class="proof evidence"><b>evidence</b> · ${esc(evidenceProof.name)} ${evidenceProof.evidenceDeltaWr > 0 ? '+' : ''}${evidenceProof.evidenceDeltaWr}wr over ${evidenceProof.evidenceN} games</span>` : ''}
+        ${underProof ? `<span class="proof playrate"><b>underexplored</b> · ${esc(underProof.name)} in ${underProof.playRatePct}% of ${esc(a.name)} games</span>` : ''}
       </div>
-      ${a.build.manaFeasible ? '' : '<div class="dim" style="margin-top:.5rem">⚠ rotation is mana-hungry; expect to weave autos</div>'}
-    </div>
+      ${a.build.manaFeasible ? '' : '<div class="warn">⚠ mana-hungry rotation — weave basic attacks between casts</div>'}
+    </section>
 
-    <div class="card">
-      <h2>Eternal</h2>
-      ${a.eternals.top.map((e, i) => `<div class="mu"><b>${i === 0 ? '★ ' : ''}${esc(e.name)}</b><span class="muted">headline +${e.headlinePct}% · burst +${e.burstPct}% · 20s +${e.rot20Pct}% · eHP +${e.ehpPct}% (min 15)</span></div>`).join('')}
-      <div class="dim">no math yet: ${esc(a.eternals.unmodeled.join(', '))}</div>
-    </div>
+    <section class="card">
+      <h2>Eternal <span class="hint">marginal gain at minute 15, math only</span></h2>
+      ${top ? `
+      <div class="eternal-row">
+        <img src="${IMG.eternal(top.id)}" alt="" onerror="this.style.visibility='hidden'">
+        <div>
+          <b>${esc(top.name)}</b>
+          <div class="deltas">headline +${top.headlinePct}% · burst +${top.burstPct}% · 20s fights +${top.rot20Pct}% · eHP +${top.ehpPct}%</div>
+        </div>
+      </div>
+      <div class="eternal-alts">
+        ${a.eternals.top.slice(1).map((e) => `<span class="alt"><img src="${IMG.eternal(e.id)}" alt=""> ${esc(e.name)} +${Math.max(e.headlinePct, e.ehpPct)}%</span>`).join('')}
+      </div>` : '<div class="muted">no modeled Eternal clears the bar for this kit yet</div>'}
+      <div style="margin-top:.6rem; font-size:.74rem; color:var(--text-2)">no math yet for: ${esc(a.eternals.unmodeled.join(', '))} — see Depth below</div>
+    </section>
 
-    <div class="card">
-      <h2>Lane checkpoints (most-played ${esc(a.role)} opponents)</h2>
-      ${a.matchups.map((m) => `<div class="mu"><span>${verdictDots(m.checkpoints)}</span><b>vs ${esc(m.enemy)}</b><span class="muted">${esc(m.gameplan)}</span></div>`).join('') || '<div class="dim">no same-role opponents with enough games</div>'}
-      <div class="dim">dots are 5-minute checkpoints, green = your kill window is better</div>
-    </div>
+    <section class="card">
+      <h2>Lane checkpoints <span class="hint">vs most-played ${esc(a.role)} opponents · green = your kill window</span></h2>
+      ${a.matchups.length ? a.matchups.map((m) => `
+        <div class="murow">
+          <img src="${IMG.hero(m.enemySlug)}" alt="" onerror="this.style.visibility='hidden'">
+          <span class="who">${esc(m.enemy)}</span>
+          ${dots(m.checkpoints)}
+          <span class="plan">${esc(m.gameplan)}</span>
+        </div>`).join('') : '<div style="color:var(--text-2)">no same-role opponents with enough games this patch</div>'}
+    </section>
 
-    <div class="card">
-      <h2>Off-meta lab</h2>
-      ${a.offMeta.candidates.length
-        ? a.offMeta.candidates.map((c) => `<div class="mu"><b>${esc(c.item)}</b><span class="muted">${c.playRatePct}% play rate; sits in a build that beats the most-played items by ${c.edgeVsPopularPct}% on ${esc(c.bestObjective)}</span></div>`).join('')
-        : `<div class="muted">${esc(a.offMeta.honestAbsence)}</div>`}
-    </div>
+    <details>
+      <summary>Off-meta lab</summary>
+      <div class="body">
+        ${a.offMeta.candidates.length
+          ? a.offMeta.candidates.map((c) => `<p><b style="color:var(--gold)">${esc(c.item)}</b> — ${c.playRatePct}% play rate on ${esc(a.name)}; part of a build that beats the most-played item set by <b>${c.edgeVsPopularPct}%</b> on ${esc(c.bestObjective)}. Treat as a hypothesis to test, not a guarantee.</p>`).join('')
+          : `<p>${esc(a.offMeta.honestAbsence)}</p>`}
+      </div>
+    </details>
 
-    <div class="flags dim">${a.flags.map(esc).join(' · ')} · generated ${esc(a.generatedAt.slice(0, 16))}</div>
+    <details>
+      <summary>The numbers</summary>
+      <div class="body">
+        <table>
+          <tr><th>objective</th><th style="text-align:right">value</th></tr>
+          <tr><td>one-combo burst vs squishy</td><td class="num">${Math.round(o.burstVsSquishy)}</td></tr>
+          <tr><td>10s rotation vs squishy</td><td class="num">${Math.round(o.rot10VsSquishy)}</td></tr>
+          <tr><td>20s fight vs bruiser</td><td class="num">${Math.round(o.rot20VsBruiser)}</td></tr>
+          <tr><td>sustained auto DPS</td><td class="num">${Math.round(o.autoDps10VsSquishy)}</td></tr>
+          <tr><td>effective HP (physical / magical)</td><td class="num">${Math.round(o.ehpPhysical)} / ${Math.round(o.ehpMagical)}</td></tr>
+        </table>
+        <p style="margin-top:.6rem">Purchase order is optimized against median ${esc(a.role)} gold curves measured from current-patch matches; spike minutes are when the median player affords each item.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Data &amp; confidence</summary>
+      <div class="body">
+        <p><b>Why THEORY:</b> ${esc(a.confidence.notes.join(' · '))}</p>
+        <p style="margin-top:.5rem"><b>Unverified constants:</b> ${esc(a.confidence.unverifiedConstants.join(', '))}</p>
+        <p style="margin-top:.5rem"><b>Flags:</b> ${a.flags.map(esc).join(' · ')}</p>
+        <p style="margin-top:.5rem">Generated ${esc(a.generatedAt.slice(0, 16).replace('T', ' '))} UTC · patch ${esc(a.patch)}</p>
+      </div>
+    </details>
   `;
+  $('#back').onclick = () => nav(null);
 }
-loadIndex();
+
+/* ── routing ── */
+async function nav(slug, replace = false) {
+  const url = slug ? `?hero=${slug}` : location.pathname;
+  (replace ? history.replaceState : history.pushState).call(history, { slug }, '', url);
+  await route();
+  window.scrollTo({ top: 0 });
+}
+async function route() {
+  const slug = new URLSearchParams(location.search).get('hero');
+  if (!slug) { show('landing'); renderGrid(); return; }
+  try {
+    const a = await getJson(`../../data/artifacts/${slug}.json`);
+    renderHero(a);
+    show('hero');
+    document.title = `${a.name} — Predecessor Scout Build Lab`;
+  } catch { show('landing'); renderGrid(); }
+}
+window.onpopstate = route;
+
+(async function init() {
+  INDEX = await getJson('../../data/artifacts/index.json');
+  $('#patchPill').textContent = `patch ${INDEX.patch}`;
+  renderRolebar();
+  $('#search').oninput = renderGrid;
+  await route();
+})();
 </script>
 </body>
 </html>
