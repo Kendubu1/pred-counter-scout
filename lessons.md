@@ -273,3 +273,30 @@ Append-only. One entry per backlog item or significant finding.
   global cooldown increase moved Gideon's haste-vs-power crossover from
   10s to ~15s. Tests should assert monotone invariants, not conclusions;
   conclusions get named "golden" gates that a human reviews when they fire.
+
+## 2026-06-12: Mobile feedback pass — copy is a data product too
+
+- Three maintainer screenshots flagged the same root cause five ways:
+  copy written from the engine's point of view ("355g", "+5.2 points",
+  "combined points", "Closet X Main" five times). Numbers a tool can
+  parse are not numbers a teammate can read. New standing rules: spell
+  out "games", express every winrate delta as "wins per 100 games",
+  and never address a specific person in shared-page copy.
+- First-match-wins archetype rules collapse onto whichever trait is most
+  common in the group (everyone has a 75-game pocket hero, so everyone
+  became a Closet Main). Fix that generalizes: emit ALL true candidate
+  identities ranked by strength, then assign squad-wide with a no-repeat
+  constraint — strongest claims pick first. Honesty is preserved because
+  every candidate receipt is independently factual; the pass only chooses
+  which true fact leads. Harness now gates on label distinctness AND on
+  the word "points" appearing in receipts.
+- A runtime `plink is not defined` shipped past `node --check` because
+  syntax-checking a template string does not execute it. The Playwright
+  pageerror listener caught it on the first screenshot. Visual checks
+  must capture console/page errors, not just pixels.
+- "Coach" nav that deep-links one person's report reads as a personal
+  page; a roster picker (squad.json is already on disk, zero API) makes
+  the same artifact set serve all five members.
+- The coach report told Willy "queue jungle as primary" while the meta
+  card showed only his volume roles — cross-card coherence needs the
+  same role-selection logic everywhere (union of plan-primary + volume).

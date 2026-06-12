@@ -99,6 +99,19 @@ describe('hero artifacts (Concept A engine stage)', () => {
     }
   });
 
+  it('archetypes: squad members carry distinct identities with plain-language receipts', () => {
+    const squad = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/squad.json'), 'utf8'));
+    const archetypes = squad.members.map((m: { archetype: { label: string; receipt: string } | null }) => m.archetype);
+    for (const a of archetypes) {
+      expect(a).not.toBeNull();
+      expect(a.receipt.length).toBeGreaterThan(20);
+      // jargon gate: receipts speak in wins-per-100, never "points of winrate"
+      expect(a.receipt).not.toMatch(/points/i);
+    }
+    const uniq = new Set(archetypes.map((a: { label: string }) => a.label));
+    expect(uniq.size, 'two members got the same archetype label').toBe(archetypes.length);
+  });
+
   it('top pilots per lane ship in meta.json (regenerate with PREDGG_* creds if this fires)', () => {
     const meta = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/meta.json'), 'utf8'));
     expect(meta.topPlayers, 'meta.json was generated without pred.gg credentials').not.toBeNull();

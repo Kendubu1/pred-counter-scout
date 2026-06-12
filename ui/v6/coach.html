@@ -29,8 +29,14 @@
   .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; }
   .card h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.8rem; }
   h1 { font-size:1.7rem; font-weight:800; }
+  h1 img.pav { width:34px; height:34px; border-radius:50%; object-fit:cover; border:1px solid var(--border); vertical-align:-7px; margin-right:.25rem; }
+  .roster { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:.7rem; }
+  .rost { display:flex; align-items:center; gap:.7rem; background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:.85rem 1rem; color:var(--text-0); }
+  .rost:hover { border-color:var(--accent); }
+  .rost img.pav { width:38px; height:38px; border-radius:50%; object-fit:cover; border:1px solid var(--border); }
+  .rost .rl { display:block; font-size:.7rem; color:var(--text-2); }
   .sub { color:var(--text-1); margin-top:.2rem; }
-  .chip { background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.13rem .62rem; font-size:.76rem; color:var(--text-1); }
+  .chip { white-space:nowrap; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.13rem .62rem; font-size:.76rem; color:var(--text-1); }
   .chip.rank { background:var(--accent-soft); border-color:var(--accent); color:var(--text-0); font-weight:700; }
 
   .goal { margin-top:.9rem; }
@@ -52,7 +58,7 @@
   .insight b { color:var(--text-0); display:block; margin-bottom:.15rem; }
   .insight .ir { font-size:.72rem; color:var(--text-2); margin-top:.25rem; }
 
-  .rolerow { display:grid; grid-template-columns:88px 1fr 120px; gap:.7rem; align-items:center; padding:.32rem 0; font-size:.85rem; }
+  .rolerow { display:grid; grid-template-columns:88px 1fr 140px; gap:.7rem; align-items:center; padding:.32rem 0; font-size:.85rem; }
   .rolerow .bar { height:9px; border-radius:99px; background:var(--bg-2); overflow:hidden; }
   .rolerow .bar i { display:block; height:100%; border-radius:99px; background:var(--accent); }
   .rolerow.best .bar i { background:var(--green); }
@@ -81,6 +87,9 @@
   /* ── mobile: smaller, crisp, nothing bleeds ── */
   @media (max-width:600px) {
     body { font-size:13.5px; }
+    .top-inner { padding:.5rem .7rem; gap:.55rem; }
+    .wordmark { font-size:.82rem; white-space:nowrap; }
+    .top-inner a { font-size:.72rem; white-space:nowrap; }
     .wrap { padding:.9rem .7rem 3rem; }
     h1 { font-size:1.35rem; }
     .arch { font-size:.86rem; }
@@ -92,7 +101,7 @@
     .ledg { grid-template-columns:58px 1fr; gap:.6rem; }
     .ledg .lv { font-size:1.05rem; }
     .insight { font-size:.8rem; }
-    .rolerow { grid-template-columns:70px 1fr 96px; font-size:.76rem; }
+    .rolerow { grid-template-columns:64px 1fr 110px; font-size:.72rem; }
     .lean { grid-template-columns:1fr; }
     .splits { font-size:.72rem; }
     .splits td, .splits th { padding:.25rem .3rem; }
@@ -114,6 +123,33 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
 (async () => {
   let c;
   const who = new URLSearchParams(location.search).get('player');
+
+  // No player chosen: show the team roster so everyone picks their own
+  // report (deep links with ?player= keep working).
+  if (!who) {
+    let sq = null;
+    try { sq = await (await fetch('../../data/artifacts/squad.json')).json(); } catch {}
+    if (sq) {
+      document.title = 'Coach reports — pick yours';
+      document.getElementById('page').innerHTML = `
+        <h1>Coach reports</h1>
+        <div class="sub" style="margin-bottom:1rem">one per member — pick yours</div>
+        <div class="roster">
+          ${sq.members.map((m) => `
+            <a class="rost" href="coach.html?player=${esc(m.uuid)}">
+              ${m.topHeroes?.[0] ? `<img class="pav" src="../img/heroes/${esc(m.topHeroes[0].slug)}.webp" alt="" onerror="this.remove()">` : ''}
+              <span>
+                <b>${esc(m.name)}</b>${m.uuid === sq.lead ? ' <span style="color:var(--gold);font-size:.68rem">stack lead</span>' : ''}
+                ${m.archetype ? `<span class="rl">“${esc(m.archetype.label)}”</span>` : ''}
+                <span class="rl">${m.current ? `${esc(m.current.rank)} · ${m.current.points} VP · ` : ''}${m.career.games.toLocaleString()} games</span>
+              </span>
+              <span style="margin-left:auto;color:var(--text-2)">→</span>
+            </a>`).join('')}
+        </div>`;
+      return;
+    }
+    // no squad report on disk — fall through to the lead's standalone report
+  }
   const src = who ? `../../data/artifacts/players/${who}.json` : '../../data/artifacts/coach.json';
   try { c = await (await fetch(src)).json(); }
   catch { document.getElementById('page').textContent = 'no coach report generated yet'; return; }
@@ -130,7 +166,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
 
   document.getElementById('page').innerHTML = `
     <div class="scope">📊 <b>Data scope:</b> this player's pred.gg public profile — career totals, ranked split history, last 40 matches · field baselines: ${metaInfo ? metaInfo.matches.toLocaleString() + ' matches, patch ' + esc(metaInfo.patch) : 'current-patch matches'}, all ranks · winrates shrunk toward the player's own average · combat math is THEORY pending in-game calibration · generated ${esc(c.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
-    <h1>${esc(p.name)} <a class="ext" href="https://pred.gg/players/${esc(p.uuid)}" target="_blank" rel="noopener">pred.gg ↗</a></h1>
+    <h1>${c.pool?.[0] ? `<img class="pav" src="../img/heroes/${esc(c.pool[0].slug)}.webp" alt="" onerror="this.remove()">` : ''}${esc(p.name)} <a class="ext" href="https://pred.gg/players/${esc(p.uuid)}" target="_blank" rel="noopener">pred.gg ↗</a></h1>
     ${c.archetype ? `<div class="arch">“${esc(c.archetype.label)}” <span class="arch-r">${esc(c.archetype.receipt)}</span></div>` : ''}
     <div class="sub">
       <span class="chip rank">${esc(p.current.rank)} · ${p.current.points} VP</span>
@@ -180,20 +216,20 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
         <div class="rolerow ${best && r.role === best.role ? 'best' : ''} ${worst && r.role === worst.role ? 'worst' : ''}">
           <span style="text-transform:capitalize">${esc(r.role)}</span>
           <span class="bar"><i style="width:${(r.shrunkWr / maxRoleWr) * 100}%"></i></span>
-          <span class="nums">${pct(r.shrunkWr)}% · ${r.games}g</span>
+          <span class="nums">${pct(r.shrunkWr)}% · ${r.games} games</span>
         </div>`).join('')}
       <div style="font-size:.74rem; color:var(--text-2); margin-top:.5rem">green = queue this as primary · red = costing you VP</div>
     </div>
 
     <div class="card">
-      <h2>Lean into these · your winrate vs the field</h2>
+      <h2>Lean into these · heroes where you beat the average player</h2>
       <div class="lean">
         ${c.leanInto.map((h) => `
           <div class="lcard">
             <div class="head">
               <img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">
               <div><b>${esc(h.name)}</b><div style="font-size:.7rem;color:var(--text-2);text-transform:capitalize">${esc(h.primaryRole ?? '')}</div></div>
-              <span class="edge">+${pct(h.edge)}</span>
+              <span class="edge" title="compared with the average player on this hero">+${pct(h.edge)} wins/100</span>
             </div>
             <div class="stats">
               you: <b>${pct(h.shrunkWr)}%</b> over ${h.games} games · field: ${pct(h.fieldWr)}%<br>
@@ -203,6 +239,34 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
           </div>`).join('')}
       </div>
     </div>
+
+    ${metaInfo ? (() => {
+      const byGames = [...c.roles].sort((a, b) => b.games - a.games).filter((r) => r.games >= 50);
+      const myRoles = [...new Set([best, ...byGames].filter(Boolean))].slice(0, 3);
+      if (!myRoles.length) return '';
+      const poolBySlug = new Map(c.pool.map((h) => [h.slug, h]));
+      return `
+    <div class="card">
+      <h2>Meta picks in your lanes · what the field is winning with right now</h2>
+      <div style="font-size:.78rem;color:var(--text-1);margin-bottom:.7rem">Comfort picks earn their spot, but the meta moves — these are the strongest current-patch heroes in the roles you actually queue. “New to you” means under 30 of your own games; the field winrate still makes them worth a look when your comfort pick gets countered or the team needs a different shape.</div>
+      ${myRoles.map((r) => `
+        <div style="margin-top:.6rem">
+          <div style="font-size:.72rem;font-weight:800;text-transform:capitalize;color:var(--accent);letter-spacing:.06em">${esc(r.role)} · your record ${pct(r.shrunkWr)}% over ${r.games} games</div>
+          ${(metaInfo.roles[r.role] || []).slice(0, 4).map((h) => {
+            const mine = poolBySlug.get(h.slug);
+            const note = mine && mine.games >= 30
+              ? `you: ${pct(mine.shrunkWr)}% · ${mine.games} games`
+              : '<span style="color:var(--gold)">new to you</span>';
+            return `
+          <div class="rolerow" style="grid-template-columns:auto 1fr auto">
+            <span><img src="../img/heroes/${esc(h.slug)}.webp" style="width:22px;height:22px;border-radius:6px;object-fit:cover;vertical-align:-5px" onerror="this.style.visibility='hidden'"> <a href="./?hero=${esc(h.slug)}">${esc(h.name)}</a></span>
+            <span style="font-size:.74rem;color:var(--text-2)">field ${pct(h.shrunkWr)}% over ${h.games.toLocaleString()} games</span>
+            <span class="nums" style="font-size:.74rem">${note}</span>
+          </div>`;
+          }).join('')}
+        </div>`).join('')}
+    </div>`;
+    })() : ''}
 
     <div class="card">
       <h2>The plan</h2>

@@ -11,7 +11,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gql, hasCredentials } from './predgg.js';
-import { analyzeProfile, archetype, buildCoachReport, pullProfile, pullRecentMatches, type AnalyzedPlayer, type RawProfile, type RecentMatch } from './playerProfile.js';
+import { analyzeProfile, assignDistinctArchetypes, buildCoachReport, pullProfile, pullRecentMatches, type AnalyzedPlayer, type RawProfile, type RecentMatch } from './playerProfile.js';
 import { computeInsights, squadBaselines, type DeepMember } from './insights.js';
 import { loadData } from '../data.js';
 
@@ -99,10 +99,17 @@ async function main() {
     const bestPair = bp ? { partner: bp.a === d.analyzed.uuid ? bp.bName : bp.aName, games: bp.games, winrate: bp.winrate } : null;
     return [d.analyzed.uuid, computeInsights(d, base, bestPair)] as const;
   }));
+  // One identity per member: strongest claims pick first, no two members
+  // lead with the same archetype kind (each candidate is independently true).
+  const archetypeByUuid = assignDistinctArchetypes(deep.map((d) => d.analyzed));
   for (const uuid of uuids) {
     const { raw } = rawByUuid.get(uuid)!;
     const profile = deep.find((d) => d.analyzed.uuid === uuid)!.analyzed;
-    const report = { ...buildCoachReport(profile, raw.lastPlayedAt), insights: insightsByUuid.get(uuid) ?? [] };
+    const report = {
+      ...buildCoachReport(profile, raw.lastPlayedAt),
+      archetype: archetypeByUuid.get(uuid) ?? null,
+      insights: insightsByUuid.get(uuid) ?? [],
+    };
     writeFileSync(path.join(playersDir, `${uuid}.json`), JSON.stringify(report, null, 1));
     // the lead's standalone coach.json gets the same insight-bearing report
     if (uuid === lead) writeFileSync(path.join(ROOT, 'data/artifacts/coach.json'), JSON.stringify(report, null, 1));
@@ -172,7 +179,7 @@ async function main() {
     lead: leadM.uuid,
     members: members.map((m) => ({
       uuid: m.uuid, name: m.name, isPrivate: m.isPrivate, favRole: m.favRole,
-      archetype: archetype(m),
+      archetype: archetypeByUuid.get(m.uuid) ?? null,
       topInsight: (insightsByUuid.get(m.uuid) ?? [])[0] ?? null,
       current: m.current, peakAllTime: m.peakAllTime,
       career: m.career,
