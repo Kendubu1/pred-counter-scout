@@ -20,6 +20,16 @@ import { loadData } from '../data.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 
 interface PerkRow { matchesPlayed: number; matchesWon: number; perk: { id: string; data: { displayName: string } | null } | null }
+interface CrestRow { matchesPlayed: number; matchesWon: number; item: { data: { displayName: string } | null } | null }
+
+async function crestStats(slug: string, role: string): Promise<CrestRow[]> {
+  const d = await gql<{ hero: { simpleBuild: { items: CrestRow[] } } }>(
+    `{ hero(by: { slug: "${slug}" }) {
+      simpleBuild(filter: { roles: [${role}], gameModes: [RANKED, STANDARD] }) {
+        items(slot: CREST, limit: 4) { matchesPlayed matchesWon item { data { displayName } } }
+      } } }`);
+  return d.hero.simpleBuild.items.filter((r) => r.item?.data?.displayName);
+}
 
 async function slotStats(slug: string, role: string, slot: string): Promise<PerkRow[]> {
   const d = await gql<{ hero: { simpleBuild: { perks: PerkRow[] } } }>(
@@ -62,7 +72,7 @@ async function main() {
   }
   console.log(`icons: ${fetched} fetched -> ui/img/augments/`);
 
-  const heroes: Record<string, Record<string, { augments: { id: string; name: string; n: number; w: number }[]; eternals: { name: string; n: number; w: number }[] }>> = {};
+  const heroes: Record<string, Record<string, { augments: { id: string; name: string; n: number; w: number }[]; eternals: { name: string; n: number; w: number }[]; crests: { name: string; n: number; w: number }[] }>> = {};
   let calls = 0;
   for (const slug of [...data.kits.keys()].sort()) {
     const byRole = agg.heroes[slug]?.byRole ?? {};
@@ -77,12 +87,15 @@ async function main() {
     for (const role of roles) {
       const aug = await slotStats(slug, role.toUpperCase(), 'HERO_SPECIFIC_1');
       const et = await slotStats(slug, role.toUpperCase(), 'ETERNAL_1');
-      calls += 2;
+      const cr = await crestStats(slug, role.toUpperCase());
+      calls += 3;
       heroes[slug][role] = {
         augments: aug.map((p) => ({ id: p.perk!.id, name: p.perk!.data!.displayName, n: p.matchesPlayed, w: p.matchesWon }))
           .sort((a, b) => b.n - a.n),
         eternals: et.map((p) => ({ name: p.perk!.data!.displayName, n: p.matchesPlayed, w: p.matchesWon }))
           .sort((a, b) => b.n - a.n).slice(0, 5),
+        crests: cr.map((r) => ({ name: r.item!.data!.displayName, n: r.matchesPlayed, w: r.matchesWon }))
+          .sort((a, b) => b.n - a.n).slice(0, 4),
       };
       await new Promise((r) => setTimeout(r, 120));
     }

@@ -670,7 +670,21 @@ function renderHero(a, roleParam) {
           </div>`;
         }).join('') : '<div class="muted">no Eternal sample for this role yet</div>'}
         ${top && ets.length && top.name.toLowerCase() !== ets[0].name.toLowerCase()
-          ? `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">⚖ our augment-blind kit math prefers ${esc(top.name)} (+${top.headlinePct}% headline) — when math and field disagree, weight the field for this role until augment mechanics land in the simulator</div>` : ''}`;
+          ? `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">⚖ our augment-blind kit math prefers ${esc(top.name)} (+${top.headlinePct}% headline) — when math and field disagree, weight the field for this role until augment mechanics land in the simulator</div>` : ''}
+        ${(() => {
+          const crs = (cell.crests || []).filter((c) => c.n >= 300).sort((x, y) => (y.w / y.n) - (x.w / x.n)).slice(0, 3);
+          if (!crs.length) return '';
+          const cslug = (n) => n.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          return `
+          <div style="font-size:.74rem;color:var(--text-2);margin:.7rem 0 .45rem"><b style="letter-spacing:.06em">CREST</b> · top 3 as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
+          ${crs.map((c, i) => `
+          <div style="display:flex;gap:.6rem;align-items:center;padding:.3rem 0;border-bottom:1px ${i === crs.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
+            <img loading="lazy" src="../img/items/${esc(cslug(c.name))}.webp" alt="" style="width:28px;height:28px;border-radius:8px;object-fit:cover;background:var(--bg-2);flex:none;${i === 0 ? 'box-shadow:0 0 0 2px var(--green)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'">
+            <span style="font-size:.88rem;font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${i === 0 ? '✓ ' : ''}${esc(c.name)}</span>
+            <span style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(c.w / c.n * 100).toFixed(1)}%</span>
+            <span style="font-size:.7rem;color:var(--text-2)">${c.n.toLocaleString()} games</span>
+          </div>`).join('')}`;
+        })()}`;
       })()}
       <div style="margin-top:.6rem; font-size:.74rem; color:var(--text-2)">
         ⚠ <b>Why no single flat build:</b> the augment changes which build is right (a damage build and a support build are different heroes in practice). The augment winrates above are field evidence; their mechanics aren't in the simulator yet, so the build below assumes the kit's baseline — treat it as the starting point for your augment and playstyle. 🧠 lines are AI-written from the mechanics and evidence shown, with every number machine-verified against the source data. No Eternal math yet for: ${esc(a.eternals.unmodeled.join(', '))} — see Depth below.
