@@ -622,6 +622,105 @@
      "note": "takedown-triggered procs excluded (no takedown model) — the encoding is a floor; in real games Lotus stacks faster, especially when ahead"
     }
    ]
+  },
+  "item:alternata": {
+   "name": "Alternata",
+   "sourceText": "Alternate Reality: Your Alternate Ability deals 15% more damage. Nata Style: Upon using your Alternate Ability, reduce your other current Basic Ability Cooldowns by 12%.",
+   "source": "omeda items.json 1.14.4; encoded 2026-06-12 (audit: sim picked it on raw stats with both passives uncredited)",
+   "provisional": false,
+   "effects": [
+    {
+     "kind": "ability_damage_amp",
+     "abilityKey": "ALTERNATE",
+     "pct": 15
+    },
+    {
+     "kind": "unmodeled",
+     "note": "Nata Style cooldown ripple (-12% of other current basic cooldowns per Alternate cast) depends on cast interleaving; not modeled"
+    }
+   ]
+  },
+  "item:imperator": {
+   "name": "Imperator",
+   "sourceText": "Precision: Critical Strikes deal 30% more damage.",
+   "source": "omeda items.json 1.14.4; encoded 2026-06-12 (item audit: high-play field staples had no entries)",
+   "provisional": false,
+   "effects": [
+    {
+     "kind": "crit_damage_amp",
+     "pct": 30
+    }
+   ]
+  },
+  "item:prophecy": {
+   "name": "Prophecy",
+   "sourceText": "Magical Strikes: On Basic Attacks, deal 20 (+15% MP) Damage On-Hit.",
+   "source": "omeda items.json 1.14.4; encoded 2026-06-12 (item audit: high-play field staples had no entries)",
+   "provisional": false,
+   "effects": [
+    {
+     "kind": "on_hit",
+     "flat": 20,
+     "scalingPct": 15,
+     "scaleStat": "magical_power",
+     "damageType": "magical"
+    }
+   ]
+  },
+  "item:megacosm": {
+   "name": "Megacosm",
+   "sourceText": "Disintegrate: On ability damage, deal 2.5% of Target Max Health over 3s (reapplication refreshes). Star Killer: also 6% of Target BONUS Health over 3s vs heroes.",
+   "source": "omeda items.json 1.14.4; encoded 2026-06-12 (item audit: high-play field staples had no entries)",
+   "provisional": false,
+   "effects": [
+    {
+     "kind": "on_ability_hit",
+     "pctTargetHealth": 2.5,
+     "healthBasis": "max",
+     "damageType": "magical",
+     "icdSeconds": 3
+    },
+    {
+     "kind": "unmodeled",
+     "note": "Star Killer (6% of target BONUS health) needs a base/bonus health split the reference profiles do not carry"
+    }
+   ]
+  },
+  "item:overlord": {
+   "name": "Overlord",
+   "sourceText": "Colossal Cleave: basic attacks cleave around the target (ratio-scaled). Devourer: permanent health stacking on kills.",
+   "source": "omeda items.json 1.14.4; encoded 2026-06-12 (item audit: high-play field staples had no entries)",
+   "provisional": false,
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "cleave is multi-target value (no single-target change at this text precision); Devourer health stacking is kill-economy"
+    }
+   ]
+  },
+  "item:terminus": {
+   "name": "Terminus",
+   "sourceText": "Anon: overhealing from Lifesteal converts to a Shield (max +100%).",
+   "source": "omeda items.json 1.14.4; encoded 2026-06-12 (item audit: high-play field staples had no entries)",
+   "provisional": false,
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "overheal-to-shield needs a health-state model; the 15% lifesteal line is valued by the sustain objective"
+    }
+   ]
+  },
+  "item:fire-blossom": {
+   "name": "Fire Blossom",
+   "sourceText": "Heatwave: burn nearby enemies 15 (+0.7%) per second, ramping +6.25%/s up to +50% (Firestorm).",
+   "source": "omeda items.json 1.14.4; encoded 2026-06-12 (item audit: high-play field staples had no entries)",
+   "provisional": false,
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "proximity burn aura; uptime depends on positioning the closed-form sim cannot observe"
+    }
+   ]
   }
  }
 }

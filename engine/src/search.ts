@@ -18,7 +18,7 @@ export interface GeneratedBuild extends BuildEval {
 const ALL_OBJECTIVE_KEYS = [
   'burstVsSquishy', 'rot10VsSquishy', 'rot20VsBruiser',
   'autoDps10VsSquishy', 'ehpPhysical', 'ehpMagical',
-  'healShield10s', 'utility',
+  'healShield10s', 'utility', 'sustain10s',
 ] as const;
 type ObjKey = (typeof ALL_OBJECTIVE_KEYS)[number];
 
@@ -29,7 +29,7 @@ type ObjKey = (typeof ALL_OBJECTIVE_KEYS)[number];
 // builds win only objectives a support search never scores.
 const COMBAT_KEYS: readonly ObjKey[] = [
   'burstVsSquishy', 'rot10VsSquishy', 'rot20VsBruiser',
-  'autoDps10VsSquishy', 'ehpPhysical', 'ehpMagical',
+  'autoDps10VsSquishy', 'ehpPhysical', 'ehpMagical', 'sustain10s',
 ];
 const SUPPORT_KEYS: readonly ObjKey[] = [
   'rot10VsSquishy', 'ehpPhysical', 'ehpMagical', 'healShield10s', 'utility',
@@ -44,6 +44,7 @@ const ARCHETYPE_LABELS: Record<ObjKey, string> = {
   ehpMagical: 'magical survival',
   healShield10s: 'heal/shield output',
   utility: 'utility',
+  sustain10s: 'drain sustain',
 };
 
 type Weights = Partial<Record<ObjKey, number>>;
@@ -54,6 +55,9 @@ const COMBAT_VECTORS: Weights[] = [
   { burstVsSquishy: 0.2, rot10VsSquishy: 1, rot20VsBruiser: 0.3 },
   { rot10VsSquishy: 0.3, rot20VsBruiser: 1, ehpPhysical: 0.1, ehpMagical: 0.1 },
   { rot20VsBruiser: 0.2, autoDps10VsSquishy: 1 },
+  // The drain corner (component C lists sustain in the objective vector;
+  // the audit found field staples like Terminus invisible without it).
+  { sustain10s: 1, rot20VsBruiser: 0.4, autoDps10VsSquishy: 0.4 },
   { burstVsSquishy: 0.3, rot10VsSquishy: 0.3, rot20VsBruiser: 0.3, autoDps10VsSquishy: 0.3, ehpPhysical: 0.5, ehpMagical: 0.5 },
 ];
 const SUPPORT_VECTORS: Weights[] = [

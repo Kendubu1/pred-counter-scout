@@ -48,6 +48,7 @@ const Primitive = z.discriminatedUnion('kind', [
     appliesWhen: z.enum(['always', 'window_only', 'burst_only', 'target_armor_gt_125', 'level_gte_10']).default('always'),
   }),
   z.object({ kind: z.literal('damage_amp_from_crit'), minPct: z.number(), maxPct: z.number(), scope: z.enum(['abilities', 'all']) }),
+  z.object({ kind: z.literal('crit_damage_amp'), pct: z.number() }), // critical strikes deal X% more (multiplies the crit multiplier)
   z.object({ kind: z.literal('item_proc_amp'), pct: z.number() }),
   z.object({
     kind: z.literal('on_hit'), flat: z.number().optional(), perLevelFlat: z.number().optional(),
@@ -152,6 +153,7 @@ export interface ResolvedEffects {
   ampAbilitiesBurstPct: number; // burst-only (e.g. vs full-health targets)
   ampUltPct: number;
   ampAbilitiesFromCrit: { minPct: number; maxPct: number } | null;
+  critDamageAmpPct: number;     // multiplies the crit multiplier's bonus portion's base
   ampVsArmorGt125Pct: number;
   itemProcAmpPct: number;
   ultHaste: number;
@@ -188,7 +190,7 @@ export function emptyEffects(): ResolvedEffects {
   return {
     statFlat: {}, statMultipliers: {}, conversions: [],
     ampAllPct: 0, ampAllWindowPct: 0, ampAbilitiesPct: 0, ampAbilitiesBurstPct: 0, ampUltPct: 0,
-    ampAbilitiesFromCrit: null, ampVsArmorGt125Pct: 0, itemProcAmpPct: 0,
+    ampAbilitiesFromCrit: null, critDamageAmpPct: 0, ampVsArmorGt125Pct: 0, itemProcAmpPct: 0,
     ultHaste: 0, cooldownRateNonUlt: 0,
     pctPen: { physical: 0, magical: 0 },
     flatPen: { physical: 0, magical: 0, rampSeconds: 0 },
@@ -245,6 +247,9 @@ export function resolveEntries(keys: string[], ctx: ResolveCtx, registry: Effect
         }
         case 'damage_amp_from_crit':
           out.ampAbilitiesFromCrit = { minPct: fx.minPct, maxPct: fx.maxPct };
+          break;
+        case 'crit_damage_amp':
+          out.critDamageAmpPct += fx.pct;
           break;
         case 'item_proc_amp':
           out.itemProcAmpPct += fx.pct;
@@ -368,6 +373,7 @@ export function mergeEffects(a: ResolvedEffects, b: ResolvedEffects): ResolvedEf
     out.ampAbilitiesPct += e.ampAbilitiesPct; out.ampAbilitiesBurstPct += e.ampAbilitiesBurstPct;
     out.ampUltPct += e.ampUltPct;
     out.ampAbilitiesFromCrit = e.ampAbilitiesFromCrit ?? out.ampAbilitiesFromCrit;
+    out.critDamageAmpPct += e.critDamageAmpPct;
     out.ampVsArmorGt125Pct += e.ampVsArmorGt125Pct;
     out.itemProcAmpPct += e.itemProcAmpPct;
     out.ultHaste += e.ultHaste; out.cooldownRateNonUlt += e.cooldownRateNonUlt;

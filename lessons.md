@@ -715,3 +715,33 @@ Append-only. One entry per backlog item or significant finding.
   (shrunk, ordered honestly), sim deltas where modeled, and a grounded
   when/why line — the thing the maintainer asked for at the start of the
   night.
+
+## 2026-06-12 (night, cont. 17): the item audit — Noxia's ICD and the sim's blind spots
+
+- "Noxia shows up often" was a real sim bug: on-ability procs were
+  credited inside the per-ability loop, so an item ICD applied per
+  ability instead of globally — a 4-ability kit collected 4x the Noxia
+  procs an 8s ICD allows (up to 48% of target max health from one
+  item). Fixed: one global proc budget per window. Noxia 23 -> ~16-18
+  builds; its residual appeal (90 MP + 20 haste + a now-honest 2 procs)
+  is legitimate math.
+- The systematic audit (sim usage vs field play vs evidence, both
+  directions) found the deeper shape: SEVEN high-play field staples had
+  no effect entries at all. Imperator (34% field play, crits +30%) went
+  0 -> 13 sim builds the moment its primitive existed. Prophecy and
+  Megacosm are now encoded; Overlord/Terminus/Fire Blossom carry honest
+  unmodeled notes. Divine Potion (a 250g statless potion upgrade, 24.6%
+  'play rate') was diluting every popular-build baseline — statless
+  cheap actives are now excluded from the build pool.
+- Sustain was in the design doc's objective vector (component C) and
+  never implemented — lifesteal/omnivamp were worth literally zero to
+  the optimizer, which is why the field's drain items lost every corner
+  to pen stat-sticks. sustain10s is now an objective with a drain
+  corner; Terminus is still outcompeted, but it is outcompeted on real
+  math now instead of being invisible.
+- What remains and why: the pen/attack-speed cluster (Deathstalker 27,
+  Painweaver 15, Alternata 14) all hangs on the unmeasured attack-speed
+  cap — the single highest-value practice-mode measurement on the
+  checklist. The audit method (usage-vs-field both directions) should
+  rerun after every snapshot; it found a bug, seven missing encodings, a
+  missing objective, and a pool hygiene hole in one pass.

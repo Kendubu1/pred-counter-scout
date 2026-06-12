@@ -145,6 +145,7 @@ const OBJECTIVE_LABELS: Record<string, string> = {
   autoDps10VsSquishy: 'sustained auto DPS',
   ehpPhysical: 'physical survivability',
   ehpMagical: 'magical survivability',
+  sustain10s: 'lifesteal sustain',
 };
 // Support pages additionally explain builds through heal/shield output.
 // (utility stays out of the label maps: "12 utility" is not a sentence.)
@@ -377,6 +378,7 @@ export function buildHeroArtifact(
     burstVsSquishy: 'one-combo burst', rot10VsSquishy: '10s rotation damage',
     rot20VsBruiser: 'extended fights vs bruisers', autoDps10VsSquishy: 'sustained auto DPS',
     ehpPhysical: 'physical survivability', ehpMagical: 'magical survivability',
+    sustain10s: 'lifesteal sustain',
     ...(role === 'support' ? { healShield10s: 'heal/shield output' } : {}),
   };
   const evaluated = cores.map((c) => {
@@ -421,6 +423,7 @@ export function buildHeroArtifact(
         rot20VsBruiser: 'damage over a 20s fight', autoDps10VsSquishy: 'auto-attack DPS',
         ehpPhysical: 'effective HP vs physical', ehpMagical: 'effective HP vs magical',
         healShield10s: 'HP healed or shielded over 10s',
+        sustain10s: 'HP drained back over a 10s fight',
       };
       whyLine = `Strongest meta core for ${bestObjective}${spikeMinute ? `, online around minute ${spikeMinute}` : ''} — about ${Math.round(ev.objectives[bestKey as keyof typeof ev.objectives] ?? 0).toLocaleString('en-US')} ${OBJ_UNITS[bestKey] ?? ''} in the sim.`;
       const ours = ourCoreEval.objectives[bestKey as keyof typeof ourCoreEval.objectives] ?? 0;

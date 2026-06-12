@@ -104,6 +104,7 @@ export interface SimResult {
   rotation: Record<number, number>; // window seconds -> mitigated damage
   autoDps: number;               // sustained basic-attack DPS, mitigated
   healShield10s: number;         // heal+shield output over 10s, one beneficiary
+  sustain10s: number;            // self-heal from lifesteal/omnivamp over a 10s fight
   manaSpent10s: number;
   manaPool: number;
   manaFeasible: boolean;
@@ -124,6 +125,7 @@ export interface BuildEval {
     ehpMagical: number;
     healShield10s: number;       // support output objective
     utility: number;             // movement_speed + tenacity points in the build
+    sustain10s: number;          // drain-tank objective (design doc component C)
   };
   manaFeasible: boolean;
 }

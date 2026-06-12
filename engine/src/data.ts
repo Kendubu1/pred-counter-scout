@@ -303,7 +303,15 @@ export function loadData(): LoadedData {
 }
 
 export function completedItems(data: LoadedData): Item[] {
-  return [...data.items.values()].filter(
-    (i) => (i.rarity === 'EPIC' || i.rarity === 'LEGENDARY') && (i.slotType === 'PASSIVE' || i.slotType === 'ACTIVE') && i.totalPrice > 0,
-  );
+  return [...data.items.values()].filter((i) => {
+    if (!(i.rarity === 'EPIC' || i.rarity === 'LEGENDARY')) return false;
+    if (!(i.slotType === 'PASSIVE' || i.slotType === 'ACTIVE')) return false;
+    if (i.totalPrice <= 0) return false;
+    // Statless cheap actives (Divine Potion, 250g) are inventory slots,
+    // not build slots: with no stats and no curated effects they carry
+    // zero sim value but used to dilute the popular-build baseline.
+    const hasStats = Object.values(i.stats).some((v) => v !== 0);
+    if (!hasStats && i.totalPrice < 1000) return false;
+    return true;
+  });
 }

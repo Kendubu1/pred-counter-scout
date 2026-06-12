@@ -175,6 +175,48 @@ describe('effects on live data', () => {
     expect(t0.ampAllPct).toBe(0);
   });
 
+  it('crit_damage_amp multiplies the crit hit (Imperator), sustain values lifesteal', () => {
+    const reg = {
+      targets: {
+        'item:imp': {
+          name: 'Imp', sourceText: 'Critical Strikes deal 30% more damage.', source: 'synthetic', provisional: false,
+          effects: [{ kind: 'crit_damage_amp' as const, pct: 30 }],
+        },
+      },
+    };
+    const crit = mkItem('crit', { critical_chance: 100 });
+    const base = simulate(synthKit, [crit], { level: 13, profile: null }, cal);
+    const amped = simulate(synthKit, [crit], { level: 13, profile: null, effects: resolveEntries(['item:imp'], { level: 13 }, reg) }, cal);
+    // at 100% crit, every hit is a crit: 1.75x -> 2.275x = +30% auto DPS
+    expect(amped.autoDps / base.autoDps).toBeCloseTo(2.275 / 1.75, 6);
+
+    // sustain: 10% lifesteal on 60-damage basics at 1.0 attacks/sec = 60 HP/10s
+    const ls = simulate(synthKit, [mkItem('ls', { lifesteal: 10 })], { level: 13, profile: null }, cal);
+    expect(ls.sustain10s).toBeCloseTo(60, 6);
+  });
+
+  it('item ICDs are global across abilities (the Noxia audit finding)', () => {
+    // 6% max-health proc, 8s ICD: a 2-ability kit casting both in 10s
+    // gets at most 2 procs total, never 2 per ability.
+    const reg = {
+      targets: {
+        'item:noxlike': {
+          name: 'Noxlike', sourceText: 'Deal 6% of Target Max Health; 8s ICD.', source: 'synthetic', provisional: false,
+          effects: [{ kind: 'on_ability_hit' as const, pctTargetHealth: 6, healthBasis: 'max' as const, damageType: 'magical' as const, icdSeconds: 8 }],
+        },
+      },
+    };
+    const fx = resolveEntries(['item:noxlike'], { level: 13 }, reg);
+    const t = itemTotals([]);
+    const ranks = new Map([['PRIMARY', 5], ['ULTIMATE', 3]]);
+    const profile = { health: 1000, physicalArmor: 0, magicalArmor: 0 };
+    const bare = rotationDamage(synthKit, { level: 18, ranks, profile }, t, 10);
+    const withProc = rotationDamage(synthKit, { level: 18, ranks, profile, effects: fx }, t, 10);
+    // PRIMARY cd 9 -> 2 casts, ULT cd 80 -> 1 cast = 3 casts; 8s ICD in a
+    // 10s window allows 2 procs of 60 = 120 (per-ability counting gave 3).
+    expect(withProc - bare).toBeCloseTo(120, 6);
+  });
+
   it('provisional sources propagate (Kallari ability-crit bakes the unverified crit multiplier)', () => {
     const fx = resolveEntries(['augment:kallari:65'], { level: 13 });
     expect(fx.provisional).toBe(true);
