@@ -37,7 +37,7 @@ writeFileSync(path.join(OUT, 'index.json'), JSON.stringify({ patch: cal.patch, g
 // Pure evidence display for the landing page; never feeds the generator.
 const agg = loadAggregates();
 if (agg) {
-  const roles: Record<string, { slug: string; name: string; games: number; rawWr: number; shrunkWr: number }[]> = {};
+  const roles: Record<string, { slug: string; name: string; games: number; rawWr: number; shrunkWr: number; metaScore: number; badge: string | null }[]> = {};
   for (const role of ['carry', 'midlane', 'offlane', 'jungle', 'support']) {
     const cells = Object.entries(agg.heroes)
       // unmapped hero_id:* entries are excluded: no kit, no portrait, no
@@ -45,16 +45,30 @@ if (agg) {
       .map(([slug, h]) => ({ slug, cell: h.byRole?.[role] }))
       .filter((x): x is { slug: string; cell: { n: number; w: number } } => data.kits.has(x.slug) && !!x.cell && x.cell.n >= 30);
     const k = momPriorStrength(cells.map((c) => c.cell), 0.5);
-    roles[role] = cells
-      .sort((a, b) => b.cell.n - a.cell.n)
-      .slice(0, 8)
-      .map(({ slug, cell }) => ({
-        slug,
-        name: data.kits.get(slug)?.name ?? slug,
-        games: cell.n,
-        rawWr: Math.round((cell.w / cell.n) * 1000) / 1000,
-        shrunkWr: Math.round(((cell.w + k * 0.5) / (cell.n + k)) * 1000) / 1000,
-      }));
+    const scored = cells.map(({ slug, cell }) => ({
+      slug,
+      name: data.kits.get(slug)?.name ?? slug,
+      games: cell.n,
+      rawWr: Math.round((cell.w / cell.n) * 1000) / 1000,
+      shrunkWr: Math.round(((cell.w + k * 0.5) / (cell.n + k)) * 1000) / 1000,
+    }));
+    // Meta = strong AND prevalent: average of each hero's percentile rank
+    // on pick volume and on shrunk winrate within the lane. A naive
+    // average of the raw numbers would re-import small-sample bias; the
+    // winrate side is shrunk and both sides are rank-normalized.
+    const pctl = (vals: number[], v: number) => vals.filter((x) => x < v).length / Math.max(vals.length - 1, 1);
+    const gamesAll = scored.map((s) => s.games);
+    const wrAll = scored.map((s) => s.shrunkWr);
+    roles[role] = scored
+      .map((s) => {
+        const pickPctl = pctl(gamesAll, s.games);
+        const wrPctl = pctl(wrAll, s.shrunkWr);
+        const badge = wrPctl >= 0.7 && pickPctl <= 0.35 ? 'sleeper'
+          : pickPctl >= 0.7 && wrPctl <= 0.35 ? 'popular but losing' : null;
+        return { ...s, metaScore: Math.round(((pickPctl + wrPctl) / 2) * 1000) / 1000, badge };
+      })
+      .sort((a, b) => b.metaScore - a.metaScore)
+      .slice(0, 8);
   }
   // Top ranked pilots per lane from the pred.gg split leaderboard.
   // Env-gated: without PREDGG_* credentials the board ships without them.
@@ -74,7 +88,7 @@ if (agg) {
     patch: cal.patch,
     generatedAt: new Date().toISOString(),
     matches: agg.meta.matches,
-    note: 'most played per lane, shrunk winrate (method-of-moments EB toward 50%); all ranks, current-patch window',
+    note: 'meta score = mean of pick-volume percentile and shrunk-winrate percentile within the lane; all ranks, current-patch window. Badges mark high-WR/low-pick sleepers and high-pick/low-WR traps.',
     roles,
     topPlayers,
     topPlayersNote: topPlayers ? 'current ranked split leaderboard via the pred.gg API (favRole filter); VP = victory points' : null,

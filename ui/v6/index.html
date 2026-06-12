@@ -277,16 +277,16 @@ function renderMetaboard() {
   $('#metaboard').innerHTML = `
     <div class="mb-head">
       <h2>The meta board</h2>
-      <span class="mb-sub">most played per lane · shrunk winrate over ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
+      <span class="mb-sub">meta score = pick presence + shrunk winrate, percentile-averaged per lane · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
     </div>
     <div class="lanes">
       ${Object.keys(LANE_LABELS).map((role) => `
         <div class="lane">
           <h3>${LANE_LABELS[role]}</h3>
           ${(META.roles[role] || []).slice(0, 5).map((h, i) => `
-            <div class="mp" data-slug="${h.slug}" title="${esc(h.name)}: ${h.games} ${role} games, ${(h.shrunkWr * 100).toFixed(1)}% shrunk winrate">
+            <div class="mp" data-slug="${h.slug}" title="${esc(h.name)}: ${h.games} ${role} games, ${(h.shrunkWr * 100).toFixed(1)}% shrunk winrate, meta score ${(h.metaScore * 100).toFixed(0)}${h.badge ? ' — ' + esc(h.badge) : ''}">
               <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
-              <span class="n">${i === 0 ? '👑 ' : ''}${esc(h.name)}<span class="g">${h.games} games</span></span>
+              <span class="n">${i === 0 ? '👑 ' : ''}${esc(h.name)}${h.badge === 'sleeper' ? ' 💤' : h.badge ? ' ⚠' : ''}<span class="g">${h.games} games</span></span>
               <span class="wr ${wrClass(h.shrunkWr)}">${(h.shrunkWr * 100).toFixed(1)}%</span>
             </div>`).join('')}
           ${META.topPlayers && META.topPlayers[role] && META.topPlayers[role].length ? `
