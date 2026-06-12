@@ -2,6 +2,27 @@
 
 Append-only. One entry per backlog item or significant finding.
 
+## 2026-06-12: Meta builds explained + the ledger POV
+
+- The sim explaining evidence is the project thesis landing: pred.gg's
+  most-played Gideon core (55.2% over 390g) is also the sim's own best
+  core for its objective ("the winrate is earned, not luck"), while the
+  third meta core triggers a +25% optimizer suggestion. Agreement
+  validates the sim; disagreement generates testable content. Both are
+  product.
+- Counter swaps must price the tradeoff or they are vibes: "their 3s
+  all-in loses 32% of its bite for 11% of your damage" is a decision a
+  player can actually make mid-game.
+- "Best objective" labels need a discrimination filter: when all cores
+  tie on an objective, relative-max picks nonsense. Require >=5% spread
+  before an objective may explain a build.
+- The ledger (wins per 100 games) is the report POV that survived: one
+  currency, every claim priced, receipts attached, non-additivity
+  stated. Archetype labels need shrinkage-aware thresholds (4 points of
+  shrunk spread is a big gap).
+- The meta.json pilots gate fired on a credless regeneration mid-session
+  and was right to.
+
 ## 2026-06-12: Squad v2 — synergy matrix, member reports, partial-stack planner
 
 - The full pairwise matrix (5 commonPlayers calls) immediately produced

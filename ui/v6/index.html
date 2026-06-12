@@ -146,6 +146,18 @@
   .dot.you { background:var(--green); } .dot.even { background:var(--bg-3); border:1px solid var(--text-2); } .dot.enemy { background:var(--red); }
   .dotwrap .m { font-size:.56rem; color:var(--text-2); margin-top:.15rem; }
   .murow .plan { grid-column:2; font-size:.78rem; color:var(--text-1); }
+  .cswap { color:var(--gold); font-size:.74rem; }
+  .metabuild { padding:.55rem 0; border-top:1px solid var(--border); }
+  .metabuild:first-of-type { border-top:none; }
+  .mb-row { display:flex; align-items:center; gap:.7rem; }
+  .mb-items { display:flex; align-items:center; gap:.3rem; }
+  .mb-items img { width:34px; height:34px; border-radius:8px; object-fit:cover; background:var(--bg-2); border:1px solid var(--border); }
+  .mb-items .arrow { color:var(--text-2); font-size:.74rem; }
+  .mb-wr { margin-left:auto; font-weight:800; font-variant-numeric:tabular-nums; }
+  .mb-wr.up { color:var(--green); } .mb-wr.down { color:var(--red); } .mb-wr.flat { color:var(--text-1); }
+  .mb-n { color:var(--text-2); font-size:.74rem; font-variant-numeric:tabular-nums; }
+  .mb-why { font-size:.76rem; color:var(--text-1); margin-top:.3rem; }
+  .mb-opt { color:var(--blue); }
 
   details { border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-1); margin-top:.7rem; overflow:hidden; }
   details summary {
@@ -389,9 +401,23 @@ function renderHero(a) {
         <div class="murow">
           <img src="${IMG.hero(m.enemySlug)}" alt="" onerror="this.style.visibility='hidden'">
           <div class="head"><span class="who">${esc(m.enemy)}</span>${dots(m.checkpoints)}</div>
-          <span class="plan">${esc(m.gameplan)}</span>
+          <span class="plan">${esc(m.gameplan)}${m.counterSwap ? `<br><span class="cswap">⚙ ${esc(m.counterSwap.line)}</span>` : ''}</span>
         </div>`).join('') : '<div style="color:var(--text-2)">no same-role opponents with enough games this patch</div>'}
     </section>
+
+    ${a.metaBuilds && a.metaBuilds.length ? `
+    <section class="card">
+      <h2>Meta builds, explained <span class="hint">pred.gg evidence × our simulator</span></h2>
+      ${a.metaBuilds.map((m) => `
+        <div class="metabuild">
+          <div class="mb-row">
+            <span class="mb-items">${m.items.map((i) => i.slug ? `<img loading="lazy" src="../img/items/${esc(i.slug)}.webp" title="${esc(i.name)}" onerror="this.style.visibility='hidden'">` : `<span class="chip">${esc(i.name)}</span>`).join('<span class="arrow">→</span>')}</span>
+            <span class="mb-wr ${m.shrunkWr >= 0.53 ? 'up' : m.shrunkWr <= 0.5 ? 'down' : 'flat'}">${(m.shrunkWr * 100).toFixed(1)}%</span>
+            <span class="mb-n">${m.n}g</span>
+          </div>
+          <div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div>
+        </div>`).join('')}
+    </section>` : ''}
 
     <details>
       <summary>Off-meta lab</summary>

@@ -99,7 +99,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
     <div class="sub">${s.members.map((m) => `<span class="chip">${esc(m.name)}${m.current ? ` · ${esc(m.current.rank)} ${m.current.points}VP` : ''}</span>`).join('')}</div>
 
     <div class="card">
-      <h2>Optimal lineup · all 120 permutations scored</h2>
+      <h2>Optimal lineup · all 120 permutations scored${typeof s.lineupGainPer100 === 'number' && s.lineupGainPer100 >= 0.5 ? ` · <span style="color:var(--green)">worth +${s.lineupGainPer100} wins/100 vs queue habits</span>` : ''}</h2>
       <table class="lineup">
         <tr><th>seat</th><th>player</th><th>role record</th><th>play these</th></tr>
         ${s.assignment.map((a) => `
@@ -138,6 +138,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
         ${s.members.map((m) => `
           <div class="member">
             <div class="nm"><a href="coach.html?player=${esc(m.uuid)}">${esc(m.name)} →</a></div>
+            ${m.archetype ? `<div style="color:var(--gold);font-size:.72rem;font-weight:700" title="${esc(m.archetype.receipt)}">“${esc(m.archetype.label)}”</div>` : ''}
             <div class="meta">${m.career.games.toLocaleString()} games · ${pct(m.career.winrate)}% career · KDA ${m.career.kda.toFixed(2)}${m.peakAllTime ? ` · peak ${m.peakAllTime} VP` : ''}</div>
             ${m.together ? `<div class="together">${m.together.games} ranked games with ${esc(lead.name)} · ${pct(m.together.winrate, 0)}% together</div>` : '<div class="together">stack lead</div>'}
             ${m.roles.slice(0, 3).map((r) => `

@@ -35,6 +35,70 @@ export const shrink = (w: number, n: number, prior: number, k: number) => (w + k
 
 export const PLATINUM_VP = 900; // Platinum III ratingMin, pred.gg rank table, Season 1 Split 4
 
+/**
+ * Data-derived player archetype: a crisp identity with its receipt.
+ * Deterministic rules, first match wins; every label cites numbers.
+ */
+export function archetype(a: AnalyzedPlayer): { label: string; receipt: string } {
+  const deep = a.roles.filter((r) => r.games >= 100);
+  const totalRoleGames = a.roles.reduce((s, r) => s + r.games, 0) || 1;
+  const topShare = (a.roles.slice().sort((x, y) => y.games - x.games)[0]?.games ?? 0) / totalRoleGames;
+  const top3Share = a.pool.slice(0, 3).reduce((s, h) => s + h.games, 0) / Math.max(a.career.games, 1);
+  const spread = deep.length ? Math.max(...deep.map((r) => r.shrunkWr)) - Math.min(...deep.map((r) => r.shrunkWr)) : 0;
+
+  // 4 points of SHRUNK spread is large; shrinkage compresses raw gaps.
+  if (deep.length >= 4 && spread >= 0.04) {
+    return { label: 'The Flex With A Secret', receipt: `${deep.length} roles at 100+ games, but a ${(spread * 100).toFixed(1)}-point winrate gap between best and worst — versatility is hiding a specialty.` };
+  }
+  if (deep.length >= 4) {
+    return { label: 'The True Flex', receipt: `${deep.length} roles at 100+ games within ${(spread * 100).toFixed(1)} points of each other — genuinely fill-proof.` };
+  }
+  if (topShare >= 0.5 && top3Share >= 0.5) {
+    return { label: 'The Specialist', receipt: `${(topShare * 100).toFixed(0)}% of games in one role, ${(top3Share * 100).toFixed(0)}% on three heroes — a sharpened edge.` };
+  }
+  if (top3Share < 0.4) {
+    return { label: 'The Wanderer', receipt: `top three heroes are only ${(top3Share * 100).toFixed(0)}% of ${a.career.games} games — breadth tax in every queue.` };
+  }
+  return { label: 'The Grinder', receipt: `${a.career.games} games of steady volume at ${(a.career.winrate * 100).toFixed(1)}% — the climb is about where the games go, not how many.` };
+}
+
+/**
+ * The ledger: every recommendation priced in wins per 100 games, with its
+ * receipt. Entries are not independent and say so.
+ */
+export function buildLedger(a: AnalyzedPlayer) {
+  const entries: { change: string; winsPer100: number; receipt: string }[] = [];
+  const overall = a.career.winrate;
+  const best = a.roles.filter((r) => r.games >= 100)[0];
+  const worst = [...a.roles].filter((r) => r.games >= 100).sort((x, y) => x.shrunkWr - y.shrunkWr)[0];
+  if (best && best.shrunkWr > overall + 0.005) {
+    entries.push({
+      change: `Queue ${best.role} instead of your average mix`,
+      winsPer100: Math.round((best.shrunkWr - overall) * 1000) / 10,
+      receipt: `${(best.shrunkWr * 100).toFixed(1)}% there vs ${(overall * 100).toFixed(1)}% overall, ${best.games} games of evidence`,
+    });
+  }
+  if (worst && best && worst.role !== best.role && worst.shrunkWr < overall - 0.01) {
+    entries.push({
+      change: `Move your ${worst.role} games to ${best.role}`,
+      winsPer100: Math.round((best.shrunkWr - worst.shrunkWr) * 1000) / 10,
+      receipt: `${(worst.shrunkWr * 100).toFixed(1)}% vs ${(best.shrunkWr * 100).toFixed(1)}%, per 100 games shifted`,
+    });
+  }
+  const hero = a.pool.filter((h) => h.games >= 75 && h.shrunkWr > overall + 0.01).sort((x, y) => y.shrunkWr - x.shrunkWr)[0];
+  if (hero) {
+    entries.push({
+      change: `Spend marginal games on ${hero.name}`,
+      winsPer100: Math.round((hero.shrunkWr - overall) * 1000) / 10,
+      receipt: `${(hero.shrunkWr * 100).toFixed(1)}% on ${hero.name} (${hero.games}g) vs ${(overall * 100).toFixed(1)}% overall`,
+    });
+  }
+  return {
+    entries: entries.sort((x, y) => y.winsPer100 - x.winsPer100),
+    note: 'wins per 100 games spent on each change; entries overlap and do not sum',
+  };
+}
+
 /** The full coach-report object rendered by ui/v6/coach.html. Shared so
  *  the lead's coach.json and every squad member's report agree. */
 export function buildCoachReport(a: AnalyzedPlayer, lastPlayedAt: string) {
@@ -68,6 +132,8 @@ export function buildCoachReport(a: AnalyzedPlayer, lastPlayedAt: string) {
   return {
     generatedAt: new Date().toISOString(),
     source: 'pred.gg public profile + own aggregate baselines',
+    archetype: archetype(a),
+    ledger: buildLedger(a),
     player: {
       name: a.name, uuid: a.uuid, favRole: a.favRole, lastPlayedAt,
       career: a.career,
