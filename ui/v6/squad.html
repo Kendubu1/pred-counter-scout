@@ -211,7 +211,7 @@ const plink = (uuid, name) => uuid
             ${m.archetype ? `<div style="color:var(--gold);font-size:.72rem;font-weight:700" title="${esc(m.archetype.receipt)}">“${esc(m.archetype.label)}”</div>` : ''}
             ${m.topInsight ? `<div style="font-size:.72rem;color:var(--text-1);margin-top:.25rem" title="${esc(m.topInsight.receipt)}">🎬 ${esc(m.topInsight.title)}</div>` : ''}
             <div class="meta">${m.career.games.toLocaleString()} games · ${pct(m.career.winrate)}% career · KDA ${m.career.kda.toFixed(2)}${m.peakAllTime ? ` · peak ${m.peakAllTime} VP` : ''}</div>
-            ${m.together ? `<div class="together">${m.together.games} ranked games with ${esc(lead.name)} · ${pct(m.together.winrate, 0)}% together</div>` : '<div class="together">stack lead</div>'}
+            ${m.together ? `<div class="together">${m.together.games} ranked games with ${esc(lead.name)} · ${pct(m.together.winrate, 0)}% together</div>` : ''}
             ${m.roles.slice(0, 3).map((r) => `
               <div class="rolemini"><span style="text-transform:capitalize">${esc(r.role)}</span>
                 <span class="bar"><i style="width:${Math.min(100, (r.shrunkWr / 0.6) * 100)}%"></i></span>
