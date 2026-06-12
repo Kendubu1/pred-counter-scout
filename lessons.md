@@ -697,3 +697,21 @@ Append-only. One entry per backlog item or significant finding.
   gold OFF-META, and builds stacking >100% AS carry an explicit
   optimism warning. The generator stays evidence-blind by design; the
   fix when the cap is measured will fall out of the math.
+
+## 2026-06-12 (night, cont. 16): the Eternal lines, written in-session
+
+- Maintainer directive: no API key — the copy pass runs in-session, the
+  way the copy audit did (lesson cont. 10). 284 Eternal when/why lines
+  (every hero-role cell's shrunk top-3) written in-session and merged
+  through the SAME machine verifier as the API pipeline: 284 written, 0
+  rejected. Provenance recorded as an in-session pass in the artifact.
+- What made zero rejections possible: the lines cite mechanics numbers
+  (which are in each cell's allowed set via the registry sourceText) and
+  exact game counts, never winrates — the displayed winrates are shrunk
+  and the verifier's allowed set carries raw ones. Where the field and
+  our sim disagree (Neon/Wraith/Shinbi Demiurge), the line says so
+  instead of picking a side silently.
+- The page now explains its Eternal rows three ways: field evidence
+  (shrunk, ordered honestly), sim deltas where modeled, and a grounded
+  when/why line — the thing the maintainer asked for at the start of the
+  night.

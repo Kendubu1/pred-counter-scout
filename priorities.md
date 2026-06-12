@@ -108,9 +108,7 @@ same day — npm run review now also writes one grounded line per top
 field Eternal per role (mechanics from the effect registry + field
 evidence only, same numeric verifier; core factored into
 src/copy-verify.ts with unit tests; hero page renders 🧠 on Eternal
-rows when present). The RUN is pending: this session's environment has
-no ANTHROPIC_API_KEY — run `npm run review` wherever the key lives and
-commit the refreshed augment-reviews.json.
+rows when present). DONE in-session 2026-06-12 (maintainer: no API) — 284 Eternal lines written and machine-verified in-session, committed in augment-reviews.json; the keyed pipeline remains for unattended post-patch refreshes.
 
 REMAINING: the original scope (hero-page coach lines + squad/coach
 report copy through the same verifier).
