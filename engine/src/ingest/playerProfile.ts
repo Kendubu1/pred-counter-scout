@@ -25,20 +25,28 @@ export interface RawProfile {
   } };
   roleStatistics: { results: { role: string; matchesPlayed: number; matchesWon: number }[] };
   heroStatistics: { results: { hero: { slug: string; name: string }; matchesPlayed: number; matchesWon: number; totalKills: number; totalDeaths: number; totalAssists: number; totalHeroDamage: number }[] };
+  gamemodeStatistics: { results: { gameMode: string; matchesPlayed: number; pentaKills: number }[] };
 }
+
+// Career/hero/role stats count REAL 5v5s only. Unfiltered, the API blends
+// ARAM/brawl/co-op into every number (one member's "20 pentakills" was 17
+// ARAM ones; half his "career games" weren't 5v5). gamemodeStatistics is
+// pulled unfiltered so casual-mode flexes can be attributed honestly.
+const REAL_MODES = 'filter: { gameModes: [RANKED, STANDARD] }';
 
 export async function pullProfile(uuid: string): Promise<RawProfile> {
   const d = await gql<{ player: RawProfile }>(`{ player(by: { uuid: "${uuid}" }) {
     name favRole lastPlayedAt
     ratings { rating { id name } points ranking percentile rank { name } peakPoints }
-    generalStatistic { result {
+    generalStatistic(${REAL_MODES}) { result {
       matchesPlayed matchesWon mostPlayedRole totalKills totalDeaths totalAssists
       totalWardsPlaced totalWardsDestroyed structureDamage objectiveDamage
       totalMinionsKilled totalHeroDamage totalHeroDamageTaken
       totalTime pentaKills quadraKills maxKillingSpree
     } }
-    roleStatistics { results { role matchesPlayed matchesWon } }
-    heroStatistics { results { hero { slug name } matchesPlayed matchesWon totalKills totalDeaths totalAssists totalHeroDamage } }
+    roleStatistics(${REAL_MODES}) { results { role matchesPlayed matchesWon } }
+    heroStatistics(${REAL_MODES}) { results { hero { slug name } matchesPlayed matchesWon totalKills totalDeaths totalAssists totalHeroDamage } }
+    gamemodeStatistics { results { gameMode matchesPlayed pentaKills } }
   } }`);
   return d.player;
 }
@@ -95,7 +103,7 @@ export async function pullHeroRoleStats(uuid: string): Promise<HeroRoleCell[]> {
   const out: HeroRoleCell[] = [];
   for (const role of ROLES) {
     const d = await gql<{ player: { heroStatistics: { results: { hero: { slug: string }; matchesPlayed: number; matchesWon: number }[] } } }>(
-      `{ player(by: { uuid: "${uuid}" }) { heroStatistics(filter: { roles: [${role}] }) {
+      `{ player(by: { uuid: "${uuid}" }) { heroStatistics(filter: { roles: [${role}], gameModes: [RANKED, STANDARD] }) {
         results { hero { slug } matchesPlayed matchesWon } } } }`);
     for (const r of d.player.heroStatistics.results) {
       out.push({ role: role.toLowerCase(), slug: r.hero.slug, n: r.matchesPlayed, w: r.matchesWon });
