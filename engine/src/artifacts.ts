@@ -8,7 +8,8 @@ import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { completedItems, type LoadedData } from './data.js';
-import { generateBuilds, headlineObjective } from './search.js';
+import { generateBuilds, headlineObjective, type ObjKey } from './search.js';
+import { classifyAugment, laneTopAugment, lanesFor, PLAYSTYLE_OBJECTIVES } from './playstyle.js';
 import { combatDamage, evaluateBuild, itemTotals, loadCalibration, unverifiedConstants, type Calibration } from './sim.js';
 import { rankAugments, rankBlessings } from './eternals.js';
 import { heroGames, itemPlayRate, loadAggregates } from './aggregates.js';
@@ -131,6 +132,21 @@ export const HeroArtifact = z.object({
     whyLine: z.string(),
     optimizer: z.string().nullable(),
   })),
+  // Playstyle-by-lane: the augment the field runs in each lane DECLARES a
+  // playstyle the sim is otherwise blind to. We steer the build toward that
+  // playstyle's objective corner and expose whether the augment's mechanic is
+  // actually modeled or we are leaning on the declared intent + field evidence.
+  laneFlex: z.array(z.object({
+    lane: z.string(),
+    augment: z.object({ id: z.string(), name: z.string() }),
+    playstyle: z.string(),
+    modeled: z.boolean(),         // does the sim compute the augment's effect?
+    wr: z.number().nullable(),    // field winrate of that augment in that lane
+    n: z.number().nullable(),
+    core: z.array(z.object({ name: z.string(), slug: z.string() })), // steered build core
+    headline: z.string(),         // the objective it is steered toward
+    provenance: z.string(),       // the honest one-liner the page shows
+  })),
   matchups: z.array(z.object({
     enemy: z.string(),
     enemySlug: z.string(),
@@ -236,6 +252,36 @@ function popularBuild(kit: HeroKit, pool: Item[]): Item[] {
     .sort((a, b) => b.r - a.r)
     .slice(0, 6)
     .map((x) => x.i);
+}
+
+/** Playstyle-by-lane: for each lane the hero has augment evidence in, the
+ *  augment the field commits to declares a playstyle; steer the build toward
+ *  it and expose whether the sim actually models that augment. This surfaces
+ *  the flex (e.g. Zinx support-enchant vs mid on-hit) the single-role build
+ *  can't show. */
+function computeLaneFlex(kit: HeroKit, pool: Item[], cal: Calibration): HeroArtifactT['laneFlex'] {
+  const out: HeroArtifactT['laneFlex'] = [];
+  const slugOf = new Map(pool.map((i) => [i.name, i.slug]));
+  for (const lane of lanesFor(kit.slug).slice(0, 4)) {
+    const aug = laneTopAugment(kit.slug, lane);
+    if (!aug) continue;
+    const cls = classifyAugment(`augment:${kit.slug}:${aug.id}`);
+    if (!cls.playstyle) continue;
+    const bias = PLAYSTYLE_OBJECTIVES[cls.playstyle];
+    const steered = generateBuilds(kit, pool, cal, { role: lane, objectiveBias: bias as ObjKey[], headlineOverride: bias[0], beamWidth: 8 })[0];
+    if (!steered) continue;
+    const ev = ` — field ${lane} ${(aug.wr * 100).toFixed(1)}% over ${aug.n.toLocaleString()} games`;
+    const provenance = cls.modeled
+      ? `“${aug.name}” ⇒ ${cls.playstyle}; the sim models this augment${ev}.`
+      : `“${aug.name}” ⇒ ${cls.playstyle}; the sim can’t model this augment — steered by the declared playstyle + field evidence${ev}, magnitude not simulated.`;
+    out.push({
+      lane, augment: { id: aug.id, name: aug.name }, playstyle: cls.playstyle, modeled: cls.modeled,
+      wr: Math.round(aug.wr * 1000) / 10, n: aug.n,
+      core: steered.items.map((n) => ({ name: n, slug: slugOf.get(n) ?? '' })),
+      headline: steered.archetypes[0] ?? cls.playstyle, provenance,
+    });
+  }
+  return out;
 }
 
 export function buildHeroArtifact(
@@ -540,6 +586,7 @@ export function buildHeroArtifact(
       honestAbsence: candidates.length ? null : 'no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)',
     },
     metaBuilds,
+    laneFlex: computeLaneFlex(kit, pool, cal),
     matchups,
     flags: [
       'THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md',

@@ -210,6 +210,23 @@
   .mb-why { font-size:.76rem; color:var(--text-1); margin-top:.3rem; }
   .mb-opt { color:var(--blue); }
 
+  /* Playstyle-by-lane: what the sim can't see, exposed */
+  .flexrow { padding:.6rem 0; border-top:1px solid var(--border); }
+  .flexrow:first-of-type { border-top:none; }
+  .flex-head { display:flex; align-items:center; gap:.55rem; flex-wrap:wrap; }
+  .flex-lane { font-weight:800; text-transform:capitalize; min-width:4.6rem; }
+  .flex-aug { font-size:.8rem; color:var(--text-1); }
+  .flex-ps { font-size:.66rem; font-weight:700; letter-spacing:.03em; text-transform:uppercase; padding:.1rem .42rem; border-radius:999px; background:var(--bg-3); color:var(--text-1); }
+  .flex-prov { font-size:.7rem; padding:.1rem .42rem; border-radius:999px; }
+  .flex-prov.modeled { background:rgba(80,200,120,.14); color:var(--green); }
+  .flex-prov.steered { background:rgba(120,160,255,.14); color:var(--blue); }
+  .flex-wr { margin-left:auto; font-weight:800; font-variant-numeric:tabular-nums; }
+  .flex-wr.up { color:var(--green); } .flex-wr.flat { color:var(--text-1); }
+  .flex-core { display:flex; align-items:center; gap:.3rem; margin-top:.4rem; flex-wrap:wrap; }
+  .flex-core img { width:30px; height:30px; border-radius:7px; object-fit:cover; background:var(--bg-2); border:1px solid var(--border); }
+  .flex-core .arrow { color:var(--text-2); font-size:.7rem; }
+  .flex-note { font-size:.73rem; color:var(--text-2); margin-top:.34rem; }
+
   details { border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-1); margin-top:.7rem; overflow:hidden; }
   details summary {
     cursor:pointer; padding:.75rem 1.1rem; font-weight:600; font-size:.9rem; color:var(--text-1);
@@ -858,6 +875,25 @@ function renderHero(a, roleParam) {
           <div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div>
         </div>`).join('')}
     </section>` : ''}
+
+    ${a.laneFlex && a.laneFlex.length ? `
+    <section class="card">
+      <h2>Playstyle by lane <span class="hint">the augment declares the playstyle · what the sim can't see, exposed</span></h2>
+      <div style="font-size:.74rem; color:var(--text-2); margin-bottom:.5rem">The lane picks the augment, and the augment commits ${esc(a.name)} to a playstyle. We steer the build toward it — and tell you straight whether the sim <b>models</b> that augment or is leaning on the declared playstyle + field evidence.</div>
+      ${a.laneFlex.map((f) => `
+        <div class="flexrow">
+          <div class="flex-head">
+            <span class="flex-lane">${esc(f.lane)}</span>
+            <span class="flex-aug">${esc(f.augment.name)}</span>
+            <span class="flex-ps">${esc(f.playstyle)}</span>
+            <span class="flex-prov ${f.modeled ? 'modeled' : 'steered'}">${f.modeled ? '⚙ sim-modeled' : '🔬 evidence-steered'}</span>
+            ${f.wr != null ? `<span class="flex-wr ${f.wr >= 50 ? 'up' : 'flat'}">${f.wr.toFixed(1)}%</span>` : ''}
+          </div>
+          <div class="flex-core">${f.core.map((i) => i.slug ? `<img loading="lazy" data-ipop="${esc(i.slug)}" src="../img/items/${esc(i.slug)}.webp" title="${esc(i.name)} · tap for details" onerror="this.style.visibility='hidden'">` : `<span class="chip">${esc(i.name)}</span>`).join('<span class="arrow">→</span>')}</div>
+          <div class="flex-note">${esc(f.provenance)}</div>
+        </div>`).join('')}
+    </section>` : ''}
+
     <section class="card answer">
       <h2>The optimizer's build <span class="hint">our kit-math second opinion · patch ${esc(a.patch)} · ${a.build.gold.toLocaleString()}g full</span></h2>
       ${a.roleCaveat ? `<div class="caveat">⚠ ${esc(a.roleCaveat)}</div>` : ''}

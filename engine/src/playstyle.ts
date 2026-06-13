@@ -90,23 +90,28 @@ function predggAugments() {
 const SHRINK_K = 400;        // empirical-Bayes prior strength (toward 50%)
 const LANE_MIN_GAMES = 200;  // ignore tiny samples for the steer
 
-/** The augment the field commits to in a given lane: best shrunk winrate among
- *  augments with enough games, tie-broken by play count. Returns null if the
- *  hero/lane has no usable evidence. */
+/** The augment the field commits to in a given lane. The playstyle signal is
+ *  the augment the lane actually RUNS — i.e. the most-played with enough games
+ *  (and not a clear loser) — tie-broken by shrunk winrate. Play count, not
+ *  winrate, defines a lane's identity: a support's most-played augment is its
+ *  enchanter pick even if an off-meta on-hit augment posts a higher rate on a
+ *  thin sample. Returns null if the hero/lane has no usable evidence. */
 export function laneTopAugment(heroSlug: string, lane: string): LaneAugment | null {
   const data = predggAugments();
   const hero = data.heroes?.[heroSlug];
   const rec = hero?.[lane];
   if (!rec?.augments?.length) return null;
   const scored = rec.augments
-    .filter((a: any) => a.n >= LANE_MIN_GAMES)
     .map((a: any) => ({
       id: String(a.id), name: a.name, lane,
       n: a.n, w: a.w, wr: a.w / a.n,
       shrunkWr: (a.w + SHRINK_K * 0.5) / (a.n + SHRINK_K),
-    }));
+    }))
+    // enough games AND not a clear loser (shrunk wr >= 47%): a dominant augment
+    // the field keeps losing on isn't the playstyle to steer toward.
+    .filter((a: LaneAugment) => a.n >= LANE_MIN_GAMES && a.shrunkWr >= 0.47);
   if (!scored.length) return null;
-  scored.sort((a: LaneAugment, b: LaneAugment) => b.shrunkWr - a.shrunkWr || b.n - a.n);
+  scored.sort((a: LaneAugment, b: LaneAugment) => b.n - a.n || b.shrunkWr - a.shrunkWr);
   return scored[0];
 }
 
