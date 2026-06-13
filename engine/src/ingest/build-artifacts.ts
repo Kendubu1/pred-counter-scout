@@ -97,7 +97,7 @@ if (agg) {
     patch: cal.patch,
     generatedAt: new Date().toISOString(),
     matches: agg.meta.matches,
-    note: 'meta score = mean of pick-volume percentile and shrunk-winrate percentile within the lane; all ranks, current-patch window. Badges mark high-WR/low-pick sleepers and high-pick/low-WR traps.',
+    note: 'meta score blends how often a lane picks a hero with how often it wins (small samples adjusted down), both rank-averaged within the lane; all ranks, current-patch window. Badges mark high-winrate/low-pick sleepers and high-pick/low-winrate traps.',
     roles,
     topPlayers,
     topPlayersNote: topPlayers ? 'current ranked split leaderboard via the pred.gg API (favRole filter); VP = victory points' : null,
