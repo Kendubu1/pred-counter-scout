@@ -78,6 +78,10 @@ const Primitive = z.discriminatedUnion('kind', [
   // Credited at a mean in-fight uptime fraction (a fight spends part of its
   // time ramping), so it is a fair average rather than the max.
   z.object({ kind: z.literal('ramp_to_stat'), stat: StatKey, perStack: z.number(), maxStacks: z.number(), meanUptime: z.number().optional() }),
+  // Execute below a health threshold: the bottom thresholdPct% of the
+  // target's HP costs nothing once you reach it, so it is credited as
+  // bonus burst equal to thresholdPct% of the target's max health.
+  z.object({ kind: z.literal('execute'), thresholdPct: z.number() }),
   // ── ability-scoped primitives (hero augments) ──
   z.object({ kind: z.literal('ability_damage_amp'), abilityKey: AbilityKey, pct: z.number() }),
   z.object({ kind: z.literal('ability_cooldown'), abilityKey: AbilityKey, pct: z.number().optional(), flatSeconds: z.number().optional() }),
@@ -173,6 +177,7 @@ export interface ResolvedEffects {
   shieldScaling: { stat: keyof ItemStats; pct: number }[]; // shields that scale with build stats
   antiHealPct: number;
   asRampPctPerSecond: number;
+  executeThresholdPct: number;
   // ── ability-scoped (hero augments) ──
   abilityAmpPct: Partial<Record<AbilityKeyT, number>>;
   abilityCooldownMods: Partial<Record<AbilityKeyT, { pct: number; flatSeconds: number }>>;
@@ -201,7 +206,7 @@ export function emptyEffects(): ResolvedEffects {
     shredPct: { physical: 0, magical: 0, rampSeconds: 0 },
     onHitProcs: [], onAbilityProcs: [],
     healthMultiplier: 1, armorMultiplier: 1, shieldFlat: 0, shieldScaling: [], antiHealPct: 0,
-    asRampPctPerSecond: 0,
+    asRampPctPerSecond: 0, executeThresholdPct: 0,
     abilityAmpPct: {}, abilityCooldownMods: {}, abilityBonuses: [], abilityHeals: [],
     provisional: false, applied: [], unmodeled: [],
   };
@@ -241,6 +246,9 @@ export function resolveEntries(keys: string[], ctx: ResolveCtx, registry: Effect
         case 'ramp_to_stat':
           // mean of (ramping → capped) over a fight; default 0.6 uptime
           out.statFlat[fx.stat] = (out.statFlat[fx.stat] ?? 0) + fx.perStack * fx.maxStacks * (fx.meanUptime ?? 0.6);
+          break;
+        case 'execute':
+          out.executeThresholdPct += fx.thresholdPct;
           break;
         case 'damage_amp': {
           if (fx.appliesWhen === 'level_gte_10' && lvl < 10) break;

@@ -365,6 +365,13 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
     burst += mitigate(procDamage(p, t, profile, kit, true, eff), p.damageType, profile, t, eff, BURST_WINDOW) * procs;
   }
 
+  // Execute: the bottom thresholdPct% of the target's HP is a free kill once
+  // your burst brings them there — credited as bonus burst (only meaningful
+  // against a killable target, so it rides the burst objective).
+  if (eff.executeThresholdPct > 0 && profile) {
+    burst += (eff.executeThresholdPct / 100) * profile.health;
+  }
+
   const rotation: Record<number, number> = {};
   for (const w of [3, 6, 10, 20]) rotation[w] = rotationDamage(kit, { ...opts, ranks, effects: eff }, t, w);
 

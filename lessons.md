@@ -977,3 +977,19 @@ Append-only. One entry per backlog item or significant finding.
   verify HEAD == origin/<branch> and that generated-but-committed data
   files are present BEFORE regenerating — a try/catch data loader will
   happily produce wrong output from missing inputs.
+
+## 2026-06-13: the execute was modelable all along — read the condition field
+
+- Maintainer pushed on Vanquisher's execute ("once they're low they're
+  just gone"). I'd called it uncodable for lack of a threshold — but the
+  threshold (5%) was in the effect's `condition` field, which my text
+  extraction (menu/game_description only) never read. Modeled it as a new
+  `execute` kind crediting thresholdPct% of target HP as bonus burst (the
+  bottom slice is a free kill). Vanquisher's burst contribution rose and
+  it's now valued for what it does, not just its flat stats.
+- BROADER lesson: ~28 completed items carry a `condition` field with the
+  trigger/threshold numbers the descriptions omit (Lifebinder "every 10%
+  missing health", Viper "Against Eroded", etc.). My item-effect catalog
+  and encodings read the wrong fields. Item 11 must re-extract effect
+  text INCLUDING condition before modeling — several "uncodable" flags
+  were really just unread data.
