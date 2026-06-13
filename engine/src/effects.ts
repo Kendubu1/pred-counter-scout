@@ -65,7 +65,10 @@ const Primitive = z.discriminatedUnion('kind', [
     damageType: DmgType, icdSeconds: z.number().optional(), rampSeconds: z.number().optional(),
   }),
   z.object({ kind: z.literal('haste'), amount: z.number(), scope: z.enum(['ultimate', 'all']) }),
-  z.object({ kind: z.literal('cooldown_rate'), bonus: z.number(), scope: z.literal('non_ultimate') }),
+  // bonus is a FRACTION (Timewarp's "1s every 8s" = 0.125), consumed as
+  // cd /= 1 + bonus. Capped at 0.9 so a mis-scaled value (e.g. 12 for "12%")
+  // can never collapse a cooldown to the floor and inflate rotation damage.
+  z.object({ kind: z.literal('cooldown_rate'), bonus: z.number().min(0).max(0.9), scope: z.literal('non_ultimate') }),
   z.object({ kind: z.literal('percent_pen'), pct: z.number(), damageType: z.enum(['physical', 'magical', 'both']), perItemPct: z.number().optional() }),
   z.object({ kind: z.literal('flat_pen'), amount: z.number(), damageType: z.enum(['physical', 'magical']), rampSeconds: z.number().optional() }),
   z.object({ kind: z.literal('armor_shred'), pct: z.number().optional(), flat: z.number().optional(), damageType: z.enum(['physical', 'magical']), rampSeconds: z.number().optional() }),
