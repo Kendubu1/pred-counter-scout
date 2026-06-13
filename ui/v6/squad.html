@@ -69,6 +69,22 @@
   .who { display:flex; gap:.45rem; flex-wrap:wrap; }
   .plansplit { display:grid; grid-template-columns:1fr auto; gap:1rem; align-items:start; padding-bottom:.7rem; border-bottom:1px dashed var(--border); }
   .grouplabel { font-size:.62rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--text-2); margin-bottom:.35rem; }
+  .planstep { margin-bottom:.9rem; }
+  .steplabel { display:flex; align-items:center; gap:.45rem; font-size:.84rem; font-weight:700; color:var(--text-0); margin-bottom:.5rem; }
+  .stepn { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; background:var(--accent); color:#fff; font-size:.66rem; font-weight:800; flex:none; }
+  .stephint { font-size:.68rem; color:var(--text-2); margin-top:.4rem; }
+  .ptoggles { display:flex; gap:.5rem; flex-wrap:wrap; }
+  .ptoggle { display:flex; align-items:center; gap:.4rem; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.28rem .7rem .28rem .35rem; font:inherit; font-size:.82rem; color:var(--text-2); cursor:pointer; transition:border-color .12s, color .12s, background .12s; }
+  .ptoggle img { width:26px; height:26px; border-radius:50%; object-fit:cover; border:1px solid var(--border); filter:grayscale(1) opacity(.5); transition:filter .12s; margin:0; }
+  .ptoggle[aria-pressed="true"] { background:var(--accent-soft); border-color:var(--accent); color:var(--text-0); font-weight:600; }
+  .ptoggle[aria-pressed="true"] img { filter:none; border-color:var(--accent); }
+  .ptoggle::before { content:""; width:14px; height:14px; border-radius:50%; border:1.5px solid var(--text-2); flex:none; display:inline-flex; align-items:center; justify-content:center; font-size:.6rem; }
+  .ptoggle[aria-pressed="true"]::before { content:"✓"; background:var(--accent); border-color:var(--accent); color:#fff; }
+  .segmented { display:inline-flex; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.15rem; gap:.1rem; }
+  .seg { font:inherit; font-size:.8rem; border:none; background:transparent; color:var(--text-2); border-radius:99px; padding:.28rem .8rem; cursor:pointer; white-space:nowrap; }
+  .seg[aria-pressed="true"] { background:var(--accent); color:#fff; font-weight:600; }
+  .ghostbtn { margin-left:auto; font:inherit; font-size:.76rem; background:var(--bg-2); border:1px solid var(--border); color:var(--text-1); border-radius:99px; padding:.2rem .65rem; cursor:pointer; }
+  .ghostbtn:hover { border-color:var(--accent); color:var(--text-0); }
   .pick { display:flex; align-items:center; gap:.35rem; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.24rem .6rem; font-size:.78rem; cursor:pointer; user-select:none; }
   button.pick { -webkit-appearance:none; appearance:none; font:inherit; font-size:.82rem; color:var(--text-0); }
   .pick input { accent-color:var(--accent); }
@@ -168,28 +184,24 @@ const plink = (uuid, name) => uuid
     <h1>The five stack</h1>
 
     <div class="card">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.6rem">
-        <h2>The lineup · pick who's queueing</h2>
-        <button id="shuffle" class="pick" style="margin-top:-.2rem">🎲 shuffle</button>
+      <h2>The lineup</h2>
+      <div class="planstep">
+        <div class="steplabel"><span class="stepn">1</span> Who's online tonight?</div>
+        <div class="ptoggles" id="who">
+          ${s.members.map((m) => {
+            const short = m.name.split(' ')[0];
+            return `<button class="ptoggle" type="button" data-uuid="${m.uuid}" aria-pressed="true">${pav(m.uuid)}<span>${esc(short.length > 10 ? short.slice(0, 9) + '…' : short)}</span></button>`;
+          }).join('')}
+        </div>
       </div>
-      <div class="plansplit">
-        <div>
-          <div class="grouplabel">who's queueing</div>
-          <div class="who" id="who">
-            ${s.members.map((m) => {
-              const short = m.name.split(' ')[0];
-              return `<label class="pick"><input type="checkbox" data-uuid="${m.uuid}" checked> ${esc(short.length > 9 ? short.slice(0, 8) + '…' : short)}</label>`;
-            }).join('')}
-          </div>
+      <div class="planstep">
+        <div class="steplabel"><span class="stepn">2</span> Hero pool <button id="shuffle" class="ghostbtn" type="button">🎲 shuffle</button></div>
+        <div class="segmented" id="mode" role="radiogroup" aria-label="Hero pool">
+          <button class="seg" type="button" data-v="wheel" aria-pressed="true">🏠 Wheelhouse</button>
+          <button class="seg" type="button" data-v="meta" aria-pressed="false">🔥 Meta</button>
+          <button class="seg" type="button" data-v="any" aria-pressed="false">🌊 Any lane</button>
         </div>
-        <div>
-          <div class="grouplabel">flavor</div>
-          <div class="who" id="mode">
-            <label class="pick"><input type="radio" name="mode" value="wheel" checked> 🏠 wheelhouse</label>
-            <label class="pick"><input type="radio" name="mode" value="meta"> 🔥 meta</label>
-            <label class="pick"><input type="radio" name="mode" value="any"> 🌊 any lane hero</label>
-          </div>
-        </div>
+        <div class="stephint">Wheelhouse = heroes each player has real games on · Meta = the current patch's best · Any = the whole lane's roster</div>
       </div>
       <div id="planOut"></div>
     </div>
@@ -268,8 +280,8 @@ const plink = (uuid, name) => uuid
 
   const memberBy = new Map(s.members.map((m) => [m.uuid, m]));
   function renderPlan() {
-    const selected = [...document.querySelectorAll('#who input[type=checkbox]:checked')].map((i) => i.dataset.uuid);
-    const mode = document.querySelector('#mode input[name=mode]:checked').value;
+    const selected = [...document.querySelectorAll('#who .ptoggle[aria-pressed="true"]')].map((b) => b.dataset.uuid);
+    const mode = document.querySelector('#mode .seg[aria-pressed="true"]')?.dataset.v ?? 'wheel';
     document.getElementById('shuffle').style.display = '';
     const out = document.getElementById('planOut');
     const options = solveTop(selected, 3);
@@ -334,7 +346,22 @@ const plink = (uuid, name) => uuid
             : 'wheelhouse mode: heroes with 10+ of your own games in that exact role (real 5v5s); thin samples under 20 games say so'}
         · seats go to whoever wins most there, with thin role records counting less</div>`;
   }
-  document.querySelectorAll('#who input, #mode input').forEach((i) => { i.onchange = renderPlan; });
+  // who toggles: flip aria-pressed (keep at least one selected)
+  document.querySelectorAll('#who .ptoggle').forEach((b) => {
+    b.onclick = () => {
+      const on = b.getAttribute('aria-pressed') === 'true';
+      if (on && document.querySelectorAll('#who .ptoggle[aria-pressed="true"]').length <= 1) return;
+      b.setAttribute('aria-pressed', String(!on));
+      renderPlan();
+    };
+  });
+  // hero pool: single-select segmented control
+  document.querySelectorAll('#mode .seg').forEach((b) => {
+    b.onclick = () => {
+      document.querySelectorAll('#mode .seg').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      renderPlan();
+    };
+  });
   document.getElementById('shuffle').onclick = () => { shuffleSeed++; renderPlan(); };
   renderPlan();
 
