@@ -849,3 +849,20 @@ Append-only. One entry per backlog item or significant finding.
   from item 8 (single-source prompt → strict JSON → machine verification
   → silent fallback) is now on its third reuse; the marginal cost of a
   new copy surface is one prompt and one render line.
+
+## 2026-06-13: the sim pick steps forward
+
+- The maintainer was right that the value was hiding: augments sorted by
+  field winrate with sim footnotes read as a stats site, not a kit-math
+  product. A parallel investigation agent found artifacts already emit
+  the sim's preferred augment first (rankAugments order), so the fix was
+  pure UI: a ⚙ SIM PICK badge, a verdict line after the list (✓⚙ when
+  field and math agree, ⚖ with both sides' numbers when they disagree,
+  honest no-opinion when nothing is modeled), and buildShift promoted to
+  its own line — the augment→build consequence is the product's unique
+  value and was buried mid-sentence.
+- Skylar answered precisely: the sim ranks augments, not abilities; her
+  unscored augment (Assault MK-II) is the one whose mechanics need a
+  windowed on-hit effect kind — and its "unstated" missile damage is
+  actually stated in Air Assault's own tooltip. The blocker list became
+  priorities item 10 with expected coverage gains per unlock.
