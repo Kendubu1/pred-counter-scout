@@ -45,7 +45,7 @@ const Primitive = z.discriminatedUnion('kind', [
     kind: z.literal('damage_amp'), pct: z.number(), perLevelPct: z.number().optional(), perMinutePct: z.number().optional(),
     scope: z.enum(['all', 'abilities', 'basics', 'ultimate']),
     dotSeconds: z.number().optional(),
-    appliesWhen: z.enum(['always', 'window_only', 'burst_only', 'target_armor_gt_125', 'level_gte_10']).default('always'),
+    appliesWhen: z.enum(['always', 'window_only', 'burst_only', 'target_armor_gt_125', 'level_gte_10', 'target_below_40', 'target_full_health']).default('always'),
   }),
   z.object({ kind: z.literal('damage_amp_from_crit'), minPct: z.number(), maxPct: z.number(), scope: z.enum(['abilities', 'all']) }),
   z.object({ kind: z.literal('crit_damage_amp'), pct: z.number() }), // critical strikes deal X% more (multiplies the crit multiplier)
@@ -74,6 +74,10 @@ const Primitive = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('shield_per_fight'), base: z.number(), maxAtLevel18: z.number().optional() }),
   z.object({ kind: z.literal('anti_heal'), pct: z.number() }),
   z.object({ kind: z.literal('as_ramp'), pctPerSecond: z.number() }),
+  // A stat that stacks up over a fight (Plasma Blade: +4% crit/stack to 5).
+  // Credited at a mean in-fight uptime fraction (a fight spends part of its
+  // time ramping), so it is a fair average rather than the max.
+  z.object({ kind: z.literal('ramp_to_stat'), stat: StatKey, perStack: z.number(), maxStacks: z.number(), meanUptime: z.number().optional() }),
   // ── ability-scoped primitives (hero augments) ──
   z.object({ kind: z.literal('ability_damage_amp'), abilityKey: AbilityKey, pct: z.number() }),
   z.object({ kind: z.literal('ability_cooldown'), abilityKey: AbilityKey, pct: z.number().optional(), flatSeconds: z.number().optional() }),
@@ -234,12 +238,18 @@ export function resolveEntries(keys: string[], ctx: ResolveCtx, registry: Effect
         case 'stat_conversion':
           out.conversions.push({ from: fx.from, to: fx.to, pct: fx.pct, consumesSource: fx.consumesSource ?? false });
           break;
+        case 'ramp_to_stat':
+          // mean of (ramping → capped) over a fight; default 0.6 uptime
+          out.statFlat[fx.stat] = (out.statFlat[fx.stat] ?? 0) + fx.perStack * fx.maxStacks * (fx.meanUptime ?? 0.6);
+          break;
         case 'damage_amp': {
           if (fx.appliesWhen === 'level_gte_10' && lvl < 10) break;
           const pct = fx.pct + (fx.perLevelPct ?? 0) * lvl + (fx.perMinutePct ?? 0) * minute;
           if (fx.appliesWhen === 'target_armor_gt_125') out.ampVsArmorGt125Pct += pct;
-          else if (fx.appliesWhen === 'burst_only') out.ampAbilitiesBurstPct += pct;
+          else if (fx.appliesWhen === 'burst_only' || fx.appliesWhen === 'target_full_health') out.ampAbilitiesBurstPct += pct;
           else if (fx.appliesWhen === 'window_only') out.ampAllWindowPct += pct;
+          // target-below-40% amps land late in a fight: credit at ~40% uptime
+          else if (fx.appliesWhen === 'target_below_40') out.ampAllWindowPct += pct * 0.4;
           else if (fx.scope === 'ultimate') out.ampUltPct += pct;
           else if (fx.scope === 'abilities') out.ampAbilitiesPct += pct;
           else out.ampAllPct += pct;

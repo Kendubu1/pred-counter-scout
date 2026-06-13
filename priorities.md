@@ -102,6 +102,44 @@ rider; its missile damage IS stated in Air Assault's own tooltip);
 stay out of model scope, correctly. Also: ProcSpec wants dual-stat
 scaling (AD and AP) for missile-type riders.
 
+## 11. Item-effect coverage (started 2026-06-13, ongoing)
+
+ROOT CAUSE of "weird off-meta builds": the sim scored only ~19 of 126
+completed items on their passive; the other 107 were flat-stats-only,
+so the optimizer over-built the items whose passives it could see
+(Necrosis) and ignored the meta staples whose value is in unmodeled
+passives (Plasma Blade ramping crit, Oathkeeper spellblade). It could
+not justify a build against the field.
+
+Done 2026-06-13 (first batch): added effect kind `ramp_to_stat` (stacking
+stat at mean fight-uptime) and damage_amp conditions `target_below_40` /
+`target_full_health`; encoded Plasma Blade, Oathkeeper, Dynamo, Wraith
+Leggings, Viper, Marshal, Rapture; flagged Vanquisher (execute) and
+Lightning Hawk (unstated proc cadence) as honestly unmodeled. Result:
+Skylar/Shinbi now build the field core and the "meta builds" card AGREES
+with the field (was suggesting swaps); 44/52 heroes build a newly-modeled
+item; optimizer agrees on the top meta build for 11 heroes (was fewer).
+
+REMAINING (the bulk): ~100 more item effects to curate from the catalog
+archetypes — empowered-basic (Solaris/Crescelia/StormBreaker), on-hit
+flat/ratio (Spectra/Mindrazor/Entropy), conditional amps (Overseer/
+SpearOfDesolation), lifesteal-conditional, armor-shred, self-shield/EHP.
+A few clusters need new kinds; many reuse on_hit/on_ability_hit/damage_amp.
+Genuinely uncodable (execute thresholds, 100-stack cadences, XP/evolve
+economy, team/ally heals, positional auras) stay unmodeled with reasons —
+coverage is a candidate harness gate like the augment one.
+
+## 12. Research-project visualization (backlog 2026-06-13)
+
+Make the engine's reasoning *visible* — a node-link graph of the build
+decision (abilities → items → effect primitives → objectives → build),
+animated matchup-matrix heatmap, damage Sankey, build-spike timeline,
+effect-coverage treemap. Static React + D3/React-Flow (or Observable
+notebooks), zero-API against committed artifacts, hostable on the
+maintainer's site as a research piece. Needs an engine `npm run explain`
+step emitting per-item per-objective attribution (leave-one-out
+re-sims = honest edge weights). Full design: docs/visualization-research.md.
+
 ## Parked ideas (not yet scheduled)
 
 - Comfort-vs-meta flex logic (parked by maintainer 2026-06-12): when a
