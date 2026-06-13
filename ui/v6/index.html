@@ -674,7 +674,9 @@ function renderHero(a, roleParam) {
           : `<a class="echip" href="?hero=${esc(a.slug)}&role=${esc(r)}" style="text-transform:capitalize">${esc(r)}</a>`).join('')}<span style="font-size:.68rem;color:var(--text-2);align-self:center">flex lanes with field evidence — switching swaps the augment and Eternal numbers</span></div>`
         : `<div style="font-size:.74rem;color:var(--text-2);margin-bottom:.45rem">augment · field evidence as <b style="text-transform:capitalize">${esc(role)}</b></div>`}
         ${mismatch ? `<div style="font-size:.72rem;color:var(--gold);margin-bottom:.45rem">you came here as ${esc(roleParam)}, but the field sample for ${esc(a.name)} ${esc(roleParam)} is too thin — showing ${esc(role)} evidence instead</div>` : ''}
+        ${(() => { window.__simPick = (a.augments || []).find((x) => x.modeled) ?? null; return ''; })()}
         ${ranked.map((g, i) => {
+          const simPick = window.__simPick;
           const wr = g.w / g.n;
           const desc = (AUGS.catalog[g.id]?.description || '').replace(/<[^>]+>/g, '');
           return `
@@ -682,6 +684,7 @@ function renderHero(a, roleParam) {
             <div style="display:flex;gap:.6rem;align-items:center">
               <img src="../img/augments/${esc(g.id)}.webp" alt="" style="width:30px;height:30px;border-radius:50%;object-fit:contain;background:var(--bg-2);flex:none;padding:1px;${i === 0 ? 'box-shadow:0 0 0 2px var(--green)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'">
               <span style="font-size:.88rem;font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${i === 0 ? '✓ ' : ''}${esc(g.name)}</span>
+              ${simPick && simPick.id === g.id ? '<span style="font-size:.6rem;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">⚙ SIM PICK</span>' : ''}
               <span style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(wr * 100).toFixed(1)}%</span>
               <span style="font-size:.7rem;color:var(--text-2)">${g.n.toLocaleString()} games</span>
             </div>
@@ -701,11 +704,26 @@ function renderHero(a, roleParam) {
               if (sa.ehpPct) parts.push(`survivability ${sa.ehpPct > 0 ? '+' : ''}${sa.ehpPct}%`);
               if (sa.healShieldPct) parts.push(`heal/shield ${sa.healShieldPct > 0 ? '+' : ''}${sa.healShieldPct}%`);
               else if (sa.healShieldAbs) parts.push(`adds ~${sa.healShieldAbs.toLocaleString()} HP of heal/shield per 10s`);
-              const shift = sa.buildShift ? ` · build shifts: ${sa.buildShift.in.map(esc).join(', ')} over ${sa.buildShift.out.map(esc).join(', ')}` : '';
-              return `<div style="font-size:.66rem;color:var(--accent);margin:.12rem 0 0 2.35rem">⚙ in the sim: ${parts.length ? esc(parts.join(' · ')) : 'no change to this kit’s main numbers'}${shift}${sa.provisional ? ' (provisional constant)' : ''}</div>`;
+              const shift = sa.buildShift
+                ? `<div style="font-size:.66rem;color:var(--accent);margin:.1rem 0 0 2.35rem">⚙ locking this shifts the optimizer's build: <b>${sa.buildShift.in.map(esc).join(', ')}</b> over ${sa.buildShift.out.map(esc).join(', ')}</div>`
+                : (simPick && simPick.id === g.id ? `<div style="font-size:.66rem;color:var(--text-2);margin:.1rem 0 0 2.35rem">⚙ build unchanged — the same six items stay optimal with this augment locked</div>` : '');
+              return `<div style="font-size:.66rem;color:var(--accent);margin:.12rem 0 0 2.35rem">⚙ in the sim: ${parts.length ? esc(parts.join(' · ')) : 'no change to this kit’s main numbers'}${sa.provisional ? ' (provisional constant)' : ''}</div>${shift}`;
             })()}
           </div>`;
         }).join('')}
+        ${(() => {
+          const simPick = window.__simPick;
+          const fieldTop = ranked[0];
+          if (!simPick) return `<div style="font-size:.7rem;color:var(--text-2);margin:.45rem 0 0">⚙ the sim has no pick here — none of this hero's augments have tractable math yet</div>`;
+          const best = [['20s fights', simPick.rot20Pct], ['burst', simPick.burstPct], ['survivability', simPick.ehpPct], ['heal/shield', simPick.healShieldPct]].filter(([, v]) => v).sort((x, y) => y[1] - x[1]);
+          const gains = best.slice(0, 2).map(([l, v]) => `${v > 0 ? '+' : ''}${v}% ${l}`).join(', ');
+          if (fieldTop && simPick.id === fieldTop.id) {
+            return `<div style="font-size:.7rem;color:var(--green);margin:.45rem 0 0">✓⚙ field and kit math agree: best winrate here AND the biggest simulated gain${gains ? ` (${esc(gains)} — THEORY until calibration)` : ''}</div>`;
+          }
+          const ftEntry = (a.augments || []).find((x) => x.id === fieldTop?.id);
+          const whyNot = ftEntry && !ftEntry.modeled && ftEntry.note ? `, and the sim can't score the field's pick (${esc(ftEntry.note)})` : '';
+          return `<div style="font-size:.7rem;color:var(--gold);margin:.45rem 0 0">⚖ our kit math prefers <b>${esc(simPick.name)}</b>${gains ? ` (${esc(gains)} — THEORY)` : ''} over the field's pick; ${fieldTop ? `${fieldTop.n.toLocaleString()} games back ${esc(fieldTop.name)}` : 'the field disagrees'}${whyNot} — weight the field until calibration lands</div>`;
+        })()}
         <div style="font-size:.74rem;color:var(--text-2);margin:.7rem 0 .45rem"><b style="letter-spacing:.06em">ETERNAL</b> · top 3 as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
         ${ets.length ? ets.map((e, i) => {
           const wr = e.w / e.n;

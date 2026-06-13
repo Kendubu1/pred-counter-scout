@@ -87,6 +87,21 @@ and the blanket 'augment-blind' caveat is retired. After a patch: rerun
 npm run augments, then diff new catalog descriptions against the
 fixture's sourceText (the fixture is hand-curated, not regenerated).
 
+## 10. Augment coverage unlocks (agent-investigated 2026-06-13)
+
+Sim-pick UX shipped same day (badge + agree/disagree/no-opinion verdict
+lines + buildShift promoted). The engine unlocks, by expected coverage
+gain over the 110 unmodeled augments: (1) parse the PASSIVE ability slot
+in data.ts + add it to AbilityKey — reaches ~14 augments that target
+hero passives already in the omeda snapshot; (2) a stated-uptime window
+effect kind (uptime = duration / cooldown, both already in tooltips —
+computed, not invented) — reaches the "while active" cluster (~6-8) and
+is the same primitive Skylar's Assault MK-II needs (windowed on-hit
+rider; its missile damage IS stated in Air Assault's own tooltip);
+(3) heal_from_damage kind (~3-4). Economy/utility/team-side clusters
+stay out of model scope, correctly. Also: ProcSpec wants dual-stat
+scaling (AD and AP) for missile-type riders.
+
 ## Parked ideas (not yet scheduled)
 
 - Comfort-vs-meta flex logic (parked by maintainer 2026-06-12): when a
