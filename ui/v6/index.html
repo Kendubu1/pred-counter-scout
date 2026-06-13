@@ -719,7 +719,7 @@ function renderHero(a, roleParam) {
         ${(() => {
           const crs = (cell.crests || []).filter((c) => c.n >= 300).sort((x, y) => (y.w / y.n) - (x.w / x.n)).slice(0, 3);
           if (!crs.length) return '';
-          const cslug = (n) => n.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          const cslug = (n) => n.toLowerCase().replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
           return `
           <div style="font-size:.74rem;color:var(--text-2);margin:.7rem 0 .45rem"><b style="letter-spacing:.06em">CREST</b> · top 3 as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
           ${crs.map((c, i) => `
