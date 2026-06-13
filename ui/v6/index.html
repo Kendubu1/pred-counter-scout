@@ -847,12 +847,16 @@ function renderHero(a, roleParam) {
 }
 
 // ── item info popup: tap any item icon for the v2-style quick view ──
-let ITEMS_RAW = null;
+let ITEMS_RAW = null, ITEM_WHY = null;
 const STAT_LABELS = { physical_power: 'Physical Power', magical_power: 'Magical Power', attack_speed: 'Attack Speed %', critical_chance: 'Crit Chance %', physical_penetration: 'Physical Pen', magical_penetration: 'Magical Pen', ability_haste: 'Ability Haste', health: 'Health', physical_armor: 'Physical Armor', magical_armor: 'Magical Armor', max_mana: 'Mana', lifesteal: 'Lifesteal %', omnivamp: 'Omnivamp %', heal_shield_increase: 'Heal & Shield Power %', gold_per_second: 'Gold / sec', tenacity: 'Tenacity', movement_speed: 'Move Speed', health_regeneration: 'Health Regen', mana_regeneration: 'Mana Regen' };
 async function showItem(slug) {
   if (!ITEMS_RAW) {
-    const raw = await getJson('../../data/omeda/items.json').catch(() => null);
+    const [raw, why] = await Promise.all([
+      getJson('../../data/omeda/items.json').catch(() => null),
+      getJson('../../data/aggregates/item-reviews.json').catch(() => null),
+    ]);
     ITEMS_RAW = new Map((Array.isArray(raw) ? raw : raw?.items ?? []).map((i) => [i.slug, i]));
+    ITEM_WHY = why?.items ?? {};
   }
   const it = ITEMS_RAW.get(slug);
   if (!it) return;
@@ -871,6 +875,7 @@ async function showItem(slug) {
       ${stats.length ? `<div class="istats">${stats.map(([k, v]) => `<span>${STAT_LABELS[k]}</span><span class="v">+${v}</span>`).join('')}</div>` : ''}
       ${(it.effects || []).filter((e) => e.menu_description || e.game_description).map((e) => `
         <div class="ifx"><b>${esc(e.name || 'Effect')}${e.cooldown ? ` · ${esc(String(e.cooldown))} cooldown` : ''}</b><br>${esc(clean(e.menu_description || e.game_description))}</div>`).join('')}
+      ${ITEM_WHY[slug] ? `<div class="ifx" style="color:var(--text-0)">🧠 ${esc(ITEM_WHY[slug])}<div style="font-size:.64rem;color:var(--text-2);margin-top:.25rem">AI-written from this item's stats and effects only; numbers machine-verified</div></div>` : ''}
       <button class="iclose">close</button>
     </div>`;
   const dismiss = () => { back.remove(); document.removeEventListener('keydown', onKey); };

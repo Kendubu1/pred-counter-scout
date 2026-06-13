@@ -839,3 +839,13 @@ Append-only. One entry per backlog item or significant finding.
   NOTHING (write happens at the end) — the popup attributes landed in a
   later script while CSS/JS never did, yielding silent dead markup.
   Verify features by exercising them, not by edit success.
+
+## 2026-06-13: item why-lines through the same verified-copy pipeline
+
+- npm run review:items writes one plain-language "who leans into this
+  and why" line per completed item + crest (180 of 182 passed the
+  numeric verifier), grounded only in the item's own stats and effect
+  text, rendered in the quick-view popup with provenance. The pipeline
+  from item 8 (single-source prompt → strict JSON → machine verification
+  → silent fallback) is now on its third reuse; the marginal cost of a
+  new copy surface is one prompt and one render line.
