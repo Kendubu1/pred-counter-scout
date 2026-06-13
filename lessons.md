@@ -1010,3 +1010,42 @@ Append-only. One entry per backlog item or significant finding.
   build often still contains one unmodeled item — coverage has to be deep,
   not just broad, before the verdict flips. The build CONTENT improves
   faster than the verdict line.
+
+## 2026-06-13: folded the whole completed-item tier into the model + a visible breakdown
+- Finished the item-11 sweep: every completed-tier item now carries a
+  decision — 65 modeled, 61 honestly-unmodeled-with-reason, 0 untouched
+  in the 2400g+ doc tier (68 modeled across all 133 item entries; counts
+  19→27→36→68). The maintainer asked to "fold every major item into this
+  understanding" and to SEE the reasoning, so the deliverable is a
+  generated breakdown: docs/item-effect-model.md (npm run item-model)
+  renders, per item, base stats + each passive split out with its trigger
+  condition + the primitive it maps to + a plain "how it rolls into the
+  sim" sentence. Generated, so it never drifts from effects.json.
+- Verify the SOURCE, not the agent. A background agent drafted encodings
+  but read a stale 19-modeled tree (container-restart git reset, twice
+  this session) and miscited the schema (claimed ramp_to_stat /
+  target_below_40 were absent — they were committed). I re-extracted every
+  candidate's text straight from data/omeda/items.json before encoding and
+  found four cleanly-modelable items it had filed as unmodeled: Alternator
+  (Alternate-ability amp — an ITEM can carry an ability-scoped primitive),
+  Echelon Cloak (camo-opener burst → damage_amp burst_only), and Tainted
+  Charm/Totem (proximity anti-heal). Net: trust the snapshot text, treat
+  agent proposals as leads.
+- "Honestly unmodeled" is a real coverage decision, not a gap. The 61
+  flagged items cluster into a small set of stated reasons the sim cannot
+  represent: ally heals/shields (team-side), farming/evolve stacks,
+  takedown-gated cooldown refunds, enemy-shield-gated bonuses, target-mana
+  burn (true damage off the target's mana), defensive/incoming mitigation,
+  multi-target splash, and mobility/movement-stack cadences. Writing the
+  reason down each time is what lets the ratchet test forbid a silent gap
+  and what makes the breakdown doc trustworthy.
+- Don't credit a tradeoff's upside alone. Cursed Ring (+20% AS but basics
+  deal 25% less, plus an attack-speed-cap change) and Onixian Quiver
+  (melee-only crit + multi-projectile splash) were left unmodeled on
+  purpose: the schema can't express a basics-only penalty or a melee gate,
+  so crediting only the good half would have actively misled the optimizer.
+- Impact: Skylar's engine core now shares Plasma Blade + Vanquisher +
+  Imperator with the field's staples (it used to over-build the handful of
+  items it understood). Manta Scythe's "isolated target +10%" is fair to
+  model as always-on because the kill-window sim is 1v1 by construction —
+  the same convention already used for augment "isolated/nearest" amps.

@@ -124,11 +124,29 @@ ESTABLISHED METHOD (repeatable per batch):
    every unmodeled entry states why. Regenerate artifacts+matrix, measure
    the optimizer-agrees-with-field rate.
 
-PROGRESS: 36/126 items modeled (19 → 27 → 36). Batches done: ramp/execute
-staples (Plasma Blade, Oathkeeper, Dynamo, Wraith Leggings, Viper, Marshal,
-Rapture, Vanquisher); spellblade/shred/anti-heal batch (Solaris, Crescelia,
-Augmentation, Entropy, Spectra, Basilisk, Soulbinder, Tainted Blade, Azure
-Core). ~90 remain — continue down the meta-frequency list.
+PROGRESS: every completed-tier item now reviewed — 65 modeled · 61
+honestly-unmodeled-with-reason · 0 untouched (the 2400g+ doc tier; 68
+modeled across all 133 item entries). Counts climbed 19 → 27 → 36 → 68.
+The reasoning breakdown is generated at `docs/item-effect-model.md`
+(`npm run item-model`): for every item, base stats + each passive split
+out (with its trigger condition) + the primitive it maps to + a plain
+sentence on how it rolls into the sim. Last batch (2026-06-13) folded in
+the rest of the tier from the omeda text (verified, not the stale agent
+read): execute/finisher (Vanquisher kept, Malady honestly unmodeled —
+sub-40% gated stacking proc), spellblades (Elafrost, Inquisition,
+Oathkeeper-class), %max-HP procs (Mutilator, Infernum, Fist of Razuul),
+percent-pen (Demolisher, The Perforator), anti-heal (Tainted Trident/
+Bastion/Charm/Totem), ult-amps & ult-haste (Spear of Desolation, Overseer,
+Tyranny, Warp Stream), conversions (World Breaker, Aegis of Agawar,
+Mindrazor, Orion), ramp_to_stat (Dust Devil), per-level stat growth
+(Orb of Enlightenment), proximity shred/amp auras (Citadel, Flux Matrix,
+Manta Scythe isolated +10%), the Alternate-ability amp (Alternator), and
+the camo-opener burst (Echelon Cloak). The 61 unmodeled are categorical
+and stated: ally heals/shields, farming/evolve stacks, takedown-gated CD
+refunds, enemy-shield-gated bonuses, target-mana-burn true damage,
+defensive/incoming-mitigation, multi-target splash, and mobility-gated
+cadences. Skylar's engine core now shares Plasma Blade + Vanquisher +
+Imperator with the field staples (was diverging).
 
 NEXT-STEP IDEA (maintainer 2026-06-13): a "why this meta build wins" panel —
 leave-one-out attribution on the META build shown beside its real winrate,
