@@ -742,6 +742,7 @@ function renderHero(a, roleParam) {
             <div style="display:flex;gap:.6rem;align-items:center">
               <img src="${IMG.eternal(e.name.toLowerCase())}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;${i === 0 ? 'box-shadow:0 0 0 2px var(--green)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'">
               <span style="font-size:.88rem;font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${i === 0 ? '✓ ' : ''}${esc(e.name)}</span>
+              ${top && top.name.toLowerCase() === e.name.toLowerCase() ? '<span style="font-size:.6rem;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">⚙ SIM PICK</span>' : ''}
               <span title="raw ${(wr * 100).toFixed(1)}% — shown shrunk toward the role's pick-weighted mean (small samples get less benefit of the doubt)" style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(e.shrunk * 100).toFixed(1)}%</span>
               <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
             </div>
@@ -752,6 +753,9 @@ function renderHero(a, roleParam) {
             })()}
           </div>`;
         }).join('') : '<div class="muted">no Eternal sample for this role yet</div>'}
+        ${top && ets.length && top.name.toLowerCase() === ets[0].name.toLowerCase()
+          ? `<div style="margin-top:.45rem;font-size:.7rem;color:var(--green)">✓⚙ field and kit math agree on ${esc(top.name)}: top winrate in this role AND the biggest simulated gain${top.headlinePct ? ` (+${top.headlinePct}% main output — THEORY until calibration)` : ''}</div>` : ''}
+        ${!top && ets.length ? `<div style="margin-top:.45rem;font-size:.7rem;color:var(--text-2)">⚙ the sim has no Eternal pick for this kit — no modeled Eternal moves its numbers</div>` : ''}
         ${top && ets.length && top.name.toLowerCase() !== ets[0].name.toLowerCase()
           ? (a.eternals.augmentAware
             ? `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">⚖ our kit math — run with ${esc(a.eternals.augmentAware)} modeled — prefers ${esc(top.name)} (+${top.headlinePct}% on this kit’s main output); when math and field disagree, the field's sample is the safer default for this role</div>`
