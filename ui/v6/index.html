@@ -113,12 +113,34 @@
   .htabs { display:flex; gap:.4rem; margin-top:1rem; }
   .htab { background:var(--bg-1); color:var(--text-1); border:1px solid var(--border); border-radius:99px; padding:.32rem 1rem; font-size:.84rem; }
   .htab.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .patchhead { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
+  .trend { font-size:.62rem; font-weight:800; letter-spacing:.04em; border-radius:6px; padding:.05rem .45rem; border:1px solid; }
+  .trend.buff { color:var(--green); border-color:var(--green); background:rgba(0,196,140,.1); }
+  .trend.nerf { color:var(--red); border-color:var(--red); background:rgba(255,90,90,.1); }
+  .trend.mixed, .trend.rework { color:var(--gold); border-color:var(--gold); background:rgba(240,180,41,.1); }
+  .pgrid { display:grid; grid-template-columns:1fr 1fr; gap:.5rem; margin-top:.7rem; }
+  @media (max-width:520px){ .pgrid { grid-template-columns:1fr; } }
+  .pgrid > div { background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:.55rem .7rem; font-size:.78rem; color:var(--text-1); }
+  .pgrid .pl { font-size:.62rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--text-2); display:block; margin-bottom:.2rem; }
+  ul.pchanges { margin:.6rem 0 0 1.1rem; font-size:.78rem; color:var(--text-1); }
+  ul.pchanges li { margin:.25rem 0; }
+  .lvlorder { display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; margin-top:.2rem; }
+  .lvlpip { display:flex; align-items:center; gap:.4rem; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.22rem .6rem; font-size:.8rem; }
+  .lvlpip img { width:24px; height:24px; border-radius:6px; object-fit:cover; }
+  .lvlpip .num { font-size:.62rem; font-weight:800; color:var(--accent); }
+  .lvlarrow { color:var(--text-2); font-size:.9rem; }
+  .abilchg { font-size:.6rem; font-weight:800; border-radius:5px; padding:.03rem .35rem; border:1px solid; vertical-align:middle; }
+  .abilchg.buff { color:var(--green); border-color:var(--green); }
+  .abilchg.nerf { color:var(--red); border-color:var(--red); }
+  .abilchg.mixed, .abilchg.rework { color:var(--gold); border-color:var(--gold); }
+  .abil .atip { font-size:.74rem; color:var(--accent); margin-top:.3rem; }
   .abil { display:flex; gap:.7rem; padding:.55rem 0; border-bottom:1px solid var(--border); align-items:flex-start; }
   .abil:last-of-type { border-bottom:none; }
   .abil img { width:44px; height:44px; border-radius:10px; object-fit:cover; background:var(--bg-2); border:1px solid var(--border); flex:none; }
   .abil .akey { display:inline-block; background:var(--bg-2); border:1px solid var(--border); border-radius:6px; font-size:.64rem; font-weight:800; padding:.04rem .4rem; color:var(--text-1); vertical-align:middle; margin-left:.35rem; }
   .abil .ameta { font-size:.7rem; color:var(--gold); margin-top:.1rem; }
-  .abil .adesc { font-size:.74rem; color:var(--text-1); margin-top:.25rem; line-height:1.5; }
+  .abil .adesc { font-size:.74rem; color:var(--text-1); margin-top:.25rem; line-height:1.5; overflow-wrap:anywhere; }
+  .abil .ameta { overflow-wrap:anywhere; }
   .answer { border-color:#3b3470; background:linear-gradient(180deg, rgba(108,92,231,.07), rgba(18,18,26,0) 55%), var(--bg-1); }
   .rail { display:grid; grid-template-columns:repeat(6, 1fr); gap:.6rem; }
   @media (max-width:680px) { .rail { grid-template-columns:repeat(3, 1fr); } }
@@ -912,10 +934,19 @@ document.addEventListener('click', (ev) => {
 });
 
 let HEROES_RAW = null;
+let SKILLS = null, ATIPS = null, PATCHES = null;
 async function renderLearn(a) {
   if (!HEROES_RAW) {
-    const raw = await getJson('../../data/omeda/heroes.json').catch(() => null);
+    const [raw, sk, tp, pa] = await Promise.all([
+      getJson('../../data/omeda/heroes.json').catch(() => null),
+      getJson('../../data/aggregates/skill-orders.json').catch(() => null),
+      getJson('../../data/aggregates/ability-tips.json').catch(() => null),
+      getJson('../../data/game-data/hero-patch-state.json').catch(() => null),
+    ]);
     HEROES_RAW = Array.isArray(raw) ? raw : raw?.heroes ?? [];
+    SKILLS = sk?.heroes ?? {};
+    ATIPS = tp?.heroes ?? {};
+    PATCHES = pa?.heroes ?? {};
   }
   const hero = HEROES_RAW.find((h) => h.slug === a.slug);
   if (!hero) return '<section class="card"><h2>Learn the hero</h2><div class="muted">no kit data found</div></section>';
@@ -923,7 +954,39 @@ async function renderLearn(a) {
   const abilities = [...(hero.abilities || [])].sort((x, y) => (ORDER[x.key] ?? 9) - (ORDER[y.key] ?? 9));
   const clean = (t) => (t || '').replace(/<br\s*\/?>(\n)?/g, ' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
   const fmtArr = (arr, unit) => Array.isArray(arr) && arr.length ? `${arr.join(' / ')}${unit}` : null;
+  const sk = SKILLS[a.slug];
+  const tips = ATIPS[a.slug] ?? {};
+  const patch = PATCHES[a.slug] ?? null;
+  const trendLabel = { buff: 'BUFFED', nerf: 'NERFED', mixed: 'MIXED', rework: 'REWORKED' };
+  const nameByKey = new Map(abilities.map((ab) => [ab.key, ab.display_name]));
+  // map each exact change line to the ability it names, for per-ability badges
+  const changedKeys = new Map();
+  if (patch) for (const ch of (patch.changes || [])) for (const ab of abilities) {
+    if (ab.display_name && ch.toLowerCase().includes(ab.display_name.toLowerCase())) changedKeys.set(ab.key, patch.trend);
+  }
   return `
+    ${patch ? `
+    <section class="card">
+      <div class="patchhead"><h2 style="margin:0">Patch ${esc(patch.patch || a.patch)} changes</h2><span class="trend ${esc(patch.trend)}">${trendLabel[patch.trend] || esc(patch.trend).toUpperCase()}</span></div>
+      <div style="font-size:.88rem;color:var(--text-0);margin-top:.6rem">${esc(patch.analysis?.summary || '')}</div>
+      ${patch.analysis?.playing || patch.analysis?.facing ? `<div class="pgrid">
+        ${patch.analysis?.playing ? `<div><span class="pl">If you play ${esc(a.name)}</span>${esc(patch.analysis.playing)}</div>` : ''}
+        ${patch.analysis?.facing ? `<div><span class="pl">If you face ${esc(a.name)}</span>${esc(patch.analysis.facing)}</div>` : ''}
+      </div>` : ''}
+      ${(patch.changes || []).length ? `<ul class="pchanges">${patch.changes.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>` : ''}
+    </section>` : ''}
+
+    ${sk && sk.maxOrder?.length ? `
+    <section class="card">
+      <h2>Leveling order <span class="hint">what the field maxes first · current patch</span></h2>
+      <div style="font-size:.78rem;color:var(--text-1);margin-bottom:.5rem">Put your early points into these abilities in this order${sk.ultLevels?.length ? ` — and take your ultimate at <b>${sk.ultLevels.join(' / ')}</b>` : ''}.</div>
+      <div class="lvlorder">${sk.maxOrder.map((o, i) => {
+        const ab = abilities.find((x) => x.key === o.key);
+        const hash = ab ? (ab.image || '').split('/').pop() : '';
+        return `${i ? '<span class="lvlarrow">→</span>' : ''}<span class="lvlpip"><span class="num">${i + 1}</span>${hash ? `<img loading="lazy" src="../img/abilities/${esc(hash)}" alt="">` : ''}${esc(o.name)}</span>`;
+      }).join('')}</div>
+    </section>` : ''}
+
     <section class="card">
       <h2>The kit <span class="hint">official ability data, patch ${esc(a.patch)}</span></h2>
       ${abilities.map((ab) => {
@@ -934,9 +997,10 @@ async function renderLearn(a) {
         <div class="abil">
           ${hash ? `<img loading="lazy" src="../img/abilities/${esc(hash)}" alt="" onerror="this.style.visibility='hidden'">` : ''}
           <div style="min-width:0">
-            <b style="font-size:.92rem">${esc(ab.display_name)}</b>${ab.key ? `<span class="akey">${esc(ab.key)}</span>` : ''}${ab.key === 'R' ? '<span class="akey" style="color:var(--gold);border-color:var(--gold)">ULT · rank at 6 / 11 / 16</span>' : ''}
+            <b style="font-size:.92rem">${esc(ab.display_name)}</b>${ab.key ? `<span class="akey">${esc(ab.key)}</span>` : ''}${ab.key === 'R' ? `<span class="akey" style="color:var(--gold);border-color:var(--gold)">ULT${sk?.ultLevels?.length ? ' · ' + sk.ultLevels.join(' / ') : ''}</span>` : ''}${changedKeys.has(ab.key) ? `<span class="abilchg ${esc(changedKeys.get(ab.key))}">${(changedKeys.get(ab.key) === 'nerf' ? '▼ nerfed' : changedKeys.get(ab.key) === 'buff' ? '▲ buffed' : '◆ changed')} this patch</span>` : ''}
             ${cd || cost ? `<div class="ameta">${[cd, cost].filter(Boolean).join(' · ')}</div>` : ''}
             <div class="adesc">${esc(clean(ab.menu_description || ab.game_description))}</div>
+            ${tips[ab.key] ? `<div class="atip">🎯 ${esc(tips[ab.key])}</div>` : ''}
           </div>
         </div>`;
       }).join('')}
@@ -945,7 +1009,7 @@ async function renderLearn(a) {
       <h2>How this kit wants to play <span class="hint">from the sim + field evidence</span></h2>
       <div style="font-size:.86rem;color:var(--text-1);line-height:1.6">${esc(a.coachLine)}</div>
       ${a.build.archetypes.length ? `<div class="chips" style="margin-top:.6rem">${a.build.archetypes.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>` : ''}
-      <div style="margin-top:.6rem;font-size:.72rem;color:var(--text-2)">ult rank levels 6 / 11 / 16 are verified from pred.gg recommended skill orders · combat numbers remain THEORY until in-game calibration · for augment-specific tips see the 🧠 lines on the Game plan tab</div>
+      <div style="margin-top:.6rem;font-size:.72rem;color:var(--text-2)">leveling order and ult timing come from pred.gg's in-game recommended skill path (current patch) · 🎯 ability tips are AI-written from each ability's own text, machine-checked · patch notes from the official 1.14 changelog · combat numbers stay THEORY until in-game calibration · augment-specific tips live on the Game plan tab</div>
     </section>`;
 }
 

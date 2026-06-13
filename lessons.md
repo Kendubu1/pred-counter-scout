@@ -866,3 +866,28 @@ Append-only. One entry per backlog item or significant finding.
   windowed on-hit effect kind — and its "unstated" missile damage is
   actually stated in Air Assault's own tooltip. The blocker list became
   priorities item 10 with expected coverage gains per unlock.
+
+## 2026-06-13: the Learn-the-hero tab, v2-grade
+
+- Rebuilt the Learn tab into v2's structure: (1) patch changes for this
+  hero — trend badge, plain summary, "if you play / if you face" grid,
+  exact change lines — read from the held current-patch data/game-data/
+  hero-patch-state.json (40/52 heroes changed; the rest honestly show no
+  section); (2) leveling order; (3) the kit, each ability now carrying a
+  🎯 how-to-play tip and a ▲buffed/▼nerfed-this-patch badge matched to
+  the change lines by ability name; (4) how it wants to play.
+- Skill order: derived a noisy proxy from summedLevelTime first and got
+  Gideon BACKWARDS — then took the maintainer's nudge to check the API
+  and found hero.data.recommendedSkills, the authoritative 18-entry
+  in-game recommended path. Lesson restated: when an authoritative field
+  exists, a clever proxy is just a bug waiting to disagree with it. One
+  call per hero, 52/52 covered, ult levels read straight from the path.
+- Wukong has no ULTIMATE entries in his recommended path (kit ranks
+  differently) → empty ultLevels. Real data, not a gap: the test allows
+  empty-or-[6,11,16] and the UI shows the ult timing only when present.
+- ability-tips coverage bug: haiku sometimes returns keys as 'R "Feast"'
+  not 'R', so strict parsed[key] lookup dropped countess/howitzer
+  entirely. Tolerant leading-token match fixed it (50→52). Also: a
+  filtered re-run OVERWROTE the whole file (lost 274 tips) until the
+  writer was made merge-with-existing — partial regens must never clobber.
+- Harness gate added: skill orders + ability tips must cover all 52.

@@ -104,6 +104,19 @@ describe('hero artifacts (Concept A engine stage)', () => {
     }
   });
 
+  it('Learn-tab data covers every rostered hero (skill orders + ability tips)', () => {
+    const index = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/index.json'), 'utf8')) as { heroes: { slug: string }[] };
+    const skills = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/skill-orders.json'), 'utf8'));
+    const tips = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/ability-tips.json'), 'utf8'));
+    for (const { slug } of index.heroes) {
+      expect(skills.heroes[slug]?.maxOrder?.length, `${slug} missing skill order`).toBeGreaterThan(0);
+      const ult = skills.heroes[slug]?.ultLevels ?? null;
+      expect(ult, `${slug} ult levels`).toBeTruthy();
+      if (ult.length) expect(ult).toEqual([6, 11, 16]);
+      expect(Object.keys(tips.heroes[slug] ?? {}).length, `${slug} missing ability tips`).toBeGreaterThan(0);
+    }
+  });
+
   it('the all-pairs matchup matrix covers every hero pair with valid verdict codes', () => {
     const mx = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/matchup-matrix.json'), 'utf8'));
     const n = 52;
