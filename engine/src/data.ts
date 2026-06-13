@@ -156,6 +156,13 @@ export function loadData(): LoadedData {
     stats: Record<string, number> | null;
   }[]>('data/omeda/items.json');
 
+  // Field-recommended ability leveling order (pred.gg recommendedSkills),
+  // optional: the sim levels basics this way when present. omeda RMB/Q/E
+  // map to the kit's PRIMARY/SECONDARY/ALTERNATE keys.
+  const OMEDA_TO_KIT: Record<string, string> = { RMB: 'PRIMARY', Q: 'SECONDARY', E: 'ALTERNATE' };
+  let skillOrders: Record<string, { maxOrder: { key: string }[] }> = {};
+  try { skillOrders = (loadJson<{ heroes: typeof skillOrders }>('data/aggregates/skill-orders.json')).heroes ?? {}; } catch { /* optional */ }
+
   const profMap = new Map(profiles.map((p) => [p.slug, p]));
   const kits = new Map<string, HeroKit>();
   const derivedProfiles: string[] = [];
@@ -252,6 +259,9 @@ export function loadData(): LoadedData {
       basicScalingPct,
       baseStats: bs as unknown as BaseStats,
       abilities: defs,
+      recommendedMaxOrder: skillOrders[om.slug]?.maxOrder
+        ?.map((o) => OMEDA_TO_KIT[o.key])
+        .filter((k): k is string => !!k && defs.some((d) => d.key === k)),
       abilitySource: defs.length && staleFallbacks.some((s) => s.slug === om.slug) ? 'mixed' : 'omeda',
     });
   }

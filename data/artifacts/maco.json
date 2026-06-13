@@ -2,7 +2,7 @@
  "slug": "maco",
  "name": "Maco",
  "patch": "1.14.4",
- "generatedAt": "2026-06-13T01:12:48.120Z",
+ "generatedAt": "2026-06-13T03:35:47.154Z",
  "role": "support",
  "damageType": "hybrid",
  "attackType": "ranged",
@@ -43,20 +43,20 @@
     "evidenceN": 16
    },
    {
-    "name": "Lifecore",
-    "slug": "lifecore",
-    "spikeMinute": 29,
-    "playRatePct": 4.5,
-    "evidenceDeltaWr": 0.4,
-    "evidenceN": 28
-   },
-   {
     "name": "Timewarp",
     "slug": "timewarp",
-    "spikeMinute": 35,
+    "spikeMinute": 29,
     "playRatePct": 17,
     "evidenceDeltaWr": 1.1,
     "evidenceN": 107
+   },
+   {
+    "name": "Lifecore",
+    "slug": "lifecore",
+    "spikeMinute": 35,
+    "playRatePct": 4.5,
+    "evidenceDeltaWr": 0.4,
+    "evidenceN": 28
    },
    {
     "name": "Lunaria",
@@ -80,9 +80,9 @@
    "heal/shield output"
   ],
   "objectives": {
-   "burstVsSquishy": 1358.5709459459458,
-   "rot10VsSquishy": 2940.793918918919,
-   "rot20VsBruiser": 3997.5657894736837,
+   "burstVsSquishy": 1345.0574324324325,
+   "rot10VsSquishy": 2913.7668918918916,
+   "rot20VsBruiser": 3646.9078947368416,
    "autoDps10VsSquishy": 69.0104341216216,
    "ehpPhysical": 3817.4396640625005,
    "ehpMagical": 2935.7240390624997,
@@ -92,23 +92,15 @@
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for heal/shield output: first spike lands around minute 14 (Noxia), third item by minute 29. Take Demiurge: +22.8% on your damage rotation at minute 15.",
+ "coachLine": "Sim-optimal for heal/shield output: first spike lands around minute 14 (Noxia), third item by minute 29. Take Vesh: +12.8% on your damage rotation at minute 15.",
  "eternals": {
   "top": [
-   {
-    "name": "Demiurge",
-    "id": "demiurge",
-    "headlinePct": 22.8,
-    "burstPct": 7.4,
-    "rot20Pct": 16.5,
-    "ehpPct": 0
-   },
    {
     "name": "Vesh",
     "id": "vesh",
     "headlinePct": 12.8,
     "burstPct": 11.7,
-    "rot20Pct": 12.9,
+    "rot20Pct": 12.8,
     "ehpPct": 0
    },
    {
@@ -116,7 +108,15 @@
     "id": "thraex",
     "headlinePct": 9,
     "burstPct": 0,
-    "rot20Pct": 9.1,
+    "rot20Pct": 9,
+    "ehpPct": 0
+   },
+   {
+    "name": "Demiurge",
+    "id": "demiurge",
+    "headlinePct": 7.8,
+    "burstPct": 7.5,
+    "rot20Pct": 7.7,
     "ehpPct": 0
    }
   ],
@@ -128,20 +128,11 @@
   ],
   "all": [
    {
-    "name": "Demiurge",
-    "modeled": true,
-    "headlinePct": 22.8,
-    "burstPct": 7.4,
-    "rot20Pct": 16.5,
-    "ehpPct": 0,
-    "note": null
-   },
-   {
     "name": "Vesh",
     "modeled": true,
     "headlinePct": 12.8,
     "burstPct": 11.7,
-    "rot20Pct": 12.9,
+    "rot20Pct": 12.8,
     "ehpPct": 0,
     "note": null
    },
@@ -150,7 +141,16 @@
     "modeled": true,
     "headlinePct": 9,
     "burstPct": 0,
-    "rot20Pct": 9.1,
+    "rot20Pct": 9,
+    "ehpPct": 0,
+    "note": null
+   },
+   {
+    "name": "Demiurge",
+    "modeled": true,
+    "headlinePct": 7.8,
+    "burstPct": 7.5,
+    "rot20Pct": 7.7,
     "ehpPct": 0,
     "note": null
    },
@@ -251,14 +251,7 @@
    "healShieldPct": 74.5,
    "healShieldAbs": 1348,
    "note": "20 ticks x 15/25/35 (+4% MP each) folded to per-cast totals; assumes full field uptime, one beneficiary",
-   "buildShift": {
-    "in": [
-     "Crystal Tear"
-    ],
-    "out": [
-     "Noxia"
-    ]
-   }
+   "buildShift": null
   },
   {
    "id": "155",
@@ -269,17 +262,10 @@
    "burstPct": 0,
    "rot20Pct": 0,
    "ehpPct": 0,
-   "healShieldPct": 25.9,
-   "healShieldAbs": 469,
+   "healShieldPct": 13.6,
+   "healShieldAbs": 247,
    "note": "counted for one enemy hit (single-target convention); own-max-health shield scaling not counted (base health outside item stats)",
-   "buildShift": {
-    "in": [
-     "Crystal Tear"
-    ],
-    "out": [
-     "Windcaller"
-    ]
-   }
+   "buildShift": null
   },
   {
    "id": "156",
@@ -328,8 +314,8 @@
    "coreGold": 7200,
    "spikeMinute": 24,
    "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 679 damage in one combo in the sim.",
-   "optimizer": "Optimizer sees +58% more one-combo burst: try Noxia over Crescelia (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 665 damage in one combo in the sim.",
+   "optimizer": "Optimizer sees +56% more one-combo burst: try Noxia over Crescelia (sim-only — the popular pick may carry utility the sim can't see; test it)."
   },
   {
    "items": [
@@ -390,9 +376,9 @@
     "out": "Timewarp",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 30,
+    "survivalGainPct": 29,
     "offenseLossPct": 10,
-    "line": "Losing lane? Third item Void Helm instead of Timewarp: their 3s all-in loses 30% of its bite; you give up 10% of your damage."
+    "line": "Losing lane? Third item Void Helm instead of Timewarp: their 3s all-in loses 29% of its bite; you give up 10% of your damage."
    }
   },
   {
@@ -554,11 +540,11 @@
   {
    "enemy": "Narbash",
    "enemySlug": "narbash",
-   "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale.",
+   "gameplan": "Even kill threat throughout: this lane is decided by mechanics and wave control, not scaling.",
    "checkpoints": [
     {
      "minute": 5,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 10,

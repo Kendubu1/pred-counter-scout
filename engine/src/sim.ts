@@ -75,14 +75,22 @@ const ULT_LEVELS = [6, 11, 16];
  *  ability is not ranked last just because it deals no damage. */
 export function skillPriority(kit: HeroKit): AbilityDef[] {
   const basics = kit.abilities.filter((a) => a.key !== 'ULTIMATE');
-  return [...basics].sort((a, b) => {
-    const growth = (x: AbilityDef) => {
-      const span = (vals: number[]) => (vals[vals.length - 1] ?? 0) - (vals[0] ?? 0);
-      const payload = span(x.damagePerRank) + (x.healing ?? []).reduce((s, h) => s + span(h.valuesPerRank), 0);
-      return payload / Math.max(x.cooldowns[Math.floor(x.cooldowns.length / 2)] ?? 10, 3);
-    };
-    return growth(b) - growth(a);
-  });
+  const growth = (x: AbilityDef) => {
+    const span = (vals: number[]) => (vals[vals.length - 1] ?? 0) - (vals[0] ?? 0);
+    const payload = span(x.damagePerRank) + (x.healing ?? []).reduce((s, h) => s + span(h.valuesPerRank), 0);
+    return payload / Math.max(x.cooldowns[Math.floor(x.cooldowns.length / 2)] ?? 10, 3);
+  };
+  // Prefer the field's recommended max order (what players actually level
+  // first); abilities outside it fall back to the damage-growth heuristic.
+  const rank = kit.recommendedMaxOrder;
+  if (rank?.length) {
+    return [...basics].sort((a, b) => {
+      const ia = rank.indexOf(a.key), ib = rank.indexOf(b.key);
+      if (ia !== -1 || ib !== -1) return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+      return growth(b) - growth(a);
+    });
+  }
+  return [...basics].sort((a, b) => growth(b) - growth(a));
 }
 
 export function ranksAtLevel(kit: HeroKit, level: number): Map<string, number> {
