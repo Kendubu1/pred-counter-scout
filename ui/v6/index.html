@@ -113,6 +113,10 @@
   .htabs { display:flex; gap:.4rem; margin-top:1rem; }
   .htab { background:var(--bg-1); color:var(--text-1); border:1px solid var(--border); border-radius:99px; padding:.32rem 1rem; font-size:.84rem; }
   .htab.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .tabtrend { font-size:.58rem; font-weight:800; border-radius:5px; padding:.03rem .3rem; border:1px solid; vertical-align:middle; }
+  .tabtrend.buff { color:var(--green); border-color:var(--green); }
+  .tabtrend.nerf { color:var(--red); border-color:var(--red); }
+  .tabtrend.mixed, .tabtrend.rework { color:var(--gold); border-color:var(--gold); }
   .patchhead { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
   .trend { font-size:.62rem; font-weight:800; letter-spacing:.04em; border-radius:6px; padding:.05rem .45rem; border:1px solid; }
   .trend.buff { color:var(--green); border-color:var(--green); background:rgba(0,196,140,.1); }
@@ -260,6 +264,9 @@
   }
 
   /* ── meta board ── */
+  .simpicks h4 { color:var(--accent); }
+  .simpicks .pilot { cursor:pointer; }
+  .theory-mini { font-size:.56rem; font-weight:800; color:var(--blue); border:1px solid var(--blue); border-radius:5px; padding:.02rem .3rem; margin-left:.3rem; cursor:help; }
   .metaboard { margin-top:2rem; }
   .metaboard .mb-head { display:flex; align-items:baseline; gap:.7rem; flex-wrap:wrap; }
   .metaboard h2 { font-size:1.05rem; font-weight:800; }
@@ -409,9 +416,9 @@ async function getArtifact(slug) {
   if (!ART.has(slug)) ART.set(slug, getJson(`../../data/artifacts/${slug}.json`).catch(() => null));
   return ART.get(slug);
 }
-let MATRIX = null;
+let MATRIX = null, PATCH_STATE = null;
 async function getMatrix() {
-  if (!MATRIX) MATRIX = getJson('../../data/artifacts/matchup-matrix.json').catch(() => null);
+  if (!MATRIX) MATRIX = await getJson('../../data/artifacts/matchup-matrix.json').catch(() => null);
   return MATRIX;
 }
 /** Verdicts for our-vs-enemy from the all-pairs matrix (y/e/= coded,
@@ -549,6 +556,23 @@ async function renderLaneDetail() {
   box.querySelectorAll('.lrow').forEach((r) => { r.onclick = () => nav(r.dataset.slug, false, role); });
   buildSubnav();
 }
+function laneSimPicks(role) {
+  if (!MATRIX) return [];
+  const lane = INDEX.heroes.filter((h) => h.role === role).map((h) => h.slug);
+  if (lane.length < 3) return [];
+  const score = (our) => {
+    let net = 0, n = 0;
+    for (const opp of lane) {
+      if (opp === our) continue;
+      const cps = matrixCps(MATRIX, our, opp);
+      if (!cps) continue;
+      for (const c of cps) { net += c.verdict === 'you' ? 1 : c.verdict === 'enemy' ? -1 : 0; n++; }
+    }
+    return n ? net / n : -Infinity;
+  };
+  return lane.map((slug) => ({ slug, name: (INDEX.heroes.find((h) => h.slug === slug) || {}).name || slug, s: score(slug) }))
+    .filter((x) => x.s > -Infinity).sort((a, b) => b.s - a.s).slice(0, 3);
+}
 function renderMetaboard() {
   if (!META) { $('#metaboard').innerHTML = ''; return; }
   const wrClass = (wr) => (wr >= 0.52 ? 'up' : wr <= 0.48 ? 'down' : 'flat');
@@ -583,9 +607,22 @@ function renderMetaboard() {
                 </${tag}>`;
               }).join('')}
             </div>` : ''}
+          ${(() => {
+            const picks = laneSimPicks(role);
+            if (!picks.length) return '';
+            return `<div class="pilots simpicks">
+              <h4>⚙ Sim picks · strongest in fights on paper <span class="theory-mini" title="From our kit-math fight simulator across every matchup in this lane. THEORY until in-game calibration — this is who the math favors, not who wins the most games.">THEORY</span></h4>
+              ${picks.map((p, i) => `
+                <div class="pilot" data-slug="${esc(p.slug)}" data-role="${esc(role)}" title="${esc(p.name)}: net kill-window edge across the lane (sim)">
+                  <span class="rk">${i + 1}</span>
+                  <img loading="lazy" src="${IMG.hero(p.slug)}" alt="" onerror="this.style.visibility='hidden'">
+                  <span class="pn">${esc(p.name)}</span>
+                </div>`).join('')}
+            </div>`;
+          })()}
         </div>`).join('')}
     </div>`;
-  document.querySelectorAll('.mp').forEach((c) => { c.onclick = () => nav(c.dataset.slug, false, c.dataset.role); });
+  document.querySelectorAll('.mp, .simpicks .pilot[data-slug]').forEach((c) => { c.onclick = () => nav(c.dataset.slug, false, c.dataset.role); });
 }
 
 function renderGrid() {
@@ -653,7 +690,12 @@ function renderHero(a, roleParam) {
 
     <div class="htabs">
       <button class="htab active" data-tab="play">Game plan</button>
-      <button class="htab" data-tab="learn">Learn the hero</button>
+      <button class="htab" data-tab="learn">Learn the hero${(() => {
+        const ps = PATCH_STATE && PATCH_STATE[a.slug];
+        if (!ps) return '';
+        const lbl = { buff: '▲ buffed', nerf: '▼ nerfed', mixed: '◆ changed', rework: '◆ reworked' }[ps.trend] || '◆ changed';
+        return ` <span class="tabtrend ${esc(ps.trend)}" title="Changed in patch ${esc(ps.patch || a.patch)} — open Learn the hero for details">${lbl}</span>`;
+      })()}</button>
     </div>
 
     <div id="tabPlay">
@@ -1050,6 +1092,8 @@ window.onpopstate = route;
   INDEX = await getJson('../../data/artifacts/index.json');
   META = await getJson('../../data/artifacts/meta.json').catch(() => null);
   $('#patchPill').textContent = `patch ${INDEX.patch}`;
+  await getMatrix();
+  PATCH_STATE = (await getJson('../../data/game-data/hero-patch-state.json').catch(() => null))?.heroes ?? {};
   renderRolebar();
   renderMetaboard();
   let selIdx = -1;
