@@ -1049,3 +1049,18 @@ Append-only. One entry per backlog item or significant finding.
   items it understood). Manta Scythe's "isolated target +10%" is fair to
   model as always-on because the kill-window sim is 1v1 by construction —
   the same convention already used for augment "isolated/nearest" amps.
+
+## 2026-06-13: a playstyle steer must route by the hero's damage type
+- The on-hit steer pointed every hero at sustained auto-DPS. For Zinx that built
+  a physical-crit core — her basic (Refibrillator) really is physical (+55% PP),
+  so on pure auto-DPS physical crit wins. But all four of her abilities are
+  magical: the magical core does 32x her rotation damage (rot10 7204 vs 225).
+  The field builds magical because real fights are rotations, not auto-attacking.
+- Fix: playstyleObjectives(playstyle, kit) routes on-hit by damage type, reusing
+  the engine's existing physical-auto-attacker test (carry or basicScaling>=90,
+  and not magical). Physical ADCs stack basic DPS (autoDps); magical/hybrid
+  casters weave the on-hit into the rotation (rot10). Lesson: a playstyle
+  classifier names the ARCHETYPE (on-hit), but the OBJECTIVE it maps to has to
+  be conditioned on how the hero actually deals damage — otherwise the steer
+  fights the kit. The damage-type routing already lived in headlineObjective;
+  the steer just has to honor it instead of overriding it blindly.
