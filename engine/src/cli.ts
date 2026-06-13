@@ -1,13 +1,16 @@
 // CLI: print The Answer artifact for a hero. Usage:
 //   npm run answer -- gideon [--level 13] [--anti-heal] [--budget 12000] [--role support]
+//                            [--augment <name|id>] [--no-steer]
 
 import { loadData, completedItems } from './data.js';
 import { loadCalibration, unverifiedConstants, simulate, skillPriority } from './sim.js';
-import { generateBuilds } from './search.js';
+import { generateBuilds, type ObjKey } from './search.js';
 import { rankAugments, rankBlessings } from './eternals.js';
 import { heroGames, itemPlayRate } from './aggregates.js';
 import { itemWinDelta } from './evidence.js';
 import { matchupCheckpoints } from './matchup.js';
+import { classifyAugment, laneTopAugment, PLAYSTYLE_OBJECTIVES, type LaneAugment } from './playstyle.js';
+import { loadEffects } from './effects.js';
 
 const args = process.argv.slice(2);
 const slug = args.find((a) => !a.startsWith('--'));
@@ -53,10 +56,51 @@ console.log('');
 const prio = skillPriority(kit);
 console.log(`skill max order: ${prio.map((a) => a.name).join(' > ')} (ult at 6/11/16)`);
 
+// ── Augment-as-playstyle steer (expose what the sim can't see) ──
+// The lane's chosen augment declares a playstyle; we steer the build toward
+// that objective corner — even when the augment's own mechanic is unmodeled —
+// and print the provenance so the gap is exposed, not silent.
+let objectiveBias: ObjKey[] | undefined;
+let headlineOverride: ObjKey | undefined;
+let provenance: string[] = [];
+if (!flag('no-steer')) {
+  const augName = strOpt('augment');
+  let chosen: LaneAugment | null = null;
+  if (augName) {
+    // resolve an explicit augment name/id within this lane's evidence, falling
+    // back to any lane the hero is recorded in
+    const reg = loadEffects();
+    const hit = Object.entries(reg.targets).find(([k, v]) =>
+      k.startsWith(`augment:${slug}:`) && (k.endsWith(`:${augName}`) || v.name.toLowerCase().includes(augName.toLowerCase())));
+    const id = (hit ? hit[0].split(':')[2] : augName) ?? augName;
+    const lane = laneTopAugment(slug, role);
+    chosen = lane && lane.id === id ? lane
+      : { id, name: hit ? hit[1].name.split(' / ').slice(1).join(' / ') || hit[1].name : augName, lane: role, n: 0, w: 0, wr: 0, shrunkWr: 0 };
+  } else {
+    chosen = laneTopAugment(slug, role);
+  }
+  if (chosen) {
+    const cls = classifyAugment(`augment:${slug}:${chosen.id}`);
+    if (cls.playstyle) {
+      objectiveBias = PLAYSTYLE_OBJECTIVES[cls.playstyle];
+      headlineOverride = objectiveBias[0];
+      const ev = chosen.n > 0 ? ` — field ${role} ${(chosen.wr * 100).toFixed(1)}% over ${chosen.n.toLocaleString()} games` : '';
+      provenance.push(`augment steer: "${chosen.name}" ⇒ ${cls.playstyle} playstyle (${cls.why})${ev}`);
+      provenance.push(cls.modeled
+        ? `  the sim MODELS this augment's effect — build reflects both its math and the playstyle.`
+        : `  the sim CANNOT model this augment's effect — build is steered by the declared playstyle + field evidence, magnitude not simulated.`);
+      provenance.push(`  steering the build toward: ${objectiveBias.join(', ')}  (use --no-steer to disable)`);
+    }
+  }
+}
+if (provenance.length) console.log('\n' + provenance.join('\n'));
+
 const builds = generateBuilds(kit, completedItems(data), cal, {
   level,
   role,
   scenario: { requireAntiHeal: flag('anti-heal'), goldBudget: opt('budget') },
+  objectiveBias,
+  headlineOverride,
 });
 
 console.log(`\nPareto front (${builds.length} builds):\n`);

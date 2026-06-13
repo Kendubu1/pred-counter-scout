@@ -42,7 +42,8 @@ const LABEL: Record<string, string> = {
 const base = evaluateBuild(kit, items, level, cal);
 // the build's headline objective = the combat objective it scores highest on,
 // normalised so eHP (big numbers) doesn't always win — rank by leave-one-out swing instead.
-function obj(b: typeof base, k: string) { return (b.objectives as Record<string, number>)[k]; }
+function obj(b: typeof base, k: string): number { return (b.objectives as Record<string, number>)[k] ?? 0; }
+const lab = (k: string) => LABEL[k] ?? k;
 
 // passive reasoning for an item, from the effect registry
 function passiveOf(itSlug: string): { modeled: boolean; line: string } {
@@ -59,35 +60,36 @@ function passiveOf(itSlug: string): { modeled: boolean; line: string } {
 
 console.log(`# Why this build wins — ${kit.name} (${role}, level ${level})`);
 console.log(`build: ${items.map((i) => i.name).join(' > ')}  ·  ${base.gold}g`);
-console.log(`confidence: THEORY (sim-only). objectives scored for ${role}: ${keys.map((k) => LABEL[k]).join(', ')}`);
+console.log(`confidence: THEORY (sim-only). objectives scored for ${role}: ${keys.map((k) => lab(k)).join(', ')}`);
 console.log(`\nfull-build objectives:`);
-for (const k of keys) console.log(`  ${LABEL[k].padEnd(16)} ${obj(base, k).toFixed(0)}`);
+for (const k of keys) console.log(`  ${lab(k).padEnd(16)} ${obj(base, k).toFixed(0)}`);
 
 // Leave-one-out: drop each item, measure the objective swing it was responsible for.
 console.log(`\nper-item contribution (leave-one-out) + the reasoning from its passive:\n`);
 type Row = { name: string; slug: string; gold: number; deltas: Record<string, number>; top: string; topPct: number; reason: { modeled: boolean; line: string } };
 const rows: Row[] = [];
 for (let i = 0; i < items.length; i++) {
+  const it = items[i]!;
   const without = items.filter((_, j) => j !== i);
   const ev = evaluateBuild(kit, without, level, cal);
   const deltas: Record<string, number> = {};
-  let top = keys[0], topPct = -Infinity;
+  let top: string = keys[0]!, topPct = -Infinity;
   for (const k of keys) {
     const full = obj(base, k), red = obj(ev, k);
     const pct = full > 0 ? ((full - red) / full) * 100 : 0;
     deltas[k] = pct;
     if (pct > topPct) { topPct = pct; top = k; }
   }
-  rows.push({ name: items[i].name, slug: items[i].slug, gold: items[i].totalPrice, deltas, top, topPct, reason: passiveOf(items[i].slug) });
+  rows.push({ name: it.name, slug: it.slug, gold: it.totalPrice, deltas, top, topPct, reason: passiveOf(it.slug) });
 }
 // order by their biggest single-objective swing
 rows.sort((a, b) => b.topPct - a.topPct);
 for (const r of rows) {
   const flag = r.reason.modeled ? '✅' : '⚠️ ';
-  console.log(`${flag} ${r.name}  (${r.gold}g)  — carries ${r.topPct.toFixed(0)}% of ${LABEL[r.top]}`);
+  console.log(`${flag} ${r.name}  (${r.gold}g)  — carries ${r.topPct.toFixed(0)}% of ${lab(r.top)}`);
   // show the next two objectives it moves most
-  const others = keys.filter((k) => k !== r.top).map((k) => [k, r.deltas[k]] as const).sort((a, b) => b[1] - a[1]).slice(0, 2)
-    .filter(([, p]) => p >= 1).map(([k, p]) => `${LABEL[k]} +${p.toFixed(0)}%`);
+  const others = keys.filter((k) => k !== r.top).map((k) => [k, r.deltas[k] ?? 0] as const).sort((a, b) => b[1] - a[1]).slice(0, 2)
+    .filter(([, p]) => p >= 1).map(([k, p]) => `${lab(k)} +${p.toFixed(0)}%`);
   if (others.length) console.log(`     also: ${others.join(', ')}`);
   console.log(`     ${r.reason.line}`);
   console.log('');

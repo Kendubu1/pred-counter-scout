@@ -152,6 +152,27 @@ NEXT-STEP IDEA (maintainer 2026-06-13): a "why this meta build wins" panel —
 leave-one-out attribution on the META build shown beside its real winrate,
 so the sim explains the field's choice instead of running parallel to it;
 also surface the highest-WINRATE build, not just most-played.
+  ENGINE SHIPPED 2026-06-13: `npm run explain -- <hero> --items a,b,c [--role]`
+  does the leave-one-out attribution and annotates each item with its modeled
+  passive, flagging items it can't justify (e.g. Cursed Ring). Justifies
+  Skylar's crit/execute core and Zinx's on-hit mid core item-by-item. STILL
+  TODO: surface it on the hero page beside the field winrate.
+
+## 10b. Augment-as-playstyle steer — ENGINE SHIPPED 2026-06-13
+
+An augment is a declared playstyle; the lane selects it. src/playstyle.ts
+classifies each augment (on-hit/ability-burst/sustain/tank/poke) from the
+curated text, laneTopAugment picks the lane's winning augment (shrunk wr),
+and generateBuilds takes an objectiveBias + headlineOverride so the build
+steers to that playstyle's corner EVEN WHEN the augment's mechanic is
+unmodeled. `npm run answer` prints provenance exposing whether the sim
+models the augment or is steering by playstyle + field evidence. Proof:
+Zinx-mid + Terminal Treatment (on-hit, unmodeled) flips ability-burst →
+on-hit auto-DPS core; Disc of Demise (modeled) → burst. NEXT: wire the
+steer + provenance into build-artifacts.ts so the hero page reflects it
+per lane (regenerates artifacts); still worth doing item-10 #1 (parse the
+PASSIVE slot) so on-hit augments like Terminal Treatment get true magnitude,
+not just a playstyle steer.
 
 ## Parked ideas (not yet scheduled)
 

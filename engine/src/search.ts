@@ -20,7 +20,7 @@ const ALL_OBJECTIVE_KEYS = [
   'autoDps10VsSquishy', 'ehpPhysical', 'ehpMagical',
   'healShield10s', 'utility', 'sustain10s',
 ] as const;
-type ObjKey = (typeof ALL_OBJECTIVE_KEYS)[number];
+export type ObjKey = (typeof ALL_OBJECTIVE_KEYS)[number];
 
 // Damage roles compete on the combat vector. Support searches swap the
 // pure-damage corners (burst, auto DPS) for heal/shield output, survival,
@@ -106,7 +106,7 @@ export function generateBuilds(
   kit: HeroKit,
   pool: Item[],
   cal: Calibration,
-  opts: { level?: number; buildSize?: number; beamWidth?: number; scenario?: Scenario; role?: string; extraEffects?: ResolvedEffects } = {},
+  opts: { level?: number; buildSize?: number; beamWidth?: number; scenario?: Scenario; role?: string; extraEffects?: ResolvedEffects; objectiveBias?: ObjKey[]; headlineOverride?: ObjKey } = {},
 ): GeneratedBuild[] {
   const level = opts.level ?? 13;
   const buildSize = opts.buildSize ?? 6;
@@ -114,7 +114,17 @@ export function generateBuilds(
   const scenario = opts.scenario ?? {};
   const role = opts.role ?? kit.roles[0] ?? 'midlane';
   const objectiveKeys = role === 'support' ? SUPPORT_KEYS : COMBAT_KEYS;
-  const weightVectors = role === 'support' ? SUPPORT_VECTORS : COMBAT_VECTORS;
+  // A declared playstyle (from a hero's lane augment) steers the search:
+  // it adds a corner that emphasises the playstyle's objectives, so builds
+  // serving that intent survive the beam even when the augment's own
+  // mechanic is unmodeled (the augment is used as a classifier, not math).
+  const biasVectors: Weights[] = [];
+  if (opts.objectiveBias && opts.objectiveBias.length) {
+    const w: Weights = {};
+    opts.objectiveBias.forEach((k, i) => { if (objectiveKeys.includes(k)) w[k] = i === 0 ? 1 : 0.5; });
+    if (Object.keys(w).length) biasVectors.push(w);
+  }
+  const weightVectors = [...(role === 'support' ? SUPPORT_VECTORS : COMBAT_VECTORS), ...biasVectors];
   const candidates = relevantPool(kit, pool, role);
   // Non-item effects (an augment under evaluation) merge with each
   // candidate set's own item effects.
@@ -164,7 +174,8 @@ export function generateBuilds(
   }
 
   const front = paretoFront(complete.map((c) => c.ev), objectiveKeys);
-  const headline = headlineObjective(kit, role);
+  const headline = (opts.headlineOverride && objectiveKeys.includes(opts.headlineOverride))
+    ? opts.headlineOverride : headlineObjective(kit, role);
   return front.map((ev) => {
     const archetypes: string[] = [];
     for (const k of objectiveKeys) {

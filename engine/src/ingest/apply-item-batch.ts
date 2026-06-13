@@ -363,5 +363,5 @@ reg.targets['item:malady'] = {
 writeFileSync(FILE, JSON.stringify(reg, null, 1) + '\n');
 
 const items = Object.keys(reg.targets).filter((k) => k.startsWith('item:'));
-const modeledCount = items.filter((k) => reg.targets[k].effects.some((e) => (e as { kind: string }).kind !== 'unmodeled')).length;
+const modeledCount = items.filter((k) => reg.targets[k]!.effects.some((e) => (e as { kind: string }).kind !== 'unmodeled')).length;
 console.log(`applied. item entries: ${items.length}, modeled: ${modeledCount}, unmodeled-only: ${items.length - modeledCount}`);
