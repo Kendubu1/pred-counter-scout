@@ -102,46 +102,38 @@ rider; its missile damage IS stated in Air Assault's own tooltip);
 stay out of model scope, correctly. Also: ProcSpec wants dual-stat
 scaling (AD and AP) for missile-type riders.
 
-## 11. Item-effect coverage (started 2026-06-13, ongoing)
+## 11. Item-effect coverage — ACTIVE PROCESS (kicked off 2026-06-13)
 
-ROOT CAUSE of "weird off-meta builds": the sim scored only ~19 of 126
-completed items on their passive; the other 107 were flat-stats-only,
-so the optimizer over-built the items whose passives it could see
-(Necrosis) and ignored the meta staples whose value is in unmodeled
-passives (Plasma Blade ramping crit, Oathkeeper spellblade). It could
-not justify a build against the field.
+ROOT CAUSE of weird builds: the sim scored only 19 of 126 completed items
+on their passive; the rest were flat-stats-only, so the optimizer
+over-built the items it understood and could not justify a build against
+the field.
 
-Done 2026-06-13 (first batch): added effect kind `ramp_to_stat` (stacking
-stat at mean fight-uptime) and damage_amp conditions `target_below_40` /
-`target_full_health`; encoded Plasma Blade, Oathkeeper, Dynamo, Wraith
-Leggings, Viper, Marshal, Rapture; flagged Vanquisher (execute) and
-Lightning Hawk (unstated proc cadence) as honestly unmodeled. Result:
-Skylar/Shinbi now build the field core and the "meta builds" card AGREES
-with the field (was suggesting swaps); 44/52 heroes build a newly-modeled
-item; optimizer agrees on the top meta build for 11 heroes (was fewer).
+ESTABLISHED METHOD (repeatable per batch):
+1. Extract each item's FULL effect text INCLUDING the `condition` field
+   (it holds thresholds/triggers the descriptions omit — Vanquisher's 5%
+   execute, Malady's "below 40%", Lifebinder's "every 10% missing"); the
+   earlier catalog read the wrong fields and wrongly flagged some uncodable.
+2. Categorize into archetypes; most reuse existing kinds (on_hit,
+   on_ability_hit for spellblades, damage_amp, armor_shred, shield_per_fight).
+   New kinds added this session: ramp_to_stat (stacking stat), execute.
+3. Encode from STATED numbers only; flag genuinely out-of-scope effects
+   (ally shields, evolve/economy, unstated proc cadences, out-of-combat
+   regen, positional auras) as unmodeled WITH a reason.
+4. Ratchet: test/effects.test.ts asserts modeled item count only grows and
+   every unmodeled entry states why. Regenerate artifacts+matrix, measure
+   the optimizer-agrees-with-field rate.
 
-REMAINING (the bulk): ~100 more item effects to curate from the catalog
-archetypes — empowered-basic (Solaris/Crescelia/StormBreaker), on-hit
-flat/ratio (Spectra/Mindrazor/Entropy), conditional amps (Overseer/
-SpearOfDesolation), lifesteal-conditional, armor-shred, self-shield/EHP.
-A few clusters need new kinds; many reuse on_hit/on_ability_hit/damage_amp.
-Genuinely uncodable EXCEPT execute thresholds, which ARE recoverable from
-the effect  field (Vanquisher 5% now modeled as kind ).
-KEY: re-extract effect text INCLUDING the condition field before modeling —
-~28 items hide their trigger numbers there. Remaining uncodable (100-stack cadences, XP/evolve
-economy, team/ally heals, positional auras) stay unmodeled with reasons —
-coverage is a candidate harness gate like the augment one.
+PROGRESS: 36/126 items modeled (19 → 27 → 36). Batches done: ramp/execute
+staples (Plasma Blade, Oathkeeper, Dynamo, Wraith Leggings, Viper, Marshal,
+Rapture, Vanquisher); spellblade/shred/anti-heal batch (Solaris, Crescelia,
+Augmentation, Entropy, Spectra, Basilisk, Soulbinder, Tainted Blade, Azure
+Core). ~90 remain — continue down the meta-frequency list.
 
-## 12. Research-project visualization (backlog 2026-06-13)
-
-Make the engine's reasoning *visible* — a node-link graph of the build
-decision (abilities → items → effect primitives → objectives → build),
-animated matchup-matrix heatmap, damage Sankey, build-spike timeline,
-effect-coverage treemap. Static React + D3/React-Flow (or Observable
-notebooks), zero-API against committed artifacts, hostable on the
-maintainer's site as a research piece. Needs an engine `npm run explain`
-step emitting per-item per-objective attribution (leave-one-out
-re-sims = honest edge weights). Full design: docs/visualization-research.md.
+NEXT-STEP IDEA (maintainer 2026-06-13): a "why this meta build wins" panel —
+leave-one-out attribution on the META build shown beside its real winrate,
+so the sim explains the field's choice instead of running parallel to it;
+also surface the highest-WINRATE build, not just most-played.
 
 ## Parked ideas (not yet scheduled)
 

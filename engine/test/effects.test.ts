@@ -67,6 +67,22 @@ describe('effect registry hygiene', () => {
     }
     console.warn(`effects coverage: ${modeled} modeled targets, ${unmodeledOnly} encoded-but-unmodeled`);
     expect(modeled).toBeGreaterThan(15);
+    // every encoded-but-unmodeled entry must state WHY (no silent blanks)
+    for (const [k, e] of Object.entries(reg.targets)) {
+      if (e.effects.every((fx) => fx.kind === 'unmodeled')) {
+        for (const fx of e.effects) {
+          expect(fx.kind === 'unmodeled' && (fx as { note: string }).note.length, `${k} unmodeled without a reason`).toBeGreaterThan(10);
+        }
+      }
+    }
+  });
+
+  it('item-effect modeling ratchet: 35+ items carry a real (non-flat) passive', () => {
+    const reg = loadEffects();
+    const items = Object.entries(reg.targets).filter(([k]) => k.startsWith('item:'));
+    const modeled = items.filter(([, e]) => e.effects.some((fx) => fx.kind !== 'unmodeled')).length;
+    // a ratchet, not a ceiling: item 11 only grows this. Bump as batches land.
+    expect(modeled, 'modeled item count regressed').toBeGreaterThanOrEqual(35);
   });
 });
 

@@ -825,6 +825,219 @@
      "thresholdPct": 5
     }
    ]
+  },
+  "item:solaris": {
+   "name": "Solaris / Solarblade",
+   "sourceText": "On Ability Cast: empower next basic, 45 (+35%) On-Hit, can crit, heals 65%.",
+   "source": "omeda items.json 1.14.4 (incl. condition field)",
+   "effects": [
+    {
+     "kind": "on_ability_hit",
+     "flat": 45,
+     "scalingPct": 35,
+     "scaleStat": "physical_power",
+     "damageType": "physical",
+     "icdSeconds": 4
+    }
+   ]
+  },
+  "item:crescelia": {
+   "name": "Crescelia / Moonblade",
+   "sourceText": "On Ability Cast: empower next basic 50 (+20%) On-Hit. Reduce non-ult cooldowns 12%.",
+   "source": "omeda items.json 1.14.4 (incl. condition field)",
+   "effects": [
+    {
+     "kind": "on_ability_hit",
+     "flat": 50,
+     "scalingPct": 20,
+     "scaleStat": "magical_power",
+     "damageType": "magical",
+     "icdSeconds": 4
+    },
+    {
+     "kind": "cooldown_rate",
+     "bonus": 12,
+     "scope": "non_ultimate"
+    }
+   ]
+  },
+  "item:augmentation": {
+   "name": "Augmentation / True Strike",
+   "sourceText": "On Ability Cast: empower next basic, +90% Base Physical Power On-Hit.",
+   "source": "omeda items.json 1.14.4 (incl. condition field)",
+   "effects": [
+    {
+     "kind": "on_ability_hit",
+     "scalingPct": 90,
+     "scaleStat": "physical_power",
+     "damageType": "physical",
+     "icdSeconds": 4
+    }
+   ]
+  },
+  "item:entropy": {
+   "name": "Entropy / Degradation",
+   "sourceText": "On dealing Ability Damage: deal 3 (+3%) additional, once per 0.2s per target.",
+   "source": "omeda items.json 1.14.4 (incl. condition field)",
+   "effects": [
+    {
+     "kind": "on_ability_hit",
+     "flat": 3,
+     "scalingPct": 3,
+     "scaleStat": "magical_power",
+     "damageType": "magical",
+     "icdSeconds": 0.2
+    }
+   ]
+  },
+  "item:spectra": {
+   "name": "Spectra / Radiant Strikes + Prisma",
+   "sourceText": "Basic Attacks deal 20 On-Hit. Prisma 30 (+4/level), 1x-2.5x by missing health.",
+   "source": "omeda items.json 1.14.4 (incl. condition field)",
+   "effects": [
+    {
+     "kind": "on_hit",
+     "flat": 20,
+     "damageType": "magical"
+    },
+    {
+     "kind": "on_hit",
+     "flat": 30,
+     "perLevelFlat": 4,
+     "damageType": "magical",
+     "icdSeconds": 2.5
+    }
+   ]
+  },
+  "item:basilisk": {
+   "name": "Basilisk / Corrode",
+   "sourceText": "On damaging a Hero: reduce Physical Armor 4.5% for 3s, stacks to 6 (Eroded).",
+   "source": "omeda items.json 1.14.4 (incl. condition field)",
+   "effects": [
+    {
+     "kind": "armor_shred",
+     "pct": 27,
+     "damageType": "physical",
+     "rampSeconds": 6
+    }
+   ]
+  },
+  "item:soulbinder": {
+   "name": "Soulbinder / Arcane Salvo",
+   "sourceText": "Abilities deal 7% bonus damage at 1450+ range.",
+   "source": "omeda items.json 1.14.4 (incl. condition field)",
+   "effects": [
+    {
+     "kind": "damage_amp",
+     "pct": 7,
+     "scope": "abilities"
+    }
+   ]
+  },
+  "item:tainted-blade": {
+   "name": "Tainted Blade / Blighted Strikes + Hex",
+   "sourceText": "Reduce Target Healing 45% for 3s. Blighted targets take 5% more damage.",
+   "source": "omeda items.json 1.14.4 (incl. condition field)",
+   "effects": [
+    {
+     "kind": "anti_heal",
+     "pct": 45
+    },
+    {
+     "kind": "damage_amp",
+     "pct": 5,
+     "scope": "all",
+     "appliesWhen": "window_only"
+    }
+   ]
+  },
+  "item:azure-core": {
+   "name": "Azure Core / Spirit Shield",
+   "sourceText": "On going below 40% Health: gain a 100 (+12%) Shield for 5s.",
+   "source": "omeda items.json 1.14.4 (incl. condition field)",
+   "effects": [
+    {
+     "kind": "shield_per_fight",
+     "base": 100
+    }
+   ]
+  },
+  "item:malady": {
+   "name": "Malady / Demise",
+   "sourceText": "see condition field",
+   "source": "omeda items.json 1.14.4 (incl. condition field)",
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "conditional sub-40% bonus that stacks per hit and an on-kill %max-health explosion \u2014 neither a damage-over-window sim with a fixed target can trigger"
+    }
+   ]
+  },
+  "item:storm-breaker": {
+   "name": "Storm Breaker / Electric Momentum",
+   "sourceText": "see condition field",
+   "source": "omeda items.json 1.14.4 (incl. condition field)",
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "empowered basic procs every 100 Momentum stacks; the generation rate is unstated so the cadence cannot be derived"
+    }
+   ]
+  },
+  "item:orb-of-growth": {
+   "name": "Orb Of Growth / Inner Growth",
+   "sourceText": "see condition field",
+   "source": "omeda items.json 1.14.4 (incl. condition field)",
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "XP-stacking item that evolves into Orb of Enlightenment \u2014 economy/progression, outside combat objectives"
+    }
+   ]
+  },
+  "item:xenia": {
+   "name": "Xenia / Xenos Guard",
+   "sourceText": "see condition field",
+   "source": "omeda items.json 1.14.4 (incl. condition field)",
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "shields a nearby ally \u2014 team-side value outside the single-hero sim"
+    }
+   ]
+  },
+  "item:enras-blessing": {
+   "name": "Enra's Blessing / Protection",
+   "sourceText": "see condition field",
+   "source": "omeda items.json 1.14.4 (incl. condition field)",
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "shields an immobilized ally \u2014 team-side value outside the single-hero sim"
+    }
+   ]
+  },
+  "item:draconum": {
+   "name": "Draconum / Surge + Flow",
+   "sourceText": "see condition field",
+   "source": "omeda items.json 1.14.4 (incl. condition field)",
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "healing-amp stacks and an on-takedown heal \u2014 sustain/economy, not single-target combat damage"
+    }
+   ]
+  },
+  "item:raiment-of-renewal": {
+   "name": "Raiment of Renewal / Regenerator",
+   "sourceText": "see condition field",
+   "source": "omeda items.json 1.14.4 (incl. condition field)",
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "out-of-combat missing-health regen \u2014 outside the in-fight window"
+    }
+   ]
   }
  }
 }
