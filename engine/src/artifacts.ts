@@ -82,6 +82,18 @@ export const HeroArtifact = z.object({
       ehpPct: z.number(),
     })),
     unmodeled: z.array(z.string()),
+    // every ranked Eternal: modeled ones carry sim deltas, unmodeled ones
+    // carry the registry's specific reason — so the page never says a
+    // generic "not in our math" when a precise why exists
+    all: z.array(z.object({
+      name: z.string(),
+      modeled: z.boolean(),
+      headlinePct: z.number().nullable(),
+      burstPct: z.number().nullable(),
+      rot20Pct: z.number().nullable(),
+      ehpPct: z.number().nullable(),
+      note: z.string().nullable(),
+    })),
     // when set, the Eternal deltas were computed WITH this augment's
     // modeled mechanics merged in (the augment-blind caveat is off)
     augmentAware: z.string().nullable(),
@@ -341,6 +353,15 @@ export function buildHeroArtifact(
       ehpPct: r1(r.deltas?.ehpPct),
     })),
     unmodeled: blessings.filter((r) => !r.modeled).map((r) => r.name.replace(' (Major)', '')),
+    all: blessings.map((r) => ({
+      name: r.name.replace(' (Major)', ''),
+      modeled: r.modeled,
+      headlinePct: r.modeled ? r1(r.headlinePct) : null,
+      burstPct: r.modeled ? r1(r.deltas?.burstPct) : null,
+      rot20Pct: r.modeled ? r1(r.deltas?.rot20Pct) : null,
+      ehpPct: r.modeled ? r1(r.deltas?.ehpPct) : null,
+      note: r.modeled ? null : (r.unmodeledNotes[0] ?? null),
+    })),
     augmentAware,
   };
 

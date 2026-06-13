@@ -627,7 +627,7 @@ function renderHero(a, roleParam) {
         const cell = hr[role];
         const ranked = [...cell.augments].sort((x, y) => (y.w / y.n) - (x.w / x.n));
         const adv = ranked[1] ? ((ranked[0].w / ranked[0].n) - (ranked[1].w / ranked[1].n)) * 100 : null;
-        const simBy = new Map(a.eternals.top.map((e) => [e.name.toLowerCase(), e]));
+        const simBy = new Map((a.eternals.all ?? a.eternals.top.map((e) => ({ ...e, modeled: true, note: null }))).map((e) => [e.name.toLowerCase(), e]));
         // Order by SHRUNK winrate (method-of-moments prior toward the
         // cell's pick-weighted mean): Eternal pick shares are wildly
         // asymmetric, and raw-winrate ordering let lucky minority picks
@@ -691,9 +691,11 @@ function renderHero(a, roleParam) {
         ${ets.length ? ets.map((e, i) => {
           const wr = e.w / e.n;
           const sim = simBy.get(e.name.toLowerCase());
-          const why = sim
+          const why = sim && sim.modeled !== false
             ? `our kit math: headline +${sim.headlinePct}% · burst +${sim.burstPct}% · 20s fights +${sim.rot20Pct}% · eHP +${sim.ehpPct}%`
-            : 'field evidence only — this Eternal isn’t in our kit math yet';
+            : sim && sim.note
+              ? `field evidence only — not in our kit math because: ${sim.note}`
+              : 'field evidence only — this Eternal isn’t in our kit math yet';
           return `
           <div style="padding:.35rem 0;border-bottom:1px ${i === ets.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
             <div style="display:flex;gap:.6rem;align-items:center">
