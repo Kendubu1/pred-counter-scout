@@ -945,3 +945,35 @@ Append-only. One entry per backlog item or significant finding.
   off-meta flexes (Zinx offlane, Iggy offlane) are never simulated and
   can't appear in another lane's sim picks. Role-aware sims would be a
   large expansion (role builds + role matrix); logged for later.
+
+## 2026-06-13: why the off-meta builds were weird — 85% of item passives were invisible
+
+- The optimizer's "weird" builds had a single mechanical cause: only 19
+  of 126 completed items had their passive encoded; the other 107 (85%)
+  were flat-stats-only to the sim. So it systematically preferred the
+  items whose passives we'd modeled (Necrosis's +15% ult dmg) over the
+  meta staples whose value is unmodeled (Plasma Blade's ramping crit,
+  Oathkeeper's spellblade) — and could not justify a build against the
+  field because it was comparing a fully-credited item to a half-credited
+  one without knowing it.
+- Fix pattern mirrors the augment work: cluster the effects into
+  archetypes, add the minimal new kinds (ramp_to_stat; reuse damage_amp
+  for "target takes more"), encode from stated numbers only, flag the
+  uncodable (execute thresholds, unstated proc cadences) as unmodeled.
+  First batch: Skylar/Shinbi now build the field core and the meta-build
+  card flipped from "swap X" to "optimizer agrees — the winrate is
+  earned." The reading of the actual item text corrected two catalog
+  guesses (Wraith Leggings is a flat ability amp, not a below-40
+  conditional) — always model from the source text, not a summary.
+
+## 2026-06-13: a container restart silently reset the branch 38 commits back
+- After a restart, the local branch HEAD pointed 38 commits behind origin
+  and two uncommitted data files (skill-orders.json, ability-tips.json)
+  were gone — so a full artifact regen silently used the heuristic
+  skill-order fallback (data.ts try/catches the missing file). Caught it
+  only because the re-added Learn-tab coverage test threw ENOENT.
+  Recovery: back up the turn's source changes, `git reset --hard
+  origin/<branch>`, re-apply, regenerate. Lesson: after any restart,
+  verify HEAD == origin/<branch> and that generated-but-committed data
+  files are present BEFORE regenerating — a try/catch data loader will
+  happily produce wrong output from missing inputs.

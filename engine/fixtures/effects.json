@@ -233,12 +233,13 @@
   },
   "item:wraith-leggings": {
    "name": "Wraith Leggings / Carnage",
-   "sourceText": "Abilities deal 12% bonus magical damage vs heroes below 40% health.",
+   "sourceText": "Abilities deal 12% bonus Magical Damage.",
    "source": "omeda items.json 1.14.4",
    "effects": [
     {
-     "kind": "unmodeled",
-     "note": "execute-window amp (target below 40%); no execute objective yet"
+     "kind": "damage_amp",
+     "pct": 12,
+     "scope": "abilities"
     }
    ]
   },
@@ -255,12 +256,12 @@
   },
   "item:lightning-hawk": {
    "name": "Lightning Hawk / Chilling Momentum",
-   "sourceText": "At 100 Momentum stacks, next basic deals 40 (+20% AD) and slows; stack generation cadence unstated.",
+   "sourceText": "At 100 stacks of Momentum, empower your next Basic for 40 (+20%) and a slow.",
    "source": "omeda items.json 1.14.4",
    "effects": [
     {
      "kind": "unmodeled",
-     "note": "stack cadence (movement + hits) unstated; proc rate unknowable from text"
+     "note": "empowered basic procs every 100 Momentum stacks, but the stack-generation rate is unstated, so the proc cadence cannot be derived"
     }
    ]
   },
@@ -583,7 +584,7 @@
    "effects": [
     {
      "kind": "unmodeled",
-     "note": "buffs the HEAL TARGET (usually an ally) — team-side value outside the single-hero sim; self-heal uptime depends on heal cadence vs the 4s window"
+     "note": "buffs the HEAL TARGET (usually an ally) \u2014 team-side value outside the single-hero sim; self-heal uptime depends on heal cadence vs the 4s window"
     }
    ]
   },
@@ -619,7 +620,7 @@
     },
     {
      "kind": "unmodeled",
-     "note": "takedown-triggered procs excluded (no takedown model) — the encoding is a floor; in real games Lotus stacks faster, especially when ahead"
+     "note": "takedown-triggered procs excluded (no takedown model) \u2014 the encoding is a floor; in real games Lotus stacks faster, especially when ahead"
     }
    ]
   },
@@ -719,6 +720,109 @@
     {
      "kind": "unmodeled",
      "note": "proximity burn aura; uptime depends on positioning the closed-form sim cannot observe"
+    }
+   ]
+  },
+  "item:plasma-blade": {
+   "name": "Plasma Blade / Vibro Cutter",
+   "sourceText": "Gain 4% Critical Strike Chance for 3s. Stacks up to 5 times.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "ramp_to_stat",
+     "stat": "critical_chance",
+     "perStack": 4,
+     "maxStacks": 5,
+     "meanUptime": 0.6
+    }
+   ]
+  },
+  "item:oathkeeper": {
+   "name": "Oathkeeper / Celestial Spellblade",
+   "sourceText": "Empower your next Basic Attack within 4s. Deal 60 (+35%) Damage On-Hit.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "on_ability_hit",
+     "flat": 60,
+     "scalingPct": 35,
+     "scaleStat": "magical_power",
+     "damageType": "magical",
+     "icdSeconds": 4
+    }
+   ]
+  },
+  "item:dynamo": {
+   "name": "Dynamo / Immobilizer",
+   "sourceText": "They take 10% more damage for 2.5s.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "damage_amp",
+     "pct": 10,
+     "scope": "all",
+     "appliesWhen": "window_only"
+    }
+   ]
+  },
+  "item:viper": {
+   "name": "Viper / Corrode + Diligence",
+   "sourceText": "Reduce Physical Armor by 4.5% for 3s, stacks to 6. Deal 8% increased On-Hit and Ability damage.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "armor_shred",
+     "pct": 27,
+     "damageType": "physical",
+     "rampSeconds": 6
+    },
+    {
+     "kind": "damage_amp",
+     "pct": 8,
+     "scope": "all"
+    }
+   ]
+  },
+  "item:marshal": {
+   "name": "Marshal / Sheriff",
+   "sourceText": "Gain 15% Attack Speed. Deal 10 (+1 Per Level) Damage On-Hit.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "stat_flat",
+     "stat": "attack_speed",
+     "base": 15
+    },
+    {
+     "kind": "on_hit",
+     "flat": 10,
+     "perLevelFlat": 1,
+     "damageType": "physical"
+    }
+   ]
+  },
+  "item:rapture": {
+   "name": "Rapture / Nearsight",
+   "sourceText": "Your Basic Attacks deal 20 (+15%) Damage On-Hit.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "on_hit",
+     "flat": 20,
+     "scalingPct": 15,
+     "scaleStat": "physical_power",
+     "damageType": "physical"
+    }
+   ]
+  },
+  "item:vanquisher": {
+   "name": "Vanquisher / Annihilate",
+   "sourceText": "Execute them.",
+   "source": "omeda items.json 1.14.4",
+   "effects": [
+    {
+     "kind": "unmodeled",
+     "note": "executes below an unstated health threshold; a damage-over-window sim has no target-HP trajectory to trigger an execute"
     }
    ]
   }
