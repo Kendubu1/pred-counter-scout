@@ -923,3 +923,25 @@ Append-only. One entry per backlog item or significant finding.
   noticed); the new home-board caller read .pairs off the promise.
   Fixed to await-and-cache. A lazy getter must store the resolved value
   if any caller reads the global directly.
+
+## 2026-06-13: duo-lane synergy — mine the truth, not the proxy
+
+- Maintainer asked why the lineup doesn't seat a synergistic pair in the
+  duo lane. It didn't, because the optimizer scored all five seats
+  independently. Chose option: mine TRUE duo-lane records (carry+support
+  same team) from role-aware rosters (~150 ranked matches deep, the
+  MatchPlayer.role field), not the any-lane pair proxy.
+- The choice paid off immediately: Cuban+Goldilocks, the best ANY-lane
+  pair (56%), are 1-of-4 (25%) actually laning together — the proxy
+  would have seated a bad duo. The real star is Willy+Mr_Meat31 at 69%
+  over 26 duo-lane games; the optimizer now seats exactly them.
+- Bonus is shrunk toward .5 (k=15), thresholded at 10 duo-lane games,
+  weighted 0.6, and the identical formula lives in BOTH the engine
+  optimizer and the client planner so the displayed lineup never drifts
+  from the computed one. The lineup surfaces the chosen pair's real
+  record so the recommendation explains itself.
+- Sim-picks scope (answered, not changed): the all-pairs matrix sims
+  each hero ONLY in its primary role with its primary-role build, so
+  off-meta flexes (Zinx offlane, Iggy offlane) are never simulated and
+  can't appear in another lane's sim picks. Role-aware sims would be a
+  large expansion (role builds + role matrix); logged for later.
