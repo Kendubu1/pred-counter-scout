@@ -55,6 +55,10 @@ export interface HeroKit {
   basicScalingPct: number;       // basic-attack ratio on bonus power, percent
   baseStats: BaseStats;
   abilities: AbilityDef[];       // damaging, castable abilities only
+  // Field's recommended max-priority of the basic abilities (kit keys,
+  // strongest-maxed-first) from pred.gg recommendedSkills; the sim levels
+  // abilities this way instead of guessing. Undefined => heuristic order.
+  recommendedMaxOrder?: string[];
   // omeda = all numbers current-patch; mixed = some slots fell back to
   // stale owned data (see LoadedData.staleFallbacks).
   abilitySource: 'omeda' | 'mixed';

@@ -891,3 +891,18 @@ Append-only. One entry per backlog item or significant finding.
   filtered re-run OVERWROTE the whole file (lost 274 tips) until the
   writer was made merge-with-existing — partial regens must never clobber.
 - Harness gate added: skill orders + ability tips must cover all 52.
+
+## 2026-06-13: the sim now levels abilities the way the field does
+
+- Maintainer asked whether the 20s-fight sim assumes the right skill
+  priority. It did NOT: skillPriority used a damage-growth/cooldown
+  heuristic that disagreed with the field's actual recommended max-order
+  on 27 of 52 heroes' first-maxed ability. Now that recommendedSkills is
+  snapshotted, the kit carries recommendedMaxOrder and the sim levels
+  basics that way (heuristic only fills abilities the field order omits).
+  All artifacts + the matrix regenerated; invariants held (81 green).
+- Confirmed for the record: the sim's headline objectives (burst, 20s,
+  main output) and the matchup kill-window verdicts both run on the
+  OPTIMIZER's build (headlineBuild), not the meta build. The meta-build
+  card evaluates each meta core separately. Cross-hero combat comparisons
+  (the matrix) therefore hold the build dimension constant per hero.
