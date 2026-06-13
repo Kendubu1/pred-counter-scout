@@ -8,12 +8,13 @@
 <style>
   :root {
     --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
-    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#6a6a80;
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#82829a;
     --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
     --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7;
     --radius:12px;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
   html { scroll-behavior:smooth; }
   body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
   a { color:var(--blue); text-decoration:none; }
@@ -61,7 +62,7 @@
   .rolebar { display:flex; gap:.45rem; justify-content:center; flex-wrap:wrap; margin-top:.9rem; }
   .rolebar button {
     background:var(--bg-1); color:var(--text-1); border:1px solid var(--border);
-    border-radius:99px; padding:.28rem .85rem; font-size:.82rem;
+    border-radius:99px; padding:.28rem .85rem; font-size:.82rem; text-transform:capitalize;
   }
   .rolebar button.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
   .receipt {
@@ -692,7 +693,11 @@ function renderHero(a, roleParam) {
           const wr = e.w / e.n;
           const sim = simBy.get(e.name.toLowerCase());
           const why = sim && sim.modeled !== false
-            ? `our kit math: headline +${sim.headlinePct}% · burst +${sim.burstPct}% · 20s fights +${sim.rot20Pct}% · eHP +${sim.ehpPct}%`
+            ? (() => {
+                const parts = [['headline', sim.headlinePct], ['burst', sim.burstPct], ['20s fights', sim.rot20Pct], ['eHP', sim.ehpPct]]
+                  .filter(([, v]) => v).map(([l, v]) => `${l} +${v}%`);
+                return parts.length ? `our kit math: ${parts.join(' · ')}` : 'our kit math: no measurable change for this kit';
+              })()
             : sim && sim.note
               ? `field evidence only — not in our kit math because: ${sim.note}`
               : 'field evidence only — this Eternal isn’t in our kit math yet';
