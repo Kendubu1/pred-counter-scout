@@ -791,3 +791,17 @@ Append-only. One entry per backlog item or significant finding.
   Aion is an economy effect). Artifacts now emit every ranked Eternal
   with deltas or its precise reason, and the page prints the reason.
   A generic disclaimer is a smell: if the system knows why, say why.
+
+## 2026-06-13: accessibility audit — measure, don't eyeball
+
+- Contrast is computable: --text-2 (#6a6a80) measured 3.75:1 on the page
+  background — below WCAG AA's 4.5:1 — and it carried most of the small
+  print sitewide (scope banners, notes, hints, receipts). Lifted to
+  #82829a (~5.0:1) while staying clearly dimmer than --text-1 (7.3:1),
+  so the visual hierarchy survives the compliance fix.
+- :focus-visible outlines added globally (keyboard navigation had no
+  visible focus anywhere); homepage role filters were the last
+  lowercase UI labels — capitalize via CSS so data stays untouched.
+- "headline +0% · burst +0% · 20s fights +0% · eHP +18%" buried the one
+  number that mattered under three zeros. Delta lists now print only
+  the non-zero parts. Zeros are data; they are rarely information.
