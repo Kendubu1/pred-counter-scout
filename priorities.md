@@ -125,7 +125,10 @@ archetypes — empowered-basic (Solaris/Crescelia/StormBreaker), on-hit
 flat/ratio (Spectra/Mindrazor/Entropy), conditional amps (Overseer/
 SpearOfDesolation), lifesteal-conditional, armor-shred, self-shield/EHP.
 A few clusters need new kinds; many reuse on_hit/on_ability_hit/damage_amp.
-Genuinely uncodable (execute thresholds, 100-stack cadences, XP/evolve
+Genuinely uncodable EXCEPT execute thresholds, which ARE recoverable from
+the effect  field (Vanquisher 5% now modeled as kind ).
+KEY: re-extract effect text INCLUDING the condition field before modeling —
+~28 items hide their trigger numbers there. Remaining uncodable (100-stack cadences, XP/evolve
 economy, team/ally heals, positional auras) stay unmodeled with reasons —
 coverage is a candidate harness gate like the augment one.
 
