@@ -906,3 +906,20 @@ Append-only. One entry per backlog item or significant finding.
   OPTIMIZER's build (headlineBuild), not the meta build. The meta-build
   card evaluates each meta core separately. Cross-hero combat comparisons
   (the matrix) therefore hold the build dimension constant per hero.
+
+## 2026-06-13: sim picks on the home board + the Learn-tab trend badge
+
+- "Show top heroes by our math, not just winrate." The all-pairs matrix
+  is the fair cross-hero metric (build dimension held constant per hero):
+  each lane now shows "⚙ Sim picks · strongest in fights on paper" =
+  the heroes with the best net kill-window edge across the whole lane,
+  THEORY-labeled, clickable. Surfaces low-pick/strong-on-paper heroes
+  (GRIM.exe in carry) the winrate board hides.
+- Learn-tab trend badge: viewing a buffed/nerfed hero shows ▲buffed /
+  ▼nerfed next to the Learn-the-hero tab so players know to look —
+  driven by the same held patch state, colored by trend.
+- Bug caught by exercising, not by tsc: getMatrix() cached the unresolved
+  PROMISE in the global (the lane room awaited it locally so never
+  noticed); the new home-board caller read .pairs off the promise.
+  Fixed to await-and-cache. A lazy getter must store the resolved value
+  if any caller reads the global directly.
