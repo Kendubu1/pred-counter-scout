@@ -818,3 +818,24 @@ Append-only. One entry per backlog item or significant finding.
   variable names) — the sweep is about the boundary where engine
   vocabulary leaks into player-facing sentences. The boundary is the
   template string, and that is where the translation belongs.
+
+## 2026-06-13: viewport-safe anchoring + the item quick view returns
+
+- The "had to re-zoom to reset" bug: centering the active subnav pill
+  with scrollIntoView lets the browser scroll ANY ancestor — on iOS
+  under pinch-zoom that pans the visual viewport sideways. Fix: scroll
+  only the pill row itself (host.scrollTo with computed offset). Rule:
+  never scrollIntoView for cosmetic centering inside a scroller; address
+  the scroller directly.
+- Anchor offsets now measure the real sticky header (--toph custom
+  property set from .top offsetHeight) instead of a hard-coded 96px —
+  sections land exactly 10px below the header on every page and layout.
+- The v2 item quick-view is back: tap any item icon (build rail, meta
+  builds, crests) for a popup with price, stats, and effect text from
+  the committed omeda catalog — lazy-loaded, zero API, Escape/backdrop
+  dismiss, aria-modal. One delegated listener serves every current and
+  future item icon via data-ipop.
+- Process note: a multi-edit python script that asserts mid-way writes
+  NOTHING (write happens at the end) — the popup attributes landed in a
+  later script while CSS/JS never did, yielding silent dead markup.
+  Verify features by exercising them, not by edit success.
