@@ -271,7 +271,7 @@ async function main() {
     roleScores,
     notes,
     honesty: [
-      'role winrates are career-wide and shrunk toward each player’s own average',
+      'role winrates are career-wide, adjusted toward each player’s own average so thin samples don’t overclaim',
       'pair winrates count ranked games where both were allies; they include games with randoms filling the rest',
       'trio records come from a recent-match window, not all-time history',
       'hero suggestions require 10+ of the player’s own games on the hero in that exact role (real 5v5s only); samples under 20 games show their count',

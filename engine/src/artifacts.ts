@@ -482,7 +482,7 @@ export function buildHeroArtifact(
   const e0 = eternals.top[0];
   // Eternal deltas are damage/EHP math; on a support page "headline
   // output" would read as heal/shield, which Eternals do not touch.
-  const e0headlineLabel = role === 'support' ? 'your damage rotation' : 'your headline output';
+  const e0headlineLabel = role === 'support' ? 'your damage rotation' : 'this kit’s main output';
   const e0best = e0
     ? ([[e0.headlinePct, e0headlineLabel], [e0.burstPct, 'your burst combo'], [e0.rot20Pct, '20-second fights'], [e0.ehpPct, 'your effective HP']] as [number, string][])
         .sort((x, y) => y[0] - x[0])[0]!

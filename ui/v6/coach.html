@@ -175,7 +175,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
   try { metaInfo = await (await fetch('../../data/artifacts/meta.json')).json(); } catch {}
 
   document.getElementById('page').innerHTML = `
-    <div class="scope">📊 <b>Data scope:</b> this player's pred.gg public profile — career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked split history, last 40 matches · field baselines: ${metaInfo ? metaInfo.matches.toLocaleString() + ' matches, patch ' + esc(metaInfo.patch) : 'current-patch matches'}, all ranks · winrates shrunk toward the player's own average · combat math is THEORY pending in-game calibration · generated ${esc(c.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
+    <div class="scope">📊 <b>Data scope:</b> this player's pred.gg public profile — career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked split history, last 40 matches · field baselines: ${metaInfo ? metaInfo.matches.toLocaleString() + ' matches, patch ' + esc(metaInfo.patch) : 'current-patch matches'}, all ranks · winrates adjusted toward the player's own average (thin samples count less) · combat math is THEORY pending in-game calibration · generated ${esc(c.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
     <h1>${c.pool?.[0] ? `<img class="pav" src="../img/heroes/${esc(c.pool[0].slug)}.webp" alt="" onerror="this.remove()">` : ''}${esc(p.name)} <a class="ext" href="https://pred.gg/players/${esc(p.uuid)}" target="_blank" rel="noopener">pred.gg ↗</a></h1>
     ${c.archetype ? `<div class="arch">“${esc(c.archetype.label)}” <span class="arch-r">${esc(c.archetype.receipt)}</span></div>` : ''}
     <div class="sub">
@@ -221,7 +221,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
     </div>` : ''}
 
     <div class="card">
-      <h2>Role focus · shrunk winrate per role</h2>
+      <h2>Role focus · winrate per role, thin samples adjusted</h2>
       ${c.roles.map((r) => `
         <div class="rolerow ${best && r.role === best.role ? 'best' : ''} ${worst && r.role === worst.role ? 'worst' : ''}">
           <span style="text-transform:capitalize">${esc(r.role)}</span>

@@ -443,7 +443,7 @@ async function renderLaneDetail() {
         <span class="echip" data-slug="${h.slug}" data-go="hero">
           <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">${esc(h.name)}</span>`).join('')}</div>`;
     }
-    body += `<div class="lp-sub" style="margin-top:.6rem">ordered by meta score (pick presence + winrate, percentile-averaged) · "out-simmed" = the kit-math kill-window sim, THEORY until calibrated · tap a hero for the full build page</div>`;
+    body += `<div class="lp-sub" style="margin-top:.6rem">ordered by meta score (pick presence + winrate, small samples adjusted) · "out-simmed" = the kit-math kill-window sim, THEORY until calibrated · tap a hero for the full build page</div>`;
   } else {
     const mx = await getMatrix();
     const metaSlugs = new Set(laneMeta.map((h) => h.slug));
@@ -515,7 +515,7 @@ function renderMetaboard() {
   $('#metaboard').innerHTML = `
     <div class="mb-head">
       <h2>The meta board</h2>
-      <span class="mb-sub">meta score = pick presence + shrunk winrate, percentile-averaged per lane · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
+      <span class="mb-sub">meta score = how often a lane picks it + how often it wins (small samples adjusted down), rank-averaged · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
     </div>
     <div class="lanes">
       ${Object.keys(LANE_LABELS).map((role) => `
@@ -680,11 +680,11 @@ function renderHero(a, roleParam) {
               const parts = [];
               if (sa.rot20Pct) parts.push(`20s fights ${sa.rot20Pct > 0 ? '+' : ''}${sa.rot20Pct}%`);
               if (sa.burstPct) parts.push(`burst ${sa.burstPct > 0 ? '+' : ''}${sa.burstPct}%`);
-              if (sa.ehpPct) parts.push(`eHP ${sa.ehpPct > 0 ? '+' : ''}${sa.ehpPct}%`);
+              if (sa.ehpPct) parts.push(`survivability ${sa.ehpPct > 0 ? '+' : ''}${sa.ehpPct}%`);
               if (sa.healShieldPct) parts.push(`heal/shield ${sa.healShieldPct > 0 ? '+' : ''}${sa.healShieldPct}%`);
               else if (sa.healShieldAbs) parts.push(`adds ~${sa.healShieldAbs.toLocaleString()} HP of heal/shield per 10s`);
               const shift = sa.buildShift ? ` · build shifts: ${sa.buildShift.in.map(esc).join(', ')} over ${sa.buildShift.out.map(esc).join(', ')}` : '';
-              return `<div style="font-size:.66rem;color:var(--accent);margin:.12rem 0 0 2.35rem">⚙ in the sim: ${parts.length ? esc(parts.join(' · ')) : 'no headline change'}${shift}${sa.provisional ? ' (provisional constant)' : ''}</div>`;
+              return `<div style="font-size:.66rem;color:var(--accent);margin:.12rem 0 0 2.35rem">⚙ in the sim: ${parts.length ? esc(parts.join(' · ')) : 'no change to this kit’s main numbers'}${shift}${sa.provisional ? ' (provisional constant)' : ''}</div>`;
             })()}
           </div>`;
         }).join('')}
@@ -694,7 +694,7 @@ function renderHero(a, roleParam) {
           const sim = simBy.get(e.name.toLowerCase());
           const why = sim && sim.modeled !== false
             ? (() => {
-                const parts = [['headline', sim.headlinePct], ['burst', sim.burstPct], ['20s fights', sim.rot20Pct], ['eHP', sim.ehpPct]]
+                const parts = [['main output', sim.headlinePct], ['burst', sim.burstPct], ['20s fights', sim.rot20Pct], ['survivability', sim.ehpPct]]
                   .filter(([, v]) => v).map(([l, v]) => `${l} +${v}%`);
                 return parts.length ? `our kit math: ${parts.join(' · ')}` : 'our kit math: no measurable change for this kit';
               })()
@@ -718,8 +718,8 @@ function renderHero(a, roleParam) {
         }).join('') : '<div class="muted">no Eternal sample for this role yet</div>'}
         ${top && ets.length && top.name.toLowerCase() !== ets[0].name.toLowerCase()
           ? (a.eternals.augmentAware
-            ? `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">⚖ our kit math — run with ${esc(a.eternals.augmentAware)} modeled — prefers ${esc(top.name)} (+${top.headlinePct}% headline); when math and field disagree, the field's sample is the safer default for this role</div>`
-            : `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">⚖ our kit math prefers ${esc(top.name)} (+${top.headlinePct}% headline), but the field's top augment for this role isn't in the simulator, so this comparison is augment-blind — weight the field</div>`)
+            ? `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">⚖ our kit math — run with ${esc(a.eternals.augmentAware)} modeled — prefers ${esc(top.name)} (+${top.headlinePct}% on this kit’s main output); when math and field disagree, the field's sample is the safer default for this role</div>`
+            : `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">⚖ our kit math prefers ${esc(top.name)} (+${top.headlinePct}% on this kit’s main output), but the field's top augment for this role isn't in the simulator, so this comparison is augment-blind — weight the field</div>`)
           : ''}
         ${(() => {
           const crs = (cell.crests || []).filter((c) => c.n >= 300).sort((x, y) => (y.w / y.n) - (x.w / x.n)).slice(0, 3);

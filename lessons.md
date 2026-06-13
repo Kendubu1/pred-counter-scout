@@ -805,3 +805,16 @@ Append-only. One entry per backlog item or significant finding.
 - "headline +0% · burst +0% · 20s fights +0% · eHP +18%" buried the one
   number that mattered under three zeros. Delta lists now print only
   the non-zero parts. Zeros are data; they are rarely information.
+
+## 2026-06-13: the insider-terminology sweep
+
+- Terms only the builders know, found and translated in user-facing
+  strings: "shrunk winrate" → "adjusted so small samples don't
+  overclaim" (meta board note, coach scope + role-focus header, squad
+  honesty list); "headline" → "main output"; "eHP" → "survivability";
+  "confidence-weighted role winrates" → "thin role records count less";
+  "percentile-averaged" → "rank-averaged" with a plain gloss.
+- The terminology stays in CODE (shrunkWr, headlinePct, ehpPct are good
+  variable names) — the sweep is about the boundary where engine
+  vocabulary leaks into player-facing sentences. The boundary is the
+  template string, and that is where the translation belongs.
