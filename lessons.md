@@ -993,3 +993,20 @@ Append-only. One entry per backlog item or significant finding.
   and encodings read the wrong fields. Item 11 must re-extract effect
   text INCLUDING condition before modeling — several "uncodable" flags
   were really just unread data.
+
+## 2026-06-13: kicked off the item-passive modeling process (batch method)
+- Established a repeatable batch loop for item 11: extract full text WITH
+  the condition field → categorize → encode-from-stated-numbers / flag
+  out-of-scope with a reason → ratchet test → regenerate → measure agree
+  rate. 36/126 items now modeled (from 19). The ratchet test
+  (effects.test.ts) makes coverage monotonic and forbids reasonless
+  unmodeled flags.
+- Most "new kinds needed" turned out to reuse existing ones once read
+  correctly: spellblades (Solaris/Crescelia/Augmentation) are on_ability_hit;
+  conditional/range amps are damage_amp; shred is armor_shred. The genuine
+  out-of-scope tail is small and honest: ally shields (team-side), evolve
+  economy, unstated proc cadences, out-of-combat regen, positional auras.
+- The agree-with-field rate moves slowly (11→12) because a hero's top meta
+  build often still contains one unmodeled item — coverage has to be deep,
+  not just broad, before the verdict flips. The build CONTENT improves
+  faster than the verdict line.
