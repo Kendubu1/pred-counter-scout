@@ -13,19 +13,36 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadEffects } from './effects.js';
 import type { ObjKey } from './search.js';
+import type { HeroKit } from './types.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
 export type Playstyle = 'on-hit' | 'ability-burst' | 'sustain' | 'tank' | 'poke';
 
-// each playstyle's objective corner (ordered: primary first)
-export const PLAYSTYLE_OBJECTIVES: Record<Playstyle, ObjKey[]> = {
-  'on-hit': ['autoDps10VsSquishy', 'rot10VsSquishy'],
-  'ability-burst': ['burstVsSquishy', 'rot10VsSquishy'],
-  sustain: ['healShield10s', 'sustain10s'],
-  tank: ['ehpPhysical', 'ehpMagical'],
-  poke: ['rot10VsSquishy', 'rot20VsBruiser'],
-};
+/** A hero whose PHYSICAL basic attacks carry the build (mirrors the routing in
+ *  search.ts headlineObjective). For these, "on-hit" means stacking basic DPS;
+ *  for everyone else (magical/hybrid casters) the on-hit value is woven into
+ *  the rotation alongside their magical abilities, not pure auto-attacking. */
+export function physicalAutoAttacker(kit: HeroKit): boolean {
+  return kit.damageType !== 'magical' && (kit.roles.includes('carry') || kit.basicScalingPct >= 90);
+}
+
+/** A playstyle's objective corner, ROUTED BY THE HERO'S DAMAGE TYPE. The key
+ *  fix: an on-hit augment on a magical hero (e.g. Zinx, whose basic is physical
+ *  but all four abilities are magical) must NOT be steered into a physical-crit
+ *  auto-DPS build — her on-hit power is magical and lives in the rotation. */
+export function playstyleObjectives(playstyle: Playstyle, kit: HeroKit): ObjKey[] {
+  switch (playstyle) {
+    case 'on-hit':
+      return physicalAutoAttacker(kit)
+        ? ['autoDps10VsSquishy', 'rot10VsSquishy']   // physical AA: basic DPS
+        : ['rot10VsSquishy', 'burstVsSquishy'];      // magical/hybrid: weave on-hit into the rotation
+    case 'ability-burst': return ['burstVsSquishy', 'rot10VsSquishy'];
+    case 'sustain': return ['healShield10s', 'sustain10s'];
+    case 'tank': return ['ehpPhysical', 'ehpMagical'];
+    case 'poke': return ['rot10VsSquishy', 'rot20VsBruiser'];
+  }
+}
 
 export interface AugmentClass {
   playstyle: Playstyle | null;

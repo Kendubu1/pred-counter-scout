@@ -9,7 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { completedItems, type LoadedData } from './data.js';
 import { generateBuilds, headlineObjective, type ObjKey } from './search.js';
-import { classifyAugment, laneTopAugment, lanesFor, PLAYSTYLE_OBJECTIVES } from './playstyle.js';
+import { classifyAugment, laneTopAugment, lanesFor, playstyleObjectives } from './playstyle.js';
 import { combatDamage, evaluateBuild, itemTotals, loadCalibration, unverifiedConstants, type Calibration } from './sim.js';
 import { rankAugments, rankBlessings } from './eternals.js';
 import { heroGames, itemPlayRate, loadAggregates } from './aggregates.js';
@@ -267,7 +267,7 @@ function computeLaneFlex(kit: HeroKit, pool: Item[], cal: Calibration): HeroArti
     if (!aug) continue;
     const cls = classifyAugment(`augment:${kit.slug}:${aug.id}`);
     if (!cls.playstyle) continue;
-    const bias = PLAYSTYLE_OBJECTIVES[cls.playstyle];
+    const bias = playstyleObjectives(cls.playstyle, kit);
     const steered = generateBuilds(kit, pool, cal, { role: lane, objectiveBias: bias as ObjKey[], headlineOverride: bias[0], beamWidth: 8 })[0];
     if (!steered) continue;
     const ev = ` — field ${lane} ${(aug.wr * 100).toFixed(1)}% over ${aug.n.toLocaleString()} games`;

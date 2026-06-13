@@ -9,7 +9,7 @@ import { rankAugments, rankBlessings } from './eternals.js';
 import { heroGames, itemPlayRate } from './aggregates.js';
 import { itemWinDelta } from './evidence.js';
 import { matchupCheckpoints } from './matchup.js';
-import { classifyAugment, laneTopAugment, PLAYSTYLE_OBJECTIVES, type LaneAugment } from './playstyle.js';
+import { classifyAugment, laneTopAugment, playstyleObjectives, type LaneAugment } from './playstyle.js';
 import { loadEffects } from './effects.js';
 
 const args = process.argv.slice(2);
@@ -82,7 +82,7 @@ if (!flag('no-steer')) {
   if (chosen) {
     const cls = classifyAugment(`augment:${slug}:${chosen.id}`);
     if (cls.playstyle) {
-      objectiveBias = PLAYSTYLE_OBJECTIVES[cls.playstyle];
+      objectiveBias = playstyleObjectives(cls.playstyle, kit);
       headlineOverride = objectiveBias[0];
       const ev = chosen.n > 0 ? ` — field ${role} ${(chosen.wr * 100).toFixed(1)}% over ${chosen.n.toLocaleString()} games` : '';
       provenance.push(`augment steer: "${chosen.name}" ⇒ ${cls.playstyle} playstyle (${cls.why})${ev}`);
