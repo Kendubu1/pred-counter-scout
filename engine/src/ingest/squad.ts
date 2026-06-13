@@ -37,16 +37,23 @@ function roleScore(p: AnalyzedPlayer, role: string): { score: number; games: num
 interface CommonRow { matchesPlayed: number; matchesWon: number; player: { uuid: string } }
 
 interface RosterRow {
-  match: { uuid: string; winningTeam: string; startTime: string; matchPlayers: { team: string; player: { uuid: string } | null }[] };
+  match: { uuid: string; winningTeam: string; startTime: string; matchPlayers: { team: string; role: string | null; player: { uuid: string } | null }[] };
 }
 
 /** Last page (50) of a member's ranked matches with full rosters; the
  *  union across all five members is the trio-record sample window. */
 async function recentRankedRosters(uuid: string): Promise<RosterRow[]> {
-  const d = await gql<{ player: { matchesPaginated: { results: RosterRow[] } } }>(
-    `{ player(by: { uuid: "${uuid}" }) { matchesPaginated(limit: 50, filter: { gameModes: [RANKED] }) {
-      results { match { uuid winningTeam startTime matchPlayers { team player { uuid } } } } } } }`);
-  return d.player.matchesPaginated.results;
+  // three pages (~150 ranked) so duo-lane (carry+support together) records
+  // have a usable sample; role is needed to identify the duo lane.
+  const out: RosterRow[] = [];
+  for (const offset of [0, 50, 100]) {
+    const d = await gql<{ player: { matchesPaginated: { results: RosterRow[] } } }>(
+      `{ player(by: { uuid: "${uuid}" }) { matchesPaginated(limit: 50, offset: ${offset}, filter: { gameModes: [RANKED] }) {
+        results { match { uuid winningTeam startTime matchPlayers { team role player { uuid } } } } } } }`);
+    out.push(...d.player.matchesPaginated.results);
+    await new Promise((r) => setTimeout(r, 150));
+  }
+  return out;
 }
 
 async function commonAllies(uuid: string): Promise<CommonRow[]> {
@@ -109,7 +116,7 @@ async function main() {
   // Trio records mined from actual shared matches (the API's commonPlayers
   // is pairwise-only). Union of every member's last 50 ranked rosters,
   // deduped by match; a trio counts when all three were on the same team.
-  const matchMap = new Map<string, { winningTeam: string; startTime: string; byTeam: Map<string, Set<string>> }>();
+  const matchMap = new Map<string, { winningTeam: string; startTime: string; byTeam: Map<string, Map<string, string>> }>();
   for (const uuid of uuids) {
     for (const r of await recentRankedRosters(uuid)) {
       let m = matchMap.get(r.match.uuid);
@@ -119,18 +126,33 @@ async function main() {
       }
       for (const mp of r.match.matchPlayers) {
         if (!mp.player || !inStack.has(mp.player.uuid)) continue;
-        if (!m.byTeam.has(mp.team)) m.byTeam.set(mp.team, new Set());
-        m.byTeam.get(mp.team)!.add(mp.player.uuid);
+        if (!m.byTeam.has(mp.team)) m.byTeam.set(mp.team, new Map());
+        m.byTeam.get(mp.team)!.set(mp.player.uuid, (mp.role ?? '').toLowerCase());
       }
     }
     await new Promise((r) => setTimeout(r, 200));
+  }
+  // Duo-lane records: two stack members on the same team as carry + support
+  // actually share a lane. This is the synergy that matters for seating.
+  const duoCount = new Map<string, { games: number; wins: number }>();
+  for (const m of matchMap.values()) {
+    for (const [team, roleMap] of m.byTeam) {
+      const carry = [...roleMap].find(([, r]) => r === 'carry')?.[0];
+      const support = [...roleMap].find(([, r]) => r === 'support')?.[0];
+      if (!carry || !support) continue;
+      const key = [carry, support].sort().join('|');
+      const t = duoCount.get(key) ?? { games: 0, wins: 0 };
+      t.games++;
+      if (team === m.winningTeam) t.wins++;
+      duoCount.set(key, t);
+    }
   }
   const trioCount = new Map<string, { games: number; wins: number }>();
   let trioWindowStart: string | null = null;
   for (const m of matchMap.values()) {
     if (!trioWindowStart || m.startTime < trioWindowStart) trioWindowStart = m.startTime;
-    for (const [team, set] of m.byTeam) {
-      const arr = [...set].sort();
+    for (const [team, roleMap] of m.byTeam) {
+      const arr = [...roleMap.keys()].sort();
       if (arr.length < 3) continue;
       for (let i = 0; i < arr.length; i++) for (let j = i + 1; j < arr.length; j++) for (let k = j + 1; k < arr.length; k++) {
         const key = `${arr[i]}|${arr[j]}|${arr[k]}`;
@@ -178,10 +200,35 @@ async function main() {
     if (uuid === lead) writeFileSync(path.join(ROOT, 'data/artifacts/coach.json'), JSON.stringify(report, null, 1));
   }
 
+  // Duo-lane synergy bonus, shared by the server optimizer and the client
+  // planner (identical formula so they never disagree). Shrunk toward .5;
+  // only counts when the pair actually laned together 10+ times.
+  const DUO_MIN = 10, DUO_K = 15, DUO_W = 0.6;
+  const duoKey = (a: string, b: string) => [a, b].sort().join('|');
+  function duoBonus(carryUuid: string, supportUuid: string): number {
+    const rec = duoCount.get(duoKey(carryUuid, supportUuid));
+    if (!rec || rec.games < DUO_MIN) return 0;
+    const shrunkWr = (rec.wins + 0.5 * DUO_K) / (rec.games + DUO_K);
+    return (shrunkWr - 0.5) * DUO_W;
+  }
+  // Emitted for the client planner: every qualifying duo-lane record.
+  const duoLane: Record<string, { games: number; winrate: number; shrunkWr: number; aName: string; bName: string }> = {};
+  for (const [key, rec] of duoCount) {
+    if (rec.games < DUO_MIN) continue;
+    const [a, b] = key.split('|');
+    duoLane[key] = {
+      games: rec.games, winrate: rec.wins / rec.games,
+      shrunkWr: (rec.wins + 0.5 * DUO_K) / (rec.games + DUO_K),
+      aName: nameOf.get(a!) ?? 'unknown', bName: nameOf.get(b!) ?? 'unknown',
+    };
+  }
+
   // Full-stack optimal lineup.
   let best: { order: string[]; total: number } | null = null;
   for (const order of permutations(ROLES)) {
-    const total = order.reduce((s, role, i) => s + roleScore(members[i]!, role).score, 0);
+    let total = order.reduce((s, role, i) => s + roleScore(members[i]!, role).score, 0);
+    const carryM = members[order.indexOf('carry')], supportM = members[order.indexOf('support')];
+    if (carryM && supportM) total += duoBonus(carryM.uuid, supportM.uuid);
     if (!best || total > best.total) best = { order, total };
   }
   // Seat picks come from the player's OWN record on the hero in that exact
@@ -267,6 +314,8 @@ async function main() {
     lineupGainPer100,
     pairs,
     trios,
+    duoLane,
+    duoLaneNote: 'carry+support on the same team actually share a lane; mined from each member’s last ~150 ranked matches, 10+ duo-lane games required',
     triosNote: `from each member's last 50 ranked matches (${matchMap.size} distinct matches since ${trioWindowStart?.slice(0, 10) ?? 'n/a'}); older trio games are outside this window — duos are all-time`,
     roleScores,
     notes,

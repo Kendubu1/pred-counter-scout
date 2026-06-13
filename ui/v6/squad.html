@@ -249,13 +249,20 @@ const plink = (uuid, name) => uuid
   const perms = (arr, k) => k === 0 ? [[]] :
     arr.flatMap((x, i) => perms([...arr.slice(0, i), ...arr.slice(i + 1)], k - 1).map((rest) => [x, ...rest]));
 
+  const duoKey = (a, b) => [a, b].sort().join('|');
+  function duoBonus(carryUuid, supportUuid) {
+    const rec = (s.duoLane || {})[duoKey(carryUuid, supportUuid)];
+    return rec ? (rec.shrunkWr - 0.5) * 0.6 : 0; // matches the engine optimizer
+  }
   function solveTop(selected, k = 3) {
     const ms = s.roleScores.filter((r) => selected.includes(r.uuid));
     if (ms.length < 2) return null;
-    const all = perms(ROLES, ms.length).map((order) => ({
-      order,
-      total: order.reduce((sum, role, i) => sum + ms[i].scores[role].score, 0),
-    })).sort((a, b) => b.total - a.total);
+    const all = perms(ROLES, ms.length).map((order) => {
+      let total = order.reduce((sum, role, i) => sum + ms[i].scores[role].score, 0);
+      const ci = order.indexOf('carry'), si = order.indexOf('support');
+      if (ci !== -1 && si !== -1) total += duoBonus(ms[ci].uuid, ms[si].uuid);
+      return { order, total };
+    }).sort((a, b) => b.total - a.total);
     const pool = all.slice(0, 9);
     const start = (shuffleSeed * k) % Math.max(pool.length - k + 1, 1);
     return pool.slice(start, start + k).map((opt) => ({
@@ -320,7 +327,15 @@ const plink = (uuid, name) => uuid
           ${isMove ? `<div class="snote">not their usual queue — they normally play ${esc(fav)}, but the team wins more with them here (${pct(seat.wr)}% over ${seat.games} games in ${esc(seat.role)})</div>` : ''}
         </div>`;
         }).join('')}
-        ${opt.seats.length >= 3 ? '<div class="snote" style="margin-top:.5rem">Seats are scored as a set — someone can look stronger in a seat they did not get, but moving them would give up more wins in the role they leave than it adds.</div>' : ''}
+        ${(() => {
+          const carry = opt.seats.find((x) => x.role === 'carry'), support = opt.seats.find((x) => x.role === 'support');
+          if (!carry || !support) return '';
+          const rec = (s.duoLane || {})[duoKey(carry.uuid, support.uuid)];
+          if (!rec) return '';
+          const col = rec.winrate >= 0.53 ? 'var(--green)' : rec.winrate <= 0.48 ? 'var(--red)' : 'var(--gold)';
+          return `<div class="snote" style="color:${col};margin-top:.5rem">🤝 <b>Duo lane synergy:</b> ${esc(carry.name.split(' ')[0])} + ${esc(support.name.split(' ')[0])} have won ${pct(rec.winrate, 0)}% of ${rec.games} games actually laning together as carry+support — that pairing is part of why they are seated here.</div>`;
+        })()}
+        ${opt.seats.length >= 3 ? '<div class="snote" style="margin-top:.5rem">Seats are scored as a set — someone can look stronger in a seat they did not get, but moving them would give up more wins in the role they leave than it adds. The carry+support pairing also weighs their real duo-lane record.</div>' : ''}
       </div>`;
       }
       return `
