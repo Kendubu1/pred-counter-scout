@@ -170,6 +170,21 @@ function bonusPowerFor(type: AbilityDef['damageType'], t: ItemStats): number {
   return type === 'magical' ? t.magical_power : t.physical_power;
 }
 
+/** Bonus damage from current/missing-health scaling (the execute pattern). Current
+ *  health is credited at the assumed live-HP fraction (full in a burst, 80% over a
+ *  sustained window); missing health as its complement, so a missing-HP finisher is
+ *  ~0 against a full target and grows as it's hurt. */
+function targetHealthBonus(ab: AbilityDef, rank: number, profile: DefenseProfile | null, isBurst: boolean): number {
+  if (!profile || !ab.targetHealthPct?.length) return 0;
+  const liveFactor = isBurst ? 1 : CURRENT_HP_FACTOR_WINDOW;
+  let bonus = 0;
+  for (const th of ab.targetHealthPct) {
+    const pct = th.pct[Math.min(rank, th.pct.length) - 1] ?? 0;
+    bonus += (pct / 100) * profile.health * (th.basis === 'current' ? liveFactor : 1 - liveFactor);
+  }
+  return bonus;
+}
+
 function rampFactor(windowSec: number, rampSeconds: number): number {
   if (rampSeconds <= 0) return 1;
   return Math.min(1, windowSec / rampSeconds);
@@ -349,7 +364,7 @@ export function rotationDamage(kit: HeroKit, opts: SimOptions, t: ItemStats, win
     const casts = 1 + Math.floor(windowSec / cd);
     totalCasts += casts;
     const amp = ampFactorAbilities(eff, ab, isBurst, profile, t);
-    const maxHpBonus = ab.pctMaxHealth && profile ? (ab.pctMaxHealth / 100) * profile.health : 0;
+    const maxHpBonus = (ab.pctMaxHealth && profile ? (ab.pctMaxHealth / 100) * profile.health : 0) + targetHealthBonus(ab, rank, profile, isBurst);
     total += mitigate((abilityHit(ab, rank, t) + maxHpBonus) * amp, ab.damageType, profile, t, eff, windowSec, k) * casts;
     for (const b of abilityBonusDamage(eff, ab, rank, t, profile)) {
       total += mitigate(b.raw, b.damageType, profile, t, eff, windowSec, k) * casts;
@@ -438,7 +453,7 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
     if (rank <= 0 || !ab.damagePerRank.length) continue;
     burstCasts++;
     const amp = ampFactorAbilities(eff, ab, true, profile, t);
-    const maxHpBonus = ab.pctMaxHealth && profile ? (ab.pctMaxHealth / 100) * profile.health : 0;
+    const maxHpBonus = (ab.pctMaxHealth && profile ? (ab.pctMaxHealth / 100) * profile.health : 0) + targetHealthBonus(ab, rank, profile, true);
     burst += mitigate((abilityHit(ab, rank, t) + maxHpBonus) * amp, ab.damageType, profile, t, eff, BURST_WINDOW, k);
     for (const b of abilityBonusDamage(eff, ab, rank, t, profile)) {
       burst += mitigate(b.raw, b.damageType, profile, t, eff, BURST_WINDOW, k);

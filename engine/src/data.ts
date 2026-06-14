@@ -101,6 +101,22 @@ function parseDamage(md: string): { values: number[]; scaling: number; pctMaxHea
   return { values, scaling: Number(b[2]), damageType };
 }
 
+// Bonus damage scaled on the target's CURRENT or MISSING health — the execute
+// pattern (Lt. Belica's 20/25/30% missing-HP ult, Feng Mao's 6% current-HP dash).
+// Max-health scaling is handled by parseDamage's pctMaxHealth; this captures the
+// health-state-dependent clauses, per rank where stated.
+function parseTargetHealth(md: string): { pct: number[]; basis: 'current' | 'missing' }[] {
+  const out: { pct: number[]; basis: 'current' | 'missing' }[] = [];
+  const text = md.replace(/<[^>]+>/g, ' ');
+  const re = /([\d.]+(?:\/[\d.]+)*)\s*%\s*(?:of\s+(?:the\s+)?(?:target'?s?|their|enemy'?s?)\s*)?(current|missing)\s*(?:health|hp)/ig;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text))) {
+    const pct = m[1]!.split('/').map(Number).filter((n) => !Number.isNaN(n) && n > 0);
+    if (pct.length) out.push({ pct, basis: m[2]!.toLowerCase() as 'current' | 'missing' });
+  }
+  return out;
+}
+
 // Parse a self attack-speed steroid: a per-rank "X/Y/Z% Attack Speed" buff (e.g.
 // Sparrow 25/30/35/40/45%, Murdock 15/20/25/30/35%). Returns the per-rank values
 // and an approximate active duration ("for Ns") for uptime; null if no AS grant.
@@ -241,6 +257,7 @@ export function loadData(): LoadedData {
       const parsed = omAb?.menu_description ? parseDamage(omAb.menu_description) : null;
       const healing = omAb?.menu_description ? parseHealing(omAb.menu_description) : [];
       const asBuff = omAb?.menu_description ? parseSelfAttackSpeed(omAb.menu_description) : null;
+      const targetHealth = omAb?.menu_description ? parseTargetHealth(omAb.menu_description) : [];
       const statBuffs = omAb?.menu_description ? parseSelfStatBuffs(omAb.menu_description) : [];
       const ownedDmg = owned ? bestOwnedDamage(owned) : null;
       const cooldowns = omAb?.cooldown?.length ? omAb.cooldown : owned?.cooldowns ?? [];
@@ -250,6 +267,7 @@ export function loadData(): LoadedData {
           key,
           name: omAb?.display_name ?? owned?.name ?? key,
           damagePerRank: parsed.values,
+          targetHealthPct: targetHealth.length ? targetHealth : undefined,
           scalingPct: parsed.scaling,
           pctMaxHealth: parsed.pctMaxHealth,
           damageType: parsed.damageType,

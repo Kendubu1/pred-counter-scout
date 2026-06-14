@@ -298,6 +298,20 @@ describe('evolving items (buy the source, credit the evolved value)', () => {
   });
 });
 
+describe('execute-gate: current/missing target-health ability damage', () => {
+  it('credits missing-health (Lt. Belica) and current-health (Feng Mao) bonuses', () => {
+    for (const [slug, basis] of [['lt-belica', 'missing'], ['feng-mao', 'current']] as const) {
+      const kit = data.kits.get(slug)!;
+      const ab = kit.abilities.find((a) => a.targetHealthPct?.some((t) => t.basis === basis));
+      expect(ab, `${slug} should have a ${basis}-health ability`).toBeDefined();
+      const stripped = { ...kit, abilities: kit.abilities.map((a) => ({ ...a, targetHealthPct: undefined })) };
+      const items = ['ashbringer', 'demon-edge', 'dread'].map((x) => data.itemsBySlug.get(x)!).filter(Boolean);
+      expect(evaluateBuild(kit, items, 13, cal).objectives.rot10VsSquishy)
+        .toBeGreaterThan(evaluateBuild(stripped, items, 13, cal).objectives.rot10VsSquishy);
+    }
+  });
+});
+
 describe('slice isolation (the other 51 heroes are untouched)', () => {
   it('non-target heroes still produce non-empty, deterministic fronts', () => {
     for (const slug of ['greystone', 'murdock', 'muriel']) {

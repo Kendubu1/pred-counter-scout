@@ -27,6 +27,10 @@ export interface AbilityDef {
   damagePerRank: number[];      // best damage entry per rank
   scalingPct: number;            // ratio applied to bonus power, in percent
   pctMaxHealth?: number;         // bonus damage as % of target max health
+  // Bonus damage scaled on target CURRENT or MISSING health (the execute pattern,
+  // e.g. Lt. Belica's missing-HP ult), per rank. Credited with a health-state
+  // factor: current at the assumed live-HP fraction, missing as its complement.
+  targetHealthPct?: { pct: number[]; basis: 'current' | 'missing' }[];
   damageType: 'physical' | 'magical' | 'true';
   healing?: HealEntry[];         // heal/shield output per cast (may be the only payload)
   // Self attack-speed steroid per rank (e.g. Sparrow's Heightened Senses,
