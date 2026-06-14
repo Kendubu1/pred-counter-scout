@@ -1396,3 +1396,23 @@ Append-only. One entry per backlog item or significant finding.
   The audit turns "builds feel templated" into a ranked, item-level fix list; the
   #1 lever (enchanter ally-utility) is an objective-architecture change, so it's
   surfaced for a maintainer call rather than silently estimated.
+
+## 2026-06-14: ally-utility objective — give enchanters the channel the combat sim lacks
+- Audit fix #1 (maintainer-authorized architecture change). The agreement audit's
+  bottom 8 by recall were all supports because the `utility` objective was only
+  movement_speed + tenacity, so enchanter items (ability_haste + heal_shield_increase
+  + ally auras) scored ~0 and never made the front.
+- Fix: utility now = movement_speed + tenacity + ability_haste + heal_shield_increase
+  + eff.ampAllWindowPct. The last term credits team damage-amp DEBUFFS (Dynamo's
+  "enemies take 10% more damage", scope:all) — near-worthless to a support's own low
+  damage but real value applied to the whole team, so it belongs on the ally channel.
+  Heuristic proxy: one unit of value per stat/amp point (documented as such).
+- Honesty line: purely-unmodeled ally auras (Xenia's ally shield, Frosted Lure's
+  proximity nuke) stay UNCREDITED rather than estimated — the calibration policy
+  forbids inventing a magnitude. They remain THEORY items the sim can't rank.
+- Result: avg item-level core recall 52% -> 58%. Dynamo dropped off the most-missed
+  list entirely; Steel/Narbash/Mourn/Zinx/Riktor left the worst-18. Remaining gaps
+  are now the in-model clusters (mage haste, bruiser sustain, on-hit magical).
+- Lesson: a single-hero combat sim is structurally blind to ally-facing value; the
+  fix is a dedicated objective fed by the stats/effects that ARE quantifiable
+  (haste, heal/shield amp, team debuffs), not a fudge factor on combat damage.

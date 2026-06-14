@@ -615,7 +615,20 @@ export function evaluateBuild(kit: HeroKit, items: Item[], level: number, cal: C
       ehpPhysical: vsSquishy.ehpPhysical,
       ehpMagical: vsSquishy.ehpMagical,
       healShield10s: vsSquishy.healShield10s,
-      utility: totals.movement_speed + totals.tenacity,
+      // Ally-utility: the enchanter channel a single-hero combat sim is otherwise
+      // blind to. Movement speed + tenacity (peel/disengage) plus the two stats
+      // that DEFINE enchanter items and that no combat objective rewards —
+      // ability_haste (recast peel/heal/CC more often) and heal_shield_increase
+      // (amplifies every heal/shield the hero and its allies put out). Plus a
+      // team damage-amp debuff (Dynamo's "enemies take 10% more damage", resolved
+      // to ampAllWindowPct, scope:all) — near-worthless to the support's own low
+      // damage but real value applied to the whole team, so it lands on the ally
+      // channel here. Heuristic proxy: one unit of value per stat/amp point; it
+      // surfaces enchanter cores (Dynamo, Enra's, Crescelia) the damage vectors
+      // leave invisible. Purely-unmodeled ally auras (Xenia's ally shield) stay
+      // uncredited rather than estimated (calibration policy).
+      utility: totals.movement_speed + totals.tenacity + totals.ability_haste
+        + totals.heal_shield_increase + eff.ampAllWindowPct,
       sustain10s: vsBruiser.sustain10s, // drain value shows in longer fights
     },
     manaFeasible: vsSquishy.manaFeasible,

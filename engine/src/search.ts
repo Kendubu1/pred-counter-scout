@@ -44,7 +44,7 @@ const ARCHETYPE_LABELS: Record<ObjKey, string> = {
   ehpPhysical: 'physical survival',
   ehpMagical: 'magical survival',
   healShield10s: 'heal/shield output',
-  utility: 'utility',
+  utility: 'enchant/peel utility',
   sustain10s: 'drain sustain',
 };
 

@@ -109,6 +109,29 @@ describe('field retrodiction validator', () => {
   }, 60000);
 });
 
+describe('ally-utility objective (the enchanter channel)', () => {
+  it('credits ability haste, heal/shield amp, and team damage-amp auras as utility', () => {
+    const byName = (n: string) => [...data.items.values()].find((i) => i.name === n)!;
+    const zinx = data.kits.get('zinx')!;
+    // Dynamo: ability_haste 10 + a team damage-amp aura ("enemies take 10% more
+    // damage"); both are ally-facing value the combat vectors ignore. Its utility
+    // must reflect haste + the amp, not be zero (it has no move speed / tenacity).
+    const dynamo = byName('Dynamo');
+    const u = evaluateBuild(zinx, [dynamo], 13, cal).objectives.utility;
+    expect(u).toBeGreaterThanOrEqual(dynamo.stats.ability_haste); // haste credited
+    expect(u).toBeGreaterThan(dynamo.stats.ability_haste);        // + team amp on top
+  });
+
+  it('surfaces an enchanter aura item in a support front that the old utility missed', () => {
+    const riktor = data.kits.get('riktor')!;
+    const front = generateBuilds(riktor, completedItems(data), cal, { level: 13, role: 'support' });
+    const built = new Set(front.flatMap((b) => b.items.slice(0, 6)));
+    // Dynamo is a field core support item; with the ally-utility credit it now
+    // lands on the utility corner instead of being dominated everywhere.
+    expect(built.has('Dynamo')).toBe(true);
+  }, 60000);
+});
+
 describe('lane-conditioned playstyle (same kit, different lane)', () => {
   it('Zinx is an ally-heal enchanter in support but a poke damage hero in a damage lane', () => {
     const kit = data.kits.get('zinx')!;
