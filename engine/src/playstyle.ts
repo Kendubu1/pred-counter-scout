@@ -13,6 +13,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadEffects } from './effects.js';
 import { kitHeals, type ObjKey } from './search.js';
+import { kitPowerType } from './sim.js';
 import type { HeroKit } from './types.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -27,18 +28,9 @@ export function physicalAutoAttacker(kit: HeroKit): boolean {
   return kit.damageType !== 'magical' && (kit.roles.includes('carry') || kit.basicScalingPct >= 90);
 }
 
-/** Where a kit's ABILITY payload lives. Most casters are tagged 'hybrid' (their
- *  basic scales on physical power while abilities deal magical damage, e.g.
- *  Gideon), so kit.damageType alone misclassifies them. We read the majority
- *  damage type of the damaging abilities, which is what an ability-power build
- *  and an ability-power Eternal should align to. */
-export function kitPowerType(kit: HeroKit): 'magical' | 'physical' {
-  if (kit.damageType === 'magical') return 'magical';
-  if (kit.damageType === 'physical') return 'physical';
-  const mag = kit.abilities.filter((a) => a.damageType === 'magical' && a.damagePerRank.length).length;
-  const phys = kit.abilities.filter((a) => a.damageType === 'physical' && a.damagePerRank.length).length;
-  return mag >= phys && mag > 0 ? 'magical' : 'physical';
-}
+// kitPowerType lives in sim.ts (the item pool needs it too); re-exported here so
+// existing importers keep working.
+export { kitPowerType };
 
 /** A playstyle's objective corner, ROUTED BY THE HERO'S DAMAGE TYPE. The key
  *  fix: an on-hit augment on a magical hero (e.g. Zinx, whose basic is physical
@@ -99,10 +91,10 @@ export function classifyAugment(key: string): AugmentClass {
   // 2) keyword scan of the curated text (same words a human reads)
   const t = (e.sourceText || '').toLowerCase();
   const cues: [Playstyle, RegExp, string][] = [
-    ['on-hit', /on-?hit|basic attack|basic attacks|per basic|auto attack/, 'on-hit / basic-attack text'],
-    ['sustain', /\bheal|\bshield|lifesteal|omnivamp|restore .*health|infuse/, 'heal / shield text'],
-    ['tank', /armou?r|mitigat|damage taken|tenacity|less damage|resurrect|cc immun/, 'defensive text'],
-    ['ability-burst', /ability|abilities|ultimate|cast|cooldown/, 'ability / cast text'],
+    ['on-hit', /on-?hit|basic attack|basic attacks|per basic|auto attack|attack[ -]?speed/, 'on-hit / attack-speed text'],
+    ['sustain', /\bheal|\bshield|\bbarrier|lifesteal|omnivamp|restore .*health|infuse/, 'heal / shield / barrier text'],
+    ['tank', /armou?r|mitigat|damage taken|damage reduction|tenacity|less damage|resurrect|cc immun/, 'defensive text'],
+    ['ability-burst', /ability|abilities|ultimate|cast|cooldown|nearby enem|\baoe\b|area|zone|explod|napalm/, 'ability / cast / AoE text'],
     ['poke', /range|projectile|missile|slow|movement speed/, 'range / poke text'],
   ];
   for (const [ps, re, why] of cues) {

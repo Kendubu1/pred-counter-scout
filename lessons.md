@@ -1195,3 +1195,28 @@ Append-only. One entry per backlog item or significant finding.
   paced rotation; it binds repeated combos in a skirmish. Modeling it on the wrong
   window silently produced a no-op. The level scaling itself is the indicator the
   maintainer pointed at: pool/combo by level is what says "this hero needs mana".
+
+## 2026-06-14: on-hit reasoning + roster re-tag from augment & lane behaviour
+- Why a weak-ability mage leans on-hit (Zinx): attack speed + a MAGICAL on-hit item,
+  not ability damage. Her meta core is Prophecy + Spectra + Orion (Orion converts
+  ability haste -> attack speed). The procs were modeled, but the optimizer couldn't
+  reach the build: the field core is a balanced hybrid no single objective corner
+  picks, and the autoDPS corner overshot to PHYSICAL crit (Deathstalker) because the
+  item pool read the 'hybrid' tag as "allow everything."
+- Fix: relevantPool routes through kitPowerType. A magical kit drops physical
+  power/crit/lethality and keeps magical power + attack speed + ability haste (which
+  feed magical on-hit). An on-hit steer on Zinx now builds Orion + Spectra, not
+  Deathstalker. Note: a naive "magical_power>0" filter was WRONG — Spectra has 0
+  magical_power (its magic is in the on-hit proc), so the rule keeps attack-speed
+  items, not just MP items.
+- Re-tagging the roster (maintainer: tag from augment + lane behaviour, not the kit
+  tag): npm run classify emits per-hero-lane (real power type) x (playstyle from the
+  lane augment fused with the kit) for all 52 heroes -> classifications.json. 26
+  agree / 37 disagree / 24 kit-only / 9 field-only. The disagreements are the
+  product: Eden is ability-burst not on-hit; Bayle/Boris are sustain bruisers; Argus
+  mid is on-hit. The augment classifier now reads attack-speed->on-hit,
+  barrier->sustain, damage-reduction->tank, AoE->ability-burst (16 unclassifiable
+  augments -> 9; the rest are non-damage utility that honestly falls back to kit).
+- Lesson: the augment is the field's DECLARATION of intent; it tags playstyle better
+  than kit numbers for heroes whose power is in items/behaviour, not raw ability
+  scaling. The kit is the fallback when the augment declares no damage playstyle.

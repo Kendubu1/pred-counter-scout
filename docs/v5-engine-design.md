@@ -238,6 +238,32 @@ of Enlightenment → Orb of Growth, "Inner Growth" stacking, a meta item) as a r
 gain rather than flat final stats; and the ultimate being credited once per rotation
 window despite its ~120-160s cooldown.
 
+On-hit reasoning via a power-type-aware pool. A magical hero can lean on-hit not
+through ability damage but through ATTACK SPEED + a magical on-hit item (Zinx's meta
+core is Prophecy + Spectra + Orion, where Orion converts ability haste → attack
+speed). The mechanics were modeled, but the optimizer couldn't reach the build: the
+field core is a balanced hybrid no single corner picks, and the autoDPS corner
+overshot to physical crit (Deathstalker) because the item pool treated the 'hybrid'
+tag as "allow everything." Fix: `relevantPool` now routes through `kitPowerType`, so a
+magical kit's pool drops physical power/crit/lethality and keeps magical power,
+attack speed, and ability haste (which feed magical on-hit). An on-hit steer on Zinx
+now builds Orion + Spectra, not Deathstalker — the model reaches and can explain the
+meta on-hit build. (Why it works, not modeled yet: a pure-physical-crit mage is also
+a hybrid-tag artifact the pool now closes.)
+
+Roster re-tagging (augment + lane behaviour). The omeda damage tag is too coarse
+('hybrid' for nearly every caster), so the authoritative classification is (real
+power type) × (playstyle from the lane's field augment, fused with the kit). `npm run
+classify` emits this for all 52 heroes / 96 hero-lanes to
+`data/aggregates/classifications.json`: per lane it records the field's top augment,
+its classified playstyle, the kit playstyle, the fused tag, and an agreement verdict
+(26 agree, 37 disagree, 24 kit-only, 9 field-only). It surfaces field-driven
+corrections the kit alone misses (Eden reads ability-burst not on-hit; Bayle/Boris
+are sustain bruisers; Argus mid is on-hit). The augment classifier gained
+attack-speed→on-hit, barrier→sustain, damage-reduction→tank, and AoE→ability-burst
+cues, cutting unclassifiable augments from 16 to 9 (the rest are genuinely non-damage
+utility — mobility, XP, homing — that honestly fall back to the kit).
+
 Scope and isolation. The above is a Gideon + Zinx vertical slice behind a
 `--playstyle` flag; the other 50 heroes' paths are byte-identical (a snapshot test
 guards determinism). Tests live in `engine/test/playstyle.test.ts` (10 cases); the

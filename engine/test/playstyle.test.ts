@@ -187,6 +187,29 @@ describe('mana-aware objective (level + item timing)', () => {
   }, 60000);
 });
 
+describe('power-type-aware pool (on-hit means magical on-hit for a mage)', () => {
+  it('an on-hit steer on Zinx builds magical on-hit, never physical crit', () => {
+    const kit = data.kits.get('zinx')!;
+    const front = generateBuilds(kit, completedItems(data), cal, {
+      level: 13, role: 'midlane', beamWidth: 10,
+      objectiveBias: ['autoDps10VsSquishy', 'rot10VsSquishy'], headlineOverride: 'autoDps10VsSquishy',
+    });
+    const items = front[0]!.items.map((n) => data.items.get(n)!).filter(Boolean);
+    // No physical power / crit / lethality leaks into a magical kit's build.
+    expect(items.every((i) => i.stats.physical_power === 0 && i.stats.critical_chance === 0 && i.stats.physical_penetration === 0)).toBe(true);
+    // Attack speed is kept because it powers magical on-hit (Spectra/Orion).
+    expect(items.some((i) => i.stats.attack_speed > 0)).toBe(true);
+  }, 60000);
+
+  it('a physical carry still gets physical items', () => {
+    const carry = [...data.kits.values()].find((k) => k.roles.includes('carry') && k.damageType !== 'magical' && k.basicScalingPct >= 90);
+    if (!carry) return;
+    const front = generateBuilds(carry, completedItems(data), cal, { level: 13, role: 'carry', beamWidth: 8 });
+    const items = front[0]!.items.map((n) => data.items.get(n)!).filter(Boolean);
+    expect(items.some((i) => i.stats.physical_power > 0 || i.stats.attack_speed > 0 || i.stats.critical_chance > 0)).toBe(true);
+  }, 60000);
+});
+
 describe('slice isolation (the other 51 heroes are untouched)', () => {
   it('non-target heroes still produce non-empty, deterministic fronts', () => {
     for (const slug of ['greystone', 'murdock', 'muriel']) {

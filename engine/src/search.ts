@@ -3,7 +3,7 @@
 // enters the objective (docs/v5-engine-design.md, component C).
 
 import type { BuildEval, HeroKit, Item } from './types.js';
-import { evaluateBuild, stagedManaAdequacy, type Calibration } from './sim.js';
+import { evaluateBuild, kitPowerType, stagedManaAdequacy, type Calibration } from './sim.js';
 import { mergeEffects, resolveItemEffects, type ResolvedEffects } from './effects.js';
 
 export interface Scenario {
@@ -69,17 +69,22 @@ const SUPPORT_VECTORS: Weights[] = [
 ];
 
 function relevantPool(kit: HeroKit, pool: Item[], role?: string): Item[] {
+  const power = kitPowerType(kit);   // real power type, not the omeda 'hybrid' tag
   return pool.filter((i) => {
-    // Support searches: crit and lethality feed only objectives outside
-    // the support vector, so their stat budget is dead gold even when the
-    // item carries a support stat (Equinox: 20% crit riding 80 tenacity).
-    // This is the design doc's golden rule, enforced as a pool constraint.
-    if (role === 'support' && (i.stats.critical_chance > 0 || i.stats.physical_penetration > 0)) return false;
-    const offensive = i.stats.physical_power || i.stats.magical_power || i.stats.attack_speed || i.stats.critical_chance;
+    const s = i.stats;
+    // Support golden rule: crit and lethality feed only objectives outside the
+    // support vector, so their stat budget is dead gold (Equinox: 20% crit riding
+    // 80 tenacity). Enforced as a pool constraint.
+    if (role === 'support' && (s.critical_chance > 0 || s.physical_penetration > 0)) return false;
+    const offensive = s.physical_power || s.magical_power || s.attack_speed || s.critical_chance;
     if (!offensive) return true; // defensive and utility items always allowed
-    if (kit.damageType === 'physical') return i.stats.physical_power > 0 || i.stats.attack_speed > 0 || i.stats.critical_chance > 0;
-    if (kit.damageType === 'magical') return i.stats.magical_power > 0;
-    return true; // hybrid
+    if (power === 'physical') return s.physical_power > 0 || s.attack_speed > 0 || s.critical_chance > 0;
+    // Magical kits (incl. hybrid-tagged mages like Zinx): physical power, crit and
+    // lethality are wasted gold. Keep magical power, attack speed and ability haste
+    // — which power MAGICAL on-hit items (Spectra/Prophecy) and Orion's haste→AS —
+    // so an on-hit build resolves to magical on-hit, not physical crit.
+    if (s.physical_power > 0 || s.critical_chance > 0 || s.physical_penetration > 0) return false;
+    return s.magical_power > 0 || s.attack_speed > 0 || s.ability_haste > 0;
   });
 }
 

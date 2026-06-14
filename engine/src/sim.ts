@@ -96,6 +96,19 @@ export function skillPriority(kit: HeroKit): AbilityDef[] {
   return [...basics].sort((a, b) => growth(b) - growth(a));
 }
 
+/** Where a kit's ABILITY payload lives. Most casters are tagged 'hybrid' (their
+ *  basic scales on physical power while abilities deal magical damage, e.g.
+ *  Gideon, Zinx), so kit.damageType alone misclassifies them. We read the majority
+ *  damage type of the damaging abilities — what an ability-power build, an on-hit
+ *  item choice, and a power-type-aware item pool should all align to. */
+export function kitPowerType(kit: HeroKit): 'magical' | 'physical' {
+  if (kit.damageType === 'magical') return 'magical';
+  if (kit.damageType === 'physical') return 'physical';
+  const mag = kit.abilities.filter((a) => a.damageType === 'magical' && a.damagePerRank.length).length;
+  const phys = kit.abilities.filter((a) => a.damageType === 'physical' && a.damagePerRank.length).length;
+  return mag >= phys && mag > 0 ? 'magical' : 'physical';
+}
+
 export function ranksAtLevel(kit: HeroKit, level: number): Map<string, number> {
   const ranks = new Map<string, number>(kit.abilities.map((a) => [a.key, 0]));
   const maxRankOf = new Map<string, number>(kit.abilities.map((a) => [a.key, a.maxRank]));
