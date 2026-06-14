@@ -1997,8 +1997,13 @@
    "source": "omeda items.json 1.14.4 (incl. condition field)",
    "effects": [
     {
+     "kind": "damage_reduction",
+     "pct": 5,
+     "damageType": "physical"
+    },
+    {
      "kind": "unmodeled",
-     "note": "Flat physical-damage mitigation; defensive, and no mitigation primitive exists."
+     "note": "Base 5% physical mitigation credited to physical EHP; the (+5%) scaling term (per-stat, unstated) is not."
     }
    ]
   },
@@ -2037,12 +2042,16 @@
   },
   "item:vainglory": {
    "name": "Vainglory / Vanity",
-   "sourceText": "On dealing/taking damage: +0.5% Armors per stack (to 10), +10% at max.",
+   "sourceText": "In Vain: +10% Armors (unconditional). Pride: +0.5% Armors per stack to 10 (+5% at max).",
    "source": "omeda items.json 1.14.4 (incl. condition field)",
    "effects": [
     {
+     "kind": "armor_multiplier",
+     "pct": 10
+    },
+    {
      "kind": "unmodeled",
-     "note": "A defensive ramping armor stat."
+     "note": "In Vain's unconditional +10% Armors credited; Pride's +0.5%/stack (to +5%) ramps on dealing/taking damage and is not."
     }
    ]
   },

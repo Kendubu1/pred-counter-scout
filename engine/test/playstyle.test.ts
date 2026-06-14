@@ -252,6 +252,19 @@ describe('attack-speed steroid abilities feed auto DPS', () => {
   });
 });
 
+describe('defensive item passives feed EHP (damage_reduction + armor multiplier)', () => {
+  it('Stonewall mitigates physical damage; Vainglory multiplies armor', () => {
+    const k = data.kits.get('steel')!;
+    const bare = evaluateBuild(k, [], 13, cal).objectives;
+    const stone = evaluateBuild(k, [data.itemsBySlug.get('stonewall')!], 13, cal).objectives;
+    // Stonewall's 5% physical mitigation lifts physical EHP beyond its raw armor/HP.
+    expect(stone.ehpPhysical).toBeGreaterThan(bare.ehpPhysical);
+    const vain = evaluateBuild(k, [data.itemsBySlug.get('vainglory')!], 13, cal).objectives;
+    expect(vain.ehpPhysical).toBeGreaterThan(bare.ehpPhysical);
+    expect(vain.ehpMagical).toBeGreaterThan(bare.ehpMagical);   // +10% to both armors
+  });
+});
+
 describe('hero self-shield passive feeds EHP', () => {
   it("Steel's 7% max-HP shield is credited; conditional passives are not", () => {
     const steel = data.kits.get('steel')!;

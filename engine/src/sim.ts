@@ -516,8 +516,9 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
     manaSpent10s,
     manaPool,
     manaFeasible: manaSpent10s <= manaPool,
-    ehpPhysical: hp * ((k + pArmor) / k),
-    ehpMagical: hp * ((k + mArmor) / k),
+    // Flat damage-reduction (Stonewall) divides damage taken, i.e. multiplies EHP.
+    ehpPhysical: hp * ((k + pArmor) / k) / eff.dmgTakenMult.physical,
+    ehpMagical: hp * ((k + mArmor) / k) / eff.dmgTakenMult.magical,
     notes: { applied: eff.applied, unmodeled: eff.unmodeled, provisional: eff.provisional },
   };
 }
