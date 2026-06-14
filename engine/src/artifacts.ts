@@ -567,7 +567,7 @@ export function buildHeroArtifact(
           ? ['support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)']
           : []),
         ...(itemTotals(items).attack_speed > 100
-          ? ['this build stacks over +100% attack speed and the sim has NO measured attack-speed cap (calibration checklist 7) — sustained-DPS numbers are optimistic until the cap is measured']
+          ? ['this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check']
           : []),
       ],
     },

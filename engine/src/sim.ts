@@ -220,9 +220,21 @@ export function basicHit(kit: HeroKit, level: number, t: ItemStats, critMultipli
   return raw * critAvg;
 }
 
-export function attacksPerSecond(kit: HeroKit, level: number, t: ItemStats): number {
+export function attacksPerSecond(kit: HeroKit, level: number, t: ItemStats, cap?: number): number {
   const base = kit.baseStats.attack_speed[level - 1] ?? 1;
-  return base * (1 + t.attack_speed / 100);
+  const aps = base * (1 + t.attack_speed / 100);
+  // Predecessor caps attacks/sec (Cursed Ring's tooltip: "from 3 to 4", so the
+  // default cap is 3.0). Without it, pen/AS-stacked builds reach 3.5+ and the
+  // sim over-credits sustained DPS. Cap value comes from calibration.
+  return cap && cap > 0 ? Math.min(aps, cap) : aps;
+}
+
+/** The attacks/sec cap for THIS build: the calibration default (3.0), raised
+ *  if the build carries a cap-raising effect (Cursed Ring's Broken Chains -> 4). */
+function effectiveAsCap(eff: ResolvedEffects, cal: Calibration): number | undefined {
+  const base = cal.constants.attackSpeedCap?.value as number | undefined;
+  if (eff.attackSpeedCapOverride > 0) return Math.max(eff.attackSpeedCapOverride, base ?? 0);
+  return base;
 }
 
 function hastedCooldown(cd: number, haste: number): number {
@@ -317,7 +329,7 @@ export function combatDamage(kit: HeroKit, items: Item[], opts: SimOptions, cal:
   const critMult = (((cal.constants.critMultiplier?.value as number) ?? 1.75)) * (1 + eff.critDamageAmpPct / 100);
   const isBurst = windowSec <= BURST_WINDOW;
   let total = rotationDamage(kit, opts, t, windowSec);
-  const aps = attacksPerSecond(kit, opts.level, t);
+  const aps = attacksPerSecond(kit, opts.level, t, effectiveAsCap(eff, cal));
   const hits = aps * windowSec;
   const amp = ampFactorBasics(eff, isBurst, profile);
   total += mitigate(basicHit(kit, opts.level, t, critMult) * amp, 'physical', profile, t, eff, windowSec) * hits;
@@ -376,8 +388,10 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
   for (const w of [3, 6, 10, 20]) rotation[w] = rotationDamage(kit, { ...opts, ranks, effects: eff }, t, w);
 
   // Sustained auto DPS over a 10s engagement: AS ramps credit their mean.
-  const apsBase = attacksPerSecond(kit, lvl, t);
-  const aps = apsBase * (1 + (eff.asRampPctPerSecond * (AUTO_DPS_WINDOW / 2)) / 100);
+  const asCap = effectiveAsCap(eff, cal);
+  const apsBase = attacksPerSecond(kit, lvl, t, asCap);
+  const apsRamped = apsBase * (1 + (eff.asRampPctPerSecond * (AUTO_DPS_WINDOW / 2)) / 100);
+  const aps = asCap && asCap > 0 ? Math.min(apsRamped, asCap) : apsRamped;
   const basicAmp = ampFactorBasics(eff, false, profile);
   let autoDps = mitigate(basicHit(kit, lvl, t, critMult) * basicAmp, 'physical', profile, t, eff, AUTO_DPS_WINDOW) * aps;
   for (const p of eff.onHitProcs) {

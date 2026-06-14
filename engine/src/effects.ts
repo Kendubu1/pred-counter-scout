@@ -77,6 +77,8 @@ const Primitive = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('shield_per_fight'), base: z.number(), maxAtLevel18: z.number().optional() }),
   z.object({ kind: z.literal('anti_heal'), pct: z.number() }),
   z.object({ kind: z.literal('as_ramp'), pctPerSecond: z.number() }),
+  // Raises the attacks/sec cap (Cursed Ring's Broken Chains: "from 3 to 4").
+  z.object({ kind: z.literal('attack_speed_cap'), cap: z.number() }),
   // A stat that stacks up over a fight (Plasma Blade: +4% crit/stack to 5).
   // Credited at a mean in-fight uptime fraction (a fight spends part of its
   // time ramping), so it is a fair average rather than the max.
@@ -180,6 +182,7 @@ export interface ResolvedEffects {
   shieldScaling: { stat: keyof ItemStats; pct: number }[]; // shields that scale with build stats
   antiHealPct: number;
   asRampPctPerSecond: number;
+  attackSpeedCapOverride: number; // 0 = use the calibration default cap
   executeThresholdPct: number;
   // ── ability-scoped (hero augments) ──
   abilityAmpPct: Partial<Record<AbilityKeyT, number>>;
@@ -209,7 +212,7 @@ export function emptyEffects(): ResolvedEffects {
     shredPct: { physical: 0, magical: 0, rampSeconds: 0 },
     onHitProcs: [], onAbilityProcs: [],
     healthMultiplier: 1, armorMultiplier: 1, shieldFlat: 0, shieldScaling: [], antiHealPct: 0,
-    asRampPctPerSecond: 0, executeThresholdPct: 0,
+    asRampPctPerSecond: 0, attackSpeedCapOverride: 0, executeThresholdPct: 0,
     abilityAmpPct: {}, abilityCooldownMods: {}, abilityBonuses: [], abilityHeals: [],
     provisional: false, applied: [], unmodeled: [],
   };
@@ -338,6 +341,9 @@ export function resolveEntries(keys: string[], ctx: ResolveCtx, registry: Effect
         case 'as_ramp':
           out.asRampPctPerSecond += fx.pctPerSecond;
           break;
+        case 'attack_speed_cap':
+          out.attackSpeedCapOverride = Math.max(out.attackSpeedCapOverride, fx.cap);
+          break;
         case 'ability_damage_amp':
           out.abilityAmpPct[fx.abilityKey] = (out.abilityAmpPct[fx.abilityKey] ?? 0) + fx.pct;
           break;
@@ -410,6 +416,7 @@ export function mergeEffects(a: ResolvedEffects, b: ResolvedEffects): ResolvedEf
     out.shieldScaling.push(...e.shieldScaling);
     out.antiHealPct = Math.max(out.antiHealPct, e.antiHealPct);
     out.asRampPctPerSecond += e.asRampPctPerSecond;
+    out.attackSpeedCapOverride = Math.max(out.attackSpeedCapOverride, e.attackSpeedCapOverride);
     for (const [k, v] of Object.entries(e.abilityAmpPct)) {
       out.abilityAmpPct[k as AbilityKeyT] = (out.abilityAmpPct[k as AbilityKeyT] ?? 0) + v;
     }

@@ -1064,3 +1064,18 @@ Append-only. One entry per backlog item or significant finding.
   be conditioned on how the hero actually deals damage — otherwise the steer
   fights the kit. The damage-type routing already lived in headlineObjective;
   the steer just has to honor it instead of overriding it blindly.
+
+## 2026-06-14: attack-speed cap — the value was stated, not unmeasurable
+- The bug sweep (after the cooldown fix) flagged one outlier: Terra's autoDPS at
+  6.6x the offlane median, driven by aps 3.34 with NO cap. The calibration note
+  gated attackSpeedCap as "UNMEASURED — measure in practice mode", but the value
+  is STATED in the item data: Cursed Ring's Broken Chains reads "Increase the
+  Attacks per Second Cap from 3 to 4", so the default cap is 3.0 (4.0 with that
+  effect). A gated constant isn't always unmeasurable — check the item tooltips
+  before deferring. Applied 3.0 from calibration (still verified:false, output
+  stays THEORY pending a formula check).
+- The cap is BUILD-AWARE: added an attack_speed_cap effect kind +
+  attackSpeedCapOverride on the resolver, modeled Cursed Ring's Broken Chains as
+  cap:4, and the sim takes max(override, default). A build with Cursed Ring caps
+  at 4.0; everything else at 3.0. The aps cap is applied AFTER the AS-ramp too,
+  not just the base, so ramping items can't sneak past it.
