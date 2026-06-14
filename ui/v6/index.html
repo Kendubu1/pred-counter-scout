@@ -226,6 +226,11 @@
   .flex-core img { width:30px; height:30px; border-radius:7px; object-fit:cover; background:var(--bg-2); border:1px solid var(--border); }
   .flex-core .arrow { color:var(--text-2); font-size:.7rem; }
   .flex-note { font-size:.73rem; color:var(--text-2); margin-top:.34rem; }
+  .lanesteer { background:var(--bg-1); border:1px solid var(--border); border-radius:10px; padding:.6rem .7rem; margin-bottom:.75rem; }
+  .ls-head { display:flex; align-items:center; gap:.55rem; flex-wrap:wrap; }
+  .ls-lane { font-weight:800; text-transform:capitalize; }
+  .ls-aug { font-size:.8rem; color:var(--text-1); }
+  .ls-shift { font-size:.76rem; color:var(--text-1); margin-top:.4rem; }
 
   /* How the build comes online: early/mid/late power curve */
   .stagerow { padding:.55rem 0; border-top:1px solid var(--border); }
@@ -904,27 +909,20 @@ function renderHero(a, roleParam) {
         </div>`).join('')}
     </section>` : ''}
 
-    ${a.laneFlex && a.laneFlex.length ? `
-    <section class="card">
-      <h2>Playstyle by lane <span class="hint">the augment declares the playstyle · what the sim can't see, exposed</span></h2>
-      <div style="font-size:.74rem; color:var(--text-2); margin-bottom:.5rem">The lane picks the augment, and the augment commits ${esc(a.name)} to a playstyle. We steer the build toward it — and tell you straight whether the sim <b>models</b> that augment or is leaning on the declared playstyle + field evidence.</div>
-      ${a.laneFlex.map((f) => `
-        <div class="flexrow">
-          <div class="flex-head">
-            <span class="flex-lane">${esc(f.lane)}</span>
-            <span class="flex-aug">${esc(f.augment.name)}</span>
-            <span class="flex-ps">${esc(f.playstyle)}</span>
-            <span class="flex-prov ${f.modeled ? 'modeled' : 'steered'}">${f.modeled ? '⚙ sim-modeled' : '🔬 evidence-steered'}</span>
-            ${f.wr != null ? `<span class="flex-wr ${f.wr >= 50 ? 'up' : 'flat'}">${f.wr.toFixed(1)}%</span>` : ''}
-          </div>
-          <div class="flex-core">${f.core.map((i) => i.slug ? `<img loading="lazy" data-ipop="${esc(i.slug)}" src="../img/items/${esc(i.slug)}.webp" title="${esc(i.name)} · tap for details" onerror="this.style.visibility='hidden'">` : `<span class="chip">${esc(i.name)}</span>`).join('<span class="arrow">→</span>')}</div>
-          <div class="flex-note">${esc(f.provenance)}</div>
-        </div>`).join('')}
-    </section>` : ''}
-
     <section class="card answer">
-      <h2>The optimizer's build <span class="hint">our kit-math second opinion · patch ${esc(a.patch)} · ${a.build.gold.toLocaleString()}g full</span></h2>
+      <h2>The optimizer's build <span class="hint">our kit-math second opinion${roleViews.length > 1 ? ` · <b>${esc(a.role)}</b>` : ''} · patch ${esc(a.patch)} · ${a.build.gold.toLocaleString()}g full</span></h2>
       ${a.roleCaveat ? `<div class="caveat">⚠ ${esc(a.roleCaveat)}</div>` : ''}
+      ${a.laneSteer ? `
+      <div class="lanesteer">
+        <div class="ls-head">
+          <span class="ls-lane">${esc(a.role)}</span>
+          <span class="ls-aug">field runs <b>${esc(a.laneSteer.augment.name)}</b> → ${esc(a.laneSteer.playstyle)}</span>
+          <span class="flex-prov ${a.laneSteer.modeled ? 'modeled' : 'steered'}">${a.laneSteer.modeled ? '⚙ sim-modeled' : '🔬 evidence-steered'}</span>
+          ${a.laneSteer.wr != null ? `<span class="flex-wr ${a.laneSteer.wr >= 50 ? 'up' : 'flat'}">${a.laneSteer.wr.toFixed(1)}%</span>` : ''}
+        </div>
+        ${a.laneSteer.shiftIn.length ? `<div class="ls-shift">Steering toward this augment swaps in <b>${a.laneSteer.shiftIn.map(esc).join(', ')}</b> over ${a.laneSteer.shiftOut.map(esc).join(', ') || '—'} vs the pure optimum below.</div>` : `<div class="ls-shift">The pure optimum below already matches this augment's playstyle.</div>`}
+        <div class="flex-note">${esc(a.laneSteer.provenance)}</div>
+      </div>` : ''}
       <div class="rail">${a.build.items.map(itile).join('')}</div>
       <div class="coach">${esc(a.coachLine)}</div>
       <div class="proofs">

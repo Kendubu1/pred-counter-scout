@@ -1460,3 +1460,21 @@ Append-only. One entry per backlog item or significant finding.
 - Lesson: "flex role" is not a display filter — it's a different hero in practice
   (different items, spikes, counters). Model it as a first-class per-role build,
   not a re-skin of the primary.
+
+## 2026-06-14: consolidate per-lane UI — augment steer as a per-role banner, not a 2nd build list
+- Once the flex-role toggle shipped a full build per lane, the old "Playstyle by
+  lane" section (laneFlex) became a redundant second per-lane build list. The
+  maintainer flagged the overlap and chose to condense.
+- Kept what was UNIQUE to it: the augment→playstyle steer + the ⚙ sim-modeled /
+  🔬 evidence-steered honesty + field winrate. Added a per-role `laneSteer` to
+  RoleView (the lane's field augment, playstyle, modeled flag, wr/n, and the
+  build-SHIFT — shiftIn/shiftOut — that steering toward the augment makes vs the
+  role's pure-optimum build). The v6 page now renders this as a compact banner
+  ABOVE the optimizer build, and the standalone "Playstyle by lane" section is
+  gone. laneFlex stays in the artifact for the standalone flex-preview tool.
+- Distinction the banner now makes explicit: the optimizer build is the PURE
+  kit-math optimum for the lane (no augment assumed); the banner says what the
+  field's augment would do on top of it (and whether the sim can see it).
+- Lesson: when you add a real per-X view (per-role builds), retire the half-measure
+  that approximated it (per-lane core previews) instead of leaving both — but carry
+  forward the one signal the half-measure had that the new view lacks.

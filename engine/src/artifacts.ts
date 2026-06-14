@@ -159,6 +159,22 @@ const RoleView = z.object({
       line: z.string(),
     }).nullable(),
   })),
+  // The augment the field commits to in THIS lane declares a playstyle the sim
+  // can't read from the kit. We surface it next to the role's pure-optimum build:
+  // which augment, what playstyle, whether the sim models it, and how steering
+  // toward it would shift the build (shiftIn/shiftOut vs the optimum). Null when
+  // the lane has no usable augment evidence. Replaces the old standalone
+  // "Playstyle by lane" section — the per-role build now lives under the toggle.
+  laneSteer: z.object({
+    augment: z.object({ id: z.string(), name: z.string() }),
+    playstyle: z.string(),
+    modeled: z.boolean(),
+    wr: z.number().nullable(),
+    n: z.number().nullable(),
+    shiftIn: z.array(z.string()),   // items the augment-steer adds vs the pure optimum
+    shiftOut: z.array(z.string()),  // items it drops
+    provenance: z.string(),
+  }).nullable(),
 });
 
 export type RoleViewT = z.infer<typeof RoleView>;
@@ -289,6 +305,32 @@ function popularBuild(kit: HeroKit, pool: Item[]): Item[] {
  *  it and expose whether the sim actually models that augment. This surfaces
  *  the flex (e.g. Zinx support-enchant vs mid on-hit) the single-role build
  *  can't show. */
+/** The augment-steer for ONE lane, with the build-shift vs a base (pure-optimum)
+ *  build. Drives the per-role "field runs X here" banner. */
+function laneSteerFor(
+  kit: HeroKit, role: string, pool: Item[], cal: Calibration, baseItems: string[],
+): RoleViewT['laneSteer'] {
+  const aug = laneTopAugment(kit.slug, role);
+  if (!aug) return null;
+  const cls = classifyAugment(`augment:${kit.slug}:${aug.id}`);
+  if (!cls.playstyle) return null;
+  const bias = playstyleObjectives(cls.playstyle, kit);
+  const steered = generateBuilds(kit, pool, cal, { role, objectiveBias: bias as ObjKey[], headlineOverride: bias[0], beamWidth: 8 })[0];
+  if (!steered) return null;
+  const baseSet = new Set(baseItems);
+  const steerSet = new Set(steered.items);
+  const shiftIn = steered.items.filter((n) => !baseSet.has(n));
+  const shiftOut = baseItems.filter((n) => !steerSet.has(n));
+  const ev = ` — field ${role} ${(aug.wr * 100).toFixed(1)}% over ${aug.n.toLocaleString()} games`;
+  const provenance = cls.modeled
+    ? `“${aug.name}” ⇒ ${cls.playstyle}; the sim models this augment${ev}.`
+    : `“${aug.name}” ⇒ ${cls.playstyle}; the sim can’t model this augment — steered by the declared playstyle + field evidence${ev}, magnitude not simulated.`;
+  return {
+    augment: { id: aug.id, name: aug.name }, playstyle: cls.playstyle, modeled: cls.modeled,
+    wr: Math.round(aug.wr * 1000) / 10, n: aug.n, shiftIn, shiftOut, provenance,
+  };
+}
+
 function computeLaneFlex(kit: HeroKit, pool: Item[], cal: Calibration): HeroArtifactT['laneFlex'] {
   const out: HeroArtifactT['laneFlex'] = [];
   const slugOf = new Map(pool.map((i) => [i.name, i.slug]));
@@ -658,6 +700,7 @@ function buildRoleView(
     metaBuilds,
     stages: computeStages(kit, ordered, spikes, role, pool, cal),
     matchups,
+    laneSteer: laneSteerFor(kit, role, pool, cal, top.items),
   });
 }
 
