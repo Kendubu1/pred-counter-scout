@@ -257,13 +257,33 @@ export function basicHit(kit: HeroKit, level: number, t: ItemStats, critMultipli
   return raw * critAvg;
 }
 
-export function attacksPerSecond(kit: HeroKit, level: number, t: ItemStats, cap?: number): number {
+export function attacksPerSecond(kit: HeroKit, level: number, t: ItemStats, cap?: number, extraAsPct = 0): number {
   const base = kit.baseStats.attack_speed[level - 1] ?? 1;
-  const aps = base * (1 + t.attack_speed / 100);
+  // extraAsPct: attack speed from sources outside item stats (a hero's own
+  // steroid ability, uptime-weighted — see selfAttackSpeedPct).
+  const aps = base * (1 + (t.attack_speed + extraAsPct) / 100);
   // Predecessor caps attacks/sec (Cursed Ring's tooltip: "from 3 to 4", so the
   // default cap is 3.0). Without it, pen/AS-stacked builds reach 3.5+ and the
   // sim over-credits sustained DPS. Cap value comes from calibration.
   return cap && cap > 0 ? Math.min(aps, cap) : aps;
+}
+
+/** Attack speed from a hero's own steroid abilities (Sparrow's Heightened Senses,
+ *  Murdock's Hot Pursuit), uptime-weighted: full in a burst window (you pop it),
+ *  buffDuration/cooldown across a sustained window. These have no damage line, so
+ *  without this their auto-attack spike is invisible to the sim. */
+function selfAttackSpeedPct(kit: HeroKit, ranks: Map<string, number>, t: ItemStats, eff: ResolvedEffects, windowSec: number): number {
+  let pct = 0;
+  for (const ab of kit.abilities) {
+    const perRank = ab.selfAttackSpeedPctPerRank;
+    if (!perRank?.length) continue;
+    const rank = ranks.get(ab.key) ?? 0;
+    if (rank <= 0) continue;
+    const val = perRank[Math.min(rank, perRank.length) - 1] ?? 0;
+    const uptime = windowSec <= BURST_WINDOW ? 1 : Math.min(1, (ab.buffDurationSec ?? 4) / Math.max(abilityCooldown(ab, rank, t, eff), 1));
+    pct += val * uptime;
+  }
+  return pct;
 }
 
 /** The attacks/sec cap for THIS build: the calibration default (3.0), raised
@@ -375,7 +395,8 @@ export function combatDamage(kit: HeroKit, items: Item[], opts: SimOptions, cal:
   const k = mitigationConstant(opts, cal);
   const isBurst = windowSec <= BURST_WINDOW;
   let total = rotationDamage(kit, { ...opts, mitigationK: k }, t, windowSec);
-  const aps = attacksPerSecond(kit, opts.level, t, effectiveAsCap(eff, cal));
+  const ranks = opts.ranks ?? ranksAtLevel(kit, opts.level);
+  const aps = attacksPerSecond(kit, opts.level, t, effectiveAsCap(eff, cal), selfAttackSpeedPct(kit, ranks, t, eff, windowSec));
   const hits = aps * windowSec;
   const amp = ampFactorBasics(eff, isBurst, profile);
   total += mitigate(basicHit(kit, opts.level, t, critMult) * amp, 'physical', profile, t, eff, windowSec, k) * hits;
@@ -436,7 +457,7 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
 
   // Sustained auto DPS over a 10s engagement: AS ramps credit their mean.
   const asCap = effectiveAsCap(eff, cal);
-  const apsBase = attacksPerSecond(kit, lvl, t, asCap);
+  const apsBase = attacksPerSecond(kit, lvl, t, asCap, selfAttackSpeedPct(kit, ranks, t, eff, AUTO_DPS_WINDOW));
   const apsRamped = apsBase * (1 + (eff.asRampPctPerSecond * (AUTO_DPS_WINDOW / 2)) / 100);
   const aps = asCap && asCap > 0 ? Math.min(apsRamped, asCap) : apsRamped;
   const basicAmp = ampFactorBasics(eff, false, profile);

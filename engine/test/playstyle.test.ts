@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeAll } from 'vitest';
 import { loadData, completedItems, type LoadedData } from '../src/data.js';
-import { loadCalibration, ranksAtLevel, manaSustain, stagedManaAdequacy, effectiveTotals, type Calibration } from '../src/sim.js';
+import { loadCalibration, ranksAtLevel, manaSustain, stagedManaAdequacy, effectiveTotals, evaluateBuild, type Calibration } from '../src/sim.js';
 import { resolveItemEffects } from '../src/effects.js';
 import { generateBuilds, headlineObjective } from '../src/search.js';
 import { kitPlaystyle, kitPowerType, fuseSteer, laneTopAugment } from '../src/playstyle.js';
@@ -220,6 +220,23 @@ describe('power-type-aware pool (on-hit means magical on-hit for a mage)', () =>
     const items = front[0]!.items.map((n) => data.items.get(n)!).filter(Boolean);
     expect(items.some((i) => i.stats.physical_power > 0 || i.stats.attack_speed > 0 || i.stats.critical_chance > 0)).toBe(true);
   }, 60000);
+});
+
+describe('attack-speed steroid abilities feed auto DPS', () => {
+  it('Sparrow/Murdock keep their no-damage AS ability and it raises auto DPS', () => {
+    for (const slug of ['sparrow', 'murdock']) {
+      const kit = data.kits.get(slug)!;
+      const asAb = kit.abilities.find((a) => a.selfAttackSpeedPctPerRank?.length);
+      expect(asAb, `${slug} should retain its AS-buff ability`).toBeDefined();
+      expect(asAb!.damagePerRank.length).toBe(0);   // retained despite no damage line
+      // Crediting the buff raises auto DPS vs the same kit with it stripped.
+      const stripped = { ...kit, abilities: kit.abilities.map((a) => ({ ...a, selfAttackSpeedPctPerRank: undefined })) };
+      const items = ['deathstalker', 'viper', 'plasma-blade'].map((s) => data.itemsBySlug.get(s)!).filter(Boolean);
+      const withBuff = evaluateBuild(kit, items, 13, cal).objectives.autoDps10VsSquishy;
+      const without = evaluateBuild(stripped, items, 13, cal).objectives.autoDps10VsSquishy;
+      expect(withBuff).toBeGreaterThan(without);
+    }
+  });
 });
 
 describe('evolving items (buy the source, credit the evolved value)', () => {

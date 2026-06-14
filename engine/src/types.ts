@@ -29,6 +29,11 @@ export interface AbilityDef {
   pctMaxHealth?: number;         // bonus damage as % of target max health
   damageType: 'physical' | 'magical' | 'true';
   healing?: HealEntry[];         // heal/shield output per cast (may be the only payload)
+  // Self attack-speed steroid per rank (e.g. Sparrow's Heightened Senses,
+  // Murdock's Hot Pursuit): a temporary AS buff with no damage line. Carries max
+  // these early for the auto-attack spike, so it must feed auto DPS.
+  selfAttackSpeedPctPerRank?: number[];
+  buffDurationSec?: number;      // approx active duration of the AS buff, for uptime
   cooldowns: number[];           // per rank, seconds
   costs: number[];               // mana per rank
   maxRank: number;

@@ -101,6 +101,19 @@ function parseDamage(md: string): { values: number[]; scaling: number; pctMaxHea
   return { values, scaling: Number(b[2]), damageType };
 }
 
+// Parse a self attack-speed steroid: a per-rank "X/Y/Z% Attack Speed" buff (e.g.
+// Sparrow 25/30/35/40/45%, Murdock 15/20/25/30/35%). Returns the per-rank values
+// and an approximate active duration ("for Ns") for uptime; null if no AS grant.
+function parseSelfAttackSpeed(md: string): { perRank: number[]; durationSec: number } | null {
+  const m = md.match(/(\d+(?:\.\d+)?(?:\/\d+(?:\.\d+)?)+)\s*%?\s*<?\s*Attack ?Speed/i)
+    ?? md.match(/(\d+(?:\.\d+)?)\s*%\s*<?\s*Attack ?Speed/i);
+  if (!m) return null;
+  const perRank = m[1]!.split('/').map(Number).filter((n) => n > 0);
+  if (!perRank.length) return null;
+  const dur = md.match(/for\s+(\d+(?:\.\d+)?)\s*s/i);
+  return { perRank, durationSec: dur ? Number(dur[1]) : 4 };
+}
+
 // Parse heal/shield output the way damage is parsed: find every
 // "<values> <PowerTag>(+<ratio>%" group, classify by context (a
 // restore/heal verb before it, or "Shield" right after it), and fold
@@ -198,6 +211,7 @@ export function loadData(): LoadedData {
       const owned = ownedByKey.get(key);
       const parsed = omAb?.menu_description ? parseDamage(omAb.menu_description) : null;
       const healing = omAb?.menu_description ? parseHealing(omAb.menu_description) : [];
+      const asBuff = omAb?.menu_description ? parseSelfAttackSpeed(omAb.menu_description) : null;
       const ownedDmg = owned ? bestOwnedDamage(owned) : null;
       const cooldowns = omAb?.cooldown?.length ? omAb.cooldown : owned?.cooldowns ?? [];
       const costs = omAb?.cost?.length ? omAb.cost : owned?.costs ?? [];
@@ -210,6 +224,8 @@ export function loadData(): LoadedData {
           pctMaxHealth: parsed.pctMaxHealth,
           damageType: parsed.damageType,
           healing: healing.length ? healing : undefined,
+          selfAttackSpeedPctPerRank: asBuff?.perRank,
+          buffDurationSec: asBuff?.durationSec,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
         });
@@ -223,6 +239,8 @@ export function loadData(): LoadedData {
           scalingPct: ownedDmg.scaling ?? 0,
           damageType: ownedDmg.damageType === 'magical' ? 'magical' : ownedDmg.damageType === 'true' ? 'true' : 'physical',
           healing: healing.length ? healing : undefined,
+          selfAttackSpeedPctPerRank: asBuff?.perRank,
+          buffDurationSec: asBuff?.durationSec,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
         });
@@ -236,6 +254,22 @@ export function loadData(): LoadedData {
           scalingPct: 0,
           damageType: healing[0]!.powerType,
           healing,
+          selfAttackSpeedPctPerRank: asBuff?.perRank,
+          buffDurationSec: asBuff?.durationSec,
+          cooldowns, costs,
+          maxRank: key === 'ULTIMATE' ? 3 : 5,
+        });
+      } else if (asBuff) {
+        // Steroid ability with no damage/heal line (Sparrow Heightened Senses,
+        // Murdock Hot Pursuit): retained so its attack-speed buff feeds auto DPS.
+        defs.push({
+          key,
+          name: omAb?.display_name ?? owned?.name ?? key,
+          damagePerRank: [],
+          scalingPct: 0,
+          damageType: 'physical',
+          selfAttackSpeedPctPerRank: asBuff.perRank,
+          buffDurationSec: asBuff.durationSec,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
         });

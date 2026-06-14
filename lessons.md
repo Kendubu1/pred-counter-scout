@@ -1285,3 +1285,21 @@ Append-only. One entry per backlog item or significant finding.
   namespace, they MUST share one map. The Alternator item modeling itself was
   already correct (abilityKey ALTERNATE = RMB via OMEDA_KEY_MAP); only the skill
   order used the wrong map.
+
+## 2026-06-14: attack-speed steroid abilities (Sparrow/Murdock) were invisible
+- Maintainer caught it: Sparrow (Heightened Senses, 25/30/35/40/45% AS) and Murdock
+  (Hot Pursuit, 15/20/25/30/35% AS) max a "utility" ability early for an attack-speed
+  SPIKE. These abilities have no damage line, so def construction dropped them
+  entirely -> the AS never reached the sim -> their auto DPS (their whole identity as
+  carries) was undervalued. This is the concrete case behind the earlier "the sim
+  only levels damaging abilities" caveat.
+- Fix: parse a per-rank "X/Y/Z% Attack Speed" self-buff (+ approx duration "for Ns")
+  from ability text (parseSelfAttackSpeed); retain buff-only abilities in the kit
+  (new branch in def construction); credit the AS in auto DPS uptime-weighted
+  (selfAttackSpeedPct: full in a burst window, buffDuration/cooldown sustained).
+  attacksPerSecond gained an extraAsPct param. Retaining these abilities ALSO fixes
+  their skill-order leveling (the E slot is no longer dropped).
+- Lesson: "no damage line" != "no combat value." An ability can be a pure stat
+  steroid (attack speed, and likely power/pen/haste buffs too) that the field maxes
+  first precisely because it scales the auto-attacks. The damage-only def filter was
+  silently discarding a carry's core power. Next: generalize to other self-buffs.
