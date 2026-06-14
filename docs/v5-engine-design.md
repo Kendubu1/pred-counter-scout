@@ -221,11 +221,22 @@ chart, loaded into `kit.recommendedSequence`) point by point up to the level. So
 early-stage evaluation has the ultimate only from the level it is taken (Zinx ULT=0
 at level 5, =1 at 6) and basics at their real recommended ranks. It converges with
 the old heuristic by level 13, so the level-13 objective and its tests are unchanged.
-Still open and noted: a mana-aware objective (mana-starved heroes — Zinx 290/340 at
-L1, Shinbi, Argus — should be steered to mana items early, which also un-hides Azure
-Core); modeling the evolving orb (Orb of Enlightenment → Orb of Growth, "Inner
-Growth" stacking, a meta item) as a ramping gain rather than flat final stats; and
-the ultimate being credited once per rotation window despite its ~120-160s cooldown.
+
+Mana-aware objective (burst cadence, level + item timing). Mana pressure is a
+burst/combo property, not a sustained-DPS one: over a 10s rotation cooldowns space
+casts out and NO kit ever runs dry (every hero's adequacy was 1.0), so a 10s mana
+model is useless for itemization. The metric that actually discriminates is "combos
+before dry" = mana pool / one-combo cost, both level-aware (base mana[level], ranks
+at level) and item-aware (item mana): Zinx is 1.9 combos at L9, Gideon 2.9 (he scales
+mana +372% and needs it less), and a mana item lifts Zinx to 3.3. The search now
+penalizes builds (down to a floor) whose worst early item-timing stage (1/2/3 items at
+~L9/12/14) can't sustain ~3 combos, so a starved kit is steered to bring mana online
+early while a mana-rich or resourceless kit is untouched. Effect: Zinx now front-loads
+a mana item (adequacy → 1.0); Gideon is left alone (0.97). This is also the structural
+fix for the Azure-Core retrodiction miss. Still open: modeling the evolving orb (Orb
+of Enlightenment → Orb of Growth, "Inner Growth" stacking, a meta item) as a ramping
+gain rather than flat final stats; and the ultimate being credited once per rotation
+window despite its ~120-160s cooldown.
 
 Scope and isolation. The above is a Gideon + Zinx vertical slice behind a
 `--playstyle` flag; the other 50 heroes' paths are byte-identical (a snapshot test

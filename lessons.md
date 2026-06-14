@@ -1175,3 +1175,23 @@ Append-only. One entry per backlog item or significant finding.
   build) as a ramping stat gain rather than flat final stats; (3) the ult is still
   credited once per rotation WINDOW despite its ~120-160s cooldown, which
   over-credits ults in rot10/rot20 (separate from acquisition timing).
+
+## 2026-06-14: mana is a BURST-cadence constraint, not a sustained-rotation one
+- Tried to make the build search mana-aware via the 10s rotation cost (manaSpent10s
+  vs pool). It did NOTHING: cooldowns space casts over 10s and the pool scales, so
+  EVERY mana hero reads adequacy 1.0 at every level. A 10s mana model can't see
+  mana pressure at all.
+- The metric that actually discriminates is "combos before dry" = pool / one-combo
+  cost (sum of ability costs, one cast each), level- and item-aware. Zinx 1.9 combos
+  at L9, Shinbi 2.5, Gideon 2.9 (he scales mana +372% L1->L18 and needs it least),
+  and a mana item lifts Zinx to 3.3. This matches the maintainer's read exactly
+  (Zinx/Shinbi/Argus sparse early; Gideon scales out of it).
+- Search penalty: factor = 0.5 + 0.5*adequacy where adequacy = min over early item-
+  timing stages (1/2/3 items at L9/12/14) of min(1, combosBeforeDry/3). Applied to
+  the beam keep-sort and the headline sort, NOT as a Pareto axis (avoids front
+  bloat). Result: Zinx front-loads mana (adequacy 1.0), Gideon untouched (0.97),
+  resourceless kits inert (1.0). Also the structural fix for the Azure-Core miss.
+- Lesson: match the constraint's MODEL to its real regime. Mana doesn't bind a
+  paced rotation; it binds repeated combos in a skirmish. Modeling it on the wrong
+  window silently produced a no-op. The level scaling itself is the indicator the
+  maintainer pointed at: pool/combo by level is what says "this hero needs mana".

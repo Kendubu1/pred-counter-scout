@@ -3,7 +3,7 @@
 // enters the objective (docs/v5-engine-design.md, component C).
 
 import type { BuildEval, HeroKit, Item } from './types.js';
-import { evaluateBuild, type Calibration } from './sim.js';
+import { evaluateBuild, stagedManaAdequacy, type Calibration } from './sim.js';
 import { mergeEffects, resolveItemEffects, type ResolvedEffects } from './effects.js';
 
 export interface Scenario {
@@ -141,12 +141,19 @@ export function generateBuilds(
   }
   const score = (ev: BuildEval, w: Weights) =>
     objectiveKeys.reduce((s, k) => s + (w[k] ?? 0) * (ev.objectives[k] / scale[k]!), 0);
+  // Mana penalty: a build that cannot sustain its rotation through the early
+  // item-timing stages loses score (down to MANA_FLOOR), so a mana-starved kit is
+  // steered to bring a mana source online in time. Resourceless / mana-rich kits
+  // are unaffected (factor 1). See stagedManaAdequacy in sim.ts.
+  const MANA_FLOOR = 0.5;
+  const manaFactor = (items: Item[]) => MANA_FLOOR + (1 - MANA_FLOOR) * stagedManaAdequacy(kit, items);
 
-  let beam: { items: Item[]; ev: BuildEval }[] = [{ items: [], ev: evalBuild([]) }];
-  const complete: { items: Item[]; ev: BuildEval }[] = [];
+  type BeamState = { items: Item[]; ev: BuildEval; mana: number };
+  let beam: BeamState[] = [{ items: [], ev: evalBuild([]), mana: 1 }];
+  const complete: BeamState[] = [];
 
   for (let depth = 0; depth < buildSize; depth++) {
-    const next: { items: Item[]; ev: BuildEval }[] = [];
+    const next: BeamState[] = [];
     const seen = new Set<string>();
     for (const state of beam) {
       let expandable = candidates.filter((c) => !violatesConstraints(state.items, c));
@@ -161,31 +168,33 @@ export function generateBuilds(
         const key = items.map((i) => i.slug).sort().join('|');
         if (seen.has(key)) continue;
         seen.add(key);
-        next.push({ items, ev: evalBuild(items) });
+        next.push({ items, ev: evalBuild(items), mana: manaFactor(items) });
       }
     }
-    // Keep the top of the beam under each corner weighting.
-    const kept = new Set<{ items: Item[]; ev: BuildEval }>();
+    // Keep the top of the beam under each corner weighting, mana-penalized.
+    const kept = new Set<BeamState>();
     for (const w of weightVectors) {
-      [...next].sort((a, b) => score(b.ev, w) - score(a.ev, w)).slice(0, beamWidth).forEach((s) => kept.add(s));
+      [...next].sort((a, b) => score(b.ev, w) * b.mana - score(a.ev, w) * a.mana).slice(0, beamWidth).forEach((s) => kept.add(s));
     }
     beam = [...kept];
     if (depth === buildSize - 1) complete.push(...beam);
   }
 
-  const front = paretoFront(complete.map((c) => c.ev), objectiveKeys);
+  const manaByEv = new Map(complete.map((c) => [c.ev, c.mana]));
   const headline = (opts.headlineOverride && objectiveKeys.includes(opts.headlineOverride))
     ? opts.headlineOverride : headlineObjective(kit, role);
-  return front.map((ev) => {
-    const archetypes: string[] = [];
-    for (const k of objectiveKeys) {
-      const best = Math.max(...front.map((f) => f.objectives[k]));
-      // best > 0: an objective nobody moves (a heal-less kit's heal
-      // output) labels nothing.
-      if (best > 0 && ev.objectives[k] >= best * 0.98) archetypes.push(ARCHETYPE_LABELS[k]);
-    }
-    return { ...ev, archetypes };
-  }).sort((a, b) => b.objectives[headline] - a.objectives[headline]);
+  return paretoFront(complete.map((c) => c.ev), objectiveKeys)
+    .sort((a, b) => b.objectives[headline] * (manaByEv.get(b) ?? 1) - a.objectives[headline] * (manaByEv.get(a) ?? 1))
+    .map((ev, _i, front) => {
+      const archetypes: string[] = [];
+      for (const k of objectiveKeys) {
+        const best = Math.max(...front.map((f) => f.objectives[k]));
+        // best > 0: an objective nobody moves (a heal-less kit's heal output)
+        // labels nothing.
+        if (best > 0 && ev.objectives[k] >= best * 0.98) archetypes.push(ARCHETYPE_LABELS[k]);
+      }
+      return { ...ev, archetypes };
+    });
 }
 
 export function kitHeals(kit: HeroKit): boolean {

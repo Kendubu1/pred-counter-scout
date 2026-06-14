@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeAll } from 'vitest';
 import { loadData, completedItems, type LoadedData } from '../src/data.js';
-import { loadCalibration, ranksAtLevel, type Calibration } from '../src/sim.js';
+import { loadCalibration, ranksAtLevel, manaSustain, stagedManaAdequacy, type Calibration } from '../src/sim.js';
 import { generateBuilds, headlineObjective } from '../src/search.js';
 import { kitPlaystyle, kitPowerType, fuseSteer, laneTopAugment } from '../src/playstyle.js';
 import { selectEternalLoadout } from '../src/eternals.js';
@@ -158,6 +158,33 @@ describe('staged ability acquisition (the V2 skill chart drives ranks)', () => {
     expect(Math.max(...basics)).toBeGreaterThan(Math.min(...basics));
     expect(basics.reduce((a, b) => a + b, 0)).toBe(5);   // 5 points spent by level 5, none on ult
   });
+});
+
+describe('mana-aware objective (level + item timing)', () => {
+  it('measures burst mana cadence and a mana item relieves a starved kit', () => {
+    const zinx = data.kits.get('zinx')!;
+    const bare = manaSustain(zinx, [], 9);
+    expect(bare.combosBeforeDry).toBeLessThan(3);        // starved at L9 with no items
+    const combustion = data.itemsBySlug.get('combustion'); // carries +mana
+    if (combustion) {
+      const withMana = manaSustain(zinx, [combustion], 9);
+      expect(withMana.adequacy).toBeGreaterThan(bare.adequacy);
+    }
+  });
+
+  it('the search brings mana online for a starved hero but leaves a mana-rich one alone', () => {
+    const pool = completedItems(data);
+    const zinx = data.kits.get('zinx')!;
+    const zFront = generateBuilds(zinx, pool, cal, { level: 13, role: 'support', beamWidth: 10 });
+    expect(stagedManaAdequacy(zinx, zFront[0]!.items.map((n) => data.items.get(n)!))).toBeGreaterThanOrEqual(0.9);
+
+    // A resourceless kit can never be mana-starved, so the penalty must be inert.
+    const resourceless = [...data.kits.values()].find((k) => k.resource !== 'mana');
+    if (resourceless) {
+      const rFront = generateBuilds(resourceless, pool, cal, { level: 13, beamWidth: 8 });
+      expect(stagedManaAdequacy(resourceless, rFront[0]!.items.map((n) => data.items.get(n)!))).toBe(1);
+    }
+  }, 60000);
 });
 
 describe('slice isolation (the other 51 heroes are untouched)', () => {

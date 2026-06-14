@@ -472,8 +472,48 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
   };
 }
 
-// ── Build evaluation against the standard objective vector ──
+// ── Mana adequacy (burst-cadence, level- and item-timing-aware) ──
+// Mana pressure is a BURST/combo property, not a sustained-DPS one: over a 10s
+// rotation cooldowns space casts out and no kit runs dry, but in a skirmish a hero
+// dumps several full combos back to back. "Combos before dry" = mana pool / one-
+// combo cost is what separates a starved kit (Zinx ~1.9 combos at L9) from a mana-
+// rich one (Gideon ~2.9), and a mana item raises it (Zinx + Azure Core -> 3.3). We
+// target sustaining ~3 combos before regen; pool and combo cost are both level-
+// aware (base mana[level], ranks at level) and item-aware (item mana).
+const TARGET_COMBOS = 3;
 
+export function manaSustain(kit: HeroKit, items: Item[], level: number): { pool: number; comboCost: number; combosBeforeDry: number; adequacy: number } {
+  if (kit.resource !== 'mana') return { pool: Number.POSITIVE_INFINITY, comboCost: 0, combosBeforeDry: Number.POSITIVE_INFINITY, adequacy: 1 };
+  const t = effectiveTotals(items, resolveItemEffects(items, { level }));
+  const ranks = ranksAtLevel(kit, level);
+  let comboCost = 0;
+  for (const ab of kit.abilities) {
+    const rank = ranks.get(ab.key) ?? 0;
+    if (rank > 0) comboCost += ab.costs[Math.min(rank, ab.costs.length) - 1] ?? 0;
+  }
+  const pool = (kit.baseStats.max_mana?.[level - 1] ?? 0) + t.max_mana;
+  const combosBeforeDry = comboCost > 0 ? pool / comboCost : Number.POSITIVE_INFINITY;
+  return { pool, comboCost, combosBeforeDry, adequacy: Math.min(1, combosBeforeDry / TARGET_COMBOS) };
+}
+
+// Levels a hero is typically at when their 1st/2nd/3rd completed item comes
+// online (laning into early-mid). Mana stops being the binding constraint once
+// items and level scale past this, so later stages are not checked.
+const MANA_STAGES = [{ count: 1, level: 9 }, { count: 2, level: 12 }, { count: 3, level: 14 }];
+
+/** Worst mana adequacy across the build's early item-timing stages (1 = always
+ *  sustainable / resourceless). Drives the search to bring mana online in time. */
+export function stagedManaAdequacy(kit: HeroKit, items: Item[]): number {
+  if (kit.resource !== 'mana' || !items.length) return 1;
+  let worst = 1;
+  for (const s of MANA_STAGES) {
+    if (items.length < s.count) break;
+    worst = Math.min(worst, manaSustain(kit, items.slice(0, s.count), s.level).adequacy);
+  }
+  return worst;
+}
+
+// ── Build evaluation against the standard objective vector ──
 export function evaluateBuild(kit: HeroKit, items: Item[], level: number, cal: Calibration, effects?: ResolvedEffects): BuildEval {
   const eff = effects ?? resolveItemEffects(items, { level });
   const squishy = cal.referenceProfiles.squishy!;

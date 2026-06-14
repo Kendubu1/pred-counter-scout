@@ -3,7 +3,7 @@
 //                            [--augment <name|id>] [--no-steer]
 
 import { loadData, completedItems } from './data.js';
-import { loadCalibration, unverifiedConstants, simulate, skillPriority } from './sim.js';
+import { loadCalibration, unverifiedConstants, simulate, skillPriority, manaSustain, stagedManaAdequacy } from './sim.js';
 import { generateBuilds, headlineObjective, type ObjKey } from './search.js';
 import { rankAugments, rankBlessings, selectEternalLoadout } from './eternals.js';
 import { heroGames, itemPlayRate } from './aggregates.js';
@@ -189,6 +189,12 @@ if (kitPs && top) {
     console.log(`  major:  ${loadout.major.name}  (${loadout.note})${loadout.major.modeled ? '' : ' — major mechanic unmodeled'}`);
     console.log(`  slot 1: ${loadout.minor1.name}  — ${loadout.minor1.note}`);
     console.log(`  slot 2: ${loadout.minor2.name}  — ${loadout.minor2.note}`);
+  }
+
+  if (kit.resource === 'mana') {
+    const bare = manaSustain(kit, [], 9).combosBeforeDry;
+    const withItems = manaSustain(kit, topItems.slice(0, 2), 12).combosBeforeDry;
+    console.log(`\nmana (burst cadence): ${bare.toFixed(1)} combos before dry at L9 bare → ${withItems.toFixed(1)} with the first 2 items @L12 | build mana-adequacy ${stagedManaAdequacy(kit, topItems).toFixed(2)} (1.0 = sustains ~3 combos)`);
   }
 
   const rob = robustnessOf(kit, completedItems(data), cal, { level, role, objectiveBias, headlineOverride, beamWidth: 16 });
