@@ -84,6 +84,38 @@ describe('effect registry hygiene', () => {
     // a ratchet, not a ceiling: item 11 only grows this. Bump as batches land.
     expect(modeled, 'modeled item count regressed').toBeGreaterThanOrEqual(35);
   });
+
+  // Guards the class of bug that collapsed Crescelia's cooldown: a value stored
+  // at the wrong scale (e.g. 12 for "12%" where a FRACTION 0.12 was meant, or a
+  // percent written as 0.15 instead of 15). Every numeric field consumed as a
+  // rate/percent has a sane band; widen a bound only when a real value needs it.
+  it('no effect value is mis-scaled (the cooldown_rate=12 class of bug)', () => {
+    const reg = loadEffects();
+    // field -> {kinds, min, max}. bonus (cooldown_rate) is fraction-consumed
+    // (cd /= 1+bonus); the rest are pct/100 or per-stat magnitudes.
+    const bands: Record<string, { kinds: string[]; min: number; max: number }> = {
+      pct: { kinds: ['stat_multiplier', 'damage_amp', 'percent_pen', 'armor_shred', 'anti_heal', 'crit_damage_amp', 'item_proc_amp', 'armor_multiplier', 'health_multiplier', 'ability_damage_amp', 'stat_conversion', 'ability_cooldown'], min: 1, max: 100 },
+      scalingPct: { kinds: ['on_hit', 'on_ability_hit', 'ability_bonus_damage', 'ability_heal', 'shield_on_cast'], min: 1, max: 300 },
+      bonus: { kinds: ['cooldown_rate'], min: 0.01, max: 0.9 },
+      thresholdPct: { kinds: ['execute'], min: 1, max: 25 },
+      amount: { kinds: ['haste'], min: 1, max: 80 },
+      pctTargetHealth: { kinds: ['on_hit', 'on_ability_hit', 'ability_bonus_damage'], min: 0.1, max: 20 },
+      meanUptime: { kinds: ['ramp_to_stat'], min: 0.05, max: 1 },
+    };
+    const anomalies: string[] = [];
+    for (const [key, e] of Object.entries(reg.targets)) {
+      for (const fx of e.effects) {
+        for (const [field, band] of Object.entries(bands)) {
+          const v = (fx as Record<string, unknown>)[field];
+          if (typeof v !== 'number' || v === 0 || !band.kinds.includes(fx.kind)) continue;
+          if (Math.abs(v) < band.min || Math.abs(v) > band.max) {
+            anomalies.push(`${key} ${fx.kind}.${field}=${v} (sane ${band.min}..${band.max})`);
+          }
+        }
+      }
+    }
+    expect(anomalies, `scale anomalies:\n${anomalies.join('\n')}`).toHaveLength(0);
+  });
 });
 
 describe('effect math (synthetic, exact)', () => {
