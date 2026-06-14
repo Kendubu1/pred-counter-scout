@@ -1263,3 +1263,25 @@ Append-only. One entry per backlog item or significant finding.
   entry. The 62 are the standing coverage backlog (priorities item 11, ratcheted);
   prioritize by field play-rate and by where the agreement validator flags a
   sim/field disagreement.
+
+## 2026-06-14: the "Alternate ability" question exposed a key-map scramble bug
+- Explaining the Alternator item ("Your Alternate Ability deals 15% more damage")
+  surfaced a real bug. "Alternate ability" = the RMB (right-click) ability slot,
+  which EVERY hero has (Gideon RMB = Void Breach, Wraith RMB = Knock Knock). Not a
+  stance mechanic. The item is strong when that RMB is a damage ability; useless if
+  the RMB is a stance/utility toggle.
+- The bug: data.ts had TWO disagreeing omeda->internal key maps. Abilities used
+  OMEDA_KEY_MAP (RMB->ALTERNATE, Q->PRIMARY, E->SECONDARY); skill orders used
+  OMEDA_TO_KIT (RMB->PRIMARY, Q->SECONDARY, E->ALTERNATE). Same omeda key, different
+  internal slot. So skill-order leveling assigned points to the WRONG ability:
+  Gideon's engine maxed Cosmic Rift (PRIMARY) by L9 when pred.gg maxes Void Breach
+  (RMB). Roster-wide scramble of which ability is high-rank at each level -> wrong
+  rotation damage at every non-max level. (Ult timing was unaffected: R->ULTIMATE in
+  both. Level-13 results mostly converge, which is why it hid until now.)
+- Fix: delete OMEDA_TO_KIT/SEQ_TO_KIT; map skill orders with the SAME OMEDA_KEY_MAP
+  the abilities use. Gideon now maxes Void Breach first. Added a regression test
+  that the RMB ability out-ranks Cosmic Rift early and is keyed ALTERNATE.
+- Lesson: when two pipelines map the same external key into the same internal
+  namespace, they MUST share one map. The Alternator item modeling itself was
+  already correct (abilityKey ALTERNATE = RMB via OMEDA_KEY_MAP); only the skill
+  order used the wrong map.

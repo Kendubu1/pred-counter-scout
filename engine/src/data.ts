@@ -165,11 +165,9 @@ export function loadData(): LoadedData {
   }[]>('data/omeda/items.json');
 
   // Field-recommended ability leveling order (pred.gg recommendedSkills),
-  // optional: the sim levels basics this way when present. omeda RMB/Q/E
-  // map to the kit's PRIMARY/SECONDARY/ALTERNATE keys.
-  const OMEDA_TO_KIT: Record<string, string> = { RMB: 'PRIMARY', Q: 'SECONDARY', E: 'ALTERNATE' };
-  // Full per-level path also needs the ultimate slot (R), which the max-order map omits.
-  const SEQ_TO_KIT: Record<string, string> = { ...OMEDA_TO_KIT, R: 'ULTIMATE' };
+  // optional. The skill order is in omeda key labels (RMB/Q/E/R), so it MUST be
+  // mapped to the kit's internal keys with the SAME map the abilities use
+  // (OMEDA_KEY_MAP) — using a different map silently levels the wrong ability.
   let skillOrders: Record<string, { maxOrder: { key: string }[]; sequence?: string[] }> = {};
   try { skillOrders = (loadJson<{ heroes: typeof skillOrders }>('data/aggregates/skill-orders.json')).heroes ?? {}; } catch { /* optional */ }
 
@@ -270,13 +268,13 @@ export function loadData(): LoadedData {
       baseStats: bs as unknown as BaseStats,
       abilities: defs,
       recommendedMaxOrder: skillOrders[om.slug]?.maxOrder
-        ?.map((o) => OMEDA_TO_KIT[o.key])
-        .filter((k): k is string => !!k && defs.some((d) => d.key === k)),
+        ?.map((o) => OMEDA_KEY_MAP[o.key])
+        .filter((k): k is AbilityDef['key'] => !!k && defs.some((d) => d.key === k)),
       // Full 18-level recommended path (the V2 ability chart): which ability gets
       // a point at each level, so the sim levels exactly as the hero is played.
       recommendedSequence: skillOrders[om.slug]?.sequence
-        ?.map((k) => SEQ_TO_KIT[k])
-        .filter((k): k is string => !!k && defs.some((d) => d.key === k)),
+        ?.map((k) => OMEDA_KEY_MAP[k])
+        .filter((k): k is AbilityDef['key'] => !!k && defs.some((d) => d.key === k)),
       abilitySource: defs.length && staleFallbacks.some((s) => s.slug === om.slug) ? 'mixed' : 'omeda',
     });
   }

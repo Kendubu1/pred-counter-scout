@@ -159,6 +159,17 @@ describe('staged ability acquisition (the V2 skill chart drives ranks)', () => {
     expect(Math.max(...basics)).toBeGreaterThan(Math.min(...basics));
     expect(basics.reduce((a, b) => a + b, 0)).toBe(5);   // 5 points spent by level 5, none on ult
   });
+
+  it('skill order maps to the right ability slot (RMB = the Alternate ability)', () => {
+    // Guards against the two omeda->kit key maps drifting apart: pred.gg maxes
+    // Gideon's RMB (Void Breach) first, so it must out-rank Cosmic Rift early.
+    const g = data.kits.get('gideon')!;
+    const r = ranksAtLevel(g, 9);
+    const rankOf = (name: string) => { const ab = g.abilities.find((a) => a.name.includes(name)); return ab ? (r.get(ab.key) ?? 0) : -1; };
+    expect(rankOf('Void Breach')).toBeGreaterThan(rankOf('Cosmic Rift'));
+    // Void Breach is the RMB ability, which the kit keys as ALTERNATE.
+    expect(g.abilities.find((a) => a.name.includes('Void Breach'))?.key).toBe('ALTERNATE');
+  });
 });
 
 describe('mana-aware objective (level + item timing)', () => {
