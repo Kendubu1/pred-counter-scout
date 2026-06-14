@@ -493,7 +493,10 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
     : Number.POSITIVE_INFINITY;
 
   // Own effective HP under the fixture mitigation model.
-  const hp = ((kit.baseStats.max_health[lvl - 1] ?? 0) + t.health) * eff.healthMultiplier + resolvedShieldFlat(eff, t);
+  const maxHp = ((kit.baseStats.max_health[lvl - 1] ?? 0) + t.health) * eff.healthMultiplier;
+  // A self-shield passive (Steel's 7% of max health) is effectively always up out
+  // of combat, so it counts as extra effective HP on top of flat item shields.
+  const hp = maxHp + resolvedShieldFlat(eff, t) + ((kit.passiveSelfShieldPctMaxHealth ?? 0) / 100) * maxHp;
   const pArmor = ((kit.baseStats.physical_armor[lvl - 1] ?? 0) + t.physical_armor) * eff.armorMultiplier;
   const mArmor = ((kit.baseStats.magical_armor[lvl - 1] ?? 0) + t.magical_armor) * eff.armorMultiplier;
 

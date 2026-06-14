@@ -252,6 +252,19 @@ describe('attack-speed steroid abilities feed auto DPS', () => {
   });
 });
 
+describe('hero self-shield passive feeds EHP', () => {
+  it("Steel's 7% max-HP shield is credited; conditional passives are not", () => {
+    const steel = data.kits.get('steel')!;
+    expect(steel.passiveSelfShieldPctMaxHealth).toBe(7);
+    const items = ['fire-blossom', 'crystalline-cuirass'].map((s) => data.itemsBySlug.get(s)!).filter(Boolean);
+    const stripped = { ...steel, passiveSelfShieldPctMaxHealth: undefined };
+    expect(evaluateBuild(steel, items, 13, cal).objectives.ehpPhysical)
+      .toBeGreaterThan(evaluateBuild(stripped, items, 13, cal).objectives.ehpPhysical);
+    // Riktor's lockdown passive is conditional CC, not a stat -> not credited.
+    expect(data.kits.get('riktor')!.passiveSelfShieldPctMaxHealth).toBeUndefined();
+  });
+});
+
 describe('evolving items (buy the source, credit the evolved value)', () => {
   it('evolved forms are not buildable; the purchasable source is', () => {
     const pool = completedItems(data).map((i) => i.slug);

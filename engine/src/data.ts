@@ -114,6 +114,15 @@ function parseSelfAttackSpeed(md: string): { perRank: number[]; durationSec: num
   return { perRank, durationSec: dur ? Number(dur[1]) : 4 };
 }
 
+// A self-shield passive as % of max health (Steel's Cybernetic Shell: "shields
+// himself for 7% of his maximum health"). Pure EHP; the only passive-slot effect
+// the sim credits.
+function parsePassiveSelfShield(md: string | undefined): number | undefined {
+  if (!md) return undefined;
+  const m = md.replace(/<[^>]+>/g, ' ').match(/shield[s]?\s+(?:himself|herself|itself|themsel\w+)?\s*for\s+(\d+(?:\.\d+)?)\s*%\s*of\s+(?:his|her|its|their)?\s*max/i);
+  return m ? Number(m[1]) : undefined;
+}
+
 // Parse permanent self stat gains a leveled ability grants ("Passive: Gain
 // 8/11/14/17/20 physical power"). These are always-on (uptime 1) and feed damage
 // like an item stat would; the AS steroid above is handled separately.
@@ -335,6 +344,7 @@ export function loadData(): LoadedData {
       recommendedSequence: skillOrders[om.slug]?.sequence
         ?.map((k) => OMEDA_KEY_MAP[k])
         .filter((k): k is AbilityDef['key'] => !!k && defs.some((d) => d.key === k)),
+      passiveSelfShieldPctMaxHealth: parsePassiveSelfShield(om.abilities?.find((a) => a.key === 'Passive')?.menu_description),
       abilitySource: defs.length && staleFallbacks.some((s) => s.slug === om.slug) ? 'mixed' : 'omeda',
     });
   }

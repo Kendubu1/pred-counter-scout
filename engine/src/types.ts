@@ -73,6 +73,11 @@ export interface HeroKit {
   // present, so early/mid stages reflect exactly which abilities are online and
   // at what rank. Undefined => fall back to the ult-timing + max-order heuristic.
   recommendedSequence?: string[];
+  // A self-shield passive as a fraction of max health (Steel's Cybernetic Shell,
+  // 7%): pure effective HP. The Passive slot isn't built into abilities[], so this
+  // is the one passive component the EHP model credits; conditional/proc passives
+  // (Riktor's lockdown, Gideon's tether) stay unmodeled.
+  passiveSelfShieldPctMaxHealth?: number;
   // omeda = all numbers current-patch; mixed = some slots fell back to
   // stale owned data (see LoadedData.staleFallbacks).
   abilitySource: 'omeda' | 'mixed';

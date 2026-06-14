@@ -1322,3 +1322,22 @@ Append-only. One entry per backlog item or significant finding.
 - Uptime model: permanent passives = 1.0 (always on); temporary steroids (AS) =
   duration/cooldown. Temporary non-AS steroids are rare/none among leveled abilities
   (the power ones are passives), so they're deferred.
+
+## 2026-06-14: hero passives — model the EHP/stat ones, skip the conditional ones
+- The Passive slot isn't built into abilities[], so no hero passive was modeled.
+  Surveyed Steel + Riktor + the survey hits: passives split like the maintainer
+  guessed. Steel's Cybernetic Shell (7% max-HP refreshing self-shield + armor
+  cross-conversion) is pure EHP -> undervalued his whole tank identity. Riktor's
+  Suspended Sentence (halt enemy cooldowns on CC) is utility/CC -> outside the
+  sim's damage/EHP/heal objectives, no impact on our numbers.
+- Most passives are conditional/stacking/proc (Gideon tether, Legion thresholds,
+  Gadget/Boris stacks), NOT clean flat grants -- the earlier "9 power passives"
+  survey over-counted by matching any "power" mention. Auto-crediting them would
+  over-count, so they stay unmodeled.
+- Modeled the clean case: parsePassiveSelfShield reads "shields ... for X% of max
+  health" (only Steel today, 7%) into kit.passiveSelfShieldPctMaxHealth; EHP adds
+  it as always-on effective HP (+472 eHP for Steel). Generic pattern, future-proof.
+  Steel's armor cross-conversion is a remaining unmodeled piece (build-dependent).
+- Lesson: a hero passive is worth modeling only when it maps to a scored objective
+  (EHP/damage/heal) AND is unconditional. CC/lockdown/proc passives are real value
+  the sim doesn't score -- flag, don't fake.
