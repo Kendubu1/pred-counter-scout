@@ -136,7 +136,7 @@ const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').repla
 const PLAYSTYLE_TRAITS: Record<Playstyle, string[]> = {
   'on-hit': ['on_hit', 'crit', 'lifesteal', 'dueling'],
   'ability-burst': ['burst', 'dot', 'aoe'],
-  sustain: ['sustain', 'healing', 'ally_heal', 'shield', 'self_heal', 'self_shield', 'lifesteal'],
+  sustain: ['sustain', 'healing', 'ally_heal', 'shield', 'self_heal', 'self_shield', 'lifesteal', 'enchant'],
   tank: ['cc', 'dive'],
   poke: ['poke', 'aoe', 'scaling'],
 };
@@ -166,7 +166,12 @@ export interface EternalLoadout {
   note: string;
 }
 
-const FIT_WEIGHT = 3;  // scales fit (~0–4) into the same points as sim delta-% — kit fit leads, sim refines.
+// The major's IDENTITY is a fit decision (which deity archetype matches this kit);
+// the sim delta only refines among comparably-fitting majors. A multiplicative
+// blend keeps fit dominant — so an unmodeled best-fit Eternal (e.g. Exarch, the
+// support major, sim=0) still beats a modeled off-archetype damage major whose
+// raw delta happens to be high on this build. Additive blending got that wrong.
+const majorScore = (fit: number, simPct: number) => Math.max(0.1, 1 + fit) * (1 + simPct / 100);
 
 /** Pick the best (major, minor1, minor2) Eternal triple for this kit. */
 export function selectEternalLoadout(
@@ -186,7 +191,7 @@ export function selectEternalLoadout(
   const baseId = (r: EternalRanking) => r.id.split(':')[0]!;
   const scored = ranked
     .map((r) => ({ r, fit: fitScore(kit, kitPs, role, defs.get(baseId(r))?.fit), sim: simComponent(r) }))
-    .sort((a, b) => (b.sim + FIT_WEIGHT * b.fit) - (a.sim + FIT_WEIGHT * a.fit));
+    .sort((a, b) => majorScore(b.fit, b.sim) - majorScore(a.fit, a.sim));
   const top = scored[0]!;
   const id = baseId(top.r);
   const def = defs.get(id);

@@ -98,7 +98,7 @@ if (!flag('no-steer')) {
 // ── Kit-derived playstyle (slice, behind --playstyle) ──
 // Fuses the first-principles kit lean with the field's lane augment. Gated to the
 // Gideon vertical slice so the other 51 heroes are untouched.
-const PLAYSTYLE_SLICE = new Set(['gideon']);
+const PLAYSTYLE_SLICE = new Set(['gideon', 'zinx']);
 let kitPs: KitPlaystyle | undefined;
 if (flag('playstyle') && PLAYSTYLE_SLICE.has(slug)) {
   kitPs = kitPlaystyle(kit, role);

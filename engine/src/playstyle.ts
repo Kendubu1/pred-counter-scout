@@ -51,7 +51,12 @@ export function playstyleObjectives(playstyle: Playstyle, kit: HeroKit): ObjKey[
         ? ['autoDps10VsSquishy', 'rot10VsSquishy']   // physical AA: basic DPS
         : ['rot10VsSquishy', 'burstVsSquishy'];      // magical/hybrid: weave on-hit into the rotation
     case 'ability-burst': return ['burstVsSquishy', 'rot10VsSquishy'];
-    case 'sustain': return ['healShield10s', 'sustain10s'];
+    case 'sustain':
+      // Ability heals are OUTPUT directed at an ally — many enchanters (Zinx)
+      // cannot heal themselves — so steer to heal/shield output, NOT self-drain.
+      // sustain10s (lifesteal/omnivamp self-heal) is the steer only for kits that
+      // sustain through items rather than heal abilities (drain bruisers).
+      return kitHeals(kit) ? ['healShield10s'] : ['sustain10s', 'healShield10s'];
     case 'tank': return ['ehpPhysical', 'ehpMagical'];
     case 'poke': return ['rot10VsSquishy', 'rot20VsBruiser'];
   }
@@ -193,8 +198,15 @@ export function kitPlaystyle(kit: HeroKit, role?: string): KitPlaystyle {
   const meanCd = abil.length ? abil.reduce((s, a) => s + (a.cooldowns[0] ?? 99), 0) / abil.length : 99;
   if (meanCd <= 9) add('poke', 1, `spammable abilities (mean base cooldown ${meanCd.toFixed(1)}s)`);
 
-  if (kitHeals(kit)) add('sustain', 2, 'kit has heal/shield abilities');
-  if (r === 'support') add('sustain', 1, 'support role');
+  // Lane-conditioned sustain: ally healing only LEADS the playstyle where it is a
+  // scored win condition (support, the role whose objective set scores heal/shield
+  // output). In a damage lane the same heal kit is a poke/burst/on-hit hero whose
+  // heals are utility, so sustain is demoted below the damage signals — otherwise
+  // the steer resolves to healShield10s, which a combat objective set drops.
+  if (kitHeals(kit)) {
+    if (r === 'support') add('sustain', 3, 'support kit whose ally heals are the win condition');
+    else add('sustain', 0.5, 'has heal abilities, but they are utility in a damage lane');
+  }
 
   if (kit.attackType === 'melee' && power === 'physical' && kit.basicScalingPct < 60 && maxScaling < 60) {
     add('tank', 2, 'melee with low basic and ability scaling (durability-leaning bruiser)');

@@ -1128,3 +1128,29 @@ Append-only. One entry per backlog item or significant finding.
   magical power. This is exactly the disagreement the validator exists to surface,
   not a number to engineer around. The fix (mana-constrained sustained casting) is
   future work; the slice ships the finding honestly.
+
+## 2026-06-14: same kit, different lane — playstyle must be lane-conditioned (Zinx)
+- Zinx exposed three coupled gaps the Gideon slice didn't. (1) She's tagged
+  hybrid; kitPowerType resolves her to magical from the ability damage type (same
+  fix Gideon needed). (2) She has two heals BUT CANNOT HEAL HERSELF (Infuse + the
+  ult heal are ally-directed) — so she's an enchanter, not a self-sustain kit. The
+  'sustain' objective was conflating the two: ability heals are ally OUTPUT
+  (healShield10s); self-drain via lifesteal is sustain10s. Split them — an
+  enchanter who can't self-heal should never steer to sustain10s.
+- (3) The big one: a kit's playstyle has to be LANE-CONDITIONED. Zinx's heal
+  abilities gave a fixed sustain bump that made her 'sustain' in EVERY lane, even
+  mid/carry where she's a poke damage hero. Worse, the sustain steer is
+  healShield10s, which COMBAT_KEYS doesn't include, so generateBuilds silently
+  DROPPED it — her damage lanes got no steer at all and an enchanter Eternal
+  (Exarch) even in carry. Fix: ally healing LEADS the playstyle only where it's a
+  scored win condition (support); in a damage lane it's demoted below the damage
+  signals. Now: support -> sustain/poke, healShield10s steer, Exarch; mid/carry ->
+  poke/sustain, rot10/rot20 steer (a combat objective the search keeps), Vesh.
+- Eternal-major selection: switched from additive (sim + 3*fit) to multiplicative
+  (max(0.1,1+fit) * (1+sim/100)) so FIT leads the major's IDENTITY and sim only
+  refines. The additive form let a modeled off-archetype damage major (Vesh, +sim)
+  beat the unmodeled best-fit support major (Exarch, sim=0) on a support hero. An
+  Eternal's deity archetype is a fit decision; the sim delta breaks ties within an
+  archetype, it doesn't override the archetype. Verified Gideon still picks Vesh.
+- Lesson for the roster generalization: "has a heal ability" is not "is a sustain
+  hero" — role/lane decides whether that heal is the win condition or just utility.

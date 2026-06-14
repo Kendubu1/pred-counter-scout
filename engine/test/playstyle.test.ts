@@ -108,6 +108,41 @@ describe('field retrodiction validator', () => {
   }, 60000);
 });
 
+describe('lane-conditioned playstyle (same kit, different lane)', () => {
+  it('Zinx is an ally-heal enchanter in support but a poke damage hero in a damage lane', () => {
+    const kit = data.kits.get('zinx')!;
+    expect(kitPowerType(kit)).toBe('magical');   // hybrid tag, magical abilities
+
+    const supp = kitPlaystyle(kit, 'support');
+    expect(supp.primary).toBe('sustain');         // ally heals are the win condition here
+
+    const mid = kitPlaystyle(kit, 'midlane');
+    expect(mid.primary).not.toBe('sustain');      // heals demoted; a damage identity leads
+    const midSteer = fuseSteer(mid, laneTopAugment('zinx', 'midlane'), kit);
+    // The damage-lane steer must be a COMBAT objective (so generateBuilds keeps it),
+    // not heal/shield output (which a combat objective set drops).
+    expect(midSteer.bias).not.toContain('healShield10s');
+    expect(midSteer.bias.some((k) => ['rot10VsSquishy', 'rot20VsBruiser', 'burstVsSquishy', 'autoDps10VsSquishy'].includes(k))).toBe(true);
+  });
+
+  it('the Eternal follows the lane: enchanter major in support, damage major in carry', () => {
+    const kit = data.kits.get('zinx')!;
+    const pool = completedItems(data);
+    const build = (role: string, ps: ReturnType<typeof kitPlaystyle>) => {
+      const fused = fuseSteer(ps, laneTopAugment('zinx', role), kit);
+      const front = generateBuilds(kit, pool, cal, { level: 13, role, beamWidth: 8, objectiveBias: fused.bias, headlineOverride: fused.bias[0] });
+      return front[0]!.items.map((n) => data.items.get(n)!).filter(Boolean);
+    };
+    const suppPs = kitPlaystyle(kit, 'support');
+    const carryPs = kitPlaystyle(kit, 'carry');
+    const suppLo = selectEternalLoadout(kit, build('support', suppPs), 13, cal, suppPs, { role: 'support' });
+    const carryLo = selectEternalLoadout(kit, build('carry', carryPs), 13, cal, carryPs, { role: 'carry' });
+    // Support -> Exarch (Empowerment Support); carry -> a non-support damage major.
+    expect(suppLo!.major.name.toLowerCase()).toContain('exarch');
+    expect(carryLo!.major.name.toLowerCase()).not.toContain('exarch');
+  }, 60000);
+});
+
 describe('slice isolation (the other 51 heroes are untouched)', () => {
   it('non-target heroes still produce non-empty, deterministic fronts', () => {
     for (const slug of ['greystone', 'murdock', 'muriel']) {

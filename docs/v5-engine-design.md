@@ -194,11 +194,31 @@ raw magical power over Azure Core's mana+haste because the damage objective is
 pool). That is a real, testable sim limitation the validator is designed to expose;
 the fix (a mana-constrained sustained-casting model) is future work.
 
-Scope and isolation. All of the above is a Gideon vertical slice behind a
-`--playstyle` flag; the other 51 heroes' paths are byte-identical (a snapshot test
-guards determinism). New tests live in `engine/test/playstyle.test.ts` (8 cases);
-the full harness is green at 91. Generalising the slice to the roster, and the
-mana-aware objective, are the named next steps.
+Lane-conditioned playstyle (Zinx, second slice hero). The same kit must resolve to
+a *different* playstyle by lane. Zinx is an ally-heal enchanter (she cannot heal
+herself — her Infuse and ult heals are ally-directed) yet plays mid/carry as a
+poke/on-hit damage hero. The classifier now conditions the heal/sustain signal on
+the lane: ally healing LEADS only where it is a scored win condition (support, the
+role whose objective set scores heal/shield output); in a damage lane the heal is
+demoted to utility and the damage identity (poke here) leads. This matters mechanically,
+not just cosmetically — a `sustain` classification steers to `healShield10s`, which a
+combat objective set drops, so an un-conditioned Zinx got NO effective steer and an
+enchanter Eternal (Exarch) even in carry. Conditioned, she reads sustain/poke in
+support (Exarch major) and poke/sustain in mid/carry (steer becomes rot10/rot20, a
+combat objective the search keeps; Eternal becomes the damage major Vesh). The
+`sustain` objective mapping was also split: ability heals are ally OUTPUT
+(`healShield10s`), distinct from self-drain via lifesteal (`sustain10s`), which an
+enchanter who cannot self-heal never gets. The Eternal-major choice is now fit-led
+(multiplicative blend, fit dominant) so a best-fit but unmodeled major (Exarch,
+sim=0) still beats a modeled off-archetype damage major — the additive blend got
+this backwards.
+
+Scope and isolation. The above is a Gideon + Zinx vertical slice behind a
+`--playstyle` flag; the other 50 heroes' paths are byte-identical (a snapshot test
+guards determinism). Tests live in `engine/test/playstyle.test.ts` (10 cases); the
+full harness is green at 93. Generalising the slice to the roster, the mana-aware
+objective, and per-lane field cores in the retrodiction validator are the named next
+steps.
 
 ## Verification summary
 
