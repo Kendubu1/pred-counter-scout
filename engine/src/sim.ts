@@ -268,6 +268,19 @@ export function attacksPerSecond(kit: HeroKit, level: number, t: ItemStats, cap?
   return cap && cap > 0 ? Math.min(aps, cap) : aps;
 }
 
+/** Fold permanent self stat gains from leveled abilities (Feng Mao's Safeguard,
+ *  Wraith's Surprise Surprise) into the effective item totals — always-on, so they
+ *  feed every damage window like an item stat. Mutates and returns t. */
+function applySelfStatBuffs(t: ItemStats, kit: HeroKit, ranks: Map<string, number>): ItemStats {
+  for (const ab of kit.abilities) {
+    if (!ab.selfStatBuffs?.length) continue;
+    const rank = ranks.get(ab.key) ?? 0;
+    if (rank <= 0) continue;
+    for (const b of ab.selfStatBuffs) t[b.stat] += b.perRank[Math.min(rank, b.perRank.length) - 1] ?? 0;
+  }
+  return t;
+}
+
 /** Attack speed from a hero's own steroid abilities (Sparrow's Heightened Senses,
  *  Murdock's Hot Pursuit), uptime-weighted: full in a burst window (you pop it),
  *  buffDuration/cooldown across a sustained window. These have no damage line, so
@@ -389,13 +402,13 @@ export function healShieldOutput(kit: HeroKit, opts: SimOptions, t: ItemStats, w
  */
 export function combatDamage(kit: HeroKit, items: Item[], opts: SimOptions, cal: Calibration, windowSec: number): number {
   const eff = opts.effects ?? emptyEffects();
-  const t = effectiveTotals(items, eff);
+  const ranks = opts.ranks ?? ranksAtLevel(kit, opts.level);
+  const t = applySelfStatBuffs(effectiveTotals(items, eff), kit, ranks);
   const profile = opts.profile ?? null;
   const critMult = (((cal.constants.critMultiplier?.value as number) ?? 1.75)) * (1 + eff.critDamageAmpPct / 100);
   const k = mitigationConstant(opts, cal);
   const isBurst = windowSec <= BURST_WINDOW;
-  let total = rotationDamage(kit, { ...opts, mitigationK: k }, t, windowSec);
-  const ranks = opts.ranks ?? ranksAtLevel(kit, opts.level);
+  let total = rotationDamage(kit, { ...opts, ranks, mitigationK: k }, t, windowSec);
   const aps = attacksPerSecond(kit, opts.level, t, effectiveAsCap(eff, cal), selfAttackSpeedPct(kit, ranks, t, eff, windowSec));
   const hits = aps * windowSec;
   const amp = ampFactorBasics(eff, isBurst, profile);
@@ -409,8 +422,8 @@ export function combatDamage(kit: HeroKit, items: Item[], opts: SimOptions, cal:
 
 export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Calibration): SimResult {
   const eff = opts.effects ?? emptyEffects();
-  const t = effectiveTotals(items, eff);
   const ranks = opts.ranks ?? ranksAtLevel(kit, opts.level);
+  const t = applySelfStatBuffs(effectiveTotals(items, eff), kit, ranks);
   const profile = opts.profile ?? null;
   // Imperator-style effects multiply the (unverified) crit multiplier.
   const critMult = (((cal.constants.critMultiplier?.value as number) ?? 1.75)) * (1 + eff.critDamageAmpPct / 100);

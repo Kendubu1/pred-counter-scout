@@ -114,6 +114,26 @@ function parseSelfAttackSpeed(md: string): { perRank: number[]; durationSec: num
   return { perRank, durationSec: dur ? Number(dur[1]) : 4 };
 }
 
+// Parse permanent self stat gains a leveled ability grants ("Passive: Gain
+// 8/11/14/17/20 physical power"). These are always-on (uptime 1) and feed damage
+// like an item stat would; the AS steroid above is handled separately.
+const STAT_PHRASES: [RegExp, keyof import('./types.js').ItemStats][] = [
+  [/physical power/i, 'physical_power'], [/magical power/i, 'magical_power'],
+  [/physical penetration/i, 'physical_penetration'], [/magical penetration/i, 'magical_penetration'],
+  [/ability haste/i, 'ability_haste'], [/lifesteal/i, 'lifesteal'], [/omnivamp/i, 'omnivamp'],
+];
+function parseSelfStatBuffs(md: string): { stat: keyof import('./types.js').ItemStats; perRank: number[] }[] {
+  const out: { stat: keyof import('./types.js').ItemStats; perRank: number[] }[] = [];
+  const re = /gain\s+(\d+(?:\.\d+)?(?:\/\d+(?:\.\d+)?)+|\d+)\s*%?\s*(?:bonus\s+)?(physical power|magical power|physical penetration|magical penetration|ability haste|lifesteal|omnivamp)/ig;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(md))) {
+    const perRank = m[1]!.split('/').map(Number).filter((n) => n > 0);
+    const stat = STAT_PHRASES.find(([rx]) => rx.test(m![2]!))?.[1];
+    if (perRank.length && stat) out.push({ stat, perRank });
+  }
+  return out;
+}
+
 // Parse heal/shield output the way damage is parsed: find every
 // "<values> <PowerTag>(+<ratio>%" group, classify by context (a
 // restore/heal verb before it, or "Shield" right after it), and fold
@@ -212,6 +232,7 @@ export function loadData(): LoadedData {
       const parsed = omAb?.menu_description ? parseDamage(omAb.menu_description) : null;
       const healing = omAb?.menu_description ? parseHealing(omAb.menu_description) : [];
       const asBuff = omAb?.menu_description ? parseSelfAttackSpeed(omAb.menu_description) : null;
+      const statBuffs = omAb?.menu_description ? parseSelfStatBuffs(omAb.menu_description) : [];
       const ownedDmg = owned ? bestOwnedDamage(owned) : null;
       const cooldowns = omAb?.cooldown?.length ? omAb.cooldown : owned?.cooldowns ?? [];
       const costs = omAb?.cost?.length ? omAb.cost : owned?.costs ?? [];
@@ -226,6 +247,7 @@ export function loadData(): LoadedData {
           healing: healing.length ? healing : undefined,
           selfAttackSpeedPctPerRank: asBuff?.perRank,
           buffDurationSec: asBuff?.durationSec,
+          selfStatBuffs: statBuffs.length ? statBuffs : undefined,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
         });
@@ -241,6 +263,7 @@ export function loadData(): LoadedData {
           healing: healing.length ? healing : undefined,
           selfAttackSpeedPctPerRank: asBuff?.perRank,
           buffDurationSec: asBuff?.durationSec,
+          selfStatBuffs: statBuffs.length ? statBuffs : undefined,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
         });
@@ -256,20 +279,23 @@ export function loadData(): LoadedData {
           healing,
           selfAttackSpeedPctPerRank: asBuff?.perRank,
           buffDurationSec: asBuff?.durationSec,
+          selfStatBuffs: statBuffs.length ? statBuffs : undefined,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
         });
-      } else if (asBuff) {
-        // Steroid ability with no damage/heal line (Sparrow Heightened Senses,
-        // Murdock Hot Pursuit): retained so its attack-speed buff feeds auto DPS.
+      } else if (asBuff || statBuffs.length) {
+        // Buff-only ability with no damage/heal line (Sparrow/Murdock AS steroid;
+        // Feng Mao/Wraith passive power gain): retained so its self-buffs feed the
+        // sim, and so it is leveled in the skill order rather than dropped.
         defs.push({
           key,
           name: omAb?.display_name ?? owned?.name ?? key,
           damagePerRank: [],
           scalingPct: 0,
           damageType: 'physical',
-          selfAttackSpeedPctPerRank: asBuff.perRank,
-          buffDurationSec: asBuff.durationSec,
+          selfAttackSpeedPctPerRank: asBuff?.perRank,
+          buffDurationSec: asBuff?.durationSec,
+          selfStatBuffs: statBuffs.length ? statBuffs : undefined,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
         });

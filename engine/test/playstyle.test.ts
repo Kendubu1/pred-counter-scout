@@ -237,6 +237,19 @@ describe('attack-speed steroid abilities feed auto DPS', () => {
       expect(withBuff).toBeGreaterThan(without);
     }
   });
+
+  it('permanent self stat gains (Feng Mao power, Wraith pen) are credited', () => {
+    for (const [slug, stat] of [['feng-mao', 'physical_power'], ['wraith', 'physical_penetration']] as const) {
+      const kit = data.kits.get(slug)!;
+      const ab = kit.abilities.find((a) => a.selfStatBuffs?.some((b) => b.stat === stat));
+      expect(ab, `${slug} should carry a ${stat} self-buff`).toBeDefined();
+      const stripped = { ...kit, abilities: kit.abilities.map((a) => ({ ...a, selfStatBuffs: undefined })) };
+      const items = ['ashbringer', 'demon-edge', 'dread'].map((s) => data.itemsBySlug.get(s)!).filter(Boolean);
+      const withBuff = evaluateBuild(kit, items, 13, cal).objectives.rot10VsSquishy;
+      const without = evaluateBuild(stripped, items, 13, cal).objectives.rot10VsSquishy;
+      expect(withBuff).toBeGreaterThan(without);
+    }
+  });
 });
 
 describe('evolving items (buy the source, credit the evolved value)', () => {

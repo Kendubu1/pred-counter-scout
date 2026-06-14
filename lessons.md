@@ -1303,3 +1303,22 @@ Append-only. One entry per backlog item or significant finding.
   steroid (attack speed, and likely power/pen/haste buffs too) that the field maxes
   first precisely because it scales the auto-attacks. The damage-only def filter was
   silently discarding a carry's core power. Next: generalize to other self-buffs.
+
+## 2026-06-14: generalized self-buffs to permanent passive stat gains
+- After the AS steroid, surveyed the roster: most other ability self-buffs are
+  PASSIVES (always-on) granting power/pen/haste — "Passive: Gain 8/11/14/17/20
+  physical power" (Feng Mao Safeguard), Wraith's Surprise, Surprise! gives
+  10/14/18/22/26 physical PENETRATION. These had no damage line so they were
+  dropped, losing both the stat and the ability's place in the skill order.
+- Added parseSelfStatBuffs (power/pen/haste/lifesteal/omnivamp from "Gain X ...")
+  + AbilityDef.selfStatBuffs; retain buff-only abilities; fold the gains into the
+  effective item totals at full uptime (applySelfStatBuffs) so they feed every
+  damage window. Retaining Wraith's Surprise, Surprise! also fixes her leveling
+  (it was the dropped ability behind her earlier skill-order mismatch).
+- Scope call confirmed with the maintainer: only COMPLETED Epic/Legendary items are
+  in the build pool, so the smaller components ("belts") that build into them are
+  already excluded — no effort spent modeling them. The 62 flat-stats-only backlog
+  is all completed items.
+- Uptime model: permanent passives = 1.0 (always on); temporary steroids (AS) =
+  duration/cooldown. Temporary non-AS steroids are rare/none among leveled abilities
+  (the power ones are passives), so they're deferred.

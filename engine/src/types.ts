@@ -34,6 +34,10 @@ export interface AbilityDef {
   // these early for the auto-attack spike, so it must feed auto DPS.
   selfAttackSpeedPctPerRank?: number[];
   buffDurationSec?: number;      // approx active duration of the AS buff, for uptime
+  // Permanent self stat gains from a leveled ability ("Passive: Gain X physical
+  // power" — Feng Mao's Safeguard, Wraith's Surprise Surprise), credited at full
+  // uptime. Distinct from the temporary AS steroid above.
+  selfStatBuffs?: { stat: keyof ItemStats; perRank: number[] }[];
   cooldowns: number[];           // per rank, seconds
   costs: number[];               // mana per rank
   maxRank: number;
