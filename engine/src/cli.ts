@@ -4,12 +4,14 @@
 
 import { loadData, completedItems } from './data.js';
 import { loadCalibration, unverifiedConstants, simulate, skillPriority } from './sim.js';
-import { generateBuilds, type ObjKey } from './search.js';
-import { rankAugments, rankBlessings } from './eternals.js';
+import { generateBuilds, headlineObjective, type ObjKey } from './search.js';
+import { rankAugments, rankBlessings, selectEternalLoadout } from './eternals.js';
 import { heroGames, itemPlayRate } from './aggregates.js';
 import { itemWinDelta } from './evidence.js';
 import { matchupCheckpoints } from './matchup.js';
-import { classifyAugment, laneTopAugment, playstyleObjectives, type LaneAugment } from './playstyle.js';
+import { classifyAugment, fuseSteer, kitPlaystyle, laneTopAugment, playstyleObjectives, type KitPlaystyle, type LaneAugment } from './playstyle.js';
+import { robustnessOf } from './robustness.js';
+import { agreeWithField } from './agreement.js';
 import { loadEffects } from './effects.js';
 
 const args = process.argv.slice(2);
@@ -93,6 +95,24 @@ if (!flag('no-steer')) {
     }
   }
 }
+// ── Kit-derived playstyle (slice, behind --playstyle) ──
+// Fuses the first-principles kit lean with the field's lane augment. Gated to the
+// Gideon vertical slice so the other 51 heroes are untouched.
+const PLAYSTYLE_SLICE = new Set(['gideon']);
+let kitPs: KitPlaystyle | undefined;
+if (flag('playstyle') && PLAYSTYLE_SLICE.has(slug)) {
+  kitPs = kitPlaystyle(kit, role);
+  const fused = fuseSteer(kitPs, laneTopAugment(slug, role), kit);
+  objectiveBias = fused.bias;
+  headlineOverride = fused.bias[0];
+  provenance = [
+    `kit playstyle: ${kitPs.primary}${kitPs.secondary ? ` / ${kitPs.secondary}` : ''} (confidence ${kitPs.confidence})`,
+    ...kitPs.evidence.map((e) => `  ${e}`),
+    `fused steer [${fused.agreement}]: ${fused.note}`,
+    `  steering toward: ${objectiveBias.join(', ')}`,
+  ];
+}
+
 if (provenance.length) console.log('\n' + provenance.join('\n'));
 
 const builds = generateBuilds(kit, completedItems(data), cal, {
@@ -156,6 +176,30 @@ if (top) {
     }
     const noMath = augs.filter((x) => !x.modeled);
     if (noMath.length) console.log(`  not in the sim (honest list): ${noMath.map((x) => x.name.split(' / ').pop()).join(', ')}`);
+  }
+}
+
+// ── Playstyle slice extras: conditional Eternal loadout, robustness, agreement ──
+if (kitPs && top) {
+  const topItems = top.items.map((n) => data.items.get(n)!).filter(Boolean);
+
+  const loadout = selectEternalLoadout(kit, topItems, level, cal, kitPs, { minute: opt('minute'), role });
+  if (loadout) {
+    console.log('\nEternal loadout (kit-fit major → conditional minors):');
+    console.log(`  major:  ${loadout.major.name}  (${loadout.note})${loadout.major.modeled ? '' : ' — major mechanic unmodeled'}`);
+    console.log(`  slot 1: ${loadout.minor1.name}  — ${loadout.minor1.note}`);
+    console.log(`  slot 2: ${loadout.minor2.name}  — ${loadout.minor2.note}`);
+  }
+
+  const rob = robustnessOf(kit, completedItems(data), cal, { level, role, objectiveBias, headlineOverride, beamWidth: 16 });
+  console.log(`\nrobustness (Option A): ${rob.stable ? 'STABLE' : 'FRAGILE'} — ${rob.note}`);
+
+  const headlineKey = headlineOverride ?? headlineObjective(kit, role);
+  const agree = agreeWithField(builds, slug, data.itemsBySlug, headlineKey);
+  if (agree) {
+    const rc = Number.isNaN(agree.rankCorr) ? 'n/a' : agree.rankCorr.toFixed(2);
+    console.log(`agreement vs field: hit@6 ${agree.hitAtK ? 'YES' : 'no'} | coverage ${(agree.coverage * 100).toFixed(0)}% | rankCorr ${rc}`);
+    console.log(`  ${agree.note}`);
   }
 }
 

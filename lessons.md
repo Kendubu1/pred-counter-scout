@@ -1079,3 +1079,52 @@ Append-only. One entry per backlog item or significant finding.
   cap:4, and the sim takes max(override, default). A build with Cursed Ring caps
   at 4.0; everything else at 3.0. The aps cap is applied AFTER the AS-ramp too,
   not just the base, so ramping items can't sneak past it.
+
+## 2026-06-14: kit-derived playstyle on top of the field steer (Gideon slice)
+- The "templated" feeling was the OBJECTIVE, not the generation. Beam search is
+  individuated per hero; the six COMBAT_VECTORS corners are global, so every hero
+  is scored through the same value function. main already shipped an
+  augment-as-playstyle steer (field-derived: the lane's most-played augment ->
+  enum -> bias corner). That's still popularity-anchored, which is the maintainer's
+  exact complaint. The fix is a KIT-derived signal fused on top, so a hero the
+  field hasn't solved (or a new one) still gets a coherent steer.
+- Data-model trap: every caster is tagged damageType:'hybrid' (physical basic,
+  magical abilities — gideon, countess, gadget, howitzer, muriel...), so a
+  `damageType === 'magical'` check silently NEVER fires for the heroes it most
+  matters for. Added kitPowerType(kit): resolve the real power type from the
+  majority damage type of the DAMAGING ABILITIES, not the kit tag. With it, Gideon
+  reads ability-burst/poke, magical — and the Vesh (Ability Damage Mage) Eternal
+  wins its fit, as it should. Before the fix, the hybrid tag made Vesh score 2.45
+  (attackPower -0.3 branch) and Demiurge's raw item-scaling delta won instead.
+- Eternal as major -> minor1, minor2: rank the major by kit fit (dominant) blended
+  with sim delta, then score each minor by its MARGINAL gain ON TOP OF that major
+  (conditioned on the major being equipped), falling back to the curated
+  recommendation when unmodeled. This subsumes the hardcoded ehpWeight heuristic.
+
+## 2026-06-14: Option-A robustness beats the binary THEORY flag
+- Unverified constants now carry a plausible range in calibration.json (crit
+  [1.6,1.8], mitigation K [100,150]). robustnessOf sweeps the 2x2 grid through the
+  generator and asks: does the #1 build survive the whole region? Threaded K through
+  SimOptions.mitigationK (default 100 -> byte-identical; the 83 baseline tests
+  stayed green) so the sweep varies it faithfully, EHP included.
+- The sweep is not trivially stable, which is the proof it's doing work: Gideon's
+  KIT-STEERED burst build is robust to both constants, but the UNSTEERED build is
+  FRAGILE — its #1 flips when K moves 100->150 — so the sweep names mitigation as
+  the constant to measure first. A binary THEORY stamp can't make that distinction;
+  it marks the robust pick and the coin-flip pick identically.
+- AS cap: kept the tooltip-sourced 3.0 (stronger source); logged the maintainer's
+  350-420% web finding as a crossCheck note (almost certainly a percent-bonus view
+  of the same absolute cap; base AS x cap ~= 3/sec). Don't overwrite a stated
+  in-game value with a looser web number; record both and reconcile in practice mode.
+
+## 2026-06-14: the agreement validator's first finding is a real sim blind spot
+- agreeWithField checks whether the GENERATED front reproduces the field's winning
+  cores (hit@k, n-weighted coverage, Spearman) — complementing explain, which
+  attributes ONE given build. Runs post-generation, never feeds the objective.
+- Finding: Gideon's front does NOT cover the field's 55%/n=390 core (Azure Core +
+  Combustion + Wraith Leggings), even at 3 items. Root cause: the damage objective
+  is MANA-BLIND — rotation damage assumes casts land within the window regardless of
+  pool, so Azure Core's 450 mana / 15 haste is invisible and the sim prefers raw
+  magical power. This is exactly the disagreement the validator exists to surface,
+  not a number to engineer around. The fix (mana-constrained sustained casting) is
+  future work; the slice ships the finding honestly.

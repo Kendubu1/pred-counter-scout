@@ -133,6 +133,73 @@ Home page redesign: its job is routing plus proof of value, in that order. Top: 
 
 Confidence and reasoning, visually. Three badges with fixed semantics: Proven (green): simulation and current-patch observed evidence agree, sample above threshold; Theory (blue): math-backed, observed evidence thin or structurally unavailable (all Eternals and augment picks today); Watch (amber): observed evidence disagrees with the simulator or the entity changed this patch and is unverified. Badges always carry a tooltip with the actual numbers: sample size, interval, sim deltas, patch tag. Two hard rules: no bare winrate percentage anywhere without sample size and patch tag attached, and no point predictions for unobserved matchups, verdict chips and intervals only. The coach-voice rule for all generated copy: imperative first, mechanism second, numbers one tap away.
 
+## 9. Kit-derived playstyle, conditional loadout, and Option-A robustness (June 14)
+
+Framing. A hero's loadout is a directed graphical model, not a flat choice:
+`kit -> playstyle z -> build -> augment -> eternal(major -> minor1, minor2)`. Each
+downstream pick is scored conditioned on its parents. The "templated" feeling the
+maintainer flagged came from the objective being global (`search.ts` COMBAT_VECTORS,
+one set of corners for all 52 heroes): the generation was individuated, the *value
+function* was not. The fix is to condition the objective on a per-hero playstyle
+derived from the kit itself.
+
+What `main` already shipped (do not rebuild): an *augment-as-playstyle* steer
+(`playstyle.ts`) — a discrete enum (`on-hit|ability-burst|sustain|tank|poke`)
+read from the augment the field runs in a lane, added as a bias corner via
+`generateBuilds(objectiveBias)`, routed by damage type; the attack-speed cap (3.0/sec,
+tooltip-sourced); `npm run explain` (leave-one-out attribution on a given build);
+and the multi-stage early/mid/late power curve. This section is the layer on top.
+
+Kit-derived playstyle (this work). `kitPlaystyle(kit)` classifies into the *same*
+enum from kit mechanics (basic-attack carry, ability scaling, cooldowns, on-hit/heal
+payloads), and `fuseSteer` reconciles it with the field's lane augment: agreement is
+a confident steer, disagreement keeps the kit lean but names the gap (the project's
+"disagreement is product" thesis). A data-model trap surfaced here and is worth
+recording: every caster is tagged `damageType: 'hybrid'` (physical basic, magical
+abilities — e.g. Gideon), so `damageType === 'magical'` checks silently never fire.
+`kitPowerType(kit)` resolves the real power type from the majority damage type of the
+damaging abilities; both the kit classifier and the Eternal fit scorer route through
+it. Gideon then reads as `ability-burst / poke`, magical.
+
+Conditional Eternal loadout. `selectEternalLoadout` picks the major by kit fit
+(dot of the playstyle against each Eternal's curated `fit` block, dominant) blended
+with its modeled sim delta, then selects one blessing from each minor slot by the
+*marginal* sim gain ON TOP OF that major (so a minor's value is conditioned on the
+major actually being equipped), falling back to the curated recommendation when a
+minor's mechanic is unmodeled. For Gideon this yields Vesh (Ability Damage Mage) +
+The Tenth Seal + Mind Rot, each with a real conditioned delta. This subsumes the old
+hardcoded `ehpWeight = ranged?0.25:0.6` heuristic — durability now flows from fit.
+
+Option-A robustness (replaces the binary THEORY flag, for the slice). Unverified
+constants carry a plausible `range` in `calibration.json` — crit [1.6,1.8],
+mitigation K [100,150] (the data warning that K may exceed 100 finally has teeth).
+`robustnessOf` sweeps the 2x2 corner grid through the generator and asks whether the
+#1 build survives; if not, it attributes the flip to the specific constant. The sim
+now reads K through `SimOptions.mitigationK` (default 100, behaviour-preserving) so
+the sweep varies it faithfully. Result for Gideon: the kit-steered burst build is
+STABLE across both ranges, while the *unsteered* build is FRAGILE — its #1 flips
+when K moves to 150 — so the sweep correctly flags mitigation as the constant to
+measure first. The attack-speed cap stays at the tooltip-sourced 3.0; the maintainer's
+350-420% web finding is recorded as a `crossCheck` note (likely a percent-bonus view
+of the same absolute cap; confirm units in practice mode).
+
+Agreement / retrodiction validator. `agreeWithField` checks whether the *generated
+front* reproduces the field's winning cores from `predgg-builds.json` (hit@k,
+n-weighted coverage, Spearman of field WR vs our headline) — complementing `explain`,
+which attributes a single given build. It runs after generation and never feeds the
+objective. First finding: Gideon's front does NOT cover the field's 55%/n=390 core
+(Azure Core + Combustion + Wraith Leggings), even at three items — the sim prefers
+raw magical power over Azure Core's mana+haste because the damage objective is
+*mana-blind* (rotation damage assumes casts land within the window regardless of
+pool). That is a real, testable sim limitation the validator is designed to expose;
+the fix (a mana-constrained sustained-casting model) is future work.
+
+Scope and isolation. All of the above is a Gideon vertical slice behind a
+`--playstyle` flag; the other 51 heroes' paths are byte-identical (a snapshot test
+guards determinism). New tests live in `engine/test/playstyle.test.ts` (8 cases);
+the full harness is green at 91. Generalising the slice to the roster, and the
+mana-aware objective, are the named next steps.
+
 ## Verification summary
 
 The loop ran three passes against the checklist before this document was finalized. Pass 1 caught three substantive problems: the worked Gideon example originally reported only the extended-fight window, which oversold the off-meta option; it now reports the burst tradeoff (A wins one-combo by 9%) alongside the uptime advantage, which is the shape every off-meta proof must have. Dropping pred.gg silently dropped skill-order data; the simulator now explicitly owns max-order derivation. And augment plus Eternal winrates turned out to be structurally unavailable from the API (no field in match payloads), so those recommendations were moved to mechanics-only with a mandatory Theory badge instead of implying observational backing. Pass 2 caught infrastructure and presentation issues: raw match storage in git was unrealistic at estimated volumes, replaced with aggregate-only persistence plus optional release-asset archives; the medium tier originally specified a managed database, replaced with a single VPS running DuckDB, which is cheaper and sufficient; and matchup output originally included predicted winrate points for unseen pairs, which reproduces the old ridge model's false-precision mistake, replaced with verdict chips and intervals. Pass 3 scored the deliverables: audit 5, data strategy 5, architecture 4 (the long pole is simulator fidelity for item passives, and the document says so), Concept A 5, Concept B 4 (it cannot see execution difficulty or macro effects, named explicitly), cost tiers 5, stack 5, UX 4 (the under-10-seconds claim holds on the spec, but only a prototype proves it). Remaining known weaknesses, stated rather than hidden: the mitigation and crit constants are unverified until the first calibration-fixture session; match-volume and API-field assumptions need one day of ingest prototyping to confirm; and lane-pressure and objective economics (Shrines) are deferred from the v1 simulator.
