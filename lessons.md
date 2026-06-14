@@ -1436,3 +1436,27 @@ Append-only. One entry per backlog item or significant finding.
 - Lesson: an agreement validator is only honest if you let it DISAGREE. The fixes
   it licenses are missing value CHANNELS (ally-utility) and modeling errors, never
   re-weighting toward the field's specific picks.
+
+## 2026-06-14: per-flex-role builds — a full optimized build for every lane a hero plays
+- Maintainer caught it: the v6 hero page let you toggle flex roles, but every role
+  showed the SAME build. Root cause in the engine: headlineBuild cached by slug
+  only and called generateBuilds WITHOUT a role, and buildHeroArtifact computed the
+  whole artifact (build, stages, eternals, augments, meta cores, matchups) for
+  kit.roles[0] alone. laneFlex gave a per-lane CORE preview but nothing else.
+- Fix: extracted buildRoleView(kit, role, ...) — the full per-role analysis — and
+  made buildHeroArtifact iterate flexRolesFor(kit) (declared roles ∪ lanes with
+  augment evidence, primary first, capped at 3). Schema split into RoleView +
+  HeroArtifact (RoleView.extend). Top-level fields still mirror the primary role
+  (backward compatible with the index and tests); a new `roles[]` carries a full
+  RoleView per lane. headlineBuild is now keyed by slug:role.
+- v6 UI: renderHero merges the active role view over the artifact (role-independent
+  fields survive the spread, so re-rendering on toggle works), and a "flex role"
+  button bar calls nav(slug, false, role). Verified headless: Zinx support build
+  (Lifecore/Windcaller, Vesh eternal, Adele/Riktor matchups) vs midlane
+  (Spectral Schematics/Combustion, Demiurge, Renna/Iggy) swap with zero JS errors.
+- Cost: artifacts now ~3× the generateBuilds work for flex heroes (52 artifacts in
+  ~10min); matrix unaffected (1326 pairs in 3s). Both regenerated so prod reflects
+  the ally-utility tweak AND the per-role builds.
+- Lesson: "flex role" is not a display filter — it's a different hero in practice
+  (different items, spikes, counters). Model it as a first-class per-role build,
+  not a re-skin of the primary.

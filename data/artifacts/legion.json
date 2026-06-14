@@ -1,11 +1,5 @@
 {
- "slug": "legion",
- "name": "Legion",
- "patch": "1.14.4",
- "generatedAt": "2026-06-14T19:33:57.500Z",
  "role": "carry",
- "damageType": "physical",
- "attackType": "ranged",
  "roleCaveat": null,
  "confidence": {
   "level": "THEORY",
@@ -88,7 +82,7 @@
    "ehpPhysical": 4442.7541875,
    "ehpMagical": 3389.7822187499996,
    "healShield10s": 202.25,
-   "utility": 0,
+   "utility": 15,
    "sustain10s": 737.906567320653
   },
   "manaFeasible": true
@@ -358,47 +352,6 @@
    "optimizer": null
   }
  ],
- "laneFlex": [
-  {
-   "lane": "carry",
-   "augment": {
-    "id": "636",
-    "name": "Scorched Earth"
-   },
-   "playstyle": "ability-burst",
-   "modeled": false,
-   "wr": 53.3,
-   "n": 78768,
-   "core": [
-    {
-     "name": "Mutilator",
-     "slug": "mutilator"
-    },
-    {
-     "name": "The Perforator",
-     "slug": "the-perforator"
-    },
-    {
-     "name": "Vanquisher",
-     "slug": "vanquisher"
-    },
-    {
-     "name": "Deathstalker",
-     "slug": "deathstalker"
-    },
-    {
-     "name": "Augmentation",
-     "slug": "augmentation"
-    },
-    {
-     "name": "Demolisher",
-     "slug": "demolisher"
-    }
-   ],
-   "headline": "burst",
-   "provenance": "“Scorched Earth” ⇒ ability-burst; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 53.3% over 78,768 games, magnitude not simulated."
-  }
- ],
  "stages": [
   {
    "label": "early",
@@ -518,7 +471,7 @@
     "ehpPhysical": 6370.162679999999,
     "ehpMagical": 4459.29582,
     "healShield10s": 202.25,
-    "utility": 0,
+    "utility": 15,
     "sustain10s": 767.6872155159504
    },
    "betterEarly": null
@@ -758,6 +711,771 @@
     "offenseLossPct": 31,
     "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their 3s all-in loses 25% of its bite; you give up 31% of your damage."
    }
+  }
+ ],
+ "slug": "legion",
+ "name": "Legion",
+ "patch": "1.14.4",
+ "generatedAt": "2026-06-14T21:11:30.240Z",
+ "damageType": "physical",
+ "attackType": "ranged",
+ "laneFlex": [
+  {
+   "lane": "carry",
+   "augment": {
+    "id": "636",
+    "name": "Scorched Earth"
+   },
+   "playstyle": "ability-burst",
+   "modeled": false,
+   "wr": 53.3,
+   "n": 78768,
+   "core": [
+    {
+     "name": "Mutilator",
+     "slug": "mutilator"
+    },
+    {
+     "name": "The Perforator",
+     "slug": "the-perforator"
+    },
+    {
+     "name": "Vanquisher",
+     "slug": "vanquisher"
+    },
+    {
+     "name": "Deathstalker",
+     "slug": "deathstalker"
+    },
+    {
+     "name": "Augmentation",
+     "slug": "augmentation"
+    },
+    {
+     "name": "Demolisher",
+     "slug": "demolisher"
+    }
+   ],
+   "headline": "burst",
+   "provenance": "“Scorched Earth” ⇒ ability-burst; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 53.3% over 78,768 games, magnitude not simulated."
+  }
+ ],
+ "roles": [
+  {
+   "role": "carry",
+   "roleCaveat": null,
+   "confidence": {
+    "level": "THEORY",
+    "unverifiedConstants": [
+     "mitigation",
+     "abilityHaste",
+     "critMultiplier",
+     "attackSpeedFormula",
+     "abilityScalingUsesBonusPowerOnly",
+     "attackSpeedCap"
+    ],
+    "notes": [
+     "all combat numbers are simulator output on unverified constants",
+     "checkpoint levels are provisional (no level timeline in the match feed)",
+     "evidence deltas carry finished-inventory survivorship bias",
+     "this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check"
+    ]
+   },
+   "build": {
+    "items": [
+     {
+      "name": "Sky Splitter",
+      "slug": "sky-splitter",
+      "spikeMinute": 12,
+      "playRatePct": null,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
+     },
+     {
+      "name": "Viper",
+      "slug": "viper",
+      "spikeMinute": 19,
+      "playRatePct": null,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
+     },
+     {
+      "name": "Deathstalker",
+      "slug": "deathstalker",
+      "spikeMinute": 25,
+      "playRatePct": null,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
+     },
+     {
+      "name": "The Perforator",
+      "slug": "the-perforator",
+      "spikeMinute": 31,
+      "playRatePct": null,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
+     },
+     {
+      "name": "Rapture",
+      "slug": "rapture",
+      "spikeMinute": 36,
+      "playRatePct": null,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
+     },
+     {
+      "name": "Tainted Rounds",
+      "slug": "tainted-rounds",
+      "spikeMinute": 42,
+      "playRatePct": null,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
+     }
+    ],
+    "gold": 18500,
+    "archetypes": [
+     "sustained DPS"
+    ],
+    "objectives": {
+     "burstVsSquishy": 946.1569589736965,
+     "teamfightVsSquishy": 1780.252270868311,
+     "rot10VsSquishy": 612.5480153649169,
+     "rot20VsBruiser": 903.3697768458891,
+     "autoDps10VsSquishy": 537.971660264618,
+     "ehpPhysical": 4442.7541875,
+     "ehpMagical": 3389.7822187499996,
+     "healShield10s": 202.25,
+     "utility": 15,
+     "sustain10s": 737.906567320653
+    },
+    "manaFeasible": true
+   },
+   "coachLine": "Sim-optimal for sustained DPS: first spike lands around minute 12 (Sky Splitter), third item by minute 25. Take Demiurge: +23.9% on this kit’s main output at minute 15.",
+   "eternals": {
+    "top": [
+     {
+      "name": "Demiurge",
+      "id": "demiurge",
+      "headlinePct": 23.9,
+      "burstPct": 11.1,
+      "rot20Pct": 8.7,
+      "ehpPct": 1.5
+     },
+     {
+      "name": "Vermis",
+      "id": "vermis",
+      "headlinePct": 8.9,
+      "burstPct": 3.5,
+      "rot20Pct": 0,
+      "ehpPct": 0
+     },
+     {
+      "name": "Krix",
+      "id": "krix",
+      "headlinePct": 0,
+      "burstPct": 0,
+      "rot20Pct": 0,
+      "ehpPct": 18
+     }
+    ],
+    "unmodeled": [
+     "Marrow",
+     "Nihil",
+     "Aion",
+     "Exarch"
+    ],
+    "all": [
+     {
+      "name": "Demiurge",
+      "modeled": true,
+      "headlinePct": 23.9,
+      "burstPct": 11.1,
+      "rot20Pct": 8.7,
+      "ehpPct": 1.5,
+      "note": null
+     },
+     {
+      "name": "Vermis",
+      "modeled": true,
+      "headlinePct": 8.9,
+      "burstPct": 3.5,
+      "rot20Pct": 0,
+      "ehpPct": 0,
+      "note": null
+     },
+     {
+      "name": "Krix",
+      "modeled": true,
+      "headlinePct": 0,
+      "burstPct": 0,
+      "rot20Pct": 0,
+      "ehpPct": 18,
+      "note": null
+     },
+     {
+      "name": "Thraex",
+      "modeled": true,
+      "headlinePct": 3.8,
+      "burstPct": 0,
+      "rot20Pct": 8.8,
+      "ehpPct": 0,
+      "note": null
+     },
+     {
+      "name": "Idrisil",
+      "modeled": true,
+      "headlinePct": 0,
+      "burstPct": 0,
+      "rot20Pct": 0,
+      "ehpPct": 6.9,
+      "note": null
+     },
+     {
+      "name": "Xyris",
+      "modeled": true,
+      "headlinePct": 1.6,
+      "burstPct": 2.8,
+      "rot20Pct": 3.7,
+      "ehpPct": 0,
+      "note": null
+     },
+     {
+      "name": "Lotus",
+      "modeled": true,
+      "headlinePct": 1.1,
+      "burstPct": 2,
+      "rot20Pct": 43.5,
+      "ehpPct": 2.8,
+      "note": null
+     },
+     {
+      "name": "Vesh",
+      "modeled": true,
+      "headlinePct": 0,
+      "burstPct": 7.3,
+      "rot20Pct": 12.5,
+      "ehpPct": 0,
+      "note": null
+     },
+     {
+      "name": "Marrow",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Marrow (Major): missing-health-dependent omnivamp; no sustain-uptime model yet"
+     },
+     {
+      "name": "Nihil",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Nihil (Major): accrual rate depends on combat uptime (how long Doom persists per fight), which the closed-form sim cannot observe"
+     },
+     {
+      "name": "Aion",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Aion (Major): economy effect; valuable but outside combat objectives (revisit with gold curves)"
+     },
+     {
+      "name": "Exarch",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Exarch (Major): buffs the HEAL TARGET (usually an ally) — team-side value outside the single-hero sim; self-heal uptime depends on heal cadence vs the 4s window"
+     }
+    ],
+    "augmentAware": null
+   },
+   "augments": [
+    {
+     "id": "635",
+     "name": "Press the Advantage",
+     "modeled": false,
+     "provisional": false,
+     "headlinePct": null,
+     "burstPct": null,
+     "rot20Pct": null,
+     "ehpPct": null,
+     "healShieldPct": null,
+     "healShieldAbs": null,
+     "note": "reworks Rally Point into a team fire-rate aura; team-side and takedown-conditional",
+     "buildShift": null
+    },
+    {
+     "id": "636",
+     "name": "Scorched Earth",
+     "modeled": false,
+     "provisional": false,
+     "headlinePct": null,
+     "burstPct": null,
+     "rot20Pct": null,
+     "ehpPct": null,
+     "healShieldPct": null,
+     "healShieldAbs": null,
+     "note": "napalm zone DoTs; zone uptime and overlap unobservable",
+     "buildShift": null
+    },
+    {
+     "id": "661",
+     "name": "Heavy Caliber",
+     "modeled": false,
+     "provisional": false,
+     "headlinePct": null,
+     "burstPct": null,
+     "rot20Pct": null,
+     "ehpPct": null,
+     "healShieldPct": null,
+     "healShieldAbs": null,
+     "note": "basic-attack restructure (timer set to 0.75s, magazine 6); not mappable onto the attack-speed model",
+     "buildShift": null
+    }
+   ],
+   "offMeta": {
+    "candidates": [],
+    "honestAbsence": "no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)"
+   },
+   "metaBuilds": [
+    {
+     "items": [
+      {
+       "name": "Malady",
+       "slug": "malady"
+      },
+      {
+       "name": "Deathstalker",
+       "slug": "deathstalker"
+      },
+      {
+       "name": "SpearOfDesolation",
+       "slug": "spear-of-desolation"
+      }
+     ],
+     "n": 438,
+     "shrunkWr": 0.536,
+     "coreGold": 8800,
+     "spikeMinute": 24,
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 78 auto-attack DPS in the sim.",
+     "optimizer": "Optimizer sees 2.3× the sustained auto DPS: try Sky Splitter over Malady (sim-only — the popular pick may carry utility the sim can't see; test it)."
+    },
+    {
+     "items": [
+      {
+       "name": "Malady",
+       "slug": "malady"
+      },
+      {
+       "name": "Vanquisher",
+       "slug": "vanquisher"
+      },
+      {
+       "name": "Deathstalker",
+       "slug": "deathstalker"
+      }
+     ],
+     "n": 421,
+     "shrunkWr": 0.525,
+     "coreGold": 9000,
+     "spikeMinute": 25,
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 25 — about 82 auto-attack DPS in the sim.",
+     "optimizer": "Optimizer sees 2.1× the sustained auto DPS: try Sky Splitter over Malady (sim-only — the popular pick may carry utility the sim can't see; test it)."
+    },
+    {
+     "items": [
+      {
+       "name": "Malady",
+       "slug": "malady"
+      },
+      {
+       "name": "Infernum",
+       "slug": "infernum"
+      },
+      {
+       "name": "ThePerforator",
+       "slug": "the-perforator"
+      }
+     ],
+     "n": 235,
+     "shrunkWr": 0.559,
+     "coreGold": 9100,
+     "spikeMinute": 25,
+     "bestObjective": "extended fights vs bruisers",
+     "whyLine": "Strongest meta core for extended fights vs bruisers, online around minute 25 — about 811 damage over a 20s fight in the sim.",
+     "optimizer": null
+    }
+   ],
+   "stages": [
+    {
+     "label": "early",
+     "itemCount": 2,
+     "minute": 19,
+     "level": 11,
+     "core": [
+      {
+       "name": "Sky Splitter",
+       "slug": "sky-splitter"
+      },
+      {
+       "name": "Viper",
+       "slug": "viper"
+      }
+     ],
+     "headline": "autoDps10VsSquishy",
+     "headlineValue": 109,
+     "objectives": {
+      "burstVsSquishy": 396.1263655152051,
+      "teamfightVsSquishy": 781.6356657809268,
+      "rot10VsSquishy": 282.53164556962025,
+      "rot20VsBruiser": 418.2080329557158,
+      "autoDps10VsSquishy": 108.53618954884777,
+      "ehpPhysical": 3149.2781718749993,
+      "ehpMagical": 2511.2131171875,
+      "healShield10s": 83.5,
+      "utility": 0,
+      "sustain10s": 83.64160659114316
+     },
+     "betterEarly": {
+      "inItem": "Spectra",
+      "inSlug": "spectra",
+      "outItem": "Viper",
+      "edgePct": 26.3
+     }
+    },
+    {
+     "label": "mid",
+     "itemCount": 3,
+     "minute": 25,
+     "level": 15,
+     "core": [
+      {
+       "name": "Sky Splitter",
+       "slug": "sky-splitter"
+      },
+      {
+       "name": "Viper",
+       "slug": "viper"
+      },
+      {
+       "name": "Deathstalker",
+       "slug": "deathstalker"
+      }
+     ],
+     "headline": "autoDps10VsSquishy",
+     "headlineValue": 182,
+     "objectives": {
+      "burstVsSquishy": 553.2503562945367,
+      "teamfightVsSquishy": 1109.558466236851,
+      "rot10VsSquishy": 413.84324119651643,
+      "rot20VsBruiser": 595.1916376306621,
+      "autoDps10VsSquishy": 181.53203786444527,
+      "ehpPhysical": 4745.204041875,
+      "ehpMagical": 3466.5048721875005,
+      "healShield10s": 126.25,
+      "utility": 0,
+      "sustain10s": 131.96982857142856
+     },
+     "betterEarly": {
+      "inItem": "Spectra",
+      "inSlug": "spectra",
+      "outItem": "Viper",
+      "edgePct": 17.6
+     }
+    },
+    {
+     "label": "late",
+     "itemCount": 6,
+     "minute": 42,
+     "level": 17,
+     "core": [
+      {
+       "name": "Sky Splitter",
+       "slug": "sky-splitter"
+      },
+      {
+       "name": "Viper",
+       "slug": "viper"
+      },
+      {
+       "name": "Deathstalker",
+       "slug": "deathstalker"
+      },
+      {
+       "name": "The Perforator",
+       "slug": "the-perforator"
+      },
+      {
+       "name": "Rapture",
+       "slug": "rapture"
+      },
+      {
+       "name": "Tainted Rounds",
+       "slug": "tainted-rounds"
+      }
+     ],
+     "headline": "autoDps10VsSquishy",
+     "headlineValue": 562,
+     "objectives": {
+      "burstVsSquishy": 981.265211588962,
+      "teamfightVsSquishy": 1843.2566877609881,
+      "rot10VsSquishy": 633.0345710627403,
+      "rot20VsBruiser": 935.7196345664222,
+      "autoDps10VsSquishy": 562.1616525821596,
+      "ehpPhysical": 6370.162679999999,
+      "ehpMagical": 4459.29582,
+      "healShield10s": 202.25,
+      "utility": 15,
+      "sustain10s": 767.6872155159504
+     },
+     "betterEarly": null
+    }
+   ],
+   "matchups": [
+    {
+     "enemy": "Sparrow",
+     "enemySlug": "sparrow",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Deathstalker",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 36,
+      "offenseLossPct": 31,
+      "line": "Losing lane? Third item Warden's Faith instead of Deathstalker: their 3s all-in loses 36% of its bite; you give up 31% of your damage."
+     }
+    },
+    {
+     "enemy": "Murdock",
+     "enemySlug": "murdock",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Deathstalker",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 25,
+      "offenseLossPct": 31,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their 3s all-in loses 25% of its bite; you give up 31% of your damage."
+     }
+    },
+    {
+     "enemy": "Drongo",
+     "enemySlug": "drongo",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Deathstalker",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 25,
+      "offenseLossPct": 31,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their 3s all-in loses 25% of its bite; you give up 31% of your damage."
+     }
+    },
+    {
+     "enemy": "Revenant",
+     "enemySlug": "revenant",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "even"
+      },
+      {
+       "minute": 15,
+       "verdict": "even"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Deathstalker",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 25,
+      "offenseLossPct": 31,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their 3s all-in loses 25% of its bite; you give up 31% of your damage."
+     }
+    },
+    {
+     "enemy": "Eden",
+     "enemySlug": "eden",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Deathstalker",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 36,
+      "offenseLossPct": 31,
+      "line": "Losing lane? Third item Warden's Faith instead of Deathstalker: their 3s all-in loses 36% of its bite; you give up 31% of your damage."
+     }
+    },
+    {
+     "enemy": "Wraith",
+     "enemySlug": "wraith",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Deathstalker",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 25,
+      "offenseLossPct": 31,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their 3s all-in loses 25% of its bite; you give up 31% of your damage."
+     }
+    }
+   ]
   }
  ],
  "flags": [

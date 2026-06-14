@@ -690,6 +690,14 @@ function itile(i, idx) {
 }
 
 function renderHero(a, roleParam) {
+  // A flex hero carries a full build per role in a.roles; the active one is
+  // merged over the artifact so the whole page reflects the chosen lane. The
+  // role-independent fields (slug, name, roles, laneFlex) survive the spread,
+  // so re-rendering on a toggle works from the same object.
+  const roleViews = a.roles || [];
+  const activeRole = (roleViews.find((r) => r.role === roleParam)?.role) || a.role;
+  const activeView = roleViews.find((r) => r.role === activeRole);
+  if (activeView) a = { ...a, ...activeView };
   const o = a.build.objectives;
   const evidenceProof = a.build.items.filter((i) => i.evidenceDeltaWr !== null && i.evidenceN >= 100)
     .sort((x, y) => Math.abs(y.evidenceDeltaWr) - Math.abs(x.evidenceDeltaWr))[0];
@@ -716,6 +724,12 @@ function renderHero(a, roleParam) {
           ${a.build.archetypes.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}
           <span class="badge theory" title="Simulator output on constants not yet measured in-game:&#10;${esc(a.confidence.unverifiedConstants.join(', '))}&#10;&#10;${esc(a.confidence.notes.join('&#10;'))}">THEORY</span>
         </div>
+        ${roleViews.length > 1 ? `
+        <div class="rolebar flexroles" style="justify-content:flex-start;margin-top:.55rem">
+          <span class="hint" style="align-self:center;margin-right:.2rem">flex role:</span>
+          ${roleViews.map((v) => `<button data-flexrole="${esc(v.role)}" class="${v.role === activeRole ? 'active' : ''}">${esc(v.role)}</button>`).join('')}
+        </div>
+        <div class="hint" style="margin-top:.35rem">A full optimized build per lane — items, spikes, Eternals, and matchups all change with the role.</div>` : ''}
       </div>
     </header>
 
@@ -990,6 +1004,9 @@ function renderHero(a, roleParam) {
     <div id="tabLearn" class="hidden"></div>
   `;
   $('#back').onclick = () => nav(null);
+  document.querySelectorAll('.flexroles button').forEach((b) => {
+    b.onclick = () => nav(a.slug, false, b.dataset.flexrole);
+  });
   document.querySelectorAll('.htab').forEach((b) => {
     b.onclick = async () => {
       document.querySelectorAll('.htab').forEach((x) => x.classList.toggle('active', x === b));
