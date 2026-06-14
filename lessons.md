@@ -1341,3 +1341,19 @@ Append-only. One entry per backlog item or significant finding.
 - Lesson: a hero passive is worth modeling only when it maps to a scored objective
   (EHP/damage/heal) AND is unconditional. CC/lockdown/proc passives are real value
   the sim doesn't score -- flag, don't fake.
+
+## 2026-06-14: neutral-objective solo-clear (who can take the Fangtooth)
+- A great player question the EHP + staged-DPS + damage-reduction work unlocks:
+  out of the junglers, who can solo the Fangtooth early, or with one item online?
+  It's pure kit math: sustained damage vs the objective's armor for time-to-kill,
+  vs its contact damage against the hero's effective HP (+ self-heal) for survival.
+- Built soloClear + bestOneItemClear (src/objectives.ts) and npm run objectives,
+  which ranks the 22 junglers at L4 bare and L6 with their best single item.
+- DATA GAP honored per autonomy policy: we have NO neutral-objective stats, so
+  added calibration.neutralObjectives.fangtooth as UNVERIFIED placeholders (HP,
+  armor, contact DPS) with verified:false; soloClear reports provisional:true and
+  output is THEORY until measured in practice mode. The machinery is correct; the
+  rankings become meaningful once real Fangtooth stats are entered.
+- This is the capstone that ties the session's defensive work together: EHP now
+  reflects armor + HP + shields + damage-reduction + self-shield passives, so
+  "survive the camp" is finally a real computation, not just raw HP.
