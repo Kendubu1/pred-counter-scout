@@ -4,7 +4,8 @@
 
 import { describe, it, expect, beforeAll } from 'vitest';
 import { loadData, completedItems, type LoadedData } from '../src/data.js';
-import { loadCalibration, ranksAtLevel, manaSustain, stagedManaAdequacy, type Calibration } from '../src/sim.js';
+import { loadCalibration, ranksAtLevel, manaSustain, stagedManaAdequacy, effectiveTotals, type Calibration } from '../src/sim.js';
+import { resolveItemEffects } from '../src/effects.js';
 import { generateBuilds, headlineObjective } from '../src/search.js';
 import { kitPlaystyle, kitPowerType, fuseSteer, laneTopAugment } from '../src/playstyle.js';
 import { selectEternalLoadout } from '../src/eternals.js';
@@ -208,6 +209,26 @@ describe('power-type-aware pool (on-hit means magical on-hit for a mage)', () =>
     const items = front[0]!.items.map((n) => data.items.get(n)!).filter(Boolean);
     expect(items.some((i) => i.stats.physical_power > 0 || i.stats.attack_speed > 0 || i.stats.critical_chance > 0)).toBe(true);
   }, 60000);
+});
+
+describe('evolving items (buy the source, credit the evolved value)', () => {
+  it('evolved forms are not buildable; the purchasable source is', () => {
+    const pool = completedItems(data).map((i) => i.slug);
+    for (const target of ['orb-of-enlightenment', 'alternata', 'cybernetic-drive']) expect(pool).not.toContain(target);
+    for (const source of ['orb-of-growth', 'alternator', 'catalytic-drive']) expect(pool).toContain(source);
+  });
+
+  it('Orb of Growth is credited at its evolved per-level growth', () => {
+    const orb = [data.itemsBySlug.get('orb-of-growth')!];
+    const early = effectiveTotals(orb, resolveItemEffects(orb, { level: 3 })).magical_power;
+    const late = effectiveTotals(orb, resolveItemEffects(orb, { level: 18 })).magical_power;
+    expect(late).toBeGreaterThan(early);   // grows with level (evolution payoff)
+  });
+
+  it('Catalytic Drive carries its evolved armor multiplier', () => {
+    const eff = resolveItemEffects([data.itemsBySlug.get('catalytic-drive')!], { level: 13 });
+    expect(eff.armorMultiplier).toBeGreaterThan(1);
+  });
 });
 
 describe('slice isolation (the other 51 heroes are untouched)', () => {

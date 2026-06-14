@@ -1239,3 +1239,27 @@ Append-only. One entry per backlog item or significant finding.
   Prophecy and agreeWithField goes hit@6 false/0% -> hit@6 TRUE/59%, reproducing the
   field core (Prophecy+Spectra+Orion). The sim EARNED the field build from first
   principles once the pool stopped leaking physical crit. Agreement is the proof.
+
+## 2026-06-14: evolving items — buy the source, credit the evolved value
+- "The orb that evolves" = Orb of Growth -> Orb of Enlightenment. You BUY Growth
+  (the field does: Shinbi/Iggy n=187/Renna/Countess); it farms bonus XP and at 500
+  evolves into Enlightenment (Per Level: +3 MP, +15 Health). Growth was unmodeled,
+  so the sim never bought the meta item. Now Growth is credited at its evolved
+  per-level MP/HP. "Alternata" (maintainer saw on Wukong/Eden) is the same pattern:
+  Alternator -> Alternata. And Catalytic Drive -> Cybernetic Drive.
+- General rule found from build_paths: an evolving completed item is an Epic/Legendary
+  whose single build_paths target is also Epic/Legendary. Three in the build pool
+  (orb, alternator, catalytic) + 8 crest lines (crests aren't in the build pool yet).
+  The evolved forms (Orb of Enlightenment, Alternata, Cybernetic Drive) are NOT
+  directly buyable, so they're excluded from completedItems (EVOLUTION_TARGETS); the
+  source carries the evolved value. This replaced an Orb-Of family hack with one
+  general mechanism.
+- Per-item: Orb of Growth -> evolved per-level MP/HP. Catalytic Drive -> evolved
+  +12% total armor (Cybernetic Conversion). Alternator was already fine (its +15%
+  alt-ability amp is modeled; the evolved "Nata Style" cooldown ripple is genuinely
+  unmodelable — depends on cast interleaving, same reason Alternata flags it).
+- Broader item review (maintainer: "review all items"): build pool is 132 items,
+  68 have a modeled passive, 62 are flat-stats-only (passive uncredited), 2 have no
+  entry. The 62 are the standing coverage backlog (priorities item 11, ratcheted);
+  prioritize by field play-rate and by where the agreement validator flags a
+  sim/field disagreement.

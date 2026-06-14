@@ -25,6 +25,14 @@ function loadJson<T>(rel: string): T {
 // line plus shared-passive lines carried over from the v2 engine).
 const FAMILY_PREFIXES = ['Tainted', 'Ashenblade', 'Hexbound'];
 
+// Evolved forms of evolving items: you BUY the source (Orb of Growth, Alternator,
+// Catalytic Drive) and it evolves into these in-game, so they are not directly
+// purchasable and must not appear as build candidates. The source is credited at
+// its evolved value in effects.json. (Derived from build_paths: an Epic/Legendary
+// whose single build_paths target is also Epic/Legendary — currently these three;
+// crest evolutions are out of the build pool already.)
+const EVOLUTION_TARGETS = new Set(['orb-of-enlightenment', 'alternata', 'cybernetic-drive']);
+
 interface OwnedAbility {
   name: string;
   key: string;
@@ -321,6 +329,7 @@ export function loadData(): LoadedData {
 
 export function completedItems(data: LoadedData): Item[] {
   return [...data.items.values()].filter((i) => {
+    if (EVOLUTION_TARGETS.has(i.slug)) return false;  // evolved form, not directly bought
     if (!(i.rarity === 'EPIC' || i.rarity === 'LEGENDARY')) return false;
     if (!(i.slotType === 'PASSIVE' || i.slotType === 'ACTIVE')) return false;
     if (i.totalPrice <= 0) return false;

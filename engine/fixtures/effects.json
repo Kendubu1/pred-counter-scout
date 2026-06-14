@@ -985,12 +985,24 @@
   },
   "item:orb-of-growth": {
    "name": "Orb Of Growth / Inner Growth",
-   "sourceText": "see condition field",
+   "sourceText": "Bonus XP from minions/camps/takedowns; at 500 bonus XP evolves into Orb of Enlightenment (Per Hero Level: +3 Magical Power, +15 Health).",
    "source": "omeda items.json 1.14.4 (incl. condition field)",
    "effects": [
     {
+     "kind": "stat_flat",
+     "stat": "magical_power",
+     "base": 0,
+     "perLevel": 3
+    },
+    {
+     "kind": "stat_flat",
+     "stat": "health",
+     "base": 0,
+     "perLevel": 15
+    },
+    {
      "kind": "unmodeled",
-     "note": "XP-stacking item that evolves into Orb of Enlightenment — economy/progression, outside combat objectives"
+     "note": "This is the item the field actually BUYS; it evolves (~500 bonus XP, mid-game) into Orb of Enlightenment, so it is credited at its evolved per-level MP/HP value. Inner Growth's bonus-XP economy (faster leveling) and Art of Fortitude's 3% missing-health heal stay unmodeled (out of combat scope). Pre-evolution the per-level growth is slightly optimistic; evolution-timing gating is a future refinement."
     }
    ]
   },
@@ -2139,12 +2151,16 @@
   },
   "item:catalytic-drive": {
    "name": "Catalytic Drive / Deconstruct + Converter",
-   "sourceText": "Next basic executes minions/small monsters (+gold); evolve after 20 executes.",
+   "sourceText": "Next basic executes minions/small monsters (+gold); evolves into Cybernetic Drive (Cybernetic Conversion: +12% Total Physical & Magical Armor).",
    "source": "omeda items.json 1.14.4 (incl. condition field)",
    "effects": [
     {
+     "kind": "armor_multiplier",
+     "pct": 12
+    },
+    {
      "kind": "unmodeled",
-     "note": "PvE execute and an evolve trigger; no combat-damage component."
+     "note": "This is the buyable; it evolves into Cybernetic Drive, so it is credited with that form's +12% total armor (Cybernetic Conversion). The PvE execute/AoE/heal (Deconstruct) and the +gold stay unmodeled (out of combat scope)."
     }
    ]
   }
