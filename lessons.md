@@ -1360,3 +1360,39 @@ Append-only. One entry per backlog item or significant finding.
   under Combustion's +15 MP. That's a finer haste-valuation call (abilityHaste is
   unverified), not "no mana", so left as-is. Lesson: the "combos before dry" metric
   only binds ability-combo kits; gate it off auto-attackers or it mis-credits carries.
+
+## 2026-06-14: roster-wide agreement audit — where the optimizer diverges from the field
+- Built `npm run agreement` (engine/src/ingest/agreement-audit.ts): for every hero,
+  run the lane-augment-steered optimizer at its primary lane and compare the Pareto
+  front to the field's winning cores (pred.gg). Writes data/aggregates/agreement-audit.json.
+- Two metrics, because the strict one is misleading: exact-trio hit (all 3 core
+  items in ONE build) is only 10% and reads as catastrophic, but item-level core
+  recall (do we build each core item ANYWHERE in the front) is 52% avg — the honest
+  number. Carries/junglers are the best-aligned (combat-objective heroes); supports
+  are the worst.
+- The bottom 8 by recall are ALL supports/enchanters (+ Wraith): Mourn, Muriel,
+  Narbash, Phase, Riktor, Zinx, Steel at 0% recall. Root cause is architectural, not
+  a constant: enchanter items ARE in the pool but are mostly `unmodeled`/flat-stat
+  (Xenia, Enra's Blessing, Windcaller, Crystal Tear, Truesilver, Frosted Lure,
+  Dawnstar). Their value is ALLY-FACING (heal_shield_increase amplifies allies'
+  heals, auras, peel) and a single-hero combat sim structurally cannot score it.
+  Even under an explicit healShield10s/utility bias, Zinx builds only 1 of her field
+  core's 3 enchanter items. "She can't heal herself" generalizes: the objective
+  vector has no ally channel.
+- Systematic never-built clusters (the fix backlog, by frequency):
+  1. Enchanter ally-utility — Dynamo(5), Xenia(3), Enra's Blessing(3), Crescelia(2),
+     Marshal(2): supports. Needs an ally-utility objective proxy (credit
+     heal_shield_increase + ability_haste + aura stats) OR steer supports by field
+     augment and accept they're partly out-of-model. ARCHITECTURE decision.
+  2. Mage cooldown/haste/mana — Entropy(4), Azure Core(3), Megacosm(3), Spectra(3),
+     Flux Matrix(2): haste/mana undervalued vs raw power. Partly the known
+     Azure-vs-Combustion haste call; abilityHaste is unverified.
+  3. Bruiser sustain (offlane) — Overlord(4), Rapture, Cursed Scroll: omnivamp/
+     sustain on bruisers; rot objectives don't reach for it. Likely in-model fixable.
+  4. On-hit magical (jungle/carry) — Malady(4): magical on-hit/anti-heal; a hybrid
+     bruiser tagged physical drops it via the power-type pool. Power-type edge case.
+- Lesson: agreement is highest where the objective IS the hero's job (carry DPS) and
+  lowest where the hero's job is off-axis to single-hero combat (enchanting allies).
+  The audit turns "builds feel templated" into a ranked, item-level fix list; the
+  #1 lever (enchanter ally-utility) is an objective-architecture change, so it's
+  surfaced for a maintainer call rather than silently estimated.
