@@ -1079,3 +1079,265 @@ Append-only. One entry per backlog item or significant finding.
   cap:4, and the sim takes max(override, default). A build with Cursed Ring caps
   at 4.0; everything else at 3.0. The aps cap is applied AFTER the AS-ramp too,
   not just the base, so ramping items can't sneak past it.
+
+## 2026-06-14: kit-derived playstyle on top of the field steer (Gideon slice)
+- The "templated" feeling was the OBJECTIVE, not the generation. Beam search is
+  individuated per hero; the six COMBAT_VECTORS corners are global, so every hero
+  is scored through the same value function. main already shipped an
+  augment-as-playstyle steer (field-derived: the lane's most-played augment ->
+  enum -> bias corner). That's still popularity-anchored, which is the maintainer's
+  exact complaint. The fix is a KIT-derived signal fused on top, so a hero the
+  field hasn't solved (or a new one) still gets a coherent steer.
+- Data-model trap: every caster is tagged damageType:'hybrid' (physical basic,
+  magical abilities — gideon, countess, gadget, howitzer, muriel...), so a
+  `damageType === 'magical'` check silently NEVER fires for the heroes it most
+  matters for. Added kitPowerType(kit): resolve the real power type from the
+  majority damage type of the DAMAGING ABILITIES, not the kit tag. With it, Gideon
+  reads ability-burst/poke, magical — and the Vesh (Ability Damage Mage) Eternal
+  wins its fit, as it should. Before the fix, the hybrid tag made Vesh score 2.45
+  (attackPower -0.3 branch) and Demiurge's raw item-scaling delta won instead.
+- Eternal as major -> minor1, minor2: rank the major by kit fit (dominant) blended
+  with sim delta, then score each minor by its MARGINAL gain ON TOP OF that major
+  (conditioned on the major being equipped), falling back to the curated
+  recommendation when unmodeled. This subsumes the hardcoded ehpWeight heuristic.
+
+## 2026-06-14: Option-A robustness beats the binary THEORY flag
+- Unverified constants now carry a plausible range in calibration.json (crit
+  [1.6,1.8], mitigation K [100,150]). robustnessOf sweeps the 2x2 grid through the
+  generator and asks: does the #1 build survive the whole region? Threaded K through
+  SimOptions.mitigationK (default 100 -> byte-identical; the 83 baseline tests
+  stayed green) so the sweep varies it faithfully, EHP included.
+- The sweep is not trivially stable, which is the proof it's doing work: Gideon's
+  KIT-STEERED burst build is robust to both constants, but the UNSTEERED build is
+  FRAGILE — its #1 flips when K moves 100->150 — so the sweep names mitigation as
+  the constant to measure first. A binary THEORY stamp can't make that distinction;
+  it marks the robust pick and the coin-flip pick identically.
+- AS cap: kept the tooltip-sourced 3.0 (stronger source); logged the maintainer's
+  350-420% web finding as a crossCheck note (almost certainly a percent-bonus view
+  of the same absolute cap; base AS x cap ~= 3/sec). Don't overwrite a stated
+  in-game value with a looser web number; record both and reconcile in practice mode.
+
+## 2026-06-14: the agreement validator's first finding is a real sim blind spot
+- agreeWithField checks whether the GENERATED front reproduces the field's winning
+  cores (hit@k, n-weighted coverage, Spearman) — complementing explain, which
+  attributes ONE given build. Runs post-generation, never feeds the objective.
+- Finding: Gideon's front does NOT cover the field's 55%/n=390 core (Azure Core +
+  Combustion + Wraith Leggings), even at 3 items. Root cause: the damage objective
+  is MANA-BLIND — rotation damage assumes casts land within the window regardless of
+  pool, so Azure Core's 450 mana / 15 haste is invisible and the sim prefers raw
+  magical power. This is exactly the disagreement the validator exists to surface,
+  not a number to engineer around. The fix (mana-constrained sustained casting) is
+  future work; the slice ships the finding honestly.
+
+## 2026-06-14: same kit, different lane — playstyle must be lane-conditioned (Zinx)
+- Zinx exposed three coupled gaps the Gideon slice didn't. (1) She's tagged
+  hybrid; kitPowerType resolves her to magical from the ability damage type (same
+  fix Gideon needed). (2) She has two heals BUT CANNOT HEAL HERSELF (Infuse + the
+  ult heal are ally-directed) — so she's an enchanter, not a self-sustain kit. The
+  'sustain' objective was conflating the two: ability heals are ally OUTPUT
+  (healShield10s); self-drain via lifesteal is sustain10s. Split them — an
+  enchanter who can't self-heal should never steer to sustain10s.
+- (3) The big one: a kit's playstyle has to be LANE-CONDITIONED. Zinx's heal
+  abilities gave a fixed sustain bump that made her 'sustain' in EVERY lane, even
+  mid/carry where she's a poke damage hero. Worse, the sustain steer is
+  healShield10s, which COMBAT_KEYS doesn't include, so generateBuilds silently
+  DROPPED it — her damage lanes got no steer at all and an enchanter Eternal
+  (Exarch) even in carry. Fix: ally healing LEADS the playstyle only where it's a
+  scored win condition (support); in a damage lane it's demoted below the damage
+  signals. Now: support -> sustain/poke, healShield10s steer, Exarch; mid/carry ->
+  poke/sustain, rot10/rot20 steer (a combat objective the search keeps), Vesh.
+- Eternal-major selection: switched from additive (sim + 3*fit) to multiplicative
+  (max(0.1,1+fit) * (1+sim/100)) so FIT leads the major's IDENTITY and sim only
+  refines. The additive form let a modeled off-archetype damage major (Vesh, +sim)
+  beat the unmodeled best-fit support major (Exarch, sim=0) on a support hero. An
+  Eternal's deity archetype is a fit decision; the sim delta breaks ties within an
+  archetype, it doesn't override the archetype. Verified Gideon still picks Vesh.
+- Lesson for the roster generalization: "has a heal ability" is not "is a sustain
+  hero" — role/lane decides whether that heal is the win condition or just utility.
+
+## 2026-06-14: the sim must level abilities by the real per-level path (V2 chart)
+- ranksAtLevel used a heuristic (one point per ability, then max by priority). It
+  got ult TIMING right (fixed 6/11/16) but the basic-rank distribution was an
+  approximation, so the early/mid stages didn't reflect how the hero is actually
+  played. skill-orders.json already holds the full 18-level recommended SEQUENCE
+  (the V2 ability chart, pred.gg recommendedSkills) but only maxOrder was loaded.
+- Fix: load the full sequence into kit.recommendedSequence (mapping omeda
+  RMB/Q/E/R -> PRIMARY/SECONDARY/ALTERNATE/ULTIMATE) and tally ranks point-by-point
+  up to the level. Now any evaluation at level L uses exactly the abilities online
+  and their ranks at L: Zinx at L5 has ULT=0 (correctly absent before 6) and
+  Bad Medicine/Ricochet already ahead; the staged early/mid sims finally reflect
+  "factor in abilities when they're acquired." Converges with the old heuristic by
+  L13, so the level-13 tests were unaffected (harness stayed green at 93->94).
+- Open follow-ups surfaced this session (not yet built): (1) mana-aware objective
+  so mana-starved heroes (Zinx 290/340 at L1, Shinbi, Argus) get steered to mana
+  items early and Azure Core stops being invisible; (2) model the EVOLVING ORB
+  (Orb of Enlightenment -> Orb of Growth, "Inner Growth" stacking, in the meta
+  build) as a ramping stat gain rather than flat final stats; (3) the ult is still
+  credited once per rotation WINDOW despite its ~120-160s cooldown, which
+  over-credits ults in rot10/rot20 (separate from acquisition timing).
+
+## 2026-06-14: mana is a BURST-cadence constraint, not a sustained-rotation one
+- Tried to make the build search mana-aware via the 10s rotation cost (manaSpent10s
+  vs pool). It did NOTHING: cooldowns space casts over 10s and the pool scales, so
+  EVERY mana hero reads adequacy 1.0 at every level. A 10s mana model can't see
+  mana pressure at all.
+- The metric that actually discriminates is "combos before dry" = pool / one-combo
+  cost (sum of ability costs, one cast each), level- and item-aware. Zinx 1.9 combos
+  at L9, Shinbi 2.5, Gideon 2.9 (he scales mana +372% L1->L18 and needs it least),
+  and a mana item lifts Zinx to 3.3. This matches the maintainer's read exactly
+  (Zinx/Shinbi/Argus sparse early; Gideon scales out of it).
+- Search penalty: factor = 0.5 + 0.5*adequacy where adequacy = min over early item-
+  timing stages (1/2/3 items at L9/12/14) of min(1, combosBeforeDry/3). Applied to
+  the beam keep-sort and the headline sort, NOT as a Pareto axis (avoids front
+  bloat). Result: Zinx front-loads mana (adequacy 1.0), Gideon untouched (0.97),
+  resourceless kits inert (1.0). Also the structural fix for the Azure-Core miss.
+- Lesson: match the constraint's MODEL to its real regime. Mana doesn't bind a
+  paced rotation; it binds repeated combos in a skirmish. Modeling it on the wrong
+  window silently produced a no-op. The level scaling itself is the indicator the
+  maintainer pointed at: pool/combo by level is what says "this hero needs mana".
+
+## 2026-06-14: on-hit reasoning + roster re-tag from augment & lane behaviour
+- Why a weak-ability mage leans on-hit (Zinx): attack speed + a MAGICAL on-hit item,
+  not ability damage. Her meta core is Prophecy + Spectra + Orion (Orion converts
+  ability haste -> attack speed). The procs were modeled, but the optimizer couldn't
+  reach the build: the field core is a balanced hybrid no single objective corner
+  picks, and the autoDPS corner overshot to PHYSICAL crit (Deathstalker) because the
+  item pool read the 'hybrid' tag as "allow everything."
+- Fix: relevantPool routes through kitPowerType. A magical kit drops physical
+  power/crit/lethality and keeps magical power + attack speed + ability haste (which
+  feed magical on-hit). An on-hit steer on Zinx now builds Orion + Spectra, not
+  Deathstalker. Note: a naive "magical_power>0" filter was WRONG — Spectra has 0
+  magical_power (its magic is in the on-hit proc), so the rule keeps attack-speed
+  items, not just MP items.
+- Re-tagging the roster (maintainer: tag from augment + lane behaviour, not the kit
+  tag): npm run classify emits per-hero-lane (real power type) x (playstyle from the
+  lane augment fused with the kit) for all 52 heroes -> classifications.json. 26
+  agree / 37 disagree / 24 kit-only / 9 field-only. The disagreements are the
+  product: Eden is ability-burst not on-hit; Bayle/Boris are sustain bruisers; Argus
+  mid is on-hit. The augment classifier now reads attack-speed->on-hit,
+  barrier->sustain, damage-reduction->tank, AoE->ability-burst (16 unclassifiable
+  augments -> 9; the rest are non-damage utility that honestly falls back to kit).
+- Lesson: the augment is the field's DECLARATION of intent; it tags playstyle better
+  than kit numbers for heroes whose power is in items/behaviour, not raw ability
+  scaling. The kit is the fallback when the augment declares no damage playstyle.
+
+## 2026-06-14: pred.gg build NAMES are a free label cross-check; the sim proved on-hit
+- pred.gg's frozen snapshot stores a build-tab NAME per hero-lane (118/118 covered):
+  "On-Hit/Crit", "Crit/Sustain", "Pen/On-Hit", "On-Hit/Anti Tank"... These are
+  human-curated playstyle labels, NOT item lists, so they cross-check our re-tag
+  without copying anything. npm run classify now shows our tag vs the pred.gg name
+  per lane: 31 agree / 47 differ / 18 no-overlap (their taxonomy adds item terms
+  like Crit/Pen/Scaling that don't map to our 5 playstyles).
+- The "differ" cases are the accuracy gold: Drongo's AoE augment (Bring The Boom)
+  tagged ability-burst, but pred.gg builds him On-Hit/Crit -> our augment-as-
+  playstyle misreads an AoE augment on a fundamentally on-hit carry. Bayle/Boris:
+  augment says sustain (lifesteal), pred.gg name says On-Hit -> both true (on-hit
+  build WITH a sustain augment); the augment declares the perk, the build name the
+  item archetype. Use the name to validate, the augment to steer.
+- Sim PROOF that magical on-hit is Zinx's route (maintainer: "prove it with the
+  sim"): after the power-type-aware pool, an on-hit steer builds Orion+Spectra+
+  Prophecy and agreeWithField goes hit@6 false/0% -> hit@6 TRUE/59%, reproducing the
+  field core (Prophecy+Spectra+Orion). The sim EARNED the field build from first
+  principles once the pool stopped leaking physical crit. Agreement is the proof.
+
+## 2026-06-14: evolving items — buy the source, credit the evolved value
+- "The orb that evolves" = Orb of Growth -> Orb of Enlightenment. You BUY Growth
+  (the field does: Shinbi/Iggy n=187/Renna/Countess); it farms bonus XP and at 500
+  evolves into Enlightenment (Per Level: +3 MP, +15 Health). Growth was unmodeled,
+  so the sim never bought the meta item. Now Growth is credited at its evolved
+  per-level MP/HP. "Alternata" (maintainer saw on Wukong/Eden) is the same pattern:
+  Alternator -> Alternata. And Catalytic Drive -> Cybernetic Drive.
+- General rule found from build_paths: an evolving completed item is an Epic/Legendary
+  whose single build_paths target is also Epic/Legendary. Three in the build pool
+  (orb, alternator, catalytic) + 8 crest lines (crests aren't in the build pool yet).
+  The evolved forms (Orb of Enlightenment, Alternata, Cybernetic Drive) are NOT
+  directly buyable, so they're excluded from completedItems (EVOLUTION_TARGETS); the
+  source carries the evolved value. This replaced an Orb-Of family hack with one
+  general mechanism.
+- Per-item: Orb of Growth -> evolved per-level MP/HP. Catalytic Drive -> evolved
+  +12% total armor (Cybernetic Conversion). Alternator was already fine (its +15%
+  alt-ability amp is modeled; the evolved "Nata Style" cooldown ripple is genuinely
+  unmodelable — depends on cast interleaving, same reason Alternata flags it).
+- Broader item review (maintainer: "review all items"): build pool is 132 items,
+  68 have a modeled passive, 62 are flat-stats-only (passive uncredited), 2 have no
+  entry. The 62 are the standing coverage backlog (priorities item 11, ratcheted);
+  prioritize by field play-rate and by where the agreement validator flags a
+  sim/field disagreement.
+
+## 2026-06-14: the "Alternate ability" question exposed a key-map scramble bug
+- Explaining the Alternator item ("Your Alternate Ability deals 15% more damage")
+  surfaced a real bug. "Alternate ability" = the RMB (right-click) ability slot,
+  which EVERY hero has (Gideon RMB = Void Breach, Wraith RMB = Knock Knock). Not a
+  stance mechanic. The item is strong when that RMB is a damage ability; useless if
+  the RMB is a stance/utility toggle.
+- The bug: data.ts had TWO disagreeing omeda->internal key maps. Abilities used
+  OMEDA_KEY_MAP (RMB->ALTERNATE, Q->PRIMARY, E->SECONDARY); skill orders used
+  OMEDA_TO_KIT (RMB->PRIMARY, Q->SECONDARY, E->ALTERNATE). Same omeda key, different
+  internal slot. So skill-order leveling assigned points to the WRONG ability:
+  Gideon's engine maxed Cosmic Rift (PRIMARY) by L9 when pred.gg maxes Void Breach
+  (RMB). Roster-wide scramble of which ability is high-rank at each level -> wrong
+  rotation damage at every non-max level. (Ult timing was unaffected: R->ULTIMATE in
+  both. Level-13 results mostly converge, which is why it hid until now.)
+- Fix: delete OMEDA_TO_KIT/SEQ_TO_KIT; map skill orders with the SAME OMEDA_KEY_MAP
+  the abilities use. Gideon now maxes Void Breach first. Added a regression test
+  that the RMB ability out-ranks Cosmic Rift early and is keyed ALTERNATE.
+- Lesson: when two pipelines map the same external key into the same internal
+  namespace, they MUST share one map. The Alternator item modeling itself was
+  already correct (abilityKey ALTERNATE = RMB via OMEDA_KEY_MAP); only the skill
+  order used the wrong map.
+
+## 2026-06-14: attack-speed steroid abilities (Sparrow/Murdock) were invisible
+- Maintainer caught it: Sparrow (Heightened Senses, 25/30/35/40/45% AS) and Murdock
+  (Hot Pursuit, 15/20/25/30/35% AS) max a "utility" ability early for an attack-speed
+  SPIKE. These abilities have no damage line, so def construction dropped them
+  entirely -> the AS never reached the sim -> their auto DPS (their whole identity as
+  carries) was undervalued. This is the concrete case behind the earlier "the sim
+  only levels damaging abilities" caveat.
+- Fix: parse a per-rank "X/Y/Z% Attack Speed" self-buff (+ approx duration "for Ns")
+  from ability text (parseSelfAttackSpeed); retain buff-only abilities in the kit
+  (new branch in def construction); credit the AS in auto DPS uptime-weighted
+  (selfAttackSpeedPct: full in a burst window, buffDuration/cooldown sustained).
+  attacksPerSecond gained an extraAsPct param. Retaining these abilities ALSO fixes
+  their skill-order leveling (the E slot is no longer dropped).
+- Lesson: "no damage line" != "no combat value." An ability can be a pure stat
+  steroid (attack speed, and likely power/pen/haste buffs too) that the field maxes
+  first precisely because it scales the auto-attacks. The damage-only def filter was
+  silently discarding a carry's core power. Next: generalize to other self-buffs.
+
+## 2026-06-14: generalized self-buffs to permanent passive stat gains
+- After the AS steroid, surveyed the roster: most other ability self-buffs are
+  PASSIVES (always-on) granting power/pen/haste — "Passive: Gain 8/11/14/17/20
+  physical power" (Feng Mao Safeguard), Wraith's Surprise, Surprise! gives
+  10/14/18/22/26 physical PENETRATION. These had no damage line so they were
+  dropped, losing both the stat and the ability's place in the skill order.
+- Added parseSelfStatBuffs (power/pen/haste/lifesteal/omnivamp from "Gain X ...")
+  + AbilityDef.selfStatBuffs; retain buff-only abilities; fold the gains into the
+  effective item totals at full uptime (applySelfStatBuffs) so they feed every
+  damage window. Retaining Wraith's Surprise, Surprise! also fixes her leveling
+  (it was the dropped ability behind her earlier skill-order mismatch).
+- Scope call confirmed with the maintainer: only COMPLETED Epic/Legendary items are
+  in the build pool, so the smaller components ("belts") that build into them are
+  already excluded — no effort spent modeling them. The 62 flat-stats-only backlog
+  is all completed items.
+- Uptime model: permanent passives = 1.0 (always on); temporary steroids (AS) =
+  duration/cooldown. Temporary non-AS steroids are rare/none among leveled abilities
+  (the power ones are passives), so they're deferred.
+
+## 2026-06-14: hero passives — model the EHP/stat ones, skip the conditional ones
+- The Passive slot isn't built into abilities[], so no hero passive was modeled.
+  Surveyed Steel + Riktor + the survey hits: passives split like the maintainer
+  guessed. Steel's Cybernetic Shell (7% max-HP refreshing self-shield + armor
+  cross-conversion) is pure EHP -> undervalued his whole tank identity. Riktor's
+  Suspended Sentence (halt enemy cooldowns on CC) is utility/CC -> outside the
+  sim's damage/EHP/heal objectives, no impact on our numbers.
+- Most passives are conditional/stacking/proc (Gideon tether, Legion thresholds,
+  Gadget/Boris stacks), NOT clean flat grants -- the earlier "9 power passives"
+  survey over-counted by matching any "power" mention. Auto-crediting them would
+  over-count, so they stay unmodeled.
+- Modeled the clean case: parsePassiveSelfShield reads "shields ... for X% of max
+  health" (only Steel today, 7%) into kit.passiveSelfShieldPctMaxHealth; EHP adds
+  it as always-on effective HP (+472 eHP for Steel). Generic pattern, future-proof.
+  Steel's armor cross-conversion is a remaining unmodeled piece (build-dependent).
+- Lesson: a hero passive is worth modeling only when it maps to a scored objective
+  (EHP/damage/heal) AND is unconditional. CC/lockdown/proc passives are real value
+  the sim doesn't score -- flag, don't fake.

@@ -29,6 +29,15 @@ export interface AbilityDef {
   pctMaxHealth?: number;         // bonus damage as % of target max health
   damageType: 'physical' | 'magical' | 'true';
   healing?: HealEntry[];         // heal/shield output per cast (may be the only payload)
+  // Self attack-speed steroid per rank (e.g. Sparrow's Heightened Senses,
+  // Murdock's Hot Pursuit): a temporary AS buff with no damage line. Carries max
+  // these early for the auto-attack spike, so it must feed auto DPS.
+  selfAttackSpeedPctPerRank?: number[];
+  buffDurationSec?: number;      // approx active duration of the AS buff, for uptime
+  // Permanent self stat gains from a leveled ability ("Passive: Gain X physical
+  // power" — Feng Mao's Safeguard, Wraith's Surprise Surprise), credited at full
+  // uptime. Distinct from the temporary AS steroid above.
+  selfStatBuffs?: { stat: keyof ItemStats; perRank: number[] }[];
   cooldowns: number[];           // per rank, seconds
   costs: number[];               // mana per rank
   maxRank: number;
@@ -59,6 +68,16 @@ export interface HeroKit {
   // strongest-maxed-first) from pred.gg recommendedSkills; the sim levels
   // abilities this way instead of guessing. Undefined => heuristic order.
   recommendedMaxOrder?: string[];
+  // Full per-level recommended path (kit keys, one per level, the V2 ability
+  // chart): the sim tallies ability ranks at a level straight from this when
+  // present, so early/mid stages reflect exactly which abilities are online and
+  // at what rank. Undefined => fall back to the ult-timing + max-order heuristic.
+  recommendedSequence?: string[];
+  // A self-shield passive as a fraction of max health (Steel's Cybernetic Shell,
+  // 7%): pure effective HP. The Passive slot isn't built into abilities[], so this
+  // is the one passive component the EHP model credits; conditional/proc passives
+  // (Riktor's lockdown, Gideon's tether) stay unmodeled.
+  passiveSelfShieldPctMaxHealth?: number;
   // omeda = all numbers current-patch; mixed = some slots fell back to
   // stale owned data (see LoadedData.staleFallbacks).
   abilitySource: 'omeda' | 'mixed';

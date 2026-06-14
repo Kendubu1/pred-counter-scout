@@ -12,7 +12,8 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadEffects } from './effects.js';
-import type { ObjKey } from './search.js';
+import { kitHeals, type ObjKey } from './search.js';
+import { kitPowerType } from './sim.js';
 import type { HeroKit } from './types.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -27,6 +28,10 @@ export function physicalAutoAttacker(kit: HeroKit): boolean {
   return kit.damageType !== 'magical' && (kit.roles.includes('carry') || kit.basicScalingPct >= 90);
 }
 
+// kitPowerType lives in sim.ts (the item pool needs it too); re-exported here so
+// existing importers keep working.
+export { kitPowerType };
+
 /** A playstyle's objective corner, ROUTED BY THE HERO'S DAMAGE TYPE. The key
  *  fix: an on-hit augment on a magical hero (e.g. Zinx, whose basic is physical
  *  but all four abilities are magical) must NOT be steered into a physical-crit
@@ -38,7 +43,12 @@ export function playstyleObjectives(playstyle: Playstyle, kit: HeroKit): ObjKey[
         ? ['autoDps10VsSquishy', 'rot10VsSquishy']   // physical AA: basic DPS
         : ['rot10VsSquishy', 'burstVsSquishy'];      // magical/hybrid: weave on-hit into the rotation
     case 'ability-burst': return ['burstVsSquishy', 'rot10VsSquishy'];
-    case 'sustain': return ['healShield10s', 'sustain10s'];
+    case 'sustain':
+      // Ability heals are OUTPUT directed at an ally — many enchanters (Zinx)
+      // cannot heal themselves — so steer to heal/shield output, NOT self-drain.
+      // sustain10s (lifesteal/omnivamp self-heal) is the steer only for kits that
+      // sustain through items rather than heal abilities (drain bruisers).
+      return kitHeals(kit) ? ['healShield10s'] : ['sustain10s', 'healShield10s'];
     case 'tank': return ['ehpPhysical', 'ehpMagical'];
     case 'poke': return ['rot10VsSquishy', 'rot20VsBruiser'];
   }
@@ -81,10 +91,10 @@ export function classifyAugment(key: string): AugmentClass {
   // 2) keyword scan of the curated text (same words a human reads)
   const t = (e.sourceText || '').toLowerCase();
   const cues: [Playstyle, RegExp, string][] = [
-    ['on-hit', /on-?hit|basic attack|basic attacks|per basic|auto attack/, 'on-hit / basic-attack text'],
-    ['sustain', /\bheal|\bshield|lifesteal|omnivamp|restore .*health|infuse/, 'heal / shield text'],
-    ['tank', /armou?r|mitigat|damage taken|tenacity|less damage|resurrect|cc immun/, 'defensive text'],
-    ['ability-burst', /ability|abilities|ultimate|cast|cooldown/, 'ability / cast text'],
+    ['on-hit', /on-?hit|basic attack|basic attacks|per basic|auto attack|attack[ -]?speed/, 'on-hit / attack-speed text'],
+    ['sustain', /\bheal|\bshield|\bbarrier|lifesteal|omnivamp|restore .*health|infuse/, 'heal / shield / barrier text'],
+    ['tank', /armou?r|mitigat|damage taken|damage reduction|tenacity|less damage|resurrect|cc immun/, 'defensive text'],
+    ['ability-burst', /ability|abilities|ultimate|cast|cooldown|nearby enem|\baoe\b|area|zone|explod|napalm/, 'ability / cast / AoE text'],
     ['poke', /range|projectile|missile|slow|movement speed/, 'range / poke text'],
   ];
   for (const [ps, re, why] of cues) {
@@ -140,4 +150,94 @@ export function lanesFor(heroSlug: string): string[] {
     const na = (hero[a].augments?.[0]?.n ?? 0), nb = (hero[b].augments?.[0]?.n ?? 0);
     return nb - na;
   });
+}
+
+// ── Kit-derived playstyle (first-principles, NOT field-derived) ──
+//
+// The shipped steer above reads INTENT from the augment the field runs — useful,
+// but still popularity-anchored. This derives the playstyle from the hero's own
+// kit (damage type, basic-attack carry, ability scaling, cooldowns, on-hit/heal
+// payloads), so a hero the field hasn't figured out (or a brand-new one) still
+// gets a coherent steer. The two are then FUSED: agreement is a confident steer,
+// disagreement is itself signal worth surfacing.
+
+export interface KitPlaystyle {
+  primary: Playstyle;
+  secondary?: Playstyle;
+  confidence: number;   // top score minus runner-up; 0 => no clear lean
+  evidence: string[];   // the kit cues that drove the classification
+}
+
+/** Score each playstyle from kit mechanics and return the lean. Deterministic;
+ *  every point is justified by a recorded cue. */
+export function kitPlaystyle(kit: HeroKit, role?: string): KitPlaystyle {
+  const r = role ?? kit.roles[0] ?? 'midlane';
+  const score: Record<Playstyle, number> = { 'on-hit': 0, 'ability-burst': 0, sustain: 0, tank: 0, poke: 0 };
+  const evidence: string[] = [];
+  const add = (ps: Playstyle, n: number, why: string) => { score[ps] += n; evidence.push(`${ps} +${n}: ${why}`); };
+
+  const power = kitPowerType(kit);
+  if (physicalAutoAttacker(kit)) add('on-hit', 3, 'physical basic attacks carry the kit (carry role / high basic scaling)');
+  else if (power === 'physical' && kit.basicScalingPct >= 60) add('on-hit', 1, `basic scaling ${kit.basicScalingPct}% on bonus power`);
+
+  const abil = kit.abilities.filter((a) => a.damagePerRank.length);
+  const maxScaling = Math.max(0, ...abil.map((a) => a.scalingPct));
+  if (power === 'magical' && maxScaling >= 60) add('ability-burst', 2, `ability-power kit with ${maxScaling}% scaling`);
+  if (abil.some((a) => a.key === 'ULTIMATE' && (a.scalingPct >= 80 || (a.pctMaxHealth ?? 0) > 0))) add('ability-burst', 1, 'high-scaling or %max-health ultimate');
+  if (abil.some((a) => (a.pctMaxHealth ?? 0) > 0)) add('ability-burst', 1, '%max-health ability damage');
+
+  if (kit.attackType === 'ranged') add('poke', 1, 'ranged auto range enables poke');
+  const meanCd = abil.length ? abil.reduce((s, a) => s + (a.cooldowns[0] ?? 99), 0) / abil.length : 99;
+  if (meanCd <= 9) add('poke', 1, `spammable abilities (mean base cooldown ${meanCd.toFixed(1)}s)`);
+
+  // Lane-conditioned sustain: ally healing only LEADS the playstyle where it is a
+  // scored win condition (support, the role whose objective set scores heal/shield
+  // output). In a damage lane the same heal kit is a poke/burst/on-hit hero whose
+  // heals are utility, so sustain is demoted below the damage signals — otherwise
+  // the steer resolves to healShield10s, which a combat objective set drops.
+  if (kitHeals(kit)) {
+    if (r === 'support') add('sustain', 3, 'support kit whose ally heals are the win condition');
+    else add('sustain', 0.5, 'has heal abilities, but they are utility in a damage lane');
+  }
+
+  if (kit.attackType === 'melee' && power === 'physical' && kit.basicScalingPct < 60 && maxScaling < 60) {
+    add('tank', 2, 'melee with low basic and ability scaling (durability-leaning bruiser)');
+  }
+
+  const ranked = (Object.keys(score) as Playstyle[]).sort((a, b) => score[b] - score[a]);
+  const primary = ranked[0]!;
+  const secondary = score[ranked[1]!] > 0 ? ranked[1]! : undefined;
+  return { primary, secondary, confidence: score[primary]! - score[ranked[1]!]!, evidence };
+}
+
+export interface FusedSteer {
+  bias: ObjKey[];
+  agreement: 'agree' | 'disagree' | 'kit-only' | 'field-only';
+  note: string;
+}
+
+/** Fuse the kit-derived playstyle with the field's lane augment into one steer.
+ *  Kit leads (first principles); the field corroborates or disagrees. Agreement
+ *  reinforces the corner; disagreement keeps the kit steer but names the gap. */
+export function fuseSteer(kitPs: KitPlaystyle, lane: LaneAugment | null, kit: HeroKit): FusedSteer {
+  const fieldPs = lane ? classifyAugment(`augment:${kit.slug}:${lane.id}`).playstyle : null;
+  const kitObj = playstyleObjectives(kitPs.primary, kit);
+  const dedup = (xs: ObjKey[]) => [...new Set(xs)];
+  const ev = lane && lane.n > 0 ? ` (field ${lane.lane} runs "${lane.name}" ${(lane.wr * 100).toFixed(1)}% over ${lane.n.toLocaleString()})` : '';
+
+  if (!fieldPs) {
+    if (kitPs.confidence <= 0) return { bias: kitObj, agreement: 'kit-only', note: `kit lean is weak; defaulting to ${kitPs.primary}` };
+    return { bias: kitObj, agreement: 'kit-only', note: `kit says ${kitPs.primary}; no usable field augment signal${ev}` };
+  }
+  if (kitPs.confidence <= 0) {
+    return { bias: playstyleObjectives(fieldPs, kit), agreement: 'field-only', note: `kit lean unclear; following the field's ${fieldPs}${ev}` };
+  }
+  if (fieldPs === kitPs.primary || fieldPs === kitPs.secondary) {
+    return { bias: dedup([...kitObj, ...playstyleObjectives(fieldPs, kit)]), agreement: 'agree', note: `kit and field agree on ${fieldPs}${ev}` };
+  }
+  return {
+    bias: kitObj,
+    agreement: 'disagree',
+    note: `kit says ${kitPs.primary}, field plays ${fieldPs}${ev} — steering by the kit; the disagreement is worth a look`,
+  };
 }

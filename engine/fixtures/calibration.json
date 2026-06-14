@@ -3,9 +3,10 @@
   "patch": "1.14.4",
   "constants": {
     "mitigation": {
-      "formula": "damage * 100 / (100 + armor)",
+      "formula": "damage * K / (K + armor)",
+      "range": [100, 150],
       "verified": false,
-      "source": "Assumed standard 100/(100+armor). DATA WARNING 2026-06-12: implied K from total_damage_mitigated rises 122->150 with armor (n=23k players), meaning the field includes shields/DR and the formula cannot be verified from aggregates; if true K > 100, current EHP outputs OVERVALUE armor. Measure in practice mode (highest-priority measurement)."
+      "source": "Assumed standard K=100 (damage*100/(100+armor)); shipped default stays 100. DATA WARNING 2026-06-12: implied K from total_damage_mitigated rises 122->150 with armor (n=23k players), meaning the field includes shields/DR and the formula cannot be verified from aggregates; if true K > 100, current EHP outputs OVERVALUE armor. range [100,150] is swept by the robustness check (src/robustness.ts) to flag picks that depend on the unknown. Measure in practice mode (highest-priority measurement)."
     },
     "percentPenMultiplicative": {
       "value": true,
@@ -19,8 +20,9 @@
     },
     "critMultiplier": {
       "value": 1.75,
+      "range": [1.6, 1.8],
       "verified": false,
-      "source": "Assumed 1.75. DATA EVIDENCE 2026-06-12: largest_critical_strike envelope over 6,657 crit builders, densest ratio bins 1.6-1.8 under bonus-only scaling (consistent with 1.75; confounded by crit-damage modifiers and possible post-mitigation recording). Confirm in practice mode."
+      "source": "Assumed 1.75. DATA EVIDENCE 2026-06-12: largest_critical_strike envelope over 6,657 crit builders, densest ratio bins 1.6-1.8 under bonus-only scaling (consistent with 1.75; confounded by crit-damage modifiers and possible post-mitigation recording). range [1.6,1.8] is swept by the robustness check. Confirm in practice mode."
     },
     "attackSpeedFormula": {
       "formula": "attacksPerSecond = base_attack_speed[level] * (1 + item_attack_speed / 100)",
@@ -49,6 +51,7 @@
     "attackSpeedCap": {
       "value": 3,
       "verified": false,
+      "crossCheck": "Maintainer web research (2026-06-14) cites a 350-420% attack-speed cap. That is a percent-bonus figure, whereas the shipped 3.0 is an absolute attacks/sec ceiling from the Cursed Ring tooltip; the two are likely the same limit seen two ways (base AS x cap ~= 3/sec for most heroes). Shipped value left at 3.0 (stronger in-game source); confirm the units in practice mode before reconciling.",
       "source": "STATED in item data: Cursed Ring (Broken Chains) reads \"Increase the Attacks per Second Cap from 3 to 4\", so the default cap is 3.0 attacks/sec (4.0 with that effect, currently unmodeled). Applied 2026-06-14 from the stated value; the formula interaction still merits a practice-mode check (checklist 7), so it stays verified:false (output remains THEORY)."
     }
   },
