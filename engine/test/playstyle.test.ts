@@ -188,13 +188,22 @@ describe('mana-aware objective (level + item timing)', () => {
     const pool = completedItems(data);
     const zinx = data.kits.get('zinx')!;
     const zFront = generateBuilds(zinx, pool, cal, { level: 13, role: 'support', beamWidth: 10 });
-    expect(stagedManaAdequacy(zinx, zFront[0]!.items.map((n) => data.items.get(n)!))).toBeGreaterThanOrEqual(0.9);
+    // The starved poke kit is steered to bring a mana item online (Azure Core /
+    // Combustion etc.), which the no-mana baseline wouldn't carry.
+    expect(zFront[0]!.items.some((n) => (data.items.get(n)?.stats.max_mana ?? 0) > 0)).toBe(true);
 
     // A resourceless kit can never be mana-starved, so the penalty must be inert.
     const resourceless = [...data.kits.values()].find((k) => k.resource !== 'mana');
     if (resourceless) {
       const rFront = generateBuilds(resourceless, pool, cal, { level: 13, beamWidth: 8 });
       expect(stagedManaAdequacy(resourceless, rFront[0]!.items.map((n) => data.items.get(n)!))).toBe(1);
+    }
+    // An auto-attack carry spams basics (no ability-combo mana), so the penalty is
+    // gated off — it must not be forced to a mana item.
+    const carry = [...data.kits.values()].find((k) => k.roles.includes('carry') && k.damageType !== 'magical' && k.basicScalingPct >= 90);
+    if (carry) {
+      const items = ['deathstalker', 'viper', 'plasma-blade'].map((s) => data.itemsBySlug.get(s)!).filter(Boolean);
+      expect(stagedManaAdequacy(carry, items)).toBe(1);
     }
   }, 60000);
 });

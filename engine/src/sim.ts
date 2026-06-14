@@ -559,7 +559,7 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
 // rich one (Gideon ~2.9), and a mana item raises it (Zinx + Azure Core -> 3.3). We
 // target sustaining ~3 combos before regen; pool and combo cost are both level-
 // aware (base mana[level], ranks at level) and item-aware (item mana).
-const TARGET_COMBOS = 3;
+const TARGET_COMBOS = 4;
 
 export function manaSustain(kit: HeroKit, items: Item[], level: number): { pool: number; comboCost: number; combosBeforeDry: number; adequacy: number } {
   if (kit.resource !== 'mana') return { pool: Number.POSITIVE_INFINITY, comboCost: 0, combosBeforeDry: Number.POSITIVE_INFINITY, adequacy: 1 };
@@ -583,7 +583,11 @@ const MANA_STAGES = [{ count: 1, level: 9 }, { count: 2, level: 12 }, { count: 3
 /** Worst mana adequacy across the build's early item-timing stages (1 = always
  *  sustainable / resourceless). Drives the search to bring mana online in time. */
 export function stagedManaAdequacy(kit: HeroKit, items: Item[]): number {
-  if (kit.resource !== 'mana' || !items.length) return 1;
+  // No mana constraint for resourceless kits or auto-attack carries: their damage
+  // is basic attacks (no mana), not repeated ability combos, so "combos before
+  // dry" doesn't bind them — only ability-reliant kits (mages/poke) are gated.
+  const autoAttacker = kit.damageType !== 'magical' && (kit.roles.includes('carry') || kit.basicScalingPct >= 90);
+  if (kit.resource !== 'mana' || autoAttacker || !items.length) return 1;
   let worst = 1;
   for (const s of MANA_STAGES) {
     if (items.length < s.count) break;

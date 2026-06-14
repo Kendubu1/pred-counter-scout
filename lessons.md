@@ -1357,3 +1357,22 @@ Append-only. One entry per backlog item or significant finding.
 - This is the capstone that ties the session's defensive work together: EHP now
   reflects armor + HP + shields + damage-reduction + self-shield passives, so
   "survive the camp" is finally a real computation, not just raw HP.
+
+## 2026-06-14: mana model tuning — value it for poke mages, gate it off carries
+- The agreement validator caught a persistent disagreement: the field rushes a mana
+  item (Azure Core / Combustion) on poke mages (Argus, Gideon — 4 of 6 Argus cores
+  start with Azure Core), but the sim didn't. Diagnosis: with TARGET_COMBOS=3 the
+  starved-build penalty was ~9.5%, just under Azure/Combustion's damage cost, so the
+  optimizer kept the higher-raw-damage no-mana build by a hair.
+- Fix 1: TARGET_COMBOS 3 -> 4 (a poke mage wants ~4 combos of mana for poke wars).
+  Now Argus/Gideon/Zinx all rush a mana item (Combustion).
+- Fix 2 (over-forcing): the penalty was also pushing AUTO-ATTACK CARRIES (Murdock,
+  Drongo) to mana — wrong, their damage is basics, not ability combos. Gated
+  stagedManaAdequacy to ability-reliant kits: auto-attackers (physical carry or
+  basicScaling>=90) return adequacy 1. Carries now build no forced mana; poke mages
+  do; mana-rich kits (Sparrow, 5.5 combos) were never forced.
+- Residual: the sim picks Combustion where the field picks Azure Core — both mana
+  items; the difference is Azure's 15 ability haste, which the sim weighs slightly
+  under Combustion's +15 MP. That's a finer haste-valuation call (abilityHaste is
+  unverified), not "no mana", so left as-is. Lesson: the "combos before dry" metric
+  only binds ability-combo kits; gate it off auto-attackers or it mis-credits carries.
