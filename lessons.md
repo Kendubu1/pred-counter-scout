@@ -1220,3 +1220,22 @@ Append-only. One entry per backlog item or significant finding.
 - Lesson: the augment is the field's DECLARATION of intent; it tags playstyle better
   than kit numbers for heroes whose power is in items/behaviour, not raw ability
   scaling. The kit is the fallback when the augment declares no damage playstyle.
+
+## 2026-06-14: pred.gg build NAMES are a free label cross-check; the sim proved on-hit
+- pred.gg's frozen snapshot stores a build-tab NAME per hero-lane (118/118 covered):
+  "On-Hit/Crit", "Crit/Sustain", "Pen/On-Hit", "On-Hit/Anti Tank"... These are
+  human-curated playstyle labels, NOT item lists, so they cross-check our re-tag
+  without copying anything. npm run classify now shows our tag vs the pred.gg name
+  per lane: 31 agree / 47 differ / 18 no-overlap (their taxonomy adds item terms
+  like Crit/Pen/Scaling that don't map to our 5 playstyles).
+- The "differ" cases are the accuracy gold: Drongo's AoE augment (Bring The Boom)
+  tagged ability-burst, but pred.gg builds him On-Hit/Crit -> our augment-as-
+  playstyle misreads an AoE augment on a fundamentally on-hit carry. Bayle/Boris:
+  augment says sustain (lifesteal), pred.gg name says On-Hit -> both true (on-hit
+  build WITH a sustain augment); the augment declares the perk, the build name the
+  item archetype. Use the name to validate, the augment to steer.
+- Sim PROOF that magical on-hit is Zinx's route (maintainer: "prove it with the
+  sim"): after the power-type-aware pool, an on-hit steer builds Orion+Spectra+
+  Prophecy and agreeWithField goes hit@6 false/0% -> hit@6 TRUE/59%, reproducing the
+  field core (Prophecy+Spectra+Orion). The sim EARNED the field build from first
+  principles once the pool stopped leaking physical crit. Agreement is the proof.
