@@ -105,6 +105,10 @@ function parseDamage(md: string): { values: number[]; scaling: number; pctMaxHea
 // pattern (Lt. Belica's 20/25/30% missing-HP ult, Feng Mao's 6% current-HP dash).
 // Max-health scaling is handled by parseDamage's pctMaxHealth; this captures the
 // health-state-dependent clauses, per rank where stated.
+// An ability hits multiple targets (area/cone/line/all-enemies) — feeds the
+// teamfight objective so AoE kits/items are valued for multi-target damage.
+const AOE_RE = /all (?:enemies|units|targets)|nearby (?:enemies|units)|in (?:a|an) (?:area|cone|line)|around (?:the )?(?:target|him|her)|area of effect|\baoe\b|enemies (?:hit|in)/i;
+
 function parseTargetHealth(md: string): { pct: number[]; basis: 'current' | 'missing' }[] {
   const out: { pct: number[]; basis: 'current' | 'missing' }[] = [];
   const text = md.replace(/<[^>]+>/g, ' ');
@@ -258,6 +262,7 @@ export function loadData(): LoadedData {
       const healing = omAb?.menu_description ? parseHealing(omAb.menu_description) : [];
       const asBuff = omAb?.menu_description ? parseSelfAttackSpeed(omAb.menu_description) : null;
       const targetHealth = omAb?.menu_description ? parseTargetHealth(omAb.menu_description) : [];
+      const aoe = omAb?.menu_description ? AOE_RE.test(omAb.menu_description.replace(/<[^>]+>/g, ' ')) : false;
       const statBuffs = omAb?.menu_description ? parseSelfStatBuffs(omAb.menu_description) : [];
       const ownedDmg = owned ? bestOwnedDamage(owned) : null;
       const cooldowns = omAb?.cooldown?.length ? omAb.cooldown : owned?.cooldowns ?? [];
@@ -267,6 +272,7 @@ export function loadData(): LoadedData {
           key,
           name: omAb?.display_name ?? owned?.name ?? key,
           damagePerRank: parsed.values,
+          aoe: aoe || undefined,
           targetHealthPct: targetHealth.length ? targetHealth : undefined,
           scalingPct: parsed.scaling,
           pctMaxHealth: parsed.pctMaxHealth,

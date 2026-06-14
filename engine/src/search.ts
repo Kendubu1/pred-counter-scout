@@ -16,7 +16,7 @@ export interface GeneratedBuild extends BuildEval {
 }
 
 const ALL_OBJECTIVE_KEYS = [
-  'burstVsSquishy', 'rot10VsSquishy', 'rot20VsBruiser',
+  'burstVsSquishy', 'teamfightVsSquishy', 'rot10VsSquishy', 'rot20VsBruiser',
   'autoDps10VsSquishy', 'ehpPhysical', 'ehpMagical',
   'healShield10s', 'utility', 'sustain10s',
 ] as const;
@@ -28,7 +28,7 @@ export type ObjKey = (typeof ALL_OBJECTIVE_KEYS)[number];
 // what keeps a crit/lethality core out of every support front: those
 // builds win only objectives a support search never scores.
 const COMBAT_KEYS: readonly ObjKey[] = [
-  'burstVsSquishy', 'rot10VsSquishy', 'rot20VsBruiser',
+  'burstVsSquishy', 'teamfightVsSquishy', 'rot10VsSquishy', 'rot20VsBruiser',
   'autoDps10VsSquishy', 'ehpPhysical', 'ehpMagical', 'sustain10s',
 ];
 const SUPPORT_KEYS: readonly ObjKey[] = [
@@ -37,6 +37,7 @@ const SUPPORT_KEYS: readonly ObjKey[] = [
 
 const ARCHETYPE_LABELS: Record<ObjKey, string> = {
   burstVsSquishy: 'burst',
+  teamfightVsSquishy: 'teamfight AoE',
   rot10VsSquishy: 'skirmish uptime',
   rot20VsBruiser: 'extended fights',
   autoDps10VsSquishy: 'sustained DPS',
@@ -52,6 +53,7 @@ type Weights = Partial<Record<ObjKey, number>>;
 // Corner weight vectors approximate the Pareto front through scalarization.
 const COMBAT_VECTORS: Weights[] = [
   { burstVsSquishy: 1, rot10VsSquishy: 0.2 },
+  { teamfightVsSquishy: 1, burstVsSquishy: 0.3, rot10VsSquishy: 0.2 },
   { burstVsSquishy: 0.2, rot10VsSquishy: 1, rot20VsBruiser: 0.3 },
   { rot10VsSquishy: 0.3, rot20VsBruiser: 1, ehpPhysical: 0.1, ehpMagical: 0.1 },
   { rot20VsBruiser: 0.2, autoDps10VsSquishy: 1 },

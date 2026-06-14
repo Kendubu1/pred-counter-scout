@@ -165,6 +165,7 @@ export interface SimOptions {
 const BURST_WINDOW = 2;             // seconds; ramps barely engage in a burst
 const CURRENT_HP_FACTOR_WINDOW = 0.8;
 const AUTO_DPS_WINDOW = 10;
+const AOE_TARGETS = 2.5;            // assumed enemies an AoE ability hits in a teamfight
 
 function bonusPowerFor(type: AbilityDef['damageType'], t: ItemStats): number {
   return type === 'magical' ? t.magical_power : t.physical_power;
@@ -446,7 +447,11 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
   const lvl = opts.level;
 
   // Burst: every ability once plus woven basics, burst-window semantics.
+  // teamfightBurst mirrors burst but weights AoE abilities by the targets they hit,
+  // so a multi-target kit/build is valued for teamfight reach. Single-target parts
+  // (basics, single-target procs, execute) count once toward both.
   let burst = 0;
+  let teamfightBurst = 0;
   let burstCasts = 0;
   for (const ab of kit.abilities) {
     const rank = ranks.get(ab.key) ?? 0;
@@ -454,30 +459,36 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
     burstCasts++;
     const amp = ampFactorAbilities(eff, ab, true, profile, t);
     const maxHpBonus = (ab.pctMaxHealth && profile ? (ab.pctMaxHealth / 100) * profile.health : 0) + targetHealthBonus(ab, rank, profile, true);
-    burst += mitigate((abilityHit(ab, rank, t) + maxHpBonus) * amp, ab.damageType, profile, t, eff, BURST_WINDOW, k);
+    let abDmg = mitigate((abilityHit(ab, rank, t) + maxHpBonus) * amp, ab.damageType, profile, t, eff, BURST_WINDOW, k);
     for (const b of abilityBonusDamage(eff, ab, rank, t, profile)) {
-      burst += mitigate(b.raw, b.damageType, profile, t, eff, BURST_WINDOW, k);
+      abDmg += mitigate(b.raw, b.damageType, profile, t, eff, BURST_WINDOW, k);
     }
+    burst += abDmg;
+    teamfightBurst += abDmg * (ab.aoe ? AOE_TARGETS : 1);
   }
   // Global item ICDs: one proc budget for the whole combo, not one per
   // ability (see rotationDamage).
   for (const p of eff.onAbilityProcs) {
     const procs = procCount(burstCasts, BURST_WINDOW, p.icdSeconds) * rampFactor(BURST_WINDOW, p.rampSeconds);
-    burst += mitigate(procDamage(p, t, profile, kit, true, eff), p.damageType, profile, t, eff, BURST_WINDOW, k) * procs;
+    const d = mitigate(procDamage(p, t, profile, kit, true, eff), p.damageType, profile, t, eff, BURST_WINDOW, k) * procs;
+    burst += d; teamfightBurst += d;
   }
   const basics = opts.burstBasics ?? 2;
   const basicAmpBurst = ampFactorBasics(eff, true, profile);
-  burst += mitigate(basicHit(kit, lvl, t, critMult) * basicAmpBurst, 'physical', profile, t, eff, BURST_WINDOW, k) * basics;
+  const basicDmg = mitigate(basicHit(kit, lvl, t, critMult) * basicAmpBurst, 'physical', profile, t, eff, BURST_WINDOW, k) * basics;
+  burst += basicDmg; teamfightBurst += basicDmg;
   for (const p of eff.onHitProcs) {
     const procs = Math.min(basics / p.everyN, p.icdSeconds > 0 ? 1 : basics);
-    burst += mitigate(procDamage(p, t, profile, kit, true, eff), p.damageType, profile, t, eff, BURST_WINDOW, k) * procs;
+    const d = mitigate(procDamage(p, t, profile, kit, true, eff), p.damageType, profile, t, eff, BURST_WINDOW, k) * procs;
+    burst += d; teamfightBurst += d;
   }
 
   // Execute: the bottom thresholdPct% of the target's HP is a free kill once
   // your burst brings them there — credited as bonus burst (only meaningful
   // against a killable target, so it rides the burst objective).
   if (eff.executeThresholdPct > 0 && profile) {
-    burst += (eff.executeThresholdPct / 100) * profile.health;
+    const ex = (eff.executeThresholdPct / 100) * profile.health;
+    burst += ex; teamfightBurst += ex;
   }
 
   const rotation: Record<number, number> = {};
@@ -524,6 +535,7 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
 
   return {
     burstCombo: burst,
+    teamfightBurst,
     rotation,
     autoDps,
     healShield10s: healShieldOutput(kit, { ...opts, ranks, effects: eff }, t, 10),
@@ -592,6 +604,7 @@ export function evaluateBuild(kit: HeroKit, items: Item[], level: number, cal: C
     gold: items.reduce((s, i) => s + i.totalPrice, 0),
     objectives: {
       burstVsSquishy: vsSquishy.burstCombo,
+      teamfightVsSquishy: vsSquishy.teamfightBurst,
       rot10VsSquishy: vsSquishy.rotation[10] ?? 0,
       rot20VsBruiser: vsBruiser.rotation[20] ?? 0,
       autoDps10VsSquishy: vsSquishy.autoDps,

@@ -32,6 +32,7 @@ export interface AbilityDef {
   // factor: current at the assumed live-HP fraction, missing as its complement.
   targetHealthPct?: { pct: number[]; basis: 'current' | 'missing' }[];
   damageType: 'physical' | 'magical' | 'true';
+  aoe?: boolean;                 // hits multiple targets (area/cone/line/all enemies)
   healing?: HealEntry[];         // heal/shield output per cast (may be the only payload)
   // Self attack-speed steroid per rank (e.g. Sparrow's Heightened Senses,
   // Murdock's Hot Pursuit): a temporary AS buff with no damage line. Carries max
@@ -128,6 +129,7 @@ export interface DefenseProfile {
 
 export interface SimResult {
   burstCombo: number;            // one cast of each ability + 2 basics, mitigated
+  teamfightBurst: number;        // burst with AoE abilities weighted by targets hit
   rotation: Record<number, number>; // window seconds -> mitigated damage
   autoDps: number;               // sustained basic-attack DPS, mitigated
   healShield10s: number;         // heal+shield output over 10s, one beneficiary
@@ -145,6 +147,7 @@ export interface BuildEval {
   gold: number;
   objectives: {
     burstVsSquishy: number;
+    teamfightVsSquishy: number;  // AoE burst across multiple targets (teamfight)
     rot10VsSquishy: number;
     rot20VsBruiser: number;
     autoDps10VsSquishy: number;
