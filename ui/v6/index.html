@@ -227,6 +227,20 @@
   .flex-core .arrow { color:var(--text-2); font-size:.7rem; }
   .flex-note { font-size:.73rem; color:var(--text-2); margin-top:.34rem; }
 
+  /* How the build comes online: early/mid/late power curve */
+  .stagerow { padding:.55rem 0; border-top:1px solid var(--border); }
+  .stagerow:first-of-type { border-top:none; }
+  .stage-head { display:flex; align-items:center; gap:.5rem; }
+  .stage-label { font-weight:800; text-transform:capitalize; min-width:3.2rem; }
+  .stage-meta { font-size:.7rem; color:var(--text-2); }
+  .stage-val { margin-left:auto; font-weight:800; font-variant-numeric:tabular-nums; }
+  .stage-bar { height:6px; border-radius:3px; background:var(--bg-3); margin:.34rem 0; overflow:hidden; }
+  .stage-bar > i { display:block; height:100%; background:linear-gradient(90deg,var(--blue),var(--green)); }
+  .stage-core { display:flex; align-items:center; gap:.28rem; flex-wrap:wrap; }
+  .stage-core img { width:28px; height:28px; border-radius:6px; object-fit:cover; background:var(--bg-2); border:1px solid var(--border); }
+  .stage-core .arrow { color:var(--text-2); font-size:.68rem; }
+  .stage-better { font-size:.73rem; color:var(--gold); margin-top:.32rem; }
+
   details { border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-1); margin-top:.7rem; overflow:hidden; }
   details summary {
     cursor:pointer; padding:.75rem 1.1rem; font-weight:600; font-size:.9rem; color:var(--text-1);
@@ -906,6 +920,27 @@ function renderHero(a, roleParam) {
       </div>
       ${a.build.manaFeasible ? '' : '<div class="warn">⚠ mana-hungry rotation — weave basic attacks between casts</div>'}
     </section>
+
+    ${a.stages && a.stages.length ? (() => {
+      const OBJ = { autoDps10VsSquishy:'sustained DPS', rot10VsSquishy:'10s rotation', rot20VsBruiser:'20s fight', burstVsSquishy:'burst', healShield10s:'heal/shield', ehpPhysical:'effective HP', ehpMagical:'magical eHP', utility:'utility', sustain10s:'drain sustain' };
+      const lab = (k) => OBJ[k] || k;
+      const max = Math.max(...a.stages.map((s) => s.headlineValue), 1);
+      return `
+    <section class="card">
+      <h2>How your build comes online <span class="hint">early → mid → late · the right build can differ by stage</span></h2>
+      <div style="font-size:.74rem; color:var(--text-2); margin-bottom:.55rem">Your purchase-ordered build, scored at each stage at the level it completes by (from real gold curves). The bar is <b>${esc(lab(a.stages[a.stages.length-1].headline))}</b> relative to the full build — it's THEORY, like all sim numbers.</div>
+      ${a.stages.map((s) => `
+        <div class="stagerow">
+          <div class="stage-head">
+            <span class="stage-label">${esc(s.label)}</span>
+            <span class="stage-meta">${s.itemCount} items · level ${s.level}${s.minute ? ` · ~${s.minute} min` : ''}</span>
+            <span class="stage-val">${s.headlineValue.toLocaleString()}</span>
+          </div>
+          <div class="stage-bar"><i style="width:${Math.max(3, Math.round(100*s.headlineValue/max))}%"></i></div>
+          <div class="stage-core">${s.core.map((i) => i.slug ? `<img loading="lazy" data-ipop="${esc(i.slug)}" src="../img/items/${esc(i.slug)}.webp" title="${esc(i.name)} · tap for details" onerror="this.style.visibility='hidden'">` : `<span class="chip">${esc(i.name)}</span>`).join('<span class="arrow">→</span>')}</div>
+          ${s.betterEarly ? `<div class="stage-better">⚠ stronger at this stage: <b>${esc(s.betterEarly.inItem)}</b> over ${esc(s.betterEarly.outItem)} (+${s.betterEarly.edgePct}% ${esc(lab(s.headline))}) — not in your final core, so treat as an early buy to sell later, not a permanent slot.</div>` : ''}
+        </div>`).join('')}
+    </section>`; })() : ''}
 
 
     <section class="card">

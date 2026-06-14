@@ -14,7 +14,7 @@ import { combatDamage, evaluateBuild, itemTotals, loadCalibration, unverifiedCon
 import { rankAugments, rankBlessings } from './eternals.js';
 import { heroGames, itemPlayRate, loadAggregates } from './aggregates.js';
 import { itemWinDelta, momPriorStrength } from './evidence.js';
-import { defenseOf, matchupCheckpoints, orderBuild, spikeTimeline } from './matchup.js';
+import { defenseOf, matchupCheckpoints, orderBuild, spikeTimeline, levelAtMinute, type OrderedBuild } from './matchup.js';
 import { resolveEntries, resolveItemEffects } from './effects.js';
 import type { HeroKit, Item } from './types.js';
 
@@ -146,6 +146,21 @@ export const HeroArtifact = z.object({
     core: z.array(z.object({ name: z.string(), slug: z.string() })), // steered build core
     headline: z.string(),         // the objective it is steered toward
     provenance: z.string(),       // the honest one-liner the page shows
+  })),
+  // The build is not one fixed thing across the game: its prefix is evaluated
+  // at early / mid / late stages (2 / 3 / 6 items, each at the level it
+  // completes by from the gold curves). betterEarly flags when a stronger
+  // stage build diverges from the eventual core — the right build by stage.
+  stages: z.array(z.object({
+    label: z.string(),            // early | mid | late
+    itemCount: z.number(),
+    minute: z.number().nullable(),
+    level: z.number(),
+    core: z.array(z.object({ name: z.string(), slug: z.string() })),
+    headline: z.string(),
+    headlineValue: z.number(),
+    objectives: z.record(z.string(), z.number()),
+    betterEarly: z.object({ inItem: z.string(), inSlug: z.string(), outItem: z.string(), edgePct: z.number() }).nullable(),
   })),
   matchups: z.array(z.object({
     enemy: z.string(),
@@ -282,6 +297,52 @@ function computeLaneFlex(kit: HeroKit, pool: Item[], cal: Calibration): HeroArti
     });
   }
   return out;
+}
+
+/** Early / mid / late evaluation: the purchase-ordered build's prefix at the
+ *  level it completes by, plus a check of whether a stronger STANDALONE build at
+ *  that stage diverges from the eventual core (the right build differs by
+ *  stage). Reuses the gold-curve completion minutes and the level table. */
+function computeStages(
+  kit: HeroKit, ordered: OrderedBuild, spikes: { minute: number | null }[],
+  role: string, pool: Item[], cal: Calibration,
+): HeroArtifactT['stages'] {
+  const slugOf = new Map(pool.map((i) => [i.name, i.slug]));
+  const fullSet = new Set(ordered.ordered.map((i) => i.slug));
+  const headline = headlineObjective(kit, role);
+  const defaultLevels: Record<string, number> = { early: 8, mid: 11, late: 15 };
+  const plan: { label: string; count: number }[] = [
+    { label: 'early', count: 2 }, { label: 'mid', count: 3 }, { label: 'late', count: Math.min(6, ordered.ordered.length) },
+  ];
+  return plan.map(({ label, count }) => {
+    const prefix = ordered.ordered.slice(0, count);
+    const minute = spikes[count - 1]?.minute ?? null;
+    const level = minute != null ? levelAtMinute(minute, cal) : (defaultLevels[label] ?? 11);
+    const ev = evaluateBuild(kit, prefix, level, cal);
+    // Does a stronger standalone build at this stage use an item that is NOT in
+    // the eventual core? Only meaningful before the build is complete.
+    let betterEarly: HeroArtifactT['stages'][number]['betterEarly'] = null;
+    if (count < ordered.ordered.length) {
+      const optimal = generateBuilds(kit, pool, cal, { buildSize: count, level, role, beamWidth: 6 })[0];
+      if (optimal) {
+        const ours = (ev.objectives as Record<string, number>)[headline] ?? 0;
+        const theirs = (optimal.objectives as Record<string, number>)[headline] ?? 0;
+        const newItems = optimal.items.filter((n) => { const s = slugOf.get(n); return s && !fullSet.has(s); });
+        if (newItems.length && ours > 0 && (theirs - ours) / ours > 0.1) {
+          const inName = newItems[0]!;
+          const outName = prefix.find((i) => !optimal.items.includes(i.name))?.name ?? '';
+          betterEarly = { inItem: inName, inSlug: slugOf.get(inName) ?? '', outItem: outName, edgePct: Math.round(((theirs - ours) / ours) * 1000) / 10 };
+        }
+      }
+    }
+    return {
+      label, itemCount: count, minute, level,
+      core: prefix.map((i) => ({ name: i.name, slug: i.slug })),
+      headline, headlineValue: Math.round((ev.objectives as Record<string, number>)[headline] ?? 0),
+      objectives: ev.objectives as unknown as Record<string, number>,
+      betterEarly,
+    };
+  });
 }
 
 export function buildHeroArtifact(
@@ -587,6 +648,7 @@ export function buildHeroArtifact(
     },
     metaBuilds,
     laneFlex: computeLaneFlex(kit, pool, cal),
+    stages: computeStages(kit, ordered, spikes, role, pool, cal),
     matchups,
     flags: [
       'THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md',

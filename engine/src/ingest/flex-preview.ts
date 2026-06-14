@@ -25,7 +25,19 @@ const sections = slugs.map((slug) => {
       <div class="flex-core">${f.core.map((i: any) => `<span class="pill">${esc(i.name)}</span>`).join('<span class="arrow">→</span>')}</div>
       <div class="flex-note">${esc(f.provenance)}</div>
     </div>`).join('');
-  return `<section class="card"><h2>${esc(a.name)} — Playstyle by lane <span class="hint">what the sim can't see, exposed</span></h2>${rows}</section>`;
+  const OBJ: Record<string, string> = { autoDps10VsSquishy: 'sustained DPS', rot10VsSquishy: '10s rotation', rot20VsBruiser: '20s fight', burstVsSquishy: 'burst', healShield10s: 'heal/shield', ehpPhysical: 'effective HP', ehpMagical: 'magical eHP' };
+  const lab = (k: string) => OBJ[k] || k;
+  const stages = a.stages ?? [];
+  const max = Math.max(...stages.map((s: any) => s.headlineValue), 1);
+  const stageRows = stages.map((s: any) => `
+    <div class="flexrow">
+      <div class="flex-head"><span class="flex-lane">${esc(s.label)}</span><span class="flex-aug">${s.itemCount} items · level ${s.level}${s.minute ? ` · ~${s.minute}m` : ''}</span><span class="flex-wr" style="margin-left:auto;font-weight:800">${s.headlineValue.toLocaleString()} ${esc(lab(s.headline))}</span></div>
+      <div class="bar"><i style="width:${Math.max(3, Math.round(100 * s.headlineValue / max))}%"></i></div>
+      <div class="flex-core">${s.core.map((i: any) => `<span class="pill">${esc(i.name)}</span>`).join('<span class="arrow">→</span>')}</div>
+      ${s.betterEarly ? `<div class="flex-note" style="color:#e8b84b">⚠ stronger here: <b>${esc(s.betterEarly.inItem)}</b> over ${esc(s.betterEarly.outItem)} (+${s.betterEarly.edgePct}%) — early buy, not a permanent slot.</div>` : ''}
+    </div>`).join('');
+  return `<section class="card"><h2>${esc(a.name)} — Playstyle by lane <span class="hint">what the sim can't see, exposed</span></h2>${rows}</section>
+  <section class="card"><h2>${esc(a.name)} — How the build comes online <span class="hint">early → mid → late · the right build can differ by stage</span></h2>${stageRows}</section>`;
 }).join('\n');
 
 const html = `<!doctype html><html><head><meta charset="utf8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -37,6 +49,7 @@ h2{font-size:1rem;margin:.1rem 0 .7rem}.hint{font-weight:400;font-size:.74rem;co
 .flexrow{padding:.6rem 0;border-top:1px solid var(--border)}.flexrow:first-of-type{border-top:none}
 .flex-head{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
 .flex-lane{font-weight:800;text-transform:capitalize;min-width:4.6rem}.flex-aug{font-size:.85rem}
+.bar{height:6px;border-radius:3px;background:var(--bg-3);margin:.34rem 0;overflow:hidden}.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--green))}
 .flex-ps{font-size:.66rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:.1rem .42rem;border-radius:999px;background:var(--bg-3)}
 .flex-prov{font-size:.7rem;padding:.1rem .42rem;border-radius:999px}.flex-prov.modeled{background:rgba(80,200,120,.14);color:var(--green)}.flex-prov.steered{background:rgba(120,160,255,.14);color:var(--blue)}
 .flex-wr{margin-left:auto;font-weight:800}.flex-wr.up{color:var(--green)}.flex-wr.flat{color:var(--text-1)}
