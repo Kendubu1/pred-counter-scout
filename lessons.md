@@ -1416,3 +1416,23 @@ Append-only. One entry per backlog item or significant finding.
 - Lesson: a single-hero combat sim is structurally blind to ally-facing value; the
   fix is a dedicated objective fed by the stats/effects that ARE quantifiable
   (haste, heal/shield amp, team debuffs), not a fudge factor on combat damage.
+
+## 2026-06-14: agreement audit — classify misses as fixable vs blocked (don't popularity-fit)
+- Enhanced `npm run agreement` to label each never-built field item: ★ fixable
+  in-engine (mechanic is modeled or it's a pure stat stick — a valuation gap) vs
+  ⓘ blocked on an unmodeled mechanic with an unstated magnitude (cleave ratio,
+  stack cadence, health-gated shield). After fix #1: 32 fixable, 33 blocked.
+- Methodological line we held: the ★ "fixable" haste/mana items (Entropy, Azure
+  Core, Megacosm) are modeled but lose on per-gold damage; the sim instead builds
+  Combustion — itself a valid field mana core. Forcing Azure in by inflating
+  ability_haste's weight would be FITTING THE OBJECTIVE TO POPULARITY, which the
+  design forbids (component C: popularity never enters the objective). That
+  Azure-vs-Combustion split is legitimate model uncertainty (abilityHaste is
+  unverified), not a bug to tune away. The audit validates; it must not become the
+  training signal.
+- The ⓘ blocked items (Overlord cleave, Malady sub-40% stacks, Salvation/Berserker
+  health-gated shields) need a measured magnitude before the sim can rank them;
+  estimating violates the calibration policy. They are flagged, not faked.
+- Lesson: an agreement validator is only honest if you let it DISAGREE. The fixes
+  it licenses are missing value CHANNELS (ally-utility) and modeling errors, never
+  re-weighting toward the field's specific picks.

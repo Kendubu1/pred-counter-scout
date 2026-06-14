@@ -13,11 +13,29 @@ import { loadCalibration } from '../sim.js';
 import { generateBuilds, headlineObjective, type ObjKey } from '../search.js';
 import { agreeWithField } from '../agreement.js';
 import { classifyAugment, laneTopAugment, lanesFor, playstyleObjectives } from '../playstyle.js';
+import { loadEffects } from '../effects.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const data = loadData();
 const cal = loadCalibration();
 const pool = completedItems(data);
+const fx = loadEffects();
+const nameToSlug = new Map([...data.items.values()].map((i) => [i.name, i.slug]));
+
+// Why does the optimizer never build a field-core item? Two very different causes:
+//  - 'fixable'  : the item's mechanic IS modeled (or it's a pure stat stick) — not
+//                 building it is an objective/valuation gap we can close in-engine.
+//  - 'blocked'  : the item's value rides an UNMODELED mechanic with an unstated
+//                 magnitude (cleave ratio, stack cadence, health-gated shield).
+//                 Estimating it violates the calibration policy; it needs a measured
+//                 number before the sim can rank it. Separating these turns the miss
+//                 list into "fix now" vs "measure first".
+function missReason(itemName: string): 'fixable' | 'blocked' {
+  const slug = nameToSlug.get(itemName);
+  const entry = slug ? fx.targets[`item:${slug}`] : undefined;
+  if (!entry) return 'fixable';                       // pure stat stick: a valuation gap
+  return entry.effects.some((e) => e.kind !== 'unmodeled') ? 'fixable' : 'blocked';
+}
 
 interface Row {
   hero: string; lane: string; augment: string | null; steer: string | null;
@@ -73,11 +91,16 @@ console.log('Worst 18 by core recall (the fix targets — winning items we never
 for (const r of rows.slice(0, 18)) {
   console.log(`  ${r.hero.padEnd(13)} ${r.lane.padEnd(8)} recall ${(r.coreRecall * 100).toFixed(0).padStart(3)}%  field core: ${r.topCore.join('+')} (n=${r.topCoreN})${r.missed.length ? ` — never build: ${r.missed.join(', ')}` : ''}`);
 }
-console.log('\nMost-never-built field items (systematic sim gaps — fix these to lift agreement):');
-for (const [item, n] of Object.entries(missTally).sort((a, b) => b[1] - a[1]).slice(0, 15)) {
-  console.log(`  ${item.padEnd(22)} never built for ${n} heroes whose field core wants it`);
+const tally = Object.entries(missTally).map(([item, n]) => ({ item, n, reason: missReason(item) }))
+  .sort((a, b) => b.n - a.n);
+const blockedN = tally.filter((t) => t.reason === 'blocked').reduce((s, t) => s + t.n, 0);
+const fixableN = tally.filter((t) => t.reason === 'fixable').reduce((s, t) => s + t.n, 0);
+console.log(`\nMisses by cause: ${fixableN} fixable in-engine (valuation gap), ${blockedN} blocked on an unmodeled-mechanic magnitude (measure first).`);
+console.log('\nMost-never-built field items (★ = fixable in-engine; ⓘ = blocked on unmodeled mechanic):');
+for (const { item, n, reason } of tally.slice(0, 18)) {
+  console.log(`  ${reason === 'fixable' ? '★' : 'ⓘ'} ${item.padEnd(22)} never built for ${n} heroes' field core`);
 }
 
 writeFileSync(path.join(ROOT, 'data/aggregates/agreement-audit.json'),
-  JSON.stringify({ generatedAt: new Date().toISOString().slice(0, 10), note: 'Per-hero optimizer-vs-field-core agreement (primary lane, lane-augment steer). coreRecall = fraction of the field top-core items the optimizer builds anywhere in its front; missed = field core items never built (true sim gaps). See engine/src/ingest/agreement-audit.ts.', summary: { heroes: rows.length, exactTrioHit: hit, avgCoreRecall: avgRecall, avgTrioCoverage: avgCov }, missTally, rows }, null, 2));
+  JSON.stringify({ generatedAt: new Date().toISOString().slice(0, 10), note: 'Per-hero optimizer-vs-field-core agreement (primary lane, lane-augment steer). coreRecall = fraction of the field top-core items the optimizer builds anywhere in its front; missed = field core items never built. missTally reason: fixable = mechanic is modeled or pure stat stick (in-engine valuation gap); blocked = value rides an unmodeled mechanic with an unstated magnitude (needs measurement, must not be estimated). Validation only — popularity never feeds the objective. See engine/src/ingest/agreement-audit.ts.', summary: { heroes: rows.length, exactTrioHit: hit, avgCoreRecall: avgRecall, avgTrioCoverage: avgCov, missesFixable: fixableN, missesBlocked: blockedN }, missTally: Object.fromEntries(tally.map((t) => [t.item, { n: t.n, reason: t.reason }])), rows }, null, 2));
 console.log('\n-> data/aggregates/agreement-audit.json');
