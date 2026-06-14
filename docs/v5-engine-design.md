@@ -213,6 +213,20 @@ enchanter who cannot self-heal never gets. The Eternal-major choice is now fit-l
 sim=0) still beats a modeled off-archetype damage major — the additive blend got
 this backwards.
 
+Staged ability acquisition (the V2 ability chart). The multi-stage sim must reflect
+which abilities a hero actually has at each stage. `ranksAtLevel` previously used a
+heuristic for basic-ability ranks (correct ult timing, approximate basics); it now
+tallies the full 18-level recommended path (`skill-orders.json` `sequence`, the V2
+chart, loaded into `kit.recommendedSequence`) point by point up to the level. So an
+early-stage evaluation has the ultimate only from the level it is taken (Zinx ULT=0
+at level 5, =1 at 6) and basics at their real recommended ranks. It converges with
+the old heuristic by level 13, so the level-13 objective and its tests are unchanged.
+Still open and noted: a mana-aware objective (mana-starved heroes — Zinx 290/340 at
+L1, Shinbi, Argus — should be steered to mana items early, which also un-hides Azure
+Core); modeling the evolving orb (Orb of Enlightenment → Orb of Growth, "Inner
+Growth" stacking, a meta item) as a ramping gain rather than flat final stats; and
+the ultimate being credited once per rotation window despite its ~120-160s cooldown.
+
 Scope and isolation. The above is a Gideon + Zinx vertical slice behind a
 `--playstyle` flag; the other 50 heroes' paths are byte-identical (a snapshot test
 guards determinism). Tests live in `engine/test/playstyle.test.ts` (10 cases); the

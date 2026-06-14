@@ -160,7 +160,9 @@ export function loadData(): LoadedData {
   // optional: the sim levels basics this way when present. omeda RMB/Q/E
   // map to the kit's PRIMARY/SECONDARY/ALTERNATE keys.
   const OMEDA_TO_KIT: Record<string, string> = { RMB: 'PRIMARY', Q: 'SECONDARY', E: 'ALTERNATE' };
-  let skillOrders: Record<string, { maxOrder: { key: string }[] }> = {};
+  // Full per-level path also needs the ultimate slot (R), which the max-order map omits.
+  const SEQ_TO_KIT: Record<string, string> = { ...OMEDA_TO_KIT, R: 'ULTIMATE' };
+  let skillOrders: Record<string, { maxOrder: { key: string }[]; sequence?: string[] }> = {};
   try { skillOrders = (loadJson<{ heroes: typeof skillOrders }>('data/aggregates/skill-orders.json')).heroes ?? {}; } catch { /* optional */ }
 
   const profMap = new Map(profiles.map((p) => [p.slug, p]));
@@ -261,6 +263,11 @@ export function loadData(): LoadedData {
       abilities: defs,
       recommendedMaxOrder: skillOrders[om.slug]?.maxOrder
         ?.map((o) => OMEDA_TO_KIT[o.key])
+        .filter((k): k is string => !!k && defs.some((d) => d.key === k)),
+      // Full 18-level recommended path (the V2 ability chart): which ability gets
+      // a point at each level, so the sim levels exactly as the hero is played.
+      recommendedSequence: skillOrders[om.slug]?.sequence
+        ?.map((k) => SEQ_TO_KIT[k])
         .filter((k): k is string => !!k && defs.some((d) => d.key === k)),
       abilitySource: defs.length && staleFallbacks.some((s) => s.slug === om.slug) ? 'mixed' : 'omeda',
     });

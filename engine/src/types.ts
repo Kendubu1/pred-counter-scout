@@ -59,6 +59,11 @@ export interface HeroKit {
   // strongest-maxed-first) from pred.gg recommendedSkills; the sim levels
   // abilities this way instead of guessing. Undefined => heuristic order.
   recommendedMaxOrder?: string[];
+  // Full per-level recommended path (kit keys, one per level, the V2 ability
+  // chart): the sim tallies ability ranks at a level straight from this when
+  // present, so early/mid stages reflect exactly which abilities are online and
+  // at what rank. Undefined => fall back to the ult-timing + max-order heuristic.
+  recommendedSequence?: string[];
   // omeda = all numbers current-patch; mixed = some slots fell back to
   // stale owned data (see LoadedData.staleFallbacks).
   abilitySource: 'omeda' | 'mixed';

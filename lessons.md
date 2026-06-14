@@ -1154,3 +1154,24 @@ Append-only. One entry per backlog item or significant finding.
   archetype, it doesn't override the archetype. Verified Gideon still picks Vesh.
 - Lesson for the roster generalization: "has a heal ability" is not "is a sustain
   hero" — role/lane decides whether that heal is the win condition or just utility.
+
+## 2026-06-14: the sim must level abilities by the real per-level path (V2 chart)
+- ranksAtLevel used a heuristic (one point per ability, then max by priority). It
+  got ult TIMING right (fixed 6/11/16) but the basic-rank distribution was an
+  approximation, so the early/mid stages didn't reflect how the hero is actually
+  played. skill-orders.json already holds the full 18-level recommended SEQUENCE
+  (the V2 ability chart, pred.gg recommendedSkills) but only maxOrder was loaded.
+- Fix: load the full sequence into kit.recommendedSequence (mapping omeda
+  RMB/Q/E/R -> PRIMARY/SECONDARY/ALTERNATE/ULTIMATE) and tally ranks point-by-point
+  up to the level. Now any evaluation at level L uses exactly the abilities online
+  and their ranks at L: Zinx at L5 has ULT=0 (correctly absent before 6) and
+  Bad Medicine/Ricochet already ahead; the staged early/mid sims finally reflect
+  "factor in abilities when they're acquired." Converges with the old heuristic by
+  L13, so the level-13 tests were unaffected (harness stayed green at 93->94).
+- Open follow-ups surfaced this session (not yet built): (1) mana-aware objective
+  so mana-starved heroes (Zinx 290/340 at L1, Shinbi, Argus) get steered to mana
+  items early and Azure Core stops being invisible; (2) model the EVOLVING ORB
+  (Orb of Enlightenment -> Orb of Growth, "Inner Growth" stacking, in the meta
+  build) as a ramping stat gain rather than flat final stats; (3) the ult is still
+  credited once per rotation WINDOW despite its ~120-160s cooldown, which
+  over-credits ults in rot10/rot20 (separate from acquisition timing).

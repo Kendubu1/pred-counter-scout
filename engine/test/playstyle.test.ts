@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeAll } from 'vitest';
 import { loadData, completedItems, type LoadedData } from '../src/data.js';
-import { loadCalibration, type Calibration } from '../src/sim.js';
+import { loadCalibration, ranksAtLevel, type Calibration } from '../src/sim.js';
 import { generateBuilds, headlineObjective } from '../src/search.js';
 import { kitPlaystyle, kitPowerType, fuseSteer, laneTopAugment } from '../src/playstyle.js';
 import { selectEternalLoadout } from '../src/eternals.js';
@@ -141,6 +141,23 @@ describe('lane-conditioned playstyle (same kit, different lane)', () => {
     expect(suppLo!.major.name.toLowerCase()).toContain('exarch');
     expect(carryLo!.major.name.toLowerCase()).not.toContain('exarch');
   }, 60000);
+});
+
+describe('staged ability acquisition (the V2 skill chart drives ranks)', () => {
+  it('the sim levels abilities by the recommended per-level path, ult only from its level', () => {
+    const kit = data.kits.get('zinx')!;
+    expect(kit.recommendedSequence?.length).toBe(18);   // the full per-level chart
+    // Early game she does NOT have her ultimate yet (taken at level 6).
+    expect(ranksAtLevel(kit, 5).get('ULTIMATE')).toBe(0);
+    expect(ranksAtLevel(kit, 6).get('ULTIMATE')).toBe(1);
+    expect(ranksAtLevel(kit, 11).get('ULTIMATE')).toBe(2);
+    // Ranks follow the path, not a uniform heuristic: at level 5 one basic is
+    // already ahead (Zinx maxes Bad Medicine/Ricochet early).
+    const r5 = ranksAtLevel(kit, 5);
+    const basics = ['PRIMARY', 'SECONDARY', 'ALTERNATE'].map((k) => r5.get(k) ?? 0);
+    expect(Math.max(...basics)).toBeGreaterThan(Math.min(...basics));
+    expect(basics.reduce((a, b) => a + b, 0)).toBe(5);   // 5 points spent by level 5, none on ult
+  });
 });
 
 describe('slice isolation (the other 51 heroes are untouched)', () => {

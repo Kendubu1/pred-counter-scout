@@ -97,8 +97,25 @@ export function skillPriority(kit: HeroKit): AbilityDef[] {
 }
 
 export function ranksAtLevel(kit: HeroKit, level: number): Map<string, number> {
-  const prio = skillPriority(kit);
   const ranks = new Map<string, number>(kit.abilities.map((a) => [a.key, 0]));
+  const maxRankOf = new Map<string, number>(kit.abilities.map((a) => [a.key, a.maxRank]));
+
+  // Preferred: tally the real recommended path (the V2 ability chart) point by
+  // point up to this level. This is exact about WHICH abilities are online and at
+  // what rank at each stage — the ultimate appears only from the level it is
+  // actually taken, and basics ramp on the recommended cadence, not a heuristic.
+  const seq = kit.recommendedSequence;
+  if (seq?.length) {
+    for (let lv = 1; lv <= Math.min(level, seq.length); lv++) {
+      const key = seq[lv - 1]!;
+      const cur = ranks.get(key) ?? 0;
+      if (cur < (maxRankOf.get(key) ?? 0)) ranks.set(key, cur + 1);
+    }
+    return ranks;
+  }
+
+  // Fallback (no recommended path): ult at its fixed levels, basics by max-order.
+  const prio = skillPriority(kit);
   let points = 0;
   for (let lv = 1; lv <= level; lv++) {
     if (ULT_LEVELS.includes(lv) && kit.abilities.some((a) => a.key === 'ULTIMATE')) {
