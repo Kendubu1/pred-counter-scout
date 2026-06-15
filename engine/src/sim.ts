@@ -22,6 +22,7 @@ export interface Calibration {
   constants: Record<string, { value?: unknown; formula?: string; verified: boolean; source: string; range?: number[]; crossCheck?: string }>;
   checkpoints: { verified: boolean; table: { minute: number; level: number; gold: Record<string, number> }[] };
   referenceProfiles: Record<string, DefenseProfile>;
+  neutralObjectives?: Record<string, any>;   // jungle objective profiles (Fangtooth, etc.)
 }
 
 export function loadCalibration(): Calibration {
