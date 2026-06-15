@@ -1,11 +1,5 @@
 {
- "slug": "kallari",
- "name": "Kallari",
- "patch": "1.14.4",
- "generatedAt": "2026-06-14T19:33:43.356Z",
  "role": "jungle",
- "damageType": "physical",
- "attackType": "melee",
  "roleCaveat": null,
  "confidence": {
   "level": "THEORY",
@@ -87,7 +81,7 @@
    "ehpPhysical": 4300.078218749999,
    "ehpMagical": 3548.2159687500002,
    "healShield10s": 0,
-   "utility": 3,
+   "utility": 73,
    "sustain10s": 0
   },
   "manaFeasible": true
@@ -377,47 +371,6 @@
    "optimizer": "Optimizer agrees: within 4% of our best core on one-combo burst. The winrate is earned, not luck."
   }
  ],
- "laneFlex": [
-  {
-   "lane": "jungle",
-   "augment": {
-    "id": "66",
-    "name": "Execution Mandate"
-   },
-   "playstyle": "ability-burst",
-   "modeled": false,
-   "wr": 47.4,
-   "n": 155632,
-   "core": [
-    {
-     "name": "Solaris",
-     "slug": "solaris"
-    },
-    {
-     "name": "Vanquisher",
-     "slug": "vanquisher"
-    },
-    {
-     "name": "The Perforator",
-     "slug": "the-perforator"
-    },
-    {
-     "name": "Deathstalker",
-     "slug": "deathstalker"
-    },
-    {
-     "name": "Demolisher",
-     "slug": "demolisher"
-    },
-    {
-     "name": "Imperator",
-     "slug": "imperator"
-    }
-   ],
-   "headline": "burst",
-   "provenance": "“Execution Mandate” ⇒ ability-burst; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 47.4% over 155,632 games, magnitude not simulated."
-  }
- ],
  "stages": [
   {
    "label": "early",
@@ -445,7 +398,7 @@
     "ehpPhysical": 3185.2642734374995,
     "ehpMagical": 2695.4867109375,
     "healShield10s": 0,
-    "utility": 0,
+    "utility": 15,
     "sustain10s": 0
    },
    "betterEarly": null
@@ -480,7 +433,7 @@
     "ehpPhysical": 4694.9789384375,
     "ehpMagical": 3778.4468159375,
     "healShield10s": 0,
-    "utility": 0,
+    "utility": 35,
     "sustain10s": 0
    },
    "betterEarly": null
@@ -527,7 +480,7 @@
     "ehpPhysical": 6078.3225600000005,
     "ehpMagical": 4772.81472,
     "healShield10s": 0,
-    "utility": 3,
+    "utility": 73,
     "sustain10s": 0
    },
    "betterEarly": null
@@ -766,6 +719,826 @@
     "survivalGainPct": 22,
     "offenseLossPct": 23,
     "line": "Losing lane? Third item Void Helm instead of Augmentation: their 3s all-in loses 22% of its bite; you give up 23% of your damage."
+   }
+  }
+ ],
+ "laneSteer": {
+  "augment": {
+   "id": "66",
+   "name": "Execution Mandate"
+  },
+  "playstyle": "ability-burst",
+  "modeled": false,
+  "wr": 47.4,
+  "n": 155632,
+  "shiftIn": [
+   "Vanquisher",
+   "Deathstalker",
+   "Demolisher",
+   "Imperator"
+  ],
+  "shiftOut": [
+   "Augmentation",
+   "Spear Of Desolation",
+   "Viper",
+   "Painweaver"
+  ],
+  "provenance": "“Execution Mandate” ⇒ ability-burst; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 47.4% over 155,632 games, magnitude not simulated."
+ },
+ "slug": "kallari",
+ "name": "Kallari",
+ "patch": "1.14.4",
+ "generatedAt": "2026-06-14T22:46:58.337Z",
+ "damageType": "physical",
+ "attackType": "melee",
+ "laneFlex": [
+  {
+   "lane": "jungle",
+   "augment": {
+    "id": "66",
+    "name": "Execution Mandate"
+   },
+   "playstyle": "ability-burst",
+   "modeled": false,
+   "wr": 47.4,
+   "n": 155632,
+   "core": [
+    {
+     "name": "Solaris",
+     "slug": "solaris"
+    },
+    {
+     "name": "Vanquisher",
+     "slug": "vanquisher"
+    },
+    {
+     "name": "The Perforator",
+     "slug": "the-perforator"
+    },
+    {
+     "name": "Deathstalker",
+     "slug": "deathstalker"
+    },
+    {
+     "name": "Demolisher",
+     "slug": "demolisher"
+    },
+    {
+     "name": "Imperator",
+     "slug": "imperator"
+    }
+   ],
+   "headline": "burst",
+   "provenance": "“Execution Mandate” ⇒ ability-burst; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 47.4% over 155,632 games, magnitude not simulated."
+  }
+ ],
+ "roles": [
+  {
+   "role": "jungle",
+   "roleCaveat": null,
+   "confidence": {
+    "level": "THEORY",
+    "unverifiedConstants": [
+     "mitigation",
+     "abilityHaste",
+     "critMultiplier",
+     "attackSpeedFormula",
+     "abilityScalingUsesBonusPowerOnly",
+     "attackSpeedCap"
+    ],
+    "notes": [
+     "all combat numbers are simulator output on unverified constants",
+     "checkpoint levels are provisional (no level timeline in the match feed)",
+     "evidence deltas carry finished-inventory survivorship bias"
+    ]
+   },
+   "build": {
+    "items": [
+     {
+      "name": "Viper",
+      "slug": "viper",
+      "spikeMinute": 12,
+      "playRatePct": 0.6,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
+     },
+     {
+      "name": "Solaris",
+      "slug": "solaris",
+      "spikeMinute": 19,
+      "playRatePct": 6.1,
+      "evidenceDeltaWr": 0.5,
+      "evidenceN": 50
+     },
+     {
+      "name": "Spear Of Desolation",
+      "slug": "spear-of-desolation",
+      "spikeMinute": 25,
+      "playRatePct": 27.8,
+      "evidenceDeltaWr": 0.3,
+      "evidenceN": 229
+     },
+     {
+      "name": "The Perforator",
+      "slug": "the-perforator",
+      "spikeMinute": 31,
+      "playRatePct": 25,
+      "evidenceDeltaWr": 0.5,
+      "evidenceN": 206
+     },
+     {
+      "name": "Augmentation",
+      "slug": "augmentation",
+      "spikeMinute": 38,
+      "playRatePct": 0.2,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
+     },
+     {
+      "name": "Painweaver",
+      "slug": "painweaver",
+      "spikeMinute": 44,
+      "playRatePct": 9.5,
+      "evidenceDeltaWr": -0.2,
+      "evidenceN": 78
+     }
+    ],
+    "gold": 18450,
+    "archetypes": [
+     "skirmish uptime"
+    ],
+    "objectives": {
+     "burstVsSquishy": 2159.653554689211,
+     "teamfightVsSquishy": 2975.7208375312102,
+     "rot10VsSquishy": 3833.44,
+     "rot20VsBruiser": 4940.6563645053375,
+     "autoDps10VsSquishy": 878.23575627375,
+     "ehpPhysical": 4300.078218749999,
+     "ehpMagical": 3548.2159687500002,
+     "healShield10s": 0,
+     "utility": 73,
+     "sustain10s": 0
+    },
+    "manaFeasible": true
+   },
+   "coachLine": "Sim-optimal for skirmish uptime: first spike lands around minute 12 (Viper), third item by minute 25. Take Krix: +18% on your effective HP at minute 15.",
+   "eternals": {
+    "top": [
+     {
+      "name": "Krix",
+      "id": "krix",
+      "headlinePct": 0,
+      "burstPct": 0,
+      "rot20Pct": 0,
+      "ehpPct": 18
+     },
+     {
+      "name": "Demiurge",
+      "id": "demiurge",
+      "headlinePct": 10.4,
+      "burstPct": 13.7,
+      "rot20Pct": 11.6,
+      "ehpPct": 1.2
+     },
+     {
+      "name": "Vesh",
+      "id": "vesh",
+      "headlinePct": 8.1,
+      "burstPct": 6.8,
+      "rot20Pct": 7.3,
+      "ehpPct": 0
+     }
+    ],
+    "unmodeled": [
+     "Marrow",
+     "Nihil",
+     "Aion",
+     "Exarch"
+    ],
+    "all": [
+     {
+      "name": "Krix",
+      "modeled": true,
+      "headlinePct": 0,
+      "burstPct": 0,
+      "rot20Pct": 0,
+      "ehpPct": 18,
+      "note": null
+     },
+     {
+      "name": "Demiurge",
+      "modeled": true,
+      "headlinePct": 10.4,
+      "burstPct": 13.7,
+      "rot20Pct": 11.6,
+      "ehpPct": 1.2,
+      "note": null
+     },
+     {
+      "name": "Vesh",
+      "modeled": true,
+      "headlinePct": 8.1,
+      "burstPct": 6.8,
+      "rot20Pct": 7.3,
+      "ehpPct": 0,
+      "note": null
+     },
+     {
+      "name": "Thraex",
+      "modeled": true,
+      "headlinePct": 5.7,
+      "burstPct": 0,
+      "rot20Pct": 5.2,
+      "ehpPct": 0,
+      "note": null
+     },
+     {
+      "name": "Idrisil",
+      "modeled": true,
+      "headlinePct": 0,
+      "burstPct": 0,
+      "rot20Pct": 0,
+      "ehpPct": 6.8,
+      "note": null
+     },
+     {
+      "name": "Xyris",
+      "modeled": true,
+      "headlinePct": 2.4,
+      "burstPct": 3.1,
+      "rot20Pct": 2.2,
+      "ehpPct": 0,
+      "note": null
+     },
+     {
+      "name": "Lotus",
+      "modeled": true,
+      "headlinePct": 1.7,
+      "burstPct": 2.2,
+      "rot20Pct": 1.5,
+      "ehpPct": 2.8,
+      "note": null
+     },
+     {
+      "name": "Vermis",
+      "modeled": true,
+      "headlinePct": 0,
+      "burstPct": 3.2,
+      "rot20Pct": 0,
+      "ehpPct": 0,
+      "note": null
+     },
+     {
+      "name": "Marrow",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Marrow (Major): missing-health-dependent omnivamp; no sustain-uptime model yet"
+     },
+     {
+      "name": "Nihil",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Nihil (Major): accrual rate depends on combat uptime (how long Doom persists per fight), which the closed-form sim cannot observe"
+     },
+     {
+      "name": "Aion",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Aion (Major): economy effect; valuable but outside combat objectives (revisit with gold curves)"
+     },
+     {
+      "name": "Exarch",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Exarch (Major): buffs the HEAL TARGET (usually an ally) — team-side value outside the single-hero sim; self-heal uptime depends on heal cadence vs the 4s window"
+     }
+    ],
+    "augmentAware": null
+   },
+   "augments": [
+    {
+     "id": "65",
+     "name": "Critical Override",
+     "modeled": true,
+     "provisional": true,
+     "headlinePct": 4.8,
+     "burstPct": 4,
+     "rot20Pct": 4.4,
+     "ehpPct": 0,
+     "healShieldPct": 0,
+     "healShieldAbs": 0,
+     "note": "maxPct bakes the UNVERIFIED 1.75 crit multiplier: 100% crit x (1.75 - 1.35) = +40%; remeasure with critMultiplier",
+     "buildShift": null
+    },
+    {
+     "id": "67",
+     "name": "Deadly Finesse",
+     "modeled": true,
+     "provisional": false,
+     "headlinePct": 0,
+     "burstPct": 0,
+     "rot20Pct": 7.6,
+     "ehpPct": 0,
+     "healShieldPct": 0,
+     "healShieldAbs": 0,
+     "note": "hit-conditional, modeled as hitting; 20 mana refund not scored",
+     "buildShift": {
+      "in": [
+       "Alternator"
+      ],
+      "out": [
+       "Painweaver"
+      ]
+     }
+    },
+    {
+     "id": "66",
+     "name": "Execution Mandate",
+     "modeled": false,
+     "provisional": false,
+     "headlinePct": null,
+     "burstPct": null,
+     "rot20Pct": null,
+     "ehpPct": null,
+     "healShieldPct": null,
+     "healShieldAbs": null,
+     "note": "takedown-conditional cooldown refund",
+     "buildShift": null
+    }
+   ],
+   "offMeta": {
+    "candidates": [
+     {
+      "item": "Viper",
+      "playRatePct": 0.6,
+      "bestObjective": "20s fight vs bruisers",
+      "edgeVsPopularPct": 100.2
+     },
+     {
+      "item": "Augmentation",
+      "playRatePct": 0.2,
+      "bestObjective": "20s fight vs bruisers",
+      "edgeVsPopularPct": 100.2
+     }
+    ],
+    "honestAbsence": null
+   },
+   "metaBuilds": [
+    {
+     "items": [
+      {
+       "name": "Malady",
+       "slug": "malady"
+      },
+      {
+       "name": "Vanquisher",
+       "slug": "vanquisher"
+      },
+      {
+       "name": "SpearOfDesolation",
+       "slug": "spear-of-desolation"
+      }
+     ],
+     "n": 136,
+     "shrunkWr": 0.58,
+     "coreGold": 8900,
+     "spikeMinute": 24,
+     "bestObjective": "10s rotation damage",
+     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 24 — about 962 damage over a 10s rotation in the sim.",
+     "optimizer": "Optimizer sees +29% more 10s rotation damage: try Viper over Malady (sim-only — the popular pick may carry utility the sim can't see; test it)."
+    },
+    {
+     "items": [
+      {
+       "name": "Malady",
+       "slug": "malady"
+      },
+      {
+       "name": "Vanquisher",
+       "slug": "vanquisher"
+      },
+      {
+       "name": "ThePerforator",
+       "slug": "the-perforator"
+      }
+     ],
+     "n": 50,
+     "shrunkWr": 0.583,
+     "coreGold": 9200,
+     "spikeMinute": 25,
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 1,261 damage in one combo in the sim.",
+     "optimizer": null
+    },
+    {
+     "items": [
+      {
+       "name": "Malady",
+       "slug": "malady"
+      },
+      {
+       "name": "Vanquisher",
+       "slug": "vanquisher"
+      },
+      {
+       "name": "TaintedTrident",
+       "slug": "tainted-trident"
+      }
+     ],
+     "n": 38,
+     "shrunkWr": 0.591,
+     "coreGold": 8900,
+     "spikeMinute": 24,
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 1,086 damage in one combo in the sim.",
+     "optimizer": "Optimizer agrees: within 4% of our best core on one-combo burst. The winrate is earned, not luck."
+    }
+   ],
+   "stages": [
+    {
+     "label": "early",
+     "itemCount": 2,
+     "minute": 19,
+     "level": 11,
+     "core": [
+      {
+       "name": "Viper",
+       "slug": "viper"
+      },
+      {
+       "name": "Solaris",
+       "slug": "solaris"
+      }
+     ],
+     "headline": "rot10VsSquishy",
+     "headlineValue": 851,
+     "objectives": {
+      "burstVsSquishy": 792.7340862119869,
+      "teamfightVsSquishy": 1217.2247859462648,
+      "rot10VsSquishy": 850.6718597857838,
+      "rot20VsBruiser": 995.9011328527292,
+      "autoDps10VsSquishy": 219.8701136392405,
+      "ehpPhysical": 3185.2642734374995,
+      "ehpMagical": 2695.4867109375,
+      "healShield10s": 0,
+      "utility": 15,
+      "sustain10s": 0
+     },
+     "betterEarly": null
+    },
+    {
+     "label": "mid",
+     "itemCount": 3,
+     "minute": 25,
+     "level": 15,
+     "core": [
+      {
+       "name": "Viper",
+       "slug": "viper"
+      },
+      {
+       "name": "Solaris",
+       "slug": "solaris"
+      },
+      {
+       "name": "Spear Of Desolation",
+       "slug": "spear-of-desolation"
+      }
+     ],
+     "headline": "rot10VsSquishy",
+     "headlineValue": 1237,
+     "objectives": {
+      "burstVsSquishy": 1049.6482395932635,
+      "teamfightVsSquishy": 1541.259297743883,
+      "rot10VsSquishy": 1236.5575501583946,
+      "rot20VsBruiser": 1618.8858397365534,
+      "autoDps10VsSquishy": 363.8832283966384,
+      "ehpPhysical": 4694.9789384375,
+      "ehpMagical": 3778.4468159375,
+      "healShield10s": 0,
+      "utility": 35,
+      "sustain10s": 0
+     },
+     "betterEarly": null
+    },
+    {
+     "label": "late",
+     "itemCount": 6,
+     "minute": 44,
+     "level": 17,
+     "core": [
+      {
+       "name": "Viper",
+       "slug": "viper"
+      },
+      {
+       "name": "Solaris",
+       "slug": "solaris"
+      },
+      {
+       "name": "Spear Of Desolation",
+       "slug": "spear-of-desolation"
+      },
+      {
+       "name": "The Perforator",
+       "slug": "the-perforator"
+      },
+      {
+       "name": "Augmentation",
+       "slug": "augmentation"
+      },
+      {
+       "name": "Painweaver",
+       "slug": "painweaver"
+      }
+     ],
+     "headline": "rot10VsSquishy",
+     "headlineValue": 3833,
+     "objectives": {
+      "burstVsSquishy": 2194.3037715186824,
+      "teamfightVsSquishy": 3010.3710543606817,
+      "rot10VsSquishy": 3833.44,
+      "rot20VsBruiser": 4940.6563645053375,
+      "autoDps10VsSquishy": 976.1821339112001,
+      "ehpPhysical": 6078.3225600000005,
+      "ehpMagical": 4772.81472,
+      "healShield10s": 0,
+      "utility": 73,
+      "sustain10s": 0
+     },
+     "betterEarly": null
+    }
+   ],
+   "matchups": [
+    {
+     "enemy": "Khaimera",
+     "enemySlug": "khaimera",
+     "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "even"
+      },
+      {
+       "minute": 20,
+       "verdict": "even"
+      },
+      {
+       "minute": 25,
+       "verdict": "even"
+      },
+      {
+       "minute": 30,
+       "verdict": "even"
+      }
+     ],
+     "counterSwap": {
+      "out": "Augmentation",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 26,
+      "offenseLossPct": 23,
+      "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 26% of its bite; you give up 23% of your damage."
+     }
+    },
+    {
+     "enemy": "Serath",
+     "enemySlug": "serath",
+     "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "you"
+      },
+      {
+       "minute": 15,
+       "verdict": "you"
+      },
+      {
+       "minute": 20,
+       "verdict": "you"
+      },
+      {
+       "minute": 25,
+       "verdict": "you"
+      },
+      {
+       "minute": 30,
+       "verdict": "you"
+      }
+     ],
+     "counterSwap": {
+      "out": "Augmentation",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 27,
+      "offenseLossPct": 23,
+      "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 27% of its bite; you give up 23% of your damage."
+     }
+    },
+    {
+     "enemy": "Boris",
+     "enemySlug": "boris",
+     "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "you"
+      },
+      {
+       "minute": 10,
+       "verdict": "you"
+      },
+      {
+       "minute": 15,
+       "verdict": "you"
+      },
+      {
+       "minute": 20,
+       "verdict": "you"
+      },
+      {
+       "minute": 25,
+       "verdict": "you"
+      },
+      {
+       "minute": 30,
+       "verdict": "you"
+      }
+     ],
+     "counterSwap": {
+      "out": "Augmentation",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 17,
+      "offenseLossPct": 23,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Augmentation: their 3s all-in loses 17% of its bite; you give up 23% of your damage."
+     }
+    },
+    {
+     "enemy": "Yin",
+     "enemySlug": "yin",
+     "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "you"
+      },
+      {
+       "minute": 10,
+       "verdict": "you"
+      },
+      {
+       "minute": 15,
+       "verdict": "you"
+      },
+      {
+       "minute": 20,
+       "verdict": "you"
+      },
+      {
+       "minute": 25,
+       "verdict": "you"
+      },
+      {
+       "minute": 30,
+       "verdict": "you"
+      }
+     ],
+     "counterSwap": {
+      "out": "Augmentation",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 27,
+      "offenseLossPct": 23,
+      "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 27% of its bite; you give up 23% of your damage."
+     }
+    },
+    {
+     "enemy": "Feng Mao",
+     "enemySlug": "feng-mao",
+     "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "you"
+      },
+      {
+       "minute": 10,
+       "verdict": "even"
+      },
+      {
+       "minute": 15,
+       "verdict": "even"
+      },
+      {
+       "minute": 20,
+       "verdict": "even"
+      },
+      {
+       "minute": 25,
+       "verdict": "even"
+      },
+      {
+       "minute": 30,
+       "verdict": "even"
+      }
+     ],
+     "counterSwap": {
+      "out": "Augmentation",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 26,
+      "offenseLossPct": 23,
+      "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 26% of its bite; you give up 23% of your damage."
+     }
+    },
+    {
+     "enemy": "Kwang",
+     "enemySlug": "kwang",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Augmentation",
+      "in": "Void Helm",
+      "inSlug": "void-helm",
+      "survivalGainPct": 22,
+      "offenseLossPct": 23,
+      "line": "Losing lane? Third item Void Helm instead of Augmentation: their 3s all-in loses 22% of its bite; you give up 23% of your damage."
+     }
+    }
+   ],
+   "laneSteer": {
+    "augment": {
+     "id": "66",
+     "name": "Execution Mandate"
+    },
+    "playstyle": "ability-burst",
+    "modeled": false,
+    "wr": 47.4,
+    "n": 155632,
+    "shiftIn": [
+     "Vanquisher",
+     "Deathstalker",
+     "Demolisher",
+     "Imperator"
+    ],
+    "shiftOut": [
+     "Augmentation",
+     "Spear Of Desolation",
+     "Viper",
+     "Painweaver"
+    ],
+    "provenance": "“Execution Mandate” ⇒ ability-burst; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 47.4% over 155,632 games, magnitude not simulated."
    }
   }
  ],

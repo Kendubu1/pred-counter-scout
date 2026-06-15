@@ -42,14 +42,12 @@ function loadPredggAugments(): PredggAugments | null {
   return predggAugmentsCache;
 }
 
-export const HeroArtifact = z.object({
-  slug: z.string(),
-  name: z.string(),
-  patch: z.string(),
-  generatedAt: z.string(),
+// A RoleView is the full optimized build for ONE role: a flex hero (Zinx
+// support vs mid) gets a distinct view per lane it plays — its own build,
+// stage timeline, eternals, augments, meta cores, and matchups — because the
+// right items, spikes, and counters change completely with the role.
+const RoleView = z.object({
   role: z.string(),
-  damageType: z.string(),
-  attackType: z.string(),
   // Honest limitation surfaced on the page (e.g. supports: the model has
   // no heal/shield/aura objectives yet, so the build is max-damage only).
   roleCaveat: z.string().nullable(),
@@ -132,21 +130,6 @@ export const HeroArtifact = z.object({
     whyLine: z.string(),
     optimizer: z.string().nullable(),
   })),
-  // Playstyle-by-lane: the augment the field runs in each lane DECLARES a
-  // playstyle the sim is otherwise blind to. We steer the build toward that
-  // playstyle's objective corner and expose whether the augment's mechanic is
-  // actually modeled or we are leaning on the declared intent + field evidence.
-  laneFlex: z.array(z.object({
-    lane: z.string(),
-    augment: z.object({ id: z.string(), name: z.string() }),
-    playstyle: z.string(),
-    modeled: z.boolean(),         // does the sim compute the augment's effect?
-    wr: z.number().nullable(),    // field winrate of that augment in that lane
-    n: z.number().nullable(),
-    core: z.array(z.object({ name: z.string(), slug: z.string() })), // steered build core
-    headline: z.string(),         // the objective it is steered toward
-    provenance: z.string(),       // the honest one-liner the page shows
-  })),
   // The build is not one fixed thing across the game: its prefix is evaluated
   // at early / mid / late stages (2 / 3 / 6 items, each at the level it
   // completes by from the gold curves). betterEarly flags when a stronger
@@ -176,6 +159,52 @@ export const HeroArtifact = z.object({
       line: z.string(),
     }).nullable(),
   })),
+  // The augment the field commits to in THIS lane declares a playstyle the sim
+  // can't read from the kit. We surface it next to the role's pure-optimum build:
+  // which augment, what playstyle, whether the sim models it, and how steering
+  // toward it would shift the build (shiftIn/shiftOut vs the optimum). Null when
+  // the lane has no usable augment evidence. Replaces the old standalone
+  // "Playstyle by lane" section — the per-role build now lives under the toggle.
+  laneSteer: z.object({
+    augment: z.object({ id: z.string(), name: z.string() }),
+    playstyle: z.string(),
+    modeled: z.boolean(),
+    wr: z.number().nullable(),
+    n: z.number().nullable(),
+    shiftIn: z.array(z.string()),   // items the augment-steer adds vs the pure optimum
+    shiftOut: z.array(z.string()),  // items it drops
+    provenance: z.string(),
+  }).nullable(),
+});
+
+export type RoleViewT = z.infer<typeof RoleView>;
+
+export const HeroArtifact = RoleView.extend({
+  slug: z.string(),
+  name: z.string(),
+  patch: z.string(),
+  generatedAt: z.string(),
+  damageType: z.string(),
+  attackType: z.string(),
+  // Playstyle-by-lane: the augment the field runs in each lane DECLARES a
+  // playstyle the sim is otherwise blind to. We steer the build toward that
+  // playstyle's objective corner and expose whether the augment's mechanic is
+  // actually modeled or we are leaning on the declared intent + field evidence.
+  laneFlex: z.array(z.object({
+    lane: z.string(),
+    augment: z.object({ id: z.string(), name: z.string() }),
+    playstyle: z.string(),
+    modeled: z.boolean(),         // does the sim compute the augment's effect?
+    wr: z.number().nullable(),    // field winrate of that augment in that lane
+    n: z.number().nullable(),
+    core: z.array(z.object({ name: z.string(), slug: z.string() })), // steered build core
+    headline: z.string(),         // the objective it is steered toward
+    provenance: z.string(),       // the honest one-liner the page shows
+  })),
+  // Every role this hero flexes to, each a full RoleView. The top-level fields
+  // above mirror the primary role's view for backward compatibility; the UI
+  // toggles among `roles` to show a complete build per flex role.
+  roles: z.array(RoleView),
   flags: z.array(z.string()),
 });
 
@@ -244,11 +273,13 @@ function counterSwap(kit: HeroKit, items: Item[], enemy: HeroKit, enemyItems: It
 
 const headlineBuildCache = new Map<string, ReturnType<typeof generateBuilds>[number]>();
 
-export function headlineBuild(kit: HeroKit, pool: Item[], cal: Calibration, beamWidth: number) {
-  let b = headlineBuildCache.get(kit.slug);
+export function headlineBuild(kit: HeroKit, pool: Item[], cal: Calibration, beamWidth: number, role?: string) {
+  const r = role ?? kit.roles[0] ?? 'midlane';
+  const key = `${kit.slug}:${r}`;
+  let b = headlineBuildCache.get(key);
   if (!b) {
-    b = generateBuilds(kit, pool, cal, { beamWidth })[0]!;
-    headlineBuildCache.set(kit.slug, b);
+    b = generateBuilds(kit, pool, cal, { beamWidth, role: r })[0]!;
+    headlineBuildCache.set(key, b);
   }
   return b;
 }
@@ -274,6 +305,32 @@ function popularBuild(kit: HeroKit, pool: Item[]): Item[] {
  *  it and expose whether the sim actually models that augment. This surfaces
  *  the flex (e.g. Zinx support-enchant vs mid on-hit) the single-role build
  *  can't show. */
+/** The augment-steer for ONE lane, with the build-shift vs a base (pure-optimum)
+ *  build. Drives the per-role "field runs X here" banner. */
+function laneSteerFor(
+  kit: HeroKit, role: string, pool: Item[], cal: Calibration, baseItems: string[],
+): RoleViewT['laneSteer'] {
+  const aug = laneTopAugment(kit.slug, role);
+  if (!aug) return null;
+  const cls = classifyAugment(`augment:${kit.slug}:${aug.id}`);
+  if (!cls.playstyle) return null;
+  const bias = playstyleObjectives(cls.playstyle, kit);
+  const steered = generateBuilds(kit, pool, cal, { role, objectiveBias: bias as ObjKey[], headlineOverride: bias[0], beamWidth: 8 })[0];
+  if (!steered) return null;
+  const baseSet = new Set(baseItems);
+  const steerSet = new Set(steered.items);
+  const shiftIn = steered.items.filter((n) => !baseSet.has(n));
+  const shiftOut = baseItems.filter((n) => !steerSet.has(n));
+  const ev = ` — field ${role} ${(aug.wr * 100).toFixed(1)}% over ${aug.n.toLocaleString()} games`;
+  const provenance = cls.modeled
+    ? `“${aug.name}” ⇒ ${cls.playstyle}; the sim models this augment${ev}.`
+    : `“${aug.name}” ⇒ ${cls.playstyle}; the sim can’t model this augment — steered by the declared playstyle + field evidence${ev}, magnitude not simulated.`;
+  return {
+    augment: { id: aug.id, name: aug.name }, playstyle: cls.playstyle, modeled: cls.modeled,
+    wr: Math.round(aug.wr * 1000) / 10, n: aug.n, shiftIn, shiftOut, provenance,
+  };
+}
+
 function computeLaneFlex(kit: HeroKit, pool: Item[], cal: Calibration): HeroArtifactT['laneFlex'] {
   const out: HeroArtifactT['laneFlex'] = [];
   const slugOf = new Map(pool.map((i) => [i.name, i.slug]));
@@ -345,13 +402,13 @@ function computeStages(
   });
 }
 
-export function buildHeroArtifact(
-  kit: HeroKit, data: LoadedData, cal: Calibration = loadCalibration(),
+/** The full optimized build + analysis for ONE role. A flex hero gets one of
+ *  these per lane it plays; buildHeroArtifact assembles them into the artifact. */
+function buildRoleView(
+  kit: HeroKit, role: string, data: LoadedData, cal: Calibration, pool: Item[],
   opts: { beamWidth?: number; matchupEnemies?: number } = {},
-): HeroArtifactT {
-  const pool = completedItems(data);
-  const role = kit.roles[0] ?? 'midlane';
-  const top = headlineBuild(kit, pool, cal, opts.beamWidth ?? 16);
+): RoleViewT {
+  const top = headlineBuild(kit, pool, cal, opts.beamWidth ?? 16, role);
   const items = top.items.map((n) => data.items.get(n)!);
   const ordered = orderBuild(kit, items, 13, cal);
   const spikes = spikeTimeline(role, ordered);
@@ -608,14 +665,8 @@ export function buildHeroArtifact(
   // confidence.notes instead of a page-level warning.
   const roleCaveat = null;
 
-  return HeroArtifact.parse({
-    slug: kit.slug,
-    name: kit.name,
-    patch: cal.patch,
-    generatedAt: new Date().toISOString(),
+  return RoleView.parse({
     role,
-    damageType: kit.damageType,
-    attackType: kit.attackType,
     roleCaveat,
     confidence: {
       level: 'THEORY',
@@ -647,9 +698,51 @@ export function buildHeroArtifact(
       honestAbsence: candidates.length ? null : 'no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)',
     },
     metaBuilds,
-    laneFlex: computeLaneFlex(kit, pool, cal),
     stages: computeStages(kit, ordered, spikes, role, pool, cal),
     matchups,
+    laneSteer: laneSteerFor(kit, role, pool, cal, top.items),
+  });
+}
+
+/** Which roles a hero gets a full build for: its declared roles plus any lane it
+ *  has real augment evidence in (the flex the field actually plays), primary
+ *  first, deduped and capped so we don't generate builds for noise lanes. */
+function flexRolesFor(kit: HeroKit): string[] {
+  const primary = kit.roles[0] ?? 'midlane';
+  const ordered = [primary, ...kit.roles, ...lanesFor(kit.slug)];
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const r of ordered) {
+    if (!r || seen.has(r)) continue;
+    seen.add(r);
+    out.push(r);
+  }
+  return out.slice(0, 3);
+}
+
+export function buildHeroArtifact(
+  kit: HeroKit, data: LoadedData, cal: Calibration = loadCalibration(),
+  opts: { beamWidth?: number; matchupEnemies?: number } = {},
+): HeroArtifactT {
+  const pool = completedItems(data);
+  const primary = kit.roles[0] ?? 'midlane';
+  const roles = flexRolesFor(kit);
+  const views = roles.map((role) => buildRoleView(kit, role, data, cal, pool, opts));
+  const primaryView = views.find((v) => v.role === primary) ?? views[0]!;
+
+  // Top-level fields mirror the primary role's view (backward compatibility with
+  // the index, tests, and any reader that ignores `roles`); `roles` carries the
+  // full build for every flex lane so the UI can toggle among them.
+  return HeroArtifact.parse({
+    ...primaryView,
+    slug: kit.slug,
+    name: kit.name,
+    patch: cal.patch,
+    generatedAt: new Date().toISOString(),
+    damageType: kit.damageType,
+    attackType: kit.attackType,
+    laneFlex: computeLaneFlex(kit, pool, cal),
+    roles: views,
     flags: [
       'THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md',
       'crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled',

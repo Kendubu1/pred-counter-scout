@@ -1376,3 +1376,121 @@ Append-only. One entry per backlog item or significant finding.
   under Combustion's +15 MP. That's a finer haste-valuation call (abilityHaste is
   unverified), not "no mana", so left as-is. Lesson: the "combos before dry" metric
   only binds ability-combo kits; gate it off auto-attackers or it mis-credits carries.
+
+## 2026-06-14: roster-wide agreement audit — where the optimizer diverges from the field
+- Built `npm run agreement` (engine/src/ingest/agreement-audit.ts): for every hero,
+  run the lane-augment-steered optimizer at its primary lane and compare the Pareto
+  front to the field's winning cores (pred.gg). Writes data/aggregates/agreement-audit.json.
+- Two metrics, because the strict one is misleading: exact-trio hit (all 3 core
+  items in ONE build) is only 10% and reads as catastrophic, but item-level core
+  recall (do we build each core item ANYWHERE in the front) is 52% avg — the honest
+  number. Carries/junglers are the best-aligned (combat-objective heroes); supports
+  are the worst.
+- The bottom 8 by recall are ALL supports/enchanters (+ Wraith): Mourn, Muriel,
+  Narbash, Phase, Riktor, Zinx, Steel at 0% recall. Root cause is architectural, not
+  a constant: enchanter items ARE in the pool but are mostly `unmodeled`/flat-stat
+  (Xenia, Enra's Blessing, Windcaller, Crystal Tear, Truesilver, Frosted Lure,
+  Dawnstar). Their value is ALLY-FACING (heal_shield_increase amplifies allies'
+  heals, auras, peel) and a single-hero combat sim structurally cannot score it.
+  Even under an explicit healShield10s/utility bias, Zinx builds only 1 of her field
+  core's 3 enchanter items. "She can't heal herself" generalizes: the objective
+  vector has no ally channel.
+- Systematic never-built clusters (the fix backlog, by frequency):
+  1. Enchanter ally-utility — Dynamo(5), Xenia(3), Enra's Blessing(3), Crescelia(2),
+     Marshal(2): supports. Needs an ally-utility objective proxy (credit
+     heal_shield_increase + ability_haste + aura stats) OR steer supports by field
+     augment and accept they're partly out-of-model. ARCHITECTURE decision.
+  2. Mage cooldown/haste/mana — Entropy(4), Azure Core(3), Megacosm(3), Spectra(3),
+     Flux Matrix(2): haste/mana undervalued vs raw power. Partly the known
+     Azure-vs-Combustion haste call; abilityHaste is unverified.
+  3. Bruiser sustain (offlane) — Overlord(4), Rapture, Cursed Scroll: omnivamp/
+     sustain on bruisers; rot objectives don't reach for it. Likely in-model fixable.
+  4. On-hit magical (jungle/carry) — Malady(4): magical on-hit/anti-heal; a hybrid
+     bruiser tagged physical drops it via the power-type pool. Power-type edge case.
+- Lesson: agreement is highest where the objective IS the hero's job (carry DPS) and
+  lowest where the hero's job is off-axis to single-hero combat (enchanting allies).
+  The audit turns "builds feel templated" into a ranked, item-level fix list; the
+  #1 lever (enchanter ally-utility) is an objective-architecture change, so it's
+  surfaced for a maintainer call rather than silently estimated.
+
+## 2026-06-14: ally-utility objective — give enchanters the channel the combat sim lacks
+- Audit fix #1 (maintainer-authorized architecture change). The agreement audit's
+  bottom 8 by recall were all supports because the `utility` objective was only
+  movement_speed + tenacity, so enchanter items (ability_haste + heal_shield_increase
+  + ally auras) scored ~0 and never made the front.
+- Fix: utility now = movement_speed + tenacity + ability_haste + heal_shield_increase
+  + eff.ampAllWindowPct. The last term credits team damage-amp DEBUFFS (Dynamo's
+  "enemies take 10% more damage", scope:all) — near-worthless to a support's own low
+  damage but real value applied to the whole team, so it belongs on the ally channel.
+  Heuristic proxy: one unit of value per stat/amp point (documented as such).
+- Honesty line: purely-unmodeled ally auras (Xenia's ally shield, Frosted Lure's
+  proximity nuke) stay UNCREDITED rather than estimated — the calibration policy
+  forbids inventing a magnitude. They remain THEORY items the sim can't rank.
+- Result: avg item-level core recall 52% -> 58%. Dynamo dropped off the most-missed
+  list entirely; Steel/Narbash/Mourn/Zinx/Riktor left the worst-18. Remaining gaps
+  are now the in-model clusters (mage haste, bruiser sustain, on-hit magical).
+- Lesson: a single-hero combat sim is structurally blind to ally-facing value; the
+  fix is a dedicated objective fed by the stats/effects that ARE quantifiable
+  (haste, heal/shield amp, team debuffs), not a fudge factor on combat damage.
+
+## 2026-06-14: agreement audit — classify misses as fixable vs blocked (don't popularity-fit)
+- Enhanced `npm run agreement` to label each never-built field item: ★ fixable
+  in-engine (mechanic is modeled or it's a pure stat stick — a valuation gap) vs
+  ⓘ blocked on an unmodeled mechanic with an unstated magnitude (cleave ratio,
+  stack cadence, health-gated shield). After fix #1: 32 fixable, 33 blocked.
+- Methodological line we held: the ★ "fixable" haste/mana items (Entropy, Azure
+  Core, Megacosm) are modeled but lose on per-gold damage; the sim instead builds
+  Combustion — itself a valid field mana core. Forcing Azure in by inflating
+  ability_haste's weight would be FITTING THE OBJECTIVE TO POPULARITY, which the
+  design forbids (component C: popularity never enters the objective). That
+  Azure-vs-Combustion split is legitimate model uncertainty (abilityHaste is
+  unverified), not a bug to tune away. The audit validates; it must not become the
+  training signal.
+- The ⓘ blocked items (Overlord cleave, Malady sub-40% stacks, Salvation/Berserker
+  health-gated shields) need a measured magnitude before the sim can rank them;
+  estimating violates the calibration policy. They are flagged, not faked.
+- Lesson: an agreement validator is only honest if you let it DISAGREE. The fixes
+  it licenses are missing value CHANNELS (ally-utility) and modeling errors, never
+  re-weighting toward the field's specific picks.
+
+## 2026-06-14: per-flex-role builds — a full optimized build for every lane a hero plays
+- Maintainer caught it: the v6 hero page let you toggle flex roles, but every role
+  showed the SAME build. Root cause in the engine: headlineBuild cached by slug
+  only and called generateBuilds WITHOUT a role, and buildHeroArtifact computed the
+  whole artifact (build, stages, eternals, augments, meta cores, matchups) for
+  kit.roles[0] alone. laneFlex gave a per-lane CORE preview but nothing else.
+- Fix: extracted buildRoleView(kit, role, ...) — the full per-role analysis — and
+  made buildHeroArtifact iterate flexRolesFor(kit) (declared roles ∪ lanes with
+  augment evidence, primary first, capped at 3). Schema split into RoleView +
+  HeroArtifact (RoleView.extend). Top-level fields still mirror the primary role
+  (backward compatible with the index and tests); a new `roles[]` carries a full
+  RoleView per lane. headlineBuild is now keyed by slug:role.
+- v6 UI: renderHero merges the active role view over the artifact (role-independent
+  fields survive the spread, so re-rendering on toggle works), and a "flex role"
+  button bar calls nav(slug, false, role). Verified headless: Zinx support build
+  (Lifecore/Windcaller, Vesh eternal, Adele/Riktor matchups) vs midlane
+  (Spectral Schematics/Combustion, Demiurge, Renna/Iggy) swap with zero JS errors.
+- Cost: artifacts now ~3× the generateBuilds work for flex heroes (52 artifacts in
+  ~10min); matrix unaffected (1326 pairs in 3s). Both regenerated so prod reflects
+  the ally-utility tweak AND the per-role builds.
+- Lesson: "flex role" is not a display filter — it's a different hero in practice
+  (different items, spikes, counters). Model it as a first-class per-role build,
+  not a re-skin of the primary.
+
+## 2026-06-14: consolidate per-lane UI — augment steer as a per-role banner, not a 2nd build list
+- Once the flex-role toggle shipped a full build per lane, the old "Playstyle by
+  lane" section (laneFlex) became a redundant second per-lane build list. The
+  maintainer flagged the overlap and chose to condense.
+- Kept what was UNIQUE to it: the augment→playstyle steer + the ⚙ sim-modeled /
+  🔬 evidence-steered honesty + field winrate. Added a per-role `laneSteer` to
+  RoleView (the lane's field augment, playstyle, modeled flag, wr/n, and the
+  build-SHIFT — shiftIn/shiftOut — that steering toward the augment makes vs the
+  role's pure-optimum build). The v6 page now renders this as a compact banner
+  ABOVE the optimizer build, and the standalone "Playstyle by lane" section is
+  gone. laneFlex stays in the artifact for the standalone flex-preview tool.
+- Distinction the banner now makes explicit: the optimizer build is the PURE
+  kit-math optimum for the lane (no augment assumed); the banner says what the
+  field's augment would do on top of it (and whether the sim can see it).
+- Lesson: when you add a real per-X view (per-role builds), retire the half-measure
+  that approximated it (per-lane core previews) instead of leaving both — but carry
+  forward the one signal the half-measure had that the new view lacks.
