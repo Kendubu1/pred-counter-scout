@@ -1494,3 +1494,28 @@ Append-only. One entry per backlog item or significant finding.
 - Lesson: when you add a real per-X view (per-role builds), retire the half-measure
   that approximated it (per-lane core previews) instead of leaving both — but carry
   forward the one signal the half-measure had that the new view lacks.
+
+## 2026-06-18: post-game review (Squad tab) — facts engine + agent coaching pass
+- New player-facing feature: a blunt, esports-style post-game review of one ranked
+  match for our group, on a new ui/v6/postgame.html (linked from Squad/Build Lab/
+  Coach nav). `npm run postgame -- <player-name | player-uuid | match-uuid>`.
+- Data source: the OMEDA PUBLIC API is fully sufficient — match detail exposes per
+  player K/D/A, full damage split (incl. to-objectives), healing, wards, gold
+  curves, inventory_data, performance_score, rank, vp_change, objective_kills; plus
+  players/{id}/hero_statistics for experience. No pred.gg creds needed (theirs
+  weren't reaching the container anyway; env secrets need a fresh session). No
+  objective TIMELINE exists in the feed — we measure objective CONTRIBUTION (kills +
+  damage), and the page says so honestly.
+- Split of labor that saved metered API spend: the ENGINE computes the deterministic
+  facts (engine/src/postgame.ts: lane matchups from our kill-window matrix, build
+  vs the optimizer + field core, experience vs this game, comp shape, objectives),
+  and the AGENT (this session) authors the blunt coaching narrative into the
+  facts.coaching slot — rather than paying for a runtime ANTHROPIC_API_KEY call.
+- Bug caught in review: build comparison matched by NAME, but artifact meta-core
+  names are camelCase (AzureCore) while item names aren't (Azure Core), so it
+  falsely flagged built items as missing. Fixed to match by SLUG, resolve to names
+  for display, and restrict to COMPLETED items (a 23-min game leaves components in
+  inventory; judging those as "missing core" is game-length, not a mistake).
+- Lesson: a single match is small-sample and short games have unfinished builds —
+  honest coaching separates the repeatable signal (objective control, draft edges,
+  experience gaps) from the noise (one outlier carry game, an unfinished build).

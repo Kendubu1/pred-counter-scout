@@ -148,6 +148,7 @@
   <span class="spacer"></span>
   <a class="navlink" href="./">Build Lab</a>
   <a class="navlink active" href="squad.html">Squad</a>
+  <a class="navlink" href="postgame.html">Post-game</a>
   <a class="navlink" href="coach.html">Coach</a>
 </div><div class="subnav" id="subnav"></div></div>
 <div class="wrap" id="page">loading…</div>
@@ -163,6 +164,14 @@ const plink = (uuid, name) => uuid
   catch { document.getElementById('page').textContent = 'no squad report generated yet'; return; }
   try { coach = await (await fetch('../../data/artifacts/coach.json')).json(); } catch {}
   try { META = await (await fetch('../../data/artifacts/meta.json')).json(); } catch {}
+  // Post-game reviews for this stack's recent ranked games (committed under data/postgame).
+  let pgGames = [];
+  try {
+    const PG = await (await fetch('../../data/postgame/index.json')).json();
+    pgGames = await Promise.all((PG.matches || []).slice(0, 8).map(async (m) => {
+      try { const f = await (await fetch(`../../data/postgame/${m.matchId}.json`)).json(); return { ...m, headline: f.coaching?.headline ?? null }; } catch { return m; }
+    }));
+  } catch {}
   // full hero pools per member, for honest meta-pick annotations (static files, no API)
   const POOLS = new Map();
   await Promise.all(s.members.map(async (m) => {
@@ -233,6 +242,22 @@ const plink = (uuid, name) => uuid
           </div>`).join('')}
       </div>
     </div>
+
+    ${pgGames.length ? `
+    <div class="card">
+      <h2>Post-game reviews <span style="font-weight:400;font-size:.72rem;color:var(--text-2)">your 5-stack ranked games · blunt review per match</span></h2>
+      <div style="display:flex;flex-direction:column;gap:.5rem">
+        ${pgGames.map((g) => `
+          <a href="postgame.html?match=${esc(g.matchId)}" style="display:block;border:1px solid var(--border);border-radius:10px;padding:.6rem .75rem;background:var(--bg-2)">
+            <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+              <span style="font-weight:800;padding:.1rem .55rem;border-radius:7px;font-size:.85rem;background:${g.result === 'win' ? 'rgba(0,196,140,.16)' : 'rgba(255,90,90,.16)'};color:${g.result === 'win' ? 'var(--green)' : 'var(--red)'}">${g.result.toUpperCase()}</span>
+              <span style="color:var(--text-1);font-size:.82rem">${new Date(g.startTime).toLocaleDateString()} · ${g.durationMin}m · stack ${g.stackSize ?? '?'}${g.vpSwing != null ? ` · VP ${g.vpSwing >= 0 ? '+' : ''}${g.vpSwing}` : ''}</span>
+              <span style="margin-left:auto;color:var(--blue);font-size:.8rem">review →</span>
+            </div>
+            ${g.headline ? `<div style="font-size:.84rem;color:var(--text-0);margin-top:.35rem">${esc(g.headline)}</div>` : ''}
+          </a>`).join('')}
+      </div>
+    </div>` : ''}
 
     <div class="card">
       <h2>Coach notes</h2>
