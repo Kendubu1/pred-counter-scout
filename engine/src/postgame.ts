@@ -78,8 +78,76 @@ export interface PostGameFacts {
   // Macro timeline (pred.gg only): when the big neutral objectives fell and the
   // tower count by side. Null when sourced from omeda (no event stream).
   timeline: { majors: { minute: number; type: string; side: 'us' | 'them' }[]; towers: { us: number; them: number } } | null;
+  kit?: KitAnalysis | null;   // kit/ability synergy + enemy threats (augmented post-hoc)
   // Authored later by the agent coaching pass; null until then.
   coaching: { headline: string; team: string; perPlayer: Record<string, string>; whatShiftedIt: string } | null;
+}
+
+// ── Kit/ability comp analysis (grounded in hero-abilities.json: structured CC,
+// heals, AoE, passives). Surfaces how OUR comp should synergize and what the
+// ENEMY comp threatens (chain-CC, heal-stacking, damage profile). The deeper
+// qualitative read (combos, win conditions, how-to-play-against) is layered on
+// later by the agent kit-knowledge pass. ──
+const HARD_CC = new Set(['knockup', 'knockback', 'root', 'silence', 'pull', 'suppress', 'stun', 'taunt', 'fear', 'sleep', 'immobilize', 'polymorph']);
+
+export interface KitAbility { name: string; key: string; cc: { type: string; value: number | null; unit: string }[]; description?: string; }
+export interface TeamKit {
+  hardCC: { hero: string; ability: string; type: string; sec: number | null }[];
+  slows: { hero: string; ability: string; pct: number | null }[];
+  healers: string[]; damage: { physical: number; magical: number };
+  frontline: string[]; aoeAbilities: number;
+}
+export interface KitAnalysis { our: TeamKit; enemy: TeamKit; threats: string[]; synergy: string[]; }
+
+function teamKit(facts: PostGameFacts, side: 'us' | 'them', abilities: Record<string, { abilities: KitAbility[] }>): TeamKit {
+  const ps = facts.players.filter((p) => (side === 'us') === p.us);
+  const hardCC: TeamKit['hardCC'] = []; const slows: TeamKit['slows'] = [];
+  let aoeAbilities = 0; const frontline: string[] = [];
+  for (const p of ps) {
+    const abil = abilities[p.heroSlug]?.abilities ?? [];
+    let hasEngage = false;
+    for (const a of abil) {
+      for (const c of a.cc ?? []) {
+        if (HARD_CC.has(c.type)) { hardCC.push({ hero: p.heroName, ability: a.name, type: c.type, sec: c.unit === 's' ? c.value : null }); if (['knockup', 'pull', 'stun', 'suppress'].includes(c.type)) hasEngage = true; }
+        else if (c.type === 'slow') slows.push({ hero: p.heroName, ability: a.name, pct: c.unit === '%' ? c.value : null });
+      }
+      if (/area|nearby|enemies|\baoe\b|cone|\bline\b|all enemies|around/i.test(a.description ?? '')) aoeAbilities++;
+    }
+    if (p.role === 'offlane' || hasEngage) frontline.push(p.heroName);
+  }
+  return {
+    hardCC, slows,
+    healers: side === 'us' ? facts.comp.ourHealers : facts.comp.theirHealers,
+    damage: side === 'us' ? facts.comp.ourDamage : facts.comp.theirDamage,
+    frontline: [...new Set(frontline)], aoeAbilities,
+  };
+}
+
+export function computeKitAnalysis(facts: PostGameFacts, abilities: Record<string, { abilities: KitAbility[] }>): KitAnalysis {
+  const our = teamKit(facts, 'us', abilities);
+  const enemy = teamKit(facts, 'them', abilities);
+  const ccList = (t: TeamKit) => t.hardCC.map((c) => `${c.hero} ${c.ability} (${c.type}${c.sec ? ` ${c.sec}s` : ''})`).join(', ');
+
+  const threats: string[] = [];
+  if (enemy.hardCC.length) {
+    const totalSec = enemy.hardCC.reduce((s, c) => s + (c.sec ?? 0.5), 0);
+    threats.push(`Chain-CC risk (${enemy.hardCC.length} hard-CC abilities, ~${totalSec.toFixed(1)}s of lockdown): ${ccList(enemy)}. Don't group tight into it — stagger the engage and hold mobility/cleanse for the key one.`);
+  }
+  if (enemy.healers.length) threats.push(`Heal-stacking: ${enemy.healers.join(', ')}. Anti-heal is mandatory against this comp — you brought none.`);
+  if (enemy.damage.physical >= 4) threats.push(`Enemy is ${enemy.damage.physical}/5 physical — a single armor item blunts most of their damage; itemize armor on anyone diveable.`);
+  else if (enemy.damage.magical >= 4) threats.push(`Enemy is ${enemy.damage.magical}/5 magical — one magic-resist item goes a long way.`);
+  if (!enemy.frontline.length) threats.push(`Enemy has no real frontline — they need to catch you; respect picks more than a straight 5v5.`);
+
+  const synergy: string[] = [];
+  if (our.hardCC.length) synergy.push(`Your engage/CC: ${ccList(our)}. Your kills come from landing burst INSIDE that CC window — whoever lands it, the rest must follow up immediately.`);
+  else synergy.push(`Little hard CC on your side — you can't force a pick. Play for poke/objectives and punish their cooldowns, don't flip coin-toss 5v5s.`);
+  if (!our.frontline.length) synergy.push(`No natural frontline — nobody absorbs the first engage. Play around vision and pick angles, not open-field fights.`);
+  if (our.healers.length) synergy.push(`You have sustain (${our.healers.join(', ')}) — favor the longer fight where your heals out-grind them.`);
+  if (our.damage.physical >= 4) synergy.push(`Your damage is ${our.damage.physical}/5 physical — predictable; the enemy itemizes one armor item against most of it. A magical pick would split their defenses.`);
+  else if (our.damage.magical >= 4) synergy.push(`Your damage is ${our.damage.magical}/5 magical — predictable; one magic-resist item answers most of it. Mix in a physical threat.`);
+  if (our.aoeAbilities >= 6) synergy.push(`Strong AoE/teamfight kit — group at choke points and fight on top of objectives.`);
+
+  return { our, enemy, threats, synergy };
 }
 
 function heroIdToSlug(data: LoadedData, omedaHeroes: { id: number; slug: string }[]): Map<number, string> {
