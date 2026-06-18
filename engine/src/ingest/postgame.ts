@@ -19,7 +19,9 @@ import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync } from 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadData } from '../data.js';
-import { computeMatchFacts, type OmedaMatch, type HeroStatCell, type PostGameInputs } from '../postgame.js';
+import { computeMatchFacts, type OmedaMatch, type HeroStatCell, type PostGameInputs, type MatchEvent } from '../postgame.js';
+import { hasCredentials } from './predgg.js';
+import { predggSquadMatches } from './predgg-match.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const UA = { 'User-Agent': 'pred-counter-scout (github.com/Kendubu1/pred-counter-scout)' };
@@ -114,7 +116,31 @@ async function main() {
     const squad = loadSquad();
     if (!squad) { console.error('no data/artifacts/squad.json — run `npm run squad -- <lead-uuid>` first'); process.exit(1); }
     const minStack = Number(arg('min-stack') ?? 4);
-    console.log(`squad mode: lead ${squad.nameByUuid.get(squad.lead)}, finding ranked games with >= ${minStack} of ${squad.uuids.size} members…`);
+    // pred.gg is fresher than omeda's stalled feed and carries the event timeline;
+    // use it when credentials are present, else fall back to the omeda feed.
+    if (hasCredentials()) {
+      console.log(`squad mode (pred.gg): lead ${squad.nameByUuid.get(squad.lead)}, ranked games with >= ${minStack} of ${squad.uuids.size} members…`);
+      const games = await predggSquadMatches(squad.lead, squad.uuids, squad.nameByUuid, omedaHeroes, minStack);
+      if (!games.length) { console.log('no qualifying stacked ranked games on pred.gg.'); process.exit(0); }
+      const force = process.argv.includes('--force');
+      let added = 0;
+      for (const g of games) {
+        // Don't clobber an already-reviewed game (preserves omeda perf scores +
+        // authored coaching); --force re-pulls everything from pred.gg.
+        if (!force && existsSync(path.join(ROOT, 'data/postgame', `${g.match.id}.json`))) {
+          console.log(`  ${g.match.start_time.slice(0, 10)} ${g.match.id.slice(0, 8)} · already reviewed, skipping`);
+          continue;
+        }
+        await generateOne(data, omedaHeroes, matrix, g.match, g.ourTeam, squad, { objectiveEvents: g.objectiveEvents, structureEvents: g.structureEvents });
+        added++;
+        console.log(`  ${g.match.start_time.slice(0, 10)} ${g.match.id.slice(0, 8)} · stack ${g.members.length} [${g.members.join(', ')}] · NEW`);
+      }
+      console.log(`(${added} new, ${games.length - added} already reviewed)`);
+      writeIndex();
+      console.log(`\n${games.length} squad games reviewed (pred.gg) -> data/postgame/. Next: agent coaching pass on each.`);
+      return;
+    }
+    console.log(`squad mode (omeda): lead ${squad.nameByUuid.get(squad.lead)}, ranked games with >= ${minStack} of ${squad.uuids.size} members…`);
     const found = await squadMatches(squad, minStack);
     if (!found.length) { console.log('no qualifying stacked ranked games in the lead\'s recent feed.'); process.exit(0); }
     for (const { match, ourTeam, members } of found) {
@@ -157,6 +183,7 @@ const OUT_DIR = path.join(ROOT, 'data/postgame');
 async function generateOne(
   data: ReturnType<typeof loadData>, omedaHeroes: { id: number; slug: string }[],
   matrix: { minutes: number[]; pairs: Record<string, string> }, match: OmedaMatch, ourTeam: string, squad: SquadInfo | null,
+  events?: { objectiveEvents: MatchEvent[]; structureEvents: MatchEvent[] },
 ) {
   const heroStats = new Map<string, HeroStatCell[]>();
   for (const p of match.players.filter((q) => q.team === ourTeam)) {
@@ -172,7 +199,7 @@ async function generateOne(
       artifacts.set(slug, JSON.parse(readFileSync(path.join(adir, `${slug}.json`), 'utf8')));
     }
   }
-  const inputs: PostGameInputs = { match, ourTeam, omedaHeroes, heroStats, matrix, artifacts };
+  const inputs: PostGameInputs = { match, ourTeam, omedaHeroes, heroStats, matrix, artifacts, objectiveEvents: events?.objectiveEvents, structureEvents: events?.structureEvents };
   const facts: any = computeMatchFacts(data, inputs);
   // Tag known squad members + who is the lead ("you").
   if (squad) {
@@ -185,8 +212,13 @@ async function generateOne(
       members: facts.players.filter((p: any) => p.us && p.squadName).map((p: any) => p.squadName),
     };
   }
+  // Preserve an already-authored coaching narrative across a facts refresh.
+  const existing = path.join(OUT_DIR, `${match.id}.json`);
+  if (existsSync(existing)) {
+    try { const prev = JSON.parse(readFileSync(existing, 'utf8')); if (prev.coaching) facts.coaching = prev.coaching; } catch { /* ignore */ }
+  }
   mkdirSync(OUT_DIR, { recursive: true });
-  writeFileSync(path.join(OUT_DIR, `${match.id}.json`), JSON.stringify(facts, null, 1));
+  writeFileSync(existing, JSON.stringify(facts, null, 1));
   return facts;
 }
 

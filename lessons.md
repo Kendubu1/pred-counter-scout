@@ -1529,3 +1529,28 @@ Append-only. One entry per backlog item or significant finding.
   prefers squadName over the omeda display_name everywhere (pgName helper).
 - Lane table now shows the PLAYER (mapped name) alongside the lane + hero, not just
   the lane name — you can see who played each matchup.
+
+## 2026-06-18: pred.gg as the fresher post-game source + counters + objective timeline
+- omeda's public feed stalled at 2026-06-12 (global, not just the squad — verified
+  all 5 members + the global feed). pred.gg carries the same matches by the SAME
+  UUIDs and is current to 06-17, AND exposes an event stream omeda lacks
+  (objectiveKills / structureDestructions with gameTime).
+- Built a pred.gg match adapter (src/ingest/predgg-match.ts): one GraphQL query for
+  the lead's recent ranked matches with full per-player detail, mapped to the same
+  OmedaMatch shape computeMatchFacts consumes. hero.slug -> our slug directly;
+  inventoryItemData -> gameIds (filter null slots); rating -> vp_change. pred.gg has
+  NO performance_score, so that field is 0 and the UI hides it.
+- npm run postgame -- --squad now prefers pred.gg when creds are present (fresher +
+  timeline), falls back to omeda. Skips already-reviewed matches (preserves omeda
+  perf scores + authored coaching); --force re-pulls. generateOne preserves any
+  existing coaching across a facts refresh.
+- Objective timeline: facts.timeline = major objectives (non-buff) with minute +
+  side, and towers by side (structureTeam = the side that LOST it, so a tower we
+  took has team=enemy). Finally answers "when did the Fangtooth fall" — e.g.
+  "11m FANGTOOTH (them) · 16m FANGTOOTH (you) · 27m PRIMAL FANGTOOTH (them)".
+- Counter tips: from the all-pairs matchup matrix, for each lost lane, role-eligible
+  heroes whose kill-window beats the enemy laner — the player's OWN pool first
+  (a counter you can pilot > a theoretical one), via their omeda hero_statistics.
+  Augmented in place (no re-pull) so all games got counters without losing data.
+- Lesson: when one provider stalls, a second sanctioned source with matching IDs is
+  the cleanest fix — adapt it to the existing shape rather than forking the engine.
