@@ -80,6 +80,7 @@ export interface LaneMatchup {
   edge: 'favored' | 'even' | 'unfavored';
   summary: string;
   counters: CounterPick[];    // heroes that would have countered the enemy laner (pool picks first)
+  predggMatchup?: { winrate: number; matchesPlayed: number; firstTowerDiff: number | null } | null;  // empirical lane winrate (pred.gg)
 }
 
 export interface PostGameFacts {

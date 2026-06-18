@@ -163,8 +163,9 @@ function pgReview(f) {
     <div style="border-left:3px solid var(--gold);padding:.5rem .8rem;background:rgba(240,180,41,.07);border-radius:6px;margin-top:.6rem;font-size:.9rem"><b>What would've shifted it:</b> ${esc(co.whatShiftedIt)}</div>` :
     `<div style="color:var(--text-2);margin-top:.5rem;font-size:.9rem">Facts computed; coaching narrative not yet authored for this match.</div>`}`);
 
+  const wrColor = (w) => w >= 52 ? 'var(--green)' : w <= 48 ? 'var(--red)' : 'var(--text-1)';
   const lanes = card(`
-    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.7rem">Draft &amp; lane matchups <span style="font-weight:400;text-transform:none;letter-spacing:0">· kill-window per minute (5·10·15·20·25·30) · green = your window</span></h2>
+    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.7rem">Draft &amp; lane matchups <span style="font-weight:400;text-transform:none;letter-spacing:0">· pred.gg win rate vs the laner (empirical) · sim kill-window as a second opinion</span></h2>
     <div style="display:flex;flex-direction:column;gap:.5rem">
       ${f.lanes.map((l) => {
         const o = ourOf(l.role), t = theirOf(l.role);
@@ -172,16 +173,17 @@ function pgReview(f) {
         const counterTxt = cs.length
           ? cs.map((c) => `${esc(c.hero)}${c.inPool ? ' <span style="color:var(--green)" title="in your pool">●</span>' : ''}`).join(', ')
           : '—';
+        const mu = l.predggMatchup;
         return `<div style="border:1px solid var(--border);border-radius:8px;padding:.5rem .6rem;background:var(--bg-2)">
           <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
             <span style="font-size:.66rem;text-transform:uppercase;color:var(--text-2);min-width:3.6rem">${esc(l.role)}</span>
             ${hlink(l.ourSlug, `<img src="${himg(l.ourSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'">`)} <b>${o ? pgName(o) : ''}</b>
             <span style="color:var(--text-2)">vs</span>
             ${hlink(l.theirSlug, `<img src="${himg(l.theirSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'">`)} ${esc(l.theirHero)}
-            <span style="margin-left:auto;font-weight:700;${edgeStyle(l.edge)}">${l.edge}</span>
+            ${mu ? `<span style="margin-left:auto;font-weight:800;color:${wrColor(mu.winrate)}" title="pred.gg empirical, ${mu.matchesPlayed.toLocaleString()} games">${mu.winrate}%</span>` : `<span style="margin-left:auto;font-weight:700;${edgeStyle(l.edge)}">${l.edge}</span>`}
           </div>
-          <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.35rem;font-size:.78rem;color:var(--text-2)">
-            ${pgDots(l.verdict)} <span>${esc(l.summary)}</span>
+          <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.35rem;font-size:.76rem;color:var(--text-2)">
+            ${mu ? `<span>pred.gg ${mu.winrate}% over ${mu.matchesPlayed.toLocaleString()}${mu.firstTowerDiff != null ? ` · 1st tower ${mu.firstTowerDiff > 0 ? '+' : ''}${mu.firstTowerDiff}s` : ''}</span> <span style="opacity:.7">· sim: ${l.edge}</span>` : `${pgDots(l.verdict)} <span>sim: ${esc(l.summary)}</span>`}
             <span style="margin-left:auto">counter: <span style="color:var(--text-1)">${counterTxt}</span></span>
           </div>
         </div>`;
@@ -240,8 +242,10 @@ function pgReview(f) {
     ${us.map((p) => {
       const built = p.items.filter((i) => !/Potion|Ward|Crest/i.test(i.name));
       const lane = (f.lanes || []).find((l) => l.role === p.role && l.ourSlug === p.heroSlug);
-      // Counters only matter when you DIDN'T win the lane — don't suggest one on a favored matchup.
-      const counter = lane && lane.edge !== 'favored' && lane.counters && lane.counters[0];
+      // Counters only matter when the lane is actually unfavored — judge by the
+      // empirical pred.gg winrate when we have it, else the sim edge.
+      const unfav = lane ? (lane.predggMatchup ? lane.predggMatchup.winrate < 49 : lane.edge !== 'favored') : false;
+      const counter = unfav && lane.counters && lane.counters[0];
       const dg = p.diagnostics;
       const dColor = (m) => m.flag === 'bad' ? 'var(--red)' : m.flag === 'good' ? 'var(--green)' : 'var(--text-2)';
       const edgeColor = lane ? (lane.edge === 'favored' ? 'var(--green)' : lane.edge === 'unfavored' ? 'var(--red)' : 'var(--text-1)') : 'var(--text-1)';
@@ -258,7 +262,7 @@ function pgReview(f) {
         ${dg && dg.headline ? `<div style="font-size:.9rem;margin-top:.4rem;font-weight:600">${dg.metrics.some((m) => m.flag === 'bad') ? '⚠ ' : ''}<span style="color:${dg.metrics.find((m) => dg.headline.startsWith(m.label)) ? dColor(dg.metrics.find((m) => dg.headline.startsWith(m.label))) : 'var(--text-0)'}">${esc(dg.headline)}</span></div>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.25rem;font-size:.72rem">${dg.metrics.map((m) => `<span style="color:${dColor(m)}" title="your season average: ${m.avg}">${esc(m.label)} ${m.value}<span style="color:var(--text-2)">/${m.avg}</span></span>`).join('')}</div>`
         : `<div style="font-size:.74rem;color:var(--text-2);margin-top:.35rem">${esc(p.experienceVerdict)} — no baseline to compare this game against</div>`}
-        ${lane ? `<div style="font-size:.82rem;margin-top:.35rem">Lane: vs <b>${esc(lane.theirHero)}</b> <span style="color:${edgeColor};font-weight:700">(${lane.edge})</span>${counter ? ` · would've countered: ${esc(counter.hero)}${counter.inPool ? ` <span style="color:var(--green)">(your pool)</span>` : ''}` : ''}</div>` : ''}
+        ${lane ? `<div style="font-size:.82rem;margin-top:.35rem">Lane: vs <b>${esc(lane.theirHero)}</b> ${lane.predggMatchup ? `<span style="font-weight:700;color:${lane.predggMatchup.winrate >= 52 ? 'var(--green)' : lane.predggMatchup.winrate <= 48 ? 'var(--red)' : 'var(--text-1)'}" title="pred.gg empirical, ${lane.predggMatchup.matchesPlayed.toLocaleString()} games">${lane.predggMatchup.winrate}% win</span> <span style="color:var(--text-2);font-size:.72rem">(pred.gg, ${lane.predggMatchup.matchesPlayed.toLocaleString()} games)</span>` : `<span style="color:${edgeColor};font-weight:700">(${lane.edge})</span>`}${counter ? ` · would've countered: ${esc(counter.hero)}${counter.inPool ? ` <span style="color:var(--green)">(your pool)</span>` : ''}` : ''}</div>` : ''}
         <div style="display:flex;gap:.25rem;flex-wrap:wrap;margin:.4rem 0">${built.map((i) => hlink(p.heroSlug, `<img src="${iimg(i.slug)}" title="${esc(i.name)} — open ${esc(p.heroSlug)} build" style="width:26px;height:26px;border-radius:6px;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">`)).join('') || '<span style="color:var(--text-2);font-size:.78rem">no completed items</span>'}</div>
         ${p.antiHealRec ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.2rem">🩹 Anti-heal: add <b>${esc(p.antiHealRec.item)}</b>${p.antiHealRec.swapOut ? ` (swap ${esc(p.antiHealRec.swapOut)})` : ''} — vs their healers</div>` : ''}
         ${wc && (p.missingCore || []).length ? `<div style="font-size:.74rem;color:${sharedCore <= 1 ? 'var(--gold)' : 'var(--text-2)'}">${sharedCore <= 1 ? '⚠ Off the winning build' : 'Build note'}: ran ${sharedCore}/${wc.items.length} of the ${wc.wr}%-winning core (${esc(wc.items.join(', '))}) — missing ${esc((p.missingCore || []).join(', '))}.</div>` : ''}
