@@ -165,26 +165,24 @@ function pgReview(f) {
   const lanes = card(`
     <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.7rem">Draft &amp; lane matchups <span style="font-weight:400;text-transform:none;letter-spacing:0">· kill-window per minute (5·10·15·20·25·30) · green = your window</span></h2>
     <table style="width:100%;border-collapse:collapse;font-size:.84rem">
-      <tr style="color:var(--text-2);text-align:left"><th style="padding:.3rem">Lane</th><th>You</th><th>Enemy</th><th>Edge</th><th>Window</th></tr>
+      <tr style="color:var(--text-2);text-align:left"><th style="padding:.3rem">Lane</th><th>You</th><th>Enemy</th><th>Edge</th><th>Suggested counter</th><th>Window</th></tr>
       ${f.lanes.map((l) => {
         const o = ourOf(l.role), t = theirOf(l.role);
+        const cs = (l.counters || []).slice(0, 2);
+        const counterCell = cs.length
+          ? cs.map((c) => `<span title="beats ${esc(l.theirHero)} on kill-window${c.inPool ? ` · ${c.games} games played` : ''}">${esc(c.hero)}${c.inPool ? ' <span style="color:var(--green)" title="in your pool">●</span>' : ''}</span>`).join(', ')
+          : '<span style="color:var(--text-2)">—</span>';
         return `<tr style="border-top:1px solid var(--border)">
           <td style="padding:.4rem .3rem;text-transform:capitalize">${esc(l.role)}</td>
           <td style="padding:.4rem .3rem"><img src="${himg(l.ourSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'"> <b>${o ? pgName(o) : ''}</b> · ${esc(l.ourHero)}</td>
           <td style="padding:.4rem .3rem"><img src="${himg(l.theirSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'"> ${t ? esc(t.squadName || t.name) : ''} · ${esc(l.theirHero)}</td>
           <td style="padding:.4rem .3rem;font-weight:700;${edgeStyle(l.edge)}">${l.edge}</td>
+          <td style="padding:.4rem .3rem">${counterCell}</td>
           <td style="padding:.4rem .3rem">${pgDots(l.verdict)} <span style="color:var(--text-2);font-size:.75rem">${esc(l.summary)}</span></td>
         </tr>`;
       }).join('')}
     </table>
-    ${(() => {
-      const tips = f.lanes.filter((l) => l.edge !== 'favored' && (l.counters || []).length);
-      if (!tips.length) return '';
-      return `<div style="margin-top:.7rem;font-size:.8rem"><b style="color:var(--text-1)">Better counters you could've picked:</b>${tips.map((l) => {
-        const cs = l.counters.slice(0, 3).map((c) => `${esc(c.hero)}${c.inPool ? ` <span style="color:var(--green)">(your pool · ${c.games}g)</span>` : ''}`).join(', ');
-        return `<div style="color:var(--text-2);margin-top:.25rem">${esc(l.role)} vs <b>${esc(l.theirHero)}</b> → ${cs || '<span style="color:var(--text-2)">no clean counter in range</span>'}</div>`;
-      }).join('')}</div>`;
-    })()}`);
+    <div style="margin-top:.5rem;font-size:.72rem;color:var(--text-2)">Suggested counter = a role-eligible hero whose kill-window beats the enemy laner (our matchup matrix, THEORY). <span style="color:var(--green)">●</span> = one of that player's tracked heroes — a counter they can actually pilot.</div>`);
 
   const comp = card(`
     <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.5rem">Team comp &amp; objectives</h2>
