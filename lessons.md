@@ -1519,3 +1519,13 @@ Append-only. One entry per backlog item or significant finding.
 - Lesson: a single match is small-sample and short games have unfinished builds —
   honest coaching separates the repeatable signal (objective control, draft edges,
   experience gaps) from the noise (one outlier carry game, an unfinished build).
+
+## 2026-06-18: post-game review moved to Coach tab + name/lane fixes
+- Relocated the post-game review from a standalone page to a section on the COACH
+  landing (where the roster already lives), with a WIN/LOSS match picker. Removed
+  the standalone postgame.html, its nav links, and the squad-page card.
+- Name fix: some omeda profiles are private and report a placeholder display_name
+  ("🎮 user-<id>"); we already map UUID->handle in the squad report, so the UI now
+  prefers squadName over the omeda display_name everywhere (pgName helper).
+- Lane table now shows the PLAYER (mapped name) alongside the lane + hero, not just
+  the lane name — you can see who played each matchup.
