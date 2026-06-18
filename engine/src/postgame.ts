@@ -34,6 +34,9 @@ export interface HeroStatCell { hero_id: number; match_count: number; winrate: n
 export interface MatchEvent { gameTime: number; type: string; team: string; } // team = DAWN/DUSK (objective: killer; structure: the side that LOST it)
 
 const ROLES = ['carry', 'midlane', 'offlane', 'jungle', 'support'];
+// Evolved item -> the item it was bought as (build_paths sources). The end-game
+// inventory shows the evolved form; the meta core references the bought source.
+const EVOLVED_SOURCE: Record<string, string> = { 'orb-of-enlightenment': 'orb-of-growth', 'alternata': 'alternator', 'cybernetic-drive': 'catalytic-drive' };
 const JUNGLE_BUFF = /_BUFF$|BUFF_/i;  // RED/BLUE/GOLD/etc. camps — not "objectives" in the macro sense
 
 export interface PlayerFacts {
@@ -322,8 +325,11 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
     const us = p.team === ourTeam;
     // Completed items only: at any game length the inventory carries components;
     // build assessment should judge the FINISHED items the player committed to.
+    // Evolving items appear in the end-game inventory as their EVOLVED form
+    // (Orb of Growth -> Orb of Enlightenment); count those and credit the source
+    // they were bought as, so an evolved core isn't reported "missing".
     const items = [...new Set(p.inventory_data ?? [])]
-      .map((gid) => idToItem.get(gid)).filter((x): x is Item => !!x && completedSlugs.has(x.slug))
+      .map((gid) => idToItem.get(gid)).filter((x): x is Item => !!x && (completedSlugs.has(x.slug) || x.slug in EVOLVED_SOURCE))
       .map((it) => ({ slug: it.slug, name: it.name }));
 
     // Build comparison is by SLUG (artifact meta-core names are camelCase, item
@@ -338,12 +344,12 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
     const metaSlugs: string[] = (winCore?.items ?? []).map((i: any) => i.slug).filter(Boolean);
     const optimalBuild = optimalSlugs.map(nameOf);
     const metaCore = metaSlugs.map(nameOf);
-    const builtSlugs = new Set(items.map((i) => i.slug));
+    const builtSlugs = new Set(items.flatMap((i) => EVOLVED_SOURCE[i.slug] ? [i.slug, EVOLVED_SOURCE[i.slug]!] : [i.slug]));
     const optimalSet = new Set([...optimalSlugs, ...metaSlugs]);
     const missingCore = metaSlugs.filter((s) => !builtSlugs.has(s)).map(nameOf);
     const winningCore = winCore && metaSlugs.length
       ? { items: metaCore, n: winCore.n ?? 0, wr: Math.round((winCore.shrunkWr ?? 0) * 1000) / 10 } : null;
-    const offMeta = items.filter((i) => !optimalSet.has(i.slug)).map((i) => i.name);
+    const offMeta = items.filter((i) => !optimalSet.has(i.slug) && !optimalSet.has(EVOLVED_SOURCE[i.slug] ?? '')).map((i) => i.name);
     const completedCount = items.length;
 
     // Matchup itemization flags (only meaningful for our players).
