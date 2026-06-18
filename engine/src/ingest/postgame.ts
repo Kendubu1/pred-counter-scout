@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url';
 import { loadData } from '../data.js';
 import { computeMatchFacts, type OmedaMatch, type HeroStatCell, type PostGameInputs, type MatchEvent } from '../postgame.js';
 import { hasCredentials } from './predgg.js';
-import { predggSquadMatches } from './predgg-match.js';
+import { predggSquadMatches, fetchLaneMatchups } from './predgg-match.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const UA = { 'User-Agent': 'pred-counter-scout (github.com/Kendubu1/pred-counter-scout)' };
@@ -209,6 +209,11 @@ async function generateOne(
   }
   const inputs: PostGameInputs = { match, ourTeam, omedaHeroes, heroStats, matrix, artifacts, objectiveEvents: events?.objectiveEvents, structureEvents: events?.structureEvents, roleStats: squad?.rolesByUuid, heroPools };
   const facts: any = computeMatchFacts(data, inputs);
+  // Empirical lane-matchup winrate from pred.gg (ground truth beside the sim).
+  if (hasCredentials() && facts.lanes?.length) {
+    const mu = await fetchLaneMatchups(facts.lanes.map((l: any) => ({ ourSlug: l.ourSlug, theirSlug: l.theirSlug })));
+    for (const l of facts.lanes) l.predggMatchup = mu.get(`${l.ourSlug}|${l.theirSlug}`) ?? null;
+  }
   // Tag known squad members + who is the lead ("you").
   if (squad) {
     for (const pl of facts.players) {

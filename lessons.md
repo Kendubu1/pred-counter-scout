@@ -1729,3 +1729,20 @@ Eight maintainer-flagged fixes:
   the real served page (resources resolve from ui/, e.g. matchup-engine.js lives
   at ui/matchup-engine.js); ui/index.html is just a redirect to v2/. Cache-busted
   app.js v77→v78 and style.css v24→v25 so the changes load.
+## 2026-06-18: empirical lane matchups from pred.gg (test) — ground truth beside the sim
+- pred.gg's coreBuild filter has NO opponent field, so matchup-SPECIFIC winning
+  BUILDS aren't queryable. But Hero.matchupStatistic(metric: WINRATE, sameRole)
+  returns empirical hero-vs-hero WINRATE + matchesPlayed + firstTowerTimeDiff, at
+  huge sample (14k-70k games per pairing). That's the real prize: ground truth for
+  the lane matchup vs our sim's kill-window THEORY.
+- fetchLaneMatchups(): one query per unique our-hero, pick the laner from results
+  (>=30 games). Wired into the post-game ingest; each lane now carries predggMatchup
+  {winrate, matchesPlayed, firstTowerDiff}. The UI leads with it and shows the sim
+  edge as a second opinion; counters now trigger on the EMPIRICAL winrate (<49%).
+- Immediately useful: the empirical data DISAGREES with the sim in places (Zinx vs
+  Gideon: sim 'unfavored' but pred.gg 52.7% over 14,311 — the sim is wrong there),
+  and confirms it elsewhere (Khaimera vs Bayle 58.7% over 36k = favored). A future
+  calibration lever: validate/replace the sim matchup matrix with this.
+- Lesson: when a provider can't give exactly what you want (per-matchup builds),
+  check what it CAN give (per-matchup winrate) — empirical winrate beside a THEORY
+  verdict is more honest than either alone, and surfaces where the model is wrong.
