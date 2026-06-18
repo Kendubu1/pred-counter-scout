@@ -21,14 +21,19 @@ export interface OmedaPlayer {
   total_damage_dealt_to_heroes: number; physical_damage_dealt_to_heroes: number; magical_damage_dealt_to_heroes: number;
   total_damage_dealt_to_objectives: number; total_damage_taken: number; total_damage_mitigated: number;
   total_healing_done: number; total_shielding_received: number;
-  wards_placed: number; wards_destroyed: number;
+  wards_placed: number; wards_destroyed: number; minions_killed: number;
   objective_kills: number; inventory_data: number[]; rank: number | null; vp_change: number | null;
 }
 export interface OmedaMatch {
   id: string; start_time: string; end_time: string; game_duration: number;
   game_mode: string; winning_team: string; players: OmedaPlayer[];
 }
-export interface HeroStatCell { hero_id: number; match_count: number; winrate: number; avg_performance_score: number; avg_kdar: number; }
+export interface HeroStatCell {
+  hero_id: number; match_count: number; winrate: number; avg_performance_score: number; avg_kdar: number;
+  avg_kills?: number; avg_deaths?: number; avg_assists?: number; avg_minions_killed?: number;
+  avg_gold_earned?: number; avg_damage_dealt_to_heroes?: number; avg_damage_mitigated?: number; avg_wards_placed?: number;
+  total_game_duration?: number;
+}
 
 // Optional match timeline (pred.gg only — omeda's feed has no event stream).
 export interface MatchEvent { gameTime: number; type: string; team: string; } // team = DAWN/DUSK (objective: killer; structure: the side that LOST it)
@@ -56,6 +61,9 @@ export interface PlayerFacts {
   experience: { games: number; winrate: number; avgPerf: number } | null;
   experienceVerdict: string;
   perfVsAvg: number | null;   // this game's perf score minus the player's avg on this hero
+  // Diagnostics: THIS game vs the player's own season average on the hero —
+  // what they can actually fix next game (deaths, farm, damage, vision).
+  diagnostics?: { metrics: { key: string; label: string; value: number; avg: number; deltaPct: number; lowerBetter: boolean; flag: 'good' | 'bad' | 'normal' }[]; headline: string | null } | null;
   // Role-fit ("rightful lane"): the role they played vs their best/proven role,
   // plus whether it's a real CONCERN — only when they're on one of their WORST
   // two lanes (a flat pool means any lane is fine; don't nag).
@@ -90,6 +98,7 @@ export interface PostGameFacts {
   // Counter-build: enemy build vs meta + whether we itemized to answer them.
   counterBuild?: { enemyOnMeta: number; ourAntiHeal: number; notes: string[]; enemyBuilds: { hero: string; role: string; onMeta: boolean; missing: string[] }[] } | null;
   closingNote?: string | null;   // tempo: led objectives but didn't close / dragged the game
+  draftNote?: string | null;     // team-level lane-fit note (demoted from per-player)
   // Macro timeline (pred.gg only): when the big neutral objectives fell and the
   // tower count by side. Null when sourced from omeda (no event stream).
   timeline: { majors: { minute: number; type: string; side: 'us' | 'them' }[]; towers: { us: number; them: number } } | null;
@@ -283,6 +292,38 @@ export interface PostGameInputs {
 
 /** Role-fit: the role they played vs their proven-best role (>=50 games, highest
  *  shrunk winrate). "Rightful lane" = where their own results say they belong. */
+/** This game vs the player's own per-hero averages (omeda hero_statistics). The
+ *  most actionable feedback: how this game deviated from how they normally play.
+ *  Needs >=5 games for a stable baseline. Rates are per-minute to fairly compare
+ *  games of different length; deaths/wards are per-game (how players think). */
+function diagnosticsOf(cell: HeroStatCell | undefined, p: OmedaPlayer, durMin: number, role: string): PlayerFacts['diagnostics'] {
+  if (!cell || cell.match_count < 5 || cell.avg_deaths == null) return null;
+  const avgDur = (cell.total_game_duration && cell.match_count) ? cell.total_game_duration / cell.match_count / 60 : durMin;
+  const pm = (v: number) => v / Math.max(durMin, 1);
+  const avgPm = (v: number) => v / Math.max(avgDur, 1);
+  const M: { key: string; label: string; value: number; avg: number; lowerBetter: boolean; roles?: string[] }[] = [
+    { key: 'deaths', label: 'deaths', value: p.deaths, avg: cell.avg_deaths ?? 0, lowerBetter: true },
+    { key: 'cs', label: 'CS/min', value: Math.round(pm(p.minions_killed) * 10) / 10, avg: Math.round(avgPm(cell.avg_minions_killed ?? 0) * 10) / 10, lowerBetter: false, roles: ['carry', 'midlane', 'offlane', 'jungle'] },
+    { key: 'dmg', label: 'hero dmg/min', value: Math.round(pm(p.total_damage_dealt_to_heroes)), avg: Math.round(avgPm(cell.avg_damage_dealt_to_heroes ?? 0)), lowerBetter: false, roles: ['carry', 'midlane', 'jungle', 'offlane'] },
+    { key: 'mit', label: 'dmg mitigated/min', value: Math.round(pm(p.total_damage_mitigated)), avg: Math.round(avgPm(cell.avg_damage_mitigated ?? 0)), lowerBetter: false, roles: ['offlane', 'support'] },
+    { key: 'wards', label: 'wards', value: p.wards_placed, avg: Math.round((cell.avg_wards_placed ?? 0) * 10) / 10, lowerBetter: false, roles: ['support', 'jungle'] },
+  ];
+  const metrics = M.filter((m) => (!m.roles || m.roles.includes(role)) && m.avg > 0).map((m) => {
+    const deltaPct = Math.round(((m.value - m.avg) / m.avg) * 100);
+    const better = m.lowerBetter ? deltaPct < 0 : deltaPct > 0;
+    const flag: 'good' | 'bad' | 'normal' = Math.abs(deltaPct) < 20 ? 'normal' : better ? 'good' : 'bad';
+    return { key: m.key, label: m.label, value: m.value, avg: m.avg, deltaPct, lowerBetter: m.lowerBetter, flag };
+  });
+  // Headline = the biggest BAD deviation (most actionable); else the best good one.
+  const bad = metrics.filter((m) => m.flag === 'bad').sort((a, b) => Math.abs(b.deltaPct) - Math.abs(a.deltaPct))[0];
+  const good = metrics.filter((m) => m.flag === 'good').sort((a, b) => Math.abs(b.deltaPct) - Math.abs(a.deltaPct))[0];
+  let headline: string | null = null;
+  if (bad) headline = `${bad.label} ${bad.value} vs your ${bad.avg} norm (${bad.deltaPct > 0 ? '+' : ''}${bad.deltaPct}%)`;
+  else if (good) headline = `${good.label} ${good.value} vs your ${good.avg} norm — above your level`;
+  else headline = 'a normal game by your numbers';
+  return { metrics, headline };
+}
+
 function roleFitOf(rs: { role: string; games: number; shrunkWr: number }[] | undefined, played: string): PlayerFacts['roleFit'] {
   if (!rs?.length) return null;
   const ranked = rs.filter((r) => r.games >= 50).sort((a, b) => b.shrunkWr - a.shrunkWr);
@@ -378,6 +419,7 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
       : hs ? { games: hs.match_count, winrate: Math.round(hs.winrate * 1000) / 10, avgPerf: Math.round(hs.avg_performance_score) } : null;
     let experienceVerdict: string;
     if (!experience || experience.games === 0) experienceVerdict = 'low sample on this hero (outside the tracked pool)';
+    else if (experience.games < 5) experienceVerdict = `near first-time (${experience.games} game${experience.games === 1 ? '' : 's'})`;   // too few for a meaningful winrate
     else if (experience.games < 10) experienceVerdict = `light experience (${experience.games} games, ${experience.winrate}% wr)`;
     else if (experience.games < 30) experienceVerdict = `solid pool (${experience.games} games, ${experience.winrate}% wr)`;
     else experienceVerdict = `comfort pick (${experience.games} games, ${experience.winrate}% wr)`;
@@ -398,6 +440,7 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
       items, completedCount, optimalBuild, metaCore, missingCore, offMeta, winningCore, matchupItemFlags,
       experience, experienceVerdict, perfVsAvg,
       roleFit: us ? roleFitOf(inp.roleStats?.get(p.id), role) : null,
+      diagnostics: us ? diagnosticsOf((inp.heroStats.get(p.id) ?? []).find((h) => h.hero_id === p.hero_id), p, dur, role) : null,
       antiHealRec: null,   // assigned team-aware below, only to fill a real coverage gap
     };
   });
@@ -506,6 +549,11 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
   cbNotes.push(`Enemy ran ${enemyOnMeta}/5 on or near their meta core${enemyOnMeta >= 4 ? ' — they drafted and built optimally; match it' : enemyOnMeta <= 1 ? ' — they were off-meta too, the win was there' : ''}.`);
   const counterBuild = { enemyOnMeta, ourAntiHeal, notes: cbNotes, enemyBuilds: enemyOnMetaList };
 
+  // Lane-fit is a DRAFT-level note, not per-player nagging: how many queued off a
+  // bottom-two lane (the only case worth raising).
+  const offLane = ourPlayers.filter((p) => p.roleFit?.concern).map((p) => `${p.name} (${p.roleFit!.played}→${p.roleFit!.bestRole})`);
+  const draftNote = offLane.length ? `${offLane.length} of five queued off a bottom-two lane: ${offLane.join(', ')}.` : null;
+
   // Closing / tempo: did we sit on a lead instead of ending it?
   const result = match.winning_team === ourTeam ? 'win' : 'loss';
   let closingNote: string | null = null;
@@ -528,6 +576,7 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
     timeline,
     counterBuild,
     closingNote,
+    draftNote,
     coaching: null,
   };
 }

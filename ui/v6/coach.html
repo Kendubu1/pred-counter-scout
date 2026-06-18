@@ -240,26 +240,33 @@ function pgReview(f) {
     ${us.map((p) => {
       const built = p.items.filter((i) => !/Potion|Ward|Crest/i.test(i.name));
       const lane = (f.lanes || []).find((l) => l.role === p.role && l.ourSlug === p.heroSlug);
-      const counter = lane && lane.counters && lane.counters[0];
-      const rf = p.roleFit;
+      // Counters only matter when you DIDN'T win the lane — don't suggest one on a favored matchup.
+      const counter = lane && lane.edge !== 'favored' && lane.counters && lane.counters[0];
+      const dg = p.diagnostics;
+      const dColor = (m) => m.flag === 'bad' ? 'var(--red)' : m.flag === 'good' ? 'var(--green)' : 'var(--text-2)';
       const edgeColor = lane ? (lane.edge === 'favored' ? 'var(--green)' : lane.edge === 'unfavored' ? 'var(--red)' : 'var(--text-1)') : 'var(--text-1)';
+      // Build vs the winning build: how many of the winning core they ran.
+      const wc = p.winningCore;
+      const sharedCore = wc ? wc.items.length - (p.missingCore || []).length : 0;
       return `<div style="border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;margin-bottom:.7rem;background:var(--bg-2)">
         <div style="display:flex;align-items:center;gap:.55rem;flex-wrap:wrap">
           ${hlink(p.heroSlug, `<img src="${himg(p.heroSlug)}" style="width:30px;height:30px;border-radius:7px" onerror="this.style.visibility='hidden'">`)}
           <b>${pgName(p)}</b>${p.isLead ? ' <span style="font-size:.62rem;color:var(--gold)">(lead)</span>' : ''}
           <span style="font-size:.68rem;text-transform:uppercase;color:var(--text-2);border:1px solid var(--border);border-radius:99px;padding:.05rem .4rem">${esc(p.role)}</span>
-          <span style="font-size:.8rem;color:var(--text-1)">${esc(p.heroName)} · ${p.kills}/${p.deaths}/${p.assists}${p.performanceScore ? ` · perf ${p.performanceScore}` : ''}</span>
-          <span style="font-size:.68rem;background:var(--accent-soft);border-radius:99px;padding:.05rem .4rem">${esc(p.experienceVerdict)}</span>
+          <span style="font-size:.8rem;color:var(--text-1)">${esc(p.heroName)} · ${p.kills}/${p.deaths}/${p.assists}</span>
         </div>
-        ${lane ? `<div style="font-size:.84rem;margin-top:.4rem">Matchup: vs <b>${esc(lane.theirHero)}</b> <span style="color:${edgeColor};font-weight:700">(${lane.edge})</span>${counter ? ` · counter: ${esc(counter.hero)}${counter.inPool ? ` <span style="color:var(--green)">(your pool · ${counter.games}g)</span>` : ''}` : ''}</div>` : ''}
-        ${rf && rf.concern ? `<div style="font-size:.82rem;margin-top:.25rem"><span style="color:var(--gold)">⚑ Off your best lanes</span> — ${esc(rf.played)} is a bottom-two role for you${rf.playedWr != null ? ` (${rf.playedWr}%)` : ''}; <b>${esc(rf.bestRole)}</b> is +${rf.deltaWins100} wins/100.</div>` : (rf && rf.onBest ? `<div style="font-size:.78rem;margin-top:.25rem;color:var(--text-2)">✓ on your best lane</div>` : '')}
+        ${dg && dg.headline ? `<div style="font-size:.9rem;margin-top:.4rem;font-weight:600">${dg.metrics.some((m) => m.flag === 'bad') ? '⚠ ' : ''}<span style="color:${dg.metrics.find((m) => dg.headline.startsWith(m.label)) ? dColor(dg.metrics.find((m) => dg.headline.startsWith(m.label))) : 'var(--text-0)'}">${esc(dg.headline)}</span></div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.25rem;font-size:.72rem">${dg.metrics.map((m) => `<span style="color:${dColor(m)}" title="your season average: ${m.avg}">${esc(m.label)} ${m.value}<span style="color:var(--text-2)">/${m.avg}</span></span>`).join('')}</div>`
+        : `<div style="font-size:.74rem;color:var(--text-2);margin-top:.35rem">${esc(p.experienceVerdict)} — no baseline to compare this game against</div>`}
+        ${lane ? `<div style="font-size:.82rem;margin-top:.35rem">Lane: vs <b>${esc(lane.theirHero)}</b> <span style="color:${edgeColor};font-weight:700">(${lane.edge})</span>${counter ? ` · would've countered: ${esc(counter.hero)}${counter.inPool ? ` <span style="color:var(--green)">(your pool)</span>` : ''}` : ''}</div>` : ''}
         <div style="display:flex;gap:.25rem;flex-wrap:wrap;margin:.4rem 0">${built.map((i) => hlink(p.heroSlug, `<img src="${iimg(i.slug)}" title="${esc(i.name)} — open ${esc(p.heroSlug)} build" style="width:26px;height:26px;border-radius:6px;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">`)).join('') || '<span style="color:var(--text-2);font-size:.78rem">no completed items</span>'}</div>
         ${p.antiHealRec ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.2rem">🩹 Anti-heal: add <b>${esc(p.antiHealRec.item)}</b>${p.antiHealRec.swapOut ? ` (swap ${esc(p.antiHealRec.swapOut)})` : ''} — vs their healers</div>` : ''}
-        ${p.missingCore && p.missingCore.length ? `<div style="font-size:.74rem;color:var(--text-2)">Missing from the winning build${p.winningCore ? ` (${p.winningCore.wr}% over ${p.winningCore.n} games)` : ''}: ${p.missingCore.map(esc).join(', ')}</div>` : ''}
+        ${wc && (p.missingCore || []).length ? `<div style="font-size:.74rem;color:${sharedCore <= 1 ? 'var(--gold)' : 'var(--text-2)'}">${sharedCore <= 1 ? '⚠ Off the winning build' : 'Build note'}: ran ${sharedCore}/${wc.items.length} of the ${wc.wr}%-winning core (${esc(wc.items.join(', '))}) — missing ${esc((p.missingCore || []).join(', '))}.</div>` : ''}
         ${p.matchupItemFlags.length ? `<div style="font-size:.74rem;color:var(--gold)">${p.matchupItemFlags.map(esc).join(' · ')}</div>` : ''}
         ${co?.perPlayer?.[p.pid] ? `<div style="font-size:.88rem;border-left:2px solid var(--accent);padding-left:.6rem;margin-top:.45rem">${esc(co.perPlayer[p.pid])}</div>` : ''}
       </div>`;
-    }).join('')}`);
+    }).join('')}
+    ${f.draftNote ? `<div style="font-size:.78rem;color:var(--text-2);margin-top:.3rem;border-top:1px solid var(--border);padding-top:.5rem">⚑ Draft: ${esc(f.draftNote)} — minor; only flagged when it's a bottom-two lane.</div>` : ''}`);
 
   return head + lanes + comp + kit + players;
 }

@@ -1684,3 +1684,24 @@ Eight maintainer-flagged fixes:
 - Lesson: authored prose is a snapshot — when the underlying facts change, the
   write-ups must be regenerated or they silently lie. Keep the narrative tied to the
   computed facts.
+
+## 2026-06-18: lead per-player feedback with match data (vs the player's own averages)
+- Maintainer pushback: "could the feedback be better than just saying they picked
+  the wrong lane?" Yes — lane-fit is the LEAST actionable line (you can't switch
+  mid-game; for a friend stack it's a social choice) and it was wrong as a headline
+  (Xeebs's flagged lane was literally his BEST). It was becoming the new single-note.
+- Built diagnosticsOf(): this game vs the player's own per-hero season averages
+  (omeda hero_statistics: deaths, CS/min, hero-dmg/min, mitigation, wards; rates are
+  per-minute to compare across game lengths; needs >=5 games for a baseline). The
+  card now LEADS with the biggest deviation, e.g. "deaths 11 vs your 5 norm (+120%)"
+  — specific, personal, fixable next game. The Xeebs case: jungle is his best lane,
+  but he doubled his death average — THAT is the story, not the lane.
+- Lane-fit demoted from a per-player headline to a single team DRAFT note, only when
+  someone's on a bottom-two lane. Counters now only show on non-favored lanes
+  (suggesting a counter for a lane you won is noise). Experience drops the winrate
+  under 5 games ("near first-time", not "1 games, 0% wr"). Build-vs-winning now
+  states how many of the pred.gg winning core they ran ("ran 1/3 of the 53%-winning
+  core — missing X").
+- Lesson: coach what they DID and can change (deaths, farm, vision vs their own
+  baseline), not who they ARE (a stat says you're a jungler). Benchmark against the
+  player's own numbers — it's the most personal, least arguable feedback we have.
