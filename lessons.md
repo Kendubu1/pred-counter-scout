@@ -1640,3 +1640,28 @@ Append-only. One entry per backlog item or significant finding.
   answer their threats (anti-heal vs healers, armor/MR vs their top damage) — with
   impact ("Gideon 31k magical; 1/5 built MR — that hurt"). Surfaced as "Their build
   vs your counter" on the review.
+
+## 2026-06-18: post-game review pass 3 — accuracy + mobile + grounding fixes
+Eight maintainer-flagged fixes:
+- Mobile: the draft lane matchup TABLE broke on phones — replaced with stacked
+  responsive cards (no horizontal overflow).
+- Objectives: rendered the major-objective stream as a visual TIMELINE (markers by
+  minute, colored by side) instead of a text line.
+- Closing/tempo feedback: closingNote flags when we led objectives but dragged the
+  game (win >35m with obj lead) or won the objective count and still lost.
+- "Blind pick" was wrong: omeda hero_statistics lags weeks. Switched the experience
+  read to the committed pred.gg POOL (current); a hero outside the pool is now
+  "low sample", not "a blind pick — a gamble".
+- Feng Mao / Bayle were mislabelled "healers": they're self-sustain bruisers.
+  Healer detection now requires the SUPPORT role (an ally-healer), not just high
+  total_healing_done (which catches lifesteal).
+- Role-fit was too aggressive (flagged anyone off their #1 lane). Now only a CONCERN
+  when on a bottom-two lane with a clearly better option (>=2 wins/100); a flat pool
+  is never flagged. "What lane to play" stops being a topic unless it's really bad.
+- "Missing core" is now grounded in the pred.gg WINNING build (most-played core that
+  wins), with its winrate + sample shown — not our sim THEORY.
+- Item + hero icons now link to the Build Lab hero page.
+- Lesson: aggregate at the right unit and trust the freshest source — a per-player
+  flag, a stale stat feed, or a lifesteal=healer heuristic each produced confidently
+  wrong feedback. Ground claims in pred.gg winning data and only raise a topic when
+  the data says it's actually a problem.
