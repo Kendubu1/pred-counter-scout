@@ -1592,3 +1592,14 @@ Append-only. One entry per backlog item or significant finding.
   (combos, win conditions, counterplay). Ground it in the committed ability text so
   it's a classification of real data, not invention — same discipline as the
   augment/coaching passes.
+
+## 2026-06-18: archetype titles — "Secret" only when the specialty is actually hidden
+- Maintainer caught Xeebs labelled "The Secret Jungler" — but jungle is his favRole,
+  so nothing is secret. The secret-role archetype fired whenever a player's best
+  100+ game role outperformed the rest, ignoring whether that role was their KNOWN
+  main. Fix: if best role == favRole it's "The Career <Role>" (open specialty, "lean
+  into it"); only when best role != favRole is it "The Secret <Role>" (genuinely
+  hidden). Recomputed squad.json titles in-place from committed data (pools live in
+  data/artifacts/players/<uuid>.json) — no API call. Other four titles held up.
+- Lesson: a "hidden gem" framing must check what the player is already known for;
+  praising their main as a secret reads as the tool not knowing the player.
