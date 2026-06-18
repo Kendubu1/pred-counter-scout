@@ -76,13 +76,58 @@ async function resolveMatch(input: string): Promise<{ match: OmedaMatch; subject
   return { match: full as OmedaMatch, subjectPid: pid };
 }
 
-async function main() {
-  const input = process.argv.slice(2).find((a) => !a.startsWith('--'));
-  if (!input) { console.error('usage: npm run postgame -- <player-name | player-uuid | match-uuid> [--match <uuid>] [--team dawn|dusk]'); process.exit(1); }
+interface SquadInfo { lead: string; uuids: Set<string>; nameByUuid: Map<string, string>; }
+function loadSquad(): SquadInfo | null {
+  const p = path.join(ROOT, 'data/artifacts/squad.json');
+  if (!existsSync(p)) return null;
+  const s = JSON.parse(readFileSync(p, 'utf8'));
+  const nameByUuid = new Map<string, string>();
+  for (const m of s.members ?? []) nameByUuid.set(m.uuid, m.name);
+  return { lead: s.lead, uuids: new Set([...nameByUuid.keys()]), nameByUuid };
+}
 
+/** Squad mode: from the committed squad, find the lead's recent ranked games that
+ *  are full/near-full stacks (>= minStack members on one team) and review each. */
+async function squadMatches(squad: SquadInfo, minStack: number): Promise<{ match: OmedaMatch; ourTeam: string; members: string[] }[]> {
+  const pm = await get(`https://omeda.city/players/${squad.lead}/matches.json`);
+  const list = (pm?.matches ?? pm ?? []) as { id: string; game_mode: string }[];
+  const out: { match: OmedaMatch; ourTeam: string; members: string[] }[] = [];
+  for (const m of list.filter((x) => x.game_mode === 'ranked')) {
+    await sleep(180);
+    const full = await get(`https://omeda.city/matches/${m.id}.json`) as OmedaMatch | null;
+    if (!full?.players) continue;
+    const leadP = full.players.find((p) => p.id === squad.lead);
+    if (!leadP) continue;
+    const members = full.players.filter((p) => p.team === leadP.team && squad.uuids.has(p.id)).map((p) => squad.nameByUuid.get(p.id)!);
+    if (members.length >= minStack) out.push({ match: full, ourTeam: leadP.team, members });
+  }
+  return out;
+}
+
+async function main() {
   const data = loadData();
   const omedaHeroes = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8')) as { id: number; slug: string }[];
   const matrix = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/matchup-matrix.json'), 'utf8')) as { minutes: number[]; pairs: Record<string, string> };
+
+  // Squad mode: review every recent full/near-full-stack ranked game automatically.
+  if (process.argv.includes('--squad')) {
+    const squad = loadSquad();
+    if (!squad) { console.error('no data/artifacts/squad.json — run `npm run squad -- <lead-uuid>` first'); process.exit(1); }
+    const minStack = Number(arg('min-stack') ?? 4);
+    console.log(`squad mode: lead ${squad.nameByUuid.get(squad.lead)}, finding ranked games with >= ${minStack} of ${squad.uuids.size} members…`);
+    const found = await squadMatches(squad, minStack);
+    if (!found.length) { console.log('no qualifying stacked ranked games in the lead\'s recent feed.'); process.exit(0); }
+    for (const { match, ourTeam, members } of found) {
+      await generateOne(data, omedaHeroes, matrix, match, ourTeam, squad);
+      console.log(`  ${match.start_time.slice(0, 10)} ${match.id.slice(0, 8)} · stack ${members.length} [${members.join(', ')}]`);
+    }
+    writeIndex();
+    console.log(`\n${found.length} squad games reviewed -> data/postgame/. Next: agent coaching pass on each.`);
+    return;
+  }
+
+  const input = process.argv.slice(2).find((a) => !a.startsWith('--'));
+  if (!input) { console.error('usage: npm run postgame -- <player-name | player-uuid | match-uuid> [--match <uuid>] [--team dawn|dusk]  |  npm run postgame -- --squad [--min-stack 4]'); process.exit(1); }
 
   const { match, subjectPid } = await resolveMatch(input);
 
@@ -95,16 +140,30 @@ async function main() {
     for (const p of match.players) vpByTeam[p.team] = (vpByTeam[p.team] ?? 0) + (p.vp_change ?? 0);
     ourTeam = Object.entries(vpByTeam).sort((a, b) => b[1] - a[1])[0]?.[0] ?? match.winning_team;
   }
-  console.log(`match ${match.id.slice(0, 8)} · ${match.game_mode} · our team = ${ourTeam}`);
+  const facts = await generateOne(data, omedaHeroes, matrix, match, ourTeam, loadSquad());
+  writeIndex();
+  const us = facts.players.filter((p: any) => p.us);
+  console.log(`\n${facts.result.toUpperCase()} · ${facts.durationMin}m · VP ${facts.vpSwing ?? '?'}`);
+  console.log('lanes:', facts.lanes.map((l: any) => `${l.role}:${l.edge[0]}`).join(' '));
+  console.log('comp flags:', facts.comp.flags.length, '| our players with build flags:', us.filter((p: any) => p.matchupItemFlags.length).length);
+  console.log(`\n-> data/postgame/${match.id}.json`);
+  console.log('Next: run the agent coaching pass to populate facts.coaching (blunt per-player + team review).');
+}
 
-  // Per-player hero_statistics for OUR side (the experience comparison).
+const OUT_DIR = path.join(ROOT, 'data/postgame');
+
+/** Fetch the experience + artifacts a match needs, compute facts (tagging known
+ *  squad members), and write data/postgame/<id>.json. Returns the facts. */
+async function generateOne(
+  data: ReturnType<typeof loadData>, omedaHeroes: { id: number; slug: string }[],
+  matrix: { minutes: number[]; pairs: Record<string, string> }, match: OmedaMatch, ourTeam: string, squad: SquadInfo | null,
+) {
   const heroStats = new Map<string, HeroStatCell[]>();
   for (const p of match.players.filter((q) => q.team === ourTeam)) {
     const hs = await get(`https://omeda.city/players/${p.id}/hero_statistics.json`);
     heroStats.set(p.id, (hs?.hero_statistics ?? []) as HeroStatCell[]);
     await sleep(200);
   }
-
   const artifacts = new Map<string, any>();
   const adir = path.join(ROOT, 'data/artifacts');
   for (const p of match.players) {
@@ -113,28 +172,31 @@ async function main() {
       artifacts.set(slug, JSON.parse(readFileSync(path.join(adir, `${slug}.json`), 'utf8')));
     }
   }
-
   const inputs: PostGameInputs = { match, ourTeam, omedaHeroes, heroStats, matrix, artifacts };
-  const facts = computeMatchFacts(data, inputs);
+  const facts: any = computeMatchFacts(data, inputs);
+  // Tag known squad members + who is the lead ("you").
+  if (squad) {
+    for (const pl of facts.players) {
+      pl.squadName = squad.nameByUuid.get(pl.pid) ?? null;
+      pl.isLead = pl.pid === squad.lead;
+    }
+    facts.squad = {
+      stackSize: facts.players.filter((p: any) => p.us && p.squadName).length,
+      members: facts.players.filter((p: any) => p.us && p.squadName).map((p: any) => p.squadName),
+    };
+  }
+  mkdirSync(OUT_DIR, { recursive: true });
+  writeFileSync(path.join(OUT_DIR, `${match.id}.json`), JSON.stringify(facts, null, 1));
+  return facts;
+}
 
-  const outDir = path.join(ROOT, 'data/postgame');
-  mkdirSync(outDir, { recursive: true });
-  const file = path.join(outDir, `${match.id}.json`);
-  writeFileSync(file, JSON.stringify(facts, null, 1));
-
-  // Maintain an index for the UI (latest first).
-  const index = readdirSync(outDir).filter((f) => UUID_RE.test(f.replace('.json', '')) && f.endsWith('.json'))
-    .map((f) => JSON.parse(readFileSync(path.join(outDir, f), 'utf8')))
-    .map((a) => ({ matchId: a.matchId, startTime: a.startTime, result: a.result, ourTeam: a.ourTeam, durationMin: a.durationMin, hasCoaching: !!a.coaching }))
+/** Rebuild the UI index (latest first). */
+function writeIndex() {
+  const files = readdirSync(OUT_DIR).filter((f) => UUID_RE.test(f.replace('.json', '')) && f.endsWith('.json'));
+  const matches = files.map((f) => JSON.parse(readFileSync(path.join(OUT_DIR, f), 'utf8')))
+    .map((a) => ({ matchId: a.matchId, startTime: a.startTime, result: a.result, ourTeam: a.ourTeam, durationMin: a.durationMin, hasCoaching: !!a.coaching, stackSize: a.squad?.stackSize ?? null, members: a.squad?.members ?? null }))
     .sort((a, b) => (a.startTime < b.startTime ? 1 : -1));
-  writeFileSync(path.join(outDir, 'index.json'), JSON.stringify({ generatedAt: new Date().toISOString(), matches: index }, null, 1));
-
-  const us = facts.players.filter((p) => p.us);
-  console.log(`\n${facts.result.toUpperCase()} · ${facts.durationMin}m · VP ${facts.vpSwing ?? '?'}`);
-  console.log('lanes:', facts.lanes.map((l) => `${l.role}:${l.edge[0]}`).join(' '));
-  console.log('comp flags:', facts.comp.flags.length, '| our players with build flags:', us.filter((p) => p.matchupItemFlags.length).length);
-  console.log(`\n-> ${file}`);
-  console.log('Next: run the agent coaching pass to populate facts.coaching (blunt per-player + team review).');
+  writeFileSync(path.join(OUT_DIR, 'index.json'), JSON.stringify({ generatedAt: new Date().toISOString(), matches }, null, 1));
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
