@@ -194,6 +194,21 @@ function pgReview(f) {
     })() : ''}
     ${f.comp.flags.length ? `<div style="font-size:.8rem;color:var(--gold);margin-top:.4rem">${f.comp.flags.map((x) => '• ' + esc(x)).join('<br>')}</div>` : ''}`);
 
+  const kit = f.kit ? card(`
+    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.6rem">Kit synergy &amp; enemy threats <span style="font-weight:400;text-transform:none;letter-spacing:0">· from ability data (CC, heals, AoE)</span></h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem">
+      <div>
+        <div style="font-weight:700;color:var(--green);font-size:.82rem;margin-bottom:.3rem">How your comp should play</div>
+        ${(f.kit.synergy || []).map((s) => `<div style="font-size:.84rem;color:var(--text-1);margin-bottom:.35rem">• ${esc(s)}</div>`).join('') || '<div style="color:var(--text-2);font-size:.82rem">—</div>'}
+      </div>
+      <div>
+        <div style="font-weight:700;color:var(--red);font-size:.82rem;margin-bottom:.3rem">What the enemy kit threatens</div>
+        ${(f.kit.threats || []).map((s) => `<div style="font-size:.84rem;color:var(--text-1);margin-bottom:.35rem">• ${esc(s)}</div>`).join('') || '<div style="color:var(--text-2);font-size:.82rem">no standout threats flagged</div>'}
+      </div>
+    </div>
+    ${f.kit.enemy.hardCC.length ? `<div style="margin-top:.6rem;font-size:.78rem;color:var(--text-2)">Enemy hard CC: ${f.kit.enemy.hardCC.map((c) => `<span style="background:var(--bg-3);border-radius:99px;padding:.05rem .45rem;margin-right:.2rem">${esc(c.hero)} ${esc(c.type)}${c.sec ? ` ${c.sec}s` : ''}</span>`).join('')}</div>` : ''}
+    <div style="margin-top:.5rem;font-size:.72rem;color:var(--text-2)">Grounded in each hero's ability data; the deeper combo/win-condition read is layered in by the kit-knowledge pass. THEORY.</div>`) : '';
+
   const players = card(`
     <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.6rem">Per-player review</h2>
     ${us.map((p) => {
@@ -213,7 +228,7 @@ function pgReview(f) {
       </div>`;
     }).join('')}`);
 
-  return head + lanes + comp + players;
+  return head + lanes + comp + kit + players;
 }
 
 (async () => {

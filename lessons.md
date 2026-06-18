@@ -1554,3 +1554,22 @@ Append-only. One entry per backlog item or significant finding.
   Augmented in place (no re-pull) so all games got counters without losing data.
 - Lesson: when one provider stalls, a second sanctioned source with matching IDs is
   the cleanest fix — adapt it to the existing shape rather than forking the engine.
+
+## 2026-06-18: kit/ability comp analysis — synergy + enemy threats from structured data
+- hero-abilities.json already carries STRUCTURED cc (knockup/root/silence/pull/
+  suppress/slow + durations), passives, AoE-ish descriptions, and heals per ability.
+  So the "cc mess / heal-stacking / synergy" read the maintainer wanted is grounded
+  in real kit data, not hallucinated.
+- computeKitAnalysis(facts, abilities) builds a TeamKit per side (hard-CC list with
+  durations, slows, healers, damage mix, frontline, AoE count) and derives THREATS
+  (chain-CC lockdown to respect, heal-stacking -> anti-heal mandate, damage profile
+  to itemize against, no-frontline = pick comp) and SYNERGY (your CC->follow-up
+  window, no-frontline play-for-picks, sustain favors long fights, predictable
+  single-damage-type, AoE teamfight). Augmented into all 8 games in place.
+- Layering plan: this V1 is structured-data-grounded and covers every hero now;
+  the deeper qualitative read (combos, win conditions, how-to-play-AGAINST each
+  kit, passives' gameplay impact) is the agent kit-knowledge pass to layer next —
+  done in-session (no metered API), grounded in each hero's ability + passive text.
+- Lesson: check for structured fields before assuming you need an LLM pass — the CC
+  data was already there. Use the LLM/agent pass for what ISN'T structured
+  (qualitative gameplay), and flag it THEORY.
