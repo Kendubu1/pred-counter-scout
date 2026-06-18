@@ -137,6 +137,7 @@ const iimg = (slug) => `../img/items/${slug}.webp`;
 // Prefer the mapped squad name: some omeda profiles are private and report a
 // placeholder display_name like "🎮 user-<id>"; squadName is the real handle.
 const pgName = (p) => esc(p.squadName || p.name);
+const hlink = (slug, inner) => slug ? `<a href="index.html?hero=${esc(slug)}" title="open ${esc(slug)} in the Build Lab">${inner}</a>` : inner;
 function pgDots(v) {
   return `<span style="display:inline-flex;gap:3px;vertical-align:middle">` + [...v].map((c) =>
     `<span title="${c === 'y' ? 'your kill window' : c === 'e' ? 'their kill window' : 'even'}" style="width:11px;height:11px;border-radius:50%;display:inline-block;background:${c === 'y' ? 'var(--green)' : c === 'e' ? 'var(--red)' : 'var(--bg-3)'};${c === '=' ? 'border:1px solid var(--border)' : ''}"></span>`).join('') + `</span>`;
@@ -164,34 +165,49 @@ function pgReview(f) {
 
   const lanes = card(`
     <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.7rem">Draft &amp; lane matchups <span style="font-weight:400;text-transform:none;letter-spacing:0">· kill-window per minute (5·10·15·20·25·30) · green = your window</span></h2>
-    <table style="width:100%;border-collapse:collapse;font-size:.84rem">
-      <tr style="color:var(--text-2);text-align:left"><th style="padding:.3rem">Lane</th><th>You</th><th>Enemy</th><th>Edge</th><th>Suggested counter</th><th>Window</th></tr>
+    <div style="display:flex;flex-direction:column;gap:.5rem">
       ${f.lanes.map((l) => {
         const o = ourOf(l.role), t = theirOf(l.role);
         const cs = (l.counters || []).slice(0, 2);
-        const counterCell = cs.length
-          ? cs.map((c) => `<span title="beats ${esc(l.theirHero)} on kill-window${c.inPool ? ` · ${c.games} games played` : ''}">${esc(c.hero)}${c.inPool ? ' <span style="color:var(--green)" title="in your pool">●</span>' : ''}</span>`).join(', ')
-          : '<span style="color:var(--text-2)">—</span>';
-        return `<tr style="border-top:1px solid var(--border)">
-          <td style="padding:.4rem .3rem;text-transform:capitalize">${esc(l.role)}</td>
-          <td style="padding:.4rem .3rem"><img src="${himg(l.ourSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'"> <b>${o ? pgName(o) : ''}</b> · ${esc(l.ourHero)}</td>
-          <td style="padding:.4rem .3rem"><img src="${himg(l.theirSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'"> ${t ? esc(t.squadName || t.name) : ''} · ${esc(l.theirHero)}</td>
-          <td style="padding:.4rem .3rem;font-weight:700;${edgeStyle(l.edge)}">${l.edge}</td>
-          <td style="padding:.4rem .3rem">${counterCell}</td>
-          <td style="padding:.4rem .3rem">${pgDots(l.verdict)} <span style="color:var(--text-2);font-size:.75rem">${esc(l.summary)}</span></td>
-        </tr>`;
+        const counterTxt = cs.length
+          ? cs.map((c) => `${esc(c.hero)}${c.inPool ? ' <span style="color:var(--green)" title="in your pool">●</span>' : ''}`).join(', ')
+          : '—';
+        return `<div style="border:1px solid var(--border);border-radius:8px;padding:.5rem .6rem;background:var(--bg-2)">
+          <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
+            <span style="font-size:.66rem;text-transform:uppercase;color:var(--text-2);min-width:3.6rem">${esc(l.role)}</span>
+            ${hlink(l.ourSlug, `<img src="${himg(l.ourSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'">`)} <b>${o ? pgName(o) : ''}</b>
+            <span style="color:var(--text-2)">vs</span>
+            ${hlink(l.theirSlug, `<img src="${himg(l.theirSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'">`)} ${esc(l.theirHero)}
+            <span style="margin-left:auto;font-weight:700;${edgeStyle(l.edge)}">${l.edge}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.35rem;font-size:.78rem;color:var(--text-2)">
+            ${pgDots(l.verdict)} <span>${esc(l.summary)}</span>
+            <span style="margin-left:auto">counter: <span style="color:var(--text-1)">${counterTxt}</span></span>
+          </div>
+        </div>`;
       }).join('')}
-    </table>
-    <div style="margin-top:.5rem;font-size:.72rem;color:var(--text-2)">Suggested counter = a role-eligible hero whose kill-window beats the enemy laner (our matchup matrix, THEORY). <span style="color:var(--green)">●</span> = one of that player's tracked heroes — a counter they can actually pilot.</div>`);
+    </div>
+    <div style="margin-top:.5rem;font-size:.72rem;color:var(--text-2)">Per-minute kill-window (5·10·15·20·25·30), green = your window. Counter = a role-eligible hero that beats the enemy laner (matchup matrix, THEORY); <span style="color:var(--green)">●</span> = in that player's pool.</div>`);
 
   const comp = card(`
     <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.5rem">Team comp &amp; objectives</h2>
     <div style="font-size:.84rem;color:var(--text-1)">Damage — you: ${f.comp.ourDamage.physical}P/${f.comp.ourDamage.magical}M · them: ${f.comp.theirDamage.physical}P/${f.comp.theirDamage.magical}M · healers them: ${f.comp.theirHealers.join(', ') || 'none'}</div>
     <div style="font-size:.84rem;color:var(--text-1)">Objectives — you: ${f.objectives.ourKills}${f.timeline ? ' majors' : ' kills'} · them: ${f.objectives.theirKills}${f.timeline ? ` · towers ${f.timeline.towers.us}–${f.timeline.towers.them}` : ''}</div>
     ${f.timeline ? (() => {
+      const dur = f.durationMin || 40;
       const big = f.timeline.majors.filter((m) => /FANG|PRIME|ORB/i.test(m.type));
-      return big.length ? `<div style="font-size:.82rem;color:var(--text-1);margin-top:.2rem">Key objectives: ${big.map((m) => `${m.minute}m ${esc(m.type.replace(/_/g, ' '))} <span style="color:${m.side === 'us' ? 'var(--green)' : 'var(--red)'}">(${m.side === 'us' ? 'you' : 'them'})</span>`).join(' · ')}</div>` : '';
+      if (!big.length) return '';
+      const types = [...new Set(big.map((m) => m.type.replace(/_/g, ' ')))];
+      return `<div style="margin-top:.5rem">
+        <div style="font-size:.72rem;color:var(--text-2);margin-bottom:.2rem">Objective timeline (0–${dur}m) · <span style="color:var(--green)">you</span> / <span style="color:var(--red)">them</span></div>
+        <div style="position:relative;height:32px">
+          <div style="position:absolute;top:15px;left:0;right:0;height:2px;background:var(--border)"></div>
+          ${big.map((m) => { const x = Math.min(97, Math.max(1, m.minute / dur * 100)); const col = m.side === 'us' ? 'var(--green)' : 'var(--red)'; return `<div title="${m.minute}m ${esc(m.type.replace(/_/g, ' '))} (${m.side === 'us' ? 'you' : 'them'})" style="position:absolute;left:${x}%;top:4px;transform:translateX(-50%);text-align:center"><div style="width:11px;height:11px;border-radius:50%;background:${col};margin:0 auto;border:1px solid var(--bg-1)"></div><div style="font-size:.58rem;color:var(--text-2)">${m.minute}'</div></div>`; }).join('')}
+        </div>
+        <div style="font-size:.68rem;color:var(--text-2)">${esc(types.join(' · '))}</div>
+      </div>`;
     })() : ''}
+    ${f.closingNote ? `<div style="font-size:.82rem;color:var(--gold);margin-top:.45rem">⏱ ${esc(f.closingNote)}</div>` : ''}
     ${f.comp.flags.length ? `<div style="font-size:.8rem;color:var(--gold);margin-top:.4rem">${f.comp.flags.map((x) => '• ' + esc(x)).join('<br>')}</div>` : ''}
     ${f.counterBuild ? `<div style="margin-top:.6rem;border-top:1px solid var(--border);padding-top:.5rem">
       <div style="font-weight:700;font-size:.78rem;color:var(--text-1);margin-bottom:.3rem">Their build vs your counter</div>
@@ -228,19 +244,18 @@ function pgReview(f) {
       const edgeColor = lane ? (lane.edge === 'favored' ? 'var(--green)' : lane.edge === 'unfavored' ? 'var(--red)' : 'var(--text-1)') : 'var(--text-1)';
       return `<div style="border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;margin-bottom:.7rem;background:var(--bg-2)">
         <div style="display:flex;align-items:center;gap:.55rem;flex-wrap:wrap">
-          <img src="${himg(p.heroSlug)}" style="width:30px;height:30px;border-radius:7px" onerror="this.style.visibility='hidden'">
+          ${hlink(p.heroSlug, `<img src="${himg(p.heroSlug)}" style="width:30px;height:30px;border-radius:7px" onerror="this.style.visibility='hidden'">`)}
           <b>${pgName(p)}</b>${p.isLead ? ' <span style="font-size:.62rem;color:var(--gold)">(lead)</span>' : ''}
           <span style="font-size:.68rem;text-transform:uppercase;color:var(--text-2);border:1px solid var(--border);border-radius:99px;padding:.05rem .4rem">${esc(p.role)}</span>
           <span style="font-size:.8rem;color:var(--text-1)">${esc(p.heroName)} · ${p.kills}/${p.deaths}/${p.assists}${p.performanceScore ? ` · perf ${p.performanceScore}` : ''}</span>
           <span style="font-size:.68rem;background:var(--accent-soft);border-radius:99px;padding:.05rem .4rem">${esc(p.experienceVerdict)}</span>
         </div>
-        ${rf ? `<div style="font-size:.84rem;margin-top:.4rem">${rf.onBest
-          ? `<span style="color:var(--green)">✓ Right lane</span> — ${esc(rf.played)} is your best role (${rf.bestWr}% over your career).`
-          : `<span style="color:var(--gold)">⚑ Off your lane</span> — played ${esc(rf.played)}${rf.playedWr != null ? ` (${rf.playedWr}%)` : ''}; your lane is <b>${esc(rf.bestRole)}</b> (${rf.bestWr}%, ${rf.deltaWins100} more wins/100).`}</div>` : ''}
-        ${lane ? `<div style="font-size:.84rem;margin-top:.3rem">Matchup: vs <b>${esc(lane.theirHero)}</b> <span style="color:${edgeColor};font-weight:700">(${lane.edge})</span>${counter ? ` · counter: ${esc(counter.hero)}${counter.inPool ? ` <span style="color:var(--green)">(your pool · ${counter.games}g)</span>` : ''}` : ''}</div>` : ''}
-        <div style="display:flex;gap:.25rem;flex-wrap:wrap;margin:.4rem 0">${built.map((i) => `<img src="${iimg(i.slug)}" title="${esc(i.name)}" style="width:26px;height:26px;border-radius:6px;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">`).join('') || '<span style="color:var(--text-2);font-size:.78rem">no completed items</span>'}</div>
+        ${lane ? `<div style="font-size:.84rem;margin-top:.4rem">Matchup: vs <b>${esc(lane.theirHero)}</b> <span style="color:${edgeColor};font-weight:700">(${lane.edge})</span>${counter ? ` · counter: ${esc(counter.hero)}${counter.inPool ? ` <span style="color:var(--green)">(your pool · ${counter.games}g)</span>` : ''}` : ''}</div>` : ''}
+        ${rf && rf.concern ? `<div style="font-size:.82rem;margin-top:.25rem"><span style="color:var(--gold)">⚑ Off your best lanes</span> — ${esc(rf.played)} is a bottom-two role for you${rf.playedWr != null ? ` (${rf.playedWr}%)` : ''}; <b>${esc(rf.bestRole)}</b> is +${rf.deltaWins100} wins/100.</div>` : (rf && rf.onBest ? `<div style="font-size:.78rem;margin-top:.25rem;color:var(--text-2)">✓ on your best lane</div>` : '')}
+        <div style="display:flex;gap:.25rem;flex-wrap:wrap;margin:.4rem 0">${built.map((i) => hlink(p.heroSlug, `<img src="${iimg(i.slug)}" title="${esc(i.name)} — open ${esc(p.heroSlug)} build" style="width:26px;height:26px;border-radius:6px;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">`)).join('') || '<span style="color:var(--text-2);font-size:.78rem">no completed items</span>'}</div>
         ${p.antiHealRec ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.2rem">🩹 Anti-heal: add <b>${esc(p.antiHealRec.item)}</b>${p.antiHealRec.swapOut ? ` (swap ${esc(p.antiHealRec.swapOut)})` : ''} — vs their healers</div>` : ''}
-        ${(p.missingCore.length || p.matchupItemFlags.length) ? `<div style="font-size:.74rem;color:var(--gold)">${[p.missingCore.length ? 'missing core: ' + p.missingCore.map(esc).join(', ') : '', ...p.matchupItemFlags.map(esc)].filter(Boolean).join(' · ')}</div>` : ''}
+        ${p.missingCore && p.missingCore.length ? `<div style="font-size:.74rem;color:var(--text-2)">Missing from the winning build${p.winningCore ? ` (${p.winningCore.wr}% over ${p.winningCore.n} games)` : ''}: ${p.missingCore.map(esc).join(', ')}</div>` : ''}
+        ${p.matchupItemFlags.length ? `<div style="font-size:.74rem;color:var(--gold)">${p.matchupItemFlags.map(esc).join(' · ')}</div>` : ''}
         ${co?.perPlayer?.[p.pid] ? `<div style="font-size:.88rem;border-left:2px solid var(--accent);padding-left:.6rem;margin-top:.45rem">${esc(co.perPlayer[p.pid])}</div>` : ''}
       </div>`;
     }).join('')}`);

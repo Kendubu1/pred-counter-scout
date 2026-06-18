@@ -48,12 +48,15 @@ export interface PlayerFacts {
   items: { slug: string; name: string }[];   // completed items only
   completedCount: number;
   optimalBuild: string[]; metaCore: string[]; missingCore: string[]; offMeta: string[];
+  winningCore?: { items: string[]; n: number; wr: number } | null;   // pred.gg most-played winning core
   matchupItemFlags: string[];
   experience: { games: number; winrate: number; avgPerf: number } | null;
   experienceVerdict: string;
   perfVsAvg: number | null;   // this game's perf score minus the player's avg on this hero
-  // Role-fit ("rightful lane"): the role they played vs their best/proven role.
-  roleFit?: { played: string; playedWr: number | null; bestRole: string; bestWr: number; onBest: boolean; deltaWins100: number } | null;
+  // Role-fit ("rightful lane"): the role they played vs their best/proven role,
+  // plus whether it's a real CONCERN — only when they're on one of their WORST
+  // two lanes (a flat pool means any lane is fine; don't nag).
+  roleFit?: { played: string; playedWr: number | null; bestRole: string; bestWr: number; onBest: boolean; deltaWins100: number; concern: boolean } | null;
   // Constructive anti-heal pick for THIS player's build (vs a healer comp), with
   // what to swap. Null when not needed (no enemy healers, or already built it).
   antiHealRec?: { item: string; slug: string; swapOut: string | null } | null;
@@ -83,6 +86,7 @@ export interface PostGameFacts {
   objectives: { ourKills: number; theirKills: number; ourObjDamage: number; theirObjDamage: number };
   // Counter-build: enemy build vs meta + whether we itemized to answer them.
   counterBuild?: { enemyOnMeta: number; ourAntiHeal: number; notes: string[]; enemyBuilds: { hero: string; role: string; onMeta: boolean; missing: string[] }[] } | null;
+  closingNote?: string | null;   // tempo: led objectives but didn't close / dragged the game
   // Macro timeline (pred.gg only): when the big neutral objectives fell and the
   // tower count by side. Null when sourced from omeda (no event stream).
   timeline: { majors: { minute: number; type: string; side: 'us' | 'them' }[]; towers: { us: number; them: number } } | null;
@@ -271,19 +275,26 @@ export interface PostGameInputs {
   objectiveEvents?: MatchEvent[];                     // pred.gg objective-kill stream (optional)
   structureEvents?: MatchEvent[];                     // pred.gg structure-destruction stream (optional)
   roleStats?: Map<string, { role: string; games: number; shrunkWr: number }[]>;  // pid -> squad role winrates (for role-fit)
+  heroPools?: Map<string, { slug: string; games: number; shrunkWr: number }[]>;  // pid -> pred.gg hero pool (fresher than omeda for experience)
 }
 
 /** Role-fit: the role they played vs their proven-best role (>=50 games, highest
  *  shrunk winrate). "Rightful lane" = where their own results say they belong. */
 function roleFitOf(rs: { role: string; games: number; shrunkWr: number }[] | undefined, played: string): PlayerFacts['roleFit'] {
   if (!rs?.length) return null;
-  const proven = rs.filter((r) => r.games >= 50).sort((a, b) => b.shrunkWr - a.shrunkWr);
-  const best = proven[0] ?? [...rs].sort((a, b) => b.shrunkWr - a.shrunkWr)[0]!;
+  const ranked = rs.filter((r) => r.games >= 50).sort((a, b) => b.shrunkWr - a.shrunkWr);
+  if (ranked.length < 3) return null;                       // too few real roles to judge fit
+  const best = ranked[0]!;
   const playedRole = rs.find((r) => r.role === played) ?? null;
+  // Concern only if they're on one of their WORST two lanes AND a clearly better
+  // option exists (>=2 wins/100). A flat pool (all lanes close) is never a concern.
+  const playedRank = ranked.findIndex((r) => r.role === played);
+  const worstTwo = playedRank >= ranked.length - 2;
+  const delta = playedRole ? Math.round((best.shrunkWr - playedRole.shrunkWr) * 1000) / 10 : 0;
   return {
     played, playedWr: playedRole ? Math.round(playedRole.shrunkWr * 1000) / 10 : null,
     bestRole: best.role, bestWr: Math.round(best.shrunkWr * 1000) / 10, onBest: best.role === played,
-    deltaWins100: playedRole ? Math.round((best.shrunkWr - playedRole.shrunkWr) * 1000) / 10 : 0,
+    deltaWins100: delta, concern: worstTwo && delta >= 2 && !!playedRole,
   };
 }
 
@@ -296,7 +307,7 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
 
   // Which enemies heal / deal physical — measured from the actual match, not assumed.
   const enemyTeam = ourTeam === 'dawn' ? 'dusk' : 'dawn';
-  const healerThreshold = 8000;   // total_healing_done over a full game that marks a real healer
+  const healerThreshold = 5000;   // healing over a full game that marks a real ALLY-healer (support)
 
   const roleView = (slug: string, role: string): any => {
     const a = inp.artifacts.get(slug);
@@ -320,13 +331,18 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
     const nameOf = (s: string) => data.itemsBySlug.get(s)?.name ?? s;
     const rv = roleView(slug, role);
     const optimalSlugs: string[] = (rv?.build?.items ?? []).map((i: any) => i.slug).filter(Boolean);
-    const metaSlugs: string[] = (rv?.metaBuilds?.[0]?.items ?? []).map((i: any) => i.slug).filter(Boolean);
+    // "Missing core" is grounded in the pred.gg WINNING build — the most-played
+    // core that actually wins (not our sim THEORY). winningCore carries its
+    // sample + winrate so the page can cite "the X%-over-N build".
+    const winCore = rv?.metaBuilds?.[0];
+    const metaSlugs: string[] = (winCore?.items ?? []).map((i: any) => i.slug).filter(Boolean);
     const optimalBuild = optimalSlugs.map(nameOf);
     const metaCore = metaSlugs.map(nameOf);
     const builtSlugs = new Set(items.map((i) => i.slug));
     const optimalSet = new Set([...optimalSlugs, ...metaSlugs]);
-    const missingCore = [...new Set([...metaSlugs, ...optimalSlugs.slice(0, 3)])]
-      .filter((s) => !builtSlugs.has(s)).map(nameOf);
+    const missingCore = metaSlugs.filter((s) => !builtSlugs.has(s)).map(nameOf);
+    const winningCore = winCore && metaSlugs.length
+      ? { items: metaCore, n: winCore.n ?? 0, wr: Math.round((winCore.shrunkWr ?? 0) * 1000) / 10 } : null;
     const offMeta = items.filter((i) => !optimalSet.has(i.slug)).map((i) => i.name);
     const completedCount = items.length;
 
@@ -347,15 +363,19 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
       if (defensiveKit && enemyMag >= 3 && !hasMR) matchupItemFlags.push(`no magic resist vs a ${enemyMag}-magical enemy comp`);
     }
 
-    // Experience: this player's history on the hero they played.
+    // Experience: prefer the pred.gg pool (current) over omeda hero_statistics
+    // (which lags weeks behind). A hero outside the tracked pool is low-sample,
+    // not necessarily a "blind pick" — the trackers just haven't synced it.
+    const poolHero = (inp.heroPools?.get(p.id) ?? []).find((h) => h.slug === slug && h.games > 0);
     const hs = (inp.heroStats.get(p.id) ?? []).find((h) => h.hero_id === p.hero_id && h.match_count > 0) ?? null;
-    const experience = hs ? { games: hs.match_count, winrate: Math.round(hs.winrate * 1000) / 10, avgPerf: Math.round(hs.avg_performance_score) } : null;
+    const experience = poolHero ? { games: poolHero.games, winrate: Math.round(poolHero.shrunkWr * 1000) / 10, avgPerf: 0 }
+      : hs ? { games: hs.match_count, winrate: Math.round(hs.winrate * 1000) / 10, avgPerf: Math.round(hs.avg_performance_score) } : null;
     let experienceVerdict: string;
-    if (!experience || experience.games === 0) experienceVerdict = 'no recorded games on this hero — a blind pick';
-    else if (experience.games < 5) experienceVerdict = `near first-time (${experience.games} games)`;
-    else if (experience.games < 20) experienceVerdict = `light experience (${experience.games} games, ${experience.winrate}% wr)`;
+    if (!experience || experience.games === 0) experienceVerdict = 'low sample on this hero (outside the tracked pool)';
+    else if (experience.games < 10) experienceVerdict = `light experience (${experience.games} games, ${experience.winrate}% wr)`;
+    else if (experience.games < 30) experienceVerdict = `solid pool (${experience.games} games, ${experience.winrate}% wr)`;
     else experienceVerdict = `comfort pick (${experience.games} games, ${experience.winrate}% wr)`;
-    const perfVsAvg = experience ? Math.round(p.performance_score - experience.avgPerf) : null;
+    const perfVsAvg = experience && experience.avgPerf ? Math.round(p.performance_score - experience.avgPerf) : null;
 
     return {
       pid: p.id, name: p.display_name, team: p.team, us, role,
@@ -369,7 +389,7 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
       damageTaken: p.total_damage_taken, mitigated: p.total_damage_mitigated,
       healingDone: p.total_healing_done, wardsPlaced: p.wards_placed, wardsDestroyed: p.wards_destroyed,
       objectiveKills: p.objective_kills, vpChange: p.vp_change,
-      items, completedCount, optimalBuild, metaCore, missingCore, offMeta, matchupItemFlags,
+      items, completedCount, optimalBuild, metaCore, missingCore, offMeta, winningCore, matchupItemFlags,
       experience, experienceVerdict, perfVsAvg,
       roleFit: us ? roleFitOf(inp.roleStats?.get(p.id), role) : null,
       antiHealRec: null,   // assigned team-aware below, only to fill a real coverage gap
@@ -401,7 +421,12 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
     }
     return { physical, magical };
   };
-  const healersOf = (team: string) => match.players.filter((q) => q.team === team && q.total_healing_done >= healerThreshold)
+  // A "healer" for the anti-heal call is an ALLY-healer (a support pumping team
+  // heals), not a self-sustain bruiser (Feng Mao, Bayle lifesteal). Require the
+  // support role so a high-lifesteal carry/bruiser isn't mislabelled a healer.
+  const healersOf = (team: string) => match.players.filter((q) => q.team === team
+      && q.total_healing_done >= healerThreshold
+      && ((q.role && q.role.toLowerCase() === 'support') || (data.kits.get(idToSlug.get(q.hero_id) ?? '')?.roles[0] === 'support')))
     .map((q) => data.kits.get(idToSlug.get(q.hero_id) ?? '')?.name ?? '?');
   const frontlineOf = (team: string) => players.filter((p) => p.team === team).some((p) => {
     const kit = data.kits.get(p.heroSlug); return !!kit && (kit.roles.includes('offlane') || p.role === 'offlane') && kit.damageType !== 'magical';
@@ -475,6 +500,12 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
   cbNotes.push(`Enemy ran ${enemyOnMeta}/5 on or near their meta core${enemyOnMeta >= 4 ? ' — they drafted and built optimally; match it' : enemyOnMeta <= 1 ? ' — they were off-meta too, the win was there' : ''}.`);
   const counterBuild = { enemyOnMeta, ourAntiHeal, notes: cbNotes, enemyBuilds: enemyOnMetaList };
 
+  // Closing / tempo: did we sit on a lead instead of ending it?
+  const result = match.winning_team === ourTeam ? 'win' : 'loss';
+  let closingNote: string | null = null;
+  if (result === 'win' && dur >= 35 && ourObjKills >= theirObjKills) closingNote = `Closed slow — you led objectives but the game ran ${dur} minutes. Convert Fangtooth/tower leads into ending the game, don't farm the lead and risk a throw.`;
+  else if (result === 'loss' && ourObjKills > theirObjKills) closingNote = `You won the objective count (${ourObjKills}–${theirObjKills}) and still lost — those leads never became towers/a close. Group and push after each Fangtooth.`;
+
   return {
     matchId: match.id, startTime: match.start_time, durationMin: dur, mode: match.game_mode,
     ourTeam, result: match.winning_team === ourTeam ? 'win' : 'loss',
@@ -490,6 +521,7 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
     objectives: { ourKills: ourObjKills, theirKills: theirObjKills, ourObjDamage: objDmg(ourTeam), theirObjDamage: objDmg(enemyTeam) },
     timeline,
     counterBuild,
+    closingNote,
     coaching: null,
   };
 }

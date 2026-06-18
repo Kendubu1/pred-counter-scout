@@ -200,7 +200,14 @@ async function generateOne(
       artifacts.set(slug, JSON.parse(readFileSync(path.join(adir, `${slug}.json`), 'utf8')));
     }
   }
-  const inputs: PostGameInputs = { match, ourTeam, omedaHeroes, heroStats, matrix, artifacts, objectiveEvents: events?.objectiveEvents, structureEvents: events?.structureEvents, roleStats: squad?.rolesByUuid };
+  // pred.gg hero pools (committed, current) for the experience read — fresher
+  // than omeda hero_statistics, which lags weeks behind.
+  const heroPools = new Map<string, { slug: string; games: number; shrunkWr: number }[]>();
+  for (const p of match.players.filter((q) => q.team === ourTeam)) {
+    const pf = path.join(ROOT, 'data/artifacts/players', `${p.id}.json`);
+    if (existsSync(pf)) { try { heroPools.set(p.id, JSON.parse(readFileSync(pf, 'utf8')).pool ?? []); } catch { /* ignore */ } }
+  }
+  const inputs: PostGameInputs = { match, ourTeam, omedaHeroes, heroStats, matrix, artifacts, objectiveEvents: events?.objectiveEvents, structureEvents: events?.structureEvents, roleStats: squad?.rolesByUuid, heroPools };
   const facts: any = computeMatchFacts(data, inputs);
   // Tag known squad members + who is the lead ("you").
   if (squad) {
