@@ -1665,3 +1665,22 @@ Eight maintainer-flagged fixes:
   flag, a stale stat feed, or a lifesteal=healer heuristic each produced confidently
   wrong feedback. Ground claims in pred.gg winning data and only raise a topic when
   the data says it's actually a problem.
+
+## 2026-06-18: write-up review + evolving-item credit + timeline colours
+- The authored coaching had never been updated after the accuracy fixes, so it still
+  carried stale claims (blind picks, false healers, over-aggressive role-fit, anti-
+  heal misses that weren't real). Rewrote all 8 games' write-ups against the
+  corrected facts. New accurate throughline: TOWER/map control predicts results
+  better than raw objective kills (wins out-towered 10-7/7-4/10-4; losses 6-11/0-10/
+  1-6), and two wins came DESPITE losing the objective count — they converted to
+  towers. The old "objectives = wins" framing was replaced with "convert to towers".
+- Evolving-item credit: end-game inventory shows the EVOLVED form (Orb of Growth ->
+  Orb of Enlightenment), which EVOLUTION_TARGETS filtered out, so an evolved core was
+  reported "missing". Added EVOLVED_SOURCE map; the post-game now counts an evolved
+  item and credits the source it was bought as. Fixed Shinbi's "missing Orb of
+  Growth" in the games he actually ran it.
+- Timeline colours: markers are now coloured by OBJECTIVE (Fangtooth orange, Orb/
+  Prime purple) with a green/red ring for which side took it.
+- Lesson: authored prose is a snapshot — when the underlying facts change, the
+  write-ups must be regenerated or they silently lie. Keep the narrative tied to the
+  computed facts.
