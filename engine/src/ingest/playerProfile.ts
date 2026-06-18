@@ -170,10 +170,15 @@ export function archetypeCandidates(a: AnalyzedPlayer): ArchetypeCandidate[] {
     });
   }
   if (deep.length >= 4 && spread >= 0.04 && best) {
+    // "Secret" only fits when the standout role is NOT what they're known for.
+    // If the best role IS their declared main, it's an open specialty, not hidden.
+    const known = a.favRole?.toLowerCase() === best.role;
     out.push({
       kind: 'secret-role', strength: spread,
-      label: `The Secret ${ROLE_NOUN[best.role] ?? best.role}`,
-      receipt: `${deep.length} roles at 100+ games, but ${best.role} (${(best.shrunkWr * 100).toFixed(1)}% over ${best.games} games) wins about ${per100(spread)} more games per 100 than the weakest role — versatility is hiding a specialty.`,
+      label: known ? `The Career ${ROLE_NOUN[best.role] ?? best.role}` : `The Secret ${ROLE_NOUN[best.role] ?? best.role}`,
+      receipt: known
+        ? `Plays ${deep.length} roles but ${best.role} is both the main and the best — ${(best.shrunkWr * 100).toFixed(1)}% over ${best.games} games, about ${per100(spread)} more wins per 100 than the weakest role. Lean into it.`
+        : `${deep.length} roles at 100+ games, but ${best.role} (${(best.shrunkWr * 100).toFixed(1)}% over ${best.games} games) wins about ${per100(spread)} more games per 100 than the weakest role — versatility is hiding a specialty.`,
     });
   }
   if (deep.length >= 4 && spread < 0.04) {
