@@ -219,6 +219,11 @@ async function generateOne(
       stackSize: facts.players.filter((p: any) => p.us && p.squadName).length,
       members: facts.players.filter((p: any) => p.us && p.squadName).map((p: any) => p.squadName),
     };
+    // Rebuild the draft note with mapped squad names (private omeda profiles show
+    // "🎮 private" otherwise).
+    const off = facts.players.filter((p: any) => p.us && p.roleFit?.concern)
+      .map((p: any) => `${p.squadName ?? p.name} (${p.roleFit.played}→${p.roleFit.bestRole})`);
+    facts.draftNote = off.length ? `${off.length} of five queued off a bottom-two lane: ${off.join(', ')}.` : null;
   }
   // Preserve an already-authored coaching narrative across a facts refresh.
   const existing = path.join(OUT_DIR, `${match.id}.json`);

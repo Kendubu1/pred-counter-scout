@@ -19,7 +19,7 @@ const MATCH_FIELDS = `
   objectiveKills { gameTime killedEntityType killerTeam }
   structureDestructions { gameTime structureEntityType structureTeam }
   matchPlayers {
-    team role kills deaths assists gold
+    team role kills deaths assists gold minionsKilled
     heroDamage physicalDamageDealtToHeroes magicalDamageDealtToHeroes
     totalDamageDealtToObjectives totalDamageTaken totalDamageMitigated
     totalHealingDone totalShieldingReceived wardsPlaced wardsDestroyed
@@ -48,7 +48,7 @@ function mapPlayer(p: any, idx: number, slugToId: Map<string, number>): OmedaPla
     total_damage_mitigated: p.totalDamageMitigated ?? 0,
     total_healing_done: p.totalHealingDone ?? 0,
     total_shielding_received: p.totalShieldingReceived ?? 0,
-    wards_placed: p.wardsPlaced ?? 0, wards_destroyed: p.wardsDestroyed ?? 0,
+    wards_placed: p.wardsPlaced ?? 0, wards_destroyed: p.wardsDestroyed ?? 0, minions_killed: p.minionsKilled ?? 0,
     objective_kills: 0,                              // timeline is used instead
     inventory_data: (p.inventoryItemData ?? []).filter((i: any) => i && i.gameId != null).map((i: any) => i.gameId),
     rank: null,
