@@ -217,18 +217,25 @@ function pgReview(f) {
     <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.6rem">Per-player review</h2>
     ${us.map((p) => {
       const built = p.items.filter((i) => !/Potion|Ward|Crest/i.test(i.name));
+      const lane = (f.lanes || []).find((l) => l.role === p.role && l.ourSlug === p.heroSlug);
+      const counter = lane && lane.counters && lane.counters[0];
+      const rf = p.roleFit;
+      const edgeColor = lane ? (lane.edge === 'favored' ? 'var(--green)' : lane.edge === 'unfavored' ? 'var(--red)' : 'var(--text-1)') : 'var(--text-1)';
       return `<div style="border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;margin-bottom:.7rem;background:var(--bg-2)">
         <div style="display:flex;align-items:center;gap:.55rem;flex-wrap:wrap">
           <img src="${himg(p.heroSlug)}" style="width:30px;height:30px;border-radius:7px" onerror="this.style.visibility='hidden'">
           <b>${pgName(p)}</b>${p.isLead ? ' <span style="font-size:.62rem;color:var(--gold)">(lead)</span>' : ''}
           <span style="font-size:.68rem;text-transform:uppercase;color:var(--text-2);border:1px solid var(--border);border-radius:99px;padding:.05rem .4rem">${esc(p.role)}</span>
-          <span style="font-size:.8rem;color:var(--text-1)">${esc(p.heroName)} · ${p.kills}/${p.deaths}/${p.assists}${p.performanceScore ? ` · perf ${p.performanceScore}${p.perfVsAvg != null ? ` (${p.perfVsAvg >= 0 ? '+' : ''}${p.perfVsAvg} vs avg)` : ''}` : ''}</span>
+          <span style="font-size:.8rem;color:var(--text-1)">${esc(p.heroName)} · ${p.kills}/${p.deaths}/${p.assists}${p.performanceScore ? ` · perf ${p.performanceScore}` : ''}</span>
           <span style="font-size:.68rem;background:var(--accent-soft);border-radius:99px;padding:.05rem .4rem">${esc(p.experienceVerdict)}</span>
-          ${p.matchupItemFlags.map((fl) => `<span style="font-size:.68rem;background:rgba(255,90,90,.14);color:var(--red);border-radius:99px;padding:.05rem .4rem">⚠ ${esc(fl)}</span>`).join('')}
         </div>
+        ${rf ? `<div style="font-size:.84rem;margin-top:.4rem">${rf.onBest
+          ? `<span style="color:var(--green)">✓ Right lane</span> — ${esc(rf.played)} is your best role (${rf.bestWr}% over your career).`
+          : `<span style="color:var(--gold)">⚑ Off your lane</span> — played ${esc(rf.played)}${rf.playedWr != null ? ` (${rf.playedWr}%)` : ''}; your lane is <b>${esc(rf.bestRole)}</b> (${rf.bestWr}%, ${rf.deltaWins100} more wins/100).`}</div>` : ''}
+        ${lane ? `<div style="font-size:.84rem;margin-top:.3rem">Matchup: vs <b>${esc(lane.theirHero)}</b> <span style="color:${edgeColor};font-weight:700">(${lane.edge})</span>${counter ? ` · counter: ${esc(counter.hero)}${counter.inPool ? ` <span style="color:var(--green)">(your pool · ${counter.games}g)</span>` : ''}` : ''}</div>` : ''}
         <div style="display:flex;gap:.25rem;flex-wrap:wrap;margin:.4rem 0">${built.map((i) => `<img src="${iimg(i.slug)}" title="${esc(i.name)}" style="width:26px;height:26px;border-radius:6px;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">`).join('') || '<span style="color:var(--text-2);font-size:.78rem">no completed items</span>'}</div>
-        ${p.missingCore.length ? `<div style="font-size:.74rem;color:var(--gold)">missing from optimal / field core: ${p.missingCore.map(esc).join(', ')}</div>` : ''}
-        ${co?.perPlayer?.[p.pid] ? `<div style="font-size:.9rem;border-left:2px solid var(--accent);padding-left:.6rem;margin-top:.45rem">${esc(co.perPlayer[p.pid])}</div>` : ''}
+        ${(p.missingCore.length || p.matchupItemFlags.length) ? `<div style="font-size:.74rem;color:var(--gold)">${[p.missingCore.length ? 'missing core: ' + p.missingCore.map(esc).join(', ') : '', ...p.matchupItemFlags.map(esc)].filter(Boolean).join(' · ')}</div>` : ''}
+        ${co?.perPlayer?.[p.pid] ? `<div style="font-size:.88rem;border-left:2px solid var(--accent);padding-left:.6rem;margin-top:.45rem">${esc(co.perPlayer[p.pid])}</div>` : ''}
       </div>`;
     }).join('')}`);
 

@@ -51,6 +51,8 @@ export interface PlayerFacts {
   experience: { games: number; winrate: number; avgPerf: number } | null;
   experienceVerdict: string;
   perfVsAvg: number | null;   // this game's perf score minus the player's avg on this hero
+  // Role-fit ("rightful lane"): the role they played vs their best/proven role.
+  roleFit?: { played: string; playedWr: number | null; bestRole: string; bestWr: number; onBest: boolean; deltaWins100: number } | null;
 }
 
 export interface CounterPick { hero: string; slug: string; edge: number; inPool: boolean; games: number; }
@@ -237,6 +239,21 @@ export interface PostGameInputs {
   artifacts: Map<string, any>;                       // slug -> hero artifact (for optimal build + meta core)
   objectiveEvents?: MatchEvent[];                     // pred.gg objective-kill stream (optional)
   structureEvents?: MatchEvent[];                     // pred.gg structure-destruction stream (optional)
+  roleStats?: Map<string, { role: string; games: number; shrunkWr: number }[]>;  // pid -> squad role winrates (for role-fit)
+}
+
+/** Role-fit: the role they played vs their proven-best role (>=50 games, highest
+ *  shrunk winrate). "Rightful lane" = where their own results say they belong. */
+function roleFitOf(rs: { role: string; games: number; shrunkWr: number }[] | undefined, played: string): PlayerFacts['roleFit'] {
+  if (!rs?.length) return null;
+  const proven = rs.filter((r) => r.games >= 50).sort((a, b) => b.shrunkWr - a.shrunkWr);
+  const best = proven[0] ?? [...rs].sort((a, b) => b.shrunkWr - a.shrunkWr)[0]!;
+  const playedRole = rs.find((r) => r.role === played) ?? null;
+  return {
+    played, playedWr: playedRole ? Math.round(playedRole.shrunkWr * 1000) / 10 : null,
+    bestRole: best.role, bestWr: Math.round(best.shrunkWr * 1000) / 10, onBest: best.role === played,
+    deltaWins100: playedRole ? Math.round((best.shrunkWr - playedRole.shrunkWr) * 1000) / 10 : 0,
+  };
 }
 
 export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGameFacts {
@@ -285,12 +302,10 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
     // Matchup itemization flags (only meaningful for our players).
     const matchupItemFlags: string[] = [];
     if (us) {
-      const enemyHealers = match.players.filter((q) => q.team === enemyTeam && q.total_healing_done >= healerThreshold);
+      // Anti-heal is a TEAM itemization call — surfaced once as a team threat
+      // (kit analysis), not repeated on every player here, so per-player flags
+      // stay matchup-specific (armor/MR vs the enemy's damage profile).
       const builtItems = items.map((i) => data.itemsBySlug.get(i.slug)).filter((x): x is Item => !!x);
-      const hasAntiHeal = builtItems.some((i) => i.antiHeal);
-      if (enemyHealers.length >= 1 && !hasAntiHeal) {
-        matchupItemFlags.push(`no anti-heal vs ${enemyHealers.length} enemy healer${enemyHealers.length > 1 ? 's' : ''} (${enemyHealers.map((h) => idToSlug.get(h.hero_id) ?? '?').join(', ')})`);
-      }
       const enemyPhys = match.players.filter((q) => q.team === enemyTeam)
         .reduce((s, q) => s + (q.physical_damage_dealt_to_heroes > q.magical_damage_dealt_to_heroes ? 1 : 0), 0);
       const enemyMag = 5 - enemyPhys;
@@ -325,6 +340,7 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
       objectiveKills: p.objective_kills, vpChange: p.vp_change,
       items, completedCount, optimalBuild, metaCore, missingCore, offMeta, matchupItemFlags,
       experience, experienceVerdict, perfVsAvg,
+      roleFit: us ? roleFitOf(inp.roleStats?.get(p.id), role) : null,
     };
   });
 
@@ -365,7 +381,8 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
   if (ourMix.magical >= 4) compFlags.push(`our damage is ${ourMix.magical}/5 magical — one enemy magic-resist item blunts most of it`);
   if (!frontlineOf(ourTeam)) compFlags.push('no natural frontline on our side — nobody to absorb the first engage');
   const ourHealers = healersOf(ourTeam), theirHealers = healersOf(enemyTeam);
-  if (theirHealers.length >= 2) compFlags.push(`enemy ran ${theirHealers.length} healers (${theirHealers.join(', ')}) — anti-heal was mandatory, not optional`);
+  // (Heal-stacking / anti-heal is surfaced once in the kit-threat analysis, not
+  // duplicated here — it was over-represented across every feedback surface.)
 
   const objDmg = (team: string) => match.players.filter((q) => q.team === team).reduce((s, q) => s + q.total_damage_dealt_to_objectives, 0);
 

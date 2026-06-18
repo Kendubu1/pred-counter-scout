@@ -78,14 +78,15 @@ async function resolveMatch(input: string): Promise<{ match: OmedaMatch; subject
   return { match: full as OmedaMatch, subjectPid: pid };
 }
 
-interface SquadInfo { lead: string; uuids: Set<string>; nameByUuid: Map<string, string>; }
+interface SquadInfo { lead: string; uuids: Set<string>; nameByUuid: Map<string, string>; rolesByUuid: Map<string, { role: string; games: number; shrunkWr: number }[]>; }
 function loadSquad(): SquadInfo | null {
   const p = path.join(ROOT, 'data/artifacts/squad.json');
   if (!existsSync(p)) return null;
   const s = JSON.parse(readFileSync(p, 'utf8'));
   const nameByUuid = new Map<string, string>();
-  for (const m of s.members ?? []) nameByUuid.set(m.uuid, m.name);
-  return { lead: s.lead, uuids: new Set([...nameByUuid.keys()]), nameByUuid };
+  const rolesByUuid = new Map<string, { role: string; games: number; shrunkWr: number }[]>();
+  for (const m of s.members ?? []) { nameByUuid.set(m.uuid, m.name); rolesByUuid.set(m.uuid, m.roles ?? []); }
+  return { lead: s.lead, uuids: new Set([...nameByUuid.keys()]), nameByUuid, rolesByUuid };
 }
 
 /** Squad mode: from the committed squad, find the lead's recent ranked games that
@@ -199,7 +200,7 @@ async function generateOne(
       artifacts.set(slug, JSON.parse(readFileSync(path.join(adir, `${slug}.json`), 'utf8')));
     }
   }
-  const inputs: PostGameInputs = { match, ourTeam, omedaHeroes, heroStats, matrix, artifacts, objectiveEvents: events?.objectiveEvents, structureEvents: events?.structureEvents };
+  const inputs: PostGameInputs = { match, ourTeam, omedaHeroes, heroStats, matrix, artifacts, objectiveEvents: events?.objectiveEvents, structureEvents: events?.structureEvents, roleStats: squad?.rolesByUuid };
   const facts: any = computeMatchFacts(data, inputs);
   // Tag known squad members + who is the lead ("you").
   if (squad) {
