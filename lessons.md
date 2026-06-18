@@ -1603,3 +1603,23 @@ Append-only. One entry per backlog item or significant finding.
   data/artifacts/players/<uuid>.json) — no API call. Other four titles held up.
 - Lesson: a "hidden gem" framing must check what the player is already known for;
   praising their main as a secret reads as the tool not knowing the player.
+
+## 2026-06-18: post-game feedback pass — matchup + rightful-lane focus, de-emphasize anti-heal
+- Audit: anti-heal/healers occupied 60% of feedback surfaces (12 of 20 in one game)
+  — the same point repeated in the comp flag, kit threat, 3 per-player flags, and
+  multiple coaching lines. It IS the #1 real issue but said 12x it buried everything.
+- Fixes: (1) anti-heal is now a single team-level kit threat — removed the per-player
+  matchupItemFlags anti-heal repetition and the duplicate comp flag. (2) Added
+  per-player roleFit ("rightful lane"): the role they played vs their proven-best
+  role (>=50 games, highest shrunk wr), from the squad report — surfaced as the lead
+  line on each player card. (3) The per-player card now leads with role-fit +
+  matchup (vs whom, edge, pool counter) instead of generic item flags. (4)
+  Re-authored all 8 games' coaching to be matchup/lane-centric, one blunt sentence
+  per player, anti-heal capped at one team-level mention. Result: anti-heal 60% -> 15%.
+- Finding the feedback now surfaces: 75% of player-games were off the player's best
+  lane (e.g. Xeebs the jungle main repeatedly on mid/offlane/carry; Cuban's carry vs
+  the mid/support he's slotted into) — a far more actionable, varied read than "buy
+  anti-heal" eight times.
+- Lesson: one true problem repeated across every surface reads as nagging and crowds
+  out the rest. Say it once at the right altitude (team), and spend the per-player
+  space on what's specific to each player — their lane and their matchup.
