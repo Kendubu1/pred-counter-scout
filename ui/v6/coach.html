@@ -207,7 +207,11 @@ function pgReview(f) {
       </div>
     </div>
     ${f.kit.enemy.hardCC.length ? `<div style="margin-top:.6rem;font-size:.78rem;color:var(--text-2)">Enemy hard CC: ${f.kit.enemy.hardCC.map((c) => `<span style="background:var(--bg-3);border-radius:99px;padding:.05rem .45rem;margin-right:.2rem">${esc(c.hero)} ${esc(c.type)}${c.sec ? ` ${c.sec}s` : ''}</span>`).join('')}</div>` : ''}
-    <div style="margin-top:.5rem;font-size:.72rem;color:var(--text-2)">Grounded in each hero's ability data; the deeper combo/win-condition read is layered in by the kit-knowledge pass. THEORY.</div>`) : '';
+    ${(f.kit.enemyKits || []).some((k) => k.playAgainst) ? `<details style="margin-top:.7rem"><summary style="cursor:pointer;font-weight:700;color:var(--red);font-size:.82rem">Enemy kits — how to play against each ▾</summary>
+      <div style="margin-top:.4rem">${f.kit.enemyKits.filter((k) => k.archetype).map((k) => `<div style="font-size:.82rem;margin-bottom:.4rem"><b>${esc(k.hero)}</b> <span style="color:var(--text-2)">· ${esc(k.archetype)}${k.dive && k.dive !== 'low' ? ` · ${esc(k.dive)} dive` : ''}</span>${k.playAgainst ? `<div style="color:var(--text-1)">↳ ${esc(k.playAgainst)}</div>` : ''}</div>`).join('')}</div></details>` : ''}
+    ${(f.kit.ourKits || []).some((k) => k.winCondition) ? `<details style="margin-top:.4rem"><summary style="cursor:pointer;font-weight:700;color:var(--green);font-size:.82rem">Your kits — win conditions &amp; combos ▾</summary>
+      <div style="margin-top:.4rem">${f.kit.ourKits.filter((k) => k.archetype).map((k) => `<div style="font-size:.82rem;margin-bottom:.4rem"><b>${esc(k.hero)}</b> <span style="color:var(--text-2)">· ${esc(k.archetype)}${k.powerSpike ? ` · ${esc(k.powerSpike)} spike` : ''}</span>${k.winCondition ? `<div style="color:var(--text-1)">↳ Win: ${esc(k.winCondition)}</div>` : ''}${k.combo ? `<div style="color:var(--text-2)">↳ Combo: ${esc(k.combo)}</div>` : ''}</div>`).join('')}</div></details>` : ''}
+    <div style="margin-top:.5rem;font-size:.72rem;color:var(--text-2)">Synergy/threat lines from structured ability data (CC, heals, AoE); per-hero combos/win-conditions/counters from the kit-knowledge pass. THEORY.</div>`) : '';
 
   const players = card(`
     <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.6rem">Per-player review</h2>

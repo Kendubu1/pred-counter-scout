@@ -78,7 +78,7 @@ export interface PostGameFacts {
   // Macro timeline (pred.gg only): when the big neutral objectives fell and the
   // tower count by side. Null when sourced from omeda (no event stream).
   timeline: { majors: { minute: number; type: string; side: 'us' | 'them' }[]; towers: { us: number; them: number } } | null;
-  kit?: KitAnalysis | null;   // kit/ability synergy + enemy threats (augmented post-hoc)
+  kit?: (KitAnalysis & { ourKits?: HeroProfileLine[]; enemyKits?: HeroProfileLine[] }) | null;   // kit/ability synergy + enemy threats + per-hero profiles (augmented post-hoc)
   // Authored later by the agent coaching pass; null until then.
   coaching: { headline: string; team: string; perPlayer: Record<string, string>; whatShiftedIt: string } | null;
 }
@@ -97,7 +97,9 @@ export interface TeamKit {
   healers: string[]; damage: { physical: number; magical: number };
   frontline: string[]; aoeAbilities: number;
 }
-export interface KitAnalysis { our: TeamKit; enemy: TeamKit; threats: string[]; synergy: string[]; }
+export interface HeroProfile { archetype?: string; combo?: string; winCondition?: string; powerSpike?: string; passive?: string; playWith?: string; playAgainst?: string; waveClear?: string; dive?: string; scaling?: string; }
+export interface HeroProfileLine extends HeroProfile { hero: string; role: string; }
+export interface KitAnalysis { our: TeamKit; enemy: TeamKit; threats: string[]; synergy: string[]; ourKits: HeroProfileLine[]; enemyKits: HeroProfileLine[]; }
 
 function teamKit(facts: PostGameFacts, side: 'us' | 'them', abilities: Record<string, { abilities: KitAbility[] }>): TeamKit {
   const ps = facts.players.filter((p) => (side === 'us') === p.us);
@@ -123,9 +125,12 @@ function teamKit(facts: PostGameFacts, side: 'us' | 'them', abilities: Record<st
   };
 }
 
-export function computeKitAnalysis(facts: PostGameFacts, abilities: Record<string, { abilities: KitAbility[] }>): KitAnalysis {
+export function computeKitAnalysis(facts: PostGameFacts, abilities: Record<string, { abilities: KitAbility[] }>, profiles: Record<string, HeroProfile> = {}): KitAnalysis {
   const our = teamKit(facts, 'us', abilities);
   const enemy = teamKit(facts, 'them', abilities);
+  const kitsFor = (us: boolean): HeroProfileLine[] => facts.players.filter((p) => p.us === us)
+    .map((p) => ({ hero: p.heroName, role: p.role, ...(profiles[p.heroSlug] ?? {}) }));
+  const ourKits = kitsFor(true), enemyKits = kitsFor(false);
   const ccList = (t: TeamKit) => t.hardCC.map((c) => `${c.hero} ${c.ability} (${c.type}${c.sec ? ` ${c.sec}s` : ''})`).join(', ');
 
   const threats: string[] = [];
@@ -147,7 +152,11 @@ export function computeKitAnalysis(facts: PostGameFacts, abilities: Record<strin
   else if (our.damage.magical >= 4) synergy.push(`Your damage is ${our.damage.magical}/5 magical — predictable; one magic-resist item answers most of it. Mix in a physical threat.`);
   if (our.aoeAbilities >= 6) synergy.push(`Strong AoE/teamfight kit — group at choke points and fight on top of objectives.`);
 
-  return { our, enemy, threats, synergy };
+  // Archetype-driven note: enemy dive/assassin pressure on our backline.
+  const enemyDivers = enemyKits.filter((k) => k.dive === 'high' && /assassin|dive/i.test(k.archetype ?? ''));
+  if (enemyDivers.length) threats.push(`Dive threat on your backline: ${enemyDivers.map((k) => k.hero).join(', ')}. Assign peel for your carry and ward your flanks.`);
+
+  return { our, enemy, threats, synergy, ourKits, enemyKits };
 }
 
 function heroIdToSlug(data: LoadedData, omedaHeroes: { id: number; slug: string }[]): Map<number, string> {

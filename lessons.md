@@ -1573,3 +1573,22 @@ Append-only. One entry per backlog item or significant finding.
 - Lesson: check for structured fields before assuming you need an LLM pass — the CC
   data was already there. Use the LLM/agent pass for what ISN'T structured
   (qualitative gameplay), and flag it THEORY.
+
+## 2026-06-18: full-roster kit-knowledge pass (agent-authored profiles)
+- Authored data/game-data/kit-profiles.json — a structured qualitative profile for
+  all 49 heroes (archetype, core combo, win condition, power spike, passive's
+  in-fight effect, who to play WITH, how to play AGAINST, waveClear, dive, scaling).
+  Grounded in each hero's actual ability + passive text (dumped from
+  hero-abilities.json), authored in-session (no metered API), flagged THEORY.
+- computeKitAnalysis now takes the profiles and attaches per-player ourKits/
+  enemyKits, and adds an archetype-driven threat ("dive threat on your backline:
+  X — assign peel"). The Coach review gets two expandable sections: "Enemy kits —
+  how to play against each" and "Your kits — win conditions & combos".
+- This is the depth layer on top of the structured CC/heal/AoE analysis: the
+  structured pass says "they have a pull + 2 healers"; the kit pass says "Mourn's
+  whole engage is the long Abduct channel — respect the range, anti-heal Contagion;
+  Khaimera's kit dies to anti-heal."
+- Lesson: the agent pass is for the QUALITATIVE read structured data can't hold
+  (combos, win conditions, counterplay). Ground it in the committed ability text so
+  it's a classification of real data, not invention — same discipline as the
+  augment/coaching passes.
