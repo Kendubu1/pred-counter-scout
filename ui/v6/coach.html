@@ -176,12 +176,24 @@ function pgReview(f) {
           <td style="padding:.4rem .3rem">${pgDots(l.verdict)} <span style="color:var(--text-2);font-size:.75rem">${esc(l.summary)}</span></td>
         </tr>`;
       }).join('')}
-    </table>`);
+    </table>
+    ${(() => {
+      const tips = f.lanes.filter((l) => l.edge !== 'favored' && (l.counters || []).length);
+      if (!tips.length) return '';
+      return `<div style="margin-top:.7rem;font-size:.8rem"><b style="color:var(--text-1)">Better counters you could've picked:</b>${tips.map((l) => {
+        const cs = l.counters.slice(0, 3).map((c) => `${esc(c.hero)}${c.inPool ? ` <span style="color:var(--green)">(your pool · ${c.games}g)</span>` : ''}`).join(', ');
+        return `<div style="color:var(--text-2);margin-top:.25rem">${esc(l.role)} vs <b>${esc(l.theirHero)}</b> → ${cs || '<span style="color:var(--text-2)">no clean counter in range</span>'}</div>`;
+      }).join('')}</div>`;
+    })()}`);
 
   const comp = card(`
     <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.5rem">Team comp &amp; objectives</h2>
     <div style="font-size:.84rem;color:var(--text-1)">Damage — you: ${f.comp.ourDamage.physical}P/${f.comp.ourDamage.magical}M · them: ${f.comp.theirDamage.physical}P/${f.comp.theirDamage.magical}M · healers them: ${f.comp.theirHealers.join(', ') || 'none'}</div>
-    <div style="font-size:.84rem;color:var(--text-1)">Objectives — you: ${f.objectives.ourKills} kills / ${f.objectives.ourObjDamage.toLocaleString()} dmg · them: ${f.objectives.theirKills} / ${f.objectives.theirObjDamage.toLocaleString()}</div>
+    <div style="font-size:.84rem;color:var(--text-1)">Objectives — you: ${f.objectives.ourKills}${f.timeline ? ' majors' : ' kills'} · them: ${f.objectives.theirKills}${f.timeline ? ` · towers ${f.timeline.towers.us}–${f.timeline.towers.them}` : ''}</div>
+    ${f.timeline ? (() => {
+      const big = f.timeline.majors.filter((m) => /FANG|PRIME|ORB/i.test(m.type));
+      return big.length ? `<div style="font-size:.82rem;color:var(--text-1);margin-top:.2rem">Key objectives: ${big.map((m) => `${m.minute}m ${esc(m.type.replace(/_/g, ' '))} <span style="color:${m.side === 'us' ? 'var(--green)' : 'var(--red)'}">(${m.side === 'us' ? 'you' : 'them'})</span>`).join(' · ')}</div>` : '';
+    })() : ''}
     ${f.comp.flags.length ? `<div style="font-size:.8rem;color:var(--gold);margin-top:.4rem">${f.comp.flags.map((x) => '• ' + esc(x)).join('<br>')}</div>` : ''}`);
 
   const players = card(`
@@ -193,7 +205,7 @@ function pgReview(f) {
           <img src="${himg(p.heroSlug)}" style="width:30px;height:30px;border-radius:7px" onerror="this.style.visibility='hidden'">
           <b>${pgName(p)}</b>${p.isLead ? ' <span style="font-size:.62rem;color:var(--gold)">(lead)</span>' : ''}
           <span style="font-size:.68rem;text-transform:uppercase;color:var(--text-2);border:1px solid var(--border);border-radius:99px;padding:.05rem .4rem">${esc(p.role)}</span>
-          <span style="font-size:.8rem;color:var(--text-1)">${esc(p.heroName)} · ${p.kills}/${p.deaths}/${p.assists} · perf ${p.performanceScore}${p.perfVsAvg != null ? ` (${p.perfVsAvg >= 0 ? '+' : ''}${p.perfVsAvg} vs avg)` : ''}</span>
+          <span style="font-size:.8rem;color:var(--text-1)">${esc(p.heroName)} · ${p.kills}/${p.deaths}/${p.assists}${p.performanceScore ? ` · perf ${p.performanceScore}${p.perfVsAvg != null ? ` (${p.perfVsAvg >= 0 ? '+' : ''}${p.perfVsAvg} vs avg)` : ''}` : ''}</span>
           <span style="font-size:.68rem;background:var(--accent-soft);border-radius:99px;padding:.05rem .4rem">${esc(p.experienceVerdict)}</span>
           ${p.matchupItemFlags.map((fl) => `<span style="font-size:.68rem;background:rgba(255,90,90,.14);color:var(--red);border-radius:99px;padding:.05rem .4rem">⚠ ${esc(fl)}</span>`).join('')}
         </div>

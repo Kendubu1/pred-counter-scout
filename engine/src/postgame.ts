@@ -29,7 +29,11 @@ export interface OmedaMatch {
 }
 export interface HeroStatCell { hero_id: number; match_count: number; winrate: number; avg_performance_score: number; avg_kdar: number; }
 
+// Optional match timeline (pred.gg only — omeda's feed has no event stream).
+export interface MatchEvent { gameTime: number; type: string; team: string; } // team = DAWN/DUSK (objective: killer; structure: the side that LOST it)
+
 const ROLES = ['carry', 'midlane', 'offlane', 'jungle', 'support'];
+const JUNGLE_BUFF = /_BUFF$|BUFF_/i;  // RED/BLUE/GOLD/etc. camps — not "objectives" in the macro sense
 
 export interface PlayerFacts {
   pid: string; name: string; team: string; us: boolean; role: string;
@@ -49,11 +53,13 @@ export interface PlayerFacts {
   perfVsAvg: number | null;   // this game's perf score minus the player's avg on this hero
 }
 
+export interface CounterPick { hero: string; slug: string; edge: number; inPool: boolean; games: number; }
 export interface LaneMatchup {
   role: string; ourHero: string; ourSlug: string; theirHero: string; theirSlug: string;
   verdict: string;            // per-minute y/e/= from OUR perspective
   edge: 'favored' | 'even' | 'unfavored';
   summary: string;
+  counters: CounterPick[];    // heroes that would have countered the enemy laner (pool picks first)
 }
 
 export interface PostGameFacts {
@@ -69,6 +75,9 @@ export interface PostGameFacts {
     flags: string[];
   };
   objectives: { ourKills: number; theirKills: number; ourObjDamage: number; theirObjDamage: number };
+  // Macro timeline (pred.gg only): when the big neutral objectives fell and the
+  // tower count by side. Null when sourced from omeda (no event stream).
+  timeline: { majors: { minute: number; type: string; side: 'us' | 'them' }[]; towers: { us: number; them: number } } | null;
   // Authored later by the agent coaching pass; null until then.
   coaching: { headline: string; team: string; perPlayer: Record<string, string>; whatShiftedIt: string } | null;
 }
@@ -92,6 +101,35 @@ function matchupVerdict(pairs: Record<string, string>, our: string, their: strin
   const rev = pairs[`${their}|${our}`];
   if (rev == null) return null;
   return [...rev].map((c) => (c === 'y' ? 'e' : c === 'e' ? 'y' : '=')).join('');
+}
+
+/** Favorability of a verdict string from the first hero's view: #y - #e. */
+function verdictEdge(v: string): number {
+  return [...v].filter((c) => c === 'y').length - [...v].filter((c) => c === 'e').length;
+}
+
+/** Heroes that would have countered the enemy laner: role-eligible heroes whose
+ *  kill-window beats the enemy, the player's own pool first (a counter you can
+ *  actually pilot is worth more than a theoretical one). */
+export function topCounters(
+  data: LoadedData, matrix: { pairs: Record<string, string> }, role: string, enemySlug: string, ourSlug: string,
+  slugToHeroId: Map<string, number>, ownHeroStats: HeroStatCell[],
+): CounterPick[] {
+  const poolGames = new Map<number, number>(ownHeroStats.filter((h) => h.match_count > 0).map((h) => [h.hero_id, h.match_count]));
+  const cands: CounterPick[] = [];
+  for (const kit of data.kits.values()) {
+    if (kit.slug === enemySlug || kit.slug === ourSlug) continue;
+    if (!kit.roles.includes(role)) continue;                 // realistic for this lane
+    const v = matchupVerdict(matrix.pairs, kit.slug, enemySlug);
+    if (!v) continue;
+    const edge = verdictEdge(v);
+    if (edge <= 0) continue;                                  // must actually beat them
+    const games = poolGames.get(slugToHeroId.get(kit.slug) ?? -1) ?? 0;
+    cands.push({ hero: kit.name, slug: kit.slug, edge, inPool: games > 0, games });
+  }
+  // Pool picks first (then by how many games), then theoretical counters by edge.
+  cands.sort((a, b) => Number(b.inPool) - Number(a.inPool) || (b.inPool ? b.games - a.games : b.edge - a.edge) || b.edge - a.edge);
+  return cands.slice(0, 4);
 }
 
 function edgeOf(verdict: string): 'favored' | 'even' | 'unfavored' {
@@ -120,6 +158,8 @@ export interface PostGameInputs {
   heroStats: Map<string, HeroStatCell[]>;            // pid -> that player's hero_statistics
   matrix: { minutes: number[]; pairs: Record<string, string> };
   artifacts: Map<string, any>;                       // slug -> hero artifact (for optimal build + meta core)
+  objectiveEvents?: MatchEvent[];                     // pred.gg objective-kill stream (optional)
+  structureEvents?: MatchEvent[];                     // pred.gg structure-destruction stream (optional)
 }
 
 export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGameFacts {
@@ -211,7 +251,9 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
     };
   });
 
-  // Lane matchups: our player vs the enemy in the same role.
+  // Lane matchups: our player vs the enemy in the same role, plus the counters
+  // our player could have brought against that enemy laner.
+  const slugToHeroId = new Map(inp.omedaHeroes.filter((h) => data.kits.has(h.slug)).map((h) => [h.slug, h.id]));
   const lanes: LaneMatchup[] = [];
   for (const role of ROLES) {
     const ours = players.find((p) => p.us && p.role === role);
@@ -219,9 +261,10 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
     if (!ours || !theirs) continue;
     const verdict = matchupVerdict(inp.matrix.pairs, ours.heroSlug, theirs.heroSlug);
     if (!verdict) continue;
+    const counters = topCounters(data, inp.matrix, role, theirs.heroSlug, ours.heroSlug, slugToHeroId, inp.heroStats.get(ours.pid) ?? []);
     lanes.push({
       role, ourHero: ours.heroName, ourSlug: ours.heroSlug, theirHero: theirs.heroName, theirSlug: theirs.heroSlug,
-      verdict, edge: edgeOf(verdict), summary: verdictSummary(verdict, inp.matrix.minutes),
+      verdict, edge: edgeOf(verdict), summary: verdictSummary(verdict, inp.matrix.minutes), counters,
     });
   }
 
@@ -247,8 +290,28 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
   const ourHealers = healersOf(ourTeam), theirHealers = healersOf(enemyTeam);
   if (theirHealers.length >= 2) compFlags.push(`enemy ran ${theirHealers.length} healers (${theirHealers.join(', ')}) — anti-heal was mandatory, not optional`);
 
-  const objKills = (team: string) => match.players.filter((q) => q.team === team).reduce((s, q) => s + q.objective_kills, 0);
   const objDmg = (team: string) => match.players.filter((q) => q.team === team).reduce((s, q) => s + q.total_damage_dealt_to_objectives, 0);
+
+  // Objectives + macro timeline. With a pred.gg event stream we count the big
+  // neutral objectives (excluding jungle buffs) and towers by side, and expose
+  // when they fell; without it we fall back to per-player objective_kills (omeda).
+  let timeline: PostGameFacts['timeline'] = null;
+  let ourObjKills: number, theirObjKills: number;
+  if (inp.objectiveEvents?.length) {
+    const majorsAll = inp.objectiveEvents.filter((e) => !JUNGLE_BUFF.test(e.type));
+    ourObjKills = majorsAll.filter((e) => e.team === ourTeam).length;
+    theirObjKills = majorsAll.filter((e) => e.team === enemyTeam).length;
+    // structureTeam is the side that LOST the tower, so a tower we took has team=enemy.
+    const towers = (inp.structureEvents ?? []).filter((e) => /TOWER|INHIBITOR|CORE|BASE/i.test(e.type));
+    timeline = {
+      majors: majorsAll.map((e) => ({ minute: Math.round(e.gameTime / 60), type: e.type, side: (e.team === ourTeam ? 'us' : 'them') as 'us' | 'them' }))
+        .sort((a, b) => a.minute - b.minute),
+      towers: { us: towers.filter((e) => e.team === enemyTeam).length, them: towers.filter((e) => e.team === ourTeam).length },
+    };
+  } else {
+    ourObjKills = match.players.filter((q) => q.team === ourTeam).reduce((s, q) => s + q.objective_kills, 0);
+    theirObjKills = match.players.filter((q) => q.team === enemyTeam).reduce((s, q) => s + q.objective_kills, 0);
+  }
 
   const ourPlayers = players.filter((p) => p.us);
   const vpSwing = ourPlayers.map((p) => p.vpChange).filter((v): v is number => v != null);
@@ -265,7 +328,8 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
       ourFrontline: frontlineOf(ourTeam), theirFrontline: frontlineOf(enemyTeam),
       flags: compFlags,
     },
-    objectives: { ourKills: objKills(ourTeam), theirKills: objKills(enemyTeam), ourObjDamage: objDmg(ourTeam), theirObjDamage: objDmg(enemyTeam) },
+    objectives: { ourKills: ourObjKills, theirKills: theirObjKills, ourObjDamage: objDmg(ourTeam), theirObjDamage: objDmg(enemyTeam) },
+    timeline,
     coaching: null,
   };
 }
