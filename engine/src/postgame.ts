@@ -9,6 +9,7 @@
 // winrate-as-truth — matchup edges are our own sim's kill-window verdicts.
 
 import { completedItems } from './data.js';
+import { kitPowerType } from './sim.js';
 import type { LoadedData } from './data.js';
 import type { Item } from './types.js';
 
@@ -53,6 +54,9 @@ export interface PlayerFacts {
   perfVsAvg: number | null;   // this game's perf score minus the player's avg on this hero
   // Role-fit ("rightful lane"): the role they played vs their best/proven role.
   roleFit?: { played: string; playedWr: number | null; bestRole: string; bestWr: number; onBest: boolean; deltaWins100: number } | null;
+  // Constructive anti-heal pick for THIS player's build (vs a healer comp), with
+  // what to swap. Null when not needed (no enemy healers, or already built it).
+  antiHealRec?: { item: string; slug: string; swapOut: string | null } | null;
 }
 
 export interface CounterPick { hero: string; slug: string; edge: number; inPool: boolean; games: number; }
@@ -77,6 +81,8 @@ export interface PostGameFacts {
     flags: string[];
   };
   objectives: { ourKills: number; theirKills: number; ourObjDamage: number; theirObjDamage: number };
+  // Counter-build: enemy build vs meta + whether we itemized to answer them.
+  counterBuild?: { enemyOnMeta: number; ourAntiHeal: number; notes: string[]; enemyBuilds: { hero: string; role: string; onMeta: boolean; missing: string[] }[] } | null;
   // Macro timeline (pred.gg only): when the big neutral objectives fell and the
   // tower count by side. Null when sourced from omeda (no event stream).
   timeline: { majors: { minute: number; type: string; side: 'us' | 'them' }[]; towers: { us: number; them: number } } | null;
@@ -159,6 +165,31 @@ export function computeKitAnalysis(facts: PostGameFacts, abilities: Record<strin
   if (enemyDivers.length) threats.push(`Dive threat on your backline: ${enemyDivers.map((k) => k.hero).join(', ')}. Assign peel for your carry and ward your flanks.`);
 
   return { our, enemy, threats, synergy, ourKits, enemyKits };
+}
+
+/** The anti-heal item that fits THIS player's build, vs a healer comp. Returns
+ *  null when there are no enemy healers or they already built one. swapOut names
+ *  the weakest off-meta item they actually built (what to cut for it). */
+export function antiHealRec(
+  data: LoadedData, heroSlug: string, role: string, builtSlugs: string[], offMeta: string[], enemyHealers: number,
+): PlayerFacts['antiHealRec'] {
+  if (enemyHealers < 1) return null;
+  const pool = completedItems(data);
+  const byName = (n: string) => pool.find((i) => i.name === n);
+  const built = builtSlugs.map((s) => data.itemsBySlug.get(s)).filter((x): x is Item => !!x);
+  if (built.some((i) => i.antiHeal)) return null;            // already covered
+  const kit = data.kits.get(heroSlug);
+  const power = kit ? kitPowerType(kit) : 'physical';
+  const aaCarry = !!kit && kit.damageType !== 'magical' && (kit.roles.includes('carry') || kit.basicScalingPct >= 90);
+  let pick: Item | undefined;
+  if (role === 'support') pick = byName('Tainted Charm');                 // hp + tenacity for peel/enchant
+  else if (power === 'magical') pick = byName('Tainted Totem');           // magical power + haste
+  else if (aaCarry) pick = byName('Tainted Rounds');                     // AS + crit for a marksman
+  else pick = byName('Tainted Blade') ?? byName('Tainted Trident');      // physical bruiser/assassin
+  if (!pick) return null;
+  // What to cut: the cheapest off-meta completed item they built (least lost).
+  const swap = offMeta.map((n) => byName(n)).filter((x): x is Item => !!x).sort((a, b) => a.totalPrice - b.totalPrice)[0];
+  return { item: pick.name, slug: pick.slug, swapOut: swap?.name ?? null };
 }
 
 function heroIdToSlug(data: LoadedData, omedaHeroes: { id: number; slug: string }[]): Map<number, string> {
@@ -341,6 +372,7 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
       items, completedCount, optimalBuild, metaCore, missingCore, offMeta, matchupItemFlags,
       experience, experienceVerdict, perfVsAvg,
       roleFit: us ? roleFitOf(inp.roleStats?.get(p.id), role) : null,
+      antiHealRec: null,   // assigned team-aware below, only to fill a real coverage gap
     };
   });
 
@@ -408,7 +440,40 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
   }
 
   const ourPlayers = players.filter((p) => p.us);
+  const enemyPlayers = players.filter((p) => !p.us);
   const vpSwing = ourPlayers.map((p) => p.vpChange).filter((v): v is number => v != null);
+
+  // Counter-build: did the enemy build to the meta, and did WE itemize to answer
+  // their threats (anti-heal vs healers, armor/MR vs their main damage) — and did
+  // it cost us? Grounded in their actual builds + damage.
+  const hasArmor = (p: PlayerFacts, phys: boolean) => p.items.some((it) => { const I = data.itemsBySlug.get(it.slug); return !!I && (phys ? I.stats.physical_armor > 0 : I.stats.magical_armor > 0); });
+  const ourAntiHeal = ourPlayers.filter((p) => p.items.some((it) => data.itemsBySlug.get(it.slug)?.antiHeal)).length;
+  const topThreat = [...enemyPlayers].sort((a, b) => b.damageToHeroes - a.damageToHeroes)[0];
+  const threatKit = topThreat ? data.kits.get(topThreat.heroSlug) : undefined;
+  const threatPhys = threatKit ? kitPowerType(threatKit) === 'physical' : true;
+  const ourDefVsThreat = ourPlayers.filter((p) => hasArmor(p, threatPhys)).length;
+  // Team-aware anti-heal: a heal comp wants ~2 anti-heal (1 vs a single healer).
+  // Only recommend to enough of our damage dealers to FILL the gap — not everyone,
+  // and not at all when the team is already covered.
+  const desiredAH = theirHealers.length >= 2 ? 2 : theirHealers.length >= 1 ? 1 : 0;
+  let gap = desiredAH - ourAntiHeal;
+  const carrierOrder = ['carry', 'midlane', 'jungle', 'offlane', 'support'];
+  const candidates = ourPlayers
+    .filter((p) => !p.items.some((it) => data.itemsBySlug.get(it.slug)?.antiHeal))
+    .sort((a, b) => carrierOrder.indexOf(a.role) - carrierOrder.indexOf(b.role));
+  for (const p of candidates) {
+    if (gap <= 0) break;
+    const rec = antiHealRec(data, p.heroSlug, p.role, p.items.map((i) => i.slug), p.offMeta, theirHealers.length);
+    if (rec) { p.antiHealRec = rec; gap--; }
+  }
+  const enemyOnMetaList = enemyPlayers.map((p) => ({ hero: p.heroName, role: p.role, onMeta: p.missingCore.length <= 1, missing: p.missingCore }));
+  const enemyOnMeta = enemyOnMetaList.filter((e) => e.onMeta).length;
+  const cbNotes: string[] = [];
+  if (theirHealers.length && ourAntiHeal === 0) cbNotes.push(`Enemy ran ${theirHealers.length} healer${theirHealers.length > 1 ? 's' : ''} (${theirHealers.join(', ')}) and your team built zero anti-heal — their sustain ran unchecked.`);
+  else if (theirHealers.length && ourAntiHeal < 2) cbNotes.push(`Enemy had ${theirHealers.length} healer${theirHealers.length > 1 ? 's' : ''}; only ${ourAntiHeal} of you carried anti-heal — usually wants two vs a heal comp.`);
+  if (topThreat) cbNotes.push(`Their main damage was ${topThreat.heroName} (${Math.round(topThreat.damageToHeroes / 1000)}k ${threatPhys ? 'physical' : 'magical'}); ${ourDefVsThreat}/5 of you itemized ${threatPhys ? 'armor' : 'magic resist'}${ourDefVsThreat <= 1 ? ' — that hurt' : ''}.`);
+  cbNotes.push(`Enemy ran ${enemyOnMeta}/5 on or near their meta core${enemyOnMeta >= 4 ? ' — they drafted and built optimally; match it' : enemyOnMeta <= 1 ? ' — they were off-meta too, the win was there' : ''}.`);
+  const counterBuild = { enemyOnMeta, ourAntiHeal, notes: cbNotes, enemyBuilds: enemyOnMetaList };
 
   return {
     matchId: match.id, startTime: match.start_time, durationMin: dur, mode: match.game_mode,
@@ -424,6 +489,7 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
     },
     objectives: { ourKills: ourObjKills, theirKills: theirObjKills, ourObjDamage: objDmg(ourTeam), theirObjDamage: objDmg(enemyTeam) },
     timeline,
+    counterBuild,
     coaching: null,
   };
 }

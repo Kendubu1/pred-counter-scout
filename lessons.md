@@ -1623,3 +1623,20 @@ Append-only. One entry per backlog item or significant finding.
 - Lesson: one true problem repeated across every surface reads as nagging and crowds
   out the rest. Say it once at the right altitude (team), and spend the per-player
   space on what's specific to each player — their lane and their matchup.
+
+## 2026-06-18: anti-heal as a build RECOMMENDATION + enemy counter-build (and a correction)
+- Re-added anti-heal as a constructive, build-specific recommendation pill (the
+  right Tainted item for the player's power type/role + what to swap), but made it
+  TEAM-AWARE: a heal comp wants ~2 anti-heal (1 vs a single healer), so we only
+  recommend enough damage dealers to fill the gap, and nothing when already covered.
+- CORRECTION: the earlier "anti-heal missed in 8/8 games" finding was an artifact of
+  a PER-PLAYER flag counting individuals, not the team. Counting real team builds:
+  the squad was actually covered (>=2 anti-heal) in 4 of 8 games and light in 3 —
+  only 1 game had genuinely zero. Fixed the false "anti-heal missed" claims in the
+  authored coaching for the covered games. Lesson: aggregate at the right unit
+  (team itemization is a team total, not a per-player checkbox) before calling it a
+  systemic failure.
+- Added counterBuild: did the enemy build to their meta core, and did we itemize to
+  answer their threats (anti-heal vs healers, armor/MR vs their top damage) — with
+  impact ("Gideon 31k magical; 1/5 built MR — that hurt"). Surfaced as "Their build
+  vs your counter" on the review.
