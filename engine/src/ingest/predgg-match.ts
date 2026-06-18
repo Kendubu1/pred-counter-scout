@@ -67,8 +67,25 @@ function mapMatch(m: any, slugToId: Map<string, number>): { match: OmedaMatch; o
   return { match, objectiveEvents, structureEvents };
 }
 
-/** The lead's recent ranked games that are full/near-full squad stacks, newest
- *  first, fully mapped + timeline-equipped. omedaHeroes provides slug -> id. */
+/** Empirical lane-matchup winrate from pred.gg (our hero vs the enemy laner,
+ *  same role). Ground truth to sit beside our sim's kill-window THEORY. One
+ *  query per unique our-hero (returns all opponents; we pick the laner). */
+export async function fetchLaneMatchups(lanes: { ourSlug: string; theirSlug: string }[]): Promise<Map<string, { winrate: number; matchesPlayed: number; firstTowerDiff: number | null }>> {
+  if (!hasCredentials()) return new Map();
+  const out = new Map<string, { winrate: number; matchesPlayed: number; firstTowerDiff: number | null }>();
+  for (const our of [...new Set(lanes.map((l) => l.ourSlug))]) {
+    try {
+      const d = await gql<any>(`{ hero(by:{slug:"${our}"}){ matchupStatistic(metric: WINRATE, sameRole: true, filter:{ gameModes:[RANKED] }){ results { matchupHero { slug } winrate matchesPlayed firstTowerTimeDiff } } } }`);
+      const bySlug = new Map<string, any>((d.hero?.matchupStatistic?.results ?? []).map((r: any) => [r.matchupHero?.slug, r]));
+      for (const l of lanes.filter((x) => x.ourSlug === our)) {
+        const r = bySlug.get(l.theirSlug);
+        if (r && r.matchesPlayed >= 30) out.set(`${our}|${l.theirSlug}`, { winrate: Math.round(r.winrate * 1000) / 10, matchesPlayed: r.matchesPlayed, firstTowerDiff: r.firstTowerTimeDiff != null ? Math.round(r.firstTowerTimeDiff) : null });
+      }
+    } catch { /* skip on error */ }
+    await new Promise((r) => setTimeout(r, 150));
+  }
+  return out;
+}
 export async function predggSquadMatches(
   leadUuid: string, memberUuids: Set<string>, nameByUuid: Map<string, string>,
   omedaHeroes: { id: number; slug: string }[], minStack: number, limit = 14,
