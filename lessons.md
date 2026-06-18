@@ -1706,6 +1706,29 @@ Eight maintainer-flagged fixes:
   baseline), not who they ARE (a stat says you're a jungler). Benchmark against the
   player's own numbers — it's the most personal, least arguable feedback we have.
 
+## 2026-06-18: Live Draft — lane-by-lane counter board (UI, ui/v2)
+- Maintainer ask: branch off the home page with a "counter" option that works
+  lane by lane for live ranked drafts — add an enemy pick, guess their lane,
+  show the best counters by win rate and the build that beats them, and keep
+  going for a full team comp.
+- Built a new `livedraft` flow (kept the existing team-board Draft Helper).
+  5 lane rows (offlane/jungle/mid/duo carry/duo support), each with an enemy
+  slot + your slot. Picking an enemy renders a per-lane panel: top counters
+  ranked by win rate (shrunk via MatchupEngine.adjustedWinRate so small
+  samples don't dominate) + the counter-strategy build from
+  MatchupEngine.counterHeroAnalysis. Click a counter to fill your lane slot.
+  "Add enemy pick (auto-lane)" guesses the lane from the role the hero has the
+  most committed games in. A running "Your Draft So Far" summary flags damage
+  skew / missing CC / no frontline.
+- Data: pure zero-API — reads the committed per-hero `counters` arrays
+  (data/<version>/<slug>.json), which are already stored per-lane. winRate in
+  those entries is the HOST hero's WR vs the listed hero, so the counter's WR
+  = 100 - winRate (low host WR = good counter for us). Same source the existing
+  Counter/Draft pages use; pre-1.14 like the rest of the live site.
+- Gotcha worth remembering: ui/v2/index.html sets `<base href="../">`, so it is
+  the real served page (resources resolve from ui/, e.g. matchup-engine.js lives
+  at ui/matchup-engine.js); ui/index.html is just a redirect to v2/. Cache-busted
+  app.js v77→v78 and style.css v24→v25 so the changes load.
 ## 2026-06-18: empirical lane matchups from pred.gg (test) — ground truth beside the sim
 - pred.gg's coreBuild filter has NO opponent field, so matchup-SPECIFIC winning
   BUILDS aren't queryable. But Hero.matchupStatistic(metric: WINRATE, sameRole)

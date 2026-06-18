@@ -73,6 +73,25 @@ let draftState = {
   activeSlot: null, // { team: 'your'|'enemy', index: 0-4 }
 };
 
+// Live Draft — lane-paired counter board for live ranked drafts
+const LIVE_LANE_ORDER = ['offlane', 'jungle', 'midlane', 'carry', 'support'];
+const LIVE_LANE_META = {
+  offlane: { emoji: '⚔️', label: 'Offlane' },
+  jungle:  { emoji: '🌿', label: 'Jungle' },
+  midlane: { emoji: '🔮', label: 'Midlane' },
+  carry:   { emoji: '🏹', label: 'Duo Carry' },
+  support: { emoji: '🛡️', label: 'Duo Support' },
+};
+let liveDraftState = {
+  lanes: {
+    offlane: { enemy: null, your: null },
+    jungle:  { enemy: null, your: null },
+    midlane: { enemy: null, your: null },
+    carry:   { enemy: null, your: null },
+    support: { enemy: null, your: null },
+  },
+};
+
 // ── Helpers ──
 function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 function wrClass(wr) {
@@ -571,6 +590,11 @@ function navigate(flow, heroSlug, opts = {}) {
     renderDraftSlots();
     updateDraftSuggestions();
     location.hash = '#draft';
+  } else if (flow === 'livedraft') {
+    text.textContent = 'Live Draft';
+    showPage('liveDraftPage');
+    renderLiveDraft();
+    location.hash = '#livedraft';
   } else if (flow === 'build') {
     text.textContent = 'Build Lab';
     showPage('buildPage');
@@ -600,6 +624,8 @@ function handleHashRoute() {
     else navigate('counter');
   } else if (parts[0] === 'draft') {
     navigate('draft');
+  } else if (parts[0] === 'livedraft') {
+    navigate('livedraft');
   } else if (parts[0] === 'build') {
     navigate('build');
   } else if (parts[0] === 'about') {
@@ -2601,6 +2627,268 @@ function generateCounterWhy(counterSlug, enemySlug, enemyProfile, counterProfile
 // FLOW 3: DRAFT HELPER
 // ══════════════════════════════════════════
 
+// ══════════════════════════════════════════
+// LIVE DRAFT — lane-by-lane counter board
+// ══════════════════════════════════════════
+
+const LIVE_MIN_COUNTER_MATCHES = 15;
+
+function allLivePicked() {
+  const s = new Set();
+  for (const l of LIVE_LANE_ORDER) {
+    const lane = liveDraftState.lanes[l];
+    if (lane.enemy) s.add(lane.enemy);
+    if (lane.your) s.add(lane.your);
+  }
+  return s;
+}
+
+function renderLiveDraft() {
+  const wrap = document.getElementById('liveDraftLanes');
+  if (!wrap) return;
+  wrap.innerHTML = LIVE_LANE_ORDER.map(renderLiveLaneRow).join('');
+
+  // Slot clicks open the picker; clear buttons empty the slot
+  wrap.querySelectorAll('[data-ld-slot]').forEach(el => {
+    el.onclick = (e) => {
+      if (e.target.classList.contains('draft-slot-clear')) return;
+      openLivePicker(el.dataset.ldLane, el.dataset.ldSlot);
+    };
+  });
+  wrap.querySelectorAll('.draft-slot-clear').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      liveDraftState.lanes[btn.dataset.ldLane][btn.dataset.ldSlot] = null;
+      renderLiveDraft();
+    };
+  });
+
+  updateLiveDraftPanels();
+  renderLiveSummary();
+}
+
+function renderLiveSlot(lane, side, slug) {
+  const teamCls = side === 'your' ? 'your-slot' : 'enemy-slot';
+  if (slug) {
+    const name = heroProfiles[slug]?.name || slug;
+    return `<div class="draft-slot filled ${teamCls}" data-ld-slot="${side}" data-ld-lane="${lane}">
+      <img class="draft-slot-img" src="img/heroes/${slug}.webp" alt="${esc(name)}" onerror="this.style.display='none'">
+      <button class="draft-slot-clear" data-ld-lane="${lane}" data-ld-slot="${side}" title="Clear">✕</button>
+    </div>`;
+  }
+  return `<div class="draft-slot" data-ld-slot="${side}" data-ld-lane="${lane}">
+    <div class="draft-slot-empty">+</div>
+  </div>`;
+}
+
+function renderLiveLaneRow(lane) {
+  const meta = LIVE_LANE_META[lane];
+  const st = liveDraftState.lanes[lane];
+  let html = `<div class="ld-row" data-ld-row="${lane}">`;
+  html += `<div class="ld-lane-head"><span class="ld-lane-emoji">${meta.emoji}</span><span class="ld-lane-name">${meta.label}</span></div>`;
+  html += '<div class="ld-matchup">';
+  html += `<div class="ld-side"><div class="ld-side-label enemy">Enemy</div>${renderLiveSlot(lane, 'enemy', st.enemy)}</div>`;
+  html += '<div class="ld-vs">VS</div>';
+  html += `<div class="ld-side"><div class="ld-side-label your">You</div>${renderLiveSlot(lane, 'your', st.your)}</div>`;
+  html += '</div>';
+  html += `<div class="ld-panel" id="ld-panel-${lane}"></div>`;
+  html += '</div>';
+  return html;
+}
+
+function openLivePicker(lane, side) {
+  const modal = document.getElementById('liveDraftModal');
+  modal.classList.remove('hidden');
+  const meta = LIVE_LANE_META[lane];
+  document.getElementById('liveDraftModalTitle').textContent =
+    side === 'enemy' ? `Enemy in ${meta.label}` : `Your pick — ${meta.label}`;
+  document.getElementById('liveDraftModalSearch').value = '';
+  renderHeroGrid('liveDraftHeroGrid', (slug) => {
+    modal.classList.add('hidden');
+    liveDraftState.lanes[lane][side] = slug;
+    renderLiveDraft();
+  }, { unavailable: allLivePicked() });
+  setupGridFilters('liveDraftModalSearch', 'liveDraftRoleFilters', 'liveDraftHeroGrid');
+}
+
+// Add an enemy pick and auto-assign it to its most-likely lane (like seeing a
+// pick come in during the live draft and slotting it where they usually play).
+function openLiveEnemyAdd() {
+  const modal = document.getElementById('liveDraftModal');
+  modal.classList.remove('hidden');
+  document.getElementById('liveDraftModalTitle').textContent = 'Add enemy pick — we guess their lane';
+  document.getElementById('liveDraftModalSearch').value = '';
+  renderHeroGrid('liveDraftHeroGrid', async (slug) => {
+    modal.classList.add('hidden');
+    const guessed = await computeEnemyLane(slug);
+    let target = guessed;
+    if (liveDraftState.lanes[target].enemy) {
+      // lane taken — fall back to an open lane the hero can play, else any open lane
+      const roles = getHeroRoles(slug);
+      target = LIVE_LANE_ORDER.find(l => roles.includes(l) && !liveDraftState.lanes[l].enemy)
+        || LIVE_LANE_ORDER.find(l => !liveDraftState.lanes[l].enemy)
+        || guessed;
+    }
+    liveDraftState.lanes[target].enemy = slug;
+    renderLiveDraft();
+  }, { unavailable: allLivePicked() });
+  setupGridFilters('liveDraftModalSearch', 'liveDraftRoleFilters', 'liveDraftHeroGrid');
+}
+
+// Guess a hero's lane from the role they have the most games in (committed data),
+// falling back to their listed roles.
+async function computeEnemyLane(slug) {
+  try {
+    const d = await loadHeroData(currentVersion, slug);
+    let best = null, bestM = -1;
+    for (const [role, rd] of Object.entries(d.roles || {})) {
+      if (role === 'all' || !LIVE_LANE_META[role]) continue;
+      const m = (rd.buildTabs || []).reduce((s, b) => s + (parseInt(String(b.matches).replace(/\D/g, '')) || 0), 0);
+      if (m > bestM) { bestM = m; best = role; }
+    }
+    if (best) return best;
+  } catch {}
+  const roles = getHeroRoles(slug).filter(r => LIVE_LANE_META[r]);
+  return roles[0] || 'midlane';
+}
+
+async function updateLiveDraftPanels() {
+  for (const lane of LIVE_LANE_ORDER) {
+    const el = document.getElementById('ld-panel-' + lane);
+    if (!el) continue;
+    const enemy = liveDraftState.lanes[lane].enemy;
+    if (!enemy) { el.innerHTML = ''; continue; }
+    el.innerHTML = '<div class="ld-loading">Loading counters…</div>';
+    try {
+      await renderLiveCounterPanel(lane, enemy, el);
+    } catch {
+      el.innerHTML = '<div class="ld-loading">Could not load counter data for this lane.</div>';
+    }
+  }
+}
+
+async function renderLiveCounterPanel(lane, enemySlug, el) {
+  const enemyData = await loadHeroData(currentVersion, enemySlug);
+  const enemyName = heroProfiles[enemySlug]?.name || enemySlug;
+  const rd = getRoleData(enemyData, lane);
+  const adj = (wr, m) => (typeof MatchupEngine !== 'undefined' && MatchupEngine.adjustedWinRate)
+    ? MatchupEngine.adjustedWinRate(wr, m) : wr;
+  const picked = allLivePicked();
+  const yourPick = liveDraftState.lanes[lane].your;
+
+  // Best counters for this lane, ranked by win rate (shrunk for small samples).
+  // counters[].winRate is the enemy's WR vs that hero, so a low value = good for us.
+  const beats = (rd?.counters || [])
+    .filter(c => c.winRate < 50 && (c.matches || 0) >= LIVE_MIN_COUNTER_MATCHES)
+    .map(c => {
+      const slug = heroSlugFromName(c.hero);
+      return {
+        slug,
+        name: heroDisplayName(c.hero),
+        theirWR: 100 - c.winRate,            // our hero's WR vs the enemy
+        matches: c.matches || 0,
+        adjEdge: 50 - adj(c.winRate, c.matches || 0),
+      };
+    })
+    .filter(c => c.slug && !picked.has(c.slug))
+    .sort((a, b) => b.adjEdge - a.adjEdge)
+    .slice(0, 6);
+
+  let html = `<div class="ld-panel-head">🏆 Best counters vs <b>${esc(enemyName)}</b> <span class="ld-panel-sub">(${LIVE_LANE_META[lane].label} · by win rate)</span></div>`;
+
+  if (!beats.length) {
+    html += `<div class="ld-loading">Not enough lane matchup data for ${esc(enemyName)} here yet — try the full breakdown below.</div>`;
+  } else {
+    html += '<div class="ld-counters">';
+    for (const c of beats) {
+      const chosen = yourPick === c.slug ? ' chosen' : '';
+      html += `<button class="ld-counter${chosen}" data-ld-pick="${esc(c.slug)}" data-ld-lane="${lane}" title="Pick ${esc(c.name)} into your ${esc(LIVE_LANE_META[lane].label)} slot">`;
+      html += `<img src="img/heroes/${c.slug}.webp" alt="${esc(c.name)}" onerror="this.style.display='none'">`;
+      html += `<span class="ld-counter-name">${esc(c.name)}</span>`;
+      html += `<span class="ld-counter-wr ${wrClass(c.theirWR)}">${c.theirWR.toFixed(1)}%</span>`;
+      html += `<span class="ld-counter-games">${c.matches}g</span>`;
+      html += '</button>';
+    }
+    html += '</div>';
+  }
+
+  // Build that works against this enemy (counter-strategy items).
+  let analysis = null;
+  if (typeof MatchupEngine !== 'undefined' && MatchupEngine.isReady && MatchupEngine.isReady()) {
+    try { analysis = MatchupEngine.counterHeroAnalysis(enemySlug, { [enemySlug]: enemyData }); } catch {}
+  }
+  if (analysis && !analysis.error && analysis.variants?.length) {
+    const v = analysis.variants[0];
+    html += '<div class="ld-build">';
+    html += `<div class="ld-build-head">🛡️ Build that works vs ${esc(enemyName)}</div>`;
+    if (v.build?.items?.length) {
+      html += `<div class="ld-build-items">${v.build.items.map(n => itemWithImg(n)).join(' <span class="build-arrow">→</span> ')}</div>`;
+    }
+    const route = (v.counterRoutes || [])[0];
+    if (route && route.items?.length) {
+      html += `<div class="ld-build-counter"><span>Key counter items:</span> ${route.items.slice(0, 3).map(it => itemWithImg(it.name)).join(' ')}</div>`;
+    }
+    if (v.exploits?.length) html += `<div class="ld-build-tip">✅ ${esc(v.exploits[0])}</div>`;
+    html += '</div>';
+  }
+
+  html += `<button class="ld-fulllink" data-ld-full="${esc(enemySlug)}">Full counter breakdown for ${esc(enemyName)} →</button>`;
+
+  el.innerHTML = html;
+
+  el.querySelectorAll('[data-ld-pick]').forEach(btn => {
+    btn.onclick = () => {
+      liveDraftState.lanes[btn.dataset.ldLane].your = btn.dataset.ldPick;
+      renderLiveDraft();
+    };
+  });
+  const full = el.querySelector('[data-ld-full]');
+  if (full) full.onclick = () => navigate('counter', enemySlug);
+}
+
+function liveTeamProfile(slugs) {
+  let phys = 0, mag = 0, cc = 0, heal = 0, tank = 0;
+  slugs.forEach(s => {
+    const p = heroProfiles[s];
+    if (!p) return;
+    if (p.damageType === 'physical') phys++;
+    else if (p.damageType === 'magical') mag++;
+    else { phys += 0.5; mag += 0.5; }
+    const t = new Set(p.baseTraits || []);
+    if (t.has('cc')) cc++;
+    if (t.has('healing') || t.has('shield')) heal++;
+    if ((p.attributes?.durability || 0) >= 7) tank++;
+  });
+  const total = phys + mag || 1;
+  return { physPct: Math.round((phys / total) * 100), magPct: Math.round((mag / total) * 100), cc, heal, tank, n: slugs.length };
+}
+
+function renderLiveSummary() {
+  const el = document.getElementById('liveDraftSummary');
+  if (!el) return;
+  const yours = LIVE_LANE_ORDER.map(l => liveDraftState.lanes[l].your).filter(Boolean);
+  if (!yours.length) { el.innerHTML = ''; return; }
+
+  const yp = liveTeamProfile(yours);
+  const tips = [];
+  if (yp.physPct >= 80) tips.push('⚠️ Your team is almost all physical — they can stack armor');
+  else if (yp.magPct >= 80) tips.push('⚠️ Your team is almost all magical — they can stack magic resist');
+  if (yp.cc === 0 && yours.length >= 3) tips.push('🚨 No hard CC yet — tough to lock anyone down');
+  if (yp.tank === 0 && yours.length >= 3) tips.push('🚨 No frontline yet — your carries will get dove');
+  if (yp.heal === 0 && yours.length >= 4) tips.push('⚠️ No sustain — you lose long fights');
+  if (!tips.length) tips.push('✅ Balanced so far — keep filling lanes');
+
+  let html = '<div class="card" style="margin-top:1rem">';
+  html += '<h3 style="margin-bottom:0.5rem">🧭 Your Draft So Far</h3>';
+  html += `<div style="font-size:0.85rem;color:var(--text-2);margin-bottom:0.4rem">Damage ${yp.physPct}% phys / ${yp.magPct}% mag · CC ${yp.cc} · Frontline ${yp.tank} · Sustain ${yp.heal}</div>`;
+  tips.slice(0, 4).forEach(t => {
+    const color = t.startsWith('✅') ? 'var(--green)' : t.startsWith('🚨') ? 'var(--red,#e74c3c)' : 'var(--gold)';
+    html += `<div style="font-size:0.85rem;color:${color};margin:0.15rem 0">${esc(t)}</div>`;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
 function renderDraftSlots() {
   const yourSlotsEl = document.getElementById('draftYourSlots');
   const enemySlotsEl = document.getElementById('draftEnemySlots');
@@ -3549,6 +3837,19 @@ async function init() {
       document.getElementById('draftModal').classList.add('hidden');
     }
   };
+
+  // Live Draft wiring
+  const ldClear = document.getElementById('liveDraftClearBtn');
+  if (ldClear) ldClear.onclick = () => {
+    LIVE_LANE_ORDER.forEach(l => { liveDraftState.lanes[l] = { enemy: null, your: null }; });
+    renderLiveDraft();
+  };
+  const ldAdd = document.getElementById('liveDraftEnemyAdd');
+  if (ldAdd) ldAdd.onclick = () => openLiveEnemyAdd();
+  const ldClose = document.getElementById('liveDraftModalClose');
+  if (ldClose) ldClose.onclick = () => document.getElementById('liveDraftModal').classList.add('hidden');
+  const ldModal = document.getElementById('liveDraftModal');
+  if (ldModal) ldModal.onclick = (e) => { if (e.target === ldModal) ldModal.classList.add('hidden'); };
 
   // Hash routing
   window.onhashchange = handleHashRoute;
