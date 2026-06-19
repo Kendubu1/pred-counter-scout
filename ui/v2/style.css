@@ -1041,3 +1041,39 @@ details[open] .match-review-toggle::before { transform: rotate(90deg); }
   .pp-head h1 { font-size: 1.2rem; }
   .pp-head-tag { display: block; margin: 0.35rem 0 0; }
 }
+
+/* ── Live Draft (lane-by-lane counter board) ── */
+.ld-sub { color: var(--text-2); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1rem; max-width: 680px; }
+.ld-row { background: var(--bg-1); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.85rem 1rem; margin-bottom: 0.85rem; }
+.ld-lane-head { display: flex; align-items: center; gap: 0.4rem; font-weight: 700; margin-bottom: 0.6rem; }
+.ld-lane-emoji { font-size: 1.1rem; }
+.ld-lane-name { font-size: 0.95rem; }
+.ld-matchup { display: flex; align-items: center; gap: 0.85rem; }
+.ld-side { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
+.ld-side-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.ld-side-label.enemy { color: var(--red); }
+.ld-side-label.your { color: var(--green); }
+.ld-vs { font-size: 0.8rem; font-weight: 700; color: var(--text-2); }
+.ld-panel { margin-top: 0.65rem; }
+.ld-loading { font-size: 0.82rem; color: var(--text-2); padding: 0.3rem 0; }
+.ld-panel-head { font-size: 0.85rem; margin-bottom: 0.5rem; }
+.ld-panel-sub { color: var(--text-2); font-weight: 400; }
+.ld-counters { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.6rem; }
+.ld-counter { display: flex; align-items: center; gap: 0.35rem; background: var(--bg-2); border: 1px solid var(--border); border-radius: 8px; padding: 0.3rem 0.5rem; cursor: pointer; font-family: inherit; color: var(--text-1); transition: all 0.15s; }
+.ld-counter:hover { border-color: var(--accent); background: var(--bg-3); }
+.ld-counter.chosen { border-color: var(--green); background: var(--green-dim); }
+.ld-counter img { width: 28px; height: 28px; border-radius: 6px; object-fit: cover; }
+.ld-counter-name { font-size: 0.8rem; font-weight: 600; }
+.ld-counter-wr { font-size: 0.8rem; font-weight: 700; }
+.ld-counter-games { font-size: 0.68rem; color: var(--text-2); }
+.ld-build { background: var(--bg-2); border-radius: 8px; padding: 0.55rem 0.65rem; margin-bottom: 0.55rem; }
+.ld-build-head { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.35rem; }
+.ld-build-items { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem; margin-bottom: 0.3rem; }
+.ld-build-counter { font-size: 0.75rem; color: var(--text-2); display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem; margin-bottom: 0.25rem; }
+.ld-build-tip { font-size: 0.78rem; color: var(--green); }
+.ld-fulllink { background: none; border: none; color: var(--accent); font-size: 0.8rem; cursor: pointer; padding: 0.2rem 0; font-family: inherit; }
+.ld-fulllink:hover { text-decoration: underline; }
+@media (max-width: 520px) {
+  .ld-matchup { gap: 0.45rem; }
+  .ld-counter-name { display: none; }
+}

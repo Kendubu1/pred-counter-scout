@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="v2/style.css?v=24">
+  <link rel="stylesheet" href="v2/style.css?v=25">
 </head>
 <body>
   <header>
@@ -63,6 +63,11 @@
           <div class="landing-card-icon">🏟️</div>
           <div class="landing-card-title">Draft Helper</div>
           <div class="landing-card-desc">Build your draft with real-time suggestions</div>
+        </button>
+        <button class="landing-card" data-flow="livedraft">
+          <div class="landing-card-icon">📡</div>
+          <div class="landing-card-title">Live Draft</div>
+          <div class="landing-card-desc">Lane-by-lane counter picks for live ranked drafts — best counters by win rate + the build that beats them</div>
         </button>
         <button class="landing-card" data-flow="build">
           <div class="landing-card-icon">🔧</div>
@@ -208,6 +213,38 @@
       </div>
     </div>
 
+    <!-- Live Draft Page (lane-by-lane counter board) -->
+    <div id="liveDraftPage" class="page hidden">
+      <h2 class="draft-title">📡 Live Draft</h2>
+      <p class="ld-sub">Lane-by-lane counter board for live ranked drafts. Add an enemy pick to a lane and get the best counters by win rate — plus the build that beats them. Pick your hero and keep going lane by lane.</p>
+      <div class="draft-actions">
+        <button class="btn-accent btn-sm" id="liveDraftEnemyAdd">➕ Add enemy pick (auto-lane)</button>
+        <button class="btn-accent btn-sm" id="liveDraftClearBtn">🗑️ Clear All</button>
+      </div>
+      <div id="liveDraftLanes"></div>
+      <div id="liveDraftSummary"></div>
+
+      <!-- Live draft hero picker modal -->
+      <div class="draft-modal hidden" id="liveDraftModal">
+        <div class="draft-modal-content">
+          <div class="draft-modal-header">
+            <h3 id="liveDraftModalTitle">Pick a Hero</h3>
+            <button class="draft-modal-close" id="liveDraftModalClose">✕</button>
+          </div>
+          <input type="text" id="liveDraftModalSearch" placeholder="Search heroes…" class="hero-grid-search">
+          <div class="role-filters" id="liveDraftRoleFilters">
+            <button class="role-btn active" data-role="all">All</button>
+            <button class="role-btn" data-role="offlane">Offlane</button>
+            <button class="role-btn" data-role="jungle">Jungle</button>
+            <button class="role-btn" data-role="midlane">Mid</button>
+            <button class="role-btn" data-role="carry">Carry</button>
+            <button class="role-btn" data-role="support">Support</button>
+          </div>
+          <div class="hero-grid draft-hero-grid" id="liveDraftHeroGrid"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- Match Review removed — saved for future 5v5 analysis feature -->
 
     <!-- Build Lab Page -->
@@ -333,6 +370,6 @@
   <script src="v2/item-tips.js?v=1"></script>
   <script src="v2/crest-data.js?v=1"></script>
   <script src="v2/crest-tips.js?v=1"></script>
-  <script src="v2/app.js?v=77"></script>
+  <script src="v2/app.js?v=78"></script>
 </body>
 </html>
