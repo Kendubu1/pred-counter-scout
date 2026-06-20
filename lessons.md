@@ -1902,3 +1902,8 @@ Eight maintainer-flagged fixes:
 - Harness green (115/115). NOTE: the LLM copy aggregates still reflect pre-refresh
   numbers; regenerate via the zero-API copy passes (copy:prepare -> pred-scout-coach
   -> copy:ingest + review:builds) so explanations match the new winrates/builds.
+- Done: regenerated all 4 copy passes on the refreshed data via 4 parallel
+  pred-scout-coach agents (no key). Ingest: augments 284 +227 eternal / 33 dropped;
+  items 182 / 0; abilities 311 / 1; build-reasoning 752 / 170 (verifier dropping
+  ungrounded numbers as designed). All explanations now reflect the 2026-06-20
+  winrates/builds. Harness green (115/115). Refresh fully complete end to end.
