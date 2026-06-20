@@ -96,7 +96,7 @@ async function main() {
 
 ${lines.join('\n')}
 
-For each augment in each role, write ONE sentence (max 26 words) on when/why to take it in that role: tie the mechanics to the role's job, and let the evidence settle disagreements. Plain language; never use the word "points" for winrate; you may only use numbers that appear in the data above. If an augment clearly loses in a role, say what situation would still justify it or advise against it.
+For each augment in each role, write ONE sentence (max 26 words) on when/why to take it in that role. START with the ACTION (take it / skip it / situational) and WHY in plain language tied to the role's job and the mechanics — that imperative is the point of the sentence. Do NOT lead with or build the sentence around a winrate number; a bare winrate is not advice. You may cite a winrate only as light support at the end if it genuinely changes the call, and you may only use numbers that appear in the data above. Never use the word "points" for winrate. If an augment clearly loses in a role, say what situation would still justify it or advise against it.
 
 Return strict JSON only, shaped: {"<role>": {"<id>": "<sentence>", ...}, ...}`;
     try {

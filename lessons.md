@@ -1790,3 +1790,10 @@ Eight maintainer-flagged fixes:
   every dynamically-rendered [data-ipop] focusable + role=button + aria-label, and
   focus management in the dialog (move focus to Close, trap Tab, restore to the
   trigger on close). Now operable by keyboard/screen-reader. Syntax-checked.
+- C4 (copy prompt): the augment-hero copy was 71% bare-winrate lines. Rewrote the
+  augment-review.ts prompt to REQUIRE an action-first imperative (take/skip/
+  situational + why) and forbid leading with a winrate (light support only).
+  copy-verify ground-check unchanged. Code-only — the improved lines land when the
+  maintainer reruns `npm run review` with ANTHROPIC_API_KEY (keyed batch job; not
+  regenerated here, no key in this environment). Same gating applies to the
+  eternal-MINOR copy lines (F1's copy half) — left for the keyed run.
