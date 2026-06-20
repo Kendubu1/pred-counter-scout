@@ -1753,3 +1753,26 @@ Eight maintainer-flagged fixes:
   instead of the frozen pre-1.14 ui/v2/. Reversible redirect only — did NOT delete
   ui/v2–v5 (frozen v2 is protected by CLAUDE.md; deletion is destructive and needs
   an explicit ask). The old dirs are now simply unreferenced from the front door.
+- E1 (build titles): added a pure, deterministic buildTitle() in search.ts —
+  style descriptor (Crit/AP/AP Burst/Lethality/On-Hit/Lifesteal/AD from the item
+  stat mix + kit power type) + class (Tank/Bruiser from defense share) + the lead
+  archetype's human noun, word-deduped. New build.title field on the artifact.
+  No popularity, no LLM, no estimation (thresholds are presentation heuristics).
+  52/52 heroes now titled; 8 distinct titles vs the prior single archetype tag.
+- F1 (eternal minors): selectEternalLoadout was computed only for the CLI and
+  dropped before the artifact. Wired it into buildRoleView → new eternals.loadout
+  {major, minor1, minor2, note} where each minor carries its marginal sim delta on
+  top of the major (or the curated pick when unmodeled). The 2×(1-of-3) minor
+  layer is now in every artifact. (UI render + the keyed copy pass are next.)
+- D1 (headline opener): the off-meta promoter gates on a negative evidence delta
+  but the headline build did not, so one niche opener (Viper/Spectral led 65% of
+  heroes) could lead with no flag. Added a DISCLOSURE note in confidence.notes
+  when the opener is field-rejected (neg delta, n>=20) or rarely built (<3% pick) —
+  surfaced, not silently reordered (popularity must never feed the objective).
+- D2 (agreement audit): agreement-audit.json (coreRecall ~58% avg) was computed
+  every run and never surfaced. buildRoleView now reads it and, when a hero+lane's
+  coreRecall < 50%, adds a confidence note naming the missed field-core items.
+- C3 (gameplans): 7 distinct gameplan strings across 312 matchups → appended an
+  enemyThreatClause(enemy.kit) grounded in kit data (execute / AoE / auto-scaling /
+  damage type + named threat ability). Now 112 distinct gameplans, opponent-named.
+- Harness green (115/115); artifacts regenerated (zero-API).

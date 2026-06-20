@@ -8,10 +8,10 @@ import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { completedItems, type LoadedData } from './data.js';
-import { generateBuilds, headlineObjective, type ObjKey } from './search.js';
-import { classifyAugment, laneTopAugment, lanesFor, playstyleObjectives } from './playstyle.js';
+import { buildTitle, generateBuilds, headlineObjective, type ObjKey } from './search.js';
+import { classifyAugment, kitPlaystyle, laneTopAugment, lanesFor, playstyleObjectives } from './playstyle.js';
 import { combatDamage, evaluateBuild, itemTotals, loadCalibration, unverifiedConstants, type Calibration } from './sim.js';
-import { rankAugments, rankBlessings } from './eternals.js';
+import { rankAugments, rankBlessings, selectEternalLoadout } from './eternals.js';
 import { heroGames, itemPlayRate, loadAggregates } from './aggregates.js';
 import { itemWinDelta, momPriorStrength } from './evidence.js';
 import { defenseOf, matchupCheckpoints, orderBuild, spikeTimeline, levelAtMinute, type OrderedBuild } from './matchup.js';
@@ -42,6 +42,21 @@ function loadPredggAugments(): PredggAugments | null {
   return predggAugmentsCache;
 }
 
+// Optimizer-vs-field-core agreement (npm run agreement). Per-hero rows carry
+// coreRecall + the field-core items the sim never builds. Computed every run
+// but historically never surfaced; we read it here so a low-agreement hero can
+// say so on the page instead of presenting a divergent build silently.
+interface AgreementAudit {
+  rows: { hero: string; lane: string; coreRecall: number; missed: string[] }[];
+}
+let agreementCache: AgreementAudit | null | undefined;
+function loadAgreementAudit(): AgreementAudit | null {
+  if (agreementCache !== undefined) return agreementCache;
+  const p = path.join(ARTIFACTS_ROOT, 'data/aggregates/agreement-audit.json');
+  agreementCache = existsSync(p) ? (JSON.parse(readFileSync(p, 'utf8')) as AgreementAudit) : null;
+  return agreementCache;
+}
+
 // A RoleView is the full optimized build for ONE role: a flex hero (Zinx
 // support vs mid) gets a distinct view per lane it plays — its own build,
 // stage timeline, eternals, augments, meta cores, and matchups — because the
@@ -57,6 +72,9 @@ const RoleView = z.object({
     notes: z.array(z.string()),
   }),
   build: z.object({
+    // Human-readable build title in the idiom players search for
+    // ("Crit DPS Carry", "AP Burst") — deterministic from the item mix + kit.
+    title: z.string(),
     items: z.array(z.object({
       name: z.string(),
       slug: z.string(),
@@ -96,6 +114,17 @@ const RoleView = z.object({
     // when set, the Eternal deltas were computed WITH this augment's
     // modeled mechanics merged in (the augment-blind caveat is off)
     augmentAware: z.string().nullable(),
+    // The recommended full loadout: the major PLUS a pick for each of the two
+    // minor slots (Predecessor Eternals are 1 major + 2×(1-of-3) minors).
+    // Each minor's value is the sim's marginal gain on top of the chosen major,
+    // or the curated recommendation when the minor's mechanic isn't modeled.
+    // Computed by selectEternalLoadout; null when no Eternal fits.
+    loadout: z.object({
+      major: z.object({ name: z.string(), modeled: z.boolean() }),
+      minor1: z.object({ name: z.string(), modeled: z.boolean(), deltaPct: z.number().nullable(), note: z.string() }),
+      minor2: z.object({ name: z.string(), modeled: z.boolean(), deltaPct: z.number().nullable(), note: z.string() }),
+      note: z.string(),
+    }).nullable(),
   }),
   augments: z.array(z.object({
     id: z.string(),
@@ -507,6 +536,21 @@ function buildRoleView(
   const fieldAugFx = fieldAug ? resolveEntries([`augment:${kit.slug}:${fieldAug.id}`], { level: 13, minute: 15 }) : null;
   const augmentAware = fieldAugFx?.applied.length ? fieldAug!.name : null;
   const blessings = rankBlessings(kit, items, 13, cal, { minute: 15, extraEffects: augmentAware ? fieldAugFx! : undefined });
+  // The full recommended loadout (major + both minor slots), conditioned on the
+  // kit. selectEternalLoadout already computes each minor's marginal sim gain on
+  // top of the chosen major (or the curated pick when unmodeled); we just surface
+  // it — previously it was computed only for the CLI and dropped before the page.
+  const lo = selectEternalLoadout(kit, items, 13, cal, kitPlaystyle(kit, role), { minute: 15, role });
+  const minorView = (m: { name: string; modeled: boolean; deltaPct?: number; note: string }) =>
+    ({ name: m.name, modeled: m.modeled, deltaPct: m.deltaPct != null ? r1(m.deltaPct) : null, note: m.note });
+  const loadout = lo
+    ? {
+        major: { name: lo.major.name.replace(' (Major)', ''), modeled: lo.major.modeled },
+        minor1: minorView(lo.minor1),
+        minor2: minorView(lo.minor2),
+        note: lo.note,
+      }
+    : null;
   const eternals = {
     top: blessings.filter((r) => r.modeled).slice(0, 3).map((r) => ({
       name: r.name.replace(' (Major)', ''),
@@ -527,6 +571,7 @@ function buildRoleView(
       note: r.modeled ? null : (r.unmodeledNotes[0] ?? null),
     })),
     augmentAware,
+    loadout,
   };
 
   // Matchups: most-played same-role heroes as default enemies.
@@ -659,6 +704,27 @@ function buildRoleView(
       ? ` Take ${e0.name}: +${e0best[0]}% on ${e0best[1]} at minute 15.`
       : ` No modeled Eternal moves this kit's numbers much — check the field's pick on the page.`) : '');
 
+  // D1 — disclose when the sim's first item diverges from the field. The
+  // off-meta promoter already gates on a negative evidence delta; the headline
+  // build did not, so one niche opener could lead a hero with no flag. Mirror
+  // that gate here as a disclosure (we surface it, we don't silently reorder).
+  const opener = buildItems[0];
+  const openerNote = opener
+    ? (opener.evidenceDeltaWr != null && opener.evidenceDeltaWr < 0 && (opener.evidenceN ?? 0) >= 20
+        ? `the sim opens on ${opener.name}, which the field has tried and lost with (${opener.evidenceDeltaWr}% winrate over ${opener.evidenceN} games) — treat this opener as a sim blind-spot and weight the field`
+        : opener.playRatePct != null && opener.playRatePct < 3
+          ? `the sim opens on ${opener.name}, which the field rarely builds (${opener.playRatePct}% pick) — a sim-only call; compare the meta cores below`
+          : null)
+    : null;
+
+  // D2 — disclose low optimizer-vs-field-core agreement (npm run agreement). The
+  // audit is computed every run; surfacing it here means a hero whose sim build
+  // shares little with what wins says so, instead of presenting it confidently.
+  const audit = loadAgreementAudit()?.rows.find((r) => r.hero === kit.name && r.lane === role);
+  const agreementNote = audit && audit.coreRecall < 0.5
+    ? `the sim build reproduces only ${Math.round(audit.coreRecall * 100)}% of the field's core for ${kit.name}${audit.missed.length ? ` (it never builds ${audit.missed.join(', ')})` : ''} — some of those items ride mechanics the sim doesn't model yet`
+    : null;
+
   // The max-damage-only caveat came off with the support output model
   // (backlog item 7): support builds now optimize heal/shield output,
   // survivability, poke, and utility. Remaining limits ride in
@@ -681,9 +747,12 @@ function buildRoleView(
         ...(itemTotals(items).attack_speed > 100
           ? ['this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check']
           : []),
+        ...(openerNote ? [openerNote] : []),
+        ...(agreementNote ? [agreementNote] : []),
       ],
     },
     build: {
+      title: buildTitle(top.archetypes, kit, items),
       items: buildItems,
       gold: top.gold,
       archetypes: top.archetypes,
