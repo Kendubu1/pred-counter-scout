@@ -1776,3 +1776,11 @@ Eight maintainer-flagged fixes:
   enemyThreatClause(enemy.kit) grounded in kit data (execute / AoE / auto-scaling /
   damage type + named threat ability). Now 112 distinct gameplans, opponent-named.
 - Harness green (115/115); artifacts regenerated (zero-API).
+- v6 UI render (ui/v6/index.html): (F1) added a "Recommended loadout · 1 major +
+  2 minors" card under the Eternal list, showing the major + both minor picks with
+  the modeled minor's sim delta or the curated note; (E1) the optimizer build now
+  shows its title ("The optimizer's build: Crit DPS Carry"); (C1) replaced the raw
+  unitless sim proof chip ("burst 1840 · 20s vs bruiser 6200 …") with a plain
+  pointer — the exact integers already live behind "The numbers" disclosure, and
+  the D1/D2 confidence notes already surface under "Why THEORY". Inline script
+  syntax-checked (node --check). No engine/test impact (pure render).

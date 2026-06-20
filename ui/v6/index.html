@@ -867,6 +867,14 @@ function renderHero(a, roleParam) {
             })()}
           </div>`;
         }).join('') : '<div class="muted">no Eternal sample for this role yet</div>'}
+        ${a.eternals.loadout ? ((lo) => `
+          <div style="margin-top:.6rem;padding:.55rem .65rem;background:var(--bg-2);border:1px solid var(--border);border-radius:8px">
+            <div style="font-size:.64rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-2);margin-bottom:.35rem">Recommended loadout · 1 major + 2 minors</div>
+            <div style="font-size:.82rem;color:var(--text-0)"><b>${esc(lo.major.name)}</b> <span style="font-size:.62rem;color:var(--text-2)">major</span></div>
+            ${[lo.minor1, lo.minor2].map((m) => `
+              <div style="font-size:.76rem;color:var(--text-1);margin-top:.22rem">↳ <b>${esc(m.name)}</b> <span style="color:var(--text-2)">— ${m.modeled && m.deltaPct != null ? `the sim gains +${m.deltaPct}% on top of the major` : esc(m.note)}</span></div>`).join('')}
+            <div style="font-size:.64rem;color:var(--text-2);margin-top:.3rem">pick one from each minor slot in the draft screen · minor values are THEORY until calibration</div>
+          </div>`)(a.eternals.loadout) : ''}
         ${top && ets.length && top.name.toLowerCase() === ets[0].name.toLowerCase()
           ? `<div style="margin-top:.45rem;font-size:.7rem;color:var(--green)">✓⚙ field and kit math agree on ${esc(top.name)}: top winrate in this role AND the biggest simulated gain${top.headlinePct ? ` (+${top.headlinePct}% main output — THEORY until calibration)` : ''}</div>` : ''}
         ${!top && ets.length ? `<div style="margin-top:.45rem;font-size:.7rem;color:var(--text-2)">⚙ the sim has no Eternal pick for this kit — no modeled Eternal moves its numbers</div>` : ''}
@@ -910,7 +918,7 @@ function renderHero(a, roleParam) {
     </section>` : ''}
 
     <section class="card answer">
-      <h2>The optimizer's build <span class="hint">our kit-math second opinion${roleViews.length > 1 ? ` · <b>${esc(a.role)}</b>` : ''} · patch ${esc(a.patch)} · ${a.build.gold.toLocaleString()}g full</span></h2>
+      <h2>The optimizer's build${a.build.title ? `: <span style="color:var(--accent);text-transform:none;letter-spacing:0">${esc(a.build.title)}</span>` : ''} <span class="hint">our kit-math second opinion${roleViews.length > 1 ? ` · <b>${esc(a.role)}</b>` : ''} · patch ${esc(a.patch)} · ${a.build.gold.toLocaleString()}g full</span></h2>
       ${a.roleCaveat ? `<div class="caveat">⚠ ${esc(a.roleCaveat)}</div>` : ''}
       ${a.laneSteer ? `
       <div class="lanesteer">
@@ -926,7 +934,7 @@ function renderHero(a, roleParam) {
       <div class="rail">${a.build.items.map(itile).join('')}</div>
       <div class="coach">${esc(a.coachLine)}</div>
       <div class="proofs">
-        <span class="proof"><b>sim</b> · ${a.role === 'support' && o.healShield10s ? `heal/shield ${Math.round(o.healShield10s).toLocaleString()} over 10s · ` : ''}burst ${Math.round(o.burstVsSquishy)} · 20s vs bruiser ${Math.round(o.rot20VsBruiser)} · auto DPS ${Math.round(o.autoDps10VsSquishy)}</span>
+        <span class="proof"><b>sim</b> · ${a.role === 'support' ? 'heal, shield & survival' : 'burst, sustained fights & DPS'} scored against the patch economy — exact figures in “The numbers” below</span>
         ${evidenceProof ? `<span class="proof evidence"><b>evidence</b> · ${esc(evidenceProof.name)} ${evidenceProof.evidenceDeltaWr > 0 ? '+' : ''}${evidenceProof.evidenceDeltaWr}wr over ${evidenceProof.evidenceN} games</span>` : ''}
         ${underProof ? `<span class="proof playrate"><b>underexplored</b> · ${esc(underProof.name)} in ${underProof.playRatePct}% of ${esc(a.name)} games</span>` : ''}
       </div>
