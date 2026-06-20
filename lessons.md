@@ -1821,3 +1821,10 @@ Eight maintainer-flagged fixes:
   52 grounded tasks with no network; typecheck green.
 - Docs made permanent: CLAUDE.md (new "Copy & analysis policy" + practical notes),
   docs/v5-engine-design.md tech-stack row. lessons append-only history left as-is.
+- End-to-end proof (abilities pass): with ANTHROPIC_API_KEY unset, prepare emitted
+  52 tasks → the in-session agent filled all 52 → ingest verified 311 tips and
+  DROPPED 1 (the ground-check still bites) → data/aggregates/ability-tips.json
+  regenerated, source now credits the in-session agent. Harness green (115/115).
+  Tips are action-first and grounded (e.g. Wraith E: "Pop it before a fight to
+  vanish, gain 20% speed…; chaining kills resets it"). items/augments passes run
+  identically (COPY_MODE=prepare npm run review:items / review → agent → ingest).
