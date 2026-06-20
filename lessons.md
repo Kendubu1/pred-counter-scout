@@ -1849,3 +1849,19 @@ Eight maintainer-flagged fixes:
   cost is resolveEntries/metrics per modeled minor. Acceptable as a periodic build
   step; follow-up: cache resolveEntries or compute minors only for shown eternals.
 - Harness green (115/115); v6 syntax-checked.
+## 2026-06-20: build-reasoning pass (item<->ability synergy + swap justification)
+- Maintainer ask: meta builds were "explained" only as "sim says high burst"; no
+  item-to-ability synergy, no order reasoning, and the optimizer's swaps (Viper over
+  Storm Breaker, Spectral over Time Warp) looked wrong on paper with no gain/lose
+  justification. Built a new LLM-checked pass on the copy-session architecture.
+- engine/src/ingest/build-review.ts: per hero+role, assembles a grounded task from
+  the committed artifact (meta builds + titles + optimizer build + swap text) + omeda
+  item effects + the ability kit. Agent returns {metaBuilds:[{synergy,holes}],
+  optimizer:{synergy,swaps:[{out,in,gain,lose}],holes}}. Ingest ground-checks every
+  number (item stats + ability cooldowns + winrates/swap %) via copy-verify and
+  writes data/aggregates/build-reasoning.json. Wired review:builds + folded into
+  copy:prepare/copy:ingest. Run by the pred-scout-coach subagent (no API key).
+- v6 render: each "Meta builds, explained" card shows 🧩 synergy + ⚠ holes; the
+  optimizer card shows 🧩 synergy, "why the optimizer swaps off the meta" with per-swap
+  gain/lose, and a ⚠ holes caveat. REASONING loaded alongside the other aggregates;
+  null-safe when the data file is absent.

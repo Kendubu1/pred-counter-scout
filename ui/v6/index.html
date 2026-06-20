@@ -911,8 +911,11 @@ function renderHero(a, roleParam) {
 
     ${a.metaBuilds && a.metaBuilds.length ? `
     <section class="card">
-      <h2>Meta builds, explained <span class="hint">what the field actually wins with · sim notes per core</span></h2>
-      ${a.metaBuilds.map((m) => `
+      <h2>Meta builds, explained <span class="hint">what the field actually wins with · why the items work together</span></h2>
+      ${(() => { window.__rsn = REASONING && REASONING.heroes && REASONING.heroes[a.slug] && REASONING.heroes[a.slug][a.role]; return ''; })()}
+      ${a.metaBuilds.map((m, mi) => {
+        const rsn = window.__rsn && window.__rsn.metaBuilds && window.__rsn.metaBuilds[mi];
+        return `
         <div class="metabuild">
           ${m.title ? `<div style="font-size:.84rem;font-weight:700;color:var(--text-0);margin-bottom:.3rem">${esc(m.title)}</div>` : ''}
           <div class="mb-row">
@@ -920,8 +923,11 @@ function renderHero(a, roleParam) {
             <span class="mb-wr ${m.shrunkWr >= 0.53 ? 'up' : m.shrunkWr <= 0.5 ? 'down' : 'flat'}">${(m.shrunkWr * 100).toFixed(1)}%</span>
             <span class="mb-n">${m.n} games</span>
           </div>
+          ${rsn && rsn.synergy ? `<div class="mb-why" style="color:var(--text-0)">🧩 ${esc(rsn.synergy)}</div>` : ''}
           <div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div>
-        </div>`).join('')}
+          ${rsn && rsn.holes ? `<div class="mb-why" style="color:var(--gold)">⚠ ${esc(rsn.holes)}</div>` : ''}
+        </div>`;
+      }).join('')}
     </section>` : ''}
 
     <section class="card answer">
@@ -940,6 +946,16 @@ function renderHero(a, roleParam) {
       </div>` : ''}
       <div class="rail">${a.build.items.map(itile).join('')}</div>
       <div class="coach">${esc(a.coachLine)}</div>
+      ${(() => {
+        const o = REASONING && REASONING.heroes && REASONING.heroes[a.slug] && REASONING.heroes[a.slug][a.role] && REASONING.heroes[a.slug][a.role].optimizer;
+        if (!o) return '';
+        const swaps = (o.swaps || []).filter((s) => s.gain || s.lose).map((s) =>
+          `<div style="font-size:.78rem;color:var(--text-1);margin-top:.35rem"><b>${esc(s.in)}</b> over <b>${esc(s.out)}</b> — <span style="color:var(--green)">gain</span> ${esc(s.gain || '—')} · <span style="color:var(--red)">lose</span> ${esc(s.lose || '—')}</div>`).join('');
+        return `
+          ${o.synergy ? `<div style="font-size:.82rem;color:var(--text-0);margin-top:.55rem">🧩 ${esc(o.synergy)}</div>` : ''}
+          ${swaps ? `<div style="margin-top:.4rem"><div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-2);margin-bottom:.1rem">why the optimizer swaps off the meta</div>${swaps}</div>` : ''}
+          ${o.holes ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.4rem">⚠ ${esc(o.holes)}</div>` : ''}`;
+      })()}
       <div class="proofs">
         <span class="proof"><b>sim</b> · ${a.role === 'support' ? 'heal, shield & survival' : 'burst, sustained fights & DPS'} scored against the patch economy — exact figures in “The numbers” below</span>
         ${evidenceProof ? `<span class="proof evidence"><b>evidence</b> · ${esc(evidenceProof.name)} ${evidenceProof.evidenceDeltaWr > 0 ? '+' : ''}${evidenceProof.evidenceDeltaWr}wr over ${evidenceProof.evidenceN} games</span>` : ''}
@@ -1193,12 +1209,13 @@ async function nav(slug, replace = false, role = null) {
   await route();
   window.scrollTo({ top: 0 });
 }
-let AUGS = null, REVIEWS = null;
+let AUGS = null, REVIEWS = null, REASONING = null;
 async function getAugs() {
   if (!AUGS) {
-    [AUGS, REVIEWS] = await Promise.all([
+    [AUGS, REVIEWS, REASONING] = await Promise.all([
       getJson('../../data/aggregates/predgg-augments.json').catch(() => null),
       getJson('../../data/aggregates/augment-reviews.json').catch(() => null),
+      getJson('../../data/aggregates/build-reasoning.json').catch(() => null),
     ]);
   }
   return AUGS;
