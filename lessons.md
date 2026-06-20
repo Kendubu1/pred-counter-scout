@@ -1865,3 +1865,8 @@ Eight maintainer-flagged fixes:
   optimizer card shows 🧩 synergy, "why the optimizer swaps off the meta" with per-swap
   gain/lose, and a ⚠ holes caveat. REASONING loaded alongside the other aggregates;
   null-safe when the data file is absent.
+- Ran it on session compute (no key): pred-scout-coach filled 96/96 build tasks;
+  ingest wrote 816 lines / 106 dropped by copy-verify. Sample (sparrow): "Storm
+  Breaker -> Viper: gain ~36% more sustained auto DPS via armor shred + on-hit;
+  lose Storm Breaker's chain-lightning empowered basic" — exactly the gain/lose
+  justification asked for. Harness green (115/115).
