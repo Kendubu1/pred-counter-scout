@@ -1834,3 +1834,50 @@ Eight maintainer-flagged fixes:
   to mechanics-only on the page). Harness green (115/115). The Anthropic API is
   fully out of the copy loop; data/aggregates/{item-reviews,augment-reviews,
   ability-tips}.json all credit the in-session agent.
+## 2026-06-20: eternal sub-options for ALL top choices + meta-build titles
+- Maintainer (from the live v6 page): minors only showed for the single
+  recommended loadout; the other top Eternal choices (Lotus/Aion/Xyris) had no
+  minors or reasoning. Fix: factored pickMinorsFor out of selectEternalLoadout and
+  added allEternalMinors() (eternals.ts) -> artifact eternals.minorsByName keyed by
+  lowercased name (all 12), rendered under each top choice in v6. Each minor carries
+  its conditioned sim delta or the curated note.
+- Meta-build titles: exported archetypeLabel() (search.ts), added title to each
+  metaBuilds[] entry via buildTitle(coreItems, bestKey) and rendered it atop each
+  "Meta builds, explained" card. Meta builds are now named (e.g. "On-Hit DPS Carry").
+- PERF NOTE: allEternalMinors computes minors for all 12 majors per role-view;
+  artifact regen went ~74s -> ~8m. Hoisting resolveItemEffects barely helped — the
+  cost is resolveEntries/metrics per modeled minor. Acceptable as a periodic build
+  step; follow-up: cache resolveEntries or compute minors only for shown eternals.
+- Harness green (115/115); v6 syntax-checked.
+## 2026-06-20: build-reasoning pass (item<->ability synergy + swap justification)
+- Maintainer ask: meta builds were "explained" only as "sim says high burst"; no
+  item-to-ability synergy, no order reasoning, and the optimizer's swaps (Viper over
+  Storm Breaker, Spectral over Time Warp) looked wrong on paper with no gain/lose
+  justification. Built a new LLM-checked pass on the copy-session architecture.
+- engine/src/ingest/build-review.ts: per hero+role, assembles a grounded task from
+  the committed artifact (meta builds + titles + optimizer build + swap text) + omeda
+  item effects + the ability kit. Agent returns {metaBuilds:[{synergy,holes}],
+  optimizer:{synergy,swaps:[{out,in,gain,lose}],holes}}. Ingest ground-checks every
+  number (item stats + ability cooldowns + winrates/swap %) via copy-verify and
+  writes data/aggregates/build-reasoning.json. Wired review:builds + folded into
+  copy:prepare/copy:ingest. Run by the pred-scout-coach subagent (no API key).
+- v6 render: each "Meta builds, explained" card shows 🧩 synergy + ⚠ holes; the
+  optimizer card shows 🧩 synergy, "why the optimizer swaps off the meta" with per-swap
+  gain/lose, and a ⚠ holes caveat. REASONING loaded alongside the other aggregates;
+  null-safe when the data file is absent.
+- Ran it on session compute (no key): pred-scout-coach filled 96/96 build tasks;
+  ingest wrote 816 lines / 106 dropped by copy-verify. Sample (sparrow): "Storm
+  Breaker -> Viper: gain ~36% more sustained auto DPS via armor shred + on-hit;
+  lose Storm Breaker's chain-lightning empowered basic" — exactly the gain/lose
+  justification asked for. Harness green (115/115).
+## 2026-06-20: full pred.gg refresh staged (creds not in this session)
+- Maintainer wants a full refresh — winrates + builds shifted across all heroes,
+  main and flex lanes. Verify-before-refresh: committed pred.gg data is from
+  2026-06-12 (8 days old) with patches 1.14/1.14.1/1.14.4 in the window, so a
+  refresh is justified. BUT PREDGG_CLIENT_ID/SECRET are unset in this session
+  (secrets inject at session start; a newly added cred needs a fresh session).
+- Staged it: new `npm run refresh` chains snapshot -> augments (winrates per role,
+  incl. flex) -> buildstats (meta builds) -> skills -> aggregate -> artifacts ->
+  matrix -> agreement. Documented in CLAUDE.md, including the follow-on zero-API
+  copy passes (copy:prepare -> pred-scout-coach -> copy:ingest + review:builds).
+  Couldn't run/verify it here (no creds); run it in a session that has them.

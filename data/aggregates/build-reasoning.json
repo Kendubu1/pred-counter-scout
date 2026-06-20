@@ -1,0 +1,2705 @@
+{
+ "generatedAt": "2026-06-20T20:30:19.266Z",
+ "source": "in-session Claude Code agent (pred-scout-coach) over the committed artifacts + omeda item/ability data only; every number ground-checked, failing lines dropped",
+ "written": 816,
+ "rejected": 106,
+ "heroes": {
+  "adele": {
+   "support": {
+    "metaBuilds": [
+     {
+      "synergy": "Dawnstar then Xenia then Raiment front-loads tankiness so Adele can sit in her Iron Rose shield and Queen's Garden root while shrugging off magic, then keep allies shielded.",
+      "holes": "Adds almost no power, so her thorns and vine ticks stay weak and she becomes a body that roots but never threatens a kill."
+     },
+     {
+      "synergy": "Dynamo then Gaia Greaves then Vanguardian stacks physical armor so Adele dives in with Imperial Lash and Queen's Garden, with Dynamo amplifying ally damage on the rooted target.",
+      "holes": "It is pure physical armor; a magic-heavy enemy team melts through this and her own damage output stays minimal."
+     },
+     {
+      "synergy": "Fire Blossom then Tainted Guard then Inquisition stacks physical armor and anti-heal so Adele bodyblocks, and Tainted Guard's healing cut bites enemies caught in her Queen's Garden.",
+      "holes": "Slow online (around minute 27) and weak versus magic damage, so Adele is fragile and passive in early skirmishes."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Stonewall then Warden's Faith then Vainglory stacks heavy physical armor so Adele anchors the front, holds enemies in Queen's Garden, and survives focus while allies cash in her Thorns passive.",
+     "swaps": [
+      {
+       "out": "Dynamo",
+       "in": "Stonewall",
+       "gain": "Far more physical survivability so Adele lives through dives while channeling Queen's Garden's root.",
+       "lose": "Dynamo's damage-amp on the rooted target that helped allies burst it."
+      },
+      {
+       "out": "Fire Blossom",
+       "in": "Stonewall",
+       "gain": "More physical armor and the 5% physical mitigation, letting Adele eat front-line focus.",
+       "lose": "Fire Blossom's ramping burn that chipped enemies stuck in her Thornbush."
+      }
+     ],
+     "holes": "It is almost entirely physical armor and health, so Adele offers nothing to a fight beyond a body that roots and never punishes."
+    }
+   },
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Dawnstar then Xenia then Raiment makes Adele a magic-tanky bruiser who dives with Imperial Lash and locks targets in Queen's Garden, refreshing Thorns while staying alive.",
+      "holes": "In a solo lane this gives no kill pressure, so Adele can win trades but struggles to actually finish a kill or push."
+     },
+     {
+      "synergy": "Dynamo then Gaia Greaves then Vanguardian armors Adele to dive, with Dynamo's mark amplifying the burst on whatever she roots with Queen's Garden.",
+      "holes": "All physical armor means a magic-damage laner punishes her, and her own damage stays low for an offlaner."
+     },
+     {
+      "synergy": "Fire Blossom then Tainted Guard then Inquisition gives armor plus anti-heal, so Adele bullies sustain bruisers stuck in her Thornbush slow.",
+      "holes": "Comes online slowly and is one-sided physical armor, so Adele is passive and easily kited early."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Solaris then Augmentation builds attack speed and penetration so Adele's true-damage basics and Iron Rose vine shred armored targets while Solaris heals her through trades.",
+     "swaps": [],
+     "holes": "This squishy damage build throws away Adele's natural tankiness and shield, so she gets blown up if a dive goes wrong."
+    }
+   }
+  },
+  "akeron": {
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Megacosm then Gaussian Greaves then Void Helm pairs max-health burn with Akeron's sustain, and Void Helm's +20% healing supercharges Crushing Maw lifesteal and Consume's bite heal.",
+      "holes": "Only about 420 damage over a 10-second rotation in the sim, so Akeron tanks well but barely threatens a kill."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Crescelia then Oathkeeper loads magic power and spellblade procs so Hellfire, Web Lash, and Consume hit far harder while staying healthy enough to brawl.",
+     "swaps": [
+      {
+       "out": "Megacosm",
+       "in": "Spectral Schematics",
+       "gain": "About 3.4 times the 10-second rotation damage, turning Hellfire and Consume into real threats.",
+       "lose": "Megacosm's max-health burn and bonus tankiness that let Akeron sit in extended fights."
+      }
+     ],
+     "holes": "Trading the meta's health for power makes Akeron squishier, so a hard dive can kill him before his sustain spins up."
+    }
+   },
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Megacosm then Gaussian Greaves then Void Helm gives clear speed and survivability, with Void Helm's +20% healing boosting Crushing Maw and Consume sustain through ganks.",
+      "holes": "Only about 420 damage over a 10-second rotation, so Akeron's ganks lack the burst to secure kills against squishies."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Crescelia then Oathkeeper stacks magic power and spellblade hits so Hellfire and Web Lash burst harder, making Akeron's gank true kill pressure.",
+     "swaps": [
+      {
+       "out": "Megacosm",
+       "in": "Spectral Schematics",
+       "gain": "About 3.4 times the 10-second rotation damage so ganks actually convert to kills.",
+       "lose": "Megacosm's max-health burn and tankiness for surviving counter-ganks."
+      }
+     ],
+     "holes": "Less health means a contested objective or counter-jungle fight can drop Akeron before his Consume execute lands."
+    }
+   }
+  },
+  "argus": {
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Azure Core then Entropy then Wraith Leggings stacks mana and magic power so Argus can spam Particle Shredder while Entropy and Wraith amplify every Disintegrate-stacked ability tick.",
+      "holes": "Only about 64 auto-attack DPS in the sim, so if his abilities are dodged Argus has almost no fallback damage."
+     },
+     {
+      "synergy": "Azure Core then Combustion then Wraith Leggings front-loads burst so Argus opens Dread Nova stun, then Combustion and Disintegrate stacks detonate the locked target.",
+      "holes": "Around 686 burst in one combo leans on landing the Dread Nova stun first; whiff it and the combo fizzles."
+     },
+     {
+      "synergy": "Timewarp then Tainted Scepter then Dynamo lowers cooldowns so Argus cycles Ether Crystal and Particle Shredder constantly, with Tainted Scepter cutting enemy healing in long fights.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Timewarp then Oathkeeper builds power and cooldowns so Argus channels Synaptic Obliterator more often while Disintegrate stacks make each beam land harder.",
+     "swaps": [
+      {
+       "out": "Azure Core",
+       "in": "Spectral Schematics",
+       "gain": "About 33% more one-combo burst plus the current-health bonus damage for melting tanks.",
+       "lose": "Azure Core's big mana pool and shield that kept Particle Shredder firing safely."
+      },
+      {
+       "out": "Timewarp",
+       "in": "Spectral Schematics",
+       "gain": "About 2.1 times the 10-second rotation damage thanks to flat power and on-hit burst.",
+       "lose": "Timewarp's heavy cooldown reduction that let Argus recast Ether Crystal far faster."
+      }
+     ],
+     "holes": "It is glass-cannon magic power, so any flanker who reaches Argus during his long ultimate channel kills him instantly."
+    }
+   },
+   "support": {
+    "metaBuilds": [
+     {
+      "synergy": "Azure Core then Entropy then Wraith Leggings gives mana to spam Particle Shredder and power to make Disintegrate-stacked ticks hurt, useful for a poke support.",
+      "holes": "Squishy with about 64 auto DPS, so a support Argus dies to any dive and adds no protection for his carry."
+     },
+     {
+      "synergy": "Azure Core then Combustion then Wraith Leggings front-loads burst so Argus lands Dread Nova stun then deletes the target, peeling by deleting threats.",
+      "holes": "It is full damage with no defense, so as a support he cannot body-block or save his carry, only kill from range."
+     },
+     {
+      "synergy": "Timewarp then Tainted Scepter then Dynamo lets Argus cycle Ether Crystal's push/pull crowd control often while Tainted Scepter shuts down enemy healing in fights.",
+      "holes": "Still has no real tankiness, so Argus gets blown up before his cooldowns matter in a chaotic teamfight."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Stonewall then Warden's Faith then Vainglory makes Argus a true tank support who walks up, lands Dread Nova stun and Ether Crystal, and survives to keep the crowd control flowing.",
+     "swaps": [],
+     "holes": "Going full tank guts Argus's damage, so his abilities barely tickle and he relies entirely on crowd control to matter."
+    }
+   }
+  },
+  "aurora": {
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Prophecy then Orion then Magnify stacks magic power and attack speed so Aurora's Shatter on-hit magic and Frost Storm passive shred, with Magnify cutting enemy magic armor.",
+      "holes": null
+     },
+     {
+      "synergy": "Magnify then Elafrost then Flux Matrix mixes power, health and armor so Aurora dives with Boreal Sweep, and Flux Matrix makes locked targets take more magic damage.",
+      "holes": "Bruiser stats dilute her burst, so Aurora can survive a dive but often cannot finish the kill."
+     },
+     {
+      "synergy": "Magnify then Elafrost then Tainted Scepter blends survivability with anti-heal, letting Aurora out-grind sustain bruisers caught in her slows and Frost Storm.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Wraith Leggings then Oathkeeper front-loads power and penetration so Cryoseism and Boreal Sweep burst, while Magnify's shred multiplies it on a single locked target.",
+     "swaps": [
+      {
+       "out": "Prophecy",
+       "in": "Spectral Schematics",
+       "gain": "About 49% more 10-second rotation damage plus current-health bonus to punish tanks.",
+       "lose": "Prophecy's attack speed that powered Aurora's on-hit Shatter and Frost Storm uptime."
+      },
+      {
+       "out": "Magnify",
+       "in": "Spectral Schematics",
+       "gain": "About 48% more damage in extended fights from flat power and the health-based bonus.",
+       "lose": "Magnify's magic-armor shred, omnivamp sustain, and health that made Aurora a sturdier brawler."
+      }
+     ],
+     "holes": "This drops Aurora's bruiser tankiness, so without landing Hoarfrost or Cryoseism first she gets caught and killed."
+    }
+   },
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Prophecy then Orion then Magnify gives clear-friendly attack speed and power so Aurora ganks with Hoarfrost root then Cryoseism, Magnify shredding the target's magic armor.",
+      "holes": "Squishy core, so a failed gank or invade leaves Aurora with no defenses to escape."
+     },
+     {
+      "synergy": "Magnify then Elafrost then Flux Matrix makes Aurora a durable ganker; Elafrost slows on-hit to extend Hoarfrost setups and Flux Matrix amplifies her magic burst.",
+      "holes": "The bruiser stats lower her combo damage, so ganks may not kill outright against a healthy carry."
+     },
+     {
+      "synergy": "Magnify then Elafrost then Tainted Scepter adds anti-heal so Aurora wins drawn-out skirmishes around objectives where her slows keep enemies in the Frost Storm.",
+      "holes": "Built for long fights, so Aurora struggles to secure quick objective bursts against a fed enemy."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Orion then Oathkeeper builds power, cooldowns and on-hit so Aurora ganks with full Cryoseism burst, with Caustica's penetration carving through magic armor.",
+     "swaps": [
+      {
+       "out": "Prophecy",
+       "in": "Spectral Schematics",
+       "gain": "About 52% more 10-second rotation damage and bonus damage scaling with the target's health.",
+       "lose": "Prophecy's attack speed that fueled Aurora's on-hit Shatter and faster Frost Storm triggers."
+      },
+      {
+       "out": "Magnify",
+       "in": "Spectral Schematics",
+       "gain": "About 49% more extended-fight damage from raw power and the current-health bonus.",
+       "lose": "Magnify's armor shred, sustain and health that let Aurora brawl at objectives."
+      }
+     ],
+     "holes": "Full damage means Aurora has no tankiness, so any counter-jungle ambush kills her before Cryoseism resolves."
+    }
+   },
+   "support": {
+    "metaBuilds": [
+     {
+      "synergy": "Prophecy then Orion then Magnify gives Aurora poke power to threaten with Boreal Sweep and Hoarfrost from range while Magnify softens magic armor for her allies.",
+      "holes": "Zero defense on a support, so Aurora dies to any engage and cannot peel for her carry."
+     },
+     {
+      "synergy": "Magnify then Elafrost then Flux Matrix lets a roaming Aurora dive with Cryoseism lockdown and survive, Flux Matrix boosting team magic damage on the held target.",
+      "holes": "Still mostly damage stats, so against heavy engage Aurora gets blown up before landing her crowd control."
+     },
+     {
+      "synergy": "Magnify then Elafrost then Tainted Scepter pairs durability with anti-heal so Aurora locks down and grinds sustain targets with her slows and Frost Storm.",
+      "holes": "Built for long fights, so a burst engage onto Aurora ends her before her value shows."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Stonewall then Inquisition then Raiment makes Aurora a tank support who walks up, lands Hoarfrost root and Cryoseism stun, and survives long enough to keep crowd control flowing.",
+     "swaps": [
+      {
+       "out": "Magnify",
+       "in": "Stonewall",
+       "gain": "About 11% more magical survivability so Aurora anchors the front line through focus.",
+       "lose": "Magnify's magic power, armor shred and omnivamp that gave her real damage and sustain."
+      }
+     ],
+     "holes": "Full tank guts Aurora's burst, so Cryoseism and Boreal Sweep barely chip; she becomes pure crowd control with no kill threat."
+    }
+   }
+  },
+  "bayle": {
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Overlord then Rapture then Cursed Scroll stacks health and on-hit so Bayle dives with Skull Crusher, sustains via Dire Howl omnivamp, and Berserk attack speed cashes in Rapture's on-hit.",
+      "holes": "Low raw power means Bayle is very tanky but his Kingslayer and Cursed Edge struggle to actually finish squishies."
+     },
+     {
+      "synergy": "Earthshaker then Basilisk then Salvation builds power and armor shred so Bayle's Cursed Edge and Skull Crusher hit harder, with Salvation's shield covering his dive.",
+      "holes": "Only about 749 over a 10-second rotation; against burst it falls short and Bayle relies on Salvation to not get deleted."
+     },
+     {
+      "synergy": "Overlord then Cursed Scroll then Sky Splitter pairs health with current-health on-hit so Bayle's fast Berserk basics melt tanks while staying durable.",
+      "holes": "About 646 one-combo burst leans on Berserk being active; if Bayle is healthy he hits far softer."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Solaris then Viper then Spear of Desolation front-loads power and armor pen so Bayle's Kingslayer and Skull Crusher slam through armor, Solaris healing him mid-dive.",
+     "swaps": [
+      {
+       "out": "Earthshaker",
+       "in": "Solaris",
+       "gain": "About 52% more 10-second rotation damage plus a healing crit-capable on-hit to sustain dives.",
+       "lose": "Earthshaker's health and stacking ability-damage ramp that suited a longer brawl."
+      },
+      {
+       "out": "Overlord",
+       "in": "Solaris",
+       "gain": "About 32% more one-combo burst and lifesteal on a powered basic to finish kills.",
+       "lose": "Overlord's big health pool and cleave that made Bayle a sturdy frontliner."
+      }
+     ],
+     "holes": "This lethality build is far squishier, so if Bayle dives in with Kingslayer and the kill fails he gets focused down."
+    }
+   },
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Overlord then Rapture then Cursed Scroll gives Bayle health and on-hit for ganks; Skull Crusher's armor shred plus Berserk attack speed feeds Rapture's bonus on-hit damage.",
+      "holes": "Low power means Bayle survives ganks but often can't burst a target down before they escape."
+     },
+     {
+      "synergy": "Earthshaker then Basilisk then Salvation stacks power, armor shred and a shield so Bayle ganks with Cursed Edge and Skull Crusher then survives the counter.",
+      "holes": "About 749 over a 10-second rotation isn't enough quick burst, so squishies can flash away from his gank."
+     },
+     {
+      "synergy": "Overlord then Cursed Scroll then Sky Splitter blends health with current-health on-hit so Bayle's Berserk basics shred objectives and tanks while staying alive.",
+      "holes": "About 646 one-combo burst depends on Berserk being live; at full health his gank damage is weak."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Solaris then Viper then Spear of Desolation builds power and armor pen so Bayle's Kingslayer lockdown and Skull Crusher carve through armor, Solaris sustaining him in the jungle.",
+     "swaps": [
+      {
+       "out": "Earthshaker",
+       "in": "Solaris",
+       "gain": "About 52% more 10-second rotation damage and a healing crit-capable on-hit for skirmishes.",
+       "lose": "Earthshaker's health and ability-damage ramp built for longer fights."
+      },
+      {
+       "out": "Overlord",
+       "in": "Solaris",
+       "gain": "About 32% more one-combo burst plus lifesteal to secure gank kills.",
+       "lose": "Overlord's health stacking and cleave that made Bayle tanky around objectives."
+      }
+     ],
+     "holes": "Lethality makes Bayle squishy, so a contested objective or counter-jungle ambush can kill him before Kingslayer resolves."
+    }
+   }
+  },
+  "boris": {
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Sky Splitter then Tainted Blade then Rapture stacks on-hit so Boris's Tesseract Core and Chrono Swipe shred, with Tainted Blade's anti-heal and Hex amplifying his sustained damage.",
+      "holes": "Low burst, so Boris peels and bullies but his Ursine Burst grab rarely outright kills a target."
+     },
+     {
+      "synergy": "Sky Splitter then Basilisk then Rapture pairs current-health on-hit with armor shred so Boris's frequent basics, fed by Canister attack speed, melt tanks.",
+      "holes": "Only about 350 over a 10-second rotation; his actual ability damage is weak so kills come slowly."
+     },
+     {
+      "synergy": "Sky Splitter then Rapture then Draconum stacks health and healing so Boris frontlines, with Draconum's heal scaling and his passive on-hit sustain keeping him alive.",
+      "holes": "Built to survive, not kill, so Boris is hard to remove but offers little burst on his Ursine Burst pick."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Basilisk then Solaris stacks armor shred and power so Boris's Chrono Swipe and Tesseract Core on-hits cut through tanks, Solaris healing him through the dive.",
+     "swaps": [
+      {
+       "out": "Sky Splitter",
+       "in": "Viper",
+       "gain": "About 2.1 times the 10-second rotation damage via armor shred and increased on-hit damage.",
+       "lose": "Sky Splitter's current-health on-hit that chunked high-health tanks and its lifesteal sustain."
+      }
+     ],
+     "holes": "Dropping Sky Splitter's percent-health damage means Boris struggles against very tanky targets, and the build is less durable for frontlining."
+    }
+   }
+  },
+  "countess": {
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Combustion then Noxia then Wraith stacks magic power and penetration so Countess's Eventide and Feast combo bursts, with Noxia's marked-target detonation amplifying her Feast leap on a single hero.",
+      "holes": "Squishy core, so if Countess's Feast leap drops her into the enemy team and the kill fails she gets collapsed on."
+     },
+     {
+      "synergy": "Spirit of Amir then Wraith then Noxia adds some health and lifesteal so Countess's Blade Siphon self-heal sustains her in fights while she still hits hard with abilities.",
+      "holes": null
+     },
+     {
+      "synergy": "Combustion then Wraith then Overseer front-loads power and magic lifesteal so Countess's Feast all-in heals her back, Overseer's amp boosting the combo to delete a target.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Orion then Oathkeeper builds power, attack speed and on-hit so Countess's Feast and Eventide burst harder while the current-health bonus helps her finish chunky targets.",
+     "swaps": [
+      {
+       "out": "Combustion",
+       "in": "Spectral Schematics",
+       "gain": "About 30% more 10-second rotation damage plus bonus damage scaling with the target's health.",
+       "lose": "Combustion's repeating area Pyro burst and big mana pool for sustained casting."
+      },
+      {
+       "out": "Spirit Of Amir",
+       "in": "Spectral Schematics",
+       "gain": "About 12% more physical survivability and current-health bonus damage on Feast.",
+       "lose": "Spirit of Amir's magic lifesteal that helped Countess drain back health from Blade Siphon."
+      }
+     ],
+     "holes": "It is still glass-cannon, so Countess's Feast dive is a gamble: whiff the kill and she has no escape or defenses."
+    }
+   },
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Combustion then Noxia then Wraith stacks power and penetration so Countess's Eventide poke and Feast all-in burst down a laner, Noxia adding max-health damage on the marked target.",
+      "holes": "No defenses, so a beefy offlaner can survive Countess's combo and punish her once Feast is on cooldown."
+     },
+     {
+      "synergy": "Spirit of Amir then Wraith then Noxia adds health and lifesteal so Countess's Blade Siphon heal lets her trade and brawl in lane while keeping ability damage.",
+      "holes": null
+     },
+     {
+      "synergy": "Combustion then Wraith then Overseer pairs power with magic lifesteal so Countess's Feast dive heals her up and Overseer's amp secures the kill.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Orion then Oathkeeper builds power and on-hit so Countess's Feast and Eventide hit harder, with the current-health bonus letting her chunk tankier laners.",
+     "swaps": [
+      {
+       "out": "Combustion",
+       "in": "Spectral Schematics",
+       "gain": "About 30% more 10-second rotation damage and health-based bonus damage to punish bulky laners.",
+       "lose": "Combustion's repeating Pyro area burst and large mana pool for extended trades."
+      },
+      {
+       "out": "Spirit Of Amir",
+       "in": "Spectral Schematics",
+       "gain": "About 12% more physical survivability plus current-health bonus on her Feast.",
+       "lose": "Spirit of Amir's magic lifesteal that sustained Countess through lane via Blade Siphon."
+      }
+     ],
+     "holes": "Still squishy, so a failed Feast dive in the solo lane leaves Countess with no way out."
+    }
+   },
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Combustion then Noxia then Wraith stacks power and penetration so Countess ganks with Shadow Slip into Feast burst, Noxia's detonation adding max-health damage on the suppressed target.",
+      "holes": "Squishy, so a counter-gank catches Countess out once she commits Feast and has no escape."
+     },
+     {
+      "synergy": "Spirit of Amir then Wraith then Noxia gives jungle lifesteal and a little health so Countess clears safely and Blade Siphon sustains her through ganks.",
+      "holes": null
+     },
+     {
+      "synergy": "Combustion then Wraith then Overseer pairs power with magic lifesteal so Countess's Feast all-in heals her back and Overseer's amp deletes a squishy.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Orion then Oathkeeper builds power and on-hit so Countess's Feast and Eventide gank burst is higher, with current-health bonus to punish chunkier targets.",
+     "swaps": [
+      {
+       "out": "Combustion",
+       "in": "Spectral Schematics",
+       "gain": "About 30% more 10-second rotation damage and health-based bonus damage for ganks.",
+       "lose": "Combustion's repeating Pyro area burst and mana pool for long clears."
+      },
+      {
+       "out": "Spirit Of Amir",
+       "in": "Spectral Schematics",
+       "gain": "About 12% more physical survivability and current-health bonus on Feast.",
+       "lose": "Spirit of Amir's magic lifesteal that boosted Countess's jungle clear sustain."
+      }
+     ],
+     "holes": "Pure burst means Countess has no defenses, so a contested objective fight can kill her right after Feast lands."
+    }
+   }
+  },
+  "crunch": {
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Berserker's Axe then Augmentation then Salvation gives health and empowered basics so Crunch's Cross Crunch amplified attack and True Strike land hard between his Left/Right Crunch combos.",
+      "holes": null
+     },
+     {
+      "synergy": "Augmentation then Mutilator then Salvation pairs empowered basics with percent-health damage so Crunch's combo plus Cross Crunch-boosted hit chunks tanks while Salvation shields his all-in.",
+      "holes": "Only about 729 one-combo burst; against a healthy bruiser Crunch can't kill and gets outlasted."
+     },
+     {
+      "synergy": "Syonic Echo then Ashbringer then Draconum builds attack speed and cooldown-on-hit so Crunch's Re-Crunch heal and Cross Crunch cycle faster for sustained brawling.",
+      "holes": "Worst-performing core at 41.3% with only about 224 auto DPS, so Crunch's damage falls far short of bruiser builds."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Basilisk then Spear of Desolation stacks penetration and power so Crunch's Forward/Left/Right Crunch combo carves through armor, with Cross Crunch's amplified basic finishing the burst.",
+     "swaps": [
+      {
+       "out": "Syonic Echo",
+       "in": "Viper",
+       "gain": "About 48% more sustained auto DPS via armor shred and increased on-hit damage.",
+       "lose": "Syonic Echo's attack-speed burst window and reset that powered Crunch's basic-attack flurry."
+      }
+     ],
+     "holes": "This lethality build drops most of Crunch's health, so a dive in with his short-range combo gets him focused down fast."
+    }
+   },
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Berserker's Axe then Augmentation then Salvation gives health and empowered basics so Crunch ganks with Forward Crunch then chains Cross Crunch-boosted hits, Salvation shielding the dive.",
+      "holes": null
+     },
+     {
+      "synergy": "Augmentation then Mutilator then Salvation adds percent-health damage so Crunch's combo plus empowered basics chunk tanky targets while Salvation covers his all-in.",
+      "holes": "Only about 729 one-combo burst, so a healthy target survives Crunch's gank and he's left exposed."
+     },
+     {
+      "synergy": "Syonic Echo then Ashbringer then Draconum stacks attack speed and cooldown-on-hit so Crunch's Re-Crunch heal and abilities cycle nonstop in extended skirmishes.",
+      "holes": "Worst core at 41.3% and only about 224 auto DPS, so Crunch clears and skirmishes far weaker than the bruiser options."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Basilisk then Spear of Desolation stacks penetration and power so Crunch's gank combo cuts through armor and Cross Crunch's amplified basic seals the kill.",
+     "swaps": [
+      {
+       "out": "Syonic Echo",
+       "in": "Viper",
+       "gain": "About 48% more sustained auto DPS through armor shred and increased on-hit damage.",
+       "lose": "Syonic Echo's attack-speed burst and reset that drove Crunch's basic-attack flurry and clear speed."
+      }
+     ],
+     "holes": "Lethality leaves Crunch squishy, so committing his short-range Forward Crunch gank into a group can get him killed."
+    }
+   }
+  },
+  "dekker": {
+   "support": {
+    "metaBuilds": [
+     {
+      "synergy": "Crescelia then Timewarp then Dynamo slashes cooldowns so Dekker recasts Stasis Bomb, Photon Disruptor and Containment Fence faster, Dynamo amplifying damage on her stunned targets.",
+      "holes": "Only about 89 auto DPS and no defenses, so Dekker dies instantly if anyone reaches her after she throws crowd control."
+     },
+     {
+      "synergy": "Crescelia then Tainted Scepter then Timewarp adds power and anti-heal so Dekker's Photon Disruptor and Ion Strike poke harder and cut enemy healing while cooldowns stay low.",
+      "holes": "Still very squishy; a single gap-closer onto Dekker ends her before her cooldowns matter."
+     },
+     {
+      "synergy": "Crescelia then Dynamo then Tainted Scepter blends cooldowns, a damage-amp on stunned targets, and anti-heal so Dekker's Ion Strike stun setups hurt more.",
+      "holes": "About 89 auto DPS and thin defenses, so Dekker is a free kill once her crowd control is on cooldown."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Stonewall then Vainglory then Raiment makes Dekker a tank support who walks up, lands Stasis Bomb and Ion Strike crowd control, and survives to keep the enemy locked down.",
+     "swaps": [],
+     "holes": "Full tank zeroes out Dekker's damage, so her abilities only crowd-control and she can never punish a stunned target herself."
+    }
+   }
+  },
+  "drongo": {
+   "carry": {
+    "metaBuilds": [
+     {
+      "synergy": "Lightning Hawk then Vanquisher then Imperator stacks crit and power so Drongo's Rad Rounds basics and crits trigger Wastelander bleeds, Imperator amplifying the crit burst into a delete.",
+      "holes": "Crit relies on landing autos; if Drongo gets kited off his Rad Rounds window his burst evaporates."
+     },
+     {
+      "synergy": "Lightning Hawk then Vanquisher then Tainted Rounds builds crit and attack speed so Drongo's sustained Rad Rounds DPS climbs, Tainted Rounds cutting healing and ramping as targets drop.",
+      "holes": "Only about 436 auto DPS in the sim, lower than the optimizer; Drongo's sustained output lags here."
+     },
+     {
+      "synergy": "Lightning Hawk then Vanquisher then Sky Splitter adds current-health on-hit so Drongo's fast Rad Rounds autos shred tanks while Vanquisher executes low targets.",
+      "holes": "Sky Splitter is reduced for ranged heroes, so Drongo squeezes less out of its percent-health hit than a melee would."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Vanquisher stacks attack speed and armor shred so Drongo's Rad Rounds basics melt through armor, building toward Imperator and Demolisher for crit burst.",
+     "swaps": [
+      {
+       "out": "Lightning Hawk",
+       "in": "Viper",
+       "gain": "Up to about 28% more sustained auto DPS via stacking armor shred and increased on-hit damage.",
+       "lose": "Lightning Hawk's Momentum empowered slow-on-hit that helped Drongo stick to and kite targets."
+      }
+     ],
+     "holes": "Dropping crit items means less upfront burst, so Drongo leans harder on attack-speed ramp and is weaker in a quick all-in."
+    }
+   }
+  },
+  "eden": {
+   "carry": {
+    "metaBuilds": [
+     {
+      "synergy": "Vanquisher then Terminus then Dust Devil stacks crit and lifesteal so Eden's melee-stance heal and Terminus shield keep her alive while critting through her claw combos.",
+      "holes": "Only about 145 health drained over a 10-second fight, so the sustain is modest and Eden still gets bursted if focused."
+     },
+     {
+      "synergy": "Vanquisher then Solaris then Nuclear Rounds pairs crit with ability-damage amp so Eden's Limit Break and Tachyon Lance hit harder, Solaris healing her on a crit-capable basic.",
+      "holes": null
+     },
+     {
+      "synergy": "Vanquisher then Dust Devil then Imperator builds crit and attack speed so Eden's Nova Repeater spray and crits stack fast, with Vanquisher executing low targets.",
+      "holes": "Only about 156 auto DPS, well below the optimizer; this core's sustained damage is weak for a carry."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Sky Splitter then Viper then Deathstalker stacks attack speed and shred so Eden's rapid Nova Repeater and claw hits melt targets, building toward Tainted Rounds and Rapture for sustained on-hit.",
+     "swaps": [
+      {
+       "out": "Vanquisher",
+       "in": "Sky Splitter",
+       "gain": "About 91% more sustained auto DPS via current-health on-hit and lifesteal feeding Eden's stance heal.",
+       "lose": "Vanquisher's execute that let Eden instantly finish low-health targets."
+      }
+     ],
+     "holes": "Sky Splitter's percent-health hit is reduced for ranged heroes, so Eden gets less from it in her Nova Repeater stance."
+    }
+   },
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Vanquisher then Terminus then Dust Devil gives crit and lifesteal so Eden's melee-stance heal plus Terminus shield sustain her while she crits through Axiom Strike combos in lane.",
+      "holes": "Only about 145 health drained over a 10-second fight, so a burst mid laner can still delete Eden through that sustain."
+     },
+     {
+      "synergy": "Vanquisher then Solaris then Nuclear Rounds pairs crit with ability-damage amp so Eden's Tachyon Lance poke and Limit Break burst harder, Solaris healing on a crit basic.",
+      "holes": null
+     },
+     {
+      "synergy": "Vanquisher then Dust Devil then Imperator stacks crit and attack speed so Eden's Nova Repeater spray ramps fast, Vanquisher executing low targets.",
+      "holes": "Only about 156 auto DPS, far below the optimizer; sustained damage is poor for a mid laner."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Sky Splitter then Viper then Deathstalker stacks attack speed and armor shred so Eden's Nova Repeater and claw combos shred, building Tainted Rounds and Rapture for sustained on-hit pressure.",
+     "swaps": [
+      {
+       "out": "Vanquisher",
+       "in": "Sky Splitter",
+       "gain": "About 91% more sustained auto DPS from current-health on-hit and lifesteal feeding her stance heal.",
+       "lose": "Vanquisher's execute for instantly finishing low-health mid laners."
+      }
+     ],
+     "holes": "Sky Splitter's percent-health hit is reduced for ranged heroes, so Eden gets less mileage from it in ranged stance."
+    }
+   },
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Vanquisher then Terminus then Dust Devil gives crit and lifesteal so Eden's melee-stance heal and Terminus shield let her brawl through her claw combos in the solo lane.",
+      "holes": "Only about 145 health drained over a 10-second fight, so a heavy-burst laner still bursts Eden down despite the sustain."
+     },
+     {
+      "synergy": "Vanquisher then Solaris then Nuclear Rounds pairs crit with ability amp so Eden's Talon Drive and Limit Break burst harder, Solaris healing her on a crit basic.",
+      "holes": null
+     },
+     {
+      "synergy": "Vanquisher then Dust Devil then Imperator stacks crit and attack speed so Eden's Nova Repeater ramps fast while Vanquisher executes low targets.",
+      "holes": "Only about 156 auto DPS, far below the optimizer; weak sustained damage for an offlaner."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Sky Splitter then Viper then Deathstalker stacks attack speed and shred so Eden's Nova Repeater and claw hits carve through armor, building Tainted Rounds and Rapture for sustained on-hit.",
+     "swaps": [
+      {
+       "out": "Vanquisher",
+       "in": "Sky Splitter",
+       "gain": "About 91% more sustained auto DPS via current-health on-hit and lifesteal feeding her stance heal.",
+       "lose": "Vanquisher's execute for instantly finishing low-health laners."
+      }
+     ],
+     "holes": "Sky Splitter's percent-health hit is reduced for ranged heroes, so Eden gets less from it in her ranged stance."
+    }
+   }
+  },
+  "feng-mao": {
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Malady then Painweaver then Omen stacks penetration so Feng Mao's Reaping Dash and Earth Shatter cut armor, Omen's empowered basic and Malady's stacking Demise rewarding takedown chains.",
+      "holes": "Only about 187 auto DPS; against a tanky front line Feng Mao's lethality bites less than against squishies."
+     },
+     {
+      "synergy": "Malady then Omen then Nightfall adds omnivamp and a shield so Feng Mao dives with Reaping Dash, sustains via Nightfall's ability heal, and resets cooldowns on takedowns.",
+      "holes": "Only about 175 auto DPS, the lowest of the cores; Feng Mao's sustained damage lags here."
+     },
+     {
+      "synergy": "Malady then Omen then The Perforator stacks penetration and armor ignore so Feng Mao's Earth Shatter and combo burst spikes for a clean execute on a squishy.",
+      "holes": "About 921 one-combo burst leans on the Earth Shatter execute; if the target is above the threshold he can't finish."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Basilisk then Solaris stacks attack speed and shred so Feng Mao's Windwalker basics and Reaping Dash grind armor, Solaris healing him through dives toward his Earth Shatter execute.",
+     "swaps": [
+      {
+       "out": "Malady",
+       "in": "Viper",
+       "gain": "About 61% more sustained auto DPS via stacking armor shred and increased on-hit damage.",
+       "lose": "Malady's stacking Demise and explode-on-death effect that rewarded chaining takedowns."
+      }
+     ],
+     "holes": "Less raw lethality means Feng Mao's burst execute is softer, so very tanky targets survive his Earth Shatter."
+    }
+   },
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Malady then Painweaver then Omen stacks penetration so Feng Mao's Reaping Dash and Earth Shatter shred armor, with Omen's empowered basic and Malady's Demise rewarding kill chains.",
+      "holes": "Only about 187 auto DPS; against a tanky lane bully Feng Mao's lethality underperforms."
+     },
+     {
+      "synergy": "Malady then Omen then Nightfall adds omnivamp and a shield so Feng Mao trades in lane, healing off abilities and resetting Reaping Dash on takedowns.",
+      "holes": "Only about 175 auto DPS, the weakest core; his sustained damage falls behind here."
+     },
+     {
+      "synergy": "Malady then Omen then The Perforator stacks penetration and armor ignore so Feng Mao's combo and Earth Shatter spike to execute a low laner.",
+      "holes": "About 921 one-combo burst depends on the Earth Shatter execute threshold; above it, Feng Mao can't seal the kill."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Basilisk then Solaris stacks attack speed and shred so Feng Mao's Windwalker basics and Reaping Dash grind armor, Solaris sustaining his all-ins toward an Earth Shatter execute.",
+     "swaps": [
+      {
+       "out": "Malady",
+       "in": "Viper",
+       "gain": "About 61% more sustained auto DPS through stacking armor shred and increased on-hit damage.",
+       "lose": "Malady's stacking Demise and explode-on-death that rewarded chaining lane kills."
+      }
+     ],
+     "holes": "Lower lethality softens Feng Mao's burst, so a tanky offlaner survives his Earth Shatter and out-trades him."
+    }
+   }
+  },
+  "gadget": {
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Azure Core then Entropy then Overseer stacks power, mana and an amp so Gadget's Sticky Mine plus empowered-basic combo and Tesla Dome ticks burst, Overseer healing her in fights.",
+      "holes": null
+     },
+     {
+      "synergy": "Azure Core then Soulbinder then Combustion builds long-range power so Gadget pokes with Seek and Destroy and Sticky Mine from afar, Soulbinder rewarding her distance casting.",
+      "holes": "No defenses, so once enemies close the gap Gadget's ranged advantage vanishes and she's deleted."
+     },
+     {
+      "synergy": "Soulbinder then Tainted Scepter then Azure Core blends long-range power, anti-heal and a shield so Gadget grinds out fights with repeated Sticky Mine and Tesla Dome.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Orion then Wraith then Oblivion Crown stacks power, penetration and attack speed so Gadget's empowered-basic Sticky Mine and Tesla Dome shred, Orion ramping damage on a focused target.",
+     "swaps": [
+      {
+       "out": "Azure Core",
+       "in": "Orion",
+       "gain": "About 31% more one-combo burst from raw power plus Orion's ramping damage and attack speed for empowered-basic mines.",
+       "lose": "Azure Core's shield and big mana pool that kept Gadget safe and casting freely."
+      },
+      {
+       "out": "Soulbinder",
+       "in": "Orion",
+       "gain": "About 43% more 10-second rotation damage with attack speed to fuel Gadget's empowered Sticky Mine basics.",
+       "lose": "Soulbinder's bonus damage from casting at long range, Gadget's safest poke distance."
+      }
+     ],
+     "holes": "Trading Azure Core's shield for raw power leaves Gadget extremely squishy, so any dive that reaches her ends the fight."
+    }
+   },
+   "support": {
+    "metaBuilds": [
+     {
+      "synergy": "Azure Core then Entropy then Overseer gives power and a self-heal so a poke support Gadget zones with Seek and Destroy and Security Gate root while Tesla Dome controls space.",
+      "holes": "Squishy with no team protection, so Gadget the support gets blown up and can't peel for her carry."
+     },
+     {
+      "synergy": "Azure Core then Soulbinder then Combustion stacks long-range power so Gadget peels from afar with Sticky Mine and Security Gate root, Soulbinder rewarding her distance.",
+      "holes": "All damage, no defense; against an engage comp Gadget dies before her root saves anyone."
+     },
+     {
+      "synergy": "Soulbinder then Tainted Scepter then Azure Core adds anti-heal so Gadget chips and cuts enemy sustain in long fights with repeated Tesla Dome and mines.",
+      "holes": "Still fragile; her value depends on never being reached, which a flanker easily punishes on a support."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Stonewall then Warden's Faith then Vainglory makes Gadget a tank support who walks up, lands Security Gate root and Tesla Dome zoning, and survives to keep enemies controlled.",
+     "swaps": [],
+     "holes": "Full tank guts Gadget's damage, so her mines and Tesla Dome barely chip and she relies purely on crowd control."
+    }
+   }
+  },
+  "gideon": {
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Azure Core then Combustion then Wraith stacks power, mana and penetration so Gideon's Void Breach and Cosmic Rift burst, with his mana-scaling cooldowns letting Black Hole come up faster.",
+      "holes": null
+     },
+     {
+      "synergy": "Azure Core then Combustion then Tainted Scepter adds health and anti-heal so Gideon survives a bit longer while his Void Breach combo cuts enemy healing in fights.",
+      "holes": null
+     },
+     {
+      "synergy": "Azure Core then Soulbinder then Combustion stacks long-range power so Gideon pokes with Void Breach and Cosmic Rift from max range, Soulbinder rewarding his distance.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Wraith then Orion then Caustica stacks power and magic-armor ignore so Gideon's Cosmic Rift and Black Hole carve through resists, Caustica punishing healthy targets and Timewarp speeding his cooldowns.",
+     "swaps": [
+      {
+       "out": "Azure Core",
+       "in": "Wraith Leggings",
+       "gain": "About 20% more damage in extended fights via raw power, penetration and the 12% ability-damage amp on Gideon's spells.",
+       "lose": "Azure Core's shield and mana pool that kept Gideon safe and casting during his channels."
+      }
+     ],
+     "holes": "Pure magic power with no real defense means Gideon's 2.75-second Black Hole channel is a death sentence if an assassin gets on him."
+    }
+   }
+  },
+  "greystone": {
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Overlord then Rapture then Aegis of Agawar stacks health and on-hit so Greystone dives with Assault The Gates and Sacred Oath cleave, Aegis spiking armor when low.",
+      "holes": "Low raw power; Greystone is extremely tanky but his Make Way and combo struggle to actually kill a squishy."
+     },
+     {
+      "synergy": "Overlord then Augmentation then Basilisk pairs health with empowered basics and armor shred so Greystone's Sacred Oath hit and Stone Forged Soul slam burst harder.",
+      "holes": null
+     },
+     {
+      "synergy": "Overlord then Rapture then Tainted Guard stacks heavy health and armor with anti-heal so Greystone anchors the front, holding sustain bruisers with Make Way's armor shred.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Basilisk then Spear of Desolation stacks penetration and power so Greystone's Make Way shred and Stone Forged Soul slam carve armor, Solaris healing his dives.",
+     "swaps": [
+      {
+       "out": "Overlord",
+       "in": "Viper",
+       "gain": "About 28% more one-combo burst via stacking armor shred and increased on-hit and ability damage.",
+       "lose": "Overlord's big stacking health and cleave that made Greystone a near-unkillable front line."
+      }
+     ],
+     "holes": "This lethality build throws away Greystone's signature tankiness, so a dive in can get him killed before his ultimate revive-stasis."
+    }
+   },
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Overlord then Rapture then Aegis of Agawar stacks health and on-hit so Greystone ganks with Assault The Gates and Sacred Oath, Aegis spiking armor when low.",
+      "holes": "Low power; Greystone survives ganks easily but lacks the burst to finish a target before they flee."
+     },
+     {
+      "synergy": "Overlord then Augmentation then Basilisk adds empowered basics and armor shred so Greystone's gank combo and ultimate slam hit harder while staying tanky.",
+      "holes": null
+     },
+     {
+      "synergy": "Overlord then Rapture then Tainted Guard stacks health, armor and anti-heal so Greystone bullies objectives and out-grinds sustain targets caught in Make Way.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Basilisk then Spear of Desolation stacks penetration and power so Greystone's Make Way shred and Stone Forged Soul slam carve armor, Solaris sustaining ganks.",
+     "swaps": [
+      {
+       "out": "Overlord",
+       "in": "Viper",
+       "gain": "About 28% more one-combo burst via armor shred and increased on-hit and ability damage.",
+       "lose": "Overlord's stacking health and cleave that made Greystone a near-unkillable bruiser."
+      }
+     ],
+     "holes": "Lethality strips Greystone's tankiness, so a contested objective fight can kill him before his Stone Forged Soul revive-stasis triggers."
+    }
+   }
+  },
+  "grim-exe": {
+   "carry": {
+    "metaBuilds": [
+     {
+      "synergy": "Lightning Hawk then Plasma Blade then Dust Devil stacks crit and attack speed so GRIM's Assault Mode cleaving basics and Pulsefire bursts crit hard while he kites with movement speed.",
+      "holes": "About 851 over a 10-second rotation is the weakest core here; GRIM's damage lags well behind the optimizer."
+     },
+     {
+      "synergy": "Plasma Blade then Lightning Hawk then Imperator front-loads crit so GRIM's Assault Mode basics and crits delete a target, Imperator amplifying the crit burst.",
+      "holes": null
+     },
+     {
+      "synergy": "Lightning Hawk then Scattershot then Tainted Rounds builds crit and bonus projectiles so GRIM's Assault Mode cleave plus Scatter shots and anti-heal grind targets down.",
+      "holes": "About 888 over a 10-second rotation still trails the optimizer; against grouped enemies the cleave spreads thin."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Manta Scythe stacks attack speed and armor shred so GRIM's Assault Mode cleaving basics and Pulsefire melt armor, building toward Vanquisher and Imperator for crit finishers.",
+     "swaps": [
+      {
+       "out": "Lightning Hawk",
+       "in": "Viper",
+       "gain": "Up to about 73% more 10-second rotation damage via stacking armor shred and increased on-hit damage on Assault Mode basics.",
+       "lose": "Lightning Hawk's Momentum empowered slow-on-hit that helped GRIM kite and stick to targets."
+      },
+      {
+       "out": "Plasma Blade",
+       "in": "Viper",
+       "gain": "About 17% more one-combo burst from armor shred and increased on-hit damage.",
+       "lose": "Plasma Blade's stacking crit chance that pushed GRIM's basics to reliable crits."
+      }
+     ],
+     "holes": "Building attack-speed shred over crit means less upfront burst, so GRIM is weaker in a quick all-in and leans on sustained fire."
+    }
+   }
+  },
+  "grux": {
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Sky Splitter then Basilisk then Rapture stacks attack speed and on-hit so Grux's Double Pain and Warlord's Challenge basics stack Bloodlust bleeds fast while Sky Splitter chunks tanks.",
+      "holes": "About 341 auto DPS needs Grux to stay attacking; if kited off his Bloodlust stacks his damage drops."
+     },
+     {
+      "synergy": "Basilisk then Rapture then Draconum stacks health, healing and armor so Grux dives with Smash 'n Grab pull and survives, Double Pain's heal and Draconum keeping him topped up.",
+      "holes": null
+     },
+     {
+      "synergy": "Sky Splitter then Tainted Blade then Rapture pairs current-health on-hit with anti-heal and Hex so Grux shreds tanks and amplifies his Bloodlust damage on a held target.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Solaris then The Perforator stacks attack speed and armor pen so Grux's Double Pain and Warlord's Challenge basics carve through armor, Solaris and Penumbra fueling his combo uptime.",
+     "swaps": [],
+     "holes": "This lethality build drops Grux's bruiser health, so committing his Smash 'n Grab and Stampede into a team can get him focused down."
+    }
+   },
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Sky Splitter then Basilisk then Rapture stacks attack speed and on-hit so Grux's gank with Smash 'n Grab pull into Bloodlust-stacking basics shreds, Sky Splitter chunking tanky targets.",
+      "holes": "About 341 auto DPS depends on staying on target; if the enemy escapes Grux's pull his damage stalls."
+     },
+     {
+      "synergy": "Basilisk then Rapture then Draconum stacks health and healing so Grux ganks and survives the counter, Double Pain's heal and Draconum sustaining him through skirmishes.",
+      "holes": null
+     },
+     {
+      "synergy": "Sky Splitter then Tainted Blade then Rapture pairs current-health on-hit with anti-heal and Hex so Grux shreds objectives and tanks while amplifying his Bloodlust.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Solaris then The Perforator stacks attack speed and armor pen so Grux's gank Double Pain and Warlord's Challenge basics cut armor, Solaris and Penumbra keeping his combo cycling.",
+     "swaps": [],
+     "holes": "Lethality strips Grux's tankiness, so a contested objective or counter-gank can kill him after he commits his Smash 'n Grab."
+    }
+   }
+  },
+  "howitzer": {
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": null,
+      "holes": null
+     },
+     {
+      "synergy": null,
+      "holes": null
+     },
+     {
+      "synergy": "Prophecy then Spectra then Cursed Ring stacks attack speed so Howitzer weaves Armed Salvo empowered basics between abilities for a hybrid auto-attack playstyle.",
+      "holes": "Worst core at 47.9% and only about 316 auto DPS; this leans on basics Howitzer is not built to rely on."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Oathkeeper then Spirit of Amir then Wraith stacks power, on-hit and penetration so Howitzer's Armed Salvo empowered basics and bomb abilities burst, Caustica punishing healthy targets.",
+     "swaps": [],
+     "holes": "Still glass-cannon; Howitzer's damage relies on enemies standing in his slow-zone bombs, and a flanker that reaches him kills him instantly."
+    }
+   }
+  },
+  "iggy-scorch": {
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Orb of Growth then Entropy then Megacosm scales power as Iggy farms, so Molotov, Oil Spill ignite and Flame Turrets burst, Megacosm's max-health burn stacking with the Ignite damage-over-time.",
+      "holes": null
+     },
+     {
+      "synergy": "Orb of Growth then Megacosm then Tainted Scepter adds anti-heal and max-health burn so Iggy's Ignite, Oil Spill and turrets grind enemies while cutting their healing.",
+      "holes": null
+     },
+     {
+      "synergy": "Megacosm then Entropy then Tainted Scepter stacks burn, power and anti-heal so Iggy out-damages bruisers over long fights with stacking Ignite and Oil Spill ticks.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Soulbinder then Wraith stacks power and penetration so Iggy's Inferno, Oil Spill ignite and turret fireballs shred, the current-health bonus punishing chunky targets.",
+     "swaps": [
+      {
+       "out": "Orb Of Growth",
+       "in": "Spectral Schematics",
+       "gain": "About 49% more one-combo burst plus current-health bonus damage, online immediately instead of waiting to stack.",
+       "lose": "Orb of Growth's scaling power that rewards Iggy farming safely into the late game."
+      },
+      {
+       "out": "Megacosm",
+       "in": "Spectral Schematics",
+       "gain": "About 49% more extended-fight damage from flat power and the current-health bonus.",
+       "lose": "Megacosm's max-health burn that stacked nicely with Iggy's Ignite damage-over-time."
+      }
+     ],
+     "holes": "Dropping health items makes Iggy squishier, so a melee diver who survives his fire zones can run him down and smash his turrets."
+    }
+   },
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Orb of Growth then Entropy then Megacosm scales power so Iggy's Molotov, Oil Spill ignite and Flame Turrets burst, Megacosm's max-health burn stacking with the Ignite over time.",
+      "holes": null
+     },
+     {
+      "synergy": "Orb of Growth then Megacosm then Tainted Scepter adds anti-heal and max-health burn so Iggy grinds sustain bruisers with stacking Ignite while cutting their healing.",
+      "holes": null
+     },
+     {
+      "synergy": "Megacosm then Entropy then Tainted Scepter stacks burn, power and anti-heal so Iggy out-damages bruisers over long fights via stacking Ignite and Oil Spill.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Soulbinder then Wraith stacks power and penetration so Iggy's Inferno, Oil Spill ignite and turret fireballs shred, with current-health bonus to punish tanky laners.",
+     "swaps": [
+      {
+       "out": "Orb Of Growth",
+       "in": "Spectral Schematics",
+       "gain": "About 49% more one-combo burst and current-health bonus damage, online right away instead of after stacking.",
+       "lose": "Orb of Growth's scaling power that rewards Iggy farming safely into late game."
+      },
+      {
+       "out": "Megacosm",
+       "in": "Spectral Schematics",
+       "gain": "About 49% more extended-fight damage from flat power and the current-health bonus.",
+       "lose": "Megacosm's max-health burn that stacked with Iggy's Ignite damage-over-time."
+      }
+     ],
+     "holes": "Fewer health items leave Iggy squishy, so a melee offlaner who tanks his fire can dive him and shatter his turrets."
+    }
+   }
+  },
+  "kallari": {
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Malady then Vanquisher then Spear of Desolation stacks penetration so Kallari's Guillotine missing-health burst executes, Spear's ultimate haste letting her recast it sooner.",
+      "holes": "About 962 over a 10-second rotation; if Guillotine doesn't kill, squishy Kallari has little follow-up and must flee."
+     },
+     {
+      "synergy": "Malady then Vanquisher then The Perforator stacks penetration and armor ignore so Kallari's Guillotine and Shadow Dance combo deletes a squishy in one burst.",
+      "holes": null
+     },
+     {
+      "synergy": "Malady then Vanquisher then Tainted Trident pairs penetration with anti-heal and bonus damage so Kallari's Guillotine execute punches through sustain targets.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Solaris then Spear of Desolation stacks attack speed, pen and a healing basic so Kallari's Guillotine and Shadow Dance combo carves armor while Solaris sustains her dives.",
+     "swaps": [
+      {
+       "out": "Malady",
+       "in": "Viper",
+       "gain": "About 29% more 10-second rotation damage via stacking armor shred and increased on-hit and ability damage.",
+       "lose": "Malady's stacking Demise and explode-on-death that reset and rewarded Kallari chaining takedowns."
+      }
+     ],
+     "holes": "Kallari stays paper-thin, so a single failed Guillotine assassination leaves her exposed with no way to survive the counter."
+    }
+   }
+  },
+  "khaimera": {
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Overlord then Basilisk then Rapture stacks health and on-hit so Khaimera's Unleash attack-speed flurry stacks bleeds and Rapture damage while Invigorate's heal keeps him sticky.",
+      "holes": "About 155 health drained over a 10-second fight is modest; against burst, Khaimera's sustain can't outpace the incoming damage."
+     },
+     {
+      "synergy": "Overlord then Basilisk then Draconum pairs health and armor shred with a heal so Khaimera dives with Ambush, Unleashes, and tops up via Draconum and Invigorate.",
+      "holes": "About 863 one-combo burst is low; Khaimera leans on sustained attacks, so kiting him off Unleash stalls his damage."
+     },
+     {
+      "synergy": "Overlord then Cursed Scroll then Draconum stacks heavy health, regen and armor so Khaimera anchors fights, with Invigorate and Draconum healing him through extended brawls.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Spear of Desolation then The Perforator stacks attack speed and armor pen so Khaimera's Unleash flurry and Ambush carve armor, Solaris healing him through dives.",
+     "swaps": [
+      {
+       "out": "Overlord",
+       "in": "Viper",
+       "gain": "About 54% more one-combo burst via stacking armor shred and increased on-hit damage on his Unleash flurry.",
+       "lose": "Overlord's big stacking health that made Khaimera a durable, drain-heavy bruiser."
+      }
+     ],
+     "holes": "Lethality strips Khaimera's tankiness, so diving with Ambush into a team can get him killed before Invigorate saves him."
+    }
+   },
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Overlord then Basilisk then Rapture stacks health and on-hit so Khaimera's Unleash flurry stacks Rapture damage and bleeds in lane while Invigorate's heal sustains his trades.",
+      "holes": "About 155 health drained over a 10-second fight is modest; a burst laner still bursts Khaimera through that sustain."
+     },
+     {
+      "synergy": "Overlord then Basilisk then Draconum pairs health and armor shred with a heal so Khaimera's Ambush and Unleash trades hit harder while Draconum tops him up.",
+      "holes": "About 863 one-combo burst is low, so a healthy laner survives Khaimera's all-in and out-trades him."
+     },
+     {
+      "synergy": "Overlord then Cursed Scroll then Draconum stacks health, regen and armor so Khaimera bullies the lane and out-sustains bruisers via Invigorate and Draconum.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Spear of Desolation then The Perforator stacks attack speed and armor pen so Khaimera's Unleash flurry and Ambush shred armor, Solaris sustaining his all-ins.",
+     "swaps": [
+      {
+       "out": "Overlord",
+       "in": "Viper",
+       "gain": "About 54% more one-combo burst from stacking armor shred and increased on-hit damage on Unleash.",
+       "lose": "Overlord's stacking health that made Khaimera a near-unkillable lane bruiser."
+      }
+     ],
+     "holes": "Lethality leaves Khaimera squishy, so committing Ambush into a group can get him focused before Invigorate cleanses and heals."
+    }
+   }
+  },
+  "kira": {
+   "carry": {
+    "metaBuilds": [
+     {
+      "synergy": "Solaris then Ashbringer then Imperator pairs crit with cooldown-on-hit so Kira's Mercy and Wrath crits refresh Dusk and Shadow Glide, Imperator amplifying the crit burst.",
+      "holes": "About 374 auto DPS trails the optimizer; Kira's sustained output is solid but not top here."
+     },
+     {
+      "synergy": "Solaris then Ashbringer then Tainted Rounds adds anti-heal and ramping on-hit so Kira's crits cut enemy healing and grow as targets drop, Ashbringer refreshing her dashes.",
+      "holes": "About 356 auto DPS is lower than the optimizer; against healthy targets her ramping on-hit starts weak."
+     },
+     {
+      "synergy": "Solaris then Ruination then Imperator front-loads crit and a mana-bleed so Kira's Purge and Mercy delete a target, Imperator boosting her crit burst.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Vanquisher stacks attack speed and armor shred so Kira's Wrath and Mercy melt through armor, building Demolisher and Imperator for crit finishers.",
+     "swaps": [
+      {
+       "out": "Solaris",
+       "in": "Viper",
+       "gain": "Up to about 41% more sustained auto DPS via stacking armor shred and increased on-hit damage.",
+       "lose": "Solaris's healing crit-capable empowered basic that sustained Kira through fights."
+      }
+     ],
+     "holes": "Dropping Solaris removes Kira's lifesteal-style sustain, so she has less healing during her stationary Purge channel."
+    }
+   }
+  },
+  "kwang": {
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Spirit of Amir then Oathkeeper then Tainted Scepter stacks power and on-hit so Kwang's blade-throw combo and Energized basics burst, anti-heal cutting enemy sustain in ganks.",
+      "holes": null
+     },
+     {
+      "synergy": "Magnify then Oathkeeper then Golem's Gift blends power, armor and a shield so Kwang dives with Surge and Fury, Golem's Gift stacking armor as he casts.",
+      "holes": null
+     },
+     {
+      "synergy": "Spirit of Amir then Oathkeeper then Gaussian Greaves adds mobility and armor so Kwang's Surge dashes and blade recalls reposition through fights while staying tanky.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Orion then Prophecy then Spectra stacks attack speed and on-hit so Kwang's Energized lightning basics and Light of the Heavens hit constantly, World Breaker keeping him fighting.",
+     "swaps": [],
+     "holes": "This hybrid attack-speed build relies on Kwang sticking to a target for on-hit value; a mobile enemy that kites him out cuts his damage."
+    }
+   },
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Spirit of Amir then Oathkeeper then Tainted Scepter stacks power and on-hit so Kwang's Judgement tether into Energized basics bursts, anti-heal punishing sustain laners.",
+      "holes": null
+     },
+     {
+      "synergy": "Magnify then Oathkeeper then Golem's Gift blends power, armor and a shield so Kwang trades with Surge and Light of the Heavens shield while Golem's Gift stacks armor on cast.",
+      "holes": null
+     },
+     {
+      "synergy": "Spirit of Amir then Oathkeeper then Gaussian Greaves gives mobility and armor so Kwang repositions with Surge dashes and blade recalls while staying tanky.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Orion then Prophecy then Spectra stacks attack speed and on-hit so Kwang's Energized lightning basics and Light of the Heavens hammer a target, World Breaker keeping him brawling.",
+     "swaps": [],
+     "holes": "The attack-speed hybrid needs Kwang glued to a target; against a kiting ranged laner his on-hit damage falls off hard."
+    }
+   }
+  },
+  "legion": {
+   "carry": {
+    "metaBuilds": [
+     {
+      "synergy": "Malady then Deathstalker then Spear of Desolation stacks penetration so Legion's penetration-scaling rifle and Frag Order burst, with his passive boosting basics per penetration owned.",
+      "holes": "Only about 78 auto DPS in the sim; Legion's basic-attack damage is very low here and leans on abilities."
+     },
+     {
+      "synergy": "Malady then Vanquisher then Deathstalker stacks penetration and an execute so Legion's rifle and Saturation Charge mines shred, Vanquisher finishing low targets.",
+      "holes": "Only about 82 auto DPS; Legion's auto output stays weak so he must rely on his grenades and ultimate."
+     },
+     {
+      "synergy": "Malady then Infernum then The Perforator stacks penetration and a max-health burn so Legion grinds bruisers over long fights with Infernum's ignite and Saturation Charge.",
+      "holes": "About 811 over a 20-second fight needs sustained uptime; in a quick burst trade Legion underperforms."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Sky Splitter then Viper then Deathstalker stacks attack speed and shred so Legion's penetration-boosted rifle melts through armor and tanks, with Rapture and Tainted Rounds for on-hit.",
+     "swaps": [
+      {
+       "out": "Malady",
+       "in": "Sky Splitter",
+       "gain": "About 2.3 times the sustained auto DPS via current-health on-hit and attack speed on Legion's rifle.",
+       "lose": "Malady's stacking Demise and explode-on-death that rewarded chaining takedowns with abilities."
+      }
+     ],
+     "holes": "Sky Splitter's percent-health hit is reduced for ranged heroes, so Legion's rifle gets less from it than a melee would."
+    }
+   }
+  },
+  "lt-belica": {
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Combustion then Noxia then Wraith stacks power and penetration so Belica's Seismic Assault stun into Void Bomb and Neural Disruptor burst, Noxia adding max-health damage on a marked target.",
+      "holes": null
+     },
+     {
+      "synergy": "Prophecy then Orion then Claw of Hermes blends power, attack speed and mana burn so Belica drains enemy mana and amplifies her Neural Disruptor missing-mana scaling.",
+      "holes": null
+     },
+     {
+      "synergy": "Crescelia then Tainted Scepter then Dynamo adds health, anti-heal and a damage-amp so Belica survives and her stunned targets take more from the team.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Timewarp then Orion builds power and heavy cooldowns so Belica recasts Seismic Assault and Void Bomb fast, Wraith and Magnify shredding through resists.",
+     "swaps": [],
+     "holes": "Pure magic power leaves Belica fragile, so a diving assassin who survives her stun kills her before her cooldowns matter."
+    }
+   },
+   "support": {
+    "metaBuilds": [
+     {
+      "synergy": "Combustion then Noxia then Wraith stacks power and penetration so Belica's Seismic Assault stun and Void Bomb hit hard, Noxia adding max-health damage on a marked target for picks.",
+      "holes": "No defenses on a support; Belica dies to any dive and can't peel beyond her single stun."
+     },
+     {
+      "synergy": "Prophecy then Orion then Claw of Hermes blends power and mana burn so Belica drains enemy resources and amplifies Neural Disruptor's missing-mana scaling while poking.",
+      "holes": null
+     },
+     {
+      "synergy": "Crescelia then Tainted Scepter then Dynamo adds health, anti-heal and a team damage-amp so Belica survives longer and her stunned targets take extra damage.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Stonewall then Vainglory then Frostguard makes Belica a tank support who walks up, lands Seismic Assault stun and Neural Disruptor silence, and survives to drain mana and zone.",
+     "swaps": [
+      {
+       "out": "Prophecy",
+       "in": "Stonewall",
+       "gain": "About 91% more magical survivability so Belica anchors the front and lives to land her stun.",
+       "lose": "Prophecy's attack speed and power that gave her real poke damage."
+      },
+      {
+       "out": "Crescelia",
+       "in": "Stonewall",
+       "gain": "About 92% more physical survivability and the 5% physical mitigation for surviving dives.",
+       "lose": "Crescelia's power and cooldown reduction that sped up Belica's Void Bomb and Drone casts."
+      }
+     ],
+     "holes": "Full tank zeroes Belica's damage, so her abilities only crowd-control and her Neural Disruptor missing-resource burst barely lands."
+    }
+   }
+  },
+  "maco": {
+   "support": {
+    "metaBuilds": [
+     {
+      "synergy": "Crescelia then Enra's Blessing then Windcaller blends power, shields and speed so Maco peels with Maco Gift heals and Enra's shield when allies are crowd-controlled.",
+      "holes": "Worst core at 43.9% with only about 703 one-combo burst; Maco offers shields but little threat or damage."
+     },
+     {
+      "synergy": "Crescelia then Lunaria then Dynamo pairs power with damage-based healing so Maco's Maco Strike and basics fuel Lunaria heals while Dynamo amps his stunned targets.",
+      "holes": "Only about 76 auto DPS; Maco's healing depends on dealing damage he isn't built to output reliably."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Noxia then Oblivion Crown then Spirit of Amir front-loads power so Maco's Maco Strike and Maco Sparkle stuns hit hard, Lifecore and Lunaria converting that damage into ally heals.",
+     "swaps": [
+      {
+       "out": "Crescelia",
+       "in": "Noxia",
+       "gain": "About 60% more one-combo burst plus max-health damage on a marked target, fueling Maco's damage-based heals.",
+       "lose": "Crescelia's cooldown reduction and empowered basic that sped up Maco's stun rotation."
+      }
+     ],
+     "holes": "This enchanter build needs Maco to land damage to heal, so if he can't connect his Sparkle and Strike his allies get no sustain."
+    }
+   }
+  },
+  "morigesh": {
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Combustion then Lifebinder then Megacosm stacks power, magic lifesteal and max-health burn so Morigesh's Pestilence stacks and Swarm pass-through heal her while burning enemies down.",
+      "holes": "Worst-performing core at 46.3% and squishy; if Curse and Hive are dodged Morigesh has weak follow-up and gets caught."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Wraith then Soulbinder stacks power and penetration so Morigesh's Hive, Curse and Pestilence ticks shred, the current-health and long-range bonuses punishing chunky targets.",
+     "swaps": [
+      {
+       "out": "Combustion",
+       "in": "Spectral Schematics",
+       "gain": "About 58% more 10-second rotation damage plus current-health bonus to chunk tanks alongside her Pestilence.",
+       "lose": "Combustion's repeating area Pyro burst and big mana pool for sustained casting."
+      }
+     ],
+     "holes": "Dropping Lifebinder removes Morigesh's magic lifesteal sustain, so she relies only on Swarm's heal and is squishier in extended fights."
+    }
+   },
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Combustion then Lifebinder then Megacosm stacks power, magic lifesteal and max-health burn so Morigesh's Pestilence stacks and Swarm pass-through heal her through lane trades.",
+      "holes": "Worst core at 46.3% and squishy; a burst laner punishes Morigesh once Curse and Swarm are on cooldown."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Wraith then Soulbinder stacks power and penetration so Morigesh's Hive, Curse and Pestilence ticks shred, with current-health and long-range bonuses to punish tanky laners.",
+     "swaps": [
+      {
+       "out": "Combustion",
+       "in": "Spectral Schematics",
+       "gain": "About 58% more 10-second rotation damage plus current-health bonus damage stacking with her Pestilence burn.",
+       "lose": "Combustion's repeating area Pyro burst and mana pool for sustained lane casting."
+      }
+     ],
+     "holes": "Without Lifebinder's magic lifesteal, Morigesh leans only on Swarm's heal and is more easily run down in the solo lane."
+    }
+   }
+  },
+  "mourn": {
+   "support": {
+    "metaBuilds": [
+     {
+      "synergy": "Hexbound Bracers then Dynamo then Enra's Blessing gives health, mana-on-damage and a shield so Mourn pulls with Abduct, heals allies via Contagion, and amps stunned targets.",
+      "holes": "Only about 91 auto DPS; Mourn's damage is minimal, so he relies entirely on his pull and crowd control to matter."
+     },
+     {
+      "synergy": "Megacosm then Tainted Scepter then Astral Catalyst stacks power, anti-heal and a burst amp so Mourn's Beguile mesmerize into Extract and Abduct deletes a picked target.",
+      "holes": "About 658 one-combo burst leans on landing Abduct's pull; squishy Mourn dies if the pick fails."
+     },
+     {
+      "synergy": "Tainted Charm then Raiment then Xenia stacks health, regen, anti-heal and a shield so Mourn anchors the front, pulling with Abduct and shielding allies while nearly unkillable.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Oathkeeper then Spirit of Amir then Oblivion Crown stacks power so Mourn's Abduct pull, Beguile and Extract hit hard, Lifecore and Lunaria converting that damage into ally heals.",
+     "swaps": [
+      {
+       "out": "Megacosm",
+       "in": "Oathkeeper",
+       "gain": "About 42% more one-combo burst via the empowered on-hit basic landing after his Abduct pull.",
+       "lose": "Megacosm's max-health burn and health that helped Mourn brawl and chip tanks over time."
+      }
+     ],
+     "holes": "This damage-enchanter build is squishy, so Mourn must land Abduct and survive; a hard engage onto him ends his fight fast."
+    }
+   },
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Hexbound Bracers then Dynamo then Enra's Blessing gives health, mana-on-damage and a shield so Mourn pulls with Abduct, sustains with Contagion and Extract, and amps stunned targets in lane.",
+      "holes": "Only about 91 auto DPS; Mourn survives but his offlane kill pressure is minimal without more power."
+     },
+     {
+      "synergy": "Megacosm then Tainted Scepter then Astral Catalyst stacks power, anti-heal and a burst amp so Mourn's Beguile mesmerize into Extract bursts a laner while cutting their healing.",
+      "holes": "About 658 one-combo burst leans on landing Abduct and Beguile; squishy Mourn is punished if he whiffs."
+     },
+     {
+      "synergy": "Tainted Charm then Raiment then Xenia stacks health, regen and anti-heal so Mourn anchors the lane, pulling with Abduct while nearly unkillable and shielding allies.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Oathkeeper then Magnify stacks power and shred so Mourn's Abduct pull, Beguile and Extract burst, with the current-health bonus chunking tanky laners.",
+     "swaps": [
+      {
+       "out": "Megacosm",
+       "in": "Spectral Schematics",
+       "gain": "About 47% more one-combo burst plus current-health bonus damage after his Abduct pull.",
+       "lose": "Megacosm's max-health burn and health that helped Mourn brawl and stay durable in lane."
+      }
+     ],
+     "holes": "This damage build makes Mourn far squishier, so a failed Abduct pull leaves him exposed with no way to escape."
+    }
+   }
+  },
+  "murdock": {
+   "carry": {
+    "metaBuilds": [
+     {
+      "synergy": "Lightning Hawk then Vanquisher then Imperator stacks crit and power so Murdock's Shots Fired empowered basic and Long Arm of the Law crit-burst, Imperator boosting his crits.",
+      "holes": null
+     },
+     {
+      "synergy": "Lightning Hawk then Vanquisher then Tainted Rounds builds crit and attack speed so Murdock's sustained autos with Hot Pursuit speed ramp, anti-heal cutting enemy sustain.",
+      "holes": "About 432 auto DPS trails the optimizer; against beefy targets Murdock's ramping on-hit starts soft."
+     },
+     {
+      "synergy": "Lightning Hawk then Vanquisher then Onixian Quiver adds extra projectiles and crit so Murdock's basics multishot and Buckshot shred, with damage mitigation when low.",
+      "holes": "About 413 auto DPS still trails the optimizer; the Multishot projectiles scale with range Murdock doesn't always have."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Vanquisher stacks attack speed and armor shred so Murdock's Hot Pursuit basics melt armor, building Imperator and Demolisher for crit finishers.",
+     "swaps": [
+      {
+       "out": "Lightning Hawk",
+       "in": "Viper",
+       "gain": "Up to about 34% more sustained auto DPS via stacking armor shred and increased on-hit damage.",
+       "lose": "Lightning Hawk's Momentum empowered slow-on-hit that helped Murdock kite and stick to targets."
+      }
+     ],
+     "holes": "Building shred over crit lowers Murdock's upfront burst, so he's weaker in a quick all-in and leans on sustained fire."
+    }
+   },
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Lightning Hawk then Vanquisher then Imperator stacks crit and power so Murdock's Shots Fired empowered basic and Buckshot poke bursts a laner, Imperator amplifying his crits.",
+      "holes": null
+     },
+     {
+      "synergy": "Lightning Hawk then Vanquisher then Tainted Rounds builds crit and attack speed so Murdock's autos with Hot Pursuit ramp, anti-heal punishing sustain laners.",
+      "holes": "About 432 auto DPS trails the optimizer; Murdock is fragile and easily collapsed on in a solo lane."
+     },
+     {
+      "synergy": "Lightning Hawk then Vanquisher then Onixian Quiver adds multishot and crit so Murdock's ranged basics shred from a distance with damage mitigation when low.",
+      "holes": "About 413 auto DPS still trails the optimizer; the Multishot value depends on range he can't always keep in lane."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Vanquisher stacks attack speed and armor shred so Murdock's Hot Pursuit basics carve armor, building Imperator and Demolisher for crit finishers.",
+     "swaps": [
+      {
+       "out": "Lightning Hawk",
+       "in": "Viper",
+       "gain": "Up to about 34% more sustained auto DPS via stacking armor shred and increased on-hit damage.",
+       "lose": "Lightning Hawk's Momentum slow-on-hit that helped Murdock kite and stick to laners."
+      }
+     ],
+     "holes": "Murdock stays squishy, so a bruiser offlaner who closes the gap kills him before his sustained fire matters."
+    }
+   },
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Lightning Hawk then Vanquisher then Imperator stacks crit and power so Murdock's Shots Fired empowered basic and Long Arm of the Law crit-burst a mid laner, Imperator boosting crits.",
+      "holes": null
+     },
+     {
+      "synergy": "Lightning Hawk then Vanquisher then Tainted Rounds builds crit and attack speed so Murdock's autos with Hot Pursuit ramp while anti-heal cuts enemy sustain.",
+      "holes": "About 432 auto DPS trails the optimizer; Murdock is fragile to mid-lane roams and ganks."
+     },
+     {
+      "synergy": "Lightning Hawk then Vanquisher then Onixian Quiver adds multishot and crit so Murdock's basics fan out and Buckshot shreds, with mitigation when low.",
+      "holes": "About 413 auto DPS still trails the optimizer; the Multishot scales with range that's harder to keep in mid."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Vanquisher stacks attack speed and armor shred so Murdock's Hot Pursuit basics melt armor, building Imperator and Demolisher for crit finishers.",
+     "swaps": [
+      {
+       "out": "Lightning Hawk",
+       "in": "Viper",
+       "gain": "Up to about 34% more sustained auto DPS via stacking armor shred and increased on-hit damage.",
+       "lose": "Lightning Hawk's Momentum slow-on-hit that helped Murdock kite roaming threats."
+      }
+     ],
+     "holes": "Shred over crit means less upfront burst, so Murdock is weaker in a quick mid-lane all-in and relies on sustained fire."
+    }
+   }
+  },
+  "muriel": {
+   "support": {
+    "metaBuilds": [
+     {
+      "synergy": "Marshal then Crystal Tear then Windcaller stacks power, healing amp and speed so Muriel's Consecrated Ground heal and Alacrity shields go further, Crystal Tear empowering her chosen ally.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Oblivion Crown then Lunaria then Noxia front-loads power so Muriel's Serenity stun and Consecrated Ground hit harder, Lunaria and Lifecore converting that damage into bigger ally heals.",
+     "swaps": [
+      {
+       "out": "Marshal",
+       "in": "Oblivion Crown",
+       "gain": "About 24% more heal/shield output by fueling Muriel's damage-based Lunaria heals with raw power.",
+       "lose": "Marshal's attack speed and on-hit that gave Muriel a bit of poke between casts."
+      }
+     ],
+     "holes": "This power-enchanter build needs Muriel to land damage to heal, so if she can't connect her Serenity her allies get less sustain."
+    }
+   }
+  },
+  "narbash": {
+   "support": {
+    "metaBuilds": [
+     {
+      "synergy": "Truesilver Bracelet then Crystal Tear then Dynamo gives a crowd-control-immune shield and power so Narbash channels Crash Bang Boom safely while Dynamo amps his Thunk-stunned targets.",
+      "holes": "Only about 133 auto DPS; Narbash offers crowd control and shields but little real damage."
+     },
+     {
+      "synergy": "Truesilver Bracelet then Crystal Tear then Everbloom stacks healing amp and a mitigation buff so Narbash's Song of My People heals and shields keep allies alive through fights.",
+      "holes": "Only about 156 heal/shield over 10 seconds, far below the optimizer; his healing output is weak here."
+     },
+     {
+      "synergy": "Truesilver Bracelet then Tainted Totem then Everbloom adds anti-heal and a mitigation buff so Narbash's Thunk and ultimate chip while cutting enemy healing for picks.",
+      "holes": "About 511 one-combo burst is low; Narbash leans on his Thunk stun landing, not raw damage."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Oblivion Crown then Spirit of Amir then Lifecore front-loads power so Narbash's Crash Bang Boom and Thunk hit harder, Lifecore and Lunaria turning that damage into bigger ally heals.",
+     "swaps": [
+      {
+       "out": "Truesilver Bracelet",
+       "in": "Oblivion Crown",
+       "gain": "About 58-61% more output (one-combo and heal/shield) by powering up Narbash's damage-based heals.",
+       "lose": "Truesilver Bracelet's crowd-control-immune shield that protected Narbash during his Crash Bang Boom channel."
+      }
+     ],
+     "holes": "Dropping the shield leaves Narbash vulnerable while channeling his slow ultimate, and his heals now depend on landing damage."
+    }
+   }
+  },
+  "neon": {
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Combustion then Wraith then Amulet of Chaos stacks power and a cooldown reset so Neon's Final Thread Overclocked combo bursts, Amulet refreshing her abilities mid-fight.",
+      "holes": null
+     },
+     {
+      "synergy": "Combustion then Noxia then Amulet of Chaos adds max-health damage and a reset so Neon's Overclocked combo deletes a chunky target, Amulet re-arming her threads.",
+      "holes": null
+     },
+     {
+      "synergy": "Azure Core then Combustion then Lifecore blends power, a shield and self-heal so Neon survives and sustains while weaving her Overclocked rotation.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Oathkeeper then Wraith stacks power and penetration so Neon's L.I.N.X, Data Burst and Final Thread bomb shred, Caustica punishing healthy targets.",
+     "swaps": [
+      {
+       "out": "Combustion",
+       "in": "Spectral Schematics",
+       "gain": "About 12-22% more burst and survivability via flat power, health, and current-health bonus damage.",
+       "lose": "Combustion's repeating area Pyro burst and big mana pool for sustained casting."
+      },
+      {
+       "out": "Azure Core",
+       "in": "Spectral Schematics",
+       "gain": "About 17% more magical survivability plus current-health bonus damage on her combo.",
+       "lose": "Azure Core's shield and mana pool that kept Neon safe while comboing."
+      }
+     ],
+     "holes": "Still glass-cannon; if Neon's Data Burst mesmerize is dodged she has no defenses and a flanker ends her fast."
+    }
+   }
+  },
+  "phase": {
+   "support": {
+    "metaBuilds": [
+     {
+      "synergy": "Marshal then Enra's Blessing then Galaxy Greaves gives power, armor and a shield so Phase's Telekinetic Link buffs her ally while she survives and pulls them to safety.",
+      "holes": null
+     },
+     {
+      "synergy": "Marshal then Dynamo then Enra's Blessing adds a damage-amp and shield so Phase's Energy Lance and linked ally hit harder on a focused target.",
+      "holes": "Only about 120 auto DPS; Phase's value is the Link buff, not damage, so a fed enemy ignores her output."
+     },
+     {
+      "synergy": "Marshal then Galaxy Greaves then Windcaller stacks speed and shields so Phase pokes with Psychic Flare blind and keeps her linked ally mobile and protected.",
+      "holes": "About 548 one-combo burst is low; Phase relies on her Link and blind, not on bursting anyone herself."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Stonewall then Vainglory then Raiment makes Phase a tank support who walks up, links and pulls her ally, lands Energy Lance root, and survives to keep the Link active.",
+     "swaps": [
+      {
+       "out": "Marshal",
+       "in": "Stonewall",
+       "gain": "About 50% more magical survivability so Phase stays alive to maintain her Telekinetic Link and pull allies out.",
+       "lose": "Marshal's attack speed and on-hit poke that gave Phase a bit of damage."
+      }
+     ],
+     "holes": "Full tank zeroes Phase's damage, so her Psychic Flare and Energy Lance barely chip and she relies entirely on the Link and crowd control."
+    }
+   }
+  },
+  "rampage": {
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Overlord then Rapture then Cursed Scroll stacks health and on-hit so Rampage's Behemoth-empowered basics and Boulder Throw stun grind, Behemoth's heal scaling with nearby enemies.",
+      "holes": "About 227 auto DPS needs Rampage attacking; if kited off his combo his sustained damage stalls."
+     },
+     {
+      "synergy": "Overlord then Rapture then Aegis of Agawar pairs health and on-hit with low-health armor so Rampage dives with Pounce and survives, Aegis spiking armor when he drops low.",
+      "holes": "About 463 one-combo burst is modest; Rampage tanks well but needs his Boulder Throw stun to set up a kill."
+     },
+     {
+      "synergy": "Overlord then Rapture then Tainted Guard stacks health, on-hit and anti-heal so Rampage anchors fights with Behemoth, holding and bleeding sustain bruisers.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Solaris then Spear of Desolation stacks attack speed and armor pen so Rampage's Behemoth basics and Boulder Throw carve armor, Solaris healing him through dives.",
+     "swaps": [
+      {
+       "out": "Overlord",
+       "in": "Viper",
+       "gain": "Up to about 53% more burst and DPS via stacking armor shred and increased on-hit damage.",
+       "lose": "Overlord's stacking health and cleave that made Rampage a hard-to-kill jungle bruiser (which carries the meta's 64% winrate)."
+      }
+     ],
+     "holes": "Lethality strips Rampage's huge tankiness, the source of his sky-high meta winrate, so a dive can get him killed despite Behemoth's heal."
+    }
+   }
+  },
+  "renna": {
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Entropy then Wraith then Overseer stacks power, penetration and magic lifesteal so Renna's Mortal Coil execute and Stupor burst hit hard while Overseer heals her in fights.",
+      "holes": "About 892 one-combo burst is modest and squishy; without Essence stacks Renna's abilities feel weak early."
+     },
+     {
+      "synergy": "Tainted Scepter then Entropy then Wraith adds health and anti-heal so Renna grinds sustain targets with Mortal Coil and Soulfire while cutting their healing.",
+      "holes": "About 947 over a 10-second rotation trails the optimizer badly; Tainted Scepter's stacks ramp slowly for her."
+     },
+     {
+      "synergy": "Orb of Growth then Tainted Scepter then Magnify scales power and health as Renna farms Essence, with Magnify shredding magic armor for her execute.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Oathkeeper then Magnify stacks power and shred so Renna's Mortal Coil execute and Stupor burst harder, the current-health bonus speeding kills as enemies drop.",
+     "swaps": [
+      {
+       "out": "Entropy",
+       "in": "Spectral Schematics",
+       "gain": "About 23% more one-combo burst plus current-health bonus damage to push targets into her execute range.",
+       "lose": "Entropy's flat power and the repeated bonus-damage proc on her multi-hit abilities."
+      },
+      {
+       "out": "Tainted Scepter",
+       "in": "Spectral Schematics",
+       "gain": "About 74% more 10-second rotation damage via power, health and the current-health bonus.",
+       "lose": "Tainted Scepter's anti-heal and stacking Malice damage against sustain targets."
+      }
+     ],
+     "holes": "Renna is squishy and Essence-dependent, so a dive that catches her before she stacks Essence ends her quickly."
+    }
+   },
+   "support": {
+    "metaBuilds": [
+     {
+      "synergy": "Entropy then Wraith then Overseer stacks power and magic lifesteal so a damage-support Renna pokes with Soulfire and threatens picks with Mortal Coil's execute while healing back.",
+      "holes": "No defenses; Renna dies to any engage and can't peel beyond her Stupor mesmerize."
+     },
+     {
+      "synergy": "Tainted Scepter then Entropy then Wraith adds health and anti-heal so Renna chips and cuts enemy healing in fights with Mortal Coil and Soulfire.",
+      "holes": "Only about 947 over a 10-second rotation; still squishy, so Renna gets blown up in messy teamfights."
+     },
+     {
+      "synergy": "Orb of Growth then Tainted Scepter then Magnify scales power and health as Renna feeds on Essence, Magnify shredding armor for her execute.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Stonewall then Warden's Faith then Vainglory makes Renna a tank support who walks up, lands Stupor mesmerize and Mortal Coil, and survives to peel and zone for her carry.",
+     "swaps": [
+      {
+       "out": "Orb Of Growth",
+       "in": "Stonewall",
+       "gain": "About 2.1 times the physical survivability plus the 5% physical mitigation, letting Renna anchor the front.",
+       "lose": "Orb of Growth's scaling power and Essence-friendly damage that gave Renna kill threat."
+      }
+     ],
+     "holes": "Full tank guts Renna's damage and execute, so she becomes pure crowd control with no real kill pressure."
+    }
+   }
+  },
+  "revenant": {
+   "carry": {
+    "metaBuilds": [
+     {
+      "synergy": "Vanquisher then Imperator then Terminus stacks crit and lifesteal so Revenant's guaranteed-crit final round and Hellfire missing-health bonus burst, Terminus shielding excess healing.",
+      "holes": "About 720 one-combo burst is the lowest of these cores; Revenant's burst here trails the alternatives."
+     },
+     {
+      "synergy": "Vanquisher then Imperator then Demolisher stacks crit and armor ignore so Revenant's crit final round and Obliterate missiles punch through tanks for a cleaner burst.",
+      "holes": "About 770 one-combo burst still leans on landing his final-round crit; against armor stacking he chips slowly."
+     },
+     {
+      "synergy": "Imperator then Terminus then Lightning Hawk pairs crit, lifesteal and a Momentum slow so Revenant sustains while his crit basics and Reckoning isolate a target.",
+      "holes": "About 365 health drained over a 10-second fight is the sustain payoff but the burst here is lower than crit cores."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Manta Scythe stacks attack speed and armor shred so Revenant's crit final round and Scar marks melt armor, building Vanquisher and Imperator for crit finishers.",
+     "swaps": [],
+     "holes": "Manta Scythe's bonus rewards isolated targets, so when the enemy carry stays grouped Revenant gets less from his Reckoning pick."
+    }
+   },
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Vanquisher then Imperator then Terminus stacks crit and lifesteal so Revenant's guaranteed-crit final round and Hellfire missing-health bonus burst, Terminus shielding excess healing.",
+      "holes": "About 720 one-combo burst is the lowest core here; Revenant's mid-lane burst trails the alternatives."
+     },
+     {
+      "synergy": "Vanquisher then Imperator then Demolisher stacks crit and armor ignore so Revenant's crit final round and Obliterate missiles punch through tanks for cleaner burst.",
+      "holes": "About 770 one-combo burst leans on his final-round crit landing; against armor stacking he chips slowly."
+     },
+     {
+      "synergy": "Imperator then Terminus then Lightning Hawk pairs crit, lifesteal and a Momentum slow so Revenant sustains while his crit basics and Reckoning isolate a mid laner.",
+      "holes": "About 365 health drained over a 10-second fight is the sustain payoff but burst here is lower than crit cores."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Manta Scythe stacks attack speed and armor shred so Revenant's crit final round and Scar marks melt armor, building Vanquisher and Imperator for crit finishers.",
+     "swaps": [],
+     "holes": "Manta Scythe's bonus rewards isolated targets, so when the enemy stays grouped Revenant gets less from his Reckoning pick."
+    }
+   }
+  },
+  "riktor": {
+   "support": {
+    "metaBuilds": [
+     {
+      "synergy": "Dynamo then Xenia then Frosted Lure stacks armor, a shield and a slow-pulse so Riktor walks up, lands Riplash pull into Skewer suppress, and survives, Dynamo amping the held target.",
+      "holes": null
+     },
+     {
+      "synergy": "Gaussian Greaves then Raiment then Dynamo blends health, mobility and a damage-amp so Riktor dives with Riplash and Skewer, the shockwave and Dynamo boosting his lockdown.",
+      "holes": "About 592 one-combo burst is low; Riktor sets up kills but can't finish them himself."
+     },
+     {
+      "synergy": "Dynamo then Tainted Charm then Xenia stacks health, anti-heal and a shield so Riktor's Riplash and Skewer chains lock targets while cutting their healing for the team to collapse.",
+      "holes": "About 539 one-combo burst is low; Riktor is a crowd-control anchor, not a damage threat."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Stonewall then Warden's Faith then Vainglory stacks heavy physical armor so Riktor dives in, lands Riplash pull and Skewer suppress, and survives focus while the team cashes in.",
+     "swaps": [
+      {
+       "out": "Dynamo",
+       "in": "Stonewall",
+       "gain": "About 48% more physical survivability and the 5% physical mitigation, so Riktor holds enemies in Skewer through focus.",
+       "lose": "Dynamo's 10% damage-amp on the target Riktor locks down, which helped allies burst it."
+      }
+     ],
+     "holes": "Pure tank means Riktor's Riplash and Shock Therapy barely chip, so he depends on teammates to convert his crowd control."
+    }
+   },
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Dynamo then Xenia then Frosted Lure stacks armor and a slow-pulse so Riktor ganks with Riplash pull into Skewer suppress, surviving counter-ganks while Dynamo amps the held target.",
+      "holes": null
+     },
+     {
+      "synergy": "Gaussian Greaves then Raiment then Dynamo blends mobility, regen and a damage-amp so Riktor's Riplash gank and shockwave lock and burst a target a bit harder.",
+      "holes": "About 592 one-combo burst is low; squishies survive Riktor's gank unless allies follow up."
+     },
+     {
+      "synergy": "Dynamo then Tainted Charm then Xenia stacks health, anti-heal and a shield so Riktor anchors objective fights, chaining targets with Skewer while cutting healing.",
+      "holes": "About 539 one-combo burst is low; Riktor sets up kills but offers almost no damage himself."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectra then Prophecy then Cursed Scroll stacks attack speed and on-hit so Riktor's Whip basics melt with Prisma missing-health damage, World Breaker and Magnify amplifying his magic.",
+     "swaps": [
+      {
+       "out": "Gaussian Greaves",
+       "in": "Spectra",
+       "gain": "About 31% more one-combo burst via Prisma's missing-health on-hit and big attack speed on his basics.",
+       "lose": "Gaussian Greaves' double-jump shockwave mobility and the bulk that helped Riktor survive ganks."
+      },
+      {
+       "out": "Dynamo",
+       "in": "Spectra",
+       "gain": "About 44% more one-combo burst from attack speed and Prisma's missing-health damage.",
+       "lose": "Dynamo's damage-amp on locked-down targets and the health that made Riktor tanky."
+      }
+     ],
+     "holes": "This attack-speed build sacrifices Riktor's signature tankiness, so a contested objective fight can drop him before Skewer resolves."
+    }
+   },
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Dynamo then Xenia then Frosted Lure stacks armor and a slow-pulse so Riktor bullies the lane, landing Riplash pull into Skewer suppress while surviving, Dynamo amping his target.",
+      "holes": null
+     },
+     {
+      "synergy": "Gaussian Greaves then Raiment then Dynamo blends mobility, regen and a damage-amp so Riktor's Riplash and shockwave lock and burst a laner slightly harder.",
+      "holes": "About 592 one-combo burst is low; a healthy laner survives Riktor's all-in."
+     },
+     {
+      "synergy": "Dynamo then Tainted Charm then Xenia stacks health, anti-heal and a shield so Riktor out-grinds sustain bruisers with Skewer chains while cutting their healing.",
+      "holes": "About 539 one-combo burst is low; Riktor anchors but can't finish kills himself."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectra then Prophecy then Cursed Scroll stacks attack speed and on-hit so Riktor's Whip basics shred with Prisma's missing-health damage, World Breaker and Magnify boosting his magic.",
+     "swaps": [
+      {
+       "out": "Gaussian Greaves",
+       "in": "Spectra",
+       "gain": "About 31% more one-combo burst via Prisma's missing-health on-hit and heavy attack speed.",
+       "lose": "Gaussian Greaves' double-jump shockwave mobility and the bulk for surviving lane trades."
+      },
+      {
+       "out": "Dynamo",
+       "in": "Spectra",
+       "gain": "About 44% more one-combo burst from attack speed and Prisma's missing-health damage.",
+       "lose": "Dynamo's damage-amp on held targets and the health that made Riktor durable in lane."
+      }
+     ],
+     "holes": "Going attack-speed strips Riktor's tankiness, so a hard-engaging laner can punish him once Skewer is down."
+    }
+   }
+  },
+  "serath": {
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Sky Splitter then Storm Breaker then Spectra stacks attack speed and on-hit so Serath's Chastise reset and Heresy basics chain bursts and Sky Splitter chunks tanks while she drains.",
+      "holes": "About 263 health drained over a 10-second fight; against burst Serath's sustain can't outrun focus."
+     },
+     {
+      "synergy": "Storm Breaker then Sky Splitter then Tainted Rounds stacks on-hit and anti-heal so Serath's Chastise-reset basics chain Storm Breaker bolts and cut enemy healing in skirmishes.",
+      "holes": "About 514 over a 10-second rotation lags the optimizer; Serath leans on attack uptime that kiting denies."
+     },
+     {
+      "synergy": "Sky Splitter then Spectra then Tyranny stacks on-hit and ability haste so Serath cycles Chastise and Heresy nonstop, Prisma and Sky Splitter shredding tanks in long fights.",
+      "holes": "About 654 over a 20-second fight needs the enemy to stay close; mobile targets kite Serath off her on-hits."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Solaris then Spear of Desolation stacks attack speed and armor pen so Serath's Chastise and Heresy basics carve armor, Solaris healing her through dives.",
+     "swaps": [
+      {
+       "out": "Storm Breaker",
+       "in": "Viper",
+       "gain": "About 95% more 10-second rotation damage via stacking armor shred and increased on-hit and ability damage.",
+       "lose": "Storm Breaker's chain-lightning empowered basic that hit multiple targets in teamfights."
+      },
+      {
+       "out": "Sky Splitter",
+       "in": "Viper",
+       "gain": "About 2.2 times the extended-fight damage from armor shred and increased on-hit damage.",
+       "lose": "Sky Splitter's current-health on-hit and lifesteal that chunked tanks and sustained Serath."
+      }
+     ],
+     "holes": "Lethality drops Serath's drain sustain, so without lifesteal she relies only on Heresy uptime and is squishier diving in."
+    }
+   },
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Sky Splitter then Storm Breaker then Spectra stacks attack speed and on-hit so Serath's Chastise reset and Heresy basics chain bursts while Sky Splitter chunks bruisers.",
+      "holes": "About 263 health drained over a 10-second fight; a burst laner still bursts Serath through that sustain."
+     },
+     {
+      "synergy": "Storm Breaker then Sky Splitter then Tainted Rounds stacks on-hit and anti-heal so Serath's Chastise-reset basics chain bolts and cut healing in lane trades.",
+      "holes": "About 514 over a 10-second rotation lags the optimizer; kiting laners deny Serath's attack uptime."
+     },
+     {
+      "synergy": "Sky Splitter then Spectra then Tyranny stacks on-hit and ability haste so Serath cycles Chastise and Heresy, Prisma and Sky Splitter shredding tanks in extended brawls.",
+      "holes": "About 654 over a 20-second fight needs the enemy close; mobile laners walk away from Serath's on-hits."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Solaris then Spear of Desolation stacks attack speed and armor pen so Serath's Chastise and Heresy basics carve armor, Solaris sustaining her all-ins.",
+     "swaps": [
+      {
+       "out": "Storm Breaker",
+       "in": "Viper",
+       "gain": "About 95% more 10-second rotation damage via stacking armor shred and increased on-hit and ability damage.",
+       "lose": "Storm Breaker's chain-lightning empowered basic that hit grouped enemies."
+      },
+      {
+       "out": "Sky Splitter",
+       "in": "Viper",
+       "gain": "About 2.2 times the extended-fight damage from armor shred and increased on-hit damage.",
+       "lose": "Sky Splitter's current-health on-hit and lifesteal that chunked bruisers and sustained Serath."
+      }
+     ],
+     "holes": "Lethality removes Serath's drain sustain, so she relies only on Heresy uptime and is squishier when she dives a laner."
+    }
+   }
+  },
+  "sevarog": {
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Fire Blossom then Tainted Guard then Fist of Razuul stacks health, armor and anti-heal so Sevarog anchors the lane, holding targets in Subjugate while Razuul's basic heals him.",
+      "holes": null
+     },
+     {
+      "synergy": "Fire Blossom then Fist of Razuul then Flux Matrix stacks health and amplifies magic damage on locked targets so Sevarog's Subjugate-chained enemies take more.",
+      "holes": "Worst core at 45.3% with only about 557 over a 10-second rotation; Sevarog's damage is very weak here."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Crescelia then Oathkeeper then Wraith stacks power, cooldowns and penetration so Sevarog's Siphon, Subjugate and Colossal Blow burst, Caustica carving magic armor as Souls stack.",
+     "swaps": [
+      {
+       "out": "Fire Blossom",
+       "in": "Crescelia",
+       "gain": "About 2.5 times the 10-second rotation damage via power, cooldown reduction and the empowered Moonblade basic.",
+       "lose": "Fire Blossom's heavy health and ramping burn that made Sevarog a near-unkillable frontliner."
+      }
+     ],
+     "holes": "This power build makes Sevarog far squishier, so diving in to land Subjugate and Siphon can get him killed before his Soul tiers pay off."
+    }
+   },
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Fire Blossom then Tainted Guard then Fist of Razuul stacks health, armor and anti-heal so Sevarog ganks with Subjugate chains, survives counter-ganks, and Razuul's basic heals him.",
+      "holes": null
+     },
+     {
+      "synergy": "Fire Blossom then Fist of Razuul then Flux Matrix stacks health and amplifies magic damage on chained targets so Sevarog's Subjugate setups hurt more.",
+      "holes": "Worst core at 45.3% with only about 557 over a 10-second rotation; Sevarog's gank damage is very weak."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Crescelia then Oathkeeper then Wraith stacks power, cooldowns and penetration so Sevarog's Siphon, Subjugate and Colossal Blow gank-burst, Caustica shredding magic armor as Souls stack.",
+     "swaps": [
+      {
+       "out": "Fire Blossom",
+       "in": "Crescelia",
+       "gain": "About 2.5 times the 10-second rotation damage via power, cooldown reduction and the empowered Moonblade basic.",
+       "lose": "Fire Blossom's health and ramping burn that made Sevarog a durable jungle frontliner."
+      }
+     ],
+     "holes": "Power over health leaves Sevarog squishy, so a contested objective fight can kill him before he reaches his big Soul tiers."
+    }
+   }
+  },
+  "shinbi": {
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Orb of Growth then Tainted Scepter then Oathkeeper scales power and anti-heal so Shinbi's wolf abilities and All-Kill burst, the empowered basic landing after her Biting Melody.",
+      "holes": "About 819 one-combo burst leans on stacking Track for All-Kill; if interrupted, squishy Shinbi has weak follow-up."
+     },
+     {
+      "synergy": "Orb of Growth then Oathkeeper then Magnify blends power, health and magic shred so Shinbi dives with Circle Rhythm's shield and her wolves while staying durable.",
+      "holes": null
+     },
+     {
+      "synergy": "Megacosm then Tainted Scepter then Magnify stacks max-health burn, anti-heal and shred so Shinbi out-damages bruisers over long fights with her wolves and Pestilence-style burn.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Timewarp then Wraith stacks power and cooldowns so Shinbi cycles Line Tempo and Circle Rhythm fast, the current-health bonus speeding her All-Kill kills.",
+     "swaps": [
+      {
+       "out": "Orb Of Growth",
+       "in": "Spectral Schematics",
+       "gain": "About 43% more one-combo burst plus current-health bonus damage, online immediately instead of after stacking.",
+       "lose": "Orb of Growth's scaling power that rewards Shinbi farming safely into the late game."
+      },
+      {
+       "out": "Megacosm",
+       "in": "Spectral Schematics",
+       "gain": "About 40% more extended-fight damage from flat power and the current-health bonus.",
+       "lose": "Megacosm's max-health burn that chipped enemies over time alongside her wolves."
+      }
+     ],
+     "holes": "Shinbi stays squishy, so if she dives in to stack Track for All-Kill and the kill fails she gets focused down."
+    }
+   },
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Orb of Growth then Tainted Scepter then Oathkeeper scales power and anti-heal so Shinbi ganks with her wolves into All-Kill, the empowered basic landing after Biting Melody.",
+      "holes": "About 819 one-combo burst leans on stacking Track; if her gank is interrupted Shinbi has little follow-up."
+     },
+     {
+      "synergy": "Orb of Growth then Oathkeeper then Magnify blends power, health and shred so Shinbi dives with Circle Rhythm's shield and wolves while staying durable through ganks.",
+      "holes": null
+     },
+     {
+      "synergy": "Megacosm then Tainted Scepter then Magnify stacks max-health burn, anti-heal and shred so Shinbi out-grinds bruisers in long objective fights with her wolves.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Timewarp then Wraith stacks power and cooldowns so Shinbi cycles Line Tempo and Circle Rhythm fast on ganks, the current-health bonus speeding her All-Kill kills.",
+     "swaps": [
+      {
+       "out": "Orb Of Growth",
+       "in": "Spectral Schematics",
+       "gain": "About 43% more one-combo burst plus current-health bonus damage, online right away instead of after stacking.",
+       "lose": "Orb of Growth's scaling power that rewards Shinbi farming into the late game."
+      },
+      {
+       "out": "Megacosm",
+       "in": "Spectral Schematics",
+       "gain": "About 40% more extended-fight damage from flat power and the current-health bonus.",
+       "lose": "Megacosm's max-health burn that chipped enemies alongside her wolves."
+      }
+     ],
+     "holes": "Shinbi is squishy, so committing to stack Track for All-Kill on a gank can get her killed if the enemy collapses."
+    }
+   }
+  },
+  "skylar": {
+   "carry": {
+    "metaBuilds": [
+     {
+      "synergy": "Plasma Blade then Vanquisher then Imperator stacks crit and attack speed so Skylar's Hypercharge fixed-rate basics crit through armor and Imperator amplifies the burst.",
+      "holes": "Worst core at 47.5%; about 924 one-combo burst leans on Hypercharge uptime, weak if Skylar is kited off it."
+     },
+     {
+      "synergy": "Plasma Blade then Vanquisher then Tainted Rounds builds crit and anti-heal so Skylar's Hypercharge spray ramps and cuts enemy healing, growing as targets drop.",
+      "holes": "About 356 auto DPS trails the optimizer; against full-health targets the ramping on-hit starts soft."
+     },
+     {
+      "synergy": "Plasma Blade then Vanquisher then Terminus pairs crit with lifesteal so Skylar's Hypercharge basics sustain her through fights and Terminus shields excess healing.",
+      "holes": "About 426 over a 10-second rotation is low; Skylar's damage trails and she's still fragile if focused."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Vanquisher stacks attack speed and armor shred so Skylar's Hypercharge fixed-rate basics melt armor, building Imperator and Demolisher for crit finishers.",
+     "swaps": [
+      {
+       "out": "Plasma Blade",
+       "in": "Viper",
+       "gain": "Up to about 47% more 10-second rotation damage via stacking armor shred and increased on-hit damage on Hypercharge.",
+       "lose": "Plasma Blade's stacking crit chance that helped Skylar's basics crit reliably."
+      }
+     ],
+     "holes": "Shred over crit lowers Skylar's burst, so she's weaker in a quick all-in and relies on Hypercharge sustained fire."
+    }
+   },
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Plasma Blade then Vanquisher then Imperator stacks crit and attack speed so Skylar's Hypercharge fixed-rate basics crit through armor in mid lane, Imperator amplifying the burst.",
+      "holes": "Worst core at 47.5%; about 924 one-combo burst leans on Hypercharge uptime, weak if Skylar is poked off it."
+     },
+     {
+      "synergy": "Plasma Blade then Vanquisher then Tainted Rounds builds crit and anti-heal so Skylar's Hypercharge spray ramps and cuts enemy healing as targets drop.",
+      "holes": "About 356 auto DPS trails the optimizer; against healthy mid laners the ramping on-hit starts soft."
+     },
+     {
+      "synergy": "Plasma Blade then Vanquisher then Terminus pairs crit with lifesteal so Skylar's Hypercharge basics sustain her through fights, Terminus shielding excess healing.",
+      "holes": "About 426 over a 10-second rotation is low; Skylar's damage trails and she stays fragile to roams."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Vanquisher stacks attack speed and armor shred so Skylar's Hypercharge fixed-rate basics melt armor, building Imperator and Demolisher for crit finishers.",
+     "swaps": [
+      {
+       "out": "Plasma Blade",
+       "in": "Viper",
+       "gain": "Up to about 47% more 10-second rotation damage via stacking armor shred and increased on-hit damage on Hypercharge.",
+       "lose": "Plasma Blade's stacking crit chance that made Skylar's basics crit reliably."
+      }
+     ],
+     "holes": "Shred over crit lowers Skylar's burst, so she's weaker in a quick mid all-in and relies on Hypercharge sustained fire."
+    }
+   }
+  },
+  "sparrow": {
+   "carry": {
+    "metaBuilds": [
+     {
+      "synergy": "Storm Breaker then Sky Splitter then Spectra stacks attack speed and on-hit so Sparrow's Heightened Senses basics stack Relentless fast, Sky Splitter and Prisma chunking targets by missing health.",
+      "holes": "About 398 auto DPS trails the optimizer; Sparrow relies on attack uptime that being kited denies."
+     },
+     {
+      "synergy": "Storm Breaker then Lightning Hawk then Spectra blends attack speed and crit so Sparrow's Relentless-stacked basics chain Storm Breaker bolts and crit through targets.",
+      "holes": "About 368 auto DPS is the lowest core here; Sparrow's sustained output lags behind the alternatives."
+     },
+     {
+      "synergy": "Storm Breaker then Sky Splitter then Tainted Rounds stacks on-hit and anti-heal so Sparrow's Relentless basics shred and cut enemy healing, growing as targets drop.",
+      "holes": "About 402 auto DPS still trails the optimizer; against healthy targets her ramping on-hit starts soft."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Vanquisher stacks attack speed and armor shred so Sparrow's Heightened Senses basics melt armor, building Plasma Blade and Imperator for crit finishers.",
+     "swaps": [
+      {
+       "out": "Storm Breaker",
+       "in": "Viper",
+       "gain": "Up to about 36% more sustained auto DPS via stacking armor shred and increased on-hit damage on her Relentless basics.",
+       "lose": "Storm Breaker's chain-lightning empowered basic that hit multiple grouped enemies."
+      }
+     ],
+     "holes": "Crit over on-hit makes early stacking streaky, so Sparrow's damage swings until her crit chance fills out."
+    }
+   },
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Storm Breaker then Sky Splitter then Spectra stacks attack speed and on-hit so Sparrow's Heightened Senses basics stack Relentless fast, Sky Splitter and Prisma chunking by missing health.",
+      "holes": "About 398 auto DPS trails the optimizer; Sparrow is fragile to mid-lane roams while attacking."
+     },
+     {
+      "synergy": "Storm Breaker then Lightning Hawk then Spectra blends attack speed and crit so Sparrow's Relentless basics chain bolts and crit through targets.",
+      "holes": "About 368 auto DPS is the lowest core here; Sparrow's sustained output lags in mid."
+     },
+     {
+      "synergy": "Storm Breaker then Sky Splitter then Tainted Rounds stacks on-hit and anti-heal so Sparrow's Relentless basics shred and cut healing as targets drop.",
+      "holes": "About 402 auto DPS still trails the optimizer; ramping on-hit is soft against full-health targets."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Vanquisher stacks attack speed and armor shred so Sparrow's Heightened Senses basics melt armor, building Plasma Blade and Imperator for crit finishers.",
+     "swaps": [
+      {
+       "out": "Storm Breaker",
+       "in": "Viper",
+       "gain": "Up to about 36% more sustained auto DPS via stacking armor shred and increased on-hit damage on her Relentless basics.",
+       "lose": "Storm Breaker's chain-lightning empowered basic that hit grouped enemies."
+      }
+     ],
+     "holes": "Crit over on-hit makes early stacking streaky, so Sparrow's mid-lane damage swings until her crit chance fills out."
+    }
+   }
+  },
+  "steel": {
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Xenia then Dynamo then Gaia Greaves stacks armor and a damage-amp so Steel dives with Bull Rush and Shield Slam, Dynamo amplifying allies' damage on his stunned targets.",
+      "holes": "Only about 94 auto DPS; Steel locks targets down but his own damage is minimal here."
+     },
+     {
+      "synergy": "Fire Blossom then Raiment then Tainted Charm stacks heavy health, regen and anti-heal so Steel anchors the lane, surviving while landing Shield Bash and Shield Slam crowd control.",
+      "holes": null
+     },
+     {
+      "synergy": "Fire Blossom then Tainted Guard then Inquisition stacks health, armor and anti-heal so Steel out-grinds bruisers, his percent-health Shield Bash chipping while cutting their healing.",
+      "holes": "About 777 one-combo burst is low; Steel relies on crowd control, not damage, to win fights."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Prophecy then Orion stacks power and attack speed so Steel's percent-health Shield Bash and Bull Rush burst, the current-health bonus punishing tanky laners.",
+     "swaps": [
+      {
+       "out": "Xenia",
+       "in": "Spectral Schematics",
+       "gain": "About 2.7 times the sustained auto DPS plus current-health bonus damage, turning Steel into a real threat.",
+       "lose": "Xenia's ally shield and the tankiness that let Steel anchor the front line."
+      },
+      {
+       "out": "Fire Blossom",
+       "in": "Spectral Schematics",
+       "gain": "About 59% more one-combo burst from power and the current-health bonus on his Shield Bash.",
+       "lose": "Fire Blossom's huge health and ramping burn that made Steel nearly unkillable."
+      }
+     ],
+     "holes": "Going full power throws away Steel's signature tankiness, so diving in with Bull Rush can get him deleted."
+    }
+   },
+   "support": {
+    "metaBuilds": [
+     {
+      "synergy": "Xenia then Dynamo then Gaia Greaves stacks armor, an ally shield and a damage-amp so Steel engages with Bull Rush and Shield Slam, Dynamo amping his stuns.",
+      "holes": "Only about 94 auto DPS; Steel is pure engage and protection with negligible damage."
+     },
+     {
+      "synergy": "Fire Blossom then Raiment then Tainted Charm stacks heavy health, regen and anti-heal so Steel front-lines, surviving focus while landing Shield Bash and Shield Slam crowd control.",
+      "holes": null
+     },
+     {
+      "synergy": "Fire Blossom then Tainted Guard then Inquisition stacks health, armor and anti-heal so Steel anchors fights, chipping with percent-health Shield Bash while cutting enemy healing.",
+      "holes": "About 777 one-combo burst is low; Steel depends entirely on crowd control and protection."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Stonewall then Warden's Faith then Vainglory stacks heavy physical armor so Steel dives in, lands Bull Rush and Shield Slam stuns, and survives focus to peel for his carry.",
+     "swaps": [
+      {
+       "out": "Fire Blossom",
+       "in": "Stonewall",
+       "gain": "About 44% more physical survivability and the 5% physical mitigation, letting Steel hold the front longer.",
+       "lose": "Fire Blossom's ramping burn that gave Steel a bit of damage on enemies he engaged."
+      }
+     ],
+     "holes": "Full tank means Steel's Shield Bash and Shield Slam barely chip, so he relies entirely on crowd control to matter."
+    }
+   }
+  },
+  "terra": {
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Tainted Guard then Fire Blossom then Transference stacks heavy health, armor and anti-heal so Terra anchors the lane, surviving while landing Highland Hurl shred and Wild Rush knockbacks.",
+      "holes": null
+     },
+     {
+      "synergy": "Tainted Guard then Elafrost then Transference blends health, armor and an on-hit slow so Terra sticks to targets with Elafrost while staying nearly unkillable.",
+      "holes": null
+     },
+     {
+      "synergy": "Fire Blossom then Tainted Guard then Inquisition stacks health, armor and anti-heal so Terra out-grinds bruisers, her Highland Hurl armor shred and Inquisition chipping them.",
+      "holes": "Worst core at 46.9% with about 583 one-combo burst; Terra's damage falls far short here."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Plasma Blade stacks attack speed and armor shred so Terra's Skullsplitter basics and empowered Ruthless Assault melt armor, building Imperator for crit finishers.",
+     "swaps": [
+      {
+       "out": "Fire Blossom",
+       "in": "Viper",
+       "gain": "About 62% more one-combo burst via stacking armor shred and increased on-hit and ability damage.",
+       "lose": "Fire Blossom's huge health and ramping burn that made Terra a near-unkillable frontliner."
+      }
+     ],
+     "holes": "This crit-carry build throws away Terra's massive tankiness, so diving in with Wild Rush can get her killed fast."
+    }
+   },
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Tainted Guard then Fire Blossom then Transference stacks health, armor and anti-heal so Terra ganks with Wild Rush and Highland Hurl shred, surviving counter-ganks while nearly unkillable.",
+      "holes": null
+     },
+     {
+      "synergy": "Tainted Guard then Elafrost then Transference blends health, armor and an on-hit slow so Terra sticks to gank targets with Elafrost while staying durable.",
+      "holes": null
+     },
+     {
+      "synergy": "Fire Blossom then Tainted Guard then Inquisition stacks health, armor and anti-heal so Terra out-grinds bruisers at objectives, her Highland Hurl shred chipping them.",
+      "holes": "Worst core at 46.9% with about 583 one-combo burst; Terra's gank damage is very low."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Plasma Blade stacks attack speed and armor shred so Terra's Skullsplitter basics and empowered Ruthless Assault melt armor, building Imperator for crit finishers.",
+     "swaps": [
+      {
+       "out": "Fire Blossom",
+       "in": "Viper",
+       "gain": "About 62% more one-combo burst via stacking armor shred and increased on-hit and ability damage.",
+       "lose": "Fire Blossom's health and ramping burn that made Terra a near-unkillable jungle bruiser."
+      }
+     ],
+     "holes": "Crit-carry strips Terra's tankiness, so a contested objective fight can kill her before her empowered abilities land."
+    }
+   }
+  },
+  "the-fey": {
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Combustion then Wraith then Megacosm stacks power, penetration and max-health burn so The Fey's Untamed Growth and Bramble Patch zones grind enemies down with stacking damage-over-time.",
+      "holes": null
+     },
+     {
+      "synergy": "Combustion then Wraith then Tainted Scepter adds anti-heal so The Fey's Bramble Patch and Harvest Nettles chip sustain targets while cutting their healing in extended fights.",
+      "holes": null
+     },
+     {
+      "synergy": "Combustion then Wraith then Noxia front-loads power and max-health damage so The Fey's Fly Trap pull into Harvest Nettles deletes a clustered target.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Wraith then Timewarp stacks power and cooldowns so The Fey cycles Fly Trap and Bramble Patch fast, the current-health bonus speeding kills on clustered enemies.",
+     "swaps": [],
+     "holes": "The Fey is squishy, so if her Fly Trap pull is dodged she has no escape and gets punished hard."
+    }
+   },
+   "support": {
+    "metaBuilds": [
+     {
+      "synergy": "Combustion then Wraith then Megacosm stacks power and max-health burn so a poke-support Fey zones with Bramble Patch and Untamed Growth while threatening Fly Trap picks.",
+      "holes": null
+     },
+     {
+      "synergy": "Combustion then Wraith then Tainted Scepter adds anti-heal so The Fey chips and cuts enemy healing with Bramble Patch and Harvest Nettles in fights.",
+      "holes": null
+     },
+     {
+      "synergy": "Combustion then Wraith then Noxia front-loads power so The Fey's Fly Trap pull into Harvest Nettles deletes a clustered target for a pick.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Stonewall then Warden's Faith then Vainglory makes The Fey a tank support who walks up, lands Fly Trap pull and Bramble Patch zoning, and survives to control fights.",
+     "swaps": [
+      {
+       "out": "Combustion",
+       "in": "Stonewall",
+       "gain": "About 2.8 times the physical survivability plus the 5% physical mitigation, so The Fey lives to land Fly Trap.",
+       "lose": "Combustion's repeating Pyro burst and power that made her abilities a real damage threat."
+      }
+     ],
+     "holes": "Full tank zeroes The Fey's damage, so her Bramble Patch and Untamed Growth barely chip and she relies purely on Fly Trap crowd control."
+    }
+   }
+  },
+  "twinblast": {
+   "carry": {
+    "metaBuilds": [
+     {
+      "synergy": "Solaris then Ashbringer then Imperator stacks crit and cooldown-on-hit so TwinBlast's Gunslinger triple-shot and Ventilate refresh Rocket Dash, Imperator amplifying his crits.",
+      "holes": "About 308 auto DPS trails the optimizer; TwinBlast's sustained output is solid but not top here."
+     },
+     {
+      "synergy": "Solaris then Vanquisher then Imperator front-loads crit and an execute so TwinBlast's Vaporize and Gunslinger triple-shot burst, Vanquisher finishing low targets.",
+      "holes": "About 674 one-combo burst leans on crits landing; if TwinBlast is kited his burst drops."
+     },
+     {
+      "synergy": "Solaris then Vanquisher then Tainted Rounds adds anti-heal so TwinBlast grinds bruisers over long fights with crits and ramping on-hit, cutting their healing.",
+      "holes": "About 558 over a 20-second fight needs uptime; against burst comps TwinBlast is fragile and dies first."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Plasma Blade stacks attack speed and armor shred so TwinBlast's Gunslinger triple-shot and Ventilate melt armor, building Imperator and Vanquisher for crit finishers.",
+     "swaps": [
+      {
+       "out": "Solaris",
+       "in": "Viper",
+       "gain": "About 47% more sustained auto DPS via stacking armor shred and increased on-hit damage.",
+       "lose": "Solaris's healing crit-capable empowered basic that sustained TwinBlast through fights."
+      }
+     ],
+     "holes": "Dropping Solaris removes TwinBlast's lifesteal-style sustain, so he's squishier with no healing during Ventilate."
+    }
+   },
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Solaris then Ashbringer then Imperator stacks crit and cooldown-on-hit so TwinBlast's Gunslinger triple-shot and Ventilate refresh Rocket Dash, Imperator amplifying his crits.",
+      "holes": "About 308 auto DPS trails the optimizer; TwinBlast is fragile to mid-lane roams while attacking."
+     },
+     {
+      "synergy": "Solaris then Vanquisher then Imperator front-loads crit and an execute so TwinBlast's Vaporize and Gunslinger triple-shot burst, Vanquisher finishing low mid laners.",
+      "holes": "About 674 one-combo burst leans on crits; if TwinBlast is poked off his rhythm his burst drops."
+     },
+     {
+      "synergy": "Solaris then Vanquisher then Tainted Rounds adds anti-heal so TwinBlast grinds bruisers with crits and ramping on-hit while cutting healing.",
+      "holes": "About 558 over a 20-second fight needs uptime; TwinBlast is fragile to mid-lane ganks."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Plasma Blade stacks attack speed and armor shred so TwinBlast's Gunslinger triple-shot and Ventilate melt armor, building Imperator and Vanquisher for crit finishers.",
+     "swaps": [
+      {
+       "out": "Solaris",
+       "in": "Viper",
+       "gain": "About 47% more sustained auto DPS via stacking armor shred and increased on-hit damage.",
+       "lose": "Solaris's healing crit-capable empowered basic that sustained TwinBlast in lane."
+      }
+     ],
+     "holes": "Dropping Solaris removes TwinBlast's lifesteal-style sustain, so he's squishier with no healing during Ventilate."
+    }
+   }
+  },
+  "wraith": {
+   "carry": {
+    "metaBuilds": [
+     {
+      "synergy": "Soulbinder then Noxia then Wraith Leggings stacks magic power so Wraith's Peekaboo mark makes Knock, Knock! deal bonus magic damage, Noxia and Soulbinder amplifying the long-range shot.",
+      "holes": null
+     },
+     {
+      "synergy": "Soulbinder then Noxia then Tainted Scepter adds health and anti-heal so Wraith's marked Knock, Knock! bonus damage chips and cuts enemy healing in trades.",
+      "holes": null
+     },
+     {
+      "synergy": "Alternator then Vanquisher then Infernum stacks penetration and a max-health burn so Wraith's Surprise penetration boosts Knock, Knock! and Vaporize for a clean burst.",
+      "holes": "About 871 one-combo burst leans on landing his sniper shot; a missed Knock, Knock! wastes the combo."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Plasma Blade stacks attack speed and armor shred so Wraith's Neutralizer basics melt armor, his Surprise penetration and Vanquisher finishing low targets.",
+     "swaps": [],
+     "holes": "This auto-attack build leans on Wraith staying in basic-attack range, working against his long-range Knock, Knock! sniper identity."
+    }
+   },
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Soulbinder then Noxia then Wraith Leggings stacks magic power so Wraith's Peekaboo mark makes Knock, Knock! deal bonus magic damage, Soulbinder rewarding his long-range shots.",
+      "holes": null
+     },
+     {
+      "synergy": "Soulbinder then Noxia then Tainted Scepter adds health and anti-heal so Wraith's marked Knock, Knock! chips and cuts enemy healing in mid-lane trades.",
+      "holes": null
+     },
+     {
+      "synergy": "Alternator then Vanquisher then Infernum stacks penetration and a max-health burn so Wraith's Surprise penetration boosts Knock, Knock! and Vaporize for a clean burst.",
+      "holes": "About 871 one-combo burst leans on landing his sniper shot; a missed Knock, Knock! wastes the combo."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Deathstalker then Plasma Blade stacks attack speed and armor shred so Wraith's Neutralizer basics melt armor, his Surprise penetration and Vanquisher finishing low mid laners.",
+     "swaps": [],
+     "holes": "This auto-attack build leans on Wraith staying in basic-attack range, working against his long-range Knock, Knock! sniper identity."
+    }
+   },
+   "support": {
+    "metaBuilds": [
+     {
+      "synergy": "Soulbinder then Noxia then Wraith Leggings stacks magic power so Wraith's Peekaboo mark makes Knock, Knock! deal bonus magic damage, Soulbinder rewarding his long-range pick shots.",
+      "holes": null
+     },
+     {
+      "synergy": "Soulbinder then Noxia then Tainted Scepter adds health and anti-heal so Wraith's marked Knock, Knock! chips and cuts enemy healing for picks.",
+      "holes": null
+     },
+     {
+      "synergy": "Alternator then Vanquisher then Infernum stacks penetration and a burn so Wraith's Surprise penetration and Knock, Knock! delete a marked target for an assassin-support pick.",
+      "holes": "About 871 one-combo burst leans on landing his sniper shot; squishy Wraith dies if the pick fails."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Stonewall then Warden's Faith then Raiment makes Wraith a tank support who walks up, lands Peekaboo slow and Back It Up displacement, and survives to scout and peel.",
+     "swaps": [
+      {
+       "out": "Soulbinder",
+       "in": "Stonewall",
+       "gain": "About 2.7 times the physical survivability plus the 5% physical mitigation, letting Wraith front-line and protect his carry.",
+       "lose": "Soulbinder's long-range bonus damage that powered his Knock, Knock! pick shots."
+      }
+     ],
+     "holes": "Full tank guts Wraith's damage, so his Knock, Knock! and Peekaboo barely chip and he relies on his slow and ultimate utility."
+    }
+   }
+  },
+  "wukong": {
+   "jungle": {
+    "metaBuilds": [],
+    "optimizer": {
+     "synergy": "Viper then Solaris then The Perforator stacks attack speed and armor pen so Wukong's Body-stance basics and High Impact slam carve armor, Solaris healing him through ganks.",
+     "swaps": [],
+     "holes": "This lethality build leaves Wukong squishy, so diving in with Cyclebreaker stun and his clones can get him killed if the gank fails."
+    }
+   },
+   "offlane": {
+    "metaBuilds": [],
+    "optimizer": {
+     "synergy": "Viper then Solaris then The Perforator stacks attack speed and armor pen so Wukong's Body-stance basics and High Impact slam carve armor in lane, Solaris sustaining his all-ins.",
+     "swaps": [],
+     "holes": "Lethality leaves Wukong squishy, so committing his Cyclebreaker stun and staff combo into a bruiser can get him focused down."
+    }
+   }
+  },
+  "yin": {
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Sky Splitter then Lightning Hawk then Onixian Quiver stacks attack speed, crit and lifesteal so Yin's Rising Storm and Windburn percent-health basics drain hard between Lash Kicks.",
+      "holes": "About 515 health drained over a 10-second fight is strong but if Yin is kited off her basics the sustain dries up."
+     },
+     {
+      "synergy": "Sky Splitter then Lightning Hawk then Tainted Rounds builds crit and anti-heal so Yin's Windburn-empowered basics burst and cut enemy healing, Sky Splitter chunking tanks.",
+      "holes": "About 711 one-combo burst leans on landing Lash Kick to lock the target; whiff it and Yin's gank stalls."
+     },
+     {
+      "synergy": "Storm Breaker then Sky Splitter then Onixian Quiver stacks on-hit and lifesteal so Yin's Rising Storm basics chain Storm Breaker bolts and drain in extended fights.",
+      "holes": "About 475 health drained over a 10-second fight; Yin still needs sustained attacks, which mobile targets deny."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Solaris then Viper then Spear of Desolation stacks power and armor pen so Yin's Lash Kick combo and Windburn percent-health basics carve armor while Solaris sustains dives.",
+     "swaps": [],
+     "holes": "This lethality build drops the heavy lifesteal of the crit cores, so Yin sustains less and is squishier diving with Lash Kick."
+    }
+   },
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Sky Splitter then Lightning Hawk then Onixian Quiver stacks attack speed, crit and lifesteal so Yin's Rising Storm and Windburn percent-health basics drain hard between Lash Kicks.",
+      "holes": "About 515 health drained over a 10-second fight is strong but a kiting laner denies Yin's basic-attack uptime."
+     },
+     {
+      "synergy": "Sky Splitter then Lightning Hawk then Tainted Rounds builds crit and anti-heal so Yin's Windburn basics burst and cut healing, Sky Splitter chunking tanky laners.",
+      "holes": "About 711 one-combo burst leans on Lash Kick landing; whiff it and Yin is left out of position."
+     },
+     {
+      "synergy": "Storm Breaker then Sky Splitter then Onixian Quiver stacks on-hit and lifesteal so Yin's Rising Storm basics chain bolts and drain in extended lane brawls.",
+      "holes": "About 475 health drained over a 10-second fight; Yin needs sustained attacks that mobile laners avoid."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Solaris then Viper then Spear of Desolation stacks power and armor pen so Yin's Lash Kick combo and Windburn percent-health basics carve armor while Solaris sustains trades.",
+     "swaps": [],
+     "holes": "Lethality drops the crit cores' heavy lifesteal, so Yin sustains less and is squishier when she commits Lash Kick."
+    }
+   }
+  },
+  "yurei": {
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Malady then Spear of Desolation then The Perforator stacks penetration so Yurei's Soul Rip combo and Severance reset burst, the armor ignore carving through gank targets.",
+      "holes": "Only 43.4% winrate; about 942 one-combo burst leans on chaining Severance resets, and Yurei is squishy if the gank fails."
+     },
+     {
+      "synergy": "Mindrazor then Tainted Blade then Nightfall blends cleave, anti-heal and a shield so Yurei sustains via Anima Burst heal and Nightfall while grinding gank targets.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Solaris then The Perforator stacks attack speed and armor pen so Yurei's Soul Rip basics and Severance carve armor, Anima Burst keeping him healthy.",
+     "swaps": [],
+     "holes": "Yurei stays squishy, so diving with Soulstorm and his Severance resets can get him killed if the enemy collapses on him."
+    }
+   },
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Malady then Spear of Desolation then The Perforator stacks penetration so Yurei's Soul Rip combo and Severance reset burst a laner, the armor ignore carving through their resists.",
+      "holes": "Only 43.4% winrate; about 942 one-combo burst leans on Severance resets, and squishy Yurei is punished if his combo whiffs."
+     },
+     {
+      "synergy": "Mindrazor then Tainted Blade then Nightfall blends cleave, anti-heal and a shield so Yurei sustains via Anima Burst and Nightfall while grinding lane trades.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Solaris then The Perforator stacks attack speed and armor pen so Yurei's Soul Rip basics and Severance carve armor, Solaris and Anima Burst sustaining his all-ins.",
+     "swaps": [],
+     "holes": "Yurei stays squishy, so committing Soulstorm and his Severance resets into a bruiser can get him focused down."
+    }
+   }
+  },
+  "zarus": {
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Berserker's Axe then Augmentation then Tainted Blade gives health, empowered basics and anti-heal so Zarus's Gladiator-boosted power and Barricade combo trade hard while cutting healing.",
+      "holes": null
+     },
+     {
+      "synergy": "Berserker's Axe then Augmentation then Basilisk stacks health, empowered basics and armor shred so Zarus's Spear of Nyr and basics carve through laners while staying durable.",
+      "holes": null
+     },
+     {
+      "synergy": "Augmentation then Mutilator then Basilisk pairs empowered basics with percent-health damage so Zarus's Spear of Nyr and Coliseum combo chunk tanks while Gladiator stacks power.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Spear of Desolation then The Perforator stacks attack speed and armor pen so Zarus's Spear of Nyr execute and basics carve armor, Solaris healing him through Coliseum dives.",
+     "swaps": [
+      {
+       "out": "Augmentation",
+       "in": "Viper",
+       "gain": "About 23% more 10-second rotation damage via stacking armor shred and increased on-hit and ability damage.",
+       "lose": "Augmentation's health and the empowered True Strike basic that suited a sturdier trade pattern."
+      }
+     ],
+     "holes": "This lethality build drops Zarus's bruiser health, so diving in with Coliseum can get him killed if the kill fails."
+    }
+   },
+   "jungle": {
+    "metaBuilds": [
+     {
+      "synergy": "Berserker's Axe then Augmentation then Tainted Blade gives health, empowered basics and anti-heal so Zarus ganks with Barricade stun and Gladiator-boosted power while cutting healing.",
+      "holes": null
+     },
+     {
+      "synergy": "Berserker's Axe then Augmentation then Basilisk stacks health, empowered basics and armor shred so Zarus's Spear of Nyr and basics carve gank targets while staying durable.",
+      "holes": null
+     },
+     {
+      "synergy": "Augmentation then Mutilator then Basilisk pairs empowered basics with percent-health damage so Zarus's Spear of Nyr and Coliseum combo chunk tanks while Gladiator stacks power.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Viper then Spear of Desolation then The Perforator stacks attack speed and armor pen so Zarus's Spear of Nyr execute and basics carve armor, Solaris healing him through Coliseum dives.",
+     "swaps": [
+      {
+       "out": "Augmentation",
+       "in": "Viper",
+       "gain": "About 23% more 10-second rotation damage via stacking armor shred and increased on-hit and ability damage.",
+       "lose": "Augmentation's health and the empowered True Strike basic that suited a sturdier trade pattern."
+      }
+     ],
+     "holes": "Lethality drops Zarus's tankiness, so a contested objective fight can kill him before his Coliseum leap secures a target."
+    }
+   }
+  },
+  "zinx": {
+   "support": {
+    "metaBuilds": [
+     {
+      "synergy": "Prophecy then Spectra then Orion stacks attack speed and on-hit so Zinx's Refibrillator burn stacks and Prisma chip enemies, Ricochet stunning the lane for picks.",
+      "holes": "About 481 one-combo burst is low and no defenses; Zinx the support dies to any dive."
+     },
+     {
+      "synergy": "Prophecy then Orion then Cursed Ring maxes attack speed so Zinx's Refibrillator burn applies fast, building Triage Protocol stacks to supercharge her Infuse heals.",
+      "holes": null
+     },
+     {
+      "synergy": "Marshal then Lunaria then Dynamo blends power, damage-based healing and a damage-amp so Zinx's burn and Ricochet feed Lunaria heals while staying a bit durable.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Oblivion Crown then Lifecore then Lunaria front-loads power so Zinx's Refibrillator burn and Ricochet hit hard, Lifecore and Lunaria converting that damage into bigger ally heals.",
+     "swaps": [
+      {
+       "out": "Prophecy",
+       "in": "Oblivion Crown",
+       "gain": "About 61% more heal/shield output by powering Zinx's damage-based Lunaria and Lifecore heals.",
+       "lose": "Prophecy's attack speed that applied Zinx's Refibrillator burn faster and built Triage stacks."
+      }
+     ],
+     "holes": "This power-enchanter build needs Zinx to land damage to heal, so if she can't connect her abilities her allies get no sustain."
+    }
+   },
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Prophecy then Spectra then Orion stacks attack speed and on-hit so Zinx's Refibrillator burn stacks and Prisma chip enemies, Ricochet stunning the wave and targets.",
+      "holes": "About 481 one-combo burst is low; Zinx is fragile to mid-lane roams and lacks real burst."
+     },
+     {
+      "synergy": "Prophecy then Orion then Cursed Ring maxes attack speed so Zinx's Refibrillator burn applies rapidly between Ricochet stuns for steady damage.",
+      "holes": "About 445 one-combo burst is low; Cursed Ring's reduced basic damage hurts Zinx's already-modest output."
+     },
+     {
+      "synergy": "Marshal then Lunaria then Dynamo blends power, healing and a damage-amp so Zinx grinds with burn and Ricochet while staying a bit durable.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Oathkeeper then Timewarp stacks power and cooldowns so Zinx's Ricochet, Bad Medicine and Refibrillator burn burst, the current-health bonus chunking tanks.",
+     "swaps": [
+      {
+       "out": "Prophecy",
+       "in": "Spectral Schematics",
+       "gain": "About 34-44% more one-combo burst plus current-health bonus damage stacking with her Refibrillator burn.",
+       "lose": "Prophecy's attack speed that applied Zinx's burn faster and built Triage stacks."
+      }
+     ],
+     "holes": "Zinx stays squishy, so a diving assassin punishes her, and dropping attack speed slows her Refibrillator burn application."
+    }
+   },
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Prophecy then Spectra then Orion stacks attack speed and on-hit so Zinx's Refibrillator burn stacks and Prisma chip laners, Ricochet stunning for trades.",
+      "holes": "About 481 one-combo burst is low; Zinx is fragile and easily collapsed on in a solo lane."
+     },
+     {
+      "synergy": "Prophecy then Orion then Cursed Ring maxes attack speed so Zinx's Refibrillator burn applies rapidly between Ricochet stuns for steady lane pressure.",
+      "holes": "About 445 one-combo burst is low; Cursed Ring's reduced basic damage hurts Zinx's modest output."
+     },
+     {
+      "synergy": "Marshal then Lunaria then Dynamo blends power, healing and a damage-amp so Zinx grinds lane trades with burn and Ricochet while staying a bit durable.",
+      "holes": null
+     }
+    ],
+    "optimizer": {
+     "synergy": "Spectral Schematics then Oathkeeper then Timewarp stacks power and cooldowns so Zinx's Ricochet, Bad Medicine and Refibrillator burn burst, the current-health bonus chunking tanky laners.",
+     "swaps": [
+      {
+       "out": "Prophecy",
+       "in": "Spectral Schematics",
+       "gain": "About 34-44% more one-combo burst plus current-health bonus damage stacking with her Refibrillator burn.",
+       "lose": "Prophecy's attack speed that applied Zinx's burn faster and built Triage stacks."
+      }
+     ],
+     "holes": "Zinx stays squishy, so a bruiser offlaner who closes the gap punishes her, and less attack speed slows her burn application."
+    }
+   }
+  }
+ }
+}
