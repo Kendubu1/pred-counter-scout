@@ -89,17 +89,27 @@ export function buildTitle(archetypes: string[], kit: HeroKit, items: Item[]): s
   else if (drain >= 25 && off > 0) style = 'Lifesteal';
   else if (off > 0) style = 'AD';
 
-  // The "class" descriptor — how much of the build is survivability.
-  let cls = '';
-  if (off === 0 && def > 0) cls = 'Tank';
-  else if (def > 0 && def >= off * 0.45) cls = 'Bruiser';
-
   const noun = ARCHETYPE_NOUN[archetypes[0] ?? ''] ?? 'Build';
-  // Bruiser/Tank lead with the class; everything else leads with the style.
-  const lead = cls || style;
-  // Word-level dedupe so "AP Burst" + "Burst" → "AP Burst", not a stutter.
+  // Damage type is always spelled out: AD vs AP (Crit/Lethality/On-Hit imply AD).
+  const powerWord = power === 'magical' ? 'AP' : 'AD';
+  // Which resist a defensive build actually stacks, so "Frontline" says whether
+  // it's built against physical or magic damage (not just "tanky").
+  const physArmor = sum('physical_armor');
+  const magArmor = sum('magical_armor');
+  const resist = physArmor > magArmor * 1.3 ? 'Armor'
+    : magArmor > physArmor * 1.3 ? 'Magic-Res'
+    : (physArmor + magArmor > 0 ? 'Mixed-Def' : '');
+
+  let lead: string;
+  if (off === 0 && def > 0) lead = resist || 'Tank';                 // pure defense: name the resist
+  else if (def > 0 && def >= off * 0.45) { lead = `${powerWord} Bruiser`; } // bruiser: name the damage type
+  else lead = style || powerWord;                                    // damage: style conveys AD/AP
+
+  // For a bruiser the "Bruiser" word is already in lead; otherwise append the
+  // archetype noun. Word-level dedupe so "AP Burst" + "Burst" → "AP Burst".
+  const parts = lead.includes('Bruiser') ? [lead] : [lead, noun];
   const seen = new Set<string>();
-  const title = [lead, noun]
+  const title = parts
     .filter(Boolean)
     .join(' ')
     .split(' ')

@@ -1922,3 +1922,10 @@ Eight maintainer-flagged fixes:
 - Still open in Phase 2: per-item build reasoning (C1, engine+copy), build-title
   AD/AP + defense-type disambiguation (C2, engine), coaching-page agent upgrade (D),
   and a copy bias-check pass (second agent critiquing copy framing).
+## 2026-06-20: Phase 2 C2 — build-title disambiguation (AD/AP + defense type)
+- buildTitle now spells out damage type (AD vs AP) and, for defensive builds, which
+  resist it stacks: physical_armor vs magical_armor -> Armor / Magic-Res / Mixed-Def.
+  Pure-defense builds read "Armor Frontline" / "Mixed-Def Frontline"; bruisers read
+  "AD Bruiser" / "AP Bruiser"; damage builds keep the style (Crit/Lethality/On-Hit/
+  AP all imply the damage type). Answers "is this magic or physical def? AD or AP?"
+- Regenerated artifacts; harness green (115/115).
