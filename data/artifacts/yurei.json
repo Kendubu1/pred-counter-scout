@@ -15,7 +15,7 @@
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
-   "the sim opens on Viper, which the field rarely builds (0.1% pick) — a sim-only call; compare the meta cores below"
+   "the sim opens on Viper, which the field rarely builds (0.3% pick) — a sim-only call; compare the meta cores below"
   ]
  },
  "build": {
@@ -25,7 +25,7 @@
     "name": "Viper",
     "slug": "viper",
     "spikeMinute": 12,
-    "playRatePct": 0.1,
+    "playRatePct": 0.3,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -33,31 +33,31 @@
     "name": "Solaris",
     "slug": "solaris",
     "spikeMinute": 19,
-    "playRatePct": 3.5,
-    "evidenceDeltaWr": 1.8,
-    "evidenceN": 26
+    "playRatePct": 2.6,
+    "evidenceDeltaWr": -0.4,
+    "evidenceN": 21
    },
    {
     "name": "The Perforator",
     "slug": "the-perforator",
     "spikeMinute": 25,
-    "playRatePct": 27.1,
-    "evidenceDeltaWr": 0.2,
-    "evidenceN": 199
+    "playRatePct": 27.2,
+    "evidenceDeltaWr": 2.2,
+    "evidenceN": 217
    },
    {
     "name": "Spear Of Desolation",
     "slug": "spear-of-desolation",
     "spikeMinute": 31,
-    "playRatePct": 24.3,
-    "evidenceDeltaWr": 1.2,
-    "evidenceN": 178
+    "playRatePct": 27.6,
+    "evidenceDeltaWr": -0.5,
+    "evidenceN": 220
    },
    {
     "name": "Augmentation",
     "slug": "augmentation",
     "spikeMinute": 38,
-    "playRatePct": 0.4,
+    "playRatePct": 0.6,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -65,9 +65,9 @@
     "name": "Painweaver",
     "slug": "painweaver",
     "spikeMinute": 44,
-    "playRatePct": 10.2,
-    "evidenceDeltaWr": 3.3,
-    "evidenceN": 75
+    "playRatePct": 10.8,
+    "evidenceDeltaWr": -0.3,
+    "evidenceN": 86
    }
   ],
   "gold": 18450,
@@ -471,13 +471,13 @@
   "candidates": [
    {
     "item": "Viper",
-    "playRatePct": 0.1,
+    "playRatePct": 0.3,
     "bestObjective": "20s fight vs bruisers",
     "edgeVsPopularPct": 135
    },
    {
     "item": "Augmentation",
-    "playRatePct": 0.4,
+    "playRatePct": 0.6,
     "bestObjective": "20s fight vs bruisers",
     "edgeVsPopularPct": 135
    }
@@ -486,7 +486,7 @@
  },
  "metaBuilds": [
   {
-   "title": "Lethality Burst",
+   "title": "Lethality Skirmisher",
    "items": [
     {
      "name": "Malady",
@@ -501,13 +501,13 @@
      "slug": "the-perforator"
     }
    ],
-   "n": 45,
-   "shrunkWr": 0.434,
+   "n": 286,
+   "shrunkWr": 0.49,
    "coreGold": 9000,
    "spikeMinute": 25,
-   "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 942 damage in one combo in the sim.",
-   "optimizer": "Optimizer agrees: within 8% of our best core on one-combo burst. The winrate is earned, not luck."
+   "bestObjective": "10s rotation damage",
+   "whyLine": "Strongest meta core for 10s rotation damage, online around minute 25 — about 997 damage over a 10s rotation in the sim.",
+   "optimizer": "Optimizer sees +16% more 10s rotation damage: try Viper over Malady (sim-only — the popular pick may carry utility the sim can't see; test it)."
   },
   {
    "title": "AD Frontline",
@@ -525,13 +525,37 @@
      "slug": "nightfall"
     }
    ],
-   "n": 20,
-   "shrunkWr": 0.318,
+   "n": 116,
+   "shrunkWr": 0.436,
    "coreGold": 8900,
    "spikeMinute": 24,
    "bestObjective": "physical survivability",
    "whyLine": "Strongest meta core for physical survivability, online around minute 24 — about 4,272 effective HP vs physical in the sim.",
    "optimizer": null
+  },
+  {
+   "title": "Lethality Frontline",
+   "items": [
+    {
+     "name": "Malady",
+     "slug": "malady"
+    },
+    {
+     "name": "SpearOfDesolation",
+     "slug": "spear-of-desolation"
+    },
+    {
+     "name": "Nightfall",
+     "slug": "nightfall"
+    }
+   ],
+   "n": 66,
+   "shrunkWr": 0.535,
+   "coreGold": 8700,
+   "spikeMinute": 24,
+   "bestObjective": "physical survivability",
+   "whyLine": "Strongest meta core for physical survivability, online around minute 24 — about 3,816 effective HP vs physical in the sim.",
+   "optimizer": "Optimizer agrees: within 0% of our best core on physical survivability. The winrate is earned, not luck."
   }
  ],
  "stages": [
@@ -695,45 +719,6 @@
    }
   },
   {
-   "enemy": "Serath",
-   "enemySlug": "serath",
-   "gameplan": "Even kill threat throughout: this lane is decided by mechanics and wave control, not scaling. Serath's main threat is Chastise; bait it before you commit, and armor softens the trade.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "even"
-    },
-    {
-     "minute": 10,
-     "verdict": "even"
-    },
-    {
-     "minute": 15,
-     "verdict": "even"
-    },
-    {
-     "minute": 20,
-     "verdict": "even"
-    },
-    {
-     "minute": 25,
-     "verdict": "even"
-    },
-    {
-     "minute": 30,
-     "verdict": "even"
-    }
-   ],
-   "counterSwap": {
-    "out": "Spear Of Desolation",
-    "in": "Warden's Faith",
-    "inSlug": "wardens-faith",
-    "survivalGainPct": 34,
-    "offenseLossPct": 28,
-    "line": "Losing lane? Third item Warden's Faith instead of Spear Of Desolation: their 3s all-in loses 34% of its bite; you give up 28% of your damage."
-   }
-  },
-  {
    "enemy": "Boris",
    "enemySlug": "boris",
    "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Boris deals area damage — spread out so one cast can't catch the group.",
@@ -770,6 +755,45 @@
     "survivalGainPct": 25,
     "offenseLossPct": 28,
     "line": "Losing lane? Third item Raiment of Renewal instead of Spear Of Desolation: their 3s all-in loses 25% of its bite; you give up 28% of your damage."
+   }
+  },
+  {
+   "enemy": "Serath",
+   "enemySlug": "serath",
+   "gameplan": "Even kill threat throughout: this lane is decided by mechanics and wave control, not scaling. Serath's main threat is Chastise; bait it before you commit, and armor softens the trade.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "even"
+    },
+    {
+     "minute": 10,
+     "verdict": "even"
+    },
+    {
+     "minute": 15,
+     "verdict": "even"
+    },
+    {
+     "minute": 20,
+     "verdict": "even"
+    },
+    {
+     "minute": 25,
+     "verdict": "even"
+    },
+    {
+     "minute": 30,
+     "verdict": "even"
+    }
+   ],
+   "counterSwap": {
+    "out": "Spear Of Desolation",
+    "in": "Warden's Faith",
+    "inSlug": "wardens-faith",
+    "survivalGainPct": 34,
+    "offenseLossPct": 28,
+    "line": "Losing lane? Third item Warden's Faith instead of Spear Of Desolation: their 3s all-in loses 34% of its bite; you give up 28% of your damage."
    }
   },
   {
@@ -812,13 +836,13 @@
    }
   },
   {
-   "enemy": "Feng Mao",
-   "enemySlug": "feng-mao",
-   "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Feng Mao deals area damage — spread out so one cast can't catch the group.",
+   "enemy": "Kallari",
+   "enemySlug": "kallari",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kallari's main threat is Guillotine; bait it before you commit, and armor softens the trade.",
    "checkpoints": [
     {
      "minute": 5,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 10,
@@ -830,7 +854,7 @@
     },
     {
      "minute": 20,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 25,
@@ -845,15 +869,15 @@
     "out": "Spear Of Desolation",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 33,
+    "survivalGainPct": 34,
     "offenseLossPct": 28,
-    "line": "Losing lane? Third item Warden's Faith instead of Spear Of Desolation: their 3s all-in loses 33% of its bite; you give up 28% of your damage."
+    "line": "Losing lane? Third item Warden's Faith instead of Spear Of Desolation: their 3s all-in loses 34% of its bite; you give up 28% of your damage."
    }
   },
   {
-   "enemy": "Kwang",
-   "enemySlug": "kwang",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kwang ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
+   "enemy": "Rampage",
+   "enemySlug": "rampage",
+   "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Rampage deals area damage — spread out so one cast can't catch the group.",
    "checkpoints": [
     {
      "minute": 5,
@@ -861,32 +885,32 @@
     },
     {
      "minute": 10,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 15,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 20,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 25,
-     "verdict": "enemy"
+     "verdict": "you"
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "you"
     }
    ],
    "counterSwap": {
     "out": "Spear Of Desolation",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 29,
+    "in": "Raiment of Renewal",
+    "inSlug": "raiment-of-renewal",
+    "survivalGainPct": 25,
     "offenseLossPct": 28,
-    "line": "Losing lane? Third item Void Helm instead of Spear Of Desolation: their 3s all-in loses 29% of its bite; you give up 28% of your damage."
+    "line": "Losing lane? Third item Raiment of Renewal instead of Spear Of Desolation: their 3s all-in loses 25% of its bite; you give up 28% of your damage."
    }
   }
  ],
@@ -897,16 +921,16 @@
   },
   "playstyle": "poke",
   "modeled": false,
-  "wr": 47.1,
-  "n": 48182,
+  "wr": 47.2,
+  "n": 49743,
   "shiftIn": [],
   "shiftOut": [],
-  "provenance": "“Ephemeral Surge” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 47.1% over 48,182 games, magnitude not simulated."
+  "provenance": "“Ephemeral Surge” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 47.2% over 49,743 games, magnitude not simulated."
  },
  "slug": "yurei",
  "name": "Yurei",
  "patch": "1.14.4",
- "generatedAt": "2026-06-20T20:08:25.064Z",
+ "generatedAt": "2026-06-20T21:16:32.902Z",
  "damageType": "physical",
  "attackType": "melee",
  "laneFlex": [
@@ -918,8 +942,8 @@
    },
    "playstyle": "poke",
    "modeled": false,
-   "wr": 47.1,
-   "n": 48182,
+   "wr": 47.2,
+   "n": 49743,
    "core": [
     {
      "name": "Solaris",
@@ -947,7 +971,7 @@
     }
    ],
    "headline": "skirmish uptime",
-   "provenance": "“Ephemeral Surge” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 47.1% over 48,182 games, magnitude not simulated."
+   "provenance": "“Ephemeral Surge” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 47.2% over 49,743 games, magnitude not simulated."
   },
   {
    "lane": "offlane",
@@ -958,7 +982,7 @@
    "playstyle": "ability-burst",
    "modeled": true,
    "wr": 50.4,
-   "n": 51816,
+   "n": 52014,
    "core": [
     {
      "name": "Solaris",
@@ -986,7 +1010,7 @@
     }
    ],
    "headline": "burst",
-   "provenance": "“Soul Weaver” ⇒ ability-burst; the sim models this augment — field offlane 50.4% over 51,816 games."
+   "provenance": "“Soul Weaver” ⇒ ability-burst; the sim models this augment — field offlane 50.4% over 52,014 games."
   }
  ],
  "roles": [
@@ -1007,7 +1031,7 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Viper, which the field rarely builds (0.1% pick) — a sim-only call; compare the meta cores below"
+     "the sim opens on Viper, which the field rarely builds (0.3% pick) — a sim-only call; compare the meta cores below"
     ]
    },
    "build": {
@@ -1017,7 +1041,7 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 12,
-      "playRatePct": 0.1,
+      "playRatePct": 0.3,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1025,31 +1049,31 @@
       "name": "Solaris",
       "slug": "solaris",
       "spikeMinute": 19,
-      "playRatePct": 3.5,
-      "evidenceDeltaWr": 1.8,
-      "evidenceN": 26
+      "playRatePct": 2.6,
+      "evidenceDeltaWr": -0.4,
+      "evidenceN": 21
      },
      {
       "name": "The Perforator",
       "slug": "the-perforator",
       "spikeMinute": 25,
-      "playRatePct": 27.1,
-      "evidenceDeltaWr": 0.2,
-      "evidenceN": 199
+      "playRatePct": 27.2,
+      "evidenceDeltaWr": 2.2,
+      "evidenceN": 217
      },
      {
       "name": "Spear Of Desolation",
       "slug": "spear-of-desolation",
       "spikeMinute": 31,
-      "playRatePct": 24.3,
-      "evidenceDeltaWr": 1.2,
-      "evidenceN": 178
+      "playRatePct": 27.6,
+      "evidenceDeltaWr": -0.5,
+      "evidenceN": 220
      },
      {
       "name": "Augmentation",
       "slug": "augmentation",
       "spikeMinute": 38,
-      "playRatePct": 0.4,
+      "playRatePct": 0.6,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1057,9 +1081,9 @@
       "name": "Painweaver",
       "slug": "painweaver",
       "spikeMinute": 44,
-      "playRatePct": 10.2,
-      "evidenceDeltaWr": 3.3,
-      "evidenceN": 75
+      "playRatePct": 10.8,
+      "evidenceDeltaWr": -0.3,
+      "evidenceN": 86
      }
     ],
     "gold": 18450,
@@ -1463,13 +1487,13 @@
     "candidates": [
      {
       "item": "Viper",
-      "playRatePct": 0.1,
+      "playRatePct": 0.3,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 135
      },
      {
       "item": "Augmentation",
-      "playRatePct": 0.4,
+      "playRatePct": 0.6,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 135
      }
@@ -1478,7 +1502,7 @@
    },
    "metaBuilds": [
     {
-     "title": "Lethality Burst",
+     "title": "Lethality Skirmisher",
      "items": [
       {
        "name": "Malady",
@@ -1493,13 +1517,13 @@
        "slug": "the-perforator"
       }
      ],
-     "n": 45,
-     "shrunkWr": 0.434,
+     "n": 286,
+     "shrunkWr": 0.49,
      "coreGold": 9000,
      "spikeMinute": 25,
-     "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 942 damage in one combo in the sim.",
-     "optimizer": "Optimizer agrees: within 8% of our best core on one-combo burst. The winrate is earned, not luck."
+     "bestObjective": "10s rotation damage",
+     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 25 — about 997 damage over a 10s rotation in the sim.",
+     "optimizer": "Optimizer sees +16% more 10s rotation damage: try Viper over Malady (sim-only — the popular pick may carry utility the sim can't see; test it)."
     },
     {
      "title": "AD Frontline",
@@ -1517,13 +1541,37 @@
        "slug": "nightfall"
       }
      ],
-     "n": 20,
-     "shrunkWr": 0.318,
+     "n": 116,
+     "shrunkWr": 0.436,
      "coreGold": 8900,
      "spikeMinute": 24,
      "bestObjective": "physical survivability",
      "whyLine": "Strongest meta core for physical survivability, online around minute 24 — about 4,272 effective HP vs physical in the sim.",
      "optimizer": null
+    },
+    {
+     "title": "Lethality Frontline",
+     "items": [
+      {
+       "name": "Malady",
+       "slug": "malady"
+      },
+      {
+       "name": "SpearOfDesolation",
+       "slug": "spear-of-desolation"
+      },
+      {
+       "name": "Nightfall",
+       "slug": "nightfall"
+      }
+     ],
+     "n": 66,
+     "shrunkWr": 0.535,
+     "coreGold": 8700,
+     "spikeMinute": 24,
+     "bestObjective": "physical survivability",
+     "whyLine": "Strongest meta core for physical survivability, online around minute 24 — about 3,816 effective HP vs physical in the sim.",
+     "optimizer": "Optimizer agrees: within 0% of our best core on physical survivability. The winrate is earned, not luck."
     }
    ],
    "stages": [
@@ -1687,45 +1735,6 @@
      }
     },
     {
-     "enemy": "Serath",
-     "enemySlug": "serath",
-     "gameplan": "Even kill threat throughout: this lane is decided by mechanics and wave control, not scaling. Serath's main threat is Chastise; bait it before you commit, and armor softens the trade.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "even"
-      },
-      {
-       "minute": 10,
-       "verdict": "even"
-      },
-      {
-       "minute": 15,
-       "verdict": "even"
-      },
-      {
-       "minute": 20,
-       "verdict": "even"
-      },
-      {
-       "minute": 25,
-       "verdict": "even"
-      },
-      {
-       "minute": 30,
-       "verdict": "even"
-      }
-     ],
-     "counterSwap": {
-      "out": "Spear Of Desolation",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 34,
-      "offenseLossPct": 28,
-      "line": "Losing lane? Third item Warden's Faith instead of Spear Of Desolation: their 3s all-in loses 34% of its bite; you give up 28% of your damage."
-     }
-    },
-    {
      "enemy": "Boris",
      "enemySlug": "boris",
      "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Boris deals area damage — spread out so one cast can't catch the group.",
@@ -1762,6 +1771,45 @@
       "survivalGainPct": 25,
       "offenseLossPct": 28,
       "line": "Losing lane? Third item Raiment of Renewal instead of Spear Of Desolation: their 3s all-in loses 25% of its bite; you give up 28% of your damage."
+     }
+    },
+    {
+     "enemy": "Serath",
+     "enemySlug": "serath",
+     "gameplan": "Even kill threat throughout: this lane is decided by mechanics and wave control, not scaling. Serath's main threat is Chastise; bait it before you commit, and armor softens the trade.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "even"
+      },
+      {
+       "minute": 15,
+       "verdict": "even"
+      },
+      {
+       "minute": 20,
+       "verdict": "even"
+      },
+      {
+       "minute": 25,
+       "verdict": "even"
+      },
+      {
+       "minute": 30,
+       "verdict": "even"
+      }
+     ],
+     "counterSwap": {
+      "out": "Spear Of Desolation",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 34,
+      "offenseLossPct": 28,
+      "line": "Losing lane? Third item Warden's Faith instead of Spear Of Desolation: their 3s all-in loses 34% of its bite; you give up 28% of your damage."
      }
     },
     {
@@ -1804,13 +1852,13 @@
      }
     },
     {
-     "enemy": "Feng Mao",
-     "enemySlug": "feng-mao",
-     "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Feng Mao deals area damage — spread out so one cast can't catch the group.",
+     "enemy": "Kallari",
+     "enemySlug": "kallari",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kallari's main threat is Guillotine; bait it before you commit, and armor softens the trade.",
      "checkpoints": [
       {
        "minute": 5,
-       "verdict": "even"
+       "verdict": "enemy"
       },
       {
        "minute": 10,
@@ -1822,7 +1870,7 @@
       },
       {
        "minute": 20,
-       "verdict": "even"
+       "verdict": "enemy"
       },
       {
        "minute": 25,
@@ -1837,15 +1885,15 @@
       "out": "Spear Of Desolation",
       "in": "Warden's Faith",
       "inSlug": "wardens-faith",
-      "survivalGainPct": 33,
+      "survivalGainPct": 34,
       "offenseLossPct": 28,
-      "line": "Losing lane? Third item Warden's Faith instead of Spear Of Desolation: their 3s all-in loses 33% of its bite; you give up 28% of your damage."
+      "line": "Losing lane? Third item Warden's Faith instead of Spear Of Desolation: their 3s all-in loses 34% of its bite; you give up 28% of your damage."
      }
     },
     {
-     "enemy": "Kwang",
-     "enemySlug": "kwang",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kwang ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
+     "enemy": "Rampage",
+     "enemySlug": "rampage",
+     "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Rampage deals area damage — spread out so one cast can't catch the group.",
      "checkpoints": [
       {
        "minute": 5,
@@ -1853,32 +1901,32 @@
       },
       {
        "minute": 10,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 15,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 20,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 25,
-       "verdict": "enemy"
+       "verdict": "you"
       },
       {
        "minute": 30,
-       "verdict": "enemy"
+       "verdict": "you"
       }
      ],
      "counterSwap": {
       "out": "Spear Of Desolation",
-      "in": "Void Helm",
-      "inSlug": "void-helm",
-      "survivalGainPct": 29,
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 25,
       "offenseLossPct": 28,
-      "line": "Losing lane? Third item Void Helm instead of Spear Of Desolation: their 3s all-in loses 29% of its bite; you give up 28% of your damage."
+      "line": "Losing lane? Third item Raiment of Renewal instead of Spear Of Desolation: their 3s all-in loses 25% of its bite; you give up 28% of your damage."
      }
     }
    ],
@@ -1889,11 +1937,11 @@
     },
     "playstyle": "poke",
     "modeled": false,
-    "wr": 47.1,
-    "n": 48182,
+    "wr": 47.2,
+    "n": 49743,
     "shiftIn": [],
     "shiftOut": [],
-    "provenance": "“Ephemeral Surge” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 47.1% over 48,182 games, magnitude not simulated."
+    "provenance": "“Ephemeral Surge” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 47.2% over 49,743 games, magnitude not simulated."
    }
   },
   {
@@ -1913,7 +1961,7 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Viper, which the field rarely builds (0.1% pick) — a sim-only call; compare the meta cores below"
+     "the sim opens on Viper, which the field rarely builds (0.3% pick) — a sim-only call; compare the meta cores below"
     ]
    },
    "build": {
@@ -1923,49 +1971,49 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 12,
-      "playRatePct": 0.1,
+      "playRatePct": 0.3,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
      {
       "name": "Solaris",
       "slug": "solaris",
-      "spikeMinute": 20,
-      "playRatePct": 3.5,
-      "evidenceDeltaWr": 1.8,
-      "evidenceN": 26
+      "spikeMinute": 19,
+      "playRatePct": 2.6,
+      "evidenceDeltaWr": -0.4,
+      "evidenceN": 21
      },
      {
       "name": "The Perforator",
       "slug": "the-perforator",
       "spikeMinute": 26,
-      "playRatePct": 27.1,
-      "evidenceDeltaWr": 0.2,
-      "evidenceN": 199
+      "playRatePct": 27.2,
+      "evidenceDeltaWr": 2.2,
+      "evidenceN": 217
      },
      {
       "name": "Spear Of Desolation",
       "slug": "spear-of-desolation",
       "spikeMinute": 31,
-      "playRatePct": 24.3,
-      "evidenceDeltaWr": 1.2,
-      "evidenceN": 178
+      "playRatePct": 27.6,
+      "evidenceDeltaWr": -0.5,
+      "evidenceN": 220
      },
      {
       "name": "Augmentation",
       "slug": "augmentation",
       "spikeMinute": 37,
-      "playRatePct": 0.4,
+      "playRatePct": 0.6,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
      {
       "name": "Painweaver",
       "slug": "painweaver",
-      "spikeMinute": 43,
-      "playRatePct": 10.2,
-      "evidenceDeltaWr": 3.3,
-      "evidenceN": 75
+      "spikeMinute": 42,
+      "playRatePct": 10.8,
+      "evidenceDeltaWr": -0.3,
+      "evidenceN": 86
      }
     ],
     "gold": 18450,
@@ -2369,13 +2417,13 @@
     "candidates": [
      {
       "item": "Viper",
-      "playRatePct": 0.1,
+      "playRatePct": 0.3,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 135
      },
      {
       "item": "Augmentation",
-      "playRatePct": 0.4,
+      "playRatePct": 0.6,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 135
      }
@@ -2384,7 +2432,7 @@
    },
    "metaBuilds": [
     {
-     "title": "Lethality Burst",
+     "title": "Lethality Skirmisher",
      "items": [
       {
        "name": "Malady",
@@ -2399,13 +2447,13 @@
        "slug": "the-perforator"
       }
      ],
-     "n": 45,
-     "shrunkWr": 0.434,
+     "n": 286,
+     "shrunkWr": 0.49,
      "coreGold": 9000,
      "spikeMinute": 25,
-     "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 942 damage in one combo in the sim.",
-     "optimizer": "Optimizer agrees: within 8% of our best core on one-combo burst. The winrate is earned, not luck."
+     "bestObjective": "10s rotation damage",
+     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 25 — about 997 damage over a 10s rotation in the sim.",
+     "optimizer": "Optimizer sees +16% more 10s rotation damage: try Viper over Malady (sim-only — the popular pick may carry utility the sim can't see; test it)."
     },
     {
      "title": "AD Frontline",
@@ -2423,21 +2471,45 @@
        "slug": "nightfall"
       }
      ],
-     "n": 20,
-     "shrunkWr": 0.318,
+     "n": 116,
+     "shrunkWr": 0.436,
      "coreGold": 8900,
      "spikeMinute": 25,
      "bestObjective": "physical survivability",
      "whyLine": "Strongest meta core for physical survivability, online around minute 25 — about 4,272 effective HP vs physical in the sim.",
      "optimizer": null
+    },
+    {
+     "title": "Lethality Frontline",
+     "items": [
+      {
+       "name": "Malady",
+       "slug": "malady"
+      },
+      {
+       "name": "SpearOfDesolation",
+       "slug": "spear-of-desolation"
+      },
+      {
+       "name": "Nightfall",
+       "slug": "nightfall"
+      }
+     ],
+     "n": 66,
+     "shrunkWr": 0.535,
+     "coreGold": 8700,
+     "spikeMinute": 24,
+     "bestObjective": "physical survivability",
+     "whyLine": "Strongest meta core for physical survivability, online around minute 24 — about 3,816 effective HP vs physical in the sim.",
+     "optimizer": "Optimizer agrees: within 0% of our best core on physical survivability. The winrate is earned, not luck."
     }
    ],
    "stages": [
     {
      "label": "early",
      "itemCount": 2,
-     "minute": 20,
-     "level": 13,
+     "minute": 19,
+     "level": 11,
      "core": [
       {
        "name": "Viper",
@@ -2449,20 +2521,25 @@
       }
      ],
      "headline": "rot10VsSquishy",
-     "headlineValue": 668,
+     "headlineValue": 640,
      "objectives": {
-      "burstVsSquishy": 701.714909949808,
-      "teamfightVsSquishy": 1062.352642456451,
-      "rot10VsSquishy": 668.3933787731256,
-      "rot20VsBruiser": 934.0319258496397,
-      "autoDps10VsSquishy": 205.8239648734177,
-      "ehpPhysical": 3816.4067499999996,
-      "ehpMagical": 3173.095046875,
-      "healShield10s": 143.75,
+      "burstVsSquishy": 665.938116327133,
+      "teamfightVsSquishy": 988.3118984351933,
+      "rot10VsSquishy": 640.3505355404089,
+      "rot20VsBruiser": 889.541709577755,
+      "autoDps10VsSquishy": 192.94230901898732,
+      "ehpPhysical": 3104.4433124999996,
+      "ehpMagical": 2671.7513554687503,
+      "healShield10s": 113.75,
       "utility": 15,
       "sustain10s": 0
      },
-     "betterEarly": null
+     "betterEarly": {
+      "inItem": "Mutilator",
+      "inSlug": "mutilator",
+      "outItem": "Viper",
+      "edgePct": 27.6
+     }
     },
     {
      "label": "mid",
@@ -2502,7 +2579,7 @@
     {
      "label": "late",
      "itemCount": 6,
-     "minute": 43,
+     "minute": 42,
      "level": 17,
      "core": [
       {
@@ -2588,45 +2665,6 @@
      }
     },
     {
-     "enemy": "Greystone",
-     "enemySlug": "greystone",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Greystone deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Spear Of Desolation",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 38,
-      "offenseLossPct": 28,
-      "line": "Losing lane? Third item Warden's Faith instead of Spear Of Desolation: their 3s all-in loses 38% of its bite; you give up 28% of your damage."
-     }
-    },
-    {
      "enemy": "Steel",
      "enemySlug": "steel",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Steel deals area damage — spread out so one cast can't catch the group.",
@@ -2702,6 +2740,45 @@
       "survivalGainPct": 34,
       "offenseLossPct": 28,
       "line": "Losing lane? Third item Warden's Faith instead of Spear Of Desolation: their 3s all-in loses 34% of its bite; you give up 28% of your damage."
+     }
+    },
+    {
+     "enemy": "Greystone",
+     "enemySlug": "greystone",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Greystone deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Spear Of Desolation",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 38,
+      "offenseLossPct": 28,
+      "line": "Losing lane? Third item Warden's Faith instead of Spear Of Desolation: their 3s all-in loses 38% of its bite; you give up 28% of your damage."
      }
     },
     {
@@ -2791,7 +2868,7 @@
     "playstyle": "ability-burst",
     "modeled": true,
     "wr": 50.4,
-    "n": 51816,
+    "n": 52014,
     "shiftIn": [
      "Vanquisher",
      "Deathstalker",
@@ -2804,7 +2881,7 @@
      "Viper",
      "Painweaver"
     ],
-    "provenance": "“Soul Weaver” ⇒ ability-burst; the sim models this augment — field offlane 50.4% over 51,816 games."
+    "provenance": "“Soul Weaver” ⇒ ability-burst; the sim models this augment — field offlane 50.4% over 52,014 games."
    }
   }
  ],

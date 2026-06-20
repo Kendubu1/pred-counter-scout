@@ -35,15 +35,15 @@
     "name": "Lunaria",
     "slug": "lunaria",
     "spikeMinute": 21,
-    "playRatePct": 6.3,
-    "evidenceDeltaWr": -4,
-    "evidenceN": 45
+    "playRatePct": 4.4,
+    "evidenceDeltaWr": 0.6,
+    "evidenceN": 32
    },
    {
     "name": "Noxia",
     "slug": "noxia",
-    "spikeMinute": 28,
-    "playRatePct": 0.4,
+    "spikeMinute": 27,
+    "playRatePct": 0.1,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -59,17 +59,17 @@
     "name": "Timewarp",
     "slug": "timewarp",
     "spikeMinute": 39,
-    "playRatePct": 14.3,
-    "evidenceDeltaWr": 0.8,
-    "evidenceN": 103
+    "playRatePct": 16.9,
+    "evidenceDeltaWr": 2.7,
+    "evidenceN": 122
    },
    {
     "name": "Lifecore",
     "slug": "lifecore",
     "spikeMinute": 45,
-    "playRatePct": 5,
-    "evidenceDeltaWr": 3.9,
-    "evidenceN": 36
+    "playRatePct": 5.3,
+    "evidenceDeltaWr": 1.1,
+    "evidenceN": 38
    }
   ],
   "gold": 17850,
@@ -90,7 +90,7 @@
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for heal/shield output: first spike lands around minute 15 (Oblivion Crown), third item by minute 28. Take Vesh: +12.8% on your damage rotation at minute 15.",
+ "coachLine": "Sim-optimal for heal/shield output: first spike lands around minute 15 (Oblivion Crown), third item by minute 27. Take Vesh: +12.8% on your damage rotation at minute 15.",
  "eternals": {
   "top": [
    {
@@ -479,7 +479,7 @@
    },
    {
     "item": "Noxia",
-    "playRatePct": 0.4,
+    "playRatePct": 0.1,
     "bestObjective": "10s rotation vs squishies",
     "edgeVsPopularPct": 158.3
    },
@@ -494,7 +494,7 @@
  },
  "metaBuilds": [
   {
-   "title": "AP Enchanter",
+   "title": "AP DPS Carry",
    "items": [
     {
      "name": "Marshal",
@@ -509,13 +509,61 @@
      "slug": "windcaller"
     }
    ],
-   "n": 66,
-   "shrunkWr": 0.47,
+   "n": 392,
+   "shrunkWr": 0.547,
    "coreGold": 7150,
    "spikeMinute": 24,
-   "bestObjective": "heal/shield output",
-   "whyLine": "Strongest meta core for heal/shield output, online around minute 24 — about 1,751 HP healed or shielded over 10s in the sim.",
-   "optimizer": "Optimizer sees +24% more heal/shield output: try Oblivion Crown over Marshal (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "bestObjective": "sustained auto DPS",
+   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 84 auto-attack DPS in the sim.",
+   "optimizer": null
+  },
+  {
+   "title": "AP DPS Carry",
+   "items": [
+    {
+     "name": "Marshal",
+     "slug": "marshal"
+    },
+    {
+     "name": "Windcaller",
+     "slug": "windcaller"
+    },
+    {
+     "name": "Everbloom",
+     "slug": "everbloom"
+    }
+   ],
+   "n": 77,
+   "shrunkWr": 0.559,
+   "coreGold": 7200,
+   "spikeMinute": 24,
+   "bestObjective": "sustained auto DPS",
+   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 84 auto-attack DPS in the sim.",
+   "optimizer": null
+  },
+  {
+   "title": "AP DPS Carry",
+   "items": [
+    {
+     "name": "Marshal",
+     "slug": "marshal"
+    },
+    {
+     "name": "CrystalTear",
+     "slug": "crystal-tear"
+    },
+    {
+     "name": "Everbloom",
+     "slug": "everbloom"
+    }
+   ],
+   "n": 72,
+   "shrunkWr": 0.557,
+   "coreGold": 7250,
+   "spikeMinute": 24,
+   "bestObjective": "sustained auto DPS",
+   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 84 auto-attack DPS in the sim.",
+   "optimizer": null
   }
  ],
  "stages": [
@@ -553,7 +601,7 @@
   {
    "label": "mid",
    "itemCount": 3,
-   "minute": 28,
+   "minute": 27,
    "level": 15,
    "core": [
     {
@@ -713,6 +761,45 @@
    }
   },
   {
+   "enemy": "Phase",
+   "enemySlug": "phase",
+   "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "even"
+    },
+    {
+     "minute": 10,
+     "verdict": "even"
+    },
+    {
+     "minute": 15,
+     "verdict": "you"
+    },
+    {
+     "minute": 20,
+     "verdict": "you"
+    },
+    {
+     "minute": 25,
+     "verdict": "even"
+    },
+    {
+     "minute": 30,
+     "verdict": "you"
+    }
+   ],
+   "counterSwap": {
+    "out": "Lunaria",
+    "in": "Void Helm",
+    "inSlug": "void-helm",
+    "survivalGainPct": 28,
+    "offenseLossPct": 9,
+    "line": "Losing lane? Third item Void Helm instead of Lunaria: their 3s all-in loses 28% of its bite; you give up 9% of your damage."
+   }
+  },
+  {
    "enemy": "Riktor",
    "enemySlug": "riktor",
    "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Riktor ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
@@ -791,45 +878,6 @@
    }
   },
   {
-   "enemy": "Phase",
-   "enemySlug": "phase",
-   "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "even"
-    },
-    {
-     "minute": 10,
-     "verdict": "even"
-    },
-    {
-     "minute": 15,
-     "verdict": "you"
-    },
-    {
-     "minute": 20,
-     "verdict": "you"
-    },
-    {
-     "minute": 25,
-     "verdict": "even"
-    },
-    {
-     "minute": 30,
-     "verdict": "you"
-    }
-   ],
-   "counterSwap": {
-    "out": "Lunaria",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 28,
-    "offenseLossPct": 9,
-    "line": "Losing lane? Third item Void Helm instead of Lunaria: their 3s all-in loses 28% of its bite; you give up 9% of your damage."
-   }
-  },
-  {
    "enemy": "Narbash",
    "enemySlug": "narbash",
    "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Narbash deals area damage — spread out so one cast can't catch the group.",
@@ -873,7 +921,7 @@
  "slug": "muriel",
  "name": "Muriel",
  "patch": "1.14.4",
- "generatedAt": "2026-06-20T20:05:52.478Z",
+ "generatedAt": "2026-06-20T21:14:00.076Z",
  "damageType": "hybrid",
  "attackType": "ranged",
  "laneFlex": [],
@@ -915,15 +963,15 @@
       "name": "Lunaria",
       "slug": "lunaria",
       "spikeMinute": 21,
-      "playRatePct": 6.3,
-      "evidenceDeltaWr": -4,
-      "evidenceN": 45
+      "playRatePct": 4.4,
+      "evidenceDeltaWr": 0.6,
+      "evidenceN": 32
      },
      {
       "name": "Noxia",
       "slug": "noxia",
-      "spikeMinute": 28,
-      "playRatePct": 0.4,
+      "spikeMinute": 27,
+      "playRatePct": 0.1,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -939,17 +987,17 @@
       "name": "Timewarp",
       "slug": "timewarp",
       "spikeMinute": 39,
-      "playRatePct": 14.3,
-      "evidenceDeltaWr": 0.8,
-      "evidenceN": 103
+      "playRatePct": 16.9,
+      "evidenceDeltaWr": 2.7,
+      "evidenceN": 122
      },
      {
       "name": "Lifecore",
       "slug": "lifecore",
       "spikeMinute": 45,
-      "playRatePct": 5,
-      "evidenceDeltaWr": 3.9,
-      "evidenceN": 36
+      "playRatePct": 5.3,
+      "evidenceDeltaWr": 1.1,
+      "evidenceN": 38
      }
     ],
     "gold": 17850,
@@ -970,7 +1018,7 @@
     },
     "manaFeasible": true
    },
-   "coachLine": "Sim-optimal for heal/shield output: first spike lands around minute 15 (Oblivion Crown), third item by minute 28. Take Vesh: +12.8% on your damage rotation at minute 15.",
+   "coachLine": "Sim-optimal for heal/shield output: first spike lands around minute 15 (Oblivion Crown), third item by minute 27. Take Vesh: +12.8% on your damage rotation at minute 15.",
    "eternals": {
     "top": [
      {
@@ -1359,7 +1407,7 @@
      },
      {
       "item": "Noxia",
-      "playRatePct": 0.4,
+      "playRatePct": 0.1,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 158.3
      },
@@ -1374,7 +1422,7 @@
    },
    "metaBuilds": [
     {
-     "title": "AP Enchanter",
+     "title": "AP DPS Carry",
      "items": [
       {
        "name": "Marshal",
@@ -1389,13 +1437,61 @@
        "slug": "windcaller"
       }
      ],
-     "n": 66,
-     "shrunkWr": 0.47,
+     "n": 392,
+     "shrunkWr": 0.547,
      "coreGold": 7150,
      "spikeMinute": 24,
-     "bestObjective": "heal/shield output",
-     "whyLine": "Strongest meta core for heal/shield output, online around minute 24 — about 1,751 HP healed or shielded over 10s in the sim.",
-     "optimizer": "Optimizer sees +24% more heal/shield output: try Oblivion Crown over Marshal (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 84 auto-attack DPS in the sim.",
+     "optimizer": null
+    },
+    {
+     "title": "AP DPS Carry",
+     "items": [
+      {
+       "name": "Marshal",
+       "slug": "marshal"
+      },
+      {
+       "name": "Windcaller",
+       "slug": "windcaller"
+      },
+      {
+       "name": "Everbloom",
+       "slug": "everbloom"
+      }
+     ],
+     "n": 77,
+     "shrunkWr": 0.559,
+     "coreGold": 7200,
+     "spikeMinute": 24,
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 84 auto-attack DPS in the sim.",
+     "optimizer": null
+    },
+    {
+     "title": "AP DPS Carry",
+     "items": [
+      {
+       "name": "Marshal",
+       "slug": "marshal"
+      },
+      {
+       "name": "CrystalTear",
+       "slug": "crystal-tear"
+      },
+      {
+       "name": "Everbloom",
+       "slug": "everbloom"
+      }
+     ],
+     "n": 72,
+     "shrunkWr": 0.557,
+     "coreGold": 7250,
+     "spikeMinute": 24,
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 84 auto-attack DPS in the sim.",
+     "optimizer": null
     }
    ],
    "stages": [
@@ -1433,7 +1529,7 @@
     {
      "label": "mid",
      "itemCount": 3,
-     "minute": 28,
+     "minute": 27,
      "level": 15,
      "core": [
       {
@@ -1593,6 +1689,45 @@
      }
     },
     {
+     "enemy": "Phase",
+     "enemySlug": "phase",
+     "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "even"
+      },
+      {
+       "minute": 15,
+       "verdict": "you"
+      },
+      {
+       "minute": 20,
+       "verdict": "you"
+      },
+      {
+       "minute": 25,
+       "verdict": "even"
+      },
+      {
+       "minute": 30,
+       "verdict": "you"
+      }
+     ],
+     "counterSwap": {
+      "out": "Lunaria",
+      "in": "Void Helm",
+      "inSlug": "void-helm",
+      "survivalGainPct": 28,
+      "offenseLossPct": 9,
+      "line": "Losing lane? Third item Void Helm instead of Lunaria: their 3s all-in loses 28% of its bite; you give up 9% of your damage."
+     }
+    },
+    {
      "enemy": "Riktor",
      "enemySlug": "riktor",
      "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Riktor ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
@@ -1668,45 +1803,6 @@
       "survivalGainPct": 31,
       "offenseLossPct": 9,
       "line": "Losing lane? Third item Void Helm instead of Lunaria: their 3s all-in loses 31% of its bite; you give up 9% of your damage."
-     }
-    },
-    {
-     "enemy": "Phase",
-     "enemySlug": "phase",
-     "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "even"
-      },
-      {
-       "minute": 10,
-       "verdict": "even"
-      },
-      {
-       "minute": 15,
-       "verdict": "you"
-      },
-      {
-       "minute": 20,
-       "verdict": "you"
-      },
-      {
-       "minute": 25,
-       "verdict": "even"
-      },
-      {
-       "minute": 30,
-       "verdict": "you"
-      }
-     ],
-     "counterSwap": {
-      "out": "Lunaria",
-      "in": "Void Helm",
-      "inSlug": "void-helm",
-      "survivalGainPct": 28,
-      "offenseLossPct": 9,
-      "line": "Losing lane? Third item Void Helm instead of Lunaria: their 3s all-in loses 28% of its bite; you give up 9% of your damage."
      }
     },
     {

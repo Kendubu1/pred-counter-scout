@@ -16,7 +16,6 @@
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
    "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)",
-   "the sim opens on Stonewall, which the field has tried and lost with (-0.2% winrate over 69 games) — treat this opener as a sim blind-spot and weight the field",
    "the sim build reproduces only 33% of the field's core for Adele (it never builds Dawnstar, Xenia) — some of those items ride mechanics the sim doesn't model yet"
   ]
  },
@@ -27,49 +26,49 @@
     "name": "Stonewall",
     "slug": "stonewall",
     "spikeMinute": 14,
-    "playRatePct": 3.5,
-    "evidenceDeltaWr": -0.2,
+    "playRatePct": 3.6,
+    "evidenceDeltaWr": 0.2,
     "evidenceN": 69
    },
    {
     "name": "Warden's Faith",
     "slug": "wardens-faith",
     "spikeMinute": 21,
-    "playRatePct": 2.5,
-    "evidenceDeltaWr": -2.6,
-    "evidenceN": 48
+    "playRatePct": 3.4,
+    "evidenceDeltaWr": -0.5,
+    "evidenceN": 65
    },
    {
     "name": "Vainglory",
     "slug": "vainglory",
     "spikeMinute": 28,
-    "playRatePct": 13.1,
-    "evidenceDeltaWr": 3.8,
-    "evidenceN": 256
+    "playRatePct": 11.8,
+    "evidenceDeltaWr": 1.6,
+    "evidenceN": 224
    },
    {
     "name": "Raiment of Renewal",
     "slug": "raiment-of-renewal",
     "spikeMinute": 34,
-    "playRatePct": 15.9,
-    "evidenceDeltaWr": 5.1,
-    "evidenceN": 312
+    "playRatePct": 15,
+    "evidenceDeltaWr": 3.6,
+    "evidenceN": 286
    },
    {
     "name": "Catalytic Drive",
     "slug": "catalytic-drive",
     "spikeMinute": 40,
-    "playRatePct": 1.1,
-    "evidenceDeltaWr": -0.3,
-    "evidenceN": 21
+    "playRatePct": 0.9,
+    "evidenceDeltaWr": -0.9,
+    "evidenceN": 18
    },
    {
     "name": "Unbroken Will",
     "slug": "unbroken-will",
     "spikeMinute": 45,
-    "playRatePct": 4.2,
-    "evidenceDeltaWr": 2.2,
-    "evidenceN": 82
+    "playRatePct": 4.5,
+    "evidenceDeltaWr": 0.6,
+    "evidenceN": 85
    }
   ],
   "gold": 18000,
@@ -470,8 +469,15 @@
   }
  ],
  "offMeta": {
-  "candidates": [],
-  "honestAbsence": "no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)"
+  "candidates": [
+   {
+    "item": "Catalytic Drive",
+    "playRatePct": 0.9,
+    "bestObjective": "magical survivability",
+    "edgeVsPopularPct": 86.4
+   }
+  ],
+  "honestAbsence": null
  },
  "metaBuilds": [
   {
@@ -490,8 +496,8 @@
      "slug": "raiment-of-renewal"
     }
    ],
-   "n": 103,
-   "shrunkWr": 0.574,
+   "n": 598,
+   "shrunkWr": 0.603,
    "coreGold": 7850,
    "spikeMinute": 25,
    "bestObjective": "magical survivability",
@@ -514,13 +520,13 @@
      "slug": "vanguardian"
     }
    ],
-   "n": 57,
-   "shrunkWr": 0.561,
+   "n": 289,
+   "shrunkWr": 0.58,
    "coreGold": 7650,
    "spikeMinute": 25,
-   "bestObjective": "physical survivability",
-   "whyLine": "Strongest meta core for physical survivability, online around minute 25 — about 8,089 effective HP vs physical in the sim.",
-   "optimizer": "Optimizer sees +51% more physical survivability: try Stonewall over Dynamo (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "bestObjective": "magical survivability",
+   "whyLine": "Strongest meta core for magical survivability, online around minute 25 — about 5,033 effective HP vs magical in the sim.",
+   "optimizer": "Optimizer sees +10% more magical survivability: try Stonewall over Dynamo (sim-only — the popular pick may carry utility the sim can't see; test it)."
   },
   {
    "title": "Tank Frontline",
@@ -538,13 +544,13 @@
      "slug": "inquisition"
     }
    ],
-   "n": 29,
-   "shrunkWr": 0.558,
+   "n": 152,
+   "shrunkWr": 0.581,
    "coreGold": 8800,
    "spikeMinute": 27,
-   "bestObjective": "physical survivability",
-   "whyLine": "Strongest meta core for physical survivability, online around minute 27 — about 8,913 effective HP vs physical in the sim.",
-   "optimizer": "Optimizer sees +37% more physical survivability: try Stonewall over Fire Blossom (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "bestObjective": "magical survivability",
+   "whyLine": "Strongest meta core for magical survivability, online around minute 27 — about 5,694 effective HP vs magical in the sim.",
+   "optimizer": "Optimizer agrees: within 2% of our best core on magical survivability. The winrate is earned, not luck."
   }
  ],
  "stages": [
@@ -696,6 +702,38 @@
    "counterSwap": null
   },
   {
+   "enemy": "Phase",
+   "enemySlug": "phase",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 10,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 15,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 20,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 25,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 30,
+     "verdict": "enemy"
+    }
+   ],
+   "counterSwap": null
+  },
+  {
    "enemy": "Riktor",
    "enemySlug": "riktor",
    "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Riktor ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
@@ -731,38 +769,6 @@
    "enemy": "Dekker",
    "enemySlug": "dekker",
    "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Dekker deals area damage — spread out so one cast can't catch the group.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 10,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 15,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 20,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 25,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 30,
-     "verdict": "enemy"
-    }
-   ],
-   "counterSwap": null
-  },
-  {
-   "enemy": "Phase",
-   "enemySlug": "phase",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
    "checkpoints": [
     {
      "minute": 5,
@@ -863,16 +869,16 @@
   },
   "playstyle": "sustain",
   "modeled": false,
-  "wr": 51.8,
-  "n": 91304,
+  "wr": 51.7,
+  "n": 97551,
   "shiftIn": [],
   "shiftOut": [],
-  "provenance": "“Court of Roses” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 51.8% over 91,304 games, magnitude not simulated."
+  "provenance": "“Court of Roses” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 51.7% over 97,551 games, magnitude not simulated."
  },
  "slug": "adele",
  "name": "Adele",
  "patch": "1.14.4",
- "generatedAt": "2026-06-20T20:01:05.292Z",
+ "generatedAt": "2026-06-20T21:09:06.008Z",
  "damageType": "physical",
  "attackType": "melee",
  "laneFlex": [
@@ -884,8 +890,8 @@
    },
    "playstyle": "sustain",
    "modeled": false,
-   "wr": 51.8,
-   "n": 91304,
+   "wr": 51.7,
+   "n": 97551,
    "core": [
     {
      "name": "Raiment of Renewal",
@@ -913,7 +919,7 @@
     }
    ],
    "headline": "physical survival",
-   "provenance": "“Court of Roses” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 51.8% over 91,304 games, magnitude not simulated."
+   "provenance": "“Court of Roses” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 51.7% over 97,551 games, magnitude not simulated."
   },
   {
    "lane": "offlane",
@@ -924,7 +930,7 @@
    "playstyle": "ability-burst",
    "modeled": false,
    "wr": 48.1,
-   "n": 54621,
+   "n": 58207,
    "core": [
     {
      "name": "Vanquisher",
@@ -952,7 +958,7 @@
     }
    ],
    "headline": "burst",
-   "provenance": "“Tyrant of Thorns” ⇒ ability-burst; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 48.1% over 54,621 games, magnitude not simulated."
+   "provenance": "“Tyrant of Thorns” ⇒ ability-burst; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 48.1% over 58,207 games, magnitude not simulated."
   }
  ],
  "roles": [
@@ -974,7 +980,6 @@
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
      "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)",
-     "the sim opens on Stonewall, which the field has tried and lost with (-0.2% winrate over 69 games) — treat this opener as a sim blind-spot and weight the field",
      "the sim build reproduces only 33% of the field's core for Adele (it never builds Dawnstar, Xenia) — some of those items ride mechanics the sim doesn't model yet"
     ]
    },
@@ -985,49 +990,49 @@
       "name": "Stonewall",
       "slug": "stonewall",
       "spikeMinute": 14,
-      "playRatePct": 3.5,
-      "evidenceDeltaWr": -0.2,
+      "playRatePct": 3.6,
+      "evidenceDeltaWr": 0.2,
       "evidenceN": 69
      },
      {
       "name": "Warden's Faith",
       "slug": "wardens-faith",
       "spikeMinute": 21,
-      "playRatePct": 2.5,
-      "evidenceDeltaWr": -2.6,
-      "evidenceN": 48
+      "playRatePct": 3.4,
+      "evidenceDeltaWr": -0.5,
+      "evidenceN": 65
      },
      {
       "name": "Vainglory",
       "slug": "vainglory",
       "spikeMinute": 28,
-      "playRatePct": 13.1,
-      "evidenceDeltaWr": 3.8,
-      "evidenceN": 256
+      "playRatePct": 11.8,
+      "evidenceDeltaWr": 1.6,
+      "evidenceN": 224
      },
      {
       "name": "Raiment of Renewal",
       "slug": "raiment-of-renewal",
       "spikeMinute": 34,
-      "playRatePct": 15.9,
-      "evidenceDeltaWr": 5.1,
-      "evidenceN": 312
+      "playRatePct": 15,
+      "evidenceDeltaWr": 3.6,
+      "evidenceN": 286
      },
      {
       "name": "Catalytic Drive",
       "slug": "catalytic-drive",
       "spikeMinute": 40,
-      "playRatePct": 1.1,
-      "evidenceDeltaWr": -0.3,
-      "evidenceN": 21
+      "playRatePct": 0.9,
+      "evidenceDeltaWr": -0.9,
+      "evidenceN": 18
      },
      {
       "name": "Unbroken Will",
       "slug": "unbroken-will",
       "spikeMinute": 45,
-      "playRatePct": 4.2,
-      "evidenceDeltaWr": 2.2,
-      "evidenceN": 82
+      "playRatePct": 4.5,
+      "evidenceDeltaWr": 0.6,
+      "evidenceN": 85
      }
     ],
     "gold": 18000,
@@ -1428,8 +1433,15 @@
     }
    ],
    "offMeta": {
-    "candidates": [],
-    "honestAbsence": "no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)"
+    "candidates": [
+     {
+      "item": "Catalytic Drive",
+      "playRatePct": 0.9,
+      "bestObjective": "magical survivability",
+      "edgeVsPopularPct": 86.4
+     }
+    ],
+    "honestAbsence": null
    },
    "metaBuilds": [
     {
@@ -1448,8 +1460,8 @@
        "slug": "raiment-of-renewal"
       }
      ],
-     "n": 103,
-     "shrunkWr": 0.574,
+     "n": 598,
+     "shrunkWr": 0.603,
      "coreGold": 7850,
      "spikeMinute": 25,
      "bestObjective": "magical survivability",
@@ -1472,13 +1484,13 @@
        "slug": "vanguardian"
       }
      ],
-     "n": 57,
-     "shrunkWr": 0.561,
+     "n": 289,
+     "shrunkWr": 0.58,
      "coreGold": 7650,
      "spikeMinute": 25,
-     "bestObjective": "physical survivability",
-     "whyLine": "Strongest meta core for physical survivability, online around minute 25 — about 8,089 effective HP vs physical in the sim.",
-     "optimizer": "Optimizer sees +51% more physical survivability: try Stonewall over Dynamo (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "bestObjective": "magical survivability",
+     "whyLine": "Strongest meta core for magical survivability, online around minute 25 — about 5,033 effective HP vs magical in the sim.",
+     "optimizer": "Optimizer sees +10% more magical survivability: try Stonewall over Dynamo (sim-only — the popular pick may carry utility the sim can't see; test it)."
     },
     {
      "title": "Tank Frontline",
@@ -1496,13 +1508,13 @@
        "slug": "inquisition"
       }
      ],
-     "n": 29,
-     "shrunkWr": 0.558,
+     "n": 152,
+     "shrunkWr": 0.581,
      "coreGold": 8800,
      "spikeMinute": 27,
-     "bestObjective": "physical survivability",
-     "whyLine": "Strongest meta core for physical survivability, online around minute 27 — about 8,913 effective HP vs physical in the sim.",
-     "optimizer": "Optimizer sees +37% more physical survivability: try Stonewall over Fire Blossom (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "bestObjective": "magical survivability",
+     "whyLine": "Strongest meta core for magical survivability, online around minute 27 — about 5,694 effective HP vs magical in the sim.",
+     "optimizer": "Optimizer agrees: within 2% of our best core on magical survivability. The winrate is earned, not luck."
     }
    ],
    "stages": [
@@ -1654,6 +1666,38 @@
      "counterSwap": null
     },
     {
+     "enemy": "Phase",
+     "enemySlug": "phase",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": null
+    },
+    {
      "enemy": "Riktor",
      "enemySlug": "riktor",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Riktor ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
@@ -1689,38 +1733,6 @@
      "enemy": "Dekker",
      "enemySlug": "dekker",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Dekker deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": null
-    },
-    {
-     "enemy": "Phase",
-     "enemySlug": "phase",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
      "checkpoints": [
       {
        "minute": 5,
@@ -1821,11 +1833,11 @@
     },
     "playstyle": "sustain",
     "modeled": false,
-    "wr": 51.8,
-    "n": 91304,
+    "wr": 51.7,
+    "n": 97551,
     "shiftIn": [],
     "shiftOut": [],
-    "provenance": "“Court of Roses” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 51.8% over 91,304 games, magnitude not simulated."
+    "provenance": "“Court of Roses” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 51.7% over 97,551 games, magnitude not simulated."
    }
   },
   {
@@ -1845,7 +1857,7 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Viper, which the field rarely builds (0.1% pick) — a sim-only call; compare the meta cores below"
+     "the sim opens on Viper, which the field rarely builds (0.2% pick) — a sim-only call; compare the meta cores below"
     ]
    },
    "build": {
@@ -1855,15 +1867,15 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 12,
-      "playRatePct": 0.1,
+      "playRatePct": 0.2,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
      {
       "name": "Solaris",
       "slug": "solaris",
-      "spikeMinute": 20,
-      "playRatePct": 0.2,
+      "spikeMinute": 19,
+      "playRatePct": 0.1,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1871,15 +1883,15 @@
       "name": "Augmentation",
       "slug": "augmentation",
       "spikeMinute": 26,
-      "playRatePct": 1.4,
-      "evidenceDeltaWr": 1.9,
-      "evidenceN": 28
+      "playRatePct": 0.7,
+      "evidenceDeltaWr": 0,
+      "evidenceN": 14
      },
      {
       "name": "The Perforator",
       "slug": "the-perforator",
       "spikeMinute": 32,
-      "playRatePct": 0,
+      "playRatePct": 0.1,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1894,7 +1906,7 @@
      {
       "name": "Alternator",
       "slug": "alternator",
-      "spikeMinute": 43,
+      "spikeMinute": 42,
       "playRatePct": 0,
       "evidenceDeltaWr": null,
       "evidenceN": null
@@ -2301,25 +2313,25 @@
     "candidates": [
      {
       "item": "Viper",
-      "playRatePct": 0.1,
-      "bestObjective": "20s fight vs bruisers",
-      "edgeVsPopularPct": 837.1
-     },
-     {
-      "item": "Solaris",
       "playRatePct": 0.2,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 837.1
      },
      {
+      "item": "Solaris",
+      "playRatePct": 0.1,
+      "bestObjective": "20s fight vs bruisers",
+      "edgeVsPopularPct": 837.1
+     },
+     {
       "item": "Augmentation",
-      "playRatePct": 1.4,
+      "playRatePct": 0.7,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 837.1
      },
      {
       "item": "The Perforator",
-      "playRatePct": 0,
+      "playRatePct": 0.1,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 837.1
      },
@@ -2355,8 +2367,8 @@
        "slug": "raiment-of-renewal"
       }
      ],
-     "n": 103,
-     "shrunkWr": 0.574,
+     "n": 598,
+     "shrunkWr": 0.603,
      "coreGold": 7850,
      "spikeMinute": 23,
      "bestObjective": "magical survivability",
@@ -2379,12 +2391,12 @@
        "slug": "vanguardian"
       }
      ],
-     "n": 57,
-     "shrunkWr": 0.561,
+     "n": 289,
+     "shrunkWr": 0.58,
      "coreGold": 7650,
      "spikeMinute": 22,
-     "bestObjective": "physical survivability",
-     "whyLine": "Strongest meta core for physical survivability, online around minute 22 — about 8,089 effective HP vs physical in the sim.",
+     "bestObjective": "magical survivability",
+     "whyLine": "Strongest meta core for magical survivability, online around minute 22 — about 5,033 effective HP vs magical in the sim.",
      "optimizer": null
     },
     {
@@ -2403,12 +2415,12 @@
        "slug": "inquisition"
       }
      ],
-     "n": 29,
-     "shrunkWr": 0.558,
+     "n": 152,
+     "shrunkWr": 0.581,
      "coreGold": 8800,
      "spikeMinute": 25,
-     "bestObjective": "physical survivability",
-     "whyLine": "Strongest meta core for physical survivability, online around minute 25 — about 8,913 effective HP vs physical in the sim.",
+     "bestObjective": "magical survivability",
+     "whyLine": "Strongest meta core for magical survivability, online around minute 25 — about 5,694 effective HP vs magical in the sim.",
      "optimizer": null
     }
    ],
@@ -2416,8 +2428,8 @@
     {
      "label": "early",
      "itemCount": 2,
-     "minute": 20,
-     "level": 13,
+     "minute": 19,
+     "level": 11,
      "core": [
       {
        "name": "Viper",
@@ -2431,13 +2443,13 @@
      "headline": "rot10VsSquishy",
      "headlineValue": 482,
      "objectives": {
-      "burstVsSquishy": 378.68585769117203,
-      "teamfightVsSquishy": 658.0126956008266,
+      "burstVsSquishy": 369.0600826690286,
+      "teamfightVsSquishy": 648.3869205786832,
       "rot10VsSquishy": 481.7332035053554,
       "rot20VsBruiser": 764.2739443872297,
-      "autoDps10VsSquishy": 164.52179857594928,
-      "ehpPhysical": 4086.7909375000004,
-      "ehpMagical": 3179.3439062500006,
+      "autoDps10VsSquishy": 150.80989094145562,
+      "ehpPhysical": 3318.7186718750004,
+      "ehpMagical": 2681.0792578125,
       "healShield10s": 0,
       "utility": 15,
       "sustain10s": 0
@@ -2487,7 +2499,7 @@
     {
      "label": "late",
      "itemCount": 6,
-     "minute": 43,
+     "minute": 42,
      "level": 17,
      "core": [
       {
@@ -2573,45 +2585,6 @@
      }
     },
     {
-     "enemy": "Greystone",
-     "enemySlug": "greystone",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Greystone deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Augmentation",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 29,
-      "offenseLossPct": 28,
-      "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 29% of its bite; you give up 28% of your damage."
-     }
-    },
-    {
      "enemy": "Steel",
      "enemySlug": "steel",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Steel deals area damage — spread out so one cast can't catch the group.",
@@ -2687,6 +2660,45 @@
       "survivalGainPct": 26,
       "offenseLossPct": 28,
       "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 26% of its bite; you give up 28% of your damage."
+     }
+    },
+    {
+     "enemy": "Greystone",
+     "enemySlug": "greystone",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Greystone deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Augmentation",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 29,
+      "offenseLossPct": 28,
+      "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 29% of its bite; you give up 28% of your damage."
      }
     },
     {
@@ -2776,7 +2788,7 @@
     "playstyle": "ability-burst",
     "modeled": false,
     "wr": 48.1,
-    "n": 54621,
+    "n": 58207,
     "shiftIn": [
      "Vanquisher",
      "Deathstalker",
@@ -2787,7 +2799,7 @@
      "Painweaver",
      "Alternator"
     ],
-    "provenance": "“Tyrant of Thorns” ⇒ ability-burst; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 48.1% over 54,621 games, magnitude not simulated."
+    "provenance": "“Tyrant of Thorns” ⇒ ability-burst; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 48.1% over 58,207 games, magnitude not simulated."
    }
   }
  ],

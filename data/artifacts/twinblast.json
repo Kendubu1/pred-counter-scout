@@ -14,8 +14,7 @@
   "notes": [
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
-   "evidence deltas carry finished-inventory survivorship bias",
-   "the sim opens on Viper, which the field has tried and lost with (-0.1% winrate over 70 games) — treat this opener as a sim blind-spot and weight the field"
+   "evidence deltas carry finished-inventory survivorship bias"
   ]
  },
  "build": {
@@ -25,49 +24,49 @@
     "name": "Viper",
     "slug": "viper",
     "spikeMinute": 12,
-    "playRatePct": 5.1,
-    "evidenceDeltaWr": -0.1,
-    "evidenceN": 70
+    "playRatePct": 5.7,
+    "evidenceDeltaWr": 4.9,
+    "evidenceN": 75
    },
    {
     "name": "Deathstalker",
     "slug": "deathstalker",
     "spikeMinute": 19,
-    "playRatePct": 0.7,
-    "evidenceDeltaWr": -2.9,
-    "evidenceN": 10
+    "playRatePct": 0.8,
+    "evidenceDeltaWr": 3.4,
+    "evidenceN": 11
    },
    {
     "name": "Plasma Blade",
     "slug": "plasma-blade",
     "spikeMinute": 25,
-    "playRatePct": 3.3,
-    "evidenceDeltaWr": -1.3,
-    "evidenceN": 45
+    "playRatePct": 1.2,
+    "evidenceDeltaWr": -1.4,
+    "evidenceN": 16
    },
    {
     "name": "Imperator",
     "slug": "imperator",
     "spikeMinute": 31,
-    "playRatePct": 34,
-    "evidenceDeltaWr": 5.9,
-    "evidenceN": 465
+    "playRatePct": 36,
+    "evidenceDeltaWr": 8.6,
+    "evidenceN": 470
    },
    {
     "name": "Vanquisher",
     "slug": "vanquisher",
     "spikeMinute": 36,
-    "playRatePct": 25,
-    "evidenceDeltaWr": 3.7,
-    "evidenceN": 342
+    "playRatePct": 26,
+    "evidenceDeltaWr": 5.4,
+    "evidenceN": 339
    },
    {
     "name": "Demolisher",
     "slug": "demolisher",
     "spikeMinute": 42,
-    "playRatePct": 18,
-    "evidenceDeltaWr": 5,
-    "evidenceN": 246
+    "playRatePct": 14.5,
+    "evidenceDeltaWr": 10.2,
+    "evidenceN": 189
    }
   ],
   "gold": 18700,
@@ -471,7 +470,13 @@
   "candidates": [
    {
     "item": "Deathstalker",
-    "playRatePct": 0.7,
+    "playRatePct": 0.8,
+    "bestObjective": "sustained auto DPS",
+    "edgeVsPopularPct": 62
+   },
+   {
+    "item": "Plasma Blade",
+    "playRatePct": 1.2,
     "bestObjective": "sustained auto DPS",
     "edgeVsPopularPct": 62
    }
@@ -495,8 +500,8 @@
      "slug": "imperator"
     }
    ],
-   "n": 174,
-   "shrunkWr": 0.527,
+   "n": 1028,
+   "shrunkWr": 0.505,
    "coreGold": 9400,
    "spikeMinute": 25,
    "bestObjective": "sustained auto DPS",
@@ -519,8 +524,8 @@
      "slug": "imperator"
     }
    ],
-   "n": 84,
-   "shrunkWr": 0.543,
+   "n": 525,
+   "shrunkWr": 0.52,
    "coreGold": 9600,
    "spikeMinute": 26,
    "bestObjective": "one-combo burst",
@@ -543,8 +548,8 @@
      "slug": "tainted-rounds"
     }
    ],
-   "n": 68,
-   "shrunkWr": 0.533,
+   "n": 329,
+   "shrunkWr": 0.494,
    "coreGold": 9200,
    "spikeMinute": 25,
    "bestObjective": "extended fights vs bruisers",
@@ -676,7 +681,7 @@
   {
    "enemy": "Sparrow",
    "enemySlug": "sparrow",
-   "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange. Sparrow ramps on auto-attacks — pressure their positioning before they itemize, and armor blunts them later.",
+   "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Sparrow ramps on auto-attacks — pressure their positioning before they itemize, and armor blunts them later.",
    "checkpoints": [
     {
      "minute": 5,
@@ -700,7 +705,7 @@
     },
     {
      "minute": 30,
-     "verdict": "even"
+     "verdict": "enemy"
     }
    ],
    "counterSwap": {
@@ -749,6 +754,45 @@
     "survivalGainPct": 24,
     "offenseLossPct": 35,
     "line": "Losing lane? Third item Raiment of Renewal instead of Plasma Blade: their 3s all-in loses 24% of its bite; you give up 35% of your damage."
+   }
+  },
+  {
+   "enemy": "Eden",
+   "enemySlug": "eden",
+   "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Eden ramps on auto-attacks — pressure them before they itemize, and armor blunts them later.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "even"
+    },
+    {
+     "minute": 10,
+     "verdict": "even"
+    },
+    {
+     "minute": 15,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 20,
+     "verdict": "even"
+    },
+    {
+     "minute": 25,
+     "verdict": "even"
+    },
+    {
+     "minute": 30,
+     "verdict": "even"
+    }
+   ],
+   "counterSwap": {
+    "out": "Plasma Blade",
+    "in": "Warden's Faith",
+    "inSlug": "wardens-faith",
+    "survivalGainPct": 36,
+    "offenseLossPct": 35,
+    "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 36% of its bite; you give up 35% of your damage."
    }
   },
   {
@@ -830,45 +874,6 @@
    }
   },
   {
-   "enemy": "Eden",
-   "enemySlug": "eden",
-   "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Eden ramps on auto-attacks — pressure them before they itemize, and armor blunts them later.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "even"
-    },
-    {
-     "minute": 10,
-     "verdict": "even"
-    },
-    {
-     "minute": 15,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 20,
-     "verdict": "even"
-    },
-    {
-     "minute": 25,
-     "verdict": "even"
-    },
-    {
-     "minute": 30,
-     "verdict": "even"
-    }
-   ],
-   "counterSwap": {
-    "out": "Plasma Blade",
-    "in": "Warden's Faith",
-    "inSlug": "wardens-faith",
-    "survivalGainPct": 36,
-    "offenseLossPct": 35,
-    "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 36% of its bite; you give up 35% of your damage."
-   }
-  },
-  {
    "enemy": "Wraith",
    "enemySlug": "wraith",
    "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Wraith ramps on auto-attacks — pressure their positioning before they itemize, and mixed resist blunts them later.",
@@ -916,7 +921,7 @@
   "playstyle": "poke",
   "modeled": false,
   "wr": 47.5,
-  "n": 408622,
+  "n": 416210,
   "shiftIn": [
    "Solaris",
    "Augmentation",
@@ -931,12 +936,12 @@
    "Vanquisher",
    "Demolisher"
   ],
-  "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 47.5% over 408,622 games, magnitude not simulated."
+  "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 47.5% over 416,210 games, magnitude not simulated."
  },
  "slug": "twinblast",
  "name": "TwinBlast",
  "patch": "1.14.4",
- "generatedAt": "2026-06-20T20:07:51.890Z",
+ "generatedAt": "2026-06-20T21:15:58.665Z",
  "damageType": "hybrid",
  "attackType": "ranged",
  "laneFlex": [
@@ -949,7 +954,7 @@
    "playstyle": "poke",
    "modeled": false,
    "wr": 47.5,
-   "n": 408622,
+   "n": 416210,
    "core": [
     {
      "name": "Solaris",
@@ -977,7 +982,7 @@
     }
    ],
    "headline": "skirmish uptime",
-   "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 47.5% over 408,622 games, magnitude not simulated."
+   "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 47.5% over 416,210 games, magnitude not simulated."
   },
   {
    "lane": "midlane",
@@ -987,8 +992,8 @@
    },
    "playstyle": "poke",
    "modeled": false,
-   "wr": 48.3,
-   "n": 26408,
+   "wr": 48.2,
+   "n": 26737,
    "core": [
     {
      "name": "Solaris",
@@ -1016,7 +1021,7 @@
     }
    ],
    "headline": "skirmish uptime",
-   "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field midlane 48.3% over 26,408 games, magnitude not simulated."
+   "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field midlane 48.2% over 26,737 games, magnitude not simulated."
   }
  ],
  "roles": [
@@ -1036,8 +1041,7 @@
     "notes": [
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
-     "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Viper, which the field has tried and lost with (-0.1% winrate over 70 games) — treat this opener as a sim blind-spot and weight the field"
+     "evidence deltas carry finished-inventory survivorship bias"
     ]
    },
    "build": {
@@ -1047,49 +1051,49 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 12,
-      "playRatePct": 5.1,
-      "evidenceDeltaWr": -0.1,
-      "evidenceN": 70
+      "playRatePct": 5.7,
+      "evidenceDeltaWr": 4.9,
+      "evidenceN": 75
      },
      {
       "name": "Deathstalker",
       "slug": "deathstalker",
       "spikeMinute": 19,
-      "playRatePct": 0.7,
-      "evidenceDeltaWr": -2.9,
-      "evidenceN": 10
+      "playRatePct": 0.8,
+      "evidenceDeltaWr": 3.4,
+      "evidenceN": 11
      },
      {
       "name": "Plasma Blade",
       "slug": "plasma-blade",
       "spikeMinute": 25,
-      "playRatePct": 3.3,
-      "evidenceDeltaWr": -1.3,
-      "evidenceN": 45
+      "playRatePct": 1.2,
+      "evidenceDeltaWr": -1.4,
+      "evidenceN": 16
      },
      {
       "name": "Imperator",
       "slug": "imperator",
       "spikeMinute": 31,
-      "playRatePct": 34,
-      "evidenceDeltaWr": 5.9,
-      "evidenceN": 465
+      "playRatePct": 36,
+      "evidenceDeltaWr": 8.6,
+      "evidenceN": 470
      },
      {
       "name": "Vanquisher",
       "slug": "vanquisher",
       "spikeMinute": 36,
-      "playRatePct": 25,
-      "evidenceDeltaWr": 3.7,
-      "evidenceN": 342
+      "playRatePct": 26,
+      "evidenceDeltaWr": 5.4,
+      "evidenceN": 339
      },
      {
       "name": "Demolisher",
       "slug": "demolisher",
       "spikeMinute": 42,
-      "playRatePct": 18,
-      "evidenceDeltaWr": 5,
-      "evidenceN": 246
+      "playRatePct": 14.5,
+      "evidenceDeltaWr": 10.2,
+      "evidenceN": 189
      }
     ],
     "gold": 18700,
@@ -1493,7 +1497,13 @@
     "candidates": [
      {
       "item": "Deathstalker",
-      "playRatePct": 0.7,
+      "playRatePct": 0.8,
+      "bestObjective": "sustained auto DPS",
+      "edgeVsPopularPct": 62
+     },
+     {
+      "item": "Plasma Blade",
+      "playRatePct": 1.2,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 62
      }
@@ -1517,8 +1527,8 @@
        "slug": "imperator"
       }
      ],
-     "n": 174,
-     "shrunkWr": 0.527,
+     "n": 1028,
+     "shrunkWr": 0.505,
      "coreGold": 9400,
      "spikeMinute": 25,
      "bestObjective": "sustained auto DPS",
@@ -1541,8 +1551,8 @@
        "slug": "imperator"
       }
      ],
-     "n": 84,
-     "shrunkWr": 0.543,
+     "n": 525,
+     "shrunkWr": 0.52,
      "coreGold": 9600,
      "spikeMinute": 26,
      "bestObjective": "one-combo burst",
@@ -1565,8 +1575,8 @@
        "slug": "tainted-rounds"
       }
      ],
-     "n": 68,
-     "shrunkWr": 0.533,
+     "n": 329,
+     "shrunkWr": 0.494,
      "coreGold": 9200,
      "spikeMinute": 25,
      "bestObjective": "extended fights vs bruisers",
@@ -1698,7 +1708,7 @@
     {
      "enemy": "Sparrow",
      "enemySlug": "sparrow",
-     "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange. Sparrow ramps on auto-attacks — pressure their positioning before they itemize, and armor blunts them later.",
+     "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Sparrow ramps on auto-attacks — pressure their positioning before they itemize, and armor blunts them later.",
      "checkpoints": [
       {
        "minute": 5,
@@ -1722,7 +1732,7 @@
       },
       {
        "minute": 30,
-       "verdict": "even"
+       "verdict": "enemy"
       }
      ],
      "counterSwap": {
@@ -1771,6 +1781,45 @@
       "survivalGainPct": 24,
       "offenseLossPct": 35,
       "line": "Losing lane? Third item Raiment of Renewal instead of Plasma Blade: their 3s all-in loses 24% of its bite; you give up 35% of your damage."
+     }
+    },
+    {
+     "enemy": "Eden",
+     "enemySlug": "eden",
+     "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Eden ramps on auto-attacks — pressure them before they itemize, and armor blunts them later.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "even"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "even"
+      },
+      {
+       "minute": 25,
+       "verdict": "even"
+      },
+      {
+       "minute": 30,
+       "verdict": "even"
+      }
+     ],
+     "counterSwap": {
+      "out": "Plasma Blade",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 36,
+      "offenseLossPct": 35,
+      "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 36% of its bite; you give up 35% of your damage."
      }
     },
     {
@@ -1852,45 +1901,6 @@
      }
     },
     {
-     "enemy": "Eden",
-     "enemySlug": "eden",
-     "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Eden ramps on auto-attacks — pressure them before they itemize, and armor blunts them later.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "even"
-      },
-      {
-       "minute": 10,
-       "verdict": "even"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "even"
-      },
-      {
-       "minute": 25,
-       "verdict": "even"
-      },
-      {
-       "minute": 30,
-       "verdict": "even"
-      }
-     ],
-     "counterSwap": {
-      "out": "Plasma Blade",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 36,
-      "offenseLossPct": 35,
-      "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 36% of its bite; you give up 35% of your damage."
-     }
-    },
-    {
      "enemy": "Wraith",
      "enemySlug": "wraith",
      "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Wraith ramps on auto-attacks — pressure their positioning before they itemize, and mixed resist blunts them later.",
@@ -1938,7 +1948,7 @@
     "playstyle": "poke",
     "modeled": false,
     "wr": 47.5,
-    "n": 408622,
+    "n": 416210,
     "shiftIn": [
      "Solaris",
      "Augmentation",
@@ -1953,7 +1963,7 @@
      "Vanquisher",
      "Demolisher"
     ],
-    "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 47.5% over 408,622 games, magnitude not simulated."
+    "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 47.5% over 416,210 games, magnitude not simulated."
    }
   },
   {
@@ -1972,8 +1982,7 @@
     "notes": [
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
-     "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Viper, which the field has tried and lost with (-0.1% winrate over 70 games) — treat this opener as a sim blind-spot and weight the field"
+     "evidence deltas carry finished-inventory survivorship bias"
     ]
    },
    "build": {
@@ -1983,49 +1992,49 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 12,
-      "playRatePct": 5.1,
-      "evidenceDeltaWr": -0.1,
-      "evidenceN": 70
+      "playRatePct": 5.7,
+      "evidenceDeltaWr": 4.9,
+      "evidenceN": 75
      },
      {
       "name": "Deathstalker",
       "slug": "deathstalker",
       "spikeMinute": 19,
-      "playRatePct": 0.7,
-      "evidenceDeltaWr": -2.9,
-      "evidenceN": 10
+      "playRatePct": 0.8,
+      "evidenceDeltaWr": 3.4,
+      "evidenceN": 11
      },
      {
       "name": "Plasma Blade",
       "slug": "plasma-blade",
       "spikeMinute": 25,
-      "playRatePct": 3.3,
-      "evidenceDeltaWr": -1.3,
-      "evidenceN": 45
+      "playRatePct": 1.2,
+      "evidenceDeltaWr": -1.4,
+      "evidenceN": 16
      },
      {
       "name": "Imperator",
       "slug": "imperator",
       "spikeMinute": 31,
-      "playRatePct": 34,
-      "evidenceDeltaWr": 5.9,
-      "evidenceN": 465
+      "playRatePct": 36,
+      "evidenceDeltaWr": 8.6,
+      "evidenceN": 470
      },
      {
       "name": "Vanquisher",
       "slug": "vanquisher",
       "spikeMinute": 36,
-      "playRatePct": 25,
-      "evidenceDeltaWr": 3.7,
-      "evidenceN": 342
+      "playRatePct": 26,
+      "evidenceDeltaWr": 5.4,
+      "evidenceN": 339
      },
      {
       "name": "Demolisher",
       "slug": "demolisher",
       "spikeMinute": 42,
-      "playRatePct": 18,
-      "evidenceDeltaWr": 5,
-      "evidenceN": 246
+      "playRatePct": 14.5,
+      "evidenceDeltaWr": 10.2,
+      "evidenceN": 189
      }
     ],
     "gold": 18700,
@@ -2429,7 +2438,13 @@
     "candidates": [
      {
       "item": "Deathstalker",
-      "playRatePct": 0.7,
+      "playRatePct": 0.8,
+      "bestObjective": "sustained auto DPS",
+      "edgeVsPopularPct": 62
+     },
+     {
+      "item": "Plasma Blade",
+      "playRatePct": 1.2,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 62
      }
@@ -2453,8 +2468,8 @@
        "slug": "imperator"
       }
      ],
-     "n": 174,
-     "shrunkWr": 0.527,
+     "n": 1028,
+     "shrunkWr": 0.505,
      "coreGold": 9400,
      "spikeMinute": 25,
      "bestObjective": "sustained auto DPS",
@@ -2477,8 +2492,8 @@
        "slug": "imperator"
       }
      ],
-     "n": 84,
-     "shrunkWr": 0.543,
+     "n": 525,
+     "shrunkWr": 0.52,
      "coreGold": 9600,
      "spikeMinute": 26,
      "bestObjective": "one-combo burst",
@@ -2501,8 +2516,8 @@
        "slug": "tainted-rounds"
       }
      ],
-     "n": 68,
-     "shrunkWr": 0.533,
+     "n": 329,
+     "shrunkWr": 0.494,
      "coreGold": 9200,
      "spikeMinute": 25,
      "bestObjective": "extended fights vs bruisers",
@@ -2671,6 +2686,45 @@
      }
     },
     {
+     "enemy": "Lt. Belica",
+     "enemySlug": "lt-belica",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Lt. Belica executes low targets with Neural Disruptor — don't linger below half HP.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Plasma Blade",
+      "in": "Void Helm",
+      "inSlug": "void-helm",
+      "survivalGainPct": 30,
+      "offenseLossPct": 35,
+      "line": "Losing lane? Third item Void Helm instead of Plasma Blade: their 3s all-in loses 30% of its bite; you give up 35% of your damage."
+     }
+    },
+    {
      "enemy": "Iggy & Scorch",
      "enemySlug": "iggy-scorch",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Iggy & Scorch deals area damage — spread out so one cast can't catch the group.",
@@ -2749,45 +2803,6 @@
      }
     },
     {
-     "enemy": "Lt. Belica",
-     "enemySlug": "lt-belica",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Lt. Belica executes low targets with Neural Disruptor — don't linger below half HP.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "even"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Plasma Blade",
-      "in": "Void Helm",
-      "inSlug": "void-helm",
-      "survivalGainPct": 30,
-      "offenseLossPct": 35,
-      "line": "Losing lane? Third item Void Helm instead of Plasma Blade: their 3s all-in loses 30% of its bite; you give up 35% of your damage."
-     }
-    },
-    {
      "enemy": "Gideon",
      "enemySlug": "gideon",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Gideon deals area damage — spread out so one cast can't catch the group.",
@@ -2827,17 +2842,17 @@
      }
     },
     {
-     "enemy": "Countess",
-     "enemySlug": "countess",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Countess deals area damage — spread out so one cast can't catch the group.",
+     "enemy": "Argus",
+     "enemySlug": "argus",
+     "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Argus deals area damage — spread out so one cast can't catch the group.",
      "checkpoints": [
       {
        "minute": 5,
-       "verdict": "enemy"
+       "verdict": "you"
       },
       {
        "minute": 10,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 15,
@@ -2845,11 +2860,11 @@
       },
       {
        "minute": 20,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 25,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 30,
@@ -2860,9 +2875,9 @@
       "out": "Plasma Blade",
       "in": "Void Helm",
       "inSlug": "void-helm",
-      "survivalGainPct": 28,
+      "survivalGainPct": 34,
       "offenseLossPct": 35,
-      "line": "Losing lane? Third item Void Helm instead of Plasma Blade: their 3s all-in loses 28% of its bite; you give up 35% of your damage."
+      "line": "Losing lane? Third item Void Helm instead of Plasma Blade: their 3s all-in loses 34% of its bite; you give up 35% of your damage."
      }
     }
    ],
@@ -2873,8 +2888,8 @@
     },
     "playstyle": "poke",
     "modeled": false,
-    "wr": 48.3,
-    "n": 26408,
+    "wr": 48.2,
+    "n": 26737,
     "shiftIn": [
      "Solaris",
      "Augmentation",
@@ -2889,7 +2904,7 @@
      "Vanquisher",
      "Demolisher"
     ],
-    "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field midlane 48.3% over 26,408 games, magnitude not simulated."
+    "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field midlane 48.2% over 26,737 games, magnitude not simulated."
    }
   }
  ],
