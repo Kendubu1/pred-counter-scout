@@ -108,6 +108,13 @@ export function buildTitle(archetypes: string[], kit: HeroKit, items: Item[]): s
   return title || 'Core Build';
 }
 
+/** The human archetype noun-source label for an objective key (e.g.
+ *  'burstVsSquishy' -> 'burst'), so callers outside this module (meta-build
+ *  titling) can feed buildTitle the same vocabulary the optimizer uses. */
+export function archetypeLabel(key: string): string {
+  return ARCHETYPE_LABELS[key as ObjKey] ?? '';
+}
+
 type Weights = Partial<Record<ObjKey, number>>;
 
 // Corner weight vectors approximate the Pareto front through scalarization.

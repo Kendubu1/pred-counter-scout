@@ -865,6 +865,12 @@ function renderHero(a, roleParam) {
               const ai = REVIEWS && REVIEWS.eternals && REVIEWS.eternals[a.slug] && REVIEWS.eternals[a.slug][role] && REVIEWS.eternals[a.slug][role][e.name];
               return ai ? `<div style="font-size:.68rem;line-height:1.45;color:${i === 0 ? 'var(--green)' : 'var(--text-1)'};margin:.12rem 0 0 2.35rem">🧠 ${esc(ai)}</div>` : '';
             })()}
+            ${(() => {
+              const mb = a.eternals.minorsByName && a.eternals.minorsByName[e.name.toLowerCase()];
+              if (!mb) return '';
+              const fmt = (m) => `<b style="color:var(--text-1)">${esc(m.name)}</b> <span style="color:var(--text-2)">(${m.modeled && m.deltaPct != null ? `+${m.deltaPct}% in the sim` : 'curated pick'})</span>`;
+              return `<div style="font-size:.66rem;color:var(--text-2);margin:.22rem 0 0 2.35rem">↳ minors: ${fmt(mb.minor1)} · ${fmt(mb.minor2)}</div>`;
+            })()}
           </div>`;
         }).join('') : '<div class="muted">no Eternal sample for this role yet</div>'}
         ${a.eternals.loadout ? ((lo) => `
@@ -908,6 +914,7 @@ function renderHero(a, roleParam) {
       <h2>Meta builds, explained <span class="hint">what the field actually wins with · sim notes per core</span></h2>
       ${a.metaBuilds.map((m) => `
         <div class="metabuild">
+          ${m.title ? `<div style="font-size:.84rem;font-weight:700;color:var(--text-0);margin-bottom:.3rem">${esc(m.title)}</div>` : ''}
           <div class="mb-row">
             <span class="mb-items">${m.items.map((i) => i.slug ? `<img loading="lazy" data-ipop="${esc(i.slug)}" src="../img/items/${esc(i.slug)}.webp" title="${esc(i.name)} · tap for details" onerror="this.style.visibility='hidden'">` : `<span class="chip">${esc(i.name)}</span>`).join('<span class="arrow">→</span>')}</span>
             <span class="mb-wr ${m.shrunkWr >= 0.53 ? 'up' : m.shrunkWr <= 0.5 ? 'down' : 'flat'}">${(m.shrunkWr * 100).toFixed(1)}%</span>

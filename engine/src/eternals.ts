@@ -196,7 +196,26 @@ export function selectEternalLoadout(
   const id = baseId(top.r);
   const def = defs.get(id);
 
-  // Headline metric for conditional minor scoring.
+  const picks = pickMinorsFor(kit, items, level, cal, id, def, opts);
+  return {
+    major: { id, name: top.r.name, modeled: top.r.modeled, fitScore: top.fit, headlinePct: top.r.headlinePct },
+    minor1: picks.minor1,
+    minor2: picks.minor2,
+    note: def?.archetype ? `${def.archetype} — fit ${top.fit.toFixed(2)}` : `fit ${top.fit.toFixed(2)}`,
+  };
+}
+
+/** Pick the conditioned minor pair for a SPECIFIC eternal id: each minor scored
+ *  by its marginal sim gain on top of THAT major, or the curated recommendation
+ *  when its mechanic isn't modeled. Shared by selectEternalLoadout (the sim pick)
+ *  and allEternalMinors (every choice the page shows). */
+function pickMinorsFor(
+  kit: HeroKit, items: Item[], level: number, cal: Calibration,
+  id: string, def: EternalDef | undefined, opts: { minute?: number; role?: string },
+  itemFx?: ResolvedEffects,
+): { minor1: MinorPick; minor2: MinorPick } {
+  const reg = loadEffects();
+  const role = opts.role ?? kit.roles[0] ?? 'midlane';
   const headline = headlineObjective(kit, role);
   const metric: keyof ReturnType<typeof metrics> =
     headline === 'autoDps10VsSquishy' ? 'autoDps'
@@ -204,13 +223,14 @@ export function selectEternalLoadout(
     : headline === 'ehpPhysical' ? 'ehp'
     : headline === 'healShield10s' ? 'healShield'
     : headline === 'rot20VsBruiser' ? 'rot20' : 'rot10';
-
-  const itemFx = resolveItemEffects(items, { level, minute: opts.minute });
+  // resolveItemEffects is pure in (items, level, minute); the caller can hoist it
+  // so computing all 12 eternals' minors doesn't redo it 12x (kept the 9-min
+  // regression out of the build pipeline).
+  itemFx = itemFx ?? resolveItemEffects(items, { level, minute: opts.minute });
   const ctx = { level, minute: opts.minute, itemCount: items.length };
   const majorFx = resolveEntries([`eternal:${id}:major`], ctx, reg);
   const withMajor = metrics(kit, items, level, cal, mergeEffects(itemFx, majorFx));
   const recommended = new Set(def?.recommend?.default ?? []);
-
   const pickMinor = (slot: 1 | 2, candidates: { name: string; desc: string }[]): MinorPick => {
     let best: MinorPick | null = null;
     for (const c of candidates) {
@@ -231,11 +251,19 @@ export function selectEternalLoadout(
     }
     return best ?? { slot, name: candidates[0]?.name ?? '—', modeled: false, note: 'no candidates' };
   };
+  return { minor1: pickMinor(1, def?.minorSlot1 ?? []), minor2: pickMinor(2, def?.minorSlot2 ?? []) };
+}
 
-  return {
-    major: { id, name: top.r.name, modeled: top.r.modeled, fitScore: top.fit, headlinePct: top.r.headlinePct },
-    minor1: pickMinor(1, def?.minorSlot1 ?? []),
-    minor2: pickMinor(2, def?.minorSlot2 ?? []),
-    note: def?.archetype ? `${def.archetype} — fit ${top.fit.toFixed(2)}` : `fit ${top.fit.toFixed(2)}`,
-  };
+/** Conditioned minor pairs for EVERY eternal, keyed by lowercased name — so the
+ *  page can show the sub-options + reasoning under EACH top Eternal choice, not
+ *  just the single recommended loadout. */
+export function allEternalMinors(
+  kit: HeroKit, items: Item[], level: number, cal: Calibration,
+  opts: { minute?: number; role?: string } = {},
+): Record<string, { minor1: MinorPick; minor2: MinorPick }> {
+  const defs = loadEternalDefs();
+  const itemFx = resolveItemEffects(items, { level, minute: opts.minute }); // hoisted once
+  const out: Record<string, { minor1: MinorPick; minor2: MinorPick }> = {};
+  for (const [id, def] of defs) out[def.name.toLowerCase()] = pickMinorsFor(kit, items, level, cal, id, def, opts, itemFx);
+  return out;
 }

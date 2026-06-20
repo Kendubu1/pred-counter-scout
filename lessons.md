@@ -1834,3 +1834,18 @@ Eight maintainer-flagged fixes:
   to mechanics-only on the page). Harness green (115/115). The Anthropic API is
   fully out of the copy loop; data/aggregates/{item-reviews,augment-reviews,
   ability-tips}.json all credit the in-session agent.
+## 2026-06-20: eternal sub-options for ALL top choices + meta-build titles
+- Maintainer (from the live v6 page): minors only showed for the single
+  recommended loadout; the other top Eternal choices (Lotus/Aion/Xyris) had no
+  minors or reasoning. Fix: factored pickMinorsFor out of selectEternalLoadout and
+  added allEternalMinors() (eternals.ts) -> artifact eternals.minorsByName keyed by
+  lowercased name (all 12), rendered under each top choice in v6. Each minor carries
+  its conditioned sim delta or the curated note.
+- Meta-build titles: exported archetypeLabel() (search.ts), added title to each
+  metaBuilds[] entry via buildTitle(coreItems, bestKey) and rendered it atop each
+  "Meta builds, explained" card. Meta builds are now named (e.g. "On-Hit DPS Carry").
+- PERF NOTE: allEternalMinors computes minors for all 12 majors per role-view;
+  artifact regen went ~74s -> ~8m. Hoisting resolveItemEffects barely helped — the
+  cost is resolveEntries/metrics per modeled minor. Acceptable as a periodic build
+  step; follow-up: cache resolveEntries or compute minors only for shown eternals.
+- Harness green (115/115); v6 syntax-checked.

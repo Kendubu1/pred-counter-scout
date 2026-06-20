@@ -8,10 +8,10 @@ import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { completedItems, type LoadedData } from './data.js';
-import { buildTitle, generateBuilds, headlineObjective, type ObjKey } from './search.js';
+import { archetypeLabel, buildTitle, generateBuilds, headlineObjective, type ObjKey } from './search.js';
 import { classifyAugment, kitPlaystyle, laneTopAugment, lanesFor, playstyleObjectives } from './playstyle.js';
 import { combatDamage, evaluateBuild, itemTotals, loadCalibration, unverifiedConstants, type Calibration } from './sim.js';
-import { rankAugments, rankBlessings, selectEternalLoadout } from './eternals.js';
+import { allEternalMinors, rankAugments, rankBlessings, selectEternalLoadout } from './eternals.js';
 import { heroGames, itemPlayRate, loadAggregates } from './aggregates.js';
 import { itemWinDelta, momPriorStrength } from './evidence.js';
 import { defenseOf, matchupCheckpoints, orderBuild, spikeTimeline, levelAtMinute, type OrderedBuild } from './matchup.js';
@@ -125,6 +125,14 @@ const RoleView = z.object({
       minor2: z.object({ name: z.string(), modeled: z.boolean(), deltaPct: z.number().nullable(), note: z.string() }),
       note: z.string(),
     }).nullable(),
+    // Conditioned minor pair for EVERY eternal, keyed by lowercased name, so the
+    // page can show sub-options + reasoning under each top choice (not just the
+    // single recommended loadout). Each minor: its marginal sim delta on top of
+    // that major, or the curated pick when the mechanic is unmodeled.
+    minorsByName: z.record(z.string(), z.object({
+      minor1: z.object({ name: z.string(), modeled: z.boolean(), deltaPct: z.number().nullable(), note: z.string() }),
+      minor2: z.object({ name: z.string(), modeled: z.boolean(), deltaPct: z.number().nullable(), note: z.string() }),
+    })),
   }),
   augments: z.array(z.object({
     id: z.string(),
@@ -150,6 +158,7 @@ const RoleView = z.object({
     honestAbsence: z.string().nullable(),
   }),
   metaBuilds: z.array(z.object({
+    title: z.string(),
     items: z.array(z.object({ name: z.string(), slug: z.string().nullable() })),
     n: z.number(),
     shrunkWr: z.number(),
@@ -551,6 +560,11 @@ function buildRoleView(
         note: lo.note,
       }
     : null;
+  // Minor pair for every eternal (keyed by lowercased name) so each top choice
+  // the page shows — not just the recommended loadout — carries its sub-options.
+  const minorsRaw = allEternalMinors(kit, items, 13, cal, { minute: 15, role });
+  const minorsByName: Record<string, { minor1: ReturnType<typeof minorView>; minor2: ReturnType<typeof minorView> }> = {};
+  for (const [k, v] of Object.entries(minorsRaw)) minorsByName[k] = { minor1: minorView(v.minor1), minor2: minorView(v.minor2) };
   const eternals = {
     top: blessings.filter((r) => r.modeled).slice(0, 3).map((r) => ({
       name: r.name.replace(' (Major)', ''),
@@ -572,6 +586,7 @@ function buildRoleView(
     })),
     augmentAware,
     loadout,
+    minorsByName,
   };
 
   // Matchups: most-played same-role heroes as default enemies.
@@ -620,7 +635,7 @@ function buildRoleView(
       const cum = coreItems.map((_, i) => coreItems.slice(0, i + 1).reduce((s, x) => s + x.totalPrice, 0));
       spikeMinute = spikeTimeline(role, { ordered: coreItems, cumulativeGold: cum })[2]?.minute ?? null;
     }
-    return { c, ev, gold, spikeMinute };
+    return { c, ev, gold, spikeMinute, coreItems };
   });
   // An objective only explains a core if it separates the meta cores at
   // all (>=5% spread); otherwise every core would claim it on a tie.
@@ -633,13 +648,13 @@ function buildRoleView(
   }
   const headlineKey = headlineObjective(kit, role);
   const ourCoreEval = evaluateBuild(kit, ordered.ordered.slice(0, 3), 13, cal);
-  const metaBuilds = evaluated.slice(0, 3).map(({ c, ev, gold, spikeMinute }) => {
+  const metaBuilds = evaluated.slice(0, 3).map(({ c, ev, gold, spikeMinute, coreItems }) => {
     const shrunkWr = (c.w + kCore * (coreMean || 0.5)) / (c.n + kCore);
     let bestObjective: string | null = null;
     let whyLine: string;
     let optimizer: string | null = null;
+    let bestKey = '';
     if (ev) {
-      let bestKey = '';
       let bestRel = -1;
       for (const key of Object.keys(OBJ_LABELS)) {
         if (!objDiscriminates[key]) continue;
@@ -671,7 +686,11 @@ function buildRoleView(
     } else {
       whyLine = 'Evidence-only: one item in this core is not in our mechanics data yet, so the sim cannot decompose it.';
     }
+    const title = coreItems && coreItems.length
+      ? buildTitle(bestKey ? [archetypeLabel(bestKey)] : [], kit, coreItems)
+      : 'Meta Core';
     return {
+      title,
       items: c.core.map((name, i) => ({ name, slug: c.coreSlugs[i] ?? null })),
       n: c.n,
       shrunkWr: Math.round(shrunkWr * 1000) / 1000,
