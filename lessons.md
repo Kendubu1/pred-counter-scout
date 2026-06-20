@@ -1870,3 +1870,14 @@ Eight maintainer-flagged fixes:
   Breaker -> Viper: gain ~36% more sustained auto DPS via armor shred + on-hit;
   lose Storm Breaker's chain-lightning empowered basic" — exactly the gain/lose
   justification asked for. Harness green (115/115).
+## 2026-06-20: full pred.gg refresh staged (creds not in this session)
+- Maintainer wants a full refresh — winrates + builds shifted across all heroes,
+  main and flex lanes. Verify-before-refresh: committed pred.gg data is from
+  2026-06-12 (8 days old) with patches 1.14/1.14.1/1.14.4 in the window, so a
+  refresh is justified. BUT PREDGG_CLIENT_ID/SECRET are unset in this session
+  (secrets inject at session start; a newly added cred needs a fresh session).
+- Staged it: new `npm run refresh` chains snapshot -> augments (winrates per role,
+  incl. flex) -> buildstats (meta builds) -> skills -> aggregate -> artifacts ->
+  matrix -> agreement. Documented in CLAUDE.md, including the follow-on zero-API
+  copy passes (copy:prepare -> pred-scout-coach -> copy:ingest + review:builds).
+  Couldn't run/verify it here (no creds); run it in a session that has them.

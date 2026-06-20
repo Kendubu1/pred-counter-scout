@@ -65,6 +65,13 @@ are unrelated to this and unaffected.
   `npm run answer -- <hero-slug>` (build generation),
   `npm run drift` (owned-data staleness report),
   `npm run snapshot` (refresh data/omeda after a balance patch),
+  `npm run refresh` (FULL data refresh chain — needs PREDGG_CLIENT_ID/SECRET in
+  the env: snapshot -> augments -> buildstats -> skills -> aggregate -> artifacts
+  -> matrix -> agreement; refreshes winrates + builds for every hero's main and
+  flex lanes. Follow with the zero-API copy passes: `COPY_MODE=prepare npm run
+  copy:prepare` -> pred-scout-coach agent -> `npm run copy:ingest` and
+  `npm run review:builds`. NOTE: secrets are injected at session start, so a newly
+  added cred needs a fresh session before `refresh` can authenticate),
   `npm run probe` (live match-feed field check),
   `npm run matrix` (all-pairs matchup matrix; rerun after snapshot/artifacts),
   `npm run augments` (per-hero-role augment/eternal/crest field evidence + icons),
