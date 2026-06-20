@@ -1746,3 +1746,10 @@ Eight maintainer-flagged fixes:
 - Lesson: when a provider can't give exactly what you want (per-matchup builds),
   check what it CAN give (per-matchup winrate) — empirical winrate beside a THEORY
   verdict is more honest than either alone, and surfaces where the model is wrong.
+## 2026-06-20: v6 senior-principal review + autonomous backlog execution
+- Wrote docs/reviews/v6/v6-review.md from 4 evidence passes + 1 independent
+  clean-room pass (bias check). Now working the prioritized backlog top to bottom.
+- A1 (root buries v6): root index.html and ui/index.html redirected to ui/v6/
+  instead of the frozen pre-1.14 ui/v2/. Reversible redirect only — did NOT delete
+  ui/v2–v5 (frozen v2 is protected by CLAUDE.md; deletion is destructive and needs
+  an explicit ask). The old dirs are now simply unreferenced from the front door.
