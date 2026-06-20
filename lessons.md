@@ -1746,3 +1746,91 @@ Eight maintainer-flagged fixes:
 - Lesson: when a provider can't give exactly what you want (per-matchup builds),
   check what it CAN give (per-matchup winrate) — empirical winrate beside a THEORY
   verdict is more honest than either alone, and surfaces where the model is wrong.
+## 2026-06-20: v6 senior-principal review + autonomous backlog execution
+- Wrote docs/reviews/v6/v6-review.md from 4 evidence passes + 1 independent
+  clean-room pass (bias check). Now working the prioritized backlog top to bottom.
+- A1 (root buries v6): root index.html and ui/index.html redirected to ui/v6/
+  instead of the frozen pre-1.14 ui/v2/. Reversible redirect only — did NOT delete
+  ui/v2–v5 (frozen v2 is protected by CLAUDE.md; deletion is destructive and needs
+  an explicit ask). The old dirs are now simply unreferenced from the front door.
+- E1 (build titles): added a pure, deterministic buildTitle() in search.ts —
+  style descriptor (Crit/AP/AP Burst/Lethality/On-Hit/Lifesteal/AD from the item
+  stat mix + kit power type) + class (Tank/Bruiser from defense share) + the lead
+  archetype's human noun, word-deduped. New build.title field on the artifact.
+  No popularity, no LLM, no estimation (thresholds are presentation heuristics).
+  52/52 heroes now titled; 8 distinct titles vs the prior single archetype tag.
+- F1 (eternal minors): selectEternalLoadout was computed only for the CLI and
+  dropped before the artifact. Wired it into buildRoleView → new eternals.loadout
+  {major, minor1, minor2, note} where each minor carries its marginal sim delta on
+  top of the major (or the curated pick when unmodeled). The 2×(1-of-3) minor
+  layer is now in every artifact. (UI render + the keyed copy pass are next.)
+- D1 (headline opener): the off-meta promoter gates on a negative evidence delta
+  but the headline build did not, so one niche opener (Viper/Spectral led 65% of
+  heroes) could lead with no flag. Added a DISCLOSURE note in confidence.notes
+  when the opener is field-rejected (neg delta, n>=20) or rarely built (<3% pick) —
+  surfaced, not silently reordered (popularity must never feed the objective).
+- D2 (agreement audit): agreement-audit.json (coreRecall ~58% avg) was computed
+  every run and never surfaced. buildRoleView now reads it and, when a hero+lane's
+  coreRecall < 50%, adds a confidence note naming the missed field-core items.
+- C3 (gameplans): 7 distinct gameplan strings across 312 matchups → appended an
+  enemyThreatClause(enemy.kit) grounded in kit data (execute / AoE / auto-scaling /
+  damage type + named threat ability). Now 112 distinct gameplans, opponent-named.
+- Harness green (115/115); artifacts regenerated (zero-API).
+- v6 UI render (ui/v6/index.html): (F1) added a "Recommended loadout · 1 major +
+  2 minors" card under the Eternal list, showing the major + both minor picks with
+  the modeled minor's sim delta or the curated note; (E1) the optimizer build now
+  shows its title ("The optimizer's build: Crit DPS Carry"); (C1) replaced the raw
+  unitless sim proof chip ("burst 1840 · 20s vs bruiser 6200 …") with a plain
+  pointer — the exact integers already live behind "The numbers" disclosure, and
+  the D1/D2 confidence notes already surface under "Why THEORY". Inline script
+  syntax-checked (node --check). No engine/test impact (pure render).
+- B2 (a11y): the item-detail popup ("numbers one tap away") was click-only and
+  mouse-only — triggers were non-focusable <div>/<img> opened by a document click
+  listener. Added Enter/Space keyboard activation, a MutationObserver that marks
+  every dynamically-rendered [data-ipop] focusable + role=button + aria-label, and
+  focus management in the dialog (move focus to Close, trap Tab, restore to the
+  trigger on close). Now operable by keyboard/screen-reader. Syntax-checked.
+- C4 (copy prompt): the augment-hero copy was 71% bare-winrate lines. Rewrote the
+  augment-review.ts prompt to REQUIRE an action-first imperative (take/skip/
+  situational + why) and forbid leading with a winrate (light support only).
+  copy-verify ground-check unchanged. Code-only — the improved lines land when the
+  maintainer reruns `npm run review` with ANTHROPIC_API_KEY (keyed batch job; not
+  regenerated here, no key in this environment). Same gating applies to the
+  eternal-MINOR copy lines (F1's copy half) — left for the keyed run.
+## 2026-06-20: copy passes move OFF the Anthropic API onto session compute
+- Maintainer decision (permanent): no ANTHROPIC_API_KEY in this project. All copy
+  & analysis run on the in-session Claude Code agent, not the API.
+- Mechanism: new engine/src/copy-session.ts replaces each review script's local
+  api.anthropic.com `ask()` with a file-based handoff. ask(pass,id,prompt):
+  prepare mode records the grounded prompt as a task and returns '{}' (downstream
+  parse no-ops); ingest mode returns the agent's stored answer for that id
+  (string OR inline JSON object, normalized). flushTasks() writes the tasks file.
+- Flow: `COPY_MODE=prepare npm run copy:prepare` → agent fills
+  engine/copy-tasks/<pass>.responses.json → `npm run copy:ingest`. The numeric
+  ground-check (copy-verify.ts) is UNCHANGED, so session-authored copy is held to
+  the exact same honesty bar (fabricated numbers still dropped). copy-tasks/ is
+  gitignored scratch.
+- The agent: .claude/agents/pred-scout-coach.md — an individualized, game-aware
+  agent that knows where all knowledge lives (kit/abilities, items+effects,
+  eternals incl. the 2x(1-of-3) minors, augments, builds/matchups in artifacts)
+  and the honesty contract (action-first, plain language, only source numbers).
+  It both runs the copy passes and does comparison/coaching analysis on request.
+- Removed the KEY check + api.anthropic.com fetch from augment/item/ability
+  review scripts; source strings now credit the in-session agent. Verified:
+  `ANTHROPIC_API_KEY` unset, `COPY_MODE=prepare npm run review:abilities` emitted
+  52 grounded tasks with no network; typecheck green.
+- Docs made permanent: CLAUDE.md (new "Copy & analysis policy" + practical notes),
+  docs/v5-engine-design.md tech-stack row. lessons append-only history left as-is.
+- End-to-end proof (abilities pass): with ANTHROPIC_API_KEY unset, prepare emitted
+  52 tasks → the in-session agent filled all 52 → ingest verified 311 tips and
+  DROPPED 1 (the ground-check still bites) → data/aggregates/ability-tips.json
+  regenerated, source now credits the in-session agent. Harness green (115/115).
+  Tips are action-first and grounded (e.g. Wraith E: "Pop it before a fight to
+  vanish, gain 20% speed…; chaining kills resets it"). items/augments passes run
+  identically (COPY_MODE=prepare npm run review:items / review → agent → ingest).
+- All three passes now session-authored (no key): items 182 written / 0 rejected;
+  augments 241 + 284 Eternal lines written / 47 dropped by the ground-check (the
+  verifier visibly enforcing honesty on the larger pass — dropped cells fall back
+  to mechanics-only on the page). Harness green (115/115). The Anthropic API is
+  fully out of the copy loop; data/aggregates/{item-reviews,augment-reviews,
+  ability-tips}.json all credit the in-session agent.

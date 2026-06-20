@@ -48,6 +48,66 @@ const ARCHETYPE_LABELS: Record<ObjKey, string> = {
   sustain10s: 'drain sustain',
 };
 
+// The human-readable noun for a build's lead archetype — the word players
+// actually use ("a Brawler", "a Burst build"), not the internal objective key.
+const ARCHETYPE_NOUN: Record<string, string> = {
+  burst: 'Burst',
+  'teamfight AoE': 'Teamfight',
+  'skirmish uptime': 'Skirmisher',
+  'extended fights': 'Brawler',
+  'sustained DPS': 'DPS Carry',
+  'physical survival': 'Frontline',
+  'magical survival': 'Frontline',
+  'heal/shield output': 'Enchanter',
+  'enchant/peel utility': 'Enchanter',
+  'drain sustain': 'Drain',
+};
+
+/**
+ * A short, human-readable build title in the idiom players search for
+ * ("Crit DPS Carry", "AP Burst", "Lethality Skirmisher", "Bruiser Brawler",
+ * "Tank Frontline"). Purely deterministic from the build's item stat mix +
+ * kit power type + lead archetype — no popularity, no LLM, no estimation.
+ * The stat thresholds are presentation heuristics, not sim constants.
+ */
+export function buildTitle(archetypes: string[], kit: HeroKit, items: Item[]): string {
+  const sum = (k: keyof Item['stats']) => items.reduce((s, i) => s + ((i.stats[k] as number) ?? 0), 0);
+  const off = sum('physical_power') + sum('magical_power');
+  const def = sum('health') / 15 + sum('physical_armor') + sum('magical_armor');
+  const crit = sum('critical_chance');
+  const lethality = sum('physical_penetration');
+  const atkSpeed = sum('attack_speed');
+  const drain = sum('lifesteal') + sum('omnivamp');
+  const power = kitPowerType(kit);
+
+  // The "style" descriptor — the offensive identity a player shops for.
+  let style = '';
+  if (crit >= 40) style = 'Crit';
+  else if (power === 'magical') style = archetypes.includes('burst') ? 'AP Burst' : 'AP';
+  else if (lethality >= 24) style = 'Lethality';
+  else if (atkSpeed >= 70) style = 'On-Hit';
+  else if (drain >= 25 && off > 0) style = 'Lifesteal';
+  else if (off > 0) style = 'AD';
+
+  // The "class" descriptor — how much of the build is survivability.
+  let cls = '';
+  if (off === 0 && def > 0) cls = 'Tank';
+  else if (def > 0 && def >= off * 0.45) cls = 'Bruiser';
+
+  const noun = ARCHETYPE_NOUN[archetypes[0] ?? ''] ?? 'Build';
+  // Bruiser/Tank lead with the class; everything else leads with the style.
+  const lead = cls || style;
+  // Word-level dedupe so "AP Burst" + "Burst" → "AP Burst", not a stutter.
+  const seen = new Set<string>();
+  const title = [lead, noun]
+    .filter(Boolean)
+    .join(' ')
+    .split(' ')
+    .filter((w) => { const k = w.toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; })
+    .join(' ');
+  return title || 'Core Build';
+}
+
 type Weights = Partial<Record<ObjKey, number>>;
 
 // Corner weight vectors approximate the Pareto front through scalarization.
