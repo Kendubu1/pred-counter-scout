@@ -89,11 +89,12 @@ ${metaBlocks}
 ${optBlock}
 
 Return strict JSON only:
-{"metaBuilds":[{"synergy":"...","holes":"..."}, ... one per META BUILD in order ...],
- "optimizer":{"synergy":"...","swaps":[{"out":"<item>","in":"<item>","gain":"...","lose":"..."}],"holes":"..."}}
+{"metaBuilds":[{"synergy":"...","items":{"<item name>":"<why>"},"holes":"..."}, ... one per META BUILD in order ...],
+ "optimizer":{"synergy":"...","items":{"<item name>":"<why>"},"swaps":[{"out":"<item>","in":"<item>","gain":"...","lose":"..."}],"holes":"..."}}
 
 Rules:
 - synergy = ONE sentence (max 30 words) on how these items work WITH this hero's abilities and why the purchase order — name the ability/passive interaction, not just the stat.
+- items = for EACH item in that build, ONE short clause (max 14 words) on why it's bought and where it fits in the order, tied to the hero's ability/synergy (not just the stat). Key it by the item's EXACT name as shown above.
 - For EACH optimizer-swap line ("try X over Y"), add a swap with the concrete GAIN (what X adds to this hero) and LOSE (what dropping Y costs this hero). If a build has no optimizer-swap line, omit it.
 - holes = ONE blunt caveat poking a hole in that build for THIS hero (when it falls flat).
 - Plain language, action-first, no jargon (say "tankiness" not "eHP"). Use ONLY numbers that appear above; when unsure, use none.`;
@@ -101,15 +102,23 @@ Rules:
       const raw = (await ask('builds', id, prompt)).trim().replace(/^```json?\s*|```$/g, '');
       if (isPrepare()) continue;
       try {
-        const parsed = JSON.parse(raw) as { metaBuilds?: { synergy?: string; holes?: string }[]; optimizer?: { synergy?: string; swaps?: { out?: string; in?: string; gain?: string; lose?: string }[]; holes?: string } };
+        type BuildR = { synergy?: string; items?: Record<string, string>; holes?: string };
+        const parsed = JSON.parse(raw) as { metaBuilds?: BuildR[]; optimizer?: BuildR & { swaps?: { out?: string; in?: string; gain?: string; lose?: string }[] } };
         const allItems = [...rv.build.items.map((i) => i.slug), ...rv.metaBuilds.flatMap((m) => m.items.map((i) => i.slug))];
         const texts = [...rv.metaBuilds.map((m) => m.optimizer ?? ''), ...rv.metaBuilds.map((m) => m.whyLine)];
         const allowed = allowedFor(allItems, hero, texts, rv.metaBuilds.map((m) => Math.round(m.shrunkWr * 1000) / 10));
         const keep = (s?: string): string | null => { if (!s) return null; if (verifyLine(s, allowed)) { written++; return s; } rejected++; return null; };
-        const metaOut = rv.metaBuilds.map((_, i) => ({ synergy: keep(parsed.metaBuilds?.[i]?.synergy), holes: keep(parsed.metaBuilds?.[i]?.holes) }));
+        // Per-item "why" map: verify each clause, keep only grounded ones.
+        const keepItems = (m?: Record<string, string>): Record<string, string> => {
+          const o2: Record<string, string> = {};
+          for (const [k, v] of Object.entries(m ?? {})) { const kept = keep(v); if (kept) o2[k] = kept; }
+          return o2;
+        };
+        const metaOut = rv.metaBuilds.map((_, i) => ({ synergy: keep(parsed.metaBuilds?.[i]?.synergy), items: keepItems(parsed.metaBuilds?.[i]?.items), holes: keep(parsed.metaBuilds?.[i]?.holes) }));
         const o = parsed.optimizer;
         const optOut = o ? {
           synergy: keep(o.synergy),
+          items: keepItems(o.items),
           swaps: (o.swaps ?? []).map((sw) => ({ out: sw.out ?? '', in: sw.in ?? '', gain: keep(sw.gain), lose: keep(sw.lose) })),
           holes: keep(o.holes),
         } : null;

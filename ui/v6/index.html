@@ -209,6 +209,10 @@
   .mb-n { color:var(--text-2); font-size:.74rem; font-variant-numeric:tabular-nums; }
   .mb-why { font-size:.76rem; color:var(--text-1); margin-top:.3rem; }
   .mb-opt { color:var(--blue); }
+  /* Per-item "why this item, in this order" list (build reasoning). */
+  .mb-items-why { margin-top:.35rem; display:flex; flex-direction:column; gap:.2rem; }
+  .mb-items-why > div { font-size:.74rem; color:var(--text-1); line-height:1.42; }
+  .mb-items-why .ord { display:inline-flex; align-items:center; justify-content:center; width:15px; height:15px; border-radius:50%; background:var(--accent); color:#fff; font-size:.58rem; font-weight:700; margin-right:.35rem; vertical-align:middle; }
 
   /* Playstyle-by-lane: what the sim can't see, exposed */
   .flexrow { padding:.6rem 0; border-top:1px solid var(--border); }
@@ -933,6 +937,7 @@ function renderHero(a, roleParam) {
             <span class="mb-n">${m.n} games</span>
           </div>
           ${rsn && rsn.synergy ? `<div class="mb-why" style="color:var(--text-0)">🧩 ${esc(rsn.synergy)}</div>` : ''}
+          ${rsn && rsn.items && Object.keys(rsn.items).length ? `<div class="mb-items-why">${m.items.filter((it) => rsn.items[it.name]).map((it, n) => `<div><span class="ord">${n + 1}</span><b>${esc(it.name)}</b> — ${esc(rsn.items[it.name])}</div>`).join('')}</div>` : ''}
           <details class="sim-collapse"><summary>the sim math</summary><div class="body"><div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div></div></details>
           ${rsn && rsn.holes ? `<div class="mb-why" style="color:var(--gold)">⚠ ${esc(rsn.holes)}</div>` : ''}
         </div>`;
@@ -960,8 +965,11 @@ function renderHero(a, roleParam) {
         if (!o) return '';
         const swaps = (o.swaps || []).filter((s) => s.gain || s.lose).map((s) =>
           `<div style="font-size:.78rem;color:var(--text-1);margin-top:.35rem"><b>${esc(s.in)}</b> over <b>${esc(s.out)}</b> — <span style="color:var(--green)">gain</span> ${esc(s.gain || '—')} · <span style="color:var(--red)">lose</span> ${esc(s.lose || '—')}</div>`).join('');
+        const itemsWhy = o.items && Object.keys(o.items).length
+          ? `<div class="mb-items-why" style="margin-top:.45rem">${a.build.items.filter((it) => o.items[it.name]).map((it, n) => `<div><span class="ord">${n + 1}</span><b>${esc(it.name)}</b> — ${esc(o.items[it.name])}</div>`).join('')}</div>` : '';
         return `
           ${o.synergy ? `<div style="font-size:.82rem;color:var(--text-0);margin-top:.55rem">🧩 ${esc(o.synergy)}</div>` : ''}
+          ${itemsWhy}
           ${swaps ? `<div style="margin-top:.4rem"><div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-2);margin-bottom:.1rem">why the optimizer swaps off the meta</div>${swaps}</div>` : ''}
           ${o.holes ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.4rem">⚠ ${esc(o.holes)}</div>` : ''}`;
       })()}

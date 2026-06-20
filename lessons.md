@@ -1929,3 +1929,11 @@ Eight maintainer-flagged fixes:
   "AD Bruiser" / "AP Bruiser"; damage builds keep the style (Crit/Lethality/On-Hit/
   AP all imply the damage type). Answers "is this magic or physical def? AD or AP?"
 - Regenerated artifacts; harness green (115/115).
+## 2026-06-20: Phase 2 C1 — per-item build reasoning
+- build-review.ts prompt + ingest extended: each build now also asks for an `items`
+  map (item name -> <=14-word "why it's bought + where in the order", ability-tied),
+  ground-checked per clause like everything else. build-reasoning.json metaBuilds[]
+  and optimizer now carry `items`. v6 renders a numbered per-item "why" list under
+  each meta build's synergy and under the optimizer build (new .mb-items-why style).
+  Null-safe before the data is regenerated. Code committed first; data follows after
+  the pred-scout-coach re-run + ingest.
