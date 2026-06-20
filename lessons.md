@@ -1784,3 +1784,9 @@ Eight maintainer-flagged fixes:
   pointer — the exact integers already live behind "The numbers" disclosure, and
   the D1/D2 confidence notes already surface under "Why THEORY". Inline script
   syntax-checked (node --check). No engine/test impact (pure render).
+- B2 (a11y): the item-detail popup ("numbers one tap away") was click-only and
+  mouse-only — triggers were non-focusable <div>/<img> opened by a document click
+  listener. Added Enter/Space keyboard activation, a MutationObserver that marks
+  every dynamically-rendered [data-ipop] focusable + role=button + aria-label, and
+  focus management in the dialog (move focus to Close, trap Tab, restore to the
+  trigger on close). Now operable by keyboard/screen-reader. Syntax-checked.

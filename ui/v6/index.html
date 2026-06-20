@@ -1058,16 +1058,46 @@ async function showItem(slug) {
       ${ITEM_WHY[slug] ? `<div class="ifx" style="color:var(--text-0)">🧠 ${esc(ITEM_WHY[slug])}<div style="font-size:.64rem;color:var(--text-2);margin-top:.25rem">AI-written from this item's stats and effects only; numbers machine-verified</div></div>` : ''}
       <button class="iclose">close</button>
     </div>`;
-  const dismiss = () => { back.remove(); document.removeEventListener('keydown', onKey); };
+  const opener = document.activeElement;            // restore focus here on close
+  const dismiss = () => { back.remove(); document.removeEventListener('keydown', onKey); if (opener && opener.focus) opener.focus(); };
   const onKey = (ev) => { if (ev.key === 'Escape') dismiss(); };
   back.onclick = (ev) => { if (ev.target === back || ev.target.classList.contains('iclose')) dismiss(); };
   document.addEventListener('keydown', onKey);
   document.body.appendChild(back);
+  // Move focus into the dialog and keep it there (single control); Esc/close
+  // restore focus to the trigger. Makes the "numbers one tap away" popup usable
+  // by keyboard, not just mouse/touch.
+  const closeBtn = back.querySelector('.iclose');
+  back.addEventListener('keydown', (ev) => { if (ev.key === 'Tab') { ev.preventDefault(); closeBtn && closeBtn.focus(); } });
+  if (closeBtn) closeBtn.focus();
 }
 document.addEventListener('click', (ev) => {
   const el = ev.target.closest('[data-ipop]');
   if (el) { ev.preventDefault(); showItem(el.dataset.ipop); }
 });
+// Keyboard activation: Enter/Space on a focused item trigger opens its details.
+document.addEventListener('keydown', (ev) => {
+  if (ev.key !== 'Enter' && ev.key !== ' ') return;
+  const el = ev.target.closest && ev.target.closest('[data-ipop]');
+  if (el) { ev.preventDefault(); showItem(el.dataset.ipop); }
+});
+// Item triggers are rendered dynamically all over the hero view; make each one
+// focusable + screen-reader labelled as it appears (was click-only, mouse-only).
+function enhanceIpop(root) {
+  const els = [];
+  if (root.matches && root.matches('[data-ipop]')) els.push(root);
+  if (root.querySelectorAll) els.push(...root.querySelectorAll('[data-ipop]'));
+  for (const el of els) {
+    if (el.hasAttribute('tabindex')) continue;
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('role', 'button');
+    if (!el.getAttribute('aria-label')) el.setAttribute('aria-label', `${el.getAttribute('title') || 'item'} — details`);
+  }
+}
+new MutationObserver((muts) => {
+  for (const m of muts) for (const n of m.addedNodes) if (n.nodeType === 1) enhanceIpop(n);
+}).observe(document.body, { childList: true, subtree: true });
+enhanceIpop(document);
 
 let HEROES_RAW = null;
 let SKILLS = null, ATIPS = null, PATCHES = null;
