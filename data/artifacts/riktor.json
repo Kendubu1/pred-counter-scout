@@ -16,7 +16,7 @@
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
    "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)",
-   "the sim opens on Stonewall, which the field has tried and lost with (-1.4% winrate over 63 games) — treat this opener as a sim blind-spot and weight the field",
+   "the sim opens on Stonewall, which the field rarely builds (2.6% pick) — a sim-only call; compare the meta cores below",
    "the sim build reproduces only 33% of the field's core for Riktor (it never builds Xenia, Frosted Lure) — some of those items ride mechanics the sim doesn't model yet"
   ]
  },
@@ -27,49 +27,49 @@
     "name": "Stonewall",
     "slug": "stonewall",
     "spikeMinute": 14,
-    "playRatePct": 3.4,
-    "evidenceDeltaWr": -1.4,
-    "evidenceN": 63
+    "playRatePct": 2.6,
+    "evidenceDeltaWr": 1.6,
+    "evidenceN": 44
    },
    {
     "name": "Warden's Faith",
     "slug": "wardens-faith",
     "spikeMinute": 21,
-    "playRatePct": 3.6,
-    "evidenceDeltaWr": -0.8,
-    "evidenceN": 67
+    "playRatePct": 4.7,
+    "evidenceDeltaWr": 3.1,
+    "evidenceN": 80
    },
    {
     "name": "Vainglory",
     "slug": "vainglory",
     "spikeMinute": 28,
-    "playRatePct": 3,
-    "evidenceDeltaWr": 0.8,
-    "evidenceN": 56
+    "playRatePct": 2.3,
+    "evidenceDeltaWr": 0.7,
+    "evidenceN": 40
    },
    {
     "name": "Raiment of Renewal",
     "slug": "raiment-of-renewal",
     "spikeMinute": 34,
-    "playRatePct": 17.7,
-    "evidenceDeltaWr": 1.3,
-    "evidenceN": 331
+    "playRatePct": 12.7,
+    "evidenceDeltaWr": 1.2,
+    "evidenceN": 218
    },
    {
     "name": "Catalytic Drive",
     "slug": "catalytic-drive",
     "spikeMinute": 40,
-    "playRatePct": 1.2,
-    "evidenceDeltaWr": -0.4,
-    "evidenceN": 22
+    "playRatePct": 0.9,
+    "evidenceDeltaWr": 0.9,
+    "evidenceN": 15
    },
    {
     "name": "Unbroken Will",
     "slug": "unbroken-will",
     "spikeMinute": 45,
-    "playRatePct": 12.1,
-    "evidenceDeltaWr": 1.9,
-    "evidenceN": 226
+    "playRatePct": 13.3,
+    "evidenceDeltaWr": 3.9,
+    "evidenceN": 228
    }
   ],
   "gold": 18000,
@@ -470,12 +470,19 @@
   }
  ],
  "offMeta": {
-  "candidates": [],
-  "honestAbsence": "no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)"
+  "candidates": [
+   {
+    "item": "Catalytic Drive",
+    "playRatePct": 0.9,
+    "bestObjective": "magical survivability",
+    "edgeVsPopularPct": 94.4
+   }
+  ],
+  "honestAbsence": null
  },
  "metaBuilds": [
   {
-   "title": "Tank Frontline",
+   "title": "Tank DPS Carry",
    "items": [
     {
      "name": "Dynamo",
@@ -490,40 +497,16 @@
      "slug": "frosted-lure"
     }
    ],
-   "n": 134,
-   "shrunkWr": 0.567,
+   "n": 798,
+   "shrunkWr": 0.536,
    "coreGold": 7200,
    "spikeMinute": 24,
-   "bestObjective": "physical survivability",
-   "whyLine": "Strongest meta core for physical survivability, online around minute 24 — about 8,624 effective HP vs physical in the sim.",
-   "optimizer": "Optimizer sees +48% more physical survivability: try Stonewall over Dynamo (sim-only — the popular pick may carry utility the sim can't see; test it)."
-  },
-  {
-   "title": "Bruiser Burst",
-   "items": [
-    {
-     "name": "GaussianGreaves",
-     "slug": "gaussian-greaves"
-    },
-    {
-     "name": "RaimentOfRenewal",
-     "slug": "raiment-of-renewal"
-    },
-    {
-     "name": "Dynamo",
-     "slug": "dynamo"
-    }
-   ],
-   "n": 60,
-   "shrunkWr": 0.558,
-   "coreGold": 8400,
-   "spikeMinute": 26,
-   "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 26 — about 592 damage in one combo in the sim.",
+   "bestObjective": "sustained auto DPS",
+   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 87 auto-attack DPS in the sim.",
    "optimizer": null
   },
   {
-   "title": "Tank Burst",
+   "title": "Tank DPS Carry",
    "items": [
     {
      "name": "Dynamo",
@@ -538,13 +521,37 @@
      "slug": "xenia"
     }
    ],
-   "n": 49,
-   "shrunkWr": 0.58,
+   "n": 333,
+   "shrunkWr": 0.544,
    "coreGold": 7200,
    "spikeMinute": 24,
-   "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 539 damage in one combo in the sim.",
-   "optimizer": "Optimizer agrees: within 0% of our best core on one-combo burst. The winrate is earned, not luck."
+   "bestObjective": "sustained auto DPS",
+   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 87 auto-attack DPS in the sim.",
+   "optimizer": null
+  },
+  {
+   "title": "Bruiser DPS Carry",
+   "items": [
+    {
+     "name": "GaussianGreaves",
+     "slug": "gaussian-greaves"
+    },
+    {
+     "name": "RaimentOfRenewal",
+     "slug": "raiment-of-renewal"
+    },
+    {
+     "name": "Dynamo",
+     "slug": "dynamo"
+    }
+   ],
+   "n": 215,
+   "shrunkWr": 0.514,
+   "coreGold": 8400,
+   "spikeMinute": 26,
+   "bestObjective": "sustained auto DPS",
+   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 26 — about 87 auto-attack DPS in the sim.",
+   "optimizer": null
   }
  ],
  "stages": [
@@ -728,38 +735,6 @@
    "counterSwap": null
   },
   {
-   "enemy": "Dekker",
-   "enemySlug": "dekker",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Dekker deals area damage — spread out so one cast can't catch the group.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 10,
-     "verdict": "even"
-    },
-    {
-     "minute": 15,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 20,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 25,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 30,
-     "verdict": "enemy"
-    }
-   ],
-   "counterSwap": null
-  },
-  {
    "enemy": "Phase",
    "enemySlug": "phase",
    "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
@@ -787,6 +762,38 @@
     {
      "minute": 30,
      "verdict": "you"
+    }
+   ],
+   "counterSwap": null
+  },
+  {
+   "enemy": "Dekker",
+   "enemySlug": "dekker",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Dekker deals area damage — spread out so one cast can't catch the group.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 10,
+     "verdict": "even"
+    },
+    {
+     "minute": 15,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 20,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 25,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 30,
+     "verdict": "enemy"
     }
    ],
    "counterSwap": null
@@ -864,15 +871,15 @@
   "playstyle": "sustain",
   "modeled": false,
   "wr": 49.7,
-  "n": 318978,
+  "n": 329277,
   "shiftIn": [],
   "shiftOut": [],
-  "provenance": "“Wanton Warden” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 49.7% over 318,978 games, magnitude not simulated."
+  "provenance": "“Wanton Warden” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 49.7% over 329,277 games, magnitude not simulated."
  },
  "slug": "riktor",
  "name": "Riktor",
  "patch": "1.14.4",
- "generatedAt": "2026-06-20T20:06:30.150Z",
+ "generatedAt": "2026-06-20T21:14:38.049Z",
  "damageType": "hybrid",
  "attackType": "melee",
  "laneFlex": [
@@ -885,7 +892,7 @@
    "playstyle": "sustain",
    "modeled": false,
    "wr": 49.7,
-   "n": 318978,
+   "n": 329277,
    "core": [
     {
      "name": "Raiment of Renewal",
@@ -913,46 +920,7 @@
     }
    ],
    "headline": "physical survival",
-   "provenance": "“Wanton Warden” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 49.7% over 318,978 games, magnitude not simulated."
-  },
-  {
-   "lane": "offlane",
-   "augment": {
-    "id": "103",
-    "name": "Wanton Warden"
-   },
-   "playstyle": "sustain",
-   "modeled": false,
-   "wr": 49.7,
-   "n": 24765,
-   "core": [
-    {
-     "name": "Prophecy",
-     "slug": "prophecy"
-    },
-    {
-     "name": "Rapture",
-     "slug": "rapture"
-    },
-    {
-     "name": "Magnify",
-     "slug": "magnify"
-    },
-    {
-     "name": "Orion",
-     "slug": "orion"
-    },
-    {
-     "name": "Spectral Schematics",
-     "slug": "spectral-schematics"
-    },
-    {
-     "name": "Cursed Scroll",
-     "slug": "cursed-scroll"
-    }
-   ],
-   "headline": "physical survival",
-   "provenance": "“Wanton Warden” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 49.7% over 24,765 games, magnitude not simulated."
+   "provenance": "“Wanton Warden” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 49.7% over 329,277 games, magnitude not simulated."
   },
   {
    "lane": "jungle",
@@ -962,8 +930,8 @@
    },
    "playstyle": "on-hit",
    "modeled": true,
-   "wr": 47.3,
-   "n": 24517,
+   "wr": 47.4,
+   "n": 26482,
    "core": [
     {
      "name": "Spectra",
@@ -991,7 +959,46 @@
     }
    ],
    "headline": "sustained DPS",
-   "provenance": "“Zap O' 9-Chains” ⇒ on-hit; the sim models this augment — field jungle 47.3% over 24,517 games."
+   "provenance": "“Zap O' 9-Chains” ⇒ on-hit; the sim models this augment — field jungle 47.4% over 26,482 games."
+  },
+  {
+   "lane": "offlane",
+   "augment": {
+    "id": "103",
+    "name": "Wanton Warden"
+   },
+   "playstyle": "sustain",
+   "modeled": false,
+   "wr": 49.6,
+   "n": 25565,
+   "core": [
+    {
+     "name": "Prophecy",
+     "slug": "prophecy"
+    },
+    {
+     "name": "Rapture",
+     "slug": "rapture"
+    },
+    {
+     "name": "Magnify",
+     "slug": "magnify"
+    },
+    {
+     "name": "Orion",
+     "slug": "orion"
+    },
+    {
+     "name": "Spectral Schematics",
+     "slug": "spectral-schematics"
+    },
+    {
+     "name": "Cursed Scroll",
+     "slug": "cursed-scroll"
+    }
+   ],
+   "headline": "physical survival",
+   "provenance": "“Wanton Warden” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 49.6% over 25,565 games, magnitude not simulated."
   }
  ],
  "roles": [
@@ -1013,7 +1020,7 @@
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
      "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)",
-     "the sim opens on Stonewall, which the field has tried and lost with (-1.4% winrate over 63 games) — treat this opener as a sim blind-spot and weight the field",
+     "the sim opens on Stonewall, which the field rarely builds (2.6% pick) — a sim-only call; compare the meta cores below",
      "the sim build reproduces only 33% of the field's core for Riktor (it never builds Xenia, Frosted Lure) — some of those items ride mechanics the sim doesn't model yet"
     ]
    },
@@ -1024,49 +1031,49 @@
       "name": "Stonewall",
       "slug": "stonewall",
       "spikeMinute": 14,
-      "playRatePct": 3.4,
-      "evidenceDeltaWr": -1.4,
-      "evidenceN": 63
+      "playRatePct": 2.6,
+      "evidenceDeltaWr": 1.6,
+      "evidenceN": 44
      },
      {
       "name": "Warden's Faith",
       "slug": "wardens-faith",
       "spikeMinute": 21,
-      "playRatePct": 3.6,
-      "evidenceDeltaWr": -0.8,
-      "evidenceN": 67
+      "playRatePct": 4.7,
+      "evidenceDeltaWr": 3.1,
+      "evidenceN": 80
      },
      {
       "name": "Vainglory",
       "slug": "vainglory",
       "spikeMinute": 28,
-      "playRatePct": 3,
-      "evidenceDeltaWr": 0.8,
-      "evidenceN": 56
+      "playRatePct": 2.3,
+      "evidenceDeltaWr": 0.7,
+      "evidenceN": 40
      },
      {
       "name": "Raiment of Renewal",
       "slug": "raiment-of-renewal",
       "spikeMinute": 34,
-      "playRatePct": 17.7,
-      "evidenceDeltaWr": 1.3,
-      "evidenceN": 331
+      "playRatePct": 12.7,
+      "evidenceDeltaWr": 1.2,
+      "evidenceN": 218
      },
      {
       "name": "Catalytic Drive",
       "slug": "catalytic-drive",
       "spikeMinute": 40,
-      "playRatePct": 1.2,
-      "evidenceDeltaWr": -0.4,
-      "evidenceN": 22
+      "playRatePct": 0.9,
+      "evidenceDeltaWr": 0.9,
+      "evidenceN": 15
      },
      {
       "name": "Unbroken Will",
       "slug": "unbroken-will",
       "spikeMinute": 45,
-      "playRatePct": 12.1,
-      "evidenceDeltaWr": 1.9,
-      "evidenceN": 226
+      "playRatePct": 13.3,
+      "evidenceDeltaWr": 3.9,
+      "evidenceN": 228
      }
     ],
     "gold": 18000,
@@ -1467,12 +1474,19 @@
     }
    ],
    "offMeta": {
-    "candidates": [],
-    "honestAbsence": "no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)"
+    "candidates": [
+     {
+      "item": "Catalytic Drive",
+      "playRatePct": 0.9,
+      "bestObjective": "magical survivability",
+      "edgeVsPopularPct": 94.4
+     }
+    ],
+    "honestAbsence": null
    },
    "metaBuilds": [
     {
-     "title": "Tank Frontline",
+     "title": "Tank DPS Carry",
      "items": [
       {
        "name": "Dynamo",
@@ -1487,40 +1501,16 @@
        "slug": "frosted-lure"
       }
      ],
-     "n": 134,
-     "shrunkWr": 0.567,
+     "n": 798,
+     "shrunkWr": 0.536,
      "coreGold": 7200,
      "spikeMinute": 24,
-     "bestObjective": "physical survivability",
-     "whyLine": "Strongest meta core for physical survivability, online around minute 24 — about 8,624 effective HP vs physical in the sim.",
-     "optimizer": "Optimizer sees +48% more physical survivability: try Stonewall over Dynamo (sim-only — the popular pick may carry utility the sim can't see; test it)."
-    },
-    {
-     "title": "Bruiser Burst",
-     "items": [
-      {
-       "name": "GaussianGreaves",
-       "slug": "gaussian-greaves"
-      },
-      {
-       "name": "RaimentOfRenewal",
-       "slug": "raiment-of-renewal"
-      },
-      {
-       "name": "Dynamo",
-       "slug": "dynamo"
-      }
-     ],
-     "n": 60,
-     "shrunkWr": 0.558,
-     "coreGold": 8400,
-     "spikeMinute": 26,
-     "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 26 — about 592 damage in one combo in the sim.",
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 87 auto-attack DPS in the sim.",
      "optimizer": null
     },
     {
-     "title": "Tank Burst",
+     "title": "Tank DPS Carry",
      "items": [
       {
        "name": "Dynamo",
@@ -1535,13 +1525,37 @@
        "slug": "xenia"
       }
      ],
-     "n": 49,
-     "shrunkWr": 0.58,
+     "n": 333,
+     "shrunkWr": 0.544,
      "coreGold": 7200,
      "spikeMinute": 24,
-     "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 539 damage in one combo in the sim.",
-     "optimizer": "Optimizer agrees: within 0% of our best core on one-combo burst. The winrate is earned, not luck."
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 87 auto-attack DPS in the sim.",
+     "optimizer": null
+    },
+    {
+     "title": "Bruiser DPS Carry",
+     "items": [
+      {
+       "name": "GaussianGreaves",
+       "slug": "gaussian-greaves"
+      },
+      {
+       "name": "RaimentOfRenewal",
+       "slug": "raiment-of-renewal"
+      },
+      {
+       "name": "Dynamo",
+       "slug": "dynamo"
+      }
+     ],
+     "n": 215,
+     "shrunkWr": 0.514,
+     "coreGold": 8400,
+     "spikeMinute": 26,
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 26 — about 87 auto-attack DPS in the sim.",
+     "optimizer": null
     }
    ],
    "stages": [
@@ -1725,38 +1739,6 @@
      "counterSwap": null
     },
     {
-     "enemy": "Dekker",
-     "enemySlug": "dekker",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Dekker deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "even"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": null
-    },
-    {
      "enemy": "Phase",
      "enemySlug": "phase",
      "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
@@ -1784,6 +1766,38 @@
       {
        "minute": 30,
        "verdict": "you"
+      }
+     ],
+     "counterSwap": null
+    },
+    {
+     "enemy": "Dekker",
+     "enemySlug": "dekker",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Dekker deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "even"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
       }
      ],
      "counterSwap": null
@@ -1861,10 +1875,10 @@
     "playstyle": "sustain",
     "modeled": false,
     "wr": 49.7,
-    "n": 318978,
+    "n": 329277,
     "shiftIn": [],
     "shiftOut": [],
-    "provenance": "“Wanton Warden” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 49.7% over 318,978 games, magnitude not simulated."
+    "provenance": "“Wanton Warden” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 49.7% over 329,277 games, magnitude not simulated."
    }
   },
   {
@@ -1885,7 +1899,7 @@
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
      "this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check",
-     "the sim opens on Spectra, which the field rarely builds (0.2% pick) — a sim-only call; compare the meta cores below"
+     "the sim opens on Spectra, which the field rarely builds (0.1% pick) — a sim-only call; compare the meta cores below"
     ]
    },
    "build": {
@@ -1895,7 +1909,7 @@
       "name": "Spectra",
       "slug": "spectra",
       "spikeMinute": 11,
-      "playRatePct": 0.2,
+      "playRatePct": 0.1,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1903,41 +1917,41 @@
       "name": "Prophecy",
       "slug": "prophecy",
       "spikeMinute": 18,
-      "playRatePct": 2.6,
+      "playRatePct": 2.7,
       "evidenceDeltaWr": 0,
-      "evidenceN": 48
+      "evidenceN": 47
      },
      {
       "name": "Cursed Scroll",
       "slug": "cursed-scroll",
       "spikeMinute": 24,
-      "playRatePct": 1.3,
-      "evidenceDeltaWr": 1.2,
-      "evidenceN": 24
+      "playRatePct": 1.2,
+      "evidenceDeltaWr": 0.1,
+      "evidenceN": 20
      },
      {
       "name": "Rapture",
       "slug": "rapture",
       "spikeMinute": 31,
-      "playRatePct": 0.6,
-      "evidenceDeltaWr": 0.5,
-      "evidenceN": 11
+      "playRatePct": 0.3,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
      },
      {
       "name": "World Breaker",
       "slug": "world-breaker",
       "spikeMinute": 37,
-      "playRatePct": 3.4,
-      "evidenceDeltaWr": 0.8,
-      "evidenceN": 63
+      "playRatePct": 4.3,
+      "evidenceDeltaWr": -0.6,
+      "evidenceN": 73
      },
      {
       "name": "Magnify",
       "slug": "magnify",
       "spikeMinute": 43,
-      "playRatePct": 2.7,
-      "evidenceDeltaWr": 0.2,
-      "evidenceN": 50
+      "playRatePct": 2.6,
+      "evidenceDeltaWr": 3.1,
+      "evidenceN": 45
      }
     ],
     "gold": 18250,
@@ -2341,19 +2355,19 @@
     "candidates": [
      {
       "item": "Spectra",
-      "playRatePct": 0.2,
+      "playRatePct": 0.1,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 563.2
      },
      {
       "item": "Cursed Scroll",
-      "playRatePct": 1.3,
+      "playRatePct": 1.2,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 563.2
      },
      {
       "item": "Rapture",
-      "playRatePct": 0.6,
+      "playRatePct": 0.3,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 563.2
      }
@@ -2362,7 +2376,7 @@
    },
    "metaBuilds": [
     {
-     "title": "Tank Frontline",
+     "title": "Tank DPS Carry",
      "items": [
       {
        "name": "Dynamo",
@@ -2377,40 +2391,16 @@
        "slug": "frosted-lure"
       }
      ],
-     "n": 134,
-     "shrunkWr": 0.567,
+     "n": 798,
+     "shrunkWr": 0.536,
      "coreGold": 7200,
      "spikeMinute": 21,
-     "bestObjective": "physical survivability",
-     "whyLine": "Strongest meta core for physical survivability, online around minute 21 — about 8,624 effective HP vs physical in the sim.",
-     "optimizer": null
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 87 auto-attack DPS in the sim.",
+     "optimizer": "Optimizer sees 3.7× the sustained auto DPS: try Spectra over Dynamo (sim-only — the popular pick may carry utility the sim can't see; test it)."
     },
     {
-     "title": "Bruiser Burst",
-     "items": [
-      {
-       "name": "GaussianGreaves",
-       "slug": "gaussian-greaves"
-      },
-      {
-       "name": "RaimentOfRenewal",
-       "slug": "raiment-of-renewal"
-      },
-      {
-       "name": "Dynamo",
-       "slug": "dynamo"
-      }
-     ],
-     "n": 60,
-     "shrunkWr": 0.558,
-     "coreGold": 8400,
-     "spikeMinute": 23,
-     "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 23 — about 592 damage in one combo in the sim.",
-     "optimizer": "Optimizer sees +31% more one-combo burst: try Spectra over Gaussian Greaves (sim-only — the popular pick may carry utility the sim can't see; test it)."
-    },
-    {
-     "title": "Tank Burst",
+     "title": "Tank DPS Carry",
      "items": [
       {
        "name": "Dynamo",
@@ -2425,13 +2415,37 @@
        "slug": "xenia"
       }
      ],
-     "n": 49,
-     "shrunkWr": 0.58,
+     "n": 333,
+     "shrunkWr": 0.544,
      "coreGold": 7200,
      "spikeMinute": 21,
-     "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 539 damage in one combo in the sim.",
-     "optimizer": "Optimizer sees +44% more one-combo burst: try Spectra over Dynamo (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 87 auto-attack DPS in the sim.",
+     "optimizer": "Optimizer sees 3.7× the sustained auto DPS: try Spectra over Dynamo (sim-only — the popular pick may carry utility the sim can't see; test it)."
+    },
+    {
+     "title": "Bruiser DPS Carry",
+     "items": [
+      {
+       "name": "GaussianGreaves",
+       "slug": "gaussian-greaves"
+      },
+      {
+       "name": "RaimentOfRenewal",
+       "slug": "raiment-of-renewal"
+      },
+      {
+       "name": "Dynamo",
+       "slug": "dynamo"
+      }
+     ],
+     "n": 215,
+     "shrunkWr": 0.514,
+     "coreGold": 8400,
+     "spikeMinute": 23,
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 23 — about 87 auto-attack DPS in the sim.",
+     "optimizer": "Optimizer sees 3.7× the sustained auto DPS: try Spectra over Gaussian Greaves (sim-only — the popular pick may carry utility the sim can't see; test it)."
     }
    ],
    "stages": [
@@ -2590,6 +2604,38 @@
      }
     },
     {
+     "enemy": "Boris",
+     "enemySlug": "boris",
+     "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Boris deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "you"
+      },
+      {
+       "minute": 10,
+       "verdict": "you"
+      },
+      {
+       "minute": 15,
+       "verdict": "you"
+      },
+      {
+       "minute": 20,
+       "verdict": "you"
+      },
+      {
+       "minute": 25,
+       "verdict": "you"
+      },
+      {
+       "minute": 30,
+       "verdict": "you"
+      }
+     ],
+     "counterSwap": null
+    },
+    {
      "enemy": "Serath",
      "enemySlug": "serath",
      "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Serath's main threat is Chastise; bait it before you commit, and armor softens the trade.",
@@ -2627,38 +2673,6 @@
       "offenseLossPct": 16,
       "line": "Losing lane? Third item Warden's Faith instead of Cursed Scroll: their 3s all-in loses 18% of its bite; you give up 16% of your damage."
      }
-    },
-    {
-     "enemy": "Boris",
-     "enemySlug": "boris",
-     "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Boris deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "you"
-      },
-      {
-       "minute": 10,
-       "verdict": "you"
-      },
-      {
-       "minute": 15,
-       "verdict": "you"
-      },
-      {
-       "minute": 20,
-       "verdict": "you"
-      },
-      {
-       "minute": 25,
-       "verdict": "you"
-      },
-      {
-       "minute": 30,
-       "verdict": "you"
-      }
-     ],
-     "counterSwap": null
     },
     {
      "enemy": "Yin",
@@ -2700,17 +2714,17 @@
      }
     },
     {
-     "enemy": "Feng Mao",
-     "enemySlug": "feng-mao",
-     "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Feng Mao deals area damage — spread out so one cast can't catch the group.",
+     "enemy": "Kallari",
+     "enemySlug": "kallari",
+     "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Kallari's main threat is Guillotine; bait it before you commit, and armor softens the trade.",
      "checkpoints": [
       {
        "minute": 5,
-       "verdict": "you"
+       "verdict": "even"
       },
       {
        "minute": 10,
-       "verdict": "even"
+       "verdict": "you"
       },
       {
        "minute": 15,
@@ -2733,15 +2747,15 @@
       "out": "Cursed Scroll",
       "in": "Warden's Faith",
       "inSlug": "wardens-faith",
-      "survivalGainPct": 17,
+      "survivalGainPct": 18,
       "offenseLossPct": 16,
-      "line": "Losing lane? Third item Warden's Faith instead of Cursed Scroll: their 3s all-in loses 17% of its bite; you give up 16% of your damage."
+      "line": "Losing lane? Third item Warden's Faith instead of Cursed Scroll: their 3s all-in loses 18% of its bite; you give up 16% of your damage."
      }
     },
     {
-     "enemy": "Kwang",
-     "enemySlug": "kwang",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kwang ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
+     "enemy": "Rampage",
+     "enemySlug": "rampage",
+     "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Rampage deals area damage — spread out so one cast can't catch the group.",
      "checkpoints": [
       {
        "minute": 5,
@@ -2749,33 +2763,26 @@
       },
       {
        "minute": 10,
-       "verdict": "enemy"
+       "verdict": "you"
       },
       {
        "minute": 15,
-       "verdict": "enemy"
+       "verdict": "you"
       },
       {
        "minute": 20,
-       "verdict": "enemy"
+       "verdict": "you"
       },
       {
        "minute": 25,
-       "verdict": "even"
+       "verdict": "you"
       },
       {
        "minute": 30,
-       "verdict": "enemy"
+       "verdict": "you"
       }
      ],
-     "counterSwap": {
-      "out": "Cursed Scroll",
-      "in": "Void Helm",
-      "inSlug": "void-helm",
-      "survivalGainPct": 14,
-      "offenseLossPct": 16,
-      "line": "Losing lane? Third item Void Helm instead of Cursed Scroll: their 3s all-in loses 14% of its bite; you give up 16% of your damage."
-     }
+     "counterSwap": null
     }
    ],
    "laneSteer": {
@@ -2785,11 +2792,11 @@
     },
     "playstyle": "on-hit",
     "modeled": true,
-    "wr": 47.3,
-    "n": 24517,
+    "wr": 47.4,
+    "n": 26482,
     "shiftIn": [],
     "shiftOut": [],
-    "provenance": "“Zap O' 9-Chains” ⇒ on-hit; the sim models this augment — field jungle 47.3% over 24,517 games."
+    "provenance": "“Zap O' 9-Chains” ⇒ on-hit; the sim models this augment — field jungle 47.4% over 26,482 games."
    }
   },
   {
@@ -2810,7 +2817,7 @@
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
      "this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check",
-     "the sim opens on Spectra, which the field rarely builds (0.2% pick) — a sim-only call; compare the meta cores below"
+     "the sim opens on Spectra, which the field rarely builds (0.1% pick) — a sim-only call; compare the meta cores below"
     ]
    },
    "build": {
@@ -2820,7 +2827,7 @@
       "name": "Spectra",
       "slug": "spectra",
       "spikeMinute": 12,
-      "playRatePct": 0.2,
+      "playRatePct": 0.1,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -2828,41 +2835,41 @@
       "name": "Prophecy",
       "slug": "prophecy",
       "spikeMinute": 19,
-      "playRatePct": 2.6,
+      "playRatePct": 2.7,
       "evidenceDeltaWr": 0,
-      "evidenceN": 48
+      "evidenceN": 47
      },
      {
       "name": "Cursed Scroll",
       "slug": "cursed-scroll",
       "spikeMinute": 25,
-      "playRatePct": 1.3,
-      "evidenceDeltaWr": 1.2,
-      "evidenceN": 24
+      "playRatePct": 1.2,
+      "evidenceDeltaWr": 0.1,
+      "evidenceN": 20
      },
      {
       "name": "Rapture",
       "slug": "rapture",
       "spikeMinute": 31,
-      "playRatePct": 0.6,
-      "evidenceDeltaWr": 0.5,
-      "evidenceN": 11
+      "playRatePct": 0.3,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
      },
      {
       "name": "World Breaker",
       "slug": "world-breaker",
-      "spikeMinute": 37,
-      "playRatePct": 3.4,
-      "evidenceDeltaWr": 0.8,
-      "evidenceN": 63
+      "spikeMinute": 36,
+      "playRatePct": 4.3,
+      "evidenceDeltaWr": -0.6,
+      "evidenceN": 73
      },
      {
       "name": "Magnify",
       "slug": "magnify",
       "spikeMinute": 42,
-      "playRatePct": 2.7,
-      "evidenceDeltaWr": 0.2,
-      "evidenceN": 50
+      "playRatePct": 2.6,
+      "evidenceDeltaWr": 3.1,
+      "evidenceN": 45
      }
     ],
     "gold": 18250,
@@ -3266,19 +3273,19 @@
     "candidates": [
      {
       "item": "Spectra",
-      "playRatePct": 0.2,
+      "playRatePct": 0.1,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 563.2
      },
      {
       "item": "Cursed Scroll",
-      "playRatePct": 1.3,
+      "playRatePct": 1.2,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 563.2
      },
      {
       "item": "Rapture",
-      "playRatePct": 0.6,
+      "playRatePct": 0.3,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 563.2
      }
@@ -3287,7 +3294,7 @@
    },
    "metaBuilds": [
     {
-     "title": "Tank Frontline",
+     "title": "Tank DPS Carry",
      "items": [
       {
        "name": "Dynamo",
@@ -3302,40 +3309,16 @@
        "slug": "frosted-lure"
       }
      ],
-     "n": 134,
-     "shrunkWr": 0.567,
+     "n": 798,
+     "shrunkWr": 0.536,
      "coreGold": 7200,
-     "spikeMinute": 22,
-     "bestObjective": "physical survivability",
-     "whyLine": "Strongest meta core for physical survivability, online around minute 22 — about 8,624 effective HP vs physical in the sim.",
-     "optimizer": null
+     "spikeMinute": 21,
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 87 auto-attack DPS in the sim.",
+     "optimizer": "Optimizer sees 3.7× the sustained auto DPS: try Spectra over Dynamo (sim-only — the popular pick may carry utility the sim can't see; test it)."
     },
     {
-     "title": "Bruiser Burst",
-     "items": [
-      {
-       "name": "GaussianGreaves",
-       "slug": "gaussian-greaves"
-      },
-      {
-       "name": "RaimentOfRenewal",
-       "slug": "raiment-of-renewal"
-      },
-      {
-       "name": "Dynamo",
-       "slug": "dynamo"
-      }
-     ],
-     "n": 60,
-     "shrunkWr": 0.558,
-     "coreGold": 8400,
-     "spikeMinute": 24,
-     "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 592 damage in one combo in the sim.",
-     "optimizer": "Optimizer sees +31% more one-combo burst: try Spectra over Gaussian Greaves (sim-only — the popular pick may carry utility the sim can't see; test it)."
-    },
-    {
-     "title": "Tank Burst",
+     "title": "Tank DPS Carry",
      "items": [
       {
        "name": "Dynamo",
@@ -3350,13 +3333,37 @@
        "slug": "xenia"
       }
      ],
-     "n": 49,
-     "shrunkWr": 0.58,
+     "n": 333,
+     "shrunkWr": 0.544,
      "coreGold": 7200,
-     "spikeMinute": 22,
-     "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 539 damage in one combo in the sim.",
-     "optimizer": "Optimizer sees +44% more one-combo burst: try Spectra over Dynamo (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "spikeMinute": 21,
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 87 auto-attack DPS in the sim.",
+     "optimizer": "Optimizer sees 3.7× the sustained auto DPS: try Spectra over Dynamo (sim-only — the popular pick may carry utility the sim can't see; test it)."
+    },
+    {
+     "title": "Bruiser DPS Carry",
+     "items": [
+      {
+       "name": "GaussianGreaves",
+       "slug": "gaussian-greaves"
+      },
+      {
+       "name": "RaimentOfRenewal",
+       "slug": "raiment-of-renewal"
+      },
+      {
+       "name": "Dynamo",
+       "slug": "dynamo"
+      }
+     ],
+     "n": 215,
+     "shrunkWr": 0.514,
+     "coreGold": 8400,
+     "spikeMinute": 24,
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 87 auto-attack DPS in the sim.",
+     "optimizer": "Optimizer sees 3.7× the sustained auto DPS: try Spectra over Gaussian Greaves (sim-only — the popular pick may carry utility the sim can't see; test it)."
     }
    ],
    "stages": [
@@ -3515,45 +3522,6 @@
      }
     },
     {
-     "enemy": "Greystone",
-     "enemySlug": "greystone",
-     "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Greystone deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "you"
-      },
-      {
-       "minute": 10,
-       "verdict": "even"
-      },
-      {
-       "minute": 15,
-       "verdict": "even"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "even"
-      },
-      {
-       "minute": 30,
-       "verdict": "even"
-      }
-     ],
-     "counterSwap": {
-      "out": "Cursed Scroll",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 19,
-      "offenseLossPct": 16,
-      "line": "Losing lane? Third item Warden's Faith instead of Cursed Scroll: their 3s all-in loses 19% of its bite; you give up 16% of your damage."
-     }
-    },
-    {
      "enemy": "Steel",
      "enemySlug": "steel",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Steel deals area damage — spread out so one cast can't catch the group.",
@@ -3629,6 +3597,45 @@
       "survivalGainPct": 18,
       "offenseLossPct": 16,
       "line": "Losing lane? Third item Warden's Faith instead of Cursed Scroll: their 3s all-in loses 18% of its bite; you give up 16% of your damage."
+     }
+    },
+    {
+     "enemy": "Greystone",
+     "enemySlug": "greystone",
+     "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Greystone deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "you"
+      },
+      {
+       "minute": 10,
+       "verdict": "even"
+      },
+      {
+       "minute": 15,
+       "verdict": "even"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "even"
+      },
+      {
+       "minute": 30,
+       "verdict": "even"
+      }
+     ],
+     "counterSwap": {
+      "out": "Cursed Scroll",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 19,
+      "offenseLossPct": 16,
+      "line": "Losing lane? Third item Warden's Faith instead of Cursed Scroll: their 3s all-in loses 19% of its bite; you give up 16% of your damage."
      }
     },
     {
@@ -3717,8 +3724,8 @@
     },
     "playstyle": "sustain",
     "modeled": false,
-    "wr": 49.7,
-    "n": 24765,
+    "wr": 49.6,
+    "n": 25565,
     "shiftIn": [
      "Orion",
      "Spectral Schematics"
@@ -3727,7 +3734,7 @@
      "Spectra",
      "World Breaker"
     ],
-    "provenance": "“Wanton Warden” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 49.7% over 24,765 games, magnitude not simulated."
+    "provenance": "“Wanton Warden” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 49.6% over 25,565 games, magnitude not simulated."
    }
   }
  ],

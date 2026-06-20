@@ -15,7 +15,7 @@
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
-   "the sim opens on Viper, which the field has tried and lost with (-2.5% winrate over 45 games) — treat this opener as a sim blind-spot and weight the field",
+   "the sim opens on Viper, which the field rarely builds (2.2% pick) — a sim-only call; compare the meta cores below",
    "the sim build reproduces only 33% of the field's core for Serath (it never builds Storm Breaker, Spectra) — some of those items ride mechanics the sim doesn't model yet"
   ]
  },
@@ -26,17 +26,17 @@
     "name": "Viper",
     "slug": "viper",
     "spikeMinute": 12,
-    "playRatePct": 2.1,
-    "evidenceDeltaWr": -2.5,
+    "playRatePct": 2.2,
+    "evidenceDeltaWr": 0.5,
     "evidenceN": 45
    },
    {
     "name": "Solaris",
     "slug": "solaris",
     "spikeMinute": 19,
-    "playRatePct": 1.6,
-    "evidenceDeltaWr": 0.7,
-    "evidenceN": 36
+    "playRatePct": 1.1,
+    "evidenceDeltaWr": 0.3,
+    "evidenceN": 22
    },
    {
     "name": "Spear Of Desolation",
@@ -50,7 +50,7 @@
     "name": "The Perforator",
     "slug": "the-perforator",
     "spikeMinute": 31,
-    "playRatePct": 0.2,
+    "playRatePct": 0.3,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -58,15 +58,15 @@
     "name": "Augmentation",
     "slug": "augmentation",
     "spikeMinute": 38,
-    "playRatePct": 2.6,
-    "evidenceDeltaWr": 2.4,
-    "evidenceN": 56
+    "playRatePct": 1.9,
+    "evidenceDeltaWr": 0.7,
+    "evidenceN": 39
    },
    {
     "name": "Painweaver",
     "slug": "painweaver",
     "spikeMinute": 44,
-    "playRatePct": 0,
+    "playRatePct": 0.1,
     "evidenceDeltaWr": null,
     "evidenceN": null
    }
@@ -472,7 +472,7 @@
   "candidates": [
    {
     "item": "Solaris",
-    "playRatePct": 1.6,
+    "playRatePct": 1.1,
     "bestObjective": "10s rotation vs squishies",
     "edgeVsPopularPct": 448.1
    },
@@ -484,13 +484,19 @@
    },
    {
     "item": "The Perforator",
-    "playRatePct": 0.2,
+    "playRatePct": 0.3,
+    "bestObjective": "10s rotation vs squishies",
+    "edgeVsPopularPct": 448.1
+   },
+   {
+    "item": "Augmentation",
+    "playRatePct": 1.9,
     "bestObjective": "10s rotation vs squishies",
     "edgeVsPopularPct": 448.1
    },
    {
     "item": "Painweaver",
-    "playRatePct": 0,
+    "playRatePct": 0.1,
     "bestObjective": "10s rotation vs squishies",
     "edgeVsPopularPct": 448.1
    }
@@ -514,8 +520,8 @@
      "slug": "spectra"
     }
    ],
-   "n": 263,
-   "shrunkWr": 0.571,
+   "n": 1307,
+   "shrunkWr": 0.574,
    "coreGold": 8900,
    "spikeMinute": 24,
    "bestObjective": "lifesteal sustain",
@@ -526,25 +532,25 @@
    "title": "On-Hit Skirmisher",
    "items": [
     {
-     "name": "StormBreaker",
-     "slug": "storm-breaker"
-    },
-    {
      "name": "SkySplitter",
      "slug": "sky-splitter"
+    },
+    {
+     "name": "StormBreaker",
+     "slug": "storm-breaker"
     },
     {
      "name": "TaintedRounds",
      "slug": "tainted-rounds"
     }
    ],
-   "n": 100,
-   "shrunkWr": 0.589,
+   "n": 530,
+   "shrunkWr": 0.566,
    "coreGold": 9100,
    "spikeMinute": 25,
    "bestObjective": "10s rotation damage",
    "whyLine": "Strongest meta core for 10s rotation damage, online around minute 25 — about 514 damage over a 10s rotation in the sim.",
-   "optimizer": "Optimizer sees +95% more 10s rotation damage: try Viper over Storm Breaker (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "optimizer": "Optimizer sees +95% more 10s rotation damage: try Viper over Sky Splitter (sim-only — the popular pick may carry utility the sim can't see; test it)."
   },
   {
    "title": "On-Hit Brawler",
@@ -562,8 +568,8 @@
      "slug": "tyranny"
     }
    ],
-   "n": 181,
-   "shrunkWr": 0.572,
+   "n": 960,
+   "shrunkWr": 0.546,
    "coreGold": 8750,
    "spikeMinute": 24,
    "bestObjective": "extended fights vs bruisers",
@@ -810,52 +816,13 @@
    }
   },
   {
-   "enemy": "Feng Mao",
-   "enemySlug": "feng-mao",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Feng Mao deals area damage — spread out so one cast can't catch the group.",
+   "enemy": "Kallari",
+   "enemySlug": "kallari",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kallari's main threat is Guillotine; bait it before you commit, and armor softens the trade.",
    "checkpoints": [
     {
      "minute": 5,
      "verdict": "even"
-    },
-    {
-     "minute": 10,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 15,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 20,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 25,
-     "verdict": "even"
-    },
-    {
-     "minute": 30,
-     "verdict": "enemy"
-    }
-   ],
-   "counterSwap": {
-    "out": "Augmentation",
-    "in": "Warden's Faith",
-    "inSlug": "wardens-faith",
-    "survivalGainPct": 26,
-    "offenseLossPct": 25,
-    "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 26% of its bite; you give up 25% of your damage."
-   }
-  },
-  {
-   "enemy": "Kwang",
-   "enemySlug": "kwang",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kwang ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "enemy"
     },
     {
      "minute": 10,
@@ -880,11 +847,11 @@
    ],
    "counterSwap": {
     "out": "Augmentation",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 22,
+    "in": "Warden's Faith",
+    "inSlug": "wardens-faith",
+    "survivalGainPct": 27,
     "offenseLossPct": 25,
-    "line": "Losing lane? Third item Void Helm instead of Augmentation: their 3s all-in loses 22% of its bite; you give up 25% of your damage."
+    "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 27% of its bite; you give up 25% of your damage."
    }
   },
   {
@@ -925,13 +892,52 @@
     "offenseLossPct": 25,
     "line": "Losing lane? Third item Raiment of Renewal instead of Augmentation: their 3s all-in loses 17% of its bite; you give up 25% of your damage."
    }
+  },
+  {
+   "enemy": "Kwang",
+   "enemySlug": "kwang",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kwang ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 10,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 15,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 20,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 25,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 30,
+     "verdict": "enemy"
+    }
+   ],
+   "counterSwap": {
+    "out": "Augmentation",
+    "in": "Void Helm",
+    "inSlug": "void-helm",
+    "survivalGainPct": 22,
+    "offenseLossPct": 25,
+    "line": "Losing lane? Third item Void Helm instead of Augmentation: their 3s all-in loses 22% of its bite; you give up 25% of your damage."
+   }
   }
  ],
  "laneSteer": null,
  "slug": "serath",
  "name": "Serath",
  "patch": "1.14.4",
- "generatedAt": "2026-06-20T20:06:35.658Z",
+ "generatedAt": "2026-06-20T21:14:43.632Z",
  "damageType": "physical",
  "attackType": "melee",
  "laneFlex": [],
@@ -953,7 +959,7 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Viper, which the field has tried and lost with (-2.5% winrate over 45 games) — treat this opener as a sim blind-spot and weight the field",
+     "the sim opens on Viper, which the field rarely builds (2.2% pick) — a sim-only call; compare the meta cores below",
      "the sim build reproduces only 33% of the field's core for Serath (it never builds Storm Breaker, Spectra) — some of those items ride mechanics the sim doesn't model yet"
     ]
    },
@@ -964,17 +970,17 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 12,
-      "playRatePct": 2.1,
-      "evidenceDeltaWr": -2.5,
+      "playRatePct": 2.2,
+      "evidenceDeltaWr": 0.5,
       "evidenceN": 45
      },
      {
       "name": "Solaris",
       "slug": "solaris",
       "spikeMinute": 19,
-      "playRatePct": 1.6,
-      "evidenceDeltaWr": 0.7,
-      "evidenceN": 36
+      "playRatePct": 1.1,
+      "evidenceDeltaWr": 0.3,
+      "evidenceN": 22
      },
      {
       "name": "Spear Of Desolation",
@@ -988,7 +994,7 @@
       "name": "The Perforator",
       "slug": "the-perforator",
       "spikeMinute": 31,
-      "playRatePct": 0.2,
+      "playRatePct": 0.3,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -996,15 +1002,15 @@
       "name": "Augmentation",
       "slug": "augmentation",
       "spikeMinute": 38,
-      "playRatePct": 2.6,
-      "evidenceDeltaWr": 2.4,
-      "evidenceN": 56
+      "playRatePct": 1.9,
+      "evidenceDeltaWr": 0.7,
+      "evidenceN": 39
      },
      {
       "name": "Painweaver",
       "slug": "painweaver",
       "spikeMinute": 44,
-      "playRatePct": 0,
+      "playRatePct": 0.1,
       "evidenceDeltaWr": null,
       "evidenceN": null
      }
@@ -1410,7 +1416,7 @@
     "candidates": [
      {
       "item": "Solaris",
-      "playRatePct": 1.6,
+      "playRatePct": 1.1,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 448.1
      },
@@ -1422,13 +1428,19 @@
      },
      {
       "item": "The Perforator",
-      "playRatePct": 0.2,
+      "playRatePct": 0.3,
+      "bestObjective": "10s rotation vs squishies",
+      "edgeVsPopularPct": 448.1
+     },
+     {
+      "item": "Augmentation",
+      "playRatePct": 1.9,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 448.1
      },
      {
       "item": "Painweaver",
-      "playRatePct": 0,
+      "playRatePct": 0.1,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 448.1
      }
@@ -1452,8 +1464,8 @@
        "slug": "spectra"
       }
      ],
-     "n": 263,
-     "shrunkWr": 0.571,
+     "n": 1307,
+     "shrunkWr": 0.574,
      "coreGold": 8900,
      "spikeMinute": 24,
      "bestObjective": "lifesteal sustain",
@@ -1464,25 +1476,25 @@
      "title": "On-Hit Skirmisher",
      "items": [
       {
-       "name": "StormBreaker",
-       "slug": "storm-breaker"
-      },
-      {
        "name": "SkySplitter",
        "slug": "sky-splitter"
+      },
+      {
+       "name": "StormBreaker",
+       "slug": "storm-breaker"
       },
       {
        "name": "TaintedRounds",
        "slug": "tainted-rounds"
       }
      ],
-     "n": 100,
-     "shrunkWr": 0.589,
+     "n": 530,
+     "shrunkWr": 0.566,
      "coreGold": 9100,
      "spikeMinute": 25,
      "bestObjective": "10s rotation damage",
      "whyLine": "Strongest meta core for 10s rotation damage, online around minute 25 — about 514 damage over a 10s rotation in the sim.",
-     "optimizer": "Optimizer sees +95% more 10s rotation damage: try Viper over Storm Breaker (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "optimizer": "Optimizer sees +95% more 10s rotation damage: try Viper over Sky Splitter (sim-only — the popular pick may carry utility the sim can't see; test it)."
     },
     {
      "title": "On-Hit Brawler",
@@ -1500,8 +1512,8 @@
        "slug": "tyranny"
       }
      ],
-     "n": 181,
-     "shrunkWr": 0.572,
+     "n": 960,
+     "shrunkWr": 0.546,
      "coreGold": 8750,
      "spikeMinute": 24,
      "bestObjective": "extended fights vs bruisers",
@@ -1748,52 +1760,13 @@
      }
     },
     {
-     "enemy": "Feng Mao",
-     "enemySlug": "feng-mao",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Feng Mao deals area damage — spread out so one cast can't catch the group.",
+     "enemy": "Kallari",
+     "enemySlug": "kallari",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kallari's main threat is Guillotine; bait it before you commit, and armor softens the trade.",
      "checkpoints": [
       {
        "minute": 5,
        "verdict": "even"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "even"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Augmentation",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 26,
-      "offenseLossPct": 25,
-      "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 26% of its bite; you give up 25% of your damage."
-     }
-    },
-    {
-     "enemy": "Kwang",
-     "enemySlug": "kwang",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kwang ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
       },
       {
        "minute": 10,
@@ -1818,11 +1791,11 @@
      ],
      "counterSwap": {
       "out": "Augmentation",
-      "in": "Void Helm",
-      "inSlug": "void-helm",
-      "survivalGainPct": 22,
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 27,
       "offenseLossPct": 25,
-      "line": "Losing lane? Third item Void Helm instead of Augmentation: their 3s all-in loses 22% of its bite; you give up 25% of your damage."
+      "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 27% of its bite; you give up 25% of your damage."
      }
     },
     {
@@ -1863,6 +1836,45 @@
       "offenseLossPct": 25,
       "line": "Losing lane? Third item Raiment of Renewal instead of Augmentation: their 3s all-in loses 17% of its bite; you give up 25% of your damage."
      }
+    },
+    {
+     "enemy": "Kwang",
+     "enemySlug": "kwang",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kwang ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Augmentation",
+      "in": "Void Helm",
+      "inSlug": "void-helm",
+      "survivalGainPct": 22,
+      "offenseLossPct": 25,
+      "line": "Losing lane? Third item Void Helm instead of Augmentation: their 3s all-in loses 22% of its bite; you give up 25% of your damage."
+     }
     }
    ],
    "laneSteer": null
@@ -1884,7 +1896,7 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Viper, which the field has tried and lost with (-2.5% winrate over 45 games) — treat this opener as a sim blind-spot and weight the field"
+     "the sim opens on Viper, which the field rarely builds (2.2% pick) — a sim-only call; compare the meta cores below"
     ]
    },
    "build": {
@@ -1894,17 +1906,17 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 12,
-      "playRatePct": 2.1,
-      "evidenceDeltaWr": -2.5,
+      "playRatePct": 2.2,
+      "evidenceDeltaWr": 0.5,
       "evidenceN": 45
      },
      {
       "name": "Solaris",
       "slug": "solaris",
-      "spikeMinute": 20,
-      "playRatePct": 1.6,
-      "evidenceDeltaWr": 0.7,
-      "evidenceN": 36
+      "spikeMinute": 19,
+      "playRatePct": 1.1,
+      "evidenceDeltaWr": 0.3,
+      "evidenceN": 22
      },
      {
       "name": "Spear Of Desolation",
@@ -1918,7 +1930,7 @@
       "name": "The Perforator",
       "slug": "the-perforator",
       "spikeMinute": 31,
-      "playRatePct": 0.2,
+      "playRatePct": 0.3,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1926,15 +1938,15 @@
       "name": "Augmentation",
       "slug": "augmentation",
       "spikeMinute": 37,
-      "playRatePct": 2.6,
-      "evidenceDeltaWr": 2.4,
-      "evidenceN": 56
+      "playRatePct": 1.9,
+      "evidenceDeltaWr": 0.7,
+      "evidenceN": 39
      },
      {
       "name": "Painweaver",
       "slug": "painweaver",
-      "spikeMinute": 43,
-      "playRatePct": 0,
+      "spikeMinute": 42,
+      "playRatePct": 0.1,
       "evidenceDeltaWr": null,
       "evidenceN": null
      }
@@ -2340,7 +2352,7 @@
     "candidates": [
      {
       "item": "Solaris",
-      "playRatePct": 1.6,
+      "playRatePct": 1.1,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 448.1
      },
@@ -2352,13 +2364,19 @@
      },
      {
       "item": "The Perforator",
-      "playRatePct": 0.2,
+      "playRatePct": 0.3,
+      "bestObjective": "10s rotation vs squishies",
+      "edgeVsPopularPct": 448.1
+     },
+     {
+      "item": "Augmentation",
+      "playRatePct": 1.9,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 448.1
      },
      {
       "item": "Painweaver",
-      "playRatePct": 0,
+      "playRatePct": 0.1,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 448.1
      }
@@ -2382,8 +2400,8 @@
        "slug": "spectra"
       }
      ],
-     "n": 263,
-     "shrunkWr": 0.571,
+     "n": 1307,
+     "shrunkWr": 0.574,
      "coreGold": 8900,
      "spikeMinute": 25,
      "bestObjective": "lifesteal sustain",
@@ -2394,25 +2412,25 @@
      "title": "On-Hit Skirmisher",
      "items": [
       {
-       "name": "StormBreaker",
-       "slug": "storm-breaker"
-      },
-      {
        "name": "SkySplitter",
        "slug": "sky-splitter"
+      },
+      {
+       "name": "StormBreaker",
+       "slug": "storm-breaker"
       },
       {
        "name": "TaintedRounds",
        "slug": "tainted-rounds"
       }
      ],
-     "n": 100,
-     "shrunkWr": 0.589,
+     "n": 530,
+     "shrunkWr": 0.566,
      "coreGold": 9100,
      "spikeMinute": 25,
      "bestObjective": "10s rotation damage",
      "whyLine": "Strongest meta core for 10s rotation damage, online around minute 25 — about 514 damage over a 10s rotation in the sim.",
-     "optimizer": "Optimizer sees +95% more 10s rotation damage: try Viper over Storm Breaker (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "optimizer": "Optimizer sees +95% more 10s rotation damage: try Viper over Sky Splitter (sim-only — the popular pick may carry utility the sim can't see; test it)."
     },
     {
      "title": "On-Hit Brawler",
@@ -2430,12 +2448,12 @@
        "slug": "tyranny"
       }
      ],
-     "n": 181,
-     "shrunkWr": 0.572,
+     "n": 960,
+     "shrunkWr": 0.546,
      "coreGold": 8750,
-     "spikeMinute": 25,
+     "spikeMinute": 24,
      "bestObjective": "extended fights vs bruisers",
-     "whyLine": "Strongest meta core for extended fights vs bruisers, online around minute 25 — about 654 damage over a 20s fight in the sim.",
+     "whyLine": "Strongest meta core for extended fights vs bruisers, online around minute 24 — about 654 damage over a 20s fight in the sim.",
      "optimizer": "Optimizer sees 2.2× the extended fights vs bruisers: try Viper over Sky Splitter (sim-only — the popular pick may carry utility the sim can't see; test it)."
     }
    ],
@@ -2443,8 +2461,8 @@
     {
      "label": "early",
      "itemCount": 2,
-     "minute": 20,
-     "level": 13,
+     "minute": 19,
+     "level": 11,
      "core": [
       {
        "name": "Viper",
@@ -2456,15 +2474,15 @@
       }
      ],
      "headline": "rot10VsSquishy",
-     "headlineValue": 750,
+     "headlineValue": 680,
      "objectives": {
-      "burstVsSquishy": 661.708355476823,
-      "teamfightVsSquishy": 788.4576911721285,
-      "rot10VsSquishy": 750.2434274586174,
-      "rot20VsBruiser": 992.8424304840373,
-      "autoDps10VsSquishy": 186.61740769183473,
-      "ehpPhysical": 4041.6479999999997,
-      "ehpMagical": 3270.6151250000003,
+      "burstVsSquishy": 621.4793917921463,
+      "teamfightVsSquishy": 748.2287274874519,
+      "rot10VsSquishy": 680.1363193768257,
+      "rot20VsBruiser": 909.4232749742534,
+      "autoDps10VsSquishy": 175.36094489947837,
+      "ehpPhysical": 3289.2704999999996,
+      "ehpMagical": 2750.71528125,
       "healShield10s": 0,
       "utility": 15,
       "sustain10s": 0
@@ -2514,7 +2532,7 @@
     {
      "label": "late",
      "itemCount": 6,
-     "minute": 43,
+     "minute": 42,
      "level": 17,
      "core": [
       {
@@ -2600,45 +2618,6 @@
      }
     },
     {
-     "enemy": "Greystone",
-     "enemySlug": "greystone",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Greystone deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "even"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Spear Of Desolation",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 37,
-      "offenseLossPct": 28,
-      "line": "Losing lane? Third item Warden's Faith instead of Spear Of Desolation: their 3s all-in loses 37% of its bite; you give up 28% of your damage."
-     }
-    },
-    {
      "enemy": "Steel",
      "enemySlug": "steel",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Steel deals area damage — spread out so one cast can't catch the group.",
@@ -2714,6 +2693,45 @@
       "survivalGainPct": 33,
       "offenseLossPct": 28,
       "line": "Losing lane? Third item Warden's Faith instead of Spear Of Desolation: their 3s all-in loses 33% of its bite; you give up 28% of your damage."
+     }
+    },
+    {
+     "enemy": "Greystone",
+     "enemySlug": "greystone",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Greystone deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Spear Of Desolation",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 37,
+      "offenseLossPct": 28,
+      "line": "Losing lane? Third item Warden's Faith instead of Spear Of Desolation: their 3s all-in loses 37% of its bite; you give up 28% of your damage."
      }
     },
     {

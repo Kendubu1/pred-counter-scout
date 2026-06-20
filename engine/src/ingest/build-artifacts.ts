@@ -37,6 +37,13 @@ writeFileSync(path.join(OUT, 'index.json'), JSON.stringify({ patch: cal.patch, g
 // Meta board: most played per lane with empirical-Bayes shrunk winrates.
 // Pure evidence display for the landing page; never feeds the generator.
 const agg = loadAggregates();
+// Augment coverage gate: the meta board must not surface a (hero, lane) the
+// augment pull doesn't cover, or the UI links a cell with no field evidence
+// behind it (e.g. an off-role 45-game blip). Keying the board to augment cells
+// keeps the two sources consistent (artifacts test enforces this).
+const augFile = path.join(ROOT, 'data/aggregates/predgg-augments.json');
+const augHeroes: Record<string, Record<string, unknown>> = existsSync(augFile)
+  ? (JSON.parse(readFileSync(augFile, 'utf8')).heroes ?? {}) : {};
 if (agg) {
   const roles: Record<string, { slug: string; name: string; games: number; rawWr: number; shrunkWr: number; metaScore: number; badge: string | null }[]> = {};
   for (const role of ['carry', 'midlane', 'offlane', 'jungle', 'support']) {
@@ -44,7 +51,7 @@ if (agg) {
       // unmapped hero_id:* entries are excluded: no kit, no portrait, no
       // page to link to (one such id is tracked in lessons.md)
       .map(([slug, h]) => ({ slug, cell: h.byRole?.[role] }))
-      .filter((x): x is { slug: string; cell: { n: number; w: number } } => data.kits.has(x.slug) && !!x.cell && x.cell.n >= 30);
+      .filter((x): x is { slug: string; cell: { n: number; w: number } } => data.kits.has(x.slug) && !!x.cell && x.cell.n >= 30 && !!augHeroes[x.slug]?.[role]);
     const k = momPriorStrength(cells.map((c) => c.cell), 0.5);
     const scored = cells.map(({ slug, cell }) => ({
       slug,

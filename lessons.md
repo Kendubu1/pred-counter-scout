@@ -1881,3 +1881,29 @@ Eight maintainer-flagged fixes:
   matrix -> agreement. Documented in CLAUDE.md, including the follow-on zero-API
   copy passes (copy:prepare -> pred-scout-coach -> copy:ingest + review:builds).
   Couldn't run/verify it here (no creds); run it in a session that has them.
+## 2026-06-20: full pred.gg refresh executed + 3 data-drift test fixes
+- Maintainer supplied creds (used in-session only, never committed; advised to
+  rotate since shared in chat). probe confirmed auth; `npm run refresh` ran the
+  full chain: snapshot (52 heroes, 270 items, up from 265), augments (288 stat
+  calls, winrates per role incl. flex), buildstats, skills (52/52), aggregate
+  (new data/aggregates/2026-06-20.json), artifacts, matrix (1326 pairs), agreement
+  (coreRecall 0.575 -> 0.583). Data is current as of 2026-06-20.
+- The fresh data drifted 3 pinned tests; fixed each properly (not papered over):
+  1. Gold checkpoint fixture (calibration.json) drifted from the new aggregate
+     medians (carry@25/30 by ~90-110). cal.checkpoints.table.gold is VERIFICATION-
+     ONLY (computation uses aggregate goldAt), so re-derived the fixture to the new
+     measured values + bumped the note/source date. No artifact regen needed for it.
+  2. playstyle retrodiction pinned gideon's field top-core n=390; it's live field
+     volume (now 2123) and shifts every refresh -> relaxed to toBeGreaterThan(0).
+  3. Meta board charted lt-belica as carry (45 games) but augments only covers
+     roles with >=100 games (+primary), so the cell had no augment evidence. Gated
+     the meta board on augment-cell presence (build-artifacts.ts) so it never links
+     a cell we have no field evidence for. belica-carry now correctly drops.
+- Harness green (115/115). NOTE: the LLM copy aggregates still reflect pre-refresh
+  numbers; regenerate via the zero-API copy passes (copy:prepare -> pred-scout-coach
+  -> copy:ingest + review:builds) so explanations match the new winrates/builds.
+- Done: regenerated all 4 copy passes on the refreshed data via 4 parallel
+  pred-scout-coach agents (no key). Ingest: augments 284 +227 eternal / 33 dropped;
+  items 182 / 0; abilities 311 / 1; build-reasoning 752 / 170 (verifier dropping
+  ungrounded numbers as designed). All explanations now reflect the 2026-06-20
+  winrates/builds. Harness green (115/115). Refresh fully complete end to end.
