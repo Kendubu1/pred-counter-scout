@@ -1828,3 +1828,9 @@ Eight maintainer-flagged fixes:
   Tips are action-first and grounded (e.g. Wraith E: "Pop it before a fight to
   vanish, gain 20% speed…; chaining kills resets it"). items/augments passes run
   identically (COPY_MODE=prepare npm run review:items / review → agent → ingest).
+- All three passes now session-authored (no key): items 182 written / 0 rejected;
+  augments 241 + 284 Eternal lines written / 47 dropped by the ground-check (the
+  verifier visibly enforcing honesty on the larger pass — dropped cells fall back
+  to mechanics-only on the page). Harness green (115/115). The Anthropic API is
+  fully out of the copy loop; data/aggregates/{item-reviews,augment-reviews,
+  ability-tips}.json all credit the in-session agent.
