@@ -110,7 +110,7 @@ Best bang for buck: Low tier now, with Medium's single VPS added the moment retr
 | GitHub Actions | Free public-repo CI; the entire orchestrator for Concepts A and B |
 | Astro | Actively maintained static-site framework; islands keep the interactive bits small |
 | uPlot | Tiny (around 40KB), fast canvas charts for power curves and scaling plots |
-| Anthropic SDK (claude-haiku-4-5 low tier, claude-sonnet-4-6 medium) | Metered coach-voice copy generation behind the ground-check verifier |
+| In-session Claude Code agent (`.claude/agents/pred-scout-coach.md`) | Coach-voice copy + analysis on session compute behind the ground-check verifier — NO Anthropic API key (permanent, 2026-06-20); see the prepare→agent→ingest flow in CLAUDE.md |
 | simple-statistics | Lightweight closed-form stats (beta-binomial EB) at the low tier |
 | polars + PyMC (medium tier and up) | Industry-standard hierarchical Bayesian fitting when full posteriors are wanted |
 | Playwright (optional) | Visual regression screenshots of generated pages before publish |

@@ -1,19 +1,20 @@
-// AI copy pass over completed items + crests (priorities item 8 family):
-// one plain-language "why you'd lean into this" line per item, written by
-// claude-haiku-4-5 from ONLY the item's own stats and effect text, then
-// ground-checked — any line citing a number absent from the item's data
-// is dropped. Rendered in the build lab's item quick-view popup.
+// Copy pass over completed items + crests: one plain-language "why you'd lean
+// into this" line per item, written by the IN-SESSION agent (no Anthropic API
+// key) from ONLY the item's own stats and effect text, then ground-checked —
+// any line citing a number absent from the item's data is dropped. Rendered in
+// the build lab's item quick-view popup.
 //
-//   ANTHROPIC_API_KEY=... npm run review:items
+//   COPY_MODE=prepare npm run review:items   # emit grounded prompts
+//   (pred-scout-coach agent fills engine/copy-tasks/items.responses.json)
+//   npm run review:items                      # verify + write
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildAllowed, verifyLine } from '../copy-verify.js';
+import { ask, flushTasks, isPrepare } from '../copy-session.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-const KEY = process.env.ANTHROPIC_API_KEY;
-if (!KEY) { console.error('needs ANTHROPIC_API_KEY in env'); process.exit(1); }
 
 interface RawItem {
   slug: string; display_name: string; total_price: number; slot_type: string; rarity?: string;
@@ -26,21 +27,6 @@ const items = (Array.isArray(raw) ? raw : (raw as { items: RawItem[] }).items)
   .filter((i) => i.slot_type === 'Crest' || (i.total_price ?? 0) >= 1800); // completed items + crests
 
 const clean = (t?: string) => (t || '').replace(/<br\s*\/?>(\n)?/g, ' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
-
-async function ask(prompt: string): Promise<string> {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    if (attempt > 0) await new Promise((r) => setTimeout(r, 2000 * attempt));
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'x-api-key': KEY!, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-haiku-4-5', max_tokens: 1600, messages: [{ role: 'user', content: prompt }] }),
-    });
-    if (res.status === 429 || res.status >= 500) continue;
-    if (!res.ok) throw new Error(`anthropic: HTTP ${res.status} ${await res.text()}`);
-    return ((await res.json()) as { content: { text: string }[] }).content[0]!.text;
-  }
-  throw new Error('anthropic: retries exhausted');
-}
 
 function itemBlock(i: RawItem): string {
   const stats = Object.entries(i.stats || {}).filter(([, v]) => v).map(([k, v]) => `${k}=${v}`).join(', ');
@@ -61,7 +47,7 @@ For each item, write ONE sentence (max 24 words) in plain language: who leans in
 
 Return strict JSON only: {"<slug>": "<sentence>", ...}`;
     try {
-      const text = (await ask(prompt)).trim().replace(/^```json?\s*|```$/g, '');
+      const text = (await ask('items', `batch-${b}`, prompt)).trim().replace(/^```json?\s*|```$/g, '');
       const parsed = JSON.parse(text) as Record<string, string>;
       for (const i of batch) {
         const line = parsed[i.slug];
@@ -75,11 +61,12 @@ Return strict JSON only: {"<slug>": "<sentence>", ...}`;
       }
       process.stdout.write('.');
     } catch { process.stdout.write('x'); }
-    await new Promise((r) => setTimeout(r, 250));
   }
+  flushTasks('items');
+  if (isPrepare()) return;
   writeFileSync(path.join(ROOT, 'data/aggregates/item-reviews.json'), JSON.stringify({
     generatedAt: new Date().toISOString(),
-    source: 'claude-haiku-4-5 over data/omeda/items.json only; every number ground-checked against the item, failing lines dropped',
+    source: 'in-session Claude Code agent (pred-scout-coach) over data/omeda/items.json only; every number ground-checked against the item, failing lines dropped',
     written, rejected,
     items: out,
   }, null, 1));

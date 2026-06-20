@@ -1,13 +1,14 @@
-// AI copy pass over the hero augments AND Eternals (priorities item 8):
-// one grounded "when to take it" line per augment per role, and one per
-// top field Eternal per role (maintainer ask, 2026-06-12), written by
-// claude-haiku-4-5 from ONLY the catalog/registry mechanics + field
-// evidence, then ground-checked — every number in a line must appear in
-// the source data for that cell (winrates, game counts, description
-// values, or the precomputed per-100 deltas). Lines that fail
-// verification are dropped; the page falls back to mechanics-only.
+// Copy pass over the hero augments AND Eternals: one grounded "when to take it"
+// line per augment per role, and one per top field Eternal per role, written by
+// the IN-SESSION agent (no Anthropic API key) from ONLY the catalog/registry
+// mechanics + field evidence, then ground-checked — every number in a line must
+// appear in the source data for that cell (winrates, game counts, description
+// values, or the precomputed per-100 deltas). Lines that fail verification are
+// dropped; the page falls back to mechanics-only.
 //
-//   ANTHROPIC_API_KEY=... npm run review
+//   COPY_MODE=prepare npm run review   # emit grounded prompts
+//   (pred-scout-coach agent fills engine/copy-tasks/augments.responses.json)
+//   npm run review                      # verify + write
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -15,11 +16,10 @@ import { fileURLToPath } from 'node:url';
 import { loadData } from '../data.js';
 import { loadEffects } from '../effects.js';
 import { buildAllowed, verifyLine, winrateNumbers } from '../copy-verify.js';
+import { ask, flushTasks, isPrepare } from '../copy-session.js';
 import { momPriorStrength } from '../evidence.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-const KEY = process.env.ANTHROPIC_API_KEY;
-if (!KEY) { console.error('needs ANTHROPIC_API_KEY in env'); process.exit(1); }
 
 interface AugCell { augments: { id: string; name: string; n: number; w: number }[]; eternals?: { name: string; n: number; w: number }[] }
 interface AugFile { catalog: Record<string, { name: string; description: string }>; heroes: Record<string, Record<string, AugCell>> }
@@ -28,22 +28,6 @@ const ETERNAL_MIN_GAMES = 300; // matches the hero page's display filter
 
 const augs = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/predgg-augments.json'), 'utf8')) as AugFile;
 const data = loadData();
-
-async function ask(prompt: string): Promise<string> {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    if (attempt > 0) await new Promise((r) => setTimeout(r, 2000 * attempt));
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'x-api-key': KEY!, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-haiku-4-5', max_tokens: 1200, messages: [{ role: 'user', content: prompt }] }),
-    });
-    if (res.status === 429 || res.status >= 500) continue;
-    if (!res.ok) throw new Error(`anthropic: HTTP ${res.status} ${await res.text()}`);
-    const body = await res.json() as { content: { text: string }[] };
-    return body.content[0]!.text;
-  }
-  throw new Error('anthropic: retries exhausted');
-}
 
 /** Allowed numeric tokens for an augment cell (shared verifier core). */
 function allowedNumbers(cell: AugCell, catalog: AugFile['catalog']): Set<string> {
@@ -100,7 +84,7 @@ For each augment in each role, write ONE sentence (max 26 words) on when/why to 
 
 Return strict JSON only, shaped: {"<role>": {"<id>": "<sentence>", ...}, ...}`;
     try {
-      const raw = (await ask(prompt)).trim().replace(/^```json?\s*|```$/g, '');
+      const raw = (await ask('augments', slug, prompt)).trim().replace(/^```json?\s*|```$/g, '');
       const parsed = JSON.parse(raw) as Record<string, Record<string, string>>;
       for (const [role, cell] of Object.entries(cells)) {
         const allowed = allowedNumbers(cell, augs.catalog);
@@ -117,9 +101,8 @@ Return strict JSON only, shaped: {"<role>": {"<id>": "<sentence>", ...}, ...}`;
     } catch (e) {
       process.stdout.write('x');
     }
-    await new Promise((r) => setTimeout(r, 200));
 
-    // Eternal pass (same hero, second call): when/why for the role's
+    // Eternal pass (same hero, second task): when/why for the role's
     // field top-3, grounded in registry mechanics + field evidence only.
     const etPromptLines: string[] = [];
     for (const [role, cell] of Object.entries(cells)) {
@@ -139,7 +122,7 @@ For each Eternal in each role, write ONE sentence (max 26 words) on when/why to 
 
 Return strict JSON only, shaped: {"<role>": {"<eternal name>": "<sentence>", ...}, ...}`;
       try {
-        const raw = (await ask(etPrompt)).trim().replace(/^```json?\s*|```$/g, '');
+        const raw = (await ask('augments', `${slug}:eternals`, etPrompt)).trim().replace(/^```json?\s*|```$/g, '');
         const parsed = JSON.parse(raw) as Record<string, Record<string, string>>;
         for (const [role, cell] of Object.entries(cells)) {
           const ets = topEternals(cell);
@@ -158,12 +141,13 @@ Return strict JSON only, shaped: {"<role>": {"<eternal name>": "<sentence>", ...
       } catch (e) {
         process.stdout.write('x');
       }
-      await new Promise((r) => setTimeout(r, 200));
     }
   }
+  flushTasks('augments');
+  if (isPrepare()) return;
   const out = {
     generatedAt: new Date().toISOString(),
-    source: 'claude-haiku-4-5 over data/aggregates/predgg-augments.json (+ effect-registry Eternal mechanics) only; every number ground-checked against the source cell, failing lines dropped',
+    source: 'in-session Claude Code agent (pred-scout-coach) over data/aggregates/predgg-augments.json (+ effect-registry Eternal mechanics) only; every number ground-checked against the source cell, failing lines dropped',
     written, rejected,
     eternalsWritten: etWritten, eternalsRejected: etRejected,
     heroes: reviews,

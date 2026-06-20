@@ -1797,3 +1797,27 @@ Eight maintainer-flagged fixes:
   maintainer reruns `npm run review` with ANTHROPIC_API_KEY (keyed batch job; not
   regenerated here, no key in this environment). Same gating applies to the
   eternal-MINOR copy lines (F1's copy half) — left for the keyed run.
+## 2026-06-20: copy passes move OFF the Anthropic API onto session compute
+- Maintainer decision (permanent): no ANTHROPIC_API_KEY in this project. All copy
+  & analysis run on the in-session Claude Code agent, not the API.
+- Mechanism: new engine/src/copy-session.ts replaces each review script's local
+  api.anthropic.com `ask()` with a file-based handoff. ask(pass,id,prompt):
+  prepare mode records the grounded prompt as a task and returns '{}' (downstream
+  parse no-ops); ingest mode returns the agent's stored answer for that id
+  (string OR inline JSON object, normalized). flushTasks() writes the tasks file.
+- Flow: `COPY_MODE=prepare npm run copy:prepare` → agent fills
+  engine/copy-tasks/<pass>.responses.json → `npm run copy:ingest`. The numeric
+  ground-check (copy-verify.ts) is UNCHANGED, so session-authored copy is held to
+  the exact same honesty bar (fabricated numbers still dropped). copy-tasks/ is
+  gitignored scratch.
+- The agent: .claude/agents/pred-scout-coach.md — an individualized, game-aware
+  agent that knows where all knowledge lives (kit/abilities, items+effects,
+  eternals incl. the 2x(1-of-3) minors, augments, builds/matchups in artifacts)
+  and the honesty contract (action-first, plain language, only source numbers).
+  It both runs the copy passes and does comparison/coaching analysis on request.
+- Removed the KEY check + api.anthropic.com fetch from augment/item/ability
+  review scripts; source strings now credit the in-session agent. Verified:
+  `ANTHROPIC_API_KEY` unset, `COPY_MODE=prepare npm run review:abilities` emitted
+  52 grounded tasks with no network; typecheck green.
+- Docs made permanent: CLAUDE.md (new "Copy & analysis policy" + practical notes),
+  docs/v5-engine-design.md tech-stack row. lessons append-only history left as-is.
