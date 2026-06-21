@@ -1944,6 +1944,23 @@ Eight maintainer-flagged fixes:
   Plan now names real heroes ("Drill Zinx toward the minute-14 Timewarp spike, take
   Vesh", "stop queueing offlane — worth +3.3 wins/100 into jungle"). coach.html
   renders coachReasoning for the verdict, film room, and plan. Harness green (115/115).
+## 2026-06-20: per-item render fix + copy bias-check pass (independent critic)
+- Per-item bug (maintainer found it): the per-item why map is keyed by display name
+  ("Orb Of Growth") but artifact meta items use concatenated pred.gg names
+  ("OrbOfGrowth"), so the UI exact-name lookup dropped ~40% of meta items and
+  mis-numbered the rest. Fixed with a normalized itemWhyRows() helper (UI-only):
+  meta coverage 58% -> 98.3%, nicer names, correct build-order numbering.
+- copy-critique.ts: an INDEPENDENT critic (general-purpose agent, NOT the author
+  pred-scout-coach) reviews build-reasoning vs the source kit+items and flags
+  wrong-item/wrong-fact/overconfident/jargon/broken-English lines, each with a
+  rewrite ground-checked by copy-verify, then APPLIES the grounded rewrites back
+  (reversible) and writes an audit report (copy-critique.json).
+- Caught what the number-checker can't: the line "Viper adds more armor and staying
+  power" was WRONG across ~20 heroes (Viper has no armor/health — attack speed,
+  power, pen, armor-shred). 2480 lines reviewed, 130 flagged (94.8% agreement),
+  114 grounded corrections applied (15 unmatched, left in the report). 0 wrong-Viper
+  lines remain; broken-English holes (Argus/Aurora "... — Hero <kit>" missing a verb)
+  fixed. Harness green (115/115). This is the bias-check the maintainer asked for.
 ## 2026-06-20: Phase 2 C1 — per-item build reasoning
 - build-review.ts prompt + ingest extended: each build now also asks for an `items`
   map (item name -> <=14-word "why it's bought + where in the order", ability-tied),
