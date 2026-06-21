@@ -2,7 +2,7 @@
 
 **A free counter-pick, matchup, and build companion for [Predecessor](https://www.predecessorgame.com/).**
 
-🔗 **Try it:** [https://kendubu1.github.io/pred-counter-scout/ui/v2/](https://kendubu1.github.io/pred-counter-scout/ui/v2/)
+🔗 **Try it:** [https://kendubu1.github.io/pred-counter-scout/ui/v6/](https://kendubu1.github.io/pred-counter-scout/ui/v6/)
 
 ☕ **Support:** [Buy Me a Coffee](https://buymeacoffee.com/saint_kendrick)
 
