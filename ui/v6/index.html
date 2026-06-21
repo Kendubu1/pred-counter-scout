@@ -397,6 +397,23 @@
 <script>
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// Per-item "why" rows for a build. The reasoning map is keyed by display name
+// ("Orb Of Growth") but artifact build items may be concatenated ("OrbOfGrowth"),
+// so match on a normalized key and prefer the reasoning's nicer name. Numbered by
+// build position; items with no why still show (name only) so the order is intact.
+const _normItem = (s) => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
+function itemWhyRows(items, whyMap) {
+  if (!whyMap || !Object.keys(whyMap).length) return '';
+  const byNorm = {};
+  for (const k in whyMap) byNorm[_normItem(k)] = { name: k, why: whyMap[k] };
+  const rows = items.map((it, n) => {
+    const e = byNorm[_normItem(it.name)];
+    const nm = e ? e.name : it.name;
+    const why = e ? e.why : '';
+    return `<div><span class="ord">${n + 1}</span><b>${esc(nm)}</b>${why ? ` — ${esc(why)}` : ''}</div>`;
+  }).join('');
+  return `<div class="mb-items-why">${rows}</div>`;
+}
 const IMG = { hero: (s) => `../img/heroes/${s}.webp`, item: (s) => `../img/items/${s}.webp`, eternal: (s) => `../img/eternals/${s}.webp` };
 const ROLES = ['all', 'carry', 'midlane', 'offlane', 'jungle', 'support'];
 const LANE_LABELS = { carry: 'Carry', midlane: 'Midlane', offlane: 'Offlane', jungle: 'Jungle', support: 'Support' };
@@ -934,7 +951,7 @@ function renderHero(a, roleParam) {
             <span class="mb-n">${m.n} games</span>
           </div>
           ${rsn && rsn.synergy ? `<div class="mb-why" style="color:var(--text-0)">🧩 ${esc(rsn.synergy)}</div>` : ''}
-          ${rsn && rsn.items && Object.keys(rsn.items).length ? `<div class="mb-items-why">${m.items.filter((it) => rsn.items[it.name]).map((it, n) => `<div><span class="ord">${n + 1}</span><b>${esc(it.name)}</b> — ${esc(rsn.items[it.name])}</div>`).join('')}</div>` : ''}
+          ${rsn ? itemWhyRows(m.items, rsn.items) : ''}
           <details class="sim-collapse"><summary>the sim math</summary><div class="body"><div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div></div></details>
           ${rsn && rsn.holes ? `<div class="mb-why" style="color:var(--gold)">⚠ ${esc(rsn.holes)}</div>` : ''}
         </div>`;
@@ -962,8 +979,7 @@ function renderHero(a, roleParam) {
         if (!o) return '';
         const swaps = (o.swaps || []).filter((s) => s.gain || s.lose).map((s) =>
           `<div style="font-size:.78rem;color:var(--text-1);margin-top:.35rem"><b>${esc(s.in)}</b> over <b>${esc(s.out)}</b> — <span style="color:var(--green)">gain</span> ${esc(s.gain || '—')} · <span style="color:var(--red)">lose</span> ${esc(s.lose || '—')}</div>`).join('');
-        const itemsWhy = o.items && Object.keys(o.items).length
-          ? `<div class="mb-items-why" style="margin-top:.45rem">${a.build.items.filter((it) => o.items[it.name]).map((it, n) => `<div><span class="ord">${n + 1}</span><b>${esc(it.name)}</b> — ${esc(o.items[it.name])}</div>`).join('')}</div>` : '';
+        const itemsWhy = itemWhyRows(a.build.items, o.items);
         return `
           ${o.synergy ? `<div style="font-size:.82rem;color:var(--text-0);margin-top:.55rem">🧩 ${esc(o.synergy)}</div>` : ''}
           ${itemsWhy}
