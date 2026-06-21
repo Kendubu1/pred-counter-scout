@@ -209,6 +209,10 @@
   .mb-n { color:var(--text-2); font-size:.74rem; font-variant-numeric:tabular-nums; }
   .mb-why { font-size:.76rem; color:var(--text-1); margin-top:.3rem; }
   .mb-opt { color:var(--blue); }
+  /* Per-item "why this item, in this order" list (build reasoning). */
+  .mb-items-why { margin-top:.35rem; display:flex; flex-direction:column; gap:.2rem; }
+  .mb-items-why > div { font-size:.74rem; color:var(--text-1); line-height:1.42; }
+  .mb-items-why .ord { display:inline-flex; align-items:center; justify-content:center; width:15px; height:15px; border-radius:50%; background:var(--accent); color:#fff; font-size:.58rem; font-weight:700; margin-right:.35rem; vertical-align:middle; }
 
   /* Playstyle-by-lane: what the sim can't see, exposed */
   .flexrow { padding:.6rem 0; border-top:1px solid var(--border); }
@@ -255,6 +259,10 @@
   details[open] summary::before { transform:rotate(90deg); }
   details summary:hover { color:var(--text-0); }
   details .body { padding:0 1.1rem 1rem; font-size:.85rem; color:var(--text-1); }
+  /* Compact reusable disclosure for in-card detail (crest list, sim math, etc.) */
+  details.sim-collapse { border:1px solid var(--border); border-radius:8px; background:var(--bg-2); margin-top:.4rem; }
+  details.sim-collapse > summary { padding:.38rem .6rem; font-size:.72rem; font-weight:600; color:var(--text-2); }
+  details.sim-collapse > .body { padding:0 .6rem .5rem; }
   table { width:100%; border-collapse:collapse; font-size:.82rem; }
   td, th { text-align:left; padding:.35rem .4rem; border-bottom:1px solid var(--border); }
   th { color:var(--text-2); font-weight:600; }
@@ -873,13 +881,16 @@ function renderHero(a, roleParam) {
             })()}
           </div>`;
         }).join('') : '<div class="muted">no Eternal sample for this role yet</div>'}
-        ${a.eternals.loadout ? ((lo) => `
+        ${a.eternals.loadout && !ets.some((e) => e.name.toLowerCase() === a.eternals.loadout.major.name.toLowerCase()) ? ((lo) => `
           <div style="margin-top:.6rem;padding:.55rem .65rem;background:var(--bg-2);border:1px solid var(--border);border-radius:8px">
-            <div style="font-size:.64rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-2);margin-bottom:.35rem">Recommended loadout · 1 major + 2 minors</div>
-            <div style="font-size:.82rem;color:var(--text-0)"><b>${esc(lo.major.name)}</b> <span style="font-size:.62rem;color:var(--text-2)">major</span></div>
+            <div style="display:flex;gap:.5rem;align-items:center">
+              <img src="${IMG.eternal(lo.major.name.toLowerCase())}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;box-shadow:0 0 0 2px var(--accent)" onerror="this.style.visibility='hidden'">
+              <span style="font-size:.86rem;font-weight:800;color:var(--text-0)">${esc(lo.major.name)}</span>
+              <span style="font-size:.6rem;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">⚙ SIM PICK</span>
+            </div>
             ${[lo.minor1, lo.minor2].map((m) => `
-              <div style="font-size:.76rem;color:var(--text-1);margin-top:.22rem">↳ <b>${esc(m.name)}</b> <span style="color:var(--text-2)">— ${m.modeled && m.deltaPct != null ? `the sim gains +${m.deltaPct}% on top of the major` : esc(m.note)}</span></div>`).join('')}
-            <div style="font-size:.64rem;color:var(--text-2);margin-top:.3rem">pick one from each minor slot in the draft screen · minor values are THEORY until calibration</div>
+              <div style="font-size:.76rem;color:var(--text-1);margin:.22rem 0 0 2.35rem">↳ <b>${esc(m.name)}</b> <span style="color:var(--text-2)">— ${m.modeled && m.deltaPct != null ? `the sim gains +${m.deltaPct}% on top of the major` : esc(m.note)}</span></div>`).join('')}
+            <div style="font-size:.64rem;color:var(--text-2);margin:.3rem 0 0 2.35rem">pick one from each minor slot in the draft screen · minor values are THEORY until calibration</div>
           </div>`)(a.eternals.loadout) : ''}
         ${top && ets.length && top.name.toLowerCase() === ets[0].name.toLowerCase()
           ? `<div style="margin-top:.45rem;font-size:.7rem;color:var(--green)">✓⚙ field and kit math agree on ${esc(top.name)}: top winrate in this role AND the biggest simulated gain${top.headlinePct ? ` (+${top.headlinePct}% main output — THEORY until calibration)` : ''}</div>` : ''}
@@ -894,19 +905,18 @@ function renderHero(a, roleParam) {
           if (!crs.length) return '';
           const cslug = (n) => n.toLowerCase().replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
           return `
-          <div style="font-size:.74rem;color:var(--text-2);margin:.7rem 0 .45rem"><b style="letter-spacing:.06em">CREST</b> · top 3 as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
+          <details class="sim-collapse" style="margin-top:.6rem"><summary><b style="letter-spacing:.06em">CREST</b> · top 3 as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</summary>
+          <div class="body" style="padding-top:.2rem">
           ${crs.map((c, i) => `
           <div style="display:flex;gap:.6rem;align-items:center;padding:.3rem 0;border-bottom:1px ${i === crs.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
             <img loading="lazy" data-ipop="${esc(cslug(c.name))}" src="../img/items/${esc(cslug(c.name))}.webp" alt="" style="width:28px;height:28px;border-radius:8px;object-fit:cover;background:var(--bg-2);flex:none;${i === 0 ? 'box-shadow:0 0 0 2px var(--green)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'">
             <span style="font-size:.88rem;font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${i === 0 ? '✓ ' : ''}${esc(c.name)}</span>
             <span style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(c.w / c.n * 100).toFixed(1)}%</span>
             <span style="font-size:.7rem;color:var(--text-2)">${c.n.toLocaleString()} games</span>
-          </div>`).join('')}`;
+          </div>`).join('')}
+          </div></details>`;
         })()}`;
       })()}
-      <div style="margin-top:.6rem; font-size:.74rem; color:var(--text-2)">
-        ⚠ <b>Why no single flat build:</b> the augment changes which build is right (a damage build and a support build are different heroes in practice). Augments marked ⚙ have their mechanics in the simulator — including the build shift the optimizer would make; 🔬 augments are field evidence only, with the reason stated. The build below assumes the kit's baseline. 🧠 lines are AI-written from the mechanics and evidence shown, with every number machine-verified against the source data. No Eternal math yet for: ${esc(a.eternals.unmodeled.join(', '))} — see Depth below.
-      </div>
     </section>
 
     ${a.metaBuilds && a.metaBuilds.length ? `
@@ -924,7 +934,8 @@ function renderHero(a, roleParam) {
             <span class="mb-n">${m.n} games</span>
           </div>
           ${rsn && rsn.synergy ? `<div class="mb-why" style="color:var(--text-0)">🧩 ${esc(rsn.synergy)}</div>` : ''}
-          <div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div>
+          ${rsn && rsn.items && Object.keys(rsn.items).length ? `<div class="mb-items-why">${m.items.filter((it) => rsn.items[it.name]).map((it, n) => `<div><span class="ord">${n + 1}</span><b>${esc(it.name)}</b> — ${esc(rsn.items[it.name])}</div>`).join('')}</div>` : ''}
+          <details class="sim-collapse"><summary>the sim math</summary><div class="body"><div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div></div></details>
           ${rsn && rsn.holes ? `<div class="mb-why" style="color:var(--gold)">⚠ ${esc(rsn.holes)}</div>` : ''}
         </div>`;
       }).join('')}
@@ -951,8 +962,11 @@ function renderHero(a, roleParam) {
         if (!o) return '';
         const swaps = (o.swaps || []).filter((s) => s.gain || s.lose).map((s) =>
           `<div style="font-size:.78rem;color:var(--text-1);margin-top:.35rem"><b>${esc(s.in)}</b> over <b>${esc(s.out)}</b> — <span style="color:var(--green)">gain</span> ${esc(s.gain || '—')} · <span style="color:var(--red)">lose</span> ${esc(s.lose || '—')}</div>`).join('');
+        const itemsWhy = o.items && Object.keys(o.items).length
+          ? `<div class="mb-items-why" style="margin-top:.45rem">${a.build.items.filter((it) => o.items[it.name]).map((it, n) => `<div><span class="ord">${n + 1}</span><b>${esc(it.name)}</b> — ${esc(o.items[it.name])}</div>`).join('')}</div>` : '';
         return `
           ${o.synergy ? `<div style="font-size:.82rem;color:var(--text-0);margin-top:.55rem">🧩 ${esc(o.synergy)}</div>` : ''}
+          ${itemsWhy}
           ${swaps ? `<div style="margin-top:.4rem"><div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-2);margin-bottom:.1rem">why the optimizer swaps off the meta</div>${swaps}</div>` : ''}
           ${o.holes ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.4rem">⚠ ${esc(o.holes)}</div>` : ''}`;
       })()}

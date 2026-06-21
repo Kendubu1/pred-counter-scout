@@ -1907,3 +1907,33 @@ Eight maintainer-flagged fixes:
   items 182 / 0; abilities 311 / 1; build-reasoning 752 / 170 (verifier dropping
   ungrounded numbers as designed). All explanations now reflect the 2026-06-20
   winrates/builds. Harness green (115/115). Refresh fully complete end to end.
+## 2026-06-20: Phase 2 increment 1 (v6 UI polish, UI-only)
+- Reusable collapsible: used the page's native <details>/<summary> (▸ arrow) with a
+  new compact `.sim-collapse` style — the scalable click/arrow expander the plan
+  wanted, droppable anywhere.
+- Eternals: de-dupe — the sim-recommendation card now renders ONLY when its major
+  isn't already in the field top-3 (its minors already show under that row); added
+  the Eternal icon + the same ⚙ SIM PICK tag used on augments.
+- Crests: collapsed the top-3 into a `.sim-collapse` disclosure to save room.
+- Meta builds: collapsed the SIM math line (whyLine + optimizer "+X% / try Y over
+  Z, sim-only") behind "the sim math"; kept 🧩 synergy and ⚠ holes always visible.
+- Could NOT find a distinct crest "!" notice in the code (the crest block is just
+  the top-3 list) — asked the maintainer to point at it. v6 syntax-checked.
+- Still open in Phase 2: per-item build reasoning (C1, engine+copy), build-title
+  AD/AP + defense-type disambiguation (C2, engine), coaching-page agent upgrade (D),
+  and a copy bias-check pass (second agent critiquing copy framing).
+## 2026-06-20: Phase 2 C2 — build-title disambiguation (AD/AP + defense type)
+- buildTitle now spells out damage type (AD vs AP) and, for defensive builds, which
+  resist it stacks: physical_armor vs magical_armor -> Armor / Magic-Res / Mixed-Def.
+  Pure-defense builds read "Armor Frontline" / "Mixed-Def Frontline"; bruisers read
+  "AD Bruiser" / "AP Bruiser"; damage builds keep the style (Crit/Lethality/On-Hit/
+  AP all imply the damage type). Answers "is this magic or physical def? AD or AP?"
+- Regenerated artifacts; harness green (115/115).
+## 2026-06-20: Phase 2 C1 — per-item build reasoning
+- build-review.ts prompt + ingest extended: each build now also asks for an `items`
+  map (item name -> <=14-word "why it's bought + where in the order", ability-tied),
+  ground-checked per clause like everything else. build-reasoning.json metaBuilds[]
+  and optimizer now carry `items`. v6 renders a numbered per-item "why" list under
+  each meta build's synergy and under the optimizer build (new .mb-items-why style).
+  Null-safe before the data is regenerated. Code committed first; data follows after
+  the pred-scout-coach re-run + ingest.
