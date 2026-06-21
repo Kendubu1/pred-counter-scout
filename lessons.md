@@ -1961,6 +1961,15 @@ Eight maintainer-flagged fixes:
   114 grounded corrections applied (15 unmatched, left in the report). 0 wrong-Viper
   lines remain; broken-English holes (Argus/Aurora "... — Hero <kit>" missing a verb)
   fixed. Harness green (115/115). This is the bias-check the maintainer asked for.
+- Extended copy-critique to ALSO review the coach copy (coach.json coachReasoning)
+  with the same independent critic, grounded on the player's stats. Round-2 full
+  re-review (corrected build + coach): 2494 lines, 39 flagged (agreement 94.8% ->
+  98.4% as corrections converge), 33 more grounded fixes applied, 0 unmatched.
+  Coach catch: the author had fabricated a "past 32 minutes" threshold ("78% past
+  32 minutes") not in the source (which only had win counts 5/8, 7/9) — critic kept
+  the real percentages, dropped the invented minute mark. Also fixed the remaining
+  Viper wrong-item variants the first pass missed (crunch/drongo/feng-mao/revenant).
+  copy-critique.json report now carries a `coach` flag list. Harness green.
 ## 2026-06-20: Phase 2 C1 — per-item build reasoning
 - build-review.ts prompt + ingest extended: each build now also asks for an `items`
   map (item name -> <=14-word "why it's bought + where in the order", ability-tied),

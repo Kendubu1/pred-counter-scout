@@ -11,7 +11,7 @@
 //   (an INDEPENDENT general-purpose agent fills critique.responses.json)
 //   npm run review:critique                      # aggregate + write the report
 
-import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildAllowed, verifyLine } from '../copy-verify.js';
@@ -118,6 +118,53 @@ Return strict JSON: {"flags":[{"quote":"<the exact line text>","severity":"high|
       } catch { process.stdout.write('x'); }
     }
   }
+
+  // Coach report critique — the SAME independent critic, different source (the
+  // player's stats + our kit reads). Reviews the agent-written coachReasoning.
+  let coachJson: Record<string, unknown> | null = null;
+  const coachFlags: { quote: string; severity: string; issue: string; rewrite: string | null }[] = [];
+  const coachPath = path.join(ROOT, 'data/artifacts/coach.json');
+  if (existsSync(coachPath)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cj = JSON.parse(readFileSync(coachPath, 'utf8')) as any;
+    const cr = cj.coachReasoning;
+    if (cr) {
+      coachJson = cj;
+      const cLines = [cr.assessment, ...(cr.plan ?? []), ...(cr.insights ?? []).flatMap((i: { title?: string; finding?: string }) => [i.title, i.finding])].filter(Boolean) as string[];
+      const src = `PLAYER: ${cj.player?.name} — ${cj.player?.career?.games} career games at ${(cj.player?.career?.winrate * 100).toFixed(1)}% winrate, KDA ${cj.player?.career?.kda?.toFixed(1)}, currently ${cj.player?.current?.rank} ${cj.player?.current?.points} VP. Goal ${cj.goal?.tier} (${cj.goal?.vp} VP, gap ${cj.goal?.gapVp}, peak ${cj.goal?.peakAllTime}).
+ROLES: ${(cj.roles ?? []).map((r: { role: string; rawWr: number; games: number }) => `${r.role} ${(r.rawWr * 100).toFixed(1)}% over ${r.games}`).join(' · ')}
+HEROES: ${(cj.pool ?? []).slice(0, 8).map((h: { name: string; rawWr: number; games: number }) => `${h.name} ${(h.rawWr * 100).toFixed(1)}% over ${h.games}`).join(' · ')}
+KIT READS: ${(cj.leanInto ?? []).map((h: { engineCoachLine?: string }) => h.engineCoachLine).filter(Boolean).join(' ')}
+LEDGER: ${(cj.ledger?.entries ?? []).map((e: { change: string; winsPer100: number; receipt: string }) => `${e.change} (+${e.winsPer100}; ${e.receipt})`).join(' ')}
+INSIGHT EVIDENCE: ${(cj.insights ?? []).map((i: { receipt?: string }) => i.receipt).filter(Boolean).join(' ')}`;
+      const prompt = `You are an INDEPENDENT reviewer of COACHING copy for ${cj.player?.name} in Predecessor (a MOBA). Another agent wrote the COPY; you did NOT. Judge it against the SOURCE only.
+
+SOURCE (the player's stats + our kit reads):
+${src}
+
+COPY UNDER REVIEW (one per line):
+${cLines.map((l, i) => `${i + 1}. ${l}`).join('\n')}
+
+Flag ONLY real problems: a line that is factually wrong vs the SOURCE, overconfident/misleading, names the wrong hero/role, uses jargon a new player won't get, or is broken/ungrammatical English. Do not nitpick style.
+Return strict JSON: {"flags":[{"quote":"<exact line text>","severity":"high|med|low","issue":"<one phrase>","rewrite":"<corrected line, or null to drop>"}]}. If all fine, return {"flags":[]}.`;
+      const raw = (await ask('critique', 'coach', prompt)).trim().replace(/^```json?\s*|```$/g, '');
+      reviewedLines += cLines.length;
+      if (!isPrepare()) {
+        try {
+          const parsed = JSON.parse(raw) as { flags?: { quote?: string; severity?: string; issue?: string; rewrite?: string | null }[] };
+          const allowed = buildAllowed([], [JSON.stringify(cj)]);
+          for (const fl of parsed.flags ?? []) {
+            if (!fl.quote) continue;
+            let rewrite = fl.rewrite ?? null;
+            if (rewrite) { if (verifyLine(rewrite, allowed)) rewritesGrounded++; else { rewrite = null; rewritesDropped++; } }
+            coachFlags.push({ quote: fl.quote, severity: fl.severity ?? 'low', issue: fl.issue ?? '', rewrite });
+          }
+          flaggedLines += coachFlags.length;
+        } catch { /* leave coach copy as-is */ }
+      }
+    }
+  }
+
   flushTasks('critique');
   if (isPrepare()) return;
 
@@ -145,6 +192,19 @@ Return strict JSON: {"flags":[{"quote":"<the exact line text>","severity":"high|
   }
   if (applied) writeFileSync(path.join(ROOT, 'data/aggregates/build-reasoning.json'), JSON.stringify(BR, null, 1));
 
+  // Apply coach rewrites back into coach.json.
+  if (coachJson && coachFlags.length) {
+    let cr: unknown = (coachJson as { coachReasoning?: unknown }).coachReasoning;
+    for (const fl of coachFlags) {
+      if (!fl.rewrite) continue;
+      const before = JSON.stringify(cr);
+      cr = deepReplace(cr, fl.quote, fl.rewrite);
+      if (JSON.stringify(cr) !== before) applied++; else unmatched++;
+    }
+    (coachJson as { coachReasoning?: unknown }).coachReasoning = cr;
+    writeFileSync(path.join(ROOT, 'data/artifacts/coach.json'), JSON.stringify(coachJson, null, 1));
+  }
+
   const agreement = reviewedLines ? (1 - flaggedLines / reviewedLines) : 1;
   writeFileSync(path.join(ROOT, 'data/aggregates/copy-critique.json'), JSON.stringify({
     generatedAt: new Date().toISOString(),
@@ -153,6 +213,7 @@ Return strict JSON: {"flags":[{"quote":"<the exact line text>","severity":"high|
     agreementRate: Math.round(agreement * 1000) / 1000,
     rewritesGrounded, rewritesDropped, applied, unmatched,
     heroes: report,
+    coach: coachFlags,
   }, null, 1));
   console.log(`\n${flaggedLines} lines flagged / ${reviewedLines} reviewed (agreement ${(agreement * 100).toFixed(1)}%); ${rewritesGrounded} grounded rewrites; applied ${applied} to build-reasoning.json (${unmatched} unmatched) -> data/aggregates/copy-critique.json`);
 }
