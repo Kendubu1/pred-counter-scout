@@ -365,7 +365,7 @@ function pgReview(f) {
         <div class="goalbar"><div class="fill" style="width:${fillPct}%"></div><div class="peak" style="left:${peakPct}%"></div></div>
         <div class="lbl"><span>${p.current.points} VP now</span><span>gap: ${c.goal.gapVp} VP</span><span>Platinum III at ${c.goal.vp} VP</span></div>
       </div>
-      <div class="verdict">${esc(c.plan[c.plan.length - 1])}</div>
+      <div class="verdict">${esc((c.coachReasoning && c.coachReasoning.assessment) || c.plan[c.plan.length - 1])}</div>
       <table class="splits" style="margin-top:.9rem">
         <tr><th>split</th><th style="text-align:right">finish</th><th style="text-align:right">peak</th><th>rank</th></tr>
         ${p.ratings.map((r) => `<tr><td>${esc(r.split)}</td><td class="n">${r.points}</td><td class="n">${r.peak}</td><td>${esc(r.rank)}</td></tr>`).join('')}
@@ -383,16 +383,20 @@ function pgReview(f) {
       <div style="font-size:.72rem;color:var(--text-2);margin-top:.5rem">${esc(c.ledger.note)}</div>
     </div>` : ''}
 
-    ${c.insights && c.insights.length ? `
+    ${(() => {
+      const ins = (c.coachReasoning && c.coachReasoning.insights && c.coachReasoning.insights.length) ? c.coachReasoning.insights : c.insights;
+      if (!ins || !ins.length) return '';
+      return `
     <div class="card">
       <h2>The film room · what your games actually say</h2>
-      ${c.insights.map((i) => `
+      ${ins.map((i) => `
         <div class="insight">
           <b>${esc(i.title)}</b>
           <div>${esc(i.finding)}</div>
-          <div class="ir">🧾 ${esc(i.receipt)}</div>
+          ${i.receipt ? `<div class="ir">🧾 ${esc(i.receipt)}</div>` : ''}
         </div>`).join('')}
-    </div>` : ''}
+    </div>`;
+    })()}
 
     <div class="card">
       <h2>Role focus · winrate per role, thin samples adjusted</h2>
@@ -454,7 +458,7 @@ function pgReview(f) {
 
     <div class="card">
       <h2>The plan</h2>
-      <ol class="plan">${c.plan.map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
+      <ol class="plan">${((c.coachReasoning && c.coachReasoning.plan && c.coachReasoning.plan.length) ? c.coachReasoning.plan : c.plan).map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
     </div>
 
     <footer>

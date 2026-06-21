@@ -21,7 +21,10 @@ Your two jobs:
 
 1. **Execute copy passes.** The engine emits grounded prompts to
    `engine/copy-tasks/<pass>.tasks.json` (pass ∈ `augments` | `items` |
-   `abilities`). Read that file, answer **every** task, and write
+   `abilities` | `builds` | `coach`). `builds` = per-item synergy + optimizer-swap
+   gain/lose + holes; `coach` = rewrite a player's templated plan/insights into
+   grounded, action-first coaching that names their actual heroes and kit reads.
+   Read that file, answer **every** task, and write
    `engine/copy-tasks/<pass>.responses.json` shaped `{ "<task.id>": "<answer>" }`
    where each answer is the **exact strict-JSON string** the task's prompt asks
    for. A deterministic verifier (`engine/src/copy-verify.ts`) then ground-checks
