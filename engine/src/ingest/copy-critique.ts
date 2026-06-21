@@ -60,8 +60,18 @@ const lines = (r: Reason): string[] => {
   return out;
 };
 
+// Replace any string value exactly equal to `from` with `to`, anywhere in a
+// hero/role reasoning subtree (synergy, holes, per-item whys, swap gain/lose).
+function deepReplace(o: unknown, from: string, to: string): unknown {
+  if (typeof o === 'string') return o === from ? to : o;
+  if (Array.isArray(o)) return o.map((x) => deepReplace(x, from, to));
+  if (o && typeof o === 'object') { const r: Record<string, unknown> = {}; for (const k in o as Record<string, unknown>) r[k] = deepReplace((o as Record<string, unknown>)[k], from, to); return r; }
+  return o;
+}
+
 async function main() {
-  const reasoning = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/build-reasoning.json'), 'utf8')).heroes as Record<string, Record<string, Reason>>;
+  const BR = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/build-reasoning.json'), 'utf8')) as { heroes: Record<string, Record<string, Reason>>; [k: string]: unknown };
+  const reasoning = BR.heroes;
   const artDir = path.join(ROOT, 'data/artifacts');
   const files = readdirSync(artDir).filter((f) => f.endsWith('.json') && f !== 'index.json' && !f.includes('matrix'));
 
@@ -111,16 +121,40 @@ Return strict JSON: {"flags":[{"quote":"<the exact line text>","severity":"high|
   flushTasks('critique');
   if (isPrepare()) return;
 
+  // Apply the grounded rewrites back into build-reasoning.json (reversible via
+  // git; the report records every change). Exact string match within the flagged
+  // hero/role subtree, so an unmatched/paraphrased quote simply no-ops.
+  let applied = 0, unmatched = 0;
+  for (const slug in report) {
+    const sub = reasoning[slug];
+    const roleFlags = report[slug];
+    if (!sub || !roleFlags) continue;
+    for (const role in roleFlags) {
+      const subRole = sub[role];
+      const fls = roleFlags[role];
+      if (!subRole || !fls) continue;
+      let cur = subRole;
+      for (const fl of fls) {
+        if (!fl.rewrite) continue;
+        const before = JSON.stringify(cur);
+        cur = deepReplace(cur, fl.quote, fl.rewrite) as Reason;
+        if (JSON.stringify(cur) !== before) applied++; else unmatched++;
+      }
+      sub[role] = cur;
+    }
+  }
+  if (applied) writeFileSync(path.join(ROOT, 'data/aggregates/build-reasoning.json'), JSON.stringify(BR, null, 1));
+
   const agreement = reviewedLines ? (1 - flaggedLines / reviewedLines) : 1;
   writeFileSync(path.join(ROOT, 'data/aggregates/copy-critique.json'), JSON.stringify({
     generatedAt: new Date().toISOString(),
-    source: 'independent (non-author) general-purpose agent reviewing data/aggregates/build-reasoning.json against the source kit+items; suggested rewrites ground-checked by copy-verify',
+    source: 'independent (non-author) general-purpose agent reviewing data/aggregates/build-reasoning.json against the source kit+items; suggested rewrites ground-checked by copy-verify, then applied back',
     reviewedLines, flaggedLines,
     agreementRate: Math.round(agreement * 1000) / 1000,
-    rewritesGrounded, rewritesDropped,
+    rewritesGrounded, rewritesDropped, applied, unmatched,
     heroes: report,
   }, null, 1));
-  console.log(`\n${flaggedLines} lines flagged / ${reviewedLines} reviewed (agreement ${(agreement * 100).toFixed(1)}%); ${rewritesGrounded} grounded rewrites, ${rewritesDropped} rewrites dropped -> data/aggregates/copy-critique.json`);
+  console.log(`\n${flaggedLines} lines flagged / ${reviewedLines} reviewed (agreement ${(agreement * 100).toFixed(1)}%); ${rewritesGrounded} grounded rewrites; applied ${applied} to build-reasoning.json (${unmatched} unmatched) -> data/aggregates/copy-critique.json`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
