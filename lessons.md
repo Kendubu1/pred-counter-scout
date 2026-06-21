@@ -1929,6 +1929,21 @@ Eight maintainer-flagged fixes:
   "AD Bruiser" / "AP Bruiser"; damage builds keep the style (Crit/Lethality/On-Hit/
   AP all imply the damage type). Answers "is this magic or physical def? AD or AP?"
 - Regenerated artifacts; harness green (115/115).
+## 2026-06-20: Phase 2 B1 + C1-UI + D (coaching page on the agent)
+- B1: removed the verbose "⚠ Why no single flat build" notice (the maintainer
+  circled it) from ui/v6/index.html. C1/C2/UI merged to main (PR #116).
+- D: the coach assessment (coach.json plan/insights/archetype) was deterministic
+  template prose from buildCoachReport (playerProfile.ts). Added coach-review.ts
+  (mirrors build-review.ts via copy-session): grounds a task in coach.json (career,
+  roles, pool heroes WITH engineCoachLine kit reads, ledger, goal) — allowed-number
+  set = numbers in the prompt itself — pred-scout-coach rewrites it into action-first
+  coaching, copy-verify drops ungrounded lines, writes a parallel coachReasoning block
+  (UI prefers it, falls back to templated plan/insights). review:coach wired into
+  copy:prepare/ingest; agent doc updated.
+- Ran keyless on the committed sample (Willy Guggenheim): 14 lines / 0 rejected.
+  Plan now names real heroes ("Drill Zinx toward the minute-14 Timewarp spike, take
+  Vesh", "stop queueing offlane — worth +3.3 wins/100 into jungle"). coach.html
+  renders coachReasoning for the verdict, film room, and plan. Harness green (115/115).
 ## 2026-06-20: Phase 2 C1 — per-item build reasoning
 - build-review.ts prompt + ingest extended: each build now also asks for an `items`
   map (item name -> <=14-word "why it's bought + where in the order", ability-tied),
