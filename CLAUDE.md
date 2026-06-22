@@ -45,6 +45,12 @@ flow is deterministic-bracketed so honesty is enforced by code, not the model:
 `engine/copy-tasks/` is scratch (gitignored). The PREDGG_*/omeda snapshot creds
 are unrelated to this and unaffected.
 
+The copy is further hardened by an **independent judge**: a separate critic agent
+(NOT the author) reviews the authored copy for wrong/misleading/jargon lines, and
+the author→judge→apply loop iterates to a target agreement rate. The reusable
+plan→build→judge methodology, the convergence gate (`npm run review:loop:gate`),
+and how to wire a new loop live in `docs/agent-loops.md`.
+
 ## Autonomy policy (permanent, set by the maintainer)
 
 1. Work the backlog in `priorities.md` top to bottom. After finishing each
