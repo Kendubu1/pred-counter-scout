@@ -548,10 +548,14 @@ async function renderLaneDetail() {
     const rest = INDEX.heroes.filter((h) => h.role === role && !metaSet.has(h.slug));
     // heroes whose PRIMARY lane is elsewhere but who flex into this role per the
     // data (e.g. The Fey support) — surfaced so they aren't invisible here
-    const flex = INDEX.heroes.filter((h) => h.role !== role && !metaSet.has(h.slug) && (h.roles || []).includes(role));
-    const echip = (h, withRole) => `
+    const flex = INDEX.heroes.filter((h) => h.role !== role && !metaSet.has(h.slug) && (h.roles || []).includes(role))
+      .sort((a, b) => ((b.roleWr && b.roleWr[role] ? b.roleWr[role].wr : 0) - (a.roleWr && a.roleWr[role] ? a.roleWr[role].wr : 0)));
+    const echip = (h, withRole) => {
+      const fw = withRole && h.roleWr && h.roleWr[role];
+      return `
         <span class="echip" data-slug="${h.slug}" data-go="hero"${withRole ? ` data-role="${role}"` : ''}>
-          <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">${esc(h.name)}${withRole ? `<span style="color:var(--text-2);font-size:.62rem;margin-left:.2rem">${esc(h.role)} flex</span>` : ''}</span>`;
+          <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">${esc(h.name)}${withRole ? `<span style="color:var(--text-2);font-size:.62rem;margin-left:.25rem">${esc(h.role)} flex${fw ? ` · <b style="color:${fw.wr >= 0.5 ? 'var(--green)' : 'var(--red)'}">${(fw.wr * 100).toFixed(1)}%</b>` : ''}</span>` : ''}</span>`;
+    };
     if (rest.length) {
       body += `<div class="lp-sub" style="margin-top:.6rem">rest of the lane:</div><div class="echips">${rest.map((h) => echip(h, false)).join('')}</div>`;
     }
