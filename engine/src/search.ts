@@ -65,8 +65,8 @@ const ARCHETYPE_NOUN: Record<string, string> = {
 
 /**
  * A short, human-readable build title in the idiom players search for
- * ("Crit DPS Carry", "AP Burst", "Lethality Skirmisher", "Bruiser Brawler",
- * "Tank Frontline"). Purely deterministic from the build's item stat mix +
+ * ("Crit DPS Carry", "Magical Burst Mage", "Lethality Skirmisher",
+ * "Physical Bruiser (Magical-Def)", "Physical-Def Frontline"). Deterministic from item stat mix +
  * kit power type + lead archetype — no popularity, no LLM, no estimation.
  * The stat thresholds are presentation heuristics, not sim constants.
  */
@@ -80,30 +80,32 @@ export function buildTitle(archetypes: string[], kit: HeroKit, items: Item[]): s
   const drain = sum('lifesteal') + sum('omnivamp');
   const power = kitPowerType(kit);
 
-  // The "style" descriptor — the offensive identity a player shops for.
+  // The "style" descriptor — the offensive identity a player shops for. Spelled
+  // in plain words ("Magical") so "AP" is never misread as "attack power".
   let style = '';
   if (crit >= 40) style = 'Crit';
-  else if (power === 'magical') style = archetypes.includes('burst') ? 'AP Burst' : 'AP';
+  else if (power === 'magical') style = archetypes.includes('burst') ? 'Magical Burst' : 'Magical';
   else if (lethality >= 24) style = 'Lethality';
   else if (atkSpeed >= 70) style = 'On-Hit';
   else if (drain >= 25 && off > 0) style = 'Lifesteal';
-  else if (off > 0) style = 'AD';
+  else if (off > 0) style = 'Physical';
 
   const noun = ARCHETYPE_NOUN[archetypes[0] ?? ''] ?? 'Build';
-  // Damage type is always spelled out: AD vs AP (Crit/Lethality/On-Hit imply AD).
-  const powerWord = power === 'magical' ? 'AP' : 'AD';
-  // Which resist a defensive build actually stacks, so "Frontline" says whether
-  // it's built against physical or magic damage (not just "tanky").
+  // Damage type in plain words: magical power vs physical (Crit/Lethality/On-Hit
+  // are physical styles). Avoids the AP/AD ambiguity a new player trips on.
+  const powerWord = power === 'magical' ? 'Magical' : 'Physical';
+  // Which resist a defensive build stacks, named as physical/magical DEFENSE (not
+  // just "tanky"/"armor") so the lean against physical vs magic damage is explicit.
   const physArmor = sum('physical_armor');
   const magArmor = sum('magical_armor');
-  const resist = physArmor > magArmor * 1.3 ? 'Armor'
-    : magArmor > physArmor * 1.3 ? 'Magic-Res'
+  const resist = physArmor > magArmor * 1.3 ? 'Physical-Def'
+    : magArmor > physArmor * 1.3 ? 'Magical-Def'
     : (physArmor + magArmor > 0 ? 'Mixed-Def' : '');
 
   let lead: string;
   if (off === 0 && def > 0) lead = resist || 'Tank';                 // pure defense: name the resist
-  else if (def > 0 && def >= off * 0.45) { lead = `${powerWord} Bruiser`; } // bruiser: name the damage type
-  else lead = style || powerWord;                                    // damage: style conveys AD/AP
+  else if (def > 0 && def >= off * 0.45) { lead = resist ? `${powerWord} Bruiser (${resist})` : `${powerWord} Bruiser`; } // bruiser: damage type + defense lean
+  else lead = style || powerWord;                                    // damage: style conveys the type
 
   // For a bruiser the "Bruiser" word is already in lead; otherwise append the
   // archetype noun. Word-level dedupe so "AP Burst" + "Burst" → "AP Burst".
