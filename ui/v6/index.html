@@ -238,25 +238,14 @@
   .ls-aug { font-size:.8rem; color:var(--text-1); }
   .ls-shift { font-size:.76rem; color:var(--text-1); margin-top:.4rem; }
 
-  /* How the build comes online: early/mid/late power curve */
-  .stagerow { padding:.55rem 0; border-top:1px solid var(--border); }
-  .stagerow:first-of-type { border-top:none; }
-  .stage-head { display:flex; align-items:center; gap:.5rem; }
-  .stage-label { font-weight:800; text-transform:capitalize; min-width:3.2rem; }
-  .stage-meta { font-size:.7rem; color:var(--text-2); }
-  .stage-val { margin-left:auto; font-weight:800; font-variant-numeric:tabular-nums; }
-  .stage-bar { height:6px; border-radius:3px; background:var(--bg-3); margin:.34rem 0; overflow:hidden; }
-  .stage-bar > i { display:block; height:100%; background:linear-gradient(90deg,var(--blue),var(--green)); }
-  .stage-core { display:flex; align-items:center; gap:.28rem; flex-wrap:wrap; }
-  .stage-core img { width:28px; height:28px; border-radius:6px; object-fit:cover; background:var(--bg-2); border:1px solid var(--border); }
-  .stage-core .arrow { color:var(--text-2); font-size:.68rem; }
-  .stage-better { font-size:.73rem; color:var(--gold); margin-top:.32rem; }
 
   details { border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-1); margin-top:.7rem; overflow:hidden; }
   details summary {
     cursor:pointer; padding:.75rem 1.1rem; font-weight:600; font-size:.9rem; color:var(--text-1);
     list-style:none; display:flex; align-items:center; gap:.5rem;
   }
+  details summary::-webkit-details-marker { display:none; } /* hide native triangle; we draw our own ▸ */
+  details summary::marker { content:""; }
   details summary::before { content:"▸"; color:var(--accent); transition:transform .15s; }
   details[open] summary::before { transform:rotate(90deg); }
   details summary:hover { color:var(--text-0); }
@@ -897,16 +886,21 @@ function renderHero(a, roleParam) {
               <span title="raw ${(wr * 100).toFixed(1)}% — shown shrunk toward the role's pick-weighted mean (small samples get less benefit of the doubt)" style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(e.shrunk * 100).toFixed(1)}%</span>
               <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
             </div>
-            <div style="font-size:.68rem;color:var(--text-2);margin:.18rem 0 0 2.35rem">${why}</div>
             ${(() => {
+              // Lead with a plain "what it does" (the Eternal's major effect) instead
+              // of kit-math jargon; tuck the minor options + sim math behind a click.
+              const et = ETMAP && ETMAP[e.name.toLowerCase()];
               const ai = REVIEWS && REVIEWS.eternals && REVIEWS.eternals[a.slug] && REVIEWS.eternals[a.slug][role] && REVIEWS.eternals[a.slug][role][e.name];
-              return ai ? `<div style="font-size:.68rem;line-height:1.45;color:${i === 0 ? 'var(--green)' : 'var(--text-1)'};margin:.12rem 0 0 2.35rem">🧠 ${esc(ai)}</div>` : '';
-            })()}
-            ${(() => {
               const mb = a.eternals.minorsByName && a.eternals.minorsByName[e.name.toLowerCase()];
-              if (!mb) return '';
-              const fmt = (m) => `<b style="color:var(--text-1)">${esc(m.name)}</b> <span style="color:var(--text-2)">(${m.modeled && m.deltaPct != null ? `+${m.deltaPct}% in the sim` : 'curated pick'})</span>`;
-              return `<div style="font-size:.66rem;color:var(--text-2);margin:.22rem 0 0 2.35rem">↳ minors: ${fmt(mb.minor1)} · ${fmt(mb.minor2)}</div>`;
+              const pick1 = mb && mb.minor1 && mb.minor1.name, pick2 = mb && mb.minor2 && mb.minor2.name;
+              const slot = (opts, pick) => (opts || []).map((o) => `<div style="margin:.12rem 0;font-size:.66rem;color:${o.name === pick ? 'var(--accent)' : 'var(--text-2)'}">${o.name === pick ? '⚙ ' : ''}<b>${esc(o.name)}</b> — ${esc(o.desc)}</div>`).join('');
+              return `
+            <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.18rem 0 0 2.35rem">${et ? esc(et.major) : why}</div>
+            ${ai ? `<div style="font-size:.68rem;line-height:1.45;color:${i === 0 ? 'var(--green)' : 'var(--text-1)'};margin:.12rem 0 0 2.35rem">🧠 ${esc(ai)}</div>` : ''}
+            <details class="sim-collapse" style="margin:.3rem 0 0 2.35rem"><summary>minors &amp; sim math</summary><div class="body">
+              ${et ? `<div style="font-size:.6rem;font-weight:800;letter-spacing:.06em;color:var(--text-2);margin-bottom:.1rem">MINOR SLOT 1 · pick one</div>${slot(et.minorSlot1, pick1)}<div style="font-size:.6rem;font-weight:800;letter-spacing:.06em;color:var(--text-2);margin:.3rem 0 .1rem">MINOR SLOT 2 · pick one</div>${slot(et.minorSlot2, pick2)}<div style="font-size:.62rem;color:var(--text-2);margin-top:.3rem">⚙ = the sim's pick · minor values are THEORY until calibration</div>` : ''}
+              <div style="font-size:.66rem;color:var(--text-2);margin-top:.3rem">⚙ sim math: ${why}</div>
+            </div></details>`;
             })()}
           </div>`;
         }).join('') : '<div class="muted">no Eternal sample for this role yet</div>'}
@@ -951,7 +945,7 @@ function renderHero(a, roleParam) {
     ${a.metaBuilds && a.metaBuilds.length ? `
     <section class="card">
       <h2>Meta builds, explained <span class="hint">what the field actually wins with · why the items work together</span></h2>
-      ${(() => { window.__rsn = REASONING && REASONING.heroes && REASONING.heroes[a.slug] && REASONING.heroes[a.slug][a.role]; return ''; })()}
+      ${(() => { window.__rsn = REASONING && REASONING.heroes && REASONING.heroes[a.slug] && REASONING.heroes[a.slug][a.role]; window.__seenHoles = new Set(); return ''; })()}
       ${a.metaBuilds.map((m, mi) => {
         const rsn = window.__rsn && window.__rsn.metaBuilds && window.__rsn.metaBuilds[mi];
         return `
@@ -965,7 +959,7 @@ function renderHero(a, roleParam) {
           ${rsn && rsn.synergy ? `<div class="mb-why" style="color:var(--text-0)">🧩 ${esc(rsn.synergy)}</div>` : ''}
           ${rsn ? itemWhyRows(m.items, rsn.items) : ''}
           <details class="sim-collapse"><summary>the sim math</summary><div class="body"><div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div></div></details>
-          ${rsn && rsn.holes ? `<div class="mb-why" style="color:var(--gold)">⚠ ${esc(rsn.holes)}</div>` : ''}
+          ${rsn && rsn.holes && !window.__seenHoles.has(rsn.holes) ? (window.__seenHoles.add(rsn.holes), `<div class="mb-why" style="color:var(--gold)">⚠ ${esc(rsn.holes)}</div>`) : ''}
         </div>`;
       }).join('')}
     </section>` : ''}
@@ -985,16 +979,6 @@ function renderHero(a, roleParam) {
         <div class="flex-note">${esc(a.laneSteer.provenance)}</div>
       </div>` : ''}
       <div class="rail">${a.build.items.map(itile).join('')}</div>
-      <div class="coach">${(() => {
-        // Bold the load-bearing tokens so the sim summary scans instead of reading
-        // as a wall: the % deltas, the recommended Eternal (after "Take"), and the
-        // sim-build item names. esc() runs first, so the <b> wrap is the only markup.
-        let h = esc(a.coachLine);
-        h = h.replace(/(\+\d+(?:\.\d+)?%)/g, '<b>$1</b>');
-        h = h.replace(/Take ([^:]+):/, 'Take <b>$1</b>:');
-        (a.build.items || []).forEach((it) => { const n = esc(it.name); if (n && n.length > 2) h = h.replace(n, `<b>${n}</b>`); });
-        return h;
-      })()}</div>
       ${(() => {
         const o = REASONING && REASONING.heroes && REASONING.heroes[a.slug] && REASONING.heroes[a.slug][a.role] && REASONING.heroes[a.slug][a.role].optimizer;
         if (!o) return '';
@@ -1008,34 +992,12 @@ function renderHero(a, roleParam) {
           ${o.holes ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.4rem">⚠ ${esc(o.holes)}</div>` : ''}`;
       })()}
       <div class="proofs">
-        <span class="proof"><b>sim</b> · ${a.role === 'support' ? 'heal, shield & survival' : 'burst, sustained fights & DPS'} scored against the patch economy — exact figures in “The numbers” below</span>
+        <span class="proof"><b>sim</b> · ${a.role === 'support' ? 'heal, shield & survival' : 'burst, sustained fights & DPS'} scored against the patch economy — exact figures under “Numbers, data &amp; confidence” on the Learn the hero tab</span>
         ${evidenceProof ? `<span class="proof evidence"><b>evidence</b> · ${esc(evidenceProof.name)} ${evidenceProof.evidenceDeltaWr > 0 ? '+' : ''}${evidenceProof.evidenceDeltaWr}wr over ${evidenceProof.evidenceN} games</span>` : ''}
         ${underProof ? `<span class="proof playrate"><b>underexplored</b> · ${esc(underProof.name)} in ${underProof.playRatePct}% of ${esc(a.name)} games</span>` : ''}
       </div>
       ${a.build.manaFeasible ? '' : '<div class="warn">⚠ mana-hungry rotation — weave basic attacks between casts</div>'}
     </section>
-
-    ${a.stages && a.stages.length ? (() => {
-      const OBJ = { autoDps10VsSquishy:'sustained DPS', rot10VsSquishy:'10s rotation', rot20VsBruiser:'20s fight', burstVsSquishy:'burst', healShield10s:'heal/shield', ehpPhysical:'effective HP', ehpMagical:'magical eHP', utility:'utility', sustain10s:'drain sustain' };
-      const lab = (k) => OBJ[k] || k;
-      const max = Math.max(...a.stages.map((s) => s.headlineValue), 1);
-      return `
-    <section class="card">
-      <h2>How your build comes online <span class="hint">early → mid → late · the right build can differ by stage</span></h2>
-      <div style="font-size:.74rem; color:var(--text-2); margin-bottom:.55rem">Your purchase-ordered build, scored at each stage at the level it completes by (from real gold curves). The bar is <b>${esc(lab(a.stages[a.stages.length-1].headline))}</b> relative to the full build — it's THEORY, like all sim numbers.</div>
-      ${a.stages.map((s) => `
-        <div class="stagerow">
-          <div class="stage-head">
-            <span class="stage-label">${esc(s.label)}</span>
-            <span class="stage-meta">${s.itemCount} items · level ${s.level}${s.minute ? ` · ~${s.minute} min` : ''}</span>
-            <span class="stage-val">${s.headlineValue.toLocaleString()}</span>
-          </div>
-          <div class="stage-bar"><i style="width:${Math.max(3, Math.round(100*s.headlineValue/max))}%"></i></div>
-          <div class="stage-core">${s.core.map((i) => i.slug ? `<img loading="lazy" data-ipop="${esc(i.slug)}" src="../img/items/${esc(i.slug)}.webp" title="${esc(i.name)} · tap for details" onerror="this.style.visibility='hidden'">` : `<span class="chip">${esc(i.name)}</span>`).join('<span class="arrow">→</span>')}</div>
-          ${s.betterEarly ? `<div class="stage-better">⚠ stronger at this stage: <b>${esc(s.betterEarly.inItem)}</b> over ${esc(s.betterEarly.outItem)} (+${s.betterEarly.edgePct}% ${esc(lab(s.headline))}) — not in your final core, so treat as an early buy to sell later, not a permanent slot.</div>` : ''}
-        </div>`).join('')}
-    </section>`; })() : ''}
-
 
     <section class="card">
       <h2>Lane checkpoints <span class="hint">vs most-played ${esc(a.role)} opponents · green = your kill window</span></h2>
@@ -1056,30 +1018,6 @@ function renderHero(a, roleParam) {
       </div>
     </details>
 
-    <details>
-      <summary>The numbers</summary>
-      <div class="body">
-        <table>
-          <tr><th>objective</th><th style="text-align:right">value</th></tr>
-          <tr><td>one-combo burst vs squishy</td><td class="num">${Math.round(o.burstVsSquishy)}</td></tr>
-          <tr><td>10s rotation vs squishy</td><td class="num">${Math.round(o.rot10VsSquishy)}</td></tr>
-          <tr><td>20s fight vs bruiser</td><td class="num">${Math.round(o.rot20VsBruiser)}</td></tr>
-          <tr><td>sustained auto DPS</td><td class="num">${Math.round(o.autoDps10VsSquishy)}</td></tr>
-          <tr><td>effective HP (physical / magical)</td><td class="num">${Math.round(o.ehpPhysical)} / ${Math.round(o.ehpMagical)}</td></tr>
-        </table>
-        <p style="margin-top:.6rem">Purchase order is optimized against median ${esc(a.role)} gold curves measured from current-patch matches; spike minutes are when the median player affords each item.</p>
-      </div>
-    </details>
-
-    <details>
-      <summary>Data &amp; confidence</summary>
-      <div class="body">
-        <p><b>Why THEORY:</b> ${esc(a.confidence.notes.join(' · '))}</p>
-        <p style="margin-top:.5rem"><b>Unverified constants:</b> ${esc(a.confidence.unverifiedConstants.join(', '))}</p>
-        <p style="margin-top:.5rem"><b>Flags:</b> ${a.flags.map(esc).join(' · ')}</p>
-        <p style="margin-top:.5rem">Generated ${esc(a.generatedAt.slice(0, 16).replace('T', ' '))} UTC · patch ${esc(a.patch)}</p>
-      </div>
-    </details>
     </div>
     <div id="tabLearn" class="hidden"></div>
   `;
@@ -1250,7 +1188,25 @@ async function renderLearn(a) {
       <div style="font-size:.86rem;color:var(--text-1);line-height:1.6">${esc(a.coachLine)}</div>
       ${a.build.archetypes.length ? `<div class="chips" style="margin-top:.6rem">${a.build.archetypes.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>` : ''}
       <div style="margin-top:.6rem;font-size:.72rem;color:var(--text-2)">leveling order and ult timing come from pred.gg's in-game recommended skill path (current patch) · 🎯 ability tips are AI-written from each ability's own text, machine-checked · patch notes from the official 1.14 changelog · combat numbers stay THEORY until in-game calibration · augment-specific tips live on the Game plan tab</div>
-    </section>`;
+    </section>
+    <details>
+      <summary>Numbers, data &amp; confidence</summary>
+      <div class="body">
+        <table>
+          <tr><th>objective</th><th style="text-align:right">value</th></tr>
+          <tr><td>one-combo burst vs squishy</td><td class="num">${Math.round(a.build.objectives.burstVsSquishy)}</td></tr>
+          <tr><td>10s rotation vs squishy</td><td class="num">${Math.round(a.build.objectives.rot10VsSquishy)}</td></tr>
+          <tr><td>20s fight vs bruiser</td><td class="num">${Math.round(a.build.objectives.rot20VsBruiser)}</td></tr>
+          <tr><td>sustained auto DPS</td><td class="num">${Math.round(a.build.objectives.autoDps10VsSquishy)}</td></tr>
+          <tr><td>effective HP (physical / magical)</td><td class="num">${Math.round(a.build.objectives.ehpPhysical)} / ${Math.round(a.build.objectives.ehpMagical)}</td></tr>
+        </table>
+        <p style="margin-top:.6rem">Purchase order is optimized against median ${esc(a.role)} gold curves measured from current-patch matches; spike minutes are when the median player affords each item.</p>
+        <p style="margin-top:.6rem"><b>Why THEORY:</b> ${esc(a.confidence.notes.join(' · '))}</p>
+        <p style="margin-top:.5rem"><b>Unverified constants:</b> ${esc(a.confidence.unverifiedConstants.join(', '))}</p>
+        <p style="margin-top:.5rem"><b>Flags:</b> ${a.flags.map(esc).join(' · ')}</p>
+        <p style="margin-top:.5rem">Live match data + winrates last refreshed ${esc((window.INDEX_GENERATED || a.generatedAt).slice(0, 10))} · build generated ${esc(a.generatedAt.slice(0, 16).replace('T', ' '))} UTC · patch ${esc(a.patch)}</p>
+      </div>
+    </details>`;
 }
 
 /* ── routing ── */
@@ -1260,14 +1216,20 @@ async function nav(slug, replace = false, role = null) {
   await route();
   window.scrollTo({ top: 0 });
 }
-let AUGS = null, REVIEWS = null, REASONING = null;
+let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null;
 async function getAugs() {
   if (!AUGS) {
-    [AUGS, REVIEWS, REASONING] = await Promise.all([
+    let eternals;
+    [AUGS, REVIEWS, REASONING, eternals] = await Promise.all([
       getJson('../../data/aggregates/predgg-augments.json').catch(() => null),
       getJson('../../data/aggregates/augment-reviews.json').catch(() => null),
       getJson('../../data/aggregates/build-reasoning.json').catch(() => null),
+      getJson('../../data/game-data/eternals.json').catch(() => null),
     ]);
+    // name -> { major, minorSlot1, minorSlot2 } so an Eternal can be explained in
+    // plain words (what it does) and clicked open for its minor options.
+    ETMAP = {};
+    (eternals && eternals.eternals || []).forEach((e) => { ETMAP[e.name.toLowerCase()] = e; });
   }
   return AUGS;
 }
@@ -1290,7 +1252,10 @@ window.onpopstate = route;
 (async function init() {
   INDEX = await getJson('../../data/artifacts/index.json');
   META = await getJson('../../data/artifacts/meta.json').catch(() => null);
-  $('#patchPill').textContent = `patch ${INDEX.patch}`;
+  window.INDEX_GENERATED = INDEX.generatedAt || '';
+  const dataDate = (INDEX.generatedAt || '').slice(0, 10);
+  $('#patchPill').textContent = `patch ${INDEX.patch}${dataDate ? ` · data ${dataDate}` : ''}`;
+  $('#patchPill').title = dataDate ? `Live match data + winrates last refreshed ${dataDate}` : '';
   await getMatrix();
   PATCH_STATE = (await getJson('../../data/game-data/hero-patch-state.json').catch(() => null))?.heroes ?? {};
   renderRolebar();

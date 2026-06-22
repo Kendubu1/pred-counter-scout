@@ -2071,3 +2071,29 @@ Eight maintainer-flagged fixes:
   regen-gated — deferred. Harness green (115/115). Lesson: a judge is only as good as
   what it can see; a bracket only catches what it measures — when something slips,
   widen both.
+
+## 2026-06-22: Build Lab feedback batch (titles, eternals, structure)
+- Build titles: AD/AP -> plain "Physical"/"Magical" (so "AP" can't be misread as
+  "attack power"); defense named as a lean Physical-Def/Magical-Def/Mixed-Def,
+  INCLUDING on bruisers, e.g. "Physical Bruiser (Magical-Def)". search.ts buildTitle;
+  regenerated all artifacts.
+- Removed the "Sim-optimal for…" tip (.coach) from the Sim Build section (it still
+  lives in "How this kit wants to play" on the Learn tab). Fixed sim-math disclosure
+  double-arrow (hid native ::-webkit-details-marker). Deduped the repeated holes
+  caveat to show once per role (was identical on every build, e.g. Khaimera).
+  Removed "How your build comes online". Moved "The numbers" + "Data & confidence"
+  into one collapsed "Numbers, data & confidence" menu on the Learn tab. Added a
+  live-data refresh date to the patch pill ("patch 1.14.4 · data 2026-06-22") + the
+  confidence block.
+- Eternals: lead with a plain "what it does" (the major effect) instead of kit-math
+  jargon; added a clickable "minors & sim math" disclosure that lists each minor-slot
+  option with its description (sim pick marked ⚙) + the sim numbers. UI now loads
+  data/game-data/eternals.json (ETMAP).
+- Validated via the UI loop: independent judge confirmed all 8 changes landed; fixed
+  its 2 low flags (stale "The numbers below" cross-ref; dead .stage-* CSS). ui-audit
+  100%, no overflow, harness green (115/115).
+- Calibration constants: maintainer deferred ("I'll come back for it"). Audited and
+  confirmed the unverified list is current (3 already verified earlier; 6 remain).
+  These need an in-game practice-mode reading per CALIBRATION-CHECKLIST.md — the loop
+  can strengthen evidence but can't honestly flip a physical constant to verified
+  (project rule: never fill an unverified constant with an estimate).
