@@ -273,7 +273,18 @@ const plink = (uuid, name) => uuid
       if (ci !== -1 && si !== -1) total += duoBonus(ms[ci].uuid, ms[si].uuid);
       return { order, total };
     }).sort((a, b) => b.total - a.total);
-    const pool = all.slice(0, 9);
+    // Shuffle pool covers each selected player's TOP 4 roles — not just the globally
+    // optimal assignment — so shuffling shows real variety even with every lane filled.
+    // For each player and each of their 4 best roles, take the best lineup that places
+    // them there; plus the global top 4 for quality. Deduped, sorted by total.
+    const pool = []; const seenKey = new Set();
+    const add = (opt) => { if (opt) { const key = opt.order.join(','); if (!seenKey.has(key)) { seenKey.add(key); pool.push(opt); } } };
+    all.slice(0, 4).forEach(add);
+    ms.forEach((m, pi) => {
+      ROLES.slice().sort((a, b) => m.scores[b].score - m.scores[a].score).slice(0, 4)
+        .forEach((role) => add(all.find((o) => o.order[pi] === role)));
+    });
+    pool.sort((a, b) => b.total - a.total);
     const start = (shuffleSeed * k) % Math.max(pool.length - k + 1, 1);
     return pool.slice(start, start + k).map((opt) => ({
       total: opt.total,
