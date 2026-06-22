@@ -524,7 +524,8 @@ async function renderLaneDetail() {
   let body = '';
   if (laneMode === 'first') {
     const mx = await getMatrix();
-    body = '<div class="lp-sub" style="margin:.2rem 0 .5rem"><b>%</b> = win rate this patch (adjusted for small sample sizes) · ordered by meta score (how often the lane picks it + how often it wins)</div>' + laneMeta.map((h, i) => {
+    const ranked = [...laneMeta].sort((a, b) => b.shrunkWr - a.shrunkWr); // sort by the win rate we show, highest first
+    body = '<div class="lp-sub" style="margin:.2rem 0 .5rem"><b>%</b> = win rate this patch, highest first (small samples pulled toward the lane average) · <b>meta</b> = how often the lane picks it AND wins (0–100)</div>' + ranked.map((h, i) => {
       // blind-pick safety vs the heroes actually in THIS lane's meta,
       // from the all-pairs matrix (artifact matchups are primary-role only)
       let trouble = '';
@@ -542,7 +543,7 @@ async function renderLaneDetail() {
         <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
         <span><b>${i === 0 ? '👑 ' : ''}${esc(h.name)}</b>${h.badge ? ` <span style="color:var(--gold)">${h.badge === 'sleeper' ? '💤 sleeper' : '⚠ popular but losing'}</span>` : ''}
           <div class="sub">${trouble ? esc(trouble) : 'no sim data for this hero'}</div></span>
-        <span class="wrr">${(h.shrunkWr * 100).toFixed(1)}%<div class="sub" style="text-align:right">${h.games} games</div></span>
+        <span class="wrr">${(h.shrunkWr * 100).toFixed(1)}%<div class="sub" style="text-align:right">${h.games} games · meta ${(h.metaScore * 100).toFixed(0)}</div></span>
       </div>`;
     }).join('');
     const metaSet = new Set(laneMeta.map((h) => h.slug));
@@ -552,7 +553,7 @@ async function renderLaneDetail() {
         <span class="echip" data-slug="${h.slug}" data-go="hero">
           <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">${esc(h.name)}</span>`).join('')}</div>`;
     }
-    body += `<div class="lp-sub" style="margin-top:.6rem">ordered by meta score (pick presence + winrate, small samples adjusted) · "out-simmed" = the kit-math kill-window sim, THEORY until calibrated · tap a hero for the full build page</div>`;
+    body += `<div class="lp-sub" style="margin-top:.6rem">"out-simmed" = the kit-math kill-window sim, THEORY until calibrated · tap a hero for the full build page</div>`;
   } else {
     const mx = await getMatrix();
     const metaSlugs = new Set(laneMeta.map((h) => h.slug));
