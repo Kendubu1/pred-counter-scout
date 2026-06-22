@@ -206,16 +206,33 @@ Return strict JSON: {"flags":[{"quote":"<exact line text>","severity":"high|med|
   }
 
   const agreement = reviewedLines ? (1 - flaggedLines / reviewedLines) : 1;
+  const agreementRate = Math.round(agreement * 1000) / 1000;
   writeFileSync(path.join(ROOT, 'data/aggregates/copy-critique.json'), JSON.stringify({
     generatedAt: new Date().toISOString(),
     source: 'independent (non-author) general-purpose agent reviewing data/aggregates/build-reasoning.json against the source kit+items; suggested rewrites ground-checked by copy-verify, then applied back',
     reviewedLines, flaggedLines,
-    agreementRate: Math.round(agreement * 1000) / 1000,
+    agreementRate,
     rewritesGrounded, rewritesDropped, applied, unmatched,
     heroes: report,
     coach: coachFlags,
   }, null, 1));
+
+  // Append this judge round to the loop history so the convergence gate
+  // (review:loop:gate) can see the trajectory across rounds. One ingest =
+  // one round of the author->judge->apply loop.
+  const histPath = path.join(ROOT, 'data/aggregates/copy-critique-history.json');
+  const hist = existsSync(histPath)
+    ? (JSON.parse(readFileSync(histPath, 'utf8')) as { rounds: unknown[] })
+    : { rounds: [] };
+  hist.rounds.push({
+    round: hist.rounds.length + 1,
+    at: new Date().toISOString(),
+    reviewedLines, flaggedLines, agreementRate, applied,
+  });
+  writeFileSync(histPath, JSON.stringify(hist, null, 1));
+
   console.log(`\n${flaggedLines} lines flagged / ${reviewedLines} reviewed (agreement ${(agreement * 100).toFixed(1)}%); ${rewritesGrounded} grounded rewrites; applied ${applied} to build-reasoning.json (${unmatched} unmatched) -> data/aggregates/copy-critique.json`);
+  console.log(`[loop] round ${hist.rounds.length} recorded -> data/aggregates/copy-critique-history.json (run \`npm run review:loop:gate\` to check convergence)`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
