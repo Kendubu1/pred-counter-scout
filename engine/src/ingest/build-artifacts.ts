@@ -21,7 +21,7 @@ const cal = loadCalibration();
 mkdirSync(OUT, { recursive: true });
 
 const slugs = requested.length ? requested : [...data.kits.keys()].sort();
-const index: { slug: string; name: string; role: string }[] = [];
+const index: { slug: string; name: string; role: string; roles: string[] }[] = [];
 const t0 = Date.now();
 for (const slug of slugs) {
   const kit = data.kits.get(slug);
@@ -29,7 +29,8 @@ for (const slug of slugs) {
   // 6 matchups per hero = lane-wide counter coverage for the lane picker
   const artifact = buildHeroArtifact(kit, data, cal, { matchupEnemies: 6 });
   writeFileSync(path.join(OUT, `${slug}.json`), JSON.stringify(artifact, null, 1));
-  index.push({ slug, name: kit.name, role: artifact.role });
+  const roles = (artifact.roles || []).map((r) => r.role);
+  index.push({ slug, name: kit.name, role: artifact.role, roles: roles.length ? roles : [artifact.role] });
   process.stdout.write('.');
 }
 writeFileSync(path.join(OUT, 'index.json'), JSON.stringify({ patch: cal.patch, generatedAt: new Date().toISOString(), heroes: index }, null, 1));
