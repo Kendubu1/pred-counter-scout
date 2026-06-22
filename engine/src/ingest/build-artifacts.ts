@@ -21,7 +21,10 @@ const cal = loadCalibration();
 mkdirSync(OUT, { recursive: true });
 
 const slugs = requested.length ? requested : [...data.kits.keys()].sort();
-const index: { slug: string; name: string; role: string; roles: string[] }[] = [];
+// Per-role field winrate (lightly shrunk toward 50%) so the lane picker can show a
+// flex hero's win% in the lane it flexes into. Same match-sample source as the meta board.
+const aggForIndex = loadAggregates();
+const index: { slug: string; name: string; role: string; roles: string[]; roleWr: Record<string, { wr: number; n: number }> }[] = [];
 const t0 = Date.now();
 for (const slug of slugs) {
   const kit = data.kits.get(slug);
@@ -30,7 +33,13 @@ for (const slug of slugs) {
   const artifact = buildHeroArtifact(kit, data, cal, { matchupEnemies: 6 });
   writeFileSync(path.join(OUT, `${slug}.json`), JSON.stringify(artifact, null, 1));
   const roles = (artifact.roles || []).map((r) => r.role);
-  index.push({ slug, name: kit.name, role: artifact.role, roles: roles.length ? roles : [artifact.role] });
+  const byRole = aggForIndex?.heroes?.[slug]?.byRole ?? {};
+  const roleWr: Record<string, { wr: number; n: number }> = {};
+  for (const r of (roles.length ? roles : [artifact.role])) {
+    const c = byRole[r];
+    if (c && c.n >= 30) roleWr[r] = { wr: Math.round(((c.w + 15) / (c.n + 30)) * 1000) / 1000, n: c.n };
+  }
+  index.push({ slug, name: kit.name, role: artifact.role, roles: roles.length ? roles : [artifact.role], roleWr });
   process.stdout.write('.');
 }
 writeFileSync(path.join(OUT, 'index.json'), JSON.stringify({ patch: cal.patch, generatedAt: new Date().toISOString(), heroes: index }, null, 1));
