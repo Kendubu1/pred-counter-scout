@@ -405,6 +405,18 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;',
 // Meta score 0-100 -> green (high) through yellow to red (low), so the number's
 // color tells you at a glance where it lands.
 const metaColor = (score) => `hsl(${Math.round(Math.max(0, Math.min(100, score)) * 1.2)}, 65%, 55%)`;
+// Turn (win rate, meta score, badge) into a plain "should I pick this?" verdict, so
+// the bare meta number isn't left to interpret. wr/ms are 0-1 fractions.
+function metaVerdict(wr, ms, badge) {
+  const tail = ` · meta score ${Math.round(ms * 100)}/100 (how popular AND winning it is in this lane)`;
+  if (badge === 'sleeper') return { label: 'Sleeper', color: 'var(--blue)', tip: 'Wins above average but rarely picked — strong, but a smaller / less-proven sample. Worth a try.' + tail };
+  if (badge === 'popular but losing') return { label: 'Overpicked', color: 'var(--gold)', tip: 'Heavily picked but below-average win rate — the popularity isn’t backed by results. Pick with care.' + tail };
+  if (wr >= 0.52) return ms >= 0.6
+    ? { label: 'Proven', color: 'var(--green)', tip: 'Commonly picked AND winning — a safe, proven meta pick.' + tail }
+    : { label: 'Strong', color: 'var(--green)', tip: 'Above-average win rate this patch, just less commonly picked.' + tail };
+  if (wr <= 0.485) return { label: 'Weak', color: 'var(--red)', tip: 'Below-average win rate this patch — only pick it if it’s a comfort hero.' + tail };
+  return { label: 'Solid', color: 'var(--text-1)', tip: 'Win rate around the 50% average — a fine, standard pick.' + tail };
+}
 // One shared win-rate color band used everywhere: green >=52% (clearly above the 50%
 // break-even), red <=48% (clearly below), neutral in between. Matches wrClass below.
 const wrColor = (wr) => wr >= 0.52 ? 'var(--green)' : wr <= 0.48 ? 'var(--red)' : 'var(--text-2)';
@@ -536,7 +548,7 @@ async function renderLaneDetail() {
   if (laneMode === 'first') {
     const mx = await getMatrix();
     const ranked = [...laneMeta].sort((a, b) => b.shrunkWr - a.shrunkWr); // sort by the win rate we show, highest first
-    body = '<div class="lp-sub" style="margin:.2rem 0 .5rem"><b>%</b> = win rate this patch, highest first (small samples pulled toward the lane average) · <span style="color:var(--green)">green</span> 52%+, <span style="color:var(--red)">red</span> 48% or less · <b>meta</b> = how often the lane picks it AND wins (0–100)</div>' + ranked.map((h, i) => {
+    body = '<div class="lp-sub" style="margin:.2rem 0 .5rem"><b>%</b> = win rate this patch, highest first (small samples pulled toward the lane average) · <span style="color:var(--green)">green</span> 52%+, <span style="color:var(--red)">red</span> 48% or less · the tag says whether to pick it — <span style="color:var(--green)">Proven/Strong</span> (take it), <span style="color:var(--blue)">Sleeper</span> (winning but rare), Solid (fine), <span style="color:var(--gold)">Overpicked</span> / <span style="color:var(--red)">Weak</span> (careful) · hover for why</div>' + ranked.map((h, i) => {
       // blind-pick safety vs the heroes actually in THIS lane's meta,
       // from the all-pairs matrix (artifact matchups are primary-role only)
       let trouble = '';
@@ -554,7 +566,7 @@ async function renderLaneDetail() {
         <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
         <span><b>${i === 0 ? '👑 ' : ''}${esc(h.name)}</b>${h.badge ? ` <span style="color:var(--gold)">${h.badge === 'sleeper' ? '💤 sleeper' : '⚠ popular but losing'}</span>` : ''}
           <div class="sub">${trouble ? esc(trouble) : 'no sim data for this hero'}</div></span>
-        <span class="wrr"><b style="color:${wrColor(h.shrunkWr)}">${(h.shrunkWr * 100).toFixed(1)}%</b><div class="sub" style="text-align:right">${h.games} games · meta <b style="color:${metaColor(h.metaScore * 100)}">${(h.metaScore * 100).toFixed(0)}</b></div></span>
+        <span class="wrr"><b style="color:${wrColor(h.shrunkWr)}">${(h.shrunkWr * 100).toFixed(1)}%</b><div class="sub" style="text-align:right">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b style="color:${v.color};cursor:help" title="${esc(v.tip)}">${v.label}</b>`; })()}</div></span>
       </div>`;
     }).join('');
     const metaSet = new Set(laneMeta.map((h) => h.slug));
@@ -673,7 +685,7 @@ function renderMetaboard() {
   $('#metaboard').innerHTML = `
     <div class="mb-head">
       <h2>The meta board</h2>
-      <span class="mb-sub">each lane's most-played heroes, sorted by <b>win rate</b> (small samples adjusted toward average) — <span style="color:var(--green)">green</span> 52%+, <span style="color:var(--red)">red</span> 48% or less · <b>meta</b> = pick rate + win rate, 0–100 · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
+      <span class="mb-sub">each lane's most-played heroes, sorted by <b>win rate</b> (small samples adjusted toward average) — <span style="color:var(--green)">green</span> 52%+, <span style="color:var(--red)">red</span> 48% or less · the tag says whether to pick it: <span style="color:var(--green)">Proven/Strong</span> (take it), <span style="color:var(--blue)">Sleeper</span> (winning but rarely picked), Solid (fine), <span style="color:var(--gold)">Overpicked</span> / <span style="color:var(--red)">Weak</span> (popularity/results don’t line up — careful); hover any tag for why · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
     </div>
     <div class="lanes">
       ${Object.keys(LANE_LABELS).map((role) => `
@@ -682,7 +694,7 @@ function renderMetaboard() {
           ${[...(META.roles[role] || [])].sort((a, b) => b.shrunkWr - a.shrunkWr).slice(0, 5).map((h, i) => `
             <div class="mp" data-slug="${h.slug}" data-role="${role}" title="${esc(h.name)}: ${h.games} ${role} games, ${(h.shrunkWr * 100).toFixed(1)}% shrunk winrate, meta score ${(h.metaScore * 100).toFixed(0)}${h.badge ? ' — ' + esc(h.badge) : ''}">
               <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
-              <span class="n">${i === 0 ? '👑 ' : ''}${esc(h.name)}${h.badge === 'sleeper' ? ' 💤' : h.badge ? ' ⚠' : ''}<span class="g">${h.games} games · meta <b style="color:${metaColor(h.metaScore * 100)}">${(h.metaScore * 100).toFixed(0)}</b></span></span>
+              <span class="n">${i === 0 ? '👑 ' : ''}${esc(h.name)}${h.badge === 'sleeper' ? ' 💤' : h.badge ? ' ⚠' : ''}<span class="g">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b style="color:${v.color};cursor:help" title="${esc(v.tip)}">${v.label}</b>`; })()}</span></span>
               <span class="wr ${wrClass(h.shrunkWr)}">${(h.shrunkWr * 100).toFixed(1)}%</span>
             </div>`).join('')}
           ${META.topPlayers && META.topPlayers[role] && META.topPlayers[role].length ? `
