@@ -11,7 +11,7 @@
     --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#82829a;
     --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
     --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7;
-    --radius:12px;
+    --radius:12px; --maxw:980px;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
@@ -25,13 +25,13 @@
     position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
     background:rgba(10,10,15,.78); border-bottom:1px solid var(--border);
   }
-  .top-inner { max-width:980px; margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
+  .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
   .wordmark { font-weight:800; letter-spacing:.02em; color:var(--text-0); }
   .top .spacer { flex:1; }
   .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
   .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
   .navlink:hover { color:var(--text-0); }
-  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:980px; margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
   .subnav::-webkit-scrollbar { display:none; }
   .subnav:empty { display:none; }
   .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; text-transform:capitalize; }
@@ -41,7 +41,7 @@
   .top a.classic { font-size:.8rem; color:var(--text-2); }
   .top a.classic:hover { color:var(--text-1); }
 
-  .wrap { max-width:980px; margin:0 auto; padding:1.25rem 1rem 4rem; }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:1.25rem 1rem 4rem; }
 
   /* ── landing ── */
   .landing-hero { text-align:center; padding:2.2rem 0 1.4rem; }
@@ -305,6 +305,16 @@
     .lanepanel { padding:.8rem .8rem; }
     .lrow { grid-template-columns:28px 1fr auto; gap:.5rem; }
     .lrow img { width:28px; height:28px; }
+    body { font-size:15px; }
+    /* tap targets: >=44px hit area on touch (Apple HIG 44 / WCAG floor 24).
+       Shared union list across all three pages — a control type gets the same
+       treatment wherever it appears (selectors absent on this page are no-ops). */
+    .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle {
+      min-height:44px; display:inline-flex; align-items:center; justify-content:center;
+    }
+    .snpill { font-size:.8rem; }
+    .navlink { border-radius:10px; } /* 44px tap height reads as a tab, not a stadium */
+    .mp .g { font-size:.66rem; }
   }
 
   /* ── meta board ── */

@@ -2006,3 +2006,38 @@ Eight maintainer-flagged fixes:
 - Diminishing returns are real and visible in the trajectory: flags 120->82->39->21.
   The gate's plateau + max-rounds guards mean the loop can't spin forever even if it
   never hits target. Harness green (115/115) throughout.
+
+## 2026-06-22: mobile UI-consistency review via the plan->build->judge loop
+- Applied the agent-loop pattern to a NON-copy artifact: the v6 UI's mobile
+  consistency. Built the UI analog of copy-verify — a deterministic bracket — plus
+  an independent visual judge, and converged.
+- ui-audit.ts (npm run ui:audit): parses the 3 v6 pages and checks cross-page
+  invariants a human can't eyeball reliably — shared design tokens, ONE container
+  width, one breakpoint scheme, base-reset parity, readable mobile body font, and
+  touch-target sizing (rubric grounded in WCAG 2.5.8 / Apple HIG 44pt / Material
+  48dp). Hard invariants (token drift, container width, viewport, inline-script
+  node --check) exit nonzero — the loop's compiler. Emits ui-audit.json + a
+  consistency score.
+- ui-render.ts (npm run ui:render): serves the repo over HTTP (pages fetch
+  ../../data/*) and loads landing/hero/coach/squad at 360/390/1024px in Playwright,
+  asserting NO horizontal overflow on phone, and writes a screenshot per surface so
+  the independent judge can SEE the layout. Chromium installed to /opt/pw-browsers.
+- Baseline divergence the audit caught: container width was 980/920/880px across the
+  three pages, mobile body font shrank to 13.5px on coach/squad but not index, and
+  interactive controls were ~21-28px tall (well under the 44px tap target). Baseline
+  consistency score 70.8%, 1 hard fail.
+- Fixes (author pass): introduced a shared --maxw:980px token (single source of
+  truth for container width, used by .top-inner/.subnav/.wrap on all pages); unified
+  mobile body font to 15px; one shared 44px tap-target selector list; brought the
+  CSS reset to parity (box-sizing/padding reset, img display:block, button reset,
+  html scroll-behavior). Rich density preserved — only sizing/spacing unified.
+- The loop earned its keep: after the audit hit 100%, the INDEPENDENT judge still
+  caught 3 things the static checks couldn't (each page hand-listed a different tap
+  selector set; ~11px sub-nav pill labels; index missing an explicit mobile body
+  font + sub-11px meta labels), then 1 (active nav pill ballooned to a 44px stadium),
+  then 0. Trajectory 75% -> 91.7% -> 100% (gate STOP, target met). Each judge catch
+  was encoded back INTO the audit (touch-consistency + pill-font checks added) so the
+  bracket can't regress silently — the same "harden from the judge" discipline as the
+  copy loop. Harness green (115/115). Screenshots are gitignored (regenerable);
+  ui-audit/ui-render/ui-review-history JSON committed. docs/agent-loops.md gained a
+  "mobile UI review loop" case study + table row.

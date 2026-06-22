@@ -139,12 +139,45 @@ To add a self-correcting loop for a new artifact:
 | **Build copy** | `build-review.ts` prepare | `pred-scout-coach` | `copy-critique.ts` independent critic | `copy-verify` per clause | `review:loop:gate` over `copy-critique-history.json` |
 | **Coach copy** | `coach-review.ts` prepare | `pred-scout-coach` | same critic, grounded on player stats | `copy-verify` | same history |
 | **Augments / items / abilities** | `*-review.ts` prepare | `pred-scout-coach` | (number bracket only today; critic-extensible) | `copy-verify` | — |
+| **Mobile UI review** | `ui-audit.ts` (consistency facts + findings) | the CSS fix author | independent mobile-UI judge over rendered screenshots | `ui-audit` hard invariants + `ui-render` no-overflow | `review:loop:gate` over `ui-review-history.json` |
 | **v6 review report** | the review plan | first-pass author agent | fresh clean-room subagent (hadn't seen conclusions) | citation spot-check | one-shot reconcile, not iterated |
 
 The v6 review (a one-off doc, not a regenerated artifact) used the **same
 discipline** — author then independent clean-room judge, reconciling disagreements
 rather than papering over them — without the iteration loop. The pattern scales
 down to a single pass and up to a convergent loop.
+
+## Case study: the mobile UI review loop
+
+The same pattern applied to a non-copy artifact — the v6 UI's mobile consistency —
+shows how to bracket a domain where the "honesty check" isn't about numbers.
+
+- **Plan / grounding** — `engine/src/ingest/ui-audit.ts` (`npm run ui:audit`) parses
+  the three v6 pages and emits objective consistency facts + findings: shared design
+  tokens, one container width (`--maxw`), one breakpoint scheme, base-reset parity, a
+  readable mobile body font, and touch-target sizing (rubric grounded in WCAG 2.5.8 /
+  Apple HIG 44pt / Material 48dp — see the rubric block in that file).
+- **Deterministic bracket** — two checks gate any authored fix, the way `copy-verify`
+  gates a rewrite: `ui:audit` **hard invariants** must pass (token drift, container
+  width, viewport, inline-script `node --check`) and `ui:render` (Playwright, serves
+  the repo and loads four surfaces at 360/390/1024px) must report **no horizontal
+  overflow** on phone. A fix that breaks either isn't a fix.
+- **Author** — applies the CSS/markup changes (shared `--maxw` token, unified mobile
+  body font, one shared 44px tap-target list, reset parity).
+- **Judge** — an **independent** mobile-UI subagent reads the rendered screenshots
+  (`docs/reviews/v6/shots/`) and flags what the static audit *cannot see*: a control
+  comfortably tappable on one page but cramped on another, sub-11px labels, lost
+  hierarchy, density that tipped into overcrowding. Its flag count is the convergence
+  signal (`agreementRate = 1 − judgeFlags / REVIEW_UNITS`).
+- **Gate** — `LOOP_HISTORY=data/aggregates/ui-review-history.json npm run review:loop:gate`.
+
+The key lesson, again, is the division of labour: the bracket proves the page is
+*objectively* consistent and doesn't overflow; the independent judge proves it's
+*actually* clean to a human on a phone. When the judge catches a class of problem the
+audit missed (here: the same control type getting different tap treatment across
+pages), you **harden the audit** to encode it (the `touch-consistency` and `pill-font`
+checks were added from judge feedback) — so the bracket gets stronger every loop and
+that regression can't return silently.
 
 ## Provenance & honesty notes
 
