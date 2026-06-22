@@ -119,7 +119,9 @@ Rules:
         const optOut = o ? {
           synergy: keep(o.synergy),
           items: keepItems(o.items),
-          swaps: (o.swaps ?? []).map((sw) => ({ out: sw.out ?? '', in: sw.in ?? '', gain: keep(sw.gain), lose: keep(sw.lose) })),
+          // dedupe by out+in: several meta builds can share the same optimizer swap
+          // (e.g. all run Storm Breaker), which would otherwise repeat it verbatim.
+          swaps: (() => { const seen = new Set<string>(); return (o.swaps ?? []).map((sw) => ({ out: sw.out ?? '', in: sw.in ?? '', gain: keep(sw.gain), lose: keep(sw.lose) })).filter((sw) => { const k = `${sw.out}|${sw.in}`; if (seen.has(k)) return false; seen.add(k); return true; }); })(),
           holes: keep(o.holes),
         } : null;
         (out[art.slug] ??= {})[rv.role] = { metaBuilds: metaOut, optimizer: optOut };

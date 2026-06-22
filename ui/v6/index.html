@@ -965,17 +965,26 @@ function renderHero(a, roleParam) {
             })()}
           </div>`;
         }).join('') : '<div class="muted">no Eternal sample for this role yet</div>'}
-        ${a.eternals.loadout && !ets.some((e) => e.name.toLowerCase() === a.eternals.loadout.major.name.toLowerCase()) ? ((lo) => `
+        ${(() => {
+          // The sim's pick is ALWAYS top[0]. If it's already in the field top-3 list
+          // above it gets the SIM PICK tag there; only surface it as a separate block
+          // when it ISN'T in that list — so there's never a second, conflicting pick.
+          if (!top || ets.some((e) => e.name.toLowerCase() === top.name.toLowerCase())) return '';
+          const mb = a.eternals.minorsByName && a.eternals.minorsByName[top.name.toLowerCase()];
+          const minors = mb ? [mb.minor1, mb.minor2].filter(Boolean) : [];
+          return `
           <div style="margin-top:.6rem;padding:.55rem .65rem;background:var(--bg-2);border:1px solid var(--border);border-radius:8px">
-            <div style="display:flex;gap:.5rem;align-items:center">
-              <img src="${IMG.eternal(lo.major.name.toLowerCase())}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;box-shadow:0 0 0 2px var(--accent)" onerror="this.style.visibility='hidden'">
-              <span style="font-size:.86rem;font-weight:800;color:var(--text-0)">${esc(lo.major.name)}</span>
+            <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+              <img src="${IMG.eternal(top.name.toLowerCase())}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;box-shadow:0 0 0 2px var(--accent)" onerror="this.style.visibility='hidden'">
+              <span style="font-size:.86rem;font-weight:800;color:var(--text-0)">${esc(top.name)}</span>
               <span style="font-size:.6rem;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">⚙ SIM PICK</span>
+              <span style="font-size:.68rem;color:var(--text-2)">the sim's pick — not in the field's top 3 above</span>
             </div>
-            ${[lo.minor1, lo.minor2].map((m) => `
-              <div style="font-size:.76rem;color:var(--text-1);margin:.22rem 0 0 2.35rem">↳ <b>${esc(m.name)}</b> <span style="color:var(--text-2)">— ${m.modeled && m.deltaPct != null ? `the sim gains +${m.deltaPct}% on top of the major` : esc(m.note)}</span></div>`).join('')}
+            ${minors.map((m) => `
+              <div style="font-size:.76rem;color:var(--text-1);margin:.22rem 0 0 2.35rem">↳ <b>${esc(m.name)}</b> <span style="color:var(--text-2)">— ${m.modeled && m.deltaPct != null ? `the sim gains +${m.deltaPct}% on top of the major` : esc(m.note || 'curated pick')}</span></div>`).join('')}
             <div style="font-size:.64rem;color:var(--text-2);margin:.3rem 0 0 2.35rem">pick one from each minor slot in the draft screen · minor values are THEORY until calibration</div>
-          </div>`)(a.eternals.loadout) : ''}
+          </div>`;
+        })()}
         ${top && ets.length && top.name.toLowerCase() === ets[0].name.toLowerCase()
           ? `<div style="margin-top:.45rem;font-size:.7rem;color:var(--green)">✓⚙ field and kit math agree on ${esc(top.name)}: top winrate in this role AND the biggest simulated gain${top.headlinePct ? ` (+${top.headlinePct}% main output — THEORY until calibration)` : ''}</div>` : ''}
         ${!top && ets.length ? `<div style="margin-top:.45rem;font-size:.7rem;color:var(--text-2)">⚙ the sim has no Eternal pick for this kit — no modeled Eternal moves its numbers</div>` : ''}
@@ -1043,7 +1052,8 @@ function renderHero(a, roleParam) {
       ${(() => {
         const o = REASONING && REASONING.heroes && REASONING.heroes[a.slug] && REASONING.heroes[a.slug][a.role] && REASONING.heroes[a.slug][a.role].optimizer;
         if (!o) return '';
-        const swaps = (o.swaps || []).filter((s) => s.gain || s.lose).map((s) =>
+        const seenSwap = new Set();
+        const swaps = (o.swaps || []).filter((s) => { if (!(s.gain || s.lose)) return false; const k = `${s.out}|${s.in}`; if (seenSwap.has(k)) return false; seenSwap.add(k); return true; }).map((s) =>
           `<div style="font-size:.78rem;color:var(--text-1);margin-top:.35rem"><b>${esc(s.in)}</b> over <b>${esc(s.out)}</b> — <span style="color:var(--green)">gain</span> ${esc(s.gain || '—')} · <span style="color:var(--red)">lose</span> ${esc(s.lose || '—')}</div>`).join('');
         const itemsWhy = itemWhyRows(a.build.items, o.items);
         return `
@@ -1051,6 +1061,21 @@ function renderHero(a, roleParam) {
           ${itemsWhy}
           ${swaps ? `<div style="margin-top:.4rem"><div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-2);margin-bottom:.1rem">why the sim build swaps off the meta</div>${swaps}</div>` : ''}
           ${o.holes ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.4rem">⚠ ${esc(o.holes)}</div>` : ''}`;
+      })()}
+      ${(() => {
+        // Build-path advice: the 6 items are a priority order, not a fixed list. Name
+        // the always-build core, flag the later slots as flexible, and surface what
+        // the field builds instead (from the meta builds) as situational swaps.
+        const items = a.build.items || [];
+        if (items.length < 4) return '';
+        const core = items.slice(0, 3).map((i) => esc(i.name));
+        const flex = items.slice(3).map((i) => esc(i.name));
+        const simSlugs = new Set(items.map((i) => i.slug));
+        const alts = [];
+        (a.metaBuilds || []).forEach((m) => (m.items || []).forEach((it) => { if (it.slug && !simSlugs.has(it.slug) && !alts.find((x) => x.slug === it.slug)) alts.push(it); }));
+        const altTxt = alts.slice(0, 4).map((i) => esc(i.name)).join(', ');
+        return `<div style="margin-top:.6rem;border-left:3px solid var(--blue);background:var(--bg-2);border-radius:0 8px 8px 0;padding:.5rem .75rem;font-size:.78rem;color:var(--text-1);line-height:1.6">
+          <b style="color:var(--text-0)">Build path</b> — buy in order, it's a priority list, not a locked set: rush <b>${core.join('</b> → <b>')}</b> every game, then adapt the last slots (${flex.join(', ')}) to the match.${altTxt ? ` Field ${esc(a.role)}s also build <b>${altTxt}</b> — sub one of the late items for these when it fits (more penetration into tanks, defense or lifesteal when you're getting punished).` : ''}</div>`;
       })()}
       <div class="proofs">
         <span class="proof"><b>sim</b> · ${a.role === 'support' ? 'heal, shield & survival' : 'burst, sustained fights & DPS'} scored against the patch economy — exact figures under “Numbers, data &amp; confidence” on the Learn the hero tab</span>
