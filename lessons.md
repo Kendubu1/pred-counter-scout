@@ -1978,3 +1978,31 @@ Eight maintainer-flagged fixes:
   each meta build's synergy and under the optimizer build (new .mb-items-why style).
   Null-safe before the data is regenerated. Code committed first; data follows after
   the pred-scout-coach re-run + ingest.
+
+## 2026-06-22: plan->build->judge agent-loop harness + run the copy loop to convergence
+- Codified the self-correcting copy loop as a first-class, reusable pattern (the
+  maintainer's "plan one agent, build one, judge one, cycle until it works"). Four
+  SEPARATED roles: deterministic PLAN (copy-session prepare emits grounded tasks),
+  BUILD author (pred-scout-coach), the copy-verify honesty BRACKET (drops ungrounded
+  numbers — honesty is code, not trust), and an INDEPENDENT JUDGE (fresh
+  general-purpose critic, never the author). docs/agent-loops.md is the recipe +
+  the table of loops we run; CLAUDE.md points at it.
+- loop-gate.ts (review:loop:gate): deterministic convergence gate so the loop has a
+  terminal state. STOP on target>=99% / clean round / no-op round / plateau (<0.2pt
+  gain) / max 5 rounds; exit 0=stop, 10=continue (shell-loopable). Env-overridable
+  (LOOP_TARGET/EPSILON/MAX_ROUNDS/HISTORY) so it drives any future loop. copy-critique
+  appends each round to copy-critique-history.json for the gate to read.
+- Ran the loop to convergence with a FRESH independent critic each round:
+  95.2% -> 96.7% -> 98.4% -> 99.2% (gate STOP, target met). 256 grounded corrections
+  applied across 4 rounds (114/82/39/21), 0 unmatched every round.
+- What independence bought us (copy-verify can't see it): R1 caught a systemic "build
+  armor and health / tank" weakness line pasted onto heroes whose entire pool is
+  magical power (Countess/Kwang/Neon/The Fey/Lt. Belica) — every number real, the
+  advice the opposite of the actual build. Later rounds: Legion knock-back mislabeled
+  knock-up, jungle-only Spirit-of-Amir lifesteal sold to laners, Kallari Tainted
+  Trident given Malady's percent-health effect, "no escape/safety net" on kits that
+  have one (Twinblast Rocket Dash, Wraith stealth, Dekker boots), and a long tail of
+  missing-verb weakness grammar + new-player jargon (kite/peel/frontline/bursted).
+- Diminishing returns are real and visible in the trajectory: flags 120->82->39->21.
+  The gate's plateau + max-rounds guards mean the loop can't spin forever even if it
+  never hits target. Harness green (115/115) throughout.
