@@ -33,10 +33,19 @@
   .card { scroll-margin-top:calc(var(--toph, 96px) + 10px); }
   .wrap { max-width:var(--maxw); margin:0 auto; padding:1.25rem 1rem 4rem; }
   .scope {
-    font-size:.7rem; color:var(--text-2); border:1px solid var(--border);
-    background:var(--bg-1); border-radius:8px; padding:.45rem .7rem; margin-bottom:1rem; line-height:1.5;
+    font-size:.76rem; color:var(--text-2); border:1px solid var(--border);
+    background:var(--bg-1); border-radius:8px; padding:.45rem .7rem; margin-bottom:1rem; line-height:1.55;
   }
+  .scope > summary { cursor:pointer; font-weight:600; color:var(--text-1); list-style:none; }
+  .scope > summary::-webkit-details-marker { display:none; }
+  .scope > summary::before { content:"▸ "; color:var(--accent); }
+  .scope[open] > summary::before { content:"▾ "; }
   .scope b { color:var(--text-1); }
+  .alts { margin-top:.6rem; }
+  .alts > summary { cursor:pointer; font-size:.74rem; font-weight:700; color:var(--text-2); letter-spacing:.04em; list-style:none; padding:.35rem 0; }
+  .alts > summary::-webkit-details-marker { display:none; }
+  .alts > summary::before { content:"▸ "; color:var(--accent); }
+  .alts[open] > summary::before { content:"▾ "; }
   a.plink { color:inherit; text-decoration:none; border-bottom:1px dotted var(--blue); }
   a.plink:hover { color:var(--blue); }
   img.pav { width:20px; height:20px; border-radius:50%; object-fit:cover; border:1px solid var(--border); vertical-align:-5px; margin-right:.1rem; align-self:center; }
@@ -53,7 +62,8 @@
   .seathead { display:flex; align-items:baseline; gap:.55rem; flex-wrap:wrap; }
   .seathead .role { font-weight:800; text-transform:capitalize; color:var(--accent); min-width:64px; }
   .seathead .rwr { font-weight:800; font-variant-numeric:tabular-nums; }
-  .seathead .sgames { margin-left:auto; color:var(--text-2); font-size:.72rem; font-variant-numeric:tabular-nums; }
+  .seathead .sgames { margin-left:auto; color:var(--text-2); font-size:.72rem; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .moved { font-size:.62rem; font-weight:700; color:var(--gold); border:1px solid var(--gold); border-radius:6px; padding:.02rem .3rem; white-space:nowrap; cursor:help; }
   .seat .picks { margin-top:.4rem; }
   .snote { margin-top:.3rem; font-size:.7rem; color:var(--text-2); }
   .picks { display:flex; gap:.5rem; }
@@ -68,7 +78,7 @@
   .rolemini { display:grid; grid-template-columns:74px 1fr 96px; gap:.5rem; align-items:center; font-size:.74rem; margin-top:.3rem; }
   .rolemini .bar { height:7px; border-radius:99px; background:var(--bg-3); overflow:hidden; }
   .rolemini .bar i { display:block; height:100%; background:var(--accent); border-radius:99px; }
-  .rolemini .n { text-align:right; color:var(--text-2); font-variant-numeric:tabular-nums; }
+  .rolemini .n { text-align:right; color:var(--text-2); font-variant-numeric:tabular-nums; white-space:nowrap; }
   .who { display:flex; gap:.45rem; flex-wrap:wrap; }
   .plansplit { display:grid; grid-template-columns:1fr auto; gap:1rem; align-items:start; padding-bottom:.7rem; border-bottom:1px dashed var(--border); }
   .grouplabel { font-size:.62rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--text-2); margin-bottom:.35rem; }
@@ -100,7 +110,7 @@
   .pairrow .names { color:var(--text-1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .pairrow .bar { height:8px; border-radius:99px; background:var(--bg-2); overflow:hidden; }
   .pairrow .bar i { display:block; height:100%; border-radius:99px; }
-  .pairrow .n { text-align:right; color:var(--text-2); font-variant-numeric:tabular-nums; font-size:.76rem; }
+  .pairrow .n { text-align:right; color:var(--text-2); font-variant-numeric:tabular-nums; font-size:.76rem; white-space:nowrap; }
   ul.notes { padding-left:1.1rem; }
   ul.notes li { margin:.45rem 0; color:var(--text-1); }
   footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
@@ -190,7 +200,7 @@ const plink = (uuid, name) => uuid
 
   const lead = s.members[0];
   document.getElementById('page').innerHTML = `
-    <div class="scope">📊 <b>Data scope:</b> pred.gg public profiles — career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked splits, last 40 matches each · field baselines: ${META ? META.matches.toLocaleString() + ' matches, patch ' + esc(META.patch) : 'current-patch matches'}, all ranks · combat math is THEORY pending in-game calibration · generated ${esc(s.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
+    <details class="scope"><summary>📊 Data scope &amp; sources</summary><div style="margin-top:.45rem">pred.gg public profiles — career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked splits, last 40 matches each · field baselines: ${META ? META.matches.toLocaleString() + ' matches, patch ' + esc(META.patch) : 'current-patch matches'}, all ranks · combat math is THEORY pending in-game calibration · generated ${esc(s.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div></details>
     <h1>The five stack</h1>
 
     <div class="card">
@@ -336,7 +346,7 @@ const plink = (uuid, name) => uuid
     const picksFor = (seat, oi, si) => mode === 'meta' ? lanePickFor(seat, oi, si, 6)
       : mode === 'any' ? anyPickFor(seat, oi, si)
       : (seat.picks.map((h) => `<a href="./?hero=${esc(h.slug)}&role=${esc(seat.role)}"><img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">${esc(h.name)} ${pct(h.shrunkWr, 0)}%${h.games != null && h.games < 20 ? ` <span style="color:var(--gold)">· ${h.games} games</span>` : ''}</a>`).join('') || '<span style="color:var(--gold);font-size:.74rem">no 10+ game hero in this exact role — try meta or any-hero mode</span>');
-    out.innerHTML = options.map((opt, oi) => {
+    const parts = options.map((opt, oi) => {
       const avg = opt.total / opt.seats.length;
       const delta = Math.abs(Math.round((avg - bestAvg) * 1000) / 10); // per-100 gap vs the top option
       const vsA = delta < 0.05 ? 'even with the top option' : `about ${delta.toFixed(1)} fewer wins per 100 than the top option`;
@@ -357,12 +367,12 @@ const plink = (uuid, name) => uuid
         <div class="seat">
           <div class="seathead">
             <span class="role">${esc(seat.role)}</span>
+            ${isMove ? `<span class="moved" title="They usually queue ${esc(fav)}, but the team wins more with them here — see the note under the lineup.">↪ from ${esc(fav)}</span>` : ''}
             <span class="rwr">${pct(seat.wr)}%</span>
             ${pav(seat.uuid)}${plink(seat.uuid, seat.name)}
             <span class="sgames">${seat.games} games in role</span>
           </div>
           <div class="picks">${picksFor(seat, oi, si)}</div>
-          ${isMove ? `<div class="snote">not their usual queue — they normally play ${esc(fav)}, but the team wins more with them here (${pct(seat.wr)}% over ${seat.games} games in ${esc(seat.role)})</div>` : ''}
         </div>`;
         }).join('')}
         ${(() => {
@@ -373,7 +383,7 @@ const plink = (uuid, name) => uuid
           const col = rec.winrate >= 0.53 ? 'var(--green)' : rec.winrate <= 0.48 ? 'var(--red)' : 'var(--gold)';
           return `<div class="snote" style="color:${col};margin-top:.5rem">🤝 <b>Duo lane synergy:</b> ${esc(carry.name.split(' ')[0])} + ${esc(support.name.split(' ')[0])} have won ${pct(rec.winrate, 0)}% of ${rec.games} games actually laning together as carry+support — that pairing is part of why they are seated here.</div>`;
         })()}
-        ${opt.seats.length >= 3 ? '<div class="snote" style="margin-top:.5rem">Seats are scored as a set — someone can look stronger in a seat they did not get, but moving them would give up more wins in the role they leave than it adds. The carry+support pairing also weighs their real duo-lane record.</div>' : ''}
+        ${opt.seats.length >= 3 ? '<div class="snote" style="margin-top:.5rem"><b>↪ from</b> = moved off their usual queue. Seats are scored as a set — someone can look stronger in a seat they did not get, but moving them gives up more wins in the role they leave than it adds. The carry+support pairing also weighs their real duo-lane record.</div>' : ''}
       </div>`;
       }
       return `
@@ -390,7 +400,9 @@ const plink = (uuid, name) => uuid
               : (seat.picks.map((h) => `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} ${pct(h.shrunkWr, 0)}%`).join(' · ') || '<span style="color:var(--gold)">no 10+ game hero here</span>')}</span>
           </div>`).join('')}
       </div>`;
-    }).join('') + `
+    });
+    const altCount = parts.length - 1;
+    const footerNote = `
       <div style="font-size:.7rem;color:var(--text-2);margin-top:.4rem">
         ${mode === 'meta'
           ? '<b>Meta</b> — the lane’s top winning heroes by field win rate, any hero (comfort aside). “new to you” = under 30 of your games on it.'
@@ -398,6 +410,9 @@ const plink = (uuid, name) => uuid
             ? '<b>Any lane</b> — a wider shuffle of heroes winning in this lane, your own most-played first (you pilot those better than average), then the lane’s other field winners.'
             : '<b>Wheelhouse</b> — your best heroes in this role from your real 5v5s (your own winning record); thin samples under 20 games say so.'}
         · seats go to whoever wins most there, with thin role records counting less</div>`;
+    out.innerHTML = parts[0] + (altCount > 0
+      ? `<details class="alts"><summary>Show ${altCount} alternate lineup${altCount > 1 ? 's' : ''}</summary>${parts.slice(1).join('')}</details>`
+      : '') + footerNote;
   }
   // who toggles: flip aria-pressed (keep at least one selected)
   document.querySelectorAll('#who .ptoggle').forEach((b) => {
