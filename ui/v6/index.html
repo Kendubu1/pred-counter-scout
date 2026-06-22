@@ -928,7 +928,7 @@ function renderHero(a, roleParam) {
           if (!crs.length) return '';
           const cslug = (n) => n.toLowerCase().replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
           return `
-          <details class="sim-collapse" style="margin-top:.6rem"><summary><b style="letter-spacing:.06em">CREST</b> · top 3 as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</summary>
+          <details class="sim-collapse" open style="margin-top:.6rem"><summary><b style="letter-spacing:.06em">CREST</b> · top 3 as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</summary>
           <div class="body" style="padding-top:.2rem">
           ${crs.map((c, i) => `
           <div style="display:flex;gap:.6rem;align-items:center;padding:.3rem 0;border-bottom:1px ${i === crs.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
@@ -1008,15 +1008,6 @@ function renderHero(a, roleParam) {
           <span class="plan">${esc(m.gameplan)}${m.counterSwap ? `<br><span class="cswap">⚙ ${esc(m.counterSwap.line)}</span>` : ''}</span>
         </div>`).join('') : '<div style="color:var(--text-2)">no same-role opponents with enough games this patch</div>'}
     </section>
-
-    <details>
-      <summary>Off-meta lab</summary>
-      <div class="body">
-        ${a.offMeta.candidates.length
-          ? a.offMeta.candidates.map((c) => `<p><b style="color:var(--gold)">${esc(c.item)}</b> — ${c.playRatePct}% play rate on ${esc(a.name)}; part of a build that beats the most-played item set by <b>${c.edgeVsPopularPct}%</b> on ${esc(c.bestObjective)}. Treat as a hypothesis to test, not a guarantee.</p>`).join('')
-          : `<p>${esc(a.offMeta.honestAbsence)}</p>`}
-      </div>
-    </details>
 
     </div>
     <div id="tabLearn" class="hidden"></div>
