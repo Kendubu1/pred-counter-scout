@@ -22,6 +22,7 @@ const SHOTS = path.join(ROOT, 'docs/reviews/v6/shots');
 const SURFACES = [
   { id: 'landing', url: '/ui/v6/index.html' },
   { id: 'hero', url: '/ui/v6/index.html?hero=countess&role=midlane' },
+  { id: 'hero-sparrow', url: '/ui/v6/index.html?hero=sparrow&role=carry' },
   { id: 'coach', url: '/ui/v6/coach.html' },
   { id: 'squad', url: '/ui/v6/squad.html' },
 ];
@@ -64,6 +65,15 @@ async function main() {
         const overflow = Math.max(0, m.sw - m.cw);
         const shot = `${s.id}-${w}.png`;
         await page.screenshot({ path: path.join(SHOTS, shot), fullPage: true }).catch(() => {});
+        // Above-the-fold, real-scale capture on phone widths so the judge can see
+        // typographic detail (a single oversized block is invisible in a 6000px-tall
+        // full-page shot scaled to fit). This closes the gap that let the Sim Build
+        // tip's 1.04rem text through the first design review.
+        if (w < 600) await page.screenshot({ path: path.join(SHOTS, `${s.id}-${w}-top.png`), fullPage: false }).catch(() => {});
+        // Real-scale element shot of the Sim Build tip (.coach) — the block the
+        // maintainer flagged as oversized. Captured directly so its size/density is
+        // visible regardless of how far down the page it sits.
+        if (w < 600) { const tip = await page.$('.coach'); if (tip) await tip.screenshot({ path: path.join(SHOTS, `${s.id}-${w}-simtip.png`) }).catch(() => {}); }
         results.push({ surface: s.id, width: w, scrollWidth: m.sw, clientWidth: m.cw, overflow, shot });
         if (w < 600 && overflow > 1) phoneOverflow++;
         await page.close();

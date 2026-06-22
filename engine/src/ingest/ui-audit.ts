@@ -95,6 +95,23 @@ function touchFixed(css: string): Set<string> {
   }
   return fixed;
 }
+// CSS with comments and all at-rule blocks (@media/@supports/@keyframes) removed,
+// leaving only base rules — so a type-scale scan sees default sizing, not the
+// mobile shrink overrides.
+function baseRules(css: string): string {
+  const s = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  let out = '', i = 0;
+  while (i < s.length) {
+    if (s[i] === '@') {
+      const b = s.indexOf('{', i);
+      if (b === -1) { out += s.slice(i); break; }
+      let depth = 1, j = b + 1;
+      for (; j < s.length && depth > 0; j++) { if (s[j] === '{') depth++; else if (s[j] === '}') depth--; }
+      i = j;
+    } else { out += s[i]; i++; }
+  }
+  return out;
+}
 function pxOf(v: string | null): number | null {
   if (!v) return null;
   const px = v.match(/([\d.]+)px/); if (px) return Number(px[1]);
@@ -205,6 +222,26 @@ function main() {
     if (fs != null && fs < PILL_FLOOR) findings.push({ check: 'pill-font', severity: 'low', page: p, detail: `.snpill label ≈${fs.toFixed(1)}px on mobile (< ${PILL_FLOOR}px) — bump font-size` });
   }
 
+  // 6d) Type scale — body/callout copy must not be the LARGEST text on the page
+  //     (inverted hierarchy reads as "oversized / wall of text"). Anything over
+  //     1rem is reserved for headings (h1-h6) and short numeric/emphasis bits
+  //     (allowlisted). This is the check the first design review lacked — the
+  //     Sim Build tip (.coach) was 1.04rem, larger than the page's reading size.
+  const TYPE_MAX_REM = 1.0;
+  const TYPE_ALLOW = new Set(['.verdict', '.ledg .lv', '.ipop .ihead b']); // short callouts / big numbers, not paragraphs
+  for (const p of PAGES) {
+    for (const m of baseRules(csss[p]!).matchAll(/([^{}]+)\{([^}]*)\}/g)) {
+      const sel = m[1]!.trim().replace(/\s+/g, ' ');
+      if (!sel.startsWith('.') || /(^|[\s,>~+])h[1-6]\b/.test(sel) || sel.includes(',')) continue; // headings + grouped rules out
+      const fm = m[2]!.match(/font-size\s*:\s*([\d.]+)rem/);
+      if (!fm) continue;
+      const rem = Number(fm[1]);
+      if (rem > TYPE_MAX_REM && !TYPE_ALLOW.has(sel)) {
+        findings.push({ check: 'type-scale', severity: 'med', page: p, detail: `${sel} font-size ${rem}rem (> ${TYPE_MAX_REM}rem) — larger than the page's reading scale; oversized for body/callout copy. Reserve >1rem for headings/numbers.` });
+      }
+    }
+  }
+
   // 7) Viewport meta.
   for (const p of PAGES) {
     if (!/name="viewport"[^>]*width=device-width/.test(htmls[p]!)) hard({ check: 'viewport', severity: 'high', page: p, detail: 'missing/!width=device-width viewport meta' });
@@ -222,7 +259,7 @@ function main() {
 
   // Score: fraction of (page x check-family) cells that are clean. Used by the
   // loop history / convergence gate.
-  const FAMILIES = ['tokens', 'container-width', 'breakpoints', 'reset', 'mobile-font', 'touch-target', 'touch-consistency', 'pill-font', 'viewport', 'script-syntax'];
+  const FAMILIES = ['tokens', 'container-width', 'breakpoints', 'reset', 'mobile-font', 'touch-target', 'touch-consistency', 'pill-font', 'type-scale', 'viewport', 'script-syntax'];
   const cells = FAMILIES.length * PAGES.length;
   const dirty = new Set(findings.map((f) => `${f.check}:${f.page ?? 'all'}`)).size;
   const score = Math.max(0, Math.round((1 - dirty / cells) * 1000) / 1000);
