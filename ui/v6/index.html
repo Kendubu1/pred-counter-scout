@@ -275,6 +275,9 @@
   .ipop .ifx b { color:var(--gold); }
   .ipop .iclose { margin-top:.8rem; width:100%; background:var(--bg-2); border:1px solid var(--border); border-radius:10px; color:var(--text-1); padding:.4rem; font-size:.8rem; }
   [data-ipop] { cursor:pointer; }
+  .vtag { cursor:help; border-bottom:1px dotted currentColor; }
+  [data-tip] { cursor:help; }
+  .tiptip { position:absolute; z-index:60; max-width:min(280px, 88vw); background:var(--bg-2); border:1px solid var(--border); border-radius:8px; padding:.5rem .65rem; font-size:.72rem; line-height:1.5; color:var(--text-1); box-shadow:0 10px 28px rgba(0,0,0,.55); }
 
   /* ── lane detail panel ── */
   .lanepanel { margin-top:1.4rem; background:var(--bg-1); border:1px solid var(--border); border-radius:14px; padding:1rem 1.1rem; }
@@ -309,6 +312,16 @@
     .snpill { font-size:.8rem; }
     .navlink { border-radius:10px; } /* 44px tap height reads as a tab, not a stadium */
     .mp .g { font-size:.66rem; }
+    /* denser hero header: narrower pills wrap less; tighter gaps; keep 44px tap area */
+    .hero-head { gap:.7rem; }
+    .chips { gap:.3rem; margin-top:.3rem; }
+    .chip { font-size:.7rem; padding:.1rem .5rem; }
+    .badge { font-size:.66rem; padding:.1rem .5rem; }
+    .flexroles { margin-top:.4rem !important; gap:.3rem; }
+    .flexroles button { font-size:.76rem; padding:.18rem .6rem; }
+    .flexroles .hint { font-size:.72rem; }
+    .htabs { margin-top:.7rem; gap:.3rem; }
+    .htab { font-size:.8rem; padding:.2rem .8rem; }
   }
 
   /* ── meta board ── */
@@ -566,7 +579,7 @@ async function renderLaneDetail() {
         <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
         <span><b>${i === 0 ? '👑 ' : ''}${esc(h.name)}</b>${h.badge ? ` <span style="color:var(--gold)">${h.badge === 'sleeper' ? '💤 sleeper' : '⚠ popular but losing'}</span>` : ''}
           <div class="sub">${trouble ? esc(trouble) : 'no sim data for this hero'}</div></span>
-        <span class="wrr"><b style="color:${wrColor(h.shrunkWr)}">${(h.shrunkWr * 100).toFixed(1)}%</b><div class="sub" style="text-align:right">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b style="color:${v.color};cursor:help" title="${esc(v.tip)}">${v.label}</b>`; })()}</div></span>
+        <span class="wrr"><b style="color:${wrColor(h.shrunkWr)}">${(h.shrunkWr * 100).toFixed(1)}%</b><div class="sub" style="text-align:right">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b class="vtag" style="color:${v.color}" data-tip="${esc(v.tip)}" title="${esc(v.tip)}">${v.label}</b>`; })()}</div></span>
       </div>`;
     }).join('');
     const metaSet = new Set(laneMeta.map((h) => h.slug));
@@ -694,7 +707,7 @@ function renderMetaboard() {
           ${[...(META.roles[role] || [])].sort((a, b) => b.shrunkWr - a.shrunkWr).slice(0, 6).map((h, i) => `
             <div class="mp" data-slug="${h.slug}" data-role="${role}" title="${esc(h.name)}: ${h.games} ${role} games, ${(h.shrunkWr * 100).toFixed(1)}% shrunk winrate, meta score ${(h.metaScore * 100).toFixed(0)}${h.badge ? ' — ' + esc(h.badge) : ''}">
               <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
-              <span class="n">${i === 0 ? '👑 ' : ''}${esc(h.name)}${h.badge === 'sleeper' ? ' 💤' : h.badge ? ' ⚠' : ''}<span class="g">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b style="color:${v.color};cursor:help" title="${esc(v.tip)}">${v.label}</b>`; })()}</span></span>
+              <span class="n">${i === 0 ? '👑 ' : ''}${esc(h.name)}${h.badge === 'sleeper' ? ' 💤' : h.badge ? ' ⚠' : ''}<span class="g">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b class="vtag" style="color:${v.color}" data-tip="${esc(v.tip)}" title="${esc(v.tip)}">${v.label}</b>`; })()}</span></span>
               <span class="wr ${wrClass(h.shrunkWr)}">${(h.shrunkWr * 100).toFixed(1)}%</span>
             </div>`).join('')}
           ${META.topPlayers && META.topPlayers[role] && META.topPlayers[role].length ? `
@@ -838,7 +851,7 @@ function renderHero(a, roleParam) {
           <span class="hint" style="align-self:center;margin-right:.2rem">flex role:</span>
           ${roleViews.map((v) => `<button data-flexrole="${esc(v.role)}" class="${v.role === activeRole ? 'active' : ''}">${esc(v.role)}</button>`).join('')}
         </div>
-        <div class="hint" style="margin-top:.35rem">A full optimized build per lane — items, spikes, Eternals, and matchups all change with the role.</div>` : ''}
+        <div class="hint" style="margin-top:.35rem">Build, spikes, Eternals &amp; matchups all change per lane.</div>` : ''}
       </div>
     </header>
 
@@ -1178,6 +1191,25 @@ document.addEventListener('click', (ev) => {
   const el = ev.target.closest('[data-ipop]');
   if (el) { ev.preventDefault(); showItem(el.dataset.ipop); }
 });
+// Tap-to-explain for [data-tip] tags (verdict labels etc.): title tooltips don't work
+// on touch. Capture phase + stopPropagation so tapping a tag inside a clickable row
+// shows the tip instead of opening the hero. Tap elsewhere / scroll dismisses it.
+let _tipEl = null;
+function closeTip() { if (_tipEl) { _tipEl.remove(); _tipEl = null; } }
+document.addEventListener('click', (ev) => {
+  const t = ev.target.closest && ev.target.closest('[data-tip]');
+  if (!t) { closeTip(); return; }
+  ev.stopPropagation(); ev.preventDefault();
+  if (_tipEl && _tipEl._for === t) { closeTip(); return; }
+  closeTip();
+  _tipEl = document.createElement('div');
+  _tipEl.className = 'tiptip'; _tipEl._for = t; _tipEl.textContent = t.dataset.tip;
+  document.body.appendChild(_tipEl);
+  const r = t.getBoundingClientRect();
+  _tipEl.style.left = Math.round(Math.min(Math.max(8, r.left), window.innerWidth - _tipEl.offsetWidth - 8)) + 'px';
+  _tipEl.style.top = Math.round(r.bottom + window.scrollY + 6) + 'px';
+}, true);
+window.addEventListener('scroll', closeTip, { passive: true });
 // Keyboard activation: Enter/Space on a focused item trigger opens its details.
 document.addEventListener('keydown', (ev) => {
   if (ev.key !== 'Enter' && ev.key !== ' ') return;
