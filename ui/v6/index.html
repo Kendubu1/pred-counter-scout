@@ -592,9 +592,6 @@ async function renderLaneDetail() {
     </select>`;
     body = `<div class="lp-sub">they locked in:</div><div class="echips">${chips}${flexSel}</div>`;
     if (laneEnemy) {
-      // Best answers to the enemy across EVERY lane (not just the mirror lane),
-      // ranked by how hard the kit-math sim says they beat it — pull the strongest
-      // counters forward, tag each with its own lane.
       const rows = [];
       for (const h of INDEX.heroes) {
         if (h.slug === laneEnemy) continue;
@@ -604,15 +601,23 @@ async function renderLaneDetail() {
         const score = cps.filter((c) => c.verdict === 'you').length - cps.filter((c) => c.verdict === 'enemy').length;
         rows.push({ slug: h.slug, name: h.name, lane: h.role, cps, score, line: direct?.gameplan ?? phaseLine(cps) });
       }
-      const winners = rows.filter((r) => r.score > 0).sort((a, b) => b.score - a.score || a.lane.localeCompare(b.lane)).slice(0, 10);
-      body += `<div class="lp-sub" style="margin:.2rem 0 .4rem">Best answers to <b>${esc(nameOf(laneEnemy))}</b> — strongest first, any lane:</div>`;
-      body += winners.map((r) => `
+      const rowHtml = (r, showLane) => `
         <div class="lrow" data-slug="${r.slug}" data-role="${r.lane}">
           <img loading="lazy" src="${IMG.hero(r.slug)}" alt="" onerror="this.style.visibility='hidden'">
-          <span><b>${esc(r.name)}</b> <span style="color:${r.lane === role ? 'var(--accent)' : 'var(--text-2)'};font-size:.68rem;text-transform:capitalize">${esc(LANE_LABELS[r.lane] || r.lane)}${r.lane === role ? ' · their lane' : ''}</span><div class="sub">${esc(r.line)}</div></span>
+          <span><b>${esc(r.name)}</b>${showLane ? ` <span style="color:var(--text-2);font-size:.68rem;text-transform:capitalize">${esc(LANE_LABELS[r.lane] || r.lane)}</span>` : ''}<div class="sub">${esc(r.line)}</div></span>
           ${vdots(r.cps)}
-        </div>`).join('');
-      if (!winners.length) body += `<div class="lp-sub">our fight-sim doesn't find a clean answer to ${esc(nameOf(laneEnemy))} right now — it may be over-modeled; weight the field and your own read.</div>`;
+        </div>`;
+      // Lane picks first: every hero in the enemy's OWN lane, ranked — your direct
+      // mirror-lane options vs them, best first (even when few clearly beat them).
+      const same = rows.filter((r) => r.lane === role).sort((a, b) => b.score - a.score).slice(0, 8);
+      body += `<div class="lp-sub" style="margin:.2rem 0 .4rem">In their lane (<b>${esc(LANE_LABELS[role])}</b>) — your picks vs <b>${esc(nameOf(laneEnemy))}</b>, best first:</div>`;
+      body += same.map((r) => rowHtml(r, false)).join('') || `<div class="lp-sub">no ${esc(LANE_LABELS[role].toLowerCase())} sim vs ${esc(nameOf(laneEnemy))} yet</div>`;
+      // Off-meta answers from other lanes underneath: genuine counters (score > 0).
+      const cross = rows.filter((r) => r.lane !== role && r.score > 0).sort((a, b) => b.score - a.score).slice(0, 8);
+      if (cross.length) {
+        body += `<div class="lp-sub" style="margin-top:.7rem">Off-meta answers from other lanes — strong into <b>${esc(nameOf(laneEnemy))}</b> if they run them off-role:</div>`;
+        body += cross.map((r) => rowHtml(r, true)).join('');
+      }
       body += `<div class="lp-sub" style="margin-top:.4rem">ranked by kill-window checkpoints from the kit-math sim (THEORY until calibrated) — green dots = your windows · sims assume each kit's standard build and primary-role income · not head-to-head match data</div>`;
     } else {
       body += '<div class="lp-sub">pick the enemy hero — including an off-meta flex via the dropdown — to see who answers them best</div>';
@@ -870,10 +875,7 @@ function renderHero(a, roleParam) {
             .sort((x, y) => y.shrunk - x.shrunk).slice(0, 3);
         })();
         return `
-        ${roles.length > 1 ? `<div class="echips" style="margin:.1rem 0 .55rem">${roles.map((r) => r === role
-          ? `<span class="echip" style="border-color:var(--accent);background:var(--accent-soft);color:var(--text-0);text-transform:capitalize">${esc(r)}</span>`
-          : `<a class="echip" href="?hero=${esc(a.slug)}&role=${esc(r)}" style="text-transform:capitalize">${esc(r)}</a>`).join('')}<span style="font-size:.68rem;color:var(--text-2);align-self:center">flex lanes with field evidence — switching swaps the augment and Eternal numbers</span></div>`
-        : `<div style="font-size:.74rem;color:var(--text-2);margin-bottom:.45rem">augment · field evidence as <b style="text-transform:capitalize">${esc(role)}</b></div>`}
+        <div style="font-size:.74rem;color:var(--text-2);margin-bottom:.45rem">augment · field evidence as <b style="text-transform:capitalize">${esc(role)}</b>${roles.length > 1 ? ' — switch lane with the <b>flex role</b> buttons up top (the augment and Eternal numbers follow)' : ''}</div>
         ${mismatch ? `<div style="font-size:.72rem;color:var(--gold);margin-bottom:.45rem">you came here as ${esc(roleParam)}, but the field sample for ${esc(a.name)} ${esc(roleParam)} is too thin — showing ${esc(role)} evidence instead</div>` : ''}
         ${(() => { window.__simPick = (a.augments || []).find((x) => x.modeled) ?? null; return ''; })()}
         ${ranked.map((g, i) => {
