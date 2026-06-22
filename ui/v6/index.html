@@ -606,7 +606,31 @@ async function renderLaneDetail() {
           ${vdots(r.cps)}
         </div>`).join('');
       body += noSim.length ? `<div class="lp-sub" style="margin-top:.5rem">no sim vs ${esc(nameOf(laneEnemy))} yet: ${noSim.map(esc).join(', ')}</div>` : '';
-      body += `<div class="lp-sub" style="margin-top:.4rem">ranked by kill-window checkpoints from the kit-math sim (THEORY until calibrated) — green dots = your windows · sims assume each kit's standard build and primary-role income, so a flexed enemy's gold may run leaner than modeled · not head-to-head match data</div>`;
+      // Cross-lane answers: the all-pairs sim knows who beats this enemy from OTHER
+      // lanes too (e.g. a carry Skylar into an off-meta offlane Iggy). Surface the
+      // best per other lane so counters aren't limited to the mirror lane.
+      const otherLanes = ['carry', 'midlane', 'offlane', 'jungle', 'support'].filter((r) => r !== role);
+      const crossByLane = [];
+      for (const ln of otherLanes) {
+        const cands = INDEX.heroes.filter((h) => h.role === ln && h.slug !== laneEnemy)
+          .map((h) => { const cps = matrixCps(mx, h.slug, laneEnemy); if (!cps) return null;
+            return { slug: h.slug, name: h.name, cps, score: cps.filter((c) => c.verdict === 'you').length - cps.filter((c) => c.verdict === 'enemy').length }; })
+          .filter((x) => x && x.score > 0).sort((a, b) => b.score - a.score).slice(0, 2);
+        if (cands.length) crossByLane.push({ lane: ln, cands });
+      }
+      crossByLane.sort((a, b) => b.cands[0].score - a.cands[0].score);
+      if (crossByLane.length) {
+        body += `<div class="lp-sub" style="margin-top:.7rem">Also strong into <b>${esc(nameOf(laneEnemy))}</b> from other lanes — handy when they run ${esc(nameOf(laneEnemy))} off-meta:</div>`;
+        for (const g of crossByLane) {
+          body += g.cands.map((r) => `
+            <div class="lrow" data-slug="${r.slug}" data-role="${g.lane}">
+              <img loading="lazy" src="${IMG.hero(r.slug)}" alt="" onerror="this.style.visibility='hidden'">
+              <span><b>${esc(r.name)}</b> <span style="color:var(--text-2);font-size:.68rem;text-transform:capitalize">${esc(LANE_LABELS[g.lane] || g.lane)}</span><div class="sub">sim favors them into ${esc(nameOf(laneEnemy))}</div></span>
+              ${vdots(r.cps)}
+            </div>`).join('');
+        }
+      }
+      body += `<div class="lp-sub" style="margin-top:.4rem">ranked by kill-window checkpoints from the kit-math sim (THEORY until calibrated) — green dots = your windows · sims assume each kit's standard build and primary-role income · cross-lane answers are fight-sim only, not a lane matchup · not head-to-head match data</div>`;
     } else {
       body += '<div class="lp-sub">pick the enemy hero — including an off-meta flex via the dropdown — to see who answers them best</div>';
     }
@@ -635,7 +659,7 @@ async function renderLaneDetail() {
   });
   const fx = box.querySelector('#flexEnemy');
   if (fx) fx.onchange = () => { if (fx.value) { laneEnemy = fx.value; renderLaneDetail(); } };
-  box.querySelectorAll('.lrow').forEach((r) => { r.onclick = () => nav(r.dataset.slug, false, role); });
+  box.querySelectorAll('.lrow').forEach((r) => { r.onclick = () => nav(r.dataset.slug, false, r.dataset.role || role); });
   buildSubnav();
 }
 function laneSimPicks(role) {
