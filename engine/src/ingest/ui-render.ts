@@ -25,6 +25,7 @@ const SURFACES = [
   { id: 'hero-sparrow', url: '/ui/v6/index.html?hero=sparrow&role=carry' },
   { id: 'coach', url: '/ui/v6/coach.html' },
   { id: 'squad', url: '/ui/v6/squad.html' },
+  { id: 'about', url: '/ui/v6/about.html' },
 ];
 const WIDTHS = [360, 390, 1024]; // phone (small), phone (modern), desktop control
 const MIME: Record<string, string> = { '.html': 'text/html', '.json': 'application/json', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.jpg': 'image/jpeg' };

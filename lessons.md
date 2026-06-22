@@ -2097,3 +2097,18 @@ Eight maintainer-flagged fixes:
   These need an in-game practice-mode reading per CALIBRATION-CHECKLIST.md — the loop
   can strengthen evidence but can't honestly flip a physical constant to verified
   (project rule: never fill an unverified constant with an estimate).
+
+## 2026-06-22: About page + removed landing "How this works" block
+- Removed the verbose "How this works" receipt block from the landing hero (lightens
+  the UI). Moved that explanation to a new ui/v6/about.html: how builds are made (sim
+  + meta), what THEORY means, where the numbers come from (Omeda API, shrunk winrates,
+  comparative evidence deltas), and how the copy is machine-checked. Linked from each
+  page's footer ("About & how this works").
+- about.html built on the shared v6 design (same :root tokens, --maxw, reset, nav,
+  600px breakpoint, 44px touch rule); added to ui-audit + ui-render PAGES so it's
+  consistency-checked too (audit 100%).
+- The render bracket earned its keep: my first attempt added "About" as a 4th TOP-NAV
+  link, which overflowed every page horizontally at 360/390px (nav row > viewport,
+  nowrap). ui-render flagged 12 phone overflows before commit. Fix: put About in the
+  footer instead (lighter, and the nav stays 3 tools). Re-render: 0 overflow. Lesson:
+  the deterministic overflow check catches mobile regressions a desktop eye misses.
