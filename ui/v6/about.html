@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About — Predecessor Scout</title>
+<meta name="description" content="How Predecessor Scout works: a kit-math simulator plus real match data from the official API, with numbers labeled honestly.">
+<style>
+  :root {
+    --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#82829a;
+    --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
+    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px; --maxw:980px;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  a { color:var(--blue); text-decoration:none; }
+  img { display:block; }
+  button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
+  .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:rgba(10,10,15,.78); border-bottom:1px solid var(--border); }
+  .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
+  .wordmark { font-weight:800; color:var(--text-0); }
+  .spacer { flex:1; }
+  .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
+  .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .navlink:hover { color:var(--text-0); }
+  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .subnav::-webkit-scrollbar { display:none; }
+  .subnav:empty { display:none; }
+  .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; text-transform:capitalize; -webkit-appearance:none; appearance:none; }
+  .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:1.25rem 1rem 4rem; }
+  .lede { font-size:1rem; color:var(--text-1); line-height:1.65; max-width:62ch; }
+  h1 { font-size:1.7rem; font-weight:800; }
+  .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; }
+  .card h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.6rem; }
+  .card p { color:var(--text-1); line-height:1.65; }
+  .card p + p { margin-top:.6rem; }
+  .card b { color:var(--text-0); }
+  .tag { display:inline-block; font-size:.66rem; font-weight:800; letter-spacing:.06em; color:var(--blue); border:1px solid var(--blue); border-radius:6px; padding:.04rem .35rem; vertical-align:middle; }
+  footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
+  @media (max-width:600px) {
+    body { font-size:15px; }
+    /* tap targets: >=44px hit area on touch (Apple HIG 44 / WCAG floor 24).
+       Shared union list across all pages (absent selectors are no-ops). */
+    .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle {
+      min-height:44px; display:inline-flex; align-items:center; justify-content:center;
+    }
+    .snpill { font-size:.8rem; }
+    .navlink { border-radius:10px; }
+    .top-inner { padding:.5rem .7rem; gap:.55rem; }
+    .wordmark { font-size:.82rem; white-space:nowrap; }
+    .top-inner a { font-size:.72rem; white-space:nowrap; }
+    .wrap { padding:.9rem .7rem 3rem; }
+    h1 { font-size:1.35rem; }
+    .card { padding:.8rem .8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <a class="wordmark" href="./">⚔ Predecessor Scout</a>
+  <span class="spacer"></span>
+  <a class="navlink" href="./">Build Lab</a>
+  <a class="navlink" href="squad.html">Squad</a>
+  <a class="navlink" href="coach.html">Coach</a>
+</div><div class="subnav" id="subnav"></div></div>
+
+<div class="wrap">
+  <h1>About Predecessor Scout</h1>
+  <p class="lede">A build-and-counter companion for <b>Predecessor</b>. It turns each hero's
+  kit math and real match data into builds, lane counters, and coaching — and labels every
+  number honestly so you know what's measured and what's still a model.</p>
+
+  <section class="card">
+    <h2>How builds are made</h2>
+    <p>A <b>simulator</b> scores every viable item set against your kit's ability ratios,
+    cooldowns, and the current patch's gold economy — then ranks them for burst, sustained
+    fights, survivability, and the other things that actually win lanes. That's the
+    <b>Sim Build</b>: a kit-math second opinion that doesn't care what's popular.</p>
+    <p>Alongside it, <b>Meta Builds</b> show what the field actually wins with — the item
+    sets real players are taking this patch and their win rates. Two opinions: what the math
+    likes, and what the data shows.</p>
+  </section>
+
+  <section class="card">
+    <h2>What <span class="tag">THEORY</span> means</h2>
+    <p>Some combat constants — the armor/mitigation formula, ability haste, the crit
+    multiplier, the attack-speed cap — haven't been measured directly in-game yet. Anything
+    that rests on them is labeled <b>THEORY</b> until it's confirmed in practice mode.</p>
+    <p>We never fill an unverified number with a guess. If we're not sure, we say so and lean
+    on the field data instead. Honesty about uncertainty is the whole point.</p>
+  </section>
+
+  <section class="card">
+    <h2>Where the numbers come from</h2>
+    <p>Play rates and win-rate deltas come from <b>thousands of current-patch matches</b> via
+    Omeda Studios' official public API (through omeda.city). Win rates are pulled toward the
+    average for small samples, so a hero with a handful of games can't fluke its way to the
+    top of a list.</p>
+    <p>Evidence deltas (an item's win-rate swing) are <b>comparative, not absolute</b> — they
+    carry finished-inventory bias, so read them as "better than the alternative here," not as
+    a guarantee.</p>
+  </section>
+
+  <section class="card">
+    <h2>How the writing is checked</h2>
+    <p>The explanations, item reasoning, and coaching are written and then <b>machine-checked</b>:
+    every number a sentence cites has to exist in its source data, and an independent reviewer
+    passes back over the copy for anything misleading. Lines that can't be backed up get cut.</p>
+  </section>
+
+  <footer>
+    Built on the official Omeda Studios public API via omeda.city · not affiliated with Omeda Studios.<br>
+    THEORY = simulator output on constants not yet measured in-game. Evidence deltas carry finished-inventory bias and are comparative, not absolute.
+  </footer>
+</div>
+</body>
+</html>

@@ -24,7 +24,7 @@ import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-const PAGES = ['index.html', 'coach.html', 'squad.html'];
+const PAGES = ['index.html', 'coach.html', 'squad.html', 'about.html'];
 const pagePath = (p: string) => path.join(ROOT, 'ui/v6', p);
 
 const MOBILE_FONT_FLOOR = 14;     // px — below this, mobile body text is too small
