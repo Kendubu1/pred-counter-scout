@@ -77,16 +77,22 @@ if (agg) {
     const pctl = (vals: number[], v: number) => vals.filter((x) => x < v).length / Math.max(vals.length - 1, 1);
     const gamesAll = scored.map((s) => s.games);
     const wrAll = scored.map((s) => s.shrunkWr);
-    roles[role] = scored
-      .map((s) => {
-        const pickPctl = pctl(gamesAll, s.games);
-        const wrPctl = pctl(wrAll, s.shrunkWr);
-        const badge = wrPctl >= 0.7 && pickPctl <= 0.35 ? 'sleeper'
-          : pickPctl >= 0.7 && wrPctl <= 0.35 ? 'popular but losing' : null;
-        return { ...s, metaScore: Math.round(((pickPctl + wrPctl) / 2) * 1000) / 1000, badge };
-      })
-      .sort((a, b) => b.metaScore - a.metaScore)
-      .slice(0, 8);
+    const withScore = scored.map((s) => {
+      const pickPctl = pctl(gamesAll, s.games);
+      const wrPctl = pctl(wrAll, s.shrunkWr);
+      const badge = wrPctl >= 0.7 && pickPctl <= 0.35 ? 'sleeper'
+        : pickPctl >= 0.7 && wrPctl <= 0.35 ? 'popular but losing' : null;
+      return { ...s, metaScore: Math.round(((pickPctl + wrPctl) / 2) * 1000) / 1000, badge };
+    });
+    // The board is "what's winning in this lane" — so it's the UNION of the most
+    // established picks (top by meta score) AND the highest win rates (top by shrunk
+    // winrate), so a winning-but-rarely-picked sleeper (e.g. Wraith support, or the
+    // many off-role offlane winners) isn't dropped just for low pick volume. The
+    // sleeper/sample is disclosed by the game count + the verdict tag in the UI.
+    const byMeta = [...withScore].sort((a, b) => b.metaScore - a.metaScore).slice(0, 8);
+    const byWr = [...withScore].sort((a, b) => b.shrunkWr - a.shrunkWr).slice(0, 5);
+    const seenSlug = new Set<string>();
+    roles[role] = [...byMeta, ...byWr].filter((s) => { if (seenSlug.has(s.slug)) return false; seenSlug.add(s.slug); return true; });
   }
   // Top ranked pilots per lane from the pred.gg split leaderboard.
   // Env-gated: without PREDGG_* credentials the board ships without them.

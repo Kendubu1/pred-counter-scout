@@ -691,7 +691,7 @@ function renderMetaboard() {
       ${Object.keys(LANE_LABELS).map((role) => `
         <div class="lane">
           <h3 class="lane-go" data-lane="${role}" title="Open the ${esc(LANE_LABELS[role])} lane room">${LANE_LABELS[role]} <span style="color:var(--text-2)">→</span></h3>
-          ${[...(META.roles[role] || [])].sort((a, b) => b.shrunkWr - a.shrunkWr).slice(0, 5).map((h, i) => `
+          ${[...(META.roles[role] || [])].sort((a, b) => b.shrunkWr - a.shrunkWr).slice(0, 6).map((h, i) => `
             <div class="mp" data-slug="${h.slug}" data-role="${role}" title="${esc(h.name)}: ${h.games} ${role} games, ${(h.shrunkWr * 100).toFixed(1)}% shrunk winrate, meta score ${(h.metaScore * 100).toFixed(0)}${h.badge ? ' — ' + esc(h.badge) : ''}">
               <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
               <span class="n">${i === 0 ? '👑 ' : ''}${esc(h.name)}${h.badge === 'sleeper' ? ' 💤' : h.badge ? ' ⚠' : ''}<span class="g">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b style="color:${v.color};cursor:help" title="${esc(v.tip)}">${v.label}</b>`; })()}</span></span>
