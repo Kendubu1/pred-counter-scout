@@ -24,6 +24,16 @@ const slugs = requested.length ? requested : [...data.kits.keys()].sort();
 // Per-role field winrate (lightly shrunk toward 50%) so the lane picker can show a
 // flex hero's win% in the lane it flexes into. Same match-sample source as the meta board.
 const aggForIndex = loadAggregates();
+// One empirical-Bayes shrink strength per lane, shared by BOTH the meta board and the
+// index roleWr below, so the same hero's win% reads identically on every surface.
+const SHRINK_ROLES = ['carry', 'midlane', 'offlane', 'jungle', 'support'];
+const priorK: Record<string, number> = {};
+for (const r of SHRINK_ROLES) {
+  const cells = Object.values(aggForIndex?.heroes ?? {})
+    .map((h) => (h as { byRole?: Record<string, { n: number; w: number }> }).byRole?.[r])
+    .filter((c): c is { n: number; w: number } => !!c && c.n >= 30);
+  priorK[r] = momPriorStrength(cells, 0.5);
+}
 const index: { slug: string; name: string; role: string; roles: string[]; roleWr: Record<string, { wr: number; n: number }> }[] = [];
 const t0 = Date.now();
 for (const slug of slugs) {
@@ -37,7 +47,7 @@ for (const slug of slugs) {
   const roleWr: Record<string, { wr: number; n: number }> = {};
   for (const r of (roles.length ? roles : [artifact.role])) {
     const c = byRole[r];
-    if (c && c.n >= 30) roleWr[r] = { wr: Math.round(((c.w + 15) / (c.n + 30)) * 1000) / 1000, n: c.n };
+    if (c && c.n >= 30) { const k = priorK[r] ?? 30; roleWr[r] = { wr: Math.round(((c.w + k * 0.5) / (c.n + k)) * 1000) / 1000, n: c.n }; }
   }
   index.push({ slug, name: kit.name, role: artifact.role, roles: roles.length ? roles : [artifact.role], roleWr });
   process.stdout.write('.');
@@ -62,7 +72,7 @@ if (agg) {
       // page to link to (one such id is tracked in lessons.md)
       .map(([slug, h]) => ({ slug, cell: h.byRole?.[role] }))
       .filter((x): x is { slug: string; cell: { n: number; w: number } } => data.kits.has(x.slug) && !!x.cell && x.cell.n >= 30 && !!augHeroes[x.slug]?.[role]);
-    const k = momPriorStrength(cells.map((c) => c.cell), 0.5);
+    const k = priorK[role] ?? momPriorStrength(cells.map((c) => c.cell), 0.5);
     const scored = cells.map(({ slug, cell }) => ({
       slug,
       name: data.kits.get(slug)?.name ?? slug,
