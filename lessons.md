@@ -2129,3 +2129,12 @@ Eight maintainer-flagged fixes:
   head-to-head), so counters are necessarily sim-based — the section carries a
   "fight-sim only, not a lane matchup · THEORY until calibrated" caveat. Flagged Iggy
   as a counter-sim fidelity gap to revisit with calibration / kit modeling.
+
+## 2026-06-22: counter engine — unified best-counters ranking (any lane)
+- Per maintainer: stop restricting counters to the enemy's lane; pull the strongest
+  counters forward regardless of lane (the Skylar/Iggy sim disagreement is a meta-vs-
+  sim call we're setting aside, not a blocker). Replaced the same-lane + cross-lane
+  two-section layout with ONE ranked list: every hero scored vs the enemy via the
+  all-pairs sim, score>0 only, sorted strongest-first, top 10, each tagged with its
+  lane and marked "· their lane" when it's the mirror matchup. Routes to the counter's
+  own-lane hero page. Verified via Playwright (Adele → Carry/Jungle picks lead).
