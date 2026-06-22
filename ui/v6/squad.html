@@ -63,7 +63,6 @@
   .seathead .role { font-weight:800; text-transform:capitalize; color:var(--accent); min-width:64px; }
   .seathead .rwr { font-weight:800; font-variant-numeric:tabular-nums; }
   .seathead .sgames { margin-left:auto; color:var(--text-2); font-size:.72rem; font-variant-numeric:tabular-nums; white-space:nowrap; }
-  .moved { font-size:.62rem; font-weight:700; color:var(--gold); border:1px solid var(--gold); border-radius:6px; padding:.02rem .3rem; white-space:nowrap; cursor:help; }
   .seat .picks { margin-top:.4rem; }
   .snote { margin-top:.3rem; font-size:.7rem; color:var(--text-2); }
   .picks { display:flex; gap:.5rem; }
@@ -333,7 +332,6 @@ const plink = (uuid, name) => uuid
     return `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} <span style="color:var(--text-2)">${note}</span>`;
   }
 
-  const memberBy = new Map(s.members.map((m) => [m.uuid, m]));
   function renderPlan() {
     const selected = [...document.querySelectorAll('#who .ptoggle[aria-pressed="true"]')].map((b) => b.dataset.uuid);
     const mode = document.querySelector('#mode .seg[aria-pressed="true"]')?.dataset.v ?? 'wheel';
@@ -359,22 +357,16 @@ const plink = (uuid, name) => uuid
         return `
       <div style="margin-top:.8rem">
         <div style="font-size:.74rem; font-weight:800; color:var(--green); letter-spacing:.06em">${head}</div>
-        ${opt.seats.map((seat, si) => {
-          const m = memberBy.get(seat.uuid);
-          const fav = m && m.favRole ? m.favRole.toLowerCase() : null;
-          const isMove = fav && fav !== seat.role;
-          return `
+        ${opt.seats.map((seat, si) => `
         <div class="seat">
           <div class="seathead">
             <span class="role">${esc(seat.role)}</span>
-            ${isMove ? `<span class="moved" title="They usually queue ${esc(fav)}, but the team wins more with them here — see the note under the lineup.">↪ from ${esc(fav)}</span>` : ''}
             <span class="rwr">${pct(seat.wr)}%</span>
             ${pav(seat.uuid)}${plink(seat.uuid, seat.name)}
             <span class="sgames">${seat.games} games in role</span>
           </div>
           <div class="picks">${picksFor(seat, oi, si)}</div>
-        </div>`;
-        }).join('')}
+        </div>`).join('')}
         ${(() => {
           const carry = opt.seats.find((x) => x.role === 'carry'), support = opt.seats.find((x) => x.role === 'support');
           if (!carry || !support) return '';
@@ -383,7 +375,7 @@ const plink = (uuid, name) => uuid
           const col = rec.winrate >= 0.53 ? 'var(--green)' : rec.winrate <= 0.48 ? 'var(--red)' : 'var(--gold)';
           return `<div class="snote" style="color:${col};margin-top:.5rem">🤝 <b>Duo lane synergy:</b> ${esc(carry.name.split(' ')[0])} + ${esc(support.name.split(' ')[0])} have won ${pct(rec.winrate, 0)}% of ${rec.games} games actually laning together as carry+support — that pairing is part of why they are seated here.</div>`;
         })()}
-        ${opt.seats.length >= 3 ? '<div class="snote" style="margin-top:.5rem"><b>↪ from</b> = moved off their usual queue. Seats are scored as a set — someone can look stronger in a seat they did not get, but moving them gives up more wins in the role they leave than it adds. The carry+support pairing also weighs their real duo-lane record.</div>' : ''}
+        ${opt.seats.length >= 3 ? '<div class="snote" style="margin-top:.5rem">Seats are scored as a set — someone can look stronger in a seat they did not get, but moving them gives up more wins in the role they leave than it adds. The carry+support pairing also weighs their real duo-lane record.</div>' : ''}
       </div>`;
       }
       return `
