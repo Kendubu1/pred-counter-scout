@@ -524,7 +524,7 @@ async function renderLaneDetail() {
   let body = '';
   if (laneMode === 'first') {
     const mx = await getMatrix();
-    body = laneMeta.map((h, i) => {
+    body = '<div class="lp-sub" style="margin:.2rem 0 .5rem"><b>%</b> = win rate this patch (adjusted for small sample sizes) · ordered by meta score (how often the lane picks it + how often it wins)</div>' + laneMeta.map((h, i) => {
       // blind-pick safety vs the heroes actually in THIS lane's meta,
       // from the all-pairs matrix (artifact matchups are primary-role only)
       let trouble = '';
@@ -641,7 +641,7 @@ function renderMetaboard() {
   $('#metaboard').innerHTML = `
     <div class="mb-head">
       <h2>The meta board</h2>
-      <span class="mb-sub">meta score = how often a lane picks it + how often it wins (small samples adjusted down), rank-averaged · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
+      <span class="mb-sub">meta score = how often a lane picks it + how often it wins (small samples adjusted down), rank-averaged · the <b>%</b> beside each hero is its win rate · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
     </div>
     <div class="lanes">
       ${Object.keys(LANE_LABELS).map((role) => `
