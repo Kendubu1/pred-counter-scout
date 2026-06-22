@@ -309,6 +309,20 @@ const plink = (uuid, name) => uuid
     return `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} <span style="color:var(--text-2)">${note}</span>`;
   }
 
+  function anyPickFor(seat, optIdx, seatIdx) {
+    // Any lane: winning heroes for this seat — the player's OWN most-played first
+    // (more games = they pilot them better than average), then the lane's other field
+    // winners; all kept to a good win rate.
+    const meta = ((META && META.roles[seat.role]) || []).filter((h) => h.shrunkWr >= 0.5).sort((a, b) => b.shrunkWr - a.shrunkWr);
+    const mine = (seat.picks || []).filter((h) => h.shrunkWr >= 0.49).map((h) => ({ ...h, mine: true }));
+    const mineSlugs = new Set(mine.map((h) => h.slug));
+    const cands = [...mine, ...meta.filter((h) => !mineSlugs.has(h.slug)).map((h) => ({ ...h, mine: false }))];
+    if (!cands.length) return lanePickFor(seat, optIdx, seatIdx, 99);
+    const h = cands[(optIdx + seatIdx + shuffleSeed) % Math.min(cands.length, 8)];
+    const note = h.mine ? `you: ${pct(h.shrunkWr, 0)}% · ${h.games} games — you main this` : `field ${pct(h.shrunkWr, 0)}%`;
+    return `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} <span style="color:var(--text-2)">${note}</span>`;
+  }
+
   const memberBy = new Map(s.members.map((m) => [m.uuid, m]));
   function renderPlan() {
     const selected = [...document.querySelectorAll('#who .ptoggle[aria-pressed="true"]')].map((b) => b.dataset.uuid);
@@ -320,7 +334,7 @@ const plink = (uuid, name) => uuid
     const bestAvg = options[0].total / options[0].seats.length;
     const isOptimal = selected.length === s.members.length && mode === 'wheel' && shuffleSeed % 3 === 0;
     const picksFor = (seat, oi, si) => mode === 'meta' ? lanePickFor(seat, oi, si, 6)
-      : mode === 'any' ? lanePickFor(seat, oi, si, 99)
+      : mode === 'any' ? anyPickFor(seat, oi, si)
       : (seat.picks.map((h) => `<a href="./?hero=${esc(h.slug)}&role=${esc(seat.role)}"><img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">${esc(h.name)} ${pct(h.shrunkWr, 0)}%${h.games != null && h.games < 20 ? ` <span style="color:var(--gold)">· ${h.games} games</span>` : ''}</a>`).join('') || '<span style="color:var(--gold);font-size:.74rem">no 10+ game hero in this exact role — try meta or any-hero mode</span>');
     out.innerHTML = options.map((opt, oi) => {
       const avg = opt.total / opt.seats.length;
@@ -371,18 +385,18 @@ const plink = (uuid, name) => uuid
           <div class="planseat">
             <span class="r">${esc(seat.role)}</span>
             <span>${plink(seat.uuid, seat.name.split(' ')[0])} <span style="color:var(--text-2);font-size:.76rem">${pct(seat.wr)}% · ${seat.games} games</span></span>
-            <span class="picks-mini">${mode === 'meta' ? lanePickFor(seat, oi, si, 5)
-              : mode === 'any' ? lanePickFor(seat, oi, si, 99)
+            <span class="picks-mini">${mode === 'meta' ? lanePickFor(seat, oi, si, 6)
+              : mode === 'any' ? anyPickFor(seat, oi, si)
               : (seat.picks.map((h) => `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} ${pct(h.shrunkWr, 0)}%`).join(' · ') || '<span style="color:var(--gold)">no 10+ game hero here</span>')}</span>
           </div>`).join('')}
       </div>`;
     }).join('') + `
       <div style="font-size:.7rem;color:var(--text-2);margin-top:.4rem">
         ${mode === 'meta'
-          ? 'meta mode: the lane’s top-5 meta heroes; “new to you” = under 30 of your games on it; the seat winrate shown is still your role record'
+          ? '<b>Meta</b> — the lane’s top winning heroes by field win rate, any hero (comfort aside). “new to you” = under 30 of your games on it.'
           : mode === 'any'
-            ? 'any-hero mode: shuffle deals from the lane’s whole tracked roster with field winrates — comfort and meta rules off'
-            : 'wheelhouse mode: heroes with 10+ of your own games in that exact role (real 5v5s); thin samples under 20 games say so'}
+            ? '<b>Any lane</b> — a wider shuffle of heroes winning in this lane, your own most-played first (you pilot those better than average), then the lane’s other field winners.'
+            : '<b>Wheelhouse</b> — your best heroes in this role from your real 5v5s (your own winning record); thin samples under 20 games say so.'}
         · seats go to whoever wins most there, with thin role records counting less</div>`;
   }
   // who toggles: flip aria-pressed (keep at least one selected)

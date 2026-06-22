@@ -592,7 +592,7 @@ async function renderLaneDetail() {
     const echip = (h, isFlex) => {
       const w = h.roleWr && h.roleWr[role];
       const wr = w ? `<b style="color:${wrColor(w.wr)}">${(w.wr * 100).toFixed(1)}%</b>` : '';
-      const tag = isFlex ? `${esc(h.role)} flex${wr ? ` · ${wr}` : ''}` : wr;
+      const tag = wr; // both rest and flex chips: just the win% (section header already says which group)
       return `
         <span class="echip" data-slug="${h.slug}" data-go="hero"${isFlex ? ` data-role="${role}"` : ''}>
           <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">${esc(h.name)}${tag ? `<span style="color:var(--text-2);font-size:.62rem;margin-left:.25rem">${tag}</span>` : ''}</span>`;
