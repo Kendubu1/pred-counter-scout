@@ -163,9 +163,11 @@
   .itile .tag { position:absolute; top:-8px; right:-6px; background:var(--gold); color:#1a1405; font-size:.56rem; font-weight:800; border-radius:6px; padding:.05rem .3rem; letter-spacing:.03em; }
 
   .coach {
-    margin-top:1rem; font-size:1.04rem; border-left:3px solid var(--accent);
-    padding:.45rem .9rem; background:var(--accent-soft); border-radius:0 8px 8px 0;
+    margin-top:1rem; font-size:.88rem; line-height:1.55; color:var(--text-1);
+    border-left:3px solid var(--accent);
+    padding:.6rem .9rem; background:var(--accent-soft); border-radius:0 8px 8px 0;
   }
+  .coach b, .coach strong { color:var(--text-0); }
   .proofs { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.8rem; }
   .proof { background:var(--bg-2); border-radius:8px; padding:.42rem .7rem; font-size:.78rem; border-left:3px solid var(--accent); color:var(--text-1); }
   .proof b { color:var(--text-0); }
@@ -854,7 +856,7 @@ function renderHero(a, roleParam) {
               if (sa.healShieldPct) parts.push(`heal/shield ${sa.healShieldPct > 0 ? '+' : ''}${sa.healShieldPct}%`);
               else if (sa.healShieldAbs) parts.push(`adds ~${sa.healShieldAbs.toLocaleString()} HP of heal/shield per 10s`);
               const shift = sa.buildShift
-                ? `<div style="font-size:.66rem;color:var(--accent);margin:.1rem 0 0 2.35rem">⚙ locking this shifts the optimizer's build: <b>${sa.buildShift.in.map(esc).join(', ')}</b> over ${sa.buildShift.out.map(esc).join(', ')}</div>`
+                ? `<div style="font-size:.66rem;color:var(--accent);margin:.1rem 0 0 2.35rem">⚙ locking this shifts the sim build: <b>${sa.buildShift.in.map(esc).join(', ')}</b> over ${sa.buildShift.out.map(esc).join(', ')}</div>`
                 : (simPick && simPick.id === g.id ? `<div style="font-size:.66rem;color:var(--text-2);margin:.1rem 0 0 2.35rem">⚙ build unchanged — the same six items stay optimal with this augment locked</div>` : '');
               return `<div style="font-size:.66rem;color:var(--accent);margin:.12rem 0 0 2.35rem">⚙ in the sim: ${parts.length ? esc(parts.join(' · ')) : 'no change to this kit’s main numbers'}${sa.provisional ? ' (provisional constant)' : ''}</div>${shift}`;
             })()}
@@ -969,7 +971,7 @@ function renderHero(a, roleParam) {
     </section>` : ''}
 
     <section class="card answer">
-      <h2>The optimizer's build${a.build.title ? `: <span style="color:var(--accent);text-transform:none;letter-spacing:0">${esc(a.build.title)}</span>` : ''} <span class="hint">our kit-math second opinion${roleViews.length > 1 ? ` · <b>${esc(a.role)}</b>` : ''} · patch ${esc(a.patch)} · ${a.build.gold.toLocaleString()}g full</span></h2>
+      <h2>Sim Build${a.build.title ? `: <span style="color:var(--accent);text-transform:none;letter-spacing:0">${esc(a.build.title)}</span>` : ''} <span class="hint">our kit-math second opinion${roleViews.length > 1 ? ` · <b>${esc(a.role)}</b>` : ''} · patch ${esc(a.patch)} · ${a.build.gold.toLocaleString()}g full</span></h2>
       ${a.roleCaveat ? `<div class="caveat">⚠ ${esc(a.roleCaveat)}</div>` : ''}
       ${a.laneSteer ? `
       <div class="lanesteer">
@@ -979,11 +981,20 @@ function renderHero(a, roleParam) {
           <span class="flex-prov ${a.laneSteer.modeled ? 'modeled' : 'steered'}">${a.laneSteer.modeled ? '⚙ sim-modeled' : '🔬 evidence-steered'}</span>
           ${a.laneSteer.wr != null ? `<span class="flex-wr ${a.laneSteer.wr >= 50 ? 'up' : 'flat'}">${a.laneSteer.wr.toFixed(1)}%</span>` : ''}
         </div>
-        ${a.laneSteer.shiftIn.length ? `<div class="ls-shift">Steering toward this augment swaps in <b>${a.laneSteer.shiftIn.map(esc).join(', ')}</b> over ${a.laneSteer.shiftOut.map(esc).join(', ') || '—'} vs the pure optimum below.</div>` : `<div class="ls-shift">The pure optimum below already matches this augment's playstyle.</div>`}
+        ${a.laneSteer.shiftIn.length ? `<div class="ls-shift">Steering toward this augment swaps in <b>${a.laneSteer.shiftIn.map(esc).join(', ')}</b> over ${a.laneSteer.shiftOut.map(esc).join(', ') || '—'} vs the sim build below.</div>` : `<div class="ls-shift">The sim build below already matches this augment's playstyle.</div>`}
         <div class="flex-note">${esc(a.laneSteer.provenance)}</div>
       </div>` : ''}
       <div class="rail">${a.build.items.map(itile).join('')}</div>
-      <div class="coach">${esc(a.coachLine)}</div>
+      <div class="coach">${(() => {
+        // Bold the load-bearing tokens so the sim summary scans instead of reading
+        // as a wall: the % deltas, the recommended Eternal (after "Take"), and the
+        // sim-build item names. esc() runs first, so the <b> wrap is the only markup.
+        let h = esc(a.coachLine);
+        h = h.replace(/(\+\d+(?:\.\d+)?%)/g, '<b>$1</b>');
+        h = h.replace(/Take ([^:]+):/, 'Take <b>$1</b>:');
+        (a.build.items || []).forEach((it) => { const n = esc(it.name); if (n && n.length > 2) h = h.replace(n, `<b>${n}</b>`); });
+        return h;
+      })()}</div>
       ${(() => {
         const o = REASONING && REASONING.heroes && REASONING.heroes[a.slug] && REASONING.heroes[a.slug][a.role] && REASONING.heroes[a.slug][a.role].optimizer;
         if (!o) return '';
@@ -993,7 +1004,7 @@ function renderHero(a, roleParam) {
         return `
           ${o.synergy ? `<div style="font-size:.82rem;color:var(--text-0);margin-top:.55rem">🧩 ${esc(o.synergy)}</div>` : ''}
           ${itemsWhy}
-          ${swaps ? `<div style="margin-top:.4rem"><div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-2);margin-bottom:.1rem">why the optimizer swaps off the meta</div>${swaps}</div>` : ''}
+          ${swaps ? `<div style="margin-top:.4rem"><div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-2);margin-bottom:.1rem">why the sim build swaps off the meta</div>${swaps}</div>` : ''}
           ${o.holes ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.4rem">⚠ ${esc(o.holes)}</div>` : ''}`;
       })()}
       <div class="proofs">

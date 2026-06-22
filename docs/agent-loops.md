@@ -179,6 +179,30 @@ pages), you **harden the audit** to encode it (the `touch-consistency` and `pill
 checks were added from judge feedback) — so the bracket gets stronger every loop and
 that regression can't return silently.
 
+### What the first loop missed (and how it was closed)
+
+After the loop converged, the maintainer found the Sim Build tip (`.coach`) rendering
+oversized — it was `1.04rem`, the *largest* body text on the hero page, an inverted
+hierarchy that reads as "so much text." Two blind spots let it through, each now fixed:
+
+1. **The audit checked structure, not type scale.** It verified tokens, widths,
+   breakpoints, touch targets, overflow — but never that body/callout copy stays
+   *below* the heading scale. Added the `type-scale` check: any non-heading text
+   selector over `1rem` (outside a short allowlist of numbers/one-line callouts) is
+   flagged. That check fires on the old `1.04rem` value, so this class of defect
+   can't return silently.
+2. **The judge reviewed downscaled full-page screenshots of one hero (Countess).** A
+   single oversized paragraph is invisible in a 6000px-tall shot scaled to fit, and
+   the tip wasn't on the surface rendered. `ui-render` now also renders the
+   maintainer's actual example (Sparrow) and captures **real-scale** above-the-fold
+   *and element-level* shots (e.g. `*-simtip.png` of the `.coach` block), so the
+   judge sees typographic detail at 1:1.
+
+The general lesson: a judge is only as good as what it can see, and a bracket only
+catches what it measures. When something slips through, fix the artifact, then widen
+*both* — encode the missed invariant in the bracket and give the judge a sharper
+view — so the same gap can't recur.
+
 ## Provenance & honesty notes
 
 - **No `ANTHROPIC_API_KEY`.** Every author/judge step runs on in-session Claude Code

@@ -2041,3 +2041,33 @@ Eight maintainer-flagged fixes:
   copy loop. Harness green (115/115). Screenshots are gitignored (regenerable);
   ui-audit/ui-render/ui-review-history JSON committed. docs/agent-loops.md gained a
   "mobile UI review loop" case study + table row.
+
+## 2026-06-22: Sim Build rename + oversized-tip fix (UI loop reopened)
+- Maintainer feedback: (1) rename the "optimizer's build" section to "Sim Build";
+  (2) the Sparrow sim tip rendered oversized / wall-of-text, throwing off the look —
+  "how did we not pick this up in a design review?"
+- Rename: "The optimizer's build" -> "Sim Build" (h2), plus the supporting lines
+  ("locking this shifts the sim build", "vs the sim build below", "why the sim build
+  swaps off the meta"). Only internal data-field names stay `optimizer`. squad's
+  separate OPTIMAL LINEUP feature left alone.
+- Root cause of the oversized tip: .coach was font-size:1.04rem — the LARGEST body
+  text on the hero page (inverted hierarchy). Fixed to .88rem, muted (--text-1),
+  line-height 1.55, and bolded the load-bearing tokens (item / Eternal / +% delta)
+  at render so it scans instead of reading as a wall (esc() first, <b> is the only
+  markup; no artifact regen needed). Independent judge: oversized issue resolved,
+  rename consistent, ship it.
+- Why the first design-review loop missed it, and how both gaps were closed:
+  1) the audit checked structure (tokens/widths/breakpoints/touch/overflow) but NOT
+     type scale. Added a `type-scale` check: non-heading text >1rem (outside a short
+     allowlist of numbers/one-line callouts) is flagged — fires on the old 1.04rem,
+     so it can't recur silently.
+  2) the judge reviewed downscaled full-page shots of ONE hero (Countess); a single
+     oversized paragraph is invisible at that scale and wasn't even on that surface.
+     ui-render now renders the maintainer's actual example (Sparrow) and captures
+     REAL-SCALE above-the-fold + element-level shots (*-simtip.png of .coach), so the
+     judge sees typographic detail at 1:1.
+- UI loop reopened and reconverged: 75% -> 91.7% -> 100% -> 83.3% (reopen) -> 100%
+  (gate STOP). Residual (split the run-on sentence) is explicitly optional and
+  regen-gated — deferred. Harness green (115/115). Lesson: a judge is only as good as
+  what it can see; a bracket only catches what it measures — when something slips,
+  widen both.
