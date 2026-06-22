@@ -555,16 +555,19 @@ async function renderLaneDetail() {
       </div>`;
     }).join('');
     const metaSet = new Set(laneMeta.map((h) => h.slug));
-    const rest = INDEX.heroes.filter((h) => h.role === role && !metaSet.has(h.slug));
+    const wrOf = (h) => (h.roleWr && h.roleWr[role] ? h.roleWr[role].wr : 0);
+    const rest = INDEX.heroes.filter((h) => h.role === role && !metaSet.has(h.slug)).sort((a, b) => wrOf(b) - wrOf(a));
     // heroes whose PRIMARY lane is elsewhere but who flex into this role per the
     // data (e.g. The Fey support) — surfaced so they aren't invisible here
     const flex = INDEX.heroes.filter((h) => h.role !== role && !metaSet.has(h.slug) && (h.roles || []).includes(role))
-      .sort((a, b) => ((b.roleWr && b.roleWr[role] ? b.roleWr[role].wr : 0) - (a.roleWr && a.roleWr[role] ? a.roleWr[role].wr : 0)));
-    const echip = (h, withRole) => {
-      const fw = withRole && h.roleWr && h.roleWr[role];
+      .sort((a, b) => wrOf(b) - wrOf(a));
+    const echip = (h, isFlex) => {
+      const w = h.roleWr && h.roleWr[role];
+      const wr = w ? `<b style="color:${w.wr >= 0.5 ? 'var(--green)' : 'var(--red)'}">${(w.wr * 100).toFixed(1)}%</b>` : '';
+      const tag = isFlex ? `${esc(h.role)} flex${wr ? ` · ${wr}` : ''}` : wr;
       return `
-        <span class="echip" data-slug="${h.slug}" data-go="hero"${withRole ? ` data-role="${role}"` : ''}>
-          <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">${esc(h.name)}${withRole ? `<span style="color:var(--text-2);font-size:.62rem;margin-left:.25rem">${esc(h.role)} flex${fw ? ` · <b style="color:${fw.wr >= 0.5 ? 'var(--green)' : 'var(--red)'}">${(fw.wr * 100).toFixed(1)}%</b>` : ''}</span>` : ''}</span>`;
+        <span class="echip" data-slug="${h.slug}" data-go="hero"${isFlex ? ` data-role="${role}"` : ''}>
+          <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">${esc(h.name)}${tag ? `<span style="color:var(--text-2);font-size:.62rem;margin-left:.25rem">${tag}</span>` : ''}</span>`;
     };
     if (rest.length) {
       body += `<div class="lp-sub" style="margin-top:.6rem">rest of the lane:</div><div class="echips">${rest.map((h) => echip(h, false)).join('')}</div>`;
@@ -662,16 +665,16 @@ function renderMetaboard() {
   $('#metaboard').innerHTML = `
     <div class="mb-head">
       <h2>The meta board</h2>
-      <span class="mb-sub">meta score = how often a lane picks it + how often it wins (small samples adjusted down), rank-averaged · the <b>%</b> beside each hero is its win rate · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
+      <span class="mb-sub">each lane's most-played heroes, sorted by <b>win rate</b> (small samples adjusted toward average) · <b>meta</b> = pick rate + win rate, 0–100 · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
     </div>
     <div class="lanes">
       ${Object.keys(LANE_LABELS).map((role) => `
         <div class="lane">
           <h3 class="lane-go" data-lane="${role}" title="Open the ${esc(LANE_LABELS[role])} lane room">${LANE_LABELS[role]} <span style="color:var(--text-2)">→</span></h3>
-          ${(META.roles[role] || []).slice(0, 5).map((h, i) => `
+          ${[...(META.roles[role] || [])].sort((a, b) => b.shrunkWr - a.shrunkWr).slice(0, 5).map((h, i) => `
             <div class="mp" data-slug="${h.slug}" data-role="${role}" title="${esc(h.name)}: ${h.games} ${role} games, ${(h.shrunkWr * 100).toFixed(1)}% shrunk winrate, meta score ${(h.metaScore * 100).toFixed(0)}${h.badge ? ' — ' + esc(h.badge) : ''}">
               <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
-              <span class="n">${i === 0 ? '👑 ' : ''}${esc(h.name)}${h.badge === 'sleeper' ? ' 💤' : h.badge ? ' ⚠' : ''}<span class="g">${h.games} games</span></span>
+              <span class="n">${i === 0 ? '👑 ' : ''}${esc(h.name)}${h.badge === 'sleeper' ? ' 💤' : h.badge ? ' ⚠' : ''}<span class="g">${h.games} games · meta <b style="color:${metaColor(h.metaScore * 100)}">${(h.metaScore * 100).toFixed(0)}</b></span></span>
               <span class="wr ${wrClass(h.shrunkWr)}">${(h.shrunkWr * 100).toFixed(1)}%</span>
             </div>`).join('')}
           ${META.topPlayers && META.topPlayers[role] && META.topPlayers[role].length ? `
