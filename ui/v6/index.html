@@ -393,6 +393,9 @@
 <script>
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// Meta score 0-100 -> green (high) through yellow to red (low), so the number's
+// color tells you at a glance where it lands.
+const metaColor = (score) => `hsl(${Math.round(Math.max(0, Math.min(100, score)) * 1.2)}, 65%, 55%)`;
 // Per-item "why" rows for a build. The reasoning map is keyed by display name
 // ("Orb Of Growth") but artifact build items may be concatenated ("OrbOfGrowth"),
 // so match on a normalized key and prefer the reasoning's nicer name. Numbered by
@@ -538,15 +541,22 @@ async function renderLaneDetail() {
         <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
         <span><b>${i === 0 ? '👑 ' : ''}${esc(h.name)}</b>${h.badge ? ` <span style="color:var(--gold)">${h.badge === 'sleeper' ? '💤 sleeper' : '⚠ popular but losing'}</span>` : ''}
           <div class="sub">${trouble ? esc(trouble) : 'no sim data for this hero'}</div></span>
-        <span class="wrr">${(h.shrunkWr * 100).toFixed(1)}%<div class="sub" style="text-align:right">${h.games} games · meta ${(h.metaScore * 100).toFixed(0)}</div></span>
+        <span class="wrr">${(h.shrunkWr * 100).toFixed(1)}%<div class="sub" style="text-align:right">${h.games} games · meta <b style="color:${metaColor(h.metaScore * 100)}">${(h.metaScore * 100).toFixed(0)}</b></div></span>
       </div>`;
     }).join('');
     const metaSet = new Set(laneMeta.map((h) => h.slug));
     const rest = INDEX.heroes.filter((h) => h.role === role && !metaSet.has(h.slug));
+    // heroes whose PRIMARY lane is elsewhere but who flex into this role per the
+    // data (e.g. The Fey support) — surfaced so they aren't invisible here
+    const flex = INDEX.heroes.filter((h) => h.role !== role && !metaSet.has(h.slug) && (h.roles || []).includes(role));
+    const echip = (h, withRole) => `
+        <span class="echip" data-slug="${h.slug}" data-go="hero"${withRole ? ` data-role="${role}"` : ''}>
+          <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">${esc(h.name)}${withRole ? `<span style="color:var(--text-2);font-size:.62rem;margin-left:.2rem">${esc(h.role)} flex</span>` : ''}</span>`;
     if (rest.length) {
-      body += `<div class="lp-sub" style="margin-top:.6rem">rest of the lane:</div><div class="echips">${rest.map((h) => `
-        <span class="echip" data-slug="${h.slug}" data-go="hero">
-          <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">${esc(h.name)}</span>`).join('')}</div>`;
+      body += `<div class="lp-sub" style="margin-top:.6rem">rest of the lane:</div><div class="echips">${rest.map((h) => echip(h, false)).join('')}</div>`;
+    }
+    if (flex.length) {
+      body += `<div class="lp-sub" style="margin-top:.6rem">also flexed into ${esc(LANE_LABELS[role] || role).toLowerCase()} (their main lane is elsewhere):</div><div class="echips">${flex.map((h) => echip(h, true)).join('')}</div>`;
     }
     body += `<div class="lp-sub" style="margin-top:.6rem">"out-simmed" = the kit-math kill-window sim, THEORY until calibrated · tap a hero for the full build page</div>`;
   } else {
@@ -605,7 +615,7 @@ async function renderLaneDetail() {
   box.querySelectorAll('.lmode button').forEach((b) => { b.onclick = () => { laneMode = b.dataset.m; renderLaneDetail(); }; });
   box.querySelectorAll('.echip').forEach((c) => {
     c.onclick = () => {
-      if (c.dataset.go === 'hero') { nav(c.dataset.slug); return; }
+      if (c.dataset.go === 'hero') { nav(c.dataset.slug, false, c.dataset.role || null); return; }
       laneEnemy = c.dataset.slug; renderLaneDetail();
     };
   });
