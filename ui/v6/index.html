@@ -405,6 +405,9 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;',
 // Meta score 0-100 -> green (high) through yellow to red (low), so the number's
 // color tells you at a glance where it lands.
 const metaColor = (score) => `hsl(${Math.round(Math.max(0, Math.min(100, score)) * 1.2)}, 65%, 55%)`;
+// One shared win-rate color band used everywhere: green >=52% (clearly above the 50%
+// break-even), red <=48% (clearly below), neutral in between. Matches wrClass below.
+const wrColor = (wr) => wr >= 0.52 ? 'var(--green)' : wr <= 0.48 ? 'var(--red)' : 'var(--text-2)';
 // Per-item "why" rows for a build. The reasoning map is keyed by display name
 // ("Orb Of Growth") but artifact build items may be concatenated ("OrbOfGrowth"),
 // so match on a normalized key and prefer the reasoning's nicer name. Numbered by
@@ -533,7 +536,7 @@ async function renderLaneDetail() {
   if (laneMode === 'first') {
     const mx = await getMatrix();
     const ranked = [...laneMeta].sort((a, b) => b.shrunkWr - a.shrunkWr); // sort by the win rate we show, highest first
-    body = '<div class="lp-sub" style="margin:.2rem 0 .5rem"><b>%</b> = win rate this patch, highest first (small samples pulled toward the lane average) · <b>meta</b> = how often the lane picks it AND wins (0–100)</div>' + ranked.map((h, i) => {
+    body = '<div class="lp-sub" style="margin:.2rem 0 .5rem"><b>%</b> = win rate this patch, highest first (small samples pulled toward the lane average) · <span style="color:var(--green)">green</span> 52%+, <span style="color:var(--red)">red</span> 48% or less · <b>meta</b> = how often the lane picks it AND wins (0–100)</div>' + ranked.map((h, i) => {
       // blind-pick safety vs the heroes actually in THIS lane's meta,
       // from the all-pairs matrix (artifact matchups are primary-role only)
       let trouble = '';
@@ -551,7 +554,7 @@ async function renderLaneDetail() {
         <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
         <span><b>${i === 0 ? '👑 ' : ''}${esc(h.name)}</b>${h.badge ? ` <span style="color:var(--gold)">${h.badge === 'sleeper' ? '💤 sleeper' : '⚠ popular but losing'}</span>` : ''}
           <div class="sub">${trouble ? esc(trouble) : 'no sim data for this hero'}</div></span>
-        <span class="wrr">${(h.shrunkWr * 100).toFixed(1)}%<div class="sub" style="text-align:right">${h.games} games · meta <b style="color:${metaColor(h.metaScore * 100)}">${(h.metaScore * 100).toFixed(0)}</b></div></span>
+        <span class="wrr"><b style="color:${wrColor(h.shrunkWr)}">${(h.shrunkWr * 100).toFixed(1)}%</b><div class="sub" style="text-align:right">${h.games} games · meta <b style="color:${metaColor(h.metaScore * 100)}">${(h.metaScore * 100).toFixed(0)}</b></div></span>
       </div>`;
     }).join('');
     const metaSet = new Set(laneMeta.map((h) => h.slug));
@@ -563,7 +566,7 @@ async function renderLaneDetail() {
       .sort((a, b) => wrOf(b) - wrOf(a));
     const echip = (h, isFlex) => {
       const w = h.roleWr && h.roleWr[role];
-      const wr = w ? `<b style="color:${w.wr >= 0.5 ? 'var(--green)' : 'var(--red)'}">${(w.wr * 100).toFixed(1)}%</b>` : '';
+      const wr = w ? `<b style="color:${wrColor(w.wr)}">${(w.wr * 100).toFixed(1)}%</b>` : '';
       const tag = isFlex ? `${esc(h.role)} flex${wr ? ` · ${wr}` : ''}` : wr;
       return `
         <span class="echip" data-slug="${h.slug}" data-go="hero"${isFlex ? ` data-role="${role}"` : ''}>
@@ -665,7 +668,7 @@ function renderMetaboard() {
   $('#metaboard').innerHTML = `
     <div class="mb-head">
       <h2>The meta board</h2>
-      <span class="mb-sub">each lane's most-played heroes, sorted by <b>win rate</b> (small samples adjusted toward average) · <b>meta</b> = pick rate + win rate, 0–100 · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
+      <span class="mb-sub">each lane's most-played heroes, sorted by <b>win rate</b> (small samples adjusted toward average) — <span style="color:var(--green)">green</span> 52%+, <span style="color:var(--red)">red</span> 48% or less · <b>meta</b> = pick rate + win rate, 0–100 · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
     </div>
     <div class="lanes">
       ${Object.keys(LANE_LABELS).map((role) => `
@@ -741,7 +744,7 @@ function setLandingMode(mode) {
   laneEnemy = null; laneMode = counter ? 'counter' : 'first';
   renderGrid();
   // In counter mode wait for an enemy pick; clear any stale lane room.
-  if (counter && roleFilter === 'all') $('#lanedetail').innerHTML = '<div class="lanepanel" style="text-align:center;color:var(--text-2)">Pick the enemy hero above (or choose their lane) to see who counters them.</div>';
+  if (counter && roleFilter === 'all') $('#lanedetail').innerHTML = '<div class="lanepanel" style="text-align:center;color:var(--text-2)">Search the enemy hero, or pick a lane, to see who counters them.</div>';
   else renderLaneDetail();
 }
 
