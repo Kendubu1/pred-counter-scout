@@ -283,7 +283,10 @@ const plink = (uuid, name) => uuid
 
   let shuffleSeed = 0;
   function lanePickFor(seat, optIdx, seatIdx, depth) {
-    const lane = (META && META.roles[seat.role]) || [];
+    // Sort by win rate (like the meta board) so the high-win-rate picks — including
+    // winning sleepers such as support Wraith — surface here too, not just the
+    // most-played heroes.
+    const lane = ((META && META.roles[seat.role]) || []).slice().sort((a, b) => b.shrunkWr - a.shrunkWr);
     if (!lane.length) return '<span style="color:var(--text-2)">no meta data</span>';
     const window = Math.min(lane.length, depth);
     const pickIdx = (optIdx + seatIdx + shuffleSeed) % window;
@@ -305,7 +308,7 @@ const plink = (uuid, name) => uuid
     if (!options) { out.innerHTML = '<div style="color:var(--text-2);font-size:.82rem;margin-top:.6rem">pick at least two players</div>'; return; }
     const bestAvg = options[0].total / options[0].seats.length;
     const isOptimal = selected.length === s.members.length && mode === 'wheel' && shuffleSeed % 3 === 0;
-    const picksFor = (seat, oi, si) => mode === 'meta' ? lanePickFor(seat, oi, si, 5)
+    const picksFor = (seat, oi, si) => mode === 'meta' ? lanePickFor(seat, oi, si, 6)
       : mode === 'any' ? lanePickFor(seat, oi, si, 99)
       : (seat.picks.map((h) => `<a href="./?hero=${esc(h.slug)}&role=${esc(seat.role)}"><img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">${esc(h.name)} ${pct(h.shrunkWr, 0)}%${h.games != null && h.games < 20 ? ` <span style="color:var(--gold)">· ${h.games} games</span>` : ''}</a>`).join('') || '<span style="color:var(--gold);font-size:.74rem">no 10+ game hero in this exact role — try meta or any-hero mode</span>');
     out.innerHTML = options.map((opt, oi) => {
