@@ -2112,3 +2112,20 @@ Eight maintainer-flagged fixes:
   nowrap). ui-render flagged 12 phone overflows before commit. Fix: put About in the
   footer instead (lighter, and the nav stays 3 tools). Re-render: 0 overflow. Lesson:
   the deterministic overflow check catches mobile regressions a desktop eye misses.
+
+## 2026-06-22: counter engine — cross-lane answers + an Iggy sim-fidelity finding
+- Gap (maintainer): the counter result only showed same-lane answers (mirror-lane
+  counters). The all-pairs matrix already knows who beats an enemy from ANY lane, so
+  added a "Also strong into <enemy> from other lanes" section: top 2 per other lane
+  with score>0, dots, each routing to the hero page in that counter's own lane
+  (.lrow data-role). Verified rendering via Playwright (Adele → Drongo/Eden/Countess).
+- BUT the maintainer's example (Skylar counters offlane Iggy) exposed a sim-accuracy
+  gap, not just a display one: in our matchup sim Iggy & Scorch BEATS Skylar 6-0, and
+  NO carry/offlane/jungle/support hero beats Iggy (only midlane Gadget/The Fey/Gideon
+  edge it). So the cross-lane section is empty for Iggy — the opposite of the field
+  read. Iggy's zone/turret/DoT kit is almost certainly over-modeled by the 1v1
+  kit-math sim (or flattered by the unverified mitigation/attack-speed constants).
+- We have no pairwise FIELD winrate (aggregates are per-hero-per-role {n,w}, not
+  head-to-head), so counters are necessarily sim-based — the section carries a
+  "fight-sim only, not a lane matchup · THEORY until calibrated" caveat. Flagged Iggy
+  as a counter-sim fidelity gap to revisit with calibration / kit modeling.
