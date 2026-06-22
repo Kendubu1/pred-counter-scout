@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Predecessor Scout — Build Lab</title>
-<meta name="description" content="Kit-math builds for Predecessor: what to build, when it spikes, and why — derived from ability math and real match data, not copied winrates.">
+<meta name="description" content="Predecessor builds, counters, and Eternals: what to build, when it spikes, and why — a kit-math simulator cross-checked against real match data.">
 <style>
   :root {
     --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
@@ -59,6 +59,9 @@
   .suggest .srow:hover, .suggest .srow.sel { background:var(--bg-2); }
   .suggest .srow img { width:30px; height:30px; border-radius:8px; object-fit:cover; background:var(--bg-2); }
   .suggest .srow .sr { margin-left:auto; font-size:.7rem; color:var(--text-2); text-transform:capitalize; }
+  .landing-mode { display:inline-flex; gap:.2rem; margin:1rem auto 0; background:var(--bg-1); border:1px solid var(--border); border-radius:99px; padding:.2rem; }
+  .landing-mode button { background:transparent; border:none; color:var(--text-1); border-radius:99px; padding:.4rem 1rem; font:inherit; font-size:.85rem; cursor:pointer; min-height:38px; }
+  .landing-mode button.active { background:var(--accent); color:#fff; font-weight:600; }
   .rolebar { display:flex; gap:.45rem; justify-content:center; flex-wrap:wrap; margin-top:.9rem; }
   .rolebar button {
     background:var(--bg-1); color:var(--text-1); border:1px solid var(--border);
@@ -319,6 +322,8 @@
   .lanes { display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:.7rem; margin-top:.8rem; }
   .lane { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:.7rem .75rem; }
   .lane h3 { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.45rem; }
+  .lane h3.lane-go { cursor:pointer; }
+  .lane h3.lane-go:hover { color:var(--accent); }
   .mp { display:flex; align-items:center; gap:.5rem; padding:.26rem .3rem; border-radius:8px; cursor:pointer; }
   .mp:hover { background:var(--bg-2); }
   .mp img { width:30px; height:30px; border-radius:8px; object-fit:cover; background:var(--bg-2); flex:none; }
@@ -372,8 +377,12 @@
 <div class="wrap">
   <div id="landing" class="hidden fade">
     <div class="landing-hero">
-      <h1>Who are you playing?</h1>
-      <p>What to build, when it spikes, and why — from kit math and real match data, not copied winrates.</p>
+      <h1 id="landTitle">Who are you playing?</h1>
+      <p id="landSub">What to build, when it spikes, and why — a kit-math simulator, cross-checked against real match data.</p>
+      <div class="landing-mode" id="landMode">
+        <button data-lm="play" class="active">🎮 Build a hero</button>
+        <button data-lm="counter">🛡 Counter an enemy</button>
+      </div>
       <div class="searchbar"><input id="search" placeholder="Search heroes…" autocomplete="off"><div class="suggest" id="suggest"></div></div>
       <div class="rolebar" id="rolebar"></div>
     </div>
@@ -469,6 +478,7 @@ function renderRolebar() {
 }
 
 /* ── lane detail: pick-first vs counter flow ── */
+let landingMode = 'play'; // 'play' (build my hero) | 'counter' (counter an enemy)
 let laneMode = 'first';
 let laneEnemy = null;
 const ART = new Map();
@@ -656,7 +666,7 @@ function renderMetaboard() {
     <div class="lanes">
       ${Object.keys(LANE_LABELS).map((role) => `
         <div class="lane">
-          <h3>${LANE_LABELS[role]}</h3>
+          <h3 class="lane-go" data-lane="${role}" title="Open the ${esc(LANE_LABELS[role])} lane room">${LANE_LABELS[role]} <span style="color:var(--text-2)">→</span></h3>
           ${(META.roles[role] || []).slice(0, 5).map((h, i) => `
             <div class="mp" data-slug="${h.slug}" data-role="${role}" title="${esc(h.name)}: ${h.games} ${role} games, ${(h.shrunkWr * 100).toFixed(1)}% shrunk winrate, meta score ${(h.metaScore * 100).toFixed(0)}${h.badge ? ' — ' + esc(h.badge) : ''}">
               <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
@@ -695,6 +705,40 @@ function renderMetaboard() {
         </div>`).join('')}
     </div>`;
   document.querySelectorAll('.mp, .simpicks .pilot[data-slug]').forEach((c) => { c.onclick = () => nav(c.dataset.slug, false, c.dataset.role); });
+  document.querySelectorAll('.lane-go').forEach((h) => { h.onclick = () => pickLane(h.dataset.lane); });
+}
+
+// Open a lane's "lane room" as if the rolebar lane was picked, and scroll to it.
+function pickLane(role) {
+  landingMode = 'play';
+  roleFilter = role; laneEnemy = null; laneMode = 'first';
+  renderRolebar(); renderGrid(); renderLaneDetail();
+  $('#lanedetail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+// Counter flow: treat the picked hero as the enemy and show the lane's best answers.
+function counterHero(slug) {
+  const h = INDEX.heroes.find((x) => x.slug === slug);
+  const lane = roleFilter !== 'all' ? roleFilter : (h && h.role) || 'midlane';
+  roleFilter = lane; laneMode = 'counter'; laneEnemy = slug;
+  renderRolebar(); renderGrid(); renderLaneDetail();
+  $('#lanedetail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+// Toggle the landing between "build my hero" and "counter an enemy".
+function setLandingMode(mode) {
+  landingMode = mode;
+  document.querySelectorAll('#landMode button').forEach((b) => b.classList.toggle('active', b.dataset.lm === mode));
+  const counter = mode === 'counter';
+  $('#landTitle').textContent = counter ? 'Who are you up against?' : 'Who are you playing?';
+  $('#landSub').textContent = counter
+    ? 'Pick the enemy hero — see who beats them in lane, then tap a counter for its full build, Eternals and augments.'
+    : 'What to build, when it spikes, and why — a kit-math simulator, cross-checked against real match data.';
+  $('#search').placeholder = counter ? 'Search the enemy hero…' : 'Search heroes…';
+  $('#search').value = ''; $('#suggest').innerHTML = '';
+  laneEnemy = null; laneMode = counter ? 'counter' : 'first';
+  renderGrid();
+  // In counter mode wait for an enemy pick; clear any stale lane room.
+  if (counter && roleFilter === 'all') $('#lanedetail').innerHTML = '<div class="lanepanel" style="text-align:center;color:var(--text-2)">Pick the enemy hero above (or choose their lane) to see who counters them.</div>';
+  else renderLaneDetail();
 }
 
 function renderGrid() {
@@ -708,7 +752,7 @@ function renderGrid() {
       <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph',style:'aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:var(--text-2)',textContent:'⚔'}))">
       <div class="nm">${esc(h.name)}</div><div class="rl">${esc(h.role)}</div>
     </div>`).join('');
-  document.querySelectorAll('.hcard').forEach((c) => { c.onclick = () => nav(c.dataset.slug, false, roleFilter !== 'all' ? roleFilter : null); });
+  document.querySelectorAll('.hcard').forEach((c) => { c.onclick = () => { if (landingMode === 'counter') counterHero(c.dataset.slug); else nav(c.dataset.slug, false, roleFilter !== 'all' ? roleFilter : null); }; });
 }
 
 /* ── hero page ── */
@@ -1276,7 +1320,7 @@ window.onpopstate = route;
         <span>${esc(h.name)}</span><span class="sr">${esc(h.role)}</span>
       </div>`).join('');
     document.querySelectorAll('#suggest .srow').forEach((r) => {
-      r.onmousedown = (e) => { e.preventDefault(); $('#search').value = ''; $('#suggest').innerHTML = ''; nav(r.dataset.slug); };
+      r.onmousedown = (e) => { e.preventDefault(); $('#search').value = ''; $('#suggest').innerHTML = ''; landingMode === 'counter' ? counterHero(r.dataset.slug) : nav(r.dataset.slug); };
     });
   }
   $('#search').oninput = () => { selIdx = -1; renderGrid(); renderSuggest(); };
@@ -1284,10 +1328,11 @@ window.onpopstate = route;
     const list = suggestions();
     if (e.key === 'ArrowDown') { selIdx = Math.min(selIdx + 1, list.length - 1); renderSuggest(); e.preventDefault(); }
     else if (e.key === 'ArrowUp') { selIdx = Math.max(selIdx - 1, -1); renderSuggest(); e.preventDefault(); }
-    else if (e.key === 'Enter' && list.length) { const h = list[Math.max(selIdx, 0)]; $('#search').value = ''; $('#suggest').innerHTML = ''; nav(h.slug); }
+    else if (e.key === 'Enter' && list.length) { const h = list[Math.max(selIdx, 0)]; $('#search').value = ''; $('#suggest').innerHTML = ''; landingMode === 'counter' ? counterHero(h.slug) : nav(h.slug); }
     else if (e.key === 'Escape') { $('#suggest').innerHTML = ''; }
   };
   $('#search').onblur = () => setTimeout(() => { $('#suggest').innerHTML = ''; }, 150);
+  document.querySelectorAll('#landMode button').forEach((b) => { b.onclick = () => setLandingMode(b.dataset.lm); });
   await route();
 })();
 </script>
