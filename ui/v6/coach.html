@@ -47,6 +47,17 @@
   .rost:hover { border-color:var(--accent); }
   .rost img.pav { width:38px; height:38px; border-radius:50%; object-fit:cover; border:1px solid var(--border); }
   .rost .rl { display:block; font-size:.7rem; color:var(--text-2); }
+  /* coach reports collapsed into a narrow menu so the post-game review leads */
+  .rostermenu { max-width:480px; border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-1); margin-bottom:1.2rem; }
+  .rostermenu > summary { cursor:pointer; list-style:none; padding:.7rem .9rem; display:flex; align-items:center; gap:.5rem; }
+  .rostermenu > summary::-webkit-details-marker { display:none; }
+  .rostermenu > summary::before { content:"▸"; color:var(--accent); font-size:.8rem; }
+  .rostermenu[open] > summary::before { content:"▾"; }
+  .rostermenu .rm-t { font-weight:800; font-size:.96rem; }
+  .rostermenu .rm-s { color:var(--text-2); font-size:.76rem; }
+  .rostermenu .roster { display:flex; flex-direction:column; gap:.4rem; padding:0 .6rem .65rem; }
+  .rostermenu .rost { padding:.5rem .7rem; gap:.6rem; background:var(--bg-2); }
+  .rostermenu .rost img.pav { width:30px; height:30px; }
   .sub { color:var(--text-1); margin-top:.2rem; }
   .chip { white-space:nowrap; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.13rem .62rem; font-size:.76rem; color:var(--text-1); }
   .chip.rank { background:var(--accent-soft); border-color:var(--accent); color:var(--text-0); font-weight:700; }
@@ -320,22 +331,23 @@ function pgReview(f) {
       } catch {}
 
       document.getElementById('page').innerHTML = `
-        <h1>Coach reports</h1>
-        <div class="sub" style="margin-bottom:1rem">one per member — pick yours</div>
-        <div class="roster">
-          ${sq.members.map((m) => `
-            <a class="rost" href="coach.html?player=${esc(m.uuid)}">
-              ${m.topHeroes?.[0] ? `<img class="pav" src="../img/heroes/${esc(m.topHeroes[0].slug)}.webp" alt="" onerror="this.remove()">` : ''}
-              <span>
-                <b>${esc(m.name)}</b>
-                ${m.archetype ? `<span class="rl">“${esc(m.archetype.label)}”</span>` : ''}
-                <span class="rl">${m.current ? `${esc(m.current.rank)} · ${m.current.points} VP · ` : ''}${m.career.games.toLocaleString()} games</span>
-              </span>
-              <span style="margin-left:auto;color:var(--text-2)">→</span>
-            </a>`).join('')}
-        </div>
+        <details class="rostermenu">
+          <summary><span class="rm-t">Coach reports</span><span class="rm-s">— open a member’s report</span></summary>
+          <div class="roster">
+            ${sq.members.map((m) => `
+              <a class="rost" href="coach.html?player=${esc(m.uuid)}">
+                ${m.topHeroes?.[0] ? `<img class="pav" src="../img/heroes/${esc(m.topHeroes[0].slug)}.webp" alt="" onerror="this.remove()">` : ''}
+                <span>
+                  <b>${esc(m.name)}</b>
+                  ${m.archetype ? `<span class="rl">“${esc(m.archetype.label)}”</span>` : ''}
+                  <span class="rl">${m.current ? `${esc(m.current.rank)} · ${m.current.points} VP · ` : ''}${m.career.games.toLocaleString()} games</span>
+                </span>
+                <span style="margin-left:auto;color:var(--text-2)">→</span>
+              </a>`).join('')}
+          </div>
+        </details>
         ${pgList.length ? `
-        <h1 style="margin-top:1.8rem">Post-game review</h1>
+        <h1>Post-game review</h1>
         <div class="sub" id="pgsub" style="margin-bottom:.6rem"></div>
         <div id="pgfilter" class="pgfilter"></div>
         <div id="pgpick" class="pgpick"></div>
