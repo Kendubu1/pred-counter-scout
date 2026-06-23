@@ -361,12 +361,17 @@ function pgReview(f) {
         // lazy detail fetch, cached per match id
         const cache = {};
         const loadGame = (id) => (cache[id] ||= fetch(`../../data/postgame/${id}.json`).then((r) => r.json()));
-        const wins = pgList.filter((m) => m.result === 'win').length;
         const stacks = [...new Set(pgList.map((m) => m.stackSize).filter(Boolean))].sort((a, b) => b - a);
-        sub.innerHTML = `${pgList.length} ranked games on record · <b style="color:var(--green)">${wins}W</b> <b style="color:var(--red)">${pgList.length - wins}L</b> · newest first`;
         const fmtDate = (iso) => new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
         let filter = 'all', cur = 0;
         const visible = () => filter === 'all' ? pgList : pgList.filter((m) => String(m.stackSize) === filter);
+        // W-L summary reflects the active filter
+        const updateSub = () => {
+          const vis = visible();
+          const w = vis.filter((m) => m.result === 'win').length;
+          const label = filter === 'all' ? `${vis.length} ranked games on record` : `${vis.length} ${filter}-stack game${vis.length === 1 ? '' : 's'}`;
+          sub.innerHTML = `${label} · <b style="color:var(--green)">${w}W</b> <b style="color:var(--red)">${vis.length - w}L</b> · newest first`;
+        };
         const renderFilter = () => {
           filterEl.innerHTML = stacks.length > 1
             ? [['all', `All ${pgList.length}`], ...stacks.map((s) => [String(s), `${s}-stack`])]
@@ -396,8 +401,16 @@ function pgReview(f) {
         };
         if (stacks.length > 1) {
           renderFilter();
-          [...filterEl.children].forEach((b) => b.onclick = () => { filter = b.dataset.f; cur = 0; renderFilter(); renderChips(); draw(0); });
+          // delegate on the container so the handler survives renderFilter()
+          // replacing the button elements (the old per-button binding went stale
+          // after the first click, locking the filter).
+          filterEl.onclick = (e) => {
+            const b = e.target.closest('.pgf'); if (!b) return;
+            filter = b.dataset.f; cur = 0;
+            renderFilter(); renderChips(); draw(0); updateSub();
+          };
         }
+        updateSub();
         renderChips();
         draw(0);
       }
