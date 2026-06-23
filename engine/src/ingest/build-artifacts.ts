@@ -102,7 +102,11 @@ if (agg) {
     const byMeta = [...withScore].sort((a, b) => b.metaScore - a.metaScore).slice(0, 8);
     const byWr = [...withScore].sort((a, b) => b.shrunkWr - a.shrunkWr).slice(0, 5);
     const seenSlug = new Set<string>();
-    roles[role] = [...byMeta, ...byWr].filter((s) => { if (seenSlug.has(s.slug)) return false; seenSlug.add(s.slug); return true; });
+    // Dedupe the union, then sort the whole board by metaScore so the lane reads
+    // high-to-low (the appended sleepers were leaving the tail out of order).
+    roles[role] = [...byMeta, ...byWr]
+      .filter((s) => { if (seenSlug.has(s.slug)) return false; seenSlug.add(s.slug); return true; })
+      .sort((a, b) => b.metaScore - a.metaScore);
   }
   // Top ranked pilots per lane from the pred.gg split leaderboard.
   // Env-gated: without PREDGG_* credentials the board ships without them.
