@@ -96,12 +96,26 @@
   .splits td.n { text-align:right; font-variant-numeric:tabular-nums; }
   footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
 
+  /* post-game review: record summary + filter pills + a scrollable game strip
+     (lazy-loaded detail) so the list stays one row no matter how many games. */
+  .pgfilter { display:flex; gap:.4rem; margin-bottom:.6rem; flex-wrap:wrap; }
+  .pgf { font:inherit; font-size:.74rem; cursor:pointer; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.2rem .7rem; color:var(--text-2); -webkit-appearance:none; appearance:none; }
+  .pgf.on { color:var(--text-0); border-color:var(--accent); background:var(--accent-soft); }
+  .pgpick { display:flex; gap:.45rem; overflow-x:auto; padding-bottom:.5rem; scrollbar-width:thin; -webkit-overflow-scrolling:touch; }
+  .pgpick::-webkit-scrollbar { height:6px; }
+  .pgpick::-webkit-scrollbar-thumb { background:var(--border); border-radius:99px; }
+  .pgchip { flex:none; font:inherit; font-size:.78rem; cursor:pointer; background:var(--bg-2); border:1px solid var(--border); border-radius:9px; padding:.35rem .6rem; color:var(--text-1); display:inline-flex; align-items:center; gap:.35rem; white-space:nowrap; -webkit-appearance:none; appearance:none; }
+  .pgchip.on { border-color:var(--accent); background:var(--bg-3); }
+  .pgchip .d { font-weight:600; }
+  .pgchip .s { color:var(--text-2); font-size:.7rem; }
+  .pgchip .c { color:var(--gold); font-size:.7rem; }
+
   /* ── mobile: smaller, crisp, nothing bleeds ── */
   @media (max-width:600px) {
     body { font-size:15px; }
     /* tap targets: >=44px hit area on touch (Apple HIG 44 / WCAG floor 24).
        Shared union list across all three pages (absent selectors are no-ops). */
-    .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle {
+    .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle, .pgchip, .pgf {
       min-height:44px; display:inline-flex; align-items:center; justify-content:center;
     }
     .snpill { font-size:.8rem; }
@@ -297,12 +311,12 @@ function pgReview(f) {
     if (sq) {
       document.title = 'Coach reports — pick yours';
       // Post-game reviews of the squad's recent ranked games (committed, zero-API).
-      let pgGames = [];
+      // Only the small index loads up front; each match's full facts are fetched
+      // lazily on click (and cached), so the list scales to any number of games.
+      let pgList = [];
       try {
         const PG = await (await fetch('../../data/postgame/index.json')).json();
-        pgGames = (await Promise.all((PG.matches || []).map(async (m) => {
-          try { return await (await fetch(`../../data/postgame/${m.matchId}.json`)).json(); } catch { return null; }
-        }))).filter(Boolean);
+        pgList = (PG.matches || []).filter((m) => m.matchId);
       } catch {}
 
       document.getElementById('page').innerHTML = `
@@ -320,24 +334,59 @@ function pgReview(f) {
               <span style="margin-left:auto;color:var(--text-2)">→</span>
             </a>`).join('')}
         </div>
-        ${pgGames.length ? `
+        ${pgList.length ? `
         <h1 style="margin-top:1.8rem">Post-game review</h1>
-        <div class="sub" style="margin-bottom:.8rem">your 5-stack ranked games — pick a result to review</div>
-        <div id="pgpick" style="display:flex;gap:.45rem;flex-wrap:wrap"></div>
+        <div class="sub" id="pgsub" style="margin-bottom:.6rem"></div>
+        <div id="pgfilter" class="pgfilter"></div>
+        <div id="pgpick" class="pgpick"></div>
         <div id="pgview"></div>` : ''}`;
 
-      if (pgGames.length) {
+      if (pgList.length) {
+        const sub = document.getElementById('pgsub');
+        const filterEl = document.getElementById('pgfilter');
         const pick = document.getElementById('pgpick');
         const view = document.getElementById('pgview');
-        const draw = (i) => {
-          [...pick.children].forEach((b, j) => b.style.borderColor = j === i ? 'var(--accent)' : 'var(--border)');
-          view.innerHTML = pgReview(pgGames[i]);
+        // lazy detail fetch, cached per match id
+        const cache = {};
+        const loadGame = (id) => (cache[id] ||= fetch(`../../data/postgame/${id}.json`).then((r) => r.json()));
+        const wins = pgList.filter((m) => m.result === 'win').length;
+        const stacks = [...new Set(pgList.map((m) => m.stackSize).filter(Boolean))].sort((a, b) => b - a);
+        sub.innerHTML = `${pgList.length} ranked games on record · <b style="color:var(--green)">${wins}W</b> <b style="color:var(--red)">${pgList.length - wins}L</b> · newest first`;
+        const fmtDate = (iso) => new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        let filter = 'all', cur = 0;
+        const visible = () => filter === 'all' ? pgList : pgList.filter((m) => String(m.stackSize) === filter);
+        const renderFilter = () => {
+          filterEl.innerHTML = stacks.length > 1
+            ? [['all', `All ${pgList.length}`], ...stacks.map((s) => [String(s), `${s}-stack`])]
+                .map(([v, label]) => `<button class="pgf${filter === v ? ' on' : ''}" data-f="${v}">${label}</button>`).join('')
+            : '';
         };
-        pick.innerHTML = pgGames.map((g, i) => {
-          const c = g.result === 'win' ? 'var(--green)' : 'var(--red)';
-          return `<button data-i="${i}" style="font:inherit;font-size:.8rem;cursor:pointer;background:var(--bg-2);border:1px solid var(--border);border-radius:8px;padding:.3rem .65rem;color:var(--text-1)"><b style="color:${c}">${g.result.toUpperCase()}</b> · ${new Date(g.startTime).toLocaleDateString()} · ${g.durationMin}m</button>`;
-        }).join('');
-        [...pick.children].forEach((b) => b.onclick = () => draw(Number(b.dataset.i)));
+        const draw = async (i) => {
+          cur = i;
+          [...pick.children].forEach((b, j) => b.classList.toggle('on', j === i));
+          const m = visible()[i];
+          if (!m) { view.innerHTML = ''; return; }
+          view.innerHTML = '<div style="color:var(--text-2);padding:1rem .2rem">loading…</div>';
+          try { view.innerHTML = pgReview(await loadGame(m.matchId)); }
+          catch { view.innerHTML = '<div style="color:var(--red);padding:1rem .2rem">could not load this match</div>'; }
+        };
+        const renderChips = () => {
+          pick.innerHTML = visible().map((m, i) => {
+            const c = m.result === 'win' ? 'var(--green)' : 'var(--red)';
+            return `<button class="pgchip${i === cur ? ' on' : ''}" data-i="${i}">
+              <b style="color:${c}">${m.result === 'win' ? 'W' : 'L'}</b>
+              <span class="d">${fmtDate(m.startTime)}</span>
+              <span class="s">${m.durationMin}m${m.stackSize ? ` · ${m.stackSize}-stack` : ''}</span>
+              ${m.hasCoaching ? '<span class="c" title="coached">✎</span>' : ''}
+            </button>`;
+          }).join('');
+          [...pick.children].forEach((b) => b.onclick = () => draw(Number(b.dataset.i)));
+        };
+        if (stacks.length > 1) {
+          renderFilter();
+          [...filterEl.children].forEach((b) => b.onclick = () => { filter = b.dataset.f; cur = 0; renderFilter(); renderChips(); draw(0); });
+        }
+        renderChips();
         draw(0);
       }
       return;
