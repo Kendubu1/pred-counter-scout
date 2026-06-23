@@ -3,7 +3,7 @@
 // enters the objective (docs/v5-engine-design.md, component C).
 
 import type { BuildEval, HeroKit, Item } from './types.js';
-import { evaluateBuild, type Calibration } from './sim.js';
+import { evaluateBuild, kitPowerType, stagedManaAdequacy, type Calibration } from './sim.js';
 import { mergeEffects, resolveItemEffects, type ResolvedEffects } from './effects.js';
 
 export interface Scenario {
@@ -16,7 +16,7 @@ export interface GeneratedBuild extends BuildEval {
 }
 
 const ALL_OBJECTIVE_KEYS = [
-  'burstVsSquishy', 'rot10VsSquishy', 'rot20VsBruiser',
+  'burstVsSquishy', 'teamfightVsSquishy', 'rot10VsSquishy', 'rot20VsBruiser',
   'autoDps10VsSquishy', 'ehpPhysical', 'ehpMagical',
   'healShield10s', 'utility', 'sustain10s',
 ] as const;
@@ -28,7 +28,7 @@ export type ObjKey = (typeof ALL_OBJECTIVE_KEYS)[number];
 // what keeps a crit/lethality core out of every support front: those
 // builds win only objectives a support search never scores.
 const COMBAT_KEYS: readonly ObjKey[] = [
-  'burstVsSquishy', 'rot10VsSquishy', 'rot20VsBruiser',
+  'burstVsSquishy', 'teamfightVsSquishy', 'rot10VsSquishy', 'rot20VsBruiser',
   'autoDps10VsSquishy', 'ehpPhysical', 'ehpMagical', 'sustain10s',
 ];
 const SUPPORT_KEYS: readonly ObjKey[] = [
@@ -37,21 +37,102 @@ const SUPPORT_KEYS: readonly ObjKey[] = [
 
 const ARCHETYPE_LABELS: Record<ObjKey, string> = {
   burstVsSquishy: 'burst',
+  teamfightVsSquishy: 'teamfight AoE',
   rot10VsSquishy: 'skirmish uptime',
   rot20VsBruiser: 'extended fights',
   autoDps10VsSquishy: 'sustained DPS',
   ehpPhysical: 'physical survival',
   ehpMagical: 'magical survival',
   healShield10s: 'heal/shield output',
-  utility: 'utility',
+  utility: 'enchant/peel utility',
   sustain10s: 'drain sustain',
 };
+
+// The human-readable noun for a build's lead archetype — the word players
+// actually use ("a Brawler", "a Burst build"), not the internal objective key.
+const ARCHETYPE_NOUN: Record<string, string> = {
+  burst: 'Burst',
+  'teamfight AoE': 'Teamfight',
+  'skirmish uptime': 'Skirmisher',
+  'extended fights': 'Brawler',
+  'sustained DPS': 'DPS Carry',
+  'physical survival': 'Frontline',
+  'magical survival': 'Frontline',
+  'heal/shield output': 'Enchanter',
+  'enchant/peel utility': 'Enchanter',
+  'drain sustain': 'Drain',
+};
+
+/**
+ * A short, human-readable build title in the idiom players search for
+ * ("Crit DPS Carry", "Magical Burst Mage", "Lethality Skirmisher",
+ * "Physical Bruiser (Magical-Def)", "Physical-Def Frontline"). Deterministic from item stat mix +
+ * kit power type + lead archetype — no popularity, no LLM, no estimation.
+ * The stat thresholds are presentation heuristics, not sim constants.
+ */
+export function buildTitle(archetypes: string[], kit: HeroKit, items: Item[]): string {
+  const sum = (k: keyof Item['stats']) => items.reduce((s, i) => s + ((i.stats[k] as number) ?? 0), 0);
+  const off = sum('physical_power') + sum('magical_power');
+  const def = sum('health') / 15 + sum('physical_armor') + sum('magical_armor');
+  const crit = sum('critical_chance');
+  const lethality = sum('physical_penetration');
+  const atkSpeed = sum('attack_speed');
+  const drain = sum('lifesteal') + sum('omnivamp');
+  const power = kitPowerType(kit);
+
+  // The "style" descriptor — the offensive identity a player shops for. Spelled
+  // in plain words ("Magical") so "AP" is never misread as "attack power".
+  let style = '';
+  if (crit >= 40) style = 'Crit';
+  else if (power === 'magical') style = archetypes.includes('burst') ? 'Magical Burst' : 'Magical';
+  else if (lethality >= 24) style = 'Lethality';
+  else if (atkSpeed >= 70) style = 'On-Hit';
+  else if (drain >= 25 && off > 0) style = 'Lifesteal';
+  else if (off > 0) style = 'Physical';
+
+  const noun = ARCHETYPE_NOUN[archetypes[0] ?? ''] ?? 'Build';
+  // Damage type in plain words: magical power vs physical (Crit/Lethality/On-Hit
+  // are physical styles). Avoids the AP/AD ambiguity a new player trips on.
+  const powerWord = power === 'magical' ? 'Magical' : 'Physical';
+  // Which resist a defensive build stacks, named as physical/magical DEFENSE (not
+  // just "tanky"/"armor") so the lean against physical vs magic damage is explicit.
+  const physArmor = sum('physical_armor');
+  const magArmor = sum('magical_armor');
+  const resist = physArmor > magArmor * 1.3 ? 'Physical-Def'
+    : magArmor > physArmor * 1.3 ? 'Magical-Def'
+    : (physArmor + magArmor > 0 ? 'Mixed-Def' : '');
+
+  let lead: string;
+  if (off === 0 && def > 0) lead = resist || 'Tank';                 // pure defense: name the resist
+  else if (def > 0 && def >= off * 0.45) { lead = resist ? `${powerWord} Bruiser (${resist})` : `${powerWord} Bruiser`; } // bruiser: damage type + defense lean
+  else lead = style || powerWord;                                    // damage: style conveys the type
+
+  // For a bruiser the "Bruiser" word is already in lead; otherwise append the
+  // archetype noun. Word-level dedupe so "AP Burst" + "Burst" → "AP Burst".
+  const parts = lead.includes('Bruiser') ? [lead] : [lead, noun];
+  const seen = new Set<string>();
+  const title = parts
+    .filter(Boolean)
+    .join(' ')
+    .split(' ')
+    .filter((w) => { const k = w.toLowerCase(); if (seen.has(k)) return false; seen.add(k); return true; })
+    .join(' ');
+  return title || 'Core Build';
+}
+
+/** The human archetype noun-source label for an objective key (e.g.
+ *  'burstVsSquishy' -> 'burst'), so callers outside this module (meta-build
+ *  titling) can feed buildTitle the same vocabulary the optimizer uses. */
+export function archetypeLabel(key: string): string {
+  return ARCHETYPE_LABELS[key as ObjKey] ?? '';
+}
 
 type Weights = Partial<Record<ObjKey, number>>;
 
 // Corner weight vectors approximate the Pareto front through scalarization.
 const COMBAT_VECTORS: Weights[] = [
   { burstVsSquishy: 1, rot10VsSquishy: 0.2 },
+  { teamfightVsSquishy: 1, burstVsSquishy: 0.3, rot10VsSquishy: 0.2 },
   { burstVsSquishy: 0.2, rot10VsSquishy: 1, rot20VsBruiser: 0.3 },
   { rot10VsSquishy: 0.3, rot20VsBruiser: 1, ehpPhysical: 0.1, ehpMagical: 0.1 },
   { rot20VsBruiser: 0.2, autoDps10VsSquishy: 1 },
@@ -69,17 +150,22 @@ const SUPPORT_VECTORS: Weights[] = [
 ];
 
 function relevantPool(kit: HeroKit, pool: Item[], role?: string): Item[] {
+  const power = kitPowerType(kit);   // real power type, not the omeda 'hybrid' tag
   return pool.filter((i) => {
-    // Support searches: crit and lethality feed only objectives outside
-    // the support vector, so their stat budget is dead gold even when the
-    // item carries a support stat (Equinox: 20% crit riding 80 tenacity).
-    // This is the design doc's golden rule, enforced as a pool constraint.
-    if (role === 'support' && (i.stats.critical_chance > 0 || i.stats.physical_penetration > 0)) return false;
-    const offensive = i.stats.physical_power || i.stats.magical_power || i.stats.attack_speed || i.stats.critical_chance;
+    const s = i.stats;
+    // Support golden rule: crit and lethality feed only objectives outside the
+    // support vector, so their stat budget is dead gold (Equinox: 20% crit riding
+    // 80 tenacity). Enforced as a pool constraint.
+    if (role === 'support' && (s.critical_chance > 0 || s.physical_penetration > 0)) return false;
+    const offensive = s.physical_power || s.magical_power || s.attack_speed || s.critical_chance;
     if (!offensive) return true; // defensive and utility items always allowed
-    if (kit.damageType === 'physical') return i.stats.physical_power > 0 || i.stats.attack_speed > 0 || i.stats.critical_chance > 0;
-    if (kit.damageType === 'magical') return i.stats.magical_power > 0;
-    return true; // hybrid
+    if (power === 'physical') return s.physical_power > 0 || s.attack_speed > 0 || s.critical_chance > 0;
+    // Magical kits (incl. hybrid-tagged mages like Zinx): physical power, crit and
+    // lethality are wasted gold. Keep magical power, attack speed and ability haste
+    // — which power MAGICAL on-hit items (Spectra/Prophecy) and Orion's haste→AS —
+    // so an on-hit build resolves to magical on-hit, not physical crit.
+    if (s.physical_power > 0 || s.critical_chance > 0 || s.physical_penetration > 0) return false;
+    return s.magical_power > 0 || s.attack_speed > 0 || s.ability_haste > 0;
   });
 }
 
@@ -141,12 +227,19 @@ export function generateBuilds(
   }
   const score = (ev: BuildEval, w: Weights) =>
     objectiveKeys.reduce((s, k) => s + (w[k] ?? 0) * (ev.objectives[k] / scale[k]!), 0);
+  // Mana penalty: a build that cannot sustain its rotation through the early
+  // item-timing stages loses score (down to MANA_FLOOR), so a mana-starved kit is
+  // steered to bring a mana source online in time. Resourceless / mana-rich kits
+  // are unaffected (factor 1). See stagedManaAdequacy in sim.ts.
+  const MANA_FLOOR = 0.5;
+  const manaFactor = (items: Item[]) => MANA_FLOOR + (1 - MANA_FLOOR) * stagedManaAdequacy(kit, items);
 
-  let beam: { items: Item[]; ev: BuildEval }[] = [{ items: [], ev: evalBuild([]) }];
-  const complete: { items: Item[]; ev: BuildEval }[] = [];
+  type BeamState = { items: Item[]; ev: BuildEval; mana: number };
+  let beam: BeamState[] = [{ items: [], ev: evalBuild([]), mana: 1 }];
+  const complete: BeamState[] = [];
 
   for (let depth = 0; depth < buildSize; depth++) {
-    const next: { items: Item[]; ev: BuildEval }[] = [];
+    const next: BeamState[] = [];
     const seen = new Set<string>();
     for (const state of beam) {
       let expandable = candidates.filter((c) => !violatesConstraints(state.items, c));
@@ -161,31 +254,33 @@ export function generateBuilds(
         const key = items.map((i) => i.slug).sort().join('|');
         if (seen.has(key)) continue;
         seen.add(key);
-        next.push({ items, ev: evalBuild(items) });
+        next.push({ items, ev: evalBuild(items), mana: manaFactor(items) });
       }
     }
-    // Keep the top of the beam under each corner weighting.
-    const kept = new Set<{ items: Item[]; ev: BuildEval }>();
+    // Keep the top of the beam under each corner weighting, mana-penalized.
+    const kept = new Set<BeamState>();
     for (const w of weightVectors) {
-      [...next].sort((a, b) => score(b.ev, w) - score(a.ev, w)).slice(0, beamWidth).forEach((s) => kept.add(s));
+      [...next].sort((a, b) => score(b.ev, w) * b.mana - score(a.ev, w) * a.mana).slice(0, beamWidth).forEach((s) => kept.add(s));
     }
     beam = [...kept];
     if (depth === buildSize - 1) complete.push(...beam);
   }
 
-  const front = paretoFront(complete.map((c) => c.ev), objectiveKeys);
+  const manaByEv = new Map(complete.map((c) => [c.ev, c.mana]));
   const headline = (opts.headlineOverride && objectiveKeys.includes(opts.headlineOverride))
     ? opts.headlineOverride : headlineObjective(kit, role);
-  return front.map((ev) => {
-    const archetypes: string[] = [];
-    for (const k of objectiveKeys) {
-      const best = Math.max(...front.map((f) => f.objectives[k]));
-      // best > 0: an objective nobody moves (a heal-less kit's heal
-      // output) labels nothing.
-      if (best > 0 && ev.objectives[k] >= best * 0.98) archetypes.push(ARCHETYPE_LABELS[k]);
-    }
-    return { ...ev, archetypes };
-  }).sort((a, b) => b.objectives[headline] - a.objectives[headline]);
+  return paretoFront(complete.map((c) => c.ev), objectiveKeys)
+    .sort((a, b) => b.objectives[headline] * (manaByEv.get(b) ?? 1) - a.objectives[headline] * (manaByEv.get(a) ?? 1))
+    .map((ev, _i, front) => {
+      const archetypes: string[] = [];
+      for (const k of objectiveKeys) {
+        const best = Math.max(...front.map((f) => f.objectives[k]));
+        // best > 0: an objective nobody moves (a heal-less kit's heal output)
+        // labels nothing.
+        if (best > 0 && ev.objectives[k] >= best * 0.98) archetypes.push(ARCHETYPE_LABELS[k]);
+      }
+      return { ...ev, archetypes };
+    });
 }
 
 export function kitHeals(kit: HeroKit): boolean {

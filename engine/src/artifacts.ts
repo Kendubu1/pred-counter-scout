@@ -8,10 +8,10 @@ import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { completedItems, type LoadedData } from './data.js';
-import { generateBuilds, headlineObjective, type ObjKey } from './search.js';
-import { classifyAugment, laneTopAugment, lanesFor, playstyleObjectives } from './playstyle.js';
+import { archetypeLabel, buildTitle, generateBuilds, headlineObjective, type ObjKey } from './search.js';
+import { classifyAugment, kitPlaystyle, laneTopAugment, lanesFor, playstyleObjectives } from './playstyle.js';
 import { combatDamage, evaluateBuild, itemTotals, loadCalibration, unverifiedConstants, type Calibration } from './sim.js';
-import { rankAugments, rankBlessings } from './eternals.js';
+import { allEternalMinors, rankAugments, rankBlessings, selectEternalLoadout } from './eternals.js';
 import { heroGames, itemPlayRate, loadAggregates } from './aggregates.js';
 import { itemWinDelta, momPriorStrength } from './evidence.js';
 import { defenseOf, matchupCheckpoints, orderBuild, spikeTimeline, levelAtMinute, type OrderedBuild } from './matchup.js';
@@ -42,14 +42,27 @@ function loadPredggAugments(): PredggAugments | null {
   return predggAugmentsCache;
 }
 
-export const HeroArtifact = z.object({
-  slug: z.string(),
-  name: z.string(),
-  patch: z.string(),
-  generatedAt: z.string(),
+// Optimizer-vs-field-core agreement (npm run agreement). Per-hero rows carry
+// coreRecall + the field-core items the sim never builds. Computed every run
+// but historically never surfaced; we read it here so a low-agreement hero can
+// say so on the page instead of presenting a divergent build silently.
+interface AgreementAudit {
+  rows: { hero: string; lane: string; coreRecall: number; missed: string[] }[];
+}
+let agreementCache: AgreementAudit | null | undefined;
+function loadAgreementAudit(): AgreementAudit | null {
+  if (agreementCache !== undefined) return agreementCache;
+  const p = path.join(ARTIFACTS_ROOT, 'data/aggregates/agreement-audit.json');
+  agreementCache = existsSync(p) ? (JSON.parse(readFileSync(p, 'utf8')) as AgreementAudit) : null;
+  return agreementCache;
+}
+
+// A RoleView is the full optimized build for ONE role: a flex hero (Zinx
+// support vs mid) gets a distinct view per lane it plays — its own build,
+// stage timeline, eternals, augments, meta cores, and matchups — because the
+// right items, spikes, and counters change completely with the role.
+const RoleView = z.object({
   role: z.string(),
-  damageType: z.string(),
-  attackType: z.string(),
   // Honest limitation surfaced on the page (e.g. supports: the model has
   // no heal/shield/aura objectives yet, so the build is max-damage only).
   roleCaveat: z.string().nullable(),
@@ -59,6 +72,9 @@ export const HeroArtifact = z.object({
     notes: z.array(z.string()),
   }),
   build: z.object({
+    // Human-readable build title in the idiom players search for
+    // ("Crit DPS Carry", "AP Burst") — deterministic from the item mix + kit.
+    title: z.string(),
     items: z.array(z.object({
       name: z.string(),
       slug: z.string(),
@@ -98,6 +114,25 @@ export const HeroArtifact = z.object({
     // when set, the Eternal deltas were computed WITH this augment's
     // modeled mechanics merged in (the augment-blind caveat is off)
     augmentAware: z.string().nullable(),
+    // The recommended full loadout: the major PLUS a pick for each of the two
+    // minor slots (Predecessor Eternals are 1 major + 2×(1-of-3) minors).
+    // Each minor's value is the sim's marginal gain on top of the chosen major,
+    // or the curated recommendation when the minor's mechanic isn't modeled.
+    // Computed by selectEternalLoadout; null when no Eternal fits.
+    loadout: z.object({
+      major: z.object({ name: z.string(), modeled: z.boolean() }),
+      minor1: z.object({ name: z.string(), modeled: z.boolean(), deltaPct: z.number().nullable(), note: z.string() }),
+      minor2: z.object({ name: z.string(), modeled: z.boolean(), deltaPct: z.number().nullable(), note: z.string() }),
+      note: z.string(),
+    }).nullable(),
+    // Conditioned minor pair for EVERY eternal, keyed by lowercased name, so the
+    // page can show sub-options + reasoning under each top choice (not just the
+    // single recommended loadout). Each minor: its marginal sim delta on top of
+    // that major, or the curated pick when the mechanic is unmodeled.
+    minorsByName: z.record(z.string(), z.object({
+      minor1: z.object({ name: z.string(), modeled: z.boolean(), deltaPct: z.number().nullable(), note: z.string() }),
+      minor2: z.object({ name: z.string(), modeled: z.boolean(), deltaPct: z.number().nullable(), note: z.string() }),
+    })),
   }),
   augments: z.array(z.object({
     id: z.string(),
@@ -123,6 +158,7 @@ export const HeroArtifact = z.object({
     honestAbsence: z.string().nullable(),
   }),
   metaBuilds: z.array(z.object({
+    title: z.string(),
     items: z.array(z.object({ name: z.string(), slug: z.string().nullable() })),
     n: z.number(),
     shrunkWr: z.number(),
@@ -131,21 +167,6 @@ export const HeroArtifact = z.object({
     bestObjective: z.string().nullable(),
     whyLine: z.string(),
     optimizer: z.string().nullable(),
-  })),
-  // Playstyle-by-lane: the augment the field runs in each lane DECLARES a
-  // playstyle the sim is otherwise blind to. We steer the build toward that
-  // playstyle's objective corner and expose whether the augment's mechanic is
-  // actually modeled or we are leaning on the declared intent + field evidence.
-  laneFlex: z.array(z.object({
-    lane: z.string(),
-    augment: z.object({ id: z.string(), name: z.string() }),
-    playstyle: z.string(),
-    modeled: z.boolean(),         // does the sim compute the augment's effect?
-    wr: z.number().nullable(),    // field winrate of that augment in that lane
-    n: z.number().nullable(),
-    core: z.array(z.object({ name: z.string(), slug: z.string() })), // steered build core
-    headline: z.string(),         // the objective it is steered toward
-    provenance: z.string(),       // the honest one-liner the page shows
   })),
   // The build is not one fixed thing across the game: its prefix is evaluated
   // at early / mid / late stages (2 / 3 / 6 items, each at the level it
@@ -176,6 +197,52 @@ export const HeroArtifact = z.object({
       line: z.string(),
     }).nullable(),
   })),
+  // The augment the field commits to in THIS lane declares a playstyle the sim
+  // can't read from the kit. We surface it next to the role's pure-optimum build:
+  // which augment, what playstyle, whether the sim models it, and how steering
+  // toward it would shift the build (shiftIn/shiftOut vs the optimum). Null when
+  // the lane has no usable augment evidence. Replaces the old standalone
+  // "Playstyle by lane" section — the per-role build now lives under the toggle.
+  laneSteer: z.object({
+    augment: z.object({ id: z.string(), name: z.string() }),
+    playstyle: z.string(),
+    modeled: z.boolean(),
+    wr: z.number().nullable(),
+    n: z.number().nullable(),
+    shiftIn: z.array(z.string()),   // items the augment-steer adds vs the pure optimum
+    shiftOut: z.array(z.string()),  // items it drops
+    provenance: z.string(),
+  }).nullable(),
+});
+
+export type RoleViewT = z.infer<typeof RoleView>;
+
+export const HeroArtifact = RoleView.extend({
+  slug: z.string(),
+  name: z.string(),
+  patch: z.string(),
+  generatedAt: z.string(),
+  damageType: z.string(),
+  attackType: z.string(),
+  // Playstyle-by-lane: the augment the field runs in each lane DECLARES a
+  // playstyle the sim is otherwise blind to. We steer the build toward that
+  // playstyle's objective corner and expose whether the augment's mechanic is
+  // actually modeled or we are leaning on the declared intent + field evidence.
+  laneFlex: z.array(z.object({
+    lane: z.string(),
+    augment: z.object({ id: z.string(), name: z.string() }),
+    playstyle: z.string(),
+    modeled: z.boolean(),         // does the sim compute the augment's effect?
+    wr: z.number().nullable(),    // field winrate of that augment in that lane
+    n: z.number().nullable(),
+    core: z.array(z.object({ name: z.string(), slug: z.string() })), // steered build core
+    headline: z.string(),         // the objective it is steered toward
+    provenance: z.string(),       // the honest one-liner the page shows
+  })),
+  // Every role this hero flexes to, each a full RoleView. The top-level fields
+  // above mirror the primary role's view for backward compatibility; the UI
+  // toggles among `roles` to show a complete build per flex role.
+  roles: z.array(RoleView),
   flags: z.array(z.string()),
 });
 
@@ -244,11 +311,13 @@ function counterSwap(kit: HeroKit, items: Item[], enemy: HeroKit, enemyItems: It
 
 const headlineBuildCache = new Map<string, ReturnType<typeof generateBuilds>[number]>();
 
-export function headlineBuild(kit: HeroKit, pool: Item[], cal: Calibration, beamWidth: number) {
-  let b = headlineBuildCache.get(kit.slug);
+export function headlineBuild(kit: HeroKit, pool: Item[], cal: Calibration, beamWidth: number, role?: string) {
+  const r = role ?? kit.roles[0] ?? 'midlane';
+  const key = `${kit.slug}:${r}`;
+  let b = headlineBuildCache.get(key);
   if (!b) {
-    b = generateBuilds(kit, pool, cal, { beamWidth })[0]!;
-    headlineBuildCache.set(kit.slug, b);
+    b = generateBuilds(kit, pool, cal, { beamWidth, role: r })[0]!;
+    headlineBuildCache.set(key, b);
   }
   return b;
 }
@@ -274,6 +343,32 @@ function popularBuild(kit: HeroKit, pool: Item[]): Item[] {
  *  it and expose whether the sim actually models that augment. This surfaces
  *  the flex (e.g. Zinx support-enchant vs mid on-hit) the single-role build
  *  can't show. */
+/** The augment-steer for ONE lane, with the build-shift vs a base (pure-optimum)
+ *  build. Drives the per-role "field runs X here" banner. */
+function laneSteerFor(
+  kit: HeroKit, role: string, pool: Item[], cal: Calibration, baseItems: string[],
+): RoleViewT['laneSteer'] {
+  const aug = laneTopAugment(kit.slug, role);
+  if (!aug) return null;
+  const cls = classifyAugment(`augment:${kit.slug}:${aug.id}`);
+  if (!cls.playstyle) return null;
+  const bias = playstyleObjectives(cls.playstyle, kit);
+  const steered = generateBuilds(kit, pool, cal, { role, objectiveBias: bias as ObjKey[], headlineOverride: bias[0], beamWidth: 8 })[0];
+  if (!steered) return null;
+  const baseSet = new Set(baseItems);
+  const steerSet = new Set(steered.items);
+  const shiftIn = steered.items.filter((n) => !baseSet.has(n));
+  const shiftOut = baseItems.filter((n) => !steerSet.has(n));
+  const ev = ` — field ${role} ${(aug.wr * 100).toFixed(1)}% over ${aug.n.toLocaleString()} games`;
+  const provenance = cls.modeled
+    ? `“${aug.name}” ⇒ ${cls.playstyle}; the sim models this augment${ev}.`
+    : `“${aug.name}” ⇒ ${cls.playstyle}; the sim can’t model this augment — steered by the declared playstyle + field evidence${ev}, magnitude not simulated.`;
+  return {
+    augment: { id: aug.id, name: aug.name }, playstyle: cls.playstyle, modeled: cls.modeled,
+    wr: Math.round(aug.wr * 1000) / 10, n: aug.n, shiftIn, shiftOut, provenance,
+  };
+}
+
 function computeLaneFlex(kit: HeroKit, pool: Item[], cal: Calibration): HeroArtifactT['laneFlex'] {
   const out: HeroArtifactT['laneFlex'] = [];
   const slugOf = new Map(pool.map((i) => [i.name, i.slug]));
@@ -345,13 +440,13 @@ function computeStages(
   });
 }
 
-export function buildHeroArtifact(
-  kit: HeroKit, data: LoadedData, cal: Calibration = loadCalibration(),
+/** The full optimized build + analysis for ONE role. A flex hero gets one of
+ *  these per lane it plays; buildHeroArtifact assembles them into the artifact. */
+function buildRoleView(
+  kit: HeroKit, role: string, data: LoadedData, cal: Calibration, pool: Item[],
   opts: { beamWidth?: number; matchupEnemies?: number } = {},
-): HeroArtifactT {
-  const pool = completedItems(data);
-  const role = kit.roles[0] ?? 'midlane';
-  const top = headlineBuild(kit, pool, cal, opts.beamWidth ?? 16);
+): RoleViewT {
+  const top = headlineBuild(kit, pool, cal, opts.beamWidth ?? 16, role);
   const items = top.items.map((n) => data.items.get(n)!);
   const ordered = orderBuild(kit, items, 13, cal);
   const spikes = spikeTimeline(role, ordered);
@@ -450,6 +545,26 @@ export function buildHeroArtifact(
   const fieldAugFx = fieldAug ? resolveEntries([`augment:${kit.slug}:${fieldAug.id}`], { level: 13, minute: 15 }) : null;
   const augmentAware = fieldAugFx?.applied.length ? fieldAug!.name : null;
   const blessings = rankBlessings(kit, items, 13, cal, { minute: 15, extraEffects: augmentAware ? fieldAugFx! : undefined });
+  // The full recommended loadout (major + both minor slots), conditioned on the
+  // kit. selectEternalLoadout already computes each minor's marginal sim gain on
+  // top of the chosen major (or the curated pick when unmodeled); we just surface
+  // it — previously it was computed only for the CLI and dropped before the page.
+  const lo = selectEternalLoadout(kit, items, 13, cal, kitPlaystyle(kit, role), { minute: 15, role });
+  const minorView = (m: { name: string; modeled: boolean; deltaPct?: number; note: string }) =>
+    ({ name: m.name, modeled: m.modeled, deltaPct: m.deltaPct != null ? r1(m.deltaPct) : null, note: m.note });
+  const loadout = lo
+    ? {
+        major: { name: lo.major.name.replace(' (Major)', ''), modeled: lo.major.modeled },
+        minor1: minorView(lo.minor1),
+        minor2: minorView(lo.minor2),
+        note: lo.note,
+      }
+    : null;
+  // Minor pair for every eternal (keyed by lowercased name) so each top choice
+  // the page shows — not just the recommended loadout — carries its sub-options.
+  const minorsRaw = allEternalMinors(kit, items, 13, cal, { minute: 15, role });
+  const minorsByName: Record<string, { minor1: ReturnType<typeof minorView>; minor2: ReturnType<typeof minorView> }> = {};
+  for (const [k, v] of Object.entries(minorsRaw)) minorsByName[k] = { minor1: minorView(v.minor1), minor2: minorView(v.minor2) };
   const eternals = {
     top: blessings.filter((r) => r.modeled).slice(0, 3).map((r) => ({
       name: r.name.replace(' (Major)', ''),
@@ -470,6 +585,8 @@ export function buildHeroArtifact(
       note: r.modeled ? null : (r.unmodeledNotes[0] ?? null),
     })),
     augmentAware,
+    loadout,
+    minorsByName,
   };
 
   // Matchups: most-played same-role heroes as default enemies.
@@ -518,7 +635,7 @@ export function buildHeroArtifact(
       const cum = coreItems.map((_, i) => coreItems.slice(0, i + 1).reduce((s, x) => s + x.totalPrice, 0));
       spikeMinute = spikeTimeline(role, { ordered: coreItems, cumulativeGold: cum })[2]?.minute ?? null;
     }
-    return { c, ev, gold, spikeMinute };
+    return { c, ev, gold, spikeMinute, coreItems };
   });
   // An objective only explains a core if it separates the meta cores at
   // all (>=5% spread); otherwise every core would claim it on a tie.
@@ -531,13 +648,13 @@ export function buildHeroArtifact(
   }
   const headlineKey = headlineObjective(kit, role);
   const ourCoreEval = evaluateBuild(kit, ordered.ordered.slice(0, 3), 13, cal);
-  const metaBuilds = evaluated.slice(0, 3).map(({ c, ev, gold, spikeMinute }) => {
+  const metaBuilds = evaluated.slice(0, 3).map(({ c, ev, gold, spikeMinute, coreItems }) => {
     const shrunkWr = (c.w + kCore * (coreMean || 0.5)) / (c.n + kCore);
     let bestObjective: string | null = null;
     let whyLine: string;
     let optimizer: string | null = null;
+    let bestKey = '';
     if (ev) {
-      let bestKey = '';
       let bestRel = -1;
       for (const key of Object.keys(OBJ_LABELS)) {
         if (!objDiscriminates[key]) continue;
@@ -569,7 +686,11 @@ export function buildHeroArtifact(
     } else {
       whyLine = 'Evidence-only: one item in this core is not in our mechanics data yet, so the sim cannot decompose it.';
     }
+    const title = coreItems && coreItems.length
+      ? buildTitle(bestKey ? [archetypeLabel(bestKey)] : [], kit, coreItems)
+      : 'Meta Core';
     return {
+      title,
       items: c.core.map((name, i) => ({ name, slug: c.coreSlugs[i] ?? null })),
       n: c.n,
       shrunkWr: Math.round(shrunkWr * 1000) / 1000,
@@ -602,20 +723,35 @@ export function buildHeroArtifact(
       ? ` Take ${e0.name}: +${e0best[0]}% on ${e0best[1]} at minute 15.`
       : ` No modeled Eternal moves this kit's numbers much — check the field's pick on the page.`) : '');
 
+  // D1 — disclose when the sim's first item diverges from the field. The
+  // off-meta promoter already gates on a negative evidence delta; the headline
+  // build did not, so one niche opener could lead a hero with no flag. Mirror
+  // that gate here as a disclosure (we surface it, we don't silently reorder).
+  const opener = buildItems[0];
+  const openerNote = opener
+    ? (opener.evidenceDeltaWr != null && opener.evidenceDeltaWr < 0 && (opener.evidenceN ?? 0) >= 20
+        ? `the sim opens on ${opener.name}, which the field has tried and lost with (${opener.evidenceDeltaWr}% winrate over ${opener.evidenceN} games) — treat this opener as a sim blind-spot and weight the field`
+        : opener.playRatePct != null && opener.playRatePct < 3
+          ? `the sim opens on ${opener.name}, which the field rarely builds (${opener.playRatePct}% pick) — a sim-only call; compare the meta cores below`
+          : null)
+    : null;
+
+  // D2 — disclose low optimizer-vs-field-core agreement (npm run agreement). The
+  // audit is computed every run; surfacing it here means a hero whose sim build
+  // shares little with what wins says so, instead of presenting it confidently.
+  const audit = loadAgreementAudit()?.rows.find((r) => r.hero === kit.name && r.lane === role);
+  const agreementNote = audit && audit.coreRecall < 0.5
+    ? `the sim build reproduces only ${Math.round(audit.coreRecall * 100)}% of the field's core for ${kit.name}${audit.missed.length ? ` (it never builds ${audit.missed.join(', ')})` : ''} — some of those items ride mechanics the sim doesn't model yet`
+    : null;
+
   // The max-damage-only caveat came off with the support output model
   // (backlog item 7): support builds now optimize heal/shield output,
   // survivability, poke, and utility. Remaining limits ride in
   // confidence.notes instead of a page-level warning.
   const roleCaveat = null;
 
-  return HeroArtifact.parse({
-    slug: kit.slug,
-    name: kit.name,
-    patch: cal.patch,
-    generatedAt: new Date().toISOString(),
+  return RoleView.parse({
     role,
-    damageType: kit.damageType,
-    attackType: kit.attackType,
     roleCaveat,
     confidence: {
       level: 'THEORY',
@@ -630,9 +766,12 @@ export function buildHeroArtifact(
         ...(itemTotals(items).attack_speed > 100
           ? ['this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check']
           : []),
+        ...(openerNote ? [openerNote] : []),
+        ...(agreementNote ? [agreementNote] : []),
       ],
     },
     build: {
+      title: buildTitle(top.archetypes, kit, items),
       items: buildItems,
       gold: top.gold,
       archetypes: top.archetypes,
@@ -647,9 +786,51 @@ export function buildHeroArtifact(
       honestAbsence: candidates.length ? null : 'no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)',
     },
     metaBuilds,
-    laneFlex: computeLaneFlex(kit, pool, cal),
     stages: computeStages(kit, ordered, spikes, role, pool, cal),
     matchups,
+    laneSteer: laneSteerFor(kit, role, pool, cal, top.items),
+  });
+}
+
+/** Which roles a hero gets a full build for: its declared roles plus any lane it
+ *  has real augment evidence in (the flex the field actually plays), primary
+ *  first, deduped and capped so we don't generate builds for noise lanes. */
+function flexRolesFor(kit: HeroKit): string[] {
+  const primary = kit.roles[0] ?? 'midlane';
+  const ordered = [primary, ...kit.roles, ...lanesFor(kit.slug)];
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const r of ordered) {
+    if (!r || seen.has(r)) continue;
+    seen.add(r);
+    out.push(r);
+  }
+  return out.slice(0, 3);
+}
+
+export function buildHeroArtifact(
+  kit: HeroKit, data: LoadedData, cal: Calibration = loadCalibration(),
+  opts: { beamWidth?: number; matchupEnemies?: number } = {},
+): HeroArtifactT {
+  const pool = completedItems(data);
+  const primary = kit.roles[0] ?? 'midlane';
+  const roles = flexRolesFor(kit);
+  const views = roles.map((role) => buildRoleView(kit, role, data, cal, pool, opts));
+  const primaryView = views.find((v) => v.role === primary) ?? views[0]!;
+
+  // Top-level fields mirror the primary role's view (backward compatibility with
+  // the index, tests, and any reader that ignores `roles`); `roles` carries the
+  // full build for every flex lane so the UI can toggle among them.
+  return HeroArtifact.parse({
+    ...primaryView,
+    slug: kit.slug,
+    name: kit.name,
+    patch: cal.patch,
+    generatedAt: new Date().toISOString(),
+    damageType: kit.damageType,
+    attackType: kit.attackType,
+    laneFlex: computeLaneFlex(kit, pool, cal),
+    roles: views,
     flags: [
       'THEORY: see engine/fixtures/CALIBRATION-CHECKLIST.md',
       'crests and consumables not yet in the build model; augments with tractable mechanics are simulated, the rest are listed unmodeled',

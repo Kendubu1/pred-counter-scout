@@ -9,26 +9,29 @@
     --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
     --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#82829a;
     --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
-    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px;
+    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px; --maxw:980px;
   }
-  * { box-sizing:border-box; margin:0; }
+  * { box-sizing:border-box; margin:0; padding:0; }
   :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  html { scroll-behavior:smooth; }
   body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
   a { color:var(--blue); text-decoration:none; }
+  img { display:block; }
+  button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
   .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:rgba(10,10,15,.78); border-bottom:1px solid var(--border); }
-  .top-inner { max-width:880px; margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
+  .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
   .wordmark { font-weight:800; color:var(--text-0); }
   .spacer { flex:1; }
   .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
   .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
   .navlink:hover { color:var(--text-0); }
-  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:880px; margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
   .subnav::-webkit-scrollbar { display:none; }
   .subnav:empty { display:none; }
   .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; text-transform:capitalize; -webkit-appearance:none; appearance:none; }
   .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
   .card { scroll-margin-top:calc(var(--toph, 96px) + 10px); }
-  .wrap { max-width:880px; margin:0 auto; padding:1.25rem 1rem 4rem; }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:1.25rem 1rem 4rem; }
   .scope {
     font-size:.7rem; color:var(--text-2); border:1px solid var(--border);
     background:var(--bg-1); border-radius:8px; padding:.45rem .7rem; margin-bottom:1rem; line-height:1.5;
@@ -44,6 +47,17 @@
   .rost:hover { border-color:var(--accent); }
   .rost img.pav { width:38px; height:38px; border-radius:50%; object-fit:cover; border:1px solid var(--border); }
   .rost .rl { display:block; font-size:.7rem; color:var(--text-2); }
+  /* coach reports collapsed into a narrow menu so the post-game review leads */
+  .rostermenu { max-width:480px; border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-1); margin-bottom:1.2rem; }
+  .rostermenu > summary { cursor:pointer; list-style:none; padding:.7rem .9rem; display:flex; align-items:center; gap:.5rem; }
+  .rostermenu > summary::-webkit-details-marker { display:none; }
+  .rostermenu > summary::before { content:"▸"; color:var(--accent); font-size:.8rem; }
+  .rostermenu[open] > summary::before { content:"▾"; }
+  .rostermenu .rm-t { font-weight:800; font-size:.96rem; }
+  .rostermenu .rm-s { color:var(--text-2); font-size:.76rem; }
+  .rostermenu .roster { display:flex; flex-direction:column; gap:.4rem; padding:0 .6rem .65rem; }
+  .rostermenu .rost { padding:.5rem .7rem; gap:.6rem; background:var(--bg-2); }
+  .rostermenu .rost img.pav { width:30px; height:30px; }
   .sub { color:var(--text-1); margin-top:.2rem; }
   .chip { white-space:nowrap; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.13rem .62rem; font-size:.76rem; color:var(--text-1); }
   .chip.rank { background:var(--accent-soft); border-color:var(--accent); color:var(--text-0); font-weight:700; }
@@ -93,9 +107,30 @@
   .splits td.n { text-align:right; font-variant-numeric:tabular-nums; }
   footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
 
+  /* post-game review: record summary + filter pills + a scrollable game strip
+     (lazy-loaded detail) so the list stays one row no matter how many games. */
+  .pgfilter { display:flex; gap:.4rem; margin-bottom:.6rem; flex-wrap:wrap; }
+  .pgf { font:inherit; font-size:.74rem; cursor:pointer; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.2rem .7rem; color:var(--text-2); -webkit-appearance:none; appearance:none; }
+  .pgf.on { color:var(--text-0); border-color:var(--accent); background:var(--accent-soft); }
+  .pgpick { display:flex; gap:.45rem; overflow-x:auto; padding-bottom:.5rem; scrollbar-width:thin; -webkit-overflow-scrolling:touch; }
+  .pgpick::-webkit-scrollbar { height:6px; }
+  .pgpick::-webkit-scrollbar-thumb { background:var(--border); border-radius:99px; }
+  .pgchip { flex:none; font:inherit; font-size:.78rem; cursor:pointer; background:var(--bg-2); border:1px solid var(--border); border-radius:9px; padding:.35rem .6rem; color:var(--text-1); display:inline-flex; align-items:center; gap:.35rem; white-space:nowrap; -webkit-appearance:none; appearance:none; }
+  .pgchip.on { border-color:var(--accent); background:var(--bg-3); }
+  .pgchip .d { font-weight:600; }
+  .pgchip .s { color:var(--text-2); font-size:.7rem; }
+  .pgchip .c { color:var(--gold); font-size:.7rem; }
+
   /* ── mobile: smaller, crisp, nothing bleeds ── */
   @media (max-width:600px) {
-    body { font-size:13.5px; }
+    body { font-size:15px; }
+    /* tap targets: >=44px hit area on touch (Apple HIG 44 / WCAG floor 24).
+       Shared union list across all three pages (absent selectors are no-ops). */
+    .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle, .pgchip, .pgf {
+      min-height:44px; display:inline-flex; align-items:center; justify-content:center;
+    }
+    .snpill { font-size:.8rem; }
+    .navlink { border-radius:10px; } /* 44px tap height reads as a tab, not a stadium */
     .top-inner { padding:.5rem .7rem; gap:.55rem; }
     .wordmark { font-size:.82rem; white-space:nowrap; }
     .top-inner a { font-size:.72rem; white-space:nowrap; }
@@ -130,6 +165,151 @@
 <script>
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct = (x, d = 1) => (x * 100).toFixed(d);
+
+// ── Post-game review rendering (omeda match facts + the coaching pass) ──
+const himg = (slug) => `../img/heroes/${slug}.webp`;
+const iimg = (slug) => `../img/items/${slug}.webp`;
+// Prefer the mapped squad name: some omeda profiles are private and report a
+// placeholder display_name like "🎮 user-<id>"; squadName is the real handle.
+const pgName = (p) => esc(p.squadName || p.name);
+const hlink = (slug, inner) => slug ? `<a href="index.html?hero=${esc(slug)}" title="open ${esc(slug)} in the Build Lab">${inner}</a>` : inner;
+function pgDots(v) {
+  return `<span style="display:inline-flex;gap:3px;vertical-align:middle">` + [...v].map((c) =>
+    `<span title="${c === 'y' ? 'your kill window' : c === 'e' ? 'their kill window' : 'even'}" style="width:11px;height:11px;border-radius:50%;display:inline-block;background:${c === 'y' ? 'var(--green)' : c === 'e' ? 'var(--red)' : 'var(--bg-3)'};${c === '=' ? 'border:1px solid var(--border)' : ''}"></span>`).join('') + `</span>`;
+}
+function pgReview(f) {
+  const us = f.players.filter((p) => p.us);
+  const ourOf = (role) => f.players.find((p) => p.us && p.role === role);
+  const theirOf = (role) => f.players.find((p) => !p.us && p.role === role);
+  const co = f.coaching;
+  const resColor = f.result === 'win' ? 'var(--green)' : 'var(--red)';
+  const resBg = f.result === 'win' ? 'rgba(0,196,140,.16)' : 'rgba(255,90,90,.16)';
+  const edgeStyle = (e) => e === 'favored' ? 'color:var(--green)' : e === 'unfavored' ? 'color:var(--red)' : 'color:var(--text-1)';
+  const card = (inner) => `<div style="background:var(--bg-1);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;margin-top:1rem">${inner}</div>`;
+
+  const head = card(`
+    <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap">
+      <span style="font-weight:800;padding:.2rem .7rem;border-radius:8px;background:${resBg};color:${resColor}">${f.result.toUpperCase()}</span>
+      <span style="color:var(--text-1);font-size:.85rem">${f.durationMin} min · ${esc(f.mode)} · ${new Date(f.startTime).toLocaleDateString()}${f.vpSwing != null ? ` · VP ${f.vpSwing >= 0 ? '+' : ''}${f.vpSwing}` : ''}${f.squad ? ` · stack ${f.squad.stackSize}` : ''}</span>
+      <span style="margin-left:auto;font-size:.62rem;font-weight:700;color:var(--gold);border:1px solid var(--gold);border-radius:99px;padding:.1rem .5rem">THEORY</span>
+    </div>
+    ${co ? `<div style="font-size:1.05rem;font-weight:700;line-height:1.45;margin-top:.7rem">${esc(co.headline)}</div>
+    <div style="color:var(--text-1);margin-top:.5rem;font-size:.92rem">${esc(co.team)}</div>
+    <div style="border-left:3px solid var(--gold);padding:.5rem .8rem;background:rgba(240,180,41,.07);border-radius:6px;margin-top:.6rem;font-size:.9rem"><b>What would've shifted it:</b> ${esc(co.whatShiftedIt)}</div>` :
+    `<div style="color:var(--text-2);margin-top:.5rem;font-size:.9rem">Facts computed; coaching narrative not yet authored for this match.</div>`}`);
+
+  const wrColor = (w) => w >= 52 ? 'var(--green)' : w <= 48 ? 'var(--red)' : 'var(--text-1)';
+  const lanes = card(`
+    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.7rem">Draft &amp; lane matchups <span style="font-weight:400;text-transform:none;letter-spacing:0">· pred.gg win rate vs the laner (empirical) · sim kill-window as a second opinion</span></h2>
+    <div style="display:flex;flex-direction:column;gap:.5rem">
+      ${f.lanes.map((l) => {
+        const o = ourOf(l.role), t = theirOf(l.role);
+        const cs = (l.counters || []).slice(0, 2);
+        const counterTxt = cs.length
+          ? cs.map((c) => `${esc(c.hero)}${c.inPool ? ' <span style="color:var(--green)" title="in your pool">●</span>' : ''}`).join(', ')
+          : '—';
+        const mu = l.predggMatchup;
+        return `<div style="border:1px solid var(--border);border-radius:8px;padding:.5rem .6rem;background:var(--bg-2)">
+          <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
+            <span style="font-size:.66rem;text-transform:uppercase;color:var(--text-2);min-width:3.6rem">${esc(l.role)}</span>
+            ${hlink(l.ourSlug, `<img src="${himg(l.ourSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'">`)} <b>${o ? pgName(o) : ''}</b>
+            <span style="color:var(--text-2)">vs</span>
+            ${hlink(l.theirSlug, `<img src="${himg(l.theirSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'">`)} ${esc(l.theirHero)}
+            ${mu ? `<span style="margin-left:auto;font-weight:800;color:${wrColor(mu.winrate)}" title="pred.gg empirical, ${mu.matchesPlayed.toLocaleString()} games">${mu.winrate}%</span>` : `<span style="margin-left:auto;font-weight:700;${edgeStyle(l.edge)}">${l.edge}</span>`}
+          </div>
+          <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.35rem;font-size:.76rem;color:var(--text-2)">
+            ${mu ? `<span>pred.gg ${mu.winrate}% over ${mu.matchesPlayed.toLocaleString()}${mu.firstTowerDiff != null ? ` · 1st tower ${mu.firstTowerDiff > 0 ? '+' : ''}${mu.firstTowerDiff}s` : ''}</span> <span style="opacity:.7">· sim: ${l.edge}</span>` : `${pgDots(l.verdict)} <span>sim: ${esc(l.summary)}</span>`}
+            <span style="margin-left:auto">counter: <span style="color:var(--text-1)">${counterTxt}</span></span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="margin-top:.5rem;font-size:.72rem;color:var(--text-2)">Per-minute kill-window (5·10·15·20·25·30), green = your window. Counter = a role-eligible hero that beats the enemy laner (matchup matrix, THEORY); <span style="color:var(--green)">●</span> = in that player's pool.</div>`);
+
+  const comp = card(`
+    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.5rem">Team comp &amp; objectives</h2>
+    <div style="font-size:.84rem;color:var(--text-1)">Damage — you: ${f.comp.ourDamage.physical}P/${f.comp.ourDamage.magical}M · them: ${f.comp.theirDamage.physical}P/${f.comp.theirDamage.magical}M · healers them: ${f.comp.theirHealers.join(', ') || 'none'}</div>
+    <div style="font-size:.84rem;color:var(--text-1)">Objectives — you: ${f.objectives.ourKills}${f.timeline ? ' majors' : ' kills'} · them: ${f.objectives.theirKills}${f.timeline ? ` · towers ${f.timeline.towers.us}–${f.timeline.towers.them}` : ''}</div>
+    ${f.timeline ? (() => {
+      const dur = f.durationMin || 40;
+      const big = f.timeline.majors.filter((m) => /FANG|PRIME|ORB/i.test(m.type));
+      if (!big.length) return '';
+      const types = [...new Set(big.map((m) => m.type.replace(/_/g, ' ')))];
+      const objColor = (t) => /FANG/i.test(t) ? '#f0820f' : /ORB|PRIME/i.test(t) ? '#a855f7' : 'var(--text-2)';
+      return `<div style="margin-top:.5rem">
+        <div style="font-size:.72rem;color:var(--text-2);margin-bottom:.2rem">Objective timeline (0–${dur}m) · <span style="color:#f0820f">Fangtooth</span> / <span style="color:#a855f7">Orb &amp; Prime</span> · ✓ you / ✗ them</div>
+        <div style="position:relative;height:34px">
+          <div style="position:absolute;top:15px;left:0;right:0;height:2px;background:var(--border)"></div>
+          ${big.map((m) => { const x = Math.min(97, Math.max(1, m.minute / dur * 100)); const col = objColor(m.type); const mine = m.side === 'us'; return `<div title="${m.minute}m ${esc(m.type.replace(/_/g, ' '))} (${mine ? 'you' : 'them'})" style="position:absolute;left:${x}%;top:3px;transform:translateX(-50%);text-align:center"><div style="width:13px;height:13px;border-radius:50%;background:${col};margin:0 auto;border:2px solid ${mine ? 'var(--green)' : 'var(--red)'}"></div><div style="font-size:.58rem;color:var(--text-2)">${m.minute}'</div></div>`; }).join('')}
+        </div>
+        <div style="font-size:.68rem;color:var(--text-2)">marker colour = objective; ring = ${`<span style="color:var(--green)">you took it</span> / <span style="color:var(--red)">they took it</span>`}</div>
+      </div>`;
+    })() : ''}
+    ${f.closingNote ? `<div style="font-size:.82rem;color:var(--gold);margin-top:.45rem">⏱ ${esc(f.closingNote)}</div>` : ''}
+    ${f.comp.flags.length ? `<div style="font-size:.8rem;color:var(--gold);margin-top:.4rem">${f.comp.flags.map((x) => '• ' + esc(x)).join('<br>')}</div>` : ''}
+    ${f.counterBuild ? `<div style="margin-top:.6rem;border-top:1px solid var(--border);padding-top:.5rem">
+      <div style="font-weight:700;font-size:.78rem;color:var(--text-1);margin-bottom:.3rem">Their build vs your counter</div>
+      ${f.counterBuild.notes.map((n) => `<div style="font-size:.82rem;color:var(--text-1);margin-bottom:.25rem">• ${esc(n)}</div>`).join('')}
+      ${(f.counterBuild.enemyBuilds || []).some((e) => !e.onMeta) ? `<div style="font-size:.74rem;color:var(--text-2);margin-top:.25rem">Off-meta enemy builds: ${f.counterBuild.enemyBuilds.filter((e) => !e.onMeta).map((e) => esc(e.hero)).join(', ')}</div>` : ''}
+    </div>` : ''}`);
+
+  const kit = f.kit ? card(`
+    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.6rem">Kit synergy &amp; enemy threats <span style="font-weight:400;text-transform:none;letter-spacing:0">· from ability data (CC, heals, AoE)</span></h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem">
+      <div>
+        <div style="font-weight:700;color:var(--green);font-size:.82rem;margin-bottom:.3rem">How your comp should play</div>
+        ${(f.kit.synergy || []).map((s) => `<div style="font-size:.84rem;color:var(--text-1);margin-bottom:.35rem">• ${esc(s)}</div>`).join('') || '<div style="color:var(--text-2);font-size:.82rem">—</div>'}
+      </div>
+      <div>
+        <div style="font-weight:700;color:var(--red);font-size:.82rem;margin-bottom:.3rem">What the enemy kit threatens</div>
+        ${(f.kit.threats || []).map((s) => `<div style="font-size:.84rem;color:var(--text-1);margin-bottom:.35rem">• ${esc(s)}</div>`).join('') || '<div style="color:var(--text-2);font-size:.82rem">no standout threats flagged</div>'}
+      </div>
+    </div>
+    ${f.kit.enemy.hardCC.length ? `<div style="margin-top:.6rem;font-size:.78rem;color:var(--text-2)">Enemy hard CC: ${f.kit.enemy.hardCC.map((c) => `<span style="background:var(--bg-3);border-radius:99px;padding:.05rem .45rem;margin-right:.2rem">${esc(c.hero)} ${esc(c.type)}${c.sec ? ` ${c.sec}s` : ''}</span>`).join('')}</div>` : ''}
+    ${(f.kit.enemyKits || []).some((k) => k.playAgainst) ? `<details style="margin-top:.7rem"><summary style="cursor:pointer;font-weight:700;color:var(--red);font-size:.82rem">Enemy kits — how to play against each ▾</summary>
+      <div style="margin-top:.4rem">${f.kit.enemyKits.filter((k) => k.archetype).map((k) => `<div style="font-size:.82rem;margin-bottom:.4rem"><b>${esc(k.hero)}</b> <span style="color:var(--text-2)">· ${esc(k.archetype)}${k.dive && k.dive !== 'low' ? ` · ${esc(k.dive)} dive` : ''}</span>${k.playAgainst ? `<div style="color:var(--text-1)">↳ ${esc(k.playAgainst)}</div>` : ''}</div>`).join('')}</div></details>` : ''}
+    ${(f.kit.ourKits || []).some((k) => k.winCondition) ? `<details style="margin-top:.4rem"><summary style="cursor:pointer;font-weight:700;color:var(--green);font-size:.82rem">Your kits — win conditions &amp; combos ▾</summary>
+      <div style="margin-top:.4rem">${f.kit.ourKits.filter((k) => k.archetype).map((k) => `<div style="font-size:.82rem;margin-bottom:.4rem"><b>${esc(k.hero)}</b> <span style="color:var(--text-2)">· ${esc(k.archetype)}${k.powerSpike ? ` · ${esc(k.powerSpike)} spike` : ''}</span>${k.winCondition ? `<div style="color:var(--text-1)">↳ Win: ${esc(k.winCondition)}</div>` : ''}${k.combo ? `<div style="color:var(--text-2)">↳ Combo: ${esc(k.combo)}</div>` : ''}</div>`).join('')}</div></details>` : ''}
+    <div style="margin-top:.5rem;font-size:.72rem;color:var(--text-2)">Synergy/threat lines from structured ability data (CC, heals, AoE); per-hero combos/win-conditions/counters from the kit-knowledge pass. THEORY.</div>`) : '';
+
+  const players = card(`
+    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.6rem">Per-player review</h2>
+    ${us.map((p) => {
+      const built = p.items.filter((i) => !/Potion|Ward|Crest/i.test(i.name));
+      const lane = (f.lanes || []).find((l) => l.role === p.role && l.ourSlug === p.heroSlug);
+      // Counters only matter when the lane is actually unfavored — judge by the
+      // empirical pred.gg winrate when we have it, else the sim edge.
+      const unfav = lane ? (lane.predggMatchup ? lane.predggMatchup.winrate < 49 : lane.edge !== 'favored') : false;
+      const counter = unfav && lane.counters && lane.counters[0];
+      const dg = p.diagnostics;
+      const dColor = (m) => m.flag === 'bad' ? 'var(--red)' : m.flag === 'good' ? 'var(--green)' : 'var(--text-2)';
+      const edgeColor = lane ? (lane.edge === 'favored' ? 'var(--green)' : lane.edge === 'unfavored' ? 'var(--red)' : 'var(--text-1)') : 'var(--text-1)';
+      // Build vs the winning build: how many of the winning core they ran.
+      const wc = p.winningCore;
+      const sharedCore = wc ? wc.items.length - (p.missingCore || []).length : 0;
+      return `<div style="border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;margin-bottom:.7rem;background:var(--bg-2)">
+        <div style="display:flex;align-items:center;gap:.55rem;flex-wrap:wrap">
+          ${hlink(p.heroSlug, `<img src="${himg(p.heroSlug)}" style="width:30px;height:30px;border-radius:7px" onerror="this.style.visibility='hidden'">`)}
+          <b>${pgName(p)}</b>${p.isLead ? ' <span style="font-size:.62rem;color:var(--gold)">(lead)</span>' : ''}
+          <span style="font-size:.68rem;text-transform:uppercase;color:var(--text-2);border:1px solid var(--border);border-radius:99px;padding:.05rem .4rem">${esc(p.role)}</span>
+          <span style="font-size:.8rem;color:var(--text-1)">${esc(p.heroName)} · ${p.kills}/${p.deaths}/${p.assists}</span>
+        </div>
+        ${dg && dg.headline ? `<div style="font-size:.9rem;margin-top:.4rem;font-weight:600">${dg.metrics.some((m) => m.flag === 'bad') ? '⚠ ' : ''}<span style="color:${dg.metrics.find((m) => dg.headline.startsWith(m.label)) ? dColor(dg.metrics.find((m) => dg.headline.startsWith(m.label))) : 'var(--text-0)'}">${esc(dg.headline)}</span></div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.25rem;font-size:.72rem">${dg.metrics.map((m) => `<span style="color:${dColor(m)}" title="your season average: ${m.avg}">${esc(m.label)} ${m.value}<span style="color:var(--text-2)">/${m.avg}</span></span>`).join('')}</div>`
+        : `<div style="font-size:.74rem;color:var(--text-2);margin-top:.35rem">${esc(p.experienceVerdict)} — no baseline to compare this game against</div>`}
+        ${lane ? `<div style="font-size:.82rem;margin-top:.35rem">Lane: vs <b>${esc(lane.theirHero)}</b> ${lane.predggMatchup ? `<span style="font-weight:700;color:${lane.predggMatchup.winrate >= 52 ? 'var(--green)' : lane.predggMatchup.winrate <= 48 ? 'var(--red)' : 'var(--text-1)'}" title="pred.gg empirical, ${lane.predggMatchup.matchesPlayed.toLocaleString()} games">${lane.predggMatchup.winrate}% win</span> <span style="color:var(--text-2);font-size:.72rem">(pred.gg, ${lane.predggMatchup.matchesPlayed.toLocaleString()} games)</span>` : `<span style="color:${edgeColor};font-weight:700">(${lane.edge})</span>`}${counter ? ` · would've countered: ${esc(counter.hero)}${counter.inPool ? ` <span style="color:var(--green)">(your pool)</span>` : ''}` : ''}</div>` : ''}
+        <div style="display:flex;gap:.25rem;flex-wrap:wrap;margin:.4rem 0">${built.map((i) => hlink(p.heroSlug, `<img src="${iimg(i.slug)}" title="${esc(i.name)} — open ${esc(p.heroSlug)} build" style="width:26px;height:26px;border-radius:6px;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">`)).join('') || '<span style="color:var(--text-2);font-size:.78rem">no completed items</span>'}</div>
+        ${p.antiHealRec ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.2rem">🩹 Anti-heal: add <b>${esc(p.antiHealRec.item)}</b>${p.antiHealRec.swapOut ? ` (swap ${esc(p.antiHealRec.swapOut)})` : ''} — vs their healers</div>` : ''}
+        ${wc && (p.missingCore || []).length ? `<div style="font-size:.74rem;color:${sharedCore <= 1 ? 'var(--gold)' : 'var(--text-2)'}">${sharedCore <= 1 ? '⚠ Off the winning build' : 'Build note'}: ran ${sharedCore}/${wc.items.length} of the ${wc.wr}%-winning core (${esc(wc.items.join(', '))}) — missing ${esc((p.missingCore || []).join(', '))}.</div>` : ''}
+        ${p.matchupItemFlags.length ? `<div style="font-size:.74rem;color:var(--gold)">${p.matchupItemFlags.map(esc).join(' · ')}</div>` : ''}
+        ${co?.perPlayer?.[p.pid] ? `<div style="font-size:.88rem;border-left:2px solid var(--accent);padding-left:.6rem;margin-top:.45rem">${esc(co.perPlayer[p.pid])}</div>` : ''}
+      </div>`;
+    }).join('')}
+    ${f.draftNote ? `<div style="font-size:.78rem;color:var(--text-2);margin-top:.3rem;border-top:1px solid var(--border);padding-top:.5rem">⚑ Draft: ${esc(f.draftNote)} — minor; only flagged when it's a bottom-two lane.</div>` : ''}`);
+
+  return head + lanes + comp + kit + players;
+}
+
 (async () => {
   let c;
   const who = new URLSearchParams(location.search).get('player');
@@ -141,21 +321,99 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
     try { sq = await (await fetch('../../data/artifacts/squad.json')).json(); } catch {}
     if (sq) {
       document.title = 'Coach reports — pick yours';
+      // Post-game reviews of the squad's recent ranked games (committed, zero-API).
+      // Only the small index loads up front; each match's full facts are fetched
+      // lazily on click (and cached), so the list scales to any number of games.
+      let pgList = [];
+      try {
+        const PG = await (await fetch('../../data/postgame/index.json')).json();
+        pgList = (PG.matches || []).filter((m) => m.matchId);
+      } catch {}
+
       document.getElementById('page').innerHTML = `
-        <h1>Coach reports</h1>
-        <div class="sub" style="margin-bottom:1rem">one per member — pick yours</div>
-        <div class="roster">
-          ${sq.members.map((m) => `
-            <a class="rost" href="coach.html?player=${esc(m.uuid)}">
-              ${m.topHeroes?.[0] ? `<img class="pav" src="../img/heroes/${esc(m.topHeroes[0].slug)}.webp" alt="" onerror="this.remove()">` : ''}
-              <span>
-                <b>${esc(m.name)}</b>
-                ${m.archetype ? `<span class="rl">“${esc(m.archetype.label)}”</span>` : ''}
-                <span class="rl">${m.current ? `${esc(m.current.rank)} · ${m.current.points} VP · ` : ''}${m.career.games.toLocaleString()} games</span>
-              </span>
-              <span style="margin-left:auto;color:var(--text-2)">→</span>
-            </a>`).join('')}
-        </div>`;
+        <details class="rostermenu">
+          <summary><span class="rm-t">Coach reports</span><span class="rm-s">— open a member’s report</span></summary>
+          <div class="roster">
+            ${sq.members.map((m) => `
+              <a class="rost" href="coach.html?player=${esc(m.uuid)}">
+                ${m.topHeroes?.[0] ? `<img class="pav" src="../img/heroes/${esc(m.topHeroes[0].slug)}.webp" alt="" onerror="this.remove()">` : ''}
+                <span>
+                  <b>${esc(m.name)}</b>
+                  ${m.archetype ? `<span class="rl">“${esc(m.archetype.label)}”</span>` : ''}
+                  <span class="rl">${m.current ? `${esc(m.current.rank)} · ${m.current.points} VP · ` : ''}${m.career.games.toLocaleString()} games</span>
+                </span>
+                <span style="margin-left:auto;color:var(--text-2)">→</span>
+              </a>`).join('')}
+          </div>
+        </details>
+        ${pgList.length ? `
+        <h1>Post-game review</h1>
+        <div class="sub" id="pgsub" style="margin-bottom:.6rem"></div>
+        <div id="pgfilter" class="pgfilter"></div>
+        <div id="pgpick" class="pgpick"></div>
+        <div id="pgview"></div>` : ''}`;
+
+      if (pgList.length) {
+        const sub = document.getElementById('pgsub');
+        const filterEl = document.getElementById('pgfilter');
+        const pick = document.getElementById('pgpick');
+        const view = document.getElementById('pgview');
+        // lazy detail fetch, cached per match id
+        const cache = {};
+        const loadGame = (id) => (cache[id] ||= fetch(`../../data/postgame/${id}.json`).then((r) => r.json()));
+        const stacks = [...new Set(pgList.map((m) => m.stackSize).filter(Boolean))].sort((a, b) => b - a);
+        const fmtDate = (iso) => new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        let filter = 'all', cur = 0;
+        const visible = () => filter === 'all' ? pgList : pgList.filter((m) => String(m.stackSize) === filter);
+        // W-L summary reflects the active filter
+        const updateSub = () => {
+          const vis = visible();
+          const w = vis.filter((m) => m.result === 'win').length;
+          const label = filter === 'all' ? `${vis.length} ranked games on record` : `${vis.length} ${filter}-stack game${vis.length === 1 ? '' : 's'}`;
+          sub.innerHTML = `${label} · <b style="color:var(--green)">${w}W</b> <b style="color:var(--red)">${vis.length - w}L</b> · newest first`;
+        };
+        const renderFilter = () => {
+          filterEl.innerHTML = stacks.length > 1
+            ? [['all', `All ${pgList.length}`], ...stacks.map((s) => [String(s), `${s}-stack`])]
+                .map(([v, label]) => `<button class="pgf${filter === v ? ' on' : ''}" data-f="${v}">${label}</button>`).join('')
+            : '';
+        };
+        const draw = async (i) => {
+          cur = i;
+          [...pick.children].forEach((b, j) => b.classList.toggle('on', j === i));
+          const m = visible()[i];
+          if (!m) { view.innerHTML = ''; return; }
+          view.innerHTML = '<div style="color:var(--text-2);padding:1rem .2rem">loading…</div>';
+          try { view.innerHTML = pgReview(await loadGame(m.matchId)); }
+          catch { view.innerHTML = '<div style="color:var(--red);padding:1rem .2rem">could not load this match</div>'; }
+        };
+        const renderChips = () => {
+          pick.innerHTML = visible().map((m, i) => {
+            const c = m.result === 'win' ? 'var(--green)' : 'var(--red)';
+            return `<button class="pgchip${i === cur ? ' on' : ''}" data-i="${i}">
+              <b style="color:${c}">${m.result === 'win' ? 'W' : 'L'}</b>
+              <span class="d">${fmtDate(m.startTime)}</span>
+              <span class="s">${m.durationMin}m${m.stackSize ? ` · ${m.stackSize}-stack` : ''}</span>
+              ${m.hasCoaching ? '<span class="c" title="coached">✎</span>' : ''}
+            </button>`;
+          }).join('');
+          [...pick.children].forEach((b) => b.onclick = () => draw(Number(b.dataset.i)));
+        };
+        if (stacks.length > 1) {
+          renderFilter();
+          // delegate on the container so the handler survives renderFilter()
+          // replacing the button elements (the old per-button binding went stale
+          // after the first click, locking the filter).
+          filterEl.onclick = (e) => {
+            const b = e.target.closest('.pgf'); if (!b) return;
+            filter = b.dataset.f; cur = 0;
+            renderFilter(); renderChips(); draw(0); updateSub();
+          };
+        }
+        updateSub();
+        renderChips();
+        draw(0);
+      }
       return;
     }
     // no squad report on disk — fall through to the lead's standalone report
@@ -191,7 +449,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
         <div class="goalbar"><div class="fill" style="width:${fillPct}%"></div><div class="peak" style="left:${peakPct}%"></div></div>
         <div class="lbl"><span>${p.current.points} VP now</span><span>gap: ${c.goal.gapVp} VP</span><span>Platinum III at ${c.goal.vp} VP</span></div>
       </div>
-      <div class="verdict">${esc(c.plan[c.plan.length - 1])}</div>
+      <div class="verdict">${esc((c.coachReasoning && c.coachReasoning.assessment) || c.plan[c.plan.length - 1])}</div>
       <table class="splits" style="margin-top:.9rem">
         <tr><th>split</th><th style="text-align:right">finish</th><th style="text-align:right">peak</th><th>rank</th></tr>
         ${p.ratings.map((r) => `<tr><td>${esc(r.split)}</td><td class="n">${r.points}</td><td class="n">${r.peak}</td><td>${esc(r.rank)}</td></tr>`).join('')}
@@ -209,16 +467,20 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
       <div style="font-size:.72rem;color:var(--text-2);margin-top:.5rem">${esc(c.ledger.note)}</div>
     </div>` : ''}
 
-    ${c.insights && c.insights.length ? `
+    ${(() => {
+      const ins = (c.coachReasoning && c.coachReasoning.insights && c.coachReasoning.insights.length) ? c.coachReasoning.insights : c.insights;
+      if (!ins || !ins.length) return '';
+      return `
     <div class="card">
       <h2>The film room · what your games actually say</h2>
-      ${c.insights.map((i) => `
+      ${ins.map((i) => `
         <div class="insight">
           <b>${esc(i.title)}</b>
           <div>${esc(i.finding)}</div>
-          <div class="ir">🧾 ${esc(i.receipt)}</div>
+          ${i.receipt ? `<div class="ir">🧾 ${esc(i.receipt)}</div>` : ''}
         </div>`).join('')}
-    </div>` : ''}
+    </div>`;
+    })()}
 
     <div class="card">
       <h2>Role focus · winrate per role, thin samples adjusted</h2>
@@ -280,11 +542,11 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
 
     <div class="card">
       <h2>The plan</h2>
-      <ol class="plan">${c.plan.map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
+      <ol class="plan">${((c.coachReasoning && c.coachReasoning.plan && c.coachReasoning.plan.length) ? c.coachReasoning.plan : c.plan).map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
     </div>
 
     <footer>
-      Data: pred.gg public profile (${esc(c.generatedAt.slice(0, 10))}) joined with Predecessor Scout aggregate baselines.<br>
+      <a href="about.html">About &amp; how this works</a> · Data: pred.gg public profile (${esc(c.generatedAt.slice(0, 10))}) joined with Predecessor Scout aggregate baselines.<br>
       ${c.honesty.map(esc).join(' · ')}
     </footer>`;
   buildSubnav();

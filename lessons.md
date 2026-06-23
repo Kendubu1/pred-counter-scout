@@ -1079,3 +1079,1062 @@ Append-only. One entry per backlog item or significant finding.
   cap:4, and the sim takes max(override, default). A build with Cursed Ring caps
   at 4.0; everything else at 3.0. The aps cap is applied AFTER the AS-ramp too,
   not just the base, so ramping items can't sneak past it.
+
+## 2026-06-14: kit-derived playstyle on top of the field steer (Gideon slice)
+- The "templated" feeling was the OBJECTIVE, not the generation. Beam search is
+  individuated per hero; the six COMBAT_VECTORS corners are global, so every hero
+  is scored through the same value function. main already shipped an
+  augment-as-playstyle steer (field-derived: the lane's most-played augment ->
+  enum -> bias corner). That's still popularity-anchored, which is the maintainer's
+  exact complaint. The fix is a KIT-derived signal fused on top, so a hero the
+  field hasn't solved (or a new one) still gets a coherent steer.
+- Data-model trap: every caster is tagged damageType:'hybrid' (physical basic,
+  magical abilities — gideon, countess, gadget, howitzer, muriel...), so a
+  `damageType === 'magical'` check silently NEVER fires for the heroes it most
+  matters for. Added kitPowerType(kit): resolve the real power type from the
+  majority damage type of the DAMAGING ABILITIES, not the kit tag. With it, Gideon
+  reads ability-burst/poke, magical — and the Vesh (Ability Damage Mage) Eternal
+  wins its fit, as it should. Before the fix, the hybrid tag made Vesh score 2.45
+  (attackPower -0.3 branch) and Demiurge's raw item-scaling delta won instead.
+- Eternal as major -> minor1, minor2: rank the major by kit fit (dominant) blended
+  with sim delta, then score each minor by its MARGINAL gain ON TOP OF that major
+  (conditioned on the major being equipped), falling back to the curated
+  recommendation when unmodeled. This subsumes the hardcoded ehpWeight heuristic.
+
+## 2026-06-14: Option-A robustness beats the binary THEORY flag
+- Unverified constants now carry a plausible range in calibration.json (crit
+  [1.6,1.8], mitigation K [100,150]). robustnessOf sweeps the 2x2 grid through the
+  generator and asks: does the #1 build survive the whole region? Threaded K through
+  SimOptions.mitigationK (default 100 -> byte-identical; the 83 baseline tests
+  stayed green) so the sweep varies it faithfully, EHP included.
+- The sweep is not trivially stable, which is the proof it's doing work: Gideon's
+  KIT-STEERED burst build is robust to both constants, but the UNSTEERED build is
+  FRAGILE — its #1 flips when K moves 100->150 — so the sweep names mitigation as
+  the constant to measure first. A binary THEORY stamp can't make that distinction;
+  it marks the robust pick and the coin-flip pick identically.
+- AS cap: kept the tooltip-sourced 3.0 (stronger source); logged the maintainer's
+  350-420% web finding as a crossCheck note (almost certainly a percent-bonus view
+  of the same absolute cap; base AS x cap ~= 3/sec). Don't overwrite a stated
+  in-game value with a looser web number; record both and reconcile in practice mode.
+
+## 2026-06-14: the agreement validator's first finding is a real sim blind spot
+- agreeWithField checks whether the GENERATED front reproduces the field's winning
+  cores (hit@k, n-weighted coverage, Spearman) — complementing explain, which
+  attributes ONE given build. Runs post-generation, never feeds the objective.
+- Finding: Gideon's front does NOT cover the field's 55%/n=390 core (Azure Core +
+  Combustion + Wraith Leggings), even at 3 items. Root cause: the damage objective
+  is MANA-BLIND — rotation damage assumes casts land within the window regardless of
+  pool, so Azure Core's 450 mana / 15 haste is invisible and the sim prefers raw
+  magical power. This is exactly the disagreement the validator exists to surface,
+  not a number to engineer around. The fix (mana-constrained sustained casting) is
+  future work; the slice ships the finding honestly.
+
+## 2026-06-14: same kit, different lane — playstyle must be lane-conditioned (Zinx)
+- Zinx exposed three coupled gaps the Gideon slice didn't. (1) She's tagged
+  hybrid; kitPowerType resolves her to magical from the ability damage type (same
+  fix Gideon needed). (2) She has two heals BUT CANNOT HEAL HERSELF (Infuse + the
+  ult heal are ally-directed) — so she's an enchanter, not a self-sustain kit. The
+  'sustain' objective was conflating the two: ability heals are ally OUTPUT
+  (healShield10s); self-drain via lifesteal is sustain10s. Split them — an
+  enchanter who can't self-heal should never steer to sustain10s.
+- (3) The big one: a kit's playstyle has to be LANE-CONDITIONED. Zinx's heal
+  abilities gave a fixed sustain bump that made her 'sustain' in EVERY lane, even
+  mid/carry where she's a poke damage hero. Worse, the sustain steer is
+  healShield10s, which COMBAT_KEYS doesn't include, so generateBuilds silently
+  DROPPED it — her damage lanes got no steer at all and an enchanter Eternal
+  (Exarch) even in carry. Fix: ally healing LEADS the playstyle only where it's a
+  scored win condition (support); in a damage lane it's demoted below the damage
+  signals. Now: support -> sustain/poke, healShield10s steer, Exarch; mid/carry ->
+  poke/sustain, rot10/rot20 steer (a combat objective the search keeps), Vesh.
+- Eternal-major selection: switched from additive (sim + 3*fit) to multiplicative
+  (max(0.1,1+fit) * (1+sim/100)) so FIT leads the major's IDENTITY and sim only
+  refines. The additive form let a modeled off-archetype damage major (Vesh, +sim)
+  beat the unmodeled best-fit support major (Exarch, sim=0) on a support hero. An
+  Eternal's deity archetype is a fit decision; the sim delta breaks ties within an
+  archetype, it doesn't override the archetype. Verified Gideon still picks Vesh.
+- Lesson for the roster generalization: "has a heal ability" is not "is a sustain
+  hero" — role/lane decides whether that heal is the win condition or just utility.
+
+## 2026-06-14: the sim must level abilities by the real per-level path (V2 chart)
+- ranksAtLevel used a heuristic (one point per ability, then max by priority). It
+  got ult TIMING right (fixed 6/11/16) but the basic-rank distribution was an
+  approximation, so the early/mid stages didn't reflect how the hero is actually
+  played. skill-orders.json already holds the full 18-level recommended SEQUENCE
+  (the V2 ability chart, pred.gg recommendedSkills) but only maxOrder was loaded.
+- Fix: load the full sequence into kit.recommendedSequence (mapping omeda
+  RMB/Q/E/R -> PRIMARY/SECONDARY/ALTERNATE/ULTIMATE) and tally ranks point-by-point
+  up to the level. Now any evaluation at level L uses exactly the abilities online
+  and their ranks at L: Zinx at L5 has ULT=0 (correctly absent before 6) and
+  Bad Medicine/Ricochet already ahead; the staged early/mid sims finally reflect
+  "factor in abilities when they're acquired." Converges with the old heuristic by
+  L13, so the level-13 tests were unaffected (harness stayed green at 93->94).
+- Open follow-ups surfaced this session (not yet built): (1) mana-aware objective
+  so mana-starved heroes (Zinx 290/340 at L1, Shinbi, Argus) get steered to mana
+  items early and Azure Core stops being invisible; (2) model the EVOLVING ORB
+  (Orb of Enlightenment -> Orb of Growth, "Inner Growth" stacking, in the meta
+  build) as a ramping stat gain rather than flat final stats; (3) the ult is still
+  credited once per rotation WINDOW despite its ~120-160s cooldown, which
+  over-credits ults in rot10/rot20 (separate from acquisition timing).
+
+## 2026-06-14: mana is a BURST-cadence constraint, not a sustained-rotation one
+- Tried to make the build search mana-aware via the 10s rotation cost (manaSpent10s
+  vs pool). It did NOTHING: cooldowns space casts over 10s and the pool scales, so
+  EVERY mana hero reads adequacy 1.0 at every level. A 10s mana model can't see
+  mana pressure at all.
+- The metric that actually discriminates is "combos before dry" = pool / one-combo
+  cost (sum of ability costs, one cast each), level- and item-aware. Zinx 1.9 combos
+  at L9, Shinbi 2.5, Gideon 2.9 (he scales mana +372% L1->L18 and needs it least),
+  and a mana item lifts Zinx to 3.3. This matches the maintainer's read exactly
+  (Zinx/Shinbi/Argus sparse early; Gideon scales out of it).
+- Search penalty: factor = 0.5 + 0.5*adequacy where adequacy = min over early item-
+  timing stages (1/2/3 items at L9/12/14) of min(1, combosBeforeDry/3). Applied to
+  the beam keep-sort and the headline sort, NOT as a Pareto axis (avoids front
+  bloat). Result: Zinx front-loads mana (adequacy 1.0), Gideon untouched (0.97),
+  resourceless kits inert (1.0). Also the structural fix for the Azure-Core miss.
+- Lesson: match the constraint's MODEL to its real regime. Mana doesn't bind a
+  paced rotation; it binds repeated combos in a skirmish. Modeling it on the wrong
+  window silently produced a no-op. The level scaling itself is the indicator the
+  maintainer pointed at: pool/combo by level is what says "this hero needs mana".
+
+## 2026-06-14: on-hit reasoning + roster re-tag from augment & lane behaviour
+- Why a weak-ability mage leans on-hit (Zinx): attack speed + a MAGICAL on-hit item,
+  not ability damage. Her meta core is Prophecy + Spectra + Orion (Orion converts
+  ability haste -> attack speed). The procs were modeled, but the optimizer couldn't
+  reach the build: the field core is a balanced hybrid no single objective corner
+  picks, and the autoDPS corner overshot to PHYSICAL crit (Deathstalker) because the
+  item pool read the 'hybrid' tag as "allow everything."
+- Fix: relevantPool routes through kitPowerType. A magical kit drops physical
+  power/crit/lethality and keeps magical power + attack speed + ability haste (which
+  feed magical on-hit). An on-hit steer on Zinx now builds Orion + Spectra, not
+  Deathstalker. Note: a naive "magical_power>0" filter was WRONG — Spectra has 0
+  magical_power (its magic is in the on-hit proc), so the rule keeps attack-speed
+  items, not just MP items.
+- Re-tagging the roster (maintainer: tag from augment + lane behaviour, not the kit
+  tag): npm run classify emits per-hero-lane (real power type) x (playstyle from the
+  lane augment fused with the kit) for all 52 heroes -> classifications.json. 26
+  agree / 37 disagree / 24 kit-only / 9 field-only. The disagreements are the
+  product: Eden is ability-burst not on-hit; Bayle/Boris are sustain bruisers; Argus
+  mid is on-hit. The augment classifier now reads attack-speed->on-hit,
+  barrier->sustain, damage-reduction->tank, AoE->ability-burst (16 unclassifiable
+  augments -> 9; the rest are non-damage utility that honestly falls back to kit).
+- Lesson: the augment is the field's DECLARATION of intent; it tags playstyle better
+  than kit numbers for heroes whose power is in items/behaviour, not raw ability
+  scaling. The kit is the fallback when the augment declares no damage playstyle.
+
+## 2026-06-14: pred.gg build NAMES are a free label cross-check; the sim proved on-hit
+- pred.gg's frozen snapshot stores a build-tab NAME per hero-lane (118/118 covered):
+  "On-Hit/Crit", "Crit/Sustain", "Pen/On-Hit", "On-Hit/Anti Tank"... These are
+  human-curated playstyle labels, NOT item lists, so they cross-check our re-tag
+  without copying anything. npm run classify now shows our tag vs the pred.gg name
+  per lane: 31 agree / 47 differ / 18 no-overlap (their taxonomy adds item terms
+  like Crit/Pen/Scaling that don't map to our 5 playstyles).
+- The "differ" cases are the accuracy gold: Drongo's AoE augment (Bring The Boom)
+  tagged ability-burst, but pred.gg builds him On-Hit/Crit -> our augment-as-
+  playstyle misreads an AoE augment on a fundamentally on-hit carry. Bayle/Boris:
+  augment says sustain (lifesteal), pred.gg name says On-Hit -> both true (on-hit
+  build WITH a sustain augment); the augment declares the perk, the build name the
+  item archetype. Use the name to validate, the augment to steer.
+- Sim PROOF that magical on-hit is Zinx's route (maintainer: "prove it with the
+  sim"): after the power-type-aware pool, an on-hit steer builds Orion+Spectra+
+  Prophecy and agreeWithField goes hit@6 false/0% -> hit@6 TRUE/59%, reproducing the
+  field core (Prophecy+Spectra+Orion). The sim EARNED the field build from first
+  principles once the pool stopped leaking physical crit. Agreement is the proof.
+
+## 2026-06-14: evolving items — buy the source, credit the evolved value
+- "The orb that evolves" = Orb of Growth -> Orb of Enlightenment. You BUY Growth
+  (the field does: Shinbi/Iggy n=187/Renna/Countess); it farms bonus XP and at 500
+  evolves into Enlightenment (Per Level: +3 MP, +15 Health). Growth was unmodeled,
+  so the sim never bought the meta item. Now Growth is credited at its evolved
+  per-level MP/HP. "Alternata" (maintainer saw on Wukong/Eden) is the same pattern:
+  Alternator -> Alternata. And Catalytic Drive -> Cybernetic Drive.
+- General rule found from build_paths: an evolving completed item is an Epic/Legendary
+  whose single build_paths target is also Epic/Legendary. Three in the build pool
+  (orb, alternator, catalytic) + 8 crest lines (crests aren't in the build pool yet).
+  The evolved forms (Orb of Enlightenment, Alternata, Cybernetic Drive) are NOT
+  directly buyable, so they're excluded from completedItems (EVOLUTION_TARGETS); the
+  source carries the evolved value. This replaced an Orb-Of family hack with one
+  general mechanism.
+- Per-item: Orb of Growth -> evolved per-level MP/HP. Catalytic Drive -> evolved
+  +12% total armor (Cybernetic Conversion). Alternator was already fine (its +15%
+  alt-ability amp is modeled; the evolved "Nata Style" cooldown ripple is genuinely
+  unmodelable — depends on cast interleaving, same reason Alternata flags it).
+- Broader item review (maintainer: "review all items"): build pool is 132 items,
+  68 have a modeled passive, 62 are flat-stats-only (passive uncredited), 2 have no
+  entry. The 62 are the standing coverage backlog (priorities item 11, ratcheted);
+  prioritize by field play-rate and by where the agreement validator flags a
+  sim/field disagreement.
+
+## 2026-06-14: the "Alternate ability" question exposed a key-map scramble bug
+- Explaining the Alternator item ("Your Alternate Ability deals 15% more damage")
+  surfaced a real bug. "Alternate ability" = the RMB (right-click) ability slot,
+  which EVERY hero has (Gideon RMB = Void Breach, Wraith RMB = Knock Knock). Not a
+  stance mechanic. The item is strong when that RMB is a damage ability; useless if
+  the RMB is a stance/utility toggle.
+- The bug: data.ts had TWO disagreeing omeda->internal key maps. Abilities used
+  OMEDA_KEY_MAP (RMB->ALTERNATE, Q->PRIMARY, E->SECONDARY); skill orders used
+  OMEDA_TO_KIT (RMB->PRIMARY, Q->SECONDARY, E->ALTERNATE). Same omeda key, different
+  internal slot. So skill-order leveling assigned points to the WRONG ability:
+  Gideon's engine maxed Cosmic Rift (PRIMARY) by L9 when pred.gg maxes Void Breach
+  (RMB). Roster-wide scramble of which ability is high-rank at each level -> wrong
+  rotation damage at every non-max level. (Ult timing was unaffected: R->ULTIMATE in
+  both. Level-13 results mostly converge, which is why it hid until now.)
+- Fix: delete OMEDA_TO_KIT/SEQ_TO_KIT; map skill orders with the SAME OMEDA_KEY_MAP
+  the abilities use. Gideon now maxes Void Breach first. Added a regression test
+  that the RMB ability out-ranks Cosmic Rift early and is keyed ALTERNATE.
+- Lesson: when two pipelines map the same external key into the same internal
+  namespace, they MUST share one map. The Alternator item modeling itself was
+  already correct (abilityKey ALTERNATE = RMB via OMEDA_KEY_MAP); only the skill
+  order used the wrong map.
+
+## 2026-06-14: attack-speed steroid abilities (Sparrow/Murdock) were invisible
+- Maintainer caught it: Sparrow (Heightened Senses, 25/30/35/40/45% AS) and Murdock
+  (Hot Pursuit, 15/20/25/30/35% AS) max a "utility" ability early for an attack-speed
+  SPIKE. These abilities have no damage line, so def construction dropped them
+  entirely -> the AS never reached the sim -> their auto DPS (their whole identity as
+  carries) was undervalued. This is the concrete case behind the earlier "the sim
+  only levels damaging abilities" caveat.
+- Fix: parse a per-rank "X/Y/Z% Attack Speed" self-buff (+ approx duration "for Ns")
+  from ability text (parseSelfAttackSpeed); retain buff-only abilities in the kit
+  (new branch in def construction); credit the AS in auto DPS uptime-weighted
+  (selfAttackSpeedPct: full in a burst window, buffDuration/cooldown sustained).
+  attacksPerSecond gained an extraAsPct param. Retaining these abilities ALSO fixes
+  their skill-order leveling (the E slot is no longer dropped).
+- Lesson: "no damage line" != "no combat value." An ability can be a pure stat
+  steroid (attack speed, and likely power/pen/haste buffs too) that the field maxes
+  first precisely because it scales the auto-attacks. The damage-only def filter was
+  silently discarding a carry's core power. Next: generalize to other self-buffs.
+
+## 2026-06-14: generalized self-buffs to permanent passive stat gains
+- After the AS steroid, surveyed the roster: most other ability self-buffs are
+  PASSIVES (always-on) granting power/pen/haste — "Passive: Gain 8/11/14/17/20
+  physical power" (Feng Mao Safeguard), Wraith's Surprise, Surprise! gives
+  10/14/18/22/26 physical PENETRATION. These had no damage line so they were
+  dropped, losing both the stat and the ability's place in the skill order.
+- Added parseSelfStatBuffs (power/pen/haste/lifesteal/omnivamp from "Gain X ...")
+  + AbilityDef.selfStatBuffs; retain buff-only abilities; fold the gains into the
+  effective item totals at full uptime (applySelfStatBuffs) so they feed every
+  damage window. Retaining Wraith's Surprise, Surprise! also fixes her leveling
+  (it was the dropped ability behind her earlier skill-order mismatch).
+- Scope call confirmed with the maintainer: only COMPLETED Epic/Legendary items are
+  in the build pool, so the smaller components ("belts") that build into them are
+  already excluded — no effort spent modeling them. The 62 flat-stats-only backlog
+  is all completed items.
+- Uptime model: permanent passives = 1.0 (always on); temporary steroids (AS) =
+  duration/cooldown. Temporary non-AS steroids are rare/none among leveled abilities
+  (the power ones are passives), so they're deferred.
+
+## 2026-06-14: hero passives — model the EHP/stat ones, skip the conditional ones
+- The Passive slot isn't built into abilities[], so no hero passive was modeled.
+  Surveyed Steel + Riktor + the survey hits: passives split like the maintainer
+  guessed. Steel's Cybernetic Shell (7% max-HP refreshing self-shield + armor
+  cross-conversion) is pure EHP -> undervalued his whole tank identity. Riktor's
+  Suspended Sentence (halt enemy cooldowns on CC) is utility/CC -> outside the
+  sim's damage/EHP/heal objectives, no impact on our numbers.
+- Most passives are conditional/stacking/proc (Gideon tether, Legion thresholds,
+  Gadget/Boris stacks), NOT clean flat grants -- the earlier "9 power passives"
+  survey over-counted by matching any "power" mention. Auto-crediting them would
+  over-count, so they stay unmodeled.
+- Modeled the clean case: parsePassiveSelfShield reads "shields ... for X% of max
+  health" (only Steel today, 7%) into kit.passiveSelfShieldPctMaxHealth; EHP adds
+  it as always-on effective HP (+472 eHP for Steel). Generic pattern, future-proof.
+  Steel's armor cross-conversion is a remaining unmodeled piece (build-dependent).
+- Lesson: a hero passive is worth modeling only when it maps to a scored objective
+  (EHP/damage/heal) AND is unconditional. CC/lockdown/proc passives are real value
+  the sim doesn't score -- flag, don't fake.
+
+## 2026-06-14: neutral-objective solo-clear (who can take the Fangtooth)
+- A great player question the EHP + staged-DPS + damage-reduction work unlocks:
+  out of the junglers, who can solo the Fangtooth early, or with one item online?
+  It's pure kit math: sustained damage vs the objective's armor for time-to-kill,
+  vs its contact damage against the hero's effective HP (+ self-heal) for survival.
+- Built soloClear + bestOneItemClear (src/objectives.ts) and npm run objectives,
+  which ranks the 22 junglers at L4 bare and L6 with their best single item.
+- DATA GAP honored per autonomy policy: we have NO neutral-objective stats, so
+  added calibration.neutralObjectives.fangtooth as UNVERIFIED placeholders (HP,
+  armor, contact DPS) with verified:false; soloClear reports provisional:true and
+  output is THEORY until measured in practice mode. The machinery is correct; the
+  rankings become meaningful once real Fangtooth stats are entered.
+- This is the capstone that ties the session's defensive work together: EHP now
+  reflects armor + HP + shields + damage-reduction + self-shield passives, so
+  "survive the camp" is finally a real computation, not just raw HP.
+
+## 2026-06-14: mana model tuning — value it for poke mages, gate it off carries
+- The agreement validator caught a persistent disagreement: the field rushes a mana
+  item (Azure Core / Combustion) on poke mages (Argus, Gideon — 4 of 6 Argus cores
+  start with Azure Core), but the sim didn't. Diagnosis: with TARGET_COMBOS=3 the
+  starved-build penalty was ~9.5%, just under Azure/Combustion's damage cost, so the
+  optimizer kept the higher-raw-damage no-mana build by a hair.
+- Fix 1: TARGET_COMBOS 3 -> 4 (a poke mage wants ~4 combos of mana for poke wars).
+  Now Argus/Gideon/Zinx all rush a mana item (Combustion).
+- Fix 2 (over-forcing): the penalty was also pushing AUTO-ATTACK CARRIES (Murdock,
+  Drongo) to mana — wrong, their damage is basics, not ability combos. Gated
+  stagedManaAdequacy to ability-reliant kits: auto-attackers (physical carry or
+  basicScaling>=90) return adequacy 1. Carries now build no forced mana; poke mages
+  do; mana-rich kits (Sparrow, 5.5 combos) were never forced.
+- Residual: the sim picks Combustion where the field picks Azure Core — both mana
+  items; the difference is Azure's 15 ability haste, which the sim weighs slightly
+  under Combustion's +15 MP. That's a finer haste-valuation call (abilityHaste is
+  unverified), not "no mana", so left as-is. Lesson: the "combos before dry" metric
+  only binds ability-combo kits; gate it off auto-attackers or it mis-credits carries.
+
+## 2026-06-14: roster-wide agreement audit — where the optimizer diverges from the field
+- Built `npm run agreement` (engine/src/ingest/agreement-audit.ts): for every hero,
+  run the lane-augment-steered optimizer at its primary lane and compare the Pareto
+  front to the field's winning cores (pred.gg). Writes data/aggregates/agreement-audit.json.
+- Two metrics, because the strict one is misleading: exact-trio hit (all 3 core
+  items in ONE build) is only 10% and reads as catastrophic, but item-level core
+  recall (do we build each core item ANYWHERE in the front) is 52% avg — the honest
+  number. Carries/junglers are the best-aligned (combat-objective heroes); supports
+  are the worst.
+- The bottom 8 by recall are ALL supports/enchanters (+ Wraith): Mourn, Muriel,
+  Narbash, Phase, Riktor, Zinx, Steel at 0% recall. Root cause is architectural, not
+  a constant: enchanter items ARE in the pool but are mostly `unmodeled`/flat-stat
+  (Xenia, Enra's Blessing, Windcaller, Crystal Tear, Truesilver, Frosted Lure,
+  Dawnstar). Their value is ALLY-FACING (heal_shield_increase amplifies allies'
+  heals, auras, peel) and a single-hero combat sim structurally cannot score it.
+  Even under an explicit healShield10s/utility bias, Zinx builds only 1 of her field
+  core's 3 enchanter items. "She can't heal herself" generalizes: the objective
+  vector has no ally channel.
+- Systematic never-built clusters (the fix backlog, by frequency):
+  1. Enchanter ally-utility — Dynamo(5), Xenia(3), Enra's Blessing(3), Crescelia(2),
+     Marshal(2): supports. Needs an ally-utility objective proxy (credit
+     heal_shield_increase + ability_haste + aura stats) OR steer supports by field
+     augment and accept they're partly out-of-model. ARCHITECTURE decision.
+  2. Mage cooldown/haste/mana — Entropy(4), Azure Core(3), Megacosm(3), Spectra(3),
+     Flux Matrix(2): haste/mana undervalued vs raw power. Partly the known
+     Azure-vs-Combustion haste call; abilityHaste is unverified.
+  3. Bruiser sustain (offlane) — Overlord(4), Rapture, Cursed Scroll: omnivamp/
+     sustain on bruisers; rot objectives don't reach for it. Likely in-model fixable.
+  4. On-hit magical (jungle/carry) — Malady(4): magical on-hit/anti-heal; a hybrid
+     bruiser tagged physical drops it via the power-type pool. Power-type edge case.
+- Lesson: agreement is highest where the objective IS the hero's job (carry DPS) and
+  lowest where the hero's job is off-axis to single-hero combat (enchanting allies).
+  The audit turns "builds feel templated" into a ranked, item-level fix list; the
+  #1 lever (enchanter ally-utility) is an objective-architecture change, so it's
+  surfaced for a maintainer call rather than silently estimated.
+
+## 2026-06-14: ally-utility objective — give enchanters the channel the combat sim lacks
+- Audit fix #1 (maintainer-authorized architecture change). The agreement audit's
+  bottom 8 by recall were all supports because the `utility` objective was only
+  movement_speed + tenacity, so enchanter items (ability_haste + heal_shield_increase
+  + ally auras) scored ~0 and never made the front.
+- Fix: utility now = movement_speed + tenacity + ability_haste + heal_shield_increase
+  + eff.ampAllWindowPct. The last term credits team damage-amp DEBUFFS (Dynamo's
+  "enemies take 10% more damage", scope:all) — near-worthless to a support's own low
+  damage but real value applied to the whole team, so it belongs on the ally channel.
+  Heuristic proxy: one unit of value per stat/amp point (documented as such).
+- Honesty line: purely-unmodeled ally auras (Xenia's ally shield, Frosted Lure's
+  proximity nuke) stay UNCREDITED rather than estimated — the calibration policy
+  forbids inventing a magnitude. They remain THEORY items the sim can't rank.
+- Result: avg item-level core recall 52% -> 58%. Dynamo dropped off the most-missed
+  list entirely; Steel/Narbash/Mourn/Zinx/Riktor left the worst-18. Remaining gaps
+  are now the in-model clusters (mage haste, bruiser sustain, on-hit magical).
+- Lesson: a single-hero combat sim is structurally blind to ally-facing value; the
+  fix is a dedicated objective fed by the stats/effects that ARE quantifiable
+  (haste, heal/shield amp, team debuffs), not a fudge factor on combat damage.
+
+## 2026-06-14: agreement audit — classify misses as fixable vs blocked (don't popularity-fit)
+- Enhanced `npm run agreement` to label each never-built field item: ★ fixable
+  in-engine (mechanic is modeled or it's a pure stat stick — a valuation gap) vs
+  ⓘ blocked on an unmodeled mechanic with an unstated magnitude (cleave ratio,
+  stack cadence, health-gated shield). After fix #1: 32 fixable, 33 blocked.
+- Methodological line we held: the ★ "fixable" haste/mana items (Entropy, Azure
+  Core, Megacosm) are modeled but lose on per-gold damage; the sim instead builds
+  Combustion — itself a valid field mana core. Forcing Azure in by inflating
+  ability_haste's weight would be FITTING THE OBJECTIVE TO POPULARITY, which the
+  design forbids (component C: popularity never enters the objective). That
+  Azure-vs-Combustion split is legitimate model uncertainty (abilityHaste is
+  unverified), not a bug to tune away. The audit validates; it must not become the
+  training signal.
+- The ⓘ blocked items (Overlord cleave, Malady sub-40% stacks, Salvation/Berserker
+  health-gated shields) need a measured magnitude before the sim can rank them;
+  estimating violates the calibration policy. They are flagged, not faked.
+- Lesson: an agreement validator is only honest if you let it DISAGREE. The fixes
+  it licenses are missing value CHANNELS (ally-utility) and modeling errors, never
+  re-weighting toward the field's specific picks.
+
+## 2026-06-14: per-flex-role builds — a full optimized build for every lane a hero plays
+- Maintainer caught it: the v6 hero page let you toggle flex roles, but every role
+  showed the SAME build. Root cause in the engine: headlineBuild cached by slug
+  only and called generateBuilds WITHOUT a role, and buildHeroArtifact computed the
+  whole artifact (build, stages, eternals, augments, meta cores, matchups) for
+  kit.roles[0] alone. laneFlex gave a per-lane CORE preview but nothing else.
+- Fix: extracted buildRoleView(kit, role, ...) — the full per-role analysis — and
+  made buildHeroArtifact iterate flexRolesFor(kit) (declared roles ∪ lanes with
+  augment evidence, primary first, capped at 3). Schema split into RoleView +
+  HeroArtifact (RoleView.extend). Top-level fields still mirror the primary role
+  (backward compatible with the index and tests); a new `roles[]` carries a full
+  RoleView per lane. headlineBuild is now keyed by slug:role.
+- v6 UI: renderHero merges the active role view over the artifact (role-independent
+  fields survive the spread, so re-rendering on toggle works), and a "flex role"
+  button bar calls nav(slug, false, role). Verified headless: Zinx support build
+  (Lifecore/Windcaller, Vesh eternal, Adele/Riktor matchups) vs midlane
+  (Spectral Schematics/Combustion, Demiurge, Renna/Iggy) swap with zero JS errors.
+- Cost: artifacts now ~3× the generateBuilds work for flex heroes (52 artifacts in
+  ~10min); matrix unaffected (1326 pairs in 3s). Both regenerated so prod reflects
+  the ally-utility tweak AND the per-role builds.
+- Lesson: "flex role" is not a display filter — it's a different hero in practice
+  (different items, spikes, counters). Model it as a first-class per-role build,
+  not a re-skin of the primary.
+
+## 2026-06-14: consolidate per-lane UI — augment steer as a per-role banner, not a 2nd build list
+- Once the flex-role toggle shipped a full build per lane, the old "Playstyle by
+  lane" section (laneFlex) became a redundant second per-lane build list. The
+  maintainer flagged the overlap and chose to condense.
+- Kept what was UNIQUE to it: the augment→playstyle steer + the ⚙ sim-modeled /
+  🔬 evidence-steered honesty + field winrate. Added a per-role `laneSteer` to
+  RoleView (the lane's field augment, playstyle, modeled flag, wr/n, and the
+  build-SHIFT — shiftIn/shiftOut — that steering toward the augment makes vs the
+  role's pure-optimum build). The v6 page now renders this as a compact banner
+  ABOVE the optimizer build, and the standalone "Playstyle by lane" section is
+  gone. laneFlex stays in the artifact for the standalone flex-preview tool.
+- Distinction the banner now makes explicit: the optimizer build is the PURE
+  kit-math optimum for the lane (no augment assumed); the banner says what the
+  field's augment would do on top of it (and whether the sim can see it).
+- Lesson: when you add a real per-X view (per-role builds), retire the half-measure
+  that approximated it (per-lane core previews) instead of leaving both — but carry
+  forward the one signal the half-measure had that the new view lacks.
+
+## 2026-06-18: post-game review (Squad tab) — facts engine + agent coaching pass
+- New player-facing feature: a blunt, esports-style post-game review of one ranked
+  match for our group, on a new ui/v6/postgame.html (linked from Squad/Build Lab/
+  Coach nav). `npm run postgame -- <player-name | player-uuid | match-uuid>`.
+- Data source: the OMEDA PUBLIC API is fully sufficient — match detail exposes per
+  player K/D/A, full damage split (incl. to-objectives), healing, wards, gold
+  curves, inventory_data, performance_score, rank, vp_change, objective_kills; plus
+  players/{id}/hero_statistics for experience. No pred.gg creds needed (theirs
+  weren't reaching the container anyway; env secrets need a fresh session). No
+  objective TIMELINE exists in the feed — we measure objective CONTRIBUTION (kills +
+  damage), and the page says so honestly.
+- Split of labor that saved metered API spend: the ENGINE computes the deterministic
+  facts (engine/src/postgame.ts: lane matchups from our kill-window matrix, build
+  vs the optimizer + field core, experience vs this game, comp shape, objectives),
+  and the AGENT (this session) authors the blunt coaching narrative into the
+  facts.coaching slot — rather than paying for a runtime ANTHROPIC_API_KEY call.
+- Bug caught in review: build comparison matched by NAME, but artifact meta-core
+  names are camelCase (AzureCore) while item names aren't (Azure Core), so it
+  falsely flagged built items as missing. Fixed to match by SLUG, resolve to names
+  for display, and restrict to COMPLETED items (a 23-min game leaves components in
+  inventory; judging those as "missing core" is game-length, not a mistake).
+- Lesson: a single match is small-sample and short games have unfinished builds —
+  honest coaching separates the repeatable signal (objective control, draft edges,
+  experience gaps) from the noise (one outlier carry game, an unfinished build).
+
+## 2026-06-18: post-game review moved to Coach tab + name/lane fixes
+- Relocated the post-game review from a standalone page to a section on the COACH
+  landing (where the roster already lives), with a WIN/LOSS match picker. Removed
+  the standalone postgame.html, its nav links, and the squad-page card.
+- Name fix: some omeda profiles are private and report a placeholder display_name
+  ("🎮 user-<id>"); we already map UUID->handle in the squad report, so the UI now
+  prefers squadName over the omeda display_name everywhere (pgName helper).
+- Lane table now shows the PLAYER (mapped name) alongside the lane + hero, not just
+  the lane name — you can see who played each matchup.
+
+## 2026-06-18: pred.gg as the fresher post-game source + counters + objective timeline
+- omeda's public feed stalled at 2026-06-12 (global, not just the squad — verified
+  all 5 members + the global feed). pred.gg carries the same matches by the SAME
+  UUIDs and is current to 06-17, AND exposes an event stream omeda lacks
+  (objectiveKills / structureDestructions with gameTime).
+- Built a pred.gg match adapter (src/ingest/predgg-match.ts): one GraphQL query for
+  the lead's recent ranked matches with full per-player detail, mapped to the same
+  OmedaMatch shape computeMatchFacts consumes. hero.slug -> our slug directly;
+  inventoryItemData -> gameIds (filter null slots); rating -> vp_change. pred.gg has
+  NO performance_score, so that field is 0 and the UI hides it.
+- npm run postgame -- --squad now prefers pred.gg when creds are present (fresher +
+  timeline), falls back to omeda. Skips already-reviewed matches (preserves omeda
+  perf scores + authored coaching); --force re-pulls. generateOne preserves any
+  existing coaching across a facts refresh.
+- Objective timeline: facts.timeline = major objectives (non-buff) with minute +
+  side, and towers by side (structureTeam = the side that LOST it, so a tower we
+  took has team=enemy). Finally answers "when did the Fangtooth fall" — e.g.
+  "11m FANGTOOTH (them) · 16m FANGTOOTH (you) · 27m PRIMAL FANGTOOTH (them)".
+- Counter tips: from the all-pairs matchup matrix, for each lost lane, role-eligible
+  heroes whose kill-window beats the enemy laner — the player's OWN pool first
+  (a counter you can pilot > a theoretical one), via their omeda hero_statistics.
+  Augmented in place (no re-pull) so all games got counters without losing data.
+- Lesson: when one provider stalls, a second sanctioned source with matching IDs is
+  the cleanest fix — adapt it to the existing shape rather than forking the engine.
+
+## 2026-06-18: kit/ability comp analysis — synergy + enemy threats from structured data
+- hero-abilities.json already carries STRUCTURED cc (knockup/root/silence/pull/
+  suppress/slow + durations), passives, AoE-ish descriptions, and heals per ability.
+  So the "cc mess / heal-stacking / synergy" read the maintainer wanted is grounded
+  in real kit data, not hallucinated.
+- computeKitAnalysis(facts, abilities) builds a TeamKit per side (hard-CC list with
+  durations, slows, healers, damage mix, frontline, AoE count) and derives THREATS
+  (chain-CC lockdown to respect, heal-stacking -> anti-heal mandate, damage profile
+  to itemize against, no-frontline = pick comp) and SYNERGY (your CC->follow-up
+  window, no-frontline play-for-picks, sustain favors long fights, predictable
+  single-damage-type, AoE teamfight). Augmented into all 8 games in place.
+- Layering plan: this V1 is structured-data-grounded and covers every hero now;
+  the deeper qualitative read (combos, win conditions, how-to-play-AGAINST each
+  kit, passives' gameplay impact) is the agent kit-knowledge pass to layer next —
+  done in-session (no metered API), grounded in each hero's ability + passive text.
+- Lesson: check for structured fields before assuming you need an LLM pass — the CC
+  data was already there. Use the LLM/agent pass for what ISN'T structured
+  (qualitative gameplay), and flag it THEORY.
+
+## 2026-06-18: full-roster kit-knowledge pass (agent-authored profiles)
+- Authored data/game-data/kit-profiles.json — a structured qualitative profile for
+  all 49 heroes (archetype, core combo, win condition, power spike, passive's
+  in-fight effect, who to play WITH, how to play AGAINST, waveClear, dive, scaling).
+  Grounded in each hero's actual ability + passive text (dumped from
+  hero-abilities.json), authored in-session (no metered API), flagged THEORY.
+- computeKitAnalysis now takes the profiles and attaches per-player ourKits/
+  enemyKits, and adds an archetype-driven threat ("dive threat on your backline:
+  X — assign peel"). The Coach review gets two expandable sections: "Enemy kits —
+  how to play against each" and "Your kits — win conditions & combos".
+- This is the depth layer on top of the structured CC/heal/AoE analysis: the
+  structured pass says "they have a pull + 2 healers"; the kit pass says "Mourn's
+  whole engage is the long Abduct channel — respect the range, anti-heal Contagion;
+  Khaimera's kit dies to anti-heal."
+- Lesson: the agent pass is for the QUALITATIVE read structured data can't hold
+  (combos, win conditions, counterplay). Ground it in the committed ability text so
+  it's a classification of real data, not invention — same discipline as the
+  augment/coaching passes.
+
+## 2026-06-18: archetype titles — "Secret" only when the specialty is actually hidden
+- Maintainer caught Xeebs labelled "The Secret Jungler" — but jungle is his favRole,
+  so nothing is secret. The secret-role archetype fired whenever a player's best
+  100+ game role outperformed the rest, ignoring whether that role was their KNOWN
+  main. Fix: if best role == favRole it's "The Career <Role>" (open specialty, "lean
+  into it"); only when best role != favRole is it "The Secret <Role>" (genuinely
+  hidden). Recomputed squad.json titles in-place from committed data (pools live in
+  data/artifacts/players/<uuid>.json) — no API call. Other four titles held up.
+- Lesson: a "hidden gem" framing must check what the player is already known for;
+  praising their main as a secret reads as the tool not knowing the player.
+
+## 2026-06-18: post-game feedback pass — matchup + rightful-lane focus, de-emphasize anti-heal
+- Audit: anti-heal/healers occupied 60% of feedback surfaces (12 of 20 in one game)
+  — the same point repeated in the comp flag, kit threat, 3 per-player flags, and
+  multiple coaching lines. It IS the #1 real issue but said 12x it buried everything.
+- Fixes: (1) anti-heal is now a single team-level kit threat — removed the per-player
+  matchupItemFlags anti-heal repetition and the duplicate comp flag. (2) Added
+  per-player roleFit ("rightful lane"): the role they played vs their proven-best
+  role (>=50 games, highest shrunk wr), from the squad report — surfaced as the lead
+  line on each player card. (3) The per-player card now leads with role-fit +
+  matchup (vs whom, edge, pool counter) instead of generic item flags. (4)
+  Re-authored all 8 games' coaching to be matchup/lane-centric, one blunt sentence
+  per player, anti-heal capped at one team-level mention. Result: anti-heal 60% -> 15%.
+- Finding the feedback now surfaces: 75% of player-games were off the player's best
+  lane (e.g. Xeebs the jungle main repeatedly on mid/offlane/carry; Cuban's carry vs
+  the mid/support he's slotted into) — a far more actionable, varied read than "buy
+  anti-heal" eight times.
+- Lesson: one true problem repeated across every surface reads as nagging and crowds
+  out the rest. Say it once at the right altitude (team), and spend the per-player
+  space on what's specific to each player — their lane and their matchup.
+
+## 2026-06-18: anti-heal as a build RECOMMENDATION + enemy counter-build (and a correction)
+- Re-added anti-heal as a constructive, build-specific recommendation pill (the
+  right Tainted item for the player's power type/role + what to swap), but made it
+  TEAM-AWARE: a heal comp wants ~2 anti-heal (1 vs a single healer), so we only
+  recommend enough damage dealers to fill the gap, and nothing when already covered.
+- CORRECTION: the earlier "anti-heal missed in 8/8 games" finding was an artifact of
+  a PER-PLAYER flag counting individuals, not the team. Counting real team builds:
+  the squad was actually covered (>=2 anti-heal) in 4 of 8 games and light in 3 —
+  only 1 game had genuinely zero. Fixed the false "anti-heal missed" claims in the
+  authored coaching for the covered games. Lesson: aggregate at the right unit
+  (team itemization is a team total, not a per-player checkbox) before calling it a
+  systemic failure.
+- Added counterBuild: did the enemy build to their meta core, and did we itemize to
+  answer their threats (anti-heal vs healers, armor/MR vs their top damage) — with
+  impact ("Gideon 31k magical; 1/5 built MR — that hurt"). Surfaced as "Their build
+  vs your counter" on the review.
+
+## 2026-06-18: post-game review pass 3 — accuracy + mobile + grounding fixes
+Eight maintainer-flagged fixes:
+- Mobile: the draft lane matchup TABLE broke on phones — replaced with stacked
+  responsive cards (no horizontal overflow).
+- Objectives: rendered the major-objective stream as a visual TIMELINE (markers by
+  minute, colored by side) instead of a text line.
+- Closing/tempo feedback: closingNote flags when we led objectives but dragged the
+  game (win >35m with obj lead) or won the objective count and still lost.
+- "Blind pick" was wrong: omeda hero_statistics lags weeks. Switched the experience
+  read to the committed pred.gg POOL (current); a hero outside the pool is now
+  "low sample", not "a blind pick — a gamble".
+- Feng Mao / Bayle were mislabelled "healers": they're self-sustain bruisers.
+  Healer detection now requires the SUPPORT role (an ally-healer), not just high
+  total_healing_done (which catches lifesteal).
+- Role-fit was too aggressive (flagged anyone off their #1 lane). Now only a CONCERN
+  when on a bottom-two lane with a clearly better option (>=2 wins/100); a flat pool
+  is never flagged. "What lane to play" stops being a topic unless it's really bad.
+- "Missing core" is now grounded in the pred.gg WINNING build (most-played core that
+  wins), with its winrate + sample shown — not our sim THEORY.
+- Item + hero icons now link to the Build Lab hero page.
+- Lesson: aggregate at the right unit and trust the freshest source — a per-player
+  flag, a stale stat feed, or a lifesteal=healer heuristic each produced confidently
+  wrong feedback. Ground claims in pred.gg winning data and only raise a topic when
+  the data says it's actually a problem.
+
+## 2026-06-18: write-up review + evolving-item credit + timeline colours
+- The authored coaching had never been updated after the accuracy fixes, so it still
+  carried stale claims (blind picks, false healers, over-aggressive role-fit, anti-
+  heal misses that weren't real). Rewrote all 8 games' write-ups against the
+  corrected facts. New accurate throughline: TOWER/map control predicts results
+  better than raw objective kills (wins out-towered 10-7/7-4/10-4; losses 6-11/0-10/
+  1-6), and two wins came DESPITE losing the objective count — they converted to
+  towers. The old "objectives = wins" framing was replaced with "convert to towers".
+- Evolving-item credit: end-game inventory shows the EVOLVED form (Orb of Growth ->
+  Orb of Enlightenment), which EVOLUTION_TARGETS filtered out, so an evolved core was
+  reported "missing". Added EVOLVED_SOURCE map; the post-game now counts an evolved
+  item and credits the source it was bought as. Fixed Shinbi's "missing Orb of
+  Growth" in the games he actually ran it.
+- Timeline colours: markers are now coloured by OBJECTIVE (Fangtooth orange, Orb/
+  Prime purple) with a green/red ring for which side took it.
+- Lesson: authored prose is a snapshot — when the underlying facts change, the
+  write-ups must be regenerated or they silently lie. Keep the narrative tied to the
+  computed facts.
+
+## 2026-06-18: lead per-player feedback with match data (vs the player's own averages)
+- Maintainer pushback: "could the feedback be better than just saying they picked
+  the wrong lane?" Yes — lane-fit is the LEAST actionable line (you can't switch
+  mid-game; for a friend stack it's a social choice) and it was wrong as a headline
+  (Xeebs's flagged lane was literally his BEST). It was becoming the new single-note.
+- Built diagnosticsOf(): this game vs the player's own per-hero season averages
+  (omeda hero_statistics: deaths, CS/min, hero-dmg/min, mitigation, wards; rates are
+  per-minute to compare across game lengths; needs >=5 games for a baseline). The
+  card now LEADS with the biggest deviation, e.g. "deaths 11 vs your 5 norm (+120%)"
+  — specific, personal, fixable next game. The Xeebs case: jungle is his best lane,
+  but he doubled his death average — THAT is the story, not the lane.
+- Lane-fit demoted from a per-player headline to a single team DRAFT note, only when
+  someone's on a bottom-two lane. Counters now only show on non-favored lanes
+  (suggesting a counter for a lane you won is noise). Experience drops the winrate
+  under 5 games ("near first-time", not "1 games, 0% wr"). Build-vs-winning now
+  states how many of the pred.gg winning core they ran ("ran 1/3 of the 53%-winning
+  core — missing X").
+- Lesson: coach what they DID and can change (deaths, farm, vision vs their own
+  baseline), not who they ARE (a stat says you're a jungler). Benchmark against the
+  player's own numbers — it's the most personal, least arguable feedback we have.
+
+## 2026-06-18: Live Draft — lane-by-lane counter board (UI, ui/v2)
+- Maintainer ask: branch off the home page with a "counter" option that works
+  lane by lane for live ranked drafts — add an enemy pick, guess their lane,
+  show the best counters by win rate and the build that beats them, and keep
+  going for a full team comp.
+- Built a new `livedraft` flow (kept the existing team-board Draft Helper).
+  5 lane rows (offlane/jungle/mid/duo carry/duo support), each with an enemy
+  slot + your slot. Picking an enemy renders a per-lane panel: top counters
+  ranked by win rate (shrunk via MatchupEngine.adjustedWinRate so small
+  samples don't dominate) + the counter-strategy build from
+  MatchupEngine.counterHeroAnalysis. Click a counter to fill your lane slot.
+  "Add enemy pick (auto-lane)" guesses the lane from the role the hero has the
+  most committed games in. A running "Your Draft So Far" summary flags damage
+  skew / missing CC / no frontline.
+- Data: pure zero-API — reads the committed per-hero `counters` arrays
+  (data/<version>/<slug>.json), which are already stored per-lane. winRate in
+  those entries is the HOST hero's WR vs the listed hero, so the counter's WR
+  = 100 - winRate (low host WR = good counter for us). Same source the existing
+  Counter/Draft pages use; pre-1.14 like the rest of the live site.
+- Gotcha worth remembering: ui/v2/index.html sets `<base href="../">`, so it is
+  the real served page (resources resolve from ui/, e.g. matchup-engine.js lives
+  at ui/matchup-engine.js); ui/index.html is just a redirect to v2/. Cache-busted
+  app.js v77→v78 and style.css v24→v25 so the changes load.
+## 2026-06-18: empirical lane matchups from pred.gg (test) — ground truth beside the sim
+- pred.gg's coreBuild filter has NO opponent field, so matchup-SPECIFIC winning
+  BUILDS aren't queryable. But Hero.matchupStatistic(metric: WINRATE, sameRole)
+  returns empirical hero-vs-hero WINRATE + matchesPlayed + firstTowerTimeDiff, at
+  huge sample (14k-70k games per pairing). That's the real prize: ground truth for
+  the lane matchup vs our sim's kill-window THEORY.
+- fetchLaneMatchups(): one query per unique our-hero, pick the laner from results
+  (>=30 games). Wired into the post-game ingest; each lane now carries predggMatchup
+  {winrate, matchesPlayed, firstTowerDiff}. The UI leads with it and shows the sim
+  edge as a second opinion; counters now trigger on the EMPIRICAL winrate (<49%).
+- Immediately useful: the empirical data DISAGREES with the sim in places (Zinx vs
+  Gideon: sim 'unfavored' but pred.gg 52.7% over 14,311 — the sim is wrong there),
+  and confirms it elsewhere (Khaimera vs Bayle 58.7% over 36k = favored). A future
+  calibration lever: validate/replace the sim matchup matrix with this.
+- Lesson: when a provider can't give exactly what you want (per-matchup builds),
+  check what it CAN give (per-matchup winrate) — empirical winrate beside a THEORY
+  verdict is more honest than either alone, and surfaces where the model is wrong.
+## 2026-06-20: v6 senior-principal review + autonomous backlog execution
+- Wrote docs/reviews/v6/v6-review.md from 4 evidence passes + 1 independent
+  clean-room pass (bias check). Now working the prioritized backlog top to bottom.
+- A1 (root buries v6): root index.html and ui/index.html redirected to ui/v6/
+  instead of the frozen pre-1.14 ui/v2/. Reversible redirect only — did NOT delete
+  ui/v2–v5 (frozen v2 is protected by CLAUDE.md; deletion is destructive and needs
+  an explicit ask). The old dirs are now simply unreferenced from the front door.
+- E1 (build titles): added a pure, deterministic buildTitle() in search.ts —
+  style descriptor (Crit/AP/AP Burst/Lethality/On-Hit/Lifesteal/AD from the item
+  stat mix + kit power type) + class (Tank/Bruiser from defense share) + the lead
+  archetype's human noun, word-deduped. New build.title field on the artifact.
+  No popularity, no LLM, no estimation (thresholds are presentation heuristics).
+  52/52 heroes now titled; 8 distinct titles vs the prior single archetype tag.
+- F1 (eternal minors): selectEternalLoadout was computed only for the CLI and
+  dropped before the artifact. Wired it into buildRoleView → new eternals.loadout
+  {major, minor1, minor2, note} where each minor carries its marginal sim delta on
+  top of the major (or the curated pick when unmodeled). The 2×(1-of-3) minor
+  layer is now in every artifact. (UI render + the keyed copy pass are next.)
+- D1 (headline opener): the off-meta promoter gates on a negative evidence delta
+  but the headline build did not, so one niche opener (Viper/Spectral led 65% of
+  heroes) could lead with no flag. Added a DISCLOSURE note in confidence.notes
+  when the opener is field-rejected (neg delta, n>=20) or rarely built (<3% pick) —
+  surfaced, not silently reordered (popularity must never feed the objective).
+- D2 (agreement audit): agreement-audit.json (coreRecall ~58% avg) was computed
+  every run and never surfaced. buildRoleView now reads it and, when a hero+lane's
+  coreRecall < 50%, adds a confidence note naming the missed field-core items.
+- C3 (gameplans): 7 distinct gameplan strings across 312 matchups → appended an
+  enemyThreatClause(enemy.kit) grounded in kit data (execute / AoE / auto-scaling /
+  damage type + named threat ability). Now 112 distinct gameplans, opponent-named.
+- Harness green (115/115); artifacts regenerated (zero-API).
+- v6 UI render (ui/v6/index.html): (F1) added a "Recommended loadout · 1 major +
+  2 minors" card under the Eternal list, showing the major + both minor picks with
+  the modeled minor's sim delta or the curated note; (E1) the optimizer build now
+  shows its title ("The optimizer's build: Crit DPS Carry"); (C1) replaced the raw
+  unitless sim proof chip ("burst 1840 · 20s vs bruiser 6200 …") with a plain
+  pointer — the exact integers already live behind "The numbers" disclosure, and
+  the D1/D2 confidence notes already surface under "Why THEORY". Inline script
+  syntax-checked (node --check). No engine/test impact (pure render).
+- B2 (a11y): the item-detail popup ("numbers one tap away") was click-only and
+  mouse-only — triggers were non-focusable <div>/<img> opened by a document click
+  listener. Added Enter/Space keyboard activation, a MutationObserver that marks
+  every dynamically-rendered [data-ipop] focusable + role=button + aria-label, and
+  focus management in the dialog (move focus to Close, trap Tab, restore to the
+  trigger on close). Now operable by keyboard/screen-reader. Syntax-checked.
+- C4 (copy prompt): the augment-hero copy was 71% bare-winrate lines. Rewrote the
+  augment-review.ts prompt to REQUIRE an action-first imperative (take/skip/
+  situational + why) and forbid leading with a winrate (light support only).
+  copy-verify ground-check unchanged. Code-only — the improved lines land when the
+  maintainer reruns `npm run review` with ANTHROPIC_API_KEY (keyed batch job; not
+  regenerated here, no key in this environment). Same gating applies to the
+  eternal-MINOR copy lines (F1's copy half) — left for the keyed run.
+## 2026-06-20: copy passes move OFF the Anthropic API onto session compute
+- Maintainer decision (permanent): no ANTHROPIC_API_KEY in this project. All copy
+  & analysis run on the in-session Claude Code agent, not the API.
+- Mechanism: new engine/src/copy-session.ts replaces each review script's local
+  api.anthropic.com `ask()` with a file-based handoff. ask(pass,id,prompt):
+  prepare mode records the grounded prompt as a task and returns '{}' (downstream
+  parse no-ops); ingest mode returns the agent's stored answer for that id
+  (string OR inline JSON object, normalized). flushTasks() writes the tasks file.
+- Flow: `COPY_MODE=prepare npm run copy:prepare` → agent fills
+  engine/copy-tasks/<pass>.responses.json → `npm run copy:ingest`. The numeric
+  ground-check (copy-verify.ts) is UNCHANGED, so session-authored copy is held to
+  the exact same honesty bar (fabricated numbers still dropped). copy-tasks/ is
+  gitignored scratch.
+- The agent: .claude/agents/pred-scout-coach.md — an individualized, game-aware
+  agent that knows where all knowledge lives (kit/abilities, items+effects,
+  eternals incl. the 2x(1-of-3) minors, augments, builds/matchups in artifacts)
+  and the honesty contract (action-first, plain language, only source numbers).
+  It both runs the copy passes and does comparison/coaching analysis on request.
+- Removed the KEY check + api.anthropic.com fetch from augment/item/ability
+  review scripts; source strings now credit the in-session agent. Verified:
+  `ANTHROPIC_API_KEY` unset, `COPY_MODE=prepare npm run review:abilities` emitted
+  52 grounded tasks with no network; typecheck green.
+- Docs made permanent: CLAUDE.md (new "Copy & analysis policy" + practical notes),
+  docs/v5-engine-design.md tech-stack row. lessons append-only history left as-is.
+- End-to-end proof (abilities pass): with ANTHROPIC_API_KEY unset, prepare emitted
+  52 tasks → the in-session agent filled all 52 → ingest verified 311 tips and
+  DROPPED 1 (the ground-check still bites) → data/aggregates/ability-tips.json
+  regenerated, source now credits the in-session agent. Harness green (115/115).
+  Tips are action-first and grounded (e.g. Wraith E: "Pop it before a fight to
+  vanish, gain 20% speed…; chaining kills resets it"). items/augments passes run
+  identically (COPY_MODE=prepare npm run review:items / review → agent → ingest).
+- All three passes now session-authored (no key): items 182 written / 0 rejected;
+  augments 241 + 284 Eternal lines written / 47 dropped by the ground-check (the
+  verifier visibly enforcing honesty on the larger pass — dropped cells fall back
+  to mechanics-only on the page). Harness green (115/115). The Anthropic API is
+  fully out of the copy loop; data/aggregates/{item-reviews,augment-reviews,
+  ability-tips}.json all credit the in-session agent.
+## 2026-06-20: eternal sub-options for ALL top choices + meta-build titles
+- Maintainer (from the live v6 page): minors only showed for the single
+  recommended loadout; the other top Eternal choices (Lotus/Aion/Xyris) had no
+  minors or reasoning. Fix: factored pickMinorsFor out of selectEternalLoadout and
+  added allEternalMinors() (eternals.ts) -> artifact eternals.minorsByName keyed by
+  lowercased name (all 12), rendered under each top choice in v6. Each minor carries
+  its conditioned sim delta or the curated note.
+- Meta-build titles: exported archetypeLabel() (search.ts), added title to each
+  metaBuilds[] entry via buildTitle(coreItems, bestKey) and rendered it atop each
+  "Meta builds, explained" card. Meta builds are now named (e.g. "On-Hit DPS Carry").
+- PERF NOTE: allEternalMinors computes minors for all 12 majors per role-view;
+  artifact regen went ~74s -> ~8m. Hoisting resolveItemEffects barely helped — the
+  cost is resolveEntries/metrics per modeled minor. Acceptable as a periodic build
+  step; follow-up: cache resolveEntries or compute minors only for shown eternals.
+- Harness green (115/115); v6 syntax-checked.
+## 2026-06-20: build-reasoning pass (item<->ability synergy + swap justification)
+- Maintainer ask: meta builds were "explained" only as "sim says high burst"; no
+  item-to-ability synergy, no order reasoning, and the optimizer's swaps (Viper over
+  Storm Breaker, Spectral over Time Warp) looked wrong on paper with no gain/lose
+  justification. Built a new LLM-checked pass on the copy-session architecture.
+- engine/src/ingest/build-review.ts: per hero+role, assembles a grounded task from
+  the committed artifact (meta builds + titles + optimizer build + swap text) + omeda
+  item effects + the ability kit. Agent returns {metaBuilds:[{synergy,holes}],
+  optimizer:{synergy,swaps:[{out,in,gain,lose}],holes}}. Ingest ground-checks every
+  number (item stats + ability cooldowns + winrates/swap %) via copy-verify and
+  writes data/aggregates/build-reasoning.json. Wired review:builds + folded into
+  copy:prepare/copy:ingest. Run by the pred-scout-coach subagent (no API key).
+- v6 render: each "Meta builds, explained" card shows 🧩 synergy + ⚠ holes; the
+  optimizer card shows 🧩 synergy, "why the optimizer swaps off the meta" with per-swap
+  gain/lose, and a ⚠ holes caveat. REASONING loaded alongside the other aggregates;
+  null-safe when the data file is absent.
+- Ran it on session compute (no key): pred-scout-coach filled 96/96 build tasks;
+  ingest wrote 816 lines / 106 dropped by copy-verify. Sample (sparrow): "Storm
+  Breaker -> Viper: gain ~36% more sustained auto DPS via armor shred + on-hit;
+  lose Storm Breaker's chain-lightning empowered basic" — exactly the gain/lose
+  justification asked for. Harness green (115/115).
+## 2026-06-20: full pred.gg refresh staged (creds not in this session)
+- Maintainer wants a full refresh — winrates + builds shifted across all heroes,
+  main and flex lanes. Verify-before-refresh: committed pred.gg data is from
+  2026-06-12 (8 days old) with patches 1.14/1.14.1/1.14.4 in the window, so a
+  refresh is justified. BUT PREDGG_CLIENT_ID/SECRET are unset in this session
+  (secrets inject at session start; a newly added cred needs a fresh session).
+- Staged it: new `npm run refresh` chains snapshot -> augments (winrates per role,
+  incl. flex) -> buildstats (meta builds) -> skills -> aggregate -> artifacts ->
+  matrix -> agreement. Documented in CLAUDE.md, including the follow-on zero-API
+  copy passes (copy:prepare -> pred-scout-coach -> copy:ingest + review:builds).
+  Couldn't run/verify it here (no creds); run it in a session that has them.
+## 2026-06-20: full pred.gg refresh executed + 3 data-drift test fixes
+- Maintainer supplied creds (used in-session only, never committed; advised to
+  rotate since shared in chat). probe confirmed auth; `npm run refresh` ran the
+  full chain: snapshot (52 heroes, 270 items, up from 265), augments (288 stat
+  calls, winrates per role incl. flex), buildstats, skills (52/52), aggregate
+  (new data/aggregates/2026-06-20.json), artifacts, matrix (1326 pairs), agreement
+  (coreRecall 0.575 -> 0.583). Data is current as of 2026-06-20.
+- The fresh data drifted 3 pinned tests; fixed each properly (not papered over):
+  1. Gold checkpoint fixture (calibration.json) drifted from the new aggregate
+     medians (carry@25/30 by ~90-110). cal.checkpoints.table.gold is VERIFICATION-
+     ONLY (computation uses aggregate goldAt), so re-derived the fixture to the new
+     measured values + bumped the note/source date. No artifact regen needed for it.
+  2. playstyle retrodiction pinned gideon's field top-core n=390; it's live field
+     volume (now 2123) and shifts every refresh -> relaxed to toBeGreaterThan(0).
+  3. Meta board charted lt-belica as carry (45 games) but augments only covers
+     roles with >=100 games (+primary), so the cell had no augment evidence. Gated
+     the meta board on augment-cell presence (build-artifacts.ts) so it never links
+     a cell we have no field evidence for. belica-carry now correctly drops.
+- Harness green (115/115). NOTE: the LLM copy aggregates still reflect pre-refresh
+  numbers; regenerate via the zero-API copy passes (copy:prepare -> pred-scout-coach
+  -> copy:ingest + review:builds) so explanations match the new winrates/builds.
+- Done: regenerated all 4 copy passes on the refreshed data via 4 parallel
+  pred-scout-coach agents (no key). Ingest: augments 284 +227 eternal / 33 dropped;
+  items 182 / 0; abilities 311 / 1; build-reasoning 752 / 170 (verifier dropping
+  ungrounded numbers as designed). All explanations now reflect the 2026-06-20
+  winrates/builds. Harness green (115/115). Refresh fully complete end to end.
+## 2026-06-20: Phase 2 increment 1 (v6 UI polish, UI-only)
+- Reusable collapsible: used the page's native <details>/<summary> (▸ arrow) with a
+  new compact `.sim-collapse` style — the scalable click/arrow expander the plan
+  wanted, droppable anywhere.
+- Eternals: de-dupe — the sim-recommendation card now renders ONLY when its major
+  isn't already in the field top-3 (its minors already show under that row); added
+  the Eternal icon + the same ⚙ SIM PICK tag used on augments.
+- Crests: collapsed the top-3 into a `.sim-collapse` disclosure to save room.
+- Meta builds: collapsed the SIM math line (whyLine + optimizer "+X% / try Y over
+  Z, sim-only") behind "the sim math"; kept 🧩 synergy and ⚠ holes always visible.
+- Could NOT find a distinct crest "!" notice in the code (the crest block is just
+  the top-3 list) — asked the maintainer to point at it. v6 syntax-checked.
+- Still open in Phase 2: per-item build reasoning (C1, engine+copy), build-title
+  AD/AP + defense-type disambiguation (C2, engine), coaching-page agent upgrade (D),
+  and a copy bias-check pass (second agent critiquing copy framing).
+## 2026-06-20: Phase 2 C2 — build-title disambiguation (AD/AP + defense type)
+- buildTitle now spells out damage type (AD vs AP) and, for defensive builds, which
+  resist it stacks: physical_armor vs magical_armor -> Armor / Magic-Res / Mixed-Def.
+  Pure-defense builds read "Armor Frontline" / "Mixed-Def Frontline"; bruisers read
+  "AD Bruiser" / "AP Bruiser"; damage builds keep the style (Crit/Lethality/On-Hit/
+  AP all imply the damage type). Answers "is this magic or physical def? AD or AP?"
+- Regenerated artifacts; harness green (115/115).
+## 2026-06-20: Phase 2 B1 + C1-UI + D (coaching page on the agent)
+- B1: removed the verbose "⚠ Why no single flat build" notice (the maintainer
+  circled it) from ui/v6/index.html. C1/C2/UI merged to main (PR #116).
+- D: the coach assessment (coach.json plan/insights/archetype) was deterministic
+  template prose from buildCoachReport (playerProfile.ts). Added coach-review.ts
+  (mirrors build-review.ts via copy-session): grounds a task in coach.json (career,
+  roles, pool heroes WITH engineCoachLine kit reads, ledger, goal) — allowed-number
+  set = numbers in the prompt itself — pred-scout-coach rewrites it into action-first
+  coaching, copy-verify drops ungrounded lines, writes a parallel coachReasoning block
+  (UI prefers it, falls back to templated plan/insights). review:coach wired into
+  copy:prepare/ingest; agent doc updated.
+- Ran keyless on the committed sample (Willy Guggenheim): 14 lines / 0 rejected.
+  Plan now names real heroes ("Drill Zinx toward the minute-14 Timewarp spike, take
+  Vesh", "stop queueing offlane — worth +3.3 wins/100 into jungle"). coach.html
+  renders coachReasoning for the verdict, film room, and plan. Harness green (115/115).
+## 2026-06-20: per-item render fix + copy bias-check pass (independent critic)
+- Per-item bug (maintainer found it): the per-item why map is keyed by display name
+  ("Orb Of Growth") but artifact meta items use concatenated pred.gg names
+  ("OrbOfGrowth"), so the UI exact-name lookup dropped ~40% of meta items and
+  mis-numbered the rest. Fixed with a normalized itemWhyRows() helper (UI-only):
+  meta coverage 58% -> 98.3%, nicer names, correct build-order numbering.
+- copy-critique.ts: an INDEPENDENT critic (general-purpose agent, NOT the author
+  pred-scout-coach) reviews build-reasoning vs the source kit+items and flags
+  wrong-item/wrong-fact/overconfident/jargon/broken-English lines, each with a
+  rewrite ground-checked by copy-verify, then APPLIES the grounded rewrites back
+  (reversible) and writes an audit report (copy-critique.json).
+- Caught what the number-checker can't: the line "Viper adds more armor and staying
+  power" was WRONG across ~20 heroes (Viper has no armor/health — attack speed,
+  power, pen, armor-shred). 2480 lines reviewed, 130 flagged (94.8% agreement),
+  114 grounded corrections applied (15 unmatched, left in the report). 0 wrong-Viper
+  lines remain; broken-English holes (Argus/Aurora "... — Hero <kit>" missing a verb)
+  fixed. Harness green (115/115). This is the bias-check the maintainer asked for.
+- Extended copy-critique to ALSO review the coach copy (coach.json coachReasoning)
+  with the same independent critic, grounded on the player's stats. Round-2 full
+  re-review (corrected build + coach): 2494 lines, 39 flagged (agreement 94.8% ->
+  98.4% as corrections converge), 33 more grounded fixes applied, 0 unmatched.
+  Coach catch: the author had fabricated a "past 32 minutes" threshold ("78% past
+  32 minutes") not in the source (which only had win counts 5/8, 7/9) — critic kept
+  the real percentages, dropped the invented minute mark. Also fixed the remaining
+  Viper wrong-item variants the first pass missed (crunch/drongo/feng-mao/revenant).
+  copy-critique.json report now carries a `coach` flag list. Harness green.
+## 2026-06-20: Phase 2 C1 — per-item build reasoning
+- build-review.ts prompt + ingest extended: each build now also asks for an `items`
+  map (item name -> <=14-word "why it's bought + where in the order", ability-tied),
+  ground-checked per clause like everything else. build-reasoning.json metaBuilds[]
+  and optimizer now carry `items`. v6 renders a numbered per-item "why" list under
+  each meta build's synergy and under the optimizer build (new .mb-items-why style).
+  Null-safe before the data is regenerated. Code committed first; data follows after
+  the pred-scout-coach re-run + ingest.
+
+## 2026-06-22: plan->build->judge agent-loop harness + run the copy loop to convergence
+- Codified the self-correcting copy loop as a first-class, reusable pattern (the
+  maintainer's "plan one agent, build one, judge one, cycle until it works"). Four
+  SEPARATED roles: deterministic PLAN (copy-session prepare emits grounded tasks),
+  BUILD author (pred-scout-coach), the copy-verify honesty BRACKET (drops ungrounded
+  numbers — honesty is code, not trust), and an INDEPENDENT JUDGE (fresh
+  general-purpose critic, never the author). docs/agent-loops.md is the recipe +
+  the table of loops we run; CLAUDE.md points at it.
+- loop-gate.ts (review:loop:gate): deterministic convergence gate so the loop has a
+  terminal state. STOP on target>=99% / clean round / no-op round / plateau (<0.2pt
+  gain) / max 5 rounds; exit 0=stop, 10=continue (shell-loopable). Env-overridable
+  (LOOP_TARGET/EPSILON/MAX_ROUNDS/HISTORY) so it drives any future loop. copy-critique
+  appends each round to copy-critique-history.json for the gate to read.
+- Ran the loop to convergence with a FRESH independent critic each round:
+  95.2% -> 96.7% -> 98.4% -> 99.2% (gate STOP, target met). 256 grounded corrections
+  applied across 4 rounds (114/82/39/21), 0 unmatched every round.
+- What independence bought us (copy-verify can't see it): R1 caught a systemic "build
+  armor and health / tank" weakness line pasted onto heroes whose entire pool is
+  magical power (Countess/Kwang/Neon/The Fey/Lt. Belica) — every number real, the
+  advice the opposite of the actual build. Later rounds: Legion knock-back mislabeled
+  knock-up, jungle-only Spirit-of-Amir lifesteal sold to laners, Kallari Tainted
+  Trident given Malady's percent-health effect, "no escape/safety net" on kits that
+  have one (Twinblast Rocket Dash, Wraith stealth, Dekker boots), and a long tail of
+  missing-verb weakness grammar + new-player jargon (kite/peel/frontline/bursted).
+- Diminishing returns are real and visible in the trajectory: flags 120->82->39->21.
+  The gate's plateau + max-rounds guards mean the loop can't spin forever even if it
+  never hits target. Harness green (115/115) throughout.
+
+## 2026-06-22: mobile UI-consistency review via the plan->build->judge loop
+- Applied the agent-loop pattern to a NON-copy artifact: the v6 UI's mobile
+  consistency. Built the UI analog of copy-verify — a deterministic bracket — plus
+  an independent visual judge, and converged.
+- ui-audit.ts (npm run ui:audit): parses the 3 v6 pages and checks cross-page
+  invariants a human can't eyeball reliably — shared design tokens, ONE container
+  width, one breakpoint scheme, base-reset parity, readable mobile body font, and
+  touch-target sizing (rubric grounded in WCAG 2.5.8 / Apple HIG 44pt / Material
+  48dp). Hard invariants (token drift, container width, viewport, inline-script
+  node --check) exit nonzero — the loop's compiler. Emits ui-audit.json + a
+  consistency score.
+- ui-render.ts (npm run ui:render): serves the repo over HTTP (pages fetch
+  ../../data/*) and loads landing/hero/coach/squad at 360/390/1024px in Playwright,
+  asserting NO horizontal overflow on phone, and writes a screenshot per surface so
+  the independent judge can SEE the layout. Chromium installed to /opt/pw-browsers.
+- Baseline divergence the audit caught: container width was 980/920/880px across the
+  three pages, mobile body font shrank to 13.5px on coach/squad but not index, and
+  interactive controls were ~21-28px tall (well under the 44px tap target). Baseline
+  consistency score 70.8%, 1 hard fail.
+- Fixes (author pass): introduced a shared --maxw:980px token (single source of
+  truth for container width, used by .top-inner/.subnav/.wrap on all pages); unified
+  mobile body font to 15px; one shared 44px tap-target selector list; brought the
+  CSS reset to parity (box-sizing/padding reset, img display:block, button reset,
+  html scroll-behavior). Rich density preserved — only sizing/spacing unified.
+- The loop earned its keep: after the audit hit 100%, the INDEPENDENT judge still
+  caught 3 things the static checks couldn't (each page hand-listed a different tap
+  selector set; ~11px sub-nav pill labels; index missing an explicit mobile body
+  font + sub-11px meta labels), then 1 (active nav pill ballooned to a 44px stadium),
+  then 0. Trajectory 75% -> 91.7% -> 100% (gate STOP, target met). Each judge catch
+  was encoded back INTO the audit (touch-consistency + pill-font checks added) so the
+  bracket can't regress silently — the same "harden from the judge" discipline as the
+  copy loop. Harness green (115/115). Screenshots are gitignored (regenerable);
+  ui-audit/ui-render/ui-review-history JSON committed. docs/agent-loops.md gained a
+  "mobile UI review loop" case study + table row.
+
+## 2026-06-22: Sim Build rename + oversized-tip fix (UI loop reopened)
+- Maintainer feedback: (1) rename the "optimizer's build" section to "Sim Build";
+  (2) the Sparrow sim tip rendered oversized / wall-of-text, throwing off the look —
+  "how did we not pick this up in a design review?"
+- Rename: "The optimizer's build" -> "Sim Build" (h2), plus the supporting lines
+  ("locking this shifts the sim build", "vs the sim build below", "why the sim build
+  swaps off the meta"). Only internal data-field names stay `optimizer`. squad's
+  separate OPTIMAL LINEUP feature left alone.
+- Root cause of the oversized tip: .coach was font-size:1.04rem — the LARGEST body
+  text on the hero page (inverted hierarchy). Fixed to .88rem, muted (--text-1),
+  line-height 1.55, and bolded the load-bearing tokens (item / Eternal / +% delta)
+  at render so it scans instead of reading as a wall (esc() first, <b> is the only
+  markup; no artifact regen needed). Independent judge: oversized issue resolved,
+  rename consistent, ship it.
+- Why the first design-review loop missed it, and how both gaps were closed:
+  1) the audit checked structure (tokens/widths/breakpoints/touch/overflow) but NOT
+     type scale. Added a `type-scale` check: non-heading text >1rem (outside a short
+     allowlist of numbers/one-line callouts) is flagged — fires on the old 1.04rem,
+     so it can't recur silently.
+  2) the judge reviewed downscaled full-page shots of ONE hero (Countess); a single
+     oversized paragraph is invisible at that scale and wasn't even on that surface.
+     ui-render now renders the maintainer's actual example (Sparrow) and captures
+     REAL-SCALE above-the-fold + element-level shots (*-simtip.png of .coach), so the
+     judge sees typographic detail at 1:1.
+- UI loop reopened and reconverged: 75% -> 91.7% -> 100% -> 83.3% (reopen) -> 100%
+  (gate STOP). Residual (split the run-on sentence) is explicitly optional and
+  regen-gated — deferred. Harness green (115/115). Lesson: a judge is only as good as
+  what it can see; a bracket only catches what it measures — when something slips,
+  widen both.
+
+## 2026-06-22: Build Lab feedback batch (titles, eternals, structure)
+- Build titles: AD/AP -> plain "Physical"/"Magical" (so "AP" can't be misread as
+  "attack power"); defense named as a lean Physical-Def/Magical-Def/Mixed-Def,
+  INCLUDING on bruisers, e.g. "Physical Bruiser (Magical-Def)". search.ts buildTitle;
+  regenerated all artifacts.
+- Removed the "Sim-optimal for…" tip (.coach) from the Sim Build section (it still
+  lives in "How this kit wants to play" on the Learn tab). Fixed sim-math disclosure
+  double-arrow (hid native ::-webkit-details-marker). Deduped the repeated holes
+  caveat to show once per role (was identical on every build, e.g. Khaimera).
+  Removed "How your build comes online". Moved "The numbers" + "Data & confidence"
+  into one collapsed "Numbers, data & confidence" menu on the Learn tab. Added a
+  live-data refresh date to the patch pill ("patch 1.14.4 · data 2026-06-22") + the
+  confidence block.
+- Eternals: lead with a plain "what it does" (the major effect) instead of kit-math
+  jargon; added a clickable "minors & sim math" disclosure that lists each minor-slot
+  option with its description (sim pick marked ⚙) + the sim numbers. UI now loads
+  data/game-data/eternals.json (ETMAP).
+- Validated via the UI loop: independent judge confirmed all 8 changes landed; fixed
+  its 2 low flags (stale "The numbers below" cross-ref; dead .stage-* CSS). ui-audit
+  100%, no overflow, harness green (115/115).
+- Calibration constants: maintainer deferred ("I'll come back for it"). Audited and
+  confirmed the unverified list is current (3 already verified earlier; 6 remain).
+  These need an in-game practice-mode reading per CALIBRATION-CHECKLIST.md — the loop
+  can strengthen evidence but can't honestly flip a physical constant to verified
+  (project rule: never fill an unverified constant with an estimate).
+
+## 2026-06-22: About page + removed landing "How this works" block
+- Removed the verbose "How this works" receipt block from the landing hero (lightens
+  the UI). Moved that explanation to a new ui/v6/about.html: how builds are made (sim
+  + meta), what THEORY means, where the numbers come from (Omeda API, shrunk winrates,
+  comparative evidence deltas), and how the copy is machine-checked. Linked from each
+  page's footer ("About & how this works").
+- about.html built on the shared v6 design (same :root tokens, --maxw, reset, nav,
+  600px breakpoint, 44px touch rule); added to ui-audit + ui-render PAGES so it's
+  consistency-checked too (audit 100%).
+- The render bracket earned its keep: my first attempt added "About" as a 4th TOP-NAV
+  link, which overflowed every page horizontally at 360/390px (nav row > viewport,
+  nowrap). ui-render flagged 12 phone overflows before commit. Fix: put About in the
+  footer instead (lighter, and the nav stays 3 tools). Re-render: 0 overflow. Lesson:
+  the deterministic overflow check catches mobile regressions a desktop eye misses.
+
+## 2026-06-22: counter engine — cross-lane answers + an Iggy sim-fidelity finding
+- Gap (maintainer): the counter result only showed same-lane answers (mirror-lane
+  counters). The all-pairs matrix already knows who beats an enemy from ANY lane, so
+  added a "Also strong into <enemy> from other lanes" section: top 2 per other lane
+  with score>0, dots, each routing to the hero page in that counter's own lane
+  (.lrow data-role). Verified rendering via Playwright (Adele → Drongo/Eden/Countess).
+- BUT the maintainer's example (Skylar counters offlane Iggy) exposed a sim-accuracy
+  gap, not just a display one: in our matchup sim Iggy & Scorch BEATS Skylar 6-0, and
+  NO carry/offlane/jungle/support hero beats Iggy (only midlane Gadget/The Fey/Gideon
+  edge it). So the cross-lane section is empty for Iggy — the opposite of the field
+  read. Iggy's zone/turret/DoT kit is almost certainly over-modeled by the 1v1
+  kit-math sim (or flattered by the unverified mitigation/attack-speed constants).
+- We have no pairwise FIELD winrate (aggregates are per-hero-per-role {n,w}, not
+  head-to-head), so counters are necessarily sim-based — the section carries a
+  "fight-sim only, not a lane matchup · THEORY until calibrated" caveat. Flagged Iggy
+  as a counter-sim fidelity gap to revisit with calibration / kit modeling.
+
+## 2026-06-22: counter engine — unified best-counters ranking (any lane)
+- Per maintainer: stop restricting counters to the enemy's lane; pull the strongest
+  counters forward regardless of lane (the Skylar/Iggy sim disagreement is a meta-vs-
+  sim call we're setting aside, not a blocker). Replaced the same-lane + cross-lane
+  two-section layout with ONE ranked list: every hero scored vs the enemy via the
+  all-pairs sim, score>0 only, sorted strongest-first, top 10, each tagged with its
+  lane and marked "· their lane" when it's the mirror matchup. Routes to the counter's
+  own-lane hero page. Verified via Playwright (Adele → Carry/Jungle picks lead).

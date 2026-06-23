@@ -74,6 +74,7 @@ const Primitive = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('armor_shred'), pct: z.number().optional(), flat: z.number().optional(), damageType: z.enum(['physical', 'magical']), rampSeconds: z.number().optional() }),
   z.object({ kind: z.literal('health_multiplier'), pct: z.number(), perLevelPct: z.number().optional(), perMinutePct: z.number().optional() }),
   z.object({ kind: z.literal('armor_multiplier'), pct: z.number() }),
+  z.object({ kind: z.literal('damage_reduction'), pct: z.number(), damageType: z.enum(['physical', 'magical', 'all']) }),
   z.object({ kind: z.literal('shield_per_fight'), base: z.number(), maxAtLevel18: z.number().optional() }),
   z.object({ kind: z.literal('anti_heal'), pct: z.number() }),
   z.object({ kind: z.literal('as_ramp'), pctPerSecond: z.number() }),
@@ -178,6 +179,10 @@ export interface ResolvedEffects {
   onAbilityProcs: ProcSpec[];
   healthMultiplier: number;
   armorMultiplier: number;
+  // Incoming-damage-taken multipliers (Stonewall's "mitigate 5% of physical
+  // damage"): <1 means less damage taken, i.e. more effective HP. Distinct from
+  // armor, which only shifts the armor curve.
+  dmgTakenMult: { physical: number; magical: number };
   shieldFlat: number;
   shieldScaling: { stat: keyof ItemStats; pct: number }[]; // shields that scale with build stats
   antiHealPct: number;
@@ -211,7 +216,7 @@ export function emptyEffects(): ResolvedEffects {
     flatPen: { physical: 0, magical: 0, rampSeconds: 0 },
     shredPct: { physical: 0, magical: 0, rampSeconds: 0 },
     onHitProcs: [], onAbilityProcs: [],
-    healthMultiplier: 1, armorMultiplier: 1, shieldFlat: 0, shieldScaling: [], antiHealPct: 0,
+    healthMultiplier: 1, armorMultiplier: 1, dmgTakenMult: { physical: 1, magical: 1 }, shieldFlat: 0, shieldScaling: [], antiHealPct: 0,
     asRampPctPerSecond: 0, attackSpeedCapOverride: 0, executeThresholdPct: 0,
     abilityAmpPct: {}, abilityCooldownMods: {}, abilityBonuses: [], abilityHeals: [],
     provisional: false, applied: [], unmodeled: [],
@@ -330,6 +335,12 @@ export function resolveEntries(keys: string[], ctx: ResolveCtx, registry: Effect
         case 'armor_multiplier':
           out.armorMultiplier *= 1 + fx.pct / 100;
           break;
+        case 'damage_reduction': {
+          const f = 1 - fx.pct / 100;
+          if (fx.damageType !== 'magical') out.dmgTakenMult.physical *= f;
+          if (fx.damageType !== 'physical') out.dmgTakenMult.magical *= f;
+        }
+          break;
         case 'shield_per_fight':
           out.shieldFlat += fx.maxAtLevel18 != null
             ? fx.base + (fx.maxAtLevel18 - fx.base) * ((lvl - 1) / 17)
@@ -412,6 +423,7 @@ export function mergeEffects(a: ResolvedEffects, b: ResolvedEffects): ResolvedEf
     out.shredPct.rampSeconds = Math.max(out.shredPct.rampSeconds, e.shredPct.rampSeconds);
     out.onHitProcs.push(...e.onHitProcs); out.onAbilityProcs.push(...e.onAbilityProcs);
     out.healthMultiplier *= e.healthMultiplier; out.armorMultiplier *= e.armorMultiplier;
+    out.dmgTakenMult.physical *= e.dmgTakenMult.physical; out.dmgTakenMult.magical *= e.dmgTakenMult.magical;
     out.shieldFlat += e.shieldFlat;
     out.shieldScaling.push(...e.shieldScaling);
     out.antiHealPct = Math.max(out.antiHealPct, e.antiHealPct);

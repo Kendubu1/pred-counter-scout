@@ -9,31 +9,43 @@
     --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
     --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#82829a;
     --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
-    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px;
+    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px; --maxw:980px;
   }
-  * { box-sizing:border-box; margin:0; }
+  * { box-sizing:border-box; margin:0; padding:0; }
   :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  html { scroll-behavior:smooth; }
   body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
   a { color:var(--blue); text-decoration:none; }
+  img { display:block; }
+  button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
   .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:rgba(10,10,15,.78); border-bottom:1px solid var(--border); }
-  .top-inner { max-width:920px; margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
+  .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
   .wordmark { font-weight:800; color:var(--text-0); }
   .spacer { flex:1; }
   .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
   .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
   .navlink:hover { color:var(--text-0); }
-  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:920px; margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
   .subnav::-webkit-scrollbar { display:none; }
   .subnav:empty { display:none; }
   .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; text-transform:capitalize; -webkit-appearance:none; appearance:none; }
   .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
   .card { scroll-margin-top:calc(var(--toph, 96px) + 10px); }
-  .wrap { max-width:920px; margin:0 auto; padding:1.25rem 1rem 4rem; }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:1.25rem 1rem 4rem; }
   .scope {
-    font-size:.7rem; color:var(--text-2); border:1px solid var(--border);
-    background:var(--bg-1); border-radius:8px; padding:.45rem .7rem; margin-bottom:1rem; line-height:1.5;
+    font-size:.76rem; color:var(--text-2); border:1px solid var(--border);
+    background:var(--bg-1); border-radius:8px; padding:.45rem .7rem; margin-bottom:1rem; line-height:1.55;
   }
+  .scope > summary { cursor:pointer; font-weight:600; color:var(--text-1); list-style:none; }
+  .scope > summary::-webkit-details-marker { display:none; }
+  .scope > summary::before { content:"▸ "; color:var(--accent); }
+  .scope[open] > summary::before { content:"▾ "; }
   .scope b { color:var(--text-1); }
+  .alts { margin-top:.6rem; }
+  .alts > summary { cursor:pointer; font-size:.74rem; font-weight:700; color:var(--text-2); letter-spacing:.04em; list-style:none; padding:.35rem 0; }
+  .alts > summary::-webkit-details-marker { display:none; }
+  .alts > summary::before { content:"▸ "; color:var(--accent); }
+  .alts[open] > summary::before { content:"▾ "; }
   a.plink { color:inherit; text-decoration:none; border-bottom:1px dotted var(--blue); }
   a.plink:hover { color:var(--blue); }
   img.pav { width:20px; height:20px; border-radius:50%; object-fit:cover; border:1px solid var(--border); vertical-align:-5px; margin-right:.1rem; align-self:center; }
@@ -50,7 +62,7 @@
   .seathead { display:flex; align-items:baseline; gap:.55rem; flex-wrap:wrap; }
   .seathead .role { font-weight:800; text-transform:capitalize; color:var(--accent); min-width:64px; }
   .seathead .rwr { font-weight:800; font-variant-numeric:tabular-nums; }
-  .seathead .sgames { margin-left:auto; color:var(--text-2); font-size:.72rem; font-variant-numeric:tabular-nums; }
+  .seathead .sgames { margin-left:auto; color:var(--text-2); font-size:.72rem; font-variant-numeric:tabular-nums; white-space:nowrap; }
   .seat .picks { margin-top:.4rem; }
   .snote { margin-top:.3rem; font-size:.7rem; color:var(--text-2); }
   .picks { display:flex; gap:.5rem; }
@@ -65,7 +77,7 @@
   .rolemini { display:grid; grid-template-columns:74px 1fr 96px; gap:.5rem; align-items:center; font-size:.74rem; margin-top:.3rem; }
   .rolemini .bar { height:7px; border-radius:99px; background:var(--bg-3); overflow:hidden; }
   .rolemini .bar i { display:block; height:100%; background:var(--accent); border-radius:99px; }
-  .rolemini .n { text-align:right; color:var(--text-2); font-variant-numeric:tabular-nums; }
+  .rolemini .n { text-align:right; color:var(--text-2); font-variant-numeric:tabular-nums; white-space:nowrap; }
   .who { display:flex; gap:.45rem; flex-wrap:wrap; }
   .plansplit { display:grid; grid-template-columns:1fr auto; gap:1rem; align-items:start; padding-bottom:.7rem; border-bottom:1px dashed var(--border); }
   .grouplabel { font-size:.62rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--text-2); margin-bottom:.35rem; }
@@ -97,14 +109,21 @@
   .pairrow .names { color:var(--text-1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .pairrow .bar { height:8px; border-radius:99px; background:var(--bg-2); overflow:hidden; }
   .pairrow .bar i { display:block; height:100%; border-radius:99px; }
-  .pairrow .n { text-align:right; color:var(--text-2); font-variant-numeric:tabular-nums; font-size:.76rem; }
+  .pairrow .n { text-align:right; color:var(--text-2); font-variant-numeric:tabular-nums; font-size:.76rem; white-space:nowrap; }
   ul.notes { padding-left:1.1rem; }
   ul.notes li { margin:.45rem 0; color:var(--text-1); }
   footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
 
   /* ── mobile: smaller, stacked, nothing bleeds ── */
   @media (max-width:600px) {
-    body { font-size:13.5px; }
+    body { font-size:15px; }
+    /* tap targets: >=44px hit area on touch (Apple HIG 44 / WCAG floor 24).
+       Shared union list across all three pages (absent selectors are no-ops). */
+    .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle {
+      min-height:44px; display:inline-flex; align-items:center; justify-content:center;
+    }
+    .snpill { font-size:.8rem; }
+    .navlink { border-radius:10px; } /* 44px tap height reads as a tab, not a stadium */
     .top-inner { padding:.5rem .7rem; gap:.55rem; }
     .wordmark { font-size:.82rem; white-space:nowrap; }
     .top-inner a { font-size:.72rem; white-space:nowrap; }
@@ -180,7 +199,7 @@ const plink = (uuid, name) => uuid
 
   const lead = s.members[0];
   document.getElementById('page').innerHTML = `
-    <div class="scope">📊 <b>Data scope:</b> pred.gg public profiles — career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked splits, last 40 matches each · field baselines: ${META ? META.matches.toLocaleString() + ' matches, patch ' + esc(META.patch) : 'current-patch matches'}, all ranks · combat math is THEORY pending in-game calibration · generated ${esc(s.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
+    <details class="scope"><summary>📊 Data scope &amp; sources</summary><div style="margin-top:.45rem">pred.gg public profiles — career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked splits, last 40 matches each · field baselines: ${META ? META.matches.toLocaleString() + ' matches, patch ' + esc(META.patch) : 'current-patch matches'}, all ranks · combat math is THEORY pending in-game calibration · generated ${esc(s.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div></details>
     <h1>The five stack</h1>
 
     <div class="card">
@@ -240,7 +259,7 @@ const plink = (uuid, name) => uuid
     </div>
 
     <footer>
-      Data: pred.gg public profiles, ranked common-teammate records (${esc(s.generatedAt.slice(0, 10))}).<br>
+      <a href="about.html">About &amp; how this works</a> · Data: pred.gg public profiles, ranked common-teammate records (${esc(s.generatedAt.slice(0, 10))}).<br>
       ${s.honesty.map(esc).join(' · ')}
     </footer>`;
 
@@ -263,7 +282,18 @@ const plink = (uuid, name) => uuid
       if (ci !== -1 && si !== -1) total += duoBonus(ms[ci].uuid, ms[si].uuid);
       return { order, total };
     }).sort((a, b) => b.total - a.total);
-    const pool = all.slice(0, 9);
+    // Shuffle pool covers each selected player's TOP 4 roles — not just the globally
+    // optimal assignment — so shuffling shows real variety even with every lane filled.
+    // For each player and each of their 4 best roles, take the best lineup that places
+    // them there; plus the global top 4 for quality. Deduped, sorted by total.
+    const pool = []; const seenKey = new Set();
+    const add = (opt) => { if (opt) { const key = opt.order.join(','); if (!seenKey.has(key)) { seenKey.add(key); pool.push(opt); } } };
+    all.slice(0, 4).forEach(add);
+    ms.forEach((m, pi) => {
+      ROLES.slice().sort((a, b) => m.scores[b].score - m.scores[a].score).slice(0, 4)
+        .forEach((role) => add(all.find((o) => o.order[pi] === role)));
+    });
+    pool.sort((a, b) => b.total - a.total);
     const start = (shuffleSeed * k) % Math.max(pool.length - k + 1, 1);
     return pool.slice(start, start + k).map((opt) => ({
       total: opt.total,
@@ -273,7 +303,10 @@ const plink = (uuid, name) => uuid
 
   let shuffleSeed = 0;
   function lanePickFor(seat, optIdx, seatIdx, depth) {
-    const lane = (META && META.roles[seat.role]) || [];
+    // Sort by win rate (like the meta board) so the high-win-rate picks — including
+    // winning sleepers such as support Wraith — surface here too, not just the
+    // most-played heroes.
+    const lane = ((META && META.roles[seat.role]) || []).slice().sort((a, b) => b.shrunkWr - a.shrunkWr);
     if (!lane.length) return '<span style="color:var(--text-2)">no meta data</span>';
     const window = Math.min(lane.length, depth);
     const pickIdx = (optIdx + seatIdx + shuffleSeed) % window;
@@ -285,7 +318,20 @@ const plink = (uuid, name) => uuid
     return `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} <span style="color:var(--text-2)">${note}</span>`;
   }
 
-  const memberBy = new Map(s.members.map((m) => [m.uuid, m]));
+  function anyPickFor(seat, optIdx, seatIdx) {
+    // Any lane: winning heroes for this seat — the player's OWN most-played first
+    // (more games = they pilot them better than average), then the lane's other field
+    // winners; all kept to a good win rate.
+    const meta = ((META && META.roles[seat.role]) || []).filter((h) => h.shrunkWr >= 0.5).sort((a, b) => b.shrunkWr - a.shrunkWr);
+    const mine = (seat.picks || []).filter((h) => h.shrunkWr >= 0.49).map((h) => ({ ...h, mine: true }));
+    const mineSlugs = new Set(mine.map((h) => h.slug));
+    const cands = [...mine, ...meta.filter((h) => !mineSlugs.has(h.slug)).map((h) => ({ ...h, mine: false }))];
+    if (!cands.length) return lanePickFor(seat, optIdx, seatIdx, 99);
+    const h = cands[(optIdx + seatIdx + shuffleSeed) % Math.min(cands.length, 8)];
+    const note = h.mine ? `you: ${pct(h.shrunkWr, 0)}% · ${h.games} games — you main this` : `field ${pct(h.shrunkWr, 0)}%`;
+    return `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} <span style="color:var(--text-2)">${note}</span>`;
+  }
+
   function renderPlan() {
     const selected = [...document.querySelectorAll('#who .ptoggle[aria-pressed="true"]')].map((b) => b.dataset.uuid);
     const mode = document.querySelector('#mode .seg[aria-pressed="true"]')?.dataset.v ?? 'wheel';
@@ -295,10 +341,10 @@ const plink = (uuid, name) => uuid
     if (!options) { out.innerHTML = '<div style="color:var(--text-2);font-size:.82rem;margin-top:.6rem">pick at least two players</div>'; return; }
     const bestAvg = options[0].total / options[0].seats.length;
     const isOptimal = selected.length === s.members.length && mode === 'wheel' && shuffleSeed % 3 === 0;
-    const picksFor = (seat, oi, si) => mode === 'meta' ? lanePickFor(seat, oi, si, 5)
-      : mode === 'any' ? lanePickFor(seat, oi, si, 99)
+    const picksFor = (seat, oi, si) => mode === 'meta' ? lanePickFor(seat, oi, si, 6)
+      : mode === 'any' ? anyPickFor(seat, oi, si)
       : (seat.picks.map((h) => `<a href="./?hero=${esc(h.slug)}&role=${esc(seat.role)}"><img src="../img/heroes/${esc(h.slug)}.webp" onerror="this.style.visibility='hidden'">${esc(h.name)} ${pct(h.shrunkWr, 0)}%${h.games != null && h.games < 20 ? ` <span style="color:var(--gold)">· ${h.games} games</span>` : ''}</a>`).join('') || '<span style="color:var(--gold);font-size:.74rem">no 10+ game hero in this exact role — try meta or any-hero mode</span>');
-    out.innerHTML = options.map((opt, oi) => {
+    const parts = options.map((opt, oi) => {
       const avg = opt.total / opt.seats.length;
       const delta = Math.abs(Math.round((avg - bestAvg) * 1000) / 10); // per-100 gap vs the top option
       const vsA = delta < 0.05 ? 'even with the top option' : `about ${delta.toFixed(1)} fewer wins per 100 than the top option`;
@@ -311,11 +357,7 @@ const plink = (uuid, name) => uuid
         return `
       <div style="margin-top:.8rem">
         <div style="font-size:.74rem; font-weight:800; color:var(--green); letter-spacing:.06em">${head}</div>
-        ${opt.seats.map((seat, si) => {
-          const m = memberBy.get(seat.uuid);
-          const fav = m && m.favRole ? m.favRole.toLowerCase() : null;
-          const isMove = fav && fav !== seat.role;
-          return `
+        ${opt.seats.map((seat, si) => `
         <div class="seat">
           <div class="seathead">
             <span class="role">${esc(seat.role)}</span>
@@ -324,9 +366,7 @@ const plink = (uuid, name) => uuid
             <span class="sgames">${seat.games} games in role</span>
           </div>
           <div class="picks">${picksFor(seat, oi, si)}</div>
-          ${isMove ? `<div class="snote">not their usual queue — they normally play ${esc(fav)}, but the team wins more with them here (${pct(seat.wr)}% over ${seat.games} games in ${esc(seat.role)})</div>` : ''}
-        </div>`;
-        }).join('')}
+        </div>`).join('')}
         ${(() => {
           const carry = opt.seats.find((x) => x.role === 'carry'), support = opt.seats.find((x) => x.role === 'support');
           if (!carry || !support) return '';
@@ -335,7 +375,7 @@ const plink = (uuid, name) => uuid
           const col = rec.winrate >= 0.53 ? 'var(--green)' : rec.winrate <= 0.48 ? 'var(--red)' : 'var(--gold)';
           return `<div class="snote" style="color:${col};margin-top:.5rem">🤝 <b>Duo lane synergy:</b> ${esc(carry.name.split(' ')[0])} + ${esc(support.name.split(' ')[0])} have won ${pct(rec.winrate, 0)}% of ${rec.games} games actually laning together as carry+support — that pairing is part of why they are seated here.</div>`;
         })()}
-        ${opt.seats.length >= 3 ? '<div class="snote" style="margin-top:.5rem">Seats are scored as a set — someone can look stronger in a seat they did not get, but moving them would give up more wins in the role they leave than it adds. The carry+support pairing also weighs their real duo-lane record.</div>' : ''}
+        ${opt.seats.length >= 3 ? '<div class="snote" style="margin-top:.5rem">Seats are scored as a set — someone can look stronger in a seat they did not get, but moving them gives up more wins in the role they leave than it adds. The carry+support pairing also weighs their real duo-lane record.</div>' : ''}
       </div>`;
       }
       return `
@@ -347,19 +387,24 @@ const plink = (uuid, name) => uuid
           <div class="planseat">
             <span class="r">${esc(seat.role)}</span>
             <span>${plink(seat.uuid, seat.name.split(' ')[0])} <span style="color:var(--text-2);font-size:.76rem">${pct(seat.wr)}% · ${seat.games} games</span></span>
-            <span class="picks-mini">${mode === 'meta' ? lanePickFor(seat, oi, si, 5)
-              : mode === 'any' ? lanePickFor(seat, oi, si, 99)
+            <span class="picks-mini">${mode === 'meta' ? lanePickFor(seat, oi, si, 6)
+              : mode === 'any' ? anyPickFor(seat, oi, si)
               : (seat.picks.map((h) => `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} ${pct(h.shrunkWr, 0)}%`).join(' · ') || '<span style="color:var(--gold)">no 10+ game hero here</span>')}</span>
           </div>`).join('')}
       </div>`;
-    }).join('') + `
+    });
+    const altCount = parts.length - 1;
+    const footerNote = `
       <div style="font-size:.7rem;color:var(--text-2);margin-top:.4rem">
         ${mode === 'meta'
-          ? 'meta mode: the lane’s top-5 meta heroes; “new to you” = under 30 of your games on it; the seat winrate shown is still your role record'
+          ? '<b>Meta</b> — the lane’s top winning heroes by field win rate, any hero (comfort aside). “new to you” = under 30 of your games on it.'
           : mode === 'any'
-            ? 'any-hero mode: shuffle deals from the lane’s whole tracked roster with field winrates — comfort and meta rules off'
-            : 'wheelhouse mode: heroes with 10+ of your own games in that exact role (real 5v5s); thin samples under 20 games say so'}
+            ? '<b>Any lane</b> — a wider shuffle of heroes winning in this lane, your own most-played first (you pilot those better than average), then the lane’s other field winners.'
+            : '<b>Wheelhouse</b> — your best heroes in this role from your real 5v5s (your own winning record); thin samples under 20 games say so.'}
         · seats go to whoever wins most there, with thin role records counting less</div>`;
+    out.innerHTML = parts[0] + (altCount > 0
+      ? `<details class="alts"><summary>Show ${altCount} alternate lineup${altCount > 1 ? 's' : ''}</summary>${parts.slice(1).join('')}</details>`
+      : '') + footerNote;
   }
   // who toggles: flip aria-pressed (keep at least one selected)
   document.querySelectorAll('#who .ptoggle').forEach((b) => {

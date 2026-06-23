@@ -124,6 +124,22 @@ export interface MatchupReport {
   gameplan: string;
 }
 
+/** A short, opponent-specific clause derived from the ENEMY's kit, so the
+ *  gameplan names who you're up against instead of only a verdict bucket.
+ *  Grounded entirely in kit data (execute pattern, AoE, auto-scaling, damage
+ *  type) — no estimation; picks the single most salient trait. */
+function enemyThreatClause(e: HeroKit): string {
+  const resist = e.damageType === 'magical' ? 'magic resist'
+    : e.damageType === 'physical' ? 'armor' : 'mixed resist';
+  const execute = e.abilities.find((a) => a.targetHealthPct?.some((t) => t.basis === 'missing'));
+  if (execute) return `${e.name} executes low targets with ${execute.name} — don't linger below half HP.`;
+  if (e.abilities.filter((a) => a.aoe).length >= 2) return `${e.name} deals area damage — spread out so one cast can't catch the group.`;
+  if (e.roles.includes('carry') || e.basicScalingPct >= 90) return `${e.name} ramps on auto-attacks — pressure ${e.attackType === 'ranged' ? 'their positioning' : 'them'} before they itemize, and ${resist} blunts them later.`;
+  const strongest = [...e.abilities].sort((a, b) => (b.damagePerRank.at(-1) ?? 0) - (a.damagePerRank.at(-1) ?? 0))[0];
+  if (strongest) return `${e.name}'s main threat is ${strongest.name}; bait it before you commit, and ${resist} softens the trade.`;
+  return `${e.name}'s damage is mostly ${e.damageType} — bring ${resist} into the lane.`;
+}
+
 export function matchupCheckpoints(
   you: { kit: HeroKit; build: Item[]; role: string },
   enemy: { kit: HeroKit; build: Item[]; role: string },
@@ -191,6 +207,10 @@ export function matchupCheckpoints(
   } else if (yours(verdicts) === 0 && theirs(verdicts) > 0) {
     gameplan = 'They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.';
   }
+  // Make the gameplan opponent-specific: append a clause grounded in the
+  // enemy's kit so two different enemies in the same verdict bucket no longer
+  // read identically (review C3: 7 distinct strings across 312 matchups).
+  gameplan = `${gameplan} ${enemyThreatClause(enemy.kit)}`;
 
   return {
     checkpoints,

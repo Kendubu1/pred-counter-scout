@@ -25,6 +25,14 @@ function loadJson<T>(rel: string): T {
 // line plus shared-passive lines carried over from the v2 engine).
 const FAMILY_PREFIXES = ['Tainted', 'Ashenblade', 'Hexbound'];
 
+// Evolved forms of evolving items: you BUY the source (Orb of Growth, Alternator,
+// Catalytic Drive) and it evolves into these in-game, so they are not directly
+// purchasable and must not appear as build candidates. The source is credited at
+// its evolved value in effects.json. (Derived from build_paths: an Epic/Legendary
+// whose single build_paths target is also Epic/Legendary — currently these three;
+// crest evolutions are out of the build pool already.)
+const EVOLUTION_TARGETS = new Set(['orb-of-enlightenment', 'alternata', 'cybernetic-drive']);
+
 interface OwnedAbility {
   name: string;
   key: string;
@@ -93,6 +101,68 @@ function parseDamage(md: string): { values: number[]; scaling: number; pctMaxHea
   return { values, scaling: Number(b[2]), damageType };
 }
 
+// Bonus damage scaled on the target's CURRENT or MISSING health — the execute
+// pattern (Lt. Belica's 20/25/30% missing-HP ult, Feng Mao's 6% current-HP dash).
+// Max-health scaling is handled by parseDamage's pctMaxHealth; this captures the
+// health-state-dependent clauses, per rank where stated.
+// An ability hits multiple targets (area/cone/line/all-enemies) — feeds the
+// teamfight objective so AoE kits/items are valued for multi-target damage.
+const AOE_RE = /all (?:enemies|units|targets)|nearby (?:enemies|units)|in (?:a|an) (?:area|cone|line)|around (?:the )?(?:target|him|her)|area of effect|\baoe\b|enemies (?:hit|in)/i;
+
+function parseTargetHealth(md: string): { pct: number[]; basis: 'current' | 'missing' }[] {
+  const out: { pct: number[]; basis: 'current' | 'missing' }[] = [];
+  const text = md.replace(/<[^>]+>/g, ' ');
+  const re = /([\d.]+(?:\/[\d.]+)*)\s*%\s*(?:of\s+(?:the\s+)?(?:target'?s?|their|enemy'?s?)\s*)?(current|missing)\s*(?:health|hp)/ig;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text))) {
+    const pct = m[1]!.split('/').map(Number).filter((n) => !Number.isNaN(n) && n > 0);
+    if (pct.length) out.push({ pct, basis: m[2]!.toLowerCase() as 'current' | 'missing' });
+  }
+  return out;
+}
+
+// Parse a self attack-speed steroid: a per-rank "X/Y/Z% Attack Speed" buff (e.g.
+// Sparrow 25/30/35/40/45%, Murdock 15/20/25/30/35%). Returns the per-rank values
+// and an approximate active duration ("for Ns") for uptime; null if no AS grant.
+function parseSelfAttackSpeed(md: string): { perRank: number[]; durationSec: number } | null {
+  const m = md.match(/(\d+(?:\.\d+)?(?:\/\d+(?:\.\d+)?)+)\s*%?\s*<?\s*Attack ?Speed/i)
+    ?? md.match(/(\d+(?:\.\d+)?)\s*%\s*<?\s*Attack ?Speed/i);
+  if (!m) return null;
+  const perRank = m[1]!.split('/').map(Number).filter((n) => n > 0);
+  if (!perRank.length) return null;
+  const dur = md.match(/for\s+(\d+(?:\.\d+)?)\s*s/i);
+  return { perRank, durationSec: dur ? Number(dur[1]) : 4 };
+}
+
+// A self-shield passive as % of max health (Steel's Cybernetic Shell: "shields
+// himself for 7% of his maximum health"). Pure EHP; the only passive-slot effect
+// the sim credits.
+function parsePassiveSelfShield(md: string | undefined): number | undefined {
+  if (!md) return undefined;
+  const m = md.replace(/<[^>]+>/g, ' ').match(/shield[s]?\s+(?:himself|herself|itself|themsel\w+)?\s*for\s+(\d+(?:\.\d+)?)\s*%\s*of\s+(?:his|her|its|their)?\s*max/i);
+  return m ? Number(m[1]) : undefined;
+}
+
+// Parse permanent self stat gains a leveled ability grants ("Passive: Gain
+// 8/11/14/17/20 physical power"). These are always-on (uptime 1) and feed damage
+// like an item stat would; the AS steroid above is handled separately.
+const STAT_PHRASES: [RegExp, keyof import('./types.js').ItemStats][] = [
+  [/physical power/i, 'physical_power'], [/magical power/i, 'magical_power'],
+  [/physical penetration/i, 'physical_penetration'], [/magical penetration/i, 'magical_penetration'],
+  [/ability haste/i, 'ability_haste'], [/lifesteal/i, 'lifesteal'], [/omnivamp/i, 'omnivamp'],
+];
+function parseSelfStatBuffs(md: string): { stat: keyof import('./types.js').ItemStats; perRank: number[] }[] {
+  const out: { stat: keyof import('./types.js').ItemStats; perRank: number[] }[] = [];
+  const re = /gain\s+(\d+(?:\.\d+)?(?:\/\d+(?:\.\d+)?)+|\d+)\s*%?\s*(?:bonus\s+)?(physical power|magical power|physical penetration|magical penetration|ability haste|lifesteal|omnivamp)/ig;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(md))) {
+    const perRank = m[1]!.split('/').map(Number).filter((n) => n > 0);
+    const stat = STAT_PHRASES.find(([rx]) => rx.test(m![2]!))?.[1];
+    if (perRank.length && stat) out.push({ stat, perRank });
+  }
+  return out;
+}
+
 // Parse heal/shield output the way damage is parsed: find every
 // "<values> <PowerTag>(+<ratio>%" group, classify by context (a
 // restore/heal verb before it, or "Shield" right after it), and fold
@@ -157,10 +227,10 @@ export function loadData(): LoadedData {
   }[]>('data/omeda/items.json');
 
   // Field-recommended ability leveling order (pred.gg recommendedSkills),
-  // optional: the sim levels basics this way when present. omeda RMB/Q/E
-  // map to the kit's PRIMARY/SECONDARY/ALTERNATE keys.
-  const OMEDA_TO_KIT: Record<string, string> = { RMB: 'PRIMARY', Q: 'SECONDARY', E: 'ALTERNATE' };
-  let skillOrders: Record<string, { maxOrder: { key: string }[] }> = {};
+  // optional. The skill order is in omeda key labels (RMB/Q/E/R), so it MUST be
+  // mapped to the kit's internal keys with the SAME map the abilities use
+  // (OMEDA_KEY_MAP) — using a different map silently levels the wrong ability.
+  let skillOrders: Record<string, { maxOrder: { key: string }[]; sequence?: string[] }> = {};
   try { skillOrders = (loadJson<{ heroes: typeof skillOrders }>('data/aggregates/skill-orders.json')).heroes ?? {}; } catch { /* optional */ }
 
   const profMap = new Map(profiles.map((p) => [p.slug, p]));
@@ -190,6 +260,10 @@ export function loadData(): LoadedData {
       const owned = ownedByKey.get(key);
       const parsed = omAb?.menu_description ? parseDamage(omAb.menu_description) : null;
       const healing = omAb?.menu_description ? parseHealing(omAb.menu_description) : [];
+      const asBuff = omAb?.menu_description ? parseSelfAttackSpeed(omAb.menu_description) : null;
+      const targetHealth = omAb?.menu_description ? parseTargetHealth(omAb.menu_description) : [];
+      const aoe = omAb?.menu_description ? AOE_RE.test(omAb.menu_description.replace(/<[^>]+>/g, ' ')) : false;
+      const statBuffs = omAb?.menu_description ? parseSelfStatBuffs(omAb.menu_description) : [];
       const ownedDmg = owned ? bestOwnedDamage(owned) : null;
       const cooldowns = omAb?.cooldown?.length ? omAb.cooldown : owned?.cooldowns ?? [];
       const costs = omAb?.cost?.length ? omAb.cost : owned?.costs ?? [];
@@ -198,10 +272,15 @@ export function loadData(): LoadedData {
           key,
           name: omAb?.display_name ?? owned?.name ?? key,
           damagePerRank: parsed.values,
+          aoe: aoe || undefined,
+          targetHealthPct: targetHealth.length ? targetHealth : undefined,
           scalingPct: parsed.scaling,
           pctMaxHealth: parsed.pctMaxHealth,
           damageType: parsed.damageType,
           healing: healing.length ? healing : undefined,
+          selfAttackSpeedPctPerRank: asBuff?.perRank,
+          buffDurationSec: asBuff?.durationSec,
+          selfStatBuffs: statBuffs.length ? statBuffs : undefined,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
         });
@@ -215,6 +294,9 @@ export function loadData(): LoadedData {
           scalingPct: ownedDmg.scaling ?? 0,
           damageType: ownedDmg.damageType === 'magical' ? 'magical' : ownedDmg.damageType === 'true' ? 'true' : 'physical',
           healing: healing.length ? healing : undefined,
+          selfAttackSpeedPctPerRank: asBuff?.perRank,
+          buffDurationSec: asBuff?.durationSec,
+          selfStatBuffs: statBuffs.length ? statBuffs : undefined,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
         });
@@ -228,6 +310,25 @@ export function loadData(): LoadedData {
           scalingPct: 0,
           damageType: healing[0]!.powerType,
           healing,
+          selfAttackSpeedPctPerRank: asBuff?.perRank,
+          buffDurationSec: asBuff?.durationSec,
+          selfStatBuffs: statBuffs.length ? statBuffs : undefined,
+          cooldowns, costs,
+          maxRank: key === 'ULTIMATE' ? 3 : 5,
+        });
+      } else if (asBuff || statBuffs.length) {
+        // Buff-only ability with no damage/heal line (Sparrow/Murdock AS steroid;
+        // Feng Mao/Wraith passive power gain): retained so its self-buffs feed the
+        // sim, and so it is leveled in the skill order rather than dropped.
+        defs.push({
+          key,
+          name: omAb?.display_name ?? owned?.name ?? key,
+          damagePerRank: [],
+          scalingPct: 0,
+          damageType: 'physical',
+          selfAttackSpeedPctPerRank: asBuff?.perRank,
+          buffDurationSec: asBuff?.durationSec,
+          selfStatBuffs: statBuffs.length ? statBuffs : undefined,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
         });
@@ -260,8 +361,14 @@ export function loadData(): LoadedData {
       baseStats: bs as unknown as BaseStats,
       abilities: defs,
       recommendedMaxOrder: skillOrders[om.slug]?.maxOrder
-        ?.map((o) => OMEDA_TO_KIT[o.key])
-        .filter((k): k is string => !!k && defs.some((d) => d.key === k)),
+        ?.map((o) => OMEDA_KEY_MAP[o.key])
+        .filter((k): k is AbilityDef['key'] => !!k && defs.some((d) => d.key === k)),
+      // Full 18-level recommended path (the V2 ability chart): which ability gets
+      // a point at each level, so the sim levels exactly as the hero is played.
+      recommendedSequence: skillOrders[om.slug]?.sequence
+        ?.map((k) => OMEDA_KEY_MAP[k])
+        .filter((k): k is AbilityDef['key'] => !!k && defs.some((d) => d.key === k)),
+      passiveSelfShieldPctMaxHealth: parsePassiveSelfShield(om.abilities?.find((a) => a.key === 'Passive')?.menu_description),
       abilitySource: defs.length && staleFallbacks.some((s) => s.slug === om.slug) ? 'mixed' : 'omeda',
     });
   }
@@ -314,6 +421,7 @@ export function loadData(): LoadedData {
 
 export function completedItems(data: LoadedData): Item[] {
   return [...data.items.values()].filter((i) => {
+    if (EVOLUTION_TARGETS.has(i.slug)) return false;  // evolved form, not directly bought
     if (!(i.rarity === 'EPIC' || i.rarity === 'LEGENDARY')) return false;
     if (!(i.slotType === 'PASSIVE' || i.slotType === 'ACTIVE')) return false;
     if (i.totalPrice <= 0) return false;
