@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Predecessor Scout — Build Lab</title>
+<title>Predecessor Scout — Pick &amp; Build</title>
 <meta name="description" content="Predecessor builds, counters, and Eternals: what to build, when it spikes, and why — a kit-math simulator cross-checked against real match data.">
 <style>
   :root {
@@ -26,7 +26,7 @@
     background:rgba(10,10,15,.78); border-bottom:1px solid var(--border);
   }
   .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
-  .wordmark { font-weight:800; letter-spacing:.02em; color:var(--text-0); }
+  .wordmark { font-weight:800; letter-spacing:.02em; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .top .spacer { flex:1; }
   .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
   .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
@@ -68,6 +68,15 @@
     border-radius:99px; padding:.28rem .85rem; font-size:.82rem; text-transform:capitalize;
   }
   .rolebar button.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  /* ── 3-step "how it works" strip ── */
+  .steps { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; margin:1.5rem auto .2rem; max-width:760px; text-align:left; }
+  .step { flex:1 1 210px; min-width:190px; display:flex; gap:.6rem; align-items:flex-start; background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:.7rem .8rem; }
+  .step .num { flex:none; width:1.55rem; height:1.55rem; border-radius:99px; background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent); font-weight:800; font-size:.82rem; display:flex; align-items:center; justify-content:center; }
+  .step .txt b { display:block; font-size:.86rem; color:var(--text-0); }
+  .step .txt span { display:block; color:var(--text-2); font-size:.74rem; line-height:1.45; margin-top:.1rem; }
+  /* ── divider that pushes the meta board + grid below the fold ── */
+  .browse-head { display:flex; align-items:center; gap:.7rem; margin:2.6rem 0 .4rem; color:var(--text-2); font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.09em; }
+  .browse-head::before, .browse-head::after { content:""; flex:1; height:1px; background:var(--border); }
   .receipt {
     max-width:640px; margin:1.1rem auto 0; font-size:.8rem; color:var(--text-2);
     border:1px dashed var(--border); border-radius:var(--radius); padding:.6rem .9rem;
@@ -298,6 +307,9 @@
   .lanepanel .pilots-line { font-size:.72rem; color:var(--text-2); margin-top:.7rem; border-top:1px dashed var(--border); padding-top:.6rem; }
   .lanepanel .pilots-line a { color:var(--blue); }
   @media (max-width:600px) {
+    /* tighter nav gap so the wordmark + nav labels never force horizontal
+       overflow at ~360px; the wordmark also shrinks/ellipsizes as a backstop */
+    .top-inner { gap:.3rem; }
     .card h2 .hint { float:none; display:block; margin-top:.15rem; }
     .lanepanel { padding:.8rem .8rem; }
     .lrow { grid-template-columns:28px 1fr auto; gap:.5rem; }
@@ -380,7 +392,7 @@
     <a class="wordmark" href="./">⚔ Predecessor Scout</a>
     <span class="spacer"></span>
     <span class="patch-pill" id="patchPill">patch —</span>
-    <a class="navlink active" href="./">Build Lab</a>
+    <a class="navlink active" href="./">Pick &amp; Build</a>
     <a class="navlink" href="squad.html">Squad</a>
     <a class="navlink" href="coach.html">Coach</a>
   </div>
@@ -392,6 +404,11 @@
     <div class="landing-hero">
       <h1 id="landTitle">Who are you playing?</h1>
       <p id="landSub">What to build, when it spikes, and why — a kit-math simulator, cross-checked against real match data.</p>
+      <div class="steps" aria-label="How it works, in three steps">
+        <div class="step"><span class="num">1</span><span class="txt"><b>Build or counter?</b><span>Drafting your own hero, or countering the enemy's.</span></span></div>
+        <div class="step"><span class="num">2</span><span class="txt"><b>Pick a hero or lane</b><span>Search a hero, or tap a lane to see who's winning right now.</span></span></div>
+        <div class="step"><span class="num">3</span><span class="txt"><b>Get the plan</b><span>Best items, power spikes, Eternals &amp; matchups — with the why.</span></span></div>
+      </div>
       <div class="landing-mode" id="landMode">
         <button data-lm="play" class="active">🎮 Build a hero</button>
         <button data-lm="counter">🛡 Counter an enemy</button>
@@ -400,7 +417,9 @@
       <div class="rolebar" id="rolebar"></div>
     </div>
     <div id="lanedetail"></div>
+    <div class="browse-head">Browse the meta</div>
     <div class="metaboard" id="metaboard"></div>
+    <div class="browse-head">All heroes</div>
     <div class="grid" id="heroGrid"></div>
   </div>
 
@@ -1367,7 +1386,7 @@ async function route() {
     renderHero(a, params.get('role'));
     show('hero');
     buildSubnav();
-    document.title = `${a.name} — Predecessor Scout Build Lab`;
+    document.title = `${a.name} — Predecessor Scout Pick & Build`;
   } catch { show('landing'); renderGrid(); buildSubnav(); }
 }
 window.onpopstate = route;
