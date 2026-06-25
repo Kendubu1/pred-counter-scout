@@ -204,6 +204,33 @@ catches what it measures. When something slips through, fix the artifact, then w
 *both* — encode the missed invariant in the bracket and give the judge a sharper
 view — so the same gap can't recur.
 
+## Case study: the v0 Senior-UX loop
+
+The same machinery, pointed at the `ui/v0` staging homepage with a pinned Senior-UX
+rubric (`docs/ux-rubric.md`). `ui-audit.ts`/`ui-render.ts` take `UI_DIR` so the frozen
+v6 keeps its exact contract (still 100%) while v0 is audited separately and gains three
+new HARD invariants (`single-legend`, `reduced-motion`, `above-fold-primary`). The audit
+caught the homepage's three duplicated win%/verdict legends + a duplicated THEORY
+definition on the first run; they were collapsed into one shared `#uxLegend` and one
+`THEORY_DEF` constant. Trajectory: **round 1 66.7% → round 2 94.4%**.
+
+Two lessons specific to a vision judge:
+
+- **Ground-check the judge.** `pred-scout-ux-judge` reads *screenshots*, so its quotes
+  can be misreads. Round 1 it flagged a verdict "not in the rain" that exists nowhere in
+  the repo (a misread of the on-screen "Situational:"). The author rejected it after a
+  `grep` — a flag is only actioned if its quote is real. This is the image-loop analog of
+  `copy-verify` dropping an ungrounded number.
+- **Know the scope boundary.** The judge also flagged genuinely dense augment-verdict copy
+  ("takedown-conditional pool sustain"), but that is *data-driven* copy from
+  `data/artifacts/*.json` — owned by the copy loop, not editable in the page. The HTML UX
+  loop fixes layout/structure/static copy; data-derived copy is handed to the copy loop.
+  The residual 94.4% is that one out-of-scope flag, logged rather than force-fixed.
+
+Gate note: in a loop where the author applies fixes *between* judge rounds, round 1 records
+`applied=0` (the fixes come after), which trips the gate's premature "no-op STOP". Pass
+`FIXES_APPLIED` on the round the fixes land so the trajectory is honest.
+
 ## Provenance & honesty notes
 
 - **No `ANTHROPIC_API_KEY`.** Every author/judge step runs on in-session Claude Code
