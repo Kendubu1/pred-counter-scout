@@ -363,6 +363,11 @@
   .mp .g { display:block; font-size:.62rem; color:var(--text-2); font-weight:400; }
   .pilots { margin-top:.55rem; padding-top:.5rem; border-top:1px dashed var(--border); }
   .pilots h4 { font-size:.6rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.3rem; }
+  /* the kit-math "second opinion" one-liner — a plain, clickable insight, not a block */
+  .metaboard .onpaper { margin-top:.55rem; padding-top:.5rem; border-top:1px dashed var(--border); font-size:.74rem; line-height:1.45; color:var(--text-1); cursor:pointer; }
+  .metaboard .onpaper b { color:var(--text-0); font-weight:700; }
+  .metaboard .onpaper .hook { color:var(--text-2); }
+  .metaboard .onpaper:hover b { color:var(--accent); }
   .pilot { display:flex; align-items:center; gap:.45rem; padding:.16rem .3rem; font-size:.72rem; color:var(--text-1); border-radius:6px; }
   a.pilot { color:var(--text-1); } a.pilot:hover { background:var(--bg-3); }
   .pilot img { width:18px; height:18px; border-radius:5px; object-fit:cover; background:var(--bg-2); flex:none; }
@@ -768,9 +773,23 @@ function renderMetaboard() {
                 </${tag}>`;
               }).join('')}
             </div>` : ''}
+          ${(() => {
+            // A plain-language "second opinion": the kit-math's strongest pick in a
+            // straight 1v1, framed as the contrast to the popular pick. THEORY caveat
+            // lives in the tooltip, not a shouted badge (maintainer feedback).
+            const picks = laneSimPicks(role);
+            if (!picks.length) return '';
+            const top = picks[0];
+            const king = [...(META.roles[role] || [])].sort((a, b) => b.shrunkWr - a.shrunkWr)[0];
+            const hook = (king && king.slug === top.slug)
+              ? "and they're already this lane's top pick"
+              : "few are picking them, but the kit-math says they win the straight fight";
+            const tip = "Our simulator's second opinion — who'd win a 1v1 from their kit alone, regardless of how often they're actually picked. A model estimate, not a win rate.";
+            return `<div class="onpaper" data-slug="${esc(top.slug)}" data-role="${esc(role)}" title="${esc(tip)}">🥊 <b>Strongest in a 1v1, on paper:</b> ${esc(top.name)} <span class="hook">— ${hook}</span></div>`;
+          })()}
         </div>`).join('')}
     </div>`;
-  document.querySelectorAll('.mp').forEach((c) => { c.onclick = () => nav(c.dataset.slug, false, c.dataset.role); });
+  document.querySelectorAll('.mp, .onpaper[data-slug]').forEach((c) => { c.onclick = () => nav(c.dataset.slug, false, c.dataset.role); });
   document.querySelectorAll('.lane-go').forEach((h) => { h.onclick = () => pickLane(h.dataset.lane); });
 }
 
