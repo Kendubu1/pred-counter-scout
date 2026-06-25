@@ -309,8 +309,6 @@
   .echip { display:flex; align-items:center; gap:.3rem; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.18rem .55rem; font-size:.74rem; cursor:pointer; color:var(--text-1); }
   .echip img { width:20px; height:20px; border-radius:50%; object-fit:cover; }
   .echip.active { border-color:var(--red); color:var(--text-0); background:rgba(255,90,90,.1); }
-  .lanepanel .pilots-line { font-size:.72rem; color:var(--text-2); margin-top:.7rem; border-top:1px dashed var(--border); padding-top:.6rem; }
-  .lanepanel .pilots-line a { color:var(--blue); }
   @media (max-width:600px) {
     /* tighter nav gap so the wordmark + nav labels never force horizontal
        overflow at ~360px; the wordmark also shrinks/ellipsizes as a backstop */
@@ -363,11 +361,6 @@
   .mp .g { display:block; font-size:.62rem; color:var(--text-2); font-weight:400; }
   .pilots { margin-top:.55rem; padding-top:.5rem; border-top:1px dashed var(--border); }
   .pilots h4 { font-size:.6rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.3rem; }
-  /* the kit-math "second opinion" one-liner — a plain, clickable insight, not a block */
-  .metaboard .onpaper { margin-top:.55rem; padding-top:.5rem; border-top:1px dashed var(--border); font-size:.74rem; line-height:1.45; color:var(--text-1); cursor:pointer; }
-  .metaboard .onpaper b { color:var(--text-0); font-weight:700; }
-  .metaboard .onpaper .hook { color:var(--text-2); }
-  .metaboard .onpaper:hover b { color:var(--accent); }
   .pilot { display:flex; align-items:center; gap:.45rem; padding:.16rem .3rem; font-size:.72rem; color:var(--text-1); border-radius:6px; }
   a.pilot { color:var(--text-1); } a.pilot:hover { background:var(--bg-3); }
   .pilot img { width:18px; height:18px; border-radius:5px; object-fit:cover; background:var(--bg-2); flex:none; }
@@ -491,14 +484,13 @@ const THEORY_DEF = 'simulator output on constants not yet measured in-game';
 // (the collapsible #uxLegend); the per-row tags keep their own hover tooltips as
 // the on-demand detail layer.
 const LEGEND_HTML = `<ul class="legend-list">`
-  + `<li><b>%</b> — win rate this patch (small samples pulled toward the lane average).</li>`
+  + `<li><b>%</b> — win rate this patch. A hero with only a few games is pulled toward the lane's average, so a tiny sample can't fluke its way to the top.</li>`
   + `<li><span style="color:var(--green)">green</span> = 52%+ &nbsp;·&nbsp; <span style="color:var(--red)">red</span> = 48% or less.</li>`
   + `<li><b style="color:var(--green)">Proven / Strong</b> — take it.</li>`
   + `<li><b style="color:var(--blue)">Sleeper</b> — winning, but rarely picked.</li>`
   + `<li><b>Solid</b> — a fine, standard pick.</li>`
   + `<li><b style="color:var(--gold)">Overpicked</b> — popular, but the results don't back it.</li>`
   + `<li><b style="color:var(--red)">Weak</b> — below average; comfort pick only.</li>`
-  + `<li><b>Meta score</b> — how popular <i>and</i> winning a hero is in its lane.</li>`
   + `</ul>`;
 let INDEX = null;
 let META = null;
@@ -650,7 +642,7 @@ async function renderLaneDetail() {
     if (flex.length) {
       body += `<div class="lp-sub" style="margin-top:.6rem">also flexed into ${esc(LANE_LABELS[role] || role).toLowerCase()} (their main lane is elsewhere):</div><div class="echips">${flex.map((h) => echip(h, true)).join('')}</div>`;
     }
-    body += `<div class="lp-sub" style="margin-top:.6rem">Matchups are model estimates from each hero's kit · tap a hero for its full build.</div>`;
+    body += `<div class="lp-sub" style="margin-top:.6rem">Tap a hero for its full build. The lane-safety notes (“loses lane to …”) are kit-math estimates, not head-to-head records.</div>`;
   } else {
     const mx = await getMatrix();
     const metaSlugs = new Set(laneMeta.map((h) => h.slug));
@@ -706,9 +698,7 @@ async function renderLaneDetail() {
         <button data-m="counter" class="${laneMode === 'counter' ? 'active' : ''}">🛡 countering their pick</button>
       </div>
       ${body}
-      ${pilots && pilots.length ? `<div class="pilots-line">🏆 top ${LANE_LABELS[role].toLowerCase()} pilots this split: ${pilots.slice(0, 3).map((p) => p.uuid
-        ? `<a href="https://pred.gg/players/${esc(p.uuid)}" target="_blank" rel="noopener">#${p.ranking} ${esc(p.name)}</a>${p.heroName ? ` (${esc(p.heroName)})` : ''}`
-        : `#${p.ranking} ${esc(p.name)}`).join(' · ')} — the ladder's highest-rated players who main this lane; names open their pred.gg match history to study real builds</div>` : ''}
+      ${playersBlock(role)}
     </div>`;
   box.querySelectorAll('.lmode button').forEach((b) => { b.onclick = () => { laneMode = b.dataset.m; renderLaneDetail(); }; });
   box.querySelectorAll('.echip').forEach((c) => {
@@ -739,6 +729,40 @@ function laneSimPicks(role) {
   return lane.map((slug) => ({ slug, name: (INDEX.heroes.find((h) => h.slug === slug) || {}).name || slug, s: score(slug) }))
     .filter((x) => x.s > -Infinity).sort((a, b) => b.s - a.s).slice(0, 3);
 }
+// Top-ranked ladder players for a lane, as a compact rows block — shared by the
+// meta board and the lane room so both look identical. Plain "players", no
+// "pilots/split" jargon; each row links to that player's pred.gg match history.
+function playersBlock(role) {
+  const ps = (META.topPlayers && META.topPlayers[role]) || [];
+  if (!ps.length) return '';
+  const rows = ps.slice(0, 3).map((p) => {
+    const main = (INDEX.heroes.find((h) => h.slug === p.heroSlug) || {}).name || p.heroName || '';
+    const tag = p.uuid ? 'a' : 'div';
+    const href = p.uuid ? ` href="https://pred.gg/players/${esc(p.uuid)}" target="_blank" rel="noopener"` : '';
+    return `<${tag} class="pilot"${href} title="#${p.ranking} ${esc(p.name)} — ${p.points} VP, ${esc(p.rank)}${main ? ', mains ' + esc(main) : ''} · opens their pred.gg match history">
+      <span class="rk">#${p.ranking}</span>
+      ${p.heroSlug ? `<img loading="lazy" src="${IMG.hero(p.heroSlug)}" alt="" onerror="this.style.visibility='hidden'">` : ''}
+      <span class="pn">${esc(p.name)}</span>
+      <span class="vp">${p.points}</span>
+    </${tag}>`;
+  }).join('');
+  return `<div class="pilots"><h4>Top-ranked players on this lane</h4>${rows}</div>`;
+}
+// The kit-math "second opinion" — strongest in a 1v1 on paper — in the SAME rows
+// format as the players block. The model/THEORY caveat lives in the heading
+// tooltip, not a shouted badge.
+function simPickBlock(role) {
+  const picks = laneSimPicks(role);
+  if (!picks.length) return '';
+  const tip = "Kit-math second opinion — who'd win a 1v1 from their kit alone, regardless of how often they're picked. A model estimate, not a win rate.";
+  const rows = picks.slice(0, 3).map((p, i) => `
+      <div class="pilot" data-slug="${esc(p.slug)}" data-role="${esc(role)}" title="${esc(p.name)} — strongest in a 1v1 on paper">
+        <span class="rk">${i + 1}</span>
+        <img loading="lazy" src="${IMG.hero(p.slug)}" alt="" onerror="this.style.visibility='hidden'">
+        <span class="pn">${esc(p.name)}</span>
+      </div>`).join('');
+  return `<div class="pilots simpicks"><h4 title="${esc(tip)}">🥊 Strongest in a 1v1 · on paper</h4>${rows}</div>`;
+}
 function renderMetaboard() {
   if (!META) { $('#metaboard').innerHTML = ''; return; }
   const wrClass = (wr) => (wr >= 0.52 ? 'up' : wr <= 0.48 ? 'down' : 'flat');
@@ -757,39 +781,11 @@ function renderMetaboard() {
               <span class="n">${i === 0 ? '👑 ' : ''}${esc(h.name)}${h.badge === 'sleeper' ? ' 💤' : h.badge ? ' ⚠' : ''}<span class="g">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b class="vtag" style="color:${v.color}" data-tip="${esc(v.tip)}" title="${esc(v.tip)}">${v.label}</b>`; })()}</span></span>
               <span class="wr ${wrClass(h.shrunkWr)}">${(h.shrunkWr * 100).toFixed(1)}%</span>
             </div>`).join('')}
-          ${META.topPlayers && META.topPlayers[role] && META.topPlayers[role].length ? `
-            <div class="pilots">
-              <h4>Top-ranked players on this lane</h4>
-              ${META.topPlayers[role].slice(0, 3).map((p) => {
-                const main = (INDEX.heroes.find((h) => h.slug === p.heroSlug) || {}).name || p.heroName;
-                const tag = p.uuid ? 'a' : 'div';
-                const href = p.uuid ? ` href="https://pred.gg/players/${esc(p.uuid)}" target="_blank" rel="noopener"` : '';
-                return `
-                <${tag} class="pilot"${href} title="#${p.ranking} ${esc(p.name)} — ${p.points} VP, ${esc(p.rank)}${main ? ', mains ' + esc(main) : ''}">
-                  <span class="rk">#${p.ranking}</span>
-                  ${p.heroSlug ? `<img loading="lazy" src="${IMG.hero(p.heroSlug)}" alt="" onerror="this.style.visibility='hidden'">` : ''}
-                  <span class="pn">${esc(p.name)}</span>
-                  <span class="vp">${p.points}</span>
-                </${tag}>`;
-              }).join('')}
-            </div>` : ''}
-          ${(() => {
-            // A plain-language "second opinion": the kit-math's strongest pick in a
-            // straight 1v1, framed as the contrast to the popular pick. THEORY caveat
-            // lives in the tooltip, not a shouted badge (maintainer feedback).
-            const picks = laneSimPicks(role);
-            if (!picks.length) return '';
-            const top = picks[0];
-            const king = [...(META.roles[role] || [])].sort((a, b) => b.shrunkWr - a.shrunkWr)[0];
-            const hook = (king && king.slug === top.slug)
-              ? "and they're already this lane's top pick"
-              : "few are picking them, but the kit-math says they win the straight fight";
-            const tip = "Our simulator's second opinion — who'd win a 1v1 from their kit alone, regardless of how often they're actually picked. A model estimate, not a win rate.";
-            return `<div class="onpaper" data-slug="${esc(top.slug)}" data-role="${esc(role)}" title="${esc(tip)}">🥊 <b>Strongest in a 1v1, on paper:</b> ${esc(top.name)} <span class="hook">— ${hook}</span></div>`;
-          })()}
+          ${playersBlock(role)}
+          ${simPickBlock(role)}
         </div>`).join('')}
     </div>`;
-  document.querySelectorAll('.mp, .onpaper[data-slug]').forEach((c) => { c.onclick = () => nav(c.dataset.slug, false, c.dataset.role); });
+  document.querySelectorAll('.mp, .simpicks .pilot[data-slug]').forEach((c) => { c.onclick = () => nav(c.dataset.slug, false, c.dataset.role); });
   document.querySelectorAll('.lane-go').forEach((h) => { h.onclick = () => pickLane(h.dataset.lane); });
 }
 
