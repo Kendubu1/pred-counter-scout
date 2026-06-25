@@ -763,12 +763,12 @@ function simPickBlock(role) {
   if (!picks.length) return '';
   const tip = "Kit-math second opinion — who'd win a 1v1 from their kit alone, regardless of how often they're picked. A model estimate, not a win rate.";
   const rows = picks.slice(0, 3).map((p, i) => `
-      <div class="pilot" data-slug="${esc(p.slug)}" data-role="${esc(role)}" title="${esc(p.name)} — strongest in a 1v1 on paper">
+      <div class="pilot" data-slug="${esc(p.slug)}" data-role="${esc(role)}" title="${esc(p.name)} — the kit-math pick to win a 1v1">
         <span class="rk">${i + 1}</span>
         <img loading="lazy" src="${IMG.hero(p.slug)}" alt="" onerror="this.style.visibility='hidden'">
         <span class="pn">${esc(p.name)}</span>
       </div>`).join('');
-  return `<div class="pilots simpicks"><h4 title="${esc(tip)}">🥊 Strongest in a 1v1 · on paper</h4>${rows}</div>`;
+  return `<div class="pilots simpicks"><h4 title="${esc(tip)}">Kit-math pick</h4>${rows}</div>`;
 }
 function renderMetaboard() {
   if (!META) { $('#metaboard').innerHTML = ''; return; }
