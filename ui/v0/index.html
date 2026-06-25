@@ -588,15 +588,15 @@ function matrixCps(mx, our, enemy) {
   }));
 }
 const vdots = (cps) => `<div class="dots">${cps.map((c) =>
-  `<div class="dotwrap"><div class="dot ${c.verdict}" title="minute ${c.minute}: ${c.verdict === 'you' ? 'your kill window is better' : c.verdict === 'enemy' ? 'their kill window is better' : 'even'}"></div><div class="m">${c.minute}</div></div>`).join('')}</div>`;
+  `<div class="dotwrap"><div class="dot ${c.verdict}" title="minute ${c.minute}: ${c.verdict === 'you' ? 'you can win the fight' : c.verdict === 'enemy' ? 'they can win the fight' : 'even'}"></div><div class="m">${c.minute}</div></div>`).join('')}</div>`;
 const invertV = (v) => (v === 'you' ? 'enemy' : v === 'enemy' ? 'you' : 'even');
 const phaseLine = (cps) => {
   const w = (arr) => arr.filter((c) => c.verdict === 'you').length - arr.filter((c) => c.verdict === 'enemy').length;
   const e = w(cps.slice(0, 2)), l = w(cps.slice(-2));
-  if (e > 0 && l > 0) return 'sim favors you at every checkpoint';
+  if (e > 0 && l > 0) return 'the sim favors you at every stage';
   if (e > 0 && l <= 0) return 'win it early — the sim flips late';
   if (e <= 0 && l > 0) return 'survive early; you take over late';
-  if (e < 0 && l < 0) return 'uphill at every checkpoint — consider another pick';
+  if (e < 0 && l < 0) return 'uphill at every stage — consider another pick';
   return 'even by the sim — comfort decides';
 };
 
@@ -698,7 +698,7 @@ async function renderLaneDetail() {
         body += `<div class="lp-sub" style="margin-top:.7rem">Off-meta answers from other lanes — strong into <b>${esc(nameOf(laneEnemy))}</b> if they run them off-role:</div>`;
         body += cross.map((r) => rowHtml(r, true)).join('');
       }
-      body += `<div class="lp-sub" style="margin-top:.4rem">ranked by kill-window checkpoints from the kit-math sim (THEORY until calibrated) — green dots = your windows · sims assume each kit's standard build and primary-role income · not head-to-head match data</div>`;
+      body += `<div class="lp-sub" style="margin-top:.4rem">ranked by who wins the fight at each stage (kit-math sim, THEORY until calibrated) — green dots = you win · sims assume each kit's standard build and primary-role income · not head-to-head match data</div>`;
     } else {
       body += '<div class="lp-sub">pick the enemy hero — including an off-meta flex via the dropdown — to see who answers them best</div>';
     }
@@ -958,7 +958,7 @@ function renderHero(a, roleParam) {
   const o = a.build.objectives;
   const top = a.eternals.top[0];
   const dots = (cps) => `<div class="dots">${cps.map((c) =>
-    `<div class="dotwrap"><div class="dot ${c.verdict}" title="minute ${c.minute}: ${c.verdict === 'you' ? 'your kill window is better' : c.verdict === 'enemy' ? 'their kill window is better' : 'even'}"></div><div class="m">${c.minute}</div></div>`).join('')}</div>`;
+    `<div class="dotwrap"><div class="dot ${c.verdict}" title="minute ${c.minute}: ${c.verdict === 'you' ? 'you can win the fight' : c.verdict === 'enemy' ? 'they can win the fight' : 'even'}"></div><div class="m">${c.minute}</div></div>`).join('')}</div>`;
 
   $('#hero').innerHTML = `
     <div class="backrow"><button id="back">← all heroes</button></div>
@@ -1218,7 +1218,7 @@ function renderHero(a, roleParam) {
     ${buildsCard(a)}
 
     <section class="card">
-      <h2>Lane checkpoints <span class="hint">vs most-played ${esc(a.role)} opponents · green = your kill window</span></h2>
+      <h2>Matchups <span class="hint">vs the most-played ${esc(a.role)} you'll face · green = when you can win the fight</span></h2>
       ${a.matchups.length ? a.matchups.map((m) => `
         <div class="murow">
           <img src="${IMG.hero(m.enemySlug)}" alt="" onerror="this.style.visibility='hidden'">
