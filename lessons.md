@@ -2138,3 +2138,32 @@ Eight maintainer-flagged fixes:
   all-pairs sim, score>0 only, sorted strongest-first, top 10, each tagged with its
   lane and marked "· their lane" when it's the mirror matchup. Routes to the counter's
   own-lane hero page. Verified via Playwright (Adele → Carry/Jungle picks lead).
+
+## 2026-06-25: v0 Senior-UX review loop (adopt loop-engineering for the UI)
+- Stood up a reusable UX loop for the ui/v0 staging site, reusing the existing UI
+  brackets rather than reinventing: `ui-audit.ts` + `ui-render.ts` now take `UI_DIR`
+  (default ui/v6, opt into ui/v0). The frozen-live v6 audit stays byte-for-byte the
+  same and 100% green; v0 is audited separately (ui-audit-v0.json, docs/reviews/v0/shots).
+- Encoded three v0-only HARD invariants from the rubric (docs/ux-rubric.md): `single-legend`
+  (the win%/verdict/THEORY legend must appear ≤1× per page), `reduced-motion` (animations
+  disabled under prefers-reduced-motion), `above-fold-primary` (pick/counter affordance
+  precedes the meta board + grid, which sit behind a `.browse-head` divider). The audit
+  immediately caught the homepage's THREE duplicated win%/verdict legends and a duplicated
+  THEORY definition — collapsed into ONE shared on-demand `#uxLegend` + one canonical
+  `THEORY_DEF` constant.
+- Independence held its weight: the author (this session) and the judge
+  (`pred-scout-ux-judge`, a separate agent over screenshots) are distinct. Round 1 the
+  judge passed the landing clean and flagged the hero view — but VERIFY THE JUDGE: it
+  read screenshots (images) and MISQUOTED a verdict ("not in the rain") that exists
+  nowhere in the repo. Lesson: a vision-judge's quotes must be ground-checked against
+  source before they're applied; one of its high-severity flags was a hallucinated read.
+- Scope boundary the loop surfaced: the real jargon it caught in augment verdicts
+  ("takedown-conditional pool sustain") is DATA-driven copy from data/artifacts/*.json,
+  governed by the copy pipeline (copy-verify), NOT editable in ui/v0/index.html. The
+  HTML UX loop fixes structure/layout/static copy; data-derived copy is a copy-loop
+  follow-up. In-scope fixes applied: renamed the cryptic "At the gate · your 20-second
+  picks" heading to plain "Your opening picks", and made the primary "Game plan" tab a
+  filled-accent dominant control vs the demoted "Learn the hero" (R5/R6).
+- Gate quirk for author-applies-between-rounds loops: `applied==0` fires a premature
+  "no-op STOP" on round 1 (fixes land AFTER the judge round, so applied is legitimately
+  0 the first round). Record `FIXES_APPLIED` on the round where the fixes are made.

@@ -123,8 +123,8 @@
   .card h2 .hint { float:right; letter-spacing:0; text-transform:none; font-weight:400; }
 
   .htabs { display:flex; gap:.4rem; margin-top:1rem; }
-  .htab { background:var(--bg-1); color:var(--text-1); border:1px solid var(--border); border-radius:99px; padding:.32rem 1rem; font-size:.84rem; }
-  .htab.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .htab { background:transparent; color:var(--text-2); border:1px solid var(--border); border-radius:99px; padding:.32rem 1rem; font-size:.84rem; }
+  .htab.active { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
   .tabtrend { font-size:.58rem; font-weight:800; border-radius:5px; padding:.03rem .3rem; border:1px solid; vertical-align:middle; }
   .tabtrend.buff { color:var(--green); border-color:var(--green); }
   .tabtrend.nerf { color:var(--red); border-color:var(--red); }
@@ -902,7 +902,7 @@ function renderHero(a, roleParam) {
 
     <div id="tabPlay">
     <section class="card">
-      <h2>At the gate · your 20-second picks <span class="hint">augment first, then Eternal — the build follows</span></h2>
+      <h2>Your opening picks <span class="hint">augment &amp; Eternal first — the item build follows</span></h2>
       ${(() => {
         const hr = AUGS && AUGS.heroes[a.slug];
         if (!hr) return `<div class="muted" style="margin-bottom:.8rem">no augment field evidence for this hero yet (thin sample)${top ? ` · kit-math Eternal pick: <b>${esc(top.name)}</b> +${top.headlinePct}% headline` : ''}</div>`;
