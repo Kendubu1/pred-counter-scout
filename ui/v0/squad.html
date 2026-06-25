@@ -374,7 +374,7 @@ const plink = (uuid, name) => uuid
           const rec = (s.duoLane || {})[duoKey(carry.uuid, support.uuid)];
           if (!rec) return '';
           const col = rec.winrate >= 0.53 ? 'var(--green)' : rec.winrate <= 0.48 ? 'var(--red)' : 'var(--gold)';
-          return `<div class="snote" style="color:${col};margin-top:.5rem">🤝 <b>Duo lane synergy:</b> ${esc(carry.name.split(' ')[0])} + ${esc(support.name.split(' ')[0])} have won ${pct(rec.winrate, 0)}% of ${rec.games} games actually laning together as carry+support — that pairing is part of why they are seated here.</div>`;
+          return `<div class="snote" style="color:${col};margin-top:.5rem">🤝 <b>${esc(carry.name.split(' ')[0])} + ${esc(support.name.split(' ')[0])}</b> have won ${pct(rec.winrate, 0)}% of ${rec.games} games laning together — part of why they're paired here.</div>`;
         })()}
         ${opt.seats.length >= 3 ? '<div class="snote" style="margin-top:.5rem">Seats are scored as a set — someone can look stronger in a seat they did not get, but moving them gives up more wins in the role they leave than it adds. The carry+support pairing also weighs their real duo-lane record.</div>' : ''}
       </div>`;

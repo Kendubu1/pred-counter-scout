@@ -268,6 +268,9 @@
   details.sim-collapse > .body { padding:0 .6rem .5rem; }
   .uxlegend { margin:.2rem 0 .7rem; }
   .uxlegend .lp-sub { padding:.15rem .6rem .55rem; line-height:1.55; }
+  .uxlegend .legend-list { list-style:none; margin:0; padding:0; }
+  .uxlegend .legend-list li { padding:.16rem 0; line-height:1.45; border-top:1px solid var(--bg-3); }
+  .uxlegend .legend-list li:first-child { border-top:none; }
   table { width:100%; border-collapse:collapse; font-size:.82rem; }
   td, th { text-align:left; padding:.35rem .4rem; border-bottom:1px solid var(--border); }
   th { color:var(--text-2); font-weight:600; }
@@ -404,23 +407,23 @@
 <div class="wrap">
   <div id="landing" class="hidden fade">
     <div class="landing-hero">
-      <h1 id="landTitle">Who are you playing?</h1>
-      <p id="landSub">What to build, when it spikes, and why — a kit-math simulator, cross-checked against real match data.</p>
+      <h1 id="landTitle">Who should you pick?</h1>
+      <p id="landSub">Who's winning each lane right now, who beats who, and what to build once you've picked — from real match data.</p>
       <div class="steps" aria-label="How it works, in three steps">
-        <div class="step"><span class="num">1</span><span class="txt"><b>Build or counter?</b><span>Drafting your own hero, or countering the enemy's.</span></span></div>
+        <div class="step"><span class="num">1</span><span class="txt"><b>Pick or counter?</b><span>Choosing your own hero, or answering the enemy's.</span></span></div>
         <div class="step"><span class="num">2</span><span class="txt"><b>Pick a hero or lane</b><span>Search a hero, or tap a lane to see who's winning right now.</span></span></div>
-        <div class="step"><span class="num">3</span><span class="txt"><b>Get the plan</b><span>Best items, power spikes, Eternals &amp; matchups — with the why.</span></span></div>
+        <div class="step"><span class="num">3</span><span class="txt"><b>Get the plan</b><span>The build, when it spikes, and who it beats.</span></span></div>
       </div>
       <div class="landing-mode" id="landMode">
-        <button data-lm="play" class="active">🎮 Build a hero</button>
+        <button data-lm="play" class="active">🎮 Pick a hero</button>
         <button data-lm="counter">🛡 Counter an enemy</button>
       </div>
       <div class="searchbar"><input id="search" placeholder="Search heroes…" autocomplete="off"><div class="suggest" id="suggest"></div></div>
       <div class="rolebar" id="rolebar"></div>
     </div>
+    <details class="sim-collapse uxlegend" id="uxLegend"><summary>What the win-rate colors &amp; pick tags mean</summary><div class="lp-sub" id="legendBody"></div></details>
     <div id="lanedetail"></div>
     <div class="browse-head">Browse the meta</div>
-    <details class="sim-collapse uxlegend" id="uxLegend"><summary>What the colors &amp; tags mean</summary><div class="lp-sub" id="legendBody"></div></details>
     <div class="metaboard" id="metaboard"></div>
     <div class="browse-head">All heroes</div>
     <div class="grid" id="heroGrid"></div>
@@ -482,12 +485,16 @@ const THEORY_DEF = 'simulator output on constants not yet measured in-game';
 // The single shared legend for the win-rate colors + verdict tags. Rendered once
 // (the collapsible #uxLegend); the per-row tags keep their own hover tooltips as
 // the on-demand detail layer.
-const LEGEND_HTML = `<b>%</b> = win rate this patch (small samples pulled toward the lane average). `
-  + `<span style="color:var(--green)">green</span> 52%+ · <span style="color:var(--red)">red</span> 48% or less. `
-  + `The tag says whether to pick it — <span style="color:var(--green)">Proven / Strong</span> take it, `
-  + `<span style="color:var(--blue)">Sleeper</span> winning but rarely picked, Solid fine, `
-  + `<span style="color:var(--gold)">Overpicked</span> popularity ahead of results, `
-  + `<span style="color:var(--red)">Weak</span> below average. Meta score = how popular AND winning a hero is in its lane.`;
+const LEGEND_HTML = `<ul class="legend-list">`
+  + `<li><b>%</b> — win rate this patch (small samples pulled toward the lane average).</li>`
+  + `<li><span style="color:var(--green)">green</span> = 52%+ &nbsp;·&nbsp; <span style="color:var(--red)">red</span> = 48% or less.</li>`
+  + `<li><b style="color:var(--green)">Proven / Strong</b> — take it.</li>`
+  + `<li><b style="color:var(--blue)">Sleeper</b> — winning, but rarely picked.</li>`
+  + `<li><b>Solid</b> — a fine, standard pick.</li>`
+  + `<li><b style="color:var(--gold)">Overpicked</b> — popular, but the results don't back it.</li>`
+  + `<li><b style="color:var(--red)">Weak</b> — below average; comfort pick only.</li>`
+  + `<li><b>Meta score</b> — how popular <i>and</i> winning a hero is in its lane.</li>`
+  + `</ul>`;
 let INDEX = null;
 let META = null;
 let roleFilter = 'all';
@@ -605,8 +612,8 @@ async function renderLaneDetail() {
           .map((o) => ({ o, bad: (matrixCps(mx, h.slug, o.slug) || []).filter((c) => c.verdict === 'enemy').length }))
           .sort((x, y) => y.bad - x.bad)[0];
         if (worst) {
-          trouble = worst.bad >= 4 ? `gets out-simmed by ${worst.o.name} — dodge or respect that lane`
-            : worst.bad >= 2 ? `closest fight in lane: ${worst.o.name}` : 'no losing sim in this lane — safe blind pick';
+          trouble = worst.bad >= 4 ? `loses lane to ${worst.o.name} — dodge or respect it`
+            : worst.bad >= 2 ? `closest matchup: ${worst.o.name}` : 'no losing matchup in this lane — safe blind pick';
         }
       }
       return `
@@ -638,7 +645,7 @@ async function renderLaneDetail() {
     if (flex.length) {
       body += `<div class="lp-sub" style="margin-top:.6rem">also flexed into ${esc(LANE_LABELS[role] || role).toLowerCase()} (their main lane is elsewhere):</div><div class="echips">${flex.map((h) => echip(h, true)).join('')}</div>`;
     }
-    body += `<div class="lp-sub" style="margin-top:.6rem">"out-simmed" = the kit-math kill-window sim, THEORY until calibrated · tap a hero for the full build page</div>`;
+    body += `<div class="lp-sub" style="margin-top:.6rem">Matchups are model estimates from each hero's kit · tap a hero for its full build.</div>`;
   } else {
     const mx = await getMatrix();
     const metaSlugs = new Set(laneMeta.map((h) => h.slug));
@@ -747,7 +754,7 @@ function renderMetaboard() {
             </div>`).join('')}
           ${META.topPlayers && META.topPlayers[role] && META.topPlayers[role].length ? `
             <div class="pilots">
-              <h4>Top pilots · ranked split</h4>
+              <h4>Top-ranked players on this lane</h4>
               ${META.topPlayers[role].slice(0, 3).map((p) => {
                 const main = (INDEX.heroes.find((h) => h.slug === p.heroSlug) || {}).name || p.heroName;
                 const tag = p.uuid ? 'a' : 'div';
@@ -761,22 +768,9 @@ function renderMetaboard() {
                 </${tag}>`;
               }).join('')}
             </div>` : ''}
-          ${(() => {
-            const picks = laneSimPicks(role);
-            if (!picks.length) return '';
-            return `<div class="pilots simpicks">
-              <h4>⚙ Sim picks · strongest in fights on paper <span class="theory-mini" title="From our kit-math fight simulator across every matchup in this lane. THEORY until in-game calibration — this is who the math favors, not who wins the most games.">THEORY</span></h4>
-              ${picks.map((p, i) => `
-                <div class="pilot" data-slug="${esc(p.slug)}" data-role="${esc(role)}" title="${esc(p.name)}: net kill-window edge across the lane (sim)">
-                  <span class="rk">${i + 1}</span>
-                  <img loading="lazy" src="${IMG.hero(p.slug)}" alt="" onerror="this.style.visibility='hidden'">
-                  <span class="pn">${esc(p.name)}</span>
-                </div>`).join('')}
-            </div>`;
-          })()}
         </div>`).join('')}
     </div>`;
-  document.querySelectorAll('.mp, .simpicks .pilot[data-slug]').forEach((c) => { c.onclick = () => nav(c.dataset.slug, false, c.dataset.role); });
+  document.querySelectorAll('.mp').forEach((c) => { c.onclick = () => nav(c.dataset.slug, false, c.dataset.role); });
   document.querySelectorAll('.lane-go').forEach((h) => { h.onclick = () => pickLane(h.dataset.lane); });
 }
 
@@ -800,10 +794,10 @@ function setLandingMode(mode) {
   landingMode = mode;
   document.querySelectorAll('#landMode button').forEach((b) => b.classList.toggle('active', b.dataset.lm === mode));
   const counter = mode === 'counter';
-  $('#landTitle').textContent = counter ? 'Who are you up against?' : 'Who are you playing?';
+  $('#landTitle').textContent = counter ? 'Who are you up against?' : 'Who should you pick?';
   $('#landSub').textContent = counter
     ? 'Pick the enemy hero — see who beats them in lane, then tap a counter for its full build, Eternals and augments.'
-    : 'What to build, when it spikes, and why — a kit-math simulator, cross-checked against real match data.';
+    : "Who's winning each lane right now, who beats who, and what to build once you've picked — from real match data.";
   $('#search').placeholder = counter ? 'Search the enemy hero…' : 'Search heroes…';
   $('#search').value = ''; $('#suggest').innerHTML = '';
   laneEnemy = null; laneMode = counter ? 'counter' : 'first';
