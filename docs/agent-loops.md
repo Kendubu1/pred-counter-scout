@@ -140,6 +140,7 @@ To add a self-correcting loop for a new artifact:
 | **Coach copy** | `coach-review.ts` prepare | `pred-scout-coach` | same critic, grounded on player stats | `copy-verify` | same history |
 | **Augments / items / abilities** | `*-review.ts` prepare | `pred-scout-coach` | (number bracket only today; critic-extensible) | `copy-verify` | — |
 | **Mobile UI review** | `ui-audit.ts` (consistency facts + findings) | the CSS fix author | independent mobile-UI judge over rendered screenshots | `ui-audit` hard invariants + `ui-render` no-overflow | `review:loop:gate` over `ui-review-history.json` |
+| **UX v0 (Senior-UX)** | `ux:critique:prepare` (rubric + per-surface shots) | the page author (session / `pred-scout-coach`) | `pred-scout-ux-judge`, independent, over `docs/reviews/v0/shots` | `ui-audit:v0` hard invariants (incl. `single-legend` / `reduced-motion` / `above-fold-primary`) + `ui-render:v0` no-overflow | `ux:loop:gate` over `ux-v0-history.json` |
 | **v6 review report** | the review plan | first-pass author agent | fresh clean-room subagent (hadn't seen conclusions) | citation spot-check | one-shot reconcile, not iterated |
 
 The v6 review (a one-off doc, not a regenerated artifact) used the **same

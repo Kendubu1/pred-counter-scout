@@ -24,8 +24,16 @@ import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
+// The audit targets one UI dir at a time. Default is the frozen-live ui/v6 — its
+// 11 invariants must stay green and are NOT changed here. UI_DIR=ui/v0 audits the
+// staging copy and ADDS the v0-only Senior-UX invariants (single-legend /
+// reduced-motion / above-fold-primary, see docs/ux-rubric.md) without touching
+// the v6 contract.
+const UI_DIR = process.env.UI_DIR ?? 'ui/v6';
+const TARGET_V0 = UI_DIR === 'ui/v0';
 const PAGES = ['index.html', 'coach.html', 'squad.html', 'about.html'];
-const pagePath = (p: string) => path.join(ROOT, 'ui/v6', p);
+const pagePath = (p: string) => path.join(ROOT, UI_DIR, p);
+const AUDIT_OUT = TARGET_V0 ? 'data/aggregates/ui-audit-v0.json' : 'data/aggregates/ui-audit.json';
 
 const MOBILE_FONT_FLOOR = 14;     // px — below this, mobile body text is too small
 const TOUCH_MIN = 40;             // px — flag interactive controls shorter than this on mobile
@@ -257,15 +265,53 @@ function main() {
     });
   }
 
+  // 9) v0-only Senior-UX invariants (R1/R3/R4 in docs/ux-rubric.md). These run
+  //    ONLY for ui/v0 so the frozen v6 contract is unchanged. They encode the
+  //    redundancy / overstimulation / above-the-fold lessons into the bracket so
+  //    a regression can't slip back in silently.
+  if (TARGET_V0) {
+    for (const p of PAGES) {
+      const html = htmls[p]!, css = csss[p]!;
+      // R3 single-legend: the combined win%/verdict legend was duplicated in the
+      // lane panel AND the meta board. These phrases occur only in that legend
+      // paragraph (never in a per-row tag), so >1 means the redundancy is back.
+      for (const sig of ['whether to pick it', '52%+']) {
+        const n = html.split(sig).length - 1;
+        if (n > 1) hard({ check: 'single-legend', severity: 'high', page: p, detail: `legend phrase "${sig}" appears ${n}× — collapse the duplicated win%/verdict legends into ONE shared on-demand legend` });
+      }
+      // R3 THEORY: one canonical definition, reused everywhere (not bespoke per
+      // badge). The distinctive phrase must appear at most once in source.
+      const theory = html.split('not yet measured in-game').length - 1;
+      if (theory > 1) hard({ check: 'single-legend', severity: 'high', page: p, detail: `THEORY definition string appears ${theory}× — route every THEORY badge through one canonical constant` });
+      // R4 reduced-motion: a page with transitions/animations must disable them
+      // under prefers-reduced-motion (overstimulation / accessibility).
+      if (/(?:^|[;{\s])(?:transition|animation)\s*:/.test(css) && !/prefers-reduced-motion\s*:\s*reduce/.test(css)) {
+        hard({ check: 'reduced-motion', severity: 'high', page: p, detail: 'has transitions/animations but no @media (prefers-reduced-motion:reduce) to disable them' });
+      }
+      // R1 above-fold-primary (soft until stable): on the landing page the
+      // pick/counter affordance must precede the meta board + full hero grid, and
+      // those browse zones must sit behind a .browse-head divider.
+      if (/id="metaboard"/.test(html) && /id="heroGrid"/.test(html)) {
+        const iMode = html.search(/id="landMode"/);
+        const iMeta = html.search(/id="metaboard"/);
+        const iGrid = html.search(/id="heroGrid"/);
+        if (iMode < 0 || iMode > iMeta || iMode > iGrid) findings.push({ check: 'above-fold-primary', severity: 'med', page: p, detail: 'meta board / hero grid render before the pick/counter affordance — demote them below the primary action' });
+        if (!/browse-head/.test(html)) findings.push({ check: 'above-fold-primary', severity: 'med', page: p, detail: 'no .browse-head divider gating the meta board / full grid as "browse" zones' });
+      }
+    }
+  }
+
   // Score: fraction of (page x check-family) cells that are clean. Used by the
   // loop history / convergence gate.
-  const FAMILIES = ['tokens', 'container-width', 'breakpoints', 'reset', 'mobile-font', 'touch-target', 'touch-consistency', 'pill-font', 'type-scale', 'viewport', 'script-syntax'];
+  const FAMILIES = ['tokens', 'container-width', 'breakpoints', 'reset', 'mobile-font', 'touch-target', 'touch-consistency', 'pill-font', 'type-scale', 'viewport', 'script-syntax',
+    ...(TARGET_V0 ? ['single-legend', 'reduced-motion', 'above-fold-primary'] : [])];
   const cells = FAMILIES.length * PAGES.length;
   const dirty = new Set(findings.map((f) => `${f.check}:${f.page ?? 'all'}`)).size;
   const score = Math.max(0, Math.round((1 - dirty / cells) * 1000) / 1000);
 
   const report = {
     generatedAt: new Date().toISOString(),
+    target: UI_DIR,
     pages: PAGES,
     rubric: { touchTargetMinPx: TOUCH_MIN, wcagFloorPx: 24, mobileFontFloorPx: MOBILE_FONT_FLOOR },
     facts: {
@@ -275,7 +321,7 @@ function main() {
     hardFail, findingCount: findings.length, score,
     findings,
   };
-  writeFileSync(path.join(ROOT, 'data/aggregates/ui-audit.json'), JSON.stringify(report, null, 1));
+  writeFileSync(path.join(ROOT, AUDIT_OUT), JSON.stringify(report, null, 1));
 
   // --record: append this run as a loop round so the convergence gate
   // (LOOP_HISTORY=data/aggregates/ui-review-history.json npm run review:loop:gate)
@@ -291,7 +337,7 @@ function main() {
     const judgeFlags = Number(process.env.JUDGE_FLAGS ?? 0);
     const units = Number(process.env.REVIEW_UNITS ?? 12);
     const agreementRate = Math.round((1 - judgeFlags / units) * 1000) / 1000;
-    const histPath = path.join(ROOT, 'data/aggregates/ui-review-history.json');
+    const histPath = path.join(ROOT, TARGET_V0 ? 'data/aggregates/ux-v0-history.json' : 'data/aggregates/ui-review-history.json');
     const hist = existsSync(histPath) ? (JSON.parse(readFileSync(histPath, 'utf8')) as { rounds: unknown[] }) : { rounds: [] };
     hist.rounds.push({
       round: hist.rounds.length + 1, at: new Date().toISOString(),
@@ -303,7 +349,7 @@ function main() {
   }
 
   const bySev = (s: string) => findings.filter((f) => f.severity === s).length;
-  console.log(`\nUI audit: ${findings.length} findings (${bySev('high')} high, ${bySev('med')} med, ${bySev('low')} low); consistency score ${(score * 100).toFixed(1)}% -> data/aggregates/ui-audit.json`);
+  console.log(`\nUI audit [${UI_DIR}]: ${findings.length} findings (${bySev('high')} high, ${bySev('med')} med, ${bySev('low')} low); consistency score ${(score * 100).toFixed(1)}% -> ${AUDIT_OUT}`);
   for (const f of findings.filter((f) => f.severity !== 'low')) console.log(`  [${f.severity}] ${f.check}${f.page ? ` (${f.page})` : ''}: ${f.detail}`);
   console.log(hardFail ? '\nHARD INVARIANT FAILED — fix before this round counts as converged.' : '\nAll hard invariants pass.');
   process.exit(hardFail ? 1 : 0);

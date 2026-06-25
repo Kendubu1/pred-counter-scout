@@ -266,6 +266,8 @@
   details.sim-collapse { border:1px solid var(--border); border-radius:8px; background:var(--bg-2); margin-top:.4rem; }
   details.sim-collapse > summary { padding:.38rem .6rem; font-size:.72rem; font-weight:600; color:var(--text-2); }
   details.sim-collapse > .body { padding:0 .6rem .5rem; }
+  .uxlegend { margin:.2rem 0 .7rem; }
+  .uxlegend .lp-sub { padding:.15rem .6rem .55rem; line-height:1.55; }
   table { width:100%; border-collapse:collapse; font-size:.82rem; }
   td, th { text-align:left; padding:.35rem .4rem; border-bottom:1px solid var(--border); }
   th { color:var(--text-2); font-weight:600; }
@@ -418,6 +420,7 @@
     </div>
     <div id="lanedetail"></div>
     <div class="browse-head">Browse the meta</div>
+    <details class="sim-collapse uxlegend" id="uxLegend"><summary>What the colors &amp; tags mean</summary><div class="lp-sub" id="legendBody"></div></details>
     <div class="metaboard" id="metaboard"></div>
     <div class="browse-head">All heroes</div>
     <div class="grid" id="heroGrid"></div>
@@ -427,7 +430,7 @@
 
   <footer>
     <a href="about.html">About &amp; how this works</a> · Built on the official Omeda Studios public API via omeda.city · not affiliated with Omeda Studios.<br>
-    THEORY = simulator output on constants not yet measured in-game. Evidence deltas carry finished-inventory bias and are comparative, not absolute.
+    THEORY = <span id="theoryDef"></span> Evidence deltas carry finished-inventory bias and are comparative, not absolute.
   </footer>
 </div>
 
@@ -472,6 +475,19 @@ function itemWhyRows(items, whyMap) {
 const IMG = { hero: (s) => `../img/heroes/${s}.webp`, item: (s) => `../img/items/${s}.webp`, eternal: (s) => `../img/eternals/${s}.webp` };
 const ROLES = ['all', 'carry', 'midlane', 'offlane', 'jungle', 'support'];
 const LANE_LABELS = { carry: 'Carry', midlane: 'Midlane', offlane: 'Offlane', jungle: 'Jungle', support: 'Support' };
+// Canonical THEORY definition — ONE source of truth, reused by every THEORY badge
+// and the footer (so the win%/verdict/THEORY legends are never duplicated; see
+// docs/ux-rubric.md R3).
+const THEORY_DEF = 'simulator output on constants not yet measured in-game';
+// The single shared legend for the win-rate colors + verdict tags. Rendered once
+// (the collapsible #uxLegend); the per-row tags keep their own hover tooltips as
+// the on-demand detail layer.
+const LEGEND_HTML = `<b>%</b> = win rate this patch (small samples pulled toward the lane average). `
+  + `<span style="color:var(--green)">green</span> 52%+ · <span style="color:var(--red)">red</span> 48% or less. `
+  + `The tag says whether to pick it — <span style="color:var(--green)">Proven / Strong</span> take it, `
+  + `<span style="color:var(--blue)">Sleeper</span> winning but rarely picked, Solid fine, `
+  + `<span style="color:var(--gold)">Overpicked</span> popularity ahead of results, `
+  + `<span style="color:var(--red)">Weak</span> below average. Meta score = how popular AND winning a hero is in its lane.`;
 let INDEX = null;
 let META = null;
 let roleFilter = 'all';
@@ -580,7 +596,7 @@ async function renderLaneDetail() {
   if (laneMode === 'first') {
     const mx = await getMatrix();
     const ranked = [...laneMeta].sort((a, b) => b.shrunkWr - a.shrunkWr); // sort by the win rate we show, highest first
-    body = '<div class="lp-sub" style="margin:.2rem 0 .5rem"><b>%</b> = win rate this patch, highest first (small samples pulled toward the lane average) · <span style="color:var(--green)">green</span> 52%+, <span style="color:var(--red)">red</span> 48% or less · the tag says whether to pick it — <span style="color:var(--green)">Proven/Strong</span> (take it), <span style="color:var(--blue)">Sleeper</span> (winning but rare), Solid (fine), <span style="color:var(--gold)">Overpicked</span> / <span style="color:var(--red)">Weak</span> (careful) · hover for why</div>' + ranked.map((h, i) => {
+    body = '<div class="lp-sub" style="margin:.2rem 0 .5rem">Sorted by win rate, highest first. Tap a hero for its build; hover a tag for what it means.</div>' + ranked.map((h, i) => {
       // blind-pick safety vs the heroes actually in THIS lane's meta,
       // from the all-pairs matrix (artifact matchups are primary-role only)
       let trouble = '';
@@ -717,7 +733,7 @@ function renderMetaboard() {
   $('#metaboard').innerHTML = `
     <div class="mb-head">
       <h2>The meta board</h2>
-      <span class="mb-sub">each lane's most-played heroes, sorted by <b>win rate</b> (small samples adjusted toward average) — <span style="color:var(--green)">green</span> 52%+, <span style="color:var(--red)">red</span> 48% or less · the tag says whether to pick it: <span style="color:var(--green)">Proven/Strong</span> (take it), <span style="color:var(--blue)">Sleeper</span> (winning but rarely picked), Solid (fine), <span style="color:var(--gold)">Overpicked</span> / <span style="color:var(--red)">Weak</span> (popularity/results don’t line up — careful); hover any tag for why · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
+      <span class="mb-sub">each lane's most-played heroes, sorted by <b>win rate</b> (small samples adjusted toward average). Colors &amp; tags explained at the top · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
     </div>
     <div class="lanes">
       ${Object.keys(LANE_LABELS).map((role) => `
@@ -863,7 +879,7 @@ function renderHero(a, roleParam) {
           })()}
           <span class="chip">${esc(a.damageType)} · ${esc(a.attackType)}</span>
           ${a.build.archetypes.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}
-          <span class="badge theory" title="Simulator output on constants not yet measured in-game:&#10;${esc(a.confidence.unverifiedConstants.join(', '))}&#10;&#10;${esc(a.confidence.notes.join('&#10;'))}">THEORY</span>
+          <span class="badge theory" title="${THEORY_DEF}:&#10;${esc(a.confidence.unverifiedConstants.join(', '))}&#10;&#10;${esc(a.confidence.notes.join('&#10;'))}">THEORY</span>
         </div>
         ${roleViews.length > 1 ? `
         <div class="rolebar flexroles" style="justify-content:flex-start;margin-top:.55rem">
@@ -1395,6 +1411,9 @@ window.onpopstate = route;
   INDEX = await getJson('../../data/artifacts/index.json');
   META = await getJson('../../data/artifacts/meta.json').catch(() => null);
   window.INDEX_GENERATED = INDEX.generatedAt || '';
+  // One canonical THEORY definition + one shared win%/verdict legend (docs/ux-rubric.md R3).
+  $('#theoryDef').textContent = THEORY_DEF + '.';
+  $('#legendBody').innerHTML = LEGEND_HTML;
   const dataDate = (INDEX.generatedAt || '').slice(0, 10);
   $('#patchPill').textContent = `patch ${INDEX.patch}${dataDate ? ` · data ${dataDate}` : ''}`;
   $('#patchPill').title = dataDate ? `Live match data + winrates last refreshed ${dataDate}` : '';

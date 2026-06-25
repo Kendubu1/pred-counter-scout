@@ -17,15 +17,19 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-const SHOTS = path.join(ROOT, 'docs/reviews/v6/shots');
+// Target one UI dir at a time (default ui/v6; UI_DIR=ui/v0 renders the staging
+// copy and writes its shots to docs/reviews/v0/shots).
+const UI_DIR = process.env.UI_DIR ?? 'ui/v6';
+const SHOTS_REL = `docs/reviews/${UI_DIR.replace('ui/', '')}/shots`;
+const SHOTS = path.join(ROOT, SHOTS_REL);
 
 const SURFACES = [
-  { id: 'landing', url: '/ui/v6/index.html' },
-  { id: 'hero', url: '/ui/v6/index.html?hero=countess&role=midlane' },
-  { id: 'hero-sparrow', url: '/ui/v6/index.html?hero=sparrow&role=carry' },
-  { id: 'coach', url: '/ui/v6/coach.html' },
-  { id: 'squad', url: '/ui/v6/squad.html' },
-  { id: 'about', url: '/ui/v6/about.html' },
+  { id: 'landing', url: `/${UI_DIR}/index.html` },
+  { id: 'hero', url: `/${UI_DIR}/index.html?hero=countess&role=midlane` },
+  { id: 'hero-sparrow', url: `/${UI_DIR}/index.html?hero=sparrow&role=carry` },
+  { id: 'coach', url: `/${UI_DIR}/coach.html` },
+  { id: 'squad', url: `/${UI_DIR}/squad.html` },
+  { id: 'about', url: `/${UI_DIR}/about.html` },
 ];
 const WIDTHS = [360, 390, 1024]; // phone (small), phone (modern), desktop control
 const MIME: Record<string, string> = { '.html': 'text/html', '.json': 'application/json', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.jpg': 'image/jpeg' };
@@ -75,6 +79,14 @@ async function main() {
         // maintainer flagged as oversized. Captured directly so its size/density is
         // visible regardless of how far down the page it sits.
         if (w < 600) { const tip = await page.$('.coach'); if (tip) await tip.screenshot({ path: path.join(SHOTS, `${s.id}-${w}-simtip.png`) }).catch(() => {}); }
+        // v0 Senior-UX loop: real-scale element shots of the single shared legend
+        // (R3 — is there one legend, not three?) and the above-the-fold pick/counter
+        // block (R1 — is it the one dominant action?), so the judge sees them at 1:1.
+        if (w < 600) {
+          for (const [sel, tag] of [['.uxlegend', 'legend'], ['.landing-hero', 'primary']] as const) {
+            const el = await page.$(sel); if (el) await el.screenshot({ path: path.join(SHOTS, `${s.id}-${w}-${tag}.png`) }).catch(() => {});
+          }
+        }
         results.push({ surface: s.id, width: w, scrollWidth: m.sw, clientWidth: m.cw, overflow, shot });
         if (w < 600 && overflow > 1) phoneOverflow++;
         await page.close();
@@ -87,15 +99,17 @@ async function main() {
   }
 
   const offenders = results.filter((r) => r.width < 600 && r.overflow > 1);
-  writeFileSync(path.join(ROOT, 'data/aggregates/ui-render.json'), JSON.stringify({
+  const RENDER_OUT = UI_DIR === 'ui/v0' ? 'data/aggregates/ui-render-v0.json' : 'data/aggregates/ui-render.json';
+  writeFileSync(path.join(ROOT, RENDER_OUT), JSON.stringify({
     generatedAt: new Date().toISOString(),
-    shotsDir: 'docs/reviews/v6/shots',
+    target: UI_DIR,
+    shotsDir: SHOTS_REL,
     widths: WIDTHS, surfaces: SURFACES.map((s) => s.id),
     phoneOverflowCount: phoneOverflow,
     results,
   }, null, 1));
 
-  console.log(`\nUI render: ${results.length} captures -> docs/reviews/v6/shots/ ; ${phoneOverflow} phone overflow(s)`);
+  console.log(`\nUI render [${UI_DIR}]: ${results.length} captures -> ${SHOTS_REL}/ ; ${phoneOverflow} phone overflow(s)`);
   for (const o of offenders) console.log(`  OVERFLOW ${o.surface} @ ${o.width}px: content ${o.scrollWidth}px > viewport ${o.clientWidth}px (+${o.overflow})`);
   process.exit(phoneOverflow ? 1 : 0);
 }
