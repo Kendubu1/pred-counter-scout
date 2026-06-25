@@ -44,7 +44,7 @@
   .wrap { max-width:var(--maxw); margin:0 auto; padding:1.25rem 1rem 4rem; }
 
   /* ── landing ── */
-  .landing-hero { text-align:center; padding:2.2rem 0 1.4rem; }
+  .landing-hero { text-align:center; padding:.5rem 0 1.4rem; }
   .landing-hero h1 { font-size:1.9rem; font-weight:800; }
   .landing-hero p { color:var(--text-1); margin-top:.4rem; }
   .searchbar { max-width:460px; margin:1.2rem auto 0; position:relative; }
@@ -512,6 +512,13 @@ function buildSubnav() {
   const view = $('#hero').classList.contains('hidden') ? '#landing' : '#hero';
   const secs = [...document.querySelectorAll(`${view} section.card, ${view} .lanepanel, ${view} .metaboard`)]
     .filter((c) => c.querySelector('h2') && c.offsetParent !== null);
+  // A one-item jumper is pointless and adds a "double header" row above the title
+  // (e.g. the lone "The Meta Board" pill on the landing). Only show it with 2+ sections.
+  if (secs.length < 2) {
+    host.innerHTML = '';
+    document.documentElement.style.setProperty('--toph', `${document.querySelector('.top')?.offsetHeight ?? 96}px`);
+    return;
+  }
   host.innerHTML = secs.map((c, i) => {
     c.id = c.id || 'sec' + i;
     const h = c.querySelector('h2');
