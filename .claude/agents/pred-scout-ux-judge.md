@@ -8,7 +8,7 @@ description: >-
   engine/copy-tasks/ux-critique.responses.json. Invoke it after
   `COPY_MODE=prepare npm run ux:critique:prepare`. It only critiques; the author
   applies the fixes.
-tools: Read, Glob, Grep
+tools: Read, Write, Glob, Grep
 model: inherit
 ---
 
