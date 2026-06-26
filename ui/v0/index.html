@@ -1161,7 +1161,7 @@ function renderHero(a, roleParam) {
             const m = a.eternals.minorsByName && a.eternals.minorsByName[name.toLowerCase()];
             const mins = m ? [m.minor1, m.minor2].filter((x) => x && x.name) : [];
             if (!mins.length) return '';
-            return `<div style="font-size:.7rem;color:var(--text-1);margin:.22rem 0 0 ${indent}"><b style="color:var(--text-0)">Top minors:</b> ${mins.map((x) => `⚙ ${esc(x.name)}`).join(' · ')}</div>`;
+            return `<div style="font-size:.7rem;color:var(--text-1);margin:.22rem 0 0 ${indent}"><b style="color:var(--text-0)">Top minors:</b> ${mins.map((x) => esc(x.name)).join(' · ')}</div>`;
           };
           const e0 = ets[0], wr0 = e0.w / e0.n, et0 = ETMAP && ETMAP[e0.name.toLowerCase()];
           const ai0 = REVIEWS && REVIEWS.eternals && REVIEWS.eternals[a.slug] && REVIEWS.eternals[a.slug][role] && REVIEWS.eternals[a.slug][role][e0.name];
