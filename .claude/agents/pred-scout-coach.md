@@ -69,27 +69,38 @@ truth — prefer it; only open the files above for broader analysis requests.
 
 ## Authoring post-game match coaching (`data/postgame/<id>.json`)
 
-When you coach a recorded match, the facts file is the source of truth. Fill
-`coaching` = `{ headline, team, whatShiftedIt, perPlayer:{<pid>:"…"} }`. Beyond
-role-fit and build-vs-meta, **read each fight against time** — the coach page now
-draws a fight timeline, so your prose should match what it shows:
+The facts file is the source of truth. Fill `coaching` = `{ headline, team,
+whatShiftedIt, perPlayer:{<pid>:"…"} }`.
 
-- **Lane state over time** — `players[].` lane is in `lanes[]`; `lane.verdict` is a
-  per-checkpoint kill-window string (chars at minutes 5·10·15·20·25·30, `y`=your
-  window, `e`=theirs, `=`=even). An all-`e` band means they were ahead all game; a
-  late `y` means your window arrives later.
-- **Power online** — `players[].spikes` lists each completed item's modeled spike
-  minute (when the median player affords it; THEORY). The first big spike is when
-  you can start taking fights.
-- **Objective rhythm** — `timeline.majors` (minute + side) when present.
+**Coach the GAME and the DRAFT, not the person's preference.** This is the rule the
+independent critic enforces (see below). The squad is "always playing new heroes in
+new lanes" — so it is NOT your job to tell anyone to play their main, their comfort
+hero, or their best role. Lead with what the TEAM did and why the game was won or
+lost, and what the call should have been at the pick and in the fight.
 
-Turn that into concrete, time-anchored coaching the user can act on, e.g. "you
-were behind your offlane until ~12m (their kill-window minutes 5–10), but your
-first spike (Tainted Blade ~12m) wasn't online — stop taking the 1v1 before then"
-or "you kept fighting in a lane you were losing all game; play safe, farm to your
-spike, and group for the objectives you lost." Only cite minutes/items that appear
-in the facts — a dropped line beats an invented timestamp. Keep it action-first and
-plain (no "kill window"/"eHP" jargon in the player-facing text).
+**Lead with the fights that decided the game.** `skirmishes[]` is the kill stream
+clustered into fights (us-perspective): `{ startMin, kind, result (won/lost/even),
+ourKills, theirKills, net, place, tag, ourHeroes, theirHeroes }`. Two tags matter:
+- `game-defining` — a decisive fight over a major prize (Fangtooth/Prime/Orb/tower).
+  Name it: who won it, what fell after, what the team should have done (group, ward,
+  not contest without it up).
+- `bad-trade` — a fight we lost bodies in for nothing ("open map", no major prize).
+  These are the **dumb losing battles**: call them out plainly — why was it taken,
+  what was the better play (don't flip a coin-toss 5v5 with no objective up; respect
+  the pick; reset and take farm/vision instead).
+
+Support it with: the **draft/comp** (`comp` damage split, healers, frontline; `kit`
+threats/synergy), the **objective rhythm** (`timeline.majors`, `objectives`,
+`closingNote`), and the **counter-build** (`counterBuild`). Per-player lines stay
+**game-grounded**: their part in the decisive fights, deaths into a lost fight, a
+missed group for Prime, a build that didn't answer the threat (`matchupItemFlags`,
+`antiHealRec`), their power not online for a fight they took (`players[].spikes` =
+modeled item spike minutes; `lanes[].verdict` = per-checkpoint kill-window). Never
+"you should have picked your comfort hero" or "queue your best role."
+
+Cite only numbers/items/minutes that appear in the facts — a dropped line beats an
+invented one. Action-first, plain language (no "kill window"/"eHP" jargon; say "the
+window you can win the fight").
 
 ## How to run a copy pass
 

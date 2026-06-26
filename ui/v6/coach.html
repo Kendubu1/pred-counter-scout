@@ -226,40 +226,35 @@ function pgReview(f) {
     </div>
     <div style="margin-top:.5rem;font-size:.72rem;color:var(--text-2)">Per-minute kill-window (5·10·15·20·25·30), green = your window. Counter = a role-eligible hero that beats the enemy laner (matchup matrix, THEORY); <span style="color:var(--green)">●</span> = in that player's pool.</div>`);
 
-  // Fight timeline: one 0->durationMin axis tying the focus player's lane state
-  // (per-checkpoint kill-window), their item power-spikes (modeled "online"
-  // minute), and the macro objective rhythm — so a fight reads against when you
-  // were ahead/behind and what was online. PHASE-level: no frame-by-frame kill
-  // data exists from either API, so nothing here is an invented timestamp.
-  const focus = us.find((p) => p.isLead && ((p.spikes && p.spikes.length) || f.lanes.some((l) => l.ourSlug === p.heroSlug)))
-    || us.find((p) => p.spikes && p.spikes.length) || us.find((p) => f.lanes.some((l) => l.ourSlug === p.heroSlug)) || us[0];
-  const focusLane = focus ? f.lanes.find((l) => l.ourSlug === focus.heroSlug && l.role === focus.role) : null;
+  // Fight timeline (TEAM): the fights that shaped the game, clustered from the
+  // kill stream — who won each and what was on the line. Per-player lane state +
+  // power spikes live in the player cards below; this headline is the team's game.
+  // PHASE-level: kill TIMES are real (pred.gg), but "game-defining/bad-trade" and
+  // the place read are heuristics (THEORY).
   const tlDur = f.durationMin || 40;
   const xOf = (min) => Math.min(96, Math.max(2, (min / tlDur) * 100));
   const tlMajors = (f.timeline ? f.timeline.majors : []).filter((m) => /FANG|PRIME|ORB/i.test(m.type));
   const objColor = (t) => /FANG/i.test(t) ? '#f0820f' : /ORB|PRIME/i.test(t) ? '#a855f7' : 'var(--text-2)';
-  // Checkpoint minutes are the matrix's fixed 5-min cadence (5·10·15…); one char
-  // per checkpoint in the verdict string. Only show checkpoints the game reached.
-  const cps = focusLane ? [...focusLane.verdict].map((c, i) => ({ min: (i + 1) * 5, c })).filter((x) => x.min <= tlDur + 3) : [];
-  const fspikes = (focus && focus.spikes ? focus.spikes : []).filter((s) => s.spikeMinute <= tlDur + 1);
-  const kitSpike = (f.kit && f.kit.ourKits ? f.kit.ourKits : []).find((k) => k.hero === (focus && focus.heroName))?.powerSpike || null;
-  const bandCol = (c) => c === 'y' ? 'var(--green)' : c === 'e' ? 'var(--red)' : 'var(--bg-3)';
-  // Adaptive height: reserve the spike row only when there are spikes, so a
-  // sparse (omeda-sourced, no-event) match doesn't leave an empty block.
-  const tlH = fspikes.length ? 88 : (cps.length ? 60 : 26);
-  const timeline = (focus && (cps.length || fspikes.length || tlMajors.length)) ? card(`
-    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.2rem">Fight timeline <span style="font-weight:400;text-transform:none;letter-spacing:0">· ${hlink(focus.heroSlug, esc(focus.heroName))} ${esc(focus.role)}${focus.isLead ? ' (you)' : ''} · 0–${tlDur}m</span></h2>
-    <div style="font-size:.74rem;color:var(--text-1);margin-bottom:.5rem">Read your fights against this line: were you ahead in lane, and was your power online?</div>
-    <div style="position:relative;height:${tlH}px;margin:.1rem 0">
-      <div style="position:absolute;top:13px;left:0;right:0;height:2px;background:var(--border)"></div>
-      ${tlMajors.map((m) => { const x = xOf(m.minute); const mine = m.side === 'us'; return `<div title="${m.minute}m ${esc(m.type.replace(/_/g, ' '))} (${mine ? 'you' : 'them'})" style="position:absolute;left:${x}%;top:2px;transform:translateX(-50%)"><div style="width:12px;height:12px;border-radius:50%;background:${objColor(m.type)};border:2px solid ${mine ? 'var(--green)' : 'var(--red)'}"></div></div>`; }).join('')}
-      <div style="position:absolute;top:30px;left:0;font-size:.58rem;color:var(--text-2)">lane</div>
-      <div style="position:absolute;top:42px;left:0;right:0;height:12px;border-radius:6px;background:var(--bg-2)">
-        ${cps.map((cp) => `<span title="${cp.min}m: ${cp.c === 'y' ? 'your kill window' : cp.c === 'e' ? 'their kill window' : 'even'}" style="position:absolute;left:${xOf(cp.min)}%;top:0;transform:translateX(-50%);width:13px;height:12px;background:${bandCol(cp.c)};border-radius:3px"></span>`).join('')}
-      </div>
-      ${fspikes.map((s) => { const x = xOf(s.spikeMinute); return `<div title="${esc(s.name)} online ~${s.spikeMinute}m (modeled spike, THEORY)" style="position:absolute;left:${x}%;top:62px;transform:translateX(-50%);text-align:center"><img src="${iimg(s.slug)}" style="width:20px;height:20px;border-radius:5px;border:1px solid var(--border)" onerror="this.style.visibility='hidden'"><div style="font-size:.56rem;color:var(--text-2)">${s.spikeMinute}m</div></div>`; }).join('')}
+  const hName = (slug) => (f.players.find((p) => p.heroSlug === slug) || {}).heroName || slug;
+  const sks = (f.skirmishes || []).filter((s) => s.startMin <= tlDur + 1);
+  const skCol = (r) => r === 'won' ? 'var(--green)' : r === 'lost' ? 'var(--red)' : 'var(--text-2)';
+  // the fights worth leading with: tagged first, then by significance (mirrors keySkirmishes)
+  const keySk = [...sks].filter((s) => s.tag || s.significance >= 6)
+    .sort((a, b) => (b.tag ? 1 : 0) - (a.tag ? 1 : 0) || b.significance - a.significance).slice(0, 3);
+  const timeline = (sks.length || tlMajors.length) ? card(`
+    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.2rem">Fight timeline <span style="font-weight:400;text-transform:none;letter-spacing:0">· the team's game · 0–${tlDur}m</span></h2>
+    <div style="font-size:.74rem;color:var(--text-1);margin-bottom:.5rem">The fights that decided the game — who won each, and what was on the line.</div>
+    <div style="position:relative;height:58px;margin:.1rem 0">
+      <div style="position:absolute;top:34px;left:0;right:0;height:2px;background:var(--border)"></div>
+      ${tlMajors.map((m) => { const x = xOf(m.minute); const mine = m.side === 'us'; return `<div title="${m.minute}m ${esc(m.type.replace(/_/g, ' '))} (${mine ? 'you' : 'them'})" style="position:absolute;left:${x}%;top:2px;transform:translateX(-50%)"><div style="width:9px;height:9px;border-radius:50%;background:${objColor(m.type)};border:1.5px solid ${mine ? 'var(--green)' : 'var(--red)'}"></div></div>`; }).join('')}
+      ${sks.map((s) => { const x = xOf(s.startMin); const d = Math.min(22, 9 + s.size * 2); const ring = s.tag === 'game-defining' ? ';box-shadow:0 0 0 2px var(--gold)' : s.tag === 'bad-trade' ? ';box-shadow:0 0 0 2px rgba(255,90,90,.7)' : ''; return `<div title="${s.startMin}m ${s.kind}: ${s.result} ${s.ourKills}-${s.theirKills} · ${esc(s.place)}${s.tag ? ' · ' + s.tag.replace('-', ' ') : ''}" style="position:absolute;left:${x}%;top:${34 - d / 2}px;transform:translateX(-50%);width:${d}px;height:${d}px;border-radius:50%;background:${skCol(s.result)}${ring};display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">${s.net > 0 ? '+' + s.net : s.net < 0 ? s.net : ''}</div>`; }).join('')}
     </div>
-    <div style="font-size:.68rem;color:var(--text-2);line-height:1.55"><span style="color:#f0820f">●</span> Fangtooth / <span style="color:#a855f7">●</span> Orb·Prime (ring <span style="color:var(--green)">you</span>/<span style="color:var(--red)">them</span>) · lane band = your <span style="color:var(--green)">●</span>/their <span style="color:var(--red)">●</span> kill-window per 5-min checkpoint · item = your power online (modeled, THEORY)${kitSpike ? ` · kit spike: ${esc(kitSpike)}` : ''}</div>`) : '';
+    <div style="font-size:.68rem;color:var(--text-2);line-height:1.5">● above = objective (Fangtooth/Orb·Prime, ring = who took it) · circle on the line = a fight, size = bodies, <span style="color:var(--green)">won</span>/<span style="color:var(--red)">lost</span>, number = net kills · <span style="color:var(--gold)">gold ring</span> = game-defining (heuristic, THEORY)</div>
+    ${keySk.length ? `<div style="margin-top:.6rem;display:flex;flex-direction:column;gap:.4rem">${keySk.map((s) => `
+      <div style="border-left:3px solid ${s.tag === 'game-defining' ? 'var(--gold)' : skCol(s.result)};padding:.35rem .6rem;background:var(--bg-2);border-radius:6px;font-size:.84rem">
+        <b>${s.startMin}m · ${s.kind} ${s.result} ${s.ourKills}–${s.theirKills}</b><span style="color:var(--text-2)"> · ${esc(s.place)}${s.tag ? ` · <b style="color:${s.tag === 'game-defining' ? 'var(--gold)' : 'var(--red)'}">${esc(s.tag.replace('-', ' '))}</b>` : ''}</span>
+        ${s.ourHeroes.length || s.theirHeroes.length ? `<div style="font-size:.72rem;color:var(--text-2);margin-top:.1rem">us: ${s.ourHeroes.map((h) => esc(hName(h))).join(', ') || '—'} · them: ${s.theirHeroes.map((h) => esc(hName(h))).join(', ') || '—'}</div>` : ''}
+      </div>`).join('')}</div>` : ''}`) : '';
 
   const comp = card(`
     <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.5rem">Team comp &amp; objectives</h2>

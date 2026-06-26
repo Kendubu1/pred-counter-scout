@@ -19,7 +19,7 @@ import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync } from 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadData } from '../data.js';
-import { computeMatchFacts, type OmedaMatch, type HeroStatCell, type PostGameInputs, type MatchEvent } from '../postgame.js';
+import { computeMatchFacts, type OmedaMatch, type HeroStatCell, type PostGameInputs, type MatchEvent, type KillEvent } from '../postgame.js';
 import { hasCredentials } from './predgg.js';
 import { predggSquadMatches, fetchLaneMatchups } from './predgg-match.js';
 
@@ -116,7 +116,7 @@ async function main() {
   if (process.argv.includes('--squad')) {
     const squad = loadSquad();
     if (!squad) { console.error('no data/artifacts/squad.json — run `npm run squad -- <lead-uuid>` first'); process.exit(1); }
-    const minStack = Number(arg('min-stack') ?? 4);
+    const minStack = Number(arg('min-stack') ?? 2);   // every game >=2 of us played together; the film room filters by stack size
     // pred.gg is fresher than omeda's stalled feed and carries the event timeline;
     // use it when credentials are present, else fall back to the omeda feed.
     if (hasCredentials()) {
@@ -132,7 +132,7 @@ async function main() {
           console.log(`  ${g.match.start_time.slice(0, 10)} ${g.match.id.slice(0, 8)} · already reviewed, skipping`);
           continue;
         }
-        await generateOne(data, omedaHeroes, matrix, g.match, g.ourTeam, squad, { objectiveEvents: g.objectiveEvents, structureEvents: g.structureEvents });
+        await generateOne(data, omedaHeroes, matrix, g.match, g.ourTeam, squad, { objectiveEvents: g.objectiveEvents, structureEvents: g.structureEvents, killEvents: g.killEvents });
         added++;
         console.log(`  ${g.match.start_time.slice(0, 10)} ${g.match.id.slice(0, 8)} · stack ${g.members.length} [${g.members.join(', ')}] · NEW`);
       }
@@ -184,7 +184,7 @@ const OUT_DIR = path.join(ROOT, 'data/postgame');
 async function generateOne(
   data: ReturnType<typeof loadData>, omedaHeroes: { id: number; slug: string }[],
   matrix: { minutes: number[]; pairs: Record<string, string> }, match: OmedaMatch, ourTeam: string, squad: SquadInfo | null,
-  events?: { objectiveEvents: MatchEvent[]; structureEvents: MatchEvent[] },
+  events?: { objectiveEvents: MatchEvent[]; structureEvents: MatchEvent[]; killEvents?: KillEvent[] },
 ) {
   const heroStats = new Map<string, HeroStatCell[]>();
   for (const p of match.players.filter((q) => q.team === ourTeam)) {
@@ -207,7 +207,7 @@ async function generateOne(
     const pf = path.join(ROOT, 'data/artifacts/players', `${p.id}.json`);
     if (existsSync(pf)) { try { heroPools.set(p.id, JSON.parse(readFileSync(pf, 'utf8')).pool ?? []); } catch { /* ignore */ } }
   }
-  const inputs: PostGameInputs = { match, ourTeam, omedaHeroes, heroStats, matrix, artifacts, objectiveEvents: events?.objectiveEvents, structureEvents: events?.structureEvents, roleStats: squad?.rolesByUuid, heroPools };
+  const inputs: PostGameInputs = { match, ourTeam, omedaHeroes, heroStats, matrix, artifacts, objectiveEvents: events?.objectiveEvents, structureEvents: events?.structureEvents, killEvents: events?.killEvents, roleStats: squad?.rolesByUuid, heroPools };
   const facts: any = computeMatchFacts(data, inputs);
   // Empirical lane-matchup winrate from pred.gg (ground truth beside the sim).
   if (hasCredentials() && facts.lanes?.length) {

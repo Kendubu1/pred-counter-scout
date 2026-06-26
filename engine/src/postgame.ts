@@ -10,6 +10,7 @@
 
 import { completedItems } from './data.js';
 import { kitPowerType } from './sim.js';
+import { detectSkirmishes, type Skirmish, type ObjEvent } from './skirmishes.js';
 import type { LoadedData } from './data.js';
 import type { Item } from './types.js';
 
@@ -37,6 +38,23 @@ export interface HeroStatCell {
 
 // Optional match timeline (pred.gg only — omeda's feed has no event stream).
 export interface MatchEvent { gameTime: number; type: string; team: string; } // team = DAWN/DUSK (objective: killer; structure: the side that LOST it)
+// Per-kill event stream (pred.gg `heroKills`). Teams are dawn/dusk; the engine
+// normalises killer/killed to us/them once it knows ourTeam.
+export interface KillEvent {
+  gameTime: number; firstBlood: boolean;
+  killerSlug: string | null; killedSlug: string | null;
+  killerPid: string | null; killedPid: string | null;
+  killerTeam: string; killedTeam: string;
+  x: number | null; y: number | null;
+}
+// Normalised kill stored on the facts: killer/killed tagged us/them, time in seconds.
+export interface FactKill {
+  t: number; min: number; firstBlood: boolean;
+  killerSide: 'us' | 'them'; killedSide: 'us' | 'them';
+  killerSlug: string | null; killedSlug: string | null;
+  killerPid: string | null; killedPid: string | null;
+  x: number | null; y: number | null;
+}
 
 const ROLES = ['carry', 'midlane', 'offlane', 'jungle', 'support'];
 // Evolved item -> the item it was bought as (build_paths sources). The end-game
@@ -107,6 +125,13 @@ export interface PostGameFacts {
   // Macro timeline (pred.gg only): when the big neutral objectives fell and the
   // tower count by side. Null when sourced from omeda (no event stream).
   timeline: { majors: { minute: number; type: string; side: 'us' | 'them' }[]; towers: { us: number; them: number } } | null;
+  // Per-kill stream (pred.gg only), killer/killed normalised to us/them. Empty
+  // when omeda-sourced. Drives skirmish detection; stored so the algorithm can
+  // be re-derived without re-pulling.
+  kills: FactKill[];
+  // The fights that shaped the game, clustered from the kill stream (us-perspective),
+  // tagged game-defining / bad-trade. Empty when there's no kill stream.
+  skirmishes: Skirmish[];
   kit?: (KitAnalysis & { ourKits?: HeroProfileLine[]; enemyKits?: HeroProfileLine[] }) | null;   // kit/ability synergy + enemy threats + per-hero profiles (augmented post-hoc)
   // Authored later by the agent coaching pass; null until then.
   coaching: { headline: string; team: string; perPlayer: Record<string, string>; whatShiftedIt: string } | null;
@@ -291,6 +316,7 @@ export interface PostGameInputs {
   artifacts: Map<string, any>;                       // slug -> hero artifact (for optimal build + meta core)
   objectiveEvents?: MatchEvent[];                     // pred.gg objective-kill stream (optional)
   structureEvents?: MatchEvent[];                     // pred.gg structure-destruction stream (optional)
+  killEvents?: KillEvent[];                           // pred.gg hero-kill stream (optional) — drives skirmishes
   roleStats?: Map<string, { role: string; games: number; shrunkWr: number }[]>;  // pid -> squad role winrates (for role-fit)
   heroPools?: Map<string, { slug: string; games: number; shrunkWr: number }[]>;  // pid -> pred.gg hero pool (fresher than omeda for experience)
 }
@@ -528,6 +554,26 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
     theirObjKills = match.players.filter((q) => q.team === enemyTeam).reduce((s, q) => s + q.objective_kills, 0);
   }
 
+  // Normalise the kill stream to us/them (drives Phase-2 skirmish detection).
+  const kills: FactKill[] = (inp.killEvents ?? []).map((k) => ({
+    t: k.gameTime, min: Math.round((k.gameTime / 60) * 10) / 10, firstBlood: k.firstBlood,
+    killerSide: (k.killerTeam === ourTeam ? 'us' : 'them') as 'us' | 'them',
+    killedSide: (k.killedTeam === ourTeam ? 'us' : 'them') as 'us' | 'them',
+    killerSlug: k.killerSlug, killedSlug: k.killedSlug, killerPid: k.killerPid, killedPid: k.killedPid,
+    x: k.x, y: k.y,
+  })).sort((a, b) => a.t - b.t);
+
+  // Objective + tower events a fight may have been over, normalised to us/them.
+  // objectiveEvents.team = killer; structureEvents.team = the side that LOST it,
+  // so a tower WE took shows team=enemy.
+  const objForSkirmish: ObjEvent[] = [
+    ...(inp.objectiveEvents ?? []).filter((e) => !JUNGLE_BUFF.test(e.type))
+      .map((e) => ({ sec: e.gameTime, type: e.type, side: (e.team === ourTeam ? 'us' : 'them') as 'us' | 'them', kind: 'objective' as const })),
+    ...(inp.structureEvents ?? []).filter((e) => /TOWER|INHIBITOR|CORE|BASE/i.test(e.type))
+      .map((e) => ({ sec: e.gameTime, type: e.type, side: (e.team === enemyTeam ? 'us' : 'them') as 'us' | 'them', kind: 'tower' as const })),
+  ];
+  const skirmishes = detectSkirmishes(kills, objForSkirmish, dur);
+
   const ourPlayers = players.filter((p) => p.us);
   const enemyPlayers = players.filter((p) => !p.us);
   const vpSwing = ourPlayers.map((p) => p.vpChange).filter((v): v is number => v != null);
@@ -589,6 +635,8 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
     },
     objectives: { ourKills: ourObjKills, theirKills: theirObjKills, ourObjDamage: objDmg(ourTeam), theirObjDamage: objDmg(enemyTeam) },
     timeline,
+    kills,
+    skirmishes,
     counterBuild,
     closingNote,
     draftNote,

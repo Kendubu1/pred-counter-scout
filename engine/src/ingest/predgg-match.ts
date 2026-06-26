@@ -7,17 +7,19 @@
 // Needs PREDGG_CLIENT_ID / PREDGG_CLIENT_SECRET (never committed).
 
 import { gql, hasCredentials } from './predgg.js';
-import type { OmedaMatch, OmedaPlayer, MatchEvent } from '../postgame.js';
+import type { OmedaMatch, OmedaPlayer, MatchEvent, KillEvent } from '../postgame.js';
 
 export interface PredggGame {
   match: OmedaMatch; ourTeam: string; members: string[];
-  objectiveEvents: MatchEvent[]; structureEvents: MatchEvent[];
+  objectiveEvents: MatchEvent[]; structureEvents: MatchEvent[]; killEvents: KillEvent[];
 }
 
 const MATCH_FIELDS = `
   uuid startTime duration gameMode winningTeam
   objectiveKills { gameTime killedEntityType killerTeam }
   structureDestructions { gameTime structureEntityType structureTeam }
+  heroKills { gameTime isFirstBlood killerTeam killedTeam killerEntityType
+    killerHero { slug } killedHero { slug } killerPlayer { uuid } killedPlayer { uuid } location { x y } }
   matchPlayers {
     team role kills deaths assists gold minionsKilled
     heroDamage physicalDamageDealtToHeroes magicalDamageDealtToHeroes
@@ -56,7 +58,7 @@ function mapPlayer(p: any, idx: number, slugToId: Map<string, number>): OmedaPla
   };
 }
 
-function mapMatch(m: any, slugToId: Map<string, number>): { match: OmedaMatch; objectiveEvents: MatchEvent[]; structureEvents: MatchEvent[] } {
+function mapMatch(m: any, slugToId: Map<string, number>): { match: OmedaMatch; objectiveEvents: MatchEvent[]; structureEvents: MatchEvent[]; killEvents: KillEvent[] } {
   const players = (m.matchPlayers ?? []).map((p: any, i: number) => mapPlayer(p, i, slugToId));
   const match: OmedaMatch = {
     id: m.uuid, start_time: m.startTime, end_time: '', game_duration: m.duration ?? 0,
@@ -64,7 +66,15 @@ function mapMatch(m: any, slugToId: Map<string, number>): { match: OmedaMatch; o
   };
   const objectiveEvents: MatchEvent[] = (m.objectiveKills ?? []).map((o: any) => ({ gameTime: o.gameTime, type: o.killedEntityType, team: String(o.killerTeam).toLowerCase() }));
   const structureEvents: MatchEvent[] = (m.structureDestructions ?? []).map((s: any) => ({ gameTime: s.gameTime, type: s.structureEntityType, team: String(s.structureTeam).toLowerCase() }));
-  return { match, objectiveEvents, structureEvents };
+  // Hero victims only (filter out minion/structure entries the stream may carry).
+  const killEvents: KillEvent[] = (m.heroKills ?? []).filter((k: any) => k.killedHero?.slug).map((k: any) => ({
+    gameTime: k.gameTime, firstBlood: !!k.isFirstBlood,
+    killerSlug: k.killerHero?.slug ?? null, killedSlug: k.killedHero?.slug ?? null,
+    killerPid: k.killerPlayer?.uuid ?? null, killedPid: k.killedPlayer?.uuid ?? null,
+    killerTeam: String(k.killerTeam).toLowerCase(), killedTeam: String(k.killedTeam).toLowerCase(),
+    x: k.location?.x ?? null, y: k.location?.y ?? null,
+  }));
+  return { match, objectiveEvents, structureEvents, killEvents };
 }
 
 /** Empirical lane-matchup winrate from pred.gg (our hero vs the enemy laner,
@@ -86,21 +96,44 @@ export async function fetchLaneMatchups(lanes: { ourSlug: string; theirSlug: str
   }
   return out;
 }
+/**
+ * Every ranked game the squad played TOGETHER, not just the lead's full stacks.
+ * Unions each member's recent ranked feed (so a game the lead missed still shows),
+ * dedupes by matchId, and keeps any game with >= minStack squad members on one
+ * team — "our team" is whichever side has the most of us. Polite: sequential per
+ * member with a delay; the caller skips already-reviewed games unless --force.
+ */
 export async function predggSquadMatches(
   leadUuid: string, memberUuids: Set<string>, nameByUuid: Map<string, string>,
-  omedaHeroes: { id: number; slug: string }[], minStack: number, limit = 14,
+  omedaHeroes: { id: number; slug: string }[], minStack: number, limit = 40,
 ): Promise<PredggGame[]> {
   if (!hasCredentials()) throw new Error('pred.gg credentials required (PREDGG_CLIENT_ID / PREDGG_CLIENT_SECRET)');
   const slugToId = new Map(omedaHeroes.map((h) => [h.slug, h.id]));
-  const d = await gql<any>(`{ player(by: { uuid: "${leadUuid}" }) { matchesPaginated(limit: ${limit}, offset: 0, filter: { gameModes: [RANKED] }) { results { match { ${MATCH_FIELDS} } } } } }`);
-  const rows = d.player?.matchesPaginated?.results ?? [];
-  const out: PredggGame[] = [];
-  for (const r of rows) {
-    const { match, objectiveEvents, structureEvents } = mapMatch(r.match, slugToId);
-    const leadP = match.players.find((p) => p.id === leadUuid);
-    if (!leadP) continue;
-    const members = match.players.filter((p) => p.team === leadP.team && memberUuids.has(p.id)).map((p) => nameByUuid.get(p.id)!);
-    if (members.length >= minStack) out.push({ match, ourTeam: leadP.team, members, objectiveEvents, structureEvents });
+  const squad = new Set([leadUuid, ...memberUuids]);
+  // Union the recent ranked feed of every squad member (raw match by uuid).
+  const rawByMatch = new Map<string, any>();
+  for (const uuid of squad) {
+    try {
+      const d = await gql<any>(`{ player(by: { uuid: "${uuid}" }) { matchesPaginated(limit: ${limit}, offset: 0, filter: { gameModes: [RANKED] }) { results { match { ${MATCH_FIELDS} } } } } }`);
+      for (const r of (d.player?.matchesPaginated?.results ?? [])) {
+        if (r.match?.uuid && !rawByMatch.has(r.match.uuid)) rawByMatch.set(r.match.uuid, r.match);
+      }
+    } catch { /* one member's feed failing shouldn't sink the pull */ }
+    await new Promise((r) => setTimeout(r, 150));
   }
+  const out: PredggGame[] = [];
+  for (const raw of rawByMatch.values()) {
+    const { match, objectiveEvents, structureEvents, killEvents } = mapMatch(raw, slugToId);
+    // Our side = the team carrying the most squad members; keep if >= minStack.
+    const byTeam = new Map<string, string[]>();
+    for (const p of match.players) if (squad.has(p.id)) (byTeam.get(p.team) ?? byTeam.set(p.team, []).get(p.team)!).push(p.id);
+    const best = [...byTeam.entries()].sort((a, b) => b[1].length - a[1].length)[0];
+    if (!best || best[1].length < minStack) continue;
+    const ourTeam = best[0];
+    const members = match.players.filter((p) => p.team === ourTeam && squad.has(p.id)).map((p) => nameByUuid.get(p.id) ?? p.display_name);
+    out.push({ match, ourTeam, members, objectiveEvents, structureEvents, killEvents });
+  }
+  // Newest first (the feed order isn't guaranteed once unioned).
+  out.sort((a, b) => (a.match.start_time < b.match.start_time ? 1 : -1));
   return out;
 }
