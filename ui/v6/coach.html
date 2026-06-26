@@ -288,8 +288,10 @@ function fightMap(f) {
   const sks = (f.skirmishes || []).filter((s) => s.startMin <= tlDur + 1);   // SAME order as the timeline → indices align
   const cen = (s) => { const ks = kills.filter((k) => k.t >= s.startSec - 1 && k.t <= s.endSec + 1); return ks.length ? sx(mean(ks.map((k) => k.x)), mean(ks.map((k) => k.y))) : null; };
   const keySk = [...sks].filter((s) => s.tag || s.significance >= 6).sort((a, b) => (b.tag ? 1 : 0) - (a.tag ? 1 : 0) || b.significance - a.significance).slice(0, 3);
-  // a hidden marching-ants ring per fight (lit by focusFight) — the dotted "where"
-  const marks = sks.map((s, i) => { const p = cen(s); if (!p) return ''; return `<g style="cursor:pointer" onclick="focusFight(${i})"><circle class="fm-halo" id="fhalo-${i}" cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="13"/><circle class="fm-mark" id="fmark-${i}" cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="13"/></g>`; }).join('');
+  const decIdx = keySk.length ? sks.indexOf(keySk[0]) : (sks.length ? 0 : -1);   // the fight the panel + map lead with
+  // a hidden marching-ants ring per fight (lit by focusFight) — the dotted "where".
+  // The lead fight's ring starts lit so the map + panel agree on first paint.
+  const marks = sks.map((s, i) => { const p = cen(s); if (!p) return ''; return `<g style="cursor:pointer" onclick="focusFight(${i})"><circle class="fm-halo" id="fhalo-${i}" cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="13"/><circle class="fm-mark${i === decIdx ? ' on' : ''}" id="fmark-${i}" cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="13"/></g>`; }).join('');
   // the key few stay labelled & clickable so the map reads on its own
   const keyHtml = keySk.map((s) => { const p = cen(s); if (!p) return ''; const i = sks.indexOf(s); const ring = s.tag === 'game-defining' ? 'var(--gold)' : s.tag === 'bad-trade' ? 'var(--red)' : 'var(--text-2)'; return `<g style="cursor:pointer" onclick="focusFight(${i})"><circle cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="8" fill="none" stroke="${ring}" stroke-width="2"/><text x="${p.px.toFixed(1)}" y="${(p.py - 11).toFixed(1)}" fill="${ring}" font-size="9" font-weight="700" text-anchor="middle" style="pointer-events:none">${Math.round(s.startMin)}m</text></g>`; }).join('');
   // the FULL per-fight breakdown the click handler swaps into the panel under the map
@@ -312,7 +314,7 @@ function fightMap(f) {
       ${towersHtml}${objHtml}${coresHtml}${keyHtml}${marks}
     </svg></div>
     <div style="font-size:.68rem;color:var(--text-2);line-height:1.5;margin-top:.4rem"><span style="color:var(--green)">green</span> glow = where we got kills · <span style="color:var(--red)">red</span> = where we died (brighter = more kills there) · ◆ towers · ● Fang/Prime · rings = key fights (<span style="color:var(--gold)">gold</span> = game-defining). Real map coordinates; reads approximate (THEORY).</div>
-    <div id="fmdetail" class="fm-detail"><span style="color:var(--text-2)">Tap a fight — on the timeline above or a ring on the map — to light up where it happened and break it down here.</span></div>
+    <div id="fmdetail" class="fm-detail${decIdx >= 0 ? ' lit' : ''}">${decIdx >= 0 ? `${fhead(sks[decIdx])}${fightDetail(sks[decIdx], f)}` : '<span style="color:var(--text-2)">No fights to break down.</span>'}</div>
     <div id="fmdetails" hidden>${details}</div>
   </div>`;
 }
@@ -398,6 +400,7 @@ function pgReview(f) {
   // the fights worth leading with: tagged first, then by significance (mirrors keySkirmishes)
   const keySk = [...sks].filter((s) => s.tag || s.significance >= 6)
     .sort((a, b) => (b.tag ? 1 : 0) - (a.tag ? 1 : 0) || b.significance - a.significance).slice(0, 3);
+  const decIdx = keySk.length ? sks.indexOf(keySk[0]) : (sks.length ? 0 : -1);   // the fight the panel/map lead with
   const timeline = (sks.length || tlMajors.length) ? card(`
     <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.2rem">Fight timeline <span style="font-weight:400;text-transform:none;letter-spacing:0">· the team's game · 0–${tlDur}m</span></h2>
     <div style="font-size:.74rem;color:var(--text-1);margin-bottom:.5rem">The fights that decided the game — who won each, and what was on the line.</div>
@@ -406,15 +409,9 @@ function pgReview(f) {
       ${tlMajors.map((m) => { const x = xOf(m.minute); const mine = m.side === 'us'; return `<div title="${m.minute}m ${esc(m.type.replace(/_/g, ' '))} (${mine ? 'you' : 'them'})" style="position:absolute;left:${x}%;top:2px;transform:translateX(-50%)"><div style="width:9px;height:9px;border-radius:50%;background:${objColor(m.type)};border:1.5px solid ${mine ? 'var(--green)' : 'var(--red)'}"></div></div>`; }).join('')}
       ${sks.map((s, i) => { const x = xOf(s.startMin); const d = Math.min(22, 9 + s.size * 2); const ring = s.tag === 'game-defining' ? ';box-shadow:0 0 0 2px var(--gold)' : s.tag === 'bad-trade' ? ';box-shadow:0 0 0 2px rgba(255,90,90,.7)' : ''; return `<div id="tlmark-${i}" class="tlmark" onclick="focusFight(${i})" title="${s.startMin}m ${s.kind}: ${s.result} ${s.ourKills}-${s.theirKills} · ${esc(s.place)}${s.tag ? ' · ' + s.tag.replace('-', ' ') : ''} · tap to locate on the map" style="position:absolute;left:${x}%;top:${34 - d / 2}px;transform:translateX(-50%);width:${d}px;height:${d}px;border-radius:50%;background:${skCol(s.result)}${ring};display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">${s.net > 0 ? '+' + s.net : s.net < 0 ? s.net : ''}</div>`; }).join('')}
     </div>
-    <div style="font-size:.68rem;color:var(--text-2);line-height:1.5">● above = objective (Fangtooth/Orb·Prime, ring = who took it) · circle on the line = a fight, size = bodies, <span style="color:var(--green)">won</span>/<span style="color:var(--red)">lost</span>, number = net kills · <span style="color:var(--gold)">gold ring</span> = game-defining (heuristic, THEORY) · <b style="color:var(--blue)">tap a fight</b> to locate it on the map &amp; see what it was</div>
-    ${keySk.length ? `<div style="margin-top:.6rem;font-size:.74rem;color:var(--text-2);text-transform:uppercase;letter-spacing:.08em">The fights that decided it</div>
-    <div style="margin-top:.3rem;display:flex;flex-direction:column;gap:.5rem">${keySk.map((s) => `
-      <div style="border-left:3px solid ${s.tag === 'game-defining' ? 'var(--gold)' : skCol(s.result)};padding:.4rem .6rem;background:var(--bg-2);border-radius:6px">
-        <div style="font-size:.84rem"><b>${s.startMin}m · ${s.kind} ${s.result} ${s.ourKills}–${s.theirKills}</b><span style="color:var(--text-2)"> · ${esc(s.place)}${s.tag ? ` · <b style="color:${s.tag === 'game-defining' ? 'var(--gold)' : 'var(--red)'}">${esc(s.tag.replace('-', ' '))}</b>` : ''}</span> <a onclick="focusFight(${sks.indexOf(s)})" style="cursor:pointer;color:var(--blue);font-size:.72rem;white-space:nowrap">📍 locate</a></div>
-        ${fightDetail(s, f)}
-      </div>`).join('')}</div>` : ''}
-    ${sks.length ? `<div style="margin-top:.7rem;font-size:.72rem;color:var(--text-2)">All ${sks.length} fights <span style="opacity:.75">· tap one to locate it on the map below &amp; break it down</span></div>
-    <div class="fchips">${sks.map((s, i) => `<button id="tlchip-${i}" class="fchip" onclick="focusFight(${i})" title="${s.startMin}m ${s.kind} ${s.result} ${s.ourKills}-${s.theirKills} · ${esc(s.place)}${s.tag ? ' · ' + s.tag.replace('-', ' ') : ''}"><b>${s.startMin}m</b> <span style="color:${skCol(s.result)};font-weight:700">${s.result === 'won' ? 'W' : s.result === 'lost' ? 'L' : '–'}${s.net > 0 ? '+' + s.net : s.net < 0 ? s.net : ''}</span>${s.tag === 'game-defining' ? ' <span style="color:var(--gold)">★</span>' : s.tag === 'bad-trade' ? ' <span style="color:var(--red)">⚠</span>' : ''}</button>`).join('')}</div>` : ''}`) : '';
+    <div style="font-size:.68rem;color:var(--text-2);line-height:1.5">● above = objective (Fangtooth/Orb·Prime, ring = who took it) · circle on the line = a fight, size = bodies, <span style="color:var(--green)">won</span>/<span style="color:var(--red)">lost</span>, number = net kills · <span style="color:var(--gold)">gold ring</span> = game-defining (heuristic, THEORY) · <b style="color:var(--blue)">tap a fight</b> to locate it on the map &amp; break it down</div>
+    ${sks.length ? `<div style="margin-top:.7rem;font-size:.72rem;color:var(--text-2)">All ${sks.length} fights <span style="opacity:.75">· ${keySk.length ? '<span style="color:var(--gold)">★</span> decided it · ' : ''}tap one to locate it on the map below &amp; break it down</span></div>
+    <div class="fchips">${sks.map((s, i) => `<button id="tlchip-${i}" class="fchip${i === decIdx ? ' sel' : ''}" onclick="focusFight(${i})" title="${s.startMin}m ${s.kind} ${s.result} ${s.ourKills}-${s.theirKills} · ${esc(s.place)}${s.tag ? ' · ' + s.tag.replace('-', ' ') : ''}"><b>${s.startMin}m</b> <span style="color:${skCol(s.result)};font-weight:700">${s.result === 'won' ? 'W' : s.result === 'lost' ? 'L' : '–'}${s.net > 0 ? '+' + s.net : s.net < 0 ? s.net : ''}</span>${s.tag === 'game-defining' ? ' <span style="color:var(--gold)">★</span>' : s.tag === 'bad-trade' ? ' <span style="color:var(--red)">⚠</span>' : ''}</button>`).join('')}</div>` : ''}`) : '';
 
   const comp = card(`
     <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.5rem">Team comp &amp; objectives</h2>
