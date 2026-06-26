@@ -429,7 +429,6 @@
       <div class="searchbar"><input id="search" placeholder="Search heroes…" autocomplete="off"><div class="suggest" id="suggest"></div></div>
       <div class="rolebar" id="rolebar"></div>
     </div>
-    <details class="sim-collapse uxlegend" id="uxLegend"><summary>What the win-rate colors &amp; pick tags mean</summary><div class="lp-sub" id="legendBody"></div></details>
     <div id="lanedetail"></div>
     <div class="browse-head">Browse the meta</div>
     <div class="metaboard" id="metaboard"></div>
@@ -778,7 +777,7 @@ function simPickBlock(role) {
         <img loading="lazy" src="${IMG.hero(p.slug)}" alt="" onerror="this.style.visibility='hidden'">
         <span class="pn">${esc(p.name)}</span>
       </div>`).join('');
-  return `<div class="pilots simpicks"><h4 title="${esc(tip)}">Kit-math pick</h4>${rows}</div>`;
+  return `<div class="pilots simpicks"><h4 title="${esc(tip)}">⚙ Kit-math pick</h4>${rows}</div>`;
 }
 function renderMetaboard() {
   if (!META) { $('#metaboard').innerHTML = ''; return; }
@@ -786,8 +785,9 @@ function renderMetaboard() {
   $('#metaboard').innerHTML = `
     <div class="mb-head">
       <h2>The meta board</h2>
-      <span class="mb-sub">each lane's most-played heroes, sorted by <b>win rate</b> (small samples adjusted toward average). Colors &amp; tags explained at the top · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
+      <span class="mb-sub">each lane's most-played heroes, sorted by <b>win rate</b> (small samples adjusted toward average). Colors &amp; tags explained below · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
     </div>
+    <details class="sim-collapse uxlegend" id="uxLegend"><summary>What the win-rate colors &amp; pick tags mean</summary><div class="lp-sub">${LEGEND_HTML}</div></details>
     <div class="lanes">
       ${Object.keys(LANE_LABELS).map((role) => `
         <div class="lane">
@@ -1155,6 +1155,14 @@ function renderHero(a, roleParam) {
                 ? `field evidence only — not in our kit math because: ${sim.note}`
                 : 'field evidence only — this Eternal isn’t in our kit math yet';
           };
+          // The recommended top minor for each slot, noted clearly per Eternal
+          // (the full slot options stay in the bottom Kit-math (THEORY) block).
+          const minorsLine = (name, indent) => {
+            const m = a.eternals.minorsByName && a.eternals.minorsByName[name.toLowerCase()];
+            const mins = m ? [m.minor1, m.minor2].filter((x) => x && x.name) : [];
+            if (!mins.length) return '';
+            return `<div style="font-size:.7rem;color:var(--text-1);margin:.22rem 0 0 ${indent}"><b style="color:var(--text-0)">Top minors:</b> ${mins.map((x) => `⚙ ${esc(x.name)}`).join(' · ')}</div>`;
+          };
           const e0 = ets[0], wr0 = e0.w / e0.n, et0 = ETMAP && ETMAP[e0.name.toLowerCase()];
           const ai0 = REVIEWS && REVIEWS.eternals && REVIEWS.eternals[a.slug] && REVIEWS.eternals[a.slug][role] && REVIEWS.eternals[a.slug][role][e0.name];
           const lead = `
@@ -1169,6 +1177,7 @@ function renderHero(a, roleParam) {
               </div>
               <div style="font-size:.72rem;line-height:1.45;color:var(--text-1);margin-top:.2rem">${et0 ? esc(et0.major) : renderWhy(e0)}</div>
               ${ai0 ? `<div style="font-size:.68rem;line-height:1.45;color:var(--green);margin-top:.12rem">${esc(ai0)}</div>` : ''}
+              ${minorsLine(e0.name, '0')}
             </div>
           </div>`;
           // The per-Eternal minors+sim-math row, reused inside the disclosure.
@@ -1234,6 +1243,7 @@ function renderHero(a, roleParam) {
                 <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
               </div>
               <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.18rem 0 0 2.1rem">${et ? esc(et.major) : renderWhy(e)}</div>
+              ${minorsLine(e.name, '2.1rem')}
             </div>`;
           };
           // The full per-Eternal sim-math/minors detail + sim-pick block + the
@@ -1268,7 +1278,7 @@ function renderHero(a, roleParam) {
           // sim-pick block, the agreement lines) are RELOCATED here, never deleted.
           const augT = window.__augTheory || '', etT = window.__etTheory || '';
           if (!augT.trim() && !etT.trim()) return '';
-          return `<details class="sim-collapse" style="margin-top:.7rem"><summary>Kit-math (THEORY)</summary><div class="body">
+          return `<details class="sim-collapse" style="margin-top:.7rem"><summary>⚙ Kit-math (THEORY)</summary><div class="body">
             ${augT.trim() ? `<div style="font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-2);margin:.2rem 0 .1rem">Augments</div>${augT}` : ''}
             ${etT.trim() ? `<div style="font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-2);margin:.5rem 0 .1rem">Eternals</div>${etT}` : ''}
           </div></details>`;
@@ -1557,7 +1567,6 @@ window.onpopstate = route;
   window.INDEX_GENERATED = INDEX.generatedAt || '';
   // One canonical THEORY definition + one shared win%/verdict legend (docs/ux-rubric.md R3).
   $('#theoryDef').textContent = THEORY_DEF + '.';
-  $('#legendBody').innerHTML = LEGEND_HTML;
   const dataDate = (INDEX.generatedAt || '').slice(0, 10);
   $('#patchPill').textContent = `patch ${INDEX.patch}${dataDate ? ` · data ${dataDate}` : ''}`;
   $('#patchPill').title = dataDate ? `Live match data + winrates last refreshed ${dataDate}` : '';
