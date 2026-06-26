@@ -41,12 +41,18 @@ function sourceOf(f: Facts): string {
 
 const lineList = (co: Coaching): string[] => [co.headline, co.team, co.whatShiftedIt, ...Object.values(co.perPlayer ?? {})].filter((s): s is string => !!s);
 
+// Coaching perPlayer values are multi-sentence; the critic flags a sentence within
+// one, so we SUBSTRING-replace (not whole-string). Guard on length so a short quote
+// can't over-match.
 function deepReplace(o: unknown, from: string, to: string): unknown {
-  if (typeof o === 'string') return o === from ? to : o;
+  if (typeof o === 'string') return (from.length > 12 && o.includes(from)) ? o.split(from).join(to) : o;
   if (Array.isArray(o)) return o.map((x) => deepReplace(x, from, to));
   if (o && typeof o === 'object') { const r: Record<string, unknown> = {}; for (const k in o as Record<string, unknown>) r[k] = deepReplace((o as Record<string, unknown>)[k], from, to); return r; }
   return o;
 }
+// The prompt numbers each line ("3. <line>"); the critic echoes that prefix in
+// both quote and rewrite. Strip it so the quote matches the actual coaching text.
+const stripNum = (s: string) => s.replace(/^\s*\d+\.\s*/, '');
 
 async function main() {
   const files = readdirSync(PG).filter((f) => f.endsWith('.json') && f !== 'index.json');
@@ -80,9 +86,10 @@ Do NOT nitpick style. Return strict JSON: {"flags":[{"quote":"<the exact line te
       const parsed = JSON.parse(raw) as { flags?: { quote?: string; severity?: string; issue?: string; rewrite?: string | null }[] };
       const allowed = buildAllowed([], [JSON.stringify(f)]);   // numbers must exist in the facts
       const flags = (parsed.flags ?? []).filter((fl) => fl.quote).map((fl) => {
-        let rewrite = fl.rewrite ?? null;
+        const quote = stripNum(fl.quote!);
+        let rewrite = fl.rewrite != null ? stripNum(fl.rewrite) : null;
         if (rewrite) { if (verifyLine(rewrite, allowed)) grounded++; else { rewrite = null; dropped++; } }
-        return { quote: fl.quote!, severity: fl.severity ?? 'low', issue: fl.issue ?? '', rewrite };
+        return { quote, severity: fl.severity ?? 'low', issue: fl.issue ?? '', rewrite };
       });
       if (flags.length) { report[id] = flags; flagged += flags.length; }
       // apply grounded rewrites back into this game's coaching
