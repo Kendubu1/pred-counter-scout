@@ -174,6 +174,22 @@ per lane (regenerates artifacts); still worth doing item-10 #1 (parse the
 PASSIVE slot) so on-hit augments like Terminal Treatment get true magnitude,
 not just a playstyle steer.
 
+## 12. Ranked-only augment/Eternal/crest evidence + ranked/standard split (backlogged 2026-06-26)
+
+The hero-page field evidence (augment/Eternal/crest win% + game counts, e.g. "Lotus 55.7% ·
+3,895 games") is pulled from pred.gg with gameModes [RANKED, STANDARD]
+(engine/src/ingest/augments.ts:28,37), mixing ranked with normal-queue games. Maintainer wants
+it MAINLY RANKED, plus a pull to understand the ranked/standard split first.
+
+Needs PREDGG_CLIENT_ID/SECRET (cred-session — secrets are injected at session start; absent
+2026-06-26). Steps: (1) augments.ts queries -> gameModes [RANKED]; before overwriting, print a
+split report (standardN ~= old.n - ranked.n per pick, aggregate %, and how many Eternals/crests
+fall under the page's 300-game floor when ranked-only). (2) npm run augments, then npm run
+artifacts — predgg-augments.json also feeds artifacts.ts, playstyle.ts, augment-review.ts (the
+copy pass). (3) relabel the hero page "by field winrate" -> "by ranked winrate"; from the split,
+decide whether to lower the >=300 Eternal/crest threshold or fall back to ranked+standard for thin
+picks. (Coach playerProfile.ts also blends modes — a separate decision.)
+
 ## Parked ideas (not yet scheduled)
 
 - Comfort-vs-meta flex logic (parked by maintainer 2026-06-12): when a

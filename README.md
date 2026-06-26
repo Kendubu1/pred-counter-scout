@@ -1,62 +1,42 @@
 # Predecessor Scout
 
-**A free counter-pick, matchup, and build companion for [Predecessor](https://www.predecessorgame.com/).**
+**A free pick, counter, and build companion for [Predecessor](https://www.predecessorgame.com/) — built for your phone during draft.**
 
-🔗 **Try it:** [https://kendubu1.github.io/pred-counter-scout/ui/v6/](https://kendubu1.github.io/pred-counter-scout/ui/v6/)
-
+🔗 **Try it:** [kendubu1.github.io/pred-counter-scout](https://kendubu1.github.io/pred-counter-scout/ui/v6/)
 ☕ **Support:** [Buy Me a Coffee](https://buymeacoffee.com/saint_kendrick)
-
 📝 **Feedback:** [Google Form](https://forms.gle/hS9bXZvqiGFruSjy5)
 
-## Why This Exists
+## What it does
 
-Every tool out there tells you WHAT to build and WHO to pick. Suggestions are everywhere. But nobody tells you WHY.
+Three tools, one tap away during draft:
 
-I came into Predecessor after my Paragon buddies put me on. 400+ hours later, still Gold 1, and the learning curve is steep. Most tools throw stats at you without explaining anything. Console players can't alt-tab during draft to look stuff up.
+- **Pick & Build** — who's winning each lane right now, who counters the enemy you're facing, and the full build for your pick: items (tabbed by archetype, with power spikes), augments, Eternals + their top minors, and crest. The kit-math "second opinion" sits next to the field's real win rates.
+- **Squad** — the best 5-stack lineup and hero picks from your group's actual records.
+- **Coach** — post-game review and per-player coaching from your match history.
 
-I want to help fill the gap between "pick this" and actually understanding why it works.
+Everything is derived from real match data, layered with hand-curated context. Every modeled (simulated) number is labelled **THEORY** until it's measured in-game — no black-box ML, transparent scoring you can verify.
 
-## What We're Building
+## Why it exists
 
-- **Counter reasoning**: not just "pick X into Y" but why it works and what to do in the matchup
-- **Augment context**: how augments shift a hero's playstyle and what that means for you or against you
-- **Eternals recommendations**: per-hero, per-role picks for the new Eternals system (1 Major + 2 Minor blessings) with the reasoning behind each — current to patch 1.14.4
-- **Draft helper**: team analysis and suggestions as you fill slots
-- **Mobile first**: built for your phone during draft, not a responsive afterthought
-- **Tap to learn**: tags, items, augments, crests. tap anything for explanation and tips
-- **Build education** (early): a lab where you can slot items and learn what works together (and what doesn't)
+Most tools tell you WHAT to build and WHO to pick, but never WHY — and console players can't alt-tab during draft to look it up. Scout fills the gap between "pick this" and actually understanding why it works.
 
-## The Approach
+## Work in progress
 
-Everything is statistically derived from real match data, then layered with hand-curated context:
+Actively built; data, tips, and features improve daily. Known gaps:
 
-- 49 hero kits analyzed with trait profiles (heal/shield subtypes, combat patterns, archetypes)
-- 147 augments manually classified with playstyle and counter tips
-- 12 Eternals mapped to hero kits, with recommended Major + Minor blessings per role (patch 1.14.4)
-- 188 items and 48 crests tagged with buy tips, counter tips, and synergy info
-- Counter picks ranked by head-to-head win rate (20-match minimum)
-- No black box ML. Transparent scoring you can verify
+- Augment / Eternal / crest evidence currently blends **ranked + standard** games (ranked-only is on the roadmap).
+- Win-rate data spans all ranks; sample sizes vary on niche role picks.
+- Some augment interactions and combat constants aren't fully modeled yet (those outputs are flagged THEORY).
 
-## Work in Progress
-
-This is actively being built. Data, tips, and features are improving every day. Some things to know:
-
-- All-ranks data (rank filtering is on the roadmap)
-- Tags and classifications are hand-curated by one person. Some edge cases are debatable
-- Sample sizes vary on niche role picks
-- Augment interactions are complex and not all fully captured yet
-
-If something feels off, [tell us](https://forms.gle/hS9bXZvqiGFruSjy5). This gets better with community input.
+If something feels off, [tell us](https://forms.gle/hS9bXZvqiGFruSjy5) — this gets better with community input.
 
 ## Links
 
-- [Predecessor Scout](https://kendubu1.github.io/pred-counter-scout/ui/v2/) - main tool
-- [Team Lab](https://kendubu1.github.io/pred-counter-scout/ui/team-lab.html) - team comp builder
-- [Learn Eternals](https://kendubu1.github.io/pred-counter-scout/ui/learn-eternals.html) - the Eternals system explained, with when to pick each
-- [Buy Me a Coffee](https://buymeacoffee.com/saint_kendrick) - support the project
-- [Feedback Form](https://forms.gle/hS9bXZvqiGFruSjy5) - tell me what sucks
-- [YouTube](https://www.youtube.com/@saint_kendrick) - gaming content
+- [Predecessor Scout](https://kendubu1.github.io/pred-counter-scout/ui/v6/) — the tool
+- [Buy Me a Coffee](https://buymeacoffee.com/saint_kendrick) — support the project
+- [Feedback Form](https://forms.gle/hS9bXZvqiGFruSjy5) — tell me what's off
+- [YouTube](https://www.youtube.com/@saint_kendrick) — gaming content
 
 ---
 
-Built by [@saint_kendrick](https://www.youtube.com/@saint_kendrick). Not affiliated with Omeda Studios.
+Built by [@saint_kendrick](https://www.youtube.com/@saint_kendrick). Not affiliated with Omeda Studios. Built on the official Omeda Studios public API (omeda.city) and pred.gg.
