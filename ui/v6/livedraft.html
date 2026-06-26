@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live Draft — Predecessor Scout</title>
+<meta name="description" content="Lane-by-lane counter board for live Predecessor drafts: add each enemy pick and get the best counters, kit-math win-the-fight reads, and the build that beats them.">
+<style>
+  :root {
+    --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#82829a;
+    --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
+    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px; --maxw:980px;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  a { color:var(--blue); text-decoration:none; }
+  img { display:block; }
+  button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; color:inherit; background:none; border:none; }
+  .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:rgba(10,10,15,.78); border-bottom:1px solid var(--border); }
+  .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
+  .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .spacer { flex:1; }
+  .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
+  .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .navlink:hover { color:var(--text-0); }
+  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .subnav::-webkit-scrollbar { display:none; }
+  .subnav:empty { display:none; }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:1.1rem 1rem 4rem; }
+  h1 { font-size:1.55rem; font-weight:800; }
+  .lede { font-size:.95rem; color:var(--text-1); line-height:1.6; max-width:60ch; margin-top:.35rem; }
+  .actions { display:flex; gap:.5rem; flex-wrap:wrap; margin:.9rem 0 .2rem; }
+  .btn { border:1px solid var(--border); background:var(--bg-2); color:var(--text-0); border-radius:99px; padding:.45rem .9rem; font-size:.82rem; font-weight:600; }
+  .btn.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .btn:hover { border-color:var(--accent); }
+  .btn.ghost { color:var(--text-2); }
+
+  /* lane rows */
+  .ld-row { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:.7rem .8rem; margin-top:.7rem; }
+  .ld-head { display:flex; align-items:center; gap:.4rem; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-2); }
+  .ld-matchup { display:flex; align-items:center; gap:.5rem; margin-top:.45rem; }
+  .ld-side { display:flex; flex-direction:column; align-items:center; gap:.2rem; }
+  .ld-side-lbl { font-size:.6rem; text-transform:uppercase; letter-spacing:.06em; }
+  .ld-side-lbl.enemy { color:var(--red); }
+  .ld-side-lbl.you { color:var(--green); }
+  .ld-vs { color:var(--text-2); font-weight:700; font-size:.78rem; }
+  .slot { position:relative; width:56px; height:56px; border-radius:12px; border:2px dashed var(--border); background:var(--bg-2); display:flex; align-items:center; justify-content:center; }
+  .slot.enemy { border-color:rgba(255,90,90,.5); }
+  .slot.you { border-color:rgba(0,196,140,.5); }
+  .slot.filled { border-style:solid; }
+  .slot img { width:100%; height:100%; border-radius:10px; object-fit:cover; }
+  .slot .plus { font-size:1rem; color:var(--text-2); font-weight:400; line-height:1; transform:scale(1.6); }
+  .slot .clr { position:absolute; top:-7px; right:-7px; width:20px; height:20px; border-radius:50%; background:var(--bg-3); border:1px solid var(--border); color:var(--text-1); font-size:.7rem; line-height:1; display:flex; align-items:center; justify-content:center; }
+  .ld-name { font-size:.74rem; color:var(--text-1); max-width:8ch; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ld-guess { font-size:.68rem; color:var(--text-2); margin-left:auto; }
+  .ld-guess button { color:var(--blue); font-size:.68rem; text-decoration:underline; }
+
+  /* counters */
+  .ld-panel { margin-top:.6rem; border-top:1px solid var(--border); padding-top:.5rem; }
+  .ld-panel-h { font-size:.74rem; color:var(--text-1); margin-bottom:.45rem; }
+  .ld-panel-h b { color:var(--text-0); }
+  .cgrid { display:flex; gap:.5rem; overflow-x:auto; padding-bottom:.3rem; scrollbar-width:none; }
+  .cgrid::-webkit-scrollbar { display:none; }
+  .cchip { flex:none; width:84px; border:1px solid var(--border); border-radius:10px; background:var(--bg-2); padding:.35rem .3rem; text-align:center; }
+  .cchip.best { border-color:var(--accent); background:var(--accent-soft); width:92px; }
+  .cchip.chosen { border-color:var(--green); background:rgba(0,196,140,.12); }
+  .cchip:hover { border-color:var(--accent); }
+  .cchip .crank { display:block; font-size:.56rem; color:var(--text-2); margin-bottom:.15rem; letter-spacing:.03em; }
+  .cchip.best .crank { color:var(--accent); font-weight:800; }
+  .cchip img { width:38px; height:38px; border-radius:8px; margin:0 auto .2rem; }
+  .cchip.best img { width:44px; height:44px; }
+  .cchip .cn { font-size:.68rem; color:var(--text-0); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .cchip .ce { font-size:.62rem; font-weight:700; margin-top:.1rem; }
+  .ldkey { font-size:.7rem; color:var(--text-2); background:var(--bg-1); border:1px solid var(--border); border-radius:8px; padding:.4rem .6rem; margin-top:.7rem; line-height:1.5; }
+  .ldkey .dot { display:inline-block; vertical-align:middle; }
+  .dots { display:flex; gap:2px; justify-content:center; margin-top:.25rem; }
+  .dot { width:7px; height:7px; border-radius:50%; background:var(--bg-3); }
+  .dot.you { background:var(--green); } .dot.enemy { background:var(--red); } .dot.even { background:var(--bg-3); border:1px solid var(--border); }
+  .ld-empty { font-size:.76rem; color:var(--text-2); }
+  .ld-full { display:inline-block; margin-top:.45rem; font-size:.74rem; color:var(--blue); }
+
+  /* summary */
+  .summary { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:.8rem .9rem; margin-top:1rem; }
+  .summary h2 { font-size:.78rem; text-transform:uppercase; letter-spacing:.1em; color:var(--text-2); margin-bottom:.5rem; }
+  .sumrow { display:flex; gap:.4rem; flex-wrap:wrap; align-items:center; font-size:.82rem; color:var(--text-1); }
+  .sbar { flex:1; min-width:120px; height:10px; border-radius:5px; background:var(--bg-3); overflow:hidden; display:flex; }
+  .sbar .p { background:#e08a4a; } .sbar .m { background:#6c8ce7; }
+  .pill { font-size:.7rem; border:1px solid var(--border); border-radius:99px; padding:.1rem .5rem; color:var(--text-1); }
+
+  /* picker modal */
+  .modal { position:fixed; inset:0; z-index:50; background:rgba(5,5,9,.82); display:none; align-items:flex-start; justify-content:center; padding:3.2rem .8rem 1rem; }
+  .modal.open { display:flex; }
+  .modal-box { width:100%; max-width:560px; max-height:82vh; background:var(--bg-1); border:1px solid var(--border); border-radius:14px; display:flex; flex-direction:column; overflow:hidden; }
+  .modal-top { display:flex; align-items:center; gap:.5rem; padding:.7rem .8rem; border-bottom:1px solid var(--border); }
+  .modal-top h3 { font-size:.9rem; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .modal-x { font-size:1rem; color:var(--text-2); width:34px; height:34px; border-radius:8px; }
+  .msearch { padding:.5rem .8rem; }
+  .msearch input { width:100%; background:var(--bg-2); border:1px solid var(--border); border-radius:10px; color:var(--text-0); padding:.5rem .7rem; font:inherit; }
+  .mroles { display:flex; gap:.3rem; flex-wrap:wrap; padding:0 .8rem .4rem; }
+  .mrole { font-size:.7rem; border:1px solid var(--border); border-radius:99px; padding:.2rem .6rem; color:var(--text-2); background:transparent; }
+  .mrole.on { background:var(--bg-2); color:var(--text-0); border-color:var(--accent); }
+  .mgrid { overflow-y:auto; padding:.3rem .8rem .9rem; display:grid; grid-template-columns:repeat(auto-fill,minmax(70px,1fr)); gap:.5rem; }
+  .mh { text-align:center; border:1px solid transparent; border-radius:10px; padding:.3rem .1rem; }
+  .mh:hover { border-color:var(--accent); background:var(--bg-2); }
+  .mh img { width:42px; height:42px; border-radius:9px; margin:0 auto .2rem; }
+  .mh span { font-size:.64rem; color:var(--text-1); display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
+
+  @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } * { transition:none !important; animation:none !important; } }
+  @media (max-width:600px) {
+    .navlink, .snpill, .btn, .mrole, .modal-x, .cchip, .mh, .slot { min-height:44px; }
+    .btn, .mrole { display:inline-flex; align-items:center; justify-content:center; }
+    .navlink { border-radius:10px; }
+    .top-inner { padding:.5rem .7rem; gap:.3rem; }
+    .wordmark { font-size:.82rem; }
+    .top-inner a.navlink { font-size:.72rem; }
+    .wrap { padding:.9rem .7rem 3rem; }
+    h1 { font-size:1.3rem; }
+  }
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <a class="wordmark" href="./">⚔ Predecessor Scout</a>
+  <span class="spacer"></span>
+  <a class="navlink" href="./">Pick &amp; Build</a>
+  <a class="navlink" href="squad.html">Squad</a>
+  <a class="navlink" href="coach.html">Coach</a>
+</div><div class="subnav" id="subnav"></div></div>
+
+<div class="wrap">
+  <h1>📡 Live Draft</h1>
+  <p class="lede">Lane by lane, add each enemy pick and get the heroes that beat them — ranked by who
+  wins the early fights. Tap a counter to slot your pick, then open its full build.</p>
+
+  <div class="actions">
+    <button class="btn primary" id="addEnemy">➕ Add enemy pick</button>
+    <button class="btn ghost" id="clearAll">🗑 Clear all</button>
+  </div>
+
+  <div id="lanes"></div>
+  <div id="summary"></div>
+
+  <footer>
+    Counters are our kit-math <b>win-the-fight</b> sim (THEORY until calibrated) over the all-pairs
+    matchup matrix — green dots = the minutes you can win the fight. Not head-to-head match data.
+    Built on the official Omeda Studios public API (omeda.city) and pred.gg · not affiliated with Omeda Studios.
+  </footer>
+</div>
+
+<!-- hero picker -->
+<div class="modal" id="modal"><div class="modal-box">
+  <div class="modal-top"><h3 id="mTitle">Pick a hero</h3><button class="modal-x" id="mClose" aria-label="Close">✕</button></div>
+  <div class="msearch" id="msearchWrap"><input id="mSearch" placeholder="Search heroes…" autocomplete="off"></div>
+  <div class="mroles" id="mRoles"></div>
+  <div class="mgrid" id="mGrid"></div>
+</div></div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+const IMG = (s) => `../img/heroes/${s}.webp`;
+const LANES = ['offlane', 'jungle', 'midlane', 'carry', 'support'];
+const LANE_LABELS = { carry:'Carry', midlane:'Midlane', offlane:'Offlane', jungle:'Jungle', support:'Support' };
+const LANE_EMOJI = { offlane:'🛡', jungle:'🌳', midlane:'✨', carry:'🏹', support:'💚' };
+const MIN_GAMES = 0;
+
+let INDEX = null, MX = null, META = null;
+const ART = new Map();   // slug -> artifact (lazy, only for picked heroes' damage type)
+// state: each lane has an enemy slug + your slug
+const state = Object.fromEntries(LANES.map((l) => [l, { enemy: null, you: null }]));
+
+async function getJson(p) { try { return await (await fetch(p)).json(); } catch { return null; } }
+
+/** Per-checkpoint verdicts our-vs-enemy from the all-pairs matrix (first-named
+ *  hero's perspective; invert when we're second-named). Mirrors index.html. */
+function matrixCps(our, enemy) {
+  if (!MX) return null;
+  const [a, b] = [our, enemy].sort();
+  const code = MX.pairs[`${a}|${b}`];
+  if (!code) return null;
+  const flip = a !== our;
+  return [...code].map((ch, i) => ({
+    minute: MX.minutes[i],
+    verdict: ch === '=' ? 'even' : (ch === 'y') === !flip ? 'you' : 'enemy',
+  }));
+}
+const scoreOf = (cps) => cps.filter((c) => c.verdict === 'you').length - cps.filter((c) => c.verdict === 'enemy').length;
+const heroRoles = (slug) => { const h = INDEX.heroes.find((x) => x.slug === slug); return h ? (h.roles && h.roles.length ? h.roles : [h.role]) : []; };
+const nameOf = (slug) => (INDEX.heroes.find((h) => h.slug === slug) || {}).name || slug;
+const picked = () => new Set(LANES.flatMap((l) => [state[l].enemy, state[l].you]).filter(Boolean));
+
+/** Guess an enemy's lane from their primary role; fall back to an open lane they
+ *  can play, then any open lane. Returns the chosen lane (always explicit in UI). */
+function guessLane(slug) {
+  const h = INDEX.heroes.find((x) => x.slug === slug);
+  const primary = h && LANE_LABELS[h.role] ? h.role : (heroRoles(slug).find((r) => LANE_LABELS[r]) || 'midlane');
+  if (!state[primary].enemy) return primary;
+  const alt = heroRoles(slug).find((r) => LANE_LABELS[r] && !state[r].enemy);
+  return alt || LANES.find((l) => !state[l].enemy) || primary;
+}
+
+/** Best counters for an enemy in a lane: role-eligible heroes ranked by how many
+ *  checkpoints we win the fight (matrix score). */
+function counters(lane, enemy) {
+  const taken = picked();
+  return INDEX.heroes
+    .filter((h) => h.slug !== enemy && (h.role === lane || (h.roles || []).includes(lane)) && !taken.has(h.slug))
+    .map((h) => { const cps = matrixCps(h.slug, enemy); return cps ? { slug:h.slug, name:h.name, cps, score:scoreOf(cps) } : null; })
+    .filter(Boolean)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 8);
+}
+const edgeLabel = (s) => s >= 4 ? { t:'strong', c:'var(--green)' } : s >= 2 ? { t:'favored', c:'var(--green)' } : s >= 1 ? { t:'slight', c:'var(--text-1)' } : s === 0 ? { t:'even', c:'var(--text-2)' } : { t:'tough', c:'var(--red)' };
+const dotsHtml = (cps) => `<div class="dots">${cps.map((c) => `<span class="dot ${c.verdict}" title="min ${c.minute}: ${c.verdict === 'you' ? 'you win the fight' : c.verdict === 'enemy' ? 'they win the fight' : 'even'}"></span>`).join('')}</div>`;
+
+function slotHtml(lane, side) {
+  const slug = state[lane][side];
+  const cls = side === 'enemy' ? 'enemy' : 'you';
+  if (slug) return `<div class="slot ${cls} filled" data-slot="${side}" data-lane="${lane}"><img src="${IMG(slug)}" alt="${esc(nameOf(slug))}" onerror="this.style.display='none'"><button class="clr" data-clr="${side}" data-lane="${lane}" title="Clear">✕</button></div>`;
+  return `<div class="slot ${cls}" data-slot="${side}" data-lane="${lane}"><span class="plus">+</span></div>`;
+}
+
+function laneRow(lane) {
+  const st = state[lane];
+  const guess = st.enemy ? `<span class="ld-guess">in ${esc(LANE_LABELS[lane])}${heroRoles(st.enemy).includes(lane) ? '' : ' (off-role?)'} · <button data-move="${lane}">move</button></span>` : '';
+  let panel = '';
+  if (st.enemy) {
+    const cs = counters(lane, st.enemy);
+    if (!cs.length) panel = `<div class="ld-empty">No matchup data for ${esc(nameOf(st.enemy))} in ${esc(LANE_LABELS[lane])} yet.</div>`;
+    else panel = `<div class="ld-panel-h">🏆 Best vs <b>${esc(nameOf(st.enemy))}</b> <span style="color:var(--text-2)">· tap to pick, strongest first</span></div>
+      <div class="cgrid">${cs.map((c, i) => { const e = edgeLabel(c.score); return `<button class="cchip${i === 0 ? ' best' : ''}${st.you === c.slug ? ' chosen' : ''}" data-pick="${c.slug}" data-lane="${lane}" title="Pick ${esc(c.name)} into ${esc(LANE_LABELS[lane])}">
+        <span class="crank">${i === 0 ? '★ best' : '#' + (i + 1)}</span>
+        <img src="${IMG(c.slug)}" alt="" onerror="this.style.visibility='hidden'">
+        <div class="cn">${esc(c.name)}</div>
+        <div class="ce" style="color:${e.c}">${e.t}</div>${dotsHtml(c.cps)}</button>`; }).join('')}</div>
+      <a class="ld-full" href="index.html?hero=${esc(st.enemy)}">Full counter breakdown for ${esc(nameOf(st.enemy))} →</a>`;
+  }
+  return `<div class="ld-row" data-row="${lane}">
+    <div class="ld-head"><span style="font-size:1rem">${LANE_EMOJI[lane]}</span> ${esc(LANE_LABELS[lane])}${guess}</div>
+    <div class="ld-matchup">
+      <div class="ld-side"><span class="ld-side-lbl enemy">Enemy</span>${slotHtml(lane, 'enemy')}${st.enemy ? `<span class="ld-name">${esc(nameOf(st.enemy))}</span>` : ''}</div>
+      <span class="ld-vs">VS</span>
+      <div class="ld-side"><span class="ld-side-lbl you">You</span>${slotHtml(lane, 'you')}${st.you ? `<span class="ld-name">${esc(nameOf(st.you))}</span>` : ''}</div>
+    </div>
+    ${st.enemy ? `<div class="ld-panel">${panel}</div>` : ''}
+  </div>`;
+}
+
+async function ensureArt(slug) { if (!ART.has(slug)) ART.set(slug, await getJson(`../../data/artifacts/${slug}.json`)); return ART.get(slug); }
+
+async function renderSummary() {
+  const el = $('#summary');
+  const yours = LANES.map((l) => state[l].you).filter(Boolean);
+  if (!yours.length) { el.innerHTML = ''; return; }
+  await Promise.all(yours.map(ensureArt));
+  let phys = 0, mag = 0;
+  for (const s of yours) { const a = ART.get(s); const d = a && a.damageType; if (d === 'magical') mag++; else if (d === 'physical') phys++; else { phys += 0.5; mag += 0.5; } }
+  const tot = phys + mag || 1;
+  const pPct = Math.round((phys / tot) * 100), mPct = 100 - pPct;
+  el.innerHTML = `<div class="summary">
+    <h2>Your team so far · ${yours.length}/5 picked</h2>
+    <div class="sumrow"><span>Damage</span><span class="sbar"><span class="p" style="width:${pPct}%"></span><span class="m" style="width:${mPct}%"></span></span><span class="pill">${pPct}% physical</span><span class="pill">${mPct}% magical</span></div>
+    <div class="sumrow" style="margin-top:.5rem">${yours.map((s) => `<a class="pill" href="index.html?hero=${esc(s)}">${esc(nameOf(s))} →</a>`).join('')}</div>
+    ${pPct >= 80 || mPct >= 80 ? `<div style="font-size:.76rem;color:var(--gold);margin-top:.5rem">⚠ Damage is one-sided (${pPct >= 80 ? 'mostly physical' : 'mostly magical'}) — one enemy resist item blunts most of it. Mix in a ${pPct >= 80 ? 'magical' : 'physical'} threat.</div>` : ''}
+  </div>`;
+}
+
+function render() {
+  // One on-demand key (R3/R5): shown once, near the content, only when counters
+  // are on screen — touch devices get no title= tooltips, so the dots need a key.
+  const anyEnemy = LANES.some((l) => state[l].enemy);
+  const key = anyEnemy ? `<div class="ldkey">Dots = the early minutes (5·10·15·20·25·30) you'd win the fight — <span class="dot you"></span> you · <span class="dot enemy"></span> them. Edge: <b style="color:var(--green)">strong/favored</b> beats them, <b style="color:var(--text-2)">even</b> is a coin-flip.</div>` : '';
+  $('#lanes').innerHTML = key + LANES.map(laneRow).join('');
+  $('#lanes').querySelectorAll('[data-slot]').forEach((el) => el.onclick = (e) => { if (e.target.closest('[data-clr]')) return; openPicker(el.dataset.lane, el.dataset.slot); });
+  $('#lanes').querySelectorAll('[data-clr]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); state[b.dataset.lane][b.dataset.clr] = null; render(); });
+  $('#lanes').querySelectorAll('[data-pick]').forEach((b) => b.onclick = () => { state[b.dataset.lane].you = b.dataset.pick; render(); });
+  $('#lanes').querySelectorAll('[data-move]').forEach((b) => b.onclick = () => openMove(b.dataset.move));
+  renderSummary();
+}
+
+/* ── picker modal ── */
+let pickCb = null, mRole = 'all';
+function openPicker(lane, side) {
+  mRole = side === 'enemy' ? 'all' : lane;          // your-pick defaults to the lane; enemy = all
+  pickCb = (slug) => { state[lane][side] = slug; closeModal(); render(); };
+  openHeroModal(side === 'enemy' ? `Enemy in ${LANE_LABELS[lane]}` : `Your pick — ${LANE_LABELS[lane]}`);
+}
+function openAddEnemy() {
+  mRole = 'all';
+  pickCb = (slug) => { const lane = guessLane(slug); state[lane].enemy = slug; closeModal(); render(); document.querySelector(`[data-row="${lane}"]`)?.scrollIntoView({ block:'center' }); };
+  openHeroModal('Add enemy pick — we guess their lane');
+}
+function openHeroModal(title) {
+  $('#mTitle').textContent = title;
+  $('#msearchWrap').style.display = ''; $('#mRoles').style.display = '';
+  $('#mSearch').value = '';
+  renderRoles(); renderGrid();
+  $('#modal').classList.add('open');
+  setTimeout(() => $('#mSearch').focus(), 30);
+}
+// Move an already-placed enemy to another lane (swaps if the target is taken).
+function openMove(fromLane) {
+  const slug = state[fromLane].enemy;
+  $('#mTitle').textContent = `Move ${nameOf(slug)} to which lane?`;
+  $('#msearchWrap').style.display = 'none'; $('#mRoles').style.display = 'none';
+  $('#mGrid').innerHTML = LANES.map((l) => `<button class="mh" data-lane="${l}"><div style="font-size:1.5rem">${LANE_EMOJI[l]}</div><span>${LANE_LABELS[l]}${state[l].enemy && l !== fromLane ? ' ⇄' : ''}</span></button>`).join('');
+  $('#mGrid').querySelectorAll('[data-lane]').forEach((b) => b.onclick = () => {
+    const to = b.dataset.lane;
+    if (to !== fromLane) { const tmp = state[to].enemy; state[to].enemy = slug; state[fromLane].enemy = tmp; }
+    closeModal(); render();
+  });
+  $('#modal').classList.add('open');
+}
+function closeModal() { $('#modal').classList.remove('open'); pickCb = null; }
+function renderRoles() {
+  $('#mRoles').innerHTML = [['all', 'All'], ...LANES.map((l) => [l, LANE_LABELS[l]])].map(([v, t]) => `<button class="mrole${mRole === v ? ' on' : ''}" data-role="${v}">${t}</button>`).join('');
+  $('#mRoles').querySelectorAll('[data-role]').forEach((b) => b.onclick = () => { mRole = b.dataset.role; renderRoles(); renderGrid(); });
+}
+function renderGrid() {
+  const q = ($('#mSearch').value || '').toLowerCase().trim();
+  const taken = picked();
+  const list = INDEX.heroes
+    .filter((h) => mRole === 'all' || h.role === mRole || (h.roles || []).includes(mRole))
+    .filter((h) => !q || h.name.toLowerCase().includes(q))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  $('#mGrid').innerHTML = list.map((h) => `<button class="mh" data-h="${h.slug}" ${taken.has(h.slug) ? 'style="opacity:.4"' : ''} title="${esc(h.name)}"><img src="${IMG(h.slug)}" alt="" onerror="this.style.visibility='hidden'"><span>${esc(h.name)}</span></button>`).join('') || '<div class="ld-empty" style="grid-column:1/-1">No heroes match.</div>';
+  $('#mGrid').querySelectorAll('[data-h]').forEach((b) => b.onclick = () => { if (pickCb) pickCb(b.dataset.h); });
+}
+
+$('#mClose').onclick = closeModal;
+$('#modal').onclick = (e) => { if (e.target.id === 'modal') closeModal(); };
+$('#mSearch').oninput = renderGrid;
+$('#addEnemy').onclick = openAddEnemy;
+$('#clearAll').onclick = () => { LANES.forEach((l) => { state[l].enemy = null; state[l].you = null; }); render(); };
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+(async () => {
+  [INDEX, MX, META] = await Promise.all([
+    getJson('../../data/artifacts/index.json'),
+    getJson('../../data/artifacts/matchup-matrix.json'),
+    getJson('../../data/artifacts/meta.json'),
+  ]);
+  if (!INDEX) { $('#lanes').innerHTML = '<div class="ld-empty">Could not load hero data.</div>'; return; }
+  render();
+})();
+</script>
+</body>
+</html>

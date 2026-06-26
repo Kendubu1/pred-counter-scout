@@ -30,7 +30,9 @@ const SURFACES = [
   { id: 'coach', url: `/${UI_DIR}/coach.html` },
   { id: 'squad', url: `/${UI_DIR}/squad.html` },
   { id: 'about', url: `/${UI_DIR}/about.html` },
-];
+  // v6-only surface (the v0 staging copy doesn't have it) — skip if absent.
+  { id: 'livedraft', url: `/${UI_DIR}/livedraft.html` },
+].filter((s) => existsSync(path.join(ROOT, s.url.split('?')[0]!)));
 const WIDTHS = [360, 390, 1024]; // phone (small), phone (modern), desktop control
 const MIME: Record<string, string> = { '.html': 'text/html', '.json': 'application/json', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.jpg': 'image/jpeg' };
 

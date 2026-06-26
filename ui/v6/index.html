@@ -59,9 +59,11 @@
   .suggest .srow:hover, .suggest .srow.sel { background:var(--bg-2); }
   .suggest .srow img { width:30px; height:30px; border-radius:8px; object-fit:cover; background:var(--bg-2); }
   .suggest .srow .sr { margin-left:auto; font-size:.7rem; color:var(--text-2); text-transform:capitalize; }
-  .landing-mode { display:inline-flex; gap:.2rem; margin:1rem auto 0; background:var(--bg-1); border:1px solid var(--border); border-radius:99px; padding:.2rem; }
+  .landing-mode { display:inline-flex; flex-wrap:wrap; justify-content:center; gap:.2rem; margin:1rem auto 0; background:var(--bg-1); border:1px solid var(--border); border-radius:99px; padding:.2rem; }
   .landing-mode button { background:transparent; border:none; color:var(--text-1); border-radius:99px; padding:.4rem 1rem; font:inherit; font-size:.85rem; cursor:pointer; min-height:38px; }
   .landing-mode button.active { background:var(--accent); color:#fff; font-weight:600; }
+  .landing-mode .lm-link { display:inline-flex; align-items:center; color:var(--text-1); border-radius:99px; padding:.4rem 1rem; font-size:.85rem; min-height:38px; border-left:1px solid var(--border); }
+  .landing-mode .lm-link:hover { color:var(--text-0); background:var(--bg-2); }
   .rolebar { display:flex; gap:.45rem; justify-content:center; flex-wrap:wrap; margin-top:.9rem; }
   .rolebar button {
     background:var(--bg-1); color:var(--text-1); border:1px solid var(--border);
@@ -425,6 +427,7 @@
       <div class="landing-mode" id="landMode">
         <button data-lm="play" class="active">🎮 Pick a hero</button>
         <button data-lm="counter">🛡 Counter an enemy</button>
+        <a class="lm-link" href="livedraft.html" title="Lane-by-lane counter board for a live draft">📡 Live draft</a>
       </div>
       <div class="searchbar"><input id="search" placeholder="Search heroes…" autocomplete="off"><div class="suggest" id="suggest"></div></div>
       <div class="rolebar" id="rolebar"></div>

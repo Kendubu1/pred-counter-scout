@@ -2198,3 +2198,26 @@ Eight maintainer-flagged fixes:
   `facts.coaching` directly (job 2). Added durable guidance to the agent so it anchors
   perPlayer lines to the new spikes + lane checkpoints, action-first and plain, citing
   only minutes/items present in the facts.
+
+## v6 Live Draft — porting v2's counter board onto the committed matrix (2026-06-26)
+
+- The frozen v2 site had a `#livedraft` lane-by-lane counter board; the maintainer wanted it
+  live in v6 next to the pick/counter pills. The port is ZERO-API: v6 already loads
+  `data/artifacts/matchup-matrix.json` and its counter mode already ranks a lane's answers from
+  it (`matrixCps` + score). v2 used empirical pred.gg head-to-head winrates, which v6 doesn't
+  commit as an all-pairs artifact — so the port reuses the sim kill-window matrix, honestly
+  THEORY-labeled. (Empirical all-pairs is a future, creds-heavy upgrade.)
+- New self-contained `ui/v6/livedraft.html` (same tokens + 3-link nav; reached from a homepage
+  PILL, not a 4th nav link — the phone-overflow lesson). Made the audit/render PAGES+SURFACES
+  EXISTENCE-AWARE (`.filter(existsSync)`) so adding a 5th v6 page doesn't break the v0 audit,
+  which has only the original four.
+- Independent judge caught what the author missed: the counter chips were "ranked" but rendered
+  identically — the #1 pick had no visual dominance, so a low-patience user couldn't tell which to
+  take (R6, high). Fix: the top chip gets an accent border + "★ best" + larger icon; the rest are
+  numbered #2/#3/#4. Also: dot meaning lived only in the footer (title= tooltips don't fire on
+  touch) — added ONE inline key shown only when counters are present (R3/R5); and moved "kit-math"
+  jargon out of the lede into the footer. The judge ground-checked its quotes against the source
+  before flagging — the discipline that makes its flags trustworthy.
+- The design-review wins vs the clunky v2: explicit lane-guessing ("IN OFFLANE · move" instead of
+  silent), image-forward ranked chips with the kill-window dots, progressive disclosure (empty
+  board is calm; counters appear only after an enemy is added), and a team damage-split summary.
