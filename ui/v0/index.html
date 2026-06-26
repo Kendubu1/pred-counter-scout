@@ -69,7 +69,7 @@
   }
   .rolebar button.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
   /* ── 3-step "how it works" strip ── */
-  .steps { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; margin:1.5rem auto .2rem; max-width:760px; text-align:left; }
+  .steps { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; margin:1.5rem auto 1.1rem; max-width:760px; text-align:left; }
   .step { flex:1 1 210px; min-width:190px; display:flex; gap:.6rem; align-items:flex-start; background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:.7rem .8rem; }
   .step .num { flex:none; width:1.55rem; height:1.55rem; border-radius:99px; background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent); font-weight:800; font-size:.82rem; display:flex; align-items:center; justify-content:center; }
   .step .txt b { display:block; font-size:.86rem; color:var(--text-0); }
@@ -131,10 +131,11 @@
   .btab { flex:none; background:transparent; color:var(--text-2); border:1px solid var(--border); border-radius:99px; padding:.3rem .85rem; font-size:.8rem; white-space:nowrap; }
   .btab.active { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
   .btab.simtab.active { background:var(--bg-3); color:var(--text-0); border-color:var(--accent); }
+  .btab-wr { color:var(--text-2); font-weight:700; font-size:.85em; }
   .bbody.hidden { display:none; }
   .bwr { font-weight:800; font-variant-numeric:tabular-nums; }
   .bwr.up { color:var(--green); } .bwr.down { color:var(--red); } .bwr.flat { color:var(--text-1); }
-  .tabtrend { font-size:.58rem; font-weight:800; border-radius:5px; padding:.03rem .3rem; border:1px solid; vertical-align:middle; }
+  .tabtrend { font-size:.58rem; font-weight:800; border-radius:5px; padding:.03rem .3rem; border:1px solid; vertical-align:middle; margin-left:.4rem; }
   .tabtrend.buff { color:var(--green); border-color:var(--green); }
   .tabtrend.nerf { color:var(--red); border-color:var(--red); }
   .tabtrend.mixed, .tabtrend.rework { color:var(--gold); border-color:var(--gold); }
@@ -415,7 +416,7 @@
   <div id="landing" class="hidden fade">
     <div class="landing-hero">
       <h1 id="landTitle">Who should you pick?</h1>
-      <p id="landSub">Who's winning each lane right now, who beats who, and what to build once you've picked — from real match data.</p>
+      <p id="landSub">Who's winning each lane right now, who beats who, and what to build once you've picked. All from real match data.</p>
       <div class="steps" aria-label="How it works, in three steps">
         <div class="step"><span class="num">1</span><span class="txt"><b>Pick or counter?</b><span>Choosing your own hero, or answering the enemy's.</span></span></div>
         <div class="step"><span class="num">2</span><span class="txt"><b>Pick a hero or lane</b><span>Search a hero, or tap a lane to see who's winning right now.</span></span></div>
@@ -439,7 +440,7 @@
   <div id="hero" class="hidden fade"></div>
 
   <footer>
-    <a href="about.html">About &amp; how this works</a> · Built on the official Omeda Studios public API via omeda.city · not affiliated with Omeda Studios.<br>
+    <a href="about.html">About &amp; how this works</a> · Built on the official Omeda Studios public API (omeda.city) and pred.gg · not affiliated with Omeda Studios.<br>
     THEORY = <span id="theoryDef"></span> Evidence deltas carry finished-inventory bias and are comparative, not absolute.
   </footer>
 </div>
@@ -828,7 +829,7 @@ function setLandingMode(mode) {
   $('#landTitle').textContent = counter ? 'Who are you up against?' : 'Who should you pick?';
   $('#landSub').textContent = counter
     ? 'Pick the enemy hero — see who beats them in lane, then tap a counter for its full build, Eternals and augments.'
-    : "Who's winning each lane right now, who beats who, and what to build once you've picked — from real match data.";
+    : "Who's winning each lane right now, who beats who, and what to build once you've picked. All from real match data.";
   $('#search').placeholder = counter ? 'Search the enemy hero…' : 'Search heroes…';
   $('#search').value = ''; $('#suggest').innerHTML = '';
   laneEnemy = null; laneMode = counter ? 'counter' : 'first';
@@ -883,7 +884,7 @@ function buildsCard(a) {
 
   // Tab strip: one per meta build (title), then the kit-math build (⚙).
   const tabs = metas.map((e, i) =>
-    `<button class="btab${i === 0 ? ' active' : ''}" data-btab="${i}">${esc(e.m.title || `Build ${i + 1}`)}</button>`).join('')
+    `<button class="btab${i === 0 ? ' active' : ''}" data-btab="${i}">${esc(e.m.title || `Build ${i + 1}`)} <span class="btab-wr">${(e.m.shrunkWr * 100).toFixed(0)}%</span></button>`).join('')
     + `<button class="btab simtab${metas.length ? '' : ' active'}" data-btab="sim">⚙ ${esc(a.build.title || 'Kit-math build')}</button>`;
 
   // One meta-build tab body: icon rail + win%/games + a "why these items" disclosure.
@@ -893,7 +894,10 @@ function buildsCard(a) {
     const rail = m.items.map((it) => it.slug
       ? `<img loading="lazy" data-ipop="${esc(it.slug)}" src="../img/items/${esc(it.slug)}.webp" title="${esc(it.name)} · tap for details" onerror="this.style.visibility='hidden'">`
       : `<span class="chip">${esc(it.name)}</span>`).join('<span class="arrow">→</span>');
-    const why = `${rsn && rsn.synergy ? `<div class="mb-why" style="color:var(--text-0)">🧩 ${esc(rsn.synergy)}</div>` : ''}${rsn ? itemWhyRows(m.items, rsn.items) : ''}<div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div>`;
+    // Build explanation (synergy + the 1/2/3 item reasons) is visible by default;
+    // only the sim-specific line collapses behind "The sim math".
+    const explain = `${rsn && rsn.synergy ? `<div class="mb-why" style="color:var(--text-0)">🧩 ${esc(rsn.synergy)}</div>` : ''}${rsn ? itemWhyRows(m.items, rsn.items) : ''}`;
+    const simLine = `<div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div>`;
     return `
       <div class="bbody${i === 0 ? '' : ' hidden'}" data-bbody="${i}">
         <div class="mb-items" style="flex-wrap:wrap;margin-bottom:.5rem">${rail}</div>
@@ -901,7 +905,8 @@ function buildsCard(a) {
           <span class="bwr ${wrCls}">${(m.shrunkWr * 100).toFixed(1)}%</span>
           <span class="mb-n">${m.n} games</span>
         </div>
-        <details class="sim-collapse"><summary>why these items</summary><div class="body">${why}</div></details>
+        ${explain}
+        <details class="sim-collapse"><summary>The sim math</summary><div class="body">${simLine}</div></details>
       </div>`;
   };
 
@@ -912,12 +917,18 @@ function buildsCard(a) {
   const orderCap = items.length >= 4
     ? `<div class="mb-why" style="color:var(--text-2);margin:.45rem 0 0">Buy in order — rush <b>${core.join('</b> → <b>')}</b>, then adapt the last slots to the match.</div>`
     : '';
-  const optWhy = (() => {
+  // Split the optimizer prose: the synergy + the 1/2/3 item reasons stay visible
+  // by default; the swap table + holes collapse into "The sim math" with proofs.
+  const optExplain = (() => {
+    if (!opt) return '';
+    return `${opt.synergy ? `<div style="font-size:.82rem;color:var(--text-0)">🧩 ${esc(opt.synergy)}</div>` : ''}${itemWhyRows(a.build.items, opt.items)}`;
+  })();
+  const optSwaps = (() => {
     if (!opt) return '';
     const seenSwap = new Set();
     const swaps = (opt.swaps || []).filter((s) => { if (!(s.gain || s.lose)) return false; const k = `${s.out}|${s.in}`; if (seenSwap.has(k)) return false; seenSwap.add(k); return true; }).map((s) =>
       `<div style="font-size:.78rem;color:var(--text-1);margin-top:.35rem"><b>${esc(s.in)}</b> over <b>${esc(s.out)}</b> — <span style="color:var(--green)">gain</span> ${esc(s.gain || '—')} · <span style="color:var(--red)">lose</span> ${esc(s.lose || '—')}</div>`).join('');
-    return `${opt.synergy ? `<div style="font-size:.82rem;color:var(--text-0)">🧩 ${esc(opt.synergy)}</div>` : ''}${itemWhyRows(a.build.items, opt.items)}${swaps ? `<div style="margin-top:.4rem"><div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-2);margin-bottom:.1rem">why the sim build swaps off the meta</div>${swaps}</div>` : ''}${opt.holes ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.4rem">⚠ ${esc(opt.holes)}</div>` : ''}`;
+    return `${swaps ? `<div style="margin-top:.4rem"><div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-2);margin-bottom:.1rem">why the sim build swaps off the meta</div>${swaps}</div>` : ''}${opt.holes ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.4rem">⚠ ${esc(opt.holes)}</div>` : ''}`;
   })();
   const ev = a.build.items.filter((i) => i.evidenceDeltaWr !== null && i.evidenceN >= 100)
     .sort((x, y) => Math.abs(y.evidenceDeltaWr) - Math.abs(x.evidenceDeltaWr))[0];
@@ -933,13 +944,14 @@ function buildsCard(a) {
         <div class="rail" style="margin-bottom:.5rem">${a.build.items.map(itile).join('')}</div>
         <div class="mb-why" style="color:var(--text-1)">⚙ kit-math second opinion · ${a.build.gold.toLocaleString()}g full</div>
         ${orderCap}
-        ${optWhy || proofs ? `<details class="sim-collapse"><summary>why these items</summary><div class="body">${optWhy}${proofs}</div></details>` : ''}
+        ${optExplain}
+        ${optSwaps || proofs ? `<details class="sim-collapse"><summary>The sim math</summary><div class="body">${optSwaps}${proofs}</div></details>` : ''}
         ${a.build.manaFeasible ? '' : '<div class="warn">⚠ mana-hungry rotation — weave basic attacks between casts</div>'}
       </div>`;
 
   return `
     <section class="card answer">
-      <h2>Builds <span class="hint">field's best path first · ⚙ = our kit-math second opinion · patch ${esc(a.patch)}</span></h2>
+      <h2>Builds</h2>
       <div class="btabs">${tabs}</div>
       ${metas.map(metaBody).join('')}
       ${simBody}
@@ -947,6 +959,10 @@ function buildsCard(a) {
 }
 
 function renderHero(a, roleParam) {
+  // Reset the transient THEORY-relocation globals up front so a hero with NO
+  // augment evidence (the !hr early-return) can't leak the previously-viewed
+  // hero's kit-math block into the bottom "Kit-math (THEORY)" disclosure.
+  window.__augTheory = ''; window.__etTheory = ''; window.__simPick = null;
   // A flex hero carries a full build per role in a.roles; the active one is
   // merged over the artifact so the whole page reflects the chosen lane. The
   // role-independent fields (slug, name, roles, laneFlex) survive the spread,
@@ -999,7 +1015,7 @@ function renderHero(a, roleParam) {
 
     <div id="tabPlay">
     <section class="card">
-      <h2>Your opening picks <span class="hint">augment &amp; Eternal first — the item build follows</span></h2>
+      <h2>Your opening picks</h2>
       ${(() => {
         const hr = AUGS && AUGS.heroes[a.slug];
         if (!hr) return `<div class="muted" style="margin-bottom:.8rem">no augment field evidence for this hero yet (thin sample)${top ? ` · kit-math Eternal pick: <b>${esc(top.name)}</b> +${top.headlinePct}% headline` : ''}</div>`;
@@ -1032,9 +1048,9 @@ function renderHero(a, roleParam) {
             .sort((x, y) => y.shrunk - x.shrunk).slice(0, 3);
         })();
         return `
-        <div style="font-size:.74rem;color:var(--text-2);margin-bottom:.45rem">augment · field evidence as <b style="text-transform:capitalize">${esc(role)}</b>${roles.length > 1 ? ' — switch lane with the <b>flex role</b> buttons up top (the augment and Eternal numbers follow)' : ''}</div>
         ${mismatch ? `<div style="font-size:.72rem;color:var(--gold);margin-bottom:.45rem">you came here as ${esc(roleParam)}, but the field sample for ${esc(a.name)} ${esc(roleParam)} is too thin — showing ${esc(role)} evidence instead</div>` : ''}
-        ${(() => { window.__simPick = (a.augments || []).find((x) => x.modeled) ?? null; return ''; })()}
+        ${(() => { window.__simPick = (a.augments || []).find((x) => x.modeled) ?? null; window.__augTheory = ''; window.__etTheory = ''; return ''; })()}
+        <div style="font-size:.74rem;color:var(--text-2);margin:0 0 .45rem"><b style="letter-spacing:.06em">AUGMENT</b> · recommended as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
         ${(() => {
           // ── BEST AUGMENT = the hero element ── one big block for ranked[0]: icon
           // + name + win% + games + a SINGLE plain "why" (AI note preferred, else
@@ -1045,7 +1061,7 @@ function renderHero(a, roleParam) {
           const wr = best.w / best.n;
           const ai = REVIEWS && REVIEWS.heroes && REVIEWS.heroes[a.slug] && REVIEWS.heroes[a.slug][role] && REVIEWS.heroes[a.slug][role][best.id];
           const whyLine = ai
-            ? `🧠 ${esc(ai)}`
+            ? `${esc(ai)}`
             : (adv !== null && adv >= 0.3 && ranked[1] ? `as ${esc(role)} it wins about ${adv.toFixed(1)} more games per 100 than ${esc(ranked[1].name)} — the field has voted` : esc((AUGS.catalog[best.id]?.description || '').replace(/<[^>]+>/g, '')));
           return `
           <div style="display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .65rem;background:var(--bg-2);border:1px solid var(--green);border-radius:10px;box-shadow:0 0 0 2px rgba(0,196,140,.12)">
@@ -1065,21 +1081,30 @@ function renderHero(a, roleParam) {
           </div>`;
         })()}
         ${ranked.length > 1 ? `
-        <details class="sim-collapse"><summary>other augments</summary><div class="body">
+        <details class="sim-collapse"><summary>Other augments</summary><div class="body">
           ${ranked.slice(1).map((g) => {
             const wr = g.w / g.n;
             const simPick = window.__simPick;
+            // Prefer the same authored review the BEST block uses (without the
+            // 🧠), else fall back to the augment catalog description.
+            const gAi = REVIEWS && REVIEWS.heroes && REVIEWS.heroes[a.slug] && REVIEWS.heroes[a.slug][role] && REVIEWS.heroes[a.slug][role][g.id];
+            const gWhy = gAi || (AUGS.catalog[g.id]?.description || '').replace(/<[^>]+>/g, '');
             return `
-            <div style="display:flex;gap:.55rem;align-items:center;padding:.28rem 0;border-bottom:1px dashed var(--border)">
+            <div style="display:flex;gap:.55rem;align-items:center;padding:.28rem 0">
               <img src="../img/augments/${esc(g.id)}.webp" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:contain;background:var(--bg-2);flex:none;padding:1px;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">
               <span style="font-size:.82rem;font-weight:600">${esc(g.name)}</span>
               ${simPick && simPick.id === g.id ? '<span style="font-size:.58rem;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:.02rem .3rem;white-space:nowrap">⚙ SIM PICK</span>' : ''}
               <span style="margin-left:auto;font-variant-numeric:tabular-nums;font-size:.78rem;color:var(--text-1)">${(wr * 100).toFixed(1)}%</span>
               <span style="font-size:.68rem;color:var(--text-2)">${g.n.toLocaleString()}</span>
-            </div>`;
+            </div>
+            ${gWhy ? `<div style="font-size:.68rem;line-height:1.4;color:var(--text-2);margin:0 0 .28rem 2.1rem;border-bottom:1px dashed var(--border);padding-bottom:.28rem">${esc(gWhy)}</div>` : '<div style="border-bottom:1px dashed var(--border);margin-bottom:.28rem"></div>'}`;
           }).join('')}
         </div></details>` : ''}
-        <details class="sim-collapse"><summary>the kit-math (THEORY)</summary><div class="body">
+        ${(() => {
+          // Augment kit-math (THEORY) — content is RELOCATED, not deleted: it is
+          // stashed here and rendered in the single merged THEORY block at the
+          // very bottom of this card (after the crest). See docs/v5-engine-design.
+          window.__augTheory = `
           ${ranked.map((g) => {
             const simPick = window.__simPick;
             const sa = (a.augments || []).find((x) => x.id === g.id);
@@ -1109,8 +1134,9 @@ function renderHero(a, roleParam) {
             const ftEntry = (a.augments || []).find((x) => x.id === fieldTop?.id);
             const whyNot = ftEntry && !ftEntry.modeled && ftEntry.note ? `, and the sim can't score the field's pick (${esc(ftEntry.note)})` : '';
             return `<div style="font-size:.7rem;color:var(--gold);margin:.45rem 0 0">⚖ our kit math prefers <b>${esc(simPick.name)}</b>${gains ? ` (${esc(gains)} — THEORY)` : ''} over the field's pick; ${fieldTop ? `${fieldTop.n.toLocaleString()} games back ${esc(fieldTop.name)}` : 'the field disagrees'}${whyNot} — weight the field until calibration lands</div>`;
-          })()}
-        </div></details>
+          })()}`;
+          return '';
+        })()}
         <div style="font-size:.74rem;color:var(--text-2);margin:.7rem 0 .45rem"><b style="letter-spacing:.06em">ETERNAL</b> · recommended as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
         ${(() => {
           // ── recommended Eternal = lead element ── ets[0] shown prominently with a
@@ -1142,7 +1168,7 @@ function renderHero(a, roleParam) {
                 <span style="font-size:.7rem;color:var(--text-2)">${e0.n.toLocaleString()} games</span>
               </div>
               <div style="font-size:.72rem;line-height:1.45;color:var(--text-1);margin-top:.2rem">${et0 ? esc(et0.major) : renderWhy(e0)}</div>
-              ${ai0 ? `<div style="font-size:.68rem;line-height:1.45;color:var(--green);margin-top:.12rem">🧠 ${esc(ai0)}</div>` : ''}
+              ${ai0 ? `<div style="font-size:.68rem;line-height:1.45;color:var(--green);margin-top:.12rem">${esc(ai0)}</div>` : ''}
             </div>
           </div>`;
           // The per-Eternal minors+sim-math row, reused inside the disclosure.
@@ -1163,7 +1189,7 @@ function renderHero(a, roleParam) {
                 <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
               </div>
               <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.18rem 0 0 2.1rem">${et ? esc(et.major) : why}</div>
-              ${ai ? `<div style="font-size:.68rem;line-height:1.45;color:var(--text-1);margin:.12rem 0 0 2.1rem">🧠 ${esc(ai)}</div>` : ''}
+              ${ai ? `<div style="font-size:.68rem;line-height:1.45;color:var(--text-1);margin:.12rem 0 0 2.1rem">${esc(ai)}</div>` : ''}
               ${et ? `<div style="margin:.2rem 0 0 2.1rem"><div style="font-size:.6rem;font-weight:800;letter-spacing:.06em;color:var(--text-2);margin-bottom:.1rem">MINOR SLOT 1 · pick one</div>${slot(et.minorSlot1, pick1)}<div style="font-size:.6rem;font-weight:800;letter-spacing:.06em;color:var(--text-2);margin:.3rem 0 .1rem">MINOR SLOT 2 · pick one</div>${slot(et.minorSlot2, pick2)}<div style="font-size:.62rem;color:var(--text-2);margin-top:.3rem">⚙ = the sim's pick · minor values are THEORY until calibration</div></div>` : ''}
               <div style="font-size:.66rem;color:var(--text-2);margin:.3rem 0 0 2.1rem">⚙ sim math: ${why}</div>
             </div>`;
@@ -1193,16 +1219,40 @@ function renderHero(a, roleParam) {
               ? `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">⚖ our kit math — run with ${esc(a.eternals.augmentAware)} modeled — prefers ${esc(top.name)} (+${top.headlinePct}% on this kit’s main output); when math and field disagree, the field's sample is the safer default for this role</div>`
               : `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">⚖ our kit math prefers ${esc(top.name)} (+${top.headlinePct}% on this kit’s main output), but the field's top augment for this role isn't in the simulator, so this comparison is augment-blind — weight the field</div>`)
             : ''}`;
-          const hasMore = ets.length > 1 || simPickBlock || agree;
-          return `${lead}${hasMore ? `<details class="sim-collapse"><summary>other Eternals &amp; the kit-math (THEORY)</summary><div class="body">${ets.map(detailRow).join('')}${simPickBlock}${agree}</div></details>` : ''}`;
+          // Slim runner-up row for the inline "Other Eternals" disclosure: just the
+          // Eternal's identity + win% + games + its what-it-does major. All the
+          // ⚙/sim-math/minors prose lives in the merged bottom THEORY block.
+          const runnerRow = (e, i) => {
+            const wr = e.w / e.n, et = ETMAP && ETMAP[e.name.toLowerCase()];
+            return `
+            <div style="padding:.35rem 0;border-bottom:1px ${i === ets.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
+              <div style="display:flex;gap:.6rem;align-items:center">
+                <img src="${IMG.eternal(e.name.toLowerCase())}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">
+                <span style="font-size:.84rem;font-weight:600">${esc(e.name)}</span>
+                ${top && top.name.toLowerCase() === e.name.toLowerCase() ? '<span style="font-size:.6rem;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">⚙ SIM PICK</span>' : ''}
+                <span title="raw ${(wr * 100).toFixed(1)}% — shown shrunk toward the role's pick-weighted mean" style="font-variant-numeric:tabular-nums;font-size:.78rem;color:var(--text-1)">${(e.shrunk * 100).toFixed(1)}%</span>
+                <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
+              </div>
+              <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.18rem 0 0 2.1rem">${et ? esc(et.major) : renderWhy(e)}</div>
+            </div>`;
+          };
+          // The full per-Eternal sim-math/minors detail + sim-pick block + the
+          // agreement lines are RELOCATED (not deleted) into the merged bottom
+          // THEORY block. The inline disclosure keeps only the runner-up identities.
+          window.__etTheory = `${ets.map(detailRow).join('')}${simPickBlock}${agree}`;
+          const runnerUps = ets.slice(1);
+          return `${lead}${runnerUps.length ? `<details class="sim-collapse"><summary>Other Eternals</summary><div class="body">${runnerUps.map((e, i) => runnerRow(e, i + 1)).join('')}</div></details>` : ''}`;
         })()}
         ${(() => {
           const crs = (cell.crests || []).filter((c) => c.n >= 300).sort((x, y) => (y.w / y.n) - (x.w / x.n)).slice(0, 3);
           if (!crs.length) return '';
           const cslug = (n) => n.toLowerCase().replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+          // CREST is EXPANDED by default — a visible block titled like the
+          // ETERNAL/AUGMENT labels, top 3 rows with #1 highlighted. No crest
+          // description data exists, so the #1 is explained from its win rate.
+          const c0 = crs[0];
           return `
-          <details class="sim-collapse" style="margin-top:.6rem"><summary><b style="letter-spacing:.06em">CREST</b> · top 3 as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</summary>
-          <div class="body" style="padding-top:.2rem">
+          <div style="font-size:.74rem;color:var(--text-2);margin:.7rem 0 .45rem"><b style="letter-spacing:.06em">CREST</b> · recommended as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
           ${crs.map((c, i) => `
           <div style="display:flex;gap:.6rem;align-items:center;padding:.3rem 0;border-bottom:1px ${i === crs.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
             <img loading="lazy" data-ipop="${esc(cslug(c.name))}" src="../img/items/${esc(cslug(c.name))}.webp" alt="" style="width:28px;height:28px;border-radius:8px;object-fit:cover;background:var(--bg-2);flex:none;${i === 0 ? 'box-shadow:0 0 0 2px var(--green)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'">
@@ -1210,6 +1260,17 @@ function renderHero(a, roleParam) {
             <span style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(c.w / c.n * 100).toFixed(1)}%</span>
             <span style="font-size:.7rem;color:var(--text-2)">${c.n.toLocaleString()} games</span>
           </div>`).join('')}
+          <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.3rem 0 0 2.1rem">Best win rate as ${esc(role)} — ${(c0.w / c0.n * 100).toFixed(1)}% over ${c0.n.toLocaleString()} games.</div>`;
+        })()}
+        ${(() => {
+          // ── ONE merged kit-math (THEORY) block at the very bottom of this card ──
+          // The augment THEORY + Eternal THEORY (per-Eternal sim-math/minors, the
+          // sim-pick block, the agreement lines) are RELOCATED here, never deleted.
+          const augT = window.__augTheory || '', etT = window.__etTheory || '';
+          if (!augT.trim() && !etT.trim()) return '';
+          return `<details class="sim-collapse" style="margin-top:.7rem"><summary>Kit-math (THEORY)</summary><div class="body">
+            ${augT.trim() ? `<div style="font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-2);margin:.2rem 0 .1rem">Augments</div>${augT}` : ''}
+            ${etT.trim() ? `<div style="font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-2);margin:.5rem 0 .1rem">Eternals</div>${etT}` : ''}
           </div></details>`;
         })()}`;
       })()}
@@ -1220,7 +1281,7 @@ function renderHero(a, roleParam) {
     <section class="card">
       <h2>Matchups <span class="hint">vs the most-played ${esc(a.role)} you'll face · green = when you can win the fight</span></h2>
       ${a.matchups.length ? a.matchups.map((m) => `
-        <div class="murow">
+        <div class="murow" data-slug="${esc(m.enemySlug)}" style="cursor:pointer">
           <img src="${IMG.hero(m.enemySlug)}" alt="" onerror="this.style.visibility='hidden'">
           <div class="head"><span class="who">${esc(m.enemy)}</span>${dots(m.checkpoints)}</div>
           <span class="plan">${esc(m.gameplan)}${m.counterSwap ? `<br><span class="cswap">⚙ ${esc(m.counterSwap.line)}</span>` : ''}</span>
@@ -1253,6 +1314,10 @@ function renderHero(a, roleParam) {
       document.querySelectorAll('.btab').forEach((x) => x.classList.toggle('active', x === b));
       document.querySelectorAll('.bbody').forEach((x) => x.classList.toggle('hidden', x.dataset.bbody !== key));
     };
+  });
+  // Matchup rows are clickable — open the enemy hero's page (reuses global nav).
+  document.querySelectorAll('.murow[data-slug]').forEach((el) => {
+    el.onclick = () => nav(el.dataset.slug, false);
   });
 }
 
