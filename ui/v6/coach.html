@@ -126,7 +126,7 @@
     body { font-size:15px; }
     /* tap targets: >=44px hit area on touch (Apple HIG 44 / WCAG floor 24).
        Shared union list across all three pages (absent selectors are no-ops). */
-    .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle, .pgchip, .pgf {
+    .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle, .pgchip, .pgf, .fchip {
       min-height:44px; display:inline-flex; align-items:center; justify-content:center;
     }
     .snpill { font-size:.8rem; }
@@ -163,10 +163,18 @@
   .fm-halo.on { animation:fmpulse 1.5s ease-out infinite; }
   @keyframes fmants  { to { stroke-dashoffset:-18; } }
   @keyframes fmpulse { 0% { opacity:.6; transform:scale(.55); } 100% { opacity:0; transform:scale(1.85); } }
-  .fm-cap { margin-top:.6rem; font-size:.76rem; line-height:1.45; color:var(--text-1); background:var(--bg-2);
-            border:1px solid var(--border); border-radius:8px; padding:.5rem .65rem; transition:border-color .2s; }
-  .fm-cap.lit { border-color:var(--gold); }
-  .fm-cap .mt { color:var(--gold); }
+  .fm-detail { margin-top:.6rem; font-size:.76rem; line-height:1.45; color:var(--text-1); background:var(--bg-2);
+            border:1px solid var(--border); border-radius:8px; padding:.55rem .65rem; transition:border-color .2s; scroll-margin-top:92px; }
+  .fm-detail.lit { border-color:var(--gold); }
+  .fm-detail .mt { color:var(--gold); }
+  /* compact "all fights" chip row — replaces the old full-detail re-expansion; a chip
+     loads its fight into the single map panel (links timeline ↔ map ↔ breakdown). */
+  .fchips { display:flex; gap:.35rem; overflow-x:auto; padding:.4rem 0 .2rem; scrollbar-width:thin; -webkit-overflow-scrolling:touch; }
+  .fchips::-webkit-scrollbar { height:5px; } .fchips::-webkit-scrollbar-thumb { background:var(--border); border-radius:99px; }
+  .fchip { flex:none; font:inherit; font-size:.72rem; cursor:pointer; background:var(--bg-2); border:1px solid var(--border);
+           border-radius:8px; padding:.3rem .55rem; color:var(--text-1); white-space:nowrap; display:inline-flex; gap:.25rem; align-items:center; -webkit-appearance:none; appearance:none; }
+  .fchip:hover { border-color:var(--text-2); }
+  .fchip.sel { border-color:var(--gold); background:var(--bg-3); box-shadow:0 0 0 1px var(--gold); }
   .fight-flash { animation:fflash 1.5s ease-out; }
   @keyframes fflash { 0%,18% { box-shadow:0 0 0 2px var(--gold); } 100% { box-shadow:0 0 0 2px transparent; } }
   @media (prefers-reduced-motion:reduce) {
@@ -284,10 +292,10 @@ function fightMap(f) {
   const marks = sks.map((s, i) => { const p = cen(s); if (!p) return ''; return `<g style="cursor:pointer" onclick="focusFight(${i})"><circle class="fm-halo" id="fhalo-${i}" cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="13"/><circle class="fm-mark" id="fmark-${i}" cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="13"/></g>`; }).join('');
   // the key few stay labelled & clickable so the map reads on its own
   const keyHtml = keySk.map((s) => { const p = cen(s); if (!p) return ''; const i = sks.indexOf(s); const ring = s.tag === 'game-defining' ? 'var(--gold)' : s.tag === 'bad-trade' ? 'var(--red)' : 'var(--text-2)'; return `<g style="cursor:pointer" onclick="focusFight(${i})"><circle cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="8" fill="none" stroke="${ring}" stroke-width="2"/><text x="${p.px.toFixed(1)}" y="${(p.py - 11).toFixed(1)}" fill="${ring}" font-size="9" font-weight="700" text-anchor="middle" style="pointer-events:none">${Math.round(s.startMin)}m</text></g>`; }).join('');
-  // caption text the click handler swaps in — the WHAT for each fight (THEORY tags labelled)
-  const meantOf = (s) => (f.timeline ? f.timeline.majors : []).filter((m) => m.minute >= s.startMin - 0.3 && m.minute <= s.startMin + 2.5 && /FANG|PRIME|ORB/i.test(m.type)).map((m) => `${m.side === 'us' ? 'you took' : 'they took'} ${m.type.replace(/_/g, ' ')}`);
-  const capOf = (s) => { const meant = meantOf(s); const mac = (s.macro && s.macro.notes || []).slice(0, 2); return `<b>${s.startMin}m · ${esc(s.kind)} <span style="color:${rcol(s.result)}">${s.result} ${s.ourKills}–${s.theirKills}</span></b> · ${esc(s.place)}${s.tag ? ` · <b style="color:${s.tag === 'game-defining' ? 'var(--gold)' : 'var(--red)'}">${esc(s.tag.replace('-', ' '))}</b>` : ''}${meant.length ? `<span class="mt"> — ${esc(meant.join('; '))}</span>` : ''}${mac.length ? `<div style="margin-top:.25rem;color:var(--text-2)">${mac.map((n) => '› ' + esc(n)).join('<br>')}</div>` : ''}`; };
-  const caps = sks.map((s, i) => `<div data-i="${i}">${capOf(s)}</div>`).join('');
+  // the FULL per-fight breakdown the click handler swaps into the panel under the map
+  // (one place — replaces the old "Every fight" re-expansion AND the lesser caption).
+  const fhead = (s) => `<div style="font-size:.86rem;font-weight:700;margin-bottom:.1rem">${s.startMin}m · ${esc(s.kind)} <span style="color:${rcol(s.result)}">${s.result} ${s.ourKills}–${s.theirKills}</span><span style="font-weight:400;color:var(--text-2)"> · ${esc(s.place)}${s.tag ? ` · <b style="color:${s.tag === 'game-defining' ? 'var(--gold)' : 'var(--red)'}">${esc(s.tag.replace('-', ' '))}</b>` : ''}</span></div>`;
+  const details = sks.map((s, i) => `<div data-i="${i}">${fhead(s)}${fightDetail(s, f)}</div>`).join('');
   return `<div id="fightmap" style="background:var(--bg-1);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;margin-top:1rem;scroll-margin-top:92px">
     <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.5rem">Fight map <span style="font-weight:400;text-transform:none;letter-spacing:0">· where the kills happened · tap a fight to locate it</span></h2>
     <div style="text-align:center"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="max-width:100%;height:auto">
@@ -303,28 +311,27 @@ function fightMap(f) {
       ${dots}
       ${towersHtml}${objHtml}${coresHtml}${keyHtml}${marks}
     </svg></div>
-    <div id="fmcaption" class="fm-cap"><span style="color:var(--text-2)">Tap a fight on the timeline above (or a ring here) to light up where it happened and what it meant.</span></div>
-    <div id="fmcaps" hidden>${caps}</div>
-    <div style="font-size:.68rem;color:var(--text-2);line-height:1.5;margin-top:.5rem"><span style="color:var(--green)">green</span> glow = where we got kills · <span style="color:var(--red)">red</span> = where we died (brighter = more kills there) · ◆ towers · ● Fang/Prime · rings = key fights (<span style="color:var(--gold)">gold</span> = game-defining). Real map coordinates; reads approximate (THEORY).</div>
+    <div style="font-size:.68rem;color:var(--text-2);line-height:1.5;margin-top:.4rem"><span style="color:var(--green)">green</span> glow = where we got kills · <span style="color:var(--red)">red</span> = where we died (brighter = more kills there) · ◆ towers · ● Fang/Prime · rings = key fights (<span style="color:var(--gold)">gold</span> = game-defining). Real map coordinates; reads approximate (THEORY).</div>
+    <div id="fmdetail" class="fm-detail"><span style="color:var(--text-2)">Tap a fight — on the timeline above or a ring on the map — to light up where it happened and break it down here.</span></div>
+    <div id="fmdetails" hidden>${details}</div>
   </div>`;
 }
-// Click a fight (timeline marker OR its ring on the map): light a marching-ants
-// dotted outline WHERE it happened, drop a caption of WHAT it was beneath the map,
-// and open its full breakdown. Single-selection; degrades gracefully when the map
-// or the detail isn't present (e.g. an old game with no located kills).
+// Click a fight (timeline marker, "all fights" chip, OR its ring on the map): light a
+// marching-ants dotted outline WHERE it happened and break it down — its FULL detail —
+// in the single panel under the map. One linked expansion; the timeline, the map and
+// the breakdown all point at the same fight. Degrades gracefully when the map/detail
+// isn't present (e.g. an old game with no located kills).
 function focusFight(n) {
   document.querySelectorAll('.fm-mark.on, .fm-halo.on').forEach((e) => e.classList.remove('on'));
-  document.querySelectorAll('.tlmark.sel').forEach((e) => e.classList.remove('sel'));
+  document.querySelectorAll('.tlmark.sel, .fchip.sel').forEach((e) => e.classList.remove('sel'));
   const mk = document.getElementById('fmark-' + n), halo = document.getElementById('fhalo-' + n);
   if (mk) mk.classList.add('on');
   if (halo) halo.classList.add('on');
-  const tl = document.getElementById('tlmark-' + n);
-  if (tl) tl.classList.add('sel');
-  const cap = document.getElementById('fmcaption'), src = document.querySelector('#fmcaps [data-i="' + n + '"]');
-  if (cap && src) { cap.innerHTML = src.innerHTML; cap.classList.add('lit'); }
-  const af = document.getElementById('allfights'); if (af) af.open = true;
-  const det = document.getElementById('fight-' + n); if (det) det.open = true;
-  const target = document.getElementById('fightmap') || det;
+  const tl = document.getElementById('tlmark-' + n); if (tl) tl.classList.add('sel');
+  const chip = document.getElementById('tlchip-' + n); if (chip) chip.classList.add('sel');
+  const panel = document.getElementById('fmdetail'), src = document.querySelector('#fmdetails [data-i="' + n + '"]');
+  if (panel && src) { panel.innerHTML = src.innerHTML; panel.classList.add('lit'); }
+  const target = document.getElementById('fightmap') || panel;
   if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 function pgReview(f) {
@@ -406,12 +413,8 @@ function pgReview(f) {
         <div style="font-size:.84rem"><b>${s.startMin}m · ${s.kind} ${s.result} ${s.ourKills}–${s.theirKills}</b><span style="color:var(--text-2)"> · ${esc(s.place)}${s.tag ? ` · <b style="color:${s.tag === 'game-defining' ? 'var(--gold)' : 'var(--red)'}">${esc(s.tag.replace('-', ' '))}</b>` : ''}</span> <a onclick="focusFight(${sks.indexOf(s)})" style="cursor:pointer;color:var(--blue);font-size:.72rem;white-space:nowrap">📍 locate</a></div>
         ${fightDetail(s, f)}
       </div>`).join('')}</div>` : ''}
-    ${sks.length ? `<details id="allfights" style="margin-top:.6rem"><summary style="cursor:pointer;color:var(--blue);font-size:.8rem;padding:.2rem 0">Every fight (${sks.length}) — full breakdown ▾</summary>
-      <div style="margin-top:.4rem;display:flex;flex-direction:column;gap:.4rem">${sks.map((s, i) => `
-        <details id="fight-${i}" style="border:1px solid var(--border);border-radius:8px;padding:.35rem .55rem;background:var(--bg-1);scroll-margin-top:92px">
-          <summary style="cursor:pointer;font-size:.8rem"><b>${s.startMin}m</b> ${s.kind} <span style="color:${skCol(s.result)};font-weight:700">${s.result} ${s.ourKills}–${s.theirKills}</span><span style="color:var(--text-2)"> · ${esc(s.place)}${s.tag ? ` · ${esc(s.tag.replace('-', ' '))}` : ''}</span></summary>
-          <div style="margin-top:.35rem">${fightDetail(s, f)}</div>
-        </details>`).join('')}</div></details>` : ''}`) : '';
+    ${sks.length ? `<div style="margin-top:.7rem;font-size:.72rem;color:var(--text-2)">All ${sks.length} fights <span style="opacity:.75">· tap one to locate it on the map below &amp; break it down</span></div>
+    <div class="fchips">${sks.map((s, i) => `<button id="tlchip-${i}" class="fchip" onclick="focusFight(${i})" title="${s.startMin}m ${s.kind} ${s.result} ${s.ourKills}-${s.theirKills} · ${esc(s.place)}${s.tag ? ' · ' + s.tag.replace('-', ' ') : ''}"><b>${s.startMin}m</b> <span style="color:${skCol(s.result)};font-weight:700">${s.result === 'won' ? 'W' : s.result === 'lost' ? 'L' : '–'}${s.net > 0 ? '+' + s.net : s.net < 0 ? s.net : ''}</span>${s.tag === 'game-defining' ? ' <span style="color:var(--gold)">★</span>' : s.tag === 'bad-trade' ? ' <span style="color:var(--red)">⚠</span>' : ''}</button>`).join('')}</div>` : ''}`) : '';
 
   const comp = card(`
     <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.5rem">Team comp &amp; objectives</h2>
