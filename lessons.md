@@ -2167,3 +2167,34 @@ Eight maintainer-flagged fixes:
 - Gate quirk for author-applies-between-rounds loops: `applied==0` fires a premature
   "no-op STOP" on round 1 (fixes land AFTER the judge round, so applied is legitimately
   0 the first round). Record `FIXES_APPLIED` on the round where the fixes are made.
+
+## Coach fight timeline — reading fights against time (2026-06-26)
+
+- The maintainer wanted coach feedback beyond role-fit/build-vs-meta: read each
+  fight against *time* ("a 1v1 in offlane before your Tainted came online", "still
+  overstepping while losing lane"). The film room (`coach.html` `pgReview`) already
+  rendered an objective timeline + per-checkpoint lane kill-windows — the feature was
+  an ENHANCEMENT, not a new build. Always check what the existing surface already
+  computes before adding data.
+- HARD DATA LIMIT (confirmed against both ingests): neither the omeda public API nor
+  pred.gg expose frame-level kill/death events or item *purchase* timestamps. So the
+  timeline is honestly a PHASE timeline (lane phase → power-spike window → objective
+  rhythm), NOT a kill replay. The "1v1 at 8:32" example is authored as phase-level
+  context grounded in lane checkpoints + modeled spike minutes — never an invented
+  timestamp. The honesty-by-code policy extends to coaching prose.
+- Minimal engine change: `computeMatchFacts` now attaches per-player `spikes` — each
+  completed item mapped to its modeled `spikeMinute` from the hero artifact's sim build
+  (`build.items[]` carries spikeMinute; meta-core rows don't), ascending. The qualitative
+  kit power-spike is NOT duplicated into PlayerFacts — it's already on `facts.kit.ourKits`,
+  so the page reads it from there (DRY). A deterministic test asserts the exact minutes
+  come from the artifact and that a player without an artifact gets `spikes:[]` (no
+  fabrication).
+- The merged timeline draws all three layers on ONE 0→durationMin axis (objective dots,
+  a lane-state band per checkpoint, item spike pips) for a single FOCUS player (the squad
+  lead = "you"). Height is adaptive so an omeda-sourced match with no event stream / no
+  modeled spikes doesn't leave a dead block. The all-red lane band on a losing lane is
+  the visual that makes "you overstepped while behind" obvious without any prose.
+- Per-match coaching has no deterministic npm pass — the `pred-scout-coach` agent authors
+  `facts.coaching` directly (job 2). Added durable guidance to the agent so it anchors
+  perPlayer lines to the new spikes + lane checkpoints, action-first and plain, citing
+  only minutes/items present in the facts.

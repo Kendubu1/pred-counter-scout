@@ -88,4 +88,40 @@ describe('post-game facts engine', () => {
     for (const n of builtNames) expect(me.missingCore).not.toContain(n);
     expect(me.items.length).toBe(builtGids.length);   // completed items resolved
   });
+
+  it('maps completed items to their modeled spike minutes, ascending and grounded', () => {
+    const gideon = idOf('gideon', omedaHeroes);
+    const art = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/gideon.json'), 'utf8'));
+    // Sim-build items that carry a modeled spike minute (the power-timeline source).
+    const simItems: { slug: string; spikeMinute: number }[] = (art.roles?.[0]?.build?.items ?? art.build.items)
+      .filter((i: any) => i.slug && typeof i.spikeMinute === 'number');
+    expect(simItems.length).toBeGreaterThan(1);   // the fixture must exercise the lookup
+    const pick = simItems.slice(0, 3);
+    const idToGid = new Map([...data.itemsBySlug.values()].filter((i) => i.gameId != null).map((i) => [i.slug, i.gameId!]));
+    const builtGids = pick.map((i) => idToGid.get(i.slug)!).filter(Boolean);
+
+    const match: OmedaMatch = {
+      id: 't3', start_time: '2026-06-11T00:00:00.000Z', end_time: '', game_duration: 2100,
+      game_mode: 'ranked', winning_team: 'dawn',
+      players: [
+        mkPlayer({ id: 'me', team: 'dawn', hero_id: gideon, role: 'midlane', inventory_data: builtGids }),
+        mkPlayer({ id: 'enemy', team: 'dusk', hero_id: idOf('countess', omedaHeroes), role: 'midlane' }),
+      ],
+    };
+    const facts = computeMatchFacts(data, { match, ourTeam: 'dawn', omedaHeroes, heroStats: new Map(), matrix, artifacts: new Map([['gideon', art]]) });
+    const me = facts.players.find((p) => p.us)!;
+
+    // Every built sim item appears with its EXACT modeled minute (never invented).
+    for (const it of pick) {
+      const got = me.spikes.find((s) => s.slug === it.slug);
+      expect(got).toBeTruthy();
+      expect(got!.spikeMinute).toBe(it.spikeMinute);
+    }
+    // Ascending by minute — the axis the timeline draws.
+    const mins = me.spikes.map((s) => s.spikeMinute);
+    expect(mins).toEqual([...mins].sort((a, b) => a - b));
+    // The enemy carries no artifact here, so no fabricated spikes leak in.
+    const enemy = facts.players.find((p) => !p.us)!;
+    expect(enemy.spikes).toEqual([]);
+  });
 });

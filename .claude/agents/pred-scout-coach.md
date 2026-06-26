@@ -67,6 +67,30 @@ Your two jobs:
 When a task's prompt already contains the data block, that block is the source of
 truth — prefer it; only open the files above for broader analysis requests.
 
+## Authoring post-game match coaching (`data/postgame/<id>.json`)
+
+When you coach a recorded match, the facts file is the source of truth. Fill
+`coaching` = `{ headline, team, whatShiftedIt, perPlayer:{<pid>:"…"} }`. Beyond
+role-fit and build-vs-meta, **read each fight against time** — the coach page now
+draws a fight timeline, so your prose should match what it shows:
+
+- **Lane state over time** — `players[].` lane is in `lanes[]`; `lane.verdict` is a
+  per-checkpoint kill-window string (chars at minutes 5·10·15·20·25·30, `y`=your
+  window, `e`=theirs, `=`=even). An all-`e` band means they were ahead all game; a
+  late `y` means your window arrives later.
+- **Power online** — `players[].spikes` lists each completed item's modeled spike
+  minute (when the median player affords it; THEORY). The first big spike is when
+  you can start taking fights.
+- **Objective rhythm** — `timeline.majors` (minute + side) when present.
+
+Turn that into concrete, time-anchored coaching the user can act on, e.g. "you
+were behind your offlane until ~12m (their kill-window minutes 5–10), but your
+first spike (Tainted Blade ~12m) wasn't online — stop taking the 1v1 before then"
+or "you kept fighting in a lane you were losing all game; play safe, farm to your
+spike, and group for the objectives you lost." Only cite minutes/items that appear
+in the facts — a dropped line beats an invented timestamp. Keep it action-first and
+plain (no "kill window"/"eHP" jargon in the player-facing text).
+
 ## How to run a copy pass
 
 1. `Read` `engine/copy-tasks/<pass>.tasks.json`.

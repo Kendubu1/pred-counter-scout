@@ -55,6 +55,10 @@ export interface PlayerFacts {
   vpChange: number | null;
   items: { slug: string; name: string }[];   // completed items only
   completedCount: number;
+  // Power timeline: each completed item's modeled "online" minute (when the
+  // median player on this kit affords it, from the sim build), ascending. The
+  // coach reads fights against these — e.g. a 1v1 taken before a key spike.
+  spikes: { slug: string; name: string; spikeMinute: number }[];
   optimalBuild: string[]; metaCore: string[]; missingCore: string[]; offMeta: string[];
   winningCore?: { items: string[]; n: number; wr: number } | null;   // pred.gg most-played winning core
   matchupItemFlags: string[];
@@ -394,6 +398,16 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
     const offMeta = items.filter((i) => !optimalSet.has(i.slug) && !optimalSet.has(EVOLVED_SOURCE[i.slug] ?? '')).map((i) => i.name);
     const completedCount = items.length;
 
+    // Power timeline: map each completed item to its modeled spike minute (sim
+    // build carries spikeMinute per item; meta-core rows don't). Evolved items
+    // credit their bought source. Ascending. Omit items with no modeled spike.
+    const spikeBySlug = new Map<string, number>();
+    for (const bi of (rv?.build?.items ?? [])) if (bi?.slug && typeof bi.spikeMinute === 'number') spikeBySlug.set(bi.slug, bi.spikeMinute);
+    const spikes = items
+      .map((i) => { const m = spikeBySlug.get(i.slug) ?? spikeBySlug.get(EVOLVED_SOURCE[i.slug] ?? ''); return m != null ? { slug: i.slug, name: i.name, spikeMinute: m } : null; })
+      .filter((x): x is { slug: string; name: string; spikeMinute: number } => !!x)
+      .sort((a, b) => a.spikeMinute - b.spikeMinute);
+
     // Matchup itemization flags (only meaningful for our players).
     const matchupItemFlags: string[] = [];
     if (us) {
@@ -438,7 +452,7 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
       damageTaken: p.total_damage_taken, mitigated: p.total_damage_mitigated,
       healingDone: p.total_healing_done, wardsPlaced: p.wards_placed, wardsDestroyed: p.wards_destroyed,
       objectiveKills: p.objective_kills, vpChange: p.vp_change,
-      items, completedCount, optimalBuild, metaCore, missingCore, offMeta, winningCore, matchupItemFlags,
+      items, completedCount, spikes, optimalBuild, metaCore, missingCore, offMeta, winningCore, matchupItemFlags,
       experience, experienceVerdict, perfVsAvg,
       roleFit: us ? roleFitOf(inp.roleStats?.get(p.id), role) : null,
       diagnostics: us ? diagnosticsOf((inp.heroStats.get(p.id) ?? []).find((h) => h.hero_id === p.hero_id), p, dur, role) : null,
