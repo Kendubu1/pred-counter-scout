@@ -28,10 +28,15 @@ function sourceOf(f: Facts): string {
   const us = f.players.filter((p) => p.us);
   const sk = (f.skirmishes ?? []);
   const tagged = sk.filter((s) => s.tag);
+  // macro reads on the fights that carry them — numbers at the engage, who was dead,
+  // who was alive and never rotated, cross-map trades. The coach must use THIS, not
+  // hero-vs-hero, to explain the fights.
+  const withMacro = sk.filter((s) => s.macro && (s.macro.notes ?? []).length);
   return [
     `RESULT: ${f.result} in ${f.durationMin}m${f.vpSwing != null ? `, VP ${f.vpSwing >= 0 ? '+' : ''}${f.vpSwing}` : ''}.`,
     `DECISIVE FIGHTS: ${tagged.length ? tagged.map((s) => `${s.startMin}m ${s.kind} ${s.result} ${s.ourKills}-${s.theirKills} @ ${s.place} [${s.tag}]`).join('; ') : 'none tagged'}.`,
     `ALL SKIRMISHES (n=${sk.length}): ${sk.map((s) => `${s.startMin}m ${s.result} ${s.ourKills}-${s.theirKills}`).join(', ') || 'none'}.`,
+    `MACRO READS (rotations/numbers/trades — THEORY): ${withMacro.length ? withMacro.map((s) => `${s.startMin}m (${s.macro.ourAlive}v${s.macro.theirAlive}): ${s.macro.notes.join(' ')}`).join(' | ') : 'none'}.`,
     `OBJECTIVES: majors you ${f.objectives?.ourKills}-${f.objectives?.theirKills} them${f.timeline ? `, towers ${f.timeline.towers.us}-${f.timeline.towers.them}` : ''}.`,
     `LANES: ${f.lanes.map((l) => `${l.role} ${l.ourHero} vs ${l.theirHero} (${l.edge}${l.predggMatchup ? `, ${l.predggMatchup.winrate}%` : ''})`).join('; ')}.`,
     `COMP: you ${f.comp?.ourDamage?.physical}P/${f.comp?.ourDamage?.magical}M, them ${f.comp?.theirDamage?.physical}P/${f.comp?.theirDamage?.magical}M; their healers ${f.comp?.theirHealers?.join(', ') || 'none'}.`,

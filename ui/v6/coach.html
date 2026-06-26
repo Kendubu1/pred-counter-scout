@@ -151,6 +151,29 @@
     .splits td, .splits th { padding:.25rem .3rem; }
     ol.plan li { font-size:.8rem; }
   }
+
+  /* ── fight timeline ⇄ fight map: click a fight to LOCATE it (marching-ants
+     dotted ring) and read WHAT it was (caption). Crisp heat, no blur. ── */
+  .tlmark { cursor:pointer; transition:filter .12s; }
+  .tlmark:hover { filter:brightness(1.3) saturate(1.2); }
+  .tlmark.sel { box-shadow:0 0 0 2px var(--gold), 0 0 9px 1px rgba(240,180,41,.65) !important; }
+  .fm-mark { fill:none; stroke:transparent; stroke-width:2.4; stroke-dasharray:5 4; transition:stroke .15s; }
+  .fm-mark.on { stroke:var(--gold); animation:fmants .7s linear infinite; }
+  .fm-halo { fill:none; stroke:var(--gold); stroke-width:1.4; opacity:0; transform-box:fill-box; transform-origin:center; }
+  .fm-halo.on { animation:fmpulse 1.5s ease-out infinite; }
+  @keyframes fmants  { to { stroke-dashoffset:-18; } }
+  @keyframes fmpulse { 0% { opacity:.6; transform:scale(.55); } 100% { opacity:0; transform:scale(1.85); } }
+  .fm-cap { margin-top:.6rem; font-size:.76rem; line-height:1.45; color:var(--text-1); background:var(--bg-2);
+            border:1px solid var(--border); border-radius:8px; padding:.5rem .65rem; transition:border-color .2s; }
+  .fm-cap.lit { border-color:var(--gold); }
+  .fm-cap .mt { color:var(--gold); }
+  .fight-flash { animation:fflash 1.5s ease-out; }
+  @keyframes fflash { 0%,18% { box-shadow:0 0 0 2px var(--gold); } 100% { box-shadow:0 0 0 2px transparent; } }
+  @media (prefers-reduced-motion:reduce) {
+    html { scroll-behavior:auto; }
+    .fm-mark.on, .fm-halo.on, .fight-flash { animation:none; }
+    .fm-mark.on { stroke:var(--gold); } .fm-halo.on { opacity:.5; }
+  }
 </style>
 </head>
 <body>
@@ -176,6 +199,40 @@ const hlink = (slug, inner) => slug ? `<a href="index.html?hero=${esc(slug)}" ti
 function pgDots(v) {
   return `<span style="display:inline-flex;gap:3px;vertical-align:middle">` + [...v].map((c) =>
     `<span title="${c === 'y' ? 'your kill window' : c === 'e' ? 'their kill window' : 'even'}" style="width:11px;height:11px;border-radius:50%;display:inline-block;background:${c === 'y' ? 'var(--green)' : c === 'e' ? 'var(--red)' : 'var(--bg-3)'};${c === '=' ? 'border:1px solid var(--border)' : ''}"></span>`).join('') + `</span>`;
+}
+// Per-fight breakdown: the kill-by-kill, who fought (with kit archetypes), each of
+// our fighters' builds + which spikes were online by then, and what the fight MEANT
+// (the major objective that fell as a result). All from the match facts — honest:
+// items shown are end-game (pred.gg gives no purchase timeline), the spike minute is
+// the modeled "online" time, and the objective consequence is the real event stream.
+function fightDetail(s, f) {
+  const hName = (slug) => (f.players.find((p) => p.heroSlug === slug) || {}).heroName || slug;
+  const kits = [...((f.kit && f.kit.ourKits) || []), ...((f.kit && f.kit.enemyKits) || [])];
+  const kitOf = (name) => kits.find((k) => k.hero === name);
+  const playerByHero = (slug) => f.players.find((p) => p.heroSlug === slug);
+  const fmtT = (t) => `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
+  const ks = (f.kills || []).filter((k) => k.t >= s.startSec - 1 && k.t <= s.endSec + 1);
+  const seq = ks.map((k) => `<span style="color:${k.killerSide === 'us' ? 'var(--green)' : 'var(--red)'};font-weight:600">${esc(hName(k.killerSlug))}</span> ▸ ${esc(hName(k.killedSlug))} <span style="color:var(--text-2);font-size:.66rem">${fmtT(k.t)}</span>`).join('&nbsp; · &nbsp;');
+  const who = (slugs, side) => slugs.map((slug) => { const k = kitOf(hName(slug)); return `${hlink(slug, `<b style="color:${side === 'us' ? 'var(--green)' : 'var(--red)'}">${esc(hName(slug))}</b>`)}${k && k.archetype ? `<span style="color:var(--text-2);font-size:.66rem"> ${esc(k.archetype)}</span>` : ''}`; }).join(', ') || '—';
+  const builds = s.ourHeroes.map((slug) => { const p = playerByHero(slug); if (!p) return ''; const items = (p.items || []).filter((i) => !/Potion|Ward|Crest/i.test(i.name)).slice(0, 6); const online = (p.spikes || []).filter((sp) => sp.spikeMinute <= s.startMin + 0.5); return `<div style="display:flex;align-items:center;gap:.25rem;font-size:.72rem;margin-top:.18rem"><b style="min-width:4.6rem">${esc(hName(slug))}</b>${items.map((i) => `<img src="${iimg(i.slug)}" title="${esc(i.name)}" style="width:17px;height:17px;border-radius:3px" onerror="this.style.display='none'">`).join('') || '<span style="color:var(--text-2)">no items</span>'}<span style="color:var(--text-2)">${online.length ? ` · ${online.map((o) => esc(o.name)).join(', ')} online` : ` · no spike online yet`}</span></div>`; }).join('');
+  const after = (f.timeline ? f.timeline.majors : []).filter((m) => m.minute >= s.startMin - 0.3 && m.minute <= s.startMin + 2.5 && /FANG|PRIME|ORB/i.test(m.type)).map((m) => `${m.side === 'us' ? 'you took' : 'they took'} ${esc(m.type.replace(/_/g, ' '))} (${m.minute}m)`);
+  const first = ks[0];
+  const worked = first ? (s.net > 0 ? `Your engage landed — ${esc(hName(first.killerSlug))} opened on ${esc(hName(first.killedSlug))}, and you closed it ${s.ourKills}–${s.theirKills}.` : s.net < 0 ? `You lost the trade — ${esc(hName(first.killerSlug))} caught ${esc(hName(first.killedSlug))} first; it went ${s.theirKills}–${s.ourKills} their way.` : `An even trade, ${s.ourKills}–${s.theirKills}.`) : '';
+  // Macro read (THEORY): the cross-map story — numbers at engage, who was dead and
+  // couldn't help, who was alive and didn't rotate, cross-map trades. Coaches the
+  // GAME (rotations, tempo), not the hero matchup.
+  const mac = s.macro || null;
+  const numLine = mac && (mac.outnumbered || (mac.manAdv > 0 && s.result !== 'won'))
+    ? `<span style="color:${mac.outnumbered ? 'var(--red)' : 'var(--gold)'};font-weight:700">${mac.ourAlive}v${mac.theirAlive}</span> standing at the engage · ` : '';
+  const macNotes = mac && (mac.notes || []).length
+    ? `<div style="font-size:.76rem;color:var(--text-1);margin-top:.3rem;border-top:1px dashed var(--border);padding-top:.3rem"><b style="color:var(--text-0)">Macro read</b> <span style="color:var(--text-2);font-size:.62rem">(rotations · numbers · tempo — THEORY)</span><div style="margin-top:.15rem">${numLine}${mac.notes.map((n) => `<div style="color:var(--text-1)">› ${esc(n)}</div>`).join('')}</div></div>` : '';
+  return `
+    <div style="font-size:.76rem;color:var(--text-1);margin:.25rem 0"><b style="color:var(--text-0)">Blow by blow:</b> ${seq || '—'}</div>
+    <div style="font-size:.76rem;color:var(--text-1);margin:.25rem 0"><b style="color:var(--text-0)">Who fought:</b> ${who(s.ourHeroes, 'us')} <span style="color:var(--text-2)">vs</span> ${who(s.theirHeroes, 'them')}</div>
+    ${builds ? `<div style="font-size:.76rem;color:var(--text-1)"><b style="color:var(--text-0)">Your builds</b> <span style="color:var(--text-2);font-size:.64rem">(end-game items; spike = modeled online minute)</span>${builds}</div>` : ''}
+    ${worked ? `<div style="font-size:.78rem;color:var(--text-1);margin-top:.3rem">${worked}</div>` : ''}
+    ${after.length ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.2rem"><b>What it meant:</b> ${after.join('; ')}.</div>` : ''}
+    ${macNotes}`;
 }
 let MAP = null;   // data/game-data/map-landmarks.json (towers/lanes/objectives), loaded once
 // Fight map: the kill stream as a density heat layer (us green / them red) on the
@@ -210,23 +267,65 @@ function fightMap(f) {
       lanesHtml += `<polyline points="${pts.map((p) => `${p.px.toFixed(0)},${p.py.toFixed(0)}`).join(' ')}" fill="none" stroke="${side === 'us' ? 'rgba(0,196,140,.22)' : 'rgba(255,90,90,.2)'}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`;
     }
   }
-  const towersHtml = MAP.structures.map((s) => { const p = sx(s.x, s.y); return `<rect x="${(p.px - 2.5).toFixed(0)}" y="${(p.py - 2.5).toFixed(0)}" width="5" height="5" rx="1" fill="${col(sideOf(s.team))}" opacity=".85"/>`; }).join('');
-  const coresHtml = MAP.cores.map((c) => { const p = sx(c.x, c.y); const side = sideOf(c.team); return `<circle cx="${p.px.toFixed(0)}" cy="${p.py.toFixed(0)}" r="7" fill="none" stroke="${col(side)}" stroke-width="2.5"/><text x="${p.px.toFixed(0)}" y="${(p.py + (side === 'us' ? 17 : -11)).toFixed(0)}" fill="${col(side)}" font-size="9" font-weight="700" text-anchor="middle">${side === 'us' ? 'YOU' : 'THEM'}</text>`; }).join('');
-  const objHtml = (MAP.objectives || []).filter((o) => o.type === 'fangtooth' || o.type === 'prime').map((o) => { const p = sx(o.x, o.y); return `<circle cx="${p.px.toFixed(0)}" cy="${p.py.toFixed(0)}" r="5" fill="${o.type === 'fangtooth' ? '#f0820f' : '#a855f7'}" opacity=".9"/><text x="${p.px.toFixed(0)}" y="${(p.py - 7).toFixed(0)}" fill="var(--text-2)" font-size="8" text-anchor="middle">${o.type === 'fangtooth' ? 'Fang' : 'Prime'}</text>`; }).join('');
-  const heat = (side) => kills.filter((k) => k.killerSide === side).map((k) => { const p = sx(k.x, k.y); return `<circle cx="${p.px.toFixed(0)}" cy="${p.py.toFixed(0)}" r="13" fill="${col(side)}"/>`; }).join('');
-  const keySk = [...(f.skirmishes || [])].filter((s) => s.tag || s.significance >= 6).sort((a, b) => (b.tag ? 1 : 0) - (a.tag ? 1 : 0) || b.significance - a.significance).slice(0, 3);
-  const fightsHtml = keySk.map((s) => { const ks = kills.filter((k) => k.t >= s.startSec - 1 && k.t <= s.endSec + 1); if (!ks.length) return ''; const p = sx(mean(ks.map((k) => k.x)), mean(ks.map((k) => k.y))); const ring = s.tag === 'game-defining' ? 'var(--gold)' : s.tag === 'bad-trade' ? 'var(--red)' : 'var(--text-2)'; return `<circle cx="${p.px.toFixed(0)}" cy="${p.py.toFixed(0)}" r="9" fill="none" stroke="${ring}" stroke-width="2.5"/><text x="${p.px.toFixed(0)}" y="${(p.py - 12).toFixed(0)}" fill="${ring}" font-size="9" font-weight="700" text-anchor="middle">${Math.round(s.startMin)}m</text>`; }).join('');
-  return `<div style="background:var(--bg-1);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;margin-top:1rem">
-    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.5rem">Fight map <span style="font-weight:400;text-transform:none;letter-spacing:0">· where the kills happened</span></h2>
+  const rcol = (r) => r === 'won' ? 'var(--green)' : r === 'lost' ? 'var(--red)' : 'var(--text-2)';
+  // towers as crisp little diamonds; cores ringed YOU/THEM
+  const towersHtml = MAP.structures.map((s) => { const p = sx(s.x, s.y); return `<rect x="${(p.px - 2.6).toFixed(1)}" y="${(p.py - 2.6).toFixed(1)}" width="5.2" height="5.2" rx="1" fill="${col(sideOf(s.team))}" opacity=".92" transform="rotate(45 ${p.px.toFixed(1)} ${p.py.toFixed(1)})"/>`; }).join('');
+  const coresHtml = MAP.cores.map((c) => { const p = sx(c.x, c.y); const side = sideOf(c.team); return `<circle cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="7" fill="none" stroke="${col(side)}" stroke-width="2.5"/><text x="${p.px.toFixed(1)}" y="${(p.py + (side === 'us' ? 17 : -11)).toFixed(1)}" fill="${col(side)}" font-size="9" font-weight="700" text-anchor="middle">${side === 'us' ? 'YOU' : 'THEM'}</text>`; }).join('');
+  const objHtml = (MAP.objectives || []).filter((o) => o.type === 'fangtooth' || o.type === 'prime').map((o) => { const p = sx(o.x, o.y); return `<circle cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="5" fill="${o.type === 'fangtooth' ? '#f0820f' : '#a855f7'}" opacity=".95"/><text x="${p.px.toFixed(1)}" y="${(p.py - 7).toFixed(1)}" fill="var(--text-2)" font-size="8" text-anchor="middle">${o.type === 'fangtooth' ? 'Fang' : 'Prime'}</text>`; }).join('');
+  // crisp heat: a soft radial glow per kill (screen-blended so clusters brighten,
+  // no muddy Gaussian smear) + a precise 1px dot at the exact spot.
+  const glow = kills.map((k) => { const p = sx(k.x, k.y); return `<circle cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="15" fill="url(#fmh-${k.killerSide})" style="mix-blend-mode:screen"/>`; }).join('');
+  const dots = kills.map((k) => { const p = sx(k.x, k.y); return `<circle cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="1.7" fill="${col(k.killerSide)}"/>`; }).join('');
+  const tlDur = f.durationMin || 40;
+  const sks = (f.skirmishes || []).filter((s) => s.startMin <= tlDur + 1);   // SAME order as the timeline → indices align
+  const cen = (s) => { const ks = kills.filter((k) => k.t >= s.startSec - 1 && k.t <= s.endSec + 1); return ks.length ? sx(mean(ks.map((k) => k.x)), mean(ks.map((k) => k.y))) : null; };
+  const keySk = [...sks].filter((s) => s.tag || s.significance >= 6).sort((a, b) => (b.tag ? 1 : 0) - (a.tag ? 1 : 0) || b.significance - a.significance).slice(0, 3);
+  // a hidden marching-ants ring per fight (lit by focusFight) — the dotted "where"
+  const marks = sks.map((s, i) => { const p = cen(s); if (!p) return ''; return `<g style="cursor:pointer" onclick="focusFight(${i})"><circle class="fm-halo" id="fhalo-${i}" cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="13"/><circle class="fm-mark" id="fmark-${i}" cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="13"/></g>`; }).join('');
+  // the key few stay labelled & clickable so the map reads on its own
+  const keyHtml = keySk.map((s) => { const p = cen(s); if (!p) return ''; const i = sks.indexOf(s); const ring = s.tag === 'game-defining' ? 'var(--gold)' : s.tag === 'bad-trade' ? 'var(--red)' : 'var(--text-2)'; return `<g style="cursor:pointer" onclick="focusFight(${i})"><circle cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="8" fill="none" stroke="${ring}" stroke-width="2"/><text x="${p.px.toFixed(1)}" y="${(p.py - 11).toFixed(1)}" fill="${ring}" font-size="9" font-weight="700" text-anchor="middle" style="pointer-events:none">${Math.round(s.startMin)}m</text></g>`; }).join('');
+  // caption text the click handler swaps in — the WHAT for each fight (THEORY tags labelled)
+  const meantOf = (s) => (f.timeline ? f.timeline.majors : []).filter((m) => m.minute >= s.startMin - 0.3 && m.minute <= s.startMin + 2.5 && /FANG|PRIME|ORB/i.test(m.type)).map((m) => `${m.side === 'us' ? 'you took' : 'they took'} ${m.type.replace(/_/g, ' ')}`);
+  const capOf = (s) => { const meant = meantOf(s); const mac = (s.macro && s.macro.notes || []).slice(0, 2); return `<b>${s.startMin}m · ${esc(s.kind)} <span style="color:${rcol(s.result)}">${s.result} ${s.ourKills}–${s.theirKills}</span></b> · ${esc(s.place)}${s.tag ? ` · <b style="color:${s.tag === 'game-defining' ? 'var(--gold)' : 'var(--red)'}">${esc(s.tag.replace('-', ' '))}</b>` : ''}${meant.length ? `<span class="mt"> — ${esc(meant.join('; '))}</span>` : ''}${mac.length ? `<div style="margin-top:.25rem;color:var(--text-2)">${mac.map((n) => '› ' + esc(n)).join('<br>')}</div>` : ''}`; };
+  const caps = sks.map((s, i) => `<div data-i="${i}">${capOf(s)}</div>`).join('');
+  return `<div id="fightmap" style="background:var(--bg-1);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;margin-top:1rem;scroll-margin-top:92px">
+    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.5rem">Fight map <span style="font-weight:400;text-transform:none;letter-spacing:0">· where the kills happened · tap a fight to locate it</span></h2>
     <div style="text-align:center"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="max-width:100%;height:auto">
-      <defs><filter id="fmblur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="8"/></filter></defs>
-      <rect x="2" y="2" width="${W - 4}" height="${H - 4}" rx="14" fill="#0c0c12" stroke="var(--border)"/>
+      <defs>
+        <radialGradient id="fmh-us"><stop offset="0%" stop-color="#00e6a4" stop-opacity=".9"/><stop offset="55%" stop-color="#00c48c" stop-opacity=".2"/><stop offset="100%" stop-color="#00c48c" stop-opacity="0"/></radialGradient>
+        <radialGradient id="fmh-them"><stop offset="0%" stop-color="#ff8080" stop-opacity=".9"/><stop offset="55%" stop-color="#ff5a5a" stop-opacity=".2"/><stop offset="100%" stop-color="#ff5a5a" stop-opacity="0"/></radialGradient>
+        <pattern id="fmgrid" width="26" height="26" patternUnits="userSpaceOnUse"><path d="M26 0H0V26" fill="none" stroke="rgba(255,255,255,.045)" stroke-width="1"/></pattern>
+      </defs>
+      <rect x="2" y="2" width="${W - 4}" height="${H - 4}" rx="14" fill="#0b0b11" stroke="var(--border)"/>
+      <rect x="2" y="2" width="${W - 4}" height="${H - 4}" rx="14" fill="url(#fmgrid)"/>
       ${lanesHtml}
-      <g filter="url(#fmblur)" opacity=".5">${heat('us')}</g><g filter="url(#fmblur)" opacity=".5">${heat('them')}</g>
-      ${towersHtml}${objHtml}${coresHtml}${fightsHtml}
+      ${glow}
+      ${dots}
+      ${towersHtml}${objHtml}${coresHtml}${keyHtml}${marks}
     </svg></div>
-    <div style="font-size:.68rem;color:var(--text-2);line-height:1.5"><span style="color:var(--green)">green</span> heat = where we got kills · <span style="color:var(--red)">red</span> = where we died · ▪ towers · ● Fang/Prime · rings = key fights (<span style="color:var(--gold)">gold</span> = game-defining). Real map coordinates; reads approximate (THEORY).</div>
+    <div id="fmcaption" class="fm-cap"><span style="color:var(--text-2)">Tap a fight on the timeline above (or a ring here) to light up where it happened and what it meant.</span></div>
+    <div id="fmcaps" hidden>${caps}</div>
+    <div style="font-size:.68rem;color:var(--text-2);line-height:1.5;margin-top:.5rem"><span style="color:var(--green)">green</span> glow = where we got kills · <span style="color:var(--red)">red</span> = where we died (brighter = more kills there) · ◆ towers · ● Fang/Prime · rings = key fights (<span style="color:var(--gold)">gold</span> = game-defining). Real map coordinates; reads approximate (THEORY).</div>
   </div>`;
+}
+// Click a fight (timeline marker OR its ring on the map): light a marching-ants
+// dotted outline WHERE it happened, drop a caption of WHAT it was beneath the map,
+// and open its full breakdown. Single-selection; degrades gracefully when the map
+// or the detail isn't present (e.g. an old game with no located kills).
+function focusFight(n) {
+  document.querySelectorAll('.fm-mark.on, .fm-halo.on').forEach((e) => e.classList.remove('on'));
+  document.querySelectorAll('.tlmark.sel').forEach((e) => e.classList.remove('sel'));
+  const mk = document.getElementById('fmark-' + n), halo = document.getElementById('fhalo-' + n);
+  if (mk) mk.classList.add('on');
+  if (halo) halo.classList.add('on');
+  const tl = document.getElementById('tlmark-' + n);
+  if (tl) tl.classList.add('sel');
+  const cap = document.getElementById('fmcaption'), src = document.querySelector('#fmcaps [data-i="' + n + '"]');
+  if (cap && src) { cap.innerHTML = src.innerHTML; cap.classList.add('lit'); }
+  const af = document.getElementById('allfights'); if (af) af.open = true;
+  const det = document.getElementById('fight-' + n); if (det) det.open = true;
+  const target = document.getElementById('fightmap') || det;
+  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 function pgReview(f) {
   const us = f.players.filter((p) => p.us);
@@ -298,14 +397,21 @@ function pgReview(f) {
     <div style="position:relative;height:58px;margin:.1rem 0">
       <div style="position:absolute;top:34px;left:0;right:0;height:2px;background:var(--border)"></div>
       ${tlMajors.map((m) => { const x = xOf(m.minute); const mine = m.side === 'us'; return `<div title="${m.minute}m ${esc(m.type.replace(/_/g, ' '))} (${mine ? 'you' : 'them'})" style="position:absolute;left:${x}%;top:2px;transform:translateX(-50%)"><div style="width:9px;height:9px;border-radius:50%;background:${objColor(m.type)};border:1.5px solid ${mine ? 'var(--green)' : 'var(--red)'}"></div></div>`; }).join('')}
-      ${sks.map((s) => { const x = xOf(s.startMin); const d = Math.min(22, 9 + s.size * 2); const ring = s.tag === 'game-defining' ? ';box-shadow:0 0 0 2px var(--gold)' : s.tag === 'bad-trade' ? ';box-shadow:0 0 0 2px rgba(255,90,90,.7)' : ''; return `<div title="${s.startMin}m ${s.kind}: ${s.result} ${s.ourKills}-${s.theirKills} · ${esc(s.place)}${s.tag ? ' · ' + s.tag.replace('-', ' ') : ''}" style="position:absolute;left:${x}%;top:${34 - d / 2}px;transform:translateX(-50%);width:${d}px;height:${d}px;border-radius:50%;background:${skCol(s.result)}${ring};display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">${s.net > 0 ? '+' + s.net : s.net < 0 ? s.net : ''}</div>`; }).join('')}
+      ${sks.map((s, i) => { const x = xOf(s.startMin); const d = Math.min(22, 9 + s.size * 2); const ring = s.tag === 'game-defining' ? ';box-shadow:0 0 0 2px var(--gold)' : s.tag === 'bad-trade' ? ';box-shadow:0 0 0 2px rgba(255,90,90,.7)' : ''; return `<div id="tlmark-${i}" class="tlmark" onclick="focusFight(${i})" title="${s.startMin}m ${s.kind}: ${s.result} ${s.ourKills}-${s.theirKills} · ${esc(s.place)}${s.tag ? ' · ' + s.tag.replace('-', ' ') : ''} · tap to locate on the map" style="position:absolute;left:${x}%;top:${34 - d / 2}px;transform:translateX(-50%);width:${d}px;height:${d}px;border-radius:50%;background:${skCol(s.result)}${ring};display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">${s.net > 0 ? '+' + s.net : s.net < 0 ? s.net : ''}</div>`; }).join('')}
     </div>
-    <div style="font-size:.68rem;color:var(--text-2);line-height:1.5">● above = objective (Fangtooth/Orb·Prime, ring = who took it) · circle on the line = a fight, size = bodies, <span style="color:var(--green)">won</span>/<span style="color:var(--red)">lost</span>, number = net kills · <span style="color:var(--gold)">gold ring</span> = game-defining (heuristic, THEORY)</div>
-    ${keySk.length ? `<div style="margin-top:.6rem;display:flex;flex-direction:column;gap:.4rem">${keySk.map((s) => `
-      <div style="border-left:3px solid ${s.tag === 'game-defining' ? 'var(--gold)' : skCol(s.result)};padding:.35rem .6rem;background:var(--bg-2);border-radius:6px;font-size:.84rem">
-        <b>${s.startMin}m · ${s.kind} ${s.result} ${s.ourKills}–${s.theirKills}</b><span style="color:var(--text-2)"> · ${esc(s.place)}${s.tag ? ` · <b style="color:${s.tag === 'game-defining' ? 'var(--gold)' : 'var(--red)'}">${esc(s.tag.replace('-', ' '))}</b>` : ''}</span>
-        ${s.ourHeroes.length || s.theirHeroes.length ? `<div style="font-size:.72rem;color:var(--text-2);margin-top:.1rem">us: ${s.ourHeroes.map((h) => esc(hName(h))).join(', ') || '—'} · them: ${s.theirHeroes.map((h) => esc(hName(h))).join(', ') || '—'}</div>` : ''}
-      </div>`).join('')}</div>` : ''}`) : '';
+    <div style="font-size:.68rem;color:var(--text-2);line-height:1.5">● above = objective (Fangtooth/Orb·Prime, ring = who took it) · circle on the line = a fight, size = bodies, <span style="color:var(--green)">won</span>/<span style="color:var(--red)">lost</span>, number = net kills · <span style="color:var(--gold)">gold ring</span> = game-defining (heuristic, THEORY) · <b style="color:var(--blue)">tap a fight</b> to locate it on the map &amp; see what it was</div>
+    ${keySk.length ? `<div style="margin-top:.6rem;font-size:.74rem;color:var(--text-2);text-transform:uppercase;letter-spacing:.08em">The fights that decided it</div>
+    <div style="margin-top:.3rem;display:flex;flex-direction:column;gap:.5rem">${keySk.map((s) => `
+      <div style="border-left:3px solid ${s.tag === 'game-defining' ? 'var(--gold)' : skCol(s.result)};padding:.4rem .6rem;background:var(--bg-2);border-radius:6px">
+        <div style="font-size:.84rem"><b>${s.startMin}m · ${s.kind} ${s.result} ${s.ourKills}–${s.theirKills}</b><span style="color:var(--text-2)"> · ${esc(s.place)}${s.tag ? ` · <b style="color:${s.tag === 'game-defining' ? 'var(--gold)' : 'var(--red)'}">${esc(s.tag.replace('-', ' '))}</b>` : ''}</span> <a onclick="focusFight(${sks.indexOf(s)})" style="cursor:pointer;color:var(--blue);font-size:.72rem;white-space:nowrap">📍 locate</a></div>
+        ${fightDetail(s, f)}
+      </div>`).join('')}</div>` : ''}
+    ${sks.length ? `<details id="allfights" style="margin-top:.6rem"><summary style="cursor:pointer;color:var(--blue);font-size:.8rem;padding:.2rem 0">Every fight (${sks.length}) — full breakdown ▾</summary>
+      <div style="margin-top:.4rem;display:flex;flex-direction:column;gap:.4rem">${sks.map((s, i) => `
+        <details id="fight-${i}" style="border:1px solid var(--border);border-radius:8px;padding:.35rem .55rem;background:var(--bg-1);scroll-margin-top:92px">
+          <summary style="cursor:pointer;font-size:.8rem"><b>${s.startMin}m</b> ${s.kind} <span style="color:${skCol(s.result)};font-weight:700">${s.result} ${s.ourKills}–${s.theirKills}</span><span style="color:var(--text-2)"> · ${esc(s.place)}${s.tag ? ` · ${esc(s.tag.replace('-', ' '))}` : ''}</span></summary>
+          <div style="margin-top:.35rem">${fightDetail(s, f)}</div>
+        </details>`).join('')}</div></details>` : ''}`) : '';
 
   const comp = card(`
     <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.5rem">Team comp &amp; objectives</h2>

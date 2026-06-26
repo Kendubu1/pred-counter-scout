@@ -26,6 +26,29 @@ export interface Skirmish {
   nearObjective: { type: string; side: 'us' | 'them'; kind: 'objective' | 'tower' } | null;
   significance: number;                                 // ranking weight
   tag: 'game-defining' | 'bad-trade' | null;            // the headline classification
+  macro?: SkirmishMacro | null;                         // cross-map read: rotations, numbers, trades (THEORY)
+}
+
+/** What the squad gives the detector to read the macro game around a fight:
+ *  the five on our side, the enemy pids, lane verdict strings, the major timeline. */
+export interface SkirmishContext {
+  ourPlayers: { pid: string; name: string; heroSlug: string; role: string }[];
+  enemyPids: string[];
+  lanes: { role: string; verdict: string }[];
+  majors?: { minute: number; type: string; side: 'us' | 'them' }[];
+}
+
+/** The macro picture of a fight — the part that's about the GAME, not the matchup:
+ *  did we engage with the bodies, who was dead and couldn't help, who was alive and
+ *  never rotated, and did the map trade somewhere else. All inferred from the kill
+ *  stream + lane verdicts, so it's THEORY (respawn timing + lane pressure are modeled). */
+export interface SkirmishMacro {
+  ourAlive: number; theirAlive: number; manAdv: number;     // who was standing when it opened
+  outnumbered: boolean;
+  absent: { name: string; role: string; hero: string; lane: 'winning' | 'even' | 'losing' | 'unknown' }[];
+  dead: { name: string; role: string; hero: string; agoSec: number }[];   // dead at engage — couldn't contest
+  crossMap: { type: string; side: 'us' | 'them' }[];        // majors that fell in the same window
+  notes: string[];                                          // ready-to-read macro reads (THEORY)
 }
 
 const GAP = 25;          // seconds: kills within GAP of the running cluster join the same fight
@@ -70,9 +93,82 @@ function regionOf(cx: number, cy: number, o: Orient): string {
   return flank > 0.55 ? 'midmap (a side)' : 'midmap / river';
 }
 
+// Respawn climbs with the game; without a per-frame level feed we model it off the
+// death's own minute (THEORY): ~6s early, ~capped 60s late. Used only to decide if a
+// teammate was still down when the next fight opened.
+const respawnSec = (deathSec: number) => Math.min(60, Math.max(6, 4 + (deathSec / 60) * 1.6));
+/** Seconds-since-death if `pid` is still respawning at `atSec`, else null (alive). */
+function deadAt(pid: string, kills: FactKill[], atSec: number): number | null {
+  let last = -1;
+  for (const k of kills) if (k.killedPid === pid && k.t < atSec && k.t > last) last = k.t;
+  if (last < 0) return null;
+  return atSec - last < respawnSec(last) ? atSec - last : null;
+}
+const CHECKPOINTS = [5, 10, 15, 20, 25, 30];
+/** A lane's kill-window verdict char nearest a minute → 'winning'/'even'/'losing'. */
+function laneStateAt(role: string, lanes: SkirmishContext['lanes'], min: number): 'winning' | 'even' | 'losing' | 'unknown' {
+  const l = lanes.find((x) => x.role === role);
+  if (!l || !l.verdict) return 'unknown';
+  let idx = 0, best = Infinity;
+  for (let i = 0; i < l.verdict.length; i++) { const d = Math.abs(CHECKPOINTS[i]! - min); if (d < best) { best = d; idx = i; } }
+  const c = l.verdict[idx];
+  return c === 'y' ? 'winning' : c === 'e' ? 'losing' : 'even';
+}
+
+/** The macro read of one fight: numbers at the engage, who was dead/absent, cross-map
+ *  trades — the part the coach should talk about instead of "your hero vs their hero". */
+export function skirmishMacro(
+  s: Pick<Skirmish, 'startSec' | 'endSec' | 'startMin' | 'ourKills' | 'theirKills' | 'net' | 'result'>,
+  kills: FactKill[], ctx: SkirmishContext,
+): SkirmishMacro {
+  const win = kills.filter((k) => k.t >= s.startSec - 1 && k.t <= s.endSec + 1);
+  const part = new Set<string>();
+  for (const k of win) { if (k.killerSide === 'us' && k.killerPid) part.add(k.killerPid); if (k.killedSide === 'us' && k.killedPid) part.add(k.killedPid); }
+
+  const ourDead = ctx.ourPlayers.map((p) => ({ p, ago: deadAt(p.pid, kills, s.startSec) })).filter((x) => x.ago != null);
+  const ourAlive = ctx.ourPlayers.length - ourDead.length;
+  const theirAlive = ctx.enemyPids.length - ctx.enemyPids.filter((pid) => deadAt(pid, kills, s.startSec) != null).length;
+  const manAdv = ourAlive - theirAlive;
+
+  const dead = ourDead.map((x) => ({ name: x.p.name, role: x.p.role, hero: x.p.heroSlug, agoSec: Math.round(x.ago!) }));
+  const absent = ctx.ourPlayers
+    .filter((p) => !part.has(p.pid) && deadAt(p.pid, kills, s.startSec) == null)
+    .map((p) => ({ name: p.name, role: p.role, hero: p.heroSlug, lane: laneStateAt(p.role, ctx.lanes, s.startMin) }));
+  // only a MAJOR prize elsewhere is a real "trade" — the timeline includes noisy
+  // minor camps (River/Seedling) we must not read as a game-swinging objective.
+  const crossMap = (ctx.majors ?? []).filter((m) => m.minute >= s.startMin - 0.3 && m.minute <= s.startMin + 2.5 && MAJOR_OBJ.test(m.type)).map((m) => ({ type: m.type, side: m.side }));
+
+  const notes: string[] = [];
+  const adverse = s.result === 'lost' || s.net < 0 || manAdv < 0;
+  // numbers at the engage — the single biggest "why did we lose that"
+  if (manAdv <= -1) notes.push(`You opened it a ${Math.abs(manAdv)}-body down (${ourAlive}v${theirAlive}) — the numbers were lost before the fight was.`);
+  else if (manAdv >= 1 && s.result !== 'won') notes.push(`You had the bodies (${ourAlive}v${theirAlive}) and it still went ${s.ourKills}-${s.theirKills} — that's a fight you should win with the man up.`);
+  // dead teammates: exculpatory — they literally couldn't be there
+  for (const d of dead.slice(0, 2)) notes.push(`${d.name} (${d.role}) was dead — went down ${d.agoSec}s earlier, so this was never a full-strength fight.`);
+  // rotations: only raise when the fight went badly (don't nag a clean win)
+  if (adverse) for (const a of absent.slice(0, 2)) {
+    if (a.lane === 'winning') notes.push(`${a.name} (${a.role}) was alive and ahead in lane — a shove-and-rotate there flips a ${s.ourKills}-${s.theirKills} into a numbers advantage.`);
+    else if (a.lane === 'losing') notes.push(`${a.name} (${a.role}) was alive but losing lane and pinned — with them stuck across the map, this was the wrong fight to start.`);
+    else notes.push(`${a.name} (${a.role}) was alive and never joined — get them to the fight and the count changes.`);
+  }
+  // cross-map trade: lost the fight but the map paid for it (or vice-versa)
+  const seen = new Set<string>();
+  for (const cm of crossMap) {
+    const isTrade = (s.result === 'lost' && cm.side === 'us') || (s.result === 'won' && cm.side === 'them');
+    if (!isTrade || seen.has(cm.type + cm.side)) continue;
+    seen.add(cm.type + cm.side);
+    notes.push(cm.side === 'us'
+      ? `You took ${titleCase(cm.type)} in the same window — read it as a trade, not a clean loss.`
+      : `They traded the fight for ${titleCase(cm.type)} across the map — you won bodies but gave the objective.`);
+  }
+
+  return { ourAlive, theirAlive, manAdv, outnumbered: manAdv < 0, absent, dead, crossMap, notes: notes.slice(0, 4) };
+}
+
 /** Cluster the kill stream into fights and classify each. `objEvents` are the
- *  objective + tower events (us/them, seconds) a fight may have been contesting. */
-export function detectSkirmishes(kills: FactKill[], objEvents: ObjEvent[], durationMin: number): Skirmish[] {
+ *  objective + tower events (us/them, seconds) a fight may have been contesting.
+ *  Pass `ctx` to attach the per-fight macro read (rotations / numbers / trades). */
+export function detectSkirmishes(kills: FactKill[], objEvents: ObjEvent[], durationMin: number, ctx?: SkirmishContext): Skirmish[] {
   const sorted = [...kills].sort((a, b) => a.t - b.t);
   const o = orient(sorted);                              // per-game map orientation (null if unclear)
   // 1) greedy time-window clustering
@@ -127,11 +223,12 @@ export function detectSkirmishes(kills: FactKill[], objEvents: ObjEvent[], durat
     if ((size >= 4 || Math.abs(net) >= 2) && nearMajor && net !== 0) tag = 'game-defining';
     else if (net <= -2 && (!nearMajor || nearMajor.side === 'them')) tag = 'bad-trade';
 
-    out.push({
+    const base = {
       startSec, endSec, startMin: Math.round((startSec / 60) * 10) / 10,
       ourKills, theirKills, net, result, size, kind, ourHeroes, theirHeroes,
       region, place, nearObjective, significance: Math.round(significance * 10) / 10, tag,
-    });
+    };
+    out.push(ctx ? { ...base, macro: skirmishMacro(base, sorted, ctx) } : base);
   }
   return out.sort((a, b) => a.startSec - b.startSec);
 }

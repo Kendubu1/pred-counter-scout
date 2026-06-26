@@ -3,7 +3,7 @@
 // dumb losing battles — plus won/lost and objective anchoring.
 
 import { describe, it, expect } from 'vitest';
-import { detectSkirmishes, keySkirmishes, type ObjEvent } from '../src/skirmishes.js';
+import { detectSkirmishes, keySkirmishes, type ObjEvent, type SkirmishContext } from '../src/skirmishes.js';
 import type { FactKill } from '../src/postgame.js';
 
 const kill = (t: number, killerSide: 'us' | 'them', killerSlug: string, killedSlug: string): FactKill => ({
@@ -60,5 +60,73 @@ describe('skirmish detection', () => {
     const key = keySkirmishes(sk);
     expect(key.length).toBe(2);
     expect(key[0]!.tag).toBe('game-defining');   // highest significance leads
+  });
+});
+
+// Macro read: the part that's about the GAME, not the hero matchup. A teamfight we
+// lose a body down — the jungler was ganked 29s earlier (still respawning) and the
+// mid was alive, ahead in lane, and never rotated — while we trade Fangtooth.
+describe('skirmish macro (rotations / numbers / trades)', () => {
+  const killP = (t: number, ks: 'us' | 'them', killerSlug: string, killedSlug: string, killerPid: string, killedPid: string): FactKill => ({
+    t, min: Math.round((t / 60) * 10) / 10, firstBlood: false,
+    killerSide: ks, killedSide: ks === 'us' ? 'them' : 'us',
+    killerSlug, killedSlug, killerPid, killedPid, x: null, y: null,
+  });
+  const kills: FactKill[] = [
+    killP(1046, 'them', 'grux', 'khaimera', 'e1', 'u4'),   // jungle ganked 29s before — its own (dropped) cluster
+    killP(1075, 'them', 'grux', 'sparrow', 'e2', 'u1'),    // the 1-for-3 teamfight begins
+    killP(1081, 'us', 'greystone', 'grux', 'u5', 'e3'),
+    killP(1087, 'them', 'grux', 'narbash', 'e2', 'u2'),
+    killP(1093, 'them', 'kira', 'greystone', 'e4', 'u5'),
+  ];
+  const ctx: SkirmishContext = {
+    ourPlayers: [
+      { pid: 'u1', name: 'Sparrow', heroSlug: 'sparrow', role: 'carry' },
+      { pid: 'u2', name: 'Narbash', heroSlug: 'narbash', role: 'support' },
+      { pid: 'u3', name: 'Gideon', heroSlug: 'gideon', role: 'midlane' },   // alive, never in the fight
+      { pid: 'u4', name: 'Khaimera', heroSlug: 'khaimera', role: 'jungle' }, // dead at the engage
+      { pid: 'u5', name: 'Greystone', heroSlug: 'greystone', role: 'offlane' },
+    ],
+    enemyPids: ['e1', 'e2', 'e3', 'e4', 'e5'],
+    lanes: [{ role: 'midlane', verdict: 'yyyyyy' }, { role: 'carry', verdict: 'eeeeee' }],
+    majors: [{ minute: 18, type: 'FANGTOOTH', side: 'us' }],
+  };
+  const sk = detectSkirmishes(kills, [], 30, ctx);
+
+  it('drops the lone gank but reads it as a respawning teammate', () => {
+    expect(sk.length).toBe(1);                       // the isolated jungle death isn't a fight
+    const m = sk[0]!.macro!;
+    expect(m.dead).toHaveLength(1);
+    expect(m.dead[0]!.role).toBe('jungle');
+    expect(m.dead[0]!.agoSec).toBe(29);
+  });
+
+  it('counts the bodies standing at the engage', () => {
+    const m = sk[0]!.macro!;
+    expect(m.ourAlive).toBe(4);                      // jungler still down
+    expect(m.theirAlive).toBe(5);
+    expect(m.manAdv).toBe(-1);
+    expect(m.outnumbered).toBe(true);
+  });
+
+  it('flags the alive, ahead-in-lane teammate who never rotated', () => {
+    const m = sk[0]!.macro!;
+    const mid = m.absent.find((a) => a.role === 'midlane');
+    expect(mid).toBeTruthy();
+    expect(mid!.lane).toBe('winning');
+    expect(m.absent.some((a) => a.role === 'jungle')).toBe(false);   // the dead jungler isn't "absent"
+  });
+
+  it('writes game-level notes: numbers, the dead body, the missed rotation, the trade', () => {
+    const notes = sk[0]!.macro!.notes.join(' | ');
+    expect(notes).toContain('4v5');
+    expect(notes.toLowerCase()).toContain('dead');
+    expect(notes.toLowerCase()).toContain('lane');
+    expect(notes).toContain('Fangtooth');
+  });
+
+  it('omits macro when no squad context is supplied (backfill-safe)', () => {
+    const bare = detectSkirmishes(kills, [], 30);
+    expect(bare[0]!.macro).toBeUndefined();
   });
 });

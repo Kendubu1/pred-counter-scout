@@ -89,14 +89,34 @@ ourKills, theirKills, net, place, tag, ourHeroes, theirHeroes }`. Two tags matte
   what was the better play (don't flip a coin-toss 5v5 with no objective up; respect
   the pick; reset and take farm/vision instead).
 
+**Read the macro, not just the matchup.** Each fight carries `macro` = `{ ourAlive,
+theirAlive, manAdv, outnumbered, dead[], absent[], crossMap[], notes[] }` — the
+high-level-ranked read of WHY a fight went the way it did, computed from the kill
+stream + lane verdicts (THEORY):
+- **Numbers at the engage** (`ourAlive`v`theirAlive`): a fight lost a body down isn't
+  a hero-matchup problem, it's a *tempo/engage* problem — "you opened it 4v5". Don't
+  blame the loser of a 4v5 for getting caught; coach the decision to take it.
+- **Who was dead** (`dead[]`): exculpatory — a teammate who'd been ganked couldn't be
+  there. Say so; don't fault a fight nobody could join at full strength.
+- **Who didn't rotate** (`absent[]`, with each one's `lane` state): the *real* lesson
+  in most squad losses. A mid/carry who was alive and **ahead in lane** could have
+  shoved and rotated to even the numbers — that's the coaching point, NOT which hero
+  they picked. If they were **losing/pinned**, the fight was the wrong call to start.
+- **Cross-map trades** (`crossMap[]`): a lost fight that bought Fangtooth/Prime is a
+  *trade*, not a throw — read it as the macro game, not a clean loss.
+`macro.notes[]` already phrases these; use them as the spine of the team + per-player
+review. This is exactly the "coach the game & the pick, not the person's preference"
+the maintainer asked for — rotations, numbers and tempo over hero-vs-hero.
+
 Support it with: the **draft/comp** (`comp` damage split, healers, frontline; `kit`
 threats/synergy), the **objective rhythm** (`timeline.majors`, `objectives`,
 `closingNote`), and the **counter-build** (`counterBuild`). Per-player lines stay
-**game-grounded**: their part in the decisive fights, deaths into a lost fight, a
-missed group for Prime, a build that didn't answer the threat (`matchupItemFlags`,
-`antiHealRec`), their power not online for a fight they took (`players[].spikes` =
-modeled item spike minutes; `lanes[].verdict` = per-checkpoint kill-window). Never
-"you should have picked your comfort hero" or "queue your best role."
+**game-grounded**: their part in the decisive fights (did they rotate? were they the
+body down?), deaths into a lost fight, a missed group for Prime, a build that didn't
+answer the threat (`matchupItemFlags`, `antiHealRec`), their power not online for a
+fight they took (`players[].spikes` = modeled item spike minutes; `lanes[].verdict` =
+per-checkpoint kill-window). Never "you should have picked your comfort hero" or
+"queue your best role."
 
 Cite only numbers/items/minutes that appear in the facts — a dropped line beats an
 invented one. Action-first, plain language (no "kill window"/"eHP" jargon; say "the

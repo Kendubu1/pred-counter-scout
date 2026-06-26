@@ -2259,3 +2259,34 @@ Eight maintainer-flagged fixes:
   grounded rewrites apply back; `coach:loop:gate` converges. Reused `loop-gate.ts`,
   `copy-session.ts`, `copy-verify.ts` wholesale — the "wire a new loop without reinventing
   the orchestration" payoff from docs/agent-loops.md.
+
+## Coach the game, not the matchup: macro reads + clickable, crisp fight map (2026-06-26)
+
+- The maintainer pushed for high-level MOBA reasoning the matchup view misses: "team fights
+  where people didn't rotate — mid may have had lane pressure, or a jungle fight where someone
+  could have helped if they weren't dead." The insight: most squad losses aren't a hero-vs-hero
+  problem, they're a *numbers / rotation / tempo* problem — and we already held every signal to
+  prove it, zero-API.
+- `skirmishMacro` (in `skirmishes.ts`) reads each fight's macro from the COMMITTED data: the
+  kill stream gives every death timestamp, so a respawn model (THEORY: ~6s early → cap 60s late,
+  off the death's own minute) tells us who was still down when the next fight opened → numbers at
+  the engage (`ourAlive`v`theirAlive`), who was dead (exculpatory — couldn't rotate), and who was
+  alive-but-absent. `lanes[].verdict` (the per-checkpoint kill-window) proxies "had lane pressure"
+  so an absent teammate is read as *ahead and should've shoved-and-rotated* vs *losing and pinned*.
+  Cross-map trades come from `timeline.majors` (MAJOR only — River/Seedling minors over-fired the
+  "trade" note exactly like they'd over-fired the game-defining tag; reuse the same `MAJOR_OBJ`).
+- The lesson that keeps repeating: **introspect what we already hold before assuming a re-pull.**
+  Gold-at-interval/CS would've needed creds, but death-timing + lane verdicts (already committed)
+  carry the rotation/numbers story. So the whole macro layer is a deterministic enrichment
+  (`npm run postgame:macro`, mirrors `postgame:kit`) — no API, fully reproducible, can't drift.
+- Honesty-by-code held: macro is labelled THEORY (respawn + lane pressure are modeled), notes are
+  gated to *adverse* fights (don't nag a clean win), and the cross-map "trade" only fires on a
+  real major. Fed into the coach agent guidance AND the critic's SOURCE so the independent loop
+  flags a line that blames a hero matchup when the facts say "4v5, jungler dead".
+- UX: the fight timeline and the fight map are now one linked surface. Tapping a fight (marker,
+  map ring, or "📍 locate") lights an animated **marching-ants dotted ring** WHERE it happened and
+  drops a caption of WHAT it was — `focusFight(i)` keys timeline ↔ map ↔ detail by a shared index.
+  The blurry Gaussian heat was replaced with crisp per-kill radial-glow dots under
+  `mix-blend-mode:screen` (clusters brighten without smearing) + diamond towers + a faint grid —
+  "render a crisp version of the map" reads far more like a real tactical map. `prefers-reduced-
+  motion` disables the animation. ui:audit 100%, ui:render 0 overflow.

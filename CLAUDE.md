@@ -62,7 +62,15 @@ and how to wire a new loop live in `docs/agent-loops.md`.
 3. Stop early only for: a test that cannot be fixed in 3 attempts, anything
    that changes scope or architecture, or anything destructive. State the
    blocker and a recommended option when stopping.
-4. Definition of done per backlog item: harness green, design doc updated,
+4. **Credentials gate (added 2026-06-26, set by the maintainer).** If a task needs
+   a live data pull (`PREDGG_CLIENT_ID/SECRET`, omeda refresh) and the credentials
+   are NOT in the session, **PAUSE and request them before starting** — do not do
+   partial work (backfills, estimates, "I'll redo it once the data lands") that has
+   to be re-run after the fact. Verify creds up front for any refresh/pull/
+   calibration task, and finish the **whole pipeline in one pass** (pull → every
+   derived pass: artifacts, kit, skirmishes, etc.) so analysis isn't redone later.
+   Doing half the work without data and re-running was double effort — gate on creds first.
+5. Definition of done per backlog item: harness green, design doc updated,
    `lessons.md` updated, committed.
 
 ## Practical notes

@@ -572,7 +572,15 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
     ...(inp.structureEvents ?? []).filter((e) => /TOWER|INHIBITOR|CORE|BASE/i.test(e.type))
       .map((e) => ({ sec: e.gameTime, type: e.type, side: (e.team === enemyTeam ? 'us' : 'them') as 'us' | 'them', kind: 'tower' as const })),
   ];
-  const skirmishes = detectSkirmishes(kills, objForSkirmish, dur);
+  // Macro context for the skirmish read: our five (pid/role/hero), the enemy pids,
+  // lane verdict strings, and the major timeline — all already computed above.
+  const skirmishCtx = {
+    ourPlayers: players.filter((p) => p.us).map((p) => ({ pid: p.pid, name: p.name, heroSlug: p.heroSlug, role: p.role })),
+    enemyPids: players.filter((p) => !p.us).map((p) => p.pid),
+    lanes: lanes.map((l) => ({ role: l.role, verdict: l.verdict })),
+    majors: timeline?.majors,
+  };
+  const skirmishes = detectSkirmishes(kills, objForSkirmish, dur, kills.length ? skirmishCtx : undefined);
 
   const ourPlayers = players.filter((p) => p.us);
   const enemyPlayers = players.filter((p) => !p.us);

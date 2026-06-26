@@ -37,6 +37,11 @@ player's own winrate instead of the matchup/draft is NOT coaching — flag it.
    - **(b) Ungrounded** — factually wrong vs the SOURCE, or invents a
      fight/objective/number not present in the facts.
    - **(c) Wrong reference** — names the wrong hero, lane, fight, or objective.
+   The SOURCE includes **MACRO READS** (numbers at the engage, who was dead, who was
+   alive and didn't rotate, cross-map trades). A line that explains a fight purely by
+   the hero matchup when the macro says it was a numbers/rotation/tempo problem
+   (e.g. blames the player who got caught in a fight the facts show was 4v5 with the
+   jungler dead) is a wrong reference — flag it and rewrite to the macro cause.
    Do NOT nitpick style, tone, or wording you merely dislike.
 3. For each flag, supply a `rewrite`: a corrected line that coaches the GAME/draft/
    fight, using ONLY facts present in that task's SOURCE (no invented numbers) — or
