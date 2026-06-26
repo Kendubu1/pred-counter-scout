@@ -2221,3 +2221,41 @@ Eight maintainer-flagged fixes:
 - The design-review wins vs the clunky v2: explicit lane-guessing ("IN OFFLANE · move" instead of
   silent), image-forward ranked chips with the kill-window dots, progressive disclosure (empty
   board is calm; counters appear only after an enemy is added), and a team damage-split summary.
+
+## Team fight-analysis system — coach the game, not the player (2026-06-26)
+
+- The Coach was too narrow (lead-keyed, limit-14, full-stack-only pull → games invisible)
+  and too personal ("play your main"). The maintainer wanted: pull every ranked game the
+  squad plays TOGETHER, read the whole team's fights, flag the game-defining ones and the
+  dumb losing battles, and have an agent keep the feedback about the game/draft, not a
+  person's hero preference.
+- The unlock was data we'd never tapped: pred.gg's `Match.heroKills` — a per-kill stream
+  with `gameTime`, killer/victim hero+player+team, `isFirstBlood`, AND map `location{x,y}`.
+  Plus `objectiveKills`/`structureDestructions` carry `location` too. ALWAYS introspect the
+  schema for what you're missing before declaring a feature infeasible — we'd earlier
+  concluded "no frame-level data exists" when the kill stream was right there.
+- Broadened pull: union ALL members' feeds + dedupe (not just the lead's), "our team" = the
+  side with the most of us, keep games with >=2 together. This caught ~50 previously-invisible
+  duo/trio/older games in one pass. Big jump in data volume — the film room's stack filter
+  lets the user focus on 5-stacks.
+- Skirmish detection (`engine/src/skirmishes.ts`): cluster kills by a 25s time window, score
+  us-perspective, tag `game-defining` (decisive fight over a MAJOR prize — Fangtooth/Prime/
+  tower, NOT the frequent minor river/seedling camps that over-fired the tag at first) and
+  `bad-trade` (lost bodies for nothing). Pure + unit-tested.
+- "Where" a fight happened: the objective stream gives a time-correlated anchor ("at Prime"),
+  but the kill x/y gives a real position. We self-calibrate the map per game — we kill toward
+  THEIR base and die toward OURS, so the side that kills deeper marks their corner (clean,
+  consistent across 43 games). The world frame is Y=base-axis, X=flank (verified from where
+  cores/towers/objectives actually die).
+- Fight map: rather than overlay a pixely minimap image, `map-calibrate.ts` derives the REAL
+  geometry from structure/objective death locations over 200 games (18 towers in 3 lanes × 3
+  tiers × 2 sides, 2 cores, 9 objectives → `data/game-data/map-landmarks.json`). The coach
+  page draws a clean SVG map (player-centric: our base bottom; dawn games rotate 180°) with a
+  kill heatmap + the key fights ringed. Data-derived beats hand-drawn AND validates the
+  calibration visually.
+- The quality half is the same author→judge→gate loop the repo already runs: a NEW
+  `pred-scout-coach-critic` (independent, separate from the author) flags coaching lines that
+  are about a player's PREFERENCE rather than the game/pick, or ungrounded in the facts;
+  grounded rewrites apply back; `coach:loop:gate` converges. Reused `loop-gate.ts`,
+  `copy-session.ts`, `copy-verify.ts` wholesale — the "wire a new loop without reinventing
+  the orchestration" payoff from docs/agent-loops.md.
