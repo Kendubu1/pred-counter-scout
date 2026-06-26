@@ -14,6 +14,8 @@ Three tools, one tap away during draft:
 - **Squad** — the best 5-stack lineup and hero picks from your group's actual records.
 - **Coach** — post-game review and per-player coaching from your match history.
 
+> **Note:** Squad & Coach are a personal tool built around my own squad's pred.gg profiles — the data there is me and my friends, not a public feature. Pick & Build is the part for everyone.
+
 Everything is derived from real match data, layered with hand-curated context. Every modeled (simulated) number is labelled **THEORY** until it's measured in-game — no black-box ML, transparent scoring you can verify.
 
 ## Why it exists
