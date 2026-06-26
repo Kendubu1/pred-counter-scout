@@ -116,7 +116,7 @@ async function main() {
   if (process.argv.includes('--squad')) {
     const squad = loadSquad();
     if (!squad) { console.error('no data/artifacts/squad.json — run `npm run squad -- <lead-uuid>` first'); process.exit(1); }
-    const minStack = Number(arg('min-stack') ?? 2);   // every game >=2 of us played together; the film room filters by stack size
+    const minStack = Number(arg('min-stack') ?? 3);   // a real squad group (the squad queues as 3 or 5, never 4); duos are too noisy for team film
     // pred.gg is fresher than omeda's stalled feed and carries the event timeline;
     // use it when credentials are present, else fall back to the omeda feed.
     if (hasCredentials()) {
