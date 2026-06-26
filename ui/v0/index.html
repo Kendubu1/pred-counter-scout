@@ -416,11 +416,11 @@
   <div id="landing" class="hidden fade">
     <div class="landing-hero">
       <h1 id="landTitle">Who should you pick?</h1>
-      <p id="landSub">Who's winning each lane right now, who beats who, and what to build once you've picked. All from real match data.</p>
+      <p id="landSub">See who's winning each lane right now and take the strongest pick. The build comes with it, all from real match data.</p>
       <div class="steps" aria-label="How it works, in three steps">
-        <div class="step"><span class="num">1</span><span class="txt"><b>Pick or counter?</b><span>Choosing your own hero, or answering the enemy's.</span></span></div>
-        <div class="step"><span class="num">2</span><span class="txt"><b>Pick a hero or lane</b><span>Search a hero, or tap a lane to see who's winning right now.</span></span></div>
-        <div class="step"><span class="num">3</span><span class="txt"><b>Get the plan</b><span>The build, when it spikes, and who it beats.</span></span></div>
+        <div class="step"><span class="num">1</span><span class="txt"><b>Pick or counter?</b><span>Drafting your own hero, or beating the enemy's.</span></span></div>
+        <div class="step"><span class="num">2</span><span class="txt"><b>Find the winning pick</b><span>Tap a lane for who's winning right now, or search the enemy to beat them.</span></span></div>
+        <div class="step"><span class="num">3</span><span class="txt"><b>Take it in-game</b><span>Your pick comes with its build, spikes and matchups.</span></span></div>
       </div>
       <div class="landing-mode" id="landMode">
         <button data-lm="play" class="active">🎮 Pick a hero</button>
@@ -828,8 +828,8 @@ function setLandingMode(mode) {
   const counter = mode === 'counter';
   $('#landTitle').textContent = counter ? 'Who are you up against?' : 'Who should you pick?';
   $('#landSub').textContent = counter
-    ? 'Pick the enemy hero — see who beats them in lane, then tap a counter for its full build, Eternals and augments.'
-    : "Who's winning each lane right now, who beats who, and what to build once you've picked. All from real match data.";
+    ? 'Pick the enemy hero and lock in the counter that beats them. Its full build comes with it, all from real match data.'
+    : "See who's winning each lane right now and take the strongest pick. The build comes with it, all from real match data.";
   $('#search').placeholder = counter ? 'Search the enemy hero…' : 'Search heroes…';
   $('#search').value = ''; $('#suggest').innerHTML = '';
   laneEnemy = null; laneMode = counter ? 'counter' : 'first';
