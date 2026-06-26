@@ -21,7 +21,7 @@
   button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
   .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:rgba(10,10,15,.78); border-bottom:1px solid var(--border); }
   .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
-  .wordmark { font-weight:800; color:var(--text-0); }
+  .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .spacer { flex:1; }
   .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
   .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
@@ -42,6 +42,14 @@
   .card p + p { margin-top:.6rem; }
   .card b { color:var(--text-0); }
   .tag { display:inline-block; font-size:.66rem; font-weight:800; letter-spacing:.06em; color:var(--blue); border:1px solid var(--blue); border-radius:6px; padding:.04rem .35rem; vertical-align:middle; }
+  /* progressive disclosure: each long section opens collapsed so the page is a
+     scannable index (docs/ux-rubric.md R2). */
+  details.disc { margin-top:.6rem; border-top:1px solid var(--border); padding-top:.2rem; }
+  details.disc > summary { cursor:pointer; color:var(--blue); font-size:.86rem; padding:.35rem 0; list-style:none; }
+  details.disc > summary::-webkit-details-marker { display:none; }
+  details.disc > summary::before { content:"▸ "; color:var(--text-2); }
+  details.disc[open] > summary { color:var(--text-2); }
+  details.disc[open] > summary::before { content:"▾ "; }
   footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
   @media (max-width:600px) {
     body { font-size:15px; }
@@ -52,7 +60,7 @@
     }
     .snpill { font-size:.8rem; }
     .navlink { border-radius:10px; }
-    .top-inner { padding:.5rem .7rem; gap:.55rem; }
+    .top-inner { padding:.5rem .7rem; gap:.3rem; }
     .wordmark { font-size:.82rem; white-space:nowrap; }
     .top-inner a { font-size:.72rem; white-space:nowrap; }
     .wrap { padding:.9rem .7rem 3rem; }
@@ -65,7 +73,7 @@
 <div class="top"><div class="top-inner">
   <a class="wordmark" href="./">⚔ Predecessor Scout</a>
   <span class="spacer"></span>
-  <a class="navlink" href="./">Build Lab</a>
+  <a class="navlink" href="./">Pick &amp; Build</a>
   <a class="navlink" href="squad.html">Squad</a>
   <a class="navlink" href="coach.html">Coach</a>
 </div><div class="subnav" id="subnav"></div></div>
@@ -89,8 +97,11 @@
 
   <section class="card">
     <h2>What the simulator models</h2>
-    <p>The sim plays out a fight on paper from each kit's real numbers. For a given build
-    it reads:</p>
+    <p>The sim plays out a fight on paper from each kit's real numbers, then scores the
+    build for the engagements its kit wants to win.</p>
+    <details class="disc">
+      <summary>What it reads, the engagement types, and the gaps it can't yet model</summary>
+    <p style="margin-top:.5rem">For a given build it reads:</p>
     <ul>
       <li><b>The kit</b> — every ability's base damage (or heal/shield), its scaling per
       rank, which stat it scales off (physical or magical power), cooldowns, and any AoE
@@ -133,6 +144,7 @@
     </ul>
     <p style="margin-top:.6rem">That's why every combat number is <b>THEORY</b> until calibration,
     and why we always show the field's real win rates and builds next to the sim's opinion.</p>
+    </details>
   </section>
 
   <section class="card">
@@ -147,12 +159,15 @@
   <section class="card">
     <h2>Where the numbers come from</h2>
     <p>Play rates and win-rate deltas come from <b>thousands of current-patch matches</b> via
-    Omeda Studios' official public API (through omeda.city). Win rates are pulled toward the
-    average for small samples, so a hero with a handful of games can't fluke its way to the
-    top of a list.</p>
+    Omeda Studios' official public API (through omeda.city).</p>
+    <details class="disc">
+      <summary>How small samples and evidence deltas are handled</summary>
+    <p style="margin-top:.5rem">Win rates are pulled toward the average for small samples, so a
+    hero with a handful of games can't fluke its way to the top of a list.</p>
     <p>Evidence deltas (an item's win-rate swing) are <b>comparative, not absolute</b> — they
     carry finished-inventory bias, so read them as "better than the alternative here," not as
     a guarantee.</p>
+    </details>
   </section>
 
   <section class="card">

@@ -20,7 +20,7 @@
   button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
   .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:rgba(10,10,15,.78); border-bottom:1px solid var(--border); }
   .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
-  .wordmark { font-weight:800; color:var(--text-0); }
+  .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .spacer { flex:1; }
   .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
   .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
@@ -124,7 +124,7 @@
     }
     .snpill { font-size:.8rem; }
     .navlink { border-radius:10px; } /* 44px tap height reads as a tab, not a stadium */
-    .top-inner { padding:.5rem .7rem; gap:.55rem; }
+    .top-inner { padding:.5rem .7rem; gap:.3rem; }
     .wordmark { font-size:.82rem; white-space:nowrap; }
     .top-inner a { font-size:.72rem; white-space:nowrap; }
     .wrap { padding:.9rem .7rem 3rem; }
@@ -159,13 +159,14 @@
     .rolemini { grid-template-columns:62px 1fr 86px; font-size:.68rem; }
     ul.notes li { font-size:.8rem; }
   }
+  @media (prefers-reduced-motion:reduce) { * { animation:none !important; transition:none !important; scroll-behavior:auto !important; } }
 </style>
 </head>
 <body>
 <div class="top"><div class="top-inner">
   <a class="wordmark" href="./">⚔ Predecessor Scout</a>
   <span class="spacer"></span>
-  <a class="navlink" href="./">Build Lab</a>
+  <a class="navlink" href="./">Pick &amp; Build</a>
   <a class="navlink active" href="squad.html">Squad</a>
   <a class="navlink" href="coach.html">Coach</a>
 </div><div class="subnav" id="subnav"></div></div>
@@ -373,7 +374,7 @@ const plink = (uuid, name) => uuid
           const rec = (s.duoLane || {})[duoKey(carry.uuid, support.uuid)];
           if (!rec) return '';
           const col = rec.winrate >= 0.53 ? 'var(--green)' : rec.winrate <= 0.48 ? 'var(--red)' : 'var(--gold)';
-          return `<div class="snote" style="color:${col};margin-top:.5rem">🤝 <b>Duo lane synergy:</b> ${esc(carry.name.split(' ')[0])} + ${esc(support.name.split(' ')[0])} have won ${pct(rec.winrate, 0)}% of ${rec.games} games actually laning together as carry+support — that pairing is part of why they are seated here.</div>`;
+          return `<div class="snote" style="color:${col};margin-top:.5rem">🤝 <b>${esc(carry.name.split(' ')[0])} + ${esc(support.name.split(' ')[0])}</b> have won ${pct(rec.winrate, 0)}% of ${rec.games} games laning together — part of why they're paired here.</div>`;
         })()}
         ${opt.seats.length >= 3 ? '<div class="snote" style="margin-top:.5rem">Seats are scored as a set — someone can look stronger in a seat they did not get, but moving them gives up more wins in the role they leave than it adds. The carry+support pairing also weighs their real duo-lane record.</div>' : ''}
       </div>`;

@@ -20,7 +20,7 @@
   button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
   .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:rgba(10,10,15,.78); border-bottom:1px solid var(--border); }
   .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
-  .wordmark { font-weight:800; color:var(--text-0); }
+  .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .spacer { flex:1; }
   .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
   .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
@@ -131,7 +131,7 @@
     }
     .snpill { font-size:.8rem; }
     .navlink { border-radius:10px; } /* 44px tap height reads as a tab, not a stadium */
-    .top-inner { padding:.5rem .7rem; gap:.55rem; }
+    .top-inner { padding:.5rem .7rem; gap:.3rem; }
     .wordmark { font-size:.82rem; white-space:nowrap; }
     .top-inner a { font-size:.72rem; white-space:nowrap; }
     .wrap { padding:.9rem .7rem 3rem; }
@@ -157,7 +157,7 @@
 <div class="top"><div class="top-inner">
   <a class="wordmark" href="./">⚔ Predecessor Scout</a>
   <span class="spacer"></span>
-  <a class="navlink" href="./">Build Lab</a>
+  <a class="navlink" href="./">Pick &amp; Build</a>
   <a class="navlink" href="squad.html">Squad</a>
   <a class="navlink active" href="coach.html">Coach</a>
 </div><div class="subnav" id="subnav"></div></div>
@@ -172,7 +172,7 @@ const iimg = (slug) => `../img/items/${slug}.webp`;
 // Prefer the mapped squad name: some omeda profiles are private and report a
 // placeholder display_name like "🎮 user-<id>"; squadName is the real handle.
 const pgName = (p) => esc(p.squadName || p.name);
-const hlink = (slug, inner) => slug ? `<a href="index.html?hero=${esc(slug)}" title="open ${esc(slug)} in the Build Lab">${inner}</a>` : inner;
+const hlink = (slug, inner) => slug ? `<a href="index.html?hero=${esc(slug)}" title="open ${esc(slug)} in Pick &amp; Build">${inner}</a>` : inner;
 function pgDots(v) {
   return `<span style="display:inline-flex;gap:3px;vertical-align:middle">` + [...v].map((c) =>
     `<span title="${c === 'y' ? 'your kill window' : c === 'e' ? 'their kill window' : 'even'}" style="width:11px;height:11px;border-radius:50%;display:inline-block;background:${c === 'y' ? 'var(--green)' : c === 'e' ? 'var(--red)' : 'var(--bg-3)'};${c === '=' ? 'border:1px solid var(--border)' : ''}"></span>`).join('') + `</span>`;
@@ -191,7 +191,7 @@ function pgReview(f) {
     <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap">
       <span style="font-weight:800;padding:.2rem .7rem;border-radius:8px;background:${resBg};color:${resColor}">${f.result.toUpperCase()}</span>
       <span style="color:var(--text-1);font-size:.85rem">${f.durationMin} min · ${esc(f.mode)} · ${new Date(f.startTime).toLocaleDateString()}${f.vpSwing != null ? ` · VP ${f.vpSwing >= 0 ? '+' : ''}${f.vpSwing}` : ''}${f.squad ? ` · stack ${f.squad.stackSize}` : ''}</span>
-      <span style="margin-left:auto;font-size:.62rem;font-weight:700;color:var(--gold);border:1px solid var(--gold);border-radius:99px;padding:.1rem .5rem">THEORY</span>
+      <span title="Combat math here is THEORY — our simulator's output on constants not yet measured in-game. Shown whenever a number rests on an unverified constant; the field win rates next to it are real." style="margin-left:auto;font-size:.62rem;font-weight:700;color:var(--gold);border:1px solid var(--gold);border-radius:99px;padding:.1rem .5rem;cursor:help">THEORY</span>
     </div>
     ${co ? `<div style="font-size:1.05rem;font-weight:700;line-height:1.45;margin-top:.7rem">${esc(co.headline)}</div>
     <div style="color:var(--text-1);margin-top:.5rem;font-size:.92rem">${esc(co.team)}</div>
