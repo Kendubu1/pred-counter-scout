@@ -177,6 +177,57 @@ function pgDots(v) {
   return `<span style="display:inline-flex;gap:3px;vertical-align:middle">` + [...v].map((c) =>
     `<span title="${c === 'y' ? 'your kill window' : c === 'e' ? 'their kill window' : 'even'}" style="width:11px;height:11px;border-radius:50%;display:inline-block;background:${c === 'y' ? 'var(--green)' : c === 'e' ? 'var(--red)' : 'var(--bg-3)'};${c === '=' ? 'border:1px solid var(--border)' : ''}"></span>`).join('') + `</span>`;
 }
+let MAP = null;   // data/game-data/map-landmarks.json (towers/lanes/objectives), loaded once
+// Fight map: the kill stream as a density heat layer (us green / them red) on the
+// REAL map geometry — lanes, turrets, Fangtooth/Prime — with the key fights ringed.
+// Player-centric (our base bottom): dusk sits low-Y so we map it to the bottom;
+// for a dawn game we rotate 180°. Positions are real coordinates; reads are THEORY.
+function fightMap(f) {
+  if (!MAP || !MAP.structures) return '';
+  const kills = (f.kills || []).filter((k) => k.x != null && k.y != null);
+  if (kills.length < 6) return '';
+  const usDawn = f.ourTeam === 'dawn';
+  const WX0 = -15000, WX1 = 16000, WY0 = -15500, WY1 = 18000;
+  const W = 320, H = 360, pad = 16, mw = W - pad * 2, mh = H - pad * 2;
+  const sx = (x, y) => {
+    const fx = usDawn ? (WX1 - x) : (x - WX0);
+    const fy = usDawn ? (y - WY0) : (WY1 - y);
+    return { px: pad + fx / (WX1 - WX0) * mw, py: pad + fy / (WY1 - WY0) * mh };
+  };
+  const sideOf = (team) => team === f.ourTeam ? 'us' : 'them';
+  const col = (s) => s === 'us' ? '#00c48c' : '#ff5a5a';
+  const mean = (a) => a.reduce((s, v) => s + v, 0) / a.length;
+  const byKey = {};
+  for (const s of MAP.structures) (byKey[`${s.team}|${s.lane}`] = byKey[`${s.team}|${s.lane}`] || []).push(s);
+  const tierOrder = { inhibitor: 0, inner: 1, outer: 2 };
+  let lanesHtml = '';
+  for (const c of MAP.cores) {
+    const side = sideOf(c.team);
+    for (const lane of ['left', 'mid', 'right']) {
+      const ts = (byKey[`${c.team}|${lane}`] || []).slice().sort((a, b) => tierOrder[a.tier] - tierOrder[b.tier]);
+      if (!ts.length) continue;
+      const pts = [c, ...ts].map((p) => sx(p.x, p.y));
+      lanesHtml += `<polyline points="${pts.map((p) => `${p.px.toFixed(0)},${p.py.toFixed(0)}`).join(' ')}" fill="none" stroke="${side === 'us' ? 'rgba(0,196,140,.22)' : 'rgba(255,90,90,.2)'}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`;
+    }
+  }
+  const towersHtml = MAP.structures.map((s) => { const p = sx(s.x, s.y); return `<rect x="${(p.px - 2.5).toFixed(0)}" y="${(p.py - 2.5).toFixed(0)}" width="5" height="5" rx="1" fill="${col(sideOf(s.team))}" opacity=".85"/>`; }).join('');
+  const coresHtml = MAP.cores.map((c) => { const p = sx(c.x, c.y); const side = sideOf(c.team); return `<circle cx="${p.px.toFixed(0)}" cy="${p.py.toFixed(0)}" r="7" fill="none" stroke="${col(side)}" stroke-width="2.5"/><text x="${p.px.toFixed(0)}" y="${(p.py + (side === 'us' ? 17 : -11)).toFixed(0)}" fill="${col(side)}" font-size="9" font-weight="700" text-anchor="middle">${side === 'us' ? 'YOU' : 'THEM'}</text>`; }).join('');
+  const objHtml = (MAP.objectives || []).filter((o) => o.type === 'fangtooth' || o.type === 'prime').map((o) => { const p = sx(o.x, o.y); return `<circle cx="${p.px.toFixed(0)}" cy="${p.py.toFixed(0)}" r="5" fill="${o.type === 'fangtooth' ? '#f0820f' : '#a855f7'}" opacity=".9"/><text x="${p.px.toFixed(0)}" y="${(p.py - 7).toFixed(0)}" fill="var(--text-2)" font-size="8" text-anchor="middle">${o.type === 'fangtooth' ? 'Fang' : 'Prime'}</text>`; }).join('');
+  const heat = (side) => kills.filter((k) => k.killerSide === side).map((k) => { const p = sx(k.x, k.y); return `<circle cx="${p.px.toFixed(0)}" cy="${p.py.toFixed(0)}" r="13" fill="${col(side)}"/>`; }).join('');
+  const keySk = [...(f.skirmishes || [])].filter((s) => s.tag || s.significance >= 6).sort((a, b) => (b.tag ? 1 : 0) - (a.tag ? 1 : 0) || b.significance - a.significance).slice(0, 3);
+  const fightsHtml = keySk.map((s) => { const ks = kills.filter((k) => k.t >= s.startSec - 1 && k.t <= s.endSec + 1); if (!ks.length) return ''; const p = sx(mean(ks.map((k) => k.x)), mean(ks.map((k) => k.y))); const ring = s.tag === 'game-defining' ? 'var(--gold)' : s.tag === 'bad-trade' ? 'var(--red)' : 'var(--text-2)'; return `<circle cx="${p.px.toFixed(0)}" cy="${p.py.toFixed(0)}" r="9" fill="none" stroke="${ring}" stroke-width="2.5"/><text x="${p.px.toFixed(0)}" y="${(p.py - 12).toFixed(0)}" fill="${ring}" font-size="9" font-weight="700" text-anchor="middle">${Math.round(s.startMin)}m</text>`; }).join('');
+  return `<div style="background:var(--bg-1);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;margin-top:1rem">
+    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.5rem">Fight map <span style="font-weight:400;text-transform:none;letter-spacing:0">· where the kills happened</span></h2>
+    <div style="text-align:center"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="max-width:100%;height:auto">
+      <defs><filter id="fmblur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="8"/></filter></defs>
+      <rect x="2" y="2" width="${W - 4}" height="${H - 4}" rx="14" fill="#0c0c12" stroke="var(--border)"/>
+      ${lanesHtml}
+      <g filter="url(#fmblur)" opacity=".5">${heat('us')}</g><g filter="url(#fmblur)" opacity=".5">${heat('them')}</g>
+      ${towersHtml}${objHtml}${coresHtml}${fightsHtml}
+    </svg></div>
+    <div style="font-size:.68rem;color:var(--text-2);line-height:1.5"><span style="color:var(--green)">green</span> heat = where we got kills · <span style="color:var(--red)">red</span> = where we died · ▪ towers · ● Fang/Prime · rings = key fights (<span style="color:var(--gold)">gold</span> = game-defining). Real map coordinates; reads approximate (THEORY).</div>
+  </div>`;
+}
 function pgReview(f) {
   const us = f.players.filter((p) => p.us);
   const ourOf = (role) => f.players.find((p) => p.us && p.role === role);
@@ -323,7 +374,7 @@ function pgReview(f) {
     }).join('')}
     ${f.draftNote ? `<div style="font-size:.78rem;color:var(--text-2);margin-top:.3rem;border-top:1px solid var(--border);padding-top:.5rem">⚑ Draft: ${esc(f.draftNote)} — minor; only flagged when it's a bottom-two lane.</div>` : ''}`);
 
-  return head + lanes + timeline + comp + kit + players;
+  return head + lanes + timeline + fightMap(f) + comp + kit + players;
 }
 
 (async () => {
@@ -344,6 +395,7 @@ function pgReview(f) {
       try {
         const PG = await (await fetch('../../data/postgame/index.json')).json();
         pgList = (PG.matches || []).filter((m) => m.matchId);
+        try { MAP = await (await fetch('../../data/game-data/map-landmarks.json')).json(); } catch {}
       } catch {}
 
       document.getElementById('page').innerHTML = `
