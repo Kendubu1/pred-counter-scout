@@ -74,6 +74,28 @@ const heroSections = groups.map(([key, title]) => {
       ${list.map(heroCard).join('')}`;
 }).join('');
 
+// Coach "meta read" callout for the bottom of a section (omitted if absent).
+function metaRead(key) {
+  const m = pred.sectionMeta && pred.sectionMeta[key];
+  return m ? `\n      <div class="meta-read"><b>📈 Meta read</b>${esc(m)}</div>` : '';
+}
+
+// ── Hero showcase: clickable images with a colored trend arrow, ordered by
+// magnitude then name. Digest slug -> site slug (Neon's artifact/image is "neon").
+const SITE_SLUG = { n3on: 'neon' };
+const heroShowcase = `
+      <div class="hx-legend"><span class="tr-buff">▲ buff</span><span class="tr-nerf">▼ nerf</span><span class="tr-mixed">◆ mixed</span><span class="hx-hint">tap a hero to open its page</span></div>
+      <div class="hx-grid">
+        ${heroes.map(([slug, p]) => {
+          const site = SITE_SLUG[slug] || slug;
+          const a = TREND[p.trend] || TREND.mixed;
+          return `<a class="hx tr-${p.trend}" href="v6/?hero=${site}" title="${esc(p.name)} — ${esc(p.magnitude)} ${a.label.toLowerCase()}; open hero page">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/${site}.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">${a.icon}</span></span>
+            <span class="hx-name">${esc(p.name)}</span>
+          </a>`;
+        }).join('')}
+      </div>`;
+
 // ── ARAM section ──
 const aramKeys = ['gold-drip', 'minion-magical-armor', 'stack-interval'];
 const aramSys = pred.aramSystem || {};
@@ -107,7 +129,7 @@ const aramBlock = digest.aram ? `
       ${(digest.aram.system || []).map(aramSysCard).join('')}
       <h3 class="group-head">Per-hero ARAM tuning <span class="group-count">${(digest.aram.heroes || []).length} heroes</span></h3>
       <p class="lead" style="margin-bottom:0.6rem;">Mode-only multipliers (damage / healing / damage-received) — they do not touch the 5v5 kit numbers above.</p>
-      <table class="et aram-table"><tbody>${(digest.aram.heroes || []).map(aramHeroRow).join('')}</tbody></table>
+      <table class="et aram-table"><tbody>${(digest.aram.heroes || []).map(aramHeroRow).join('')}</tbody></table>${metaRead('aram')}
 ` : '';
 
 const globalList = (digest.global || []).map((g) => `<li>${esc(g)}</li>`).join('');
@@ -116,6 +138,11 @@ const eternalRows = (digest.eternals?.changes || []).map((e) =>
 const itemList = (digest.items || []).map((i) => `<li>${esc(i)}</li>`).join('');
 const sysList = (digest.systems || []).map((s) =>
   `<div class="sys"><div class="sys-name">${esc(s.name)}</div><div class="sys-sum">${esc(s.summary)}</div></div>`).join('');
+const rankedBlock = digest.ranked ? `
+      <h2 class="section" id="ch-ranked">Ranked</h2>
+      <p class="lead">${esc(digest.ranked.summary || '')}</p>
+      <ul class="items-list ranked-list">${(digest.ranked.changes || []).map((c) => `<li>${esc(c)}</li>`).join('')}</ul>${metaRead('ranked')}
+` : '';
 
 const counts = groups.map(([k]) => heroes.filter(([, p]) => p.magnitude === k).length);
 
@@ -129,6 +156,7 @@ const SECTIONS = [
   { id: 'ch-items', label: 'Items' },
   ...(digest.aram ? [{ id: 'ch-aram', label: 'ARAM' }] : []),
   { id: 'ch-systems', label: 'Systems & map' },
+  ...(digest.ranked ? [{ id: 'ch-ranked', label: 'Ranked' }] : []),
 ];
 const subnavBar = `
   <nav class="patch-subnav" aria-label="Chapters">
@@ -197,6 +225,34 @@ const html = `<!DOCTYPE html>
     .foot { margin-top: 2rem; font-size: 0.78rem; color: var(--text-2); border-top: 1px solid var(--border); padding-top: 1rem; }
     .foot a, .lead a { color: var(--accent); }
     html { scroll-behavior: smooth; }
+    .hx-legend { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; font-size: 0.72rem;
+      font-weight: 700; margin: 0.2rem 0 0.7rem; }
+    .hx-legend .hx-hint { color: var(--text-2); font-weight: 500; }
+    .hx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 0.5rem;
+      margin-bottom: 1.1rem; }
+    .hx { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; text-decoration: none;
+      color: var(--text-1); padding: 0.5rem 0.3rem; border-radius: 12px; border: 1px solid var(--border);
+      background: var(--bg-1); transition: border-color 0.15s, background 0.15s, transform 0.1s; }
+    .hx:hover { background: var(--bg-2); transform: translateY(-2px); }
+    .hx.tr-buff:hover { border-color: var(--green); }
+    .hx.tr-nerf:hover { border-color: var(--red); }
+    .hx.tr-mixed:hover { border-color: var(--gold); }
+    .hx-imgwrap { position: relative; width: 52px; height: 52px; }
+    .hx-imgwrap img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover;
+      background: var(--bg-3); }
+    .hx-arrow { position: absolute; right: -3px; bottom: -3px; width: 19px; height: 19px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 0.66rem; font-weight: 800;
+      background: var(--bg-0); border: 1.5px solid var(--bg-0); }
+    .hx.tr-buff .hx-arrow { color: var(--green); }
+    .hx.tr-nerf .hx-arrow { color: var(--red); }
+    .hx.tr-mixed .hx-arrow { color: var(--gold); }
+    .hx-name { font-size: 0.72rem; font-weight: 600; color: var(--text-1); text-align: center; line-height: 1.1; }
+    .tr-buff { color: var(--green); } .tr-nerf { color: var(--red); } .tr-mixed { color: var(--gold); }
+    .meta-read { margin: 1.1rem 0 0.3rem; background: var(--accent-dim); border-left: 3px solid var(--accent);
+      border-radius: 8px; padding: 0.7rem 0.9rem; font-size: 0.85rem; color: var(--text-1); line-height: 1.5; }
+    .meta-read b { display: block; color: var(--accent); text-transform: uppercase; font-size: 0.64rem;
+      letter-spacing: 0.06em; margin-bottom: 0.25rem; }
+    .ranked-list li::before { content: '🏆'; }
     .patch-subnav { position: sticky; top: 56px; z-index: 90; background: var(--bg-1);
       border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
     .psn-inner { max-width: 880px; margin: 0 auto; display: flex; align-items: center; gap: 0.35rem;
@@ -241,23 +297,26 @@ ${subnavBar}
       </div>
 
       <h2 class="section" id="ch-tldr">TL;DR — what actually changes how you play</h2>
-      <ul class="tldr">${globalList}</ul>
+      <ul class="tldr">${globalList}</ul>${metaRead('tldr')}
 
       <h2 class="section" id="ch-heroes">Hero changes <span style="font-size:0.7rem;color:var(--text-2);font-weight:500;">
         ${counts[0]} meta-shifting · ${counts[1]} notable · ${counts[2]} minor · bugfix-only heroes excluded</span></h2>
-      ${heroSections}
+      ${heroShowcase}
+      ${heroSections}${metaRead('heroes')}
 
       <h2 class="section" id="ch-eternals">Eternals (draft blessings)</h2>
       <p class="lead">${esc(digest.eternals?.summary || '')}</p>
-      <table class="et"><tbody>${eternalRows}</tbody></table>
+      <table class="et"><tbody>${eternalRows}</tbody></table>${metaRead('eternals')}
 
       <h2 class="section" id="ch-items">Items</h2>
-      <ul class="items-list">${itemList}</ul>
+      <ul class="items-list">${itemList}</ul>${metaRead('items')}
 
       ${aramBlock}
 
       <h2 class="section" id="ch-systems">Systems &amp; map</h2>
-      ${sysList}
+      ${sysList}${metaRead('systems')}
+
+      ${rankedBlock}
 
       <div class="foot">
         Generated from <code>data/patches/${esc(version)}.json</code> +
