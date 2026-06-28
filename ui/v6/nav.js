@@ -5,7 +5,7 @@
 (function () {
   const LINKS = [
     { href: './',                    label: 'Pick & Build',           icon: '🎯', match: ['', 'index.html'] },
-    { href: 'squad.html',            label: 'Squad',                  icon: '🛡️', match: ['squad.html'] },
+    { href: 'squad.html',            label: 'Pre-Game',               icon: '🧩', match: ['squad.html'] },
     { href: 'coach.html',            label: 'Coach',                  icon: '🎓', match: ['coach.html'] },
     { sep: true },
     { href: 'livedraft.html',        label: 'Live draft',             icon: '📡', match: ['livedraft.html'] },
