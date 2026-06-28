@@ -263,7 +263,7 @@ const html = `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Predecessor Scout — Patch ${esc(version)} Overview</title>
+  <title>Patch ${esc(version)} review — Pred Scout</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -326,6 +326,7 @@ const html = `<!DOCTYPE html>
     .foot { margin-top: 2rem; font-size: 0.78rem; color: var(--text-2); border-top: 1px solid var(--border); padding-top: 1rem; }
     .foot a, .lead a { color: var(--accent); }
     html { scroll-behavior: smooth; }
+    a.logo { text-decoration: none; }
     .hx-legend { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: center; font-size: 0.72rem;
       font-weight: 700; margin: 0.2rem 0 0.7rem; }
     .hx-legend .hx-hint { color: var(--text-2); font-weight: 500; }
@@ -393,12 +394,11 @@ const html = `<!DOCTYPE html>
 <body>
   <header>
     <div class="header-inner">
-      <h1 class="logo">⚔ Predecessor Scout</h1>
+      <a class="logo" href="v6/">Pred Scout</a>
       <div class="header-links">
-        <a href="index.html" class="header-link">v1</a>
-        <a href="v2/" class="header-link">v2</a>
-        <a href="patch-notes.html" class="header-link">Tool changelog</a>
-        <a href="learn-eternals.html" class="header-link">Learn Eternals</a>
+        <a href="v6/" class="header-link">Pick &amp; Build</a>
+        <a href="v6/squad.html" class="header-link">Pre-Game</a>
+        <a href="v6/coach.html" class="header-link">Coach</a>
       </div>
     </div>
   </header>

@@ -4,20 +4,20 @@
  * All v6 pages live in ui/v6/, so these relative links are identical per page. */
 (function () {
   const LINKS = [
-    { href: './',                    label: 'Pick & Build',           icon: '🎯', match: ['', 'index.html'] },
-    { href: 'squad.html',            label: 'Pre-Game',               icon: '🧩', match: ['squad.html'] },
-    { href: 'coach.html',            label: 'Coach',                  icon: '🎓', match: ['coach.html'] },
+    { href: './',                    label: 'Pick & Build',           match: ['', 'index.html'] },
+    { href: 'squad.html',            label: 'Pre-Game',               match: ['squad.html'] },
+    { href: 'coach.html',            label: 'Coach',                  match: ['coach.html'] },
     { sep: true },
-    { href: 'livedraft.html',        label: 'Live draft',             icon: '📡', match: ['livedraft.html'] },
-    { href: '../patch-1.15.html',    label: 'Patch 1.15 review',      icon: '📋', tag: 'new', match: ['patch-1.15.html'] },
-    { href: '../learn-eternals.html',label: 'Learn Eternals',         icon: '✨', match: ['learn-eternals.html'] },
-    { href: 'about.html',            label: 'About & how this works', icon: 'ℹ️', match: ['about.html'] },
+    { href: 'livedraft.html',        label: 'Live draft',             match: ['livedraft.html'] },
+    { href: '../patch-1.15.html',    label: 'Patch 1.15 review',      tag: 'new', match: ['patch-1.15.html'] },
+    { href: '../learn-eternals.html',label: 'Learn Eternals',         match: ['learn-eternals.html'] },
+    { href: 'about.html',            label: 'About & how this works', match: ['about.html'] },
   ];
 
   const here = (location.pathname.split('/').pop() || '').toLowerCase();
 
   const css = `
-  .nav-burger { margin-left:.2rem; background:transparent; border:1px solid var(--border); border-radius:10px;
+  .nav-burger { margin-right:.5rem; background:transparent; border:1px solid var(--border); border-radius:10px;
     width:36px; height:32px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;
     color:var(--text-1); flex-shrink:0; padding:0; }
   .nav-burger:hover { color:var(--text-0); border-color:var(--accent); }
@@ -25,10 +25,10 @@
   .nav-overlay { position:fixed; inset:0; background:rgba(4,4,8,.6); opacity:0; pointer-events:none;
     transition:opacity .2s ease; z-index:9998; }
   .nav-overlay.open { opacity:1; pointer-events:auto; }
-  .nav-drawer { position:fixed; top:0; right:0; bottom:0; width:min(82vw, 320px);
-    background:var(--bg-1); border-left:1px solid var(--border); z-index:9999;
-    transform:translateX(100%); transition:transform .22s cubic-bezier(.4,0,.2,1);
-    display:flex; flex-direction:column; box-shadow:-12px 0 40px rgba(0,0,0,.45); }
+  .nav-drawer { position:fixed; top:0; left:0; bottom:0; width:min(82vw, 320px);
+    background:var(--bg-1); border-right:1px solid var(--border); z-index:9999;
+    transform:translateX(-100%); transition:transform .22s cubic-bezier(.4,0,.2,1);
+    display:flex; flex-direction:column; box-shadow:12px 0 40px rgba(0,0,0,.45); }
   .nav-drawer.open { transform:translateX(0); }
   .nav-drawer-head { display:flex; align-items:center; justify-content:space-between;
     padding:.85rem 1rem; border-bottom:1px solid var(--border); }
@@ -43,7 +43,6 @@
     color:var(--text-1); text-decoration:none; font-size:.9rem; }
   .nav-list a:hover { background:var(--bg-2); color:var(--text-0); }
   .nav-list a.active { background:var(--accent-soft); color:var(--text-0); font-weight:700; }
-  .nav-list a .nav-ic { font-size:1.05rem; width:1.3rem; text-align:center; flex-shrink:0; }
   .nav-list a .nav-tag { margin-left:auto; font-size:.56rem; font-weight:700; text-transform:uppercase;
     letter-spacing:.06em; background:var(--accent); color:#fff; border-radius:99px; padding:.1rem .42rem; }
   `;
@@ -61,7 +60,7 @@
     burger.setAttribute('aria-label', 'Open menu');
     burger.setAttribute('aria-expanded', 'false');
     burger.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
-    topInner.appendChild(burger);
+    topInner.insertBefore(burger, topInner.firstChild);
 
     const overlay = document.createElement('div');
     overlay.className = 'nav-overlay';
@@ -76,11 +75,11 @@
       if (l.sep) return '<li class="nav-sep" role="separator"></li>';
       const active = l.match && l.match.includes(here) ? ' active' : '';
       const tag = l.tag ? `<span class="nav-tag">${l.tag}</span>` : '';
-      return `<li><a class="${active.trim()}" href="${l.href}"><span class="nav-ic" aria-hidden="true">${l.icon}</span><span>${l.label}</span>${tag}</a></li>`;
+      return `<li><a class="${active.trim()}" href="${l.href}"><span>${l.label}</span>${tag}</a></li>`;
     }).join('');
 
     drawer.innerHTML =
-      '<div class="nav-drawer-head"><b>⚔ Predecessor Scout</b>' +
+      '<div class="nav-drawer-head"><b>Pred Scout</b>' +
       '<button class="nav-close" aria-label="Close menu">×</button></div>' +
       `<ul class="nav-list">${items}</ul>`;
 
