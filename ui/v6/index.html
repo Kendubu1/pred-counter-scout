@@ -76,6 +76,21 @@
   .step .num { flex:none; width:1.55rem; height:1.55rem; border-radius:99px; background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent); font-weight:800; font-size:.82rem; display:flex; align-items:center; justify-content:center; }
   .step .txt b { display:block; font-size:.86rem; color:var(--text-0); }
   .step .txt span { display:block; color:var(--text-2); font-size:.74rem; line-height:1.45; margin-top:.1rem; }
+  /* ── end-of-selection cards: live draft + patch review, side by side ── */
+  a.patch-pill:hover { color:var(--text-0); border-color:var(--accent); }
+  .endcards { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; margin-top:1.6rem; }
+  @media (max-width:560px){ .endcards { grid-template-columns:1fr; } }
+  .endcard { display:flex; gap:.75rem; align-items:flex-start; background:var(--bg-1); border:1px solid var(--border); border-radius:14px; padding:.95rem 1rem; text-decoration:none; color:inherit; transition:border-color .15s, background .15s; }
+  .endcard:hover { border-color:var(--accent); background:var(--bg-2); }
+  .endcard--patch { border-color:var(--accent); background:var(--accent-soft); }
+  .endcard--patch:hover { background:var(--bg-2); }
+  .ec-icon { font-size:1.55rem; line-height:1; flex-shrink:0; }
+  .ec-title { font-weight:800; font-size:.96rem; color:var(--text-0); display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; }
+  .ec-tag { font-size:.58rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; background:var(--accent); color:#fff; border-radius:99px; padding:.1rem .42rem; }
+  .ec-sub { font-size:.78rem; color:var(--text-2); margin:.28rem 0 .35rem; line-height:1.45; }
+  .ec-hi { list-style:none; padding:0; margin:.3rem 0 .5rem; display:flex; flex-direction:column; gap:.18rem; }
+  .ec-hi li { font-size:.74rem; color:var(--text-1); }
+  .ec-cta { font-size:.76rem; font-weight:700; color:var(--accent); }
   /* ── divider that pushes the meta board + grid below the fold ── */
   .browse-head { display:flex; align-items:center; gap:.7rem; margin:2.6rem 0 .4rem; color:var(--text-2); font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.09em; }
   .browse-head::before, .browse-head::after { content:""; flex:1; height:1px; background:var(--border); }
@@ -406,7 +421,7 @@
   <div class="top-inner">
     <a class="wordmark" href="./">⚔ Predecessor Scout</a>
     <span class="spacer"></span>
-    <span class="patch-pill" id="patchPill">patch —</span>
+    <a class="patch-pill" id="patchPill" href="../patch-1.15.html" title="Read the patch 1.15 review">patch —</a>
     <a class="navlink active" href="./">Pick &amp; Build</a>
     <a class="navlink" href="squad.html">Squad</a>
     <a class="navlink" href="coach.html">Coach</a>
@@ -427,12 +442,34 @@
       <div class="landing-mode" id="landMode">
         <button data-lm="play" class="active">🎮 Pick a hero</button>
         <button data-lm="counter">🛡 Counter an enemy</button>
-        <a class="lm-link" href="livedraft.html" title="Lane-by-lane counter board for a live draft">📡 Live draft</a>
       </div>
       <div class="searchbar"><input id="search" placeholder="Search heroes…" autocomplete="off"><div class="suggest" id="suggest"></div></div>
       <div class="rolebar" id="rolebar"></div>
     </div>
     <div id="lanedetail"></div>
+    <section class="endcards" aria-label="Live draft and patch review">
+      <a class="endcard endcard--draft" href="livedraft.html">
+        <span class="ec-icon">📡</span>
+        <span class="ec-body">
+          <span class="ec-title">Live draft</span>
+          <p class="ec-sub">Already in a pick/ban? Run the lane-by-lane counter board live as the draft unfolds.</p>
+          <span class="ec-cta">Open the draft board →</span>
+        </span>
+      </a>
+      <a class="endcard endcard--patch" href="../patch-1.15.html">
+        <span class="ec-icon">📋</span>
+        <span class="ec-body">
+          <span class="ec-title">Patch <span id="ecPatchVer">1.15</span> review <span class="ec-tag">new</span></span>
+          <p class="ec-sub" id="ecPatchSub">Splash Damage — what changed and what it'll do to the meta, with sim-grounded predictions.</p>
+          <ul class="ec-hi" id="ecPatchHi">
+            <li>🆕 New hero: Ikra, a splash-damage mage</li>
+            <li>🗺️ Daybreak V6 map + jungle rework</li>
+            <li>⚖️ Eternals trimmed · Revenant &amp; Terra meta-shifting</li>
+          </ul>
+          <span class="ec-cta">Read the patch review →</span>
+        </span>
+      </a>
+    </section>
     <div class="browse-head">Browse the meta</div>
     <div class="metaboard" id="metaboard"></div>
     <div class="browse-head">All heroes</div>

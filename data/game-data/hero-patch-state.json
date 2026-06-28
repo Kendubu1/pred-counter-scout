@@ -1,98 +1,109 @@
 {
-  "patch": "1.14.4",
+  "patch": "1.15",
   "appliedPatches": [
     "1.14",
     "1.14.1",
-    "1.14.4"
+    "1.14.4",
+    "1.15"
   ],
-  "generated": "2026-06-09T19:53:20.923Z",
-  "source": "https://www.predecessorgame.com/en-US/news/patch-notes/v1.14.4_Patch_Notes",
+  "generated": "2026-06-28T05:02:23.210Z",
+  "source": "https://www.predecessorgame.com/en-US/news/patch-notes/Patch_Notes_1.15",
   "global": [
-    "Map is tankier — towers, inhibitors, minions, and jungle camps all gained health. Games run slower and pushing takes more commitment.",
-    "Super Minions deal less to inhibitors and the core, so you can't close out a game off one big wave crash.",
-    "Many physical heroes gained Magical / Bonus-Physical scaling — expect more hybrid and AP-bruiser builds (Akeron, Khaimera, Zarus, and more); itemize magic resist accordingly."
+    "New hero: Ikra, a long-range splash-damage mage (Carry/Mid) with bubble zoning and a global-feel knock-up ult. See the systems section for her kit.",
+    "Daybreak V6: the map was reworked — clearer jungle corners, more rotation/dive paths, a redesigned Orb Prime pit, and rebalanced shrine/buff timers, gold, and XP. Expect different rotation timings and objective tempo.",
+    "Jungle economy standardized: most camps are now 5 CS each, camp leaders deal current-health damage, Red/Blue buffs hit softer but add %current-health, and the Hunt slay now heals. Clear paths and first-clear power shift.",
+    "Comeback XP retuned to trigger later (1.5 -> 1.75 level gap) and start smaller but ramp harder — snowballs are slightly stickier early, catch-up a touch stronger once behind.",
+    "Towers got a consistent 0.25s target-switch delay and reset-on-swap, so diving and last-hitting under tower is more predictable and skill-based.",
+    "Critical strikes are now pseudo-random (dynamic): misses raise your next crit chance, crits lower it — less crit variance swing in fights.",
+    "Eternals broadly trimmed: durability/sustain/scaling blessings (Vermis, Marrow, Thraex, Lotus, Exarch, Demiurge, Xyris, Aion and more) lost a little, with a few soft reworks (Krix anti-heal, Vesh mana-on-takedown, Marrow Jealousy). Re-check your draft blessings.",
+    "Items: Earth Spirit removed and replaced by the new Gamma Gloop tank crest; Rebirth reworked into a fighter resurrect item; several carry/fighter/tank items reshuffled (Echelon Cloak cheaper+stronger, Stonewall/Giant's Ring/Citadel tankier, Sky Splitter/Stormbreaker power trimmed)."
   ],
   "items": [
-    "Crests: Razorback Echidna armor bonus 25%->20%, cooldown 90->100s.",
-    "Carry: Sky Splitter lifesteal 7%->8% (melee dmg 6->5.5%, ranged 4->3.5%); Stormbreaker attack speed 35->30; Viper shred 4%->4.5% (+armor-correction bugfix).",
-    "Assassin: Deathstalker penetration 9->10; Infernum Cinder max-health 3%->4%; Nightfall omnivamp 7%->8%.",
-    "Fighter: Augmentation ability haste 16->20 / scaling 80->90%; Mutilator power 40->45 & omnivamp 10->12%; Vyzar-Carapace power 40->45 & health 200->225; Basilisk shred 4->4.5%; Solstice Mornfall 0-60%->0-55%.",
-    "Mage: Orb of Growth mana 300->250; Orb of Enlightenment mana 300->250 & scaling 4->3/level.",
-    "Tank: Cursed Scroll health scaling 5->4% & regen 30->25% (+Cleave-trigger bugfix).",
-    "Tier 2 / fixes: Ruthless Broadsword shred 4->4.5%; Refillable Potion (135-270) and Divine Potion (165-300) healing labels corrected."
+    "Crests: Earth Spirit REMOVED, replaced by the new Gamma Gloop (Titan crest: 180 Health, 8 Phys Armor, 5 Mag Armor; active Gob Glue deals 80 +3% bonus-health magic damage, Grounds 1.5s, leaves a 5s 30% slow field).",
+    "Fighter: Rebirth REWORKED (cost 2600 -> 2800; +50 Phys Power, +300 Health, -40 Phys Armor, -35 Mag Armor, -10 Ability Haste; recipe Greatsword + Banded Emerald + 750g; resurrect at 50% base health/mana after 3s).",
+    "Carry: Eviscerator omnivamp 10% -> 8%; Sky Splitter power 40 -> 35; Stormbreaker power 45 -> 40; Echelon Cloak cost 2900 -> 2800, power 40 -> 45, cooldown 12 -> 10s.",
+    "Mage: Astral Catalyst cost 2850 -> 2950 & power 80 -> 85; Claw of Hermes power 90 -> 85; Timewarp base mana regen 125% -> 150%.",
+    "Tank/Support: Citadel phys armor 35 -> 40; Gaussian Greaves phys armor 30 -> 35; Giant's Ring phys armor 45 -> 50; Stonewall health 250 -> 275 & regen 80% -> 100%; Resolution darksteel on-hit mana scaling 2% -> 2.5%; Soulbinder Farseer cooldown 10 -> 8; Transference ionizing-charge move speed 12% -> 8%.",
+    "Fixes: Oathkeeper mana 250 -> 275 and now actually grants its health (was 0 from a bug)."
   ],
   "eternals": {
-    "summary": "This patch's headline is a big rebalance of the Eternals (the deity blessings picked in draft). The durability and sustain blessings that defined the meta got trimmed, while a few scaling and economy paths were buffed. Here's what changed and how it affects your picks.",
+    "summary": "1.15 trims the Eternals broadly rather than reworking the system: the durability, sustain, and pure-scaling blessings that anchored the meta each lost a little, while a handful got soft reworks that change how you use them (Krix now applies anti-heal, Vesh restores mana on takedowns, Marrow's Jealousy became a health-threshold damage amp, Vermis's Crush gained an immobilize burst with a per-target cooldown). Re-check your major and both minors after this patch.",
     "changes": [
       {
         "name": "Vermis",
-        "change": "Serration reworked: instead of amplifying critical strikes, it now adds 4% of the target's missing health as bonus damage on every proc. Cauterize and Sub-Surface were lightly trimmed.",
-        "meaning": "Still the go-to on-hit anti-tank Eternal, but Serration is now a steady, reliable damage add rather than a crit gamble — better on non-crit carries."
+        "change": "Major's max-health damage scaling trimmed (3% +0.25%/lvl -> 3% +0.2%/lvl); Serration missing-health 4% -> 3.5%; Sub Surface damage reduction 8% -> 7%; Crush now deals 8% immobilizing damage (was 5%) but on an 8s per-target cooldown (soft rework); Breach armor shred 30% -> 35%, duration 3.5 -> 4s.",
+        "meaning": "Still the go-to anti-tank on-hit Eternal; Crush turns into a periodic immobilize burst, and Breach shreds a bit more for longer."
       },
       {
         "name": "Marrow",
-        "change": "The Maw and Leech swapped slots, so you can no longer run Blood Bank + Leech together. The Maw now triggers on all basic attacks (not just crits) below 30% HP, and Blood Bank's lifesteal per stack was trimmed.",
-        "meaning": "Default shifts to Blood Bank + The Maw — stack lifesteal and execute low targets. Take Leech instead when you need to shut off heavy enemy regen."
+        "change": "Major omnivamp 0.85% -> 0.75% (+0.05%/lvl); The Maw true damage +12% -> +10% and threshold 30% -> 40%; Jealousy reworked into a 1-8% damage amp scaling with your health (20-100%).",
+        "meaning": "Slightly less raw lifesteal, but The Maw executes from a higher threshold and Jealousy now rewards staying healthy with a damage amp."
       },
       {
         "name": "Thraex",
-        "change": "Golden Mane's damage reduction dropped 12% → 8% but now applies to all non-AoE attacks (not just abilities); Rallying Roar now also grants Ultimate Haste.",
-        "meaning": "A bit less personal tankiness in duels, traded for more frequent ults."
+        "change": "Major bonus damage +3% (+0.5%/lvl) -> +3% (+0.4%/lvl) and damage reduction growth trimmed; Ferocity attack speed 1.5% -> 1.25%.",
+        "meaning": "A small across-the-board trim to the bruiser blessing — still solid, just slightly weaker scaling."
       },
       {
         "name": "Nihil",
-        "change": "Growing Threat's bonus damage 15% → 12% but now also adds 5% omnivamp; From the Abyss's regen now scales with level.",
-        "meaning": "Slightly less burst, more lifesteal and scaling sustain for long extended fights."
+        "change": "Major bonus-stat modifier 20% -> 18%.",
+        "meaning": "A touch less of everything from the all-stats major."
       },
       {
         "name": "Krix",
-        "change": "The Major's bonus Max Health was halved (10% → 5%); Voracity, Regenerative Tissue and Cannibalism were all retuned.",
-        "meaning": "The signature 'giant HP tank' identity got reined in — still a frontline anchor, just not as oversized."
+        "change": "Festering Wounds now applies 45% anti-heal on immobilizing effects (soft rework); Predator camp-leader kill damage +8% -> +10% and adds +3% movement speed for 20s on kill.",
+        "meaning": "Krix becomes an anti-heal enabler for CC-heavy comps, and the jungle path is a bit faster and stickier after camps."
       },
       {
         "name": "Idrisil",
-        "change": "Mending's missing-health heal now scales by level (weaker early, stronger late).",
-        "meaning": "The armor-tank pick is a little softer in the early game and rewards getting to the late game."
+        "change": "Mending healing 4/5/6/8% -> 3/4/5/7%.",
+        "meaning": "The armor-tank sustain blessing heals a little less at every rank."
+      },
+      {
+        "name": "Vesh",
+        "change": "Major ability damage +6% (+0.5%/min) -> +7% (+0.4%/min); Tithe Of Death ability haste capped at 15 takedowns (30 max) and now restores 15% max mana on takedown (soft rework).",
+        "meaning": "Front-loaded a bit more, capped late, and now pays mana back on kills — better for mana-hungry mages snowballing fights."
       },
       {
         "name": "Xyris",
-        "change": "The Major is now front-loaded (flat 4% + 0.6% per 10 units instead of pure stacking). Bone Collector was reworked into a crit payoff (20% Crit Chance + 5% Crit Damage at 150 units); Iron Will now heals on all basics; Eviscerate 20% → 15%.",
-        "meaning": "Xyris is now a crit hyper-carry — Furor + Bone Collector turns farm into crit power. Build crit and farm to 150 units for the spike."
+        "change": "Major damage 4% -> 3% and per-10-units 0.6% -> 0.4%, capped at 400 unit kills; Furor attack-speed duration 4.5 -> 4s; Iron Will crit heal 8% -> 7%; Cull The Weak minion/monster damage 8% -> 7%; Bone Collector lost its +5% crit-damage bonus.",
+        "meaning": "The crit hyper-carry blessing was trimmed and capped — still farm-to-spike, just a lower ceiling."
+      },
+      {
+        "name": "Exarch",
+        "change": "Preservation healing/shielding received +15% -> +12%; Fervour magical-power scaling 6% -> 5%; Omnipresent out-of-combat movement 8% -> 7%; Delayed Fate DoT conversion 25% -> 20%.",
+        "meaning": "The enchanter/scaling support blessing lost a little on every node — modest sustain/utility trim."
       },
       {
         "name": "Lotus",
-        "change": "The Major's damage/health rolls were trimmed; Immaculate's damage reduction 35% → 20%; Early Bloom now triggers at level 12 (was 10); Fragrance now adds a magic-damage amp.",
-        "meaning": "Still the safe, flexible pick, but its defensive payoffs are weaker — less of a free 'tanky' bonus when ahead."
+        "change": "Major damage 1.5% -> 1%; Masterpiece movement on takedown 6% -> 5%; Prima Donna damage dealt +12% -> +10% and damage taken +6% -> +5%; Fragrance magical damage 5% -> 4%.",
+        "meaning": "The safe, flexible mage blessing is a bit weaker on both its offense and its trade-off nodes."
       },
       {
         "name": "Demiurge",
-        "change": "Bloatware and Construct swapped slots; Bloatware's damage-per-item 1% → 0.5%; Construct reworked to per-level Health and Ability Haste.",
-        "meaning": "Still the late-game full-build scaler; the Construct + Bloatware combo is intact, just in opposite slots now."
+        "change": "Major bonus-stat modifier 12% -> 10%; Tri-Core on-hit damage 6% -> 5%; Cursed Corrupted ability-haste-per-crit 1 -> 0.8; Memory Leak mana-from-ability 6% -> 5% and max mana 600 -> 500.",
+        "meaning": "The late-game full-build scaler lost a little off each node; still the stack-into-late blessing."
       },
       {
         "name": "Aion",
-        "change": "Bottomless Vial, Perfection (now triggers above 85% HP), and Runic Focus were all buffed.",
-        "meaning": "Mana-economy mages convert mana into power more efficiently — stronger poke and scaling."
-      },
-      {
-        "name": "Phylactery (Vesh)",
-        "change": "Soft rework: now grants 100% Cooldown Progression for 3s after your ult; shield 20% → 15% of Max Mana and duration 4s → 3s.",
-        "meaning": "Shifts from a pure shield into a cooldown-reset tool — cast your ult, then immediately get your other abilities back."
+        "change": "Major gold-from-ability-damage 8% -> 7%; Arcane Resonance cooldown progression 1% -> 0.75% per mana regen, max 75% -> 50%.",
+        "meaning": "The mana-economy mage blessing converts a bit less mana into gold and cooldowns."
       }
     ]
   },
   "heroes": {
     "wraith": {
-      "patch": "1.14.4",
-      "trend": "nerf",
+      "patch": "1.15",
+      "trend": "mixed",
       "changes": [
-        "Peekaboo max-health damage 6.5-8.5%->6-8%",
-        "Knock Knock scaling 120%->110% Physical / 75%->70% Magical"
+        "Stealth Matrix cooldown modifier +20% -> +10% (a buff — less cooldown penalty)",
+        "Peekaboo! max-health damage 6-8% -> 5.5-7.5%, magical-power scaling 2% -> 1.5%",
+        "Surprise, Surprise! cooldown 26/24/22/20/18 -> 23/21.5/20/18.5/17, movement speed 20% -> 25%"
       ],
       "analysis": {
-        "summary": "Wraith was nerfed again: lower max-health damage on Peekaboo and reduced Knock Knock scaling.",
-        "playing": "Your burst and anti-tank damage are down — pick engages carefully and itemize for the lost damage.",
-        "facing": "His pick burst is weaker — a bit more survivable if caught, but still respect the engage."
+        "summary": "Mixed: his anti-tank Peekaboo damage was trimmed, but his stealth engage is up more often and faster (lower cooldowns, more movement speed).",
+        "playing": "You roam and re-engage more often; your max-health burst is a touch lower, so commit when the pick is clean.",
+        "facing": "Expect more frequent stealth engages with a bigger speed burst, but slightly less burst on arrival — ward and track his cooldowns."
       },
       "reviewNeeded": false,
       "reviewReasons": []
@@ -160,63 +171,63 @@
       "reviewReasons": []
     },
     "bayle": {
-      "patch": "1.14.4",
+      "patch": "1.15",
       "trend": "mixed",
       "changes": [
-        "Berserk attack speed 25%(+3%/lvl)->15%(+4%/lvl), movement 6.5%->4%(+0.5%/lvl)",
-        "Dire Howl added 65% Magical Power, omnivamp 6-10%->10-18%",
-        "Cursed Edge added 50% Magical Power (bleed +15%)",
-        "Skull Crusher damage 85-245->90-250, shred 10-20%->20-30%"
+        "Swift Strikes third-strike modifier -25% -> -20% (a small buff)",
+        "Dire Howl mana 50 -> 60, omnivamp 10-18% -> 8-16%, cooldown 15 -> 16"
       ],
       "analysis": {
-        "summary": "Reworked toward sustain and Magical Power: his attack-speed steroid was toned down, but his abilities now scale with Magical Power and his ult heals far more (omnivamp nearly doubled).",
-        "playing": "This opens a hybrid/AP bruiser Bayle that sustains hard in long fights — lean into Dire Howl's healing and the new Magical scaling over pure attack speed.",
-        "facing": "He sustains much more in drawn-out fights now — bring anti-heal and try to burst him rather than out-DPS his omnivamp."
+        "summary": "Mixed tune: his on-hit combo got marginally stronger, but his Dire Howl sustain and uptime were trimmed.",
+        "playing": "Your basic-attack rhythm is a touch better; just expect a bit less healing and a longer Dire Howl cooldown.",
+        "facing": "He sustains slightly less in extended fights — anti-heal and burst windows are a little safer."
       },
-      "reviewNeeded": true,
-      "reviewReasons": [
-        "consider adding trait: lifesteal"
-      ]
+      "reviewNeeded": false,
+      "reviewReasons": []
     },
     "boris": {
-      "patch": "1.14.4",
+      "patch": "1.15",
       "trend": "nerf",
       "changes": [
-        "Health 665->650, Physical Power 61->58",
-        "Maul scaling 80%->75% Physical",
-        "Primeval Roar damage 60-120->40-100 (added 70% Magical)",
-        "Added Magical Power scaling to Tesseract Device and Detection Protocol"
+        "Tesseract Device attack speed per canister 9-18% -> 8-17%",
+        "Tesseract Device zap damage 5 (+2.25/lvl) -> 5 (+2/lvl)"
       ],
       "analysis": {
-        "summary": "Boris's base stats and physical damage were cut, but Magical Power scaling was added across his kit — a nerf to standard builds that quietly opens an AP Boris.",
-        "playing": "Pure-physical Boris is weaker; consider Magical Power, which now scales much of his kit, to recoup the lost damage.",
-        "facing": "He's weaker and squishier on standard builds — pressure him, but note an AP Boris can still scale."
+        "summary": "Narrow nerf: Boris's Tesseract attack-speed steroid and zap damage were both trimmed.",
+        "playing": "Your sustained DPS dips slightly — nothing changes mechanically, just slightly weaker extended fights.",
+        "facing": "His ramp damage is a hair lower; you can trade a bit longer before disengaging."
       },
       "reviewNeeded": false,
       "reviewReasons": []
     },
     "crunch": {
-      "patch": "1.14",
-      "trend": "nerf",
+      "patch": "1.15",
+      "trend": "buff",
       "changes": [
-        "Re-Crunch healing 25/65/105 -> 20/60/100"
+        "Health growth 136 -> 141",
+        "Combo Crunch attack speed 6% -> 7.5% (max stacks 5 -> 4)",
+        "Falcon Crunch right-crunch modifier +10% -> +15%",
+        "Cross Crunch scaling 25%/28% -> 28%/30% (phys/mag); Right Crunch scaling 100%/65% -> 110%/75% (phys/mag)"
       ],
-      "analysis": null,
+      "analysis": {
+        "summary": "Broad buff: more health scaling and higher damage scaling across his combo, with a faster attack-speed ramp (fewer stacks to cap).",
+        "playing": "Lean into the combo — your right/cross crunches hit harder and you reach max attack speed quicker.",
+        "facing": "His burst and sustained damage are both up; respect a bigger combo and don't sit in melee at low health."
+      },
       "reviewNeeded": false,
       "reviewReasons": []
     },
     "greystone": {
-      "patch": "1.14.4",
-      "trend": "nerf",
+      "patch": "1.15",
+      "trend": "buff",
       "changes": [
-        "Physical Armor 35->33, health regen growth 0.18->0.15",
-        "Stone Forged Soul cooldown 165/150/135->175/160/145 (added 100% Magical Power, healing +2.5% Magical)",
-        "Sacred Oath mana 25->30, Make Way added 80% Magical"
+        "Health growth 132 -> 135, Mana 280 -> 300",
+        "Make Way damage 80/125/170/215/260 -> 80/130/180/230/280"
       ],
       "analysis": {
-        "summary": "Greystone was nerfed on durability and his ult cooldown went up, though Magical Power scaling was added — a hit to the standard tanky build.",
-        "playing": "You're less tanky and your revive is up less often; AP scaling is now an option but the safe build is weaker.",
-        "facing": "Punish him harder in lane and time your burst for when his revive ult is down."
+        "summary": "Solid buff: more health scaling, a bigger mana pool, and higher Make Way damage at every rank.",
+        "playing": "You're a touch tankier and your engage hits harder — trade more confidently.",
+        "facing": "His Make Way does more now; give the dash a wider berth in lane."
       },
       "reviewNeeded": false,
       "reviewReasons": []
@@ -269,12 +280,16 @@
       "reviewReasons": []
     },
     "mourn": {
-      "patch": "1.14",
-      "trend": "nerf",
+      "patch": "1.15",
+      "trend": "mixed",
       "changes": [
-        "Extract healing scaling 7% -> 6%"
+        "Contagion: fixed a cleanse exploit"
       ],
-      "analysis": null,
+      "analysis": {
+        "summary": "Bugfix: a Contagion cleanse exploit was closed — no intended balance change.",
+        "playing": "Play as normal; the cleanse interaction just works correctly now.",
+        "facing": "Unchanged matchup outside the patched exploit."
+      },
       "reviewNeeded": false,
       "reviewReasons": []
     },
@@ -310,18 +325,16 @@
       "reviewReasons": []
     },
     "sevarog": {
-      "patch": "1.14.4",
-      "trend": "nerf",
+      "patch": "1.15",
+      "trend": "mixed",
       "changes": [
-        "Health growth 113->108",
-        "Reaper of Souls health/stack 3->1, tier bonuses 40/80/120/160->50/100/200/400",
-        "Siphon max-health steal 2.5-3.5%->1.8-2.6%, cost 20->25",
-        "Phantom Rush cost 80->100"
+        "Reaper Of Souls health per stack 1 -> 2, tier gains 50/100/200/400 -> 40/80/180/350",
+        "Siphon health-steal duration 30s -> 15s, monster damage 20-40 -> 30-50"
       ],
       "analysis": {
-        "summary": "Sevarog's stacking passive was reworked (less health per stack but bigger milestone bonuses) and his sustain and costs were nerfed — weaker early, more milestone-dependent.",
-        "playing": "Early stacks give less health, so lane is rougher; push to the big stack-tier breakpoints and manage higher ability costs.",
-        "facing": "He's weaker and hungrier for stacks early — deny his last-hits on minions and camps to slow his spikes."
+        "summary": "Rebalance: more health per stack early but smaller milestone bonuses, and Siphon steals for a shorter window while clearing camps faster.",
+        "playing": "Early stacking is a bit kinder but the big-tier payoffs are smaller; your jungle clear is faster via Siphon.",
+        "facing": "His early durability scales a touch faster — deny stacks where you can, but his milestone spikes are lower."
       },
       "reviewNeeded": false,
       "reviewReasons": []
@@ -338,16 +351,17 @@
       "reviewReasons": []
     },
     "terra": {
-      "patch": "1.14.4",
-      "trend": "nerf",
+      "patch": "1.15",
+      "trend": "mixed",
       "changes": [
-        "Ruthless Assault armor scaling 40%->37.5% (empowered damage curve lowered)",
-        "Wild Rush minimum scaling 40%->37.5%, max charge 120%->112.5%"
+        "Iron Resolve damage reduction 30/33/36/39/42% -> 25/27.5/30/32.5/35%",
+        "Ruthless Assault damage 50/85/120/155/190 -> 50/80/110/140/170, monster cap 100 -> 200 (+20/lvl)",
+        "Wild Rush damage 27/45/63/81/99 -> 27/48/69/90/111, max charge raised to 81/144/207/270/333"
       ],
       "analysis": {
-        "summary": "Terra was nerfed: her armor-based scaling and empowered damage were trimmed.",
-        "playing": "Your damage off armor is a bit lower — you're still tanky, but expect less burst from your steroid.",
-        "facing": "She does a little less off her defensive stats — trading into her is slightly safer."
+        "summary": "Rebalance: her signature Iron Resolve damage reduction was cut hard (a real durability nerf) and Ruthless Assault PvP damage trimmed, but her jungle clear (monster cap) and Wild Rush damage went up.",
+        "playing": "You're noticeably less tanky in duels — clear is faster and Wild Rush hits harder, but pick your frontline commitments more carefully.",
+        "facing": "Terra mitigates much less now; burst her through the smaller damage-reduction window, though her clear/skirmish damage is up."
       },
       "reviewNeeded": false,
       "reviewReasons": []
@@ -370,18 +384,15 @@
       "reviewReasons": []
     },
     "countess": {
-      "patch": "1.14.4",
-      "trend": "nerf",
+      "patch": "1.15",
+      "trend": "mixed",
       "changes": [
-        "Physical Armor 37->33, mana growth 65->60",
-        "Blood Tithe max-health damage 5%->4%",
-        "Eventide damage curve lowered at higher ranks",
-        "Feast cooldown 135/105/75->135/110/85"
+        "Blood Well: fixed a shield/healthbar display bug"
       ],
       "analysis": {
-        "summary": "Countess was nerfed: less durability and mana, lower max-health damage, weaker late Eventide, and a longer ult cooldown.",
-        "playing": "You're more fragile and your ult is up less — pick your dives carefully and rely on less burst.",
-        "facing": "She's easier to punish with more ult downtime — trade when Feast is down."
+        "summary": "Bugfix only: Blood Well's shield/healthbar interaction was corrected — no balance change.",
+        "playing": "Nothing changes in how she plays; the shield just reads correctly now.",
+        "facing": "Unchanged matchup."
       },
       "reviewNeeded": false,
       "reviewReasons": []
@@ -403,46 +414,43 @@
       "reviewReasons": []
     },
     "gadget": {
-      "patch": "1.14.4",
-      "trend": "buff",
+      "patch": "1.15",
+      "trend": "mixed",
       "changes": [
-        "Sticky Mine damage 75-195->80-200, empowered 90-250->100-260"
+        "Sticky Mine: enhanced VFX adjustment (quality-of-life, no balance change)"
       ],
       "analysis": {
-        "summary": "Small, clean buff — Gadget's Sticky Mine simply does more damage at every rank.",
-        "playing": "Your lane poke and combo damage are a touch higher; play the same, just trade a bit more confidently.",
-        "facing": "Slightly riskier to walk over her mines — give them a wider berth in lane."
+        "summary": "Cosmetic only: a Sticky Mine VFX tweak with no gameplay impact.",
+        "playing": "Plays identically — the mine just reads a bit cleaner.",
+        "facing": "Unchanged matchup."
       },
       "reviewNeeded": false,
       "reviewReasons": []
     },
     "gideon": {
-      "patch": "1.14.4",
-      "trend": "buff",
+      "patch": "1.15",
+      "trend": "mixed",
       "changes": [
-        "Void Breach damage 85-225->95-235"
+        "Cosmic Power: fixed Tether being lost on death"
       ],
       "analysis": {
-        "summary": "Minor buff: Gideon's Void Breach deals more damage.",
-        "playing": "A bit more poke and teamfight damage on your main zoning tool — nothing else changes.",
-        "facing": "His poke stings a little more; don't get greedy standing in the void zone."
+        "summary": "Bugfix: Gideon no longer loses his Cosmic Power tether stacks when he dies.",
+        "playing": "Slightly more reliable scaling — your tether progress survives a death now.",
+        "facing": "Effectively unchanged; he keeps stacks through deaths, so don't count on resetting his scaling by killing him."
       },
       "reviewNeeded": false,
       "reviewReasons": []
     },
     "howitzer": {
-      "patch": "1.14.4",
-      "trend": "buff",
+      "patch": "1.15",
+      "trend": "nerf",
       "changes": [
-        "Cannon scaling 55%->70% Bonus Physical",
-        "R2000 Missile added 50% Bonus Physical",
-        "Land Mine damage 80-200->90-210",
-        "Make It Rain added 120% Bonus Physical total"
+        "Sniper Shells omnivamp per stack 2% -> 1.5%"
       ],
       "analysis": {
-        "summary": "Howitzer's abilities now scale much more with bonus Physical Power, so a full AD build turns him into a real damage threat.",
-        "playing": "Build damage — your whole kit, especially the Make It Rain ult, scales far harder now; great for teamfight zoning.",
-        "facing": "His combos and ult hit noticeably harder; don't group tightly in Make It Rain and pop him before he free-casts."
+        "summary": "Narrow nerf: Howitzer's passive omnivamp was reduced.",
+        "playing": "You sustain a bit less from your stacks — otherwise unchanged.",
+        "facing": "He heals slightly less in extended fights; pressure him a touch harder."
       },
       "reviewNeeded": false,
       "reviewReasons": []
@@ -480,18 +488,15 @@
       "reviewReasons": []
     },
     "shinbi": {
-      "patch": "1.14.4",
-      "trend": "buff",
+      "patch": "1.15",
+      "trend": "mixed",
       "changes": [
-        "Kiba scaling 75%->80% Bonus Physical",
-        "Line Tempo 50%->55% Magical",
-        "Crescendo added 25% Bonus Physical, Biting Melody added 10%",
-        "Circle Rhythm and Rushing Beat per-rank damage increased"
+        "Allegro: fixed a cooldown-refund bug"
       ],
       "analysis": {
-        "summary": "Across-the-board damage buff: her wolves, dash, and ult all scale better, and several abilities now also reward bonus Physical Power.",
-        "playing": "Both AP and on-hit Shinbi got stronger — your wolves and ult clear and burst harder, so play aggressively.",
-        "facing": "Her skirmish and dive damage are up; ward for the wolf roams and don't get caught alone."
+        "summary": "Bugfix: Allegro's cooldown refund now behaves correctly — no intended balance change.",
+        "playing": "Play as normal; your cooldown refunds are just consistent now.",
+        "facing": "Unchanged matchup."
       },
       "reviewNeeded": false,
       "reviewReasons": []
@@ -546,16 +551,17 @@
       "reviewReasons": []
     },
     "zinx": {
-      "patch": "1.14.4",
-      "trend": "mixed",
+      "patch": "1.15",
+      "trend": "nerf",
       "changes": [
-        "Heal Matrix modifier 90%->85%",
-        "Ricochet hitbox +10%, cast frame 6->4.65 (faster)"
+        "Terminal Treatment on-hit bonus 0-60% -> 0-50%",
+        "Basic-attack time 1.3 -> 1.35 (slower)",
+        "Refibrillator magical-power scaling 15% -> 12%"
       ],
       "analysis": {
-        "summary": "Mixed: her healing was slightly cut, but Ricochet is now easier to land and fires faster — more reliable damage, a bit less sustain.",
-        "playing": "Your poke and combo are snappier and more consistent; just don't rely on quite as much healing.",
-        "facing": "Her Ricochet is harder to dodge now — sidestep earlier; her heals are slightly weaker too."
+        "summary": "Nerf: her on-hit bonus, attack cadence, and ult scaling were all trimmed — less sustained and burst damage.",
+        "playing": "Your auto-DPS and combo hit less; weave abilities more and don't rely on the old on-hit ramp.",
+        "facing": "Her on-hit pressure and burst are weaker; you can trade into her more freely."
       },
       "reviewNeeded": false,
       "reviewReasons": []
@@ -606,31 +612,33 @@
       "reviewReasons": []
     },
     "kallari": {
-      "patch": "1.14.4",
+      "patch": "1.15",
       "trend": "nerf",
       "changes": [
-        "Health growth 137->134",
-        "Crippling Dagger damage 65-185->60-180",
-        "Shadow Dance cooldown 18-14->19-15"
+        "Death Mark bonus physical-power scaling 2.5% -> 2%",
+        "Shadow Walk health-regen physical-penetration scaling 150% -> 100%"
       ],
       "analysis": {
-        "summary": "Kallari was nerfed: less health scaling, lower dagger damage, and a longer stealth-ult cooldown.",
-        "playing": "You're squishier and your engage/escape ult is up less — pick assassinations more carefully.",
-        "facing": "She has more ult downtime now — group up when her stealth is on cooldown and ward to spot her."
+        "summary": "Nerf: Kallari's execute scaling and Shadow Walk penetration benefit were both trimmed.",
+        "playing": "Your assassination ceiling is a bit lower — pick cleaner targets and itemize penetration to compensate.",
+        "facing": "Her burst is slightly weaker; you have a hair more room to survive her opener."
       },
       "reviewNeeded": false,
       "reviewReasons": []
     },
     "revenant": {
-      "patch": "1.14.4",
-      "trend": "nerf",
+      "patch": "1.15",
+      "trend": "buff",
       "changes": [
-        "Hellfire Rounds monster damage cap 250-750->200-600"
+        "Mana regen growth 0.15 -> 0.18",
+        "Obliterate scaling 40/50/60/70/80% -> 40/55/70/85/100%",
+        "Scar scaling 15%/20% -> 20%/30% (phys/mag)",
+        "Hellfire Rounds speed/attack scaling 15% -> 18% (monster cap lowered to 200-450)"
       ],
       "analysis": {
-        "summary": "Narrow nerf: Revenant's bonus damage to monsters is capped lower, slowing his jungle and objective clear.",
-        "playing": "Your camp and objective damage is a bit lower — clear is slightly slower, but your hero damage is unchanged.",
-        "facing": "He takes objectives slightly slower now — contest neutrals a touch more confidently."
+        "summary": "Strong damage buff: Obliterate and Scar scale much harder and his on-hit ramp is faster, at the cost of a lower monster-damage cap.",
+        "playing": "Build damage — your ult and Scar hit far harder now; clear is marginally slower but your hero damage jumps.",
+        "facing": "His burst and ult threat are up significantly; don't sit in Obliterate range at low health."
       },
       "reviewNeeded": false,
       "reviewReasons": []
@@ -669,33 +677,129 @@
       "reviewReasons": []
     },
     "the-fey": {
-      "patch": "1.14.4",
-      "trend": "nerf",
+      "patch": "1.15",
+      "trend": "mixed",
       "changes": [
-        "Verdant Embrace per-tick scaling 5.3%->4%, explosion 32%->24%",
-        "Bramble Patch damage 80-240->90-250"
+        "Mana growth 27 -> 32, movement speed 675 -> 670",
+        "Bramble Patch magical-power scaling 75% -> 70%, mana cost 70-110 -> 60-100"
       ],
       "analysis": {
-        "summary": "The Fey was nerfed where it matters most: Verdant Embrace damage was cut significantly (a small Bramble buff doesn't offset it).",
-        "playing": "Your main damage/zoning ability hits much less — play for utility and picks over raw poke.",
-        "facing": "Her zoning damage is noticeably weaker — you can contest her zones more aggressively."
+        "summary": "Mixed tune: a healthier mana pool and cheaper Bramble Patch, offset by slightly lower Bramble scaling and a hair less move speed.",
+        "playing": "You can poke more sustainably with cheaper Bramble; the damage per cast is marginally lower.",
+        "facing": "She zones more often but each Bramble hits a touch less — contest the space a bit more freely."
       },
       "reviewNeeded": false,
       "reviewReasons": []
     },
     "yin": {
-      "patch": "1.14.4",
+      "patch": "1.15",
       "trend": "nerf",
       "changes": [
-        "Health 690->670",
-        "Rising Storm max stacks 5->6 but speed 5-6.5%->3/4/5/6%",
-        "Silksong scaling 80%->75% Bonus Physical, Windburn max-health 3-6%->2-5%",
-        "Added Magical Power scaling to Lash Kick (80%) and Backlash (60%)"
+        "Rising Storm: fixed a stack bug with Eternals",
+        "Windburn physical-power scaling 10-20% -> 10-18%, cooldown 12-8 -> 13-9"
       ],
       "analysis": {
-        "summary": "Yin was nerfed on health and physical scaling (with Magical Power added to two abilities) — weaker for the standard build, with a possible AP flavor.",
-        "playing": "Standard Yin is squishier and hits a bit less; the new Magical scaling on Lash Kick and Backlash is worth trying.",
-        "facing": "He's more fragile and his physical damage dipped — pressure him and don't fear the old burst as much."
+        "summary": "Nerf: Windburn scales less and is up less often, plus a Rising Storm/Eternals stacking bug was fixed.",
+        "playing": "Your Windburn poke is weaker and on a longer cooldown — rely more on positioning and basics.",
+        "facing": "His ability poke is down and less frequent; step up between Windburns."
+      },
+      "reviewNeeded": false,
+      "reviewReasons": []
+    },
+    "argus": {
+      "patch": "1.15",
+      "trend": "buff",
+      "changes": [
+        "Mana regen 1.7 -> 2.0, Physical Power growth 3.1 -> 3.5",
+        "Particle Shredder mana cost lowered to 12/14/16/18/20",
+        "Infinite Obliteration projectile speed +25% -> +50%",
+        "Synaptic Obliterator cancel delay 0.5s -> 0.1s"
+      ],
+      "analysis": {
+        "summary": "Clean quality-of-life and scaling buff: more sustain, more power per level, cheaper abilities, and far snappier ult controls.",
+        "playing": "You can cast more freely and your ult is much more responsive — lean into aggressive poke and re-positions.",
+        "facing": "His abilities are up more and his ult is harder to dodge — respect a longer poke window and quicker follow-up."
+      },
+      "reviewNeeded": false,
+      "reviewReasons": []
+    },
+    "dekker": {
+      "patch": "1.15",
+      "trend": "buff",
+      "changes": [
+        "Polarity Strike shield 150/250/350 -> 200/350/500",
+        "Mana regen 1.65 -> 1.75, mana growth 34 -> 38"
+      ],
+      "analysis": {
+        "summary": "Support buff: a much larger Polarity Strike shield and healthier mana economy.",
+        "playing": "You peel harder with the bigger shield and run out of mana less — be more proactive with Polarity Strike.",
+        "facing": "Her shields absorb more now; commit to a target before she can peel rather than after."
+      },
+      "reviewNeeded": false,
+      "reviewReasons": []
+    },
+    "murdock": {
+      "patch": "1.15",
+      "trend": "nerf",
+      "changes": [
+        "Physical Power 61 -> 59",
+        "Justice's Reach range bonus +300 -> +250",
+        "Shots Fired scaling 40/52/64/76% -> 35/45/55/65%",
+        "Buckshot damage 80/108/136/164/192 -> 70/98/126/154/182"
+      ],
+      "analysis": {
+        "summary": "Broad nerf: less base power, shorter ult range, and lower Shots Fired and Buckshot damage.",
+        "playing": "Your poke and burst are down and your ult reaches less far — play safer and farm to your item spikes.",
+        "facing": "His lane damage and ult threat are weaker; you can step up against his poke more often."
+      },
+      "reviewNeeded": false,
+      "reviewReasons": []
+    },
+    "muriel": {
+      "patch": "1.15",
+      "trend": "mixed",
+      "changes": [
+        "Physical Power growth 2.6 -> 3.4 (off-build flavor)",
+        "Alacrity cooldown 11/10.5/10/9.5/9 -> 12/11.5/11/10.5/10",
+        "Reversal Of Fortune damage reduction 40% -> 35%"
+      ],
+      "analysis": {
+        "summary": "Mixed: her movement steroid is on a longer cooldown and her ult's damage reduction was cut, with an odd physical-power growth bump that only matters for off-meta builds.",
+        "playing": "You shield-engage a bit less often and your ult mitigates less — time Alacrity and Reversal more deliberately.",
+        "facing": "Her peel ult is slightly weaker and up less; commit to a dive when Alacrity is down."
+      },
+      "reviewNeeded": false,
+      "reviewReasons": []
+    },
+    "phase": {
+      "patch": "1.15",
+      "trend": "nerf",
+      "changes": [
+        "Physical Armor growth 5.5 -> 5.2",
+        "Telekinetic Link range-break delay 1.3s -> 1s",
+        "Hyperflux attack speed 50/75/100% -> 40/60/80%"
+      ],
+      "analysis": {
+        "summary": "Nerf: her link breaks faster at range, her Hyperflux attack-speed buff is smaller, and she's slightly squishier.",
+        "playing": "Hold your link tighter (it snaps sooner) and expect a weaker attack-speed steroid for your carry.",
+        "facing": "You can break her tether by spacing sooner, and her empowered carry windows are a bit weaker."
+      },
+      "reviewNeeded": false,
+      "reviewReasons": []
+    },
+    "wukong": {
+      "patch": "1.15",
+      "trend": "nerf",
+      "changes": [
+        "Health growth 134 -> 132",
+        "Force Push physical-power scaling 110% -> 100%",
+        "Windsurge physical-power scaling 100% -> 90%",
+        "84,000 Hairs clone scaling 14% -> 12% (phys), max-health scaling 18% -> 16%"
+      ],
+      "analysis": {
+        "summary": "Broad nerf: less health scaling and lower physical-power scaling across Force Push, Windsurge, and his clone ult.",
+        "playing": "Your combo and ult clone hit less — itemize for the lost damage and pick engages carefully.",
+        "facing": "His burst and clone pressure are weaker; you can trade into him a bit more confidently."
       },
       "reviewNeeded": false,
       "reviewReasons": []
