@@ -124,7 +124,7 @@ const counts = groups.map(([k]) => heroes.filter(([, p]) => p.magnitude === k).l
 // a small scrollspy highlights the section you're in.
 const SECTIONS = [
   { id: 'ch-tldr', label: 'TL;DR' },
-  { id: 'ch-heroes', label: 'Hero predictions' },
+  { id: 'ch-heroes', label: 'Hero changes' },
   { id: 'ch-eternals', label: 'Eternals' },
   { id: 'ch-items', label: 'Items' },
   ...(digest.aram ? [{ id: 'ch-aram', label: 'ARAM' }] : []),
@@ -243,7 +243,7 @@ ${subnavBar}
       <h2 class="section" id="ch-tldr">TL;DR — what actually changes how you play</h2>
       <ul class="tldr">${globalList}</ul>
 
-      <h2 class="section" id="ch-heroes">Hero predictions <span style="font-size:0.7rem;color:var(--text-2);font-weight:500;">
+      <h2 class="section" id="ch-heroes">Hero changes <span style="font-size:0.7rem;color:var(--text-2);font-weight:500;">
         ${counts[0]} meta-shifting · ${counts[1]} notable · ${counts[2]} minor · bugfix-only heroes excluded</span></h2>
       ${heroSections}
 
