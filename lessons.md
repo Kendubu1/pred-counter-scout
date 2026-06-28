@@ -2290,3 +2290,33 @@ Eight maintainer-flagged fixes:
   `mix-blend-mode:screen` (clusters brighten without smearing) + diamond towers + a faint grid —
   "render a crisp version of the map" reads far more like a real tactical map. `prefers-reduced-
   motion` disables the animation. ui:audit 100%, ui:render 0 overflow.
+
+## 2026-06-28: Onboarding the 1.15 "Splash Damage" patch (digest layer, zero-API)
+
+- **What this patch is:** the biggest since the Eternals overhaul — new hero (Ikra, splash
+  mage), a full Daybreak V6 map + jungle-economy rework, comeback-XP/tower/crit system
+  changes, a broad Eternal trim, and item shuffles (Earth Spirit → Gamma Gloop crest, Rebirth
+  reworked). Captured as `data/patches/1.15.json` in the established 1.14.4 schema and stacked
+  by `scripts/apply-patch.js` (now `1.14 + 1.14.1 + 1.14.4 + 1.15`). 23 trend flips; 46 heroes
+  annotated. Harness stayed green (126), typecheck clean.
+- **The split that matters:** the patch has two cleanly separable halves. The *digest/trend
+  layer* (data/patches → apply-patch → hero-patch-state.json → patch-state UI) is HAND-CAPTURED
+  and ZERO-API — doable now, permanent regardless of when data lands, not redone work. The
+  *numeric resim* (omeda snapshot → artifacts → matrix, plus Ikra's actual stats + the item
+  number changes) is gated on (a) 1.15 going live on omeda.city — it dropped 2026-06-30, this
+  session is 2026-06-28, so omeda still holds the pre-1.15 snapshot — and (b) PREDGG creds for
+  the pred.gg winrate/build half (absent this session). So the right call was: ship the digest
+  + a simplified readable page now, and leave a precise post-go-live checklist rather than do
+  estimate work that gets redone. (CLAUDE.md rule 4 is about not doing partial *pull* work; the
+  digest is not a pull.)
+- **`npm run snapshot` needs NO creds** — it's the public omeda.city API (heroes.json/items.json
+  with a User-Agent). Only the full `refresh` chain (augments/buildstats/skills via pred.gg)
+  needs PREDGG_CLIENT_ID/SECRET. Worth remembering: after a patch goes live you can refresh hero
+  base stats + items immediately, and only the winrate/build half waits on a cred session.
+- **Slug conventions held:** Neon = `n3on`, and `adele`/`n3on`/`legion` correctly report as
+  "not in hero-profiles.json" (same as prior patches — harmless; the script skips them from the
+  state but lists them). New hero Ikra lives in the digest `systems[]`, not `heroes[]` (no trend,
+  no profile yet) — it surfaces in the global/systems copy without polluting the buff/nerf buckets.
+- **Simplified page:** `docs/patches/1.15.md` — a skimmable, gameplay-only condensation (drops
+  store/esports/ranked-reset noise) with the post-go-live resim checklist baked in. This is the
+  "simplify this" deliverable: the giant official notes reduced to what touches the engine + meta.
