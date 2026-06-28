@@ -172,6 +172,12 @@ const aramBlock = digest.aram ? `
 ` : '';
 
 const globalList = (digest.global || []).map((g) => `<li>${esc(g)}</li>`).join('');
+// TL;DR as scannable bold-lead cards (same shape as Systems entries), with a
+// fallback to the long global strings if no structured tldr is present.
+const tldrBlock = (digest.tldr && digest.tldr.length)
+  ? `<div class="tldr-grid">${digest.tldr.map((t) =>
+      `<div class="tldr-item"><div class="tldr-lead">${esc(t.lead)}</div><div class="tldr-text">${esc(t.text)}</div></div>`).join('')}</div>`
+  : `<ul class="tldr">${globalList}</ul>`;
 // Eternals get the same treatment as heroes: a showcase grid of clickable
 // images with a colored buff/nerf/shift arrow, then a card per Eternal.
 const ETSLUG = (name) => name.toLowerCase();
@@ -278,6 +284,10 @@ const html = `<!DOCTYPE html>
     .tldr { list-style: none; padding: 0; }
     .tldr li { font-size: 0.88rem; color: var(--text-1); margin-bottom: 0.5rem; padding-left: 1.2rem; position: relative; }
     .tldr li::before { content: '◦'; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+    .tldr-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 0.7rem 1.4rem; }
+    .tldr-item { border-left: 2px solid var(--border); padding-left: 0.75rem; }
+    .tldr-lead { font-weight: 700; font-size: 0.9rem; color: var(--text-0); margin-bottom: 0.15rem; }
+    .tldr-text { font-size: 0.84rem; color: var(--text-1); line-height: 1.5; }
     .group-head { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;
       margin: 1.5rem 0 0.6rem; display: flex; align-items: center; gap: 0.5rem; }
     .group-count { color: var(--text-2); font-weight: 500; }
@@ -418,7 +428,7 @@ ${subnavBar}
       </div>
 
       <h2 class="section" id="ch-tldr">TL;DR — what actually changes how you play</h2>
-      <ul class="tldr">${globalList}</ul>${metaRead('tldr')}
+      ${tldrBlock}${metaRead('tldr')}
 
       <h2 class="section" id="ch-heroes">Hero changes <span style="font-size:0.7rem;color:var(--text-2);font-weight:500;">
         ${counts[0]} meta-shifting · ${counts[1]} notable · ${counts[2]} minor · bugfix-only heroes excluded</span></h2>
