@@ -78,8 +78,7 @@
   .step .txt span { display:block; color:var(--text-2); font-size:.74rem; line-height:1.45; margin-top:.1rem; }
   /* ── end-of-selection cards: live draft + patch review, side by side ── */
   a.patch-pill:hover { color:var(--text-0); border-color:var(--accent); }
-  .endcards { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; margin-top:1.6rem; }
-  @media (max-width:560px){ .endcards { grid-template-columns:1fr; } }
+  .endcards { display:grid; grid-template-columns:1fr; gap:.7rem; margin-top:1.6rem; }
   .endcard { display:flex; gap:.75rem; align-items:flex-start; background:var(--bg-1); border:1px solid var(--border); border-radius:14px; padding:.95rem 1rem; text-decoration:none; color:inherit; transition:border-color .15s, background .15s; }
   .endcard:hover { border-color:var(--accent); background:var(--bg-2); }
   .endcard--patch { border-color:var(--accent); background:var(--accent-soft); }
@@ -447,15 +446,7 @@
       <div class="rolebar" id="rolebar"></div>
     </div>
     <div id="lanedetail"></div>
-    <section class="endcards" aria-label="Live draft and patch review">
-      <a class="endcard endcard--draft" href="livedraft.html">
-        <span class="ec-icon">📡</span>
-        <span class="ec-body">
-          <span class="ec-title">Live draft</span>
-          <p class="ec-sub">Already in a pick/ban? Run the lane-by-lane counter board live as the draft unfolds.</p>
-          <span class="ec-cta">Open the draft board →</span>
-        </span>
-      </a>
+    <section class="endcards" aria-label="Patch review">
       <a class="endcard endcard--patch" href="../patch-1.15.html">
         <span class="ec-icon">📋</span>
         <span class="ec-body">
@@ -505,6 +496,9 @@ function metaVerdict(wr, ms, badge) {
 // One shared win-rate color band used everywhere: green >=52% (clearly above the 50%
 // break-even), red <=48% (clearly below), neutral in between. Matches wrClass below.
 const wrColor = (wr) => wr >= 0.52 ? 'var(--green)' : wr <= 0.48 ? 'var(--red)' : 'var(--text-2)';
+// Plain-language tooltip for the colored win-rate number, so the green/grey/red
+// coding is explained on hover (not just in the legend).
+const wrTip = (wr) => { const p = (wr * 100).toFixed(1); return wr >= 0.52 ? `${p}% win rate — above the lane average (strong)` : wr <= 0.48 ? `${p}% win rate — below the lane average (weak)` : `${p}% win rate — around the lane average (even)`; };
 // Per-item "why" rows for a build. The reasoning map is keyed by display name
 // ("Orb Of Growth") but artifact build items may be concatenated ("OrbOfGrowth"),
 // so match on a normalized key and prefer the reasoning's nicer name. Numbered by
@@ -656,7 +650,7 @@ async function renderLaneDetail() {
   if (laneMode === 'first') {
     const mx = await getMatrix();
     const ranked = [...laneMeta].sort((a, b) => b.shrunkWr - a.shrunkWr); // sort by the win rate we show, highest first
-    body = '<div class="lp-sub" style="margin:.2rem 0 .5rem">Sorted by win rate, highest first. Tap a hero for its build; hover a tag for what it means.</div>' + ranked.map((h, i) => {
+    body = '<div class="lp-sub wr-legend" style="margin:.2rem 0 .5rem">Win rate vs the lane average — <b style="color:var(--green)">●&nbsp;≥52% strong</b> · <b style="color:var(--text-2)">●&nbsp;48–52% even</b> · <b style="color:var(--red)">●&nbsp;≤48% weak</b>. Sorted highest first; tap a hero for its build, hover its tag (Proven / Strong / Sleeper …) for what it means.</div>' + ranked.map((h, i) => {
       // blind-pick safety vs the heroes actually in THIS lane's meta,
       // from the all-pairs matrix (artifact matchups are primary-role only)
       let trouble = '';
@@ -674,7 +668,7 @@ async function renderLaneDetail() {
         <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
         <span><b>${i === 0 ? '👑 ' : ''}${esc(h.name)}</b>${h.badge ? ` <span style="color:var(--gold)">${h.badge === 'sleeper' ? '💤 sleeper' : '⚠ popular but losing'}</span>` : ''}
           <div class="sub">${trouble ? esc(trouble) : 'no sim data for this hero'}</div></span>
-        <span class="wrr"><b style="color:${wrColor(h.shrunkWr)}">${(h.shrunkWr * 100).toFixed(1)}%</b><div class="sub" style="text-align:right">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b class="vtag" style="color:${v.color}" data-tip="${esc(v.tip)}" title="${esc(v.tip)}">${v.label}</b>`; })()}</div></span>
+        <span class="wrr"><b style="color:${wrColor(h.shrunkWr)}" title="${esc(wrTip(h.shrunkWr))}">${(h.shrunkWr * 100).toFixed(1)}%</b><div class="sub" style="text-align:right">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b class="vtag" style="color:${v.color}" data-tip="${esc(v.tip)}" title="${esc(v.tip)}">${v.label}</b>`; })()}</div></span>
       </div>`;
     }).join('');
     const metaSet = new Set(laneMeta.map((h) => h.slug));
@@ -686,7 +680,7 @@ async function renderLaneDetail() {
       .sort((a, b) => wrOf(b) - wrOf(a));
     const echip = (h, isFlex) => {
       const w = h.roleWr && h.roleWr[role];
-      const wr = w ? `<b style="color:${wrColor(w.wr)}">${(w.wr * 100).toFixed(1)}%</b>` : '';
+      const wr = w ? `<b style="color:${wrColor(w.wr)}" title="${esc(wrTip(w.wr))}">${(w.wr * 100).toFixed(1)}%</b>` : '';
       const tag = wr; // both rest and flex chips: just the win% (section header already says which group)
       return `
         <span class="echip" data-slug="${h.slug}" data-go="hero"${isFlex ? ` data-role="${role}"` : ''}>

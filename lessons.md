@@ -2320,3 +2320,21 @@ Eight maintainer-flagged fixes:
 - **Simplified page:** `docs/patches/1.15.md` — a skimmable, gameplay-only condensation (drops
   store/esports/ranked-reset noise) with the post-go-live resim checklist baked in. This is the
   "simplify this" deliverable: the giant official notes reduced to what touches the engine + meta.
+
+## 2026-06-28: Retire the old version UIs; v6 is the only served site
+
+- The maintainer asked to stop serving the older UIs (v0–v5, the v1 root `ui/index.html`,
+  `patch-notes.html`, `team-lab.html`) so players don't land on stale, confusing pages. This is
+  an **explicit override** of the CLAUDE.md "ui/v2 is frozen, don't modify" rule — granted in the
+  request. Implemented as redirect stubs (meta-refresh + `location.replace` + `noindex` +
+  `rel=canonical`) to `../v6/` (or `v6/` from the ui root), so old bookmarks resolve to v6 rather
+  than 404. Data under data/game-data + data/2026-02-08 is untouched; only the old HTML stops
+  serving.
+- `learn-eternals.html` is the one OLD-styled page v6 still links to (drawer "Learn Eternals"), so
+  it was kept but de-stale'd: header now points to v6 (Pick & Build / Pre-Game / Coach) + the patch
+  page, rebranded to "Pred Scout", and its dead `v2/`/team-lab/patch-notes links removed.
+- Lane room got a colour legend: the win-rate numbers were colour-coded (green ≥52% / grey 48–52% /
+  red ≤48% via `wrColor`) with no explanation. Added an at-a-glance legend above the list plus a
+  per-number hover `title` (`wrTip`). The verdict tags already had hover tips.
+- Removed the Live-draft end-card from the home page now that it lives in the side menu (kept the
+  Patch review card, full-width).
