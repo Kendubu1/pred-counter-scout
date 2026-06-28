@@ -128,24 +128,39 @@ function aramSysCard(s, i) {
         ${p.willChange ? `<div class="pred"><span class="pred-label">What it'll change</span>${esc(p.willChange)}</div>` : ''}
       </div>`;
 }
-// Per-hero ARAM tuning, grouped by direction into portrait chips so the
-// ~34-hero pass is scannable at a glance instead of a flat table.
+// Per-hero ARAM tuning, grouped by the SHARED change so common buffs cluster
+// (e.g. the heroes who all got the same +3% damage), instead of a flat table.
 const ARAM_SLUG_OVER = { Grim: 'grim-exe' };
 const aramSlug = (n) => ARAM_SLUG_OVER[n] || n.toLowerCase().replace(/ & /g, '-').replace(/\./g, '').replace(/'/g, '').replace(/\s+/g, '-');
-function aramChip(h) {
-  return `<div class="aram-chip" data-dir="${h.dir}">
-            <img loading="lazy" src="img/heroes/${aramSlug(h.name)}.webp" alt="" onerror="this.style.visibility='hidden'">
-            <span class="ac-body"><span class="ac-name">${esc(h.name)}</span><span class="ac-change">${esc(h.change)}</span></span>
-          </div>`;
+const aramImg = (h) => `<img loading="lazy" src="img/heroes/${aramSlug(h.name)}.webp" alt="" onerror="this.style.visibility='hidden'">`;
+// Compact chip (face + name) — used in a cluster where the change is the header.
+function aramFace(h) {
+  return `<div class="aram-chip" data-dir="${h.dir}">${aramImg(h)}<span class="ac-body"><span class="ac-name">${esc(h.name)}</span></span></div>`;
 }
-const aramHeroGroups = [['buff', 'Buffed'], ['nerf', 'Nerfed'], ['mixed', 'Mixed']].map(([dir, label]) => {
-  const list = (digest.aram?.heroes || []).filter((h) => h.dir === dir);
-  if (!list.length) return '';
-  const t = TREND[dir] || TREND.mixed;
-  return `
-      <h4 class="aram-grp-head"><span class="badge ${t.cls}">${t.icon} ${label}</span> <span class="group-count">${list.length}</span></h4>
-      <div class="aram-chips">${list.map(aramChip).join('')}</div>`;
-}).join('');
+// Full chip (face + name + its own change) — used for bespoke adjustments.
+function aramChip(h) {
+  return `<div class="aram-chip" data-dir="${h.dir}">${aramImg(h)}<span class="ac-body"><span class="ac-name">${esc(h.name)}</span><span class="ac-change">${esc(h.change)}</span></span></div>`;
+}
+const aramByChange = new Map();
+(digest.aram?.heroes || []).forEach((h) => {
+  if (!aramByChange.has(h.change)) aramByChange.set(h.change, []);
+  aramByChange.get(h.change).push(h);
+});
+const aramClusters = [...aramByChange.entries()].filter(([, hs]) => hs.length >= 2)
+  .sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]));
+const aramSingles = [...aramByChange.entries()].filter(([, hs]) => hs.length < 2)
+  .flatMap(([, hs]) => hs).sort((a, b) => a.name.localeCompare(b.name));
+const aramHeroGroups = [
+  ...aramClusters.map(([change, hs]) => {
+    const t = TREND[hs[0].dir] || TREND.mixed;
+    return `
+      <h4 class="aram-grp-head"><span class="badge ${t.cls}">${t.icon} ${esc(change.replace(/\s*->\s*/g, ' → '))}</span> <span class="group-count">${hs.length} heroes</span></h4>
+      <div class="aram-chips compact">${hs.map(aramFace).join('')}</div>`;
+  }),
+  aramSingles.length ? `
+      <h4 class="aram-grp-head"><span class="badge trend-mixed">◆ Other adjustments</span> <span class="group-count">${aramSingles.length}</span></h4>
+      <div class="aram-chips">${aramSingles.map(aramChip).join('')}</div>` : '',
+].join('');
 const aramBlock = digest.aram ? `
       <h2 class="section" id="ch-aram">ARAM balance</h2>
       <p class="lead">${esc(digest.aram.summary || '')}</p>
@@ -292,6 +307,7 @@ const html = `<!DOCTYPE html>
     .et-mean { color: var(--text-2); }
     .aram-grp-head { display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0 0.5rem; }
     .aram-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: 0.45rem; }
+    .aram-chips.compact { grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); }
     .aram-chip { display: flex; align-items: center; gap: 0.55rem; padding: 0.4rem 0.55rem; border-radius: 10px;
       background: var(--bg-1); border: 1px solid var(--border); border-left: 3px solid var(--border); min-width: 0; }
     .aram-chip[data-dir="buff"] { border-left-color: var(--green); }
