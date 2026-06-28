@@ -101,7 +101,7 @@ function aramHeroRow(h) {
   return `<tr><td class="aram-h">${esc(h.name)}</td><td><span class="badge ${d.cls}">${d.icon} ${d.label}</span></td><td class="aram-c">${esc(h.change)}</td></tr>`;
 }
 const aramBlock = digest.aram ? `
-      <h2 class="section">ARAM balance</h2>
+      <h2 class="section" id="ch-aram">ARAM balance</h2>
       <p class="lead">${esc(digest.aram.summary || '')}</p>
       <h3 class="group-head">Systemic changes <span class="group-count">${(digest.aram.system || []).length}</span></h3>
       ${(digest.aram.system || []).map(aramSysCard).join('')}
@@ -118,6 +118,25 @@ const sysList = (digest.systems || []).map((s) =>
   `<div class="sys"><div class="sys-name">${esc(s.name)}</div><div class="sys-sum">${esc(s.summary)}</div></div>`).join('');
 
 const counts = groups.map(([k]) => heroes.filter(([, p]) => p.magnitude === k).length);
+
+// Chapter menu — a sticky section jumper (mirrors the v6 pages' subnav), since
+// the page has many chapters. Pills are real anchor links (work without JS);
+// a small scrollspy highlights the section you're in.
+const SECTIONS = [
+  { id: 'ch-tldr', label: 'TL;DR' },
+  { id: 'ch-heroes', label: 'Hero predictions' },
+  { id: 'ch-eternals', label: 'Eternals' },
+  { id: 'ch-items', label: 'Items' },
+  ...(digest.aram ? [{ id: 'ch-aram', label: 'ARAM' }] : []),
+  { id: 'ch-systems', label: 'Systems & map' },
+];
+const subnavBar = `
+  <nav class="patch-subnav" aria-label="Chapters">
+    <div class="psn-inner">
+      <span class="psn-label">Jump to</span>
+      ${SECTIONS.map((s) => `<a class="psn-pill" href="#${s.id}" data-t="${s.id}">${esc(s.label)}</a>`).join('')}
+    </div>
+  </nav>`;
 
 const html = `<!DOCTYPE html>
 <html lang="en">
@@ -177,6 +196,21 @@ const html = `<!DOCTYPE html>
     .sys-sum { font-size: 0.82rem; color: var(--text-1); margin-top: 0.15rem; line-height: 1.45; }
     .foot { margin-top: 2rem; font-size: 0.78rem; color: var(--text-2); border-top: 1px solid var(--border); padding-top: 1rem; }
     .foot a, .lead a { color: var(--accent); }
+    html { scroll-behavior: smooth; }
+    .patch-subnav { position: sticky; top: 56px; z-index: 90; background: var(--bg-1);
+      border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
+    .psn-inner { max-width: 880px; margin: 0 auto; display: flex; align-items: center; gap: 0.35rem;
+      padding: 0.5rem 1rem; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+    .psn-inner::-webkit-scrollbar { display: none; }
+    .psn-label { font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-2);
+      font-weight: 700; margin-right: 0.2rem; flex-shrink: 0; }
+    .psn-pill { flex-shrink: 0; font-size: 0.78rem; color: var(--text-1); text-decoration: none;
+      padding: 0.3rem 0.7rem; border-radius: 99px; border: 1px solid var(--border); white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s, background 0.15s; }
+    .psn-pill:hover { color: var(--text-0); border-color: var(--accent); }
+    .psn-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    h2.section { scroll-margin-top: 112px; }
+    @media (max-width: 560px) { .psn-label { display: none; } }
   </style>
 </head>
 <body>
@@ -191,6 +225,7 @@ const html = `<!DOCTYPE html>
       </div>
     </div>
   </header>
+${subnavBar}
 
   <main id="app">
     <div class="patch">
@@ -205,23 +240,23 @@ const html = `<!DOCTYPE html>
         updated builds &amp; matchups) runs once 1.15 goes live on omeda.city.
       </div>
 
-      <h2 class="section">TL;DR — what actually changes how you play</h2>
+      <h2 class="section" id="ch-tldr">TL;DR — what actually changes how you play</h2>
       <ul class="tldr">${globalList}</ul>
 
-      <h2 class="section">Hero predictions <span style="font-size:0.7rem;color:var(--text-2);font-weight:500;">
+      <h2 class="section" id="ch-heroes">Hero predictions <span style="font-size:0.7rem;color:var(--text-2);font-weight:500;">
         ${counts[0]} meta-shifting · ${counts[1]} notable · ${counts[2]} minor · bugfix-only heroes excluded</span></h2>
       ${heroSections}
 
-      <h2 class="section">Eternals (draft blessings)</h2>
+      <h2 class="section" id="ch-eternals">Eternals (draft blessings)</h2>
       <p class="lead">${esc(digest.eternals?.summary || '')}</p>
       <table class="et"><tbody>${eternalRows}</tbody></table>
 
-      <h2 class="section">Items</h2>
+      <h2 class="section" id="ch-items">Items</h2>
       <ul class="items-list">${itemList}</ul>
 
       ${aramBlock}
 
-      <h2 class="section">Systems &amp; map</h2>
+      <h2 class="section" id="ch-systems">Systems &amp; map</h2>
       ${sysList}
 
       <div class="foot">
@@ -233,6 +268,23 @@ const html = `<!DOCTYPE html>
       </div>
     </div>
   </main>
+  <script>
+  (function () {
+    var pills = [].slice.call(document.querySelectorAll('.psn-pill'));
+    var byId = {}; pills.forEach(function (p) { byId[p.dataset.t] = p; });
+    var secs = pills.map(function (p) { return document.getElementById(p.dataset.t); }).filter(Boolean);
+    if (!('IntersectionObserver' in window) || !secs.length) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        pills.forEach(function (p) { p.classList.toggle('active', p.dataset.t === e.target.id); });
+        var p = byId[e.target.id];
+        if (p) { p.parentNode.scrollTo({ left: p.offsetLeft - p.parentNode.clientWidth / 2 + p.offsetWidth / 2, behavior: 'smooth' }); }
+      });
+    }, { rootMargin: '-20% 0px -75% 0px' });
+    secs.forEach(function (s) { io.observe(s); });
+  })();
+  </script>
 </body>
 </html>
 `;
