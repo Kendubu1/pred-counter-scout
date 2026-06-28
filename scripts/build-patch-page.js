@@ -74,6 +74,42 @@ const heroSections = groups.map(([key, title]) => {
       ${list.map(heroCard).join('')}`;
 }).join('');
 
+// ── ARAM section ──
+const aramKeys = ['gold-drip', 'minion-magical-armor', 'stack-interval'];
+const aramSys = pred.aramSystem || {};
+function aramSysCard(s, i) {
+  const p = aramSys[aramKeys[i]] || {};
+  const m = MAG[p.magnitude] || null;
+  return `
+      <div class="hero-card card" data-mag="${p.magnitude || ''}">
+        <div class="hero-head">
+          <span class="hero-name">${esc(s.name)}</span>
+          ${m ? `<span class="badge ${m.cls}">${m.label}</span>` : ''}
+        </div>
+        <ul class="change-list"><li>${esc(s.change)}</li></ul>
+        ${p.why ? `<div class="pred"><span class="pred-label">Why</span>${esc(p.why)}</div>` : `<div class="pred">${esc(s.meaning)}</div>`}
+        ${p.willChange ? `<div class="pred"><span class="pred-label">What it'll change</span>${esc(p.willChange)}</div>` : ''}
+      </div>`;
+}
+const ADIR = {
+  buff: { label: 'Buff', cls: 'trend-buff', icon: '▲' },
+  nerf: { label: 'Nerf', cls: 'trend-nerf', icon: '▼' },
+  mixed: { label: 'Mixed', cls: 'trend-mixed', icon: '◆' },
+};
+function aramHeroRow(h) {
+  const d = ADIR[h.dir] || ADIR.mixed;
+  return `<tr><td class="aram-h">${esc(h.name)}</td><td><span class="badge ${d.cls}">${d.icon} ${d.label}</span></td><td class="aram-c">${esc(h.change)}</td></tr>`;
+}
+const aramBlock = digest.aram ? `
+      <h2 class="section">ARAM balance</h2>
+      <p class="lead">${esc(digest.aram.summary || '')}</p>
+      <h3 class="group-head">Systemic changes <span class="group-count">${(digest.aram.system || []).length}</span></h3>
+      ${(digest.aram.system || []).map(aramSysCard).join('')}
+      <h3 class="group-head">Per-hero ARAM tuning <span class="group-count">${(digest.aram.heroes || []).length} heroes</span></h3>
+      <p class="lead" style="margin-bottom:0.6rem;">Mode-only multipliers (damage / healing / damage-received) — they do not touch the 5v5 kit numbers above.</p>
+      <table class="et aram-table"><tbody>${(digest.aram.heroes || []).map(aramHeroRow).join('')}</tbody></table>
+` : '';
+
 const globalList = (digest.global || []).map((g) => `<li>${esc(g)}</li>`).join('');
 const eternalRows = (digest.eternals?.changes || []).map((e) =>
   `<tr><td class=" et-name">${esc(e.name)}</td><td>${esc(e.change)}</td><td class=" et-mean">${esc(e.meaning)}</td></tr>`).join('');
@@ -130,6 +166,9 @@ const html = `<!DOCTYPE html>
     table.et td { border-bottom: 1px solid var(--border); padding: 0.5rem 0.6rem; vertical-align: top; color: var(--text-1); }
     .et-name { font-weight: 700; color: var(--text-0); white-space: nowrap; }
     .et-mean { color: var(--text-2); }
+    .aram-table td { padding: 0.35rem 0.6rem; }
+    .aram-h { font-weight: 600; color: var(--text-0); white-space: nowrap; }
+    .aram-c { color: var(--text-2); font-size: 0.78rem; }
     .items-list { list-style: none; padding: 0; }
     .items-list li { font-size: 0.82rem; color: var(--text-1); margin-bottom: 0.45rem; padding-left: 1.2rem; position: relative; }
     .items-list li::before { content: '⬡'; position: absolute; left: 0; color: var(--gold); }
@@ -179,6 +218,8 @@ const html = `<!DOCTYPE html>
 
       <h2 class="section">Items</h2>
       <ul class="items-list">${itemList}</ul>
+
+      ${aramBlock}
 
       <h2 class="section">Systems &amp; map</h2>
       ${sysList}
