@@ -46,18 +46,78 @@
   "eternals": {
     "summary": "1.15 trims the Eternals broadly rather than reworking the system: the durability, sustain, and pure-scaling blessings that anchored the meta each lost a little, while a handful got soft reworks that change how you use them (Krix now applies anti-heal, Vesh restores mana on takedowns, Marrow's Jealousy became a health-threshold damage amp, Vermis's Crush gained an immobilize burst with a per-target cooldown). Re-check your major and both minors after this patch.",
     "changes": [
-      { "name": "Vermis", "change": "Major's max-health damage scaling trimmed (3% +0.25%/lvl -> 3% +0.2%/lvl); Serration missing-health 4% -> 3.5%; Sub Surface damage reduction 8% -> 7%; Crush now deals 8% immobilizing damage (was 5%) but on an 8s per-target cooldown (soft rework); Breach armor shred 30% -> 35%, duration 3.5 -> 4s.", "meaning": "Still the go-to anti-tank on-hit Eternal; Crush turns into a periodic immobilize burst, and Breach shreds a bit more for longer." },
-      { "name": "Marrow", "change": "Major omnivamp 0.85% -> 0.75% (+0.05%/lvl); The Maw true damage +12% -> +10% and threshold 30% -> 40%; Jealousy reworked into a 1-8% damage amp scaling with your health (20-100%).", "meaning": "Slightly less raw lifesteal, but The Maw executes from a higher threshold and Jealousy now rewards staying healthy with a damage amp." },
-      { "name": "Thraex", "change": "Major bonus damage +3% (+0.5%/lvl) -> +3% (+0.4%/lvl) and damage reduction growth trimmed; Ferocity attack speed 1.5% -> 1.25%.", "meaning": "A small across-the-board trim to the bruiser blessing — still solid, just slightly weaker scaling." },
-      { "name": "Nihil", "change": "Major bonus-stat modifier 20% -> 18%.", "meaning": "A touch less of everything from the all-stats major." },
-      { "name": "Krix", "change": "Festering Wounds now applies 45% anti-heal on immobilizing effects (soft rework); Predator camp-leader kill damage +8% -> +10% and adds +3% movement speed for 20s on kill.", "meaning": "Krix becomes an anti-heal enabler for CC-heavy comps, and the jungle path is a bit faster and stickier after camps." },
-      { "name": "Idrisil", "change": "Mending healing 4/5/6/8% -> 3/4/5/7%.", "meaning": "The armor-tank sustain blessing heals a little less at every rank." },
-      { "name": "Vesh", "change": "Major ability damage +6% (+0.5%/min) -> +7% (+0.4%/min); Tithe Of Death ability haste capped at 15 takedowns (30 max) and now restores 15% max mana on takedown (soft rework).", "meaning": "Front-loaded a bit more, capped late, and now pays mana back on kills — better for mana-hungry mages snowballing fights." },
-      { "name": "Xyris", "change": "Major damage 4% -> 3% and per-10-units 0.6% -> 0.4%, capped at 400 unit kills; Furor attack-speed duration 4.5 -> 4s; Iron Will crit heal 8% -> 7%; Cull The Weak minion/monster damage 8% -> 7%; Bone Collector lost its +5% crit-damage bonus.", "meaning": "The crit hyper-carry blessing was trimmed and capped — still farm-to-spike, just a lower ceiling." },
-      { "name": "Exarch", "change": "Preservation healing/shielding received +15% -> +12%; Fervour magical-power scaling 6% -> 5%; Omnipresent out-of-combat movement 8% -> 7%; Delayed Fate DoT conversion 25% -> 20%.", "meaning": "The enchanter/scaling support blessing lost a little on every node — modest sustain/utility trim." },
-      { "name": "Lotus", "change": "Major damage 1.5% -> 1%; Masterpiece movement on takedown 6% -> 5%; Prima Donna damage dealt +12% -> +10% and damage taken +6% -> +5%; Fragrance magical damage 5% -> 4%.", "meaning": "The safe, flexible mage blessing is a bit weaker on both its offense and its trade-off nodes." },
-      { "name": "Demiurge", "change": "Major bonus-stat modifier 12% -> 10%; Tri-Core on-hit damage 6% -> 5%; Cursed Corrupted ability-haste-per-crit 1 -> 0.8; Memory Leak mana-from-ability 6% -> 5% and max mana 600 -> 500.", "meaning": "The late-game full-build scaler lost a little off each node; still the stack-into-late blessing." },
-      { "name": "Aion", "change": "Major gold-from-ability-damage 8% -> 7%; Arcane Resonance cooldown progression 1% -> 0.75% per mana regen, max 75% -> 50%.", "meaning": "The mana-economy mage blessing converts a bit less mana into gold and cooldowns." }
+      {
+        "name": "Vermis",
+        "dir": "mixed",
+        "change": "Major's max-health damage scaling trimmed (3% +0.25%/lvl -> 3% +0.2%/lvl); Serration missing-health 4% -> 3.5%; Sub Surface damage reduction 8% -> 7%; Crush now deals 8% immobilizing damage (was 5%) but on an 8s per-target cooldown (soft rework); Breach armor shred 30% -> 35%, duration 3.5 -> 4s.",
+        "meaning": "Still the go-to anti-tank on-hit Eternal; Crush turns into a periodic immobilize burst, and Breach shreds a bit more for longer."
+      },
+      {
+        "name": "Marrow",
+        "dir": "mixed",
+        "change": "Major omnivamp 0.85% -> 0.75% (+0.05%/lvl); The Maw true damage +12% -> +10% and threshold 30% -> 40%; Jealousy reworked into a 1-8% damage amp scaling with your health (20-100%).",
+        "meaning": "Slightly less raw lifesteal, but The Maw executes from a higher threshold and Jealousy now rewards staying healthy with a damage amp."
+      },
+      {
+        "name": "Thraex",
+        "dir": "nerf",
+        "change": "Major bonus damage +3% (+0.5%/lvl) -> +3% (+0.4%/lvl) and damage reduction growth trimmed; Ferocity attack speed 1.5% -> 1.25%.",
+        "meaning": "A small across-the-board trim to the bruiser blessing — still solid, just slightly weaker scaling."
+      },
+      {
+        "name": "Nihil",
+        "dir": "nerf",
+        "change": "Major bonus-stat modifier 20% -> 18%.",
+        "meaning": "A touch less of everything from the all-stats major."
+      },
+      {
+        "name": "Krix",
+        "dir": "rework",
+        "change": "Festering Wounds now applies 45% anti-heal on immobilizing effects (soft rework); Predator camp-leader kill damage +8% -> +10% and adds +3% movement speed for 20s on kill.",
+        "meaning": "Krix becomes an anti-heal enabler for CC-heavy comps, and the jungle path is a bit faster and stickier after camps."
+      },
+      {
+        "name": "Idrisil",
+        "dir": "nerf",
+        "change": "Mending healing 4/5/6/8% -> 3/4/5/7%.",
+        "meaning": "The armor-tank sustain blessing heals a little less at every rank."
+      },
+      {
+        "name": "Vesh",
+        "dir": "rework",
+        "change": "Major ability damage +6% (+0.5%/min) -> +7% (+0.4%/min); Tithe Of Death ability haste capped at 15 takedowns (30 max) and now restores 15% max mana on takedown (soft rework).",
+        "meaning": "Front-loaded a bit more, capped late, and now pays mana back on kills — better for mana-hungry mages snowballing fights."
+      },
+      {
+        "name": "Xyris",
+        "dir": "nerf",
+        "change": "Major damage 4% -> 3% and per-10-units 0.6% -> 0.4%, capped at 400 unit kills; Furor attack-speed duration 4.5 -> 4s; Iron Will crit heal 8% -> 7%; Cull The Weak minion/monster damage 8% -> 7%; Bone Collector lost its +5% crit-damage bonus.",
+        "meaning": "The crit hyper-carry blessing was trimmed and capped — still farm-to-spike, just a lower ceiling."
+      },
+      {
+        "name": "Exarch",
+        "dir": "nerf",
+        "change": "Preservation healing/shielding received +15% -> +12%; Fervour magical-power scaling 6% -> 5%; Omnipresent out-of-combat movement 8% -> 7%; Delayed Fate DoT conversion 25% -> 20%.",
+        "meaning": "The enchanter/scaling support blessing lost a little on every node — modest sustain/utility trim."
+      },
+      {
+        "name": "Lotus",
+        "dir": "nerf",
+        "change": "Major damage 1.5% -> 1%; Masterpiece movement on takedown 6% -> 5%; Prima Donna damage dealt +12% -> +10% and damage taken +6% -> +5%; Fragrance magical damage 5% -> 4%.",
+        "meaning": "The safe, flexible mage blessing is a bit weaker on both its offense and its trade-off nodes."
+      },
+      {
+        "name": "Demiurge",
+        "dir": "nerf",
+        "change": "Major bonus-stat modifier 12% -> 10%; Tri-Core on-hit damage 6% -> 5%; Cursed Corrupted ability-haste-per-crit 1 -> 0.8; Memory Leak mana-from-ability 6% -> 5% and max mana 600 -> 500.",
+        "meaning": "The late-game full-build scaler lost a little off each node; still the stack-into-late blessing."
+      },
+      {
+        "name": "Aion",
+        "dir": "nerf",
+        "change": "Major gold-from-ability-damage 8% -> 7%; Arcane Resonance cooldown progression 1% -> 0.75% per mana regen, max 75% -> 50%.",
+        "meaning": "The mana-economy mage blessing converts a bit less mana into gold and cooldowns."
+      }
     ]
   },
   "items": [
@@ -71,45 +131,193 @@
   "aram": {
     "summary": "1.15 also passes over ARAM (Daybreak's single-lane mode). The systemic changes matter most: Gold Drip ramps with level (more income mid-game), minions gain real magical armor at level (mage poke into the wave falls off), and the big sustain/stack items (Alchemical Rod/Azure Core, Soul Chalice/Resolution, Orb of Growth/Enlightenment) now stack every 4s instead of 2s/1.5s, slowing how fast stacking carries come online. On top of that, ~35 heroes got per-mode damage/healing/damage-received multiplier tuning to flatten the ARAM tier list. These are mode-only knobs (they do NOT touch the 5v5 kit numbers above).",
     "system": [
-      { "name": "Gold Drip", "change": "Flat 11/s -> ramps 11 -> 13 by level (adjusts every 80s)", "meaning": "More passive income as the game goes long, so full builds land a bit sooner in extended ARAMs." },
-      { "name": "Minion Magical Armor", "change": "Melee/Ranged ~0 -> 1..15 by level; Siege negative -> 0..10 by level", "meaning": "Mages lose wave-clear and poke-through-minions value as the game scales — magical poke comps get less free chip damage late." },
-      { "name": "Sustain/stack item stacking", "change": "Alchemical Rod/Azure Core & Soul Chalice/Resolution 2s -> 4s; Orb of Growth/Enlightenment 1.5s -> 4s", "meaning": "Stacking sustain and scaling items ramp half as fast, so the perma-poke/scaling carries that snowball ARAM come online later." }
+      {
+        "name": "Gold Drip",
+        "change": "Flat 11/s -> ramps 11 -> 13 by level (adjusts every 80s)",
+        "meaning": "More passive income as the game goes long, so full builds land a bit sooner in extended ARAMs."
+      },
+      {
+        "name": "Minion Magical Armor",
+        "change": "Melee/Ranged ~0 -> 1..15 by level; Siege negative -> 0..10 by level",
+        "meaning": "Mages lose wave-clear and poke-through-minions value as the game scales — magical poke comps get less free chip damage late."
+      },
+      {
+        "name": "Sustain/stack item stacking",
+        "change": "Alchemical Rod/Azure Core & Soul Chalice/Resolution 2s -> 4s; Orb of Growth/Enlightenment 1.5s -> 4s",
+        "meaning": "Stacking sustain and scaling items ramp half as fast, so the perma-poke/scaling carries that snowball ARAM come online later."
+      }
     ],
     "heroes": [
-      { "name": "Bayle", "change": "Healing received 100% -> 110%", "dir": "buff" },
-      { "name": "Boris", "change": "Healing received 100% -> 110%", "dir": "buff" },
-      { "name": "Countess", "change": "Damage received 95% -> 100%", "dir": "nerf" },
-      { "name": "Crunch", "change": "Damage 108% -> 110%, healing 100% -> 110%", "dir": "buff" },
-      { "name": "Dekker", "change": "Damage 105% -> 100%", "dir": "nerf" },
-      { "name": "Drongo", "change": "Damage 95% -> 98%", "dir": "buff" },
-      { "name": "Eden", "change": "Damage 100% -> 102%, received 100% -> 98%", "dir": "buff" },
-      { "name": "Feng Mao", "change": "Damage received 92% -> 95%", "dir": "nerf" },
-      { "name": "Gadget", "change": "Damage 92% -> 98%", "dir": "buff" },
-      { "name": "Gideon", "change": "Damage 92% -> 98%", "dir": "buff" },
-      { "name": "Grim", "change": "Damage 95% -> 98%", "dir": "buff" },
-      { "name": "Howitzer", "change": "Damage 95% -> 98%", "dir": "buff" },
-      { "name": "Iggy & Scorch", "change": "Damage 90% -> 95%", "dir": "buff" },
-      { "name": "Khaimera", "change": "Healing 100% -> 110%", "dir": "buff" },
-      { "name": "Kira", "change": "Damage 95% -> 98%", "dir": "buff" },
-      { "name": "Legion", "change": "Healing 100% -> 90%, damage 100% -> 98%", "dir": "nerf" },
-      { "name": "Lt. Belica", "change": "Damage 95% -> 98%", "dir": "buff" },
-      { "name": "Morigesh", "change": "Damage received 105% -> 100%, damage 100% -> 98%", "dir": "mixed" },
-      { "name": "Mourn", "change": "Healing 85% -> 75%, received 105% -> 100%, damage 105% -> 100%", "dir": "nerf" },
-      { "name": "Murdock", "change": "Damage 95% -> 98%", "dir": "buff" },
-      { "name": "Muriel", "change": "Damage 105% -> 100%, shielding 90% -> 100%", "dir": "mixed" },
-      { "name": "Narbash", "change": "Healing 85% -> 70%, damage 105% -> 110%, received 105% -> 110%", "dir": "mixed" },
-      { "name": "Neon", "change": "Damage 102% -> 98%, received 98% -> 100%", "dir": "nerf" },
-      { "name": "Phase", "change": "Damage 110% -> 100%, healing 100% -> 90%", "dir": "nerf" },
-      { "name": "Renna", "change": "Damage 92% -> 98%", "dir": "buff" },
-      { "name": "Riktor", "change": "Damage received 92% -> 95%", "dir": "nerf" },
-      { "name": "Sevarog", "change": "Damage received 92% -> 95%", "dir": "nerf" },
-      { "name": "Skylar", "change": "Damage 95% -> 98%", "dir": "buff" },
-      { "name": "Sparrow", "change": "Damage 92% -> 95%", "dir": "buff" },
-      { "name": "Steel", "change": "Damage 105% -> 100%", "dir": "nerf" },
-      { "name": "The Fey", "change": "Damage 92% -> 98%, received 105% -> 100%", "dir": "buff" },
-      { "name": "Wraith", "change": "Damage 95% -> 98%", "dir": "buff" },
-      { "name": "Yin", "change": "Damage 95% -> 98%, received 95% -> 98%", "dir": "mixed" },
-      { "name": "Zinx", "change": "Damage 108% -> 100%", "dir": "nerf" }
+      {
+        "name": "Bayle",
+        "change": "Healing received 100% -> 110%",
+        "dir": "buff"
+      },
+      {
+        "name": "Boris",
+        "change": "Healing received 100% -> 110%",
+        "dir": "buff"
+      },
+      {
+        "name": "Countess",
+        "change": "Damage received 95% -> 100%",
+        "dir": "nerf"
+      },
+      {
+        "name": "Crunch",
+        "change": "Damage 108% -> 110%, healing 100% -> 110%",
+        "dir": "buff"
+      },
+      {
+        "name": "Dekker",
+        "change": "Damage 105% -> 100%",
+        "dir": "nerf"
+      },
+      {
+        "name": "Drongo",
+        "change": "Damage 95% -> 98%",
+        "dir": "buff"
+      },
+      {
+        "name": "Eden",
+        "change": "Damage 100% -> 102%, received 100% -> 98%",
+        "dir": "buff"
+      },
+      {
+        "name": "Feng Mao",
+        "change": "Damage received 92% -> 95%",
+        "dir": "nerf"
+      },
+      {
+        "name": "Gadget",
+        "change": "Damage 92% -> 98%",
+        "dir": "buff"
+      },
+      {
+        "name": "Gideon",
+        "change": "Damage 92% -> 98%",
+        "dir": "buff"
+      },
+      {
+        "name": "Grim",
+        "change": "Damage 95% -> 98%",
+        "dir": "buff"
+      },
+      {
+        "name": "Howitzer",
+        "change": "Damage 95% -> 98%",
+        "dir": "buff"
+      },
+      {
+        "name": "Iggy & Scorch",
+        "change": "Damage 90% -> 95%",
+        "dir": "buff"
+      },
+      {
+        "name": "Khaimera",
+        "change": "Healing 100% -> 110%",
+        "dir": "buff"
+      },
+      {
+        "name": "Kira",
+        "change": "Damage 95% -> 98%",
+        "dir": "buff"
+      },
+      {
+        "name": "Legion",
+        "change": "Healing 100% -> 90%, damage 100% -> 98%",
+        "dir": "nerf"
+      },
+      {
+        "name": "Lt. Belica",
+        "change": "Damage 95% -> 98%",
+        "dir": "buff"
+      },
+      {
+        "name": "Morigesh",
+        "change": "Damage received 105% -> 100%, damage 100% -> 98%",
+        "dir": "mixed"
+      },
+      {
+        "name": "Mourn",
+        "change": "Healing 85% -> 75%, received 105% -> 100%, damage 105% -> 100%",
+        "dir": "nerf"
+      },
+      {
+        "name": "Murdock",
+        "change": "Damage 95% -> 98%",
+        "dir": "buff"
+      },
+      {
+        "name": "Muriel",
+        "change": "Damage 105% -> 100%, shielding 90% -> 100%",
+        "dir": "mixed"
+      },
+      {
+        "name": "Narbash",
+        "change": "Healing 85% -> 70%, damage 105% -> 110%, received 105% -> 110%",
+        "dir": "mixed"
+      },
+      {
+        "name": "Neon",
+        "change": "Damage 102% -> 98%, received 98% -> 100%",
+        "dir": "nerf"
+      },
+      {
+        "name": "Phase",
+        "change": "Damage 110% -> 100%, healing 100% -> 90%",
+        "dir": "nerf"
+      },
+      {
+        "name": "Renna",
+        "change": "Damage 92% -> 98%",
+        "dir": "buff"
+      },
+      {
+        "name": "Riktor",
+        "change": "Damage received 92% -> 95%",
+        "dir": "nerf"
+      },
+      {
+        "name": "Sevarog",
+        "change": "Damage received 92% -> 95%",
+        "dir": "nerf"
+      },
+      {
+        "name": "Skylar",
+        "change": "Damage 95% -> 98%",
+        "dir": "buff"
+      },
+      {
+        "name": "Sparrow",
+        "change": "Damage 92% -> 95%",
+        "dir": "buff"
+      },
+      {
+        "name": "Steel",
+        "change": "Damage 105% -> 100%",
+        "dir": "nerf"
+      },
+      {
+        "name": "The Fey",
+        "change": "Damage 92% -> 98%, received 105% -> 100%",
+        "dir": "buff"
+      },
+      {
+        "name": "Wraith",
+        "change": "Damage 95% -> 98%",
+        "dir": "buff"
+      },
+      {
+        "name": "Yin",
+        "change": "Damage 95% -> 98%, received 95% -> 98%",
+        "dir": "mixed"
+      },
+      {
+        "name": "Zinx",
+        "change": "Damage 108% -> 100%",
+        "dir": "nerf"
+      }
     ]
   },
   "ranked": {
