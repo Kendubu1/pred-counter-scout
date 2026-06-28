@@ -84,6 +84,14 @@
     .hx.tr-rework:hover { border-color: var(--accent); }
     .hx.tr-rework .hx-arrow { color: var(--accent); }
     .trend-rework { background: var(--accent-dim); color: var(--accent); }
+    .tr-new { color: var(--green); } .tr-removed { color: var(--text-2); }
+    .hx.tr-new:hover { border-color: var(--green); }
+    .hx.tr-removed:hover { border-color: var(--border); }
+    .hx.tr-new .hx-arrow { color: var(--green); }
+    .hx.tr-removed .hx-arrow { color: var(--text-2); }
+    .trend-new { background: var(--green-dim, rgba(0,196,140,0.16)); color: var(--green); }
+    .trend-removed { background: var(--bg-3); color: var(--text-2); }
+    .item-card .hero-name { font-size: 0.95rem; }
     .hero-card { position: relative; scroll-margin-top: 116px; }
     .card-out { position: absolute; top: 0.7rem; right: 0.8rem; font-size: 0.68rem; font-weight: 700;
       color: var(--text-2); text-decoration: none; border: 1px solid var(--border); border-radius: 99px;
@@ -657,7 +665,210 @@
       <div class="meta-read"><b>📈 Meta read</b>This is a trim, not a teardown — the durability/sustain/scaling anchors (Demiurge, Lotus, Xyris, Exarch, Thraex and more) each lost a little, flattening the gap between the safe meta blessings and the rest. The soft reworks change how you draft: Krix now enables anti-heal for crowd-control comps, Vesh pays mana back on takedowns for snowballing mages, Marrow's Jealousy rewards staying healthy, and Vermis's Crush adds a periodic immobilize — re-check your major and both minors.</div>
 
       <h2 class="section" id="ch-items">Items</h2>
-      <ul class="items-list"><li>Crests: Earth Spirit REMOVED, replaced by the new Gamma Gloop (Titan crest: 180 Health, 8 Phys Armor, 5 Mag Armor; active Gob Glue deals 80 +3% bonus-health magic damage, Grounds 1.5s, leaves a 5s 30% slow field).</li><li>Fighter: Rebirth REWORKED (cost 2600 -&gt; 2800; +50 Phys Power, +300 Health, -40 Phys Armor, -35 Mag Armor, -10 Ability Haste; recipe Greatsword + Banded Emerald + 750g; resurrect at 50% base health/mana after 3s).</li><li>Carry: Eviscerator omnivamp 10% -&gt; 8%; Sky Splitter power 40 -&gt; 35; Stormbreaker power 45 -&gt; 40; Echelon Cloak cost 2900 -&gt; 2800, power 40 -&gt; 45, cooldown 12 -&gt; 10s.</li><li>Mage: Astral Catalyst cost 2850 -&gt; 2950 &amp; power 80 -&gt; 85; Claw of Hermes power 90 -&gt; 85; Timewarp base mana regen 125% -&gt; 150%.</li><li>Tank/Support: Citadel phys armor 35 -&gt; 40; Gaussian Greaves phys armor 30 -&gt; 35; Giant's Ring phys armor 45 -&gt; 50; Stonewall health 250 -&gt; 275 &amp; regen 80% -&gt; 100%; Resolution darksteel on-hit mana scaling 2% -&gt; 2.5%; Soulbinder Farseer cooldown 10 -&gt; 8; Transference ionizing-charge move speed 12% -&gt; 8%.</li><li>Fixes: Oathkeeper mana 250 -&gt; 275 and now actually grants its health (was 0 from a bug).</li></ul>
+      
+      <div class="hx-legend"><span class="tr-new">✦ new</span><span class="tr-removed">✕ removed</span><span class="tr-rework">⟳ rework</span><span class="tr-buff">▲ buff</span><span class="tr-mixed">◆ mixed</span><span class="tr-nerf">▼ nerf</span><span class="hx-hint">tap an item to jump to its change</span></div>
+      <div class="hx-grid">
+        <a class="hx tr-new" href="#item-gamma-gloop" title="Gamma Gloop — New; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/gamma-gloop.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">✦</span></span>
+            <span class="hx-name">Gamma Gloop</span>
+          </a><a class="hx tr-removed" href="#item-earth-spirit" title="Earth Spirit — Removed; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/earth-spirit.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">✕</span></span>
+            <span class="hx-name">Earth Spirit</span>
+          </a><a class="hx tr-rework" href="#item-rebirth" title="Rebirth — Shift; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/rebirth.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">⟳</span></span>
+            <span class="hx-name">Rebirth</span>
+          </a><a class="hx tr-buff" href="#item-citadel" title="Citadel — Buff; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/citadel.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Citadel</span>
+          </a><a class="hx tr-buff" href="#item-echelon-cloak" title="Echelon Cloak — Buff; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/echelon-cloak.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Echelon Cloak</span>
+          </a><a class="hx tr-buff" href="#item-gaussian-greaves" title="Gaussian Greaves — Buff; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/gaussian-greaves.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Gaussian Greaves</span>
+          </a><a class="hx tr-buff" href="#item-giants-ring" title="Giant’s Ring — Buff; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/giants-ring.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Giant’s Ring</span>
+          </a><a class="hx tr-buff" href="#item-oathkeeper" title="Oathkeeper — Buff; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/oathkeeper.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Oathkeeper</span>
+          </a><a class="hx tr-buff" href="#item-resolution" title="Resolution — Buff; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/resolution.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Resolution</span>
+          </a><a class="hx tr-buff" href="#item-soulbinder" title="Soulbinder — Buff; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/soulbinder.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Soulbinder</span>
+          </a><a class="hx tr-buff" href="#item-stonewall" title="Stonewall — Buff; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/stonewall.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Stonewall</span>
+          </a><a class="hx tr-buff" href="#item-timewarp" title="Timewarp — Buff; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/timewarp.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▲</span></span>
+            <span class="hx-name">Timewarp</span>
+          </a><a class="hx tr-mixed" href="#item-astral-catalyst" title="Astral Catalyst — Mixed; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/astral-catalyst.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">◆</span></span>
+            <span class="hx-name">Astral Catalyst</span>
+          </a><a class="hx tr-nerf" href="#item-claw-of-hermes" title="Claw of Hermes — Nerf; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/claw-of-hermes.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Claw of Hermes</span>
+          </a><a class="hx tr-nerf" href="#item-eviscerator" title="Eviscerator — Nerf; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/eviscerator.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Eviscerator</span>
+          </a><a class="hx tr-nerf" href="#item-sky-splitter" title="Sky Splitter — Nerf; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/sky-splitter.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Sky Splitter</span>
+          </a><a class="hx tr-nerf" href="#item-storm-breaker" title="Storm Breaker — Nerf; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/storm-breaker.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Storm Breaker</span>
+          </a><a class="hx tr-nerf" href="#item-transference" title="Transference — Nerf; jump to its change">
+            <span class="hx-imgwrap"><img loading="lazy" src="img/items/transference.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">▼</span></span>
+            <span class="hx-name">Transference</span>
+          </a>
+      </div>
+      
+      <div class="hero-card card item-card" id="item-gamma-gloop" data-trend="new">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/gamma-gloop.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Gamma Gloop</span>
+          <span class="badge trend-new">✦ New</span>
+        </div>
+        <div class="pred" style="margin:0">New Titan crest (replaces Earth Spirit): 180 HP / 8 Phys Armor / 5 Mag Armor; active Gob Glue deals 80 (+3% bonus-HP) magic damage, Grounds 1.5s, leaves a 5s 30% slow field.</div>
+      </div>
+      <div class="hero-card card item-card" id="item-earth-spirit" data-trend="removed">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/earth-spirit.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Earth Spirit</span>
+          <span class="badge trend-removed">✕ Removed</span>
+        </div>
+        <div class="pred" style="margin:0">Removed from the game — replaced by the Gamma Gloop tank crest.</div>
+      </div>
+      <div class="hero-card card item-card" id="item-rebirth" data-trend="rework">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/rebirth.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Rebirth</span>
+          <span class="badge trend-rework">⟳ Shift</span>
+        </div>
+        <div class="pred" style="margin:0">Reworked fighter item: cost 2600 -&gt; 2800; +50 Power / +300 HP / -40 Phys Armor / -35 Mag Armor / -10 Ability Haste; resurrect at 50% base HP/mana after 3s.</div>
+      </div>
+      <div class="hero-card card item-card" id="item-citadel" data-trend="buff">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/citadel.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Citadel</span>
+          <span class="badge trend-buff">▲ Buff</span>
+        </div>
+        <div class="pred" style="margin:0">Physical armor 35 -&gt; 40.</div>
+      </div>
+      <div class="hero-card card item-card" id="item-echelon-cloak" data-trend="buff">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/echelon-cloak.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Echelon Cloak</span>
+          <span class="badge trend-buff">▲ Buff</span>
+        </div>
+        <div class="pred" style="margin:0">Cost 2900 -&gt; 2800, physical power 40 -&gt; 45, cooldown 12 -&gt; 10s.</div>
+      </div>
+      <div class="hero-card card item-card" id="item-gaussian-greaves" data-trend="buff">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/gaussian-greaves.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Gaussian Greaves</span>
+          <span class="badge trend-buff">▲ Buff</span>
+        </div>
+        <div class="pred" style="margin:0">Physical armor 30 -&gt; 35.</div>
+      </div>
+      <div class="hero-card card item-card" id="item-giants-ring" data-trend="buff">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/giants-ring.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Giant’s Ring</span>
+          <span class="badge trend-buff">▲ Buff</span>
+        </div>
+        <div class="pred" style="margin:0">Physical armor 45 -&gt; 50.</div>
+      </div>
+      <div class="hero-card card item-card" id="item-oathkeeper" data-trend="buff">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/oathkeeper.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Oathkeeper</span>
+          <span class="badge trend-buff">▲ Buff</span>
+        </div>
+        <div class="pred" style="margin:0">Mana 250 -&gt; 275; fixed a bug where it granted no health.</div>
+      </div>
+      <div class="hero-card card item-card" id="item-resolution" data-trend="buff">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/resolution.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Resolution</span>
+          <span class="badge trend-buff">▲ Buff</span>
+        </div>
+        <div class="pred" style="margin:0">Darksteel on-hit mana scaling 2% -&gt; 2.5%.</div>
+      </div>
+      <div class="hero-card card item-card" id="item-soulbinder" data-trend="buff">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/soulbinder.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Soulbinder</span>
+          <span class="badge trend-buff">▲ Buff</span>
+        </div>
+        <div class="pred" style="margin:0">Farseer cooldown 10 -&gt; 8s.</div>
+      </div>
+      <div class="hero-card card item-card" id="item-stonewall" data-trend="buff">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/stonewall.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Stonewall</span>
+          <span class="badge trend-buff">▲ Buff</span>
+        </div>
+        <div class="pred" style="margin:0">Health 250 -&gt; 275, health regen 80% -&gt; 100%.</div>
+      </div>
+      <div class="hero-card card item-card" id="item-timewarp" data-trend="buff">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/timewarp.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Timewarp</span>
+          <span class="badge trend-buff">▲ Buff</span>
+        </div>
+        <div class="pred" style="margin:0">Base mana regen 125% -&gt; 150%.</div>
+      </div>
+      <div class="hero-card card item-card" id="item-astral-catalyst" data-trend="mixed">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/astral-catalyst.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Astral Catalyst</span>
+          <span class="badge trend-mixed">◆ Mixed</span>
+        </div>
+        <div class="pred" style="margin:0">Cost 2850 -&gt; 2950, magical power 80 -&gt; 85.</div>
+      </div>
+      <div class="hero-card card item-card" id="item-claw-of-hermes" data-trend="nerf">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/claw-of-hermes.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Claw of Hermes</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+        </div>
+        <div class="pred" style="margin:0">Magical power 90 -&gt; 85.</div>
+      </div>
+      <div class="hero-card card item-card" id="item-eviscerator" data-trend="nerf">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/eviscerator.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Eviscerator</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+        </div>
+        <div class="pred" style="margin:0">Omnivamp 10% -&gt; 8%.</div>
+      </div>
+      <div class="hero-card card item-card" id="item-sky-splitter" data-trend="nerf">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/sky-splitter.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Sky Splitter</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+        </div>
+        <div class="pred" style="margin:0">Physical power 40 -&gt; 35.</div>
+      </div>
+      <div class="hero-card card item-card" id="item-storm-breaker" data-trend="nerf">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/storm-breaker.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Storm Breaker</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+        </div>
+        <div class="pred" style="margin:0">Physical power 45 -&gt; 40.</div>
+      </div>
+      <div class="hero-card card item-card" id="item-transference" data-trend="nerf">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/transference.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">Transference</span>
+          <span class="badge trend-nerf">▼ Nerf</span>
+        </div>
+        <div class="pred" style="margin:0">Ionizing-charge movement speed 12% -&gt; 8%.</div>
+      </div>
       <div class="meta-read"><b>📈 Meta read</b>Tanks and frontline supports are the clear winners — Stonewall, Citadel, Giant's Ring and Gaussian Greaves all got sturdier and the new Gamma Gloop crest adds a grounding tank tool — while crit/carry power was shaved (Sky Splitter, Stormbreaker, Eviscerator). Echelon Cloak and the Rebirth fighter-resurrect rework give bruisers fresh options, and the Oathkeeper health bugfix quietly buffs every build that ran it.</div>
 
       

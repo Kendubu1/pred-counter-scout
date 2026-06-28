@@ -32,6 +32,8 @@ const TREND = {
   nerf: { label: 'Nerf', cls: 'trend-nerf', icon: '▼' },
   mixed: { label: 'Mixed', cls: 'trend-mixed', icon: '◆' },
   rework: { label: 'Shift', cls: 'trend-rework', icon: '⟳' },
+  new: { label: 'New', cls: 'trend-new', icon: '✦' },
+  removed: { label: 'Removed', cls: 'trend-removed', icon: '✕' },
 };
 
 const order = { 'meta-shifting': 0, 'notable': 1, 'minor': 2 };
@@ -174,6 +176,34 @@ const eternalCards = (digest.eternals?.changes || []).map((e) => {
       </div>`;
 }).join('');
 const itemList = (digest.items || []).map((i) => `<li>${esc(i)}</li>`).join('');
+// Items get the hero/Eternal treatment when structured itemChanges exist:
+// a showcase grid of images with a colored trend arrow, then a card each.
+const itemOrder = { new: 0, removed: 1, rework: 2, buff: 3, mixed: 4, nerf: 5 };
+const itemChanges = (digest.itemChanges || []).slice()
+  .sort((a, b) => (itemOrder[a.dir] ?? 9) - (itemOrder[b.dir] ?? 9) || a.name.localeCompare(b.name));
+const itemShowcase = itemChanges.length ? `
+      <div class="hx-legend"><span class="tr-new">✦ new</span><span class="tr-removed">✕ removed</span><span class="tr-rework">⟳ rework</span><span class="tr-buff">▲ buff</span><span class="tr-mixed">◆ mixed</span><span class="tr-nerf">▼ nerf</span><span class="hx-hint">tap an item to jump to its change</span></div>
+      <div class="hx-grid">
+        ${itemChanges.map((it) => showcaseTile({
+          href: `#item-${it.slug}`,
+          img: `img/items/${it.slug}.webp`,
+          name: it.name,
+          trend: it.dir,
+          title: `${it.name} — ${(TREND[it.dir] || TREND.mixed).label}; jump to its change`,
+        })).join('')}
+      </div>` : '';
+const itemCards = itemChanges.map((it) => {
+  const t = TREND[it.dir] || TREND.mixed;
+  return `
+      <div class="hero-card card item-card" id="item-${it.slug}" data-trend="${it.dir}">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/items/${it.slug}.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">${esc(it.name)}</span>
+          <span class="badge ${t.cls}">${t.icon} ${t.label}</span>
+        </div>
+        <div class="pred" style="margin:0">${esc(it.change)}</div>
+      </div>`;
+}).join('');
 const sysList = (digest.systems || []).map((s) =>
   `<div class="sys"><div class="sys-name">${esc(s.name)}</div><div class="sys-sum">${esc(s.summary)}</div></div>`).join('');
 const rankedBlock = digest.ranked ? `
@@ -290,6 +320,14 @@ const html = `<!DOCTYPE html>
     .hx.tr-rework:hover { border-color: var(--accent); }
     .hx.tr-rework .hx-arrow { color: var(--accent); }
     .trend-rework { background: var(--accent-dim); color: var(--accent); }
+    .tr-new { color: var(--green); } .tr-removed { color: var(--text-2); }
+    .hx.tr-new:hover { border-color: var(--green); }
+    .hx.tr-removed:hover { border-color: var(--border); }
+    .hx.tr-new .hx-arrow { color: var(--green); }
+    .hx.tr-removed .hx-arrow { color: var(--text-2); }
+    .trend-new { background: var(--green-dim, rgba(0,196,140,0.16)); color: var(--green); }
+    .trend-removed { background: var(--bg-3); color: var(--text-2); }
+    .item-card .hero-name { font-size: 0.95rem; }
     .hero-card { position: relative; scroll-margin-top: 116px; }
     .card-out { position: absolute; top: 0.7rem; right: 0.8rem; font-size: 0.68rem; font-weight: 700;
       color: var(--text-2); text-decoration: none; border: 1px solid var(--border); border-radius: 99px;
@@ -360,7 +398,7 @@ ${subnavBar}
       ${eternalCards}${metaRead('eternals')}
 
       <h2 class="section" id="ch-items">Items</h2>
-      <ul class="items-list">${itemList}</ul>${metaRead('items')}
+      ${itemChanges.length ? `${itemShowcase}\n      ${itemCards}` : `<ul class="items-list">${itemList}</ul>`}${metaRead('items')}
 
       ${aramBlock}
 
