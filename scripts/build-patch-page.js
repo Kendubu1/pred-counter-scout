@@ -31,11 +31,24 @@ const TREND = {
   buff: { label: 'Buff', cls: 'trend-buff', icon: '▲' },
   nerf: { label: 'Nerf', cls: 'trend-nerf', icon: '▼' },
   mixed: { label: 'Mixed', cls: 'trend-mixed', icon: '◆' },
+  rework: { label: 'Shift', cls: 'trend-rework', icon: '⟳' },
 };
 
 const order = { 'meta-shifting': 0, 'notable': 1, 'minor': 2 };
 const heroes = Object.entries(pred.predictions)
   .sort((a, b) => (order[a[1].magnitude] - order[b[1].magnitude]) || a[1].name.localeCompare(b[1].name));
+
+// Digest slug -> site slug (Neon's artifact/image is "neon"). Used by the
+// hero cards (out-link) and the showcase.
+const SITE_SLUG = { n3on: 'neon' };
+// One showcase tile: image + colored trend arrow, links to an in-page anchor.
+function showcaseTile({ href, img, name, trend, title }) {
+  const a = TREND[trend] || TREND.mixed;
+  return `<a class="hx tr-${trend}" href="${href}" title="${esc(title)}">
+            <span class="hx-imgwrap"><img loading="lazy" src="${img}" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">${a.icon}</span></span>
+            <span class="hx-name">${esc(name)}</span>
+          </a>`;
+}
 
 function heroCard([slug, p]) {
   const t = TREND[p.trend] || TREND.mixed;
@@ -46,8 +59,10 @@ function heroCard([slug, p]) {
       (p.topMetaBuild.shrunkWr ? ` · ${(p.topMetaBuild.shrunkWr * 100).toFixed(1)}% wr` : '') +
       (p.topMetaBuild.games ? ` · ${p.topMetaBuild.games.toLocaleString()} games` : '') + `</div>`
     : '';
+  const site = SITE_SLUG[slug] || slug;
   return `
-      <div class="hero-card card" data-mag="${p.magnitude}" data-trend="${p.trend}">
+      <div class="hero-card card" id="hero-${slug}" data-mag="${p.magnitude}" data-trend="${p.trend}">
+        <a class="card-out" href="v6/?hero=${site}" title="Open ${esc(p.name)}'s full build &amp; matchups">full page ↗</a>
         <div class="hero-head">
           <span class="hero-name">${esc(p.name)}</span>
           <span class="hero-role">${esc(p.role || '')}</span>
@@ -81,19 +96,17 @@ function metaRead(key) {
 }
 
 // ── Hero showcase: clickable images with a colored trend arrow, ordered by
-// magnitude then name. Digest slug -> site slug (Neon's artifact/image is "neon").
-const SITE_SLUG = { n3on: 'neon' };
+// magnitude then name; each jumps to that hero's card lower in this section.
 const heroShowcase = `
-      <div class="hx-legend"><span class="tr-buff">▲ buff</span><span class="tr-nerf">▼ nerf</span><span class="tr-mixed">◆ mixed</span><span class="hx-hint">tap a hero to open its page</span></div>
+      <div class="hx-legend"><span class="tr-buff">▲ buff</span><span class="tr-nerf">▼ nerf</span><span class="tr-mixed">◆ mixed</span><span class="hx-hint">tap a hero to jump to its changes</span></div>
       <div class="hx-grid">
-        ${heroes.map(([slug, p]) => {
-          const site = SITE_SLUG[slug] || slug;
-          const a = TREND[p.trend] || TREND.mixed;
-          return `<a class="hx tr-${p.trend}" href="v6/?hero=${site}" title="${esc(p.name)} — ${esc(p.magnitude)} ${a.label.toLowerCase()}; open hero page">
-            <span class="hx-imgwrap"><img loading="lazy" src="img/heroes/${site}.webp" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">${a.icon}</span></span>
-            <span class="hx-name">${esc(p.name)}</span>
-          </a>`;
-        }).join('')}
+        ${heroes.map(([slug, p]) => showcaseTile({
+          href: `#hero-${slug}`,
+          img: `img/heroes/${SITE_SLUG[slug] || slug}.webp`,
+          name: p.name,
+          trend: p.trend,
+          title: `${p.name} — ${p.magnitude} ${(TREND[p.trend] || TREND.mixed).label.toLowerCase()}; jump to its changes`,
+        })).join('')}
       </div>`;
 
 // ── ARAM section ──
@@ -133,8 +146,33 @@ const aramBlock = digest.aram ? `
 ` : '';
 
 const globalList = (digest.global || []).map((g) => `<li>${esc(g)}</li>`).join('');
-const eternalRows = (digest.eternals?.changes || []).map((e) =>
-  `<tr><td class=" et-name">${esc(e.name)}</td><td>${esc(e.change)}</td><td class=" et-mean">${esc(e.meaning)}</td></tr>`).join('');
+// Eternals get the same treatment as heroes: a showcase grid of clickable
+// images with a colored buff/nerf/shift arrow, then a card per Eternal.
+const ETSLUG = (name) => name.toLowerCase();
+const eternalShowcase = `
+      <div class="hx-legend"><span class="tr-buff">▲ buff</span><span class="tr-nerf">▼ nerf</span><span class="tr-mixed">◆ mixed</span><span class="tr-rework">⟳ shift</span><span class="hx-hint">tap an Eternal to jump to its change</span></div>
+      <div class="hx-grid">
+        ${(digest.eternals?.changes || []).map((e) => showcaseTile({
+          href: `#eternal-${ETSLUG(e.name)}`,
+          img: `img/eternals/${ETSLUG(e.name)}.webp`,
+          name: e.name,
+          trend: e.dir || 'mixed',
+          title: `${e.name} — ${(TREND[e.dir] || TREND.mixed).label}; jump to its change`,
+        })).join('')}
+      </div>`;
+const eternalCards = (digest.eternals?.changes || []).map((e) => {
+  const t = TREND[e.dir] || TREND.mixed;
+  return `
+      <div class="hero-card card" id="eternal-${ETSLUG(e.name)}" data-trend="${e.dir || 'mixed'}">
+        <div class="hero-head">
+          <img class="et-ic" loading="lazy" src="img/eternals/${ETSLUG(e.name)}.webp" alt="" onerror="this.style.display='none'">
+          <span class="hero-name">${esc(e.name)}</span>
+          <span class="badge ${t.cls}">${t.icon} ${t.label}</span>
+        </div>
+        <ul class="change-list"><li>${esc(e.change)}</li></ul>
+        <div class="pred"><span class="pred-label">Meaning</span>${esc(e.meaning)}</div>
+      </div>`;
+}).join('');
 const itemList = (digest.items || []).map((i) => `<li>${esc(i)}</li>`).join('');
 const sysList = (digest.systems || []).map((s) =>
   `<div class="sys"><div class="sys-name">${esc(s.name)}</div><div class="sys-sum">${esc(s.summary)}</div></div>`).join('');
@@ -248,6 +286,18 @@ const html = `<!DOCTYPE html>
     .hx.tr-mixed .hx-arrow { color: var(--gold); }
     .hx-name { font-size: 0.72rem; font-weight: 600; color: var(--text-1); text-align: center; line-height: 1.1; }
     .tr-buff { color: var(--green); } .tr-nerf { color: var(--red); } .tr-mixed { color: var(--gold); }
+    .tr-rework { color: var(--accent); }
+    .hx.tr-rework:hover { border-color: var(--accent); }
+    .hx.tr-rework .hx-arrow { color: var(--accent); }
+    .trend-rework { background: var(--accent-dim); color: var(--accent); }
+    .hero-card { position: relative; scroll-margin-top: 116px; }
+    .card-out { position: absolute; top: 0.7rem; right: 0.8rem; font-size: 0.68rem; font-weight: 700;
+      color: var(--text-2); text-decoration: none; border: 1px solid var(--border); border-radius: 99px;
+      padding: 0.12rem 0.5rem; }
+    .card-out:hover { color: var(--accent); border-color: var(--accent); }
+    .card-out + .hero-head { padding-right: 4.2rem; }
+    .et-ic { width: 26px; height: 26px; border-radius: 6px; object-fit: contain; background: var(--bg-3);
+      flex-shrink: 0; }
     .meta-read { margin: 1.1rem 0 0.3rem; background: var(--accent-dim); border-left: 3px solid var(--accent);
       border-radius: 8px; padding: 0.7rem 0.9rem; font-size: 0.85rem; color: var(--text-1); line-height: 1.5; }
     .meta-read b { display: block; color: var(--accent); text-transform: uppercase; font-size: 0.64rem;
@@ -306,7 +356,8 @@ ${subnavBar}
 
       <h2 class="section" id="ch-eternals">Eternals (draft blessings)</h2>
       <p class="lead">${esc(digest.eternals?.summary || '')}</p>
-      <table class="et"><tbody>${eternalRows}</tbody></table>${metaRead('eternals')}
+      ${eternalShowcase}
+      ${eternalCards}${metaRead('eternals')}
 
       <h2 class="section" id="ch-items">Items</h2>
       <ul class="items-list">${itemList}</ul>${metaRead('items')}
