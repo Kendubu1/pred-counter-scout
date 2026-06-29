@@ -89,6 +89,16 @@
   .sbar { flex:1; min-width:120px; height:10px; border-radius:5px; background:var(--bg-3); overflow:hidden; display:flex; }
   .sbar .p { background:#e08a4a; } .sbar .m { background:#6c8ce7; }
   .pill { font-size:.7rem; border:1px solid var(--border); border-radius:99px; padding:.1rem .5rem; color:var(--text-1); }
+  /* enemy-counter summary at the top */
+  .ctop { background:var(--accent-soft); border:1px solid var(--accent); border-radius:var(--radius); padding:.85rem .95rem; margin:.6rem 0 1.1rem; }
+  .ctop-h { font-weight:800; font-size:.98rem; color:var(--text-0); display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; margin-bottom:.55rem; }
+  .ctop-n { font-size:.68rem; font-weight:600; color:var(--text-2); }
+  .ctop-recs { list-style:none; margin:.55rem 0 0; padding:0; display:flex; flex-direction:column; gap:.42rem; }
+  .ctop-recs li { font-size:.85rem; color:var(--text-1); line-height:1.45; }
+  .ctop-recs li b { color:var(--text-0); }
+  .ctop-k { display:inline-block; font-size:.59rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--accent); background:var(--bg-1); border:1px solid var(--accent); border-radius:99px; padding:.06rem .45rem; margin-right:.35rem; vertical-align:1px; }
+  .ctop-sub { font-size:.8rem; color:var(--text-2); margin-top:.6rem; line-height:1.5; }
+  .ctop-sub b { color:var(--text-1); }
 
   /* picker modal */
   .modal { position:fixed; inset:0; z-index:50; background:rgba(5,5,9,.82); display:none; align-items:flex-start; justify-content:center; padding:3.2rem .8rem 1rem; }
@@ -141,6 +151,7 @@
     <button class="btn ghost" id="clearAll">🗑 Clear all</button>
   </div>
 
+  <div id="countertop"></div>
   <div id="lanes"></div>
   <div id="summary"></div>
 
@@ -168,7 +179,7 @@ const LANE_LABELS = { carry:'Carry', midlane:'Midlane', offlane:'Offlane', jungl
 const LANE_EMOJI = { offlane:'🛡', jungle:'🌳', midlane:'✨', carry:'🏹', support:'💚' };
 const MIN_GAMES = 0;
 
-let INDEX = null, MX = null, META = null;
+let INDEX = null, MX = null, META = null, PROFILES = null;
 const ART = new Map();   // slug -> artifact (lazy, only for picked heroes' damage type)
 // state: each lane has an enemy slug + your slug
 const state = Object.fromEntries(LANES.map((l) => [l, { enemy: null, you: null }]));
@@ -269,6 +280,72 @@ async function renderSummary() {
   </div>`;
 }
 
+/** Whole-team counter plan from the enemy picks: damage profile -> resist
+ *  itemization, plus anti-heal / spread / peel / execute flags from each hero's
+ *  baseTraits & classes (hero-profiles), the lane matchup tally, and the best
+ *  counter for any lane you haven't answered yet. Grows as enemies lock in. */
+function renderCounterTop() {
+  const el = $('#countertop');
+  const enemies = LANES.map((l) => ({ lane: l, slug: state[l].enemy })).filter((x) => x.slug);
+  if (!enemies.length || !PROFILES) { el.innerHTML = ''; return; }
+  const prof = (s) => PROFILES[s] || {};
+  const traitsOf = (s) => prof(s).baseTraits || [];
+  const classesOf = (s) => prof(s).classes || [];
+  const names = (arr) => arr.map((e) => nameOf(e.slug)).join(', ');
+
+  // damage split (hybrid counts half/half), from hero-profiles damageType
+  let phys = 0, mag = 0;
+  enemies.forEach(({ slug }) => { const d = prof(slug).damageType; if (d === 'magical') mag++; else if (d === 'physical') phys++; else { phys += 0.5; mag += 0.5; } });
+  const tot = phys + mag || 1;
+  const pPct = Math.round((phys / tot) * 100), mPct = 100 - pPct;
+
+  const recs = [];
+  if (pPct >= 65) recs.push({ k: 'Itemize', t: `They're <b>${pPct}% physical</b> — rush <b>physical armor</b>; one armor item blunts most of their damage.` });
+  else if (mPct >= 65) recs.push({ k: 'Itemize', t: `They're <b>${mPct}% magical</b> — rush <b>magic resist</b>; one resist item blunts most of their damage.` });
+  else recs.push({ k: 'Itemize', t: `Mixed damage (<b>${pPct}% phys / ${mPct}% mag</b>) — you'll need <b>both</b> armor and magic resist; no single resist solves it.` });
+
+  const healers = enemies.filter((e) => traitsOf(e.slug).some((t) => /heal|lifesteal/.test(t)));
+  const allyHeal = enemies.filter((e) => traitsOf(e.slug).includes('ally_heal'));
+  if (allyHeal.length || healers.length >= 2) recs.push({ k: 'Anti-heal', t: `${names(healers)} bring strong sustain — buy an <b>anti-heal item early</b>; it cuts their healing significantly.` });
+
+  const cc = enemies.filter((e) => traitsOf(e.slug).includes('cc'));
+  if (cc.length >= 3) recs.push({ k: 'Spread out', t: `<b>${cc.length} CC threats</b> (${names(cc)}) — value <b>tenacity/cleanse</b> and don't clump for their chain.` });
+
+  const dive = enemies.filter((e) => classesOf(e.slug).includes('ASSASSIN') || traitsOf(e.slug).includes('stealth'));
+  if (dive.length) recs.push({ k: 'Peel', t: `Dive threat (${names(dive)}) — <b>ward your flanks</b> and peel for your carries; squishies grab a defensive item.` });
+
+  const exe = enemies.filter((e) => traitsOf(e.slug).includes('execute'));
+  if (exe.length) recs.push({ k: 'Stay healthy', t: `${names(exe)} <b>execute</b> low targets — disengage before you drop into kill range.` });
+
+  // lane matchup tally (only where both sides are picked)
+  let fav = 0, even = 0, behind = 0, toughest = null;
+  for (const { lane, slug } of enemies) {
+    const you = state[lane].you; if (!you) continue;
+    const cps = matrixCps(you, slug); if (!cps) continue;
+    const sc = scoreOf(cps);
+    if (sc >= 2) fav++; else if (sc <= -2) behind++; else even++;
+    if (!toughest || sc < toughest.sc) toughest = { sc, you, them: slug, lane };
+  }
+  const laneRead = (fav + even + behind)
+    ? `Lane matchups: <b style="color:var(--green)">${fav} favored</b> · ${even} even · <b style="color:var(--red)">${behind} behind</b>${toughest && toughest.sc < 0 ? ` — watch <b>${esc(nameOf(toughest.you))}</b> vs ${esc(nameOf(toughest.them))} (${LANE_LABELS[toughest.lane]})` : ''}.`
+    : '';
+
+  // best counter for any enemy lane you haven't answered yet
+  const openRecs = enemies.filter((e) => !state[e.lane].you).map((e) => {
+    const cs = counters(e.lane, e.slug);
+    return cs.length ? `${LANE_EMOJI[e.lane]} ${LANE_LABELS[e.lane]}: <b>${esc(cs[0].name)}</b>${cs[1] ? `, ${esc(cs[1].name)}` : ''}` : null;
+  }).filter(Boolean);
+
+  const n = enemies.length;
+  el.innerHTML = `<div class="ctop">
+    <div class="ctop-h">🎯 How to beat this team <span class="ctop-n">${n}/5 enemy picked${n < 5 ? ' · sharpens as they lock in' : ''}</span></div>
+    <div class="sumrow"><span>Their damage</span><span class="sbar"><span class="p" style="width:${pPct}%"></span><span class="m" style="width:${mPct}%"></span></span><span class="pill">${pPct}% phys</span><span class="pill">${mPct}% mag</span></div>
+    <ul class="ctop-recs">${recs.map((r) => `<li><span class="ctop-k">${r.k}</span>${r.t}</li>`).join('')}</ul>
+    ${openRecs.length ? `<div class="ctop-sub"><b>Best counters for open lanes:</b> ${openRecs.join(' · ')}</div>` : ''}
+    ${laneRead ? `<div class="ctop-sub">${laneRead}</div>` : ''}
+  </div>`;
+}
+
 function render() {
   // One on-demand key (R3/R5): shown once, near the content, only when counters
   // are on screen — touch devices get no title= tooltips, so the dots need a key.
@@ -279,6 +356,7 @@ function render() {
   $('#lanes').querySelectorAll('[data-clr]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); state[b.dataset.lane][b.dataset.clr] = null; render(); });
   $('#lanes').querySelectorAll('[data-pick]').forEach((b) => b.onclick = () => { state[b.dataset.lane].you = b.dataset.pick; render(); });
   $('#lanes').querySelectorAll('[data-move]').forEach((b) => b.onclick = () => openMove(b.dataset.move));
+  renderCounterTop();
   renderSummary();
 }
 
@@ -339,10 +417,11 @@ $('#clearAll').onclick = () => { LANES.forEach((l) => { state[l].enemy = null; s
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
 (async () => {
-  [INDEX, MX, META] = await Promise.all([
+  [INDEX, MX, META, PROFILES] = await Promise.all([
     getJson('../../data/artifacts/index.json'),
     getJson('../../data/artifacts/matchup-matrix.json'),
     getJson('../../data/artifacts/meta.json'),
+    getJson('../../data/game-data/hero-profiles.json').then((p) => p ? Object.fromEntries(p.map((h) => [h.slug, h])) : null),
   ]);
   if (!INDEX) { $('#lanes').innerHTML = '<div class="ld-empty">Could not load hero data.</div>'; return; }
   render();
