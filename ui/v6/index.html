@@ -60,7 +60,7 @@
   .suggest .srow img { width:30px; height:30px; border-radius:8px; object-fit:cover; background:var(--bg-2); }
   .suggest .srow .sr { margin-left:auto; font-size:.7rem; color:var(--text-2); text-transform:capitalize; }
   .landing-mode { display:inline-flex; flex-wrap:wrap; justify-content:center; gap:.2rem; margin:1rem auto 0; background:var(--bg-1); border:1px solid var(--border); border-radius:99px; padding:.2rem; }
-  .landing-mode button { background:transparent; border:none; color:var(--text-1); border-radius:99px; padding:.4rem 1rem; font:inherit; font-size:.85rem; cursor:pointer; min-height:38px; }
+  .landing-mode button { background:transparent; border:none; color:var(--text-1); border-radius:99px; padding:.4rem 1rem; font:inherit; font-size:.85rem; cursor:pointer; min-height:38px; display:inline-flex; align-items:center; gap:.4rem; }
   .landing-mode button.active { background:var(--accent); color:#fff; font-weight:600; }
   .landing-mode .lm-link { display:inline-flex; align-items:center; color:var(--text-1); border-radius:99px; padding:.4rem 1rem; font-size:.85rem; min-height:38px; border-left:1px solid var(--border); }
   .landing-mode .lm-link:hover { color:var(--text-0); background:var(--bg-2); }
@@ -418,7 +418,7 @@
 <body>
 <div class="top">
   <div class="top-inner">
-    <a class="wordmark" href="./">Pred Scout</a>
+    <a class="wordmark" href="./"><img src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</a>
     <span class="spacer"></span>
     <a class="patch-pill" id="patchPill" href="../patch-1.15.html" title="Read the patch 1.15 review">patch —</a>
     <a class="navlink active" href="./">Pick &amp; Build</a>
@@ -439,8 +439,8 @@
         <div class="step"><span class="num">3</span><span class="txt"><b>Take it in-game</b><span>Your pick comes with its build, spikes and matchups.</span></span></div>
       </div>
       <div class="landing-mode" id="landMode">
-        <button data-lm="play" class="active">🎮 Pick a hero</button>
-        <button data-lm="counter">🛡 Counter an enemy</button>
+        <button data-lm="play" class="active"><span data-bic="build"></span> Pick a hero</button>
+        <button data-lm="counter"><span data-bic="counter-pick"></span> Counter an enemy</button>
       </div>
       <div class="searchbar"><input id="search" placeholder="Search heroes…" autocomplete="off"><div class="suggest" id="suggest"></div></div>
       <div class="rolebar" id="rolebar"></div>
@@ -448,7 +448,7 @@
     <div id="lanedetail"></div>
     <section class="endcards" aria-label="Patch review">
       <a class="endcard endcard--patch" href="../patch-1.15.html">
-        <span class="ec-icon">📋</span>
+        <span class="ec-icon" data-bic="patch-strategy" data-bic-size="26"></span>
         <span class="ec-body">
           <span class="ec-title">Patch <span id="ecPatchVer">1.15</span> review <span class="ec-tag">new</span></span>
           <p class="ec-sub" id="ecPatchSub">Splash Damage — what changed and what it'll do to the meta, with sim-grounded predictions.</p>
@@ -1639,6 +1639,7 @@ window.onpopstate = route;
   await route();
 })();
 </script>
+<script defer src="icons.js"></script>
 <script defer src="nav.js"></script>
 </body>
 </html>

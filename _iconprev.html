@@ -1,0 +1,11 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>body{background:#0a0a0f;color:#e8e8f0;font-family:Inter,system-ui;padding:24px;--accent:#6c5ce7}
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start;margin-top:20px}
+.cell{display:flex;flex-direction:column;align-items:center;gap:8px;color:#a0a0b8;font-size:11px;width:110px;background:#12121a;border:1px solid #2a2a3a;border-radius:10px;padding:12px 6px}</style></head><body>
+<div style="display:flex;align-items:center;gap:14px"><img src="ui/img/brand/logo.svg" width="56" height="56"><span style="font-size:28px;font-weight:800">Pred Scout</span></div>
+<div class="row" id="g"></div>
+<script src="ui/v6/icons.js"></script>
+<script>
+const labels={'counter-pick':'Counter Pick','matchup':'Matchup','build':'Build','patch-strategy':'Patch/Strategy','scout':'Scout','team-comp':'Team Comp','role-path':'Role Path','eternal-augment':'Eternals','meta-guide':'Meta Guide','power-spike':'Power Spike','weakness-counter':'Weakness','tap-to-learn':'Tap to Learn'};
+document.getElementById('g').innerHTML = BrandIcons.names.map(n=>`<div class="cell"><span style="color:#e8e8f0">${BrandIcons.svg(n,32)}</span><span>${labels[n]}</span></div>`).join('');
+</script></body></html>

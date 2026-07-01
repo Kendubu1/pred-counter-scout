@@ -404,7 +404,7 @@ const html = `<!DOCTYPE html>
 <body>
   <header>
     <div class="header-inner">
-      <a class="logo" href="v6/">Pred Scout</a>
+      <a class="logo" href="v6/" style="display:inline-flex;align-items:center;gap:0.45rem"><img src="img/brand/logo.svg" alt="" width="26" height="26"> Pred Scout</a>
       <div class="header-links">
         <a href="v6/" class="header-link">Pick &amp; Build</a>
         <a href="v6/squad.html" class="header-link">Pre-Game</a>
@@ -416,7 +416,7 @@ ${subnavBar}
 
   <main id="app">
     <div class="patch">
-      <h1 style="margin-bottom:0.25rem;">📋 Patch ${esc(version)} — Splash Damage</h1>
+      <h1 style="margin-bottom:0.25rem;">Patch ${esc(version)} — Splash Damage</h1>
       <p class="lead">Released ${esc(digest.date)} · Scout overview &amp; sim-grounded predictions ·
         <a href="${esc(digest.source)}" target="_blank" rel="noopener">official notes ↗</a></p>
 

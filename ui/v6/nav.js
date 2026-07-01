@@ -4,15 +4,16 @@
  * All v6 pages live in ui/v6/, so these relative links are identical per page. */
 (function () {
   const LINKS = [
-    { href: './',                    label: 'Pick & Build',           match: ['', 'index.html'] },
-    { href: 'squad.html',            label: 'Pre-Game',               match: ['squad.html'] },
-    { href: 'coach.html',            label: 'Coach',                  match: ['coach.html'] },
+    { href: './',                    label: 'Pick & Build',           icon: 'counter-pick',     match: ['', 'index.html'] },
+    { href: 'squad.html',            label: 'Pre-Game',               icon: 'team-comp',        match: ['squad.html'] },
+    { href: 'coach.html',            label: 'Coach',                  icon: 'scout',            match: ['coach.html'] },
     { sep: true },
-    { href: 'livedraft.html',        label: 'Live draft',             match: ['livedraft.html'] },
-    { href: '../patch-1.15.html',    label: 'Patch 1.15 review',      tag: 'new', match: ['patch-1.15.html'] },
-    { href: '../learn-eternals.html',label: 'Learn Eternals',         match: ['learn-eternals.html'] },
-    { href: 'about.html',            label: 'About & how this works', match: ['about.html'] },
+    { href: 'livedraft.html',        label: 'Live draft',             icon: 'weakness-counter', match: ['livedraft.html'] },
+    { href: '../patch-1.15.html',    label: 'Patch 1.15 review',      icon: 'patch-strategy', tag: 'new', match: ['patch-1.15.html'] },
+    { href: '../learn-eternals.html',label: 'Learn Eternals',         icon: 'eternal-augment',  match: ['learn-eternals.html'] },
+    { href: 'about.html',            label: 'About & how this works', icon: 'tap-to-learn',     match: ['about.html'] },
   ];
+  const bic = (name) => (window.BrandIcons ? window.BrandIcons.svg(name, 18) : '');
 
   const here = (location.pathname.split('/').pop() || '').toLowerCase();
 
@@ -43,6 +44,10 @@
     color:var(--text-1); text-decoration:none; font-size:.9rem; }
   .nav-list a:hover { background:var(--bg-2); color:var(--text-0); }
   .nav-list a.active { background:var(--accent-soft); color:var(--text-0); font-weight:700; }
+  .nav-list a .nav-ic { display:inline-flex; width:20px; color:var(--text-2); flex:none; }
+  .nav-list a:hover .nav-ic, .nav-list a.active .nav-ic { color:var(--text-0); }
+  .nav-drawer-head b { display:inline-flex; align-items:center; gap:.5rem; }
+  .nav-logo { display:block; }
   .nav-list a .nav-tag { margin-left:auto; font-size:.56rem; font-weight:700; text-transform:uppercase;
     letter-spacing:.06em; background:var(--accent); color:#fff; border-radius:99px; padding:.1rem .42rem; }
   `;
@@ -75,11 +80,11 @@
       if (l.sep) return '<li class="nav-sep" role="separator"></li>';
       const active = l.match && l.match.includes(here) ? ' active' : '';
       const tag = l.tag ? `<span class="nav-tag">${l.tag}</span>` : '';
-      return `<li><a class="${active.trim()}" href="${l.href}"><span>${l.label}</span>${tag}</a></li>`;
+      return `<li><a class="${active.trim()}" href="${l.href}"><span class="nav-ic">${bic(l.icon)}</span><span>${l.label}</span>${tag}</a></li>`;
     }).join('');
 
     drawer.innerHTML =
-      '<div class="nav-drawer-head"><b>Pred Scout</b>' +
+      '<div class="nav-drawer-head"><b><img class="nav-logo" src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</b>' +
       '<button class="nav-close" aria-label="Close menu">×</button></div>' +
       `<ul class="nav-list">${items}</ul>`;
 
