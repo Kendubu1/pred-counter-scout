@@ -14,7 +14,8 @@ import path from 'node:path';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const UA = { 'User-Agent': 'pred-counter-scout (github.com/Kendubu1/pred-counter-scout)' };
-const MODES = new Set(['pvp', 'ranked']);
+// RANKED_ONLY=1 restricts to ranked matches (default keeps pvp+ranked).
+const MODES = process.env.RANKED_ONLY ? new Set(['ranked']) : new Set(['pvp', 'ranked']);
 const ROLES = new Set(['carry', 'support', 'midlane', 'offlane', 'jungle']);
 
 interface FeedPlayer {
