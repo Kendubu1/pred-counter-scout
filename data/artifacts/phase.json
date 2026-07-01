@@ -16,7 +16,7 @@
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
    "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)",
-   "the sim opens on Stonewall, which the field rarely builds (0.2% pick) — a sim-only call; compare the meta cores below",
+   "the sim opens on Stonewall, which the field rarely builds (0.1% pick) — a sim-only call; compare the meta cores below",
    "the sim build reproduces only 0% of the field's core for Phase (it never builds Marshal, Enra's Blessing, Galaxy Greaves) — some of those items ride mechanics the sim doesn't model yet"
   ]
  },
@@ -27,7 +27,7 @@
     "name": "Stonewall",
     "slug": "stonewall",
     "spikeMinute": 14,
-    "playRatePct": 0.2,
+    "playRatePct": 0.1,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -43,7 +43,7 @@
     "name": "Raiment of Renewal",
     "slug": "raiment-of-renewal",
     "spikeMinute": 28,
-    "playRatePct": 0.3,
+    "playRatePct": 0.1,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -59,7 +59,7 @@
     "name": "Catalytic Drive",
     "slug": "catalytic-drive",
     "spikeMinute": 38,
-    "playRatePct": 0.2,
+    "playRatePct": 0,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -67,7 +67,7 @@
     "name": "Unbroken Will",
     "slug": "unbroken-will",
     "spikeMinute": 43,
-    "playRatePct": 0.2,
+    "playRatePct": 0.1,
     "evidenceDeltaWr": null,
     "evidenceN": null
    }
@@ -473,7 +473,7 @@
   "candidates": [
    {
     "item": "Stonewall",
-    "playRatePct": 0.2,
+    "playRatePct": 0.1,
     "bestObjective": "magical survivability",
     "edgeVsPopularPct": 195.6
    },
@@ -485,7 +485,7 @@
    },
    {
     "item": "Raiment of Renewal",
-    "playRatePct": 0.3,
+    "playRatePct": 0.1,
     "bestObjective": "magical survivability",
     "edgeVsPopularPct": 195.6
    },
@@ -497,13 +497,13 @@
    },
    {
     "item": "Catalytic Drive",
-    "playRatePct": 0.2,
+    "playRatePct": 0,
     "bestObjective": "magical survivability",
     "edgeVsPopularPct": 195.6
    },
    {
     "item": "Unbroken Will",
-    "playRatePct": 0.2,
+    "playRatePct": 0.1,
     "bestObjective": "magical survivability",
     "edgeVsPopularPct": 195.6
    }
@@ -527,13 +527,37 @@
      "slug": "galaxy-greaves"
     }
    ],
-   "n": 1355,
-   "shrunkWr": 0.538,
+   "n": 182,
+   "shrunkWr": 0.628,
    "coreGold": 7300,
    "spikeMinute": 24,
    "bestObjective": "magical survivability",
    "whyLine": "Strongest meta core for magical survivability, online around minute 24 — about 4,034 effective HP vs magical in the sim.",
    "optimizer": "Optimizer sees +50% more magical survivability: try Stonewall over Marshal (sim-only — the popular pick may carry utility the sim can't see; test it)."
+  },
+  {
+   "title": "Magical Burst",
+   "items": [
+    {
+     "name": "Marshal",
+     "slug": "marshal"
+    },
+    {
+     "name": "EnmasBlessing",
+     "slug": "enras-blessing"
+    },
+    {
+     "name": "Windcaller",
+     "slug": "windcaller"
+    }
+   ],
+   "n": 27,
+   "shrunkWr": 0.569,
+   "coreGold": 7150,
+   "spikeMinute": 24,
+   "bestObjective": "one-combo burst",
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 594 damage in one combo in the sim.",
+   "optimizer": null
   },
   {
    "title": "Magical Bruiser (Physical-Def)",
@@ -551,36 +575,12 @@
      "slug": "enras-blessing"
     }
    ],
-   "n": 483,
-   "shrunkWr": 0.538,
+   "n": 43,
+   "shrunkWr": 0.525,
    "coreGold": 7200,
    "spikeMinute": 24,
    "bestObjective": "sustained auto DPS",
    "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 120 auto-attack DPS in the sim.",
-   "optimizer": null
-  },
-  {
-   "title": "Magical Bruiser (Mixed-Def)",
-   "items": [
-    {
-     "name": "Marshal",
-     "slug": "marshal"
-    },
-    {
-     "name": "GalaxyGreaves",
-     "slug": "galaxy-greaves"
-    },
-    {
-     "name": "Windcaller",
-     "slug": "windcaller"
-    }
-   ],
-   "n": 256,
-   "shrunkWr": 0.543,
-   "coreGold": 7250,
-   "spikeMinute": 24,
-   "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 548 damage in one combo in the sim.",
    "optimizer": null
   }
  ],
@@ -733,6 +733,70 @@
    "counterSwap": null
   },
   {
+   "enemy": "Dekker",
+   "enemySlug": "dekker",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Dekker deals area damage — spread out so one cast can't catch the group.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 10,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 15,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 20,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 25,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 30,
+     "verdict": "enemy"
+    }
+   ],
+   "counterSwap": null
+  },
+  {
+   "enemy": "Riktor",
+   "enemySlug": "riktor",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Riktor ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 10,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 15,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 20,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 25,
+     "verdict": "even"
+    },
+    {
+     "minute": 30,
+     "verdict": "enemy"
+    }
+   ],
+   "counterSwap": null
+  },
+  {
    "enemy": "Adele",
    "enemySlug": "adele",
    "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Adele deals area damage — spread out so one cast can't catch the group.",
@@ -772,61 +836,29 @@
    }
   },
   {
-   "enemy": "Riktor",
-   "enemySlug": "riktor",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Riktor ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
+   "enemy": "Mourn",
+   "enemySlug": "mourn",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Mourn's main threat is Abduct; bait it before you commit, and mixed resist softens the trade.",
    "checkpoints": [
     {
      "minute": 5,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 10,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 15,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 20,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 25,
      "verdict": "even"
-    },
-    {
-     "minute": 30,
-     "verdict": "enemy"
-    }
-   ],
-   "counterSwap": null
-  },
-  {
-   "enemy": "Dekker",
-   "enemySlug": "dekker",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Dekker deals area damage — spread out so one cast can't catch the group.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 10,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 15,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 20,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 25,
-     "verdict": "enemy"
     },
     {
      "minute": 30,
@@ -866,38 +898,6 @@
     }
    ],
    "counterSwap": null
-  },
-  {
-   "enemy": "Mourn",
-   "enemySlug": "mourn",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Mourn's main threat is Abduct; bait it before you commit, and mixed resist softens the trade.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "even"
-    },
-    {
-     "minute": 10,
-     "verdict": "even"
-    },
-    {
-     "minute": 15,
-     "verdict": "even"
-    },
-    {
-     "minute": 20,
-     "verdict": "even"
-    },
-    {
-     "minute": 25,
-     "verdict": "even"
-    },
-    {
-     "minute": 30,
-     "verdict": "enemy"
-    }
-   ],
-   "counterSwap": null
   }
  ],
  "laneSteer": {
@@ -907,16 +907,16 @@
   },
   "playstyle": "sustain",
   "modeled": false,
-  "wr": 51.2,
-  "n": 546421,
+  "wr": 51.5,
+  "n": 281588,
   "shiftIn": [],
   "shiftOut": [],
-  "provenance": "“Kindred Surge” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 51.2% over 546,421 games, magnitude not simulated."
+  "provenance": "“Kindred Surge” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 51.5% over 281,588 games, magnitude not simulated."
  },
  "slug": "phase",
  "name": "Phase",
  "patch": "1.14.4",
- "generatedAt": "2026-06-22T22:53:24.556Z",
+ "generatedAt": "2026-07-01T18:41:00.914Z",
  "damageType": "hybrid",
  "attackType": "ranged",
  "laneFlex": [
@@ -928,8 +928,8 @@
    },
    "playstyle": "sustain",
    "modeled": false,
-   "wr": 51.2,
-   "n": 546421,
+   "wr": 51.5,
+   "n": 281588,
    "core": [
     {
      "name": "Warp Stream",
@@ -957,7 +957,7 @@
     }
    ],
    "headline": "physical survival",
-   "provenance": "“Kindred Surge” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 51.2% over 546,421 games, magnitude not simulated."
+   "provenance": "“Kindred Surge” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 51.5% over 281,588 games, magnitude not simulated."
   }
  ],
  "roles": [
@@ -979,7 +979,7 @@
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
      "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)",
-     "the sim opens on Stonewall, which the field rarely builds (0.2% pick) — a sim-only call; compare the meta cores below",
+     "the sim opens on Stonewall, which the field rarely builds (0.1% pick) — a sim-only call; compare the meta cores below",
      "the sim build reproduces only 0% of the field's core for Phase (it never builds Marshal, Enra's Blessing, Galaxy Greaves) — some of those items ride mechanics the sim doesn't model yet"
     ]
    },
@@ -990,7 +990,7 @@
       "name": "Stonewall",
       "slug": "stonewall",
       "spikeMinute": 14,
-      "playRatePct": 0.2,
+      "playRatePct": 0.1,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1006,7 +1006,7 @@
       "name": "Raiment of Renewal",
       "slug": "raiment-of-renewal",
       "spikeMinute": 28,
-      "playRatePct": 0.3,
+      "playRatePct": 0.1,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1022,7 +1022,7 @@
       "name": "Catalytic Drive",
       "slug": "catalytic-drive",
       "spikeMinute": 38,
-      "playRatePct": 0.2,
+      "playRatePct": 0,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1030,7 +1030,7 @@
       "name": "Unbroken Will",
       "slug": "unbroken-will",
       "spikeMinute": 43,
-      "playRatePct": 0.2,
+      "playRatePct": 0.1,
       "evidenceDeltaWr": null,
       "evidenceN": null
      }
@@ -1436,7 +1436,7 @@
     "candidates": [
      {
       "item": "Stonewall",
-      "playRatePct": 0.2,
+      "playRatePct": 0.1,
       "bestObjective": "magical survivability",
       "edgeVsPopularPct": 195.6
      },
@@ -1448,7 +1448,7 @@
      },
      {
       "item": "Raiment of Renewal",
-      "playRatePct": 0.3,
+      "playRatePct": 0.1,
       "bestObjective": "magical survivability",
       "edgeVsPopularPct": 195.6
      },
@@ -1460,13 +1460,13 @@
      },
      {
       "item": "Catalytic Drive",
-      "playRatePct": 0.2,
+      "playRatePct": 0,
       "bestObjective": "magical survivability",
       "edgeVsPopularPct": 195.6
      },
      {
       "item": "Unbroken Will",
-      "playRatePct": 0.2,
+      "playRatePct": 0.1,
       "bestObjective": "magical survivability",
       "edgeVsPopularPct": 195.6
      }
@@ -1490,13 +1490,37 @@
        "slug": "galaxy-greaves"
       }
      ],
-     "n": 1355,
-     "shrunkWr": 0.538,
+     "n": 182,
+     "shrunkWr": 0.628,
      "coreGold": 7300,
      "spikeMinute": 24,
      "bestObjective": "magical survivability",
      "whyLine": "Strongest meta core for magical survivability, online around minute 24 — about 4,034 effective HP vs magical in the sim.",
      "optimizer": "Optimizer sees +50% more magical survivability: try Stonewall over Marshal (sim-only — the popular pick may carry utility the sim can't see; test it)."
+    },
+    {
+     "title": "Magical Burst",
+     "items": [
+      {
+       "name": "Marshal",
+       "slug": "marshal"
+      },
+      {
+       "name": "EnmasBlessing",
+       "slug": "enras-blessing"
+      },
+      {
+       "name": "Windcaller",
+       "slug": "windcaller"
+      }
+     ],
+     "n": 27,
+     "shrunkWr": 0.569,
+     "coreGold": 7150,
+     "spikeMinute": 24,
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 594 damage in one combo in the sim.",
+     "optimizer": null
     },
     {
      "title": "Magical Bruiser (Physical-Def)",
@@ -1514,36 +1538,12 @@
        "slug": "enras-blessing"
       }
      ],
-     "n": 483,
-     "shrunkWr": 0.538,
+     "n": 43,
+     "shrunkWr": 0.525,
      "coreGold": 7200,
      "spikeMinute": 24,
      "bestObjective": "sustained auto DPS",
      "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 120 auto-attack DPS in the sim.",
-     "optimizer": null
-    },
-    {
-     "title": "Magical Bruiser (Mixed-Def)",
-     "items": [
-      {
-       "name": "Marshal",
-       "slug": "marshal"
-      },
-      {
-       "name": "GalaxyGreaves",
-       "slug": "galaxy-greaves"
-      },
-      {
-       "name": "Windcaller",
-       "slug": "windcaller"
-      }
-     ],
-     "n": 256,
-     "shrunkWr": 0.543,
-     "coreGold": 7250,
-     "spikeMinute": 24,
-     "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 548 damage in one combo in the sim.",
      "optimizer": null
     }
    ],
@@ -1696,6 +1696,70 @@
      "counterSwap": null
     },
     {
+     "enemy": "Dekker",
+     "enemySlug": "dekker",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Dekker deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": null
+    },
+    {
+     "enemy": "Riktor",
+     "enemySlug": "riktor",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Riktor ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "even"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": null
+    },
+    {
      "enemy": "Adele",
      "enemySlug": "adele",
      "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Adele deals area damage — spread out so one cast can't catch the group.",
@@ -1735,61 +1799,29 @@
      }
     },
     {
-     "enemy": "Riktor",
-     "enemySlug": "riktor",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Riktor ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
+     "enemy": "Mourn",
+     "enemySlug": "mourn",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Mourn's main threat is Abduct; bait it before you commit, and mixed resist softens the trade.",
      "checkpoints": [
       {
        "minute": 5,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 10,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 15,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 20,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 25,
        "verdict": "even"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": null
-    },
-    {
-     "enemy": "Dekker",
-     "enemySlug": "dekker",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Dekker deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
       },
       {
        "minute": 30,
@@ -1829,38 +1861,6 @@
       }
      ],
      "counterSwap": null
-    },
-    {
-     "enemy": "Mourn",
-     "enemySlug": "mourn",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Mourn's main threat is Abduct; bait it before you commit, and mixed resist softens the trade.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "even"
-      },
-      {
-       "minute": 10,
-       "verdict": "even"
-      },
-      {
-       "minute": 15,
-       "verdict": "even"
-      },
-      {
-       "minute": 20,
-       "verdict": "even"
-      },
-      {
-       "minute": 25,
-       "verdict": "even"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": null
     }
    ],
    "laneSteer": {
@@ -1870,11 +1870,11 @@
     },
     "playstyle": "sustain",
     "modeled": false,
-    "wr": 51.2,
-    "n": 546421,
+    "wr": 51.5,
+    "n": 281588,
     "shiftIn": [],
     "shiftOut": [],
-    "provenance": "“Kindred Surge” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 51.2% over 546,421 games, magnitude not simulated."
+    "provenance": "“Kindred Surge” ⇒ sustain; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 51.5% over 281,588 games, magnitude not simulated."
    }
   }
  ],
