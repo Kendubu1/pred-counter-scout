@@ -94,7 +94,7 @@ const heroSections = groups.map(([key, title]) => {
 // Coach "meta read" callout for the bottom of a section (omitted if absent).
 function metaRead(key) {
   const m = pred.sectionMeta && pred.sectionMeta[key];
-  return m ? `\n      <div class="meta-read"><b>📈 Meta read</b>${esc(m)}</div>` : '';
+  return m ? `\n      <div class="meta-read"><b><span class="mr-ic" data-bic="scout" data-bic-size="13"></span>Meta read</b>${esc(m)}</div>` : '';
 }
 
 // ── Hero showcase: clickable images with a colored trend arrow, ordered by
@@ -162,7 +162,7 @@ const aramHeroGroups = [
       <div class="aram-chips">${aramSingles.map(aramChip).join('')}</div>` : '',
 ].join('');
 const aramBlock = digest.aram ? `
-      <h2 class="section" id="ch-aram">ARAM balance</h2>
+      <h2 class="section" id="ch-aram"><span class="sec-ic" data-bic="team-comp"></span>ARAM balance</h2>
       <p class="lead">${esc(digest.aram.summary || '')}</p>
       <h3 class="group-head">Systemic changes <span class="group-count">${(digest.aram.system || []).length}</span></h3>
       ${(digest.aram.system || []).map(aramSysCard).join('')}
@@ -237,7 +237,7 @@ const itemCards = itemChanges.map((it) => {
 const sysList = (digest.systems || []).map((s) =>
   `<div class="sys"><div class="sys-name">${esc(s.name)}</div><div class="sys-sum">${esc(s.summary)}</div></div>`).join('');
 const rankedBlock = digest.ranked ? `
-      <h2 class="section" id="ch-ranked">Ranked</h2>
+      <h2 class="section" id="ch-ranked"><span class="sec-ic" data-bic="power-spike"></span>Ranked</h2>
       <p class="lead">${esc(digest.ranked.summary || '')}</p>
       <ul class="items-list ranked-list">${(digest.ranked.changes || []).map((c) => `<li>${esc(c)}</li>`).join('')}</ul>${metaRead('ranked')}
 ` : '';
@@ -384,7 +384,11 @@ const html = `<!DOCTYPE html>
       border-radius: 8px; padding: 0.7rem 0.9rem; font-size: 0.85rem; color: var(--text-1); line-height: 1.5; }
     .meta-read b { display: block; color: var(--accent); text-transform: uppercase; font-size: 0.64rem;
       letter-spacing: 0.06em; margin-bottom: 0.25rem; }
-    .ranked-list li::before { content: '🏆'; }
+    .ranked-list li::before { content: '⬡'; }
+    h2.section .sec-ic { display: inline-flex; width: 1.1em; height: 1.1em; margin-right: 0.45rem; vertical-align: -0.16em; color: var(--text-0); }
+    h2.section .sec-ic .bic { width: 100%; height: 100%; }
+    .meta-read .mr-ic { display: inline-flex; width: 0.95em; height: 0.95em; margin-right: 0.3rem; vertical-align: -0.12em; }
+    .meta-read .mr-ic .bic { width: 100%; height: 100%; color: var(--accent); }
     .patch-subnav { position: sticky; top: 56px; z-index: 90; background: var(--bg-1);
       border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); }
     .psn-inner { max-width: 880px; margin: 0 auto; display: flex; align-items: center; gap: 0.35rem;
@@ -427,25 +431,25 @@ ${subnavBar}
         updated builds &amp; matchups) runs once 1.15 goes live on omeda.city.
       </div>
 
-      <h2 class="section" id="ch-tldr">TL;DR — what actually changes how you play</h2>
+      <h2 class="section" id="ch-tldr"><span class="sec-ic" data-bic="scout"></span>TL;DR — what actually changes how you play</h2>
       ${tldrBlock}${metaRead('tldr')}
 
-      <h2 class="section" id="ch-heroes">Hero changes <span style="font-size:0.7rem;color:var(--text-2);font-weight:500;">
+      <h2 class="section" id="ch-heroes"><span class="sec-ic" data-bic="counter-pick"></span>Hero changes <span style="font-size:0.7rem;color:var(--text-2);font-weight:500;">
         ${counts[0]} meta-shifting · ${counts[1]} notable · ${counts[2]} minor · bugfix-only heroes excluded</span></h2>
       ${heroShowcase}
       ${heroSections}${metaRead('heroes')}
 
-      <h2 class="section" id="ch-eternals">Eternals (draft blessings)</h2>
+      <h2 class="section" id="ch-eternals"><span class="sec-ic" data-bic="eternal-augment"></span>Eternals (draft blessings)</h2>
       <p class="lead">${esc(digest.eternals?.summary || '')}</p>
       ${eternalShowcase}
       ${eternalCards}${metaRead('eternals')}
 
-      <h2 class="section" id="ch-items">Items</h2>
+      <h2 class="section" id="ch-items"><span class="sec-ic" data-bic="build"></span>Items</h2>
       ${itemChanges.length ? `${itemShowcase}\n      ${itemCards}` : `<ul class="items-list">${itemList}</ul>`}${metaRead('items')}
 
       ${aramBlock}
 
-      <h2 class="section" id="ch-systems">Systems &amp; map</h2>
+      <h2 class="section" id="ch-systems"><span class="sec-ic" data-bic="meta-guide"></span>Systems &amp; map</h2>
       ${sysList}${metaRead('systems')}
 
       ${rankedBlock}
@@ -476,6 +480,7 @@ ${subnavBar}
     secs.forEach(function (s) { io.observe(s); });
   })();
   </script>
+  <script defer src="v6/icons.js"></script>
 </body>
 </html>
 `;

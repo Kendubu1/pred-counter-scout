@@ -88,7 +88,8 @@
   .ec-tag { font-size:.58rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; background:var(--accent); color:#fff; border-radius:99px; padding:.1rem .42rem; }
   .ec-sub { font-size:.78rem; color:var(--text-2); margin:.28rem 0 .35rem; line-height:1.45; }
   .ec-hi { list-style:none; padding:0; margin:.3rem 0 .5rem; display:flex; flex-direction:column; gap:.18rem; }
-  .ec-hi li { font-size:.74rem; color:var(--text-1); }
+  .ec-hi li { font-size:.74rem; color:var(--text-1); display:flex; align-items:center; gap:.4rem; }
+  .ec-hi .hi-ic { display:inline-flex; flex:none; }
   .ec-cta { font-size:.76rem; font-weight:700; color:var(--accent); }
   /* ── divider that pushes the meta board + grid below the fold ── */
   .browse-head { display:flex; align-items:center; gap:.7rem; margin:2.6rem 0 .4rem; color:var(--text-2); font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.09em; }
@@ -324,7 +325,7 @@
   .lanepanel h2 { font-size:1rem; font-weight:800; }
   .lanepanel .lp-sub { font-size:.72rem; color:var(--text-2); margin-top:.15rem; }
   .lmode { display:flex; gap:.5rem; margin:.7rem 0 .8rem; flex-wrap:wrap; }
-  .lmode button { background:var(--bg-2); border:1px solid var(--border); color:var(--text-1); border-radius:99px; padding:.3rem .9rem; font-size:.8rem; }
+  .lmode button { background:var(--bg-2); border:1px solid var(--border); color:var(--text-1); border-radius:99px; padding:.3rem .9rem; font-size:.8rem; display:inline-flex; align-items:center; gap:.35rem; }
   .lmode button.active { background:var(--accent-soft); border-color:var(--accent); color:var(--text-0); }
   .lrow { display:grid; grid-template-columns:auto 1fr auto; gap:.7rem; align-items:center; padding:.45rem 0; border-bottom:1px solid var(--border); cursor:pointer; }
   .lrow:last-of-type { border-bottom:none; }
@@ -453,9 +454,9 @@
           <span class="ec-title">Patch <span id="ecPatchVer">1.15</span> review <span class="ec-tag">new</span></span>
           <p class="ec-sub" id="ecPatchSub">Splash Damage — what changed and what it'll do to the meta, with sim-grounded predictions.</p>
           <ul class="ec-hi" id="ecPatchHi">
-            <li>🆕 New hero: Ikra, a splash-damage mage</li>
-            <li>🗺️ Daybreak V6 map + jungle rework</li>
-            <li>⚖️ Eternals trimmed · Revenant &amp; Terra meta-shifting</li>
+            <li><span class="hi-ic" data-bic="scout" data-bic-size="15"></span> New hero: Ikra, a splash-damage mage</li>
+            <li><span class="hi-ic" data-bic="meta-guide" data-bic-size="15"></span> Daybreak V6 map + jungle rework</li>
+            <li><span class="hi-ic" data-bic="eternal-augment" data-bic-size="15"></span> Eternals trimmed · Revenant &amp; Terra meta-shifting</li>
           </ul>
           <span class="ec-cta">Read the patch review →</span>
         </span>
@@ -744,12 +745,13 @@ async function renderLaneDetail() {
       <h2>${LANE_LABELS[role]} · lane room</h2>
       <div class="lp-sub">${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</div>
       <div class="lmode">
-        <button data-m="first" class="${laneMode === 'first' ? 'active' : ''}">⚔ picking first</button>
-        <button data-m="counter" class="${laneMode === 'counter' ? 'active' : ''}">🛡 countering their pick</button>
+        <button data-m="first" class="${laneMode === 'first' ? 'active' : ''}"><span data-bic="counter-pick" data-bic-size="15"></span> picking first</button>
+        <button data-m="counter" class="${laneMode === 'counter' ? 'active' : ''}"><span data-bic="matchup" data-bic-size="15"></span> countering their pick</button>
       </div>
       ${body}
       ${playersBlock(role)}
     </div>`;
+  if (window.BrandIcons) window.BrandIcons.hydrate(box);
   box.querySelectorAll('.lmode button').forEach((b) => { b.onclick = () => { laneMode = b.dataset.m; renderLaneDetail(); }; });
   box.querySelectorAll('.echip').forEach((c) => {
     c.onclick = () => {
