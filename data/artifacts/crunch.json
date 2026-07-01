@@ -15,7 +15,7 @@
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
-   "the sim opens on Viper, which the field rarely builds (0.5% pick) — a sim-only call; compare the meta cores below",
+   "the sim opens on Viper, which the field rarely builds (0% pick) — a sim-only call; compare the meta cores below",
    "the sim build reproduces only 33% of the field's core for Crunch (it never builds Berserker's Axe, Salvation) — some of those items ride mechanics the sim doesn't model yet"
   ]
  },
@@ -26,7 +26,7 @@
     "name": "Viper",
     "slug": "viper",
     "spikeMinute": 12,
-    "playRatePct": 0.5,
+    "playRatePct": 0,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -34,48 +34,47 @@
     "name": "Basilisk",
     "slug": "basilisk",
     "spikeMinute": 19,
-    "playRatePct": 1.4,
-    "evidenceDeltaWr": -3.8,
-    "evidenceN": 16
+    "playRatePct": 2.8,
+    "evidenceDeltaWr": 3.9,
+    "evidenceN": 14
    },
    {
     "name": "Spear Of Desolation",
     "slug": "spear-of-desolation",
     "spikeMinute": 25,
-    "playRatePct": 0.5,
+    "playRatePct": 0.6,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
    {
     "name": "Augmentation",
     "slug": "augmentation",
-    "spikeMinute": 31,
-    "playRatePct": 50.3,
-    "evidenceDeltaWr": -2.2,
-    "evidenceN": 556
+    "spikeMinute": 30,
+    "playRatePct": 51.5,
+    "evidenceDeltaWr": 0,
+    "evidenceN": 256
    },
    {
     "name": "The Perforator",
     "slug": "the-perforator",
-    "spikeMinute": 37,
-    "playRatePct": 0.5,
+    "spikeMinute": 36,
+    "playRatePct": 1,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
    {
     "name": "Solaris",
     "slug": "solaris",
-    "spikeMinute": 42,
-    "playRatePct": 2,
-    "evidenceDeltaWr": 4.9,
-    "evidenceN": 22
+    "spikeMinute": 41,
+    "playRatePct": 1.8,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
    }
   ],
   "gold": 18500,
   "archetypes": [
    "skirmish uptime",
-   "extended fights",
-   "physical survival"
+   "extended fights"
   ],
   "objectives": {
    "burstVsSquishy": 1826.9685404420898,
@@ -91,7 +90,7 @@
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for skirmish uptime, extended fights and physical survival: first spike lands around minute 12 (Viper), third item by minute 25. Take Demiurge: +14.1% on your burst combo at minute 15.",
+ "coachLine": "Sim-optimal for skirmish uptime and extended fights: first spike lands around minute 12 (Viper), third item by minute 25. Take Demiurge: +14.1% on your burst combo at minute 15.",
  "eternals": {
   "top": [
    {
@@ -474,32 +473,80 @@
   "candidates": [
    {
     "item": "Viper",
-    "playRatePct": 0.5,
+    "playRatePct": 0,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 183.3
-   },
-   {
-    "item": "Basilisk",
-    "playRatePct": 1.4,
-    "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 183.3
+    "edgeVsPopularPct": 190.6
    },
    {
     "item": "Spear Of Desolation",
-    "playRatePct": 0.5,
+    "playRatePct": 0.6,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 183.3
+    "edgeVsPopularPct": 190.6
    },
    {
     "item": "The Perforator",
-    "playRatePct": 0.5,
+    "playRatePct": 1,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 183.3
+    "edgeVsPopularPct": 190.6
+   },
+   {
+    "item": "Solaris",
+    "playRatePct": 1.8,
+    "bestObjective": "sustained auto DPS",
+    "edgeVsPopularPct": 190.6
    }
   ],
   "honestAbsence": null
  },
  "metaBuilds": [
+  {
+   "title": "Physical Bruiser (Physical-Def)",
+   "items": [
+    {
+     "name": "Augmentation",
+     "slug": "augmentation"
+    },
+    {
+     "name": "Mutilator",
+     "slug": "mutilator"
+    },
+    {
+     "name": "Draconum",
+     "slug": "draconum"
+    }
+   ],
+   "n": 23,
+   "shrunkWr": 0.48,
+   "coreGold": 9300,
+   "spikeMinute": 25,
+   "bestObjective": "one-combo burst",
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 744 damage in one combo in the sim.",
+   "optimizer": "Optimizer agrees: within 1% of our best core on one-combo burst. The winrate is earned, not luck."
+  },
+  {
+   "title": "Physical DPS Carry",
+   "items": [
+    {
+     "name": "Augmentation",
+     "slug": "augmentation"
+    },
+    {
+     "name": "Mutilator",
+     "slug": "mutilator"
+    },
+    {
+     "name": "Salvation",
+     "slug": "salvation"
+    }
+   ],
+   "n": 35,
+   "shrunkWr": 0.471,
+   "coreGold": 9300,
+   "spikeMinute": 25,
+   "bestObjective": "sustained auto DPS",
+   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 25 — about 190 auto-attack DPS in the sim.",
+   "optimizer": "Optimizer sees +74% more sustained auto DPS: try Viper over Augmentation (sim-only — the popular pick may carry utility the sim can't see; test it)."
+  },
   {
    "title": "Physical Bruiser",
    "items": [
@@ -516,61 +563,13 @@
      "slug": "salvation"
     }
    ],
-   "n": 263,
-   "shrunkWr": 0.516,
+   "n": 21,
+   "shrunkWr": 0.494,
    "coreGold": 9200,
    "spikeMinute": 25,
-   "bestObjective": "magical survivability",
-   "whyLine": "Strongest meta core for magical survivability, online around minute 25 — about 4,664 effective HP vs magical in the sim.",
+   "bestObjective": "physical survivability",
+   "whyLine": "Strongest meta core for physical survivability, online around minute 25 — about 6,191 effective HP vs physical in the sim.",
    "optimizer": null
-  },
-  {
-   "title": "Physical Burst",
-   "items": [
-    {
-     "name": "Augmentation",
-     "slug": "augmentation"
-    },
-    {
-     "name": "Mutilator",
-     "slug": "mutilator"
-    },
-    {
-     "name": "Salvation",
-     "slug": "salvation"
-    }
-   ],
-   "n": 228,
-   "shrunkWr": 0.518,
-   "coreGold": 9300,
-   "spikeMinute": 26,
-   "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 26 — about 729 damage in one combo in the sim.",
-   "optimizer": "Optimizer agrees: within 3% of our best core on one-combo burst. The winrate is earned, not luck."
-  },
-  {
-   "title": "Physical DPS Carry",
-   "items": [
-    {
-     "name": "Augmentation",
-     "slug": "augmentation"
-    },
-    {
-     "name": "Mutilator",
-     "slug": "mutilator"
-    },
-    {
-     "name": "TaintedBlade",
-     "slug": "tainted-blade"
-    }
-   ],
-   "n": 91,
-   "shrunkWr": 0.519,
-   "coreGold": 9400,
-   "spikeMinute": 26,
-   "bestObjective": "sustained auto DPS",
-   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 26 — about 199 auto-attack DPS in the sim.",
-   "optimizer": "Optimizer sees +66% more sustained auto DPS: try Viper over Augmentation (sim-only — the popular pick may carry utility the sim can't see; test it)."
   }
  ],
  "stages": [
@@ -653,7 +652,7 @@
   {
    "label": "late",
    "itemCount": 6,
-   "minute": 42,
+   "minute": 41,
    "level": 17,
    "core": [
     {
@@ -700,45 +699,6 @@
  ],
  "matchups": [
   {
-   "enemy": "Grux",
-   "enemySlug": "grux",
-   "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Grux deals area damage — spread out so one cast can't catch the group.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "even"
-    },
-    {
-     "minute": 10,
-     "verdict": "even"
-    },
-    {
-     "minute": 15,
-     "verdict": "even"
-    },
-    {
-     "minute": 20,
-     "verdict": "even"
-    },
-    {
-     "minute": 25,
-     "verdict": "you"
-    },
-    {
-     "minute": 30,
-     "verdict": "even"
-    }
-   ],
-   "counterSwap": {
-    "out": "Basilisk",
-    "in": "Warden's Faith",
-    "inSlug": "wardens-faith",
-    "survivalGainPct": 23,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Warden's Faith instead of Basilisk: their 3s all-in loses 23% of its bite; you give up 20% of your damage."
-   }
-  },
-  {
    "enemy": "Steel",
    "enemySlug": "steel",
    "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Steel deals area damage — spread out so one cast can't catch the group.",
@@ -769,12 +729,51 @@
     }
    ],
    "counterSwap": {
-    "out": "Basilisk",
+    "out": "Augmentation",
     "in": "Void Helm",
     "inSlug": "void-helm",
-    "survivalGainPct": 21,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Void Helm instead of Basilisk: their 3s all-in loses 21% of its bite; you give up 20% of your damage."
+    "survivalGainPct": 22,
+    "offenseLossPct": 27,
+    "line": "Losing lane? Third item Void Helm instead of Augmentation: their 3s all-in loses 22% of its bite; you give up 27% of your damage."
+   }
+  },
+  {
+   "enemy": "Grux",
+   "enemySlug": "grux",
+   "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Grux deals area damage — spread out so one cast can't catch the group.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "even"
+    },
+    {
+     "minute": 10,
+     "verdict": "even"
+    },
+    {
+     "minute": 15,
+     "verdict": "even"
+    },
+    {
+     "minute": 20,
+     "verdict": "even"
+    },
+    {
+     "minute": 25,
+     "verdict": "even"
+    },
+    {
+     "minute": 30,
+     "verdict": "you"
+    }
+   ],
+   "counterSwap": {
+    "out": "Augmentation",
+    "in": "Warden's Faith",
+    "inSlug": "wardens-faith",
+    "survivalGainPct": 25,
+    "offenseLossPct": 27,
+    "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 25% of its bite; you give up 27% of your damage."
    }
   },
   {
@@ -808,12 +807,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Basilisk",
+    "out": "Augmentation",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 24,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Warden's Faith instead of Basilisk: their 3s all-in loses 24% of its bite; you give up 20% of your damage."
+    "survivalGainPct": 25,
+    "offenseLossPct": 27,
+    "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 25% of its bite; you give up 27% of your damage."
    }
   },
   {
@@ -847,51 +846,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Basilisk",
+    "out": "Augmentation",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 27,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Warden's Faith instead of Basilisk: their 3s all-in loses 27% of its bite; you give up 20% of your damage."
-   }
-  },
-  {
-   "enemy": "Aurora",
-   "enemySlug": "aurora",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Aurora deals area damage — spread out so one cast can't catch the group.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 10,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 15,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 20,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 25,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 30,
-     "verdict": "enemy"
-    }
-   ],
-   "counterSwap": {
-    "out": "Basilisk",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 26,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Void Helm instead of Basilisk: their 3s all-in loses 26% of its bite; you give up 20% of your damage."
+    "survivalGainPct": 29,
+    "offenseLossPct": 27,
+    "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 29% of its bite; you give up 27% of your damage."
    }
   },
   {
@@ -921,16 +881,55 @@
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
-    "out": "Basilisk",
+    "out": "Augmentation",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 24,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Warden's Faith instead of Basilisk: their 3s all-in loses 24% of its bite; you give up 20% of your damage."
+    "survivalGainPct": 25,
+    "offenseLossPct": 27,
+    "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 25% of its bite; you give up 27% of your damage."
+   }
+  },
+  {
+   "enemy": "Aurora",
+   "enemySlug": "aurora",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Aurora deals area damage — spread out so one cast can't catch the group.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 10,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 15,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 20,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 25,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 30,
+     "verdict": "even"
+    }
+   ],
+   "counterSwap": {
+    "out": "Augmentation",
+    "in": "Void Helm",
+    "inSlug": "void-helm",
+    "survivalGainPct": 27,
+    "offenseLossPct": 27,
+    "line": "Losing lane? Third item Void Helm instead of Augmentation: their 3s all-in loses 27% of its bite; you give up 27% of your damage."
    }
   }
  ],
@@ -941,16 +940,16 @@
   },
   "playstyle": "on-hit",
   "modeled": false,
-  "wr": 47.7,
-  "n": 252410,
+  "wr": 47.5,
+  "n": 128925,
   "shiftIn": [],
   "shiftOut": [],
-  "provenance": "“Combo Crunch” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 47.7% over 252,410 games, magnitude not simulated."
+  "provenance": "“Combo Crunch” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 47.5% over 128,925 games, magnitude not simulated."
  },
  "slug": "crunch",
  "name": "Crunch",
  "patch": "1.14.4",
- "generatedAt": "2026-06-22T22:49:54.027Z",
+ "generatedAt": "2026-07-01T18:37:46.277Z",
  "damageType": "hybrid",
  "attackType": "melee",
  "laneFlex": [
@@ -962,8 +961,8 @@
    },
    "playstyle": "on-hit",
    "modeled": false,
-   "wr": 47.7,
-   "n": 252410,
+   "wr": 47.5,
+   "n": 128925,
    "core": [
     {
      "name": "Solaris",
@@ -991,7 +990,7 @@
     }
    ],
    "headline": "skirmish uptime",
-   "provenance": "“Combo Crunch” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 47.7% over 252,410 games, magnitude not simulated."
+   "provenance": "“Combo Crunch” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 47.5% over 128,925 games, magnitude not simulated."
   }
  ],
  "roles": [
@@ -1012,7 +1011,7 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Viper, which the field rarely builds (0.5% pick) — a sim-only call; compare the meta cores below",
+     "the sim opens on Viper, which the field rarely builds (0% pick) — a sim-only call; compare the meta cores below",
      "the sim build reproduces only 33% of the field's core for Crunch (it never builds Berserker's Axe, Salvation) — some of those items ride mechanics the sim doesn't model yet"
     ]
    },
@@ -1023,7 +1022,7 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 12,
-      "playRatePct": 0.5,
+      "playRatePct": 0,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1031,48 +1030,47 @@
       "name": "Basilisk",
       "slug": "basilisk",
       "spikeMinute": 19,
-      "playRatePct": 1.4,
-      "evidenceDeltaWr": -3.8,
-      "evidenceN": 16
+      "playRatePct": 2.8,
+      "evidenceDeltaWr": 3.9,
+      "evidenceN": 14
      },
      {
       "name": "Spear Of Desolation",
       "slug": "spear-of-desolation",
       "spikeMinute": 25,
-      "playRatePct": 0.5,
+      "playRatePct": 0.6,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
      {
       "name": "Augmentation",
       "slug": "augmentation",
-      "spikeMinute": 31,
-      "playRatePct": 50.3,
-      "evidenceDeltaWr": -2.2,
-      "evidenceN": 556
+      "spikeMinute": 30,
+      "playRatePct": 51.5,
+      "evidenceDeltaWr": 0,
+      "evidenceN": 256
      },
      {
       "name": "The Perforator",
       "slug": "the-perforator",
-      "spikeMinute": 37,
-      "playRatePct": 0.5,
+      "spikeMinute": 36,
+      "playRatePct": 1,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
      {
       "name": "Solaris",
       "slug": "solaris",
-      "spikeMinute": 42,
-      "playRatePct": 2,
-      "evidenceDeltaWr": 4.9,
-      "evidenceN": 22
+      "spikeMinute": 41,
+      "playRatePct": 1.8,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
      }
     ],
     "gold": 18500,
     "archetypes": [
      "skirmish uptime",
-     "extended fights",
-     "physical survival"
+     "extended fights"
     ],
     "objectives": {
      "burstVsSquishy": 1826.9685404420898,
@@ -1088,7 +1086,7 @@
     },
     "manaFeasible": true
    },
-   "coachLine": "Sim-optimal for skirmish uptime, extended fights and physical survival: first spike lands around minute 12 (Viper), third item by minute 25. Take Demiurge: +14.1% on your burst combo at minute 15.",
+   "coachLine": "Sim-optimal for skirmish uptime and extended fights: first spike lands around minute 12 (Viper), third item by minute 25. Take Demiurge: +14.1% on your burst combo at minute 15.",
    "eternals": {
     "top": [
      {
@@ -1471,32 +1469,80 @@
     "candidates": [
      {
       "item": "Viper",
-      "playRatePct": 0.5,
+      "playRatePct": 0,
       "bestObjective": "sustained auto DPS",
-      "edgeVsPopularPct": 183.3
-     },
-     {
-      "item": "Basilisk",
-      "playRatePct": 1.4,
-      "bestObjective": "sustained auto DPS",
-      "edgeVsPopularPct": 183.3
+      "edgeVsPopularPct": 190.6
      },
      {
       "item": "Spear Of Desolation",
-      "playRatePct": 0.5,
+      "playRatePct": 0.6,
       "bestObjective": "sustained auto DPS",
-      "edgeVsPopularPct": 183.3
+      "edgeVsPopularPct": 190.6
      },
      {
       "item": "The Perforator",
-      "playRatePct": 0.5,
+      "playRatePct": 1,
       "bestObjective": "sustained auto DPS",
-      "edgeVsPopularPct": 183.3
+      "edgeVsPopularPct": 190.6
+     },
+     {
+      "item": "Solaris",
+      "playRatePct": 1.8,
+      "bestObjective": "sustained auto DPS",
+      "edgeVsPopularPct": 190.6
      }
     ],
     "honestAbsence": null
    },
    "metaBuilds": [
+    {
+     "title": "Physical Bruiser (Physical-Def)",
+     "items": [
+      {
+       "name": "Augmentation",
+       "slug": "augmentation"
+      },
+      {
+       "name": "Mutilator",
+       "slug": "mutilator"
+      },
+      {
+       "name": "Draconum",
+       "slug": "draconum"
+      }
+     ],
+     "n": 23,
+     "shrunkWr": 0.48,
+     "coreGold": 9300,
+     "spikeMinute": 25,
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 744 damage in one combo in the sim.",
+     "optimizer": "Optimizer agrees: within 1% of our best core on one-combo burst. The winrate is earned, not luck."
+    },
+    {
+     "title": "Physical DPS Carry",
+     "items": [
+      {
+       "name": "Augmentation",
+       "slug": "augmentation"
+      },
+      {
+       "name": "Mutilator",
+       "slug": "mutilator"
+      },
+      {
+       "name": "Salvation",
+       "slug": "salvation"
+      }
+     ],
+     "n": 35,
+     "shrunkWr": 0.471,
+     "coreGold": 9300,
+     "spikeMinute": 25,
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 25 — about 190 auto-attack DPS in the sim.",
+     "optimizer": "Optimizer sees +74% more sustained auto DPS: try Viper over Augmentation (sim-only — the popular pick may carry utility the sim can't see; test it)."
+    },
     {
      "title": "Physical Bruiser",
      "items": [
@@ -1513,61 +1559,13 @@
        "slug": "salvation"
       }
      ],
-     "n": 263,
-     "shrunkWr": 0.516,
+     "n": 21,
+     "shrunkWr": 0.494,
      "coreGold": 9200,
      "spikeMinute": 25,
-     "bestObjective": "magical survivability",
-     "whyLine": "Strongest meta core for magical survivability, online around minute 25 — about 4,664 effective HP vs magical in the sim.",
+     "bestObjective": "physical survivability",
+     "whyLine": "Strongest meta core for physical survivability, online around minute 25 — about 6,191 effective HP vs physical in the sim.",
      "optimizer": null
-    },
-    {
-     "title": "Physical Burst",
-     "items": [
-      {
-       "name": "Augmentation",
-       "slug": "augmentation"
-      },
-      {
-       "name": "Mutilator",
-       "slug": "mutilator"
-      },
-      {
-       "name": "Salvation",
-       "slug": "salvation"
-      }
-     ],
-     "n": 228,
-     "shrunkWr": 0.518,
-     "coreGold": 9300,
-     "spikeMinute": 26,
-     "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 26 — about 729 damage in one combo in the sim.",
-     "optimizer": "Optimizer agrees: within 3% of our best core on one-combo burst. The winrate is earned, not luck."
-    },
-    {
-     "title": "Physical DPS Carry",
-     "items": [
-      {
-       "name": "Augmentation",
-       "slug": "augmentation"
-      },
-      {
-       "name": "Mutilator",
-       "slug": "mutilator"
-      },
-      {
-       "name": "TaintedBlade",
-       "slug": "tainted-blade"
-      }
-     ],
-     "n": 91,
-     "shrunkWr": 0.519,
-     "coreGold": 9400,
-     "spikeMinute": 26,
-     "bestObjective": "sustained auto DPS",
-     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 26 — about 199 auto-attack DPS in the sim.",
-     "optimizer": "Optimizer sees +66% more sustained auto DPS: try Viper over Augmentation (sim-only — the popular pick may carry utility the sim can't see; test it)."
     }
    ],
    "stages": [
@@ -1650,7 +1648,7 @@
     {
      "label": "late",
      "itemCount": 6,
-     "minute": 42,
+     "minute": 41,
      "level": 17,
      "core": [
       {
@@ -1697,45 +1695,6 @@
    ],
    "matchups": [
     {
-     "enemy": "Grux",
-     "enemySlug": "grux",
-     "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Grux deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "even"
-      },
-      {
-       "minute": 10,
-       "verdict": "even"
-      },
-      {
-       "minute": 15,
-       "verdict": "even"
-      },
-      {
-       "minute": 20,
-       "verdict": "even"
-      },
-      {
-       "minute": 25,
-       "verdict": "you"
-      },
-      {
-       "minute": 30,
-       "verdict": "even"
-      }
-     ],
-     "counterSwap": {
-      "out": "Basilisk",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 23,
-      "offenseLossPct": 20,
-      "line": "Losing lane? Third item Warden's Faith instead of Basilisk: their 3s all-in loses 23% of its bite; you give up 20% of your damage."
-     }
-    },
-    {
      "enemy": "Steel",
      "enemySlug": "steel",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Steel deals area damage — spread out so one cast can't catch the group.",
@@ -1766,12 +1725,51 @@
       }
      ],
      "counterSwap": {
-      "out": "Basilisk",
+      "out": "Augmentation",
       "in": "Void Helm",
       "inSlug": "void-helm",
-      "survivalGainPct": 21,
-      "offenseLossPct": 20,
-      "line": "Losing lane? Third item Void Helm instead of Basilisk: their 3s all-in loses 21% of its bite; you give up 20% of your damage."
+      "survivalGainPct": 22,
+      "offenseLossPct": 27,
+      "line": "Losing lane? Third item Void Helm instead of Augmentation: their 3s all-in loses 22% of its bite; you give up 27% of your damage."
+     }
+    },
+    {
+     "enemy": "Grux",
+     "enemySlug": "grux",
+     "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Grux deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "even"
+      },
+      {
+       "minute": 15,
+       "verdict": "even"
+      },
+      {
+       "minute": 20,
+       "verdict": "even"
+      },
+      {
+       "minute": 25,
+       "verdict": "even"
+      },
+      {
+       "minute": 30,
+       "verdict": "you"
+      }
+     ],
+     "counterSwap": {
+      "out": "Augmentation",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 25,
+      "offenseLossPct": 27,
+      "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 25% of its bite; you give up 27% of your damage."
      }
     },
     {
@@ -1805,12 +1803,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Basilisk",
+      "out": "Augmentation",
       "in": "Warden's Faith",
       "inSlug": "wardens-faith",
-      "survivalGainPct": 24,
-      "offenseLossPct": 20,
-      "line": "Losing lane? Third item Warden's Faith instead of Basilisk: their 3s all-in loses 24% of its bite; you give up 20% of your damage."
+      "survivalGainPct": 25,
+      "offenseLossPct": 27,
+      "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 25% of its bite; you give up 27% of your damage."
      }
     },
     {
@@ -1844,51 +1842,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Basilisk",
+      "out": "Augmentation",
       "in": "Warden's Faith",
       "inSlug": "wardens-faith",
-      "survivalGainPct": 27,
-      "offenseLossPct": 20,
-      "line": "Losing lane? Third item Warden's Faith instead of Basilisk: their 3s all-in loses 27% of its bite; you give up 20% of your damage."
-     }
-    },
-    {
-     "enemy": "Aurora",
-     "enemySlug": "aurora",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Aurora deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Basilisk",
-      "in": "Void Helm",
-      "inSlug": "void-helm",
-      "survivalGainPct": 26,
-      "offenseLossPct": 20,
-      "line": "Losing lane? Third item Void Helm instead of Basilisk: their 3s all-in loses 26% of its bite; you give up 20% of your damage."
+      "survivalGainPct": 29,
+      "offenseLossPct": 27,
+      "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 29% of its bite; you give up 27% of your damage."
      }
     },
     {
@@ -1918,16 +1877,55 @@
       },
       {
        "minute": 30,
-       "verdict": "enemy"
+       "verdict": "even"
       }
      ],
      "counterSwap": {
-      "out": "Basilisk",
+      "out": "Augmentation",
       "in": "Warden's Faith",
       "inSlug": "wardens-faith",
-      "survivalGainPct": 24,
-      "offenseLossPct": 20,
-      "line": "Losing lane? Third item Warden's Faith instead of Basilisk: their 3s all-in loses 24% of its bite; you give up 20% of your damage."
+      "survivalGainPct": 25,
+      "offenseLossPct": 27,
+      "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 25% of its bite; you give up 27% of your damage."
+     }
+    },
+    {
+     "enemy": "Aurora",
+     "enemySlug": "aurora",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Aurora deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "even"
+      }
+     ],
+     "counterSwap": {
+      "out": "Augmentation",
+      "in": "Void Helm",
+      "inSlug": "void-helm",
+      "survivalGainPct": 27,
+      "offenseLossPct": 27,
+      "line": "Losing lane? Third item Void Helm instead of Augmentation: their 3s all-in loses 27% of its bite; you give up 27% of your damage."
      }
     }
    ],
@@ -1938,11 +1936,11 @@
     },
     "playstyle": "on-hit",
     "modeled": false,
-    "wr": 47.7,
-    "n": 252410,
+    "wr": 47.5,
+    "n": 128925,
     "shiftIn": [],
     "shiftOut": [],
-    "provenance": "“Combo Crunch” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 47.7% over 252,410 games, magnitude not simulated."
+    "provenance": "“Combo Crunch” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 47.5% over 128,925 games, magnitude not simulated."
    }
   },
   {
@@ -1962,7 +1960,7 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Viper, which the field rarely builds (0.5% pick) — a sim-only call; compare the meta cores below"
+     "the sim opens on Viper, which the field rarely builds (0% pick) — a sim-only call; compare the meta cores below"
     ]
    },
    "build": {
@@ -1972,7 +1970,7 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 12,
-      "playRatePct": 0.5,
+      "playRatePct": 0,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1980,15 +1978,15 @@
       "name": "Basilisk",
       "slug": "basilisk",
       "spikeMinute": 19,
-      "playRatePct": 1.4,
-      "evidenceDeltaWr": -3.8,
-      "evidenceN": 16
+      "playRatePct": 2.8,
+      "evidenceDeltaWr": 3.9,
+      "evidenceN": 14
      },
      {
       "name": "Spear Of Desolation",
       "slug": "spear-of-desolation",
       "spikeMinute": 25,
-      "playRatePct": 0.5,
+      "playRatePct": 0.6,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1996,25 +1994,25 @@
       "name": "Augmentation",
       "slug": "augmentation",
       "spikeMinute": 31,
-      "playRatePct": 50.3,
-      "evidenceDeltaWr": -2.2,
-      "evidenceN": 556
+      "playRatePct": 51.5,
+      "evidenceDeltaWr": 0,
+      "evidenceN": 256
      },
      {
       "name": "The Perforator",
       "slug": "the-perforator",
       "spikeMinute": 37,
-      "playRatePct": 0.5,
+      "playRatePct": 1,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
      {
       "name": "Solaris",
       "slug": "solaris",
-      "spikeMinute": 44,
-      "playRatePct": 2,
-      "evidenceDeltaWr": 4.9,
-      "evidenceN": 22
+      "spikeMinute": 43,
+      "playRatePct": 1.8,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
      }
     ],
     "gold": 18500,
@@ -2419,32 +2417,80 @@
     "candidates": [
      {
       "item": "Viper",
-      "playRatePct": 0.5,
+      "playRatePct": 0,
       "bestObjective": "sustained auto DPS",
-      "edgeVsPopularPct": 183.3
-     },
-     {
-      "item": "Basilisk",
-      "playRatePct": 1.4,
-      "bestObjective": "sustained auto DPS",
-      "edgeVsPopularPct": 183.3
+      "edgeVsPopularPct": 190.6
      },
      {
       "item": "Spear Of Desolation",
-      "playRatePct": 0.5,
+      "playRatePct": 0.6,
       "bestObjective": "sustained auto DPS",
-      "edgeVsPopularPct": 183.3
+      "edgeVsPopularPct": 190.6
      },
      {
       "item": "The Perforator",
-      "playRatePct": 0.5,
+      "playRatePct": 1,
       "bestObjective": "sustained auto DPS",
-      "edgeVsPopularPct": 183.3
+      "edgeVsPopularPct": 190.6
+     },
+     {
+      "item": "Solaris",
+      "playRatePct": 1.8,
+      "bestObjective": "sustained auto DPS",
+      "edgeVsPopularPct": 190.6
      }
     ],
     "honestAbsence": null
    },
    "metaBuilds": [
+    {
+     "title": "Physical Bruiser (Physical-Def)",
+     "items": [
+      {
+       "name": "Augmentation",
+       "slug": "augmentation"
+      },
+      {
+       "name": "Mutilator",
+       "slug": "mutilator"
+      },
+      {
+       "name": "Draconum",
+       "slug": "draconum"
+      }
+     ],
+     "n": 23,
+     "shrunkWr": 0.48,
+     "coreGold": 9300,
+     "spikeMinute": 25,
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 744 damage in one combo in the sim.",
+     "optimizer": "Optimizer agrees: within 1% of our best core on one-combo burst. The winrate is earned, not luck."
+    },
+    {
+     "title": "Physical DPS Carry",
+     "items": [
+      {
+       "name": "Augmentation",
+       "slug": "augmentation"
+      },
+      {
+       "name": "Mutilator",
+       "slug": "mutilator"
+      },
+      {
+       "name": "Salvation",
+       "slug": "salvation"
+      }
+     ],
+     "n": 35,
+     "shrunkWr": 0.471,
+     "coreGold": 9300,
+     "spikeMinute": 25,
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 25 — about 190 auto-attack DPS in the sim.",
+     "optimizer": "Optimizer sees +74% more sustained auto DPS: try Viper over Augmentation (sim-only — the popular pick may carry utility the sim can't see; test it)."
+    },
     {
      "title": "Physical Bruiser",
      "items": [
@@ -2461,61 +2507,13 @@
        "slug": "salvation"
       }
      ],
-     "n": 263,
-     "shrunkWr": 0.516,
+     "n": 21,
+     "shrunkWr": 0.494,
      "coreGold": 9200,
      "spikeMinute": 25,
-     "bestObjective": "magical survivability",
-     "whyLine": "Strongest meta core for magical survivability, online around minute 25 — about 4,664 effective HP vs magical in the sim.",
+     "bestObjective": "physical survivability",
+     "whyLine": "Strongest meta core for physical survivability, online around minute 25 — about 6,191 effective HP vs physical in the sim.",
      "optimizer": null
-    },
-    {
-     "title": "Physical Burst",
-     "items": [
-      {
-       "name": "Augmentation",
-       "slug": "augmentation"
-      },
-      {
-       "name": "Mutilator",
-       "slug": "mutilator"
-      },
-      {
-       "name": "Salvation",
-       "slug": "salvation"
-      }
-     ],
-     "n": 228,
-     "shrunkWr": 0.518,
-     "coreGold": 9300,
-     "spikeMinute": 25,
-     "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 729 damage in one combo in the sim.",
-     "optimizer": "Optimizer agrees: within 3% of our best core on one-combo burst. The winrate is earned, not luck."
-    },
-    {
-     "title": "Physical DPS Carry",
-     "items": [
-      {
-       "name": "Augmentation",
-       "slug": "augmentation"
-      },
-      {
-       "name": "Mutilator",
-       "slug": "mutilator"
-      },
-      {
-       "name": "TaintedBlade",
-       "slug": "tainted-blade"
-      }
-     ],
-     "n": 91,
-     "shrunkWr": 0.519,
-     "coreGold": 9400,
-     "spikeMinute": 25,
-     "bestObjective": "sustained auto DPS",
-     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 25 — about 199 auto-attack DPS in the sim.",
-     "optimizer": "Optimizer sees +66% more sustained auto DPS: try Viper over Augmentation (sim-only — the popular pick may carry utility the sim can't see; test it)."
     }
    ],
    "stages": [
@@ -2598,7 +2596,7 @@
     {
      "label": "late",
      "itemCount": 6,
-     "minute": 44,
+     "minute": 43,
      "level": 17,
      "core": [
       {
@@ -2684,45 +2682,6 @@
      }
     },
     {
-     "enemy": "Boris",
-     "enemySlug": "boris",
-     "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Boris deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "you"
-      },
-      {
-       "minute": 10,
-       "verdict": "you"
-      },
-      {
-       "minute": 15,
-       "verdict": "you"
-      },
-      {
-       "minute": 20,
-       "verdict": "you"
-      },
-      {
-       "minute": 25,
-       "verdict": "you"
-      },
-      {
-       "minute": 30,
-       "verdict": "you"
-      }
-     ],
-     "counterSwap": {
-      "out": "Augmentation",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 16,
-      "offenseLossPct": 27,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Augmentation: their 3s all-in loses 16% of its bite; you give up 27% of your damage."
-     }
-    },
-    {
      "enemy": "Serath",
      "enemySlug": "serath",
      "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Serath's main threat is Chastise; bait it before you commit, and armor softens the trade.",
@@ -2759,6 +2718,45 @@
       "survivalGainPct": 25,
       "offenseLossPct": 27,
       "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 25% of its bite; you give up 27% of your damage."
+     }
+    },
+    {
+     "enemy": "Boris",
+     "enemySlug": "boris",
+     "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Boris deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "you"
+      },
+      {
+       "minute": 10,
+       "verdict": "you"
+      },
+      {
+       "minute": 15,
+       "verdict": "you"
+      },
+      {
+       "minute": 20,
+       "verdict": "you"
+      },
+      {
+       "minute": 25,
+       "verdict": "you"
+      },
+      {
+       "minute": 30,
+       "verdict": "you"
+      }
+     ],
+     "counterSwap": {
+      "out": "Augmentation",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 16,
+      "offenseLossPct": 27,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Augmentation: their 3s all-in loses 16% of its bite; you give up 27% of your damage."
      }
     },
     {
