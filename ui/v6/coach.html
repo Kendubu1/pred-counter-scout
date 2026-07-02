@@ -285,7 +285,39 @@ function fightDetail(s, f) {
     fread = `<div class="fread">${line}</div>`;
   }
   const who = (slugs, side) => slugs.map((slug) => { const k = kitOf(hName(slug)); return `${hlink(slug, `<b style="color:${side === 'us' ? 'var(--green)' : 'var(--red)'}">${esc(hName(slug))}</b>`)}${k && k.archetype ? `<span style="color:var(--text-2);font-size:.66rem"> ${esc(k.archetype)}</span>` : ''}`; }).join(', ') || '—';
-  const builds = s.ourHeroes.map((slug) => { const p = playerByHero(slug); if (!p) return ''; const items = (p.items || []).filter((i) => !/Potion|Ward|Crest/i.test(i.name)).slice(0, 6); const online = (p.spikes || []).filter((sp) => sp.spikeMinute <= s.startMin + 0.5); return `<div style="display:flex;align-items:center;gap:.25rem;font-size:.72rem;margin-top:.18rem"><b style="min-width:4.6rem">${esc(hName(slug))}</b>${items.map((i) => `<img src="${iimg(i.slug)}" title="${esc(i.name)}" style="width:17px;height:17px;border-radius:3px" onerror="this.style.display='none'">`).join('') || '<span style="color:var(--text-2)">no items</span>'}<span style="color:var(--text-2)">${online.length ? ` · ${online.map((o) => esc(o.name)).join(', ')} online` : ` · no spike online yet`}</span></div>`; }).join('');
+  // Builds AT FIGHT TIME: itemTimeline (est online minute from the measured
+  // median gold curve — THEORY) says which of the end-game items were likely
+  // purchased by this fight; offline ones render dimmed. Falls back to the
+  // sim-spike read on un-enriched files.
+  const builds = s.ourHeroes.map((slug) => {
+    const p = playerByHero(slug); if (!p) return '';
+    if (Array.isArray(p.itemTimeline) && p.itemTimeline.length) {
+      const rows = p.itemTimeline.slice(0, 6);
+      const onCount = rows.filter((i) => i.estMin != null && i.estMin <= s.startMin + 0.5).length;
+      const icons = rows.map((i) => { const on = i.estMin != null && i.estMin <= s.startMin + 0.5; return `<img src="${iimg(i.slug)}" title="${esc(i.name)} · ${i.estMin != null ? `est. online ~${i.estMin}m` : 'est. very late'}${on ? '' : ' — NOT yet at this fight'}" style="width:17px;height:17px;border-radius:3px;${on ? '' : 'opacity:.28;filter:grayscale(.7)'}" onerror="this.style.display='none'">`; }).join('');
+      return `<div style="display:flex;align-items:center;gap:.25rem;font-size:.72rem;margin-top:.18rem"><b style="min-width:4.6rem">${esc(hName(slug))}</b>${icons}<span style="color:var(--text-2)"> · ~${onCount}/${rows.length} online</span></div>`;
+    }
+    const items = (p.items || []).filter((i) => !/Potion|Ward|Crest/i.test(i.name)).slice(0, 6);
+    const online = (p.spikes || []).filter((sp) => sp.spikeMinute <= s.startMin + 0.5);
+    return `<div style="display:flex;align-items:center;gap:.25rem;font-size:.72rem;margin-top:.18rem"><b style="min-width:4.6rem">${esc(hName(slug))}</b>${items.map((i) => `<img src="${iimg(i.slug)}" title="${esc(i.name)}" style="width:17px;height:17px;border-radius:3px" onerror="this.style.display='none'">`).join('') || '<span style="color:var(--text-2)">no items</span>'}<span style="color:var(--text-2)">${online.length ? ` · ${online.map((o) => esc(o.name)).join(', ')} online` : ` · no spike online yet`}</span></div>`;
+  }).join('');
+
+  // Sustain check: if they run healers, was OUR anti-heal (the Tainted family)
+  // actually online when this fight happened? The most common invisible reason
+  // a fight "randomly" went their way.
+  let sustain = '';
+  const theirHealers = (f.comp && f.comp.theirHealers) || [];
+  if (theirHealers.length) {
+    const carriers = [];
+    for (const slug of s.ourHeroes) {
+      const p = playerByHero(slug); if (!p || !Array.isArray(p.itemTimeline)) continue;
+      for (const it of p.itemTimeline) if (/^tainted-/.test(it.slug)) carriers.push({ hero: hName(slug), item: it.name, est: it.estMin, on: it.estMin != null && it.estMin <= s.startMin + 0.5 });
+    }
+    const on = carriers.filter((c) => c.on);
+    if (on.length) sustain = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--green)">✓ <b>Sustain check:</b> ${esc(on.map((c) => `${c.item} (${c.hero})`).join(', '))} online into ${esc(theirHealers.join('/'))} — their healing was answered.</div>`;
+    else if (carriers.length) sustain = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--gold)">⚠ <b>Sustain check:</b> ${esc(theirHealers.join('/'))} heal for their side, but the anti-heal wasn't online yet (${esc(carriers.map((c) => `${c.hero}'s ${c.item} est. ~${c.est ?? 'late'}${c.est != null ? 'm' : ''}`).join(', '))}) — this fight ran unanswered.</div>`;
+    else if (s.ourHeroes.some((slug) => { const p = playerByHero(slug); return p && Array.isArray(p.itemTimeline); })) sustain = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--red)">✕ <b>Sustain check:</b> ${esc(theirHealers.join('/'))} heal for their side and nobody in this fight built anti-heal all game.</div>`;
+  }
   const after = (f.timeline ? f.timeline.majors : []).filter((m) => m.minute >= s.startMin - 0.3 && m.minute <= s.startMin + 2.5 && /FANG|PRIME|ORB/i.test(m.type)).map((m) => `${m.side === 'us' ? 'you took' : 'they took'} ${esc(m.type.replace(/_/g, ' '))} (${m.minute}m)`);
   // Macro read (THEORY): the cross-map story — numbers at engage, who was dead and
   // couldn't help, who was alive and didn't rotate, cross-map trades. Coaches the
@@ -299,7 +331,8 @@ function fightDetail(s, f) {
     ${fread}
     ${ladder ? `<div style="font-size:.68rem;color:var(--text-2);margin-top:.35rem"><b style="color:var(--text-0);font-size:.74rem">Death sequence</b> · first column = clock / seconds after the opener · right column = bodies standing (you v them)</div>${ladder}` : '<div style="font-size:.76rem;color:var(--text-2)">No located kills for this fight.</div>'}
     <div style="font-size:.76rem;color:var(--text-1);margin:.35rem 0 .25rem"><b style="color:var(--text-0)">Who fought:</b> ${who(s.ourHeroes, 'us')} <span style="color:var(--text-2)">vs</span> ${who(s.theirHeroes, 'them')}</div>
-    ${builds ? `<div style="font-size:.76rem;color:var(--text-1)"><b style="color:var(--text-0)">Your builds</b> <span style="color:var(--text-2);font-size:.64rem">(end-game items; spike = modeled online minute)</span>${builds}</div>` : ''}
+    ${builds ? `<div style="font-size:.76rem;color:var(--text-1)"><b style="color:var(--text-0)">Online at this fight</b> <span style="color:var(--text-2);font-size:.64rem">(dimmed = est. not purchased yet — median-gold model, THEORY; entry HP isn't in the feed)</span>${builds}</div>` : ''}
+    ${sustain}
     ${after.length ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.2rem"><b>What it meant:</b> ${after.join('; ')}.</div>` : ''}
     ${macNotes}`;
 }
