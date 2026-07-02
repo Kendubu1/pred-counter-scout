@@ -24,6 +24,9 @@ export interface OmedaPlayer {
   total_healing_done: number; total_shielding_received: number;
   wards_placed: number; wards_destroyed: number; minions_killed: number;
   objective_kills: number; inventory_data: number[]; rank: number | null; vp_change: number | null;
+  /** pred.gg hero slug, carried through when hero_id can't map (a hero newer
+   *  than the committed omeda snapshot, e.g. a just-released hero). */
+  hero_slug?: string;
 }
 export interface OmedaMatch {
   id: string; start_time: string; end_time: string; game_duration: number;
@@ -391,7 +394,7 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
   };
 
   const players: PlayerFacts[] = match.players.map((p) => {
-    const slug = idToSlug.get(p.hero_id) ?? `hero_id:${p.hero_id}`;
+    const slug = idToSlug.get(p.hero_id) ?? p.hero_slug ?? `hero_id:${p.hero_id}`;
     const kit = data.kits.get(slug);
     const role = (p.role && ROLES.includes(p.role)) ? p.role : (kit?.roles[0] ?? 'midlane');
     const us = p.team === ourTeam;

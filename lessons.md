@@ -2338,3 +2338,26 @@ Eight maintainer-flagged fixes:
   per-number hover `title` (`wrTip`). The verdict tags already had hover tips.
 - Removed the Live-draft end-card from the home page now that it lives in the side menu (kept the
   Patch review card, full-width).
+
+## 2026-07-02: Day-one 1.15 squad film (3 new stacks) + hero-slug fallback
+
+- Squad check found 3 new stacked ranked games since 6/24: a 27min 5-stack WIN
+  (GRIM.exe 17/1), a 42min 3-stack WIN (Steel 0/0/16), and a 22min 5-stack LOSS
+  (8/19, 0-5 towers) — the loss featuring **Mr_Meat31 on day-one Ikra mid**.
+- That game exposed a real pipeline gap: pred.gg knew the hero ("ikra") but the
+  omeda snapshot didn't, so mapPlayer dropped it to hero_id:-1 and the review
+  lost the hero name. Fix: OmedaPlayer now carries an optional `hero_slug` from
+  pred.gg and computeMatchFacts falls back to it. Every future day-one hero
+  names correctly without waiting for omeda.
+- Coaching flow held for a hero with NO kit data: the author was instructed that
+  any Ikra ability claim is ungrounded by definition; the critic confirmed the
+  Ikra line passed (it coaches the day-one-pick fact and the fights, not the kit).
+- The critic round (35 games / 264 lines) flagged 8 — 2 in the new loss (a
+  majors-count misread and an invented fight location) and 6 LATENT in older,
+  previously-converged games (incl. one preference-framing line). Re-running the
+  critic over the whole corpus when new games land catches regressions the
+  per-round convergence missed; all 8 rewrites were auto-applied and survived
+  the deterministic ground-check (0 unmatched). Gate: STOP at max rounds.
+- Schema note: coach.html reads coaching.perPlayer by **pid**; the author keyed
+  by squadName this round and it was re-keyed deterministically from each file's
+  own roster. Codified here so the next authoring pass keys by pid directly.
