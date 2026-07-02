@@ -13,13 +13,16 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { gql, hasCredentials } from './predgg.js';
+import { gql, hasCredentials, currentVersion } from './predgg.js';
 import { loadAggregates } from '../aggregates.js';
 import { loadData } from '../data.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 // RANKED_ONLY=1 restricts the perk/crest stats to ranked (default RANKED+STANDARD).
-const GAME_MODES = process.env.RANKED_ONLY ? 'RANKED' : 'RANKED, STANDARD';
+const GAME_MODES = process.env.RANKED_ONLY ? "RANKED" : "RANKED, STANDARD";
+// Version pin (current patch), resolved in main() when RANKED_ONLY is set.
+let VERSION_FILTER = "";
+let SCOPE_NOTE = "";
 
 interface PerkRow { matchesPlayed: number; matchesWon: number; perk: { id: string; data: { displayName: string } | null } | null }
 interface CrestRow { matchesPlayed: number; matchesWon: number; item: { data: { displayName: string } | null } | null }
@@ -27,7 +30,7 @@ interface CrestRow { matchesPlayed: number; matchesWon: number; item: { data: { 
 async function crestStats(slug: string, role: string): Promise<CrestRow[]> {
   const d = await gql<{ hero: { simpleBuild: { items: CrestRow[] } } }>(
     `{ hero(by: { slug: "${slug}" }) {
-      simpleBuild(filter: { roles: [${role}], gameModes: [${GAME_MODES}] }) {
+      simpleBuild(filter: { roles: [${role}], gameModes: [${GAME_MODES}]${VERSION_FILTER} }) {
         items(slot: CREST, limit: 4) { matchesPlayed matchesWon item { data { displayName } } }
       } } }`);
   return d.hero.simpleBuild.items.filter((r) => r.item?.data?.displayName);
@@ -36,7 +39,7 @@ async function crestStats(slug: string, role: string): Promise<CrestRow[]> {
 async function slotStats(slug: string, role: string, slot: string): Promise<PerkRow[]> {
   const d = await gql<{ hero: { simpleBuild: { perks: PerkRow[] } } }>(
     `{ hero(by: { slug: "${slug}" }) {
-      simpleBuild(filter: { roles: [${role}], gameModes: [${GAME_MODES}] }) {
+      simpleBuild(filter: { roles: [${role}], gameModes: [${GAME_MODES}]${VERSION_FILTER} }) {
         perks(slot: ${slot}) { matchesPlayed matchesWon perk { id data { displayName } } }
       } } }`);
   return d.hero.simpleBuild.perks.filter((p) => p.perk?.data?.displayName);
@@ -47,6 +50,13 @@ async function main() {
   const agg = loadAggregates();
   if (!agg) { console.error('no aggregates loaded'); process.exit(1); }
   const data = loadData();
+
+  if (process.env.RANKED_ONLY) {
+    const v = await currentVersion();
+    VERSION_FILTER = `, versions: ["${v.id}"]`;
+    SCOPE_NOTE = `, patch ${v.name} only`;
+    console.log(`scope: RANKED only, patch ${v.name} (pred.gg version id ${v.id})`);
+  }
 
   // augment catalog: names + mechanical descriptions, keyed by perk id
   const cat = await gql<{ perks: { id: string; data: { slot: string; displayName: string; description: string; icon: string | null; hero: { slug: string } | null } | null }[] }>(
@@ -106,7 +116,7 @@ async function main() {
 
   const out = {
     generatedAt: new Date().toISOString(),
-    source: `pred.gg simpleBuild perk statistics (gameModes ${GAME_MODES}), per hero-role with 100+ field games in our aggregates, plus every hero’s primary role`,
+    source: `pred.gg simpleBuild perk statistics (gameModes ${GAME_MODES}${SCOPE_NOTE}), per hero-role with 100+ field games in our aggregates, plus every hero’s primary role`,
     note: 'augment = the hero-specific perk locked in the first ~20s; winrates are observational evidence, not engine math; augment mechanical modeling is still open (priorities item 9)',
     catalog,
     heroes,

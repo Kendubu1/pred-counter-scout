@@ -8,11 +8,15 @@
 import { writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { gql, hasCredentials } from './predgg.js';
+import { gql, hasCredentials, currentVersion } from './predgg.js';
 import { loadData } from '../data.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const BATCH = 6;
+// RANKED_ONLY=1 restricts the core-build evidence to ranked games on the
+// CURRENT patch (default keeps pred.gg's own default pool, which spans
+// versions). coreBuild accepts filter: { gameModes, versions } per schema
+// introspection 2026-07-02; the version id is resolved at runtime.
 
 const norm = (s: string) => (s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
@@ -31,12 +35,20 @@ async function main() {
   const nameToSlug = new Map<string, string>();
   for (const i of data.items.values()) nameToSlug.set(norm(i.name), i.slug);
 
+  let coreFilter = '', scopeNote = 'pred.gg default pool (all modes, all versions)';
+  if (process.env.RANKED_ONLY) {
+    const v = await currentVersion();
+    coreFilter = `, filter: { gameModes: [RANKED], versions: ["${v.id}"] }`;
+    scopeNote = `RANKED only, patch ${v.name} (pred.gg version id ${v.id})`;
+    console.log(`scope: ${scopeNote}`);
+  }
+
   const out: Record<string, { core: string[]; coreSlugs: (string | null)[]; n: number; w: number }[]> = {};
   let unmapped = new Set<string>();
   for (let b = 0; b < slugs.length; b += BATCH) {
     const batch = slugs.slice(b, b + BATCH);
     const q = `{ ${batch.map((s, i) =>
-      `h${i}: hero(by: { slug: "${s}" }) { coreBuild(limit: 6) { results {
+      `h${i}: hero(by: { slug: "${s}" }) { coreBuild(limit: 6${coreFilter}) { results {
         core1Item { name } core2Item { name } core3Item { name }
         matchesPlayedBuildOrder matchesWonBuildOrder } } }`).join(' ')} }`;
     const d = await gql<Record<string, { coreBuild: { results: { core1Item: { name: string } | null; core2Item: { name: string } | null; core3Item: { name: string } | null; matchesPlayedBuildOrder: number; matchesWonBuildOrder: number }[] } }>>(q);
@@ -60,7 +72,7 @@ async function main() {
   const file = path.join(ROOT, 'data/aggregates/predgg-builds.json');
   writeFileSync(file, JSON.stringify({
     generatedAt: new Date().toISOString(),
-    source: 'pred.gg coreBuild (full current-patch evidence, ordered 3-item cores, 20+ games each)',
+    source: `pred.gg coreBuild (${scopeNote}; ordered 3-item cores, 20+ games each)`,
     heroes: out,
   }, null, 1));
   const total = Object.values(out).reduce((s, v) => s + v.length, 0);

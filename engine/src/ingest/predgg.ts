@@ -54,6 +54,20 @@ export async function gql<T>(query: string, variables?: Record<string, unknown>)
   throw lastErr ?? new Error('pred.gg gql: retries exhausted');
 }
 
+/** The newest NAMED game version on pred.gg (e.g. { id: "152", name: "1.15" }).
+ *  Used to pin build/perk statistics to the current patch; entries with a null
+ *  name are unreleased/internal and skipped. Cached per process. */
+let cachedVersion: { id: string; name: string } | null = null;
+export async function currentVersion(): Promise<{ id: string; name: string }> {
+  if (cachedVersion) return cachedVersion;
+  const d = await gql<{ versions: { id: string; name: string | null }[] }>(`{ versions { id name } }`);
+  const named = d.versions.filter((v) => v.name);
+  const last = named[named.length - 1];
+  if (!last) throw new Error('pred.gg: no named versions');
+  cachedVersion = { id: last.id, name: last.name! };
+  return cachedVersion;
+}
+
 const LANES = ['CARRY', 'MIDLANE', 'OFFLANE', 'JUNGLE', 'SUPPORT'] as const;
 
 export interface TopPlayer {
