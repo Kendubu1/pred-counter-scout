@@ -183,6 +183,8 @@ const plink = (uuid, name) => uuid
   catch { document.getElementById('page').textContent = 'no squad report generated yet'; return; }
   try { coach = await (await fetch('../../data/artifacts/coach.json')).json(); } catch {}
   try { META = await (await fetch('../../data/artifacts/meta.json')).json(); } catch {}
+  let HABITS = null;
+  try { HABITS = await (await fetch('../../data/aggregates/fight-habits.json')).json(); } catch {}
   // full hero pools per member, for honest meta-pick annotations (static files, no API)
   const POOLS = new Map();
   await Promise.all(s.members.map(async (m) => {
@@ -253,6 +255,36 @@ const plink = (uuid, name) => uuid
           </div>`).join('')}
       </div>
     </div>
+
+    ${HABITS && HABITS.members && Object.keys(HABITS.members).length ? (() => {
+      const rows = Object.entries(HABITS.members).map(([name, h]) => {
+        const presWr = h.fightsPresent ? Math.round((h.fightsPresentWon / h.fightsPresent) * 100) : null;
+        const absWr = h.fightsAbsent ? Math.round((h.fightsAbsentWon / h.fightsAbsent) * 100) : null;
+        const swing = presWr != null && absWr != null ? presWr - absWr : null;
+        const caughtRate = h.deaths ? Math.round((h.caughtOut / h.deaths) * 100) : 0;
+        return { name, h, presWr, absWr, swing, caughtRate };
+      }).sort((a, b) => (b.swing ?? -99) - (a.swing ?? -99));
+      const conv = HABITS.teamConversion;
+      const convPct = conv && conv.wonFights ? Math.round((conv.cashed / conv.wonFights) * 100) : null;
+      return `<div class="card">
+      <h2>Fight habits · ${esc(String(HABITS.films || ""))} films</h2>
+      <div style="font-size:.78rem;color:var(--text-1);line-height:1.55;margin-bottom:.6rem">
+        Across every reviewed stack game: who falls first, who gets caught rotating alone, and how the team's fights go with each member in or out of them.
+        ${convPct != null ? `<div style="margin-top:.3rem"><b style="color:var(--text-0)">Cashing wins:</b> the team converted <b style="color:${convPct < 40 ? 'var(--red)' : 'var(--green)'}">${conv.cashed} of ${conv.wonFights}</b> won fights (${convPct}%) into a major/tower within 90s — ${convPct < 40 ? 'winning the fight and walking away is the squad’s biggest leak' : 'a solid cash-in rate'}.</div>` : ''}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:.6rem">
+        ${rows.map((r) => `<div style="background:var(--bg-2);border:1px solid var(--border);border-radius:10px;padding:.6rem .7rem">
+          <div style="font-weight:800;font-size:.84rem">${esc(r.name)}</div>
+          <div style="font-size:.72rem;color:var(--text-1);margin-top:.25rem;line-height:1.6">
+            first to fall <b style="color:${r.h.firstToFall / Math.max(1, r.h.games) > 1.4 ? 'var(--red)' : 'var(--text-0)'}">${r.h.firstToFall}×</b> in ${r.h.games} games<br>
+            caught out alone <b style="color:${r.caughtRate >= 15 ? 'var(--red)' : 'var(--text-0)'}">${r.h.caughtOut}</b> of ${r.h.deaths} deaths (${r.caughtRate}%)<br>
+            team fight record: <b style="color:${(r.swing ?? 0) >= 0 ? 'var(--green)' : 'var(--red)'}">${r.presWr ?? '—'}%</b> with them in · ${r.absWr ?? '—'}% without${r.swing != null ? ` <span style="color:var(--text-2)">(${r.swing >= 0 ? '+' : ''}${r.swing})</span>` : ''}
+          </div>
+        </div>`).join('')}
+      </div>
+      <div style="font-size:.66rem;color:var(--text-2);margin-top:.5rem;line-height:1.5">${esc(HABITS.note || '')} · derived from the reviewed films (data/postgame), not the full career.</div>
+    </div>`;
+    })() : ''}
 
     <div class="card">
       <h2>Coach notes</h2>

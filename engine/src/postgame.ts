@@ -135,6 +135,10 @@ export interface PostGameFacts {
   // The fights that shaped the game, clustered from the kill stream (us-perspective),
   // tagged game-defining / bad-trade. Empty when there's no kill stream.
   skirmishes: Skirmish[];
+  // Per-event objective+tower stream (sec + side), persisted so downstream
+  // passes can tie deaths / won fights to prizes WITH tower times. Only on
+  // pulls made after 2026-07-02; older films degrade to timeline.majors.
+  events?: { sec: number; type: string; side: 'us' | 'them'; kind: 'objective' | 'tower' }[];
   kit?: (KitAnalysis & { ourKits?: HeroProfileLine[]; enemyKits?: HeroProfileLine[] }) | null;   // kit/ability synergy + enemy threats + per-hero profiles (augmented post-hoc)
   // Authored later by the agent coaching pass; null until then.
   coaching: { headline: string; team: string; perPlayer: Record<string, string>; whatShiftedIt: string } | null;
@@ -648,6 +652,10 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
     timeline,
     kills,
     skirmishes,
+    // Per-event objective/tower stream (sec + side), persisted so downstream
+    // passes can tie deaths and won fights to what they cost/earned WITH tower
+    // times. Older films lack it — consumers degrade to timeline.majors.
+    events: objForSkirmish.map((e) => ({ sec: e.sec, type: e.type, side: e.side, kind: e.kind })),
     counterBuild,
     closingNote,
     draftNote,

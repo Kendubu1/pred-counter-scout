@@ -302,21 +302,32 @@ function fightDetail(s, f) {
     return `<div style="display:flex;align-items:center;gap:.25rem;font-size:.72rem;margin-top:.18rem"><b style="min-width:4.6rem">${esc(hName(slug))}</b>${items.map((i) => `<img src="${iimg(i.slug)}" title="${esc(i.name)}" style="width:17px;height:17px;border-radius:3px" onerror="this.style.display='none'">`).join('') || '<span style="color:var(--text-2)">no items</span>'}<span style="color:var(--text-2)">${online.length ? ` · ${online.map((o) => esc(o.name)).join(', ')} online` : ` · no spike online yet`}</span></div>`;
   }).join('');
 
-  // Sustain check: if they run healers, was OUR anti-heal (the Tainted family)
-  // actually online when this fight happened? The most common invisible reason
-  // a fight "randomly" went their way.
+  // Sustain check BOTH WAYS: was OUR anti-heal (the Tainted family) online into
+  // their healers — and was THEIRS online into ours? The most common invisible
+  // reason a fight "randomly" went one way.
+  const taintedOf = (slugs) => { const out = []; for (const slug of slugs) { const p = playerByHero(slug); if (!p || !Array.isArray(p.itemTimeline)) continue; for (const it of p.itemTimeline) if (/^tainted-/.test(it.slug)) out.push({ hero: hName(slug), item: it.name, est: it.estMin, on: it.estMin != null && it.estMin <= s.startMin + 0.5 }); } return out; };
   let sustain = '';
   const theirHealers = (f.comp && f.comp.theirHealers) || [];
   if (theirHealers.length) {
-    const carriers = [];
-    for (const slug of s.ourHeroes) {
-      const p = playerByHero(slug); if (!p || !Array.isArray(p.itemTimeline)) continue;
-      for (const it of p.itemTimeline) if (/^tainted-/.test(it.slug)) carriers.push({ hero: hName(slug), item: it.name, est: it.estMin, on: it.estMin != null && it.estMin <= s.startMin + 0.5 });
-    }
+    const carriers = taintedOf(s.ourHeroes);
     const on = carriers.filter((c) => c.on);
     if (on.length) sustain = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--green)">✓ <b>Sustain check:</b> ${esc(on.map((c) => `${c.item} (${c.hero})`).join(', '))} online into ${esc(theirHealers.join('/'))} — their healing was answered.</div>`;
     else if (carriers.length) sustain = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--gold)">⚠ <b>Sustain check:</b> ${esc(theirHealers.join('/'))} heal for their side, but the anti-heal wasn't online yet (${esc(carriers.map((c) => `${c.hero}'s ${c.item} est. ~${c.est ?? 'late'}${c.est != null ? 'm' : ''}`).join(', '))}) — this fight ran unanswered.</div>`;
     else if (s.ourHeroes.some((slug) => { const p = playerByHero(slug); return p && Array.isArray(p.itemTimeline); })) sustain = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--red)">✕ <b>Sustain check:</b> ${esc(theirHealers.join('/'))} heal for their side and nobody in this fight built anti-heal all game.</div>`;
+  }
+  // mirror: their Tainted into OUR healers explains "our healing stopped working"
+  const ourHealers = (f.comp && f.comp.ourHealers) || [];
+  if (ourHealers.length) {
+    const theirsOn = taintedOf(s.theirHeroes).filter((c) => c.on);
+    if (theirsOn.length) sustain += `<div style="font-size:.76rem;margin-top:.25rem;color:var(--text-1)">↩ <b>Their side:</b> ${esc(theirsOn.map((c) => `${c.item} (${c.hero})`).join(', '))} was online against your ${esc(ourHealers.join('/'))} — expect your healing to have been cut in this fight.</div>`;
+  }
+  // Item gap: participants' items est. online, us vs them (from the fights pass)
+  let gapLine = '';
+  const gap = f.fights && Array.isArray(f.fights.itemGap) ? f.fights.itemGap.find((g) => g.startMin === s.startMin) : null;
+  if (gap && (gap.us || gap.them)) {
+    const diff = gap.us - gap.them;
+    const col = diff < 0 ? 'var(--red)' : diff > 0 ? 'var(--green)' : 'var(--text-2)';
+    gapLine = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--text-1)"><b style="color:var(--text-0)">Item count at engage:</b> <b style="color:${col}">you ~${gap.us} v their ~${gap.them}</b>${diff <= -3 ? ' — you took this fight well behind on items; that gap, not the mechanics, is often the whole story' : diff >= 3 ? ' — you had the item lead; fights like this are yours to force' : ''} <span style="color:var(--text-2);font-size:.62rem">(participants only, median-gold model — THEORY)</span></div>`;
   }
   const after = (f.timeline ? f.timeline.majors : []).filter((m) => m.minute >= s.startMin - 0.3 && m.minute <= s.startMin + 2.5 && /FANG|PRIME|ORB/i.test(m.type)).map((m) => `${m.side === 'us' ? 'you took' : 'they took'} ${esc(m.type.replace(/_/g, ' '))} (${m.minute}m)`);
   // Macro read (THEORY): the cross-map story — numbers at engage, who was dead and
@@ -332,6 +343,7 @@ function fightDetail(s, f) {
     ${ladder ? `<div style="font-size:.68rem;color:var(--text-2);margin-top:.35rem"><b style="color:var(--text-0);font-size:.74rem">Death sequence</b> · first column = clock / seconds after the opener · right column = bodies standing (you v them)</div>${ladder}` : '<div style="font-size:.76rem;color:var(--text-2)">No located kills for this fight.</div>'}
     <div style="font-size:.76rem;color:var(--text-1);margin:.35rem 0 .25rem"><b style="color:var(--text-0)">Who fought:</b> ${who(s.ourHeroes, 'us')} <span style="color:var(--text-2)">vs</span> ${who(s.theirHeroes, 'them')}</div>
     ${builds ? `<div style="font-size:.76rem;color:var(--text-1)"><b style="color:var(--text-0)">Online at this fight</b> <span style="color:var(--text-2);font-size:.64rem">(dimmed = est. not purchased yet — median-gold model, THEORY; entry HP isn't in the feed)</span>${builds}</div>` : ''}
+    ${gapLine}
     ${sustain}
     ${after.length ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.2rem"><b>What it meant:</b> ${after.join('; ')}.</div>` : ''}
     ${macNotes}`;
@@ -399,6 +411,14 @@ function fightMap(f) {
       <text x="${p.px.toFixed(1)}" y="${(p.py + 2.6).toFixed(1)}" fill="${died === 'us' ? 'var(--red)' : 'var(--green)'}" font-size="7.5" font-weight="800" text-anchor="middle">${n + 1}</text>`; }).join('');
     return `<g class="fseq" id="fseq-${i}"${i === decIdx ? '' : ' visibility="hidden"'}>${path}${nodes}</g>`;
   }).join('');
+  // caught-out deaths (outside every fight): small ✕ marks — the picks that
+  // gave away free tempo, visible as geography (usually mid-rotation spots).
+  const caughtHtml = ((f.fights && f.fights.caughtOut && f.fights.caughtOut.us) || []).map((c) => {
+    const k = kills.find((x) => x.t === c.t); if (!k) return '';
+    const p = sx(k.x, k.y);
+    return `<g><title>${Math.round(c.min)}m — ${esc(c.hero)} caught out (by ${esc(c.by)}), no fight around</title>
+      <path d="M${(p.px - 3.4).toFixed(1)} ${(p.py - 3.4).toFixed(1)}l6.8 6.8M${(p.px + 3.4).toFixed(1)} ${(p.py - 3.4).toFixed(1)}l-6.8 6.8" stroke="var(--gold)" stroke-width="2" stroke-linecap="round"/></g>`;
+  }).join('');
   // the key few stay labelled & clickable so the map reads on its own
   const keyHtml = keySk.map((s) => { const p = cen(s); if (!p) return ''; const i = sks.indexOf(s); const ring = s.tag === 'game-defining' ? 'var(--gold)' : s.tag === 'bad-trade' ? 'var(--red)' : 'var(--text-2)'; return `<g style="cursor:pointer" onclick="focusFight(${i})"><circle cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="8" fill="none" stroke="${ring}" stroke-width="2"/><text x="${p.px.toFixed(1)}" y="${(p.py - 11).toFixed(1)}" fill="${ring}" font-size="9" font-weight="700" text-anchor="middle" style="pointer-events:none">${Math.round(s.startMin)}m</text></g>`; }).join('');
   // the FULL per-fight breakdown the click handler swaps into the panel under the map
@@ -418,9 +438,9 @@ function fightMap(f) {
       ${lanesHtml}
       ${glow}
       ${dots}
-      ${towersHtml}${objHtml}${coresHtml}${keyHtml}${marks}${seqs}
+      ${towersHtml}${objHtml}${coresHtml}${keyHtml}${marks}${seqs}${caughtHtml}
     </svg></div>
-    <div style="font-size:.68rem;color:var(--text-2);line-height:1.5;margin-top:.4rem"><span style="color:var(--green)">green</span> glow = where we got kills · <span style="color:var(--red)">red</span> = where we died (brighter = more kills there) · ◆ towers · ● Fang/Prime · rings = key fights (<span style="color:var(--gold)">gold</span> = game-defining) · numbered dots = the focused fight's kills in death order (<span style="color:var(--red)">red ring</span> = we died, <span style="color:var(--green)">green</span> = they died; dotted line = which way the fight moved). Real map coordinates; reads approximate (THEORY).</div>
+    <div style="font-size:.68rem;color:var(--text-2);line-height:1.5;margin-top:.4rem"><span style="color:var(--green)">green</span> glow = where we got kills · <span style="color:var(--red)">red</span> = where we died (brighter = more kills there) · ◆ towers · ● Fang/Prime · rings = key fights (<span style="color:var(--gold)">gold</span> = game-defining) · <span style="color:var(--gold)">✕</span> = caught out alone (a death with no fight around it) · numbered dots = the focused fight's kills in death order (<span style="color:var(--red)">red ring</span> = we died, <span style="color:var(--green)">green</span> = they died; dotted line = which way the fight moved). Real map coordinates; reads approximate (THEORY).</div>
     <div id="fmdetail" class="fm-detail${decIdx >= 0 ? ' lit' : ''}">${decIdx >= 0 ? `${fhead(sks[decIdx])}${fightDetail(sks[decIdx], f)}` : '<span style="color:var(--text-2)">No fights to break down.</span>'}</div>
     <div id="fmdetails" hidden>${details}</div>
   </div>`;
@@ -527,6 +547,32 @@ function pgReview(f) {
     const [topName, topRole] = top ? top[0].split('|') : [null, null];
     fdSummary = `<div class="fdeath-sum"><b style="color:var(--text-0)">First-death pattern</b> · you gave up the opening kill in <b style="color:${usFirst.length > openers.length / 2 ? 'var(--red)' : 'var(--text-0)'}">${usFirst.length} of ${openers.length}</b> fights${usFirst.length ? ` — and went ${wonAfterLosingOpener}–${lostAfterLosingOpener} in those` : ''}.${top && top[1] >= 2 ? ` <b>${esc(topName)}</b>${topRole ? ` (${esc(topRole)})` : ''} was the first to fall ${top[1]}×${topRole === 'carry' || topRole === 'support' ? ' — protect that opening pick and the fights start even' : ' — the first 5 seconds of the engage are where this game was decided'}.` : ''}</div>`;
   }
+  // Fight economics (from the postgame:fights pass): picks conceded outside
+  // fights, whether won fights were cashed into prizes, and what deaths cost.
+  let econ = '';
+  if (f.fights) {
+    const fx = f.fights;
+    const lines = [];
+    const co = fx.caughtOut || { us: [], themCount: 0 };
+    if (co.us.length || co.themCount) {
+      const byHero = {};
+      co.us.forEach((c) => { byHero[c.hero] = (byHero[c.hero] || 0) + 1; });
+      const worst = Object.entries(byHero).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([h, n]) => `${esc(h)} ${n}×`).join(', ');
+      lines.push(`<b style="color:${co.us.length > co.themCount ? 'var(--red)' : 'var(--text-0)'}">Caught out:</b> ${co.us.length} of your deaths happened OUTSIDE any fight (them: ${co.themCount})${worst ? ` — ${worst}` : ''}${co.us.length >= 3 ? '. Deaths while rotating alone are free tempo for them — move with a buddy or don’t cross the river.' : '.'}`);
+    }
+    const cv = fx.conversion;
+    if (cv && (cv.wonFights || cv.theirWonFights)) {
+      const usPct = cv.wonFights ? Math.round((cv.cashed / cv.wonFights) * 100) : 0;
+      const usTxt = cv.wonFights ? `you converted <b style="color:${usPct < 40 ? 'var(--red)' : 'var(--green)'}">${cv.cashed} of ${cv.wonFights}</b> won fights into a prize within 90s${cv.missed && cv.missed.length ? ` (nothing after the ${cv.missed.map((m) => m + 'm').join(', ')} wins)` : ''}` : `you never won a fight to convert`;
+      lines.push(`<b style="color:var(--text-0)">Cashing wins:</b> ${usTxt}; they converted ${cv.theirCashed} of ${cv.theirWonFights}. A won fight with no objective after it is tempo left on the table.`);
+    }
+    const dc = fx.deathCosts || [];
+    if (dc.length) {
+      const items = dc.slice(0, 3).map((d) => `${esc(d.hero)}'s ${d.min}m death → ${d.cost.map((c) => esc(String(c.type).replace(/_/g, ' ').toLowerCase())).join(' + ')}`);
+      lines.push(`<b style="color:var(--text-0)">What deaths cost:</b> ${dc.length} death${dc.length > 1 ? 's' : ''} directly preceded an enemy prize — ${items.join('; ')}${dc.length > 3 ? '; …' : ''}.`);
+    }
+    if (lines.length) econ = `<div class="fdeath-sum">${lines.map((l) => `<div style="margin-top:.2rem">${l}</div>`).join('')}<div style="color:var(--text-2);font-size:.62rem;margin-top:.25rem">${esc(fx.note || '')}</div></div>`;
+  }
   const timeline = (sks.length || tlMajors.length) ? card(`
     <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.2rem">Fight timeline <span style="font-weight:400;text-transform:none;letter-spacing:0">· the team's game · 0–${tlDur}m</span></h2>
     <div style="font-size:.74rem;color:var(--text-1);margin-bottom:.5rem">The fights that decided the game — who won each, and what was on the line.</div>
@@ -538,7 +584,7 @@ function pgReview(f) {
     <div style="font-size:.68rem;color:var(--text-2);line-height:1.5">● above = objective (Fangtooth/Orb·Prime, ring = who took it) · circle on the line = a fight, size = bodies, <span style="color:var(--green)">won</span>/<span style="color:var(--red)">lost</span>, number = net kills · <span style="color:var(--gold)">gold ring</span> = game-defining (heuristic, THEORY) · <b style="color:var(--blue)">tap a fight</b> to locate it on the map &amp; break it down</div>
     ${sks.length ? `<div style="margin-top:.7rem;font-size:.72rem;color:var(--text-2)">All ${sks.length} fights <span style="opacity:.75">· ${keySk.length ? '<span style="color:var(--gold)">★</span> decided it · ' : ''}tap one to locate it on the map below &amp; break it down</span></div>
     <div class="fchips">${sks.map((s, i) => { const op = openers.find((o) => o.s === s); const opTxt = op ? ` · first death: ${hName(op.k.killedSlug)} (${op.k.killedSide === 'us' ? 'you' : 'them'})` : ''; return `<button id="tlchip-${i}" class="fchip${i === decIdx ? ' sel' : ''}" onclick="focusFight(${i})" title="${s.startMin}m ${s.kind} ${s.result} ${s.ourKills}-${s.theirKills} · ${esc(s.place)}${esc(opTxt)}${s.tag ? ' · ' + s.tag.replace('-', ' ') : ''}"><b>${s.startMin}m</b> <span style="color:${skCol(s.result)};font-weight:700">${s.result === 'won' ? 'W' : s.result === 'lost' ? 'L' : '–'}${s.net > 0 ? '+' + s.net : s.net < 0 ? s.net : ''}</span>${s.tag === 'game-defining' ? ' <span style="color:var(--gold)">★</span>' : s.tag === 'bad-trade' ? ' <span style="color:var(--red)">⚠</span>' : ''}</button>`; }).join('')}</div>
-    ${fdSummary}` : ''}`) : '';
+    ${fdSummary}${econ}` : ''}`) : '';
 
   const comp = card(`
     <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.5rem">Team comp &amp; objectives</h2>
