@@ -38,6 +38,9 @@ function mapPlayer(p: any, idx: number, slugToId: Map<string, number>): OmedaPla
     display_name: p.player?.name ?? '🎮 private',
     team: String(p.team).toLowerCase(),
     hero_id: slugToId.get(p.hero?.slug) ?? -1,
+    // Keep the pred.gg slug when the omeda snapshot doesn't know this hero yet
+    // (e.g. a day-one hero like Ikra) so reviews name the hero, not hero_id:-1.
+    hero_slug: p.hero?.slug ?? undefined,
     role: p.role && p.role !== 'NONE' && p.role !== 'FILL' ? String(p.role).toLowerCase() : null,
     kills: p.kills ?? 0, deaths: p.deaths ?? 0, assists: p.assists ?? 0,
     performance_score: 0, performance_title: '',   // pred.gg has no performance score
