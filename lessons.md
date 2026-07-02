@@ -2456,3 +2456,22 @@ Eight maintainer-flagged fixes:
   the fights block with the "coach the timing, not the mechanics" framing.
 - Modeling honesty held: item gaps are median-gold THEORY (labeled); presence/
   absence fight records are association; entry HP remains stated-unknowable.
+
+## 2026-07-02: Economics-cited coaching + critic round 7 — the loop caught fresh hallucinations
+
+- Re-authored the 3 newest films' coaching to cite the fights block (conversion
+  headlines, caught-out picks with minutes, all 8 deathCosts on the loss, itemGap
+  used to KILL the item excuse). The author verified every economics number —
+  and then invented CONNECTIVE TISSUE around them: an objective timeline that
+  exists nowhere in the facts, killer attributions, fight locations, and one
+  hero (Renna) who isn't even in the match. Pattern worth naming: grounding the
+  NUMBERS doesn't ground the NARRATIVE — the story glue is where authoring
+  hallucinates, and only the independent critic caught it (35 flags / 264 lines,
+  agreement 86.7% this round, all 35 grounded rewrites auto-applied, 0 unmatched).
+- The critic also swept 15 older games: residual preference-framing ("jungle's
+  your seat", "on your hero") and factual contradictions ("never took an
+  objective" vs majors 9-12) that earlier rounds passed. A re-sweep after ANY
+  SOURCE enrichment is worth it — richer facts make old lines newly checkable.
+- The 3 films now lead with the economics story, verified: "You never won a
+  fight — and eight of your deaths directly bought their two Fangtooths and Orb
+  Prime" / "8 wins, 3 cashed — that's how an 8-5 tower lead ran 42 minutes."
