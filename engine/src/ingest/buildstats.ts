@@ -17,7 +17,7 @@
 import { writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { gql, hasCredentials } from './predgg.js';
+import { gql, hasCredentials, currentVersion } from './predgg.js';
 import { loadData } from '../data.js';
 import { loadAggregates } from '../aggregates.js';
 
@@ -27,6 +27,11 @@ const BATCH = 6;          // heroes per hero-wide request
 const ROLE_CONCURRENCY = 4; // parallel role-filtered queries (each ~10-23s server-side)
 
 const norm = (s: string) => (s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+// RANKED_ONLY=1 pins all core-build evidence to ranked games on the CURRENT
+// patch (pred.gg default pool spans modes and versions). Set in main().
+let MODE_FILTER = "";       // e.g. `gameModes: [RANKED], versions: ["152"]`
+let SCOPE_NOTE = "pred.gg default pool (all modes, all versions)";
 
 // lowercase aggregate role -> pred.gg role enum
 const ROLE_ENUM: Record<string, string> = {
@@ -52,7 +57,13 @@ async function pool<T>(items: T[], n: number, fn: (t: T) => Promise<void>): Prom
 }
 
 async function main() {
-  if (!hasCredentials()) { console.error('needs PREDGG_CLIENT_ID/SECRET in env'); process.exit(1); }
+  if (!hasCredentials()) { console.error("needs PREDGG_CLIENT_ID/SECRET in env"); process.exit(1); }
+  if (process.env.RANKED_ONLY) {
+    const v = await currentVersion();
+    MODE_FILTER = `gameModes: [RANKED], versions: ["${v.id}"]`;
+    SCOPE_NOTE = `RANKED only, patch ${v.name} (pred.gg version id ${v.id})`;
+    console.log(`scope: ${SCOPE_NOTE}`);
+  }
   const data = loadData();
   const agg = loadAggregates();
   const slugs = [...data.kits.keys()].sort();
@@ -76,7 +87,7 @@ async function main() {
   const heroes: Record<string, Core[]> = {};
   for (let b = 0; b < slugs.length; b += BATCH) {
     const batch = slugs.slice(b, b + BATCH);
-    const q = `{ ${batch.map((s, i) => `h${i}: hero(by: { slug: "${s}" }) { coreBuild(limit: 6) { ${CB_FIELDS} } }`).join(' ')} }`;
+    const q = `{ ${batch.map((s, i) => `h${i}: hero(by: { slug: "${s}" }) { coreBuild(limit: 6${MODE_FILTER ? `, filter: { ${MODE_FILTER} }` : ""}) { ${CB_FIELDS} } }`).join(' ')} }`;
     try {
       const d = await gql<Record<string, { coreBuild: { results: CoreRow[] } } | null>>(q);
       batch.forEach((slug, i) => { heroes[slug] = parseRows(d[`h${i}`]?.coreBuild?.results ?? []); });
@@ -96,7 +107,7 @@ async function main() {
   const byRole: Record<string, Record<string, Core[]>> = {};
   let done = 0;
   await pool(roleTasks, ROLE_CONCURRENCY, async ({ slug, role }) => {
-    const q = `{ hero(by: { slug: "${slug}" }) { coreBuild(limit: 6, filter: { roles: [${ROLE_ENUM[role]}] }) { ${CB_FIELDS} } } }`;
+    const q = `{ hero(by: { slug: "${slug}" }) { coreBuild(limit: 6, filter: { roles: [${ROLE_ENUM[role]}]${MODE_FILTER ? `, ${MODE_FILTER}` : ""} }) { ${CB_FIELDS} } } }`;
     try {
       const d = await gql<{ hero: { coreBuild: { results: CoreRow[] } } | null }>(q);
       const cores = parseRows(d.hero?.coreBuild?.results ?? []);
@@ -108,7 +119,7 @@ async function main() {
   const file = path.join(ROOT, 'data/aggregates/predgg-builds.json');
   writeFileSync(file, JSON.stringify({
     generatedAt: new Date().toISOString(),
-    source: 'pred.gg coreBuild (full current-patch evidence, ordered 3-item cores, 20+ games each); hero-wide + per-role for flex heroes',
+    source: `pred.gg coreBuild (${SCOPE_NOTE}; ordered 3-item cores, 20+ games each); hero-wide + per-role for flex heroes`,
     heroes,
     byRole,
   }, null, 1));

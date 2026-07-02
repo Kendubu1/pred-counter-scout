@@ -14,7 +14,8 @@
   "notes": [
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
-   "evidence deltas carry finished-inventory survivorship bias"
+   "evidence deltas carry finished-inventory survivorship bias",
+   "the sim opens on Viper, which the field has tried and lost with (-0.3% winrate over 28 games) — treat this opener as a sim blind-spot and weight the field"
   ]
  },
  "build": {
@@ -24,15 +25,15 @@
     "name": "Viper",
     "slug": "viper",
     "spikeMinute": 12,
-    "playRatePct": 4.2,
-    "evidenceDeltaWr": 8.9,
-    "evidenceN": 23
+    "playRatePct": 4.1,
+    "evidenceDeltaWr": -0.3,
+    "evidenceN": 28
    },
    {
     "name": "Deathstalker",
     "slug": "deathstalker",
     "spikeMinute": 19,
-    "playRatePct": 0.4,
+    "playRatePct": 0.9,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -40,33 +41,33 @@
     "name": "Plasma Blade",
     "slug": "plasma-blade",
     "spikeMinute": 24,
-    "playRatePct": 1.5,
-    "evidenceDeltaWr": null,
-    "evidenceN": null
+    "playRatePct": 2.5,
+    "evidenceDeltaWr": -0.1,
+    "evidenceN": 17
    },
    {
     "name": "Imperator",
     "slug": "imperator",
     "spikeMinute": 30,
-    "playRatePct": 38.9,
-    "evidenceDeltaWr": 6.5,
-    "evidenceN": 214
+    "playRatePct": 38.7,
+    "evidenceDeltaWr": 1,
+    "evidenceN": 264
    },
    {
     "name": "Vanquisher",
     "slug": "vanquisher",
     "spikeMinute": 36,
-    "playRatePct": 40,
-    "evidenceDeltaWr": 3.9,
-    "evidenceN": 220
+    "playRatePct": 33.8,
+    "evidenceDeltaWr": 5.2,
+    "evidenceN": 231
    },
    {
     "name": "Demolisher",
     "slug": "demolisher",
     "spikeMinute": 41,
-    "playRatePct": 16.5,
-    "evidenceDeltaWr": -4.8,
-    "evidenceN": 91
+    "playRatePct": 16.3,
+    "evidenceDeltaWr": 0.5,
+    "evidenceN": 111
    }
   ],
   "gold": 18700,
@@ -464,19 +465,27 @@
    "healShieldAbs": null,
    "note": "grenade charges; cadence economy",
    "buildShift": null
+  },
+  {
+   "id": "127",
+   "name": "Hotshot",
+   "modeled": false,
+   "provisional": false,
+   "headlinePct": null,
+   "burstPct": null,
+   "rot20Pct": null,
+   "ehpPct": null,
+   "healShieldPct": null,
+   "healShieldAbs": null,
+   "note": "new 1.15 hero augment; effect not yet modeled by the sim",
+   "buildShift": null
   }
  ],
  "offMeta": {
   "candidates": [
    {
     "item": "Deathstalker",
-    "playRatePct": 0.4,
-    "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 62
-   },
-   {
-    "item": "Plasma Blade",
-    "playRatePct": 1.5,
+    "playRatePct": 0.9,
     "bestObjective": "sustained auto DPS",
     "edgeVsPopularPct": 62
    }
@@ -500,37 +509,13 @@
      "slug": "imperator"
     }
    ],
-   "n": 134,
-   "shrunkWr": 0.521,
+   "n": 182,
+   "shrunkWr": 0.49,
    "coreGold": 9400,
    "spikeMinute": 25,
    "bestObjective": "sustained auto DPS",
    "whyLine": "Strongest meta core for sustained auto DPS, online around minute 25 — about 308 auto-attack DPS in the sim.",
    "optimizer": "Optimizer sees +47% more sustained auto DPS: try Viper over Solaris (sim-only — the popular pick may carry utility the sim can't see; test it)."
-  },
-  {
-   "title": "Crit Burst",
-   "items": [
-    {
-     "name": "Solaris",
-     "slug": "solaris"
-    },
-    {
-     "name": "Vanquisher",
-     "slug": "vanquisher"
-    },
-    {
-     "name": "Imperator",
-     "slug": "imperator"
-    }
-   ],
-   "n": 62,
-   "shrunkWr": 0.536,
-   "coreGold": 9600,
-   "spikeMinute": 25,
-   "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 674 damage in one combo in the sim.",
-   "optimizer": null
   },
   {
    "title": "Crit Brawler",
@@ -548,12 +533,36 @@
      "slug": "tainted-rounds"
     }
    ],
-   "n": 37,
-   "shrunkWr": 0.535,
+   "n": 46,
+   "shrunkWr": 0.506,
    "coreGold": 9200,
    "spikeMinute": 24,
    "bestObjective": "extended fights vs bruisers",
    "whyLine": "Strongest meta core for extended fights vs bruisers, online around minute 24 — about 558 damage over a 20s fight in the sim.",
+   "optimizer": null
+  },
+  {
+   "title": "Crit Burst",
+   "items": [
+    {
+     "name": "Solaris",
+     "slug": "solaris"
+    },
+    {
+     "name": "Vanquisher",
+     "slug": "vanquisher"
+    },
+    {
+     "name": "Imperator",
+     "slug": "imperator"
+    }
+   ],
+   "n": 81,
+   "shrunkWr": 0.51,
+   "coreGold": 9600,
+   "spikeMinute": 25,
+   "bestObjective": "one-combo burst",
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 674 damage in one combo in the sim.",
    "optimizer": null
   }
  ],
@@ -874,17 +883,17 @@
    }
   },
   {
-   "enemy": "Kira",
-   "enemySlug": "kira",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kira ramps on auto-attacks — pressure their positioning before they itemize, and armor blunts them later.",
+   "enemy": "Eden",
+   "enemySlug": "eden",
+   "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Eden ramps on auto-attacks — pressure them before they itemize, and armor blunts them later.",
    "checkpoints": [
     {
      "minute": 5,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 10,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 15,
@@ -892,24 +901,24 @@
     },
     {
      "minute": 20,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 25,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
     "out": "Plasma Blade",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 38,
+    "survivalGainPct": 36,
     "offenseLossPct": 35,
-    "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 38% of its bite; you give up 35% of your damage."
+    "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 36% of its bite; you give up 35% of your damage."
    }
   }
  ],
@@ -920,8 +929,8 @@
   },
   "playstyle": "poke",
   "modeled": false,
-  "wr": 47.8,
-  "n": 197527,
+  "wr": 47.7,
+  "n": 1046,
   "shiftIn": [
    "Solaris",
    "Augmentation",
@@ -936,12 +945,12 @@
    "Vanquisher",
    "Demolisher"
   ],
-  "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 47.8% over 197,527 games, magnitude not simulated."
+  "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 47.7% over 1,046 games, magnitude not simulated."
  },
  "slug": "twinblast",
  "name": "TwinBlast",
  "patch": "1.14.4",
- "generatedAt": "2026-07-01T21:23:22.544Z",
+ "generatedAt": "2026-07-02T21:01:42.662Z",
  "damageType": "hybrid",
  "attackType": "ranged",
  "laneFlex": [
@@ -953,8 +962,8 @@
    },
    "playstyle": "poke",
    "modeled": false,
-   "wr": 47.8,
-   "n": 197527,
+   "wr": 47.7,
+   "n": 1046,
    "core": [
     {
      "name": "Solaris",
@@ -982,7 +991,7 @@
     }
    ],
    "headline": "skirmish uptime",
-   "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 47.8% over 197,527 games, magnitude not simulated."
+   "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 47.7% over 1,046 games, magnitude not simulated."
   }
  ],
  "roles": [
@@ -1002,7 +1011,8 @@
     "notes": [
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
-     "evidence deltas carry finished-inventory survivorship bias"
+     "evidence deltas carry finished-inventory survivorship bias",
+     "the sim opens on Viper, which the field has tried and lost with (-0.3% winrate over 28 games) — treat this opener as a sim blind-spot and weight the field"
     ]
    },
    "build": {
@@ -1012,15 +1022,15 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 12,
-      "playRatePct": 4.2,
-      "evidenceDeltaWr": 8.9,
-      "evidenceN": 23
+      "playRatePct": 4.1,
+      "evidenceDeltaWr": -0.3,
+      "evidenceN": 28
      },
      {
       "name": "Deathstalker",
       "slug": "deathstalker",
       "spikeMinute": 19,
-      "playRatePct": 0.4,
+      "playRatePct": 0.9,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1028,33 +1038,33 @@
       "name": "Plasma Blade",
       "slug": "plasma-blade",
       "spikeMinute": 24,
-      "playRatePct": 1.5,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
+      "playRatePct": 2.5,
+      "evidenceDeltaWr": -0.1,
+      "evidenceN": 17
      },
      {
       "name": "Imperator",
       "slug": "imperator",
       "spikeMinute": 30,
-      "playRatePct": 38.9,
-      "evidenceDeltaWr": 6.5,
-      "evidenceN": 214
+      "playRatePct": 38.7,
+      "evidenceDeltaWr": 1,
+      "evidenceN": 264
      },
      {
       "name": "Vanquisher",
       "slug": "vanquisher",
       "spikeMinute": 36,
-      "playRatePct": 40,
-      "evidenceDeltaWr": 3.9,
-      "evidenceN": 220
+      "playRatePct": 33.8,
+      "evidenceDeltaWr": 5.2,
+      "evidenceN": 231
      },
      {
       "name": "Demolisher",
       "slug": "demolisher",
       "spikeMinute": 41,
-      "playRatePct": 16.5,
-      "evidenceDeltaWr": -4.8,
-      "evidenceN": 91
+      "playRatePct": 16.3,
+      "evidenceDeltaWr": 0.5,
+      "evidenceN": 111
      }
     ],
     "gold": 18700,
@@ -1452,19 +1462,27 @@
      "healShieldAbs": null,
      "note": "grenade charges; cadence economy",
      "buildShift": null
+    },
+    {
+     "id": "127",
+     "name": "Hotshot",
+     "modeled": false,
+     "provisional": false,
+     "headlinePct": null,
+     "burstPct": null,
+     "rot20Pct": null,
+     "ehpPct": null,
+     "healShieldPct": null,
+     "healShieldAbs": null,
+     "note": "new 1.15 hero augment; effect not yet modeled by the sim",
+     "buildShift": null
     }
    ],
    "offMeta": {
     "candidates": [
      {
       "item": "Deathstalker",
-      "playRatePct": 0.4,
-      "bestObjective": "sustained auto DPS",
-      "edgeVsPopularPct": 62
-     },
-     {
-      "item": "Plasma Blade",
-      "playRatePct": 1.5,
+      "playRatePct": 0.9,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 62
      }
@@ -1488,37 +1506,13 @@
        "slug": "imperator"
       }
      ],
-     "n": 134,
-     "shrunkWr": 0.521,
+     "n": 182,
+     "shrunkWr": 0.49,
      "coreGold": 9400,
      "spikeMinute": 25,
      "bestObjective": "sustained auto DPS",
      "whyLine": "Strongest meta core for sustained auto DPS, online around minute 25 — about 308 auto-attack DPS in the sim.",
      "optimizer": "Optimizer sees +47% more sustained auto DPS: try Viper over Solaris (sim-only — the popular pick may carry utility the sim can't see; test it)."
-    },
-    {
-     "title": "Crit Burst",
-     "items": [
-      {
-       "name": "Solaris",
-       "slug": "solaris"
-      },
-      {
-       "name": "Vanquisher",
-       "slug": "vanquisher"
-      },
-      {
-       "name": "Imperator",
-       "slug": "imperator"
-      }
-     ],
-     "n": 62,
-     "shrunkWr": 0.536,
-     "coreGold": 9600,
-     "spikeMinute": 25,
-     "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 674 damage in one combo in the sim.",
-     "optimizer": null
     },
     {
      "title": "Crit Brawler",
@@ -1536,12 +1530,36 @@
        "slug": "tainted-rounds"
       }
      ],
-     "n": 37,
-     "shrunkWr": 0.535,
+     "n": 46,
+     "shrunkWr": 0.506,
      "coreGold": 9200,
      "spikeMinute": 24,
      "bestObjective": "extended fights vs bruisers",
      "whyLine": "Strongest meta core for extended fights vs bruisers, online around minute 24 — about 558 damage over a 20s fight in the sim.",
+     "optimizer": null
+    },
+    {
+     "title": "Crit Burst",
+     "items": [
+      {
+       "name": "Solaris",
+       "slug": "solaris"
+      },
+      {
+       "name": "Vanquisher",
+       "slug": "vanquisher"
+      },
+      {
+       "name": "Imperator",
+       "slug": "imperator"
+      }
+     ],
+     "n": 81,
+     "shrunkWr": 0.51,
+     "coreGold": 9600,
+     "spikeMinute": 25,
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 674 damage in one combo in the sim.",
      "optimizer": null
     }
    ],
@@ -1862,17 +1880,17 @@
      }
     },
     {
-     "enemy": "Kira",
-     "enemySlug": "kira",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kira ramps on auto-attacks — pressure their positioning before they itemize, and armor blunts them later.",
+     "enemy": "Eden",
+     "enemySlug": "eden",
+     "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Eden ramps on auto-attacks — pressure them before they itemize, and armor blunts them later.",
      "checkpoints": [
       {
        "minute": 5,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 10,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 15,
@@ -1880,24 +1898,24 @@
       },
       {
        "minute": 20,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 25,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 30,
-       "verdict": "enemy"
+       "verdict": "even"
       }
      ],
      "counterSwap": {
       "out": "Plasma Blade",
       "in": "Warden's Faith",
       "inSlug": "wardens-faith",
-      "survivalGainPct": 38,
+      "survivalGainPct": 36,
       "offenseLossPct": 35,
-      "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 38% of its bite; you give up 35% of your damage."
+      "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 36% of its bite; you give up 35% of your damage."
      }
     }
    ],
@@ -1908,8 +1926,8 @@
     },
     "playstyle": "poke",
     "modeled": false,
-    "wr": 47.8,
-    "n": 197527,
+    "wr": 47.7,
+    "n": 1046,
     "shiftIn": [
      "Solaris",
      "Augmentation",
@@ -1924,7 +1942,7 @@
      "Vanquisher",
      "Demolisher"
     ],
-    "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 47.8% over 197,527 games, magnitude not simulated."
+    "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 47.7% over 1,046 games, magnitude not simulated."
    }
   }
  ],

@@ -173,7 +173,12 @@ describe('hero artifacts (Concept A engine stage)', () => {
 
   it('artifacts carry per-augment sim deltas, honest notes, and build shifts', { timeout: 60000 }, () => {
     const a = buildHeroArtifact(data.kits.get('skylar')!, data, cal, { beamWidth: 6, matchupEnemies: 1 });
-    expect(a.augments.length).toBe(3);
+    // Hero-specific augment count follows the live pred.gg catalog (heroes
+    // launched with 3; balance patches can add more — 1.15 gave Skylar a 4th).
+    const catalog = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/predgg-augments.json'), 'utf8')).catalog as Record<string, { hero: string | null }>;
+    const skylarCatalogCount = Object.values(catalog).filter((c) => c.hero === 'skylar').length;
+    expect(a.augments.length).toBe(skylarCatalogCount);
+    expect(a.augments.length).toBeGreaterThanOrEqual(3);
     const aa = a.augments.find((g) => g.name === 'Atomised Artillery')!;
     expect(aa.modeled).toBe(true);
     expect(aa.rot20Pct!).toBeGreaterThan(10);
