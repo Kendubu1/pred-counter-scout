@@ -41,7 +41,30 @@ function sourceOf(f: Facts): string {
     `LANES: ${f.lanes.map((l) => `${l.role} ${l.ourHero} vs ${l.theirHero} (${l.edge}${l.predggMatchup ? `, ${l.predggMatchup.winrate}%` : ''})`).join('; ')}.`,
     `COMP: you ${f.comp?.ourDamage?.physical}P/${f.comp?.ourDamage?.magical}M, them ${f.comp?.theirDamage?.physical}P/${f.comp?.theirDamage?.magical}M; their healers ${f.comp?.theirHealers?.join(', ') || 'none'}.`,
     `OUR PLAYERS: ${us.map((p) => `${p.name} ${p.heroName} ${p.role} ${p.kills}/${p.deaths}/${p.assists}${(p.spikes ?? []).length ? ` (spikes ${p.spikes.map((s: any) => `${s.name}~${s.spikeMinute}m`).join(', ')})` : ''}${p.roleFit?.concern ? ` [off bottom-two lane]` : ''}`).join('; ')}.`,
+    ...fightEconLines(f),
   ].join('\n');
+}
+
+/** Fight-economics facts (postgame:fights pass): first deaths, caught-out picks,
+ *  cash-in rate, death costs, item gaps. The coach should cite THESE for "who
+ *  died first / what it cost" claims instead of eyeballing the kill stream. */
+function fightEconLines(f: Facts & { fights?: any; kills?: any[] }): string[] {
+  const out: string[] = [];
+  const sk = (f.skirmishes ?? []);
+  const kills = (f as any).kills ?? [];
+  if (kills.length && sk.length) {
+    const openers = sk.map((s: any) => kills.find((k: any) => k.t >= s.startSec - 1 && k.t <= s.endSec + 1)).filter(Boolean);
+    const usFirst = openers.filter((k: any) => k.killedSide === 'us').length;
+    out.push(`FIRST DEATHS: you gave up the opening kill in ${usFirst} of ${openers.length} fights.`);
+  }
+  const fx = (f as any).fights;
+  if (fx) {
+    if (fx.caughtOut) out.push(`CAUGHT OUT (deaths outside any fight): you ${fx.caughtOut.us.length}${fx.caughtOut.us.length ? ` (${fx.caughtOut.us.map((c: any) => `${c.hero} ${c.min}m`).join(', ')})` : ''}, them ${fx.caughtOut.themCount}.`);
+    if (fx.conversion) out.push(`CASHING WINS: you converted ${fx.conversion.cashed} of ${fx.conversion.wonFights} won fights into a prize within 90s; them ${fx.conversion.theirCashed} of ${fx.conversion.theirWonFights}.`);
+    if ((fx.deathCosts ?? []).length) out.push(`DEATH COSTS: ${fx.deathCosts.map((d: any) => `${d.hero} ${d.min}m -> ${d.cost.map((c: any) => c.type).join('+')}`).join('; ')}.`);
+    if ((fx.itemGap ?? []).length) out.push(`ITEM COUNT AT ENGAGE (est., THEORY): ${fx.itemGap.map((g: any) => `${g.startMin}m you ${g.us} v them ${g.them}`).join(', ')}.`);
+  }
+  return out;
 }
 
 const lineList = (co: Coaching): string[] => [co.headline, co.team, co.whatShiftedIt, ...Object.values(co.perPlayer ?? {})].filter((s): s is string => !!s);

@@ -2425,3 +2425,34 @@ Eight maintainer-flagged fixes:
   with all three Tainteds est. 5-11 minutes away.
 - Entry HP: NOT modelable — neither API carries any health stream. Stated in
   the panel note ("entry HP isn't in the feed") rather than faked.
+
+## 2026-07-02: Fight economics — the meaty pass (all seven follow-ups in one)
+
+- New zero-API pass `npm run postgame:fights` computes, per film, everything the
+  fight data can honestly say about VALUE: `caughtOut` (deaths outside every
+  skirmish window — picks while rotating alone), `deathCosts` (our deaths
+  directly preceding an enemy major/tower within 90s), `conversion` (won fights
+  cashed into a prize vs left on the table, both sides), `itemGap` (participants'
+  items est. online per fight, us v them). Plus the cross-game aggregate
+  `data/aggregates/fight-habits.json` per squad member: games, first-to-fall,
+  caught-out rate, and the TEAM's fight record with them present vs absent
+  (association-not-causation note baked in).
+- postgame.ts now PERSISTS the per-event objective+tower stream (`events`) on
+  future pulls — tower times were computed then thrown away, which capped
+  death-cost attribution at Fang/Prime on the 59 existing films. Forward-fixed;
+  consumers degrade to majors and say so in their note.
+- Coach page: item-count-at-engage line per fight ("you ~4 v their ~7" — a fight
+  taken 3+ items down is a timing mistake, not mechanics); sustain check now runs
+  BOTH ways (their Tainted online into OUR healers = "expect your healing to have
+  been cut"); the timeline card gained the economics block (caught-out, cashing
+  wins, what deaths cost); the map marks caught-out deaths with gold ✕.
+- Pre-Game page: "Fight habits" card over all 59 films. The corpus headline: the
+  team converted only 95 of 272 won fights (35%) into a prize within 90s —
+  winning-and-walking-away is the squad's biggest measured leak. Xeebs: first to
+  fall 89× in 53 games, 17% of deaths caught out alone.
+- Coaching loop closed: coach-critique SOURCE now carries FIRST DEATHS / CAUGHT
+  OUT / CASHING WINS / DEATH COSTS / ITEM COUNT lines (author claims about them
+  are now checkable), and the pred-scout-coach agent guidance points authors at
+  the fights block with the "coach the timing, not the mechanics" framing.
+- Modeling honesty held: item gaps are median-gold THEORY (labeled); presence/
+  absence fight records are association; entry HP remains stated-unknowable.

@@ -108,6 +108,21 @@ stream + lane verdicts (THEORY):
 review. This is exactly the "coach the game & the pick, not the person's preference"
 the maintainer asked for — rotations, numbers and tempo over hero-vs-hero.
 
+**Use the fight economics** (`fights` block, from `npm run postgame:fights` — all
+deterministic; the critic sees the same numbers):
+- `fights.caughtOut.us[]` — deaths OUTSIDE any fight (caught rotating alone). These
+  are the cheapest coaching wins: name the pick and the habit, not the mechanics.
+- `fights.conversion` — won fights cashed into a prize within 90s vs left on the
+  table. "You won 4 fights and converted 1" is a macro leak worth a headline.
+- `fights.deathCosts[]` — deaths that directly preceded an enemy major/tower: what
+  a death actually COST. Cite these instead of raw death counts when they exist.
+- `fights.itemGap[]` — participants' items est. online per fight (us v them,
+  median-gold model, THEORY). A fight taken 3+ items down is a timing mistake, not
+  a mechanics one — coach the timing.
+- Who died FIRST in each fight is in the kill stream (first kill in the skirmish
+  window); the UI's first-death pattern is derived the same way. Losing carry or
+  support first is a protect/spacing note, not a blame note.
+
 Support it with: the **draft/comp** (`comp` damage split, healers, frontline; `kit`
 threats/synergy), the **objective rhythm** (`timeline.majors`, `objectives`,
 `closingNote`), and the **counter-build** (`counterBuild`). Per-player lines stay
