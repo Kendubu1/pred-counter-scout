@@ -22,6 +22,7 @@ const ARTIFACTS_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url))
 
 interface PredggBuilds {
   heroes: Record<string, { core: string[]; coreSlugs: (string | null)[]; n: number; w: number }[]>;
+  byRole?: Record<string, Record<string, { core: string[]; coreSlugs: (string | null)[]; n: number; w: number }[]>>;
 }
 let predggBuildsCache: PredggBuilds | null | undefined;
 function loadPredggBuilds(): PredggBuilds | null {
@@ -614,7 +615,11 @@ function buildRoleView(
   // Meta builds, explained: pred.gg's most-played cores run through the
   // simulator so the page can say WHY each one wins and whether the
   // optimizer sees an upgrade.
-  const evidence = loadPredggBuilds()?.heroes[kit.slug] ?? [];
+  // Prefer this lane's own field cores (so a flex hero shows the build for the
+  // role you're viewing, e.g. support Argus gets tank-support cores, not his
+  // midlane mage cores); fall back to hero-wide evidence when a role has none.
+  const pgBuilds = loadPredggBuilds();
+  const evidence = pgBuilds?.byRole?.[kit.slug]?.[role] ?? pgBuilds?.heroes[kit.slug] ?? [];
   const cores = evidence.slice(0, 5);
   const coreCells = cores.map((c) => ({ n: c.n, w: c.w }));
   const coreMean = coreCells.reduce((s, c) => s + c.w, 0) / Math.max(coreCells.reduce((s, c) => s + c.n, 0), 1);
