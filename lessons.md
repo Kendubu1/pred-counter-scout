@@ -2361,3 +2361,30 @@ Eight maintainer-flagged fixes:
 - Schema note: coach.html reads coaching.perPlayer by **pid**; the author keyed
   by squadName this round and it was re-keyed deterministically from each file's
   own roster. Codified here so the next authoring pass keys by pid directly.
+
+## 2026-07-02: Patch-pure ranked refresh (1.15) + version-pinned pred.gg pulls
+
+- Re-ran the refresh now that the 36h window sits entirely inside 1.15 (7/01 08:25+):
+  4,280 ranked matches / 42,800 rows, mode=["ranked"]. The 7/01 run had straddled the
+  patch drop — winrates were mostly late-1.14; this one is the real 1.15 read.
+- **pred.gg default pools span versions.** coreBuild/simpleBuild unfiltered returned
+  n=72k for one Revenant core — all-time, not current patch. Introspection showed both
+  filters accept `versions`; RANKED_ONLY now resolves the newest named version at
+  runtime (id 152 = 1.15) and pins builds/augments/eternals/crests to it. Scope is
+  recorded in each output's source note. Skills need no pin (static recommended path).
+- 1.15 catalog reality hit two harness gates, both fixed honestly: (a) 23 NEW hero
+  augments (incl. Ikra's Cascade/The Gloom/Undertow, icons 737-739) entered the catalog
+  and were added to fixtures/augments.json as explicitly-unmodeled entries; (b) the
+  artifacts test hardcoded 3 augments per hero — Skylar now has 4 — made dynamic
+  against the catalog count.
+- Meta movers (patch-pure ranked, primary role, n>=100): risers Crunch +3.6, Murdock
+  +3.1, Boris +3.0, Gideon +3.0, Mourn +2.6; fallers Khaimera -4.2, Steel -2.9,
+  Sparrow -2.7, Terra -2.6 (prediction CONFIRMED), Sevarog -2.5. **Revenant went
+  DOWN** 49.8→48.8 despite his top 1.15 core running 55.4% — buffed heroes attract a
+  pick-rate flood that drags the average; the build-conditional read and the hero
+  read can disagree. Field meta-build cores moved on 4 heroes (Drongo, GRIM.exe,
+  Kwang, Legion). Sim build cores moved on 0 — expected: kit math inputs (omeda base
+  stats/items) are still pre-1.15; sim builds only move when omeda publishes.
+- omeda STILL hasn't published 1.15 (52 heroes / 270 items at 20:25 UTC 7/02) but its
+  MATCH FEED already carries Ikra's hero_id (53 heroes in the aggregate) — catalog
+  and feed update on different schedules.

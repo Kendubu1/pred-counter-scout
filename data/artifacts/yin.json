@@ -15,7 +15,7 @@
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
-   "the sim opens on Solaris, which the field rarely builds (0.4% pick) — a sim-only call; compare the meta cores below"
+   "the sim opens on Solaris, which the field rarely builds (0% pick) — a sim-only call; compare the meta cores below"
   ]
  },
  "build": {
@@ -25,7 +25,7 @@
     "name": "Solaris",
     "slug": "solaris",
     "spikeMinute": 12,
-    "playRatePct": 0.4,
+    "playRatePct": 0,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -33,9 +33,9 @@
     "name": "Viper",
     "slug": "viper",
     "spikeMinute": 19,
-    "playRatePct": 6.1,
-    "evidenceDeltaWr": 5.4,
-    "evidenceN": 32
+    "playRatePct": 7.1,
+    "evidenceDeltaWr": 5.9,
+    "evidenceN": 44
    },
    {
     "name": "Spear Of Desolation",
@@ -49,14 +49,14 @@
     "name": "The Perforator",
     "slug": "the-perforator",
     "spikeMinute": 31,
-    "playRatePct": 0.4,
+    "playRatePct": 0,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
    {
     "name": "Augmentation",
     "slug": "augmentation",
-    "spikeMinute": 38,
+    "spikeMinute": 37,
     "playRatePct": 0.2,
     "evidenceDeltaWr": null,
     "evidenceN": null
@@ -471,7 +471,7 @@
   "candidates": [
    {
     "item": "Solaris",
-    "playRatePct": 0.4,
+    "playRatePct": 0,
     "bestObjective": "20s fight vs bruisers",
     "edgeVsPopularPct": 543.6
    },
@@ -483,7 +483,7 @@
    },
    {
     "item": "The Perforator",
-    "playRatePct": 0.4,
+    "playRatePct": 0,
     "bestObjective": "20s fight vs bruisers",
     "edgeVsPopularPct": 543.6
    },
@@ -504,7 +504,7 @@
  },
  "metaBuilds": [
   {
-   "title": "Crit Burst",
+   "title": "Crit Drain",
    "items": [
     {
      "name": "SkySplitter",
@@ -519,13 +519,37 @@
      "slug": "onixian-quiver"
     }
    ],
-   "n": 31,
-   "shrunkWr": 0.514,
+   "n": 64,
+   "shrunkWr": 0.531,
    "coreGold": 8950,
    "spikeMinute": 24,
+   "bestObjective": "lifesteal sustain",
+   "whyLine": "Strongest meta core for lifesteal sustain, online around minute 24 — about 515 HP drained back over a 10s fight in the sim.",
+   "optimizer": null
+  },
+  {
+   "title": "Crit Burst",
+   "items": [
+    {
+     "name": "SkySplitter",
+     "slug": "sky-splitter"
+    },
+    {
+     "name": "LightningHawk",
+     "slug": "lightning-hawk"
+    },
+    {
+     "name": "TaintedRounds",
+     "slug": "tainted-rounds"
+    }
+   ],
+   "n": 47,
+   "shrunkWr": 0.523,
+   "coreGold": 9200,
+   "spikeMinute": 25,
    "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 622 damage in one combo in the sim.",
-   "optimizer": "Optimizer sees +22% more one-combo burst: try Solaris over Sky Splitter (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 711 damage in one combo in the sim.",
+   "optimizer": "Optimizer agrees: within 7% of our best core on one-combo burst. The winrate is earned, not luck."
   },
   {
    "title": "Crit Drain",
@@ -543,37 +567,13 @@
      "slug": "onixian-quiver"
     }
    ],
-   "n": 38,
-   "shrunkWr": 0.621,
+   "n": 51,
+   "shrunkWr": 0.593,
    "coreGold": 8850,
    "spikeMinute": 24,
    "bestObjective": "lifesteal sustain",
    "whyLine": "Strongest meta core for lifesteal sustain, online around minute 24 — about 508 HP drained back over a 10s fight in the sim.",
    "optimizer": null
-  },
-  {
-   "title": "Crit Skirmisher",
-   "items": [
-    {
-     "name": "LightningHawk",
-     "slug": "lightning-hawk"
-    },
-    {
-     "name": "OnixianQuiver",
-     "slug": "onixian-quiver"
-    },
-    {
-     "name": "Ashbringer",
-     "slug": "ashbringer"
-    }
-   ],
-   "n": 62,
-   "shrunkWr": 0.524,
-   "coreGold": 8750,
-   "spikeMinute": 24,
-   "bestObjective": "10s rotation damage",
-   "whyLine": "Strongest meta core for 10s rotation damage, online around minute 24 — about 584 damage over a 10s rotation in the sim.",
-   "optimizer": "Optimizer sees 2.0× the 10s rotation damage: try Solaris over Lightning Hawk (sim-only — the popular pick may carry utility the sim can't see; test it)."
   }
  ],
  "stages": [
@@ -810,6 +810,45 @@
    }
   },
   {
+   "enemy": "Kwang",
+   "enemySlug": "kwang",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kwang ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 10,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 15,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 20,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 25,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 30,
+     "verdict": "enemy"
+    }
+   ],
+   "counterSwap": {
+    "out": "Augmentation",
+    "in": "Void Helm",
+    "inSlug": "void-helm",
+    "survivalGainPct": 23,
+    "offenseLossPct": 27,
+    "line": "Losing lane? Third item Void Helm instead of Augmentation: their 3s all-in loses 23% of its bite; you give up 27% of your damage."
+   }
+  },
+  {
    "enemy": "Kallari",
    "enemySlug": "kallari",
    "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kallari's main threat is Guillotine; bait it before you commit, and armor softens the trade.",
@@ -886,45 +925,6 @@
     "offenseLossPct": 27,
     "line": "Losing lane? Third item Raiment of Renewal instead of Augmentation: their 3s all-in loses 17% of its bite; you give up 27% of your damage."
    }
-  },
-  {
-   "enemy": "Kwang",
-   "enemySlug": "kwang",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kwang ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 10,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 15,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 20,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 25,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 30,
-     "verdict": "enemy"
-    }
-   ],
-   "counterSwap": {
-    "out": "Augmentation",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 23,
-    "offenseLossPct": 27,
-    "line": "Losing lane? Third item Void Helm instead of Augmentation: their 3s all-in loses 23% of its bite; you give up 27% of your damage."
-   }
   }
  ],
  "laneSteer": {
@@ -934,16 +934,16 @@
   },
   "playstyle": "on-hit",
   "modeled": false,
-  "wr": 51.6,
-  "n": 154097,
+  "wr": 51.8,
+  "n": 1289,
   "shiftIn": [],
   "shiftOut": [],
-  "provenance": "“Storm of Salvation” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 51.6% over 154,097 games, magnitude not simulated."
+  "provenance": "“Storm of Salvation” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 51.8% over 1,289 games, magnitude not simulated."
  },
  "slug": "yin",
  "name": "Yin",
  "patch": "1.14.4",
- "generatedAt": "2026-07-01T18:42:39.321Z",
+ "generatedAt": "2026-07-02T20:41:39.133Z",
  "damageType": "physical",
  "attackType": "melee",
  "laneFlex": [
@@ -955,8 +955,8 @@
    },
    "playstyle": "on-hit",
    "modeled": false,
-   "wr": 51.6,
-   "n": 154097,
+   "wr": 51.8,
+   "n": 1289,
    "core": [
     {
      "name": "The Perforator",
@@ -984,46 +984,7 @@
     }
    ],
    "headline": "skirmish uptime",
-   "provenance": "“Storm of Salvation” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 51.6% over 154,097 games, magnitude not simulated."
-  },
-  {
-   "lane": "offlane",
-   "augment": {
-    "id": "138",
-    "name": "Storm of Salvation"
-   },
-   "playstyle": "on-hit",
-   "modeled": false,
-   "wr": 51.5,
-   "n": 54379,
-   "core": [
-    {
-     "name": "The Perforator",
-     "slug": "the-perforator"
-    },
-    {
-     "name": "Solaris",
-     "slug": "solaris"
-    },
-    {
-     "name": "Augmentation",
-     "slug": "augmentation"
-    },
-    {
-     "name": "Basilisk",
-     "slug": "basilisk"
-    },
-    {
-     "name": "Viper",
-     "slug": "viper"
-    },
-    {
-     "name": "Spear Of Desolation",
-     "slug": "spear-of-desolation"
-    }
-   ],
-   "headline": "skirmish uptime",
-   "provenance": "“Storm of Salvation” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 51.5% over 54,379 games, magnitude not simulated."
+   "provenance": "“Storm of Salvation” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 51.8% over 1,289 games, magnitude not simulated."
   }
  ],
  "roles": [
@@ -1044,7 +1005,7 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Solaris, which the field rarely builds (0.4% pick) — a sim-only call; compare the meta cores below"
+     "the sim opens on Solaris, which the field rarely builds (0% pick) — a sim-only call; compare the meta cores below"
     ]
    },
    "build": {
@@ -1054,7 +1015,7 @@
       "name": "Solaris",
       "slug": "solaris",
       "spikeMinute": 12,
-      "playRatePct": 0.4,
+      "playRatePct": 0,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1062,9 +1023,9 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 19,
-      "playRatePct": 6.1,
-      "evidenceDeltaWr": 5.4,
-      "evidenceN": 32
+      "playRatePct": 7.1,
+      "evidenceDeltaWr": 5.9,
+      "evidenceN": 44
      },
      {
       "name": "Spear Of Desolation",
@@ -1078,14 +1039,14 @@
       "name": "The Perforator",
       "slug": "the-perforator",
       "spikeMinute": 31,
-      "playRatePct": 0.4,
+      "playRatePct": 0,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
      {
       "name": "Augmentation",
       "slug": "augmentation",
-      "spikeMinute": 38,
+      "spikeMinute": 37,
       "playRatePct": 0.2,
       "evidenceDeltaWr": null,
       "evidenceN": null
@@ -1500,7 +1461,7 @@
     "candidates": [
      {
       "item": "Solaris",
-      "playRatePct": 0.4,
+      "playRatePct": 0,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 543.6
      },
@@ -1512,7 +1473,7 @@
      },
      {
       "item": "The Perforator",
-      "playRatePct": 0.4,
+      "playRatePct": 0,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 543.6
      },
@@ -1533,7 +1494,7 @@
    },
    "metaBuilds": [
     {
-     "title": "Crit Burst",
+     "title": "Crit Drain",
      "items": [
       {
        "name": "SkySplitter",
@@ -1548,13 +1509,37 @@
        "slug": "onixian-quiver"
       }
      ],
-     "n": 31,
-     "shrunkWr": 0.514,
+     "n": 64,
+     "shrunkWr": 0.531,
      "coreGold": 8950,
      "spikeMinute": 24,
+     "bestObjective": "lifesteal sustain",
+     "whyLine": "Strongest meta core for lifesteal sustain, online around minute 24 — about 515 HP drained back over a 10s fight in the sim.",
+     "optimizer": null
+    },
+    {
+     "title": "Crit Burst",
+     "items": [
+      {
+       "name": "SkySplitter",
+       "slug": "sky-splitter"
+      },
+      {
+       "name": "LightningHawk",
+       "slug": "lightning-hawk"
+      },
+      {
+       "name": "TaintedRounds",
+       "slug": "tainted-rounds"
+      }
+     ],
+     "n": 47,
+     "shrunkWr": 0.523,
+     "coreGold": 9200,
+     "spikeMinute": 25,
      "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 622 damage in one combo in the sim.",
-     "optimizer": "Optimizer sees +22% more one-combo burst: try Solaris over Sky Splitter (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 711 damage in one combo in the sim.",
+     "optimizer": "Optimizer agrees: within 7% of our best core on one-combo burst. The winrate is earned, not luck."
     },
     {
      "title": "Crit Drain",
@@ -1572,37 +1557,13 @@
        "slug": "onixian-quiver"
       }
      ],
-     "n": 38,
-     "shrunkWr": 0.621,
+     "n": 51,
+     "shrunkWr": 0.593,
      "coreGold": 8850,
      "spikeMinute": 24,
      "bestObjective": "lifesteal sustain",
      "whyLine": "Strongest meta core for lifesteal sustain, online around minute 24 — about 508 HP drained back over a 10s fight in the sim.",
      "optimizer": null
-    },
-    {
-     "title": "Crit Skirmisher",
-     "items": [
-      {
-       "name": "LightningHawk",
-       "slug": "lightning-hawk"
-      },
-      {
-       "name": "OnixianQuiver",
-       "slug": "onixian-quiver"
-      },
-      {
-       "name": "Ashbringer",
-       "slug": "ashbringer"
-      }
-     ],
-     "n": 62,
-     "shrunkWr": 0.524,
-     "coreGold": 8750,
-     "spikeMinute": 24,
-     "bestObjective": "10s rotation damage",
-     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 24 — about 584 damage over a 10s rotation in the sim.",
-     "optimizer": "Optimizer sees 2.0× the 10s rotation damage: try Solaris over Lightning Hawk (sim-only — the popular pick may carry utility the sim can't see; test it)."
     }
    ],
    "stages": [
@@ -1839,6 +1800,45 @@
      }
     },
     {
+     "enemy": "Kwang",
+     "enemySlug": "kwang",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kwang ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Augmentation",
+      "in": "Void Helm",
+      "inSlug": "void-helm",
+      "survivalGainPct": 23,
+      "offenseLossPct": 27,
+      "line": "Losing lane? Third item Void Helm instead of Augmentation: their 3s all-in loses 23% of its bite; you give up 27% of your damage."
+     }
+    },
+    {
      "enemy": "Kallari",
      "enemySlug": "kallari",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kallari's main threat is Guillotine; bait it before you commit, and armor softens the trade.",
@@ -1915,45 +1915,6 @@
       "offenseLossPct": 27,
       "line": "Losing lane? Third item Raiment of Renewal instead of Augmentation: their 3s all-in loses 17% of its bite; you give up 27% of your damage."
      }
-    },
-    {
-     "enemy": "Kwang",
-     "enemySlug": "kwang",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kwang ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Augmentation",
-      "in": "Void Helm",
-      "inSlug": "void-helm",
-      "survivalGainPct": 23,
-      "offenseLossPct": 27,
-      "line": "Losing lane? Third item Void Helm instead of Augmentation: their 3s all-in loses 23% of its bite; you give up 27% of your damage."
-     }
     }
    ],
    "laneSteer": {
@@ -1963,958 +1924,11 @@
     },
     "playstyle": "on-hit",
     "modeled": false,
-    "wr": 51.6,
-    "n": 154097,
+    "wr": 51.8,
+    "n": 1289,
     "shiftIn": [],
     "shiftOut": [],
-    "provenance": "“Storm of Salvation” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 51.6% over 154,097 games, magnitude not simulated."
-   }
-  },
-  {
-   "role": "offlane",
-   "roleCaveat": null,
-   "confidence": {
-    "level": "THEORY",
-    "unverifiedConstants": [
-     "mitigation",
-     "abilityHaste",
-     "critMultiplier",
-     "attackSpeedFormula",
-     "abilityScalingUsesBonusPowerOnly",
-     "attackSpeedCap"
-    ],
-    "notes": [
-     "all combat numbers are simulator output on unverified constants",
-     "checkpoint levels are provisional (no level timeline in the match feed)",
-     "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Solaris, which the field rarely builds (0.4% pick) — a sim-only call; compare the meta cores below"
-    ]
-   },
-   "build": {
-    "title": "Lethality Skirmisher",
-    "items": [
-     {
-      "name": "Solaris",
-      "slug": "solaris",
-      "spikeMinute": 12,
-      "playRatePct": 0.4,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
-     },
-     {
-      "name": "Viper",
-      "slug": "viper",
-      "spikeMinute": 19,
-      "playRatePct": 6.1,
-      "evidenceDeltaWr": 5.4,
-      "evidenceN": 32
-     },
-     {
-      "name": "Spear Of Desolation",
-      "slug": "spear-of-desolation",
-      "spikeMinute": 25,
-      "playRatePct": 0,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
-     },
-     {
-      "name": "The Perforator",
-      "slug": "the-perforator",
-      "spikeMinute": 30,
-      "playRatePct": 0.4,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
-     },
-     {
-      "name": "Augmentation",
-      "slug": "augmentation",
-      "spikeMinute": 36,
-      "playRatePct": 0.2,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
-     },
-     {
-      "name": "Alternator",
-      "slug": "alternator",
-      "spikeMinute": 41,
-      "playRatePct": 0,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
-     }
-    ],
-    "gold": 18450,
-    "archetypes": [
-     "skirmish uptime"
-    ],
-    "objectives": {
-     "burstVsSquishy": 1759.1275991217872,
-     "teamfightVsSquishy": 1759.1275991217872,
-     "rot10VsSquishy": 3656.470811400389,
-     "rot20VsBruiser": 5310.730867155909,
-     "autoDps10VsSquishy": 671.4148712588028,
-     "ehpPhysical": 4081.1537500000004,
-     "ehpMagical": 3328.580765625,
-     "healShield10s": 0,
-     "utility": 80,
-     "sustain10s": 0
-    },
-    "manaFeasible": true
-   },
-   "coachLine": "Sim-optimal for skirmish uptime: first spike lands around minute 12 (Solaris), third item by minute 25. Take Demiurge: +16.6% on 20-second fights at minute 15.",
-   "eternals": {
-    "top": [
-     {
-      "name": "Demiurge",
-      "id": "demiurge",
-      "headlinePct": 16.2,
-      "burstPct": 15.2,
-      "rot20Pct": 16.6,
-      "ehpPct": 1.1
-     },
-     {
-      "name": "Krix",
-      "id": "krix",
-      "headlinePct": 0,
-      "burstPct": 0,
-      "rot20Pct": 0,
-      "ehpPct": 18
-     },
-     {
-      "name": "Vesh",
-      "id": "vesh",
-      "headlinePct": 7.6,
-      "burstPct": 5.6,
-      "rot20Pct": 7.4,
-      "ehpPct": 0
-     }
-    ],
-    "unmodeled": [
-     "Marrow",
-     "Nihil",
-     "Aion",
-     "Exarch"
-    ],
-    "all": [
-     {
-      "name": "Demiurge",
-      "modeled": true,
-      "headlinePct": 16.2,
-      "burstPct": 15.2,
-      "rot20Pct": 16.6,
-      "ehpPct": 1.1,
-      "note": null
-     },
-     {
-      "name": "Krix",
-      "modeled": true,
-      "headlinePct": 0,
-      "burstPct": 0,
-      "rot20Pct": 0,
-      "ehpPct": 18,
-      "note": null
-     },
-     {
-      "name": "Vesh",
-      "modeled": true,
-      "headlinePct": 7.6,
-      "burstPct": 5.6,
-      "rot20Pct": 7.4,
-      "ehpPct": 0,
-      "note": null
-     },
-     {
-      "name": "Thraex",
-      "modeled": true,
-      "headlinePct": 5.3,
-      "burstPct": 0,
-      "rot20Pct": 5.2,
-      "ehpPct": 0,
-      "note": null
-     },
-     {
-      "name": "Idrisil",
-      "modeled": true,
-      "headlinePct": 0,
-      "burstPct": 0,
-      "rot20Pct": 0,
-      "ehpPct": 6.4,
-      "note": null
-     },
-     {
-      "name": "Xyris",
-      "modeled": true,
-      "headlinePct": 2.2,
-      "burstPct": 2.9,
-      "rot20Pct": 2.2,
-      "ehpPct": 0,
-      "note": null
-     },
-     {
-      "name": "Lotus",
-      "modeled": true,
-      "headlinePct": 1.6,
-      "burstPct": 2.1,
-      "rot20Pct": 1.5,
-      "ehpPct": 2.8,
-      "note": null
-     },
-     {
-      "name": "Vermis",
-      "modeled": true,
-      "headlinePct": 0,
-      "burstPct": 3.9,
-      "rot20Pct": 0,
-      "ehpPct": 0,
-      "note": null
-     },
-     {
-      "name": "Marrow",
-      "modeled": false,
-      "headlinePct": null,
-      "burstPct": null,
-      "rot20Pct": null,
-      "ehpPct": null,
-      "note": "Marrow (Major): missing-health-dependent omnivamp; no sustain-uptime model yet"
-     },
-     {
-      "name": "Nihil",
-      "modeled": false,
-      "headlinePct": null,
-      "burstPct": null,
-      "rot20Pct": null,
-      "ehpPct": null,
-      "note": "Nihil (Major): accrual rate depends on combat uptime (how long Doom persists per fight), which the closed-form sim cannot observe"
-     },
-     {
-      "name": "Aion",
-      "modeled": false,
-      "headlinePct": null,
-      "burstPct": null,
-      "rot20Pct": null,
-      "ehpPct": null,
-      "note": "Aion (Major): economy effect; valuable but outside combat objectives (revisit with gold curves)"
-     },
-     {
-      "name": "Exarch",
-      "modeled": false,
-      "headlinePct": null,
-      "burstPct": null,
-      "rot20Pct": null,
-      "ehpPct": null,
-      "note": "Exarch (Major): buffs the HEAL TARGET (usually an ally) — team-side value outside the single-hero sim; self-heal uptime depends on heal cadence vs the 4s window"
-     }
-    ],
-    "augmentAware": null,
-    "loadout": {
-     "major": {
-      "name": "Thraex",
-      "modeled": true
-     },
-     "minor1": {
-      "name": "Savage Strikes",
-      "modeled": true,
-      "deltaPct": 0,
-      "note": "+0.0% rot10 on top of the major (modeled)"
-     },
-     "minor2": {
-      "name": "Ferocity",
-      "modeled": true,
-      "deltaPct": 0,
-      "note": "+0.0% rot10 on top of the major (modeled)"
-     },
-     "note": "Sustained Duelist — fit 2.90"
-    },
-    "minorsByName": {
-     "vesh": {
-      "minor1": {
-       "name": "The Tenth Seal",
-       "modeled": true,
-       "deltaPct": 0,
-       "note": "+0.0% rot10 on top of the major (modeled)"
-      },
-      "minor2": {
-       "name": "Mind Rot",
-       "modeled": true,
-       "deltaPct": 2.6,
-       "note": "+2.6% rot10 on top of the major (modeled)"
-      }
-     },
-     "aion": {
-      "minor1": {
-       "name": "Philosopher",
-       "modeled": false,
-       "deltaPct": null,
-       "note": "curated recommendation (mechanic not in the sim)"
-      },
-      "minor2": {
-       "name": "Runic Focus",
-       "modeled": false,
-       "deltaPct": null,
-       "note": "curated recommendation (mechanic not in the sim)"
-      }
-     },
-     "vermis": {
-      "minor1": {
-       "name": "Serration",
-       "modeled": false,
-       "deltaPct": null,
-       "note": "curated recommendation (mechanic not in the sim)"
-      },
-      "minor2": {
-       "name": "Melting Point",
-       "modeled": true,
-       "deltaPct": 0,
-       "note": "+0.0% rot10 on top of the major (modeled)"
-      }
-     },
-     "thraex": {
-      "minor1": {
-       "name": "Savage Strikes",
-       "modeled": true,
-       "deltaPct": 0,
-       "note": "+0.0% rot10 on top of the major (modeled)"
-      },
-      "minor2": {
-       "name": "Ferocity",
-       "modeled": true,
-       "deltaPct": 0,
-       "note": "+0.0% rot10 on top of the major (modeled)"
-      }
-     },
-     "marrow": {
-      "minor1": {
-       "name": "Blood Bank",
-       "modeled": false,
-       "deltaPct": null,
-       "note": "curated recommendation (mechanic not in the sim)"
-      },
-      "minor2": {
-       "name": "The Maw",
-       "modeled": false,
-       "deltaPct": null,
-       "note": "curated recommendation (mechanic not in the sim)"
-      }
-     },
-     "xyris": {
-      "minor1": {
-       "name": "Furor",
-       "modeled": false,
-       "deltaPct": null,
-       "note": "curated recommendation (mechanic not in the sim)"
-      },
-      "minor2": {
-       "name": "Eviscerate",
-       "modeled": true,
-       "deltaPct": 0,
-       "note": "+0.0% rot10 on top of the major (modeled)"
-      }
-     },
-     "demiurge": {
-      "minor1": {
-       "name": "Construct",
-       "modeled": true,
-       "deltaPct": 0,
-       "note": "+0.0% rot10 on top of the major (modeled)"
-      },
-      "minor2": {
-       "name": "Cursed Corrupted",
-       "modeled": true,
-       "deltaPct": 0,
-       "note": "+0.0% rot10 on top of the major (modeled)"
-      }
-     },
-     "nihil": {
-      "minor1": {
-       "name": "From the Abyss",
-       "modeled": false,
-       "deltaPct": null,
-       "note": "curated recommendation (mechanic not in the sim)"
-      },
-      "minor2": {
-       "name": "Adaptive Plating",
-       "modeled": false,
-       "deltaPct": null,
-       "note": "curated recommendation (mechanic not in the sim)"
-      }
-     },
-     "exarch": {
-      "minor1": {
-       "name": "Revelation",
-       "modeled": false,
-       "deltaPct": null,
-       "note": "curated recommendation (mechanic not in the sim)"
-      },
-      "minor2": {
-       "name": "Fervour",
-       "modeled": false,
-       "deltaPct": null,
-       "note": "curated recommendation (mechanic not in the sim)"
-      }
-     },
-     "krix": {
-      "minor1": {
-       "name": "Festering Wounds",
-       "modeled": false,
-       "deltaPct": null,
-       "note": "curated recommendation (mechanic not in the sim)"
-      },
-      "minor2": {
-       "name": "Cannibalism",
-       "modeled": false,
-       "deltaPct": null,
-       "note": "curated recommendation (mechanic not in the sim)"
-      }
-     },
-     "idrisil": {
-      "minor1": {
-       "name": "Mending",
-       "modeled": false,
-       "deltaPct": null,
-       "note": "curated recommendation (mechanic not in the sim)"
-      },
-      "minor2": {
-       "name": "Diamond Tip",
-       "modeled": true,
-       "deltaPct": 5.4,
-       "note": "+5.4% rot10 on top of the major (modeled)"
-      }
-     },
-     "lotus": {
-      "minor1": {
-       "name": "Masterpiece",
-       "modeled": false,
-       "deltaPct": null,
-       "note": "curated recommendation (mechanic not in the sim)"
-      },
-      "minor2": {
-       "name": "Prima Donna",
-       "modeled": false,
-       "deltaPct": null,
-       "note": "curated recommendation (mechanic not in the sim)"
-      }
-     }
-    }
-   },
-   "augments": [
-    {
-     "id": "137",
-     "name": "Energy Transfer",
-     "modeled": false,
-     "provisional": false,
-     "headlinePct": null,
-     "burstPct": null,
-     "rot20Pct": null,
-     "ehpPct": null,
-     "healShieldPct": null,
-     "healShieldAbs": null,
-     "note": "deflect-conditional shield/speed; reactive",
-     "buildShift": null
-    },
-    {
-     "id": "138",
-     "name": "Storm of Salvation",
-     "modeled": false,
-     "provisional": false,
-     "headlinePct": null,
-     "burstPct": null,
-     "rot20Pct": null,
-     "ehpPct": null,
-     "healShieldPct": null,
-     "healShieldAbs": null,
-     "note": "own-missing-health on-hit healing during Windburn; health-state conditional",
-     "buildShift": null
-    },
-    {
-     "id": "139",
-     "name": "Serpent's Blessing",
-     "modeled": false,
-     "provisional": false,
-     "headlinePct": null,
-     "burstPct": null,
-     "rot20Pct": null,
-     "ehpPct": null,
-     "healShieldPct": null,
-     "healShieldAbs": null,
-     "note": "terrain-conditional cooldown reduction; positional",
-     "buildShift": null
-    }
-   ],
-   "offMeta": {
-    "candidates": [
-     {
-      "item": "Solaris",
-      "playRatePct": 0.4,
-      "bestObjective": "20s fight vs bruisers",
-      "edgeVsPopularPct": 509.8
-     },
-     {
-      "item": "Spear Of Desolation",
-      "playRatePct": 0,
-      "bestObjective": "20s fight vs bruisers",
-      "edgeVsPopularPct": 509.8
-     },
-     {
-      "item": "The Perforator",
-      "playRatePct": 0.4,
-      "bestObjective": "20s fight vs bruisers",
-      "edgeVsPopularPct": 509.8
-     },
-     {
-      "item": "Augmentation",
-      "playRatePct": 0.2,
-      "bestObjective": "20s fight vs bruisers",
-      "edgeVsPopularPct": 509.8
-     },
-     {
-      "item": "Alternator",
-      "playRatePct": 0,
-      "bestObjective": "20s fight vs bruisers",
-      "edgeVsPopularPct": 509.8
-     }
-    ],
-    "honestAbsence": null
-   },
-   "metaBuilds": [
-    {
-     "title": "Crit Burst",
-     "items": [
-      {
-       "name": "SkySplitter",
-       "slug": "sky-splitter"
-      },
-      {
-       "name": "LightningHawk",
-       "slug": "lightning-hawk"
-      },
-      {
-       "name": "OnixianQuiver",
-       "slug": "onixian-quiver"
-      }
-     ],
-     "n": 31,
-     "shrunkWr": 0.514,
-     "coreGold": 8950,
-     "spikeMinute": 24,
-     "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 622 damage in one combo in the sim.",
-     "optimizer": "Optimizer sees +22% more one-combo burst: try Solaris over Sky Splitter (sim-only — the popular pick may carry utility the sim can't see; test it)."
-    },
-    {
-     "title": "Crit Drain",
-     "items": [
-      {
-       "name": "SkySplitter",
-       "slug": "sky-splitter"
-      },
-      {
-       "name": "TaintedRounds",
-       "slug": "tainted-rounds"
-      },
-      {
-       "name": "OnixianQuiver",
-       "slug": "onixian-quiver"
-      }
-     ],
-     "n": 38,
-     "shrunkWr": 0.621,
-     "coreGold": 8850,
-     "spikeMinute": 24,
-     "bestObjective": "lifesteal sustain",
-     "whyLine": "Strongest meta core for lifesteal sustain, online around minute 24 — about 508 HP drained back over a 10s fight in the sim.",
-     "optimizer": null
-    },
-    {
-     "title": "Crit Skirmisher",
-     "items": [
-      {
-       "name": "LightningHawk",
-       "slug": "lightning-hawk"
-      },
-      {
-       "name": "OnixianQuiver",
-       "slug": "onixian-quiver"
-      },
-      {
-       "name": "Ashbringer",
-       "slug": "ashbringer"
-      }
-     ],
-     "n": 62,
-     "shrunkWr": 0.524,
-     "coreGold": 8750,
-     "spikeMinute": 24,
-     "bestObjective": "10s rotation damage",
-     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 24 — about 584 damage over a 10s rotation in the sim.",
-     "optimizer": "Optimizer sees 2.0× the 10s rotation damage: try Solaris over Lightning Hawk (sim-only — the popular pick may carry utility the sim can't see; test it)."
-    }
-   ],
-   "stages": [
-    {
-     "label": "early",
-     "itemCount": 2,
-     "minute": 19,
-     "level": 11,
-     "core": [
-      {
-       "name": "Solaris",
-       "slug": "solaris"
-      },
-      {
-       "name": "Viper",
-       "slug": "viper"
-      }
-     ],
-     "headline": "rot10VsSquishy",
-     "headlineValue": 861,
-     "objectives": {
-      "burstVsSquishy": 582.7542810746972,
-      "teamfightVsSquishy": 582.7542810746972,
-      "rot10VsSquishy": 860.6621226874391,
-      "rot20VsBruiser": 1081.8228630278065,
-      "autoDps10VsSquishy": 180.9580612143987,
-      "ehpPhysical": 3021.7209374999998,
-      "ehpMagical": 2549.26180078125,
-      "healShield10s": 0,
-      "utility": 15,
-      "sustain10s": 0
-     },
-     "betterEarly": null
-    },
-    {
-     "label": "mid",
-     "itemCount": 3,
-     "minute": 25,
-     "level": 15,
-     "core": [
-      {
-       "name": "Solaris",
-       "slug": "solaris"
-      },
-      {
-       "name": "Viper",
-       "slug": "viper"
-      },
-      {
-       "name": "Spear Of Desolation",
-       "slug": "spear-of-desolation"
-      }
-     ],
-     "headline": "rot10VsSquishy",
-     "headlineValue": 1188,
-     "objectives": {
-      "burstVsSquishy": 770.1173339688592,
-      "teamfightVsSquishy": 770.1173339688592,
-      "rot10VsSquishy": 1187.9619852164728,
-      "rot20VsBruiser": 1463.77607025247,
-      "autoDps10VsSquishy": 291.54322138139077,
-      "ehpPhysical": 4462.4085374999995,
-      "ehpMagical": 3519.02767328125,
-      "healShield10s": 0,
-      "utility": 35,
-      "sustain10s": 0
-     },
-     "betterEarly": null
-    },
-    {
-     "label": "late",
-     "itemCount": 6,
-     "minute": 41,
-     "level": 17,
-     "core": [
-      {
-       "name": "Solaris",
-       "slug": "solaris"
-      },
-      {
-       "name": "Viper",
-       "slug": "viper"
-      },
-      {
-       "name": "Spear Of Desolation",
-       "slug": "spear-of-desolation"
-      },
-      {
-       "name": "The Perforator",
-       "slug": "the-perforator"
-      },
-      {
-       "name": "Augmentation",
-       "slug": "augmentation"
-      },
-      {
-       "name": "Alternator",
-       "slug": "alternator"
-      }
-     ],
-     "headline": "rot10VsSquishy",
-     "headlineValue": 3656,
-     "objectives": {
-      "burstVsSquishy": 1784.925739377502,
-      "teamfightVsSquishy": 1784.925739377502,
-      "rot10VsSquishy": 3656.470811400389,
-      "rot20VsBruiser": 5310.730867155909,
-      "autoDps10VsSquishy": 728.464106771945,
-      "ehpPhysical": 5781.6864000000005,
-      "ehpMagical": 4409.885340000001,
-      "healShield10s": 0,
-      "utility": 80,
-      "sustain10s": 0
-     },
-     "betterEarly": null
-    }
-   ],
-   "matchups": [
-    {
-     "enemy": "Steel",
-     "enemySlug": "steel",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Steel deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Augmentation",
-      "in": "Void Helm",
-      "inSlug": "void-helm",
-      "survivalGainPct": 23,
-      "offenseLossPct": 27,
-      "line": "Losing lane? Third item Void Helm instead of Augmentation: their 3s all-in loses 23% of its bite; you give up 27% of your damage."
-     }
-    },
-    {
-     "enemy": "Grux",
-     "enemySlug": "grux",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Grux deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "even"
-      }
-     ],
-     "counterSwap": {
-      "out": "Augmentation",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 27,
-      "offenseLossPct": 27,
-      "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 27% of its bite; you give up 27% of your damage."
-     }
-    },
-    {
-     "enemy": "Bayle",
-     "enemySlug": "bayle",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Bayle deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Augmentation",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 28,
-      "offenseLossPct": 27,
-      "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 28% of its bite; you give up 27% of your damage."
-     }
-    },
-    {
-     "enemy": "Greystone",
-     "enemySlug": "greystone",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Greystone deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Augmentation",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 32,
-      "offenseLossPct": 27,
-      "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 32% of its bite; you give up 27% of your damage."
-     }
-    },
-    {
-     "enemy": "Zarus",
-     "enemySlug": "zarus",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Zarus's main threat is Coliseum; bait it before you commit, and armor softens the trade.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Augmentation",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 28,
-      "offenseLossPct": 27,
-      "line": "Losing lane? Third item Warden's Faith instead of Augmentation: their 3s all-in loses 28% of its bite; you give up 27% of your damage."
-     }
-    },
-    {
-     "enemy": "Aurora",
-     "enemySlug": "aurora",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Aurora deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Augmentation",
-      "in": "Void Helm",
-      "inSlug": "void-helm",
-      "survivalGainPct": 28,
-      "offenseLossPct": 27,
-      "line": "Losing lane? Third item Void Helm instead of Augmentation: their 3s all-in loses 28% of its bite; you give up 27% of your damage."
-     }
-    }
-   ],
-   "laneSteer": {
-    "augment": {
-     "id": "138",
-     "name": "Storm of Salvation"
-    },
-    "playstyle": "on-hit",
-    "modeled": false,
-    "wr": 51.5,
-    "n": 54379,
-    "shiftIn": [
-     "Basilisk"
-    ],
-    "shiftOut": [
-     "Alternator"
-    ],
-    "provenance": "“Storm of Salvation” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 51.5% over 54,379 games, magnitude not simulated."
+    "provenance": "“Storm of Salvation” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 51.8% over 1,289 games, magnitude not simulated."
    }
   }
  ],
