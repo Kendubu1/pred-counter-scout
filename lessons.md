@@ -2388,3 +2388,23 @@ Eight maintainer-flagged fixes:
 - omeda STILL hasn't published 1.15 (52 heroes / 270 items at 20:25 UTC 7/02) but its
   MATCH FEED already carries Ikra's hero_id (53 heroes in the aggregate) — catalog
   and feed update on different schedules.
+
+## 2026-07-02: Fight review revamp — death order is the story
+
+- The old fight breakdown buried its best data: kills carried timestamps, sides,
+  roles, and coordinates, but rendered as one flat "blow by blow" string. The
+  revamp makes the DEATH ORDER the spine: a kill ladder (one row per kill —
+  clock/+offset, killer→victim with the victim's ROLE, and the running body
+  count after each kill), so a fight reads as 5v4 → 4v4 → collapse at a glance.
+- Three deterministic layers on top, all pure arithmetic on committed facts:
+  (1) a "fight read" verdict — who drew first blood on whom, whether the pick
+  held or flipped ("they traded back 3–1 after the opener — a pick is only a
+  win if you cash it or leave"), with a carry/support-died-first note;
+  (2) a game-wide FIRST-DEATH PATTERN in the timeline card ("you gave up the
+  opening kill in 2 of 7 fights and went 0–2 in those; Serath fell first 2×");
+  (3) map kill SEQUENCES — focusing a fight overlays its kills as numbered
+  dots in death order with a dotted drift path (which way the chase moved),
+  replacing the anonymous ring-only locate.
+- The ladder's opening body count comes from the macro read at engage (not a
+  hardcoded 5v5), so a 4v5 start shows as one. No engine changes needed — the
+  postgame files already carried everything; this was pure rendering debt.
