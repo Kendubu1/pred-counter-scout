@@ -2338,3 +2338,32 @@ Eight maintainer-flagged fixes:
   per-number hover `title` (`wrTip`). The verdict tags already had hover tips.
 - Removed the Live-draft end-card from the home page now that it lives in the side menu (kept the
   Patch review card, full-width).
+
+## 2026-07-02: Home page — stop explaining the funnel, BE the funnel
+
+- The maintainer's read on the landing ("not linear or intuitive, clunky, not to
+  the point") traced to three things: a 3-step "how it works" strip that described
+  the UI instead of demonstrating it; three disconnected control clusters (mode
+  toggle / search / abstract role pills) the user had to relate on their own; and
+  zero actual content above the fold — the page asked "Who should you pick?" and
+  then showed no picks until you interacted.
+- Fix pattern worth keeping: **show, don't tell**. Deleted the explainer strip
+  outright, chained the controls into one readable sentence (toggle → search →
+  "or tap your lane —"), and turned the role pills into **lane cards that carry
+  the answer** (each lane's strongest pick: portrait, name, win rate, "+N more").
+  The page now answers its own headline with zero clicks, and the same cards ARE
+  the navigation (tap = open the lane room, tap again / ✕ = close). When a UI
+  needs a numbered how-to strip, the controls are in the wrong shape.
+- Small affordances that made the flow feel reversible: a "✕ close" in the lane
+  room header, re-tap-to-close on the active card, and the "All heroes" divider
+  now names the active filter with a one-tap "show all" reset (before, clearing a
+  lane filter required knowing the old "All roles" pill did that).
+- `ui:render` in a fresh managed container: the pinned playwright (1.60) wants a
+  browser revision `/opt/pw-browsers` doesn't have. Added a fallback in
+  `ui-render.ts` — if the default `chromium.launch()` fails, retry with
+  `executablePath: /opt/pw-browsers/chromium` (or `$PW_CHROMIUM`). Never
+  `playwright install` in these sessions.
+- Verified beyond the audit: a scratchpad Playwright drive exercised the whole
+  landing (cards render with picks, lane room open/close both ways, counter mode
+  chips → ranked answers, show-all reset, search → hero page) — 15/15 green, plus
+  `ui:audit` 0 findings and `ui:render` 0 phone overflows at 360/390.

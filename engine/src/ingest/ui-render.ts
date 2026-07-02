@@ -57,7 +57,13 @@ async function main() {
   const { chromium } = await import('playwright');
   mkdirSync(SHOTS, { recursive: true });
   const { port, close } = await serve();
-  const browser = await chromium.launch();
+  // Managed environments pre-install a chromium at a stable path that may not
+  // match this playwright version's expected browser revision — fall back to it.
+  const browser = await chromium.launch().catch(() => {
+    const exe = process.env.PW_CHROMIUM ?? '/opt/pw-browsers/chromium';
+    if (!existsSync(exe)) throw new Error(`no playwright chromium and no fallback executable at ${exe}`);
+    return chromium.launch({ executablePath: exe });
+  });
   const results: { surface: string; width: number; scrollWidth: number; clientWidth: number; overflow: number; shot: string }[] = [];
   let phoneOverflow = 0;
 

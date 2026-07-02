@@ -70,12 +70,19 @@
     border-radius:99px; padding:.28rem .85rem; font-size:.82rem; text-transform:capitalize;
   }
   .rolebar button.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
-  /* ── 3-step "how it works" strip ── */
-  .steps { display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; margin:1.5rem auto 1.1rem; max-width:760px; text-align:left; }
-  .step { flex:1 1 210px; min-width:190px; display:flex; gap:.6rem; align-items:flex-start; background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:.7rem .8rem; }
-  .step .num { flex:none; width:1.55rem; height:1.55rem; border-radius:99px; background:var(--accent-soft); color:var(--accent); border:1px solid var(--accent); font-weight:800; font-size:.82rem; display:flex; align-items:center; justify-content:center; }
-  .step .txt b { display:block; font-size:.86rem; color:var(--text-0); }
-  .step .txt span { display:block; color:var(--text-2); font-size:.74rem; line-height:1.45; margin-top:.1rem; }
+  /* ── lane cards: the zero-click answer — each lane's strongest pick right now ── */
+  .lane-lead { margin:1.15rem auto .5rem; font-size:.7rem; color:var(--text-2); font-weight:700; text-transform:uppercase; letter-spacing:.09em; }
+  .lanecards { display:grid; grid-template-columns:repeat(5, 1fr); gap:.55rem; max-width:760px; margin:0 auto; }
+  @media (max-width:700px){ .lanecards { grid-template-columns:repeat(auto-fit, minmax(138px, 1fr)); } }
+  .lanecard { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:.6rem .5rem .55rem; text-align:center; color:var(--text-0); transition:border-color .12s ease, transform .12s ease; }
+  .lanecard:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .lanecard.active { border-color:var(--accent); background:var(--accent-soft); }
+  .lanecard .ln { display:block; font-size:.64rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:var(--text-2); }
+  .lanecard.active .ln { color:var(--accent); }
+  .lanecard img { width:44px; height:44px; border-radius:10px; object-fit:cover; background:var(--bg-2); margin:.45rem auto .3rem; }
+  .lanecard .hn { display:block; font-size:.8rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lanecard .hw { display:block; font-size:.74rem; font-weight:800; font-variant-numeric:tabular-nums; margin-top:.05rem; }
+  .lanecard .more { display:block; font-size:.6rem; color:var(--text-2); margin-top:.2rem; }
   /* ── end-of-selection cards: live draft + patch review, side by side ── */
   a.patch-pill:hover { color:var(--text-0); border-color:var(--accent); }
   .endcards { display:grid; grid-template-columns:1fr; gap:.7rem; margin-top:1.6rem; }
@@ -324,6 +331,12 @@
   .lanepanel { margin-top:1.4rem; background:var(--bg-1); border:1px solid var(--border); border-radius:14px; padding:1rem 1.1rem; }
   .lanepanel h2 { font-size:1rem; font-weight:800; }
   .lanepanel .lp-sub { font-size:.72rem; color:var(--text-2); margin-top:.15rem; }
+  .lp-head { display:flex; align-items:flex-start; gap:.7rem; }
+  .lp-head > div:first-child { flex:1; }
+  .lp-close { background:transparent; border:1px solid var(--border); border-radius:99px; color:var(--text-2); font-size:.72rem; padding:.2rem .65rem; white-space:nowrap; }
+  .lp-close:hover { color:var(--text-0); border-color:var(--accent); }
+  .showall { background:transparent; border:1px solid var(--border); border-radius:99px; color:var(--accent); font:inherit; font-size:.68rem; text-transform:none; letter-spacing:0; padding:.12rem .55rem; margin-left:.15rem; }
+  .showall:hover { border-color:var(--accent); }
   .lmode { display:flex; gap:.5rem; margin:.7rem 0 .8rem; flex-wrap:wrap; }
   .lmode button { background:var(--bg-2); border:1px solid var(--border); color:var(--text-1); border-radius:99px; padding:.3rem .9rem; font-size:.8rem; display:inline-flex; align-items:center; gap:.35rem; }
   .lmode button.active { background:var(--accent-soft); border-color:var(--accent); color:var(--text-0); }
@@ -348,7 +361,7 @@
     /* tap targets: >=44px hit area on touch (Apple HIG 44 / WCAG floor 24).
        Shared union list across all three pages — a control type gets the same
        treatment wherever it appears (selectors absent on this page are no-ops). */
-    .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle {
+    .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle, .lp-close, .showall {
       min-height:44px; display:inline-flex; align-items:center; justify-content:center;
     }
     .snpill { font-size:.8rem; }
@@ -413,7 +426,7 @@
   .hidden { display:none; }
   .fade { animation:fade .18s ease; }
   @keyframes fade { from { opacity:0; transform:translateY(4px); } to { opacity:1; } }
-  @media (prefers-reduced-motion:reduce) { .fade, .hcard { animation:none; transition:none; } }
+  @media (prefers-reduced-motion:reduce) { .fade, .hcard, .lanecard { animation:none; transition:none; } }
 </style>
 </head>
 <body>
@@ -433,18 +446,14 @@
   <div id="landing" class="hidden fade">
     <div class="landing-hero">
       <h1 id="landTitle">Who should you pick?</h1>
-      <p id="landSub">See who's winning each lane right now and take the strongest pick. The build comes with it, all from real match data.</p>
-      <div class="steps" aria-label="How it works, in three steps">
-        <div class="step"><span class="num">1</span><span class="txt"><b>Pick or counter?</b><span>Drafting your own hero, or beating the enemy's.</span></span></div>
-        <div class="step"><span class="num">2</span><span class="txt"><b>Find the winning pick</b><span>Tap a lane for who's winning right now, or search the enemy to beat them.</span></span></div>
-        <div class="step"><span class="num">3</span><span class="txt"><b>Take it in-game</b><span>Your pick comes with its build, spikes and matchups.</span></span></div>
-      </div>
+      <p id="landSub">The strongest pick for every lane, from real match data — take one and its build comes with it.</p>
       <div class="landing-mode" id="landMode">
         <button data-lm="play" class="active"><span data-bic="build"></span> Pick a hero</button>
         <button data-lm="counter"><span data-bic="counter-pick"></span> Counter an enemy</button>
       </div>
       <div class="searchbar"><input id="search" placeholder="Search heroes…" autocomplete="off"><div class="suggest" id="suggest"></div></div>
-      <div class="rolebar" id="rolebar"></div>
+      <div class="lane-lead" id="laneLead">or tap your lane — its strongest pick right now:</div>
+      <div class="lanecards" id="rolebar"></div>
     </div>
     <div id="lanedetail"></div>
     <section class="endcards" aria-label="Patch review">
@@ -464,7 +473,7 @@
     </section>
     <div class="browse-head">Browse the meta</div>
     <div class="metaboard" id="metaboard"></div>
-    <div class="browse-head">All heroes</div>
+    <div class="browse-head" id="gridHead">All heroes</div>
     <div class="grid" id="heroGrid"></div>
   </div>
 
@@ -518,7 +527,6 @@ function itemWhyRows(items, whyMap) {
   return `<div class="mb-items-why">${rows}</div>`;
 }
 const IMG = { hero: (s) => `../img/heroes/${s}.webp`, item: (s) => `../img/items/${s}.webp`, eternal: (s) => `../img/eternals/${s}.webp` };
-const ROLES = ['all', 'carry', 'midlane', 'offlane', 'jungle', 'support'];
 const LANE_LABELS = { carry: 'Carry', midlane: 'Midlane', offlane: 'Offlane', jungle: 'Jungle', support: 'Support' };
 // Canonical THEORY definition — ONE source of truth, reused by every THEORY badge
 // and the footer (so the win%/verdict/THEORY legends are never duplicated; see
@@ -586,12 +594,35 @@ function buildSubnav() {
   secs.forEach((c) => subnavIO.observe(c));
 }
 
-/* ── landing ── */
+/* ── landing: lane cards — each lane's strongest pick, tap to open the lane room ── */
 function renderRolebar() {
-  $('#rolebar').innerHTML = ROLES.map((r) =>
-    `<button data-r="${r}" class="${r === roleFilter ? 'active' : ''}">${r === 'all' ? 'All roles' : r}</button>`).join('');
-  document.querySelectorAll('#rolebar button').forEach((b) => {
-    b.onclick = () => { roleFilter = b.dataset.r; laneEnemy = null; renderRolebar(); renderGrid(); renderLaneDetail(); };
+  const counter = landingMode === 'counter';
+  const lead = $('#laneLead');
+  if (lead) lead.textContent = counter ? "or tap the enemy's lane for the picks that beat it:" : 'or tap your lane — its strongest pick right now:';
+  $('#rolebar').innerHTML = Object.keys(LANE_LABELS).map((r) => {
+    const lane = (META && META.roles[r]) || [];
+    const top = [...lane].sort((a, b) => b.shrunkWr - a.shrunkWr)[0];
+    const open = r === roleFilter;
+    const body = top ? `
+      <img loading="lazy" src="${IMG.hero(top.slug)}" alt="" onerror="this.style.visibility='hidden'">
+      <span class="hn">${esc(top.name)}</span>
+      <span class="hw" style="color:${wrColor(top.shrunkWr)}">${(top.shrunkWr * 100).toFixed(1)}%</span>
+      <span class="more">${open ? '✕ close the lane' : lane.length > 1 ? `+${lane.length - 1} more picks` : 'open the lane'}</span>` : '';
+    const tip = top
+      ? (counter ? `${LANE_LABELS[r]}: see who beats the ${LANE_LABELS[r].toLowerCase()} picks — ${top.name} leads the lane at ${(top.shrunkWr * 100).toFixed(1)}%`
+        : `${top.name} is the strongest ${LANE_LABELS[r].toLowerCase()} right now (${(top.shrunkWr * 100).toFixed(1)}% win rate, ${top.games} games) — tap for the whole lane`)
+      : `Open the ${LANE_LABELS[r]} lane`;
+    return `<button class="lanecard${open ? ' active' : ''}" data-r="${r}" title="${esc(tip)}"><span class="ln">${LANE_LABELS[r]}</span>${body}</button>`;
+  }).join('');
+  document.querySelectorAll('#rolebar .lanecard').forEach((b) => {
+    b.onclick = () => {
+      const r = b.dataset.r;
+      const closing = roleFilter === r;
+      roleFilter = closing ? 'all' : r;
+      laneEnemy = null;
+      renderRolebar(); renderGrid(); renderLaneDetail();
+      if (!closing) $('#lanedetail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
   });
 }
 
@@ -742,8 +773,13 @@ async function renderLaneDetail() {
   const pilots = META.topPlayers && META.topPlayers[role];
   box.innerHTML = `
     <div class="lanepanel">
-      <h2>${LANE_LABELS[role]} · lane room</h2>
-      <div class="lp-sub">${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</div>
+      <div class="lp-head">
+        <div style="min-width:0">
+          <h2>${LANE_LABELS[role]} · lane room</h2>
+          <div class="lp-sub">${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</div>
+        </div>
+        <button class="lp-close" title="Close this lane" aria-label="Close this lane">✕ close</button>
+      </div>
       <div class="lmode">
         <button data-m="first" class="${laneMode === 'first' ? 'active' : ''}"><span data-bic="counter-pick" data-bic-size="15"></span> picking first</button>
         <button data-m="counter" class="${laneMode === 'counter' ? 'active' : ''}"><span data-bic="matchup" data-bic-size="15"></span> countering their pick</button>
@@ -752,6 +788,8 @@ async function renderLaneDetail() {
       ${playersBlock(role)}
     </div>`;
   if (window.BrandIcons) window.BrandIcons.hydrate(box);
+  const lpClose = box.querySelector('.lp-close');
+  if (lpClose) lpClose.onclick = () => { roleFilter = 'all'; laneEnemy = null; renderRolebar(); renderGrid(); renderLaneDetail(); };
   box.querySelectorAll('.lmode button').forEach((b) => { b.onclick = () => { laneMode = b.dataset.m; renderLaneDetail(); }; });
   box.querySelectorAll('.echip').forEach((c) => {
     c.onclick = () => {
@@ -864,11 +902,12 @@ function setLandingMode(mode) {
   const counter = mode === 'counter';
   $('#landTitle').textContent = counter ? 'Who are you up against?' : 'Who should you pick?';
   $('#landSub').textContent = counter
-    ? 'Pick the enemy hero and lock in the counter that beats them. Its full build comes with it, all from real match data.'
-    : "See who's winning each lane right now and take the strongest pick. The build comes with it, all from real match data.";
+    ? 'Search the enemy hero and get the pick that beats them — its full build comes with it.'
+    : 'The strongest pick for every lane, from real match data — take one and its build comes with it.';
   $('#search').placeholder = counter ? 'Search the enemy hero…' : 'Search heroes…';
   $('#search').value = ''; $('#suggest').innerHTML = '';
   laneEnemy = null; laneMode = counter ? 'counter' : 'first';
+  renderRolebar();
   renderGrid();
   // In counter mode wait for an enemy pick; clear any stale lane room.
   if (counter && roleFilter === 'all') $('#lanedetail').innerHTML = '<div class="lanepanel" style="text-align:center;color:var(--text-2)">Search the enemy hero, or pick a lane, to see who counters them.</div>';
@@ -881,6 +920,14 @@ function renderGrid() {
   // otherwise a hero outside the selected lane is unfindable
   const heroes = INDEX.heroes.filter((h) =>
     q ? h.name.toLowerCase().includes(q) : (roleFilter === 'all' || h.role === roleFilter));
+  // the divider says what the grid is actually showing, with a one-tap reset
+  const head = $('#gridHead');
+  if (head) {
+    head.innerHTML = (q || roleFilter === 'all') ? 'All heroes'
+      : `${esc(LANE_LABELS[roleFilter] || roleFilter)} heroes <button class="showall" id="showAllHeroes">show all</button>`;
+    const all = head.querySelector('#showAllHeroes');
+    if (all) all.onclick = () => { roleFilter = 'all'; laneEnemy = null; renderRolebar(); renderGrid(); renderLaneDetail(); };
+  }
   $('#heroGrid').innerHTML = heroes.map((h) => `
     <div class="hcard" data-slug="${h.slug}">
       <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph',style:'aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:var(--text-2)',textContent:'⚔'}))">
