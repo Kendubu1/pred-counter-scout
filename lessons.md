@@ -2408,3 +2408,20 @@ Eight maintainer-flagged fixes:
 - The ladder's opening body count comes from the macro read at engage (not a
   hardcoded 5v5), so a 4v5 start shows as one. No engine changes needed — the
   postgame files already carried everything; this was pure rendering debt.
+
+## 2026-07-02: Fight itemization — "was the Tainted online?" + entry-HP honesty
+
+- Follow-up to the fight revamp: the "online" read was nearly useless on real
+  films because `spikes` only mapped items matching the SIM build. New zero-API
+  pass `npm run postgame:items` estimates each player's per-item online minute
+  from their ACTUAL inventory (slot order ≈ purchase order) x omeda total_price
+  x the measured median role gold curve — the same modeling basis the sim uses,
+  applied to what was really built. Written as `itemTimeline` on all 59 films.
+- The fight panel now shows "Online at this fight" (offline items dimmed, ~K/N
+  count) and a SUSTAIN CHECK: when their comp heals, it reports whether any of
+  our fighters' Tainted-family items were online at that fight's minute — ✓
+  answered / ⚠ est. minutes away ("this fight ran unanswered") / ✕ never built.
+  The 7/02 loss's 7.3m fight is the poster case: lost 2-3 into Zinx sustain
+  with all three Tainteds est. 5-11 minutes away.
+- Entry HP: NOT modelable — neither API carries any health stream. Stated in
+  the panel note ("entry HP isn't in the feed") rather than faked.
