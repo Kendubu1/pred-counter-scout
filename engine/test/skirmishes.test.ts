@@ -53,7 +53,7 @@ describe('skirmish detection', () => {
   it('flags the late teamfight as game-defining and anchors it to Prime', () => {
     expect(sk[1]!.tag).toBe('game-defining');
     expect(sk[1]!.nearObjective).toEqual({ type: 'PRIME_GUARDIAN', side: 'us', kind: 'objective' });
-    expect(sk[1]!.place).toContain('your');
+    expect(sk[1]!.place).toContain('our');
   });
 
   it('surfaces both tagged fights, the game-defining one most significant', () => {

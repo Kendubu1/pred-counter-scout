@@ -199,23 +199,23 @@ export function computeKitAnalysis(facts: PostGameFacts, abilities: Record<strin
     const totalSec = enemy.hardCC.reduce((s, c) => s + (c.sec ?? 0.5), 0);
     threats.push(`Chain-CC risk (${enemy.hardCC.length} hard-CC abilities, ~${totalSec.toFixed(1)}s of lockdown): ${ccList(enemy)}. Don't group tight into it — stagger the engage and hold mobility/cleanse for the key one.`);
   }
-  if (enemy.healers.length) threats.push(`Heal-stacking: ${enemy.healers.join(', ')}. Anti-heal is mandatory against this comp — you brought none.`);
+  if (enemy.healers.length) threats.push(`Heal-stacking: ${enemy.healers.join(', ')}. Anti-heal is mandatory against this comp — we brought none.`);
   if (enemy.damage.physical >= 4) threats.push(`Enemy is ${enemy.damage.physical}/5 physical — a single armor item blunts most of their damage; itemize armor on anyone diveable.`);
   else if (enemy.damage.magical >= 4) threats.push(`Enemy is ${enemy.damage.magical}/5 magical — one magic-resist item goes a long way.`);
-  if (!enemy.frontline.length) threats.push(`Enemy has no real frontline — they need to catch you; respect picks more than a straight 5v5.`);
+  if (!enemy.frontline.length) threats.push(`Enemy has no real frontline — they need to catch us; respect picks more than a straight 5v5.`);
 
   const synergy: string[] = [];
-  if (our.hardCC.length) synergy.push(`Your engage/CC: ${ccList(our)}. Your kills come from landing burst INSIDE that CC window — whoever lands it, the rest must follow up immediately.`);
-  else synergy.push(`Little hard CC on your side — you can't force a pick. Play for poke/objectives and punish their cooldowns, don't flip coin-toss 5v5s.`);
+  if (our.hardCC.length) synergy.push(`Our engage/CC: ${ccList(our)}. Our kills come from landing burst INSIDE that CC window — whoever lands it, the rest must follow up immediately.`);
+  else synergy.push(`Little hard CC on our side — we can't force a pick. Play for poke/objectives and punish their cooldowns, don't flip coin-toss 5v5s.`);
   if (!our.frontline.length) synergy.push(`No natural frontline — nobody absorbs the first engage. Play around vision and pick angles, not open-field fights.`);
-  if (our.healers.length) synergy.push(`You have sustain (${our.healers.join(', ')}) — favor the longer fight where your heals out-grind them.`);
-  if (our.damage.physical >= 4) synergy.push(`Your damage is ${our.damage.physical}/5 physical — predictable; the enemy itemizes one armor item against most of it. A magical pick would split their defenses.`);
-  else if (our.damage.magical >= 4) synergy.push(`Your damage is ${our.damage.magical}/5 magical — predictable; one magic-resist item answers most of it. Mix in a physical threat.`);
+  if (our.healers.length) synergy.push(`We have sustain (${our.healers.join(', ')}) — favor the longer fight where our heals out-grind them.`);
+  if (our.damage.physical >= 4) synergy.push(`Our damage is ${our.damage.physical}/5 physical — predictable; the enemy itemizes one armor item against most of it. A magical pick would split their defenses.`);
+  else if (our.damage.magical >= 4) synergy.push(`Our damage is ${our.damage.magical}/5 magical — predictable; one magic-resist item answers most of it. Mix in a physical threat.`);
   if (our.aoeAbilities >= 6) synergy.push(`Strong AoE/teamfight kit — group at choke points and fight on top of objectives.`);
 
   // Archetype-driven note: enemy dive/assassin pressure on our backline.
   const enemyDivers = enemyKits.filter((k) => k.dive === 'high' && /assassin|dive/i.test(k.archetype ?? ''));
-  if (enemyDivers.length) threats.push(`Dive threat on your backline: ${enemyDivers.map((k) => k.hero).join(', ')}. Assign peel for your carry and ward your flanks.`);
+  if (enemyDivers.length) threats.push(`Dive threat on our backline: ${enemyDivers.map((k) => k.hero).join(', ')}. Assign peel for the carry and ward the flanks.`);
 
   return { our, enemy, threats, synergy, ourKits, enemyKits };
 }
@@ -307,7 +307,7 @@ function verdictSummary(verdict: string, minutes: number[]): string {
     const idx = minutes.map((m, i) => [m, i] as [number, number]).filter(([m]) => m >= lo && m <= hi).map(([, i]) => i);
     const chars = idx.map((i) => verdict[i]).filter(Boolean);
     const y = chars.filter((c) => c === 'y').length, e = chars.filter((c) => c === 'e').length;
-    return y > e ? 'yours' : e > y ? 'theirs' : 'even';
+    return y > e ? 'ours' : e > y ? 'theirs' : 'even';
   };
   const early = seg(0, 15), late = seg(16, 99);
   if (early === late) return `${early === 'even' ? 'even all game' : `${early} all game`}`;
@@ -356,9 +356,9 @@ function diagnosticsOf(cell: HeroStatCell | undefined, p: OmedaPlayer, durMin: n
   const bad = metrics.filter((m) => m.flag === 'bad').sort((a, b) => Math.abs(b.deltaPct) - Math.abs(a.deltaPct))[0];
   const good = metrics.filter((m) => m.flag === 'good').sort((a, b) => Math.abs(b.deltaPct) - Math.abs(a.deltaPct))[0];
   let headline: string | null = null;
-  if (bad) headline = `${bad.label} ${bad.value} vs your ${bad.avg} norm (${bad.deltaPct > 0 ? '+' : ''}${bad.deltaPct}%)`;
-  else if (good) headline = `${good.label} ${good.value} vs your ${good.avg} norm — above your level`;
-  else headline = 'a normal game by your numbers';
+  if (bad) headline = `${bad.label} ${bad.value} vs the ${bad.avg} norm (${bad.deltaPct > 0 ? '+' : ''}${bad.deltaPct}%)`;
+  else if (good) headline = `${good.label} ${good.value} vs the ${good.avg} norm — above the usual level`;
+  else headline = 'a normal game by the usual numbers';
   return { metrics, headline };
 }
 
@@ -619,9 +619,9 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
   const enemyOnMetaList = enemyPlayers.map((p) => ({ hero: p.heroName, role: p.role, onMeta: p.missingCore.length <= 1, missing: p.missingCore }));
   const enemyOnMeta = enemyOnMetaList.filter((e) => e.onMeta).length;
   const cbNotes: string[] = [];
-  if (theirHealers.length && ourAntiHeal === 0) cbNotes.push(`Enemy ran ${theirHealers.length} healer${theirHealers.length > 1 ? 's' : ''} (${theirHealers.join(', ')}) and your team built zero anti-heal — their sustain ran unchecked.`);
-  else if (theirHealers.length && ourAntiHeal < 2) cbNotes.push(`Enemy had ${theirHealers.length} healer${theirHealers.length > 1 ? 's' : ''}; only ${ourAntiHeal} of you carried anti-heal — usually wants two vs a heal comp.`);
-  if (topThreat) cbNotes.push(`Their main damage was ${topThreat.heroName} (${Math.round(topThreat.damageToHeroes / 1000)}k ${threatPhys ? 'physical' : 'magical'}); ${ourDefVsThreat}/5 of you itemized ${threatPhys ? 'armor' : 'magic resist'}${ourDefVsThreat <= 1 ? ' — that hurt' : ''}.`);
+  if (theirHealers.length && ourAntiHeal === 0) cbNotes.push(`Enemy ran ${theirHealers.length} healer${theirHealers.length > 1 ? 's' : ''} (${theirHealers.join(', ')}) and the team built zero anti-heal — their sustain ran unchecked.`);
+  else if (theirHealers.length && ourAntiHeal < 2) cbNotes.push(`Enemy had ${theirHealers.length} healer${theirHealers.length > 1 ? 's' : ''}; only ${ourAntiHeal} of us carried anti-heal — usually wants two vs a heal comp.`);
+  if (topThreat) cbNotes.push(`Their main damage was ${topThreat.heroName} (${Math.round(topThreat.damageToHeroes / 1000)}k ${threatPhys ? 'physical' : 'magical'}); ${ourDefVsThreat}/5 of us itemized ${threatPhys ? 'armor' : 'magic resist'}${ourDefVsThreat <= 1 ? ' — that hurt' : ''}.`);
   cbNotes.push(`Enemy ran ${enemyOnMeta}/5 on or near their meta core${enemyOnMeta >= 4 ? ' — they drafted and built optimally; match it' : enemyOnMeta <= 1 ? ' — they were off-meta too, the win was there' : ''}.`);
   const counterBuild = { enemyOnMeta, ourAntiHeal, notes: cbNotes, enemyBuilds: enemyOnMetaList };
 
@@ -633,8 +633,8 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
   // Closing / tempo: did we sit on a lead instead of ending it?
   const result = match.winning_team === ourTeam ? 'win' : 'loss';
   let closingNote: string | null = null;
-  if (result === 'win' && dur >= 35 && ourObjKills >= theirObjKills) closingNote = `Closed slow — you led objectives but the game ran ${dur} minutes. Convert Fangtooth/tower leads into ending the game, don't farm the lead and risk a throw.`;
-  else if (result === 'loss' && ourObjKills > theirObjKills) closingNote = `You won the objective count (${ourObjKills}–${theirObjKills}) and still lost — those leads never became towers/a close. Group and push after each Fangtooth.`;
+  if (result === 'win' && dur >= 35 && ourObjKills >= theirObjKills) closingNote = `Closed slow — we led objectives but the game ran ${dur} minutes. Convert Fangtooth/tower leads into ending the game, don't farm the lead and risk a throw.`;
+  else if (result === 'loss' && ourObjKills > theirObjKills) closingNote = `We won the objective count (${ourObjKills}–${theirObjKills}) and still lost — those leads never became towers/a close. Group and push after each Fangtooth.`;
 
   return {
     matchId: match.id, startTime: match.start_time, durationMin: dur, mode: match.game_mode,
