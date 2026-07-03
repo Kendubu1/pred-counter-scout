@@ -346,8 +346,8 @@ const plink = (uuid, name) => uuid
     const h = lane[pickIdx];
     const mine = (POOLS.get(seat.uuid) || new Map()).get(h.slug);
     const note = mine && mine.games >= 30
-      ? `you: ${pct(mine.shrunkWr, 0)}% · ${mine.games} games on the hero (all lanes)`
-      : `field ${pct(h.shrunkWr, 0)}% · <span style="color:var(--gold)">new to you</span>`;
+      ? `own: ${pct(mine.shrunkWr, 0)}% · ${mine.games} games on the hero (all lanes)`
+      : `field ${pct(h.shrunkWr, 0)}% · <span style="color:var(--gold)">new pick</span>`;
     return `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} <span style="color:var(--text-2)">${note}</span>`;
   }
 
@@ -361,7 +361,7 @@ const plink = (uuid, name) => uuid
     const cands = [...mine, ...meta.filter((h) => !mineSlugs.has(h.slug)).map((h) => ({ ...h, mine: false }))];
     if (!cands.length) return lanePickFor(seat, optIdx, seatIdx, 99);
     const h = cands[(optIdx + seatIdx + shuffleSeed) % Math.min(cands.length, 8)];
-    const note = h.mine ? `you: ${pct(h.shrunkWr, 0)}% · ${h.games} games — you main this` : `field ${pct(h.shrunkWr, 0)}%`;
+    const note = h.mine ? `own: ${pct(h.shrunkWr, 0)}% · ${h.games} games — their most-played` : `field ${pct(h.shrunkWr, 0)}%`;
     return `<img class="hico" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} <span style="color:var(--text-2)">${note}</span>`;
   }
 
@@ -430,10 +430,10 @@ const plink = (uuid, name) => uuid
     const footerNote = `
       <div style="font-size:.7rem;color:var(--text-2);margin-top:.4rem">
         ${mode === 'meta'
-          ? '<b>Meta</b> — the lane’s top winning heroes by field win rate, any hero (comfort aside). “new to you” = under 30 of your games on it.'
+          ? '<b>Meta</b> — the lane’s top winning heroes by field win rate, any hero (comfort aside). “new pick” = under 30 of that player’s games on it.'
           : mode === 'any'
-            ? '<b>Any lane</b> — a wider shuffle of heroes winning in this lane, your own most-played first (you pilot those better than average), then the lane’s other field winners.'
-            : '<b>Wheelhouse</b> — your best heroes in this role from your real 5v5s (your own winning record); thin samples under 20 games say so.'}
+            ? '<b>Any lane</b> — a wider shuffle of heroes winning in this lane, each player’s own most-played first (they pilot those better than average), then the lane’s other field winners.'
+            : '<b>Wheelhouse</b> — each player’s best heroes in this role from their real 5v5s (their own winning record); thin samples under 20 games say so.'}
         · seats go to whoever wins most there, with thin role records counting less</div>`;
     out.innerHTML = parts[0] + (altCount > 0
       ? `<details class="alts"><summary>Show ${altCount} alternate lineup${altCount > 1 ? 's' : ''}</summary>${parts.slice(1).join('')}</details>`

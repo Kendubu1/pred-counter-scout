@@ -88,8 +88,8 @@ function regionOf(cx: number, cy: number, o: Orient): string {
   const side = flank > 0.55 ? 'jungle' : 'lane';
   if (pos > 0.78) return `deep in their ${side === 'jungle' ? 'jungle' : 'half'}`;
   if (pos > 0.6) return `their ${side === 'jungle' ? 'jungle' : 'half'}`;
-  if (pos < 0.22) return `deep in your ${side === 'jungle' ? 'jungle' : 'half'}`;
-  if (pos < 0.4) return `your ${side === 'jungle' ? 'jungle' : 'half'}`;
+  if (pos < 0.22) return `deep in our ${side === 'jungle' ? 'jungle' : 'half'}`;
+  if (pos < 0.4) return `our ${side === 'jungle' ? 'jungle' : 'half'}`;
   return flank > 0.55 ? 'midmap (a side)' : 'midmap / river';
 }
 
@@ -141,8 +141,8 @@ export function skirmishMacro(
   const notes: string[] = [];
   const adverse = s.result === 'lost' || s.net < 0 || manAdv < 0;
   // numbers at the engage — the single biggest "why did we lose that"
-  if (manAdv <= -1) notes.push(`You opened it a ${Math.abs(manAdv)}-body down (${ourAlive}v${theirAlive}) — the numbers were lost before the fight was.`);
-  else if (manAdv >= 1 && s.result !== 'won') notes.push(`You had the bodies (${ourAlive}v${theirAlive}) and it still went ${s.ourKills}-${s.theirKills} — that's a fight you should win with the man up.`);
+  if (manAdv <= -1) notes.push(`We opened it a ${Math.abs(manAdv)}-body down (${ourAlive}v${theirAlive}) — the numbers were lost before the fight was.`);
+  else if (manAdv >= 1 && s.result !== 'won') notes.push(`We had the bodies (${ourAlive}v${theirAlive}) and it still went ${s.ourKills}-${s.theirKills} — that's a fight to win with the man up.`);
   // dead teammates: exculpatory — they literally couldn't be there
   for (const d of dead.slice(0, 2)) notes.push(`${d.name} (${d.role}) was dead — went down ${d.agoSec}s earlier, so this was never a full-strength fight.`);
   // rotations: only raise when the fight went badly (don't nag a clean win)
@@ -158,8 +158,8 @@ export function skirmishMacro(
     if (!isTrade || seen.has(cm.type + cm.side)) continue;
     seen.add(cm.type + cm.side);
     notes.push(cm.side === 'us'
-      ? `You took ${titleCase(cm.type)} in the same window — read it as a trade, not a clean loss.`
-      : `They traded the fight for ${titleCase(cm.type)} across the map — you won bodies but gave the objective.`);
+      ? `We took ${titleCase(cm.type)} in the same window — read it as a trade, not a clean loss.`
+      : `They traded the fight for ${titleCase(cm.type)} across the map — we won bodies but gave the objective.`);
   }
 
   return { ourAlive, theirAlive, manAdv, outnumbered: manAdv < 0, absent, dead, crossMap, notes: notes.slice(0, 4) };
@@ -210,8 +210,8 @@ export function detectSkirmishes(kills: FactKill[], objEvents: ObjEvent[], durat
       ? regionOf(loc.reduce((s, k) => s + k.x!, 0) / loc.length, loc.reduce((s, k) => s + k.y!, 0) / loc.length, o)
       : null;
     // place: the major prize on the line, else the location, else a minor objective.
-    const place = nearMajor ? `${nearMajor.side === 'us' ? 'your' : 'their'} ${titleCase(nearMajor.type)}`
-      : region ?? (anchor ? `${anchor.side === 'us' ? 'your' : 'their'} ${titleCase(anchor.type)}` : 'open map');
+    const place = nearMajor ? `${nearMajor.side === 'us' ? 'our' : 'their'} ${titleCase(nearMajor.type)}`
+      : region ?? (anchor ? `${anchor.side === 'us' ? 'our' : 'their'} ${titleCase(anchor.type)}` : 'open map');
 
     // significance: bodies + decisiveness + a MAJOR prize on the line + lateness
     const lateness = durationMin > 0 ? Math.min(1, endSec / 60 / durationMin) : 0.5;

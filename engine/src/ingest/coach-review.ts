@@ -91,7 +91,7 @@ Return strict JSON only:
  "plan":["<imperative step tied to a SPECIFIC hero they play and what to DRILL on its kit (a combo, a power spike, positioning), referencing a recent game where it helps>", ... up to 5 ...],
  "insights":[{"title":"<short>","finding":"<one grounded, game-specific finding>"}, ... up to 4 ...]}
 
-Rules: Lead with in-game execution — what to DO on their heroes — not role selection. Only mention role/queue choice if a role is clearly costing VP, and never as the headline. Plain language, no jargon. Tie every line to their actual heroes, kit reads, or recent games above. Use ONLY numbers that appear above; when unsure, use none.`;
+Rules: Lead with in-game execution — what to DO on their heroes — not role selection. Only mention role/queue choice if a role is clearly costing VP, and never as the headline. Plain language, no jargon. Tie every line to their actual heroes, kit reads, or recent games above. Use ONLY numbers that appear above; when unsure, use none. VOICE (maintainer rule): the report is read by the whole squad — never use second person ("you/your"); name the player (${c.player.name.split(' ')[0]}) in third person, or use bare imperatives for drill steps ("Open with E, then…").`;
 }
 
 /** Collect the reports to coach: the lead's standalone coach.json plus every

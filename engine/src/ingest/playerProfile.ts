@@ -247,14 +247,14 @@ export function buildLedger(a: AnalyzedPlayer) {
   const worst = [...a.roles].filter((r) => r.games >= 100).sort((x, y) => x.shrunkWr - y.shrunkWr)[0];
   if (best && best.shrunkWr > overall + 0.005) {
     entries.push({
-      change: `Queue ${best.role} instead of your average mix`,
+      change: `Queue ${best.role} instead of the usual mix`,
       winsPer100: Math.round((best.shrunkWr - overall) * 1000) / 10,
       receipt: `${(best.shrunkWr * 100).toFixed(1)}% there vs ${(overall * 100).toFixed(1)}% overall, ${best.games} games of evidence`,
     });
   }
   if (worst && best && worst.role !== best.role && worst.shrunkWr < overall - 0.01) {
     entries.push({
-      change: `Move your ${worst.role} games to ${best.role}`,
+      change: `Move the ${worst.role} games to ${best.role}`,
       winsPer100: Math.round((best.shrunkWr - worst.shrunkWr) * 1000) / 10,
       receipt: `${(worst.shrunkWr * 100).toFixed(1)}% vs ${(best.shrunkWr * 100).toFixed(1)}%, per 100 games shifted`,
     });
@@ -276,6 +276,7 @@ export function buildLedger(a: AnalyzedPlayer) {
 /** The full coach-report object rendered by ui/v6/coach.html. Shared so
  *  the lead's coach.json and every squad member's report agree. */
 export function buildCoachReport(a: AnalyzedPlayer, lastPlayedAt: string) {
+  const first = a.name.split(' ')[0]!;
   const overallWr = a.career.winrate;
   const leanInto = a.pool
     .filter((h) => h.games >= 75 && h.edge != null && h.edge >= 0.02 && h.shrunkWr >= 0.52)
@@ -291,23 +292,23 @@ export function buildCoachReport(a: AnalyzedPlayer, lastPlayedAt: string) {
   if (bestRole) {
     const fav = a.favRole?.toLowerCase();
     plan.push(fav === bestRole.role
-      ? `Keep queueing ${bestRole.role} as primary — it is already your usual queue AND your best role at ${(bestRole.shrunkWr * 100).toFixed(1)}% over ${bestRole.games} games (your overall is ${(overallWr * 100).toFixed(1)}%).`
-      : `Queue ${bestRole.role} as primary. It is your best role at ${(bestRole.shrunkWr * 100).toFixed(1)}% over ${bestRole.games} games (your overall is ${(overallWr * 100).toFixed(1)}%). Set ${fav ?? 'your current fav'} as secondary, not the other way around.`);
+      ? `Keep queueing ${bestRole.role} as primary — it is already ${first}'s usual queue AND best role at ${(bestRole.shrunkWr * 100).toFixed(1)}% over ${bestRole.games} games (overall is ${(overallWr * 100).toFixed(1)}%).`
+      : `Queue ${bestRole.role} as primary. It is ${first}'s best role at ${(bestRole.shrunkWr * 100).toFixed(1)}% over ${bestRole.games} games (overall is ${(overallWr * 100).toFixed(1)}%). Set ${fav ?? 'the current fav'} as secondary, not the other way around.`);
   }
   if (worstRole && worstRole.shrunkWr < overallWr - 0.02) {
-    plan.push(`Stop queueing ${worstRole.role}: ${(worstRole.rawWr * 100).toFixed(1)}% over ${worstRole.games} games is costing real VP. When auto-filled there, play your safest comfort pick, not a learning pick.`);
+    plan.push(`Stop queueing ${worstRole.role}: ${(worstRole.rawWr * 100).toFixed(1)}% over ${worstRole.games} games is costing real VP. When auto-filled there, play the safest comfort pick, not a learning pick.`);
   }
   if (leanInto.length) {
     const lean2 = leanInto.slice(0, 2);
     plan.push(lean2.length === 1
-      ? `Comfort-hero rule for the climb: ${lean2[0]!.name}. Compared with the average player on the same hero, you win about ${(Math.abs(lean2[0]!.edge ?? 0) * 100).toFixed(1)} more games per 100 on it.`
-      : `Two-hero rule for the climb: ${lean2.map((h) => h.name).join(' and ')}. Compared with the average player on the same hero, you win about ${lean2.map((h) => `${(Math.abs(h.edge ?? 0) * 100).toFixed(1)}`).join(' and ')} more games per 100 on them.`);
+      ? `Comfort-hero rule for the climb: ${lean2[0]!.name}. Compared with the average player on the same hero, ${first} wins about ${(Math.abs(lean2[0]!.edge ?? 0) * 100).toFixed(1)} more games per 100 on it.`
+      : `Two-hero rule for the climb: ${lean2.map((h) => h.name).join(' and ')}. Compared with the average player on the same hero, ${first} wins about ${lean2.map((h) => `${(Math.abs(h.edge ?? 0) * 100).toFixed(1)}`).join(' and ')} more games per 100 on them.`);
   }
-  plan.push(`Your champion pool is ${a.pool.length}+ heroes wide and your top three are only ${(top3Share * 100).toFixed(0)}% of your games. Gold-to-Platinum climbs are almost always pool-narrowing stories: aim for 70%+ of games on your top three.`);
+  plan.push(`${first}'s champion pool is ${a.pool.length}+ heroes wide and the top three are only ${(top3Share * 100).toFixed(0)}% of the games. Gold-to-Platinum climbs are almost always pool-narrowing stories: aim for 70%+ of games on the top three.`);
   if (park.length) {
     plan.push(`Park ${park.map((h) => h.name).join(', ')} for ranked: ${park.map((h) => `${(h.rawWr * 100).toFixed(0)}% over ${h.games}`).join('; ')}. Keep them for normals.`);
   }
-  plan.push(`The math: you are at ${current.points} VP; Platinum III starts at ${PLATINUM_VP}. Your all-time peak is ${a.peakAllTime}${a.peakAllTime >= PLATINUM_VP ? ' — you have already touched Platinum-level rating once; this is a consistency problem, not a ceiling problem' : ''}.`);
+  plan.push(`The math: ${first} is at ${current.points} VP; Platinum III starts at ${PLATINUM_VP}. The all-time peak is ${a.peakAllTime}${a.peakAllTime >= PLATINUM_VP ? ' — Platinum-level rating has been touched once already; this is a consistency problem, not a ceiling problem' : ''}.`);
 
   return {
     generatedAt: new Date().toISOString(),
@@ -328,9 +329,9 @@ export function buildCoachReport(a: AnalyzedPlayer, lastPlayedAt: string) {
     poolWidth: { heroesPlayed20Plus: a.pool.length, top3Share },
     plan,
     honesty: [
-      'personal winrates are shrunk toward your own average (small heater samples do not count as mains)',
+      'personal winrates are shrunk toward the player\'s own average (small heater samples do not count as mains)',
       'field baselines are all-ranks aggregates from our current-patch match sample, not Gold-bracket-specific yet',
-      'winrate edges are observational; they say where you win, not why',
+      'winrate edges are observational; they say where the player wins, not why',
     ],
   };
 }

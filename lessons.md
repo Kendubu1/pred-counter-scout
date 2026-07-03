@@ -2491,3 +2491,29 @@ Eight maintainer-flagged fixes:
   enrichment landed after their coaching was written (incl. the nonexistent
   "Genesis Core" objective in ca184f0b). Same lesson as round 7: re-sweep after
   any SOURCE enrichment.
+
+## 2026-07-03 — Team-agnostic voice overhaul (maintainer rule)
+- New permanent rule: nothing user-facing speaks second person. Team lines say
+  "we/our/the team"; per-player lines name the player. Enforced in three layers:
+  the author agent's voice contract, a new (d) VOICE flag in the critic loop,
+  and the fixed engine templates (postgame.ts, skirmishes.ts, insights.ts,
+  playerProfile.ts, artifacts.ts coach lines) so every future generation is
+  clean at the source.
+- Migrations: 205 authored coaching lines re-voiced by agent (facts byte-
+  preserved), ~1,040 engine-templated film strings regenerated or migrated by
+  exact template maps, season reports regenerated + coachReasoning re-authored
+  (84 lines, 0 rejected). Full-repo scans + rendered-page Playwright scans now
+  show zero second-person strings on coach/squad surfaces.
+- Critic lesson: round 9 flagged 141 lines but 132 were FALSE positives caused
+  by the critique SOURCE, not the coaching — sourceOf printed omeda's display
+  name ("🎮 private") instead of squadName, so every correct "Cuban Noobster"
+  mention looked wrong; and per-player stats absent from the SOURCE subset made
+  genuinely-grounded numbers look invented. Fixed sourceOf (squadName first)
+  and filtered the round deterministically: a flag only survives if its quote
+  actually fails the FULL-facts ground-check or names a player the roster
+  doesn't support. The 9 survivors (misattributions + macro wrong-references)
+  applied clean. Rule of thumb: when the critic's flag rate jumps 10x, audit
+  the critic's evidence before applying — the loop's arbiter is the
+  deterministic verifier, not either agent.
+- grep for voice sweeps must be case-insensitive — a lowercase-only pattern
+  missed "You/Your" templates on the first pass.

@@ -1,8 +1,9 @@
 // Independent critic over post-game COACHING. A SEPARATE agent (NOT the author
 // pred-scout-coach) reviews each game's coaching narrative against the match
 // FACTS and flags any line that (a) coaches a player's hero/role PREFERENCE
-// instead of the game & the draft, or (b) isn't grounded in the facts — each flag
-// carries a game/draft-focused rewrite. Rewrites are ground-checked (a fix can't
+// instead of the game & the draft, (b) isn't grounded in the facts, or (d) uses
+// second-person voice — the review is read by the whole squad, so team lines say
+// "we/the team" and per-player lines name the player. Each flag carries a rewrite. Rewrites are ground-checked (a fix can't
 // add a number absent from the facts), applied back into the postgame coaching,
 // and the per-round agreement rate feeds the convergence gate.
 //
@@ -40,7 +41,7 @@ function sourceOf(f: Facts): string {
     `OBJECTIVES: majors you ${f.objectives?.ourKills}-${f.objectives?.theirKills} them${f.timeline ? `, towers ${f.timeline.towers.us}-${f.timeline.towers.them}` : ''}.`,
     `LANES: ${f.lanes.map((l) => `${l.role} ${l.ourHero} vs ${l.theirHero} (${l.edge}${l.predggMatchup ? `, ${l.predggMatchup.winrate}%` : ''})`).join('; ')}.`,
     `COMP: you ${f.comp?.ourDamage?.physical}P/${f.comp?.ourDamage?.magical}M, them ${f.comp?.theirDamage?.physical}P/${f.comp?.theirDamage?.magical}M; their healers ${f.comp?.theirHealers?.join(', ') || 'none'}.`,
-    `OUR PLAYERS: ${us.map((p) => `${p.name} ${p.heroName} ${p.role} ${p.kills}/${p.deaths}/${p.assists}${(p.spikes ?? []).length ? ` (spikes ${p.spikes.map((s: any) => `${s.name}~${s.spikeMinute}m`).join(', ')})` : ''}${p.roleFit?.concern ? ` [off bottom-two lane]` : ''}`).join('; ')}.`,
+    `OUR PLAYERS: ${us.map((p) => `${p.squadName || p.name} ${p.heroName} ${p.role} ${p.kills}/${p.deaths}/${p.assists}${(p.spikes ?? []).length ? ` (spikes ${p.spikes.map((s: any) => `${s.name}~${s.spikeMinute}m`).join(', ')})` : ''}${p.roleFit?.concern ? ` [off bottom-two lane]` : ''}`).join('; ')}.`,
     ...fightEconLines(f),
   ].join('\n');
 }
@@ -105,7 +106,8 @@ Flag ONLY real problems:
 (a) PREFERENCE — a line telling someone to play their main / comfort hero / best role, or judging a PICK by that player's own winrate/comfort rather than the matchup, draft, or what the game needed. The squad plays new heroes in new lanes; "play your main" is NOT coaching.
 (b) UNGROUNDED — a line factually wrong vs the SOURCE, or that invents a fight/objective/number not present.
 (c) WRONG REFERENCE — names the wrong hero, lane, fight, or objective.
-Do NOT nitpick style. Return strict JSON: {"flags":[{"quote":"<the exact line text>","severity":"high|med|low","issue":"<what's wrong, one phrase>","rewrite":"<a game/draft/fight-focused corrected line grounded in the SOURCE, or null to drop the line>"}]}. If all fine, return {"flags":[]}.`;
+(d) VOICE — uses second person ("you/your/you're") as if addressed to one reader. The review is read by the WHOLE squad: team lines must speak as "we/our/the team"; per-player lines must name the player (squad name or hero) in third person. Rewrite keeping the exact same facts and numbers, changing only the voice.
+Do NOT nitpick style beyond the voice rule. Return strict JSON: {"flags":[{"quote":"<the exact line text>","severity":"high|med|low","issue":"<what's wrong, one phrase>","rewrite":"<a game/draft/fight-focused corrected line grounded in the SOURCE, or null to drop the line>"}]}. If all fine, return {"flags":[]}.`;
 
     const raw = (await ask('coach-critique', id, prompt)).trim().replace(/^```json?\s*|```$/g, '');
     reviewed += lines.length;

@@ -72,6 +72,14 @@ truth — prefer it; only open the files above for broader analysis requests.
 The facts file is the source of truth. Fill `coaching` = `{ headline, team,
 whatShiftedIt, perPlayer:{<pid>:"…"} }`.
 
+**Voice contract (maintainer rule, 2026-07-03): NEVER second person.** The review
+is read by the whole squad, so no line may say "you/your/you're" as if talking to
+one reader. Team-level lines (`headline`, `team`, `whatShiftedIt`) speak as the
+team: "we/our/the team" ("We won eight fights and cashed six"). Per-player lines
+name the player in third person — squad name or hero ("Xeebs was the frontline…",
+"Aurora's two deaths were the expensive kind…") — never "you were the frontline".
+This keeps every line agnostic across the full team; the critic flags violations.
+
 **Coach the GAME and the DRAFT, not the person's preference.** This is the rule the
 independent critic enforces (see below). The squad is "always playing new heroes in
 new lanes" — so it is NOT your job to tell anyone to play their main, their comfort

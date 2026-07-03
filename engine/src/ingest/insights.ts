@@ -57,7 +57,7 @@ export function computeInsights(m: DeepMember, base: SquadBaselines, bestPair?: 
     const delta = recentWr - careerWr;
     if (Math.abs(delta) >= 0.08) {
       out.push({
-        title: delta > 0 ? 'You are hotter than your career says' : 'Recent form is below your career line',
+        title: delta > 0 ? `${first} is running hotter than the career line` : 'Recent form is below the career line',
         finding: delta > 0
           ? `The last 20 games are ${pct(recentWr)}% against a ${pct(careerWr)}% career. Whatever changed recently, keep it.`
           : `The last 20 games are ${pct(recentWr)}% against a ${pct(careerWr)}% career. Worth asking what changed before grinding more.`,
@@ -78,15 +78,15 @@ export function computeInsights(m: DeepMember, base: SquadBaselines, bestPair?: 
       const gap = wrAW - wrAL;
       if (gap >= 0.12) {
         out.push({
-          title: 'The tilt tax is real for you',
-          finding: `Right after a loss you win ${pct(wrAL)}%; right after a win, ${pct(wrAW)}%. One cooldown break after losses is free VP.`,
+          title: `The tilt tax is real for ${first}`,
+          finding: `Right after a loss ${first} wins ${pct(wrAL)}%; right after a win, ${pct(wrAW)}%. One cooldown break after losses is free VP.`,
           receipt: `${afterLossW}/${afterLossN} after losses vs ${afterWinW}/${afterWinN} after wins, last ${ms.length} games`,
           salience: gap,
         });
       } else if (gap <= -0.1) {
         out.push({
-          title: 'You punch back after losses',
-          finding: `You win MORE right after a loss (${pct(wrAL)}%) than after a win (${pct(wrAW)}%). Tilt is not your problem; complacency might be.`,
+          title: `${first} punches back after losses`,
+          finding: `${first} wins MORE right after a loss (${pct(wrAL)}%) than after a win (${pct(wrAW)}%). Tilt is not the problem; complacency might be.`,
           receipt: `${afterLossW}/${afterLossN} after losses vs ${afterWinW}/${afterWinN} after wins, last ${ms.length} games`,
           salience: -0,
         });
@@ -102,10 +102,10 @@ export function computeInsights(m: DeepMember, base: SquadBaselines, bestPair?: 
       const gap = wrS - wrL;
       if (Math.abs(gap) >= 0.12) {
         out.push({
-          title: gap > 0 ? 'You are a closer, not a marathoner' : 'You win the long game',
+          title: gap > 0 ? `${first} is a closer, not a marathoner` : `${first} wins the long game`,
           finding: gap > 0
             ? `Games under 28 minutes: ${pct(wrS)}%. Past 32: ${pct(wrL)}%. Press early leads and call objectives; do not let games drift.`
-            : `Past 32 minutes you win ${pct(wrL)}% vs ${pct(wrS)}% in short games. Scaling comps and patience suit you; avoid coin-flip early all-ins.`,
+            : `Past 32 minutes ${first} wins ${pct(wrL)}% vs ${pct(wrS)}% in short games. Scaling comps and patience fit; avoid coin-flip early all-ins.`,
           receipt: `wins ${short.filter((x) => x.won).length} of ${short.length} short games vs ${long.filter((x) => x.won).length} of ${long.length} long ones, recent sample`,
           salience: Math.abs(gap),
         });
@@ -130,15 +130,15 @@ export function computeInsights(m: DeepMember, base: SquadBaselines, bestPair?: 
   const wardRatio = wardsPg / Math.max(base.wardsPerGame, 0.01);
   if (wardRatio >= 1.5) {
     out.push({
-      title: 'The squad sees the map through your wards',
+      title: `The squad sees the map through ${first}'s wards`,
       finding: `${wardsPg.toFixed(1)} wards placed+cleared per game, ${wardRatio.toFixed(1)}x the squad average. That is a real, unsung win condition.`,
       receipt: `${g.totalWardsPlaced.toLocaleString()} placed + ${g.totalWardsDestroyed.toLocaleString()} cleared over ${games} games; squad average ${base.wardsPerGame.toFixed(1)}/game`,
       salience: (wardRatio - 1) * 0.18,
     });
   } else if (wardRatio <= 0.6) {
     out.push({
-      title: 'Vision is your cheapest upgrade',
-      finding: `${wardsPg.toFixed(1)} wards per game, ${pct(wardRatio)}% of the squad average. Wards cost nothing and you are leaving them in the shop.`,
+      title: `Vision is ${first}'s cheapest upgrade`,
+      finding: `${wardsPg.toFixed(1)} wards per game, ${pct(wardRatio)}% of the squad average. Wards cost nothing and they are being left in the shop.`,
       receipt: `${g.totalWardsPlaced.toLocaleString()} placed + ${g.totalWardsDestroyed.toLocaleString()} cleared over ${games} games; squad average ${base.wardsPerGame.toFixed(1)}/game`,
       salience: (1 - wardRatio) * 0.18,
     });
@@ -148,8 +148,8 @@ export function computeInsights(m: DeepMember, base: SquadBaselines, bestPair?: 
   const objRatio = objPg / Math.max(base.objSharePerGame, 1);
   if (objRatio >= 1.4) {
     out.push({
-      title: 'You end games, not just fights',
-      finding: `${Math.round(objPg).toLocaleString()} structure+objective damage per game, ${objRatio.toFixed(1)}x the squad average. When the team needs a closer, it is you.`,
+      title: `${first} ends games, not just fights`,
+      finding: `${Math.round(objPg).toLocaleString()} structure+objective damage per game, ${objRatio.toFixed(1)}x the squad average. When the team needs a closer, it is ${first}.`,
       receipt: `vs squad average ${Math.round(base.objSharePerGame).toLocaleString()}/game`,
       salience: (objRatio - 1) * 0.15,
     });
@@ -160,15 +160,15 @@ export function computeInsights(m: DeepMember, base: SquadBaselines, bestPair?: 
   const frontline = takenPg / Math.max(base.takenPerGame, 1);
   if (frontline >= 1.35) {
     out.push({
-      title: 'You are the shield this team stands behind',
-      finding: `${Math.round(takenPg).toLocaleString()} damage soaked per game, ${frontline.toFixed(1)}x the squad average. Your deaths are often the team's purchase price; judge them by what they bought.`,
+      title: `${first} is the shield this team stands behind`,
+      finding: `${Math.round(takenPg).toLocaleString()} damage soaked per game, ${frontline.toFixed(1)}x the squad average. ${first}'s deaths are often the team's purchase price; judge them by what they bought.`,
       receipt: `damage taken/game vs squad average ${Math.round(base.takenPerGame).toLocaleString()}`,
       salience: (frontline - 1) * 0.14,
     });
   }
   if (dealtPg / Math.max(base.dmgPerGame, 1) >= 1.35) {
     out.push({
-      title: 'The damage actually runs through you',
+      title: `The damage actually runs through ${first}`,
       finding: `${Math.round(dealtPg).toLocaleString()} hero damage per game, ${(dealtPg / base.dmgPerGame).toFixed(1)}x the squad average. Build the comp so this keeps being true.`,
       receipt: `vs squad average ${Math.round(base.dmgPerGame).toLocaleString()}/game`,
       salience: (dealtPg / base.dmgPerGame - 1) * 0.14,
@@ -181,8 +181,8 @@ export function computeInsights(m: DeepMember, base: SquadBaselines, bestPair?: 
     const dAvg = g.totalDeaths / games;
     if (sig.deathsPerGame <= dAvg - 0.7) {
       out.push({
-        title: `${sig.name} is not just your best hero, it is your most disciplined`,
-        finding: `On ${sig.name} you die ${sig.deathsPerGame.toFixed(1)}/game vs your ${dAvg.toFixed(1)} average. The winrate edge is partly a discipline edge; that habit can travel to other picks.`,
+        title: `${sig.name} is not just ${first}'s best hero, it is the most disciplined`,
+        finding: `On ${sig.name} ${first} dies ${sig.deathsPerGame.toFixed(1)}/game vs a ${dAvg.toFixed(1)} average. The winrate edge is partly a discipline edge; that habit can travel to other picks.`,
         receipt: `${sig.games} games on ${sig.name}, ${pct(sig.shrunkWr, 1)}% shrunk vs field ${pct(sig.fieldWr ?? 0.5, 1)}%`,
         salience: (dAvg - sig.deathsPerGame) / 8,
       });
@@ -196,15 +196,15 @@ export function computeInsights(m: DeepMember, base: SquadBaselines, bestPair?: 
     const assistShare = assists / (kills + assists);
     if (assistShare >= 0.68) {
       out.push({
-        title: 'You set the table; others eat',
-        finding: `${pct(assistShare)}% of your takedowns are assists (${assists.toFixed(1)}A vs ${kills.toFixed(1)}K per game). You create the kills this team gets credit for; pick engage tools and play around your finishers.`,
+        title: `${first} sets the table; others eat`,
+        finding: `${pct(assistShare)}% of ${first}'s takedowns are assists (${assists.toFixed(1)}A vs ${kills.toFixed(1)}K per game). ${first} creates the kills this team gets credit for; pick engage tools and play around the finishers.`,
         receipt: `${g.totalAssists.toLocaleString()} assists vs ${g.totalKills.toLocaleString()} kills over ${games} games`,
         salience: (assistShare - 0.5) * 0.3,
       });
     } else if (assistShare <= 0.45) {
       out.push({
-        title: 'You finish what the team starts',
-        finding: `${kills.toFixed(1)} kills vs ${assists.toFixed(1)} assists per game — a finisher's split. Your gold conversion matters more than most; protect your farm and take the last hits.`,
+        title: `${first} finishes what the team starts`,
+        finding: `${kills.toFixed(1)} kills vs ${assists.toFixed(1)} assists per game — a finisher's split. That gold conversion matters more than most; protect the farm and take the last hits.`,
         receipt: `${g.totalKills.toLocaleString()} kills vs ${g.totalAssists.toLocaleString()} assists over ${games} games`,
         salience: (0.5 - assistShare) * 0.3,
       });
@@ -214,8 +214,8 @@ export function computeInsights(m: DeepMember, base: SquadBaselines, bestPair?: 
   // ── best teammate, from the squad's pair matrix ──
   if (bestPair && bestPair.games >= 100) {
     out.push({
-      title: `${bestPair.partner.split(' ')[0]} brings out your best`,
-      finding: `Your record alongside ${bestPair.partner} is ${pct(bestPair.winrate)}% over ${bestPair.games} ranked games — your strongest pairing in the stack. When only two of you queue, make it this one.`,
+      title: `${bestPair.partner.split(' ')[0]} brings out ${first}'s best`,
+      finding: `${first}'s record alongside ${bestPair.partner} is ${pct(bestPair.winrate)}% over ${bestPair.games} ranked games — the strongest pairing in the stack. When only two of the squad queue, make it this pair.`,
       receipt: `${Math.round(bestPair.winrate * bestPair.games)}/${bestPair.games} together`,
       salience: Math.max(bestPair.winrate - careerWr, 0.015),
     });
@@ -228,7 +228,7 @@ export function computeInsights(m: DeepMember, base: SquadBaselines, bestPair?: 
     out.push({
       title: `${vol.name} is the long-term relationship`,
       finding: vsField != null && vsField > 0.015
-        ? `${vol.games} games and you genuinely out-pilot the field on ${vol.name} — about ${(Math.abs(vsField) * 100).toFixed(1)} more wins per 100 games than the average ${vol.name} player. The hours show.`
+        ? `${vol.games} games and ${first} genuinely out-pilots the field on ${vol.name} — about ${(Math.abs(vsField) * 100).toFixed(1)} more wins per 100 games than the average ${vol.name} player. The hours show.`
         : `${vol.games} games on ${vol.name} at ${pct(vol.shrunkWr, 1)}% — the field averages ${pct(vol.fieldWr ?? 0.5, 1)}%. The comfort is real; the edge is ${vsField != null && vsField < -0.01 ? 'not there yet — worth studying top builds' : 'roughly neutral'}.`,
       receipt: `${vol.games} games, KDA ${vol.kda.toFixed(1)}, ${vol.deathsPerGame.toFixed(1)} deaths/game`,
       salience: 0.03 + Math.abs(vsField ?? 0) * 0.5,
@@ -268,7 +268,7 @@ export function computeInsights(m: DeepMember, base: SquadBaselines, bestPair?: 
     ];
     const most = traits.sort((a, b) => Math.abs(b[1] - 1) - Math.abs(a[1] - 1))[0]!;
     out.push({
-      title: `Your lean, relative to the squad: ${most[0]}`,
+      title: `${first}'s lean, relative to the squad: ${most[0]}`,
       finding: `${first}'s profile sits mid-pack on most axes; the clearest lean is ${most[0]} at ${most[1].toFixed(1)}x the squad average. Steady is a style too — the lineup can build around predictability.`,
       receipt: most[2],
       salience: 0.01,
