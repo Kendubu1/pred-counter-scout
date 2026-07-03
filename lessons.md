@@ -2475,3 +2475,19 @@ Eight maintainer-flagged fixes:
 - The 3 films now lead with the economics story, verified: "You never won a
   fight — and eight of your deaths directly bought their two Fangtooths and Orb
   Prime" / "8 wins, 3 cashed — that's how an 8-5 tower lead ran 42 minutes."
+
+## 2026-07-03 — 61dfa250 film (7/03 3-stack WIN) authored + critic round 8
+- New film pulled with the persisted `events` stream (63 events, 17 towers) —
+  the first where deathCosts are tower-grounded instead of majors-only.
+- Round 8 critic pass over all 36 films: 15 flags / 270 lines (94.4% agreement),
+  all applied clean. 5 were on the NEW film's fresh authoring, and every one was
+  the same known failure: invented narrative glue around verified numbers — an
+  invented cashed-prize timeline ("Fangtooth at 11, 19 and 24…"), invented
+  uncashed-win identities, a 25–21 majors count miscalled a "kill lead", killer
+  attributions to Khaimera the kill stream doesn't support, an invented "18.5"
+  tower timestamp. Authors ground the NUMBERS; only the independent critic
+  catches the glue. The loop is not optional for fresh authoring.
+- 10 more flags were older films newly checkable because the fights/economics
+  enrichment landed after their coaching was written (incl. the nonexistent
+  "Genesis Core" objective in ca184f0b). Same lesson as round 7: re-sweep after
+  any SOURCE enrichment.
