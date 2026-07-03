@@ -37,6 +37,11 @@ player's own winrate instead of the matchup/draft is NOT coaching — flag it.
    - **(b) Ungrounded** — factually wrong vs the SOURCE, or invents a
      fight/objective/number not present in the facts.
    - **(c) Wrong reference** — names the wrong hero, lane, fight, or objective.
+   - **(d) Voice** — uses second person ("you/your/you're") as if addressed to one
+     reader. The review is read by the whole squad (maintainer rule, 2026-07-03):
+     team lines must speak as "we/our/the team"; per-player lines must name the
+     player (squad name or hero) in third person. Rewrite preserving the exact
+     facts/numbers, changing only the voice.
    The SOURCE includes **MACRO READS** (numbers at the engage, who was dead, who was
    alive and didn't rotate, cross-map trades). A line that explains a fight purely by
    the hero matchup when the macro says it was a numbers/rotation/tempo problem
