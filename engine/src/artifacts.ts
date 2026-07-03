@@ -306,7 +306,7 @@ function counterSwap(kit: HeroKit, items: Item[], enemy: HeroKit, enemyItems: It
     inSlug: best.item.slug,
     survivalGainPct: Math.round(best.gain * 100),
     offenseLossPct: Math.round(best.loss * 100),
-    line: `Losing lane? Third item ${best.item.name} instead of ${prefix[2]!.name}: their 3s all-in loses ${Math.round(best.gain * 100)}% of its bite; you give up ${Math.round(best.loss * 100)}% of your damage.`,
+    line: `Losing lane? Third item ${best.item.name} instead of ${prefix[2]!.name}: their 3s all-in loses ${Math.round(best.gain * 100)}% of its bite, at the cost of ${Math.round(best.loss * 100)}% of this kit's damage.`,
   };
 }
 
@@ -715,9 +715,9 @@ function buildRoleView(
   const e0 = eternals.top[0];
   // Eternal deltas are damage/EHP math; on a support page "headline
   // output" would read as heal/shield, which Eternals do not touch.
-  const e0headlineLabel = role === 'support' ? 'your damage rotation' : 'this kit’s main output';
+  const e0headlineLabel = role === 'support' ? 'the damage rotation' : 'this kit’s main output';
   const e0best = e0
-    ? ([[e0.headlinePct, e0headlineLabel], [e0.burstPct, 'your burst combo'], [e0.rot20Pct, '20-second fights'], [e0.ehpPct, 'your effective HP']] as [number, string][])
+    ? ([[e0.headlinePct, e0headlineLabel], [e0.burstPct, 'the burst combo'], [e0.rot20Pct, '20-second fights'], [e0.ehpPct, 'effective HP']] as [number, string][])
         .sort((x, y) => y[0] - x[0])[0]!
     : null;
   const coachLine =
