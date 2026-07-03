@@ -41,7 +41,7 @@ function sourceOf(f: Facts): string {
     `OBJECTIVES: majors you ${f.objectives?.ourKills}-${f.objectives?.theirKills} them${f.timeline ? `, towers ${f.timeline.towers.us}-${f.timeline.towers.them}` : ''}.`,
     `LANES: ${f.lanes.map((l) => `${l.role} ${l.ourHero} vs ${l.theirHero} (${l.edge}${l.predggMatchup ? `, ${l.predggMatchup.winrate}%` : ''})`).join('; ')}.`,
     `COMP: you ${f.comp?.ourDamage?.physical}P/${f.comp?.ourDamage?.magical}M, them ${f.comp?.theirDamage?.physical}P/${f.comp?.theirDamage?.magical}M; their healers ${f.comp?.theirHealers?.join(', ') || 'none'}.`,
-    `OUR PLAYERS: ${us.map((p) => `${p.name} ${p.heroName} ${p.role} ${p.kills}/${p.deaths}/${p.assists}${(p.spikes ?? []).length ? ` (spikes ${p.spikes.map((s: any) => `${s.name}~${s.spikeMinute}m`).join(', ')})` : ''}${p.roleFit?.concern ? ` [off bottom-two lane]` : ''}`).join('; ')}.`,
+    `OUR PLAYERS: ${us.map((p) => `${p.squadName || p.name} ${p.heroName} ${p.role} ${p.kills}/${p.deaths}/${p.assists}${(p.spikes ?? []).length ? ` (spikes ${p.spikes.map((s: any) => `${s.name}~${s.spikeMinute}m`).join(', ')})` : ''}${p.roleFit?.concern ? ` [off bottom-two lane]` : ''}`).join('; ')}.`,
     ...fightEconLines(f),
   ].join('\n');
 }
