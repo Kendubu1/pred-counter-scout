@@ -2517,3 +2517,33 @@ Eight maintainer-flagged fixes:
   deterministic verifier, not either agent.
 - grep for voice sweeps must be case-insensitive — a lowercase-only pattern
   missed "You/Your" templates on the first pass.
+
+## 2026-07-06 — 1.15 numeric refresh landed (the standing gate cleared)
+- omeda.city published 1.15 (53 heroes / 270 items). Full ranked pipeline ran
+  in one pass per the credentials gate: snapshot -> augments -> buildstats ->
+  skills -> aggregate -> artifacts -> matrix -> agreement -> copy passes ->
+  patch page, harness 126 green.
+- TRAP #1 — version pinning: pred.gg named the 1.15+1 hotfix version (id 153)
+  and "newest named version" pinned to it — a day-one hotfix id has ~zero
+  games, which silently zeroed EVERY build/perk pool (53/53 heroes empty, the
+  retrodiction test caught it). Fix: pin the patch FAMILY — every named
+  version sharing the newest base major.minor (152+153). A 10x drop in pool
+  sizes after a refresh means check the version filter first.
+- TRAP #2 — feed/catalog id mismatch: the omeda MATCH FEED uses hero ids
+  75/76 for Legion/Ikra while the CATALOG says 77/79. Unmapped rows fell out
+  as hero_id:N keys, so both heroes lost their feed evidence (meta board,
+  roleWr, item deltas). Verified the mapping by elimination (75 has pre-1.15
+  games = Legion; 76 first appears on patch day 6/30 = Ikra), added
+  FEED_ID_ALIASES to aggregate+postgame, migrated committed aggregates.
+- Ikra activated honestly: omeda ships unresolved {Damage} templates for her
+  abilities, so hero-abilities carries verified cd/cost/CC with EMPTY damage
+  arrays (no-estimates rule) — her sim output stays THEORY on autos.
+- Measured vs predicted (pre-patch 06-20 vs week-one 07-06, ranked, n>=200):
+  9/14 predictions directionally right. Misses worth remembering: Wukong and
+  Kallari were NERFED but ROSE (+5.2 / +3.7) — direct-number reads lose to
+  meta displacement when the heroes around them got hit harder. Ikra debuts
+  48.8% over 1,804 games (mostly midlane). Movers: Sevarog +7.0, Eden +5.1,
+  Morigesh -5.8, Boris -5.4.
+- The patch page now renders measured week-one winrates beside every
+  prediction with a scorecard banner — the predictions/measured swap the page
+  promised at publish time.
