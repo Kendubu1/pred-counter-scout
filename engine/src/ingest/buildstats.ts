@@ -60,8 +60,8 @@ async function main() {
   if (!hasCredentials()) { console.error("needs PREDGG_CLIENT_ID/SECRET in env"); process.exit(1); }
   if (process.env.RANKED_ONLY) {
     const v = await currentVersion();
-    MODE_FILTER = `gameModes: [RANKED], versions: ["${v.id}"]`;
-    SCOPE_NOTE = `RANKED only, patch ${v.name} (pred.gg version id ${v.id})`;
+    MODE_FILTER = `gameModes: [RANKED], versions: [${v.ids.map((i) => `"${i}"`).join(', ')}]`;
+    SCOPE_NOTE = `RANKED only, patch ${v.name} (pred.gg version ids ${v.ids.join('+')})`;
     console.log(`scope: ${SCOPE_NOTE}`);
   }
   const data = loadData();
