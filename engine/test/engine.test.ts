@@ -34,8 +34,9 @@ describe('fixtures (Concept B layer 1: mechanics gates)', () => {
 });
 
 describe('data joins and patch currency', () => {
-  it('covers the full 52-hero roster, deriving profiles where owned data lacks them', () => {
-    expect(data.kits.size).toBe(52);
+  it('covers the full snapshot roster, deriving profiles where owned data lacks them', () => {
+    const roster = Object.keys(JSON.parse(require('node:fs').readFileSync(new URL('../../data/omeda/heroes.json', import.meta.url), 'utf8'))).length;
+    expect(data.kits.size).toBe(roster);
     expect(data.derivedProfiles).toEqual(['adele', 'legion', 'neon']);
   });
 

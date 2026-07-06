@@ -15,7 +15,7 @@
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
-   "the sim opens on Viper, which the field rarely builds (0.2% pick) — a sim-only call; compare the meta cores below",
+   "the sim opens on Viper, which the field rarely builds (0.4% pick) — a sim-only call; compare the meta cores below",
    "the sim build reproduces only 33% of the field's core for Feng Mao (it never builds Malady, Omen) — some of those items ride mechanics the sim doesn't model yet"
   ]
  },
@@ -26,7 +26,7 @@
     "name": "Viper",
     "slug": "viper",
     "spikeMinute": 12,
-    "playRatePct": 0.2,
+    "playRatePct": 0.4,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -34,7 +34,7 @@
     "name": "Basilisk",
     "slug": "basilisk",
     "spikeMinute": 19,
-    "playRatePct": 0,
+    "playRatePct": 0.2,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -42,15 +42,15 @@
     "name": "Solaris",
     "slug": "solaris",
     "spikeMinute": 25,
-    "playRatePct": 2.1,
-    "evidenceDeltaWr": 6.7,
-    "evidenceN": 10
+    "playRatePct": 1.1,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
    },
    {
     "name": "Spear Of Desolation",
     "slug": "spear-of-desolation",
     "spikeMinute": 31,
-    "playRatePct": 1.3,
+    "playRatePct": 1.8,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -58,7 +58,7 @@
     "name": "Augmentation",
     "slug": "augmentation",
     "spikeMinute": 37,
-    "playRatePct": 1.7,
+    "playRatePct": 1.1,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -66,9 +66,9 @@
     "name": "The Perforator",
     "slug": "the-perforator",
     "spikeMinute": 43,
-    "playRatePct": 39.3,
-    "evidenceDeltaWr": 5.1,
-    "evidenceN": 186
+    "playRatePct": 38.8,
+    "evidenceDeltaWr": 3,
+    "evidenceN": 176
    }
   ],
   "gold": 18500,
@@ -473,25 +473,31 @@
   "candidates": [
    {
     "item": "Viper",
-    "playRatePct": 0.2,
+    "playRatePct": 0.4,
     "bestObjective": "20s fight vs bruisers",
     "edgeVsPopularPct": 160.3
    },
    {
     "item": "Basilisk",
-    "playRatePct": 0,
+    "playRatePct": 0.2,
+    "bestObjective": "20s fight vs bruisers",
+    "edgeVsPopularPct": 160.3
+   },
+   {
+    "item": "Solaris",
+    "playRatePct": 1.1,
     "bestObjective": "20s fight vs bruisers",
     "edgeVsPopularPct": 160.3
    },
    {
     "item": "Spear Of Desolation",
-    "playRatePct": 1.3,
+    "playRatePct": 1.8,
     "bestObjective": "20s fight vs bruisers",
     "edgeVsPopularPct": 160.3
    },
    {
     "item": "Augmentation",
-    "playRatePct": 1.7,
+    "playRatePct": 1.1,
     "bestObjective": "20s fight vs bruisers",
     "edgeVsPopularPct": 160.3
    }
@@ -515,8 +521,8 @@
      "slug": "omen"
     }
    ],
-   "n": 98,
-   "shrunkWr": 0.54,
+   "n": 241,
+   "shrunkWr": 0.512,
    "coreGold": 8900,
    "spikeMinute": 24,
    "bestObjective": "sustained auto DPS",
@@ -539,8 +545,8 @@
      "slug": "the-perforator"
     }
    ],
-   "n": 59,
-   "shrunkWr": 0.53,
+   "n": 181,
+   "shrunkWr": 0.519,
    "coreGold": 9100,
    "spikeMinute": 25,
    "bestObjective": "one-combo burst",
@@ -563,8 +569,8 @@
      "slug": "tainted-trident"
     }
    ],
-   "n": 27,
-   "shrunkWr": 0.539,
+   "n": 89,
+   "shrunkWr": 0.521,
    "coreGold": 8800,
    "spikeMinute": 24,
    "bestObjective": "physical survivability",
@@ -806,6 +812,45 @@
    }
   },
   {
+   "enemy": "Rampage",
+   "enemySlug": "rampage",
+   "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Rampage deals area damage — spread out so one cast can't catch the group.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 10,
+     "verdict": "you"
+    },
+    {
+     "minute": 15,
+     "verdict": "you"
+    },
+    {
+     "minute": 20,
+     "verdict": "you"
+    },
+    {
+     "minute": 25,
+     "verdict": "you"
+    },
+    {
+     "minute": 30,
+     "verdict": "you"
+    }
+   ],
+   "counterSwap": {
+    "out": "Viper",
+    "in": "Raiment of Renewal",
+    "inSlug": "raiment-of-renewal",
+    "survivalGainPct": 24,
+    "offenseLossPct": 34,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their 3s all-in loses 24% of its bite, at the cost of 34% of this kit's damage."
+   }
+  },
+  {
    "enemy": "Yin",
    "enemySlug": "yin",
    "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Yin's main threat is Backlash; bait it before you commit, and armor softens the trade.",
@@ -842,45 +887,6 @@
     "survivalGainPct": 33,
     "offenseLossPct": 34,
     "line": "Losing lane? Third item Warden's Faith instead of Viper: their 3s all-in loses 33% of its bite, at the cost of 34% of this kit's damage."
-   }
-  },
-  {
-   "enemy": "Kwang",
-   "enemySlug": "kwang",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kwang ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 10,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 15,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 20,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 25,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 30,
-     "verdict": "enemy"
-    }
-   ],
-   "counterSwap": {
-    "out": "Viper",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 29,
-    "offenseLossPct": 34,
-    "line": "Losing lane? Third item Void Helm instead of Viper: their 3s all-in loses 29% of its bite, at the cost of 34% of this kit's damage."
    }
   },
   {
@@ -930,16 +936,16 @@
   },
   "playstyle": "on-hit",
   "modeled": true,
-  "wr": 47.3,
-  "n": 567,
+  "wr": 46.4,
+  "n": 1671,
   "shiftIn": [],
   "shiftOut": [],
-  "provenance": "“Imperial Duelist” ⇒ on-hit; the sim models this augment — field jungle 47.3% over 567 games."
+  "provenance": "“Imperial Duelist” ⇒ on-hit; the sim models this augment — field jungle 46.4% over 1,671 games."
  },
  "slug": "feng-mao",
  "name": "Feng Mao",
- "patch": "1.14.4",
- "generatedAt": "2026-07-03T17:14:01.716Z",
+ "patch": "1.15",
+ "generatedAt": "2026-07-06T17:18:31.378Z",
  "damageType": "physical",
  "attackType": "melee",
  "laneFlex": [
@@ -951,8 +957,8 @@
    },
    "playstyle": "on-hit",
    "modeled": true,
-   "wr": 47.3,
-   "n": 567,
+   "wr": 46.4,
+   "n": 1671,
    "core": [
     {
      "name": "Solaris",
@@ -980,7 +986,46 @@
     }
    ],
    "headline": "skirmish uptime",
-   "provenance": "“Imperial Duelist” ⇒ on-hit; the sim models this augment — field jungle 47.3% over 567 games."
+   "provenance": "“Imperial Duelist” ⇒ on-hit; the sim models this augment — field jungle 46.4% over 1,671 games."
+  },
+  {
+   "lane": "offlane",
+   "augment": {
+    "id": "35",
+    "name": "Imperial Duelist"
+   },
+   "playstyle": "on-hit",
+   "modeled": true,
+   "wr": 46.7,
+   "n": 653,
+   "core": [
+    {
+     "name": "Solaris",
+     "slug": "solaris"
+    },
+    {
+     "name": "The Perforator",
+     "slug": "the-perforator"
+    },
+    {
+     "name": "Viper",
+     "slug": "viper"
+    },
+    {
+     "name": "Augmentation",
+     "slug": "augmentation"
+    },
+    {
+     "name": "Spear Of Desolation",
+     "slug": "spear-of-desolation"
+    },
+    {
+     "name": "Basilisk",
+     "slug": "basilisk"
+    }
+   ],
+   "headline": "skirmish uptime",
+   "provenance": "“Imperial Duelist” ⇒ on-hit; the sim models this augment — field offlane 46.7% over 653 games."
   }
  ],
  "roles": [
@@ -1001,7 +1046,7 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Viper, which the field rarely builds (0.2% pick) — a sim-only call; compare the meta cores below",
+     "the sim opens on Viper, which the field rarely builds (0.4% pick) — a sim-only call; compare the meta cores below",
      "the sim build reproduces only 33% of the field's core for Feng Mao (it never builds Malady, Omen) — some of those items ride mechanics the sim doesn't model yet"
     ]
    },
@@ -1012,7 +1057,7 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 12,
-      "playRatePct": 0.2,
+      "playRatePct": 0.4,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1020,7 +1065,7 @@
       "name": "Basilisk",
       "slug": "basilisk",
       "spikeMinute": 19,
-      "playRatePct": 0,
+      "playRatePct": 0.2,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1028,15 +1073,15 @@
       "name": "Solaris",
       "slug": "solaris",
       "spikeMinute": 25,
-      "playRatePct": 2.1,
-      "evidenceDeltaWr": 6.7,
-      "evidenceN": 10
+      "playRatePct": 1.1,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
      },
      {
       "name": "Spear Of Desolation",
       "slug": "spear-of-desolation",
       "spikeMinute": 31,
-      "playRatePct": 1.3,
+      "playRatePct": 1.8,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1044,7 +1089,7 @@
       "name": "Augmentation",
       "slug": "augmentation",
       "spikeMinute": 37,
-      "playRatePct": 1.7,
+      "playRatePct": 1.1,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1052,9 +1097,9 @@
       "name": "The Perforator",
       "slug": "the-perforator",
       "spikeMinute": 43,
-      "playRatePct": 39.3,
-      "evidenceDeltaWr": 5.1,
-      "evidenceN": 186
+      "playRatePct": 38.8,
+      "evidenceDeltaWr": 3,
+      "evidenceN": 176
      }
     ],
     "gold": 18500,
@@ -1459,25 +1504,31 @@
     "candidates": [
      {
       "item": "Viper",
-      "playRatePct": 0.2,
+      "playRatePct": 0.4,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 160.3
      },
      {
       "item": "Basilisk",
-      "playRatePct": 0,
+      "playRatePct": 0.2,
+      "bestObjective": "20s fight vs bruisers",
+      "edgeVsPopularPct": 160.3
+     },
+     {
+      "item": "Solaris",
+      "playRatePct": 1.1,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 160.3
      },
      {
       "item": "Spear Of Desolation",
-      "playRatePct": 1.3,
+      "playRatePct": 1.8,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 160.3
      },
      {
       "item": "Augmentation",
-      "playRatePct": 1.7,
+      "playRatePct": 1.1,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 160.3
      }
@@ -1501,8 +1552,8 @@
        "slug": "omen"
       }
      ],
-     "n": 98,
-     "shrunkWr": 0.54,
+     "n": 241,
+     "shrunkWr": 0.512,
      "coreGold": 8900,
      "spikeMinute": 24,
      "bestObjective": "sustained auto DPS",
@@ -1525,8 +1576,8 @@
        "slug": "the-perforator"
       }
      ],
-     "n": 59,
-     "shrunkWr": 0.53,
+     "n": 181,
+     "shrunkWr": 0.519,
      "coreGold": 9100,
      "spikeMinute": 25,
      "bestObjective": "one-combo burst",
@@ -1549,8 +1600,8 @@
        "slug": "tainted-trident"
       }
      ],
-     "n": 27,
-     "shrunkWr": 0.539,
+     "n": 89,
+     "shrunkWr": 0.521,
      "coreGold": 8800,
      "spikeMinute": 24,
      "bestObjective": "physical survivability",
@@ -1792,6 +1843,45 @@
      }
     },
     {
+     "enemy": "Rampage",
+     "enemySlug": "rampage",
+     "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Rampage deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "you"
+      },
+      {
+       "minute": 15,
+       "verdict": "you"
+      },
+      {
+       "minute": 20,
+       "verdict": "you"
+      },
+      {
+       "minute": 25,
+       "verdict": "you"
+      },
+      {
+       "minute": 30,
+       "verdict": "you"
+      }
+     ],
+     "counterSwap": {
+      "out": "Viper",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 24,
+      "offenseLossPct": 34,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their 3s all-in loses 24% of its bite, at the cost of 34% of this kit's damage."
+     }
+    },
+    {
      "enemy": "Yin",
      "enemySlug": "yin",
      "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Yin's main threat is Backlash; bait it before you commit, and armor softens the trade.",
@@ -1828,45 +1918,6 @@
       "survivalGainPct": 33,
       "offenseLossPct": 34,
       "line": "Losing lane? Third item Warden's Faith instead of Viper: their 3s all-in loses 33% of its bite, at the cost of 34% of this kit's damage."
-     }
-    },
-    {
-     "enemy": "Kwang",
-     "enemySlug": "kwang",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kwang ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Viper",
-      "in": "Void Helm",
-      "inSlug": "void-helm",
-      "survivalGainPct": 29,
-      "offenseLossPct": 34,
-      "line": "Losing lane? Third item Void Helm instead of Viper: their 3s all-in loses 29% of its bite, at the cost of 34% of this kit's damage."
      }
     },
     {
@@ -1916,11 +1967,11 @@
     },
     "playstyle": "on-hit",
     "modeled": true,
-    "wr": 47.3,
-    "n": 567,
+    "wr": 46.4,
+    "n": 1671,
     "shiftIn": [],
     "shiftOut": [],
-    "provenance": "“Imperial Duelist” ⇒ on-hit; the sim models this augment — field jungle 47.3% over 567 games."
+    "provenance": "“Imperial Duelist” ⇒ on-hit; the sim models this augment — field jungle 46.4% over 1,671 games."
    }
   },
   {
@@ -1940,7 +1991,7 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Viper, which the field rarely builds (0.2% pick) — a sim-only call; compare the meta cores below"
+     "the sim opens on Viper, which the field rarely builds (0.4% pick) — a sim-only call; compare the meta cores below"
     ]
    },
    "build": {
@@ -1950,7 +2001,7 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 12,
-      "playRatePct": 0.2,
+      "playRatePct": 0.4,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1958,7 +2009,7 @@
       "name": "Basilisk",
       "slug": "basilisk",
       "spikeMinute": 19,
-      "playRatePct": 0,
+      "playRatePct": 0.2,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1966,15 +2017,15 @@
       "name": "Solaris",
       "slug": "solaris",
       "spikeMinute": 25,
-      "playRatePct": 2.1,
-      "evidenceDeltaWr": 6.7,
-      "evidenceN": 10
+      "playRatePct": 1.1,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
      },
      {
       "name": "Spear Of Desolation",
       "slug": "spear-of-desolation",
       "spikeMinute": 30,
-      "playRatePct": 1.3,
+      "playRatePct": 1.8,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1982,7 +2033,7 @@
       "name": "Augmentation",
       "slug": "augmentation",
       "spikeMinute": 35,
-      "playRatePct": 1.7,
+      "playRatePct": 1.1,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1990,9 +2041,9 @@
       "name": "The Perforator",
       "slug": "the-perforator",
       "spikeMinute": 41,
-      "playRatePct": 39.3,
-      "evidenceDeltaWr": 5.1,
-      "evidenceN": 186
+      "playRatePct": 38.8,
+      "evidenceDeltaWr": 3,
+      "evidenceN": 176
      }
     ],
     "gold": 18500,
@@ -2014,15 +2065,15 @@
     },
     "manaFeasible": true
    },
-   "coachLine": "Sim-optimal for skirmish uptime and extended fights: first spike lands around minute 12 (Viper), third item by minute 25. Take Demiurge: +12.1% on 20-second fights at minute 15.",
+   "coachLine": "Sim-optimal for skirmish uptime and extended fights: first spike lands around minute 12 (Viper), third item by minute 25. Take Demiurge: +12% on 20-second fights at minute 15.",
    "eternals": {
     "top": [
      {
       "name": "Demiurge",
       "id": "demiurge",
-      "headlinePct": 11.1,
-      "burstPct": 12,
-      "rot20Pct": 12.1,
+      "headlinePct": 10.9,
+      "burstPct": 11.9,
+      "rot20Pct": 12,
       "ehpPct": 2.2
      },
      {
@@ -2036,9 +2087,9 @@
      {
       "name": "Vesh",
       "id": "vesh",
-      "headlinePct": 6.9,
-      "burstPct": 5.8,
-      "rot20Pct": 6.3,
+      "headlinePct": 6.8,
+      "burstPct": 5.6,
+      "rot20Pct": 6.1,
       "ehpPct": 0
      }
     ],
@@ -2052,9 +2103,9 @@
      {
       "name": "Demiurge",
       "modeled": true,
-      "headlinePct": 11.1,
-      "burstPct": 12,
-      "rot20Pct": 12.1,
+      "headlinePct": 10.9,
+      "burstPct": 11.9,
+      "rot20Pct": 12,
       "ehpPct": 2.2,
       "note": null
      },
@@ -2070,18 +2121,18 @@
      {
       "name": "Vesh",
       "modeled": true,
-      "headlinePct": 6.9,
-      "burstPct": 5.8,
-      "rot20Pct": 6.3,
+      "headlinePct": 6.8,
+      "burstPct": 5.6,
+      "rot20Pct": 6.1,
       "ehpPct": 0,
       "note": null
      },
      {
       "name": "Thraex",
       "modeled": true,
-      "headlinePct": 4.9,
+      "headlinePct": 4.8,
       "burstPct": 0,
-      "rot20Pct": 4.4,
+      "rot20Pct": 4.3,
       "ehpPct": 0,
       "note": null
      },
@@ -2097,9 +2148,9 @@
      {
       "name": "Xyris",
       "modeled": true,
-      "headlinePct": 2.1,
-      "burstPct": 3,
-      "rot20Pct": 1.9,
+      "headlinePct": 2,
+      "burstPct": 2.9,
+      "rot20Pct": 1.8,
       "ehpPct": 0,
       "note": null
      },
@@ -2107,7 +2158,7 @@
       "name": "Lotus",
       "modeled": true,
       "headlinePct": 1.4,
-      "burstPct": 2.1,
+      "burstPct": 2,
       "rot20Pct": 1.3,
       "ehpPct": 2.8,
       "note": null
@@ -2116,7 +2167,7 @@
       "name": "Vermis",
       "modeled": true,
       "headlinePct": 0,
-      "burstPct": 3.9,
+      "burstPct": 3.7,
       "rot20Pct": 0,
       "ehpPct": 0,
       "note": null
@@ -2158,7 +2209,7 @@
       "note": "Exarch (Major): buffs the HEAL TARGET (usually an ally) — team-side value outside the single-hero sim; self-heal uptime depends on heal cadence vs the 4s window"
      }
     ],
-    "augmentAware": null,
+    "augmentAware": "Imperial Duelist",
     "loadout": {
      "major": {
       "name": "Thraex",
@@ -2397,25 +2448,31 @@
     "candidates": [
      {
       "item": "Viper",
-      "playRatePct": 0.2,
+      "playRatePct": 0.4,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 160.3
      },
      {
       "item": "Basilisk",
-      "playRatePct": 0,
+      "playRatePct": 0.2,
+      "bestObjective": "20s fight vs bruisers",
+      "edgeVsPopularPct": 160.3
+     },
+     {
+      "item": "Solaris",
+      "playRatePct": 1.1,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 160.3
      },
      {
       "item": "Spear Of Desolation",
-      "playRatePct": 1.3,
+      "playRatePct": 1.8,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 160.3
      },
      {
       "item": "Augmentation",
-      "playRatePct": 1.7,
+      "playRatePct": 1.1,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 160.3
      }
@@ -2424,36 +2481,32 @@
    },
    "metaBuilds": [
     {
-     "title": "Lethality DPS Carry",
+     "title": "Physical Skirmisher",
      "items": [
       {
-       "name": "Malady",
-       "slug": "malady"
-      },
-      {
-       "name": "Painweaver",
-       "slug": "painweaver"
+       "name": "Mindrazor",
+       "slug": "mindrazor"
       },
       {
        "name": "Omen",
        "slug": "omen"
+      },
+      {
+       "name": "Painweaver",
+       "slug": "painweaver"
       }
      ],
-     "n": 99,
-     "shrunkWr": 0.538,
+     "n": 50,
+     "shrunkWr": 0.556,
      "coreGold": 8900,
      "spikeMinute": 24,
-     "bestObjective": "sustained auto DPS",
-     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 187 auto-attack DPS in the sim.",
-     "optimizer": "Optimizer sees +61% more sustained auto DPS: try Viper over Malady (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "bestObjective": "10s rotation damage",
+     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 24 — about 692 damage over a 10s rotation in the sim.",
+     "optimizer": "Optimizer sees +54% more 10s rotation damage: try Viper over Mindrazor (sim-only — the popular pick may carry utility the sim can't see; test it)."
     },
     {
-     "title": "Lethality Burst",
+     "title": "Physical Burst",
      "items": [
-      {
-       "name": "Malady",
-       "slug": "malady"
-      },
       {
        "name": "Omen",
        "slug": "omen"
@@ -2461,39 +2514,19 @@
       {
        "name": "ThePerforator",
        "slug": "the-perforator"
+      },
+      {
+       "name": "Solstice",
+       "slug": "solstice"
       }
      ],
-     "n": 59,
-     "shrunkWr": 0.528,
-     "coreGold": 9100,
+     "n": 28,
+     "shrunkWr": 0.546,
+     "coreGold": 9300,
      "spikeMinute": 25,
      "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 921 damage in one combo in the sim.",
-     "optimizer": "Optimizer agrees: within 7% of our best core on one-combo burst. The winrate is earned, not luck."
-    },
-    {
-     "title": "Lethality Frontline",
-     "items": [
-      {
-       "name": "Malady",
-       "slug": "malady"
-      },
-      {
-       "name": "Omen",
-       "slug": "omen"
-      },
-      {
-       "name": "TaintedTrident",
-       "slug": "tainted-trident"
-      }
-     ],
-     "n": 27,
-     "shrunkWr": 0.537,
-     "coreGold": 8800,
-     "spikeMinute": 24,
-     "bestObjective": "physical survivability",
-     "whyLine": "Strongest meta core for physical survivability, online around minute 24 — about 4,167 effective HP vs physical in the sim.",
-     "optimizer": "Optimizer sees +12% more physical survivability: try Viper over Malady (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 824 damage in one combo in the sim.",
+     "optimizer": "Optimizer agrees: within 4% of our best core on one-combo burst. The winrate is earned, not luck."
     }
    ],
    "stages": [
@@ -2644,11 +2677,11 @@
      ],
      "counterSwap": {
       "out": "Viper",
-      "in": "Void Helm",
-      "inSlug": "void-helm",
-      "survivalGainPct": 28,
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 22,
       "offenseLossPct": 34,
-      "line": "Losing lane? Third item Void Helm instead of Viper: their 3s all-in loses 28% of its bite, at the cost of 34% of this kit's damage."
+      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their 3s all-in loses 22% of its bite, at the cost of 34% of this kit's damage."
      }
     },
     {
@@ -2800,11 +2833,11 @@
      ],
      "counterSwap": {
       "out": "Viper",
-      "in": "Void Helm",
-      "inSlug": "void-helm",
-      "survivalGainPct": 34,
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 24,
       "offenseLossPct": 34,
-      "line": "Losing lane? Third item Void Helm instead of Viper: their 3s all-in loses 34% of its bite, at the cost of 34% of this kit's damage."
+      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their 3s all-in loses 24% of its bite, at the cost of 34% of this kit's damage."
      }
     },
     {
@@ -2847,7 +2880,19 @@
      }
     }
    ],
-   "laneSteer": null
+   "laneSteer": {
+    "augment": {
+     "id": "35",
+     "name": "Imperial Duelist"
+    },
+    "playstyle": "on-hit",
+    "modeled": true,
+    "wr": 46.7,
+    "n": 653,
+    "shiftIn": [],
+    "shiftOut": [],
+    "provenance": "“Imperial Duelist” ⇒ on-hit; the sim models this augment — field offlane 46.7% over 653 games."
+   }
   }
  ],
  "flags": [

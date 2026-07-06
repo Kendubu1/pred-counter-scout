@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-07-02",
+  "generatedAt": "2026-07-06",
   "note": "Per-hero optimizer-vs-field-core agreement (primary lane, lane-augment steer). coreRecall = fraction of the field top-core items the optimizer builds anywhere in its front; missed = field core items never built. missTally reason: fixable = mechanic is modeled or pure stat stick (in-engine valuation gap); blocked = value rides an unmodeled mechanic with an unstated magnitude (needs measurement, must not be estimated). Validation only — popularity never feeds the objective. See engine/src/ingest/agreement-audit.ts.",
   "summary": {
-    "heroes": 51,
+    "heroes": 53,
     "exactTrioHit": 5,
-    "avgCoreRecall": 0.607843137254902,
-    "avgTrioCoverage": 0.09411764705882353,
-    "missesFixable": 30,
-    "missesBlocked": 30
+    "avgCoreRecall": 0.6164150943396227,
+    "avgTrioCoverage": 0.10037735849056605,
+    "missesFixable": 32,
+    "missesBlocked": 29
   },
   "missTally": {
     "Entropy": {
@@ -58,10 +58,6 @@
       "n": 2,
       "reason": "fixable"
     },
-    "Windcaller": {
-      "n": 2,
-      "reason": "blocked"
-    },
     "Marshal": {
       "n": 2,
       "reason": "fixable"
@@ -78,6 +74,10 @@
       "n": 1,
       "reason": "blocked"
     },
+    "Berserker's Axe": {
+      "n": 1,
+      "reason": "blocked"
+    },
     "Salvation": {
       "n": 1,
       "reason": "blocked"
@@ -86,15 +86,15 @@
       "n": 1,
       "reason": "blocked"
     },
-    "Lightning Hawk": {
-      "n": 1,
-      "reason": "blocked"
-    },
     "Dust Devil": {
       "n": 1,
       "reason": "fixable"
     },
     "Golem's Gift": {
+      "n": 1,
+      "reason": "blocked"
+    },
+    "Windcaller": {
       "n": 1,
       "reason": "blocked"
     },
@@ -122,6 +122,10 @@
       "n": 1,
       "reason": "blocked"
     },
+    "Tainted Guard": {
+      "n": 1,
+      "reason": "fixable"
+    },
     "Inquisition": {
       "n": 1,
       "reason": "fixable"
@@ -135,6 +139,10 @@
       "reason": "fixable"
     },
     "Wraith Leggings": {
+      "n": 1,
+      "reason": "fixable"
+    },
+    "Mindrazor": {
       "n": 1,
       "reason": "fixable"
     },
@@ -157,7 +165,7 @@
         "Enra's Blessing",
         "Windcaller"
       ],
-      "topCoreN": 68,
+      "topCoreN": 193,
       "topCoreCovered": false,
       "coreRecall": 0,
       "missed": [
@@ -179,7 +187,7 @@
         "Enra's Blessing",
         "Galaxy Greaves"
       ],
-      "topCoreN": 290,
+      "topCoreN": 936,
       "topCoreCovered": false,
       "coreRecall": 0,
       "missed": [
@@ -191,17 +199,17 @@
     {
       "hero": "Wraith",
       "lane": "midlane",
-      "augment": "Mystic Marksman",
+      "augment": "Sniper's Bounty",
       "steer": null,
       "hitAtK": false,
-      "coverage": 0,
+      "coverage": 0.12,
       "rankCorr": null,
       "topCore": [
         "Soulbinder",
         "Noxia",
         "Wraith Leggings"
       ],
-      "topCoreN": 126,
+      "topCoreN": 469,
       "topCoreCovered": false,
       "coreRecall": 0,
       "missed": [
@@ -223,7 +231,7 @@
         "Xenia",
         "Raiment of Renewal"
       ],
-      "topCoreN": 142,
+      "topCoreN": 384,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
@@ -233,9 +241,9 @@
     },
     {
       "hero": "Argus",
-      "lane": "support",
-      "augment": "Infinite Obliteration",
-      "steer": "poke",
+      "lane": "midlane",
+      "augment": "Mana Catalyst",
+      "steer": "on-hit",
       "hitAtK": false,
       "coverage": 0,
       "rankCorr": null,
@@ -244,7 +252,7 @@
         "Entropy",
         "Wraith Leggings"
       ],
-      "topCoreN": 253,
+      "topCoreN": 811,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
@@ -265,12 +273,33 @@
         "Rapture",
         "Cursed Scroll"
       ],
-      "topCoreN": 163,
+      "topCoreN": 483,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
         "Overlord",
         "Cursed Scroll"
+      ]
+    },
+    {
+      "hero": "Crunch",
+      "lane": "offlane",
+      "augment": "Combo Crunch",
+      "steer": "on-hit",
+      "hitAtK": false,
+      "coverage": 0,
+      "rankCorr": null,
+      "topCore": [
+        "Berserker's Axe",
+        "Augmentation",
+        "Salvation"
+      ],
+      "topCoreN": 165,
+      "topCoreCovered": false,
+      "coreRecall": 0.33,
+      "missed": [
+        "Berserker's Axe",
+        "Salvation"
       ]
     },
     {
@@ -286,33 +315,12 @@
         "Painweaver",
         "Omen"
       ],
-      "topCoreN": 99,
+      "topCoreN": 243,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
         "Malady",
         "Omen"
-      ]
-    },
-    {
-      "hero": "GRIM.exe",
-      "lane": "carry",
-      "augment": "System Restore",
-      "steer": "sustain",
-      "hitAtK": false,
-      "coverage": 0,
-      "rankCorr": null,
-      "topCore": [
-        "Lightning Hawk",
-        "Plasma Blade",
-        "Dust Devil"
-      ],
-      "topCoreN": 107,
-      "topCoreCovered": false,
-      "coreRecall": 0.33,
-      "missed": [
-        "Lightning Hawk",
-        "Dust Devil"
       ]
     },
     {
@@ -328,7 +336,7 @@
         "Entropy",
         "Megacosm"
       ],
-      "topCoreN": 152,
+      "topCoreN": 538,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
@@ -349,33 +357,12 @@
         "Lifebinder",
         "Megacosm"
       ],
-      "topCoreN": 70,
+      "topCoreN": 251,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
         "Lifebinder",
         "Megacosm"
-      ]
-    },
-    {
-      "hero": "Muriel",
-      "lane": "support",
-      "augment": "Sacrosanct",
-      "steer": "sustain",
-      "hitAtK": false,
-      "coverage": 0,
-      "rankCorr": null,
-      "topCore": [
-        "Marshal",
-        "Crystal Tear",
-        "Windcaller"
-      ],
-      "topCoreN": 123,
-      "topCoreCovered": false,
-      "coreRecall": 0.33,
-      "missed": [
-        "Marshal",
-        "Windcaller"
       ]
     },
     {
@@ -391,7 +378,7 @@
         "Rapture",
         "Cursed Scroll"
       ],
-      "topCoreN": 190,
+      "topCoreN": 590,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
@@ -412,7 +399,7 @@
         "Wraith Leggings",
         "Overseer"
       ],
-      "topCoreN": 543,
+      "topCoreN": 1758,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
@@ -433,7 +420,7 @@
         "Xenia",
         "Frosted Lure"
       ],
-      "topCoreN": 162,
+      "topCoreN": 535,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
@@ -454,7 +441,7 @@
         "Storm Breaker",
         "Spectra"
       ],
-      "topCoreN": 232,
+      "topCoreN": 626,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
@@ -475,7 +462,7 @@
         "Fist Of Razuul",
         "Flux Matrix"
       ],
-      "topCoreN": 45,
+      "topCoreN": 118,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
@@ -496,7 +483,7 @@
         "Sky Splitter",
         "Spectra"
       ],
-      "topCoreN": 459,
+      "topCoreN": 1184,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
@@ -517,12 +504,33 @@
         "Dynamo",
         "Gaia Greaves"
       ],
-      "topCoreN": 218,
+      "topCoreN": 722,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
         "Xenia",
         "Gaia Greaves"
+      ]
+    },
+    {
+      "hero": "Terra",
+      "lane": "offlane",
+      "augment": "Iron Resolve",
+      "steer": "tank",
+      "hitAtK": false,
+      "coverage": 0,
+      "rankCorr": null,
+      "topCore": [
+        "Fire Blossom",
+        "Tainted Guard",
+        "Inquisition"
+      ],
+      "topCoreN": 169,
+      "topCoreCovered": false,
+      "coreRecall": 0.33,
+      "missed": [
+        "Tainted Guard",
+        "Inquisition"
       ]
     },
     {
@@ -538,7 +546,7 @@
         "Spectra",
         "Orion"
       ],
-      "topCoreN": 319,
+      "topCoreN": 965,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
@@ -552,59 +560,19 @@
       "augment": "Auto-Lock Amp",
       "steer": null,
       "hitAtK": false,
-      "coverage": 0.25,
+      "coverage": 0.21,
       "rankCorr": null,
       "topCore": [
         "Azure Core",
         "Entropy",
         "Overseer"
       ],
-      "topCoreN": 80,
+      "topCoreN": 261,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
         "Azure Core",
         "Entropy"
-      ]
-    },
-    {
-      "hero": "Akeron",
-      "lane": "offlane",
-      "augment": "Death From Above",
-      "steer": "poke",
-      "hitAtK": false,
-      "coverage": 0,
-      "rankCorr": null,
-      "topCore": [
-        "Magnify",
-        "Tainted Scepter",
-        "Truesilver Bracelet"
-      ],
-      "topCoreN": 27,
-      "topCoreCovered": false,
-      "coreRecall": 0.67,
-      "missed": [
-        "Truesilver Bracelet"
-      ]
-    },
-    {
-      "hero": "Crunch",
-      "lane": "offlane",
-      "augment": "Combo Crunch",
-      "steer": "on-hit",
-      "hitAtK": false,
-      "coverage": 0,
-      "rankCorr": null,
-      "topCore": [
-        "Augmentation",
-        "Mutilator",
-        "Salvation"
-      ],
-      "topCoreN": 55,
-      "topCoreCovered": false,
-      "coreRecall": 0.67,
-      "missed": [
-        "Salvation"
       ]
     },
     {
@@ -620,7 +588,7 @@
         "Timewarp",
         "Dynamo"
       ],
-      "topCoreN": 365,
+      "topCoreN": 990,
       "topCoreCovered": false,
       "coreRecall": 0.67,
       "missed": [
@@ -640,7 +608,7 @@
         "Combustion",
         "Wraith Leggings"
       ],
-      "topCoreN": 407,
+      "topCoreN": 1260,
       "topCoreCovered": false,
       "coreRecall": 0.67,
       "missed": [
@@ -660,11 +628,31 @@
         "Augmentation",
         "Basilisk"
       ],
-      "topCoreN": 192,
+      "topCoreN": 578,
       "topCoreCovered": false,
       "coreRecall": 0.67,
       "missed": [
         "Overlord"
+      ]
+    },
+    {
+      "hero": "GRIM.exe",
+      "lane": "carry",
+      "augment": "System Restore",
+      "steer": "sustain",
+      "hitAtK": false,
+      "coverage": 0,
+      "rankCorr": null,
+      "topCore": [
+        "Lightning Hawk",
+        "Plasma Blade",
+        "Dust Devil"
+      ],
+      "topCoreN": 339,
+      "topCoreCovered": false,
+      "coreRecall": 0.67,
+      "missed": [
+        "Dust Devil"
       ]
     },
     {
@@ -680,7 +668,7 @@
         "Vanquisher",
         "Spear Of Desolation"
       ],
-      "topCoreN": 238,
+      "topCoreN": 696,
       "topCoreCovered": false,
       "coreRecall": 0.67,
       "missed": [
@@ -700,7 +688,7 @@
         "Basilisk",
         "Rapture"
       ],
-      "topCoreN": 330,
+      "topCoreN": 1082,
       "topCoreCovered": false,
       "coreRecall": 0.67,
       "missed": [
@@ -720,7 +708,7 @@
         "Vanquisher",
         "Deathstalker"
       ],
-      "topCoreN": 427,
+      "topCoreN": 1357,
       "topCoreCovered": false,
       "coreRecall": 0.67,
       "missed": [
@@ -740,11 +728,31 @@
         "Dynamo",
         "Enra's Blessing"
       ],
-      "topCoreN": 81,
+      "topCoreN": 307,
       "topCoreCovered": false,
       "coreRecall": 0.67,
       "missed": [
         "Enra's Blessing"
+      ]
+    },
+    {
+      "hero": "Muriel",
+      "lane": "support",
+      "augment": "Sacrosanct",
+      "steer": "sustain",
+      "hitAtK": false,
+      "coverage": 0,
+      "rankCorr": null,
+      "topCore": [
+        "Marshal",
+        "Crystal Tear",
+        "Windcaller"
+      ],
+      "topCoreN": 353,
+      "topCoreCovered": false,
+      "coreRecall": 0.67,
+      "missed": [
+        "Marshal"
       ]
     },
     {
@@ -760,7 +768,7 @@
         "Crystal Tear",
         "Dynamo"
       ],
-      "topCoreN": 133,
+      "topCoreN": 394,
       "topCoreCovered": false,
       "coreRecall": 0.67,
       "missed": [
@@ -768,23 +776,23 @@
       ]
     },
     {
-      "hero": "Terra",
-      "lane": "offlane",
-      "augment": "Iron Resolve",
-      "steer": "tank",
+      "hero": "Wukong",
+      "lane": "jungle",
+      "augment": "Masterful Mimicry",
+      "steer": null,
       "hitAtK": false,
       "coverage": 0,
       "rankCorr": null,
       "topCore": [
-        "Fire Blossom",
-        "Tainted Guard",
-        "Inquisition"
+        "Mindrazor",
+        "Augmentation",
+        "Painweaver"
       ],
-      "topCoreN": 55,
+      "topCoreN": 60,
       "topCoreCovered": false,
       "coreRecall": 0.67,
       "missed": [
-        "Inquisition"
+        "Mindrazor"
       ]
     },
     {
@@ -800,7 +808,7 @@
         "Onixian Quiver",
         "Ashbringer"
       ],
-      "topCoreN": 87,
+      "topCoreN": 247,
       "topCoreCovered": false,
       "coreRecall": 0.67,
       "missed": [
@@ -810,8 +818,8 @@
     {
       "hero": "Yurei",
       "lane": "jungle",
-      "augment": "Soul Weaver",
-      "steer": "ability-burst",
+      "augment": "Ephemeral Surge",
+      "steer": "poke",
       "hitAtK": false,
       "coverage": 0,
       "rankCorr": null,
@@ -820,11 +828,31 @@
         "Spear Of Desolation",
         "The Perforator"
       ],
-      "topCoreN": 89,
+      "topCoreN": 265,
       "topCoreCovered": false,
       "coreRecall": 0.67,
       "missed": [
         "Malady"
+      ]
+    },
+    {
+      "hero": "Akeron",
+      "lane": "offlane",
+      "augment": "Death From Above",
+      "steer": "poke",
+      "hitAtK": false,
+      "coverage": 0.1,
+      "rankCorr": null,
+      "topCore": [
+        "Magnify",
+        "Tainted Scepter",
+        "Truesilver Bracelet"
+      ],
+      "topCoreN": 87,
+      "topCoreCovered": false,
+      "coreRecall": 0.67,
+      "missed": [
+        "Truesilver Bracelet"
       ]
     },
     {
@@ -833,14 +861,14 @@
       "augment": "Wild Growth",
       "steer": "poke",
       "hitAtK": false,
-      "coverage": 0.15,
-      "rankCorr": -1,
+      "coverage": 0.14,
+      "rankCorr": 1,
       "topCore": [
         "Combustion",
         "Wraith Leggings",
         "Megacosm"
       ],
-      "topCoreN": 333,
+      "topCoreN": 1104,
       "topCoreCovered": false,
       "coreRecall": 0.67,
       "missed": [
@@ -853,14 +881,14 @@
       "augment": "Amplified Burst",
       "steer": "poke",
       "hitAtK": false,
-      "coverage": 0.2,
+      "coverage": 0.22,
       "rankCorr": null,
       "topCore": [
         "Solaris",
         "Ashbringer",
         "Imperator"
       ],
-      "topCoreN": 187,
+      "topCoreN": 576,
       "topCoreCovered": false,
       "coreRecall": 0.67,
       "missed": [
@@ -873,14 +901,14 @@
       "augment": "Glacial Thorns",
       "steer": "ability-burst",
       "hitAtK": false,
-      "coverage": 0.26,
-      "rankCorr": 1,
+      "coverage": 0.24,
+      "rankCorr": -1,
       "topCore": [
         "Magnify",
         "Elafrost",
         "Flux Matrix"
       ],
-      "topCoreN": 114,
+      "topCoreN": 350,
       "topCoreCovered": false,
       "coreRecall": 0.67,
       "missed": [
@@ -893,14 +921,14 @@
       "augment": "Slayer of the Heavens",
       "steer": "ability-burst",
       "hitAtK": false,
-      "coverage": 0.53,
-      "rankCorr": 1,
+      "coverage": 0.5,
+      "rankCorr": 0.5,
       "topCore": [
         "Magnify",
         "Oathkeeper",
         "Golem's Gift"
       ],
-      "topCoreN": 46,
+      "topCoreN": 144,
       "topCoreCovered": false,
       "coreRecall": 0.67,
       "missed": [
@@ -920,7 +948,7 @@
         "Basilisk",
         "Rapture"
       ],
-      "topCoreN": 172,
+      "topCoreN": 488,
       "topCoreCovered": false,
       "coreRecall": 1,
       "missed": []
@@ -938,7 +966,7 @@
         "Noxia",
         "Wraith Leggings"
       ],
-      "topCoreN": 162,
+      "topCoreN": 407,
       "topCoreCovered": false,
       "coreRecall": 1,
       "missed": []
@@ -956,7 +984,7 @@
         "Vanquisher",
         "Nuclear Rounds"
       ],
-      "topCoreN": 140,
+      "topCoreN": 395,
       "topCoreCovered": false,
       "coreRecall": 1,
       "missed": []
@@ -974,7 +1002,7 @@
         "Ashbringer",
         "Imperator"
       ],
-      "topCoreN": 213,
+      "topCoreN": 744,
       "topCoreCovered": false,
       "coreRecall": 1,
       "missed": []
@@ -992,7 +1020,7 @@
         "Tainted Scepter",
         "Oathkeeper"
       ],
-      "topCoreN": 71,
+      "topCoreN": 288,
       "topCoreCovered": false,
       "coreRecall": 1,
       "missed": []
@@ -1010,7 +1038,7 @@
         "Mutilator",
         "Basilisk"
       ],
-      "topCoreN": 73,
+      "topCoreN": 209,
       "topCoreCovered": false,
       "coreRecall": 1,
       "missed": []
@@ -1028,7 +1056,7 @@
         "Noxia",
         "Wraith Leggings"
       ],
-      "topCoreN": 157,
+      "topCoreN": 480,
       "topCoreCovered": false,
       "coreRecall": 1,
       "missed": []
@@ -1039,14 +1067,32 @@
       "augment": "Lust For Blood",
       "steer": "sustain",
       "hitAtK": false,
-      "coverage": 0.14,
+      "coverage": 0.15,
       "rankCorr": null,
       "topCore": [
         "Sky Splitter",
         "Basilisk",
         "Rapture"
       ],
-      "topCoreN": 122,
+      "topCoreN": 407,
+      "topCoreCovered": false,
+      "coreRecall": 1,
+      "missed": []
+    },
+    {
+      "hero": "Ikra",
+      "lane": "carry",
+      "augment": "Cascade",
+      "steer": "on-hit",
+      "hitAtK": false,
+      "coverage": 0.3,
+      "rankCorr": 0.5,
+      "topCore": [
+        "Combustion",
+        "Wraith Leggings",
+        "Noxia"
+      ],
+      "topCoreN": 1079,
       "topCoreCovered": false,
       "coreRecall": 1,
       "missed": []
@@ -1058,13 +1104,13 @@
       "steer": "poke",
       "hitAtK": false,
       "coverage": 0.31,
-      "rankCorr": 1,
+      "rankCorr": 0.5,
       "topCore": [
         "Combustion",
         "Wraith Leggings",
         "Noxia"
       ],
-      "topCoreN": 137,
+      "topCoreN": 384,
       "topCoreCovered": false,
       "coreRecall": 1,
       "missed": []
@@ -1075,14 +1121,14 @@
       "augment": "Bring The Boom",
       "steer": "ability-burst",
       "hitAtK": true,
-      "coverage": 0.42,
+      "coverage": 0.45,
       "rankCorr": null,
       "topCore": [
         "Lightning Hawk",
         "Vanquisher",
         "Imperator"
       ],
-      "topCoreN": 197,
+      "topCoreN": 675,
       "topCoreCovered": true,
       "coreRecall": 1,
       "missed": []
@@ -1093,32 +1139,14 @@
       "augment": "Justice's Reach",
       "steer": "poke",
       "hitAtK": true,
-      "coverage": 0.49,
+      "coverage": 0.48,
       "rankCorr": null,
       "topCore": [
         "Lightning Hawk",
         "Vanquisher",
         "Imperator"
       ],
-      "topCoreN": 431,
-      "topCoreCovered": true,
-      "coreRecall": 1,
-      "missed": []
-    },
-    {
-      "hero": "Skylar",
-      "lane": "carry",
-      "augment": "Assault MK-II ",
-      "steer": "poke",
-      "hitAtK": true,
-      "coverage": 0.54,
-      "rankCorr": -1,
-      "topCore": [
-        "Plasma Blade",
-        "Vanquisher",
-        "Imperator"
-      ],
-      "topCoreN": 265,
+      "topCoreN": 1337,
       "topCoreCovered": true,
       "coreRecall": 1,
       "missed": []
@@ -1129,14 +1157,32 @@
       "augment": "Ghost in the Machine",
       "steer": null,
       "hitAtK": true,
-      "coverage": 0.57,
-      "rankCorr": -1,
+      "coverage": 0.56,
+      "rankCorr": null,
       "topCore": [
         "Combustion",
         "Wraith Leggings",
         "Amulet Of Chaos"
       ],
-      "topCoreN": 120,
+      "topCoreN": 422,
+      "topCoreCovered": true,
+      "coreRecall": 1,
+      "missed": []
+    },
+    {
+      "hero": "Skylar",
+      "lane": "carry",
+      "augment": "Assault MK-II ",
+      "steer": "poke",
+      "hitAtK": true,
+      "coverage": 0.59,
+      "rankCorr": -1,
+      "topCore": [
+        "Plasma Blade",
+        "Vanquisher",
+        "Imperator"
+      ],
+      "topCoreN": 935,
       "topCoreCovered": true,
       "coreRecall": 1,
       "missed": []
@@ -1147,14 +1193,14 @@
       "augment": "Hellfire Blast",
       "steer": "tank",
       "hitAtK": true,
-      "coverage": 0.81,
+      "coverage": 0.82,
       "rankCorr": -0.5,
       "topCore": [
         "Vanquisher",
         "Imperator",
         "Terminus"
       ],
-      "topCoreN": 370,
+      "topCoreN": 1095,
       "topCoreCovered": true,
       "coreRecall": 1,
       "missed": []

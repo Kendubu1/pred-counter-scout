@@ -54,17 +54,22 @@ export async function gql<T>(query: string, variables?: Record<string, unknown>)
   throw lastErr ?? new Error('pred.gg gql: retries exhausted');
 }
 
-/** The newest NAMED game version on pred.gg (e.g. { id: "152", name: "1.15" }).
+/** The current patch FAMILY on pred.gg (e.g. { ids: ["152","153"], name: "1.15" }).
  *  Used to pin build/perk statistics to the current patch; entries with a null
- *  name are unreleased/internal and skipped. Cached per process. */
-let cachedVersion: { id: string; name: string } | null = null;
-export async function currentVersion(): Promise<{ id: string; name: string }> {
+ *  name are unreleased/internal and skipped. Pinning only the newest named entry
+ *  proved wrong on 1.15+1 day one: a fresh hotfix gets its own version id with
+ *  near-zero games, zeroing every build/perk pool — so include every named
+ *  version that shares the newest base "major.minor". Cached per process. */
+let cachedVersion: { id: string; name: string; ids: string[] } | null = null;
+export async function currentVersion(): Promise<{ id: string; name: string; ids: string[] }> {
   if (cachedVersion) return cachedVersion;
   const d = await gql<{ versions: { id: string; name: string | null }[] }>(`{ versions { id name } }`);
   const named = d.versions.filter((v) => v.name);
   const last = named[named.length - 1];
   if (!last) throw new Error('pred.gg: no named versions');
-  cachedVersion = { id: last.id, name: last.name! };
+  const base = (last.name!.match(/^\d+\.\d+/) ?? [last.name!])[0];
+  const family = named.filter((v) => (v.name!.match(/^\d+\.\d+/) ?? [v.name!])[0] === base);
+  cachedVersion = { id: last.id, name: base, ids: family.map((v) => v.id) };
   return cachedVersion;
 }
 

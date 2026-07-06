@@ -14,7 +14,8 @@
   "notes": [
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
-   "evidence deltas carry finished-inventory survivorship bias"
+   "evidence deltas carry finished-inventory survivorship bias",
+   "the sim opens on Viper, which the field has tried and lost with (-0.2% winrate over 101 games) — treat this opener as a sim blind-spot and weight the field"
   ]
  },
  "build": {
@@ -24,49 +25,49 @@
     "name": "Viper",
     "slug": "viper",
     "spikeMinute": 12,
-    "playRatePct": 10.8,
-    "evidenceDeltaWr": 0.4,
-    "evidenceN": 78
+    "playRatePct": 13.3,
+    "evidenceDeltaWr": -0.2,
+    "evidenceN": 101
    },
    {
     "name": "Deathstalker",
     "slug": "deathstalker",
     "spikeMinute": 19,
-    "playRatePct": 0.8,
-    "evidenceDeltaWr": null,
-    "evidenceN": null
+    "playRatePct": 1.3,
+    "evidenceDeltaWr": 1,
+    "evidenceN": 10
    },
    {
     "name": "Vanquisher",
     "slug": "vanquisher",
     "spikeMinute": 24,
-    "playRatePct": 61.8,
-    "evidenceDeltaWr": 1.1,
-    "evidenceN": 446
+    "playRatePct": 69.2,
+    "evidenceDeltaWr": 0.8,
+    "evidenceN": 527
    },
    {
     "name": "Plasma Blade",
     "slug": "plasma-blade",
     "spikeMinute": 30,
-    "playRatePct": 69.4,
-    "evidenceDeltaWr": -1.9,
-    "evidenceN": 501
+    "playRatePct": 68.1,
+    "evidenceDeltaWr": -0.7,
+    "evidenceN": 519
    },
    {
     "name": "Imperator",
     "slug": "imperator",
-    "spikeMinute": 36,
-    "playRatePct": 36.8,
-    "evidenceDeltaWr": 3.4,
-    "evidenceN": 266
+    "spikeMinute": 35,
+    "playRatePct": 40.4,
+    "evidenceDeltaWr": 1.7,
+    "evidenceN": 308
    },
    {
     "name": "Demolisher",
     "slug": "demolisher",
-    "spikeMinute": 41,
-    "playRatePct": 12.5,
+    "spikeMinute": 40,
+    "playRatePct": 13.3,
     "evidenceDeltaWr": 2.4,
-    "evidenceN": 90
+    "evidenceN": 101
    }
   ],
   "gold": 18700,
@@ -484,9 +485,9 @@
   "candidates": [
    {
     "item": "Deathstalker",
-    "playRatePct": 0.8,
+    "playRatePct": 1.3,
     "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 77
+    "edgeVsPopularPct": 78.9
    }
   ],
   "honestAbsence": null
@@ -508,8 +509,8 @@
      "slug": "imperator"
     }
    ],
-   "n": 245,
-   "shrunkWr": 0.522,
+   "n": 879,
+   "shrunkWr": 0.486,
    "coreGold": 9500,
    "spikeMinute": 25,
    "bestObjective": "one-combo burst",
@@ -532,8 +533,8 @@
      "slug": "tainted-rounds"
     }
    ],
-   "n": 102,
-   "shrunkWr": 0.544,
+   "n": 361,
+   "shrunkWr": 0.508,
    "coreGold": 9100,
    "spikeMinute": 24,
    "bestObjective": "sustained auto DPS",
@@ -556,8 +557,8 @@
      "slug": "scattershot"
     }
    ],
-   "n": 85,
-   "shrunkWr": 0.537,
+   "n": 256,
+   "shrunkWr": 0.544,
    "coreGold": 9200,
    "spikeMinute": 24,
    "bestObjective": "10s rotation damage",
@@ -595,12 +596,7 @@
     "utility": 0,
     "sustain10s": 0
    },
-   "betterEarly": {
-    "inItem": "Sky Splitter",
-    "inSlug": "sky-splitter",
-    "outItem": "Deathstalker",
-    "edgePct": 10.3
-   }
+   "betterEarly": null
   },
   {
    "label": "mid",
@@ -640,7 +636,7 @@
   {
    "label": "late",
    "itemCount": 6,
-   "minute": 41,
+   "minute": 40,
    "level": 17,
    "core": [
     {
@@ -687,6 +683,45 @@
  ],
  "matchups": [
   {
+   "enemy": "Ikra",
+   "enemySlug": "ikra",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Ikra deals area damage — spread out so one cast can't catch the group.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 10,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 15,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 20,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 25,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 30,
+     "verdict": "enemy"
+    }
+   ],
+   "counterSwap": {
+    "out": "Plasma Blade",
+    "in": "Crystalline Cuirass",
+    "inSlug": "crystalline-cuirass",
+    "survivalGainPct": 30,
+    "offenseLossPct": 34,
+    "line": "Losing lane? Third item Crystalline Cuirass instead of Plasma Blade: their 3s all-in loses 30% of its bite, at the cost of 34% of this kit's damage."
+   }
+  },
+  {
    "enemy": "Sparrow",
    "enemySlug": "sparrow",
    "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange. Sparrow ramps on auto-attacks — pressure their positioning before they itemize, and armor blunts them later.",
@@ -726,6 +761,45 @@
    }
   },
   {
+   "enemy": "Legion",
+   "enemySlug": "legion",
+   "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Legion deals area damage — spread out so one cast can't catch the group.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "you"
+    },
+    {
+     "minute": 10,
+     "verdict": "you"
+    },
+    {
+     "minute": 15,
+     "verdict": "you"
+    },
+    {
+     "minute": 20,
+     "verdict": "you"
+    },
+    {
+     "minute": 25,
+     "verdict": "you"
+    },
+    {
+     "minute": 30,
+     "verdict": "you"
+    }
+   ],
+   "counterSwap": {
+    "out": "Plasma Blade",
+    "in": "Warden's Faith",
+    "inSlug": "wardens-faith",
+    "survivalGainPct": 29,
+    "offenseLossPct": 34,
+    "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 29% of its bite, at the cost of 34% of this kit's damage."
+   }
+  },
+  {
    "enemy": "Murdock",
    "enemySlug": "murdock",
    "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Murdock deals area damage — spread out so one cast can't catch the group.",
@@ -757,11 +831,11 @@
    ],
    "counterSwap": {
     "out": "Plasma Blade",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 24,
-    "offenseLossPct": 34,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Plasma Blade: their 3s all-in loses 24% of its bite, at the cost of 34% of this kit's damage."
+    "in": "Aegis Of Agawar",
+    "inSlug": "aegis-of-agawar",
+    "survivalGainPct": 19,
+    "offenseLossPct": 19,
+    "line": "Losing lane? Third item Aegis Of Agawar instead of Plasma Blade: their 3s all-in loses 19% of its bite, at the cost of 19% of this kit's damage."
    }
   },
   {
@@ -796,11 +870,11 @@
    ],
    "counterSwap": {
     "out": "Plasma Blade",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 24,
-    "offenseLossPct": 34,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Plasma Blade: their 3s all-in loses 24% of its bite, at the cost of 34% of this kit's damage."
+    "in": "Aegis Of Agawar",
+    "inSlug": "aegis-of-agawar",
+    "survivalGainPct": 19,
+    "offenseLossPct": 19,
+    "line": "Losing lane? Third item Aegis Of Agawar instead of Plasma Blade: their 3s all-in loses 19% of its bite, at the cost of 19% of this kit's damage."
    }
   },
   {
@@ -835,89 +909,11 @@
    ],
    "counterSwap": {
     "out": "Plasma Blade",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 24,
-    "offenseLossPct": 34,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Plasma Blade: their 3s all-in loses 24% of its bite, at the cost of 34% of this kit's damage."
-   }
-  },
-  {
-   "enemy": "TwinBlast",
-   "enemySlug": "twinblast",
-   "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. TwinBlast ramps on auto-attacks — pressure their positioning before they itemize, and mixed resist blunts them later.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 10,
-     "verdict": "even"
-    },
-    {
-     "minute": 15,
-     "verdict": "you"
-    },
-    {
-     "minute": 20,
-     "verdict": "you"
-    },
-    {
-     "minute": 25,
-     "verdict": "you"
-    },
-    {
-     "minute": 30,
-     "verdict": "even"
-    }
-   ],
-   "counterSwap": {
-    "out": "Plasma Blade",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 24,
-    "offenseLossPct": 34,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Plasma Blade: their 3s all-in loses 24% of its bite, at the cost of 34% of this kit's damage."
-   }
-  },
-  {
-   "enemy": "Eden",
-   "enemySlug": "eden",
-   "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Eden ramps on auto-attacks — pressure them before they itemize, and armor blunts them later.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 10,
-     "verdict": "even"
-    },
-    {
-     "minute": 15,
-     "verdict": "even"
-    },
-    {
-     "minute": 20,
-     "verdict": "you"
-    },
-    {
-     "minute": 25,
-     "verdict": "you"
-    },
-    {
-     "minute": 30,
-     "verdict": "you"
-    }
-   ],
-   "counterSwap": {
-    "out": "Plasma Blade",
-    "in": "Warden's Faith",
-    "inSlug": "wardens-faith",
-    "survivalGainPct": 36,
-    "offenseLossPct": 34,
-    "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 36% of its bite, at the cost of 34% of this kit's damage."
+    "in": "Aegis Of Agawar",
+    "inSlug": "aegis-of-agawar",
+    "survivalGainPct": 19,
+    "offenseLossPct": 19,
+    "line": "Losing lane? Third item Aegis Of Agawar instead of Plasma Blade: their 3s all-in loses 19% of its bite, at the cost of 19% of this kit's damage."
    }
   }
  ],
@@ -929,7 +925,7 @@
   "playstyle": "poke",
   "modeled": false,
   "wr": 49.6,
-  "n": 1533,
+  "n": 5067,
   "shiftIn": [
    "Mutilator",
    "The Perforator",
@@ -942,12 +938,12 @@
    "Vanquisher",
    "Demolisher"
   ],
-  "provenance": "“Assault MK-II ” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 49.6% over 1,533 games, magnitude not simulated."
+  "provenance": "“Assault MK-II ” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 49.6% over 5,067 games, magnitude not simulated."
  },
  "slug": "skylar",
  "name": "Skylar",
- "patch": "1.14.4",
- "generatedAt": "2026-07-03T17:18:19.646Z",
+ "patch": "1.15",
+ "generatedAt": "2026-07-06T17:21:40.134Z",
  "damageType": "hybrid",
  "attackType": "ranged",
  "laneFlex": [
@@ -960,7 +956,7 @@
    "playstyle": "poke",
    "modeled": false,
    "wr": 49.6,
-   "n": 1533,
+   "n": 5067,
    "core": [
     {
      "name": "Mutilator",
@@ -988,7 +984,7 @@
     }
    ],
    "headline": "skirmish uptime",
-   "provenance": "“Assault MK-II ” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 49.6% over 1,533 games, magnitude not simulated."
+   "provenance": "“Assault MK-II ” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 49.6% over 5,067 games, magnitude not simulated."
   }
  ],
  "roles": [
@@ -1008,7 +1004,8 @@
     "notes": [
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
-     "evidence deltas carry finished-inventory survivorship bias"
+     "evidence deltas carry finished-inventory survivorship bias",
+     "the sim opens on Viper, which the field has tried and lost with (-0.2% winrate over 101 games) — treat this opener as a sim blind-spot and weight the field"
     ]
    },
    "build": {
@@ -1018,49 +1015,49 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 12,
-      "playRatePct": 10.8,
-      "evidenceDeltaWr": 0.4,
-      "evidenceN": 78
+      "playRatePct": 13.3,
+      "evidenceDeltaWr": -0.2,
+      "evidenceN": 101
      },
      {
       "name": "Deathstalker",
       "slug": "deathstalker",
       "spikeMinute": 19,
-      "playRatePct": 0.8,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
+      "playRatePct": 1.3,
+      "evidenceDeltaWr": 1,
+      "evidenceN": 10
      },
      {
       "name": "Vanquisher",
       "slug": "vanquisher",
       "spikeMinute": 24,
-      "playRatePct": 61.8,
-      "evidenceDeltaWr": 1.1,
-      "evidenceN": 446
+      "playRatePct": 69.2,
+      "evidenceDeltaWr": 0.8,
+      "evidenceN": 527
      },
      {
       "name": "Plasma Blade",
       "slug": "plasma-blade",
       "spikeMinute": 30,
-      "playRatePct": 69.4,
-      "evidenceDeltaWr": -1.9,
-      "evidenceN": 501
+      "playRatePct": 68.1,
+      "evidenceDeltaWr": -0.7,
+      "evidenceN": 519
      },
      {
       "name": "Imperator",
       "slug": "imperator",
-      "spikeMinute": 36,
-      "playRatePct": 36.8,
-      "evidenceDeltaWr": 3.4,
-      "evidenceN": 266
+      "spikeMinute": 35,
+      "playRatePct": 40.4,
+      "evidenceDeltaWr": 1.7,
+      "evidenceN": 308
      },
      {
       "name": "Demolisher",
       "slug": "demolisher",
-      "spikeMinute": 41,
-      "playRatePct": 12.5,
+      "spikeMinute": 40,
+      "playRatePct": 13.3,
       "evidenceDeltaWr": 2.4,
-      "evidenceN": 90
+      "evidenceN": 101
      }
     ],
     "gold": 18700,
@@ -1478,9 +1475,9 @@
     "candidates": [
      {
       "item": "Deathstalker",
-      "playRatePct": 0.8,
+      "playRatePct": 1.3,
       "bestObjective": "20s fight vs bruisers",
-      "edgeVsPopularPct": 77
+      "edgeVsPopularPct": 78.9
      }
     ],
     "honestAbsence": null
@@ -1502,8 +1499,8 @@
        "slug": "imperator"
       }
      ],
-     "n": 245,
-     "shrunkWr": 0.522,
+     "n": 879,
+     "shrunkWr": 0.486,
      "coreGold": 9500,
      "spikeMinute": 25,
      "bestObjective": "one-combo burst",
@@ -1526,8 +1523,8 @@
        "slug": "tainted-rounds"
       }
      ],
-     "n": 102,
-     "shrunkWr": 0.544,
+     "n": 361,
+     "shrunkWr": 0.508,
      "coreGold": 9100,
      "spikeMinute": 24,
      "bestObjective": "sustained auto DPS",
@@ -1550,8 +1547,8 @@
        "slug": "scattershot"
       }
      ],
-     "n": 85,
-     "shrunkWr": 0.537,
+     "n": 256,
+     "shrunkWr": 0.544,
      "coreGold": 9200,
      "spikeMinute": 24,
      "bestObjective": "10s rotation damage",
@@ -1589,12 +1586,7 @@
       "utility": 0,
       "sustain10s": 0
      },
-     "betterEarly": {
-      "inItem": "Sky Splitter",
-      "inSlug": "sky-splitter",
-      "outItem": "Deathstalker",
-      "edgePct": 10.3
-     }
+     "betterEarly": null
     },
     {
      "label": "mid",
@@ -1634,7 +1626,7 @@
     {
      "label": "late",
      "itemCount": 6,
-     "minute": 41,
+     "minute": 40,
      "level": 17,
      "core": [
       {
@@ -1681,6 +1673,45 @@
    ],
    "matchups": [
     {
+     "enemy": "Ikra",
+     "enemySlug": "ikra",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Ikra deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Plasma Blade",
+      "in": "Crystalline Cuirass",
+      "inSlug": "crystalline-cuirass",
+      "survivalGainPct": 30,
+      "offenseLossPct": 34,
+      "line": "Losing lane? Third item Crystalline Cuirass instead of Plasma Blade: their 3s all-in loses 30% of its bite, at the cost of 34% of this kit's damage."
+     }
+    },
+    {
      "enemy": "Sparrow",
      "enemySlug": "sparrow",
      "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange. Sparrow ramps on auto-attacks — pressure their positioning before they itemize, and armor blunts them later.",
@@ -1720,6 +1751,45 @@
      }
     },
     {
+     "enemy": "Legion",
+     "enemySlug": "legion",
+     "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Legion deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "you"
+      },
+      {
+       "minute": 10,
+       "verdict": "you"
+      },
+      {
+       "minute": 15,
+       "verdict": "you"
+      },
+      {
+       "minute": 20,
+       "verdict": "you"
+      },
+      {
+       "minute": 25,
+       "verdict": "you"
+      },
+      {
+       "minute": 30,
+       "verdict": "you"
+      }
+     ],
+     "counterSwap": {
+      "out": "Plasma Blade",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 29,
+      "offenseLossPct": 34,
+      "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 29% of its bite, at the cost of 34% of this kit's damage."
+     }
+    },
+    {
      "enemy": "Murdock",
      "enemySlug": "murdock",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Murdock deals area damage — spread out so one cast can't catch the group.",
@@ -1751,11 +1821,11 @@
      ],
      "counterSwap": {
       "out": "Plasma Blade",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 24,
-      "offenseLossPct": 34,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Plasma Blade: their 3s all-in loses 24% of its bite, at the cost of 34% of this kit's damage."
+      "in": "Aegis Of Agawar",
+      "inSlug": "aegis-of-agawar",
+      "survivalGainPct": 19,
+      "offenseLossPct": 19,
+      "line": "Losing lane? Third item Aegis Of Agawar instead of Plasma Blade: their 3s all-in loses 19% of its bite, at the cost of 19% of this kit's damage."
      }
     },
     {
@@ -1790,11 +1860,11 @@
      ],
      "counterSwap": {
       "out": "Plasma Blade",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 24,
-      "offenseLossPct": 34,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Plasma Blade: their 3s all-in loses 24% of its bite, at the cost of 34% of this kit's damage."
+      "in": "Aegis Of Agawar",
+      "inSlug": "aegis-of-agawar",
+      "survivalGainPct": 19,
+      "offenseLossPct": 19,
+      "line": "Losing lane? Third item Aegis Of Agawar instead of Plasma Blade: their 3s all-in loses 19% of its bite, at the cost of 19% of this kit's damage."
      }
     },
     {
@@ -1829,89 +1899,11 @@
      ],
      "counterSwap": {
       "out": "Plasma Blade",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 24,
-      "offenseLossPct": 34,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Plasma Blade: their 3s all-in loses 24% of its bite, at the cost of 34% of this kit's damage."
-     }
-    },
-    {
-     "enemy": "TwinBlast",
-     "enemySlug": "twinblast",
-     "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. TwinBlast ramps on auto-attacks — pressure their positioning before they itemize, and mixed resist blunts them later.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "even"
-      },
-      {
-       "minute": 15,
-       "verdict": "you"
-      },
-      {
-       "minute": 20,
-       "verdict": "you"
-      },
-      {
-       "minute": 25,
-       "verdict": "you"
-      },
-      {
-       "minute": 30,
-       "verdict": "even"
-      }
-     ],
-     "counterSwap": {
-      "out": "Plasma Blade",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 24,
-      "offenseLossPct": 34,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Plasma Blade: their 3s all-in loses 24% of its bite, at the cost of 34% of this kit's damage."
-     }
-    },
-    {
-     "enemy": "Eden",
-     "enemySlug": "eden",
-     "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Eden ramps on auto-attacks — pressure them before they itemize, and armor blunts them later.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "even"
-      },
-      {
-       "minute": 15,
-       "verdict": "even"
-      },
-      {
-       "minute": 20,
-       "verdict": "you"
-      },
-      {
-       "minute": 25,
-       "verdict": "you"
-      },
-      {
-       "minute": 30,
-       "verdict": "you"
-      }
-     ],
-     "counterSwap": {
-      "out": "Plasma Blade",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 36,
-      "offenseLossPct": 34,
-      "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 36% of its bite, at the cost of 34% of this kit's damage."
+      "in": "Aegis Of Agawar",
+      "inSlug": "aegis-of-agawar",
+      "survivalGainPct": 19,
+      "offenseLossPct": 19,
+      "line": "Losing lane? Third item Aegis Of Agawar instead of Plasma Blade: their 3s all-in loses 19% of its bite, at the cost of 19% of this kit's damage."
      }
     }
    ],
@@ -1923,7 +1915,7 @@
     "playstyle": "poke",
     "modeled": false,
     "wr": 49.6,
-    "n": 1533,
+    "n": 5067,
     "shiftIn": [
      "Mutilator",
      "The Perforator",
@@ -1936,7 +1928,7 @@
      "Vanquisher",
      "Demolisher"
     ],
-    "provenance": "“Assault MK-II ” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 49.6% over 1,533 games, magnitude not simulated."
+    "provenance": "“Assault MK-II ” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 49.6% over 5,067 games, magnitude not simulated."
    }
   }
  ],

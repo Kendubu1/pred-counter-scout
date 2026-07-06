@@ -15,7 +15,8 @@
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
-   "the sim opens on Viper, which the field rarely builds (0.2% pick) — a sim-only call; compare the meta cores below"
+   "the sim opens on Viper, which the field rarely builds (0% pick) — a sim-only call; compare the meta cores below",
+   "the sim build reproduces only 33% of the field's core for Terra (it never builds Tainted Guard, Inquisition) — some of those items ride mechanics the sim doesn't model yet"
   ]
  },
  "build": {
@@ -25,7 +26,7 @@
     "name": "Viper",
     "slug": "viper",
     "spikeMinute": 12,
-    "playRatePct": 0.2,
+    "playRatePct": 0,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -33,7 +34,7 @@
     "name": "Deathstalker",
     "slug": "deathstalker",
     "spikeMinute": 19,
-    "playRatePct": 0.3,
+    "playRatePct": 0.2,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -41,7 +42,7 @@
     "name": "Plasma Blade",
     "slug": "plasma-blade",
     "spikeMinute": 25,
-    "playRatePct": 0.2,
+    "playRatePct": 0,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -65,7 +66,7 @@
     "name": "Demolisher",
     "slug": "demolisher",
     "spikeMinute": 41,
-    "playRatePct": 0,
+    "playRatePct": 0.4,
     "evidenceDeltaWr": null,
     "evidenceN": null
    }
@@ -471,19 +472,19 @@
   "candidates": [
    {
     "item": "Viper",
-    "playRatePct": 0.2,
+    "playRatePct": 0,
     "bestObjective": "sustained auto DPS",
     "edgeVsPopularPct": 2765.9
    },
    {
     "item": "Deathstalker",
-    "playRatePct": 0.3,
+    "playRatePct": 0.2,
     "bestObjective": "sustained auto DPS",
     "edgeVsPopularPct": 2765.9
    },
    {
     "item": "Plasma Blade",
-    "playRatePct": 0.2,
+    "playRatePct": 0,
     "bestObjective": "sustained auto DPS",
     "edgeVsPopularPct": 2765.9
    },
@@ -501,7 +502,7 @@
    },
    {
     "item": "Demolisher",
-    "playRatePct": 0,
+    "playRatePct": 0.4,
     "bestObjective": "sustained auto DPS",
     "edgeVsPopularPct": 2765.9
    }
@@ -509,30 +510,6 @@
   "honestAbsence": null
  },
  "metaBuilds": [
-  {
-   "title": "Physical-Def Frontline",
-   "items": [
-    {
-     "name": "Elafrost",
-     "slug": "elafrost"
-    },
-    {
-     "name": "TaintedGuard",
-     "slug": "tainted-guard"
-    },
-    {
-     "name": "Transference",
-     "slug": "transference"
-    }
-   ],
-   "n": 31,
-   "shrunkWr": 0.562,
-   "coreGold": 8800,
-   "spikeMinute": 24,
-   "bestObjective": "physical survivability",
-   "whyLine": "Strongest meta core for physical survivability, online around minute 24 — about 9,528 effective HP vs physical in the sim.",
-   "optimizer": null
-  },
   {
    "title": "Physical-Def Burst",
    "items": [
@@ -549,8 +526,8 @@
      "slug": "inquisition"
     }
    ],
-   "n": 53,
-   "shrunkWr": 0.607,
+   "n": 164,
+   "shrunkWr": 0.546,
    "coreGold": 8800,
    "spikeMinute": 24,
    "bestObjective": "one-combo burst",
@@ -573,13 +550,37 @@
      "slug": "transference"
     }
    ],
-   "n": 25,
-   "shrunkWr": 0.607,
+   "n": 99,
+   "shrunkWr": 0.55,
    "coreGold": 8800,
    "spikeMinute": 24,
    "bestObjective": "physical survivability",
    "whyLine": "Strongest meta core for physical survivability, online around minute 24 — about 9,840 effective HP vs physical in the sim.",
    "optimizer": null
+  },
+  {
+   "title": "Physical-Def Brawler",
+   "items": [
+    {
+     "name": "TaintedGuard",
+     "slug": "tainted-guard"
+    },
+    {
+     "name": "Elafrost",
+     "slug": "elafrost"
+    },
+    {
+     "name": "Transference",
+     "slug": "transference"
+    }
+   ],
+   "n": 78,
+   "shrunkWr": 0.556,
+   "coreGold": 8800,
+   "spikeMinute": 24,
+   "bestObjective": "extended fights vs bruisers",
+   "whyLine": "Strongest meta core for extended fights vs bruisers, online around minute 24 — about 906 damage over a 20s fight in the sim.",
+   "optimizer": "Optimizer sees +14% more extended fights vs bruisers: try Viper over Tainted Guard (sim-only — the popular pick may carry utility the sim can't see; test it)."
   }
  ],
  "stages": [
@@ -616,7 +617,7 @@
     "inItem": "Sky Splitter",
     "inSlug": "sky-splitter",
     "outItem": "Deathstalker",
-    "edgePct": 14
+    "edgePct": 11.7
    }
   },
   {
@@ -734,12 +735,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Plasma Blade",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 29,
-    "offenseLossPct": 35,
-    "line": "Losing lane? Third item Void Helm instead of Plasma Blade: their 3s all-in loses 29% of its bite, at the cost of 35% of this kit's damage."
+    "out": "Imperator",
+    "in": "Aegis Of Agawar",
+    "inSlug": "aegis-of-agawar",
+    "survivalGainPct": 18,
+    "offenseLossPct": 25,
+    "line": "Losing lane? Third item Aegis Of Agawar instead of Imperator: their 3s all-in loses 18% of its bite, at the cost of 25% of this kit's damage."
    }
   },
   {
@@ -773,12 +774,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Plasma Blade",
+    "out": "Imperator",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 33,
-    "offenseLossPct": 35,
-    "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 33% of its bite, at the cost of 35% of this kit's damage."
+    "offenseLossPct": 38,
+    "line": "Losing lane? Third item Warden's Faith instead of Imperator: their 3s all-in loses 33% of its bite, at the cost of 38% of this kit's damage."
    }
   },
   {
@@ -812,12 +813,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Plasma Blade",
+    "out": "Imperator",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 33,
-    "offenseLossPct": 36,
-    "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 33% of its bite, at the cost of 36% of this kit's damage."
+    "offenseLossPct": 38,
+    "line": "Losing lane? Third item Warden's Faith instead of Imperator: their 3s all-in loses 33% of its bite, at the cost of 38% of this kit's damage."
    }
   },
   {
@@ -851,12 +852,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Plasma Blade",
+    "out": "Imperator",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 37,
-    "offenseLossPct": 35,
-    "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 37% of its bite, at the cost of 35% of this kit's damage."
+    "offenseLossPct": 38,
+    "line": "Losing lane? Third item Warden's Faith instead of Imperator: their 3s all-in loses 37% of its bite, at the cost of 38% of this kit's damage."
    }
   },
   {
@@ -890,12 +891,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Plasma Blade",
-    "in": "Void Helm",
-    "inSlug": "void-helm",
-    "survivalGainPct": 34,
-    "offenseLossPct": 35,
-    "line": "Losing lane? Third item Void Helm instead of Plasma Blade: their 3s all-in loses 34% of its bite, at the cost of 35% of this kit's damage."
+    "out": "Imperator",
+    "in": "Aegis Of Agawar",
+    "inSlug": "aegis-of-agawar",
+    "survivalGainPct": 19,
+    "offenseLossPct": 25,
+    "line": "Losing lane? Third item Aegis Of Agawar instead of Imperator: their 3s all-in loses 19% of its bite, at the cost of 25% of this kit's damage."
    }
   },
   {
@@ -929,12 +930,12 @@
     }
    ],
    "counterSwap": {
-    "out": "Plasma Blade",
+    "out": "Imperator",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
     "survivalGainPct": 33,
-    "offenseLossPct": 35,
-    "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 33% of its bite, at the cost of 35% of this kit's damage."
+    "offenseLossPct": 38,
+    "line": "Losing lane? Third item Warden's Faith instead of Imperator: their 3s all-in loses 33% of its bite, at the cost of 38% of this kit's damage."
    }
   }
  ],
@@ -945,30 +946,30 @@
   },
   "playstyle": "tank",
   "modeled": false,
-  "wr": 47.9,
-  "n": 898,
+  "wr": 50.9,
+  "n": 2608,
   "shiftIn": [
    "Stonewall",
    "Vainglory",
    "Warden's Faith",
-   "Fire Blossom",
    "Catalytic Drive",
-   "Tainted Guard"
+   "Fire Blossom",
+   "Giant's Ring"
   ],
   "shiftOut": [
-   "Viper",
-   "Deathstalker",
    "Plasma Blade",
+   "Viper",
    "Imperator",
+   "Deathstalker",
    "Vanquisher",
    "Demolisher"
   ],
-  "provenance": "“Iron Resolve” ⇒ tank; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 47.9% over 898 games, magnitude not simulated."
+  "provenance": "“Iron Resolve” ⇒ tank; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 50.9% over 2,608 games, magnitude not simulated."
  },
  "slug": "terra",
  "name": "Terra",
- "patch": "1.14.4",
- "generatedAt": "2026-07-03T17:18:44.195Z",
+ "patch": "1.15",
+ "generatedAt": "2026-07-06T17:22:01.032Z",
  "damageType": "hybrid",
  "attackType": "melee",
  "laneFlex": [
@@ -980,8 +981,8 @@
    },
    "playstyle": "tank",
    "modeled": false,
-   "wr": 47.9,
-   "n": 898,
+   "wr": 50.9,
+   "n": 2608,
    "core": [
     {
      "name": "Stonewall",
@@ -996,20 +997,20 @@
      "slug": "wardens-faith"
     },
     {
-     "name": "Fire Blossom",
-     "slug": "fire-blossom"
-    },
-    {
      "name": "Catalytic Drive",
      "slug": "catalytic-drive"
     },
     {
-     "name": "Tainted Guard",
-     "slug": "tainted-guard"
+     "name": "Fire Blossom",
+     "slug": "fire-blossom"
+    },
+    {
+     "name": "Giant's Ring",
+     "slug": "giants-ring"
     }
    ],
    "headline": "physical survival",
-   "provenance": "“Iron Resolve” ⇒ tank; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 47.9% over 898 games, magnitude not simulated."
+   "provenance": "“Iron Resolve” ⇒ tank; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 50.9% over 2,608 games, magnitude not simulated."
   }
  ],
  "roles": [
@@ -1030,7 +1031,8 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Viper, which the field rarely builds (0.2% pick) — a sim-only call; compare the meta cores below"
+     "the sim opens on Viper, which the field rarely builds (0% pick) — a sim-only call; compare the meta cores below",
+     "the sim build reproduces only 33% of the field's core for Terra (it never builds Tainted Guard, Inquisition) — some of those items ride mechanics the sim doesn't model yet"
     ]
    },
    "build": {
@@ -1040,7 +1042,7 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 12,
-      "playRatePct": 0.2,
+      "playRatePct": 0,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1048,7 +1050,7 @@
       "name": "Deathstalker",
       "slug": "deathstalker",
       "spikeMinute": 19,
-      "playRatePct": 0.3,
+      "playRatePct": 0.2,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1056,7 +1058,7 @@
       "name": "Plasma Blade",
       "slug": "plasma-blade",
       "spikeMinute": 25,
-      "playRatePct": 0.2,
+      "playRatePct": 0,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1080,7 +1082,7 @@
       "name": "Demolisher",
       "slug": "demolisher",
       "spikeMinute": 41,
-      "playRatePct": 0,
+      "playRatePct": 0.4,
       "evidenceDeltaWr": null,
       "evidenceN": null
      }
@@ -1486,19 +1488,19 @@
     "candidates": [
      {
       "item": "Viper",
-      "playRatePct": 0.2,
+      "playRatePct": 0,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 2765.9
      },
      {
       "item": "Deathstalker",
-      "playRatePct": 0.3,
+      "playRatePct": 0.2,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 2765.9
      },
      {
       "item": "Plasma Blade",
-      "playRatePct": 0.2,
+      "playRatePct": 0,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 2765.9
      },
@@ -1516,7 +1518,7 @@
      },
      {
       "item": "Demolisher",
-      "playRatePct": 0,
+      "playRatePct": 0.4,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 2765.9
      }
@@ -1524,30 +1526,6 @@
     "honestAbsence": null
    },
    "metaBuilds": [
-    {
-     "title": "Physical-Def Frontline",
-     "items": [
-      {
-       "name": "Elafrost",
-       "slug": "elafrost"
-      },
-      {
-       "name": "TaintedGuard",
-       "slug": "tainted-guard"
-      },
-      {
-       "name": "Transference",
-       "slug": "transference"
-      }
-     ],
-     "n": 31,
-     "shrunkWr": 0.562,
-     "coreGold": 8800,
-     "spikeMinute": 24,
-     "bestObjective": "physical survivability",
-     "whyLine": "Strongest meta core for physical survivability, online around minute 24 — about 9,528 effective HP vs physical in the sim.",
-     "optimizer": null
-    },
     {
      "title": "Physical-Def Burst",
      "items": [
@@ -1564,8 +1542,8 @@
        "slug": "inquisition"
       }
      ],
-     "n": 53,
-     "shrunkWr": 0.607,
+     "n": 164,
+     "shrunkWr": 0.546,
      "coreGold": 8800,
      "spikeMinute": 24,
      "bestObjective": "one-combo burst",
@@ -1588,13 +1566,37 @@
        "slug": "transference"
       }
      ],
-     "n": 25,
-     "shrunkWr": 0.607,
+     "n": 99,
+     "shrunkWr": 0.55,
      "coreGold": 8800,
      "spikeMinute": 24,
      "bestObjective": "physical survivability",
      "whyLine": "Strongest meta core for physical survivability, online around minute 24 — about 9,840 effective HP vs physical in the sim.",
      "optimizer": null
+    },
+    {
+     "title": "Physical-Def Brawler",
+     "items": [
+      {
+       "name": "TaintedGuard",
+       "slug": "tainted-guard"
+      },
+      {
+       "name": "Elafrost",
+       "slug": "elafrost"
+      },
+      {
+       "name": "Transference",
+       "slug": "transference"
+      }
+     ],
+     "n": 78,
+     "shrunkWr": 0.556,
+     "coreGold": 8800,
+     "spikeMinute": 24,
+     "bestObjective": "extended fights vs bruisers",
+     "whyLine": "Strongest meta core for extended fights vs bruisers, online around minute 24 — about 906 damage over a 20s fight in the sim.",
+     "optimizer": "Optimizer sees +14% more extended fights vs bruisers: try Viper over Tainted Guard (sim-only — the popular pick may carry utility the sim can't see; test it)."
     }
    ],
    "stages": [
@@ -1631,7 +1633,7 @@
       "inItem": "Sky Splitter",
       "inSlug": "sky-splitter",
       "outItem": "Deathstalker",
-      "edgePct": 14
+      "edgePct": 11.7
      }
     },
     {
@@ -1749,12 +1751,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Plasma Blade",
-      "in": "Void Helm",
-      "inSlug": "void-helm",
-      "survivalGainPct": 29,
-      "offenseLossPct": 35,
-      "line": "Losing lane? Third item Void Helm instead of Plasma Blade: their 3s all-in loses 29% of its bite, at the cost of 35% of this kit's damage."
+      "out": "Imperator",
+      "in": "Aegis Of Agawar",
+      "inSlug": "aegis-of-agawar",
+      "survivalGainPct": 18,
+      "offenseLossPct": 25,
+      "line": "Losing lane? Third item Aegis Of Agawar instead of Imperator: their 3s all-in loses 18% of its bite, at the cost of 25% of this kit's damage."
      }
     },
     {
@@ -1788,12 +1790,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Plasma Blade",
+      "out": "Imperator",
       "in": "Warden's Faith",
       "inSlug": "wardens-faith",
       "survivalGainPct": 33,
-      "offenseLossPct": 35,
-      "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 33% of its bite, at the cost of 35% of this kit's damage."
+      "offenseLossPct": 38,
+      "line": "Losing lane? Third item Warden's Faith instead of Imperator: their 3s all-in loses 33% of its bite, at the cost of 38% of this kit's damage."
      }
     },
     {
@@ -1827,12 +1829,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Plasma Blade",
+      "out": "Imperator",
       "in": "Warden's Faith",
       "inSlug": "wardens-faith",
       "survivalGainPct": 33,
-      "offenseLossPct": 36,
-      "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 33% of its bite, at the cost of 36% of this kit's damage."
+      "offenseLossPct": 38,
+      "line": "Losing lane? Third item Warden's Faith instead of Imperator: their 3s all-in loses 33% of its bite, at the cost of 38% of this kit's damage."
      }
     },
     {
@@ -1866,12 +1868,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Plasma Blade",
+      "out": "Imperator",
       "in": "Warden's Faith",
       "inSlug": "wardens-faith",
       "survivalGainPct": 37,
-      "offenseLossPct": 35,
-      "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 37% of its bite, at the cost of 35% of this kit's damage."
+      "offenseLossPct": 38,
+      "line": "Losing lane? Third item Warden's Faith instead of Imperator: their 3s all-in loses 37% of its bite, at the cost of 38% of this kit's damage."
      }
     },
     {
@@ -1905,12 +1907,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Plasma Blade",
-      "in": "Void Helm",
-      "inSlug": "void-helm",
-      "survivalGainPct": 34,
-      "offenseLossPct": 35,
-      "line": "Losing lane? Third item Void Helm instead of Plasma Blade: their 3s all-in loses 34% of its bite, at the cost of 35% of this kit's damage."
+      "out": "Imperator",
+      "in": "Aegis Of Agawar",
+      "inSlug": "aegis-of-agawar",
+      "survivalGainPct": 19,
+      "offenseLossPct": 25,
+      "line": "Losing lane? Third item Aegis Of Agawar instead of Imperator: their 3s all-in loses 19% of its bite, at the cost of 25% of this kit's damage."
      }
     },
     {
@@ -1944,12 +1946,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Plasma Blade",
+      "out": "Imperator",
       "in": "Warden's Faith",
       "inSlug": "wardens-faith",
       "survivalGainPct": 33,
-      "offenseLossPct": 35,
-      "line": "Losing lane? Third item Warden's Faith instead of Plasma Blade: their 3s all-in loses 33% of its bite, at the cost of 35% of this kit's damage."
+      "offenseLossPct": 38,
+      "line": "Losing lane? Third item Warden's Faith instead of Imperator: their 3s all-in loses 33% of its bite, at the cost of 38% of this kit's damage."
      }
     }
    ],
@@ -1960,25 +1962,25 @@
     },
     "playstyle": "tank",
     "modeled": false,
-    "wr": 47.9,
-    "n": 898,
+    "wr": 50.9,
+    "n": 2608,
     "shiftIn": [
      "Stonewall",
      "Vainglory",
      "Warden's Faith",
-     "Fire Blossom",
      "Catalytic Drive",
-     "Tainted Guard"
+     "Fire Blossom",
+     "Giant's Ring"
     ],
     "shiftOut": [
-     "Viper",
-     "Deathstalker",
      "Plasma Blade",
+     "Viper",
      "Imperator",
+     "Deathstalker",
      "Vanquisher",
      "Demolisher"
     ],
-    "provenance": "“Iron Resolve” ⇒ tank; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 47.9% over 898 games, magnitude not simulated."
+    "provenance": "“Iron Resolve” ⇒ tank; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 50.9% over 2,608 games, magnitude not simulated."
    }
   },
   {
@@ -1998,7 +2000,7 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Viper, which the field rarely builds (0.2% pick) — a sim-only call; compare the meta cores below"
+     "the sim opens on Viper, which the field rarely builds (0% pick) — a sim-only call; compare the meta cores below"
     ]
    },
    "build": {
@@ -2008,7 +2010,7 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 12,
-      "playRatePct": 0.2,
+      "playRatePct": 0,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -2016,7 +2018,7 @@
       "name": "Deathstalker",
       "slug": "deathstalker",
       "spikeMinute": 18,
-      "playRatePct": 0.3,
+      "playRatePct": 0.2,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -2024,7 +2026,7 @@
       "name": "Plasma Blade",
       "slug": "plasma-blade",
       "spikeMinute": 25,
-      "playRatePct": 0.2,
+      "playRatePct": 0,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -2048,7 +2050,7 @@
       "name": "Demolisher",
       "slug": "demolisher",
       "spikeMinute": 44,
-      "playRatePct": 0,
+      "playRatePct": 0.4,
       "evidenceDeltaWr": null,
       "evidenceN": null
      }
@@ -2454,19 +2456,19 @@
     "candidates": [
      {
       "item": "Viper",
-      "playRatePct": 0.2,
+      "playRatePct": 0,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 2765.9
      },
      {
       "item": "Deathstalker",
-      "playRatePct": 0.3,
+      "playRatePct": 0.2,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 2765.9
      },
      {
       "item": "Plasma Blade",
-      "playRatePct": 0.2,
+      "playRatePct": 0,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 2765.9
      },
@@ -2484,7 +2486,7 @@
      },
      {
       "item": "Demolisher",
-      "playRatePct": 0,
+      "playRatePct": 0.4,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 2765.9
      }
@@ -2508,9 +2510,33 @@
        "slug": "transference"
       }
      ],
-     "n": 20,
-     "shrunkWr": 0.6,
+     "n": 53,
+     "shrunkWr": 0.492,
      "coreGold": 8600,
+     "spikeMinute": 24,
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 87 auto-attack DPS in the sim.",
+     "optimizer": "Optimizer sees 7.2× the sustained auto DPS: try Viper over Elafrost (sim-only — the popular pick may carry utility the sim can't see; test it)."
+    },
+    {
+     "title": "Physical-Def DPS Carry",
+     "items": [
+      {
+       "name": "Elafrost",
+       "slug": "elafrost"
+      },
+      {
+       "name": "TaintedGuard",
+       "slug": "tainted-guard"
+      },
+      {
+       "name": "Transference",
+       "slug": "transference"
+      }
+     ],
+     "n": 27,
+     "shrunkWr": 0.541,
+     "coreGold": 8800,
      "spikeMinute": 24,
      "bestObjective": "sustained auto DPS",
      "whyLine": "Strongest meta core for sustained auto DPS, online around minute 24 — about 87 auto-attack DPS in the sim.",
@@ -2551,7 +2577,7 @@
       "inItem": "Sky Splitter",
       "inSlug": "sky-splitter",
       "outItem": "Deathstalker",
-      "edgePct": 14
+      "edgePct": 11.7
      }
     },
     {
@@ -2748,11 +2774,50 @@
      ],
      "counterSwap": {
       "out": "Imperator",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 25,
-      "offenseLossPct": 38,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Imperator: their 3s all-in loses 25% of its bite, at the cost of 38% of this kit's damage."
+      "in": "Aegis Of Agawar",
+      "inSlug": "aegis-of-agawar",
+      "survivalGainPct": 19,
+      "offenseLossPct": 25,
+      "line": "Losing lane? Third item Aegis Of Agawar instead of Imperator: their 3s all-in loses 19% of its bite, at the cost of 25% of this kit's damage."
+     }
+    },
+    {
+     "enemy": "Rampage",
+     "enemySlug": "rampage",
+     "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Rampage deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "even"
+      },
+      {
+       "minute": 15,
+       "verdict": "you"
+      },
+      {
+       "minute": 20,
+       "verdict": "you"
+      },
+      {
+       "minute": 25,
+       "verdict": "you"
+      },
+      {
+       "minute": 30,
+       "verdict": "you"
+      }
+     ],
+     "counterSwap": {
+      "out": "Imperator",
+      "in": "Aegis Of Agawar",
+      "inSlug": "aegis-of-agawar",
+      "survivalGainPct": 19,
+      "offenseLossPct": 25,
+      "line": "Losing lane? Third item Aegis Of Agawar instead of Imperator: their 3s all-in loses 19% of its bite, at the cost of 25% of this kit's damage."
      }
     },
     {
@@ -2792,45 +2857,6 @@
       "survivalGainPct": 33,
       "offenseLossPct": 38,
       "line": "Losing lane? Third item Warden's Faith instead of Imperator: their 3s all-in loses 33% of its bite, at the cost of 38% of this kit's damage."
-     }
-    },
-    {
-     "enemy": "Kwang",
-     "enemySlug": "kwang",
-     "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Kwang ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "even"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "even"
-      },
-      {
-       "minute": 25,
-       "verdict": "you"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Imperator",
-      "in": "Void Helm",
-      "inSlug": "void-helm",
-      "survivalGainPct": 30,
-      "offenseLossPct": 38,
-      "line": "Losing lane? Third item Void Helm instead of Imperator: their 3s all-in loses 30% of its bite, at the cost of 38% of this kit's damage."
      }
     },
     {

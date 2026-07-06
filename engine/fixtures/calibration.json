@@ -1,10 +1,13 @@
 {
   "_readme": "Measured or assumed game constants the simulator depends on. Every entry carries verified:true only after an in-game practice-mode measurement (record date + method in source). The harness lists unverified fixtures on every run and refuses to stamp any artifact 'Proven' while a constant it used is unverified. See docs/v5-engine-design.md, component A.",
-  "patch": "1.14.4",
+  "patch": "1.15",
   "constants": {
     "mitigation": {
       "formula": "damage * K / (K + armor)",
-      "range": [100, 150],
+      "range": [
+        100,
+        150
+      ],
       "verified": false,
       "source": "Assumed standard K=100 (damage*100/(100+armor)); shipped default stays 100. DATA WARNING 2026-06-12: implied K from total_damage_mitigated rises 122->150 with armor (n=23k players), meaning the field includes shields/DR and the formula cannot be verified from aggregates; if true K > 100, current EHP outputs OVERVALUE armor. range [100,150] is swept by the robustness check (src/robustness.ts) to flag picks that depend on the unknown. Measure in practice mode (highest-priority measurement)."
     },
@@ -20,7 +23,10 @@
     },
     "critMultiplier": {
       "value": 1.75,
-      "range": [1.6, 1.8],
+      "range": [
+        1.6,
+        1.8
+      ],
       "verified": false,
       "source": "Assumed 1.75. DATA EVIDENCE 2026-06-12: largest_critical_strike envelope over 6,657 crit builders, densest ratio bins 1.6-1.8 under bonus-only scaling (consistent with 1.75; confounded by crit-damage modifiers and possible post-mitigation recording). range [1.6,1.8] is swept by the robustness check. Confirm in practice mode."
     },
@@ -56,9 +62,9 @@
     }
   },
   "checkpoints": {
-    "_note": "Minute -> typical level and item gold by role. GOLD is MEASURED: per-role medians from the match feed, re-derived on data refresh, data/aggregates/2026-07-02.json. Caveat: gold_earned_at_interval includes ~2-3 pregame entries, so values may lag true game-minute by up to ~2-3 minutes. LEVELS remain PROVISIONAL: the feed has no level timeline (autonomy policy rule: flagged, not estimated).",
+    "_note": "Minute -> typical level and item gold by role. GOLD is MEASURED: per-role medians from the match feed, re-derived on data refresh, data/aggregates/2026-07-06.json. Caveat: gold_earned_at_interval includes ~2-3 pregame entries, so values may lag true game-minute by up to ~2-3 minutes. LEVELS remain PROVISIONAL: the feed has no level timeline (autonomy policy rule: flagged, not estimated).",
     "goldVerified": true,
-    "goldSource": "data/aggregates/2026-07-02.json (npm run aggregate, ranked-only, patch 1.15)",
+    "goldSource": "data/aggregates/2026-07-06.json (npm run aggregate, ranked-only, patch 1.15)",
     "levelVerified": false,
     "verified": false,
     "table": [
@@ -66,9 +72,9 @@
         "minute": 5,
         "level": 5,
         "gold": {
-          "carry": 646,
-          "midlane": 670,
-          "offlane": 634,
+          "carry": 647,
+          "midlane": 672,
+          "offlane": 635,
           "jungle": 741,
           "support": 563
         }
@@ -77,22 +83,22 @@
         "minute": 10,
         "level": 8,
         "gold": {
-          "carry": 2537,
-          "midlane": 2574,
-          "offlane": 2456,
-          "jungle": 2667,
-          "support": 1937
+          "carry": 2539,
+          "midlane": 2581,
+          "offlane": 2464,
+          "jungle": 2657,
+          "support": 1945
         }
       },
       {
         "minute": 15,
         "level": 11,
         "gold": {
-          "carry": 4666,
-          "midlane": 4732,
-          "offlane": 4530,
-          "jungle": 4759,
-          "support": 3583
+          "carry": 4656,
+          "midlane": 4759,
+          "offlane": 4533,
+          "jungle": 4740,
+          "support": 3582
         }
       },
       {
@@ -100,32 +106,32 @@
         "level": 13,
         "gold": {
           "carry": 7079,
-          "midlane": 7168,
-          "offlane": 6947,
-          "jungle": 7101,
-          "support": 5642
+          "midlane": 7209,
+          "offlane": 6945,
+          "jungle": 7071,
+          "support": 5675
         }
       },
       {
         "minute": 25,
         "level": 15,
         "gold": {
-          "carry": 9781,
-          "midlane": 9912,
-          "offlane": 9598,
-          "jungle": 9568,
-          "support": 7910
+          "carry": 9788,
+          "midlane": 9981,
+          "offlane": 9612,
+          "jungle": 9552,
+          "support": 7916
         }
       },
       {
         "minute": 30,
         "level": 17,
         "gold": {
-          "carry": 12559,
-          "midlane": 12744,
-          "offlane": 12368,
-          "jungle": 12052,
-          "support": 10318
+          "carry": 12594,
+          "midlane": 12895,
+          "offlane": 12358,
+          "jungle": 12044,
+          "support": 10343
         }
       }
     ]

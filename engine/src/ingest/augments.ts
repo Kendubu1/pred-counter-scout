@@ -53,9 +53,9 @@ async function main() {
 
   if (process.env.RANKED_ONLY) {
     const v = await currentVersion();
-    VERSION_FILTER = `, versions: ["${v.id}"]`;
+    VERSION_FILTER = `, versions: [${v.ids.map((i) => `"${i}"`).join(', ')}]`;
     SCOPE_NOTE = `, patch ${v.name} only`;
-    console.log(`scope: RANKED only, patch ${v.name} (pred.gg version id ${v.id})`);
+    console.log(`scope: RANKED only, patch ${v.name} (pred.gg version ids ${v.ids.join('+')})`);
   }
 
   // augment catalog: names + mechanical descriptions, keyed by perk id

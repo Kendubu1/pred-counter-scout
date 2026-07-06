@@ -248,6 +248,8 @@ export function antiHealRec(
 function heroIdToSlug(data: LoadedData, omedaHeroes: { id: number; slug: string }[]): Map<number, string> {
   const m = new Map<number, string>();
   for (const h of omedaHeroes) if (data.kits.has(h.slug)) m.set(h.id, h.slug);
+  // Feed/catalog id mismatches (see aggregate.ts FEED_ID_ALIASES): 75=Legion, 76=Ikra.
+  for (const [id, slug] of [[75, 'legion'], [76, 'ikra']] as [number, string][]) if (!m.has(id) && data.kits.has(slug)) m.set(id, slug);
   return m;
 }
 function gameIdToItem(data: LoadedData): Map<number, Item> {

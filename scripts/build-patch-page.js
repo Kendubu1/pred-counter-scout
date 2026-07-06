@@ -62,6 +62,16 @@ function heroCard([slug, p]) {
       (p.topMetaBuild.games ? ` · ${p.topMetaBuild.games.toLocaleString()} games` : '') + `</div>`
     : '';
   const site = SITE_SLUG[slug] || slug;
+  const mm = (pred.measured && pred.measured.perHero && pred.measured.perHero[slug]) || null;
+  const mHit = mm && mm.delta != null && (p.trend === 'buff' || p.trend === 'nerf')
+    ? ((p.trend === 'buff' && mm.delta > 0) || (p.trend === 'nerf' && mm.delta < 0)) : null;
+  const measuredLine = mm
+    ? `<div class="pred measured"><span class="pred-label">Measured (week 1)</span>${
+        mm.delta != null
+          ? `${mm.old}% → <strong>${mm.now}%</strong> win rate (${mm.delta > 0 ? '+' : ''}${mm.delta} pts over ${mm.n.toLocaleString()} ranked games)${mHit === true ? ' <span class="m-hit">✓ called it</span>' : mHit === false ? ' <span class="m-miss">✗ moved the other way</span>' : ''}`
+          : `<strong>${mm.now}%</strong> win rate over ${mm.n.toLocaleString()} ranked games${mm.isNew ? ' (new hero — no baseline)' : ' (thin pre-patch sample)'}`
+      }</div>`
+    : '';
   return `
       <div class="hero-card card" id="hero-${slug}" data-mag="${p.magnitude}" data-trend="${p.trend}">
         <a class="card-out" href="v6/?hero=${site}" title="Open ${esc(p.name)}'s full build &amp; matchups">full page ↗</a>
@@ -75,6 +85,7 @@ function heroCard([slug, p]) {
         <div class="pred"><span class="pred-label">Why</span>${esc(p.why)}</div>
         <div class="pred"><span class="pred-label">What it'll change</span>${esc(p.willChange)}</div>
         ${simRead}
+        ${measuredLine}
       </div>`;
 }
 
@@ -403,6 +414,8 @@ const html = `<!DOCTYPE html>
     .psn-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
     h2.section { scroll-margin-top: 112px; }
     @media (max-width: 560px) { .psn-label { display: none; } }
+  .measured .m-hit{color:var(--green,#4caf50);font-weight:700;} .measured .m-miss{color:var(--gold,#e0a93e);font-weight:700;}
+  .measured-banner{border-color:var(--green,#4caf50);}
   </style>
 </head>
 <body>
@@ -424,12 +437,21 @@ ${subnavBar}
       <p class="lead">Released ${esc(digest.date)} · Scout overview &amp; sim-grounded predictions ·
         <a href="${esc(digest.source)}" target="_blank" rel="noopener">official notes ↗</a></p>
 
-      <div class="banner">
+      ${pred.measured ? `<div class="banner measured-banner">
+        <strong>Now with measured results.</strong> The 1.15 numeric refresh has landed: every hero card below
+        carries its <strong>measured week-one ranked win rate</strong> (pre-patch baseline 2026-06-20 vs 2026-07-06)
+        next to the original prediction. Scorecard: the coach called
+        <strong>${pred.measured.scorecard.directionallyRight} of ${pred.measured.scorecard.predicted}</strong>
+        predicted movers directionally right. Biggest measured movers:
+        ${pred.measured.risers.slice(0, 3).map((r) => `${r.slug} +${r.delta}`).join(', ')} ·
+        ${pred.measured.fallers.slice(0, 3).map((r) => `${r.slug} ${r.delta}`).join(', ')}.
+        ${pred.measured.newHeroes.length ? `New hero ${pred.measured.newHeroes.map((h) => `<strong>${h.slug}</strong> lands at ${h.now}% over ${h.n.toLocaleString()} games`).join('; ')}.` : ''}
+      </div>` : `<div class="banner">
         <strong>Heads up:</strong> these are <strong>predictions</strong>, not measured results. The engine's
         numeric base is still the pre-1.15 snapshot (2026-06-20), so the sim reads below are the <em>current</em>
         meta — every forecast is grounded in the patch's stated numbers. The full numeric re-sim (new hero stats,
         updated builds &amp; matchups) runs once 1.15 goes live on omeda.city.
-      </div>
+      </div>`}
 
       <h2 class="section" id="ch-tldr"><span class="sec-ic" data-bic="scout"></span>TL;DR — what actually changes how you play</h2>
       ${tldrBlock}${metaRead('tldr')}
@@ -458,8 +480,8 @@ ${subnavBar}
         Generated from <code>data/patches/${esc(version)}.json</code> +
         <code>data/aggregates/patch-${esc(version)}-predictions.json</code> by
         <code>scripts/build-patch-page.js</code>. Predictions authored on session compute (no API) and
-        grounded in the stated change numbers. Re-run after the go-live numeric refresh to replace forecasts
-        with measured results.
+        grounded in the stated change numbers. Measured results (when shown) come from the ranked
+        match feed: pre-patch baseline 2026-06-20 vs week-one 2026-07-06.
       </div>
     </div>
   </main>

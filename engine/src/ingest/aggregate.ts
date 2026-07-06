@@ -15,6 +15,9 @@ import path from 'node:path';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const UA = { 'User-Agent': 'pred-counter-scout (github.com/Kendubu1/pred-counter-scout)' };
 // RANKED_ONLY=1 restricts to ranked matches (default keeps pvp+ranked).
+// feed-id -> slug aliases where the match feed disagrees with the hero catalog
+const FEED_ID_ALIASES: Record<number, string> = { 75: 'legion', 76: 'ikra' };
+
 const MODES = process.env.RANKED_ONLY ? new Set(['ranked']) : new Set(['pvp', 'ranked']);
 const ROLES = new Set(['carry', 'support', 'midlane', 'offlane', 'jungle']);
 
@@ -122,6 +125,12 @@ async function main() {
   // hero_id -> slug via the omeda snapshot
   const omedaHeroes = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8')) as { id: number; slug: string }[];
   const idToSlug = new Map(omedaHeroes.map((h) => [h.id, h.slug]));
+  // The omeda MATCH FEED uses different ids than the hero catalog for two
+  // heroes (verified empirically 2026-07-06 by elimination against the
+  // catalog + release dates: feed id 75 has pre-1.15 games = Legion; feed
+  // id 76 first appears on the 1.15 release day 6/30 = Ikra). Catalog ids
+  // are 77/79. Overlay the verified aliases so their rows key by slug.
+  for (const [id, slug] of Object.entries(FEED_ID_ALIASES)) if (!idToSlug.has(Number(id))) idToSlug.set(Number(id), slug);
 
   const goldByMinute: Record<string, Record<number, { p25: number; p50: number; p75: number; n: number }>> = {};
   for (const [role, byMin] of gold) {
