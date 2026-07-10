@@ -1,8 +1,10 @@
 // pred.gg GraphQL client (the community API behind the dev portal).
-// Auth discovered June 12: GET https://pred.gg/auth/token with HTTP Basic
-// (client_id:client_secret) returns a ~30-minute JWT; /gql accepts it as
-// a Bearer token. Public reads work unauthenticated; leaderboards and the
-// statistic scopes require the token.
+// Auth updated 2026-07-10: pred.gg replaced the old GET /auth/token exchange
+// (now a hard 403 for everyone) with an OAuth2 "Applications" system. The
+// machine flow is POST https://pred.gg/api/oauth2/token with HTTP Basic
+// (client_id:client_secret) and grant_type=client_credentials; it returns a
+// ~30-minute JWT that /gql accepts as a Bearer token. Public fields (e.g.
+// versions) now work unauthenticated; match/player data requires the token.
 //
 // Credentials come from PREDGG_CLIENT_ID / PREDGG_CLIENT_SECRET env vars
 // and are NEVER written to the repo. Without them, callers degrade
@@ -21,7 +23,11 @@ export async function getToken(): Promise<string | null> {
   if (!hasCredentials()) return null;
   if (cachedToken && Date.now() < cachedToken.expiresAt - 60_000) return cachedToken.token;
   const basic = Buffer.from(`${process.env.PREDGG_CLIENT_ID}:${process.env.PREDGG_CLIENT_SECRET}`).toString('base64');
-  const res = await fetch(`${BASE}/auth/token`, { headers: { ...UA, Authorization: `Basic ${basic}` } });
+  const res = await fetch(`${BASE}/api/oauth2/token`, {
+    method: 'POST',
+    headers: { ...UA, Authorization: `Basic ${basic}`, 'content-type': 'application/x-www-form-urlencoded' },
+    body: 'grant_type=client_credentials',
+  });
   if (!res.ok) throw new Error(`pred.gg token exchange failed: HTTP ${res.status}`);
   const body = (await res.json()) as { access_token: string; expires_in?: number };
   cachedToken = { token: body.access_token, expiresAt: Date.now() + (body.expires_in ?? 1800) * 1000 };
