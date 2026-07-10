@@ -36,7 +36,7 @@ function sourceOf(f: Facts): string {
   return [
     `RESULT: ${f.result} in ${f.durationMin}m${f.vpSwing != null ? `, VP ${f.vpSwing >= 0 ? '+' : ''}${f.vpSwing}` : ''}.`,
     `DECISIVE FIGHTS: ${tagged.length ? tagged.map((s) => `${s.startMin}m ${s.kind} ${s.result} ${s.ourKills}-${s.theirKills} @ ${s.place} [${s.tag}]`).join('; ') : 'none tagged'}.`,
-    `ALL SKIRMISHES (n=${sk.length}): ${sk.map((s) => `${s.startMin}m ${s.result} ${s.ourKills}-${s.theirKills}`).join(', ') || 'none'}.`,
+    `ALL SKIRMISHES (n=${sk.length}): ${sk.map((s) => `${s.startMin}m ${s.result} ${s.ourKills}-${s.theirKills} @ ${s.place} (${(s.ourHeroes ?? []).join('/')} v ${(s.theirHeroes ?? []).join('/')})`).join(', ') || 'none'}.`,
     `MACRO READS (rotations/numbers/trades — THEORY): ${withMacro.length ? withMacro.map((s) => `${s.startMin}m (${s.macro.ourAlive}v${s.macro.theirAlive}): ${s.macro.notes.join(' ')}`).join(' | ') : 'none'}.`,
     `OBJECTIVES: majors you ${f.objectives?.ourKills}-${f.objectives?.theirKills} them${f.timeline ? `, towers ${f.timeline.towers.us}-${f.timeline.towers.them}` : ''}.`,
     `LANES: ${f.lanes.map((l) => `${l.role} ${l.ourHero} vs ${l.theirHero} (${l.edge}${l.predggMatchup ? `, ${l.predggMatchup.winrate}%` : ''})`).join('; ')}.`,
@@ -56,15 +56,27 @@ function fightEconLines(f: Facts & { fights?: any; kills?: any[] }): string[] {
   if (kills.length && sk.length) {
     const openers = sk.map((s: any) => kills.find((k: any) => k.t >= s.startSec - 1 && k.t <= s.endSec + 1)).filter(Boolean);
     const usFirst = openers.filter((k: any) => k.killedSide === 'us').length;
-    out.push(`FIRST DEATHS: you gave up the opening kill in ${usFirst} of ${openers.length} fights.`);
+    out.push(`FIRST DEATHS: we gave up the opening kill in ${usFirst} of ${openers.length} fights.`);
   }
   const fx = (f as any).fights;
   if (fx) {
-    if (fx.caughtOut) out.push(`CAUGHT OUT (deaths outside any fight): you ${fx.caughtOut.us.length}${fx.caughtOut.us.length ? ` (${fx.caughtOut.us.map((c: any) => `${c.hero} ${c.min}m`).join(', ')})` : ''}, them ${fx.caughtOut.themCount}.`);
-    if (fx.conversion) out.push(`CASHING WINS: you converted ${fx.conversion.cashed} of ${fx.conversion.wonFights} won fights into a prize within 90s; them ${fx.conversion.theirCashed} of ${fx.conversion.theirWonFights}.`);
-    if ((fx.deathCosts ?? []).length) out.push(`DEATH COSTS: ${fx.deathCosts.map((d: any) => `${d.hero} ${d.min}m -> ${d.cost.map((c: any) => c.type).join('+')}`).join('; ')}.`);
-    if ((fx.itemGap ?? []).length) out.push(`ITEM COUNT AT ENGAGE (est., THEORY): ${fx.itemGap.map((g: any) => `${g.startMin}m you ${g.us} v them ${g.them}`).join(', ')}.`);
+    // Print the killer on every caught-out death and the exact minute of every
+    // cost — round 10 lesson: the author cites these (they ARE in the facts),
+    // and a SOURCE that omits them makes the critic flag true lines as invented.
+    if (fx.caughtOut) out.push(`CAUGHT OUT (deaths outside any fight): us ${fx.caughtOut.us.length}${fx.caughtOut.us.length ? ` (${fx.caughtOut.us.map((c: any) => `${c.hero} ${c.min}m by ${c.by}`).join(', ')})` : ''}, them ${fx.caughtOut.themCount}.`);
+    if (fx.conversion) out.push(`CASHING WINS: we converted ${fx.conversion.cashed} of ${fx.conversion.wonFights} won fights into a prize within 90s; them ${fx.conversion.theirCashed} of ${fx.conversion.theirWonFights}.`);
+    if ((fx.deathCosts ?? []).length) out.push(`DEATH COSTS: ${fx.deathCosts.map((d: any) => `${d.hero} ${d.min}m -> ${d.cost.map((c: any) => `${c.type}@${c.min}m`).join('+')}`).join('; ')}.`);
+    if ((fx.itemGap ?? []).length) out.push(`ITEM COUNT AT ENGAGE (est., THEORY): ${fx.itemGap.map((g: any) => `${g.startMin}m us ${g.us} v them ${g.them}`).join(', ')}.`);
   }
+  // Full kill ladder (killer>victim@min, us-side victims marked †) so killer
+  // attributions and kill minutes are verifiable instead of flag bait.
+  if (kills.length) {
+    const heroName = (slug: string) => (((f as any).players ?? []).find((p: any) => p.heroSlug === slug) || {}).heroName || slug;
+    out.push(`KILLS: ${kills.map((k: any) => `${heroName(k.killerSlug)}>${heroName(k.killedSlug)}${k.killedSide === 'us' ? '†' : ''}@${k.min}m`).join(', ')}.`);
+  }
+  // Tower/objective event times (newer films) — grounds structure timestamps.
+  const evs = ((f as any).events ?? []).filter((e: any) => e.kind === 'tower' || /FANG|PRIME|ORB/i.test(e.type));
+  if (evs.length) out.push(`EVENTS: ${evs.map((e: any) => `${e.side} ${String(e.type).replace(/_/g, ' ')}@${Math.round(e.sec / 6) / 10}m`).join(', ')}.`);
   return out;
 }
 
