@@ -2547,3 +2547,26 @@ Eight maintainer-flagged fixes:
 - The patch page now renders measured week-one winrates beside every
   prediction with a scorecard banner — the predictions/measured swap the page
   promised at publish time.
+
+## 2026-07-10 — pred.gg Applications auth + six new films (incl. the two 7/07 losses)
+- pred.gg replaced GET /auth/token (now 403 for everyone) with an OAuth2
+  Applications system. Machine flow: POST /api/oauth2/token, HTTP Basic,
+  grant_type=client_credentials -> ~30min JWT. Discovered by reading the SPA's
+  authorize-page chunk (it redirects to /api/oauth2/... — the backend prefix).
+  simpleBuild (build/perk stats) is scope-gated beyond the default token;
+  augments/buildstats hold until the Application gets a statistics-type scope.
+- Critic loop, round 10, the recurring lesson sharpened: the first critic pass
+  flagged 33 lines, and spot-checks showed most were the SOURCE's blind spots
+  again — 'invented' timestamps were verbatim deathCosts entries; killer
+  attributions matched caughtOut.by exactly. Enriched the SOURCE (KILLS ladder,
+  caught-out killers, cost@minute, EVENTS, skirmish places+participants) and
+  re-ran: 4 real flags survived (98.7% agreement), all wrong cash/window refs.
+  Standing rule: when the critic and the facts disagree, print more facts —
+  never apply flags the raw film contradicts.
+- Ground-check blind spot found: rewrites citing minute-converted event times
+  (sec/60) fail verification because the raw JSON stores seconds. The two such
+  rewrites were re-authored by hand against raw-fact numbers instead.
+- The 7/07 losses read as one failure: favored lanes held, but one enemy carry
+  was fed by caught-alone deaths (8 in b31f, 7 by Revenant), won fights went
+  uncashed (2/5, 1/3), and both games ended in five-man dives past towers taken
+  while AHEAD on modeled items. The 7/06 wins are the blueprint contrast.
