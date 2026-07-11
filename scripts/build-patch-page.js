@@ -66,7 +66,7 @@ function heroCard([slug, p]) {
   const mHit = mm && mm.delta != null && (p.trend === 'buff' || p.trend === 'nerf')
     ? ((p.trend === 'buff' && mm.delta > 0) || (p.trend === 'nerf' && mm.delta < 0)) : null;
   const measuredLine = mm
-    ? `<div class="pred measured"><span class="pred-label">Measured (week 1)</span>${
+    ? `<div class="pred measured"><span class="pred-label">Measured (patch to date)</span>${
         mm.delta != null
           ? `${mm.old}% → <strong>${mm.now}%</strong> win rate (${mm.delta > 0 ? '+' : ''}${mm.delta} pts over ${mm.n.toLocaleString()} ranked games)${mHit === true ? ' <span class="m-hit">✓ called it</span>' : mHit === false ? ' <span class="m-miss">✗ moved the other way</span>' : ''}`
           : `<strong>${mm.now}%</strong> win rate over ${mm.n.toLocaleString()} ranked games${mm.isNew ? ' (new hero — no baseline)' : ' (thin pre-patch sample)'}`
@@ -439,7 +439,7 @@ ${subnavBar}
 
       ${pred.measured ? `<div class="banner measured-banner">
         <strong>Now with measured results.</strong> The 1.15 numeric refresh has landed: every hero card below
-        carries its <strong>measured week-one ranked win rate</strong> (pre-patch baseline 2026-06-20 vs 2026-07-06)
+        carries its <strong>measured patch-to-date ranked win rate</strong> (pre-patch baseline 2026-06-20 vs 2026-07-11)
         next to the original prediction. Scorecard: the coach called
         <strong>${pred.measured.scorecard.directionallyRight} of ${pred.measured.scorecard.predicted}</strong>
         predicted movers directionally right. Biggest measured movers:
