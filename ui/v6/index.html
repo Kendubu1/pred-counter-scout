@@ -711,7 +711,7 @@ async function renderLaneDetail() {
       const fieldRoles = enemyIdx && enemyIdx.roleWr
         ? Object.fromEntries(Object.entries(enemyIdx.roleWr).map(([r, c]) => [r, `${c.n}g`]))
         : null;
-      body += `<div class="lp-sub" style="margin:.55rem 0 .25rem">where are they playing <b>${esc(nameOf(laneEnemy))}</b>?</div>
+      body += `<div class="lp-sub" style="margin:.55rem 0 .25rem;color:var(--accent);font-weight:700;font-size:.8rem">Where are they playing ${esc(nameOf(laneEnemy))}? <span style="font-weight:400;color:var(--text-2)">— pick the lane to counter</span></div>
         <div class="echips">${Object.keys(LANE_LABELS).map((r) => `
           <span class="echip lane-switch ${r === role ? 'active' : ''}" data-lane="${r}" title="Show the best answers to ${esc(nameOf(laneEnemy))} in ${esc(LANE_LABELS[r])}${fieldRoles && fieldRoles[r] ? ` — the field plays them there ${fieldRoles[r]}` : ''}">${esc(LANE_LABELS[r])}${fieldRoles && fieldRoles[r] ? ` <span style="color:var(--text-2);font-size:.64rem">${fieldRoles[r]}</span>` : ''}</span>`).join('')}
         </div>`;
