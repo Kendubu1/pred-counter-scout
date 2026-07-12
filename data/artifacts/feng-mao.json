@@ -15,7 +15,7 @@
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
-   "the sim opens on Viper, which the field rarely builds (0.4% pick) — a sim-only call; compare the meta cores below",
+   "the sim opens on Viper, which the field rarely builds (0.5% pick) — a sim-only call; compare the meta cores below",
    "the sim build reproduces only 33% of the field's core for Feng Mao (it never builds Malady, Omen) — some of those items ride mechanics the sim doesn't model yet"
   ]
  },
@@ -26,15 +26,15 @@
     "name": "Viper",
     "slug": "viper",
     "spikeMinute": 12,
-    "playRatePct": 0.4,
+    "playRatePct": 0.5,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
    {
     "name": "Basilisk",
     "slug": "basilisk",
-    "spikeMinute": 19,
-    "playRatePct": 0.2,
+    "spikeMinute": 18,
+    "playRatePct": 0.6,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -42,23 +42,23 @@
     "name": "Solaris",
     "slug": "solaris",
     "spikeMinute": 25,
-    "playRatePct": 1.1,
-    "evidenceDeltaWr": null,
-    "evidenceN": null
+    "playRatePct": 2,
+    "evidenceDeltaWr": 0.4,
+    "evidenceN": 13
    },
    {
     "name": "Spear Of Desolation",
     "slug": "spear-of-desolation",
     "spikeMinute": 31,
-    "playRatePct": 1.8,
-    "evidenceDeltaWr": null,
-    "evidenceN": null
+    "playRatePct": 1.7,
+    "evidenceDeltaWr": -0.8,
+    "evidenceN": 11
    },
    {
     "name": "Augmentation",
     "slug": "augmentation",
     "spikeMinute": 37,
-    "playRatePct": 1.1,
+    "playRatePct": 0.9,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -66,9 +66,9 @@
     "name": "The Perforator",
     "slug": "the-perforator",
     "spikeMinute": 43,
-    "playRatePct": 38.8,
-    "evidenceDeltaWr": 3,
-    "evidenceN": 176
+    "playRatePct": 39,
+    "evidenceDeltaWr": 6,
+    "evidenceN": 256
    }
   ],
   "gold": 18500,
@@ -473,33 +473,27 @@
   "candidates": [
    {
     "item": "Viper",
-    "playRatePct": 0.4,
+    "playRatePct": 0.5,
     "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 160.3
+    "edgeVsPopularPct": 143.8
    },
    {
     "item": "Basilisk",
-    "playRatePct": 0.2,
+    "playRatePct": 0.6,
     "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 160.3
-   },
-   {
-    "item": "Solaris",
-    "playRatePct": 1.1,
-    "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 160.3
+    "edgeVsPopularPct": 143.8
    },
    {
     "item": "Spear Of Desolation",
-    "playRatePct": 1.8,
+    "playRatePct": 1.7,
     "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 160.3
+    "edgeVsPopularPct": 143.8
    },
    {
     "item": "Augmentation",
-    "playRatePct": 1.1,
+    "playRatePct": 0.9,
     "bestObjective": "20s fight vs bruisers",
-    "edgeVsPopularPct": 160.3
+    "edgeVsPopularPct": 143.8
    }
   ],
   "honestAbsence": null
@@ -582,7 +576,7 @@
   {
    "label": "early",
    "itemCount": 2,
-   "minute": 19,
+   "minute": 18,
    "level": 11,
    "core": [
     {
@@ -851,6 +845,45 @@
    }
   },
   {
+   "enemy": "Kwang",
+   "enemySlug": "kwang",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kwang ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 10,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 15,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 20,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 25,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 30,
+     "verdict": "enemy"
+    }
+   ],
+   "counterSwap": {
+    "out": "Viper",
+    "in": "Raiment of Renewal",
+    "inSlug": "raiment-of-renewal",
+    "survivalGainPct": 24,
+    "offenseLossPct": 34,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their 3s all-in loses 24% of its bite, at the cost of 34% of this kit's damage."
+   }
+  },
+  {
    "enemy": "Yin",
    "enemySlug": "yin",
    "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Yin's main threat is Backlash; bait it before you commit, and armor softens the trade.",
@@ -888,45 +921,6 @@
     "offenseLossPct": 34,
     "line": "Losing lane? Third item Warden's Faith instead of Viper: their 3s all-in loses 33% of its bite, at the cost of 34% of this kit's damage."
    }
-  },
-  {
-   "enemy": "Kallari",
-   "enemySlug": "kallari",
-   "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Kallari's main threat is Guillotine; bait it before you commit, and armor softens the trade.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 10,
-     "verdict": "even"
-    },
-    {
-     "minute": 15,
-     "verdict": "even"
-    },
-    {
-     "minute": 20,
-     "verdict": "even"
-    },
-    {
-     "minute": 25,
-     "verdict": "even"
-    },
-    {
-     "minute": 30,
-     "verdict": "even"
-    }
-   ],
-   "counterSwap": {
-    "out": "Viper",
-    "in": "Warden's Faith",
-    "inSlug": "wardens-faith",
-    "survivalGainPct": 33,
-    "offenseLossPct": 34,
-    "line": "Losing lane? Third item Warden's Faith instead of Viper: their 3s all-in loses 33% of its bite, at the cost of 34% of this kit's damage."
-   }
   }
  ],
  "laneSteer": {
@@ -945,7 +939,7 @@
  "slug": "feng-mao",
  "name": "Feng Mao",
  "patch": "1.15",
- "generatedAt": "2026-07-06T17:18:31.378Z",
+ "generatedAt": "2026-07-12T03:42:26.758Z",
  "damageType": "physical",
  "attackType": "melee",
  "laneFlex": [
@@ -1046,7 +1040,7 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Viper, which the field rarely builds (0.4% pick) — a sim-only call; compare the meta cores below",
+     "the sim opens on Viper, which the field rarely builds (0.5% pick) — a sim-only call; compare the meta cores below",
      "the sim build reproduces only 33% of the field's core for Feng Mao (it never builds Malady, Omen) — some of those items ride mechanics the sim doesn't model yet"
     ]
    },
@@ -1057,15 +1051,15 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 12,
-      "playRatePct": 0.4,
+      "playRatePct": 0.5,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
      {
       "name": "Basilisk",
       "slug": "basilisk",
-      "spikeMinute": 19,
-      "playRatePct": 0.2,
+      "spikeMinute": 18,
+      "playRatePct": 0.6,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1073,23 +1067,23 @@
       "name": "Solaris",
       "slug": "solaris",
       "spikeMinute": 25,
-      "playRatePct": 1.1,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
+      "playRatePct": 2,
+      "evidenceDeltaWr": 0.4,
+      "evidenceN": 13
      },
      {
       "name": "Spear Of Desolation",
       "slug": "spear-of-desolation",
       "spikeMinute": 31,
-      "playRatePct": 1.8,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
+      "playRatePct": 1.7,
+      "evidenceDeltaWr": -0.8,
+      "evidenceN": 11
      },
      {
       "name": "Augmentation",
       "slug": "augmentation",
       "spikeMinute": 37,
-      "playRatePct": 1.1,
+      "playRatePct": 0.9,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1097,9 +1091,9 @@
       "name": "The Perforator",
       "slug": "the-perforator",
       "spikeMinute": 43,
-      "playRatePct": 38.8,
-      "evidenceDeltaWr": 3,
-      "evidenceN": 176
+      "playRatePct": 39,
+      "evidenceDeltaWr": 6,
+      "evidenceN": 256
      }
     ],
     "gold": 18500,
@@ -1504,33 +1498,27 @@
     "candidates": [
      {
       "item": "Viper",
-      "playRatePct": 0.4,
+      "playRatePct": 0.5,
       "bestObjective": "20s fight vs bruisers",
-      "edgeVsPopularPct": 160.3
+      "edgeVsPopularPct": 143.8
      },
      {
       "item": "Basilisk",
-      "playRatePct": 0.2,
+      "playRatePct": 0.6,
       "bestObjective": "20s fight vs bruisers",
-      "edgeVsPopularPct": 160.3
-     },
-     {
-      "item": "Solaris",
-      "playRatePct": 1.1,
-      "bestObjective": "20s fight vs bruisers",
-      "edgeVsPopularPct": 160.3
+      "edgeVsPopularPct": 143.8
      },
      {
       "item": "Spear Of Desolation",
-      "playRatePct": 1.8,
+      "playRatePct": 1.7,
       "bestObjective": "20s fight vs bruisers",
-      "edgeVsPopularPct": 160.3
+      "edgeVsPopularPct": 143.8
      },
      {
       "item": "Augmentation",
-      "playRatePct": 1.1,
+      "playRatePct": 0.9,
       "bestObjective": "20s fight vs bruisers",
-      "edgeVsPopularPct": 160.3
+      "edgeVsPopularPct": 143.8
      }
     ],
     "honestAbsence": null
@@ -1613,7 +1601,7 @@
     {
      "label": "early",
      "itemCount": 2,
-     "minute": 19,
+     "minute": 18,
      "level": 11,
      "core": [
       {
@@ -1882,6 +1870,45 @@
      }
     },
     {
+     "enemy": "Kwang",
+     "enemySlug": "kwang",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kwang ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Viper",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 24,
+      "offenseLossPct": 34,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their 3s all-in loses 24% of its bite, at the cost of 34% of this kit's damage."
+     }
+    },
+    {
      "enemy": "Yin",
      "enemySlug": "yin",
      "gameplan": "You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention. Yin's main threat is Backlash; bait it before you commit, and armor softens the trade.",
@@ -1909,45 +1936,6 @@
       {
        "minute": 30,
        "verdict": "you"
-      }
-     ],
-     "counterSwap": {
-      "out": "Viper",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 33,
-      "offenseLossPct": 34,
-      "line": "Losing lane? Third item Warden's Faith instead of Viper: their 3s all-in loses 33% of its bite, at the cost of 34% of this kit's damage."
-     }
-    },
-    {
-     "enemy": "Kallari",
-     "enemySlug": "kallari",
-     "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Kallari's main threat is Guillotine; bait it before you commit, and armor softens the trade.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "even"
-      },
-      {
-       "minute": 15,
-       "verdict": "even"
-      },
-      {
-       "minute": 20,
-       "verdict": "even"
-      },
-      {
-       "minute": 25,
-       "verdict": "even"
-      },
-      {
-       "minute": 30,
-       "verdict": "even"
       }
      ],
      "counterSwap": {
@@ -1991,7 +1979,7 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Viper, which the field rarely builds (0.4% pick) — a sim-only call; compare the meta cores below"
+     "the sim opens on Viper, which the field rarely builds (0.5% pick) — a sim-only call; compare the meta cores below"
     ]
    },
    "build": {
@@ -2001,7 +1989,7 @@
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 12,
-      "playRatePct": 0.4,
+      "playRatePct": 0.5,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -2009,7 +1997,7 @@
       "name": "Basilisk",
       "slug": "basilisk",
       "spikeMinute": 19,
-      "playRatePct": 0.2,
+      "playRatePct": 0.6,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -2017,23 +2005,23 @@
       "name": "Solaris",
       "slug": "solaris",
       "spikeMinute": 25,
-      "playRatePct": 1.1,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
+      "playRatePct": 2,
+      "evidenceDeltaWr": 0.4,
+      "evidenceN": 13
      },
      {
       "name": "Spear Of Desolation",
       "slug": "spear-of-desolation",
       "spikeMinute": 30,
-      "playRatePct": 1.8,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
+      "playRatePct": 1.7,
+      "evidenceDeltaWr": -0.8,
+      "evidenceN": 11
      },
      {
       "name": "Augmentation",
       "slug": "augmentation",
       "spikeMinute": 35,
-      "playRatePct": 1.1,
+      "playRatePct": 0.9,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -2041,9 +2029,9 @@
       "name": "The Perforator",
       "slug": "the-perforator",
       "spikeMinute": 41,
-      "playRatePct": 38.8,
-      "evidenceDeltaWr": 3,
-      "evidenceN": 176
+      "playRatePct": 39,
+      "evidenceDeltaWr": 6,
+      "evidenceN": 256
      }
     ],
     "gold": 18500,
@@ -2448,33 +2436,27 @@
     "candidates": [
      {
       "item": "Viper",
-      "playRatePct": 0.4,
+      "playRatePct": 0.5,
       "bestObjective": "20s fight vs bruisers",
-      "edgeVsPopularPct": 160.3
+      "edgeVsPopularPct": 143.8
      },
      {
       "item": "Basilisk",
-      "playRatePct": 0.2,
+      "playRatePct": 0.6,
       "bestObjective": "20s fight vs bruisers",
-      "edgeVsPopularPct": 160.3
-     },
-     {
-      "item": "Solaris",
-      "playRatePct": 1.1,
-      "bestObjective": "20s fight vs bruisers",
-      "edgeVsPopularPct": 160.3
+      "edgeVsPopularPct": 143.8
      },
      {
       "item": "Spear Of Desolation",
-      "playRatePct": 1.8,
+      "playRatePct": 1.7,
       "bestObjective": "20s fight vs bruisers",
-      "edgeVsPopularPct": 160.3
+      "edgeVsPopularPct": 143.8
      },
      {
       "item": "Augmentation",
-      "playRatePct": 1.1,
+      "playRatePct": 0.9,
       "bestObjective": "20s fight vs bruisers",
-      "edgeVsPopularPct": 160.3
+      "edgeVsPopularPct": 143.8
      }
     ],
     "honestAbsence": null
