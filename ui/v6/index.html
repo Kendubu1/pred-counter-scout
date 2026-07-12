@@ -708,12 +708,12 @@ async function renderLaneDetail() {
       // Let the user move the locked enemy between lanes without losing them
       // (the top rolebar clears the enemy; these chips deliberately keep it).
       const enemyIdx = INDEX.heroes.find((h) => h.slug === laneEnemy);
-      const fieldRoles = enemyIdx && enemyIdx.roleWr
-        ? Object.fromEntries(Object.entries(enemyIdx.roleWr).map(([r, c]) => [r, `${c.n}g`]))
+      const fieldGames = enemyIdx && enemyIdx.roleWr
+        ? Object.fromEntries(Object.entries(enemyIdx.roleWr).map(([r, c]) => [r, c.n]))
         : null;
       body += `<div class="lp-sub" style="margin:.55rem 0 .25rem;color:var(--accent);font-weight:700;font-size:.8rem">Where are they playing ${esc(nameOf(laneEnemy))}? <span style="font-weight:400;color:var(--text-2)">— pick the lane to counter</span></div>
         <div class="echips">${Object.keys(LANE_LABELS).map((r) => `
-          <span class="echip lane-switch ${r === role ? 'active' : ''}" data-lane="${r}" title="Show the best answers to ${esc(nameOf(laneEnemy))} in ${esc(LANE_LABELS[r])}${fieldRoles && fieldRoles[r] ? ` — the field plays them there ${fieldRoles[r]}` : ''}">${esc(LANE_LABELS[r])}${fieldRoles && fieldRoles[r] ? ` <span style="color:var(--text-2);font-size:.64rem">${fieldRoles[r]}</span>` : ''}</span>`).join('')}
+          <span class="echip lane-switch ${r === role ? 'active' : ''}" data-lane="${r}" title="Show the best answers to ${esc(nameOf(laneEnemy))} in ${esc(LANE_LABELS[r])}${fieldGames && fieldGames[r] ? ` — the field plays them there (${fieldGames[r].toLocaleString()} ranked games this patch)` : ''}">${esc(LANE_LABELS[r])}</span>`).join('')}
         </div>`;
       const rows = [];
       for (const h of INDEX.heroes) {
