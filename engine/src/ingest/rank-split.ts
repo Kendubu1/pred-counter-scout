@@ -1,17 +1,16 @@
-// Rank-split hero winrates from the omeda.city ranked feed: Bronze–Gold vs
-// Platinum+ — how differently does the meta play at high ELO?
+// Rank-split hero winrates from the omeda.city ranked feed, PER TIER —
+// Bronze / Silver / Gold / Platinum / Diamond+ — how the meta shifts with ELO.
 //
 //   npm run ranksplit            # 36h window, ranked rows only
 //
 // Bucketing is PER PLAYER ROW by the row's own `rank` field (two-digit code:
-// tens = tier 1 Bronze … 5+ Diamond+, units = division), so a mixed-tier match
-// contributes each player to their own bucket. low = rank < 40 (Bronze/Silver/
-// Gold), high = rank >= 40 (Platinum and up — also the 900-VP Platinum III
-// line the coach reports use). Rows with no rank (placements/private) are
-// dropped. Same polite fetching as aggregate.ts: sequential, delay, cursor.
+// tens = tier 1 Bronze … 5+ pooled as diamond+, units = division), so a
+// mixed-tier match contributes each player to their own tier. Rows with no
+// rank (placements/private) are dropped. Same polite fetching as aggregate.ts.
 //
 // Output: data/aggregates/rank-split-<date>.json — per hero slug,
-// { low: {n, w}, high: {n, w} }, plus byRole per bucket for the lane view.
+// tiers: { bronze|silver|gold|platinum|diamond+: {n, w} } + byRole per tier.
+// Coarser buckets (e.g. Plat+) derive by summing tiers — never re-pull for them.
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -21,13 +20,16 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.
 const UA = { 'User-Agent': 'pred-counter-scout (github.com/Kendubu1/pred-counter-scout)' };
 const ROLES = new Set(['carry', 'midlane', 'offlane', 'jungle', 'support']);
 const WINDOW_H = 36, MAX_PAGES = 120;
-const HIGH_MIN_RANK = 40; // tens digit 4 = Platinum
+// tens digit of the row's rank code = tier; 5+ pooled as diamond+ (thin)
+const TIERS = ['bronze', 'silver', 'gold', 'platinum', 'diamond+'] as const;
+const tierOf = (rank: number) => TIERS[Math.min(Math.floor(rank / 10), 5) - 1]!;
 // Feed/catalog id mismatches — keep in sync with aggregate.ts FEED_ID_ALIASES
 // (not imported: aggregate.ts runs its pull on import).
 const FEED_ID_ALIASES: Record<number, string> = { 75: 'legion', 76: 'ikra' };
 
 interface Cell { n: number; w: number }
-interface HeroCells { low: Cell; high: Cell; byRole: Record<string, { low: Cell; high: Cell }> }
+type TierCells = Record<string, Cell>;
+interface HeroCells { tiers: TierCells; byRole: Record<string, TierCells> }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 async function fetchPage(url: string): Promise<any> {
@@ -62,13 +64,14 @@ async function main() {
         if (!role || !p.hero_id) continue;
         if (p.rank == null || p.rank < 10) { unranked++; continue; }
         const slug = idToSlug.get(p.hero_id) ?? `hero_id:${p.hero_id}`;
-        const bucket: 'low' | 'high' = p.rank >= HIGH_MIN_RANK ? 'high' : 'low';
+        const tier = tierOf(p.rank);
         let h = heroes.get(slug);
-        if (!h) { h = { low: { n: 0, w: 0 }, high: { n: 0, w: 0 }, byRole: {} }; heroes.set(slug, h); }
+        if (!h) { h = { tiers: {}, byRole: {} }; heroes.set(slug, h); }
         const won = p.team === m.winning_team;
-        h[bucket].n++; if (won) h[bucket].w++;
-        const rc = (h.byRole[role] ??= { low: { n: 0, w: 0 }, high: { n: 0, w: 0 } });
-        rc[bucket].n++; if (won) rc[bucket].w++;
+        const tc = (h.tiers[tier] ??= { n: 0, w: 0 });
+        tc.n++; if (won) tc.w++;
+        const rc = ((h.byRole[role] ??= {})[tier] ??= { n: 0, w: 0 });
+        rc.n++; if (won) rc.w++;
         rows++;
       }
     }
@@ -79,22 +82,19 @@ async function main() {
 
   const date = new Date().toISOString().slice(0, 10);
   const out = path.join(ROOT, `data/aggregates/rank-split-${date}.json`);
-  const lowN = [...heroes.values()].reduce((s, h) => s + h.low.n, 0);
-  const highN = [...heroes.values()].reduce((s, h) => s + h.high.n, 0);
+  const tierRows: Record<string, number> = {};
+  for (const h of heroes.values()) for (const [t, c] of Object.entries(h.tiers)) tierRows[t] = (tierRows[t] ?? 0) + c.n;
   writeFileSync(out, JSON.stringify({
     meta: {
       source: 'omeda.city matches.json (official Omeda public API), ranked rows only',
       generatedAt: new Date().toISOString(),
       windowHours: WINDOW_H, pages, matches,
-      buckets: {
-        low: { label: 'Bronze–Gold', rule: 'row rank 10–39', playerRows: lowN },
-        high: { label: 'Platinum+', rule: 'row rank >= 40', playerRows: highN },
-      },
-      note: 'bucketed per PLAYER ROW by that player’s own rank (a mixed-tier match feeds both buckets); rows with no rank dropped',
+      tiers: Object.fromEntries(TIERS.map((t) => [t, { playerRows: tierRows[t] ?? 0 }])),
+      note: 'per PLAYER ROW by that player’s own rank code (tens digit = tier; 5+ pooled as diamond+); a mixed-tier match feeds each player’s own tier; rows with no rank dropped. Coarser buckets (e.g. Plat+) derive by summing tiers.',
     },
     heroes: Object.fromEntries([...heroes.entries()].sort()),
   }, null, 1));
-  console.log(`${matches} ranked matches -> ${rows} rows (${lowN} Bronze–Gold / ${highN} Platinum+, ${unranked} unranked dropped) -> ${out}`);
+  console.log(`${matches} ranked matches -> ${rows} rows (${Object.entries(tierRows).map(([t, n]) => `${t} ${n}`).join(', ')}; ${unranked} unranked dropped) -> ${out}`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
