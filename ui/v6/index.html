@@ -1014,7 +1014,7 @@ function renderHero(a, roleParam) {
     `<div class="dotwrap"><div class="dot ${c.verdict}" title="minute ${c.minute}: ${c.verdict === 'you' ? 'you can win the fight' : c.verdict === 'enemy' ? 'they can win the fight' : 'even'}"></div><div class="m">${c.minute}</div></div>`).join('')}</div>`;
 
   $('#hero').innerHTML = `
-    <div class="backrow"><button id="back">← all heroes</button></div>
+    <div class="backrow"><button id="back">← all heroes</button><button id="beatThis" title="Open the ${esc(a.role)} lane room with ${esc(a.name)} as the enemy — who answers them best">⚔ How to beat ${esc(a.name)}</button></div>
 
     <header class="hero-head">
       <img src="${IMG.hero(a.slug)}" alt="" onerror="this.style.visibility='hidden'">
@@ -1339,6 +1339,7 @@ function renderHero(a, roleParam) {
     <div id="tabLearn" class="hidden"></div>
   `;
   $('#back').onclick = () => nav(null);
+  $('#beatThis').onclick = () => { history.pushState({}, '', './?counter=' + a.slug); route(); };
   document.querySelectorAll('.flexroles button').forEach((b) => {
     b.onclick = () => nav(a.slug, false, b.dataset.flexrole);
   });
@@ -1585,6 +1586,12 @@ async function getAugs() {
 
 async function route() {
   const params = new URLSearchParams(location.search);
+  // ?counter=<slug> — the global-search "how do I beat X" deep link: open the
+  // landing in counter mode with X locked in as the enemy, lane room scrolled to.
+  const enemy = params.get('counter');
+  if (enemy && INDEX.heroes.some((h) => h.slug === enemy)) {
+    show('landing'); setLandingMode('counter'); counterHero(enemy); buildSubnav(); return;
+  }
   const slug = params.get('hero');
   if (!slug) { show('landing'); renderGrid(); buildSubnav(); return; }
   try {
