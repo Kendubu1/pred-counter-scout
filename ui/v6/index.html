@@ -151,6 +151,10 @@
   .htabs { display:flex; gap:.4rem; margin-top:1rem; }
   .htab { background:transparent; color:var(--text-2); border:1px solid var(--border); border-radius:99px; padding:.32rem 1rem; font-size:.84rem; }
   .htab.active { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
+  /* the "beat them" tab is an action, not a view — tinted so it reads distinct */
+  .htab-beat { color:var(--red, #ff5a5a); border-color:color-mix(in srgb, var(--red, #ff5a5a) 45%, var(--border)); margin-left:auto; }
+  .htab-beat:hover { background:color-mix(in srgb, var(--red, #ff5a5a) 14%, transparent); }
+  .htabs { flex-wrap:wrap; }
   /* build tabs — one per build path, modelled on .htab but scoped/scrollable */
   .btabs { display:flex; gap:.4rem; margin-bottom:.8rem; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
   .btabs::-webkit-scrollbar { display:none; }
@@ -606,11 +610,17 @@ async function getMatrix() {
   if (!MATRIX) MATRIX = await getJson('../../data/artifacts/matchup-matrix.json').catch(() => null);
   return MATRIX;
 }
-// Empirical head-to-head records (npm run matchups). Absent until the pred.gg
-// Application gets the statistics scope — every consumer falls back to sim.
+// Empirical head-to-head records, merged from two sources: the open omeda
+// feed (npm run matchups:feed — available today) with pred.gg's patch-wide
+// records overlaid per-pair when that pass unlocks (bigger samples). Either
+// file absent is fine; both absent -> null and every consumer falls back to sim.
 let MATCHUPS;
 async function getMatchups() {
-  if (MATCHUPS === undefined) MATCHUPS = await getJson('../../data/aggregates/predgg-matchups.json').then((j) => j.pairs || null).catch(() => null);
+  if (MATCHUPS === undefined) {
+    const feed = await getJson('../../data/aggregates/feed-matchups.json').then((j) => j.pairs || null).catch(() => null);
+    const gg = await getJson('../../data/aggregates/predgg-matchups.json').then((j) => j.pairs || null).catch(() => null);
+    MATCHUPS = (feed || gg) ? { ...(feed || {}), ...(gg || {}) } : null;
+  }
   return MATCHUPS;
 }
 /** Verdicts for our-vs-enemy from the all-pairs matrix (y/e/= coded,
@@ -764,7 +774,7 @@ async function renderLaneDetail() {
         body += cross.map((r) => rowHtml(r, true)).join('');
       }
       body += MU
-        ? `<div class="lp-sub" style="margin-top:.4rem">ranked by the REAL head-to-head record (pred.gg ranked, this patch, 20+ games) where one exists; the kill-window sim ranks the rest and is the second opinion — green dots = the sim says you win that stage</div>`
+        ? `<div class="lp-sub" style="margin-top:.4rem">ranked by the REAL head-to-head lane record (ranked games this patch, 20+ per pair) where one exists; the kill-window sim ranks the rest and is the second opinion — green dots = the sim says you win that stage</div>`
         : `<div class="lp-sub" style="margin-top:.4rem">ranked by who wins the fight at each stage (kit-math sim, THEORY until calibrated) — green dots = you win · sims assume each kit's standard build and primary-role income · not head-to-head match data</div>`;
     } else {
       body += '<div class="lp-sub">pick the enemy hero — including an off-meta flex via the dropdown — to see who answers them best</div>';
@@ -1059,7 +1069,7 @@ function renderHero(a, roleParam) {
     `<div class="dotwrap"><div class="dot ${c.verdict}" title="minute ${c.minute}: ${c.verdict === 'you' ? 'you can win the fight' : c.verdict === 'enemy' ? 'they can win the fight' : 'even'}"></div><div class="m">${c.minute}</div></div>`).join('')}</div>`;
 
   $('#hero').innerHTML = `
-    <div class="backrow"><button id="back">← all heroes</button><button id="beatThis" title="Open the ${esc(a.role)} lane room with ${esc(a.name)} as the enemy — who answers them best">⚔ How to beat ${esc(a.name)}</button></div>
+    <div class="backrow"><button id="back">← all heroes</button></div>
 
     <header class="hero-head">
       <img src="${IMG.hero(a.slug)}" alt="" onerror="this.style.visibility='hidden'">
@@ -1093,6 +1103,7 @@ function renderHero(a, roleParam) {
         const lbl = { buff: '▲ buffed', nerf: '▼ nerfed', mixed: '◆ changed', rework: '◆ reworked' }[ps.trend] || '◆ changed';
         return ` <span class="tabtrend ${esc(ps.trend)}" title="Changed in patch ${esc(ps.patch || a.patch)} — open Learn the hero for details">${lbl}</span>`;
       })()}</button>
+      <button class="htab htab-beat" data-tab="beat" title="Open the ${esc(a.role)} lane room with ${esc(a.name)} locked as the enemy — the best answers, ranked">⚔ How to beat ${esc(a.name)}</button>
     </div>
 
     <div id="tabPlay">
@@ -1384,12 +1395,12 @@ function renderHero(a, roleParam) {
     <div id="tabLearn" class="hidden"></div>
   `;
   $('#back').onclick = () => nav(null);
-  $('#beatThis').onclick = () => { history.pushState({}, '', './?counter=' + a.slug); route(); };
   document.querySelectorAll('.flexroles button').forEach((b) => {
     b.onclick = () => nav(a.slug, false, b.dataset.flexrole);
   });
   document.querySelectorAll('.htab').forEach((b) => {
     b.onclick = async () => {
+      if (b.dataset.tab === 'beat') { history.pushState({}, '', './?counter=' + a.slug); route(); return; }
       document.querySelectorAll('.htab').forEach((x) => x.classList.toggle('active', x === b));
       const learn = b.dataset.tab === 'learn';
       $('#tabPlay').classList.toggle('hidden', learn);
