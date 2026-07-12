@@ -704,6 +704,17 @@ async function renderLaneDetail() {
     </select>`;
     body = `<div class="lp-sub">they locked in:</div><div class="echips">${chips}${flexSel}</div>`;
     if (laneEnemy) {
+      // The enemy may be FLEXING — a support Zinx in mid is a different fight.
+      // Let the user move the locked enemy between lanes without losing them
+      // (the top rolebar clears the enemy; these chips deliberately keep it).
+      const enemyIdx = INDEX.heroes.find((h) => h.slug === laneEnemy);
+      const fieldRoles = enemyIdx && enemyIdx.roleWr
+        ? Object.fromEntries(Object.entries(enemyIdx.roleWr).map(([r, c]) => [r, `${c.n}g`]))
+        : null;
+      body += `<div class="lp-sub" style="margin:.55rem 0 .25rem">where are they playing <b>${esc(nameOf(laneEnemy))}</b>?</div>
+        <div class="echips">${Object.keys(LANE_LABELS).map((r) => `
+          <span class="echip lane-switch ${r === role ? 'active' : ''}" data-lane="${r}" title="Show the best answers to ${esc(nameOf(laneEnemy))} in ${esc(LANE_LABELS[r])}${fieldRoles && fieldRoles[r] ? ` — the field plays them there ${fieldRoles[r]}` : ''}">${esc(LANE_LABELS[r])}${fieldRoles && fieldRoles[r] ? ` <span style="color:var(--text-2);font-size:.64rem">${fieldRoles[r]}</span>` : ''}</span>`).join('')}
+        </div>`;
       const rows = [];
       for (const h of INDEX.heroes) {
         if (h.slug === laneEnemy) continue;
@@ -752,6 +763,11 @@ async function renderLaneDetail() {
   if (window.BrandIcons) window.BrandIcons.hydrate(box);
   box.querySelectorAll('.lmode button').forEach((b) => { b.onclick = () => { laneMode = b.dataset.m; renderLaneDetail(); }; });
   box.querySelectorAll('.echip').forEach((c) => {
+    if (c.classList.contains('lane-switch')) {
+      // move the LOCKED enemy to another lane — keep them selected
+      c.onclick = () => { roleFilter = c.dataset.lane; renderRolebar(); renderGrid(); renderLaneDetail(); };
+      return;
+    }
     c.onclick = () => {
       if (c.dataset.go === 'hero') { nav(c.dataset.slug, false, c.dataset.role || null); return; }
       laneEnemy = c.dataset.slug; renderLaneDetail();
@@ -848,9 +864,14 @@ function pickLane(role) {
   $('#lanedetail').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 // Counter flow: treat the picked hero as the enemy and show the lane's best answers.
-function counterHero(slug) {
+function counterHero(slug, laneParam) {
   const h = INDEX.heroes.find((x) => x.slug === slug);
-  const lane = roleFilter !== 'all' ? roleFilter : (h && h.role) || 'midlane';
+  // lane priority: explicit ?lane= > the lane already filtered > where the
+  // FIELD most plays them this patch (roleWr sample) > their listed role.
+  const fieldLane = h && h.roleWr && Object.entries(h.roleWr).sort((a, b) => b[1].n - a[1].n)[0]?.[0];
+  const lane = (laneParam && LANE_LABELS[laneParam] && laneParam)
+    || (roleFilter !== 'all' ? roleFilter : null)
+    || fieldLane || (h && h.role) || 'midlane';
   roleFilter = lane; laneMode = 'counter'; laneEnemy = slug;
   renderRolebar(); renderGrid(); renderLaneDetail();
   $('#lanedetail').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1590,7 +1611,7 @@ async function route() {
   // landing in counter mode with X locked in as the enemy, lane room scrolled to.
   const enemy = params.get('counter');
   if (enemy && INDEX.heroes.some((h) => h.slug === enemy)) {
-    show('landing'); setLandingMode('counter'); counterHero(enemy); buildSubnav(); return;
+    show('landing'); setLandingMode('counter'); counterHero(enemy, params.get('lane')); buildSubnav(); return;
   }
   const slug = params.get('hero');
   if (!slug) { show('landing'); renderGrid(); buildSubnav(); return; }
