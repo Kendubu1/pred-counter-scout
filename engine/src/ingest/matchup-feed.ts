@@ -37,14 +37,25 @@ async function fetchPage(url: string): Promise<any> {
   throw new Error(`feed fetch failed: ${url}`);
 }
 
+const OUT = path.join(ROOT, 'data/aggregates/feed-matchups.json');
+
 async function main() {
-  const startTs = Math.floor(new Date(`${PATCH_START}T00:00:00Z`).getTime() / 1000);
+  // Incremental: if a committed file carries raw `cells`, resume 1s after its
+  // window end and merge counts; else walk the whole patch from PATCH_START.
+  let existing: any = null;
+  try { existing = JSON.parse(readFileSync(OUT, 'utf8')); } catch { /* fresh */ }
+  const resume = existing?.cells && existing?.window?.to;
+  const windowFrom = resume ? existing.window.from : PATCH_START;
+  const startTs = resume
+    ? Math.floor(new Date(existing.window.to).getTime() / 1000) + 1
+    : Math.floor(new Date(`${PATCH_START}T00:00:00Z`).getTime() / 1000);
+  if (resume) console.log(`resuming from ${existing.window.to} (window began ${windowFrom})`);
   const omedaHeroes = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8'));
   const arr = Array.isArray(omedaHeroes) ? omedaHeroes : Object.values(omedaHeroes);
   const idToSlug = new Map<number, string>(arr.map((h: any) => [h.id, h.slug]));
   for (const [id, slug] of Object.entries(FEED_ID_ALIASES)) if (!idToSlug.has(Number(id))) idToSlug.set(Number(id), slug);
 
-  const cells = new Map<string, { n: number; w: number }>();
+  const cells = new Map<string, { n: number; w: number }>(resume ? Object.entries(existing.cells as Record<string, { n: number; w: number }>) : []);
   let url: string | null = `https://omeda.city/matches.json?per_page=100&timestamp=${startTs}`;
   let pages = 0, matches = 0, pairsCounted = 0, lastStart = '';
   while (url && pages < MAX_PAGES) {
@@ -111,17 +122,20 @@ async function main() {
     }
   } catch { /* no matrix */ }
 
-  writeFileSync(path.join(ROOT, 'data/aggregates/feed-matchups.json'), JSON.stringify({
+  const windowTo = lastStart || existing?.window?.to || PATCH_START;
+  const totalMatches = matches + (resume ? (existing.window.matches ?? 0) : 0);
+  writeFileSync(OUT, JSON.stringify({
     generatedAt: new Date().toISOString(),
-    source: `omeda.city ranked match feed (official Omeda public API): same-role lane pairs, ${PATCH_START} -> ${lastStart.slice(0, 10)}; directed "a|b" = a's record into b, n >= ${MIN_GAMES}`,
-    note: 'EMPIRICAL head-to-head lane records computed from the open feed — no rank filter (all ranks). The pred.gg matchup pass overlays these per-pair when its scope unlocks.',
-    window: { from: PATCH_START, to: lastStart, matches, pages },
+    source: `omeda.city ranked match feed (official Omeda public API): same-role lane pairs, ${windowFrom} -> ${String(windowTo).slice(0, 10)}; directed "a|b" = a's record into b, n >= ${MIN_GAMES}`,
+    note: 'EMPIRICAL head-to-head lane records computed from the open feed — no rank filter (all ranks). Raw `cells` persist ALL pairs so reruns resume incrementally from window.to; `pairs` is the n-gated consumable.',
+    window: { from: windowFrom, to: windowTo, matches: totalMatches, pages },
     validation: both
       ? { pairsCompared: both, simAgrees: agree, agreementRate: Math.round((agree / both) * 1000) / 10, simSaidEven: simEven, fieldSaidEven: fieldEven, method: 'sim net kill-window verdict vs field winrate, counted only where both commit (field >=52% or <=48%, sim net != 0)' }
       : null,
     pairs,
+    cells: Object.fromEntries([...cells.entries()].sort()),
   }, null, 1));
-  console.log(`\n${matches} ranked matches -> ${Object.keys(pairs).length} evidenced pairs (n>=${MIN_GAMES}) -> data/aggregates/feed-matchups.json`);
+  console.log(`\n${matches} new ranked matches (${totalMatches} total) -> ${Object.keys(pairs).length} evidenced pairs (n>=${MIN_GAMES}) -> ${OUT}`);
   if (both) console.log(`validation: sim agrees with the field on ${agree}/${both} committed pairs (${Math.round((agree / both) * 1000) / 10}%)`);
 }
 
