@@ -28,3 +28,19 @@
   fixed (field) build item-by-item from the modeled passives, and flags the
   items it can't justify (Cursed Ring) — the engine that proves "we can justify
   the top winning builds with reasoning."
+
+## 2026-07-12 — Real head-to-head counters + the sim's first calibration number
+- feed-matchups.json now carries the whole patch: 49,301 ranked matches ->
+  1,876 evidenced directed lane pairs (n>=20), computed from the OPEN omeda
+  feed (no credentials). Counters rank on these; incremental reruns extend
+  from window.to.
+- THE CALIBRATION NUMBER: the kill-window matchup sim agrees with real lane
+  outcomes on 594/1314 committed pairs — 45.2%, a coin flip. Orientation was
+  verified (symmetric pairs, lopsided anchors) before believing it. The sim
+  is useful as kit THEORY and stage-by-stage narrative, but as a lane-winner
+  PREDICTOR it is no better than chance — evidence-first ranking wasn't an
+  upgrade, it was a correction. The counter footnote now states this to users.
+- Product rule going forward: any sim output that has a measurable real-world
+  counterpart gets measured against it and labeled with the number, not just
+  'THEORY'. Builds: ~62% core recall. Matchups: ~45% directional. Both prints
+  refresh automatically with their evidence passes.
