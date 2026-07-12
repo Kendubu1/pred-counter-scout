@@ -151,6 +151,10 @@
   .htabs { display:flex; gap:.4rem; margin-top:1rem; }
   .htab { background:transparent; color:var(--text-2); border:1px solid var(--border); border-radius:99px; padding:.32rem 1rem; font-size:.84rem; }
   .htab.active { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
+  /* the "beat them" tab is an action, not a view — tinted so it reads distinct */
+  .htab-beat { color:var(--red, #ff5a5a); border-color:color-mix(in srgb, var(--red, #ff5a5a) 45%, var(--border)); margin-left:auto; }
+  .htab-beat:hover { background:color-mix(in srgb, var(--red, #ff5a5a) 14%, transparent); }
+  .htabs { flex-wrap:wrap; }
   /* build tabs — one per build path, modelled on .htab but scoped/scrollable */
   .btabs { display:flex; gap:.4rem; margin-bottom:.8rem; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
   .btabs::-webkit-scrollbar { display:none; }
@@ -1065,7 +1069,7 @@ function renderHero(a, roleParam) {
     `<div class="dotwrap"><div class="dot ${c.verdict}" title="minute ${c.minute}: ${c.verdict === 'you' ? 'you can win the fight' : c.verdict === 'enemy' ? 'they can win the fight' : 'even'}"></div><div class="m">${c.minute}</div></div>`).join('')}</div>`;
 
   $('#hero').innerHTML = `
-    <div class="backrow"><button id="back">← all heroes</button><button id="beatThis" title="Open the ${esc(a.role)} lane room with ${esc(a.name)} as the enemy — who answers them best">⚔ How to beat ${esc(a.name)}</button></div>
+    <div class="backrow"><button id="back">← all heroes</button></div>
 
     <header class="hero-head">
       <img src="${IMG.hero(a.slug)}" alt="" onerror="this.style.visibility='hidden'">
@@ -1099,6 +1103,7 @@ function renderHero(a, roleParam) {
         const lbl = { buff: '▲ buffed', nerf: '▼ nerfed', mixed: '◆ changed', rework: '◆ reworked' }[ps.trend] || '◆ changed';
         return ` <span class="tabtrend ${esc(ps.trend)}" title="Changed in patch ${esc(ps.patch || a.patch)} — open Learn the hero for details">${lbl}</span>`;
       })()}</button>
+      <button class="htab htab-beat" data-tab="beat" title="Open the ${esc(a.role)} lane room with ${esc(a.name)} locked as the enemy — the best answers, ranked">⚔ How to beat ${esc(a.name)}</button>
     </div>
 
     <div id="tabPlay">
@@ -1390,12 +1395,12 @@ function renderHero(a, roleParam) {
     <div id="tabLearn" class="hidden"></div>
   `;
   $('#back').onclick = () => nav(null);
-  $('#beatThis').onclick = () => { history.pushState({}, '', './?counter=' + a.slug); route(); };
   document.querySelectorAll('.flexroles button').forEach((b) => {
     b.onclick = () => nav(a.slug, false, b.dataset.flexrole);
   });
   document.querySelectorAll('.htab').forEach((b) => {
     b.onclick = async () => {
+      if (b.dataset.tab === 'beat') { history.pushState({}, '', './?counter=' + a.slug); route(); return; }
       document.querySelectorAll('.htab').forEach((x) => x.classList.toggle('active', x === b));
       const learn = b.dataset.tab === 'learn';
       $('#tabPlay').classList.toggle('hidden', learn);
