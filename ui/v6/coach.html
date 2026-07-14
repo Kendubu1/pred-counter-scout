@@ -360,8 +360,11 @@ function fightMap(f) {
   const usDawn = f.ourTeam === 'dawn';
   const WX0 = -15000, WX1 = 16000, WY0 = -15500, WY1 = 18000;
   const W = 320, H = 360, pad = 16, mw = W - pad * 2, mh = H - pad * 2;
+  // Us at the bottom in every game; the two views are 180° rotations of each
+  // other. Flank handedness verified against the in-game minimap (the previous
+  // transform mirrored the map — Fang/Prime rendered on the wrong side).
   const sx = (x, y) => {
-    const fx = usDawn ? (WX1 - x) : (x - WX0);
+    const fx = usDawn ? (x - WX0) : (WX1 - x);
     const fy = usDawn ? (y - WY0) : (WY1 - y);
     return { px: pad + fx / (WX1 - WX0) * mw, py: pad + fy / (WY1 - WY0) * mh };
   };
@@ -382,6 +385,37 @@ function fightMap(f) {
     }
   }
   const rcol = (r) => r === 'won' ? 'var(--green)' : r === 'lost' ? 'var(--red)' : 'var(--text-2)';
+  // ── Map underlay: river + jungle pockets + flank buffs, all from the REAL
+  // landmark geometry (no invented positions), so the dots read as places.
+  const oPos = (t) => { const o = (MAP.objectives || []).find((x) => x.type === t); return o ? { ...sx(o.x, o.y), o } : null; };
+  const pFang = oPos('fangtooth'), pPrime = oPos('prime'), pRiver = oPos('river'), pGold = oPos('gold_buff'), pCyan = oPos('cyan_buff');
+  let underlay = '';
+  if (pFang && pPrime && pRiver) {
+    // the river runs edge-to-edge through the two pits and the river midpoint
+    const rp = [{ px: 4, py: pFang.py + (pFang.px < W / 2 ? 0 : 0) }, pFang, pRiver, pPrime, { px: W - 4, py: pPrime.py }]
+      .sort((a, b) => a.px - b.px);
+    const rline = rp.map((p) => `${p.px.toFixed(0)},${p.py.toFixed(0)}`).join(' ');
+    underlay += `<polyline points="${rline}" fill="none" stroke="#3b82f6" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" opacity=".10"/>`;
+    underlay += `<polyline points="${rline}" fill="none" stroke="#60a5fa" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".12"/>`;
+  }
+  // jungle pockets: the four regions between mid and each side lane, centered
+  // on the real tower geometry (mean of each team's mid + flank inner/outer)
+  for (const c of MAP.cores) {
+    for (const lane of ['left', 'right']) {
+      const flank = (byKey[`${c.team}|${lane}`] || []).filter((s) => s.tier !== 'inhibitor');
+      const mid = (byKey[`${c.team}|mid`] || []).filter((s) => s.tier !== 'inhibitor');
+      if (!flank.length || !mid.length) continue;
+      const cx = (mean(flank.map((s) => s.x)) + mean(mid.map((s) => s.x))) / 2;
+      const cy = (mean(flank.map((s) => s.y)) + mean(mid.map((s) => s.y))) / 2;
+      const p = sx(cx, cy);
+      underlay += `<ellipse cx="${p.px.toFixed(0)}" cy="${p.py.toFixed(0)}" rx="42" ry="34" fill="#16a34a" opacity=".07"/>`;
+    }
+  }
+  // flank buffs (single-instance, real coordinates)
+  const buffsHtml = [[pGold, '#e0a93e', 'Gold buff'], [pCyan, '#22d3ee', 'Cyan buff']].filter(([p]) => p).map(([p, colr, label]) =>
+    `<g><title>${label} (spawns here)</title><circle cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="3.4" fill="${colr}" opacity=".9"/><text x="${p.px.toFixed(1)}" y="${(p.py - 6).toFixed(1)}" fill="${colr}" font-size="7" text-anchor="middle" opacity=".85">${label.split(' ')[0]}</text></g>`).join('');
+  const halfLabels = `<text x="${W / 2}" y="${pad + 10}" fill="rgba(255,90,90,.4)" font-size="8" font-weight="700" letter-spacing="2" text-anchor="middle">THEIR HALF</text>
+    <text x="${W / 2}" y="${H - pad - 4}" fill="rgba(0,196,140,.45)" font-size="8" font-weight="700" letter-spacing="2" text-anchor="middle">OUR HALF</text>`;
   // towers as crisp little diamonds; cores ringed YOU/THEM
   const towersHtml = MAP.structures.map((s) => { const p = sx(s.x, s.y); return `<rect x="${(p.px - 2.6).toFixed(1)}" y="${(p.py - 2.6).toFixed(1)}" width="5.2" height="5.2" rx="1" fill="${col(sideOf(s.team))}" opacity=".92" transform="rotate(45 ${p.px.toFixed(1)} ${p.py.toFixed(1)})"/>`; }).join('');
   const coresHtml = MAP.cores.map((c) => { const p = sx(c.x, c.y); const side = sideOf(c.team); return `<circle cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="7" fill="none" stroke="${col(side)}" stroke-width="2.5"/><text x="${p.px.toFixed(1)}" y="${(p.py + (side === 'us' ? 17 : -11)).toFixed(1)}" fill="${col(side)}" font-size="9" font-weight="700" text-anchor="middle">${side === 'us' ? 'US' : 'THEM'}</text>`; }).join('');
@@ -435,12 +469,15 @@ function fightMap(f) {
       </defs>
       <rect x="2" y="2" width="${W - 4}" height="${H - 4}" rx="14" fill="#0b0b11" stroke="var(--border)"/>
       <rect x="2" y="2" width="${W - 4}" height="${H - 4}" rx="14" fill="url(#fmgrid)"/>
+      ${underlay}
       ${lanesHtml}
       ${glow}
       ${dots}
-      ${towersHtml}${objHtml}${coresHtml}${keyHtml}${marks}${seqs}${caughtHtml}
+      ${buffsHtml}
+      ${towersHtml}${objHtml}${coresHtml}${halfLabels}${keyHtml}${marks}${seqs}${caughtHtml}
     </svg></div>
-    <div style="font-size:.68rem;color:var(--text-2);line-height:1.5;margin-top:.4rem"><span style="color:var(--green)">green</span> glow = where we got kills · <span style="color:var(--red)">red</span> = where we died (brighter = more kills there) · ◆ towers · ● Fang/Prime · rings = key fights (<span style="color:var(--gold)">gold</span> = game-defining) · <span style="color:var(--gold)">✕</span> = caught out alone (a death with no fight around it) · numbered dots = the focused fight's kills in death order (<span style="color:var(--red)">red ring</span> = we died, <span style="color:var(--green)">green</span> = they died; dotted line = which way the fight moved). Real map coordinates; reads approximate (THEORY).</div>
+    <div style="font-size:.68rem;color:var(--text-2);line-height:1.6;margin-top:.4rem">
+      <b style="color:var(--text-1)">Reading the map:</b> our base is always at the bottom; the <span style="color:#60a5fa">blue band</span> is the river (Fang and Prime sit in it), green shading = jungle. <span style="color:var(--green)">Green glow</span> = where we got kills · <span style="color:var(--red)">red</span> = where we died (brighter = more) · ◆ towers · ● Fang/Prime pits · <span style="color:#e0a93e">Gold</span>/<span style="color:#22d3ee">Cyan</span> dots = flank buffs · rings = key fights (<span style="color:var(--gold)">gold ring</span> = game-defining) · <span style="color:var(--gold)">✕</span> = caught out alone (a death with no fight around it) · numbered dots = the focused fight's kills in death order (<span style="color:var(--red)">red ring</span> = we died, <span style="color:var(--green)">green</span> = they died; dotted line = which way the fight moved). Real map coordinates; reads approximate (THEORY).</div>
     <div id="fmdetail" class="fm-detail${decIdx >= 0 ? ' lit' : ''}">${decIdx >= 0 ? `${fhead(sks[decIdx])}${fightDetail(sks[decIdx], f)}` : '<span style="color:var(--text-2)">No fights to break down.</span>'}</div>
     <div id="fmdetails" hidden>${details}</div>
   </div>`;
