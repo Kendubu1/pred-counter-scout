@@ -57,7 +57,10 @@ async function main() {
   const { chromium } = await import('playwright');
   mkdirSync(SHOTS, { recursive: true });
   const { port, close } = await serve();
-  const browser = await chromium.launch();
+  // Remote sessions ship a system chromium at /opt/pw-browsers/chromium (no
+  // playwright-managed download); fall back to the default resolution locally.
+  const sysChromium = '/opt/pw-browsers/chromium';
+  const browser = await chromium.launch(existsSync(sysChromium) ? { executablePath: sysChromium } : {});
   const results: { surface: string; width: number; scrollWidth: number; clientWidth: number; overflow: number; shot: string }[] = [];
   let phoneOverflow = 0;
 
