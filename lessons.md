@@ -2570,3 +2570,21 @@ Eight maintainer-flagged fixes:
   was fed by caught-alone deaths (8 in b31f, 7 by Revenant), won fights went
   uncashed (2/5, 1/3), and both games ended in five-man dives past towers taken
   while AHEAD on modeled items. The 7/06 wins are the blueprint contrast.
+
+## 2026-07-15 — UX judge loop over the v6 sprint (maintainer: "why aren't you looping?")
+- Correct call: three weeks of UI changes (home simplification, global search,
+  counter lane chips, evidence counters, beat tab, fight-map fix) had shipped
+  on author-only verification. Ran the proper author->judge->apply loop over
+  landing/hero/coach/squad/livedraft: 70.0% -> 93.3% -> 100.0%, gate STOP at
+  target. 11 real flags found and fixed — none of which I'd caught myself:
+  clipped meta-board names, the beat tab reading as a detached CTA on phones,
+  a swap tip repeated under 5 of 6 matchups, an always-open 10-symbol map key,
+  double-defined 'game-defining', jargon ('kill-window', '3s all-in', 'front-
+  foot') in primary copy.
+- Round-2 lesson inside the loop: my round-1 dedupe keyed on string equality
+  and never fired (numbers differ per row) — the judge caught the no-op fix.
+  Fixes must be re-verified by the independent judge, not assumed.
+- Template fixes don't ship until their artifacts rebuild — the judge sees
+  committed copy, not source. Rebuild before re-judging.
+- Standing practice: UI work of more than a trivial patch goes through this
+  loop before merge (bracket: ui:audit + ui:render green; judge to >=99%).
