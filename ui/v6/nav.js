@@ -57,7 +57,10 @@
   .gs-pill:hover { color:var(--text-0); border-color:var(--accent); }
   .gs-pill .gs-kbd { border:1px solid var(--border); border-radius:4px; padding:0 .3rem; font-size:.66rem; }
   .gs-pill svg { width:14px; height:14px; flex:none; }
-  @media (max-width:720px) { .top .navlink { display:none; } .gs-pill .gs-txt, .gs-pill .gs-kbd { display:none; } .gs-pill { padding:.34rem .55rem; } }
+  /* On phones the burger drawer IS the nav, so the inline top-bar tabs + the
+     patch pill are redundant and squeeze the wordmark down to "Pred". Hide both
+     so the full "Pred Scout" lockup fits (the compact search pill stays). */
+  @media (max-width:720px) { .top .navlink, .top .patch-pill { display:none; } .gs-pill .gs-txt, .gs-pill .gs-kbd { display:none; } .gs-pill { padding:.34rem .55rem; } }
   .gs-overlay { position:fixed; inset:0; background:rgba(4,4,8,.72); z-index:10000; display:none;
     align-items:flex-start; justify-content:center; padding:10vh 1rem 1rem; }
   .gs-overlay.open { display:flex; }
