@@ -476,8 +476,10 @@ function fightMap(f) {
       ${buffsHtml}
       ${towersHtml}${objHtml}${coresHtml}${halfLabels}${keyHtml}${marks}${seqs}${caughtHtml}
     </svg></div>
-    <div style="font-size:.68rem;color:var(--text-2);line-height:1.6;margin-top:.4rem">
-      <b style="color:var(--text-1)">Reading the map:</b> our base is always at the bottom; the <span style="color:#60a5fa">blue band</span> is the river (Fang and Prime sit in it), green shading = jungle. <span style="color:var(--green)">Green glow</span> = where we got kills · <span style="color:var(--red)">red</span> = where we died (brighter = more) · ◆ towers · ● Fang/Prime pits · <span style="color:#e0a93e">Gold</span>/<span style="color:#22d3ee">Cyan</span> dots = flank buffs · rings = key fights (<span style="color:var(--gold)">gold ring</span> = game-defining) · <span style="color:var(--gold)">✕</span> = caught out alone (a death with no fight around it) · numbered dots = the focused fight's kills in death order (<span style="color:var(--red)">red ring</span> = we died, <span style="color:var(--green)">green</span> = they died; dotted line = which way the fight moved). Real map coordinates; reads approximate (THEORY).</div>
+    <div style="font-size:.72rem;color:var(--text-1);margin-top:.4rem">Our base is always at the <b>bottom</b> · the <span style="color:#60a5fa">blue band</span> is the river · <span style="color:var(--green)">green glow</span> = our kills, <span style="color:var(--red)">red</span> = our deaths.</div>
+    <details class="sim-collapse" style="margin-top:.25rem"><summary>Full map key</summary>
+      <div style="font-size:.68rem;color:var(--text-2);line-height:1.6;margin-top:.3rem">Green shading = jungle · ◆ towers · ● Fang/Prime pits · <span style="color:#e0a93e">Gold</span>/<span style="color:#22d3ee">Cyan</span> dots = flank buffs · rings = the key fights (gold ring = the game-defining one, defined in the timeline key above) · <span style="color:var(--gold)">✕</span> = caught out alone (a death with no fight around it) · numbered dots = the focused fight's kills in death order (<span style="color:var(--red)">red ring</span> = we died, <span style="color:var(--green)">green</span> = they died; dotted line = which way the fight moved). Real map coordinates; reads approximate (THEORY).</div>
+    </details>
     <div id="fmdetail" class="fm-detail${decIdx >= 0 ? ' lit' : ''}">${decIdx >= 0 ? `${fhead(sks[decIdx])}${fightDetail(sks[decIdx], f)}` : '<span style="color:var(--text-2)">No fights to break down.</span>'}</div>
     <div id="fmdetails" hidden>${details}</div>
   </div>`;
@@ -519,13 +521,15 @@ function pgReview(f) {
       <span title="Combat math here is THEORY — our simulator's output on constants not yet measured in-game. Shown whenever a number rests on an unverified constant; the field win rates next to it are real." style="margin-left:auto;font-size:.62rem;font-weight:700;color:var(--gold);border:1px solid var(--gold);border-radius:99px;padding:.1rem .5rem;cursor:help">THEORY</span>
     </div>
     ${co ? `<div style="font-size:1.05rem;font-weight:700;line-height:1.45;margin-top:.7rem">${esc(co.headline)}</div>
-    <div style="color:var(--text-1);margin-top:.5rem;font-size:.92rem">${esc(co.team)}</div>
+    <details class="sim-collapse" style="margin-top:.5rem"${(co.team || '').length <= 220 ? ' open' : ''}><summary>The full team read</summary>
+      <div style="color:var(--text-1);margin-top:.35rem;font-size:.92rem">${esc(co.team)}</div>
+    </details>
     <div style="border-left:3px solid var(--gold);padding:.5rem .8rem;background:rgba(240,180,41,.07);border-radius:6px;margin-top:.6rem;font-size:.9rem"><b>What would've shifted it:</b> ${esc(co.whatShiftedIt)}</div>` :
     `<div style="color:var(--text-2);margin-top:.5rem;font-size:.9rem">Facts computed; coaching narrative not yet authored for this match.</div>`}`);
 
   const wrColor = (w) => w >= 52 ? 'var(--green)' : w <= 48 ? 'var(--red)' : 'var(--text-1)';
   const lanes = card(`
-    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.7rem">Draft &amp; lane matchups <span style="font-weight:400;text-transform:none;letter-spacing:0">· pred.gg win rate vs the laner (empirical) · sim kill-window as a second opinion</span></h2>
+    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.7rem">Draft &amp; lane matchups <span style="font-weight:400;text-transform:none;letter-spacing:0">· pred.gg win rate vs the laner (empirical) · the sim's fight read as a second opinion</span></h2>
     <div style="display:flex;flex-direction:column;gap:.5rem">
       ${f.lanes.map((l) => {
         const o = ourOf(l.role), t = theirOf(l.role);
@@ -549,7 +553,7 @@ function pgReview(f) {
         </div>`;
       }).join('')}
     </div>
-    <div style="margin-top:.5rem;font-size:.72rem;color:var(--text-2)">Per-minute kill-window (5·10·15·20·25·30), green = our window. Counter = a role-eligible hero that beats the enemy laner (matchup matrix, THEORY); <span style="color:var(--green)">●</span> = in that player's pool.</div>`);
+    <div style="margin-top:.5rem;font-size:.72rem;color:var(--text-2)">Dots = minutes 5·10·15·20·25·30 — green = the minutes the fight is winnable for us. Counter = a role-eligible hero that beats the enemy laner (matchup matrix, THEORY); <span style="color:var(--green)">●</span> = in that player's pool.</div>`);
 
   // Fight timeline (TEAM): the fights that shaped the game, clustered from the
   // kill stream — who won each and what was on the line. Per-player lane state +

@@ -306,7 +306,7 @@ function counterSwap(kit: HeroKit, items: Item[], enemy: HeroKit, enemyItems: It
     inSlug: best.item.slug,
     survivalGainPct: Math.round(best.gain * 100),
     offenseLossPct: Math.round(best.loss * 100),
-    line: `Losing lane? Third item ${best.item.name} instead of ${prefix[2]!.name}: their 3s all-in loses ${Math.round(best.gain * 100)}% of its bite, at the cost of ${Math.round(best.loss * 100)}% of this kit's damage.`,
+    line: `Losing lane? Third item ${best.item.name} instead of ${prefix[2]!.name}: their burst combo hits ${Math.round(best.gain * 100)}% less hard, and this kit gives up ${Math.round(best.loss * 100)}% of its damage for it.`,
   };
 }
 

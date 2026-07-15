@@ -151,10 +151,13 @@
   .htabs { display:flex; gap:.4rem; margin-top:1rem; }
   .htab { background:transparent; color:var(--text-2); border:1px solid var(--border); border-radius:99px; padding:.32rem 1rem; font-size:.84rem; }
   .htab.active { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
-  /* the "beat them" tab is an action, not a view — tinted so it reads distinct */
-  .htab-beat { color:var(--red, #ff5a5a); border-color:color-mix(in srgb, var(--red, #ff5a5a) 45%, var(--border)); margin-left:auto; }
+  /* the "beat them" tab is an action, not a view — tinted so it reads distinct.
+     On phones it flows inline with the tabs (judge R1: right-aligned on its own
+     row read as a detached competing CTA). */
+  .htab-beat { color:var(--red, #ff5a5a); border-color:color-mix(in srgb, var(--red, #ff5a5a) 45%, var(--border)); }
   .htab-beat:hover { background:color-mix(in srgb, var(--red, #ff5a5a) 14%, transparent); }
   .htabs { flex-wrap:wrap; }
+  @media (min-width:721px) { .htab-beat { margin-left:auto; } }
   /* build tabs — one per build path, modelled on .htab but scoped/scrollable */
   .btabs { display:flex; gap:.4rem; margin-bottom:.8rem; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
   .btabs::-webkit-scrollbar { display:none; }
@@ -387,7 +390,7 @@
   .metaboard .mb-head { display:flex; align-items:baseline; gap:.7rem; flex-wrap:wrap; }
   .metaboard h2 { font-size:1.05rem; font-weight:800; }
   .metaboard .mb-sub { font-size:.74rem; color:var(--text-2); }
-  .lanes { display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:.7rem; margin-top:.8rem; }
+  .lanes { display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:.7rem; margin-top:.8rem; }
   .lane { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:.7rem .75rem; }
   .lane h3 { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.45rem; }
   .lane h3.lane-go { cursor:pointer; }
@@ -395,8 +398,10 @@
   .mp { display:flex; align-items:center; gap:.5rem; padding:.26rem .3rem; border-radius:8px; cursor:pointer; }
   .mp:hover { background:var(--bg-2); }
   .mp img { width:30px; height:30px; border-radius:8px; object-fit:cover; background:var(--bg-2); flex:none; }
-  .mp .n { flex:1; font-size:.8rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .mp .wr { font-size:.74rem; font-variant-numeric:tabular-nums; font-weight:700; }
+  /* names wrap instead of clipping (judge R5: "Ikra…"/"Auro…" ellipses); the
+     win%% column shrinks to content so the name gets the room */
+  .mp .n { flex:1; min-width:0; font-size:.8rem; font-weight:600; overflow-wrap:anywhere; }
+  .mp .wr { font-size:.74rem; font-variant-numeric:tabular-nums; font-weight:700; flex:none; }
   .wr.up { color:var(--green); } .wr.down { color:var(--red); } .wr.flat { color:var(--text-2); }
   .mp .g { display:block; font-size:.62rem; color:var(--text-2); font-weight:400; }
   .pilots { margin-top:.55rem; padding-top:.5rem; border-top:1px dashed var(--border); }
@@ -1383,12 +1388,20 @@ function renderHero(a, roleParam) {
 
     <section class="card">
       <h2>Matchups <span class="hint">vs the most-played ${esc(a.role)} you'll face · green = when you can win the fight</span></h2>
-      ${a.matchups.length ? a.matchups.map((m) => `
+      ${(() => {
+        if (!a.matchups.length) return '<div style="color:var(--text-2)">no same-role opponents with enough games this patch</div>';
+        // The defensive-swap tip is often IDENTICAL across matchups — show a
+        // repeated line once at the top instead of on every row (judge R3).
+        const swaps = a.matchups.filter((m) => m.counterSwap).map((m) => m.counterSwap.line);
+        const shared = swaps.length >= 3 && new Set(swaps).size === 1 ? swaps[0] : null;
+        return (shared ? `<div class="cswap" style="margin-bottom:.55rem">⚙ ${esc(shared)} <span class="hint">(applies to the tough matchups below)</span></div>` : '') +
+          a.matchups.map((m) => `
         <div class="murow" data-slug="${esc(m.enemySlug)}" style="cursor:pointer">
           <img src="${IMG.hero(m.enemySlug)}" alt="" onerror="this.style.visibility='hidden'">
           <div class="head"><span class="who">${esc(m.enemy)}</span>${dots(m.checkpoints)}</div>
-          <span class="plan">${esc(m.gameplan)}${m.counterSwap ? `<br><span class="cswap">⚙ ${esc(m.counterSwap.line)}</span>` : ''}</span>
-        </div>`).join('') : '<div style="color:var(--text-2)">no same-role opponents with enough games this patch</div>'}
+          <span class="plan">${esc(m.gameplan)}${m.counterSwap && !shared ? `<br><span class="cswap">⚙ ${esc(m.counterSwap.line)}</span>` : ''}</span>
+        </div>`).join('');
+      })()}
     </section>
 
     </div>

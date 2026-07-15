@@ -385,7 +385,7 @@ const plink = (uuid, name) => uuid
         // the winning option, rendered rich — this IS the optimal lineup
         // when everyone is in, wheelhouse, unshuffled
         const head = isOptimal
-          ? `OPTIMAL LINEUP · all ${[1, 2, 6, 24, 120][opt.seats.length - 1] ?? ''} permutations scored${typeof s.lineupGainPer100 === 'number' && s.lineupGainPer100 >= 0.5 ? ` · <span style="color:var(--green)">worth +${s.lineupGainPer100} wins/100 vs queue habits</span>` : ''}`
+          ? `OPTIMAL LINEUP · all ${[1, 2, 6, 24, 120][opt.seats.length - 1] ?? ''} permutations scored${typeof s.lineupGainPer100 === 'number' && s.lineupGainPer100 >= 0.5 ? ` · <span style="color:var(--green)">about ${s.lineupGainPer100} more wins per 100 games than the usual queue picks</span>` : ''}`
           : `${shuffleSeed % 3 === 0 ? 'BEST FOR THIS GROUP' : '🎲 SHUFFLED SET'} · seats average ${pct(avg)}%`;
         return `
       <div style="margin-top:.8rem">
