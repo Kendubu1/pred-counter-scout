@@ -1390,16 +1390,29 @@ function renderHero(a, roleParam) {
       <h2>Matchups <span class="hint">vs the most-played ${esc(a.role)} you'll face · green = when you can win the fight</span></h2>
       ${(() => {
         if (!a.matchups.length) return '<div style="color:var(--text-2)">no same-role opponents with enough games this patch</div>';
-        // The defensive-swap tip is often IDENTICAL across matchups — show a
-        // repeated line once at the top instead of on every row (judge R3).
-        const swaps = a.matchups.filter((m) => m.counterSwap).map((m) => m.counterSwap.line);
-        const shared = swaps.length >= 3 && new Set(swaps).size === 1 ? swaps[0] : null;
-        return (shared ? `<div class="cswap" style="margin-bottom:.55rem">⚙ ${esc(shared)} <span class="hint">(applies to the tough matchups below)</span></div>` : '') +
+        // The defensive-swap tip repeats the same ITEM PAIR across matchups
+        // with only the percentages changing — hoist the sentence once and
+        // keep short labeled numbers per row (judge R3, round 2: string-equal
+        // dedupe never fired because the numbers differ).
+        const pairOf = (l) => (l.split(':')[0] || l);
+        const nums = (l) => (l.match(/(\d+)%/g) || []).map((x) => parseInt(x));
+        const swapRows = a.matchups.filter((m) => m.counterSwap && m.counterSwap.line);
+        const pairs = new Set(swapRows.map((m) => pairOf(m.counterSwap.line)));
+        const shared = swapRows.length >= 3 && pairs.size === 1 ? pairOf(swapRows[0].counterSwap.line) : null;
+        const rowSwap = (m) => {
+          if (!m.counterSwap) return '';
+          if (!shared) return `<br><span class="cswap">⚙ ${esc(m.counterSwap.line)}</span>`;
+          const [theirLoss, ourCost] = nums(m.counterSwap.line);
+          return theirLoss != null && ourCost != null
+            ? `<br><span class="cswap">⚙ with the swap: their burst −${theirLoss}% · our damage −${ourCost}%</span>`
+            : `<br><span class="cswap">⚙ ${esc(m.counterSwap.line)}</span>`;
+        };
+        return (shared ? `<div class="cswap" style="margin-bottom:.55rem">⚙ ${esc(shared)} — blunts their burst at some damage cost; per-matchup numbers on each row.</div>` : '') +
           a.matchups.map((m) => `
         <div class="murow" data-slug="${esc(m.enemySlug)}" style="cursor:pointer">
           <img src="${IMG.hero(m.enemySlug)}" alt="" onerror="this.style.visibility='hidden'">
           <div class="head"><span class="who">${esc(m.enemy)}</span>${dots(m.checkpoints)}</div>
-          <span class="plan">${esc(m.gameplan)}${m.counterSwap && !shared ? `<br><span class="cswap">⚙ ${esc(m.counterSwap.line)}</span>` : ''}</span>
+          <span class="plan">${esc(m.gameplan)}${rowSwap(m)}</span>
         </div>`).join('');
       })()}
     </section>

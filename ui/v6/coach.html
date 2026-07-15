@@ -221,7 +221,7 @@ const pgName = (p) => esc(p.squadName || p.name);
 const hlink = (slug, inner) => slug ? `<a href="index.html?hero=${esc(slug)}" title="open ${esc(slug)} in Pick &amp; Build">${inner}</a>` : inner;
 function pgDots(v) {
   return `<span style="display:inline-flex;gap:3px;vertical-align:middle">` + [...v].map((c) =>
-    `<span title="${c === 'y' ? 'our kill window' : c === 'e' ? 'their kill window' : 'even'}" style="width:11px;height:11px;border-radius:50%;display:inline-block;background:${c === 'y' ? 'var(--green)' : c === 'e' ? 'var(--red)' : 'var(--bg-3)'};${c === '=' ? 'border:1px solid var(--border)' : ''}"></span>`).join('') + `</span>`;
+    `<span title="${c === 'y' ? 'a minute we can win the fight' : c === 'e' ? 'a minute they can win the fight' : 'even'}" style="width:11px;height:11px;border-radius:50%;display:inline-block;background:${c === 'y' ? 'var(--green)' : c === 'e' ? 'var(--red)' : 'var(--bg-3)'};${c === '=' ? 'border:1px solid var(--border)' : ''}"></span>`).join('') + `</span>`;
 }
 // Per-fight breakdown: the kill-by-kill, who fought (with kit archetypes), each of
 // our fighters' builds + which spikes were online by then, and what the fight MEANT

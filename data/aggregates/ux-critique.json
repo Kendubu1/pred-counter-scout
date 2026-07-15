@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-07-15T03:34:27.336Z",
+ "generatedAt": "2026-07-15T03:49:32.133Z",
  "target": "ui/v6",
  "surfaces": [
   "landing",
@@ -9,80 +9,28 @@
   "livedraft"
  ],
  "units": 30,
- "flagCount": 9,
- "agreementRate": 0.7,
+ "flagCount": 2,
+ "agreementRate": 0.933,
  "perSurface": {
-  "landing": [
-   {
-    "criterion": "R5",
-    "quote": "meta board rows clip hero names and pick tags at every viewport — 'Ikra…', 'Ram…', 'Auro…', 'Murdoc…', 'Zin…' and tag links cut to 'Sle', 'P', 'SI' (390 and 1024)",
-    "severity": "med",
-    "issue": "truncated names/tags make the top picks unreadable",
-    "fix": "let the name+tag block wrap to a second line (or place win% under the name) instead of a fixed-width right column that forces ellipsis"
-   }
-  ],
+  "landing": [],
   "hero": [
    {
-    "criterion": "R1",
-    "quote": "the red-outlined 'How to beat Countess' pill wraps to its own right-aligned row below the Game plan / Learn the hero tabs at 390/360px",
-    "severity": "med",
-    "issue": "reads as a detached competing CTA in a second accent color rather than a third tab",
-    "fix": "keep all three tabs in one left-aligned wrapping row with the neutral tab style; apply the red accent only when the counter tab is active"
-   },
-   {
     "criterion": "R3",
-    "quote": "'Losing lane? Third item Raiment of Renewal instead of Spectral Schematics: their 3s all-in loses N% of its bite, at the cost of ~29% of this kit's damage' repeats near-verbatim in 5 of 6 matchup rows",
+    "quote": "'Losing lane? Third item Raiment of Renewal instead of Spectral Schematics: their 3s all-in loses N% of its bite, at the cost of ~27-29% of this kit's damage' still renders under 5 of 6 matchup rows (The Fey, Argus, Renna, Iggy & Scorch, Gideon)",
     "severity": "med",
-    "issue": "same swap advice duplicated across the whole matchup list",
-    "fix": "state the Raiment-of-Renewal losing-lane swap once above the matchup list and keep only the per-enemy % delta inline in each row"
+    "issue": "round-1 swap-tip redundancy not resolved — the dedup only fires on byte-identical lines, and these differ only in the percentages, so the same swap advice repeats five times",
+    "fix": "dedupe on the item pair, not the full string: state 'Losing lane? Swap the third item to Raiment of Renewal instead of Spectral Schematics' once above the matchup list and keep only the per-enemy numbers inline (e.g. '-11% their all-in / -29% your damage')"
    },
    {
     "criterion": "R5",
-    "quote": "matchup copy: 'their 3s all-in loses 11% of its bite, at the cost of 29% of this kit's damage' and 'you hold the kill-threat edge'",
+    "quote": "matchup copy still reads 'their 3s all-in loses 11% of its bite, at the cost of 29% of this kit's damage' and 'You hold the kill-threat edge wherever one exists: play front-foot'",
     "severity": "low",
-    "issue": "shorthand jargon ('3s all-in', 'bite', 'kill-threat edge') opaque to a new player",
-    "fix": "rephrase in plain terms, e.g. 'their full combo hits 11% weaker, but you give up 29% of your own damage' and 'you win the all-in fight'"
+    "issue": "round-1 jargon flag not resolved on this surface — '3s all-in', 'bite', 'kill-threat edge', 'play front-foot' render verbatim as before",
+    "fix": "rephrase plainly, e.g. 'their full combo hits 11% weaker, but you give up 29% of your own damage' and 'you win the all-in fight — take trades, but watch for their jungler'"
    }
   ],
-  "coach": [
-   {
-    "criterion": "R5",
-    "quote": "fold summary paragraph: 'of six won fights we cashed two — the 11.1 win bought Fangtooth at 11.2 and the 15.7 win bought a tower at 15.9, while the 2.4, 8.3, 9.7 and 12.9 wins turned into nothing on the map — so towers read only 2-1 at the end'",
-    "severity": "med",
-    "issue": "one ~60-word sentence packed with six decimal timestamps plus 'cashed'/'leak' jargon, above the fold",
-    "fix": "split into two short sentences and compress the timestamp list ('four of the six wins turned into nothing on the map'), keeping exact times in the fight timeline below"
-   },
-   {
-    "criterion": "R2",
-    "quote": "'Reading the map' key under the fight map is a fully expanded run-on paragraph defining ~10 symbols (blue band, green glow, towers, pits, flank buffs, rings, caught-out, numbered dots, dotted line)",
-    "severity": "med",
-    "issue": "dense always-on legend instead of on-demand disclosure",
-    "fix": "move the symbol key into a collapsed <details> ('Reading the map') or a compact two-column symbol list"
-   },
-   {
-    "criterion": "R3",
-    "quote": "'gold ring = game-defining (heuristic, THEORY)' is defined in both the fight-timeline key and again in the fight-map 'Reading the map' key",
-    "severity": "med",
-    "issue": "same marker explained twice on one page",
-    "fix": "define the gold-ring/game-defining marker once in a single shared key for the timeline + map pair"
-   },
-   {
-    "criterion": "R5",
-    "quote": "draft & lane matchups header/legend: 'sim kill-window as a second opinion' and 'Per-minute kill-window (5·10·15·20·25·30), green = our window'",
-    "severity": "low",
-    "issue": "'kill-window' jargon (explicitly on the rubric's jargon list) where the hero page already uses plain phrasing",
-    "fix": "reuse the plain wording from the hero page: 'green = the minutes you can win the fight'"
-   }
-  ],
-  "squad": [
-   {
-    "criterion": "R5",
-    "quote": "primary green headline: 'OPTIMAL LINEUP · all 120 permutations scored · worth +2.8 wins/100 vs queue habits'",
-    "severity": "low",
-    "issue": "shorthand ('wins/100', 'permutations', 'queue habits') in the page's most important line; the plain version only appears in Coach Notes at the very bottom",
-    "fix": "write the headline plainly — 'best seating · worth about +2.8 wins per 100 games vs everyone playing their usual role' — and move 'all 120 permutations scored' into the Data scope collapse"
-   }
-  ],
+  "coach": [],
+  "squad": [],
   "livedraft": []
  }
 }

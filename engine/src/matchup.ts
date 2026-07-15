@@ -203,7 +203,7 @@ export function matchupCheckpoints(
   } else if (theirs(early) > 0 && yours(late) === 0 && theirs(late) === 0) {
     gameplan = 'Respect their early kill threat; the exchange levels out later, so trade patiently and scale.';
   } else if (theirs(verdicts) === 0 && yours(verdicts) > 0) {
-    gameplan = 'You hold the kill-threat edge wherever one exists: play front-foot, but respect jungle attention.';
+    gameplan = 'Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention.';
   } else if (yours(verdicts) === 0 && theirs(verdicts) > 0) {
     gameplan = 'They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel.';
   }
