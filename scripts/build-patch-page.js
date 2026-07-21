@@ -17,6 +17,17 @@ const version = process.argv[2] || '1.15';
 
 const digest = JSON.parse(fs.readFileSync(path.join(ROOT, `data/patches/${version}.json`), 'utf8'));
 const pred = JSON.parse(fs.readFileSync(path.join(ROOT, `data/aggregates/patch-${version}-predictions.json`), 'utf8'));
+// Catalogs for the "what is this?" popups on item/Eternal cards — the same
+// committed snapshots the rest of the site renders from (zero-API).
+const ITEM_CATALOG = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/omeda/items.json'), 'utf8'));
+const ITEM_META = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/omeda/META.json'), 'utf8'));
+const ETERNAL_DATA = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/game-data/eternals.json'), 'utf8'));
+const ETERNAL_CATALOG = ETERNAL_DATA.eternals;
+const ITEM_SNAP_DATE = (ITEM_META.fetchedAt || '').slice(0, 10);
+// The catalogs can lag the patch being reviewed — say so in every popup so the
+// card's change line is understood as the newer truth where they disagree.
+const ITEM_NOTE = `Base info from the team's committed item snapshot (${ITEM_SNAP_DATE}). Where this patch changed a number, the change line on the card is the newer value.`;
+const ETERNAL_NOTE = `Base info from the team's Eternals data (patch ${ETERNAL_DATA.patch}). Where a later patch changed a number, the change line on the card is the newer value.`;
 
 const esc = (s) => String(s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -239,6 +250,27 @@ const tldrBlock = (digest.tldr && digest.tldr.length)
 // Eternals get the same treatment as heroes: a showcase grid of clickable
 // images with a colored buff/nerf/shift arrow, then a card per Eternal.
 const ETSLUG = (name) => name.toLowerCase();
+// ── "What is this?" popup data: keyed by card anchor id, baked into the page.
+// Only cards whose subject resolves in a committed catalog get the button, so
+// a stale digest entry degrades to no popup rather than an empty one.
+const popupInfo = {};
+const stripFx = (s) => String(s || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+const PCT_STATS = new Set(['critical_chance', 'attack_speed', 'lifesteal', 'magical_lifesteal', 'omnivamp', 'tenacity', 'heal_shield_increase', 'movement_speed']);
+const STAT_LABEL = (k) => k.replace(/_/g, ' ').replace(/^max /, '').replace(/\b\w/, (c) => c.toUpperCase());
+for (const e of (digest.eternals?.changes || [])) {
+  const et = ETERNAL_CATALOG.find((x) => x.name.toLowerCase() === e.name.toLowerCase());
+  if (!et) continue;
+  popupInfo[`eternal-${ETSLUG(e.name)}`] = {
+    kind: 'Eternal', name: et.name, img: `img/eternals/${ETSLUG(e.name)}.webp`,
+    meta: [et.deity, et.archetype].filter(Boolean).join(' · '),
+    note: ETERNAL_NOTE,
+    sections: [
+      { title: 'Major (always on)', lines: [et.major].filter(Boolean) },
+      { title: 'Minor slot 1 (pick one)', lines: (et.minorSlot1 || []).map((m) => `${m.name} — ${m.desc}`) },
+      { title: 'Minor slot 2 (pick one)', lines: (et.minorSlot2 || []).map((m) => `${m.name} — ${m.desc}`) },
+    ].filter((s) => s.lines.length),
+  };
+}
 const eternalShowcase = `
       <div class="hx-legend"><span class="hx-hint">tap an Eternal to jump to its change</span></div>
       <div class="hx-grid">
@@ -262,6 +294,7 @@ const eternalCards = (digest.eternals?.changes || []).map((e) => {
         </div>
         <ul class="change-list"><li>${g(esc(e.change))}</li></ul>
         ${e.meaning ? `<div class="pred"><span class="pred-label">Meaning</span>${g(esc(e.meaning))}</div>` : ''}
+        ${popupInfo[`eternal-${ETSLUG(e.name)}`] ? `<button class="card-info" data-info="eternal-${ETSLUG(e.name)}">ⓘ what is ${esc(e.name)}?</button>` : ''}
       </div>`;
 }).join('');
 const itemList = (digest.items || []).map((i) => `<li>${esc(i)}</li>`).join('');
@@ -270,6 +303,25 @@ const itemList = (digest.items || []).map((i) => `<li>${esc(i)}</li>`).join('');
 const itemOrder = { new: 0, removed: 1, rework: 2, buff: 3, mixed: 4, nerf: 5 };
 const itemChanges = (digest.itemChanges || []).slice()
   .sort((a, b) => (itemOrder[a.dir] ?? 9) - (itemOrder[b.dir] ?? 9) || a.name.localeCompare(b.name));
+for (const c of itemChanges) {
+  const it = ITEM_CATALOG.find((i) => i.slug === c.slug);
+  if (!it) continue;
+  const stats = Object.entries(it.stats || {})
+    .map(([k, v]) => `${STAT_LABEL(k)} ${v}${PCT_STATS.has(k) ? '%' : ''}`);
+  popupInfo[`item-${c.slug}`] = {
+    kind: 'Item', name: it.display_name || it.name, img: `img/items/${c.slug}.webp`,
+    meta: [it.rarity, it.slot_type && it.slot_type !== 'Passive' ? it.slot_type : null,
+      it.total_price ? `${it.total_price}g` : null].filter(Boolean).join(' · '),
+    note: ITEM_NOTE,
+    sections: [
+      { title: 'Stats', lines: stats },
+      ...(it.effects || []).map((fx) => ({
+        title: fx.name + (fx.active ? ' (active)' : ' (passive)'),
+        lines: [stripFx(`${fx.condition || ''} ${fx.menu_description || ''}`)].filter(Boolean),
+      })),
+    ].filter((s) => s.lines.length),
+  };
+}
 // Only advertise the symbols this patch actually uses beyond the hero legend.
 const itemDirs = new Set(itemChanges.map((it) => it.dir));
 const itemExtraKey = [
@@ -297,6 +349,7 @@ const itemCards = itemChanges.map((it) => {
           <span class="badge ${t.cls}">${t.icon} ${t.label}</span>
         </div>
         <div class="pred" style="margin:0">${makeGloss()(esc(it.change))}</div>
+        ${popupInfo[`item-${it.slug}`] ? `<button class="card-info" data-info="item-${it.slug}">ⓘ what is ${esc(it.name)}?</button>` : ''}
       </div>`;
 }).join('');
 const sysList = (digest.systems || []).map((s) =>
@@ -476,6 +529,33 @@ const html = `<!DOCTYPE html>
     .hxs:hover { border-color: var(--accent); }
     .hxs.active { border-color: var(--accent); background: var(--bg-2);
       box-shadow: 0 0 0 1px var(--accent) inset; }
+    /* "What is this?" popups on item/Eternal cards (anchor targets only). */
+    .card-info { font: inherit; font-size: 0.74rem; font-weight: 600; color: var(--accent);
+      background: transparent; border: 1px solid var(--border); border-radius: 999px;
+      padding: 0.3rem 0.75rem; margin-top: 0.55rem; cursor: pointer;
+      min-height: 40px; display: inline-flex; align-items: center; }
+    .card-info:hover { border-color: var(--accent); }
+    .pop-back { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 90;
+      display: flex; align-items: center; justify-content: center; padding: 1rem; }
+    /* author display:flex would otherwise beat the [hidden] UA rule */
+    .pop-back[hidden] { display: none; }
+    .pop { background: var(--bg-1); border: 1px solid var(--border); border-radius: 14px;
+      max-width: 460px; width: 100%; max-height: min(80vh, 640px); overflow-y: auto;
+      padding: 1rem 1.1rem 1.2rem; position: relative; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+    .pop-x { position: absolute; top: 0.55rem; right: 0.55rem; font: inherit; font-size: 1rem;
+      background: transparent; border: 0; color: var(--text-2); cursor: pointer;
+      min-width: 40px; min-height: 40px; border-radius: 10px; }
+    .pop-x:hover { color: var(--text-1); background: var(--bg-2); }
+    .pop-head { display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.7rem; padding-right: 2.2rem; }
+    .pop-head img { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; }
+    .pop-kind { font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-2); font-weight: 700; }
+    .pop-head h3 { margin: 0.05rem 0; font-size: 1.05rem; }
+    .pop-meta { font-size: 0.74rem; color: var(--text-2); }
+    .pop-sec { margin-top: 0.7rem; }
+    .pop-sec b { display: block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--text-2); margin-bottom: 0.25rem; }
+    .pop-sec div { font-size: 0.82rem; color: var(--text-1); line-height: 1.5; margin-bottom: 0.3rem; }
+    .pop-note { margin-top: 0.8rem; font-size: 0.7rem; color: var(--text-2); }
     /* Glossary terms: dotted underline, tooltip on hover (desktop) or tap/
        focus (mobile — the spans are tabbable). Tooltip is clamped to the
        viewport by a --tt-shift set from JS on open. */
@@ -565,6 +645,24 @@ ${subnavBar}
       </div>
     </div>
   </main>
+  <div class="pop-back" id="popBack" hidden>
+    <div class="pop" role="dialog" aria-modal="true" aria-labelledby="popTitle">
+      <button class="pop-x" id="popClose" aria-label="Close">✕</button>
+      <div class="pop-head">
+        <img id="popImg" alt="" onerror="this.style.visibility='hidden'">
+        <div>
+          <div class="pop-kind" id="popKind"></div>
+          <h3 id="popTitle"></h3>
+          <div class="pop-meta" id="popMeta"></div>
+        </div>
+      </div>
+      <div id="popBody"></div>
+      <div class="pop-note" id="popNote"></div>
+    </div>
+  </div>
+  <script>
+  window.__POPUP_INFO = ${JSON.stringify(popupInfo).replace(/</g, '\\u003c')};
+  </script>
   <script>
   (function () {
     var pills = [].slice.call(document.querySelectorAll('.psn-pill'));
@@ -615,6 +713,48 @@ ${subnavBar}
         apply(current);
       });
     });
+  })();
+  // "What is this?" popups: the buttons live on the item/Eternal cards (the
+  // anchor targets), so the popup is reachable only after jumping there — the
+  // showcase tiles above keep their plain jump behavior.
+  (function () {
+    var INFO = window.__POPUP_INFO || {};
+    var back = document.getElementById('popBack');
+    if (!back) return;
+    var lastFocus = null;
+    function open(key) {
+      var d = INFO[key];
+      if (!d) return;
+      document.getElementById('popKind').textContent = d.kind;
+      document.getElementById('popTitle').textContent = d.name;
+      document.getElementById('popMeta').textContent = d.meta || '';
+      var img = document.getElementById('popImg');
+      img.style.visibility = ''; img.src = d.img; img.alt = '';
+      var body = document.getElementById('popBody');
+      body.innerHTML = '';
+      (d.sections || []).forEach(function (s) {
+        var sec = document.createElement('div'); sec.className = 'pop-sec';
+        var h = document.createElement('b'); h.textContent = s.title; sec.appendChild(h);
+        s.lines.forEach(function (ln) {
+          var div = document.createElement('div'); div.textContent = ln; sec.appendChild(div);
+        });
+        body.appendChild(sec);
+      });
+      document.getElementById('popNote').textContent = d.note || '';
+      lastFocus = document.activeElement;
+      back.hidden = false;
+      document.getElementById('popClose').focus();
+    }
+    function close() {
+      back.hidden = true;
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    [].slice.call(document.querySelectorAll('.card-info')).forEach(function (b) {
+      b.addEventListener('click', function () { open(b.dataset.info); });
+    });
+    document.getElementById('popClose').addEventListener('click', close);
+    back.addEventListener('click', function (e) { if (e.target === back) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !back.hidden) close(); });
   })();
   // Glossary tooltips: clamp each tooltip inside the viewport when it opens
   // (the CSS centers it on the term; --tt-shift nudges it off an edge).

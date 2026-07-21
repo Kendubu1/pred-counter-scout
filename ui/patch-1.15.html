@@ -145,6 +145,33 @@
     .hxs:hover { border-color: var(--accent); }
     .hxs.active { border-color: var(--accent); background: var(--bg-2);
       box-shadow: 0 0 0 1px var(--accent) inset; }
+    /* "What is this?" popups on item/Eternal cards (anchor targets only). */
+    .card-info { font: inherit; font-size: 0.74rem; font-weight: 600; color: var(--accent);
+      background: transparent; border: 1px solid var(--border); border-radius: 999px;
+      padding: 0.3rem 0.75rem; margin-top: 0.55rem; cursor: pointer;
+      min-height: 40px; display: inline-flex; align-items: center; }
+    .card-info:hover { border-color: var(--accent); }
+    .pop-back { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 90;
+      display: flex; align-items: center; justify-content: center; padding: 1rem; }
+    /* author display:flex would otherwise beat the [hidden] UA rule */
+    .pop-back[hidden] { display: none; }
+    .pop { background: var(--bg-1); border: 1px solid var(--border); border-radius: 14px;
+      max-width: 460px; width: 100%; max-height: min(80vh, 640px); overflow-y: auto;
+      padding: 1rem 1.1rem 1.2rem; position: relative; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+    .pop-x { position: absolute; top: 0.55rem; right: 0.55rem; font: inherit; font-size: 1rem;
+      background: transparent; border: 0; color: var(--text-2); cursor: pointer;
+      min-width: 40px; min-height: 40px; border-radius: 10px; }
+    .pop-x:hover { color: var(--text-1); background: var(--bg-2); }
+    .pop-head { display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.7rem; padding-right: 2.2rem; }
+    .pop-head img { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; }
+    .pop-kind { font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-2); font-weight: 700; }
+    .pop-head h3 { margin: 0.05rem 0; font-size: 1.05rem; }
+    .pop-meta { font-size: 0.74rem; color: var(--text-2); }
+    .pop-sec { margin-top: 0.7rem; }
+    .pop-sec b { display: block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--text-2); margin-bottom: 0.25rem; }
+    .pop-sec div { font-size: 0.82rem; color: var(--text-1); line-height: 1.5; margin-bottom: 0.3rem; }
+    .pop-note { margin-top: 0.8rem; font-size: 0.7rem; color: var(--text-2); }
     /* Glossary terms: dotted underline, tooltip on hover (desktop) or tap/
        focus (mobile — the spans are tabbable). Tooltip is clamped to the
        viewport by a --tt-shift set from JS on open. */
@@ -638,6 +665,7 @@
         </div>
         <ul class="change-list"><li>Major's max-health damage scaling trimmed (3% +0.25%/lvl -&gt; 3% +0.2%/lvl); Serration missing-health 4% -&gt; 3.5%; Sub Surface damage reduction 8% -&gt; 7%; Crush now deals 8% immobilizing damage (was 5%) but on an 8s per-target cooldown (soft rework); Breach armor shred 30% -&gt; 35%, duration 3.5 -&gt; 4s.</li></ul>
         <div class="pred"><span class="pred-label">Meaning</span>Still the go-to anti-tank on-hit Eternal; Crush turns into a periodic immobilize burst, and Breach shreds a bit more for longer.</div>
+        <button class="card-info" data-info="eternal-vermis">ⓘ what is Vermis?</button>
       </div>
       <div class="hero-card card" id="eternal-marrow" data-trend="mixed">
         <div class="hero-head">
@@ -647,6 +675,7 @@
         </div>
         <ul class="change-list"><li>Major <span class="term" tabindex="0" data-tip="Omnivamp heals for a percentage of ALL damage dealt — abilities included.">omnivamp</span> 0.85% -&gt; 0.75% (+0.05%/lvl); The Maw true damage +12% -&gt; +10% and threshold 30% -&gt; 40%; Jealousy reworked into a 1-8% damage amp scaling with your health (20-100%).</li></ul>
         <div class="pred"><span class="pred-label">Meaning</span>Slightly less raw <span class="term" tabindex="0" data-tip="Lifesteal heals for a percentage of basic-attack damage dealt.">lifesteal</span>, but The Maw executes from a higher threshold and Jealousy now rewards staying healthy with a damage amp.</div>
+        <button class="card-info" data-info="eternal-marrow">ⓘ what is Marrow?</button>
       </div>
       <div class="hero-card card" id="eternal-thraex" data-trend="nerf">
         <div class="hero-head">
@@ -656,6 +685,7 @@
         </div>
         <ul class="change-list"><li>Major bonus damage +3% (+0.5%/lvl) -&gt; +3% (+0.4%/lvl) and damage reduction growth trimmed; Ferocity attack speed 1.5% -&gt; 1.25%.</li></ul>
         <div class="pred"><span class="pred-label">Meaning</span>A small across-the-board trim to the bruiser blessing — still solid, just slightly weaker scaling.</div>
+        <button class="card-info" data-info="eternal-thraex">ⓘ what is Thraex?</button>
       </div>
       <div class="hero-card card" id="eternal-nihil" data-trend="nerf">
         <div class="hero-head">
@@ -665,6 +695,7 @@
         </div>
         <ul class="change-list"><li>Major bonus-stat modifier 20% -&gt; 18%.</li></ul>
         <div class="pred"><span class="pred-label">Meaning</span>A touch less of everything from the all-stats major.</div>
+        <button class="card-info" data-info="eternal-nihil">ⓘ what is Nihil?</button>
       </div>
       <div class="hero-card card" id="eternal-krix" data-trend="rework">
         <div class="hero-head">
@@ -674,6 +705,7 @@
         </div>
         <ul class="change-list"><li>Festering Wounds now applies 45% anti-heal on immobilizing effects (soft rework); Predator camp-leader kill damage +8% -&gt; +10% and adds +3% movement speed for 20s on kill.</li></ul>
         <div class="pred"><span class="pred-label">Meaning</span>Krix becomes an anti-heal enabler for CC-heavy comps, and the jungle path is a bit faster and stickier after camps.</div>
+        <button class="card-info" data-info="eternal-krix">ⓘ what is Krix?</button>
       </div>
       <div class="hero-card card" id="eternal-idrisil" data-trend="nerf">
         <div class="hero-head">
@@ -683,6 +715,7 @@
         </div>
         <ul class="change-list"><li>Mending healing 4/5/6/8% -&gt; 3/4/5/7%.</li></ul>
         <div class="pred"><span class="pred-label">Meaning</span>The armor-tank <span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span> blessing heals a little less at every rank.</div>
+        <button class="card-info" data-info="eternal-idrisil">ⓘ what is Idrisil?</button>
       </div>
       <div class="hero-card card" id="eternal-vesh" data-trend="rework">
         <div class="hero-head">
@@ -692,6 +725,7 @@
         </div>
         <ul class="change-list"><li>Major ability damage +6% (+0.5%/min) -&gt; +7% (+0.4%/min); Tithe Of Death <span class="term" tabindex="0" data-tip="Ability haste shortens cooldowns — more haste means abilities come back faster.">ability haste</span> capped at 15 takedowns (30 max) and now restores 15% max mana on takedown (soft rework).</li></ul>
         <div class="pred"><span class="pred-label">Meaning</span>Front-loaded a bit more, capped late, and now pays mana back on kills — better for mana-hungry mages snowballing fights.</div>
+        <button class="card-info" data-info="eternal-vesh">ⓘ what is Vesh?</button>
       </div>
       <div class="hero-card card" id="eternal-xyris" data-trend="nerf">
         <div class="hero-head">
@@ -701,6 +735,7 @@
         </div>
         <ul class="change-list"><li>Major damage 4% -&gt; 3% and per-10-units 0.6% -&gt; 0.4%, capped at 400 unit kills; Furor attack-speed duration 4.5 -&gt; 4s; Iron Will crit heal 8% -&gt; 7%; Cull The Weak minion/monster damage 8% -&gt; 7%; Bone Collector lost its +5% crit-damage bonus.</li></ul>
         <div class="pred"><span class="pred-label">Meaning</span>The crit hyper-carry blessing was trimmed and capped — still farm-to-spike, just a lower ceiling.</div>
+        <button class="card-info" data-info="eternal-xyris">ⓘ what is Xyris?</button>
       </div>
       <div class="hero-card card" id="eternal-exarch" data-trend="nerf">
         <div class="hero-head">
@@ -710,6 +745,7 @@
         </div>
         <ul class="change-list"><li>Preservation healing/shielding received +15% -&gt; +12%; Fervour magical-power scaling 6% -&gt; 5%; Omnipresent out-of-combat movement 8% -&gt; 7%; Delayed Fate DoT conversion 25% -&gt; 20%.</li></ul>
         <div class="pred"><span class="pred-label">Meaning</span>The enchanter/scaling support blessing lost a little on every node — modest <span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span>/utility trim.</div>
+        <button class="card-info" data-info="eternal-exarch">ⓘ what is Exarch?</button>
       </div>
       <div class="hero-card card" id="eternal-lotus" data-trend="nerf">
         <div class="hero-head">
@@ -719,6 +755,7 @@
         </div>
         <ul class="change-list"><li>Major damage 1.5% -&gt; 1%; Masterpiece movement on takedown 6% -&gt; 5%; Prima Donna damage dealt +12% -&gt; +10% and damage taken +6% -&gt; +5%; Fragrance magical damage 5% -&gt; 4%.</li></ul>
         <div class="pred"><span class="pred-label">Meaning</span>The safe, flexible mage blessing is a bit weaker on both its offense and its trade-off nodes.</div>
+        <button class="card-info" data-info="eternal-lotus">ⓘ what is Lotus?</button>
       </div>
       <div class="hero-card card" id="eternal-demiurge" data-trend="nerf">
         <div class="hero-head">
@@ -728,6 +765,7 @@
         </div>
         <ul class="change-list"><li>Major bonus-stat modifier 12% -&gt; 10%; Tri-Core on-hit damage 6% -&gt; 5%; Cursed Corrupted ability-haste-per-crit 1 -&gt; 0.8; Memory Leak mana-from-ability 6% -&gt; 5% and max mana 600 -&gt; 500.</li></ul>
         <div class="pred"><span class="pred-label">Meaning</span>The late-game full-build scaler lost a little off each node; still the stack-into-late blessing.</div>
+        <button class="card-info" data-info="eternal-demiurge">ⓘ what is Demiurge?</button>
       </div>
       <div class="hero-card card" id="eternal-aion" data-trend="nerf">
         <div class="hero-head">
@@ -737,6 +775,7 @@
         </div>
         <ul class="change-list"><li>Major gold-from-ability-damage 8% -&gt; 7%; Arcane Resonance cooldown progression 1% -&gt; 0.75% per mana regen, max 75% -&gt; 50%.</li></ul>
         <div class="pred"><span class="pred-label">Meaning</span>The mana-economy mage blessing converts a bit less mana into gold and cooldowns.</div>
+        <button class="card-info" data-info="eternal-aion">ⓘ what is Aion?</button>
       </div>
       <div class="meta-read"><b><span class="mr-ic" data-bic="scout" data-bic-size="13"></span>Meta read</b>This is a trim, not a teardown — the durability/<span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span>/scaling anchors (Demiurge, Lotus, Xyris, Exarch, Thraex and more) each lost a little, flattening the gap between the safe meta blessings and the rest. The soft reworks change how you draft: Krix now enables anti-heal for crowd-control comps, Vesh pays mana back on takedowns for snowballing mages, Marrow's Jealousy rewards staying healthy, and Vermis's Crush adds a periodic immobilize — re-check your major and both minors.</div>
 
@@ -808,6 +847,7 @@
           <span class="badge trend-new">✦ New</span>
         </div>
         <div class="pred" style="margin:0">New Titan crest (replaces Earth Spirit): 180 HP / 8 Phys Armor / 5 Mag Armor; active Gob Glue deals 80 (+3% bonus-HP) magic damage, Grounds 1.5s, leaves a 5s 30% slow field.</div>
+        <button class="card-info" data-info="item-gamma-gloop">ⓘ what is Gamma Gloop?</button>
       </div>
       <div class="hero-card card item-card" id="item-earth-spirit" data-trend="removed">
         <div class="hero-head">
@@ -816,6 +856,7 @@
           <span class="badge trend-removed">✕ Removed</span>
         </div>
         <div class="pred" style="margin:0">Removed from the game — replaced by the Gamma Gloop tank crest.</div>
+        
       </div>
       <div class="hero-card card item-card" id="item-rebirth" data-trend="rework">
         <div class="hero-head">
@@ -824,6 +865,7 @@
           <span class="badge trend-rework">⟳ Shift</span>
         </div>
         <div class="pred" style="margin:0">Reworked fighter item: cost 2600 -&gt; 2800; +50 Power / +300 HP / -40 Phys Armor / -35 Mag Armor / -10 <span class="term" tabindex="0" data-tip="Ability haste shortens cooldowns — more haste means abilities come back faster.">Ability Haste</span>; resurrect at 50% base HP/mana after 3s.</div>
+        <button class="card-info" data-info="item-rebirth">ⓘ what is Rebirth?</button>
       </div>
       <div class="hero-card card item-card" id="item-citadel" data-trend="buff">
         <div class="hero-head">
@@ -832,6 +874,7 @@
           <span class="badge trend-buff">▲ Buff</span>
         </div>
         <div class="pred" style="margin:0">Physical armor 35 -&gt; 40.</div>
+        <button class="card-info" data-info="item-citadel">ⓘ what is Citadel?</button>
       </div>
       <div class="hero-card card item-card" id="item-echelon-cloak" data-trend="buff">
         <div class="hero-head">
@@ -840,6 +883,7 @@
           <span class="badge trend-buff">▲ Buff</span>
         </div>
         <div class="pred" style="margin:0">Cost 2900 -&gt; 2800, physical power 40 -&gt; 45, cooldown 12 -&gt; 10s.</div>
+        <button class="card-info" data-info="item-echelon-cloak">ⓘ what is Echelon Cloak?</button>
       </div>
       <div class="hero-card card item-card" id="item-gaussian-greaves" data-trend="buff">
         <div class="hero-head">
@@ -848,6 +892,7 @@
           <span class="badge trend-buff">▲ Buff</span>
         </div>
         <div class="pred" style="margin:0">Physical armor 30 -&gt; 35.</div>
+        <button class="card-info" data-info="item-gaussian-greaves">ⓘ what is Gaussian Greaves?</button>
       </div>
       <div class="hero-card card item-card" id="item-giants-ring" data-trend="buff">
         <div class="hero-head">
@@ -856,6 +901,7 @@
           <span class="badge trend-buff">▲ Buff</span>
         </div>
         <div class="pred" style="margin:0">Physical armor 45 -&gt; 50.</div>
+        <button class="card-info" data-info="item-giants-ring">ⓘ what is Giant’s Ring?</button>
       </div>
       <div class="hero-card card item-card" id="item-oathkeeper" data-trend="buff">
         <div class="hero-head">
@@ -864,6 +910,7 @@
           <span class="badge trend-buff">▲ Buff</span>
         </div>
         <div class="pred" style="margin:0">Mana 250 -&gt; 275; fixed a bug where it granted no health.</div>
+        <button class="card-info" data-info="item-oathkeeper">ⓘ what is Oathkeeper?</button>
       </div>
       <div class="hero-card card item-card" id="item-resolution" data-trend="buff">
         <div class="hero-head">
@@ -872,6 +919,7 @@
           <span class="badge trend-buff">▲ Buff</span>
         </div>
         <div class="pred" style="margin:0">Darksteel on-hit mana scaling 2% -&gt; 2.5%.</div>
+        <button class="card-info" data-info="item-resolution">ⓘ what is Resolution?</button>
       </div>
       <div class="hero-card card item-card" id="item-soulbinder" data-trend="buff">
         <div class="hero-head">
@@ -880,6 +928,7 @@
           <span class="badge trend-buff">▲ Buff</span>
         </div>
         <div class="pred" style="margin:0">Farseer cooldown 10 -&gt; 8s.</div>
+        <button class="card-info" data-info="item-soulbinder">ⓘ what is Soulbinder?</button>
       </div>
       <div class="hero-card card item-card" id="item-stonewall" data-trend="buff">
         <div class="hero-head">
@@ -888,6 +937,7 @@
           <span class="badge trend-buff">▲ Buff</span>
         </div>
         <div class="pred" style="margin:0">Health 250 -&gt; 275, health regen 80% -&gt; 100%.</div>
+        <button class="card-info" data-info="item-stonewall">ⓘ what is Stonewall?</button>
       </div>
       <div class="hero-card card item-card" id="item-timewarp" data-trend="buff">
         <div class="hero-head">
@@ -896,6 +946,7 @@
           <span class="badge trend-buff">▲ Buff</span>
         </div>
         <div class="pred" style="margin:0">Base mana regen 125% -&gt; 150%.</div>
+        <button class="card-info" data-info="item-timewarp">ⓘ what is Timewarp?</button>
       </div>
       <div class="hero-card card item-card" id="item-astral-catalyst" data-trend="mixed">
         <div class="hero-head">
@@ -904,6 +955,7 @@
           <span class="badge trend-mixed">◆ Mixed</span>
         </div>
         <div class="pred" style="margin:0">Cost 2850 -&gt; 2950, magical power 80 -&gt; 85.</div>
+        <button class="card-info" data-info="item-astral-catalyst">ⓘ what is Astral Catalyst?</button>
       </div>
       <div class="hero-card card item-card" id="item-claw-of-hermes" data-trend="nerf">
         <div class="hero-head">
@@ -912,6 +964,7 @@
           <span class="badge trend-nerf">▼ Nerf</span>
         </div>
         <div class="pred" style="margin:0">Magical power 90 -&gt; 85.</div>
+        <button class="card-info" data-info="item-claw-of-hermes">ⓘ what is Claw of Hermes?</button>
       </div>
       <div class="hero-card card item-card" id="item-eviscerator" data-trend="nerf">
         <div class="hero-head">
@@ -920,6 +973,7 @@
           <span class="badge trend-nerf">▼ Nerf</span>
         </div>
         <div class="pred" style="margin:0"><span class="term" tabindex="0" data-tip="Omnivamp heals for a percentage of ALL damage dealt — abilities included.">Omnivamp</span> 10% -&gt; 8%.</div>
+        <button class="card-info" data-info="item-eviscerator">ⓘ what is Eviscerator?</button>
       </div>
       <div class="hero-card card item-card" id="item-sky-splitter" data-trend="nerf">
         <div class="hero-head">
@@ -928,6 +982,7 @@
           <span class="badge trend-nerf">▼ Nerf</span>
         </div>
         <div class="pred" style="margin:0">Physical power 40 -&gt; 35.</div>
+        <button class="card-info" data-info="item-sky-splitter">ⓘ what is Sky Splitter?</button>
       </div>
       <div class="hero-card card item-card" id="item-storm-breaker" data-trend="nerf">
         <div class="hero-head">
@@ -936,6 +991,7 @@
           <span class="badge trend-nerf">▼ Nerf</span>
         </div>
         <div class="pred" style="margin:0">Physical power 45 -&gt; 40.</div>
+        <button class="card-info" data-info="item-storm-breaker">ⓘ what is Storm Breaker?</button>
       </div>
       <div class="hero-card card item-card" id="item-transference" data-trend="nerf">
         <div class="hero-head">
@@ -944,6 +1000,7 @@
           <span class="badge trend-nerf">▼ Nerf</span>
         </div>
         <div class="pred" style="margin:0">Ionizing-charge movement speed 12% -&gt; 8%.</div>
+        <button class="card-info" data-info="item-transference">ⓘ what is Transference?</button>
       </div>
       <div class="meta-read"><b><span class="mr-ic" data-bic="scout" data-bic-size="13"></span>Meta read</b>Tanks and frontline supports are the clear winners — Stonewall, Citadel, Giant's Ring and Gaussian Greaves all got sturdier and the new Gamma Gloop crest adds a grounding tank tool — while crit/carry power was shaved (Sky Splitter, Stormbreaker, Eviscerator). Echelon Cloak and the Rebirth fighter-resurrect rework give bruisers fresh options, and the Oathkeeper health bugfix quietly buffs every build that ran it.</div>
 
@@ -1017,6 +1074,24 @@
       </div>
     </div>
   </main>
+  <div class="pop-back" id="popBack" hidden>
+    <div class="pop" role="dialog" aria-modal="true" aria-labelledby="popTitle">
+      <button class="pop-x" id="popClose" aria-label="Close">✕</button>
+      <div class="pop-head">
+        <img id="popImg" alt="" onerror="this.style.visibility='hidden'">
+        <div>
+          <div class="pop-kind" id="popKind"></div>
+          <h3 id="popTitle"></h3>
+          <div class="pop-meta" id="popMeta"></div>
+        </div>
+      </div>
+      <div id="popBody"></div>
+      <div class="pop-note" id="popNote"></div>
+    </div>
+  </div>
+  <script>
+  window.__POPUP_INFO = {"eternal-vermis":{"kind":"Eternal","name":"Vermis","img":"img/eternals/vermis.webp","meta":"Harbingers · Auto-Attack / Anti-Tank","note":"Base info from the team's Eternals data (patch 1.14.4). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Every 3rd consecutive Basic Attack on the same Enemy Hero within 2.5s deals 3% (+0.25% per Level) of their Max Health as bonus Physical Damage."]},{"title":"Minor slot 1 (pick one)","lines":["Serration — On activation, the major also deals 4% of the target's Missing Health as bonus Physical Damage.","Crush — Immobilizing an Enemy Hero deals 5% of their Max Health as bonus Physical Damage.","Cauterize — Taking Ability or Passive damage grants 2 (+0.5 per level) Health Regeneration for 2s."]},{"title":"Minor slot 2 (pick one)","lines":["Melting Point — Deal 10% bonus damage to targets with more than 125 Physical Armor.","Breach — Damaging a hero with your Ultimate reduces their Physical Armor by 30%.","Sub-Surface — Take 8% less damage from AoE Abilities."]}]},"eternal-marrow":{"kind":"Eternal","name":"Marrow","img":"img/eternals/marrow.webp","meta":"Harbingers · Lifesteal Bruiser","note":"Base info from the team's Eternals data (patch 1.14.4). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Gain 0.5% (+0.05% per level) Omnivamp per 5% Missing Health. This doubles for 8s upon killing an Enemy Hero."]},{"title":"Minor slot 1 (pick one)","lines":["Leech — Enemy heroes within 550 units have base Health Regen reduced by 200%.","Blood Bank — Gain charges equal to damage dealt to heroes; +0.75% Lifesteal per 100 charges.","Taste of Iron — Damaging a hero with a DoT increases your damage by 6% for 3s."]},{"title":"Minor slot 2 (pick one)","lines":["Roses — Takedowns grant 20 bonus gold per previous takedown.","Jealousy — Deal 10% bonus damage vs heroes with more current health than you.","The Maw — Basic Attacks deal 12% bonus True Damage to targets below 30% Max Health."]}]},"eternal-thraex":{"kind":"Eternal","name":"Thraex","img":"img/eternals/thraex.webp","meta":"Primarchs · Sustained Duelist","note":"Base info from the team's Eternals data (patch 1.14.4). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Mark the last Enemy Hero damaged by your Basic Attack for 3s, increasing your damage against them by 3% (+0.5% per level) and reducing the damage they deal to you by 1.5% (+0.4% per level)."]},{"title":"Minor slot 1 (pick one)","lines":["Alpha's Court — Deal 6% bonus damage when no allied hero is within 800 units.","Savage Strikes — Deal 1.5 (+0.4 per level) physical damage On-Hit, +100% for 3s vs heroes.","The King — Basic Attacks against Enemy Heroes grant you 7 gold."]},{"title":"Minor slot 2 (pick one)","lines":["Ferocity — Gain 1.5% Total Attack Speed per 1s in Hero Combat, stacking infinitely.","Rallying Roar — Casting your Ultimate grants you and nearby allies 20% movement speed and 10 Ultimate Haste.","Golden Mane — Take 8% less damage from all non-AoE attacks and abilities."]}]},"eternal-nihil":{"kind":"Eternal","name":"Nihil","img":"img/eternals/nihil.webp","meta":"Primarchs · Extended-Fight Fighter","note":"Base info from the team's Eternals data (patch 1.14.4). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Damage a hero to gain Doom for 3s. Doom grants 1 Physical Power, 2 Magical Power, 1 Physical Armor & 1 Magical Armor for every 3s it persists. On level-up or Takedown, the stats Doom grants are permanently increased by 20%."]},{"title":"Minor slot 1 (pick one)","lines":["Growing Threat — At 18 minutes, gain +12% Bonus Damage and 5% Omnivamp permanently.","From the Abyss — Restore 0.2/0.4/0.7/1% Max Health/s (Levels 1/6/11/16) while in Hero Combat or out of enemy vision.","Mana Siphon — Hitting a hero with an ability steals 10 (+1% Max Mana) Mana."]},{"title":"Minor slot 2 (pick one)","lines":["Adaptive Plating — Taking damage grants matching Armor (1% per hit, stacks 8x).","Inescapable — Enemies within 800u that dash/leap/blink are slowed 20% for 1.5s.","Terror — Minions/Monsters deal 30% less damage to you; Towers 15% less."]}]},"eternal-krix":{"kind":"Eternal","name":"Krix","img":"img/eternals/krix.webp","meta":"Dreadnoughts · Health-Stacking Tank","note":"Base info from the team's Eternals data (patch 1.14.4). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Gain 5% (+1% per Level) increased Maximum Health, and bonus size equal to 0.5% of your Maximum Health."]},{"title":"Minor slot 1 (pick one)","lines":["Voracity — Killing an Enemy Unit restores 1% of your Maximum Health and grants 2 Gold.","Regenerative Tissue — After 8s without hero damage, regen 0.2/0.4/0.8/1.2% Max Health/s (Levels 1/6/11/16).","Festering Wounds — Enemies hit by your DoT effects receive 45% less healing for 2s."]},{"title":"Minor slot 2 (pick one)","lines":["Cannibalism — Takedowns permanently increase your Maximum Health by 35.","Feeding Frenzy — Gain +12% Attack Speed per Enemy Hero within 1500 units.","Predator — Camp Leader kills grant 8% Bonus Damage for 20s (2x on Epic Monsters)."]}]},"eternal-idrisil":{"kind":"Eternal","name":"Idrisil","img":"img/eternals/idrisil.webp","meta":"Dreadnoughts · Armor Tank","note":"Base info from the team's Eternals data (patch 1.14.4). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["While off cooldown and above 30% Max Health, gain 15% increased Physical and Magical Armor. Falling below 30% Health consumes this bonus to grant a 4s Shield equal to 150% of your total Armor (CD: 75–32.5s)."]},{"title":"Minor slot 1 (pick one)","lines":["Cold Hearted — Enemies that basic attack you lose 2% movement speed for 2s (stacks 5x).","Mending — After taking hero damage, restore 4/5/6/8% of your missing health (Levels 1/6/11/16) over 3s.","Frost Snap — Deal 10% Bonus Damage to Immobilized Targets."]},{"title":"Minor slot 2 (pick one)","lines":["Icy Touch — Your Basic Attacks reduce enemy Attack Speed by 3% for 3s (stacks 4x).","Glacier — Permanently gain 1 Magical Armor per 300 total gold earned.","Diamond Tip — Gain 4% increased Physical and Magical Penetration per finished item."]}]},"eternal-vesh":{"kind":"Eternal","name":"Vesh","img":"img/eternals/vesh.webp","meta":"Sovereigns · Ability Damage Mage","note":"Base info from the team's Eternals data (patch 1.14.4). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Damaging an Enemy Hero with an ability deals 6% (+0.5% per minute) of the damage as a DoT over 3s."]},{"title":"Minor slot 1 (pick one)","lines":["Lich — Gain 8% (+0.5% per Level) Magical Lifesteal.","Tithe of Death — Takedowns grant 2 Ability Haste.","The Tenth Seal — At Level 10, gain 5% Ultimate Damage and 25 Ultimate Ability Haste."]},{"title":"Minor slot 2 (pick one)","lines":["Mind Rot — The major also deals 2% of the target's current health as bonus damage.","Phylactery — After your Ultimate, gain 100% Cooldown Progression for 3s and a shield equal to 15% of Max Mana for 3s.","Millennia — Every 60s, increase your Ultimate Ability Damage by 1%."]}]},"eternal-xyris":{"kind":"Eternal","name":"Xyris","img":"img/eternals/xyris.webp","meta":"Sovereigns · Scaling Carry","note":"Base info from the team's Eternals data (patch 1.14.4). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Gain 4% Bonus Damage, increased by 0.6% per 10 Units killed."]},{"title":"Minor slot 1 (pick one)","lines":["Furor — Entering Hero Combat grants 20% Total Attack Speed for 4.5s.","Dominance — Takedowns heal you for 100 (+15% Missing Health).","Iron Will — Basic Attacks heal for 3% of damage dealt (8% for Critical Strikes)."]},{"title":"Minor slot 2 (pick one)","lines":["Cull the Weak — Deal +8% bonus damage to Minions and Monsters, and restore 1% Missing Mana on kill.","Bone Collector — After killing 150 units, gain 20% Critical Chance and 5% Critical Damage.","Eviscerate — Deal +15% bonus damage to targets above 80% Health."]}]},"eternal-exarch":{"kind":"Eternal","name":"Exarch","img":"img/eternals/exarch.webp","meta":"Divines · Empowerment Support","note":"Base info from the team's Eternals data (patch 1.14.4). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Healing or Shielding a target (including yourself) grants them 10% Total Attack Speed and empowers their Basic Attacks to deal 10% bonus Magical Damage On-Hit for 4s."]},{"title":"Minor slot 1 (pick one)","lines":["Illumination — Gain Health Regeneration equal to your Bonus Mana Regeneration.","Preservation — Any healing or shielding you receive is increased by 15%.","Revelation — Casting an Ability reduces current Basic Ability Cooldowns by 0.3s."]},{"title":"Minor slot 2 (pick one)","lines":["Fervour — Basic Attacks vs heroes heal you and nearby allies for 2 (+0.5/lvl)(+6% MP).","Omnipresent — Gain 8% Movement Speed when out of combat.","Delayed Fate — 25% of ability damage taken is stored and dealt to you as a DoT instead."]}]},"eternal-lotus":{"kind":"Eternal","name":"Lotus","img":"img/eternals/lotus.webp","meta":"Divines · Adaptive Flex","note":"Base info from the team's Eternals data (patch 1.14.4). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Every 2 minutes and every Takedown randomly grants +1.5% Damage, +4 Ability Haste, +0.75% Move Speed, or +1.5% Max Health."]},{"title":"Minor slot 1 (pick one)","lines":["Early Bloom — Gain an additional Level upon reaching Level 12.","Flawless — Damaging a hero with an ability heals you and nearby allies for 8.","Masterpiece — Kills grant +5% Damage and +6% Move Speed for 12s (stacks 5x)."]},{"title":"Minor slot 2 (pick one)","lines":["Immaculate — Gain 20% Damage Reduction above 85% current health.","Prima Donna — Deal 12% increased damage to heroes, but take 6% increased damage.","Fragrance — Nearby enemy heroes (within 800 units) take 5% increased Magical Damage, and your True Damage against them is increased 12%."]}]},"eternal-demiurge":{"kind":"Eternal","name":"Demiurge","img":"img/eternals/demiurge.webp","meta":"Anomalies · Item Scaling","note":"Base info from the team's Eternals data (patch 1.14.4). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Increase stats gained from Items (not passives/crests) by 12%, and damage dealt by Item Effects by 10%."]},{"title":"Minor slot 1 (pick one)","lines":["Tri-Core — Deal 6% bonus damage On-Hit, randomly Physical/Magical/True.","Construct — Gain +10 Health and +1.25 Ability Haste per Level.","Bio-Mechanical Fusion — Gain +1 Physical Power per 8 Magical Power you possess."]},{"title":"Minor slot 2 (pick one)","lines":["Cursed Corrupted — Convert each 1% Crit Chance into 1 Ability Haste (you lose the crit stat).","Memory Leak — On cast, gain 6% of the mana cost as permanent Max Mana; +5% MS at 600.","Bloatware — Gain +0.5% Increased Damage and +1% Damage Reduction per item owned."]}]},"eternal-aion":{"kind":"Eternal","name":"Aion","img":"img/eternals/aion.webp","meta":"Anomalies · Mana / Economy Mage","note":"Base info from the team's Eternals data (patch 1.14.4). Where a later patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Major (always on)","lines":["Casting a spell grants 1 Mana Regeneration for 8s (stacks 5x). Spells also grant gold equal to 8% of damage dealt to Enemy Heroes."]},{"title":"Minor slot 1 (pick one)","lines":["Philosopher — Every 10s, generate 5 gold (faster with Ability Haste).","Sacrifice — Killing an Enemy Unit grants +2 Mana Regen for 5s (30x on hero kills).","Bottomless Vial — Killing a River Buff restores a Potion charge and grants +5 Magical Power permanently."]},{"title":"Minor slot 2 (pick one)","lines":["Arcane Resonance — Basic ability cooldowns and Philosopher progress 1% faster per 1 Mana Regen.","Perfection — While above 85% Health, gain 30 Ability Haste.","Runic Focus — Gain 0.2% increased Magical Power per 1% current Mana."]}]},"item-gamma-gloop":{"kind":"Item","name":"Gamma Gloop","img":"img/items/gamma-gloop.webp","meta":"Legendary · Crest","note":"Base info from the team's committed item snapshot (2026-07-10). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Physical armor 8","Magical armor 5","Health 180"]},{"title":"Gob Glue (active)","lines":["• Deal 80 (+3%) Damage in a 550u radius around you.• Grounds Enemies hit for 1.5s.• Create a field of Goo for 5s that Slows Enemies by 30%.If Gob Glue is activated while mid-air:• Leap into the air in your current movement direction.• Gob Glue's effects then trigger upon landing."]}]},"item-rebirth":{"kind":"Item","name":"Rebirth","img":"img/items/rebirth.webp","meta":"Epic · 2800g","note":"Base info from the team's committed item snapshot (2026-07-10). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Health 300","Physical power 50"]},{"title":"Mechanica (passive)","lines":["Upon Dying: • After 3s, Resurrect with 50% Base Health & Max Mana."]}]},"item-citadel":{"kind":"Item","name":"Citadel","img":"img/items/citadel.webp","meta":"Epic · 3000g","note":"Base info from the team's committed item snapshot (2026-07-10). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Physical power 35","Health 300","Physical armor 40"]},{"title":"Fortification (passive)","lines":["For each nearby Enemy Hero: • Gain 5 Physical Armor."]},{"title":"Intimidation (passive)","lines":["Nearby Enemy Heroes: • Have their Physical Armor decreased by 20%."]}]},"item-echelon-cloak":{"kind":"Item","name":"Echelon Cloak","img":"img/items/echelon-cloak.webp","meta":"Epic · 2800g","note":"Base info from the team's committed item snapshot (2026-07-10). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Physical power 45","Attack speed 25%","Health 250","Ability haste 10"]},{"title":"Shadow (passive)","lines":["On standing still and unharmed for 2s: • Become Camouflaged.• Moving 800u from this location, casting an ability, or receiving damage ends this effect."]},{"title":"Unseen Threat (passive)","lines":["While Camouflaged: • Gain 1% of your Missing Health and Mana every second.• Increase your damage dealt by 8%.• Lasts 3s after exiting Camouflage."]}]},"item-gaussian-greaves":{"kind":"Item","name":"Gaussian Greaves","img":"img/items/gaussian-greaves.webp","meta":"Epic · 2900g","note":"Base info from the team's committed item snapshot (2026-07-10). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Physical armor 35","Health 200","Ability haste 10","Magical power 55"]},{"title":"System Shock (passive)","lines":["• Gain the ability to Double Jump while mid-air.• After Double Jumping, emit a shockwave upon landing.• Deals 100 (+50%) Damage.• Slows by 40% for 1.25s."]},{"title":"Galvanize (passive)","lines":["While out of combat: • Gain 7% Movement Speed."]}]},"item-giants-ring":{"kind":"Item","name":"Giant's Ring","img":"img/items/giants-ring.webp","meta":"Epic · 2900g","note":"Base info from the team's committed item snapshot (2026-07-10). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Health 300","Ability haste 15","Physical armor 50"]},{"title":"Retribution (passive)","lines":["When hit by Basic Attacks: • Reduce your Non-Ultimate Cooldowns by 0.25s."]},{"title":"Gigantism (passive)","lines":["On casting your Ultimate: • Gain 15% Hero Size.• Mitigate 5% of damage taken.• Double the effectiveness of Retribution for 6s."]}]},"item-oathkeeper":{"kind":"Item","name":"Oathkeeper","img":"img/items/oathkeeper.webp","meta":"Epic · 3100g","note":"Base info from the team's committed item snapshot (2026-07-10). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Mana 275","Ability haste 15","Health 175","Magical power 80"]},{"title":"Celestial Spellblade (passive)","lines":["On Ability Cast: • Empower your next Basic Attack within 4s.• Deal 60 (+35%) Damage On-Hit."]}]},"item-resolution":{"kind":"Item","name":"Resolution","img":"img/items/resolution.webp","meta":"Epic · 3100g","note":"Base info from the team's committed item snapshot (2026-07-10). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Mana 350","Attack speed 20%","Physical power 40","Physical penetration 9"]},{"title":"Darksteel (passive)","lines":["On Successful Basic Attacks: • Deal (+2.5%) Damage On-Hit."]},{"title":"Potent Font (passive)","lines":["On Killing any Unit: • Gain 5 Max Mana.• Camp Leaders grant 15.• Stacks up to 400.• At 400, gain (+2.5%) Physical Power."]}]},"item-soulbinder":{"kind":"Item","name":"Soulbinder","img":"img/items/soulbinder.webp","meta":"Epic · 3000g","note":"Base info from the team's committed item snapshot (2026-07-10). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Ability haste 20","Magical power 85","Mana 400"]},{"title":"Arcane Salvo (passive)","lines":["Damage Heroes from afar with Abilities: • Deal 7% bonus Damage.• Activates at 1450+ Range."]},{"title":"Farseer (passive)","lines":["Upon triggering Arcane Salvo: • Permanently gain 1 Magical Power."]}]},"item-stonewall":{"kind":"Item","name":"Stonewall","img":"img/items/stonewall.webp","meta":"Epic · 3000g","note":"Base info from the team's committed item snapshot (2026-07-10). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Health 275","Physical armor 70","Health regeneration 100"]},{"title":"Bulwark (passive)","lines":["• Mitigate 5 (+5%)% of Physical Damage."]}]},"item-timewarp":{"kind":"Item","name":"Timewarp","img":"img/items/timewarp.webp","meta":"Epic · 3000g","note":"Base info from the team's committed item snapshot (2026-07-10). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Mana regeneration 150","Ability haste 25","Magical power 75"]},{"title":"Chime (passive)","lines":["Every 8s: • Subtract 1s from Non-Ultimate Cooldowns."]}]},"item-astral-catalyst":{"kind":"Item","name":"Astral Catalyst","img":"img/items/astral-catalyst.webp","meta":"Epic · 2950g","note":"Base info from the team's committed item snapshot (2026-07-10). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Mana 250","Ability haste 20","Magical power 85"]},{"title":"Ravenous (passive)","lines":["On Takedown: • Reduce Ultimate Cooldown by 20%."]},{"title":"Event Horizon (passive)","lines":["On damaging a Shielded Target: • Deal 40% bonus Damage.• Does not exceed the size of the Shield."]}]},"item-claw-of-hermes":{"kind":"Item","name":"Claw Of Hermes","img":"img/items/claw-of-hermes.webp","meta":"Epic · 2900g","note":"Base info from the team's committed item snapshot (2026-07-10). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Health 200","Health regeneration 80","Magical power 85","Mana 250"]},{"title":"Mana Burn (passive)","lines":["On Successful Basic Attack: • Against Melee Heroes: Drain 2.5% of their Max Mana.• Against Ranged Heroes: Drain 4% of their Max Mana.• Deals True Damage equal to 75% of the Mana Drained.• If you are a Ranged Hero, Mana Burn is 50% as effective."]},{"title":"Mindflare (passive)","lines":["Based on the Target's Missing Mana: • Abilities deal 0-12% more Damage."]}]},"item-eviscerator":{"kind":"Item","name":"Eviscerator","img":"img/items/eviscerator.webp","meta":"Legendary · Crest","note":"Base info from the team's committed item snapshot (2026-07-10). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Physical power 12","Attack speed 15%","Lifesteal 7%"]},{"title":"Rending Strikes (active)","lines":["• Gain 20% Attack Speed and 8% Omnivamp for 6s.• Empower your Basic Attacks to deal (+10%) Damage On-Hit for 6s."]}]},"item-sky-splitter":{"kind":"Item","name":"Sky Splitter","img":"img/items/sky-splitter.webp","meta":"Epic · 3100g","note":"Base info from the team's committed item snapshot (2026-07-10). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Attack speed 30%","Physical power 35","Lifesteal 8%"]},{"title":"Rend (passive)","lines":["On Successful Basic Attacks: • Deal 5.5% of Target's Current Health as Damage On-Hit.• Reduced to 3.5% for Ranged Heroes.• Minimum of 12 Damage."]}]},"item-storm-breaker":{"kind":"Item","name":"Storm Breaker","img":"img/items/storm-breaker.webp","meta":"Epic · 3000g","note":"Base info from the team's committed item snapshot (2026-07-10). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Physical power 40","Attack speed 30%"]},{"title":"Electric Momentum (passive)","lines":["While moving or landing Basic Attacks: • Generate stacks of Momentum.• At 100 stacks empower your next Basic Attack On-Hit.• Release a bolt of lightning that chains to 7 Targets.• Deal 70 (+20%) Damage.• Applies On-Hit effects."]}]},"item-transference":{"kind":"Item","name":"Transference","img":"img/items/transference.webp","meta":"Epic · 2900g","note":"Base info from the team's committed item snapshot (2026-07-10). Where this patch changed a number, the change line on the card is the newer value.","sections":[{"title":"Stats","lines":["Heal shield increase 12%","Magical armor 35","Health 200","Physical armor 40"]},{"title":"Shield Transference (passive)","lines":["Upon Shields expiring: • 50% of its remaining value is restored as Health over 3s.• Reduced to 25% for Ally Shields."]},{"title":"Ionizing Charge (passive)","lines":["While Shielded: • Gain 8% Movement Speed.• Gain 10% increased Armors."]}]}};
+  </script>
   <script>
   (function () {
     var pills = [].slice.call(document.querySelectorAll('.psn-pill'));
@@ -1067,6 +1142,48 @@
         apply(current);
       });
     });
+  })();
+  // "What is this?" popups: the buttons live on the item/Eternal cards (the
+  // anchor targets), so the popup is reachable only after jumping there — the
+  // showcase tiles above keep their plain jump behavior.
+  (function () {
+    var INFO = window.__POPUP_INFO || {};
+    var back = document.getElementById('popBack');
+    if (!back) return;
+    var lastFocus = null;
+    function open(key) {
+      var d = INFO[key];
+      if (!d) return;
+      document.getElementById('popKind').textContent = d.kind;
+      document.getElementById('popTitle').textContent = d.name;
+      document.getElementById('popMeta').textContent = d.meta || '';
+      var img = document.getElementById('popImg');
+      img.style.visibility = ''; img.src = d.img; img.alt = '';
+      var body = document.getElementById('popBody');
+      body.innerHTML = '';
+      (d.sections || []).forEach(function (s) {
+        var sec = document.createElement('div'); sec.className = 'pop-sec';
+        var h = document.createElement('b'); h.textContent = s.title; sec.appendChild(h);
+        s.lines.forEach(function (ln) {
+          var div = document.createElement('div'); div.textContent = ln; sec.appendChild(div);
+        });
+        body.appendChild(sec);
+      });
+      document.getElementById('popNote').textContent = d.note || '';
+      lastFocus = document.activeElement;
+      back.hidden = false;
+      document.getElementById('popClose').focus();
+    }
+    function close() {
+      back.hidden = true;
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+    [].slice.call(document.querySelectorAll('.card-info')).forEach(function (b) {
+      b.addEventListener('click', function () { open(b.dataset.info); });
+    });
+    document.getElementById('popClose').addEventListener('click', close);
+    back.addEventListener('click', function (e) { if (e.target === back) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !back.hidden) close(); });
   })();
   // Glossary tooltips: clamp each tooltip inside the viewport when it opens
   // (the CSS centers it on the term; --tt-shift nudges it off an edge).
