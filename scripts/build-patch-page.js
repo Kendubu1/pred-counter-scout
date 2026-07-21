@@ -37,8 +37,14 @@ const TREND = {
 };
 
 const order = { 'meta-shifting': 0, 'notable': 1, 'minor': 2 };
+// Default trend order inside a magnitude group: reworks first, then buffs,
+// nerfs, mixed. The trend chips above the hero grid re-sort (never filter)
+// client-side; this server-side order is what no-JS readers get too.
+const TREND_PRI = { rework: 0, buff: 1, nerf: 2, mixed: 3 };
 const heroes = Object.entries(pred.predictions)
-  .sort((a, b) => (order[a[1].magnitude] - order[b[1].magnitude]) || a[1].name.localeCompare(b[1].name));
+  .sort((a, b) => (order[a[1].magnitude] - order[b[1].magnitude])
+    || ((TREND_PRI[a[1].trend] ?? 9) - (TREND_PRI[b[1].trend] ?? 9))
+    || a[1].name.localeCompare(b[1].name));
 
 // Digest slug -> site slug (Neon's artifact/image is "neon"). Used by the
 // hero cards (out-link) and the showcase.
@@ -46,7 +52,7 @@ const SITE_SLUG = { n3on: 'neon' };
 // One showcase tile: image + colored trend arrow, links to an in-page anchor.
 function showcaseTile({ href, img, name, trend, title }) {
   const a = TREND[trend] || TREND.mixed;
-  return `<a class="hx tr-${trend}" href="${href}" title="${esc(title)}">
+  return `<a class="hx tr-${trend}" data-trend="${trend}" href="${href}" title="${esc(title)}">
             <span class="hx-imgwrap"><img loading="lazy" src="${img}" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">${a.icon}</span></span>
             <span class="hx-name">${esc(name)}</span>
           </a>`;
@@ -132,7 +138,7 @@ const heroSections = groups.map(([key, title]) => {
   if (!list.length) return '';
   return `
       <h3 class="group-head"><span class="badge ${MAG[key].cls}">${MAG[key].label}</span> <span class="group-count">${list.length} ${list.length === 1 ? 'hero' : 'heroes'}</span></h3>
-      ${list.map(heroCard).join('')}`;
+      <div class="group-cards">${list.map(heroCard).join('')}</div>`;
 }).join('');
 
 // Coach "meta read" callout for the bottom of a section (omitted if absent).
@@ -144,8 +150,14 @@ function metaRead(key) {
 // ── Hero showcase: clickable images with a colored trend arrow, ordered by
 // magnitude then name; each jumps to that hero's card lower in this section.
 const heroShowcase = `
-      <div class="hx-legend"><span class="tr-buff">▲ buff</span><span class="tr-nerf">▼ nerf</span><span class="tr-mixed">◆ mixed</span><span class="tr-rework">⟳ rework/shift</span><span class="hx-hint">tap a hero to jump to its changes</span></div>
-      <div class="hx-grid">
+      <div class="hx-legend hx-sortbar" role="group" aria-label="Sort heroes by change type">
+        <button class="hxs tr-rework" data-sort="rework" aria-pressed="false">⟳ reworks</button>
+        <button class="hxs tr-buff" data-sort="buff" aria-pressed="false">▲ buffs</button>
+        <button class="hxs tr-nerf" data-sort="nerf" aria-pressed="false">▼ nerfs</button>
+        <button class="hxs tr-mixed" data-sort="mixed" aria-pressed="false">◆ mixed</button>
+        <span class="hx-hint">tap a change type to bring those heroes to the top — nothing is hidden. tap a hero to jump to its changes</span>
+      </div>
+      <div class="hx-grid" id="heroShowcaseGrid">
         ${heroes.map(([slug, p]) => showcaseTile({
           href: `#hero-${slug}`,
           img: `img/heroes/${SITE_SLUG[slug] || slug}.webp`,
@@ -450,6 +462,13 @@ const html = `<!DOCTYPE html>
     .psn-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
     h2.section { scroll-margin-top: 112px; }
     @media (max-width: 560px) { .psn-label { display: none; } }
+    /* Trend sort chips: re-order the hero cards + showcase, never filter. */
+    .hxs { font: inherit; font-size: 0.72rem; font-weight: 600; cursor: pointer;
+      background: transparent; border: 1px solid var(--line); border-radius: 999px;
+      padding: 0.22rem 0.6rem; line-height: 1; }
+    .hxs:hover { border-color: var(--accent); }
+    .hxs.active { border-color: var(--accent); background: var(--bg-2);
+      box-shadow: 0 0 0 1px var(--accent) inset; }
     /* Glossary terms: dotted underline, tooltip on hover (desktop) or tap/
        focus (mobile — the spans are tabbable). Tooltip is clamped to the
        viewport by a --tt-shift set from JS on open. */
@@ -554,6 +573,41 @@ ${subnavBar}
       });
     }, { rootMargin: '-20% 0px -75% 0px' });
     secs.forEach(function (s) { io.observe(s); });
+  })();
+  // Trend sort chips: clicking a chip lifts that change type to the top of the
+  // showcase grid and every magnitude group — a SORT, never a filter. Clicking
+  // the active chip again restores the default order (reworks, buffs, nerfs,
+  // mixed — the order the page ships in, stamped here as data-oi).
+  (function () {
+    var btns = [].slice.call(document.querySelectorAll('.hxs'));
+    if (!btns.length) return;
+    var pools = [].slice.call(document.querySelectorAll('#heroShowcaseGrid, .group-cards'));
+    pools.forEach(function (pool) {
+      [].slice.call(pool.children).forEach(function (el, i) { el.dataset.oi = i; });
+    });
+    function apply(sel) {
+      pools.forEach(function (pool) {
+        [].slice.call(pool.children)
+          .sort(function (a, b) {
+            var ra = sel && a.dataset.trend === sel ? 0 : 1;
+            var rb = sel && b.dataset.trend === sel ? 0 : 1;
+            return ra - rb || (+a.dataset.oi - +b.dataset.oi);
+          })
+          .forEach(function (el) { pool.appendChild(el); });
+      });
+      btns.forEach(function (b) {
+        var on = b.dataset.sort === sel;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+    var current = null;
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        current = current === b.dataset.sort ? null : b.dataset.sort;
+        apply(current);
+      });
+    });
   })();
   // Glossary tooltips: clamp each tooltip inside the viewport when it opens
   // (the CSS centers it on the term; --tt-shift nudges it off an edge).
