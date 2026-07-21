@@ -2588,3 +2588,29 @@ Eight maintainer-flagged fixes:
   committed copy, not source. Rebuild before re-judging.
 - Standing practice: UI work of more than a trivial patch goes through this
   loop before merge (bracket: ui:audit + ui:render green; judge to >=99%).
+
+## 2026-07-21 — Patch 1.15.3 review page (digest -> predictions -> page -> judge loop)
+- Same-day patch review is now a repeatable pipeline: hand-capture the digest
+  (data/patches/1.15.3.json), stack it with scripts/apply-patch.js (Learn-tab
+  badges follow automatically), author predictions on session compute grounded
+  in measured data (meta.json, rank splits, feed matchups, artifacts — sim as
+  kit-mechanism color only), build with the now version-generic
+  scripts/build-patch-page.js, then judge-loop before merge.
+- The generator was 1.15-hardcoded in quiet ways: the page title came from a
+  hardcoded name (the digest had no `name` field), banner/footer dates were
+  baked in. Genericizing surfaced a silent regression — always rebuild the OLD
+  page too when a shared generator changes.
+- The judge caught a harness bug, not just page bugs: my "latest patch page"
+  sort compared filenames, and `patch-1.15.html` sorts AFTER
+  `patch-1.15.3.html` (".h" > ".3"), so the bracket screenshotted the old
+  page. The judge noticed the shots showed "Splash Damage" and verified flags
+  against the static markup instead. Sort on the extracted version string.
+- Schema drift between digests bites at render time: 1.15 eternal changes had
+  `meaning` fields, 1.15.3's didn't -> every card printed "Meaning undefined".
+  Generators must guard optional fields, and digest authors should diff their
+  shape against the previous digest before building.
+- Judge round 1 on the new surface: 6 real flags (machine item tokens leaking
+  from artifacts, empty-section nav pill, no reduced-motion override, triple
+  legend, second-person heading). Round 2 clean (100% agreement). The
+  ux-critique task emitter still defaults SHOTS_REL to v0 — point the judge at
+  docs/reviews/v6/shots explicitly, or run with UI_DIR=ui/v6.

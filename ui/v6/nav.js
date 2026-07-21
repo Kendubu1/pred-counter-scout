@@ -9,7 +9,8 @@
     { href: 'coach.html',            label: 'Coach',                  icon: 'scout',            match: ['coach.html'] },
     { sep: true },
     { href: 'livedraft.html',        label: 'Live draft',             icon: 'weakness-counter', match: ['livedraft.html'] },
-    { href: '../patch-1.15.html',    label: 'Patch 1.15 review',      icon: 'patch-strategy', tag: 'new', match: ['patch-1.15.html'] },
+    { href: '../patch-1.15.3.html',  label: 'Patch 1.15.3 review',    icon: 'patch-strategy', tag: 'new', match: ['patch-1.15.3.html'] },
+    { href: '../patch-1.15.html',    label: 'Patch 1.15 review',      icon: 'patch-strategy',   match: ['patch-1.15.html'] },
     { href: '../learn-eternals.html',label: 'Learn Eternals',         icon: 'eternal-augment',  match: ['learn-eternals.html'] },
     { href: 'about.html',            label: 'About & how this works', icon: 'tap-to-learn',     match: ['about.html'] },
   ];

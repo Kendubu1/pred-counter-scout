@@ -11,7 +11,7 @@
 // Surfaces cover the landing grid, a data-rich hero page, the coach report, and
 // the squad planner — the four places "rich infusion" most stresses small screens.
 
-import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
+import { writeFileSync, mkdirSync, existsSync, readFileSync, readdirSync } from 'node:fs';
 import { createServer } from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -32,6 +32,17 @@ const SURFACES = [
   { id: 'about', url: `/${UI_DIR}/about.html` },
   // v6-only surface (the v0 staging copy doesn't have it) — skip if absent.
   { id: 'livedraft', url: `/${UI_DIR}/livedraft.html` },
+  // Latest patch review page (lives at ui/, shared by both UI dirs).
+  ...(() => {
+    // Compare on the extracted version, not the filename — "patch-1.15.html"
+    // must sort BELOW "patch-1.15.3.html" (".h" vs ".3" breaks filename sort).
+    const ver = (f: string) => f.replace(/^patch-|\.html$/g, '');
+    const latest = readdirSync(path.join(ROOT, 'ui'))
+      .filter((f) => /^patch-[\d.]+\.html$/.test(f))
+      .sort((a, b) => ver(a).localeCompare(ver(b), undefined, { numeric: true }))
+      .at(-1);
+    return latest ? [{ id: 'patch', url: `/ui/${latest}` }] : [];
+  })(),
 ].filter((s) => existsSync(path.join(ROOT, s.url.split('?')[0]!)));
 const WIDTHS = [360, 390, 1024]; // phone (small), phone (modern), desktop control
 const MIME: Record<string, string> = { '.html': 'text/html', '.json': 'application/json', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.jpg': 'image/jpeg' };
