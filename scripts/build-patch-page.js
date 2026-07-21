@@ -52,12 +52,18 @@ function showcaseTile({ href, img, name, trend, title }) {
           </a>`;
 }
 
+// Artifact item ids arrive as CamelCase machine tokens ("RaimentOfRenewal");
+// space them out and lowercase connective words for display.
+const humanizeItem = (s) => s
+  .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+  .replace(/ (Of|The|And|In) /g, (m) => m.toLowerCase());
+
 function heroCard([slug, p]) {
   const t = TREND[p.trend] || TREND.mixed;
   const m = MAG[p.magnitude] || MAG.minor;
   const changes = (p.changes || []).map((c) => `<li>${esc(c)}</li>`).join('');
   const simRead = p.topMetaBuild
-    ? `<div class="sim-read">Sim read (pre-${esc(version)}): top field core <strong>${esc(p.topMetaBuild.title)}</strong> — ${esc((p.topMetaBuild.items || []).join(', '))}` +
+    ? `<div class="sim-read">Sim read (pre-${esc(version)}): top field core <strong>${esc(p.topMetaBuild.title)}</strong> — ${esc((p.topMetaBuild.items || []).map(humanizeItem).join(', '))}` +
       (p.topMetaBuild.shrunkWr ? ` · ${(p.topMetaBuild.shrunkWr * 100).toFixed(1)}% wr` : '') +
       (p.topMetaBuild.games ? ` · ${p.topMetaBuild.games.toLocaleString()} games` : '') + `</div>`
     : '';
@@ -111,7 +117,7 @@ function metaRead(key) {
 // ── Hero showcase: clickable images with a colored trend arrow, ordered by
 // magnitude then name; each jumps to that hero's card lower in this section.
 const heroShowcase = `
-      <div class="hx-legend"><span class="tr-buff">▲ buff</span><span class="tr-nerf">▼ nerf</span><span class="tr-mixed">◆ mixed</span><span class="hx-hint">tap a hero to jump to its changes</span></div>
+      <div class="hx-legend"><span class="tr-buff">▲ buff</span><span class="tr-nerf">▼ nerf</span><span class="tr-mixed">◆ mixed</span><span class="tr-rework">⟳ rework/shift</span><span class="hx-hint">tap a hero to jump to its changes</span></div>
       <div class="hx-grid">
         ${heroes.map(([slug, p]) => showcaseTile({
           href: `#hero-${slug}`,
@@ -193,7 +199,7 @@ const tldrBlock = (digest.tldr && digest.tldr.length)
 // images with a colored buff/nerf/shift arrow, then a card per Eternal.
 const ETSLUG = (name) => name.toLowerCase();
 const eternalShowcase = `
-      <div class="hx-legend"><span class="tr-buff">▲ buff</span><span class="tr-nerf">▼ nerf</span><span class="tr-mixed">◆ mixed</span><span class="tr-rework">⟳ shift</span><span class="hx-hint">tap an Eternal to jump to its change</span></div>
+      <div class="hx-legend"><span class="hx-hint">tap an Eternal to jump to its change</span></div>
       <div class="hx-grid">
         ${(digest.eternals?.changes || []).map((e) => showcaseTile({
           href: `#eternal-${ETSLUG(e.name)}`,
@@ -213,7 +219,7 @@ const eternalCards = (digest.eternals?.changes || []).map((e) => {
           <span class="badge ${t.cls}">${t.icon} ${t.label}</span>
         </div>
         <ul class="change-list"><li>${esc(e.change)}</li></ul>
-        <div class="pred"><span class="pred-label">Meaning</span>${esc(e.meaning)}</div>
+        ${e.meaning ? `<div class="pred"><span class="pred-label">Meaning</span>${esc(e.meaning)}</div>` : ''}
       </div>`;
 }).join('');
 const itemList = (digest.items || []).map((i) => `<li>${esc(i)}</li>`).join('');
@@ -223,7 +229,7 @@ const itemOrder = { new: 0, removed: 1, rework: 2, buff: 3, mixed: 4, nerf: 5 };
 const itemChanges = (digest.itemChanges || []).slice()
   .sort((a, b) => (itemOrder[a.dir] ?? 9) - (itemOrder[b.dir] ?? 9) || a.name.localeCompare(b.name));
 const itemShowcase = itemChanges.length ? `
-      <div class="hx-legend"><span class="tr-new">✦ new</span><span class="tr-removed">✕ removed</span><span class="tr-rework">⟳ rework</span><span class="tr-buff">▲ buff</span><span class="tr-mixed">◆ mixed</span><span class="tr-nerf">▼ nerf</span><span class="hx-hint">tap an item to jump to its change</span></div>
+      <div class="hx-legend"><span class="tr-new">✦ new</span><span class="tr-removed">✕ removed</span><span class="hx-hint">tap an item to jump to its change</span></div>
       <div class="hx-grid">
         ${itemChanges.map((it) => showcaseTile({
           href: `#item-${it.slug}`,
@@ -264,7 +270,7 @@ const SECTIONS = [
   { id: 'ch-eternals', label: 'Eternals' },
   { id: 'ch-items', label: 'Items' },
   ...(digest.aram ? [{ id: 'ch-aram', label: 'ARAM' }] : []),
-  { id: 'ch-systems', label: 'Systems & map' },
+  ...((digest.systems || []).length ? [{ id: 'ch-systems', label: 'Systems & map' }] : []),
   ...(digest.ranked ? [{ id: 'ch-ranked', label: 'Ranked' }] : []),
 ];
 const subnavBar = `
@@ -414,6 +420,11 @@ const html = `<!DOCTYPE html>
     .psn-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
     h2.section { scroll-margin-top: 112px; }
     @media (max-width: 560px) { .psn-label { display: none; } }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+      .hx:hover { transform: none; }
+    }
   .measured .m-hit{color:var(--green,#4caf50);font-weight:700;} .measured .m-miss{color:var(--gold,#e0a93e);font-weight:700;}
   .measured-banner{border-color:var(--green,#4caf50);}
   </style>
@@ -453,7 +464,7 @@ ${subnavBar}
         forecasts once enough post-patch ranked games land in the feed.
       </div>`}
 
-      <h2 class="section" id="ch-tldr"><span class="sec-ic" data-bic="scout"></span>TL;DR — what actually changes how you play</h2>
+      <h2 class="section" id="ch-tldr"><span class="sec-ic" data-bic="scout"></span>TL;DR — what actually changes how the game plays</h2>
       ${tldrBlock}${metaRead('tldr')}
 
       <h2 class="section" id="ch-heroes"><span class="sec-ic" data-bic="counter-pick"></span>Hero changes <span style="font-size:0.7rem;color:var(--text-2);font-weight:500;">
@@ -471,8 +482,8 @@ ${subnavBar}
 
       ${aramBlock}
 
-      <h2 class="section" id="ch-systems"><span class="sec-ic" data-bic="meta-guide"></span>Systems &amp; map</h2>
-      ${sysList}${metaRead('systems')}
+      ${(digest.systems || []).length ? `<h2 class="section" id="ch-systems"><span class="sec-ic" data-bic="meta-guide"></span>Systems &amp; map</h2>
+      ${sysList}${metaRead('systems')}` : ''}
 
       ${rankedBlock}
 

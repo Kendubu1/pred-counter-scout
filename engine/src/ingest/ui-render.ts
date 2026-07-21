@@ -34,9 +34,12 @@ const SURFACES = [
   { id: 'livedraft', url: `/${UI_DIR}/livedraft.html` },
   // Latest patch review page (lives at ui/, shared by both UI dirs).
   ...(() => {
+    // Compare on the extracted version, not the filename — "patch-1.15.html"
+    // must sort BELOW "patch-1.15.3.html" (".h" vs ".3" breaks filename sort).
+    const ver = (f: string) => f.replace(/^patch-|\.html$/g, '');
     const latest = readdirSync(path.join(ROOT, 'ui'))
       .filter((f) => /^patch-[\d.]+\.html$/.test(f))
-      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+      .sort((a, b) => ver(a).localeCompare(ver(b), undefined, { numeric: true }))
       .at(-1);
     return latest ? [{ id: 'patch', url: `/ui/${latest}` }] : [];
   })(),
