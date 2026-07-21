@@ -255,8 +255,12 @@ const ETSLUG = (name) => name.toLowerCase();
 // a stale digest entry degrades to no popup rather than an empty one.
 const popupInfo = {};
 const stripFx = (s) => String(s || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
-const PCT_STATS = new Set(['critical_chance', 'attack_speed', 'lifesteal', 'magical_lifesteal', 'omnivamp', 'tenacity', 'heal_shield_increase', 'movement_speed']);
+const PCT_STATS = new Set(['critical_chance', 'attack_speed', 'lifesteal', 'magical_lifesteal', 'omnivamp', 'heal_shield_increase', 'movement_speed']);
 const STAT_LABEL = (k) => k.replace(/_/g, ' ').replace(/^max /, '').replace(/\b\w/, (c) => c.toUpperCase());
+// The omeda snapshot stores tenacity inverted (remaining CC duration: 75 means
+// 25 tenacity). Convert so the popup matches how the game and the patch notes
+// state it (Unbroken Will: snapshot 75 -> "Tenacity 25").
+const statValue = (k, v) => (k === 'tenacity' ? 100 - v : v);
 for (const e of (digest.eternals?.changes || [])) {
   const et = ETERNAL_CATALOG.find((x) => x.name.toLowerCase() === e.name.toLowerCase());
   if (!et) continue;
@@ -307,7 +311,7 @@ for (const c of itemChanges) {
   const it = ITEM_CATALOG.find((i) => i.slug === c.slug);
   if (!it) continue;
   const stats = Object.entries(it.stats || {})
-    .map(([k, v]) => `${STAT_LABEL(k)} ${v}${PCT_STATS.has(k) ? '%' : ''}`);
+    .map(([k, v]) => `${STAT_LABEL(k)} ${statValue(k, v)}${PCT_STATS.has(k) ? '%' : ''}`);
   popupInfo[`item-${c.slug}`] = {
     kind: 'Item', name: it.display_name || it.name, img: `img/items/${c.slug}.webp`,
     meta: [it.rarity, it.slot_type && it.slot_type !== 'Passive' ? it.slot_type : null,
@@ -316,8 +320,11 @@ for (const c of itemChanges) {
     sections: [
       { title: 'Stats', lines: stats },
       ...(it.effects || []).map((fx) => ({
-        title: fx.name + (fx.active ? ' (active)' : ' (passive)'),
-        lines: [stripFx(`${fx.condition || ''} ${fx.menu_description || ''}`)].filter(Boolean),
+        // Snapshot effect names can be empty or carry trailing punctuation
+        // ("Crusader-"); bullets in menu text become separate rows.
+        title: (stripFx(fx.name).replace(/[-–—:\s]+$/, '') || 'Effect') + (fx.active ? ' (active)' : ' (passive)'),
+        lines: stripFx(`${fx.condition || ''} ${fx.menu_description || ''}`)
+          .split(/\s*•\s*/).map((s) => s.trim()).filter(Boolean),
       })),
     ].filter((s) => s.lines.length),
   };
