@@ -270,8 +270,14 @@ const itemList = (digest.items || []).map((i) => `<li>${esc(i)}</li>`).join('');
 const itemOrder = { new: 0, removed: 1, rework: 2, buff: 3, mixed: 4, nerf: 5 };
 const itemChanges = (digest.itemChanges || []).slice()
   .sort((a, b) => (itemOrder[a.dir] ?? 9) - (itemOrder[b.dir] ?? 9) || a.name.localeCompare(b.name));
+// Only advertise the symbols this patch actually uses beyond the hero legend.
+const itemDirs = new Set(itemChanges.map((it) => it.dir));
+const itemExtraKey = [
+  itemDirs.has('new') ? '<span class="tr-new">✦ new</span>' : '',
+  itemDirs.has('removed') ? '<span class="tr-removed">✕ removed</span>' : '',
+].filter(Boolean).join('');
 const itemShowcase = itemChanges.length ? `
-      <div class="hx-legend"><span class="tr-new">✦ new</span><span class="tr-removed">✕ removed</span><span class="hx-hint">tap an item to jump to its change</span></div>
+      <div class="hx-legend">${itemExtraKey}<span class="hx-hint">tap an item to jump to its change</span></div>
       <div class="hx-grid">
         ${itemChanges.map((it) => showcaseTile({
           href: `#item-${it.slug}`,
@@ -464,8 +470,9 @@ const html = `<!DOCTYPE html>
     @media (max-width: 560px) { .psn-label { display: none; } }
     /* Trend sort chips: re-order the hero cards + showcase, never filter. */
     .hxs { font: inherit; font-size: 0.72rem; font-weight: 600; cursor: pointer;
-      background: transparent; border: 1px solid var(--line); border-radius: 999px;
-      padding: 0.22rem 0.6rem; line-height: 1; }
+      background: transparent; border: 1px solid var(--border); border-radius: 999px;
+      padding: 0.22rem 0.7rem; line-height: 1; min-height: 40px;
+      display: inline-flex; align-items: center; }
     .hxs:hover { border-color: var(--accent); }
     .hxs.active { border-color: var(--accent); background: var(--bg-2);
       box-shadow: 0 0 0 1px var(--accent) inset; }
@@ -478,7 +485,7 @@ const html = `<!DOCTYPE html>
     .term::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 7px);
       transform: translateX(calc(-50% + var(--tt-shift, 0px))); width: max-content;
       max-width: min(270px, calc(100vw - 2rem)); white-space: normal; display: none;
-      background: var(--bg-2); color: var(--text-1); border: 1px solid var(--line); border-radius: 8px;
+      background: var(--bg-2); color: var(--text-1); border: 1px solid var(--border); border-radius: 8px;
       padding: 0.5rem 0.7rem; font-size: 0.74rem; line-height: 1.5; font-weight: 500; text-align: left;
       z-index: 40; box-shadow: 0 6px 18px rgba(0,0,0,0.35); pointer-events: none; }
     .term:hover::after, .term:focus::after { display: block; }
