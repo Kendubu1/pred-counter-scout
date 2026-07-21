@@ -37,8 +37,14 @@ const TREND = {
 };
 
 const order = { 'meta-shifting': 0, 'notable': 1, 'minor': 2 };
+// Default trend order inside a magnitude group: reworks first, then buffs,
+// nerfs, mixed. The trend chips above the hero grid re-sort (never filter)
+// client-side; this server-side order is what no-JS readers get too.
+const TREND_PRI = { rework: 0, buff: 1, nerf: 2, mixed: 3 };
 const heroes = Object.entries(pred.predictions)
-  .sort((a, b) => (order[a[1].magnitude] - order[b[1].magnitude]) || a[1].name.localeCompare(b[1].name));
+  .sort((a, b) => (order[a[1].magnitude] - order[b[1].magnitude])
+    || ((TREND_PRI[a[1].trend] ?? 9) - (TREND_PRI[b[1].trend] ?? 9))
+    || a[1].name.localeCompare(b[1].name));
 
 // Digest slug -> site slug (Neon's artifact/image is "neon"). Used by the
 // hero cards (out-link) and the showcase.
@@ -46,7 +52,7 @@ const SITE_SLUG = { n3on: 'neon' };
 // One showcase tile: image + colored trend arrow, links to an in-page anchor.
 function showcaseTile({ href, img, name, trend, title }) {
   const a = TREND[trend] || TREND.mixed;
-  return `<a class="hx tr-${trend}" href="${href}" title="${esc(title)}">
+  return `<a class="hx tr-${trend}" data-trend="${trend}" href="${href}" title="${esc(title)}">
             <span class="hx-imgwrap"><img loading="lazy" src="${img}" alt="" onerror="this.style.visibility='hidden'"><span class="hx-arrow">${a.icon}</span></span>
             <span class="hx-name">${esc(name)}</span>
           </a>`;
@@ -58,10 +64,37 @@ const humanizeItem = (s) => s
   .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
   .replace(/ (Of|The|And|In) /g, (m) => m.toLowerCase());
 
+// ── Glossary tooltips: game jargon gets a dotted underline with a plain-
+// language tooltip (hover on desktop, tap on mobile via tabindex focus).
+// makeGloss() returns a per-block glosser that only marks each term's FIRST
+// occurrence within that block, so cards don't fill with underlines. Applied
+// to ALREADY-ESCAPED plain text only — the single-pass replace never rescans
+// the tooltip markup it inserts, so tips may mention other glossed terms.
+const TERMS = [
+  ['tenacity', 'Tenacity shortens how long crowd control (stuns, roots, slows) lasts on a hero. More tenacity = less time locked down.'],
+  ['sustain', 'Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.'],
+  ['cleave', 'Cleave makes basic attacks also hit enemies near the target for a portion of the damage.'],
+  ['omnivamp', 'Omnivamp heals for a percentage of ALL damage dealt — abilities included.'],
+  ['lifesteal', 'Lifesteal heals for a percentage of basic-attack damage dealt.'],
+  ['ability haste', 'Ability haste shortens cooldowns — more haste means abilities come back faster.'],
+];
+const TERM_RE = new RegExp('\\b(' + TERMS.map(([t]) => t.replace(/ /g, '\\s+')).join('|') + ')\\b', 'gi');
+function makeGloss() {
+  const done = new Set();
+  return (escaped) => escaped.replace(TERM_RE, (m) => {
+    const key = m.toLowerCase().replace(/\s+/g, ' ');
+    const hit = TERMS.find(([t]) => t === key);
+    if (!hit || done.has(key)) return m;
+    done.add(key);
+    return `<span class="term" tabindex="0" data-tip="${esc(hit[1])}">${m}</span>`;
+  });
+}
+
 function heroCard([slug, p]) {
+  const g = makeGloss();
   const t = TREND[p.trend] || TREND.mixed;
   const m = MAG[p.magnitude] || MAG.minor;
-  const changes = (p.changes || []).map((c) => `<li>${esc(c)}</li>`).join('');
+  const changes = (p.changes || []).map((c) => `<li>${g(esc(c))}</li>`).join('');
   const simRead = p.topMetaBuild
     ? `<div class="sim-read">Sim read (pre-${esc(version)}): top field core <strong>${esc(p.topMetaBuild.title)}</strong> — ${esc((p.topMetaBuild.items || []).map(humanizeItem).join(', '))}` +
       (p.topMetaBuild.shrunkWr ? ` · ${(p.topMetaBuild.shrunkWr * 100).toFixed(1)}% wr` : '') +
@@ -88,8 +121,8 @@ function heroCard([slug, p]) {
           <span class="badge ${m.cls}">${m.label}</span>
         </div>
         <ul class="change-list">${changes}</ul>
-        <div class="pred"><span class="pred-label">Why</span>${esc(p.why)}</div>
-        <div class="pred"><span class="pred-label">What it'll change</span>${esc(p.willChange)}</div>
+        <div class="pred"><span class="pred-label">Why</span>${g(esc(p.why))}</div>
+        <div class="pred"><span class="pred-label">What it'll change</span>${g(esc(p.willChange))}</div>
         ${simRead}
         ${measuredLine}
       </div>`;
@@ -105,20 +138,26 @@ const heroSections = groups.map(([key, title]) => {
   if (!list.length) return '';
   return `
       <h3 class="group-head"><span class="badge ${MAG[key].cls}">${MAG[key].label}</span> <span class="group-count">${list.length} ${list.length === 1 ? 'hero' : 'heroes'}</span></h3>
-      ${list.map(heroCard).join('')}`;
+      <div class="group-cards">${list.map(heroCard).join('')}</div>`;
 }).join('');
 
 // Coach "meta read" callout for the bottom of a section (omitted if absent).
 function metaRead(key) {
   const m = pred.sectionMeta && pred.sectionMeta[key];
-  return m ? `\n      <div class="meta-read"><b><span class="mr-ic" data-bic="scout" data-bic-size="13"></span>Meta read</b>${esc(m)}</div>` : '';
+  return m ? `\n      <div class="meta-read"><b><span class="mr-ic" data-bic="scout" data-bic-size="13"></span>Meta read</b>${makeGloss()(esc(m))}</div>` : '';
 }
 
 // ── Hero showcase: clickable images with a colored trend arrow, ordered by
 // magnitude then name; each jumps to that hero's card lower in this section.
 const heroShowcase = `
-      <div class="hx-legend"><span class="tr-buff">▲ buff</span><span class="tr-nerf">▼ nerf</span><span class="tr-mixed">◆ mixed</span><span class="tr-rework">⟳ rework/shift</span><span class="hx-hint">tap a hero to jump to its changes</span></div>
-      <div class="hx-grid">
+      <div class="hx-legend hx-sortbar" role="group" aria-label="Sort heroes by change type">
+        <button class="hxs tr-rework" data-sort="rework" aria-pressed="false">⟳ reworks</button>
+        <button class="hxs tr-buff" data-sort="buff" aria-pressed="false">▲ buffs</button>
+        <button class="hxs tr-nerf" data-sort="nerf" aria-pressed="false">▼ nerfs</button>
+        <button class="hxs tr-mixed" data-sort="mixed" aria-pressed="false">◆ mixed</button>
+        <span class="hx-hint">tap a change type to bring those heroes to the top — nothing is hidden. tap a hero to jump to its changes</span>
+      </div>
+      <div class="hx-grid" id="heroShowcaseGrid">
         ${heroes.map(([slug, p]) => showcaseTile({
           href: `#hero-${slug}`,
           img: `img/heroes/${SITE_SLUG[slug] || slug}.webp`,
@@ -188,12 +227,14 @@ const aramBlock = digest.aram ? `
       ${aramHeroGroups}${metaRead('aram')}
 ` : '';
 
-const globalList = (digest.global || []).map((g) => `<li>${esc(g)}</li>`).join('');
+const globalList = (digest.global || []).map((x) => `<li>${makeGloss()(esc(x))}</li>`).join('');
 // TL;DR as scannable bold-lead cards (same shape as Systems entries), with a
 // fallback to the long global strings if no structured tldr is present.
 const tldrBlock = (digest.tldr && digest.tldr.length)
-  ? `<div class="tldr-grid">${digest.tldr.map((t) =>
-      `<div class="tldr-item"><div class="tldr-lead">${esc(t.lead)}</div><div class="tldr-text">${esc(t.text)}</div></div>`).join('')}</div>`
+  ? `<div class="tldr-grid">${digest.tldr.map((t) => {
+      const g = makeGloss();
+      return `<div class="tldr-item"><div class="tldr-lead">${g(esc(t.lead))}</div><div class="tldr-text">${g(esc(t.text))}</div></div>`;
+    }).join('')}</div>`
   : `<ul class="tldr">${globalList}</ul>`;
 // Eternals get the same treatment as heroes: a showcase grid of clickable
 // images with a colored buff/nerf/shift arrow, then a card per Eternal.
@@ -211,6 +252,7 @@ const eternalShowcase = `
       </div>`;
 const eternalCards = (digest.eternals?.changes || []).map((e) => {
   const t = TREND[e.dir] || TREND.mixed;
+  const g = makeGloss();
   return `
       <div class="hero-card card" id="eternal-${ETSLUG(e.name)}" data-trend="${e.dir || 'mixed'}">
         <div class="hero-head">
@@ -218,8 +260,8 @@ const eternalCards = (digest.eternals?.changes || []).map((e) => {
           <span class="hero-name">${esc(e.name)}</span>
           <span class="badge ${t.cls}">${t.icon} ${t.label}</span>
         </div>
-        <ul class="change-list"><li>${esc(e.change)}</li></ul>
-        ${e.meaning ? `<div class="pred"><span class="pred-label">Meaning</span>${esc(e.meaning)}</div>` : ''}
+        <ul class="change-list"><li>${g(esc(e.change))}</li></ul>
+        ${e.meaning ? `<div class="pred"><span class="pred-label">Meaning</span>${g(esc(e.meaning))}</div>` : ''}
       </div>`;
 }).join('');
 const itemList = (digest.items || []).map((i) => `<li>${esc(i)}</li>`).join('');
@@ -228,8 +270,14 @@ const itemList = (digest.items || []).map((i) => `<li>${esc(i)}</li>`).join('');
 const itemOrder = { new: 0, removed: 1, rework: 2, buff: 3, mixed: 4, nerf: 5 };
 const itemChanges = (digest.itemChanges || []).slice()
   .sort((a, b) => (itemOrder[a.dir] ?? 9) - (itemOrder[b.dir] ?? 9) || a.name.localeCompare(b.name));
+// Only advertise the symbols this patch actually uses beyond the hero legend.
+const itemDirs = new Set(itemChanges.map((it) => it.dir));
+const itemExtraKey = [
+  itemDirs.has('new') ? '<span class="tr-new">✦ new</span>' : '',
+  itemDirs.has('removed') ? '<span class="tr-removed">✕ removed</span>' : '',
+].filter(Boolean).join('');
 const itemShowcase = itemChanges.length ? `
-      <div class="hx-legend"><span class="tr-new">✦ new</span><span class="tr-removed">✕ removed</span><span class="hx-hint">tap an item to jump to its change</span></div>
+      <div class="hx-legend">${itemExtraKey}<span class="hx-hint">tap an item to jump to its change</span></div>
       <div class="hx-grid">
         ${itemChanges.map((it) => showcaseTile({
           href: `#item-${it.slug}`,
@@ -248,15 +296,15 @@ const itemCards = itemChanges.map((it) => {
           <span class="hero-name">${esc(it.name)}</span>
           <span class="badge ${t.cls}">${t.icon} ${t.label}</span>
         </div>
-        <div class="pred" style="margin:0">${esc(it.change)}</div>
+        <div class="pred" style="margin:0">${makeGloss()(esc(it.change))}</div>
       </div>`;
 }).join('');
 const sysList = (digest.systems || []).map((s) =>
   `<div class="sys"><div class="sys-name">${esc(s.name)}</div><div class="sys-sum">${esc(s.summary)}</div></div>`).join('');
 const rankedBlock = digest.ranked ? `
       <h2 class="section" id="ch-ranked"><span class="sec-ic" data-bic="power-spike"></span>Ranked</h2>
-      <p class="lead">${esc(digest.ranked.summary || '')}</p>
-      <ul class="items-list ranked-list">${(digest.ranked.changes || []).map((c) => `<li>${esc(c)}</li>`).join('')}</ul>${metaRead('ranked')}
+      <p class="lead">${makeGloss()(esc(digest.ranked.summary || ''))}</p>
+      <ul class="items-list ranked-list">${(digest.ranked.changes || []).map((c) => `<li>${makeGloss()(esc(c))}</li>`).join('')}</ul>${metaRead('ranked')}
 ` : '';
 
 const counts = groups.map(([k]) => heroes.filter(([, p]) => p.magnitude === k).length);
@@ -420,6 +468,27 @@ const html = `<!DOCTYPE html>
     .psn-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
     h2.section { scroll-margin-top: 112px; }
     @media (max-width: 560px) { .psn-label { display: none; } }
+    /* Trend sort chips: re-order the hero cards + showcase, never filter. */
+    .hxs { font: inherit; font-size: 0.72rem; font-weight: 600; cursor: pointer;
+      background: transparent; border: 1px solid var(--border); border-radius: 999px;
+      padding: 0.22rem 0.7rem; line-height: 1; min-height: 40px;
+      display: inline-flex; align-items: center; }
+    .hxs:hover { border-color: var(--accent); }
+    .hxs.active { border-color: var(--accent); background: var(--bg-2);
+      box-shadow: 0 0 0 1px var(--accent) inset; }
+    /* Glossary terms: dotted underline, tooltip on hover (desktop) or tap/
+       focus (mobile — the spans are tabbable). Tooltip is clamped to the
+       viewport by a --tt-shift set from JS on open. */
+    .term { text-decoration: underline dotted; text-decoration-color: var(--accent); text-decoration-thickness: 1px;
+      text-underline-offset: 3px; cursor: help; position: relative; outline: none; }
+    .term:focus-visible { border-radius: 3px; box-shadow: 0 0 0 2px var(--accent); }
+    .term::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 7px);
+      transform: translateX(calc(-50% + var(--tt-shift, 0px))); width: max-content;
+      max-width: min(270px, calc(100vw - 2rem)); white-space: normal; display: none;
+      background: var(--bg-2); color: var(--text-1); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.5rem 0.7rem; font-size: 0.74rem; line-height: 1.5; font-weight: 500; text-align: left;
+      z-index: 40; box-shadow: 0 6px 18px rgba(0,0,0,0.35); pointer-events: none; }
+    .term:hover::after, .term:focus::after { display: block; }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after { transition: none !important; animation: none !important; }
@@ -473,7 +542,7 @@ ${subnavBar}
       ${heroSections}${metaRead('heroes')}
 
       <h2 class="section" id="ch-eternals"><span class="sec-ic" data-bic="eternal-augment"></span>Eternals (draft blessings)</h2>
-      <p class="lead">${esc(digest.eternals?.summary || '')}</p>
+      <p class="lead">${makeGloss()(esc(digest.eternals?.summary || ''))}</p>
       ${eternalShowcase}
       ${eternalCards}${metaRead('eternals')}
 
@@ -511,6 +580,57 @@ ${subnavBar}
       });
     }, { rootMargin: '-20% 0px -75% 0px' });
     secs.forEach(function (s) { io.observe(s); });
+  })();
+  // Trend sort chips: clicking a chip lifts that change type to the top of the
+  // showcase grid and every magnitude group — a SORT, never a filter. Clicking
+  // the active chip again restores the default order (reworks, buffs, nerfs,
+  // mixed — the order the page ships in, stamped here as data-oi).
+  (function () {
+    var btns = [].slice.call(document.querySelectorAll('.hxs'));
+    if (!btns.length) return;
+    var pools = [].slice.call(document.querySelectorAll('#heroShowcaseGrid, .group-cards'));
+    pools.forEach(function (pool) {
+      [].slice.call(pool.children).forEach(function (el, i) { el.dataset.oi = i; });
+    });
+    function apply(sel) {
+      pools.forEach(function (pool) {
+        [].slice.call(pool.children)
+          .sort(function (a, b) {
+            var ra = sel && a.dataset.trend === sel ? 0 : 1;
+            var rb = sel && b.dataset.trend === sel ? 0 : 1;
+            return ra - rb || (+a.dataset.oi - +b.dataset.oi);
+          })
+          .forEach(function (el) { pool.appendChild(el); });
+      });
+      btns.forEach(function (b) {
+        var on = b.dataset.sort === sel;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+    var current = null;
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        current = current === b.dataset.sort ? null : b.dataset.sort;
+        apply(current);
+      });
+    });
+  })();
+  // Glossary tooltips: clamp each tooltip inside the viewport when it opens
+  // (the CSS centers it on the term; --tt-shift nudges it off an edge).
+  (function () {
+    [].slice.call(document.querySelectorAll('.term')).forEach(function (t) {
+      function place() {
+        var r = t.getBoundingClientRect();
+        var w = Math.min(270, window.innerWidth - 32);
+        var cx = r.left + r.width / 2, half = w / 2, shift = 0;
+        if (cx - half < 12) shift = 12 - (cx - half);
+        else if (cx + half > window.innerWidth - 12) shift = (window.innerWidth - 12) - (cx + half);
+        t.style.setProperty('--tt-shift', shift + 'px');
+      }
+      t.addEventListener('mouseenter', place);
+      t.addEventListener('focus', place);
+    });
   })();
   </script>
   <script defer src="v6/icons.js"></script>

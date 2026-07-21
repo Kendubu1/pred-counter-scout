@@ -2614,3 +2614,20 @@ Eight maintainer-flagged fixes:
   legend, second-person heading). Round 2 clean (100% agreement). The
   ux-critique task emitter still defaults SHOTS_REL to v0 — point the judge at
   docs/reviews/v6/shots explicitly, or run with UI_DIR=ui/v6.
+
+## 2026-07-21 — Patch page follow-ups: glossary tooltips + trend sort chips
+- Maintainer asks, same day as the 1.15.3 page: (a) "tenacity" was used in the
+  TL;DR with no explanation -> glossary tooltips (tenacity, sustain, cleave,
+  omnivamp, lifesteal, ability haste; dotted underline, hover/tap, first
+  occurrence per block, viewport-clamped); (b) trend chips must SORT the hero
+  cards, never filter — default order reworks -> buffs -> nerfs -> mixed,
+  server-rendered so no-JS readers get the same default.
+- The judge caught a CSS custom-property bug author testing missed: this page's
+  palette defines --border, not --line; `border: 1px solid var(--line)` voids
+  the whole shorthand and the chips rendered borderless (reading as passive
+  text). In-browser behavior tests (tap/sort/aria) don't catch a dead token —
+  check computed styles or grep new var() names against the palette.
+- Two more judge flags on round 1 of the feature: 20px chips vs the 40px
+  touch-target bracket, and a legend advertising ✦ new / ✕ removed symbols the
+  patch didn't contain (legend is now built from the dirs actually present).
+  Round 2 clean, 100% agreement, rounds 11-12 in ux-v0-history.
