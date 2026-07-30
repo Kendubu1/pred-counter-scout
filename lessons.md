@@ -2631,3 +2631,32 @@ Eight maintainer-flagged fixes:
   touch-target bracket, and a legend advertising ✦ new / ✕ removed symbols the
   patch didn't contain (legend is now built from the dirs actually present).
   Round 2 clean, 100% agreement, rounds 11-12 in ux-v0-history.
+
+## 2026-07-30 — "What is this?" popups + film 686ae197 (the day of two verify loops)
+- Popups on item/Eternal cards reuse the committed catalogs (omeda items,
+  game-data eternals) baked in at build time — zero fetch. Provenance note in
+  every popup: the snapshot can lag the patch, so the card's change line is
+  the newer truth. The judge round surfaced a REAL data quirk: omeda stores
+  tenacity inverted (75 = remaining CC duration); convert to the patch-note
+  scale (100−v) or popups contradict the cards they sit on.
+- In-browser flow tests catch what markup checks can't: author display:flex
+  on the overlay silently beat the [hidden] UA rule, leaving an invisible
+  full-screen layer intercepting every tap. If a modal exists, tap something
+  UNDER it in the test.
+- Film pipeline after a container restart: npm ci first (tsx vanishes), creds
+  re-staged scratchpad-only, verify token before the pull. postgame --squad
+  found exactly 1 new game; kit/items/fights enrichment must run before the
+  coach (fresh pulls lack all three).
+- Critic round on the new film: 7 of 8 lines flagged, but adjudication against
+  the RAW film split it — half the flags were sourceOf blind spots (objective
+  damage totals, GENESIS_CORE@29m in timeline.majors, missing-meta-core field,
+  item stats proving zero-of-five armor), half were real (invented CS/death/
+  ward "norms" — perfVsAvg is null in films; a 'thin vision' claim the ward
+  counts contradicted at 8-vs-7; minute-14 Fangtooth called a trade when the
+  enemy won that fight outright). Standing rule held: apply nothing the raw
+  film contradicts, print the missing facts into sourceOf, re-run the critic.
+  Round 2: 0 flags, gate STOP at 100%.
+- The film's own lane verdict ("ours all game") can mislead: Bayle's offlane
+  read favored on paper while the scoreline went 1/5. Coaching now states the
+  paper verdict AND that the scoreline never cashed it — the honest framing
+  survived the critic.

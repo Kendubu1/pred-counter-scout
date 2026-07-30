@@ -38,10 +38,13 @@ function sourceOf(f: Facts): string {
     `DECISIVE FIGHTS: ${tagged.length ? tagged.map((s) => `${s.startMin}m ${s.kind} ${s.result} ${s.ourKills}-${s.theirKills} @ ${s.place} [${s.tag}]`).join('; ') : 'none tagged'}.`,
     `ALL SKIRMISHES (n=${sk.length}): ${sk.map((s) => `${s.startMin}m ${s.result} ${s.ourKills}-${s.theirKills} @ ${s.place} (${(s.ourHeroes ?? []).join('/')} v ${(s.theirHeroes ?? []).join('/')})`).join(', ') || 'none'}.`,
     `MACRO READS (rotations/numbers/trades — THEORY): ${withMacro.length ? withMacro.map((s) => `${s.startMin}m (${s.macro.ourAlive}v${s.macro.theirAlive}): ${s.macro.notes.join(' ')}`).join(' | ') : 'none'}.`,
-    `OBJECTIVES: majors you ${f.objectives?.ourKills}-${f.objectives?.theirKills} them${f.timeline ? `, towers ${f.timeline.towers.us}-${f.timeline.towers.them}` : ''}.`,
-    `LANES: ${f.lanes.map((l) => `${l.role} ${l.ourHero} vs ${l.theirHero} (${l.edge}${l.predggMatchup ? `, ${l.predggMatchup.winrate}%` : ''})`).join('; ')}.`,
+    `OBJECTIVES: majors you ${f.objectives?.ourKills}-${f.objectives?.theirKills} them${f.timeline ? `, towers ${f.timeline.towers.us}-${f.timeline.towers.them}` : ''}${(f.objectives as any)?.ourObjDamage != null ? `, objective damage us ${(f.objectives as any).ourObjDamage} vs them ${(f.objectives as any).theirObjDamage}` : ''}.`,
+    // Named-prize timeline (round-12 lesson: Genesis Core@29m WAS in the facts;
+    // a SOURCE without the majors stream makes the critic flag true lines).
+    `MAJOR TIMELINE: ${((f.timeline as any)?.majors ?? []).filter((m: any) => m.type !== 'RIVER').map((m: any) => `${m.type}@${m.minute}m ${m.side}`).join(', ') || 'none'}.`,
+    `LANES: ${f.lanes.map((l) => `${l.role} ${l.ourHero} vs ${l.theirHero} (${l.edge}${l.predggMatchup ? `, ${l.predggMatchup.winrate}%` : ''}${(l as any).summary ? `, lane read: ${(l as any).summary}` : ''})`).join('; ')}.`,
     `COMP: you ${f.comp?.ourDamage?.physical}P/${f.comp?.ourDamage?.magical}M, them ${f.comp?.theirDamage?.physical}P/${f.comp?.theirDamage?.magical}M; their healers ${f.comp?.theirHealers?.join(', ') || 'none'}.`,
-    `OUR PLAYERS: ${us.map((p) => `${p.squadName || p.name} ${p.heroName} ${p.role} ${p.kills}/${p.deaths}/${p.assists}${(p.spikes ?? []).length ? ` (spikes ${p.spikes.map((s: any) => `${s.name}~${s.spikeMinute}m`).join(', ')})` : ''}${p.roleFit?.concern ? ` [off bottom-two lane]` : ''}`).join('; ')}.`,
+    `OUR PLAYERS: ${us.map((p) => `${p.squadName || p.name} ${p.heroName} ${p.role} ${p.kills}/${p.deaths}/${p.assists}, ${(p as any).damageToObjectives ?? '?'} obj dmg, ${(p as any).wardsPlaced ?? '?'} wards, items [${((p as any).items ?? []).map((i: any) => i.name ?? i).join(', ')}]${((p as any).missingCore ?? []).length ? `, missing meta core [${(p as any).missingCore.join(', ')}]` : ''}${(p.spikes ?? []).length ? ` (spikes ${p.spikes.map((s: any) => `${s.name}~${s.spikeMinute}m`).join(', ')})` : ''}${p.roleFit?.concern ? ` [off bottom-two lane]` : ''}`).join('; ')}.`,
     ...fightEconLines(f),
   ].join('\n');
 }
