@@ -14,7 +14,8 @@
   "notes": [
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
-   "evidence deltas carry finished-inventory survivorship bias"
+   "evidence deltas carry finished-inventory survivorship bias",
+   "the sim opens on Spectral Schematics, which the field has tried and lost with (-0.3% winrate over 124 games) — treat this opener as a sim blind-spot and weight the field"
   ]
  },
  "build": {
@@ -24,25 +25,25 @@
     "name": "Spectral Schematics",
     "slug": "spectral-schematics",
     "spikeMinute": 12,
-    "playRatePct": 4.5,
-    "evidenceDeltaWr": 3.2,
-    "evidenceN": 79
+    "playRatePct": 5.2,
+    "evidenceDeltaWr": -0.3,
+    "evidenceN": 124
    },
    {
     "name": "Prophecy",
     "slug": "prophecy",
     "spikeMinute": 19,
-    "playRatePct": 0.9,
-    "evidenceDeltaWr": -3.2,
-    "evidenceN": 16
+    "playRatePct": 1,
+    "evidenceDeltaWr": 0.3,
+    "evidenceN": 25
    },
    {
     "name": "Orion",
     "slug": "orion",
     "spikeMinute": 24,
-    "playRatePct": 0.1,
-    "evidenceDeltaWr": null,
-    "evidenceN": null
+    "playRatePct": 0.4,
+    "evidenceDeltaWr": 0.4,
+    "evidenceN": 10
    },
    {
     "name": "Oathkeeper",
@@ -64,7 +65,7 @@
     "name": "Oblivion Crown",
     "slug": "oblivion-crown",
     "spikeMinute": 41,
-    "playRatePct": 0.2,
+    "playRatePct": 0,
     "evidenceDeltaWr": null,
     "evidenceN": null
    }
@@ -482,13 +483,13 @@
   "candidates": [
    {
     "item": "Prophecy",
-    "playRatePct": 0.9,
+    "playRatePct": 1,
     "bestObjective": "20s fight vs bruisers",
     "edgeVsPopularPct": 495.8
    },
    {
     "item": "Orion",
-    "playRatePct": 0.1,
+    "playRatePct": 0.4,
     "bestObjective": "20s fight vs bruisers",
     "edgeVsPopularPct": 495.8
    },
@@ -506,7 +507,7 @@
    },
    {
     "item": "Oblivion Crown",
-    "playRatePct": 0.2,
+    "playRatePct": 0,
     "bestObjective": "20s fight vs bruisers",
     "edgeVsPopularPct": 495.8
    }
@@ -709,6 +710,45 @@
  ],
  "matchups": [
   {
+   "enemy": "Greystone",
+   "enemySlug": "greystone",
+   "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange. Greystone deals area damage — spread out so one cast can't catch the group.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "you"
+    },
+    {
+     "minute": 10,
+     "verdict": "even"
+    },
+    {
+     "minute": 15,
+     "verdict": "even"
+    },
+    {
+     "minute": 20,
+     "verdict": "even"
+    },
+    {
+     "minute": 25,
+     "verdict": "even"
+    },
+    {
+     "minute": 30,
+     "verdict": "even"
+    }
+   ],
+   "counterSwap": {
+    "out": "Spectral Schematics",
+    "in": "Warden's Faith",
+    "inSlug": "wardens-faith",
+    "survivalGainPct": 27,
+    "offenseLossPct": 23,
+    "line": "Losing lane? Third item Warden's Faith instead of Spectral Schematics: their burst combo hits 27% less hard, and this kit gives up 23% of its damage for it."
+   }
+  },
+  {
    "enemy": "Grux",
    "enemySlug": "grux",
    "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Grux deals area damage — spread out so one cast can't catch the group.",
@@ -784,45 +824,6 @@
     "survivalGainPct": 24,
     "offenseLossPct": 24,
     "line": "Losing lane? Third item Warden's Faith instead of Spectral Schematics: their burst combo hits 24% less hard, and this kit gives up 24% of its damage for it."
-   }
-  },
-  {
-   "enemy": "Greystone",
-   "enemySlug": "greystone",
-   "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange. Greystone deals area damage — spread out so one cast can't catch the group.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "you"
-    },
-    {
-     "minute": 10,
-     "verdict": "even"
-    },
-    {
-     "minute": 15,
-     "verdict": "even"
-    },
-    {
-     "minute": 20,
-     "verdict": "even"
-    },
-    {
-     "minute": 25,
-     "verdict": "even"
-    },
-    {
-     "minute": 30,
-     "verdict": "even"
-    }
-   ],
-   "counterSwap": {
-    "out": "Spectral Schematics",
-    "in": "Warden's Faith",
-    "inSlug": "wardens-faith",
-    "survivalGainPct": 27,
-    "offenseLossPct": 23,
-    "line": "Losing lane? Third item Warden's Faith instead of Spectral Schematics: their burst combo hits 27% less hard, and this kit gives up 23% of its damage for it."
    }
   },
   {
@@ -904,9 +905,9 @@
    }
   },
   {
-   "enemy": "Shinbi",
-   "enemySlug": "shinbi",
-   "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange. Shinbi's main threat is Line Tempo; bait it before you commit, and mixed resist softens the trade.",
+   "enemy": "Crunch",
+   "enemySlug": "crunch",
+   "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Crunch deals area damage — spread out so one cast can't catch the group.",
    "checkpoints": [
     {
      "minute": 5,
@@ -918,19 +919,19 @@
     },
     {
      "minute": 15,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 20,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 25,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 30,
-     "verdict": "even"
+     "verdict": "you"
     }
    ],
    "counterSwap": {
@@ -938,8 +939,8 @@
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
     "survivalGainPct": 14,
-    "offenseLossPct": 21,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Spectral Schematics: their burst combo hits 14% less hard, and this kit gives up 21% of its damage for it."
+    "offenseLossPct": 22,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Spectral Schematics: their burst combo hits 14% less hard, and this kit gives up 22% of its damage for it."
    }
   }
  ],
@@ -966,8 +967,8 @@
  },
  "slug": "steel",
  "name": "Steel",
- "patch": "1.15",
- "generatedAt": "2026-07-15T03:56:42.641Z",
+ "patch": "1.15.3/1.15.4",
+ "generatedAt": "2026-08-07T19:39:58.815Z",
  "damageType": "hybrid",
  "attackType": "melee",
  "laneFlex": [
@@ -1067,7 +1068,8 @@
     "notes": [
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
-     "evidence deltas carry finished-inventory survivorship bias"
+     "evidence deltas carry finished-inventory survivorship bias",
+     "the sim opens on Spectral Schematics, which the field has tried and lost with (-0.3% winrate over 124 games) — treat this opener as a sim blind-spot and weight the field"
     ]
    },
    "build": {
@@ -1077,25 +1079,25 @@
       "name": "Spectral Schematics",
       "slug": "spectral-schematics",
       "spikeMinute": 12,
-      "playRatePct": 4.5,
-      "evidenceDeltaWr": 3.2,
-      "evidenceN": 79
+      "playRatePct": 5.2,
+      "evidenceDeltaWr": -0.3,
+      "evidenceN": 124
      },
      {
       "name": "Prophecy",
       "slug": "prophecy",
       "spikeMinute": 19,
-      "playRatePct": 0.9,
-      "evidenceDeltaWr": -3.2,
-      "evidenceN": 16
+      "playRatePct": 1,
+      "evidenceDeltaWr": 0.3,
+      "evidenceN": 25
      },
      {
       "name": "Orion",
       "slug": "orion",
       "spikeMinute": 24,
-      "playRatePct": 0.1,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
+      "playRatePct": 0.4,
+      "evidenceDeltaWr": 0.4,
+      "evidenceN": 10
      },
      {
       "name": "Oathkeeper",
@@ -1117,7 +1119,7 @@
       "name": "Oblivion Crown",
       "slug": "oblivion-crown",
       "spikeMinute": 41,
-      "playRatePct": 0.2,
+      "playRatePct": 0,
       "evidenceDeltaWr": null,
       "evidenceN": null
      }
@@ -1535,13 +1537,13 @@
     "candidates": [
      {
       "item": "Prophecy",
-      "playRatePct": 0.9,
+      "playRatePct": 1,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 495.8
      },
      {
       "item": "Orion",
-      "playRatePct": 0.1,
+      "playRatePct": 0.4,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 495.8
      },
@@ -1559,7 +1561,7 @@
      },
      {
       "item": "Oblivion Crown",
-      "playRatePct": 0.2,
+      "playRatePct": 0,
       "bestObjective": "20s fight vs bruisers",
       "edgeVsPopularPct": 495.8
      }
@@ -1762,6 +1764,45 @@
    ],
    "matchups": [
     {
+     "enemy": "Greystone",
+     "enemySlug": "greystone",
+     "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange. Greystone deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "you"
+      },
+      {
+       "minute": 10,
+       "verdict": "even"
+      },
+      {
+       "minute": 15,
+       "verdict": "even"
+      },
+      {
+       "minute": 20,
+       "verdict": "even"
+      },
+      {
+       "minute": 25,
+       "verdict": "even"
+      },
+      {
+       "minute": 30,
+       "verdict": "even"
+      }
+     ],
+     "counterSwap": {
+      "out": "Spectral Schematics",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 27,
+      "offenseLossPct": 23,
+      "line": "Losing lane? Third item Warden's Faith instead of Spectral Schematics: their burst combo hits 27% less hard, and this kit gives up 23% of its damage for it."
+     }
+    },
+    {
      "enemy": "Grux",
      "enemySlug": "grux",
      "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Grux deals area damage — spread out so one cast can't catch the group.",
@@ -1837,45 +1878,6 @@
       "survivalGainPct": 24,
       "offenseLossPct": 24,
       "line": "Losing lane? Third item Warden's Faith instead of Spectral Schematics: their burst combo hits 24% less hard, and this kit gives up 24% of its damage for it."
-     }
-    },
-    {
-     "enemy": "Greystone",
-     "enemySlug": "greystone",
-     "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange. Greystone deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "you"
-      },
-      {
-       "minute": 10,
-       "verdict": "even"
-      },
-      {
-       "minute": 15,
-       "verdict": "even"
-      },
-      {
-       "minute": 20,
-       "verdict": "even"
-      },
-      {
-       "minute": 25,
-       "verdict": "even"
-      },
-      {
-       "minute": 30,
-       "verdict": "even"
-      }
-     ],
-     "counterSwap": {
-      "out": "Spectral Schematics",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 27,
-      "offenseLossPct": 23,
-      "line": "Losing lane? Third item Warden's Faith instead of Spectral Schematics: their burst combo hits 27% less hard, and this kit gives up 23% of its damage for it."
      }
     },
     {
@@ -1957,9 +1959,9 @@
      }
     },
     {
-     "enemy": "Shinbi",
-     "enemySlug": "shinbi",
-     "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange. Shinbi's main threat is Line Tempo; bait it before you commit, and mixed resist softens the trade.",
+     "enemy": "Crunch",
+     "enemySlug": "crunch",
+     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Crunch deals area damage — spread out so one cast can't catch the group.",
      "checkpoints": [
       {
        "minute": 5,
@@ -1971,19 +1973,19 @@
       },
       {
        "minute": 15,
-       "verdict": "even"
+       "verdict": "you"
       },
       {
        "minute": 20,
-       "verdict": "even"
+       "verdict": "you"
       },
       {
        "minute": 25,
-       "verdict": "even"
+       "verdict": "you"
       },
       {
        "minute": 30,
-       "verdict": "even"
+       "verdict": "you"
       }
      ],
      "counterSwap": {
@@ -1991,8 +1993,8 @@
       "in": "Raiment of Renewal",
       "inSlug": "raiment-of-renewal",
       "survivalGainPct": 14,
-      "offenseLossPct": 21,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Spectral Schematics: their burst combo hits 14% less hard, and this kit gives up 21% of its damage for it."
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Spectral Schematics: their burst combo hits 14% less hard, and this kit gives up 22% of its damage for it."
      }
     }
    ],
@@ -2046,49 +2048,49 @@
       "name": "Stonewall",
       "slug": "stonewall",
       "spikeMinute": 14,
-      "playRatePct": 5.3,
-      "evidenceDeltaWr": 1.1,
-      "evidenceN": 93
+      "playRatePct": 6.6,
+      "evidenceDeltaWr": 1.2,
+      "evidenceN": 158
      },
      {
       "name": "Warden's Faith",
       "slug": "wardens-faith",
       "spikeMinute": 21,
-      "playRatePct": 5.3,
-      "evidenceDeltaWr": 0.6,
-      "evidenceN": 93
+      "playRatePct": 6.2,
+      "evidenceDeltaWr": 0.9,
+      "evidenceN": 148
      },
      {
       "name": "Vainglory",
       "slug": "vainglory",
       "spikeMinute": 28,
-      "playRatePct": 10.2,
-      "evidenceDeltaWr": 1.6,
-      "evidenceN": 178
+      "playRatePct": 9.4,
+      "evidenceDeltaWr": 2.2,
+      "evidenceN": 226
      },
      {
       "name": "Raiment of Renewal",
       "slug": "raiment-of-renewal",
       "spikeMinute": 34,
-      "playRatePct": 11.8,
-      "evidenceDeltaWr": 2.5,
-      "evidenceN": 205
+      "playRatePct": 11.3,
+      "evidenceDeltaWr": 0.6,
+      "evidenceN": 271
      },
      {
       "name": "Catalytic Drive",
       "slug": "catalytic-drive",
       "spikeMinute": 40,
-      "playRatePct": 2.1,
-      "evidenceDeltaWr": 0.7,
-      "evidenceN": 37
+      "playRatePct": 1.9,
+      "evidenceDeltaWr": 0.9,
+      "evidenceN": 46
      },
      {
       "name": "Unbroken Will",
       "slug": "unbroken-will",
       "spikeMinute": 45,
-      "playRatePct": 5.9,
-      "evidenceDeltaWr": -1.4,
-      "evidenceN": 102
+      "playRatePct": 6.9,
+      "evidenceDeltaWr": 0.5,
+      "evidenceN": 165
      }
     ],
     "gold": 18000,
@@ -2503,8 +2505,15 @@
     }
    ],
    "offMeta": {
-    "candidates": [],
-    "honestAbsence": "no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)"
+    "candidates": [
+     {
+      "item": "Catalytic Drive",
+      "playRatePct": 1.9,
+      "bestObjective": "magical survivability",
+      "edgeVsPopularPct": 60.2
+     }
+    ],
+    "honestAbsence": null
    },
    "metaBuilds": [
     {
@@ -2697,9 +2706,73 @@
    ],
    "matchups": [
     {
-     "enemy": "Phase",
-     "enemySlug": "phase",
-     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
+     "enemy": "Dekker",
+     "enemySlug": "dekker",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Dekker deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "even"
+      },
+      {
+       "minute": 20,
+       "verdict": "even"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": null
+    },
+    {
+     "enemy": "Adele",
+     "enemySlug": "adele",
+     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Adele deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "you"
+      },
+      {
+       "minute": 10,
+       "verdict": "you"
+      },
+      {
+       "minute": 15,
+       "verdict": "you"
+      },
+      {
+       "minute": 20,
+       "verdict": "you"
+      },
+      {
+       "minute": 25,
+       "verdict": "you"
+      },
+      {
+       "minute": 30,
+       "verdict": "you"
+      }
+     ],
+     "counterSwap": null
+    },
+    {
+     "enemy": "Zinx",
+     "enemySlug": "zinx",
+     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Zinx's main threat is Ricochet; bait it before you commit, and mixed resist softens the trade.",
      "checkpoints": [
       {
        "minute": 5,
@@ -2761,73 +2834,9 @@
      "counterSwap": null
     },
     {
-     "enemy": "Zinx",
-     "enemySlug": "zinx",
-     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Zinx's main threat is Ricochet; bait it before you commit, and mixed resist softens the trade.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "you"
-      },
-      {
-       "minute": 10,
-       "verdict": "you"
-      },
-      {
-       "minute": 15,
-       "verdict": "you"
-      },
-      {
-       "minute": 20,
-       "verdict": "you"
-      },
-      {
-       "minute": 25,
-       "verdict": "you"
-      },
-      {
-       "minute": 30,
-       "verdict": "you"
-      }
-     ],
-     "counterSwap": null
-    },
-    {
-     "enemy": "Dekker",
-     "enemySlug": "dekker",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Dekker deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "even"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "even"
-      },
-      {
-       "minute": 20,
-       "verdict": "even"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": null
-    },
-    {
-     "enemy": "Adele",
-     "enemySlug": "adele",
-     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Adele deals area damage — spread out so one cast can't catch the group.",
+     "enemy": "Phase",
+     "enemySlug": "phase",
+     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
      "checkpoints": [
       {
        "minute": 5,
