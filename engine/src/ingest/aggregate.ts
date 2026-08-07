@@ -59,10 +59,27 @@ function percentile(sorted: number[], p: number): number {
   return sorted[idx]!;
 }
 
+/** The omeda feed can lag wall clock by days (2026-08-07: head was ~5 days
+ *  behind). Anchor the window to the FEED HEAD, not now(): walk back day by
+ *  day until a probe returns matches, and treat that day as "now". */
+async function findFeedHeadTs(): Promise<number> {
+  const now = Math.floor(Date.now() / 1000);
+  for (let daysBack = 0; daysBack <= 14; daysBack++) {
+    const ts = now - daysBack * 86400;
+    const page = await fetchPage(`https://omeda.city/matches.json?per_page=1&timestamp=${ts}`);
+    if ((page.matches ?? []).length) {
+      if (daysBack > 0) console.log(`feed head lags ~${daysBack}d behind wall clock; anchoring window there`);
+      return ts + 86400; // matches exist at ts; head is somewhere inside the next day
+    }
+  }
+  return now; // fall through: let the pull report 0 matches honestly
+}
+
 async function main() {
   const hours = opt('hours', 36);
   const maxPages = opt('max-pages', 120);
-  const startTs = Math.floor(Date.now() / 1000) - hours * 3600;
+  const headTs = await findFeedHeadTs();
+  const startTs = headTs - hours * 3600;
 
   // gold[role][minute] = list of cumulative gold values
   const gold = new Map<string, Map<number, number[]>>();
@@ -158,7 +175,7 @@ async function main() {
       pages, matches, playerRows: players,
       firstMatch: firstStart, lastMatch: lastStart,
       modes: [...MODES],
-      patchNote: 'window chosen inside patch 1.14.4 (released 2026-06-09); matches carry no patch field',
+      patchNote: 'window anchored to the feed head, inside the 1.15.3/1.15.4 era (1.15.3 released 2026-07-21); matches carry no patch field',
     },
     goldByMinute,
     heroes: heroStats,

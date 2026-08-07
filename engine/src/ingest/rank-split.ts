@@ -43,8 +43,23 @@ async function fetchPage(url: string): Promise<any> {
   throw new Error(`feed fetch failed: ${url}`);
 }
 
+/** The feed can lag wall clock by days; anchor the window to the feed HEAD
+ *  (same fix as aggregate.ts, 2026-08-07: a now-36h window returned 0 rows). */
+async function findFeedHeadTs(): Promise<number> {
+  const now = Math.floor(Date.now() / 1000);
+  for (let daysBack = 0; daysBack <= 14; daysBack++) {
+    const ts = now - daysBack * 86400;
+    const page = await fetchPage(`https://omeda.city/matches.json?per_page=1&timestamp=${ts}`);
+    if ((page.matches ?? []).length) {
+      if (daysBack > 0) console.log(`feed head lags ~${daysBack}d; anchoring window there`);
+      return ts + 86400;
+    }
+  }
+  return now;
+}
+
 async function main() {
-  const startTs = Math.floor(Date.now() / 1000) - WINDOW_H * 3600;
+  const startTs = (await findFeedHeadTs()) - WINDOW_H * 3600;
   const omedaHeroes = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8'));
   const arr = Array.isArray(omedaHeroes) ? omedaHeroes : Object.values(omedaHeroes);
   const idToSlug = new Map<number, string>(arr.map((h: any) => [h.id, h.slug]));

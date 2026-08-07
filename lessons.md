@@ -2660,3 +2660,38 @@ Eight maintainer-flagged fixes:
   read favored on paper while the scoreline went 1/5. Coaching now states the
   paper verdict AND that the scoreline never cashed it — the honest framing
   survived the critic.
+
+## 2026-08-07 — Full data overhaul (the day pred.gg closed one door and opened another)
+- pred.gg quietly moved simpleBuild/coreBuild behind the operator-managed
+  Application-scope gate (valid queries now return Forbidden at the field
+  path) and deleted recommendedSkills from the schema. Augments, buildstats
+  and skill orders now REQUIRE operator-granted scopes; their July data is
+  retained with provenance. Same sweep found generalStatistic — OPEN, per-hero
+  RANKED wins/picks/bans/gold@15 filterable by role AND version id. New pass:
+  npm run genstats (+ VERSIONS/OUT env). Version-pinned pulls give exact
+  patch-windowed winrates; raw counts mean windows ADD and SUBTRACT
+  (baseline = family minus window) — scripts/build-measured.js.
+- The omeda feed lags wall clock by DAYS (head was ~5 days behind). Every
+  wall-clock-anchored window (aggregate, rank-split) silently returned 0
+  matches and wrote hollow files with stale patch labels. Fix: probe the feed
+  head and anchor windows there. A refresh that "succeeds" with 0 matches is
+  a failure — validate row counts before letting a chain continue.
+- npm chains that continue past a failed member: the refresh chain died at
+  augments but the runner reported exit 0 and the earlier stages' data
+  looked complete. Read every stage's output, not the chain's exit code.
+- An ingest pass with NO fresh responses must not run against committed
+  copy: the augments review ingest ran with an empty responses file and
+  wiped 933 lines of valid July copy (restored from git). Ingests should
+  no-op when their responses file is empty/absent.
+- Author quality degrades at batch scale: 16 films in one pass produced 53
+  real critic flags (systematic: majors ledger quoted as kill scores,
+  "no anti-heal" claims contradicted by Tainted items in the printed builds,
+  external winrates leaking into film coaching). The critic was RIGHT this
+  round — sample-verify before assuming blind spots. Loop: 87.2% -> apply
+  53 ground-checked rewrites -> 100%, gate STOP.
+- 1.15.3 scorecard (measured-data-grounded predictions): 16/18 directional,
+  vs 10/14 for the sim-heavier 1.15 round. Both misses were flat-liners
+  (<0.5pt), not wrong directions. Grounding predictions in rank splits +
+  feed matchups instead of sim colors measurably works.
+- 1.15.4 is an undocumented balance hotfix (pred.gg id 157, no official
+  notes); V1.16 "Aegis of Dawn" ships in ~4 days — plan the next digest.
