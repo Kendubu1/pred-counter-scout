@@ -16,17 +16,39 @@ const version = process.argv[2] || '1.15.3';
 
 const predPath = path.join(ROOT, `data/aggregates/patch-${version}-predictions.json`);
 const pred = JSON.parse(fs.readFileSync(predPath, 'utf8'));
-const family = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/aggregates/predgg-general-stats.json'), 'utf8'));
-// Every pinned per-version file that belongs to this patch's live window.
-const windowFiles = fs.readdirSync(path.join(ROOT, 'data/aggregates'))
-  .filter((f) => f.startsWith('predgg-general-stats-1.15.') && f.endsWith('.json'))
-  .filter((f) => {
-    const v = f.replace('predgg-general-stats-', '').replace('.json', '');
-    return v.localeCompare(version, undefined, { numeric: true }) >= 0;
-  });
-if (!windowFiles.length) { console.error('no pinned window files found'); process.exit(1); }
-const windows = windowFiles.map((f) => JSON.parse(fs.readFileSync(path.join(ROOT, 'data/aggregates', f), 'utf8')));
-console.log(`window files: ${windowFiles.join(', ')} | baseline = family minus window`);
+const AGG = path.join(ROOT, 'data/aggregates');
+const read = (f) => JSON.parse(fs.readFileSync(path.join(AGG, f), 'utf8'));
+const verOf = (f) => f.replace('predgg-general-stats-', '').replace('.json', '');
+const cmp = (a, b) => a.localeCompare(b, undefined, { numeric: true });
+
+// The window runs from this patch until the NEXT REVIEWED patch (a patch with
+// its own digest). Unlisted hotfixes in between — 1.15.4 inside 1.15.3's era —
+// belong to this patch's window; the next reviewed patch does not.
+const nextReviewed = fs.readdirSync(path.join(ROOT, 'data/patches'))
+  .filter((f) => f.endsWith('.json'))
+  .map((f) => f.replace('.json', ''))
+  .filter((v) => cmp(v, version) > 0)
+  .sort(cmp)[0] ?? null;
+
+// Every version-pinned stats file, split around this patch's window.
+const pinned = fs.readdirSync(AGG)
+  .filter((f) => /^predgg-general-stats-[\d.]+\.json$/.test(f))
+  .sort((a, b) => cmp(verOf(a), verOf(b)));
+const inWindow = (f) => cmp(verOf(f), version) >= 0 && (!nextReviewed || cmp(verOf(f), nextReviewed) < 0);
+const windowFiles = pinned.filter(inWindow);
+const priorFiles = pinned.filter((f) => cmp(verOf(f), version) < 0);
+if (!windowFiles.length) { console.error(`no pinned stats file at or after ${version} — run \`VERSIONS=<id> OUT=data/aggregates/predgg-general-stats-${version}.json npm run genstats\` first`); process.exit(1); }
+const windows = windowFiles.map(read);
+
+// Baseline: prefer explicit pre-patch pinned files (exact, no arithmetic). Fall
+// back to family-minus-window when the pre-patch period was only ever captured
+// inside the rolling family file (how the 1.15.3 scorecard was built).
+const priors = priorFiles.map(read);
+const family = priors.length ? null : read('predgg-general-stats.json');
+const baselineNote = priors.length
+  ? `pinned pre-patch files ${priorFiles.map(verOf).join(' + ')}`
+  : 'the rolling family file minus the patch window';
+console.log(`window: ${windowFiles.map(verOf).join(' + ')} | baseline: ${baselineNote}`);
 
 const MIN_N = 200; // per side, same bar as the 1.15 scorecard
 
@@ -36,12 +58,20 @@ function cell(fileHeroes, slug) {
 }
 
 const perHero = {};
-const allSlugs = Object.keys(family.heroes);
+const allSlugs = Object.keys((family ?? windows[0]).heroes);
 for (const slug of allSlugs) {
-  const fam = cell(family.heroes, slug);
   let winN = 0, winW = 0;
   for (const w of windows) { const c = cell(w.heroes, slug); winN += c.n; winW += c.w; }
-  const oldN = fam.n - winN, oldW = fam.w - winW;
+  // Baseline: sum the pre-patch pinned files directly, or subtract the window
+  // out of the rolling family file when no pre-patch file was ever pinned.
+  let oldN, oldW;
+  if (priors.length) {
+    oldN = 0; oldW = 0;
+    for (const p of priors) { const c = cell(p.heroes, slug); oldN += c.n; oldW += c.w; }
+  } else {
+    const fam = cell(family.heroes, slug);
+    oldN = fam.n - winN; oldW = fam.w - winW;
+  }
   const now = winN ? +(100 * winW / winN).toFixed(1) : null;
   const old = oldN ? +(100 * oldW / oldN).toFixed(1) : null;
   const enough = winN >= MIN_N && oldN >= MIN_N;
@@ -60,6 +90,17 @@ for (const [slug, p] of predicted) {
   if ((p.trend === 'buff' && m.delta > 0) || (p.trend === 'nerf' && m.delta < 0)) right++;
 }
 
+// Refuse to publish a scorecard the data cannot support: a freshly released
+// patch has far too few games for n>=MIN_N deltas, and a page that flips into
+// "measured" mode on three heroes reads as fact when it is noise.
+const MIN_GRADED = 8;
+if (counted < MIN_GRADED && !process.env.FORCE) {
+  const windowGames = Object.values(perHero).reduce((s, m) => s + m.n, 0);
+  console.error(`too early: only ${counted} of ${predicted.length} directional predictions have n>=${MIN_N} on both sides (window holds ~${Math.round(windowGames / 10).toLocaleString()} ranked matches).`);
+  console.error(`Re-run once the patch has more games, or set FORCE=1 to write it anyway.`);
+  process.exit(2);
+}
+
 const movers = Object.entries(perHero)
   .filter(([, m]) => m.delta != null)
   .map(([slug, m]) => ({ slug, ...m }));
@@ -67,8 +108,8 @@ const risers = movers.filter((m) => m.delta > 0).sort((a, b) => b.delta - a.delt
 const fallers = movers.filter((m) => m.delta < 0).sort((a, b) => a.delta - b.delta).slice(0, 6);
 
 pred.measured = {
-  source: `pred.gg generalStatistic (RANKED): pre-patch baseline = 1.15 family minus the ${version}+ window; patch window = ${windows.map((w) => w.versionLabel).join(' + ')} (n>=${MIN_N} both sides for deltas). The 1.15.4 balance hotfix sits inside the window (no official notes published for it).`,
-  patchDate: '2026-07-21',
+  source: `pred.gg generalStatistic (RANKED): pre-patch baseline = ${baselineNote}; patch window = ${windows.map((w) => w.versionLabel).join(' + ')} (n>=${MIN_N} both sides for deltas). Any unlisted hotfix released inside the window is measured as part of it.`,
+  patchDate: JSON.parse(fs.readFileSync(path.join(ROOT, `data/patches/${version}.json`), 'utf8')).date,
   scorecard: { predicted: counted, directionallyRight: right },
   risers, fallers,
   newHeroes: [],
