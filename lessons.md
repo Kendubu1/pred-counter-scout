@@ -2736,3 +2736,36 @@ Eight maintainer-flagged fixes:
 - Follow-up queued: data/game-data/eternals.json is still 1.14.4-era. It needs
   the four new Eternals + Mechadrive + the Marrow/Sacrifice reworks before
   learn-eternals and the popups can cover them.
+
+## 2026-08-11 (later) — Eternals catalog to 1.16, and two silent pipeline holes
+- The Eternals catalog was three patches stale (1.14.4) and the drift was
+  invisible: Aion still showed 8% gold when the live value was 6%, Ferocity
+  1.5% when it was 1%. Patch digests recorded the DELTAS each patch but nobody
+  applied them to the catalog. Any file the digests describe but no script
+  writes to will rot — check owned game-data against a fresh digest whenever a
+  patch touches it.
+- **The recommender pool is keyed off effects.json, not the catalog.** Adding
+  Weald/Rust/Pilow/Satatriel to eternals.json left them unrecommendable —
+  verified 0 of 53 artifacts contained one. rankBlessings enumerates
+  `eternal:<id>:major` keys in fixtures/effects.json. Registering them there
+  (kind:unmodeled, with a note on why each resists the sim) put them in all 53
+  pools. Data lives in two places; updating one is a no-op.
+- **Hand-authored fit weights nearly rewrote 13 heroes' advice.** With my first
+  fit block, Weald scored 3.00 vs Vermis's 2.90 for on-hit kits and took over
+  the recommended loadout on 14 heroes (13 identically) — an unmodeled, zero-
+  field-data Eternal displacing modeled incumbents on a 0.10 margin I invented.
+  Fix: keep the archetype shape, apply a flat 25% unproven discount, record it
+  in a per-entry fitNote. Result: visible in every pool, 0 recommendation
+  changes. Rule going forward — an unmodeled major with no field data must not
+  outrank a curated modeled one on authored numbers alone.
+- **The UX bracket's halves disagreed on the shots directory.** ui-render.ts
+  wrote to docs/reviews/v6/shots while ux-critique.ts defaulted UI_DIR to
+  ui/v0, so every prepared task shipped with ZERO screenshots attached — the
+  judge only ever saw pixels because I pasted paths into its prompt by hand
+  each round. Fixed both to ui/v6. A convention split across two files is
+  worse than a bug: it silently degrades a verifier into guessing.
+- Once the judge could actually see the pages it caught 5 real flags the
+  author missed, all of the same class: content updated, FRAMING left behind.
+  The lead still promised "all 12", the heading still said "The 6 families",
+  step 2 still named six deity types — under 16 cards in seven blocks. When a
+  data refresh changes a count, grep the page for the old count.
