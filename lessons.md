@@ -2711,3 +2711,28 @@ Eight maintainer-flagged fixes:
   duo aggregate flagged on 08-07, now confirmed on a second pairing.
 - 1.16 "Aegis of Dawn" still not live on pred.gg (latest version id 157);
   the films are 1.15.4-era and the current meta read stands.
+
+## 2026-08-11 — Patch 1.16 "Aegis of Dawn" review (same-day, first clean judge round)
+- The pipeline is now genuinely repeatable: digest -> apply-patch restack ->
+  measured-grounded predictions -> generic page build -> bracket -> judge.
+  Elapsed: one session, and the UX judge returned ZERO flags on the first
+  round for the first time — the 1.15.3 convergence work (tooltips, sort
+  chips, popups, single legend, reduced-motion) transferred to a brand-new
+  page with no rework.
+- Graceful degradation earned its keep on release day: Scarlett and the four
+  new Eternals (Weald/Rust/Pilow/Satatriel + Mechadrive) are in the notes but
+  NOT in the omeda/eternals catalogs yet. Because every image carries an
+  onerror self-hide and the popup button is conditional on catalog presence,
+  the page renders honestly with no broken glyphs and no dead buttons. Build
+  generators should always gate enrichment on catalog presence, never assume.
+- Digest capture needed FOUR WebFetch passes (systems, heroes A-L, heroes M-Z,
+  then a numbers-and-eternals sweep) — a single fetch summarizes and drops
+  exact numbers. Ask for verbatim numbers per section and expect to re-ask.
+- 1.16 structural read: ~12 heroes lost 2-4 base physical power with growth
+  compensation (carry early game flattened league-wide), the jungle pays
+  ~35-40% more camp gold, and Shrines add a permanent-ability-haste objective.
+  Rampage (55.5%, the top winrate hero) got only a hitbox change on a
+  cosmetic augment — the patch did not address him.
+- Follow-up queued: data/game-data/eternals.json is still 1.14.4-era. It needs
+  the four new Eternals + Mechadrive + the Marrow/Sacrifice reworks before
+  learn-eternals and the popups can cover them.
