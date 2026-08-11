@@ -43,6 +43,8 @@ const SURFACES = [
       .at(-1);
     return latest ? [{ id: 'patch', url: `/ui/${latest}` }] : [];
   })(),
+  // Long-form explainer that ships with the patch cycle (Eternals catalog).
+  { id: 'learn-eternals', url: '/ui/learn-eternals.html' },
 ].filter((s) => existsSync(path.join(ROOT, s.url.split('?')[0]!)));
 const WIDTHS = [360, 390, 1024]; // phone (small), phone (modern), desktop control
 const MIME: Record<string, string> = { '.html': 'text/html', '.json': 'application/json', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.jpg': 'image/jpeg' };
