@@ -24,7 +24,10 @@ import { ask, flushTasks, isPrepare } from '../copy-session.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const PASS = 'ux-critique';
-const UI_DIR = process.env.UI_DIR ?? 'ui/v0';
+// Must match ui-render.ts's default (ui/v6) — they are the two halves of one
+// bracket. When they disagreed, shotsFor() resolved into an empty v0 directory
+// and every task shipped to the judge with NO screenshots attached.
+const UI_DIR = process.env.UI_DIR ?? 'ui/v6';
 const SHOTS_REL = `docs/reviews/${UI_DIR.replace('ui/', '')}/shots`;
 const RUBRIC = existsSync(path.join(ROOT, 'docs/ux-rubric.md'))
   ? readFileSync(path.join(ROOT, 'docs/ux-rubric.md'), 'utf8')
