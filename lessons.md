@@ -2695,3 +2695,19 @@ Eight maintainer-flagged fixes:
   feed matchups instead of sim colors measurably works.
 - 1.15.4 is an undocumented balance hotfix (pred.gg id 157, no official
   notes); V1.16 "Aegis of Dawn" ships in ~4 days — plan the next digest.
+
+## 2026-08-11 — Three new films (the Meat+Goldilocks duo debuts 0-2)
+- Loop round 13-14: 10 flags, adjudication split cleanly again — every
+  healing/damage/mitigated figure the critic called invented was verbatim in
+  the raw film (the SOURCE printed neither our players' healing nor ANY enemy
+  row), while every "against the N norm" clause was a real invention even
+  after the author was explicitly briefed against norms. Norms are the
+  author's recurring tic at any scale; grep coaching for "norm" before the
+  critic ever sees it. sourceOf now prints hero dmg/healing/mitigated,
+  item-online estimates, matchupItemFlags, and a THEIR PLAYERS line.
+- All three films are conversion losses: 9 won fights across them cashed 3
+  prizes while the enemy cashed 7 of 10. The new Meat+Goldilocks duo wins
+  its shared lane and stays there — same "winning-lane hermit" shape the
+  duo aggregate flagged on 08-07, now confirmed on a second pairing.
+- 1.16 "Aegis of Dawn" still not live on pred.gg (latest version id 157);
+  the films are 1.15.4-era and the current meta read stands.
