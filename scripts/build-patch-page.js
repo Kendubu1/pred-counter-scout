@@ -118,7 +118,7 @@ function heroCard([slug, p]) {
   const measuredLine = mm
     ? `<div class="pred measured"><span class="pred-label">Measured (patch to date)</span>${
         mm.delta != null
-          ? `${mm.old}% → <strong>${mm.now}%</strong> win rate (${mm.delta > 0 ? '+' : ''}${mm.delta} pts over ${mm.n.toLocaleString()} ranked games)${mHit === true ? ' <span class="m-hit">✓ called it</span>' : mHit === false ? ' <span class="m-miss">✗ moved the other way</span>' : ''}`
+          ? `${mm.old}% → <strong>${mm.now}%</strong> win rate (${mm.delta > 0 ? '+' : ''}${mm.delta} pts over ${mm.n.toLocaleString()} ranked games)${mHit === true ? ' <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span>' : mHit === false ? ' <span class="m-miss" title="The win rate moved against the direction the patch notes pointed — read the call above for what the analysis expected">✗ moved against the notes</span>' : ''}`
           : `<strong>${mm.now}%</strong> win rate over ${mm.n.toLocaleString()} ranked games${mm.isNew ? ' (new hero — no baseline)' : ' (thin pre-patch sample)'}`
       }</div>`
     : '';
@@ -528,10 +528,11 @@ const html = `<!DOCTYPE html>
     .psn-pill:hover { color: var(--text-0); border-color: var(--accent); }
     .psn-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
     h2.section { scroll-margin-top: 112px; }
-    .maturity { margin-top: 0.55rem; padding-top: 0.5rem; border-top: 1px solid var(--border);
-      font-size: 0.76rem; color: var(--text-2); }
-    .maturity.early { color: var(--text-1); }
-    .maturity.early strong { color: var(--accent); }
+    .maturity { margin-bottom: 0.6rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+      font-size: 0.8rem; color: var(--text-1); }
+    .maturity.early strong { color: var(--accent); text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.74rem; }
+    .chipkey { margin-top: 0.6rem; padding-top: 0.5rem; border-top: 1px solid var(--border);
+      font-size: 0.74rem; color: var(--text-2); line-height: 1.6; }
     @media (max-width: 560px) { .psn-label { display: none; } }
     /* Trend sort chips: re-order the hero cards + showcase, never filter. */
     .hxs { font: inherit; font-size: 0.72rem; font-weight: 600; cursor: pointer;
@@ -606,7 +607,7 @@ ${subnavBar}
   <main id="app">
     <div class="patch">
       <h1 style="margin-bottom:0.25rem;">Patch ${esc(version)}${digest.name ? ` — ${esc(digest.name)}` : ''}</h1>
-      <p class="lead">Released ${esc(digest.date)} · Scout overview &amp; sim-grounded predictions ·
+      <p class="lead">Released ${esc(digest.date)} · Scout overview, predictions${pred.measured ? ' &amp; measured results' : ''} ·
         <a href="${esc(digest.source)}" target="_blank" rel="noopener">official notes ↗</a></p>
 
       ${(() => {
@@ -628,15 +629,15 @@ ${subnavBar}
         return '';
       })()}
       ${pred.measured ? `<div class="banner measured-banner">
-        <strong>Now with measured results.</strong> The ${esc(version)} numeric refresh has landed: every hero card below
-        carries its <strong>measured patch-to-date ranked win rate</strong> (pre-patch baseline vs the patch-to-date ranked window)
-        next to the original prediction. Scorecard: the coach called
-        <strong>${pred.measured.scorecard.directionallyRight} of ${pred.measured.scorecard.predicted}</strong>
-        predicted movers directionally right. Biggest measured movers:
-        ${pred.measured.risers.slice(0, 3).map((r) => `${r.slug} +${r.delta}`).join(', ')} ·
-        ${pred.measured.fallers.slice(0, 3).map((r) => `${r.slug} ${r.delta}`).join(', ')}.
-        ${pred.measured.newHeroes.length ? `New hero ${pred.measured.newHeroes.map((h) => `<strong>${h.slug}</strong> lands at ${h.now}% over ${h.n.toLocaleString()} games`).join('; ')}.` : ''}
         ${MEASURED_MATURITY}
+        <strong>Measured results are in.</strong> Every hero card below carries its
+        <strong>measured ranked win rate</strong> for this patch next to the original call.
+        Of the heroes the notes buffed or nerfed, the stated direction held for
+        <strong>${pred.measured.scorecard.directionallyRight} of ${pred.measured.scorecard.predicted}</strong>.
+        ${pred.measured.newHeroes.length ? `New hero ${pred.measured.newHeroes.map((h) => `<strong>${h.slug}</strong> lands at ${h.now}% over ${h.n.toLocaleString()} games`).join('; ')}.` : ''}
+        <div class="chipkey">On each card: <span class="m-hit">✓ direction held</span> the win rate moved the way the notes pointed ·
+        <span class="m-miss">✗ moved the other way</span> it moved against them · no mark = the notes did not buff or nerf that hero,
+        so there is no direction to check.</div>
       </div>` : `<div class="banner">
         <strong>Heads up:</strong> these are <strong>predictions</strong>, not measured results. The engine's
         numeric base is still the pre-${esc(version)} data, so the sim reads below are the <em>current</em>
