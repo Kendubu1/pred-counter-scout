@@ -110,6 +110,10 @@ const fallers = movers.filter((m) => m.delta < 0).sort((a, b) => a.delta - b.del
 pred.measured = {
   source: `pred.gg generalStatistic (RANKED): pre-patch baseline = ${baselineNote}; patch window = ${windows.map((w) => w.versionLabel).join(' + ')} (n>=${MIN_N} both sides for deltas). Any unlisted hotfix released inside the window is measured as part of it.`,
   patchDate: JSON.parse(fs.readFileSync(path.join(ROOT, `data/patches/${version}.json`), 'utf8')).date,
+  // How mature this read is. A day-3 window is real data but an unsettled
+  // meta; the page says so instead of presenting it as the verdict.
+  windowMatches: Math.round(Object.values(perHero).reduce((a, m) => a + m.n, 0) / 10),
+  measuredAt: new Date().toISOString(),
   scorecard: { predicted: counted, directionallyRight: right },
   risers, fallers,
   newHeroes: [],

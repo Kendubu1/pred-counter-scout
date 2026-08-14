@@ -367,6 +367,7 @@ const rankedBlock = digest.ranked ? `
       <ul class="items-list ranked-list">${(digest.ranked.changes || []).map((c) => `<li>${makeGloss()(esc(c))}</li>`).join('')}</ul>${metaRead('ranked')}
 ` : '';
 
+let MEASURED_MATURITY = '';
 const counts = groups.map(([k]) => heroes.filter(([, p]) => p.magnitude === k).length);
 
 // Chapter menu — a sticky section jumper (mirrors the v6 pages' subnav), since
@@ -527,6 +528,10 @@ const html = `<!DOCTYPE html>
     .psn-pill:hover { color: var(--text-0); border-color: var(--accent); }
     .psn-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
     h2.section { scroll-margin-top: 112px; }
+    .maturity { margin-top: 0.55rem; padding-top: 0.5rem; border-top: 1px solid var(--border);
+      font-size: 0.76rem; color: var(--text-2); }
+    .maturity.early { color: var(--text-1); }
+    .maturity.early strong { color: var(--accent); }
     @media (max-width: 560px) { .psn-label { display: none; } }
     /* Trend sort chips: re-order the hero cards + showcase, never filter. */
     .hxs { font: inherit; font-size: 0.72rem; font-weight: 600; cursor: pointer;
@@ -604,6 +609,24 @@ ${subnavBar}
       <p class="lead">Released ${esc(digest.date)} · Scout overview &amp; sim-grounded predictions ·
         <a href="${esc(digest.source)}" target="_blank" rel="noopener">official notes ↗</a></p>
 
+      ${(() => {
+        // How mature the measured window is. Early-patch data is real but the
+        // meta is still settling, so the banner says which it is rather than
+        // letting a day-three read pass for the verdict.
+        if (!pred.measured) return '';
+        const m = pred.measured;
+        const days = (m.patchDate && m.measuredAt) ? Math.max(1, Math.round((Date.parse(m.measuredAt) - Date.parse(m.patchDate)) / 86400000)) : null;
+        const matches = m.windowMatches ?? null;
+        if (!days && !matches) return '';
+        const early = matches != null && matches < 25000;
+        MEASURED_MATURITY = `<div class="maturity ${early ? 'early' : ''}">`
+          + `${days ? `${days} day${days === 1 ? '' : 's'} into the patch` : 'Patch to date'}`
+          + `${matches != null ? ` · ${matches.toLocaleString()} ranked matches measured` : ''}`
+          + (early ? ' · <strong>early read</strong> — the meta is still settling, so treat small gaps as noise and check back as the sample grows.'
+                   : ' · sample is mature enough to read small gaps.')
+          + `</div>`;
+        return '';
+      })()}
       ${pred.measured ? `<div class="banner measured-banner">
         <strong>Now with measured results.</strong> The ${esc(version)} numeric refresh has landed: every hero card below
         carries its <strong>measured patch-to-date ranked win rate</strong> (pre-patch baseline vs the patch-to-date ranked window)
@@ -613,6 +636,7 @@ ${subnavBar}
         ${pred.measured.risers.slice(0, 3).map((r) => `${r.slug} +${r.delta}`).join(', ')} ·
         ${pred.measured.fallers.slice(0, 3).map((r) => `${r.slug} ${r.delta}`).join(', ')}.
         ${pred.measured.newHeroes.length ? `New hero ${pred.measured.newHeroes.map((h) => `<strong>${h.slug}</strong> lands at ${h.now}% over ${h.n.toLocaleString()} games`).join('; ')}.` : ''}
+        ${MEASURED_MATURITY}
       </div>` : `<div class="banner">
         <strong>Heads up:</strong> these are <strong>predictions</strong>, not measured results. The engine's
         numeric base is still the pre-${esc(version)} data, so the sim reads below are the <em>current</em>
