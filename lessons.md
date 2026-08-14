@@ -2769,3 +2769,34 @@ Eight maintainer-flagged fixes:
   The lead still promised "all 12", the heading still said "The 6 families",
   step 2 still named six deity types — under 16 cards in seven blocks. When a
   data refresh changes a count, grep the page for the old count.
+
+## 2026-08-14 — 1.16 measured refresh, and a scorecard that was mislabelled all along
+- **The scorecard never graded the coach.** Each prediction's `trend` is copied
+  verbatim from the patch notes, so "the coach called 16 of 18 directionally
+  right" was crediting analysis for what is really a PATCH-EFFICACY measure:
+  did the notes' stated direction hold. Reframed on every page to "Of the
+  heroes the notes buffed or nerfed, the stated direction held for N of M",
+  with card chips "✓ direction held" / "✗ moved against the notes". The judge
+  found this via a self-contradiction, not the wording: Rampage was chipped
+  "✗ moved the other way" directly beneath our own written call that he would
+  stay #1 — which he did, at 57.7%. When a derived label contradicts authored
+  prose on the same card, suspect the label's definition, not the prose.
+- **Two data sources, two different patches.** pred.gg's version-pinned stats
+  are genuinely 1.16; omeda's public feed head sits ~10 days behind and was
+  entirely PRE-1.16, so lane boards, matchup evidence and rank splits cannot
+  be 1.16 no matter how often they are re-run. The boards now say so
+  ("collected before 1.16 — the public match feed runs behind live"). Never
+  assume a refresh advances every source.
+- **Early-window honesty.** Day-four data (6,147 matches) is real but the meta
+  is unsettled, and six of eleven "misses" moved under half a point. The
+  measured block now carries `windowMatches` + `measuredAt`, and the banner
+  LEADS with maturity ("4 days into the patch · EARLY READ") before the
+  verdict — reading order matters as much as the caveat existing.
+- The pinned rubric still documented v0-era commands and shot paths, which is
+  where the judge's stale v0 references came from. Fix the instructions, not
+  just the code.
+- 1.16 measured so far: Rampage 57.7% (+2.2 — the patch did not address him,
+  as called), Greystone +3.7 (shred-bugfix call landed), and the biggest
+  risers took NO balance changes at all — Shinbi +6.3, Yin +6.2, systemic
+  winners of the Daybreak v7 map/jungle rework. Per-hero prediction grading
+  structurally cannot catch that; a systems-level read should accompany it.
