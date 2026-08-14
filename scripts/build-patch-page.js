@@ -587,7 +587,7 @@ const html = `<!DOCTYPE html>
       *, *::before, *::after { transition: none !important; animation: none !important; }
       .hx:hover { transform: none; }
     }
-  .measured .m-hit{color:var(--green,#4caf50);font-weight:700;} .measured .m-miss{color:var(--gold,#e0a93e);font-weight:700;}
+  .measured .m-hit, .chipkey .m-hit{color:var(--green,#4caf50);font-weight:700;} .measured .m-miss, .chipkey .m-miss{color:var(--gold,#e0a93e);font-weight:700;}
   .measured-banner{border-color:var(--green,#4caf50);}
   </style>
 </head>
@@ -635,9 +635,9 @@ ${subnavBar}
         Of the heroes the notes buffed or nerfed, the stated direction held for
         <strong>${pred.measured.scorecard.directionallyRight} of ${pred.measured.scorecard.predicted}</strong>.
         ${pred.measured.newHeroes.length ? `New hero ${pred.measured.newHeroes.map((h) => `<strong>${h.slug}</strong> lands at ${h.now}% over ${h.n.toLocaleString()} games`).join('; ')}.` : ''}
-        <div class="chipkey">On each card: <span class="m-hit">✓ direction held</span> the win rate moved the way the notes pointed ·
-        <span class="m-miss">✗ moved the other way</span> it moved against them · no mark = the notes did not buff or nerf that hero,
-        so there is no direction to check.</div>
+        <div class="chipkey">On each card: <span class="m-hit">✓ direction held</span> — the win rate moved the way the notes pointed ·
+        <span class="m-miss">✗ moved against the notes</span> — it moved the other way ·
+        no mark — the notes did not buff or nerf that hero, so there is no direction to check.</div>
       </div>` : `<div class="banner">
         <strong>Heads up:</strong> these are <strong>predictions</strong>, not measured results. The engine's
         numeric base is still the pre-${esc(version)} data, so the sim reads below are the <em>current</em>
