@@ -463,7 +463,7 @@
     <a class="patchstrip" href="../patch-1.16.html" aria-label="Read the patch 1.16 review">
       <span class="ec-icon" data-bic="patch-strategy" data-bic-size="17"></span>
       <b>Patch <span id="ecPatchVer">1.16</span> review <span class="ec-tag">new</span></b>
-      <span class="ps-sub">New hero Scarlett · Shrines objective · carries flattened · predictions inside</span>
+      <span class="ps-sub">New hero Scarlett · Shrines objective · carries flattened · measured results inside</span>
       <span class="ec-cta">→</span>
     </a>
     <div class="browse-head">Winning right now</div>
@@ -610,7 +610,15 @@ async function getArtifact(slug) {
   if (!ART.has(slug)) ART.set(slug, getJson(`../../data/artifacts/${slug}.json`).catch(() => null));
   return ART.get(slug);
 }
-let MATRIX = null, PATCH_STATE = null;
+let MATRIX = null, PATCH_STATE = null, LATEST_PATCH = null;
+// The lane boards come from the public match feed, which runs days behind live.
+// When it hasn't reached the newest reviewed patch yet, say so plainly rather
+// than letting a stale window read as current.
+function metaWindowNote() {
+  if (!LATEST_PATCH || !META || !META.patch) return '';
+  if (String(META.patch).includes(String(LATEST_PATCH))) return '';
+  return ` · <b>collected before ${LATEST_PATCH}</b> — the public match feed runs behind live, so these boards do not include ${LATEST_PATCH} games yet`;
+}
 async function getMatrix() {
   if (!MATRIX) MATRIX = await getJson('../../data/artifacts/matchup-matrix.json').catch(() => null);
   return MATRIX;
@@ -790,7 +798,7 @@ async function renderLaneDetail() {
   box.innerHTML = `
     <div class="lanepanel">
       <h2>${LANE_LABELS[role]} · lane room</h2>
-      <div class="lp-sub">${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</div>
+      <div class="lp-sub">${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks${metaWindowNote()}</div>
       <div class="lmode">
         <button data-m="first" class="${laneMode === 'first' ? 'active' : ''}"><span data-bic="counter-pick" data-bic-size="15"></span> picking first</button>
         <button data-m="counter" class="${laneMode === 'counter' ? 'active' : ''}"><span data-bic="matchup" data-bic-size="15"></span> countering their pick</button>
@@ -875,7 +883,7 @@ function renderMetaboard() {
   $('#metaboard').innerHTML = `
     <div class="mb-head">
       <h2>The meta board</h2>
-      <span class="mb-sub">each lane's strongest picks by <b>win rate</b> (small samples adjusted toward average) · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks</span>
+      <span class="mb-sub">each lane's strongest picks by <b>win rate</b> · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks${metaWindowNote()}</span>
     </div>
     <details class="sim-collapse uxlegend" id="uxLegend"><summary>What the win-rate colors &amp; pick tags mean</summary><div class="lp-sub">${LEGEND_HTML}</div></details>
     <div class="lanes">
@@ -1699,7 +1707,9 @@ window.onpopstate = route;
   const allSum = document.querySelector('#allHeroes > summary .t');
   if (allSum) allSum.textContent = `Browse all ${INDEX.heroes.length} heroes`;
   await getMatrix();
-  PATCH_STATE = (await getJson('../../data/game-data/hero-patch-state.json').catch(() => null))?.heroes ?? {};
+  const _ps = await getJson('../../data/game-data/hero-patch-state.json').catch(() => null);
+  PATCH_STATE = _ps?.heroes ?? {};
+  LATEST_PATCH = _ps?.patch ?? null;
   renderRolebar();
   renderMetaboard();
   let selIdx = -1;
