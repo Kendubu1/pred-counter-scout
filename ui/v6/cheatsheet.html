@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cheat Sheet — before the queue · Pred Scout</title>
+<style>
+  :root {
+    --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#82829a;
+    --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
+    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px; --maxw:980px;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  a { color:var(--blue); text-decoration:none; }
+  img { display:block; }
+  button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
+  .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:rgba(10,10,15,.78); border-bottom:1px solid var(--border); }
+  .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
+  .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .spacer { flex:1; }
+  .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
+  .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .navlink:hover { color:var(--text-0); }
+  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .subnav::-webkit-scrollbar { display:none; }
+  .subnav:empty { display:none; }
+  .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; text-transform:capitalize; -webkit-appearance:none; appearance:none; }
+  .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:1.25rem 1rem 4rem; }
+  h1 { font-size:1.7rem; font-weight:800; }
+  .sub { color:var(--text-1); margin-top:.3rem; display:flex; gap:.4rem; flex-wrap:wrap; }
+  .chip { white-space:nowrap; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.13rem .62rem; font-size:.76rem; color:var(--text-1); }
+  .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; scroll-margin-top:calc(var(--toph, 96px) + 10px); }
+  .card h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.35rem; }
+  .card .lede { font-size:.82rem; color:var(--text-1); margin-bottom:.8rem; }
+  .scope { font-size:.76rem; color:var(--text-2); border:1px solid var(--border); background:var(--bg-1); border-radius:8px; padding:.45rem .7rem; margin-bottom:1rem; line-height:1.55; }
+  .scope > summary { cursor:pointer; font-weight:600; color:var(--text-1); list-style:none; }
+  .scope > summary::-webkit-details-marker { display:none; }
+  .scope > summary::before { content:"▸ "; color:var(--accent); }
+  .scope[open] > summary::before { content:"▾ "; }
+  .scope b { color:var(--text-1); }
+
+  /* ── ban board ─────────────────────────────────────────────── */
+  .brow { display:grid; grid-template-columns:30px 1fr auto; gap:.6rem; align-items:center; padding:.5rem 0; border-bottom:1px solid var(--border); }
+  .brow:last-child { border-bottom:none; }
+  .brow img { width:30px; height:30px; border-radius:7px; object-fit:cover; background:var(--bg-3); }
+  .bname { font-weight:700; display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; }
+  .bmeta { font-size:.72rem; color:var(--text-2); font-variant-numeric:tabular-nums; margin-top:.15rem; }
+  .bwr { font-weight:800; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .tag { font-size:.64rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase; border-radius:99px; padding:.1rem .45rem; border:1px solid; }
+  .tag.ban { color:var(--red); border-color:var(--red); background:rgba(255,90,90,.1); }
+  .tag.contested { color:var(--gold); border-color:var(--gold); background:rgba(240,180,41,.1); }
+  .tag.free { color:var(--green); border-color:var(--green); background:rgba(0,196,140,.1); }
+
+  /* ── lane picks ────────────────────────────────────────────── */
+  .lanes { display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:.7rem; }
+  .lane { background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:.7rem .8rem; }
+  .lane h3 { font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--accent); margin-bottom:.45rem; }
+  .pick { display:flex; align-items:center; gap:.45rem; padding:.28rem 0; font-size:.8rem; width:100%;
+    background:transparent; border:0; color:inherit; text-align:left; border-radius:6px; }
+  button.pick:hover { color:var(--text-0); }
+  .pick img { width:24px; height:24px; border-radius:6px; object-fit:cover; background:var(--bg-3); }
+  .pick .pn { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pick .pw { font-weight:800; font-variant-numeric:tabular-nums; }
+  .pick .pd { font-size:.68rem; font-variant-numeric:tabular-nums; width:42px; text-align:right; }
+  .up { color:var(--green); } .down { color:var(--red); } .flat { color:var(--text-2); }
+
+  /* ── hero trend ────────────────────────────────────────────── */
+  .picker { display:flex; gap:.4rem; flex-wrap:wrap; align-items:center; margin-bottom:.7rem; }
+  .picker input { flex:1; min-width:140px; font:inherit; font-size:.85rem; background:var(--bg-2); color:var(--text-0);
+    border:1px solid var(--border); border-radius:8px; padding:.5rem .7rem; min-height:40px; }
+  .hgrid { display:flex; gap:.35rem; overflow-x:auto; padding-bottom:.35rem; scrollbar-width:thin; }
+  .hbtn { flex:none; background:var(--bg-2); border:1px solid var(--border); border-radius:8px; padding:.25rem; line-height:0; }
+  .hbtn.active { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset; }
+  .hbtn img { width:34px; height:34px; border-radius:6px; object-fit:cover; background:var(--bg-3); }
+  .series { display:flex; gap:.4rem; flex-wrap:wrap; margin:.7rem 0 .3rem; }
+  .sbtn { font-size:.72rem; font-weight:700; background:transparent; border:1px solid var(--border); border-radius:99px;
+    padding:.25rem .7rem; color:var(--text-2); min-height:40px; display:inline-flex; align-items:center; gap:.35rem; }
+  .sbtn .dot { width:9px; height:9px; border-radius:50%; background:currentColor; }
+  .sbtn[aria-pressed="true"] { color:var(--text-0); border-color:currentColor; background:var(--bg-2); }
+  .sbtn.s-wr[aria-pressed="true"] { color:var(--green); }
+  .sbtn.s-pick[aria-pressed="true"] { color:var(--blue); }
+  .sbtn.s-ban[aria-pressed="true"] { color:var(--red); }
+  .chartwrap { overflow-x:auto; }
+  svg.chart { width:100%; height:auto; display:block; min-width:280px; touch-action:pan-y; }
+  .chart text { font:11px Inter,-apple-system,sans-serif; fill:var(--text-2); }
+  .chart .axis { stroke:var(--border); }
+  .chart .mid { stroke:var(--border); stroke-dasharray:3 4; }
+  .chart .pt { cursor:pointer; }
+  .chart .marker { fill:var(--gold); }
+  .readout { margin-top:.6rem; background:var(--bg-2); border:1px solid var(--border); border-radius:8px; padding:.55rem .75rem; font-size:.8rem; color:var(--text-1); min-height:44px; }
+  .readout b { color:var(--text-0); }
+  .readout .chg { display:block; margin-top:.25rem; font-size:.74rem; color:var(--text-2); }
+
+  /* ── comp ──────────────────────────────────────────────────── */
+  .comp { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:.7rem; }
+  .cbox { background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:.7rem .8rem; }
+  .cbox h4 { font-size:.7rem; text-transform:uppercase; letter-spacing:.07em; color:var(--text-2); margin-bottom:.4rem; }
+  .cbox li { list-style:none; font-size:.8rem; padding:.2rem 0; color:var(--text-1); }
+  .cbox li b { color:var(--text-0); }
+  .foot { margin-top:1.2rem; font-size:.74rem; color:var(--text-2); line-height:1.6; }
+  @media (max-width:600px) {
+    body { font-size:15px; }
+    /* tap targets: >=44px hit area on touch (Apple HIG 44 / WCAG floor 24).
+       Shared union list across all pages (absent selectors are no-ops). */
+    .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle,
+    .sbtn, .hbtn {
+      min-height:44px; display:inline-flex; align-items:center; justify-content:center;
+    }
+    .pick { justify-content:flex-start; }
+    .snpill { font-size:.8rem; }
+    .navlink { border-radius:10px; }
+    .top-inner { padding:.5rem .7rem; gap:.3rem; }
+    .wordmark { font-size:.82rem; white-space:nowrap; }
+    h1 { font-size:1.4rem; }
+    .card { padding:.9rem .85rem; }
+  }
+  @media (prefers-reduced-motion:reduce) { * { animation:none !important; transition:none !important; scroll-behavior:auto !important; } }
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <a class="wordmark" href="./"><img src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</a>
+  <span class="spacer"></span>
+  <a class="navlink" href="./">Pick &amp; Build</a>
+  <a class="navlink active" href="cheatsheet.html">Cheat Sheet</a>
+  <a class="navlink" href="coach.html">Coach</a>
+</div><div class="subnav" id="subnav"></div></div>
+<div class="wrap" id="page">loading…</div>
+<script>
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const heroImg = (s) => `../img/heroes/${s}.webp`;
+const j = (p) => fetch(p).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+const f1 = (n) => (Math.round(n * 10) / 10).toFixed(1);
+
+// The four version windows we hold pinned stats for, oldest first. `notes` marks
+// whether that version shipped official patch notes — 1.15.4 did not, and saying
+// so is more useful than leaving a silent gap on the timeline.
+const WINDOWS = [
+  { v: '1.15', file: '../../data/aggregates/predgg-general-stats-1.15.json', digest: '../../data/patches/1.15.json', notes: true },
+  { v: '1.15.3', file: '../../data/aggregates/predgg-general-stats-1.15.3.json', digest: '../../data/patches/1.15.3.json', notes: true },
+  { v: '1.15.4', file: '../../data/aggregates/predgg-general-stats-1.15.4.json', digest: null, notes: false },
+  { v: '1.16', file: '../../data/aggregates/predgg-general-stats-1.16.json', digest: '../../data/patches/1.16.json', notes: true },
+];
+const LANES = ['carry', 'midlane', 'offlane', 'jungle', 'support'];
+const LANE_LABEL = { carry: 'Carry', midlane: 'Mid', offlane: 'Offlane', jungle: 'Jungle', support: 'Support' };
+const SERIES = [
+  { k: 'wr', label: 'Win rate', cls: 's-wr', color: 'var(--green)' },
+  { k: 'pick', label: 'Pick rate', cls: 's-pick', color: 'var(--blue)' },
+  { k: 'ban', label: 'Ban rate', cls: 's-ban', color: 'var(--red)' },
+];
+
+const S = { data: [], index: [], changesByVersion: {}, duos: null, kits: null, hero: null, on: { wr: true, pick: false, ban: true } };
+
+/** Rates for one hero in one window: win %, and pick/ban as a share of the
+ *  window's matches (matchesPlayed sums to 10 per match, so /10 is the count). */
+function ratesFor(win, slug) {
+  const h = win.heroes && win.heroes[slug];
+  if (!h || !h.overall || !h.overall.matchesPlayed) return null;
+  const o = h.overall;
+  return {
+    wr: o.winrate,
+    pick: (100 * o.matchesPlayed) / win.matches,
+    ban: (100 * o.matchesBanned) / win.matches,
+    n: o.matchesPlayed,
+  };
+}
+
+async function load() {
+  const [index, duos, kits] = await Promise.all([
+    j('../../data/artifacts/index.json'), j('../../data/game-data/duo-synergies.json'), j('../../data/game-data/kit-profiles.json'),
+  ]);
+  S.index = (index && (Array.isArray(index) ? index : index.heroes)) || [];
+  S.duos = duos || {}; S.kits = (kits && kits.heroes) || {};
+  const files = await Promise.all(WINDOWS.map((w) => j(w.file)));
+  const digests = await Promise.all(WINDOWS.map((w) => (w.digest ? j(w.digest) : null)));
+  S.data = WINDOWS.map((w, i) => {
+    const g = files[i];
+    if (!g) return null;
+    const played = Object.values(g.heroes).reduce((a, h) => a + ((h.overall && h.overall.matchesPlayed) || 0), 0);
+    return { ...w, heroes: g.heroes, matches: Math.round(played / 10) };
+  }).filter(Boolean);
+  digests.forEach((d, i) => {
+    if (!d) return;
+    S.changesByVersion[WINDOWS[i].v] = Object.fromEntries((d.heroes || []).map((h) => [h.slug, h]));
+  });
+}
+
+const current = () => S.data[S.data.length - 1];
+
+/** Heroes worth a ban, by measured strength in the current window. The verdict
+ *  compares how strong a hero is against how often the lobby already removes
+ *  them — a strong hero nobody bans is the one worth spending a ban on. */
+function banBoard() {
+  const cur = current();
+  const rows = Object.keys(cur.heroes).map((slug) => {
+    const r = ratesFor(cur, slug);
+    return r && r.n >= 300 ? { slug, name: cur.heroes[slug].name, ...r } : null;
+  }).filter(Boolean).sort((a, b) => b.wr - a.wr);
+
+  return rows.slice(0, 8).map((r) => {
+    let tag = '', why = '';
+    if (r.wr >= 52 && r.ban < 25) { tag = '<span class="tag ban">under-banned</span>'; why = 'winning well and left open in most drafts'; }
+    else if (r.ban >= 40) { tag = '<span class="tag contested">usually banned</span>'; why = 'the lobby removes this one for you more often than not'; }
+    else if (r.wr < 50) { tag = '<span class="tag free">not the problem</span>'; why = 'banned often for its reputation, not its results'; }
+    return `<div class="brow">
+      <img loading="lazy" src="${heroImg(r.slug)}" alt="" onerror="this.style.visibility='hidden'">
+      <div><div class="bname">${esc(r.name)} ${tag}</div>
+        <div class="bmeta">picked in ${f1(r.pick)}% of games · banned in ${f1(r.ban)}%${why ? ' · ' + why : ''}</div></div>
+      <div class="bwr">${f1(r.wr)}%</div>
+    </div>`;
+  }).join('');
+}
+
+/** Per-lane picks from the current window, with movement against the window
+ *  before it so a hero on the way up is distinguishable from one on the way down. */
+function lanePicks() {
+  const cur = current(), prev = S.data[S.data.length - 2];
+  return LANES.map((lane) => {
+    const rows = Object.keys(cur.heroes).map((slug) => {
+      const c = cur.heroes[slug].byRole && cur.heroes[slug].byRole[lane];
+      if (!c || c.matchesPlayed < 200) return null;
+      const p = prev && prev.heroes[slug] && prev.heroes[slug].byRole && prev.heroes[slug].byRole[lane];
+      return { slug, name: cur.heroes[slug].name, wr: c.winrate, n: c.matchesPlayed, d: p && p.winrate != null ? c.winrate - p.winrate : null };
+    }).filter(Boolean).sort((a, b) => b.wr - a.wr).slice(0, 3);
+    if (!rows.length) return '';
+    return `<div class="lane"><h3>${LANE_LABEL[lane]}</h3>${rows.map((r) => {
+      const cls = r.d == null ? 'flat' : r.d > 0.5 ? 'up' : r.d < -0.5 ? 'down' : 'flat';
+      const arrow = r.d == null ? '—' : (r.d > 0 ? '+' : '') + f1(r.d);
+      return `<button class="pick" data-hero="${esc(r.slug)}">
+        <img loading="lazy" src="${heroImg(r.slug)}" alt="" onerror="this.style.visibility='hidden'">
+        <span class="pn">${esc(r.name)}</span><span class="pw">${f1(r.wr)}%</span>
+        <span class="pd ${cls}" title="change since ${esc(prev ? prev.v : 'the previous patch')}">${arrow}</span></button>`;
+    }).join('')}</div>`;
+  }).join('');
+}
+
+/** The trend chart: one line per enabled series across the pinned windows, with
+ *  a marker on any window whose notes changed this hero. Pure inline SVG. */
+function chart(slug) {
+  const pts = S.data.map((w) => ({ v: w.v, r: ratesFor(w, slug), notes: w.notes }));
+  const on = SERIES.filter((s) => S.on[s.k]);
+  const vals = pts.flatMap((p) => (p.r ? on.map((s) => p.r[s.k]) : [])).filter((v) => v != null);
+  if (!vals.length || !on.length) return '<p class="lede">Enable a series to draw the chart.</p>';
+  const lo = Math.max(0, Math.floor((Math.min(...vals) - 4) / 5) * 5);
+  const hi = Math.min(100, Math.ceil((Math.max(...vals) + 4) / 5) * 5);
+  const W = 640, H = 240, L = 34, R = 12, T = 14, B = 30;
+  const x = (i) => L + (i * (W - L - R)) / Math.max(1, pts.length - 1);
+  const y = (v) => T + ((hi - v) / (hi - lo)) * (H - T - B);
+
+  let g = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Win, pick and ban rate across recent patches">`;
+  for (let i = 0; i <= 4; i++) {
+    const v = lo + ((hi - lo) * i) / 4;
+    g += `<line class="axis" x1="${L}" y1="${y(v).toFixed(1)}" x2="${W - R}" y2="${y(v).toFixed(1)}"></line>`
+      + `<text x="${L - 6}" y="${(y(v) + 3.5).toFixed(1)}" text-anchor="end">${Math.round(v)}%</text>`;
+  }
+  if (lo < 50 && hi > 50) g += `<line class="mid" x1="${L}" y1="${y(50).toFixed(1)}" x2="${W - R}" y2="${y(50).toFixed(1)}"></line>`;
+  pts.forEach((p, i) => {
+    g += `<text x="${x(i).toFixed(1)}" y="${H - 10}" text-anchor="middle">${esc(p.v)}</text>`;
+    if (S.changesByVersion[p.v] && S.changesByVersion[p.v][slug]) {
+      g += `<polygon class="marker" points="${x(i).toFixed(1)},${T - 8} ${(x(i) - 5).toFixed(1)},${T - 1} ${(x(i) + 5).toFixed(1)},${T - 1}"><title>Balance change in ${esc(p.v)}</title></polygon>`;
+    }
+  });
+  on.forEach((s) => {
+    const d = pts.map((p, i) => (p.r ? `${i === 0 || !pts[i - 1].r ? 'M' : 'L'}${x(i).toFixed(1)},${y(p.r[s.k]).toFixed(1)}` : '')).join(' ');
+    g += `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2.5" stroke-linejoin="round"></path>`;
+    pts.forEach((p, i) => {
+      if (!p.r) return;
+      g += `<circle class="pt" cx="${x(i).toFixed(1)}" cy="${y(p.r[s.k]).toFixed(1)}" r="9" fill="transparent" data-i="${i}"></circle>`
+        + `<circle cx="${x(i).toFixed(1)}" cy="${y(p.r[s.k]).toFixed(1)}" r="4" fill="${s.color}" pointer-events="none"></circle>`;
+    });
+  });
+  return g + '</svg>';
+}
+
+function readout(slug, i) {
+  const w = S.data[i] || current();
+  const r = ratesFor(w, slug);
+  if (!r) return `<div class="readout">No ranked games recorded for this hero in ${esc(w.v)}.</div>`;
+  const chg = S.changesByVersion[w.v] && S.changesByVersion[w.v][slug];
+  return `<div class="readout"><b>${esc(w.v)}</b> — win ${f1(r.wr)}% · picked ${f1(r.pick)}% · banned ${f1(r.ban)}%
+    <span style="color:var(--text-2)">(${r.n.toLocaleString()} ranked games)</span>
+    ${!w.notes ? '<span class="chg">No patch notes shipped for this version — it was an unlisted balance hotfix.</span>' : ''}
+    ${chg ? `<span class="chg">Changed this patch: ${esc((chg.changes || []).slice(0, 2).join(' · '))}</span>` : ''}</div>`;
+}
+
+function compFor(slug) {
+  const kit = S.kits[slug] || {};
+  const entry = S.duos[slug];
+  let allies = [];
+  if (entry) for (const role of Object.keys(entry)) allies = allies.concat(entry[role] || []);
+  allies = allies.sort((a, b) => (b.synergyScore || 0) - (a.synergyScore || 0)).slice(0, 3);
+  return `<div class="comp">
+    <div class="cbox"><h4>How this hero wins</h4><ul>
+      ${kit.winCondition ? `<li>${esc(kit.winCondition)}</li>` : '<li>No kit profile recorded yet.</li>'}
+      ${kit.powerSpike ? `<li>Power spike: <b>${esc(kit.powerSpike)}</b></li>` : ''}
+      ${kit.archetype ? `<li>Archetype: <b>${esc(kit.archetype)}</b></li>` : ''}
+    </ul></div>
+    <div class="cbox"><h4>Pairs well with</h4><ul>
+      ${allies.length ? allies.map((a) => `<li><b>${esc(a.allyName || a.ally)}</b> — ${esc((a.reasons || [])[0] || 'kit synergy')}</li>`).join('')
+        : '<li>No synergy pairing recorded yet.</li>'}
+    </ul></div>
+  </div>`;
+}
+
+function renderHero() {
+  const slug = S.hero;
+  const name = (S.index.find((h) => h.slug === slug) || {}).name || slug;
+  document.getElementById('trendTitle').textContent = name;
+  document.getElementById('chart').innerHTML = chart(slug);
+  document.getElementById('readoutBox').innerHTML = readout(slug, S.data.length - 1);
+  document.getElementById('compBox').innerHTML = compFor(slug);
+  document.querySelectorAll('.hbtn').forEach((b) => b.classList.toggle('active', b.dataset.hero === slug));
+  document.querySelectorAll('#chart .pt').forEach((c) => {
+    const show = () => { document.getElementById('readoutBox').innerHTML = readout(slug, +c.dataset.i); };
+    c.addEventListener('mouseenter', show); c.addEventListener('click', show);
+  });
+}
+
+function selectHero(slug) { S.hero = slug; renderHero(); }
+
+(async () => {
+  await load();
+  if (!S.data.length) { document.getElementById('page').textContent = 'no patch statistics committed yet'; return; }
+  const cur = current();
+  const roster = S.index.filter((h) => cur.heroes[h.slug]).sort((a, b) => a.name.localeCompare(b.name));
+  S.hero = (Object.keys(cur.heroes).map((s) => ({ s, r: ratesFor(cur, s) })).filter((x) => x.r && x.r.n >= 300)
+    .sort((a, b) => b.r.wr - a.r.wr)[0] || { s: roster[0] && roster[0].slug }).s;
+
+  document.getElementById('page').innerHTML = `
+    <h1>Cheat sheet</h1>
+    <div class="sub"><span class="chip">Patch ${esc(cur.v)}</span>
+      <span class="chip">${cur.matches.toLocaleString()} ranked matches</span>
+      <span class="chip">ranked only, all ranks</span></div>
+    <details class="scope"><summary>Where these numbers come from</summary>
+      Win, pick and ban rates are measured from ranked games on the current patch and refreshed from the
+      committed snapshots — no live calls. Pick and ban rates are shares of all ranked matches in the window.
+      Lane rows only appear once a hero has 200+ ranked games in that lane, and the ban board needs 300+ overall,
+      so a tiny sample cannot reach either list. Pairings are read from kit synergy, not from measured duo win rates.
+    </details>
+
+    <div class="card" id="sec-ban"><h2>Who to ban</h2>
+      <p class="lede">The strongest heroes in the current patch, with how often the lobby already removes them.
+        A hero winning well that few people ban is where a ban buys the most.</p>
+      ${banBoard()}</div>
+
+    <div class="card" id="sec-lanes"><h2>Who to pick, by lane</h2>
+      <p class="lede">Best measured win rate per lane this patch, with movement since ${esc(S.data.length > 1 ? S.data[S.data.length - 2].v : 'the last patch')}. Tap any hero to chart it below.</p>
+      <div class="lanes">${lanePicks()}</div></div>
+
+    <div class="card" id="sec-trend"><h2>Hero trend — <span id="trendTitle"></span></h2>
+      <p class="lede">Win, pick and ban rate across the last four patch windows. A gold triangle marks a patch that changed this hero.</p>
+      <div class="picker"><input id="heroSearch" type="search" placeholder="Search a hero…" aria-label="Search a hero"></div>
+      <div class="hgrid" id="heroGrid">${roster.map((h) => `<button class="hbtn" data-hero="${esc(h.slug)}" title="${esc(h.name)}" aria-label="${esc(h.name)}"><img loading="lazy" src="${heroImg(h.slug)}" alt="" onerror="this.style.visibility='hidden'"></button>`).join('')}</div>
+      <div class="series" role="group" aria-label="Chart series">
+        ${SERIES.map((s) => `<button class="sbtn ${s.cls}" data-series="${s.k}" aria-pressed="${S.on[s.k]}"><span class="dot"></span>${s.label}</button>`).join('')}
+      </div>
+      <div class="chartwrap" id="chart"></div>
+      <div id="readoutBox"></div>
+    </div>
+
+    <div class="card" id="sec-comp"><h2>Drafting around the pick</h2>
+      <p class="lede">What this hero needs from the rest of the draft.</p>
+      <div id="compBox"></div></div>
+
+    <p class="foot">Ban and pick rates are shares of ranked matches in the current window. Lane movement compares
+      like-for-like lane win rates between the last two patch windows.</p>`;
+
+  document.getElementById('heroGrid').addEventListener('click', (e) => {
+    const b = e.target.closest('.hbtn'); if (b) selectHero(b.dataset.hero);
+  });
+  document.getElementById('sec-lanes').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-hero]');
+    if (b) { selectHero(b.dataset.hero); document.getElementById('sec-trend').scrollIntoView({ block: 'start' }); }
+  });
+  document.querySelectorAll('.sbtn').forEach((b) => b.addEventListener('click', () => {
+    const k = b.dataset.series;
+    if (S.on[k] && SERIES.filter((s) => S.on[s.k]).length === 1) return; // never leave the chart empty
+    S.on[k] = !S.on[k]; b.setAttribute('aria-pressed', String(S.on[k])); renderHero();
+  }));
+  document.getElementById('heroSearch').addEventListener('input', (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    let first = null;
+    document.querySelectorAll('.hbtn').forEach((b) => {
+      const h = roster.find((r) => r.slug === b.dataset.hero);
+      const hit = !q || (h && h.name.toLowerCase().includes(q));
+      b.style.display = hit ? '' : 'none';
+      if (hit && !first) first = b.dataset.hero;
+    });
+    if (q && first) selectHero(first);
+  });
+  renderHero();
+})();
+</script>
+<script defer src="nav.js"></script>
+</body>
+</html>

@@ -32,6 +32,7 @@ const SURFACES = [
   { id: 'about', url: `/${UI_DIR}/about.html` },
   // v6-only surface (the v0 staging copy doesn't have it) — skip if absent.
   { id: 'livedraft', url: `/${UI_DIR}/livedraft.html` },
+  { id: 'cheatsheet', url: `/${UI_DIR}/cheatsheet.html` },
   // Latest patch review page (lives at ui/, shared by both UI dirs).
   ...(() => {
     // Compare on the extracted version, not the filename — "patch-1.15.html"

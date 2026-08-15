@@ -34,7 +34,7 @@ const TARGET_V0 = UI_DIR === 'ui/v0';
 const pagePath = (p: string) => path.join(ROOT, UI_DIR, p);
 // livedraft.html is a v6 surface; only audit pages that exist in the target dir
 // (the v0 staging copy has only the original four), so v0 stays green.
-const PAGES = ['index.html', 'coach.html', 'squad.html', 'about.html', 'livedraft.html'].filter((p) => existsSync(pagePath(p)));
+const PAGES = ['index.html', 'coach.html', 'squad.html', 'about.html', 'livedraft.html', 'cheatsheet.html'].filter((p) => existsSync(pagePath(p)));
 const AUDIT_OUT = TARGET_V0 ? 'data/aggregates/ui-audit-v0.json' : 'data/aggregates/ui-audit.json';
 
 const MOBILE_FONT_FLOOR = 14;     // px — below this, mobile body text is too small
