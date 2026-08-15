@@ -41,6 +41,21 @@ async function pull(slug: string, versions: string[], role?: string): Promise<St
 
 const wr = (c: StatCell | null) => c && c.matchesPlayed ? +(100 * c.matchesWon / c.matchesPlayed).toFixed(1) : null;
 
+// matchesBanned is stored per (hero, role) partition with the SAME total copied
+// into each of the five role rows, so an unfiltered query SUMS them and reports
+// 5x the real number. Verified 2026-08-14: the unfiltered value is exactly 5.00x
+// the role-filtered one on every hero tested, the role-filtered value is
+// identical across roles (bans are not role-scoped), and dividing by 5 puts the
+// league total at 3.87 bans per ranked match — i.e. a 4-ban draft. We therefore
+// read the true count from a role-filtered query and keep the raw value plus the
+// observed ratio so the day pred.gg fixes this is visible in the data.
+async function trueBans(slug: string, versions: string[]): Promise<number | null> {
+  const d = await gql<{ hero: { generalStatistic: { result: { matchesBanned: number } | null } | null } | null }>(
+    `{ hero(by: { slug: "${slug}" }) {
+      generalStatistic(filter: { roles: [MIDLANE], gameModes: [RANKED], versions: [${versions.map((v) => `"${v}"`).join(', ')}] }) { result { matchesBanned } } } }`);
+  return d.hero?.generalStatistic?.result?.matchesBanned ?? null;
+}
+
 async function main() {
   if (!hasCredentials()) { console.error('needs PREDGG_CLIENT_ID/SECRET in env'); process.exit(1); }
   let versions: string[]; let label: string;
@@ -67,6 +82,15 @@ async function main() {
   for (const h of heroes) {
     const overall = await pull(h.slug, versions);
     await sleep(350);
+    const bansTrue = await trueBans(h.slug, versions);
+    await sleep(350);
+    if (overall && bansTrue != null) {
+      const ratio = bansTrue ? +(overall.matchesBanned / bansTrue).toFixed(2) : null;
+      if (ratio != null && ratio !== 5 && bansTrue > 50) console.warn(`  ! ${h.slug}: ban partition ratio ${ratio}, expected 5 — pred.gg may have changed the field`);
+      (overall as any).matchesBannedRaw = overall.matchesBanned;
+      (overall as any).banPartitionRatio = ratio;
+      overall.matchesBanned = bansTrue;
+    }
     const byRole: Record<string, StatCell & { winrate: number | null }> = {};
     for (const role of rolesOf.get(h.slug) ?? []) {
       const c = await pull(h.slug, versions, role);
@@ -81,6 +105,7 @@ async function main() {
   const file = process.env.OUT ?? 'data/aggregates/predgg-general-stats.json';
   writeFileSync(path.join(ROOT, file), JSON.stringify({
     source: 'pred.gg generalStatistic (open endpoint, RANKED only)',
+    banNote: 'matchesBanned is the TRUE count, read from a role-filtered query. The unfiltered field sums the same total across five role partitions and reads 5x high; matchesBannedRaw preserves it and banPartitionRatio records the observed factor.',
     fetchedAt: new Date().toISOString(),
     versions, versionLabel: label,
     heroes: out,

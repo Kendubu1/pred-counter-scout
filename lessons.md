@@ -2800,3 +2800,33 @@ Eight maintainer-flagged fixes:
   risers took NO balance changes at all — Shinbi +6.3, Yin +6.2, systemic
   winners of the Daybreak v7 map/jungle rework. Per-hero prediction grading
   structurally cannot catch that; a systems-level read should accompany it.
+
+## 2026-08-14 (later) — "you see data on the bans?" → three defects
+One question about ban data surfaced three separate problems. Sanity-check a
+field against a quantity it cannot exceed BEFORE reporting it.
+- **matchesBanned reads 5x high.** It is stored per (hero, role) with the same
+  total copied into all five role rows, so an unfiltered query sums them. The
+  tell was arithmetic: Adele "banned" 17,085 times in a 6,147-match window,
+  when a hero is bannable at most once per match. Role-filtered queries return
+  exactly 1/5, identical across roles; dividing by five puts the league at
+  ~3.9 bans per ranked match, i.e. a 4-ban draft. genstats now reads the
+  role-filtered count, keeps the raw, and records banPartitionRatio so a
+  provider-side fix shows up in data instead of silently moving every number.
+  Every ban figure reported before this was 5x — ordering was right, scale was
+  not.
+- **Pinned "closed" windows were snapshotted while still open.** 1.15.3/1.15.4
+  were pulled 08-07 but 1.15.4 ran until 1.16 shipped on 08-11: 89,907 matches
+  captured vs 111,589 final. The 1.16 scorecard was grading against a
+  truncated baseline. Re-pulling moved it 10/21 -> 13/21. A version window is
+  only final once the NEXT version ships.
+- **The unpinned family pull follows the newest version.** Re-running
+  `npm run genstats` with no VERSIONS silently rewrote the 1.15-family
+  baseline file with 1.16-only data, which made the 1.15.3 baseline
+  (family minus window) negative. Nothing shipped because the thin-data guard
+  refused to write a 0-of-18 scorecard — a guard added for a different reason
+  caught this one. Fixed by pinning an explicit pre-1.15.3 file so no scorecard
+  depends on family arithmetic; the family file now spans 152-158 and
+  reconciles exactly against the pinned parts (131,211 + 5,930 + 111,589 +
+  6,147 = 254,877).
+- 1.15.3 still scores 16/18 on the corrected explicit baseline — the headline
+  survived the repair, which is the point of re-deriving rather than patching.
