@@ -45,12 +45,16 @@
   .scope b { color:var(--text-1); }
 
   /* ── ban board ─────────────────────────────────────────────── */
-  .brow { display:grid; grid-template-columns:30px 1fr auto; gap:.6rem; align-items:center; padding:.5rem 0; border-bottom:1px solid var(--border); }
+  .brow { display:grid; grid-template-columns:18px 30px 1fr 64px; gap:.55rem; align-items:center; padding:.5rem 0; border-bottom:1px solid var(--border); }
+  .brank { font-weight:800; font-size:.85rem; color:var(--text-2); font-variant-numeric:tabular-nums; text-align:right; }
+  .bbar { height:8px; border-radius:99px; background:var(--bg-3); overflow:hidden; }
+  .bbar i { display:block; height:100%; background:var(--accent); border-radius:99px; }
+  .bcav { font-size:.66rem; font-weight:500; color:var(--text-2); white-space:nowrap; }
   .brow:last-child { border-bottom:none; }
   .brow img { width:30px; height:30px; border-radius:7px; object-fit:cover; background:var(--bg-3); }
   .bname { font-weight:700; display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; }
   .bmeta { font-size:.72rem; color:var(--text-2); font-variant-numeric:tabular-nums; margin-top:.15rem; }
-  .bwr { font-weight:800; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; }
+  .bmeta b { color:var(--text-1); }
   .tag { font-size:.64rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase; border-radius:99px; padding:.1rem .45rem; border:1px solid; }
   .tag.ban { color:var(--red); border-color:var(--red); background:rgba(255,90,90,.1); }
   .tag.contested { color:var(--gold); border-color:var(--gold); background:rgba(240,180,41,.1); }
@@ -209,16 +213,25 @@ function banBoard() {
     return r && r.n >= 300 && r.wr > 50 ? { slug, name: NAME[slug] || cur.heroes[slug].name, ...r } : null;
   }).filter(Boolean).sort((a, b) => banValue(b) - banValue(a)).slice(0, 8);
 
+  // The bar is the sort made visible: reading down it must descend, or the list
+  // looks mis-ordered. Win rate moves to the meta line — it is an input to the
+  // ranking, not the ranking itself.
+  const top = banValue(rows[0]) || 1;
   return rows.map((r, i) => {
-    let tag = '';
-    if (r.ban >= 15) tag = '<span class="tag contested">often banned already</span>';
-    else if (i < 3) tag = '<span class="tag ban">ban first</span>';
+    let tag = '', caveat = '';
+    if (i < 3) {
+      tag = '<span class="tag ban">ban first</span>';
+      if (r.ban >= 15) caveat = ' <span class="bcav">— often taken already</span>';
+    } else if (r.ban >= 15) tag = '<span class="tag contested">often banned already</span>';
     else if (r.pick < 15) tag = '<span class="tag free">strong but rare</span>';
+    const w = Math.max(6, Math.round((banValue(r) / top) * 100));
     return `<div class="brow">
+      <span class="brank">${i + 1}</span>
       <img loading="lazy" src="${heroImg(r.slug)}" alt="" onerror="this.style.visibility='hidden'">
-      <div><div class="bname">${esc(r.name)} ${tag}</div>
-        <div class="bmeta">in ${f1(r.pick)}% of games · already banned in ${f1(r.ban)}%</div></div>
-      <div class="bwr">${f1(r.wr)}%</div>
+      <div><div class="bname">${esc(r.name)} ${tag}${caveat}</div>
+        <div class="bmeta">${f1(r.wr)}% win · in ${f1(r.pick)}% of games · already banned in ${f1(r.ban)}%</div></div>
+      <div class="bbar" title="Ban value relative to the top row" aria-label="ban value ${w}% of the highest">
+        <i style="width:${w}%"></i></div>
     </div>`;
   }).join('');
 }
@@ -360,9 +373,9 @@ function selectHero(slug) { S.hero = slug; renderHero(); }
     </details>
 
     <div class="card" id="sec-ban"><h2>Who to ban</h2>
-      <p class="lede">Ordered by what a ban buys: how far above even a hero is winning, how often they actually
-        turn up, and whether the lobby already removes them. A hero at the top is one who will be in the game,
-        winning, and left open.</p>
+      <p class="lede">Ordered by what a ban buys — the bar shows it. It combines how far above even a hero is
+        winning, how often they actually turn up, and whether the lobby already removes them, so the top row is
+        the hero most likely to be in the game, winning, and left open.</p>
       ${banBoard()}</div>
 
     <div class="card" id="sec-lanes"><h2>Who to pick, by lane</h2>
