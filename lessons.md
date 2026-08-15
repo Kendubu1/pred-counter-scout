@@ -2830,3 +2830,37 @@ field against a quantity it cannot exceed BEFORE reporting it.
   6,147 = 254,877).
 - 1.15.3 still scores 16/18 on the corrected explicit baseline — the headline
   survived the repair, which is the point of re-deriving rather than patching.
+
+## 2026-08-14 — Cheat Sheet page (a sort that contradicted its own headline)
+- Maintainer ask: one glanceable page before a ranked game — what's the meta,
+  who to ban, who to pick, what comps win, plus a dynamic per-hero graph. Built
+  as ui/v6/cheatsheet.html against committed snapshots only (no chart library:
+  inline SVG).
+- **The ban board shipped sorted on the wrong thing.** Its lede promised "a hero
+  winning well that few people ban", and it sorted by win rate — so Rampage
+  (banned in 22.6% of games) outranked Greystone (banned in 3.9%, and present in
+  a THIRD of all games). Correct ordering is what a ban buys:
+  (wr − 50) × pickRate × (1 − banRate). When a section's copy states a ranking
+  rule, the sort key has to be that rule.
+- **And then the fix hid itself.** After re-sorting, the bold column was still
+  win rate, so the list read as mis-ordered (57.7% sitting sixth). The judge
+  caught it: whatever a list is sorted by must be its dominant visual element.
+  Rows now lead with rank and end with a value bar that descends monotonically.
+- **Defaults have to match the promise, but turning everything on can be worse.**
+  The trend lede promised three series while two were off. Enabling all three
+  stretched the y-axis to 0-80% (win rates live at 45-58%, pick/ban at 0-37%),
+  flattening the exact differences the chart exists to show. Right answer was to
+  fix the LEDE and default to win rate, with chips to opt in.
+- **Responsive SVG shrinks type.** A 640-unit viewBox scaled to a 358px phone
+  renders 11px labels at ~6px. Draw at the container's pixel width so 1 unit =
+  1 px, and redraw on resize.
+- **A new page is a data-quality probe.** Rendering hero names to a human
+  exposed that genstats had stored omeda's INTERNAL codenames — Skylar as
+  "Boost", Legion as "Trooper" — across all five committed stat files, 20
+  heroes each. Nothing had displayed that field before.
+- Adding the page to ui-audit's PAGES immediately caught a missing 44px tap
+  target (I had hacked the rows with inline `all:unset`). Put a new page in the
+  bracket before polishing it, not after.
+- Harness: full-page screenshots race `loading="lazy"` images, so below-fold
+  content can capture blank and quietly deprive the judge of evidence. The
+  render pass now scrolls the page, returns to the top and awaits decode.

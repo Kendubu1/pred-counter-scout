@@ -85,6 +85,20 @@ async function main() {
         const page = await ctx.newPage();
         await page.goto(`http://127.0.0.1:${port}${s.url}`, { waitUntil: 'networkidle', timeout: 20000 }).catch(() => {});
         await page.waitForTimeout(500);
+        // Full-page shots race loading="lazy" images: anything below the fold can
+        // capture empty, which silently robs the judge of evidence (it saw a blank
+        // hero strip on one round and a full one the next). Scroll the page to
+        // force every lazy image to start, return to the top, then wait for decode.
+        await page.evaluate(async () => {
+          const step = Math.round(innerHeight * 0.8);
+          for (let y = 0; y < document.body.scrollHeight; y += step) {
+            scrollTo(0, y); await new Promise((r) => setTimeout(r, 60));
+          }
+          scrollTo(0, 0);
+          await Promise.all([...document.images].filter((i) => !i.complete)
+            .map((i) => i.decode().catch(() => {})));
+        }).catch(() => {});
+        await page.waitForTimeout(250);
         const m = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
         const overflow = Math.max(0, m.sw - m.cw);
         const shot = `${s.id}-${w}.png`;
