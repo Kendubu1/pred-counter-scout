@@ -67,7 +67,10 @@ async function main() {
     versions = v.ids; label = `patch ${v.name} family (ids ${v.ids.join('+')})`;
   }
 
-  const heroes = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8')) as { slug: string; name: string }[];
+  // `name` is the internal codename (Skylar is "Boost", Legion is "Trooper");
+  // display_name is what players call the hero.
+  const heroes = (JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8')) as { slug: string; name: string; display_name?: string }[])
+    .map((h) => ({ ...h, name: h.display_name || h.name }));
   // Per-role pulls only for roles the hero meaningfully plays in our field
   // aggregates (meta.json) — keeps the request count polite.
   const meta = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/meta.json'), 'utf8')) as { roles: Record<string, { slug: string }[]> };

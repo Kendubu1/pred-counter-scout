@@ -57,7 +57,7 @@
   .tag.free { color:var(--green); border-color:var(--green); background:rgba(0,196,140,.1); }
 
   /* ── lane picks ────────────────────────────────────────────── */
-  .lanes { display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:.7rem; }
+  .lanes { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:.7rem; }
   .lane { background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:.7rem .8rem; }
   .lane h3 { font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--accent); margin-bottom:.45rem; }
   .pick { display:flex; align-items:center; gap:.45rem; padding:.28rem 0; font-size:.8rem; width:100%;
@@ -66,7 +66,8 @@
   .pick img { width:24px; height:24px; border-radius:6px; object-fit:cover; background:var(--bg-3); }
   .pick .pn { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .pick .pw { font-weight:800; font-variant-numeric:tabular-nums; }
-  .pick .pd { font-size:.68rem; font-variant-numeric:tabular-nums; width:42px; text-align:right; }
+  .pick .pd { font-size:.68rem; font-variant-numeric:tabular-nums; min-width:34px; text-align:right; flex:none; }
+  .pick .pw { flex:none; }
   .up { color:var(--green); } .down { color:var(--red); } .flat { color:var(--text-2); }
 
   /* ── hero trend ────────────────────────────────────────────── */
@@ -87,7 +88,8 @@
   .sbtn.s-ban[aria-pressed="true"] { color:var(--red); }
   .chartwrap { overflow-x:auto; }
   svg.chart { width:100%; height:auto; display:block; min-width:280px; touch-action:pan-y; }
-  .chart text { font:11px Inter,-apple-system,sans-serif; fill:var(--text-2); }
+  .chart text { font:12px Inter,-apple-system,sans-serif; fill:var(--text-2); }
+  .chart .evenlbl { font-size:10px; fill:var(--text-2); }
   .chart .axis { stroke:var(--border); }
   .chart .mid { stroke:var(--border); stroke-dasharray:3 4; }
   .chart .pt { cursor:pointer; }
@@ -154,7 +156,8 @@ const SERIES = [
   { k: 'ban', label: 'Ban rate', cls: 's-ban', color: 'var(--red)' },
 ];
 
-const S = { data: [], index: [], changesByVersion: {}, duos: null, kits: null, hero: null, on: { wr: true, pick: false, ban: true } };
+const NAME = {};
+const S = { data: [], index: [], changesByVersion: {}, duos: null, kits: null, hero: null, on: { wr: true, pick: false, ban: false } };
 
 /** Rates for one hero in one window: win %, and pick/ban as a share of the
  *  window's matches (matchesPlayed sums to 10 per match, so /10 is the count). */
@@ -175,6 +178,7 @@ async function load() {
     j('../../data/artifacts/index.json'), j('../../data/game-data/duo-synergies.json'), j('../../data/game-data/kit-profiles.json'),
   ]);
   S.index = (index && (Array.isArray(index) ? index : index.heroes)) || [];
+  S.index.forEach((h) => { NAME[h.slug] = h.name; });
   S.duos = duos || {}; S.kits = (kits && kits.heroes) || {};
   const files = await Promise.all(WINDOWS.map((w) => j(w.file)));
   const digests = await Promise.all(WINDOWS.map((w) => (w.digest ? j(w.digest) : null)));
@@ -192,25 +196,28 @@ async function load() {
 
 const current = () => S.data[S.data.length - 1];
 
-/** Heroes worth a ban, by measured strength in the current window. The verdict
- *  compares how strong a hero is against how often the lobby already removes
- *  them — a strong hero nobody bans is the one worth spending a ban on. */
+/** Heroes worth a ban, ordered by what a ban actually buys: the win-rate
+ *  surplus a hero carries, multiplied by how often they turn up, discounted by
+ *  how often the lobby already removes them. Sorting on win rate alone would
+ *  top the list with a hero half the lobby bans for you. */
+function banValue(r) { return (r.wr - 50) * r.pick * (1 - r.ban / 100); }
+
 function banBoard() {
   const cur = current();
   const rows = Object.keys(cur.heroes).map((slug) => {
     const r = ratesFor(cur, slug);
-    return r && r.n >= 300 ? { slug, name: cur.heroes[slug].name, ...r } : null;
-  }).filter(Boolean).sort((a, b) => b.wr - a.wr);
+    return r && r.n >= 300 && r.wr > 50 ? { slug, name: NAME[slug] || cur.heroes[slug].name, ...r } : null;
+  }).filter(Boolean).sort((a, b) => banValue(b) - banValue(a)).slice(0, 8);
 
-  return rows.slice(0, 8).map((r) => {
-    let tag = '', why = '';
-    if (r.wr >= 52 && r.ban < 25) { tag = '<span class="tag ban">under-banned</span>'; why = 'winning well and left open in most drafts'; }
-    else if (r.ban >= 40) { tag = '<span class="tag contested">usually banned</span>'; why = 'the lobby removes this one for you more often than not'; }
-    else if (r.wr < 50) { tag = '<span class="tag free">not the problem</span>'; why = 'banned often for its reputation, not its results'; }
+  return rows.map((r, i) => {
+    let tag = '';
+    if (r.ban >= 15) tag = '<span class="tag contested">often banned already</span>';
+    else if (i < 3) tag = '<span class="tag ban">ban first</span>';
+    else if (r.pick < 15) tag = '<span class="tag free">strong but rare</span>';
     return `<div class="brow">
       <img loading="lazy" src="${heroImg(r.slug)}" alt="" onerror="this.style.visibility='hidden'">
       <div><div class="bname">${esc(r.name)} ${tag}</div>
-        <div class="bmeta">picked in ${f1(r.pick)}% of games · banned in ${f1(r.ban)}%${why ? ' · ' + why : ''}</div></div>
+        <div class="bmeta">in ${f1(r.pick)}% of games · already banned in ${f1(r.ban)}%</div></div>
       <div class="bwr">${f1(r.wr)}%</div>
     </div>`;
   }).join('');
@@ -225,7 +232,7 @@ function lanePicks() {
       const c = cur.heroes[slug].byRole && cur.heroes[slug].byRole[lane];
       if (!c || c.matchesPlayed < 200) return null;
       const p = prev && prev.heroes[slug] && prev.heroes[slug].byRole && prev.heroes[slug].byRole[lane];
-      return { slug, name: cur.heroes[slug].name, wr: c.winrate, n: c.matchesPlayed, d: p && p.winrate != null ? c.winrate - p.winrate : null };
+      return { slug, name: NAME[slug] || cur.heroes[slug].name, wr: c.winrate, n: c.matchesPlayed, d: p && p.winrate != null ? c.winrate - p.winrate : null };
     }).filter(Boolean).sort((a, b) => b.wr - a.wr).slice(0, 3);
     if (!rows.length) return '';
     return `<div class="lane"><h3>${LANE_LABEL[lane]}</h3>${rows.map((r) => {
@@ -246,19 +253,28 @@ function chart(slug) {
   const on = SERIES.filter((s) => S.on[s.k]);
   const vals = pts.flatMap((p) => (p.r ? on.map((s) => p.r[s.k]) : [])).filter((v) => v != null);
   if (!vals.length || !on.length) return '<p class="lede">Enable a series to draw the chart.</p>';
-  const lo = Math.max(0, Math.floor((Math.min(...vals) - 4) / 5) * 5);
-  const hi = Math.min(100, Math.ceil((Math.max(...vals) + 4) / 5) * 5);
-  const W = 640, H = 240, L = 34, R = 12, T = 14, B = 30;
+  const span = Math.max(...vals) - Math.min(...vals);
+  const step = span > 40 ? 20 : span > 18 ? 10 : 5;   // round ticks, never 16/33/49
+  const lo = Math.max(0, Math.floor((Math.min(...vals) - step / 2) / step) * step);
+  const hi = Math.min(100, Math.ceil((Math.max(...vals) + step / 2) / step) * step);
+  // 1 SVG unit = 1 CSS pixel, so the 12px labels render at 12px on every screen
+  // instead of shrinking with the viewBox (they measured ~6px at 390 before).
+  const host = document.getElementById('chart');
+  const W = Math.max(300, Math.min(760, (host && host.clientWidth) || 640));
+  const H = W < 420 ? 210 : 240, L = 38, R = 12, T = 16, B = 30;
   const x = (i) => L + (i * (W - L - R)) / Math.max(1, pts.length - 1);
   const y = (v) => T + ((hi - v) / (hi - lo)) * (H - T - B);
 
   let g = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Win, pick and ban rate across recent patches">`;
-  for (let i = 0; i <= 4; i++) {
-    const v = lo + ((hi - lo) * i) / 4;
+  for (let v = lo; v <= hi + 0.001; v += step) {
     g += `<line class="axis" x1="${L}" y1="${y(v).toFixed(1)}" x2="${W - R}" y2="${y(v).toFixed(1)}"></line>`
-      + `<text x="${L - 6}" y="${(y(v) + 3.5).toFixed(1)}" text-anchor="end">${Math.round(v)}%</text>`;
+      + `<text x="${L - 6}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${Math.round(v)}%</text>`;
   }
-  if (lo < 50 && hi > 50) g += `<line class="mid" x1="${L}" y1="${y(50).toFixed(1)}" x2="${W - R}" y2="${y(50).toFixed(1)}"></line>`;
+  // the even-odds line, labelled — an unexplained dashed rule reads as a gridline
+  if (lo < 50 && hi > 50) {
+    g += `<line class="mid" x1="${L}" y1="${y(50).toFixed(1)}" x2="${W - R}" y2="${y(50).toFixed(1)}"></line>`
+      + `<text class="evenlbl" x="${W - R}" y="${(y(50) - 5).toFixed(1)}" text-anchor="end">even odds</text>`;
+  }
   pts.forEach((p, i) => {
     g += `<text x="${x(i).toFixed(1)}" y="${H - 10}" text-anchor="middle">${esc(p.v)}</text>`;
     if (S.changesByVersion[p.v] && S.changesByVersion[p.v][slug]) {
@@ -300,7 +316,7 @@ function compFor(slug) {
       ${kit.powerSpike ? `<li>Power spike: <b>${esc(kit.powerSpike)}</b></li>` : ''}
       ${kit.archetype ? `<li>Archetype: <b>${esc(kit.archetype)}</b></li>` : ''}
     </ul></div>
-    <div class="cbox"><h4>Pairs well with</h4><ul>
+    <div class="cbox"><h4>Pairs well with <span style="font-weight:400;text-transform:none;letter-spacing:0">— kit synergy, not measured win rates</span></h4><ul>
       ${allies.length ? allies.map((a) => `<li><b>${esc(a.allyName || a.ally)}</b> — ${esc((a.reasons || [])[0] || 'kit synergy')}</li>`).join('')
         : '<li>No synergy pairing recorded yet.</li>'}
     </ul></div>
@@ -344,8 +360,9 @@ function selectHero(slug) { S.hero = slug; renderHero(); }
     </details>
 
     <div class="card" id="sec-ban"><h2>Who to ban</h2>
-      <p class="lede">The strongest heroes in the current patch, with how often the lobby already removes them.
-        A hero winning well that few people ban is where a ban buys the most.</p>
+      <p class="lede">Ordered by what a ban buys: how far above even a hero is winning, how often they actually
+        turn up, and whether the lobby already removes them. A hero at the top is one who will be in the game,
+        winning, and left open.</p>
       ${banBoard()}</div>
 
     <div class="card" id="sec-lanes"><h2>Who to pick, by lane</h2>
@@ -353,7 +370,8 @@ function selectHero(slug) { S.hero = slug; renderHero(); }
       <div class="lanes">${lanePicks()}</div></div>
 
     <div class="card" id="sec-trend"><h2>Hero trend — <span id="trendTitle"></span></h2>
-      <p class="lede">Win, pick and ban rate across the last four patch windows. A gold triangle marks a patch that changed this hero.</p>
+      <p class="lede">Win rate across the last four patch windows — add pick and ban rate with the chips below.
+        A gold triangle marks a patch that changed this hero; tap any point for that patch's numbers.</p>
       <div class="picker"><input id="heroSearch" type="search" placeholder="Search a hero…" aria-label="Search a hero"></div>
       <div class="hgrid" id="heroGrid">${roster.map((h) => `<button class="hbtn" data-hero="${esc(h.slug)}" title="${esc(h.name)}" aria-label="${esc(h.name)}"><img loading="lazy" src="${heroImg(h.slug)}" alt="" onerror="this.style.visibility='hidden'"></button>`).join('')}</div>
       <div class="series" role="group" aria-label="Chart series">
@@ -367,8 +385,7 @@ function selectHero(slug) { S.hero = slug; renderHero(); }
       <p class="lede">What this hero needs from the rest of the draft.</p>
       <div id="compBox"></div></div>
 
-    <p class="foot">Ban and pick rates are shares of ranked matches in the current window. Lane movement compares
-      like-for-like lane win rates between the last two patch windows.</p>`;
+    <p class="foot">Refreshed from committed snapshots after every patch pull.</p>`;
 
   document.getElementById('heroGrid').addEventListener('click', (e) => {
     const b = e.target.closest('.hbtn'); if (b) selectHero(b.dataset.hero);
@@ -393,6 +410,17 @@ function selectHero(slug) { S.hero = slug; renderHero(); }
     });
     if (q && first) selectHero(first);
   });
+  // the chart is drawn at the container's pixel width, so it must be redrawn
+  // when that width changes (rotation, desktop resize)
+  let rt; let lastW = document.getElementById('chart').clientWidth;
+  addEventListener('resize', () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => {
+      const w = document.getElementById('chart').clientWidth;
+      if (w && Math.abs(w - lastW) > 8) { lastW = w; renderHero(); }
+    }, 150);
+  });
+
   renderHero();
 })();
 </script>
