@@ -12,7 +12,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildAllowed, verifyLine } from '../copy-verify.js';
-import { ask, flushTasks, isPrepare } from '../copy-session.js';
+import { ask, flushTasks, isPrepare, writeAggregate } from '../copy-session.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 
@@ -64,12 +64,12 @@ Return strict JSON only: {"<slug>": "<sentence>", ...}`;
   }
   flushTasks('items');
   if (isPrepare()) return;
-  writeFileSync(path.join(ROOT, 'data/aggregates/item-reviews.json'), JSON.stringify({
+  if (!writeAggregate(path.join(ROOT, 'data/aggregates/item-reviews.json'), {
     generatedAt: new Date().toISOString(),
     source: 'in-session Claude Code agent (pred-scout-coach) over data/omeda/items.json only; every number ground-checked against the item, failing lines dropped',
     written, rejected,
     items: out,
-  }, null, 1));
+  })) return;
   console.log(`\n${written} lines written, ${rejected} rejected -> data/aggregates/item-reviews.json`);
 }
 

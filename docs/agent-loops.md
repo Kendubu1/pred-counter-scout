@@ -155,7 +155,7 @@ To add a self-correcting loop for a new artifact:
 | Loop | Plan | Author (build) | Judge | Bracket | Gate / history |
 |------|------|----------------|-------|---------|----------------|
 | **Build copy** | `build-review.ts` prepare | `pred-scout-coach` | `copy-critique.ts` independent critic | `copy-verify` per clause | `review:loop:gate` over `copy-critique-history.json` |
-| **Coach copy** | `coach-review.ts` prepare | `pred-scout-coach` | same critic, grounded on player stats | `copy-verify` | same history |
+| **Coach copy** (lead + every squad member's report) | `coach-review.ts` prepare | `pred-scout-coach` | same critic, **scoped** (`CRITIQUE_ONLY=coach`), grounded on that player's stats + kit reads; also flags second-person voice | `copy-verify` | `coachreport:loop:gate` over `coach-report-critique-history.json` |
 | **Hero-page coach lines** | `hero-coach-review.ts` prepare (facts block from `src/hero-coach-copy.ts`) | `pred-scout-coach` | same critic, **scoped** (`CRITIQUE_ONLY=herocoach`), grounded on the identical facts block | `copy-verify` on every line and every rewrite, re-run in `test/hero-coach.test.ts` | `herocoach:loop:gate` over `hero-coach-critique-history.json` |
 | **Augments / items / abilities** | `*-review.ts` prepare | `pred-scout-coach` | (number bracket only today; critic-extensible) | `copy-verify` | — |
 | **Mobile UI review** | `ui-audit.ts` (consistency facts + findings) | the CSS fix author | independent mobile-UI judge over rendered screenshots | `ui-audit` hard invariants + `ui-render` no-overflow | `review:loop:gate` over `ui-review-history.json` |

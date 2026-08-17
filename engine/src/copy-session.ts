@@ -63,6 +63,29 @@ export async function ask(pass: string, id: string, prompt: string): Promise<str
   return typeof v === 'string' ? v : JSON.stringify(v);
 }
 
+/**
+ * Write a copy pass's aggregate, refusing to replace committed copy with an
+ * EMPTY result. `copy:ingest` runs every pass in a chain; a pass whose
+ * responses file is missing gets `{}` from ask() for every cell and used to
+ * write a zero-line aggregate over the good one. That is how
+ * data/aggregates/item-reviews.json silently went from 182 lines to 0 on
+ * 2026-08-07 and stayed blank on the hero page.
+ *
+ * Zero written lines + an existing non-empty file = a skipped pass, not a
+ * result. Keep the file, say so loudly, and exit non-zero so a chained refresh
+ * cannot report success. COPY_FORCE=1 allows a deliberate wipe.
+ */
+export function writeAggregate(file: string, doc: { written: number; [k: string]: unknown }): boolean {
+  const prev = existsSync(file) ? (JSON.parse(readFileSync(file, 'utf8')) as { written?: number }) : null;
+  if (doc.written === 0 && (prev?.written ?? 0) > 0 && process.env.COPY_FORCE !== '1') {
+    console.error(`\n[copy] REFUSING to overwrite ${path.basename(file)}: this run produced 0 lines but the committed file has ${prev!.written}. The pass's responses are missing — author them first (COPY_MODE=prepare, then the pred-scout-coach agent), or set COPY_FORCE=1 to wipe deliberately.`);
+    process.exitCode = 1;
+    return false;
+  }
+  writeFileSync(file, JSON.stringify(doc, null, 1));
+  return true;
+}
+
 /** In prepare mode, flush the recorded prompts to engine/copy-tasks/<pass>.tasks.json. */
 export function flushTasks(pass: string): void {
   if (COPY_MODE !== 'prepare') return;

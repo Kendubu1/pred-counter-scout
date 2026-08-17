@@ -11,7 +11,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildAllowed, verifyLine } from '../copy-verify.js';
-import { ask, flushTasks, isPrepare } from '../copy-session.js';
+import { ask, flushTasks, isPrepare, writeAggregate } from '../copy-session.js';
 import { loadData } from '../data.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -61,11 +61,11 @@ Return strict JSON only: {"<key>": "<tip>", ...}`;
   }
   flushTasks('abilities');
   if (isPrepare()) return;
-  writeFileSync(path.join(ROOT, 'data/aggregates/ability-tips.json'), JSON.stringify({
+  if (!writeAggregate(path.join(ROOT, 'data/aggregates/ability-tips.json'), {
     generatedAt: new Date().toISOString(),
     source: 'in-session Claude Code agent (pred-scout-coach) over data/omeda/heroes.json ability text only; every number ground-checked against the ability, failing lines dropped',
     written, rejected, heroes: out,
-  }, null, 1));
+  })) return;
   console.log(`\n${written} tips written, ${rejected} rejected -> data/aggregates/ability-tips.json`);
 }
 main().catch((e) => { console.error(e); process.exit(1); });

@@ -23,7 +23,7 @@ import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildAllowed, verifyLine } from '../copy-verify.js';
-import { ask, flushTasks, isPrepare } from '../copy-session.js';
+import { ask, flushTasks, isPrepare, writeAggregate } from '../copy-session.js';
 import { factsFor, isHeroArtifact, promptFor, type Artifact, type RawHero } from '../hero-coach-copy.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -62,11 +62,11 @@ async function main() {
 
   flushTasks('herocoach');
   if (isPrepare()) return;
-  writeFileSync(OUT, JSON.stringify({
+  if (!writeAggregate(OUT, {
     generatedAt: new Date().toISOString(),
     source: 'in-session Claude Code agent (pred-scout-coach) over each artifact role view (kit, build, stages, Eternal, lane augment, matchup verdicts, honesty notes) only; every number ground-checked, failing lines dropped',
     written, rejected, heroes: out,
-  }, null, 1));
+  })) return;
   console.log(`\n${written} hero coach lines written, ${rejected} rejected -> data/aggregates/hero-coach-lines.json`);
 }
 

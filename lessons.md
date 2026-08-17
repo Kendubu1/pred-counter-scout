@@ -2830,3 +2830,40 @@ field against a quantity it cannot exceed BEFORE reporting it.
   6,147 = 254,877).
 - 1.15.3 still scores 16/18 on the corrected explicit baseline — the headline
   survived the repair, which is the point of re-deriving rather than patching.
+
+## 2026-08-17 — front door, the steer that shipped without a renderer, hero-page coach copy
+
+Three-item session (front door / copy pass / augment steer). Two of the three
+were **already half-done in ways the backlog didn't record** — checking before
+building is what made the session cheap.
+
+- **The front door was already fixed.** v6-review Finding A1 (root `index.html`
+  meta-refreshing to the frozen pre-1.14 `ui/v2/`) was closed on 2026-06-28 by
+  the "Retire old UIs to v6" commit: root, `ui/index.html`, v0/v2/v3/v4/v5 and
+  the orphaned loose pages are all redirect stubs to `ui/v6/` now. The review doc
+  still reads as if it were open, so a task written from the doc looks like new
+  work. **Findings docs are snapshots; verify against the tree before acting on
+  one.** What was genuinely left was the review's *other* redirect instruction —
+  per-route, not blanket-to-homepage: `v0/coach.html`, `v0/squad.html`,
+  `v0/about.html` and `v3/learn-eternals.html` all dumped users on the v6 home
+  instead of the page they asked for. Fixed; they now land on their own
+  successor. Retired content stays reachable in git history — nothing deleted.
+- **`laneSteer` shipped in the artifacts and was never rendered.** The engine
+  half of backlog 10b (augment-as-playstyle steer + honest provenance) has been
+  in every artifact for weeks — 67 of 83 role views carry a steer, 25 modeled —
+  and `ui/v6/index.html` even carries the finished `.lanesteer` CSS. No renderer
+  ever referenced it, so the data was invisible on the page. The `.eternal-row`
+  vestige the review flagged was the same shape of bug. **Dead CSS is a symptom
+  worth grepping for: styles for a class no template emits usually means a
+  data path that stops one step short of the user.**
+- **A copy pass with no responses silently wiped 182 committed lines.**
+  `copy:ingest` chains every pass; a pass whose `<pass>.responses.json` is
+  missing gets `{}` for every cell, writes a zero-line aggregate over the good
+  one, and exits 0. That is how `data/aggregates/item-reviews.json` went from
+  182 item explanations to `{}` on 2026-08-07 — the hero page's 🧠 item lines
+  have been blank ever since, with nothing failing. Every pass now writes
+  through `writeAggregate()`, which refuses to replace a non-empty aggregate
+  with a zero-line one and exits non-zero (`COPY_FORCE=1` to wipe on purpose).
+  Verified: a responses-less `review:abilities` run now keeps all 318 tips and
+  fails the chain. **A pipeline stage that can produce "nothing" must not be
+  allowed to spend that nothing on a file that already holds something.**
