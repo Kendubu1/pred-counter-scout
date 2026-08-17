@@ -16,9 +16,22 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildAllowed, verifyLine } from '../copy-verify.js';
 import { ask, flushTasks, isPrepare } from '../copy-session.js';
+import { factsFor, isHeroArtifact, type Artifact as HeroArt, type RawHero as KitHero } from '../hero-coach-copy.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const clean = (t?: string) => (t || '').replace(/<br\s*\/?>(\n)?/g, ' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+
+// A round can be scoped to one copy surface (CRITIQUE_ONLY=herocoach) so a new
+// surface converges on its own history instead of re-judging — and churning —
+// copy that already converged. Default is every surface, as before. The scope is
+// recorded in the round so an agreement rate can never be read wider than it was
+// measured; a scoped loop points CRITIQUE_HISTORY/CRITIQUE_REPORT at its own files.
+const SURFACES = ['builds', 'herocoach', 'coach'] as const;
+type Surface = typeof SURFACES[number];
+const SCOPE = new Set<string>((process.env.CRITIQUE_ONLY ?? SURFACES.join(',')).split(',').map((s) => s.trim()).filter(Boolean));
+const inScope = (s: Surface) => SCOPE.has(s);
+const REPORT_PATH = path.join(ROOT, process.env.CRITIQUE_REPORT ?? 'data/aggregates/copy-critique.json');
+const HISTORY_PATH = path.join(ROOT, process.env.CRITIQUE_HISTORY ?? 'data/aggregates/copy-critique-history.json');
 
 interface RawItem { slug: string; display_name: string; stats?: Record<string, number>; effects?: { name?: string; menu_description?: string; game_description?: string }[] }
 interface RawHero { slug: string; name?: string; display_name?: string; abilities?: { key: string; display_name: string; cooldown?: number[]; menu_description?: string; game_description?: string }[] }
@@ -78,7 +91,7 @@ async function main() {
   const report: Record<string, Record<string, { quote: string; severity: string; issue: string; rewrite: string | null }[]>> = {};
   let reviewedLines = 0, flaggedLines = 0, rewritesGrounded = 0, rewritesDropped = 0;
 
-  for (const f of files) {
+  for (const f of inScope('builds') ? files : []) {
     const art = JSON.parse(readFileSync(path.join(artDir, f), 'utf8')) as Artifact;
     const hero = heroBySlug.get(art.slug);
     if (!hero || !art.roles) continue;
@@ -119,12 +132,61 @@ Return strict JSON: {"flags":[{"quote":"<the exact line text>","severity":"high|
     }
   }
 
+  // Hero-page coach lines — the SAME independent critic over the third copy
+  // surface (data/aggregates/hero-coach-lines.json). Source is the identical
+  // facts block the author was handed, rebuilt by the shared pure builder, so
+  // the judge grades against exactly what the author could see.
+  const HC_PATH = path.join(ROOT, 'data/aggregates/hero-coach-lines.json');
+  interface HCCell { line: string | null; watchout: string | null }
+  let hcDoc: { heroes: Record<string, Record<string, HCCell>>; [k: string]: unknown } | null = null;
+  const hcFlags: Record<string, Record<string, { quote: string; severity: string; issue: string; rewrite: string | null }[]>> = {};
+  if (inScope('herocoach') && existsSync(HC_PATH)) {
+    hcDoc = JSON.parse(readFileSync(HC_PATH, 'utf8')) as { heroes: Record<string, Record<string, HCCell>> };
+    for (const f of readdirSync(artDir).filter(isHeroArtifact)) {
+      const art = JSON.parse(readFileSync(path.join(artDir, f), 'utf8')) as HeroArt;
+      const kit = heroBySlug.get(art.slug) as KitHero | undefined;
+      const cells = hcDoc.heroes[art.slug];
+      if (!kit || !cells || !Array.isArray(art.roles)) continue;
+      for (const rv of art.roles) {
+        const cell = cells[rv.role];
+        if (!cell || !(cell.line || cell.watchout)) continue;
+        const facts = factsFor(art, rv, kit);
+        const copyLines = [cell.line, cell.watchout].filter(Boolean) as string[];
+        const prompt = `You are an INDEPENDENT reviewer of hero-page coaching copy for ${art.name} (${rv.role}) in Predecessor (a MOBA). Another agent wrote the COPY below; you did NOT write it. Judge it against the SOURCE only.
+
+SOURCE (everything the author was allowed to use):
+${facts}
+
+COPY UNDER REVIEW (one per line):
+${copyLines.map((l, i) => `${i + 1}. ${l}`).join('\n')}
+
+Flag ONLY real problems: a line that (a) names an ability or item that is not in the SOURCE, or describes one wrongly, (b) is factually wrong vs the SOURCE, (c) leads with a statistic instead of an action, or claims a magnitude the HONESTY NOTES say is not proven (e.g. a size of gain for an augment the sim cannot model), (d) uses jargon a brand-new player won't get, or (e) is broken/ungrammatical English. Do not nitpick style.
+Return strict JSON: {"flags":[{"quote":"<the exact line text>","severity":"high|med|low","issue":"<what's wrong, one phrase>","rewrite":"<a corrected line, or null if it should just be dropped>"}]}. If the copy is all fine, return {"flags":[]}.`;
+
+        const raw = (await ask('critique', `herocoach:${art.slug}:${rv.role}`, prompt)).trim().replace(/^```json?\s*|```$/g, '');
+        reviewedLines += copyLines.length;
+        if (isPrepare()) continue;
+        try {
+          const parsed = JSON.parse(raw) as { flags?: { quote?: string; severity?: string; issue?: string; rewrite?: string | null }[] };
+          const allowed = buildAllowed([], [facts]);
+          const flags = (parsed.flags ?? []).filter((fl) => fl.quote).map((fl) => {
+            let rewrite = fl.rewrite ?? null;
+            if (rewrite) { if (verifyLine(rewrite, allowed)) rewritesGrounded++; else { rewrite = null; rewritesDropped++; } }
+            return { quote: fl.quote!, severity: fl.severity ?? 'low', issue: fl.issue ?? '', rewrite };
+          });
+          if (flags.length) { (hcFlags[art.slug] ??= {})[rv.role] = flags; flaggedLines += flags.length; }
+          process.stdout.write('.');
+        } catch { process.stdout.write('x'); }
+      }
+    }
+  }
+
   // Coach report critique — the SAME independent critic, different source (the
   // player's stats + our kit reads). Reviews the agent-written coachReasoning.
   let coachJson: Record<string, unknown> | null = null;
   const coachFlags: { quote: string; severity: string; issue: string; rewrite: string | null }[] = [];
   const coachPath = path.join(ROOT, 'data/artifacts/coach.json');
-  if (existsSync(coachPath)) {
+  if (inScope('coach') && existsSync(coachPath)) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const cj = JSON.parse(readFileSync(coachPath, 'utf8')) as any;
     const cr = cj.coachReasoning;
@@ -192,6 +254,27 @@ Return strict JSON: {"flags":[{"quote":"<exact line text>","severity":"high|med|
   }
   if (applied) writeFileSync(path.join(ROOT, 'data/aggregates/build-reasoning.json'), JSON.stringify(BR, null, 1));
 
+  // Apply hero-page coach-line rewrites back into hero-coach-lines.json. Exact
+  // string match on the flagged cell's own line/watchout, so a paraphrased quote
+  // no-ops instead of overwriting the wrong line.
+  if (hcDoc && Object.keys(hcFlags).length) {
+    for (const slug in hcFlags) {
+      for (const role in hcFlags[slug]!) {
+        const cell = hcDoc.heroes[slug]?.[role];
+        if (!cell) continue;
+        for (const fl of hcFlags[slug]![role]!) {
+          if (fl.rewrite === undefined) continue;
+          let hit = false;
+          for (const k of ['line', 'watchout'] as const) {
+            if (cell[k] === fl.quote) { cell[k] = fl.rewrite; hit = true; applied++; }
+          }
+          if (!hit) unmatched++;
+        }
+      }
+    }
+    writeFileSync(HC_PATH, JSON.stringify(hcDoc, null, 1));
+  }
+
   // Apply coach rewrites back into coach.json.
   if (coachJson && coachFlags.length) {
     let cr: unknown = (coachJson as { coachReasoning?: unknown }).coachReasoning;
@@ -207,32 +290,35 @@ Return strict JSON: {"flags":[{"quote":"<exact line text>","severity":"high|med|
 
   const agreement = reviewedLines ? (1 - flaggedLines / reviewedLines) : 1;
   const agreementRate = Math.round(agreement * 1000) / 1000;
-  writeFileSync(path.join(ROOT, 'data/aggregates/copy-critique.json'), JSON.stringify({
+  writeFileSync(REPORT_PATH, JSON.stringify({
     generatedAt: new Date().toISOString(),
-    source: 'independent (non-author) general-purpose agent reviewing data/aggregates/build-reasoning.json against the source kit+items; suggested rewrites ground-checked by copy-verify, then applied back',
+    scope: [...SCOPE],
+    source: 'independent (non-author) general-purpose agent reviewing data/aggregates/build-reasoning.json + hero-coach-lines.json + the coach report against their own source blocks; suggested rewrites ground-checked by copy-verify, then applied back',
     reviewedLines, flaggedLines,
     agreementRate,
     rewritesGrounded, rewritesDropped, applied, unmatched,
     heroes: report,
+    heroCoach: hcFlags,
     coach: coachFlags,
   }, null, 1));
 
   // Append this judge round to the loop history so the convergence gate
   // (review:loop:gate) can see the trajectory across rounds. One ingest =
   // one round of the author->judge->apply loop.
-  const histPath = path.join(ROOT, 'data/aggregates/copy-critique-history.json');
+  const histPath = HISTORY_PATH;
   const hist = existsSync(histPath)
     ? (JSON.parse(readFileSync(histPath, 'utf8')) as { rounds: unknown[] })
     : { rounds: [] };
   hist.rounds.push({
     round: hist.rounds.length + 1,
     at: new Date().toISOString(),
+    scope: [...SCOPE],
     reviewedLines, flaggedLines, agreementRate, applied,
   });
   writeFileSync(histPath, JSON.stringify(hist, null, 1));
 
-  console.log(`\n${flaggedLines} lines flagged / ${reviewedLines} reviewed (agreement ${(agreement * 100).toFixed(1)}%); ${rewritesGrounded} grounded rewrites; applied ${applied} to build-reasoning.json (${unmatched} unmatched) -> data/aggregates/copy-critique.json`);
-  console.log(`[loop] round ${hist.rounds.length} recorded -> data/aggregates/copy-critique-history.json (run \`npm run review:loop:gate\` to check convergence)`);
+  console.log(`\n[${[...SCOPE].join('+')}] ${flaggedLines} lines flagged / ${reviewedLines} reviewed (agreement ${(agreement * 100).toFixed(1)}%); ${rewritesGrounded} grounded rewrites; applied ${applied} (${unmatched} unmatched) -> ${path.relative(ROOT, REPORT_PATH)}`);
+  console.log(`[loop] round ${hist.rounds.length} recorded -> ${path.relative(ROOT, histPath)} (run the matching \`*:loop:gate\` to check convergence)`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
