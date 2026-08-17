@@ -2867,3 +2867,45 @@ building is what made the session cheap.
   Verified: a responses-less `review:abilities` run now keeps all 318 tips and
   fails the chain. **A pipeline stage that can produce "nothing" must not be
   allowed to spend that nothing on a file that already holds something.**
+
+## 2026-08-17 (later) — two copy loops to convergence, and what the judge caught
+
+Ran the plan → author → verify → independent-judge → gate loop over two copy
+surfaces that had never been judged. Both converged; the interesting part is
+what "converged" cost and what only the judge could see.
+
+- **Hero-page coach lines: 87.3% → 98.8% → 100%** (21, 2, 0 flags over 166
+  lines). **Squad coach reports: 74.1% → 88.9% → 96.3% → 98.8% → 100%** (21, 9,
+  3, 1, 0 over 81 lines). The reports started 13 points lower and took five
+  rounds — because that copy had **never** been judged: the last critique round
+  predated its 2026-08-07 re-author, and the critic only ever read the lead's
+  report, so five squad members' coaching had never been read by anything but
+  its author. **A loop only protects the surfaces it is pointed at; check the
+  judge's coverage against the author's, not against the loop's existence.**
+- **The judge earns its place on claims, not numbers.** `copy-verify` cleared
+  every line in both passes (0 rejected of 166). What the judge found was
+  wrong *claims made with real numbers*: an invented comparison ("+5.8 wins per
+  100 more than the average Murdock player" — no global Murdock baseline exists
+  anywhere in the source), a superlative contradicted by the same cell (59.7%
+  called the best in a pool containing 65.6%), two backwards kit reads
+  (Greystone's Stone Forged Soul hoarded for a dive when it heals on missing
+  health; Countess's Feast coached as an escape when it is a leap onto an
+  enemy), and a hero's class swapped (a tank described as doing an assassin's
+  job). None of those has a fabricated digit in it.
+- **A rewrite can introduce a fresh error, and only the NEXT round catches it.**
+  Round 2 correctly flagged "spend Kira's Vengeance stacks before pressing the
+  purge" — then its own fix re-attached the mechanic to the Purge ultimate when
+  Dusk is what consumes them. Rewrites go through the number bracket, never a
+  meaning bracket. **Stop on the gate's clean round, not on the round that
+  fixed the most** — the big-fix round is exactly the one most likely to have
+  broken something.
+- **Scope a new loop to its own surface and history.** Judging all three copy
+  surfaces every round would have re-read 2,494 settled build lines to fix 166
+  new ones, and mixed the agreement rates into one number that means nothing.
+  `copy-critique.ts` now takes `CRITIQUE_ONLY` + its own report/history paths,
+  and every round records its `scope` so a rate can never be read wider than it
+  was measured.
+- Prompt hygiene that paid off: the facts block translates objective keys
+  (`rot10VsSquishy`) to plain words BEFORE the author sees them. Engine
+  vocabulary handed to a writer comes back out as jargon on the page — the
+  cheapest place to fix C2-style jargon is the prompt, not the copy.

@@ -221,4 +221,33 @@ src/copy-verify.ts with unit tests; hero page renders 🧠 on Eternal
 rows when present). DONE in-session 2026-06-12 (maintainer: no API) — 284 Eternal lines written and machine-verified in-session, committed in augment-reviews.json; the keyed pipeline remains for unattended post-patch refreshes.
 
 REMAINING: the original scope (hero-page coach lines + squad/coach
-report copy through the same verifier).
+report copy through the same verifier). **DONE 2026-08-17** — both halves
+shipped through plan -> author -> verify -> independent judge -> gate:
+
+- **Hero-page coach lines.** New pass `npm run review:herocoach`
+  (src/hero-coach-copy.ts builds the facts block, ingest/hero-coach-review.ts
+  runs it) replaces the templated `coachLine` with an action-first line plus one
+  blunt watch-out, per hero AND per lane. 166 lines over all 83 role views, 0
+  rejected by copy-verify. Judge converged 87.3% -> 98.8% -> 100% (21 + 2 + 0
+  flags; gate STOP). Output data/aggregates/hero-coach-lines.json; the hero page
+  prefers it and keeps the engine's templated line as the timing footnote, so a
+  dropped line degrades to what shipped before. test/hero-coach.test.ts rebuilds
+  every facts block and re-runs the verifier, so stale copy fails `npm test`.
+- **Squad/coach report copy.** The author pass existed but had never been
+  judged (the last critique round predated the 2026-08-07 re-author) and the
+  critic only ever read the LEAD's report. Now all six (lead + five members) go
+  through it: 74.1% -> 88.9% -> 96.3% -> 98.8% -> 100% over five rounds, 34
+  grounded rewrites applied. It found real defects, not style: an invented
+  baseline ("+5.8 wins per 100 vs the average Murdock player" — no such
+  baseline exists in the data), a false superlative, two backwards kit reads,
+  a wrong hero class, and two "queue a different role" headlines.
+- Loop plumbing: `copy-critique.ts` is scopeable per surface (CRITIQUE_ONLY +
+  its own CRITIQUE_REPORT/CRITIQUE_HISTORY) so a new surface converges without
+  re-judging settled copy; `herocoach:*` and `coachreport:*` scripts run each
+  loop and its gate. See docs/agent-loops.md.
+
+STILL OPEN (not this item's scope): data/aggregates/item-reviews.json holds 0
+lines — a responses-less `copy:ingest` wiped 182 committed item explanations on
+2026-08-07 and the hero page's item "why" lines have been blank since. The new
+writeAggregate() guard makes that failure mode impossible going forward, but
+the 182 lines still need re-authoring (one agent pass).
