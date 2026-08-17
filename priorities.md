@@ -158,7 +158,7 @@ also surface the highest-WINRATE build, not just most-played.
   Skylar's crit/execute core and Zinx's on-hit mid core item-by-item. STILL
   TODO: surface it on the hero page beside the field winrate.
 
-## 10b. Augment-as-playstyle steer — ENGINE SHIPPED 2026-06-13
+## 10b. Augment-as-playstyle steer — ENGINE SHIPPED 2026-06-13; PAGE SHIPPED 2026-08-17
 
 An augment is a declared playstyle; the lane selects it. src/playstyle.ts
 classifies each augment (on-hit/ability-burst/sustain/tank/poke) from the
@@ -168,11 +168,18 @@ steers to that playstyle's corner EVEN WHEN the augment's mechanic is
 unmodeled. `npm run answer` prints provenance exposing whether the sim
 models the augment or is steering by playstyle + field evidence. Proof:
 Zinx-mid + Terminal Treatment (on-hit, unmodeled) flips ability-burst →
-on-hit auto-DPS core; Disc of Demise (modeled) → burst. NEXT: wire the
-steer + provenance into build-artifacts.ts so the hero page reflects it
-per lane (regenerates artifacts); still worth doing item-10 #1 (parse the
-PASSIVE slot) so on-hit augments like Terminal Treatment get true magnitude,
-not just a playstyle steer.
+on-hit auto-DPS core; Disc of Demise (modeled) → burst. DONE 2026-08-17: the artifacts already carried
+`laneSteer` (per role view) and `laneFlex` (per lane) with the honest
+provenance string — 67 of 83 role views have a steer, 25 of them modeled — but
+the hero page never rendered either (the CSS shipped, the renderer never did).
+ui/v6/index.html now renders the active lane's steer beside the kit-math build:
+the augment the field takes there, its playstyle in plain words, an "in our
+math" / "playstyle steer only" pill, the field win rate, and the exact items
+the steer would add and drop. Switching flex role re-renders it for that lane;
+the 5 heroes with no augment evidence (gadget, neon, serath, wraith, wukong)
+degrade to nothing. Still worth doing item-10 #1 (parse the PASSIVE slot) so
+on-hit augments like Terminal Treatment get true magnitude, not just a
+playstyle steer.
 
 ## 12. Ranked-only augment/Eternal/crest evidence + ranked/standard split (backlogged 2026-06-26)
 
