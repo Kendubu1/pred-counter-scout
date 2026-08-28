@@ -105,16 +105,43 @@ describe('hero artifacts (Concept A engine stage)', () => {
     }
   });
 
-  it('Learn-tab data covers every rostered hero (skill orders + ability tips)', () => {
+  it('Learn-tab data covers every rostered hero, or declares the hero pending', () => {
+    // A hero released this patch has no pred.gg-derived field data at all. That
+    // is allowed ONLY if data/aggregates/field-data-pending.json declares it, so
+    // the surfaces can say "field evidence pending" instead of rendering blank.
     const index = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/index.json'), 'utf8')) as { heroes: { slug: string }[] };
     const skills = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/skill-orders.json'), 'utf8'));
     const tips = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/ability-tips.json'), 'utf8'));
+    const pending = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/field-data-pending.json'), 'utf8')).heroes as Record<string, { missing: string[] }>;
     for (const { slug } of index.heroes) {
-      expect(skills.heroes[slug]?.maxOrder?.length, `${slug} missing skill order`).toBeGreaterThan(0);
-      const ult = skills.heroes[slug]?.ultLevels ?? null;
-      expect(ult, `${slug} ult levels`).toBeTruthy();
-      if (ult.length) expect(ult).toEqual([6, 11, 16]);
-      expect(Object.keys(tips.heroes[slug] ?? {}).length, `${slug} missing ability tips`).toBeGreaterThan(0);
+      if (pending[slug]?.missing.includes('recommended skill order')) {
+        expect(skills.heroes[slug], `${slug} is declared pending but HAS a skill order`).toBeUndefined();
+      } else {
+        expect(skills.heroes[slug]?.maxOrder?.length, `${slug} missing skill order and not declared pending`).toBeGreaterThan(0);
+        const ult = skills.heroes[slug]?.ultLevels ?? null;
+        expect(ult, `${slug} ult levels`).toBeTruthy();
+        if (ult.length) expect(ult).toEqual([6, 11, 16]);
+      }
+      if (!pending[slug]?.missing.includes('ability tips')) {
+        expect(Object.keys(tips.heroes[slug] ?? {}).length, `${slug} missing ability tips and not declared pending`).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('a declared-pending hero is declared honestly, and nobody else is hiding behind it', () => {
+    const index = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/index.json'), 'utf8')) as { heroes: { slug: string; fieldDataPending?: boolean }[] };
+    const pending = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/field-data-pending.json'), 'utf8')).heroes as Record<string, { name: string; missing: string[]; reason: string; matchSample: number }>;
+    const slugs = new Set(index.heroes.map((h) => h.slug));
+    for (const [slug, p] of Object.entries(pending)) {
+      expect(slugs.has(slug), `${slug} is declared pending but is not on the roster`).toBe(true);
+      expect(p.missing.length, `${slug} declared pending with nothing missing`).toBeGreaterThan(0);
+      expect(p.reason.length, `${slug} declared pending with no stated reason`).toBeGreaterThan(20);
+      // The declaration must not become a dumping ground for established heroes.
+      expect(p.matchSample, `${slug} has a real match sample; it is not a pending hero`).toBeLessThan(500);
+    }
+    // The index flag and the declaration must agree.
+    for (const h of index.heroes) {
+      expect(!!h.fieldDataPending, `${h.slug} index flag disagrees with the declaration`).toBe(!!pending[h.slug]);
     }
   });
 
@@ -192,8 +219,10 @@ describe('hero artifacts (Concept A engine stage)', () => {
     const augs = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/predgg-augments.json'), 'utf8'));
     const meta = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/meta.json'), 'utf8'));
     const index = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/index.json'), 'utf8'));
+    const pending = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/field-data-pending.json'), 'utf8')).heroes as Record<string, { missing: string[] }>;
     for (const h of index.heroes) {
-      expect(Object.keys(augs.heroes[h.slug] ?? {}).length, `${h.slug} has no augment cells`).toBeGreaterThan(0);
+      if (pending[h.slug]?.missing.includes('augment and Eternal win evidence')) continue;
+      expect(Object.keys(augs.heroes[h.slug] ?? {}).length, `${h.slug} has no augment cells and is not declared pending`).toBeGreaterThan(0);
     }
     for (const [role, list] of Object.entries(meta.roles) as [string, { slug: string }[]][]) {
       for (const h of list) {

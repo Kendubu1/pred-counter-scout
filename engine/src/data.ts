@@ -76,7 +76,7 @@ const OMEDA_KEY_MAP: Record<string, AbilityDef['key']> = {
 // maximum health) magical damage" (percent-max-health scaling; any inner
 // power ratio on the percentage itself is conservatively dropped).
 // Per-rank scaling arrays ("+110/115/.../130%") use the mean.
-function parseDamage(md: string): { values: number[]; scaling: number; pctMaxHealth?: number; damageType: 'physical' | 'magical' } | null {
+export function parseDamage(md: string): { values: number[]; scaling: number; pctMaxHealth?: number; damageType: 'physical' | 'magical' } | null {
   const a = md.match(/deal(?:ing|s)?\s+([\d][\d./]*)\s*<(AttackDamageText|AbilityPowerText)>\(\+([\d./]+)%/);
   if (a) {
     const values = a[1]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
@@ -99,6 +99,98 @@ function parseDamage(md: string): { values: number[]; scaling: number; pctMaxHea
     return { values, scaling: 0, pctMaxHealth: Number(b[2]), damageType };
   }
   return { values, scaling: Number(b[2]), damageType };
+}
+
+// Pattern C: the clause-scoped fallback, tried ONLY where A and B both fail.
+// Before this existed those abilities fell back to the frozen pre-1.14 owned
+// scrape, so 15 abilities across 10 heroes silently served numbers two patches
+// old (found 2026-08-28 by npm run patchcheck, via Terra's Ruthless Assault).
+//
+// Three gaps in A/B it closes, all read from the live text and never invented:
+//   1. the damage verb is "take"/"receive"/"Deals" (capitalised), not "deals"
+//   2. the scaling tag is a stat the sim cannot scale on (ArmorText, HealthText,
+//      MRText — Terra scales off her own armor, Sevarog off his own health).
+//      The stated damage values are still correct, so they are taken and the
+//      ratio is dropped to 0 and REPORTED as unmodeled rather than guessed.
+//   3. the base damage carries no tag at all and only a rider is tagged
+//      (Kira's Dusk: 45-125 base plus a 6-14 per-stack rider)
+//
+// Work is clause-scoped so a heal never reads as damage: Muriel's Consecrated
+// Ground restores Health in one clause and deals magical damage in another, and
+// only the clause that actually says "damage" is eligible.
+const POWER_TAG: Record<string, 'physical' | 'magical'> = {
+  AttackDamageText: 'physical', AbilityPowerText: 'magical',
+};
+
+/** Does the number at `from` actually pay out damage, or health/mana/a shield?
+ *  Reads the text that follows it with markup removed and takes whichever
+ *  payload word appears first. */
+function isDamagePayload(clause: string, from: number): boolean {
+  // Strip markup BEFORE looking, and read to the end of the clause rather than a
+  // fixed character window: the tag soup between a number and its payload word
+  // runs to ~130 characters on abilities that scale on two stats (Terra's
+  // Armor+MR, Yin's AD+AP), which a fixed window truncates. The clause is
+  // already the bound.
+  const after = clause.slice(from).replace(/<[^>]+>/g, ' ');
+  const m = after.match(/\b(damage|health|mana|shield|heal|healing|barrier)\b/i);
+  return !!m && m[1]!.toLowerCase() === 'damage';
+}
+
+export function parseDamageClauseScoped(md: string): { values: number[]; scaling: number; pctMaxHealth?: number; damageType: 'physical' | 'magical'; unmodeledScaling?: string } | null {
+  const clauses = md.split(/<br>|\n|(?<=\.)\s+/).filter((c) => /damage/i.test(c));
+  type Cand = { values: number[]; scaling: number; pctMaxHealth?: number; damageType: 'physical' | 'magical'; unmodeledScaling?: string; conditional?: boolean };
+  const cands: Cand[] = [];
+  // A conditional maximum is not the ability's damage. Terra's Wild Rush deals
+  // 27-111 on a normal dash and "up to" 81-333 only inside a 1.25s charge window;
+  // Kira's Dusk adds 6-14 "per stack" on top of its 45-125 base. Crediting either
+  // as the baseline would overstate the kit, so they are taken only when nothing
+  // unconditional is on offer.
+  const CONDITIONAL = /\bup to\b|\bper stack\b|Empowered:|\bFor the first\b|\bfully charged\b/i;
+
+  for (const clause of clauses) {
+    const typeOf = (fallback: 'physical' | 'magical'): 'physical' | 'magical' => {
+      const t = clause.match(/(magical|physical)\s+damage/i);
+      return t ? (t[1]!.toLowerCase() as 'physical' | 'magical') : fallback;
+    };
+
+    // Tagged values: "50/80/110/140/170 <ArmorText>(+35%" or "<AbilityPowerText>(+50%"
+    const tagged = /([\d][\d./]*)\s*<(\w+Text)>\(\+([\d./]+)%/g;
+    let m: RegExpExecArray | null;
+    while ((m = tagged.exec(clause))) {
+      const values = m[1]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
+      if (!values.length) continue;
+      const tag = m[2]!;
+      const power = POWER_TAG[tag];
+      // The clause mentioning "damage" is not enough: Zinx's ultimate reads
+      // "If the Target takes lethal damage ... they Resurrect with 500/900/1300
+      // Health", which would otherwise book a 1300-damage nuke on a resurrect.
+      // The number must be followed by "damage" BEFORE any health/mana/shield
+      // word, with tags stripped first (the tag names carry those words).
+      if (!isDamagePayload(clause, m.index! + m[0].length)) continue;
+      const conditional = CONDITIONAL.test(clause.slice(0, m.index!));
+      if (power) {
+        const parts = m[3]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
+        cands.push({ values, scaling: parts.length ? parts.reduce((s, n) => s + n, 0) / parts.length : 0, damageType: typeOf(power), conditional });
+      } else {
+        // Scaling stat the sim has no channel for: keep the stated base, drop
+        // the ratio, and say so.
+        cands.push({ values, scaling: 0, damageType: typeOf('physical'), unmodeledScaling: tag.replace(/Text$/, ''), conditional });
+      }
+    }
+
+    // Untagged base damage: "dealing 45/65/85/105/125 physical damage"
+    const plain = clause.match(/(?:deal(?:ing|s)?|take|takes|receive|receives|suffer|suffers)\s+([\d][\d./]*)\s*(?:physical|magical|true)?\s*damage/i);
+    if (plain) {
+      const values = plain[1]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
+      if (values.length) cands.push({ values, scaling: 0, damageType: typeOf('physical'), unmodeledScaling: 'untagged-base', conditional: CONDITIONAL.test(clause.slice(0, plain.index!)) });
+    }
+  }
+
+  if (!cands.length) return null;
+  // Prefer the unconditional damage; among those take the largest first rank,
+  // which is pattern A's "best damage entry" convention.
+  const pool = cands.some((c) => !c.conditional) ? cands.filter((c) => !c.conditional) : cands;
+  return pool.reduce((best, c) => (c.values[0]! > best.values[0]! ? c : best));
 }
 
 // Bonus damage scaled on the target's CURRENT or MISSING health — the execute
@@ -214,6 +306,9 @@ export interface LoadedData {
   itemsBySlug: Map<string, Item>;
   derivedProfiles: string[];       // heroes with no owned profile (derived from omeda)
   staleFallbacks: { slug: string; key: string }[]; // ability numbers taken from stale owned data
+  // Current-text damage kept, scaling ratio dropped because the sim has no
+  // channel for it (caster armor/health scaling) or the base carried no tag.
+  unmodeledScalings: { slug: string; key: string; stat: string }[];
 }
 
 export function loadData(): LoadedData {
@@ -237,6 +332,10 @@ export function loadData(): LoadedData {
   const kits = new Map<string, HeroKit>();
   const derivedProfiles: string[] = [];
   const staleFallbacks: { slug: string; key: string }[] = [];
+  // Abilities whose damage values are current but whose scaling ratio the sim
+  // cannot represent (scales on the caster's own armor/health, or the base is
+  // untagged). Damage is understated for these, so they are reported, not hidden.
+  const unmodeledScalings: { slug: string; key: string; stat: string }[] = [];
 
   for (const om of omedaHeroes) {
     const bs = om.base_stats;
@@ -258,7 +357,12 @@ export function loadData(): LoadedData {
     for (const key of ['ALTERNATE', 'PRIMARY', 'SECONDARY', 'ULTIMATE'] as const) {
       const omAb = omAbs.get(key);
       const owned = ownedByKey.get(key);
-      const parsed = omAb?.menu_description ? parseDamage(omAb.menu_description) : null;
+      const strict = omAb?.menu_description ? parseDamage(omAb.menu_description) : null;
+      // Pattern C runs only where the strict patterns fail; without it these
+      // abilities silently fall back to the frozen pre-1.14 owned scrape.
+      const parsed = strict ?? (omAb?.menu_description ? parseDamageClauseScoped(omAb.menu_description) : null);
+      const droppedScaling = !strict && parsed ? (parsed as { unmodeledScaling?: string }).unmodeledScaling : undefined;
+      if (droppedScaling) unmodeledScalings.push({ slug: om.slug, key, stat: droppedScaling });
       const healing = omAb?.menu_description ? parseHealing(omAb.menu_description) : [];
       const asBuff = omAb?.menu_description ? parseSelfAttackSpeed(omAb.menu_description) : null;
       const targetHealth = omAb?.menu_description ? parseTargetHealth(omAb.menu_description) : [];
@@ -416,7 +520,7 @@ export function loadData(): LoadedData {
     itemsBySlug.set(item.slug, item);
   }
 
-  return { kits, items, itemsBySlug, derivedProfiles: derivedProfiles.sort(), staleFallbacks };
+  return { kits, items, itemsBySlug, derivedProfiles: derivedProfiles.sort(), staleFallbacks, unmodeledScalings };
 }
 
 export function completedItems(data: LoadedData): Item[] {

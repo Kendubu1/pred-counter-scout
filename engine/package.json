@@ -14,7 +14,7 @@
     "squad": "tsx src/ingest/squad.ts",
     "buildstats": "tsx src/ingest/buildstats.ts",
     "snapshot": "tsx src/ingest/snapshot.ts",
-    "refresh": "npm run snapshot && npm run augments && npm run buildstats && npm run skills && npm run aggregate && npm run artifacts && npm run matrix && npm run agreement",
+    "refresh": "npm run snapshot && npm run patchcheck && npm run augments && npm run buildstats && npm run skills && npm run aggregate && npm run artifacts && npm run matrix && npm run agreement",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "calibrate": "tsx src/ingest/calibrate-from-data.ts",
@@ -56,7 +56,8 @@
     "coach:loop:gate": "LOOP_HISTORY=data/aggregates/coach-critique-history.json tsx src/ingest/loop-gate.ts",
     "postgame:items": "tsx src/ingest/postgame-items.ts",
     "postgame:fights": "tsx src/ingest/postgame-fights.ts",
-    "genstats": "tsx src/ingest/general-stats.ts"
+    "genstats": "tsx src/ingest/general-stats.ts",
+    "patchcheck": "tsx src/ingest/patch-check.ts"
   },
   "devDependencies": {
     "@types/node": "^25.9.3",
