@@ -78,7 +78,10 @@ and how to wire a new loop live in `docs/agent-loops.md`.
 - Engine commands (run from `engine/`): `npm test` (harness),
   `npm run answer -- <hero-slug>` (build generation),
   `npm run drift` (owned-data staleness report),
-  `npm run snapshot` (refresh data/omeda after a balance patch),
+  `npm run patchcheck` (grades data/omeda against the data/patches digests —
+  run it after EVERY snapshot: omeda's catalog lags live, so a fresh fetch can
+  still return pre-patch numbers; it is also a harness gate),
+  `npm run snapshot` (refresh data/omeda after a balance patch; ALWAYS follow with `npm run patchcheck`),
   `npm run refresh` (FULL data refresh chain — needs PREDGG_CLIENT_ID/SECRET in
   the env: snapshot -> augments -> buildstats -> skills -> aggregate -> artifacts
   -> matrix -> agreement; refreshes winrates + builds for every hero's main and

@@ -190,6 +190,60 @@ copy pass). (3) relabel the hero page "by field winrate" -> "by ranked winrate";
 decide whether to lower the >=300 Eternal/crest threshold or fall back to ranked+standard for thin
 picks. (Coach playerProfile.ts also blends modes — a separate decision.)
 
+## 13. Community-gap review 2026-08-28 — findings and what is left
+
+Done this session (see lessons.md for the mechanics): the catalog was two
+patches stale and is now verified 1.16 (`npm run patchcheck`, standing gate),
+Scarlett is onboarded with a declared field-data gap, 15 abilities stopped
+silently serving pre-1.14 numbers, and the copy that had rotted against the new
+catalog is re-grounded.
+
+### Still open, in the order they cost us most
+
+1. **CRED-GATED: the whole pred.gg field layer is on patch 1.15 (pulled
+   2026-07-06).** Augment/Eternal win evidence, recommended skill orders and
+   build statistics are seven weeks and two patches old, and 1.16 rebalanced
+   augments directly (Scarlett's three new ones, plus nerfs to Tiny Titan and
+   Focal Lens). The hero page LEADS with the augment choice, so this is the
+   stalest thing a player actually reads. Needs PREDGG_CLIENT_ID/SECRET in a
+   fresh session — the host is reachable, only the credentials are missing.
+   Run: `npm run augments && npm run buildstats && npm run skills && npm run
+   genstats`, then `npm run artifacts` and the copy passes. Do item 12
+   (ranked-only evidence) in the same pass rather than pulling twice.
+
+2. **The omeda match feed returned 503 all session**, so lane boards, matchup
+   evidence, rank splits and the gold curves could not be re-measured. Two
+   consequences are live on the site and labelled: the boards are a pre-1.16
+   window, and spike minutes come from 1.15 gold curves that 1.16's economy
+   rework invalidated. First job of the next session that finds the feed up:
+   `npm run aggregate` -> `npm run artifacts` -> `npm run matrix`, then clear
+   goldEconomyStaleAgainst in calibration.json.
+
+3. **1.16 systemic changes the engine does not model at all.** Shrines (a new
+   mini-objective granting permanent ability haste and tower true damage),
+   teleporters live from minute zero, and never-expiring tower platings are
+   map-and-economy mechanics with no representation in the kit-math model. We
+   should not pretend to model them; the honest step is deciding whether the
+   coach and lane copy should mention them as macro advice, which is where the
+   community actually feels 1.16.
+
+4. **Competitor read (predbuilds.com, pred.gg).** PredBuilds advertises 590.8K
+   matches over 30 days with tier lists, ban votes, counters and builds. Our
+   meta board is an 8,243-match, 36-hour window. Competing on win-rate boards
+   is a losing trade and always will be: they have the sample and the refresh
+   cadence. What neither of them does is the thing we already have — kit-math
+   builds with per-item leave-one-out attribution (`npm run explain`), matchup
+   checkpoints that say WHEN a lane is winnable rather than a single counter
+   score, augment/Eternal sim-vs-field disagreement, and a stated confidence on
+   every number. Recommendation: stop treating the meta board as a headline
+   surface and lead with the explanation layer. Concretely, ship the panel that
+   is already half-built — item 11's "why this meta build wins" is engine-done
+   (`npm run explain`) and still not on the hero page.
+
+5. **Scarlett needs a second pass once she has field data** — the declaration
+   in data/aggregates/field-data-pending.json is the tracking record and clears
+   itself when the pull lands.
+
 ## Parked ideas (not yet scheduled)
 
 - Comfort-vs-meta flex logic (parked by maintainer 2026-06-12): when a
