@@ -618,6 +618,17 @@ let MATRIX = null, PATCH_STATE = null, LATEST_PATCH = null;
 // The lane boards come from the public match feed, which runs days behind live.
 // When it hasn't reached the newest reviewed patch yet, say so plainly rather
 // than letting a stale window read as current.
+// Spike minutes come from a measured gold table. When that table was collected
+// under a different economy than the live patch, the minutes are a patch behind
+// and the page has to say so — 1.16 raised camp gold, changed tower plating gold
+// and added a lane buff, so gold arrives on a different schedule than the table
+// was measured under.
+function spikeCaveat() {
+  const g = INDEX && INDEX.goldEconomy;
+  if (!g || !g.measuredIn || !g.staleAgainst) return '';
+  return ` <span title="${esc(g.note || '')}" style="color:var(--gold)">Spike minutes come from ${esc(g.measuredIn)} gold curves — ${esc(g.staleAgainst)} changed the economy, so treat them as approximate.</span>`;
+}
+
 function metaWindowNote() {
   if (!LATEST_PATCH || !META || !META.patch) return '';
   if (String(META.patch).includes(String(LATEST_PATCH))) return '';
@@ -1024,7 +1035,7 @@ function buildsCard(a) {
   const items = a.build.items || [];
   const core = items.slice(0, 3).map((i) => esc(i.name));
   const orderCap = items.length >= 4
-    ? `<div class="mb-why" style="color:var(--text-2);margin:.45rem 0 0">Buy in order — rush <b>${core.join('</b> → <b>')}</b>, then adapt the last slots to the match.</div>`
+    ? `<div class="mb-why" style="color:var(--text-2);margin:.45rem 0 0">Buy in order — rush <b>${core.join('</b> → <b>')}</b>, then adapt the last slots to the match.${spikeCaveat()}</div>`
     : '';
   // Split the optimizer prose: the synergy + the 1/2/3 item reasons stay visible
   // by default; the swap table + holes collapse into "The sim math" with proofs.

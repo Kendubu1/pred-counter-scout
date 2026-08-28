@@ -126,8 +126,18 @@ if (existsSync(currencyPath)) {
   }
 }
 
+// Spike minutes are read off the measured gold table, which was collected in a
+// patch-1.15 window; 1.16 reworked the economy that table describes. Surfaces
+// that print a spike minute need to say so, so the gap travels with the data.
+const goldEconomy = {
+  measuredIn: (cal.checkpoints as { goldEconomyPatch?: string }).goldEconomyPatch ?? null,
+  staleAgainst: (cal.checkpoints as { goldEconomyStaleAgainst?: string }).goldEconomyStaleAgainst ?? null,
+  note: (cal.checkpoints as { goldEconomyNote?: string }).goldEconomyNote ?? null,
+};
+
 writeFileSync(path.join(OUT, 'index.json'), JSON.stringify({
   patch: cal.patch,
+  goldEconomy,
   patchNote: 'patch = the match window the aggregates were collected in. catalogPatch = the patch the hero/item numbers are verified against (npm run patchcheck). They differ whenever the public match feed is behind live, which is most of the time.',
   catalogPatch,
   generatedAt: new Date().toISOString(),
