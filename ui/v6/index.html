@@ -38,6 +38,10 @@
   .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
   section.card, .lanepanel, .metaboard { scroll-margin-top:calc(var(--toph, 96px) + 10px); }
   .patch-pill { font-size:.74rem; color:var(--text-1); border:1px solid var(--border); border-radius:99px; padding:.15rem .6rem; }
+  /* new-hero state: kit math present, field evidence declared absent */
+  .pending-note { border:1px solid var(--gold); background:var(--bg-2); border-radius:10px;
+    padding:.7rem .85rem; margin:.2rem 0 .9rem; font-size:.78rem; line-height:1.5; color:var(--text-1); }
+  .pending-note b { color:var(--text-0); }
   .top a.classic { font-size:.8rem; color:var(--text-2); }
   .top a.classic:hover { color:var(--text-1); }
 
@@ -1081,8 +1085,24 @@ function renderHero(a, roleParam) {
   const dots = (cps) => `<div class="dots">${cps.map((c) =>
     `<div class="dotwrap"><div class="dot ${c.verdict}" title="minute ${c.minute}: ${c.verdict === 'you' ? 'you can win the fight' : c.verdict === 'enemy' ? 'they can win the fight' : 'even'}"></div><div class="m">${c.minute}</div></div>`).join('')}</div>`;
 
+  // A hero released this patch has a full kit but no field layer yet: no augment
+  // win evidence, no recommended skill order, no build statistics. Saying so is
+  // the honest state — a new hero is the most-looked-up page on the site in her
+  // first fortnight, and that is the worst place to imply evidence we lack.
+  const pend = (typeof PENDING === 'object' && PENDING) ? PENDING[a.slug] : null;
+  const pendingBanner = !pend ? '' : `
+    <div class="pending-note">
+      <b>New hero — kit math only.</b> ${esc(a.name)}'s numbers below come from the
+      current-patch catalog and our own simulator, so the build, matchups and
+      ability breakdown are real. What is missing is the <b>field layer</b>:
+      ${esc(pend.missing.join(', '))}. ${esc(pend.reason.charAt(0).toUpperCase() + pend.reason.slice(1))}.
+      We would rather show you nothing there than a win rate we made up — it fills in
+      once she has been played enough to measure.
+    </div>`;
+
   $('#hero').innerHTML = `
     <div class="backrow"><button id="back">← all heroes</button></div>
+    ${pendingBanner}
 
     <header class="hero-head">
       <img src="${IMG.hero(a.slug)}" alt="" onerror="this.style.visibility='hidden'">
@@ -1124,7 +1144,19 @@ function renderHero(a, roleParam) {
       <h2>Your opening picks</h2>
       ${(() => {
         const hr = AUGS && AUGS.heroes[a.slug];
-        if (!hr) return `<div class="muted" style="margin-bottom:.8rem">no augment field evidence for this hero yet (thin sample)${top ? ` · kit-math Eternal pick: <b>${esc(top.name)}</b> +${top.headlinePct}% headline` : ''}</div>`;
+        // "thin sample" is wrong for a hero released this patch: the sample is
+        // zero, not thin, and the banner above already says so. Match it, and
+        // drop the kit-math Eternal line when its headline gain is 0% — an
+        // Eternal named with "+0%" beside it reads as a recommendation the
+        // math did not actually make.
+        if (!hr) {
+          const isNew = (typeof PENDING === 'object' && PENDING) ? !!PENDING[a.slug] : false;
+          const lead = isNew
+            ? `no augment or Eternal field evidence yet — ${esc(a.name)} released this patch`
+            : 'no augment field evidence for this hero yet (thin sample)';
+          const kitPick = top && top.headlinePct > 0 ? ` · kit-math Eternal pick: <b>${esc(top.name)}</b> +${top.headlinePct}% headline` : '';
+          return `<div class="muted" style="margin-bottom:.8rem">${lead}${kitPick}</div>`;
+        }
         const roles = Object.keys(hr);
         const role = roleParam && hr[roleParam] ? roleParam : (hr[a.role] ? a.role : roles[0]);
         const mismatch = roleParam && !hr[roleParam];
@@ -1656,16 +1688,18 @@ async function nav(slug, replace = false, role = null) {
   await route();
   window.scrollTo({ top: 0 });
 }
-let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null;
+let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null, PENDING = null;
 async function getAugs() {
   if (!AUGS) {
-    let eternals;
-    [AUGS, REVIEWS, REASONING, eternals] = await Promise.all([
+    let eternals, pending;
+    [AUGS, REVIEWS, REASONING, eternals, pending] = await Promise.all([
       getJson('../../data/aggregates/predgg-augments.json').catch(() => null),
       getJson('../../data/aggregates/augment-reviews.json').catch(() => null),
       getJson('../../data/aggregates/build-reasoning.json').catch(() => null),
       getJson('../../data/game-data/eternals.json').catch(() => null),
+      getJson('../../data/aggregates/field-data-pending.json').catch(() => null),
     ]);
+    PENDING = (pending && pending.heroes) || {};
     // name -> { major, minorSlot1, minorSlot2 } so an Eternal can be explained in
     // plain words (what it does) and clicked open for its minor options.
     ETMAP = {};
@@ -1702,8 +1736,18 @@ window.onpopstate = route;
   // One canonical THEORY definition + one shared win%/verdict legend (docs/ux-rubric.md R3).
   $('#theoryDef').textContent = THEORY_DEF + '.';
   const dataDate = (INDEX.generatedAt || '').slice(0, 10);
-  $('#patchPill').textContent = `patch ${INDEX.patch}${dataDate ? ` · data ${dataDate}` : ''}`;
-  $('#patchPill').title = dataDate ? `Live match data + winrates last refreshed ${dataDate}` : '';
+  // Two different patches, labelled separately. INDEX.catalogPatch is the patch
+  // the hero and item numbers are verified against; INDEX.patch is the match
+  // window the win rates and lane boards were collected in. The feed runs behind
+  // live, so these usually differ — showing one number for both once let the
+  // site claim the boards' patch for its kit math.
+  const kitP = INDEX.catalogPatch, boardP = INDEX.patch;
+  $('#patchPill').textContent = kitP && boardP && !String(boardP).includes(String(kitP))
+    ? `kit ${kitP} · boards ${boardP}`
+    : `patch ${boardP}${dataDate ? ` · data ${dataDate}` : ''}`;
+  $('#patchPill').title = kitP && boardP && !String(boardP).includes(String(kitP))
+    ? `Hero and item numbers are patch ${kitP} (verified against the patch notes). Win rates and lane boards come from a match window collected in ${boardP} — the public match feed runs days behind live.${dataDate ? ` Last refreshed ${dataDate}.` : ''}`
+    : (dataDate ? `Live match data + winrates last refreshed ${dataDate}` : '');
   const allSum = document.querySelector('#allHeroes > summary .t');
   if (allSum) allSum.textContent = `Browse all ${INDEX.heroes.length} heroes`;
   await getMatrix();

@@ -103,8 +103,33 @@ if (Object.keys(fieldPending).length) {
   console.log(`\nfield evidence pending for ${Object.keys(fieldPending).length} hero(es): ${Object.keys(fieldPending).join(', ')}`);
 }
 
+// TWO patches, not one. cal.patch labels the MATCH WINDOW the aggregates were
+// collected in (lane boards, gold curves, winrates); the hero and item numbers
+// come from the catalog snapshot, which is refreshed separately and is usually
+// AHEAD of the feed — the public match feed runs days behind live. Publishing a
+// single "patch X" pill made the site claim the boards' patch for the kit math,
+// which was wrong in both directions at different times. Each is now labelled
+// with the patch it actually describes.
+//
+// catalogPatch is derived, never typed in: it is the newest patch whose stated
+// changes npm run patchcheck finds present in the snapshot with none stale.
+const currencyPath = path.join(ROOT, 'data/aggregates/patch-currency.json');
+let catalogPatch: string | null = null;
+if (existsSync(currencyPath)) {
+  const cur = JSON.parse(readFileSync(currencyPath, 'utf8')) as {
+    staleAgainstPatch: string | null;
+    perPatch: Record<string, { applied: number; stale: number }>;
+  };
+  if (!cur.staleAgainstPatch) {
+    const verified = Object.entries(cur.perPatch).filter(([, v]) => v.applied > 0 && v.stale === 0).map(([p]) => p);
+    catalogPatch = verified.length ? verified[verified.length - 1]! : null;
+  }
+}
+
 writeFileSync(path.join(OUT, 'index.json'), JSON.stringify({
   patch: cal.patch,
+  patchNote: 'patch = the match window the aggregates were collected in. catalogPatch = the patch the hero/item numbers are verified against (npm run patchcheck). They differ whenever the public match feed is behind live, which is most of the time.',
+  catalogPatch,
   generatedAt: new Date().toISOString(),
   heroes: index.map((h) => (fieldPending[h.slug] ? { ...h, fieldDataPending: true } : h)),
 }, null, 1));
