@@ -2720,7 +2720,7 @@ Eight maintainer-flagged fixes:
   chips, popups, single legend, reduced-motion) transferred to a brand-new
   page with no rework.
 - Graceful degradation earned its keep on release day: Scarlett and the four
-  new Eternals (Weald/Rust/Pilow/Satatriel + Mechadrive) are in the notes but
+  new Eternals (Weald/Rust/Pilow/Satariel + Mechadrive) are in the notes but
   NOT in the omeda/eternals catalogs yet. Because every image carries an
   onerror self-hide and the popup button is conditional on catalog presence,
   the page renders honestly with no broken glyphs and no dead buttons. Build
@@ -2745,7 +2745,7 @@ Eight maintainer-flagged fixes:
   writes to will rot — check owned game-data against a fresh digest whenever a
   patch touches it.
 - **The recommender pool is keyed off effects.json, not the catalog.** Adding
-  Weald/Rust/Pilow/Satatriel to eternals.json left them unrecommendable —
+  Weald/Rust/Pilow/Satariel to eternals.json left them unrecommendable —
   verified 0 of 53 artifacts contained one. rankBlessings enumerates
   `eternal:<id>:major` keys in fixtures/effects.json. Registering them there
   (kind:unmodeled, with a note on why each resists the sim) put them in all 53
