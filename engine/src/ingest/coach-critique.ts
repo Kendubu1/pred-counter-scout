@@ -21,7 +21,7 @@ import { ask, flushTasks, isPrepare } from '../copy-session.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const PG = path.join(ROOT, 'data/postgame');
 
-interface Coaching { headline?: string; team?: string; whatShiftedIt?: string; perPlayer?: Record<string, string>; }
+interface Coaching { headline?: string; team?: string; whatShiftedIt?: string; perPlayer?: Record<string, string>; verdicts?: Record<string, { mood?: string; text?: string }>; }
 interface Facts { matchId: string; result: string; durationMin: number; vpSwing: number | null; players: any[]; lanes: any[]; comp: any; objectives: any; timeline?: any; skirmishes?: any[]; coaching?: Coaching | null; }
 
 /** Compact, factual source block the critic judges the coaching against. */
@@ -49,8 +49,23 @@ function sourceOf(f: Facts): string {
     // the film — e.g. their Narbash's 70,180 healing — were flagged as invented
     // because the SOURCE only printed our side).
     `THEIR PLAYERS: ${f.players.filter((p) => !p.us).map((p) => `${p.heroName} ${p.role} ${p.kills}/${p.deaths}/${p.assists}, ${(p as any).damageToHeroes ?? '?'} hero dmg, ${(p as any).healingDone ?? '?'} healing, items [${((p as any).items ?? []).map((i: any) => i.name ?? i).join(', ')}]`).join('; ')}.`,
+    ...interrogationLines(f),
     ...fightEconLines(f),
   ].join('\n');
+}
+
+
+/** The interrogation pass (postgame:interrogate): citable causation facts —
+ *  team ward sums, river/seedling control, and who was dead (or that NOBODY
+ *  was) going into each enemy major. */
+function interrogationLines(f: Facts & { interrogation?: any }): string[] {
+  const ig = (f as any).interrogation;
+  if (!ig) return [];
+  const out: string[] = [];
+  if (ig.vision) out.push(`VISION WAR: wards placed us ${ig.vision.usWards} vs them ${ig.vision.themWards}; destroyed us ${ig.vision.usDestroyed} vs them ${ig.vision.themDestroyed}.`);
+  if (ig.riverControl) out.push(`RIVER/SEEDLING CONTROL: river buffs us ${ig.riverControl.riverUs} vs them ${ig.riverControl.riverThem}; seedlings us ${ig.riverControl.seedlingUs} vs them ${ig.riverControl.seedlingThem}.`);
+  if ((ig.concededMajors ?? []).length) out.push(`CONCEDED MAJORS (their non-river takes, who on our side was dead in the prior 60s): ${ig.concededMajors.map((m: any) => `${m.type}@${m.minute}m ${m.uncontested ? 'NOBODY DEAD (uncontested — five alive)' : m.deadBefore.join(' + ') + ' dead'}`).join('; ')}.`);
+  return out;
 }
 
 /** Fight-economics facts (postgame:fights pass): first deaths, caught-out picks,
@@ -87,7 +102,7 @@ function fightEconLines(f: Facts & { fights?: any; kills?: any[] }): string[] {
   return out;
 }
 
-const lineList = (co: Coaching): string[] => [co.headline, co.team, co.whatShiftedIt, ...Object.values(co.perPlayer ?? {})].filter((s): s is string => !!s);
+const lineList = (co: Coaching): string[] => [co.headline, co.team, co.whatShiftedIt, ...Object.values(co.perPlayer ?? {}), ...Object.values(co.verdicts ?? {}).map((v) => v?.text)].filter((s): s is string => !!s);
 
 // Coaching perPlayer values are multi-sentence; the critic flags a sentence within
 // one, so we SUBSTRING-replace (not whole-string). Guard on length so a short quote
@@ -104,7 +119,11 @@ const stripNum = (s: string) => s.replace(/^\s*\d+\.\s*/, '');
 
 async function main() {
   const files = readdirSync(PG).filter((f) => f.endsWith('.json') && f !== 'index.json');
-  const games = files.map((fn) => ({ fn, f: JSON.parse(readFileSync(path.join(PG, fn), 'utf8')) as Facts })).filter((g) => g.f.coaching);
+  // COACH_GAMES=<id,id,...> scopes the loop to specific matches (prefix match),
+  // so a re-author of a few games doesn't re-judge the whole film library.
+  const scope = (process.env.COACH_GAMES ?? '').split(',').map((s) => s.trim()).filter(Boolean);
+  const inScope = (fn: string, id: string) => !scope.length || scope.some((s) => fn.startsWith(s) || id.startsWith(s));
+  const games = files.map((fn) => ({ fn, f: JSON.parse(readFileSync(path.join(PG, fn), 'utf8')) as Facts })).filter((g) => g.f.coaching && inScope(g.fn, g.f.matchId ?? ''));
 
   const report: Record<string, { quote: string; severity: string; issue: string; rewrite: string | null }[]> = {};
   let reviewed = 0, flagged = 0, grounded = 0, dropped = 0, applied = 0, unmatched = 0;
@@ -126,6 +145,9 @@ Flag ONLY real problems:
 (b) UNGROUNDED — a line factually wrong vs the SOURCE, or that invents a fight/objective/number not present.
 (c) WRONG REFERENCE — names the wrong hero, lane, fight, or objective.
 (d) VOICE — uses second person ("you/your/you're") as if addressed to one reader. The review is read by the WHOLE squad: team lines must speak as "we/our/the team"; per-player lines must name the player (squad name or hero) in third person. Rewrite keeping the exact same facts and numbers, changing only the voice.
+(e) METHOD — blames an ally's play instead of the decision made around them; judges a role by the wrong yardstick (a support on KDA/farm, a carry on wards, an offlaner on lane kills instead of survival); or makes an execution claim the SOURCE cannot show ("missed the combo") where it only proves a decision error (numbers, items-down, timing).
+(f) CAUSATION — a game-deciding claim with no why attached when the SOURCE carries one (a lost stretch without its cause; an enemy objective without who was dead or that NOBODY was); a bare timestamp with no event named ("absent at 20.5" when the SOURCE says what the 20.5 fight was); or a "why" the SOURCE cannot support (a guessed teleport, wave state, or position).
+BLUNT IS THE HOUSE STYLE: a harsh verdict backed by two or more SOURCE facts is CORRECT — do not flag or soften it; flag a blunt line only when its receipts are not in the SOURCE.
 Do NOT nitpick style beyond the voice rule. Return strict JSON: {"flags":[{"quote":"<the exact line text>","severity":"high|med|low","issue":"<what's wrong, one phrase>","rewrite":"<a game/draft/fight-focused corrected line grounded in the SOURCE, or null to drop the line>"}]}. If all fine, return {"flags":[]}.`;
 
     const raw = (await ask('coach-critique', id, prompt)).trim().replace(/^```json?\s*|```$/g, '');
