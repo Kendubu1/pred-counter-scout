@@ -57,20 +57,34 @@ describe('hero-page coach lines (copy pass, item 8)', () => {
     const data = load();
     if (!data) return;
     const arts = artifacts();
-    // Item vocabulary = every item name across every shipped build; a line may
-    // only name one that is in ITS lane's build.
+    // Item vocabulary = the whole catalogue, not just what some build ships.
+    // Drawn from shipped builds only, this missed a lane naming an item that
+    // appears in no build at all (an independent judge caught that one).
+    const catalogRaw = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/items.json'), 'utf8')) as
+      { display_name?: string }[] | { items: { display_name?: string }[] };
     const vocab = new Set<string>();
+    for (const i of Array.isArray(catalogRaw) ? catalogRaw : catalogRaw.items) if (i.display_name) vocab.add(i.display_name);
     for (const a of arts) for (const rv of a.roles) for (const it of rv.build.items) vocab.add(it.name);
     const wrong: string[] = [];
     for (const a of arts) {
       const cells = data.heroes[a.slug];
       if (!cells) continue;
+      // Some item names are also words in this hero's ability names ("Dread"
+      // is an item and the head of Argus's Dread Nova; Kwang's ultimate is
+      // Judgement). Naming an ability is not naming an item, so a candidate
+      // that occurs inside one of this hero's own ability names is skipped.
+      const kit = heroBySlug.get(a.slug);
+      // Ability TEXT as well as titles: GRIM's "Sentry Mode" is a weapon stance
+      // named only inside its tooltip, and "Sentry" is also an item.
+      const abilityText = (kit?.abilities ?? [])
+        .map((ab) => `${ab.display_name} ${ab.menu_description ?? ''} ${ab.game_description ?? ''}`).join(' | ');
       for (const rv of a.roles) {
         const cell = cells[rv.role];
         if (!cell) continue;
         const build = new Set(rv.build.items.map((i) => i.name));
         const text = [cell.line, cell.watchout].filter(Boolean).join(' ');
         for (const name of vocab) {
+          if (abilityText.includes(name)) continue;
           // Short names risk matching ordinary words; the real drift cases are
           // full item names, which are all longer than four characters.
           if (name.length > 4 && text.includes(name) && !build.has(name)) {
@@ -105,6 +119,46 @@ describe('hero-page coach lines (copy pass, item 8)', () => {
           // Naming an opponent the sim says this lane beats reads as a warning
           // about someone who is not a threat; re-author rather than reword.
           if (you > enemy) wrong.push(`${art.slug}/${rv.role}: names ${m.enemy}, whose checkpoints now favour this lane`);
+        }
+      }
+    }
+    expect(wrong).toEqual([]);
+  });
+
+  // Fourth drift class: the item is real and in the build, the minute is real
+  // and in the facts, but they are paired with each other wrongly — "Viper and
+  // Solaris done by minute 19" when Solaris completes at 36. Every number
+  // verifies, so nothing else can see it; the reader is promised a power spike
+  // that lands a quarter of an hour late. An independent judge caught two of
+  // these; this check finds all of them.
+  it('never promises an item earlier than it completes', () => {
+    const data = load();
+    if (!data) return;
+    const wrong: string[] = [];
+    for (const art of artifacts()) {
+      const cells = data.heroes[art.slug];
+      if (!cells) continue;
+      for (const rv of art.roles) {
+        const cell = cells[rv.role];
+        if (!cell) continue;
+        const text = [cell.line, cell.watchout].filter(Boolean).join(' ');
+        for (const it of rv.build.items) {
+          const at = text.indexOf(it.name);
+          if (at < 0) continue;
+          // Only a minute in the same clause as the item is a claim about it.
+          const after = text.slice(at, at + 90);
+          const m = /minute (\d+)/.exec(after);
+          if (!m) continue;
+          const claimed = Number(m[1]);
+          // "by minute N" is satisfied by anything completing at or before N;
+          // "at minute N" has to match. A stage whose core carries the item
+          // legitimately pairs it with that stage's minute.
+          const by = /\bby\b/.test(after.slice(0, m.index));
+          const spike = it.spikeMinute;
+          const ok = spike === claimed
+            || (by && spike != null && spike <= claimed)
+            || rv.stages.some((s) => s.minute === claimed && s.core.some((c) => c.name === it.name));
+          if (!ok) wrong.push(`${art.slug}/${rv.role}: "${it.name}" tied to minute ${claimed}, completes at ${spike ?? 'n/a'}`);
         }
       }
     }

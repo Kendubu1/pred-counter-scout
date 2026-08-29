@@ -90,6 +90,10 @@ async function main() {
 
   const report: Record<string, Record<string, { quote: string; severity: string; issue: string; rewrite: string | null }[]>> = {};
   let reviewedLines = 0, flaggedLines = 0, rewritesGrounded = 0, rewritesDropped = 0;
+  // A task the judge did not answer returns '{}' and silently contributes its
+  // lines to reviewedLines with zero flags, which flatters the rate and makes a
+  // partial round look like a full one. Count what was actually answered.
+  let answeredTasks = 0, totalTasks = 0;
 
   for (const f of inScope('builds') ? files : []) {
     const art = JSON.parse(readFileSync(path.join(artDir, f), 'utf8')) as Artifact;
@@ -165,6 +169,7 @@ Return strict JSON: {"flags":[{"quote":"<the exact line text>","severity":"high|
 
         const raw = (await ask('critique', `herocoach:${art.slug}:${rv.role}`, prompt)).trim().replace(/^```json?\s*|```$/g, '');
         reviewedLines += copyLines.length;
+        totalTasks++; if (raw && raw !== '{}') answeredTasks++;
         if (isPrepare()) continue;
         try {
           const parsed = JSON.parse(raw) as { flags?: { quote?: string; severity?: string; issue?: string; rewrite?: string | null }[] };
@@ -355,6 +360,9 @@ Return strict JSON: {"flags":[{"quote":"<exact line text>","severity":"high|med|
     at: new Date().toISOString(),
     generation,
     scope: [...SCOPE],
+    // Coverage: tasks the judge actually answered / tasks put to it. A round at
+    // partial coverage is not comparable to a full one, and the gate says so.
+    ...(totalTasks ? { judged: answeredTasks, ofTasks: totalTasks } : {}),
     reviewedLines, flaggedLines, agreementRate, applied,
   });
   writeFileSync(histPath, JSON.stringify(hist, null, 1));
