@@ -70,7 +70,13 @@ truth — prefer it; only open the files above for broader analysis requests.
 ## Authoring post-game match coaching (`data/postgame/<id>.json`)
 
 The facts file is the source of truth. Fill `coaching` = `{ headline, team,
-whatShiftedIt, perPlayer:{<pid>:"…"} }`.
+whatShiftedIt, whatWorked, perPlayer:{<pid>:"…"}, verdicts:{<pid>:{mood,text}},
+moments:{"<startMin>":{call:"…"}} }`. `whatWorked` is the one evidenced strength
+(method rule: real, from the facts, never filler). `moments` carries THE CALL for
+each of the game's key fights — the coach's answer to "what was the right play
+there", keyed by the fight's exact `startMin` (the UI selects key fights as:
+tagged first, then significance ≥ 6, top three); the computed macro/cost lines
+render beside it, so the call adds judgement, not a restat.
 
 **Voice contract (maintainer rule, 2026-07-03): NEVER second person.** The review
 is read by the whole squad, so no line may say "you/your/you're" as if talking to

@@ -136,6 +136,8 @@
   .mo .fighters { font-size:.72rem; color:var(--text-2); margin-top:.3rem; }
   .mo .fighters img { display:inline-block; width:17px; height:17px; border-radius:4px; vertical-align:-4px; }
   .mo .fighters a, .heroline a { display:inline-block; }
+  .mocall { margin-top:.35rem; font-size:.86rem; color:var(--text-0); border-left:2px solid var(--accent); padding:.1rem 0 .1rem .6rem; }
+  .mocall b { color:var(--accent); text-transform:uppercase; font-size:.68rem; letter-spacing:.08em; margin-right:.3rem; }
   .tagchip { font-size:.62rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; border-radius:99px; padding:.03rem .45rem; margin-left:.4rem; vertical-align:1px; white-space:nowrap; }
   .tagchip.def { color:var(--gold); border:1px solid var(--gold); }
   .tagchip.bad { color:var(--red); border:1px solid var(--red); }
@@ -600,7 +602,8 @@ function pgReview(f) {
     const idx = sks.indexOf(sk);
     const costAll = dcs.filter((d) => d.min * 60 >= sk.startSec - 5 && d.min * 60 <= sk.endSec + 45)
       .map((d) => `${esc(d.hero)}'s ${d.min}m death → ${d.cost.map((c) => esc(String(c.type).replace(/_/g, ' ').toLowerCase()) + ' @' + c.min + 'm').join(' + ')}`);
-    const costs = costAll.length > 2 ? [...costAll.slice(0, 2), `+${costAll.length - 2} more priced deaths in this fight`] : costAll;
+    const costs = costAll.length > 1 ? [costAll[0], `+${costAll.length - 1} more priced death${costAll.length > 2 ? 's' : ''} in this fight`] : costAll;
+    const call = co && co.moments && (co.moments[String(sk.startMin)] || {}).call;
     const after = (f.timeline ? f.timeline.majors : []).filter((m) => m.minute >= sk.startMin - 0.3 && m.minute <= sk.startMin + 2.5 && /FANG|PRIME|ORB|CORE/i.test(m.type))
       .map((m) => `${m.side === 'us' ? 'we took' : 'they took'} ${esc(m.type.replace(/_/g, ' ').toLowerCase())} (${m.minute}m)`);
     const scrub = (t) => String(t).replace(/\u{1F3AE} private \((\w+)\)/gu, 'our $1');
@@ -614,6 +617,7 @@ function pgReview(f) {
         <div class="fighters">${sk.ourHeroes.map((h) => hIcon(h, 17)).join('')} <span style="margin:0 .2rem">vs</span> ${sk.theirHeroes.map((h) => hIcon(h, 17)).join('')}</div>
         ${why || numLine ? `<div class="why">${numLine}${why}</div>` : ''}
         ${costs.length || after.length ? `<div class="cost">${[...costs, ...after.map((a) => `→ ${a}`)].join(' · ')}</div>` : ''}
+        ${call ? `<div class="mocall"><b>The call</b>${esc(call)}</div>` : ''}
         <div style="margin-top:.3rem"><a href="#" onclick="focusFight(${idx});return false" style="font-size:.72rem">locate on the fight map ↓</a></div>
       </div>
     </div>`;
@@ -647,6 +651,12 @@ function pgReview(f) {
       ${tlMajors.map((m) => { const x = xOf(m.minute); const mine = m.side === 'us'; return `<div title="${m.minute}m ${esc(m.type.replace(/_/g, ' '))} (${mine ? 'us' : 'them'})" style="position:absolute;left:${x}%;top:2px;transform:translateX(-50%)"><div style="width:9px;height:9px;border-radius:50%;background:${objColor(m.type)};border:1.5px solid ${mine ? 'var(--green)' : 'var(--red)'}"></div></div>`; }).join('')}
       ${sks.map((sk, i) => { const x = xOf(sk.startMin); const d = Math.min(22, 9 + sk.size * 2); const ring = keySet.has(sk) ? ';box-shadow:0 0 0 2px var(--gold)' : ''; return `<div id="tlmark-${i}" class="tlmark" onclick="focusFight(${i})" title="${sk.startMin}m ${sk.kind}: ${sk.result} ${sk.ourKills}-${sk.theirKills} · ${esc(sk.place)}${sk.tag ? ' · ' + sk.tag.replace('-', ' ') : ''}" style="position:absolute;left:${x}%;top:${34 - d / 2}px;transform:translateX(-50%);width:${d}px;height:${d}px;border-radius:50%;background:${skCol(sk.result)}${ring};display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">${sk.net > 0 ? '+' + sk.net : sk.net < 0 ? sk.net : ''}</div>`; }).join('')}
     </div>`) : '';
+
+  // ── What worked: the authored, evidenced strength (methodology rule 7) ──
+  const worked = co && co.whatWorked ? `<div style="background:var(--bg-1);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:12px;padding:1rem 1.1rem;margin-top:1rem">
+    ${eyebrow('<span style="color:var(--green)">What worked</span>', '')}
+    <div style="font-size:.92rem;color:var(--text-1)">${esc(co.whatWorked)}</div>
+  </div>` : '';
 
   // ── The interrogation: the causation questions, answered from the film ──
   let interrogation = '';
@@ -776,7 +786,7 @@ function pgReview(f) {
     ${lanes}${fightMap(f)}${comp}${kit}
   </details>`;
 
-  return head + moments + tiles + timeline + interrogation + lobby + deep;
+  return head + moments + tiles + timeline + worked + interrogation + lobby + deep;
 }
 
 // The lobby's ETERNAL line joins the per-hero artifact (engine loadout + the
