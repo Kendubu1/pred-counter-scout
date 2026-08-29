@@ -3120,3 +3120,37 @@ verdict is even. **Make the machine check what a machine can check, and the
 reviewer's attention goes where judgement is actually required.** The
 deterministic timing gate found six live cases; the judge, reading the same
 copy, had found two of them.
+
+### Coaching methodology research pass (2026-08-29)
+
+Researched what the coach was missing: how professional MOBA coaches actually
+review games (BSJ's replay template, VOD-review practice, coaching-course
+curricula), the academic win-factor literature, and the Predecessor-specific
+canon. Basis doc: `docs/coaching-methodology.md`; encoded into the coach agent
+as a method section and into the critic as a fifth flag category (method:
+ally-blame, role-blind yardsticks, unprovable execution claims).
+
+- **The pipeline had the right data and the wrong pedagogy.** The macro reads,
+  fight economics and honesty contract were already stronger than most human
+  reviews — but a review with fifteen grounded findings is worse coaching than
+  one with four. The literature is unanimous on the cap (3–5 moments, one
+  theme) and on ending with a checkable next-game focus. Structure was the
+  missing half, not data.
+- **The academic literature validates the engine's exact features.** Encounter
+  detection from kill streams (Schubert 2016), numbers-parity at fight start
+  as a match predictor (Yang FDG 2014), death context over death count (Time
+  to Die), towers/inhibitors as the strongest outcome model (Novak 2020,
+  95.8% from structures alone) — each maps one-to-one onto `skirmishes.macro`,
+  `caughtOut`, `deathCosts`, `conversion`. What changed is emphasis: structures
+  and conversion are headline material, KDA is not.
+- **A stats coach must stay in its lane: decisions, not execution.** Expertise
+  research shows mechanical skill is invisible in aggregate stats; the coach
+  can PROVE a fight was taken 4v5 or 3 items down, and can only guess at aim.
+  Execution claims are now critic-flaggable.
+- **Don't borrow calibration constants across games.** LoL's first-objective
+  win-rates (first tower ≈70%) shape emphasis but Predecessor's equivalents are
+  unmeasured — backlog candidate: first-Fangtooth/first-Prime win% from our own
+  feed. Same rule as the fixtures: an unverified constant is THEORY.
+- **Fangtooth has no Smite analog** — its buffs stack permanently, so it is a
+  race to 3, not a one-off prize like Gold Fury; the timeline should ideally
+  carry stack counts (gap noted in the doc's engine-work list).

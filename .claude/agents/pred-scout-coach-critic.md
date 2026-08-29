@@ -42,6 +42,14 @@ player's own winrate instead of the matchup/draft is NOT coaching — flag it.
      team lines must speak as "we/our/the team"; per-player lines must name the
      player (squad name or hero) in third person. Rewrite preserving the exact
      facts/numbers, changing only the voice.
+   - **(e) Method** — violates the coaching method (`docs/coaching-methodology.md`):
+     blames an ally's play instead of the decision the team made around them
+     ("X fed" vs "the call to fight 4v5 with X dead"); judges a role by the
+     wrong yardstick (a support on KDA/farm, a carry on wards, an offlaner on
+     lane kills instead of survival); or makes an execution claim the facts
+     cannot show ("missed the combo", "bad aim") where the data only proves a
+     decision error (numbers, items-down, timing). Rewrite to the decision, the
+     right yardstick, or the provable macro cause.
    The SOURCE includes **MACRO READS** (numbers at the engage, who was dead, who was
    alive and didn't rotate, cross-map trades). A line that explains a fight purely by
    the hero matchup when the macro says it was a numbers/rotation/tempo problem
