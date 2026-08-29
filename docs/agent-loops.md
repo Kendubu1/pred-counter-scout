@@ -105,6 +105,24 @@ The author step (regenerating the build/coach copy itself) is the matching
 `copy:prepare` → `pred-scout-coach` → `copy:ingest` chain; the critique loop runs
 *on top of* whatever the author last produced.
 
+### Scoping a round to one surface
+
+`copy-critique.ts` judges three surfaces — `builds`, `herocoach`, `coach`. A new
+surface should NOT drag the already-converged ones through another round: re-judging
+settled copy costs a full agent pass and churns files for no gain. Scope the round
+instead, and give it its own history so the agreement rate is never read wider than
+it was measured:
+
+```bash
+CRITIQUE_ONLY=herocoach \
+CRITIQUE_REPORT=data/aggregates/hero-coach-critique.json \
+CRITIQUE_HISTORY=data/aggregates/hero-coach-critique-history.json \
+  npm run review:critique          # or just: npm run herocoach:critique
+```
+
+Every round records its own `scope` in both the report and the history entry.
+Unset, all three surfaces are judged into the shared history exactly as before.
+
 > The subagent dispatch (build, judge) is driven by the orchestrating session — it
 > is not a pure shell script, because spawning a fresh independent agent is the
 > session's job. Everything *around* the agent (plan, bracket, apply, gate) is
@@ -137,7 +155,8 @@ To add a self-correcting loop for a new artifact:
 | Loop | Plan | Author (build) | Judge | Bracket | Gate / history |
 |------|------|----------------|-------|---------|----------------|
 | **Build copy** | `build-review.ts` prepare | `pred-scout-coach` | `copy-critique.ts` independent critic | `copy-verify` per clause | `review:loop:gate` over `copy-critique-history.json` |
-| **Coach copy** | `coach-review.ts` prepare | `pred-scout-coach` | same critic, grounded on player stats | `copy-verify` | same history |
+| **Coach copy** (lead + every squad member's report) | `coach-review.ts` prepare | `pred-scout-coach` | same critic, **scoped** (`CRITIQUE_ONLY=coach`), grounded on that player's stats + kit reads; also flags second-person voice | `copy-verify` | `coachreport:loop:gate` over `coach-report-critique-history.json` |
+| **Hero-page coach lines** | `hero-coach-review.ts` prepare (facts block from `src/hero-coach-copy.ts`) | `pred-scout-coach` | same critic, **scoped** (`CRITIQUE_ONLY=herocoach`), grounded on the identical facts block | `copy-verify` on every line and every rewrite, re-run in `test/hero-coach.test.ts` | `herocoach:loop:gate` over `hero-coach-critique-history.json` |
 | **Augments / items / abilities** | `*-review.ts` prepare | `pred-scout-coach` | (number bracket only today; critic-extensible) | `copy-verify` | — |
 | **Mobile UI review** | `ui-audit.ts` (consistency facts + findings) | the CSS fix author | independent mobile-UI judge over rendered screenshots | `ui-audit` hard invariants + `ui-render` no-overflow | `review:loop:gate` over `ui-review-history.json` |
 | **UX v0 (Senior-UX)** | `ux:critique:prepare` (rubric + per-surface shots) | the page author (session / `pred-scout-coach`) | `pred-scout-ux-judge`, independent, over `docs/reviews/v0/shots` | `ui-audit:v0` hard invariants (incl. `single-legend` / `reduced-motion` / `above-fold-primary`) + `ui-render:v0` no-overflow | `ux:loop:gate` over `ux-v0-history.json` |

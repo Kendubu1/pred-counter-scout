@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 import { loadData } from '../data.js';
 import { loadEffects } from '../effects.js';
 import { buildAllowed, verifyLine, winrateNumbers } from '../copy-verify.js';
-import { ask, flushTasks, isPrepare } from '../copy-session.js';
+import { ask, flushTasks, isPrepare, writeAggregate } from '../copy-session.js';
 import { momPriorStrength } from '../evidence.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -153,7 +153,7 @@ Return strict JSON only, shaped: {"<role>": {"<eternal name>": "<sentence>", ...
     heroes: reviews,
     eternals: eternalReviews,
   };
-  writeFileSync(path.join(ROOT, 'data/aggregates/augment-reviews.json'), JSON.stringify(out, null, 1));
+  if (!writeAggregate(path.join(ROOT, 'data/aggregates/augment-reviews.json'), out)) return;
   console.log(`\n${written} augment lines (+${etWritten} Eternal lines) written, ${rejected + etRejected} rejected by the verifier -> data/aggregates/augment-reviews.json`);
 }
 

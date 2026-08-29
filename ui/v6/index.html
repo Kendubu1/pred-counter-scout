@@ -992,6 +992,45 @@ function itile(i, idx) {
     </div>`;
 }
 
+// ── The lane's augment declares a playstyle the kit alone can't reveal (engine:
+// playstyle.ts + artifacts.ts `laneSteer`, backlog 10b). The sim build above is
+// the pure optimum; this says what the field's augment in THIS lane implies and
+// how the build would move if you commit to it — and, honestly, whether the sim
+// actually models that augment or is only steering by the declared playstyle.
+// Per-lane by construction: each role view carries its own laneSteer, so the
+// flex-role toggle re-renders this with that lane's augment.
+const PLAYSTYLE_WORDS = {
+  'on-hit': 'basic-attack damage',
+  'ability-burst': 'ability burst',
+  sustain: 'healing and staying power',
+  tank: 'frontline soak',
+  poke: 'poke from range',
+};
+function laneSteerBlock(a) {
+  const ls = a.laneSteer;
+  if (!ls) return '';
+  const ps = PLAYSTYLE_WORDS[ls.playstyle] || ls.playstyle;
+  const wr = ls.wr === null ? '' :
+    `<span class="flex-wr ${ls.wr >= 52 ? 'up' : 'flat'}">${ls.wr}%${ls.n === null ? '' : ` <span class="mb-n">${ls.n.toLocaleString()} games</span>`}</span>`;
+  const shift = (ls.shiftIn || []).length || (ls.shiftOut || []).length
+    ? `<div class="ls-shift">Commit to it and the build moves${(ls.shiftIn || []).length ? `: add <b>${ls.shiftIn.map(esc).join('</b>, <b>')}</b>` : ''}${(ls.shiftOut || []).length ? `${(ls.shiftIn || []).length ? ', ' : ': '}drop <b>${ls.shiftOut.map(esc).join('</b>, <b>')}</b>` : ''}.</div>`
+    : '<div class="ls-shift">Committing to it doesn’t change the items — this build already plays that way.</div>';
+  return `
+      <div class="lanesteer">
+        <div class="ls-head">
+          <span class="ls-lane">${esc(a.role)}</span>
+          <span class="ls-aug">the field takes <b>${esc(ls.augment.name)}</b> here</span>
+          <span class="flex-ps">${esc(ps)}</span>
+          <span class="flex-prov ${ls.modeled ? 'modeled' : 'steered'}" title="${ls.modeled
+            ? 'our math includes this augment’s effect'
+            : 'our math can’t compute this augment yet, so the build is aimed at the playstyle it declares — the size of the gain is not simulated'}">${ls.modeled ? 'in our math' : 'playstyle steer only'}</span>
+          ${wr}
+        </div>
+        ${shift}
+        <div class="flex-note">${esc(ls.provenance)}</div>
+      </div>`;
+}
+
 // ── ONE image-forward, tabbed "Builds" card: one tab per meta build (by title,
 // highest field winrate first) + the kit-math build last. Only the active tab
 // body shows; the prose lives behind a per-tab "why these items" disclosure.
@@ -1061,6 +1100,7 @@ function buildsCard(a) {
   const simBody = `
       <div class="bbody${metas.length ? ' hidden' : ''}" data-bbody="sim">
         ${a.roleCaveat ? `<div class="caveat">⚠ ${esc(a.roleCaveat)}</div>` : ''}
+        ${laneSteerBlock(a)}
         <div class="rail" style="margin-bottom:.5rem">${a.build.items.map(itile).join('')}</div>
         <div class="mb-why" style="color:var(--text-1)">⚙ kit-math second opinion · ${a.build.gold.toLocaleString()}g full</div>
         ${orderCap}
@@ -1597,6 +1637,9 @@ enhanceIpop(document);
 let HEROES_RAW = null;
 let SKILLS = null, ATIPS = null, PATCHES = null;
 async function renderLearn(a) {
+  // Same field-evidence declaration renderHero makes: a hero with no field layer
+  // yet must not have her coach line labelled "field evidence".
+  const pend = (typeof PENDING === 'object' && PENDING) ? PENDING[a.slug] : null;
   if (!HEROES_RAW) {
     const [raw, sk, tp, pa] = await Promise.all([
       getJson('../../data/omeda/heroes.json').catch(() => null),
@@ -1667,10 +1710,21 @@ async function renderLearn(a) {
       }).join('')}
     </section>
     <section class="card">
-      <h2>How this kit wants to play <span class="hint">from the sim + field evidence</span></h2>
-      <div style="font-size:.86rem;color:var(--text-1);line-height:1.6">${esc(a.coachLine)}</div>
+      <h2>How this kit wants to play <span class="hint">${pend ? 'from the sim — field evidence pending' : 'from the sim + field evidence'}</span></h2>
+      ${(() => {
+        // The authored, action-first line for THIS lane (hero-coach-lines.json,
+        // written by the in-session agent from this role view's own facts and
+        // machine-checked). The engine's templated line keeps its place as the
+        // timing footnote, so a dropped line degrades to what shipped before.
+        const hc = HEROCOACH && HEROCOACH.heroes && HEROCOACH.heroes[a.slug] && HEROCOACH.heroes[a.slug][a.role];
+        if (!hc || !(hc.line || hc.watchout)) return `<div style="font-size:.86rem;color:var(--text-1);line-height:1.6">${esc(a.coachLine)}</div>`;
+        return `
+      ${hc.line ? `<div style="font-size:.92rem;color:var(--text-0);line-height:1.6">🧠 ${esc(hc.line)}</div>` : ''}
+      ${hc.watchout ? `<div style="font-size:.82rem;color:var(--gold);line-height:1.5;margin-top:.45rem">⚠ ${esc(hc.watchout)}</div>` : ''}
+      <div style="font-size:.78rem;color:var(--text-2);line-height:1.55;margin-top:.5rem">${esc(a.coachLine)}</div>`;
+      })()}
       ${a.build.archetypes.length ? `<div class="chips" style="margin-top:.6rem">${a.build.archetypes.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>` : ''}
-      <div style="margin-top:.6rem;font-size:.72rem;color:var(--text-2)">leveling order and ult timing come from pred.gg's in-game recommended skill path (current patch) · 🎯 ability tips are AI-written from each ability's own text, machine-checked · patch notes from the official 1.14 changelog · combat numbers stay THEORY until in-game calibration · augment-specific tips live on the Game plan tab</div>
+      <div style="margin-top:.6rem;font-size:.72rem;color:var(--text-2)">leveling order and ult timing come from pred.gg's in-game recommended skill path (current patch) · 🎯 ability tips are AI-written from each ability's own text, machine-checked · 🧠 the how-to-play line is AI-written from this lane's own kit, build and timings, machine-checked, and reviewed by a second agent; the grey line under it is the engine's own timing summary · patch notes from the official 1.14 changelog · combat numbers stay THEORY until in-game calibration · augment-specific tips live on the Game plan tab</div>
     </section>
     <details>
       <summary>Numbers, data &amp; confidence</summary>
@@ -1699,16 +1753,17 @@ async function nav(slug, replace = false, role = null) {
   await route();
   window.scrollTo({ top: 0 });
 }
-let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null, PENDING = null;
+let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null, PENDING = null, HEROCOACH = null;
 async function getAugs() {
   if (!AUGS) {
     let eternals, pending;
-    [AUGS, REVIEWS, REASONING, eternals, pending] = await Promise.all([
+    [AUGS, REVIEWS, REASONING, eternals, pending, HEROCOACH] = await Promise.all([
       getJson('../../data/aggregates/predgg-augments.json').catch(() => null),
       getJson('../../data/aggregates/augment-reviews.json').catch(() => null),
       getJson('../../data/aggregates/build-reasoning.json').catch(() => null),
       getJson('../../data/game-data/eternals.json').catch(() => null),
       getJson('../../data/aggregates/field-data-pending.json').catch(() => null),
+      getJson('../../data/aggregates/hero-coach-lines.json').catch(() => null),
     ]);
     PENDING = (pending && pending.heroes) || {};
     // name -> { major, minorSlot1, minorSlot2 } so an Eternal can be explained in

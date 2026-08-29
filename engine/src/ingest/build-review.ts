@@ -16,7 +16,7 @@ import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildAllowed, verifyLine } from '../copy-verify.js';
-import { ask, flushTasks, isPrepare } from '../copy-session.js';
+import { ask, flushTasks, isPrepare, writeAggregate } from '../copy-session.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 
@@ -169,11 +169,11 @@ Rules:
   }
   flushTasks('builds');
   if (isPrepare()) return;
-  writeFileSync(path.join(ROOT, 'data/aggregates/build-reasoning.json'), JSON.stringify({
+  if (!writeAggregate(path.join(ROOT, 'data/aggregates/build-reasoning.json'), {
     generatedAt: new Date().toISOString(),
     source: 'in-session Claude Code agent (pred-scout-coach) over the committed artifacts + omeda item/ability data only; every number ground-checked, failing lines dropped',
     written, rejected, heroes: out,
-  }, null, 1));
+  })) return;
   console.log(`\n${written} build-reasoning lines written, ${rejected} rejected -> data/aggregates/build-reasoning.json`);
 }
 

@@ -2980,3 +2980,143 @@ The user was right and the fix surfaced two buried assumptions:
 - Scarlett's pending reason updated itself into a sharper claim: 41,035 ranked
   games this patch and STILL no augment evidence — because the missing piece is
   the app-tier permission, not her novelty. The declaration machinery held.
+## 2026-08-29 (later) — front door, the steer that shipped without a renderer, hero-page coach copy
+
+Three-item session (front door / copy pass / augment steer). Two of the three
+were **already half-done in ways the backlog didn't record** — checking before
+building is what made the session cheap.
+
+- **The front door was already fixed.** v6-review Finding A1 (root `index.html`
+  meta-refreshing to the frozen pre-1.14 `ui/v2/`) was closed on 2026-06-28 by
+  the "Retire old UIs to v6" commit: root, `ui/index.html`, v0/v2/v3/v4/v5 and
+  the orphaned loose pages are all redirect stubs to `ui/v6/` now. The review doc
+  still reads as if it were open, so a task written from the doc looks like new
+  work. **Findings docs are snapshots; verify against the tree before acting on
+  one.** What was genuinely left was the review's *other* redirect instruction —
+  per-route, not blanket-to-homepage: `v0/coach.html`, `v0/squad.html`,
+  `v0/about.html` and `v3/learn-eternals.html` all dumped users on the v6 home
+  instead of the page they asked for. Fixed; they now land on their own
+  successor. Retired content stays reachable in git history — nothing deleted.
+- **`laneSteer` shipped in the artifacts and was never rendered.** The engine
+  half of backlog 10b (augment-as-playstyle steer + honest provenance) has been
+  in every artifact for weeks — 67 of 83 role views carry a steer, 25 modeled —
+  and `ui/v6/index.html` even carries the finished `.lanesteer` CSS. No renderer
+  ever referenced it, so the data was invisible on the page. The `.eternal-row`
+  vestige the review flagged was the same shape of bug. **Dead CSS is a symptom
+  worth grepping for: styles for a class no template emits usually means a
+  data path that stops one step short of the user.**
+- **A copy pass with no responses silently wiped 182 committed lines.**
+  `copy:ingest` chains every pass; a pass whose `<pass>.responses.json` is
+  missing gets `{}` for every cell, writes a zero-line aggregate over the good
+  one, and exits 0. That is how `data/aggregates/item-reviews.json` went from
+  182 item explanations to `{}` on 2026-08-07 — the hero page's 🧠 item lines
+  have been blank ever since, with nothing failing. Every pass now writes
+  through `writeAggregate()`, which refuses to replace a non-empty aggregate
+  with a zero-line one and exits non-zero (`COPY_FORCE=1` to wipe on purpose).
+  Verified: a responses-less `review:abilities` run now keeps all 318 tips and
+  fails the chain. **A pipeline stage that can produce "nothing" must not be
+  allowed to spend that nothing on a file that already holds something.**
+
+## 2026-08-29 (later still) — two copy loops to convergence, and what the judge caught
+
+Ran the plan → author → verify → independent-judge → gate loop over two copy
+surfaces that had never been judged. Both converged; the interesting part is
+what "converged" cost and what only the judge could see.
+
+- **Hero-page coach lines: 87.3% → 98.8% → 100%** (21, 2, 0 flags over 166
+  lines). **Squad coach reports: 74.1% → 88.9% → 96.3% → 98.8% → 100%** (21, 9,
+  3, 1, 0 over 81 lines). The reports started 13 points lower and took five
+  rounds — because that copy had **never** been judged: the last critique round
+  predated its 2026-08-07 re-author, and the critic only ever read the lead's
+  report, so five squad members' coaching had never been read by anything but
+  its author. **A loop only protects the surfaces it is pointed at; check the
+  judge's coverage against the author's, not against the loop's existence.**
+- **The judge earns its place on claims, not numbers.** `copy-verify` cleared
+  every line in both passes (0 rejected of 166). What the judge found was
+  wrong *claims made with real numbers*: an invented comparison ("+5.8 wins per
+  100 more than the average Murdock player" — no global Murdock baseline exists
+  anywhere in the source), a superlative contradicted by the same cell (59.7%
+  called the best in a pool containing 65.6%), two backwards kit reads
+  (Greystone's Stone Forged Soul hoarded for a dive when it heals on missing
+  health; Countess's Feast coached as an escape when it is a leap onto an
+  enemy), and a hero's class swapped (a tank described as doing an assassin's
+  job). None of those has a fabricated digit in it.
+- **A rewrite can introduce a fresh error, and only the NEXT round catches it.**
+  Round 2 correctly flagged "spend Kira's Vengeance stacks before pressing the
+  purge" — then its own fix re-attached the mechanic to the Purge ultimate when
+  Dusk is what consumes them. Rewrites go through the number bracket, never a
+  meaning bracket. **Stop on the gate's clean round, not on the round that
+  fixed the most** — the big-fix round is exactly the one most likely to have
+  broken something.
+- **Scope a new loop to its own surface and history.** Judging all three copy
+  surfaces every round would have re-read 2,494 settled build lines to fix 166
+  new ones, and mixed the agreement rates into one number that means nothing.
+  `copy-critique.ts` now takes `CRITIQUE_ONLY` + its own report/history paths,
+  and every round records its `scope` so a rate can never be read wider than it
+  was measured.
+- Prompt hygiene that paid off: the facts block translates objective keys
+  (`rot10VsSquishy`) to plain words BEFORE the author sees them. Engine
+  vocabulary handed to a writer comes back out as jargon on the page — the
+  cheapest place to fix C2-style jargon is the prompt, not the copy.
+
+## 2026-08-29 (review pass) — what a data refresh does to copy that already passed
+
+Asked to review the branch before merging it, the review found more than the
+build did. Merging main's live 1.16 refresh into copy authored against the
+previous artifacts broke it in three distinct ways, only one of which any
+existing gate could see.
+
+- **Three drift classes, one gate.** Of 166 lines authored and judged to 100%
+  agreement, the refresh left: **2** citing a number the new facts don't
+  contain (the numeric verifier caught these), **16** naming items the
+  refreshed build no longer contains (every number still verified — invisible),
+  and **3** warning about an opponent whose checkpoints had flipped to
+  favourable (no numbers in the sentence at all — invisible to everything).
+  Plus 2 lanes with no copy, for a hero that didn't exist last patch.
+  **A ground-check on numbers is a check that the copy was true once, not that
+  it is true now.** The harness now checks item currency and verdict currency
+  as well; both fail on the pre-repair data. Main independently added the same
+  item-currency check for build-reasoning in the same refresh — the same hole,
+  found twice on two surfaces, which is the argument for making it a habit:
+  every generated sentence should be re-derivable from its source, and a test
+  should say so.
+- **The judge's fixes were not durable.** `copy-critique.ts` applies rewrites to
+  the AGGREGATE. Re-running the ingest rebuilds that aggregate from the
+  author's raw responses, so every judged fix silently reverted — including the
+  round-1 catch that had Countess's Feast (a leap onto an enemy) coached as an
+  escape. Three rounds of judging, undone by one re-run, with no test failing.
+  Applied fixes now live in a committed sidecar (`hero-coach-fixes.json`) and
+  are re-applied on every ingest, each re-verified against current facts.
+  **If a correction lives only in the output, the next regeneration is a
+  rollback.** The same hazard still exists for build-reasoning and the coach
+  reports — worth closing next.
+- **Refreshed player data must invalidate coaching, not inherit it.** Main's
+  refresh regenerated all six coach reports and dropped `coachReasoning`; the
+  underlying numbers moved (1195 career games, not 1169). Pasting the judged
+  July copy onto August stats would have kept sentences whose numbers no longer
+  existed. Discarded and re-authored. Unlike hero copy, coaching is bound to a
+  player's current record, so losing it on refresh is correct behaviour.
+- **Two measures of one quantity, unlabelled, read as a contradiction.** The
+  coach prompt printed raw winrates in ROLE RECORDS and sample-adjusted ones in
+  the ledger receipts, so jungle appeared as both 53.4% and 51.3%. Both pass the
+  verifier (both strings are present), and the author correctly refused to lean
+  on either. Label the measure wherever two of them meet.
+
+### Closing the two loops on the refreshed data (2026-08-29)
+
+Final trajectories after the 1.16 merge, both to a gate STOP on target met:
+**hero coach lines** 92.4% -> 97.6% -> 99.4% (full coverage each round; the
+earlier 93.5% judged only the 22 re-authored lanes and was never comparable),
+**coach reports** 83.3% -> 97.6% -> 100%.
+
+The division of labour that emerged is the reusable part. Once the harness
+gated the three mechanical drift classes — an item no build contains, an item
+promised before it completes, an opponent named whose verdict favours the lane
+— the judge stopped spending its rounds on them and started finding what only a
+reader can: a knockback coached as if it pulled enemies toward your minions, a
+teleport described as landing somewhere the player does not choose, a damage
+share the source never measured, an opponent called a lane loss when the
+verdict is even. **Make the machine check what a machine can check, and the
+reviewer's attention goes where judgement is actually required.** The
+deterministic timing gate found six live cases; the judge, reading the same
+copy, had found two of them.

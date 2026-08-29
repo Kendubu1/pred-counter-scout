@@ -33,14 +33,29 @@ const HISTORY = process.env.LOOP_HISTORY
   ? path.resolve(ROOT, process.env.LOOP_HISTORY)
   : path.join(ROOT, 'data/aggregates/copy-critique-history.json');
 
-interface Round { round: number; at: string; reviewedLines: number; flaggedLines: number; agreementRate: number; applied: number }
+interface Round { round: number; at: string; reviewedLines: number; flaggedLines: number; agreementRate: number; applied: number; generation?: number; judged?: number; ofTasks?: number }
+
+// A loop's rounds only compare within one GENERATION of the copy. When the copy
+// is re-authored from scratch — a field refresh invalidated it, say — the new
+// draft starts from a fresh error rate, and carrying the old rounds forward both
+// reads as a collapse ("100% -> 83%") and trips max-rounds on a draft that has
+// been judged once. So the gate considers only the newest generation's rounds.
+// Rounds written before this field existed are generation 1.
+const currentGeneration = (rounds: Round[]): Round[] => {
+  const gen = Math.max(...rounds.map((r) => r.generation ?? 1));
+  return rounds.filter((r) => (r.generation ?? 1) === gen);
+};
 
 function main() {
   if (!existsSync(HISTORY)) {
     console.log(`[loop:gate] CONTINUE — no history yet at ${path.relative(ROOT, HISTORY)}; run a first round.`);
     process.exit(10);
   }
-  const rounds = (JSON.parse(readFileSync(HISTORY, 'utf8')) as { rounds: Round[] }).rounds ?? [];
+  const all = (JSON.parse(readFileSync(HISTORY, 'utf8')) as { rounds: Round[] }).rounds ?? [];
+  const rounds = all.length ? currentGeneration(all) : all;
+  if (all.length && rounds.length < all.length) {
+    console.log(`[loop:gate] ${all.length - rounds.length} earlier round(s) belong to a previous generation of this copy and are not compared against.`);
+  }
   if (!rounds.length) {
     console.log('[loop:gate] CONTINUE — history is empty; run a first round.');
     process.exit(10);
@@ -56,11 +71,22 @@ function main() {
   const stop = (reason: string) => { console.log(`[loop:gate] STOP — ${reason}.`); process.exit(0); };
   const cont = (reason: string) => { console.log(`[loop:gate] CONTINUE — ${reason}.`); process.exit(10); };
 
+  // A partial round (the judge answered only some tasks) reads as a high
+  // agreement rate because unanswered tasks contribute lines and no flags.
+  // Comparing the next full round against it looks like a regression, so the
+  // plateau test is skipped across a coverage change.
+  const coverage = (r?: Round) => (r?.ofTasks ? (r.judged ?? 0) / r.ofTasks : 1);
+  const coverageChanged = prev ? Math.abs(coverage(last) - coverage(prev)) > 0.05 : false;
+  if (coverage(last) < 0.99) {
+    console.log(`[loop:gate] note: this round judged ${last.judged}/${last.ofTasks} tasks — its rate covers only what was read.`);
+  }
+
   if (last.agreementRate >= TARGET) stop(`target met (>= ${(TARGET * 100).toFixed(0)}%)`);
   if (last.flaggedLines === 0) stop('clean round (judge flagged nothing)');
   if (last.applied === 0) stop('no-op round (nothing new could be applied)');
   if (rounds.length >= MAX_ROUNDS) stop(`max rounds reached (${MAX_ROUNDS})`);
-  if (prev && gain < EPSILON) stop(`plateau (gain ${(gain * 100).toFixed(2)} pts < ${(EPSILON * 100).toFixed(2)} pt threshold)`);
+  if (prev && gain < EPSILON && !coverageChanged) stop(`plateau (gain ${(gain * 100).toFixed(2)} pts < ${(EPSILON * 100).toFixed(2)} pt threshold)`);
+  if (prev && gain < EPSILON && coverageChanged) cont(`the previous round judged ${prev.judged ?? '?'}/${prev.ofTasks ?? '?'} tasks and this one ${last.judged ?? '?'}/${last.ofTasks ?? '?'}, so their rates are not comparable — run a full round before calling it converged`);
   cont(`below ${(TARGET * 100).toFixed(0)}% and still improving — run another round`);
 }
 

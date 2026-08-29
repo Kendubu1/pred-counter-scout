@@ -80,8 +80,8 @@ RECENT REVIEWED GAMES (most recent first — lead your coaching with these):
 
 WHERE THEY ARE: ${c.player.career.games} career games at ${pct(c.player.career.winrate)}% winrate, KDA ${c.player.career.kda.toFixed(1)}${c.player.current ? `, currently ${c.player.current.rank} (${c.player.current.points} VP)` : ''}. Goal: ${c.goal.tier} (${c.goal.vp} VP, gap ${c.goal.gapVp} VP; all-time peak ${c.goal.peakAllTime} VP). Player archetype: ${c.archetype.label} — ${c.archetype.receipt}
 THEIR HEROES (with our kit-math read — use these for what to DRILL): ${topHeroes.map((h) => `${h.name} ${pct(h.rawWr)}% over ${h.games} games${kitBySlug.get(h.slug) ? ` — ${kitBySlug.get(h.slug)}` : ''}`).join('\n  ')}
-ROLE RECORDS (context only — do NOT lead with this): ${c.roles.map((r) => `${r.role} ${pct(r.rawWr)}% over ${r.games}`).join(' · ')}
-PRICED CHANGES (wins per 100 games): ${c.ledger.entries.map((e) => `${e.change} (+${e.winsPer100}; ${e.receipt})`).join('\n  ')}
+ROLE RECORDS — RAW winrate, not adjusted for sample size (context only — do NOT lead with this): ${c.roles.map((r) => `${r.role} ${pct(r.rawWr)}% over ${r.games}`).join(' · ')}
+PRICED CHANGES (wins per 100 games) — these receipts quote the SAMPLE-ADJUSTED winrate, so a role can read lower here than in ROLE RECORDS above; that is two different measures of the same games, not a contradiction. Quote either, never both as if they disagree: ${c.ledger.entries.map((e) => `${e.change} (+${e.winsPer100}; ${e.receipt})`).join('\n  ')}
 POOL: ${c.poolWidth.heroesPlayed20Plus}+ heroes with 20+ games; top three are ${(c.poolWidth.top3Share * 100).toFixed(0)}% of games.
 CURRENT (templated) PLAN to REPLACE with game-specific advice: ${c.plan.map((p, i) => `${i + 1}. ${p}`).join(' ')}
 CURRENT INSIGHTS: ${c.insights.map((x) => `${x.title}: ${x.finding}`).join(' | ')}

@@ -158,7 +158,7 @@ also surface the highest-WINRATE build, not just most-played.
   Skylar's crit/execute core and Zinx's on-hit mid core item-by-item. STILL
   TODO: surface it on the hero page beside the field winrate.
 
-## 10b. Augment-as-playstyle steer — ENGINE SHIPPED 2026-06-13
+## 10b. Augment-as-playstyle steer — ENGINE SHIPPED 2026-06-13; PAGE SHIPPED 2026-08-29
 
 An augment is a declared playstyle; the lane selects it. src/playstyle.ts
 classifies each augment (on-hit/ability-burst/sustain/tank/poke) from the
@@ -168,11 +168,18 @@ steers to that playstyle's corner EVEN WHEN the augment's mechanic is
 unmodeled. `npm run answer` prints provenance exposing whether the sim
 models the augment or is steering by playstyle + field evidence. Proof:
 Zinx-mid + Terminal Treatment (on-hit, unmodeled) flips ability-burst →
-on-hit auto-DPS core; Disc of Demise (modeled) → burst. NEXT: wire the
-steer + provenance into build-artifacts.ts so the hero page reflects it
-per lane (regenerates artifacts); still worth doing item-10 #1 (parse the
-PASSIVE slot) so on-hit augments like Terminal Treatment get true magnitude,
-not just a playstyle steer.
+on-hit auto-DPS core; Disc of Demise (modeled) → burst. DONE 2026-08-29: the artifacts already carried
+`laneSteer` (per role view) and `laneFlex` (per lane) with the honest
+provenance string — 67 of 83 role views have a steer, 25 of them modeled — but
+the hero page never rendered either (the CSS shipped, the renderer never did).
+ui/v6/index.html now renders the active lane's steer beside the kit-math build:
+the augment the field takes there, its playstyle in plain words, an "in our
+math" / "playstyle steer only" pill, the field win rate, and the exact items
+the steer would add and drop. Switching flex role re-renders it for that lane;
+the 5 heroes with no augment evidence (gadget, neon, serath, wraith, wukong)
+degrade to nothing. Still worth doing item-10 #1 (parse the PASSIVE slot) so
+on-hit augments like Terminal Treatment get true magnitude, not just a
+playstyle steer.
 
 ## 12. Ranked-only augment/Eternal/crest evidence + ranked/standard split (backlogged 2026-06-26)
 
@@ -300,4 +307,43 @@ src/copy-verify.ts with unit tests; hero page renders 🧠 on Eternal
 rows when present). DONE in-session 2026-06-12 (maintainer: no API) — 284 Eternal lines written and machine-verified in-session, committed in augment-reviews.json; the keyed pipeline remains for unattended post-patch refreshes.
 
 REMAINING: the original scope (hero-page coach lines + squad/coach
-report copy through the same verifier).
+report copy through the same verifier). **DONE 2026-08-29** — both halves
+shipped through plan -> author -> verify -> independent judge -> gate:
+
+- **Hero-page coach lines.** New pass `npm run review:herocoach`
+  (src/hero-coach-copy.ts builds the facts block, ingest/hero-coach-review.ts
+  runs it) replaces the templated `coachLine` with an action-first line plus one
+  blunt watch-out, per hero AND per lane. 166 lines over all 83 role views, 0
+  rejected by copy-verify. Judge converged 87.3% -> 98.8% -> 100% (21 + 2 + 0
+  flags; gate STOP). Output data/aggregates/hero-coach-lines.json; the hero page
+  prefers it and keeps the engine's templated line as the timing footnote, so a
+  dropped line degrades to what shipped before. test/hero-coach.test.ts rebuilds
+  every facts block and re-runs the verifier, so stale copy fails `npm test`.
+- **Squad/coach report copy.** The author pass existed but had never been
+  judged (the last critique round predated the 2026-08-07 re-author) and the
+  critic only ever read the LEAD's report. Now all six (lead + five members) go
+  through it: 74.1% -> 88.9% -> 96.3% -> 98.8% -> 100% over five rounds, 34
+  grounded rewrites applied. It found real defects, not style: an invented
+  baseline ("+5.8 wins per 100 vs the average Murdock player" — no such
+  baseline exists in the data), a false superlative, two backwards kit reads,
+  a wrong hero class, and two "queue a different role" headlines.
+- Loop plumbing: `copy-critique.ts` is scopeable per surface (CRITIQUE_ONLY +
+  its own CRITIQUE_REPORT/CRITIQUE_HISTORY) so a new surface converges without
+  re-judging settled copy; `herocoach:*` and `coachreport:*` scripts run each
+  loop and its gate. See docs/agent-loops.md.
+
+CARRIED FORWARD (found in the 2026-08-29 review, after merging the 1.16 refresh):
+judge rewrites are applied to the aggregate only, so re-running an ingest
+reverts them. Fixed for the hero coach lines via a committed sidecar
+(data/aggregates/hero-coach-fixes.json, re-applied and re-verified on every
+ingest); build-reasoning.json and the coach reports still have the hazard.
+Also: a copy pass should be re-checked for CURRENCY after every field refresh,
+not just for grounding at authoring time — the 1.16 refresh left 16 lanes
+naming items their build had dropped and 3 warning about opponents they now
+beat, all with perfectly valid numbers. test/hero-coach.test.ts now gates both.
+
+STILL OPEN (not this item's scope): data/aggregates/item-reviews.json holds 0
+lines — a responses-less `copy:ingest` wiped 182 committed item explanations on
+2026-08-07 and the hero page's item "why" lines have been blank since. The new
+writeAggregate() guard makes that failure mode impossible going forward, but
+the 182 lines still need re-authoring (one agent pass).
