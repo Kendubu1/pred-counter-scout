@@ -2945,6 +2945,41 @@ neither upstream offers, and `npm run explain` has been engine-done since
   forever."** The credentials gate exits 2 loudly instead, and the Routine
   prompt makes that a stop-and-report, not a skip. Same lesson as apply-patch's
   console line nobody read: a report nobody is forced to see is not a gate.
+  PREDICTOR it is no better than chance — evidence-first ranking wasn't an
+  upgrade, it was a correction. The counter footnote now states this to users.
+- Product rule going forward: any sim output that has a measurable real-world
+  counterpart gets measured against it and labeled with the number, not just
+  'THEORY'. Builds: ~62% core recall. Matchups: ~45% directional. Both prints
+  refresh automatically with their evidence passes.
+
+## 2026-08-29 (later) — "the meta board is outdated" — it was, twice over
+
+The user was right and the fix surfaced two buried assumptions:
+
+- **The board's source and the board's label had a single point of failure: the
+  omeda feed.** The lane boards could only ever be as current as the public
+  match feed, which runs days behind live and had been 503 for two days — so
+  "boards collected before 1.16" was the best the old pipeline could ever say
+  during the window players care about most (right after a patch). pred.gg's
+  generalStatistic was readable at our app tier all along: role-filterable,
+  version-pinnable, ranked-scoped. `npm run lanestats` pulls the whole 54-hero
+  x 5-role matrix in 14 aliased calls, and the board went from an 8,243-match
+  pre-1.16 window to ~103,305 ranked 1.16 matches. The board now labels the
+  patch its own SOURCE measured, not the calibration window's.
+- **The augment-cell gate was quietly censoring the meta.** The board dropped
+  any (hero, lane) the 1.15 augment pull lacked a cell for — which is exactly
+  the newly-meta rows a patch creates (Yin carry, Eden mid, Morigesh offlane —
+  18 rows). A gate built for consistency became a filter against novelty. Rows
+  now stay, flagged augmentPending, and the hero page renders its honest
+  no-evidence state; the harness checks the flag instead of the absence.
+- **A fixed games floor is implicitly calibrated to a window size.** n>=30
+  meant something in an 8k-match window; in a 103k-match patch sample it let an
+  89-game off-role blip onto the board's win-rate column. Floors that gate
+  displays should scale with the sample (1-in-500 matches keeps the old floor
+  at the old size, ~200 for a full patch).
+- Scarlett's pending reason updated itself into a sharper claim: 41,035 ranked
+  games this patch and STILL no augment evidence — because the missing piece is
+  the app-tier permission, not her novelty. The declaration machinery held.
 ## 2026-08-29 (later) — front door, the steer that shipped without a renderer, hero-page coach copy
 
 Three-item session (front door / copy pass / augment steer). Two of the three

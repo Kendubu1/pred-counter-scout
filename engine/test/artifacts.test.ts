@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from 'vitest';
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadData, type LoadedData } from '../src/data.js';
@@ -63,7 +63,15 @@ describe('hero artifacts (Concept A engine stage)', () => {
 
   it('meta board: five lanes of most-played heroes with sane shrunk winrates', () => {
     const meta = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/meta.json'), 'utf8'));
-    expect(meta.patch).toBe(cal.patch);
+    // The board's patch is whatever its lane-evidence source measured: the
+    // pred.gg lane-stats pull carries its own version-pinned patch; only the
+    // omeda-feed fallback inherits the calibration window's. Pinning cal.patch
+    // here would force the board back onto the stale feed label.
+    const laneStatsPath = path.join(ROOT, 'data/aggregates/predgg-lane-stats.json');
+    const expectedPatch = existsSync(laneStatsPath)
+      ? JSON.parse(readFileSync(laneStatsPath, 'utf8')).patch
+      : cal.patch;
+    expect(meta.patch).toBe(expectedPatch);
     for (const role of ['carry', 'midlane', 'offlane', 'jungle', 'support']) {
       const lane = meta.roles[role];
       expect(lane.length, role).toBeGreaterThanOrEqual(5);
@@ -136,8 +144,15 @@ describe('hero artifacts (Concept A engine stage)', () => {
       expect(slugs.has(slug), `${slug} is declared pending but is not on the roster`).toBe(true);
       expect(p.missing.length, `${slug} declared pending with nothing missing`).toBeGreaterThan(0);
       expect(p.reason.length, `${slug} declared pending with no stated reason`).toBeGreaterThan(20);
-      // The declaration must not become a dumping ground for established heroes.
-      expect(p.matchSample, `${slug} has a real match sample; it is not a pending hero`).toBeLessThan(500);
+      // The declaration must not become a dumping ground for established heroes:
+      // a pending hero is either patch-new (hero-patch-state trend 'new') or has
+      // a thin sample. A hero with real games is allowed here ONLY while the
+      // missing pieces are the fields the pred.gg app tier cannot read at all.
+      const patchState = JSON.parse(readFileSync(path.join(ROOT, 'data/game-data/hero-patch-state.json'), 'utf8')).heroes as Record<string, { trend?: string }>;
+      const gatedOnly = p.missing.every((m) => m === 'augment and Eternal win evidence' || m === 'field build statistics');
+      const isNew = patchState[slug]?.trend === 'new';
+      expect(isNew || p.matchSample < 500 || gatedOnly,
+        `${slug} has a real match sample, is not patch-new, and is missing refreshable fields — it is not a pending hero`).toBe(true);
     }
     // The index flag and the declaration must agree.
     for (const h of index.heroes) {
@@ -224,9 +239,16 @@ describe('hero artifacts (Concept A engine stage)', () => {
       if (pending[h.slug]?.missing.includes('augment and Eternal win evidence')) continue;
       expect(Object.keys(augs.heroes[h.slug] ?? {}).length, `${h.slug} has no augment cells and is not declared pending`).toBeGreaterThan(0);
     }
-    for (const [role, list] of Object.entries(meta.roles) as [string, { slug: string }[]][]) {
+    // A board row without an augment cell is allowed ONLY when it says so:
+    // the board no longer censors newly-meta (hero, lane) rows, it flags them
+    // augmentPending and the hero page renders its honest no-evidence state.
+    for (const [role, list] of Object.entries(meta.roles) as [string, { slug: string; augmentPending?: boolean }[]][]) {
       for (const h of list) {
-        expect(augs.heroes[h.slug]?.[role], `meta board links ${h.slug} as ${role} but no augment cell exists`).toBeDefined();
+        if (augs.heroes[h.slug]?.[role]) {
+          expect(h.augmentPending, `${h.slug}/${role} has an augment cell but is flagged pending`).toBeUndefined();
+        } else {
+          expect(h.augmentPending, `meta board links ${h.slug} as ${role} with no augment cell and no augmentPending flag`).toBe(true);
+        }
       }
     }
   });

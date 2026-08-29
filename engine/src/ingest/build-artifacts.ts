@@ -24,13 +24,31 @@ const slugs = requested.length ? requested : [...data.kits.keys()].sort();
 // Per-role field winrate (lightly shrunk toward 50%) so the lane picker can show a
 // flex hero's win% in the lane it flexes into. Same match-sample source as the meta board.
 const aggForIndex = loadAggregates();
+// Lane evidence source, in preference order: the pred.gg ranked lane-stats pull
+// (current patch, version-pinned — npm run lanestats) over the omeda feed
+// aggregate. The feed runs days behind live and can be down entirely; the 1.16
+// era shipped boards measured on pre-1.16 games because the feed window was the
+// only source. When lane-stats exists it carries the patch it measured, so the
+// board can say which patch it is instead of inheriting the feed window's.
+const laneStatsPath = path.join(ROOT, 'data/aggregates/predgg-lane-stats.json');
+const laneStats = existsSync(laneStatsPath)
+  ? JSON.parse(readFileSync(laneStatsPath, 'utf8')) as {
+      patch: string; scopeLabel: string; matchesApprox: number; generatedAt: string;
+      heroes: Record<string, { byRole: Record<string, { n: number; w: number }> }>;
+    }
+  : null;
+const laneCells: Record<string, { byRole?: Record<string, { n: number; w: number }> }> =
+  laneStats?.heroes ?? (aggForIndex?.heroes as Record<string, { byRole?: Record<string, { n: number; w: number }> }>) ?? {};
+const lanePatch = laneStats?.patch ?? cal.patch;
+const laneScope = laneStats?.scopeLabel ?? 'all ranks';
+const laneMatches = laneStats?.matchesApprox ?? aggForIndex?.meta.matches ?? 0;
 // One empirical-Bayes shrink strength per lane, shared by BOTH the meta board and the
 // index roleWr below, so the same hero's win% reads identically on every surface.
 const SHRINK_ROLES = ['carry', 'midlane', 'offlane', 'jungle', 'support'];
 const priorK: Record<string, number> = {};
 for (const r of SHRINK_ROLES) {
-  const cells = Object.values(aggForIndex?.heroes ?? {})
-    .map((h) => (h as { byRole?: Record<string, { n: number; w: number }> }).byRole?.[r])
+  const cells = Object.values(laneCells)
+    .map((h) => h.byRole?.[r])
     .filter((c): c is { n: number; w: number } => !!c && c.n >= 30);
   priorK[r] = momPriorStrength(cells, 0.5);
 }
@@ -43,7 +61,7 @@ for (const slug of slugs) {
   const artifact = buildHeroArtifact(kit, data, cal, { matchupEnemies: 6 });
   writeFileSync(path.join(OUT, `${slug}.json`), JSON.stringify(artifact, null, 1));
   const roles = (artifact.roles || []).map((r) => r.role);
-  const byRole = aggForIndex?.heroes?.[slug]?.byRole ?? {};
+  const byRole = laneCells[slug]?.byRole ?? {};
   const roleWr: Record<string, { wr: number; n: number }> = {};
   for (const r of (roles.length ? roles : [artifact.role])) {
     const c = byRole[r];
@@ -83,15 +101,22 @@ for (const { slug, name } of index) {
   if (!has(tipSrc, slug)) missing.push('ability tips');
   if (!has(buildSrc, slug)) missing.push('field build statistics');
   if (!missing.length) continue;
-  const byRole = (aggForIndex?.heroes?.[slug]?.byRole ?? {}) as Record<string, { n: number }>;
+  const byRole = laneCells[slug]?.byRole ?? {};
   const matchSample = Object.values(byRole).reduce((t, c) => t + (c?.n ?? 0), 0);
+  // Three honest reasons, in order of what actually happened: the hero has no
+  // recorded games; the hero has games but the missing pieces are the fields
+  // the current pred.gg app tier cannot read (simpleBuild/coreBuild — see
+  // priorities item 1); or the sample is genuinely below the floor.
+  const onlyGatedFields = missing.every((m) => m === 'augment and Eternal win evidence' || m === 'field build statistics');
   fieldPending[slug] = {
     name,
     missing,
     matchSample,
     reason: matchSample === 0
       ? 'no games in our committed match sample yet — released after the last field pull'
-      : `only ${matchSample} games in our committed match sample — below the evidence floor`,
+      : onlyGatedFields
+        ? `${matchSample.toLocaleString()} ranked games this patch, but the augment and build evidence fields are not readable at the current pred.gg app tier (priorities item 1)`
+        : `only ${matchSample} games in our committed match sample — below the evidence floor`,
   };
 }
 writeFileSync(path.join(ROOT, 'data/aggregates/field-data-pending.json'), JSON.stringify({
@@ -154,21 +179,34 @@ const agg = loadAggregates();
 const augFile = path.join(ROOT, 'data/aggregates/predgg-augments.json');
 const augHeroes: Record<string, Record<string, unknown>> = existsSync(augFile)
   ? (JSON.parse(readFileSync(augFile, 'utf8')).heroes ?? {}) : {};
-if (agg) {
-  const roles: Record<string, { slug: string; name: string; games: number; rawWr: number; shrunkWr: number; metaScore: number; badge: string | null }[]> = {};
+if (agg || laneStats) {
+  const roles: Record<string, { slug: string; name: string; games: number; rawWr: number; shrunkWr: number; metaScore: number; badge: string | null; augmentPending?: boolean }[]> = {};
   for (const role of ['carry', 'midlane', 'offlane', 'jungle', 'support']) {
-    const cells = Object.entries(agg.heroes)
+    const cells = Object.entries(laneCells)
       // unmapped hero_id:* entries are excluded: no kit, no portrait, no
       // page to link to (one such id is tracked in lessons.md)
       .map(([slug, h]) => ({ slug, cell: h.byRole?.[role] }))
-      .filter((x): x is { slug: string; cell: { n: number; w: number } } => data.kits.has(x.slug) && !!x.cell && x.cell.n >= 30 && !!augHeroes[x.slug]?.[role]);
+      // The games floor SCALES with the window: 30 games meant something in an
+      // 8k-match feed window but is pure noise in a 103k-match patch sample —
+      // without scaling, an 89-game off-role blip walked straight onto the
+      // board's win-rate column. 1 in 500 matches keeps the old floor for the
+      // old window size and moves it to ~200 for a full-patch pull.
+      .filter((x): x is { slug: string; cell: { n: number; w: number } } =>
+        data.kits.has(x.slug) && !!x.cell && x.cell.n >= Math.max(30, Math.round(laneMatches / 500)));
     const k = priorK[role] ?? momPriorStrength(cells.map((c) => c.cell), 0.5);
+    // The augment gate used to DROP any (hero, lane) the augment pull lacks a
+    // cell for. With current-patch lane evidence that quietly censors exactly
+    // the interesting rows — a hero newly meta in a role, or a new hero — and
+    // "the board is outdated" was the complaint that exposed it. The row now
+    // stays and carries augmentPending; the hero page already renders an
+    // honest no-field-evidence state for such cells.
     const scored = cells.map(({ slug, cell }) => ({
       slug,
       name: data.kits.get(slug)?.name ?? slug,
       games: cell.n,
       rawWr: Math.round((cell.w / cell.n) * 1000) / 1000,
       shrunkWr: Math.round(((cell.w + k * 0.5) / (cell.n + k)) * 1000) / 1000,
+      augmentPending: !augHeroes[slug]?.[role] || undefined,
     }));
     // Meta = strong AND prevalent: average of each hero's percentile rank
     // on pick volume and on shrunk winrate within the lane. A naive
@@ -221,10 +259,12 @@ if (agg) {
   }
 
   writeFileSync(path.join(OUT, 'meta.json'), JSON.stringify({
-    patch: cal.patch,
+    patch: lanePatch,
+    scope: laneScope,
+    laneSource: laneStats ? `pred.gg ranked general statistics, patch ${lanePatch}` : 'omeda public match feed window',
     generatedAt: new Date().toISOString(),
-    matches: agg.meta.matches,
-    note: 'meta score blends how often a lane picks a hero with how often it wins (small samples adjusted down), both rank-averaged within the lane; all ranks, current-patch window. Badges mark high-winrate/low-pick sleepers and high-pick/low-winrate traps.',
+    matches: laneMatches,
+    note: `meta score blends how often a lane picks a hero with how often it wins (small samples adjusted down), both rank-averaged within the lane; ${laneScope}, current-patch window. Badges mark high-winrate/low-pick sleepers and high-pick/low-winrate traps.`,
     roles,
     topPlayers,
     topPlayersNote: topPlayers ? 'current ranked split leaderboard via the pred.gg API (favRole filter); VP = victory points' : null,

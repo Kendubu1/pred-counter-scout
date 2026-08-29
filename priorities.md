@@ -256,6 +256,19 @@ catalog is re-grounded.
    itself when the pull lands. 2026-08-29: skill order and ability tips landed;
    the two remaining gaps are exactly the Forbidden endpoints in (1).
 
+## 15. [SHIPPED 2026-08-29] Meta board on current-patch ranked lane stats
+
+The lane boards' only source was the omeda feed window — days behind live and
+503 for two days — so every board through the 1.16 era was pre-1.16. `npm run
+lanestats` now pulls the full (hero, role) ranked matrix for the CURRENT patch
+from pred.gg generalStatistic (14 aliased calls, version-pinned); the board and
+index roleWr prefer it over the feed, label the patch the SOURCE measured
+("103,305 matches, patch 1.16, ranked"), keep newly-meta rows the old
+augment-cell gate silently censored (flagged augmentPending instead), and the
+games floor scales with the window (1-in-500 matches). Feed remains fallback.
+Gold curves / matchup evidence / item play rates are still feed-only — those
+stay on the item-2 pipeline when the feed returns.
+
 ## 14. [SHIPPED 2026-08-29] Squad postgame coach automation
 
 When anyone in the 5-stack finishes a game, the coach pipeline runs unasked.
