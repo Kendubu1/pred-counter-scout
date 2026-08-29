@@ -79,6 +79,30 @@ export async function currentVersion(): Promise<{ id: string; name: string; ids:
   return cachedVersion;
 }
 
+/** Rank bands shared by every banded pull (lanestats, augments): pred.gg's
+ *  filters take ranks: [id], and the band → rank-id mapping comes from the
+ *  OPEN ranked split's ladder by tierIdx. Cached per process. */
+export const BAND_DEFS: { key: string; label: string; tiers: number[] }[] = [
+  { key: 'low', label: 'Bronze–Silver', tiers: [0, 1] },
+  { key: 'mid', label: 'Gold–Platinum', tiers: [2, 3] },
+  { key: 'high', label: 'Diamond+', tiers: [4, 5] },
+];
+let cachedBands: { key: string; label: string; rankIds: string[] }[] | null = null;
+export async function rankBands(): Promise<{ key: string; label: string; rankIds: string[] }[]> {
+  if (cachedBands) return cachedBands;
+  const d = await gql<{ ratings: { endTime: string | null; startTime: string; ranks: { id: string; name: string; tierIdx: number }[] }[] }>(
+    '{ ratings { startTime endTime ranks { id name tierIdx } } }',
+  );
+  const open = d.ratings.filter((r) => !r.endTime).sort((a, b) => b.startTime.localeCompare(a.startTime))[0];
+  if (!open?.ranks?.length) throw new Error('pred.gg: no open split / rank ladder');
+  cachedBands = BAND_DEFS.map((b) => {
+    const rankIds = open.ranks.filter((r) => b.tiers.includes(r.tierIdx)).map((r) => r.id);
+    if (!rankIds.length) throw new Error(`pred.gg: no ranks for band ${b.key} (tiers ${b.tiers.join(',')})`);
+    return { key: b.key, label: b.label, rankIds };
+  });
+  return cachedBands;
+}
+
 const LANES = ['CARRY', 'MIDLANE', 'OFFLANE', 'JUNGLE', 'SUPPORT'] as const;
 
 export interface TopPlayer {

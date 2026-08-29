@@ -31,7 +31,7 @@
 import { writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { gql, hasCredentials, currentVersion } from './predgg.js';
+import { gql, hasCredentials, currentVersion, rankBands } from './predgg.js';
 import { loadData } from '../data.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -39,28 +39,8 @@ const ROLES = ['carry', 'midlane', 'offlane', 'jungle', 'support'];
 const ROLE_ENUM: Record<string, string> = { carry: 'CARRY', midlane: 'MIDLANE', offlane: 'OFFLANE', jungle: 'JUNGLE', support: 'SUPPORT' };
 const HEROES_PER_CALL = 3;
 
-const BAND_DEFS: { key: string; label: string; tiers: number[] }[] = [
-  { key: 'low', label: 'Bronze–Silver', tiers: [0, 1] },
-  { key: 'mid', label: 'Gold–Platinum', tiers: [2, 3] },
-  { key: 'high', label: 'Diamond+', tiers: [4, 5] },
-];
-
 interface Cell { matchesPlayed: number; matchesWon: number }
 interface NW { n: number; w: number }
-
-/** Rank-id lists per band, read from the OPEN ranked split's ladder. */
-async function rankBands(): Promise<{ key: string; label: string; rankIds: string[] }[]> {
-  const d = await gql<{ ratings: { endTime: string | null; startTime: string; ranks: { id: string; name: string; tierIdx: number }[] }[] }>(
-    '{ ratings { startTime endTime ranks { id name tierIdx } } }',
-  );
-  const open = d.ratings.filter((r) => !r.endTime).sort((a, b) => b.startTime.localeCompare(a.startTime))[0];
-  if (!open?.ranks?.length) throw new Error('pred.gg: no open split / rank ladder');
-  return BAND_DEFS.map((b) => {
-    const rankIds = open.ranks.filter((r) => b.tiers.includes(r.tierIdx)).map((r) => r.id);
-    if (!rankIds.length) throw new Error(`pred.gg: no ranks for band ${b.key} (tiers ${b.tiers.join(',')})`);
-    return { key: b.key, label: b.label, rankIds };
-  });
-}
 
 async function main() {
   if (!hasCredentials()) { console.error('needs PREDGG_CLIENT_ID/SECRET in env'); process.exit(1); }

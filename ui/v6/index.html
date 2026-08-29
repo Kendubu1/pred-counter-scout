@@ -535,6 +535,12 @@ function itemWhyRows(items, whyMap) {
   return `<div class="mb-items-why">${rows}</div>`;
 }
 const IMG = { hero: (s) => `../img/heroes/${s}.webp`, item: (s) => `../img/items/${s}.webp`, eternal: (s) => `../img/eternals/${s}.webp` };
+// A minor blessing's in-game card icon (id-keyed snapshot from the pred.gg
+// perk catalog); empty string when the catalog hasn't loaded or lacks it.
+const minorIcon = (name, px) => {
+  const id = typeof MINORICON !== 'undefined' && MINORICON && MINORICON[name.toLowerCase()];
+  return id ? `<img src="../img/eternals/${id}.webp" alt="" loading="lazy" style="width:${px}px;height:${px}px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">` : '';
+};
 const ROLES = ['all', 'carry', 'midlane', 'offlane', 'jungle', 'support'];
 const LANE_LABELS = { carry: 'Carry', midlane: 'Midlane', offlane: 'Offlane', jungle: 'Jungle', support: 'Support' };
 // Canonical THEORY definition — ONE source of truth, reused by every THEORY badge
@@ -1414,7 +1420,7 @@ function renderHero(a, roleParam) {
             const m = a.eternals.minorsByName && a.eternals.minorsByName[name.toLowerCase()];
             const mins = m ? [m.minor1, m.minor2].filter((x) => x && x.name) : [];
             if (!mins.length) return '';
-            return `<div style="font-size:.7rem;color:var(--text-1);margin:.22rem 0 0 ${indent}"><b style="color:var(--text-0)">Top minors:</b> ${mins.map((x) => esc(x.name)).join(' · ')}</div>`;
+            return `<div style="display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;font-size:.7rem;color:var(--text-1);margin:.22rem 0 0 ${indent}"><b style="color:var(--text-0)">Top minors:</b> ${mins.map((x) => `<span style="display:inline-flex;align-items:center;gap:.25rem">${minorIcon(x.name, 18)}${esc(x.name)}</span>`).join(' <span style="color:var(--text-2)">·</span> ')}</div>`;
           };
           const e0 = ets[0], wr0 = e0.w / e0.n, et0 = ETMAP && ETMAP[e0.name.toLowerCase()];
           const ai0 = REVIEWS && REVIEWS.eternals && REVIEWS.eternals[a.slug] && REVIEWS.eternals[a.slug][role] && REVIEWS.eternals[a.slug][role][e0.name];
@@ -1440,7 +1446,7 @@ function renderHero(a, roleParam) {
             const ai = REVIEWS && REVIEWS.eternals && REVIEWS.eternals[a.slug] && REVIEWS.eternals[a.slug][role] && REVIEWS.eternals[a.slug][role][e.name];
             const mb = a.eternals.minorsByName && a.eternals.minorsByName[e.name.toLowerCase()];
             const pick1 = mb && mb.minor1 && mb.minor1.name, pick2 = mb && mb.minor2 && mb.minor2.name;
-            const slot = (opts, pick) => (opts || []).map((o) => `<div style="margin:.12rem 0;font-size:.66rem;color:${o.name === pick ? 'var(--accent)' : 'var(--text-2)'}">${o.name === pick ? '⚙ ' : ''}<b>${esc(o.name)}</b> — ${esc(o.desc)}</div>`).join('');
+            const slot = (opts, pick) => (opts || []).map((o) => `<div style="display:flex;align-items:flex-start;gap:.35rem;margin:.14rem 0;font-size:.66rem;color:${o.name === pick ? 'var(--accent)' : 'var(--text-2)'}">${minorIcon(o.name, 20)}<span>${o.name === pick ? '⚙ ' : ''}<b>${esc(o.name)}</b> — ${esc(o.desc)}</span></div>`).join('');
             return `
             <div style="padding:.35rem 0;border-bottom:1px ${i === ets.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
               <div style="display:flex;gap:.6rem;align-items:center">
@@ -1471,7 +1477,7 @@ function renderHero(a, roleParam) {
                 <span style="font-size:.68rem;color:var(--text-2)">the sim's pick — not in the field's list above</span>
               </div>
               ${minors.map((m) => `
-                <div style="font-size:.76rem;color:var(--text-1);margin:.22rem 0 0 2.1rem">↳ <b>${esc(m.name)}</b> <span style="color:var(--text-2)">— ${m.modeled && m.deltaPct != null ? `the sim gains +${m.deltaPct}% on top of the major` : esc(m.note || 'curated pick')}</span></div>`).join('')}
+                <div style="display:flex;align-items:flex-start;gap:.35rem;font-size:.76rem;color:var(--text-1);margin:.22rem 0 0 2.1rem">↳ ${minorIcon(m.name, 20)}<span><b>${esc(m.name)}</b> <span style="color:var(--text-2)">— ${m.modeled && m.deltaPct != null ? `the sim gains +${m.deltaPct}% on top of the major` : esc(m.note || 'curated pick')}</span></span></div>`).join('')}
               <div style="font-size:.64rem;color:var(--text-2);margin:.3rem 0 0 2.1rem">pick one from each minor slot in the draft screen · minor values are THEORY until calibration</div>
             </div>`;
           })();
@@ -1817,23 +1823,30 @@ async function nav(slug, replace = false, role = null) {
   await route();
   window.scrollTo({ top: 0 });
 }
-let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null, PENDING = null, HEROCOACH = null;
+let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null, PENDING = null, HEROCOACH = null, MINORICON = null;
 async function getAugs() {
   if (!AUGS) {
-    let eternals, pending;
-    [AUGS, REVIEWS, REASONING, eternals, pending, HEROCOACH] = await Promise.all([
+    let eternals, pending, etcat;
+    [AUGS, REVIEWS, REASONING, eternals, pending, HEROCOACH, etcat] = await Promise.all([
       getJson('../../data/aggregates/predgg-augments.json').catch(() => null),
       getJson('../../data/aggregates/augment-reviews.json').catch(() => null),
       getJson('../../data/aggregates/build-reasoning.json').catch(() => null),
       getJson('../../data/game-data/eternals.json').catch(() => null),
       getJson('../../data/aggregates/field-data-pending.json').catch(() => null),
       getJson('../../data/aggregates/hero-coach-lines.json').catch(() => null),
+      getJson('../../data/aggregates/eternals-catalog.json').catch(() => null),
     ]);
     PENDING = (pending && pending.heroes) || {};
     // name -> { major, minorSlot1, minorSlot2 } so an Eternal can be explained in
     // plain words (what it does) and clicked open for its minor options.
     ETMAP = {};
     (eternals && eternals.eternals || []).forEach((e) => { ETMAP[e.name.toLowerCase()] = e; });
+    // minor-blessing name -> pred.gg perk id, so every minor renders its real
+    // in-game card icon (ui/img/eternals/<id>.webp) next to its name.
+    MINORICON = {};
+    Object.values((etcat && etcat.eternals) || {}).forEach((e) => {
+      (e.minors || []).forEach((m) => { MINORICON[m.name.toLowerCase()] = m.id; });
+    });
   }
   return AUGS;
 }

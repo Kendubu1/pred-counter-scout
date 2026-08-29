@@ -3280,3 +3280,36 @@ circles were still ambiguous:
 - meta.json is backward/forward compatible: `rolesByBand`/`rankBands`/
   `matchesByBand` are additive and the UI falls back to the all-ranks board
   (and hides the selector) when they're absent.
+
+## 2026-08-29: pred.gg app scopes; Eternal catalog + icons; banded augment evidence (code-ready)
+
+- The user-created pred.gg application authenticates fine but its token
+  carries only `offline_access profile`: hero.simpleBuild, coreBuild and
+  matchupStatistic all return per-field "Forbidden" while generalStatistic,
+  perks, ratings and versions work. Scopes are fixed at app registration —
+  the token endpoint silently DROPS unregistered scope requests (asking for
+  `build_statistic` returns scope "") — so no token parameter fixes it. The
+  original creds had the statistics tier (lessons 2026-06-12: "credentialed
+  scopes add leaderboards and build_statistic/matchup_statistic"). Winrate
+  refresh for augments/builds/matchups stays blocked until those creds (or a
+  scope upgrade on the new app) land; snapshot + patchcheck (1.16, verdict
+  clean) and the catalog/icon pull all worked on the limited scope.
+- simpleBuild's filter accepts ranks: [id] (schema introspection, same shape
+  as generalStatistic) — the rank-banded augment/eternal/crest evidence is
+  wired into augments.ts as low/mid/high aliases in the same per-cell
+  requests, writing heroes[slug][role].byRank next to the canonical rows.
+  rankBands()/BAND_DEFS moved to predgg.ts, shared with lanestats.
+- The perk catalog is richer than we used: PerkData.minorBlessings links each
+  ETERNAL_1 major to its 6 minors (3 per blessing slot — the in-game pick
+  screen). New artifact data/aggregates/eternals-catalog.json (pure catalog,
+  regenerates on limited creds; CATALOG_ONLY=1 npm run augments) + icon
+  snapshot ui/img/eternals/<perk-id>.webp for majors AND minors, majors also
+  by name. The v6 hero page now renders minor icons in Top-minors lines and
+  both MINOR SLOT lists (name->id map from the catalog).
+- pred.gg names Eternals by internal codename like heroes: their "Knell" is
+  the game's "Rust" (identical minor sets confirmed). Mapped at ingest
+  (ETERNAL_DISPLAY) so evidence joins data/game-data/eternals.json.
+- Patch 1.16 ground truth: game-data/eternals.json was already current (16
+  Eternals incl. Weald/Rust/Pilow/Satariel); the stale piece is ONLY the
+  winrate evidence (predgg-augments.json still 2026-07-06, patch 1.15 — why
+  Lotus still trended and Pilow was missing on Shinbi).
