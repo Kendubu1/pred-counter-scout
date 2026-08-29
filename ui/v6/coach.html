@@ -236,6 +236,8 @@
   .tlkey .tko { width:8px; height:8px; border-radius:2px; }
   .tl-detail { margin-top:.55rem; font-size:.8rem; line-height:1.5; color:var(--text-1); background:var(--bg-2); border:1px solid var(--gold); border-radius:8px; padding:.5rem .65rem; }
   .tlfighters a, .tlfighters img { display:inline-block; }
+  /* population filters: hide a whole mark family when its pill is toggled off */
+  .tlhide-f .tlmark, .tlhide-o .tlobj, .tlhide-t .tltower { display:none; }
   .fm-mark { fill:none; stroke:transparent; stroke-width:2.4; stroke-dasharray:5 4; transition:stroke .15s; }
   .fm-mark.on { stroke:var(--gold); animation:fmants .7s linear infinite; }
   .fm-halo { fill:none; stroke:var(--gold); stroke-width:1.4; opacity:0; transform-box:fill-box; transform-origin:center; }
@@ -598,6 +600,16 @@ function tlSelect(kind, n) {
   const src = document.querySelector(`#tldetails [data-${kind === 'o' ? 'o' : kind === 't' ? 't' : 'i'}="${n}"]`);
   if (src) { panel.innerHTML = src.innerHTML; panel.hidden = false; }
 }
+// Population filter pills over the strip: toggle a whole mark family. If the
+// currently selected mark just got hidden, close its panel too.
+function tlFilter(kind, btn) {
+  const strip = document.getElementById('tlstrip'); if (!strip) return;
+  const off = strip.classList.toggle('tlhide-' + kind);
+  btn.classList.toggle('on', !off);
+  btn.setAttribute('aria-pressed', String(!off));
+  const sel = document.querySelector('.tlmark.sel, .tlobj.sel, .tltower.sel');
+  if (sel && sel.offsetParent === null) { sel.classList.remove('sel'); const p = document.getElementById('tldetail'); if (p) p.hidden = true; }
+}
 // strip marks are divs — make Enter/Space activate them like buttons
 document.addEventListener('keydown', (e) => {
   if ((e.key === 'Enter' || e.key === ' ') && e.target.closest && e.target.closest('.tlmark, .tlobj, .tltower')) { e.preventDefault(); e.target.click(); }
@@ -730,9 +742,12 @@ function pgReview(f) {
       <span class="tk"><i class="tko" style="position:relative;background:var(--bg-3);border:1.5px solid var(--green)"><span style="position:absolute;inset:0;margin:auto;width:3px;height:3px;border-radius:50%;background:#fff"></span></i> we took it (white dot) · <i class="tko" style="background:var(--bg-3);border:1.5px solid var(--red)"></i> they did</span>
       ${tlTowers.length ? `<span class="tk"><i class="tkt" style="border-bottom:7px solid var(--green)"></i> tower/inhib we took · <i class="tkt" style="border-top:7px solid var(--red)"></i> one we lost</span>` : ''}
     </div>`;
+  const tlPops = [sks.length && ['f', `fights (${sks.length})`], tlMajors.length && ['o', `objectives (${tlMajors.length})`], tlTowers.length && ['t', `towers (${tlTowers.length})`]].filter(Boolean);
+  const tlFilterRow = tlPops.length > 1 ? `<div class="pgfilter" style="margin:.2rem 0 .3rem">${tlPops.map(([k, label]) => `<button class="pgf on" aria-pressed="true" onclick="tlFilter('${k}',this)">${label}</button>`).join('')}</div>` : '';
   const timeline = (sks.length || tlMajors.length || tlTowers.length) ? card(`
     ${eyebrow('The game in one strip', `circles on the line = fights · squares above = objective takes${tlTowers.length ? ' · ▲▼ = tower falls' : ''} · tap any mark and it breaks down right here · key below`)}
-    <div style="position:relative;height:74px;margin:.1rem 0 0">
+    ${tlFilterRow}
+    <div id="tlstrip" style="position:relative;height:74px;margin:.1rem 0 0">
       <div style="position:absolute;top:40px;left:0;right:0;height:2px;background:var(--border)"></div>
       ${tlTicks}${tlObjMarks}${tlTowerMarks}${tlFightMarks}
     </div>

@@ -3253,3 +3253,9 @@ circles were still ambiguous:
   a white pip. The objective triple (orange/purple/blue) passes CVD ΔE 11.2.
 - a11y: aria-labels on every mark, aria-live on the breakdown panel, the
   existing keyboard activation extended to the new marks.
+
+- **Density gets a filter, not a redesign** (maintainer's call): population
+  pills over the strip (fights / objectives / towers, with counts) toggle
+  each mark family; hiding the family that holds the current selection also
+  closes its panel. Reusing the `.pgf` pill class bought the 44px mobile
+  tap targets for free.
