@@ -3178,3 +3178,27 @@ critic:
   pattern never the person, randoms get the same standard, and the critic's
   new flag (f) cuts both ways — it flags missing causation AND refuses to
   soften a grounded blunt line.
+
+### Running the new coach over the last 6 games (2026-08-29)
+
+First full pass of the research-backed coach (blunt verdicts, causation,
+interrogation block, minute-context) over real films, through the
+author→critic→apply loop. Outcomes:
+
+- **The critic is only as good as the SOURCE — again.** Round 1 flagged 24
+  lines; ~18 were true numbers (winning-core winrates, wards cleared,
+  damage taken) whose fields the critique SOURCE simply didn't print — the
+  exact failure mode already documented three times in coach-critique.ts.
+  Completed the SOURCE (both teams) and re-ran rather than applying
+  rewrites that would have weakened true lines. The recurring rule: when
+  the critic flags a cluster of "invented" numbers, audit the SOURCE
+  printer before trusting the flags.
+- **Round 2 found six real errors, one per game** — all misattributions or
+  overclaims (a hero credited in a fight he wasn't in, "every major"
+  against a seedling ledger, "three pinned" when macro lists two). The
+  blunt verdicts all survived untouched: with the receipts in the SOURCE,
+  the house style and the honesty contract don't conflict. 6/6 rewrites
+  ground-checked and applied; gate STOP at 91.9% on the round.
+- **The verdicts field works end-to-end**: authored per player (squad and
+  randoms, ≥1 positive per game), critiqued as ordinary lines, rendered
+  automatically by the merged coach page.
