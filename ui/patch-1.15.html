@@ -197,6 +197,17 @@
     }
   .measured .m-hit, .chipkey .m-hit{color:var(--green,#4caf50);font-weight:700;} .measured .m-miss, .chipkey .m-miss{color:var(--gold,#e0a93e);font-weight:700;}
   .measured-banner{border-color:var(--green,#4caf50);}
+  
+    .card-deep { margin:.45rem 0 .25rem; }
+    .card-deep>summary { cursor:pointer; list-style:none; font-size:.72rem; font-weight:700;
+      letter-spacing:.08em; text-transform:uppercase; color:var(--text-2); }
+    .card-deep>summary::before { content:"▸ "; color:var(--accent); }
+    .card-deep[open]>summary::before { content:"▾ "; }
+    .card-deep>summary:hover { color:var(--accent); }
+    .scorestrip { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:.6rem; margin:.8rem 0; }
+    .scorestrip .st { background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:.55rem .7rem; }
+    .scorestrip .st .n { font-size:1.25rem; font-weight:800; font-variant-numeric:tabular-nums; }
+    .scorestrip .st .l { font-size:.7rem; color:var(--text-2); margin-top:.1rem; line-height:1.35; }
   </style>
 </head>
 <body>
@@ -238,9 +249,9 @@
       </div>
 
       <h2 class="section" id="ch-tldr"><span class="sec-ic" data-bic="scout"></span>TL;DR — what actually changes how the game plays</h2>
-      <div class="tldr-grid"><div class="tldr-item"><div class="tldr-lead">New hero — Ikra</div><div class="tldr-text">A long-range splash-damage mage (Carry/Mid): bubble zoning, a suspend projectile, and a channeled knock-up ult.</div></div><div class="tldr-item"><div class="tldr-lead">Map reworked — Daybreak V6</div><div class="tldr-text">More rotation and dive paths, a redesigned Orb Prime pit, and retuned shrine/buff timers — rotation timing and objective tempo shift.</div></div><div class="tldr-item"><div class="tldr-lead">Jungle is harder to clear</div><div class="tldr-text">Camps and Red/Blue now deal current-health damage, so you finish lower; the uniform 5 CS per camp makes the enemy jungler’s farm easy to track.</div></div><div class="tldr-item"><div class="tldr-lead">Comeback XP: later, harder</div><div class="tldr-text">Triggers at a bigger lead (1.5 → 1.75) and ramps harder — snowballs are stickier early, catch-up sharper once behind.</div></div><div class="tldr-item"><div class="tldr-lead">Towers are predictable</div><div class="tldr-text">A 0.25s target-switch delay + reset-on-swap makes diving and last-hitting under tower skill-based, not random.</div></div><div class="tldr-item"><div class="tldr-lead">Crits are pseudo-random</div><div class="tldr-text">Misses raise your next crit chance and crits lower it — far less coin-flip variance in fights.</div></div><div class="tldr-item"><div class="tldr-lead">Eternals trimmed</div><div class="tldr-text">Durability, <span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span>, and scaling blessings each lost a little, with a few soft reworks (Krix anti-heal, Vesh mana-on-takedown). Re-check your draft.</div></div><div class="tldr-item"><div class="tldr-lead">Items reshuffled</div><div class="tldr-text">Earth Spirit → the new Gamma Gloop crest, Rebirth reworked into a resurrect item; tanks gained armor while some carry items lost power.</div></div><div class="tldr-item"><div class="tldr-lead">Biggest hero swings</div><div class="tldr-text">Revenant jumps toward pick/ban contention; Terra’s dive durability takes the patch’s hardest hit. Twelve more notable changes below.</div></div></div>
       <div class="meta-read"><b><span class="mr-ic" data-bic="scout" data-bic-size="13"></span>Meta read</b>1.15 is the biggest shake-up since the Eternals overhaul: a new control mage (Ikra), a full Daybreak V6 map and standardized jungle economy, stickier-early/harder-catch-up comeback XP, more predictable tower diving, less streaky crit, a broad Eternal trim, and an item reshuffle. Net direction is a healthier mid-game built on cleaner objective tempo and macro reads rather than raw stat ceilings — re-learn your rotations, re-check your blessings, and re-time your spikes.</div>
 
+      <div class="tldr-grid"><div class="tldr-item"><div class="tldr-lead">New hero — Ikra</div><div class="tldr-text">A long-range splash-damage mage (Carry/Mid): bubble zoning, a suspend projectile, and a channeled knock-up ult.</div></div><div class="tldr-item"><div class="tldr-lead">Map reworked — Daybreak V6</div><div class="tldr-text">More rotation and dive paths, a redesigned Orb Prime pit, and retuned shrine/buff timers — rotation timing and objective tempo shift.</div></div><div class="tldr-item"><div class="tldr-lead">Jungle is harder to clear</div><div class="tldr-text">Camps and Red/Blue now deal current-health damage, so you finish lower; the uniform 5 CS per camp makes the enemy jungler’s farm easy to track.</div></div><div class="tldr-item"><div class="tldr-lead">Comeback XP: later, harder</div><div class="tldr-text">Triggers at a bigger lead (1.5 → 1.75) and ramps harder — snowballs are stickier early, catch-up sharper once behind.</div></div><div class="tldr-item"><div class="tldr-lead">Towers are predictable</div><div class="tldr-text">A 0.25s target-switch delay + reset-on-swap makes diving and last-hitting under tower skill-based, not random.</div></div><div class="tldr-item"><div class="tldr-lead">Crits are pseudo-random</div><div class="tldr-text">Misses raise your next crit chance and crits lower it — far less coin-flip variance in fights.</div></div><div class="tldr-item"><div class="tldr-lead">Eternals trimmed</div><div class="tldr-text">Durability, <span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span>, and scaling blessings each lost a little, with a few soft reworks (Krix anti-heal, Vesh mana-on-takedown). Re-check your draft.</div></div><div class="tldr-item"><div class="tldr-lead">Items reshuffled</div><div class="tldr-text">Earth Spirit → the new Gamma Gloop crest, Rebirth reworked into a resurrect item; tanks gained armor while some carry items lost power.</div></div><div class="tldr-item"><div class="tldr-lead">Biggest hero swings</div><div class="tldr-text">Revenant jumps toward pick/ban contention; Terra’s dive durability takes the patch’s hardest hit. Twelve more notable changes below.</div></div></div>
       <h2 class="section" id="ch-heroes"><span class="sec-ic" data-bic="counter-pick"></span>Hero changes <span style="font-size:0.7rem;color:var(--text-2);font-weight:500;">
         2 meta-shifting · 12 notable · 7 minor · bugfix-only heroes excluded</span></h2>
       
@@ -329,10 +340,10 @@
           <span class="badge mag-meta">Meta-shifting</span>
         </div>
         <ul class="change-list"><li>Mana regen growth 0.15 -&gt; 0.18</li><li>Obliterate scaling 40/50/60/70/80% -&gt; 40/55/70/85/100%</li><li>Scar scaling 15%/20% -&gt; 20%/30% (phys/mag)</li><li>Hellfire Rounds speed/attack scaling 15% -&gt; 18% (monster cap lowered to 200-450)</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>Obliterate scaling jumps 40/50/60/70/80% -&gt; 40/55/70/85/100% — a +20-point swing at max on his homing-missile ult — and Scar 15%/20% -&gt; 20%/30% (phys/mag) on his cursed orb, so two of his core abilities gain large damage; the sim already opens Viper into a sustained-DPS crit core, and with Obliterate to 100% his burst window grows sharply.</div>
+        <details class="card-deep" open><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>Obliterate scaling jumps 40/50/60/70/80% -&gt; 40/55/70/85/100% — a +20-point swing at max on his homing-missile ult — and Scar 15%/20% -&gt; 20%/30% (phys/mag) on his cursed orb, so two of his core abilities gain large damage; the sim already opens Viper into a sustained-DPS crit core, and with Obliterate to 100% his burst window grows sharply.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>His combo and teamfight ult damage spike hard, plausibly pushing the Vanquisher/Imperator crit line above its current sub-52% field read and into pick/ban contention as a carry — the largest single hero swing in this patch.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Crit Burst</strong> — Vanquisher, Imperator, Terminus · 51.8% wr · 1,289 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>45.5% → <strong>48.2%</strong> win rate (+2.6 pts over 868 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>45.5% → <strong>48.2%</strong> win rate (+2.6 pts over 868 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
       </div>
       <div class="hero-card card" id="hero-terra" data-mag="meta-shifting" data-trend="mixed">
         <a class="card-out" href="v6/?hero=terra" title="Open Terra's full build &amp; matchups">full page ↗</a>
@@ -343,10 +354,10 @@
           <span class="badge mag-meta">Meta-shifting</span>
         </div>
         <ul class="change-list"><li>Iron Resolve damage reduction 30/33/36/39/42% -&gt; 25/27.5/30/32.5/35%</li><li>Ruthless Assault damage 50/85/120/155/190 -&gt; 50/80/110/140/170, monster cap 100 -&gt; 200 (+20/lvl)</li><li>Wild Rush damage 27/45/63/81/99 -&gt; 27/48/69/90/111, max charge raised to 81/144/207/270/333</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>Her signature durability passive Iron Resolve is cut hard — damage reduction 30/33/36/39/42% -&gt; 25/27.5/30/32.5/35%, a 7-point drop at max — so the trait that lets her dive and survive is materially weaker; the Ruthless Assault and Wild Rush reshuffles add monster damage and charge ceiling but trim mid-rank hero damage.</div>
+        <details class="card-deep" open><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>Her signature durability passive Iron Resolve is cut hard — damage reduction 30/33/36/39/42% -&gt; 25/27.5/30/32.5/35%, a 7-point drop at max — so the trait that lets her dive and survive is materially weaker; the Ruthless Assault and Wild Rush reshuffles add monster damage and charge ceiling but trim mid-rank hero damage.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>Losing a chunk of her core damage reduction directly lowers her effective tankiness in fights, the thing that defines her offlane dive — this should pull her power down even as her clear improves, a change big enough to reshape how safely she can engage.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Physical-Def Frontline</strong> — Tainted Guard, Fire Blossom, Transference · 53.7% wr · 143 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>51.7% → <strong>47%</strong> win rate (-4.7 pts over 536 ranked games)</div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>51.7% → <strong>47%</strong> win rate (-4.7 pts over 536 ranked games)</div>
       </div></div>
       <h3 class="group-head"><span class="badge mag-notable">Notable</span> <span class="group-count">12 heroes</span></h3>
       <div class="group-cards">
@@ -359,10 +370,10 @@
           <span class="badge mag-notable">Notable</span>
         </div>
         <ul class="change-list"><li>Mana regen 1.7 -&gt; 2.0, Physical Power growth 3.1 -&gt; 3.5</li><li>Particle Shredder mana cost lowered to 12/14/16/18/20</li><li>Infinite Obliteration projectile speed +25% -&gt; +50%</li><li>Synaptic Obliterator cancel delay 0.5s -&gt; 0.1s</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>Particle Shredder mana cost drops to 12/14/16/18/20 and mana regen rises 1.7 -&gt; 2.0, easing the kit's biggest constraint, while Physical Power growth 3.1 -&gt; 3.5 and Infinite Obliteration projectile speed +25% -&gt; +50% make his obliteration line land far more reliably; Synaptic Obliterator's cancel delay 0.5s -&gt; 0.1s tightens his combo into squishies.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>Particle Shredder mana cost drops to 12/14/16/18/20 and mana regen rises 1.7 -&gt; 2.0, easing the kit's biggest constraint, while Physical Power growth 3.1 -&gt; 3.5 and Infinite Obliteration projectile speed +25% -&gt; +50% make his obliteration line land far more reliably; Synaptic Obliterator's cancel delay 0.5s -&gt; 0.1s tightens his combo into squishies.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>Better mana lets him spam his rotation in lane without backing off, and the faster, snappier projectiles raise his hit rate on the 10-second burst the sim already builds for — expect a meaningful lane-bully and skirmish bump for mid Argus.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Magical DPS Carry</strong> — Azure Core, Entropy, Wraith Leggings · 56.2% wr · 1,199 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>50.4% → <strong>50.9%</strong> win rate (+0.5 pts over 1,261 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>50.4% → <strong>50.9%</strong> win rate (+0.5 pts over 1,261 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
       </div>
       <div class="hero-card card" id="hero-crunch" data-mag="notable" data-trend="buff">
         <a class="card-out" href="v6/?hero=crunch" title="Open Crunch's full build &amp; matchups">full page ↗</a>
@@ -373,10 +384,10 @@
           <span class="badge mag-notable">Notable</span>
         </div>
         <ul class="change-list"><li>Health growth 136 -&gt; 141</li><li>Combo Crunch attack speed 6% -&gt; 7.5% (max stacks 5 -&gt; 4)</li><li>Falcon Crunch right-crunch modifier +10% -&gt; +15%</li><li>Cross Crunch scaling 25%/28% -&gt; 28%/30% (phys/mag); Right Crunch scaling 100%/65% -&gt; 110%/75% (phys/mag)</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>His ability scaling is broadly buffed — Right Crunch 100%/65% -&gt; 110%/75% and Cross Crunch 25%/28% -&gt; 28%/30% (phys/mag), Falcon Crunch right-crunch modifier +10% -&gt; +15%, plus Health growth 136 -&gt; 141 — so each combo hits harder and he is sturdier; Combo Crunch attack speed 6% -&gt; 7.5% at fewer max stacks (5 -&gt; 4) ramps his on-hit faster.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>His ability scaling is broadly buffed — Right Crunch 100%/65% -&gt; 110%/75% and Cross Crunch 25%/28% -&gt; 28%/30% (phys/mag), Falcon Crunch right-crunch modifier +10% -&gt; +15%, plus Health growth 136 -&gt; 141 — so each combo hits harder and he is sturdier; Combo Crunch attack speed 6% -&gt; 7.5% at fewer max stacks (5 -&gt; 4) ramps his on-hit faster.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>His combo burst and dive damage climb across the board while he gains durability, making the Viper/Basilisk bruiser plan more threatening on the dive — a clear power bump that should lift his offlane pick rate above the sub-52% field read.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Physical Bruiser</strong> — Berserkers Axe, Augmentation, Salvation · 51.6% wr · 263 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>45.2% → <strong>49.1%</strong> win rate (+3.9 pts over 570 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>45.2% → <strong>49.1%</strong> win rate (+3.9 pts over 570 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
       </div>
       <div class="hero-card card" id="hero-dekker" data-mag="notable" data-trend="buff">
         <a class="card-out" href="v6/?hero=dekker" title="Open Dekker's full build &amp; matchups">full page ↗</a>
@@ -387,10 +398,10 @@
           <span class="badge mag-notable">Notable</span>
         </div>
         <ul class="change-list"><li>Polarity Strike shield 150/250/350 -&gt; 200/350/500</li><li>Mana regen 1.65 -&gt; 1.75, mana growth 34 -&gt; 38</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>Polarity Strike shield jumps sharply (150/250/350 -&gt; 200/350/500, a +150 top-end swing) and mana regen/growth both rise (1.65 -&gt; 1.75, 34 -&gt; 38), directly buffing her peel value and letting her cast through fights without going dry.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>Polarity Strike shield jumps sharply (150/250/350 -&gt; 200/350/500, a +150 top-end swing) and mana regen/growth both rise (1.65 -&gt; 1.75, 34 -&gt; 38), directly buffing her peel value and letting her cast through fights without going dry.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>The bigger shield makes her a stronger save-and-engage support immediately, and the mana relief eases her early lane; this raises her floor as a peel pick even though the sim's tanky Stonewall core stays the same.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Magical DPS Carry</strong> — Crescelia, Timewarp, Dynamo · 50.7% wr · 1,680 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>47.7% → <strong>47%</strong> win rate (-0.7 pts over 1,015 ranked games) <span class="m-miss" title="The win rate moved against the direction the patch notes pointed — read the call above for what the analysis expected">✗ moved against the notes</span></div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>47.7% → <strong>47%</strong> win rate (-0.7 pts over 1,015 ranked games) <span class="m-miss" title="The win rate moved against the direction the patch notes pointed — read the call above for what the analysis expected">✗ moved against the notes</span></div>
       </div>
       <div class="hero-card card" id="hero-adele" data-mag="notable" data-trend="nerf">
         <a class="card-out" href="v6/?hero=adele" title="Open Adele's full build &amp; matchups">full page ↗</a>
@@ -401,10 +412,10 @@
           <span class="badge mag-notable">Notable</span>
         </div>
         <ul class="change-list"><li>Imperial Lash damage 45/70/95/120/145 -&gt; 45/65/85/105/125</li><li>Seeds Of Dominion: Imperial Lash cooldown reduction 12% -&gt; 10%</li><li>Crown Of Thorns ally damage 7% -&gt; 6%</li><li>Tyrant Of Thorns crown effectiveness 250% -&gt; 300% (the lone buff)</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>Imperial Lash damage drops at every rank (max 145 -&gt; 125) and the Seeds Of Dominion cooldown reduction falls 12% -&gt; 10%, so her poke pattern hits softer and recurs slower; the only buff, Tyrant Of Thorns crown effectiveness 250% -&gt; 300%, is a deep-investment scaling node, not a lane lever.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>Imperial Lash damage drops at every rank (max 145 -&gt; 125) and the Seeds Of Dominion cooldown reduction falls 12% -&gt; 10%, so her poke pattern hits softer and recurs slower; the only buff, Tyrant Of Thorns crown effectiveness 250% -&gt; 300%, is a deep-investment scaling node, not a lane lever.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>Her early support poke and tempo get clipped, nudging her further toward the tanky enabler the field already favors — the top meta build is the durable Dawnstar/Xenia/Raiment frontline, not a damage line, so this mostly trims her kill-pressure lanes rather than her viability.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Physical-Def Frontline</strong> — Dawnstar, Xenia, Raiment of Renewal · 60.3% wr · 598 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>51.1% → <strong>47.8%</strong> win rate (-3.3 pts over 811 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>51.1% → <strong>47.8%</strong> win rate (-3.3 pts over 811 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
       </div>
       <div class="hero-card card" id="hero-kallari" data-mag="notable" data-trend="nerf">
         <a class="card-out" href="v6/?hero=kallari" title="Open Kallari's full build &amp; matchups">full page ↗</a>
@@ -415,10 +426,10 @@
           <span class="badge mag-notable">Notable</span>
         </div>
         <ul class="change-list"><li>Death Mark bonus physical-power scaling 2.5% -&gt; 2%</li><li>Shadow Walk health-regen physical-penetration scaling 150% -&gt; 100%</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>Death Mark bonus physical-power scaling 2.5% -&gt; 2% trims her execute payoff, and Shadow Walk's health-regen physical-penetration scaling 150% -&gt; 100% cuts the <span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span> she gets from stacking penetration on her assassin build.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>Death Mark bonus physical-power scaling 2.5% -&gt; 2% trims her execute payoff, and Shadow Walk's health-regen physical-penetration scaling 150% -&gt; 100% cuts the <span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span> she gets from stacking penetration on her assassin build.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>Her pick-off burst and lane-sustain both dip, making the squishy lethality assassin plan a touch riskier to snowball; the Malady/Vanquisher meta build still works but with a slightly lower ceiling, a real but contained nerf.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Lethality Skirmisher</strong> — Malady, Vanquisher, Spear of Desolation · 55.7% wr · 1,009 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>50.9% → <strong>53.4%</strong> win rate (+2.5 pts over 547 ranked games) <span class="m-miss" title="The win rate moved against the direction the patch notes pointed — read the call above for what the analysis expected">✗ moved against the notes</span></div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>50.9% → <strong>53.4%</strong> win rate (+2.5 pts over 547 ranked games) <span class="m-miss" title="The win rate moved against the direction the patch notes pointed — read the call above for what the analysis expected">✗ moved against the notes</span></div>
       </div>
       <div class="hero-card card" id="hero-murdock" data-mag="notable" data-trend="nerf">
         <a class="card-out" href="v6/?hero=murdock" title="Open Murdock's full build &amp; matchups">full page ↗</a>
@@ -429,10 +440,10 @@
           <span class="badge mag-notable">Notable</span>
         </div>
         <ul class="change-list"><li>Physical Power 61 -&gt; 59</li><li>Justice's Reach range bonus +300 -&gt; +250</li><li>Shots Fired scaling 40/52/64/76% -&gt; 35/45/55/65%</li><li>Buckshot damage 80/108/136/164/192 -&gt; 70/98/126/154/182</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>A four-pronged carry nerf: Physical Power 61 -&gt; 59, Justice's Reach range bonus +300 -&gt; +250, Shots Fired scaling 40/52/64/76% -&gt; 35/45/55/65%, and Buckshot 80/108/136/164/192 -&gt; 70/98/126/154/182 — both his signature poke ability and his empowered-shot DPS lose meaningful damage and reach.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>A four-pronged carry nerf: Physical Power 61 -&gt; 59, Justice's Reach range bonus +300 -&gt; +250, Shots Fired scaling 40/52/64/76% -&gt; 35/45/55/65%, and Buckshot 80/108/136/164/192 -&gt; 70/98/126/154/182 — both his signature poke ability and his empowered-shot DPS lose meaningful damage and reach.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>His safe long-range poke pattern is noticeably weaker, shortening his bully window and lowering his damage spike; expect the LightningHawk crit-burst meta line to remain but his lane pressure and pick priority to fall.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Crit Burst</strong> — Lightning Hawk, Vanquisher, Imperator · 56.0% wr · 2,021 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>50.8% → <strong>47.3%</strong> win rate (-3.5 pts over 1,291 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>50.8% → <strong>47.3%</strong> win rate (-3.5 pts over 1,291 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
       </div>
       <div class="hero-card card" id="hero-phase" data-mag="notable" data-trend="nerf">
         <a class="card-out" href="v6/?hero=phase" title="Open Phase's full build &amp; matchups">full page ↗</a>
@@ -443,10 +454,10 @@
           <span class="badge mag-notable">Notable</span>
         </div>
         <ul class="change-list"><li>Physical Armor growth 5.5 -&gt; 5.2</li><li>Telekinetic Link range-break delay 1.3s -&gt; 1s</li><li>Hyperflux attack speed 50/75/100% -&gt; 40/60/80%</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>Phase is trimmed across her enabling and survival: Hyperflux attack speed 50/75/100% -&gt; 40/60/80% cuts the steroid she gives her carry, Telekinetic Link range-break delay 1.3s -&gt; 1s makes her tether break sooner, and Physical Armor growth 5.5 -&gt; 5.2 shaves her own durability.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>Phase is trimmed across her enabling and survival: Hyperflux attack speed 50/75/100% -&gt; 40/60/80% cuts the steroid she gives her carry, Telekinetic Link range-break delay 1.3s -&gt; 1s makes her tether break sooner, and Physical Armor growth 5.5 -&gt; 5.2 shaves her own durability.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>Her value as a hyper-carry support dips — the attack-speed buff and link uptime that define her are both weaker — lowering her support priority; the tanky Stonewall sim core stays but her pairing power drops.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Magical Bruiser (Mixed-Def)</strong> — Marshal, Enmas Blessing, Galaxy Greaves · 53.8% wr · 1,355 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>53% → <strong>51.3%</strong> win rate (-1.7 pts over 1,195 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>53% → <strong>51.3%</strong> win rate (-1.7 pts over 1,195 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
       </div>
       <div class="hero-card card" id="hero-wukong" data-mag="notable" data-trend="nerf">
         <a class="card-out" href="v6/?hero=wukong" title="Open Wukong's full build &amp; matchups">full page ↗</a>
@@ -457,10 +468,10 @@
           <span class="badge mag-notable">Notable</span>
         </div>
         <ul class="change-list"><li>Health growth 134 -&gt; 132</li><li>Force Push physical-power scaling 110% -&gt; 100%</li><li>Windsurge physical-power scaling 100% -&gt; 90%</li><li>84,000 Hairs clone scaling 14% -&gt; 12% (phys), max-health scaling 18% -&gt; 16%</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>A broad scaling nerf: Force Push 110% -&gt; 100% and Windsurge 100% -&gt; 90% physical-power scaling cut his combo damage, 84,000 Hairs clone scaling 14% -&gt; 12% and max-health scaling 18% -&gt; 16% weaken his ult, and Health growth 134 -&gt; 132 shaves durability.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>A broad scaling nerf: Force Push 110% -&gt; 100% and Windsurge 100% -&gt; 90% physical-power scaling cut his combo damage, 84,000 Hairs clone scaling 14% -&gt; 12% and max-health scaling 18% -&gt; 16% weaken his ult, and Health growth 134 -&gt; 132 shaves durability.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>Every part of his damage and his clone ult tick down, lowering his already coin-flip jungle output (the field build sits at 50%); expect his clear and burst to feel weaker and his pick priority to slide, a clear if not dramatic nerf.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Physical Skirmisher</strong> — Mindrazor, Augmentation, Painweaver · 50.0% wr · 74 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>46.9% → <strong>48.4%</strong> win rate (+1.6 pts over 258 ranked games) <span class="m-miss" title="The win rate moved against the direction the patch notes pointed — read the call above for what the analysis expected">✗ moved against the notes</span></div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>46.9% → <strong>48.4%</strong> win rate (+1.6 pts over 258 ranked games) <span class="m-miss" title="The win rate moved against the direction the patch notes pointed — read the call above for what the analysis expected">✗ moved against the notes</span></div>
       </div>
       <div class="hero-card card" id="hero-zinx" data-mag="notable" data-trend="nerf">
         <a class="card-out" href="v6/?hero=zinx" title="Open Zinx's full build &amp; matchups">full page ↗</a>
@@ -471,10 +482,10 @@
           <span class="badge mag-notable">Notable</span>
         </div>
         <ul class="change-list"><li>Terminal Treatment on-hit bonus 0-60% -&gt; 0-50%</li><li>Basic-attack time 1.3 -&gt; 1.35 (slower)</li><li>Refibrillator magical-power scaling 15% -&gt; 12%</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>Her enabling and damage are trimmed together: Terminal Treatment on-hit bonus 0-60% -&gt; 0-50% cuts the on-hit she lends, basic-attack time 1.3 -&gt; 1.35 slows her own attacks, and Refibrillator magical-power scaling 15% -&gt; 12% lowers her ability payoff.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>Her enabling and damage are trimmed together: Terminal Treatment on-hit bonus 0-60% -&gt; 0-50% cuts the on-hit she lends, basic-attack time 1.3 -&gt; 1.35 slows her own attacks, and Refibrillator magical-power scaling 15% -&gt; 12% lowers her ability payoff.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>She offers a bit less on-hit pressure and personal damage as a support, slightly lowering her priority; the Oblivion Crown heal/shield sim core and the strong Prophecy meta line both still stand, so the nerf shaves her ceiling without changing her role.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Magical Burst</strong> — Prophecy, Spectra, Orion · 56.0% wr · 1,819 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>50.4% → <strong>49.3%</strong> win rate (-1.2 pts over 1,015 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>50.4% → <strong>49.3%</strong> win rate (-1.2 pts over 1,015 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
       </div>
       <div class="hero-card card" id="hero-muriel" data-mag="notable" data-trend="mixed">
         <a class="card-out" href="v6/?hero=muriel" title="Open Muriel's full build &amp; matchups">full page ↗</a>
@@ -485,10 +496,10 @@
           <span class="badge mag-notable">Notable</span>
         </div>
         <ul class="change-list"><li>Physical Power growth 2.6 -&gt; 3.4 (off-build flavor)</li><li>Alacrity cooldown 11/10.5/10/9.5/9 -&gt; 12/11.5/11/10.5/10</li><li>Reversal Of Fortune damage reduction 40% -&gt; 35%</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>A mixed pass on her utility: Reversal Of Fortune damage reduction 40% -&gt; 35% weakens her marquee defensive ult and Alacrity cooldown lengthens (e.g. 9 -&gt; 10 at rank 5), while the Physical Power growth 2.6 -&gt; 3.4 only matters on an off-build damage flavor.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>A mixed pass on her utility: Reversal Of Fortune damage reduction 40% -&gt; 35% weakens her marquee defensive ult and Alacrity cooldown lengthens (e.g. 9 -&gt; 10 at rank 5), while the Physical Power growth 2.6 -&gt; 3.4 only matters on an off-build damage flavor.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>Her save-value as a support drops modestly — the protection ult shields less and her speed buff is available less often — so her peel pick loses a little priority while the niche AP-damage build the sim shows stays a fringe option.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Magical DPS Carry</strong> — Marshal, Crystal Tear, Windcaller · 54.7% wr · 392 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>49.9% → <strong>51.6%</strong> win rate (+1.7 pts over 376 ranked games)</div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>49.9% → <strong>51.6%</strong> win rate (+1.7 pts over 376 ranked games)</div>
       </div>
       <div class="hero-card card" id="hero-sevarog" data-mag="notable" data-trend="mixed">
         <a class="card-out" href="v6/?hero=sevarog" title="Open Sevarog's full build &amp; matchups">full page ↗</a>
@@ -499,10 +510,10 @@
           <span class="badge mag-notable">Notable</span>
         </div>
         <ul class="change-list"><li>Reaper Of Souls health per stack 1 -&gt; 2, tier gains 50/100/200/400 -&gt; 40/80/180/350</li><li>Siphon health-steal duration 30s -&gt; 15s, monster damage 20-40 -&gt; 30-50</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>A mixed identity shift: Reaper Of Souls health per stack doubles (1 -&gt; 2) but the tier thresholds drop (50/100/200/400 -&gt; 40/80/180/350), so he reaches durability tiers faster and gains more HP per stack, while Siphon's health-steal duration is halved (30s -&gt; 15s) with higher monster damage (20-40 -&gt; 30-50).</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>A mixed identity shift: Reaper Of Souls health per stack doubles (1 -&gt; 2) but the tier thresholds drop (50/100/200/400 -&gt; 40/80/180/350), so he reaches durability tiers faster and gains more HP per stack, while Siphon's health-steal duration is halved (30s -&gt; 15s) with higher monster damage (20-40 -&gt; 30-50).</div>
         <div class="pred"><span class="pred-label">What it'll change</span>His stacking scales into a tankier late-game more aggressively and clears camps a bit faster, but his lane-<span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span> window from Siphon shrinks; net it pushes him further toward the scaling frontline the field already builds, a real but two-sided adjustment.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Physical-Def Frontline</strong> — Fire Blossom, Tainted Guard, Fist of Jazuul · 52.0% wr · 165 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>44.3% → <strong>46.9%</strong> win rate (+2.5 pts over 382 ranked games)</div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>44.3% → <strong>46.9%</strong> win rate (+2.5 pts over 382 ranked games)</div>
       </div>
       <div class="hero-card card" id="hero-wraith" data-mag="notable" data-trend="mixed">
         <a class="card-out" href="v6/?hero=wraith" title="Open Wraith's full build &amp; matchups">full page ↗</a>
@@ -513,10 +524,10 @@
           <span class="badge mag-notable">Notable</span>
         </div>
         <ul class="change-list"><li>Stealth Matrix cooldown modifier +20% -&gt; +10% (a buff — less cooldown penalty)</li><li>Peekaboo! max-health damage 6-8% -&gt; 5.5-7.5%, magical-power scaling 2% -&gt; 1.5%</li><li>Surprise, Surprise! cooldown 26/24/22/20/18 -&gt; 23/21.5/20/18.5/17, movement speed 20% -&gt; 25%</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>A mixed kit pass: Stealth Matrix cooldown modifier +20% -&gt; +10% (less penalty) and Surprise, Surprise! cooldown drops (e.g. 18 -&gt; 17 at max) with movement speed 20% -&gt; 25%, improving his mobility and uptime, while Peekaboo! max-health damage 6-8% -&gt; 5.5-7.5% and magical scaling 2% -&gt; 1.5% trim that ability's payoff.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>A mixed kit pass: Stealth Matrix cooldown modifier +20% -&gt; +10% (less penalty) and Surprise, Surprise! cooldown drops (e.g. 18 -&gt; 17 at max) with movement speed 20% -&gt; 25%, improving his mobility and uptime, while Peekaboo! max-health damage 6-8% -&gt; 5.5-7.5% and magical scaling 2% -&gt; 1.5% trim that ability's payoff.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>He gains roam/reposition uptime and re-stealth tempo at the cost of a little ability damage — a quality-of-life nudge that helps his pick-and-skirmish pattern; given his sub-48% field read this is a welcome but modest lift, not a fix.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Physical Frontline</strong> — Soulbinder, Noxia, Wraith Leggings · 47.4% wr · 1,096 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>47% → <strong>46.3%</strong> win rate (-0.6 pts over 671 ranked games)</div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>47% → <strong>46.3%</strong> win rate (-0.6 pts over 671 ranked games)</div>
       </div></div>
       <h3 class="group-head"><span class="badge mag-minor">Minor</span> <span class="group-count">7 heroes</span></h3>
       <div class="group-cards">
@@ -529,10 +540,10 @@
           <span class="badge mag-minor">Minor</span>
         </div>
         <ul class="change-list"><li>Health growth 132 -&gt; 135, Mana 280 -&gt; 300</li><li>Make Way damage 80/125/170/215/260 -&gt; 80/130/180/230/280</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>Make Way damage scales up at every rank past one (max 260 -&gt; 280) and he gets baseline durability/utility with Health growth 132 -&gt; 135 and Mana 280 -&gt; 300, so his wave-clear and poke ability hits harder while he sustains casting longer.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>Make Way damage scales up at every rank past one (max 260 -&gt; 280) and he gets baseline durability/utility with Health growth 132 -&gt; 135 and Mana 280 -&gt; 300, so his wave-clear and poke ability hits harder while he sustains casting longer.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>A modest, even buff that makes his offlane lane phase a bit stronger and his all-in slightly more rewarding; the sim's Viper bruiser core and the Krix eHP loadout still fit, so it lifts his floor without changing the build.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Physical Bruiser</strong> — Overlord, Rapture, Aegis of Agawar · 52.2% wr · 987 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>47.1% → <strong>49%</strong> win rate (+1.9 pts over 1,150 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>47.1% → <strong>49%</strong> win rate (+1.9 pts over 1,150 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
       </div>
       <div class="hero-card card" id="hero-boris" data-mag="minor" data-trend="nerf">
         <a class="card-out" href="v6/?hero=boris" title="Open Boris's full build &amp; matchups">full page ↗</a>
@@ -543,10 +554,10 @@
           <span class="badge mag-minor">Minor</span>
         </div>
         <ul class="change-list"><li>Tesseract Device attack speed per canister 9-18% -&gt; 8-17%</li><li>Tesseract Device zap damage 5 (+2.25/lvl) -&gt; 5 (+2/lvl)</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>Both Tesseract Device numbers shrink — attack speed per canister 9-18% -&gt; 8-17% and zap scaling 5 (+2.25/lvl) -&gt; 5 (+2/lvl) — so his core attack-speed and tick damage engine loses a small slice at every canister and level.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>Both Tesseract Device numbers shrink — attack speed per canister 9-18% -&gt; 8-17% and zap scaling 5 (+2.25/lvl) -&gt; 5 (+2/lvl) — so his core attack-speed and tick damage engine loses a small slice at every canister and level.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>His clear and sustained DPS get marginally slower, but the build path and jungle viability are unchanged; the sim's Viper skirmish core and the field's SkySplitter bruiser line both still hold, so this is a light shave, not a rework.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Physical Bruiser</strong> — Sky Splitter, Tainted Blade, Rapture · 54.4% wr · 1,089 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>55.1% → <strong>52%</strong> win rate (-3.2 pts over 787 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>55.1% → <strong>52%</strong> win rate (-3.2 pts over 787 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
       </div>
       <div class="hero-card card" id="hero-howitzer" data-mag="minor" data-trend="nerf">
         <a class="card-out" href="v6/?hero=howitzer" title="Open Howitzer's full build &amp; matchups">full page ↗</a>
@@ -557,10 +568,10 @@
           <span class="badge mag-minor">Minor</span>
         </div>
         <ul class="change-list"><li>Sniper Shells <span class="term" tabindex="0" data-tip="Omnivamp heals for a percentage of ALL damage dealt — abilities included.">omnivamp</span> per stack 2% -&gt; 1.5%</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>The only change is Sniper Shells omnivamp per stack 2% -&gt; 1.5%, a small cut to his in-combat self-healing on his stacking passive.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>The only change is Sniper Shells omnivamp per stack 2% -&gt; 1.5%, a small cut to his in-combat self-healing on his stacking passive.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>Slightly less <span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span> in extended fights, but his burst, build and mid viability are untouched; the sim's Oathkeeper skirmish core and the Combustion meta line are unaffected, so this barely moves the needle.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Magical Skirmisher</strong> — Combustion, Wraith Leggings, Noxia · 51.9% wr · 645 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>50.6% → <strong>50.8%</strong> win rate (+0.2 pts over 510 ranked games) <span class="m-miss" title="The win rate moved against the direction the patch notes pointed — read the call above for what the analysis expected">✗ moved against the notes</span></div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>50.6% → <strong>50.8%</strong> win rate (+0.2 pts over 510 ranked games) <span class="m-miss" title="The win rate moved against the direction the patch notes pointed — read the call above for what the analysis expected">✗ moved against the notes</span></div>
       </div>
       <div class="hero-card card" id="hero-n3on" data-mag="minor" data-trend="nerf">
         <a class="card-out" href="v6/?hero=neon" title="Open Neon's full build &amp; matchups">full page ↗</a>
@@ -571,11 +582,11 @@
           <span class="badge mag-minor">Minor</span>
         </div>
         <ul class="change-list"><li>Final Thread recast delay 0.05s -&gt; 0.32s</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>The sole change, Final Thread recast delay 0.05s -&gt; 0.32s, slows the second-cast of her ult, widening the gap an opponent has to react or sidestep the follow-up.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>The sole change, Final Thread recast delay 0.05s -&gt; 0.32s, slows the second-cast of her ult, widening the gap an opponent has to react or sidestep the follow-up.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>Her burst combo loses a sliver of reliability against mobile targets but her damage, mana and build are untouched; the Combustion magical-burst plan and her mid viability hold, making this a small mechanical execution nerf.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Magical Burst</strong> — Combustion, Wraith Leggings, Amulet of Chaos · 51.1% wr · 587 games</div>
         
-      </div>
+      </details></div>
       <div class="hero-card card" id="hero-yin" data-mag="minor" data-trend="nerf">
         <a class="card-out" href="v6/?hero=yin" title="Open Yin's full build &amp; matchups">full page ↗</a>
         <div class="hero-head">
@@ -585,10 +596,10 @@
           <span class="badge mag-minor">Minor</span>
         </div>
         <ul class="change-list"><li>Rising Storm: fixed a stack bug with Eternals</li><li>Windburn physical-power scaling 10-20% -&gt; 10-18%, cooldown 12-8 -&gt; 13-9</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>Windburn physical-power scaling 10-20% -&gt; 10-18% and cooldown 12-8 -&gt; 13-9 slightly cut his damage and re-up speed on a core ability, and the Rising Storm Eternal-stack bug fix removes an interaction that was inflating his stacking.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>Windburn physical-power scaling 10-20% -&gt; 10-18% and cooldown 12-8 -&gt; 13-9 slightly cut his damage and re-up speed on a core ability, and the Rising Storm Eternal-stack bug fix removes an interaction that was inflating his stacking.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>His combo damage and ability cadence dip a touch, and the bugfix may quietly remove free power some loadouts leaned on; the crit-drain meta build still holds, so this is a measured shave to his jungle output rather than a build change.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Crit Drain</strong> — Sky Splitter, Lightning Hawk, Onixian Quiver · 55.0% wr · 540 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>51.2% → <strong>49.6%</strong> win rate (-1.6 pts over 591 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>51.2% → <strong>49.6%</strong> win rate (-1.6 pts over 591 ranked games) <span class="m-hit" title="The win rate moved the way the patch notes pointed">✓ direction held</span></div>
       </div>
       <div class="hero-card card" id="hero-bayle" data-mag="minor" data-trend="mixed">
         <a class="card-out" href="v6/?hero=bayle" title="Open Bayle's full build &amp; matchups">full page ↗</a>
@@ -599,10 +610,10 @@
           <span class="badge mag-minor">Minor</span>
         </div>
         <ul class="change-list"><li>Swift Strikes third-strike modifier -25% -&gt; -20% (a small buff)</li><li>Dire Howl mana 50 -&gt; 60, <span class="term" tabindex="0" data-tip="Omnivamp heals for a percentage of ALL damage dealt — abilities included.">omnivamp</span> 10-18% -&gt; 8-16%, cooldown 15 -&gt; 16</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>This is a genuine mixed: Swift Strikes third-strike modifier -25% -&gt; -20% is a small damage buff to her basic chain, but Dire Howl gets hit on three axes (mana 50 -&gt; 60, omnivamp 10-18% -&gt; 8-16%, cooldown 15 -&gt; 16), trimming her <span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span> and uptime.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>This is a genuine mixed: Swift Strikes third-strike modifier -25% -&gt; -20% is a small damage buff to her basic chain, but Dire Howl gets hit on three axes (mana 50 -&gt; 60, omnivamp 10-18% -&gt; 8-16%, cooldown 15 -&gt; 16), trimming her <span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span> and uptime.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>Her in-fight self-healing and re-engage get a touch weaker while her steady-state damage ticks up slightly; the sim's sustain-leaning Solaris/Viper core still holds, so this is close to a wash that slightly favors the bruiser-trade meta build over a pure drain plan.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Physical Bruiser (Physical-Def)</strong> — Overlord, Rapture, Cursed Scroll · 57.8% wr · 883 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>51.1% → <strong>49%</strong> win rate (-2.1 pts over 1,368 ranked games)</div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>51.1% → <strong>49%</strong> win rate (-2.1 pts over 1,368 ranked games)</div>
       </div>
       <div class="hero-card card" id="hero-the-fey" data-mag="minor" data-trend="mixed">
         <a class="card-out" href="v6/?hero=the-fey" title="Open The Fey's full build &amp; matchups">full page ↗</a>
@@ -613,10 +624,10 @@
           <span class="badge mag-minor">Minor</span>
         </div>
         <ul class="change-list"><li>Mana growth 27 -&gt; 32, movement speed 675 -&gt; 670</li><li>Bramble Patch magical-power scaling 75% -&gt; 70%, mana cost 70-110 -&gt; 60-100</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>A mixed pass: Bramble Patch magical-power scaling 75% -&gt; 70% slightly lowers her zone damage, but its mana cost drops (70-110 -&gt; 60-100) and Mana growth rises 27 -&gt; 32, easing her mana strain at the cost of 5 movement speed (675 -&gt; 670).</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>A mixed pass: Bramble Patch magical-power scaling 75% -&gt; 70% slightly lowers her zone damage, but its mana cost drops (70-110 -&gt; 60-100) and Mana growth rises 27 -&gt; 32, easing her mana strain at the cost of 5 movement speed (675 -&gt; 670).</div>
         <div class="pred"><span class="pred-label">What it'll change</span>She trades a little ability damage for much better mana economy, so she can hold and re-zone lanes longer without backing — close to a wash that slightly improves her sustained mid presence; the Combustion frontline-mage build and her strong field read hold.</div>
         <div class="sim-read">Sim read (pre-1.15): top field core <strong>Magical Frontline</strong> — Combustion, Wraith Leggings, Megacosm · 55.7% wr · 1,689 games</div>
-        <div class="pred measured"><span class="pred-label">Measured (patch to date)</span>52.2% → <strong>51.1%</strong> win rate (-1.1 pts over 1,360 ranked games)</div>
+        </details><div class="pred measured"><span class="pred-label">Measured (patch to date)</span>52.2% → <strong>51.1%</strong> win rate (-1.1 pts over 1,360 ranked games)</div>
       </div></div>
       <div class="meta-read"><b><span class="mr-ic" data-bic="scout" data-bic-size="13"></span>Meta read</b>The single biggest swings are Revenant up (Obliterate to 100% + Scar buffs push his crit carry toward pick/ban) and Terra down (a 7-point Iron Resolve cut guts her dive durability). As a group the trims land hardest on safe poke and <span class="term" tabindex="0" data-tip="Sustain is everything that refills health through a lane or a fight: regen, potions, lifesteal, omnivamp, healing abilities.">sustain</span> carries (Murdock, Kallari, Boris) while combo bruisers (Crunch) and peel supports (Dekker) gain ground.</div>
 
@@ -1022,25 +1033,25 @@
           <span class="badge mag-notable">Notable</span>
         </div>
         <ul class="change-list"><li>Flat 11/s -&gt; ramps 11 -&gt; 13 by level (adjusts every 80s)</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>ARAM income is largely passive gold drip (you can't farm efficiently in a single perma-contested lane), and 1.15 changes that drip from a flat 11/s to a ramp of 11 -&gt; 13 by level adjusting every 80s, so the longer the game runs the faster gold accrues.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>ARAM income is largely passive gold drip (you can't farm efficiently in a single perma-contested lane), and 1.15 changes that drip from a flat 11/s to a ramp of 11 -&gt; 13 by level adjusting every 80s, so the longer the game runs the faster gold accrues.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>Full six-item builds land sooner in long ARAMs, which favors scaling and hyper-carry picks that just need to reach their item spikes; early-game bully comps lose a little relative edge as the game's back half speeds up. Expect slightly faster, more decisive late-game power swings.</div>
-      </div>
+      </details></div>
       <div class="hero-card card" data-mag="notable">
         <div class="hero-head">
           <span class="hero-name">Minion Magical Armor</span>
           <span class="badge mag-notable">Notable</span>
         </div>
         <ul class="change-list"><li>Melee/Ranged ~0 -&gt; 1..15 by level; Siege negative -&gt; 0..10 by level</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>Minions gain magical armor that scales with level (Melee/Ranged ~0 -&gt; 1..15, Siege from negative -&gt; 0..10), so magical poke that chips through the minion wall in the single ARAM lane meets rising resistance as the game scales — physical poke is unaffected.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>Minions gain magical armor that scales with level (Melee/Ranged ~0 -&gt; 1..15, Siege from negative -&gt; 0..10), so magical poke that chips through the minion wall in the single ARAM lane meets rising resistance as the game scales — physical poke is unaffected.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>Mage poke comps lose free chip damage through minions late, when the perma-fight is densest, weakening magical wave-clear and poke-through dominance; physical and true-damage carries gain relative value in the back half. A meaningful tilt against the AP-poke ARAM archetype.</div>
-      </div>
+      </details></div>
       <div class="hero-card card" data-mag="notable">
         <div class="hero-head">
           <span class="hero-name">Sustain/stack item stacking</span>
           <span class="badge mag-notable">Notable</span>
         </div>
         <ul class="change-list"><li>Alchemical Rod/Azure Core &amp; Soul Chalice/Resolution 2s -&gt; 4s; Orb of Growth/Enlightenment 1.5s -&gt; 4s</li></ul>
-        <div class="pred"><span class="pred-label">Why</span>ARAM has no recall-to-base reset, so stacking sustain/scaling items charge continuously in the perma-fight — 1.15 doubles their tick interval (Alchemical Rod/Azure Core &amp; Soul Chalice/Resolution 2s -&gt; 4s, Orb of Growth/Enlightenment 1.5s -&gt; 4s), so those items ramp roughly half as fast.</div>
+        <details class="card-deep"><summary>The read — why, the call, the sim</summary><div class="pred"><span class="pred-label">Why</span>ARAM has no recall-to-base reset, so stacking sustain/scaling items charge continuously in the perma-fight — 1.15 doubles their tick interval (Alchemical Rod/Azure Core &amp; Soul Chalice/Resolution 2s -&gt; 4s, Orb of Growth/Enlightenment 1.5s -&gt; 4s), so those items ramp roughly half as fast.</div>
         <div class="pred"><span class="pred-label">What it'll change</span>The perma-poke and infinite-scaling carries that snowball ARAM by stacking these items online much later, blunting the runaway leads they normally build in non-stop combat; opens room for fixed-stat and burst picks early-to-mid before the stackers come online. A clear hit to the dominant ARAM scaling pattern.</div>
       </div>
       <h3 class="group-head">Per-hero ARAM tuning <span class="group-count">34 heroes</span></h3>
@@ -1058,7 +1069,7 @@
       <div class="aram-chips compact"><div class="aram-chip" data-dir="buff"><img loading="lazy" src="img/heroes/bayle.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">Bayle</span></span></div><div class="aram-chip" data-dir="buff"><img loading="lazy" src="img/heroes/boris.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">Boris</span></span></div></div>
       <h4 class="aram-grp-head"><span class="badge trend-mixed">◆ Other adjustments</span> <span class="group-count">16</span></h4>
       <div class="aram-chips"><div class="aram-chip" data-dir="nerf"><img loading="lazy" src="img/heroes/countess.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">Countess</span><span class="ac-change">Damage received 95% -&gt; 100%</span></span></div><div class="aram-chip" data-dir="buff"><img loading="lazy" src="img/heroes/crunch.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">Crunch</span><span class="ac-change">Damage 108% -&gt; 110%, healing 100% -&gt; 110%</span></span></div><div class="aram-chip" data-dir="buff"><img loading="lazy" src="img/heroes/eden.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">Eden</span><span class="ac-change">Damage 100% -&gt; 102%, received 100% -&gt; 98%</span></span></div><div class="aram-chip" data-dir="buff"><img loading="lazy" src="img/heroes/iggy-scorch.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">Iggy &amp; Scorch</span><span class="ac-change">Damage 90% -&gt; 95%</span></span></div><div class="aram-chip" data-dir="buff"><img loading="lazy" src="img/heroes/khaimera.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">Khaimera</span><span class="ac-change">Healing 100% -&gt; 110%</span></span></div><div class="aram-chip" data-dir="nerf"><img loading="lazy" src="img/heroes/legion.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">Legion</span><span class="ac-change">Healing 100% -&gt; 90%, damage 100% -&gt; 98%</span></span></div><div class="aram-chip" data-dir="mixed"><img loading="lazy" src="img/heroes/morigesh.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">Morigesh</span><span class="ac-change">Damage received 105% -&gt; 100%, damage 100% -&gt; 98%</span></span></div><div class="aram-chip" data-dir="nerf"><img loading="lazy" src="img/heroes/mourn.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">Mourn</span><span class="ac-change">Healing 85% -&gt; 75%, received 105% -&gt; 100%, damage 105% -&gt; 100%</span></span></div><div class="aram-chip" data-dir="mixed"><img loading="lazy" src="img/heroes/muriel.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">Muriel</span><span class="ac-change">Damage 105% -&gt; 100%, shielding 90% -&gt; 100%</span></span></div><div class="aram-chip" data-dir="mixed"><img loading="lazy" src="img/heroes/narbash.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">Narbash</span><span class="ac-change">Healing 85% -&gt; 70%, damage 105% -&gt; 110%, received 105% -&gt; 110%</span></span></div><div class="aram-chip" data-dir="nerf"><img loading="lazy" src="img/heroes/neon.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">Neon</span><span class="ac-change">Damage 102% -&gt; 98%, received 98% -&gt; 100%</span></span></div><div class="aram-chip" data-dir="nerf"><img loading="lazy" src="img/heroes/phase.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">Phase</span><span class="ac-change">Damage 110% -&gt; 100%, healing 100% -&gt; 90%</span></span></div><div class="aram-chip" data-dir="buff"><img loading="lazy" src="img/heroes/sparrow.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">Sparrow</span><span class="ac-change">Damage 92% -&gt; 95%</span></span></div><div class="aram-chip" data-dir="buff"><img loading="lazy" src="img/heroes/the-fey.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">The Fey</span><span class="ac-change">Damage 92% -&gt; 98%, received 105% -&gt; 100%</span></span></div><div class="aram-chip" data-dir="mixed"><img loading="lazy" src="img/heroes/yin.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">Yin</span><span class="ac-change">Damage 95% -&gt; 98%, received 95% -&gt; 98%</span></span></div><div class="aram-chip" data-dir="nerf"><img loading="lazy" src="img/heroes/zinx.webp" alt="" onerror="this.style.visibility='hidden'"><span class="ac-body"><span class="ac-name">Zinx</span><span class="ac-change">Damage 108% -&gt; 100%</span></span></div></div>
-      <div class="meta-read"><b><span class="mr-ic" data-bic="scout" data-bic-size="13"></span>Meta read</b>The systemic changes pull ARAM away from runaway scaling: faster late gold drip helps everyone reach full builds, but rising minion magical armor blunts mage poke-through-minions and the doubled stack interval delays the perma-poke carries that snowball the mode. With the ~34-hero multiplier pass largely lifting underused picks, expect a flatter, more fight-driven ARAM where early-to-mid burst is rewarded before the stackers come online.</div>
+      <div class="meta-read"><b><span class="mr-ic" data-bic="scout" data-bic-size="13"></span>Meta read</b>The systemic changes pull ARAM away from runaway scaling: faster late gold drip helps everyone reach full builds, but rising minion magical armor blunts mage poke-through-minions and the doubled stack interval delays the perma-poke carries that snowball the mode. With the ~34-hero multiplier pass largely lifting underused picks, expect a flatter, more fight-driven ARAM where early-to-mid burst is rewarded before the stackers come online.</details></div>
 
 
       <h2 class="section" id="ch-systems"><span class="sec-ic" data-bic="meta-guide"></span>Systems &amp; map</h2>
