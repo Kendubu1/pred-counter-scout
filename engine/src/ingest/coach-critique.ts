@@ -21,7 +21,7 @@ import { ask, flushTasks, isPrepare } from '../copy-session.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const PG = path.join(ROOT, 'data/postgame');
 
-interface Coaching { headline?: string; team?: string; whatShiftedIt?: string; perPlayer?: Record<string, string>; verdicts?: Record<string, { mood?: string; text?: string }>; }
+interface Coaching { headline?: string; team?: string; whatShiftedIt?: string; whatWorked?: string; perPlayer?: Record<string, string>; verdicts?: Record<string, { mood?: string; text?: string }>; moments?: Record<string, { call?: string }>; }
 interface Facts { matchId: string; result: string; durationMin: number; vpSwing: number | null; players: any[]; lanes: any[]; comp: any; objectives: any; timeline?: any; skirmishes?: any[]; coaching?: Coaching | null; }
 
 /** Compact, factual source block the critic judges the coaching against. */
@@ -102,7 +102,7 @@ function fightEconLines(f: Facts & { fights?: any; kills?: any[] }): string[] {
   return out;
 }
 
-const lineList = (co: Coaching): string[] => [co.headline, co.team, co.whatShiftedIt, ...Object.values(co.perPlayer ?? {}), ...Object.values(co.verdicts ?? {}).map((v) => v?.text)].filter((s): s is string => !!s);
+const lineList = (co: Coaching): string[] => [co.headline, co.team, co.whatShiftedIt, co.whatWorked, ...Object.values(co.perPlayer ?? {}), ...Object.values(co.verdicts ?? {}).map((v) => v?.text), ...Object.values(co.moments ?? {}).map((m) => m?.call)].filter((s): s is string => !!s);
 
 // Coaching perPlayer values are multi-sentence; the critic flags a sentence within
 // one, so we SUBSTRING-replace (not whole-string). Guard on length so a short quote
