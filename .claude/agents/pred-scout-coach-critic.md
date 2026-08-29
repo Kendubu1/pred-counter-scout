@@ -42,6 +42,23 @@ player's own winrate instead of the matchup/draft is NOT coaching — flag it.
      team lines must speak as "we/our/the team"; per-player lines must name the
      player (squad name or hero) in third person. Rewrite preserving the exact
      facts/numbers, changing only the voice.
+   - **(e) Method** — violates the coaching method (`docs/coaching-methodology.md`):
+     blames an ally's play instead of the decision the team made around them
+     ("X fed" vs "the call to fight 4v5 with X dead"); judges a role by the
+     wrong yardstick (a support on KDA/farm, a carry on wards, an offlaner on
+     lane kills instead of survival); or makes an execution claim the facts
+     cannot show ("missed the combo", "bad aim") where the data only proves a
+     decision error (numbers, items-down, timing). Rewrite to the decision, the
+     right yardstick, or the provable macro cause.
+   - **(f) Causation** — a game-deciding claim with no why attached when the
+     SOURCE carries one (a lost stretch narrated without its cause; an enemy
+     objective mentioned without who was dead or that nobody was; a bare
+     timestamp with no event named — "absent at 20.5" when the SOURCE says
+     what the 20.5 fight was), or a "why" the SOURCE cannot support (a
+     guessed teleport, wave state, or position).
+     Blunt verdicts are FINE — they are the house style when two or more
+     SOURCE facts back them; flag a blunt verdict only when the receipts
+     aren't in the SOURCE, and never soften one that is grounded.
    The SOURCE includes **MACRO READS** (numbers at the engage, who was dead, who was
    alive and didn't rotate, cross-map trades). A line that explains a fight purely by
    the hero matchup when the macro says it was a numbers/rotation/tempo problem

@@ -121,6 +121,58 @@
   .pgchip .s { color:var(--text-2); font-size:.7rem; }
   .pgchip .c { color:var(--gold); font-size:.7rem; }
 
+  /* ── v7 review: verdict → moments → numbers → strip → interrogation → lobby → deep dive ── */
+  .heroline { display:flex; align-items:center; gap:.25rem; margin-top:.6rem; flex-wrap:wrap; }
+  .heroline img { display:inline-block; width:26px; height:26px; border-radius:7px; object-fit:cover; border:1px solid var(--border); }
+  .heroline .vsx { color:var(--text-2); font-size:.7rem; margin:0 .35rem; }
+  .mo { display:grid; grid-template-columns:54px 1fr; gap:.75rem; padding:.7rem 0; border-bottom:1px solid var(--border); }
+  .mo:last-of-type { border-bottom:none; padding-bottom:.15rem; }
+  .mo .t { font-size:1.3rem; font-weight:800; font-variant-numeric:tabular-nums; line-height:1.1; }
+  .mo .t small { display:block; font-size:.6rem; color:var(--text-2); font-weight:400; letter-spacing:.05em; }
+  .mo h3 { font-size:.95rem; font-weight:700; }
+  .mo .facts { font-size:.76rem; color:var(--text-2); margin-top:.1rem; }
+  .mo .why { font-size:.84rem; color:var(--text-1); margin-top:.3rem; }
+  .mo .cost { font-size:.8rem; color:var(--gold); margin-top:.25rem; }
+  .mo .fighters { font-size:.72rem; color:var(--text-2); margin-top:.3rem; }
+  .mo .fighters img { display:inline-block; width:17px; height:17px; border-radius:4px; vertical-align:-4px; }
+  .mo .fighters a, .heroline a { display:inline-block; }
+  .tagchip { font-size:.62rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; border-radius:99px; padding:.03rem .45rem; margin-left:.4rem; vertical-align:1px; white-space:nowrap; }
+  .tagchip.def { color:var(--gold); border:1px solid var(--gold); }
+  .tagchip.bad { color:var(--red); border:1px solid var(--red); }
+  .tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.6rem; }
+  .tile { background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:.6rem .7rem; }
+  .tile .n { font-size:1.35rem; font-weight:800; font-variant-numeric:tabular-nums; }
+  .tile .n .vs { color:var(--text-2); font-size:.85rem; font-weight:500; }
+  .tile.bad .n { color:var(--red); } .tile.good .n { color:var(--green); }
+  .tile .lbl { font-size:.72rem; color:var(--text-1); margin-top:.1rem; }
+  .tile .read { font-size:.68rem; color:var(--text-2); margin-top:.25rem; line-height:1.4; }
+  .qa { padding:.55rem 0; border-bottom:1px solid var(--border); }
+  .qa:last-of-type { border-bottom:none; }
+  .qa .q { font-weight:700; font-size:.9rem; }
+  .qa .a { color:var(--text-1); font-size:.84rem; margin-top:.2rem; }
+  .qa .a.damn { border-left:2px solid var(--red); padding-left:.55rem; }
+  .qa .a b { color:var(--text-0); }
+  .bverdict { margin:.5rem 0 .2rem; font-size:.86rem; color:var(--text-1); border-left:3px solid var(--red); padding:.35rem .65rem; background:rgba(255,90,90,.06); border-radius:0 8px 8px 0; }
+  .plobby { display:grid; grid-template-columns:150px 1fr; gap:.7rem; padding:.65rem 0; border-bottom:1px solid var(--border); }
+  .plobby:last-of-type { border-bottom:none; }
+  .plobby .who { display:flex; gap:.5rem; align-items:flex-start; }
+  .plobby .who img { width:34px; height:34px; border-radius:8px; object-fit:cover; border:1px solid var(--border); }
+  .plobby .who b { display:block; font-size:.86rem; }
+  .plobby .who .h { font-size:.7rem; color:var(--text-2); }
+  .plobby .who .kda { font-size:.72rem; color:var(--text-1); font-variant-numeric:tabular-nums; }
+  .plobby .line { font-size:.84rem; color:var(--text-1); }
+  .plobby .items { display:flex; gap:.2rem; margin-top:.3rem; }
+  .plobby .items img { width:20px; height:20px; border-radius:4px; border:1px solid var(--border); }
+  .ltag { font-size:.6rem; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:var(--accent); margin-right:.35rem; }
+  .lrow { font-size:.74rem; color:var(--text-2); margin-top:.25rem; line-height:1.5; }
+  .lrow b { color:var(--text-1); }
+  .lrow .swap { color:var(--gold); }
+  .vline { margin-top:.3rem; padding-left:.5rem; font-size:.8rem; color:var(--text-1); }
+  .vline.pos { border-left:2px solid var(--green); } .vline.neg { border-left:2px solid var(--red); }
+  .vline.pos .ltag::after { content:" +"; color:var(--green); } .vline.neg .ltag::after { content:" −"; color:var(--red); }
+  details.deepdive { margin-top:1rem; border:1px dashed var(--border); border-radius:12px; padding:.6rem .9rem; }
+  details.deepdive > summary { cursor:pointer; font-size:.78rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--text-2); }
+
   /* ── mobile: smaller, crisp, nothing bleeds ── */
   @media (max-width:600px) {
     body { font-size:15px; }
@@ -147,6 +199,8 @@
     .insight { font-size:.8rem; }
     .rolerow { grid-template-columns:64px 1fr 110px; font-size:.72rem; }
     .lean { grid-template-columns:1fr; }
+    .mo { grid-template-columns:44px 1fr; }
+    .plobby { grid-template-columns:1fr; gap:.25rem; }
     .splits { font-size:.72rem; }
     .splits td, .splits th { padding:.25rem .3rem; }
     ol.plan li { font-size:.8rem; }
@@ -217,7 +271,7 @@ const himg = (slug) => `../img/heroes/${slug}.webp`;
 const iimg = (slug) => `../img/items/${slug}.webp`;
 // Prefer the mapped squad name: some omeda profiles are private and report a
 // placeholder display_name like "🎮 user-<id>"; squadName is the real handle.
-const pgName = (p) => esc(p.squadName || p.name);
+const pgName = (p) => esc(p.squadName || (String(p.name || '').startsWith('\u{1F3AE}') ? 'Random' : p.name));
 const hlink = (slug, inner) => slug ? `<a href="index.html?hero=${esc(slug)}" title="open ${esc(slug)} in Pick &amp; Build">${inner}</a>` : inner;
 function pgDots(v) {
   return `<span style="display:inline-flex;gap:3px;vertical-align:middle">` + [...v].map((c) =>
@@ -490,6 +544,7 @@ function fightMap(f) {
 // the breakdown all point at the same fight. Degrades gracefully when the map/detail
 // isn't present (e.g. an old game with no located kills).
 function focusFight(n) {
+  const dd = document.getElementById('deepdive'); if (dd) dd.open = true;
   document.querySelectorAll('.fm-mark.on, .fm-halo.on').forEach((e) => e.classList.remove('on'));
   document.querySelectorAll('.tlmark.sel, .fchip.sel').forEach((e) => e.classList.remove('sel'));
   document.querySelectorAll('.fseq').forEach((e) => e.setAttribute('visibility', 'hidden'));
@@ -513,23 +568,161 @@ function pgReview(f) {
   const resBg = f.result === 'win' ? 'rgba(0,196,140,.16)' : 'rgba(255,90,90,.16)';
   const edgeStyle = (e) => e === 'favored' ? 'color:var(--green)' : e === 'unfavored' ? 'color:var(--red)' : 'color:var(--text-1)';
   const card = (inner) => `<div style="background:var(--bg-1);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;margin-top:1rem">${inner}</div>`;
+  const eyebrow = (t, why) => `<h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.5rem">${t}${why ? ` <span style="font-weight:400;text-transform:none;letter-spacing:0">· ${why}</span>` : ''}</h2>`;
+  const hIcon = (slug, size) => hlink(slug, `<img src="${himg(slug)}" title="${esc(slug)}" style="width:${size}px;height:${size}px;border-radius:${Math.round(size / 4)}px;object-fit:cover;border:1px solid var(--border);vertical-align:-4px" onerror="this.style.display='none'">`);
 
+  // ── Verdict: result, the coach's headline, what shifted it, both teams' heroes ──
+  const heroline = `<div class="heroline">${us.map((p) => hIcon(p.heroSlug, 26)).join('')}<span class="vsx">vs</span>${f.players.filter((p) => !p.us).map((p) => hIcon(p.heroSlug, 26)).join('')}</div>`;
   const head = card(`
     <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap">
       <span style="font-weight:800;padding:.2rem .7rem;border-radius:8px;background:${resBg};color:${resColor}">${f.result.toUpperCase()}</span>
       <span style="color:var(--text-1);font-size:.85rem">${f.durationMin} min · ${esc(f.mode)} · ${new Date(f.startTime).toLocaleDateString()}${f.vpSwing != null ? ` · VP ${f.vpSwing >= 0 ? '+' : ''}${f.vpSwing}` : ''}${f.squad ? ` · stack ${f.squad.stackSize}` : ''}</span>
       <span title="Combat math here is THEORY — our simulator's output on constants not yet measured in-game. Shown whenever a number rests on an unverified constant; the field win rates next to it are real." style="margin-left:auto;font-size:.62rem;font-weight:700;color:var(--gold);border:1px solid var(--gold);border-radius:99px;padding:.1rem .5rem;cursor:help">THEORY</span>
     </div>
+    ${heroline}
     ${co ? `<div style="font-size:1.05rem;font-weight:700;line-height:1.45;margin-top:.7rem">${esc(co.headline)}</div>
     <details class="sim-collapse" style="margin-top:.5rem"${(co.team || '').length <= 220 ? ' open' : ''}><summary>The full team read</summary>
       <div style="color:var(--text-1);margin-top:.35rem;font-size:.92rem">${esc(co.team)}</div>
     </details>
-    <div style="border-left:3px solid var(--gold);padding:.5rem .8rem;background:rgba(240,180,41,.07);border-radius:6px;margin-top:.6rem;font-size:.9rem"><b>What would've shifted it:</b> ${esc(co.whatShiftedIt)}</div>` :
+    <div style="border-left:3px solid var(--gold);padding:.5rem .8rem;background:rgba(240,180,41,.07);border-radius:6px;margin-top:.6rem;font-size:.9rem"><b>What shifted it:</b> ${esc(co.whatShiftedIt)}</div>` :
     `<div style="color:var(--text-2);margin-top:.5rem;font-size:.9rem">Facts computed; coaching narrative not yet authored for this match.</div>`}`);
 
+  // ── The three moments: tagged fights first, then by significance — capped at 3.
+  // Why = the computed macro read; cost = deaths in the fight priced at prizes +
+  // the majors that fell right after (all from the facts; tags/places THEORY). ──
+  const sks = (f.skirmishes || []);
+  const keyMoments = [...sks].filter((s) => s.tag || s.significance >= 6)
+    .sort((a, b) => (b.tag ? 1 : 0) - (a.tag ? 1 : 0) || b.significance - a.significance).slice(0, 3)
+    .sort((a, b) => a.startMin - b.startMin);
+  const rword = (r) => r === 'won' ? '<b style="color:var(--green)">WON</b>' : r === 'lost' ? '<b style="color:var(--red)">LOST</b>' : '<b style="color:var(--text-2)">EVEN</b>';
+  const dcs = (f.fights && f.fights.deathCosts) || [];
+  const momentRow = (sk) => {
+    const idx = sks.indexOf(sk);
+    const costAll = dcs.filter((d) => d.min * 60 >= sk.startSec - 5 && d.min * 60 <= sk.endSec + 45)
+      .map((d) => `${esc(d.hero)}'s ${d.min}m death → ${d.cost.map((c) => esc(String(c.type).replace(/_/g, ' ').toLowerCase()) + ' @' + c.min + 'm').join(' + ')}`);
+    const costs = costAll.length > 2 ? [...costAll.slice(0, 2), `+${costAll.length - 2} more priced deaths in this fight`] : costAll;
+    const after = (f.timeline ? f.timeline.majors : []).filter((m) => m.minute >= sk.startMin - 0.3 && m.minute <= sk.startMin + 2.5 && /FANG|PRIME|ORB|CORE/i.test(m.type))
+      .map((m) => `${m.side === 'us' ? 'we took' : 'they took'} ${esc(m.type.replace(/_/g, ' ').toLowerCase())} (${m.minute}m)`);
+    const scrub = (t) => String(t).replace(/\u{1F3AE} private \((\w+)\)/gu, 'our $1');
+    const why = (sk.macro && (sk.macro.notes || []).length) ? sk.macro.notes.map((n) => esc(scrub(n))).join(' ') : '';
+    const numLine = sk.macro && sk.macro.ourAlive != null && sk.macro.ourAlive !== sk.macro.theirAlive ? `${sk.macro.ourAlive}v${sk.macro.theirAlive} at the engage. ` : '';
+    return `<div class="mo">
+      <div class="t">${sk.startMin}<small>min</small></div>
+      <div>
+        <h3>${esc(sk.kind)} at ${esc(sk.place)}${sk.tag ? `<span class="tagchip ${sk.tag === 'game-defining' ? 'def' : 'bad'}">${sk.tag.replace('-', ' ')}</span>` : ''}</h3>
+        <div class="facts">${rword(sk.result)} ${sk.ourKills}–${sk.theirKills}</div>
+        <div class="fighters">${sk.ourHeroes.map((h) => hIcon(h, 17)).join('')} <span style="margin:0 .2rem">vs</span> ${sk.theirHeroes.map((h) => hIcon(h, 17)).join('')}</div>
+        ${why || numLine ? `<div class="why">${numLine}${why}</div>` : ''}
+        ${costs.length || after.length ? `<div class="cost">${[...costs, ...after.map((a) => `→ ${a}`)].join(' · ')}</div>` : ''}
+        <div style="margin-top:.3rem"><a href="#" onclick="focusFight(${idx});return false" style="font-size:.72rem">locate on the fight map ↓</a></div>
+      </div>
+    </div>`;
+  };
+  const moments = keyMoments.length ? card(`${eyebrow('The moments that decided it', 'capped at three — everything else is in “the full story” below')}${keyMoments.map(momentRow).join('')}`) : '';
+
+  // ── The numbers that decided it: conversion, structures, caught-out, priced deaths ──
+  let tiles = '';
+  if (f.fights || f.timeline) {
+    const cv = (f.fights && f.fights.conversion) || null;
+    const cA = (f.fights && f.fights.caughtOut) || null;
+    const t = [];
+    if (cv) t.push({ n: `${cv.cashed}/${cv.wonFights}`, vs: `${cv.theirCashed}/${cv.theirWonFights}`, lbl: 'won fights cashed — us v them', read: 'A won fight spent on no objective is tempo left on the table.', mood: cv.wonFights && cv.cashed / cv.wonFights >= 0.5 ? 'good' : 'bad' });
+    if (f.timeline) t.push({ n: String(f.timeline.towers.us), vs: String(f.timeline.towers.them), lbl: 'towers', read: 'Structures track winning closer than any kill line.', mood: f.timeline.towers.us >= f.timeline.towers.them ? 'good' : 'bad' });
+    if (cA) t.push({ n: String(cA.us.length), vs: String(cA.themCount), lbl: 'caught out alone', read: 'Deaths outside any fight — free tempo handed over.', mood: cA.us.length <= cA.themCount ? 'good' : 'bad' });
+    if (dcs.length || (f.fights && f.fights.deathCosts)) t.push({ n: String(dcs.length), vs: null, lbl: 'deaths that cost a prize', read: 'Deaths that directly preceded an enemy tower or objective.', mood: dcs.length <= 3 ? 'good' : 'bad' });
+    if (t.length) tiles = card(`${eyebrow('The numbers that decided it', '')}<div class="tiles">${t.map((x) => `<div class="tile ${x.mood}"><div class="n">${x.n}${x.vs != null ? ` <span class="vs">v ${x.vs}</span>` : ''}</div><div class="lbl">${esc(x.lbl)}</div><div class="read">${esc(x.read)}</div></div>`).join('')}</div>`);
+  }
+
+  // ── The game in one strip (fights + majors; key moments ringed) ──
+  const tlDur = f.durationMin || 40;
+  const xOf = (min) => Math.min(96, Math.max(2, (min / tlDur) * 100));
+  const tlMajors = (f.timeline ? f.timeline.majors : []).filter((m) => /FANG|PRIME|ORB/i.test(m.type));
+  const objColor = (t) => /FANG/i.test(t) ? '#f0820f' : /ORB|PRIME/i.test(t) ? '#a855f7' : 'var(--text-2)';
+  const skCol = (r) => r === 'won' ? 'var(--green)' : r === 'lost' ? 'var(--red)' : 'var(--text-2)';
+  const keySet = new Set(keyMoments);
+  const timeline = (sks.length || tlMajors.length) ? card(`
+    ${eyebrow('The game in one strip', `0–${tlDur}m · ● above = Fangtooth/Prime (ring = who took it) · circles = fights (size = net kills) · gold ring = the moments above · tap any fight to break it down`)}
+    <div style="position:relative;height:58px;margin:.1rem 0">
+      <div style="position:absolute;top:34px;left:0;right:0;height:2px;background:var(--border)"></div>
+      ${tlMajors.map((m) => { const x = xOf(m.minute); const mine = m.side === 'us'; return `<div title="${m.minute}m ${esc(m.type.replace(/_/g, ' '))} (${mine ? 'us' : 'them'})" style="position:absolute;left:${x}%;top:2px;transform:translateX(-50%)"><div style="width:9px;height:9px;border-radius:50%;background:${objColor(m.type)};border:1.5px solid ${mine ? 'var(--green)' : 'var(--red)'}"></div></div>`; }).join('')}
+      ${sks.map((sk, i) => { const x = xOf(sk.startMin); const d = Math.min(22, 9 + sk.size * 2); const ring = keySet.has(sk) ? ';box-shadow:0 0 0 2px var(--gold)' : ''; return `<div id="tlmark-${i}" class="tlmark" onclick="focusFight(${i})" title="${sk.startMin}m ${sk.kind}: ${sk.result} ${sk.ourKills}-${sk.theirKills} · ${esc(sk.place)}${sk.tag ? ' · ' + sk.tag.replace('-', ' ') : ''}" style="position:absolute;left:${x}%;top:${34 - d / 2}px;transform:translateX(-50%);width:${d}px;height:${d}px;border-radius:50%;background:${skCol(sk.result)}${ring};display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">${sk.net > 0 ? '+' + sk.net : sk.net < 0 ? sk.net : ''}</div>`; }).join('')}
+    </div>`) : '';
+
+  // ── The interrogation: the causation questions, answered from the film ──
+  let interrogation = '';
+  {
+    const ig = f.interrogation;
+    const qs = [];
+    if (ig && ig.vision && (ig.vision.usWards || ig.vision.themWards)) {
+      const gap = ig.vision.themWards - ig.vision.usWards;
+      qs.push({ q: 'Was the vision war even?', damn: gap >= 12, a: `Wards placed <b>${ig.vision.usWards} v ${ig.vision.themWards}</b>, destroyed ${ig.vision.usDestroyed} v ${ig.vision.themDestroyed}.${gap >= 12 ? ' They out-warded us badly — fights past 20 minutes start blind.' : gap <= -12 ? ' The map was lit — vision was a real edge.' : ''}` });
+    }
+    if (ig && ig.riverControl && (ig.riverControl.riverUs + ig.riverControl.riverThem)) {
+      const r = ig.riverControl;
+      const rout = r.riverThem >= r.riverUs * 2 && r.riverThem - r.riverUs >= 5;
+      qs.push({ q: 'Were river buffs and seedlings taken?', damn: rout, a: `River buffs <b>${r.riverUs} v ${r.riverThem}</b>, seedlings ${r.seedlingUs} v ${r.seedlingThem}.${rout ? ' The map income was conceded — that gold and tempo showed up in every fight.' : ''}` });
+    }
+    if (ig && (ig.concededMajors || []).length) {
+      const cm = ig.concededMajors;
+      const unc = cm.filter((m) => m.uncontested);
+      const named = (m) => `${esc(String(m.type).replace(/_/g, ' ').toLowerCase())} (${m.minute}m)`;
+      qs.push({ q: 'Where were we when their objectives fell?', damn: unc.length >= 2, a: `${cm.length} major${cm.length > 1 ? 's' : ''} conceded.${unc.length ? ` <b>${unc.length} fell with nobody dead — five alive, zero contest</b>: ${unc.slice(0, 4).map(named).join(', ')}${unc.length > 4 ? '…' : ''}. That is an awareness problem, not a numbers problem.` : ''}${cm.length > unc.length ? ` The rest were bought with our deaths: ${cm.filter((m) => !m.uncontested).slice(0, 3).map((m) => `${named(m)} after ${esc(m.deadBefore.join(' + '))} died`).join('; ')}${cm.length - unc.length > 3 ? '…' : ''}.` : ''}` });
+    }
+    // first-death habit (openers) — who falls first, and how those fights went
+    const kills = (f.kills || []);
+    if (kills.length && sks.length >= 3) {
+      const openers = sks.map((sk) => { const ks = kills.filter((k) => k.t >= sk.startSec - 1 && k.t <= sk.endSec + 1); return ks.length ? { k: ks[0], sk } : null; }).filter(Boolean);
+      const usFirst = openers.filter((o) => o.k.killedSide === 'us');
+      if (openers.length >= 3) {
+        const faller = {};
+        usFirst.forEach((o) => { const pl = f.players.find((x) => x.heroSlug === o.k.killedSlug); const key = (pl ? pl.heroName : o.k.killedSlug) + '|' + (pl && pl.role ? pl.role : ''); faller[key] = (faller[key] || 0) + 1; });
+        const top = Object.entries(faller).sort((a, b) => b[1] - a[1])[0];
+        const [topName, topRole] = top ? top[0].split('|') : [null, null];
+        const w = usFirst.filter((o) => o.sk.result === 'won').length;
+        qs.push({ q: 'Who fell first in the fights?', damn: usFirst.length > openers.length / 2, a: `We gave up the opening kill in <b>${usFirst.length} of ${openers.length}</b> fights${usFirst.length ? ` and went ${w}–${usFirst.filter((o) => o.sk.result === 'lost').length} in those` : ''}.${top && top[1] >= 2 ? ` <b>${esc(topName)}</b>${topRole ? ` (${esc(topRole)})` : ''} was first down ${top[1]}× — ${topRole === 'carry' || topRole === 'support' ? 'protect that opening pick and the fights start even.' : 'the first five seconds of the engage are where these fights were decided.'}` : ''}` });
+      }
+    }
+    if (qs.length) interrogation = card(`${eyebrow('The interrogation', 'the causation questions a coach asks, answered from the film — computed, not vibes')}${qs.map((x) => `<div class="qa"><div class="q">${esc(x.q)}</div><div class="a${x.damn ? ' damn' : ''}">${x.a}</div></div>`).join('')}<div style="font-size:.68rem;color:var(--text-2);margin-top:.5rem;border-top:1px dashed var(--border);padding-top:.4rem">Not in the feed (never guessed): teleport windows, wave states, positions between kills. Conceded-major reads are THEORY.</div>`);
+  }
+
+  // ── The lobby: every player — portrait, coach line, build read, eternal (lazy), verdict ──
+  const lobbyRow = (p) => {
+    const lane = (f.lanes || []).find((l) => l.role === p.role && l.ourSlug === p.heroSlug);
+    const built = (p.items || []).filter((i) => !/Potion|Ward|Crest/i.test(i.name));
+    const wc = p.winningCore;
+    const bits = [`${p.completedCount ?? built.length} completed`];
+    if (wc && (p.missingCore || []).length) bits.push(`missing <b>${esc(p.missingCore.join(', '))}</b> from the ${wc.wr}% core`);
+    else if (wc) bits.push(`on the ${wc.wr}%-winning core`);
+    if ((p.offMeta || []).length) bits.push(`off-list: ${esc(p.offMeta.join(', '))}`);
+    if ((p.matchupItemFlags || []).length) bits.push(`<span style="color:var(--gold)">${esc(p.matchupItemFlags.join(' · '))}</span>`);
+    if (p.antiHealRec) bits.push(`<span style="color:var(--gold)">anti-heal: add ${esc(p.antiHealRec.item)}</span>`);
+    const v = co && co.verdicts ? co.verdicts[p.pid] : null;
+    return `<div class="plobby">
+      <div class="who">
+        ${hIcon(p.heroSlug, 34)}
+        <span><b>${pgName(p)}${p.isLead ? ' <span style="font-size:.6rem;color:var(--gold)">(lead)</span>' : ''}</b>
+        <span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br>
+        <span class="kda">${p.kills} / ${p.deaths} / ${p.assists}</span></span>
+      </div>
+      <div>
+        ${co?.perPlayer?.[p.pid] ? `<div class="line">${esc(co.perPlayer[p.pid])}</div>` : ''}
+        <div class="items">${built.map((i) => `<img src="${iimg(i.slug)}" title="${esc(i.name)}" onerror="this.style.display='none'">`).join('')}</div>
+        <div class="lrow"><span class="ltag">build</span>${bits.join(' · ')}</div>
+        <div class="lrow" data-et-slug="${esc(p.heroSlug)}" data-et-role="${esc(p.role)}" data-et-opp="${lane ? esc(lane.theirSlug) : ''}"><span class="ltag">eternal</span><span style="opacity:.6">loading the engine's pick…</span></div>
+        ${v && v.text ? `<div class="vline ${v.mood === 'pos' ? 'pos' : 'neg'}"><span class="ltag">verdict</span>${esc(v.text)}</div>` : ''}
+      </div>
+    </div>`;
+  };
+  const cb = f.counterBuild;
+  const lobby = card(`${eyebrow('The lobby — squad &amp; randoms', 'build reads from the match; Eternal loadouts are the engine’s pick for the kit &amp; matchup (the feed doesn’t record what was run) — THEORY')}
+    ${cb && (cb.notes || []).length ? `<div class="bverdict">${cb.notes.slice(0, 2).map(esc).join(' ')}</div>` : ''}
+    ${us.map(lobbyRow).join('')}
+    ${f.draftNote ? `<div style="font-size:.76rem;color:var(--text-2);margin-top:.4rem">⚑ Draft: ${esc(f.draftNote)}</div>` : ''}`);
+
+  // ── Deep dive: lanes, fight map + per-fight breakdowns, comp, kit ──
   const wrColor = (w) => w >= 52 ? 'var(--green)' : w <= 48 ? 'var(--red)' : 'var(--text-1)';
   const lanes = card(`
-    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.7rem">Draft &amp; lane matchups <span style="font-weight:400;text-transform:none;letter-spacing:0">· pred.gg win rate vs the laner (empirical) · the sim's fight read as a second opinion</span></h2>
+    ${eyebrow('Draft &amp; lane matchups', 'pred.gg win rate vs the laner (empirical) · the sim’s fight read as a second opinion')}
     <div style="display:flex;flex-direction:column;gap:.5rem">
       ${f.lanes.map((l) => {
         const o = ourOf(l.role), t = theirOf(l.role);
@@ -553,149 +746,61 @@ function pgReview(f) {
         </div>`;
       }).join('')}
     </div>
-    <div style="margin-top:.5rem;font-size:.72rem;color:var(--text-2)">Dots = minutes 5·10·15·20·25·30 — green = the minutes the fight is winnable for us. Counter = a role-eligible hero that beats the enemy laner (matchup matrix, THEORY); <span style="color:var(--green)">●</span> = in that player's pool.</div>`);
-
-  // Fight timeline (TEAM): the fights that shaped the game, clustered from the
-  // kill stream — who won each and what was on the line. Per-player lane state +
-  // power spikes live in the player cards below; this headline is the team's game.
-  // PHASE-level: kill TIMES are real (pred.gg), but "game-defining/bad-trade" and
-  // the place read are heuristics (THEORY).
-  const tlDur = f.durationMin || 40;
-  const xOf = (min) => Math.min(96, Math.max(2, (min / tlDur) * 100));
-  const tlMajors = (f.timeline ? f.timeline.majors : []).filter((m) => /FANG|PRIME|ORB/i.test(m.type));
-  const objColor = (t) => /FANG/i.test(t) ? '#f0820f' : /ORB|PRIME/i.test(t) ? '#a855f7' : 'var(--text-2)';
-  const hName = (slug) => (f.players.find((p) => p.heroSlug === slug) || {}).heroName || slug;
-  const sks = (f.skirmishes || []).filter((s) => s.startMin <= tlDur + 1);
-  const skCol = (r) => r === 'won' ? 'var(--green)' : r === 'lost' ? 'var(--red)' : 'var(--text-2)';
-  // the fights worth leading with: tagged first, then by significance (mirrors keySkirmishes)
-  const keySk = [...sks].filter((s) => s.tag || s.significance >= 6)
-    .sort((a, b) => (b.tag ? 1 : 0) - (a.tag ? 1 : 0) || b.significance - a.significance).slice(0, 3);
-  const decIdx = keySk.length ? sks.indexOf(keySk[0]) : (sks.length ? 0 : -1);   // the fight the panel/map lead with
-  // First-death pattern across the game: who fell first in each fight, and how
-  // the fight went from there. Openers decide fights — this is the habit read.
-  const openers = sks.map((s) => {
-    const ks = (f.kills || []).filter((k) => k.t >= s.startSec - 1 && k.t <= s.endSec + 1);
-    return ks.length ? { k: ks[0], s } : null;
-  }).filter(Boolean);
-  let fdSummary = '';
-  if (openers.length >= 2) {
-    const usFirst = openers.filter((o) => o.k.killedSide === 'us');
-    const wonAfterLosingOpener = usFirst.filter((o) => o.s.result === 'won').length;
-    const lostAfterLosingOpener = usFirst.filter((o) => o.s.result === 'lost').length;
-    const faller = {};
-    usFirst.forEach((o) => { const p = f.players.find((x) => x.heroSlug === o.k.killedSlug); const key = (p ? p.heroName : o.k.killedSlug) + (p && p.role ? '|' + p.role : '|'); faller[key] = (faller[key] || 0) + 1; });
-    const top = Object.entries(faller).sort((a, b) => b[1] - a[1])[0];
-    const [topName, topRole] = top ? top[0].split('|') : [null, null];
-    fdSummary = `<div class="fdeath-sum"><b style="color:var(--text-0)">First-death pattern</b> · we gave up the opening kill in <b style="color:${usFirst.length > openers.length / 2 ? 'var(--red)' : 'var(--text-0)'}">${usFirst.length} of ${openers.length}</b> fights${usFirst.length ? ` — and went ${wonAfterLosingOpener}–${lostAfterLosingOpener} in those` : ''}.${top && top[1] >= 2 ? ` <b>${esc(topName)}</b>${topRole ? ` (${esc(topRole)})` : ''} was the first to fall ${top[1]}×${topRole === 'carry' || topRole === 'support' ? ' — protect that opening pick and the fights start even' : ' — the first 5 seconds of the engage are where this game was decided'}.` : ''}</div>`;
-  }
-  // Fight economics (from the postgame:fights pass): picks conceded outside
-  // fights, whether won fights were cashed into prizes, and what deaths cost.
-  let econ = '';
-  if (f.fights) {
-    const fx = f.fights;
-    const lines = [];
-    const co = fx.caughtOut || { us: [], themCount: 0 };
-    if (co.us.length || co.themCount) {
-      const byHero = {};
-      co.us.forEach((c) => { byHero[c.hero] = (byHero[c.hero] || 0) + 1; });
-      const worst = Object.entries(byHero).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([h, n]) => `${esc(h)} ${n}×`).join(', ');
-      lines.push(`<b style="color:${co.us.length > co.themCount ? 'var(--red)' : 'var(--text-0)'}">Caught out:</b> ${co.us.length} of our deaths happened OUTSIDE any fight (them: ${co.themCount})${worst ? ` — ${worst}` : ''}${co.us.length >= 3 ? '. Deaths while rotating alone are free tempo for them — move with a buddy or don’t cross the river.' : '.'}`);
-    }
-    const cv = fx.conversion;
-    if (cv && (cv.wonFights || cv.theirWonFights)) {
-      const usPct = cv.wonFights ? Math.round((cv.cashed / cv.wonFights) * 100) : 0;
-      const usTxt = cv.wonFights ? `we converted <b style="color:${usPct < 40 ? 'var(--red)' : 'var(--green)'}">${cv.cashed} of ${cv.wonFights}</b> won fights into a prize within 90s${cv.missed && cv.missed.length ? ` (nothing after the ${cv.missed.map((m) => m + 'm').join(', ')} wins)` : ''}` : `we never won a fight to convert`;
-      lines.push(`<b style="color:var(--text-0)">Cashing wins:</b> ${usTxt}; they converted ${cv.theirCashed} of ${cv.theirWonFights}. A won fight with no objective after it is tempo left on the table.`);
-    }
-    const dc = fx.deathCosts || [];
-    if (dc.length) {
-      const items = dc.slice(0, 3).map((d) => `${esc(d.hero)}'s ${d.min}m death → ${d.cost.map((c) => esc(String(c.type).replace(/_/g, ' ').toLowerCase())).join(' + ')}`);
-      lines.push(`<b style="color:var(--text-0)">What deaths cost:</b> ${dc.length} death${dc.length > 1 ? 's' : ''} directly preceded an enemy prize — ${items.join('; ')}${dc.length > 3 ? '; …' : ''}.`);
-    }
-    if (lines.length) econ = `<div class="fdeath-sum">${lines.map((l) => `<div style="margin-top:.2rem">${l}</div>`).join('')}<div style="color:var(--text-2);font-size:.62rem;margin-top:.25rem">${esc(fx.note || '')}</div></div>`;
-  }
-  const timeline = (sks.length || tlMajors.length) ? card(`
-    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.2rem">Fight timeline <span style="font-weight:400;text-transform:none;letter-spacing:0">· the team's game · 0–${tlDur}m</span></h2>
-    <div style="font-size:.74rem;color:var(--text-1);margin-bottom:.5rem">The fights that decided the game — who won each, and what was on the line.</div>
-    <div style="position:relative;height:58px;margin:.1rem 0">
-      <div style="position:absolute;top:34px;left:0;right:0;height:2px;background:var(--border)"></div>
-      ${tlMajors.map((m) => { const x = xOf(m.minute); const mine = m.side === 'us'; return `<div title="${m.minute}m ${esc(m.type.replace(/_/g, ' '))} (${mine ? 'us' : 'them'})" style="position:absolute;left:${x}%;top:2px;transform:translateX(-50%)"><div style="width:9px;height:9px;border-radius:50%;background:${objColor(m.type)};border:1.5px solid ${mine ? 'var(--green)' : 'var(--red)'}"></div></div>`; }).join('')}
-      ${sks.map((s, i) => { const x = xOf(s.startMin); const d = Math.min(22, 9 + s.size * 2); const ring = s.tag === 'game-defining' ? ';box-shadow:0 0 0 2px var(--gold)' : s.tag === 'bad-trade' ? ';box-shadow:0 0 0 2px rgba(255,90,90,.7)' : ''; return `<div id="tlmark-${i}" class="tlmark" onclick="focusFight(${i})" title="${s.startMin}m ${s.kind}: ${s.result} ${s.ourKills}-${s.theirKills} · ${esc(s.place)}${s.tag ? ' · ' + s.tag.replace('-', ' ') : ''} · tap to locate on the map" style="position:absolute;left:${x}%;top:${34 - d / 2}px;transform:translateX(-50%);width:${d}px;height:${d}px;border-radius:50%;background:${skCol(s.result)}${ring};display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">${s.net > 0 ? '+' + s.net : s.net < 0 ? s.net : ''}</div>`; }).join('')}
-    </div>
-    <div style="font-size:.68rem;color:var(--text-2);line-height:1.5">● above = objective (Fangtooth/Orb·Prime, ring = who took it) · circle on the line = a fight, size = bodies, <span style="color:var(--green)">won</span>/<span style="color:var(--red)">lost</span>, number = net kills · <span style="color:var(--gold)">gold ring</span> = game-defining (heuristic, THEORY) · <b style="color:var(--blue)">tap a fight</b> to locate it on the map &amp; break it down</div>
-    ${sks.length ? `<div style="margin-top:.7rem;font-size:.72rem;color:var(--text-2)">All ${sks.length} fights <span style="opacity:.75">· ${keySk.length ? '<span style="color:var(--gold)">★</span> decided it · ' : ''}tap one to locate it on the map below &amp; break it down</span></div>
-    <div class="fchips">${sks.map((s, i) => { const op = openers.find((o) => o.s === s); const opTxt = op ? ` · first death: ${hName(op.k.killedSlug)} (${op.k.killedSide === 'us' ? 'us' : 'them'})` : ''; return `<button id="tlchip-${i}" class="fchip${i === decIdx ? ' sel' : ''}" onclick="focusFight(${i})" title="${s.startMin}m ${s.kind} ${s.result} ${s.ourKills}-${s.theirKills} · ${esc(s.place)}${esc(opTxt)}${s.tag ? ' · ' + s.tag.replace('-', ' ') : ''}"><b>${s.startMin}m</b> <span style="color:${skCol(s.result)};font-weight:700">${s.result === 'won' ? 'W' : s.result === 'lost' ? 'L' : '–'}${s.net > 0 ? '+' + s.net : s.net < 0 ? s.net : ''}</span>${s.tag === 'game-defining' ? ' <span style="color:var(--gold)">★</span>' : s.tag === 'bad-trade' ? ' <span style="color:var(--red)">⚠</span>' : ''}</button>`; }).join('')}</div>
-    ${fdSummary}${econ}` : ''}`) : '';
+    <div style="margin-top:.5rem;font-size:.72rem;color:var(--text-2)">Dots = minutes 5·10·15·20·25·30 — green = the minutes the fight is winnable for us. Counter = a role-eligible hero that beats the enemy laner (matchup matrix, THEORY); <span style="color:var(--green)">●</span> = in that player’s pool.</div>`);
 
   const comp = card(`
-    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.5rem">Team comp &amp; objectives</h2>
+    ${eyebrow('Team comp &amp; objectives', '')}
     <div style="font-size:.84rem;color:var(--text-1)">Damage — us: ${f.comp.ourDamage.physical}P/${f.comp.ourDamage.magical}M · them: ${f.comp.theirDamage.physical}P/${f.comp.theirDamage.magical}M · healers them: ${f.comp.theirHealers.join(', ') || 'none'}</div>
-    <div style="font-size:.84rem;color:var(--text-1)">Objectives — us: ${f.objectives.ourKills}${f.timeline ? ' majors' : ' kills'} · them: ${f.objectives.theirKills}${f.timeline ? ` · towers ${f.timeline.towers.us}–${f.timeline.towers.them}` : ''} ${f.timeline && tlMajors.length ? '<span style="color:var(--text-2);font-size:.72rem">· when each fell: see the fight timeline above</span>' : ''}</div>
+    <div style="font-size:.84rem;color:var(--text-1)">Objectives — us: ${f.objectives.ourKills}${f.timeline ? ' majors' : ' kills'} · them: ${f.objectives.theirKills}${f.timeline ? ` · towers ${f.timeline.towers.us}–${f.timeline.towers.them}` : ''}</div>
     ${f.closingNote ? `<div style="font-size:.82rem;color:var(--gold);margin-top:.45rem">⏱ ${esc(f.closingNote)}</div>` : ''}
-    ${f.comp.flags.length ? `<div style="font-size:.8rem;color:var(--gold);margin-top:.4rem">${f.comp.flags.map((x) => '• ' + esc(x)).join('<br>')}</div>` : ''}
-    ${f.counterBuild ? `<div style="margin-top:.6rem;border-top:1px solid var(--border);padding-top:.5rem">
-      <div style="font-weight:700;font-size:.78rem;color:var(--text-1);margin-bottom:.3rem">Their build vs our counter</div>
-      ${f.counterBuild.notes.map((n) => `<div style="font-size:.82rem;color:var(--text-1);margin-bottom:.25rem">• ${esc(n)}</div>`).join('')}
-      ${(f.counterBuild.enemyBuilds || []).some((e) => !e.onMeta) ? `<div style="font-size:.74rem;color:var(--text-2);margin-top:.25rem">Off-meta enemy builds: ${f.counterBuild.enemyBuilds.filter((e) => !e.onMeta).map((e) => esc(e.hero)).join(', ')}</div>` : ''}
-    </div>` : ''}`);
+    ${f.comp.flags.length ? `<div style="font-size:.8rem;color:var(--gold);margin-top:.4rem">${f.comp.flags.map((x) => '• ' + esc(x)).join('<br>')}</div>` : ''}`);
 
   const kit = f.kit ? card(`
-    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.6rem">Kit synergy &amp; enemy threats <span style="font-weight:400;text-transform:none;letter-spacing:0">· from ability data (CC, heals, AoE)</span></h2>
+    ${eyebrow('Kit synergy &amp; enemy threats', 'from ability data (CC, heals, AoE)')}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem">
       <div>
         <div style="font-weight:700;color:var(--green);font-size:.82rem;margin-bottom:.3rem">How our comp should play</div>
-        ${(f.kit.synergy || []).map((s) => `<div style="font-size:.84rem;color:var(--text-1);margin-bottom:.35rem">• ${esc(s)}</div>`).join('') || '<div style="color:var(--text-2);font-size:.82rem">—</div>'}
+        ${(f.kit.synergy || []).map((x) => `<div style="font-size:.84rem;color:var(--text-1);margin-bottom:.35rem">• ${esc(x)}</div>`).join('') || '<div style="color:var(--text-2);font-size:.82rem">—</div>'}
       </div>
       <div>
         <div style="font-weight:700;color:var(--red);font-size:.82rem;margin-bottom:.3rem">What the enemy kit threatens</div>
-        ${(f.kit.threats || []).map((s) => `<div style="font-size:.84rem;color:var(--text-1);margin-bottom:.35rem">• ${esc(s)}</div>`).join('') || '<div style="color:var(--text-2);font-size:.82rem">no standout threats flagged</div>'}
+        ${(f.kit.threats || []).map((x) => `<div style="font-size:.84rem;color:var(--text-1);margin-bottom:.35rem">• ${esc(x)}</div>`).join('') || '<div style="color:var(--text-2);font-size:.82rem">no standout threats flagged</div>'}
       </div>
     </div>
-    ${f.kit.enemy.hardCC.length ? `<div style="margin-top:.6rem;font-size:.78rem;color:var(--text-2)">Enemy hard CC: ${f.kit.enemy.hardCC.map((c) => `<span style="background:var(--bg-3);border-radius:99px;padding:.05rem .45rem;margin-right:.2rem">${esc(c.hero)} ${esc(c.type)}${c.sec ? ` ${c.sec}s` : ''}</span>`).join('')}</div>` : ''}
     ${(f.kit.enemyKits || []).some((k) => k.playAgainst) ? `<details style="margin-top:.7rem"><summary style="cursor:pointer;font-weight:700;color:var(--red);font-size:.82rem">Enemy kits — how to play against each ▾</summary>
-      <div style="margin-top:.4rem">${f.kit.enemyKits.filter((k) => k.archetype).map((k) => `<div style="font-size:.82rem;margin-bottom:.4rem"><b>${esc(k.hero)}</b> <span style="color:var(--text-2)">· ${esc(k.archetype)}${k.dive && k.dive !== 'low' ? ` · ${esc(k.dive)} dive` : ''}</span>${k.playAgainst ? `<div style="color:var(--text-1)">↳ ${esc(k.playAgainst)}</div>` : ''}</div>`).join('')}</div></details>` : ''}
+      <div style="margin-top:.4rem">${f.kit.enemyKits.filter((k) => k.archetype).map((k) => `<div style="font-size:.82rem;margin-bottom:.4rem"><b>${esc(k.hero)}</b> <span style="color:var(--text-2)">· ${esc(k.archetype)}</span>${k.playAgainst ? `<div style="color:var(--text-1)">↳ ${esc(k.playAgainst)}</div>` : ''}</div>`).join('')}</div></details>` : ''}
     ${(f.kit.ourKits || []).some((k) => k.winCondition) ? `<details style="margin-top:.4rem"><summary style="cursor:pointer;font-weight:700;color:var(--green);font-size:.82rem">Our kits — win conditions &amp; combos ▾</summary>
-      <div style="margin-top:.4rem">${f.kit.ourKits.filter((k) => k.archetype).map((k) => `<div style="font-size:.82rem;margin-bottom:.4rem"><b>${esc(k.hero)}</b> <span style="color:var(--text-2)">· ${esc(k.archetype)}${k.powerSpike ? ` · ${esc(k.powerSpike)} spike` : ''}</span>${k.winCondition ? `<div style="color:var(--text-1)">↳ Win: ${esc(k.winCondition)}</div>` : ''}${k.combo ? `<div style="color:var(--text-2)">↳ Combo: ${esc(k.combo)}</div>` : ''}</div>`).join('')}</div></details>` : ''}
-    <div style="margin-top:.5rem;font-size:.72rem;color:var(--text-2)">Synergy/threat lines from structured ability data (CC, heals, AoE); per-hero combos/win-conditions/counters from the kit-knowledge pass. THEORY.</div>`) : '';
+      <div style="margin-top:.4rem">${f.kit.ourKits.filter((k) => k.archetype).map((k) => `<div style="font-size:.82rem;margin-bottom:.4rem"><b>${esc(k.hero)}</b> <span style="color:var(--text-2)">· ${esc(k.archetype)}</span>${k.winCondition ? `<div style="color:var(--text-1)">↳ Win: ${esc(k.winCondition)}</div>` : ''}</div>`).join('')}</div></details>` : ''}`) : '';
 
-  const players = card(`
-    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.6rem">Per-player review</h2>
-    ${us.map((p) => {
-      const built = p.items.filter((i) => !/Potion|Ward|Crest/i.test(i.name));
-      const lane = (f.lanes || []).find((l) => l.role === p.role && l.ourSlug === p.heroSlug);
-      // Counters only matter when the lane is actually unfavored — judge by the
-      // empirical pred.gg winrate when we have it, else the sim edge.
-      const unfav = lane ? (lane.predggMatchup ? lane.predggMatchup.winrate < 49 : lane.edge !== 'favored') : false;
-      const counter = unfav && lane.counters && lane.counters[0];
-      const dg = p.diagnostics;
-      const dColor = (m) => m.flag === 'bad' ? 'var(--red)' : m.flag === 'good' ? 'var(--green)' : 'var(--text-2)';
-      const edgeColor = lane ? (lane.edge === 'favored' ? 'var(--green)' : lane.edge === 'unfavored' ? 'var(--red)' : 'var(--text-1)') : 'var(--text-1)';
-      // Build vs the winning build: how many of the winning core they ran.
-      const wc = p.winningCore;
-      const sharedCore = wc ? wc.items.length - (p.missingCore || []).length : 0;
-      return `<div style="border:1px solid var(--border);border-radius:10px;padding:.7rem .8rem;margin-bottom:.7rem;background:var(--bg-2)">
-        <div style="display:flex;align-items:center;gap:.55rem;flex-wrap:wrap">
-          ${hlink(p.heroSlug, `<img src="${himg(p.heroSlug)}" style="width:30px;height:30px;border-radius:7px" onerror="this.style.visibility='hidden'">`)}
-          <b>${pgName(p)}</b>${p.isLead ? ' <span style="font-size:.62rem;color:var(--gold)">(lead)</span>' : ''}
-          <span style="font-size:.68rem;text-transform:uppercase;color:var(--text-2);border:1px solid var(--border);border-radius:99px;padding:.05rem .4rem">${esc(p.role)}</span>
-          <span style="font-size:.8rem;color:var(--text-1)">${esc(p.heroName)} · ${p.kills}/${p.deaths}/${p.assists}</span>
-        </div>
-        ${dg && dg.headline ? `<div style="font-size:.9rem;margin-top:.4rem;font-weight:600">${dg.metrics.some((m) => m.flag === 'bad') ? '⚠ ' : ''}<span style="color:${dg.metrics.find((m) => dg.headline.startsWith(m.label)) ? dColor(dg.metrics.find((m) => dg.headline.startsWith(m.label))) : 'var(--text-0)'}">${esc(dg.headline)}</span></div>
-        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.25rem;font-size:.72rem">${dg.metrics.map((m) => `<span style="color:${dColor(m)}" title="this player's season average: ${m.avg}">${esc(m.label)} ${m.value}<span style="color:var(--text-2)">/${m.avg}</span></span>`).join('')}</div>`
-        : `<div style="font-size:.74rem;color:var(--text-2);margin-top:.35rem">${esc(p.experienceVerdict)} — no baseline to compare this game against</div>`}
-        ${lane ? `<div style="font-size:.82rem;margin-top:.35rem">Lane: vs <b>${esc(lane.theirHero)}</b> ${lane.predggMatchup ? `<span style="font-weight:700;color:${lane.predggMatchup.winrate >= 52 ? 'var(--green)' : lane.predggMatchup.winrate <= 48 ? 'var(--red)' : 'var(--text-1)'}" title="pred.gg empirical, ${lane.predggMatchup.matchesPlayed.toLocaleString()} games">${lane.predggMatchup.winrate}% win</span> <span style="color:var(--text-2);font-size:.72rem">(pred.gg, ${lane.predggMatchup.matchesPlayed.toLocaleString()} games)</span>` : `<span style="color:${edgeColor};font-weight:700">(${lane.edge})</span>`}${counter ? ` · would've countered: ${esc(counter.hero)}${counter.inPool ? ` <span style="color:var(--green)">(in their pool)</span>` : ''}` : ''}</div>` : ''}
-        ${p.spikes && p.spikes.length ? `<div style="font-size:.74rem;color:var(--text-2);margin-top:.2rem" title="When the median player on this kit affords each item (modeled spike, THEORY). Take fights once the power is online; respect them before.">⏱ Power online: ${p.spikes.slice(0, 4).map((s) => `${esc(s.name)} <b style="color:var(--text-1)">~${s.spikeMinute}m</b>`).join(' · ')}</div>` : ''}
-        <div style="display:flex;gap:.25rem;flex-wrap:wrap;margin:.4rem 0">${built.map((i) => hlink(p.heroSlug, `<img src="${iimg(i.slug)}" title="${esc(i.name)} — open ${esc(p.heroSlug)} build" style="width:26px;height:26px;border-radius:6px;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">`)).join('') || '<span style="color:var(--text-2);font-size:.78rem">no completed items</span>'}</div>
-        ${p.antiHealRec ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.2rem">🩹 Anti-heal: add <b>${esc(p.antiHealRec.item)}</b>${p.antiHealRec.swapOut ? ` (swap ${esc(p.antiHealRec.swapOut)})` : ''} — vs their healers</div>` : ''}
-        ${wc && (p.missingCore || []).length ? `<div style="font-size:.74rem;color:${sharedCore <= 1 ? 'var(--gold)' : 'var(--text-2)'}">${sharedCore <= 1 ? '⚠ Off the winning build' : 'Build note'}: ran ${sharedCore}/${wc.items.length} of the ${wc.wr}%-winning core (${esc(wc.items.join(', '))}) — missing ${esc((p.missingCore || []).join(', '))}.</div>` : ''}
-        ${p.matchupItemFlags.length ? `<div style="font-size:.74rem;color:var(--gold)">${p.matchupItemFlags.map(esc).join(' · ')}</div>` : ''}
-        ${co?.perPlayer?.[p.pid] ? `<div style="font-size:.88rem;border-left:2px solid var(--accent);padding-left:.6rem;margin-top:.45rem">${esc(co.perPlayer[p.pid])}</div>` : ''}
-      </div>`;
-    }).join('')}
-    ${f.draftNote ? `<div style="font-size:.78rem;color:var(--text-2);margin-top:.3rem;border-top:1px solid var(--border);padding-top:.5rem">⚑ Draft: ${esc(f.draftNote)} — minor; only flagged when it's a bottom-two lane.</div>` : ''}`);
+  const deep = `<details class="deepdive" id="deepdive"><summary>The full story — lanes, the fight map, every fight, comp &amp; kits</summary>
+    ${lanes}${fightMap(f)}${comp}${kit}
+  </details>`;
 
-  return head + lanes + timeline + fightMap(f) + comp + kit + players;
+  return head + moments + tiles + timeline + interrogation + lobby + deep;
 }
+
+// The lobby's ETERNAL line joins the per-hero artifact (engine loadout + the
+// matchup item swap vs the actual lane opponent). Lazy + cached — artifacts are
+// only fetched for the five heroes on screen, after the review renders.
+const ARTCACHE = {};
+async function fillEternals() {
+  for (const el of [...document.querySelectorAll('[data-et-slug]')]) {
+    const slug = el.dataset.etSlug, role = el.dataset.etRole, opp = el.dataset.etOpp;
+    try {
+      ARTCACHE[slug] ||= fetch(`../../data/artifacts/${slug}.json`).then((r) => r.json());
+      const d = await ARTCACHE[slug];
+      let src = d;
+      for (const r of d.roles || []) if (r.role === role) src = r;
+      const lo = ((src.eternals || d.eternals) || {}).loadout;
+      const mu = (src.matchups || d.matchups || []).find((m) => m.enemySlug === opp);
+      const cs = mu && mu.counterSwap;
+      const oppName = mu ? mu.enemy : opp;
+      if (lo && lo.major) el.innerHTML = `<span class="ltag">eternal</span><b>${esc(lo.major.name)}</b>${lo.minor1 ? ` + ${esc(lo.minor1.name)}` : ''}${lo.minor2 ? ` + ${esc(lo.minor2.name)}` : ''}${cs && typeof cs.in === 'string' && cs.out ? ` <span class="swap">· matchup swap vs ${esc(oppName)}: ${esc(cs.in)} in for ${esc(cs.out)}</span>` : ''}`;
+      else el.remove();
+    } catch { el.remove(); }
+  }
+}
+
 
 (async () => {
   let c;
@@ -772,7 +877,7 @@ function pgReview(f) {
           const m = visible()[i];
           if (!m) { view.innerHTML = ''; return; }
           view.innerHTML = '<div style="color:var(--text-2);padding:1rem .2rem">loading…</div>';
-          try { view.innerHTML = pgReview(await loadGame(m.matchId)); }
+          try { view.innerHTML = pgReview(await loadGame(m.matchId)); fillEternals(); }
           catch { view.innerHTML = '<div style="color:var(--red);padding:1rem .2rem">could not load this match</div>'; }
         };
         const renderChips = () => {

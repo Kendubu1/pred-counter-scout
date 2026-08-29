@@ -3120,3 +3120,85 @@ verdict is even. **Make the machine check what a machine can check, and the
 reviewer's attention goes where judgement is actually required.** The
 deterministic timing gate found six live cases; the judge, reading the same
 copy, had found two of them.
+
+### Coaching methodology research pass (2026-08-29)
+
+Researched what the coach was missing: how professional MOBA coaches actually
+review games (BSJ's replay template, VOD-review practice, coaching-course
+curricula), the academic win-factor literature, and the Predecessor-specific
+canon. Basis doc: `docs/coaching-methodology.md`; encoded into the coach agent
+as a method section and into the critic as a fifth flag category (method:
+ally-blame, role-blind yardsticks, unprovable execution claims).
+
+- **The pipeline had the right data and the wrong pedagogy.** The macro reads,
+  fight economics and honesty contract were already stronger than most human
+  reviews — but a review with fifteen grounded findings is worse coaching than
+  one with four. The literature is unanimous on the cap (3–5 moments, one
+  theme) and on ending with a checkable next-game focus. Structure was the
+  missing half, not data.
+- **The academic literature validates the engine's exact features.** Encounter
+  detection from kill streams (Schubert 2016), numbers-parity at fight start
+  as a match predictor (Yang FDG 2014), death context over death count (Time
+  to Die), towers/inhibitors as the strongest outcome model (Novak 2020,
+  95.8% from structures alone) — each maps one-to-one onto `skirmishes.macro`,
+  `caughtOut`, `deathCosts`, `conversion`. What changed is emphasis: structures
+  and conversion are headline material, KDA is not.
+- **A stats coach must stay in its lane: decisions, not execution.** Expertise
+  research shows mechanical skill is invisible in aggregate stats; the coach
+  can PROVE a fight was taken 4v5 or 3 items down, and can only guess at aim.
+  Execution claims are now critic-flaggable.
+- **Don't borrow calibration constants across games.** LoL's first-objective
+  win-rates (first tower ≈70%) shape emphasis but Predecessor's equivalents are
+  unmeasured — backlog candidate: first-Fangtooth/first-Prime win% from our own
+  feed. Same rule as the fixtures: an unverified constant is THEORY.
+- **Fangtooth has no Smite analog** — its buffs stack permanently, so it is a
+  race to 3, not a one-off prize like Gold Fury; the timeline should ideally
+  carry stack counts (gap noted in the doc's engine-work list).
+
+### The interrogation pass: causation + the blunt voice (2026-08-29)
+
+The maintainer's read on the v7 prototype: the honesty of a coach was missing
+— nobody said the favored mid was thrown, and observations floated free of
+their causes. Two additions to the methodology (doc §4), the coach, and the
+critic:
+
+- **The feed answers more of the coach's questions than we were asking.**
+  "Was mid warding" (wardsPlaced: 6 in 38 min), "were buffs taken" (RIVER/
+  SEEDLING timeline events carry a side: 21-10 theirs), and "where were we
+  when their objective fell" (kill stream: who was dead in the prior minute
+  — and NOBODY dead means conceded uncontested, an awareness read, not a
+  numbers one) were all computable from committed facts and never surfaced.
+  The interrogation checklist now maps every coach question to its field —
+  or marks it not-in-feed (teleports, wave states, positions between kills),
+  where the rule is say so, never guess.
+- **Blunt needs receipts, and then it needs no apology.** "The lane read
+  favored at 5 and 20; the output was 2/8 with six wards" is harsher than
+  anything the old copy said, and completely defensible — every clause is a
+  field. The contract: two-plus facts behind any blunt verdict, attack the
+  pattern never the person, randoms get the same standard, and the critic's
+  new flag (f) cuts both ways — it flags missing causation AND refuses to
+  soften a grounded blunt line.
+
+### Running the new coach over the last 6 games (2026-08-29)
+
+First full pass of the research-backed coach (blunt verdicts, causation,
+interrogation block, minute-context) over real films, through the
+author→critic→apply loop. Outcomes:
+
+- **The critic is only as good as the SOURCE — again.** Round 1 flagged 24
+  lines; ~18 were true numbers (winning-core winrates, wards cleared,
+  damage taken) whose fields the critique SOURCE simply didn't print — the
+  exact failure mode already documented three times in coach-critique.ts.
+  Completed the SOURCE (both teams) and re-ran rather than applying
+  rewrites that would have weakened true lines. The recurring rule: when
+  the critic flags a cluster of "invented" numbers, audit the SOURCE
+  printer before trusting the flags.
+- **Round 2 found six real errors, one per game** — all misattributions or
+  overclaims (a hero credited in a fight he wasn't in, "every major"
+  against a seedling ledger, "three pinned" when macro lists two). The
+  blunt verdicts all survived untouched: with the receipts in the SOURCE,
+  the house style and the honesty contract don't conflict. 6/6 rewrites
+  ground-checked and applied; gate STOP at 91.9% on the round.
+- **The verdicts field works end-to-end**: authored per player (squad and
+  randoms, ≥1 positive per game), critiqued as ordinary lines, rendered
+  automatically by the merged coach page.
