@@ -3202,3 +3202,60 @@ author→critic→apply loop. Outcomes:
 - **The verdicts field works end-to-end**: authored per player (squad and
   randoms, ≥1 positive per game), critiqued as ordinary lines, rendered
   automatically by the merged coach page.
+
+## 2026-08-29 — "The game in one strip" rework (coach page)
+
+The maintainer's read of the strip: not helpful enough — no key, circles
+unexplained, no time labels, and clicking a fight yanked the page down to
+the fight map. Lessons from the fix (ui/v6/coach.html):
+
+- **A key crammed into the section eyebrow is not a key.** The one-line
+  "● above = … · circles = … · gold ring = …" header explained nothing at
+  a glance. Replaced with a proper legend row of real swatches (won/lost/
+  even circles, size = net kills, moment ring, Fangtooth/Prime dots, and
+  the who-took-it ring colors) under the strip.
+- **Navigation is not a tooltip.** The old click = focusFight() scroll-jump
+  conflated "what is this?" with "take me to the map". Now a tap breaks the
+  mark down in a panel directly under the strip (fight: score, place, tag,
+  fighters, macro read, objective consequence; objective: who took it,
+  when), tap-again closes, and the fight map is an explicit link inside
+  the panel. Native title tooltips stay for hover, but they never worked
+  on touch — the tap panel is the mobile answer.
+- **A timeline needs its axis.** Added minute ticks + labels (5m steps,
+  10m past 50-minute games) and an end-of-game label.
+- **Global `img { display:block }` bites any innerHTML-composed icon row**
+  — the panel's hero icons stacked vertically until scoped back to
+  inline-block. Same trap as any new component on this page.
+- Verified in real Chromium (Playwright against the committed postgame
+  data): tap opens/toggles the panel with zero scroll, objective dots
+  select independently, the map link still opens the deep dive with the
+  same fight lit, keyboard Enter/Space works on the marks.
+
+## 2026-08-29 — Strip round 2: shapes per population, tower band, a11y
+
+Follow-up to the strip rework, from the maintainer's read that the floating
+circles were still ambiguous:
+
+- **One shape per event population.** Circles = fights, squares = objective
+  takes (fill: orange Fangtooth / purple Prime / blue Genesis Core),
+  triangles = structure falls. Same-shape-different-size was read as one
+  confusing population; shape is the encoding that survives glance-reading.
+- **The committed postgame files already carried timed tower falls** — not
+  in `timeline` (which collapses towers to counts) but in the per-event
+  `events` stream (`{sec,type,side,kind}`) persisted since 2026-07-02.
+  Check the whole artifact before concluding a feature needs a data-pipeline
+  change: the tower band shipped zero-API off `f.events`, degrading to no
+  band on the 59 older films that lack it.
+- **Red/green needs a second channel (validated, not vibed).** The dataviz
+  palette validator put our green/red pair at deutan ΔE 6.9 — legal only
+  with secondary encoding. So every side encoding now carries one: fights
+  label ±n, towers point ▲ (took) / ▼ (lost), objective squares we took get
+  a white pip. The objective triple (orange/purple/blue) passes CVD ΔE 11.2.
+- a11y: aria-labels on every mark, aria-live on the breakdown panel, the
+  existing keyboard activation extended to the new marks.
+
+- **Density gets a filter, not a redesign** (maintainer's call): population
+  pills over the strip (fights / objectives / towers, with counts) toggle
+  each mark family; hiding the family that holds the current selection also
+  closes its panel. Reusing the `.pgf` pill class bought the 44px mobile
+  tap targets for free.
