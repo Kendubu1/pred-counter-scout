@@ -19,7 +19,7 @@
 //   (pred-scout-coach agent fills engine/copy-tasks/herocoach.responses.json)
 //   npm run review:herocoach                      # verify + write
 
-import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildAllowed, verifyLine } from '../copy-verify.js';
@@ -28,13 +28,25 @@ import { factsFor, isHeroArtifact, promptFor, type Artifact, type RawHero } from
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const OUT = path.join(ROOT, 'data/aggregates/hero-coach-lines.json');
+const FIXES = path.join(ROOT, 'data/aggregates/hero-coach-fixes.json');
+
+// The independent critic applies its rewrites to the AGGREGATE. Re-running this
+// ingest rebuilds that aggregate from the author's raw responses, which silently
+// reverted every judged fix — including the round-1 catch that had Countess's
+// Feast (a leap onto an enemy) coached as an escape. So the applied fixes are
+// committed here and re-applied on every ingest, keyed to the exact authored
+// line: a re-authored line simply won't match, and any fix that does match is
+// still put through the same ground-check before it is kept.
+const loadFixes = (): Record<string, Record<string, string>> =>
+  existsSync(FIXES) ? (JSON.parse(readFileSync(FIXES, 'utf8')) as { lanes: Record<string, Record<string, string>> }).lanes ?? {} : {};
 
 const heroesRaw = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8')) as RawHero[] | { heroes: RawHero[] };
 const heroBySlug = new Map((Array.isArray(heroesRaw) ? heroesRaw : heroesRaw.heroes).map((h) => [h.slug, h]));
 
 async function main() {
   const out: Record<string, Record<string, { line: string | null; watchout: string | null }>> = {};
-  let written = 0, rejected = 0;
+  const fixes = loadFixes();
+  let written = 0, rejected = 0, judged = 0;
   const artDir = path.join(ROOT, 'data/artifacts');
   const files = readdirSync(artDir).filter(isHeroArtifact);
 
@@ -52,7 +64,17 @@ async function main() {
         // Ground-check against the very block the author was handed.
         const allowed = buildAllowed([], [facts]);
         const keep = (s?: string): string | null => { if (!s) return null; if (verifyLine(s, allowed)) { written++; return s; } rejected++; return null; };
-        const line = keep(parsed.line), watchout = keep(parsed.watchout);
+        // Re-apply this lane's judged fixes, each re-verified against the facts
+        // as they read NOW (a fix that no longer grounds is dropped, not kept).
+        const laneFix = fixes[id] ?? {};
+        const judge = (s: string | null): string | null => {
+          if (!s || !(s in laneFix)) return s;
+          const fixed = laneFix[s]!;
+          if (!verifyLine(fixed, allowed)) { rejected++; return s; }
+          judged++;
+          return fixed;
+        };
+        const line = judge(keep(parsed.line)), watchout = judge(keep(parsed.watchout));
         if (!line && !watchout) { process.stdout.write('x'); continue; }
         (out[art.slug] ??= {})[rv.role] = { line, watchout };
         process.stdout.write('.');
@@ -67,7 +89,7 @@ async function main() {
     source: 'in-session Claude Code agent (pred-scout-coach) over each artifact role view (kit, build, stages, Eternal, lane augment, matchup verdicts, honesty notes) only; every number ground-checked, failing lines dropped',
     written, rejected, heroes: out,
   })) return;
-  console.log(`\n${written} hero coach lines written, ${rejected} rejected -> data/aggregates/hero-coach-lines.json`);
+  console.log(`\n${written} hero coach lines written, ${rejected} rejected, ${judged} judged fixes re-applied -> data/aggregates/hero-coach-lines.json`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

@@ -48,6 +48,69 @@ describe('hero-page coach lines (copy pass, item 8)', () => {
     expect(checked).toBeGreaterThan(0);
   });
 
+  // The numeric check above cannot see this: when a catalog refresh changes what
+  // the optimizer picks, a line keeps naming the OLD items and every number in it
+  // still grounds, so the page coaches a build nobody is buying. The 1.16 refresh
+  // left 16 of 83 lanes in exactly that state (the same failure the build-reasoning
+  // currency test in copy.test.ts was added for, on a different surface).
+  it('never coaches an item the lane no longer builds', () => {
+    const data = load();
+    if (!data) return;
+    const arts = artifacts();
+    // Item vocabulary = every item name across every shipped build; a line may
+    // only name one that is in ITS lane's build.
+    const vocab = new Set<string>();
+    for (const a of arts) for (const rv of a.roles) for (const it of rv.build.items) vocab.add(it.name);
+    const wrong: string[] = [];
+    for (const a of arts) {
+      const cells = data.heroes[a.slug];
+      if (!cells) continue;
+      for (const rv of a.roles) {
+        const cell = cells[rv.role];
+        if (!cell) continue;
+        const build = new Set(rv.build.items.map((i) => i.name));
+        const text = [cell.line, cell.watchout].filter(Boolean).join(' ');
+        for (const name of vocab) {
+          // Short names risk matching ordinary words; the real drift cases are
+          // full item names, which are all longer than four characters.
+          if (name.length > 4 && text.includes(name) && !build.has(name)) {
+            wrong.push(`${a.slug}/${rv.role}: coaches "${name}", which is not in this lane's build`);
+          }
+        }
+      }
+    }
+    expect(wrong).toEqual([]);
+  });
+
+  // The third drift class, and the one with no numbers in it at all: a line
+  // names an opponent as a threat ("X beats you early"), then a refresh flips
+  // that checkpoint verdict and the warning is simply false. Neither the number
+  // check nor the item check can see it. The 1.16 refresh flipped three.
+  it('never warns about an opponent this lane now beats', () => {
+    const data = load();
+    if (!data) return;
+    const wrong: string[] = [];
+    for (const art of artifacts()) {
+      const cells = data.heroes[art.slug];
+      if (!cells) continue;
+      for (const rv of art.roles) {
+        const cell = cells[rv.role];
+        if (!cell) continue;
+        const text = [cell.line, cell.watchout].filter(Boolean).join(' ');
+        for (const m of rv.matchups) {
+          if (!text.includes(m.enemy)) continue;
+          const v = m.checkpoints.map((c) => c.verdict);
+          const you = v.filter((x) => x === 'you').length;
+          const enemy = v.filter((x) => x === 'enemy').length;
+          // Naming an opponent the sim says this lane beats reads as a warning
+          // about someone who is not a threat; re-author rather than reword.
+          if (you > enemy) wrong.push(`${art.slug}/${rv.role}: names ${m.enemy}, whose checkpoints now favour this lane`);
+        }
+      }
+    }
+    expect(wrong).toEqual([]);
+  });
+
   it('covers the lanes the hero pages render, and keeps engine vocabulary out of the copy', () => {
     const data = load();
     if (!data) return;

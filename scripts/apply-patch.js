@@ -27,6 +27,7 @@ const ROOT = path.resolve(__dirname, '..');
 const PATCH_DIR = path.join(ROOT, 'data', 'patches');
 const PROFILES = path.join(ROOT, 'data', 'game-data', 'hero-profiles.json');
 const OUT = path.join(ROOT, 'data', 'game-data', 'hero-patch-state.json');
+const ROSTER = path.join(ROOT, 'data', 'omeda', 'heroes.json');
 
 function fail(msg) { console.error('✗ ' + msg); process.exit(1); }
 
@@ -50,6 +51,14 @@ function main() {
   const profiles = JSON.parse(fs.readFileSync(PROFILES, 'utf8'));
   const bySlug = Object.fromEntries(profiles.map(p => [p.slug, p]));
 
+  // Existence is decided by the LIVE ROSTER, not by the frozen v2 profiles.
+  // hero-profiles.json covers 50 heroes; the catalog carries 54, and the four
+  // without a curated profile (Adele, Legion, Neon, Scarlett) were silently
+  // dropped here — Neon's changes went unrecorded for three patches while this
+  // script reported her only as a console line nobody read. Profiles are still
+  // used for the trait-hint review, which genuinely needs a curated profile.
+  const roster = new Set(JSON.parse(fs.readFileSync(ROSTER, 'utf8')).map(h => h.slug));
+
   const heroes = {};      // slug -> latest entry (later patches overwrite)
   const flips = [];       // { slug, from, fromPatch, to, toPatch }
   const missing = {};     // slug -> first patch version it was missing in
@@ -60,7 +69,7 @@ function main() {
     last = digest;
 
     for (const h of (digest.heroes || [])) {
-      if (!bySlug[h.slug]) {
+      if (!roster.has(h.slug)) {
         if (!(h.slug in missing)) missing[h.slug] = version;
         continue;
       }
@@ -72,7 +81,7 @@ function main() {
 
       // Flag for review when a digest trait hint isn't in the curated profile
       // yet — a signal the kit synergy data is stale.
-      const have = new Set(bySlug[h.slug].baseTraits || []);
+      const have = new Set((bySlug[h.slug] || {}).baseTraits || []);
       const reviewReasons = (h.traitHints || [])
         .filter(t => !have.has(t))
         .map(t => `consider adding trait: ${t}`);

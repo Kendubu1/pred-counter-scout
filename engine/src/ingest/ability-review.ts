@@ -54,7 +54,13 @@ Return strict JSON only: {"<key>": "<tip>", ...}`;
         const tip = parsed[a.key] ?? byKey[a.key];
         if (!tip) continue;
         const allowed = buildAllowed([...(a.cooldown ?? []), ...(a.cost ?? [])], [clean(a.menu_description || a.game_description)]);
-        if (verifyLine(tip, allowed)) { (out[hero.slug] ??= {})[a.key] = tip; written++; } else rejected++;
+        if (verifyLine(tip, allowed)) { (out[hero.slug] ??= {})[a.key] = tip; written++; }
+        // A rejected line must be REMOVED, not merely uncounted. `out` is seeded
+        // from the committed file so a single-hero run does not wipe the rest,
+        // which meant a tip that stopped grounding after a patch kept its old
+        // text and shipped: Bayle's "2.5x damage" survived the nerf to 2.3x, and
+        // Maco's basic-attack stack tip outlived the mechanic entirely.
+        else { delete out[hero.slug]?.[a.key]; rejected++; }
       }
       process.stdout.write('.');
     } catch { process.stdout.write('x'); }

@@ -20,6 +20,24 @@ import { ask, flushTasks, isPrepare, writeAggregate } from '../copy-session.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 
+// An item's INTERNAL name and its DISPLAY name are not always the same word:
+// the catalog ships FistOfJazuul as "Fist Of Razuul" and EnmasBlessing as
+// "Enra's Blessing". Meta builds carry the internal name, the optimizer build
+// and all player-facing copy carry the display name, so membership tests have
+// to go through the catalog rather than string-matching the two.
+const ITEM_ALIASES: Map<string, string> = (() => {
+  const raw = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/items.json'), 'utf8')) as
+    { name?: string; display_name?: string; slug?: string }[];
+  const key = (n: string) => n.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const m = new Map<string, string>();
+  for (const it of raw) {
+    const canon = key(it.display_name ?? it.name ?? '');
+    if (!canon) continue;
+    for (const alt of [it.name, it.display_name, it.slug]) if (alt) m.set(key(alt), canon);
+  }
+  return m;
+})();
+
 interface RawItem { slug: string; display_name: string; stats?: Record<string, number>; effects?: { name?: string; menu_description?: string; game_description?: string }[] }
 interface RawAbility { key: string; display_name: string; cooldown?: number[]; menu_description?: string; game_description?: string }
 interface RawHero { slug: string; name?: string; display_name?: string; abilities?: RawAbility[] }
@@ -108,17 +126,37 @@ Rules:
         const texts = [...rv.metaBuilds.map((m) => m.optimizer ?? ''), ...rv.metaBuilds.map((m) => m.whyLine)];
         const allowed = allowedFor(allItems, hero, texts, rv.metaBuilds.map((m) => Math.round(m.shrunkWr * 1000) / 10));
         const keep = (s?: string): string | null => { if (!s) return null; if (verifyLine(s, allowed)) { written++; return s; } rejected++; return null; };
-        // Per-item "why" map: verify each clause, keep only grounded ones.
-        const keepItems = (m?: Record<string, string>): Record<string, string> => {
+        // Per-item "why" map: verify each clause, keep only grounded ones, and
+        // only for items the build ACTUALLY contains.
+        //
+        // The numeric verifier alone does not catch the drift that matters here:
+        // when the catalog is refreshed the optimizer picks different items, but
+        // the prose keeps explaining the old ones — the numbers still ground, so
+        // every line passes while the page explains items nobody is buying. The
+        // 1.16 refresh left 24 of 83 optimizer blocks in exactly that state.
+        // Membership is tested on a normalized name: the optimizer build carries
+        // display names ("Raiment of Renewal") while the field's meta builds come
+        // back from pred.gg in PascalCase ("RaimentOfRenewal"). Comparing raw
+        // strings drops correct copy. The authored key is kept as written.
+        const norm = (n: string) => {
+          const k = n.toLowerCase().replace(/[^a-z0-9]/g, '');
+          return ITEM_ALIASES.get(k) ?? k;
+        };
+        const keepItems = (m: Record<string, string> | undefined, inBuild: Set<string>): Record<string, string> => {
           const o2: Record<string, string> = {};
-          for (const [k, v] of Object.entries(m ?? {})) { const kept = keep(v); if (kept) o2[k] = kept; }
+          for (const [k, v] of Object.entries(m ?? {})) {
+            if (!inBuild.has(norm(k))) { rejected++; continue; }
+            const kept = keep(v);
+            if (kept) o2[k] = kept;
+          }
           return o2;
         };
-        const metaOut = rv.metaBuilds.map((_, i) => ({ synergy: keep(parsed.metaBuilds?.[i]?.synergy), items: keepItems(parsed.metaBuilds?.[i]?.items), holes: keep(parsed.metaBuilds?.[i]?.holes) }));
+        const namesOf = (items: { name: string }[]) => new Set(items.map((i) => norm(i.name)));
+        const metaOut = rv.metaBuilds.map((mb, i) => ({ synergy: keep(parsed.metaBuilds?.[i]?.synergy), items: keepItems(parsed.metaBuilds?.[i]?.items, namesOf(mb.items)), holes: keep(parsed.metaBuilds?.[i]?.holes) }));
         const o = parsed.optimizer;
         const optOut = o ? {
           synergy: keep(o.synergy),
-          items: keepItems(o.items),
+          items: keepItems(o.items, namesOf(rv.build.items)),
           // dedupe by out+in: several meta builds can share the same optimizer swap
           // (e.g. all run Storm Breaker), which would otherwise repeat it verbatim.
           swaps: (() => { const seen = new Set<string>(); return (o.swaps ?? []).map((sw) => ({ out: sw.out ?? '', in: sw.in ?? '', gain: keep(sw.gain), lose: keep(sw.lose) })).filter((sw) => { const k = `${sw.out}|${sw.in}`; if (seen.has(k)) return false; seen.add(k); return true; }); })(),
