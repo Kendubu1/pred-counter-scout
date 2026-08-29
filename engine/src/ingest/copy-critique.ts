@@ -326,9 +326,15 @@ Return strict JSON: {"flags":[{"quote":"<exact line text>","severity":"high|med|
   const hist = existsSync(histPath)
     ? (JSON.parse(readFileSync(histPath, 'utf8')) as { rounds: unknown[] })
     : { rounds: [] };
+  // CRITIQUE_GENERATION marks a round as judging a NEW draft (the copy was
+  // re-authored from scratch, so its error rate does not continue the old
+  // trajectory). The gate compares only within the newest generation.
+  const generation = Number(process.env.CRITIQUE_GENERATION ?? 0)
+    || Math.max(1, ...hist.rounds.map((r) => (r as { generation?: number }).generation ?? 1));
   hist.rounds.push({
     round: hist.rounds.length + 1,
     at: new Date().toISOString(),
+    generation,
     scope: [...SCOPE],
     reviewedLines, flaggedLines, agreementRate, applied,
   });

@@ -33,14 +33,29 @@ const HISTORY = process.env.LOOP_HISTORY
   ? path.resolve(ROOT, process.env.LOOP_HISTORY)
   : path.join(ROOT, 'data/aggregates/copy-critique-history.json');
 
-interface Round { round: number; at: string; reviewedLines: number; flaggedLines: number; agreementRate: number; applied: number }
+interface Round { round: number; at: string; reviewedLines: number; flaggedLines: number; agreementRate: number; applied: number; generation?: number }
+
+// A loop's rounds only compare within one GENERATION of the copy. When the copy
+// is re-authored from scratch — a field refresh invalidated it, say — the new
+// draft starts from a fresh error rate, and carrying the old rounds forward both
+// reads as a collapse ("100% -> 83%") and trips max-rounds on a draft that has
+// been judged once. So the gate considers only the newest generation's rounds.
+// Rounds written before this field existed are generation 1.
+const currentGeneration = (rounds: Round[]): Round[] => {
+  const gen = Math.max(...rounds.map((r) => r.generation ?? 1));
+  return rounds.filter((r) => (r.generation ?? 1) === gen);
+};
 
 function main() {
   if (!existsSync(HISTORY)) {
     console.log(`[loop:gate] CONTINUE — no history yet at ${path.relative(ROOT, HISTORY)}; run a first round.`);
     process.exit(10);
   }
-  const rounds = (JSON.parse(readFileSync(HISTORY, 'utf8')) as { rounds: Round[] }).rounds ?? [];
+  const all = (JSON.parse(readFileSync(HISTORY, 'utf8')) as { rounds: Round[] }).rounds ?? [];
+  const rounds = all.length ? currentGeneration(all) : all;
+  if (all.length && rounds.length < all.length) {
+    console.log(`[loop:gate] ${all.length - rounds.length} earlier round(s) belong to a previous generation of this copy and are not compared against.`);
+  }
   if (!rounds.length) {
     console.log('[loop:gate] CONTINUE — history is empty; run a first round.');
     process.exit(10);
