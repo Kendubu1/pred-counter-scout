@@ -188,8 +188,18 @@ async function generateOne(
 ) {
   const heroStats = new Map<string, HeroStatCell[]>();
   for (const p of match.players.filter((q) => q.team === ourTeam)) {
-    const hs = await get(`https://omeda.city/players/${p.id}/hero_statistics.json`);
-    heroStats.set(p.id, (hs?.hero_statistics ?? []) as HeroStatCell[]);
+    // Omeda's dynamic endpoints go down together (players/matches all 503 while
+    // the static catalog stays up — observed 2026-08-28/29). hero_statistics is
+    // a garnish here — heroPools below (pred.gg-derived, committed) covers the
+    // experience read — so a failed pull degrades to an empty cell instead of
+    // killing the whole review while the interesting game goes unreviewed.
+    try {
+      const hs = await get(`https://omeda.city/players/${p.id}/hero_statistics.json`);
+      heroStats.set(p.id, (hs?.hero_statistics ?? []) as HeroStatCell[]);
+    } catch (e) {
+      console.error(`  (omeda hero_statistics unavailable for ${p.id.slice(0, 8)} — ${(e as Error).message.slice(-12)}; continuing without)`);
+      heroStats.set(p.id, []);
+    }
     await sleep(200);
   }
   const artifacts = new Map<string, any>();
