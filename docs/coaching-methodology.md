@@ -258,7 +258,11 @@ Encoded into `.claude/agents/pred-scout-coach.md` (methodology section) and
   focus for the next game, grounded in that game's facts.
 - The interrogation checklist (§4) and the blunt-voice contract (§4) —
   causation-complete answers where the feed reaches, honesty where it
-  doesn't, blunt verdicts only with receipts. (Cross-game
+  doesn't, blunt verdicts only with receipts.
+- Per-player VERDICT: every player in the lobby — squad and randoms alike —
+  gets ONE unique labeled line, positive or negative, under their build and
+  Eternal reads. Candidate `coaching.verdicts` field for the pipeline so the
+  coach authors it per game alongside `perPlayer`. (Cross-game
   trend-grading needs pipeline support — see backlog note below.)
 
 Deliberately NOT adopted: long-horizon training plans (no evidence base),
