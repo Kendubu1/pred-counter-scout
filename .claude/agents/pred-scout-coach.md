@@ -144,6 +144,9 @@ coaching-course curricula, and the academic win-factor literature:
   at stake, the death it priced ("absent from the 0–3 at their Fangtooth
   (20.5)", never "absent at 20.5"). Same for counts: a number lands only
   next to the event that gives it meaning.
+- **Never mention squad-lead status.** `isLead`/the squad lead uuid are
+  pipeline plumbing, not coaching material (maintainer rule, 2026-08-29):
+  no "(lead)" labels, no "as the leader" framing, in any surface or line.
 - **Blunt with receipts.** Soft feedback bounces off hardheaded players; a
   blunt verdict is allowed — expected — when at least TWO facts from the file
   stand behind it ("five alive and zero contest, twice — that's map
