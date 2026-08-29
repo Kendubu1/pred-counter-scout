@@ -122,7 +122,7 @@ describe('hero-page coach lines (copy pass, item 8)', () => {
     for (const key of covered) expect(roleViews, `${key} is not a rendered role view`).toContain(key);
 
     // The whole point of the pass is that the page stops speaking engine.
-    const banned = /\b(eHP|rot10|rot20|autoDps|VsSquishy|VsBruiser|shrunk|out-simmed|kill window|objective corner|headlineValue)\b/i;
+    const banned = /\b(eHP|rot10|rot20|autoDps|VsSquishy|VsBruiser|shrunk|out-simmed|kill window|objective corner|headlineValue|checkpoints?)\b/i;
     for (const [slug, roles] of Object.entries(data.heroes)) {
       for (const [role, cell] of Object.entries(roles)) {
         for (const line of [cell.line, cell.watchout]) {

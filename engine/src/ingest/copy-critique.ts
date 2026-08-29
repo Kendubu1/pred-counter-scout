@@ -288,6 +288,25 @@ Return strict JSON: {"flags":[{"quote":"<exact line text>","severity":"high|med|
       }
     }
     writeFileSync(HC_PATH, JSON.stringify(hcDoc, null, 1));
+
+    // Persist the applied rewrites next to the copy. The ingest rebuilds the
+    // aggregate from the author's raw responses, so a fix written only here is
+    // undone by the next `npm run review:herocoach` — that is exactly how three
+    // judged rounds were silently reverted once. hero-coach-review.ts re-applies
+    // this file (re-verifying each fix against the current facts) on every run.
+    const fixPath = path.join(ROOT, 'data/aggregates/hero-coach-fixes.json');
+    const fixDoc = existsSync(fixPath)
+      ? (JSON.parse(readFileSync(fixPath, 'utf8')) as { lanes: Record<string, Record<string, string>>; [k: string]: unknown })
+      : { source: 'applied rewrites from the independent-critic rounds, re-applied and re-verified on every ingest so a re-run cannot revert to the pre-judge draft', lanes: {} };
+    for (const slug in hcFlags) {
+      for (const role in hcFlags[slug]!) {
+        for (const fl of hcFlags[slug]![role]!) {
+          if (fl.rewrite) ((fixDoc.lanes ??= {})[`${slug}:${role}`] ??= {})[fl.quote] = fl.rewrite;
+        }
+      }
+    }
+    fixDoc.generatedAt = new Date().toISOString();
+    writeFileSync(fixPath, JSON.stringify(fixDoc, null, 1));
   }
 
   // Apply coach rewrites back into each report they came from (lead + members).
