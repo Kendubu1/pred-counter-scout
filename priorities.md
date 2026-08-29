@@ -200,16 +200,20 @@ catalog is re-grounded.
 
 ### Still open, in the order they cost us most
 
-1. **CRED-GATED: the whole pred.gg field layer is on patch 1.15 (pulled
-   2026-07-06).** Augment/Eternal win evidence, recommended skill orders and
-   build statistics are seven weeks and two patches old, and 1.16 rebalanced
-   augments directly (Scarlett's three new ones, plus nerfs to Tiny Titan and
-   Focal Lens). The hero page LEADS with the augment choice, so this is the
-   stalest thing a player actually reads. Needs PREDGG_CLIENT_ID/SECRET in a
-   fresh session — the host is reachable, only the credentials are missing.
-   Run: `npm run augments && npm run buildstats && npm run skills && npm run
-   genstats`, then `npm run artifacts` and the copy passes. Do item 12
-   (ranked-only evidence) in the same pass rather than pulling twice.
+1. **PERMISSION-GATED (was cred-gated; creds arrived 2026-08-29): augment and
+   build field evidence still on patch 1.15.** The maintainer's pred.gg app
+   authenticates (scope `profile offline_access`, roles []) and that tier CAN
+   read generalStatistic, recommendedSkills, player profiles/matches and the
+   leaderboard — all refreshed 2026-08-29 — but `simpleBuild` (augment/Eternal/
+   crest win evidence) and `coreBuild` (build statistics) return **Forbidden**.
+   Those two fields went behind an auth wall ~2026-08-07 and evidently need a
+   higher app tier / stats permission on the pred.gg application, not just any
+   token. FIX: in the pred.gg developer portal, enable the stats/build
+   permissions for the app (or ask pred.gg for the tier), then re-run
+   `RANKED_ONLY=1 npm run augments` (item 12's ranked-only switch plus its
+   split report is ALREADY WIRED — one aliased pull produces both) and
+   `npm run buildstats`, then `npm run artifacts` + the copy passes, and
+   relabel the hero page "by field winrate" -> "by ranked winrate".
 
 2. **The omeda match feed returned 503 all session**, so lane boards, matchup
    evidence, rank splits and the gold curves could not be re-measured. Two
@@ -242,7 +246,22 @@ catalog is re-grounded.
 
 5. **Scarlett needs a second pass once she has field data** — the declaration
    in data/aggregates/field-data-pending.json is the tracking record and clears
-   itself when the pull lands.
+   itself when the pull lands. 2026-08-29: skill order and ability tips landed;
+   the two remaining gaps are exactly the Forbidden endpoints in (1).
+
+## 14. [SHIPPED 2026-08-29] Squad postgame coach automation
+
+When anyone in the 5-stack finishes a game, the coach pipeline runs unasked.
+`npm run squad:watch` (engine/src/ingest/squad-watch.ts) is the detector: one
+aliased pred.gg call for all five members, committed high-water mark in
+data/postgame/watch-state.json, 5-stack dedupe by match uuid, exit code 3 =
+new matches. An hourly Routine ("Squad postgame coach",
+trig_01TiC3a86t8U37gebvZdQnuM) fires a fresh session that follows
+docs/coach-automation.md: postgame facts -> enrichment -> session-compute
+coaching narrative -> critic loop -> coach + squad refresh -> harness ->
+data-only commit to main. DEPENDENCY: the execution environment must carry
+PREDGG_CLIENT_ID/SECRET as secrets; until then every fire exits loudly at the
+credentials gate (watcher exit 2), by design.
 
 ## Parked ideas (not yet scheduled)
 

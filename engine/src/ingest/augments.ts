@@ -27,22 +27,39 @@ let SCOPE_NOTE = "";
 interface PerkRow { matchesPlayed: number; matchesWon: number; perk: { id: string; data: { displayName: string } | null } | null }
 interface CrestRow { matchesPlayed: number; matchesWon: number; item: { data: { displayName: string } | null } | null }
 
-async function crestStats(slug: string, role: string): Promise<CrestRow[]> {
-  const d = await gql<{ hero: { simpleBuild: { items: CrestRow[] } } }>(
+// When RANKED_ONLY is set, each call ALIASES a second simpleBuild scoped to
+// RANKED+STANDARD in the same request (data policy: batch and alias queries
+// rather than pulling twice). The primary rows become the artifact; the wider
+// rows feed the one-time ranked/standard split report backlog item 12 asked
+// for before switching scope.
+type SplitRows<T> = { primary: T[]; both: T[] | null };
+
+async function crestStats(slug: string, role: string): Promise<SplitRows<CrestRow>> {
+  const alias = process.env.RANKED_ONLY
+    ? ` both: simpleBuild(filter: { roles: [${role}], gameModes: [RANKED, STANDARD]${VERSION_FILTER} }) {
+        items(slot: CREST, limit: 4) { matchesPlayed matchesWon item { data { displayName } } } }`
+    : '';
+  const d = await gql<{ hero: { simpleBuild: { items: CrestRow[] }; both?: { items: CrestRow[] } } }>(
     `{ hero(by: { slug: "${slug}" }) {
       simpleBuild(filter: { roles: [${role}], gameModes: [${GAME_MODES}]${VERSION_FILTER} }) {
         items(slot: CREST, limit: 4) { matchesPlayed matchesWon item { data { displayName } } }
-      } } }`);
-  return d.hero.simpleBuild.items.filter((r) => r.item?.data?.displayName);
+      }${alias} } }`);
+  const keep = (rows?: CrestRow[]) => (rows ?? []).filter((r) => r.item?.data?.displayName);
+  return { primary: keep(d.hero.simpleBuild.items), both: d.hero.both ? keep(d.hero.both.items) : null };
 }
 
-async function slotStats(slug: string, role: string, slot: string): Promise<PerkRow[]> {
-  const d = await gql<{ hero: { simpleBuild: { perks: PerkRow[] } } }>(
+async function slotStats(slug: string, role: string, slot: string): Promise<SplitRows<PerkRow>> {
+  const alias = process.env.RANKED_ONLY
+    ? ` both: simpleBuild(filter: { roles: [${role}], gameModes: [RANKED, STANDARD]${VERSION_FILTER} }) {
+        perks(slot: ${slot}) { matchesPlayed matchesWon perk { id data { displayName } } } }`
+    : '';
+  const d = await gql<{ hero: { simpleBuild: { perks: PerkRow[] }; both?: { perks: PerkRow[] } } }>(
     `{ hero(by: { slug: "${slug}" }) {
       simpleBuild(filter: { roles: [${role}], gameModes: [${GAME_MODES}]${VERSION_FILTER} }) {
         perks(slot: ${slot}) { matchesPlayed matchesWon perk { id data { displayName } } }
-      } } }`);
-  return d.hero.simpleBuild.perks.filter((p) => p.perk?.data?.displayName);
+      }${alias} } }`);
+  const keep = (rows?: PerkRow[]) => (rows ?? []).filter((p) => p.perk?.data?.displayName);
+  return { primary: keep(d.hero.simpleBuild.perks), both: d.hero.both ? keep(d.hero.both.perks) : null };
 }
 
 async function main() {
@@ -85,6 +102,8 @@ async function main() {
   console.log(`icons: ${fetched} fetched -> ui/img/augments/`);
 
   const heroes: Record<string, Record<string, { augments: { id: string; name: string; n: number; w: number }[]; eternals: { name: string; n: number; w: number }[]; crests: { name: string; n: number; w: number }[] }>> = {};
+  type SplitPick = { name: string; n: number; w: number };
+  const splitCells: { slug: string; role: string; ranked: Record<string, SplitPick[]>; both: Record<string, SplitPick[]> }[] = [];
   let calls = 0;
   for (const slug of [...data.kits.keys()].sort()) {
     const byRole = agg.heroes[slug]?.byRole ?? {};
@@ -102,13 +121,30 @@ async function main() {
       const cr = await crestStats(slug, role.toUpperCase());
       calls += 3;
       heroes[slug][role] = {
-        augments: aug.map((p) => ({ id: p.perk!.id, name: p.perk!.data!.displayName, n: p.matchesPlayed, w: p.matchesWon }))
+        augments: aug.primary.map((p) => ({ id: p.perk!.id, name: p.perk!.data!.displayName, n: p.matchesPlayed, w: p.matchesWon }))
           .sort((a, b) => b.n - a.n),
-        eternals: et.map((p) => ({ name: p.perk!.data!.displayName, n: p.matchesPlayed, w: p.matchesWon }))
+        eternals: et.primary.map((p) => ({ name: p.perk!.data!.displayName, n: p.matchesPlayed, w: p.matchesWon }))
           .sort((a, b) => b.n - a.n).slice(0, 5),
-        crests: cr.map((r) => ({ name: r.item!.data!.displayName, n: r.matchesPlayed, w: r.matchesWon }))
+        crests: cr.primary.map((r) => ({ name: r.item!.data!.displayName, n: r.matchesPlayed, w: r.matchesWon }))
           .sort((a, b) => b.n - a.n).slice(0, 4),
       };
+      if (aug.both || et.both || cr.both) {
+        const pair = (rows: { matchesPlayed: number; matchesWon: number }[], name: (r: any) => string) =>
+          rows.map((r) => ({ name: name(r), n: r.matchesPlayed, w: r.matchesWon }));
+        splitCells.push({
+          slug, role,
+          ranked: {
+            augments: pair(aug.primary, (r) => r.perk.data.displayName),
+            eternals: pair(et.primary, (r) => r.perk.data.displayName),
+            crests: pair(cr.primary, (r) => r.item.data.displayName),
+          },
+          both: {
+            augments: pair(aug.both ?? [], (r) => r.perk.data.displayName),
+            eternals: pair(et.both ?? [], (r) => r.perk.data.displayName),
+            crests: pair(cr.both ?? [], (r) => r.item.data.displayName),
+          },
+        });
+      }
       await new Promise((r) => setTimeout(r, 120));
     }
     process.stdout.write('.');
@@ -123,6 +159,46 @@ async function main() {
   };
   writeFileSync(path.join(ROOT, 'data/aggregates/predgg-augments.json'), JSON.stringify(out, null, 1));
   console.log(`\n${calls} stat calls -> data/aggregates/predgg-augments.json (${Object.keys(heroes).length} heroes)`);
+
+  // Ranked/standard split report (backlog item 12): what switching the evidence
+  // to ranked-only costs in sample, per pick and in aggregate, and how many
+  // Eternal/crest picks drop below the hero page's 300-game floor.
+  if (splitCells.length) {
+    let rankedN = 0, bothN = 0;
+    const floorImpact = { eternals: { before: 0, after: 0 }, crests: { before: 0, after: 0 } };
+    for (const c of splitCells) {
+      for (const kind of ['augments', 'eternals', 'crests'] as const) {
+        const rankedByName = new Map(c.ranked[kind]!.map((p) => [p.name, p]));
+        for (const b of c.both[kind]!) {
+          bothN += b.n;
+          rankedN += rankedByName.get(b.name)?.n ?? 0;
+        }
+        if (kind !== 'augments') {
+          floorImpact[kind].before += c.both[kind]!.filter((p) => p.n >= 300).length;
+          floorImpact[kind].after += c.ranked[kind]!.filter((p) => p.n >= 300).length;
+        }
+      }
+    }
+    const report = {
+      generatedAt: new Date().toISOString(),
+      note: 'One-time scope-switch analysis (priorities item 12): both scopes pulled in the SAME aliased queries, so the pairs are sampled at the same instant. standard share is (both - ranked) / both across every pick in every cell.',
+      scope: SCOPE_NOTE.replace(/^, /, ''),
+      cells: splitCells.length,
+      totals: {
+        rankedGames: rankedN,
+        rankedPlusStandardGames: bothN,
+        standardSharePct: bothN ? Math.round(((bothN - rankedN) / bothN) * 1000) / 10 : null,
+      },
+      floor300: floorImpact,
+      perCell: splitCells.map((c) => ({
+        slug: c.slug, role: c.role,
+        rankedGames: Object.values(c.ranked).flat().reduce((t, p) => t + p.n, 0),
+        bothGames: Object.values(c.both).flat().reduce((t, p) => t + p.n, 0),
+      })),
+    };
+    writeFileSync(path.join(ROOT, 'data/aggregates/ranked-standard-split.json'), JSON.stringify(report, null, 1));
+    console.log(`split: ranked ${rankedN.toLocaleString()} of ${bothN.toLocaleString()} pick-games (${report.totals.standardSharePct}% standard); Eternal picks >=300 games ${floorImpact.eternals.before} -> ${floorImpact.eternals.after}, crests ${floorImpact.crests.before} -> ${floorImpact.crests.after} -> data/aggregates/ranked-standard-split.json`);
+  }
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

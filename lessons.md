@@ -2912,3 +2912,36 @@ losing trade we cannot win on sample or cadence. The explanation layer — why
 this build wins, item by item, and when a lane is winnable — is the thing
 neither upstream offers, and `npm run explain` has been engine-done since
 2026-06-13 without ever reaching the hero page. Written into priorities.md 13.
+
+## 2026-08-29 — creds arrived: what a token is entitled to is a separate fact from having one
+
+- **Authenticated ≠ authorized, field by field.** The new PREDGG app creds
+  exchange fine and the token carries scope `profile offline_access`, roles [].
+  That tier reads generalStatistic, recommendedSkills, player profiles/matches
+  and the leaderboard — but `simpleBuild` and `coreBuild` are Forbidden, which
+  are precisely the augment-evidence and build-statistics fields the refresh
+  was for. The server also silently DROPS unrequested-scope grants rather than
+  erroring, so "token works" proves nothing about any specific field. Probe the
+  actual queries each pass uses before declaring a refresh unblocked; the truth
+  table went in priorities item 1.
+- **The split analysis cost zero extra pulls.** Item 12 wanted a ranked vs
+  ranked+standard comparison before switching scope. Instead of pulling twice,
+  the ranked-only pull now ALIASES a second simpleBuild scoped to both modes in
+  the same request — same call count, and the pairs are sampled at the same
+  instant so the subtraction is exact. Wired and waiting on the permission fix.
+- **The 1.16 scorecard matured 13/21 -> 17/21** on the re-pulled 18-day window
+  (same code, bigger sample) — the early-window honesty framing from 08-14 was
+  the right call: four "misses" were just immaturity.
+- **"Event-based" without webhooks is a committed high-water mark.** Nothing in
+  the Predecessor ecosystem pushes events, so the squad coach automation is a
+  poll that is honest about it: watcher diffs five members' match lists (one
+  aliased call) against data/postgame/watch-state.json, keyed by startTime per
+  member (uuids do not order), dedupes the 5-stack game by match uuid so one
+  game triggers one coach run, initialises without replaying history, and looks
+  back 8 games so an evening between fires is caught whole. The marker is
+  COMMITTED because the fired sessions are ephemeral — repo state is the only
+  memory an hourly fresh session has.
+- **A watcher that no-ops on missing creds is indistinguishable from "no games
+  forever."** The credentials gate exits 2 loudly instead, and the Routine
+  prompt makes that a stop-and-report, not a skip. Same lesson as apply-patch's
+  console line nobody read: a report nobody is forced to see is not a gate.
