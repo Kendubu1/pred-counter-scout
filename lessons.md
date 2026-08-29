@@ -3066,3 +3066,22 @@ existing gate could see.
   the ledger receipts, so jungle appeared as both 53.4% and 51.3%. Both pass the
   verifier (both strings are present), and the author correctly refused to lean
   on either. Label the measure wherever two of them meet.
+
+### Closing the two loops on the refreshed data (2026-08-29)
+
+Final trajectories after the 1.16 merge, both to a gate STOP on target met:
+**hero coach lines** 92.4% -> 97.6% -> 99.4% (full coverage each round; the
+earlier 93.5% judged only the 22 re-authored lanes and was never comparable),
+**coach reports** 83.3% -> 97.6% -> 100%.
+
+The division of labour that emerged is the reusable part. Once the harness
+gated the three mechanical drift classes — an item no build contains, an item
+promised before it completes, an opponent named whose verdict favours the lane
+— the judge stopped spending its rounds on them and started finding what only a
+reader can: a knockback coached as if it pulled enemies toward your minions, a
+teleport described as landing somewhere the player does not choose, a damage
+share the source never measured, an opponent called a lane loss when the
+verdict is even. **Make the machine check what a machine can check, and the
+reviewer's attention goes where judgement is actually required.** The
+deterministic timing gate found six live cases; the judge, reading the same
+copy, had found two of them.
