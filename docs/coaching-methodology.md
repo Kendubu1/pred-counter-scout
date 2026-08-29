@@ -193,7 +193,55 @@ grade rotations by fight presence instead, which we do); death-timer window
 math on `deathCosts` (durationMin + level would let us say "a ~40s death");
 first-Fangtooth/first-Prime win% measured from our own feed.
 
-## 4. What changed because of this research
+## 4. The interrogation (causation checklist) and the voice
+
+**Causation rule: no observation without its why.** Every claim in a review
+must sit in a cause chain the facts support — "we lost" is not analysis,
+"their 23m Fangtooth fell with all five of us alive" is. The checklist below
+is the set of questions a human coach asks of the footage; each is mapped to
+what our feed can actually answer. The coach answers every answerable one per
+game (in the narrative or the interrogation block) and NEVER fakes the rest.
+
+| # | Coach's question | Answerable? | From |
+|---|------------------|-------------|------|
+| 1 | Did a laner lose their matchup or throw it? | YES | `lanes[].verdict/predggMatchup` (the paper read) vs K/D, gold, build vs winning core (the output) |
+| 2 | Was each player warding? | PARTIAL — totals only | `players[].wardsPlaced/wardsDestroyed`; team ward war us-vs-them; no placement times/spots |
+| 3 | Were river buffs and seedlings taken? | YES | `timeline.majors` RIVER/SEEDLING events carry a side — control share is computable |
+| 4 | Where were jungle & support when an objective fell? | PARTIAL | kill stream: who was DEAD in the prior 45–60s of each enemy major; nobody-dead ⇒ conceded uncontested (an awareness/rotation read, THEORY) |
+| 5 | Did mid/ahead lanes have the wave to rotate? | PROXY | `skirmishes[].macro.absent[]` with lane state (ahead ⇒ shove was available) — wave position itself is not in the feed |
+| 6 | Was the offlane supported when pushed early? | PARTIAL | early ganks/deaths by lane side from the kill stream + `caughtOut`; jungler proximity is not in the feed |
+| 7 | Was a won fight converted? | YES | `fights.conversion` |
+| 8 | What did each death cost? | YES | `fights.deathCosts`, `caughtOut` |
+| 9 | Were fights taken on spikes/items? | YES (modeled) | `fights.itemGap`, `players[].spikes` — THEORY label |
+| 10 | Teleport windows, wave states, positions between kills | NO | not in the feed — say so, never guess |
+
+Engine work this implies (backlog): a deterministic `postgame:interrogate`
+pass writing per-game answers for rows 1–4 (vision war, river/seedling
+control share, per-enemy-major cause chain with an `uncontested` flag,
+lane paper-vs-output deltas) so the coach cites them instead of re-deriving.
+
+**The blunt-voice contract (added 2026-08-29, at the maintainer's ask).**
+Hardheaded players tune out soft feedback; the coach is allowed — expected —
+to be blunt. Blunt is a claim about a decision, priced: it is not rudeness.
+
+- **Blunt with receipts:** a blunt verdict ("that favored lane was given
+  away", "five alive and zero contest — that's a map-awareness problem, not
+  a numbers problem") requires at least TWO facts from the file behind it.
+  No receipts ⇒ no verdict — soften to the question form.
+- **Attack the pattern, not the person:** "three solo catches in fog is not
+  bad luck three times" is coaching; "he's bad" is not. Never mock, never
+  speculate about intent or skill ceiling.
+- **Randoms get the same standard:** name their impact factually (a thrown
+  favored lane, two wards from a carry) because the squad plans around it —
+  it is context and drafting/adaptation material, not an insult ledger.
+- **The existing rules still bind:** third person always, no preference
+  coaching, no invented numbers, and the tilt exception (a loss-streak
+  night gets a shorter, session-hygiene review, not a harsher one).
+- **Bluntest where the evidence is hardest:** conceded-uncontested
+  objectives, thrown favored lanes, ward-war routs, and won-fights-cashed
+  gaps are where the blunt register belongs, because the numbers carry it.
+
+## 5. What changed because of this research
 
 Encoded into `.claude/agents/pred-scout-coach.md` (methodology section) and
 `.claude/agents/pred-scout-coach-critic.md` (new flaggable issues):
@@ -207,7 +255,10 @@ Encoded into `.claude/agents/pred-scout-coach.md` (methodology section) and
 - Role-normalized judgement as a critic-flaggable error.
 - The Predecessor priority rules table above as the coach's rulebook.
 - Next-game focus point: each review's `team` line may close with ONE
-  focus for the next game, grounded in that game's facts. (Cross-game
+  focus for the next game, grounded in that game's facts.
+- The interrogation checklist (§4) and the blunt-voice contract (§4) —
+  causation-complete answers where the feed reaches, honesty where it
+  doesn't, blunt verdicts only with receipts. (Cross-game
   trend-grading needs pipeline support — see backlog note below.)
 
 Deliberately NOT adopted: long-horizon training plans (no evidence base),
@@ -219,7 +270,7 @@ block carried across a squad's consecutive films so reviews grade the
 previous focus point; measured Predecessor objective win-rate anchors;
 death-timer cost annotation in `postgame:fights`.
 
-## 5. Sources
+## 6. Sources
 
 Coaching practice & courses: BSJ replay-review template
 (bsjdota.com/blog/dota-2-replay-review-template) and match-analysis guide;

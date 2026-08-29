@@ -3154,3 +3154,27 @@ ally-blame, role-blind yardsticks, unprovable execution claims).
 - **Fangtooth has no Smite analog** — its buffs stack permanently, so it is a
   race to 3, not a one-off prize like Gold Fury; the timeline should ideally
   carry stack counts (gap noted in the doc's engine-work list).
+
+### The interrogation pass: causation + the blunt voice (2026-08-29)
+
+The maintainer's read on the v7 prototype: the honesty of a coach was missing
+— nobody said the favored mid was thrown, and observations floated free of
+their causes. Two additions to the methodology (doc §4), the coach, and the
+critic:
+
+- **The feed answers more of the coach's questions than we were asking.**
+  "Was mid warding" (wardsPlaced: 6 in 38 min), "were buffs taken" (RIVER/
+  SEEDLING timeline events carry a side: 21-10 theirs), and "where were we
+  when their objective fell" (kill stream: who was dead in the prior minute
+  — and NOBODY dead means conceded uncontested, an awareness read, not a
+  numbers one) were all computable from committed facts and never surfaced.
+  The interrogation checklist now maps every coach question to its field —
+  or marks it not-in-feed (teleports, wave states, positions between kills),
+  where the rule is say so, never guess.
+- **Blunt needs receipts, and then it needs no apology.** "The lane read
+  favored at 5 and 20; the output was 2/8 with six wards" is harsher than
+  anything the old copy said, and completely defensible — every clause is a
+  field. The contract: two-plus facts behind any blunt verdict, attack the
+  pattern never the person, randoms get the same standard, and the critic's
+  new flag (f) cuts both ways — it flags missing causation AND refuses to
+  soften a grounded blunt line.

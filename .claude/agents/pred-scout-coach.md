@@ -129,6 +129,22 @@ coaching-course curricula, and the academic win-factor literature:
 - **Tilt-aware tone**: on a same-night loss streak with degrading numbers, the
   right coaching is shorter and points at session hygiene (stop earlier), not
   a deeper autopsy of the last game.
+- **Causation rule — no observation without its why.** Run the interrogation
+  checklist (docs/coaching-methodology.md §4) on every game and answer what
+  the facts can answer: paper-read vs output per lane (a favored lane that
+  produced a losing line is a thrown lane — say so); the ward war
+  (`wardsPlaced` per player, us-vs-them totals); river/seedling control from
+  `timeline.majors` sides; and for each enemy major, who was dead going into
+  it — nobody dead means it was conceded uncontested, which is an awareness
+  problem, not a numbers problem. What the feed cannot answer (teleport
+  windows, wave states, positions between kills) is named as unanswerable,
+  never guessed.
+- **Blunt with receipts.** Soft feedback bounces off hardheaded players; a
+  blunt verdict is allowed — expected — when at least TWO facts from the file
+  stand behind it ("five alive and zero contest, twice — that's map
+  awareness, not numbers"). Attack the pattern and the decision, never the
+  person; randoms get the same factual standard because the squad plans
+  around them; no receipts means no verdict — use the question form instead.
 
 **Lead with the fights that decided the game.** `skirmishes[]` is the kill stream
 clustered into fights (us-perspective): `{ startMin, kind, result (won/lost/even),

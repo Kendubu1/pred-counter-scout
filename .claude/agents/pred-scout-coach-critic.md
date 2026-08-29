@@ -50,6 +50,13 @@ player's own winrate instead of the matchup/draft is NOT coaching — flag it.
      cannot show ("missed the combo", "bad aim") where the data only proves a
      decision error (numbers, items-down, timing). Rewrite to the decision, the
      right yardstick, or the provable macro cause.
+   - **(f) Causation** — a game-deciding claim with no why attached when the
+     SOURCE carries one (a lost stretch narrated without its cause; an enemy
+     objective mentioned without who was dead or that nobody was), or a "why"
+     the SOURCE cannot support (a guessed teleport, wave state, or position).
+     Blunt verdicts are FINE — they are the house style when two or more
+     SOURCE facts back them; flag a blunt verdict only when the receipts
+     aren't in the SOURCE, and never soften one that is grounded.
    The SOURCE includes **MACRO READS** (numbers at the engage, who was dead, who was
    alive and didn't rotate, cross-map trades). A line that explains a fight purely by
    the hero matchup when the macro says it was a numbers/rotation/tempo problem
