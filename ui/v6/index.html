@@ -394,6 +394,9 @@
   .metaboard .mb-head { display:flex; align-items:baseline; gap:.7rem; flex-wrap:wrap; }
   .metaboard h2 { font-size:1.05rem; font-weight:800; }
   .metaboard .mb-sub { font-size:.74rem; color:var(--text-2); }
+  .mb-toggle { margin-left:auto; background:var(--bg-1); border:1px solid var(--border); border-radius:99px; padding:.28rem .7rem; color:var(--text-2); font:inherit; font-size:.72rem; font-weight:700; cursor:pointer; white-space:nowrap; }
+  .mb-toggle:hover { color:var(--text-0); }
+  .mb-toggle.active { color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
   .lanes { display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:.7rem; margin-top:.8rem; }
   .lane { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:.7rem .75rem; }
   .lane h3 { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.45rem; }
@@ -549,6 +552,13 @@ const LEGEND_HTML = `<ul class="legend-list">`
 let INDEX = null;
 let META = null;
 let roleFilter = 'all';
+// Meta-board "big samples only" toggle — hides rows whose game count is under
+// ~1% of the window's matches (same scale-with-the-window idea as the
+// pipeline's games floor). Sticky per browser; off by default so sleepers
+// stay discoverable.
+let metaBigOnly = false;
+try { metaBigOnly = localStorage.getItem('metaBigOnly') === '1'; } catch { /* private mode */ }
+function metaMinSample() { return Math.max(300, Math.round((META?.matches || 0) / 100)); }
 
 async function getJson(path) { return (await fetch(path)).json(); }
 
@@ -899,13 +909,14 @@ function renderMetaboard() {
     <div class="mb-head">
       <h2>The meta board</h2>
       <span class="mb-sub">each lane's strongest picks by <b>win rate</b> · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, ${esc(META.scope || 'all ranks')}${metaWindowNote()}</span>
+      <button class="mb-toggle${metaBigOnly ? ' active' : ''}" id="mbBigOnly" title="Hide picks with under ${metaMinSample().toLocaleString()} games this patch (~1% of the window) — small samples read as Sleeper 💤 and can swing patch to patch">${metaBigOnly ? '✓ ' : ''}${metaMinSample().toLocaleString()}+ games only</button>
     </div>
     <details class="sim-collapse uxlegend" id="uxLegend"><summary>What the win-rate colors &amp; pick tags mean</summary><div class="lp-sub">${LEGEND_HTML}</div></details>
     <div class="lanes">
       ${Object.keys(LANE_LABELS).map((role) => `
         <div class="lane">
           <h3 class="lane-go" data-lane="${role}" title="Open the ${esc(LANE_LABELS[role])} lane room">${LANE_LABELS[role]} <span style="color:var(--text-2)">→</span></h3>
-          ${[...(META.roles[role] || [])].sort((a, b) => b.shrunkWr - a.shrunkWr).slice(0, 5).map((h, i) => `
+          ${[...(META.roles[role] || [])].filter((h) => !metaBigOnly || h.games >= metaMinSample()).sort((a, b) => b.shrunkWr - a.shrunkWr).slice(0, 5).map((h, i) => `
             <div class="mp" data-slug="${h.slug}" data-role="${role}" title="${esc(h.name)}: ${h.games} ${role} games, ${(h.shrunkWr * 100).toFixed(1)}% shrunk winrate, meta score ${(h.metaScore * 100).toFixed(0)}${h.badge ? ' — ' + esc(h.badge) : ''}">
               <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
               <span class="n">${i === 0 ? '👑 ' : ''}${esc(h.name)}${h.badge === 'sleeper' ? ' 💤' : h.badge ? ' ⚠' : ''}<span class="g">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b class="vtag" style="color:${v.color}" data-tip="${esc(v.tip)}" title="${esc(v.tip)}">${v.label}</b>`; })()}</span></span>
@@ -916,6 +927,11 @@ function renderMetaboard() {
     </div>`;
   document.querySelectorAll('.mp').forEach((c) => { c.onclick = () => nav(c.dataset.slug, false, c.dataset.role); });
   document.querySelectorAll('.lane-go, .lane-more').forEach((h) => { h.onclick = () => pickLane(h.dataset.lane); });
+  $('#mbBigOnly').onclick = () => {
+    metaBigOnly = !metaBigOnly;
+    try { localStorage.setItem('metaBigOnly', metaBigOnly ? '1' : '0'); } catch { /* private mode */ }
+    renderMetaboard();
+  };
 }
 
 // Open a lane's "lane room" as if the rolebar lane was picked, and scroll to it.
