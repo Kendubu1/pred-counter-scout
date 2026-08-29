@@ -237,6 +237,11 @@ to be blunt. Blunt is a claim about a decision, priced: it is not rudeness.
 - **The existing rules still bind:** third person always, no preference
   coaching, no invented numbers, and the tilt exception (a loss-streak
   night gets a shorter, session-hygiene review, not a harsher one).
+- **A minute is not a receipt.** Never cite a bare timestamp: every minute
+  travels with the event it names — the fight and its score, the objective
+  at stake, the death it priced ("absent from the 0–3 at their Fangtooth
+  (20.5)", never "absent at 20.5"). A number without context reads as
+  noise to the player it's aimed at and gets tuned out with the rest.
 - **Bluntest where the evidence is hardest:** conceded-uncontested
   objectives, thrown favored lanes, ward-war routs, and won-fights-cashed
   gaps are where the blunt register belongs, because the numbers carry it.

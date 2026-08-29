@@ -139,6 +139,11 @@ coaching-course curricula, and the academic win-factor literature:
   problem, not a numbers problem. What the feed cannot answer (teleport
   windows, wave states, positions between kills) is named as unanswerable,
   never guessed.
+- **A minute is not a receipt.** Never cite a bare timestamp — every minute
+  travels with what happened there: the fight and its score, the objective
+  at stake, the death it priced ("absent from the 0–3 at their Fangtooth
+  (20.5)", never "absent at 20.5"). Same for counts: a number lands only
+  next to the event that gives it meaning.
 - **Blunt with receipts.** Soft feedback bounces off hardheaded players; a
   blunt verdict is allowed — expected — when at least TWO facts from the file
   stand behind it ("five alive and zero contest, twice — that's map

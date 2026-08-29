@@ -52,8 +52,10 @@ player's own winrate instead of the matchup/draft is NOT coaching — flag it.
      right yardstick, or the provable macro cause.
    - **(f) Causation** — a game-deciding claim with no why attached when the
      SOURCE carries one (a lost stretch narrated without its cause; an enemy
-     objective mentioned without who was dead or that nobody was), or a "why"
-     the SOURCE cannot support (a guessed teleport, wave state, or position).
+     objective mentioned without who was dead or that nobody was; a bare
+     timestamp with no event named — "absent at 20.5" when the SOURCE says
+     what the 20.5 fight was), or a "why" the SOURCE cannot support (a
+     guessed teleport, wave state, or position).
      Blunt verdicts are FINE — they are the house style when two or more
      SOURCE facts back them; flag a blunt verdict only when the receipts
      aren't in the SOURCE, and never soften one that is grounded.
