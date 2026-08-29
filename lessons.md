@@ -3202,3 +3202,31 @@ author→critic→apply loop. Outcomes:
 - **The verdicts field works end-to-end**: authored per player (squad and
   randoms, ≥1 positive per game), critiqued as ordinary lines, rendered
   automatically by the merged coach page.
+
+## 2026-08-29 — "The game in one strip" rework (coach page)
+
+The maintainer's read of the strip: not helpful enough — no key, circles
+unexplained, no time labels, and clicking a fight yanked the page down to
+the fight map. Lessons from the fix (ui/v6/coach.html):
+
+- **A key crammed into the section eyebrow is not a key.** The one-line
+  "● above = … · circles = … · gold ring = …" header explained nothing at
+  a glance. Replaced with a proper legend row of real swatches (won/lost/
+  even circles, size = net kills, moment ring, Fangtooth/Prime dots, and
+  the who-took-it ring colors) under the strip.
+- **Navigation is not a tooltip.** The old click = focusFight() scroll-jump
+  conflated "what is this?" with "take me to the map". Now a tap breaks the
+  mark down in a panel directly under the strip (fight: score, place, tag,
+  fighters, macro read, objective consequence; objective: who took it,
+  when), tap-again closes, and the fight map is an explicit link inside
+  the panel. Native title tooltips stay for hover, but they never worked
+  on touch — the tap panel is the mobile answer.
+- **A timeline needs its axis.** Added minute ticks + labels (5m steps,
+  10m past 50-minute games) and an end-of-game label.
+- **Global `img { display:block }` bites any innerHTML-composed icon row**
+  — the panel's hero icons stacked vertically until scoped back to
+  inline-block. Same trap as any new component on this page.
+- Verified in real Chromium (Playwright against the committed postgame
+  data): tap opens/toggles the panel with zero scroll, objective dots
+  select independently, the map link still opens the deep dive with the
+  same fight lit, keyboard Enter/Space works on the marks.

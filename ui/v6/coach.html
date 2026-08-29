@@ -211,6 +211,22 @@
   .tlmark { cursor:pointer; transition:filter .12s; }
   .tlmark:hover { filter:brightness(1.3) saturate(1.2); }
   .tlmark.sel { box-shadow:0 0 0 2px var(--gold), 0 0 9px 1px rgba(240,180,41,.65) !important; }
+  /* strip marks get an invisible enlarged hit area (the dots are small on touch) */
+  .tlmark::after, .tlobj::after { content:""; position:absolute; inset:-9px; border-radius:50%; }
+  .tlobj { cursor:pointer; transition:filter .12s; }
+  .tlobj:hover { filter:brightness(1.35); }
+  .tlobj.sel > div { box-shadow:0 0 0 2px var(--gold); }
+  .tl-tick { position:absolute; top:26px; height:16px; width:1px; background:var(--border); opacity:.7; }
+  .tl-ticklbl { position:absolute; top:48px; transform:translateX(-50%); font-size:.6rem; color:var(--text-2); font-variant-numeric:tabular-nums; }
+  /* the strip's key + tap-to-open breakdown panel (replaces the crammed eyebrow key) */
+  .tlkey { display:flex; flex-wrap:wrap; gap:.3rem .75rem; margin-top:.55rem; font-size:.68rem; color:var(--text-2); border-top:1px dashed var(--border); padding-top:.5rem; }
+  .tlkey .tk { display:inline-flex; align-items:center; gap:.32rem; white-space:nowrap; }
+  .tlkey i { display:inline-block; flex:none; border-radius:50%; }
+  .tlkey .tkc { width:11px; height:11px; }
+  .tlkey .tkc.ring { width:9px; height:9px; background:var(--bg-3); box-shadow:0 0 0 2px var(--gold); margin:0 2px; }
+  .tlkey .tko { width:8px; height:8px; }
+  .tl-detail { margin-top:.55rem; font-size:.8rem; line-height:1.5; color:var(--text-1); background:var(--bg-2); border:1px solid var(--gold); border-radius:8px; padding:.5rem .65rem; }
+  .tlfighters a, .tlfighters img { display:inline-block; }
   .fm-mark { fill:none; stroke:transparent; stroke-width:2.4; stroke-dasharray:5 4; transition:stroke .15s; }
   .fm-mark.on { stroke:var(--gold); animation:fmants .7s linear infinite; }
   .fm-halo { fill:none; stroke:var(--gold); stroke-width:1.4; opacity:0; transform-box:fill-box; transform-origin:center; }
@@ -559,6 +575,24 @@ function focusFight(n) {
   const target = document.getElementById('fightmap') || panel;
   if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
+// Tap a strip mark (fight circle or objective dot): break it down in the panel
+// right under the strip — no scroll-jump. Tapping the same mark again closes it;
+// the panel's own link is the (explicit) way into the fight map.
+function tlSelect(kind, n) {
+  const el = document.getElementById((kind === 'o' ? 'tlobj-' : 'tlmark-') + n);
+  const panel = document.getElementById('tldetail');
+  const already = el && el.classList.contains('sel');
+  document.querySelectorAll('.tlmark.sel, .tlobj.sel').forEach((e) => e.classList.remove('sel'));
+  if (!el || !panel) return;
+  if (already) { panel.hidden = true; return; }
+  el.classList.add('sel');
+  const src = document.querySelector(`#tldetails [data-${kind === 'o' ? 'o' : 'i'}="${n}"]`);
+  if (src) { panel.innerHTML = src.innerHTML; panel.hidden = false; }
+}
+// strip marks are divs — make Enter/Space activate them like buttons
+document.addEventListener('keydown', (e) => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.closest && e.target.closest('.tlmark, .tlobj')) { e.preventDefault(); e.target.click(); }
+});
 function pgReview(f) {
   const us = f.players.filter((p) => p.us);
   const ourOf = (role) => f.players.find((p) => p.us && p.role === role);
@@ -596,6 +630,7 @@ function pgReview(f) {
     .sort((a, b) => a.startMin - b.startMin);
   const rword = (r) => r === 'won' ? '<b style="color:var(--green)">WON</b>' : r === 'lost' ? '<b style="color:var(--red)">LOST</b>' : '<b style="color:var(--text-2)">EVEN</b>';
   const dcs = (f.fights && f.fights.deathCosts) || [];
+  const scrub = (t) => String(t).replace(/\u{1F3AE} private \((\w+)\)/gu, 'our $1');
   const momentRow = (sk) => {
     const idx = sks.indexOf(sk);
     const costAll = dcs.filter((d) => d.min * 60 >= sk.startSec - 5 && d.min * 60 <= sk.endSec + 45)
@@ -603,7 +638,6 @@ function pgReview(f) {
     const costs = costAll.length > 2 ? [...costAll.slice(0, 2), `+${costAll.length - 2} more priced deaths in this fight`] : costAll;
     const after = (f.timeline ? f.timeline.majors : []).filter((m) => m.minute >= sk.startMin - 0.3 && m.minute <= sk.startMin + 2.5 && /FANG|PRIME|ORB|CORE/i.test(m.type))
       .map((m) => `${m.side === 'us' ? 'we took' : 'they took'} ${esc(m.type.replace(/_/g, ' ').toLowerCase())} (${m.minute}m)`);
-    const scrub = (t) => String(t).replace(/\u{1F3AE} private \((\w+)\)/gu, 'our $1');
     const why = (sk.macro && (sk.macro.notes || []).length) ? sk.macro.notes.map((n) => esc(scrub(n))).join(' ') : '';
     const numLine = sk.macro && sk.macro.ourAlive != null && sk.macro.ourAlive !== sk.macro.theirAlive ? `${sk.macro.ourAlive}v${sk.macro.theirAlive} at the engage. ` : '';
     return `<div class="mo">
@@ -633,20 +667,59 @@ function pgReview(f) {
     if (t.length) tiles = card(`${eyebrow('The numbers that decided it', '')}<div class="tiles">${t.map((x) => `<div class="tile ${x.mood}"><div class="n">${x.n}${x.vs != null ? ` <span class="vs">v ${x.vs}</span>` : ''}</div><div class="lbl">${esc(x.lbl)}</div><div class="read">${esc(x.read)}</div></div>`).join('')}</div>`);
   }
 
-  // ── The game in one strip (fights + majors; key moments ringed) ──
+  // ── The game in one strip: fights on the line, objectives above, a labeled
+  // minute axis, a real key, and a tap-to-open breakdown panel IN PLACE (the
+  // fight-map jump is now an explicit link inside the panel, not the tap). ──
   const tlDur = f.durationMin || 40;
   const xOf = (min) => Math.min(96, Math.max(2, (min / tlDur) * 100));
   const tlMajors = (f.timeline ? f.timeline.majors : []).filter((m) => /FANG|PRIME|ORB/i.test(m.type));
   const objColor = (t) => /FANG/i.test(t) ? '#f0820f' : /ORB|PRIME/i.test(t) ? '#a855f7' : 'var(--text-2)';
+  const objName = (t) => String(t).replace(/_/g, ' ').toLowerCase();
   const skCol = (r) => r === 'won' ? 'var(--green)' : r === 'lost' ? 'var(--red)' : 'var(--text-2)';
   const keySet = new Set(keyMoments);
+  const tickStep = tlDur > 50 ? 10 : 5;
+  let tlTicks = '';
+  for (let t = 0; t <= tlDur; t += tickStep) tlTicks += `<div class="tl-tick" style="left:${xOf(t)}%"></div><div class="tl-ticklbl" style="left:${xOf(t)}%">${t === 0 ? '0m' : t}</div>`;
+  if (tlDur % tickStep > 2) tlTicks += `<div class="tl-tick" style="left:${xOf(tlDur)}%"></div><div class="tl-ticklbl" style="left:${xOf(tlDur)}%">${tlDur}m</div>`;
+  const tlObjMarks = tlMajors.map((m, j) => { const x = xOf(m.minute); const mine = m.side === 'us'; return `<div id="tlobj-${j}" class="tlobj" role="button" tabindex="0" onclick="tlSelect('o',${j})" title="${m.minute}m ${esc(objName(m.type))} (${mine ? 'us' : 'them'}) · tap for detail" style="position:absolute;left:${x}%;top:0;transform:translateX(-50%);padding:3px"><div style="width:9px;height:9px;border-radius:50%;background:${objColor(m.type)};border:1.5px solid ${mine ? 'var(--green)' : 'var(--red)'}"></div></div>`; }).join('');
+  const tlFightMarks = sks.map((sk, i) => { const x = xOf(sk.startMin); const d = Math.min(22, 9 + sk.size * 2); const ring = keySet.has(sk) ? ';box-shadow:0 0 0 2px var(--gold)' : ''; return `<div id="tlmark-${i}" class="tlmark" role="button" tabindex="0" onclick="tlSelect('f',${i})" title="${sk.startMin}m ${sk.kind}: ${sk.result} ${sk.ourKills}-${sk.theirKills} · ${esc(sk.place)}${sk.tag ? ' · ' + sk.tag.replace('-', ' ') : ''} · tap for detail" style="position:absolute;left:${x}%;top:${34 - d / 2}px;transform:translateX(-50%);width:${d}px;height:${d}px;border-radius:50%;background:${skCol(sk.result)}${ring};display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">${sk.net > 0 ? '+' + sk.net : sk.net < 0 ? sk.net : ''}</div>`; }).join('');
+  // the hidden per-mark breakdowns tlSelect() swaps into the panel under the strip
+  const tlFightSums = sks.map((sk, i) => {
+    const why = (sk.macro && (sk.macro.notes || []).length) ? sk.macro.notes.map((n) => esc(scrub(n))).join(' ') : '';
+    const numLine = sk.macro && sk.macro.ourAlive != null && sk.macro.ourAlive !== sk.macro.theirAlive ? `<b>${sk.macro.ourAlive}v${sk.macro.theirAlive}</b> at the engage. ` : '';
+    const after = (f.timeline ? f.timeline.majors : []).filter((m) => m.minute >= sk.startMin - 0.3 && m.minute <= sk.startMin + 2.5 && /FANG|PRIME|ORB|CORE/i.test(m.type))
+      .map((m) => `${m.side === 'us' ? 'we took' : 'they took'} ${esc(objName(m.type))} (${m.minute}m)`);
+    return `<div data-i="${i}">
+      <div style="font-weight:700;color:var(--text-0)">${sk.startMin}m · ${esc(sk.kind)} <span style="color:${skCol(sk.result)}">${sk.result} ${sk.ourKills}–${sk.theirKills}</span><span style="font-weight:400;color:var(--text-2)"> · ${esc(sk.place)}</span>${sk.tag ? `<span class="tagchip ${sk.tag === 'game-defining' ? 'def' : 'bad'}">${sk.tag.replace('-', ' ')}</span>` : ''}</div>
+      <div class="tlfighters" style="margin:.25rem 0">${sk.ourHeroes.map((h) => hIcon(h, 17)).join('')} <span style="color:var(--text-2);margin:0 .2rem;font-size:.72rem">vs</span> ${sk.theirHeroes.map((h) => hIcon(h, 17)).join('')}</div>
+      ${why || numLine ? `<div>${numLine}${why}</div>` : ''}
+      ${after.length ? `<div style="color:var(--gold);margin-top:.2rem">→ ${after.join('; ')}</div>` : ''}
+      <div style="margin-top:.3rem"><a href="#" onclick="focusFight(${i});return false" style="font-size:.72rem">full breakdown + where it happened — fight map ↓</a></div>
+    </div>`;
+  }).join('');
+  const tlObjSums = tlMajors.map((m, j) => `<div data-o="${j}">
+      <div style="font-weight:700;color:var(--text-0)">${m.minute}m · ${esc(objName(m.type))} <span style="color:${m.side === 'us' ? 'var(--green)' : 'var(--red)'}">taken by ${m.side === 'us' ? 'us' : 'them'}</span></div>
+      <div style="color:var(--text-2);font-size:.74rem;margin-top:.15rem">A major objective from the real event stream — the nearest fight circles on the strip are usually why it fell (or fell free).</div>
+    </div>`).join('');
+  const tlKey = `<div class="tlkey">
+      <span class="tk"><i class="tkc" style="background:var(--green)"></i> won fight</span>
+      <span class="tk"><i class="tkc" style="background:var(--red)"></i> lost fight</span>
+      <span class="tk"><i class="tkc" style="background:var(--text-2)"></i> even trade</span>
+      <span class="tk"><i class="tkc" style="width:7px;height:7px;background:var(--text-2)"></i><i class="tkc" style="width:13px;height:13px;background:var(--text-2)"></i> bigger = more net kills (±n)</span>
+      <span class="tk"><i class="tkc ring"></i> one of “the moments” above</span>
+      <span class="tk"><i class="tko" style="background:#f0820f"></i> Fangtooth</span>
+      <span class="tk"><i class="tko" style="background:#a855f7"></i> Prime / Orb</span>
+      <span class="tk">ring: <i class="tko" style="background:var(--bg-3);border:1.5px solid var(--green)"></i> we took it · <i class="tko" style="background:var(--bg-3);border:1.5px solid var(--red)"></i> they did</span>
+    </div>`;
   const timeline = (sks.length || tlMajors.length) ? card(`
-    ${eyebrow('The game in one strip', `0–${tlDur}m · ● above = Fangtooth/Prime (ring = who took it) · circles = fights (size = net kills) · gold ring = the moments above · tap any fight to break it down`)}
-    <div style="position:relative;height:58px;margin:.1rem 0">
+    ${eyebrow('The game in one strip', `fights sit on the line, objectives float above it · tap any mark and it breaks down right here · key below`)}
+    <div style="position:relative;height:68px;margin:.1rem 0 0">
       <div style="position:absolute;top:34px;left:0;right:0;height:2px;background:var(--border)"></div>
-      ${tlMajors.map((m) => { const x = xOf(m.minute); const mine = m.side === 'us'; return `<div title="${m.minute}m ${esc(m.type.replace(/_/g, ' '))} (${mine ? 'us' : 'them'})" style="position:absolute;left:${x}%;top:2px;transform:translateX(-50%)"><div style="width:9px;height:9px;border-radius:50%;background:${objColor(m.type)};border:1.5px solid ${mine ? 'var(--green)' : 'var(--red)'}"></div></div>`; }).join('')}
-      ${sks.map((sk, i) => { const x = xOf(sk.startMin); const d = Math.min(22, 9 + sk.size * 2); const ring = keySet.has(sk) ? ';box-shadow:0 0 0 2px var(--gold)' : ''; return `<div id="tlmark-${i}" class="tlmark" onclick="focusFight(${i})" title="${sk.startMin}m ${sk.kind}: ${sk.result} ${sk.ourKills}-${sk.theirKills} · ${esc(sk.place)}${sk.tag ? ' · ' + sk.tag.replace('-', ' ') : ''}" style="position:absolute;left:${x}%;top:${34 - d / 2}px;transform:translateX(-50%);width:${d}px;height:${d}px;border-radius:50%;background:${skCol(sk.result)}${ring};display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">${sk.net > 0 ? '+' + sk.net : sk.net < 0 ? sk.net : ''}</div>`; }).join('')}
-    </div>`) : '';
+      ${tlTicks}${tlObjMarks}${tlFightMarks}
+    </div>
+    <div id="tldetail" class="tl-detail" hidden></div>
+    ${tlKey}
+    <div id="tldetails" hidden>${tlFightSums}${tlObjSums}</div>`) : '';
 
   // ── The interrogation: the causation questions, answered from the film ──
   let interrogation = '';
