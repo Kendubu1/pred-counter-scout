@@ -319,6 +319,16 @@ shipped through plan -> author -> verify -> independent judge -> gate:
   re-judging settled copy; `herocoach:*` and `coachreport:*` scripts run each
   loop and its gate. See docs/agent-loops.md.
 
+CARRIED FORWARD (found in the 2026-08-29 review, after merging the 1.16 refresh):
+judge rewrites are applied to the aggregate only, so re-running an ingest
+reverts them. Fixed for the hero coach lines via a committed sidecar
+(data/aggregates/hero-coach-fixes.json, re-applied and re-verified on every
+ingest); build-reasoning.json and the coach reports still have the hazard.
+Also: a copy pass should be re-checked for CURRENCY after every field refresh,
+not just for grounding at authoring time — the 1.16 refresh left 16 lanes
+naming items their build had dropped and 3 warning about opponents they now
+beat, all with perfectly valid numbers. test/hero-coach.test.ts now gates both.
+
 STILL OPEN (not this item's scope): data/aggregates/item-reviews.json holds 0
 lines — a responses-less `copy:ingest` wiped 182 committed item explanations on
 2026-08-07 and the hero page's item "why" lines have been blank since. The new

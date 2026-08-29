@@ -3023,3 +3023,46 @@ what "converged" cost and what only the judge could see.
   (`rot10VsSquishy`) to plain words BEFORE the author sees them. Engine
   vocabulary handed to a writer comes back out as jargon on the page — the
   cheapest place to fix C2-style jargon is the prompt, not the copy.
+
+## 2026-08-29 (review pass) — what a data refresh does to copy that already passed
+
+Asked to review the branch before merging it, the review found more than the
+build did. Merging main's live 1.16 refresh into copy authored against the
+previous artifacts broke it in three distinct ways, only one of which any
+existing gate could see.
+
+- **Three drift classes, one gate.** Of 166 lines authored and judged to 100%
+  agreement, the refresh left: **2** citing a number the new facts don't
+  contain (the numeric verifier caught these), **16** naming items the
+  refreshed build no longer contains (every number still verified — invisible),
+  and **3** warning about an opponent whose checkpoints had flipped to
+  favourable (no numbers in the sentence at all — invisible to everything).
+  Plus 2 lanes with no copy, for a hero that didn't exist last patch.
+  **A ground-check on numbers is a check that the copy was true once, not that
+  it is true now.** The harness now checks item currency and verdict currency
+  as well; both fail on the pre-repair data. Main independently added the same
+  item-currency check for build-reasoning in the same refresh — the same hole,
+  found twice on two surfaces, which is the argument for making it a habit:
+  every generated sentence should be re-derivable from its source, and a test
+  should say so.
+- **The judge's fixes were not durable.** `copy-critique.ts` applies rewrites to
+  the AGGREGATE. Re-running the ingest rebuilds that aggregate from the
+  author's raw responses, so every judged fix silently reverted — including the
+  round-1 catch that had Countess's Feast (a leap onto an enemy) coached as an
+  escape. Three rounds of judging, undone by one re-run, with no test failing.
+  Applied fixes now live in a committed sidecar (`hero-coach-fixes.json`) and
+  are re-applied on every ingest, each re-verified against current facts.
+  **If a correction lives only in the output, the next regeneration is a
+  rollback.** The same hazard still exists for build-reasoning and the coach
+  reports — worth closing next.
+- **Refreshed player data must invalidate coaching, not inherit it.** Main's
+  refresh regenerated all six coach reports and dropped `coachReasoning`; the
+  underlying numbers moved (1195 career games, not 1169). Pasting the judged
+  July copy onto August stats would have kept sentences whose numbers no longer
+  existed. Discarded and re-authored. Unlike hero copy, coaching is bound to a
+  player's current record, so losing it on refresh is correct behaviour.
+- **Two measures of one quantity, unlabelled, read as a contradiction.** The
+  coach prompt printed raw winrates in ROLE RECORDS and sample-adjusted ones in
+  the ledger receipts, so jungle appeared as both 53.4% and 51.3%. Both pass the
+  verifier (both strings are present), and the author correctly refused to lean
+  on either. Label the measure wherever two of them meet.
