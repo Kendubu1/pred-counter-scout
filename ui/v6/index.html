@@ -813,7 +813,7 @@ async function renderLaneDetail() {
   box.innerHTML = `
     <div class="lanepanel">
       <h2>${LANE_LABELS[role]} · lane room</h2>
-      <div class="lp-sub">${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks${metaWindowNote()}</div>
+      <div class="lp-sub">${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, ${esc(META.scope || 'all ranks')}${metaWindowNote()}</div>
       <div class="lmode">
         <button data-m="first" class="${laneMode === 'first' ? 'active' : ''}"><span data-bic="counter-pick" data-bic-size="15"></span> picking first</button>
         <button data-m="counter" class="${laneMode === 'counter' ? 'active' : ''}"><span data-bic="matchup" data-bic-size="15"></span> countering their pick</button>
@@ -898,7 +898,7 @@ function renderMetaboard() {
   $('#metaboard').innerHTML = `
     <div class="mb-head">
       <h2>The meta board</h2>
-      <span class="mb-sub">each lane's strongest picks by <b>win rate</b> · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, all ranks${metaWindowNote()}</span>
+      <span class="mb-sub">each lane's strongest picks by <b>win rate</b> · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, ${esc(META.scope || 'all ranks')}${metaWindowNote()}</span>
     </div>
     <details class="sim-collapse uxlegend" id="uxLegend"><summary>What the win-rate colors &amp; pick tags mean</summary><div class="lp-sub">${LEGEND_HTML}</div></details>
     <div class="lanes">
@@ -1752,7 +1752,10 @@ window.onpopstate = route;
   // window the win rates and lane boards were collected in. The feed runs behind
   // live, so these usually differ — showing one number for both once let the
   // site claim the boards' patch for its kit math.
-  const kitP = INDEX.catalogPatch, boardP = INDEX.patch;
+  // Boards label: prefer the meta board's own measured patch (its lane-stats
+  // source pins the patch it pulled); INDEX.patch is the calibration window and
+  // lags whenever the boards move to a fresher source.
+  const kitP = INDEX.catalogPatch, boardP = (META && META.patch) || INDEX.patch;
   $('#patchPill').textContent = kitP && boardP && !String(boardP).includes(String(kitP))
     ? `kit ${kitP} · boards ${boardP}`
     : `patch ${boardP}${dataDate ? ` · data ${dataDate}` : ''}`;
