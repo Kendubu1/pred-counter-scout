@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coach Review v7</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+  /* Pred Scout v7 coach-review prototype — single-theme (the product's committed
+     dark look); every color painted explicitly so it holds on any host ground. */
+  :root {
+    --bg:#0b0b12; --surface:#14141d; --raised:#1c1c28; --border:#282838;
+    --ink:#ecebf4; --ink-2:#a2a1b8; --ink-3:#77768c;
+    --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.16);
+    --win:#00c48c; --loss:#ff5a5a; --key:#f0b429;
+    --fang:#f0820f; --prime:#a855f7;
+    --disp:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+    --body:"Barlow","Segoe UI",Roboto,Arial,sans-serif;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  @media (prefers-reduced-motion:reduce){ html { scroll-behavior:auto; } }
+  body { background:var(--bg); color:var(--ink); font:16px/1.55 var(--body); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  button { font:inherit; cursor:pointer; color:inherit; background:none; border:none; }
+  .wrap { max-width:860px; margin:0 auto; padding:1.4rem 1.1rem 4rem; }
+  .masthead { display:flex; align-items:baseline; gap:.7rem; flex-wrap:wrap; }
+  .masthead h1 { font-family:var(--disp); font-weight:700; font-size:1.9rem; letter-spacing:.02em; text-transform:uppercase; }
+  .masthead .proto { font-size:.72rem; color:var(--key); border:1px solid var(--key); border-radius:99px; padding:.08rem .55rem; letter-spacing:.08em; text-transform:uppercase; }
+  .masthead .ctx { color:var(--ink-3); font-size:.82rem; margin-left:auto; }
+  /* game switcher */
+  .tabs { display:flex; gap:.5rem; margin:1.1rem 0 0; }
+  .tab { flex:1; max-width:270px; text-align:left; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:.6rem .85rem; }
+  .tab[aria-selected="true"] { border-color:var(--accent); background:var(--accent-soft); }
+  .tab .r { font-family:var(--disp); font-weight:700; font-size:1.05rem; letter-spacing:.04em; }
+  .tab .m { color:var(--ink-3); font-size:.76rem; }
+  section.card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:1.15rem 1.25rem; margin-top:1rem; }
+  .eyebrow { font-family:var(--disp); font-weight:600; font-size:.86rem; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); }
+  .eyebrow .why { font-family:var(--body); font-weight:400; letter-spacing:0; text-transform:none; font-size:.78rem; }
+  /* verdict */
+  .verdict .head { display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; }
+  .pill { font-family:var(--disp); font-weight:700; letter-spacing:.06em; padding:.14rem .6rem; border-radius:8px; font-size:.95rem; }
+  .pill.loss { background:rgba(255,90,90,.16); color:var(--loss); }
+  .pill.win { background:rgba(0,196,140,.16); color:var(--win); }
+  .verdict .meta { color:var(--ink-3); font-size:.82rem; }
+  .verdict h2 { font-family:var(--disp); font-weight:600; font-size:1.6rem; line-height:1.2; margin-top:.65rem; text-wrap:balance; }
+  .shift { margin-top:.7rem; border-left:3px solid var(--key); background:rgba(240,180,41,.07); border-radius:0 8px 8px 0; padding:.5rem .8rem; font-size:.92rem; color:var(--ink-2); }
+  .shift b { color:var(--ink); }
+  /* moments */
+  .moment { display:grid; grid-template-columns:64px 1fr; gap:.9rem; padding:.85rem 0; border-bottom:1px solid var(--border); scroll-margin-top:1rem; }
+  .moment:last-of-type { border-bottom:none; padding-bottom:.2rem; }
+  .moment .t { font-family:var(--disp); font-weight:700; font-size:1.5rem; color:var(--ink); line-height:1; padding-top:.1rem; font-variant-numeric:tabular-nums; }
+  .moment .t small { display:block; font-size:.66rem; font-family:var(--body); font-weight:400; color:var(--ink-3); letter-spacing:.05em; margin-top:.2rem; }
+  .moment h3 { font-size:1rem; font-weight:600; }
+  .moment .facts { color:var(--ink-3); font-size:.78rem; margin-top:.1rem; }
+  .moment .facts b.l { color:var(--loss); } .moment .facts b.w { color:var(--win); }
+  .moment p { color:var(--ink-2); font-size:.9rem; margin-top:.35rem; }
+  .moment .call { margin-top:.45rem; font-size:.9rem; border-left:2px solid var(--accent); padding:.15rem 0 .15rem .6rem; }
+  .moment .call b { color:var(--accent); font-family:var(--disp); font-weight:600; letter-spacing:.08em; text-transform:uppercase; font-size:.8rem; margin-right:.3rem; }
+  .tagchip { font-size:.66rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; border-radius:99px; padding:.05rem .5rem; vertical-align:2px; margin-left:.4rem; }
+  .tagchip.def { color:var(--key); border:1px solid var(--key); }
+  .tagchip.bad { color:var(--loss); border:1px solid var(--loss); }
+  /* scoreboard tiles */
+  .tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:.7rem; }
+  .tile { background:var(--raised); border:1px solid var(--border); border-radius:12px; padding:.75rem .85rem; }
+  .tile .n { font-family:var(--disp); font-weight:700; font-size:1.7rem; line-height:1.1; font-variant-numeric:tabular-nums; }
+  .tile .n .vs { color:var(--ink-3); font-size:1rem; font-weight:500; }
+  .tile .lbl { font-size:.78rem; color:var(--ink-2); margin-top:.15rem; }
+  .tile .read { font-size:.72rem; color:var(--ink-3); margin-top:.3rem; line-height:1.4; }
+  .tile.bad .n { color:var(--loss); } .tile.good .n { color:var(--win); }
+  /* timeline */
+  .tl-note { font-size:.74rem; color:var(--ink-3); margin-top:.4rem; }
+  .tl-note .k { font-variant-numeric:tabular-nums; }
+  /* strength + focus */
+  .strength { border-left:3px solid var(--win); }
+  .strength p, .focus p { color:var(--ink-2); font-size:.94rem; margin-top:.4rem; }
+  .focus { border:1px solid var(--accent); background:linear-gradient(180deg, var(--accent-soft), var(--surface) 65%); }
+  .focus h2 { font-family:var(--disp); font-weight:700; font-size:1.45rem; letter-spacing:.02em; margin-top:.3rem; }
+  /* players */
+  .player { display:grid; grid-template-columns:150px 1fr; gap:.8rem; padding:.65rem 0; border-bottom:1px solid var(--border); font-size:.9rem; }
+  .player:last-of-type { border-bottom:none; }
+  .player .who b { display:block; }
+  .player .who .h { color:var(--ink-3); font-size:.76rem; }
+  .player .who .kda { font-variant-numeric:tabular-nums; color:var(--ink-2); font-size:.78rem; }
+  .rolechip { font-size:.62rem; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-3); border:1px solid var(--border); border-radius:4px; padding:0 .3rem; }
+  .player .line { color:var(--ink-2); }
+  .player .line.none { color:var(--ink-3); font-size:.8rem; }
+  /* deep dive */
+  details.deep { margin-top:1rem; border:1px dashed var(--border); border-radius:12px; padding:.6rem .9rem; color:var(--ink-2); }
+  details.deep summary { cursor:pointer; font-family:var(--disp); font-weight:600; letter-spacing:.08em; text-transform:uppercase; font-size:.85rem; color:var(--ink-3); }
+  details.deep .fl { display:grid; grid-template-columns:52px 44px 1fr; gap:.5rem; padding:.28rem 0; border-bottom:1px solid var(--border); font-size:.8rem; color:var(--ink-2); font-variant-numeric:tabular-nums; }
+  details.deep .fl:last-of-type { border-bottom:none; }
+  details.deep .fl .r { font-weight:600; }
+  details.deep .fl .note { color:var(--ink-3); font-size:.74rem; }
+  details.deep p.team { margin:.5rem 0 .7rem; font-size:.88rem; line-height:1.6; }
+  .lanegrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.45rem; margin:.5rem 0 .3rem; }
+  .lanegrid .lg { background:var(--raised); border:1px solid var(--border); border-radius:8px; padding:.4rem .55rem; font-size:.76rem; }
+  .lanegrid .lg .rr { text-transform:uppercase; letter-spacing:.05em; font-size:.62rem; color:var(--ink-3); }
+  .lanegrid .lg .e-f { color:var(--win); } .lanegrid .lg .e-u { color:var(--loss); } .lanegrid .lg .e-e { color:var(--ink-3); }
+  footer { margin-top:2.2rem; color:var(--ink-3); font-size:.76rem; line-height:1.7; }
+  @media (max-width:560px){
+    .moment { grid-template-columns:48px 1fr; }
+    .player { grid-template-columns:1fr; gap:.2rem; }
+    .masthead .ctx { margin-left:0; width:100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="masthead">
+    <h1>Coach Review</h1><span class="proto">v7 prototype</span>
+    <span class="ctx">Last two ranked games · Aug 28 · data: committed match facts, zero-API</span>
+  </div>
+
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <div id="game"></div>
+
+  <section class="card focus" id="squadfocus">
+    <span class="eyebrow">The pattern across both games</span>
+    <h2 id="focus-h"></h2>
+    <p id="focus-p"></p>
+  </section>
+
+  <footer>
+    <b>What this prototype trims, and where it went:</b> the fight map, kit-synergy,
+    comp and counter-build cards, the all-fights chip row and per-fight kill ladders
+    now live behind “The full story” — the review leads with three moments, four
+    numbers, one strength, one focus (the coaching-methodology basis,
+    docs/coaching-methodology.md). Every number on this page comes from the two
+    committed facts files; fight tags, places and macro reads are heuristics (THEORY).
+  </footer>
+</div>
+
+<script>
+const GAMES = {"a": {"id": "2813ba73", "result": "loss", "dur": 25, "date": "2026-08-28", "stack": 3, "headline": "Four of five lanes read favored and we still won zero fights — their offlane Murdock went 7/2, they cashed four of their five wins, and towers finished 0-6.", "team": "This was a discipline loss, not a draft loss: carry, mid, jungle and support all read favored, but every fight from 14.6 on started with a winning lane absent — the film flags it at 14.6, 16.9 and 21.3 — and we ended with two completed items apiece against their three and four. Riktor's pull-silence-suppress chain and a free-farming Murdock (27k physical, with the film flagging three of us for no armor) punished every scattered engage. Zero won fights in 25 minutes is the number to sit with.", "shift": "The 19-minute teamfight at their outer tower, lost 2-4 with all five of us present, started the collapse the file prices out — two towers by 20.1, Fangtooth at 22.6, both inner towers at 24.5.", "towers": {"us": 0, "them": 6}, "objDmg": {"us": 8526, "them": 28992}, "conv": {"us": [0, 0], "them": [4, 5]}, "caught": {"us": 4, "them": 1}, "deathCosts": 14, "majors": [{"min": 11, "type": "FANGTOOTH", "side": "us"}, {"min": 18, "type": "FANGTOOTH", "side": "them"}, {"min": 22, "type": "GENESIS_CORE", "side": "them"}, {"min": 23, "type": "FANGTOOTH", "side": "them"}], "fights": [{"min": 2.3, "kind": "skirmish", "result": "even", "us": 1, "them": 1, "net": 0, "place": "our half", "tag": null, "sig": 2.2, "notes": []}, {"min": 8, "kind": "skirmish", "result": "even", "us": 1, "them": 1, "net": 0, "place": "deep in our jungle", "tag": null, "sig": 2.6, "notes": []}, {"min": 10, "kind": "skirmish", "result": "even", "us": 1, "them": 1, "net": 0, "place": "deep in their half", "tag": null, "sig": 2.8, "notes": []}, {"min": 14.6, "kind": "skirmish", "result": "lost", "us": 0, "them": 2, "net": -2, "place": "their half", "tag": "bad-trade", "sig": 6.2, "notes": ["our support was alive and ahead in lane — a shove-and-rotate there flips a 0-2 into a numbers advantage.", "our jungle was alive and never joined — get them to the fight and the count changes."]}, {"min": 16.9, "kind": "skirmish", "result": "lost", "us": 1, "them": 2, "net": -1, "place": "their Fangtooth", "tag": null, "sig": 8.9, "notes": ["our midlane was alive and ahead in lane — a shove-and-rotate there flips a 1-2 into a numbers advantage.", "Willy Guggenheim (carry) was alive and ahead in lane — a shove-and-rotate there flips a 1-2 into a numbers advantage."]}, {"min": 19, "kind": "teamfight", "result": "lost", "us": 2, "them": 4, "net": -2, "place": "their Outer Tower", "tag": "game-defining", "sig": 13.6, "notes": []}, {"min": 21.3, "kind": "skirmish", "result": "lost", "us": 0, "them": 3, "net": -3, "place": "their Outer Tower", "tag": "game-defining", "sig": 12.2, "notes": ["our midlane was alive and ahead in lane — a shove-and-rotate there flips a 0-3 into a numbers advantage.", "Xeebs (offlane) was alive but losing lane and pinned — with them stuck across the map, this was the wrong fight to start."]}, {"min": 23.4, "kind": "teamfight", "result": "lost", "us": 1, "them": 4, "net": -3, "place": "their Inner Tower", "tag": "game-defining", "sig": 14.4, "notes": []}], "players": [{"pid": "7682f9ea-ae1d-42fe-adf4-89bf55b76e97", "name": "teammate", "hero": "Countess", "role": "midlane", "k": 0, "d": 3, "a": 0, "line": null}, {"pid": "b449674d-1061-4984-b85e-5acf60f0d620", "name": "teammate", "hero": "Kwang", "role": "support", "k": 2, "d": 6, "a": 2, "line": null}, {"pid": "a0c393cc-1437-4bdc-8168-64676ce2166c", "name": "Cuban Noobster", "hero": "Scarlett", "role": "jungle", "k": 2, "d": 4, "a": 1, "line": "Cuban Noobster won the jungle read and got real picks — Renna at 17.1, Riktor at 19.4 — but every one of his four deaths carried a price: the 10.2 fall to Kallari preceded the first outer tower, and the 17.1, 21.5 and 23.5 deaths each preceded a Fangtooth or the inner towers. Two completed items by 19 minutes says the farming never kept up with the fighting."}, {"pid": "10edbf65-457d-48d0-9151-9df5b4fcb40a", "name": "Willy Guggenheim", "hero": "Drongo", "role": "carry", "k": 1, "d": 4, "a": 3, "line": "Willy Guggenheim's carry lane was read 'ours all game' and he did take down Murdock at 20.4, but 1/4 against a 7/1 Sparrow with two items finished is the real line — and at 16.9 he was ahead in lane while a 1-2 was lost at their Fangtooth. Drongo's kite-and-bleed game needed the third core item (Tainted Rounds, the missing meta core) and bodies in front; neither arrived."}, {"pid": "a412baf3-dd17-4f89-8ecf-9d0704f3a79e", "name": "Xeebs", "hero": "Crunch", "role": "offlane", "k": 3, "d": 5, "a": 0, "line": "Xeebs opened with first blood on Kallari at 2.3, then gave the offlane away in pieces — Murdock killed Crunch five times, three of them solo catches at 6.9, 13.1 and 18. Murdock has almost no escape once someone closes past the trap; trading poke-range deaths instead is playing his game, and no armor into his 27k physical made every exchange worse."}], "lanes": [{"role": "carry", "us": "Drongo", "them": "Sparrow", "edge": "favored"}, {"role": "midlane", "us": "Countess", "them": "Renna", "edge": "favored"}, {"role": "offlane", "us": "Crunch", "them": "Murdock", "edge": "unfavored"}, {"role": "jungle", "us": "Scarlett", "them": "Kallari", "edge": "favored"}, {"role": "support", "us": "Kwang", "them": "Riktor", "edge": "favored"}], "tag": "zero won fights", "moments": [{"min": 14.6, "title": "The habit starts: a 0–2 in their half with two winners watching", "tag": "bad-trade", "result": "lost", "score": "0–2", "place": "their half", "why": "Support and jungle were both alive — the file flags the support ahead in lane and the jungler never joining. Two bodies given for nothing, with no objective up.", "call": "What was the win condition? There wasn't one. With nothing up and two teammates absent, reset — take farm and vision, and fight when five walk in together."}, {"min": 16.9, "title": "Fangtooth contested short-handed — and paid at 17.6", "tag": null, "result": "lost", "score": "1–2", "place": "their Fangtooth", "why": "Mid and carry were both ahead in lane and absent from the fight. Kwang's death at 16.9 and Scarlett's at 17.1 directly preceded their Fangtooth at 17.6.", "call": "A Fangtooth fight is a five-man date. The ahead lanes shove and arrive first — or we don't contest, and take something else instead."}, {"min": 19, "title": "The collapse: five present, two items apiece", "tag": "game-defining", "result": "lost", "score": "2–4", "place": "their Outer Tower", "why": "All five were there and it still went 2–4 — the team read prices us at two completed items apiece against their three and four. Drongo's 19-minute death preceded their outer tower at 19.6 and the inner at 20.1.", "call": "This was an items fight, not a mechanics fight. That far down on completions, the win condition was to not take it at their tower — farm to the next spike first."}], "tiles": [{"n": "0/0", "vs": "4/5", "lbl": "won fights cashed — us v them", "read": "We never won a fight; they spent four of their five wins on a prize.", "mood": "bad"}, {"n": "0", "vs": "6", "lbl": "towers", "read": "Structures track winning closer than any kill line — this was the real scoreboard.", "mood": "bad"}, {"n": "4", "vs": "1", "lbl": "caught out alone", "read": "Deaths outside any fight — three were Crunch to Murdock (6.9, 13.1, 18).", "mood": "bad"}, {"n": "14", "vs": null, "lbl": "deaths that cost a prize", "read": "Deaths that directly preceded an enemy tower or objective.", "mood": "bad"}], "strength": "Xeebs drew first blood at 2.3, and Cuban Noobster won the jungle read — real picks on Renna at 17.1 and Riktor at 19.4. The early game was ours to shape, and four favored lanes say the draft was too."}, "b": {"id": "c357e754", "result": "loss", "dur": 38, "date": "2026-08-28", "stack": 3, "headline": "They put 126266 damage into objectives to our 18178 — and they cashed seven of ten won fights while our seven wins cashed once.", "team": "The kill columns say close — Eden had 17, Scarlett 9 — but the map says rout: 11 objective takes to 35 and towers 3-14, because our fight wins were spent nowhere while Khaimera ate the map. Both early trades at 4.4 and 18 were the same shape — we win the bodies, they take Fangtooth across the map — and the death ledger runs twenty-six lines, with Steel's eleven falls alone priced at Fangtooths, Mini Prime, towers and inhibitors. With the carry and offlane pinned in losing lanes, the winning mid and jungle had to rotate, and the file flags them absent at 3.6, 13.9, 16.5, 19.1, 20.5 and 36.3.", "shift": "The 13.9-to-21 stretch decided it — four lost fights around their Fangtooth pit, priced by the file at two Fangtooths, Mini Prime, four towers and the first inhibitor.", "towers": {"us": 3, "them": 14}, "objDmg": {"us": 18178, "them": 126266}, "conv": {"us": [1, 7], "them": [7, 10]}, "caught": {"us": 1, "them": 5}, "deathCosts": 26, "majors": [{"min": 6, "type": "FANGTOOTH", "side": "them"}, {"min": 14, "type": "FANGTOOTH", "side": "them"}, {"min": 16, "type": "GENESIS_CORE", "side": "them"}, {"min": 17, "type": "MINI_PRIME", "side": "them"}, {"min": 20, "type": "FANGTOOTH", "side": "them"}, {"min": 23, "type": "GENESIS_CORE", "side": "them"}, {"min": 27, "type": "ORB_PRIME", "side": "them"}, {"min": 27, "type": "PRIMAL_FANGTOOTH", "side": "them"}, {"min": 30, "type": "GENESIS_CORE", "side": "us"}, {"min": 33, "type": "PRIMAL_FANGTOOTH", "side": "them"}, {"min": 34, "type": "ORB_PRIME", "side": "them"}, {"min": 37, "type": "GENESIS_CORE", "side": "them"}], "fights": [{"min": 3.6, "kind": "teamfight", "result": "lost", "us": 1, "them": 3, "net": -2, "place": "their River", "tag": "bad-trade", "sig": 7.2, "notes": ["our midlane was alive and ahead in lane — a shove-and-rotate there flips a 1-3 into a numbers advantage.", "Willy Guggenheim (support) was alive and ahead in lane — a shove-and-rotate there flips a 1-3 into a numbers advantage."]}, {"min": 4.4, "kind": "skirmish", "result": "won", "us": 3, "them": 0, "net": 3, "place": "our River", "tag": null, "sig": 7.7, "notes": ["They traded the fight for Fangtooth across the map — we won bodies but gave the objective."]}, {"min": 7.6, "kind": "skirmish", "result": "even", "us": 1, "them": 1, "net": 0, "place": "our River", "tag": null, "sig": 2.4, "notes": []}, {"min": 8.7, "kind": "skirmish", "result": "lost", "us": 0, "them": 2, "net": -2, "place": "their River", "tag": "bad-trade", "sig": 5.5, "notes": ["our jungle was alive but losing lane and pinned — with them stuck across the map, this was the wrong fight to start.", "our midlane was alive and never joined — get them to the fight and the count changes."]}, {"min": 9.7, "kind": "skirmish", "result": "even", "us": 1, "them": 1, "net": 0, "place": "their River", "tag": null, "sig": 2.5, "notes": []}, {"min": 10.2, "kind": "skirmish", "result": "even", "us": 1, "them": 1, "net": 0, "place": "their River", "tag": null, "sig": 2.6, "notes": []}, {"min": 11.2, "kind": "skirmish", "result": "won", "us": 2, "them": 0, "net": 2, "place": "their River", "tag": null, "sig": 5.6, "notes": []}, {"min": 12.7, "kind": "skirmish", "result": "lost", "us": 1, "them": 2, "net": -1, "place": "our River", "tag": null, "sig": 5.2, "notes": ["solusLupus (offlane) was alive but losing lane and pinned — with them stuck across the map, this was the wrong fight to start.", "Xeebs (carry) was alive but losing lane and pinned — with them stuck across the map, this was the wrong fight to start."]}, {"min": 13.9, "kind": "skirmish", "result": "lost", "us": 0, "them": 3, "net": -3, "place": "their Fangtooth", "tag": "game-defining", "sig": 11.2, "notes": ["our midlane was alive and never joined — get them to the fight and the count changes.", "solusLupus (offlane) was alive but losing lane and pinned — with them stuck across the map, this was the wrong fight to start."]}, {"min": 16.5, "kind": "skirmish", "result": "lost", "us": 1, "them": 2, "net": -1, "place": "their Inner Tower", "tag": null, "sig": 8.4, "notes": ["our jungle was alive and never joined — get them to the fight and the count changes.", "our midlane was alive and never joined — get them to the fight and the count changes."]}, {"min": 18, "kind": "skirmish", "result": "won", "us": 2, "them": 1, "net": 1, "place": "their Mini Prime", "tag": null, "sig": 8.5, "notes": ["They traded the fight for Fangtooth across the map — we won bodies but gave the objective."]}, {"min": 19.1, "kind": "teamfight", "result": "lost", "us": 1, "them": 3, "net": -2, "place": "their Inner Tower", "tag": "game-defining", "sig": 11, "notes": ["our midlane was alive and ahead in lane — a shove-and-rotate there flips a 1-3 into a numbers advantage.", "solusLupus (offlane) was alive but losing lane and pinned — with them stuck across the map, this was the wrong fight to start."]}, {"min": 20.5, "kind": "skirmish", "result": "lost", "us": 0, "them": 3, "net": -3, "place": "their Fangtooth", "tag": "game-defining", "sig": 11.6, "notes": ["our jungle was alive and ahead in lane — a shove-and-rotate there flips a 0-3 into a numbers advantage.", "solusLupus (offlane) was alive but losing lane and pinned — with them stuck across the map, this was the wrong fight to start."]}, {"min": 22.2, "kind": "skirmish", "result": "lost", "us": 1, "them": 2, "net": -1, "place": "their Inner Tower", "tag": null, "sig": 8.7, "notes": ["our midlane was alive and ahead in lane — a shove-and-rotate there flips a 1-2 into a numbers advantage.", "solusLupus (offlane) was alive but losing lane and pinned — with them stuck across the map, this was the wrong fight to start."]}, {"min": 23.4, "kind": "teamfight", "result": "lost", "us": 2, "them": 3, "net": -1, "place": "their Inhibitor", "tag": "game-defining", "sig": 10.8, "notes": []}, {"min": 25.3, "kind": "teamfight", "result": "even", "us": 2, "them": 2, "net": 0, "place": "their Inhibitor", "tag": null, "sig": 8.4, "notes": []}, {"min": 27.9, "kind": "skirmish", "result": "won", "us": 2, "them": 0, "net": 2, "place": "their River", "tag": null, "sig": 6.5, "notes": []}, {"min": 28.5, "kind": "skirmish", "result": "won", "us": 2, "them": 1, "net": 1, "place": "their River", "tag": null, "sig": 6, "notes": []}, {"min": 30.7, "kind": "skirmish", "result": "even", "us": 1, "them": 1, "net": 0, "place": "our Outer Tower", "tag": null, "sig": 6.6, "notes": []}, {"min": 32.3, "kind": "skirmish", "result": "even", "us": 1, "them": 1, "net": 0, "place": "their Inhibitor", "tag": null, "sig": 6.7, "notes": []}, {"min": 34.8, "kind": "skirmish", "result": "won", "us": 3, "them": 0, "net": 3, "place": "their Inhibitor", "tag": "game-defining", "sig": 12.3, "notes": []}, {"min": 36.3, "kind": "skirmish", "result": "lost", "us": 0, "them": 2, "net": -2, "place": "their River", "tag": "bad-trade", "sig": 6.9, "notes": ["our jungle was alive and ahead in lane — a shove-and-rotate there flips a 0-2 into a numbers advantage.", "our midlane was alive and never joined — get them to the fight and the count changes."]}, {"min": 37.7, "kind": "teamfight", "result": "won", "us": 4, "them": 2, "net": 2, "place": "their Inhibitor", "tag": "game-defining", "sig": 14, "notes": []}], "players": [{"pid": "a0c393cc-1437-4bdc-8168-64676ce2166c", "name": "Cuban Noobster", "hero": "Scarlett", "role": "jungle", "k": 9, "d": 5, "a": 11, "line": "Cuban Noobster's Scarlett fought well uphill — 9/5/11 with 64464 mitigated and five kills on Drongo — but the flags land on him twice at the worst times: ahead in the jungle and absent at 20.5 and 36.3, both 0-2s and 0-3s. No magic resist into Iggy & Scorch's 72k magical is the item-screen note."}, {"pid": "d7103eb5-3b8e-45c0-ab18-0250d0341237", "name": "teammate", "hero": "The Fey", "role": "midlane", "k": 2, "d": 8, "a": 5, "line": null}, {"pid": "10edbf65-457d-48d0-9151-9df5b4fcb40a", "name": "Willy Guggenheim", "hero": "Steel", "role": "support", "k": 3, "d": 11, "a": 18, "line": "Willy Guggenheim's Steel absorbed a staggering 110,894 mitigated and dealt 18 assists — and died eleven times, with the file pricing nearly every fall at a tower, Fangtooth or inhibitor. A peel tank being the repeated first body into Khaimera and Drongo is the pattern to break: hold the wall for Eden instead of leading into their damage."}, {"pid": "aaa9bb1a-d2ae-4829-9fb9-bfabc7641e9a", "name": "solusLupus", "hero": "TwinBlast", "role": "offlane", "k": 6, "d": 5, "a": 5, "line": null}, {"pid": "a412baf3-dd17-4f89-8ecf-9d0704f3a79e", "name": "Xeebs", "hero": "Eden", "role": "carry", "k": 17, "d": 8, "a": 8, "line": "Xeebs' Eden put up 17 kills into a lane read 'theirs all game' — and it still could not matter, because the build again skipped Solaris and Nuclear Rounds from Eden's meta core and two wards all game left every fight blind. When the carry is the whole offense, the third core item and river vision are worth more than the eighteenth kill."}], "lanes": [{"role": "carry", "us": "Eden", "them": "Drongo", "edge": "unfavored"}, {"role": "midlane", "us": "The Fey", "them": "Iggy & Scorch", "edge": "favored"}, {"role": "offlane", "us": "TwinBlast", "them": "Gideon", "edge": "unfavored"}, {"role": "jungle", "us": "Scarlett", "them": "Khaimera", "edge": "favored"}, {"role": "support", "us": "Steel", "them": "Argus", "edge": "favored"}], "tag": "won fights, lost map", "moments": [{"min": 4.4, "title": "Won 3–0 — and paid Fangtooth for it", "tag": null, "result": "won", "score": "3–0", "place": "our River", "why": "The file's read: they traded the fight for Fangtooth across the map — we won the bodies and gave the objective.", "call": "A won fight opens a short window. The prize was across the map — the next move after a win is the objective, not the chase."}, {"min": 13.9, "title": "The stretch that decided it opens at their Fangtooth", "tag": "game-defining", "result": "lost", "score": "0–3", "place": "their Fangtooth", "why": "Mid was alive and never joined; the offlane was pinned in a losing lane — a 5v5 on paper that wasn't one in practice. The 13.9-to-21 stretch is priced at two Fangtooths, Mini Prime, four towers and the first inhibitor.", "call": "With two lanes unable to come, this pit was theirs. Concede it and trade cross-map — the exact trade they kept making on us."}, {"min": 18, "title": "Same shape, fourteen minutes later", "tag": null, "result": "won", "score": "2–1", "place": "their Mini Prime", "why": "Won the bodies again — and again the file flags Fangtooth taken across the map while we fought. Seven won fights this game; one was spent on a prize.", "call": "Cash it or it didn't happen. After a won fight, the nearest objective — pit, tower, or wave — is the whole point of having won it."}], "tiles": [{"n": "1/7", "vs": "7/10", "lbl": "won fights cashed — us v them", "read": "Seven fight wins, one prize. They spent seven of ten.", "mood": "bad"}, {"n": "3", "vs": "14", "lbl": "towers", "read": "Structures track winning closer than any kill line — this was the real scoreboard.", "mood": "bad"}, {"n": "18k", "vs": "126k", "lbl": "objective damage", "read": "They played the map; we played the fight.", "mood": "bad"}, {"n": "26", "vs": null, "lbl": "deaths that cost a prize", "read": "The death ledger — Steel's eleven falls alone priced at Fangtooths, Mini Prime, towers and inhibitors.", "mood": "bad"}], "strength": "The fighting held up all game: Xeebs' Eden put 17 kills into a lane read 'theirs all game', and Cuban Noobster's Scarlett went 9/5/11 with 64k damage mitigated, uphill. The map play lost this, not the combat."}};
+const FOCUS = {"h": "Rotate on the crash. Cash the win.", "p": "Across these two games we won 7 fights and spent 1 on a prize; of 15 lost fights, 12 carry the same flag — an ahead teammate absent, or a pinned lane forced to fight. One habit until the next review: nobody contests until the ahead lanes shove and arrive, and every won fight buys the nearest objective while the window is open."};
+
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rcol = (r) => r === 'won' ? 'var(--win)' : r === 'lost' ? 'var(--loss)' : 'var(--ink-3)';
+
+function timeline(g) {
+  const W = 780, H = 84, pad = 26, mw = W - pad * 2;
+  const x = (min) => pad + (min / g.dur) * mw;
+  const majors = g.majors.map((m) => {
+    const c = /FANG/.test(m.type) ? 'var(--fang)' : /PRIME|ORB/.test(m.type) ? 'var(--prime)' : 'var(--ink-3)';
+    const label = m.type.replace(/_/g, ' ').toLowerCase();
+    return `<g><title>${m.min}m — ${esc(label)} (${m.side === 'us' ? 'us' : 'them'})</title>
+      <circle cx="${x(m.min).toFixed(1)}" cy="20" r="4.5" fill="${c}" stroke="${m.side === 'us' ? 'var(--win)' : 'var(--loss)'}" stroke-width="1.6"/></g>`;
+  }).join('');
+  const keyMins = new Set(g.moments.map((m) => m.min));
+  const fights = g.fights.map((f) => {
+    const isKey = keyMins.has(f.min);
+    const r = Math.min(11, 5 + Math.abs(f.net) * 1.6);
+    const lbl = f.net > 0 ? '+' + f.net : f.net < 0 ? '−' + Math.abs(f.net) : '';
+    const dot = `<circle cx="${x(f.min).toFixed(1)}" cy="52" r="${r}" fill="${rcol(f.result)}" opacity="${isKey ? 1 : 0.55}"/>` +
+      (isKey ? `<circle cx="${x(f.min).toFixed(1)}" cy="52" r="${r + 3.5}" fill="none" stroke="var(--key)" stroke-width="1.8"/>` : '') +
+      (lbl && r >= 7 ? `<text x="${x(f.min).toFixed(1)}" y="55.5" text-anchor="middle" font-size="9" font-weight="700" fill="#0b0b12">${lbl}</text>` : '');
+    const min = `<text x="${x(f.min).toFixed(1)}" y="76" text-anchor="middle" font-size="9" fill="${isKey ? 'var(--key)' : 'var(--ink-3)'}">${isKey ? Math.round(f.min) + 'm' : ''}</text>`;
+    return `<g style="cursor:${isKey ? 'pointer' : 'default'}" ${isKey ? `onclick="document.getElementById('mo-${f.min}').scrollIntoView({behavior:'smooth',block:'center'})"` : ''}>
+      <title>${f.min}m — ${esc(f.kind)} ${f.result} ${f.us}–${f.them} · ${esc(f.place)}${f.tag ? ' · ' + f.tag.replace('-', ' ') : ''}${isKey ? ' · in the three moments above' : ''}</title>${dot}${min}</g>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="fight and objective timeline">
+    <line x1="${pad}" y1="52" x2="${W - pad}" y2="52" stroke="var(--border)" stroke-width="2"/>
+    <text x="${pad}" y="80" font-size="9" fill="var(--ink-3)">0m</text>
+    <text x="${W - pad}" y="80" text-anchor="end" font-size="9" fill="var(--ink-3)">${g.dur}m</text>
+    ${majors}${fights}
+  </svg>`;
+}
+
+function render(k) {
+  const g = GAMES[k];
+  document.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', t.dataset.k === k));
+  const tiles = g.tiles.map((t) => `<div class="tile ${t.mood}"><div class="n">${t.n}${t.vs ? ` <span class="vs">v ${t.vs}</span>` : ''}</div><div class="lbl">${esc(t.lbl)}</div><div class="read">${esc(t.read)}</div></div>`).join('');
+  const moments = g.moments.map((m, i) => `
+    <div class="moment" id="mo-${m.min}">
+      <div class="t">${m.min}<small>min</small></div>
+      <div>
+        <h3>${esc(m.title)}${m.tag ? `<span class="tagchip ${m.tag === 'game-defining' ? 'def' : 'bad'}">${m.tag.replace('-', ' ')}</span>` : ''}</h3>
+        <div class="facts">${m.result === 'won' ? '<b class="w">WON</b>' : '<b class="l">LOST</b>'} ${m.score} · ${esc(m.place)}</div>
+        <p>${esc(m.why)}</p>
+        <div class="call"><b>The call</b>${esc(m.call)}</div>
+      </div>
+    </div>`).join('');
+  const players = g.players.map((p) => `
+    <div class="player">
+      <div class="who"><b>${esc(p.name)}</b><span class="h">${esc(p.hero)} <span class="rolechip">${esc(p.role)}</span></span><br><span class="kda">${p.k} / ${p.d} / ${p.a}</span></div>
+      ${p.line ? `<div class="line">${esc(p.line)}</div>` : `<div class="line none">No individual note this game — the team read covers it.</div>`}
+    </div>`).join('');
+  const allFights = g.fights.map((f) => `<div class="fl"><span>${f.min}m</span><span class="r" style="color:${rcol(f.result)}">${f.result === 'won' ? 'W' : f.result === 'lost' ? 'L' : '–'} ${f.us}–${f.them}</span><span>${esc(f.place)}${f.tag ? ` · ${f.tag.replace('-', ' ')}` : ''}${f.notes.length ? `<div class="note">${f.notes.map(esc).join('<br>')}</div>` : ''}</span></div>`).join('');
+  const lanes = g.lanes.map((l) => `<div class="lg"><span class="rr">${esc(l.role)}</span><br>${esc(l.us)} <span style="color:var(--ink-3)">vs</span> ${esc(l.them)}<br><span class="e-${l.edge[0]}">${esc(l.edge)}</span></div>`).join('');
+  document.getElementById('game').innerHTML = `
+    <section class="card verdict">
+      <div class="head">
+        <span class="pill ${g.result}">${g.result.toUpperCase()}</span>
+        <span class="meta">${g.dur} min · ranked · ${g.date} · ${g.stack}-stack</span>
+      </div>
+      <h2>${esc(g.headline)}</h2>
+      <div class="shift"><b>What shifted it:</b> ${esc(g.shift)}</div>
+    </section>
+    <section class="card">
+      <span class="eyebrow">The three moments <span class="why">· everything else is in “the full story” below</span></span>
+      ${moments}
+    </section>
+    <section class="card">
+      <span class="eyebrow">The numbers that decided it</span>
+      <div class="tiles" style="margin-top:.7rem">${tiles}</div>
+    </section>
+    <section class="card">
+      <span class="eyebrow">The game in one strip <span class="why">· dots on the line = fights (sized by net kills, labeled ±) · dots above = Fangtooth/Prime/core · gold ring = the three moments — tap one</span></span>
+      <div style="margin-top:.5rem">${timeline(g)}</div>
+      <div class="tl-note">Hover any mark for the detail. Fight tags and places are heuristics (THEORY); kill times and objectives are real.</div>
+    </section>
+    <section class="card strength">
+      <span class="eyebrow" style="color:var(--win)">What worked</span>
+      <p>${esc(g.strength)}</p>
+    </section>
+    <section class="card">
+      <span class="eyebrow">The squad</span>
+      ${players}
+    </section>
+    <details class="deep">
+      <summary>The full story — team read, every fight, the lanes</summary>
+      <p class="team">${esc(g.team)}</p>
+      <div class="lanegrid">${lanes}</div>
+      ${allFights}
+      <div style="font-size:.72rem;color:var(--ink-3);margin-top:.5rem">The v6 deep-dive surfaces (fight map, kill ladders, builds-online, kit read) belong here as a drill-in, not on the front page.</div>
+    </details>`;
+}
+
+const tabs = document.getElementById('tabs');
+tabs.innerHTML = Object.entries(GAMES).map(([k, g]) => `
+  <button class="tab" role="tab" data-k="${k}" aria-selected="false">
+    <div class="r" style="color:${g.result === 'win' ? 'var(--win)' : 'var(--loss)'}">${g.result === 'win' ? 'W' : 'L'} · ${g.dur} min</div>
+    <div class="m">${g.date} · ${g.stack}-stack · ${esc(g.tag)}</div>
+  </button>`).join('');
+tabs.querySelectorAll('.tab').forEach((t) => t.onclick = () => render(t.dataset.k));
+
+document.getElementById('focus-h').textContent = FOCUS.h;
+document.getElementById('focus-p').textContent = FOCUS.p;
+render('b');
+</script>
+
+</body>
+</html>
