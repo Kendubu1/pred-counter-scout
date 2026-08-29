@@ -224,7 +224,7 @@
   .tlkey i { display:inline-block; flex:none; border-radius:50%; }
   .tlkey .tkc { width:11px; height:11px; }
   .tlkey .tkc.ring { width:9px; height:9px; background:var(--bg-3); box-shadow:0 0 0 2px var(--gold); margin:0 2px; }
-  .tlkey .tko { width:8px; height:8px; }
+  .tlkey .tko { width:8px; height:8px; border-radius:2px; }
   .tl-detail { margin-top:.55rem; font-size:.8rem; line-height:1.5; color:var(--text-1); background:var(--bg-2); border:1px solid var(--gold); border-radius:8px; padding:.5rem .65rem; }
   .tlfighters a, .tlfighters img { display:inline-block; }
   .fm-mark { fill:none; stroke:transparent; stroke-width:2.4; stroke-dasharray:5 4; transition:stroke .15s; }
@@ -681,7 +681,7 @@ function pgReview(f) {
   let tlTicks = '';
   for (let t = 0; t <= tlDur; t += tickStep) tlTicks += `<div class="tl-tick" style="left:${xOf(t)}%"></div><div class="tl-ticklbl" style="left:${xOf(t)}%">${t === 0 ? '0m' : t}</div>`;
   if (tlDur % tickStep > 2) tlTicks += `<div class="tl-tick" style="left:${xOf(tlDur)}%"></div><div class="tl-ticklbl" style="left:${xOf(tlDur)}%">${tlDur}m</div>`;
-  const tlObjMarks = tlMajors.map((m, j) => { const x = xOf(m.minute); const mine = m.side === 'us'; return `<div id="tlobj-${j}" class="tlobj" role="button" tabindex="0" onclick="tlSelect('o',${j})" title="${m.minute}m ${esc(objName(m.type))} (${mine ? 'us' : 'them'}) · tap for detail" style="position:absolute;left:${x}%;top:0;transform:translateX(-50%);padding:3px"><div style="width:9px;height:9px;border-radius:50%;background:${objColor(m.type)};border:1.5px solid ${mine ? 'var(--green)' : 'var(--red)'}"></div></div>`; }).join('');
+  const tlObjMarks = tlMajors.map((m, j) => { const x = xOf(m.minute); const mine = m.side === 'us'; return `<div id="tlobj-${j}" class="tlobj" role="button" tabindex="0" onclick="tlSelect('o',${j})" title="${m.minute}m ${esc(objName(m.type))} (${mine ? 'us' : 'them'}) · tap for detail" style="position:absolute;left:${x}%;top:0;transform:translateX(-50%);padding:3px"><div style="width:9px;height:9px;border-radius:2px;background:${objColor(m.type)};border:1.5px solid ${mine ? 'var(--green)' : 'var(--red)'}"></div></div>`; }).join('');
   const tlFightMarks = sks.map((sk, i) => { const x = xOf(sk.startMin); const d = Math.min(22, 9 + sk.size * 2); const ring = keySet.has(sk) ? ';box-shadow:0 0 0 2px var(--gold)' : ''; return `<div id="tlmark-${i}" class="tlmark" role="button" tabindex="0" onclick="tlSelect('f',${i})" title="${sk.startMin}m ${sk.kind}: ${sk.result} ${sk.ourKills}-${sk.theirKills} · ${esc(sk.place)}${sk.tag ? ' · ' + sk.tag.replace('-', ' ') : ''} · tap for detail" style="position:absolute;left:${x}%;top:${34 - d / 2}px;transform:translateX(-50%);width:${d}px;height:${d}px;border-radius:50%;background:${skCol(sk.result)}${ring};display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">${sk.net > 0 ? '+' + sk.net : sk.net < 0 ? sk.net : ''}</div>`; }).join('');
   // the hidden per-mark breakdowns tlSelect() swaps into the panel under the strip
   const tlFightSums = sks.map((sk, i) => {
@@ -712,7 +712,7 @@ function pgReview(f) {
       <span class="tk">ring: <i class="tko" style="background:var(--bg-3);border:1.5px solid var(--green)"></i> we took it · <i class="tko" style="background:var(--bg-3);border:1.5px solid var(--red)"></i> they did</span>
     </div>`;
   const timeline = (sks.length || tlMajors.length) ? card(`
-    ${eyebrow('The game in one strip', `fights sit on the line, objectives float above it · tap any mark and it breaks down right here · key below`)}
+    ${eyebrow('The game in one strip', `circles on the line = fights · squares above = objective takes · tap any mark and it breaks down right here · key below`)}
     <div style="position:relative;height:68px;margin:.1rem 0 0">
       <div style="position:absolute;top:34px;left:0;right:0;height:2px;background:var(--border)"></div>
       ${tlTicks}${tlObjMarks}${tlFightMarks}
