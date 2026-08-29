@@ -28,15 +28,18 @@ not in the env, stop immediately and report — no partial work.
 1. `npm run squad:watch`
    - exit 0 → done. Commit nothing, report nothing.
    - exit 2 → creds missing: stop and say so loudly.
-   - exit 3 → for each match uuid printed, in startTime order:
-2. `npm run postgame -- <match-uuid>` — pulls the facts (omeda public API,
-   match detail; the feed's list endpoint being down does not block a detail
-   pull, but if the pull itself fails, leave that match for the next fire — the
-   marker only advances past what the watcher saw, and the postgame file's
-   absence is the retry signal).
-3. Deterministic enrichment: `npm run postgame:kit`, `npm run postgame:items`,
-   `npm run postgame:fights`, `npm run postgame:macro` (each `-- <match-uuid>`
-   where supported; they no-op on games they don't apply to).
+   - exit 3 → new matches exist; continue:
+2. `npm run postgame -- --squad` — SELF-HEALING film pull: discovers every
+   stacked ranked game in the members' recent history (pred.gg source when
+   creds are present), skips already-reviewed games, and writes the film index.
+   This is deliberately not a per-uuid loop: if an earlier fire died mid-run or
+   a game was missed for any reason, the next fire picks it up — the Aug 11-28
+   backlog that motivated this design happened precisely because nothing was
+   re-scanning history. Omeda's per-player enrichment degrades gracefully when
+   omeda is 503 (postgame.ts handles it); the review still lands.
+3. Deterministic enrichment over the whole set: `npm run postgame:kit`,
+   `npm run postgame:items`, `npm run postgame:fights`, `npm run postgame:macro`
+   (all idempotent — they only touch films missing their block).
 4. Coaching narrative (session compute, NO API key — the standing copy policy):
    author the `coaching` block for each new game the way the pred-scout-coach
    agent does — grounded ONLY in that game's facts file — then run the
@@ -67,3 +70,8 @@ not in the env, stop immediately and report — no partial work.
   watcher starts exiting 2, the environment lost its creds.
 - **Stopping:** disable or delete the Routine (it is listed under Routines as
   "Squad postgame coach"); the repo needs no change.
+- **Division of labour:** this Routine reacts to GAMES. Site data that ages on
+  its own clock — the meta board's lane stats, the measured patch stats, and
+  catching the moment omeda publishes a new balance patch — belongs to the
+  separate daily pull (docs/daily-refresh.md), not here. One reacts to events,
+  the other keeps the shelves stocked.
