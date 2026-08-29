@@ -212,12 +212,21 @@
   .tlmark:hover { filter:brightness(1.3) saturate(1.2); }
   .tlmark.sel { box-shadow:0 0 0 2px var(--gold), 0 0 9px 1px rgba(240,180,41,.65) !important; }
   /* strip marks get an invisible enlarged hit area (the dots are small on touch) */
-  .tlmark::after, .tlobj::after { content:""; position:absolute; inset:-9px; border-radius:50%; }
+  .tlmark::after, .tlobj::after, .tltower::after { content:""; position:absolute; inset:-9px; border-radius:50%; }
   .tlobj { cursor:pointer; transition:filter .12s; }
   .tlobj:hover { filter:brightness(1.35); }
   .tlobj.sel > div { box-shadow:0 0 0 2px var(--gold); }
-  .tl-tick { position:absolute; top:26px; height:16px; width:1px; background:var(--border); opacity:.7; }
-  .tl-ticklbl { position:absolute; top:48px; transform:translateX(-50%); font-size:.6rem; color:var(--text-2); font-variant-numeric:tabular-nums; }
+  .tl-tick { position:absolute; top:32px; height:16px; width:1px; background:var(--border); opacity:.7; }
+  .tl-ticklbl { position:absolute; top:54px; transform:translateX(-50%); font-size:.6rem; color:var(--text-2); font-variant-numeric:tabular-nums; }
+  /* structure falls: triangles between the objective row and the axis — direction
+     is the non-color encoding (▲ we took theirs, ▼ they took ours) */
+  .tltower { position:absolute; transform:translateX(-50%); cursor:pointer; padding:4px 3px; transition:filter .12s; }
+  .tltower:hover { filter:brightness(1.35); }
+  .tltower i { display:block; width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; }
+  .tltower.up i { border-bottom:7px solid var(--green); }
+  .tltower.down i { border-top:7px solid var(--red); }
+  .tltower.sel i { filter:drop-shadow(0 0 3px var(--gold)) brightness(1.25); }
+  .tlkey .tkt { width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-radius:0; }
   /* the strip's key + tap-to-open breakdown panel (replaces the crammed eyebrow key) */
   .tlkey { display:flex; flex-wrap:wrap; gap:.3rem .75rem; margin-top:.55rem; font-size:.68rem; color:var(--text-2); border-top:1px dashed var(--border); padding-top:.5rem; }
   .tlkey .tk { display:inline-flex; align-items:center; gap:.32rem; white-space:nowrap; }
@@ -579,19 +588,19 @@ function focusFight(n) {
 // right under the strip — no scroll-jump. Tapping the same mark again closes it;
 // the panel's own link is the (explicit) way into the fight map.
 function tlSelect(kind, n) {
-  const el = document.getElementById((kind === 'o' ? 'tlobj-' : 'tlmark-') + n);
+  const el = document.getElementById((kind === 'o' ? 'tlobj-' : kind === 't' ? 'tltw-' : 'tlmark-') + n);
   const panel = document.getElementById('tldetail');
   const already = el && el.classList.contains('sel');
-  document.querySelectorAll('.tlmark.sel, .tlobj.sel').forEach((e) => e.classList.remove('sel'));
+  document.querySelectorAll('.tlmark.sel, .tlobj.sel, .tltower.sel').forEach((e) => e.classList.remove('sel'));
   if (!el || !panel) return;
   if (already) { panel.hidden = true; return; }
   el.classList.add('sel');
-  const src = document.querySelector(`#tldetails [data-${kind === 'o' ? 'o' : 'i'}="${n}"]`);
+  const src = document.querySelector(`#tldetails [data-${kind === 'o' ? 'o' : kind === 't' ? 't' : 'i'}="${n}"]`);
   if (src) { panel.innerHTML = src.innerHTML; panel.hidden = false; }
 }
 // strip marks are divs — make Enter/Space activate them like buttons
 document.addEventListener('keydown', (e) => {
-  if ((e.key === 'Enter' || e.key === ' ') && e.target.closest && e.target.closest('.tlmark, .tlobj')) { e.preventDefault(); e.target.click(); }
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.closest && e.target.closest('.tlmark, .tlobj, .tltower')) { e.preventDefault(); e.target.click(); }
 });
 function pgReview(f) {
   const us = f.players.filter((p) => p.us);
@@ -672,8 +681,8 @@ function pgReview(f) {
   // fight-map jump is now an explicit link inside the panel, not the tap). ──
   const tlDur = f.durationMin || 40;
   const xOf = (min) => Math.min(96, Math.max(2, (min / tlDur) * 100));
-  const tlMajors = (f.timeline ? f.timeline.majors : []).filter((m) => /FANG|PRIME|ORB/i.test(m.type));
-  const objColor = (t) => /FANG/i.test(t) ? '#f0820f' : /ORB|PRIME/i.test(t) ? '#a855f7' : 'var(--text-2)';
+  const tlMajors = (f.timeline ? f.timeline.majors : []).filter((m) => /FANG|PRIME|ORB|CORE/i.test(m.type));
+  const objColor = (t) => /FANG/i.test(t) ? '#f0820f' : /ORB|PRIME/i.test(t) ? '#a855f7' : /CORE/i.test(t) ? 'var(--blue)' : 'var(--text-2)';
   const objName = (t) => String(t).replace(/_/g, ' ').toLowerCase();
   const skCol = (r) => r === 'won' ? 'var(--green)' : r === 'lost' ? 'var(--red)' : 'var(--text-2)';
   const keySet = new Set(keyMoments);
@@ -681,8 +690,12 @@ function pgReview(f) {
   let tlTicks = '';
   for (let t = 0; t <= tlDur; t += tickStep) tlTicks += `<div class="tl-tick" style="left:${xOf(t)}%"></div><div class="tl-ticklbl" style="left:${xOf(t)}%">${t === 0 ? '0m' : t}</div>`;
   if (tlDur % tickStep > 2) tlTicks += `<div class="tl-tick" style="left:${xOf(tlDur)}%"></div><div class="tl-ticklbl" style="left:${xOf(tlDur)}%">${tlDur}m</div>`;
-  const tlObjMarks = tlMajors.map((m, j) => { const x = xOf(m.minute); const mine = m.side === 'us'; return `<div id="tlobj-${j}" class="tlobj" role="button" tabindex="0" onclick="tlSelect('o',${j})" title="${m.minute}m ${esc(objName(m.type))} (${mine ? 'us' : 'them'}) · tap for detail" style="position:absolute;left:${x}%;top:0;transform:translateX(-50%);padding:3px"><div style="width:9px;height:9px;border-radius:2px;background:${objColor(m.type)};border:1.5px solid ${mine ? 'var(--green)' : 'var(--red)'}"></div></div>`; }).join('');
-  const tlFightMarks = sks.map((sk, i) => { const x = xOf(sk.startMin); const d = Math.min(22, 9 + sk.size * 2); const ring = keySet.has(sk) ? ';box-shadow:0 0 0 2px var(--gold)' : ''; return `<div id="tlmark-${i}" class="tlmark" role="button" tabindex="0" onclick="tlSelect('f',${i})" title="${sk.startMin}m ${sk.kind}: ${sk.result} ${sk.ourKills}-${sk.theirKills} · ${esc(sk.place)}${sk.tag ? ' · ' + sk.tag.replace('-', ' ') : ''} · tap for detail" style="position:absolute;left:${x}%;top:${34 - d / 2}px;transform:translateX(-50%);width:${d}px;height:${d}px;border-radius:50%;background:${skCol(sk.result)}${ring};display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">${sk.net > 0 ? '+' + sk.net : sk.net < 0 ? sk.net : ''}</div>`; }).join('');
+  const tlObjMarks = tlMajors.map((m, j) => { const x = xOf(m.minute); const mine = m.side === 'us'; const lbl = `${m.minute}m ${objName(m.type)} — taken by ${mine ? 'us' : 'them'}`; return `<div id="tlobj-${j}" class="tlobj" role="button" tabindex="0" aria-label="${esc(lbl)}" onclick="tlSelect('o',${j})" title="${esc(lbl)} · tap for detail" style="position:absolute;left:${x}%;top:0;transform:translateX(-50%);padding:3px"><div style="position:relative;width:9px;height:9px;border-radius:2px;background:${objColor(m.type)};border:1.5px solid ${mine ? 'var(--green)' : 'var(--red)'}">${mine ? '<span style="position:absolute;inset:0;margin:auto;width:3px;height:3px;border-radius:50%;background:#fff"></span>' : ''}</div></div>`; }).join('');
+  // structure falls (towers/inhibs/core) from the per-event stream; older films
+  // without f.events simply have no tower band
+  const tlTowers = (f.events || []).filter((e) => e.kind === 'tower').map((e) => ({ min: Math.round(e.sec / 6) / 10, type: e.type, side: e.side })).sort((a, b) => a.min - b.min);
+  const tlTowerMarks = tlTowers.map((e, j) => { const x = xOf(e.min); const mine = e.side === 'us'; const lbl = `${e.min}m ${objName(e.type)} — ${mine ? 'we took theirs' : 'they took ours'}`; return `<div id="tltw-${j}" class="tltower ${mine ? 'up' : 'down'}" role="button" tabindex="0" aria-label="${esc(lbl)}" onclick="tlSelect('t',${j})" title="${esc(lbl)} · tap for detail" style="left:${x}%;top:14px"><i></i></div>`; }).join('');
+  const tlFightMarks = sks.map((sk, i) => { const x = xOf(sk.startMin); const d = Math.min(22, 9 + sk.size * 2); const ring = keySet.has(sk) ? ';box-shadow:0 0 0 2px var(--gold)' : ''; const lbl = `${sk.startMin}m ${sk.kind}: ${sk.result} ${sk.ourKills}-${sk.theirKills} · ${sk.place}${sk.tag ? ' · ' + sk.tag.replace('-', ' ') : ''}`; return `<div id="tlmark-${i}" class="tlmark" role="button" tabindex="0" aria-label="${esc(lbl)}" onclick="tlSelect('f',${i})" title="${esc(lbl)} · tap for detail" style="position:absolute;left:${x}%;top:${40 - d / 2}px;transform:translateX(-50%);width:${d}px;height:${d}px;border-radius:50%;background:${skCol(sk.result)}${ring};display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">${sk.net > 0 ? '+' + sk.net : sk.net < 0 ? sk.net : ''}</div>`; }).join('');
   // the hidden per-mark breakdowns tlSelect() swaps into the panel under the strip
   const tlFightSums = sks.map((sk, i) => {
     const why = (sk.macro && (sk.macro.notes || []).length) ? sk.macro.notes.map((n) => esc(scrub(n))).join(' ') : '';
@@ -701,25 +714,31 @@ function pgReview(f) {
       <div style="font-weight:700;color:var(--text-0)">${m.minute}m · ${esc(objName(m.type))} <span style="color:${m.side === 'us' ? 'var(--green)' : 'var(--red)'}">taken by ${m.side === 'us' ? 'us' : 'them'}</span></div>
       <div style="color:var(--text-2);font-size:.74rem;margin-top:.15rem">A major objective from the real event stream — the nearest fight circles on the strip are usually why it fell (or fell free).</div>
     </div>`).join('');
+  const tlTowerSums = tlTowers.map((e, j) => `<div data-t="${j}">
+      <div style="font-weight:700;color:var(--text-0)">${e.min}m · ${esc(objName(e.type))} <span style="color:${e.side === 'us' ? 'var(--green)' : 'var(--red)'}">${e.side === 'us' ? 'we took theirs' : 'they took ours'}</span></div>
+      <div style="color:var(--text-2);font-size:.74rem;margin-top:.15rem">A structure fall from the real event stream — check the fights just before it on the line; that's usually what paid for it.</div>
+    </div>`).join('');
   const tlKey = `<div class="tlkey">
-      <span class="tk"><i class="tkc" style="background:var(--green)"></i> won fight</span>
-      <span class="tk"><i class="tkc" style="background:var(--red)"></i> lost fight</span>
+      <span class="tk"><i class="tkc" style="background:var(--green)"></i> won fight (+n)</span>
+      <span class="tk"><i class="tkc" style="background:var(--red)"></i> lost fight (−n)</span>
       <span class="tk"><i class="tkc" style="background:var(--text-2)"></i> even trade</span>
-      <span class="tk"><i class="tkc" style="width:7px;height:7px;background:var(--text-2)"></i><i class="tkc" style="width:13px;height:13px;background:var(--text-2)"></i> bigger = more net kills (±n)</span>
+      <span class="tk"><i class="tkc" style="width:7px;height:7px;background:var(--text-2)"></i><i class="tkc" style="width:13px;height:13px;background:var(--text-2)"></i> bigger = more net kills</span>
       <span class="tk"><i class="tkc ring"></i> one of “the moments” above</span>
       <span class="tk"><i class="tko" style="background:#f0820f"></i> Fangtooth</span>
       <span class="tk"><i class="tko" style="background:#a855f7"></i> Prime / Orb</span>
-      <span class="tk">ring: <i class="tko" style="background:var(--bg-3);border:1.5px solid var(--green)"></i> we took it · <i class="tko" style="background:var(--bg-3);border:1.5px solid var(--red)"></i> they did</span>
+      <span class="tk"><i class="tko" style="background:var(--blue)"></i> Genesis Core</span>
+      <span class="tk"><i class="tko" style="position:relative;background:var(--bg-3);border:1.5px solid var(--green)"><span style="position:absolute;inset:0;margin:auto;width:3px;height:3px;border-radius:50%;background:#fff"></span></i> we took it (white dot) · <i class="tko" style="background:var(--bg-3);border:1.5px solid var(--red)"></i> they did</span>
+      ${tlTowers.length ? `<span class="tk"><i class="tkt" style="border-bottom:7px solid var(--green)"></i> tower/inhib we took · <i class="tkt" style="border-top:7px solid var(--red)"></i> one we lost</span>` : ''}
     </div>`;
-  const timeline = (sks.length || tlMajors.length) ? card(`
-    ${eyebrow('The game in one strip', `circles on the line = fights · squares above = objective takes · tap any mark and it breaks down right here · key below`)}
-    <div style="position:relative;height:68px;margin:.1rem 0 0">
-      <div style="position:absolute;top:34px;left:0;right:0;height:2px;background:var(--border)"></div>
-      ${tlTicks}${tlObjMarks}${tlFightMarks}
+  const timeline = (sks.length || tlMajors.length || tlTowers.length) ? card(`
+    ${eyebrow('The game in one strip', `circles on the line = fights · squares above = objective takes${tlTowers.length ? ' · ▲▼ = tower falls' : ''} · tap any mark and it breaks down right here · key below`)}
+    <div style="position:relative;height:74px;margin:.1rem 0 0">
+      <div style="position:absolute;top:40px;left:0;right:0;height:2px;background:var(--border)"></div>
+      ${tlTicks}${tlObjMarks}${tlTowerMarks}${tlFightMarks}
     </div>
-    <div id="tldetail" class="tl-detail" hidden></div>
+    <div id="tldetail" class="tl-detail" aria-live="polite" hidden></div>
     ${tlKey}
-    <div id="tldetails" hidden>${tlFightSums}${tlObjSums}</div>`) : '';
+    <div id="tldetails" hidden>${tlFightSums}${tlObjSums}${tlTowerSums}</div>`) : '';
 
   // ── The interrogation: the causation questions, answered from the film ──
   let interrogation = '';

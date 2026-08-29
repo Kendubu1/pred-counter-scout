@@ -3230,3 +3230,26 @@ the fight map. Lessons from the fix (ui/v6/coach.html):
   data): tap opens/toggles the panel with zero scroll, objective dots
   select independently, the map link still opens the deep dive with the
   same fight lit, keyboard Enter/Space works on the marks.
+
+## 2026-08-29 — Strip round 2: shapes per population, tower band, a11y
+
+Follow-up to the strip rework, from the maintainer's read that the floating
+circles were still ambiguous:
+
+- **One shape per event population.** Circles = fights, squares = objective
+  takes (fill: orange Fangtooth / purple Prime / blue Genesis Core),
+  triangles = structure falls. Same-shape-different-size was read as one
+  confusing population; shape is the encoding that survives glance-reading.
+- **The committed postgame files already carried timed tower falls** — not
+  in `timeline` (which collapses towers to counts) but in the per-event
+  `events` stream (`{sec,type,side,kind}`) persisted since 2026-07-02.
+  Check the whole artifact before concluding a feature needs a data-pipeline
+  change: the tower band shipped zero-API off `f.events`, degrading to no
+  band on the 59 older films that lack it.
+- **Red/green needs a second channel (validated, not vibed).** The dataviz
+  palette validator put our green/red pair at deutan ΔE 6.9 — legal only
+  with secondary encoding. So every side encoding now carries one: fights
+  label ±n, towers point ▲ (took) / ▼ (lost), objective squares we took get
+  a white pip. The objective triple (orange/purple/blue) passes CVD ΔE 11.2.
+- a11y: aria-labels on every mark, aria-live on the breakdown panel, the
+  existing keyboard activation extended to the new marks.
