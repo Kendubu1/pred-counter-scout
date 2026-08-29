@@ -34,7 +34,9 @@ const laneStatsPath = path.join(ROOT, 'data/aggregates/predgg-lane-stats.json');
 const laneStats = existsSync(laneStatsPath)
   ? JSON.parse(readFileSync(laneStatsPath, 'utf8')) as {
       patch: string; scopeLabel: string; matchesApprox: number; generatedAt: string;
-      heroes: Record<string, { byRole: Record<string, { n: number; w: number }> }>;
+      rankBands?: { key: string; label: string; rankIds: string[] }[];
+      matchesApproxByBand?: Record<string, number>;
+      heroes: Record<string, { byRole: Record<string, { n: number; w: number; bands?: Record<string, { n: number; w: number }> }> }>;
     }
   : null;
 const laneCells: Record<string, { byRole?: Record<string, { n: number; w: number }> }> =
@@ -180,20 +182,26 @@ const augFile = path.join(ROOT, 'data/aggregates/predgg-augments.json');
 const augHeroes: Record<string, Record<string, unknown>> = existsSync(augFile)
   ? (JSON.parse(readFileSync(augFile, 'utf8')).heroes ?? {}) : {};
 if (agg || laneStats) {
-  const roles: Record<string, { slug: string; name: string; games: number; rawWr: number; shrunkWr: number; metaScore: number; badge: string | null; augmentPending?: boolean }[]> = {};
-  for (const role of ['carry', 'midlane', 'offlane', 'jungle', 'support']) {
+  type BoardRow = { slug: string; name: string; games: number; rawWr: number; shrunkWr: number; metaScore: number; badge: string | null; augmentPending?: boolean };
+  type NW = { n: number; w: number };
+  // One lane board from a cell accessor, so the all-ranks board and each
+  // rank-band board (added 2026-08-29) run the exact same scoring: same
+  // scaling games floor, same per-board shrink prior, same badges. Bands get
+  // their OWN prior strength and floor because a 3.7k-match Diamond+ window
+  // is a different evidence regime than the 106k-match all-ranks one.
+  const laneBoard = (role: string, cellOf: (h: { byRole?: Record<string, NW & { bands?: Record<string, NW> }> }) => NW | undefined, matches: number, fallbackK?: number): BoardRow[] => {
     const cells = Object.entries(laneCells)
       // unmapped hero_id:* entries are excluded: no kit, no portrait, no
       // page to link to (one such id is tracked in lessons.md)
-      .map(([slug, h]) => ({ slug, cell: h.byRole?.[role] }))
+      .map(([slug, h]) => ({ slug, cell: cellOf(h) }))
       // The games floor SCALES with the window: 30 games meant something in an
       // 8k-match feed window but is pure noise in a 103k-match patch sample —
       // without scaling, an 89-game off-role blip walked straight onto the
       // board's win-rate column. 1 in 500 matches keeps the old floor for the
       // old window size and moves it to ~200 for a full-patch pull.
-      .filter((x): x is { slug: string; cell: { n: number; w: number } } =>
-        data.kits.has(x.slug) && !!x.cell && x.cell.n >= Math.max(30, Math.round(laneMatches / 500)));
-    const k = priorK[role] ?? momPriorStrength(cells.map((c) => c.cell), 0.5);
+      .filter((x): x is { slug: string; cell: NW } =>
+        data.kits.has(x.slug) && !!x.cell && x.cell.n >= Math.max(30, Math.round(matches / 500)));
+    const k = fallbackK ?? momPriorStrength(cells.map((c) => c.cell), 0.5);
     // The augment gate used to DROP any (hero, lane) the augment pull lacks a
     // cell for. With current-patch lane evidence that quietly censors exactly
     // the interesting rows — a hero newly meta in a role, or a new hero — and
@@ -232,9 +240,19 @@ if (agg || laneStats) {
     const seenSlug = new Set<string>();
     // Dedupe the union, then sort the whole board by metaScore so the lane reads
     // high-to-low (the appended sleepers were leaving the tail out of order).
-    roles[role] = [...byMeta, ...byWr]
+    return [...byMeta, ...byWr]
       .filter((s) => { if (seenSlug.has(s.slug)) return false; seenSlug.add(s.slug); return true; })
       .sort((a, b) => b.metaScore - a.metaScore);
+  };
+  const roles: Record<string, BoardRow[]> = {};
+  const rolesByBand: Record<string, Record<string, BoardRow[]>> = {};
+  const bands = laneStats?.rankBands ?? [];
+  for (const role of ['carry', 'midlane', 'offlane', 'jungle', 'support']) {
+    roles[role] = laneBoard(role, (h) => h.byRole?.[role], laneMatches, priorK[role]);
+    for (const band of bands) {
+      (rolesByBand[band.key] ??= {})[role] =
+        laneBoard(role, (h) => h.byRole?.[role]?.bands?.[band.key], laneStats?.matchesApproxByBand?.[band.key] ?? 0);
+    }
   }
   // Top ranked pilots per lane from the pred.gg split leaderboard.
   // Env-gated: without PREDGG_* credentials the board ships without them.
@@ -266,6 +284,11 @@ if (agg || laneStats) {
     matches: laneMatches,
     note: `meta score blends how often a lane picks a hero with how often it wins (small samples adjusted down), both rank-averaged within the lane; ${laneScope}, current-patch window. Badges mark high-winrate/low-pick sleepers and high-pick/low-winrate traps.`,
     roles,
+    // Rank-band boards (absent when the lane-stats snapshot predates bands).
+    // Bands sum below all-ranks: unplaced players only count unfiltered.
+    rankBands: bands.length ? bands.map((b) => ({ key: b.key, label: b.label })) : undefined,
+    matchesByBand: bands.length ? laneStats?.matchesApproxByBand : undefined,
+    rolesByBand: bands.length ? rolesByBand : undefined,
     topPlayers,
     topPlayersNote: topPlayers ? 'current ranked split leaderboard via the pred.gg API (favRole filter); VP = victory points' : null,
   }, null, 1));

@@ -397,6 +397,8 @@
   .mb-toggle { margin-left:auto; background:var(--bg-1); border:1px solid var(--border); border-radius:99px; padding:.28rem .7rem; color:var(--text-2); font:inherit; font-size:.72rem; font-weight:700; cursor:pointer; white-space:nowrap; }
   .mb-toggle:hover { color:var(--text-0); }
   .mb-toggle.active { color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
+  .mb-bands { flex-basis:100%; display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.15rem; }
+  .mb-bands .mb-toggle { margin-left:0; }
   .lanes { display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:.7rem; margin-top:.8rem; }
   .lane { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:.7rem .75rem; }
   .lane h3 { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.45rem; }
@@ -558,7 +560,11 @@ let roleFilter = 'all';
 // stay discoverable.
 let metaBigOnly = false;
 try { metaBigOnly = localStorage.getItem('metaBigOnly') === '1'; } catch { /* private mode */ }
-function metaMinSample() { return Math.max(300, Math.round((META?.matches || 0) / 100)); }
+function metaMinSample(matches) { return Math.max(300, Math.round((matches || 0) / 100)); }
+// Rank-band selector (all | low | mid | high) — boards exist only when the
+// committed meta.json carries rolesByBand. Sticky per browser.
+let metaBand = 'all';
+try { metaBand = localStorage.getItem('metaBand') || 'all'; } catch { /* private mode */ }
 
 async function getJson(path) { return (await fetch(path)).json(); }
 
@@ -905,18 +911,25 @@ function simPickBlock(role) {
 function renderMetaboard() {
   if (!META) { $('#metaboard').innerHTML = ''; return; }
   const wrClass = (wr) => (wr >= 0.52 ? 'up' : wr <= 0.48 ? 'down' : 'flat');
+  const bands = (META.rankBands && META.rolesByBand) ? META.rankBands : null;
+  if (metaBand !== 'all' && !(bands && META.rolesByBand[metaBand])) metaBand = 'all';
+  const boardRoles = metaBand === 'all' ? META.roles : META.rolesByBand[metaBand];
+  const boardMatches = metaBand === 'all' ? META.matches : (META.matchesByBand?.[metaBand] ?? META.matches);
+  const bandLabel = metaBand === 'all' ? '' : ` · ${bands.find((b) => b.key === metaBand)?.label ?? metaBand} only`;
+  const minSample = metaMinSample(boardMatches);
   $('#metaboard').innerHTML = `
     <div class="mb-head">
       <h2>The meta board</h2>
-      <span class="mb-sub">each lane's strongest picks by <b>win rate</b> · ${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, ${esc(META.scope || 'all ranks')}${metaWindowNote()}</span>
-      <button class="mb-toggle${metaBigOnly ? ' active' : ''}" id="mbBigOnly" title="Hide picks with under ${metaMinSample().toLocaleString()} games this patch (~1% of the window) — small samples read as Sleeper 💤 and can swing patch to patch">${metaBigOnly ? '✓ ' : ''}${metaMinSample().toLocaleString()}+ games only</button>
+      <span class="mb-sub">each lane's strongest picks by <b>win rate</b> · ${boardMatches.toLocaleString()} matches, patch ${esc(META.patch)}, ${esc(META.scope || 'all ranks')}${bandLabel}${metaWindowNote()}</span>
+      <button class="mb-toggle${metaBigOnly ? ' active' : ''}" id="mbBigOnly" title="Hide picks with under ${minSample.toLocaleString()} games this patch (~1% of the window) — small samples read as Sleeper 💤 and can swing patch to patch">${metaBigOnly ? '✓ ' : ''}${minSample.toLocaleString()}+ games only</button>
+      ${bands ? `<div class="mb-bands" title="Filter the boards to games played at a rank band — the meta shifts with skill level. All ranks includes players without a placed rank.">${[{ key: 'all', label: 'All ranks' }, ...bands].map((b) => `<button class="mb-toggle band${metaBand === b.key ? ' active' : ''}" data-band="${esc(b.key)}">${esc(b.label)}</button>`).join('')}</div>` : ''}
     </div>
     <details class="sim-collapse uxlegend" id="uxLegend"><summary>What the win-rate colors &amp; pick tags mean</summary><div class="lp-sub">${LEGEND_HTML}</div></details>
     <div class="lanes">
       ${Object.keys(LANE_LABELS).map((role) => `
         <div class="lane">
           <h3 class="lane-go" data-lane="${role}" title="Open the ${esc(LANE_LABELS[role])} lane room">${LANE_LABELS[role]} <span style="color:var(--text-2)">→</span></h3>
-          ${[...(META.roles[role] || [])].filter((h) => !metaBigOnly || h.games >= metaMinSample()).sort((a, b) => b.shrunkWr - a.shrunkWr).slice(0, 5).map((h, i) => `
+          ${[...(boardRoles[role] || [])].filter((h) => !metaBigOnly || h.games >= minSample).sort((a, b) => b.shrunkWr - a.shrunkWr).slice(0, 5).map((h, i) => `
             <div class="mp" data-slug="${h.slug}" data-role="${role}" title="${esc(h.name)}: ${h.games} ${role} games, ${(h.shrunkWr * 100).toFixed(1)}% shrunk winrate, meta score ${(h.metaScore * 100).toFixed(0)}${h.badge ? ' — ' + esc(h.badge) : ''}">
               <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
               <span class="n">${i === 0 ? '👑 ' : ''}${esc(h.name)}${h.badge === 'sleeper' ? ' 💤' : h.badge ? ' ⚠' : ''}<span class="g">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b class="vtag" style="color:${v.color}" data-tip="${esc(v.tip)}" title="${esc(v.tip)}">${v.label}</b>`; })()}</span></span>
@@ -932,6 +945,13 @@ function renderMetaboard() {
     try { localStorage.setItem('metaBigOnly', metaBigOnly ? '1' : '0'); } catch { /* private mode */ }
     renderMetaboard();
   };
+  document.querySelectorAll('.mb-bands .mb-toggle').forEach((b) => {
+    b.onclick = () => {
+      metaBand = b.dataset.band;
+      try { localStorage.setItem('metaBand', metaBand); } catch { /* private mode */ }
+      renderMetaboard();
+    };
+  });
 }
 
 // Open a lane's "lane room" as if the rolebar lane was picked, and scroll to it.

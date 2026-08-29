@@ -3259,3 +3259,24 @@ circles were still ambiguous:
   each mark family; hiding the family that holds the current selection also
   closes its panel. Reusing the `.pgf` pill class bought the 44px mobile
   tap targets for free.
+
+## 2026-08-29: rank-band split on the meta board (pred.gg ranks filter verified)
+- `generalStatistic`'s filter accepts `ranks: [ID]` — confirmed by schema
+  introspection (`HeroGeneralStatisticFilterInput`: gameModes, matchup, ranks,
+  roles, versions), readable at our app tier. Rank ids come from the OPEN
+  split's ladder (`ratings { ranks { id tierIdx } }`; no root `ranks` query),
+  so `lanestats` derives its three bands by tierIdx (low 0-1 Bronze+Silver,
+  mid 2-3 Gold+Platinum, high 4-5 Diamond+Paragon) and survives id reshuffles.
+- **Bands sum BELOW the unfiltered cell** (~4-5%, e.g. Skylar carry 21,810
+  banded vs 22,846 all): players without a placed rank only count unfiltered.
+  All-ranks numbers stay canonical; the bands are a lens, not a partition.
+- The split is worth having: Diamond+ (~3.7k matches) tells a different story
+  than all-ranks in every lane — carry flips from Skylar/Sparrow to
+  Revenant/Eden/Kira by meta score. Thin high-band samples are handled by the
+  same scale-with-the-window floors (max(30, matches/500) in the pipeline,
+  max(300, matches/100) for the UI's big-samples toggle), computed per band.
+- Cost stayed polite: aliasing heroes x 5 roles x 4 variants (all + 3 bands)
+  = 60 cells/request, 18 requests for the whole 54-hero matrix.
+- meta.json is backward/forward compatible: `rolesByBand`/`rankBands`/
+  `matchesByBand` are additive and the UI falls back to the all-ranks board
+  (and hides the selector) when they're absent.
