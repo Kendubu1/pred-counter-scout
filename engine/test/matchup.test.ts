@@ -62,7 +62,8 @@ describe('purchase order and spike timeline', () => {
 describe('ability parse coverage (pattern B: percent-max-health ults)', () => {
   it('Countess Feast parses with pctMaxHealth and feeds the kill window', () => {
     const ult = data.kits.get('countess')!.abilities.find((a) => a.key === 'ULTIMATE')!;
-    expect(ult.damagePerRank).toEqual([135, 185, 235]);
+    // 1.16 buffed Feast: data/patches/1.16.json records "135/185/235 -> 135/215/285".
+    expect(ult.damagePerRank).toEqual([135, 215, 285]);
     expect(ult.pctMaxHealth).toBe(5);
     expect(ult.damageType).toBe('magical');
   });

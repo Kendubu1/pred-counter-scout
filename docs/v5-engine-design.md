@@ -271,6 +271,40 @@ full harness is green at 93. Generalising the slice to the roster, the mana-awar
 objective, and per-lane field cores in the retrodiction validator are the named next
 steps.
 
+## 10. Patch currency: the catalog is not trusted to be current (Aug 28)
+
+The data strategy assumed a refreshed snapshot is a current snapshot. It is not.
+omeda's catalog lags the live game by days-to-weeks, so `fetchedAt` records when
+we asked, never what we got — a snapshot pulled hours after 1.16 shipped came
+back holding pre-1.15.3 numbers, and the engine ran a whole patch cycle on them.
+
+`npm run patchcheck` closes that. It grades the snapshot against every
+machine-checkable change stated in the hand-captured `data/patches/*.json`
+digests and sorts each into APPLIED (snapshot holds the post-patch value), STALE
+(snapshot still holds the pre-patch value) or UNKNOWN. Design points that matter:
+
+- **Coverage is partial and says so.** Only base stats, ability damage arrays
+  and item costs parse; the ~300 note lines it cannot grade are counted and
+  reported as unparsed, never as passing.
+- **Supersession.** Where several patches touch the same field, only the newest
+  statement is graded — otherwise a stat changed twice reads as permanently
+  stale. Digests are ordered by version, not filename.
+- **The verdict is data.** `data/aggregates/patch-currency.json` feeds both a
+  harness gate (no stated change may sit at its pre-patch value) and the
+  published `catalogPatch`, so the patch label on the site is derived from the
+  verification rather than typed in.
+
+This supersedes hand-pinned PATCH GATE tests as the primary mechanism. Those
+remain as fast canaries but cannot detect staleness on their own: one pinned
+1.14.4 values and passed for five weeks across two patches that changed them.
+
+**Two clocks.** The catalog patch and the match-window patch are separate and
+usually differ, because the public match feed runs behind live. Any surface
+quoting a number must say which clock it is on: hero and item numbers carry
+`catalogPatch`, win rates and lane boards carry `patch`, and the measured gold
+curves carry `goldEconomyPatch` plus the patch that invalidated them, so spike
+minutes read as approximate when the economy has since been reworked.
+
 ## Verification summary
 
 The loop ran three passes against the checklist before this document was finalized. Pass 1 caught three substantive problems: the worked Gideon example originally reported only the extended-fight window, which oversold the off-meta option; it now reports the burst tradeoff (A wins one-combo by 9%) alongside the uptime advantage, which is the shape every off-meta proof must have. Dropping pred.gg silently dropped skill-order data; the simulator now explicitly owns max-order derivation. And augment plus Eternal winrates turned out to be structurally unavailable from the API (no field in match payloads), so those recommendations were moved to mechanics-only with a mandatory Theory badge instead of implying observational backing. Pass 2 caught infrastructure and presentation issues: raw match storage in git was unrealistic at estimated volumes, replaced with aggregate-only persistence plus optional release-asset archives; the medium tier originally specified a managed database, replaced with a single VPS running DuckDB, which is cheaper and sufficient; and matchup output originally included predicted winrate points for unseen pairs, which reproduces the old ridge model's false-precision mistake, replaced with verdict chips and intervals. Pass 3 scored the deliverables: audit 5, data strategy 5, architecture 4 (the long pole is simulator fidelity for item passives, and the document says so), Concept A 5, Concept B 4 (it cannot see execution difficulty or macro effects, named explicitly), cost tiers 5, stack 5, UX 4 (the under-10-seconds claim holds on the spec, but only a prototype proves it). Remaining known weaknesses, stated rather than hidden: the mitigation and crit constants are unverified until the first calibration-fixture session; match-volume and API-field assumptions need one day of ingest prototyping to confirm; and lane-pressure and objective economics (Shrines) are deferred from the v1 simulator.

@@ -2720,7 +2720,7 @@ Eight maintainer-flagged fixes:
   chips, popups, single legend, reduced-motion) transferred to a brand-new
   page with no rework.
 - Graceful degradation earned its keep on release day: Scarlett and the four
-  new Eternals (Weald/Rust/Pilow/Satatriel + Mechadrive) are in the notes but
+  new Eternals (Weald/Rust/Pilow/Satariel + Mechadrive) are in the notes but
   NOT in the omeda/eternals catalogs yet. Because every image carries an
   onerror self-hide and the popup button is conditional on catalog presence,
   the page renders honestly with no broken glyphs and no dead buttons. Build
@@ -2745,7 +2745,7 @@ Eight maintainer-flagged fixes:
   writes to will rot — check owned game-data against a fresh digest whenever a
   patch touches it.
 - **The recommender pool is keyed off effects.json, not the catalog.** Adding
-  Weald/Rust/Pilow/Satatriel to eternals.json left them unrecommendable —
+  Weald/Rust/Pilow/Satariel to eternals.json left them unrecommendable —
   verified 0 of 53 artifacts contained one. rankBlessings enumerates
   `eternal:<id>:major` keys in fixtures/effects.json. Registering them there
   (kind:unmodeled, with a note on why each resists the sim) put them in all 53
@@ -2830,3 +2830,118 @@ field against a quantity it cannot exceed BEFORE reporting it.
   6,147 = 254,877).
 - 1.15.3 still scores 16/18 on the corrected explicit baseline — the headline
   survived the repair, which is the point of re-deriving rather than patching.
+
+## 2026-08-28 — "revisit the setup and the data": a refresh that found the pipeline lying to itself
+
+Asked to revisit the project and update the data. The refresh was the smallest
+part; what it exposed was five ways the pipeline confirmed its own stale state.
+
+- **`fetchedAt` is not patch identity.** The snapshot was pulled 2026-08-11 at
+  14:29 UTC, hours after 1.16 shipped, and looked current by every field we
+  record. It was not: omeda's catalog lags the live game by days-to-weeks, and
+  the catalog it returned that day was still pre-1.15.3. The engine ran the
+  entire 1.16 era on hero and item numbers two patches old. A timestamp records
+  when we asked, never what we got — check the CONTENT against the patch notes.
+  `npm run patchcheck` now does exactly that and is a harness gate.
+- **A hand-pinned gate is only as current as its last editor.** The PATCH GATE
+  test pinned Gideon's 1.14.4 values and passed green for five weeks across two
+  patches that changed them, because the frozen owned data it silently fell
+  back to still held exactly those numbers. A test asserting a hardcoded
+  constant cannot detect that the world moved; it detects that nobody edited
+  the test. The general form — grade every machine-checkable stated change —
+  found the staleness in one run.
+- **A silent fallback is worse than a failure.** 15 abilities across 10 heroes
+  failed to parse from current text and quietly served pre-1.14 numbers from
+  the frozen scrape. The mechanism was tracked (`staleFallbacks`) and printed,
+  and nobody had ever acted on the number. Tracking a defect is not the same as
+  gating on it; the count is now ratcheted.
+- **The verifier can only check what it was pointed at.** Numeric ground-checks
+  passed happily on 24 optimizer blocks explaining items the build no longer
+  contained: every number was real, it just belonged to the previous build. And
+  the ability-tips ingest seeded its output from the committed file while only
+  leaving rejected lines *uncounted*, so a tip that stopped grounding kept its
+  old text — Bayle's "2.5x damage" outlived the nerf to 2.3x and Maco's tip
+  outlived its mechanic entirely. Verify the SHAPE of the claim, not only its
+  numbers, and make a rejection delete something.
+- **Internal consistency is not correctness.** The Eternal Satariel was entered
+  as "Satatriel" and, because the name doubles as the join key, 62 committed
+  files agreed with each other and all were wrong. The patch digest, captured
+  from the official notes, had it right the whole time. Check names against the
+  source, not against yourself. The same check found `n3on` vs `neon` — three
+  digests recording Neon's changes under a slug that joined to nothing — and
+  that `apply-patch.js` decided who exists from the frozen 50-hero profile list
+  rather than the 54-hero roster, so four heroes could never receive patch
+  state at all. It reported them, as a console line nobody read.
+
+Two things I got wrong while fixing this, both caught by looking at the output
+rather than trusting the diff:
+- The clause-scoped parser initially read Zinx's ultimate — "if the Target takes
+  lethal DAMAGE ... they Resurrect with 500/900/1300 Health" — as a 1300-damage
+  nuke, which flipped him from support enchanter to burst carry. A clause
+  containing the word "damage" is not a damage payload; the word that FOLLOWS
+  the number decides.
+- Its second attempt used a fixed 140-character window to find that word, which
+  the tag soup on dual-scaling abilities (Terra's Armor+MR, Yin's AD+AP) runs
+  right past — so Terra silently fell back to stale numbers again. Auditing all
+  23 parses against their live text, rather than the four I had reasoned about,
+  is what surfaced it.
+
+**Two patches, two clocks.** The site published one "patch" pill for everything
+while the catalog (1.16) and the match window the boards come from (1.15.3/
+1.15.4) genuinely differ, and will differ most of the time, because the public
+feed runs behind live. One label for two clocks is wrong in both directions at
+different times. It now reads "kit 1.16 · boards 1.15.3/1.15.4", derived from
+the patchcheck verdict rather than typed in. The same split applies to spike
+minutes: 1.16 reworked jungle camp gold, tower plating gold and lane buffs, so
+the measured gold curves the timings come from describe an economy that no
+longer exists. Flagged in place, not adjusted.
+
+**A new hero is the honesty test.** Scarlett arrived with a full kit and no
+field layer at all, and she is the most-looked-up page on the site in her first
+fortnight — the worst possible place to imply evidence we do not have. Rather
+than let the coverage gates fail or fabricate a win rate, the gap is DECLARED
+(data/aggregates/field-data-pending.json), the gates require a declaration
+instead of accepting a silent hole, and they check nobody established is hiding
+behind it. Two lines that contradicted the resulting banner had to go with it:
+"thin sample" where the sample is zero, and a kit-math Eternal pick printed as
+"+0% headline", which reads as a recommendation the math never made.
+
+**Competitor read.** PredBuilds analyses 590.8K matches over 30 days; our meta
+board is an 8,243-match, 36-hour window. Competing on win-rate boards is a
+losing trade we cannot win on sample or cadence. The explanation layer — why
+this build wins, item by item, and when a lane is winnable — is the thing
+neither upstream offers, and `npm run explain` has been engine-done since
+2026-06-13 without ever reaching the hero page. Written into priorities.md 13.
+
+## 2026-08-29 — creds arrived: what a token is entitled to is a separate fact from having one
+
+- **Authenticated ≠ authorized, field by field.** The new PREDGG app creds
+  exchange fine and the token carries scope `profile offline_access`, roles [].
+  That tier reads generalStatistic, recommendedSkills, player profiles/matches
+  and the leaderboard — but `simpleBuild` and `coreBuild` are Forbidden, which
+  are precisely the augment-evidence and build-statistics fields the refresh
+  was for. The server also silently DROPS unrequested-scope grants rather than
+  erroring, so "token works" proves nothing about any specific field. Probe the
+  actual queries each pass uses before declaring a refresh unblocked; the truth
+  table went in priorities item 1.
+- **The split analysis cost zero extra pulls.** Item 12 wanted a ranked vs
+  ranked+standard comparison before switching scope. Instead of pulling twice,
+  the ranked-only pull now ALIASES a second simpleBuild scoped to both modes in
+  the same request — same call count, and the pairs are sampled at the same
+  instant so the subtraction is exact. Wired and waiting on the permission fix.
+- **The 1.16 scorecard matured 13/21 -> 17/21** on the re-pulled 18-day window
+  (same code, bigger sample) — the early-window honesty framing from 08-14 was
+  the right call: four "misses" were just immaturity.
+- **"Event-based" without webhooks is a committed high-water mark.** Nothing in
+  the Predecessor ecosystem pushes events, so the squad coach automation is a
+  poll that is honest about it: watcher diffs five members' match lists (one
+  aliased call) against data/postgame/watch-state.json, keyed by startTime per
+  member (uuids do not order), dedupes the 5-stack game by match uuid so one
+  game triggers one coach run, initialises without replaying history, and looks
+  back 8 games so an evening between fires is caught whole. The marker is
+  COMMITTED because the fired sessions are ephemeral — repo state is the only
+  memory an hourly fresh session has.
+- **A watcher that no-ops on missing creds is indistinguishable from "no games
+  forever."** The credentials gate exits 2 loudly instead, and the Routine
+  prompt makes that a stop-and-report, not a skip. Same lesson as apply-patch's
+  console line nobody read: a report nobody is forced to see is not a gate.
