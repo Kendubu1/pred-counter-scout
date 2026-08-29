@@ -399,6 +399,8 @@
   .mb-toggle.active { color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
   .mb-bands { flex-basis:100%; display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.15rem; }
   .mb-bands .mb-toggle { margin-left:0; }
+  .lanepanel .mb-head { align-items:center; }
+  .lanepanel .mb-toggle { margin-left:0; }
   .lanes { display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:.7rem; margin-top:.8rem; }
   .lane { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:.7rem .75rem; }
   .lane h3 { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.45rem; }
@@ -565,6 +567,43 @@ function metaMinSample(matches) { return Math.max(300, Math.round((matches || 0)
 // committed meta.json carries rolesByBand. Sticky per browser.
 let metaBand = 'all';
 try { metaBand = localStorage.getItem('metaBand') || 'all'; } catch { /* private mode */ }
+// The one source of truth for the board filters, shared by the meta board AND
+// the lane room so expanding a lane keeps the selected band + sample floor.
+function metaFilterState() {
+  const bands = (META?.rankBands && META?.rolesByBand) ? META.rankBands : null;
+  if (metaBand !== 'all' && !(bands && META.rolesByBand[metaBand])) metaBand = 'all';
+  const boardRoles = metaBand === 'all' ? META.roles : META.rolesByBand[metaBand];
+  const boardMatches = metaBand === 'all' ? META.matches : (META.matchesByBand?.[metaBand] ?? META.matches);
+  return {
+    bands, boardRoles, boardMatches,
+    minSample: metaMinSample(boardMatches),
+    bandLabel: metaBand === 'all' ? '' : ` · ${bands.find((b) => b.key === metaBand)?.label ?? metaBand} only`,
+  };
+}
+// Both filter controls, rendered identically on the meta board and in the lane
+// room. Handlers are bound per container so each surface refreshes BOTH views.
+function metaFilterControlsHtml() {
+  const st = metaFilterState();
+  return `
+      <button class="mb-toggle mb-bigonly${metaBigOnly ? ' active' : ''}" title="Hide picks with under ${st.minSample.toLocaleString()} games this patch (~1% of the window) — small samples read as Sleeper 💤 and can swing patch to patch">${metaBigOnly ? '✓ ' : ''}${st.minSample.toLocaleString()}+ games only</button>
+      ${st.bands ? `<div class="mb-bands" title="Filter the boards to games played at a rank band — the meta shifts with skill level. All ranks includes players without a placed rank.">${[{ key: 'all', label: 'All ranks' }, ...st.bands].map((b) => `<button class="mb-toggle band${metaBand === b.key ? ' active' : ''}" data-band="${esc(b.key)}">${esc(b.label)}</button>`).join('')}</div>` : ''}`;
+}
+function bindMetaFilterControls(container) {
+  const rerender = () => { renderMetaboard(); if (roleFilter !== 'all') renderLaneDetail(); };
+  container.querySelectorAll('.mb-bands .mb-toggle').forEach((b) => {
+    b.onclick = () => {
+      metaBand = b.dataset.band;
+      try { localStorage.setItem('metaBand', metaBand); } catch { /* private mode */ }
+      rerender();
+    };
+  });
+  const big = container.querySelector('.mb-bigonly');
+  if (big) big.onclick = () => {
+    metaBigOnly = !metaBigOnly;
+    try { localStorage.setItem('metaBigOnly', metaBigOnly ? '1' : '0'); } catch { /* private mode */ }
+    rerender();
+  };
+}
 
 async function getJson(path) { return (await fetch(path)).json(); }
 
@@ -697,7 +736,10 @@ async function renderLaneDetail() {
   const box = $('#lanedetail');
   if (roleFilter === 'all' || !META) { box.innerHTML = ''; return; }
   const role = roleFilter;
-  const laneMeta = META.roles[role] || [];
+  // The lane room follows the meta board's filters (rank band + sample floor)
+  // instead of silently reverting to the unfiltered all-ranks board.
+  const filterSt = metaFilterState();
+  const laneMeta = (filterSt.boardRoles[role] || []).filter((h) => !metaBigOnly || h.games >= filterSt.minSample);
   const laneSlugs = INDEX.heroes.filter((h) => h.role === role).map((h) => h.slug);
   box.innerHTML = '<div class="lanepanel">loading lane sims…</div>';
   const arts = new Map();
@@ -829,7 +871,8 @@ async function renderLaneDetail() {
   box.innerHTML = `
     <div class="lanepanel">
       <h2>${LANE_LABELS[role]} · lane room</h2>
-      <div class="lp-sub">${META.matches.toLocaleString()} matches, patch ${esc(META.patch)}, ${esc(META.scope || 'all ranks')}${metaWindowNote()}</div>
+      <div class="lp-sub">${filterSt.boardMatches.toLocaleString()} matches, patch ${esc(META.patch)}, ${esc(META.scope || 'all ranks')}${filterSt.bandLabel}${metaWindowNote()}</div>
+      <div class="mb-head" style="margin-top:.4rem">${metaFilterControlsHtml()}</div>
       <div class="lmode">
         <button data-m="first" class="${laneMode === 'first' ? 'active' : ''}"><span data-bic="counter-pick" data-bic-size="15"></span> picking first</button>
         <button data-m="counter" class="${laneMode === 'counter' ? 'active' : ''}"><span data-bic="matchup" data-bic-size="15"></span> countering their pick</button>
@@ -839,6 +882,7 @@ async function renderLaneDetail() {
       ${simPickBlock(role)}
     </div>`;
   if (window.BrandIcons) window.BrandIcons.hydrate(box);
+  bindMetaFilterControls(box);
   box.querySelectorAll('.lmode button').forEach((b) => { b.onclick = () => { laneMode = b.dataset.m; renderLaneDetail(); }; });
   box.querySelectorAll('.echip').forEach((c) => {
     if (c.classList.contains('lane-switch')) {
@@ -911,18 +955,12 @@ function simPickBlock(role) {
 function renderMetaboard() {
   if (!META) { $('#metaboard').innerHTML = ''; return; }
   const wrClass = (wr) => (wr >= 0.52 ? 'up' : wr <= 0.48 ? 'down' : 'flat');
-  const bands = (META.rankBands && META.rolesByBand) ? META.rankBands : null;
-  if (metaBand !== 'all' && !(bands && META.rolesByBand[metaBand])) metaBand = 'all';
-  const boardRoles = metaBand === 'all' ? META.roles : META.rolesByBand[metaBand];
-  const boardMatches = metaBand === 'all' ? META.matches : (META.matchesByBand?.[metaBand] ?? META.matches);
-  const bandLabel = metaBand === 'all' ? '' : ` · ${bands.find((b) => b.key === metaBand)?.label ?? metaBand} only`;
-  const minSample = metaMinSample(boardMatches);
+  const { boardRoles, boardMatches, minSample, bandLabel } = metaFilterState();
   $('#metaboard').innerHTML = `
     <div class="mb-head">
       <h2>The meta board</h2>
       <span class="mb-sub">each lane's strongest picks by <b>win rate</b> · ${boardMatches.toLocaleString()} matches, patch ${esc(META.patch)}, ${esc(META.scope || 'all ranks')}${bandLabel}${metaWindowNote()}</span>
-      <button class="mb-toggle${metaBigOnly ? ' active' : ''}" id="mbBigOnly" title="Hide picks with under ${minSample.toLocaleString()} games this patch (~1% of the window) — small samples read as Sleeper 💤 and can swing patch to patch">${metaBigOnly ? '✓ ' : ''}${minSample.toLocaleString()}+ games only</button>
-      ${bands ? `<div class="mb-bands" title="Filter the boards to games played at a rank band — the meta shifts with skill level. All ranks includes players without a placed rank.">${[{ key: 'all', label: 'All ranks' }, ...bands].map((b) => `<button class="mb-toggle band${metaBand === b.key ? ' active' : ''}" data-band="${esc(b.key)}">${esc(b.label)}</button>`).join('')}</div>` : ''}
+      ${metaFilterControlsHtml()}
     </div>
     <details class="sim-collapse uxlegend" id="uxLegend"><summary>What the win-rate colors &amp; pick tags mean</summary><div class="lp-sub">${LEGEND_HTML}</div></details>
     <div class="lanes">
@@ -938,20 +976,10 @@ function renderMetaboard() {
           <button class="lane-more" data-lane="${role}">full lane — more picks, top players &amp; kit-math →</button>
         </div>`).join('')}
     </div>`;
-  document.querySelectorAll('.mp').forEach((c) => { c.onclick = () => nav(c.dataset.slug, false, c.dataset.role); });
-  document.querySelectorAll('.lane-go, .lane-more').forEach((h) => { h.onclick = () => pickLane(h.dataset.lane); });
-  $('#mbBigOnly').onclick = () => {
-    metaBigOnly = !metaBigOnly;
-    try { localStorage.setItem('metaBigOnly', metaBigOnly ? '1' : '0'); } catch { /* private mode */ }
-    renderMetaboard();
-  };
-  document.querySelectorAll('.mb-bands .mb-toggle').forEach((b) => {
-    b.onclick = () => {
-      metaBand = b.dataset.band;
-      try { localStorage.setItem('metaBand', metaBand); } catch { /* private mode */ }
-      renderMetaboard();
-    };
-  });
+  const mb = $('#metaboard');
+  mb.querySelectorAll('.mp').forEach((c) => { c.onclick = () => nav(c.dataset.slug, false, c.dataset.role); });
+  mb.querySelectorAll('.lane-go, .lane-more').forEach((h) => { h.onclick = () => pickLane(h.dataset.lane); });
+  bindMetaFilterControls(mb);
 }
 
 // Open a lane's "lane room" as if the rolebar lane was picked, and scroll to it.
