@@ -242,12 +242,55 @@ to be blunt. Blunt is a claim about a decision, priced: it is not rudeness.
   night gets a shorter, session-hygiene review, not a harsher one).
 - **A minute is not a receipt.** Never cite a bare timestamp: every minute
   travels with the event it names — the fight and its score, the objective
-  at stake, the death it priced ("absent from the 0–3 at their Fangtooth
+  at stake, the death that preceded it ("absent from the 0–3 at their Fangtooth
   (20.5)", never "absent at 20.5"). A number without context reads as
   noise to the player it's aimed at and gets tuned out with the rest.
+
 - **Bluntest where the evidence is hardest:** conceded-uncontested
   objectives, thrown favored lanes, ward-war routs, and won-fights-cashed
   gaps are where the blunt register belongs, because the numbers carry it.
+
+**The readability contract (humanizer pass, 2026-08-30, at the maintainer's
+ask).** A pattern pass over the first seven new-method reviews found the
+wording drifting hard into known AI-writing tells (cross-checked against the
+humanizer skill catalog, github.com/blader/humanizer, itself built from
+Wikipedia's "Signs of AI writing"). The rules, each mined from a real
+offender in our own copy:
+
+1. **One metaphor: "cashed."** That is the house word for converting a won
+   fight. Retire the rest of the ledger vocabulary — no "priced/pricing",
+   "on the receipt", "banked", "the ledger", "the cost column". Say what
+   happened: "his death at 25.3 was followed by their Orb Prime a minute
+   later", not "his death priced Orb Prime".
+2. **At most two timestamps per sentence.** Three or more minutes in a row
+   become a count ("caught alone three times before minute 14"); the UI
+   already renders the exact minutes. One minute-list per review, max.
+3. **One idea per sentence.** Break at roughly 25 words. At most one em-dash
+   per sentence and none in headlines; a semicolon chain of fight summaries
+   becomes separate sentences. (Humanizer #14, #31.)
+4. **Scorelines are descriptions, not nouns.** "The fight at 14.6, lost
+   0-2" — never "the 0-2 at 14.6" as a sentence subject.
+5. **Numbers carry their unit, with thousands separators.** "13,464
+   objective damage", never a bare "(13464)". No rounding or derived
+   figures — the honesty verifier only passes numbers present in the facts.
+6. **No internal-artifact voice.** "The file says", "the sheet", "the
+   file's own note" — state the fact directly ("that loss bought Mini Prime
+   across the map"). The idiom "on paper" is fine; "the paper called" is
+   borderline, prefer "our pre-game read had mid favored".
+7. **One coined maxim per review, max.** "A won lane left in the lane" is
+   seasoning; five per review is a fortune-cookie machine. (Humanizer #32.)
+8. **"Not X, but Y" once per review, max.** The antithesis formula ("a
+   trade, not a throw"; "discipline, not the build") is the loudest AI tell
+   in the set. (Humanizer #9.)
+9. **No pretend-depth announcers.** "The line to remember is", "the one
+   that says everything", "at its core" — just state the point.
+   (Humanizer #27.)
+10. **Plain verbs.** "Is/has/took/fell" over "carries the signature",
+    "runs in reverse", "held its weight". (Humanizer #8.)
+
+The critic enforces these as flag (g), scoped to exactly this list — the
+no-style-nitpicking rule still stands for everything not named here.
+
 
 ## 5. What changed because of this research
 
