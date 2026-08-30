@@ -3280,3 +3280,29 @@ circles were still ambiguous:
 - meta.json is backward/forward compatible: `rolesByBand`/`rankBands`/
   `matchesByBand` are additive and the UI falls back to the all-ranks board
   (and hides the selector) when they're absent.
+
+### The humanizer pass (2026-08-30)
+
+The maintainer's read on the first seven new-method reviews: the coaching
+was right and unreadable. A pattern pass cross-checked against the humanizer
+AI-writing catalog (blader/humanizer, built from Wikipedia's "Signs of AI
+writing") found our copy hitting the known tells — and one home-grown class
+worse than any of them:
+
+- **The pipeline's internal vocabulary had leaked into squad-facing copy.**
+  "Deaths pricing towers", "on the receipt", "banked", "the cost column" —
+  ledger metaphors from our own engine passes, meaningless to a player.
+  The plain-language contract already banned jargon; nobody had noticed the
+  jargon we invented ourselves. One metaphor survives ("cashed").
+- **Every fix breeds its own excess.** The minute-context rule ("a minute is
+  not a receipt") overcorrected into timestamp flooding — sentences carrying
+  five minutes each. New cap: two per sentence, runs become counts.
+- **Readability edits drift facts.** The wording-only rewrite still produced
+  grounding errors the critic caught: 68k vs the source's 67,562, a fight
+  order reversed, a wrong-side tower, an ENEMY hero credited in a praise
+  line. 20 flags on 115 lines (82.6%), all 20 grounded rewrites applied.
+  A rewrite pass without the critique round after it would have shipped
+  every one of those.
+- Ten readability rules now live in the methodology (§4), the coach agent,
+  and critic flag (g) — scoped to the named patterns so the
+  no-style-nitpicking rule still holds.
