@@ -3306,3 +3306,30 @@ worse than any of them:
 - Ten readability rules now live in the methodology (§4), the coach agent,
   and critic flag (g) — scoped to the named patterns so the
   no-style-nitpicking rule still holds.
+
+### buildReads: teaching the why on builds (2026-08-30)
+
+The maintainer's ask: the coach was grading builds ("missing Tainted Guard
+from the 54.6% core") without teaching anything. New layer: every us-player
+gets `buildReads` — a build line (2-4 sentences, what this build gained vs
+gave up, mechanics in plain words from the item catalog, numbers only from
+the facts file) and an eternal line (why this loadout fits the matchup,
+trade-off included, NO numeric deltas — the sim doesn't model per-game
+Eternal output). Rendered as collapsed `details.whyd` dropdowns under the
+BUILD and ETERNAL rows so the lobby stays scannable.
+
+- **"Why this fits" vs "you picked wrong" is a real line the critic can
+  hold.** 35 pairs authored across 7 games; the one flag was exactly the
+  spec's forbidden move — a counterfactual "a health-stacking blessing would
+  have traded his chip damage for staying upright" on Steel's Vesh loadout,
+  prescribing an Eternal the feed doesn't record. The rewrite kept the
+  eleven-deaths fact and ended on the trade-off instead. 99.5% agreement,
+  gate passed round 21 in one pass.
+- **Plain-word catalog mechanics don't need SOURCE numbers.** The critic was
+  told (and correctly held to) the split: item/Eternal mechanics described
+  from the catalog in plain words are fine ungrounded; any NUMBER must be in
+  the facts file. This is what lets the reasoning teach without inviting
+  invented stats.
+- Playwright module resolution is by script location, not cwd — a scratchpad
+  .mjs can't import playwright-core even when run from engine/; copy the
+  script into engine/ first.
