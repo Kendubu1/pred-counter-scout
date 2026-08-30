@@ -11,6 +11,25 @@ and commits data-only changes to `main`. It complements the hourly "Squad
 postgame coach" Routine (docs/coach-automation.md): that one reacts to the
 squad's GAMES; this one keeps the SHELVES stocked.
 
+## Architecture change (2026-08-30): persistent worker session
+
+Fresh-per-fire sessions turned out to have NO git authorization for this
+repo: a run coached a game, went green, committed — and the push died on a
+403 from the git proxy ("repo isn't in the session's authorized set"),
+stranding the commit in an ephemeral container. Source/credential config
+lives on a SESSION, and Routines cannot attach sources to the fresh
+sessions they spawn — so the Routine now fires into a PERSISTENT WORKER
+session created with the repo attached as a source (push access to main),
+which survives container recycling. Consequences:
+- Each fire starts with `git fetch origin main && git reset --hard
+  origin/main` — the worker's clone is disposable; leftovers from an
+  interrupted run are debris, never work to keep.
+- A stranded-commit failure is impossible to lose data to: the watch
+  marker only advances when a push lands, so an interrupted run's games
+  are re-detected and re-coached on the next fire (this is the standing
+  self-healing design doing its job).
+- The old fresh-session Routines are disabled, kept for reference.
+
 ## Step 0 — bootstrap (added 2026-08-30 after a repo-less fire)
 
 Fired sessions have started with an EMPTY environment (no repo at
