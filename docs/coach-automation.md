@@ -72,7 +72,8 @@ not in the env, stop immediately and report — no partial work.
    (all idempotent — they only touch films missing their block).
 4. Coaching narrative (session compute, NO API key — the standing copy policy):
    author the `coaching` block for each new game the way the pred-scout-coach
-   agent does — grounded ONLY in that game's facts file — then run the
+   agent does — grounded ONLY in that game's facts file, including the
+   buildReads teaching layer (gained-vs-lost reasoning per player) — then run the
    independent critique loop SCOPED TO THE NEW GAMES ONLY:
    `COACH_GAMES=<id,id,...> COPY_MODE=prepare npm run coach:critique:prepare`,
    the independent critic pass, `COACH_GAMES=<same ids> npm run coach:critique`,
