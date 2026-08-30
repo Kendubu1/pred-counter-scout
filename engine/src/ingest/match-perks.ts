@@ -40,7 +40,8 @@ const UA = 'pred-counter-scout (github.com/Kendubu1/pred-counter-scout)';
 // 2026-08-29: ~2-3 req/s drew a transient HTTP 403 (rate limit / bot guard)
 // a few dozen pages in; it clears on its own within seconds. Pace gentler
 // and treat 403/429 as a long cool-down, not a failure.
-const PAGE_DELAY_MS = 450;
+const PAGE_DELAY_MS = Number(process.env.PAGE_DELAY_MS || 450);
+const COOLDOWN_MS = Number(process.env.COOLDOWN_MS || 90_000);
 const SAVE_EVERY = 100;
 const MIN_DURATION_S = 300;
 
@@ -75,8 +76,8 @@ async function fetchPage(cursor: number): Promise<any[]> {
     try {
       const res = await fetch(`https://pred.gg/api/public/get-matches-since/${cursor}/`, { headers: { 'User-Agent': UA } });
       if (res.status === 403 || res.status === 429) { // rate limit: long cool-down, then resume
-        console.log(`rate-limited (HTTP ${res.status}); cooling down 90s`);
-        await new Promise((r) => setTimeout(r, 90_000));
+        console.log(`rate-limited (HTTP ${res.status}); cooling down ${COOLDOWN_MS / 1000}s`);
+        await new Promise((r) => setTimeout(r, COOLDOWN_MS));
         lastErr = new Error(`HTTP ${res.status}`);
         continue;
       }
@@ -114,12 +115,21 @@ async function main() {
   const windowDays = Number(process.env.WINDOW_DAYS || 3);
   const since = process.env.SINCE ? Number(process.env.SINCE) : Math.floor(Date.now() / 1000) - windowDays * 86400;
   const endEpoch = Math.floor(Date.now() / 1000) - 120;
-  const maxPages = Number(process.env.MAX_PAGES || Infinity);
+  // MAX_PAGES=0 skips the crawl entirely and (re)writes the aggregate from
+  // the saved state — useful to ship a partial window while a resume runs.
+  const maxPages = process.env.MAX_PAGES !== undefined ? Number(process.env.MAX_PAGES) : Infinity;
 
+  // Saved state ALWAYS wins unless RESET=1: a resumed session keeps the
+  // original window start and continues from the saved cursor (WINDOW_DAYS/
+  // SINCE only shape a fresh start). Learned the hard way 2026-08-29: a
+  // fresh-computed `since` mismatching the saved one silently started an
+  // empty session and clobbered 1,000 pages of tallies. State is also
+  // backed up to .bak before this session can overwrite it.
   let st: State = { since, cursor: since, pages: 0, matches: 0, ranked: 0, kept: 0, seen: [], tallies: {} };
   if (!process.env.RESET && existsSync(STATE_FILE)) {
-    const prev = JSON.parse(readFileSync(STATE_FILE, 'utf8')) as State;
-    if (prev.since === since || process.env.SINCE || !process.env.WINDOW_DAYS) { st = prev; console.log(`resuming: cursor ${new Date(st.cursor * 1000).toISOString()} after ${st.pages} pages`); }
+    st = JSON.parse(readFileSync(STATE_FILE, 'utf8')) as State;
+    writeFileSync(STATE_FILE + '.bak', JSON.stringify(st));
+    console.log(`resuming: cursor ${new Date(st.cursor * 1000).toISOString()} after ${st.pages} pages (${st.kept} ranked kept)`);
   }
   const seen = new Set(st.seen);
 
@@ -187,6 +197,7 @@ async function main() {
   console.log(`crawl done: ${st.pages} pages, ${st.kept} ranked matches kept, window ${new Date(st.since * 1000).toISOString()} -> ${new Date(st.cursor * 1000).toISOString()}`);
 
   // ---- perk catalog (internal name -> id/display/slot + eternal minors) ----
+  if (st.kept === 0) { console.error('no ranked matches in state — refusing to write an empty aggregate'); process.exit(1); }
   if (!hasCredentials()) { console.error('needs PREDGG_CLIENT_ID/SECRET for the perk catalog'); process.exit(1); }
   interface MinorData { id: string; slot: string; displayName: string; description: string; icon: string | null }
   const cat = await gql<{ perks: { id: string; name: string; data: { slot: string; displayName: string; description: string; hero: { slug: string } | null; minorBlessings: MinorData[] | null } | null }[] }>(
