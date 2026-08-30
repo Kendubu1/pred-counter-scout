@@ -535,6 +535,12 @@ function itemWhyRows(items, whyMap) {
   return `<div class="mb-items-why">${rows}</div>`;
 }
 const IMG = { hero: (s) => `../img/heroes/${s}.webp`, item: (s) => `../img/items/${s}.webp`, eternal: (s) => `../img/eternals/${s}.webp` };
+// Display floor for Eternal/crest evidence rows, scaled with the aggregate's
+// window sample (a 3-day match-feed window is far smaller than the whole-patch
+// samples the fixed 300 floor was tuned for). 300 stays the cap and the
+// fallback for aggregates that predate the `matches` field.
+const etFloor = () => (typeof AUGS !== 'undefined' && AUGS && AUGS.matches)
+  ? Math.min(300, Math.max(30, Math.round(AUGS.matches / 120))) : 300;
 // A minor blessing's in-game card icon (id-keyed snapshot from the pred.gg
 // perk catalog); empty string when the catalog hasn't loaded or lacks it.
 const minorIcon = (name, px) => {
@@ -1302,7 +1308,7 @@ function renderHero(a, roleParam) {
             const noise = usable.reduce((s, c) => s + (mean * (1 - mean)) / c.n, 0) / usable.length;
             k = Math.min(Math.max((mean * (1 - mean)) / Math.max(varObs - noise, 1e-5) - 1, 10), 500);
           }
-          return all.filter((e) => e.n >= 300)
+          return all.filter((e) => e.n >= etFloor())
             .map((e) => ({ ...e, shrunk: (e.w + k * mean) / (e.n + k) }))
             .sort((x, y) => y.shrunk - x.shrunk).slice(0, 3);
         })();
@@ -1525,7 +1531,7 @@ function renderHero(a, roleParam) {
           return `${lead}${runnerUps.length ? `<details class="sim-collapse"><summary>Other Eternals</summary><div class="body">${runnerUps.map((e, i) => runnerRow(e, i + 1)).join('')}</div></details>` : ''}`;
         })()}
         ${(() => {
-          const crs = (cell.crests || []).filter((c) => c.n >= 300).sort((x, y) => (y.w / y.n) - (x.w / x.n)).slice(0, 3);
+          const crs = (cell.crests || []).filter((c) => c.n >= etFloor()).sort((x, y) => (y.w / y.n) - (x.w / x.n)).slice(0, 3);
           if (!crs.length) return '';
           const cslug = (n) => n.toLowerCase().replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
           // CREST is EXPANDED by default — a visible block titled like the

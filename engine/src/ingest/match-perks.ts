@@ -72,7 +72,8 @@ function bump(rec: Record<string, NW>, key: string, win: boolean) {
 async function fetchPage(cursor: number): Promise<any[]> {
   let lastErr: unknown;
   let delay = 2000;
-  for (let attempt = 0; attempt < 8; attempt++) {
+  const RETRIES = Number(process.env.RETRIES || 8);
+  for (let attempt = 0; attempt < RETRIES; attempt++) {
     try {
       const res = await fetch(`https://pred.gg/api/public/get-matches-since/${cursor}/`, { headers: { 'User-Agent': UA } });
       if (res.status === 403 || res.status === 429) { // rate limit: long cool-down, then resume
@@ -265,6 +266,7 @@ async function main() {
     source: `computed by our own aggregator from the pred.gg PUBLIC match feed (/api/public/get-matches-since, dev-sanctioned bulk pull), RANKED matches only, ${new Date(st.since * 1000).toISOString().slice(0, 10)} -> ${new Date(st.cursor * 1000).toISOString().slice(0, 10)} (${st.kept.toLocaleString()} matches)`,
     note: 'augment = the hero-specific perk locked in the first ~20s; winrates are observational evidence, not engine math; matches carry no patch field — the window is partitioned by date against patch release days; eternal rows carry per-minor winrates (new: the old simpleBuild source never exposed minors)',
     rankBands: null as null,
+    matches: st.kept, // window sample size — the UI scales its display floors with this
     catalog,
     eternals: eternalCatalog,
     heroes,
