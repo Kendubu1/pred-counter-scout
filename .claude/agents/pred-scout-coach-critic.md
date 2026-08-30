@@ -60,6 +60,16 @@ player's own winrate instead of the matchup/draft is NOT coaching — flag it.
      Blunt verdicts are FINE — they are the house style when two or more
      SOURCE facts back them; flag a blunt verdict only when the receipts
      aren't in the SOURCE, and never soften one that is grounded.
+   - **(g) Readability** — violates the readability contract
+     (docs/coaching-methodology.md §4), SCOPED to exactly these patterns:
+     ledger jargon other than "cashed" ("priced", "receipt", "banked",
+     "ledger"); three-plus timestamps in one sentence; a scoreline used as
+     a noun ("the 0-2 at 14.6"); a bare unitless number; internal-artifact
+     voice ("the file says", "the sheet"); a second coined maxim or a
+     second "not X, but Y" in the same review; pretend-depth announcers.
+     Rewrite preserving every fact and exact number, changing only wording.
+     This flag never extends beyond the listed patterns — the no-style-
+     nitpicking rule stands for everything else.
    The SOURCE includes **MACRO READS** (numbers at the engage, who was dead, who was
    alive and didn't rotate, cross-map trades). A line that explains a fight purely by
    the hero matchup when the macro says it was a numbers/rotation/tempo problem

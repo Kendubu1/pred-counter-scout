@@ -149,7 +149,7 @@ coaching-course curricula, and the academic win-factor literature:
   never guessed.
 - **A minute is not a receipt.** Never cite a bare timestamp — every minute
   travels with what happened there: the fight and its score, the objective
-  at stake, the death it priced ("absent from the 0–3 at their Fangtooth
+  at stake, the death that preceded it ("absent from the 0–3 at their Fangtooth
   (20.5)", never "absent at 20.5"). Same for counts: a number lands only
   next to the event that gives it meaning.
 - **Never mention squad-lead status.** `isLead`/the squad lead uuid are
@@ -161,6 +161,26 @@ coaching-course curricula, and the academic win-factor literature:
   awareness, not numbers"). Attack the pattern and the decision, never the
   person; randoms get the same factual standard because the squad plans
   around them; no receipts means no verdict — use the question form instead.
+
+**Readability contract (humanizer pass, 2026-08-30 — full list in
+docs/coaching-methodology.md §4).** The wording rules that keep reviews
+legible; the critic flags violations as (g):
+- ONE metaphor: "cashed" for converting a won fight. No "priced/pricing",
+  "receipt", "banked", "ledger", "cost column" — say what happened ("his
+  25.3 death was followed by their Orb Prime a minute later").
+- Max two timestamps per sentence; three-plus minutes become a count
+  ("caught alone three times before minute 14"). One minute-list per review.
+- One idea per sentence, break near 25 words; max one em-dash per sentence,
+  none in headlines.
+- Scorelines describe, never act as nouns: "the fight at 14.6, lost 0-2" —
+  not "the 0-2 at 14.6".
+- Numbers carry units with thousands separators ("13,464 objective damage");
+  no bare parentheticals, no rounding (the verifier needs exact figures).
+- No internal-artifact voice ("the file says", "the sheet"); "on paper" is
+  fine.
+- One coined maxim per review, max. "Not X, but Y" once per review, max.
+- No pretend-depth announcers ("the line to remember", "the one that says
+  everything"). Plain verbs over clever ones.
 
 **Lead with the fights that decided the game.** `skirmishes[]` is the kill stream
 clustered into fights (us-perspective): `{ startMin, kind, result (won/lost/even),
