@@ -10,6 +10,17 @@ Routine fires a fresh Claude session on a cadence; the session runs the watcher
 and either exits quietly (no new games — one API call spent) or works the full
 pipeline for each new match.
 
+## Step 0 — bootstrap (added 2026-08-30 after a repo-less fire)
+
+Fired sessions have started with an EMPTY environment (no repo at
+/home/user/pred-counter-scout; the 2026-08-30 15:51 fire found /home/user
+bare and could do nothing). The Routine prompts now carry the fix, and it
+is policy: **if the repo is missing, clone it before anything else** —
+`git clone https://github.com/Kendubu1/pred-counter-scout` with up to 4
+retries on network failure — and only report "repo unavailable" if the
+clone itself fails. A fired session must never report "nothing to do"
+because the environment forgot the checkout.
+
 ## The moving parts
 
 | Piece | Where | What it does |

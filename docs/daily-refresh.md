@@ -11,6 +11,17 @@ and commits data-only changes to `main`. It complements the hourly "Squad
 postgame coach" Routine (docs/coach-automation.md): that one reacts to the
 squad's GAMES; this one keeps the SHELVES stocked.
 
+## Step 0 — bootstrap (added 2026-08-30 after a repo-less fire)
+
+Fired sessions have started with an EMPTY environment (no repo at
+/home/user/pred-counter-scout; the 2026-08-30 15:51 fire found /home/user
+bare and could do nothing). The Routine prompts now carry the fix, and it
+is policy: **if the repo is missing, clone it before anything else** —
+`git clone https://github.com/Kendubu1/pred-counter-scout` with up to 4
+retries on network failure — and only report "repo unavailable" if the
+clone itself fails. A fired session must never report "nothing to do"
+because the environment forgot the checkout.
+
 ## What the fired session does
 
 All commands from `engine/` after `npm install`. **Credentials gate first**: if
