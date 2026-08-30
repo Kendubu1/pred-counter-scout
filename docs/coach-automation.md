@@ -54,9 +54,13 @@ not in the env, stop immediately and report — no partial work.
 4. Coaching narrative (session compute, NO API key — the standing copy policy):
    author the `coaching` block for each new game the way the pred-scout-coach
    agent does — grounded ONLY in that game's facts file — then run the
-   independent critique loop: `COPY_MODE=prepare npm run coach:critique:prepare`,
-   the pred-scout-coach-critic pass, `npm run coach:critique`, and
-   `npm run coach:loop:gate` until it converges (docs/agent-loops.md).
+   independent critique loop SCOPED TO THE NEW GAMES ONLY:
+   `COACH_GAMES=<id,id,...> COPY_MODE=prepare npm run coach:critique:prepare`,
+   the independent critic pass, `COACH_GAMES=<same ids> npm run coach:critique`,
+   and `npm run coach:loop:gate` until it converges (docs/agent-loops.md).
+   COACH_GAMES takes comma-separated match-id prefixes; without it the loop
+   re-judges the ENTIRE film library (~100 games) on every fire — never do
+   that in the automation (added 2026-08-30 after a fire did exactly this).
 5. Refresh the reports: `npm run coach -- <lead-uuid>` and
    `npm run squad -- <lead-uuid>` (lead = `data/artifacts/squad.json` `.lead`).
 6. `npm test` — commit only on green (autonomy rule 1).
