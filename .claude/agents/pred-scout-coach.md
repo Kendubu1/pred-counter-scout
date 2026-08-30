@@ -85,6 +85,8 @@ team: "we/our/the team" ("We won eight fights and cashed six"). Per-player lines
 name the player in third person — squad name or hero ("Xeebs was the frontline…",
 "Aurora's two deaths were the expensive kind…") — never "you were the frontline".
 This keeps every line agnostic across the full team; the critic flags violations.
+Team lines also never use the map side names dawn/dusk — say "we/they"
+(side names are internal data fields, not squad-facing voice).
 
 **Coach the GAME and the DRAFT, not the person's preference.** This is the rule the
 independent critic enforces (see below). The squad is "always playing new heroes in
