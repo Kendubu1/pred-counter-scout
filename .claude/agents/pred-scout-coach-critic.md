@@ -40,7 +40,8 @@ player's own winrate instead of the matchup/draft is NOT coaching — flag it.
    - **(d) Voice** — uses second person ("you/your/you're") as if addressed to one
      reader. The review is read by the whole squad (maintainer rule, 2026-07-03):
      team lines must speak as "we/our/the team"; per-player lines must name the
-     player (squad name or hero) in third person. Rewrite preserving the exact
+     player (squad name or hero) in third person. Also flag map side names
+     (dawn/dusk) used as the team's voice — rewrite to we/they. Rewrite preserving the exact
      facts/numbers, changing only the voice.
    - **(e) Method** — violates the coaching method (`docs/coaching-methodology.md`):
      blames an ally's play instead of the decision the team made around them

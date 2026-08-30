@@ -234,6 +234,9 @@ to be blunt. Blunt is a claim about a decision, priced: it is not rudeness.
 - **Randoms get the same standard:** name their impact factually (a thrown
   favored lane, two wards from a carry) because the squad plans around it —
   it is context and drafting/adaptation material, not an insult ledger.
+- **Never side names:** team lines say "we/our/the team" and "they/them" —
+  never the map side names dawn/dusk (internal data, not squad-facing voice;
+  caught live in the 697fb953 review, 2026-08-30).
 - **The existing rules still bind:** third person always, no preference
   coaching, no invented numbers, and the tilt exception (a loss-streak
   night gets a shorter, session-hygiene review, not a harsher one).
