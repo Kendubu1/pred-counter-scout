@@ -250,6 +250,16 @@ to be blunt. Blunt is a claim about a decision, priced: it is not rudeness.
   objectives, thrown favored lanes, ward-war routs, and won-fights-cashed
   gaps are where the blunt register belongs, because the numbers carry it.
 
+**Teach the why on builds (maintainer rule, 2026-08-30).** A recommendation
+without its trade-off teaches nothing. Every build or Eternal suggestion in
+a review carries reasoning in gained-vs-lost form: what the actual build
+gave (plain mechanics), what the suggested items would have given instead,
+and why that difference mattered against this specific lineup. The Eternal
+loadout's reasoning explains fit (kit + lane matchup) and what the choice
+trades away versus the kit's other style. Lives in `coaching.buildReads`,
+renders as "why" dropdowns under the lobby's BUILD/ETERNAL rows, and is
+critiqued like every other coaching line.
+
 **The readability contract (humanizer pass, 2026-08-30, at the maintainer's
 ask).** A pattern pass over the first seven new-method reviews found the
 wording drifting hard into known AI-writing tells (cross-checked against the

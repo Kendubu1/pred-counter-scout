@@ -76,7 +76,22 @@ moments:{"<startMin>":{call:"…"}} }`. `whatWorked` is the one evidenced streng
 each of the game's key fights — the coach's answer to "what was the right play
 there", keyed by the fight's exact `startMin` (the UI selects key fights as:
 tagged first, then significance ≥ 6, top three); the computed macro/cost lines
-render beside it, so the call adds judgement, not a restat.
+render beside it, so the call adds judgement, not a restat. `buildReads` =
+{ "<pid>": { build, eternal } } for ALL FIVE of our players — the teaching
+layer under the lobby's BUILD and ETERNAL rows (maintainer rule, 2026-08-30):
+- `build` (2-4 sentences): the TRADE-OFF of what was actually built — what
+  those items gave in plain mechanics, what the skipped core items would have
+  given instead, and why the difference mattered against THIS lineup (their
+  damage split, healers, frontline, the fights where the gap showed). Teach
+  the why; never just repeat the recommendation. Item mechanics in plain
+  words from the item data; numbers only from the facts file.
+- `eternal` (2-3 sentences): why the engine's loadout fits this kit and lane
+  matchup, and what taking it trades away versus the other style the kit
+  could run (burst vs sustain, dueling vs teamfight) — tied to what actually
+  happened in the game where the facts support it. No numeric deltas from
+  outside the facts file; the loadout itself is THEORY (the feed doesn't
+  record what was run) and the reasoning must read as "why this fits", never
+  "you picked wrong".
 
 **Voice contract (maintainer rule, 2026-07-03): NEVER second person.** The review
 is read by the whole squad, so no line may say "you/your/you're" as if talking to

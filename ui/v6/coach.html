@@ -148,6 +148,11 @@
   .tile.bad .n { color:var(--red); } .tile.good .n { color:var(--green); }
   .tile .lbl { font-size:.72rem; color:var(--text-1); margin-top:.1rem; }
   .tile .read { font-size:.68rem; color:var(--text-2); margin-top:.25rem; line-height:1.4; }
+  .whyd { margin:.1rem 0 .25rem .1rem; }
+  .whyd>summary { cursor:pointer; list-style:none; font-size:.7rem; color:var(--accent); }
+  .whyd>summary::before { content:"▸ "; }
+  .whyd[open]>summary::before { content:"▾ "; }
+  .whyd>div { font-size:.8rem; color:var(--text-1); padding:.35rem .55rem; border-left:2px solid var(--border); margin-top:.2rem; line-height:1.55; }
   .qa { padding:.55rem 0; border-bottom:1px solid var(--border); }
   .qa:last-of-type { border-bottom:none; }
   .qa .q { font-weight:700; font-size:.9rem; }
@@ -814,6 +819,7 @@ function pgReview(f) {
     if ((p.matchupItemFlags || []).length) bits.push(`<span style="color:var(--gold)">${esc(p.matchupItemFlags.join(' · '))}</span>`);
     if (p.antiHealRec) bits.push(`<span style="color:var(--gold)">anti-heal: add ${esc(p.antiHealRec.item)}</span>`);
     const v = co && co.verdicts ? co.verdicts[p.pid] : null;
+    const br = co && co.buildReads ? co.buildReads[p.pid] : null;
     return `<div class="plobby">
       <div class="who">
         ${hIcon(p.heroSlug, 34)}
@@ -825,7 +831,9 @@ function pgReview(f) {
         ${co?.perPlayer?.[p.pid] ? `<div class="line">${esc(co.perPlayer[p.pid])}</div>` : ''}
         <div class="items">${built.map((i) => `<img src="${iimg(i.slug)}" title="${esc(i.name)}" onerror="this.style.display='none'">`).join('')}</div>
         <div class="lrow"><span class="ltag">build</span>${bits.join(' · ')}</div>
+        ${br?.build ? `<details class="whyd"><summary>why — what this build gained vs gave up</summary><div>${esc(br.build)}</div></details>` : ''}
         <div class="lrow" data-et-slug="${esc(p.heroSlug)}" data-et-role="${esc(p.role)}" data-et-opp="${lane ? esc(lane.theirSlug) : ''}"><span class="ltag">eternal</span><span style="opacity:.6">loading the engine's pick…</span></div>
+        ${br?.eternal ? `<details class="whyd"><summary>why — why this loadout fits the matchup</summary><div>${esc(br.eternal)}</div></details>` : ''}
         ${v && v.text ? `<div class="vline ${v.mood === 'pos' ? 'pos' : 'neg'}"><span class="ltag">verdict</span>${esc(v.text)}</div>` : ''}
       </div>
     </div>`;
