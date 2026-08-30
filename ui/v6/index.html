@@ -1416,11 +1416,23 @@ function renderHero(a, roleParam) {
           };
           // The recommended top minor for each slot, noted clearly per Eternal
           // (the full slot options stay in the bottom Kit-math (THEORY) block).
-          const minorsLine = (name, indent) => {
-            const m = a.eternals.minorsByName && a.eternals.minorsByName[name.toLowerCase()];
-            const mins = m ? [m.minor1, m.minor2].filter((x) => x && x.name) : [];
+          // Field-first minors: an eternal row from the match-feed aggregate
+          // carries its own per-minor winrates — most-played per slot beats the
+          // sim's theory pick; the sim stays the fallback when field is absent.
+          const minorsLine = (row, indent) => {
+            const slots = ETMAP && ETMAP[row.name.toLowerCase()];
+            let mins = [];
+            if (row.minors && row.minors.length && slots) {
+              const top = (opts) => row.minors.filter((m) => (opts || []).some((o) => o.name === m.name)).sort((x, y) => y.n - x.n)[0];
+              mins = [top(slots.minorSlot1), top(slots.minorSlot2)].filter(Boolean)
+                .map((m) => ({ name: m.name, tail: m.n >= 25 ? ` <span style="color:var(--text-2);font-variant-numeric:tabular-nums">${(m.w / m.n * 100).toFixed(1)}%</span>` : '' }));
+            }
+            if (!mins.length) {
+              const m = a.eternals.minorsByName && a.eternals.minorsByName[row.name.toLowerCase()];
+              mins = (m ? [m.minor1, m.minor2].filter((x) => x && x.name) : []).map((x) => ({ name: x.name, tail: '' }));
+            }
             if (!mins.length) return '';
-            return `<div style="display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;font-size:.7rem;color:var(--text-1);margin:.22rem 0 0 ${indent}"><b style="color:var(--text-0)">Top minors:</b> ${mins.map((x) => `<span style="display:inline-flex;align-items:center;gap:.25rem">${minorIcon(x.name, 18)}${esc(x.name)}</span>`).join(' <span style="color:var(--text-2)">·</span> ')}</div>`;
+            return `<div style="display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;font-size:.7rem;color:var(--text-1);margin:.22rem 0 0 ${indent}"><b style="color:var(--text-0)">Top minors:</b> ${mins.map((x) => `<span style="display:inline-flex;align-items:center;gap:.25rem">${minorIcon(x.name, 18)}${esc(x.name)}${x.tail}</span>`).join(' <span style="color:var(--text-2)">·</span> ')}</div>`;
           };
           const e0 = ets[0], wr0 = e0.w / e0.n, et0 = ETMAP && ETMAP[e0.name.toLowerCase()];
           const ai0 = REVIEWS && REVIEWS.eternals && REVIEWS.eternals[a.slug] && REVIEWS.eternals[a.slug][role] && REVIEWS.eternals[a.slug][role][e0.name];
@@ -1436,7 +1448,7 @@ function renderHero(a, roleParam) {
               </div>
               <div style="font-size:.72rem;line-height:1.45;color:var(--text-1);margin-top:.2rem">${et0 ? esc(et0.major) : renderWhy(e0)}</div>
               ${ai0 ? `<div style="font-size:.68rem;line-height:1.45;color:var(--green);margin-top:.12rem">${esc(ai0)}</div>` : ''}
-              ${minorsLine(e0.name, '0')}
+              ${minorsLine(e0, '0')}
             </div>
           </div>`;
           // The per-Eternal minors+sim-math row, reused inside the disclosure.
@@ -1502,7 +1514,7 @@ function renderHero(a, roleParam) {
                 <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
               </div>
               <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.18rem 0 0 2.1rem">${et ? esc(et.major) : renderWhy(e)}</div>
-              ${minorsLine(e.name, '2.1rem')}
+              ${minorsLine(e, '2.1rem')}
             </div>`;
           };
           // The full per-Eternal sim-math/minors detail + sim-pick block + the
