@@ -42,6 +42,11 @@ const UA = 'pred-counter-scout (github.com/Kendubu1/pred-counter-scout)';
 // and treat 403/429 as a long cool-down, not a failure.
 const PAGE_DELAY_MS = Number(process.env.PAGE_DELAY_MS || 450);
 const COOLDOWN_MS = Number(process.env.COOLDOWN_MS || 90_000);
+// The guard escalates on repeat offenses (observed 2026-08-30: ~1,000 pages
+// on first contact, ~130 on the next session, then hour-long blocks), so the
+// crawler now pauses VOLUNTARILY under the budget instead of tripping it.
+const BURST_PAGES = Number(process.env.BURST_PAGES || 60);
+const BURST_PAUSE_MS = Number(process.env.BURST_PAUSE_MS || 20 * 60_000);
 const SAVE_EVERY = 100;
 const MIN_DURATION_S = 300;
 
@@ -190,6 +195,11 @@ async function main() {
       writeFileSync(STATE_FILE, JSON.stringify(st));
       const covered = ((st.cursor - st.since) / 86400).toFixed(2);
       console.log(`${st.pages} pages · ${st.matches} matches (${st.ranked} ranked, ${st.kept} kept) · ${covered}d of ${((endEpoch - st.since) / 86400).toFixed(2)}d · cursor ${new Date(st.cursor * 1000).toISOString()}`);
+    }
+    if (sessionPages % BURST_PAGES === 0) {
+      saveState();
+      console.log(`burst of ${BURST_PAGES} done (${sessionPages} this session); pausing ${Math.round(BURST_PAUSE_MS / 60000)}m`);
+      await new Promise((r) => setTimeout(r, BURST_PAUSE_MS));
     }
     await new Promise((r) => setTimeout(r, PAGE_DELAY_MS));
   }
