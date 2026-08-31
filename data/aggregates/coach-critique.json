@@ -1,104 +1,44 @@
 {
- "generatedAt": "2026-08-31T04:15:32.489Z",
+ "generatedAt": "2026-08-31T05:18:06.826Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
- "reviewedLines": 828,
- "flaggedLines": 15,
- "agreementRate": 0.982,
- "rewritesGrounded": 15,
+ "reviewedLines": 27,
+ "flaggedLines": 5,
+ "agreementRate": 0.815,
+ "rewritesGrounded": 5,
  "rewritesDropped": 0,
- "applied": 0,
- "unmatched": 15,
+ "applied": 5,
+ "unmatched": 0,
  "games": {
-  "879006ee-a17e-45ca-b1bb-0dc893a27615": [
+  "1e55fa4e-00b7-4c85-9842-6c7737ec369f": [
    {
-    "quote": "The fights that decided the game were taken down bodies or not taken at all: the first at their Fangtooth at 7.5 minutes, lost 0-2, while two teammates stayed back in losing lanes, then the Outer Tower fight at 15.3 minutes lost 0-3 three-on-five, then the Fangtooth fight at 19.4 that opened the door to Orb Prime, and finally a full-strength wipe at their Inner Tower at 21.7 that closed it out.",
-    "severity": "high",
-    "issue": "wrong causation (19.4 Fangtooth loss fed the Inner Tower fall, not Orb Prime, per death costs) plus four timestamps in one sentence",
-    "rewrite": "The fights that decided the game were taken down bodies or not taken at all. The first was at their Fangtooth at 7.5 minutes, lost 0-2, while two teammates stayed back in losing lanes. The Outer Tower fight at 15.3 minutes was lost 0-3, three of us against their full five. The Fangtooth fight at 19.4 fed their Inner Tower fall at 19.5. A full-strength wipe at their Inner Tower at 21.7 closed the game out."
+    "quote": "Eighteen kills to five deaths, 73,441 damage to heroes, the highest of any player in the lobby. Won two fights essentially alone: 3-0 at our Fangtooth (22.9) and 2-0 at our inner tower (25.7). The build skipped Imperator for lifesteal and anti-heal instead, and it worked.",
+    "severity": "low",
+    "issue": "scoreline used as a noun, not a description",
+    "rewrite": "Eighteen kills to five deaths, 73,441 damage to heroes, the highest of any player in the lobby. Won two fights essentially alone: the fight at our Fangtooth (22.9), won 3-0, and the fight at our inner tower (25.7), won 2-0. The build skipped Imperator for lifesteal and anti-heal instead, and it worked."
    },
    {
-    "quote": "a teammate was flagged absent, either pinned in a losing lane or simply unengaged, in six of the game's eight fights, and Murdock alone was caught alone four times before the loss was sealed.",
-    "severity": "high",
-    "issue": "wrong count: macro flags absence in 4 of 8 fights, not 6",
-    "rewrite": "a teammate was flagged absent, either pinned in a losing lane or simply unengaged, in four of the game's eight fights, and Murdock alone was caught alone four times before the loss was sealed."
-   },
-   {
-    "quote": "Legion was flagged absent from six of the game's eight fights, still stuck in a losing lane against Sparrow every time, including the team's first game-defining loss at their Fangtooth, 0-2, at 7.5 minutes.",
-    "severity": "high",
-    "issue": "wrong count: Legion flagged absent in 4 of 8 fights, not 6",
-    "rewrite": "Legion was flagged absent from four of the game's eight fights, still stuck in a losing lane against Sparrow every time, including the team's first game-defining loss at their Fangtooth, 0-2, at 7.5 minutes."
-   },
-   {
-    "quote": "He didn't reach a fight until the final teamfight at their Inner Tower at 21.7 minutes, and was the last of the five caught, at 22.1, right after the tower fell.",
+    "quote": "This fight was won 5-2 at their Orb Prime, but Aurora's death in it, at 40.4, came about a minute before that Prime secured and the Core fell at 41.2. The call there was to prioritize denying or contesting the Prime once the fight turned, since losing Aurora let it go through uncontested — that objective decided the game more than the extra kills did.",
     "severity": "med",
-    "issue": "wrong sequencing: the 22.1 death preceded the 22.2 tower fall, not after",
-    "rewrite": "He didn't reach a fight until the final teamfight at their Inner Tower at 21.7 minutes, and was the last of the five caught, at 22.1, just before the tower fell at 22.2."
+    "issue": "misuses 'uncontested' (SOURCE reserves that word for the nobody-dead Primal Fangtooth case; this Orb Prime was conceded because Aurora and The Fey were specifically dead, a different mechanism)",
+    "rewrite": "This fight was won 5-2 at their Orb Prime, but Aurora's death in it, at 40.4, came about a minute before that Prime secured and the Core fell at 41.2, with The Fey dead by then too. The call there was to prioritize denying or contesting the Prime once the fight turned, since losing both left nobody there to stop it — that objective decided the game more than the extra kills did."
    },
    {
-    "quote": "Zinx led the team in wards for the game, 11, and topped it in healing, 12,693, the two numbers a support in the 0-10 minute window is actually judged on, even with zero kills to show for it.",
+    "quote": "The team held at our inhibitor with Sevarog still pinned in a losing offlane lane, absent from the fight, and lost it 1-4 anyway. That cost both inhibitors within about a minute, at 39.5 and 39.7. Falling back to the inner turret and regrouping once the offlane cleared would have cost less than two inhibitors.",
     "severity": "med",
-    "issue": "method: mischaracterizes end-of-game ward/healing totals as a 0-10 minute window stat the data doesn't carry",
-    "rewrite": "Zinx led the team in wards for the game, 11, and topped it in healing, 12,693, real support production even with zero kills to show for it."
+    "issue": "invents a specific fallback position (inner turret) the SOURCE doesn't support and that other tower/inhibitor events suggest may not have been standing",
+    "rewrite": "The team held at our inhibitor with Sevarog still pinned in a losing offlane lane, absent from the fight, and lost it 1-4 anyway. That cost both inhibitors within about a minute, at 39.5 and 39.7. Skipping that fight until the offlane could join would likely have cost less than two inhibitors."
    },
    {
-    "quote": "Fangtooth twice, the Mini Prime once, three separate towers.",
-    "severity": "low",
-    "issue": "wrong count: death costs tie Rampage's deaths to four separate tower falls, not three",
-    "rewrite": "Fangtooth twice, the Mini Prime once, four separate towers."
-   },
-   {
-    "quote": "and her only clean solo death, caught alone by Serath at 11.5 minutes, was the exception rather than a pattern.",
-    "severity": "low",
-    "issue": "readability: repeated antithesis formula overused across the review",
-    "rewrite": "and her only clean solo death was being caught alone by Serath at 11.5 minutes."
-   },
-   {
-    "quote": "By the Fangtooth fight at 19.4 minutes her lane had gone from even to losing, and she was pinned like the rest of the team by then.",
+    "quote": "Mr_Meat31 covered Phase's full meta core (Marshal, Enra's Blessing, Galaxy Greaves), including Enra's Blessing's shield for an immobilized ally within range — real value against Riktor's pull-into-silence-into-suppress chain. The last three slots went to Prophecy, Plasma Blade, and Spectra, three on-hit or ability-power items built for more damage rather than survivability. Against a comp with roughly three seconds of chainable hard crowd control, the alternative path, a defensive item with built-in tenacity like Unbroken Will, would have helped Phase survive the suppress instead of adding damage from a hero who finished with zero kills. The trade mattered most given Phase died in all three fights reached this game.",
     "severity": "med",
-    "issue": "ungrounded: the 19.4 macro read only flags Legion and Murdock as pinned or absent, not Renna or 'the rest of the team'",
-    "rewrite": "By the Fangtooth fight at 19.4 minutes her lane had gone from even to losing."
+    "issue": "invents a CC-duration number ('roughly three seconds') not present in the SOURCE",
+    "rewrite": "Mr_Meat31 covered Phase's full meta core (Marshal, Enra's Blessing, Galaxy Greaves), including Enra's Blessing's shield for an immobilized ally within range — real value against Riktor's pull-into-silence-into-suppress chain. The last three slots went to Prophecy, Plasma Blade, and Spectra, three on-hit or ability-power items built for more damage rather than survivability. Against a comp built around a chainable hard-crowd-control combo, the alternative path, a defensive item with built-in tenacity like Unbroken Will, would have helped Phase survive the suppress instead of adding damage from a hero who finished with zero kills. The trade mattered most given Phase died in all three fights reached this game."
    },
    {
-    "quote": "One death in 22 minutes, but Legion was the team's most-flagged absentee, missing six of the game's eight fights while stuck in a losing lane.",
-    "severity": "high",
-    "issue": "wrong count and wrong reference: absence is flagged in 4 of 8 fights, not 6, and Murdock is flagged equally often, not less than Legion",
-    "rewrite": "One death in 22 minutes, but Legion was flagged absent, pinned in a losing lane, in four of the game's eight fights."
-   },
-   {
-    "quote": "the read needed to be to fall back and force the fight somewhere the dive couldn't chain kills, not stand and trade into it.",
+    "quote": "The engine's top-modeled major for Phase support is Vesh, an ability-damage blessing that adds a damage tick to her spells — it lines up with a passive that already heals off ability casts, letting Phase chip health while sustaining herself and a linked ally. The default minors add haste on takedowns and bonus damage against high-health targets, leaning the loadout toward extended teamfights rather than one burst window. The trade-off is that Vesh spends its budget on damage, not survivability, so a Phase running it still needs the item slots, not the blessing, to answer a chain-crowd-control comp like this one.",
     "severity": "low",
-    "issue": "readability: repeated antithesis formula overused across the review",
-    "rewrite": "the read needed to be to fall back and force the fight somewhere the dive couldn't chain kills."
-   },
-   {
-    "quote": "Three of us walked into this fight at their Outer Tower with Legion still pinned in a losing lane and Murdock, who was only even in his own lane and free to leave, not there either.",
-    "severity": "med",
-    "issue": "ungrounded: Murdock's offlane matchup was unfavored/losing all game per the lane reads, not even",
-    "rewrite": "Three of us walked into this fight at their Outer Tower with Legion still pinned in a losing lane and Murdock, who was free to leave his own losing lane, not there either."
-   },
-   {
-    "quote": "the call was to wait for the group or skip the tower rather than trade three-on-five numbers with two teammates on the sideline.",
-    "severity": "low",
-    "issue": "readability: repeated antithesis formula overused across the review",
-    "rewrite": "the call was to wait for the group or skip the tower instead of trading three-on-five numbers with two teammates on the sideline."
-   },
-   {
-    "quote": "Losing that fight let the enemy walk to a free Orb Prime across the map; the right read on a losing item count is to disengage and regroup for the bigger prize, not force the smaller fight.",
-    "severity": "high",
-    "issue": "wrong causation: death costs tie this fight's deaths to the Inner Tower fall, not Orb Prime",
-    "rewrite": "Losing that fight fed their Inner Tower fall minutes later. On a losing item count, the right read is to disengage and regroup instead of forcing the smaller fight."
-   },
-   {
-    "quote": "Legion had two of the three items in the meta core, Storm Breaker and Sky Splitter, but ran Lightning Hawk instead of Spectra for the third slot; both are attack-speed stat sticks with a stacking bolt proc, so the swap wasn't a raw damage downgrade. What Spectra adds that Lightning Hawk doesn't is a cooldown refresh on top of its on-hit true damage, which matters more in an unfavored lane where Legion needed his tools back faster just to survive Sparrow's ramping DPS rather than to finish a fight. The recorded core, Storm Breaker, Sky Splitter, and Spectra, is a 56.2% winner across 1,173 games; Legion also skipped Tainted Rounds, the anti-heal item flagged for this matchup, against a comp running a healer.",
-    "severity": "high",
-    "issue": "ungrounded: contradicts the source build data (Legion's actual items are Malady and Deathstalker, missing Vanquisher, winning core Malady/Vanquisher/Deathstalker at 56.9%) with a completely different, invented build",
-    "rewrite": "Legion built Malady and Deathstalker but missed Vanquisher, the third piece of the meta core; the full core, Malady, Vanquisher, and Deathstalker, wins 56.9% of games. Against Sparrow's ramping damage in a lane he was losing all game, the execute pressure Vanquisher adds against low-health targets was the missing piece."
-   },
-   {
-    "quote": "Nobody was there to contest them; that's an awareness problem, not a numbers problem.",
-    "severity": "low",
-    "issue": "readability: repeated antithesis formula overused across the review",
-    "rewrite": "Nobody was there to contest them, an awareness problem more than a numbers one."
+    "issue": "two 'not X' antithesis constructs in one line, and the review already uses the formula once elsewhere ('this isn't a numbers problem, it's a map-presence one') — exceeds the one-per-review cap",
+    "rewrite": "The engine's top-modeled major for Phase support is Vesh, an ability-damage blessing that adds a damage tick to her spells — it lines up with a passive that already heals off ability casts, letting Phase chip health while sustaining herself and a linked ally. The default minors add haste on takedowns and bonus damage against high-health targets, leaning the loadout toward extended teamfights rather than one burst window. The trade-off is that Vesh spends its budget on damage rather than survivability, so a Phase running it still needs the item slots to cover the survivability a chain-crowd-control comp like this one demands."
    }
   ]
  }
