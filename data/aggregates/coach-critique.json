@@ -1,20 +1,104 @@
 {
- "generatedAt": "2026-08-30T23:35:44.113Z",
+ "generatedAt": "2026-08-31T04:15:32.489Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
- "reviewedLines": 185,
- "flaggedLines": 1,
- "agreementRate": 0.995,
- "rewritesGrounded": 1,
+ "reviewedLines": 828,
+ "flaggedLines": 15,
+ "agreementRate": 0.982,
+ "rewritesGrounded": 15,
  "rewritesDropped": 0,
- "applied": 1,
- "unmatched": 0,
+ "applied": 0,
+ "unmatched": 15,
  "games": {
-  "c357e754-d09a-4cf9-a902-fedcbf471f95": [
+  "879006ee-a17e-45ca-b1bb-0dc893a27615": [
    {
-    "quote": "Vesh leans into the half of Steel that deals damage: his ability-heavy kit leaves a burn on everything he hits, and Mind Rot points it at the enemy frontline by scaling with their current health. The Tenth Seal rounds out the level-10 ultimate for the fights that decide the mid game. What it does not do is make him any harder to kill, a real cost in a game where he died eleven times; a health-stacking blessing would have traded his chip damage for staying upright longer.",
+    "quote": "The fights that decided the game were taken down bodies or not taken at all: the first at their Fangtooth at 7.5 minutes, lost 0-2, while two teammates stayed back in losing lanes, then the Outer Tower fight at 15.3 minutes lost 0-3 three-on-five, then the Fangtooth fight at 19.4 that opened the door to Orb Prime, and finally a full-strength wipe at their Inner Tower at 21.7 that closed it out.",
+    "severity": "high",
+    "issue": "wrong causation (19.4 Fangtooth loss fed the Inner Tower fall, not Orb Prime, per death costs) plus four timestamps in one sentence",
+    "rewrite": "The fights that decided the game were taken down bodies or not taken at all. The first was at their Fangtooth at 7.5 minutes, lost 0-2, while two teammates stayed back in losing lanes. The Outer Tower fight at 15.3 minutes was lost 0-3, three of us against their full five. The Fangtooth fight at 19.4 fed their Inner Tower fall at 19.5. A full-strength wipe at their Inner Tower at 21.7 closed the game out."
+   },
+   {
+    "quote": "a teammate was flagged absent, either pinned in a losing lane or simply unengaged, in six of the game's eight fights, and Murdock alone was caught alone four times before the loss was sealed.",
+    "severity": "high",
+    "issue": "wrong count: macro flags absence in 4 of 8 fights, not 6",
+    "rewrite": "a teammate was flagged absent, either pinned in a losing lane or simply unengaged, in four of the game's eight fights, and Murdock alone was caught alone four times before the loss was sealed."
+   },
+   {
+    "quote": "Legion was flagged absent from six of the game's eight fights, still stuck in a losing lane against Sparrow every time, including the team's first game-defining loss at their Fangtooth, 0-2, at 7.5 minutes.",
+    "severity": "high",
+    "issue": "wrong count: Legion flagged absent in 4 of 8 fights, not 6",
+    "rewrite": "Legion was flagged absent from four of the game's eight fights, still stuck in a losing lane against Sparrow every time, including the team's first game-defining loss at their Fangtooth, 0-2, at 7.5 minutes."
+   },
+   {
+    "quote": "He didn't reach a fight until the final teamfight at their Inner Tower at 21.7 minutes, and was the last of the five caught, at 22.1, right after the tower fell.",
+    "severity": "med",
+    "issue": "wrong sequencing: the 22.1 death preceded the 22.2 tower fall, not after",
+    "rewrite": "He didn't reach a fight until the final teamfight at their Inner Tower at 21.7 minutes, and was the last of the five caught, at 22.1, just before the tower fell at 22.2."
+   },
+   {
+    "quote": "Zinx led the team in wards for the game, 11, and topped it in healing, 12,693, the two numbers a support in the 0-10 minute window is actually judged on, even with zero kills to show for it.",
+    "severity": "med",
+    "issue": "method: mischaracterizes end-of-game ward/healing totals as a 0-10 minute window stat the data doesn't carry",
+    "rewrite": "Zinx led the team in wards for the game, 11, and topped it in healing, 12,693, real support production even with zero kills to show for it."
+   },
+   {
+    "quote": "Fangtooth twice, the Mini Prime once, three separate towers.",
     "severity": "low",
-    "issue": "counterfactual pick judgment on an Eternal the feed doesn't record",
-    "rewrite": "Vesh leans into the half of Steel that deals damage: his ability-heavy kit leaves a burn on everything he hits, and Mind Rot points it at the enemy frontline by scaling with their current health. The Tenth Seal rounds out the level-10 ultimate for the fights that decide the mid game. What it does not do is make him any harder to kill, a real cost in a game where he died eleven times; the surviving is left entirely to his items and positioning."
+    "issue": "wrong count: death costs tie Rampage's deaths to four separate tower falls, not three",
+    "rewrite": "Fangtooth twice, the Mini Prime once, four separate towers."
+   },
+   {
+    "quote": "and her only clean solo death, caught alone by Serath at 11.5 minutes, was the exception rather than a pattern.",
+    "severity": "low",
+    "issue": "readability: repeated antithesis formula overused across the review",
+    "rewrite": "and her only clean solo death was being caught alone by Serath at 11.5 minutes."
+   },
+   {
+    "quote": "By the Fangtooth fight at 19.4 minutes her lane had gone from even to losing, and she was pinned like the rest of the team by then.",
+    "severity": "med",
+    "issue": "ungrounded: the 19.4 macro read only flags Legion and Murdock as pinned or absent, not Renna or 'the rest of the team'",
+    "rewrite": "By the Fangtooth fight at 19.4 minutes her lane had gone from even to losing."
+   },
+   {
+    "quote": "One death in 22 minutes, but Legion was the team's most-flagged absentee, missing six of the game's eight fights while stuck in a losing lane.",
+    "severity": "high",
+    "issue": "wrong count and wrong reference: absence is flagged in 4 of 8 fights, not 6, and Murdock is flagged equally often, not less than Legion",
+    "rewrite": "One death in 22 minutes, but Legion was flagged absent, pinned in a losing lane, in four of the game's eight fights."
+   },
+   {
+    "quote": "the read needed to be to fall back and force the fight somewhere the dive couldn't chain kills, not stand and trade into it.",
+    "severity": "low",
+    "issue": "readability: repeated antithesis formula overused across the review",
+    "rewrite": "the read needed to be to fall back and force the fight somewhere the dive couldn't chain kills."
+   },
+   {
+    "quote": "Three of us walked into this fight at their Outer Tower with Legion still pinned in a losing lane and Murdock, who was only even in his own lane and free to leave, not there either.",
+    "severity": "med",
+    "issue": "ungrounded: Murdock's offlane matchup was unfavored/losing all game per the lane reads, not even",
+    "rewrite": "Three of us walked into this fight at their Outer Tower with Legion still pinned in a losing lane and Murdock, who was free to leave his own losing lane, not there either."
+   },
+   {
+    "quote": "the call was to wait for the group or skip the tower rather than trade three-on-five numbers with two teammates on the sideline.",
+    "severity": "low",
+    "issue": "readability: repeated antithesis formula overused across the review",
+    "rewrite": "the call was to wait for the group or skip the tower instead of trading three-on-five numbers with two teammates on the sideline."
+   },
+   {
+    "quote": "Losing that fight let the enemy walk to a free Orb Prime across the map; the right read on a losing item count is to disengage and regroup for the bigger prize, not force the smaller fight.",
+    "severity": "high",
+    "issue": "wrong causation: death costs tie this fight's deaths to the Inner Tower fall, not Orb Prime",
+    "rewrite": "Losing that fight fed their Inner Tower fall minutes later. On a losing item count, the right read is to disengage and regroup instead of forcing the smaller fight."
+   },
+   {
+    "quote": "Legion had two of the three items in the meta core, Storm Breaker and Sky Splitter, but ran Lightning Hawk instead of Spectra for the third slot; both are attack-speed stat sticks with a stacking bolt proc, so the swap wasn't a raw damage downgrade. What Spectra adds that Lightning Hawk doesn't is a cooldown refresh on top of its on-hit true damage, which matters more in an unfavored lane where Legion needed his tools back faster just to survive Sparrow's ramping DPS rather than to finish a fight. The recorded core, Storm Breaker, Sky Splitter, and Spectra, is a 56.2% winner across 1,173 games; Legion also skipped Tainted Rounds, the anti-heal item flagged for this matchup, against a comp running a healer.",
+    "severity": "high",
+    "issue": "ungrounded: contradicts the source build data (Legion's actual items are Malady and Deathstalker, missing Vanquisher, winning core Malady/Vanquisher/Deathstalker at 56.9%) with a completely different, invented build",
+    "rewrite": "Legion built Malady and Deathstalker but missed Vanquisher, the third piece of the meta core; the full core, Malady, Vanquisher, and Deathstalker, wins 56.9% of games. Against Sparrow's ramping damage in a lane he was losing all game, the execute pressure Vanquisher adds against low-health targets was the missing piece."
+   },
+   {
+    "quote": "Nobody was there to contest them; that's an awareness problem, not a numbers problem.",
+    "severity": "low",
+    "issue": "readability: repeated antithesis formula overused across the review",
+    "rewrite": "Nobody was there to contest them, an awareness problem more than a numbers one."
    }
   ]
  }
