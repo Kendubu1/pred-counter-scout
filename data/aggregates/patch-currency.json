@@ -1,42 +1,56 @@
 {
  "source": "data/patches/*.json digests checked against data/omeda",
- "note": "Coverage is partial by design: only base stats, ability damage arrays and item costs are machine-checkable. unparsedNoteLines counts stated changes this tool cannot verify — they are NOT counted as passing. Where several patches touch the same field only the newest statement is graded; earlier ones are marked superseded.",
- "supersededChecks": 12,
- "generatedAt": "2026-09-01T09:04:05.986Z",
- "snapshotFetchedAt": "2026-09-01T09:04:02.242Z",
+ "note": "Coverage is partial by design: only base stats, ability damage arrays and item costs are machine-checkable. unparsedNoteLines counts stated changes this tool cannot verify — they are NOT counted as passing. Where several patches touch the same field only the newest statement is graded; earlier ones are marked superseded. pendingAgainstPatch names the newest digest whose values omeda has not published yet (snapshot re-pulled on/after release, within the release window) — the engine is knowingly on pre-patch numbers until the catalog updates.",
+ "supersededChecks": 22,
+ "generatedAt": "2026-09-01T22:12:42.252Z",
+ "snapshotFetchedAt": "2026-09-01T22:10:30.443Z",
  "totals": {
-  "checks": 123,
-  "applied": 59,
+  "checks": 166,
+  "applied": 52,
   "stale": 0,
-  "unknown": 64,
-  "unparsedNoteLines": 298
+  "pending": 25,
+  "unknown": 89,
+  "unparsedNoteLines": 385
  },
  "staleAgainstPatch": null,
+ "pendingAgainstPatch": "1.16.4",
+ "pendingReleaseDate": "2026-09-01",
  "perPatch": {
   "1.14.1": {
    "applied": 1,
    "stale": 0,
+   "pending": 0,
    "unknown": 1
   },
   "1.14.4": {
-   "applied": 22,
-   "stale": 0,
-   "unknown": 14
-  },
-  "1.15": {
-   "applied": 5,
-   "stale": 0,
-   "unknown": 16
-  },
-  "1.15.3": {
    "applied": 19,
    "stale": 0,
+   "pending": 0,
    "unknown": 17
+  },
+  "1.15": {
+   "applied": 4,
+   "stale": 0,
+   "pending": 0,
+   "unknown": 17
+  },
+  "1.15.3": {
+   "applied": 16,
+   "stale": 0,
+   "pending": 0,
+   "unknown": 20
   },
   "1.16": {
    "applied": 12,
    "stale": 0,
+   "pending": 0,
    "unknown": 16
+  },
+  "1.16.4": {
+   "applied": 0,
+   "stale": 0,
+   "pending": 25,
+   "unknown": 18
   }
  },
  "checks": [
@@ -214,7 +228,7 @@
     "to": "685"
    },
    "observed": "685",
-   "verdict": "applied"
+   "verdict": "unknown"
   },
   {
    "patch": "1.14.4",
@@ -434,7 +448,7 @@
     "to": "48-128"
    },
    "observed": "48/68/88/108/128",
-   "verdict": "applied"
+   "verdict": "unknown"
   },
   {
    "patch": "1.14.4",
@@ -456,7 +470,7 @@
     "to": "65-165"
    },
    "observed": "65/90/115/140/165",
-   "verdict": "applied"
+   "verdict": "unknown"
   },
   {
    "patch": "1.15",
@@ -467,7 +481,7 @@
     "to": "45/65/85/105/125"
    },
    "observed": "45/65/85/105/125",
-   "verdict": "applied"
+   "verdict": "unknown"
   },
   {
    "patch": "1.15",
@@ -698,7 +712,7 @@
     "to": "34"
    },
    "observed": "34",
-   "verdict": "applied"
+   "verdict": "unknown"
   },
   {
    "patch": "1.15.3",
@@ -907,7 +921,7 @@
     "to": "695"
    },
    "observed": "695",
-   "verdict": "applied"
+   "verdict": "unknown"
   },
   {
    "patch": "1.15.3",
@@ -1017,7 +1031,7 @@
     "to": "685"
    },
    "observed": "685",
-   "verdict": "applied"
+   "verdict": "unknown"
   },
   {
    "patch": "1.15.3",
@@ -1392,6 +1406,479 @@
    },
    "observed": "3000",
    "verdict": "applied"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "adele",
+   "field": "max_health",
+   "stated": {
+    "from": "685",
+    "to": "680"
+   },
+   "observed": "685",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "adele",
+   "field": "physical_armor",
+   "stated": {
+    "from": "34",
+    "to": "33"
+   },
+   "observed": "34",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "adele",
+   "field": "Royal Flourish damage",
+   "stated": {
+    "from": "5/15/25/35/45",
+    "to": "5/20/35/50/65"
+   },
+   "observed": "5/15/25/35/45",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "adele",
+   "field": "Imperial Lash damage",
+   "stated": {
+    "from": "45/65/85/105/125",
+    "to": "40/55/70/85/100"
+   },
+   "observed": "45/65/85/105/125",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "argus",
+   "field": "Synaptic Obliterator damage",
+   "stated": {
+    "from": "130/155/180",
+    "to": "130/150/170"
+   },
+   "observed": "130/155/180",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "bayle",
+   "field": "physical_power growth",
+   "stated": {
+    "from": "52",
+    "to": "49"
+   },
+   "observed": "2.799999999999997",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "bayle",
+   "field": "attack_speed",
+   "stated": {
+    "from": "160",
+    "to": "175"
+   },
+   "observed": "1.6",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "drongo",
+   "field": "max_mana growth",
+   "stated": {
+    "from": "40",
+    "to": "45"
+   },
+   "observed": "28",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "drongo",
+   "field": "physical_power",
+   "stated": {
+    "from": "22/20/18/16/14",
+    "to": "18/17/16/15/14"
+   },
+   "observed": "57",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "eden",
+   "field": "physical_power",
+   "stated": {
+    "from": "6/14/22/30/38",
+    "to": "5/12/19/26/33"
+   },
+   "observed": "49",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "greystone",
+   "field": "attack_speed",
+   "stated": {
+    "from": "100",
+    "to": "105"
+   },
+   "observed": "1",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "greystone",
+   "field": "Sacred Oath damage",
+   "stated": {
+    "from": "10/50/90/130/170",
+    "to": "10/45/80/115/150"
+   },
+   "observed": "10/50/90/130/170",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "ikra",
+   "field": "max_health growth",
+   "stated": {
+    "from": "141",
+    "to": "138"
+   },
+   "observed": "98.70000000000005",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "ikra",
+   "field": "max_mana growth",
+   "stated": {
+    "from": "25",
+    "to": "28"
+   },
+   "observed": "17.5",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "ikra",
+   "field": "Hydroclasm damage",
+   "stated": {
+    "from": "25/35/45/55/65",
+    "to": "35/45/55/65/75"
+   },
+   "observed": "25/35/45/55/65",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "kallari",
+   "field": "max_health growth",
+   "stated": {
+    "from": "134",
+    "to": "131"
+   },
+   "observed": "93.79999999999995",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "kallari",
+   "field": "base_movement_speed",
+   "stated": {
+    "from": "695",
+    "to": "690"
+   },
+   "observed": "695",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "legion",
+   "field": "Orbital Sanction damage",
+   "stated": {
+    "from": "28/47/66",
+    "to": "30/50/70"
+   },
+   "observed": "28/47/66",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "maco",
+   "field": "max_health growth",
+   "stated": {
+    "from": "131",
+    "to": "128"
+   },
+   "observed": "91.70000000000005",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "maco",
+   "field": "base_health_regeneration",
+   "stated": {
+    "from": "1.8",
+    "to": "1.6"
+   },
+   "observed": "1.8",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "maco",
+   "field": "physical_armor",
+   "stated": {
+    "from": "5.15",
+    "to": "4.9"
+   },
+   "observed": "28",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "maco",
+   "field": "Maco Strike! damage",
+   "stated": {
+    "from": "80/120/160",
+    "to": "70/110/150"
+   },
+   "observed": "80/120/160",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "narbash",
+   "field": "physical_power",
+   "stated": {
+    "from": "58",
+    "to": "60"
+   },
+   "observed": "58",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "narbash",
+   "field": "physical_armor",
+   "stated": {
+    "from": "30",
+    "to": "32"
+   },
+   "observed": "30",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "narbash",
+   "field": "max_mana growth",
+   "stated": {
+    "from": "45",
+    "to": "50"
+   },
+   "observed": "31.5",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "neon",
+   "field": "L.I.N.X damage",
+   "stated": {
+    "from": "48/68/88/108/128",
+    "to": "48/69/90/111/132"
+   },
+   "observed": "48/68/88/108/128",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "neon",
+   "field": "Erase Vector damage",
+   "stated": {
+    "from": "65/90/115/140/165",
+    "to": "60/85/110/135/160"
+   },
+   "observed": "65/90/115/140/165",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "neon",
+   "field": "Final Thread damage",
+   "stated": {
+    "from": "140/210/280",
+    "to": "155/225/295"
+   },
+   "observed": "140/210/280",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "phase",
+   "field": "max_health growth",
+   "stated": {
+    "from": "131",
+    "to": "127"
+   },
+   "observed": "91.70000000000005",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "rampage",
+   "field": "physical_armor",
+   "stated": {
+    "from": "4.8",
+    "to": "4.5"
+   },
+   "observed": "33",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "renna",
+   "field": "max_health",
+   "stated": {
+    "from": "685",
+    "to": "675"
+   },
+   "observed": "685",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "renna",
+   "field": "physical_armor",
+   "stated": {
+    "from": "5",
+    "to": "4.8"
+   },
+   "observed": "25",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "renna",
+   "field": "Abyssal Rift damage",
+   "stated": {
+    "from": "60/82/104",
+    "to": "60/78/96"
+   },
+   "observed": "60/82/104",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "riktor",
+   "field": "max_mana",
+   "stated": {
+    "from": "400",
+    "to": "420"
+   },
+   "observed": "400",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "riktor",
+   "field": "base_movement_speed",
+   "stated": {
+    "from": "15/13.75/12.5/11.25/10",
+    "to": "15/13.5/12/10.5/9"
+   },
+   "observed": "700",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "riktor",
+   "field": "Skewer damage",
+   "stated": {
+    "from": "110/190/270",
+    "to": "110/200/290"
+   },
+   "observed": "110/190/270",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "serath",
+   "field": "Heresy damage",
+   "stated": {
+    "from": "15/30/45",
+    "to": "14/27/40"
+   },
+   "observed": "60/90/120",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "skylar",
+   "field": "Air Assault damage",
+   "stated": {
+    "from": "15/20/25/30/35",
+    "to": "10/15/20/25/30"
+   },
+   "observed": "15/20/25/30/35",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "steel",
+   "field": "Shield Bash damage",
+   "stated": {
+    "from": "30/35/40/45/50",
+    "to": "50/55/60/65/70"
+   },
+   "observed": "35/65/95/125/155",
+   "verdict": "unknown"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "terra",
+   "field": "Highland Hurl damage",
+   "stated": {
+    "from": "80/115/150/185/220",
+    "to": "80/120/160/200/240"
+   },
+   "observed": "80/115/150/185/220",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "brimstone",
+   "field": "total_price",
+   "stated": {
+    "from": "1200",
+    "to": "1000"
+   },
+   "observed": "1200",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "xenia",
+   "field": "total_price",
+   "stated": {
+    "from": "2450",
+    "to": "2400"
+   },
+   "observed": "2450",
+   "verdict": "pending"
+  },
+  {
+   "patch": "1.16.4",
+   "target": "fire-blossom",
+   "field": "total_price",
+   "stated": {
+    "from": "2900",
+    "to": "3000"
+   },
+   "observed": "2900",
+   "verdict": "pending"
   }
  ]
 }

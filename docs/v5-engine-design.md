@@ -298,6 +298,18 @@ This supersedes hand-pinned PATCH GATE tests as the primary mechanism. Those
 remain as fast canaries but cannot detect staleness on their own: one pinned
 1.14.4 values and passed for five weeks across two patches that changed them.
 
+- **Release-window PENDING (Sep 1, added on 1.16.4 day).** On patch day the
+  catalog cannot be current — omeda has not published yet, and no snapshot can
+  fix it. The first collision of the gate with a release day would have frozen
+  every commit for the lag window. The NEWEST digest's stale checks are
+  therefore reclassified `pending`, but only under evidence: the snapshot was
+  re-pulled on/after the digest's release date (we actually tried), and we are
+  within 14 days of release. Outside those bounds they are `stale` and fail
+  exactly as before, so a missed catalog update still cannot ship silently.
+  Pending is loud (verdict line, `pendingAgainstPatch` in the report) and a
+  pending patch never becomes `catalogPatch` — the site keeps labelling kit
+  numbers with the last verified patch until the values actually land.
+
 **Two clocks.** The catalog patch and the match-window patch are separate and
 usually differ, because the public match feed runs behind live. Any surface
 quoting a number must say which clock it is on: hero and item numbers carry

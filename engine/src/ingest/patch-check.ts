@@ -23,7 +23,7 @@ import { loadData } from '../data.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 
-type Verdict = 'applied' | 'stale' | 'unknown';
+type Verdict = 'applied' | 'stale' | 'unknown' | 'pending';
 interface Check {
   patch: string; target: string; field: string;
   stated: { from: string; to: string }; observed: string; verdict: Verdict;
@@ -134,6 +134,31 @@ function main() {
   const superseded = checks.filter((c) => !live.has(c));
   for (const c of superseded) c.verdict = 'unknown';
 
+  // Release-window pending: on patch day omeda's catalog has not published the
+  // new numbers yet, and no snapshot can fix that. The NEWEST digest's stale
+  // checks are reclassified 'pending' — never silently: only when the snapshot
+  // was re-pulled ON or AFTER the digest's release date (proof we tried), and
+  // only within a bounded window after release. Outside those conditions they
+  // stay 'stale' and fail the harness exactly as before — a weeks-old gap is a
+  // pipeline failure, not a release day. Older digests never qualify: a stale
+  // value from a patch omeda has long published is always a real failure.
+  const PENDING_WINDOW_DAYS = 14;
+  const newestFile = files[files.length - 1]!;
+  const newestDigest = JSON.parse(readFileSync(path.join(ROOT, 'data/patches', newestFile), 'utf8'));
+  const newestPatch: string = newestDigest.patch ?? newestFile.replace('.json', '');
+  const snapshotFetchedAt: string = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/META.json'), 'utf8')).fetchedAt;
+  let pendingPatch: string | null = null;
+  const newestStales = checks.filter((c) => c.patch === newestPatch && c.verdict === 'stale');
+  if (newestStales.length && newestDigest.date) {
+    const released = Date.parse(newestDigest.date);
+    const refetched = Date.parse(snapshotFetchedAt) >= released;
+    const inWindow = Date.now() - released <= PENDING_WINDOW_DAYS * 86400000;
+    if (refetched && inWindow) {
+      pendingPatch = newestPatch;
+      for (const c of newestStales) c.verdict = 'pending';
+    }
+  }
+
   const byPatch = new Map<string, Check[]>();
   for (const c of checks) (byPatch.get(c.patch) ?? byPatch.set(c.patch, []).get(c.patch)!).push(c);
 
@@ -143,8 +168,9 @@ function main() {
     const a = cs.filter((c) => c.verdict === 'applied').length;
     const s = cs.filter((c) => c.verdict === 'stale').length;
     const u = cs.filter((c) => c.verdict === 'unknown').length;
-    const flag = s > 0 ? '  <-- STALE VALUES PRESENT' : '';
-    console.log(`${patch.padEnd(8)} applied ${String(a).padStart(3)} · stale ${String(s).padStart(3)} · unknown ${String(u).padStart(3)}${flag}`);
+    const p = cs.filter((c) => c.verdict === 'pending').length;
+    const flag = s > 0 ? '  <-- STALE VALUES PRESENT' : p > 0 ? '  <-- PENDING (omeda has not published this patch yet)' : '';
+    console.log(`${patch.padEnd(8)} applied ${String(a).padStart(3)} · stale ${String(s).padStart(3)} · pending ${String(p).padStart(3)} · unknown ${String(u).padStart(3)}${flag}`);
     for (const c of cs.filter((x) => x.verdict === 'stale' && live.has(x))) {
       console.log(`    STALE ${c.target}/${c.field}: notes say ${c.stated.from} -> ${c.stated.to}, snapshot has ${c.observed}`);
     }
@@ -154,21 +180,26 @@ function main() {
   const total = checks.length;
   const applied = checks.filter((c) => c.verdict === 'applied').length;
   const stale = checks.filter((c) => c.verdict === 'stale').length;
-  console.log(`\n${applied}/${total} stated changes present in the snapshot; ${stale} still at pre-patch values; ${unparsed} note lines not machine-checkable.`);
+  const pending = checks.filter((c) => c.verdict === 'pending').length;
+  console.log(`\n${applied}/${total} stated changes present in the snapshot; ${stale} still at pre-patch values; ${pending} pending omeda publication; ${unparsed} note lines not machine-checkable.`);
   if (newestStale) console.log(`VERDICT: the catalog is BEHIND — ${newestStale} changes are missing. Re-run npm run snapshot; if it stays stale, omeda has not published the patch yet.`);
+  else if (pendingPatch) console.log(`VERDICT: PENDING — omeda has not published ${pendingPatch} yet (snapshot re-pulled ${snapshotFetchedAt.slice(0, 10)}, release ${newestDigest.date}). The engine is knowingly on pre-${pendingPatch} numbers until the catalog updates; re-run npm run snapshot daily. This turns into a hard STALE failure ${PENDING_WINDOW_DAYS} days after release.`);
   else console.log('VERDICT: no stated change is still at its pre-patch value.');
 
   const out = {
     source: 'data/patches/*.json digests checked against data/omeda',
-    note: 'Coverage is partial by design: only base stats, ability damage arrays and item costs are machine-checkable. unparsedNoteLines counts stated changes this tool cannot verify — they are NOT counted as passing. Where several patches touch the same field only the newest statement is graded; earlier ones are marked superseded.',
+    note: 'Coverage is partial by design: only base stats, ability damage arrays and item costs are machine-checkable. unparsedNoteLines counts stated changes this tool cannot verify — they are NOT counted as passing. Where several patches touch the same field only the newest statement is graded; earlier ones are marked superseded. pendingAgainstPatch names the newest digest whose values omeda has not published yet (snapshot re-pulled on/after release, within the release window) — the engine is knowingly on pre-patch numbers until the catalog updates.',
     supersededChecks: superseded.length,
     generatedAt: new Date().toISOString(),
-    snapshotFetchedAt: JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/META.json'), 'utf8')).fetchedAt,
-    totals: { checks: total, applied, stale, unknown: total - applied - stale, unparsedNoteLines: unparsed },
+    snapshotFetchedAt,
+    totals: { checks: total, applied, stale, pending, unknown: total - applied - stale - pending, unparsedNoteLines: unparsed },
     staleAgainstPatch: newestStale,
+    pendingAgainstPatch: pendingPatch,
+    pendingReleaseDate: pendingPatch ? newestDigest.date : null,
     perPatch: Object.fromEntries([...byPatch].map(([p, cs]) => [p, {
       applied: cs.filter((c) => c.verdict === 'applied').length,
       stale: cs.filter((c) => c.verdict === 'stale').length,
+      pending: cs.filter((c) => c.verdict === 'pending').length,
       unknown: cs.filter((c) => c.verdict === 'unknown').length,
     }])),
     checks,

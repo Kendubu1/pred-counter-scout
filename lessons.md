@@ -3333,3 +3333,37 @@ BUILD and ETERNAL rows so the lobby stays scannable.
 - Playwright module resolution is by script location, not cwd — a scratchpad
   .mjs can't import playwright-core even when run from engine/; copy the
   script into engine/ first.
+
+## 2026-09-01 — Patch 1.16.4 review (same-day), and the gate meets its first release day
+- The pipeline held again on release day, this time with the humanized voice
+  and the trade-off coaching layered in: digest -> snapshot+patchcheck ->
+  apply-patch restack -> facts file -> pred-scout-coach authors 29 cards +
+  4 meta reads -> deterministic number ground-check (0 flags) -> independent
+  critic (6 flags on 33 entries, all applied) -> generic page build.
+- **patchcheck's first patch day exposed a designed-in deadlock.** omeda has
+  not published 1.16.4 (re-pull changed only fetchedAt), so the gate's own
+  test would have frozen every commit for the lag window — including the
+  daily refresh. Added a bounded release-window PENDING state: the NEWEST
+  digest's stale checks reclassify only when the snapshot was re-pulled
+  on/after the release date and within 14 days of it; a pending patch is
+  loud in the verdict, never becomes catalogPatch, and hardens back to
+  STALE at day 14. A gate that cannot distinguish "the world hasn't caught
+  up" from "we didn't look" ends up disabled the first time reality hits it.
+- **The critic catches the author's arithmetic editorializing.** All 6 flags
+  were judgment drift on top of correct numbers: "nearly in half" on a
+  one-third cut (18% -> 12%), "the one gain" when the facts held three,
+  "flattens" for a cooldown that gained rank scaling, and Kallari (51.1%)
+  grouped with the 54-55% dominators. And the same "nearly halved" had
+  crept into MY hand-written digest tldr — the deterministic number check
+  passes these every time, because every number is real. Direction words
+  and proportions are the critic's territory, not the verifier's.
+- Grounding the author in a per-hero facts file (digest lines + 1.16
+  measured baseline + lane board + build blocks, ~122k matches, all pulled
+  2026-09-01 by the daily refresh) made the ground-check trivially clean:
+  0 invented numbers across 29 heroes on the first pass. The 16 build-item
+  claims all resolved because the facts file carried the builds the claims
+  had to cite. pred.gg calls Adele "Hemlock" — display names come from the
+  omeda snapshot, never from pred.gg.
+- Same-day fetch discipline confirmed: three verbatim WebFetch passes
+  (full, A-L, M-Z+systems) agreed with each other; the single-pass capture
+  had already been complete this time, but the cross-check is what proves it.

@@ -15,8 +15,11 @@ import { loadData } from '../src/data.js';
 const report = JSON.parse(
   readFileSync(new URL('../../data/aggregates/patch-currency.json', import.meta.url), 'utf8'),
 ) as {
-  totals: { checks: number; applied: number; stale: number; unparsedNoteLines: number };
+  totals: { checks: number; applied: number; stale: number; pending?: number; unparsedNoteLines: number };
   staleAgainstPatch: string | null;
+  pendingAgainstPatch?: string | null;
+  pendingReleaseDate?: string | null;
+  snapshotFetchedAt: string;
   checks: { patch: string; target: string; field: string; stated: { from: string; to: string }; observed: string; verdict: string }[];
 };
 
@@ -26,6 +29,21 @@ describe('patch currency', () => {
     const detail = stale.map((c) => `${c.patch} ${c.target}/${c.field}: notes ${c.stated.from} -> ${c.stated.to}, snapshot ${c.observed}`);
     expect(detail).toEqual([]);
     expect(report.staleAgainstPatch).toBeNull();
+  });
+
+  it('release-window pending is a bounded, evidenced state — never a loophole', () => {
+    // 'pending' means the NEWEST digest's numbers are not in omeda's catalog
+    // yet. It is only legal when the report names the pending patch, the
+    // snapshot was re-pulled on/after that patch's release date (we actually
+    // tried), and we are within 14 days of release. Anything else is stale.
+    const pending = report.checks.filter((c) => c.verdict === 'pending');
+    if (!pending.length) return;
+    expect(report.pendingAgainstPatch).toBeTruthy();
+    expect(pending.every((c) => c.patch === report.pendingAgainstPatch)).toBe(true);
+    expect(report.pendingReleaseDate).toBeTruthy();
+    const released = Date.parse(report.pendingReleaseDate!);
+    expect(Date.parse(report.snapshotFetchedAt)).toBeGreaterThanOrEqual(released);
+    expect(Date.now() - released).toBeLessThanOrEqual(14 * 86400000);
   });
 
   it('the report actually checked something (a silent zero is not a pass)', () => {
