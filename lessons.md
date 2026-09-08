@@ -3394,3 +3394,35 @@ guides, the rest build templates) and distilled into
 Critic prompt gained one clarification: map-economy concepts and player
 vocabulary are game knowledge, not match claims — no SOURCE needed; numbers
 and this-game claims still are.
+
+### The guides archive pass (2026-09-08)
+
+Follow-up to the current-patch scrub, per the maintainer: newest patch
+first, then backwards through each patch family's most popular guides.
+Thirteen more read, 1.15 down to the 0.16 era, chosen by the site's own
+popularity ranking per version family — including the most-read guide on
+pred.gg (Shinbi offlane/jungle, 5,505 views).
+
+- **pred.gg's listing is a gated GraphQL app, but the door is the URL.**
+  `https://pred.gg/gql` answers introspection and the `versions` query
+  unauthenticated, but `guidesPaginated`/`guide` return Forbidden without
+  the SSR's server-side auth — no header/cookie/origin trick passes. The
+  working path: the SvelteKit page itself SSRs for our fetcher, and its
+  URL params are real filters (`?versions=<ids|all>&sorting=popular&
+  inDepth=1&page=N`; version IDs from the open `versions` query, 166
+  entries, families groupable by prefix). Read the route module's bundle
+  (`/_app/immutable/nodes/`) to learn an SPA's param grammar instead of
+  guessing endpoints.
+- **The archive's value was the roles the current patch didn't cover.**
+  The 1.16.4 listing skewed jungle/carry; the all-time popular list is
+  offlane- and support-heavy. New digest §6: the offlane winning-vs-losing
+  lane split (coach the state, not the lane), the two support schools
+  (peel vs damage-scaling — a build is a stance choice) with "frequency is
+  king" and preemptive shielding, carries grading themselves on caught-out
+  deaths (our fights.caughtOut, in their words), matchup buckets with the
+  deciding mechanic attached, and win-condition builds named around one
+  scaling engine.
+- Old guides are patch-stale on every number and item by definition —
+  the digest takes only reasoning patterns from them and says so. Authors
+  themselves flag it ("UNDER CONSTRUCTION AFTER RECENT ITEM CHANGES");
+  guide culture validates our provenance discipline.

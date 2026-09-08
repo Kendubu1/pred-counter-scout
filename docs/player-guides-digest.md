@@ -12,10 +12,18 @@ against our own 99 committed films or the omeda catalog) or **SOURCED**
 digest supplies *concepts and vocabulary only*: a coaching review still cites
 numbers exclusively from that game's facts file, never from this document.
 
-Sources: guides by Peter Weeber (hybrid-Eternal series for Boris/Grux/Rampage,
-the Iggy & Scorch jungle macro guide), CarlDanger (Skylar, TwinBlast, Eden,
-The Fey, Sparrow, Gadget, Legion), PB 4ND JAM (Yin, Kwang, Serath, Kallari,
-Feng Mao jungle), Ryuzumei (Grux bruiser, TwinBlast), user-bb3c1ef5 (Serath).
+Sources — current patch (all 19 v1.16.4 guides): Peter Weeber (hybrid-Eternal
+series for Boris/Grux/Rampage, the Iggy & Scorch jungle macro guide),
+CarlDanger (Skylar, TwinBlast, Eden, The Fey, Sparrow, Gadget, Legion),
+PB 4ND JAM (Yin, Kwang, Serath, Kallari, Feng Mao jungle), Ryuzumei (Grux
+bruiser, TwinBlast), user-bb3c1ef5 (Serath). Archive pass (§6, most-viewed
+per patch family, 1.15 back to 0.16): Ryuzumei (Adele support), Olli Kahn
+(Ikra mid), PopHero234 (Greystone offlane), Bruhsarion (Crunch jungle),
+BlueElliott (Aurora offlane), PB 4ND JAM (Rumble Rampage; Shinbi
+offlane/jungle — the site's most-read guide, 5,505 views), Y0urDrunkUncle
+(Eden), Gerolly (Zarus offlane), Klingklang5000 (Muriel "Hegemony"),
+Krillari (Yin), Armageddon (Morigesh), aanilonred (Serath jungle, Master
+elo).
 
 ## 1. The objective clock (the macro layer players plan around)
 
@@ -135,12 +143,96 @@ powerful CC") rather than the abstraction. The readability contract
 (coaching-methodology §4) already points the same way; this is field
 confirmation.
 
-## 6. What this changes for the coach
+## 6. The archive pass (older patches, most-read guides)
+
+A second sweep (2026-09-08, same session) worked backwards from patch 1.15
+through the 0.16 era, taking each patch family's most-viewed guides via the
+site's own popularity ranking — 13 more guides, including the most-read
+guide on the site (PB 4ND JAM's Shinbi offlane/jungle, 5,505 views, v1.11)
+and the deep offlane/support material the current-patch listing lacked.
+**Provenance:** every item name, number, and build in these is patch-stale
+by definition; only the reasoning patterns below travel. Read for concepts:
+
+**Offlane yardsticks** (Aurora v1.14, Zarus v1.12, Shinbi v1.11, Greystone
+v1.15):
+
+- The lane splits by state, and the guides coach each state separately:
+  *winning* = "poke until you see fit to dash in" when the wave advantage
+  exists, then "look to roam when the wave is pushed — your CC makes you
+  extremely valuable in fights across the map"; *losing* = farm safely,
+  prioritize warding against ganks, follow roams or split-push. Grading an
+  offlaner means first asking which state they were in.
+- Trades are coached around resource ticks, not bravado: "let [the DoT
+  passive] tick in short trades, punish when the enemy overextends."
+- The known failure mode is external: "get camped by their jungler and
+  watch your duo lane still lose" — the answer is defensive itemization,
+  aggressive warding, and patience, which matches our rule that offlane
+  deaths pre-10 weigh heavier than missed farm.
+- The kill pattern has a name: land the ultimate "to burn enemy Blink,"
+  then re-engage on the dead escape. Escapes-forced is a real intermediate
+  result between poke and kill.
+
+**Support yardsticks** (Muriel v1.11 "Hegemony", Adele v1.15, Rampage
+support v1.16):
+
+- There are two live schools, and guides argue them openly: traditional
+  peel/shield-power support versus damage-scaling support ("Magical Power
+  has way more multipliers than Heal & Shield Power — do the math"). A
+  support's build is a stance choice, not a default; a review can name
+  which stance the loadout took and judge it against the game.
+- "Frequency is king": uptime beats one big moment — an effect "you can
+  use only once every minute is no augment at all." Same logic players
+  apply to ult usage.
+- Shields are coached as *preemptive*, not reactive — "shield allies
+  before expected damage rather than reacting."
+- Itemization is carry-specific: the same support swaps items depending on
+  which carry they protect. Support reads should name who the loadout
+  serves.
+
+**Carry & mechanics literacy** (Eden v1.13, Yin v1.5, Serath v0.18,
+Rampage v1.13):
+
+- "The worst case scenario for Eden is getting caught in a CC" — the
+  carry's own guides grade themselves on caught-out deaths, exactly our
+  `fights.caughtOut` yardstick.
+- Players study frame-level mechanics as normal practice: animation
+  canceling, auto-attack-reset weaving ("Attack → ability → Attack"),
+  passive-stack upkeep between camps ("kite the buff between camps to keep
+  8 stacks"), and stat caps to the percent ("346% attack speed, 1% off the
+  melee cap"). Execution vocabulary in reviews can assume this literacy.
+- Two mechanics players quote that our sim does not model: slow stacking
+  is not additive (strongest slow + 5% per extra source), and anti-heal
+  sources don't stack multiplicatively — yet dual anti-heal is still
+  justified when one vector doesn't apply (an on-hit anti-heal never
+  touches a hero who won't get autoed). SOURCED, not verified.
+- Authors publish first-clear benchmarks to the second (camp starts at
+  2:45–2:53; a 2:25 first clear called out as "insane") — jungle clear
+  tempo is a measured, comparable stat in the players' own culture.
+
+**Matchup grammar, deepened.** The best archive guides sort matchups into
+favorable / even / difficult buckets and attach the *mechanic* that decides
+each: "Kwang's Blade Tether blocks dash abilities — wait for blade recall
+before committing"; "Murdock outranges the poke — stay behind the minion
+wave and roam for value instead." Hard counters get item pivots stated as
+rules ("vs Countess: rush Tainted Blade first item"). This is the fullest
+form of the swap grammar: condition → mechanism → response.
+
+**Win-condition builds are named as such.** The most-read guide on the
+site opens "The main idea of this build is to have high base health and
+use World Breaker" and then does the math at three checkpoints. Players
+respect a build organized around one scaling engine — a buildRead that
+names the engine ("this build's engine is X; everything else feeds it")
+speaks that culture.
+
+## 7. What this changes for the coach
 
 Enforceable versions live in `docs/coaching-methodology.md` §3–4 and the
 agent specs; in short: causation lines may lean on the objective clock
 (which Fangtooth/Prime window a fight sat in, what a Mini Prime take did or
-didn't convert); junglers are graded on the §2 yardsticks; buildReads keep
-using the swap grammar and threshold/fight-length axes players already
-speak; magnitudes from this digest (Fangtooth stack %s etc.) are THEORY and
-never appear as numbers in a review.
+didn't convert); junglers are graded on the §2 yardsticks and offlane/
+support/carry on the §6 ones (winning-vs-losing lane state first, support
+stance named, preemptive-vs-reactive peel, caught-out deaths as the carry's
+own metric); buildReads keep using the swap grammar, the threshold and
+fight-length axes, and may name a build's scaling engine; magnitudes from
+this digest (Fangtooth stack %s, slow-stacking math, clear benchmarks) are
+THEORY and never appear as numbers in a review.

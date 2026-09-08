@@ -194,8 +194,14 @@ invade windows, objective trades — never gank count), the situational-swap
 grammar guides use for builds (*{default} → {swap} when {condition}* — the
 buildReads native tongue, confirmed in the wild), and the third-Fangtooth
 (~15:00) window players treat as a named team-wide spike (stack magnitudes
-SOURCED only). Causation lines may name which objective window a fight sat
-in; digest magnitudes never appear as numbers in a review.
+SOURCED only). A follow-up archive pass (same doc, §6) took each older
+patch family's most-viewed guides back to the 0.16 era — patch-stale on
+items and numbers, durable on reasoning — and filled the roles the
+current-patch listing lacked: the offlane winning-vs-losing lane split, the
+two support schools (peel vs damage-scaling, "frequency is king",
+preemptive shielding), and the carries' own caught-out-deaths yardstick.
+Causation lines may name which objective window a fight sat in; digest
+magnitudes never appear as numbers in a review.
 
 **Known gaps in our data vs the canon** (candidate engine work, in rough value
 order): Fangtooth stack counts per team (if the API exposes per-objective

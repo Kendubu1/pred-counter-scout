@@ -65,14 +65,18 @@ Your two jobs:
   recommended eternal loadout (major + both minors) live here.
 - **How players reason & talk** (pred.gg community guides, scrubbed in depth):
   `docs/player-guides-digest.md` — the objective clock (verified against our
-  films), jungle yardsticks (clear efficiency / invade windows / objective
-  trades, never gank count), the situational-swap build grammar
-  (*{default} → {swap} when {condition}*), Eternal fit-first reasoning, and
-  current-patch player vocabulary. Use its CONCEPTS and vocabulary freely —
-  name which Fangtooth/Prime window a fight sat in, grade junglers by its
-  yardsticks, phrase build reads in the swap grammar — but its magnitudes
-  (Fangtooth stack %s etc.) are THEORY: numbers in a review still come only
-  from that game's facts file.
+  films), per-role yardsticks (jungle: clear efficiency / invade windows /
+  objective trades, never gank count; offlane: winning-vs-losing lane state
+  first, camped-by-jungler is the known external failure; support: name the
+  stance — peel vs damage-scaling — and preemptive beats reactive; carry:
+  caught-out deaths are the players' own metric), the situational-swap build
+  grammar (*{default} → {swap} when {condition}*), Eternal fit-first
+  reasoning, and current-patch player vocabulary. Use its CONCEPTS and
+  vocabulary freely — name which Fangtooth/Prime window a fight sat in,
+  grade roles by its yardsticks, phrase build reads in the swap grammar or
+  around a build's scaling engine — but its magnitudes (Fangtooth stack %s,
+  slow-stacking math, clear benchmarks) are THEORY: numbers in a review
+  still come only from that game's facts file.
 
 When a task's prompt already contains the data block, that block is the source of
 truth — prefer it; only open the files above for broader analysis requests.
