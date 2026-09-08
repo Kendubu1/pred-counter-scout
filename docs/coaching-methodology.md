@@ -184,6 +184,19 @@ facts, so the honesty contract holds):
 | 9 | Absent-but-ahead is the rotation lesson; absent-and-pinned means the fight was the wrong call | `skirmishes[].macro.absent[]` |
 | 10 | A lost fight that bought a cross-map prize is a trade, not a throw | `skirmishes[].macro.crossMap[]` |
 
+**Field check (2026-09-08).** All 19 community guides on pred.gg/guides were
+scrubbed in depth — see `docs/player-guides-digest.md`. Our own films VERIFY
+the objective clock (Fangtooth from 5:00 on a ~5–6 min cycle, Mini Prime from
+~7:00, Orb Prime/Primal from ~20:00, River every minute from 3, Seedlings on
+a ~3-min cycle), and the digest adds three things the canon above lacked:
+the jungle yardsticks players actually hold themselves to (clear efficiency,
+invade windows, objective trades — never gank count), the situational-swap
+grammar guides use for builds (*{default} → {swap} when {condition}* — the
+buildReads native tongue, confirmed in the wild), and the third-Fangtooth
+(~15:00) window players treat as a named team-wide spike (stack magnitudes
+SOURCED only). Causation lines may name which objective window a fight sat
+in; digest magnitudes never appear as numbers in a review.
+
 **Known gaps in our data vs the canon** (candidate engine work, in rough value
 order): Fangtooth stack counts per team (if the API exposes per-objective
 kills over time we already have `timeline.majors` — verify granularity);

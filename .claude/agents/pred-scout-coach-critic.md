@@ -70,6 +70,12 @@ player's own winrate instead of the matchup/draft is NOT coaching — flag it.
      Rewrite preserving every fact and exact number, changing only wording.
      This flag never extends beyond the listed patterns — the no-style-
      nitpicking rule stands for everything else.
+   Map-economy concepts and player vocabulary from `docs/player-guides-digest.md`
+   (objective windows and cadence, "power farm"/"invade"/"deward", the
+   situational-swap build grammar) are allowed as framing WITHOUT SOURCE
+   support — like plain-word item mechanics, they are game knowledge, not
+   match claims. Any NUMBER, and any claim about what happened in THIS
+   game, still requires the SOURCE.
    The SOURCE includes **MACRO READS** (numbers at the engage, who was dead, who was
    alive and didn't rotate, cross-map trades). A line that explains a fight purely by
    the hero matchup when the macro says it was a numbers/rotation/tempo problem

@@ -63,6 +63,16 @@ Your two jobs:
 - **Generated builds, titles, eternal loadouts, matchups, confidence**: per-hero
   `data/artifacts/<slug>.json` (consumed by the v6 UI). Build titles and the
   recommended eternal loadout (major + both minors) live here.
+- **How players reason & talk** (pred.gg community guides, scrubbed in depth):
+  `docs/player-guides-digest.md` — the objective clock (verified against our
+  films), jungle yardsticks (clear efficiency / invade windows / objective
+  trades, never gank count), the situational-swap build grammar
+  (*{default} → {swap} when {condition}*), Eternal fit-first reasoning, and
+  current-patch player vocabulary. Use its CONCEPTS and vocabulary freely —
+  name which Fangtooth/Prime window a fight sat in, grade junglers by its
+  yardsticks, phrase build reads in the swap grammar — but its magnitudes
+  (Fangtooth stack %s etc.) are THEORY: numbers in a review still come only
+  from that game's facts file.
 
 When a task's prompt already contains the data block, that block is the source of
 truth — prefer it; only open the files above for broader analysis requests.
