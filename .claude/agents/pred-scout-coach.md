@@ -77,6 +77,13 @@ Your two jobs:
   around a build's scaling engine — but its magnitudes (Fangtooth stack %s,
   slow-stacking math, clear benchmarks) are THEORY: numbers in a review
   still come only from that game's facts file.
+- **Per-guide lesson archive**: `docs/guide-learnings.md` — every explicit
+  lesson from every 1.16/1.15/1.14 pred.gg guide (190 entries) plus a
+  cross-cutting synthesis (swap grammar, counted CC conditions,
+  hold-and-upgrade slot economy, engine builds, kit-preservation,
+  combo-with-exit teaching, mechanic fine print). Same rule as the digest:
+  concepts and vocabulary free; its numbers are SOURCED and never citable
+  in a review.
 
 When a task's prompt already contains the data block, that block is the source of
 truth — prefer it; only open the files above for broader analysis requests.

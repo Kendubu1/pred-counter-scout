@@ -6,6 +6,12 @@ all patch v1.16.4, read 2026-09-08. The point is not the individual builds
 players **reason, prioritize, and talk** — so the coach speaks their language
 and grades against their yardsticks.
 
+**Companion archive.** `docs/guide-learnings.md` is the per-guide record:
+one entry for every guide in the 1.16/1.15/1.14 families (190 entries)
+carrying each author's explicit lessons verbatim, with a cross-cutting
+synthesis up top. This digest stays the thematic summary; the archive is
+where a specific guide's teaching lives.
+
 **Provenance rule.** Everything here is either **VERIFIED** (cross-checked
 against our own 99 committed films or the omeda catalog) or **SOURCED**
 (guide-author claim we cannot check — treat as THEORY). Either way this
