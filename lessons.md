@@ -3333,3 +3333,30 @@ BUILD and ETERNAL rows so the lobby stays scannable.
 - Playwright module resolution is by script location, not cwd — a scratchpad
   .mjs can't import playwright-core even when run from engine/; copy the
   script into engine/ first.
+
+### The pred.gg guides scrub (2026-09-08)
+
+All 19 community guides on pred.gg/guides read in depth (four deep-macro
+guides, the rest build templates) and distilled into
+`docs/player-guides-digest.md`. Two findings worth keeping:
+
+- **Our films verify the guides' objective clock.** Fangtooth earliest take
+  min 5 / ~6-min median gap, Mini Prime from ~8, Orb Prime and Primal from
+  ~21, River every minute from 3, Seedlings on a ~3-min cycle — a scan of
+  `timeline.majors` across all 99 films matched every guide-claimed cadence.
+  The digest marks those VERIFIED and leaves magnitudes (the 2%/4%/8%
+  Fangtooth stack claim) as SOURCED theory. Concepts travel into reviews;
+  numbers still only come from the game's own facts file.
+- **The buildReads grammar was already the players' grammar.** Nearly every
+  carry guide writes the same situational-swap sentence ("Liberator over the
+  damage opener against powerful CC"), states greed as conditional ("you
+  need to be ahead — if you fall behind you need to change"), and reasons
+  about Eternals fit-first with blunt trade-offs ("do NOT go Broken Wings —
+  the movespeed from your Q is super important for disengaging"). The digest
+  is field confirmation for the teach-the-why layer, plus the jungle
+  yardsticks (clear efficiency, invade windows, objective trades — never
+  gank count) our reviews had no basis for before.
+
+Critic prompt gained one clarification: map-economy concepts and player
+vocabulary are game knowledge, not match claims — no SOURCE needed; numbers
+and this-game claims still are.
