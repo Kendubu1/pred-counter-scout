@@ -1,44 +1,128 @@
 {
- "generatedAt": "2026-08-31T05:18:06.826Z",
+ "generatedAt": "2026-09-08T20:15:04.242Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
  "reviewedLines": 27,
- "flaggedLines": 5,
- "agreementRate": 0.815,
- "rewritesGrounded": 5,
+ "flaggedLines": 19,
+ "agreementRate": 0.296,
+ "rewritesGrounded": 19,
  "rewritesDropped": 0,
- "applied": 5,
+ "applied": 19,
  "unmatched": 0,
  "games": {
-  "1e55fa4e-00b7-4c85-9842-6c7737ec369f": [
+  "95637f00-f605-4892-904e-30642ca9265a": [
    {
-    "quote": "Eighteen kills to five deaths, 73,441 damage to heroes, the highest of any player in the lobby. Won two fights essentially alone: 3-0 at our Fangtooth (22.9) and 2-0 at our inner tower (25.7). The build skipped Imperator for lifesteal and anti-heal instead, and it worked.",
+    "quote": "From the Mini Prime loss at 13.9 through a five-for-nothing wipe at the Outer Tower at 17.9, the team dropped three fights in a row, and in two of them a winning-lane player was alive but marked absent rather than rotating in.",
+    "severity": "high",
+    "issue": "ungrounded count — only the 13.9 fight has a macro-read entry showing a winning-lane player absent; the 15.9 absence was a losing-lane player pinned, and 17.9 has no macro-read entry at all",
+    "rewrite": "From the Mini Prime loss at 13.9 through a five-for-nothing wipe at the Outer Tower at 17.9, the team dropped three fights in a row, and at the first of them the macro read shows a winning-lane player alive but marked absent rather than rotating in."
+   },
+   {
+    "quote": "The support lane against Steel was lost for the whole game, and the macro read marks Phase alive but absent from three of the team's defining fights because that lane state left them pinned rather than by choice.",
+    "severity": "med",
+    "issue": "one of the three cited fights (24.3) is a 5v4 skirmish, not tagged game-defining in the source",
+    "rewrite": "The support lane against Steel was lost for the whole game, and the macro read marks Phase alive but absent from three of the team's fights because that lane state left them pinned rather than by choice."
+   },
+   {
+    "quote": "Phase was alive but absent from three of the game's defining fights, and every one of the five deaths came from the same hero, Kira.",
+    "severity": "med",
+    "issue": "one of the three cited fights (24.3) is a 5v4 skirmish, not tagged game-defining in the source",
+    "rewrite": "Phase was alive but absent from three of the game's fights, and every one of the five deaths came from the same hero, Kira."
+   },
+   {
+    "quote": "Even so, the macro read marks Goldilocks324 alive but absent from four of the team's fights, twice while the lane was already even and twice while it was ahead, including the 23.1 fight the notes call winnable with that rotation.",
+    "severity": "high",
+    "issue": "macro read only lists Goldilocks324 absent from three fights (11.8, 13.9, 23.1), and only 23.1 is explicitly marked ahead",
+    "rewrite": "Even so, the macro read marks Goldilocks324 alive but absent from three of the team's fights, twice while the lane was already even and once while it was ahead, including the 23.1 fight the notes call winnable with that rotation."
+   },
+   {
+    "quote": "but Grux was alive and simply not there for four of the team's fights, including two where the lane was already ahead.",
+    "severity": "high",
+    "issue": "macro read only lists three absences (11.8, 13.9, 23.1), and only one is explicitly marked ahead",
+    "rewrite": "but Grux was alive and simply not there for three of the team's fights, including one where the lane was already ahead."
+   },
+   {
+    "quote": "The matchup was fine; the rotations were not.",
     "severity": "low",
-    "issue": "scoreline used as a noun, not a description",
-    "rewrite": "Eighteen kills to five deaths, 73,441 damage to heroes, the highest of any player in the lobby. Won two fights essentially alone: the fight at our Fangtooth (22.9), won 3-0, and the fight at our inner tower (25.7), won 2-0. The build skipped Imperator for lifesteal and anti-heal instead, and it worked."
+    "issue": "readability — repeats the exact coined-maxim template already used earlier in the review (\"The matchup was fine; the map presence wasn't.\")",
+    "rewrite": "The matchup held up; the rotations to reinforce it didn't."
    },
    {
-    "quote": "This fight was won 5-2 at their Orb Prime, but Aurora's death in it, at 40.4, came about a minute before that Prime secured and the Core fell at 41.2. The call there was to prioritize denying or contesting the Prime once the fight turned, since losing Aurora let it go through uncontested — that objective decided the game more than the extra kills did.",
-    "severity": "med",
-    "issue": "misuses 'uncontested' (SOURCE reserves that word for the nobody-dead Primal Fangtooth case; this Orb Prime was conceded because Aurora and The Fey were specifically dead, a different mechanism)",
-    "rewrite": "This fight was won 5-2 at their Orb Prime, but Aurora's death in it, at 40.4, came about a minute before that Prime secured and the Core fell at 41.2, with The Fey dead by then too. The call there was to prioritize denying or contesting the Prime once the fight turned, since losing both left nobody there to stop it — that objective decided the game more than the extra kills did."
+    "quote": "That win never left the lane, though: the macro read marks Cuban Noobster alive but absent, still ahead, from four of the team's fights, including the 13.9 fight lost 0-3 at the enemy Mini Prime and the 23.1 fight lost 0-2 at their Inner Tower, both flagged as winnable with a rotation.",
+    "severity": "high",
+    "issue": "macro read lists Cuban Noobster absent from three fights (13.9, 23.1, 24.3), not four",
+    "rewrite": "That win never left the lane, though: the macro read marks Cuban Noobster alive but absent, still ahead, from three of the team's fights, including the 13.9 fight lost 0-3 at the enemy Mini Prime and the 23.1 fight lost 0-2 at their Inner Tower, both flagged as winnable with a rotation."
    },
    {
-    "quote": "The team held at our inhibitor with Sevarog still pinned in a losing offlane lane, absent from the fight, and lost it 1-4 anyway. That cost both inhibitors within about a minute, at 39.5 and 39.7. Falling back to the inner turret and regrouping once the offlane cleared would have cost less than two inhibitors.",
-    "severity": "med",
-    "issue": "invents a specific fallback position (inner turret) the SOURCE doesn't support and that other tower/inhibitor events suggest may not have been standing",
-    "rewrite": "The team held at our inhibitor with Sevarog still pinned in a losing offlane lane, absent from the fight, and lost it 1-4 anyway. That cost both inhibitors within about a minute, at 39.5 and 39.7. Skipping that fight until the offlane could join would likely have cost less than two inhibitors."
+    "quote": "yet Cuban Noobster was marked absent, still ahead, from four of the team's fights, two of them explicitly flagged as winnable with the extra body.",
+    "severity": "high",
+    "issue": "three absences, not four, and all three carry the shove-and-rotate winnable read, not just two",
+    "rewrite": "yet Cuban Noobster was marked absent, still ahead, from three of the team's fights, all three explicitly flagged as winnable with the extra body."
    },
    {
-    "quote": "Mr_Meat31 covered Phase's full meta core (Marshal, Enra's Blessing, Galaxy Greaves), including Enra's Blessing's shield for an immobilized ally within range — real value against Riktor's pull-into-silence-into-suppress chain. The last three slots went to Prophecy, Plasma Blade, and Spectra, three on-hit or ability-power items built for more damage rather than survivability. Against a comp with roughly three seconds of chainable hard crowd control, the alternative path, a defensive item with built-in tenacity like Unbroken Will, would have helped Phase survive the suppress instead of adding damage from a hero who finished with zero kills. The trade mattered most given Phase died in all three fights reached this game.",
-    "severity": "med",
-    "issue": "invents a CC-duration number ('roughly three seconds') not present in the SOURCE",
-    "rewrite": "Mr_Meat31 covered Phase's full meta core (Marshal, Enra's Blessing, Galaxy Greaves), including Enra's Blessing's shield for an immobilized ally within range — real value against Riktor's pull-into-silence-into-suppress chain. The last three slots went to Prophecy, Plasma Blade, and Spectra, three on-hit or ability-power items built for more damage rather than survivability. Against a comp built around a chainable hard-crowd-control combo, the alternative path, a defensive item with built-in tenacity like Unbroken Will, would have helped Phase survive the suppress instead of adding damage from a hero who finished with zero kills. The trade mattered most given Phase died in all three fights reached this game."
+    "quote": "Seven deaths spread across three different enemy heroes point at being caught in the open rather than one bad matchup, including a death at 26.9 that came entirely alone outside any clustered fight.",
+    "severity": "high",
+    "issue": "Crunch's seven deaths came from four different enemy heroes (Serath, Bayle, Kira, Skylar), not three",
+    "rewrite": "Seven deaths spread across four different enemy heroes point at being caught in the open rather than one bad matchup, including a death at 26.9 that came entirely alone outside any clustered fight."
    },
    {
-    "quote": "The engine's top-modeled major for Phase support is Vesh, an ability-damage blessing that adds a damage tick to her spells — it lines up with a passive that already heals off ability casts, letting Phase chip health while sustaining herself and a linked ally. The default minors add haste on takedowns and bonus damage against high-health targets, leaning the loadout toward extended teamfights rather than one burst window. The trade-off is that Vesh spends its budget on damage, not survivability, so a Phase running it still needs the item slots, not the blessing, to answer a chain-crowd-control comp like this one.",
+    "quote": "Crunch was also alive, in an even lane, when the team lost the 25.7 fight without joining it.",
     "severity": "low",
-    "issue": "two 'not X' antithesis constructs in one line, and the review already uses the formula once elsewhere ('this isn't a numbers problem, it's a map-presence one') — exceeds the one-per-review cap",
-    "rewrite": "The engine's top-modeled major for Phase support is Vesh, an ability-damage blessing that adds a damage tick to her spells — it lines up with a passive that already heals off ability casts, letting Phase chip health while sustaining herself and a linked ally. The default minors add haste on takedowns and bonus damage against high-health targets, leaning the loadout toward extended teamfights rather than one burst window. The trade-off is that Vesh spends its budget on damage rather than survivability, so a Phase running it still needs the item slots to cover the survivability a chain-crowd-control comp like this one demands."
+    "issue": "contradicts the line's own earlier claim that the offlane had swung to ahead by late game, not even",
+    "rewrite": "Crunch was also alive, still ahead in lane, when the team lost the 25.7 fight without joining it."
+   },
+   {
+    "quote": "Seven deaths across three different killers, including one caught alone at 26.9, point at exposure, not one bad matchup.",
+    "severity": "high",
+    "issue": "four different enemy heroes (Serath, Bayle, Kira, Skylar) killed Crunch across the seven deaths, not three",
+    "rewrite": "Seven deaths across four different killers, including one caught alone at 26.9, point at exposure, not one bad matchup."
+   },
+   {
+    "quote": "That is the model worth repeating — fight where the win pays into an objective, not wherever five bodies happen to cross paths.",
+    "severity": "low",
+    "issue": "readability — second \"X, not Y\" coined-maxim formula in the same review",
+    "rewrite": "That is the model worth repeating: fight where the win pays into an objective."
+   },
+   {
+    "quote": "This was a clean 5v5, both sides at full strength, deep in the enemy jungle with no objective on the table, and it went 0-5. Item gap was not the issue; the team was actually ahead on that read for this fight. The read here is a fight taken in the wrong place for no prize: back off from a five-versus-five that deep without vision or a reason to be there, and reset instead.",
+    "severity": "high",
+    "issue": "wrong location/objective — this is the 17.9 fight, fought at their Outer Tower (not \"deep in the enemy jungle with no objective\"), and two of their towers fell in the following minute",
+    "rewrite": "The 17.9 fight at their Outer Tower went 0-5 even though the team was ahead on the item-count read for that engage — this wasn't a gear problem. Two of their towers fell in the following minute, so the fix isn't about location, it's about the trade: back off a five-man fight the team isn't winning instead of feeding it next to their tower, then reset."
+   },
+   {
+    "quote": "Contesting it 5v5 without a numbers or vision edge handed them the fight and the buff, and the core fell soon after, at 28.5.",
+    "severity": "med",
+    "issue": "no macro-read entry exists for the 27.8 fight to support a \"numbers or vision edge\" cause — a guessed why the source doesn't carry",
+    "rewrite": "Contesting it while already down that many structures handed them the fight and the buff, and the core fell soon after, at 28.5."
+   },
+   {
+    "quote": "That is a real trade against an early-favored jungle profile: Demiurge is weak before it comes online, and Grux closed this 29-minute loss with only three completed items, short of where that scaling pays off.",
+    "severity": "low",
+    "issue": "the jungle matchup read for this game was even early and only favored late, not early-favored",
+    "rewrite": "That is a real trade against a jungle matchup the notes read as even early and only favored late: Demiurge is weak before it comes online, and Grux closed this 29-minute loss with only three completed items, short of where that scaling pays off."
+   },
+   {
+    "quote": "Lt. Belica's build was pure damage: Combustion and Noxia both stack magic power and cooldown haste around an area burst combo, and Oblivion Crown adds another 120 power with a flat 25% amplification on top, three of the community's four core pieces.",
+    "severity": "high",
+    "issue": "the community core for this build is three pieces total (Combustion, Noxia, Wraith Leggings), not four — Lt. Belica hit two of the three",
+    "rewrite": "Lt. Belica's build was pure damage: Combustion and Noxia both stack magic power and cooldown haste around an area burst combo, and Oblivion Crown adds another 120 power with a flat 25% amplification on top — two of the community's three core pieces, with Wraith Leggings the missing third."
+   },
+   {
+    "quote": "It still fits a control mage built to scale into the mid-to-late game rather than to win the opening trades outright, and the midlane matchup against Skylar bears that out.",
+    "severity": "med",
+    "issue": "contradicts the lane read — Lt. Belica won the midlane matchup outright for the entire game, not just late, so the matchup doesn't support this framing",
+    "rewrite": "It still fits a control mage built to scale into the mid-to-late game, though the midlane matchup against Skylar was actually won outright for the entire game, early trades included."
+   },
+   {
+    "quote": "Kira outscaled the lane regardless, closing with 18,073 gold to Drongo's 15,003.",
+    "severity": "high",
+    "issue": "no gold figures exist anywhere in the source for either player — fabricated numbers",
+    "rewrite": "Kira outscaled the lane regardless, closing with 31,286 hero damage and a 14/5/4 scoreline to Drongo's 17,969 hero damage and 8/8/3."
+   },
+   {
+    "quote": "It trades away the earlier, front-loaded majors that would answer an even-early lane like the one Crunch played against Bayle, in exchange for staying power in a longer game than this one turned out to be.",
+    "severity": "low",
+    "issue": "the offlane read has the early phase going to Bayle (\"theirs early\"), not even — Crunch was behind early, not in an even lane",
+    "rewrite": "It trades away the earlier, front-loaded majors that would answer a lane Crunch played from behind early against Bayle, in exchange for staying power in a longer game than this one turned out to be."
    }
   ]
  }
