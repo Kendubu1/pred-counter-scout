@@ -1,128 +1,80 @@
 {
- "generatedAt": "2026-09-08T20:15:04.242Z",
+ "generatedAt": "2026-09-08T21:11:39.882Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
  "reviewedLines": 27,
- "flaggedLines": 19,
- "agreementRate": 0.296,
- "rewritesGrounded": 19,
+ "flaggedLines": 11,
+ "agreementRate": 0.593,
+ "rewritesGrounded": 10,
  "rewritesDropped": 0,
- "applied": 19,
+ "applied": 10,
  "unmatched": 0,
  "games": {
-  "95637f00-f605-4892-904e-30642ca9265a": [
+  "bf93f598-b58d-4978-8fe3-97d89b297b95": [
    {
-    "quote": "From the Mini Prime loss at 13.9 through a five-for-nothing wipe at the Outer Tower at 17.9, the team dropped three fights in a row, and in two of them a winning-lane player was alive but marked absent rather than rotating in.",
-    "severity": "high",
-    "issue": "ungrounded count — only the 13.9 fight has a macro-read entry showing a winning-lane player absent; the 15.9 absence was a losing-lane player pinned, and 17.9 has no macro-read entry at all",
-    "rewrite": "From the Mini Prime loss at 13.9 through a five-for-nothing wipe at the Outer Tower at 17.9, the team dropped three fights in a row, and at the first of them the macro read shows a winning-lane player alive but marked absent rather than rotating in."
-   },
-   {
-    "quote": "The support lane against Steel was lost for the whole game, and the macro read marks Phase alive but absent from three of the team's defining fights because that lane state left them pinned rather than by choice.",
+    "quote": "River control read the same way before a single tower fell, 7 river camps to their 18 and 0 seedlings taken to their 3, and two of the biggest majors, the Mini Prime at minute 18 and the Fangtooth at minute 22, went to the opponent with the entire roster alive and nobody sent to stop them.",
     "severity": "med",
-    "issue": "one of the three cited fights (24.3) is a 5v4 skirmish, not tagged game-defining in the source",
-    "rewrite": "The support lane against Steel was lost for the whole game, and the macro read marks Phase alive but absent from three of the team's fights because that lane state left them pinned rather than by choice."
+    "issue": "ungrounded timing claim — river/seedling counts are whole-match totals, not a snapshot 'before a single tower fell' (first tower fell at 12.5m per EVENTS)",
+    "rewrite": "River control went the same way across the match, 7 river camps to their 18 and 0 seedlings taken to their 3, and two of the biggest majors, the Mini Prime at minute 18 and the Fangtooth at minute 22, went to the opponent with the entire roster alive and nobody sent to stop them."
    },
    {
-    "quote": "Phase was alive but absent from three of the game's defining fights, and every one of the five deaths came from the same hero, Kira.",
+    "quote": "The fight at 31.2, lost 0-2 near the enemy's Primal Fangtooth, triggered the final collapse: the carry and jungle, both ahead in their lanes, never joined it, and Renna's death there fed the Primal Fangtooth and, across the next minute, two inhibitors and the core.",
+    "severity": "high",
+    "issue": "wrong reference — MACRO READS at 31.2m names carry (Goldilocks324) and offlane (🎮 private), not jungle; offlane's lane was even, not ahead",
+    "rewrite": "The fight at 31.2, lost 0-2 near the enemy's Primal Fangtooth, triggered the final collapse: the carry, ahead in lane, and the offlane, alive but never joining, both stayed out of it, and Renna's death there fed the Primal Fangtooth and, across the next minute, two inhibitors and the core."
+   },
+   {
+    "quote": "The swing point sat between minute 18 and minute 22: the Mini Prime and the Fangtooth both went to the opponent uncontested while the entire roster was alive, handing over two majors without a fight.",
+    "severity": "high",
+    "issue": "ungrounded — DECISIVE FIGHTS records a 22m teamfight won 4-1 at their Fangtooth; a fight did happen, the objective was still lost",
+    "rewrite": "The swing point sat between minute 18 and minute 22: the Mini Prime fell uncontested with the entire roster alive, and the Fangtooth followed the same way even though the team won the fight for it 4-1 — the objective still went to the opponent."
+   },
+   {
+    "quote": "From there, winning a fight stopped mattering as much as converting one — the roster won six fights the rest of the way but converted only one, while the opponent converted every fight it won.",
     "severity": "med",
-    "issue": "one of the three cited fights (24.3) is a 5v4 skirmish, not tagged game-defining in the source",
-    "rewrite": "Phase was alive but absent from three of the game's fights, and every one of the five deaths came from the same hero, Kira."
+    "issue": "second coined maxim in the review, plus the six wins are a whole-match total (two of them, 5.7m and 7.9m, came before the stated swing point) not 'the rest of the way'",
+    "rewrite": "From there, converting a fight mattered more than winning one: across the match the roster won six fights but converted only one into an objective, while the opponent converted all four it won."
    },
    {
-    "quote": "Even so, the macro read marks Goldilocks324 alive but absent from four of the team's fights, twice while the lane was already even and twice while it was ahead, including the 23.1 fight the notes call winnable with that rotation.",
+    "quote": "and only 3 completed items by the end for the lowest gold total in the game, 10,650.",
     "severity": "high",
-    "issue": "macro read only lists Goldilocks324 absent from three fights (11.8, 13.9, 23.1), and only 23.1 is explicitly marked ahead",
-    "rewrite": "Even so, the macro read marks Goldilocks324 alive but absent from three of the team's fights, twice while the lane was already even and once while it was ahead, including the 23.1 fight the notes call winnable with that rotation."
+    "issue": "ungrounded — no gold figures appear anywhere in the SOURCE",
+    "rewrite": "and only 3 completed items by the end."
    },
    {
-    "quote": "but Grux was alive and simply not there for four of the team's fights, including two where the lane was already ahead.",
+    "quote": "Xeebs' Renna produced the roster's leading number of picks, 8 kills, and the second-most damage, 35,029, in a midlane matchup against Gideon that was lost the entire game.",
     "severity": "high",
-    "issue": "macro read only lists three absences (11.8, 13.9, 23.1), and only one is explicitly marked ahead",
-    "rewrite": "but Grux was alive and simply not there for three of the team's fights, including one where the lane was already ahead."
+    "issue": "wrong reference — GRIM.exe led the roster with 9 kills (stated correctly elsewhere in this same review), not Renna's 8",
+    "rewrite": "Xeebs' Renna produced the roster's second-leading number of picks behind GRIM.exe's 9, with 8 kills, and the second-most damage, 35,029, in a midlane matchup against Gideon that was lost the entire game."
    },
    {
-    "quote": "The matchup was fine; the rotations were not.",
+    "quote": "and only 3 completed items for the lowest gold total in the game, 10,650.",
+    "severity": "high",
+    "issue": "ungrounded — no gold figures appear anywhere in the SOURCE",
+    "rewrite": "and only 3 completed items."
+   },
+   {
+    "quote": "while the carry and jungle, both ahead in their lanes, never rotated in.",
+    "severity": "high",
+    "issue": "wrong reference — MACRO READS at 31.2m names carry and offlane, not jungle; offlane's lane was even, not ahead",
+    "rewrite": "while the carry, ahead in lane, and the offlane, alive but never rotating in, both stayed out of it."
+   },
+   {
+    "quote": "and GRIM.exe did finish all five items bought this game, the fullest build on the roster.",
     "severity": "low",
-    "issue": "readability — repeats the exact coined-maxim template already used earlier in the review (\"The matchup was fine; the map presence wasn't.\")",
-    "rewrite": "The matchup held up; the rotations to reinforce it didn't."
+    "issue": "ungrounded overstatement — Phase also finished 5 items, so GRIM.exe is tied, not uniquely the fullest",
+    "rewrite": "and GRIM.exe did finish all five items bought this game, tied with Phase for the fullest build on the roster."
    },
    {
-    "quote": "That win never left the lane, though: the macro read marks Cuban Noobster alive but absent, still ahead, from four of the team's fights, including the 13.9 fight lost 0-3 at the enemy Mini Prime and the 23.1 fight lost 0-2 at their Inner Tower, both flagged as winnable with a rotation.",
+    "quote": "and Zarus finished only 3 items for the lowest gold total on the roster, 10,650, after getting caught for first blood at minute 3.",
     "severity": "high",
-    "issue": "macro read lists Cuban Noobster absent from three fights (13.9, 23.1, 24.3), not four",
-    "rewrite": "That win never left the lane, though: the macro read marks Cuban Noobster alive but absent, still ahead, from three of the team's fights, including the 13.9 fight lost 0-3 at the enemy Mini Prime and the 23.1 fight lost 0-2 at their Inner Tower, both flagged as winnable with a rotation."
+    "issue": "ungrounded — no gold figures appear anywhere in the SOURCE",
+    "rewrite": "and Zarus finished only 3 items after getting caught for first blood at minute 3."
    },
    {
-    "quote": "yet Cuban Noobster was marked absent, still ahead, from four of the team's fights, two of them explicitly flagged as winnable with the extra body.",
-    "severity": "high",
-    "issue": "three absences, not four, and all three carry the shove-and-rotate winnable read, not just two",
-    "rewrite": "yet Cuban Noobster was marked absent, still ahead, from three of the team's fights, all three explicitly flagged as winnable with the extra body."
-   },
-   {
-    "quote": "Seven deaths spread across three different enemy heroes point at being caught in the open rather than one bad matchup, including a death at 26.9 that came entirely alone outside any clustered fight.",
-    "severity": "high",
-    "issue": "Crunch's seven deaths came from four different enemy heroes (Serath, Bayle, Kira, Skylar), not three",
-    "rewrite": "Seven deaths spread across four different enemy heroes point at being caught in the open rather than one bad matchup, including a death at 26.9 that came entirely alone outside any clustered fight."
-   },
-   {
-    "quote": "Crunch was also alive, in an even lane, when the team lost the 25.7 fight without joining it.",
+    "quote": "That's the shape worth repeating: fight where the win pays into an objective already up.",
     "severity": "low",
-    "issue": "contradicts the line's own earlier claim that the offlane had swung to ahead by late game, not even",
-    "rewrite": "Crunch was also alive, still ahead in lane, when the team lost the 25.7 fight without joining it."
-   },
-   {
-    "quote": "Seven deaths across three different killers, including one caught alone at 26.9, point at exposure, not one bad matchup.",
-    "severity": "high",
-    "issue": "four different enemy heroes (Serath, Bayle, Kira, Skylar) killed Crunch across the seven deaths, not three",
-    "rewrite": "Seven deaths across four different killers, including one caught alone at 26.9, point at exposure, not one bad matchup."
-   },
-   {
-    "quote": "That is the model worth repeating — fight where the win pays into an objective, not wherever five bodies happen to cross paths.",
-    "severity": "low",
-    "issue": "readability — second \"X, not Y\" coined-maxim formula in the same review",
-    "rewrite": "That is the model worth repeating: fight where the win pays into an objective."
-   },
-   {
-    "quote": "This was a clean 5v5, both sides at full strength, deep in the enemy jungle with no objective on the table, and it went 0-5. Item gap was not the issue; the team was actually ahead on that read for this fight. The read here is a fight taken in the wrong place for no prize: back off from a five-versus-five that deep without vision or a reason to be there, and reset instead.",
-    "severity": "high",
-    "issue": "wrong location/objective — this is the 17.9 fight, fought at their Outer Tower (not \"deep in the enemy jungle with no objective\"), and two of their towers fell in the following minute",
-    "rewrite": "The 17.9 fight at their Outer Tower went 0-5 even though the team was ahead on the item-count read for that engage — this wasn't a gear problem. Two of their towers fell in the following minute, so the fix isn't about location, it's about the trade: back off a five-man fight the team isn't winning instead of feeding it next to their tower, then reset."
-   },
-   {
-    "quote": "Contesting it 5v5 without a numbers or vision edge handed them the fight and the buff, and the core fell soon after, at 28.5.",
-    "severity": "med",
-    "issue": "no macro-read entry exists for the 27.8 fight to support a \"numbers or vision edge\" cause — a guessed why the source doesn't carry",
-    "rewrite": "Contesting it while already down that many structures handed them the fight and the buff, and the core fell soon after, at 28.5."
-   },
-   {
-    "quote": "That is a real trade against an early-favored jungle profile: Demiurge is weak before it comes online, and Grux closed this 29-minute loss with only three completed items, short of where that scaling pays off.",
-    "severity": "low",
-    "issue": "the jungle matchup read for this game was even early and only favored late, not early-favored",
-    "rewrite": "That is a real trade against a jungle matchup the notes read as even early and only favored late: Demiurge is weak before it comes online, and Grux closed this 29-minute loss with only three completed items, short of where that scaling pays off."
-   },
-   {
-    "quote": "Lt. Belica's build was pure damage: Combustion and Noxia both stack magic power and cooldown haste around an area burst combo, and Oblivion Crown adds another 120 power with a flat 25% amplification on top, three of the community's four core pieces.",
-    "severity": "high",
-    "issue": "the community core for this build is three pieces total (Combustion, Noxia, Wraith Leggings), not four — Lt. Belica hit two of the three",
-    "rewrite": "Lt. Belica's build was pure damage: Combustion and Noxia both stack magic power and cooldown haste around an area burst combo, and Oblivion Crown adds another 120 power with a flat 25% amplification on top — two of the community's three core pieces, with Wraith Leggings the missing third."
-   },
-   {
-    "quote": "It still fits a control mage built to scale into the mid-to-late game rather than to win the opening trades outright, and the midlane matchup against Skylar bears that out.",
-    "severity": "med",
-    "issue": "contradicts the lane read — Lt. Belica won the midlane matchup outright for the entire game, not just late, so the matchup doesn't support this framing",
-    "rewrite": "It still fits a control mage built to scale into the mid-to-late game, though the midlane matchup against Skylar was actually won outright for the entire game, early trades included."
-   },
-   {
-    "quote": "Kira outscaled the lane regardless, closing with 18,073 gold to Drongo's 15,003.",
-    "severity": "high",
-    "issue": "no gold figures exist anywhere in the source for either player — fabricated numbers",
-    "rewrite": "Kira outscaled the lane regardless, closing with 31,286 hero damage and a 14/5/4 scoreline to Drongo's 17,969 hero damage and 8/8/3."
-   },
-   {
-    "quote": "It trades away the earlier, front-loaded majors that would answer an even-early lane like the one Crunch played against Bayle, in exchange for staying power in a longer game than this one turned out to be.",
-    "severity": "low",
-    "issue": "the offlane read has the early phase going to Bayle (\"theirs early\"), not even — Crunch was behind early, not in an even lane",
-    "rewrite": "It trades away the earlier, front-loaded majors that would answer a lane Crunch played from behind early against Bayle, in exchange for staying power in a longer game than this one turned out to be."
+    "issue": "pretend-depth announcer phrasing / extra coined maxim beyond the review's first",
+    "rewrite": null
    }
   ]
  }
