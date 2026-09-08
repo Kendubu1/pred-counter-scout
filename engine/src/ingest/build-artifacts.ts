@@ -145,10 +145,13 @@ let catalogPatch: string | null = null;
 if (existsSync(currencyPath)) {
   const cur = JSON.parse(readFileSync(currencyPath, 'utf8')) as {
     staleAgainstPatch: string | null;
-    perPatch: Record<string, { applied: number; stale: number }>;
+    perPatch: Record<string, { applied: number; stale: number; pending?: number }>;
   };
   if (!cur.staleAgainstPatch) {
-    const verified = Object.entries(cur.perPatch).filter(([, v]) => v.applied > 0 && v.stale === 0).map(([p]) => p);
+    // A patch in the release-window pending state is NOT verified: omeda has
+    // not published it, so the snapshot's numbers are still the prior patch's.
+    const verified = Object.entries(cur.perPatch)
+      .filter(([, v]) => v.applied > 0 && v.stale === 0 && !(v.pending && v.pending > 0)).map(([p]) => p);
     catalogPatch = verified.length ? verified[verified.length - 1]! : null;
   }
 }

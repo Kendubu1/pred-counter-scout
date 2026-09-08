@@ -1,0 +1,961 @@
+{
+ "patch": "1.16.4",
+ "note": "Forward predictions for 1.16.4, authored by the pred-scout-coach agent on session compute (no API) and numerically ground-checked against the release-day digest and the committed 1.16 measured baseline: pred.gg general stats for the full 1.16 window (version ids 158-165, fetched 2026-09-01), the patch-1.16 ranked lane board (~122,407 matches, pulled 2026-09-01), and the committed build artifacts. Forecasts, not measured post-patch results; no measured block yet. Shinbi is excluded as a bugfix-only entry with no expected power movement. The omeda catalog has not published 1.16.4 yet (patch-currency: PENDING), so sim reads are pre-1.16.4 by construction.",
+ "source": "https://www.predecessorgame.com/en-US/news/patch-notes/Patch_Notes_1.16.4",
+ "generatedAt": "2026-09-01T22:25:37.140Z",
+ "predictions": {
+  "adele": {
+   "name": "Adele",
+   "role": "support",
+   "trend": "mixed",
+   "changes": [
+    "Health 685 -> 680; physical armor 34 -> 33",
+    "Crown of Thorns ally bonus true damage 6% -> 5%",
+    "Acacia cleave 20% -> 25%",
+    "Royal Flourish damage 5/15/25/35/45 -> 5/20/35/50/65; true damage 70/90/110/130/150 -> 60/80/100/120/140, bonus health scaling 7% -> 8%",
+    "Imperial Lash damage 45/65/85/105/125 -> 40/55/70/85/100, bonus physical power scaling 50% -> 80%",
+    "Queen's Garden root 0.75s -> 0.5s",
+    "Seeds of Dominion augment true damage 2/2.5/3/3.5/4 -> 2 flat; Tyrant of Thorns effectiveness 300% -> 400%"
+   ],
+   "simBuildCore": [
+    "Stonewall",
+    "Vainglory",
+    "Raiment of Renewal",
+    "Frostguard",
+    "Catalytic Drive",
+    "Warp Stream"
+   ],
+   "topMetaBuild": {
+    "title": "Physical-Def Skirmisher",
+    "items": [
+     "Dawnstar",
+     "Xenia",
+     "RaimentOfRenewal"
+    ],
+    "shrunkWr": 0.576,
+    "games": 382,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Her damage moves out of her team and into her own casts: Crown of Thorns ally true damage drops 6% -> 5% and the Queen's Garden root shortens 0.75s -> 0.5s, while Royal Flourish climbs to 5/20/35/50/65 and Imperial Lash's bonus physical power scaling jumps 50% -> 80%. She also gives up a little durability, with health 685 -> 680 and physical armor 34 -> 33.",
+   "willChange": "The support version sits at 51.0% over 13,582 ranked support games, and it leans on exactly the aura and root that got trimmed. The Imperial Lash buff scales with her own physical power, which support builds rarely buy, so expect support Adele to slip toward even while the 46.8% offlane version (4,627 games) gets a real reason to try again. The Xenia cost cut (2,450 -> 2,400) is a small kindness to her top meta build.",
+   "magnitude": "notable"
+  },
+  "argus": {
+   "name": "Argus",
+   "role": "midlane",
+   "trend": "nerf",
+   "changes": [
+    "Dread Nova cooldown 16/15/14/13/12 -> 16/15.25/14.5/13.75/13",
+    "Particle Shredder scaling 16% -> 15%",
+    "Synaptic Obliterator damage 130/155/180 -> 130/150/170"
+   ],
+   "simBuildCore": [
+    "Spectral Schematics",
+    "Timewarp",
+    "Oathkeeper",
+    "Wraith Leggings",
+    "Oblivion Crown",
+    "Combustion"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Frontline",
+    "items": [
+     "AzureCore",
+     "Entropy",
+     "WraithLeggings"
+    ],
+    "shrunkWr": 0.576,
+    "games": 784,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Three small trims: Dread Nova's later cooldowns stretch to 16/15.25/14.5/13.75/13, Particle Shredder scaling dips 16% -> 15%, and Synaptic Obliterator falls to 130/150/170.",
+   "willChange": "At 51.7% over 19,614 ranked midlane games he can afford this haircut. The slower Dread Nova means slightly fewer poke-and-clear cycles late, but nothing about how he plays changes. Expect a small drift down while he stays a solid mid pick; his Azure Core and Entropy meta build is untouched by the item pass.",
+   "magnitude": "minor"
+  },
+  "bayle": {
+   "name": "Bayle",
+   "role": "offlane",
+   "trend": "mixed",
+   "changes": [
+    "BAT 1.6 -> 1.75; physical power 52 -> 49, growth 4 -> 4.4",
+    "Attack speed 160 -> 175, growth 1.2 -> 1.4",
+    "Berserk attack speed 15-83% (+4/level) -> 15.5-91.5% (+4.5%/level), activation threshold 40% -> 35% health",
+    "Cursed Edge bonus physical power scaling 75% -> 80%"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Spear Of Desolation",
+    "The Perforator",
+    "Augmentation",
+    "Solaris",
+    "Basilisk"
+   ],
+   "topMetaBuild": {
+    "title": "Physical Bruiser (Physical-Def)",
+    "items": [
+     "Overlord",
+     "Rapture",
+     "CursedScroll"
+    ],
+    "shrunkWr": 0.565,
+    "games": 456,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "A cadence rework: time between basic attacks rises 1.6 -> 1.75 and base power falls 52 -> 49, paid back with attack speed 160 -> 175, power growth 4 -> 4.4, and a Berserk that reaches 91.5% attack speed but only activates at 35% health. Cursed Edge scaling also rises 75% -> 80%.",
+   "willChange": "He is under water at 47.2% over 12,763 ranked offlane games, and this trade moves his power from level one to the mid-game. Early trades get worse; long all-ins with levels and Berserk get better, so the play is to survive the opening and fight extended. His Overlord, Rapture and Cursed Scroll meta build eats two item trims (Rapture on-hit health scaling 3% -> 2.5%, Cursed Scroll armor 45 -> 40), so expect only a modest climb, if any.",
+   "magnitude": "notable"
+  },
+  "countess": {
+   "name": "Countess",
+   "role": "midlane",
+   "trend": "buff",
+   "changes": [
+    "Feast cooldown 135/110/85 -> 125/105/85",
+    "Sanguine Slash augment now heals 50% more against isolated targets"
+   ],
+   "simBuildCore": [
+    "Spectral Schematics",
+    "Orion",
+    "Oathkeeper",
+    "Magnify",
+    "Wraith Leggings",
+    "Oblivion Crown"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Skirmisher",
+    "items": [
+     "Combustion",
+     "Noxia",
+     "WraithLeggings"
+    ],
+    "shrunkWr": 0.517,
+    "games": 381,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Feast's early cooldowns drop to 125/105/85, and the Sanguine Slash augment now heals 50% more against isolated targets.",
+   "willChange": "At 48.8% over 8,617 ranked midlane games, more rank-one ultimate windows help the phase where she hunts picks, and the isolation healing rewards catching people alone. Expect a nudge upward rather than a rescue; one cooldown does not move a hero a full point on its own.",
+   "magnitude": "minor"
+  },
+  "dekker": {
+   "name": "Dekker",
+   "role": "support",
+   "trend": "buff",
+   "changes": [
+    "Ion Strike bugfix: ultimate haste now correctly reduces its cooldown"
+   ],
+   "simBuildCore": [
+    "Stonewall",
+    "Inquisition",
+    "Vainglory",
+    "Raiment of Renewal",
+    "Catalytic Drive",
+    "Unbroken Will"
+   ],
+   "topMetaBuild": {
+    "title": "Magical DPS Carry",
+    "items": [
+     "Crescelia",
+     "Timewarp",
+     "Dynamo"
+    ],
+    "shrunkWr": 0.492,
+    "games": 990,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "One bugfix: ultimate haste now correctly reduces Ion Strike's cooldown, as the tooltip always implied.",
+   "willChange": "At 48.8% over 26,816 ranked support games, the fix mainly pays players who already stack haste, and her Crescelia, Timewarp and Dynamo meta line does. More cages in the late game is a real gain in teamfights, but expect only a small rise since nothing else in the kit moved.",
+   "magnitude": "minor"
+  },
+  "drongo": {
+   "name": "Drongo",
+   "role": "carry",
+   "trend": "mixed",
+   "changes": [
+    "Mana growth 40 -> 45",
+    "Gag Grenade bonus physical power scaling 50% -> 80%, magical power scaling 100% -> 120%, cooldown 22/20/18/16/14 -> 18/17/16/15/14",
+    "Rad Rounds cooldown 16/14/12/10/8 -> 20/18/16/14/12 (now commits on activation), mana cost 50/45/40/35/30 -> 50 flat",
+    "Augments: Smog Therapy healing scaling 105% -> 115%; Bring The Boom explosion radius 500u -> 600u; Shred Spree cooldown reduction 85% -> 80%, damage reduction 60% -> 50%"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Deathstalker",
+    "Vanquisher",
+    "Imperator",
+    "Plasma Blade",
+    "Demolisher"
+   ],
+   "topMetaBuild": {
+    "title": "Crit Skirmisher",
+    "items": [
+     "LightningHawk",
+     "Vanquisher",
+     "TaintedRounds"
+    ],
+    "shrunkWr": 0.581,
+    "games": 472,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Gag Grenade gets stronger and faster (bonus physical power scaling 50% -> 80%, cooldown down to 18/17/16/15/14) while Rad Rounds loses reliability: cooldown up to 20/18/16/14/12, a flat 50 mana, and it now commits the moment it is activated.",
+   "willChange": "At 49.3% over 24,914 ranked carry games, this trades free steroid uptime for better utility. The behavior change is real: stop toggling Rad Rounds casually, save it for a fight worth finishing, and lean on the cheaper Gag Grenade for poke and peel. The Deathstalker buff (physical power 45 -> 50) helps his sim core, so a flat-to-slightly-up landing is the honest call.",
+   "magnitude": "notable"
+  },
+  "eden": {
+   "name": "Eden",
+   "role": "carry",
+   "trend": "nerf",
+   "changes": [
+    "Heat generation on hit: Tachyon Lance 25 -> 20, Axiom Strike 7 -> 6, Talon Drive 25 -> 20, Sidewind 25 -> 20",
+    "Zero Shift ranged-stance physical power 6/14/22/30/38 -> 5/12/19/26/33",
+    "Air control 100% -> 85% (systems change, listed here because she is a named exception)"
+   ],
+   "simBuildCore": [
+    "Sky Splitter",
+    "Viper",
+    "Deathstalker",
+    "The Perforator",
+    "Tainted Rounds",
+    "Rapture"
+   ],
+   "topMetaBuild": {
+    "title": "Crit Skirmisher",
+    "items": [
+     "Solaris",
+     "Vanquisher",
+     "NuclearRounds"
+    ],
+    "shrunkWr": 0.625,
+    "games": 342,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "All four Heat generators are trimmed (Tachyon Lance, Talon Drive and Sidewind 25 -> 20, Axiom Strike 7 -> 6), the ranged stance loses power at every rank (down to 5/12/19/26/33), and her mid-air steering falls from 100% to 85%.",
+   "willChange": "She was fine rather than oppressive at 49.9% over 13,791 ranked carry games, with the solo-lane versions ahead at 54.6% in midlane and 52.5% in offlane. Slower Heat means the empowered casts come up less often, and the air-control cut makes her jumps commit to their arc, so dodging mid-leap gets harder. Expect all three lanes to come down, with the solo lanes losing the most.",
+   "magnitude": "notable"
+  },
+  "feng-mao": {
+   "name": "Feng Mao",
+   "role": "jungle",
+   "trend": "nerf",
+   "changes": [
+    "Hamstring isolation bonus physical power scaling 25% -> 20%",
+    "Earth Shatter cooldown 105/95/85 -> 125/105/85"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Augmentation",
+    "Spear Of Desolation",
+    "The Perforator",
+    "Solaris",
+    "Basilisk"
+   ],
+   "topMetaBuild": {
+    "title": "Lethality DPS Carry",
+    "items": [
+     "Malady",
+     "Painweaver",
+     "Omen"
+    ],
+    "shrunkWr": 0.512,
+    "games": 241,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Hamstring's isolation bonus scaling dips 25% -> 20%, and Earth Shatter's cooldown stretches from 105/95/85 to 125/105/85.",
+   "willChange": "At 49.1% over 13,743 ranked jungle games, both trims land on his gank pattern: less bonus damage on the isolated target, and a rank-one ultimate that is up far less often. Ganks now need to be more certain before the ultimate is spent. The Malady penetration trim (12 -> 11) also touches his top meta build, so expect a small slide.",
+   "magnitude": "minor"
+  },
+  "greystone": {
+   "name": "Greystone",
+   "role": "offlane",
+   "trend": "mixed",
+   "changes": [
+    "BAT 1.1 -> 1.15; attack speed 100 -> 105",
+    "Sacred Oath damage 10/50/90/130/170 -> 10/45/80/115/150, mana cost 30 -> 40"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Augmentation",
+    "Spear Of Desolation",
+    "The Perforator",
+    "Painweaver",
+    "Solaris"
+   ],
+   "topMetaBuild": {
+    "title": "Physical Bruiser",
+    "items": [
+     "Overlord",
+     "Rapture",
+     "AegisOfAgawar"
+    ],
+    "shrunkWr": 0.557,
+    "games": 542,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "His attack cadence slows (time between basic attacks 1.1 -> 1.15, offset by attack speed 100 -> 105), and Sacred Oath falls to 10/45/80/115/150 damage at a higher 40 mana cost.",
+   "willChange": "This is a deliberate trim on the most-played winner in the game: 55.0% over 37,150 ranked offlane games, 54.3% overall. The Sacred Oath cut hurts his shove and trades more than the attack-speed wash, and his Overlord and Rapture meta build also eats the Rapture scaling trim (3% -> 2.5%). Expect him to come down toward the pack while staying a strong pick.",
+   "magnitude": "notable"
+  },
+  "grim-exe": {
+   "name": "GRIM.exe",
+   "role": "carry",
+   "trend": "mixed",
+   "changes": [
+    "The Inverter bonus physical power scaling 70% -> 67.5%",
+    "Reboot.exe augment bugfix: now correctly refunds basic ability cooldowns"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Deathstalker",
+    "Manta Scythe",
+    "Vanquisher",
+    "Imperator",
+    "Plasma Blade"
+   ],
+   "topMetaBuild": {
+    "title": "Crit Skirmisher",
+    "items": [
+     "LightningHawk",
+     "PlasmaBlade",
+     "DustDevil"
+    ],
+    "shrunkWr": 0.554,
+    "games": 321,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "The Inverter's bonus physical power scaling dips 70% -> 67.5%, and the Reboot.exe augment now correctly refunds basic ability cooldowns.",
+   "willChange": "At 49.8% over 11,223 ranked carry games, the shield-cannon trim is small, while the Reboot.exe fix is a real gain for anyone running that augment. Net effect near zero; play him exactly as before and expect the number to hold.",
+   "magnitude": "minor"
+  },
+  "ikra": {
+   "name": "Ikra",
+   "role": "midlane",
+   "trend": "buff",
+   "changes": [
+    "Health growth 141 -> 138; mana growth 25 -> 28",
+    "Hydroclasm damage 25/35/45/55/65 -> 35/45/55/65/75, scaling 10% -> 15%, persistent slow 15% -> 20%",
+    "Amplified bubble damage 60/110/160/210/260 -> 75/120/165/210/255, scaling 70% -> 80%"
+   ],
+   "simBuildCore": [
+    "Spectral Schematics",
+    "Wraith Leggings",
+    "Oathkeeper",
+    "Magnify",
+    "Oblivion Crown",
+    "Combustion"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Skirmisher",
+    "items": [
+     "Combustion",
+     "WraithLeggings",
+     "Noxia"
+    ],
+    "shrunkWr": 0.461,
+    "games": 1079,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Hydroclasm climbs to 35/45/55/65/75 damage with 15% scaling and a 20% persistent slow, and the amplified bubble rises to 80% scaling. The cost is small: health growth 141 -> 138.",
+   "willChange": "She is one of the weakest mids on the board at 44.5% over 8,012 ranked midlane games (44.9% overall), so this is a targeted lift to her core poke-and-trap loop. The stronger slow makes landing the second spell on the same target easier, which is where her burst actually comes from. Expect a real climb, though from this floor she likely stays below even.",
+   "magnitude": "notable"
+  },
+  "kallari": {
+   "name": "Kallari",
+   "role": "jungle",
+   "trend": "nerf",
+   "changes": [
+    "Health growth 134 -> 131; movement speed 695 -> 690",
+    "Death Mark missing-health damage 8% -> 7%",
+    "Plasteel Sword scaling 80% -> 75%; Shadow Dance scaling 50% -> 45%",
+    "Shadow Walk health-regen penetration scaling 100% -> 75%",
+    "Air control 100% -> 90% (systems change, listed here because she is a named exception)"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Spear Of Desolation",
+    "The Perforator",
+    "Augmentation",
+    "Solaris",
+    "Painweaver"
+   ],
+   "topMetaBuild": {
+    "title": "Lethality Skirmisher",
+    "items": [
+     "Malady",
+     "Vanquisher",
+     "SpearOfDesolation"
+    ],
+    "shrunkWr": 0.57,
+    "games": 696,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Five cuts at once: health growth 134 -> 131, movement speed 695 -> 690, Death Mark's missing-health damage 8% -> 7%, Plasteel Sword scaling 80% -> 75% with Shadow Dance 50% -> 45%, and her mid-air steering cut from 100% to 90%.",
+   "willChange": "At 51.1% over 12,562 ranked jungle games she won through executes and untouchable exits, and both took a hit. The air-control cut is the quiet one: steering out of a dive is her escape plan, and leaps now commit to their arc. Expect her to land near or below even, with fewer coin-flip dives; the Malady trim (physical penetration 12 -> 11) clips her top meta build too.",
+   "magnitude": "meta-shifting"
+  },
+  "khaimera": {
+   "name": "Khaimera",
+   "role": "jungle",
+   "trend": "mixed",
+   "changes": [
+    "Invigorate bugfix: no longer heals for up to double from Rage stacks; current-health-regen heal multiplier 1.5x -> 4x in compensation",
+    "Lane Lurker augment bugfix: passive health regen now scales with magical power"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Spear Of Desolation",
+    "The Perforator",
+    "Painweaver",
+    "Augmentation",
+    "Solaris"
+   ],
+   "topMetaBuild": {
+    "title": "Physical Bruiser",
+    "items": [
+     "Overlord",
+     "Basilisk",
+     "Rapture"
+    ],
+    "shrunkWr": 0.536,
+    "games": 1035,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "The Invigorate bugfix ends the double healing from Rage stacks, with the current-health-regen multiplier raised from 1.5x to 4x in compensation. The Lane Lurker augment fix is a side note.",
+   "willChange": "At 53.8% over 38,965 ranked jungle games, part of that number was a heal working twice as hard as intended. The compensation favors regen-heavy builds, but the raw mid-fight sustain that made his long duels unloseable should be thinner. Expect a real drop; how far depends on how much of his healing was the bug.",
+   "magnitude": "notable"
+  },
+  "legion": {
+   "name": "Legion",
+   "role": "carry",
+   "trend": "buff",
+   "changes": [
+    "Ballistic Calibration thresholds: magical power 90 -> 80, ability haste 50 -> 45; Frag Order missing-health damage at the haste threshold 8% -> 10%",
+    "Saturation Charge cooldown 20/19/18/17/16 -> 19/18/17/16/15",
+    "Rally Point healing: penetration scaling 95% -> 100%, magical power scaling 8% -> 10%",
+    "Orbital Sanction damage 28/47/66 -> 30/50/70"
+   ],
+   "simBuildCore": [
+    "Sky Splitter",
+    "Spectra",
+    "The Perforator",
+    "Viper",
+    "Deathstalker",
+    "Rapture"
+   ],
+   "topMetaBuild": {
+    "title": "Lethality DPS Carry",
+    "items": [
+     "Malady",
+     "Vanquisher",
+     "Deathstalker"
+    ],
+    "shrunkWr": 0.569,
+    "games": 1357,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Both Ballistic Calibration thresholds get easier to reach (magical power 90 -> 80, ability haste 50 -> 45) and the haste reward grows to 10% missing-health damage. Saturation Charge drops to 19/18/17/16/15 and the ultimate rises to 30/50/70.",
+   "willChange": "At 50.5% over 26,488 ranked carry games she was already healthy, and cheaper thresholds mean her spike arrives an item earlier. Builds now hit the haste breakpoint without contorting, so the Frag Order missing-health damage shows up in more games. Expect a climb; the Deathstalker buff (45 -> 50) helps, against the small Malady penetration trim (12 -> 11) in her meta build.",
+   "magnitude": "notable"
+  },
+  "lt-belica": {
+   "name": "Lt. Belica",
+   "role": "midlane",
+   "trend": "buff",
+   "changes": [
+    "Seismic Assault cooldown 18/16.5/15/13.5/12 -> 16/15/14/13/12, hitbox width 250u -> 270u, can now be Blink-proxied mid-cast",
+    "Combat Veteran augment now also grants +3% movement speed"
+   ],
+   "simBuildCore": [
+    "Spectral Schematics",
+    "Wraith Leggings",
+    "Oathkeeper",
+    "Magnify",
+    "Oblivion Crown",
+    "Combustion"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Burst",
+    "items": [
+     "Combustion",
+     "Noxia",
+     "WraithLeggings"
+    ],
+    "shrunkWr": 0.52,
+    "games": 456,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Seismic Assault gets a flat 16/15/14/13/12 cooldown, a wider 270u hitbox, and can now be Blink-proxied mid-cast. The Combat Veteran augment adds 3% movement speed on top.",
+   "willChange": "She sits at exactly 50.0% over 15,082 ranked midlane games, and this buffs the one ability her whole control pattern hangs on. More knock-ups means more mana burn and more picks, and the Blink interaction adds an engage angle she never had. Expect the midlane number to move above even; the 48.3% support version (10,787 games) gains less.",
+   "magnitude": "notable"
+  },
+  "maco": {
+   "name": "Maco",
+   "role": "support",
+   "trend": "nerf",
+   "changes": [
+    "Health growth 131 -> 128; health regen 1.8 -> 1.6; physical armor growth 5.15 -> 4.9",
+    "Mach Speed: taking hero damage now removes the buffs immediately; standing-still fall-off 1.5s -> 3s",
+    "Maco Gift! ally movement speed 10/12/14/16/18% -> 8/9/10/11/12%",
+    "Maco Strike! damage 80/120/160 -> 70/110/150, explosion 110/170/230 -> 100/160/220; stun bugfix now scales 0.25-1.4s with charge (was always minimum)",
+    "Shatterbloom augment healing 15/25/35 -> 20/30/40"
+   ],
+   "simBuildCore": [
+    "Noxia",
+    "Oblivion Crown",
+    "Spirit Of Amir",
+    "Timewarp",
+    "Lifecore",
+    "Lunaria"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Burst",
+    "items": [
+     "Crescelia",
+     "EnmasBlessing",
+     "Windcaller"
+    ],
+    "shrunkWr": 0.506,
+    "games": 193,
+    "spikeMinute": 23
+   },
+   "confidence": "THEORY",
+   "why": "A broad cut: health growth 131 -> 128, Mach Speed's buffs now drop the moment he takes hero damage, the ally speed gift falls to 8/9/10/11/12%, and Maco Strike! loses damage. The gains are the stun bugfix, which now scales 0.25-1.4s with charge, and Shatterbloom healing rising to 20/30/40.",
+   "willChange": "At 48.8% over 10,404 ranked support games he was already below even, and the max-rank ally gift falling from 18% to 12% cuts a third off his best team tool. Mach Speed is now a rotation tool, so stop using it to dance inside fights. Expect him to fall further; the fixed, chargeable stun is the one real reason to stay on him.",
+   "magnitude": "notable"
+  },
+  "muriel": {
+   "name": "Muriel",
+   "role": "support",
+   "trend": "buff",
+   "changes": [
+    "Serenity projectile radius 65 -> 85, speed 4250 -> 3900, larger VFX, now spawns from her hand"
+   ],
+   "simBuildCore": [
+    "Oblivion Crown",
+    "Lunaria",
+    "Noxia",
+    "Spirit Of Amir",
+    "Lifecore",
+    "Timewarp"
+   ],
+   "topMetaBuild": {
+    "title": "Magical DPS Carry",
+    "items": [
+     "Marshal",
+     "CrystalTear",
+     "Windcaller"
+    ],
+    "shrunkWr": 0.532,
+    "games": 353,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "One buff: Serenity's projectile radius grows from 65 to 85 (at a slower 3900 speed, with larger visuals), so the shield orb reaches allies it used to miss.",
+   "willChange": "At 52.1% over 10,106 ranked support games she was already quietly strong, and easier shield delivery is a straight consistency gain. Expect a small rise; nothing in the item or Eternals wave touches her core build.",
+   "magnitude": "minor"
+  },
+  "narbash": {
+   "name": "Narbash",
+   "role": "support",
+   "trend": "mixed",
+   "changes": [
+    "Physical power 58 -> 60; physical armor 30 -> 32; mana growth 45 -> 50",
+    "Thunk scaling 120% -> 130%, cooldown 14/13/12/11/10 -> 13/12/11/10/9",
+    "Crash, Bang, Boom: magical scaling 30% -> 40%, physical 50% -> 70%; final strike 70% -> 80% magical, 100% -> 120% physical",
+    "March blocking window 0.3s -> 0.1s; Song Of My People blocking window 1s -> 0.8s"
+   ],
+   "simBuildCore": [
+    "Noxia",
+    "Oblivion Crown",
+    "Spirit Of Amir",
+    "Lifecore",
+    "Lunaria",
+    "Timewarp"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Bruiser (Physical-Def)",
+    "items": [
+     "TruesilverBracelet",
+     "CrystalTear",
+     "Dynamo"
+    ],
+    "shrunkWr": 0.566,
+    "games": 394,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Base bumps (physical power 58 -> 60, physical armor 30 -> 32) plus real damage buffs: Thunk to 130% scaling on a 13/12/11/10/9 cooldown and Crash, Bang, Boom up across both damage types. The trade is tighter blocking windows: March 0.3s -> 0.1s and Song Of My People 1s -> 0.8s.",
+   "willChange": "At 51.2% over 11,682 ranked support games he was fine, and the scaling buffs make fist-first Narbash styles genuinely scarier. The shorter blocking windows demand sharper timing to soak enemy fire for the team, so the skill floor rises while the ceiling climbs. Expect a modest gain, mostly in hands that already time the drum well.",
+   "magnitude": "notable"
+  },
+  "neon": {
+   "name": "Neon",
+   "role": "midlane",
+   "trend": "mixed",
+   "changes": [
+    "L.I.N.X damage 48/68/88/108/128 -> 48/69/90/111/132, mana 50/60/70/80/90 -> 55/60/65/70/75",
+    "Erase Vector damage 65/90/115/140/165 -> 60/85/110/135/160, projectile radius 55u -> 60u, much larger VFX",
+    "Final Thread damage 140/210/280 -> 155/225/295, jump height 50% -> 45%"
+   ],
+   "simBuildCore": [
+    "Spectral Schematics",
+    "Oathkeeper",
+    "Wraith Leggings",
+    "Caustica",
+    "Oblivion Crown",
+    "Combustion"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Burst",
+    "items": [
+     "Combustion",
+     "WraithLeggings",
+     "AmuletOfChaos"
+    ],
+    "shrunkWr": 0.551,
+    "games": 422,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "L.I.N.X climbs to 48/69/90/111/132 damage on cheaper late ranks (mana down to 55/60/65/70/75), Erase Vector trades 5 base damage for a bigger 60u projectile with much larger visuals, and Final Thread rises to 155/225/295.",
+   "willChange": "At 45.8% over 11,527 ranked midlane games she needs the help, and an easier-to-land Erase Vector plus cheaper spam attacks her real problem: connecting enough spells to matter. The louder visuals cut both ways, since enemies see the thread coming too. Expect a climb of around a point, likely still short of even.",
+   "magnitude": "notable"
+  },
+  "phase": {
+   "name": "Phase",
+   "role": "support",
+   "trend": "nerf",
+   "changes": [
+    "Health growth 131 -> 127",
+    "Telekinetic Link ally bonus power 4/5/6/7/8% -> 3/4/5/6/7%, max radius 1800u -> 1700u, breaks immediately at 2100u",
+    "Psychic Flare bugfix: blink cooldown correctly resets to 2.5s at all levels",
+    "Kindred Surge augment bugfix: now heals at ultimate ranks 2 and 3"
+   ],
+   "simBuildCore": [
+    "Stonewall",
+    "Vainglory",
+    "Frostguard",
+    "Warp Stream",
+    "Catalytic Drive",
+    "Unbroken Will"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Bruiser (Mixed-Def)",
+    "items": [
+     "Marshal",
+     "EnmasBlessing",
+     "GalaxyGreaves"
+    ],
+    "shrunkWr": 0.542,
+    "games": 936,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "The Telekinetic Link aura gives 1% less power at every rank (3/4/5/6/7%), its max radius shrinks 1800u -> 1700u and now breaks instantly at 2100u, and health growth dips 131 -> 127. The Psychic Flare blink fix is the consolation.",
+   "willChange": "At 51.6% over 23,336 ranked support games she has been one of the stronger supports all patch, and this trims exactly what made her pick-proof: free stats for her carry at long range. The tighter leash asks for closer positioning to the linked ally rather than a different build. Expect her to drift back toward even but stay playable.",
+   "magnitude": "notable"
+  },
+  "rampage": {
+   "name": "Rampage",
+   "role": "jungle",
+   "trend": "nerf",
+   "changes": [
+    "Physical armor growth 4.8 -> 4.5",
+    "Behemoth movement speed 5% -> 3%",
+    "Tiny Titan augment no longer removes the combat penalty"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Spear Of Desolation",
+    "The Perforator",
+    "Augmentation",
+    "Basilisk",
+    "Solaris"
+   ],
+   "topMetaBuild": {
+    "title": "Physical Bruiser (Physical-Def)",
+    "items": [
+     "Overlord",
+     "Rapture",
+     "CursedScroll"
+    ],
+    "shrunkWr": 0.632,
+    "games": 562,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Three connected nerfs: physical armor growth 4.8 -> 4.5, Behemoth movement speed 5% -> 3%, and the Tiny Titan augment no longer removes the combat penalty, which was the point of taking it.",
+   "willChange": "He is the patch's biggest target at 54.2% over 15,921 ranked jungle games, with his Overlord, Rapture and Cursed Scroll meta build at a 63.2% shrunken win rate over 562 games. He is now slower and softer in exactly the fights he used to run down, and the item pass piles on with Rapture and Cursed Scroll both trimmed. Expect a fall of a couple of points; strong, but no longer the default jungle pick.",
+   "magnitude": "meta-shifting"
+  },
+  "renna": {
+   "name": "Renna",
+   "role": "midlane",
+   "trend": "nerf",
+   "changes": [
+    "Health 685 -> 675; physical armor growth 5 -> 4.8",
+    "Abyssal Rift damage 60/82/104 -> 60/78/96, scaling 25% -> 24%, mana cost 100 -> 100/125/150",
+    "Augments: Netherward shield scaling 40% -> 35%; Vital Essence restore 3.5% -> 3%"
+   ],
+   "simBuildCore": [
+    "Spectral Schematics",
+    "Oathkeeper",
+    "Magnify",
+    "Spirit Of Amir",
+    "Wraith Leggings",
+    "Combustion"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Burst",
+    "items": [
+     "Entropy",
+     "WraithLeggings",
+     "Overseer"
+    ],
+    "shrunkWr": 0.575,
+    "games": 1728,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "She gets softer (health 685 -> 675, physical armor growth 5 -> 4.8) and her ultimate gets weaker and pricier: Abyssal Rift falls to 60/78/96 damage and now costs 100/125/150 mana by rank. Two augments are trimmed alongside.",
+   "willChange": "At 52.9% over 30,672 ranked midlane games she has been the most-played strong mid all patch, and the ultimate mana cost is the real change. Late-game Rifts now compete with the rest of her kit for mana, so the habit of casting it on cooldown has to go. Expect a slide of around a point while she stays a top-tier mid.",
+   "magnitude": "notable"
+  },
+  "revenant": {
+   "name": "Revenant",
+   "role": "carry",
+   "trend": "buff",
+   "changes": [
+    "Obliterate cooldown 9 flat -> 10/9.5/9/8.5/8",
+    "Scar cooldown 15/14.25/13.5/12.75/12 -> 15/14/13/12/11",
+    "Hellfire Rounds fourth-shot movement speed 10% -> 12%",
+    "Reckoning cooldown 145/125/105 -> 135/120/105"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Deathstalker",
+    "Manta Scythe",
+    "Vanquisher",
+    "Imperator",
+    "Plasma Blade"
+   ],
+   "topMetaBuild": {
+    "title": "Crit Burst",
+    "items": [
+     "Vanquisher",
+     "Imperator",
+     "Terminus"
+    ],
+    "shrunkWr": 0.551,
+    "games": 1029,
+    "spikeMinute": 26
+   },
+   "confidence": "THEORY",
+   "why": "Cooldowns fall across the kit: Scar to 15/14/13/12/11, Reckoning to 135/120/105, and Obliterate moves from a flat 9 to 10/9.5/9/8.5/8, slower at rank one but faster when maxed. The fourth Hellfire shot also grants 12% movement speed.",
+   "willChange": "At 49.5% over 23,955 ranked carry games he was just under even, and more ultimates means more of the mark-and-hunt plays that decide his games. Rank-one Obliterate is slightly slower, so early trades soften a touch while the mid-game gets meaningfully better. Expect a climb above even; the Deathstalker buff (45 -> 50) in his sim core adds a nudge.",
+   "magnitude": "notable"
+  },
+  "riktor": {
+   "name": "Riktor",
+   "role": "support",
+   "trend": "buff",
+   "changes": [
+    "Mana 400 -> 420",
+    "Electrocute movement speed 6-10% -> 8-12%, cooldown 15/13.75/12.5/11.25/10 -> 15/13.5/12/10.5/9",
+    "Riplash cooldown 20/18.75/17.5/16.25/15 -> 20/18.5/17/15.5/14",
+    "Skewer damage 110/190/270 -> 110/200/290"
+   ],
+   "simBuildCore": [
+    "Stonewall",
+    "Warden's Faith",
+    "Vainglory",
+    "Raiment of Renewal",
+    "Catalytic Drive",
+    "Unbroken Will"
+   ],
+   "topMetaBuild": {
+    "title": "Physical-Def Frontline",
+    "items": [
+     "Dynamo",
+     "Xenia",
+     "FrostedLure"
+    ],
+    "shrunkWr": 0.544,
+    "games": 535,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Faster hooks and chains: Riplash's cooldown falls to 20/18.5/17/15.5/14 and Electrocute to 15/13.5/12/10.5/9 with a stronger 8-12% movement speed, plus mana 400 -> 420 and a harder-hitting Skewer at 110/200/290.",
+   "willChange": "At 49.5% over 25,017 ranked support games he has hovered just under even, and one more hook attempt per fight is exactly what a pick hero wants. The Xenia cost cut (2,450 -> 2,400) shaves a little off his meta build's timing too. Expect him to cross even; hook accuracy still decides everything.",
+   "magnitude": "notable"
+  },
+  "scarlett": {
+   "name": "Scarlett",
+   "role": "offlane",
+   "trend": "buff",
+   "changes": [
+    "Swan Song range 825u -> 960u, faster cast frame",
+    "Cindara third-strike energy vs heroes 10 flat -> 10/10/15/20 at levels 1/6/11/16",
+    "Bugfix: now correctly regenerates Energy in base"
+   ],
+   "simBuildCore": [
+    "Basilisk",
+    "Viper",
+    "Spear Of Desolation",
+    "The Perforator",
+    "Augmentation",
+    "Solaris"
+   ],
+   "confidence": "THEORY",
+   "why": "Swan Song's range grows from 825u to 960u with a faster cast, Cindara's third strike now gives up to 20 energy against heroes at level 16, and she finally regenerates Energy in base.",
+   "willChange": "She has been the patch's problem child at 45.1% over 46,565 total ranked games (46.8% in offlane, 42.2% in jungle), and this attacks her actual bottleneck: fueling the kit. The Basilisk health buff (275 -> 300) helps her sim core survive long enough to use the energy. Expect a real climb in offlane and a smaller one in jungle, both likely still below even.",
+   "magnitude": "notable"
+  },
+  "serath": {
+   "name": "Serath",
+   "role": "jungle",
+   "trend": "nerf",
+   "changes": [
+    "Heresy burn damage 15/30/45 -> 14/27/40"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Solaris",
+    "Spear Of Desolation",
+    "The Perforator",
+    "Augmentation",
+    "Painweaver"
+   ],
+   "topMetaBuild": {
+    "title": "On-Hit Drain",
+    "items": [
+     "SkySplitter",
+     "StormBreaker",
+     "Spectra"
+    ],
+    "shrunkWr": 0.588,
+    "games": 612,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "One trim: Heresy's burn falls to 14/27/40 damage.",
+   "willChange": "At 51.7% over 25,413 ranked jungle games she barely notices a few points of burn, and her On-Hit Drain meta build (58.8% shrunken win rate over 612 games) is untouched by the item pass. The league-wide air-control cut from 90% to 75% does stiffen her aerial repositioning slightly. Expect her to hold close to where she is.",
+   "magnitude": "minor"
+  },
+  "skylar": {
+   "name": "Skylar",
+   "role": "carry",
+   "trend": "nerf",
+   "changes": [
+    "Air Assault damage 15/20/25/30/35 -> 10/15/20/25/30, magical scaling 15% -> 12%, physical scaling 25% -> 20%",
+    "Hypercharge attack speed scaling 11% -> 10%; Satariel's Broken Wings no longer removes the combat penalty (bugfix)"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Deathstalker",
+    "Vanquisher",
+    "Plasma Blade",
+    "Imperator",
+    "Demolisher"
+   ],
+   "topMetaBuild": {
+    "title": "Crit Burst",
+    "items": [
+     "PlasmaBlade",
+     "Vanquisher",
+     "Imperator"
+    ],
+    "shrunkWr": 0.486,
+    "games": 879,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Air Assault loses 5 base damage per rank and scaling on both sides (magical 15% -> 12%, physical 25% -> 20%), Hypercharge's attack speed scaling dips to 10%, and the Broken Wings bugfix stops removing the combat penalty.",
+   "willChange": "She is the top carry at 54.0% over 24,680 ranked carry games, and this hits the poke, the sustained damage, and the mobility cheat all at once. Her Crit Burst meta build already sat at only a 48.6% shrunken win rate over 879 games, so the hero, not the build, was carrying the number. Expect a fall of a couple of points and a real opening for Legion and Revenant in the carry seat.",
+   "magnitude": "meta-shifting"
+  },
+  "steel": {
+   "name": "Steel",
+   "role": "support",
+   "trend": "buff",
+   "changes": [
+    "Shield Bash max-health damage 5/5.5/6/6.5/7% -> 5/5.75/6.5/7.25/8%, bonus monster damage 30/35/40/45/50 -> 50/55/60/65/70"
+   ],
+   "simBuildCore": [
+    "Spectral Schematics",
+    "Oathkeeper",
+    "Noxia",
+    "Tainted Scepter",
+    "Wraith Leggings",
+    "Oblivion Crown"
+   ],
+   "topMetaBuild": {
+    "title": "Physical-Def DPS Carry",
+    "items": [
+     "FireBlossom",
+     "TaintedGuard",
+     "FluxMatrix"
+    ],
+    "shrunkWr": 0.534,
+    "games": 267,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Shield Bash hits harder at higher ranks (max-health damage up to 8% at max) and its bonus monster damage jumps from 30/35/40/45/50 to 50/55/60/65/70.",
+   "willChange": "At 52.0% over 32,561 ranked support games the max-health damage bump is a small, steady gain for the most-played tank support. The monster damage mostly matters for the 1,105-game jungle experiment and for helping secure objectives. Expect little visible movement; the Fire Blossom rework touches his offlane meta build, but the support core is untouched.",
+   "magnitude": "minor"
+  },
+  "terra": {
+   "name": "Terra",
+   "role": "offlane",
+   "trend": "buff",
+   "changes": [
+    "Ruthless Assault third-strike max-health damage 5-9% -> 5-10%",
+    "Highland Hurl damage 80/115/150/185/220 -> 80/120/160/200/240, slow 30% -> 40%; Axe Retrieval bonus +15% -> +20%",
+    "Wild Rush armor scalings 37.5% -> 40% (max charge 112.5% -> 120%)",
+    "Unstoppable Force tenacity 40/70/100 -> 50/100/150"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Deathstalker",
+    "Plasma Blade",
+    "Imperator",
+    "Vanquisher",
+    "Demolisher"
+   ],
+   "topMetaBuild": {
+    "title": "Physical-Def Burst",
+    "items": [
+     "FireBlossom",
+     "TaintedGuard",
+     "Inquisition"
+    ],
+    "shrunkWr": 0.546,
+    "games": 164,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Buffs everywhere that matters: Highland Hurl up to 80/120/160/200/240 damage with a 40% slow, third-strike max-health damage up to 10%, Wild Rush armor scaling to 40%, and Unstoppable Force tenacity jumping from 40/70/100 to 50/100/150 — at max rank she shrugs off most stuns and slows.",
+   "willChange": "She has been the weakest offlaner on the board at 44.9% over 5,718 ranked offlane games (44.5% overall), and this is the patch's biggest single-hero package. The tenacity ultimate breaks the crowd-control chains that shut her down, and the 40% slow finally lets her stick to a target. Expect several points of climb and real draft presence; the Fire Blossom rework in her top meta build raises its cost (2,900 -> 3,000) but is roughly a wash.",
+   "magnitude": "meta-shifting"
+  }
+ },
+ "sectionMeta": {
+  "tldr": "A balance-only patch that trims the top and lifts the floor. Mid-air steering drops from 90% to 75% league-wide, so jumps and dashes commit to their arc, and the camera now tracks aim with no lag. The 1.16 winners (Rampage, Skylar, Greystone, Khaimera) all take real cuts, Kallari's kit is trimmed in five places, and the strugglers (Terra, Ikra, Scarlett, Neon) get targeted lifts. Expect the ranked spread to compress and dive-heavy play to get more honest.",
+  "heroes": "Thirty heroes touched, and the pattern is compression. The winners pay: Rampage (54.2% over 15,921 ranked jungle games), Skylar (54.0% over 24,680 carry games), Greystone (55.0% over 37,150 offlane games) and Khaimera (53.8% over 38,965 jungle games) all take real cuts, and Kallari's 51.1% jungle gets a five-part trim. The lift goes to the floor: Terra (44.9% offlane), Ikra (44.5% midlane), Scarlett (45.1% overall) and Neon (45.8% midlane) are all buffed at their weakest point. Expect offlane to open up as Greystone comes down and Terra rises, and the carry seat to reshuffle toward Legion and Revenant.",
+  "eternals": "Nine Eternals touched, no new faces. The 1.16 standouts pay: Weald's execute missiles now need 30% bonus attack speed per extra missile with a 10-second per-hero wait (though they now fly through walls), and Vesh's Lich lifesteal restructures to 5/8/12/16% by level, weak until 11 and only fully back at 16. Krix's minor row gets broadly kinder and Azai's mana refunds grow, so tank and aggressive-mage loadouts gain real alternatives to the usual picks.",
+  "items": "27 item changes, mostly stat bumps for fighters and tanks: Deathstalker and Demon Edge climb to 50 physical power, Tyranny and Citadel each gain 5, and the tank pieces (Basilisk, Volcanica, Vyzar Carapace, Elafrost) all add health. The trims land on sustain-bruiser staples: Rapture's on-hit health scaling dips to 2.5% and Cursed Scroll takes its second straight trim, while Astral Catalyst's ultimate refund now pays 25% on hero kills and 15% on assists instead of 20% on any takedown. Build paths barely move; the power shifts a little toward raw stats and away from passives."
+ }
+}
