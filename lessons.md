@@ -3426,3 +3426,28 @@ pred.gg (Shinbi offlane/jungle, 5,505 views).
   the digest takes only reasoning patterns from them and says so. Authors
   themselves flag it ("UNDER CONSTRUCTION AFTER RECENT ITEM CHANGES");
   guide culture validates our provenance discipline.
+
+### The full-catalog sweep and the learning archive (2026-09-08)
+
+Per the maintainer: scrub ALL guides in 1.16, 1.15 and 1.14 and build a
+learning archive of the explicit lessons. Six parallel reader agents
+processed 160 guides (0 fetch failures) on top of the 30 already read;
+`docs/guide-learnings.md` now holds all 190 entries with a synthesis.
+
+- **Teaching concentrates hard.** 126 of 190 guides are pure build
+  templates — the honest verdict "no explicit lessons" is most of the
+  catalog. Nearly all real teaching comes from under ten authors, and the
+  extraction bar ("record only what the author explicitly teaches; a
+  template is one line") kept 160 agent-read guides from bloating the
+  archive with paraphrased item lists.
+- **New cross-cutting patterns the deep-read passes had missed** because
+  they only show at catalog scale: the hold-and-upgrade slot idiom ("buy
+  Soul Chalice 2nd and hold, upgrade to Resolution last") across
+  CarlDanger's whole catalog; defensive conditions stated as COUNTS
+  ("against one or fewer enemy stuns use higher damage", "1+ CC
+  abilities"); late-game slot liquidity (sell the mana trinket, sell the
+  gold engine at full build); kit-preservation warnings (an attack build
+  on an ability hero "loses all her skills").
+- Fan-out worked: one list file + one output file per agent, identical
+  extraction rules in every prompt, entries in a fixed format so the
+  compile step is a concatenation script, not an editing job.
