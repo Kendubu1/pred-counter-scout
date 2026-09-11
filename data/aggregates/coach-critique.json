@@ -1,122 +1,56 @@
 {
- "generatedAt": "2026-09-11T04:24:08.233Z",
+ "generatedAt": "2026-09-11T05:17:34.422Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
  "reviewedLines": 27,
- "flaggedLines": 18,
- "agreementRate": 0.333,
- "rewritesGrounded": 18,
+ "flaggedLines": 7,
+ "agreementRate": 0.741,
+ "rewritesGrounded": 7,
  "rewritesDropped": 0,
- "applied": 18,
+ "applied": 7,
  "unmatched": 0,
  "games": {
-  "dc93b56f-46d5-4048-8abe-98a682d98917": [
+  "405cb99a-644d-41c7-92d3-a31fdae408fa": [
    {
-    "quote": "Six fights won outright between 17.8 and 26.6 fed an 8-0 tower sweep and closed the game at 28 minutes, with zero fights lost all game.",
+    "quote": "A 38-minute ranked loss: Legion alone killed four of our five players 16 times combined, including all seven of Muriel's deaths, and we were out-killed 31 to 21 overall despite leading the objective count 25 to 19.",
     "severity": "low",
-    "issue": "readability - three timestamps (17.8, 26.6, 28) in one sentence",
-    "rewrite": "Six fights won outright between 17.8 and 26.6 fed an 8-0 tower sweep that closed the game, with zero fights lost all game."
+    "issue": "invents match type 'ranked' not present in SOURCE",
+    "rewrite": "A 38-minute loss: Legion alone killed four of our five players 16 times combined, including all seven of Muriel's deaths, and we were out-killed 31 to 21 overall despite leading the objective count 25 to 19."
    },
    {
-    "quote": "The one place the plan cracked: the support was marked absent from all seven clustered fights of the game, every time out of the losing lane against Dekker.",
+    "quote": "Akeron took first blood off Shinbi at 2.5, but Aurora caught him alone twice early, a sign of the jungle pressure behind that \"theirs early\" read.",
     "severity": "med",
-    "issue": "ungrounded count (SOURCE lists 9 skirmishes total, not seven) and unnamed player",
-    "rewrite": "The one place the plan cracked: XiaO BaO's Phase was marked absent from all nine skirmishes of the game, every time out of the losing lane against Dekker."
+    "issue": "wrong reference: the 12.7m catch was by Shinbi, not Aurora (per CAUGHT OUT), so only one of the two was Aurora",
+    "rewrite": "Akeron took first blood off Shinbi at 2.5, but he was then caught alone by Shinbi at 12.7 and by Aurora at 15.5, a sign of the pressure behind that \"theirs early\" jungle read."
    },
    {
-    "quote": "Next game: get the support out of a losing lane and into the fights it's not attending, rather than trusting the other four to keep covering for it.",
+    "quote": "Xeebs brought a real comfort pick, 168 games at a 54% winrate on his best role, but the jungle matchup against Aurora read \"theirs early, even late,\" and Aurora caught him alone twice, at 14.4 and 21.3. He finished with the team's highest damage taken, 72,251, and highest damage to objectives, 32,378, going 5 kills and 5 deaths. His build hit two of the three winning-core items, Overlord and Basilisk, skipping only Rapture for Void Helm and two off-meta pieces; Rapture's on-hit damage and lifesteal are dueling tools that might have helped in the extended trades with Aurora and Legion that ran up that damage total.",
+    "severity": "high",
+    "issue": "preference framing (comfort pick/personal winrate) plus an invented 168-game/54% stat not in SOURCE, and CAUGHT OUT only lists one Aurora-alone catch on Khaimera (14.4), not two",
+    "rewrite": "Xeebs's Khaimera faced a jungle matchup against Aurora that read \"theirs early, even late,\" and Aurora caught him alone once, at 14.4. He finished with the team's highest damage taken, 72,251, and highest damage to objectives, 32,378, going 5 kills and 5 deaths. His build hit two of the three winning-core items, Overlord and Basilisk, skipping only Rapture for Void Helm and two off-meta pieces; Rapture's on-hit damage and lifesteal are dueling tools that might have helped in the extended trades with Aurora and Legion that ran up that damage total."
+   },
+   {
+    "quote": "Xeebs brought a 168-game comfort pick and led the team in damage taken and damage to objectives, but Aurora caught him alone twice early in a matchup that read \"theirs early.\"",
+    "severity": "high",
+    "issue": "preference framing (comfort pick) plus an invented 168-game stat not in SOURCE, and overcounts the Aurora-alone catch (CAUGHT OUT lists only one, at 14.4)",
+    "rewrite": "Xeebs's Khaimera led the team in damage taken and damage to objectives, but Aurora caught him alone once early, at 14.4, in a matchup that read \"theirs early.\""
+   },
+   {
+    "quote": "Down a body with Murdock already dead, the team still won this fight 3-1 and cashed it straight into the Orb Prime. Pressing an advantage even a player short, then converting it into an objective immediately, is exactly the shape of fight worth repeating.",
+    "severity": "high",
+    "issue": "causation error: MACRO READS labels the 33.8m fight (4v4) — Legion was also out of it, so this was an even fight, not a numbers disadvantage",
+    "rewrite": "With Murdock dead but Legion also out of the fight, the team fought this one even, 4-versus-4, and still won it 3-1, cashing it straight into the Orb Prime. Winning an even fight down our own carry, then converting it into an objective immediately, is exactly the shape of fight worth repeating."
+   },
+   {
+    "quote": "but it still produced the team's worst kda, 0.8, and 9 deaths, seven of which were followed by a lost tower or objective within 90 seconds.",
     "severity": "low",
-    "issue": "voice - per-player takeaway doesn't name the player",
-    "rewrite": "Next game: get XiaO BaO's Phase out of a losing lane and into the fights she's not attending, rather than trusting the other four to keep covering for her."
+    "issue": "invented derived stat (0.8 kda ratio) not present in SOURCE",
+    "rewrite": "but it still produced the team's worst kda and 9 deaths, seven of which were followed by a lost tower or objective within 90 seconds."
    },
    {
-    "quote": "At 20.3, Khaimera and Gideon alone caught Boris and Bayle at Fangtooth, won it 2-0 while up a body, 5 versus 4, and that fight fed straight into Orb Prime the same window.",
-    "severity": "high",
-    "issue": "ungrounded - the 20.3 Fangtooth skirmish roster is 2v2 (khaimera/gideon v bayle/boris), not 5v4, and MACRO READS is none so a causal link into Orb Prime isn't supported",
-    "rewrite": "At 20.3, Khaimera and Gideon alone caught Boris and Bayle at Fangtooth, an even 2-on-2, and won it 2-0."
-   },
-   {
-    "quote": "Two more clean wins, 4-1 at the inhibitor at 23.7 and 4-1 again at 26.6 with another body advantage, pushed the second inhibitor down and closed the game.",
-    "severity": "high",
-    "issue": "ungrounded - the 23.7 fight roster was 3v4 and the 26.6 fight roster was 3v5, the team was down bodies both times, not up one",
-    "rewrite": "Two more clean wins, 4-1 at the inhibitor at 23.7 while down a body, 3 versus 4, and 4-1 again at 26.6 while down two bodies, 3 versus 5, pushed the second inhibitor down and closed the game."
-   },
-   {
-    "quote": "Five of six won fights were cashed into a tower or objective within 90 seconds, from the 20.3 Fangtooth that fed straight into Orb Prime the same window to the 26.6 inhibitor push.",
-    "severity": "med",
-    "issue": "causation - MACRO READS is none, so the causal link from the 20.3 fight into Orb Prime isn't supported",
-    "rewrite": "Five of six won fights were cashed into a tower or objective within 90 seconds, from the 20.3 Fangtooth win to the 26.6 inhibitor push."
-   },
-   {
-    "quote": "B4-Gl0Ck's Greystone had the best game on the team by the count, 10 kills, 1 death, 39,519 hero damage, and the most gold on the team at 17,361, in a lane that read \"ours all game\" against Bayle.",
-    "severity": "high",
-    "issue": "ungrounded - no gold stat appears anywhere in the SOURCE for any player; 17,361 is invented",
-    "rewrite": "B4-Gl0Ck's Greystone had the best game on the team by the count, 10 kills, 1 death, and 39,519 hero damage, in a lane that read \"ours all game\" against Bayle."
-   },
-   {
-    "quote": "10 kills, 1 death, and the team's highest gold and hero damage, built with no armor against a three-physical enemy comp, and it still didn't matter.",
-    "severity": "high",
-    "issue": "ungrounded gold claim (no gold stat in SOURCE) and unnamed player",
-    "rewrite": "B4-Gl0Ck's Greystone put up 10 kills, 1 death, and the team's highest hero damage, built with no armor against a three-physical enemy comp, and it still didn't matter."
-   },
-   {
-    "quote": "36,319 hero damage and one death, inside a fight the team still won 2-2, is as clean a line as a midlane gets.",
-    "severity": "high",
-    "issue": "ungrounded - SOURCE lists the 11.7 fight as even 2-2, not won, and the player isn't named",
-    "rewrite": "Willy Guggenheim's Gideon put up 36,319 hero damage and one death, inside an even 2-2 fight, as clean a line as a midlane gets."
-   },
-   {
-    "quote": "The other five deaths came inside team fights the squad still won, so the trade was survivable here, but solo deaths early are exactly what a tougher opponent punishes.",
-    "severity": "med",
-    "issue": "ungrounded - two of those five deaths (14.4, 19.1) were inside fights the SOURCE lists as even, not won",
-    "rewrite": "The other five deaths came inside team fights - two even trades at 14.4 and 19.1, two wins at 21.7 and 23.7 - so most of the trade was survivable here, but solo deaths early are exactly what a tougher opponent punishes."
-   },
-   {
-    "quote": "Six kills, two deaths, and a completed 51.9% winning core — the favored carry lane stayed won the whole game.",
+    "quote": "The itemization wasn't the issue; the fights it kept getting spent in were.",
     "severity": "low",
-    "issue": "voice - per-player line doesn't name the player",
-    "rewrite": "TwinBlast's six kills, two deaths, and a completed 51.9% winning core kept the favored carry lane won the whole game."
-   },
-   {
-    "quote": "Zero deaths, 17,049 healing, 15 wards, and marked absent from all seven fights of the game out of a losing lane — the healing never reached the fights that needed it.",
-    "severity": "med",
-    "issue": "ungrounded count (9 skirmishes total, not seven) and unnamed player",
-    "rewrite": "XiaO BaO's Phase had zero deaths, 17,049 healing, and 15 wards, but was marked absent from all nine skirmishes of the game out of a losing lane — the healing never reached the fights that needed it."
-   },
-   {
-    "quote": "Seven deaths, two of them caught alone outside any fight, next to a team-high 32,008 damage to objectives — the jungle carried tempo and gave bodies back for it.",
-    "severity": "low",
-    "issue": "voice - per-player line doesn't name the player",
-    "rewrite": "Xeebs' Khaimera racked up seven deaths, two of them caught alone outside any fight, next to a team-high 32,008 damage to objectives — the jungle carried tempo and gave bodies back for it."
-   },
-   {
-    "quote": "The first inhibitor fell right after a fight won 4-1 with the numbers even, 5 versus 5.",
-    "severity": "high",
-    "issue": "ungrounded - the 23.7 inhibitor fight roster was 3v4, not an even 5v5",
-    "rewrite": "The first inhibitor fell right after the 23.7 fight, won 4-1 while down a body, 3 versus 4."
-   },
-   {
-    "quote": "The second inhibitor went down 4-1 with a body already up, 5 versus 4, before the fight even started.",
-    "severity": "high",
-    "issue": "ungrounded - the 26.6 inhibitor fight roster was 3v5, the team was outnumbered, not up a body",
-    "rewrite": "The second inhibitor went down 4-1 at 26.6 even though the group was outnumbered, 3 versus 5, before the fight even started."
-   },
-   {
-    "quote": "That is the shape to look for again: don't take the closing fight until the numbers already favor it, the way they did here.",
-    "severity": "med",
-    "issue": "causation - the lesson rests on the false 5v4 premise in the prior line; the SOURCE roster shows the team outnumbered, not favored",
-    "rewrite": "That is the shape worth repeating: closing out a fight even while outnumbered, the way the team did here."
-   },
-   {
-    "quote": "The cost of that losing lane showed up everywhere else: the macro marks Phase absent, out of a losing lane, from all seven clustered fights of the game, including the 21.7 Orb Prime fight and the 26.6 fight that closed the second inhibitor.",
-    "severity": "med",
-    "issue": "ungrounded count - SOURCE lists 9 skirmishes total, not seven",
-    "rewrite": "The cost of that losing lane showed up everywhere else: the macro marks Phase absent, out of a losing lane, from all nine skirmishes of the game, including the 21.7 Orb Prime fight and the 26.6 fight that closed the second inhibitor."
-   },
-   {
-    "quote": "The trade showed up in the macro: Phase put up the team's highest healing, 17,049, and the most wards, 15, but was marked absent from all seven clustered fights of the game, every time out of a losing lane.",
-    "severity": "med",
-    "issue": "ungrounded count - SOURCE lists 9 skirmishes total, not seven",
-    "rewrite": "The trade showed up in the macro: Phase put up the team's highest healing, 17,049, and the most wards, 15, but was marked absent from all nine skirmishes of the game, every time out of a losing lane."
+    "issue": "second 'not X, but Y' coined-maxim formula in the review (line 5 already used one)",
+    "rewrite": "The itemization matched the matchup; the fights it kept getting spent in cost the game."
    }
   ]
  }
