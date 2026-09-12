@@ -223,6 +223,32 @@ wave and roam for value instead." Hard counters get item pivots stated as
 rules ("vs Countess: rush Tainted Blade first item"). This is the fullest
 form of the swap grammar: condition → mechanism → response.
 
+**Splitpushing has its own doctrine** (splitpush 101, 824 views — the
+catalog's one pure-macro guide): proxfarm mid+offlane waves behind the
+tier-1 BEFORE the objective window; the stay/join rule is numeric — keep
+splitting while 2+ enemies commit to stopping you (that's the 4v3), and
+"if you're late for splitpush → teamfight" voids the play; sustain off
+nearby camps instead of recalling; it only works as synchronized team
+action. A film where our splitter held a side lane while we fought 4v5
+can now be graded both ways: did the split hold 2+, and did we convert
+the man-advantage?
+
+**Support economy and the third school.** "As support, most games you'll
+only get up to 3 to 4 items" — judge a support build by its first three
+slots, not its six-item dream; even skill-justified greed caps at 3
+offensive items. Beyond peel vs damage-scaling there is a third stance:
+the entry facilitator ("blink into the middle of the enemy team… be the
+flashbang for your entry team"), whose lane job is "pressure enough to be
+the target." Support skill expression includes counter-CC — canceling a
+channeled hook or mesmerize with your own CC is peel.
+
+**Accountability lines players write themselves**: "Fangtooth killer! You
+are the Jungler. When Fangtooth gets into enemy hands, it's your fault";
+a roam "only benefits allies with available abilities"; a build that
+can't hold its own benchmark ("stay above 450 Magical Power or better
+play Belica") indicts the pick, not the pilot. Blunt house style has deep
+community precedent.
+
 **Win-condition builds are named as such.** The most-read guide on the
 site opens "The main idea of this build is to have high base health and
 use World Breaker" and then does the math at three checkpoints. Players
