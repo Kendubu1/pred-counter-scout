@@ -19,10 +19,11 @@ carrying only what its author explicitly teaches.
   any NUMBER in a review still comes only from that game's facts file
   (honesty contract, `docs/coaching-methodology.md`).
 
-**Coverage.** 190 entries: 53 in the 1.16 family, 81 in 1.15, 48 in
+**Coverage.** 202 entries: 53 in the 1.16 family, 81 in 1.15, 48 in
 1.14 (every guide listed on pred.gg for those families at compile time,
-minus two junk/test entries), plus 8 most-viewed picks from 1.13 back to
-0.16. 64 carry explicit lessons; 126 are build templates.
+minus two junk/test entries), 8 most-viewed picks from 1.13 back to 0.16,
+and 12 high-view in-depth picks across the full catalog (final section).
+76 carry explicit lessons; 126 are build templates.
 
 ## Cross-cutting lessons (what the catalog teaches as a whole)
 
@@ -786,3 +787,148 @@ minus two junk/test entries), plus 8 most-viewed picks from 1.13 back to
 - Archetype naming: "insane ability-resetting team fighter", built around Penumbra's full cooldown resets on takedown and Nightfall shields working during ult invulnerability.
 - Stat-cap literacy at high elo: "346% attack speed which is 1% OFF FROM THE MELEE ATTACK SPEED CAP of 345%."
 - Meta context taught: the 0.18 durability patch killed "kill-or-be-killed" assassins — hero choices follow patch physics.
+
+## In-depth picks across the catalog (high-view teaching guides, added 2026-09-12)
+
+A follow-up pass over the all-time in-depth listing (~310 guides with real
+prose), cherry-picking the highest-view teaching guides not yet read.
+Same provenance rules as above.
+
+### splitpush 101 — Wukong, Offlane (v1.10.2, 824 views, by pitri49) `daP96C0`
+- Splitpush defined as a dual threat: "split push & distract enemies while
+  your team catches a kill or objective on the other side of the map."
+- Proxfarm setup BEFORE objective fights: stand between mid and offlane
+  waves behind the tier-1 to stack both, timed ahead of Fangtooth windows.
+- The rotation loop: proxfarm → fang fight → counter-jungle → midlane
+  pressure, repeating.
+- The join/stay rule is numeric: keep splitting until the enemy commits
+  2+ heroes to stop you — that's a 4v3 for the team; "if your late for
+  splitpush → teamfight" defeats the whole strategy.
+- Sustain from nearby camps instead of recalling; conserve 70%+ mana for
+  actual fights; the hero must shred towers and escape ("wk is not a
+  magican… your job is to team up and do something") — splitpush only
+  works as synchronized team action.
+
+### Rampage, The Jungle King — Rampage, Jungle (v0.18, 1073 views, by Armageddon) `ezW7Ezl`
+- Anti-heal by VECTOR coverage: Tainted Guard covers auto-attacks, Tainted
+  Bastion covers abilities — "combined coverage maximizes opponent healing
+  reduction."
+- "Tank is arguably better in all ways" than bruiser on this kit — role
+  identity over damage temptation; flex table per threat (Warden's Faith
+  vs fed ADCs/Revenant, Crystalline vs sustained/DoT magic, Legacy vs
+  hard CC).
+- "All these builds are extremely flexible… learn the items I have listed
+  and learn them well" — item literacy over memorized orders.
+
+### Narbash Support [code in description] — Narbash, Support (v1.11.2, 1005 views, by PB 4ND JAM) `ezWSmKz`
+- Ult budgeting: "save your ult for fighting on objectives — with duo lane
+  right next to fangtooth, it's easy to show up and provide an ult"; it
+  multiplies with ally ults.
+- The ult pattern has an exit: "click ult, almost die by the time it
+  finishes, flash away and run until they aren't hitting me, turn around
+  and heal my back liners."
+- Counter-CC as a support skill: "if you see Mourn charge up his mesmerize
+  or hook, you can cancel it with a thunk" — peel by interrupting, not
+  just body-blocking.
+- Rotation condition: "rotating to midlane only benefits allies with
+  available abilities" — a roam is only as good as the cooldowns it joins.
+- Early mana: "be very stingy" — heals are budgeted, not spammed, until
+  the mana-regen items are online.
+- Mechanic fine print: the crest shield stacks with Truesilver's — "always
+  pop your crest right after your ult."
+
+### Phase Be Nimble, Phase Be Quick — Phase, Support (v1.10.1.1, 530 views, by PhilosopherKhaos) `DdUy6Ke`
+- Kit re-prioritization: "many people mistake the lance as the most
+  important tool in her kit but you should be focusing on… getting that
+  [Flare] cd reduced so you can cycle blinks faster" — the mobility loop
+  IS the kit.
+- Support as entry facilitator: "blink into the middle of the enemy team…
+  be the flashbang for your entry team" — aggressive distraction, not
+  passive backline peel.
+- Item anti-recommendation with a mechanism: "Lunaria just doesn't work
+  with Phase's heal dynamics. She uses abilities too often to build any
+  meaningful stacks" — proc items must match the kit's cast rhythm.
+- Early lane stance: "pressure enough to be the target but not full-on
+  push" — drawing focus is itself a service to the carry.
+- Link the jungler on ganks to raise success odds; 65+ ability haste is
+  the threshold where the blink loop becomes continuous.
+
+### ONESHOT JG KALLARI GUIDE — Kallari, Jungle (v0.18.3, 932 views, by aanilonred, Master elo) `daPMe20`
+- Farm-first discipline: "clear their jungle camps before even thinking
+  about ganking another lane (unless it is a really easy gank e.g. an
+  overextended low HP Grux)."
+- The assassin teamfight rule: "let your teammates engage while you look
+  for opportunities to single someone out" — position with Shadow Walk,
+  "bide your time."
+- Objective priority by stage: early, take picks near objectives rather
+  than soloing Fangtooth; late, contest Orb Prime/high Fangtooth stacks
+  only after a won fight or a pick.
+- "Learning how to animation cancel greatly increases your burst and how
+  fast you clear" — practice it in the practice tool before ganking.
+
+### Riktor support [v1.2] — Riktor, Support (v1.2, 523 views, by BbcitoCacacito) `Mor78pF`
+- Support economy stated flat: "as support, most games you'll only get up
+  to 3 to 4 items" — the first three slots ARE the build.
+- Skill-conditional greed with a hard cap: "if you're confident, go 2 or 3
+  items to increase the impact of your hooks, then go full tank" — 3
+  offensive items at most, even when dominating.
+- Itemization follows hook accuracy: "if you're very accurate with early
+  hooks, Dynamo is quite a nice option"; if hooks miss or targets get
+  healed out, pivot to the mana/slow path and hook the support instead.
+- Slows only vs no-escape comps (names Sparrow, Fey, Iggy, Muriel);
+  Raiment "against passive lanes like Narbash to keep up with his healing."
+
+### Aggressive Dekker Support — Dekker, Support (v0.18.1, 345 views, by extremepoetry) `fk9BdgQ`
+- The damage-support caveat: "You are not the finisher. This is a 'do a
+  surprising amount of damage before I peel off and let my Carry/Jungle
+  finish them off' build" — chunk, then peel.
+- The build's cost is positional: "best built with an ADC you are in
+  comms with as you lack armor until late game" — greed priced in
+  coordination.
+- Range-proc discipline: the whole scaling engine rewards landing
+  extended-range abilities — aggressive positioning is mechanically paid.
+
+### 🔥SPICY CARRY BUILD — Kira, Carry (v1.9.1, 379 views, by LX WinduTheMace) `Vy8O3kK`
+- Behind-state carry play spelled out: "focus on safe farming, picks, and
+  avoiding full-on engagements until you scale"; ahead = "maximize damage,
+  crit and carry."
+- Late teamfight rule: "let your team initiate while you stay alive and
+  unleash your combo… one clean kill or ultimate use can win the fight —
+  survival and execution matter."
+- Kit math taught: max Vengeance stacks convert bonus damage to TRUE
+  damage (Umbra state), which is why penetration+crit is the shell.
+
+### Yurei Offlane — Yurei, Offlane (v1.11.1, 260 views, by LesbianPhase) `OZhFeu8`
+- First item chosen by FUNCTION: "Alternator gives you insane damage on
+  your RMB but not as much wave clear. Malady is better for wave clear
+  for shove/invade/rotate" — the item picks the game plan.
+- Anti-duplication: doubling similar stack items "misses out on potential
+  stacks" — diversify proc engines.
+- Crest by matchup archetype: Nex into low-interrupt, Witchstalker into
+  tanky/high-interrupt (Steel, Grux), Ortus only when already snowballing.
+- Hard augment ban: "Do not use Regenerator even with bruiser build."
+
+### Shinbi ignores Armor — Shinbi, Jungle (v1.9.4, 90 views, by Klingklang5000) `qFtZ04K`
+- A self-benchmark as a build test: "stay above at least 450 Magical Power
+  or better play Belica" — if the build can't hit its threshold, the pick
+  was wrong.
+- Jungler accountability stated raw: "Fangtooth killer! You are the
+  Jungler. When Fangtooth gets into enemy hands, it's your fault."
+- Slot order flexes with team state: Megacosm slot 2 for early mana, "when
+  your team is weak, shift it to slot 4."
+
+### The Kastelan Robot — Howitzer, Midlane (v1.4.1, 252 views, by r3d01386) `83jZSFn`
+- Lane-presence trick: "keep a proximity mine for when you do River buffs
+  so you can jump back into lane" — mobility cooldowns budgeted for the
+  farm loop, not just fights.
+- Owns the build's weakness (melee shove matchups) and its social cost
+  ("more than one game I happened to receive insults for this build") —
+  conviction with stated limits.
+
+### 🔥SPICY JUNGLE FENG MAO — Feng Mao, Jungle (v1.6, 612 views, by user-ef55e3f0) `hRiXWl9`
+- Stack-target discipline: "stack up malady as much as possible" on
+  high-health camps; 7–8 stacks by mid game is the pace check.
+- Mid game is split-push-then-rotate: "utilize your mobility and wave
+  clear to split push lanes… force rotations from the enemy team."
+- Anti-heal fork (Tainted Trident + Barbaric Cleaver) vs healers; Demon
+  Edge vs shields; Painweaver emphasis vs tanks.

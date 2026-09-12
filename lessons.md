@@ -3451,3 +3451,24 @@ processed 160 guides (0 fetch failures) on top of the 30 already read;
 - Fan-out worked: one list file + one output file per agent, identical
   extraction rules in every prompt, entries in a fixed format so the
   compile step is a concatenation script, not an editing job.
+
+### The in-depth picks pass (2026-09-12)
+
+Per the maintainer: keep reading the guides that actually teach. The
+all-time in-depth listing (~310 guides with ≥2000 chars of prose) held
+the remaining signal; twelve high-view picks read deeply, archive now at
+202 entries.
+
+- **The catalog had one pure macro-strategy guide** (splitpush 101, 824
+  views) and it was worth more than fifty build templates: proxfarming
+  before objective windows, the numeric stay/join rule (2+ committed
+  defenders = keep splitting), "late for splitpush → teamfight". First
+  full doctrine for grading split-map films.
+- **Support knowledge concentrates in the old guides.** The three
+  most-read support guides (Narbash 1005v, Phase 530v, Riktor 523v) carry
+  the role's real curriculum: ult budgeting against the objective clock
+  with a planned exit, counter-CC as peel (cancel the channel), the 3-4
+  item support economy, and the entry-facilitator stance. None of this
+  existed in the 1.14-1.16 catalog.
+- View count within the in-depth filter is a good teaching proxy; outside
+  it, views mostly track hero popularity.
