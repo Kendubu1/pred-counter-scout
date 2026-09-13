@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Climb — Pred Scout</title>
+<meta name="description" content="How to play ranked Predecessor effectively at a high level — the objective clock, tempo economics, real role yardsticks, and build reasoning. Not a beginner guide.">
+<style>
+  :root {
+    --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#82829a;
+    --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
+    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px; --maxw:980px;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  a { color:var(--blue); text-decoration:none; }
+  img { display:block; }
+  button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
+  .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:rgba(10,10,15,.78); border-bottom:1px solid var(--border); }
+  .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
+  .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .spacer { flex:1; }
+  .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
+  .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .navlink:hover { color:var(--text-0); }
+  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .subnav::-webkit-scrollbar { display:none; }
+  .subnav:empty { display:none; }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:1.25rem 1rem 4rem; }
+  .lede { font-size:1rem; color:var(--text-1); line-height:1.65; max-width:64ch; }
+  h1 { font-size:1.7rem; font-weight:800; }
+  .kicker { font-size:.7rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin-bottom:.3rem; }
+  .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; }
+  .card h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.6rem; }
+  .card h3 { font-size:.9rem; color:var(--text-0); margin:.9rem 0 .25rem; }
+  .card p { color:var(--text-1); line-height:1.65; }
+  .card ul { margin:.5rem 0 0 1.15rem; padding:0; }
+  .card li { color:var(--text-1); line-height:1.6; margin:.4rem 0; }
+  .card p + p { margin-top:.6rem; }
+  .card b { color:var(--text-0); }
+  .maxim { border-left:3px solid var(--accent); background:var(--accent-soft); border-radius:0 8px 8px 0; padding:.6rem .85rem; margin:.7rem 0 0; color:var(--text-0); font-size:.92rem; line-height:1.55; }
+  .maxim i { color:var(--text-2); font-size:.78rem; font-style:normal; display:block; margin-top:.25rem; }
+  .tag { display:inline-block; font-size:.66rem; font-weight:800; letter-spacing:.06em; color:var(--blue); border:1px solid var(--blue); border-radius:6px; padding:.04rem .35rem; vertical-align:middle; }
+  .tag.gold { color:var(--gold); border-color:var(--gold); }
+  table.clock { width:100%; border-collapse:collapse; margin-top:.6rem; font-size:.86rem; }
+  table.clock th { text-align:left; color:var(--text-2); font-size:.68rem; text-transform:uppercase; letter-spacing:.1em; padding:.35rem .5rem; border-bottom:1px solid var(--border); }
+  table.clock td { padding:.42rem .5rem; border-bottom:1px solid var(--border); color:var(--text-1); vertical-align:top; }
+  table.clock td:first-child { color:var(--text-0); font-weight:700; white-space:nowrap; }
+  .tblwrap { overflow-x:auto; }
+  details.disc { margin-top:.6rem; border-top:1px solid var(--border); padding-top:.2rem; }
+  details.disc > summary { cursor:pointer; color:var(--blue); font-size:.86rem; padding:.35rem 0; list-style:none; }
+  details.disc > summary::-webkit-details-marker { display:none; }
+  details.disc > summary::before { content:"▸ "; color:var(--text-2); }
+  details.disc[open] > summary { color:var(--text-2); }
+  details.disc[open] > summary::before { content:"▾ "; }
+  footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
+  @media (max-width:600px) {
+    body { font-size:15px; }
+    .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle {
+      min-height:44px; display:inline-flex; align-items:center; justify-content:center;
+    }
+    .navlink { border-radius:10px; }
+    .top-inner { padding:.5rem .7rem; gap:.3rem; }
+    .wordmark { font-size:.82rem; white-space:nowrap; }
+    .top-inner a { font-size:.72rem; white-space:nowrap; }
+    .wrap { padding:.9rem .7rem 3rem; }
+    h1 { font-size:1.35rem; }
+    .card { padding:.8rem .8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <a class="wordmark" href="./"><img src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</a>
+  <span class="spacer"></span>
+  <a class="navlink" href="./">Pick &amp; Build</a>
+  <a class="navlink" href="squad.html">Pre-Game</a>
+  <a class="navlink" href="coach.html">Coach</a>
+</div><div class="subnav" id="subnav"></div></div>
+
+<div class="wrap">
+  <div class="kicker">Ranked, played properly</div>
+  <h1>The Climb</h1>
+  <p class="lede">How to play ranked <b>Predecessor</b> effectively when you already know the game —
+  distilled from 200+ community guides, esports coaching practice, and the film of real ranked
+  matches. This is not a beginner guide. It assumes you can lane, last-hit, and land your kit;
+  it is about the decisions between the mechanics, because that is where games above Gold are won.</p>
+  <p class="maxim">"Mastery is not achieved by winning more games than everyone else. It is achieved
+  by making better decisions than you made yesterday."<i>— The Wraith Codex, one of the community's
+  best-regarded guides. The rest of this page is what those decisions are.</i></p>
+
+  <section class="card">
+    <h2>1 · Play the clock, not the kills</h2>
+    <p>High-level Predecessor is scheduled. Every deep macro guide structures the whole game
+    around objective respawns, and our own match films confirm the cadence — the schedule
+    below is measured across ranked games, not folklore.</p>
+    <div class="tblwrap"><table class="clock">
+      <tr><th>Objective</th><th>Clock</th><th>What it means for your plan</th></tr>
+      <tr><td>River buffs</td><td>from ~3:00, ~every minute</td><td>Continuous side income. Whoever holds river tempo holds the map's cash flow.</td></tr>
+      <tr><td>Seedlings</td><td>from ~4:00, ~3-min cycle</td><td>The between-windows farm. An idle window with no seedling taken is income handed over.</td></tr>
+      <tr><td>Fangtooth</td><td>5:00, ~5–6 min cycle</td><td>Permanent, stacking, team-wide damage. It is a race counted in stacks, not a one-off prize.</td></tr>
+      <tr><td>Mini Prime (Mini Orb)</td><td>~7:00 / ~13:00 / ~19:00</td><td>A <b>conversion</b> buff — it exists to melt plated towers in the minutes after the take.</td></tr>
+      <tr><td>Orb Prime &amp; Primal Fangtooth</td><td>from ~20:00</td><td>The game-enders. Late deaths near these windows hand the game over — death timers run ~40s+ by then.</td></tr>
+    </table></div>
+    <h3>The rules the clock creates</h3>
+    <ul>
+      <li><b>The third Fangtooth (~15:00) is a named power spike.</b> Community consensus treats
+      it as "your number one priority, no exceptions" — a permanent team-wide damage lead from
+      the 15-minute mark. Plan the two minutes before it like a set play: wave state, wards, bodies.</li>
+      <li><b>Mini Prime is for converting, not holding.</b> Take it and push immediately — the
+      community calls it the "Giga Push." Dying with the buff is acceptable <i>if</i> it took
+      towers or forced a cross-map reaction. Grade your take by what fell in the next window.</li>
+      <li><b>Deward before every objective attempt.</b> The sentry bought on your first recall is
+      an objective tool, not a luxury. Vision work is scheduled around the clock, not ad hoc.</li>
+      <li><b>Objective trading is real play.</b> Enemy committed to Fangtooth? Take Mini Prime or
+      their camps. Giving up the first Fangtooth to build a farm lead is a legitimate, stated
+      strategy in high-level guides — as long as you actually collect the trade.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>2 · Tempo economics — fights are loans, not wins</h2>
+    <p>The scoreboard lies to climbers. A won fight is a <b>loan of tempo</b> that expires with
+    the enemy death timers: if nothing is collected before they respawn — an objective, a tower,
+    a wave crashed for a reset — the fight paid nothing. Film review across ranked games shows
+    the same lost-game shape over and over: fights won, none cashed.</p>
+    <ul>
+      <li><b>Cash every won fight.</b> The question after a won fight is never "who do we chase" —
+      it's "what falls before they respawn." Chasing kills after a won trade is the classic
+      mid-ladder death.</li>
+      <li><b>Deaths are priced by what they cost, not counted.</b> A 2-death game where both
+      deaths directly preceded an enemy Fangtooth and an inhibitor was worse than a 7-death game
+      of even trades. Watch what fell within the minute after each of your deaths.</li>
+      <li><b>Caught-out deaths are the cheapest thing to fix.</b> Deaths outside any fight — walking
+      a river without vision, farming a pushed side lane at 22 minutes — are pure tempo handed to
+      the enemy for free, and they are a habit, not bad luck.</li>
+      <li><b>Fight on your item spike, not theirs.</b> A fight taken one completed item down is a
+      timing error dressed up as a skill matchup. If their carry just finished a core item and
+      yours is 800g short, the correct fight is the one two minutes from now.</li>
+      <li><b>A lost fight that bought a cross-map prize is a trade, not a throw.</b> Grade the
+      whole map: 3 deaths bot while your splitter took two towers top can be a winning exchange.</li>
+    </ul>
+    <p class="maxim">A won fight spent on no objective is tempo left on the table.</p>
+  </section>
+
+  <section class="card">
+    <h2>3 · Your role's real yardstick</h2>
+    <p>Most ladder players grade every role on the carry's scoreboard. High-level guides —
+    written by the people who main these roles — grade very differently. Hold yourself to the
+    yardstick your role's own best players use.</p>
+
+    <h3>Jungle — tempo and the schedule, never gank count</h3>
+    <ul>
+      <li>Ganks are a <b>byproduct of map control</b>, judged by what they converted (a tower, an
+      objective, a fed lane) — "forced early ganks waste time."</li>
+      <li>Clear efficiency is a studied skill: chain camps with zero downtime, drag camps to keep
+      passives rolling, space ability procs across the clear. High-level junglers benchmark first
+      clears to the second.</li>
+      <li>Invade windows are read off the clock: enemy jungler committed to Fangtooth, dead, or
+      showing on the map means their camps are free.</li>
+      <li>The accountability line, from the community itself: <b>"You are the jungler. When
+      Fangtooth gets into enemy hands, it's your fault."</b></li>
+      <li>Playing an assassin? Farm their camps before even thinking about ganks, and in
+      teamfights "let your teammates engage while you look for opportunities to single someone
+      out." Patience is the assassin's mechanic.</li>
+    </ul>
+
+    <h3>Offlane — coach the lane state, not the lane</h3>
+    <ul>
+      <li>The lane splits into two games. <b>Winning</b>: poke, shove, and "look to roam when the
+      wave is pushed — your presence is extremely valuable in fights across the map."
+      <b>Losing</b>: farm safe, ward against the dive, follow roams or split — safe farm under
+      tower beats a coin-flip trade. Know which game you're in before every decision.</li>
+      <li>Your known failure mode is external: "get camped by their jungler and watch your duo
+      lane still lose." The answer is defensive itemization, aggressive warding, and patience —
+      an offlane death pre-10 opens the river and costs more than any missed wave.</li>
+      <li>The kill pattern is a sequence, not a moment: poke, force the escape ("burn their
+      Blink"), then re-engage on the dead cooldown. Escapes-forced is a real intermediate win.</li>
+      <li>Trades run through resources, not courage: let your damage-over-time tick in short
+      trades, punish when they overextend, and count both kits' cooldowns before committing.</li>
+    </ul>
+
+    <h3>Midlane — the rotation hub</h3>
+    <ul>
+      <li>Mid is graded on <b>shove-and-rotate</b>, not on out-farming. The roam trigger is a
+      crashed wave, not a clock — rotating off an un-pushed wave costs the lane twice.</li>
+      <li>Budget your mobility cooldowns for the farm loop, not just fights — the small tricks
+      (holding an escape to jump back into lane after river buffs) are what keep mid's income
+      and presence simultaneous.</li>
+    </ul>
+
+    <h3>Carry — farm-to-damage, and the one death that matters</h3>
+    <ul>
+      <li>The carry's own guides grade themselves on one number: <b>caught-out deaths</b>. "The
+      worst case scenario is getting caught in a CC." Positioning is the mechanic; everything
+      else is arithmetic.</li>
+      <li>Behind? The play is stated flat in high-level carry guides: "focus on safe farming,
+      picks, and avoiding full-on engagements until you scale." Ahead? Maximize pressure — but
+      in teamfights, "let your team initiate while you stay alive. One clean kill can win the
+      fight — survival and execution matter."</li>
+    </ul>
+
+    <h3>Support — the three stances and the 3-item reality</h3>
+    <ul>
+      <li>Support economy is blunt: <b>"most games you'll only get 3 to 4 items."</b> Your first
+      three slots ARE your build — and even skill-justified greed caps around three offensive
+      items before you tank up.</li>
+      <li>Pick a stance and play it on purpose. The community runs three: <b>peel</b> (classic
+      shield/CC bodyguard), <b>damage-scaling</b> ("magical power has way more multipliers than
+      heal &amp; shield power — do the math"), and the <b>entry facilitator</b> ("blink into the
+      middle of the enemy team — be the flashbang for your entry team"). Each is legitimate;
+      drifting between them mid-game is not.</li>
+      <li>Uptime beats moments: "an effect you can use only once every minute is no effect at
+      all — <b>frequency is king</b>." The same logic prices your ultimate: save it for objective
+      windows, and plan the exit before you press it.</li>
+      <li>Peel includes <b>counter-CC</b>: canceling the hook or the channel with your own stun is
+      the highest form of peel. And shield <i>preemptively</i> — before expected damage, not after.</li>
+      <li>A roam is only as good as the cooldowns it joins — "rotating to midlane only benefits
+      allies with available abilities." Check their ults before you walk.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>4 · Build like the top of the ladder builds</h2>
+    <p>High-level players don't memorize builds — they hold a small grammar of reasons. Every
+    serious guide in the catalog writes builds the same five ways:</p>
+    <ul>
+      <li><b>The swap grammar:</b> <i>{default} → {swap} when {condition}</i>. The canonical
+      conditions: a cleanse item over the damage opener against heavy CC; anti-heal against
+      sustain; percent-health damage against health-stackers; penetration against armor-stackers;
+      the last one or two slots always flexed to the enemy comp.</li>
+      <li><b>Count, don't feel.</b> The best guides make defensive choices numeric: tenacity
+      builds "when the enemy has lots of stuns to interrupt your ultimate — against one or fewer,
+      go damage"; the CC item "if the enemy has 1+ hard-CC abilities." Count the enemy kit in the
+      draft, then itemize.</li>
+      <li><b>Name the engine.</b> The most respected builds are organized around one scaling
+      engine stated in a sentence — health stacking feeding a health-to-power item, a burn feeding
+      healing procs, a haste rush feeding a gold engine. Every slot either feeds the engine or
+      answers a threat; a slot that does neither is a wasted purchase.</li>
+      <li><b>Don't build away from your kit.</b> An attack-speed build on an ability hero
+      "loses all the skills she's so powerful with." The kit's cast rate picks your proc items;
+      the kit's mechanism picks your stats.</li>
+      <li><b>Slots are liquid.</b> The hold-and-upgrade idiom (buy the cheap stacking component
+      second, complete it last), selling the early mana trinket late, selling the gold engine at
+      full build, trading utility for survivability once cooldowns stop mattering — a build is a
+      process across the whole game, not a checklist.</li>
+    </ul>
+    <details class="disc">
+      <summary>Two more axes the ladder underuses: fight length and stated greed</summary>
+      <p style="margin-top:.5rem"><b>Fight length</b> is a real itemization axis: burst mitigation
+      when you expect to get blown up, lifesteal when you expect the long fight. Ask which fight
+      your next game will actually contain.</p>
+      <p><b>Greed is conditional and should be said out loud.</b> "This is the optimal build,
+      but you need to be ahead — if you fall behind you need to change." A greedy build isn't
+      wrong in general; it's wrong for a game state. Re-check the condition every recall.</p>
+    </details>
+    <p style="margin-top:.6rem">Per-hero specifics live in <a href="./">Pick &amp; Build</a> —
+    the sim's opinion and the field's real win rates, side by side.</p>
+  </section>
+
+  <section class="card">
+    <h2>5 · The splitpush doctrine</h2>
+    <p>Splitpushing is the most misplayed macro tool on the ladder, and the community's one
+    dedicated macro guide lays out the actual doctrine:</p>
+    <ul>
+      <li><b>Prepare before the window.</b> Proxfarm — stack the mid and side waves behind the
+      tier-1 — <i>before</i> the Fangtooth window opens, so your pressure peaks exactly when the
+      map fight starts.</li>
+      <li><b>The stay/join rule is numeric.</b> Keep pushing while <b>2+ enemies</b> commit to
+      stopping you — that's a 4v3 for your team on the other side. The moment fewer than two
+      watch you, your push is free real estate for them somewhere else.</li>
+      <li><b>"If you're late for splitpush → teamfight."</b> Arriving to split after the fight
+      window opened is the worst of both — you miss the fight and the towers.</li>
+      <li><b>Sustain off nearby camps, not recalls.</b> A recall resets the whole threat.</li>
+      <li><b>It's a team play.</b> The split only pays if the four are pressuring something
+      simultaneously. A splitter with a passive team isn't a strategy, it's a 4v5.</li>
+    </ul>
+    <p>And from the other side: when the enemy splits, the same math applies in reverse — send
+    exactly one answer, and take the 4v4 fight or the objective their splitter isn't at.</p>
+  </section>
+
+  <section class="card">
+    <h2>6 · Micro that's assumed up here</h2>
+    <p>Above Gold, this is table stakes — opponents are doing all of it:</p>
+    <ul>
+      <li><b>Animation canceling</b> — cutting an ability's follow-through the moment its damage
+      lands. It compounds: faster clears, faster objectives, more damage per fight window.
+      Learn it in the practice tool, per kit.</li>
+      <li><b>Auto-reset weaving</b> — attack → ability → attack, resetting the swing timer.
+      Free damage on every trade.</li>
+      <li><b>Passive upkeep</b> — dragging camps to chain them, kiting a buff between camps to
+      keep stacks rolling, spacing casts so proc effects never idle.</li>
+      <li><b>Cooldown accounting in trades</b> — "burn their Blink" then kill on the timer;
+      wait out the ability that answers your engage (the tether, the reflect, the cleanse)
+      before committing yours.</li>
+    </ul>
+    <details class="disc">
+      <summary>The fine print that decides close fights (community-reported mechanics)</summary>
+      <ul style="margin-top:.5rem">
+        <li>Slow stacking is <b>not additive</b> — the strongest slow applies plus a small bonus
+        per extra source. Don't build stacked slows.</li>
+        <li>Anti-heal sources don't stack multiplicatively — but <b>vector coverage</b> matters:
+        an on-hit anti-heal never touches a hero you can't auto, so a second (ability-applied)
+        source can still be right.</li>
+        <li>Know your immunity gaps — some ultimates do <b>not</b> grant CC immunity while
+        channeling. Know which of yours can be interrupted, and which of theirs you can interrupt.</li>
+        <li>Reflects and blocks have exceptions — know the specific abilities your defensive
+        tool <i>cannot</i> answer before you bet a fight on it.</li>
+        <li>Stat caps are real build targets — attack-speed caps, 100% crit completion. A stat
+        past its cap is gold burned; high-elo players build to the threshold, then stop.</li>
+      </ul>
+    </details>
+  </section>
+
+  <section class="card">
+    <h2>7 · Review your own film — the interrogation</h2>
+    <p>Every rank above Platinum reviews film. Don't rewatch to relive it — interrogate it.
+    The questions a real coach asks of a lost game, in order:</p>
+    <ul>
+      <li>Which fights did we <b>win and not cash</b>? What was takeable in each window?</li>
+      <li>For every objective they took: <b>who was dead, and why?</b> If nobody was dead —
+      where were the five of us, and who saw it happen?</li>
+      <li>Which deaths <b>directly preceded</b> an enemy tower or objective? Those are the ones
+      that cost; the rest were even trades.</li>
+      <li>Was the losing stretch a <b>fight problem or a numbers problem</b>? Count the bodies at
+      each engage — a 4v5 lost is a call error by the four, not a mechanics error by the one.</li>
+      <li>Which fights were taken <b>items-down</b>, and what would waiting two minutes have
+      changed?</li>
+      <li>What did the <b>vision war</b> look like around each major — wards placed, wards
+      cleared, and by whom?</li>
+    </ul>
+    <p style="margin-top:.6rem">The <a href="coach.html">Coach</a> runs exactly this
+    interrogation over your squad's real matches — the fights, the windows, the causes, and the
+    build reasoning per player — so the review happens even when nobody feels like doing it.</p>
+    <p class="maxim">Everything gets a cause or it doesn't go in the review. "We lost" is not
+    analysis; "their 23-minute Fangtooth fell with all five of us alive" is.</p>
+  </section>
+
+  <footer>
+    Distilled from 200+ pred.gg community guides (all of patches 1.14–1.16 plus the most-read
+    guides of every earlier patch), esports MOBA coaching methodology, and the film of ranked
+    matches. Objective cadences are measured from real match timelines; mechanics marked
+    "community-reported" are guide claims we haven't independently verified. Not affiliated
+    with Omeda Studios.
+  </footer>
+</div>
+<script defer src="icons.js"></script>
+<script defer src="nav.js"></script>
+</body>
+</html>

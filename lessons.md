@@ -3472,3 +3472,20 @@ the remaining signal; twelve high-view picks read deeply, archive now at
   existed in the 1.14-1.16 catalog.
 - View count within the in-depth filter is a good teaching proxy; outside
   it, views mostly track hero popularity.
+
+### The Climb — the ranked guide page (2026-09-13)
+
+The maintainer asked for the learning to be turned outward: a
+how-to-play-effectively page for climbers (explicitly not a beginner
+guide), in the site menu. `ui/v6/climb.html`, drawer entry via nav.js
+(the menu's single source of truth — one edit, every page).
+
+- Structure follows the knowledge, not a template: the objective clock
+  (our film-verified cadences), tempo economics (fights as loans),
+  per-role yardsticks in the community's own words, the build grammar,
+  the splitpush doctrine, assumed micro, and the self-review
+  interrogation that hands off to the Coach page.
+- Provenance discipline holds on a public page: measured cadences stated
+  as measured, guide-claimed mechanics labeled community-reported in a
+  collapsed fine-print section, and the footer says where all of it
+  comes from.
