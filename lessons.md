@@ -3489,3 +3489,79 @@ guide), in the site menu. `ui/v6/climb.html`, drawer entry via nav.js
   as measured, guide-claimed mechanics labeled community-reported in a
   collapsed fine-print section, and the footer says where all of it
   comes from.
+
+## 2026-09-21 — Patch 1.17 "Bloodtide" review, and the day omeda stopped publishing
+- **The upstream catalog is frozen, and a timestamp hid it.** `data/omeda/heroes.json`
+  and `items.json` have been byte-identical since 2026-08-28: omeda.city still
+  answers with a complete 54-hero / 270-item payload, so every refresh "succeeded"
+  and `fetchedAt` kept advancing while the numbers stood still. The maintainer
+  heard the service had shut down; the git history proved it in one command
+  (`git log -1 -- data/omeda/heroes.json`). 1.16.4 and now 1.17 both land on a
+  catalog that will never receive them. snapshot.ts now hashes the payload and
+  carries `contentChangedAt` + `contentAgeDays`, prints a loud NOTE when content
+  has not moved in 3+ days, and the patch pages' item popups date themselves from
+  the CONTENT date instead of the fetch date — they were about to tell readers
+  their base numbers were from 09-21 when they are from 08-28. The design doc's
+  own lesson ("a timestamp records when we asked, never what we got") was written
+  a month before the thing it warned about actually happened.
+- **The release-window PENDING state expired exactly as designed, and that is the
+  alarm, not a bug.** 1.16.4 went hard STALE on 09-15 at the 14-day bound. Note
+  the harness still passed on main, because the test reads the COMMITTED
+  patch-currency report and that one was written on 09-14 while pending was
+  still valid; the failure only appears once you re-run `npm run patchcheck`, as
+  the documented workflow requires. A gate whose verdict is cached in a
+  committed artifact can be silently a week out of date — the report needs to be
+  regenerated to be believed.
+- **A page summarizer invented Eternal groupings, and they shipped.** The 1.16.4
+  digest was captured with WebFetch, whose small model imposed structure the
+  notes do not contain: headers for "XYRIS", "VESH", "AZAI", "KRIX". Against the
+  raw HTML, the notes name only Weald, Thraex, Krix, Knell, Pilow and Satariel in
+  prose; the rest are bare minor-blessing headers. Cold Hearted is Idrisil's, not
+  Xyris'; Sacrifice is Aion's, and **no Eternal named "Azai" exists in any patch
+  notes** — it was pure fabrication that reached the published page and the
+  prediction copy. Four minors filed under Krix belong to Nihil. Capture patch
+  notes by parsing the page's own HTML to text (curl + tag strip, ~40 lines);
+  reserve summarizers for prose, never for structure or attribution.
+- **Our "Rust" Eternal is named Knell.** Rust is the armour-shred DEBUFF it
+  applies. The 1.16 notes settle it twice over: the bugfix list says "Knell
+  Dampening" (Dampening being one of this Eternal's minors) and the 1.16.4 notes
+  say "Knell's Major blessing". The 1.16 capture took the mechanic for the name
+  and it propagated to the catalog, effects.json, the artifacts and the Learn
+  page. Renamed across catalog, effect keys, ids and display names; the `id` and
+  the effect key are a join, so renaming one without the other silently drops
+  that Eternal's definition out of `rankBlessings`.
+- **name-integrity caught the rename AND had a bug of its own.** Its hero test
+  carried a comment promising it "reports rather than fails on the newest digest
+  only" for a hero the catalog has not published yet — an exemption that was
+  described but never written. The first pre-release hero digest after it was
+  authored (Baron Valmont) failed the harness for doing its job. Implemented the
+  documented behaviour. A comment describing intent the code does not have is a
+  latent failure with a due date.
+- **Countess was silently gutted for three weeks and our own page said "buff".**
+  1.16.4's notes listed a Feast cooldown change; the game shipped a bug where the
+  ultimate dealt its COOLDOWN values as damage (125/105/85 instead of hundreds),
+  which 1.17 fixes to 135/200/265. Our 1.16.4 prediction called her a buff and her
+  measured 47.8% over 31,219 games was set with a broken ultimate. Nothing in the
+  pipeline could have caught it — the digest was faithful to the notes and the
+  notes were faithful to the intent. Worth remembering when a measured number
+  disagrees loudly with a stated change: the third possibility is that the build
+  does not match either.
+- **The critic keeps earning its round.** 11 flags on 27 entries, all on top of
+  copy whose numbers were already 100% ground-checked: two mechanism errors a
+  player would catch instantly (TwinBlast's Lunari 4.0 called a rifle when they
+  are pistols; "every buff rewards holding max range" applied to Buckshot, a
+  falloff cone), a "most-played hero on this board" claim that Greystone's 71,608
+  games contradicts, and a derived delta ("for 10 more mana") that the numeric
+  verifier passed because 10 appears elsewhere in the block. Deterministic
+  checking proves every number is real; only a reader checks whether the sentence
+  around it is.
+- **The Learn Eternals page is generated now.** It was hand-written at 1.16 and
+  had rotted exactly as predicted: it still shipped the "satatriel" typo, pointed
+  at an image that never existed and described a three-patch-old game.
+  `scripts/build-learn-eternals.js` renders it from the catalog, with playstyle
+  tags derived from each Eternal's stored `fit` weights rather than hand-assigned.
+  First cut scored a playstyle by SUMMING its traits, which let a group with four
+  small traits outrank one with a single large trait — it read Knell, an on-hit
+  shred Eternal, as a spell playstyle. Scoring by the strongest contributing
+  trait fixed it. Lotus has almost no stored lean, so it now reads "fits any
+  playstyle" rather than having its loudest rounding error promoted into a claim.
