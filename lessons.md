@@ -3489,3 +3489,45 @@ guide), in the site menu. `ui/v6/climb.html`, drawer entry via nav.js
   as measured, guide-claimed mechanics labeled community-reported in a
   collapsed fine-print section, and the footer says where all of it
   comes from.
+
+### Coach audit: the last ten ranked reviews (2026-09-21)
+
+The maintainer asked for a read of how the coach has been operating
+(biases, repeated takes, the support misread, voice, verbosity). Full
+audit in `docs/reviews/coach-audit-2026-09-21.md`; the lessons:
+
+- **The support misread is engine plumbing, not prose.** Fight presence
+  (`skirmishes.ts` `ourHeroes` / `skirmishMacro` participants) counts
+  killers and victims only, so a support with 48–82% kill participation
+  is "absent" from most fights (77 support absent-flags across ten games,
+  the most of any role). The "support lane" is a 1v1 kill-window sim of
+  support-vs-support, which reads "theirs all game" for any enchanter
+  (8 of 10 films) and feeds `laneStateAt` → "pinned in a losing lane".
+  And support Eternals are unmodeled, so the engine hands Vesh to every
+  enchanter while our own committed pred.gg evidence has Exarch at
+  ten-to-forty times the picks. The coach narrated all three as facts.
+  Fix the fields; the critic then enforces it for free.
+- **Assists require damage in Predecessor** (12-second window, wiki), so
+  kill participation is a floor for healers, never a ceiling. A
+  low-participation Muriel is "unknown", not "absent".
+- **Ten reviews, one skeleton.** Conversion tally, "alive and ahead never
+  rotated", the meta-core comparison and the Eternal trade-off paragraph
+  appear in every film; the next-game focus is the rotation lesson in six
+  of ten. Most of it is the facts file handing the coach the same ten
+  blocks; the rest is the spec telling it to use all of them.
+- **It grades the model and the scoreboard.** Thirty paper-read mentions,
+  seventy-two meta-core mentions, result-anchored verdict moods (the same
+  armor flag is "didn't matter" in a win and "exposed" in a loss).
+- **Blunt is permitted and not practiced.** Forty-one hedges, eleven
+  "mixed" verdicts, no roster ranking, no cross-game callbacks, no throw
+  called a throw. The outside sources agree on the shape that lands:
+  verdict first, receipts second, one fix, ranking only with a receipt,
+  pattern over person, two or three points per review.
+- **Verbosity is in the wrong layer**: ~2,300 words per review, 44% of it
+  build/Eternal "why" prose. Proposed tiers: ten-second verdict + fix +
+  ranking, one-minute moments, on-demand receipts and teaching.
+- **The preference rule leaks through the facts file**: `draftNote`
+  (role-fit "queued off a bottom-two lane") renders on the coach page and
+  reached copy once (25e1a1e9). The rule bans it; the plumbing ships it.
+- **September first-draft agreement rates were 15–63%.** The critic is the
+  accuracy layer; any voice change ships through it, never around it.
