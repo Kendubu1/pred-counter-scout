@@ -3649,3 +3649,34 @@ audit in `docs/reviews/coach-audit-2026-09-21.md`; the lessons:
   reached copy once (25e1a1e9). The rule bans it; the plumbing ships it.
 - **September first-draft agreement rates were 15–63%.** The critic is the
   accuracy layer; any voice change ships through it, never around it.
+
+### Patch 1.17 copy re-authored after the coach audit (2026-09-21)
+
+The maintainer read the 1.17 page and saw the meta-shifting explanations
+repeating. Measured before the rewrite: 20 of 23 cards opened "What it'll
+change" with "The <role> baseline is NN.N% over N,NNN ranked games", the
+"Why" field restated 187 of the 224 numbers already printed in the change
+lines directly above it, and "Expect" appeared 29 times. The humanizer rules
+were all obeyed; the template underneath them was the problem. Rewrite
+rules, now the standard for patch cards:
+- **"Why" is the mechanism, never the change list.** The card already
+  shows the lines; the read says what they do to the kit in plain words,
+  citing at most the one number that carries the mechanism.
+- **Verdict first.** The first sentence of "What it'll change" is the call
+  (trim not correction, repair not buff, the casualty is the jungle seat);
+  the winrate comes after it, and the sample count only where the sample
+  size changes the read (Countess's bugged window, Wukong's thin sample).
+  After the rewrite 4 of 23 first sentences carry a sample count.
+- **No "Expect a couple of points".** Direction and size in plain words,
+  once, with the habit or draft call that goes with it.
+- **Numbers stay inside the verified set.** A scratch ground-check allowed
+  only numbers present in the hero's own change lines or the previously
+  critic-verified copy; it caught one tokenizer artifact and nothing else.
+- **The independent critic still earned its round: 16 flags on 24 entries,
+  0 high, 3 medium.** Two mechanism catches a player would have spotted
+  (Kwang's Surge of the Heavens is a dash and stays denied while grounded,
+  the 1.17 fix only restores the recall; the Rallying Roar/Peal cooldowns
+  are timed to Valmont's holdable ultimate, not the sword), one sample
+  count outside the verified list, and a spread of three-numbers-in-a-
+  sentence splits. All 16 grounded rewrites applied. A blunter voice
+  makes mechanism slips louder, so the critic round is not optional.
