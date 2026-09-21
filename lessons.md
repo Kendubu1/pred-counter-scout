@@ -3680,3 +3680,59 @@ rules, now the standard for patch cards:
   count outside the verified list, and a spread of three-numbers-in-a-
   sentence splits. All 16 grounded rewrites applied. A blunter voice
   makes mechanism slips louder, so the critic round is not optional.
+
+### Coach content pass after the audit (2026-09-21): ten films re-authored, three engine gaps closed
+
+The maintainer asked for a pass "with our research to write better comp
+game content". Done as: the audit's voice/shape contract written into the
+coach and critic specs, the ten audited films re-authored by two coach
+agents in parallel under it, one critic round applied (88 grounded rewrites
+on 326 lines, 73% first-round agreement against 15–63% for the previous
+September rounds), and the engine gaps the round exposed fixed before the
+second round. Average review length 2,282 → ~1,150 words; hedges 41 → 0;
+em-dashes 102 → 0; every support graded on participation, wards, healing
+and pre-10 deaths with a one-line "unmodeled; the field runs Exarch"
+Eternal read; a `ranking` field with a receipt per row on every film.
+
+- **"Absent" was never provable for anyone with assists.** The audit fixed
+  it for supports; the critic then correctly applied the FIGHT PRESENCE
+  RULE to offlaners and junglers too (an absence claim about a player with
+  five assists across nine fights is unprovable). The macro pass now marks
+  any absent entry `unproven` when the player has assists, and the note
+  reads as a question ("no kill or death credited; if free, the lane read
+  says ahead") instead of a verdict. The rotation lesson survives only in
+  that form until the feed exposes per-kill assists.
+- **A SOURCE printer gap reads as a fabrication, again.** Eight "invented
+  number" high flags were true enemy objective-damage and gold figures the
+  critic's SOURCE never printed (fourth recurrence of the lesson recorded
+  in coach-critique.ts). Enemy rows now print objective damage and gold,
+  and our rows print gold.
+- **Cross-film callbacks need cross-film SOURCE.** The new contract asks
+  for "third film in a row" patterns; the critic could not see prior films
+  and dropped fifteen true callbacks. The SOURCE now carries a PREVIOUS
+  FILMS block (three prior films per squad member: hero/role, K/D/A, wards,
+  caught-alone count, deaths before 10) so a callback is checkable.
+- **The interrogation window was reading a rounded minute.** "Orb Prime
+  conceded with nobody dead" in 3a95c5eb came from `timeline.majors`'
+  integer minute (26) while four of ours died at 24.5–24.9 into the 25.6
+  event. The pass now takes the exact second from the event stream.
+- **Two more inconsistencies the authors worked around, not fixed:**
+  skirmish `place` side labels disagree with the structure event stream in
+  several fights (405cb99a 30.9/33.8, dc93b56f 23.7/26.6), and
+  `kit.threats` says "no anti-heal" in games where `counterBuild` counts
+  two. Filed as follow-ups; the copy keeps tower sides neutral where the
+  event stream does not confirm them.
+- **Icons:** the Eternal-minor icons missing on the 1.16 page were a
+  generator path bug (minors looked up under img/eternals/), fixed and all
+  patch pages rebuilt. The only icon the site still lacks is Baron
+  Valmont's hero image, which needs `npm run icons` with PREDGG creds (his
+  pred.gg page is a client-rendered app; the asset hash only comes from the
+  catalog API). Credentials gate: not attempted without creds.
+- **Round two converged at 95.7%** (14 flags on 326 lines, 13 applied, one
+  rewrite hand-corrected because the verifier dropped it). Four games were
+  clean. The residue was all causation against the CONCEDED MAJORS block
+  (a Genesis Core or Mini Prime that fell with nobody dead attributed to a
+  fight) and two more absence assertions, so the next thing the coach spec
+  needs is an explicit "an uncontested major is a choice, never a cost of a
+  fight" line. The `draftNote` role-fit line no longer renders on the coach
+  page (preference coaching, banned by the squad rule).

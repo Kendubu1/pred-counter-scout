@@ -843,7 +843,7 @@ function pgReview(f) {
   const lobby = card(`${eyebrow('The lobby — squad &amp; randoms', 'build reads from the match; Eternal loadouts are the engine’s pick for the kit &amp; matchup (the feed doesn’t record what was run) — THEORY')}
     ${cb && (cb.notes || []).length ? `<div class="bverdict">${cb.notes.slice(0, 2).map(esc).join(' ')}</div>` : ''}
     ${us.map(lobbyRow).join('')}
-    ${f.draftNote ? `<div style="font-size:.76rem;color:var(--text-2);margin-top:.4rem">⚑ Draft: ${esc(f.draftNote)}</div>` : ''}`);
+    `);  // draftNote (role-fit "queued off a bottom-two lane") is preference coaching the squad rule bans — not rendered (coach audit 2026-09-21)
 
   // ── Deep dive: lanes, fight map + per-fight breakdowns, comp, kit ──
   const wrColor = (w) => w >= 52 ? 'var(--green)' : w <= 48 ? 'var(--red)' : 'var(--text-1)';

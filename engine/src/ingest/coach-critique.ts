@@ -22,7 +22,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.
 const PG = path.join(ROOT, 'data/postgame');
 
 interface Coaching { headline?: string; team?: string; whatShiftedIt?: string; whatWorked?: string; perPlayer?: Record<string, string>; verdicts?: Record<string, { mood?: string; text?: string }>; moments?: Record<string, { call?: string }>; buildReads?: Record<string, { build?: string; eternal?: string }>; ranking?: { pid?: string; grade?: string }[]; }
-interface Facts { matchId: string; result: string; durationMin: number; vpSwing: number | null; players: any[]; lanes: any[]; comp: any; objectives: any; timeline?: any; skirmishes?: any[]; coaching?: Coaching | null; }
+interface Facts { matchId: string; result: string; durationMin: number; vpSwing: number | null; players: any[]; lanes: any[]; comp: any; objectives: any; timeline?: any; skirmishes?: any[]; kills?: { killedPid: string | null; min: number }[]; coaching?: Coaching | null; }
 
 /** Compact, factual source block the critic judges the coaching against. */
 function sourceOf(f: Facts): string {
@@ -44,17 +44,49 @@ function sourceOf(f: Facts): string {
     `MAJOR TIMELINE: ${((f.timeline as any)?.majors ?? []).filter((m: any) => m.type !== 'RIVER').map((m: any) => `${m.type}@${m.minute}m ${m.side}`).join(', ') || 'none'}.`,
     `LANES: ${f.lanes.map((l) => `${l.role} ${l.ourHero} vs ${l.theirHero} (${l.edge}${l.predggMatchup ? `, ${l.predggMatchup.winrate}%` : ''}${(l as any).summary ? `, lane read: ${(l as any).summary}` : ''})`).join('; ')}.`,
     `COMP: you ${f.comp?.ourDamage?.physical}P/${f.comp?.ourDamage?.magical}M, them ${f.comp?.theirDamage?.physical}P/${f.comp?.theirDamage?.magical}M; their healers ${f.comp?.theirHealers?.join(', ') || 'none'}.`,
-    `OUR PLAYERS: ${us.map((p) => `${p.squadName || p.name} ${p.heroName} ${p.role} ${p.kills}/${p.deaths}/${p.assists} (kill participation ${Math.round(((p.kills + p.assists) / Math.max(1, us.reduce((a, q) => a + q.kills, 0))) * 100)}% of ${us.reduce((a, q) => a + q.kills, 0)} team kills), ${(p as any).damageToHeroes ?? '?'} hero dmg, ${(p as any).damageToObjectives ?? '?'} obj dmg, ${(p as any).healingDone ?? '?'} healing, ${(p as any).mitigated ?? '?'} mitigated, ${(p as any).damageTaken ?? '?'} damage taken, ${(p as any).wardsPlaced ?? '?'} wards placed + ${(p as any).wardsDestroyed ?? 0} cleared, items [${((p as any).items ?? []).map((i: any) => i.name ?? i).join(', ')}]${((p as any).itemTimeline ?? []).length ? `, est online [${(p as any).itemTimeline.map((t: any) => `${t.name}~${t.estMin}m`).join(', ')}]` : ''}${((p as any).matchupItemFlags ?? []).length ? `, film flags [${(p as any).matchupItemFlags.join('; ')}]` : ''}${((p as any).missingCore ?? []).length ? `, missing meta core [${(p as any).missingCore.join(', ')}]` : ''}${(p as any).winningCore ? `, winning core [${(p as any).winningCore.items.join(', ')}] at ${(p as any).winningCore.wr}%` : ''}${(p.spikes ?? []).length ? ` (spikes ${p.spikes.map((s: any) => `${s.name}~${s.spikeMinute}m`).join(', ')})` : ''}${p.roleFit?.concern ? ` [off bottom-two lane]` : ''}`).join('; ')}.`,
+    `OUR PLAYERS: ${us.map((p) => `${p.squadName || p.name} ${p.heroName} ${p.role} ${p.kills}/${p.deaths}/${p.assists} (kill participation ${Math.round(((p.kills + p.assists) / Math.max(1, us.reduce((a, q) => a + q.kills, 0))) * 100)}% of ${us.reduce((a, q) => a + q.kills, 0)} team kills), ${(p as any).damageToHeroes ?? '?'} hero dmg, ${(p as any).damageToObjectives ?? '?'} obj dmg, ${(p as any).goldEarned ?? '?'} gold, ${(p as any).healingDone ?? '?'} healing, ${(p as any).mitigated ?? '?'} mitigated, ${(p as any).damageTaken ?? '?'} damage taken, ${(p as any).wardsPlaced ?? '?'} wards placed + ${(p as any).wardsDestroyed ?? 0} cleared, items [${((p as any).items ?? []).map((i: any) => i.name ?? i).join(', ')}]${((p as any).itemTimeline ?? []).length ? `, est online [${(p as any).itemTimeline.map((t: any) => `${t.name}~${t.estMin}m`).join(', ')}]` : ''}${((p as any).matchupItemFlags ?? []).length ? `, film flags [${(p as any).matchupItemFlags.join('; ')}]` : ''}${((p as any).missingCore ?? []).length ? `, missing meta core [${(p as any).missingCore.join(', ')}]` : ''}${(p as any).winningCore ? `, winning core [${(p as any).winningCore.items.join(', ')}] at ${(p as any).winningCore.wr}%` : ''}${(p.spikes ?? []).length ? ` (spikes ${p.spikes.map((s: any) => `${s.name}~${s.spikeMinute}m`).join(', ')})` : ''}${p.roleFit?.concern ? ` [off bottom-two lane]` : ''}`).join('; ')}.`,
     // Enemy rows too (round-13 lesson: enemy healing/damage figures cited from
     // the film — e.g. their Narbash's 70,180 healing — were flagged as invented
     // because the SOURCE only printed our side).
-    `THEIR PLAYERS: ${f.players.filter((p) => !p.us).map((p) => `${p.heroName} ${p.role} ${p.kills}/${p.deaths}/${p.assists}, ${(p as any).damageToHeroes ?? '?'} hero dmg, ${(p as any).healingDone ?? '?'} healing, ${(p as any).mitigated ?? '?'} mitigated, ${(p as any).damageTaken ?? '?'} damage taken, ${(p as any).wardsPlaced ?? '?'} wards placed, items [${((p as any).items ?? []).map((i: any) => i.name ?? i).join(', ')}]`).join('; ')}.`,
+    `THEIR PLAYERS: ${f.players.filter((p) => !p.us).map((p) => `${p.heroName} ${p.role} ${p.kills}/${p.deaths}/${p.assists}, ${(p as any).damageToHeroes ?? '?'} hero dmg, ${(p as any).damageToObjectives ?? '?'} obj dmg, ${(p as any).goldEarned ?? '?'} gold, ${(p as any).healingDone ?? '?'} healing, ${(p as any).mitigated ?? '?'} mitigated, ${(p as any).damageTaken ?? '?'} damage taken, ${(p as any).wardsPlaced ?? '?'} wards placed, items [${((p as any).items ?? []).map((i: any) => i.name ?? i).join(', ')}]`).join('; ')}.`,
     `FIGHT PRESENCE RULE: "absent" in a macro read means no kill or death credited in that fight window; assists are not tracked per fight. A player with A assists cannot have been absent from more than (fights - kills - deaths - A) fights, and a support's lane read is a 1v1 sim that never happens, so a support is never "pinned in a losing lane". Grade supports on kill participation, wards, healing/mitigation and deaths, never on the 1v1 lane read or the absent flag (coach audit 2026-09-21).`,
     ...interrogationLines(f),
     ...fightEconLines(f),
+    ...previousFilmLines(f),
   ].join('\n');
 }
 
+
+/** Cross-film callbacks (coach contract 2026-09-21): the coach may name a
+ *  repeating pattern across a squad member's previous films, so the critic
+ *  must see those films' facts. One compact line per member per prior film
+ *  (up to three, newest first, by index.json order): date, hero/role, K/D/A,
+ *  wards, deaths caught outside any fight, deaths before minute 10. */
+function previousFilmLines(f: Facts): string[] {
+  let idx: { matchId: string; startTime: string }[] = [];
+  try { idx = (JSON.parse(readFileSync(path.join(PG, 'index.json'), 'utf8')).matches ?? []) as { matchId: string; startTime: string }[]; } catch { return []; }
+  const mine = idx.find((m) => m.matchId === f.matchId);
+  if (!mine) return [];
+  const earlier = idx.filter((m) => m.startTime < mine.startTime).sort((a, b) => b.startTime.localeCompare(a.startTime));
+  const us = f.players.filter((p) => p.us && (p as any).squadName);
+  const out: string[] = [];
+  for (const p of us) {
+    const rows: string[] = [];
+    for (const m of earlier) {
+      if (rows.length >= 3) break;
+      let g: Facts;
+      try { g = JSON.parse(readFileSync(path.join(PG, `${m.matchId}.json`), 'utf8')) as Facts; } catch { continue; }
+      const q = g.players.find((x) => x.pid === p.pid && x.us);
+      if (!q) continue;
+      const caught = ((g as any).fights?.caughtOut?.us ?? []).filter((c: any) => c.pid === p.pid).length;
+      const early = (g.kills ?? []).filter((k) => k.killedPid === p.pid && k.min < 10).length;
+      rows.push(`${m.startTime.slice(0, 10)} ${g.result} ${q.heroName} ${q.role} ${q.kills}/${q.deaths}/${q.assists}, ${(q as any).wardsPlaced ?? '?'} wards, ${caught} caught alone, ${early} deaths before 10`);
+    }
+    if (rows.length) out.push(`PREVIOUS FILMS ${(p as any).squadName || p.name}: ${rows.join(' | ')}`);
+  }
+  if (out.length) out.unshift('PREVIOUS FILMS (for cross-film callbacks; a pattern claim must match these rows exactly):');
+  return out;
+}
 
 /** The interrogation pass (postgame:interrogate): citable causation facts —
  *  team ward sums, river/seedling control, and who was dead (or that NOBODY

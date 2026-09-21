@@ -477,3 +477,18 @@ UI (`ui/v6/coach.html`):
 15. Render the ranking as Tier 0 above the headline; open the team read
     when it is under the new budget; move buildReads under a single
     "teaching" disclosure per player rather than two.
+
+## 9. Status (same day)
+
+Done in the follow-through commits on this branch: engine items 1 (partial:
+presence is `unproven` for any player with assists and never a "pinned"
+read for supports; per-fight assist ids still need the pred.gg schema
+check), 3 (support Eternal read is one honest line), 5 (the preference
+leak stays out of the SOURCE and the copy; the page still renders
+`draftNote`), 6 (a PREVIOUS FILMS block in the critic SOURCE so callbacks
+are checkable), plus the interrogation window fix; coach items 8–12 and
+critic items 13–14 are in the agent specs; UI item 15's ranking block is on
+the coach page. The ten audited films were re-authored under the contract
+and passed through the critic loop. Open: items 2 (duo-lane read), 4
+(support yardstick block in the facts file), 7 (death-cost split), the
+`draftNote` render, and the per-fight assist schema check.

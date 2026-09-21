@@ -32,7 +32,7 @@ export interface Skirmish {
 /** What the squad gives the detector to read the macro game around a fight:
  *  the five on our side, the enemy pids, lane verdict strings, the major timeline. */
 export interface SkirmishContext {
-  ourPlayers: { pid: string; name: string; heroSlug: string; role: string }[];
+  ourPlayers: { pid: string; name: string; heroSlug: string; role: string; assists?: number }[];   // assists: end-of-game total (presence bound)
   enemyPids: string[];
   lanes: { role: string; verdict: string }[];
   majors?: { minute: number; type: string; side: 'us' | 'them' }[];
@@ -141,7 +141,7 @@ export function skirmishMacro(
   const dead = ourDead.map((x) => ({ name: x.p.name, role: x.p.role, hero: x.p.heroSlug, agoSec: Math.round(x.ago!) }));
   const absent = ctx.ourPlayers
     .filter((p) => !part.has(p.pid) && deadAt(p.pid, kills, s.startSec) == null)
-    .map((p) => ({ name: p.name, role: p.role, hero: p.heroSlug, lane: laneStateAt(p.role, ctx.lanes, s.startMin), ...(p.role === 'support' ? { unproven: true } : {}) }));
+    .map((p) => ({ name: p.name, role: p.role, hero: p.heroSlug, lane: laneStateAt(p.role, ctx.lanes, s.startMin), ...((p.role === 'support' || (p.assists ?? 0) > 0) ? { unproven: true } : {}) }));
   // only a MAJOR prize elsewhere is a real "trade" — the timeline includes noisy
   // minor camps (River/Seedling) we must not read as a game-swinging objective.
   const crossMap = (ctx.majors ?? []).filter((m) => m.minute >= s.startMin - 0.3 && m.minute <= s.startMin + 2.5 && MAJOR_OBJ.test(m.type)).map((m) => ({ type: m.type, side: m.side }));
@@ -155,7 +155,8 @@ export function skirmishMacro(
   for (const d of dead.slice(0, 2)) notes.push(`${d.name} (${d.role}) was dead — went down ${d.agoSec}s earlier, so this was never a full-strength fight.`);
   // rotations: only raise when the fight went badly (don't nag a clean win)
   if (adverse) for (const a of absent.slice(0, 2)) {
-    if (a.unproven) notes.push(`${a.name} (support) has no kill or death credited in this fight — assists aren't tracked per fight, so absence is unproven; grade the support on participation and peel, not on this.`);
+    if (a.unproven && a.role === 'support') notes.push(`${a.name} (support) has no kill or death credited in this fight — assists aren't tracked per fight, so absence is unproven; grade the support on participation and peel, not on this.`);
+    else if (a.unproven) notes.push(`${a.name} (${a.role}) has no kill or death credited in this fight; assists aren't tracked per fight, so presence is unknown${a.lane === 'winning' ? ' — if free, the lane read says ahead, and a shove-and-rotate was available' : a.lane === 'losing' ? ' — the lane read says pinned, so the fight was the wrong call regardless' : ''}.`);
     else if (a.lane === 'winning') notes.push(`${a.name} (${a.role}) was alive and ahead in lane — a shove-and-rotate there flips a ${s.ourKills}-${s.theirKills} into a numbers advantage.`);
     else if (a.lane === 'losing') notes.push(`${a.name} (${a.role}) was alive but losing lane and pinned — with them stuck across the map, this was the wrong fight to start.`);
     else notes.push(`${a.name} (${a.role}) was alive and never joined — get them to the fight and the count changes.`);

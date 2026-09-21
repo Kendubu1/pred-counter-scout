@@ -39,12 +39,19 @@ function interrogate(f: PostGameFacts): Interrogation | null {
   if (!us.length || !them.length) return null;
   const sum = (rows: any[], k: string) => rows.reduce((s, p) => s + (p[k] ?? 0), 0);
   const majors = ((f.timeline as any)?.majors ?? []) as { minute: number; type: string; side: string }[];
+  const usedEv = new Set<any>();
   const kills = ((f as any).kills ?? []) as any[];
   const heroOf = new Map(us.map((p) => [p.pid, `${p.heroName} (${p.role})`]));
   const concededMajors = majors
     .filter((m) => m.side === 'them' && m.type !== 'RIVER' && m.type !== 'SEEDLING')
     .map((m) => {
-      const t = m.minute * 60;
+      // timeline.majors carries a ROUNDED minute; the event stream has the
+      // exact second. Use it, or the 60s window misses deaths that sit just
+      // before a major (3a95c5eb: four deaths at 24.5-24.9 into Orb Prime at
+      // 25.6, which the rounded 26m window read as "nobody dead").
+      const ev = ((f as any).events ?? []).find((e: any) => e.type === m.type && e.side === m.side && Math.abs(e.sec / 60 - m.minute) <= 0.51 && !usedEv.has(e));
+      if (ev) usedEv.add(ev);
+      const t = ev ? ev.sec : m.minute * 60;
       const deadBefore = kills
         .filter((k) => k.killedSide === 'us' && heroOf.has(k.killedPid) && k.t >= t - 60 && k.t <= t + 10)
         .map((k) => heroOf.get(k.killedPid)!);

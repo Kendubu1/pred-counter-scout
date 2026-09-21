@@ -32,7 +32,7 @@ function main() {
     if (!all && sks.every((s) => s.macro)) continue;                            // already done
 
     const ctx: SkirmishContext = {
-      ourPlayers: f.players.filter((p) => p.us).map((p) => ({ pid: p.pid, name: p.name, heroSlug: p.heroSlug, role: p.role })),
+      ourPlayers: f.players.filter((p) => p.us).map((p) => ({ pid: p.pid, name: p.name, heroSlug: p.heroSlug, role: p.role, assists: p.assists })),
       enemyPids: f.players.filter((p) => !p.us).map((p) => p.pid),
       lanes: f.lanes.map((l) => ({ role: l.role, verdict: l.verdict })),
       majors: f.timeline?.majors,
