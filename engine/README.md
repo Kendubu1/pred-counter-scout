@@ -47,7 +47,7 @@ feature's presence in the committed meta.json.
 
 `npm run icons` keeps `ui/img/` complete: it reads the image hashes already
 in `data/omeda/` (heroes, abilities, items, crests) and the pred.gg perks
-catalog (Eternals, augments; needs the creds above) and downloads only the
+catalog (Eternals, their minor blessings, augments; needs the creds above) and downloads only the
 files the repo is missing, so a normal run makes zero requests. It is part
 of `npm run refresh`; run it alone after a snapshot that adds a hero, item
 or Eternal.

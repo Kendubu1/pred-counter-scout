@@ -3515,3 +3515,11 @@ guide), in the site menu. `ui/v6/climb.html`, drawer entry via nav.js
 - Harness note: test/patch-currency.test.ts fails on the untouched tree too
   (the pending-release window is past its 14-day bound); that is the
   snapshot's staleness, not this change — it needs a snapshot + patchcheck.
+- Follow-up the same day: the minors are what a player actually scans in
+  draft, so `npm run icons` also saves BLESSING_MINOR_* and COMMON_* perks
+  to ui/img/blessings/<slugified name>.webp (118 files, 476K). 95 of our 96
+  catalog minor names matched pred.gg's exactly; the last (Dryad's Boon)
+  differs only by apostrophe style, which slugify collapses. The hero page's
+  MINOR SLOT rows and the learn page's "Good minors" lines now carry the
+  icons (self-hiding on a missing file, as everywhere else).
+

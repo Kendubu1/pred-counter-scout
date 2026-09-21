@@ -2,7 +2,7 @@
 // zero-API at render time.
 //
 //   npm run icons                       (omeda images only: heroes, abilities, items, crests)
-//   PREDGG_CLIENT_ID=... PREDGG_CLIENT_SECRET=... npm run icons   (+ Eternals and augments)
+//   PREDGG_CLIENT_ID=... PREDGG_CLIENT_SECRET=... npm run icons   (+ Eternals, minors, augments)
 //
 // Sources:
 //   - data/omeda/heroes.json + items.json carry an `image` hash per hero,
@@ -11,7 +11,9 @@
 //   - pred.gg perks catalog carries an `icon` hash per perk; it resolves at
 //     https://pred.gg/assets/<hash>.webp. ETERNAL_1 perks -> ui/img/eternals/
 //     (by catalog id when data/game-data/eternals.json names it, else by
-//     slugified display name); HERO_SPECIFIC_1 perks -> ui/img/augments/<perkId>.
+//     slugified display name); BLESSING_MINOR_* and COMMON_* perks (the minors
+//     under each Eternal, keyed by slugified name because the catalog names
+//     them) -> ui/img/blessings/; HERO_SPECIFIC_1 perks -> ui/img/augments/<perkId>.
 //
 // Skip-if-exists, sequential, delayed, UA-identified: only files the repo is
 // missing are fetched, so a normal run makes zero requests. Run it after
@@ -100,6 +102,8 @@ async function predggJobs(): Promise<Job[]> {
         jobs.push({ url, dest: path.join(ROOT, 'ui/img/eternals', `${name}.webp`), label: `eternal ${p.data.displayName}` });
       }
       seen.add(p.data.displayName.toLowerCase());
+    } else if (p.data.slot.startsWith('BLESSING_MINOR') || p.data.slot.startsWith('COMMON')) {
+      jobs.push({ url, dest: path.join(ROOT, 'ui/img/blessings', `${slugify(p.data.displayName)}.webp`), label: `blessing ${p.data.displayName}` });
     } else if (p.data.slot === 'HERO_SPECIFIC_1') {
       jobs.push({ url, dest: path.join(ROOT, 'ui/img/augments', `${p.id}.webp`), label: `augment ${p.id} ${p.data.displayName}` });
     }
@@ -118,7 +122,7 @@ async function main() {
 
   let predgg = { fetched: 0, missing: [] as string[], failed: [] as string[] };
   if (hasCredentials()) {
-    console.log('pred.gg perk icons (Eternals, augments):');
+    console.log('pred.gg perk icons (Eternals, minor blessings, augments):');
     predgg = await fetchMissing(await predggJobs());
     console.log(`  ${predgg.fetched} fetched`);
   } else {

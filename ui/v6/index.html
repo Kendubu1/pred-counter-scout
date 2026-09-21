@@ -534,7 +534,7 @@ function itemWhyRows(items, whyMap) {
   }).join('');
   return `<div class="mb-items-why">${rows}</div>`;
 }
-const IMG = { hero: (s) => `../img/heroes/${s}.webp`, item: (s) => `../img/items/${s}.webp`, eternal: (s) => `../img/eternals/${s}.webp` };
+const IMG = { hero: (s) => `../img/heroes/${s}.webp`, item: (s) => `../img/items/${s}.webp`, eternal: (s) => `../img/eternals/${s}.webp`, blessing: (name) => `../img/blessings/${String(name).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}.webp` };
 const ROLES = ['all', 'carry', 'midlane', 'offlane', 'jungle', 'support'];
 const LANE_LABELS = { carry: 'Carry', midlane: 'Midlane', offlane: 'Offlane', jungle: 'Jungle', support: 'Support' };
 // Canonical THEORY definition — ONE source of truth, reused by every THEORY badge
@@ -1440,7 +1440,7 @@ function renderHero(a, roleParam) {
             const ai = REVIEWS && REVIEWS.eternals && REVIEWS.eternals[a.slug] && REVIEWS.eternals[a.slug][role] && REVIEWS.eternals[a.slug][role][e.name];
             const mb = a.eternals.minorsByName && a.eternals.minorsByName[e.name.toLowerCase()];
             const pick1 = mb && mb.minor1 && mb.minor1.name, pick2 = mb && mb.minor2 && mb.minor2.name;
-            const slot = (opts, pick) => (opts || []).map((o) => `<div style="margin:.12rem 0;font-size:.66rem;color:${o.name === pick ? 'var(--accent)' : 'var(--text-2)'}">${o.name === pick ? '⚙ ' : ''}<b>${esc(o.name)}</b> — ${esc(o.desc)}</div>`).join('');
+            const slot = (opts, pick) => (opts || []).map((o) => `<div style="display:flex;gap:.35rem;align-items:flex-start;margin:.12rem 0;font-size:.66rem;color:${o.name === pick ? 'var(--accent)' : 'var(--text-2)'}"><img src="${IMG.blessing(o.name)}" alt="" style="width:18px;height:18px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;margin-top:.05rem;${o.name === pick ? 'box-shadow:0 0 0 1.5px var(--accent)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'"><span>${o.name === pick ? '⚙ ' : ''}<b>${esc(o.name)}</b> — ${esc(o.desc)}</span></div>`).join('');
             return `
             <div style="padding:.35rem 0;border-bottom:1px ${i === ets.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
               <div style="display:flex;gap:.6rem;align-items:center">

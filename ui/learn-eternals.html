@@ -251,5 +251,27 @@
       </div>
     </div>
   </main>
+  <script>
+    // Progressive enhancement: give each "Good minors" name its icon from
+    // ui/img/blessings/ (synced by `npm run icons`); a missing file hides itself.
+    (function () {
+      var slug = function (n) { return n.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); };
+      document.querySelectorAll('.le-minors').forEach(function (el) {
+        var label = el.querySelector('b'); if (!label || !label.nextSibling) return;
+        var text = el.textContent.replace(label.textContent, '').trim(); if (!text) return;
+        var frag = document.createDocumentFragment();
+        text.split(/\s\+\s/).forEach(function (name, i) {
+          if (i) frag.appendChild(document.createTextNode(' + '));
+          var img = document.createElement('img');
+          img.src = 'img/blessings/' + slug(name) + '.webp'; img.alt = ''; img.loading = 'lazy';
+          img.style.cssText = 'width:16px;height:16px;border-radius:50%;object-fit:cover;vertical-align:-3px;margin:0 .2rem 0 .1rem;background:var(--bg-2,#222)';
+          img.onerror = function () { this.style.display = 'none'; };
+          frag.appendChild(img); frag.appendChild(document.createTextNode(name));
+        });
+        while (label.nextSibling) el.removeChild(label.nextSibling);
+        el.appendChild(document.createTextNode(' ')); el.appendChild(frag);
+      });
+    })();
+  </script>
 </body>
 </html>
