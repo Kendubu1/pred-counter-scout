@@ -310,6 +310,23 @@ remain as fast canaries but cannot detect staleness on their own: one pinned
   pending patch never becomes `catalogPatch` — the site keeps labelling kit
   numbers with the last verified patch until the values actually land.
 
+- **Upstream stopped publishing (Sep 21).** The premise under all of the above —
+  that omeda eventually ships the patch — no longer holds. `heroes.json` and
+  `items.json` have been byte-identical since 2026-08-28 while every fetch kept
+  returning HTTP 200 with a full payload, so 1.16.4 aged out of its pending
+  window and went hard STALE with nothing to re-run. The snapshot now records
+  `contentHash` / `contentChangedAt` / `contentAgeDays` so freshness is measured
+  by the payload rather than by the request, and any surface describing data
+  freshness must read `contentChangedAt`. **Open decision for the maintainer:**
+  the gate as written can never go green again on a dead upstream. The two
+  candidate answers are (a) an evidence-based UPSTREAM-BEHIND verdict — green but
+  loud when a fresh pull contains none of a patch's stated values, keeping a hard
+  failure for a mixed applied/stale state, or (b) making the patch digests
+  themselves the source of truth for base stats, stacking their stated changes
+  onto the last good snapshot, which the digests already carry in machine-checked
+  form. Until one is chosen the engine is knowingly on 1.16-era kit numbers and
+  every surface says so.
+
 **Two clocks.** The catalog patch and the match-window patch are separate and
 usually differ, because the public match feed runs behind live. Any surface
 quoting a number must say which clock it is on: hero and item numbers carry

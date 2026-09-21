@@ -23,10 +23,16 @@ const ITEM_CATALOG = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/omeda/item
 const ITEM_META = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/omeda/META.json'), 'utf8'));
 const ETERNAL_DATA = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/game-data/eternals.json'), 'utf8'));
 const ETERNAL_CATALOG = ETERNAL_DATA.eternals;
-const ITEM_SNAP_DATE = (ITEM_META.fetchedAt || '').slice(0, 10);
+// Use the date the snapshot CONTENT last changed, never the date we last
+// asked. omeda kept answering with a full payload long after it stopped
+// publishing, so fetchedAt would have the popups claiming data that is weeks
+// fresher than the numbers actually are.
+const ITEM_SNAP_DATE = (ITEM_META.contentChangedAt || ITEM_META.fetchedAt || '').slice(0, 10);
+const ITEM_SNAP_AGE = Number(ITEM_META.contentAgeDays ?? 0);
 // The catalogs can lag the patch being reviewed — say so in every popup so the
 // card's change line is understood as the newer truth where they disagree.
-const ITEM_NOTE = `Base info from the team's committed item snapshot (${ITEM_SNAP_DATE}). Where this patch changed a number, the change line on the card is the newer value.`;
+const ITEM_NOTE = `Base info from the team's committed item snapshot (${ITEM_SNAP_DATE}). Where this patch changed a number, the change line on the card is the newer value.`
+  + (ITEM_SNAP_AGE >= 14 ? ` The upstream catalog has not published a change in ${ITEM_SNAP_AGE} days, so treat these base numbers as ${ITEM_SNAP_DATE} values.` : '');
 const ETERNAL_NOTE = `Base info from the team's Eternals data (patch ${ETERNAL_DATA.patch}). Where a later patch changed a number, the change line on the card is the newer value.`;
 
 const esc = (s) => String(s)
