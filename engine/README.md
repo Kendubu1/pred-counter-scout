@@ -45,12 +45,14 @@ scopes). Token flow: GET pred.gg/auth/token with HTTP Basic, ~30-min JWT,
 Bearer on pred.gg/gql. Never commit credentials; the harness gates on the
 feature's presence in the committed meta.json.
 
-`npm run icons` keeps `ui/img/` complete: it reads the image hashes already
-in `data/omeda/` (heroes, abilities, items, crests) and the pred.gg perks
-catalog (Eternals, their minor blessings, augments; needs the creds above) and downloads only the
-files the repo is missing, so a normal run makes zero requests. It is part
-of `npm run refresh`; run it alone after a snapshot that adds a hero, item
-or Eternal.
+`npm run icons` keeps `ui/img/` complete from the pred.gg catalog (heroes,
+items, crests, Eternals, their minor blessings, augments; needs the creds
+above). It downloads only the files the repo is missing, so a normal run
+makes zero requests. omeda.city is not consulted: its catalog froze on
+2026-08-28. Ability icons are keyed by the omeda hashes the frozen kit
+snapshot links and are committed with no live source. It is part of
+`npm run refresh`; run it alone after a catalog change that adds a hero,
+item or Eternal.
 
 ## Known gaps (deliberate, tracked)
 

@@ -1,23 +1,24 @@
 // Icon sync: snapshot every image the site renders into ui/img/ so pages stay
 // zero-API at render time.
 //
-//   npm run icons                       (omeda images only: heroes, abilities, items, crests)
-//   PREDGG_CLIENT_ID=... PREDGG_CLIENT_SECRET=... npm run icons   (+ Eternals, minors, augments)
+//   PREDGG_CLIENT_ID=... PREDGG_CLIENT_SECRET=... npm run icons
 //
-// Sources:
-//   - data/omeda/heroes.json + items.json carry an `image` hash per hero,
-//     ability and item; it resolves at https://omeda.city<image>. Heroes and
-//     items are saved by slug, abilities by hash (what the hero pages link).
-//   - pred.gg perks catalog carries an `icon` hash per perk; it resolves at
-//     https://pred.gg/assets/<hash>.webp. ETERNAL_1 perks -> ui/img/eternals/
-//     (by catalog id when data/game-data/eternals.json names it, else by
-//     slugified display name); BLESSING_MINOR_* and COMMON_* perks (the minors
-//     under each Eternal, keyed by slugified name because the catalog names
-//     them) -> ui/img/blessings/; HERO_SPECIFIC_1 perks -> ui/img/augments/<perkId>.
+// Source: the pred.gg catalog (omeda.city stopped publishing on 2026-08-28,
+// see lessons.md 2026-09-21, so it is no longer consulted). Every entity
+// carries an `icon` hash that resolves at https://pred.gg/assets/<hash>.webp:
+//   - heroes            -> ui/img/heroes/<slug>.webp
+//   - items             -> ui/img/items/<slug>.webp (+ ui/img/crests/ for CREST slot)
+//   - ETERNAL_1 perks   -> ui/img/eternals/<catalog id or slugified name>.webp
+//   - BLESSING_MINOR_* and COMMON_* perks (the minors under each Eternal,
+//     keyed by slugified name because the catalog names them)
+//                       -> ui/img/blessings/<slug>.webp
+//   - HERO_SPECIFIC_1   -> ui/img/augments/<perkId>.webp
+// Ability icons (ui/img/abilities/<hash>.webp) are keyed by the omeda hashes
+// the frozen kit snapshot links; they are committed and have no live source.
 //
 // Skip-if-exists, sequential, delayed, UA-identified: only files the repo is
-// missing are fetched, so a normal run makes zero requests. Run it after
-// `npm run snapshot` (new hero / item / Eternal) and it fills the gaps.
+// missing are fetched, so a normal run makes zero requests. Run it after any
+// catalog change (new hero / item / Eternal) and it fills the gaps.
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -59,32 +60,28 @@ async function fetchMissing(jobs: Job[]): Promise<{ fetched: number; missing: st
   return { fetched, missing, failed };
 }
 
-type OmedaHero = { slug: string; image: string | null; abilities?: { display_name: string; image: string | null }[] };
-type OmedaItem = { slug: string; image: string | null; slot_type?: string };
+type Perk = { id: string; data: { slot: string; displayName: string; icon: string | null } | null };
 
-function omedaJobs(): Job[] {
-  const heroes = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8')) as OmedaHero[];
-  const items = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/items.json'), 'utf8')) as OmedaItem[];
+type PredHero = { slug: string; data: { icon: string | null } | null };
+type PredItem = { slug: string; data: { icon: string | null; slotType: string | null; isHidden: boolean } | null };
+
+const ASSET = (hash: string) => `https://pred.gg/assets/${hash}.webp`;
+
+async function catalogJobs(): Promise<Job[]> {
+  const d = await gql<{ heroes: PredHero[]; items: PredItem[] }>('{ heroes { slug data { icon } } items { slug data { icon slotType isHidden } } }');
   const jobs: Job[] = [];
-  const omeda = (image: string) => `https://omeda.city${image}`;
-  for (const h of heroes) {
-    if (h.image) jobs.push({ url: omeda(h.image), dest: path.join(ROOT, 'ui/img/heroes', `${h.slug}.webp`), label: `hero ${h.slug}` });
-    for (const a of h.abilities ?? []) {
-      const hash = a.image?.match(/([0-9a-f]{16})\.webp$/)?.[1];
-      if (hash) jobs.push({ url: omeda(a.image!), dest: path.join(ROOT, 'ui/img/abilities', `${hash}.webp`), label: `ability ${h.slug}/${a.display_name}` });
-    }
+  for (const h of d.heroes) {
+    if (h.data?.icon) jobs.push({ url: ASSET(h.data.icon), dest: path.join(ROOT, 'ui/img/heroes', `${h.slug}.webp`), label: `hero ${h.slug}` });
   }
-  for (const i of items) {
-    if (!i.image) continue;
-    jobs.push({ url: omeda(i.image), dest: path.join(ROOT, 'ui/img/items', `${i.slug}.webp`), label: `item ${i.slug}` });
-    if (i.slot_type === 'Crest') jobs.push({ url: omeda(i.image), dest: path.join(ROOT, 'ui/img/crests', `${i.slug}.webp`), label: `crest ${i.slug}` });
+  for (const i of d.items) {
+    if (!i.data?.icon || i.data.isHidden) continue;
+    jobs.push({ url: ASSET(i.data.icon), dest: path.join(ROOT, 'ui/img/items', `${i.slug}.webp`), label: `item ${i.slug}` });
+    if (i.data.slotType === 'CREST') jobs.push({ url: ASSET(i.data.icon), dest: path.join(ROOT, 'ui/img/crests', `${i.slug}.webp`), label: `crest ${i.slug}` });
   }
   return jobs;
 }
 
-type Perk = { id: string; data: { slot: string; displayName: string; icon: string | null } | null };
-
-async function predggJobs(): Promise<Job[]> {
+async function perkJobs(): Promise<Job[]> {
   const catalogPath = path.join(ROOT, 'data/game-data/eternals.json');
   const catalog = JSON.parse(readFileSync(catalogPath, 'utf8')) as { eternals: { id: string; name: string }[] };
   const idByName = new Map(catalog.eternals.map((e) => [e.name.toLowerCase(), e.id]));
@@ -93,7 +90,7 @@ async function predggJobs(): Promise<Job[]> {
   const seen = new Set<string>();
   for (const p of d.perks) {
     if (!p.data?.icon) continue;
-    const url = `https://pred.gg/assets/${p.data.icon}.webp`;
+    const url = ASSET(p.data.icon);
     if (p.data.slot === 'ETERNAL_1') {
       const slug = slugify(p.data.displayName);
       const id = idByName.get(p.data.displayName.toLowerCase());
@@ -116,22 +113,17 @@ async function predggJobs(): Promise<Job[]> {
 }
 
 async function main() {
-  console.log('omeda.city images (heroes, abilities, items, crests):');
-  const omeda = await fetchMissing(omedaJobs());
-  console.log(`  ${omeda.fetched} fetched`);
+  if (!hasCredentials()) { console.error('needs PREDGG_CLIENT_ID/SECRET in env'); process.exit(1); }
+  console.log('pred.gg catalog icons (heroes, items, crests):');
+  const catalog = await fetchMissing(await catalogJobs());
+  console.log(`  ${catalog.fetched} fetched`);
+  console.log('pred.gg perk icons (Eternals, minor blessings, augments):');
+  const perks = await fetchMissing(await perkJobs());
+  console.log(`  ${perks.fetched} fetched`);
 
-  let predgg = { fetched: 0, missing: [] as string[], failed: [] as string[] };
-  if (hasCredentials()) {
-    console.log('pred.gg perk icons (Eternals, minor blessings, augments):');
-    predgg = await fetchMissing(await predggJobs());
-    console.log(`  ${predgg.fetched} fetched`);
-  } else {
-    console.log('pred.gg perk icons: skipped (no PREDGG_CLIENT_ID/SECRET in env)');
-  }
-
-  const missing = [...omeda.missing, ...predgg.missing];
+  const missing = [...catalog.missing, ...perks.missing];
   if (missing.length) console.warn(`upstream has no file for (${missing.length}):\n  ${missing.join('\n  ')}`);
-  const failed = [...omeda.failed, ...predgg.failed];
+  const failed = [...catalog.failed, ...perks.failed];
   if (failed.length) {
     console.error(`failed (${failed.length}):\n  ${failed.join('\n  ')}`);
     process.exit(1);

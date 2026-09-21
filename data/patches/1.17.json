@@ -1,0 +1,347 @@
+{
+  "patch": "1.17",
+  "name": "Bloodtide",
+  "date": "2026-09-22",
+  "source": "https://www.predecessorgame.com/en-US/news/patch-notes/Patch_Notes_1.17",
+  "note": "Hand-captured from the official notes the day before release. Captured by parsing the page's own HTML to text rather than a summarizer: an earlier summarized pass invented Eternal groupings that do not appear in the notes at all, so every line here is traceable to the raw text. New hero Baron Valmont is not in the omeda catalog yet, so his card gets no image or popup until the next snapshot; his slug is a best guess until omeda publishes him.",
+  "global": [
+    "New hero Baron Valmont: a ranged magical carry who fights alongside Lilith, a sword that attacks on its own and can be thrown.",
+    "Crucible 3v3 launches: one lane plus a jungle, no Gold or Cyan buff, Raptor Fangteeth that grant permanent stacking stats, and geysers, bounce pads and health packs on the map.",
+    "Tower Fortification no longer stacks, and the 3+/4/5-hero bonus armor drops to 200/260/330 (was 220/300/400) — late sieges stall less.",
+    "Weald, the dominant Eternal since 1.16, takes its second straight trim: Forage, Wind-Rider and Taproot all come down while the Major is left alone.",
+    "Ultimate-spam Eternals get cooldowns ahead of Valmont: Rallying Roar and Peal both gain a 20s cooldown.",
+    "Enchanters are squeezed from both ends — Muriel and Phase lose durability and output, and Hexbound Bracers and Transference both lose Heal & Shield Power."
+  ],
+  "tldr": [
+    {
+      "lead": "Baron Valmont brings a second body to the duo lane",
+      "text": "His sword Lilith fights on her own and can be thrown at a target. He is a ranged magical carry with a self-healing ultimate and a tether that steals attack speed."
+    },
+    {
+      "lead": "Countess was secretly broken for three weeks",
+      "text": "Since 1.16.x her ultimate was dealing its cooldown numbers as damage — 125/105/85 instead of hundreds. Feast returns to 135/200/265, so she goes from quietly unplayable to genuinely dangerous."
+    },
+    {
+      "lead": "Crucible 3v3 is a different game",
+      "text": "One lane, a shared jungle, no Gold or Cyan buff, and Raptor Fangteeth that hand out permanent stacking stats with no cap. Expect snowballs that never stop."
+    },
+    {
+      "lead": "Weald finally gets its minors cut",
+      "text": "Forage, Wind-Rider and Taproot all lose value while the Major keeps its strength. The devs say they would rather gut the minors than the missiles."
+    },
+    {
+      "lead": "Enchanters lose their cushion",
+      "text": "Muriel drops armor growth, regen, shield scaling and ult damage reduction. Phase loses health, passive healing and her level-six spike. Hexbound Bracers and Transference both shed Heal & Shield Power."
+    },
+    {
+      "lead": "Two carries get bigger bullets",
+      "text": "Legion and TwinBlast both gain 10% basic-attack projectile radius. The stated reason is that automatic-fire carries land a far lower share of their shots without aim assist."
+    },
+    {
+      "lead": "Sieging gets less punishing",
+      "text": "Tower Fortification armor no longer stacks on itself, and the grouped-hero bonus falls at every tier. Grouping to take a Tier 2 tower no longer hands the defenders a wall."
+    }
+  ],
+  "systems": [
+    {
+      "name": "Tower Fortification",
+      "summary": "Temporary plating armor no longer stacks — it is removed and reapplied on each new plate. Bonus armor with 3 nearby heroes 220 -> 200, with 4 heroes 300 -> 260, with 5 heroes 400 -> 330."
+    },
+    {
+      "name": "Crucible 3v3 (new mode)",
+      "summary": "Single lane plus jungle, core-destruction win condition. Gold and Cyan buffs removed, Orb Prime removed with its buff folded into Shaper (spawns 10:00), Fangtooth replaced by 3 Raptor Fangteeth every 3 minutes whose kills grant permanent +2% to all stats with no stack limit. Start level 1 with 350 gold, blink on 150s, 100% jungle XP share."
+    },
+    {
+      "name": "Crucible map tools",
+      "summary": "Full air-control geysers for fast rotations, gold plants (40s, respawn 80s), speed plants (5s, respawn 80s), bounce pads toward the Shaper pit, channeled health packs, and stealth bushes."
+    },
+    {
+      "name": "Draft fixes",
+      "summary": "Five draft bugs fixed, all Eternal-related: swapping pick position could reset Eternals and augments, auto-locking could switch your Eternal, the wrong Eternal could display and register on a different hero, ban choices could become your hovered pick, and controller users had selection jump to the minor blessing."
+    }
+  ],
+  "eternals": {
+    "summary": "No new Eternals. This is a targeted pass at the two that shaped 1.16: Weald's minors come down again, and the ultimate-uptime blessings gain cooldowns specifically because Valmont's ultimate can be held up almost continuously. Satariel keeps getting walked back.",
+    "changes": [
+      {
+        "name": "Weald",
+        "dir": "nerf",
+        "change": "Major bugfix: missiles now fire correctly on proc-type damage. Forage XP on minion and monster kill 4 -> 3. Wind-Rider attack speed 20% -> 15%. Taproot bonus physical power 8% -> 7%, and it no longer heals off tower damage.",
+        "meaning": "Second straight trim, and again aimed at the minors rather than the missiles. Weald still executes; it just pays less rent while you get there."
+      },
+      {
+        "name": "Thraex",
+        "dir": "nerf",
+        "change": "Rallying Roar now has a 20s cooldown.",
+        "meaning": "An explicit Valmont tax. His ultimate can stay up almost continuously, so the on-ultimate speed burst needed a floor between uses."
+      },
+      {
+        "name": "Knell",
+        "dir": "nerf",
+        "change": "Peal now has a 20s cooldown.",
+        "meaning": "Same reason as Rallying Roar. Peal's max-Rust burst on every ultimate was the engine behind Knell's ultimate-spam builds."
+      },
+      {
+        "name": "Vesh",
+        "dir": "nerf",
+        "change": "Lich magical lifesteal 5%/8%/12%/16% -> 4%/7%/10%/14% at levels 1/6/11/16.",
+        "meaning": "Third consecutive cut to the same minor. Mage lane sustain keeps getting pushed later into the game."
+      },
+      {
+        "name": "Aion",
+        "dir": "mixed",
+        "change": "Sacrifice bugfix: it no longer grants excessive mana regeneration in ARAM and Brawl.",
+        "meaning": "A mode-only fix — the devs describe it as having paid out over 100 times the intended mana there. Nothing changes in the 5v5 lane."
+      },
+      {
+        "name": "Satariel",
+        "dir": "nerf",
+        "change": "Major bonus stats per Fearless stack 5% -> 4%. Demonic Bargain gold payouts move from levels 1/7/13 to levels 1/10. Hellfire Strikes true damage 1.5 (+1.5 per level) -> 1.5 (+1.25 per level).",
+        "meaning": "The snowball Eternal is trimmed at the source and at the wallet. Losing a payout tier means a behind Satariel stays behind."
+      }
+    ]
+  },
+  "items": [
+    "Typhoon (crest): Cyclone attack speed magical power scaling 3.5% -> 3%; Mirage Dash cooldown 35s -> 45s.",
+    "Terminus: Bugfix — its shield could be fully removed after taking damage, capping later shields lower than intended.",
+    "Hexbound Bracers: Heal & Shield Power 10% -> 8%.",
+    "Transference: Cost 2900 -> 3000; magical armor 35 -> 40; Heal & Shield Power 10% -> 8%."
+  ],
+  "itemChanges": [
+    {
+      "slug": "typhoon",
+      "name": "Typhoon",
+      "dir": "nerf",
+      "change": "Cyclone attack speed magical power scaling 3.5% -> 3%; Mirage Dash cooldown 35s -> 45s — the magical on-hit crest loses both damage and escapes."
+    },
+    {
+      "slug": "terminus",
+      "name": "Terminus",
+      "dir": "buff",
+      "change": "Bugfix: the shield could be fully removed after taking damage, and every later shield was then capped lower."
+    },
+    {
+      "slug": "hexbound-bracers",
+      "name": "Hexbound Bracers",
+      "dir": "nerf",
+      "change": "Heal & Shield Power 10% -> 8% — the enchanter durability pick costs more output now."
+    },
+    {
+      "slug": "transference",
+      "name": "Transference",
+      "dir": "mixed",
+      "change": "Cost 2900 -> 3000; magical armor 35 -> 40; Heal & Shield Power 10% -> 8%. Better for the frontliners it was built for, worse for enchanters poaching it."
+    }
+  ],
+  "aram": null,
+  "ranked": null,
+  "heroes": [
+    {
+      "slug": "baron-valmont",
+      "trend": "new",
+      "changes": [
+        "NEW HERO — ranged magical carry. 685 health (+133), 400 mana (+60), 49 physical power (+4), 125 attack speed (+1.7), 665 movement speed, BAT 1.4.",
+        "Hemophagia (passive): his sword Lilith independently attacks the last target he hit for 4s, dealing 15 (+15% magical power) per strike at his attack speed. Enemy deaths near Lilith restore 3-41 mana; hero deaths restore an extra 35% max mana.",
+        "Rupture (primary): 5 blood blades launch over 0.75s for 20/29/38/47/56 (+15% magical power) each in a 300u radius.",
+        "Bloodbound (secondary): throws Lilith up to 1800u for 70/90/110/130/150 (+60% magical power) and a 30% slow for 1.5s; passively adds 0/8/16/24/32 to her damage.",
+        "Arterial Grip (alternate): a 1600u tether dealing 80/120/160/200/240 (+60% magical power) over 3s while stealing 20/25/30/35/40% attack speed, slowing 25% and grounding. Breaks on range, line of sight or immobilize.",
+        "Exsanguinate (ultimate): transforms to fire 3 bat swarms a second for 40/70/100 (+22% magical power), healing 25/45/65 (+20% magical power) each time. Costs 15 mana per second, rising 5 per second. Cooldown 25/15/5s.",
+        "Augments: Vein Splitter (tether branches to nearby targets for 80% damage, loses the ground), Rupturing Fangs (blades deal 20% less but up to 100% more on missing health), Sanguine Banquet (2% omnivamp plus permanent max mana from nearby deaths)."
+      ]
+    },
+    {
+      "slug": "akeron",
+      "trend": "nerf",
+      "changes": [
+        "Hellfire magical power scaling 16% -> 14%",
+        "Web Lash: Web Shot and Leap magical power scaling both 35% -> 30%",
+        "Crushing Maw magical power scaling 40% -> 35%, bonus health scaling 4% -> 4.5%",
+        "Consume pull damage magical power scaling 5% -> 4%"
+      ]
+    },
+    {
+      "slug": "aurora",
+      "trend": "nerf",
+      "changes": [
+        "Shatter on-hit magical power scaling 30% -> 25%"
+      ]
+    },
+    {
+      "slug": "countess",
+      "trend": "buff",
+      "changes": [
+        "Attack speed 110 -> 115",
+        "Feast bugfix: damage 125/105/85 -> 135/200/265 — since 1.16.x the ultimate had been dealing its cooldown values as damage"
+      ]
+    },
+    {
+      "slug": "crunch",
+      "trend": "nerf",
+      "changes": [
+        "Forward Crunch bugfix: the empowered version is now correctly interrupted by a ground effect"
+      ]
+    },
+    {
+      "slug": "feng-mao",
+      "trend": "nerf",
+      "changes": [
+        "Reaping Dash bugfix: he can no longer teleport while hit by a ground effect"
+      ]
+    },
+    {
+      "slug": "gadget",
+      "trend": "buff",
+      "changes": [
+        "Sticky Mine empowered damage 110/150/190/230/270 -> 110/155/200/245/290",
+        "Security Gate allied decaying movement speed 40% -> 50%, mana cost 65 -> 75"
+      ]
+    },
+    {
+      "slug": "gideon",
+      "trend": "nerf",
+      "changes": [
+        "Event Horizon augment max-health damage 5% -> 4%",
+        "Cosmic Power bonus max mana now 1% per 20 magical power (was per 15)",
+        "Void Breach damage 100/140/180/220/260 -> 90/130/170/210/250; cooldown progresses 1% faster per 100 max mana (was per 80)",
+        "Black Hole damage 520/780/1040 -> 500/760/1020",
+        "Torn Space bugfix: no teleport while hit by a ground effect"
+      ]
+    },
+    {
+      "slug": "greystone",
+      "trend": "nerf",
+      "changes": [
+        "Base health 690 -> 680",
+        "Armor growth 5.4 -> 4.8"
+      ]
+    },
+    {
+      "slug": "grux",
+      "trend": "nerf",
+      "changes": [
+        "Stampede bugfix: now correctly interrupted by a ground effect"
+      ]
+    },
+    {
+      "slug": "iggy-scorch",
+      "trend": "mixed",
+      "changes": [
+        "Inferno description bugfix: it now states that activating the ultimate temporarily raises turret attack speed"
+      ]
+    },
+    {
+      "slug": "kira",
+      "trend": "buff",
+      "changes": [
+        "Physical power 54 -> 53, growth 3.5 -> 3.7",
+        "Dusk now refunds 35% of its mana if it kills any target (once per cast)",
+        "Mercy damage 20/25/30/35/40 -> 25/30/35/40/45"
+      ]
+    },
+    {
+      "slug": "kwang",
+      "trend": "buff",
+      "changes": [
+        "Judgement Of The Heavens bugfix: he can now pick up his sword while grounded"
+      ]
+    },
+    {
+      "slug": "legion",
+      "trend": "buff",
+      "changes": [
+        "K-75 Storm Rifle projectile hitbox radius increased 10%"
+      ]
+    },
+    {
+      "slug": "morigesh",
+      "trend": "buff",
+      "changes": [
+        "Health regen 1.3 -> 1.5",
+        "Hive cooldown 14/13/12/11/10 -> 12/11.25/10.5/9.75/9",
+        "Mark cooldown 8/7.25/6.5/5.75/5 -> 8.5/7.5/6.5/5.5/4.5",
+        "Curse damage 300/430/560 -> 320/450/580"
+      ]
+    },
+    {
+      "slug": "murdock",
+      "trend": "buff",
+      "changes": [
+        "Shots Fired total physical power scaling 36%/44%/52%/60% -> 40%/48%/56%/64%",
+        "Buckshot damage 60/85/110/135/160 -> 60/90/120/150/180",
+        "Long Arm of the Law damage 250/400/550 -> 280/430/580, bonus physical power scaling 115% -> 120%"
+      ]
+    },
+    {
+      "slug": "muriel",
+      "trend": "nerf",
+      "changes": [
+        "Physical armor growth 5.5 -> 5.1, health regen 1.8 -> 1.6, mana growth 55 -> 52",
+        "Sentinel heal & shield power 12-20.5% (+0.5 per level) -> 10-16.8% (+0.4% per level)",
+        "Alacrity shield magical power scaling 60% -> 50%",
+        "Reversal Of Fortune damage reduction 35% -> 30%, mana cost 100 -> 100/125/150",
+        "Consecrated Ground bugfixes: it no longer deals or heals 10% more than intended"
+      ]
+    },
+    {
+      "slug": "phase",
+      "trend": "nerf",
+      "changes": [
+        "Health 670 -> 660",
+        "Essence Catalyst healing 12-80 (+4 per level) -> 10-61 (+3 per level)",
+        "Hyperflux attack speed 40%/60%/80% -> 35%/55%/75%"
+      ]
+    },
+    {
+      "slug": "serath",
+      "trend": "nerf",
+      "changes": [
+        "The Nephilim bonus physical power scaling 70% -> 75%, magical on-hit total physical power scaling 15% -> 10%",
+        "Heresy burn bonus physical power scaling 25% -> 20%, burn damage 14/27/40 -> 14/26/38"
+      ]
+    },
+    {
+      "slug": "twinblast",
+      "trend": "buff",
+      "changes": [
+        "Lunari 4.0 projectile hitbox radius increased 10%"
+      ]
+    },
+    {
+      "slug": "wukong",
+      "trend": "mixed",
+      "changes": [
+        "Health 680 -> 665, physical armor 30 -> 28, magical armor 33 -> 31, attack speed 110 -> 115",
+        "Ruyi Jingu Bang cleave 15% -> 20%",
+        "High Impact minion damage modifier -60% -> -70%",
+        "Windsurge damage 60/90/120/150/180/210 -> 60/85/110/135/160/185, bonus physical power scaling 90% -> 100%, mana cost 50 -> 50/55/60/65/70/75",
+        "84000 Hairs clone kill gold 5 -> 7",
+        "From Up High augment: height damage raised at every band, 2000u 1.7x -> 1.76x up to 9000u 1.875x -> 2.1x"
+      ]
+    },
+    {
+      "slug": "yin",
+      "trend": "nerf",
+      "changes": [
+        "Lash Kick bugfix: now correctly interrupted by a ground effect"
+      ]
+    },
+    {
+      "slug": "yurei",
+      "trend": "nerf",
+      "changes": [
+        "Soulstorm bugfix: now correctly interrupted by a ground effect"
+      ]
+    },
+    {
+      "slug": "zinx",
+      "trend": "mixed",
+      "changes": [
+        "Attack speed 110 -> 115, BAT 1.4 -> 1.5",
+        "Infuse missing-health healing modifier 40% -> 50%",
+        "Neural Regenesis cooldown 160/140/120 -> 150/135/120",
+        "Disc Of Demise ricochet cooldown reduction 10% -> 12% on heroes, 5% -> 6% on non-heroes",
+        "Terminal Treatment additional DoT damage 35% -> 25%"
+      ]
+    }
+  ]
+}

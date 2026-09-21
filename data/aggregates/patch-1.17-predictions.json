@@ -1,0 +1,747 @@
+{
+ "patch": "1.17",
+ "note": "Forward predictions for 1.17 \"Bloodtide\", authored by the pred-scout-coach agent on session compute (no API) and numerically ground-checked against the release-eve digest and the committed measured baseline: pred.gg ranked stats for version ids 158-166 (fetched 2026-09-14) and the matching ranked lane board of ~193,776 matches. That window spans the 1.16 and 1.16.4 era, so it is the pre-1.17 baseline. Forecasts, not measured results. Iggy & Scorch is excluded as a description-only fix. Baron Valmont is new: no baseline, no artifact, kit-only THEORY. The omeda hero/item catalog has been frozen upstream since 2026-08-28, so every sim build core here is computed on pre-1.16.4 kit numbers and is directional only.",
+ "source": "https://www.predecessorgame.com/en-US/news/patch-notes/Patch_Notes_1.17",
+ "generatedAt": "2026-09-21T17:46:07.995Z",
+ "predictions": {
+  "baron-valmont": {
+   "name": "Baron Valmont",
+   "role": "carry",
+   "trend": "new",
+   "changes": [
+    "NEW HERO — ranged magical carry. 685 health (+133), 400 mana (+60), 49 physical power (+4), 125 attack speed (+1.7), 665 movement speed, BAT 1.4.",
+    "Hemophagia (passive): his sword Lilith independently attacks the last target he hit for 4s, dealing 15 (+15% magical power) per strike at his attack speed. Enemy deaths near Lilith restore 3-41 mana; hero deaths restore an extra 35% max mana.",
+    "Rupture (primary): 5 blood blades launch over 0.75s for 20/29/38/47/56 (+15% magical power) each in a 300u radius.",
+    "Bloodbound (secondary): throws Lilith up to 1800u for 70/90/110/130/150 (+60% magical power) and a 30% slow for 1.5s; passively adds 0/8/16/24/32 to her damage.",
+    "Arterial Grip (alternate): a 1600u tether dealing 80/120/160/200/240 (+60% magical power) over 3s while stealing 20/25/30/35/40% attack speed, slowing 25% and grounding. Breaks on range, line of sight or immobilize.",
+    "Exsanguinate (ultimate): transforms to fire 3 bat swarms a second for 40/70/100 (+22% magical power), healing 25/45/65 (+20% magical power) each time. Costs 15 mana per second, rising 5 per second. Cooldown 25/15/5s.",
+    "Augments: Vein Splitter (tether branches to nearby targets for 80% damage, loses the ground), Rupturing Fangs (blades deal 20% less but up to 100% more on missing health), Sanguine Banquet (2% omnivamp plus permanent max mana from nearby deaths)."
+   ],
+   "confidence": "THEORY",
+   "why": "His sword Lilith is a second attacker: after he hits a target she keeps striking it on her own for 4s at 15 (+15% magical power) per swing, at his attack speed. Bloodbound throws her up to 1800u for 70/90/110/130/150 (+60% magical power) with a 30% slow, and Arterial Grip tethers for 80/120/160/200/240 (+60% magical power) over 3s while stealing 20/25/30/35/40% attack speed.",
+   "willChange": "He has no ranked history, so this is a read on the kit only. The tether is the hero, and it breaks on range, line of sight or an immobilize. The counter is a wall, a dash or a stun. Exsanguinate heals 25/45/65 (+20% magical power) per swarm. It burns 15 mana a second, rising 5 a second, so it cannot be held long on a 400 mana pool. Expect him to look oppressive in the duo lane for a week, then settle once the tether break becomes reflex.",
+   "magnitude": "meta-shifting"
+  },
+  "akeron": {
+   "name": "Akeron",
+   "role": "offlane",
+   "trend": "nerf",
+   "changes": [
+    "Hellfire magical power scaling 16% -> 14%",
+    "Web Lash: Web Shot and Leap magical power scaling both 35% -> 30%",
+    "Crushing Maw magical power scaling 40% -> 35%, bonus health scaling 4% -> 4.5%",
+    "Consume pull damage magical power scaling 5% -> 4%"
+   ],
+   "simBuildCore": [
+    "Spectral Schematics",
+    "Oathkeeper",
+    "Crescelia",
+    "Tainted Scepter",
+    "Wraith Leggings",
+    "Oblivion Crown"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Burst",
+    "items": [
+     "Magnify",
+     "TaintedScepter",
+     "TruesilverBracelet"
+    ],
+    "shrunkWr": 0.507,
+    "games": 76,
+    "spikeMinute": 23
+   },
+   "confidence": "THEORY",
+   "why": "Every magical power line comes down at once: Hellfire 16% to 14%, both halves of Web Lash 35% to 30%, Crushing Maw 40% to 35% and the Consume pull 5% to 4%. The one thing going up is Crushing Maw's bonus health scaling, 4% to 4.5%, which shifts him away from raw power.",
+   "willChange": "The baseline is 48.5% over 15,819 ranked games, with the main seat at 49.7% over 11,002 offlane games. Crushing Maw loses magical power scaling, 40% to 35%, and gains bonus health scaling, 4% to 4.5%, so health items cost him less damage than they used to. Expect a drop of under a point in the offlane, and expect the 45.3% jungle line over 3,423 games to get worse, because clearing leans hardest on Hellfire.",
+   "magnitude": "notable"
+  },
+  "aurora": {
+   "name": "Aurora",
+   "role": "jungle",
+   "trend": "nerf",
+   "changes": [
+    "Shatter on-hit magical power scaling 30% -> 25%"
+   ],
+   "simBuildCore": [
+    "Spectral Schematics",
+    "Wraith Leggings",
+    "Oathkeeper",
+    "Magnify",
+    "Oblivion Crown",
+    "Combustion"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Bruiser (Mixed-Def)",
+    "items": [
+     "Magnify",
+     "Elafrost",
+     "FluxMatrix"
+    ],
+    "shrunkWr": 0.521,
+    "games": 249,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Shatter is her basic attack, and its on-hit magical power scaling falls 30% to 25%. Every auto does less as she stacks power, which is the part of her damage that never misses.",
+   "willChange": "The jungle line is 53.3% over 19,147 ranked games, the strongest of her three seats. Her abilities are untouched, so open with Hoarfrost for the root and Boreal Sweep for the slow instead of trying to win a long auto-attack trade. Expect the jungle number to drift toward her 50.7% over 16,649 offlane games, though a point would be a large move from a single scaling cut.",
+   "magnitude": "notable"
+  },
+  "countess": {
+   "name": "Countess",
+   "role": "midlane",
+   "trend": "buff",
+   "changes": [
+    "Attack speed 110 -> 115",
+    "Feast bugfix: damage 125/105/85 -> 135/200/265 — since 1.16.x the ultimate had been dealing its cooldown values as damage"
+   ],
+   "simBuildCore": [
+    "Spectral Schematics",
+    "Orion",
+    "Oathkeeper",
+    "Magnify",
+    "Wraith Leggings",
+    "Oblivion Crown"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Skirmisher",
+    "items": [
+     "Combustion",
+     "Noxia",
+     "WraithLeggings"
+    ],
+    "shrunkWr": 0.517,
+    "games": 381,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Since 1.16.x Feast had been dealing its own cooldown values as damage, 125/105/85, so the ultimate got weaker every time it was ranked up. It now deals 135/200/265, and attack speed goes 110 to 115.",
+   "willChange": "Her recorded 47.8% over 31,219 ranked games understates her, because that figure was set while Feast was dealing its cooldown values as damage. Feast suppresses the target and applies Haemorrhage, and the follow-up damage bonus now lands on a leap that actually kills, so the dive is a real finisher again. Expect the sharpest climb on this patch from the 48.1% over 13,887 midlane games, and expect her ban rate to move before her win rate does.",
+   "magnitude": "meta-shifting"
+  },
+  "crunch": {
+   "name": "Crunch",
+   "role": "offlane",
+   "trend": "nerf",
+   "changes": [
+    "Forward Crunch bugfix: the empowered version is now correctly interrupted by a ground effect"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Basilisk",
+    "Spear Of Desolation",
+    "Augmentation",
+    "The Perforator",
+    "Solaris"
+   ],
+   "topMetaBuild": {
+    "title": "Physical DPS Carry",
+    "items": [
+     "Augmentation",
+     "Mutilator",
+     "TaintedBlade"
+    ],
+    "shrunkWr": 0.511,
+    "games": 46,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Turbo Crunch's empowered Forward Crunch used to push through ground effects on the way in. It is now interrupted like any other dash.",
+   "willChange": "The offlane baseline is 48.0% over 19,323 ranked games. The long Turbo engage through a Gideon or Gadget zone no longer completes, so wait the zone out or come in from an angle it does not cover. Expect no measurable movement in the number; this costs a couple of forced engages a game against the right lineups.",
+   "magnitude": "minor"
+  },
+  "feng-mao": {
+   "name": "Feng Mao",
+   "role": "jungle",
+   "trend": "nerf",
+   "changes": [
+    "Reaping Dash bugfix: he can no longer teleport while hit by a ground effect"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Augmentation",
+    "Spear Of Desolation",
+    "The Perforator",
+    "Solaris",
+    "Basilisk"
+   ],
+   "topMetaBuild": {
+    "title": "Lethality DPS Carry",
+    "items": [
+     "Malady",
+     "Painweaver",
+     "Omen"
+    ],
+    "shrunkWr": 0.512,
+    "games": 241,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Reaping Dash is a blink, and it used to complete even while a ground effect was on him. A ground effect now stops it.",
+   "willChange": "The jungle baseline is 48.1% over 20,393 ranked games. Treat the dash as an entry tool rather than the escape out of a zoned fight, because the exit is the cast that now gets denied. Expect the number to hold flat; this removes an escape that only existed against specific zone heroes.",
+   "magnitude": "minor"
+  },
+  "gadget": {
+   "name": "Gadget",
+   "role": "midlane",
+   "trend": "buff",
+   "changes": [
+    "Sticky Mine empowered damage 110/150/190/230/270 -> 110/155/200/245/290",
+    "Security Gate allied decaying movement speed 40% -> 50%, mana cost 65 -> 75"
+   ],
+   "simBuildCore": [
+    "Orion",
+    "Wraith Leggings",
+    "Oblivion Crown",
+    "Spirit Of Amir",
+    "Oathkeeper",
+    "Combustion"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Frontline",
+    "items": [
+     "AzureCore",
+     "Entropy",
+     "Overseer"
+    ],
+    "shrunkWr": 0.5,
+    "games": 251,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Empowered Sticky Mine rises at every rank past the first, 110/150/190/230/270 to 110/155/200/245/290, so the Spark-into-mine pattern does more damage as she levels. Security Gate's allied decaying movement speed goes 40% to 50%, and its mana cost goes 65 to 75.",
+   "willChange": "The main seat sits at 50.2% over 28,997 ranked midlane games. The mine only reaches the bigger number when Spark damages the attached target first, so the auto before the detonation is now worth real damage and is worth drilling. Expect a small rise in mid, and expect the 51.4% over 5,414 support games to gain more, since the faster gate is a peel and engage tool for the whole team.",
+   "magnitude": "notable"
+  },
+  "gideon": {
+   "name": "Gideon",
+   "role": "midlane",
+   "trend": "nerf",
+   "changes": [
+    "Event Horizon augment max-health damage 5% -> 4%",
+    "Cosmic Power bonus max mana now 1% per 20 magical power (was per 15)",
+    "Void Breach damage 100/140/180/220/260 -> 90/130/170/210/250; cooldown progresses 1% faster per 100 max mana (was per 80)",
+    "Black Hole damage 520/780/1040 -> 500/760/1020",
+    "Torn Space bugfix: no teleport while hit by a ground effect"
+   ],
+   "simBuildCore": [
+    "Wraith Leggings",
+    "Orion",
+    "Caustica",
+    "Oblivion Crown",
+    "Soulbinder",
+    "Timewarp"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Burst",
+    "items": [
+     "AzureCore",
+     "Combustion",
+     "WraithLeggings"
+    ],
+    "shrunkWr": 0.576,
+    "games": 1260,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Three damage lines fall together: Void Breach 100/140/180/220/260 to 90/130/170/210/250, Black Hole 520/780/1040 to 500/760/1020, and the Event Horizon augment's max-health damage 5% to 4%. The mana engine also slows, with bonus max mana now 1% per 20 magical power instead of 15 and Void Breach's cooldown progressing 1% faster per 100 max mana instead of 80.",
+   "willChange": "He holds the biggest midlane sample on this board at 52.0% over 57,247 ranked midlane games. The mana stacking that carried his late game needs more magical power for the same return, so the Azure Core opening in his 57.6% build over 1,260 games matters more than before. Expect him to settle near even, down roughly a point, and still a comfortable blind pick.",
+   "magnitude": "notable"
+  },
+  "greystone": {
+   "name": "Greystone",
+   "role": "offlane",
+   "trend": "nerf",
+   "changes": [
+    "Base health 690 -> 680",
+    "Armor growth 5.4 -> 4.8"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Augmentation",
+    "Spear Of Desolation",
+    "The Perforator",
+    "Painweaver",
+    "Solaris"
+   ],
+   "topMetaBuild": {
+    "title": "Physical Bruiser",
+    "items": [
+     "Overlord",
+     "Rapture",
+     "AegisOfAgawar"
+    ],
+    "shrunkWr": 0.557,
+    "games": 542,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Base health goes 690 to 680 and armor growth goes 5.4 to 4.8. The health loss is trivial; the armor growth is the real cut, because the gap widens with every level and he is hardest to kill late.",
+   "willChange": "He is the strongest line on this board at 54.7% over 58,834 ranked offlane games, so this is a trim rather than a correction. Physical offlaners get a genuine window now, so trade harder in the levels before his Overlord into Rapture into Aegis Of Agawar core comes online, which measured 55.7% over 542 games. Expect a fall of under a point, and expect him to stay a top-tier offlane pick.",
+   "magnitude": "notable"
+  },
+  "grux": {
+   "name": "Grux",
+   "role": "offlane",
+   "trend": "nerf",
+   "changes": [
+    "Stampede bugfix: now correctly interrupted by a ground effect"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Solaris",
+    "The Perforator",
+    "Augmentation",
+    "Basilisk",
+    "Penumbra"
+   ],
+   "topMetaBuild": {
+    "title": "Physical Bruiser",
+    "items": [
+     "SkySplitter",
+     "Basilisk",
+     "Rapture"
+    ],
+    "shrunkWr": 0.588,
+    "games": 305,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Stampede drags enemy heroes along its path, and the dash is now correctly interrupted by a ground effect. The drag ends where the interrupt lands.",
+   "willChange": "The offlane baseline is 51.5% over 34,877 ranked games. When the ground under the fight is covered, open with the Smash 'n Grab channel pull instead, since it is not a dash and cannot be cut the same way. Expect no visible change; this closes one route into a zoned fight, not the hero.",
+   "magnitude": "minor"
+  },
+  "kira": {
+   "name": "Kira",
+   "role": "carry",
+   "trend": "buff",
+   "changes": [
+    "Physical power 54 -> 53, growth 3.5 -> 3.7",
+    "Dusk now refunds 35% of its mana if it kills any target (once per cast)",
+    "Mercy damage 20/25/30/35/40 -> 25/30/35/40/45"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Deathstalker",
+    "Vanquisher",
+    "Demolisher",
+    "Imperator",
+    "Plasma Blade"
+   ],
+   "topMetaBuild": {
+    "title": "Crit DPS Carry",
+    "items": [
+     "Solaris",
+     "Ashbringer",
+     "Imperator"
+    ],
+    "shrunkWr": 0.565,
+    "games": 744,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Mercy gains 5 damage at every rank, 20/25/30/35/40 to 25/30/35/40/45, and it crits and applies on-hit effects, so the flat rise is multiplied by her items. Dusk now refunds 35% of its mana on a kill, and the power trade of 54 base to 53 with growth 3.5 to 3.7 means she starts lower and finishes higher.",
+   "willChange": "The carry baseline is 49.1% over 30,083 ranked games. The mana refund removes the old choice between clearing a wave with Dusk and holding mana for the next fight, so use it on the wave when the kill is there. Expect a rise of about a point, with the Solaris into Ashbringer into Imperator crit line at 56.5% over 744 games staying the default.",
+   "magnitude": "notable"
+  },
+  "kwang": {
+   "name": "Kwang",
+   "role": "offlane",
+   "trend": "buff",
+   "changes": [
+    "Judgement Of The Heavens bugfix: he can now pick up his sword while grounded"
+   ],
+   "simBuildCore": [
+    "Orion",
+    "Prophecy",
+    "Spectra",
+    "Magnify",
+    "Cursed Scroll",
+    "World Breaker"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Burst",
+    "items": [
+     "SpiritOfAmir",
+     "Oathkeeper",
+     "TaintedScepter"
+    ],
+    "shrunkWr": 0.5,
+    "games": 100,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Being grounded used to block picking his blade back up, which stranded him without the recall on Judgement Of The Heavens. He can now retrieve it while grounded.",
+   "willChange": "The offlane baseline is 49.0% over 14,546 ranked games. A grounding effect no longer locks the sword on the floor, so the dash-into-blade knock-up stays available in exactly the fights where it was disappearing. Expect no movement in the number now, though it matters more from tomorrow, since Baron Valmont's Arterial Grip grounds for up to 3s and breaks only on range, line of sight or an immobilize.",
+   "magnitude": "minor"
+  },
+  "legion": {
+   "name": "Legion",
+   "role": "carry",
+   "trend": "buff",
+   "changes": [
+    "K-75 Storm Rifle projectile hitbox radius increased 10%"
+   ],
+   "simBuildCore": [
+    "Sky Splitter",
+    "Spectra",
+    "The Perforator",
+    "Viper",
+    "Deathstalker",
+    "Rapture"
+   ],
+   "topMetaBuild": {
+    "title": "Lethality DPS Carry",
+    "items": [
+     "Malady",
+     "Vanquisher",
+     "Deathstalker"
+    ],
+    "shrunkWr": 0.569,
+    "games": 1357,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "The K-75 Storm Rifle's projectile hitbox radius goes up 10%. It is an automatic-fire rifle with no aim assist, so a wider bullet turns directly into a higher share of shots landing on a moving target.",
+   "willChange": "The carry baseline is 51.0% over 43,696 ranked games, the healthier of the two automatic-fire carries getting bigger bullets. Nothing in his rotation changes, so the same spacing simply produces more damage, and the stated reason for the change is that automatic-fire carries land a far lower share of their shots. Expect a modest rise of under a point, with the Malady into Vanquisher into Deathstalker line at 56.9% over 1,357 games unchanged.",
+   "magnitude": "notable"
+  },
+  "morigesh": {
+   "name": "Morigesh",
+   "role": "midlane",
+   "trend": "buff",
+   "changes": [
+    "Health regen 1.3 -> 1.5",
+    "Hive cooldown 14/13/12/11/10 -> 12/11.25/10.5/9.75/9",
+    "Mark cooldown 8/7.25/6.5/5.75/5 -> 8.5/7.5/6.5/5.5/4.5",
+    "Curse damage 300/430/560 -> 320/450/580"
+   ],
+   "simBuildCore": [
+    "Spectral Schematics",
+    "Wraith Leggings",
+    "Soulbinder",
+    "Oathkeeper",
+    "Spirit Of Amir",
+    "Oblivion Crown"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Frontline",
+    "items": [
+     "Combustion",
+     "Lifebinder",
+     "Megacosm"
+    ],
+    "shrunkWr": 0.452,
+    "games": 250,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Hive's cooldown drops at every rank, 14/13/12/11/10 to 12/11.25/10.5/9.75/9, Curse goes 300/430/560 to 320/450/580, and health regen goes 1.3 to 1.5. Mark trades a slower first rank, 8 to 8.5, for a faster max rank, 5 to 4.5.",
+   "willChange": "The midlane line is the weakest mid mark on this board at 45.8% over 15,818 ranked games, against 54.0% over 3,603 offlane games. The faster Hive is the part that matters, because clearing the wave and poking the lane opponent now come around on the same rotation. Expect the mid number to climb a point or two toward even, and expect the offlane version to stay the stronger pick.",
+   "magnitude": "notable"
+  },
+  "murdock": {
+   "name": "Murdock",
+   "role": "carry",
+   "trend": "buff",
+   "changes": [
+    "Shots Fired total physical power scaling 36%/44%/52%/60% -> 40%/48%/56%/64%",
+    "Buckshot damage 60/85/110/135/160 -> 60/90/120/150/180",
+    "Long Arm of the Law damage 250/400/550 -> 280/430/580, bonus physical power scaling 115% -> 120%"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Deathstalker",
+    "Vanquisher",
+    "Imperator",
+    "Plasma Blade",
+    "Demolisher"
+   ],
+   "topMetaBuild": {
+    "title": "Crit Burst",
+    "items": [
+     "LightningHawk",
+     "Vanquisher",
+     "Imperator"
+    ],
+    "shrunkWr": 0.565,
+    "games": 1183,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "All three of his damage sources go up at once. Shots Fired charged-attack scaling goes 36%/44%/52%/60% to 40%/48%/56%/64%, Buckshot goes 60/85/110/135/160 to 60/90/120/150/180, and Long Arm of the Law goes 250/400/550 to 280/430/580 with bonus physical power scaling 115% to 120%.",
+   "willChange": "The carry baseline is 46.8% over 33,732 ranked games, the lowest carry line here. The charged shot and Long Arm of the Law both reward holding range. Buckshot loses damage the further out it lands, so fire it up close for its armor shred just before the charged attack rather than throwing it as poke. Expect the biggest carry gain of the patch, plausibly a point or two, and probably still short of even.",
+   "magnitude": "notable"
+  },
+  "muriel": {
+   "name": "Muriel",
+   "role": "support",
+   "trend": "nerf",
+   "changes": [
+    "Physical armor growth 5.5 -> 5.1, health regen 1.8 -> 1.6, mana growth 55 -> 52",
+    "Sentinel heal & shield power 12-20.5% (+0.5 per level) -> 10-16.8% (+0.4% per level)",
+    "Alacrity shield magical power scaling 60% -> 50%",
+    "Reversal Of Fortune damage reduction 35% -> 30%, mana cost 100 -> 100/125/150",
+    "Consecrated Ground bugfixes: it no longer deals or heals 10% more than intended"
+   ],
+   "simBuildCore": [
+    "Oblivion Crown",
+    "Lunaria",
+    "Noxia",
+    "Spirit Of Amir",
+    "Lifecore",
+    "Timewarp"
+   ],
+   "topMetaBuild": {
+    "title": "Magical DPS Carry",
+    "items": [
+     "Marshal",
+     "CrystalTear",
+     "Windcaller"
+    ],
+    "shrunkWr": 0.532,
+    "games": 353,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Everything she gives away shrinks at once. Sentinel's healing and shielding boost goes 12-20.5% to 10-16.8%, and Alacrity's shield magical power scaling goes 60% to 50%. Reversal Of Fortune falls to 30% damage reduction while its mana cost rises to 100/125/150, and her armor growth goes 5.5 to 5.1.",
+   "willChange": "She is one of the strongest support lines here at 52.8% over 17,812 ranked support games, and this is the patch correcting that. The ultimate is a real cost at higher ranks now, so save the flight for a fight the team can turn rather than an early-lane bail-out. Expect the largest support fall of the patch, with Hexbound Bracers and Transference both dropping to 8% Heal & Shield Power pushing the same way.",
+   "magnitude": "meta-shifting"
+  },
+  "phase": {
+   "name": "Phase",
+   "role": "support",
+   "trend": "nerf",
+   "changes": [
+    "Health 670 -> 660",
+    "Essence Catalyst healing 12-80 (+4 per level) -> 10-61 (+3 per level)",
+    "Hyperflux attack speed 40%/60%/80% -> 35%/55%/75%"
+   ],
+   "simBuildCore": [
+    "Stonewall",
+    "Vainglory",
+    "Frostguard",
+    "Warp Stream",
+    "Catalytic Drive",
+    "Unbroken Will"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Bruiser (Mixed-Def)",
+    "items": [
+     "Marshal",
+     "EnmasBlessing",
+     "GalaxyGreaves"
+    ],
+    "shrunkWr": 0.542,
+    "games": 936,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Essence Catalyst is her free sustain on every cast, and it drops from 12-80 healing (+4 per level) to 10-61 (+3 per level), replicated on the linked ally. Hyperflux falls to 35%/55%/75% attack speed and health goes 670 to 660.",
+   "willChange": "The support baseline is 51.1% over 35,111 ranked games, almost all of her play. The level-six spike she hands the linked carry is smaller, so time fights around the carry's own item power instead of treating Hyperflux as the window on its own. Expect a fall toward even, made sharper because Hexbound Bracers and Transference both lose Heal & Shield Power in the same patch.",
+   "magnitude": "meta-shifting"
+  },
+  "serath": {
+   "name": "Serath",
+   "role": "jungle",
+   "trend": "nerf",
+   "changes": [
+    "The Nephilim bonus physical power scaling 70% -> 75%, magical on-hit total physical power scaling 15% -> 10%",
+    "Heresy burn bonus physical power scaling 25% -> 20%, burn damage 14/27/40 -> 14/26/38"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Solaris",
+    "Spear Of Desolation",
+    "The Perforator",
+    "Augmentation",
+    "Painweaver"
+   ],
+   "topMetaBuild": {
+    "title": "On-Hit Drain",
+    "items": [
+     "SkySplitter",
+     "StormBreaker",
+     "Spectra"
+    ],
+    "shrunkWr": 0.588,
+    "games": 612,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Her sustained damage is what gets cut. The Nephilim's magical on-hit total physical power scaling goes 15% to 10%, and Heresy's burn goes 14/27/40 to 14/26/38 with bonus physical power scaling 25% to 20%. The basic attack's bonus physical power scaling rises 70% to 75%, which only pays back behind heavy power items.",
+   "willChange": "The jungle line is 51.9% over 40,852 ranked games, a large and stable sample. The trim lands on long fights inside Heresy, so pick targets she can finish in the opening burst rather than committing to duels that go the distance. Expect a fall of under a point, and note the on-hit Sky Splitter line at 58.8% over 612 games loses the most from the 15% to 10% cut.",
+   "magnitude": "notable"
+  },
+  "twinblast": {
+   "name": "TwinBlast",
+   "role": "carry",
+   "trend": "buff",
+   "changes": [
+    "Lunari 4.0 projectile hitbox radius increased 10%"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Deathstalker",
+    "Vanquisher",
+    "Plasma Blade",
+    "Imperator",
+    "Demolisher"
+   ],
+   "topMetaBuild": {
+    "title": "Crit DPS Carry",
+    "items": [
+     "Solaris",
+     "Ashbringer",
+     "Imperator"
+    ],
+    "shrunkWr": 0.519,
+    "games": 552,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Lunari 4.0 fires two projectiles per attack, and both get a 10% larger hitbox radius. The change compounds on a basic attack that is already two bullets, and on Gunslinger's three-shot follow-up after every cast.",
+   "willChange": "The carry baseline is 48.4% over 34,014 ranked games. Nothing in his rotation changes, so the gain is purely in hit rate against a strafing target, which is where his damage has always leaked. Expect a small rise, likely under a point, with the Solaris into Ashbringer into Imperator crit line at 51.9% over 552 games still the build.",
+   "magnitude": "notable"
+  },
+  "wukong": {
+   "name": "Wukong",
+   "role": "jungle",
+   "trend": "mixed",
+   "changes": [
+    "Health 680 -> 665, physical armor 30 -> 28, magical armor 33 -> 31, attack speed 110 -> 115",
+    "Ruyi Jingu Bang cleave 15% -> 20%",
+    "High Impact minion damage modifier -60% -> -70%",
+    "Windsurge damage 60/90/120/150/180/210 -> 60/85/110/135/160/185, bonus physical power scaling 90% -> 100%, mana cost 50 -> 50/55/60/65/70/75",
+    "84000 Hairs clone kill gold 5 -> 7",
+    "From Up High augment: height damage raised at every band, 2000u 1.7x -> 1.76x up to 9000u 1.875x -> 2.1x"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Solaris",
+    "Augmentation",
+    "The Perforator",
+    "Painweaver",
+    "Alternator"
+   ],
+   "topMetaBuild": {
+    "title": "Physical Frontline",
+    "items": [
+     "Mindrazor",
+     "Augmentation",
+     "Painweaver"
+    ],
+    "shrunkWr": 0.467,
+    "games": 58,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "He trades durability for output. Health goes 680 to 665, physical armor 30 to 28 and magical armor 33 to 31, against attack speed 110 to 115 and Ruyi Jingu Bang cleave 15% to 20%. Body Windsurge gives up flat damage for bonus physical power scaling 90% to 100%, and High Impact's minion damage modifier falls -60% to -70%.",
+   "willChange": "The jungle baseline is 48.1% over 6,834 ranked games, the smallest sample among the reworked heroes here. The extra cleave and attack speed reward clearing and skirmishing, while the armor cut punishes a bad engage, so take fights with clone stacks ready rather than alone. Expect a rise of around a point for players who build power and run From Up High, which now reaches 2.1x at 9000u.",
+   "magnitude": "notable"
+  },
+  "yin": {
+   "name": "Yin",
+   "role": "jungle",
+   "trend": "nerf",
+   "changes": [
+    "Lash Kick bugfix: now correctly interrupted by a ground effect"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Solaris",
+    "Spear Of Desolation",
+    "The Perforator",
+    "Augmentation",
+    "Basilisk"
+   ],
+   "topMetaBuild": {
+    "title": "Crit Drain",
+    "items": [
+     "SkySplitter",
+     "LightningHawk",
+     "OnixianQuiver"
+    ],
+    "shrunkWr": 0.542,
+    "games": 172,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Lash Kick attaches her whip and dashes her to the spot, and a ground effect now correctly interrupts it. The dash and the leap that follows can both be denied.",
+   "willChange": "The jungle line is 50.6% over 14,170 ranked games, her lowest seat, against 52.2% over 4,066 offlane games and 53.2% over 1,087 carry games. The gap-close into covered ground is no longer free, so commit before the zone lands or take the longer path in. Expect no visible change in the number.",
+   "magnitude": "minor"
+  },
+  "yurei": {
+   "name": "Yurei",
+   "role": "jungle",
+   "trend": "nerf",
+   "changes": [
+    "Soulstorm bugfix: now correctly interrupted by a ground effect"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Solaris",
+    "The Perforator",
+    "Spear Of Desolation",
+    "Augmentation",
+    "Painweaver"
+   ],
+   "topMetaBuild": {
+    "title": "Lethality Skirmisher",
+    "items": [
+     "Malady",
+     "SpearOfDesolation",
+     "ThePerforator"
+    ],
+    "shrunkWr": 0.466,
+    "games": 260,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Soulstorm channels a maelstrom and then pulls everything in at the end, and a ground effect now interrupts the channel. Losing the channel loses the pull, which is the payoff of the whole ultimate.",
+   "willChange": "The jungle baseline is 48.4% over 12,798 ranked games, against 53.1% over 2,025 offlane games. Cast the ultimate from ground the enemy zone cannot reach, because the value is entirely in the pull at the end. Expect the number to hold; this costs a handful of ultimates rather than a role.",
+   "magnitude": "minor"
+  },
+  "zinx": {
+   "name": "Zinx",
+   "role": "support",
+   "trend": "mixed",
+   "changes": [
+    "Attack speed 110 -> 115, BAT 1.4 -> 1.5",
+    "Infuse missing-health healing modifier 40% -> 50%",
+    "Neural Regenesis cooldown 160/140/120 -> 150/135/120",
+    "Disc Of Demise ricochet cooldown reduction 10% -> 12% on heroes, 5% -> 6% on non-heroes",
+    "Terminal Treatment additional DoT damage 35% -> 25%"
+   ],
+   "simBuildCore": [
+    "Oblivion Crown",
+    "Lifecore",
+    "Lunaria",
+    "Spirit Of Amir",
+    "Timewarp",
+    "Windcaller"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Burst",
+    "items": [
+     "Prophecy",
+     "Spectra",
+     "Orion"
+    ],
+    "shrunkWr": 0.498,
+    "games": 500,
+    "spikeMinute": 27
+   },
+   "confidence": "THEORY",
+   "why": "Her attacks slow down, with the time between basic attacks (BAT) rising 1.4 to 1.5 against attack speed 110 to 115, and Terminal Treatment's extra damage over time falls 35% to 25%. The healing half gains instead. Infuse's missing-health modifier goes 40% to 50%, Neural Regenesis drops to 150/135/120, and Disc Of Demise's ricochet cooldown reduction rises to 12% on heroes.",
+   "willChange": "The support line is 46.8% over 30,107 ranked games, the weakest support mark on this board and the seat she is played in most. The healing change rewards holding Infuse until the ally is genuinely low, and the better ricochet cooldown rewards aiming the disc through several bodies instead of the nearest one. Expect a rise toward even for the healing build, and expect the damage-leaning setups to lose more than they gain.",
+   "magnitude": "notable"
+  }
+ },
+ "sectionMeta": {
+  "tldr": "Bloodtide changes how games close out. Tower Fortification no longer stacks on itself, and the grouped-hero bonus armor falls to 200/260/330 from 220/300/400, so bringing five heroes to a Tier 2 tower stops handing the defenders a wall. Baron Valmont arrives as a ranged magical carry whose sword fights on its own, and Crucible 3v3 opens as a genuinely different game. Countess gets a working ultimate back after three weeks of it dealing its cooldown numbers as damage.",
+  "heroes": "The hero pass squeezes the top of the board and lifts the bottom of the carry pool. Greystone at 54.7% over 58,834 ranked offlane games and Muriel at 52.8% over 17,812 support games both get trimmed. Murdock, on the lowest carry line at 46.8% over 33,732 games, gets all three of his damage sources raised at once. Countess is the outlier, because her 47.8% over 31,219 ranked games was recorded with a broken ultimate and understates her. Five other heroes get nothing but a ground-effect interrupt bugfix.",
+  "eternals": "Weald takes its second straight trim and again at the minors. Forage XP goes 4 to 3, Wind-Rider attack speed 20% to 15%, and Taproot falls to 7% bonus physical power and stops healing off tower damage. The Major keeps its strength, and its bugfix now has the missiles firing correctly on proc-type damage, so Weald is still the pick when the missiles are the point. Rallying Roar and Peal each gain a 20s cooldown ahead of Valmont, and Satariel loses a gold payout tier, so a behind Satariel stays behind.",
+  "items": "The item pass points at the same enchanters the hero pass hit. Hexbound Bracers drops Heal & Shield Power 10% to 8%, and Transference does the same while moving to 3000 gold and 40 magical armor, a frontline buy now more than an enchanter one. Typhoon loses on both ends, with Cyclone attack speed magical power scaling 3.5% to 3% and Mirage Dash cooldown 35s to 45s, while the Terminus bugfix restores shields that were capped too low."
+ }
+}

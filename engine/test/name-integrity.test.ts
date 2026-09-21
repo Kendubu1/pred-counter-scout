@@ -48,10 +48,27 @@ describe('names match the patch notes', () => {
       { slug: string }[]).map((h) => h.slug));
     // Digests can name a hero the catalog had not published yet (Scarlett was in
     // the 1.16 notes days before omeda listed her), so this reports rather than
-    // fails on the newest digest only.
+    // fails on the newest digest only. That exemption was described here from
+    // the start but never actually implemented, so the first pre-release hero
+    // digest after it was written failed the harness for doing its job.
+    const vkey = (p?: string) => (p ?? '0').split('.').map(Number);
+    const newest = digests.slice().sort((a, b) => {
+      const [x, y] = [vkey(a.patch), vkey(b.patch)];
+      for (let i = 0; i < Math.max(x.length, y.length); i++) {
+        if ((x[i] ?? 0) !== (y[i] ?? 0)) return (x[i] ?? 0) - (y[i] ?? 0);
+      }
+      return 0;
+    }).pop();
     const unknown: string[] = [];
+    const pending: string[] = [];
     for (const d of digests) {
-      for (const h of d.heroes ?? []) if (!roster.has(h.slug)) unknown.push(`${d.patch}: ${h.slug}`);
+      for (const h of d.heroes ?? []) {
+        if (roster.has(h.slug)) continue;
+        (d === newest ? pending : unknown).push(`${d.patch}: ${h.slug}`);
+      }
+    }
+    if (pending.length) {
+      console.log(`  note: ${pending.join(', ')} — named by the newest digest, not yet in the catalog (expected before release).`);
     }
     expect(unknown, 'a digest names a hero slug the roster does not have — check the spelling').toEqual([]);
   });
