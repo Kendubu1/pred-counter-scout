@@ -3489,3 +3489,29 @@ guide), in the site menu. `ui/v6/climb.html`, drawer entry via nav.js
   as measured, guide-claimed mechanics labeled community-reported in a
   collapsed fine-print section, and the footer says where all of it
   comes from.
+
+## 2026-09-21: every icon has a sync step again
+
+- Only augment icons had an automated pull; hero portraits, ability, item,
+  crest and Eternal icons were one-off downloads with no script left after
+  the history squash. Eternal icons never had a source at all (the catalog
+  is hand-curated from patch notes), so the four 1.16 Eternals rendered as
+  hidden images. `npm run icons` (engine/src/ingest/icons.ts) now reads the
+  image hashes the omeda snapshot already carries and the pred.gg perks
+  catalog's `icon` field (slot ETERNAL_1 -> ui/img/eternals, HERO_SPECIFIC_1
+  -> ui/img/augments), skip-if-exists, and sits in the refresh chain.
+- First run filled the real gaps: 12 ability icons (Scarlett, Ikra), Dox and
+  Gamma Gloop items, Reclamation and Gamma Gloop crests, and Eternal icons
+  for Weald, Pilow, Satariel and Knell.
+- Catalog drift surfaced by the join: pred.gg has no "Rust" Eternal (our
+  eternals.json lists one from the 1.16 notes; no icon source exists), it
+  does have "Knell" (1.16.4, not in our catalog yet), and our catalog id is
+  "satatriel" for the Eternal pred.gg spells "Satariel" — the icon is saved
+  under both ids until the typo is fixed across eternals.json,
+  fixtures/effects.json and learn-eternals.html.
+- One augment (perk 771, Sanguine Banquet) points at an asset pred.gg does
+  not serve (404). Upstream 404s are warnings, not failures, so a refresh
+  cannot be blocked by a catalog pointing at a missing file.
+- Harness note: test/patch-currency.test.ts fails on the untouched tree too
+  (the pending-release window is past its 14-day bound); that is the
+  snapshot's staleness, not this change — it needs a snapshot + patchcheck.

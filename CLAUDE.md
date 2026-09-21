@@ -92,6 +92,9 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   `npm run probe` (live match-feed field check),
   `npm run matrix` (all-pairs matchup matrix; rerun after snapshot/artifacts),
   `npm run augments` (per-hero-role augment/eternal/crest field evidence + icons),
+  `npm run icons` (fills ui/img/ from the omeda snapshot hashes + pred.gg perk
+  catalog: heroes, abilities, items, crests, Eternals, augments; skip-if-exists,
+  so it only fetches what the repo lacks — run after any snapshot),
   `npm run lanestats` (per-hero-role RANKED lane stats for the CURRENT patch from
   pred.gg generalStatistic — the meta board's preferred source; the omeda feed
   window is only the fallback, it runs days behind live),
