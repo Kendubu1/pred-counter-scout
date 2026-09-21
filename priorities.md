@@ -200,7 +200,8 @@ picks. (Coach playerProfile.ts also blends modes — a separate decision.)
 ## 13. Community-gap review 2026-08-28 — findings and what is left
 
 Done this session (see lessons.md for the mechanics): the catalog was two
-patches stale and is now verified 1.16 (`npm run patchcheck`, standing gate),
+patches stale and is now verified 1.16 (`npm run patchcheck`; its harness gate
+was retired 2026-09-21 when omeda froze — report only now),
 Scarlett is onboarded with a declared field-data gap, 15 abilities stopped
 silently serving pre-1.14 numbers, and the copy that had rotted against the new
 catalog is re-grounded.
