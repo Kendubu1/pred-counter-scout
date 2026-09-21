@@ -277,6 +277,73 @@ Cite only numbers/items/minutes that appear in the facts — a dropped line beat
 invented one. Action-first, plain language (no "kill window"/"eHP" jargon; say "the
 window you can win the fight").
 
+## Voice and shape contract (coach audit, 2026-09-21)
+
+Full basis in `docs/reviews/coach-audit-2026-09-21.md`. Ten reviews were one
+review; these rules break the template. The critic enforces them.
+
+**Shape: verdict first, receipts second, in every field.** The first sentence
+of any line is the call ("A donated mid lane", "The support did the job; the
+fights were wrong"), then the facts that back it. Never open on a stat or a
+lane read. Vary the structure between players and between games; if two lines
+in one review share an opening pattern, rewrite one.
+
+**Word budgets (hard):** `headline` 20 words; `team` 180; `whatShiftedIt` 50;
+`whatWorked` 30; each `perPlayer` 60; each verdict `text` 25 (one sentence);
+each moment `call` 40; `buildReads.build` 50; `buildReads.eternal` one
+sentence. `team` is collapsed on the page above 220 characters, so the
+headline plus `whatShiftedIt` must carry the review on their own.
+
+**`ranking` (new field):** `ranking: [{pid, grade}]` ordering all five of our
+players from the one who did most to win the game to the one who cost most,
+each `grade` at most 15 words and carrying one receipt ("carried every fight
+from 20 on: 14 kills, 3 deaths"). A ranking without a receipt per row is the
+cvMax mistake; it is the bluntest honest thing a stats coach can say, so it
+is mandatory and it is grounded.
+
+**Lexicon.** Allowed and encouraged when two facts back it: threw, donated,
+griefed, free kill, coin-flip fight, farmed while the team fought, AFK, fed
+a lane, wasted, nothing to fix here. Banned: arguably, likely, might have,
+could have, defensible, reasonable, a real, worth carrying forward, "the
+shape worth repeating", "the clearest strength", "the one throughline",
+"the line to remember". "Cashed" at most once per review; "on paper" at most
+once; the Eternal-is-theoretical disclaimer never (the page labels the row).
+One joke per review, at the decision, never at the player, none on a
+loss-streak night.
+
+**Result-blind grading.** The same flag gets the same verdict in a win as in
+a loss. Seven deaths in a stomp are seven deaths; "and it still didn't
+matter" is not a verdict.
+
+**Support rule (explicit).** Never quote a support's kills or deaths as the
+verdict. Grade supports on kill participation (kills + assists over team
+kills, printed in the SOURCE), wards placed and destroyed, healing and
+mitigation, deaths before minute 10 and whether the carry died in fights the
+support could reach. The support row of `lanes[]` is a 1v1 sim that never
+happens: never call a support "pinned", "losing lane" or "absent" from it.
+An `absent[]` entry marked `unproven` means no kill or death was credited in
+that fight window, nothing more; assists are not tracked per fight, and a
+heal or shield earns no assist at all, so low participation on a pure healer
+is "unknown", never "absent". The engine does not model support Eternals
+(Exarch, Aion, Lotus, Marrow, Nihil, Weald, Pilow, Satariel are unmodeled);
+for a support the `eternal` read is one sentence saying so and naming what
+the field runs, never a rationalization of Vesh or Demiurge.
+
+**Build reads only where the game tested the build.** Write `build` when the
+completed items differ from the winning core AND a fight in the facts shows
+the difference; otherwise one sentence ("on core, nothing to teach here").
+Never the same paragraph twice across films for the same hero.
+
+**Death cost is not a receipt by itself.** A death inside a lost 5v5 near an
+objective and a solo catch before it are different sentences; only the solo
+catch is the player's.
+
+**Callbacks across films are expected.** Before authoring, read the same
+squad members' previous three films (order from `data/postgame/index.json`)
+and name a repeating pattern when the facts in those files show one ("third
+film in a row with a solo death before minute 8"); cite only facts present in
+those files.
+
 ## How to run a copy pass
 
 1. `Read` `engine/copy-tasks/<pass>.tasks.json`.

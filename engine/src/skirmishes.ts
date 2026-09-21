@@ -45,7 +45,10 @@ export interface SkirmishContext {
 export interface SkirmishMacro {
   ourAlive: number; theirAlive: number; manAdv: number;     // who was standing when it opened
   outnumbered: boolean;
-  absent: { name: string; role: string; hero: string; lane: 'winning' | 'even' | 'losing' | 'unknown' }[];
+  absent: { name: string; role: string; hero: string; lane: 'winning' | 'even' | 'losing' | 'unknown'; unproven?: boolean }[];
+  // `unproven`: presence is read from kills/deaths only (assists are not in the
+  // feed per fight), so a support with no kill or death here was not shown
+  // absent — the flag tells the coach to grade on participation instead.
   dead: { name: string; role: string; hero: string; agoSec: number }[];   // dead at engage — couldn't contest
   crossMap: { type: string; side: 'us' | 'them' }[];        // majors that fell in the same window
   notes: string[];                                          // ready-to-read macro reads (THEORY)
@@ -107,6 +110,11 @@ function deadAt(pid: string, kills: FactKill[], atSec: number): number | null {
 const CHECKPOINTS = [5, 10, 15, 20, 25, 30];
 /** A lane's kill-window verdict char nearest a minute → 'winning'/'even'/'losing'. */
 function laneStateAt(role: string, lanes: SkirmishContext['lanes'], min: number): 'winning' | 'even' | 'losing' | 'unknown' {
+  // The lane verdict is a 1v1 kill-window sim. For a support that is a
+  // support-vs-support duel that never happens (an enchanter "loses" it to
+  // anything), so it must never become a "pinned in a losing lane" read
+  // (coach audit 2026-09-21, docs/reviews/coach-audit-2026-09-21.md §2.2).
+  if (role === 'support') return 'unknown';
   const l = lanes.find((x) => x.role === role);
   if (!l || !l.verdict) return 'unknown';
   let idx = 0, best = Infinity;
@@ -133,7 +141,7 @@ export function skirmishMacro(
   const dead = ourDead.map((x) => ({ name: x.p.name, role: x.p.role, hero: x.p.heroSlug, agoSec: Math.round(x.ago!) }));
   const absent = ctx.ourPlayers
     .filter((p) => !part.has(p.pid) && deadAt(p.pid, kills, s.startSec) == null)
-    .map((p) => ({ name: p.name, role: p.role, hero: p.heroSlug, lane: laneStateAt(p.role, ctx.lanes, s.startMin) }));
+    .map((p) => ({ name: p.name, role: p.role, hero: p.heroSlug, lane: laneStateAt(p.role, ctx.lanes, s.startMin), ...(p.role === 'support' ? { unproven: true } : {}) }));
   // only a MAJOR prize elsewhere is a real "trade" — the timeline includes noisy
   // minor camps (River/Seedling) we must not read as a game-swinging objective.
   const crossMap = (ctx.majors ?? []).filter((m) => m.minute >= s.startMin - 0.3 && m.minute <= s.startMin + 2.5 && MAJOR_OBJ.test(m.type)).map((m) => ({ type: m.type, side: m.side }));
@@ -147,7 +155,8 @@ export function skirmishMacro(
   for (const d of dead.slice(0, 2)) notes.push(`${d.name} (${d.role}) was dead — went down ${d.agoSec}s earlier, so this was never a full-strength fight.`);
   // rotations: only raise when the fight went badly (don't nag a clean win)
   if (adverse) for (const a of absent.slice(0, 2)) {
-    if (a.lane === 'winning') notes.push(`${a.name} (${a.role}) was alive and ahead in lane — a shove-and-rotate there flips a ${s.ourKills}-${s.theirKills} into a numbers advantage.`);
+    if (a.unproven) notes.push(`${a.name} (support) has no kill or death credited in this fight — assists aren't tracked per fight, so absence is unproven; grade the support on participation and peel, not on this.`);
+    else if (a.lane === 'winning') notes.push(`${a.name} (${a.role}) was alive and ahead in lane — a shove-and-rotate there flips a ${s.ourKills}-${s.theirKills} into a numbers advantage.`);
     else if (a.lane === 'losing') notes.push(`${a.name} (${a.role}) was alive but losing lane and pinned — with them stuck across the map, this was the wrong fight to start.`);
     else notes.push(`${a.name} (${a.role}) was alive and never joined — get them to the fight and the count changes.`);
   }

@@ -646,7 +646,8 @@ function pgReview(f) {
     <details class="sim-collapse" style="margin-top:.5rem"${(co.team || '').length <= 220 ? ' open' : ''}><summary>The full team read</summary>
       <div style="color:var(--text-1);margin-top:.35rem;font-size:.92rem">${esc(co.team)}</div>
     </details>
-    <div style="border-left:3px solid var(--gold);padding:.5rem .8rem;background:rgba(240,180,41,.07);border-radius:6px;margin-top:.6rem;font-size:.9rem"><b>What shifted it:</b> ${esc(co.whatShiftedIt)}</div>` :
+    <div style="border-left:3px solid var(--gold);padding:.5rem .8rem;background:rgba(240,180,41,.07);border-radius:6px;margin-top:.6rem;font-size:.9rem"><b>What shifted it:</b> ${esc(co.whatShiftedIt)}</div>
+    ${Array.isArray(co.ranking) && co.ranking.length ? `<div style="margin-top:.6rem"><div style="font-size:.7rem;font-weight:700;letter-spacing:.06em;color:var(--text-2);text-transform:uppercase">The ranking · who won it, who cost it</div><ol style="margin:.3rem 0 0;padding-left:1.3rem;font-size:.88rem;line-height:1.5">${co.ranking.map((r) => { const pl = f.players.find((p) => p.pid === r.pid); return `<li><b>${pl ? pgName(pl) : ''}</b>${pl ? ` <span style="color:var(--text-2);font-size:.78rem">${esc(pl.heroName)}</span>` : ''} — ${esc(r.grade || '')}</li>`; }).join('')}</ol></div>` : ''}` :
     `<div style="color:var(--text-2);margin-top:.5rem;font-size:.9rem">Facts computed; coaching narrative not yet authored for this match.</div>`}`);
 
   // ── The three moments: tagged fights first, then by significance — capped at 3.

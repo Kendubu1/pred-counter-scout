@@ -256,6 +256,16 @@ const tldrBlock = (digest.tldr && digest.tldr.length)
 // Eternals get the same treatment as heroes: a showcase grid of clickable
 // images with a colored buff/nerf/shift arrow, then a card per Eternal.
 const ETSLUG = (name) => name.toLowerCase();
+// Icon path for an Eternal-section entry: majors live in img/eternals/, minor
+// blessings (Ferocity, The King, Sacrifice...) in img/blessings/, both keyed by
+// a hyphenated slug. Resolved against the committed files so a name that has
+// no icon degrades to the majors path (and the card's onerror hides it).
+const ICON_SLUG = (name) => String(name).toLowerCase().replace(/['’.]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const ETICON = (name) => {
+  const slug = ICON_SLUG(name);
+  for (const dir of ['eternals', 'blessings']) if (fs.existsSync(path.join(ROOT, 'ui/img', dir, `${slug}.webp`))) return `img/${dir}/${slug}.webp`;
+  return `img/eternals/${slug}.webp`;
+};
 // ── "What is this?" popup data: keyed by card anchor id, baked into the page.
 // Only cards whose subject resolves in a committed catalog get the button, so
 // a stale digest entry degrades to no popup rather than an empty one.
@@ -271,7 +281,7 @@ for (const e of (digest.eternals?.changes || [])) {
   const et = ETERNAL_CATALOG.find((x) => x.name.toLowerCase() === e.name.toLowerCase());
   if (!et) continue;
   popupInfo[`eternal-${ETSLUG(e.name)}`] = {
-    kind: 'Eternal', name: et.name, img: `img/eternals/${ETSLUG(e.name)}.webp`,
+    kind: 'Eternal', name: et.name, img: `${ETICON(e.name)}`,
     meta: [et.deity, et.archetype].filter(Boolean).join(' · '),
     note: ETERNAL_NOTE,
     sections: [
@@ -286,7 +296,7 @@ const eternalShowcase = `
       <div class="hx-grid">
         ${(digest.eternals?.changes || []).map((e) => showcaseTile({
           href: `#eternal-${ETSLUG(e.name)}`,
-          img: `img/eternals/${ETSLUG(e.name)}.webp`,
+          img: `${ETICON(e.name)}`,
           name: e.name,
           trend: e.dir || 'mixed',
           title: `${e.name} — ${(TREND[e.dir] || TREND.mixed).label}; jump to its change`,
@@ -298,7 +308,7 @@ const eternalCards = (digest.eternals?.changes || []).map((e) => {
   return `
       <div class="hero-card card" id="eternal-${ETSLUG(e.name)}" data-trend="${e.dir || 'mixed'}">
         <div class="hero-head">
-          <img class="et-ic" loading="lazy" src="img/eternals/${ETSLUG(e.name)}.webp" alt="" onerror="this.style.display='none'">
+          <img class="et-ic" loading="lazy" src="${ETICON(e.name)}" alt="" onerror="this.style.display='none'">
           <span class="hero-name">${esc(e.name)}</span>
           <span class="badge ${t.cls}">${t.icon} ${t.label}</span>
         </div>

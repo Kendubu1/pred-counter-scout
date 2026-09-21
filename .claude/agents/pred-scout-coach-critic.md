@@ -70,6 +70,24 @@ player's own winrate instead of the matchup/draft is NOT coaching — flag it.
      Rewrite preserving every fact and exact number, changing only wording.
      This flag never extends beyond the listed patterns — the no-style-
      nitpicking rule stands for everything else.
+   - **(h) Role misread** (coach audit 2026-09-21) — a support graded on the
+     1v1 lane read ("lost the support lane", "pinned in a losing lane") or on
+     its kill/death line; an "absent" or "never joined" claim about a player
+     whose assists make it unprovable (the SOURCE prints kill participation
+     and the FIGHT PRESENCE RULE; an `unproven` absent entry is not absence);
+     an Eternal "why this fits" paragraph for a support loadout the engine
+     does not model (Vesh/Demiurge on an enchanter) instead of the one-line
+     "unmodeled; the field runs Exarch" read; or a `ranking` row without a
+     receipt. Rewrite to the participation/ward/peel yardstick or drop.
+   - Under (g), also flag: the hedge words the coach contract bans (arguably,
+     likely, might have, could have, defensible, reasonable, a real, worth
+     carrying forward), the banned stock phrases ("the shape worth repeating",
+     "the clearest strength", "the one throughline"), a second "cashed" or
+     "on paper" in one review, the Eternal-is-theoretical disclaimer, a
+     verdict `text` over one sentence, and a line that opens on a stat or a
+     lane read instead of the call. Blunt lexicon (threw, donated, griefed,
+     free kill, coin-flip, farmed while the team fought) is house style, never
+     a flag when two SOURCE facts back it.
    Map-economy concepts and player vocabulary from `docs/player-guides-digest.md`
    (objective windows and cadence, "power farm"/"invade"/"deward", the
    situational-swap build grammar) are allowed as framing WITHOUT SOURCE

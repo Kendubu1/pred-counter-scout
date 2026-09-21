@@ -130,3 +130,47 @@ describe('skirmish macro (rotations / numbers / trades)', () => {
     expect(bare[0]!.macro).toBeUndefined();
   });
 });
+
+// Support presence: the feed credits kills and deaths only, so a support who
+// peeled the whole fight without a kill or death looks "absent". The macro pass
+// must say so honestly (unproven) and must never read the support's 1v1 lane
+// verdict as a lane state (coach audit 2026-09-21).
+describe('skirmish macro: support presence is unproven, never "pinned"', () => {
+  const killP = (t: number, ks: 'us' | 'them', killerSlug: string, killedSlug: string, killerPid: string, killedPid: string): FactKill => ({
+    t, min: Math.round((t / 60) * 10) / 10, firstBlood: false,
+    killerSide: ks, killedSide: ks === 'us' ? 'them' : 'us',
+    killerSlug, killedSlug, killerPid, killedPid, x: null, y: null,
+  });
+  const kills: FactKill[] = [
+    killP(900, 'them', 'grux', 'sparrow', 'e2', 'u1'),
+    killP(906, 'them', 'grux', 'gideon', 'e2', 'u3'),
+  ];
+  const ctx: SkirmishContext = {
+    ourPlayers: [
+      { pid: 'u1', name: 'Sparrow', heroSlug: 'sparrow', role: 'carry' },
+      { pid: 'u2', name: 'Phase', heroSlug: 'phase', role: 'support' },     // no kill/death credited
+      { pid: 'u3', name: 'Gideon', heroSlug: 'gideon', role: 'midlane' },
+      { pid: 'u4', name: 'Khaimera', heroSlug: 'khaimera', role: 'jungle' },
+      { pid: 'u5', name: 'Greystone', heroSlug: 'greystone', role: 'offlane' },
+    ],
+    enemyPids: ['e1', 'e2', 'e3', 'e4', 'e5'],
+    lanes: [{ role: 'support', verdict: 'eeeeee' }, { role: 'offlane', verdict: 'yyyyyy' }],
+  };
+  const sk = detectSkirmishes(kills, [], 30, ctx);
+  const m = sk[0]!.macro!;
+  it('marks the support unproven with an unknown lane state, even on a "losing" 1v1 verdict', () => {
+    const sup = m.absent.find((a) => a.role === 'support');
+    expect(sup).toBeTruthy();
+    expect(sup!.unproven).toBe(true);
+    expect(sup!.lane).toBe('unknown');
+    const off = m.absent.find((a) => a.role === 'offlane');
+    expect(off!.unproven).toBeUndefined();
+    expect(off!.lane).toBe('winning');
+  });
+  it('never writes a pinned/losing-lane note about the support', () => {
+    const notes = m.notes.join(' | ');
+    expect(notes).toContain('absence is unproven');
+    expect(notes).not.toMatch(/Phase \(support\) was alive/);
+    expect(notes).not.toMatch(/support\) was alive but losing lane/);
+  });
+});
