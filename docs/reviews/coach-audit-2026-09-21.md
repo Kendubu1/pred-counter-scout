@@ -478,17 +478,20 @@ UI (`ui/v6/coach.html`):
     when it is under the new budget; move buildReads under a single
     "teaching" disclosure per player rather than two.
 
-## 9. Status (same day)
+## 9. Status
 
-Done in the follow-through commits on this branch: engine items 1 (partial:
-presence is `unproven` for any player with assists and never a "pinned"
-read for supports; per-fight assist ids still need the pred.gg schema
-check), 3 (support Eternal read is one honest line), 5 (the preference
-leak stays out of the SOURCE and the copy; the page still renders
-`draftNote`), 6 (a PREVIOUS FILMS block in the critic SOURCE so callbacks
-are checkable), plus the interrogation window fix; coach items 8–12 and
-critic items 13–14 are in the agent specs; UI item 15's ranking block is on
-the coach page. The ten audited films were re-authored under the contract
-and passed through the critic loop. Open: items 2 (duo-lane read), 4
-(support yardstick block in the facts file), 7 (death-cost split), the
-`draftNote` render, and the per-fight assist schema check.
+2026-09-21: engine items 1 (presence is `unproven` for any player with
+assists; supports never read from the 1v1 sim), 3 (one-line unmodeled
+support Eternal read), 5 (preference leak out of the SOURCE and copy), 6
+(PREVIOUS FILMS block for callbacks) plus the interrogation window fix;
+coach items 8–12 and critic items 13–14 in the agent specs; the ranking
+block on the coach page; the ten films re-authored and critiqued.
+
+2026-09-22: items 2 (duo-lane 2v2 read in `interrogation.duoLane`), 4
+(support yardstick block in `interrogation.support`), 7 (death-cost `solo`
+split), the `draftNote` render removed, fight labels naming who took the
+prize, the kit anti-heal line reading the counter-build count, and a third
+critic round applying the side corrections; the two films the automation
+added were re-authored under the contract. Still open: the per-fight
+assist schema check on pred.gg (needs credentials) and Baron Valmont's
+icon (same).
