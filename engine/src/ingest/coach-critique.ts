@@ -80,7 +80,7 @@ function previousFilmLines(f: Facts): string[] {
       if (!q) continue;
       const caught = ((g as any).fights?.caughtOut?.us ?? []).filter((c: any) => c.pid === p.pid).length;
       const early = (g.kills ?? []).filter((k) => k.killedPid === p.pid && k.min < 10).length;
-      rows.push(`${m.startTime.slice(0, 10)} ${g.result} ${q.heroName} ${q.role} ${q.kills}/${q.deaths}/${q.assists}, ${(q as any).wardsPlaced ?? '?'} wards, ${caught} caught alone, ${early} deaths before 10`);
+      rows.push(`${m.startTime.slice(0, 10)} ${g.result} ${q.heroName} ${q.role} ${q.kills}/${q.deaths}/${q.assists}, ${(q as any).wardsPlaced ?? '?'} wards + ${(q as any).wardsDestroyed ?? 0} cleared, ${caught} caught alone, ${early} deaths before 10, ${(q as any).damageToObjectives ?? '?'} obj dmg, items [${((q as any).items ?? []).map((i: any) => i.name ?? i).join(', ')}]`);
     }
     if (rows.length) out.push(`PREVIOUS FILMS ${(p as any).squadName || p.name}: ${rows.join(' | ')}`);
   }
