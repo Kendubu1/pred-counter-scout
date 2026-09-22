@@ -13,7 +13,7 @@
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { skirmishMacro, type Skirmish, type SkirmishContext } from '../skirmishes.js';
+import { detectSkirmishes, skirmishMacro, type Skirmish, type SkirmishContext } from '../skirmishes.js';
 import type { PostGameFacts } from '../postgame.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -37,6 +37,15 @@ function main() {
       lanes: f.lanes.map((l) => ({ role: l.role, verdict: l.verdict })),
       majors: f.timeline?.majors,
     };
+    // --all also re-runs the detector when the film carries the event stream, so
+    // label/tag fixes in skirmishes.ts reach committed films (same kills, same
+    // clustering, so the startMin keys the coaching is keyed by are unchanged).
+    if (all && (f.events ?? []).length) {
+      const fresh = detectSkirmishes(f.kills, f.events!, f.durationMin, ctx);
+      const sameKeys = fresh.length === sks.length && fresh.every((s, i) => s.startMin === sks[i]!.startMin);
+      if (sameKeys) { f.skirmishes = fresh; sks.length = 0; sks.push(...fresh); }
+      else console.warn(`  ${fn}: detector clustering changed (${sks.length} -> ${fresh.length} fights) — kept the committed fights`);
+    }
     for (const s of sks) { s.macro = skirmishMacro(s, f.kills, ctx); fights++; }
     writeFileSync(p, JSON.stringify(f, null, 1));
     touched++;

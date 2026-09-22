@@ -74,8 +74,8 @@ function main() {
     const deathCosts = kills.filter((k) => k.killedSide === 'us').map((k) => {
       const cost = prizes.filter((e) => e.side === 'them' && e.sec >= k.t && e.sec <= k.t + WINDOW_S)
         .map((e) => ({ type: e.type, kind: e.kind, min: Math.round(e.sec / 6) / 10 }));
-      return cost.length ? { min: k.min, hero: heroName(k.killedSlug), pid: k.killedPid, cost } : null;
-    }).filter(Boolean) as { min: number; hero: string; pid: string; cost: { type: string; kind: string; min: number }[] }[];
+      return cost.length ? { min: k.min, hero: heroName(k.killedSlug), pid: k.killedPid, solo: !inFight(k.t), cost } : null;
+    }).filter(Boolean) as { min: number; hero: string; pid: string; solo: boolean; cost: { type: string; kind: string; min: number }[] }[];
 
     // ── conversion: won fights cashed vs left on the table (and their side)
     const cashOf = (s: Skirmish, side: string) => prizes.filter((e) => e.side === side && e.sec >= s.endSec && e.sec <= s.endSec + WINDOW_S).map((e) => e.type);

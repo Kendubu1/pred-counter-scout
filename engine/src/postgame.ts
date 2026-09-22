@@ -199,7 +199,10 @@ export function computeKitAnalysis(facts: PostGameFacts, abilities: Record<strin
     const totalSec = enemy.hardCC.reduce((s, c) => s + (c.sec ?? 0.5), 0);
     threats.push(`Chain-CC risk (${enemy.hardCC.length} hard-CC abilities, ~${totalSec.toFixed(1)}s of lockdown): ${ccList(enemy)}. Don't group tight into it — stagger the engage and hold mobility/cleanse for the key one.`);
   }
-  if (enemy.healers.length) threats.push(`Heal-stacking: ${enemy.healers.join(', ')}. Anti-heal is mandatory against this comp — we brought none.`);
+  if (enemy.healers.length) {
+    const ah = facts.counterBuild?.ourAntiHeal;
+    threats.push(`Heal-stacking: ${enemy.healers.join(', ')}. Anti-heal is mandatory against this comp — ${ah == null ? 'check the builds' : ah === 0 ? 'we brought none' : `we brought ${ah} item${ah === 1 ? '' : 's'} of it`}.`);
+  }
   if (enemy.damage.physical >= 4) threats.push(`Enemy is ${enemy.damage.physical}/5 physical — a single armor item blunts most of their damage; itemize armor on anyone diveable.`);
   else if (enemy.damage.magical >= 4) threats.push(`Enemy is ${enemy.damage.magical}/5 magical — one magic-resist item goes a long way.`);
   if (!enemy.frontline.length) threats.push(`Enemy has no real frontline — they need to catch us; respect picks more than a straight 5v5.`);

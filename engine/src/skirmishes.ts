@@ -12,7 +12,7 @@
 import type { FactKill } from './postgame.js';
 
 /** Objective/tower event normalised to us/them, in seconds — what a fight was over. */
-export interface ObjEvent { sec: number; type: string; side: 'us' | 'them'; kind: 'objective' | 'tower'; }
+export interface ObjEvent { sec: number; type: string; side: 'us' | 'them'; kind: 'objective' | 'tower'; }   // side = who TOOK it (for a tower: who destroyed it, i.e. the structure belonged to the other side)
 
 export interface Skirmish {
   startSec: number; endSec: number; startMin: number;   // when (startMin for display)
@@ -220,8 +220,13 @@ export function detectSkirmishes(kills: FactKill[], objEvents: ObjEvent[], durat
       ? regionOf(loc.reduce((s, k) => s + k.x!, 0) / loc.length, loc.reduce((s, k) => s + k.y!, 0) / loc.length, o)
       : null;
     // place: the major prize on the line, else the location, else a minor objective.
-    const place = nearMajor ? `${nearMajor.side === 'us' ? 'our' : 'their'} ${titleCase(nearMajor.type)}`
-      : region ?? (anchor ? `${anchor.side === 'us' ? 'our' : 'their'} ${titleCase(anchor.type)}` : 'open map');
+    // The label names the prize and who took it. A destroyed tower belonged to
+    // the side that did NOT take it, so "their Outer Tower (we took it)" — the
+    // old "our/their" prefix read a tower we destroyed as ours (2026-09-22).
+    const placeOf = (e: ObjEvent) => e.kind === 'tower'
+      ? `${e.side === 'us' ? 'their' : 'our'} ${titleCase(e.type)} (${e.side === 'us' ? 'we took it' : 'they took it'})`
+      : `${titleCase(e.type)} (${e.side === 'us' ? 'we took it' : 'they took it'})`;
+    const place = nearMajor ? placeOf(nearMajor) : region ?? (anchor ? placeOf(anchor) : 'open map');
 
     // significance: bodies + decisiveness + a MAJOR prize on the line + lateness
     const lateness = durationMin > 0 ? Math.min(1, endSec / 60 / durationMin) : 0.5;

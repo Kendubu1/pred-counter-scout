@@ -96,6 +96,8 @@ function interrogationLines(f: Facts & { interrogation?: any }): string[] {
   if (!ig) return [];
   const out: string[] = [];
   if (ig.vision) out.push(`VISION WAR: wards placed us ${ig.vision.usWards} vs them ${ig.vision.themWards}; destroyed us ${ig.vision.usDestroyed} vs them ${ig.vision.themDestroyed}.`);
+  if (ig.support) out.push(`SUPPORT YARDSTICK (${ig.support.hero}): kill participation ${ig.support.participation}% of team kills, ${ig.support.assistShare}% of team assists, ${ig.support.wardsPlaced} wards placed (${ig.support.wardsPerMin}/min${ig.support.enemySupportWards != null ? ` vs their support's ${ig.support.enemySupportWards}` : ''}) + ${ig.support.wardsDestroyed} cleared, ${ig.support.healing} healing, ${ig.support.mitigated} mitigated, ${ig.support.deathsBefore10} deaths before minute 10, died first in ${ig.support.diedFirst} fights, carry deaths before 10: ${ig.support.carryDeathsBefore10}. Grade the support on THIS; the support row of LANES is a 1v1 sim and never a lane read.`);
+  if (ig.duoLane) out.push(`DUO LANE (2v2 read, THEORY): ${ig.duoLane.ourCarry} + ${ig.duoLane.ourSupport} vs ${ig.duoLane.theirCarry} + ${ig.duoLane.theirSupport}; carry matchup read ${ig.duoLane.carryRead ?? 'n/a'}; first blood ${ig.duoLane.firstBlood ?? 'none'}; first Fangtooth ${ig.duoLane.firstFangtooth ?? 'none'}; duo deaths before 10: us ${ig.duoLane.duoDeathsBefore10.us} vs them ${ig.duoLane.duoDeathsBefore10.them}; duo read: ${ig.duoLane.read}.`);
   if (ig.riverControl) out.push(`RIVER/SEEDLING CONTROL: river buffs us ${ig.riverControl.riverUs} vs them ${ig.riverControl.riverThem}; seedlings us ${ig.riverControl.seedlingUs} vs them ${ig.riverControl.seedlingThem}.`);
   if ((ig.concededMajors ?? []).length) out.push(`CONCEDED MAJORS (their non-river takes, who on our side was dead in the prior 60s): ${ig.concededMajors.map((m: any) => `${m.type}@${m.minute}m ${m.uncontested ? 'NOBODY DEAD (uncontested — five alive)' : m.deadBefore.join(' + ') + ' dead'}`).join('; ')}.`);
   return out;
@@ -106,6 +108,10 @@ function interrogationLines(f: Facts & { interrogation?: any }): string[] {
  *  died first / what it cost" claims instead of eyeballing the kill stream. */
 function fightEconLines(f: Facts & { fights?: any; kills?: any[] }): string[] {
   const out: string[] = [];
+  {
+    const dc = ((f as any).fights?.deathCosts ?? []) as { min: number; hero: string; solo?: boolean; cost: { type: string; min: number }[] }[];
+    if (dc.length && dc.some((d) => d.solo != null)) out.push(`DEATH COST SPLIT: solo deaths (caught outside any fight) before an enemy prize: ${dc.filter((d) => d.solo).map((d) => `${d.hero} ${d.min}m -> ${d.cost.map((c) => `${c.type}@${c.min}m`).join('+')}`).join('; ') || 'none'} | deaths inside a fight before an enemy prize: ${dc.filter((d) => !d.solo).map((d) => `${d.hero} ${d.min}m`).join(', ') || 'none'}. Only a SOLO death is the player's own receipt; a death inside a lost fight is the call to take the fight.`);
+  }
   const sk = (f.skirmishes ?? []);
   const kills = (f as any).kills ?? [];
   if (kills.length && sk.length) {

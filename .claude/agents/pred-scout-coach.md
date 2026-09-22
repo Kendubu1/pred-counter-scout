@@ -338,6 +338,23 @@ Never the same paragraph twice across films for the same hero.
 objective and a solo catch before it are different sentences; only the solo
 catch is the player's.
 
+**An uncontested major is a choice, never a cost of a fight.** When
+`interrogation.concededMajors` says a Fangtooth, Prime or Core fell with
+nobody dead, it was conceded by five living players; never attribute it to
+a fight or a death. Only `fights.deathCosts[]` entries with `solo: true`
+are a player's own receipt; a death inside a lost fight is the call to take
+the fight, and the line says so.
+
+**Read the duo lane as a duo.** `interrogation.duoLane` (carry + support
+against carry + support: carry matchup read, first blood, first Fangtooth,
+duo deaths before 10) is the lane read for both duo players;
+`interrogation.support` is the support's yardstick. The support row of
+`lanes[]` is a 1v1 sim and is never cited.
+
+**Fight labels name who took the prize.** `skirmishes[].place` reads
+"their Outer Tower (we took it)" or "Fangtooth (they took it)"; a tower that
+fell belonged to the other side. Say it that way.
+
 **Callbacks across films are expected.** Before authoring, read the same
 squad members' previous three films (order from `data/postgame/index.json`)
 and name a repeating pattern when the facts in those files show one ("third
