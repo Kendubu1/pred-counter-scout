@@ -3,10 +3,10 @@
 // deterministic skeleton the coaching pass narrates.
 
 import { describe, it, expect, beforeAll } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { loadData, type LoadedData } from '../src/data.js';
-import { computeMatchFacts, type OmedaMatch, type PostGameInputs, type HeroStatCell } from '../src/postgame.js';
+import { computeMatchFacts, loadoutFromPerks, type OmedaMatch, type PostGameInputs, type HeroStatCell } from '../src/postgame.js';
 
 const ROOT = path.resolve(__dirname, '..', '..');
 let data: LoadedData;
@@ -123,5 +123,55 @@ describe('post-game facts engine', () => {
     // The enemy carries no artifact here, so no fabricated spikes leak in.
     const enemy = facts.players.find((p) => !p.us)!;
     expect(enemy.spikes).toEqual([]);
+  });
+
+  // 2026-09-21 feedback: a squad member read the lobby's ETERNAL row (the
+  // engine's pick) as their own loadout — wrong three games running. What was
+  // RUN is a feed fact (pred.gg perks); the engine's pick never masquerades as it.
+  it('records the Eternal loadout that was RUN from the feed perks, and never invents one', () => {
+    const gideon = idOf('gideon', omedaHeroes);
+    const perks = [
+      { slot: 'BLESSING_MINOR_2', name: 'Mind Rot' },
+      { slot: 'COMMON_1', name: 'Technocrat' },
+      { slot: 'ETERNAL_1', name: 'Vesh' },
+      { slot: 'HERO_SPECIFIC_1', name: 'Cosmic Cascade' },
+      { slot: 'BLESSING_MINOR_1', name: 'The Tenth Seal' },
+      { slot: 'COMMON_2', name: 'Farmer' },
+      { slot: 'MYSTERY_SLOT', name: 'ignored' },
+    ];
+    const match: OmedaMatch = {
+      id: 't4', start_time: '2026-09-22T00:00:00.000Z', end_time: '', game_duration: 1800,
+      game_mode: 'ranked', winning_team: 'dawn',
+      players: [
+        mkPlayer({ id: 'me', team: 'dawn', hero_id: gideon, role: 'midlane', perks }),
+        mkPlayer({ id: 'enemy', team: 'dusk', hero_id: idOf('countess', omedaHeroes), role: 'midlane' }),   // omeda-shaped: no perks
+      ],
+    };
+    const facts = computeMatchFacts(data, { match, ourTeam: 'dawn', omedaHeroes, heroStats: new Map(), matrix, artifacts: new Map() });
+    const me = facts.players.find((p) => p.us)!;
+    expect(me.loadout).toEqual({ eternal: 'Vesh', minors: ['The Tenth Seal', 'Mind Rot'], augment: 'Cosmic Cascade', commons: ['Technocrat', 'Farmer'], source: 'pred.gg' });
+    // No perks in the feed = not recorded. Null, never the engine's pick.
+    expect(facts.players.find((p) => !p.us)!.loadout).toBeNull();
+    expect(loadoutFromPerks([])).toBeNull();
+    expect(loadoutFromPerks(undefined)).toBeNull();
+    // A partial record stays partial (a missing minor is not filled in).
+    expect(loadoutFromPerks([{ slot: 'ETERNAL_1', name: 'Krix' }])).toEqual({ eternal: 'Krix', minors: [], augment: null, commons: [], source: 'pred.gg' });
+  });
+
+  it('committed coaching never states the engine\'s Eternal pick as what a player ran', () => {
+    // The author rule (pred-scout-coach.md) and critic flag (h): on a film with
+    // no recorded loadout, an Eternal line may only speak of "the engine's pick".
+    const dir = path.join(ROOT, 'data/postgame');
+    const POSSESSIVE = /\b[\w.&' ]+?'s (loadout|top pick|eternal|blessing) (is|was|runs|ran)\b|\b(ran|took|picked|chose|equipped|brought) (Vesh|Aion|Vermis|Thraex|Marrow|Xyris|Demiurge|Nihil|Exarch|Krix|Idrisil|Lotus|Weald|Knell|Pilow|Satariel)\b|\bthe loadout (he|she|they) (ran|took|picked|chose)\b/i;
+    const offenders: string[] = [];
+    for (const f of readdirSync(dir).filter((x) => /^[0-9a-f-]{36}\.json$/.test(x))) {
+      const j = JSON.parse(readFileSync(path.join(dir, f), 'utf8'));
+      for (const [pid, br] of Object.entries<any>(j.coaching?.buildReads ?? {})) {
+        const pl = (j.players ?? []).find((p: any) => p.pid === pid);
+        if (pl?.loadout?.eternal || !br?.eternal) continue;   // recorded loadout: naming it is a fact
+        if (POSSESSIVE.test(br.eternal)) offenders.push(`${f.slice(0, 8)} ${pid.slice(0, 8)}: ${br.eternal.slice(0, 90)}`);
+      }
+    }
+    expect(offenders, offenders.join('\n')).toEqual([]);
   });
 });

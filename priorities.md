@@ -284,6 +284,30 @@ data-only commit to main. DEPENDENCY: the execution environment must carry
 PREDGG_CLIENT_ID/SECRET as secrets; until then every fire exits loudly at the
 credentials gate (watcher exit 2), by design.
 
+## 16. Recorded Eternal loadouts — backfill and re-read (CREDS-GATED, opened 2026-09-22)
+
+Maintainer feedback 2026-09-21 (squad member, three games running: "it's
+gotten my eternal wrong"). Root cause: the lobby's ETERNAL row showed the
+engine's pick, the row never said so, and 29 authored `buildReads.eternal`
+lines stated that pick as the player's own loadout. Shipped without creds:
+pred.gg's per-player perks (ETERNAL_1 / BLESSING_MINOR_1-2 / HERO_SPECIFIC_1 /
+COMMON_1-2, schema confirmed by unauthenticated introspection) now flow into
+`players[].loadout` on every new film; the row shows *ran* vs *the engine's
+pick* and says *not recorded* when the feed lacks it; the 29 lines were
+reworded to "The engine's pick for X is …"; author rule, critic flag (h) and
+a harness test hold the wording. Left, needing PREDGG creds in the session:
+
+1. `cd engine && npm run postgame:loadouts` — backfills `loadout` on every
+   committed film pred.gg still serves (one call per film, sequential).
+2. For each of our players whose recorded loadout differs from the engine's
+   pick, re-author that `eternal` buildRead about the RECORDED loadout
+   (pred-scout-coach agent, `COACH_GAMES`-scoped critique loop), then
+   `npm test` and commit data-only.
+3. Optional follow-up: per-hero-role Eternal *pick rate vs win rate* already
+   exists in `data/aggregates/predgg-augments.json`; with recorded loadouts the
+   coach can cite "Thraex is the 61%-winning pick on Scarlett jungle" as
+   field evidence beside the engine's kit-math pick.
+
 ## Parked ideas (not yet scheduled)
 
 - Comfort-vs-meta flex logic (parked by maintainer 2026-06-12): when a

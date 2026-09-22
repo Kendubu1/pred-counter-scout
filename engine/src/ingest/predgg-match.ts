@@ -7,7 +7,7 @@
 // Needs PREDGG_CLIENT_ID / PREDGG_CLIENT_SECRET (never committed).
 
 import { gql, hasCredentials } from './predgg.js';
-import type { OmedaMatch, OmedaPlayer, MatchEvent, KillEvent } from '../postgame.js';
+import type { OmedaMatch, OmedaPlayer, MatchEvent, KillEvent, MatchPerk } from '../postgame.js';
 
 export interface PredggGame {
   match: OmedaMatch; ourTeam: string; members: string[];
@@ -29,7 +29,17 @@ const MATCH_FIELDS = `
     player { uuid name }
     rating { points newPoints rank { name } }
     inventoryItemData { gameId name }
+    perks { id name data { slot displayName } }
   }`;
+
+/** pred.gg `perks` rows -> the engine's MatchPerk shape. `data` is null for a
+ *  perk the current catalog no longer carries; fall back to the bare perk name
+ *  so an older game still records what was run. */
+export function mapPerks(perks: any[] | null | undefined): MatchPerk[] {
+  return (perks ?? []).filter((k: any) => k && (k.data?.slot || k.name)).map((k: any) => ({
+    slot: String(k.data?.slot ?? ''), name: String(k.data?.displayName ?? k.name ?? ''), id: k.id ?? null,
+  })).filter((k: MatchPerk) => k.slot && k.name);
+}
 
 function mapPlayer(p: any, idx: number, slugToId: Map<string, number>): OmedaPlayer {
   const rating = p.rating;
@@ -58,6 +68,7 @@ function mapPlayer(p: any, idx: number, slugToId: Map<string, number>): OmedaPla
     inventory_data: (p.inventoryItemData ?? []).filter((i: any) => i && i.gameId != null).map((i: any) => i.gameId),
     rank: null,
     vp_change: rating ? Math.round((rating.newPoints ?? 0) - (rating.points ?? 0)) : null,
+    perks: mapPerks(p.perks),
   };
 }
 

@@ -70,6 +70,17 @@ player's own winrate instead of the matchup/draft is NOT coaching — flag it.
      Rewrite preserving every fact and exact number, changing only wording.
      This flag never extends beyond the listed patterns — the no-style-
      nitpicking rule stands for everything else.
+   - **(h) Loadout** — an Eternal/blessing line that states or implies a
+     player RAN a given Eternal, minor or augment ("X's loadout is Vesh",
+     "X ran Thraex", "X's top pick", "the loadout he took", or judging how
+     "the loadout played out" as if equipped) when the SOURCE's **LOADOUTS
+     RUN** row says NOT RECORDED for that player — or that names a different
+     Eternal/minor than the one recorded there. The match feed is the only
+     source for what was equipped; the engine's pick is THEORY and must be
+     introduced as "The engine's pick for X is …". Rewrite to that framing
+     (or to the recorded loadout), keeping the fit-and-trade-off reasoning
+     and every number. (Maintainer feedback 2026-09-21: a squad member read
+     the engine's pick as their own Eternal, wrong three games running.)
    Map-economy concepts and player vocabulary from `docs/player-guides-digest.md`
    (objective windows and cadence, "power farm"/"invade"/"deward", the
    situational-swap build grammar) are allowed as framing WITHOUT SOURCE

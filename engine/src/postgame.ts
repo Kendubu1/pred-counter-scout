@@ -27,6 +27,42 @@ export interface OmedaPlayer {
   /** pred.gg hero slug, carried through when hero_id can't map (a hero newer
    *  than the committed omeda snapshot, e.g. a just-released hero). */
   hero_slug?: string;
+  /** The perks this player actually locked in (pred.gg `matchPlayers.perks`):
+   *  Eternal major (ETERNAL_1), its two minors (BLESSING_MINOR_1/2), the hero
+   *  augment (HERO_SPECIFIC_1) and the two commons. Omeda's feed carries none
+   *  of this, so it is absent on omeda-sourced matches. */
+  perks?: MatchPerk[];
+}
+export interface MatchPerk { slot: string; name: string; id?: string | null; }
+
+/** What a player RAN, straight from the match feed — never the engine's pick.
+ *  Null when the source feed didn't record perks (omeda, or an older film). */
+export interface PlayerLoadout {
+  eternal: string | null;            // ETERNAL_1 major
+  minors: string[];                  // BLESSING_MINOR_1, BLESSING_MINOR_2 (in slot order)
+  augment: string | null;            // HERO_SPECIFIC_1
+  commons: string[];                 // COMMON_1, COMMON_2
+  source: 'pred.gg';
+}
+
+const PERK_SLOT_ORDER: Record<string, number> = { COMMON_1: 0, COMMON_2: 1, HERO_SPECIFIC_1: 2, ETERNAL_1: 3, BLESSING_MINOR_1: 4, BLESSING_MINOR_2: 5 };
+
+/** Fold a feed's perk list into the recorded loadout. Slots the feed left empty
+ *  stay null/[] rather than being filled from the engine's recommendation — the
+ *  whole point of this field is that it is what was run, not what we'd pick. */
+export function loadoutFromPerks(perks: MatchPerk[] | undefined | null): PlayerLoadout | null {
+  if (!perks || !perks.length) return null;
+  const known = perks.filter((p) => p && p.slot in PERK_SLOT_ORDER && p.name)
+    .sort((a, b) => PERK_SLOT_ORDER[a.slot]! - PERK_SLOT_ORDER[b.slot]!);
+  if (!known.length) return null;
+  const one = (slot: string) => known.find((p) => p.slot === slot)?.name ?? null;
+  return {
+    eternal: one('ETERNAL_1'),
+    minors: known.filter((p) => p.slot === 'BLESSING_MINOR_1' || p.slot === 'BLESSING_MINOR_2').map((p) => p.name),
+    augment: one('HERO_SPECIFIC_1'),
+    commons: known.filter((p) => p.slot === 'COMMON_1' || p.slot === 'COMMON_2').map((p) => p.name),
+    source: 'pred.gg',
+  };
 }
 export interface OmedaMatch {
   id: string; start_time: string; end_time: string; game_duration: number;
@@ -96,6 +132,11 @@ export interface PlayerFacts {
   // Constructive anti-heal pick for THIS player's build (vs a healer comp), with
   // what to swap. Null when not needed (no enemy healers, or already built it).
   antiHealRec?: { item: string; slug: string; swapOut: string | null } | null;
+  // The Eternal / minors / augment this player actually ran, from the match
+  // feed (pred.gg records perks; omeda never did). Null = not recorded for this
+  // game, in which case the UI and the coach may only speak of the ENGINE'S
+  // PICK, and must say so — never present the pick as what the player ran.
+  loadout?: PlayerLoadout | null;
 }
 
 export interface CounterPick { hero: string; slug: string; edge: number; inPool: boolean; games: number; }
@@ -492,6 +533,7 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
       roleFit: us ? roleFitOf(inp.roleStats?.get(p.id), role) : null,
       diagnostics: us ? diagnosticsOf((inp.heroStats.get(p.id) ?? []).find((h) => h.hero_id === p.hero_id), p, dur, role) : null,
       antiHealRec: null,   // assigned team-aware below, only to fill a real coverage gap
+      loadout: loadoutFromPerks(p.perks),
     };
   });
 

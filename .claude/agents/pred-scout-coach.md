@@ -106,13 +106,25 @@ layer under the lobby's BUILD and ETERNAL rows (maintainer rule, 2026-08-30):
   damage split, healers, frontline, the fights where the gap showed). Teach
   the why; never just repeat the recommendation. Item mechanics in plain
   words from the item data; numbers only from the facts file.
-- `eternal` (2-3 sentences): why the engine's loadout fits this kit and lane
-  matchup, and what taking it trades away versus the other style the kit
-  could run (burst vs sustain, dueling vs teamfight) — tied to what actually
-  happened in the game where the facts support it. No numeric deltas from
-  outside the facts file; the loadout itself is THEORY (the feed doesn't
-  record what was run) and the reasoning must read as "why this fits", never
-  "you picked wrong".
+- `eternal` (2-3 sentences). **Check `players[].loadout` first** (maintainer
+  feedback 2026-09-21: a player read the engine's pick as their own Eternal,
+  wrong three games running). Two cases, never blended:
+  - **`loadout` present** (pred.gg recorded the perks — films from 2026-09-22
+    and backfilled ones): the read is about the loadout THAT WAS RUN — name it
+    (`loadout.eternal` + `loadout.minors`, `loadout.augment` if relevant), why it
+    fits or fights this kit and lane matchup, and its trade-off. Where it
+    differs from the engine's pick in `data/artifacts/<slug>.json`, say what the
+    engine's pick would have given instead, in gained-vs-lost form; still no
+    "you picked wrong", and no numeric deltas from outside the facts file.
+  - **`loadout` null/absent** (older film, or omeda-sourced): the feed did NOT
+    record what was run. Open with "The engine's pick for <name> is …" and keep
+    every sentence about the pick, never about the player's choice: no "X's
+    loadout", "X ran/took/picked", "X's top pick", and no verdict on how the
+    pick "played out" as if it were equipped. Explain why the pick fits this kit
+    and matchup and what it trades away versus the kit's other style (burst vs
+    sustain, dueling vs teamfight), tied to what happened where the facts
+    support it. The pick itself is THEORY. The harness greps every committed
+    film for the possessive phrasings above and fails on them.
 
 **Voice contract (maintainer rule, 2026-07-03): NEVER second person.** The review
 is read by the whole squad, so no line may say "you/your/you're" as if talking to

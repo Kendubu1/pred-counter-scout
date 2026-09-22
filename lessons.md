@@ -3615,3 +3615,36 @@ guide), in the site menu. `ui/v6/climb.html`, drawer entry via nav.js
   the report, and catalogPatch on the site still derives from it, so the
   staleness is recorded and shown rather than enforced.
 
+
+## 2026-09-22 — "It's gotten my eternal wrong": the engine's pick was wearing the player's name
+- **A label in the eyebrow is not a label on the row.** The lobby's ETERNAL row
+  read "Thraex + Savage Strikes + Ferocity" and the only hint that this was the
+  engine's recommendation sat in a 0.66rem eyebrow two cards up. A squad member
+  read it as a record of what they ran and reported it wrong three games in a
+  row — correctly, because it was never what they ran. Every fact-shaped row
+  now carries its own provenance inline: *ran* (feed) or *not recorded · the
+  engine's pick* (THEORY). If a reader can screenshot a line without its
+  caveat, the caveat does not exist.
+- **"The feed doesn't record it" was true of the feed we stopped using.** The
+  note dated from omeda (probe.ts: no augment or Eternal fields). The postgame
+  pull moved to pred.gg in August, and pred.gg's `matchPlayers.perks` carries
+  every slot (ETERNAL_1, BLESSING_MINOR_1/2, HERO_SPECIFIC_1, COMMON_1/2) — the
+  same data its per-hero Eternal winrates are aggregated from. A caveat about
+  a source must be re-checked when the source changes; this one outlived its
+  premise by a month and became a false claim on the page.
+- **Introspection is public even when data is not.** pred.gg answers
+  `__type` queries without a token, so the exact field names were verified
+  and the adapter written schema-correct without spending the credentials
+  gate. What the gate still holds back is the pull itself: the backfill
+  (`npm run postgame:loadouts`) and the re-read of any `eternal` line whose
+  recorded loadout differs from the engine's pick (priorities item 16).
+- **The author drifted from "fits" to "ran" without anyone noticing.** The
+  agent rule said the loadout is THEORY; 29 of 110 authored Eternal lines
+  still opened "Kira's loadout is Vermis", "Skylar runs the same…", "Rampage's
+  loadout runs Thraex", and several graded how "the loadout played out". The
+  critic never flagged them because no flag named the pattern and the SOURCE
+  block never said the loadout was unrecorded. Fix in three layers: the SOURCE
+  now prints a LOADOUTS RUN row (recorded, or NOT RECORDED with the required
+  framing), the critic has flag (h), and the harness greps every committed
+  film for the possessive/verb phrasings on players without a recorded
+  loadout. The 29 lines were reworded by exact-match edit, wording only.

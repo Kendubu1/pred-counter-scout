@@ -174,6 +174,7 @@
   .lrow { font-size:.74rem; color:var(--text-2); margin-top:.25rem; line-height:1.5; }
   .lrow b { color:var(--text-1); }
   .lrow .swap { color:var(--gold); }
+  .lrow .etnote { color:var(--text-2); font-weight:600; }
   .vline { margin-top:.3rem; padding-left:.5rem; font-size:.8rem; color:var(--text-1); }
   .vline.pos { border-left:2px solid var(--green); } .vline.neg { border-left:2px solid var(--red); }
   .vline.pos .ltag::after { content:" +"; color:var(--green); } .vline.neg .ltag::after { content:" −"; color:var(--red); }
@@ -820,6 +821,15 @@ function pgReview(f) {
     if (p.antiHealRec) bits.push(`<span style="color:var(--gold)">anti-heal: add ${esc(p.antiHealRec.item)}</span>`);
     const v = co && co.verdicts ? co.verdicts[p.pid] : null;
     const br = co && co.buildReads ? co.buildReads[p.pid] : null;
+    // What was RUN comes from the match feed (pred.gg records perks; older films
+    // and omeda-sourced ones don't carry it). The engine's pick is filled in
+    // lazily by fillEternals and is ALWAYS labelled as the engine's — a player
+    // reading "eternal: Thraex" as their own loadout was the 2026-09-21 bug.
+    const lo = p.loadout && p.loadout.eternal ? p.loadout : null;
+    const ran = lo ? `<b>${esc(lo.eternal)}</b>${(lo.minors || []).map((m) => ` + ${esc(m)}`).join('')}` : '';
+    const etRow = lo
+      ? `${ran} <span class="etnote">· ran${lo.augment ? ` · augment: ${esc(lo.augment)}` : ''}</span> <span class="etpick" style="opacity:.6">· checking the engine's pick…</span>`
+      : `<span class="etnote">not recorded for this game · the engine's pick:</span> <span class="etpick" style="opacity:.6">loading…</span>`;
     return `<div class="plobby">
       <div class="who">
         ${hIcon(p.heroSlug, 34)}
@@ -832,14 +842,14 @@ function pgReview(f) {
         <div class="items">${built.map((i) => `<img src="${iimg(i.slug)}" title="${esc(i.name)}" onerror="this.style.display='none'">`).join('')}</div>
         <div class="lrow"><span class="ltag">build</span>${bits.join(' · ')}</div>
         ${br?.build ? `<details class="whyd"><summary>why — what this build gained vs gave up</summary><div>${esc(br.build)}</div></details>` : ''}
-        <div class="lrow" data-et-slug="${esc(p.heroSlug)}" data-et-role="${esc(p.role)}" data-et-opp="${lane ? esc(lane.theirSlug) : ''}"><span class="ltag">eternal</span><span style="opacity:.6">loading the engine's pick…</span></div>
-        ${br?.eternal ? `<details class="whyd"><summary>why — why this loadout fits the matchup</summary><div>${esc(br.eternal)}</div></details>` : ''}
+        <div class="lrow" data-et-slug="${esc(p.heroSlug)}" data-et-role="${esc(p.role)}" data-et-opp="${lane ? esc(lane.theirSlug) : ''}" data-et-ran="${lo ? esc(lo.eternal) : ''}"><span class="ltag">eternal</span>${etRow}</div>
+        ${br?.eternal ? `<details class="whyd"><summary>${lo ? 'why — what this loadout gained vs gave up' : 'why — why the engine’s pick fits the matchup'}</summary><div>${esc(br.eternal)}</div></details>` : ''}
         ${v && v.text ? `<div class="vline ${v.mood === 'pos' ? 'pos' : 'neg'}"><span class="ltag">verdict</span>${esc(v.text)}</div>` : ''}
       </div>
     </div>`;
   };
   const cb = f.counterBuild;
-  const lobby = card(`${eyebrow('The lobby — squad &amp; randoms', 'build reads from the match; Eternal loadouts are the engine’s pick for the kit &amp; matchup (the feed doesn’t record what was run) — THEORY')}
+  const lobby = card(`${eyebrow('The lobby — squad &amp; randoms', 'build reads from the match · ETERNAL = what was run when the match feed recorded it (pred.gg, films from 2026-09-22); on older films it is the engine’s pick for the kit &amp; matchup, labelled as such — THEORY')}
     ${cb && (cb.notes || []).length ? `<div class="bverdict">${cb.notes.slice(0, 2).map(esc).join(' ')}</div>` : ''}
     ${us.map(lobbyRow).join('')}
     ${f.draftNote ? `<div style="font-size:.76rem;color:var(--text-2);margin-top:.4rem">⚑ Draft: ${esc(f.draftNote)}</div>` : ''}`);
@@ -904,13 +914,17 @@ function pgReview(f) {
   return head + moments + tiles + timeline + worked + interrogation + lobby + deep;
 }
 
-// The lobby's ETERNAL line joins the per-hero artifact (engine loadout + the
-// matchup item swap vs the actual lane opponent). Lazy + cached — artifacts are
-// only fetched for the five heroes on screen, after the review renders.
+// The lobby's ETERNAL line joins the per-hero artifact (the ENGINE'S loadout +
+// the matchup item swap vs the actual lane opponent). Lazy + cached — artifacts
+// are only fetched for the five heroes on screen, after the review renders.
+// When the film recorded what was run (data-et-ran), the engine's pick is a
+// labelled comparison beside it; when it didn't, the row already says
+// "not recorded · the engine's pick:" and this only fills the pick in.
 const ARTCACHE = {};
 async function fillEternals() {
   for (const el of [...document.querySelectorAll('[data-et-slug]')]) {
-    const slug = el.dataset.etSlug, role = el.dataset.etRole, opp = el.dataset.etOpp;
+    const slug = el.dataset.etSlug, role = el.dataset.etRole, opp = el.dataset.etOpp, ran = el.dataset.etRan || '';
+    const slot = el.querySelector('.etpick');
     try {
       ARTCACHE[slug] ||= fetch(`../../data/artifacts/${slug}.json`).then((r) => r.json());
       const d = await ARTCACHE[slug];
@@ -920,9 +934,14 @@ async function fillEternals() {
       const mu = (src.matchups || d.matchups || []).find((m) => m.enemySlug === opp);
       const cs = mu && mu.counterSwap;
       const oppName = mu ? mu.enemy : opp;
-      if (lo && lo.major) el.innerHTML = `<span class="ltag">eternal</span><b>${esc(lo.major.name)}</b>${lo.minor1 ? ` + ${esc(lo.minor1.name)}` : ''}${lo.minor2 ? ` + ${esc(lo.minor2.name)}` : ''}${cs && typeof cs.in === 'string' && cs.out ? ` <span class="swap">· matchup swap vs ${esc(oppName)}: ${esc(cs.in)} in for ${esc(cs.out)}</span>` : ''}`;
-      else el.remove();
-    } catch { el.remove(); }
+      const swap = cs && typeof cs.in === 'string' && cs.out ? ` <span class="swap">· matchup swap vs ${esc(oppName)}: ${esc(cs.in)} in for ${esc(cs.out)}</span>` : '';
+      if (!lo || !lo.major) { if (ran) slot && slot.remove(); else el.remove(); continue; }
+      const pick = `<b>${esc(lo.major.name)}</b>${lo.minor1 ? ` + ${esc(lo.minor1.name)}` : ''}${lo.minor2 ? ` + ${esc(lo.minor2.name)}` : ''}`;
+      if (!slot) continue;
+      if (!ran) slot.outerHTML = `${pick}${swap}`;
+      else if (ran === lo.major.name) slot.outerHTML = `<span class="etnote">· the engine’s pick too</span>${swap}`;
+      else slot.outerHTML = `<span class="etnote">· the engine’s pick was</span> ${pick}${swap}`;
+    } catch { if (ran) slot && slot.remove(); else el.remove(); }
   }
 }
 

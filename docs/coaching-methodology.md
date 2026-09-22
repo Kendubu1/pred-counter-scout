@@ -279,6 +279,20 @@ trades away versus the kit's other style. Lives in `coaching.buildReads`,
 renders as "why" dropdowns under the lobby's BUILD/ETERNAL rows, and is
 critiqued like every other coaching line.
 
+**What was run vs the engine's pick (maintainer feedback, 2026-09-21).** A
+squad member reported the review "getting my eternal wrong" three games
+running: the lobby's ETERNAL row was the engine's recommendation, and nothing
+on the row itself said so. The rule now: the only source for what a player
+equipped is the match feed (`players[].loadout`, from pred.gg's per-player
+perks — Eternal, both minors, augment, commons; films from 2026-09-22, older
+ones once `npm run postgame:loadouts` backfills them). When it is recorded,
+the row shows it as *ran* and the engine's pick beside it as a labelled
+comparison, and the `eternal` read is about the recorded loadout. When it is
+not, the row says *not recorded for this game · the engine's pick:* and the
+read must introduce the Eternal as "The engine's pick for X is …" — never
+"X's loadout", "X ran", or a verdict on how the pick "played out" as if it
+were equipped. The critic's flag (h) and a harness test enforce the wording.
+
 **The readability contract (humanizer pass, 2026-08-30, at the maintainer's
 ask).** A pattern pass over the first seven new-method reviews found the
 wording drifting hard into known AI-writing tells (cross-checked against the

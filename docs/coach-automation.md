@@ -70,6 +70,13 @@ not in the env, stop immediately and report — no partial work.
 3. Deterministic enrichment over the whole set: `npm run postgame:kit`,
    `npm run postgame:items`, `npm run postgame:fights`, `npm run postgame:macro`
    (all idempotent — they only touch films missing their block).
+   New films already carry `players[].loadout` (the Eternal + minors + augment
+   each player RAN, from pred.gg's perks) straight from the pull. Films
+   reviewed before 2026-09-22 don't; `npm run postgame:loadouts` (one pred.gg
+   call per film, patches only that field, creds-gated) backfills them — run
+   it once, and let the coaching pass in step 4 re-read the `eternal`
+   buildRead of any player whose recorded loadout differs from the engine's
+   pick (the author rule in `.claude/agents/pred-scout-coach.md`).
 4. Coaching narrative (session compute, NO API key — the standing copy policy):
    author the `coaching` block for each new game the way the pred-scout-coach
    agent does — grounded ONLY in that game's facts file, including the
