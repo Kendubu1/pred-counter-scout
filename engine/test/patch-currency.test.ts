@@ -1,84 +1,14 @@
-// The general form of the hand-pinned PATCH GATE tests.
+// Ability text parsing checks against the committed kit catalog.
 //
-// Those gates pin one ability each and are only as current as the last person
-// to edit them: the Gideon gate pinned 1.14.4 values and passed for five weeks
-// against a snapshot that was two patches behind, because the frozen owned data
-// it silently fell back to still held exactly those numbers. This checks EVERY
-// machine-checkable change the committed patch digests state, so a stale
-// catalog fails the harness instead of quietly shipping old math.
-//
-// Run `npm run patchcheck` to regenerate the report this reads.
+// This file used to also hold the patch-currency GATE: every machine-checkable
+// change in data/patches/*.json had to be present in data/omeda, so a stale
+// catalog failed the harness. omeda.city stopped publishing on 2026-08-28
+// (lessons.md 2026-09-21), so that gate could never pass again and was retired
+// on 2026-09-21. `npm run patchcheck` still writes the report
+// (data/aggregates/patch-currency.json) that labels catalogPatch on the site;
+// it is informational now, not a harness gate.
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
 import { loadData } from '../src/data.js';
-
-const report = JSON.parse(
-  readFileSync(new URL('../../data/aggregates/patch-currency.json', import.meta.url), 'utf8'),
-) as {
-  totals: { checks: number; applied: number; stale: number; pending?: number; unparsedNoteLines: number };
-  staleAgainstPatch: string | null;
-  pendingAgainstPatch?: string | null;
-  pendingReleaseDate?: string | null;
-  frozenAgainstPatches?: string[];
-  frozenReleaseDates?: Record<string, string>;
-  upstreamContentChangedAt?: string | null;
-  upstreamContentAgeDays?: number | null;
-  generatedAt: string;
-  snapshotFetchedAt: string;
-  checks: { patch: string; target: string; field: string; stated: { from: string; to: string }; observed: string; verdict: string }[];
-};
-
-describe('patch currency', () => {
-  it('no stated patch change is still sitting at its pre-patch value', () => {
-    const stale = report.checks.filter((c) => c.verdict === 'stale');
-    const detail = stale.map((c) => `${c.patch} ${c.target}/${c.field}: notes ${c.stated.from} -> ${c.stated.to}, snapshot ${c.observed}`);
-    expect(detail).toEqual([]);
-    expect(report.staleAgainstPatch).toBeNull();
-  });
-
-  it('release-window pending is a bounded, evidenced state — never a loophole', () => {
-    // 'pending' means the NEWEST digest's numbers are not in omeda's catalog
-    // yet. It is only legal when the report names the pending patch, the
-    // snapshot was re-pulled on/after that patch's release date (we actually
-    // tried), and we are within 14 days of release. Anything else is stale.
-    const pending = report.checks.filter((c) => c.verdict === 'pending');
-    if (!pending.length) return;
-    expect(report.pendingAgainstPatch).toBeTruthy();
-    expect(pending.every((c) => c.patch === report.pendingAgainstPatch)).toBe(true);
-    expect(report.pendingReleaseDate).toBeTruthy();
-    const released = Date.parse(report.pendingReleaseDate!);
-    expect(Date.parse(report.snapshotFetchedAt)).toBeGreaterThanOrEqual(released);
-    expect(Date.now() - released).toBeLessThanOrEqual(14 * 86400000);
-  });
-
-  it('a frozen upstream is an evidenced state: content unchanged 14+ days, patch released after the freeze, still re-fetched', () => {
-    // 'frozen' means the upstream catalog stopped changing before the patch
-    // was released, so the numbers can never arrive. It is legal only with the
-    // evidence: the snapshot payload unchanged for 14+ days, every frozen
-    // check on a patch dated after the last content change, and the snapshot
-    // re-fetched within 10 days of grading (we are still looking).
-    const frozen = report.checks.filter((c) => c.verdict === 'frozen');
-    if (!frozen.length) return;
-    expect(report.frozenAgainstPatches?.length).toBeGreaterThan(0);
-    expect(frozen.every((c) => report.frozenAgainstPatches!.includes(c.patch))).toBe(true);
-    expect(report.upstreamContentChangedAt).toBeTruthy();
-    expect(report.upstreamContentAgeDays ?? 0).toBeGreaterThanOrEqual(14);
-    const frozenAt = Date.parse(report.upstreamContentChangedAt!);
-    for (const p of report.frozenAgainstPatches!) expect(Date.parse(report.frozenReleaseDates![p]!)).toBeGreaterThan(frozenAt);
-    expect(Date.parse(report.generatedAt) - Date.parse(report.snapshotFetchedAt)).toBeLessThanOrEqual(10 * 86400000);
-  });
-
-  it('the report actually checked something (a silent zero is not a pass)', () => {
-    expect(report.totals.checks).toBeGreaterThan(50);
-    expect(report.totals.applied).toBeGreaterThan(40);
-  });
-
-  it('reports its own blind spot rather than implying full coverage', () => {
-    // Most note lines are prose the parser cannot grade. That is fine — what is
-    // not fine is counting them as passing, so the count must be carried.
-    expect(report.totals.unparsedNoteLines).toBeGreaterThan(0);
-  });
-});
 
 describe('ability text parsing keeps up with the live catalog', () => {
   const data = loadData();

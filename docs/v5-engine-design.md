@@ -289,10 +289,14 @@ digests and sorts each into APPLIED (snapshot holds the post-patch value), STALE
 - **Supersession.** Where several patches touch the same field, only the newest
   statement is graded — otherwise a stat changed twice reads as permanently
   stale. Digests are ordered by version, not filename.
-- **The verdict is data.** `data/aggregates/patch-currency.json` feeds both a
-  harness gate (no stated change may sit at its pre-patch value) and the
+- **The verdict is data.** `data/aggregates/patch-currency.json` feeds the
   published `catalogPatch`, so the patch label on the site is derived from the
-  verification rather than typed in.
+  verification rather than typed in. Until 2026-09-21 it also fed a harness
+  gate (no stated change may sit at its pre-patch value); the maintainer
+  retired that gate once omeda.city stopped publishing (catalog frozen since
+  2026-08-28), because a gate on a source that will never update can only
+  stay red. The report remains the honest record of how far the kit numbers
+  trail the live game.
 
 This supersedes hand-pinned PATCH GATE tests as the primary mechanism. Those
 remain as fast canaries but cannot detect staleness on their own: one pinned

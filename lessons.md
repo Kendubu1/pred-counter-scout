@@ -3607,6 +3607,13 @@ guide), in the site menu. `ui/v6/climb.html`, drawer entry via nav.js
   what links them); a new hero's kit and ability art need a new source that
   this step does not provide. The orphan `satatriel.webp` went with main's
   catalog fix.
+- Gate retired by the maintainer: the patch-currency harness test (every
+  stated digest change must be present in data/omeda) was dropped, keeping
+  only the parser tests that shared its file. With omeda frozen since
+  08-28 the gate had one possible state, red, and a permanently red gate
+  teaches people to ignore the harness. `npm run patchcheck` still writes
+  the report, and catalogPatch on the site still derives from it, so the
+  staleness is recorded and shown rather than enforced.
 
 ### Coach audit: the last ten ranked reviews (2026-09-21)
 
