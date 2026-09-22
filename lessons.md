@@ -3736,3 +3736,36 @@ Eternal read; a `ranking` field with a receipt per row on every film.
   needs is an explicit "an uncontested major is a choice, never a cost of a
   fight" line. The `draftNote` role-fit line no longer renders on the coach
   page (preference coaching, banned by the squad rule).
+
+## 2026-09-22 — "Fix it all": the audit's open engine items, the frozen gate, and main
+
+- **A destroyed tower belonged to the other side.** `skirmishes[].place` read
+  `our/their <structure>` off the event's `side`, but for structures `side`
+  is who DESTROYED it, so every tower we took was labelled "our Outer Tower"
+  and every base we lost "their Inhibitor". The critic then rewrote correct
+  copy to match the wrong label. Labels now name the prize and who took it
+  ("their Outer Tower (we took it)", "Fangtooth (they took it)"), and
+  `postgame:macro --all` re-runs the detector on films that carry the event
+  stream so a detector fix reaches committed films (clustering is unchanged,
+  so the moment keys the coaching hangs on survive). Lesson: a field whose
+  meaning flips by `kind` needs the meaning in the label, not a prefix.
+- **The kit pass asserted "we brought no anti-heal" without looking at the
+  builds.** It now reads `counterBuild.ourAntiHeal`. Two passes that describe
+  the same fact must read the same field.
+- **The support now has a yardstick block and the duo lane a 2v2 read** in
+  `interrogation` (participation, assist share, wards/min against their
+  support, healing, mitigated, deaths before 10, died-first count; first
+  blood, first Fangtooth, duo deaths before 10, a duo read), and
+  `deathCosts[]` carries `solo` so only a caught-out death is the player's
+  own receipt. The critic SOURCE prints all three; the spec tells the coach
+  the `lanes[]` support row is never cited.
+- **The patch gate has a third state: FROZEN.** Stale and pending could not
+  describe an upstream that stopped publishing; 1.16.4 and 1.17 were a
+  permanent harness red with no action that could clear it, which is a gate
+  nobody can obey. `frozen` is reclassified only with evidence (snapshot
+  content unchanged 14+ days, the patch dated after the last content change,
+  the snapshot re-fetched within 10 days of grading), stays loud in the
+  verdict, is never counted as applied, and names the digests that are the
+  record of those changes. Harness 150/150.
+- **The Valmont icon stays open**: no PREDGG creds in this session, and the
+  pred.gg hero page is a client-rendered app with no asset hash in its HTML.
