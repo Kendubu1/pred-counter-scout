@@ -1,747 +1,1172 @@
 {
-  "patch": "1.17",
-  "note": "Forward predictions for 1.17 \"Bloodtide\", authored by the pred-scout-coach agent on session compute (no API) and numerically ground-checked against the release-eve digest and the committed measured baseline: pred.gg ranked stats for version ids 158-166 (fetched 2026-09-14) and the matching ranked lane board of ~193,776 matches. That window spans the 1.16 and 1.16.4 era, so it is the pre-1.17 baseline. Forecasts, not measured results. Iggy & Scorch is excluded as a description-only fix. Baron Valmont is new: no baseline, no artifact, kit-only THEORY. The omeda hero/item catalog has been frozen upstream since 2026-08-28, so every sim build core here is computed on pre-1.16.4 kit numbers and is directional only. Copy re-authored 2026-09-21 after the coach audit (docs/reviews/coach-audit-2026-09-21.md): verdict first, \"why\" gives the mechanism instead of restating the change lines, no baseline-opener template, no hedges; every number re-checked against the hero's change lines and the previously verified copy.",
-  "source": "https://www.predecessorgame.com/en-US/news/patch-notes/Patch_Notes_1.17",
-  "generatedAt": "2026-09-21T18:40:23.447Z",
-  "predictions": {
-    "baron-valmont": {
-      "name": "Baron Valmont",
-      "role": "carry",
-      "trend": "new",
-      "changes": [
-        "NEW HERO — ranged magical carry. 685 health (+133), 400 mana (+60), 49 physical power (+4), 125 attack speed (+1.7), 665 movement speed, BAT 1.4.",
-        "Hemophagia (passive): his sword Lilith independently attacks the last target he hit for 4s, dealing 15 (+15% magical power) per strike at his attack speed. Enemy deaths near Lilith restore 3-41 mana; hero deaths restore an extra 35% max mana.",
-        "Rupture (primary): 5 blood blades launch over 0.75s for 20/29/38/47/56 (+15% magical power) each in a 300u radius.",
-        "Bloodbound (secondary): throws Lilith up to 1800u for 70/90/110/130/150 (+60% magical power) and a 30% slow for 1.5s; passively adds 0/8/16/24/32 to her damage.",
-        "Arterial Grip (alternate): a 1600u tether dealing 80/120/160/200/240 (+60% magical power) over 3s while stealing 20/25/30/35/40% attack speed, slowing 25% and grounding. Breaks on range, line of sight or immobilize.",
-        "Exsanguinate (ultimate): transforms to fire 3 bat swarms a second for 40/70/100 (+22% magical power), healing 25/45/65 (+20% magical power) each time. Costs 15 mana per second, rising 5 per second. Cooldown 25/15/5s.",
-        "Augments: Vein Splitter (tether branches to nearby targets for 80% damage, loses the ground), Rupturing Fangs (blades deal 20% less but up to 100% more on missing health), Sanguine Banquet (2% omnivamp plus permanent max mana from nearby deaths)."
-      ],
-      "confidence": "THEORY",
-      "why": "Two attackers in one slot. Once he lands a hit, Lilith keeps swinging at that target for 4s on her own, so every trade is his damage plus hers, and Arterial Grip steals up to 40% attack speed from whoever it holds while grounding them.",
-      "willChange": "No history, kit only. The tether is the hero and the tell: it breaks on range, line of sight or an immobilize, so a wall, a dash or a stun ends him. Exsanguinate cannot be held, 15 mana a second rising 5 a second on a 400 mana pool. He will look broken in the duo lane for a week and settle the moment breaking the tether becomes reflex. Ban him if your carry cannot, otherwise draft a stun into the duo.",
-      "magnitude": "meta-shifting"
-    },
-    "akeron": {
-      "name": "Akeron",
-      "role": "offlane",
-      "trend": "nerf",
-      "changes": [
-        "Hellfire magical power scaling 16% -> 14%",
-        "Web Lash: Web Shot and Leap magical power scaling both 35% -> 30%",
-        "Crushing Maw magical power scaling 40% -> 35%, bonus health scaling 4% -> 4.5%",
-        "Consume pull damage magical power scaling 5% -> 4%"
-      ],
-      "simBuildCore": [
-        "Spectral Schematics",
-        "Oathkeeper",
-        "Crescelia",
-        "Tainted Scepter",
-        "Wraith Leggings",
-        "Oblivion Crown"
-      ],
-      "topMetaBuild": {
-        "title": "Magical Burst",
-        "items": [
-          "Magnify",
-          "TaintedScepter",
-          "TruesilverBracelet"
-        ],
-        "shrunkWr": 0.507,
-        "games": 76,
-        "spikeMinute": 23
-      },
-      "confidence": "THEORY",
-      "why": "A power-scaling tax across the whole kit with one exception: Crushing Maw now scales harder off bonus health. The message is build health, not raw power.",
-      "willChange": "Offlane Akeron barely moves. At 49.7% in the offlane this is under a point of damage from a full-power build, and a health build loses almost nothing. Jungle Akeron is the casualty, because clears lean on Hellfire and a 45.3% jungle seat gets worse. Keep him offlane, build bruiser, stop treating him as a mage.",
-      "magnitude": "notable"
-    },
-    "aurora": {
-      "name": "Aurora",
-      "role": "jungle",
-      "trend": "nerf",
-      "changes": [
-        "Shatter on-hit magical power scaling 30% -> 25%"
-      ],
-      "simBuildCore": [
-        "Spectral Schematics",
-        "Wraith Leggings",
-        "Oathkeeper",
-        "Magnify",
-        "Oblivion Crown",
-        "Combustion"
-      ],
-      "topMetaBuild": {
-        "title": "Magical Bruiser (Mixed-Def)",
-        "items": [
-          "Magnify",
-          "Elafrost",
-          "FluxMatrix"
-        ],
-        "shrunkWr": 0.521,
-        "games": 249,
-        "spikeMinute": 24
-      },
-      "confidence": "THEORY",
-      "why": "The cut lands on the part of her damage that never misses. Shatter is her basic attack, so every auto shrinks as she stacks power, while the root and the slow are untouched.",
-      "willChange": "Jungle is her best seat at 53.3% and she stays in it. Play the control jungler she is: Hoarfrost root, Boreal Sweep slow, and stop trying to win long auto trades against a bruiser. One scaling cut is not a point of winrate; anyone calling her dead is reacting to the word nerf.",
-      "magnitude": "notable"
-    },
-    "countess": {
-      "name": "Countess",
-      "role": "midlane",
-      "trend": "buff",
-      "changes": [
-        "Attack speed 110 -> 115",
-        "Feast bugfix: damage 125/105/85 -> 135/200/265 — since 1.16.x the ultimate had been dealing its cooldown values as damage"
-      ],
-      "simBuildCore": [
-        "Spectral Schematics",
-        "Orion",
-        "Oathkeeper",
-        "Magnify",
-        "Wraith Leggings",
-        "Oblivion Crown"
-      ],
-      "topMetaBuild": {
-        "title": "Magical Skirmisher",
-        "items": [
-          "Combustion",
-          "Noxia",
-          "WraithLeggings"
-        ],
-        "shrunkWr": 0.517,
-        "games": 381,
-        "spikeMinute": 24
-      },
-      "confidence": "THEORY",
-      "why": "Not a buff, a repair. Since 1.16.x Feast dealt its cooldown as damage, 125/105/85, so ranking the ultimate made it weaker. It deals 135/200/265 now and the dive kills again.",
-      "willChange": "Treat her 47.8% over 31,219 ranked games as suspect; the ultimate has been broken since 1.16.x, so every game since then was played with it. Feast suppresses, applies Haemorrhage, and finishes what it lands on, so the follow-up damage lands on a kill instead of a survivor. Sharpest climb on the patch from a 48.1% midlane mark. Her ban rate moves before her win rate does; if she is open in your draft, someone at the table is asleep.",
-      "magnitude": "meta-shifting"
-    },
-    "crunch": {
-      "name": "Crunch",
-      "role": "offlane",
-      "trend": "nerf",
-      "changes": [
-        "Forward Crunch bugfix: the empowered version is now correctly interrupted by a ground effect"
-      ],
-      "simBuildCore": [
-        "Viper",
-        "Basilisk",
-        "Spear Of Desolation",
-        "Augmentation",
-        "The Perforator",
-        "Solaris"
-      ],
-      "topMetaBuild": {
-        "title": "Physical DPS Carry",
-        "items": [
-          "Augmentation",
-          "Mutilator",
-          "TaintedBlade"
-        ],
-        "shrunkWr": 0.511,
-        "games": 46,
-        "spikeMinute": 25
-      },
-      "confidence": "THEORY",
-      "why": "Turbo-empowered Forward Crunch used to barrel through ground effects. It is a dash like any other now, and a Gideon or Gadget zone stops it.",
-      "willChange": "Zero movement in the number. What changes is the engage against zone heroes: the long Turbo entry through a zone no longer completes, so wait it out or come in from the angle it does not cover. A handful of forced engages a game against the right lineup, nothing more.",
-      "magnitude": "minor"
-    },
-    "feng-mao": {
-      "name": "Feng Mao",
-      "role": "jungle",
-      "trend": "nerf",
-      "changes": [
-        "Reaping Dash bugfix: he can no longer teleport while hit by a ground effect"
-      ],
-      "simBuildCore": [
-        "Viper",
-        "Augmentation",
-        "Spear Of Desolation",
-        "The Perforator",
-        "Solaris",
-        "Basilisk"
-      ],
-      "topMetaBuild": {
-        "title": "Lethality DPS Carry",
-        "items": [
-          "Malady",
-          "Painweaver",
-          "Omen"
-        ],
-        "shrunkWr": 0.512,
-        "games": 241,
-        "spikeMinute": 24
-      },
-      "confidence": "THEORY",
-      "why": "Reaping Dash is a blink, and a blink that ignored ground effects was an escape almost nobody had. The zone stops it now.",
-      "willChange": "Flat. The dash is an entry tool now, not the exit from a zoned fight, because the exit is exactly the cast that gets denied. Against Gideon or Gadget, decide before you go in; there is no leaving through the floor.",
-      "magnitude": "minor"
-    },
-    "gadget": {
-      "name": "Gadget",
-      "role": "midlane",
-      "trend": "buff",
-      "changes": [
-        "Sticky Mine empowered damage 110/150/190/230/270 -> 110/155/200/245/290",
-        "Security Gate allied decaying movement speed 40% -> 50%, mana cost 65 -> 75"
-      ],
-      "simBuildCore": [
-        "Orion",
-        "Wraith Leggings",
-        "Oblivion Crown",
-        "Spirit Of Amir",
-        "Oathkeeper",
-        "Combustion"
-      ],
-      "topMetaBuild": {
-        "title": "Magical Frontline",
-        "items": [
-          "AzureCore",
-          "Entropy",
-          "Overseer"
-        ],
-        "shrunkWr": 0.5,
-        "games": 251,
-        "spikeMinute": 24
-      },
-      "confidence": "THEORY",
-      "why": "The mine pays more at every rank past the first, but only the empowered version, which needs Spark to hit the attached target first. The gate gets faster for the whole team and costs more mana.",
-      "willChange": "Mid Gadget rises a little from 50.2%, and only for players who do the sequence: mine, then a basic attack on the target before the timer runs out. Skip the attack and you bought nothing. The bigger winner is support Gadget, already 51.4%, because a 50% decaying-speed gate is an engage and a peel button for four other people.",
-      "magnitude": "notable"
-    },
-    "gideon": {
-      "name": "Gideon",
-      "role": "midlane",
-      "trend": "nerf",
-      "changes": [
-        "Event Horizon augment max-health damage 5% -> 4%",
-        "Cosmic Power bonus max mana now 1% per 20 magical power (was per 15)",
-        "Void Breach damage 100/140/180/220/260 -> 90/130/170/210/250; cooldown progresses 1% faster per 100 max mana (was per 80)",
-        "Black Hole damage 520/780/1040 -> 500/760/1020",
-        "Torn Space bugfix: no teleport while hit by a ground effect"
-      ],
-      "simBuildCore": [
-        "Wraith Leggings",
-        "Orion",
-        "Caustica",
-        "Oblivion Crown",
-        "Soulbinder",
-        "Timewarp"
-      ],
-      "topMetaBuild": {
-        "title": "Magical Burst",
-        "items": [
-          "AzureCore",
-          "Combustion",
-          "WraithLeggings"
-        ],
-        "shrunkWr": 0.576,
-        "games": 1260,
-        "spikeMinute": 24
-      },
-      "confidence": "THEORY",
-      "why": "Both damage buttons come down at every rank and the mana engine slows: bonus max mana per magical power and the Void Breach cooldown speed-up both need more stat for the same return. Late Gideon is what gets taxed.",
-      "willChange": "Still the safest blind pick in mid. He carries the biggest mid sample on the board, 52.0% over 57,247 games, and this lands him near even, not below it. The mana stacking that carried his late game now needs more power for the same return, so the Azure Core opening in his 57.6% build is not optional any more. Draft him, build him properly, stop expecting him to carry alone.",
-      "magnitude": "notable"
-    },
-    "greystone": {
-      "name": "Greystone",
-      "role": "offlane",
-      "trend": "nerf",
-      "changes": [
-        "Base health 690 -> 680",
-        "Armor growth 5.4 -> 4.8"
-      ],
-      "simBuildCore": [
-        "Viper",
-        "Augmentation",
-        "Spear Of Desolation",
-        "The Perforator",
-        "Painweaver",
-        "Solaris"
-      ],
-      "topMetaBuild": {
-        "title": "Physical Bruiser",
-        "items": [
-          "Overlord",
-          "Rapture",
-          "AegisOfAgawar"
-        ],
-        "shrunkWr": 0.557,
-        "games": 542,
-        "spikeMinute": 25
-      },
-      "confidence": "THEORY",
-      "why": "Ten health is nothing. Armor growth 5.4 to 4.8 is the cut, because it compounds every level and he is a hero who wins by being unkillable late.",
-      "willChange": "A trim, not a correction. At 54.7% over 58,834 offlane games he is the strongest line on the board, and a growth cut takes him down under a point and leaves him top tier. What it opens is a window: physical offlaners can trade into him before Overlord into Rapture into Aegis Of Agawar lands, a core that measured 55.7% over 542 games. Hit him early or do not bother.",
-      "magnitude": "notable"
-    },
-    "grux": {
-      "name": "Grux",
-      "role": "offlane",
-      "trend": "nerf",
-      "changes": [
-        "Stampede bugfix: now correctly interrupted by a ground effect"
-      ],
-      "simBuildCore": [
-        "Viper",
-        "Solaris",
-        "The Perforator",
-        "Augmentation",
-        "Basilisk",
-        "Penumbra"
-      ],
-      "topMetaBuild": {
-        "title": "Physical Bruiser",
-        "items": [
-          "SkySplitter",
-          "Basilisk",
-          "Rapture"
-        ],
-        "shrunkWr": 0.588,
-        "games": 305,
-        "spikeMinute": 25
-      },
-      "confidence": "THEORY",
-      "why": "Stampede is a dash that drags, and a dash a zone now stops. The drag stops where the interrupt does.",
-      "willChange": "No movement. When the fight sits on a zone, open with Smash 'n Grab instead: it is a channel pull, not a dash, and nothing in this patch touches it. One route into a zoned fight closes; the hero does not.",
-      "magnitude": "minor"
-    },
-    "kira": {
-      "name": "Kira",
-      "role": "carry",
-      "trend": "buff",
-      "changes": [
-        "Physical power 54 -> 53, growth 3.5 -> 3.7",
-        "Dusk now refunds 35% of its mana if it kills any target (once per cast)",
-        "Mercy damage 20/25/30/35/40 -> 25/30/35/40/45"
-      ],
-      "simBuildCore": [
-        "Viper",
-        "Deathstalker",
-        "Vanquisher",
-        "Demolisher",
-        "Imperator",
-        "Plasma Blade"
-      ],
-      "topMetaBuild": {
-        "title": "Crit DPS Carry",
-        "items": [
-          "Solaris",
-          "Ashbringer",
-          "Imperator"
-        ],
-        "shrunkWr": 0.565,
-        "games": 744,
-        "spikeMinute": 25
-      },
-      "confidence": "THEORY",
-      "why": "Mercy is the button, and it crits and applies on-hit, so the flat gain at every rank gets multiplied by her whole item build. Dusk refunding 35% of its mana on a kill removes the wave-or-fight mana choice. Base power down, growth up: worse early, better late.",
-      "willChange": "About a point up from 49.1%, and it comes from two habits. Use Dusk on the wave when the kill is there; the mana comes back. Stop saving Mercy for the finish; it is a crit that applies on-hit, so it is her best damage button. The build does not move: Solaris into Ashbringer into Imperator at 56.5% over 744 games.",
-      "magnitude": "notable"
-    },
-    "kwang": {
-      "name": "Kwang",
-      "role": "offlane",
-      "trend": "buff",
-      "changes": [
-        "Judgement Of The Heavens bugfix: he can now pick up his sword while grounded"
-      ],
-      "simBuildCore": [
-        "Orion",
-        "Prophecy",
-        "Spectra",
-        "Magnify",
-        "Cursed Scroll",
-        "World Breaker"
-      ],
-      "topMetaBuild": {
-        "title": "Magical Burst",
-        "items": [
-          "SpiritOfAmir",
-          "Oathkeeper",
-          "TaintedScepter"
-        ],
-        "shrunkWr": 0.5,
-        "games": 100,
-        "spikeMinute": 25
-      },
-      "confidence": "THEORY",
-      "why": "Grounded used to strand the sword on the floor with no recall. He can pick it up while grounded now.",
-      "willChange": "Nothing in the number, today. Tomorrow it matters: Baron Valmont's Arterial Grip grounds for up to 3s and only breaks on range, line of sight or an immobilize, and Kwang was about to be the one offlaner whose whole kit sat on the floor for the duration. What he keeps in that fight is the recall: the blade comes back to his hand while grounded, so Light of the Heavens and its shield are not stranded until the tether ends. Surge of the Heavens is still a dash and still denied while the ground holds.",
-      "magnitude": "minor"
-    },
-    "legion": {
-      "name": "Legion",
-      "role": "carry",
-      "trend": "buff",
-      "changes": [
-        "K-75 Storm Rifle projectile hitbox radius increased 10%"
-      ],
-      "simBuildCore": [
-        "Sky Splitter",
-        "Spectra",
-        "The Perforator",
-        "Viper",
-        "Deathstalker",
-        "Rapture"
-      ],
-      "topMetaBuild": {
-        "title": "Lethality DPS Carry",
-        "items": [
-          "Malady",
-          "Vanquisher",
-          "Deathstalker"
-        ],
-        "shrunkWr": 0.569,
-        "games": 1357,
-        "spikeMinute": 24
-      },
-      "confidence": "THEORY",
-      "why": "A 10% wider bullet on an automatic rifle with no aim assist. Nothing about the rotation changes; a bigger hitbox is a higher share of shots landing on a strafing target, and that is the entire change.",
-      "willChange": "Already the healthier of the two auto-fire carries at 51.0%, and a hit-rate buff on a healthy hero is a small climb, under a point. No build change: Malady into Vanquisher into Deathstalker at 56.9% over 1,357 games. The players who gain most are the ones who were missing. If you already tracked well, this is a rounding error.",
-      "magnitude": "notable"
-    },
-    "morigesh": {
-      "name": "Morigesh",
-      "role": "midlane",
-      "trend": "buff",
-      "changes": [
-        "Health regen 1.3 -> 1.5",
-        "Hive cooldown 14/13/12/11/10 -> 12/11.25/10.5/9.75/9",
-        "Mark cooldown 8/7.25/6.5/5.75/5 -> 8.5/7.5/6.5/5.5/4.5",
-        "Curse damage 300/430/560 -> 320/450/580"
-      ],
-      "simBuildCore": [
-        "Spectral Schematics",
-        "Wraith Leggings",
-        "Soulbinder",
-        "Oathkeeper",
-        "Spirit Of Amir",
-        "Oblivion Crown"
-      ],
-      "topMetaBuild": {
-        "title": "Magical Frontline",
-        "items": [
-          "Combustion",
-          "Lifebinder",
-          "Megacosm"
-        ],
-        "shrunkWr": 0.452,
-        "games": 250,
-        "spikeMinute": 24
-      },
-      "confidence": "THEORY",
-      "why": "Hive comes around faster at every rank, and Hive is both her wave clear and her poke, so one cooldown buff fixes two problems. Curse hits harder, and Mark ends faster at max rank after a slower start.",
-      "willChange": "Weakest mid on the board at 45.8%, against 54.0% in the offlane. Mid climbs a point or two toward even because clearing the wave and poking the laner now sit on the same rotation. The offlane version stays the better pick; this narrows the gap, it does not close it.",
-      "magnitude": "notable"
-    },
-    "murdock": {
-      "name": "Murdock",
-      "role": "carry",
-      "trend": "buff",
-      "changes": [
-        "Shots Fired total physical power scaling 36%/44%/52%/60% -> 40%/48%/56%/64%",
-        "Buckshot damage 60/85/110/135/160 -> 60/90/120/150/180",
-        "Long Arm of the Law damage 250/400/550 -> 280/430/580, bonus physical power scaling 115% -> 120%"
-      ],
-      "simBuildCore": [
-        "Viper",
-        "Deathstalker",
-        "Vanquisher",
-        "Imperator",
-        "Plasma Blade",
-        "Demolisher"
-      ],
-      "topMetaBuild": {
-        "title": "Crit Burst",
-        "items": [
-          "LightningHawk",
-          "Vanquisher",
-          "Imperator"
-        ],
-        "shrunkWr": 0.565,
-        "games": 1183,
-        "spikeMinute": 25
-      },
-      "confidence": "THEORY",
-      "why": "All three damage sources go up at once, and the one that compounds with items is the charged shot's scaling, which is where a crit build lives. Buckshot also gains at every rank past the first, and it still falls off with distance.",
-      "willChange": "Lowest carry on the board at 46.8%, and this is the biggest carry gain of the patch, a point or two, probably still short of even. Play changes more than the build: hold range for the charged shot and Long Arm of the Law, and fire Buckshot point blank for the armor shred right before the charged attack, never as poke, because it loses damage the further out it lands. He is playable now. He is not a first pick.",
-      "magnitude": "notable"
-    },
-    "muriel": {
-      "name": "Muriel",
-      "role": "support",
-      "trend": "nerf",
-      "changes": [
-        "Physical armor growth 5.5 -> 5.1, health regen 1.8 -> 1.6, mana growth 55 -> 52",
-        "Sentinel heal & shield power 12-20.5% (+0.5 per level) -> 10-16.8% (+0.4% per level)",
-        "Alacrity shield magical power scaling 60% -> 50%",
-        "Reversal Of Fortune damage reduction 35% -> 30%, mana cost 100 -> 100/125/150",
-        "Consecrated Ground bugfixes: it no longer deals or heals 10% more than intended"
-      ],
-      "simBuildCore": [
-        "Oblivion Crown",
-        "Lunaria",
-        "Noxia",
-        "Spirit Of Amir",
-        "Lifecore",
-        "Timewarp"
-      ],
-      "topMetaBuild": {
-        "title": "Magical DPS Carry",
-        "items": [
-          "Marshal",
-          "CrystalTear",
-          "Windcaller"
-        ],
-        "shrunkWr": 0.532,
-        "games": 353,
-        "spikeMinute": 24
-      },
-      "confidence": "THEORY",
-      "why": "Everything she hands to other people shrinks: Sentinel's heal and shield boost, Alacrity's shield scaling, the ultimate's damage reduction. Reversal Of Fortune also costs more at higher ranks, so the free bail-out is no longer free.",
-      "willChange": "Largest support fall on the patch. At 52.8% she was one of the strongest support lines here, and this is the correction, with Hexbound Bracers and Transference both losing Heal & Shield Power in the same pass. Reversal Of Fortune at 100/125/150 mana is a fight-turning tool now, not an early-lane rescue; spend it on a fight the team can win. She stays a pick. She stops being the answer to every carry.",
-      "magnitude": "meta-shifting"
-    },
-    "phase": {
-      "name": "Phase",
-      "role": "support",
-      "trend": "nerf",
-      "changes": [
-        "Health 670 -> 660",
-        "Essence Catalyst healing 12-80 (+4 per level) -> 10-61 (+3 per level)",
-        "Hyperflux attack speed 40%/60%/80% -> 35%/55%/75%"
-      ],
-      "simBuildCore": [
-        "Stonewall",
-        "Vainglory",
-        "Frostguard",
-        "Warp Stream",
-        "Catalytic Drive",
-        "Unbroken Will"
-      ],
-      "topMetaBuild": {
-        "title": "Magical Bruiser (Mixed-Def)",
-        "items": [
-          "Marshal",
-          "EnmasBlessing",
-          "GalaxyGreaves"
-        ],
-        "shrunkWr": 0.542,
-        "games": 936,
-        "spikeMinute": 24
-      },
-      "confidence": "THEORY",
-      "why": "Essence Catalyst, the free sustain on every cast and mirrored to the linked ally, comes down at every level, and the level-six Hyperflux spike hands the carry less attack speed. Ten base health is the least of it.",
-      "willChange": "A fall toward even from 51.1%, sharpened by Hexbound Bracers and Transference losing Heal & Shield Power in the same patch, and nearly all of her play is support, so there is no other seat to run to. The habit to break: Hyperflux is no longer a fight window on its own. Time fights around the carry's item spikes and use the link for the attack speed, not as the reason to go.",
-      "magnitude": "meta-shifting"
-    },
-    "serath": {
-      "name": "Serath",
-      "role": "jungle",
-      "trend": "nerf",
-      "changes": [
-        "The Nephilim bonus physical power scaling 70% -> 75%, magical on-hit total physical power scaling 15% -> 10%",
-        "Heresy burn bonus physical power scaling 25% -> 20%, burn damage 14/27/40 -> 14/26/38"
-      ],
-      "simBuildCore": [
-        "Viper",
-        "Solaris",
-        "Spear Of Desolation",
-        "The Perforator",
-        "Augmentation",
-        "Painweaver"
-      ],
-      "topMetaBuild": {
-        "title": "On-Hit Drain",
-        "items": [
-          "SkySplitter",
-          "StormBreaker",
-          "Spectra"
-        ],
-        "shrunkWr": 0.588,
-        "games": 612,
-        "spikeMinute": 24
-      },
-      "confidence": "THEORY",
-      "why": "The sustained damage is what goes: the Nephilim's magical on-hit and Heresy's burn both scale down. Basic-attack scaling goes up, which only pays behind heavy power items, so the on-hit builds are the ones that lose.",
-      "willChange": "Under a point off a large, stable 51.9% over 40,852 jungle games. The cut lands on long fights inside Heresy, so she is a burst-and-leave jungler now: pick targets the opening kills and stop committing to duels that go the distance. The on-hit Sky Splitter line at 58.8% over 612 games loses the most. The on-hit cut from 15% to 10% lands squarely on it, and the power builds barely notice.",
-      "magnitude": "notable"
-    },
-    "twinblast": {
-      "name": "TwinBlast",
-      "role": "carry",
-      "trend": "buff",
-      "changes": [
-        "Lunari 4.0 projectile hitbox radius increased 10%"
-      ],
-      "simBuildCore": [
-        "Viper",
-        "Deathstalker",
-        "Vanquisher",
-        "Plasma Blade",
-        "Imperator",
-        "Demolisher"
-      ],
-      "topMetaBuild": {
-        "title": "Crit DPS Carry",
-        "items": [
-          "Solaris",
-          "Ashbringer",
-          "Imperator"
-        ],
-        "shrunkWr": 0.519,
-        "games": 552,
-        "spikeMinute": 25
-      },
-      "confidence": "THEORY",
-      "why": "Two pistol rounds per attack, both 10% wider, and Gunslinger's three-shot follow-up after every cast is three more of them. It compounds on a kit built out of projectiles.",
-      "willChange": "A hit-rate buff on a 48.4% carry: small, under a point, and entirely in the strafing-target fights where his damage leaks. No build change, Solaris into Ashbringer into Imperator at 51.9% over 552 games. If you miss, you gain. If you land, nothing changed.",
-      "magnitude": "notable"
-    },
-    "wukong": {
-      "name": "Wukong",
-      "role": "jungle",
-      "trend": "mixed",
-      "changes": [
-        "Health 680 -> 665, physical armor 30 -> 28, magical armor 33 -> 31, attack speed 110 -> 115",
-        "Ruyi Jingu Bang cleave 15% -> 20%",
-        "High Impact minion damage modifier -60% -> -70%",
-        "Windsurge damage 60/90/120/150/180/210 -> 60/85/110/135/160/185, bonus physical power scaling 90% -> 100%, mana cost 50 -> 50/55/60/65/70/75",
-        "84000 Hairs clone kill gold 5 -> 7",
-        "From Up High augment: height damage raised at every band, 2000u 1.7x -> 1.76x up to 9000u 1.875x -> 2.1x"
-      ],
-      "simBuildCore": [
-        "Viper",
-        "Solaris",
-        "Augmentation",
-        "The Perforator",
-        "Painweaver",
-        "Alternator"
-      ],
-      "topMetaBuild": {
-        "title": "Physical Frontline",
-        "items": [
-          "Mindrazor",
-          "Augmentation",
-          "Painweaver"
-        ],
-        "shrunkWr": 0.467,
-        "games": 58,
-        "spikeMinute": 25
-      },
-      "confidence": "THEORY",
-      "why": "Durability out, output in: health and both armors down, attack speed and cleave up. Body Windsurge trades flat damage for scaling and costs more mana at rank, and the From Up High augment rewards height more at every band.",
-      "willChange": "A thin sample at 48.1% over 6,834 jungle games, and the read is a point up for players who build power and run From Up High. The augment now reaches 2.1x at 9000u. The armor cut is the tax: a bad engage dies faster than before. Fight with clone stacks ready and from height, or do not fight.",
-      "magnitude": "notable"
-    },
-    "yin": {
-      "name": "Yin",
-      "role": "jungle",
-      "trend": "nerf",
-      "changes": [
-        "Lash Kick bugfix: now correctly interrupted by a ground effect"
-      ],
-      "simBuildCore": [
-        "Viper",
-        "Solaris",
-        "Spear Of Desolation",
-        "The Perforator",
-        "Augmentation",
-        "Basilisk"
-      ],
-      "topMetaBuild": {
-        "title": "Crit Drain",
-        "items": [
-          "SkySplitter",
-          "LightningHawk",
-          "OnixianQuiver"
-        ],
-        "shrunkWr": 0.542,
-        "games": 172,
-        "spikeMinute": 24
-      },
-      "confidence": "THEORY",
-      "why": "Lash Kick attaches the whip and dashes her in, and the dash now stops in a ground effect, which also denies the leap after it.",
-      "willChange": "No visible change; jungle at 50.6% is her lowest seat. Offlane sits at 52.2% and carry at 53.2%. Gap-closing into covered ground is no longer free: commit before the zone lands or walk the long way. Same hero, one fewer free entry.",
-      "magnitude": "minor"
-    },
-    "yurei": {
-      "name": "Yurei",
-      "role": "jungle",
-      "trend": "nerf",
-      "changes": [
-        "Soulstorm bugfix: now correctly interrupted by a ground effect"
-      ],
-      "simBuildCore": [
-        "Viper",
-        "Solaris",
-        "The Perforator",
-        "Spear Of Desolation",
-        "Augmentation",
-        "Painweaver"
-      ],
-      "topMetaBuild": {
-        "title": "Lethality Skirmisher",
-        "items": [
-          "Malady",
-          "SpearOfDesolation",
-          "ThePerforator"
-        ],
-        "shrunkWr": 0.466,
-        "games": 260,
-        "spikeMinute": 25
-      },
-      "confidence": "THEORY",
-      "why": "Soulstorm channels and then pulls at the end, and a ground effect now breaks the channel. Lose the channel, lose the pull, lose the ultimate.",
-      "willChange": "Holds at 48.4% in the jungle, against 53.1% in the offlane. Cast the ultimate from ground the enemy zone cannot reach; all of its value is the pull at the end. This costs a handful of ultimates, not a role.",
-      "magnitude": "minor"
-    },
-    "zinx": {
-      "name": "Zinx",
-      "role": "support",
-      "trend": "mixed",
-      "changes": [
-        "Attack speed 110 -> 115, BAT 1.4 -> 1.5",
-        "Infuse missing-health healing modifier 40% -> 50%",
-        "Neural Regenesis cooldown 160/140/120 -> 150/135/120",
-        "Disc Of Demise ricochet cooldown reduction 10% -> 12% on heroes, 5% -> 6% on non-heroes",
-        "Terminal Treatment additional DoT damage 35% -> 25%"
-      ],
-      "simBuildCore": [
-        "Oblivion Crown",
-        "Lifecore",
-        "Lunaria",
-        "Spirit Of Amir",
-        "Timewarp",
-        "Windcaller"
-      ],
-      "topMetaBuild": {
-        "title": "Magical Burst",
-        "items": [
-          "Prophecy",
-          "Spectra",
-          "Orion"
-        ],
-        "shrunkWr": 0.498,
-        "games": 500,
-        "spikeMinute": 27
-      },
-      "confidence": "THEORY",
-      "why": "Slower basic attacks, weaker Terminal Treatment, and in exchange the healing half grows: Infuse heals more on low allies, the ultimate comes back sooner, and Disc Of Demise ricochets refund more cooldown. The damage build pays for the healing build.",
-      "willChange": "Weakest support on the board at 46.8%, and support is her most-played seat. The healing build climbs toward even; the damage-leaning setups lose more than they gain. Two habits: hold Infuse until the ally is genuinely low, where the 50% missing-health modifier pays, and aim the disc through bodies, not at the nearest one.",
-      "magnitude": "notable"
-    }
+ "patch": "1.17",
+ "note": "Forward predictions for 1.17 \"Bloodtide\", authored by the pred-scout-coach agent on session compute (no API) and numerically ground-checked against the release-eve digest and the committed measured baseline: pred.gg ranked stats for version ids 158-166 (fetched 2026-09-14) and the matching ranked lane board of ~193,776 matches. That window spans the 1.16 and 1.16.4 era, so it is the pre-1.17 baseline. Forecasts, not measured results. Iggy & Scorch is excluded as a description-only fix. Baron Valmont is new: no baseline, no artifact, kit-only THEORY. The omeda hero/item catalog has been frozen upstream since 2026-08-28, so every sim build core here is computed on pre-1.16.4 kit numbers and is directional only. Copy re-authored 2026-09-21 after the coach audit (docs/reviews/coach-audit-2026-09-21.md): verdict first, \"why\" gives the mechanism instead of restating the change lines, no baseline-opener template, no hedges; every number re-checked against the hero's change lines and the previously verified copy.",
+ "source": "https://www.predecessorgame.com/en-US/news/patch-notes/Patch_Notes_1.17",
+ "generatedAt": "2026-09-21T18:40:23.447Z",
+ "predictions": {
+  "baron-valmont": {
+   "name": "Baron Valmont",
+   "role": "carry",
+   "trend": "new",
+   "changes": [
+    "NEW HERO — ranged magical carry. 685 health (+133), 400 mana (+60), 49 physical power (+4), 125 attack speed (+1.7), 665 movement speed, BAT 1.4.",
+    "Hemophagia (passive): his sword Lilith independently attacks the last target he hit for 4s, dealing 15 (+15% magical power) per strike at his attack speed. Enemy deaths near Lilith restore 3-41 mana; hero deaths restore an extra 35% max mana.",
+    "Rupture (primary): 5 blood blades launch over 0.75s for 20/29/38/47/56 (+15% magical power) each in a 300u radius.",
+    "Bloodbound (secondary): throws Lilith up to 1800u for 70/90/110/130/150 (+60% magical power) and a 30% slow for 1.5s; passively adds 0/8/16/24/32 to her damage.",
+    "Arterial Grip (alternate): a 1600u tether dealing 80/120/160/200/240 (+60% magical power) over 3s while stealing 20/25/30/35/40% attack speed, slowing 25% and grounding. Breaks on range, line of sight or immobilize.",
+    "Exsanguinate (ultimate): transforms to fire 3 bat swarms a second for 40/70/100 (+22% magical power), healing 25/45/65 (+20% magical power) each time. Costs 15 mana per second, rising 5 per second. Cooldown 25/15/5s.",
+    "Augments: Vein Splitter (tether branches to nearby targets for 80% damage, loses the ground), Rupturing Fangs (blades deal 20% less but up to 100% more on missing health), Sanguine Banquet (2% omnivamp plus permanent max mana from nearby deaths)."
+   ],
+   "confidence": "THEORY",
+   "why": "Two attackers in one slot. Once he lands a hit, Lilith keeps swinging at that target for 4s on her own, so every trade is his damage plus hers, and Arterial Grip steals up to 40% attack speed from whoever it holds while grounding them.",
+   "willChange": "No history, kit only. The tether is the hero and the tell: it breaks on range, line of sight or an immobilize, so a wall, a dash or a stun ends him. Exsanguinate cannot be held, 15 mana a second rising 5 a second on a 400 mana pool. He will look broken in the duo lane for a week and settle the moment breaking the tether becomes reflex. Ban him if your carry cannot, otherwise draft a stun into the duo.",
+   "magnitude": "meta-shifting"
   },
-  "sectionMeta": {
-    "tldr": "Bloodtide is three things. Sieging works again: Tower Fortification no longer stacks on itself and the grouped-hero armor bonus falls to 200/260/330 from 220/300/400, so five heroes at a Tier 2 tower no longer build the defenders a wall. Baron Valmont is a carry with a second attacker and a tether that ends when you make it end. And Countess gets her ultimate back after three weeks of dealing its cooldown as damage, which makes her the pick-or-ban of the week. Crucible 3v3 is its own game and should not touch how you draft the real one.",
-    "heroes": "The hero pass presses on the top and lifts the bottom. Greystone and Muriel, two of the strongest lines on the board, get trimmed, not broken; both stay picks. Murdock, the worst carry, gets all three damage sources raised and is playable again. Countess is the one to act on: her measured number was set with a broken ultimate, so treat her as unknown and dangerous until the first week of data lands. The rest of the pass is ground-effect bugfixes: free entries close for Crunch, Feng Mao, Grux and Yin, Gideon loses the Torn Space escape, and Yurei's Soulstorm channel now breaks, which matters most against Gideon and Gadget. Draft change for the week: a stun in the duo lane for the new hero, and pick Countess before they do.",
-    "eternals": "Weald gets cut at the minors for the second patch running and the Major stays whole. Forage XP goes 4 to 3 and Wind-Rider attack speed 20% to 15%. Taproot drops to 7% bonus physical power and no longer heals off tower damage. The missiles are the reason to take it, and they now also fire correctly on proc-type damage, so Weald is still the pick when the missiles are the point and a worse one when the minors were. Rallying Roar and Peal each gain a 20s cooldown ahead of Valmont's ultimate, which can be held up almost continuously, and Satariel loses a gold payout tier, so a Satariel that falls behind stays behind.",
-    "items": "The item pass aims at the same enchanters the hero pass hit. Hexbound Bracers drops Heal & Shield Power 10% to 8%. Transference does the same and moves to 3000 gold and 40 magical armor, which makes it a frontline buy now more than an enchanter one. Typhoon loses on both ends. Cyclone attack speed magical power scaling drops 3.5% to 3%. Mirage Dash cooldown rises 35s to 45s, so the crest is a worse escape and a worse damage engine at once. The Terminus bugfix restores shields that were capped too low, a small buff for every Terminus carry."
+  "akeron": {
+   "name": "Akeron",
+   "role": "offlane",
+   "trend": "nerf",
+   "changes": [
+    "Hellfire magical power scaling 16% -> 14%",
+    "Web Lash: Web Shot and Leap magical power scaling both 35% -> 30%",
+    "Crushing Maw magical power scaling 40% -> 35%, bonus health scaling 4% -> 4.5%",
+    "Consume pull damage magical power scaling 5% -> 4%"
+   ],
+   "simBuildCore": [
+    "Spectral Schematics",
+    "Oathkeeper",
+    "Crescelia",
+    "Tainted Scepter",
+    "Wraith Leggings",
+    "Oblivion Crown"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Burst",
+    "items": [
+     "Magnify",
+     "TaintedScepter",
+     "TruesilverBracelet"
+    ],
+    "shrunkWr": 0.507,
+    "games": 76,
+    "spikeMinute": 23
+   },
+   "confidence": "THEORY",
+   "why": "A power-scaling tax across the whole kit with one exception: Crushing Maw now scales harder off bonus health. The message is build health, not raw power.",
+   "willChange": "Offlane Akeron barely moves. At 49.7% in the offlane this is under a point of damage from a full-power build, and a health build loses almost nothing. Jungle Akeron is the casualty, because clears lean on Hellfire and a 45.3% jungle seat gets worse. Keep him offlane, build bruiser, stop treating him as a mage.",
+   "magnitude": "notable"
+  },
+  "aurora": {
+   "name": "Aurora",
+   "role": "jungle",
+   "trend": "nerf",
+   "changes": [
+    "Shatter on-hit magical power scaling 30% -> 25%"
+   ],
+   "simBuildCore": [
+    "Spectral Schematics",
+    "Wraith Leggings",
+    "Oathkeeper",
+    "Magnify",
+    "Oblivion Crown",
+    "Combustion"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Bruiser (Mixed-Def)",
+    "items": [
+     "Magnify",
+     "Elafrost",
+     "FluxMatrix"
+    ],
+    "shrunkWr": 0.521,
+    "games": 249,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "The cut lands on the part of her damage that never misses. Shatter is her basic attack, so every auto shrinks as she stacks power, while the root and the slow are untouched.",
+   "willChange": "Jungle is her best seat at 53.3% and she stays in it. Play the control jungler she is: Hoarfrost root, Boreal Sweep slow, and stop trying to win long auto trades against a bruiser. One scaling cut is not a point of winrate; anyone calling her dead is reacting to the word nerf.",
+   "magnitude": "notable"
+  },
+  "countess": {
+   "name": "Countess",
+   "role": "midlane",
+   "trend": "buff",
+   "changes": [
+    "Attack speed 110 -> 115",
+    "Feast bugfix: damage 125/105/85 -> 135/200/265 — since 1.16.x the ultimate had been dealing its cooldown values as damage"
+   ],
+   "simBuildCore": [
+    "Spectral Schematics",
+    "Orion",
+    "Oathkeeper",
+    "Magnify",
+    "Wraith Leggings",
+    "Oblivion Crown"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Skirmisher",
+    "items": [
+     "Combustion",
+     "Noxia",
+     "WraithLeggings"
+    ],
+    "shrunkWr": 0.517,
+    "games": 381,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Not a buff, a repair. Since 1.16.x Feast dealt its cooldown as damage, 125/105/85, so ranking the ultimate made it weaker. It deals 135/200/265 now and the dive kills again.",
+   "willChange": "Treat her 47.8% over 31,219 ranked games as suspect; the ultimate has been broken since 1.16.x, so every game since then was played with it. Feast suppresses, applies Haemorrhage, and finishes what it lands on, so the follow-up damage lands on a kill instead of a survivor. Sharpest climb on the patch from a 48.1% midlane mark. Her ban rate moves before her win rate does; if she is open in your draft, someone at the table is asleep.",
+   "magnitude": "meta-shifting"
+  },
+  "crunch": {
+   "name": "Crunch",
+   "role": "offlane",
+   "trend": "nerf",
+   "changes": [
+    "Forward Crunch bugfix: the empowered version is now correctly interrupted by a ground effect"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Basilisk",
+    "Spear Of Desolation",
+    "Augmentation",
+    "The Perforator",
+    "Solaris"
+   ],
+   "topMetaBuild": {
+    "title": "Physical DPS Carry",
+    "items": [
+     "Augmentation",
+     "Mutilator",
+     "TaintedBlade"
+    ],
+    "shrunkWr": 0.511,
+    "games": 46,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Turbo-empowered Forward Crunch used to barrel through ground effects. It is a dash like any other now, and a Gideon or Gadget zone stops it.",
+   "willChange": "Zero movement in the number. What changes is the engage against zone heroes: the long Turbo entry through a zone no longer completes, so wait it out or come in from the angle it does not cover. A handful of forced engages a game against the right lineup, nothing more.",
+   "magnitude": "minor"
+  },
+  "feng-mao": {
+   "name": "Feng Mao",
+   "role": "jungle",
+   "trend": "nerf",
+   "changes": [
+    "Reaping Dash bugfix: he can no longer teleport while hit by a ground effect"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Augmentation",
+    "Spear Of Desolation",
+    "The Perforator",
+    "Solaris",
+    "Basilisk"
+   ],
+   "topMetaBuild": {
+    "title": "Lethality DPS Carry",
+    "items": [
+     "Malady",
+     "Painweaver",
+     "Omen"
+    ],
+    "shrunkWr": 0.512,
+    "games": 241,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Reaping Dash is a blink, and a blink that ignored ground effects was an escape almost nobody had. The zone stops it now.",
+   "willChange": "Flat. The dash is an entry tool now, not the exit from a zoned fight, because the exit is exactly the cast that gets denied. Against Gideon or Gadget, decide before you go in; there is no leaving through the floor.",
+   "magnitude": "minor"
+  },
+  "gadget": {
+   "name": "Gadget",
+   "role": "midlane",
+   "trend": "buff",
+   "changes": [
+    "Sticky Mine empowered damage 110/150/190/230/270 -> 110/155/200/245/290",
+    "Security Gate allied decaying movement speed 40% -> 50%, mana cost 65 -> 75"
+   ],
+   "simBuildCore": [
+    "Orion",
+    "Wraith Leggings",
+    "Oblivion Crown",
+    "Spirit Of Amir",
+    "Oathkeeper",
+    "Combustion"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Frontline",
+    "items": [
+     "AzureCore",
+     "Entropy",
+     "Overseer"
+    ],
+    "shrunkWr": 0.5,
+    "games": 251,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "The mine pays more at every rank past the first, but only the empowered version, which needs Spark to hit the attached target first. The gate gets faster for the whole team and costs more mana.",
+   "willChange": "Mid Gadget rises a little from 50.2%, and only for players who do the sequence: mine, then a basic attack on the target before the timer runs out. Skip the attack and you bought nothing. The bigger winner is support Gadget, already 51.4%, because a 50% decaying-speed gate is an engage and a peel button for four other people.",
+   "magnitude": "notable"
+  },
+  "gideon": {
+   "name": "Gideon",
+   "role": "midlane",
+   "trend": "nerf",
+   "changes": [
+    "Event Horizon augment max-health damage 5% -> 4%",
+    "Cosmic Power bonus max mana now 1% per 20 magical power (was per 15)",
+    "Void Breach damage 100/140/180/220/260 -> 90/130/170/210/250; cooldown progresses 1% faster per 100 max mana (was per 80)",
+    "Black Hole damage 520/780/1040 -> 500/760/1020",
+    "Torn Space bugfix: no teleport while hit by a ground effect"
+   ],
+   "simBuildCore": [
+    "Wraith Leggings",
+    "Orion",
+    "Caustica",
+    "Oblivion Crown",
+    "Soulbinder",
+    "Timewarp"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Burst",
+    "items": [
+     "AzureCore",
+     "Combustion",
+     "WraithLeggings"
+    ],
+    "shrunkWr": 0.576,
+    "games": 1260,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Both damage buttons come down at every rank and the mana engine slows: bonus max mana per magical power and the Void Breach cooldown speed-up both need more stat for the same return. Late Gideon is what gets taxed.",
+   "willChange": "Still the safest blind pick in mid. He carries the biggest mid sample on the board, 52.0% over 57,247 games, and this lands him near even, not below it. The mana stacking that carried his late game now needs more power for the same return, so the Azure Core opening in his 57.6% build is not optional any more. Draft him, build him properly, stop expecting him to carry alone.",
+   "magnitude": "notable"
+  },
+  "greystone": {
+   "name": "Greystone",
+   "role": "offlane",
+   "trend": "nerf",
+   "changes": [
+    "Base health 690 -> 680",
+    "Armor growth 5.4 -> 4.8"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Augmentation",
+    "Spear Of Desolation",
+    "The Perforator",
+    "Painweaver",
+    "Solaris"
+   ],
+   "topMetaBuild": {
+    "title": "Physical Bruiser",
+    "items": [
+     "Overlord",
+     "Rapture",
+     "AegisOfAgawar"
+    ],
+    "shrunkWr": 0.557,
+    "games": 542,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Ten health is nothing. Armor growth 5.4 to 4.8 is the cut, because it compounds every level and he is a hero who wins by being unkillable late.",
+   "willChange": "A trim, not a correction. At 54.7% over 58,834 offlane games he is the strongest line on the board, and a growth cut takes him down under a point and leaves him top tier. What it opens is a window: physical offlaners can trade into him before Overlord into Rapture into Aegis Of Agawar lands, a core that measured 55.7% over 542 games. Hit him early or do not bother.",
+   "magnitude": "notable"
+  },
+  "grux": {
+   "name": "Grux",
+   "role": "offlane",
+   "trend": "nerf",
+   "changes": [
+    "Stampede bugfix: now correctly interrupted by a ground effect"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Solaris",
+    "The Perforator",
+    "Augmentation",
+    "Basilisk",
+    "Penumbra"
+   ],
+   "topMetaBuild": {
+    "title": "Physical Bruiser",
+    "items": [
+     "SkySplitter",
+     "Basilisk",
+     "Rapture"
+    ],
+    "shrunkWr": 0.588,
+    "games": 305,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Stampede is a dash that drags, and a dash a zone now stops. The drag stops where the interrupt does.",
+   "willChange": "No movement. When the fight sits on a zone, open with Smash 'n Grab instead: it is a channel pull, not a dash, and nothing in this patch touches it. One route into a zoned fight closes; the hero does not.",
+   "magnitude": "minor"
+  },
+  "kira": {
+   "name": "Kira",
+   "role": "carry",
+   "trend": "buff",
+   "changes": [
+    "Physical power 54 -> 53, growth 3.5 -> 3.7",
+    "Dusk now refunds 35% of its mana if it kills any target (once per cast)",
+    "Mercy damage 20/25/30/35/40 -> 25/30/35/40/45"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Deathstalker",
+    "Vanquisher",
+    "Demolisher",
+    "Imperator",
+    "Plasma Blade"
+   ],
+   "topMetaBuild": {
+    "title": "Crit DPS Carry",
+    "items": [
+     "Solaris",
+     "Ashbringer",
+     "Imperator"
+    ],
+    "shrunkWr": 0.565,
+    "games": 744,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Mercy is the button, and it crits and applies on-hit, so the flat gain at every rank gets multiplied by her whole item build. Dusk refunding 35% of its mana on a kill removes the wave-or-fight mana choice. Base power down, growth up: worse early, better late.",
+   "willChange": "About a point up from 49.1%, and it comes from two habits. Use Dusk on the wave when the kill is there; the mana comes back. Stop saving Mercy for the finish; it is a crit that applies on-hit, so it is her best damage button. The build does not move: Solaris into Ashbringer into Imperator at 56.5% over 744 games.",
+   "magnitude": "notable"
+  },
+  "kwang": {
+   "name": "Kwang",
+   "role": "offlane",
+   "trend": "buff",
+   "changes": [
+    "Judgement Of The Heavens bugfix: he can now pick up his sword while grounded"
+   ],
+   "simBuildCore": [
+    "Orion",
+    "Prophecy",
+    "Spectra",
+    "Magnify",
+    "Cursed Scroll",
+    "World Breaker"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Burst",
+    "items": [
+     "SpiritOfAmir",
+     "Oathkeeper",
+     "TaintedScepter"
+    ],
+    "shrunkWr": 0.5,
+    "games": 100,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Grounded used to strand the sword on the floor with no recall. He can pick it up while grounded now.",
+   "willChange": "Nothing in the number, today. Tomorrow it matters: Baron Valmont's Arterial Grip grounds for up to 3s and only breaks on range, line of sight or an immobilize, and Kwang was about to be the one offlaner whose whole kit sat on the floor for the duration. What he keeps in that fight is the recall: the blade comes back to his hand while grounded, so Light of the Heavens and its shield are not stranded until the tether ends. Surge of the Heavens is still a dash and still denied while the ground holds.",
+   "magnitude": "minor"
+  },
+  "legion": {
+   "name": "Legion",
+   "role": "carry",
+   "trend": "buff",
+   "changes": [
+    "K-75 Storm Rifle projectile hitbox radius increased 10%"
+   ],
+   "simBuildCore": [
+    "Sky Splitter",
+    "Spectra",
+    "The Perforator",
+    "Viper",
+    "Deathstalker",
+    "Rapture"
+   ],
+   "topMetaBuild": {
+    "title": "Lethality DPS Carry",
+    "items": [
+     "Malady",
+     "Vanquisher",
+     "Deathstalker"
+    ],
+    "shrunkWr": 0.569,
+    "games": 1357,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "A 10% wider bullet on an automatic rifle with no aim assist. Nothing about the rotation changes; a bigger hitbox is a higher share of shots landing on a strafing target, and that is the entire change.",
+   "willChange": "Already the healthier of the two auto-fire carries at 51.0%, and a hit-rate buff on a healthy hero is a small climb, under a point. No build change: Malady into Vanquisher into Deathstalker at 56.9% over 1,357 games. The players who gain most are the ones who were missing. If you already tracked well, this is a rounding error.",
+   "magnitude": "notable"
+  },
+  "morigesh": {
+   "name": "Morigesh",
+   "role": "midlane",
+   "trend": "buff",
+   "changes": [
+    "Health regen 1.3 -> 1.5",
+    "Hive cooldown 14/13/12/11/10 -> 12/11.25/10.5/9.75/9",
+    "Mark cooldown 8/7.25/6.5/5.75/5 -> 8.5/7.5/6.5/5.5/4.5",
+    "Curse damage 300/430/560 -> 320/450/580"
+   ],
+   "simBuildCore": [
+    "Spectral Schematics",
+    "Wraith Leggings",
+    "Soulbinder",
+    "Oathkeeper",
+    "Spirit Of Amir",
+    "Oblivion Crown"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Frontline",
+    "items": [
+     "Combustion",
+     "Lifebinder",
+     "Megacosm"
+    ],
+    "shrunkWr": 0.452,
+    "games": 250,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Hive comes around faster at every rank, and Hive is both her wave clear and her poke, so one cooldown buff fixes two problems. Curse hits harder, and Mark ends faster at max rank after a slower start.",
+   "willChange": "Weakest mid on the board at 45.8%, against 54.0% in the offlane. Mid climbs a point or two toward even because clearing the wave and poking the laner now sit on the same rotation. The offlane version stays the better pick; this narrows the gap, it does not close it.",
+   "magnitude": "notable"
+  },
+  "murdock": {
+   "name": "Murdock",
+   "role": "carry",
+   "trend": "buff",
+   "changes": [
+    "Shots Fired total physical power scaling 36%/44%/52%/60% -> 40%/48%/56%/64%",
+    "Buckshot damage 60/85/110/135/160 -> 60/90/120/150/180",
+    "Long Arm of the Law damage 250/400/550 -> 280/430/580, bonus physical power scaling 115% -> 120%"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Deathstalker",
+    "Vanquisher",
+    "Imperator",
+    "Plasma Blade",
+    "Demolisher"
+   ],
+   "topMetaBuild": {
+    "title": "Crit Burst",
+    "items": [
+     "LightningHawk",
+     "Vanquisher",
+     "Imperator"
+    ],
+    "shrunkWr": 0.565,
+    "games": 1183,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "All three damage sources go up at once, and the one that compounds with items is the charged shot's scaling, which is where a crit build lives. Buckshot also gains at every rank past the first, and it still falls off with distance.",
+   "willChange": "Lowest carry on the board at 46.8%, and this is the biggest carry gain of the patch, a point or two, probably still short of even. Play changes more than the build: hold range for the charged shot and Long Arm of the Law, and fire Buckshot point blank for the armor shred right before the charged attack, never as poke, because it loses damage the further out it lands. He is playable now. He is not a first pick.",
+   "magnitude": "notable"
+  },
+  "muriel": {
+   "name": "Muriel",
+   "role": "support",
+   "trend": "nerf",
+   "changes": [
+    "Physical armor growth 5.5 -> 5.1, health regen 1.8 -> 1.6, mana growth 55 -> 52",
+    "Sentinel heal & shield power 12-20.5% (+0.5 per level) -> 10-16.8% (+0.4% per level)",
+    "Alacrity shield magical power scaling 60% -> 50%",
+    "Reversal Of Fortune damage reduction 35% -> 30%, mana cost 100 -> 100/125/150",
+    "Consecrated Ground bugfixes: it no longer deals or heals 10% more than intended"
+   ],
+   "simBuildCore": [
+    "Oblivion Crown",
+    "Lunaria",
+    "Noxia",
+    "Spirit Of Amir",
+    "Lifecore",
+    "Timewarp"
+   ],
+   "topMetaBuild": {
+    "title": "Magical DPS Carry",
+    "items": [
+     "Marshal",
+     "CrystalTear",
+     "Windcaller"
+    ],
+    "shrunkWr": 0.532,
+    "games": 353,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Everything she hands to other people shrinks: Sentinel's heal and shield boost, Alacrity's shield scaling, the ultimate's damage reduction. Reversal Of Fortune also costs more at higher ranks, so the free bail-out is no longer free.",
+   "willChange": "Largest support fall on the patch. At 52.8% she was one of the strongest support lines here, and this is the correction, with Hexbound Bracers and Transference both losing Heal & Shield Power in the same pass. Reversal Of Fortune at 100/125/150 mana is a fight-turning tool now, not an early-lane rescue; spend it on a fight the team can win. She stays a pick. She stops being the answer to every carry.",
+   "magnitude": "meta-shifting"
+  },
+  "phase": {
+   "name": "Phase",
+   "role": "support",
+   "trend": "nerf",
+   "changes": [
+    "Health 670 -> 660",
+    "Essence Catalyst healing 12-80 (+4 per level) -> 10-61 (+3 per level)",
+    "Hyperflux attack speed 40%/60%/80% -> 35%/55%/75%"
+   ],
+   "simBuildCore": [
+    "Stonewall",
+    "Vainglory",
+    "Frostguard",
+    "Warp Stream",
+    "Catalytic Drive",
+    "Unbroken Will"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Bruiser (Mixed-Def)",
+    "items": [
+     "Marshal",
+     "EnmasBlessing",
+     "GalaxyGreaves"
+    ],
+    "shrunkWr": 0.542,
+    "games": 936,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Essence Catalyst, the free sustain on every cast and mirrored to the linked ally, comes down at every level, and the level-six Hyperflux spike hands the carry less attack speed. Ten base health is the least of it.",
+   "willChange": "A fall toward even from 51.1%, sharpened by Hexbound Bracers and Transference losing Heal & Shield Power in the same patch, and nearly all of her play is support, so there is no other seat to run to. The habit to break: Hyperflux is no longer a fight window on its own. Time fights around the carry's item spikes and use the link for the attack speed, not as the reason to go.",
+   "magnitude": "meta-shifting"
+  },
+  "serath": {
+   "name": "Serath",
+   "role": "jungle",
+   "trend": "nerf",
+   "changes": [
+    "The Nephilim bonus physical power scaling 70% -> 75%, magical on-hit total physical power scaling 15% -> 10%",
+    "Heresy burn bonus physical power scaling 25% -> 20%, burn damage 14/27/40 -> 14/26/38"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Solaris",
+    "Spear Of Desolation",
+    "The Perforator",
+    "Augmentation",
+    "Painweaver"
+   ],
+   "topMetaBuild": {
+    "title": "On-Hit Drain",
+    "items": [
+     "SkySplitter",
+     "StormBreaker",
+     "Spectra"
+    ],
+    "shrunkWr": 0.588,
+    "games": 612,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "The sustained damage is what goes: the Nephilim's magical on-hit and Heresy's burn both scale down. Basic-attack scaling goes up, which only pays behind heavy power items, so the on-hit builds are the ones that lose.",
+   "willChange": "Under a point off a large, stable 51.9% over 40,852 jungle games. The cut lands on long fights inside Heresy, so she is a burst-and-leave jungler now: pick targets the opening kills and stop committing to duels that go the distance. The on-hit Sky Splitter line at 58.8% over 612 games loses the most. The on-hit cut from 15% to 10% lands squarely on it, and the power builds barely notice.",
+   "magnitude": "notable"
+  },
+  "twinblast": {
+   "name": "TwinBlast",
+   "role": "carry",
+   "trend": "buff",
+   "changes": [
+    "Lunari 4.0 projectile hitbox radius increased 10%"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Deathstalker",
+    "Vanquisher",
+    "Plasma Blade",
+    "Imperator",
+    "Demolisher"
+   ],
+   "topMetaBuild": {
+    "title": "Crit DPS Carry",
+    "items": [
+     "Solaris",
+     "Ashbringer",
+     "Imperator"
+    ],
+    "shrunkWr": 0.519,
+    "games": 552,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Two pistol rounds per attack, both 10% wider, and Gunslinger's three-shot follow-up after every cast is three more of them. It compounds on a kit built out of projectiles.",
+   "willChange": "A hit-rate buff on a 48.4% carry: small, under a point, and entirely in the strafing-target fights where his damage leaks. No build change, Solaris into Ashbringer into Imperator at 51.9% over 552 games. If you miss, you gain. If you land, nothing changed.",
+   "magnitude": "notable"
+  },
+  "wukong": {
+   "name": "Wukong",
+   "role": "jungle",
+   "trend": "mixed",
+   "changes": [
+    "Health 680 -> 665, physical armor 30 -> 28, magical armor 33 -> 31, attack speed 110 -> 115",
+    "Ruyi Jingu Bang cleave 15% -> 20%",
+    "High Impact minion damage modifier -60% -> -70%",
+    "Windsurge damage 60/90/120/150/180/210 -> 60/85/110/135/160/185, bonus physical power scaling 90% -> 100%, mana cost 50 -> 50/55/60/65/70/75",
+    "84000 Hairs clone kill gold 5 -> 7",
+    "From Up High augment: height damage raised at every band, 2000u 1.7x -> 1.76x up to 9000u 1.875x -> 2.1x"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Solaris",
+    "Augmentation",
+    "The Perforator",
+    "Painweaver",
+    "Alternator"
+   ],
+   "topMetaBuild": {
+    "title": "Physical Frontline",
+    "items": [
+     "Mindrazor",
+     "Augmentation",
+     "Painweaver"
+    ],
+    "shrunkWr": 0.467,
+    "games": 58,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Durability out, output in: health and both armors down, attack speed and cleave up. Body Windsurge trades flat damage for scaling and costs more mana at rank, and the From Up High augment rewards height more at every band.",
+   "willChange": "A thin sample at 48.1% over 6,834 jungle games, and the read is a point up for players who build power and run From Up High. The augment now reaches 2.1x at 9000u. The armor cut is the tax: a bad engage dies faster than before. Fight with clone stacks ready and from height, or do not fight.",
+   "magnitude": "notable"
+  },
+  "yin": {
+   "name": "Yin",
+   "role": "jungle",
+   "trend": "nerf",
+   "changes": [
+    "Lash Kick bugfix: now correctly interrupted by a ground effect"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Solaris",
+    "Spear Of Desolation",
+    "The Perforator",
+    "Augmentation",
+    "Basilisk"
+   ],
+   "topMetaBuild": {
+    "title": "Crit Drain",
+    "items": [
+     "SkySplitter",
+     "LightningHawk",
+     "OnixianQuiver"
+    ],
+    "shrunkWr": 0.542,
+    "games": 172,
+    "spikeMinute": 24
+   },
+   "confidence": "THEORY",
+   "why": "Lash Kick attaches the whip and dashes her in, and the dash now stops in a ground effect, which also denies the leap after it.",
+   "willChange": "No visible change; jungle at 50.6% is her lowest seat. Offlane sits at 52.2% and carry at 53.2%. Gap-closing into covered ground is no longer free: commit before the zone lands or walk the long way. Same hero, one fewer free entry.",
+   "magnitude": "minor"
+  },
+  "yurei": {
+   "name": "Yurei",
+   "role": "jungle",
+   "trend": "nerf",
+   "changes": [
+    "Soulstorm bugfix: now correctly interrupted by a ground effect"
+   ],
+   "simBuildCore": [
+    "Viper",
+    "Solaris",
+    "The Perforator",
+    "Spear Of Desolation",
+    "Augmentation",
+    "Painweaver"
+   ],
+   "topMetaBuild": {
+    "title": "Lethality Skirmisher",
+    "items": [
+     "Malady",
+     "SpearOfDesolation",
+     "ThePerforator"
+    ],
+    "shrunkWr": 0.466,
+    "games": 260,
+    "spikeMinute": 25
+   },
+   "confidence": "THEORY",
+   "why": "Soulstorm channels and then pulls at the end, and a ground effect now breaks the channel. Lose the channel, lose the pull, lose the ultimate.",
+   "willChange": "Holds at 48.4% in the jungle, against 53.1% in the offlane. Cast the ultimate from ground the enemy zone cannot reach; all of its value is the pull at the end. This costs a handful of ultimates, not a role.",
+   "magnitude": "minor"
+  },
+  "zinx": {
+   "name": "Zinx",
+   "role": "support",
+   "trend": "mixed",
+   "changes": [
+    "Attack speed 110 -> 115, BAT 1.4 -> 1.5",
+    "Infuse missing-health healing modifier 40% -> 50%",
+    "Neural Regenesis cooldown 160/140/120 -> 150/135/120",
+    "Disc Of Demise ricochet cooldown reduction 10% -> 12% on heroes, 5% -> 6% on non-heroes",
+    "Terminal Treatment additional DoT damage 35% -> 25%"
+   ],
+   "simBuildCore": [
+    "Oblivion Crown",
+    "Lifecore",
+    "Lunaria",
+    "Spirit Of Amir",
+    "Timewarp",
+    "Windcaller"
+   ],
+   "topMetaBuild": {
+    "title": "Magical Burst",
+    "items": [
+     "Prophecy",
+     "Spectra",
+     "Orion"
+    ],
+    "shrunkWr": 0.498,
+    "games": 500,
+    "spikeMinute": 27
+   },
+   "confidence": "THEORY",
+   "why": "Slower basic attacks, weaker Terminal Treatment, and in exchange the healing half grows: Infuse heals more on low allies, the ultimate comes back sooner, and Disc Of Demise ricochets refund more cooldown. The damage build pays for the healing build.",
+   "willChange": "Weakest support on the board at 46.8%, and support is her most-played seat. The healing build climbs toward even; the damage-leaning setups lose more than they gain. Two habits: hold Infuse until the ally is genuinely low, where the 50% missing-health modifier pays, and aim the disc through bodies, not at the nearest one.",
+   "magnitude": "notable"
   }
+ },
+ "sectionMeta": {
+  "tldr": "Bloodtide is three things. Sieging works again: Tower Fortification no longer stacks on itself and the grouped-hero armor bonus falls to 200/260/330 from 220/300/400, so five heroes at a Tier 2 tower no longer build the defenders a wall. Baron Valmont is a carry with a second attacker and a tether that ends when you make it end. And Countess gets her ultimate back after three weeks of dealing its cooldown as damage, which makes her the pick-or-ban of the week. Crucible 3v3 is its own game and should not touch how you draft the real one.",
+  "heroes": "The hero pass presses on the top and lifts the bottom. Greystone and Muriel, two of the strongest lines on the board, get trimmed, not broken; both stay picks. Murdock, the worst carry, gets all three damage sources raised and is playable again. Countess is the one to act on: her measured number was set with a broken ultimate, so treat her as unknown and dangerous until the first week of data lands. The rest of the pass is ground-effect bugfixes: free entries close for Crunch, Feng Mao, Grux and Yin, Gideon loses the Torn Space escape, and Yurei's Soulstorm channel now breaks, which matters most against Gideon and Gadget. Draft change for the week: a stun in the duo lane for the new hero, and pick Countess before they do.",
+  "eternals": "Weald gets cut at the minors for the second patch running and the Major stays whole. Forage XP goes 4 to 3 and Wind-Rider attack speed 20% to 15%. Taproot drops to 7% bonus physical power and no longer heals off tower damage. The missiles are the reason to take it, and they now also fire correctly on proc-type damage, so Weald is still the pick when the missiles are the point and a worse one when the minors were. Rallying Roar and Peal each gain a 20s cooldown ahead of Valmont's ultimate, which can be held up almost continuously, and Satariel loses a gold payout tier, so a Satariel that falls behind stays behind.",
+  "items": "The item pass aims at the same enchanters the hero pass hit. Hexbound Bracers drops Heal & Shield Power 10% to 8%. Transference does the same and moves to 3000 gold and 40 magical armor, which makes it a frontline buy now more than an enchanter one. Typhoon loses on both ends. Cyclone attack speed magical power scaling drops 3.5% to 3%. Mirage Dash cooldown rises 35s to 45s, so the crest is a worse escape and a worse damage engine at once. The Terminus bugfix restores shields that were capped too low, a small buff for every Terminus carry."
+ },
+ "measured": {
+  "source": "pred.gg generalStatistic (RANKED): pre-patch baseline = pinned pre-patch files 1.15 + 1.15.3 + 1.15.4 + 1.16; patch window = version ids 167 (n>=200 both sides for deltas). Any unlisted hotfix released inside the window is measured as part of it.",
+  "patchDate": "2026-09-22",
+  "windowMatches": 6452,
+  "measuredAt": "2026-09-24T09:03:01.046Z",
+  "scorecard": {
+   "predicted": 20,
+   "directionallyRight": 11
+  },
+  "risers": [
+   {
+    "slug": "neon",
+    "old": 46.9,
+    "now": 53.6,
+    "n": 548,
+    "delta": 6.7
+   },
+   {
+    "slug": "zarus",
+    "old": 50.1,
+    "now": 53.8,
+    "n": 1373,
+    "delta": 3.7
+   },
+   {
+    "slug": "yin",
+    "old": 50.6,
+    "now": 54.2,
+    "n": 758,
+    "delta": 3.6
+   },
+   {
+    "slug": "muriel",
+    "old": 52.2,
+    "now": 55.6,
+    "n": 642,
+    "delta": 3.4
+   },
+   {
+    "slug": "scarlett",
+    "old": 46.8,
+    "now": 49.7,
+    "n": 1621,
+    "delta": 2.9
+   },
+   {
+    "slug": "eden",
+    "old": 49.8,
+    "now": 52.6,
+    "n": 959,
+    "delta": 2.8
+   }
+  ],
+  "fallers": [
+   {
+    "slug": "rampage",
+    "old": 54,
+    "now": 48.1,
+    "n": 638,
+    "delta": -5.9
+   },
+   {
+    "slug": "terra",
+    "old": 46.1,
+    "now": 41.6,
+    "n": 385,
+    "delta": -4.5
+   },
+   {
+    "slug": "grim-exe",
+    "old": 49.6,
+    "now": 45.4,
+    "n": 478,
+    "delta": -4.2
+   },
+   {
+    "slug": "skylar",
+    "old": 50.6,
+    "now": 46.7,
+    "n": 901,
+    "delta": -3.9
+   },
+   {
+    "slug": "renna",
+    "old": 51.8,
+    "now": 48,
+    "n": 1334,
+    "delta": -3.8
+   },
+   {
+    "slug": "wukong",
+    "old": 47.6,
+    "now": 43.9,
+    "n": 314,
+    "delta": -3.7
+   }
+  ],
+  "newHeroes": [],
+  "perHero": {
+   "adele": {
+    "old": 49.3,
+    "now": 47.8,
+    "n": 860,
+    "delta": -1.5
+   },
+   "skylar": {
+    "old": 50.6,
+    "now": 46.7,
+    "n": 901,
+    "delta": -3.9
+   },
+   "sevarog": {
+    "old": 46.5,
+    "now": 47.8,
+    "n": 642,
+    "delta": 1.3
+   },
+   "kwang": {
+    "old": 48.5,
+    "now": 49.5,
+    "n": 1009,
+    "delta": 1
+   },
+   "yurei": {
+    "old": 47.2,
+    "now": 46.3,
+    "n": 482,
+    "delta": -0.9
+   },
+   "neon": {
+    "old": 46.9,
+    "now": 53.6,
+    "n": 548,
+    "delta": 6.7
+   },
+   "rampage": {
+    "old": 54,
+    "now": 48.1,
+    "n": 638,
+    "delta": -5.9
+   },
+   "argus": {
+    "old": 50.3,
+    "now": 50.1,
+    "n": 1405,
+    "delta": -0.2
+   },
+   "drongo": {
+    "old": 50,
+    "now": 51.1,
+    "n": 1634,
+    "delta": 1.1
+   },
+   "greystone": {
+    "old": 52.3,
+    "now": 52.7,
+    "n": 2263,
+    "delta": 0.4
+   },
+   "lt-belica": {
+    "old": 49.5,
+    "now": 49.6,
+    "n": 2129,
+    "delta": 0.1
+   },
+   "aurora": {
+    "old": 51.4,
+    "now": 52.9,
+    "n": 1690,
+    "delta": 1.5
+   },
+   "shinbi": {
+    "old": 50.9,
+    "now": 52.1,
+    "n": 1003,
+    "delta": 1.2
+   },
+   "eden": {
+    "old": 49.8,
+    "now": 52.6,
+    "n": 959,
+    "delta": 2.8
+   },
+   "narbash": {
+    "old": 51.2,
+    "now": 49,
+    "n": 794,
+    "delta": -2.2
+   },
+   "serath": {
+    "old": 50.5,
+    "now": 47.2,
+    "n": 1476,
+    "delta": -3.3
+   },
+   "countess": {
+    "old": 47.4,
+    "now": 49.6,
+    "n": 1255,
+    "delta": 2.2
+   },
+   "gideon": {
+    "old": 50.9,
+    "now": 50.2,
+    "n": 1797,
+    "delta": -0.7
+   },
+   "howitzer": {
+    "old": 49.5,
+    "now": 49.7,
+    "n": 578,
+    "delta": 0.2
+   },
+   "feng-mao": {
+    "old": 47.6,
+    "now": 48.8,
+    "n": 787,
+    "delta": 1.2
+   },
+   "dekker": {
+    "old": 49,
+    "now": 48.3,
+    "n": 1562,
+    "delta": -0.7
+   },
+   "iggy-scorch": {
+    "old": 51.4,
+    "now": 54.1,
+    "n": 1272,
+    "delta": 2.7
+   },
+   "scarlett": {
+    "old": 46.8,
+    "now": 49.7,
+    "n": 1621,
+    "delta": 2.9
+   },
+   "mourn": {
+    "old": 53.1,
+    "now": 51.2,
+    "n": 1087,
+    "delta": -1.9
+   },
+   "wukong": {
+    "old": 47.6,
+    "now": 43.9,
+    "n": 314,
+    "delta": -3.7
+   },
+   "grux": {
+    "old": 50.8,
+    "now": 49.2,
+    "n": 2050,
+    "delta": -1.6
+   },
+   "khaimera": {
+    "old": 53.3,
+    "now": 53,
+    "n": 2361,
+    "delta": -0.3
+   },
+   "crunch": {
+    "old": 48.1,
+    "now": 48.8,
+    "n": 1032,
+    "delta": 0.7
+   },
+   "muriel": {
+    "old": 52.2,
+    "now": 55.6,
+    "n": 642,
+    "delta": 3.4
+   },
+   "grim-exe": {
+    "old": 49.6,
+    "now": 45.4,
+    "n": 478,
+    "delta": -4.2
+   },
+   "renna": {
+    "old": 51.8,
+    "now": 48,
+    "n": 1334,
+    "delta": -3.8
+   },
+   "revenant": {
+    "old": 49.7,
+    "now": 51.6,
+    "n": 1480,
+    "delta": 1.9
+   },
+   "bayle": {
+    "old": 47.5,
+    "now": 44.3,
+    "n": 950,
+    "delta": -3.2
+   },
+   "steel": {
+    "old": 51.8,
+    "now": 52.5,
+    "n": 2709,
+    "delta": 0.7
+   },
+   "terra": {
+    "old": 46.1,
+    "now": 41.6,
+    "n": 385,
+    "delta": -4.5
+   },
+   "zinx": {
+    "old": 48.6,
+    "now": 48.9,
+    "n": 1161,
+    "delta": 0.3
+   },
+   "murdock": {
+    "old": 47.5,
+    "now": 48.5,
+    "n": 1599,
+    "delta": 1
+   },
+   "gadget": {
+    "old": 49.8,
+    "now": 48.5,
+    "n": 1314,
+    "delta": -1.3
+   },
+   "the-fey": {
+    "old": 51.7,
+    "now": 52.8,
+    "n": 1601,
+    "delta": 1.1
+   },
+   "boris": {
+    "old": 49.2,
+    "now": 49.4,
+    "n": 848,
+    "delta": 0.2
+   },
+   "morigesh": {
+    "old": 47.2,
+    "now": 49.8,
+    "n": 904,
+    "delta": 2.6
+   },
+   "phase": {
+    "old": 51.4,
+    "now": 48.1,
+    "n": 1107,
+    "delta": -3.3
+   },
+   "riktor": {
+    "old": 49,
+    "now": 48.6,
+    "n": 2082,
+    "delta": -0.4
+   },
+   "ikra": {
+    "old": 47,
+    "now": 43.9,
+    "n": 544,
+    "delta": -3.1
+   },
+   "yin": {
+    "old": 50.6,
+    "now": 54.2,
+    "n": 758,
+    "delta": 3.6
+   },
+   "kira": {
+    "old": 49,
+    "now": 49.2,
+    "n": 1031,
+    "delta": 0.2
+   },
+   "kallari": {
+    "old": 49.9,
+    "now": 48.7,
+    "n": 448,
+    "delta": -1.2
+   },
+   "legion": {
+    "old": 50.7,
+    "now": 51.6,
+    "n": 1809,
+    "delta": 0.9
+   },
+   "twinblast": {
+    "old": 48.1,
+    "now": 47.9,
+    "n": 1586,
+    "delta": -0.2
+   },
+   "zarus": {
+    "old": 50.1,
+    "now": 53.8,
+    "n": 1373,
+    "delta": 3.7
+   },
+   "wraith": {
+    "old": 46,
+    "now": 47,
+    "n": 896,
+    "delta": 1
+   },
+   "akeron": {
+    "old": 48.2,
+    "now": 49.7,
+    "n": 541,
+    "delta": 1.5
+   },
+   "sparrow": {
+    "old": 51.6,
+    "now": 50.7,
+    "n": 2386,
+    "delta": -0.9
+   },
+   "maco": {
+    "old": 48.8,
+    "now": 47.1,
+    "n": 401,
+    "delta": -1.7
+   }
+  }
+ }
 }
