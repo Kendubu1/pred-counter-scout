@@ -1,80 +1,50 @@
 {
- "generatedAt": "2026-09-28T17:09:03.853Z",
+ "generatedAt": "2026-09-28T18:06:17.851Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
- "reviewedLines": 33,
- "flaggedLines": 11,
- "agreementRate": 0.667,
- "rewritesGrounded": 11,
+ "reviewedLines": 32,
+ "flaggedLines": 6,
+ "agreementRate": 0.813,
+ "rewritesGrounded": 5,
  "rewritesDropped": 0,
- "applied": 10,
- "unmatched": 1,
+ "applied": 5,
+ "unmatched": 0,
  "games": {
-  "fd7ea85d-648a-4d08-98d9-416587150b48": [
+  "ca7ddb1f-3059-488e-b3e6-8f20cfa56b80": [
    {
-    "quote": "Skylar's 17 kills and 61,612 damage to heroes could not cover 8 offlane deaths and two skipped fights.",
+    "quote": "Only 2 of 5 carried magic resist against Morigesh's 19,402 magical damage, but the enemy ran just 1 of 5 on their own meta core too.",
     "severity": "med",
-    "issue": "ambiguous attribution mixes Skylar's stats with Bayle's and Morigesh's shortfalls without naming them",
-    "rewrite": "Skylar's 17 kills and 61,612 damage to heroes could not cover it: Bayle's 8 offlane deaths and Morigesh's fights skipped alive at 20.9 and 30.5 sank the game anyway."
+    "issue": "invents a magic-resist item count and an enemy meta-core stat not in SOURCE (enemy players have no missing/winning-core data)",
+    "rewrite": null
    },
    {
-    "quote": "The duo lane ran to Kira and Riktor all game",
+    "quote": "Steel's job was the frontline: 27,375 damage mitigated, the team high, says he did it, with 9 assists inside 52% kill participation.",
     "severity": "high",
-    "issue": "ungrounded: contradicts SOURCE duo lane read (even), conflates carry matchup with duo lane",
-    "rewrite": "The carry matchup ran to Kira all game while the duo lane read was even"
+    "issue": "wrong stat: Steel's 27,375 mitigated is not the team high — Greystone's 30,931 is higher",
+    "rewrite": "Steel's job was the frontline: 27,375 damage mitigated, second on the team behind Greystone's 30,931, with 9 assists inside 52% kill participation."
    },
    {
-    "quote": "Skylar was the only real offense on the roster: 17 kills, 61,612 damage to heroes, nearly triple the next-highest total.",
-    "severity": "med",
-    "issue": "ungrounded ratio: 61,612 vs next-highest hero damage 28,854 is about 2.1x, not nearly triple",
-    "rewrite": "Skylar was the only real offense on the roster: 17 kills, 61,612 damage to heroes, more than double the next-highest total."
-   },
-   {
-    "quote": "Their Inner Tower fell after we lost this fight 0-3 while Morigesh and Greystone stood alive and never joined; five bodies there and the count is different.",
+    "quote": "Steel mitigated a team-high 27,375 damage and hit 52% kill participation, but placed only 2 wards to Zinx's 8.",
     "severity": "high",
-    "issue": "wrong reference: SOURCE says OUR Inner Tower fell (they took it), not theirs",
-    "rewrite": "Our Inner Tower fell after we lost this fight 0-3 while Morigesh and Greystone stood alive and never joined; five bodies there and the count is different."
+    "issue": "wrong stat: Steel's 27,375 mitigated is not the team high — Greystone's 30,931 is higher",
+    "rewrite": "Steel mitigated 27,375 damage, second on the team behind Greystone's 30,931, and hit 52% kill participation, but placed only 2 wards to Zinx's 8."
    },
    {
-    "quote": "The fight at their Outer Tower went 3-1 and took the tower back — proof the team could win the objective trade when everyone showed up.",
+    "quote": "9 assists, 52% kill participation, and a team-high 27,375 damage mitigated as the frontline.",
+    "severity": "high",
+    "issue": "wrong stat: Steel's 27,375 mitigated is not the team high — Greystone's 30,931 is higher",
+    "rewrite": "9 assists, 52% kill participation, and 27,375 damage mitigated, second on the team behind Greystone's 30,931, as the frontline."
+   },
+   {
+    "quote": "GRIM.exe, Lt. Belica and Yurei won this 3-0 over Gadget, Zinx and Sparrow at Fangtooth — a clean sweep with all five of ours alive and none of theirs.",
     "severity": "med",
-    "issue": "ungrounded: 'took it back' implies reclaiming; SOURCE shows this tower only fell once, to us",
-    "rewrite": "The fight at their Outer Tower went 3-1 and took the tower — proof the team could win the objective trade when everyone showed up."
+    "issue": "overclaims a full 5-person enemy wipe; SOURCE only shows a 3-0 skirmish with 3 participants per side",
+    "rewrite": "GRIM.exe, Lt. Belica and Yurei won this 3-0 over Gadget, Zinx and Sparrow at Fangtooth — zero deaths on our side in the fight."
    },
    {
-    "quote": "Steel built two of three core items, Xenia and Dynamo, swapping Gaia Greaves' armor for Tainted Guard and Prophecy against a three-fifths-physical comp — different defense, not more of it.",
+    "quote": "Steel built two of the three winning-core items, Xenia and Dynamo, swapping Gaia Greaves' armor for Cursed Scroll's damage — on core, nothing to teach here.",
     "severity": "low",
-    "issue": "readability: second not-X-but-Y formula in the review",
-    "rewrite": "Steel built two of three core items, Xenia and Dynamo, swapping Gaia Greaves' armor for Tainted Guard and Prophecy against a three-fifths-physical comp."
-   },
-   {
-    "quote": "17 kills, 6 deaths, 61,612 damage to heroes — nearly triple the next-highest total.",
-    "severity": "med",
-    "issue": "ungrounded ratio and missing player name on a per-player line",
-    "rewrite": "Skylar: 17 kills, 6 deaths, 61,612 damage to heroes — more than double the next-highest total."
-   },
-   {
-    "quote": "76% kill participation, 16 assists, 63,858 damage mitigated — held the frontline all game.",
-    "severity": "low",
-    "issue": "voice: per-player line missing player name",
-    "rewrite": "Steel: 76% kill participation, 16 assists, 63,858 damage mitigated — held the frontline all game."
-   },
-   {
-    "quote": "10 assists, 16,174 objective damage — but zero armor and 5 deaths.",
-    "severity": "low",
-    "issue": "voice: per-player line missing player name",
-    "rewrite": "Greystone: 10 assists, 16,174 objective damage — but zero armor and 5 deaths."
-   },
-   {
-    "quote": "Fewest deaths on the team, but alive and absent from the 20.9 loss.",
-    "severity": "low",
-    "issue": "voice: per-player line missing player name",
-    "rewrite": "Morigesh: fewest deaths on the team, but alive and absent from the 20.9 loss."
-   },
-   {
-    "quote": "8 deaths, the most on the team; 5 of them to Scarlett alone.",
-    "severity": "low",
-    "issue": "voice: per-player line missing player name",
-    "rewrite": "Bayle: 8 deaths, the most on the team; 5 of them to Scarlett alone."
+    "issue": "repeated coined phrase ('on core, nothing to teach here' also used for GRIM.exe)",
+    "rewrite": "Steel built two of the three winning-core items, Xenia and Dynamo, swapping Gaia Greaves' armor for Cursed Scroll's damage — a clean match to the winning core."
    }
   ]
  }
