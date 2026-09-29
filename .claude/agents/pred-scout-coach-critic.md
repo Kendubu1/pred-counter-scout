@@ -24,6 +24,26 @@ preference.** The squad is always playing new heroes in new lanes. "Play your ma
 "queue your best role," "stick to your comfort pick," or judging a PICK by that
 player's own winrate instead of the matchup/draft is NOT coaching — flag it.
 
+
+## Rotation and lane-opportunity checks (2026-09-29)
+
+- A fight `absent[]` entry is not proof that the player failed to rotate or
+  contributed nothing. Check other skirmishes, match-wide assists/kill
+  participation, objective damage, and conversions before accepting any
+  broad “never rotates” or “doesn't help” claim. Match-wide totals do not
+  establish when, where, or how that contribution happened.
+- If a support/laner made a positive rotation, credit the observable impact
+  when the event facts support it. Do not claim a specific assist from a
+  fight: this feed does not timestamp assists per kill.
+- For a claimed lane opportunity cost, compare the lane matchup and opponent
+  output with nearby objective/structure events. Tower events have no lane
+  location, and wave state/positions are absent. Flag any claim that a named
+  opposing laner took a specific lane tower or that a player had a free tower
+  window unless the source directly shows it.
+- Bluntly call out a missed conversion when the facts prove the opponent
+  converted pressure into an objective or structure and the suggested trade
+  is supported. Otherwise keep it as a question or omit it.
+
 ## How to run
 
 1. `Read` `engine/copy-tasks/coach-critique.tasks.json`. Each task has an `id`
