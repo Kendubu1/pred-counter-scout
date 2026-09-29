@@ -1,50 +1,104 @@
 {
- "generatedAt": "2026-09-28T18:06:17.851Z",
+ "generatedAt": "2026-09-29T02:21:13.300Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
  "reviewedLines": 32,
- "flaggedLines": 6,
- "agreementRate": 0.813,
- "rewritesGrounded": 5,
+ "flaggedLines": 15,
+ "agreementRate": 0.531,
+ "rewritesGrounded": 11,
  "rewritesDropped": 0,
- "applied": 5,
+ "applied": 11,
  "unmatched": 0,
  "games": {
-  "ca7ddb1f-3059-488e-b3e6-8f20cfa56b80": [
+  "25842569-73fb-47fb-af52-aa99730b4393": [
    {
-    "quote": "Only 2 of 5 carried magic resist against Morigesh's 19,402 magical damage, but the enemy ran just 1 of 5 on their own meta core too.",
-    "severity": "med",
-    "issue": "invents a magic-resist item count and an enemy meta-core stat not in SOURCE (enemy players have no missing/winning-core data)",
+    "quote": "Shinbi's zero deaths and a 5-0 fight at 32.3 sealed a 23-14 kill win that ran through the core.",
+    "severity": "high",
+    "issue": "23-14 is the majors/objectives score, not a kill count",
+    "rewrite": "Shinbi's zero deaths and a 5-0 fight at 32.3 helped seal the win in 33 minutes, with majors won 23-14 and towers 8-4."
+   },
+   {
+    "quote": "Final: 23 kills to 14, towers 8-4, six fights won to four cashed.",
+    "severity": "high",
+    "issue": "23-14 is majors, not kills",
+    "rewrite": "Final: majors won 23-14, towers 8-4, six fights won to four cashed."
+   },
+   {
+    "quote": "The fight went 0-3, but Fangtooth and a tower fell to us in the same window — a trade, not a clean loss. Shinbi, ahead in lane, sat out a second time instead of rotating to flip the numbers.",
+    "severity": "low",
+    "issue": "second 'not a clean loss' formula repeats the same maxim used earlier in the review",
+    "rewrite": "The fight went 0-3, but Fangtooth and a tower fell to us in the same window. Shinbi, ahead in lane, sat out a second time instead of rotating to flip the numbers."
+   },
+   {
+    "quote": "the loss also handed over Primal Fangtooth in the same window",
+    "severity": "high",
+    "issue": "invented causation — SOURCE shows Primal Fangtooth at 32m was uncontested with the whole squad alive, not a consequence of the 29.9 fight loss",
+    "rewrite": "Primal Fangtooth fell to them uncontested at minute 32 with the whole squad alive — a separate concession, not a consequence of this fight."
+   },
+   {
+    "quote": "A costly fight to start that close to full strength on both sides.",
+    "severity": "medium",
+    "issue": "contradicts the fight roster — we had a 5v4 numbers edge (Riktor absent from their side) and still lost it 3-4",
+    "rewrite": "A costly fight to start — we had the 5v4 numbers edge at their Inner Tower and still lost it 3-4."
+   },
+   {
+    "quote": "The engine's modeled pick for Greystone is Krix, worth 18% effective health, fitting the stasis-and-soak win condition over a burst option like Demiurge.",
+    "severity": "high",
+    "issue": "no Eternal/engine-pick data exists anywhere in the SOURCE for Greystone — Krix, the 18% figure, and Demiurge are invented",
     "rewrite": null
    },
    {
-    "quote": "Steel's job was the frontline: 27,375 damage mitigated, the team high, says he did it, with 9 assists inside 52% kill participation.",
+    "quote": "The engine's modeled pick for Scarlett is also Krix for the same 18% effective-health boost, trading away Demiurge's burst for durability in extended jungle fights.",
     "severity": "high",
-    "issue": "wrong stat: Steel's 27,375 mitigated is not the team high — Greystone's 30,931 is higher",
-    "rewrite": "Steel's job was the frontline: 27,375 damage mitigated, second on the team behind Greystone's 30,931, with 9 assists inside 52% kill participation."
+    "issue": "same fabricated Eternal data — no SOURCE backing for Scarlett",
+    "rewrite": null
    },
    {
-    "quote": "Steel mitigated a team-high 27,375 damage and hit 52% kill participation, but placed only 2 wards to Zinx's 8.",
+    "quote": "The engine's modeled pick for Shinbi is Krix for the effective-health boost, trading away Demiurge's fight-duration damage that suits the wolfpack ultimate.",
     "severity": "high",
-    "issue": "wrong stat: Steel's 27,375 mitigated is not the team high — Greystone's 30,931 is higher",
-    "rewrite": "Steel mitigated 27,375 damage, second on the team behind Greystone's 30,931, and hit 52% kill participation, but placed only 2 wards to Zinx's 8."
+    "issue": "same fabricated Eternal data — no SOURCE backing for Shinbi",
+    "rewrite": null
    },
    {
-    "quote": "9 assists, 52% kill participation, and a team-high 27,375 damage mitigated as the frontline.",
+    "quote": "The engine doesn't model support Eternals; the field mostly runs Krix at support for Steel, prioritizing effective health for the peel job.",
     "severity": "high",
-    "issue": "wrong stat: Steel's 27,375 mitigated is not the team high — Greystone's 30,931 is higher",
-    "rewrite": "9 assists, 52% kill participation, and 27,375 damage mitigated, second on the team behind Greystone's 30,931, as the frontline."
+    "issue": "invents a specific field pick ('Krix') under the unmodeled-support disclaimer with no SOURCE evidence for it",
+    "rewrite": "The engine doesn't model support Eternals for Steel — no graded pick to compare here."
    },
    {
-    "quote": "GRIM.exe, Lt. Belica and Yurei won this 3-0 over Gadget, Zinx and Sparrow at Fangtooth — a clean sweep with all five of ours alive and none of theirs.",
-    "severity": "med",
-    "issue": "overclaims a full 5-person enemy wipe; SOURCE only shows a 3-0 skirmish with 3 participants per side",
-    "rewrite": "GRIM.exe, Lt. Belica and Yurei won this 3-0 over Gadget, Zinx and Sparrow at Fangtooth — zero deaths on our side in the fight."
+    "quote": "The engine's modeled pick for Argus is Demiurge, worth 14% more damage in extended fights, fitting the poke-and-zone kit over a dueling pick like Vesh.",
+    "severity": "high",
+    "issue": "same fabricated Eternal data — no SOURCE backing for Argus",
+    "rewrite": null
    },
    {
-    "quote": "Steel built two of the three winning-core items, Xenia and Dynamo, swapping Gaia Greaves' armor for Cursed Scroll's damage — on core, nothing to teach here.",
-    "severity": "low",
-    "issue": "repeated coined phrase ('on core, nothing to teach here' also used for GRIM.exe)",
-    "rewrite": "Steel built two of the three winning-core items, Xenia and Dynamo, swapping Gaia Greaves' armor for Cursed Scroll's damage — a clean match to the winning core."
+    "quote": "8 kills, 3 deaths, team-high 20,725 objective damage, closed both decisive Fangtooth fights.",
+    "severity": "medium",
+    "issue": "per-player line doesn't name the player (Scarlett)",
+    "rewrite": "Scarlett: 8 kills, 3 deaths, team-high 20,725 objective damage, closed both decisive Fangtooth fights."
+   },
+   {
+    "quote": "Zero deaths in 33 minutes, team-high 36,562 damage to heroes, but never rotated twice.",
+    "severity": "medium",
+    "issue": "per-player line doesn't name the player (Shinbi)",
+    "rewrite": "Shinbi: zero deaths in 33 minutes, team-high 36,562 damage to heroes, but never rotated twice."
+   },
+   {
+    "quote": "74,498 mitigated and 12 assists, but caught alone three times: 2.1, 10.7, 17.7.",
+    "severity": "medium",
+    "issue": "per-player line doesn't name the player (Steel)",
+    "rewrite": "Steel: 74,498 mitigated and 12 assists, but caught alone three times: 2.1, 10.7, 17.7."
+   },
+   {
+    "quote": "6 kills, 3 deaths, but out-damaged 54,469-to-23,322 in a lane read theirs all game.",
+    "severity": "medium",
+    "issue": "per-player line doesn't name the player (Argus)",
+    "rewrite": "Argus: 6 kills, 3 deaths, but out-damaged 54,469-to-23,322 in a lane read theirs all game."
+   },
+   {
+    "quote": "11 deaths, the team high, and no armor into a three-physical enemy comp.",
+    "severity": "medium",
+    "issue": "per-player line doesn't name the player (Greystone)",
+    "rewrite": "Greystone: 11 deaths, the team high, and no armor into a three-physical enemy comp."
    }
   ]
  }
