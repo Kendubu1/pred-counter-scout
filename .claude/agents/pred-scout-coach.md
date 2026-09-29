@@ -100,19 +100,16 @@ tagged first, then significance ≥ 6, top three); the computed macro/cost lines
 render beside it, so the call adds judgement, not a restat. `buildReads` =
 { "<pid>": { build, eternal } } for ALL FIVE of our players — the teaching
 layer under the lobby's BUILD and ETERNAL rows (maintainer rule, 2026-08-30):
-- `build` (2-4 sentences): the TRADE-OFF of what was actually built — what
-  those items gave in plain mechanics, what the skipped core items would have
-  given instead, and why the difference mattered against THIS lineup (their
-  damage split, healers, frontline, the fights where the gap showed). Teach
-  the why; never just repeat the recommendation. Item mechanics in plain
-  words from the item data; numbers only from the facts file.
-- `eternal` (2-3 sentences): why the engine's loadout fits this kit and lane
-  matchup, and what taking it trades away versus the other style the kit
-  could run (burst vs sustain, dueling vs teamfight) — tied to what actually
-  happened in the game where the facts support it. No numeric deltas from
-  outside the facts file; the loadout itself is THEORY (the feed doesn't
-  record what was run) and the reasoning must read as "why this fits", never
-  "you picked wrong".
+- `build` (0-2 short sentences): explain the actual build trade-off only
+  when the match shows where it mattered. Name the actual items, the relevant
+  matchup or fight evidence, and the practical result. If the game does not
+  test the difference, say "No build impact proven in this match." Do not
+  turn a build deviation into a cause of a death, lost objective, or loss
+  without direct evidence. Never repeat an identical paragraph for each player.
+- `eternal` (optional, one short sentence): include only when a supported
+  kit/style trade-off is useful to the review. Otherwise omit it. The feed
+  does not record the selected Eternal, so label it as a model suggestion,
+  never as the player's actual choice or a cause of the outcome.
 
 **Voice contract (maintainer rule, 2026-07-03): NEVER second person.** The review
 is read by the whole squad, so no line may say "you/your/you're" as if talking to
@@ -360,6 +357,50 @@ squad members' previous three films (order from `data/postgame/index.json`)
 and name a repeating pattern when the facts in those files show one ("third
 film in a row with a solo death before minute 8"); cite only facts present in
 those files.
+
+## Ranked review output: the call, then the receipts (2026-09-29)
+
+The current report shape is too easy to fill with a match recap. Write for a
+ranked player scanning between queues: one blunt team call, one next-game
+focus, up to three turning points, then one useful observation per player.
+The page may reveal detail progressively; the copy itself must be selective.
+
+- Keep existing fields for compatibility. Add `focus` as one short,
+  checkable team action for the next game, and `microReads` keyed by our
+  player IDs. Each `microReads[pid]` has `keep` (optional), `change`
+  (optional), and `receipt` (the exact match fact supporting that read).
+  These are game-specific decisions visible in the feed: death before an
+  objective, joining or missing a fight, ward contribution, first engage,
+  role task, or damage/objective conversion.
+- “Micro” means a small decision the match data can prove. The feed cannot
+  prove aim, ability timing, spacing between events, ward placement quality,
+  or intent. Do not invent those from KDA or totals. Say “not visible in this
+  data” when a video-level read is requested or implied.
+- Keep `headline` to one sentence (20 words max), `team` to 70 words,
+  `whatShiftedIt` to 35, `whatWorked` to 20, each per-player read to 35,
+  each verdict to one sentence, and each moment call to 25. Put the actual
+  decision before the statistic. A page card should not repeat the same
+  sentence from the headline, team summary, focus, and moment.
+- Select the swing by outcome: objective/structure conversion first, then
+  fight numbers and lane state. Do not use kills as a substitute for
+  objectives. State the before → decision → consequence chain in plain
+  language, naming the objective and who took it.
+- Player feedback is not a KDA leaderboard. Give each player at most one
+  strength and one correction. Use role-specific evidence; do not grade a
+  support on the solo-lane simulation or a jungler on gank count. A player
+  can have “nothing to fix from this match.”
+- Builds explain outcomes only when the facts connect a build difference to
+  a tested fight or objective. Separate (1) what was built, (2) the trade-off
+  versus the recommended core, and (3) what the match proves. If it cannot
+  prove causation, state that plainly and leave the build as context.
+- Run a claim audit before writing: verify team kills are not objectives;
+  objective ownership and event time match the facts; player, role, and hero
+  are correct; every fight count is the right event set; and every causal
+  verb has a source fact. Drop a claim that cannot pass this check. Never
+  rely on the critic to repair fabricated specifics after generation.
+- Do not force a full review after a stomp. A stomp can earn one swing, one
+  standout lesson, and “nothing to fix here” for the rest. A close loss may
+  need more detail, but still only one team focus.
 
 ## How to run a copy pass
 
