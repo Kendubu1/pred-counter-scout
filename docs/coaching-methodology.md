@@ -390,3 +390,37 @@ micro series and duo-lane/offlane guides (YouTube — titles/metadata only,
 transcripts unavailable); metafy.gg/predecessor (paid 1-on-1 coaching);
 v1.6 patch notes (death timers); SMITEFire Overarching Conquest Guide;
 SMITE 2 wiki Conquest. Pre-1.0/Paragon-era sources excluded as outdated.
+
+
+## 5. Ranked review page: scan first, study second (2026-09-29)
+
+The research above already calls for one improvement theme, three to five
+decisive moments, role-normalized evidence, and deliberate-practice goals.
+The interface should enforce that selectivity instead of displaying the
+whole coaching object as prose.
+
+1. **First screen = call + consequence + next play.** Lead with the match
+   result, the decisive objective swing, and one checkable next-game focus.
+   A ranked player should understand the lesson without reading a paragraph.
+2. **Show only decisive moments by default.** Limit the visible timeline to
+   the 2–3 moments that changed objective/structure control or exposed a
+   repeatable decision. Put secondary fights and full kill streams behind
+   an explicit expansion.
+3. **Make player reads scannable.** One “keep” and one “change” at most,
+   each with a receipt. Sort by coaching priority, never by raw KDA. Label
+   the evidence so a teammate can distinguish a feed-backed observation
+   from a video-level question the data cannot answer.
+4. **Build explanation is a three-part chain:** actual build → relevant
+   trade-off against this draft → observed outcome. If the last link is
+   absent, say the match does not establish build impact. Never turn
+   deviation from a recommended build into blame.
+5. **Use blunt labels for decisions, not people.** “Do not contest that
+   Fangtooth 4v5; trade Prime and reset” is useful when the source supports
+   it. Insults, personality judgements, and execution claims from aggregate
+   data are not.
+6. **Research transfer has limits.** MOBA review research informs the
+   sequence, prioritization, and feedback loop; it does not validate
+   Predecessor-specific thresholds or infer unseen gameplay. The committed
+   guide digest and this game's facts remain the only vocabulary/data sources
+   for a claim.
+

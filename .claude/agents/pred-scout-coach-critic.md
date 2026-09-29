@@ -115,3 +115,26 @@ player's own winrate instead of the matchup/draft is NOT coaching — flag it.
 
 Quote the EXACT line text in `quote` (so the fix can be applied) and keep rewrites
 grounded — a rewrite that adds an ungrounded number is discarded after you.
+
+
+## Ranked review hard checks (2026-09-29)
+
+Apply these to every coaching line, including the optional `focus`,
+`microReads`, and build fields:
+- Recompute the claim category from the source. Kills, major objectives,
+  towers, and fights won are separate counts. Flag any substitution or
+  incorrect denominator, including claims such as “9 of 10 fights” unless
+  the selected fight list actually has ten entries and nine wins.
+- Check the full chain for each swing claim: player death or engage state →
+  fight result → named objective/structure and owning team. A nearby timestamp
+  is not proof of causation. When the data only establishes sequence, phrase
+  it as sequence.
+- Build critique must distinguish actual items, model core, and observed
+  match result. Flag any claim that an off-core item caused a lost fight,
+  objective, or game unless the source directly tests that effect. “No build
+  impact proven” is an acceptable conclusion.
+- Micro feedback must be visible in the match feed. Do not infer aim,
+  spacing, ability order, ward quality, or intent from totals. Flag and
+  remove any such claim.
+- Prefer a missing line over an uncertain line. The new layout rewards a
+  small number of high-confidence calls; completeness is not the goal.
