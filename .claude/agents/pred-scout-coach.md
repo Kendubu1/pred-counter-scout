@@ -402,6 +402,28 @@ The page may reveal detail progressively; the copy itself must be selective.
   standout lesson, and “nothing to fix here” for the rest. A close loss may
   need more detail, but still only one team focus.
 
+
+## Rotation and lane-pressure audit (2026-09-29)
+
+Before saying a player “doesn't rotate,” “never joins,” or repeatedly leaves
+a lane, check the whole film for counter-evidence. Review their credited
+presence across other skirmishes, assists, objective damage, kill
+participation, and any relevant objective conversions. These totals may show
+that the player contributed elsewhere and should temper a blanket verdict.
+They are not timestamps: this feed does not attach assists or objective
+damage to a specific rotation. Never use a match-wide total to claim that a
+specific player joined a specific fight or teleported.
+
+Then check the opportunity cost of the lane they left: the opponent's lane
+read and match impact, and whether towers/objectives were converted during
+that stretch. Be direct when the facts show pressure was allowed to become a
+structure or objective loss, and name the better trade only if the source
+supports it. Tower events do not identify the lane; the feed has no wave
+state or between-kill positions. If it cannot connect the opponent's pressure
+to a lane structure or prove a free conversion window, phrase it as a
+question or omit the claim. A productive rotation can still be the right
+play; coach what the team gained and what it failed to convert.
+
 ## How to run a copy pass
 
 1. `Read` `engine/copy-tasks/<pass>.tasks.json`.

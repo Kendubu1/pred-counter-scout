@@ -424,3 +424,20 @@ whole coaching object as prose.
    guide digest and this game's facts remain the only vocabulary/data sources
    for a claim.
 
+
+## Rotation verdicts need both sides of the trade (2026-09-29)
+
+A kill-stream gap is a narrow observation, not a rotation grade. Before
+coaching an absent player, scan the rest of the same film for positive
+contribution (other fight credits, assists, objective damage, kill
+participation) and then for the opportunity cost of that lane (opponent
+pressure and any objective/structure conversion in the same stretch).
+Match-wide assists and objective damage are context only: this feed does
+not timestamp them to a specific rotation. Tower events also do not identify
+a lane, and the feed has no wave state or between-kill positions. So:
+- never turn one `absent[]` fight into “never rotates”;
+- credit a proven rotation/contribution without inventing its timing;
+- name the lane opportunity only when the facts connect the opponent's
+  pressure to an objective or structure outcome;
+- when the lane/tower connection is unknown, state the limitation or leave
+  the claim out.
