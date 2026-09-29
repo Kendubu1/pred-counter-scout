@@ -450,3 +450,8 @@ Choose one team focus, then up to three event receipts that explain it. Each rec
 ## Ranked review copy within the established page (2026-09-29)
 
 Preserve the production post-game page's established sequence and visual language. Improve the copy and evidence inside existing review sections; do not replace the default page with a standalone redesign. Present a compact statline once (K/D/A, hero damage, objective damage, mitigation, wards). Then combine diagnostic numbers and their coach questions into one short evidence section: question → what the match data supports → next play. Cap it at the two most important actionable reads. Match-wide assists/objective damage are not fight timestamps. Remove unsupported generalizations and answer every displayed question with a concrete, conditional action. Keep the existing moments, timeline, player lobby, and build reads framework.
+
+
+## Match-specific coach focus (2026-09-29)
+
+The live page puts flat team totals in the statline. `focus` must teach something those totals cannot: a decision, trade, or pressure sequence unique to this match. Use `{title,evidence,action}`. The evidence should explain why the outcome mattered; the action must say what the team should call or do next. Do not repeat K/D/A or damage totals, the headline, or a `moments` call. Compare events when that reveals the lesson. If the feed cannot support a distinct takeaway, omit `focus`.

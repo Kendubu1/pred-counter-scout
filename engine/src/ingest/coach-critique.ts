@@ -21,7 +21,7 @@ import { ask, flushTasks, isPrepare } from '../copy-session.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const PG = path.join(ROOT, 'data/postgame');
 
-interface Coaching { headline?: string; team?: string; whatShiftedIt?: string; whatWorked?: string; perPlayer?: Record<string, string>; verdicts?: Record<string, { mood?: string; text?: string }>; moments?: Record<string, { call?: string }>; buildReads?: Record<string, { build?: string; eternal?: string }>; ranking?: { pid?: string; grade?: string }[]; }
+interface Coaching { headline?: string; team?: string; whatShiftedIt?: string; whatWorked?: string; focus?: { title?: string; evidence?: string; action?: string }; perPlayer?: Record<string, string>; verdicts?: Record<string, { mood?: string; text?: string }>; moments?: Record<string, { call?: string }>; buildReads?: Record<string, { build?: string; eternal?: string }>; ranking?: { pid?: string; grade?: string }[]; }
 interface Facts { matchId: string; result: string; durationMin: number; vpSwing: number | null; players: any[]; lanes: any[]; comp: any; objectives: any; timeline?: any; skirmishes?: any[]; kills?: { killedPid: string | null; min: number }[]; coaching?: Coaching | null; }
 
 /** Compact, factual source block the critic judges the coaching against. */
@@ -142,7 +142,7 @@ function fightEconLines(f: Facts & { fights?: any; kills?: any[] }): string[] {
   return out;
 }
 
-const lineList = (co: Coaching): string[] => [co.headline, co.team, co.whatShiftedIt, co.whatWorked, ...Object.values(co.perPlayer ?? {}), ...Object.values(co.verdicts ?? {}).map((v) => v?.text), ...Object.values(co.moments ?? {}).map((m) => m?.call), ...Object.values(co.buildReads ?? {}).flatMap((b) => [b?.build, b?.eternal]), ...(co.ranking ?? []).map((r) => r?.grade)].filter((s): s is string => !!s);
+const lineList = (co: Coaching): string[] => [co.headline, co.team, co.whatShiftedIt, co.whatWorked, co.focus?.title, co.focus?.evidence, co.focus?.action, ...Object.values(co.perPlayer ?? {}), ...Object.values(co.verdicts ?? {}).map((v) => v?.text), ...Object.values(co.moments ?? {}).map((m) => m?.call), ...Object.values(co.buildReads ?? {}).flatMap((b) => [b?.build, b?.eternal]), ...(co.ranking ?? []).map((r) => r?.grade)].filter((s): s is string => !!s);
 
 // Coaching perPlayer values are multi-sentence; the critic flags a sentence within
 // one, so we SUBSTRING-replace (not whole-string). Guard on length so a short quote
@@ -181,6 +181,7 @@ COACHING UNDER REVIEW (one per line):
 ${lines.map((l, i) => `${i + 1}. ${l}`).join('\n')}
 
 Flag ONLY real problems:
+(i) DUPLICATE / GENERIC FOCUS — the authored match focus repeats the scoreboard, headline, or an existing moment without adding a match-specific decision and concrete next action. Flag only clear repetition or stat-only filler.
 (a) PREFERENCE — a line telling someone to play their main / comfort hero / best role, or judging a PICK by that player's own winrate/comfort rather than the matchup, draft, or what the game needed. The squad plays new heroes in new lanes; "play your main" is NOT coaching.
 (b) UNGROUNDED — a line factually wrong vs the SOURCE, or that invents a fight/objective/number not present.
 (c) WRONG REFERENCE — names the wrong hero, lane, fight, or objective.

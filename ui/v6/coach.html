@@ -159,6 +159,10 @@
   .qa .a { color:var(--text-1); font-size:.84rem; margin-top:.2rem; }
   .qa .a.damn { border-left:2px solid var(--red); padding-left:.55rem; }
   .qa .a b { color:var(--text-0); }
+  .focus-call { border-left:3px solid var(--accent); background:var(--accent-soft); border-radius:0 9px 9px 0; padding:.7rem .85rem; margin-top:.7rem; }
+  .focus-call h3 { font-size:.98rem; margin:0 0 .3rem; }
+  .focus-call p { font-size:.82rem; color:var(--text-1); margin:.28rem 0 0; }
+  .focus-call .action { color:var(--text-0); }
   .qa .next { font-size:.8rem; color:var(--gold); margin-top:.25rem; }
   .coach-stat-wrap { overflow-x:auto; margin:.5rem 0 .8rem; }
   .coach-stats { width:100%; min-width:670px; border-collapse:collapse; font-size:.74rem; }
@@ -692,18 +696,8 @@ function pgReview(f) {
   };
   const moments = keyMoments.length ? card(`${eyebrow('The moments that decided it', 'capped at three — everything else is in “the full story” below')}${keyMoments.map(momentRow).join('')}`) : '';
 
-  // ── The numbers that decided it: conversion, structures, caught-out, priced deaths ──
-  let tiles = '';
-  if (f.fights || f.timeline) {
-    const cv = (f.fights && f.fights.conversion) || null;
-    const cA = (f.fights && f.fights.caughtOut) || null;
-    const t = [];
-    if (cv) t.push({ n: `${cv.cashed}/${cv.wonFights}`, vs: `${cv.theirCashed}/${cv.theirWonFights}`, lbl: 'won fights cashed — us v them', read: 'A won fight spent on no objective is tempo left on the table.', mood: cv.wonFights && cv.cashed / cv.wonFights >= 0.5 ? 'good' : 'bad' });
-    if (f.timeline) t.push({ n: String(f.timeline.towers.us), vs: String(f.timeline.towers.them), lbl: 'towers', read: 'Structures track winning closer than any kill line.', mood: f.timeline.towers.us >= f.timeline.towers.them ? 'good' : 'bad' });
-    if (cA) t.push({ n: String(cA.us.length), vs: String(cA.themCount), lbl: 'caught out alone', read: 'Deaths outside any fight — free tempo handed over.', mood: cA.us.length <= cA.themCount ? 'good' : 'bad' });
-    if (dcs.length || (f.fights && f.fights.deathCosts)) t.push({ n: String(dcs.length), vs: null, lbl: 'deaths that cost a prize', read: 'Deaths that directly preceded an enemy tower or objective.', mood: dcs.length <= 3 ? 'good' : 'bad' });
-    if (t.length) tiles = `<div class="tiles">${t.map((x) => `<div class="tile ${x.mood}"><div class="n">${x.n}${x.vs != null ? ` <span class="vs">v ${x.vs}</span>` : ''}</div><div class="lbl">${esc(x.lbl)}</div><div class="read">${esc(x.read)}</div></div>`).join('')}</div>`;
-  }
+  // ── Scoreboard facts: useful context, not coach calls ──
+  const statline = `<div class="coach-stat-wrap"><table class="coach-stats"><thead><tr><th>Squad · role</th><th>K / D / A</th><th>Hero dmg</th><th>Objective dmg</th><th>Mitigated</th><th>Wards</th></tr></thead><tbody>${us.map((p) => `<tr><td><b>${esc(pgName(p))}</b> <span class="role">· ${esc(p.heroName)} / ${esc(p.role)}</span></td><td>${p.kills} / ${p.deaths} / ${p.assists}</td><td>${Number(p.damageToHeroes || 0).toLocaleString()}</td><td>${Number(p.damageToObjectives || 0).toLocaleString()}</td><td>${Number(p.mitigated || 0).toLocaleString()}</td><td>${p.wardsPlaced || 0}</td></tr>`).join('')}</tbody></table><div style="font-size:.66rem;color:var(--text-2);margin-top:.25rem">Match totals only; they do not place a player in a specific fight.</div></div>`;
 
   // ── The game in one strip: fights on the line, objectives above, a labeled
   // minute axis, a real key, and a tap-to-open breakdown panel IN PLACE (the
@@ -778,66 +772,12 @@ function pgReview(f) {
     <div style="font-size:.92rem;color:var(--text-1)">${esc(co.whatWorked)}</div>
   </div>` : '';
 
-  // ── Coach answers: the question, the evidence, and the next play ──
-  let interrogation = '';
-  {
-    const ig = f.interrogation;
-    const qs = [];
-    if (ig && ig.vision && (ig.vision.usWards || ig.vision.themWards)) {
-      const gap = ig.vision.themWards - ig.vision.usWards;
-      qs.push({
-        q: 'Did we win the vision war?',
-        damn: gap >= 12,
-        a: `Wards placed <b>${ig.vision.usWards} v ${ig.vision.themWards}</b>, destroyed ${ig.vision.usDestroyed} v ${ig.vision.themDestroyed}. This is a match total; it cannot prove what was visible at one fight.`,
-        next: gap >= 12 ? 'Before the next major, clear the approach and place fresh vision. Do not walk into the pit blind.' : gap <= -12 ? 'Keep vision on the next objective route and use it to group before the start.' : 'Refresh vision on the next major route before committing.'
-      });
-    }
-    if (ig && ig.riverControl && (ig.riverControl.riverUs + ig.riverControl.riverThem)) {
-      const r = ig.riverControl;
-      const rout = r.riverThem >= r.riverUs * 2 && r.riverThem - r.riverUs >= 5;
-      qs.push({
-        q: 'Who controlled river income?',
-        damn: rout,
-        a: `River buffs <b>${r.riverUs} v ${r.riverThem}</b>; seedlings ${r.seedlingUs} v ${r.seedlingThem}. The totals show control over the match, not the cause of each fight.`,
-        next: rout ? 'Start the next river sweep before the major spawns. If lanes cannot move, call the trade early.' : 'Keep taking river camps while moving into objective setup; do not delay the major for a low-value camp.'
-      });
-    }
-    if (ig && (ig.concededMajors || []).length) {
-      const cm = ig.concededMajors;
-      const unc = cm.filter((m) => m.uncontested);
-      const named = (m) => `${esc(String(m.type).replace(/_/g, ' ').toLowerCase())} (${m.minute}m)`;
-      qs.push({
-        q: 'Was their major contested or traded?',
-        damn: unc.length > 0,
-        a: `${cm.length} major${cm.length > 1 ? 's' : ''} conceded.${unc.length ? ` <b>${unc.length} fell with nobody dead</b>: ${unc.slice(0, 3).map(named).join(', ')}. The feed does not show positions or the call made.` : ''}${cm.length > unc.length ? ` Others fell after our deaths: ${cm.filter((m) => !m.uncontested).slice(0, 2).map((m) => `${named(m)} after ${esc(m.deadBefore.join(' + '))} died`).join('; ')}.` : ''}`,
-        next: unc.length ? 'Before the next major, call contest or cross-map trade. If trading, name the structure or objective and start moving before it is taken.' : 'If key players are dead, give the major and call the cross-map trade before resetting.'
-      });
-    }
-    const kills = (f.kills || []);
-    if (kills.length && sks.length >= 3) {
-      const openers = sks.map((sk) => { const ks = kills.filter((k) => k.t >= sk.startSec - 1 && k.t <= sk.endSec + 1); return ks.length ? { k: ks[0], sk } : null; }).filter(Boolean);
-      const usFirst = openers.filter((o) => o.k.killedSide === 'us');
-      if (openers.length >= 3) {
-        const faller = {};
-        usFirst.forEach((o) => { const pl = f.players.find((x) => x.heroSlug === o.k.killedSlug); const key = (pl ? pl.heroName : o.k.killedSlug) + '|' + (pl && pl.role ? pl.role : ''); faller[key] = (faller[key] || 0) + 1; });
-        const top = Object.entries(faller).sort((a, b) => b[1] - a[1])[0];
-        const [topName, topRole] = top ? top[0].split('|') : [null, null];
-        const w = usFirst.filter((o) => o.sk.result === 'won').length;
-        qs.push({
-          q: 'Who was first down in our fights?',
-          damn: usFirst.length > openers.length / 2,
-          a: `We gave up first death in <b>${usFirst.length} of ${openers.length}</b> fights${usFirst.length ? ` and won ${w} of those` : ''}.${top && top[1] >= 2 ? ` <b>${esc(topName)}</b>${topRole ? ` (${esc(topRole)})` : ''} was first down ${top[1]} times.` : ''}`,
-          next: topRole === 'carry' || topRole === 'support' ? 'Protect the first pick. Do not hard-commit after the carry or support is already down.' : 'Call the engage before contact; do not trickle into the fight after the opener falls.'
-        });
-      }
-    }
-    const selected = qs.sort((a, b) => Number(b.damn) - Number(a.damn)).slice(0, 2);
-    if (selected.length) interrogation = `<div class="coach-answers">${selected.map((x) => `<div class="qa"><div class="q">${esc(x.q)}</div><div class="a${x.damn ? ' damn' : ''}">${x.a}</div><div class="next"><b>Next play:</b> ${esc(x.next)}</div></div>`).join('')}</div><div style="font-size:.68rem;color:var(--text-2);margin-top:.5rem;border-top:1px dashed var(--border);padding-top:.4rem">Match totals are context, not fight timestamps. No positions, wave states, or teleport windows are inferred.</div>`;
-  }
-
-  const statline = `<div class="coach-stat-wrap"><table class="coach-stats"><thead><tr><th>Squad · role</th><th>K / D / A</th><th>Hero dmg</th><th>Objective dmg</th><th>Mitigated</th><th>Wards</th></tr></thead><tbody>${us.map((p) => `<tr><td><b>${esc(pgName(p))}</b> <span class="role">· ${esc(p.heroName)} / ${esc(p.role)}</span></td><td>${p.kills} / ${p.deaths} / ${p.assists}</td><td>${Number(p.damageToHeroes || 0).toLocaleString()}</td><td>${Number(p.damageToObjectives || 0).toLocaleString()}</td><td>${Number(p.mitigated || 0).toLocaleString()}</td><td>${p.wardsPlaced || 0}</td></tr>`).join('')}</tbody></table><div style="font-size:.66rem;color:var(--text-2);margin-top:.25rem">Whole-match contribution only; it does not prove a specific rotation or fight attendance.</div></div>`;
-
-  const coachEvidence = card(`${eyebrow('Match numbers → coach calls', 'receipts and next plays in one section')}${statline}${tiles}${interrogation}`);
+  // ── One authored, match-specific coaching read. No generic stat diagnostics. ──
+  const focus = co && co.focus;
+  const focusCall = focus && focus.title && focus.evidence && focus.action
+    ? `<div class="focus-call"><div class="eyebrow">Match-specific coach call</div><h3>${esc(focus.title)}</h3><p><b>Why this match:</b> ${esc(focus.evidence)}</p><p class="action"><b>Next time:</b> ${esc(focus.action)}</p></div>`
+    : '';
+  const coachEvidence = card(`${eyebrow('Squad statline & coach call', 'totals for context; the call must teach something unique')}${statline}${focusCall}`);
   // ── The lobby: every player — portrait, coach line, build read, eternal (lazy), verdict ──
   const lobbyRow = (p) => {
     const lane = (f.lanes || []).find((l) => l.role === p.role && l.ourSlug === p.heroSlug);

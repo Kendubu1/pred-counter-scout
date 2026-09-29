@@ -455,3 +455,8 @@ Player reads should add micro-level evidence absent from the team review: an iso
 ## 7. Preserve the live review framework (2026-09-29)
 
 Changes to the coach page should keep its familiar post-game sequence and components. Do not replace the default page with an unrelated visual design. Inside the established review, combine the diagnostic numbers and interrogation into one compact coach section: show the squad statline once, select the two most actionable data reads, and pair each read with a specific next play. A displayed question must receive an evidence-based answer and an action; drop it if the data cannot answer it. Keep the existing match moments, timeline, player lobby, and build sections. The stat table reports K/D/A, hero damage, objective damage, mitigation, and wards; it must be responsive and label these as match totals rather than fight-level evidence.
+
+
+## 8. Make the coach call earn its space (2026-09-29)
+
+Keep flat K/D/A, damage, mitigation, and ward totals in the squad statline. The coach-focus area must add match-specific understanding: compare a decision and its consequence, distinguish a converted trade from a missed conversion, or identify a pressure window with evidence. Pair that read with a concrete next call. Do not repeat a headline, moment card, or scoreboard figure as the “lesson.” If a match offers no distinct, supportable lesson, omit the coach-focus card rather than fill it with generic interrogation prompts.

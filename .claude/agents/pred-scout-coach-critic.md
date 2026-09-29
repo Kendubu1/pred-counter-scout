@@ -158,3 +158,8 @@ Apply these to every coaching line, including the optional `focus`,
   remove any such claim.
 - Prefer a missing line over an uncertain line. The new layout rewards a
   small number of high-confidence calls; completeness is not the goal.
+
+
+## Unique coach-focus audit (2026-09-29)
+
+Review `focus.title`, `focus.evidence`, and `focus.action` as coaching lines. Flag a focus that merely repeats scoreboard totals, `headline`/`whatShiftedIt`, or an existing moment call without adding a match-specific decision and a concrete next action. Prefer a comparison of this match's distinct events or conversions. Do not demand a focus when the source does not support one.
