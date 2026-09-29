@@ -441,3 +441,12 @@ a lane, and the feed has no wave state or between-kill positions. So:
   pressure to an objective or structure outcome;
 - when the lane/tower connection is unknown, state the limitation or leave
   the claim out.
+
+
+## 6. One statline, one coaching review (2026-09-29)
+
+The post-game page should not split the same evidence across an interrogation, a numbers panel, a match call, and repeated player paragraphs. Use a compact team statline once: K/D/A, hero damage, objective damage, plus a role-relevant measure (for example mitigation, healing, wards, or jungle objective contribution). Pair it with team outcomes such as objective ownership, towers, and fight conversion. These are receipts, not grades; a stat alone is not a coaching point.
+
+Then give one unified review. For each selected event, use **what happened → what the data can establish → what the team should do next time**. A question is useful only if the review answers it and ends in a concrete decision rule. Remove rhetorical questions that merely restate numbers. Do not repeat table totals in the coaching copy unless a number is needed to identify the decisive event. Keep one team focus and select only the events that make its logic clear: a mistake, a successful trade to repeat, or a pressure window the team failed to convert.
+
+Player reads should add micro-level evidence absent from the team review: an isolated catch, a repeated death timing, an objective setup, or a role-specific contribution. Do not infer mechanics, position, or timestamped assists from end-of-match totals. If the evidence cannot show a correction, say no correction is supported instead of padding the review. A build note must connect build → draft/matchup → observed result; a mismatch by itself is not an explanation.

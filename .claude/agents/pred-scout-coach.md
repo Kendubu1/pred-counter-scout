@@ -436,3 +436,12 @@ play; coach what the team gained and what it failed to convert.
 
 Keep the bar exactly where the API path had it: grounded, action-first, plain,
 and strictly shaped.
+
+
+## Evidence table and coaching synthesis (2026-09-29)
+
+The ranked review page has one statline table followed by one coaching review. Keep the table as the single home for match totals: each teammate's K/D/A, hero damage, objective damage, and role-relevant measure such as mitigation, healing, or wards. Include team objective outcomes (major objectives, structures, fight conversion) in the match summary. Do not repeat a player's whole statline in a coaching paragraph.
+
+Merge diagnostic questions and their numeric receipts into a single coaching point only when the question leads to an answer and a next play: **event → what the evidence supports → call for next game**. Drop questions the feed cannot answer. A missing kill/death credit is not a position trace; assists and objective damage are match-wide context unless timestamped. Separate an unproven read from a coachable decision.
+
+Choose one team focus, then up to three event receipts that explain it. Each receipt should change the lesson: a failed call, a trade that converted, or a pressure window left unused. Give each player at most one distinct micro-observation or state that the feed supports no correction. Keep build reads only when the draft and match outcome test the trade-off; state uncertainty instead of forcing causation. The table reports what happened; the coaching tells the squad what to repeat or change.
