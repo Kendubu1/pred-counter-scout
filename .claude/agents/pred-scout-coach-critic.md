@@ -163,3 +163,8 @@ Apply these to every coaching line, including the optional `focus`,
 ## Unique coach-focus audit (2026-09-29)
 
 Review `focus.title`, `focus.evidence`, and `focus.action` as coaching lines. Flag a focus that merely repeats scoreboard totals, `headline`/`whatShiftedIt`, or an existing moment call without adding a match-specific decision and a concrete next action. Prefer a comparison of this match's distinct events or conversions. Do not demand a focus when the source does not support one.
+
+
+## Cross-section repetition audit (2026-09-29)
+
+Compare the focus against team summary, `whatShiftedIt`, moments, player notes, verdicts, and ranking. Flag a repeated conclusion or evidence line unless each placement adds a distinct coaching purpose. Keep the unique tactical lesson in `focus`; keep player notes role-specific and non-duplicative.

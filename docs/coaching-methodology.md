@@ -460,3 +460,8 @@ Changes to the coach page should keep its familiar post-game sequence and compon
 ## 8. Make the coach call earn its space (2026-09-29)
 
 Keep flat K/D/A, damage, mitigation, and ward totals in the squad statline. The coach-focus area must add match-specific understanding: compare a decision and its consequence, distinguish a converted trade from a missed conversion, or identify a pressure window with evidence. Pair that read with a concrete next call. Do not repeat a headline, moment card, or scoreboard figure as the “lesson.” If a match offers no distinct, supportable lesson, omit the coach-focus card rather than fill it with generic interrogation prompts.
+
+
+## 9. One finding, one home (2026-09-29)
+
+Do not repeat a match lesson across the team summary, `whatShiftedIt`, moments, unique focus, player notes, verdicts, and ranking. Give the finding one primary home. Other sections may provide distinct facts, but should not restate the same reasoning. The statline owns flat totals; the unique focus owns the match-specific lesson; a player note adds a separate role-specific observation or is omitted.

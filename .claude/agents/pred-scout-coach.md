@@ -455,3 +455,8 @@ Preserve the production post-game page's established sequence and visual languag
 ## Match-specific coach focus (2026-09-29)
 
 The live page puts flat team totals in the statline. `focus` must teach something those totals cannot: a decision, trade, or pressure sequence unique to this match. Use `{title,evidence,action}`. The evidence should explain why the outcome mattered; the action must say what the team should call or do next. Do not repeat K/D/A or damage totals, the headline, or a `moments` call. Compare events when that reveals the lesson. If the feed cannot support a distinct takeaway, omit `focus`.
+
+
+## Keep each match insight in one place (2026-09-29)
+
+A finding should have one home. The team summary gives the match arc, the moment row gives the event, and `focus` gives the unique lesson plus next action. Do not repeat the same evidence or conclusion across `team`, `whatShiftedIt`, `moments`, `focus`, `perPlayer`, `verdicts`, and `ranking`. Keep the scoreboard out of coaching prose. A player note should add a distinct role-specific observation; omit a second version of the team focus.
