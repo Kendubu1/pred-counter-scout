@@ -1,50 +1,190 @@
 {
- "generatedAt": "2026-10-05T22:06:56.629Z",
+ "generatedAt": "2026-10-06T20:47:45.213Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
- "reviewedLines": 27,
- "flaggedLines": 6,
- "agreementRate": 0.778,
- "rewritesGrounded": 6,
+ "reviewedLines": 61,
+ "flaggedLines": 29,
+ "agreementRate": 0.525,
+ "rewritesGrounded": 22,
  "rewritesDropped": 0,
- "applied": 6,
+ "applied": 22,
  "unmatched": 0,
  "games": {
-  "5d1be023-d040-4fb3-ba73-68892107fb3b": [
+  "716cbfd6-20e7-4b6c-b03c-ed2f14dcd7c3": [
    {
-    "quote": "Cuban Noobster queued off his best role into a midlane lost to Gideon all game, including two early deaths. We gave away Fangtooth at 8 and Primal Fangtooth at 28 uncontested, nobody dead either time. We won three fights and cashed one; they won four and cashed three. At 30.2, full strength and ahead on items, Valmont and Gideon wiped the whole squad, and Genesis Core fell a minute later.",
-    "severity": "high",
-    "issue": "preference — grades the pick by the player's 'best role' instead of the matchup/draft",
-    "rewrite": "Cuban Noobster's Lt. Belica took a midlane matchup lost to Gideon all game, including two early deaths. We gave away Fangtooth at 8 and Primal Fangtooth at 28 uncontested, nobody dead either time. We won three fights and cashed one; they won four and cashed three. At 30.2, full strength and ahead on items, Valmont and Gideon wiped the whole squad, and Genesis Core fell a minute later."
-   },
-   {
-    "quote": "Goldilocks324's Steel placed 25 wards, the most on the team, with zero deaths before minute ten — a clean bounce back from being the alive-and-absent player in the last film.",
-    "severity": "high",
-    "issue": "ungrounded — invents an 'alive-and-absent' prior-film event not present in the PREVIOUS FILMS data (no such field exists there)",
-    "rewrite": "Goldilocks324's Steel placed 25 wards, the most on the team, with zero deaths before minute ten."
-   },
-   {
-    "quote": "Cuban Noobster's Lt. Belica queued off his best role, carry, into a midlane Gideon won twice before minute 11 — a draft call, not a mechanical one.",
-    "severity": "high",
-    "issue": "preference + ungrounded — judges the pick by an unproven 'best role' (carry) instead of the matchup, and the second Gideon kill lands at 11m exactly, not before it",
-    "rewrite": "Cuban Noobster's Lt. Belica took an unfavored midlane matchup against Gideon, who secured kills at 9.3 and 11 minutes — the draft gave us a lane the opponents won all game, not a mechanical slip."
-   },
-   {
-    "quote": "Lt. Belica died to Gideon twice before minute 11 in a lane read theirs all game.",
+    "quote": "Crunch's solo death at 28.8 came first: Primal Fangtooth, two inner towers, and the inhibitor all fell in the fights right after, with no fight won to stop it.",
     "severity": "low",
-    "issue": "ungrounded — second Gideon kill on Lt. Belica is credited at 11m exactly, not 'before' minute 11",
-    "rewrite": "Lt. Belica died to Gideon at 9.3 and 11 minutes, in a lane read theirs all game."
+    "issue": "duplicates the team summary's collapse narrative with no new purpose",
+    "rewrite": null
    },
    {
-    "quote": "Maco skipped the full meta core (Crescelia, Enra's Blessing, Windcaller) for Megacosm and Caustica; the no-magic-resist flag against their 3-magical comp lines up with both solo catches, at 17.1 and 26.6, that each preceded an objective loss.",
-    "severity": "high",
-    "issue": "causation — misattributes the no-magic-resist flag to solo catches that CAUGHT OUT credits to Scarlett (17.1m) and Sparrow (26.6m), both physical-item attackers, not the magical side of the enemy comp",
-    "rewrite": "Maco skipped the full meta core (Crescelia, Enra's Blessing, Windcaller) for Megacosm and Caustica; the two solo catches, at 17.1 (by Scarlett) and 26.6 (by Sparrow), came from their physical damage dealers, not the magical comp the no-resist flag targets — no build impact proven on those deaths."
+    "quote": "The jungle matchup favored Crunch late, but the record was 0-8-3 with the most damage taken on the team, 64,807, and two solo catches that handed over objectives.",
+    "severity": "med",
+    "issue": "only one of Crunch's two caught-out deaths is shown costing an objective (28.8 -> Primal Fangtooth + inner tower); the 14.2 catch has no objective tied to it",
+    "rewrite": "The jungle matchup favored Crunch late, but the record was 0-8-3 with the most damage taken on the team, 64,807, and the 28.8 solo catch handed Primal Fangtooth and an inner tower to them."
    },
    {
-    "quote": "Queued off carry into midlane and died to Gideon twice before minute 11.",
+    "quote": "Maco led the team with 21 wards and 13,756 healing, but died first in the match and twice more before minute 10 — too many early catches for a support.",
     "severity": "high",
-    "issue": "preference + ungrounded — 'queued off carry' grades the pick by role preference, and the second death to Gideon is at 11m exactly, not before it",
-    "rewrite": "Took an unfavored midlane matchup against Gideon, who secured kills at 9.3 and 11 minutes."
+    "issue": "miscounts deaths before 10 (source shows 2 total before minute 10, not 3)",
+    "rewrite": "Maco led the team with 21 wards and 13,756 healing, but died first in the match and once more before minute 10 — two early catches is too many for a support."
+   },
+   {
+    "quote": "Scarlett's offlane matchup read favored her all game, yet she sat out three of the six decisive fights while alive and ahead in lane.",
+    "severity": "high",
+    "issue": "miscounts absences (Scarlett was uncredited in four of the six decisive fights: 9.2, 17, 22.8, 31.8)",
+    "rewrite": "Scarlett's offlane matchup read favored her all game, yet she sat out four of the six decisive fights while alive and ahead in lane."
+   },
+   {
+    "quote": "Drongo had the favored lane and the full meta core all game but finished 3-6-0 with zero assists, including a death that preceded the Outer Tower falling at 19.8.",
+    "severity": "high",
+    "issue": "fabricated event — the deaths that preceded the 19.8 Outer Tower belong to Crunch, Renna, and Scarlett; Drongo has no death near that time",
+    "rewrite": "Drongo had the favored lane and the full meta core all game but finished 3-6-0 with zero assists."
+   },
+   {
+    "quote": "Best vision on the team, but dying first and twice more before 10 gave away the squad's early tempo.",
+    "severity": "med",
+    "issue": "no player named (per-player line must name Maco) and repeats the death-count miscount (2 before 10, not 3)",
+    "rewrite": "Maco had the best vision on the team, but dying first and once more before 10 gave away the squad's early tempo."
+   },
+   {
+    "quote": "The best performance on the team, but staying in lane cost the squad bodies in three fights.",
+    "severity": "med",
+    "issue": "no player named (Scarlett) and undercounts her absences (four of six decisive fights, not three)",
+    "rewrite": "Scarlett had the best performance on the team, but staying in lane cost the squad bodies in four of the six decisive fights."
+   },
+   {
+    "quote": "Full meta core and heavy damage output, but a late midlane and an early no-show at Fangtooth.",
+    "severity": "low",
+    "issue": "no player named (Renna/Xeebs)",
+    "rewrite": "Renna had full meta core and heavy damage output, but the midlane swung late and Xeebs was a no-show at the 9.2 Fangtooth fight."
+   },
+   {
+    "quote": "We had the man advantage, 5-vs-4, and still lost it 0-3; respect their chain crowd control and stagger the engage instead of grouping tight.",
+    "severity": "high",
+    "issue": "invents a tactical/execution cause (chain crowd control, grouping tight) the source cannot show",
+    "rewrite": "We had the man advantage, 5-vs-4, at 17m and still lost it 0-3 — that fight needed to be won with the extra body, not just entered with it."
+   },
+   {
+    "quote": "Crunch skipped the jungle core entirely (Berserker's Axe, Augmentation, Salvation) and carried no magic resist against a 3-magical enemy comp, taking a team-high 64,807 damage — the same missing-resistance flag that hit someone in each of the last three games too.",
+    "severity": "high",
+    "issue": "fabricated cross-game pattern — the previous-films data carries no film-flag field for any prior game, so a repeat across the last three games cannot be confirmed",
+    "rewrite": "Crunch skipped the jungle core entirely (Berserker's Axe, Augmentation, Salvation) and carried no magic resist against a 3-magical enemy comp, taking a team-high 64,807 damage."
+   },
+   {
+    "quote": "On full meta core (Lightning Hawk, Vanquisher, Tainted Rounds) all game — on core, nothing to teach here.",
+    "severity": "low",
+    "issue": "no player named (Drongo)",
+    "rewrite": "Drongo was on full meta core (Lightning Hawk, Vanquisher, Tainted Rounds) all game — on core, nothing to teach here."
+   },
+   {
+    "quote": "On full meta core (Entropy, Wraith Leggings, Overseer) with just one extra item — on core, nothing to teach here.",
+    "severity": "low",
+    "issue": "no player named (Renna/Xeebs)",
+    "rewrite": "Renna was on full meta core (Entropy, Wraith Leggings, Overseer) with just one extra item — on core, nothing to teach here."
+   },
+   {
+    "quote": "Scarlett led the team with 7 kills and 33,233 damage, won the lane all game.",
+    "severity": "low",
+    "issue": "duplicates the earlier identical ranking line with no new purpose",
+    "rewrite": null
+   },
+   {
+    "quote": "Built full core and still dealt 33,102 damage despite losing the midlane late.",
+    "severity": "low",
+    "issue": "no player named (Renna/Xeebs); duplicates the earlier line on Xeebs' damage and late midlane",
+    "rewrite": "Renna built full core and still dealt 33,102 damage despite losing the midlane late."
+   },
+   {
+    "quote": "On full meta core in a favored lane, still finished 3-6-0 with zero assists.",
+    "severity": "low",
+    "issue": "no player named (Drongo); duplicates the earlier Drongo lines",
+    "rewrite": "Drongo was on full meta core in a favored lane, still finished 3-6-0 with zero assists."
+   },
+   {
+    "quote": "Died first at 7.1 and twice before 10, though led the team with 21 wards.",
+    "severity": "med",
+    "issue": "no player named (Maco); repeats the death-count miscount (2 before 10, not 3)",
+    "rewrite": "Maco died first at 7.1 and once more before 10, though led the team with 21 wards."
+   }
+  ],
+  "b8ec9335-fdd4-4f2a-963a-d83290988057": [
+   {
+    "quote": "At 23.5, a 4-0 fight at their Outer Tower converted into both Orb Prime and Primal Fangtooth falling our way in the same window, turning tempo into a two-objective swing.",
+    "severity": "med",
+    "issue": "causal claim from timing alone — Primal Fangtooth landed roughly two minutes later, past the source's own 90s conversion window",
+    "rewrite": "At 23.5, we won 4-0 at their Outer Tower; Orb Prime and Primal Fangtooth both fell our way in the following two minutes."
+   },
+   {
+    "quote": "Lt. Belica queued into a bottom-two role but led the team with 7 kills and 5 assists, running the complete meta core (Combustion, Noxia, Wraith Leggings) plus Overseer.",
+    "severity": "high",
+    "issue": "misleadingly implies she led the team in assists too — 5 assists is the team's lowest (Aurora 10, Steel 9, Greystone 7, Murdock 6)",
+    "rewrite": "Lt. Belica queued into a bottom-two role but led the team with 7 kills, running the complete meta core (Combustion, Noxia, Wraith Leggings) plus Overseer."
+   },
+   {
+    "quote": "Aurora was caught alone for first blood at 5.7 by Khaimera, who killed it three times total, the second straight film with a solo-catch death for Willy Guggenheim.",
+    "severity": "high",
+    "issue": "false streak — the immediately prior film (2026-10-06, Drongo) shows 0 caught-alone deaths, breaking any back-to-back pattern",
+    "rewrite": "Aurora was caught alone for first blood at 5.7 by Khaimera, who killed it three times total."
+   },
+   {
+    "quote": "Won 4-0 at their Outer Tower while Orb Prime and Primal Fangtooth both fell our way in the same window, a double-objective swing.",
+    "severity": "med",
+    "issue": "same causal overreach as the 23.5 claim — proximity alone does not prove this specific fight caused both objectives",
+    "rewrite": "Won 4-0 at their Outer Tower at 23.5; Orb Prime and Primal Fangtooth both fell our way in the following two minutes."
+   },
+   {
+    "quote": "Won 3-1 at their Outer Tower as Primal Fangtooth fell too, stacking a second objective onto the tower push.",
+    "severity": "med",
+    "issue": "Primal Fangtooth fell at 25.5, just before this 25.7 fight, not as a result of it — conflicts with the other lines crediting Primal Fangtooth to the 23.5 fight",
+    "rewrite": "Won 3-1 at their Outer Tower at 25.7, shortly after Primal Fangtooth had fallen our way."
+   },
+   {
+    "quote": "Won 3-1 at their Core, closing the game; the squad stayed grouped through every fight after 18.6.",
+    "severity": "high",
+    "issue": "fabricated execution/positioning claim — grouping and positions are not in the feed",
+    "rewrite": "Won 3-1 at their Core, closing the game; we won every decisive fight from 18.6 on."
+   },
+   {
+    "quote": "Greystone took zero deaths all game despite the no-armor flag against a 3-physical comp.",
+    "severity": "low",
+    "issue": "duplicates the earlier Greystone line with no new purpose",
+    "rewrite": null
+   },
+   {
+    "quote": "Murdock skipped the full meta core but still finished 5 kills and 10,636 objective damage.",
+    "severity": "low",
+    "issue": "duplicates the earlier Murdock line with no new purpose",
+    "rewrite": null
+   },
+   {
+    "quote": "Lt. Belica queued into midlane off a bottom-two role and led the team with 7 kills.",
+    "severity": "low",
+    "issue": "duplicates the earlier Lt. Belica line with no new purpose",
+    "rewrite": null
+   },
+   {
+    "quote": "Steel's 5 wards lagged Riktor's 16, and Steel died first in the 8.6 loss that also cost Murdock.",
+    "severity": "low",
+    "issue": "duplicates the earlier Steel line with no new purpose",
+    "rewrite": null
+   },
+   {
+    "quote": "Greystone: zero deaths in 29 minutes, 5 kills, 7 assists, kda 12.",
+    "severity": "med",
+    "issue": "\"kda 12\" is a derived figure (sum of kills+assists) not present in the source and mislabeled as a KDA ratio with 0 deaths",
+    "rewrite": "Greystone: zero deaths in 29 minutes, 5 kills, 7 assists."
+   },
+   {
+    "quote": "Steel: fewest kills (2), 5 wards to Riktor's 16, died first in the 8.6 loss.",
+    "severity": "med",
+    "issue": "grades a support on kill count, the wrong yardstick for the role",
+    "rewrite": "Steel: 5 wards to Riktor's 16, died first in the 8.6 loss."
+   },
+   {
+    "quote": "Aurora's first-blood solo catch at 5.7 is the second straight film with that pattern for Willy Guggenheim.",
+    "severity": "high",
+    "issue": "repeats the same false streak claim and duplicates the earlier line — the prior film had 0 caught-alone deaths",
+    "rewrite": null
    }
   ]
  }
