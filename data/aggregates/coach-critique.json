@@ -1,116 +1,62 @@
 {
- "generatedAt": "2026-10-07T03:24:19.302Z",
+ "generatedAt": "2026-10-07T20:07:50.304Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
  "reviewedLines": 31,
- "flaggedLines": 17,
- "agreementRate": 0.452,
- "rewritesGrounded": 12,
- "rewritesDropped": 0,
- "applied": 12,
+ "flaggedLines": 8,
+ "agreementRate": 0.742,
+ "rewritesGrounded": 6,
+ "rewritesDropped": 2,
+ "applied": 6,
  "unmatched": 0,
  "games": {
-  "f668b1dc-7c73-4131-b9a9-c75dcf180fa2": [
+  "8cc11343-e0c3-435c-82a8-db293a01ee0e": [
    {
-    "quote": "We lost 2-6 at our Inner Tower, and eight towers plus zero cashed wins followed.",
+    "quote": "A 1-3 loss at 14.9 near our half cost the first Outer Tower at 15.9; a second lost fight at 18.7, the game's highest-significance fight, sat right at our second Outer Tower falling.",
+    "severity": "low",
+    "issue": "readability: three timestamps (14.9, 15.9, 18.7) in one sentence",
+    "rewrite": "A 1-3 loss at 14.9 near our half cost the first Outer Tower at 15.9. A second lost fight at 18.7, the game's highest-significance fight, sat right at our second Outer Tower falling."
+   },
+   {
+    "quote": "When a fight is won clean, follow it straight into the nearest camp or tower instead of resetting — a won fight that isn't cashed is a wasted lead.",
+    "severity": "low",
+    "issue": "readability: second use of 'cashed' in the same review (first in the preceding line)",
+    "rewrite": "When a fight is won clean, follow it straight into the nearest camp or tower instead of resetting — a won fight that isn't converted into an objective is a wasted lead."
+   },
+   {
+    "quote": "Khaimera opened the game with three kills (4.3, 8.7, 12.7), then died in the 15.0 fight that preceded our first Outer Tower, and again in the 18.7 fight tagged the game's most significant.",
     "severity": "med",
-    "issue": "causation: frames the towers tally as following the 20.4 fight, but three 'them' tower events (13.3, 13.4, 17.4) happened before it",
-    "rewrite": "We lost 2-6 at our Inner Tower and cashed zero of our four won fights; towers finished 2-8 for the game."
+    "issue": "readability: five timestamps in one sentence",
+    "rewrite": "Khaimera opened the game with two early kills, at 4.3 and 8.7. He added a third at 12.7, then died in the 15.0 fight that preceded our first Outer Tower. He died again in the 18.7 fight tagged the game's most significant."
    },
    {
-    "quote": "Midlane was ours the whole game and the offlane was theirs; the carry duo flipped from behind to ahead. We won four fights but cashed none of them, while the enemy converted two of their five. An early Fangtooth fell with nobody of ours dead at minute 11. After the 2-6 loss at our Inner Tower, towers finished 2-8 and five majors went their way late.",
-    "severity": "high",
-    "issue": "ungrounded number: only four majors (Fangtooth@24, Genesis Core@30, Primal Fangtooth@31, Orb Prime@31) followed the 20.4 fight, not five; towers tally also wrongly framed as following it",
-    "rewrite": "Midlane was ours the whole game and the offlane was theirs; the carry duo flipped from behind to ahead. We won four fights but cashed none of them, while the enemy converted two of their five. An early Fangtooth fell with nobody of ours dead at minute 11. Towers finished 2-8 for the game, and four more majors went their way after the Inner Tower loss."
-   },
-   {
-    "quote": "At 20.4 we lost 2-6 despite having more items online than them, 10 to 7 — the Inner Tower fell, and the next three majors all went their way.",
-    "severity": "high",
-    "issue": "ungrounded number: four majors followed the 20.4 fight (Fangtooth@24, Genesis Core@30, Primal Fangtooth@31, Orb Prime@31), not three",
-    "rewrite": "At 20.4 we lost 2-6 despite having more items online than them, 10 to 7 — the Inner Tower fell, and the next four majors all went their way."
-   },
-   {
-    "quote": "At 17.6 we won the fight 2-0 right on top of Fangtooth and still didn't secure it; three more won fights (14.7, 18.8, 28.6) left no major or tower behind either.",
+    "quote": "Greystone: zero deaths, the early offlane win, and the lone kill in a lost fight.",
     "severity": "low",
-    "issue": "readability: three timestamps in one sentence",
-    "rewrite": "At 17.6 we won the fight 2-0 right on top of Fangtooth and still didn't secure it. Three more won fights after that left no major or tower behind either."
+    "issue": "cross-section repetition: duplicates the verdict line verbatim with no distinct ranking purpose",
+    "rewrite": "Greystone: tied for third in kill participation at 20%, with zero deaths, the early offlane win, and the lone kill in a lost fight."
    },
    {
-    "quote": "Skylar flipped the carry matchup from behind to ahead, finishing 9 kills and 3 deaths, the team's best KDA, with late kills at 17.6, 25, and 28.7.",
+    "quote": "Khaimera: 3 early kills, then died in both the 15.0 and 18.7 fights.",
     "severity": "low",
-    "issue": "readability: three timestamps in one sentence",
-    "rewrite": "Skylar flipped the carry matchup from behind to ahead, finishing 9 kills and 3 deaths, the team's best KDA, with late kills across three separate fights."
-   },
-   {
-    "quote": "Gadget won the midlane clean and led the team in damage to heroes at 37,463, but died 8 times, including two solo catches that each gave up a Fangtooth.",
-    "severity": "med",
-    "issue": "ungrounded causation: only the 16.9 solo catch has a traced Fangtooth cost (FANGTOOTH@17.4); the 13.9 catch has no listed consequence in DEATH COST SPLIT",
-    "rewrite": "Gadget won the midlane clean and led the team in damage to heroes at 37,463, but died 8 times, including a solo catch at 16.9 that was followed by their Fangtooth at 17.4."
-   },
-   {
-    "quote": "Khaimera took a team-high 43,251 damage and finished with the roster's worst swing at -48 rating points; the 22.8 solo catch to Argus cost a Fangtooth at 24.2.",
-    "severity": "high",
-    "issue": "fabricated stat: no 'rating swing' or -48 figure appears anywhere in the SOURCE",
-    "rewrite": "Khaimera took a team-high 43,251 damage; the 22.8 solo catch to Argus cost a Fangtooth at 24.2."
-   },
-   {
-    "quote": "Skylar closed the game out with 9 kills and 3 deaths after the carry matchup flipped in her favor.",
-    "severity": "low",
-    "issue": "duplicate of the Skylar note already stated, no new purpose",
+    "issue": "cross-section repetition: duplicates the verdict line verbatim with no distinct ranking purpose",
     "rewrite": null
    },
    {
-    "quote": "Gadget's 37,463 damage led the team, but two solo catches gave away a Fangtooth each.",
-    "severity": "med",
-    "issue": "duplicate of the Gadget note already stated, and repeats the unproven claim that both solo catches cost a Fangtooth",
-    "rewrite": null
-   },
-   {
-    "quote": "Two kills on Zarus by minute 6 couldn't stop the offlane matchup from going their way the rest of the game.",
+    "quote": "Phase: 8 wards and 7,596 healing, with both deaths inside fights the team lost.",
     "severity": "low",
-    "issue": "duplicate of the Feng Mao note already stated, no new purpose",
-    "rewrite": null
+    "issue": "cross-section repetition: duplicates the verdict line with no distinct ranking purpose",
+    "rewrite": "Phase: tied for third in kill participation at 20%, with 8 wards and 7,596 healing, and both deaths inside fights the team lost."
    },
    {
-    "quote": "Maco's 15 wards to Riktor's 7 and team-high healing were the support job done right.",
+    "quote": "Neon: 0 kills and 0 assists, plus the solo death that cost the first Fangtooth.",
     "severity": "low",
-    "issue": "duplicate of the Maco note already stated, no new purpose",
-    "rewrite": null
+    "issue": "cross-section repetition: duplicates the verdict line verbatim with no distinct ranking purpose",
+    "rewrite": "Neon: last in kill participation at 0%, with the solo death that cost the first Fangtooth."
    },
    {
-    "quote": "Khaimera's -48 rating swing and the 22.8 solo catch that gave up a Fangtooth were the roster's worst marks.",
-    "severity": "high",
-    "issue": "duplicate of the Khaimera note already stated, and repeats the fabricated -48 rating-swing stat",
-    "rewrite": null
-   },
-   {
-    "quote": "Won 3-2 at our Inhibitor, but it still fell, and Primal Fangtooth plus Orb Prime went to them minutes later.",
-    "severity": "med",
-    "issue": "causation gap: Primal Fangtooth is named falling without its cause, though SOURCE shows it uncontested with nobody of ours dead",
-    "rewrite": "Won 3-2 at our Inhibitor, but it still fell. Primal Fangtooth went to them minutes later with nobody of ours dead, and Orb Prime followed from the fight lost there."
-   },
-   {
-    "quote": "Khaimera ran the complete meta core (Overlord, Basilisk, Rapture) with no missing or off-meta items; the matchup flag for missing magic resist is a gap in that core itself, not a build mistake this game.",
+    "quote": "Eden: 4 deaths, all to Sparrow, including the solo catch before a tower fell.",
     "severity": "low",
-    "issue": "readability: second 'not X, but Y' formula in the review (first used at the Inner Tower line)",
-    "rewrite": "Khaimera ran the complete meta core (Overlord, Basilisk, Rapture) with no missing or off-meta items. The matchup flag for missing magic resist reflects a gap in that core itself, since Khaimera's build matches the winning core exactly."
-   },
-   {
-    "quote": "Skylar: 9 kills, 3 deaths, the team's best KDA, closing six of the late fights.",
-    "severity": "high",
-    "issue": "ungrounded number: 'six of the late fights' is not supported anywhere in the SOURCE",
-    "rewrite": "Skylar: 9 kills, 3 deaths, the team's best KDA."
-   },
-   {
-    "quote": "Gadget: team-high 37,463 damage, but two solo catches each gave away a Fangtooth.",
-    "severity": "med",
-    "issue": "duplicate of earlier Gadget lines, and repeats the unproven claim that both solo catches cost a Fangtooth",
-    "rewrite": "Gadget: team-high 37,463 damage, but a solo catch at 16.9 gave away a Fangtooth."
-   },
-   {
-    "quote": "Khaimera: worst rating swing on the roster at -48, plus a costly solo catch.",
-    "severity": "high",
-    "issue": "duplicate of earlier Khaimera lines, and repeats the fabricated -48 rating-swing stat",
-    "rewrite": "Khaimera: team-high 43,251 damage taken, plus a costly solo catch that gave up a Fangtooth."
+    "issue": "cross-section repetition: duplicates the verdict line verbatim with no distinct ranking purpose",
+    "rewrite": null
    }
   ]
  }
