@@ -33,6 +33,11 @@ export interface Interrogation {
   /** The support's own yardstick (coach audit 2026-09-21): participation, wards, healing, early deaths, died-first count. */
   support?: { pid: string; hero: string; participation: number; assistShare: number; wardsPlaced: number; wardsDestroyed: number; wardsPerMin: number; enemySupportWards: number | null; healing: number; mitigated: number; deathsBefore10: number; diedFirst: number; carryDeathsBefore10: number } | null;
   /** The duo lane as a 2v2: the support row of lanes[] is a 1v1 sim and is NOT a lane read. THEORY. */
+  /** Every structure THEY took, with what we were doing around it: our dead in the prior 60s, a major we took within 90s, the nearest fight within 60s. The structure story of a game, in order (2026-10-08). */
+  structureLedger?: { min: number; type: string; ourDeadBefore: string[]; ourMajorInWindow: string | null; fightInWindow: { startMin: number; result: string; score: string } | null }[];
+  structures?: { usTaken: number; themTaken: number; inhibitorsLost: number; theirPlayerObjDamage: number; ourPlayerObjDamage: number };
+  /** A loss the stat sheet says we should have won. Deterministic triggers; when set, the coach owes a `deepDive`. */
+  upset?: { isUpset: boolean; reasons: string[] };
   duoLane?: { ourCarry: string; ourSupport: string; theirCarry: string; theirSupport: string; carryRead: string | null; firstBlood: string | null; firstFangtooth: 'us' | 'them' | null; duoDeathsBefore10: { us: number; them: number }; read: 'ours' | 'theirs' | 'even' } | null;
 }
 
@@ -95,8 +100,33 @@ function interrogate(f: PostGameFacts): Interrogation | null {
     const carryLane = ((f as any).lanes ?? []).find((l: any) => l.role === 'carry');
     duoLane = { ourCarry: carry.heroName, ourSupport: sup.heroName, theirCarry: theirCarry.heroName, theirSupport: theirSup.heroName, carryRead: carryLane?.summary ?? null, firstBlood, firstFangtooth, duoDeathsBefore10: { us: usD, them: themD }, read };
   }
+  const events = (((f as any).events ?? []) as { sec: number; type: string; side: string; kind: string }[]);
+  const towerEv = events.filter((e) => e.kind === 'tower');
+  const structureLedger = towerEv.filter((e) => e.side === 'them').map((e) => {
+    const ourDeadBefore = [...new Set(kills.filter((k) => k.killedSide === 'us' && heroOf.has(k.killedPid) && k.t >= e.sec - 60 && k.t <= e.sec + 5).map((k) => heroOf.get(k.killedPid)!))];
+    const maj = events.find((m) => m.kind === 'objective' && m.side === 'us' && !/RIVER|SEEDLING/.test(m.type) && Math.abs(m.sec - e.sec) <= 90);
+    const fight = (((f as any).skirmishes ?? []) as { startSec: number; endSec: number; startMin: number; result: string; ourKills: number; theirKills: number }[])
+      .find((s) => e.sec >= s.startSec - 60 && e.sec <= s.endSec + 60);
+    return { min: Math.round(e.sec / 6) / 10, type: e.type, ourDeadBefore, ourMajorInWindow: maj ? `${maj.type}@${Math.round(maj.sec / 6) / 10}m` : null, fightInWindow: fight ? { startMin: fight.startMin, result: fight.result, score: `${fight.ourKills}-${fight.theirKills}` } : null };
+  });
+  const structures = towerEv.length ? {
+    usTaken: towerEv.filter((e) => e.side === 'us').length, themTaken: towerEv.filter((e) => e.side === 'them').length,
+    inhibitorsLost: towerEv.filter((e) => e.side === 'them' && /INHIB/.test(e.type)).length,
+    theirPlayerObjDamage: sum(them, 'damageToObjectives'), ourPlayerObjDamage: sum(us, 'damageToObjectives'),
+  } : undefined;
+  const theirKills = them.reduce((s, p) => s + (p.kills ?? 0), 0);
+  const conv = (f as any).fights?.conversion;
+  const obj = (f as any).objectives ?? {};
+  const upsetReasons: string[] = [];
+  if ((f as any).result === 'loss') {
+    if (teamKills >= 1.5 * Math.max(1, theirKills)) upsetReasons.push(`kills ${teamKills} to ${theirKills}`);
+    if ((obj.ourKills ?? 0) > (obj.theirKills ?? 0)) upsetReasons.push(`majors ${obj.ourKills} to ${obj.theirKills}`);
+    if (conv && conv.wonFights >= 2 * Math.max(1, conv.theirWonFights)) upsetReasons.push(`fights won ${conv.wonFights} to ${conv.theirWonFights}`);
+    if (structures && structures.ourPlayerObjDamage >= 2 * Math.max(1, structures.theirPlayerObjDamage)) upsetReasons.push(`player objective damage ${structures.ourPlayerObjDamage} to ${structures.theirPlayerObjDamage}`);
+  }
+  const upset = { isUpset: upsetReasons.length >= 2, reasons: upsetReasons };
   return {
-    support, duoLane,
+    support, duoLane, structureLedger, structures, upset,
     vision: {
       usWards: sum(us, 'wardsPlaced'), themWards: sum(them, 'wardsPlaced'),
       usDestroyed: sum(us, 'wardsDestroyed'), themDestroyed: sum(them, 'wardsDestroyed'),

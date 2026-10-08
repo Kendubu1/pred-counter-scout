@@ -358,6 +358,37 @@ and name a repeating pattern when the facts in those files show one ("third
 film in a row with a solo death before minute 8"); cite only facts present in
 those files.
 
+## Upset losses get a deep dive (maintainer rule, 2026-10-08)
+
+`interrogation.upset.isUpset` marks a loss the stat sheet says we should have
+won (kills, majors, fights won or player objective damage far ahead). The
+maintainer's read of f7571490 (46-20 kills, 33-18 majors, 9-3 fights, lost
+6-13 on towers): a summary that names the paradox and never explains it is
+not a review. An upset loss REQUIRES `coaching.deepDive`:
+
+- `verdict` (≤30 words): the one-sentence cause of the loss, not the
+  paradox. "We fought for neutral objectives while minion waves took the
+  base" is a verdict; "we won the fights and lost the towers" is the symptom.
+- `causes` (3–5, ordered by cost): `{claim ≤25 words, receipt ≤40 words}`.
+  Each receipt is a specific event chain from `interrogation.structureLedger`
+  (which structure fell, what we were doing within the window, who was
+  dead), `fights.conversion.missed`, `concededMajors`, or `itemGap`. Every
+  cause must be a decision the squad can change.
+- `ledger` (≤150 words): the structure story in game order, built from
+  `structureLedger` — when each structure fell and what the team was doing
+  at that moment (a neutral take, a fight elsewhere, nobody dead). This is
+  where "how did we lose the base" gets answered minute by minute.
+- `theCall` (≤60 words): the single decision that would have ended or saved
+  the game, placed at its minute, with the facts that show the window was
+  there (an ace with the Prime buff up, a structure count, death timers).
+- `rule` (≤20 words): a checkable next-game rule, specific to this failure
+  ("after an ace past minute 35, the core, not the Prime").
+
+When `deepDive` exists, `focus` must agree with it (same lesson, one line)
+and `whatShiftedIt` names the decision, not a fight score. Budgets for
+`team` extend to 150 words on an upset. The deep dive renders as its own
+card under the moments; the critic reviews every line of it.
+
 ## Ranked review output: the call, then the receipts (2026-09-29)
 
 The current report shape is too easy to fill with a match recap. Write for a

@@ -3776,3 +3776,33 @@ Eternal read; a `ranking` field with a receipt per row on every film.
   record of those changes. Harness 150/150.
 - **The Valmont icon stays open**: no PREDGG creds in this session, and the
   pred.gg hero page is a client-rendered app with no asset hash in its HTML.
+
+## 2026-10-08 — Upset losses get a deep dive (maintainer ask on f7571490)
+
+The maintainer's read of the f7571490 review (45-minute loss at 46-20 kills,
+33-18 majors, 9-3 fights, towers 6-13): naming the paradox is not a review.
+The facts explained it once asked the right question — what were we doing
+when each structure fell:
+
+- **A structure ledger is the missing interrogation row.** Per enemy
+  structure take: our dead in the prior 60s, a major we took within 90s,
+  the nearest fight. For f7571490 it reads: nine of their thirteen
+  structures fell while we were taking a Fangtooth, Prime or Genesis Core,
+  seven with nobody on our side dead, five while we were WINNING the fight
+  at that structure. Their players did 33,043 objective damage all game;
+  minion waves took the base. `interrogation.structureLedger` +
+  `interrogation.structures` now carry this for every film.
+- **"Upset" is deterministic.** `interrogation.upset` fires on a loss with
+  two or more of: kills ≥1.5× theirs, majors ahead, fights won ≥2× theirs,
+  player objective damage ≥2× theirs. Two films in the library qualify
+  (f7571490 and dc04db6a). An upset REQUIRES `coaching.deepDive` (verdict,
+  3–5 causes with receipts, the structure story minute by minute, the one
+  call, a checkable rule); the critic SOURCE says so and flags its absence.
+- **The one call was findable.** At 42 all five of theirs were dead off a
+  5-0, we took two inner towers and an inhibitor by 43, and went to Primal
+  Fangtooth at 43 instead of the core; the game ran three more minutes and
+  ended with us winning 4-1 at Orb Prime while the core fell at 45.4.
+  Rule written into the review: after an ace past minute 35, the core,
+  never a camp.
+- Rendered as its own card under the moments; `focus` and `whatShiftedIt`
+  now carry the decision, not the fight score.

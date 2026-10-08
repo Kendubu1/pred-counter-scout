@@ -73,7 +73,10 @@ not in the env, stop immediately and report — no partial work.
 4. Coaching narrative (session compute, NO API key — the standing copy policy):
    author the `coaching` block for each new game the way the pred-scout-coach
    agent does — grounded ONLY in that game's facts file, including the
-   buildReads teaching layer (gained-vs-lost reasoning per player) — then run the
+   buildReads teaching layer (gained-vs-lost reasoning per player); when the
+   facts carry `interrogation.upset.isUpset` (a loss the stat sheet says we
+   should have won) the block MUST also carry `deepDive` (coach spec
+   "Upset losses get a deep dive") — then run the
    independent critique loop SCOPED TO THE NEW GAMES ONLY:
    `COACH_GAMES=<id,id,...> COPY_MODE=prepare npm run coach:critique:prepare`,
    the independent critic pass, `COACH_GAMES=<same ids> npm run coach:critique`,

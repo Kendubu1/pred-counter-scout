@@ -773,6 +773,15 @@ function pgReview(f) {
   </div>` : '';
 
   // ── One authored, match-specific coaching read. No generic stat diagnostics. ──
+  const dd = co && co.deepDive;
+  const deepDive = dd && (dd.verdict || (dd.causes || []).length) ? `<div style="background:var(--bg-1);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:12px;padding:1rem 1.1rem;margin-top:1rem">
+    <div class="eyebrow">Deep dive · how a game this far ahead was lost</div>
+    ${dd.verdict ? `<div style="font-size:1rem;font-weight:700;line-height:1.45;margin-top:.3rem">${esc(dd.verdict)}</div>` : ''}
+    ${(dd.causes || []).length ? `<ol style="margin:.6rem 0 0;padding-left:1.3rem;font-size:.88rem;line-height:1.5">${dd.causes.map((c) => `<li><b>${esc(c.claim || '')}</b>${c.receipt ? `<div style="color:var(--text-1);font-size:.8rem;margin:.1rem 0 .4rem">${esc(c.receipt)}</div>` : ''}</li>`).join('')}</ol>` : ''}
+    ${dd.ledger ? `<details class="sim-collapse" style="margin-top:.5rem"><summary>The structure story, minute by minute</summary><div style="color:var(--text-1);margin-top:.35rem;font-size:.86rem;line-height:1.55">${esc(dd.ledger)}</div></details>` : ''}
+    ${dd.theCall ? `<div style="border-left:3px solid var(--gold);padding:.5rem .8rem;background:rgba(240,180,41,.07);border-radius:6px;margin-top:.6rem;font-size:.88rem"><b>The call:</b> ${esc(dd.theCall)}</div>` : ''}
+    ${dd.rule ? `<div style="margin-top:.5rem;font-size:.88rem"><b>Next game rule:</b> ${esc(dd.rule)}</div>` : ''}
+  </div>` : '';
   const focus = co && co.focus;
   const focusCall = focus && focus.title && focus.evidence && focus.action
     ? `<div class="focus-call"><div class="eyebrow">Match-specific coach call</div><h3>${esc(focus.title)}</h3><p><b>Why this match:</b> ${esc(focus.evidence)}</p><p class="action"><b>Next time:</b> ${esc(focus.action)}</p></div>`
@@ -872,7 +881,7 @@ function pgReview(f) {
     ${lanes}${fightMap(f)}${comp}${kit}
   </details>`;
 
-  return head + moments + coachEvidence + timeline + worked + lobby + deep;
+  return head + moments + deepDive + coachEvidence + timeline + worked + lobby + deep;
 }
 
 // The lobby's ETERNAL line joins the per-hero artifact (engine loadout + the
@@ -891,6 +900,11 @@ async function fillEternals() {
       const mu = (src.matchups || d.matchups || []).find((m) => m.enemySlug === opp);
       const cs = mu && mu.counterSwap;
       const oppName = mu ? mu.enemy : opp;
+      // Support loadouts: the engine models only damage majors (Vesh/Demiurge/
+      // Thraex...), the support majors (Exarch, Aion, Lotus, Marrow, Nihil,
+      // Weald, Pilow, Satariel) are unmodeled — so a Vesh row on an enchanter is
+      // the model's blind spot, not a recommendation (coach audit 2026-09-21).
+      if (role === 'support') { el.innerHTML = `<span class="ltag">eternal</span><span style="color:var(--text-2)">support loadouts are not modeled by the engine (the field runs Exarch on healers and shielders, Krix on tank supports)</span>`; continue; }
       if (lo && lo.major) el.innerHTML = `<span class="ltag">eternal</span><b>${esc(lo.major.name)}</b>${lo.minor1 ? ` + ${esc(lo.minor1.name)}` : ''}${lo.minor2 ? ` + ${esc(lo.minor2.name)}` : ''}${cs && typeof cs.in === 'string' && cs.out ? ` <span class="swap">· matchup swap vs ${esc(oppName)}: ${esc(cs.in)} in for ${esc(cs.out)}</span>` : ''}`;
       else el.remove();
     } catch { el.remove(); }
