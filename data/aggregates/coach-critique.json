@@ -1,62 +1,68 @@
 {
- "generatedAt": "2026-10-07T20:07:50.304Z",
+ "generatedAt": "2026-10-08T20:12:32.061Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
  "reviewedLines": 31,
- "flaggedLines": 8,
- "agreementRate": 0.742,
+ "flaggedLines": 9,
+ "agreementRate": 0.71,
  "rewritesGrounded": 6,
- "rewritesDropped": 2,
+ "rewritesDropped": 0,
  "applied": 6,
  "unmatched": 0,
  "games": {
-  "8cc11343-e0c3-435c-82a8-db293a01ee0e": [
+  "d87f9cad-d701-4275-9576-bf80c1a7d95a": [
    {
-    "quote": "A 1-3 loss at 14.9 near our half cost the first Outer Tower at 15.9; a second lost fight at 18.7, the game's highest-significance fight, sat right at our second Outer Tower falling.",
-    "severity": "low",
-    "issue": "readability: three timestamps (14.9, 15.9, 18.7) in one sentence",
-    "rewrite": "A 1-3 loss at 14.9 near our half cost the first Outer Tower at 15.9. A second lost fight at 18.7, the game's highest-significance fight, sat right at our second Outer Tower falling."
-   },
-   {
-    "quote": "When a fight is won clean, follow it straight into the nearest camp or tower instead of resetting — a won fight that isn't cashed is a wasted lead.",
-    "severity": "low",
-    "issue": "readability: second use of 'cashed' in the same review (first in the preceding line)",
-    "rewrite": "When a fight is won clean, follow it straight into the nearest camp or tower instead of resetting — a won fight that isn't converted into an objective is a wasted lead."
-   },
-   {
-    "quote": "Khaimera opened the game with three kills (4.3, 8.7, 12.7), then died in the 15.0 fight that preceded our first Outer Tower, and again in the 18.7 fight tagged the game's most significant.",
+    "quote": "Phase was caught alone for first blood at 3.2 in the duo lane, but river camps were ours from minute 3 on, 21-2 overall. Midlane read theirs the whole laning phase against Gideon, yet Lt. Belica began stacking kills on him from 9.2 and never let up. By the finish, they'd been caught alone six times to our one. Towers finished 8-2.",
     "severity": "med",
-    "issue": "readability: five timestamps in one sentence",
-    "rewrite": "Khaimera opened the game with two early kills, at 4.3 and 8.7. He added a third at 12.7, then died in the 15.0 fight that preceded our first Outer Tower. He died again in the 18.7 fight tagged the game's most significant."
+    "issue": "fabricated timing -- SOURCE gives only a 21-2 river-buff total, no 'from minute 3' start time",
+    "rewrite": "Phase was caught alone for first blood at 3.2 in the duo lane, but river camps were ours 21-2 overall. Midlane read theirs the whole laning phase against Gideon, yet Lt. Belica began stacking kills on him from 9.2 and never let up. By the finish, they'd been caught alone six times to our one. Towers finished 8-2."
    },
    {
-    "quote": "Greystone: zero deaths, the early offlane win, and the lone kill in a lost fight.",
-    "severity": "low",
-    "issue": "cross-section repetition: duplicates the verdict line verbatim with no distinct ranking purpose",
-    "rewrite": "Greystone: tied for third in kill participation at 20%, with zero deaths, the early offlane win, and the lone kill in a lost fight."
+    "quote": "The 18.7-minute teamfight, the game's highest-significance fight, was won 4-1 at their Outer Tower; three of the four fights after it converted into a tower or objective.",
+    "severity": "med",
+    "issue": "miscounted conversions -- only 2 of the 4 fights after 18.7m took a tower/objective (26.2 Inner Tower, 26.8 Inhibitor); the third (22.1) was a river camp, not a tower/objective, and the fourth (20.5) actually conceded Fangtooth to them",
+    "rewrite": "The 18.7-minute teamfight, tagged game-defining, was won 4-1 at their Outer Tower; of the four fights after it, two converted into a tower or objective for us (Inner Tower at 26.2, Inhibitor at 26.8), while the fight at 20.5 was won 2-0 but conceded Fangtooth to them."
    },
    {
-    "quote": "Khaimera: 3 early kills, then died in both the 15.0 and 18.7 fights.",
+    "quote": "At minute 21, Fangtooth fell to them with nobody of ours dead going into it, even though we'd won fights at 16.9 and 20.5 right near that camp without claiming it.",
+    "severity": "high",
+    "issue": "wrong reference -- the 16.9m skirmish was at our Outer Tower, not near Fangtooth, and that tower actually went to them (not merely left unclaimed); also stacks three timestamps (21, 16.9, 20.5) in one sentence",
+    "rewrite": "At minute 21, Fangtooth fell to them with nobody of ours dead going into it, even though we'd won the fight right next to it at 20.5 without claiming the camp."
+   },
+   {
+    "quote": "Grouping full strength erased the midlane deficit -- win fights together instead of soloing a losing lane.",
     "severity": "low",
-    "issue": "cross-section repetition: duplicates the verdict line verbatim with no distinct ranking purpose",
+    "issue": "unsupported 'full strength' claim -- the 18.7m skirmish entry names only murdock/scarlett/lt-belica on our side against all 5 of theirs, contradicting the 5v5 macro-read tag (which itself misdescribes that fight as being for Fangtooth)",
+    "rewrite": "Grouping murdock, scarlett and lt-belica for the 18.7m fight, won 4-1 at their Outer Tower, erased the midlane deficit -- win fights together instead of soloing a losing lane."
+   },
+   {
+    "quote": "Pressed a 5-to-2 man advantage straight into their Inhibitor instead of resetting -- the correct read once a fight is already won that lopsided.",
+    "severity": "high",
+    "issue": "fabricated stat -- no '5-to-2' headcount exists in the SOURCE; the 26.8m Inhibitor skirmish is recorded as a 2v2 (lt-belica/murdock v serath/drongo) won 2-0",
+    "rewrite": "Won the fight at their Inhibitor 2-0 at 26.8 and converted it straight into the structure instead of resetting -- cashing a won fight immediately is the correct read."
+   },
+   {
+    "quote": "Fangtooth went to them uncontested",
+    "severity": "low",
+    "issue": "duplicate -- restates line 1 and line 6's Fangtooth-uncontested fact with no new decision or action",
     "rewrite": null
    },
    {
-    "quote": "Phase: 8 wards and 7,596 healing, with both deaths inside fights the team lost.",
+    "quote": "Caught alone for first blood at 3.2, but led the team in healing (18,290) and wards (11 to their 2).",
     "severity": "low",
-    "issue": "cross-section repetition: duplicates the verdict line with no distinct ranking purpose",
-    "rewrite": "Phase: tied for third in kill participation at 20%, with 8 wards and 7,596 healing, and both deaths inside fights the team lost."
-   },
-   {
-    "quote": "Neon: 0 kills and 0 assists, plus the solo death that cost the first Fangtooth.",
-    "severity": "low",
-    "issue": "cross-section repetition: duplicates the verdict line verbatim with no distinct ranking purpose",
-    "rewrite": "Neon: last in kill participation at 0%, with the solo death that cost the first Fangtooth."
-   },
-   {
-    "quote": "Eden: 4 deaths, all to Sparrow, including the solo catch before a tower fell.",
-    "severity": "low",
-    "issue": "cross-section repetition: duplicates the verdict line verbatim with no distinct ranking purpose",
+    "issue": "duplicate -- repeats Phase's player note (healing/wards/caught-alone) with no added purpose",
     "rewrite": null
+   },
+   {
+    "quote": "Team-high 23,045 objective damage and a favored matchup against Serath all game, despite two deaths.",
+    "severity": "low",
+    "issue": "duplicate -- repeats Scarlett's player note (obj damage/matchup/deaths) with no added purpose",
+    "rewrite": null
+   },
+   {
+    "quote": "Murdock: 7 kills, zero deaths, 24,125 damage to heroes in an even matchup.",
+    "severity": "low",
+    "issue": "duplicate ranking row -- repeats the player note verbatim with no rank/comparative marker to justify a separate ranking entry",
+    "rewrite": "Murdock: second-most kills on the team (7), zero deaths, 24,125 damage to heroes in an even matchup."
    }
   ]
  }
