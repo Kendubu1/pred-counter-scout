@@ -1,127 +1,103 @@
 {
- "generatedAt": "2026-10-09T20:15:53.969Z",
+ "generatedAt": "2026-10-11T07:13:52.465Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
  "reviewedLines": 31,
- "flaggedLines": 19,
- "agreementRate": 0.387,
- "rewritesGrounded": 14,
+ "flaggedLines": 15,
+ "agreementRate": 0.516,
+ "rewritesGrounded": 10,
  "rewritesDropped": 0,
- "applied": 14,
+ "applied": 10,
  "unmatched": 0,
  "games": {
-  "e75e5241-3131-4191-a9b7-d04aa1b8c9c5": [
+  "343eb87b-305a-460d-884c-4e27ee710bab": [
    {
-    "quote": "Cuban Noobster off his best role (carry), Mr_Meat31 off his (offlane), Willy Guggenheim off his (jungle)",
+    "quote": "We were caught alone nine times to their three; towers finished 3-3, objective damage 18,881 to 253, kills 9-14.",
     "severity": "high",
-    "issue": "fabricated best-role/comfort-pick framing not in SOURCE",
-    "rewrite": "Cuban Noobster, Mr_Meat31 and Willy Guggenheim were all off their bottom-two lanes this game"
+    "issue": "wrong claim category: 9-14 is the MAJORS (major objectives) count, not kills; actual kills were 11 (us) to 26 (them) by the players' own K/D lines",
+    "rewrite": "We were caught alone nine times to their three; towers finished 3-3, objective damage 18,881 to 253, majors 9-14 them."
    },
    {
-    "quote": "The finish was two 4-against-5 losses -- 0-2 at 30.7, Greystone dead 41 seconds earlier, and 1-2 at 31.7, Phase dead 42 seconds earlier -- before three inhibitors, an inner tower and the core fell by 31.8.",
+    "quote": "Two lanes read favored before the first ward dropped — jungle and support — while carry, mid and offlane all lost their matchups.",
     "severity": "low",
-    "issue": "three timestamps stacked in one sentence",
-    "rewrite": "The finish was two 4-against-5 losses: 0-2 at 30.7 with Greystone dead 41 seconds earlier, then 1-2 at 31.7 with Phase dead 42 seconds earlier. Three inhibitors, an inner tower and the core fell in that window."
+    "issue": "verdict opens on a lane-read recap instead of naming the decisive call",
+    "rewrite": "Steel's solo death at 14.2 handed us the Outer Tower at 14.8, and the fight right after, lost 1-3, was the first game-defining swing — even though jungle and support were our two favored lanes, with carry, mid and offlane all losing theirs."
    },
    {
-    "quote": "Three of five lanes read ours all game -- Kira over Revenant, Argus over Eden, Khaimera over Riktor -- the draft and lane phase were not the problem.",
-    "severity": "medium",
-    "issue": "duplicate conclusion with no new decision or action",
+    "quote": "Revenant's solo catch by Yin at 20.5 cost two towers within the next 70 seconds, and the following teamfight, lost 0-5 at 21.7, ended the game.",
+    "severity": "med",
+    "issue": "wrong time window: Outer Tower fell 60s later (21.5) but Inner Tower fell 78s later (21.8), not within 70s",
+    "rewrite": "Revenant's solo catch by Yin at 20.5 cost two towers within the next 80 seconds, and the following teamfight, lost 0-5 at 21.7, ended the game."
+   },
+   {
+    "quote": "We secured both Fangtooths, at minute 6 and minute 19, the second converted straight off an even 2-2 trade at their camp.",
+    "severity": "low",
+    "issue": "invented location: the source records this skirmish only as '@ Fangtooth', not 'their camp'",
+    "rewrite": "We secured both Fangtooths, at minute 6 and minute 19, the second converted straight off an even 2-2 trade at Fangtooth."
+   },
+   {
+    "quote": "Steel's lane read favored against Dekker, but the numbers didn't follow: 4 wards placed to the enemy support's 10, and a team-low 18% kill participation. His solo death at 14.2 cost the Outer Tower at 14.8, and he died first in two of the game's fights.",
+    "severity": "high",
+    "issue": "opens by grading the support on the 1v1 lane read (banned yardstick for supports), and '18% kill participation' is mislabeled 'team-low' — Legion's 9% is the actual team-low, and that worse number goes uncited while the (incorrect) team-low label lands on a non-squad player",
+    "rewrite": "Steel's own numbers were weak: 4 wards placed to the enemy support's 10, and 18% kill participation (Legion's 9% was the actual team low). His solo death at 14.2 cost the Outer Tower at 14.8, and he died first in two of the game's fights."
+   },
+   {
+    "quote": "but she also landed the game's only kill on The Fey, at 18.8.",
+    "severity": "med",
+    "issue": "wrong: Zarus also killed The Fey at 8.5m, so Countess's kill wasn't the only one",
+    "rewrite": "but she also landed one of the team's two kills on The Fey, at 18.8 (Zarus got the other at 8.5)."
+   },
+   {
+    "quote": "5,401 damage to heroes, the lowest on the roster, but the only kill on The Fey, at 18.8.",
+    "severity": "med",
+    "issue": "wrong: Zarus also killed The Fey at 8.5m, so this wasn't the only kill on The Fey",
+    "rewrite": "5,401 damage to heroes, the lowest on the roster, but one of the team's two kills on The Fey, at 18.8."
+   },
+   {
+    "quote": "Lowest damage on the roster, 5,401, but the only kill landed on The Fey.",
+    "severity": "med",
+    "issue": "duplicates the ranking rows already given for Countess and repeats the wrong 'only kill' claim (Zarus also killed The Fey at 8.5m)",
     "rewrite": null
    },
    {
-    "quote": "Have the support split time between placing and sweeping or destroying enemy vision, not just planting more of ours.",
-    "severity": "medium",
-    "issue": "per-player note doesn't name the player",
-    "rewrite": "Mr_Meat31 (Phase) needs to split time between placing and sweeping or destroying enemy vision, not just planting more of ours."
-   },
-   {
-    "quote": "the exact reverse of his last film's 'theirs all game' read on Zinx, where he finished zero deaths in 23 minutes.",
+    "quote": "Legion died solo 26 seconds before this fight, and Zarus was alive and winning his lane but never joined; outnumbered 4-against-5, we lost it 0-2 and it fed the Outer Tower falling at 21.5.",
     "severity": "high",
-    "issue": "fabricated prior-match lane read and duration not in SOURCE",
-    "rewrite": "the reverse of his last film on Zinx, where he finished 3/0/2 with zero deaths."
+    "issue": "unproven 'never joined' claim about Zarus (kill/death-only signal; he has 1 match assist not located to a fight) plus wrong causation — the structure ledger ties the Outer Tower fall at 21.5 to Revenant's solo death at 20.5 and the 21.7 fight, not this 19.9 skirmish",
+    "rewrite": "Legion died solo 26 seconds before this fight, leaving us a body down for the 4-against-5; we lost it 0-2."
    },
    {
-    "quote": "This time: 2 kills, 8 deaths, tied for most on the roster, zero objective damage, and three solo catches at 5.4, 13.1 and 16.9, the most of anyone.",
-    "severity": "medium",
-    "issue": "three timestamps in one sentence",
-    "rewrite": "This time: 2 kills, 8 deaths (tied for most on the roster), zero objective damage. He was caught alone at 5.4 and 13.1. He was caught alone again at 16.9, the most of anyone on the roster."
+    "quote": "close enough that the losing lane, not the build, was the story this game.",
+    "severity": "low",
+    "issue": "second 'not X, but Y' formula in the review (line 18 already used one: 'the swing started here, not at the final wipe')",
+    "rewrite": "close enough that the losing lane explains this game more than the build does."
    },
    {
-    "quote": "14 wards to the enemy's 2, zero deaths before 10.",
-    "severity": "high",
-    "issue": "fabricated opponent ward count from a prior match not in SOURCE",
-    "rewrite": "14 wards placed, zero deaths before 10."
+    "quote": "Steel ran Necrosis and Terminus instead of the Xenia-Dynamo-Gaia Greaves core (56.4% win rate), with zero of five of us carrying armor into a 4-physical enemy comp — a real gap, but no single fight isolates it as the cause of a specific death.",
+    "severity": "low",
+    "issue": "banned hedge phrase 'a real gap'",
+    "rewrite": "Steel ran Necrosis and Terminus instead of the Xenia-Dynamo-Gaia Greaves core (56.4% win rate), with zero of five of us carrying armor into a 4-physical enemy comp — but no single fight isolates it as the cause of a specific death."
    },
    {
-    "quote": "Last time on Khaimera, Xeebs led the roster with 14 kills on 10 deaths.",
-    "severity": "medium",
-    "issue": "claims he led the roster in a prior match where no teammate data is in SOURCE",
-    "rewrite": "Last time on Khaimera, Xeebs finished 14 kills on 10 deaths."
-   },
-   {
-    "quote": "the slowest build on the roster and tied for the most costly deaths in the game.",
-    "severity": "high",
-    "issue": "factually wrong -- Kira's and Phase's 30.7/31m deaths each preceded 5 lost structures, more than Khaimera's",
-    "rewrite": "the slowest build on the roster, and his 26.9 death preceded three lost structures."
-   },
-   {
-    "quote": "Only 3 items by the 32-minute mark, tied for the most costly deaths on the roster.",
-    "severity": "high",
-    "issue": "factually wrong -- Kira and Phase's deaths each cost more structures (5 vs Khaimera's 3)",
-    "rewrite": "Only 3 items by the 32-minute mark, the slowest build on the roster."
-   },
-   {
-    "quote": "three deaths in the next 40 seconds handed Fangtooth at 7.6",
-    "severity": "medium",
-    "issue": "duration not supported -- the three deaths (6.7-7.1) span about 30 seconds, not 40",
-    "rewrite": "three deaths by 7.1 handed Fangtooth at 7.6"
-   },
-   {
-    "quote": "Kira and Argus were both alive and ahead in their lanes but sat out this 0-3; the Primal Fangtooth and both inner towers fell in the same window -- the single costliest sequence of the game.",
-    "severity": "medium",
-    "issue": "duplicates the 26.9 moment stated verbatim elsewhere with no distinct addition",
+    "quote": "Won the jungle clean, 11,478 objective damage, but 3 solo catches led the roster.",
+    "severity": "med",
+    "issue": "triplicates the Zarus player note and ranking row already given, with no new information",
     "rewrite": null
    },
    {
-    "quote": "Kira finished the full Solaris-Ashbringer-Imperator core (744 games, 56.5% win rate) plus Demolisher -- on-core, nothing to fix in the items themselves; the flagged miss is Tainted Rounds against two healers, Riktor and Renna, whose sustain the team never answered as a whole.",
-    "severity": "high",
-    "issue": "fabricated sample size and a fabricated item flag -- SOURCE carries no such flag for Kira",
-    "rewrite": "Kira finished the full Solaris-Ashbringer-Imperator core (56.5% win rate) plus Demolisher -- on-core, nothing to fix in the items themselves. Riktor and Renna gave the enemy two healers whose sustain the team never answered as a whole."
-   },
-   {
-    "quote": "Argus finished the Azure Core-Entropy-Wraith Leggings core (784 games, 57.6% win rate) but spent the fourth slot on Caustica instead of the flagged Tainted Totem -- a real miss against two unanswered healers, Riktor and Renna.",
-    "severity": "high",
-    "issue": "fabricated sample size, a fabricated item flag, and a banned hedge phrase ('a real miss')",
-    "rewrite": "Argus finished the Azure Core-Entropy-Wraith Leggings core (57.6% win rate) and spent the fourth slot on Caustica, against two unanswered healers, Riktor and Renna."
-   },
-   {
-    "quote": "Greystone finished the full Overlord-Rapture-Aegis Of Agawar core (542 games, 55.7% win rate) and added Fire Blossom; the no-magic-resist flag against this three-fifths-magical comp stands even on full core, but no fight here proves it cost a death.",
-    "severity": "high",
-    "issue": "fabricated sample size not in SOURCE",
-    "rewrite": "Greystone finished the full Overlord-Rapture-Aegis Of Agawar core (55.7% win rate) and added Fire Blossom; the no-magic-resist flag against this three-fifths-magical comp stands even on full core, but no fight here proves it cost a death."
-   },
-   {
-    "quote": "Khaimera finished only 3 items in 32 minutes, missing both Basilisk and Rapture from the winning core (1,035 games, 53.6% win rate) for Draconum and Void Helm instead -- the slowest build on the roster, and he tied the most costly deaths in the game.",
-    "severity": "high",
-    "issue": "fabricated sample size and a wrong superlative -- Kira/Phase's deaths each cost more structures",
-    "rewrite": "Khaimera finished only 3 items in 32 minutes, missing both Basilisk and Rapture from the winning core (53.6% win rate) for Draconum and Void Helm instead -- the slowest build on the roster, and his 26.9 death preceded three lost structures."
-   },
-   {
-    "quote": "35,474 damage to heroes on full core, but the 30.7 death cost 5 structures.",
-    "severity": "medium",
-    "issue": "duplicates the same verdict already given for Kira elsewhere",
+    "quote": "Led the team with 21,154 damage, but one solo death cost two towers.",
+    "severity": "med",
+    "issue": "triplicates the Revenant player note and ranking row already given, with no new information",
     "rewrite": null
    },
    {
-    "quote": "Kept the carry's lane deaths at zero before 10, but died first in 3 fights.",
-    "severity": "medium",
-    "issue": "duplicates the same verdict already given for Phase elsewhere",
+    "quote": "Lost the offlane all game; his solo catch opened the 4-against-5 lost at 19.9.",
+    "severity": "med",
+    "issue": "triplicates the Legion player note and ranking row already given, with no new information",
     "rewrite": null
    },
    {
-    "quote": "Won the lane vs Eden but finished 2 kills, 8 deaths, 3 solo catches.",
-    "severity": "medium",
-    "issue": "duplicates the same verdict already given for Argus elsewhere",
+    "quote": "4 wards to the enemy support's 10; his solo death cost the first tower.",
+    "severity": "med",
+    "issue": "triplicates the Steel player note and ranking row already given, with no new information",
     "rewrite": null
    }
   ]
