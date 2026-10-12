@@ -1,103 +1,199 @@
 {
- "generatedAt": "2026-10-11T07:13:52.465Z",
+ "generatedAt": "2026-10-12T02:27:21.321Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
- "reviewedLines": 31,
- "flaggedLines": 15,
- "agreementRate": 0.516,
- "rewritesGrounded": 10,
+ "reviewedLines": 43,
+ "flaggedLines": 31,
+ "agreementRate": 0.279,
+ "rewritesGrounded": 17,
  "rewritesDropped": 0,
- "applied": 10,
+ "applied": 17,
  "unmatched": 0,
  "games": {
-  "343eb87b-305a-460d-884c-4e27ee710bab": [
+  "696e831d-50d3-49a7-aafb-ee94ab920a77": [
    {
-    "quote": "We were caught alone nine times to their three; towers finished 3-3, objective damage 18,881 to 253, kills 9-14.",
+    "quote": "We won the duo lane clean — first blood at 2.7, first Fangtooth, zero duo deaths before 10 to their three — and three of five role matchups read favorably at some point. The 18-minute teamfight, traded 2-2 with Murdock and Khaimera already dead, cost our first tower at 18.8. We answered by winning the 22.5-minute fight 2-0 and taking Fangtooth, but they took an Outer Tower in the same window. From 27 to 35 minutes the game turned: Shinbi's solo catch at 27.4 cost an Inner Tower, Morigesh's at 31.7 cost four structures in a minute, and Khaimera's three late solo catches fed the Primal Fangtooth, an Inhibitor, and the Core. We still won the last fight, at 35.7, 2-1, but the Core had already fallen. Majors finished 22-19 ours, fights 4-0 ours, towers 4-9 theirs.",
+    "severity": "med",
+    "issue": "ungrounded matchup count (only Murdock and Shinbi show a favorable 'ours' window in the LANES data, i.e. 2 of 5, not 3) plus 4 timestamps stacked in one sentence",
+    "rewrite": "We won the duo lane clean — first blood at 2.7, first Fangtooth, zero duo deaths before 10 to their three — and two of five role matchups (Murdock, Shinbi) read favorably for us at some point. The 18-minute teamfight, traded 2-2 with Murdock and Khaimera already dead, cost our first tower at 18.8. We answered by winning the 22.5-minute fight 2-0 and taking Fangtooth, but they took an Outer Tower in the same window. The game turned in the 27-to-35-minute stretch. Shinbi's solo catch at 27.4 cost an Inner Tower, Morigesh's catch at 31.7 cost four structures in a minute, and Khaimera's three late solo catches fed the Primal Fangtooth, an Inhibitor, and the Core. We still won the last fight, at 35.7, 2-1, but the Core had already fallen. Majors finished 22-19 ours, fights 4-0 ours, towers 4-9 theirs."
+   },
+   {
+    "quote": "Three solo catches from 27 to 35 minutes — Shinbi, then Morigesh, then Khaimera twice more — each fed a structure or major while the team kept winning the fights around them; that pattern, not any single fight, turned the 22-19 major lead into the loss.",
+    "severity": "med",
+    "issue": "miscounts solo catches in the 27-35m window: caughtOut lists Shinbi 27.4, Khaimera 29.4, Morigesh 31.7, Khaimera 32.4, Khaimera 34.6 — five catches, not three",
+    "rewrite": "Five solo catches from 27 to 35 minutes — Shinbi once, Morigesh once, Khaimera three times — each fed a structure or major while the team kept winning the fights around them; that pattern, not any single fight, turned the 22-19 major lead into the loss."
+   },
+   {
+    "quote": "Our duo lane won clean: first blood at 2.7, first Fangtooth, and zero duo deaths before minute 10 to their three.",
+    "severity": "low",
+    "issue": "duplicate of line 2's duo-lane claim, no new decision or action added",
+    "rewrite": null
+   },
+   {
+    "quote": "Three solo catches between 27.4 and 34.6 (Shinbi, Morigesh, Khaimera) each preceded a structure or major falling, while the team's own fights that game stayed 4-0 in our favor.",
+    "severity": "med",
+    "issue": "same miscount as line 3 — caughtOut shows five solo catches in that window (Khaimera three times, not once), and it duplicates that line's conclusion",
+    "rewrite": "Five solo catches between 27.4 and 34.6 (Shinbi once, Morigesh once, Khaimera three times) each preceded a structure or major falling, while the team's own fights that game stayed 4-0 in our favor."
+   },
+   {
+    "quote": "After any solo death, pull back and group rather than keep roaming — the same decision point that cost four structures in one minute at 31.7.",
+    "severity": "low",
+    "issue": "duplicate of the rule already stated in line 5",
+    "rewrite": null
+   },
+   {
+    "quote": "We won the majors and the fights, but three solo deaths from Shinbi, Morigesh, and Khaimera between 27 and 35 minutes let nine towers and two inhibitors fall behind us.",
     "severity": "high",
-    "issue": "wrong claim category: 9-14 is the MAJORS (major objectives) count, not kills; actual kills were 11 (us) to 26 (them) by the players' own K/D lines",
-    "rewrite": "We were caught alone nine times to their three; towers finished 3-3, objective damage 18,881 to 253, majors 9-14 them."
+    "issue": "double-counts structures and miscounts deaths: the structureLedger lists nine total structures taken (six towers, two inhibitors, one core), not nine towers plus two more inhibitors; and five solo catches fed them, not three",
+    "rewrite": "We won the majors and the fights, but five solo deaths from Shinbi, Morigesh, and Khaimera between 27 and 35 minutes let nine structures — six towers, two inhibitors, and the core — fall behind us."
    },
    {
-    "quote": "Two lanes read favored before the first ward dropped — jungle and support — while carry, mid and offlane all lost their matchups.",
-    "severity": "low",
-    "issue": "verdict opens on a lane-read recap instead of naming the decisive call",
-    "rewrite": "Steel's solo death at 14.2 handed us the Outer Tower at 14.8, and the fight right after, lost 1-3, was the first game-defining swing — even though jungle and support were our two favored lanes, with carry, mid and offlane all losing theirs."
-   },
-   {
-    "quote": "Revenant's solo catch by Yin at 20.5 cost two towers within the next 70 seconds, and the following teamfight, lost 0-5 at 21.7, ended the game.",
+    "quote": "Morigesh was caught alone by The Fey at 31.7; the structure ledger shows her dead before the Outer Tower (31.8), Inner Tower (32.1), and both Inhibitors (32.3 and 32.6) fell, with no fight in any of those windows.",
     "severity": "med",
-    "issue": "wrong time window: Outer Tower fell 60s later (21.5) but Inner Tower fell 78s later (21.8), not within 70s",
-    "rewrite": "Revenant's solo catch by Yin at 20.5 cost two towers within the next 80 seconds, and the following teamfight, lost 0-5 at 21.7, ended the game."
+    "issue": "the structureLedger lists a fight at 33m alongside three of those four entries (Inner Tower 32.1, both Inhibitors) — only the Outer Tower@31.8 entry explicitly says 'no fight within 60s'",
+    "rewrite": "Morigesh was caught alone by The Fey at 31.7; the structure ledger shows her dead before the Outer Tower (31.8) fell with no fight nearby, and dead again — alongside Khaimera — before the Inner Tower (32.1) and both Inhibitors (32.3 and 32.6) fell near the 33-minute fight."
    },
    {
-    "quote": "We secured both Fangtooths, at minute 6 and minute 19, the second converted straight off an even 2-2 trade at their camp.",
+    "quote": "fights.deathCosts: the 29.4 solo death preceded the uncontested Primal Fangtooth at 30.5; the 32.4 solo death preceded an Inhibitor at 32.6 and an Inner Tower at 33.5; the 34.6 solo death preceded the Core falling at 36.1.",
+    "severity": "med",
+    "issue": "internal-artifact voice — exposes the raw field name 'fights.deathCosts' instead of speaking in plain terms",
+    "rewrite": "Khaimera's 29.4 solo death preceded the uncontested Primal Fangtooth at 30.5; his 32.4 solo death preceded an Inhibitor at 32.6 and an Inner Tower at 33.5; his 34.6 solo death preceded the Core falling at 36.1."
+   },
+   {
+    "quote": "fights.caughtOut.us lists Shinbi caught by Aurora at 5.4, 10.3, 12.2, and 27.4; deathCosts ties the 27.4 catch to the Inner Tower falling at 27.9, and matchupItemFlags notes no magic resist built against a 3-magical enemy comp.",
+    "severity": "med",
+    "issue": "internal-artifact voice — exposes raw field names 'fights.caughtOut.us', 'deathCosts', and 'matchupItemFlags'",
+    "rewrite": "Shinbi was caught alone by Aurora at 5.4, 10.3, 12.2, and 27.4; the 27.4 catch ties directly to the Inner Tower falling at 27.9, and he never built magic resist against a comp that was three-fifths magical."
+   },
+   {
+    "quote": "fights.conversion: 4 fights won, only 2 cashed, missed at 15.7 and 35.7; interrogation.concededMajors marks the Fangtooth at minute 17 and the Primal Fangtooth at minute 30 both uncontested, with nobody of ours dead at the time.",
+    "severity": "med",
+    "issue": "internal-artifact voice ('fights.conversion:', 'interrogation.concededMajors') plus a repeat use of 'cashed' beyond the one-use house-style cap",
+    "rewrite": "We won 4 fights but only converted 2 into a prize, missing conversions at 15.7 and 35.7; the enemy also took the Fangtooth at minute 17 and the Primal Fangtooth at minute 30 completely uncontested, with nobody of ours dead at the time."
+   },
+   {
+    "quote": "Their first tower fell at 18.8 after the 18-minute teamfight, which we traded 2-2 with Murdock and Khaimera already dead. We then won the 22.5-minute fight 2-0 and took Fangtooth, but they took an Outer Tower in the same window — the win never bought map control. Shinbi's solo catch at 27.4 cost the Inner Tower at 27.9, and their Genesis Core fell in the same window, with only Shinbi dead. Morigesh's solo catch at 31.7 cost four structures in a minute: the Outer Tower (31.8), Inner Tower (32.1), and both Inhibitors (32.3, 32.6), the last two with Khaimera also dead. The 33-minute teamfight, opened a body down after Khaimera's death 37 seconds earlier, cost another Inner Tower at 33.5 as Murdock and Narbash also fell. Khaimera's last solo catch at 34.6 doomed the Core, which fell at 36.1 even though the final fight, at 35.7, was won 2-1.",
     "severity": "low",
-    "issue": "invented location: the source records this skirmish only as '@ Fangtooth', not 'their camp'",
-    "rewrite": "We secured both Fangtooths, at minute 6 and minute 19, the second converted straight off an even 2-2 trade at Fangtooth."
+    "issue": "duplicates the verdict's causal narrative (line 2) almost fact-for-fact; acceptable as the deepDive ledger but the overview line should be trimmed so the same chain isn't told twice in full",
+    "rewrite": null
    },
    {
-    "quote": "Steel's lane read favored against Dekker, but the numbers didn't follow: 4 wards placed to the enemy support's 10, and a team-low 18% kill participation. His solo death at 14.2 cost the Outer Tower at 14.8, and he died first in two of the game's fights.",
+    "quote": "At 31.7, with us already down an Outer Tower and Khaimera dead minutes earlier, Morigesh needed to group instead of roaming alone — that one catch by The Fey fed four structures (31.8-32.6) in under a minute and is where the 22-19 major lead became a 4-9 tower deficit.",
+    "severity": "med",
+    "issue": "overattributes the whole 4-9 deficit to one catch; by 31.7 we were already down two Outer Towers and an Inner Tower, and two more structures (Inner Tower 33.5, Core 36.1) came from Khaimera's later, separate solo catches",
+    "rewrite": "At 31.7, with us already down two Outer Towers and an Inner Tower, Morigesh needed to group instead of roaming alone — that one catch by The Fey fed four structures (31.8-32.6) in under a minute, turning a close structure count into the decisive stretch that ended 4-9."
+   },
+   {
+    "quote": "After losing a tower or ally, group before the next objective — don't roam solo down a structure.",
+    "severity": "low",
+    "issue": "duplicate of the rule already stated in line 5",
+    "rewrite": null
+   },
+   {
+    "quote": "Murdock's lane read even early and favored late against TwinBlast, and he led the team in hero damage at 45,815 across 8 kills. Both his later deaths, at 18.1 and 33, came inside team fights the squad was already losing, not solo catches — the cleanest carry statline of his recent films.",
+    "severity": "med",
+    "issue": "mischaracterizes the 18-minute fight as already-losing; the skirmish record and structureLedger both describe it as an even 2-2 trade — only the 33-minute fight was opened down a body",
+    "rewrite": "Murdock's lane read even early and favored late against TwinBlast, and he led the team in hero damage at 45,815 across 8 kills. His death at 33 came inside the 4-against-5 teamfight the team opened down a body; his death at 18.1 came inside an even 2-2 trade — neither was a solo catch, the cleanest carry statline of his recent films."
+   },
+   {
+    "quote": "Narbash did the support job: 79% kill participation, 18 wards placed, 25,832 healing, and zero deaths before minute 10 for himself or the carry. His only death, at 33, came inside the 4-against-5 teamfight the team was already down a body for — the cleanest support film of the stretch.",
+    "severity": "med",
+    "issue": "unverifiable cross-film superlative — his most recent prior Narbash film (2/0/11, 0 caught alone) had zero deaths, cleaner than this match's one death",
+    "rewrite": "Narbash did the support job: 79% kill participation, 18 wards placed, 25,832 healing, and zero deaths before minute 10 for himself or the carry. His only death, at 33, came inside the 4-against-5 teamfight the team was already down a body for."
+   },
+   {
+    "quote": "Morigesh led early with 8 kills, but her solo catch by The Fey at 31.7 was the single costliest death of the match — the structure ledger shows four structures falling in the next minute with nobody else of ours dead.",
     "severity": "high",
-    "issue": "opens by grading the support on the 1v1 lane read (banned yardstick for supports), and '18% kill participation' is mislabeled 'team-low' — Legion's 9% is the actual team-low, and that worse number goes uncited while the (incorrect) team-low label lands on a non-squad player",
-    "rewrite": "Steel's own numbers were weak: 4 wards placed to the enemy support's 10, and 18% kill participation (Legion's 9% was the actual team low). His solo death at 14.2 cost the Outer Tower at 14.8, and he died first in two of the game's fights."
+    "issue": "contradicts the structure ledger, which lists Khaimera also dead in the prior 60s before both Inhibitors (32.3, 32.6) fell — it wasn't 'nobody else'",
+    "rewrite": "Morigesh led early with 8 kills, but her solo catch by The Fey at 31.7 was the single costliest death of the match — the structure ledger shows four structures falling in the next minute, with Khaimera also dead before the two Inhibitors fell."
    },
    {
-    "quote": "but she also landed the game's only kill on The Fey, at 18.8.",
-    "severity": "med",
-    "issue": "wrong: Zarus also killed The Fey at 8.5m, so Countess's kill wasn't the only one",
-    "rewrite": "but she also landed one of the team's two kills on The Fey, at 18.8 (Zarus got the other at 8.5)."
-   },
-   {
-    "quote": "5,401 damage to heroes, the lowest on the roster, but the only kill on The Fey, at 18.8.",
-    "severity": "med",
-    "issue": "wrong: Zarus also killed The Fey at 8.5m, so this wasn't the only kill on The Fey",
-    "rewrite": "5,401 damage to heroes, the lowest on the roster, but one of the team's two kills on The Fey, at 18.8."
-   },
-   {
-    "quote": "Lowest damage on the roster, 5,401, but the only kill landed on The Fey.",
-    "severity": "med",
-    "issue": "duplicates the ranking rows already given for Countess and repeats the wrong 'only kill' claim (Zarus also killed The Fey at 8.5m)",
-    "rewrite": null
-   },
-   {
-    "quote": "Legion died solo 26 seconds before this fight, and Zarus was alive and winning his lane but never joined; outnumbered 4-against-5, we lost it 0-2 and it fed the Outer Tower falling at 21.5.",
+    "quote": "Khaimera lost the jungle matchup to Zarus all game despite it being his best and most-played role, and was caught alone four times. Three of those catches, at 29.4, 32.4, and 34.6, each directly preceded a major or structure falling — a regression from his last film, where none of his deaths were solo.",
     "severity": "high",
-    "issue": "unproven 'never joined' claim about Zarus (kill/death-only signal; he has 1 match assist not located to a fight) plus wrong causation — the structure ledger ties the Outer Tower fall at 21.5 to Revenant's solo death at 20.5 and the 21.7 fight, not this 19.9 skirmish",
-    "rewrite": "Legion died solo 26 seconds before this fight, leaving us a body down for the 4-against-5; we lost it 0-2."
+    "issue": "(a) preference framing — grades the matchup by Khaimera's personal comfort/most-played role rather than the draft; (b) unverifiable cross-film claim — his most recent prior film shows 1 caught-alone death, not zero",
+    "rewrite": "Khaimera lost the jungle matchup to Zarus all game, and was caught alone four times. Three of those catches, at 29.4, 32.4, and 34.6, each directly preceded a major or structure falling."
    },
    {
-    "quote": "close enough that the losing lane, not the build, was the story this game.",
+    "quote": "Led the team with 45,815 hero damage, and both his deaths came inside team fights, not solo catches.",
     "severity": "low",
-    "issue": "second 'not X, but Y' formula in the review (line 18 already used one: 'the swing started here, not at the final wipe')",
-    "rewrite": "close enough that the losing lane explains this game more than the build does."
+    "issue": "duplicate of line 20, no new purpose",
+    "rewrite": null
    },
    {
-    "quote": "Steel ran Necrosis and Terminus instead of the Xenia-Dynamo-Gaia Greaves core (56.4% win rate), with zero of five of us carrying armor into a 4-physical enemy comp — a real gap, but no single fight isolates it as the cause of a specific death.",
+    "quote": "79% kill participation, 18 wards, 25,832 healing, and zero deaths before 10 for himself or the carry.",
     "severity": "low",
-    "issue": "banned hedge phrase 'a real gap'",
-    "rewrite": "Steel ran Necrosis and Terminus instead of the Xenia-Dynamo-Gaia Greaves core (56.4% win rate), with zero of five of us carrying armor into a 4-physical enemy comp — but no single fight isolates it as the cause of a specific death."
-   },
-   {
-    "quote": "Won the jungle clean, 11,478 objective damage, but 3 solo catches led the roster.",
-    "severity": "med",
-    "issue": "triplicates the Zarus player note and ranking row already given, with no new information",
+    "issue": "duplicate of line 21, no new purpose",
     "rewrite": null
    },
    {
-    "quote": "Led the team with 21,154 damage, but one solo death cost two towers.",
-    "severity": "med",
-    "issue": "triplicates the Revenant player note and ranking row already given, with no new information",
+    "quote": "His 31.7 solo catch by The Fey cost four structures in the next minute — the costliest death of the game.",
+    "severity": "low",
+    "issue": "duplicate of lines 9/22, no new purpose",
     "rewrite": null
    },
    {
-    "quote": "Lost the offlane all game; his solo catch opened the 4-against-5 lost at 19.9.",
-    "severity": "med",
-    "issue": "triplicates the Legion player note and ranking row already given, with no new information",
+    "quote": "Caught alone by Aurora four times, finished 0 kills, and never built magic resist into a 3-magical comp.",
+    "severity": "low",
+    "issue": "duplicate of line 23, no new purpose",
     "rewrite": null
    },
    {
-    "quote": "4 wards to the enemy support's 10; his solo death cost the first tower.",
+    "quote": "Caught alone four times; three of those catches directly preceded the Primal Fangtooth, an Inhibitor, and the Core falling.",
+    "severity": "low",
+    "issue": "duplicate of lines 11/24, no new purpose",
+    "rewrite": null
+   },
+   {
+    "quote": "Fought 4-against-5 after Khaimera died 37 seconds earlier; Shinbi was alive and winning his lane but never rotated to even the numbers. This Inner Tower loss was the one the team could have prevented.",
+    "severity": "high",
+    "issue": "unproven 'never rotated' claim — Shinbi has 4 match-wide assists that aren't timestamped per fight, so his presence or absence at the 33m fight is unprovable per the FIGHT PRESENCE RULE; the SOURCE frames the rotation only as a hypothetical ('a shove-and-rotate there flips...')",
+    "rewrite": "We fought the 33-minute fight 4-against-5 after Khaimera died 37 seconds earlier, while Shinbi was alive and ahead in his lane; a shove-and-rotate there could have evened the numbers. This Inner Tower loss was the one the team could have prevented by grouping before the fight instead of opening it a body down."
+   },
+   {
+    "quote": "Narbash and Morigesh won this 2-0 and cashed straight into Fangtooth — the one early fight that converted cleanly into a major.",
+    "severity": "low",
+    "issue": "third use of 'cashed' in the review, exceeds the one-use house-style cap",
+    "rewrite": "Narbash and Morigesh won this 2-0 and converted it straight into Fangtooth — the one early fight that converted cleanly into a major."
+   },
+   {
+    "quote": "We won this 2-0 and took Fangtooth again, but they used the same window to take an Outer Tower elsewhere — the fight win didn't stop their push on the other side of the map.",
     "severity": "med",
-    "issue": "triplicates the Steel player note and ranking row already given, with no new information",
+    "issue": "invents a position/location ('elsewhere', 'the other side of the map') — structure events in the SOURCE carry no lane or map-side location",
+    "rewrite": "We won this 2-0 and took Fangtooth again, but they used the same window to take an Outer Tower — the fight win didn't stop their parallel push."
+   },
+   {
+    "quote": "Murdock skipped Lightning Hawk for Necrosis, Nuclear Rounds, and Spear of Desolation, missing one item from the winning core (56.5% win rate, 1,183 games) — he still led the team in hero damage, so nothing here proves the gap cost a death.",
+    "severity": "high",
+    "issue": "fabricated statistic — '1,183 games' does not appear anywhere in the SOURCE",
+    "rewrite": "Murdock skipped Lightning Hawk for Necrosis, Nuclear Rounds, and Spear of Desolation, missing one item from the winning core (56.5% win rate) — he still led the team in hero damage, so nothing here proves the gap cost a death."
+   },
+   {
+    "quote": "79% kill participation, 18 wards, zero deaths before 10 — did the support job clean.",
+    "severity": "low",
+    "issue": "duplicate of lines 21/26, no new purpose",
+    "rewrite": null
+   },
+   {
+    "quote": "Led the team with 45,815 hero damage; both deaths came inside team fights, not solo.",
+    "severity": "low",
+    "issue": "duplicate of lines 20/25, no new purpose",
+    "rewrite": null
+   },
+   {
+    "quote": "8 kills early, but the 31.7 solo catch cost four structures in a minute.",
+    "severity": "low",
+    "issue": "duplicate of lines 9/22/27, no new purpose",
+    "rewrite": null
+   },
+   {
+    "quote": "0 kills on 4 deaths, caught alone by Aurora four times, no magic resist built.",
+    "severity": "low",
+    "issue": "duplicate of lines 23/28, no new purpose",
+    "rewrite": null
+   },
+   {
+    "quote": "Lost the jungle matchup all game; 3 solo catches each fed a major or structure.",
+    "severity": "low",
+    "issue": "duplicate of lines 11/24/29, no new purpose",
     "rewrite": null
    }
   ]
