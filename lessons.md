@@ -3806,3 +3806,40 @@ when each structure fell:
   never a camp.
 - Rendered as its own card under the moments; `focus` and `whatShiftedIt`
   now carry the decision, not the fight score.
+
+## 2026-10-13 — Patch 1.17.2 review, and two blind spots the freeze created
+- **The deterministic verifier checks number TOKENS, not arithmetic CLAIMS.** Six
+  of the critic's nineteen flags were derived deltas: "Obliterate loses 5 damage
+  at every rank", "Double Pain costs 10 more mana at every rank", "gains a full
+  second of cooldown at every rank". Every one is arithmetically correct, and
+  every one passed both the author's own self-check and the ground-check pass,
+  because the tokens involved ("5", "10", "1") all appear somewhere legal in the
+  block. The verifier can only ask "is this number present?", never "is this
+  subtraction right?" — so a wrong subtraction would ship exactly as easily as a
+  right one. Only the critic reads the sentence. Worth remembering before
+  trusting a 0-flag verifier run as evidence the copy is sound.
+- **A "newest digest" exemption dies the second time the same hero appears.**
+  September's name-integrity fix exempted an unpublished hero named by the newest
+  digest, assuming they would join the catalog before the next patch. omeda is
+  frozen, so Baron Valmont never joined, and 1.17.2 arriving pushed his 1.17
+  entry out of the exemption and failed the harness. The rule now keys on the
+  HERO: a slug the newest digest still names is pending publication and is
+  exempt in every digest; a slug the newest digest has stopped naming is a typo
+  and still fails. An exemption scoped to a moment rather than to a condition
+  expires on its own.
+- **We never asked pred.gg about Valmont.** He has no measured win rate anywhere
+  in our data, and the reason is ours, not the provider's: `general-stats.ts`
+  reads its hero list from `data/omeda/heroes.json`, frozen on 2026-08-28 before
+  he existed, then queries pred.gg per slug. pred.gg is alive and almost
+  certainly has him. A roster-shaped blind spot like this is invisible in the
+  output — the stats file simply has 54 heroes and looks complete. Hand-adding
+  him to the snapshot would be wiped by the next `npm run snapshot`, so the fix
+  is an owned roster supplement layered over the frozen catalog, which is the
+  same architecture question §10 already carries.
+- **The pipeline recovered on its own.** The match feed (503 on 2026-09-21) and
+  the pred.gg pulls are both flowing again: today's lane board is ~99,627 ranked
+  matches at patch 1.17 and the postgame coach has been ingesting films. Only the
+  omeda reference catalog is still frozen, now 46 days. The zero-API architecture
+  meant none of that outage reached the site.
+- Catalog deltas for 1.17.2 applied with zero value discrepancies, the first
+  clean pass since the corrections in September — evidence those fixes took.

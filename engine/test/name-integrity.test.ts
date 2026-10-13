@@ -59,12 +59,21 @@ describe('names match the patch notes', () => {
       }
       return 0;
     }).pop();
+    // Exempt by HERO, not by digest. Keying the exemption to "named by the
+    // newest digest" assumed a pre-release hero joins the catalog before the
+    // next patch. With omeda frozen since 2026-08-28 that never happens, so
+    // Baron Valmont — named by 1.17 and again by 1.17.2 — failed the moment a
+    // second patch mentioned him. A slug the NEWEST digest still names is a
+    // hero the catalog has yet to publish, so every digest may name it; a slug
+    // the newest digest has stopped naming is a typo and still fails.
+    const stillPending = new Set<string>();
+    for (const h of newest?.heroes ?? []) if (!roster.has(h.slug)) stillPending.add(h.slug);
     const unknown: string[] = [];
     const pending: string[] = [];
     for (const d of digests) {
       for (const h of d.heroes ?? []) {
         if (roster.has(h.slug)) continue;
-        (d === newest ? pending : unknown).push(`${d.patch}: ${h.slug}`);
+        (stillPending.has(h.slug) ? pending : unknown).push(`${d.patch}: ${h.slug}`);
       }
     }
     if (pending.length) {
