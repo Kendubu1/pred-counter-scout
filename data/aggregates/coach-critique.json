@@ -1,172 +1,68 @@
 {
- "generatedAt": "2026-10-13T00:14:41.870Z",
+ "generatedAt": "2026-10-13T03:19:09.589Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
- "reviewedLines": 62,
- "flaggedLines": 26,
- "agreementRate": 0.581,
- "rewritesGrounded": 24,
- "rewritesDropped": 1,
- "applied": 24,
+ "reviewedLines": 31,
+ "flaggedLines": 9,
+ "agreementRate": 0.71,
+ "rewritesGrounded": 7,
+ "rewritesDropped": 0,
+ "applied": 7,
  "unmatched": 0,
  "games": {
-  "843dea78-517d-4edb-a302-927a906801a0": [
+  "d29a30f4-f714-482e-9c7d-20b34c201706": [
    {
-    "quote": "We won 17 kills to 3 and closed the game by 18 minutes off one decisive fight at 16.7.",
+    "quote": "Lt. Belica's death at 15.3 cost Mini Prime, and a solo catch on Aurora at 19.4 cost the Outer Tower.",
     "severity": "high",
-    "issue": "conflates majors (river buffs 12-3 + seedlings 3-0 + Fangtooth 2-0 = 17-3) with kills -- actual kills finished 12-5 per the 12-team-kills stat and the kill log",
-    "rewrite": "We won the majors 17 to 3 (river buffs, seedlings, and Fangtooth) and closed the game by 18 minutes off the decisive fight at 16.7."
+    "issue": "blames the player's death for the first clause, but DEATH COST SPLIT marks the 15.3 death as inside a fight, not solo -- that cost is the call to take the fight, not Lt. Belica's own receipt",
+    "rewrite": "The call to fight at 15.3 cost Mini Prime, and a solo catch on Aurora at 19.4 cost the Outer Tower."
    },
    {
-    "quote": "Three of five lanes read favorably: carry, midlane, and the duo, which read 'ours' by game's end.",
+    "quote": "Losing the Fangtooth fight at 20.6 let three more objectives slip in the next three minutes: their Fangtooth, Genesis Core, and Orb Prime, two uncontested with nobody of ours dead.",
     "severity": "med",
-    "issue": "miscounts the five role lanes by substituting the duo-lane read for a third lane; only carry and midlane were favored, offlane/jungle/support were unfavored",
-    "rewrite": "Two of five lanes read favorably: carry and midlane. The duo lane (Murdock+Phase) also read 'ours' by game's end."
+    "issue": "causation overreach -- CONCEDED MAJORS tags Genesis Core@22 and Orb Prime@23 as uncontested with nobody dead, a separate no-show decision, not fallout from the 20.6 fight loss",
+    "rewrite": "Losing the Fangtooth fight at 20.6 cost their Fangtooth outright; Genesis Core and Orb Prime fell in the next three minutes too, both uncontested with nobody of ours dead -- a separate failure to show, not fallout from the fight."
    },
    {
-    "quote": "by full time, none of us had.",
-    "severity": "high",
-    "issue": "contradicted by Lt. Belica's finished Wraith Leggings, an armor item",
-    "rewrite": "by full time, only Lt. Belica had (Wraith Leggings) -- Murdock, Phase, Aurora and Crunch finished with none."
-   },
-   {
-    "quote": "Lt. Belica, Crunch, Murdock and Phase combined for a 5-1 win over their jungle at 16.7, taking Fangtooth in the same window -- the fight that decided the game three minutes before the clock ran out.",
-    "severity": "high",
-    "issue": "wrong location (that 16.7 skirmish was fought at Fangtooth, not their jungle -- the jungle fight was the earlier 11.7m skirmish) and wrong time gap (16.7 to the 18m finish is about a minute, not three)",
-    "rewrite": "Lt. Belica, Crunch, Murdock and Phase combined for a 5-1 win at Fangtooth at 16.7 -- the fight that decided the game about a minute before the clock ran out."
-   },
-   {
-    "quote": "We finished 17 kills to 3, but only one tower changed hands all game, and neither of our two won fights is credited with converting a structure beyond that trade.",
-    "severity": "high",
-    "issue": "same majors/kills conflation as the opening line -- 17-3 is the majors count, not kills",
-    "rewrite": "We finished the majors 17 to 3, but only one tower changed hands all game, and neither of our two won fights is credited with converting a structure beyond that trade."
-   },
-   {
-    "quote": "The 16.7 teamfight, won 5-1, decided it: Fangtooth fell in the same window, and the match ended three minutes later with no further kills recorded.",
-    "severity": "med",
-    "issue": "wrong time gap -- the game ended at 18m, about a minute after 16.7, not three",
-    "rewrite": "The 16.7 teamfight, won 5-1, decided it: Fangtooth fell in the same window, and the match ended about a minute later with no further kills recorded."
-   },
-   {
-    "quote": "None of us carried an armor item while Greystone alone did 12,000 physical damage in a comp that finished four-fifths physical; the kill lead covered for it, but the gap was there the whole game.",
-    "severity": "high",
-    "issue": "contradicted by Lt. Belica's Wraith Leggings, an armor item",
-    "rewrite": null
-   },
-   {
-    "quote": "She carried no armor into a draft that finished four-fifths physical, the same flag the whole team missed.",
-    "severity": "med",
-    "issue": "overreach -- Lt. Belica's finished build included Wraith Leggings, an armor item, so it wasn't the whole team",
-    "rewrite": "She carried no armor into a draft that finished four-fifths physical, the same flag Phase and Crunch also missed."
-   },
-   {
-    "quote": "Crunch lost the offlane to Greystone all game and was caught alone twice early, by Greystone at 6.2 and by Zarus at 9.7, before ever completing an item. No armor against a four-fifths-physical draft, and a build missing two of three core items -- the third straight film with an incomplete build.",
-    "severity": "med",
-    "issue": "the previous films for this player list only raw items with no winning-core data, so a three-film build-completion pattern can't be verified",
-    "rewrite": "Crunch lost the offlane to Greystone all game and was caught alone twice early, by Greystone at 6.2 and by Zarus at 9.7, before ever completing an item. No armor against a four-fifths-physical draft, and a build missing two of three core items."
-   },
-   {
-    "quote": "We won this 3-1 while Crunch sat alone in a losing offlane -- a good trade elsewhere, not a fix for the lane problem it never touched.",
-    "severity": "med",
-    "issue": "infers Crunch's position during that window -- the SOURCE only shows he wasn't credited in that skirmish's roster, not that he was alone in lane at that moment",
-    "rewrite": "We won this 3-1 without Crunch, who wasn't part of the fight and was still losing the offlane to Greystone overall -- a good trade elsewhere, not a fix for the lane problem it never touched."
-   },
-   {
-    "quote": "An even 1-1 trade between Murdock and Crunch against TwinBlast and Greystone still bought the game's only tower -- a split trade paying for itself at a tower already under threat.",
+    "quote": "We converted every fight we won into a prize within ninety seconds, four for four, while they only closed out two of their three.",
     "severity": "low",
-    "issue": "'a tower already under threat' is unsupported -- the SOURCE gives no prior tower-state or threat data",
-    "rewrite": "An even 1-1 trade between Murdock and Crunch against TwinBlast and Greystone still bought the game's only tower."
-   },
-   {
-    "quote": "Lt. Belica, Crunch, Murdock and Phase combined for a 5-1 win over their jungle and took Fangtooth in the same window -- the fight that decided the game three minutes before full time.",
-    "severity": "high",
-    "issue": "same wrong location + wrong time-gap error repeated",
-    "rewrite": "Lt. Belica, Crunch, Murdock and Phase combined for a 5-1 win at Fangtooth -- the fight that decided the game about a minute before full time."
-   },
-   {
-    "quote": "Crunch had only Augmentation finished, missing Mutilator and Tainted Blade from the winning core, and carried no armor into the same four-fifths-physical comp as the rest of the team -- paired with the losing matchup against Greystone, this looks like a lane and itemization problem together.",
-    "severity": "med",
-    "issue": "'as the rest of the team' repeats the false whole-team-no-armor claim; Lt. Belica had Wraith Leggings",
-    "rewrite": "Crunch had only Augmentation finished, missing Mutilator and Tainted Blade from the winning core, and carried no armor against a comp that finished four-fifths physical -- paired with the losing matchup against Greystone, this looks like a lane and itemization problem together."
-   },
-   {
-    "quote": "Second-highest damage at 12,188; both deaths fell inside fights we won.",
-    "severity": "high",
-    "issue": "wrong ranking -- Lt. Belica's 12,188 hero damage is third-highest on the roster (Murdock 15,517, Crunch 13,103, then Lt. Belica 12,188), not second",
-    "rewrite": "Third-highest damage at 12,188; both deaths fell inside fights we won."
-   }
-  ],
-  "dfcb69c9-1cc6-4414-aad1-7f5654cb93e4": [
-   {
-    "quote": "We won 27 kills to 8 and 8 towers to 2, converting five of eight won fights into structures.",
-    "severity": "high",
-    "issue": "conflates majors (27-8) with kills -- actual kills finished 33-7 per the kill log and the 33 team-kills stat",
-    "rewrite": "We won the majors 27 to 8 and the towers 8 to 2, converting five of eight won fights into a prize within 90 seconds."
-   },
-   {
-    "quote": "The draft read favorable in three of five lanes: Kira over Legion, Lt. Belica over Renna late, and the duo lane clean with zero deaths before minute ten to their three.",
-    "severity": "med",
-    "issue": "miscounts the five role lanes by substituting the duo-lane read for a third lane; only carry and midlane were favored, jungle was even, offlane and support were unfavored",
-    "rewrite": "The draft read favorable in two of five lanes: Kira over Legion, and Lt. Belica over Renna late. The jungle read even, and the duo lane (Kira+Phase) also read ours by game's end, with zero duo deaths before minute ten to their three."
-   },
-   {
-    "quote": "Every fight after that, we won.",
-    "severity": "high",
-    "issue": "contradicted by the 13.5m skirmish, an even 1-1 trade that cost us our Outer Tower",
-    "rewrite": "After that we won every fight but one: an even 1-1 skirmish at 13.5 that cost us our Outer Tower."
-   },
-   {
-    "quote": "The only even stretch was the minute-8 trade of our Fangtooth for their Mini Prime; every fight after that, we won, and five of our eight wins converted straight into towers.",
-    "severity": "high",
-    "issue": "two more even skirmishes happened later (6.8 and 13.5), so 'the only even stretch' and 'every fight after that, we won' are both false",
-    "rewrite": "We also traded even skirmishes at 6.8 and 13.5; outside of those, we won every fight, and five of our eight won fights converted into a prize within 90 seconds."
-   },
-   {
-    "quote": "This is the third recent film on Kira: a flawless 9-0-5 two films back, a rough 4-7-7 in the loss right after, and now the best of the three.",
-    "severity": "high",
-    "issue": "fabricated stat -- no previous film shows a 9-0-5 Kira game (the prior films are Murdock 8/3/3, Kira 4/7/7, Muriel 0/5/7), and this is only the second Kira film, not the third",
-    "rewrite": "Her only previous film on Kira was a 4/7/7 loss; this 17/0/6 win is a clear step up."
-   },
-   {
-    "quote": "Aurora's jungle matchup read even early and ours out late against Scarlett, and she led the match in objective damage at 30,227.",
-    "severity": "high",
-    "issue": "reverses the lane read -- the SOURCE has it ours early, theirs late, not even early",
-    "rewrite": "Aurora's jungle matchup read ours early and theirs late against Scarlett, and she led the match in objective damage at 30,227."
-   },
-   {
-    "quote": "breaking a run of two straight films with three-plus solo catches apiece.",
-    "severity": "med",
-    "issue": "only one of the three prior films (the Argus game) had three-plus solo catches; the other two had 0 and 1",
-    "rewrite": "breaking from a recent film on Argus with three solo catches."
-   },
-   {
-    "quote": "continuing a run of incomplete builds",
-    "severity": "med",
-    "issue": "prior films are on a different hero/role (Khaimera jungle) with no winning-core data given, so there's no basis for a build-completion pattern claim",
+    "issue": "duplicates the same conversion stat already stated in full in the team narrative, no new analysis added",
     "rewrite": null
    },
    {
-    "quote": "Lt. Belica, Kira, and Feng Mao caught Legion's team without the rest of the roster and still won 4-0, cashed it into an Outer Tower -- the fight didn't need a full group to pay off.",
-    "severity": "high",
-    "issue": "wrong objective -- that 4-0 trio fight (lt-belica/kira/feng-mao) converted into their Inner Tower, not an Outer Tower",
-    "rewrite": "Lt. Belica, Kira, and Feng Mao won a 4-0 fight without Aurora and converted it into their Inner Tower -- the fight didn't need a full group to pay off."
-   },
-   {
-    "quote": "This 3-0 win doubled as Orb Prime and the Primal Fangtooth landing in the same window -- stacking a fight win on top of two majors is how the lead turned into towers.",
-    "severity": "high",
-    "issue": "invents a link -- Orb Prime (25.4) and the Primal Fangtooth (26.3) are separate events from the 3-0 fight at 24.5 that took their Inner Tower; the SOURCE doesn't tie them to the same fight",
-    "rewrite": "The 24.5 fight, won 3-0, took their Inner Tower, and Orb Prime and the Primal Fangtooth both fell to us minutes later -- stacking objectives back-to-back is how the lead turned into towers."
-   },
-   {
-    "quote": "The biggest fight of the game, won 4-0 and converted into another Inner Tower; by this point we'd won eight fights to their zero, with only the Core left to fall.",
+    "quote": "She finished with 6 assists and the match's heaviest mitigation at 49,545, but a solo catch by Khaimera at 19.4 directly preceded the Outer Tower we lost at 20.1.",
     "severity": "med",
-    "issue": "miscounts the win tally -- by the 27.1 fight we had won seven fights, not eight, and an Inhibitor still remained before the Core fell",
-    "rewrite": "Won 4-0 and converted into another Inner Tower; by this point we'd won seven fights to their zero, with an Inhibitor and the Core still left to fall."
+    "issue": "ungrounded superlative -- Khaimera (opponent) logged 55,657 mitigated, higher than Aurora's 49,545; it's the team's high, not the match's",
+    "rewrite": "She finished with 6 assists and the team's heaviest mitigation at 49,545, but a solo catch by Khaimera at 19.4 directly preceded the Outer Tower we lost at 20.1."
    },
    {
-    "quote": "Phase finished the full Marshal-Enra's Blessing-Galaxy Greaves meta core before adding Windcaller as a fourth item -- on-core, nothing to question here.",
+    "quote": "6 assists and the match's highest mitigation, but a solo catch by Khaimera at 19.4 cost the Outer Tower at 20.1.",
     "severity": "med",
-    "issue": "reverses the completion order -- Windcaller finished at ~24m, before Galaxy Greaves at ~29m, so the core wasn't complete until after Windcaller",
-    "rewrite": "Phase added Windcaller before completing the Marshal-Enra's Blessing-Galaxy Greaves core at Galaxy Greaves (~29m) -- all three core items landed by full build, nothing to question here."
+    "issue": "same ungrounded superlative -- Khaimera's 55,657 mitigated is the match high, not Aurora's 49,545",
+    "rewrite": "6 assists and the team's highest mitigation, but a solo catch by Khaimera at 19.4 cost the Outer Tower at 20.1."
+   },
+   {
+    "quote": "Murdock and Steel took this Fangtooth fight alone and lost it 0-2, while Aurora, Scarlett, and Lt. Belica, all alive in even lanes, never joined. Their Fangtooth, Genesis Core, and Orb Prime fell in the next three minutes.",
+    "severity": "high",
+    "issue": "Lt. Belica wrongly added to the absence list -- MACRO READS at 20.6m flags only jungle (Aurora) and offlane (Scarlett) as alive-and-never-joined, and her lane read unfavored early, not even",
+    "rewrite": "Murdock and Steel took this Fangtooth fight alone and lost it 0-2, while Aurora and Scarlett, both alive, never joined. Their Fangtooth, Genesis Core, and Orb Prime fell in the next three minutes."
+   },
+   {
+    "quote": "Aurora built Magnify and Elafrost from the meta core, then subbed Giant's Ring and Flux Matrix for Gaia Greaves, landing more total armor (physical and magical) than the three-item core alone, not less; the two Khaimera catches were positioning, not a gear gap.",
+    "severity": "high",
+    "issue": "invents an armor-stat comparison not in the SOURCE and calls the catches 'positioning' -- an execution/positioning read the match feed can't show",
+    "rewrite": "Aurora built Magnify and Elafrost from the meta core, then subbed Giant's Ring and Flux Matrix for Gaia Greaves -- a defensive-item choice, not a proven gear gain or loss; the two Khaimera catches on Aurora (12.8m, 19.4m) aren't explained by items either way."
+   },
+   {
+    "quote": "One item short of the winning core again, Noxia swapped for Tainted Scepter — the gap matters less than Morigesh catching him alone three times before minute fourteen.",
+    "severity": "low",
+    "issue": "'again' implies a repeat pattern for Lt. Belica that PREVIOUS FILMS doesn't support -- no core-completeness data is given for his prior games",
+    "rewrite": "One item short of the winning core, Noxia swapped for Tainted Scepter — the gap matters less than Morigesh catching him alone three times before minute fourteen."
+   },
+   {
+    "quote": "Murdock and Lt. Belica won this 4-0, and it broke the game: their Inhibitor, Outer Tower, and Core fell in the next ninety seconds, with the Primal Fangtooth right behind it.",
+    "severity": "low",
+    "issue": "near-verbatim repeat of the same 33.4 ace already covered in full detail elsewhere, adds no new purpose",
+    "rewrite": null
    }
   ]
  }
