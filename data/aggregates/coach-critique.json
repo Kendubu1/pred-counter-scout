@@ -1,68 +1,124 @@
 {
- "generatedAt": "2026-10-13T03:19:09.589Z",
+ "generatedAt": "2026-10-13T23:23:33.059Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
- "reviewedLines": 31,
- "flaggedLines": 9,
- "agreementRate": 0.71,
- "rewritesGrounded": 7,
+ "reviewedLines": 63,
+ "flaggedLines": 18,
+ "agreementRate": 0.714,
+ "rewritesGrounded": 16,
  "rewritesDropped": 0,
- "applied": 7,
+ "applied": 16,
  "unmatched": 0,
  "games": {
-  "d29a30f4-f714-482e-9c7d-20b34c201706": [
+  "43f8a9e4-c7c6-4081-b01c-78f80434b651": [
    {
-    "quote": "Lt. Belica's death at 15.3 cost Mini Prime, and a solo catch on Aurora at 19.4 cost the Outer Tower.",
-    "severity": "high",
-    "issue": "blames the player's death for the first clause, but DEATH COST SPLIT marks the 15.3 death as inside a fight, not solo -- that cost is the call to take the fight, not Lt. Belica's own receipt",
-    "rewrite": "The call to fight at 15.3 cost Mini Prime, and a solo catch on Aurora at 19.4 cost the Outer Tower."
-   },
-   {
-    "quote": "Losing the Fangtooth fight at 20.6 let three more objectives slip in the next three minutes: their Fangtooth, Genesis Core, and Orb Prime, two uncontested with nobody of ours dead.",
+    "quote": "Riktor still caught Narbash alone for first blood at 3.3",
     "severity": "med",
-    "issue": "causation overreach -- CONCEDED MAJORS tags Genesis Core@22 and Orb Prime@23 as uncontested with nobody dead, a separate no-show decision, not fallout from the 20.6 fight loss",
-    "rewrite": "Losing the Fangtooth fight at 20.6 cost their Fangtooth outright; Genesis Core and Orb Prime fell in the next three minutes too, both uncontested with nobody of ours dead -- a separate failure to show, not fallout from the fight."
+    "issue": "mischaracterizes a fight death as a solo catch -- the CAUGHT OUT list names only Murdock (7.5m) as caught alone, and Narbash's death at 3.3 happened inside the 3.3m skirmish alongside Murdock",
+    "rewrite": "Riktor opened first blood on Narbash inside the 3.3m skirmish, not a solo catch"
    },
    {
-    "quote": "We converted every fight we won into a prize within ninety seconds, four for four, while they only closed out two of their three.",
+    "quote": "finished 13 kills to 7",
+    "severity": "high",
+    "issue": "conflates majors (us 7, them 13) with kills -- actual kills finished us 4, them 17 per the KDA lines and the kill log",
+    "rewrite": "lost the majors 7 to 13"
+   },
+   {
+    "quote": "Send one resist item at their biggest magic threat by the first completed item instead of skipping it again.",
     "severity": "low",
-    "issue": "duplicates the same conversion stat already stated in full in the team narrative, no new analysis added",
+    "issue": "'skipping it again' implies an unverified multi-game repeat pattern not supported by the PREVIOUS FILMS rows",
+    "rewrite": "Send one resist item at their biggest magic threat by the first completed item against this 3-magical draft."
+   },
+   {
+    "quote": "This is the third time this specific gap has shown up on Aurora in recent films: armor two films back, magic resist the one before this, and magic resist again tonight.",
+    "severity": "high",
+    "issue": "fabricated cross-film pattern -- the PREVIOUS FILMS rows for Cuban Noobster carry no film-flags data on armor or magic resist, and the SOURCE instructs that a pattern claim must match those rows exactly",
+    "rewrite": "Aurora carried no magic resist into this 3-magical enemy comp, per tonight's matchup flag."
+   },
+   {
+    "quote": "a continuation of the clean break from the solo-catch pattern that marked his last three films on Lt. Belica.",
+    "severity": "med",
+    "issue": "miscasts the trend -- the most recent of those three prior films had 3 caught-alone incidents, the worst of the three, so there was no existing break for tonight to 'continue'",
+    "rewrite": "a break from the caught-alone issues that showed up in two of his last three Lt. Belica films."
+   },
+   {
+    "quote": "After two of his last three films were clean support showings, tonight's flex into midlane was a much rougher one.",
+    "severity": "high",
+    "issue": "miscounts role history -- only 1 of Xeebs's last 3 films (Steel, 0 caught alone, 0 deaths before 10) was support at all; the other two were offlane (Crunch, Feng Mao)",
+    "rewrite": "After a clean support showing last time out on Steel (zero caught alone, zero deaths before ten), tonight's flex into midlane was a much rougher one."
+   },
+   {
+    "quote": "the third game running without the resist item the matchup flag calls for",
+    "severity": "high",
+    "issue": "same fabricated cross-film pattern as the Aurora armor/magic-resist claim earlier -- unsupported by the PREVIOUS FILMS rows, which carry no film-flags history",
+    "rewrite": null
+   }
+  ],
+  "f203aa9c-a0a8-43db-bc8e-68fce342d93c": [
+   {
+    "quote": "Lt. Belica opened first blood on Iggy & Scorch at 2.3, and an even 1-1 skirmish at 6.8 went to them, followed by a five-man teamfight lost 2-3 at 9.1 near our river.",
+    "severity": "low",
+    "issue": "three timestamps stacked in one sentence",
+    "rewrite": "Lt. Belica opened first blood on Iggy & Scorch at 2.3. An even 1-1 skirmish at 6.8 went to them, followed by a five-man teamfight lost 2-3 at 9.1 near our river."
+   },
+   {
+    "quote": "From 16.3 on we started converting: back-to-back wins took their Outer Tower, then Fangtooth at 17.9, fought a body down after Murdock caught Wukong alone at 17.5, and still won 3-0.",
+    "severity": "low",
+    "issue": "three timestamps stacked in one sentence",
+    "rewrite": "From 16.3 on we started converting, taking their Outer Tower and then Fangtooth at 17.9. We fought that Fangtooth a body down after Murdock caught Wukong alone at 17.5, and still won 3-0."
+   },
+   {
+    "quote": "After two straight clean support showings -- strong ward counts and zero deaths before minute ten both times -- this one slipped: outwarded 9 wards to 25, two deaths before minute ten, and the first of our team to die, at 6.8.",
+    "severity": "high",
+    "issue": "fabricated cross-film pattern (only 1 of Xeebs's last 3 films is a support game, not two straight) plus a wrong fact -- Scarlett died first on the team at 5.3, not Riktor at 6.8",
+    "rewrite": "Riktor's wards fell to 9 against their support's 25, with two deaths before minute ten and a first-to-die finish in the 6.8 fight -- a step back from his last support outing, which closed with 12 wards and zero deaths before ten."
+   },
+   {
+    "quote": "Riktor was outwarded 9 wards to 25 and died first on the team, breaking two straight clean support showings.",
+    "severity": "high",
+    "issue": "fabricated cross-film pattern (only 1 of 3 prior films is a support game) plus wrong fact -- Scarlett died first on the team at 5.3, not Riktor at 6.8",
+    "rewrite": "Riktor was outwarded 9 wards to 25 and died first within the 6.8 fight, a step back from his last support outing's clean line of 12 wards and zero deaths before ten."
+   },
+   {
+    "quote": "Outwarded 9 to 25 and the first of the team to die, at 6.8.",
+    "severity": "high",
+    "issue": "wrong fact -- the kill log shows Scarlett died first on the team at 5.3, before Riktor at 6.8",
+    "rewrite": "Outwarded 9 to 25, and first to die within the 6.8 fight."
+   },
+   {
+    "quote": "All three deaths fell inside team fights -- a clean break from the run of solo catches that marked his last three films on this hero.",
+    "severity": "high",
+    "issue": "fabricated cross-film pattern -- only 2 of the 3 prior films are on Lt. Belica (the third is Terra offlane), and only one of those two had any caught-alone incidents (3), the other had 0",
+    "rewrite": "All three deaths fell inside team fights -- an improvement over the most recent Lt. Belica film, which had 3 catches-alone."
+   },
+   {
+    "quote": "that tracked core itself sits under 50% win rate on a 58-game sample, so this deviation isn't a proven loss",
+    "severity": "high",
+    "issue": "fabricated number -- no sample size appears anywhere in the SOURCE",
+    "rewrite": "that tracked core itself sits under 50% win rate (46.7%), so this deviation isn't a proven loss"
+   },
+   {
+    "quote": "Lt. Belica completed the full winning core -- Combustion, Noxia and Wraith Leggings -- and added Caustica and Megacosm beyond it; nothing missing to question here.",
+    "severity": "med",
+    "issue": "omits Oblivion Crown, which is also in his finished item list, understating the full build",
+    "rewrite": "Lt. Belica completed the full winning core -- Combustion, Noxia and Wraith Leggings -- and added Oblivion Crown, Caustica and Megacosm beyond it; nothing missing to question here."
+   },
+   {
+    "quote": "We won majors 33 to 17 and out-damaged them 123,676 to 41,865 on objectives, but towers finished 8 to 9 -- they actually took one more of ours than we took of theirs, which is why a game this one-sided still ran 44 minutes.",
+    "severity": "low",
+    "issue": "near-verbatim repeat of the team summary's closing sentence, no distinct angle added as focus evidence",
+    "rewrite": "Towers still finished 8 to 9 against that lead -- the gap this focus is about closing."
+   },
+   {
+    "quote": "As in a recent film, there's still no tracked winning core to check her build against -- Mutilator, Terminus, Tainted Guard and Rebirth all sit outside any baseline.",
+    "severity": "low",
+    "issue": "duplicates the build-section conclusion (line 23) inside the player note with no new purpose",
     "rewrite": null
    },
    {
-    "quote": "She finished with 6 assists and the match's heaviest mitigation at 49,545, but a solo catch by Khaimera at 19.4 directly preceded the Outer Tower we lost at 20.1.",
-    "severity": "med",
-    "issue": "ungrounded superlative -- Khaimera (opponent) logged 55,657 mitigated, higher than Aurora's 49,545; it's the team's high, not the match's",
-    "rewrite": "She finished with 6 assists and the team's heaviest mitigation at 49,545, but a solo catch by Khaimera at 19.4 directly preceded the Outer Tower we lost at 20.1."
-   },
-   {
-    "quote": "6 assists and the match's highest mitigation, but a solo catch by Khaimera at 19.4 cost the Outer Tower at 20.1.",
-    "severity": "med",
-    "issue": "same ungrounded superlative -- Khaimera's 55,657 mitigated is the match high, not Aurora's 49,545",
-    "rewrite": "6 assists and the team's highest mitigation, but a solo catch by Khaimera at 19.4 cost the Outer Tower at 20.1."
-   },
-   {
-    "quote": "Murdock and Steel took this Fangtooth fight alone and lost it 0-2, while Aurora, Scarlett, and Lt. Belica, all alive in even lanes, never joined. Their Fangtooth, Genesis Core, and Orb Prime fell in the next three minutes.",
-    "severity": "high",
-    "issue": "Lt. Belica wrongly added to the absence list -- MACRO READS at 20.6m flags only jungle (Aurora) and offlane (Scarlett) as alive-and-never-joined, and her lane read unfavored early, not even",
-    "rewrite": "Murdock and Steel took this Fangtooth fight alone and lost it 0-2, while Aurora and Scarlett, both alive, never joined. Their Fangtooth, Genesis Core, and Orb Prime fell in the next three minutes."
-   },
-   {
-    "quote": "Aurora built Magnify and Elafrost from the meta core, then subbed Giant's Ring and Flux Matrix for Gaia Greaves, landing more total armor (physical and magical) than the three-item core alone, not less; the two Khaimera catches were positioning, not a gear gap.",
-    "severity": "high",
-    "issue": "invents an armor-stat comparison not in the SOURCE and calls the catches 'positioning' -- an execution/positioning read the match feed can't show",
-    "rewrite": "Aurora built Magnify and Elafrost from the meta core, then subbed Giant's Ring and Flux Matrix for Gaia Greaves -- a defensive-item choice, not a proven gear gain or loss; the two Khaimera catches on Aurora (12.8m, 19.4m) aren't explained by items either way."
-   },
-   {
-    "quote": "One item short of the winning core again, Noxia swapped for Tainted Scepter — the gap matters less than Morigesh catching him alone three times before minute fourteen.",
+    "quote": "Scarlett won the offlane late against Greystone and killed him three times, on a build with no tracked core to grade.",
     "severity": "low",
-    "issue": "'again' implies a repeat pattern for Lt. Belica that PREVIOUS FILMS doesn't support -- no core-completeness data is given for his prior games",
-    "rewrite": "One item short of the winning core, Noxia swapped for Tainted Scepter — the gap matters less than Morigesh catching him alone three times before minute fourteen."
-   },
-   {
-    "quote": "Murdock and Lt. Belica won this 4-0, and it broke the game: their Inhibitor, Outer Tower, and Core fell in the next ninety seconds, with the Primal Fangtooth right behind it.",
-    "severity": "low",
-    "issue": "near-verbatim repeat of the same 33.4 ace already covered in full detail elsewhere, adds no new purpose",
-    "rewrite": null
+    "issue": "duplicates the no-tracked-core conclusion a third time (player note and build section already cover it); ranking rows for other players don't carry build commentary",
+    "rewrite": "Won the offlane late against Greystone, killing him three times across the match."
    }
   ]
  }
