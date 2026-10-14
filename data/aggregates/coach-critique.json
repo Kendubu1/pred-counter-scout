@@ -1,74 +1,86 @@
 {
- "generatedAt": "2026-10-14T05:21:22.537Z",
+ "generatedAt": "2026-10-14T20:27:02.465Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
- "reviewedLines": 54,
- "flaggedLines": 10,
- "agreementRate": 0.815,
- "rewritesGrounded": 10,
+ "reviewedLines": 53,
+ "flaggedLines": 12,
+ "agreementRate": 0.774,
+ "rewritesGrounded": 11,
  "rewritesDropped": 0,
- "applied": 10,
+ "applied": 11,
  "unmatched": 0,
  "games": {
-  "57cac19e-fd25-47ac-83ce-4b1cb35a1d1b": [
+  "752e9e57-2cf4-4cd2-8723-036d953af1e8": [
    {
-    "quote": "One minute after giving up Fangtooth at 14.4, we caught the same camp for a clean 2-0 at 15.3, then won five of the next seven fights, three tagged game-defining, closing with towers, Genesis Core and Orb Prime.",
-    "severity": "med",
-    "issue": "wrong count -- four of the next seven fights (20.3, 22.1, 24.4, 25.8) carry the game-defining tag, not three",
-    "rewrite": "One minute after giving up Fangtooth at 14.4, we caught the same camp for a clean 2-0 at 15.3, then won five of the next seven fights, four tagged game-defining, closing with towers, Genesis Core and Orb Prime."
+    "quote": "Revenant's carry lane read theirs all game against Kira from the start, and the carry still finished the full winning core, Vanquisher, Imperator and Terminus -- 2 kills on 4 deaths, and the worst individual ranked-point swing on the roster. The lone solo death, at 26.4, cost the Primal Fangtooth.",
+    "severity": "high",
+    "issue": "invents a per-player ranked-point/VP swing metric not in SOURCE (SOURCE only gives team VP -16)",
+    "rewrite": "Revenant's carry lane read theirs all game against Kira from the start, and the carry still finished the full winning core, Vanquisher, Imperator and Terminus -- 2 kills on 4 deaths. The lone solo death, at 26.4, cost the Primal Fangtooth."
    },
    {
-    "quote": "Early fights won, nothing banked until minute 17",
+    "quote": "Caught alone by Feng Mao at 26.4, the only solo catch on our side; Primal Fangtooth fell to them at 27.5; completed the full winning core; 2 kills, 4 deaths, worst individual ranked-point swing on the roster at -48.",
+    "severity": "high",
+    "issue": "invents a specific per-player VP swing number (-48) absent from SOURCE",
+    "rewrite": "Caught alone by Feng Mao at 26.4, the only solo catch on our side; Primal Fangtooth fell to them at 27.5; completed the full winning core; 2 kills, 4 deaths."
+   },
+   {
+    "quote": "Led the team with 5,085 objective damage, but died a team-worst seven times.",
+    "severity": "high",
+    "issue": "false superlative: Khaimera's 15,707 objective damage is higher than Lt. Belica's 5,085",
+    "rewrite": "Dealt 5,085 objective damage, but died a team-worst seven times."
+   },
+   {
+    "quote": "Topped the team in objective damage at 5,085 and drew first blood on The Fey at 7.2.",
+    "severity": "high",
+    "issue": "false superlative: Khaimera's 15,707 objective damage is higher than Lt. Belica's 5,085",
+    "rewrite": "Dealt 5,085 objective damage and drew first blood on The Fey at 7.2."
+   },
+   {
+    "quote": "Lt. Belica's deaths preceded five separate tower or objective losses this match, more than any other player. Back off from a losing team fight once the engage is spent, rather than staying in it.",
+    "severity": "high",
+    "issue": "false superlative: Khaimera's deaths also precede five structure/objective losses per DEATH COSTS, a tie not a lead",
+    "rewrite": "Lt. Belica's deaths preceded five separate tower or objective losses this match, tied with Khaimera for the most on the roster. Back off from a losing team fight once the engage is spent, rather than staying in it."
+   },
+   {
+    "quote": "Khaimera again skipped the winning jungle core, Overlord, Basilisk and Rapture, finishing only Ashbringer, Claw of Hermes and Draconum -- the fewest completed items on the roster at three. Xeebs still killed Kira three times, but the match's four game-defining fight losses don't single out the build as the cause.",
+    "severity": "med",
+    "issue": "double miscount: Muriel also finished 3 items (tied, not sole fewest), and DECISIVE FIGHTS lists five fights tagged [game-defining], not four",
+    "rewrite": "Khaimera again skipped the winning jungle core, Overlord, Basilisk and Rapture, finishing only Ashbringer, Claw of Hermes and Draconum -- tied for the fewest completed items on the roster at three. Xeebs still killed Kira three times, but the match's five game-defining fight losses don't single out the build as the cause."
+   },
+   {
+    "quote": "MurderDekker killed Scarlett four times and died just three, yet was flagged alive and pinned in five of our fights.",
+    "severity": "med",
+    "issue": "miscounts the MACRO READS alive-but-pinned flags for Dekker: 17.7m, 22.8m, 26.9m, 32m = four, not five",
+    "rewrite": "MurderDekker killed Scarlett four times and died just three, yet was flagged alive and pinned in four of our fights."
+   },
+   {
+    "quote": "Flagged alive-but-pinned in five fights after minute 16 while losing his own lane; the offlane's job is to not get stuck there. Push back the matchup before the team's next contested fight, not after.",
+    "severity": "high",
+    "issue": "miscounts the MACRO READS alive-but-pinned flags for Dekker after minute 16: 17.7, 22.8, 26.9, 32m = four, not five",
+    "rewrite": "Flagged alive-but-pinned in four fights after minute 16 while losing his own lane; the offlane's job is to not get stuck there. Push back the matchup before the team's next contested fight, not after."
+   },
+   {
+    "quote": "Killed Scarlett at 12.0, 13.5, 24.3 and 28.7; flagged alive-but-pinned in 5 fights after minute 16; none of 5 completed items matched the flagged core; 5 kills, 3 deaths.",
+    "severity": "high",
+    "issue": "stacks four timestamps in one clause and repeats the wrong pinned-fight count (should be four, not five)",
+    "rewrite": "Killed Scarlett four times across the match; flagged alive-but-pinned in 4 fights after minute 16; none of 5 completed items matched the flagged core; 5 kills, 3 deaths."
+   },
+   {
+    "quote": "Deaths at 11.9 (Scarlett), 13.5 (Kira), 23.0 (Feng Mao), 32.2 (Kira); 0 of 3 support-core items built; 12 assists, 10 wards placed, 1 destroyed.",
+    "severity": "med",
+    "issue": "stacks four timestamps in one clause",
+    "rewrite": "Died once to Scarlett, twice to Kira, and once to Feng Mao; 0 of 3 support-core items built; 12 assists, 10 wards placed, 1 destroyed."
+   },
+   {
+    "quote": "The only solo death on the team, to Feng Mao at 26.4 while caught alone, directly cost Primal Fangtooth at 27.5. Don't cross the map alone when the enemy jungler is unaccounted for.",
+    "severity": "med",
+    "issue": "the 'enemy jungler unaccounted for' cause is not in SOURCE -- no vision/ward data ties to this death, only that Feng Mao (jungler) got the kill",
+    "rewrite": "The only solo death on the team, to Feng Mao at 26.4 while caught alone, directly cost Primal Fangtooth at 27.5. Group up before crossing the map alone in that kind of window."
+   },
+   {
+    "quote": "Muriel skipped the full support core, Marshal, Crystal Tear and Windcaller, building no armor against a comp flagged three-physical. All four deaths, two to Kira and one each to Scarlett and Feng Mao, were physical -- a pattern the missing armor doesn't disprove.",
     "severity": "low",
-    "issue": "readability -- 'banked' is banned ledger jargon",
-    "rewrite": "Early fights won, nothing converted into a tower or major until minute 17"
-   },
-   {
-    "quote": "Murdock's matchup flipped from theirs early to ours late against Aurora, the second film running he's turned around an unfavored lane, but he was credited in only 4 of 13 fights, missing the 18.9-minute loss while alive and even.",
-    "severity": "med",
-    "issue": "ungrounded cross-film pattern -- the PREVIOUS FILMS rows for Mr_Meat31 carry no lane-read data, so a 'second film running' claim can't be checked; 'even' at 18.9 isn't in the SOURCE either (the macro read only says alive and never joined)",
-    "rewrite": "Murdock's matchup flipped from theirs early to ours late against Aurora, but he was credited in only 4 of 13 fights, missing the 18.9-minute loss while alive."
-   },
-   {
-    "quote": "Khaimera's matchup read \"ours all game\" against Serath, who died 8 times, 4 to Xeebs directly; zero deaths before minute 10 this time, after two in the last film, though only 3 wards were placed, fewest on the roster.",
-    "severity": "med",
-    "issue": "ungrounded cross-film claim -- the most recent previous film for Xeebs (Steel support) shows 0 deaths before 10, not 2; the two-deaths-before-10 games are earlier in the history, not 'the last film'",
-    "rewrite": "Khaimera's matchup read \"ours all game\" against Serath, who died 8 times, 4 to Xeebs directly; zero deaths before minute 10 this time, though only 3 wards were placed, fewest on the roster."
-   },
-   {
-    "quote": "Won the 5-1 teamfight at their Outer Tower while Fangtooth fell to us across the map in the same window, the split push and the fight both paying off together.",
-    "severity": "high",
-    "issue": "wrong reference -- the Fangtooth-in-the-same-window pairing belongs to the 22.1m fight at our Outer Tower (they took it), per the structure ledger; the 20.3m fight at their Outer Tower has no paired Fangtooth event",
-    "rewrite": "Won the 5-1 teamfight at their Outer Tower at 20.3, taking the tower clean off the back of the fight win."
-   },
-   {
-    "quote": "Caught alone by Serath at 4.3, then died again at 14.4 and 18.9 inside the two fights the team lost. Hold position with the group until the engage is clearly won, not just contested.",
-    "severity": "high",
-    "issue": "method -- bundles a solo death (Sparrow's own cost) with two deaths inside team-call fight losses (0-2, 1-2) into one personal-positioning fix; also stacks three timestamps in one sentence",
-    "rewrite": "Caught alone by Serath at 4.3 is Sparrow's own cost; the deaths at 14.4 and 18.9 came inside fights the team lost 0-2 and 1-2, which is the call to fight, not his read. Don't extend alone past the jungle again."
-   },
-   {
-    "quote": "Flagged alive but pinned in a losing lane in both fights we lost, at 14.4 and 18.9, the latter called the wrong fight to start. Shove the Gideon matchup instead of holding a losing lane.",
-    "severity": "high",
-    "issue": "inaccurate scope and causation omission -- the macro reads flag BOTH 14.4 and 18.9 as the wrong fight to start, not only 'the latter'; and the SOURCE explicitly reframes the 18.9 fight as a trade for Mini Prime, not a clean loss, which this line ignores while prescribing a fix",
-    "rewrite": "Flagged alive but pinned in a losing lane in both fights we lost, at 14.4 and 18.9 -- both macro-flagged as the wrong fight to start, though the 18.9 fight traded into taking Mini Prime in the same window rather than a clean loss. Shove the Gideon matchup instead of holding a losing lane."
-   },
-   {
-    "quote": "Credited in only 4 of 13 fights; the 18.9 loss (1-2) was fought without him despite being alive and even. Join the next fight instead of farming through it.",
-    "severity": "med",
-    "issue": "ungrounded -- 'even' isn't in the SOURCE's macro read, and 'farming through it' invents a specific reason (farming) for his absence that the feed cannot show",
-    "rewrite": "Credited in only 4 of 13 fights; the 18.9 loss (1-2) was fought without him despite being alive. Get to the next fight when the team engages."
-   },
-   {
-    "quote": "Full core: Lightning Hawk, Vanquisher, Imperator; matchup read theirs early, ours late against Aurora; credited in 4 of 13 skirmishes, missing the 18.9 loss (1-2) while alive and even. 3 kills, 1 death, 11 assists.",
-    "severity": "low",
-    "issue": "ungrounded -- 'even' at 18.9 isn't supported by the SOURCE's macro read, which only says alive and never joined",
-    "rewrite": "Full core: Lightning Hawk, Vanquisher, Imperator; matchup read theirs early, ours late against Aurora; credited in 4 of 13 skirmishes, missing the 18.9 loss (1-2) while alive. 3 kills, 1 death, 11 assists."
-   },
-   {
-    "quote": "Sparrow died twice before minute 10, at 3 and 4.3, both to Serath, the second caught alone, while Riktor logged zero deaths in that window. Ward the river entrance before the carry extends again.",
-    "severity": "med",
-    "issue": "invented location -- the skirmish log places these deaths deep in our jungle, not at a river entrance; no river location is tied to this window in the SOURCE",
-    "rewrite": "Sparrow died twice before minute 10, at 3 and 4.3, both to Serath, the second caught alone, while Riktor logged zero deaths in that window. Put a ward in the jungle before the carry extends alone again."
+    "issue": "duplicates the microReads change card's death breakdown and missing-core claim almost verbatim without a distinct coaching purpose",
+    "rewrite": null
    }
   ]
  }
