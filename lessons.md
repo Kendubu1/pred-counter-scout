@@ -3843,3 +3843,33 @@ when each structure fell:
   meant none of that outage reached the site.
 - Catalog deltas for 1.17.2 applied with zero value discrepancies, the first
   clean pass since the corrections in September — evidence those fixes took.
+
+## 2026-10-14 — Keep / Change / Check: every player, every result (maintainer rule)
+
+The maintainer's ask after f7571490: "regardless of a win or lose everyone
+should have an explicit improvement or adjustment", and the comments must
+"depend on the understanding of the match". Audit of the five newest
+five-stack films: two or three of five player cards were keep-only,
+"nothing to fix" appeared in four of five reviews, "build the resist item
+the matchup flag calls for" was pasted three games running, and
+`microReads` was neither rendered on the page nor critiqued — the
+automation was writing cards nobody saw.
+
+- The card is now fixed-shape and mandatory: `keep`, `change` (the
+  player's role-slice of the team focus, anchored to an event in this film),
+  `check` (the number the next film is graded on, measurable in the feed),
+  `receipt`, and `lastCheck` grading the previous film's Check. "Nothing to
+  fix" is retired; a stat restated as an instruction or a copied build flag
+  is not a Change. The critic flags all of it as (i); the SOURCE prints each
+  player's PREVIOUS CHECK; the lobby renders last check / keep / change /
+  check / receipt.
+- Six films re-authored in chronological order so each grades the one
+  before. The checks had to be role-portable because the roster rotates
+  roles every film (solo catches, wards cleared, objective damage, a
+  structure within 90 seconds of a won fight, deaths before an enemy
+  major, fight credit) — a check written for "the support" breaks when the
+  same player is the carry next game.
+- A template literal in the critic prompt broke on backticks inside the
+  flag text and the prepare step died silently to a one-task file; the
+  harness does not import the critique module, so it passed. Check the
+  prepared task count against the scope every time.
