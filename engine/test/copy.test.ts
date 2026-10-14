@@ -54,7 +54,7 @@ describe('committed copy still grounds against the current catalog', () => {
   // Maco's tip described a basic-attack stack mechanic that no longer exists.
   // Both survived because the ingest seeded its output from the committed file
   // and only skipped counting a rejected line instead of removing it.
-  const heroes = JSON.parse(readFileSync(new URL('../../data/omeda/heroes.json', import.meta.url), 'utf8')) as {
+  const heroes = JSON.parse(readFileSync(new URL('../../data/catalog/heroes.json', import.meta.url), 'utf8')) as {
     slug: string; abilities?: { key: string; cooldown?: number[]; cost?: number[]; menu_description?: string; game_description?: string }[];
   }[];
   const tips = JSON.parse(readFileSync(new URL('../../data/aggregates/ability-tips.json', import.meta.url), 'utf8')).heroes as Record<string, Record<string, string>>;

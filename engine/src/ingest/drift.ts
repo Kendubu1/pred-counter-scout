@@ -22,7 +22,7 @@ function parseValues(md: string): number[] | null {
 }
 
 const owned = load<Record<string, { abilities: { key: string; name: string; cooldowns?: number[]; damage?: { values: number[] }[] }[] }>>('data/game-data/hero-abilities.json');
-const omeda = load<{ slug: string; abilities?: { key?: string; menu_description?: string; cooldown?: number[] }[] }[]>('data/omeda/heroes.json');
+const omeda = load<{ slug: string; abilities?: { key?: string; menu_description?: string; cooldown?: number[] }[] }[]>('data/catalog/heroes.json');
 const omedaMap = new Map(omeda.map((h) => [h.slug, h]));
 
 let compared = 0;

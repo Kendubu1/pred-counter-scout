@@ -1,25 +1,115 @@
 {
- "generatedAt": "2026-08-29T03:01:27.102Z",
+ "generatedAt": "2026-10-14T19:32:29.242Z",
  "scope": [
   "herocoach"
  ],
  "source": "independent (non-author) general-purpose agent reviewing data/aggregates/build-reasoning.json + hero-coach-lines.json + the coach report against their own source blocks; suggested rewrites ground-checked by copy-verify, then applied back",
- "reviewedLines": 170,
- "flaggedLines": 1,
- "agreementRate": 0.994,
- "rewritesGrounded": 1,
+ "reviewedLines": 172,
+ "flaggedLines": 10,
+ "agreementRate": 0.942,
+ "rewritesGrounded": 10,
  "rewritesDropped": 0,
- "applied": 1,
+ "applied": 10,
  "unmatched": 0,
  "heroes": {},
  "heroCoach": {
-  "greystone": {
-   "offlane": [
+  "argus": {
+   "support": [
     {
-     "quote": "Steel and Zarus win this lane — once you have spent Stone Forged Soul to heal up, back off instead of staying for another trade.",
+     "quote": "Riktor, Dekker, Mourn and Narbash win this lane on our sim; hide behind minions and lift your carry out with Ether Crystal.",
+     "severity": "low",
+     "issue": "Ether Crystal lifts allies in place, it does not move them out",
+     "rewrite": "Riktor, Dekker, Mourn and Narbash win this lane on our sim; hide behind minions and drop Ether Crystal on your carry to push divers off them."
+    }
+   ]
+  },
+  "aurora": {
+   "support": [
+    {
+     "quote": "Dekker wins this lane on our sim; don't trade into her fences, stay by your carry and root her with Hoarfrost when she engages.",
      "severity": "med",
-     "issue": "names Steel as a lane loss when the checkpoint verdict for Steel is even, not theirs",
-     "rewrite": "Zarus wins this lane — once you have spent Stone Forged Soul to heal up, back off instead of staying for another trade."
+     "issue": "Dekker's fences are not in the SOURCE",
+     "rewrite": "Dekker wins this lane on our sim; don't trade into her, stay by your carry and root her with Hoarfrost when she engages."
+    }
+   ]
+  },
+  "boris": {
+   "jungle": [
+    {
+     "quote": "Mark a target with Detection Protocol, follow the trail in, Chrono Swipe through them, then Primeval Roar to fear and Ursine Burst to slam them toward your team. After Deathstalker lands around minute 16, stick to squishy targets in short fights.",
+     "severity": "med",
+     "issue": "Ursine Burst is not described as slamming toward your team",
+     "rewrite": "Mark a target with Detection Protocol, follow the trail in, Chrono Swipe through them, then Primeval Roar to fear and Ursine Burst to grab and slam them. After Deathstalker lands around minute 16, stick to squishy targets in short fights."
+    }
+   ]
+  },
+  "crunch": {
+   "jungle": [
+    {
+     "quote": "Gank with Forward Crunch to stun, then Right Crunch to slow and Left Crunch to hit hard, with a basic attack between each to lower cooldowns. After Basilisk lands around minute 16, repeat your best empowered ability with Re-Crunch.",
+     "severity": "med",
+     "issue": "Re-Crunch repeats the last ability used, not your best one",
+     "rewrite": "Gank with Forward Crunch to stun, then Right Crunch to slow and Left Crunch to hit hard, with a basic attack between each to lower cooldowns. After Basilisk lands around minute 16, use Re-Crunch right after your strongest hit to repeat it."
+    }
+   ]
+  },
+  "ikra": {
+   "carry": [
+    {
+     "quote": "You beat every listed carry on our sim, but a missed Narcosis leaves nothing to stop divers; back off until it's ready again.",
+     "severity": "low",
+     "issue": "overstates: Hydroclasm and Genesis still slow and knock up",
+     "rewrite": "You beat every listed carry on our sim, but a missed Narcosis leaves you open to divers; back off until it's ready again."
+    }
+   ]
+  },
+  "neon": {
+   "midlane": [
+    {
+     "quote": "Slow them with E Data Burst, send Q L.I.N.X through them, then dash with RMB Erase Vector for an empowered Jolt; every third ability gets Overclocked. Once Spectral Schematics and Oathkeeper are done around minute 16, chain R Final Thread into its recast bomb.",
+     "severity": "med",
+     "issue": "misstates the passive: Overclock lands on the ability after three casts, not every third",
+     "rewrite": "Slow them with E Data Burst, send Q L.I.N.X through them, then dash with RMB Erase Vector for an empowered Jolt; after three abilities, your next one gets Overclocked. Once Spectral Schematics and Oathkeeper are done around minute 16, chain R Final Thread into its recast bomb."
+    }
+   ]
+  },
+  "phase": {
+   "support": [
+    {
+     "quote": "Against Riktor, Dekker, Mourn or Narbash, stay behind your carry and reactivate Telekinetic Link to pull them out when caught.",
+     "severity": "low",
+     "issue": "Immobilized allies cannot be pulled, so pulling them out once caught can fail",
+     "rewrite": "Against Riktor, Dekker, Mourn or Narbash, stay behind your carry and reactivate Telekinetic Link to pull them out before they get stunned or rooted."
+    }
+   ]
+  },
+  "the-fey": {
+   "support": [
+    {
+     "quote": "Before your tank items land you are fragile; if you wander ahead of your carry you get picked, so stay with them and poke.",
+     "severity": "low",
+     "issue": "jargon: \"get picked\"",
+     "rewrite": "Before your tank items land you are fragile; if you wander ahead of your carry you get caught alone and killed, so stay with them and poke."
+    }
+   ]
+  },
+  "wukong": {
+   "jungle": [
+    {
+     "quote": "Dash in with RMB Windsurge in Spirit stance, throw E Cyclebreaker to stun, then switch stance with R and keep basic attacking to spawn Clones. Once Viper and Solaris are done around minute 16, use Pole Vault to leap onto the backline.",
+     "severity": "low",
+     "issue": "jargon: \"backline\"",
+     "rewrite": "Dash in with RMB Windsurge in Spirit stance, throw E Cyclebreaker to stun, then switch stance with R and keep basic attacking to spawn Clones. Once Viper and Solaris are done around minute 16, use Q Pole Vault in Body stance to leap onto the enemy damage dealers standing at the back."
+    }
+   ]
+  },
+  "zarus": {
+   "jungle": [
+    {
+     "quote": "Leaping in with Coliseum before your team arrives gets you collapsed on; wait for a teammate and keep Evade to escape.",
+     "severity": "low",
+     "issue": "jargon: \"collapsed on\"",
+     "rewrite": "Leaping in with Coliseum before your team arrives gets you surrounded and killed; wait for a teammate and keep Evade to escape."
     }
    ]
   }

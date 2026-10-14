@@ -35,21 +35,23 @@ describe('fixtures (Concept B layer 1: mechanics gates)', () => {
 
 describe('data joins and patch currency', () => {
   it('covers the full snapshot roster, deriving profiles where owned data lacks them', () => {
-    const roster = Object.keys(JSON.parse(require('node:fs').readFileSync(new URL('../../data/omeda/heroes.json', import.meta.url), 'utf8'))).length;
+    const roster = Object.keys(JSON.parse(require('node:fs').readFileSync(new URL('../../data/catalog/heroes.json', import.meta.url), 'utf8'))).length;
     expect(data.kits.size).toBe(roster);
     // scarlett joined the roster in 1.16 and has no owned profile — the frozen
     // v2 game-data predates her, so her profile is derived from the snapshot.
-    expect(data.derivedProfiles).toEqual(['adele', 'legion', 'neon', 'scarlett']);
+    // valmont (1.17) likewise: the first hero the omeda catalog never carried.
+    expect(data.derivedProfiles).toEqual(['adele', 'legion', 'neon', 'scarlett', 'valmont']);
   });
 
-  it('PATCH GATE: Gideon Void Breach matches the 1.15.3 digest (100-260)', () => {
-    // data/patches/1.15.3.json records "Void Breach 95-235 -> 100-260",
-    // superseding the 1.14.4 line ("85-225 -> 95-235"). This gate previously
-    // pinned the 1.14.4 values and PASSED for five weeks against a snapshot
-    // that was two patches old — it only caught the regression once the
-    // catalog was refreshed. npm run patchcheck is the general form of it.
+  it('PATCH GATE: Gideon Void Breach matches the 1.17 digest (90-250)', () => {
+    // data/patches/1.17.json records "Void Breach damage 100/140/180/220/260 ->
+    // 90/130/170/210/250", superseding 1.15.3 ("95-235 -> 100-260"). The frozen
+    // omeda catalog kept serving the 1.15.3 values until the catalog moved to
+    // pred.gg (2026-10-14); this gate pinned the stale numbers the whole time.
+    // An older pin likewise passed for five weeks on a two-patch-old snapshot.
+    // npm run patchcheck is the general form of it.
     const vb = data.kits.get('gideon')!.abilities.find((a) => a.key === 'ALTERNATE')!;
-    expect(vb.damagePerRank).toEqual([100, 140, 180, 220, 260]);
+    expect(vb.damagePerRank).toEqual([90, 130, 170, 210, 250]);
     expect(vb.cooldowns).toEqual([11, 10.5, 10, 9.5, 9]);
   });
 
@@ -107,7 +109,7 @@ describe('simulator exact math (synthetic fixtures, immune to data refreshes)', 
       key: 'PRIMARY', name: 'Bolt', damagePerRank: [100, 150, 200, 250, 300],
       scalingPct: 50, damageType: 'magical', cooldowns: [10, 9, 8, 7, 6], costs: [50, 50, 50, 50, 50], maxRank: 5,
     }],
-    abilitySource: 'omeda',
+    abilitySource: 'catalog',
   };
   const mpItem = (mp: number, haste = 0): Item => ({
     slug: `mp${mp}`, name: `MP${mp}`, gameId: 1, totalPrice: 3000, rarity: 'EPIC', slotType: 'PASSIVE',

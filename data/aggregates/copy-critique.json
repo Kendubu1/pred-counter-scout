@@ -1,186 +1,810 @@
 {
- "generatedAt": "2026-06-22T04:54:26.793Z",
- "source": "independent (non-author) general-purpose agent reviewing data/aggregates/build-reasoning.json against the source kit+items; suggested rewrites ground-checked by copy-verify, then applied back",
- "reviewedLines": 2494,
- "flaggedLines": 21,
- "agreementRate": 0.992,
- "rewritesGrounded": 21,
- "rewritesDropped": 0,
- "applied": 21,
+ "generatedAt": "2026-10-14T19:32:35.138Z",
+ "scope": [
+  "builds"
+ ],
+ "source": "independent (non-author) general-purpose agent reviewing data/aggregates/build-reasoning.json + hero-coach-lines.json + the coach report against their own source blocks; suggested rewrites ground-checked by copy-verify, then applied back",
+ "reviewedLines": 2044,
+ "flaggedLines": 99,
+ "agreementRate": 0.952,
+ "rewritesGrounded": 98,
+ "rewritesDropped": 1,
+ "applied": 98,
  "unmatched": 0,
  "heroes": {
-  "dekker": {
+  "adele": {
    "support": [
     {
-     "quote": "Squishy with no safety net — Dekker is a pure utility caster; if her stuns miss she has no damage or escape.",
-     "severity": "low",
-     "issue": "says no escape but Rocket Boots passive gives a reposition/escape",
-     "rewrite": "Squishy with no safety net — Dekker is a pure utility caster; if her stuns miss she has little damage to fall back on."
+     "quote": "Fourth: armor, move speed and stronger shields for her allies.",
+     "severity": "med",
+     "issue": "Transference strengthens shields, but nothing in this build lets her shield allies",
+     "rewrite": "Fourth: armor for both damage types plus bonus move speed."
+    }
+   ],
+   "offlane": [
+    {
+     "quote": "Shreds armor through fast basic attacks so her true-damage hits and Imperial Lash finish targets, with Solaris and Mutilator healing her through extended trades.",
+     "severity": "med",
+     "issue": "armor shred does nothing for true damage, and Imperial Lash deals true damage",
+     "rewrite": "Shreds armor through fast basic attacks so her physical hits and Royal Flourish land harder, with Solaris and Mutilator healing her through extended trades."
     },
     {
-     "quote": "Jack-of-all-trades, master of none — Dekker is a pure utility caster, so if her stuns miss she has no damage or escape.",
+     "quote": "No defensive items at all, so as the frontliner she dies the moment she dives in.",
      "severity": "low",
-     "issue": "says no escape but Rocket Boots passive gives a reposition/escape",
-     "rewrite": "Jack-of-all-trades, master of none — Dekker is a pure utility caster, so if her stuns miss she has little damage to fall back on."
-    },
-    {
-     "quote": "Little kill power — Dekker is a pure utility caster; if her stuns miss she has no damage or escape, so you just soak damage without threatening anyone.",
-     "severity": "low",
-     "issue": "says no escape but Rocket Boots passive gives a reposition/escape",
-     "rewrite": "Little kill power — Dekker is a pure utility caster; if her stuns miss she has little damage to threaten with, so you mostly enable allies."
+     "issue": "overconfident; Augmentation still adds some health",
+     "rewrite": "No armor items at all, so as the frontliner she gets burst down quickly when she dives in."
     }
    ]
   },
-  "drongo": {
+  "akeron": {
+   "offlane": [
+    {
+     "quote": "First: magic armor shred and lifesteal stacking from Hellfire fireballs.",
+     "severity": "low",
+     "issue": "the armor shred stacks, the lifesteal does not",
+     "rewrite": "First: stacking magic armor shred from Hellfire fireballs, plus lifesteal."
+    }
+   ]
+  },
+  "argus": {
+   "midlane": [
+    {
+     "quote": "Azure Core's shield and mana feed long Particle Shredder strings, Entropy adds a hit to every Disintegrate stack, Wraith Leggings amplifies Dread Nova and Synaptic Obliterator.",
+     "severity": "low",
+     "issue": "\"adds a hit to every Disintegrate stack\" is unclear; Entropy adds bonus damage per ability hit",
+     "rewrite": "Azure Core's shield and mana feed long Particle Shredder strings, Entropy adds bonus damage to every ability hit, Wraith Leggings amplifies Dread Nova and Synaptic Obliterator."
+    },
+    {
+     "quote": "Mana gets tight without Azure Core, and he still has no armor against divers.",
+     "severity": "low",
+     "issue": "misleading on mana: Timewarp gives heavy mana regen and Oathkeeper and Combustion add mana",
+     "rewrite": "No armor or real defense, so divers who reach him burst him down."
+    }
+   ],
+   "support": [
+    {
+     "quote": "His stun and pull lose damage entirely, so the team gets control but little threat from him.",
+     "severity": "med",
+     "issue": "wrong: his abilities keep their base damage, the build just adds none",
+     "rewrite": "No damage items, so his stun and pull still control fights but he adds little threat himself."
+    },
+    {
+     "quote": "Last: crowd-control reduction and burst armor to finish his channel.",
+     "severity": "low",
+     "issue": "crowd-control reduction shortens stuns but does not protect his channel",
+     "rewrite": "Last: magic armor, crowd-control reduction and a short burst of extra armor."
+    }
+   ]
+  },
+  "aurora": {
+   "jungle": [
+    {
+     "quote": "Magnify shreds for her ability damage and lifesteal clears, Elafrost's empowered hit hits monsters harder, Gaia Greaves adds armor and roam speed for ganks.",
+     "severity": "low",
+     "issue": "garbled phrasing",
+     "rewrite": "Magnify shreds magic armor and adds lifesteal for clears, Elafrost's empowered hit hits monsters harder, Gaia Greaves adds armor and roam speed for ganks."
+    }
+   ]
+  },
+  "countess": {
+   "midlane": [
+    {
+     "quote": "Combustion and Noxia reward hitting a hero with two abilities, just like Blood Tithe, and Overseer's healing on hero damage keeps her diving.",
+     "severity": "med",
+     "issue": "Combustion has no two-ability trigger; only Noxia matches Blood Tithe's rule",
+     "rewrite": "Noxia rewards hitting a hero with two abilities, just like Blood Tithe, Combustion adds area burst, and Overseer's healing on hero damage keeps her diving."
+    }
+   ],
+   "jungle": [
+    {
+     "quote": "Missing penetration, so tanky targets shrug off her combo late.",
+     "severity": "low",
+     "issue": "Spirit Of Amir does give some penetration",
+     "rewrite": "Little penetration, so tanky targets shrug off her combo late."
+    }
+   ]
+  },
+  "crunch": {
+   "offlane": [
+    {
+     "quote": "Augmentation and Mutilator power his ability-into-basic-attack rhythm, Salvation shields him and blocks crowd control while he dives with Forward Crunch.",
+     "severity": "med",
+     "issue": "Salvation gives crowd-control reduction, not crowd-control immunity",
+     "rewrite": "Augmentation and Mutilator power his ability-into-basic-attack rhythm, Salvation shields him and shortens crowd control while he dives with Forward Crunch."
+    }
+   ]
+  },
+  "dekker": {
+   "support": [
+    {
+     "quote": "Pure tankiness lets Dekker stand close enough to drop Containment Fence and Stasis Bomb on divers, with Transference strengthening shields for her team late.",
+     "severity": "med",
+     "issue": "Dekker has no shields, so Transference's shield boost does nothing for her team",
+     "rewrite": "Pure tankiness lets Dekker stand close enough to drop Containment Fence and Stasis Bomb on divers, with Transference adding armor and move speed late."
+    },
+    {
+     "quote": "Strips all her poke and gold income, so a ranged support becomes a slow target.",
+     "severity": "med",
+     "issue": "wrong: Catalytic Drive still grants bonus gold; \"slow target\" is unclear",
+     "rewrite": "Drops her poke items, so she deals little damage of her own."
+    },
+    {
+     "quote": "Last: armor, move speed and stronger shields.",
+     "severity": "low",
+     "issue": "she has no shields to strengthen",
+     "rewrite": "Last: armor for both damage types plus bonus move speed."
+    }
+   ]
+  },
+  "eden": {
    "carry": [
     {
-     "quote": "Paper-thin once the combo's spent — Drongo ramp-up carry with no escape; he folds to dives before his damage comes online.",
-     "severity": "med",
-     "issue": "garbled English (missing 'is a')",
-     "rewrite": "Paper-thin once the combo's spent — Drongo is a ramp-up carry with no escape; he folds to dives before his damage comes online."
+     "quote": "Low ability damage, so burst mages kill her before her lifesteal kicks in.",
+     "severity": "low",
+     "issue": "faulty logic: low ability damage is not why mages kill her",
+     "rewrite": "No health or armor, so burst mages kill her before her lifesteal kicks in."
     },
     {
-     "quote": "Jack-of-all-trades, master of none — Drongo ramp-up carry with no escape; he folds to dives before his damage comes online.",
+     "quote": "No crit at all, so her basic attacks never spike the way a crit build does late.",
      "severity": "med",
-     "issue": "garbled English (missing 'is a')",
-     "rewrite": "Jack-of-all-trades, master of none — Drongo is a ramp-up carry with no escape; he folds to dives before his damage comes online."
-    },
-    {
-     "quote": "Squishy with no safety net — Drongo ramp-up carry with no escape; he folds to dives before his damage comes online.",
-     "severity": "med",
-     "issue": "garbled English (missing 'is a')",
-     "rewrite": "Squishy with no safety net — Drongo is a ramp-up carry with no escape; he folds to dives before his damage comes online."
+     "issue": "wrong: Tainted Rounds gives crit chance",
+     "rewrite": "Little crit, so her basic attacks never spike the way a crit build does late."
     }
    ]
   },
   "greystone": {
-   "offlane": [
-    {
-     "quote": "Jack-of-all-trades, master of none — Greystone reliant on the ultimate reset; baited out of it he just dies on the dive.",
-     "severity": "med",
-     "issue": "broken English, missing 'is'",
-     "rewrite": "Jack-of-all-trades, master of none — Greystone is reliant on the ultimate reset; baited out of it he just dies on the dive."
-    }
-   ],
    "jungle": [
     {
-     "quote": "Jack-of-all-trades, master of none — Greystone reliant on the ultimate reset; baited out of it he just dies on the dive.",
+     "quote": "Overlord cleaves camps, Rapture adds attack speed and omnivamp for sustain, Aegis Of Agawar boosts armor when Stoicism's low-health regen is active.",
+     "severity": "low",
+     "issue": "Aegis triggers below 40% health and is unrelated to Stoicism",
+     "rewrite": "Overlord cleaves camps, Rapture adds attack speed and omnivamp for sustain, Aegis Of Agawar adds health and bigger armor boosts when he drops low."
+    }
+   ]
+  },
+  "grim-exe": {
+   "carry": [
+    {
+     "quote": "Viper shreds physical armor, but Pulsefire turns his basic attacks into magic damage, so test the sim's gain.",
      "severity": "med",
-     "issue": "broken English, missing 'is'",
-     "rewrite": "Jack-of-all-trades, master of none — Greystone is reliant on the ultimate reset; baited out of it he just dies on the dive."
+     "issue": "\"test the sim's gain\" is jargon and not advice a player can act on",
+     "rewrite": "Viper and Deathstalker shred physical armor, but Pulsefire turns his basic attacks into magic damage, so the shred helps less than it looks."
     }
    ]
   },
   "grux": {
-   "offlane": [
+   "jungle": [
     {
-     "quote": "Jack-of-all-trades, master of none — Grux hard engage on Stampede/ultimate; if the pick fails he's stranded in the enemy team.",
+     "quote": "Last: cuts basic cooldowns so Stampede and Smash 'n Grab return sooner.",
+     "severity": "low",
+     "issue": "\"basic cooldowns\" is unclear; Penumbra cuts non-ultimate cooldowns",
+     "rewrite": "Last: cuts non-ultimate cooldowns so Stampede and Smash 'n Grab return sooner."
+    },
+    {
+     "quote": "Very little health or armor until late, so a Grux who dives first can die before the shred pays off.",
+     "severity": "low",
+     "issue": "overstated; Augmentation, Basilisk and Penumbra all add health",
+     "rewrite": "Little armor until late, so a Grux who dives first can die before the shred pays off."
+    }
+   ]
+  },
+  "howitzer": {
+   "midlane": [
+    {
+     "quote": "Third: ability damage boost for Make It Rain and your ultimate.",
      "severity": "med",
-     "issue": "broken English / jargon ('hard engage'), missing verb",
-     "rewrite": "Jack-of-all-trades, master of none — Grux relies on charging in with Stampede or his ultimate; if it fails he's stranded in the enemy team."
+     "issue": "Make It Rain is the ultimate; names it twice",
+     "rewrite": null
+    },
+    {
+     "quote": "The health is small; against teams with little healing, the third slot is wasted.",
+     "severity": "low",
+     "issue": "overstated; Tainted Scepter still adds per-hit ability damage",
+     "rewrite": "The health is small; against teams with little healing, the third slot's healing cut does little."
+    },
+    {
+     "quote": "The healing only works if missiles land; a mobile team dodges Make It Rain and Overseer gives nothing.",
+     "severity": "med",
+     "issue": "overconfident; Overseer still adds damage and heals off any hero damage",
+     "rewrite": "The healing only comes from hitting heroes; a mobile team that dodges Make It Rain and Land Mine starves Overseer."
+    },
+    {
+     "quote": "Combustion comes last, so Howitzer gives up the early wave clear and burst the field's builds open with.",
+     "severity": "low",
+     "issue": "\"the field's builds\" is jargon",
+     "rewrite": "Combustion comes last, so Howitzer gives up the early wave clear and burst that rushing it gives."
+    }
+   ]
+  },
+  "iggy-scorch": {
+   "midlane": [
+    {
+     "quote": "Almost no health until Spirit Of Amir; a diver who reaches Iggy simply ignores the turrets.",
+     "severity": "high",
+     "issue": "wrong: first item Spectral Schematics already gives health",
+     "rewrite": "Little health beyond Spectral Schematics until Spirit Of Amir; a diver who reaches Iggy simply ignores the turrets."
+    },
+    {
+     "quote": "No level-scaling item, so the early lane and first back are weaker than the Orb Of Growth starts.",
+     "severity": "med",
+     "issue": "confusing comparison; Orb Of Growth is not an early-strength item",
+     "rewrite": "No evolving item, so this build gives up Orb Of Growth's late upgrade."
+    },
+    {
+     "quote": "Fifth: empowered Spew after abilities for extra lane poke.",
+     "severity": "low",
+     "issue": "fifth item is not a lane-phase item",
+     "rewrite": "Fifth: empowered Spew after abilities for extra damage."
     }
    ],
-   "jungle": [
+   "offlane": [
     {
-     "quote": "Jack-of-all-trades, master of none — Grux hard engage on Stampede/ultimate; if the pick fails he's stranded in the enemy team.",
+     "quote": "In the offlane Iggy plants turrets to zone, and Orb Of Growth, Entropy and Megacosm all add damage to each fireball and fire tick.",
      "severity": "med",
-     "issue": "broken English / jargon ('hard engage'), missing verb",
-     "rewrite": "Jack-of-all-trades, master of none — Grux relies on charging in with Stampede or his ultimate; if it fails he's stranded in the enemy team."
+     "issue": "Orb Of Growth adds no damage to fireballs or fire ticks",
+     "rewrite": "In the offlane Iggy plants turrets to zone; Orb Of Growth adds health, while Entropy and Megacosm add damage to each fireball and fire tick."
+    },
+    {
+     "quote": "Still a backline caster; the frontline label won't let Iggy stand in front of a fight.",
+     "severity": "low",
+     "issue": "\"frontline label\" is jargon",
+     "rewrite": "Still a backline caster; the extra health doesn't let Iggy stand in front of a fight."
     }
    ]
   },
-  "kallari": {
-   "jungle": [
-    {
-     "quote": "Jack-of-all-trades, master of none — Kallari assassin with paper health; if the pick fails she has no second chance.",
-     "severity": "med",
-     "issue": "broken English, missing 'is an'",
-     "rewrite": "Jack-of-all-trades, master of none — Kallari is an assassin with paper health; if the pick fails she has no second chance."
-    },
-    {
-     "quote": "Penetration and power that cuts healing and deals percent-health.",
-     "severity": "med",
-     "issue": "Tainted Trident deals bonus damage, not percent-health",
-     "rewrite": "Penetration and power that cuts healing and adds bonus damage."
-    }
-   ]
-  },
-  "maco": {
-   "support": [
-    {
-     "quote": "Paper-thin once the combo's spent — Maco has thin frontline presence; caught out, he can't protect allies or escape when enemies jump on him.",
-     "severity": "low",
-     "issue": "'frontline' is jargon a new player won't get",
-     "rewrite": "Paper-thin once the combo's spent — caught out, Maco can't protect allies or escape when enemies jump on him."
-    },
-    {
-     "quote": "Jack-of-all-trades, master of none — Maco has thin frontline presence; caught out, he can't protect allies or escape when enemies jump on him.",
-     "severity": "low",
-     "issue": "'frontline' is jargon a new player won't get",
-     "rewrite": "Jack-of-all-trades, master of none — caught out, Maco can't protect allies or escape when enemies jump on him."
-    },
-    {
-     "quote": "Almost no damage of your own — Maco has thin frontline presence; caught out, he can't protect allies or escape when enemies jump on him.",
-     "severity": "low",
-     "issue": "'frontline' is jargon a new player won't get",
-     "rewrite": "Almost no damage of your own — caught out, Maco can't protect allies or escape when enemies jump on him."
-    }
-   ]
-  },
-  "twinblast": {
+  "ikra": {
    "carry": [
     {
-     "quote": "Squishy with no safety net — TwinBlast Rocket Dash is his only out; on cooldown he's a squishy with no escape.",
-     "severity": "med",
-     "issue": "contradicts itself: names Rocket Dash as his escape then says no escape",
-     "rewrite": "Squishy and reliant on Rocket Dash — it's his only escape, so once it's on cooldown he has no way out."
+     "quote": "No real defense despite the frontline label; Ikra still dies fast to divers.",
+     "severity": "low",
+     "issue": "\"frontline label\" is jargon and this build has no tank items",
+     "rewrite": "No real defense; Ikra still dies fast to divers."
+    },
+    {
+     "quote": "Prophecy adds on-hit damage and attack speed to Fathom, which pops bubbles and shortens Brine under Harbingers, between Combustion and Noxia bursts.",
+     "severity": "low",
+     "issue": "\"under Harbingers\" is jargon for the Eternal category",
+     "rewrite": "Prophecy adds on-hit damage and attack speed to Fathom, which pops bubbles and, with a Harbinger Eternal, shortens Brine's cooldown between Combustion and Noxia bursts."
     }
    ],
    "midlane": [
     {
-     "quote": "Squishy with no safety net — TwinBlast Rocket Dash is his only out; on cooldown he's a squishy with no escape.",
+     "quote": "Combustion's area blast, so wave clear in mid gets slower.",
      "severity": "med",
-     "issue": "contradicts itself: names Rocket Dash as his escape then says no escape",
-     "rewrite": "Squishy and reliant on Rocket Dash — it's his only escape, so once it's on cooldown he has no way out."
+     "issue": "reads as if Combustion slows wave clear; it speeds it",
+     "rewrite": "Combustion's area blast comes late, so wave clear in mid is slower."
+    },
+    {
+     "quote": "Combustion comes last, so mid wave clear is slower than the field's builds.",
+     "severity": "low",
+     "issue": "\"the field's builds\" is jargon",
+     "rewrite": "Combustion comes last, so mid wave clear is slower than in builds that buy it first."
+    },
+    {
+     "quote": "Prophecy lets Fathom poke harder in lane and keeps Brine cycling under Harbingers, while Combustion and Noxia stay the burst.",
+     "severity": "low",
+     "issue": "\"under Harbingers\" is jargon for the Eternal category",
+     "rewrite": "Prophecy lets Fathom poke harder in lane and, with a Harbinger Eternal, keeps Brine cycling, while Combustion and Noxia stay the burst."
+    }
+   ]
+  },
+  "khaimera": {
+   "jungle": [
+    {
+     "quote": "Viper and Deathstalker shred armor fast during Unleash's rapid attacks, Spear Of Desolation shortens Cull, and The Perforator makes Cull's hits ignore armor.",
+     "severity": "low",
+     "issue": "overstated; The Perforator ignores only part of armor",
+     "rewrite": "Viper and Deathstalker shred armor fast during Unleash's rapid attacks, Spear Of Desolation shortens Cull, and The Perforator lets Cull ignore part of the target's armor."
+    }
+   ],
+   "offlane": [
+    {
+     "quote": "The weakest field results and no defense; Khaimera melts before the extra attacks matter.",
+     "severity": "low",
+     "issue": "\"field results\" is jargon; Claw Of Hermes does add health",
+     "rewrite": "The weakest results of these builds and little defense; Khaimera melts before the extra attacks matter."
+    }
+   ]
+  },
+  "kira": {
+   "carry": [
+    {
+     "quote": "Fourth: ignores armor on crits.",
+     "severity": "low",
+     "issue": "Demolisher ignores some armor on every hit, not only crits",
+     "rewrite": "Fourth: ignores part of the target's armor, more on basic attacks and crits."
+    },
+    {
+     "quote": "Solaris empowers Kira's next hit, Ashbringer's crits cut Shadow Glide and Dusk cooldowns, and Imperator makes crits on Mercy and Purge hit harder.",
+     "severity": "low",
+     "issue": "every on-hit cuts cooldowns; crits only cut more",
+     "rewrite": "Solaris empowers Kira's next hit, Ashbringer's hits (crits most) cut Shadow Glide and Dusk cooldowns, and Imperator makes crits on Mercy and Purge hit harder."
+    }
+   ]
+  },
+  "kwang": {
+   "jungle": [
+    {
+     "quote": "Armor only; magic-heavy enemies ignore the extra tankiness.",
+     "severity": "low",
+     "issue": "misleading; Gaussian Greaves also adds health that works against magic",
+     "rewrite": "Its armor does nothing against magic damage; magic-heavy enemies only face the extra health."
+    }
+   ],
+   "offlane": [
+    {
+     "quote": "Field results sit below even; physical bruisers still out-trade it early.",
+     "severity": "low",
+     "issue": "\"field results sit below even\" is jargon",
+     "rewrite": "Results so far are below average; physical bruisers still out-trade it early."
+    }
+   ]
+  },
+  "legion": {
+   "carry": [
+    {
+     "quote": "Untested in real games, while the field's Malady starts already win often; trial it before committing.",
+     "severity": "low",
+     "issue": "\"the field's Malady starts\" is jargon",
+     "rewrite": "Untested in real games, while Malady-first builds already win often; trial it before committing."
+    },
+    {
+     "quote": "No execute item, so low targets escape and the field results lag the other builds.",
+     "severity": "low",
+     "issue": "\"field results\" is jargon",
+     "rewrite": "No execute item, so low targets escape and its results lag the other builds."
+    }
+   ]
+  },
+  "lt-belica": {
+   "support": [
+    {
+     "quote": "Useless against manaless heroes; the mana drain gives nothing there.",
+     "severity": "med",
+     "issue": "overconfident; Claw Of Hermes still gives power and health",
+     "rewrite": "Weak against manaless heroes; the mana drain does nothing there."
+    },
+    {
+     "quote": "Below-even field results and little burst once lane trades turn into teamfights.",
+     "severity": "low",
+     "issue": "\"below-even field results\" is jargon",
+     "rewrite": "Below-average results so far and little burst once lane trades turn into teamfights."
+    }
+   ]
+  },
+  "morigesh": {
+   "midlane": [
+    {
+     "quote": "Weak field results overall; Curse's channel leaves Morigesh open.",
+     "severity": "low",
+     "issue": "\"field results\" is jargon",
+     "rewrite": "Weak results overall; Curse's channel leaves Morigesh open."
+    }
+   ]
+  },
+  "murdock": {
+   "carry": [
+    {
+     "quote": "Last: ignores armor on crits.",
+     "severity": "low",
+     "issue": "Demolisher ignores some armor on every hit, not only crits",
+     "rewrite": "Last: ignores part of the target's armor, more on basic attacks and crits."
+    }
+   ],
+   "offlane": [
+    {
+     "quote": "Last: ignores armor on crits.",
+     "severity": "low",
+     "issue": "Demolisher ignores some armor on every hit, not only crits",
+     "rewrite": "Last: ignores part of the target's armor, more on basic attacks and crits."
+    },
+    {
+     "quote": "Very few games; strong field result but not proven.",
+     "severity": "low",
+     "issue": "\"field result\" is jargon",
+     "rewrite": "Very few games; strong results so far but not proven."
+    }
+   ]
+  },
+  "muriel": {
+   "support": [
+    {
+     "quote": "The lowest field results of the three, and no speed utility.",
+     "severity": "low",
+     "issue": "\"field results\" is jargon",
+     "rewrite": "The lowest results of the three, and no speed utility."
+    }
+   ]
+  },
+  "narbash": {
+   "support": [
+    {
+     "quote": "No armor; Narbash is easy to burst in melee range.",
+     "severity": "med",
+     "issue": "misleading; Mosh Pit gives Narbash armor near heroes",
+     "rewrite": "No armor items; Narbash leans on Mosh Pit and is easy to burst in melee range."
+    }
+   ]
+  },
+  "neon": {
+   "midlane": [
+    {
+     "quote": "No defense; Final Thread's jump is Neon's only escape.",
+     "severity": "high",
+     "issue": "wrong: Erase Vector is also a dash",
+     "rewrite": "No defense; Neon relies on Erase Vector's dash and Final Thread's jump to escape."
+    },
+    {
+     "quote": "Amulet Of Chaos resets basic cooldowns, so Neon reaches Overclock faster after the Combustion and Wraith Leggings burst.",
+     "severity": "med",
+     "issue": "Amulet Of Chaos cuts current basic cooldowns, not a full reset",
+     "rewrite": "Amulet Of Chaos cuts current basic cooldowns, so Neon reaches Overclock faster after the Combustion and Wraith Leggings burst."
+    },
+    {
+     "quote": "Third: cooldown reset for a second burst.",
+     "severity": "low",
+     "issue": "a cooldown cut, not a reset",
+     "rewrite": "Third: big basic cooldown cut for a second burst."
+    },
+    {
+     "quote": "Combustion comes last, so early wave clear is slower than the field's builds.",
+     "severity": "low",
+     "issue": "\"the field's builds\" is jargon",
+     "rewrite": "Combustion comes last, so early wave clear is slower than in builds that buy it first."
+    }
+   ]
+  },
+  "rampage": {
+   "jungle": [
+    {
+     "quote": "Drops the field's tank core, so Rampage loses the staying power those strong field results rely on.",
+     "severity": "med",
+     "issue": "\"field's tank core\" and \"field results\" are jargon",
+     "rewrite": "Skips tank items, so Rampage loses the staying power the more successful builds rely on."
+    },
+    {
+     "quote": "Third: health and armors that grow below low health.",
+     "severity": "low",
+     "issue": "\"grow below low health\" is garbled",
+     "rewrite": "Third: health and armors that grow when Rampage is low."
+    },
+    {
+     "quote": "Mostly a defensive answer; only buy it into healing-heavy attackers.",
+     "severity": "low",
+     "issue": "overconfident; Tainted Guard also gives armor and a bleed",
+     "rewrite": "Mostly a defensive answer; best into healing-heavy physical attackers."
+    },
+    {
+     "quote": "Viper boosts Boulder Throw and Rumble ability damage, Spear Of Desolation shortens Behemoth, and The Perforator makes Pounce and Rumble ignore armor.",
+     "severity": "low",
+     "issue": "overstated; The Perforator ignores only part of armor",
+     "rewrite": "Viper boosts Boulder Throw and Rumble ability damage, Spear Of Desolation shortens Behemoth, and The Perforator lets Pounce and Rumble ignore part of the target's armor."
+    }
+   ]
+  },
+  "renna": {
+   "midlane": [
+    {
+     "quote": "Lower field results than the Entropy builds; burst is weaker.",
+     "severity": "low",
+     "issue": "\"field results\" is jargon",
+     "rewrite": "Lower results than the Entropy builds; burst is weaker."
+    },
+    {
+     "quote": "Wraith Leggings comes late, so mid-game burst is weaker than the field's builds.",
+     "severity": "low",
+     "issue": "\"the field's builds\" is jargon",
+     "rewrite": "Wraith Leggings comes late, so mid-game burst is weaker than in builds that buy it early."
+    }
+   ]
+  },
+  "revenant": {
+   "carry": [
+    {
+     "quote": "Terminus is gone, so Revenant has no shield or lifesteal against divers.",
+     "severity": "med",
+     "issue": "wrong: Manta Scythe in this build has lifesteal",
+     "rewrite": "Terminus is gone, so Revenant has no shield and only Manta Scythe's lifesteal against divers."
+    },
+    {
+     "quote": "Demolisher ignores armor on crits, so Fate's guaranteed crit and Obliterate's missiles cut through tanks.",
+     "severity": "low",
+     "issue": "Demolisher ignores some armor on every hit, not only crits; missiles are not crits",
+     "rewrite": "Demolisher ignores part of the target's armor, more on crits, so Fate's guaranteed crit and Obliterate's missiles cut through tanks."
+    },
+    {
+     "quote": "Third: armor ignore on crits.",
+     "severity": "low",
+     "issue": "Demolisher ignores some armor on every hit, not only crits",
+     "rewrite": "Third: armor ignore, stronger on crits."
+    }
+   ]
+  },
+  "riktor": {
+   "support": [
+    {
+     "quote": "Fewer games behind it; only useful against healing-heavy attackers.",
+     "severity": "low",
+     "issue": "overconfident; Tainted Guard also gives armor and a bleed",
+     "rewrite": "Fewer games behind it; best against healing-heavy attackers."
+    }
+   ],
+   "jungle": [
+    {
+     "quote": "Untested in real games; the field's tank cores keep Riktor alive for his hooks.",
+     "severity": "med",
+     "issue": "\"the field's tank cores\" is jargon",
+     "rewrite": "Untested in real games, and it skips the tank items that keep Riktor alive for his hooks."
+    },
+    {
+     "quote": "Very few games; strong field result but not proven.",
+     "severity": "low",
+     "issue": "\"field result\" is jargon",
+     "rewrite": "Very few games; strong results so far but not proven."
+    }
+   ]
+  },
+  "scarlett": {
+   "jungle": [
+    {
+     "quote": "Viper and Augmentation turn every ability cast into a harder Cindara hit, so camps fall fast and ganks with Swan Song's restrain end before help arrives.",
+     "severity": "med",
+     "issue": "Viper does not empower hits after casts; only Augmentation does",
+     "rewrite": "Augmentation empowers Cindara after each ability and Viper adds bonus on-hit and ability damage, so camps fall fast and Swan Song's restrain sets up ganks."
+    },
+    {
+     "quote": "Zero tankiness in six slots: if her gank fails, a jungler this fragile is a free kill for the counter-gank.",
+     "severity": "high",
+     "issue": "wrong: Augmentation gives health, so not zero tankiness",
+     "rewrite": "Almost no tankiness: if her gank fails, a jungler this fragile is a free kill for the counter-gank."
+    }
+   ]
+  },
+  "serath": {
+   "jungle": [
+    {
+     "quote": "Chastise applies on-hit to everything it hits, so Sky Splitter's current-health damage and Storm Breaker's chain lightning both fire off one clap, while Spectra keeps it going.",
+     "severity": "low",
+     "issue": "Storm Breaker's bolt only fires at full Momentum, not off every clap",
+     "rewrite": "Chastise applies on-hit to everything it hits, so Sky Splitter's current-health damage fires off each clap, Storm Breaker's chain lightning joins in once charged, and Spectra keeps it going."
+    },
+    {
+     "quote": "Drops lifesteal and most tankiness from the meta: a jungler with no sustain loses long fights she can't end quickly.",
+     "severity": "med",
+     "issue": "contradicts build: Solaris heals her, so she is not without sustain",
+     "rewrite": "Drops lifesteal and most tankiness from the meta: with only Solaris healing, she loses long fights she can't end quickly."
+    },
+    {
+     "quote": "Second: chain bolt adds burst whenever Chastise resets her attack.",
+     "severity": "med",
+     "issue": "wrong trigger: Storm Breaker's bolt fires at full Momentum, not on every Chastise reset",
+     "rewrite": "Second: chain bolt adds burst once Momentum is full."
+    }
+   ],
+   "offlane": [
+    {
+     "quote": "Storm Breaker and Sky Splitter fire on-hit damage off every Chastise reset, and Tyranny's health and ultimate haste let her brawl in lane and recast Heresy.",
+     "severity": "low",
+     "issue": "Storm Breaker's bolt only fires at full Momentum, not off every Chastise",
+     "rewrite": "Sky Splitter fires on-hit damage off every Chastise, Storm Breaker adds a chain bolt once charged, and Tyranny's health and ultimate haste let her brawl in lane and recast Heresy."
+    },
+    {
+     "quote": "Second: chain bolt adds damage to every Chastise hit.",
+     "severity": "med",
+     "issue": "wrong trigger: Storm Breaker's bolt fires at full Momentum, not on every Chastise hit",
+     "rewrite": "Second: chain bolt adds burst once Momentum is full."
+    },
+    {
+     "quote": "Fourth: armor ignore so the enemy offlaner's tankiness stops mattering.",
+     "severity": "med",
+     "issue": "overconfident: The Perforator ignores only part of the armor",
+     "rewrite": "Fourth: ignores part of the enemy offlaner's armor so their tankiness matters less."
+    }
+   ]
+  },
+  "sevarog": {
+   "offlane": [
+    {
+     "quote": "Only one health item and no armor: if he's the team's only frontline, he dies before the soul tiers pay off.",
+     "severity": "high",
+     "issue": "wrong: Spectral Schematics and Oathkeeper both give health",
+     "rewrite": "Little health and no armor: if he's the team's only frontline, he dies before the soul tiers pay off."
+    }
+   ],
+   "jungle": [
+    {
+     "quote": "Pure armor stack: magical damage dealers ignore all of it.",
+     "severity": "med",
+     "issue": "overstated: the items also give health, which still helps against magic",
+     "rewrite": "Armor-heavy stack: magical damage dealers get around most of it."
+    }
+   ]
+  },
+  "shinbi": {
+   "offlane": [
+    {
+     "quote": "Against squishy targets, Megacosm's health burn is wasted.",
+     "severity": "med",
+     "issue": "overstated: Megacosm's max-health burn still works on squishies; only the bonus-health part is weak",
+     "rewrite": "Against squishy targets, Megacosm's bonus-health burn does little."
+    }
+   ],
+   "jungle": [
+    {
+     "quote": "No defense: if All-Kill doesn't secure the kill, she has no way out.",
+     "severity": "med",
+     "issue": "wrong: Rushing Beat's dashes give her a way out",
+     "rewrite": "Little defense: if All-Kill doesn't secure the kill, she relies on Rushing Beat's dashes to escape."
+    }
+   ]
+  },
+  "skylar": {
+   "carry": [
+    {
+     "quote": "Plasma Blade's crit stacks and Vanquisher's execute power up Plasma Grenade and Atomiser, while Imperator makes every crit hit harder.",
+     "severity": "med",
+     "issue": "misleading: crit stacks power basic attacks, not Plasma Grenade or Atomiser",
+     "rewrite": "Plasma Blade's crit stacks power up Starfire, Vanquisher executes targets Atomiser leaves low, and Imperator makes every crit hit harder."
+    }
+   ]
+  },
+  "sparrow": {
+   "carry": [
+    {
+     "quote": "Vanquisher, Dust Devil and Imperator build crit for Inner Fire and Piercing Shot burst.",
+     "severity": "low",
+     "issue": "source only shows Inner Fire can crit, not Piercing Shot",
+     "rewrite": "Vanquisher, Dust Devil and Imperator build crit for Inner Fire's arrows and her basic attacks."
+    },
+    {
+     "quote": "Pure burst: tanks absorb it all without armor penetration.",
+     "severity": "high",
+     "issue": "wrong: Vanquisher gives physical penetration",
+     "rewrite": "Crit-heavy with little penetration: tanks absorb much of it."
+    }
+   ]
+  },
+  "steel": {
+   "offlane": [
+    {
+     "quote": "Both armor items stack the same defense: magical lanes go through it.",
+     "severity": "med",
+     "issue": "misleading: Inquisition in this build gives magic armor",
+     "rewrite": "Two armor items stack the same defense: Inquisition is his only real magic defense."
+    },
+    {
+     "quote": "Fire Blossom and Tainted Guard keep him in lane, and Fist Of Razuul's healing empowered hit follows his Heavy Punch.",
+     "severity": "low",
+     "issue": "Fist Of Razuul empowers any basic attack, not specifically the Heavy Punch",
+     "rewrite": "Fire Blossom and Tainted Guard keep him in lane, and Fist Of Razuul adds a healing empowered hit."
+    },
+    {
+     "quote": "No magic armor at all: a magical offlaner wins long trades.",
+     "severity": "med",
+     "issue": "wrong: Cybernetic Shell still grants some magic armor",
+     "rewrite": "Almost no magic armor: a magical offlaner wins long trades."
+    }
+   ],
+   "support": [
+    {
+     "quote": "No ally shields or damage boosts: he only protects himself.",
+     "severity": "low",
+     "issue": "misleading: his kit still protects allies; only the items are selfish",
+     "rewrite": "No ally shields or damage boosts: his items only protect himself."
+    }
+   ]
+  },
+  "terra": {
+   "offlane": [
+    {
+     "quote": "Third: Wild Rush's shield turns into health and both armors.",
+     "severity": "low",
+     "issue": "ambiguous: reads as the shield turning into armor",
+     "rewrite": "Third: Wild Rush's shield turns into health, plus both armors."
+    }
+   ],
+   "jungle": [
+    {
+     "quote": "Little damage: ganks stun but don't kill once enemies have items.",
+     "severity": "med",
+     "issue": "wrong: Terra has no stun; her ganks slow and root",
+     "rewrite": "Little damage: ganks slow and root but don't kill once enemies have items."
+    }
+   ]
+  },
+  "the-fey": {
+   "midlane": [
+    {
+     "quote": "Megacosm is wasted against squishy teams.",
+     "severity": "med",
+     "issue": "overstated: Megacosm's max-health burn still works on squishies",
+     "rewrite": "Megacosm's bonus-health burn does little against squishy teams."
     }
    ]
   },
   "wraith": {
    "carry": [
     {
-     "quote": "Squishy with no safety net — Wraith is fragile and reliant on positioning; caught out he dies fast.",
+     "quote": "Alternator boosts Knock, Knock!, Vanquisher executes targets marked by Peekaboo!, and Syonic Echo's attack-speed burst finishes with basic attacks.",
      "severity": "med",
-     "issue": "'no safety net' wrong: kit gives Surprise, Surprise! stealth escape",
-     "rewrite": "Squishy and reliant on positioning — outside his Surprise, Surprise! stealth he dies fast if caught."
-    }
-   ],
-   "midlane": [
+     "issue": "wrong: Vanquisher's execute is not tied to Peekaboo!'s mark",
+     "rewrite": "Alternator boosts Knock, Knock!, Vanquisher executes low-health targets, and Syonic Echo's attack-speed burst finishes with basic attacks."
+    },
     {
-     "quote": "Squishy with no safety net — Wraith is fragile and reliant on positioning; caught out he dies fast.",
+     "quote": "Second: penetration and execute for marked targets.",
      "severity": "med",
-     "issue": "'no safety net' wrong: kit gives Surprise, Surprise! stealth escape",
-     "rewrite": "Squishy and reliant on positioning — outside his Surprise, Surprise! stealth he dies fast if caught."
+     "issue": "wrong: Vanquisher's execute is not tied to marked targets",
+     "rewrite": "Second: penetration and an execute for low targets."
+    }
+   ]
+  },
+  "wukong": {
+   "jungle": [
+    {
+     "quote": "Augmentation adds empowered hits, Infernum burns max health, and Penumbra cuts cooldowns for more stance swaps.",
+     "severity": "med",
+     "issue": "wrong: Penumbra cuts non-ultimate cooldowns, and stance swaps are his ultimate",
+     "rewrite": "Augmentation adds empowered hits, Infernum burns max health, and Penumbra cuts basic ability cooldowns for more casts."
+    }
+   ]
+  },
+  "yurei": {
+   "jungle": [
+    {
+     "quote": "Viper's bonus ability damage boosts Severance and Anima Burst, Solaris adds healing hits after Hallowed Strikes, and penetration lets Soulstorm hit through armor.",
+     "severity": "low",
+     "issue": "misleading: Solaris triggers after each cast, not after Hallowed Strikes",
+     "rewrite": "Viper's bonus ability damage boosts Severance and Anima Burst, Solaris adds a healing hit after each cast, and penetration lets Soulstorm hit through armor."
     }
    ]
   },
   "zarus": {
    "offlane": [
     {
-     "quote": "Paper-thin once the combo's spent — Zarus Coliseum traps him in with the enemy; pick the wrong target and he's outnumbered.",
+     "quote": "Augmentation adds empowered hits after Evade, Mutilator's max-health damage hits three times per ability, and Basilisk adds health and armor shred.",
      "severity": "med",
-     "issue": "contradicts Barricade damage reduction and Gladiator self-heal; also garbled",
-     "rewrite": "Committed once Coliseum drops — Zarus traps himself in with the enemy; pick the wrong target and he's outnumbered."
+     "issue": "wrong: Mutilator applies once per ability, three times total",
+     "rewrite": "Augmentation adds empowered hits after Evade, Mutilator adds max-health damage to his ability hits, and Basilisk adds health and armor shred."
+    }
+   ]
+  },
+  "zinx": {
+   "offlane": [
+    {
+     "quote": "Prophecy, Orion and Spectra add on-hit damage to Refibrillator's stacking burn.",
+     "severity": "low",
+     "issue": "Orion ramps damage; it adds no on-hit damage",
+     "rewrite": "Prophecy and Spectra add on-hit damage to Refibrillator's stacking burn, and Orion ramps damage."
+    },
+    {
+     "quote": "Prophecy and Entropy add damage to every ability, and Orion ramps damage.",
+     "severity": "low",
+     "issue": "Prophecy adds on-hit damage to basic attacks, not ability damage",
+     "rewrite": "Prophecy adds on-hit damage, Entropy adds damage to every ability, and Orion ramps damage."
+    },
+    {
+     "quote": "Spectral Schematics and Oathkeeper add damage to Ricochet and Bad Medicine, Timewarp cuts cooldowns, and Wraith Leggings boosts every ability.",
+     "severity": "low",
+     "issue": "Oathkeeper empowers basic attacks, not Ricochet or Bad Medicine",
+     "rewrite": "Spectral Schematics adds damage to Ricochet and Bad Medicine, Oathkeeper adds an empowered hit after each cast, Timewarp cuts cooldowns, and Wraith Leggings boosts every ability."
     }
    ],
-   "jungle": [
+   "midlane": [
     {
-     "quote": "Paper-thin once the combo's spent — Zarus Coliseum traps him in with the enemy; pick the wrong target and he's outnumbered.",
-     "severity": "med",
-     "issue": "contradicts Barricade damage reduction and Gladiator self-heal; also garbled",
-     "rewrite": "Committed once Coliseum drops — Zarus traps himself in with the enemy; pick the wrong target and he's outnumbered."
+     "quote": "Prophecy, Orion and Entropy add damage to every ability.",
+     "severity": "low",
+     "issue": "Prophecy adds on-hit damage to basic attacks, not ability damage",
+     "rewrite": "Prophecy adds on-hit damage, Orion ramps damage, and Entropy adds damage to every ability."
+    },
+    {
+     "quote": "Spectral Schematics and Oathkeeper add damage to Ricochet and Bad Medicine, Timewarp cuts cooldowns, and Wraith Leggings boosts every ability.",
+     "severity": "low",
+     "issue": "Oathkeeper empowers basic attacks, not Ricochet or Bad Medicine",
+     "rewrite": "Spectral Schematics adds damage to Ricochet and Bad Medicine, Oathkeeper adds an empowered hit after each cast, Timewarp cuts cooldowns, and Wraith Leggings boosts every ability."
     }
    ]
   }
  },
- "coach": []
+ "heroCoach": {},
+ "coach": {}
 }

@@ -14,7 +14,7 @@ let omedaHeroes: { id: number; slug: string }[];
 let matrix: { minutes: number[]; pairs: Record<string, string> };
 beforeAll(() => {
   data = loadData();
-  omedaHeroes = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8'));
+  omedaHeroes = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8'));
   matrix = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/matchup-matrix.json'), 'utf8'));
 });
 

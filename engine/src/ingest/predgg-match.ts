@@ -7,7 +7,7 @@
 // Needs PREDGG_CLIENT_ID / PREDGG_CLIENT_SECRET (never committed).
 
 import { gql, hasCredentials } from './predgg.js';
-import type { OmedaMatch, OmedaPlayer, MatchEvent, KillEvent } from '../postgame.js';
+import type { OmedaMatch, OmedaPlayer, MatchEvent, KillEvent, HeroStatCell } from '../postgame.js';
 
 export interface PredggGame {
   match: OmedaMatch; ourTeam: string; members: string[];
@@ -139,4 +139,50 @@ export async function predggSquadMatches(
   // Newest first (the feed order isn't guaranteed once unioned).
   out.sort((a, b) => (a.match.start_time < b.match.start_time ? 1 : -1));
   return out;
+}
+
+// ── Single-match review lookups (replaced the omeda.city player/match API,
+// which went to 503 with the rest of omeda's dynamic endpoints in 2026-09). ──
+
+/** One match by its uuid, mapped like the squad games (timeline included). */
+export async function predggMatch(uuid: string, omedaHeroes: { id: number; slug: string }[]): Promise<Omit<PredggGame, 'ourTeam' | 'members'> | null> {
+  const slugToId = new Map(omedaHeroes.map((h) => [h.slug, h.id]));
+  const d = await gql<any>(`{ match(by: { id: "${uuid}" }) { ${MATCH_FIELDS} } }`);
+  return d.match?.uuid ? mapMatch(d.match, slugToId) : null;
+}
+
+/** First player whose name matches the search, as { uuid, name }. */
+export async function predggFindPlayer(name: string): Promise<{ uuid: string; name: string } | null> {
+  const d = await gql<any>(`query($s: String!) { playersPaginated(filter: { search: $s }, limit: 5) { results { uuid name } } }`, { s: name });
+  const results: { uuid: string; name: string }[] = d.playersPaginated?.results ?? [];
+  return results.find((p) => p.name.toLowerCase() === name.toLowerCase()) ?? results[0] ?? null;
+}
+
+/** The uuid of a player's most recent ranked match. */
+export async function predggLatestRankedMatchId(playerUuid: string): Promise<string | null> {
+  const d = await gql<any>(`{ player(by: { uuid: "${playerUuid}" }) { matchesPaginated(limit: 1, offset: 0, filter: { gameModes: [RANKED] }) { results { match { uuid } } } } }`);
+  return d.player?.matchesPaginated?.results?.[0]?.match?.uuid ?? null;
+}
+
+/** A player's ranked per-hero record in the HeroStatCell shape the review reads.
+ *  pred.gg has no performance score, so avg_performance_score is 0, and no
+ *  damage-mitigated total, so that diagnostic simply drops out. */
+export async function predggHeroStats(playerUuid: string, omedaHeroes: { id: number; slug: string }[]): Promise<HeroStatCell[]> {
+  const slugToId = new Map(omedaHeroes.map((h) => [h.slug, h.id]));
+  const d = await gql<any>(`{ player(by: { uuid: "${playerUuid}" }) { heroStatistics(filter: { gameModes: [RANKED] }) { results {
+    hero { slug } matchesPlayed matchesWon totalKills totalDeaths totalAssists totalGold totalHeroDamage
+    totalMinionsKilled totalWardsPlaced totalTime } } } }`);
+  return (d.player?.heroStatistics?.results ?? [])
+    .filter((r: any) => r.hero?.slug && slugToId.has(r.hero.slug) && r.matchesPlayed > 0)
+    .map((r: any): HeroStatCell => {
+      const n = r.matchesPlayed;
+      return {
+        hero_id: slugToId.get(r.hero.slug)!, match_count: n, winrate: r.matchesWon / n,
+        avg_performance_score: 0, avg_kdar: (r.totalKills + r.totalAssists) / Math.max(1, r.totalDeaths),
+        avg_kills: r.totalKills / n, avg_deaths: r.totalDeaths / n, avg_assists: r.totalAssists / n,
+        avg_minions_killed: r.totalMinionsKilled / n, avg_gold_earned: r.totalGold / n,
+        avg_damage_dealt_to_heroes: r.totalHeroDamage / n, avg_wards_placed: r.totalWardsPlaced / n,
+        total_game_duration: r.totalTime,
+      };
+    });
 }

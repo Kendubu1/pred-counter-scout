@@ -20,7 +20,7 @@ async function main() {
   if (!hasCredentials()) { console.error('needs PREDGG_CLIENT_ID/SECRET in env'); process.exit(1); }
   const data = loadData();
   const index = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/index.json'), 'utf8')) as { heroes: { slug: string }[] };
-  const rawHeroes = (() => { const h = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8')); return Array.isArray(h) ? h : h.heroes; })() as { slug: string; abilities: { key: string; display_name: string }[] }[];
+  const rawHeroes = (() => { const h = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8')); return Array.isArray(h) ? h : h.heroes; })() as { slug: string; abilities: { key: string; display_name: string }[] }[];
   const nameOf = new Map(rawHeroes.map((h) => [h.slug, new Map(h.abilities.map((a) => [a.key, a.display_name]))]));
 
   const out: Record<string, { sequence: string[]; maxOrder: { key: string; name: string; maxedAt: number }[]; ultLevels: number[] }> = {};

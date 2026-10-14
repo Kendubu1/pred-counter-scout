@@ -18,13 +18,13 @@ Total time: roughly 60 to 90 minutes in practice mode. Bring this file.
 What to verify: damage taken = raw x 100 / (100 + armor).
 
 How:
-1. Pick Gideon, no items, level 1. Void Breach rank 1 deals a flat 95
-   magical (current patch, zero MP).
+1. Pick Gideon, no items, level 1. Void Breach rank 1 deals a flat 90
+   magical (patch 1.17+, zero MP).
 2. Hit an enemy bot hero whose magical armor you know from the base-stat
-   table (`data/omeda/heroes.json`, `base_stats.magical_armor[level-1]`;
+   table (`data/catalog/heroes.json`, `base_stats.magical_armor[level-1]`;
    for example Riktor level 1 has a known value). Read the actual damage
    number shown.
-3. Compute factor = observed / 95. Check whether factor = 100/(100+armor).
+3. Compute factor = observed / 90. Check whether factor = 100/(100+armor).
 4. Repeat at two more armor values (let the bot level, or pick a tankier
    bot) so the formula is confirmed at 3 points, not fit to 1.
 

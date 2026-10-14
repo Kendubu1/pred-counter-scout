@@ -9,12 +9,13 @@ Two halves:
   data. Frozen; do not modify without an explicit ask. Its game numbers are
   known to be pre-patch-1.14 (see lessons.md and `npm run drift`).
 - `engine/`: the v5 kit-math engine, spec in `docs/v5-engine-design.md`.
-  All numbers come from the `data/omeda/` snapshot (current patch, official
-  API via omeda.city). This is where active work happens.
+  All numbers come from the `data/catalog/` snapshot (current patch, pulled
+  from pred.gg by `npm run catalog`; it replaced the omeda.city snapshot on
+  2026-10-14 after omeda stopped publishing). This is where active work happens.
 
 ## Data policy (permanent, set by the maintainer 2026-06-12)
 
-Pull from external APIs (pred.gg, omeda.city) ONLY when genuinely needed:
+Pull from external APIs (pred.gg; omeda.city is retired, see below) ONLY when genuinely needed:
 a scheduled refresh, a patch drop, or a new data requirement that cannot
 be served from what we hold. Everything the site renders must be static
 committed snapshots or computed by our own engine from them. Before any
@@ -42,8 +43,8 @@ flow is deterministic-bracketed so honesty is enforced by code, not the model:
    (`engine/src/copy-verify.ts`) and writes `data/aggregates/*.json`; any line
    citing a number absent from its source cell is still dropped.
 
-`engine/copy-tasks/` is scratch (gitignored). The PREDGG_*/omeda snapshot creds
-are unrelated to this and unaffected.
+`engine/copy-tasks/` is scratch (gitignored). The PREDGG_* creds used by the
+catalog and match pulls are unrelated to this and unaffected.
 
 The copy is further hardened by an **independent judge**: a separate critic agent
 (NOT the author) reviews the authored copy for wrong/misleading/jargon lines, and
@@ -63,7 +64,7 @@ and how to wire a new loop live in `docs/agent-loops.md`.
    that changes scope or architecture, or anything destructive. State the
    blocker and a recommended option when stopping.
 4. **Credentials gate (added 2026-06-26, set by the maintainer).** If a task needs
-   a live data pull (`PREDGG_CLIENT_ID/SECRET`, omeda refresh) and the credentials
+   a live data pull (`PREDGG_CLIENT_ID/SECRET`, catalog refresh) and the credentials
    are NOT in the session, **PAUSE and request them before starting** — do not do
    partial work (backfills, estimates, "I'll redo it once the data lands") that has
    to be re-run after the fact. Verify creds up front for any refresh/pull/
@@ -78,29 +79,32 @@ and how to wire a new loop live in `docs/agent-loops.md`.
 - Engine commands (run from `engine/`): `npm test` (harness),
   `npm run answer -- <hero-slug>` (build generation),
   `npm run drift` (owned-data staleness report),
-  `npm run patchcheck` (grades data/omeda against the data/patches digests and
-  writes the report that labels catalogPatch on the site. Informational only
-  since 2026-09-21: omeda's catalog froze on 2026-08-28, so the harness gate on
-  it was retired by the maintainer),
-  `npm run snapshot` (refresh data/omeda after a balance patch; omeda has been
-  frozen since 2026-08-28, so expect no content change),
+  `npm run patchcheck` (grades data/catalog against the data/patches digests and
+  writes the report that labels catalogPatch on the site. The harness gate on it,
+  retired 2026-09-21 while omeda's catalog was frozen, was restored on 2026-10-14
+  once the catalog moved to pred.gg),
+  `npm run catalog` (refresh data/catalog from pred.gg after a balance patch or
+  a new hero/item; needs PREDGG creds; `npm run snapshot` is an alias),
   `npm run refresh` (FULL data refresh chain — needs PREDGG_CLIENT_ID/SECRET in
-  the env: snapshot -> augments -> buildstats -> skills -> aggregate -> artifacts
-  -> matrix -> agreement; refreshes winrates + builds for every hero's main and
+  the env: catalog -> patchcheck -> augments -> icons -> buildstats -> skills ->
+  lanestats -> aggregate -> artifacts -> matrix -> agreement; refreshes winrates
+  + builds for every hero's main and
   flex lanes. Follow with the zero-API copy passes: `COPY_MODE=prepare npm run
   copy:prepare` -> pred-scout-coach agent -> `npm run copy:ingest` and
   `npm run review:builds`. NOTE: secrets are injected at session start, so a newly
   added cred needs a fresh session before `refresh` can authenticate),
-  `npm run probe` (live match-feed field check),
-  `npm run matrix` (all-pairs matchup matrix; rerun after snapshot/artifacts),
+  `npm run probe` (live match-sample field check, pred.gg),
+  `npm run aggregate` / `ranksplit` / `matchups:feed` / `calibrate` (live match
+  samples from pred.gg via src/ingest/predgg-feed.ts — the omeda.city match feed
+  they used went to 503 in 2026-09 and is retired),
+  `npm run matrix` (all-pairs matchup matrix; rerun after catalog/artifacts),
   `npm run augments` (per-hero-role augment/eternal/crest field evidence + icons),
   `npm run icons` (fills ui/img/ from the pred.gg catalog — heroes, items, crests,
-  Eternals, their minors, augments; needs PREDGG creds; skip-if-exists, so it only
-  fetches what the repo lacks — run after any catalog change. omeda is not
-  consulted: its catalog froze on 2026-08-28),
+  Eternals, their minors, augments, and every ability icon data/catalog links;
+  needs PREDGG creds; skip-if-exists, so it only fetches what the repo lacks —
+  run after any catalog change),
   `npm run lanestats` (per-hero-role RANKED lane stats for the CURRENT patch from
-  pred.gg generalStatistic — the meta board's preferred source; the omeda feed
-  window is only the fallback, it runs days behind live),
+  pred.gg generalStatistic — the meta board's source),
   `npm run skills` (per-hero recommended leveling order from pred.gg),
   `npm run copy:prepare` then (pred-scout-coach agent fills responses) then
   `npm run copy:ingest` (copy passes on session compute — NO API key; each line
@@ -108,6 +112,7 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   are the per-pass ingest steps; prefix with `COPY_MODE=prepare` to emit tasks.
 - Confidence rule: any output touching an unverified fixture constant is
   THEORY at best. The harness prints unverified constants on every run.
-- The omeda.city match feed is oldest-first by default; always drive it
-  with `?timestamp=` + cursor. Matches carry no patch field; partition by
-  start_time against patch release dates.
+- omeda.city is retired as a dependency (2026-10-14): its catalog froze on
+  2026-08-28 and its match/player endpoints return 503. No code calls it; the
+  catalog (`data/catalog/`), match samples and postgame lookups all come from
+  pred.gg. pred.gg matches carry their version, so partition by version.

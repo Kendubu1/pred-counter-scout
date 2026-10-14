@@ -50,7 +50,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
   it('the committed artifact set covers the full roster and parses', () => {
     const dir = path.join(ROOT, 'data/artifacts');
     const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json'].includes(f));
-    const roster = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8'));
+    const roster = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8'));
     expect(files.length).toBe(Object.keys(roster).length);
     for (const f of files.slice(0, 8)) {
       const parsed = HeroArtifact.safeParse(JSON.parse(readFileSync(path.join(dir, f), 'utf8')));
@@ -162,7 +162,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
 
   it('the all-pairs matchup matrix covers every hero pair with valid verdict codes', () => {
     const mx = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/matchup-matrix.json'), 'utf8'));
-    const n = Object.keys(JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8'))).length;
+    const n = Object.keys(JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8'))).length;
     expect(Object.keys(mx.pairs).length).toBe((n * (n - 1)) / 2);
     expect(mx.minutes.length).toBeGreaterThanOrEqual(4);
     for (const v of Object.values(mx.pairs)) {

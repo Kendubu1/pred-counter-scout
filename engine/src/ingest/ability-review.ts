@@ -19,7 +19,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.
 interface RawAbility { key: string; display_name: string; cooldown?: number[]; cost?: number[]; menu_description?: string; game_description?: string }
 interface RawHero { slug: string; name: string; display_name?: string; abilities?: RawAbility[] }
 
-const raw = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8')) as RawHero[] | { heroes: RawHero[] };
+const raw = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8')) as RawHero[] | { heroes: RawHero[] };
 const heroes = Array.isArray(raw) ? raw : raw.heroes;
 const data = loadData();
 const KEY_LABEL: Record<string, string> = { LMB: 'left-click', RMB: 'right-click', Q: 'Q', E: 'E', R: 'ultimate (R)' };
@@ -69,7 +69,7 @@ Return strict JSON only: {"<key>": "<tip>", ...}`;
   if (isPrepare()) return;
   if (!writeAggregate(path.join(ROOT, 'data/aggregates/ability-tips.json'), {
     generatedAt: new Date().toISOString(),
-    source: 'in-session Claude Code agent (pred-scout-coach) over data/omeda/heroes.json ability text only; every number ground-checked against the ability, failing lines dropped',
+    source: 'in-session Claude Code agent (pred-scout-coach) over data/catalog/heroes.json ability text only; every number ground-checked against the ability, failing lines dropped',
     written, rejected, heroes: out,
   })) return;
   console.log(`\n${written} tips written, ${rejected} rejected -> data/aggregates/ability-tips.json`);

@@ -331,6 +331,16 @@ remain as fast canaries but cannot detect staleness on their own: one pinned
   form. Until one is chosen the engine is knowingly on 1.16-era kit numbers and
   every surface says so.
 
+- **Resolved (Oct 14): the catalog moved to pred.gg.** Neither (a) nor (b) was
+  needed: pred.gg serves the same catalog, version-tagged and current (it had
+  1.17.2 the day after release). `npm run catalog` (src/ingest/catalog.ts)
+  writes `data/catalog/` in the omeda file shape, verified field by field
+  against the frozen payload before `data/omeda/` was deleted; patchcheck reads
+  0 stale / 0 frozen across every digest, and the harness gate is restored. The
+  match-feed consumers (aggregate, rank-split, matchup-feed, calibrate, probe)
+  and the postgame lookups moved to pred.gg too, through one shared per-hero
+  match sampler (src/ingest/predgg-feed.ts). No code calls omeda.city.
+
 **Two clocks.** The catalog patch and the match-window patch are separate and
 usually differ, because the public match feed runs behind live. Any surface
 quoting a number must say which clock it is on: hero and item numbers carry

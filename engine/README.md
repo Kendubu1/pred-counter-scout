@@ -13,14 +13,15 @@ npm install
 npm test                      # Concept B harness gates (16 tests)
 npm run answer -- gideon      # Pareto builds for a hero
 npm run answer -- gideon --anti-heal --budget 12000
-npm run probe                 # live check of omeda.city match-feed fields
-npm run snapshot              # refresh data/omeda/ after a balance patch
+npm run probe                 # live check of pred.gg match-sample fields
+npm run catalog               # refresh data/catalog/ from pred.gg after a balance patch
 ```
 
 ## What exists (vertical slice, June 2026)
 
 - `src/data.ts` loads all numbers (ability damage, cooldowns, costs, item
-  stats) from the omeda snapshot, which tracks the live patch; owned data
+  stats) from the catalog snapshot (data/catalog/, pulled from pred.gg; it
+  replaced the frozen omeda.city snapshot on 2026-10-14), which tracks the live patch; owned data
   supplies curated profiles and last-resort fallbacks. Validation against
   the repo's own 1.14.4 digest showed the owned ability data carries
   pre-1.14 numbers (`npm run drift` for the report). Full 52-hero roster,
@@ -48,9 +49,10 @@ feature's presence in the committed meta.json.
 `npm run icons` keeps `ui/img/` complete from the pred.gg catalog (heroes,
 items, crests, Eternals, their minor blessings, augments; needs the creds
 above). It downloads only the files the repo is missing, so a normal run
-makes zero requests. omeda.city is not consulted: its catalog froze on
-2026-08-28. Ability icons are keyed by the omeda hashes the frozen kit
-snapshot links and are committed with no live source. It is part of
+makes zero requests. Ability icons are fetched for every hash the committed
+catalog (data/catalog/heroes.json) links; pred.gg serves the same hashes
+omeda did. omeda.city is not consulted anywhere: its catalog froze on
+2026-08-28 and its match/player endpoints went to 503. It is part of
 `npm run refresh`; run it alone after a catalog change that adds a hero,
 item or Eternal.
 

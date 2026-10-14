@@ -28,7 +28,7 @@ const SKIP = /Potion|Ward|Crest/i;
 function main() {
   const agg = loadAggregates();
   if (!agg) { console.error('no aggregate snapshot in data/aggregates/'); process.exit(1); }
-  const omeda = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/items.json'), 'utf8')) as { slug: string; total_price: number | null }[];
+  const omeda = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/items.json'), 'utf8')) as { slug: string; total_price: number | null }[];
   const priceOf = new Map(omeda.map((i) => [i.slug, i.total_price ?? null]));
 
   // sorted minute keys per role, so estimates walk the measured curve only

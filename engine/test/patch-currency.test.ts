@@ -7,8 +7,29 @@
 // on 2026-09-21. `npm run patchcheck` still writes the report
 // (data/aggregates/patch-currency.json) that labels catalogPatch on the site;
 // it is informational now, not a harness gate.
+//
+// RESTORED 2026-10-14: the catalog now comes from pred.gg (npm run catalog ->
+// data/catalog/), which is current, so a stale catalog is once again a real
+// pipeline failure and the gate below grades the committed report.
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { loadData } from '../src/data.js';
+
+describe('patch currency gate (data/catalog vs data/patches digests)', () => {
+  const report = JSON.parse(readFileSync(new URL('../../data/aggregates/patch-currency.json', import.meta.url), 'utf8')) as {
+    totals: { stale: number }; frozenAgainstPatches: string[];
+  };
+
+  it('no machine-checkable patch change is still at its pre-patch value', () => {
+    // Re-run npm run catalog then npm run patchcheck. A pending patch (release
+    // day, upstream not yet published) is reported separately and allowed.
+    expect(report.totals.stale).toBe(0);
+  });
+
+  it('no patch is frozen out of the catalog', () => {
+    expect(report.frozenAgainstPatches).toEqual([]);
+  });
+});
 
 describe('ability text parsing keeps up with the live catalog', () => {
   const data = loadData();

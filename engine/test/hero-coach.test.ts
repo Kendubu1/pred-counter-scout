@@ -18,7 +18,7 @@ interface Lines { written: number; rejected: number; heroes: Record<string, Reco
 
 const load = (): Lines | null => (existsSync(LINES) ? (JSON.parse(readFileSync(LINES, 'utf8')) as Lines) : null);
 
-const heroesRaw = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8')) as RawHero[] | { heroes: RawHero[] };
+const heroesRaw = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8')) as RawHero[] | { heroes: RawHero[] };
 const heroBySlug = new Map((Array.isArray(heroesRaw) ? heroesRaw : heroesRaw.heroes).map((h) => [h.slug, h]));
 
 const artifacts = (): Artifact[] => readdirSync(path.join(ROOT, 'data/artifacts')).filter(isHeroArtifact)
@@ -60,7 +60,7 @@ describe('hero-page coach lines (copy pass, item 8)', () => {
     // Item vocabulary = the whole catalogue, not just what some build ships.
     // Drawn from shipped builds only, this missed a lane naming an item that
     // appears in no build at all (an independent judge caught that one).
-    const catalogRaw = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/items.json'), 'utf8')) as
+    const catalogRaw = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/items.json'), 'utf8')) as
       { display_name?: string }[] | { items: { display_name?: string }[] };
     const vocab = new Set<string>();
     for (const i of Array.isArray(catalogRaw) ? catalogRaw : catalogRaw.items) if (i.display_name) vocab.add(i.display_name);
@@ -87,7 +87,11 @@ describe('hero-page coach lines (copy pass, item 8)', () => {
           if (abilityText.includes(name)) continue;
           // Short names risk matching ordinary words; the real drift cases are
           // full item names, which are all longer than four characters.
-          if (name.length > 4 && text.includes(name) && !build.has(name)) {
+          // Whole-name match: "Spectra" is an item AND the head of the item
+          // "Spectral Schematics", so a substring test flags every lane that
+          // builds the latter.
+          const named = new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`).test(text);
+          if (name.length > 4 && named && !build.has(name)) {
             wrong.push(`${a.slug}/${rv.role}: coaches "${name}", which is not in this lane's build`);
           }
         }

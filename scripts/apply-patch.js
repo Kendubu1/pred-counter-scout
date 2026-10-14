@@ -27,7 +27,7 @@ const ROOT = path.resolve(__dirname, '..');
 const PATCH_DIR = path.join(ROOT, 'data', 'patches');
 const PROFILES = path.join(ROOT, 'data', 'game-data', 'hero-profiles.json');
 const OUT = path.join(ROOT, 'data', 'game-data', 'hero-patch-state.json');
-const ROSTER = path.join(ROOT, 'data', 'omeda', 'heroes.json');
+const ROSTER = path.join(ROOT, 'data', 'catalog', 'heroes.json');
 
 function fail(msg) { console.error('✗ ' + msg); process.exit(1); }
 

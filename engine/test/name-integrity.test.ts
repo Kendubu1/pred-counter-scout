@@ -44,7 +44,7 @@ describe('names match the patch notes', () => {
   });
 
   it('every hero a patch digest names is on the roster', () => {
-    const roster = new Set((JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8')) as
+    const roster = new Set((JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8')) as
       { slug: string }[]).map((h) => h.slug));
     // Digests can name a hero the catalog had not published yet (Scarlett was in
     // the 1.16 notes days before omeda listed her), so this reports rather than

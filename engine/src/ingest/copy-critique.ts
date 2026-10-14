@@ -36,9 +36,9 @@ const HISTORY_PATH = path.join(ROOT, process.env.CRITIQUE_HISTORY ?? 'data/aggre
 interface RawItem { slug: string; display_name: string; stats?: Record<string, number>; effects?: { name?: string; menu_description?: string; game_description?: string }[] }
 interface RawHero { slug: string; name?: string; display_name?: string; abilities?: { key: string; display_name: string; cooldown?: number[]; menu_description?: string; game_description?: string }[] }
 
-const itemsRaw = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/items.json'), 'utf8')) as RawItem[] | { items: RawItem[] };
+const itemsRaw = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/items.json'), 'utf8')) as RawItem[] | { items: RawItem[] };
 const itemBySlug = new Map((Array.isArray(itemsRaw) ? itemsRaw : itemsRaw.items).map((i) => [i.slug, i]));
-const heroesRaw = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8')) as RawHero[] | { heroes: RawHero[] };
+const heroesRaw = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8')) as RawHero[] | { heroes: RawHero[] };
 const heroBySlug = new Map((Array.isArray(heroesRaw) ? heroesRaw : heroesRaw.heroes).map((h) => [h.slug, h]));
 
 const itemLine = (slug: string | null): string => {

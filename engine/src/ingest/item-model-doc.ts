@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { loadEffects } from '../effects.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-const raw = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/items.json'), 'utf8'));
+const raw = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/items.json'), 'utf8'));
 const items = (Array.isArray(raw) ? raw : raw.items) as any[];
 const reg = loadEffects();
 const clean = (s?: string) => (s || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -75,7 +75,7 @@ for (const it of completed.sort((a, b) => (b.total_price ?? 0) - (a.total_price 
 
 const out = `# Item-effect model — reasoning breakdown
 
-Generated from \`data/omeda/items.json\` + \`engine/fixtures/effects.json\`
+Generated from \`data/catalog/items.json\` + \`engine/fixtures/effects.json\`
 (\`npm run item-model\`). For every completed item: its base stats, each
 passive split out (with the trigger condition), the effect primitive it maps
 to, and how that rolls into the simulator. Flat stats are always counted;

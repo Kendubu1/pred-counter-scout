@@ -26,7 +26,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.
 // and all player-facing copy carry the display name, so membership tests have
 // to go through the catalog rather than string-matching the two.
 const ITEM_ALIASES: Map<string, string> = (() => {
-  const raw = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/items.json'), 'utf8')) as
+  const raw = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/items.json'), 'utf8')) as
     { name?: string; display_name?: string; slug?: string }[];
   const key = (n: string) => n.toLowerCase().replace(/[^a-z0-9]/g, '');
   const m = new Map<string, string>();
@@ -44,9 +44,9 @@ interface RawHero { slug: string; name?: string; display_name?: string; abilitie
 
 const clean = (t?: string) => (t || '').replace(/<br\s*\/?>(\n)?/g, ' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
 
-const itemsRaw = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/items.json'), 'utf8')) as RawItem[] | { items: RawItem[] };
+const itemsRaw = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/items.json'), 'utf8')) as RawItem[] | { items: RawItem[] };
 const itemBySlug = new Map((Array.isArray(itemsRaw) ? itemsRaw : itemsRaw.items).map((i) => [i.slug, i]));
-const heroesRaw = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8')) as RawHero[] | { heroes: RawHero[] };
+const heroesRaw = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8')) as RawHero[] | { heroes: RawHero[] };
 const heroBySlug = new Map((Array.isArray(heroesRaw) ? heroesRaw : heroesRaw.heroes).map((h) => [h.slug, h]));
 
 const itemLine = (slug: string | null): string => {

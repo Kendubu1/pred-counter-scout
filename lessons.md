@@ -3885,3 +3885,75 @@ automation was writing cards nobody saw.
   commonest medium flag; the rule now says five cards are five jobs, and the
   critic enforces it. Running lastCheck tally across the set: 21 held, 32
   missed, 4 not measurable.
+
+## 2026-10-14 — omeda.city retired as a dependency; catalog + match samples move to pred.gg
+
+Maintainer ask: "since omeda is no longer updated, did we update all of our code
+to no longer rely on the dependency? we need to do this." Audit: 20 engine files
+read `data/omeda/*.json`, and six scripts called omeda.city live (aggregate,
+rank-split, matchup-feed, calibrate, probe, postgame). The match/player endpoints
+were returning 503; the catalog had been byte-identical since 2026-08-28.
+
+- **`npm run catalog` (src/ingest/catalog.ts) replaces `npm run snapshot`.** It
+  pulls heroes, items and versions from pred.gg and writes `data/catalog/` in the
+  omeda file SHAPE, so every consumer only changed its path. The mapping was
+  verified field by field against the frozen payload before omeda's files were
+  deleted: ability keys (BASIC/ALTERNATE/PRIMARY/SECONDARY/ULTIMATE/PASSIVE ->
+  LMB/RMB/Q/E/R/Passive), stat order, ability icon hashes, item slugs and
+  game_ids agree 100% on all 54 shared heroes and 270 items. Base stats arrive as
+  base + per-level growth (omeda stored running totals; attack speed x0.01;
+  constant arrays collapse to one value). Markup closes with `</>` and `\n`;
+  a tag stack converts it to omeda's `</Name>` / `<br>`, after which every
+  ability and effect text that still differs differs only by a balance change.
+- **The frozen catalog had been wrong for longer than it admitted.** World
+  Breaker tenacity was still pre-1.15.3; Gideon Void Breach and Countess Feast
+  were pre-1.17 — and two harness tests had pinned the stale numbers, so they
+  passed against data two patches old. Both now pin the 1.17 digest values. A
+  test that pins a value is only as current as the snapshot it was written on.
+- **The patch-currency harness gate is restored.** patchcheck now reads 0 stale,
+  0 frozen across 1.14.1-1.17.2 (1.17 and 1.17.2 graded applied for the first
+  time). It surfaced one parser bug: "damage reduction 35% -> 30%, mana cost
+  100 -> 100/125/150" (Muriel) was graded as an ult DAMAGE change because the
+  percent pair never matches ARROW and the arrow landed on the cost; the words
+  before the numbers now decide.
+- **Baron Valmont joins the roster** (catalog id 80; ids are carried forward,
+  new heroes take the next free one, skipping omeda's 10000000001 outlier). The
+  patch digests and prediction files spelled him `baron-valmont`; the game's
+  slug is `valmont`, fixed so patchcheck grades him and the patch pages link.
+- **One shared match sampler (src/ingest/predgg-feed.ts)** replaces the omeda
+  feed walk. pred.gg has no global match list, so it walks
+  hero.matchesPaginated per hero (5 aliased per request, newest first, inside a
+  timeframe), dedupes by uuid and returns the omeda row shape keyed by slug —
+  which also retires omeda's feed-vs-catalog id aliases (75/76). Matches carry
+  their version, so windows are bounded by patch release instead of start_time
+  arithmetic. aggregate (36h, bounded by the current patch) and matchups:feed
+  (current patch FAMILY, incremental, replaced when the family changes) are in
+  the daily runbook; the committed feed-matchups.json had been 1.15-era data
+  (to 2026-08-03) on the live counter pages.
+- **Postgame lookups** (match by uuid, player search, latest ranked match,
+  per-hero record) go through pred.gg; pred.gg has no performance score or
+  mitigated total, so those two fields drop out rather than being invented.
+- **Ability icons have a live source again**: `npm run icons` fetches every hash
+  the catalog links (Valmont's six were the only gaps).
+- **omeda's gold curves read ~3 minutes late — the whole time.** omeda's
+  `gold_earned_at_interval` carried ~3 pregame entries (2026-06-11 noted it and
+  moved on); pred.gg's array has none (length = duration in minutes). Same
+  numbers, shifted: omeda "minute 5" 642 carry gold = pred.gg minute 2. The
+  checkpoint fixture (engine/fixtures/calibration.json), which every spike
+  minute on the site derives from, was re-derived from the 1.17.2 pred.gg
+  sample on the true game clock — which also retires its "1.15 economy, stale
+  against 1.16" flag. "Verify interval semantics against a second field" was
+  the right rule and was not followed through; array LENGTH vs match DURATION
+  is the cheap second field.
+- **A catalog refresh is a copy refresh.** New numbers change the builds, and the
+  harness caught copy written for the old builds (items no longer bought, spikes
+  promised too early). Abilities, items, builds and hero-coach copy were
+  re-authored on session compute (7 parallel pred-scout-coach agents over split
+  task files) and judged by independent general-purpose critics: builds 95.2%
+  agreement (98 grounded rewrites applied), hero-coach 94.2% (10 applied).
+  Both gates stop on their round cap, not on convergence. A Howitzer line was
+  dropped by the verifier for citing "R2000 Missile" — a number inside an
+  ability NAME still has to ground.
+- **Substring item matching breaks when names nest.** The hero-coach test flagged
+  12 lanes for coaching "Spectra" because they build "Spectral Schematics"; it
+  now matches whole names.

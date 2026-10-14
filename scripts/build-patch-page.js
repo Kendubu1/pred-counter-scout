@@ -19,8 +19,8 @@ const digest = JSON.parse(fs.readFileSync(path.join(ROOT, `data/patches/${versio
 const pred = JSON.parse(fs.readFileSync(path.join(ROOT, `data/aggregates/patch-${version}-predictions.json`), 'utf8'));
 // Catalogs for the "what is this?" popups on item/Eternal cards — the same
 // committed snapshots the rest of the site renders from (zero-API).
-const ITEM_CATALOG = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/omeda/items.json'), 'utf8'));
-const ITEM_META = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/omeda/META.json'), 'utf8'));
+const ITEM_CATALOG = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/catalog/items.json'), 'utf8'));
+const ITEM_META = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/catalog/META.json'), 'utf8'));
 const ETERNAL_DATA = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/game-data/eternals.json'), 'utf8'));
 const ETERNAL_CATALOG = ETERNAL_DATA.eternals;
 // Use the date the snapshot CONTENT last changed, never the date we last

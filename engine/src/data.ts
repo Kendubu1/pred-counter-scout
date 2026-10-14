@@ -314,12 +314,12 @@ export interface LoadedData {
 export function loadData(): LoadedData {
   const ownedAbilities = loadJson<Record<string, { abilities: OwnedAbility[] }>>('data/game-data/hero-abilities.json');
   const profiles = loadJson<OwnedProfile[]>('data/game-data/hero-profiles.json');
-  const omedaHeroes = loadJson<OmedaHero[]>('data/omeda/heroes.json');
+  const omedaHeroes = loadJson<OmedaHero[]>('data/catalog/heroes.json');
   const omedaItems = loadJson<{
     game_id: number | null; display_name: string; slug: string; total_price: number | null;
     rarity: string | null; slot_type: string | null; hero_class: string | null;
     stats: Record<string, number> | null;
-  }[]>('data/omeda/items.json');
+  }[]>('data/catalog/items.json');
 
   // Field-recommended ability leveling order (pred.gg recommendedSkills),
   // optional. The skill order is in omeda key labels (RMB/Q/E/R), so it MUST be
@@ -473,7 +473,7 @@ export function loadData(): LoadedData {
         ?.map((k) => OMEDA_KEY_MAP[k])
         .filter((k): k is AbilityDef['key'] => !!k && defs.some((d) => d.key === k)),
       passiveSelfShieldPctMaxHealth: parsePassiveSelfShield(om.abilities?.find((a) => a.key === 'Passive')?.menu_description),
-      abilitySource: defs.length && staleFallbacks.some((s) => s.slug === om.slug) ? 'mixed' : 'omeda',
+      abilitySource: defs.length && staleFallbacks.some((s) => s.slug === om.slug) ? 'mixed' : 'catalog',
     });
   }
 

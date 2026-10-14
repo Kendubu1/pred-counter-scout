@@ -488,7 +488,7 @@
   <div id="hero" class="hidden fade"></div>
 
   <footer>
-    <a href="about.html">About &amp; how this works</a> · Built on the official Omeda Studios public API (omeda.city) and pred.gg · not affiliated with Omeda Studios.<br>
+    <a href="about.html">About &amp; how this works</a> · Game data via pred.gg · not affiliated with Omeda Studios.<br>
     THEORY = <span id="theoryDef"></span> Evidence deltas carry finished-inventory bias and are comparative, not absolute.
   </footer>
 </div>
@@ -693,9 +693,9 @@ async function getMatrix() {
   if (!MATRIX) MATRIX = await getJson('../../data/artifacts/matchup-matrix.json').catch(() => null);
   return MATRIX;
 }
-// Empirical head-to-head records, merged from two sources: the open omeda
-// feed (npm run matchups:feed — available today) with pred.gg's patch-wide
-// records overlaid per-pair when that pass unlocks (bigger samples). Either
+// Empirical head-to-head records, merged from two sources: the pred.gg match
+// sample (npm run matchups:feed — available today) with pred.gg's patch-wide
+// matchupStatistic records overlaid per-pair when that pass unlocks. Either
 // file absent is fine; both absent -> null and every consumer falls back to sim.
 let MATCHUPS;
 async function getMatchups() {
@@ -1212,7 +1212,7 @@ function renderHero(a, roleParam) {
       ability breakdown are real. What is missing is the <b>field layer</b>:
       ${esc(pend.missing.join(', '))}. ${esc(pend.reason.charAt(0).toUpperCase() + pend.reason.slice(1))}.
       We would rather show you nothing there than a win rate we made up — it fills in
-      once she has been played enough to measure.
+      as soon as that evidence can be measured.
     </div>`;
 
   $('#hero').innerHTML = `
@@ -1614,7 +1614,7 @@ const STAT_LABELS = { physical_power: 'Physical Power', magical_power: 'Magical 
 async function showItem(slug) {
   if (!ITEMS_RAW) {
     const [raw, why] = await Promise.all([
-      getJson('../../data/omeda/items.json').catch(() => null),
+      getJson('../../data/catalog/items.json').catch(() => null),
       getJson('../../data/aggregates/item-reviews.json').catch(() => null),
     ]);
     ITEMS_RAW = new Map((Array.isArray(raw) ? raw : raw?.items ?? []).map((i) => [i.slug, i]));
@@ -1708,7 +1708,7 @@ async function renderLearn(a) {
   const pend = (typeof PENDING === 'object' && PENDING) ? PENDING[a.slug] : null;
   if (!HEROES_RAW) {
     const [raw, sk, tp, pa] = await Promise.all([
-      getJson('../../data/omeda/heroes.json').catch(() => null),
+      getJson('../../data/catalog/heroes.json').catch(() => null),
       getJson('../../data/aggregates/skill-orders.json').catch(() => null),
       getJson('../../data/aggregates/ability-tips.json').catch(() => null),
       getJson('../../data/game-data/hero-patch-state.json').catch(() => null),

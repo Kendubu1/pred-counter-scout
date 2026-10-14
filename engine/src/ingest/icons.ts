@@ -13,8 +13,9 @@
 //     keyed by slugified name because the catalog names them)
 //                       -> ui/img/blessings/<slug>.webp
 //   - HERO_SPECIFIC_1   -> ui/img/augments/<perkId>.webp
-// Ability icons (ui/img/abilities/<hash>.webp) are keyed by the omeda hashes
-// the frozen kit snapshot links; they are committed and have no live source.
+//   - ability icons     -> ui/img/abilities/<hash>.webp, for every hash the
+//                          committed catalog (data/catalog/heroes.json) links.
+//                          pred.gg serves the same hashes omeda did.
 //
 // Skip-if-exists, sequential, delayed, UA-identified: only files the repo is
 // missing are fetched, so a normal run makes zero requests. Run it after any
@@ -81,6 +82,20 @@ async function catalogJobs(): Promise<Job[]> {
   return jobs;
 }
 
+// Read from the committed catalog (npm run catalog), so this costs no query.
+function abilityJobs(): Job[] {
+  const heroes = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8')) as
+    { slug: string; abilities: { key: string; image: string | null }[] }[];
+  const jobs: Job[] = [];
+  for (const h of heroes) {
+    for (const a of h.abilities) {
+      const hash = a.image?.match(/([0-9a-f]+)\.webp$/)?.[1];
+      if (hash) jobs.push({ url: ASSET(hash), dest: path.join(ROOT, 'ui/img/abilities', `${hash}.webp`), label: `ability ${h.slug} ${a.key}` });
+    }
+  }
+  return jobs;
+}
+
 async function perkJobs(): Promise<Job[]> {
   const catalogPath = path.join(ROOT, 'data/game-data/eternals.json');
   const catalog = JSON.parse(readFileSync(catalogPath, 'utf8')) as { eternals: { id: string; name: string }[] };
@@ -117,13 +132,16 @@ async function main() {
   console.log('pred.gg catalog icons (heroes, items, crests):');
   const catalog = await fetchMissing(await catalogJobs());
   console.log(`  ${catalog.fetched} fetched`);
+  console.log('ability icons (from data/catalog):');
+  const abilities = await fetchMissing(abilityJobs());
+  console.log(`  ${abilities.fetched} fetched`);
   console.log('pred.gg perk icons (Eternals, minor blessings, augments):');
   const perks = await fetchMissing(await perkJobs());
   console.log(`  ${perks.fetched} fetched`);
 
-  const missing = [...catalog.missing, ...perks.missing];
+  const missing = [...catalog.missing, ...abilities.missing, ...perks.missing];
   if (missing.length) console.warn(`upstream has no file for (${missing.length}):\n  ${missing.join('\n  ')}`);
-  const failed = [...catalog.failed, ...perks.failed];
+  const failed = [...catalog.failed, ...abilities.failed, ...perks.failed];
   if (failed.length) {
     console.error(`failed (${failed.length}):\n  ${failed.join('\n  ')}`);
     process.exit(1);

@@ -44,7 +44,7 @@ const synthKit: HeroKit = {
       scalingPct: 100, damageType: 'magical', cooldowns: [120, 100, 80], costs: [100, 100, 100], maxRank: 3,
     },
   ],
-  abilitySource: 'omeda',
+  abilitySource: 'catalog',
 };
 
 describe('effect registry hygiene', () => {

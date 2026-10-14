@@ -40,7 +40,7 @@ const FIXES = path.join(ROOT, 'data/aggregates/hero-coach-fixes.json');
 const loadFixes = (): Record<string, Record<string, string>> =>
   existsSync(FIXES) ? (JSON.parse(readFileSync(FIXES, 'utf8')) as { lanes: Record<string, Record<string, string>> }).lanes ?? {} : {};
 
-const heroesRaw = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8')) as RawHero[] | { heroes: RawHero[] };
+const heroesRaw = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8')) as RawHero[] | { heroes: RawHero[] };
 const heroBySlug = new Map((Array.isArray(heroesRaw) ? heroesRaw : heroesRaw.heroes).map((h) => [h.slug, h]));
 
 async function main() {

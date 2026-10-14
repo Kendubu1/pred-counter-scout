@@ -67,7 +67,7 @@ async function main() {
     versions = v.ids; label = `patch ${v.name} family (ids ${v.ids.join('+')})`;
   }
 
-  const heroes = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/heroes.json'), 'utf8')) as { slug: string; name: string }[];
+  const heroes = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8')) as { slug: string; name: string }[];
   // Per-role pulls only for roles the hero meaningfully plays in our field
   // aggregates (meta.json) — keeps the request count polite.
   const meta = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/meta.json'), 'utf8')) as { roles: Record<string, { slug: string }[]> };

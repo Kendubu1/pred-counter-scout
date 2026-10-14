@@ -22,7 +22,7 @@ interface RawItem {
   effects?: { name?: string; cooldown?: string | null; menu_description?: string; game_description?: string }[];
 }
 
-const raw = JSON.parse(readFileSync(path.join(ROOT, 'data/omeda/items.json'), 'utf8')) as RawItem[];
+const raw = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/items.json'), 'utf8')) as RawItem[];
 const items = (Array.isArray(raw) ? raw : (raw as { items: RawItem[] }).items)
   .filter((i) => i.slot_type === 'Crest' || (i.total_price ?? 0) >= 1800); // completed items + crests
 
@@ -66,7 +66,7 @@ Return strict JSON only: {"<slug>": "<sentence>", ...}`;
   if (isPrepare()) return;
   if (!writeAggregate(path.join(ROOT, 'data/aggregates/item-reviews.json'), {
     generatedAt: new Date().toISOString(),
-    source: 'in-session Claude Code agent (pred-scout-coach) over data/omeda/items.json only; every number ground-checked against the item, failing lines dropped',
+    source: 'in-session Claude Code agent (pred-scout-coach) over data/catalog/items.json only; every number ground-checked against the item, failing lines dropped',
     written, rejected,
     items: out,
   })) return;

@@ -85,7 +85,7 @@ export interface HeroKit {
   passiveSelfShieldPctMaxHealth?: number;
   // omeda = all numbers current-patch; mixed = some slots fell back to
   // stale owned data (see LoadedData.staleFallbacks).
-  abilitySource: 'omeda' | 'mixed';
+  abilitySource: 'catalog' | 'mixed';
 }
 
 export interface ItemStats {

@@ -1,7 +1,11 @@
-// Calibration from live data: what the match feed can tell us about the
+// Calibration from live data: what a live match sample can tell us about the
 // unverified combat constants, without a practice-mode session.
 //
-//   npm run calibrate -- [--pages 40]
+//   npm run calibrate -- [--per-hero 60]      (needs PREDGG creds)
+//
+// Sample: the last 36h of pvp+ranked matches from pred.gg via the shared
+// sampler (src/ingest/predgg-feed.ts); this read the omeda.city feed until
+// it went to 503 in 2026-09.
 //
 // 1. critMultiplier: each player's largest_critical_strike divided by
 //    their predicted maximum non-crit basic hit (final level + final
@@ -18,24 +22,14 @@
 //    proof; the report says which.
 
 import { loadData } from '../data.js';
-
-const UA = { 'User-Agent': 'pred-counter-scout (github.com/Kendubu1/pred-counter-scout)' };
-const MODES = new Set(['pvp', 'ranked']);
-
-interface FeedPlayer {
-  team: string; hero_id: number; level: number | null;
-  inventory_data: number[] | null;
-  largest_critical_strike: number | null;
-  total_damage_taken: number | null;
-  total_damage_mitigated: number | null;
-}
+import { hasCredentials } from './predgg.js';
+import { sampleMatches } from './predgg-feed.js';
 
 const args = process.argv.slice(2);
 const opt = (name: string, dflt: number) => {
   const i = args.indexOf(`--${name}`);
   return i >= 0 ? Number(args[i + 1]) : dflt;
 };
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 function quantile(sorted: number[], q: number): number {
   if (!sorted.length) return NaN;
@@ -43,72 +37,54 @@ function quantile(sorted: number[], q: number): number {
 }
 
 async function main() {
-  const pages = opt('pages', 40);
+  if (!hasCredentials()) { console.error('needs PREDGG_CLIENT_ID/SECRET in env'); process.exit(1); }
+  const perHero = opt('per-hero', 60);
   const data = loadData();
   const byGameId = new Map<number, ReturnType<typeof data.itemsBySlug.get>>();
   for (const i of data.items.values()) if (i.gameId != null) byGameId.set(i.gameId, i);
-  const kitById = new Map<number, NonNullable<ReturnType<typeof data.kits.get>>>();
-  {
-    // omeda heroes.json ids -> kits
-    const omeda = (await import('node:fs')).readFileSync;
-    const heroes = JSON.parse(omeda(new URL('../../../data/omeda/heroes.json', import.meta.url), 'utf8')) as { id: number; slug: string }[];
-    for (const h of heroes) {
-      const kit = data.kits.get(h.slug);
-      if (kit) kitById.set(h.id, kit);
-    }
-  }
 
-  const ts = Math.floor(Date.now() / 1000) - 36 * 3600;
-  let url: string | null = `https://omeda.city/matches.json?per_page=100&timestamp=${ts}`;
+  const to = new Date();
+  const { matches, requests } = await sampleMatches({ from: new Date(to.getTime() - 36 * 3600_000), to, gameModes: ['STANDARD', 'RANKED'], perHero });
   const critRatiosBonus: number[] = [];
   const critRatiosTotal: number[] = [];
   const mitBuckets = new Map<number, { share: number[]; armor: number[] }>();
-  let page = 0, used = 0;
+  let used = 0;
 
-  while (url && page < pages) {
-    const res = await fetch(url, { headers: UA });
-    if (!res.ok) { await sleep(2000); continue; }
-    const body = (await res.json()) as { matches: { game_mode: string; players: FeedPlayer[] }[]; cursor: string | null };
-    page++;
-    for (const m of body.matches ?? []) {
-      if (!MODES.has(m.game_mode)) continue;
-      for (const p of m.players ?? []) {
-        const kit = kitById.get(p.hero_id);
-        const level = p.level ?? 0;
-        if (!kit || level < 10 || !Array.isArray(p.inventory_data)) continue;
-        const items = p.inventory_data.map((id) => byGameId.get(id)).filter((x): x is NonNullable<typeof x> => !!x);
-        const pp = items.reduce((s, i) => s + i.stats.physical_power, 0);
-        const critChance = items.reduce((s, i) => s + i.stats.critical_chance, 0);
-        const base = kit.baseStats.physical_power[level - 1] ?? 0;
+  for (const m of matches) {
+    for (const p of m.players) {
+      const kit = data.kits.get(p.hero_slug);
+      const level = p.level ?? 0;
+      if (!kit || level < 10 || !p.inventory_data.length) continue;
+      const items = p.inventory_data.map((id) => byGameId.get(id)).filter((x): x is NonNullable<typeof x> => !!x);
+      const pp = items.reduce((s, i) => s + i.stats.physical_power, 0);
+      const critChance = items.reduce((s, i) => s + i.stats.critical_chance, 0);
+      const base = kit.baseStats.physical_power[level - 1] ?? 0;
 
-        // crit envelope: needs real crit chance and a physical hero
-        if (critChance >= 20 && p.largest_critical_strike && p.largest_critical_strike > 50) {
-          const predBonus = base + (kit.basicScalingPct / 100) * pp;
-          const predTotal = (base + pp) * (kit.basicScalingPct / 100) + base; // total-power reading
-          if (predBonus > 0) critRatiosBonus.push(p.largest_critical_strike / predBonus);
-          if (predTotal > 0) critRatiosTotal.push(p.largest_critical_strike / predTotal);
-          used++;
-        }
+      // crit envelope: needs real crit chance and a physical hero
+      if (critChance >= 20 && p.largest_critical_strike && p.largest_critical_strike > 50) {
+        const predBonus = base + (kit.basicScalingPct / 100) * pp;
+        const predTotal = (base + pp) * (kit.basicScalingPct / 100) + base; // total-power reading
+        if (predBonus > 0) critRatiosBonus.push(p.largest_critical_strike / predBonus);
+        if (predTotal > 0) critRatiosTotal.push(p.largest_critical_strike / predTotal);
+        used++;
+      }
 
-        // mitigation share vs estimated final armor
-        if (p.total_damage_taken && p.total_damage_mitigated != null && p.total_damage_taken > 1000) {
-          const armor =
-            ((kit.baseStats.physical_armor[level - 1] ?? 0) + (kit.baseStats.magical_armor[level - 1] ?? 0)) / 2 +
-            items.reduce((s, i) => s + (i.stats.physical_armor + i.stats.magical_armor) / 2, 0);
-          const share = p.total_damage_mitigated / (p.total_damage_taken + p.total_damage_mitigated);
-          const bucket = Math.round(armor / 20) * 20;
-          let b = mitBuckets.get(bucket);
-          if (!b) { b = { share: [], armor: [] }; mitBuckets.set(bucket, b); }
-          b.share.push(share);
-          b.armor.push(armor);
-        }
+      // mitigation share vs estimated final armor
+      if (p.total_damage_taken && p.total_damage_mitigated != null && p.total_damage_taken > 1000) {
+        const armor =
+          ((kit.baseStats.physical_armor[level - 1] ?? 0) + (kit.baseStats.magical_armor[level - 1] ?? 0)) / 2 +
+          items.reduce((s, i) => s + (i.stats.physical_armor + i.stats.magical_armor) / 2, 0);
+        const share = p.total_damage_mitigated / (p.total_damage_taken + p.total_damage_mitigated);
+        const bucket = Math.round(armor / 20) * 20;
+        let b = mitBuckets.get(bucket);
+        if (!b) { b = { share: [], armor: [] }; mitBuckets.set(bucket, b); }
+        b.share.push(share);
+        b.armor.push(armor);
       }
     }
-    url = body.cursor ? `https://omeda.city/matches.json?per_page=100&timestamp=${ts}&cursor=${encodeURIComponent(body.cursor)}` : null;
-    await sleep(150);
   }
 
-  console.log(`sample: ${page} pages, ${used} crit-capable players\n`);
+  console.log(`sample: ${matches.length} matches over ${requests} requests, ${used} crit-capable players\n`);
   for (const [label, arr] of [['bonus-only scaling', critRatiosBonus], ['total-power scaling', critRatiosTotal]] as const) {
     const s = [...arr].sort((a, b) => a - b);
     console.log(`crit ratio (${label}): n=${s.length} p50=${quantile(s, 0.5).toFixed(2)} p90=${quantile(s, 0.9).toFixed(2)} p97=${quantile(s, 0.97).toFixed(2)} p99=${quantile(s, 0.99).toFixed(2)} p99.5=${quantile(s, 0.995).toFixed(2)}`);

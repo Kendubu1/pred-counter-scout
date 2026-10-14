@@ -51,9 +51,9 @@ Your two jobs:
 
 ## Where the game knowledge lives (read these as needed)
 
-- **Kits & abilities** (current patch): `data/omeda/heroes.json` — per-ability
+- **Kits & abilities** (current patch): `data/catalog/heroes.json` (pred.gg, current patch) — per-ability
   damage, scaling, cooldowns, costs, AoE/execute flags.
-- **Items & passives**: `data/omeda/items.json`; curated effect mechanics in
+- **Items & passives**: `data/catalog/items.json`; curated effect mechanics in
   `engine/fixtures/effects.json`.
 - **Eternals (1 major + 2×(1-of-3) minors)**: `data/game-data/eternals.json` —
   the minor sub-options and their descriptions live here; major mechanics also in
