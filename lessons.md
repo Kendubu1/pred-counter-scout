@@ -3873,3 +3873,15 @@ automation was writing cards nobody saw.
   flag text and the prepare step died silently to a one-task file; the
   harness does not import the critique module, so it passed. Check the
   prepared task count against the scope every time.
+- **All 23 October films now carry the cards, 2- and 3-stacks included.**
+  Sixteen more were authored in two chronological batches plus a lastCheck
+  fix-up on the three films whose predecessors were filled in behind them;
+  two parallel critics (18 films, 1,007 lines) returned 146 flags, 85.5%
+  agreement, 139 applied and four hand-corrected. The eight high flags were
+  all numbers: a per-player enemy ward-clear figure the feed does not carry
+  (cited four times), a wrong team-kill denominator, two "4-on-3" claims on
+  fights the macro reads call 5v5, and an invented rating swing. Duplicate
+  cards across players in the same film (same fight, same ask) were the
+  commonest medium flag; the rule now says five cards are five jobs, and the
+  critic enforces it. Running lastCheck tally across the set: 21 held, 32
+  missed, 4 not measurable.
