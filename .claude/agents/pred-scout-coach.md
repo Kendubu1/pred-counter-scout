@@ -398,11 +398,10 @@ The page may reveal detail progressively; the copy itself must be selective.
 
 - Keep existing fields for compatibility. Add `focus` as one short,
   checkable team action for the next game, and `microReads` keyed by our
-  player IDs. Each `microReads[pid]` has `keep` (optional), `change`
-  (optional), and `receipt` (the exact match fact supporting that read).
-  These are game-specific decisions visible in the feed: death before an
-  objective, joining or missing a fight, ward contribution, first engage,
-  role task, or damage/objective conversion.
+  player IDs: the Keep / Change / Check card (maintainer rule, 2026-10-14,
+  below). These are game-specific decisions visible in the feed: death
+  before an objective, joining or missing a fight, ward contribution, first
+  engage, role task, or damage/objective conversion.
 - “Micro” means a small decision the match data can prove. The feed cannot
   prove aim, ability timing, spacing between events, ward placement quality,
   or intent. Do not invent those from KDA or totals. Say “not visible in this
@@ -418,8 +417,9 @@ The page may reveal detail progressively; the copy itself must be selective.
   language, naming the objective and who took it.
 - Player feedback is not a KDA leaderboard. Give each player at most one
   strength and one correction. Use role-specific evidence; do not grade a
-  support on the solo-lane simulation or a jungler on gank count. A player
-  can have “nothing to fix from this match.”
+  support on the solo-lane simulation or a jungler on gank count. "Nothing
+  to fix" is retired: every player gets a Change in every result (see the
+  Keep / Change / Check rule).
 - Builds explain outcomes only when the facts connect a build difference to
   a tested fight or objective. Separate (1) what was built, (2) the trade-off
   versus the recommended core, and (3) what the match proves. If it cannot
@@ -430,9 +430,50 @@ The page may reveal detail progressively; the copy itself must be selective.
   verb has a source fact. Drop a claim that cannot pass this check. Never
   rely on the critic to repair fabricated specifics after generation.
 - Do not force a full review after a stomp. A stomp can earn one swing, one
-  standout lesson, and “nothing to fix here” for the rest. A close loss may
-  need more detail, but still only one team focus.
+  standout lesson, and short player cards for the rest, but every card
+  still carries a Change and a Check. A close loss may need more detail,
+  but still only one team focus.
 
+
+## Keep / Change / Check: every player, every result (maintainer rule, 2026-10-14)
+
+The maintainer's read of the last five-stack films: two or three of five
+player cards were "keep" only, "nothing to fix" appeared in four of five
+reviews, and the same "build the resist item the matchup flag calls for"
+line was pasted three games running. A review where some players leave
+with nothing to adjust is not a review; a card that could be pasted into
+another game is not about this match.
+
+`microReads[pid]` is required for all five of our players, in wins and
+losses alike, shaped:
+
+- `keep` (≤25 words): one strength from THIS match with its fact inline.
+- `change` (≤35 words, required): one decision the feed shows this player
+  making in THIS match, and what to do instead. It is the player's slice of
+  the team `focus`: when the team lesson is "the base is the objective", the
+  carry's Change is who ends the game, mid's is who holds the wave, the
+  offlane's is the side push, the jungler's is the death before the
+  objective, the support's is vision. A Change must name an event or count
+  from this film (the minute, the fight, the structure, the ward total). A
+  stat restated as an instruction ("die less", "deal more damage"), a build
+  flag copied from `matchupItemFlags`, or a sentence that fits any game is
+  not a Change. When the player's yardstick was met, the Change is the next
+  thing the role owes the team, still anchored to an event in this film.
+- `check` (≤20 words, required): the number or event the NEXT film will be
+  graded on, measurable in this feed: solo deaths before 10, wards
+  destroyed, objective damage, a structure within 90 seconds of a won
+  fight, deaths inside 60 seconds of an enemy major. Never aim, spacing,
+  timing or intent.
+- `receipt` (≤40 words): the exact facts behind keep and change.
+- `lastCheck` (when the SOURCE carries PREVIOUS CHECKS for this player):
+  `{ text, result: "held" | "missed" | "not measurable", receipt }` — the
+  previous film's Check graded against this film's facts, in one line,
+  before anything new. The page shows it first.
+
+Five cards must read as five different jobs that add up to the one team
+focus. The critic flags a missing Change or Check, a Change that restates a
+stat or a build flag, a Check the feed cannot measure, and a card that
+repeats another player's card or the previous film's card verbatim.
 
 ## Rotation and lane-pressure audit (2026-09-29)
 

@@ -76,7 +76,10 @@ not in the env, stop immediately and report — no partial work.
    buildReads teaching layer (gained-vs-lost reasoning per player); when the
    facts carry `interrogation.upset.isUpset` (a loss the stat sheet says we
    should have won) the block MUST also carry `deepDive` (coach spec
-   "Upset losses get a deep dive") — then run the
+   "Upset losses get a deep dive"); every film carries a Keep / Change /
+   Check card per squad player in `microReads` (coach spec, 2026-10-14:
+   a Change and a measurable Check for all five in every result, and
+   `lastCheck` grading the previous film's Check) — then run the
    independent critique loop SCOPED TO THE NEW GAMES ONLY:
    `COACH_GAMES=<id,id,...> COPY_MODE=prepare npm run coach:critique:prepare`,
    the independent critic pass, `COACH_GAMES=<same ids> npm run coach:critique`,

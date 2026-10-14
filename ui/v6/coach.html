@@ -149,6 +149,8 @@
   .tile .lbl { font-size:.72rem; color:var(--text-1); margin-top:.1rem; }
   .tile .read { font-size:.68rem; color:var(--text-2); margin-top:.25rem; line-height:1.4; }
   .whyd { margin:.1rem 0 .25rem .1rem; }
+  .kcc { margin:.35rem 0 .2rem; padding:.4rem .6rem; border:1px solid var(--border); border-radius:8px; background:var(--bg-1); }
+  .kcc .lrow { margin:.12rem 0; }
   .whyd>summary { cursor:pointer; list-style:none; font-size:.7rem; color:var(--accent); }
   .whyd>summary::before { content:"▸ "; }
   .whyd[open]>summary::before { content:"▾ "; }
@@ -814,6 +816,13 @@ function pgReview(f) {
         ${br?.build ? `<details class="whyd"><summary>why — what this build gained vs gave up</summary><div>${esc(br.build)}</div></details>` : ''}
         <div class="lrow" data-et-slug="${esc(p.heroSlug)}" data-et-role="${esc(p.role)}" data-et-opp="${lane ? esc(lane.theirSlug) : ''}"><span class="ltag">eternal</span><span style="opacity:.6">loading the engine's pick…</span></div>
         ${br?.eternal ? `<details class="whyd"><summary>why — why this loadout fits the matchup</summary><div>${esc(br.eternal)}</div></details>` : ''}
+        ${(() => { const m = co && co.microReads ? co.microReads[p.pid] : null; if (!m || !(m.keep || m.change || m.check)) return ''; return `<div class="kcc">
+          ${m.lastCheck && m.lastCheck.text ? `<div class="lrow"><span class="ltag" style="color:${m.lastCheck.result === 'held' ? 'var(--green)' : m.lastCheck.result === 'missed' ? 'var(--red)' : 'var(--text-2)'}">last check · ${esc(m.lastCheck.result || '')}</span>${esc(m.lastCheck.text)}${m.lastCheck.receipt ? ` <span style="color:var(--text-2)">(${esc(m.lastCheck.receipt)})</span>` : ''}</div>` : ''}
+          ${m.keep ? `<div class="lrow"><span class="ltag" style="color:var(--green)">keep</span>${esc(m.keep)}</div>` : ''}
+          ${m.change ? `<div class="lrow"><span class="ltag" style="color:var(--gold)">change</span><b>${esc(m.change)}</b></div>` : ''}
+          ${m.check ? `<div class="lrow"><span class="ltag">check</span>${esc(m.check)}</div>` : ''}
+          ${m.receipt ? `<div class="lrow" style="color:var(--text-2);font-size:.74rem"><span class="ltag">receipt</span>${esc(m.receipt)}</div>` : ''}
+        </div>`; })()}
         ${v && v.text ? `<div class="vline ${v.mood === 'pos' ? 'pos' : 'neg'}"><span class="ltag">verdict</span>${esc(v.text)}</div>` : ''}
       </div>
     </div>`;
