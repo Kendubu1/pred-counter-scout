@@ -1,170 +1,98 @@
 {
- "generatedAt": "2026-10-15T04:11:48.490Z",
+ "generatedAt": "2026-10-15T05:11:45.245Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
- "reviewedLines": 56,
- "flaggedLines": 26,
- "agreementRate": 0.536,
- "rewritesGrounded": 25,
+ "reviewedLines": 55,
+ "flaggedLines": 14,
+ "agreementRate": 0.745,
+ "rewritesGrounded": 14,
  "rewritesDropped": 0,
- "applied": 23,
- "unmatched": 2,
+ "applied": 14,
+ "unmatched": 0,
  "games": {
-  "4b6784f9-6519-445e-802d-c62dcf6830e4": [
+  "59d9b8fb-9780-45d7-bb98-8b406bc64d6d": [
    {
-    "quote": "We dropped three straight fights from 20 to 35 minutes, then closed with a 5-1 ace that took the core.",
-    "severity": "high",
-    "issue": "ungrounded count/sequence",
-    "rewrite": "We lost four fights between 22.4 and 34.6 (two of them game-defining), with wins at 27.1 and 32 mixed in, then closed with a 5-1 ace at their Inhibitor at 40.2 that opened the Core a minute later."
-   },
-   {
-    "quote": "The duo lane set the tone early — first blood and first Fangtooth both ours, four enemy duo deaths before ten to our one. A solo death at 20.1 cost two towers, then two game-defining fights were lost at 22.4 and 24.4 while Murdock sat ahead in lane both times instead of joining. Fights turned from 27.1; a 5-1 ace at 40.2 took the Inhibitor and Core to close it.",
+    "quote": "The lane sheet read unfavored early in the carry, offlane, and jungle matchups, and favored in mid and support, but first blood came to us at 2.6 when Khaimera caught Wraith. Kallari was caught out 1.3 minutes later. The game turned at 11.2: three of us won 4-1 at their Outer Tower while Murdock and Khaimera were elsewhere as we took the Mini Prime across the map - two prizes at once. We gave one back at 13.5, losing a contested Fangtooth fight 2-3 after Murdock's solo death at 12.8 and a second death from Sparrow inside the fight. From there it was one-sided: a 3-1 win at their Inhibitor at 19.7, then the match-ending push through Fangtooth between 21.1 and 22.0 that finished the game 6 towers to 0 in 22 minutes.",
     "severity": "low",
-    "issue": "three timestamps in one sentence",
-    "rewrite": "The duo lane set the tone early — first blood and first Fangtooth both ours, four enemy duo deaths before ten to our one. A solo death at 20.1 cost two towers. Then two game-defining fights were lost at 22.4 and 24.4 while Murdock sat ahead in lane both times instead of joining. Fights turned from 27.1; a 5-1 ace at 40.2 took the Inhibitor and Core to close it."
+    "issue": "readability: three timestamps (19.7, 21.1, 22.0) in one sentence",
+    "rewrite": "The lane sheet read unfavored early in the carry, offlane, and jungle matchups, and favored in mid and support, but first blood came to us at 2.6 when Khaimera caught Wraith. Kallari was caught out 1.3 minutes later. The game turned at 11.2: three of us won 4-1 at their Outer Tower while Murdock and Khaimera were elsewhere as we took the Mini Prime across the map - two prizes at once. We gave one back at 13.5, losing a contested Fangtooth fight 2-3 after Murdock's solo death at 12.8 and a second death from Sparrow inside the fight. From there it was one-sided: a 3-1 win at their Inhibitor at 19.7 put the game out of reach. The match-ending push through Fangtooth at 21.1 and 22.0 finished the game 6 towers to 0 in 22 minutes."
    },
    {
-    "quote": "The two lost fights at 22.4 and 24.4 while Murdock stayed ahead in lane instead of rotating in — each one flipped from a joinable number-advantage into a clean loss that cost towers and a Fangtooth.",
-    "severity": "low",
-    "issue": "overstated plural (only one tower ties to this window)",
-    "rewrite": "The two lost fights at 22.4 and 24.4 while Murdock stayed ahead in lane instead of rotating in — each one flipped from a joinable number-advantage into a clean loss, and the 24.4 loss cost the Outer Tower at 24.7 and the Fangtooth at 25.5."
-   },
-   {
-    "quote": "The support's night: 1 kill, 3 deaths, 18 assists, 22,452 healing, and 13 wards against an 8.3 norm — but two late solo catches (30.6, 32.8) each cost a structure.",
+    "quote": "Lt. Belica's favored midlane (even early, ours late) delivered 3 kills and 5 assists with zero caught-out deaths across the 22 minutes, though he sat out the 19.7 Inhibitor fight the team won 3-1 while flagged winning his own lane.",
     "severity": "high",
-    "issue": "fabricated ward norm; 32.8 catch not tied to any structure in the data",
-    "rewrite": "The support's night: 1 kill, 3 deaths, 18 assists, 22,452 healing, and 13 wards placed — but the solo catch at 30.6 alone cost Primal Fangtooth and the Inner Tower; the 32.8 catch isn't tied to a lost structure in the data."
+    "issue": "unprovable absence claim: the 19.7 skirmish roster is built from kill/death credits only (FIGHT PRESENCE RULE); Lt. Belica has 5 match assists untimestamped, so 'sat out' is not provable",
+    "rewrite": "Lt. Belica's favored midlane (even early, ours late) delivered 3 kills and 5 assists with zero caught-out deaths across the 22 minutes, credited in 4 of 8 team skirmishes overall."
    },
    {
-    "quote": "Khaimera's lane read favored all game, and he led the team in objective damage (30,078), but 9 deaths — the team high — came inside fights already lost (24.4, 31) before he fell.",
+    "quote": "Sparrow's carry lane read unfavored early but evened out, and she finished with the team's most kills (10) across 3 deaths, including the opening pick on Drongo at 7 - though she was caught out twice, at 9 by Wraith and again inside the lost Fangtooth fight at 13.9.",
+    "severity": "high",
+    "issue": "method: the 13.9 death is listed in DEATH COST SPLIT as a death inside a lost fight (the team's call to take it), not a solo catch; only the 9m death is her own receipt, but this line labels both 'caught out'",
+    "rewrite": "Sparrow's carry lane read unfavored early but evened out, and she finished with the team's most kills (10) across 3 deaths, including the opening pick on Drongo at 7 - though she was caught out solo at 9 by Wraith, and died again at 13.9 inside the lost Fangtooth fight the team chose to contest down a player."
+   },
+   {
+    "quote": "Kallari's support lane read favored early (ours early, theirs late) and she finished with the team's most assists (7) and 11,999 damage mitigated, but she was caught out twice, at 3.9 and again at 19, and only Rebirth of her core ever completed, with no armor against a comp that ran 3 physical.",
+    "severity": "high",
+    "issue": "role misread: opens by grading the support on the 1v1 lane-read row, which the SOURCE says is a sim that never happens for supports - grade on participation/wards/healing/mitigation/deaths instead",
+    "rewrite": "Kallari finished with the team's most assists (7), 3,251 healing and 11,999 damage mitigated, but she was caught out twice, at 3.9 and again at 19, and only Rebirth of her core ever completed, with no armor against a comp that ran 3 physical."
+   },
+   {
+    "quote": "Zero caught-out deaths all game and a favored lane produced 3 kills and 5 assists, even missing one big teamfight.",
     "severity": "med",
-    "issue": "overgeneralized causation (several of his 9 deaths were in won/drawn fights or a solo catch, not just lost fights)",
-    "rewrite": "Khaimera's lane read favored all game, and he led the team in objective damage (30,078), but his 9 deaths — the team high — include the lost fights at 24.4 and 31, a solo catch at 14.1, and one inside the won fight at 39 — a mixed picture, not uniformly inside lost fights."
+    "issue": "unprovable absence claim ('missing one big teamfight' repeats the unproven 19.7 absence)",
+    "rewrite": "Zero caught-out deaths all game and a favored lane produced 3 kills and 5 assists, credited in 4 of 8 team skirmishes."
    },
    {
-    "quote": "On a near-first-time hero (4 games), Revenant finished 14 kills and 3 deaths, took first blood on Legion at 3.7, and anchored the duo lane that went 1 death to their 4 before ten.",
-    "severity": "high",
-    "issue": "fabricated hero-experience count (no prior-films data exists for this player in source)",
-    "rewrite": "Revenant finished 14 kills and 3 deaths, took first blood on Legion at 3.7, and anchored the duo lane that went 1 death to their 4 before ten."
-   },
-   {
-    "quote": "Strong vision and healing numbers, but two late solo catches (30.6, 32.8) each cost the team a structure.",
-    "severity": "high",
-    "issue": "32.8 catch not tied to any structure in the data",
-    "rewrite": "Strong vision and healing numbers, but the solo catch at 30.6 cost the team Primal Fangtooth and the Inner Tower."
-   },
-   {
-    "quote": "14 kills and 3 deaths on a hero he's barely played — first blood, and the carry lane the team won.",
-    "severity": "high",
-    "issue": "fabricated hero-experience claim, no source data for this player",
-    "rewrite": "14 kills and 3 deaths — first blood, and the carry lane the team won."
-   },
-   {
-    "quote": "Opened 4v5 with Zinx already dead 27 seconds earlier — a fight to decline, not take, with the numbers already lost.",
+    "quote": "Team-high 10 kills carried a lane that opened unfavored, though two separate catches cost tempo along the way.",
     "severity": "med",
-    "issue": "repeated 'not X, Y' maxim (third+ use in review)",
-    "rewrite": "Opened 4v5 with Zinx already dead 27 seconds earlier — the numbers were already lost before the fight started."
+    "issue": "method: labels both the 9m solo catch and the 13.9m in-fight death as 'catches'; the SOURCE marks the 13.9 death as inside a lost fight, not an individual catch",
+    "rewrite": "Team-high 10 kills carried a lane that opened unfavored, though a solo catch at 9 cost tempo, and a second death came inside the lost Fangtooth fight at 13.9."
    },
    {
-    "quote": "A coin-flip fight with nothing up and Willy pinned in a losing lane — the better call was resetting for vision, not contesting it.",
+    "quote": "A 3-1 win at their Inhibitor put the game out of reach; towers kept falling our way for the rest of the match.",
     "severity": "med",
-    "issue": "repeated 'not X, Y' maxim (third+ use in review)",
-    "rewrite": "A coin-flip fight with nothing up and Willy pinned in a losing lane — resetting for vision was the better call than contesting it."
+    "issue": "ungrounded: the structure event list shows no tower event after the 19.8 Inhibitor take - nothing fell 'for the rest of the match' beyond it",
+    "rewrite": "A 3-1 win at their Inhibitor at 19.7 capped our sweep of towers and structures, 6-0, for the match."
    },
    {
-    "quote": "Lost 2-4 at their Outer Tower while Murdock sat ahead in lane — shoving in there flips the fight, not holding the wave.",
+    "quote": "Kallari's only completed item was Rebirth, missing the full core (Malady, Vanquisher, Spear Of Desolation) with no armor against a comp that ran 3 physical - the same flag the file raises - and both her catches, at 3.9 and 19, came from physical damage dealers.",
     "severity": "med",
-    "issue": "repeated 'not X, Y' maxim (third+ use in review)",
-    "rewrite": "Lost 2-4 at their Outer Tower while Murdock sat ahead in lane — shoving the wave and rotating in flips that fight."
+    "issue": "readability: internal-artifact voice ('the file raises')",
+    "rewrite": "Kallari's only completed item was Rebirth, missing the full core (Malady, Vanquisher, Spear Of Desolation) with no armor against a comp that ran 3 physical, and both her catches, at 3.9 and 19, came from physical damage dealers."
    },
    {
-    "quote": "On-core build — Lightning Hawk, Vanquisher, and Imperator all completed, matching the meta exactly — so there's no item gap to read here; the two lost fights at 22.4 and 24.4 were a rotation call, not a build one.",
+    "quote": "Team-high 10 kills and the final blow that ended the game at 22.0.",
     "severity": "med",
-    "issue": "repeated 'not X, Y' maxim (third+ use in review)",
-    "rewrite": "On-core build — Lightning Hawk, Vanquisher, and Imperator all completed, matching the meta exactly — so there's no item gap to read here; the two lost fights at 22.4 and 24.4 were a rotation call."
+    "issue": "causation: SOURCE only shows this was the last kill recorded at the same minute the match ended, not that this kill ended the game",
+    "rewrite": "Team-high 10 kills, including the last kill of the match, on Zarus at 22.0."
    },
    {
-    "quote": "On-core build — Vanquisher, Imperator, and Terminus all completed, matching the meta exactly — on a hero he's played only 4 times; nothing to fix in the items this game.",
+    "quote": "Absent from the 19.7 Inhibitor teamfight (won 3-1 without him) while flagged winning his own lane - shove the wave and join when a game-defining fight is forming nearby, even from ahead.",
     "severity": "high",
-    "issue": "fabricated hero-experience count, no source data for this player",
-    "rewrite": "On-core build — Vanquisher, Imperator, and Terminus all completed, matching the meta exactly; nothing to fix in the items this game."
+    "issue": "unprovable absence claim used as the basis for a player-card 'change' - kill/death credit absence at 19.7 does not prove he wasn't present (FIGHT PRESENCE RULE; he has 5 match assists untimestamped)",
+    "rewrite": "Credited in only 4 of 8 team skirmishes despite a midlane that favored him late - push to show up in more of the game's contested fights once ahead."
    },
    {
-    "quote": "10 kills, won his lane, but missed two lost game-defining fights (22.4, 24.4).",
-    "severity": "low",
-    "issue": "near-verbatim duplicate of the Murdock conclusion stated twice elsewhere, no added purpose",
-    "rewrite": null
-   },
-   {
-    "quote": "18 assists and 22,452 healing, but two late solo catches (30.6, 32.8) cost structures.",
+    "quote": "Credited in 4 of 8 skirmishes (11.2, 13.5, 16.3, 21.1); absent from the 19.7 Inhibitor fight while flagged winning lane; finished 3 kills, 3 deaths, 5 assists, zero caught-out deaths.",
     "severity": "high",
-    "issue": "32.8 catch not tied to any structure in the data",
-    "rewrite": "18 assists and 22,452 healing, but the solo catch at 30.6 cost two structures (Primal Fangtooth, Inner Tower)."
+    "issue": "unprovable absence claim plus four timestamps stacked in one sentence",
+    "rewrite": "Credited in 4 of 8 team skirmishes; finished 3 kills, 3 deaths, 5 assists, zero caught-out deaths across the 22 minutes."
    },
    {
-    "quote": "22,452 healing and 18 assists, with 13 wards against the 8.3 norm — the strongest vision output on the team.",
+    "quote": "Caught out twice, at 9 by Wraith and again at 13.9 inside the lost Fangtooth fight by Kwang - hold position near teammates once the enemy jungler is unaccounted for.",
     "severity": "high",
-    "issue": "fabricated ward norm not in source",
-    "rewrite": "22,452 healing and 18 assists, with 13 wards placed to their support's 14 — comparable vision output on the team."
+    "issue": "method: this player-card 'change' blames a personal positioning lapse for the 13.9 death, but DEATH COST SPLIT attributes that death to the team's call to take the fight, not an individual catch",
+    "rewrite": "Caught out solo at 9 by Wraith - the game's only death that's her own receipt, since the 13.9 death came inside the team's choice to contest a losing Fangtooth fight - hold position near teammates once the enemy jungler is unaccounted for."
    },
    {
-    "quote": "Two late solo catches (30.6 to Crunch, 32.8 to Argus) each cost a structure (Primal Fangtooth/Inner Tower, Outer Tower) — hold position once a fight is lost, don't wander alone after.",
-    "severity": "high",
-    "issue": "fabricated structure cost for the 32.8 catch (no Outer Tower event near that timestamp)",
-    "rewrite": "The solo catch by Crunch at 30.6 cost Primal Fangtooth at 31 and the Inner Tower at 31.5 — hold position once a fight is lost, don't wander alone after."
-   },
-   {
-    "quote": "Alive and ahead in lane at both the 22.4 (lost 2-4) and 24.4 (lost 0-3) game-defining fights without joining — shove the wave and rotate in once the macro call flags it.",
+    "quote": "Caught out solo at 9 (by Wraith) and again at 13.9 inside the lost Fangtooth fight (by Kwang); finished 10 kills, 3 deaths, 1 assist, 18,341 hero damage; lane read theirs early, even late.",
     "severity": "med",
-    "issue": "internal field name ('macro call') leaked into prose",
-    "rewrite": "Alive and ahead in lane at both the 22.4 (lost 2-4) and 24.4 (lost 0-3) game-defining fights without joining — shove the wave and rotate in once a team fight is forming nearby."
+    "issue": "method: 'and again' labels the 13.9 in-fight death as a repeat solo catch, contradicting DEATH COST SPLIT's distinction between a solo death and a death inside a lost fight",
+    "rewrite": "Caught out solo at 9 (by Wraith); died again at 13.9 inside the lost Fangtooth fight (by Kwang), the team's call to contest it; finished 10 kills, 3 deaths, 1 assist, 18,341 hero damage; lane read theirs early, even late."
    },
    {
-    "quote": "9 of 19 skirmishes credited (4.9, 6.3, 8.1, 8.9, 31, 34.6, 36.8, 39, 40.2); absent at 22.4 and 24.4 while flagged alive and ahead in lane in both.",
-    "severity": "low",
-    "issue": "nine timestamps stacked in one sentence",
-    "rewrite": "9 of 19 skirmishes credited; absent at 22.4 and 24.4 while flagged alive and ahead in lane in both."
-   },
-   {
-    "quote": "CS/min 10 and hero damage/min 1,159, both well above the 6.9/718 norms, in a lane that went from losing to even by late game.",
+    "quote": "7 assists, the most on the team, built up over a favored early support lane (ours early, theirs late).",
     "severity": "high",
-    "issue": "fabricated CS and benchmark norms not present anywhere in source",
-    "rewrite": "47,510 hero damage over the match (about 1,159/min), in a lane that went from losing to even by late game."
-   },
-   {
-    "quote": "A solo catch at 20.1 cost two towers back to back (20.5, 20.6) — the single costliest death of the game; don't push alone once a fight is down.",
-    "severity": "med",
-    "issue": "unsupported premise — no team fight loss immediately preceded this solo catch",
-    "rewrite": "A solo catch at 20.1 cost two towers back to back (20.5, 20.6) — the single costliest death of the game; avoid pushing alone in the midlane."
-   },
-   {
-    "quote": "Caught alone by Argus at 20.1, costing the Inner Tower at 20.5 and Outer Tower at 20.6 within a minute; finished 10 CS/min and 1,159 hero damage/min, both above norm.",
-    "severity": "high",
-    "issue": "fabricated CS and benchmark norm not present anywhere in source",
-    "rewrite": "Caught alone by Argus at 20.1, costing the Inner Tower at 20.5 and Outer Tower at 20.6 within a minute; finished 47,510 hero damage over the match (about 1,159/min)."
-   },
-   {
-    "quote": "last check: \"No 'alive and ahead in lane, didn't join' flags in the next film.\" → held (The one macro note naming Willy Guggenheim this film (8.1) reads 'alive but losing lane and pinned' — a different category than the absence flag being tracked; zero instances of that specific flag against him.)",
-    "severity": "med",
-    "issue": "miscounts the macro notes (there are two naming him — 8.1 and 34.6 — not one)",
-    "rewrite": "last check: \"No 'alive and ahead in lane, didn't join' flags in the next film.\" → held (The two macro notes naming Willy Guggenheim this film — 8.1 'alive but losing lane and pinned' and 34.6 'was dead' — are each a different category than the absence flag being tracked; zero instances of that specific flag against him.)"
-   },
-   {
-    "quote": "5 completed items (Ashbringer, Claw Of Hermes, Draconum, Sky Splitter, Tainted Blade), missing all of Overlord, Basilisk, Rapture; 9 deaths, 381 hero damage/min vs the 632 norm; 7 wards placed.",
-    "severity": "high",
-    "issue": "fabricated benchmark norm not present in source",
-    "rewrite": "5 completed items (Ashbringer, Claw Of Hermes, Draconum, Sky Splitter, Tainted Blade), missing all of Overlord, Basilisk, Rapture; 9 deaths; 15,623 hero damage (about 381/min); 7 wards placed."
-   },
-   {
-    "quote": "14 kills and 3 deaths (kda 7.7) on a near-first-time hero (4 games), anchoring a carry lane that read even early, ours late.",
-    "severity": "high",
-    "issue": "fabricated hero-experience count, no source data for this player",
-    "rewrite": "14 kills and 3 deaths (kda 7.7), anchoring a carry lane that read even early, ours late."
-   },
-   {
-    "quote": "All 3 deaths came to the same hero, Legion — including the opening exchange at 3.7 and the lost fight at 24.4; respect his follow-up and don't extend trades once he's engaged.",
-    "severity": "med",
-    "issue": "execution/intent claim the data cannot show",
-    "rewrite": "All 3 deaths came to the same hero, Legion — at 3.7, 22.8, and 24.4; this matchup is worth drafting or playing around more directly next time it repeats."
+    "issue": "role misread: frames the support's assist total around the 1v1 lane-read row instead of participation/healing/mitigation",
+    "rewrite": "7 assists, the most on the team, alongside 3,251 healing and 11,999 damage mitigated."
    }
   ]
  }
