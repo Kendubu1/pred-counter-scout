@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { loadData } from '../src/data.js';
+import { orderBuild } from '../src/matchup.js';
 import { generateBuilds } from '../src/search.js';
 import { itemTotals, loadCalibration, stagedManaAdequacy } from '../src/sim.js';
 import type { HeroKit, Item } from '../src/types.js';
@@ -50,5 +51,27 @@ describe('purchase order survives item-set deduplication', () => {
       expect(build.items.slice(0, 3)).toContain(anti.name);
       expect(adequacy(build.items, pool)).toBe(1);
     }
+  });
+});
+
+
+describe('displayed purchase order preserves search mana adequacy', () => {
+  it('cannot move the mana source behind the damage item', () => {
+    const result = orderBuild(kit, [mana, damage, defense], 13, cal);
+    expect(result.ordered[0]).toBe(mana);
+    expect(stagedManaAdequacy(kit, result.ordered)).toBe(1);
+    expect(result.cumulativeGold).toEqual([100, 200, 300]);
+  });
+  it('never lowers input adequacy across every small-pool permutation', () => {
+    for (const input of permutations([damage, mana, defense])) {
+      const result = orderBuild(kit, input, 13, cal);
+      expect(stagedManaAdequacy(kit, result.ordered)).toBeGreaterThanOrEqual(stagedManaAdequacy(kit, input));
+      expect(result.ordered.map(i => i.slug).sort()).toEqual(input.map(i => i.slug).sort());
+    }
+  });
+  it('keeps combat-per-gold ordering for resourceless kits and handles empty builds', () => {
+    const freeKit: HeroKit = { ...kit, resource: 'other' };
+    expect(orderBuild(freeKit, [mana, damage], 13, cal).ordered).toEqual([damage, mana]);
+    expect(orderBuild(kit, [], 13, cal)).toEqual({ ordered: [], cumulativeGold: [] });
   });
 });

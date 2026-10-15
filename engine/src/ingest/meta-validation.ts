@@ -38,7 +38,7 @@ const out={
     'Current patch item marginals cannot reconstruct joint builds or purchase order. No synthetic build observations are invented.',
     'Same gold CAP is not identical spending: completed-item prefixes preserve purchase order and report residual gold; components are unmodeled.',
     'All scenarios exclude Eternals and augments equally and use the engine reference defenses. Conditional effects and unsupported mechanics remain incomplete.',
-    'Candidate timelines use a separate marginal-combat-per-gold ordering heuristic, which can reorder the mana-aware search result. Early mana sustainability of those displayed prefixes is not validated.',
+    'Candidate timelines use marginal combat gain per gold while preserving the input search order\'s staged mana adequacy. That mana target and its stage levels remain heuristics, not measured sustainable rotations.',
     'This evidence has been inspected during development and is not a held-out evaluation. No predicted win probability or causal build advantage is reported.',
     'Future validation must freeze model/predictions before collecting a later patch-matched ranked sample, preserve match IDs for split isolation, and separate hero/role/rank/opponent/duration/completion cohorts.',
   ],

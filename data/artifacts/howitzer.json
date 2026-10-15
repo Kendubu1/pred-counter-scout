@@ -10,16 +10,24 @@
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
-   "the sim opens on Oathkeeper, which the field rarely builds (2.7% pick) — a sim-only call; compare the meta cores below"
+   "the sim opens on Combustion, which the field has tried and lost with (-0.6% winrate over 149 games) — treat this opener as a sim blind-spot and weight the field"
   ]
  },
  "build": {
   "title": "Magical Teamfight",
   "items": [
    {
+    "name": "Combustion",
+    "slug": "combustion",
+    "spikeMinute": 9,
+    "playRatePct": 44.1,
+    "evidenceDeltaWr": -0.6,
+    "evidenceN": 149
+   },
+   {
     "name": "Oathkeeper",
     "slug": "oathkeeper",
-    "spikeMinute": 9,
+    "spikeMinute": 16,
     "playRatePct": 2.7,
     "evidenceDeltaWr": null,
     "evidenceN": null
@@ -27,7 +35,7 @@
    {
     "name": "Spirit Of Amir",
     "slug": "spirit-of-amir",
-    "spikeMinute": 15,
+    "spikeMinute": 21,
     "playRatePct": 0,
     "evidenceDeltaWr": null,
     "evidenceN": null
@@ -35,7 +43,7 @@
    {
     "name": "Wraith Leggings",
     "slug": "wraith-leggings",
-    "spikeMinute": 21,
+    "spikeMinute": 27,
     "playRatePct": 34.9,
     "evidenceDeltaWr": 0.3,
     "evidenceN": 118
@@ -43,7 +51,7 @@
    {
     "name": "Oblivion Crown",
     "slug": "oblivion-crown",
-    "spikeMinute": 27,
+    "spikeMinute": 32,
     "playRatePct": 15.7,
     "evidenceDeltaWr": 1.7,
     "evidenceN": 53
@@ -51,18 +59,10 @@
    {
     "name": "Caustica",
     "slug": "caustica",
-    "spikeMinute": 32,
+    "spikeMinute": 37,
     "playRatePct": 10.7,
     "evidenceDeltaWr": 0.3,
     "evidenceN": 36
-   },
-   {
-    "name": "Combustion",
-    "slug": "combustion",
-    "spikeMinute": 37,
-    "playRatePct": 44.1,
-    "evidenceDeltaWr": -0.6,
-    "evidenceN": 149
    }
   ],
   "gold": 18500,
@@ -84,7 +84,7 @@
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for teamfight AoE and skirmish uptime: first spike lands around minute 9 (Oathkeeper), third item by minute 21. Take Demiurge: +15.7% on 20-second fights at minute 15.",
+ "coachLine": "Sim-optimal for teamfight AoE and skirmish uptime: first spike lands around minute 9 (Combustion), third item by minute 21. Take Demiurge: +15.7% on 20-second fights at minute 15.",
  "eternals": {
   "top": [
    {
@@ -600,7 +600,7 @@
    "spikeMinute": 21,
    "bestObjective": "10s rotation damage",
    "whyLine": "Strongest meta core for 10s rotation damage, online around minute 21 — about 2,877 damage over a 10s rotation in the sim.",
-   "optimizer": "Optimizer sees +17% more 10s rotation damage: try Oathkeeper over Combustion (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "optimizer": "Optimizer agrees: within 5% of our best core on 10s rotation damage. The winrate is earned, not luck."
   },
   {
    "title": "Magical Frontline",
@@ -648,37 +648,37 @@
    "spikeMinute": 21,
    "bestObjective": "one-combo burst",
    "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 2,506 damage in one combo in the sim.",
-   "optimizer": "Optimizer agrees: within 5% of our best core on one-combo burst. The winrate is earned, not luck."
+   "optimizer": null
   }
  ],
  "stages": [
   {
    "label": "early",
    "itemCount": 2,
-   "minute": 15,
+   "minute": 16,
    "level": 11,
    "core": [
     {
-     "name": "Oathkeeper",
-     "slug": "oathkeeper"
+     "name": "Combustion",
+     "slug": "combustion"
     },
     {
-     "name": "Spirit Of Amir",
-     "slug": "spirit-of-amir"
+     "name": "Oathkeeper",
+     "slug": "oathkeeper"
     }
    ],
    "headline": "rot10VsSquishy",
-   "headlineValue": 1911,
+   "headlineValue": 1959,
    "objectives": {
-    "burstVsSquishy": 1576.074563925628,
-    "teamfightVsSquishy": 2091.6490320107346,
-    "rot10VsSquishy": 1911.2340425531916,
-    "rot20VsBruiser": 2031.5628415300548,
+    "burstVsSquishy": 1628.265798172273,
+    "teamfightVsSquishy": 2140.3161578845034,
+    "rot10VsSquishy": 1959.3165467625897,
+    "rot20VsBruiser": 2102.4309392265195,
     "autoDps10VsSquishy": 43.65872526544402,
-    "ehpPhysical": 3963.524009765625,
-    "ehpMagical": 3182.7984433593747,
+    "ehpPhysical": 3617.355259765625,
+    "ehpMagical": 2904.817193359375,
     "healShield10s": 0,
-    "utility": 25,
+    "utility": 15,
     "sustain10s": 0
    },
    "betterEarly": null
@@ -690,33 +690,38 @@
    "level": 13,
    "core": [
     {
+     "name": "Combustion",
+     "slug": "combustion"
+    },
+    {
      "name": "Oathkeeper",
      "slug": "oathkeeper"
     },
     {
      "name": "Spirit Of Amir",
      "slug": "spirit-of-amir"
-    },
-    {
-     "name": "Wraith Leggings",
-     "slug": "wraith-leggings"
     }
    ],
    "headline": "rot10VsSquishy",
-   "headlineValue": 3361,
+   "headlineValue": 3018,
    "objectives": {
-    "burstVsSquishy": 2370.807650727651,
-    "teamfightVsSquishy": 3269.0131891891892,
-    "rot10VsSquishy": 3360.822153846154,
-    "rot20VsBruiser": 3404.013023255814,
+    "burstVsSquishy": 2140.9225225225227,
+    "teamfightVsSquishy": 2906.8088861588867,
+    "rot10VsSquishy": 3017.930303030303,
+    "rot20VsBruiser": 3113.497701149425,
     "autoDps10VsSquishy": 49.29552847490348,
     "ehpPhysical": 4818.5240390624995,
     "ehpMagical": 3676.8630234374996,
     "healShield10s": 0,
-    "utility": 29,
+    "utility": 25,
     "sustain10s": 0
    },
-   "betterEarly": null
+   "betterEarly": {
+    "inItem": "Orion",
+    "inSlug": "orion",
+    "outItem": "Combustion",
+    "edgePct": 14.2
+   }
   },
   {
    "label": "late",
@@ -724,6 +729,10 @@
    "minute": 37,
    "level": 17,
    "core": [
+    {
+     "name": "Combustion",
+     "slug": "combustion"
+    },
     {
      "name": "Oathkeeper",
      "slug": "oathkeeper"
@@ -743,10 +752,6 @@
     {
      "name": "Caustica",
      "slug": "caustica"
-    },
-    {
-     "name": "Combustion",
-     "slug": "combustion"
     }
    ],
    "headline": "rot10VsSquishy",
@@ -887,7 +892,7 @@
   {
    "enemy": "Gideon",
    "enemySlug": "gideon",
-   "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Gideon deals area damage — spread out so one cast can't catch the group.",
+   "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Gideon deals area damage — spread out so one cast can't catch the group.",
    "checkpoints": [
     {
      "minute": 5,
@@ -895,11 +900,11 @@
     },
     {
      "minute": 10,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 15,
-     "verdict": "you"
+     "verdict": "enemy"
     },
     {
      "minute": 20,
@@ -911,7 +916,7 @@
     },
     {
      "minute": 30,
-     "verdict": "you"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
@@ -926,7 +931,7 @@
   {
    "enemy": "Iggy & Scorch",
    "enemySlug": "iggy-scorch",
-   "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Iggy & Scorch deals area damage — spread out so one cast can't catch the group.",
+   "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Iggy & Scorch deals area damage — spread out so one cast can't catch the group.",
    "checkpoints": [
     {
      "minute": 5,
@@ -934,23 +939,23 @@
     },
     {
      "minute": 10,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 15,
-     "verdict": "you"
+     "verdict": "enemy"
     },
     {
      "minute": 20,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 25,
-     "verdict": "you"
+     "verdict": "even"
     },
     {
      "minute": 30,
-     "verdict": "you"
+     "verdict": "even"
     }
    ],
    "counterSwap": {
@@ -1018,7 +1023,7 @@
  "slug": "howitzer",
  "name": "Howitzer",
  "patch": "1.15.3/1.15.4",
- "generatedAt": "2026-10-15T19:39:27.769Z",
+ "generatedAt": "2026-10-15T19:54:37.733Z",
  "damageType": "hybrid",
  "attackType": "ranged",
  "laneFlex": [
@@ -1075,16 +1080,24 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Oathkeeper, which the field rarely builds (2.7% pick) — a sim-only call; compare the meta cores below"
+     "the sim opens on Combustion, which the field has tried and lost with (-0.6% winrate over 149 games) — treat this opener as a sim blind-spot and weight the field"
     ]
    },
    "build": {
     "title": "Magical Teamfight",
     "items": [
      {
+      "name": "Combustion",
+      "slug": "combustion",
+      "spikeMinute": 9,
+      "playRatePct": 44.1,
+      "evidenceDeltaWr": -0.6,
+      "evidenceN": 149
+     },
+     {
       "name": "Oathkeeper",
       "slug": "oathkeeper",
-      "spikeMinute": 9,
+      "spikeMinute": 16,
       "playRatePct": 2.7,
       "evidenceDeltaWr": null,
       "evidenceN": null
@@ -1092,7 +1105,7 @@
      {
       "name": "Spirit Of Amir",
       "slug": "spirit-of-amir",
-      "spikeMinute": 15,
+      "spikeMinute": 21,
       "playRatePct": 0,
       "evidenceDeltaWr": null,
       "evidenceN": null
@@ -1100,7 +1113,7 @@
      {
       "name": "Wraith Leggings",
       "slug": "wraith-leggings",
-      "spikeMinute": 21,
+      "spikeMinute": 27,
       "playRatePct": 34.9,
       "evidenceDeltaWr": 0.3,
       "evidenceN": 118
@@ -1108,7 +1121,7 @@
      {
       "name": "Oblivion Crown",
       "slug": "oblivion-crown",
-      "spikeMinute": 27,
+      "spikeMinute": 32,
       "playRatePct": 15.7,
       "evidenceDeltaWr": 1.7,
       "evidenceN": 53
@@ -1116,18 +1129,10 @@
      {
       "name": "Caustica",
       "slug": "caustica",
-      "spikeMinute": 32,
+      "spikeMinute": 37,
       "playRatePct": 10.7,
       "evidenceDeltaWr": 0.3,
       "evidenceN": 36
-     },
-     {
-      "name": "Combustion",
-      "slug": "combustion",
-      "spikeMinute": 37,
-      "playRatePct": 44.1,
-      "evidenceDeltaWr": -0.6,
-      "evidenceN": 149
      }
     ],
     "gold": 18500,
@@ -1149,7 +1154,7 @@
     },
     "manaFeasible": true
    },
-   "coachLine": "Sim-optimal for teamfight AoE and skirmish uptime: first spike lands around minute 9 (Oathkeeper), third item by minute 21. Take Demiurge: +15.7% on 20-second fights at minute 15.",
+   "coachLine": "Sim-optimal for teamfight AoE and skirmish uptime: first spike lands around minute 9 (Combustion), third item by minute 21. Take Demiurge: +15.7% on 20-second fights at minute 15.",
    "eternals": {
     "top": [
      {
@@ -1665,7 +1670,7 @@
      "spikeMinute": 21,
      "bestObjective": "10s rotation damage",
      "whyLine": "Strongest meta core for 10s rotation damage, online around minute 21 — about 2,877 damage over a 10s rotation in the sim.",
-     "optimizer": "Optimizer sees +17% more 10s rotation damage: try Oathkeeper over Combustion (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "optimizer": "Optimizer agrees: within 5% of our best core on 10s rotation damage. The winrate is earned, not luck."
     },
     {
      "title": "Magical Frontline",
@@ -1713,37 +1718,37 @@
      "spikeMinute": 21,
      "bestObjective": "one-combo burst",
      "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 2,506 damage in one combo in the sim.",
-     "optimizer": "Optimizer agrees: within 5% of our best core on one-combo burst. The winrate is earned, not luck."
+     "optimizer": null
     }
    ],
    "stages": [
     {
      "label": "early",
      "itemCount": 2,
-     "minute": 15,
+     "minute": 16,
      "level": 11,
      "core": [
       {
-       "name": "Oathkeeper",
-       "slug": "oathkeeper"
+       "name": "Combustion",
+       "slug": "combustion"
       },
       {
-       "name": "Spirit Of Amir",
-       "slug": "spirit-of-amir"
+       "name": "Oathkeeper",
+       "slug": "oathkeeper"
       }
      ],
      "headline": "rot10VsSquishy",
-     "headlineValue": 1911,
+     "headlineValue": 1959,
      "objectives": {
-      "burstVsSquishy": 1576.074563925628,
-      "teamfightVsSquishy": 2091.6490320107346,
-      "rot10VsSquishy": 1911.2340425531916,
-      "rot20VsBruiser": 2031.5628415300548,
+      "burstVsSquishy": 1628.265798172273,
+      "teamfightVsSquishy": 2140.3161578845034,
+      "rot10VsSquishy": 1959.3165467625897,
+      "rot20VsBruiser": 2102.4309392265195,
       "autoDps10VsSquishy": 43.65872526544402,
-      "ehpPhysical": 3963.524009765625,
-      "ehpMagical": 3182.7984433593747,
+      "ehpPhysical": 3617.355259765625,
+      "ehpMagical": 2904.817193359375,
       "healShield10s": 0,
-      "utility": 25,
+      "utility": 15,
       "sustain10s": 0
      },
      "betterEarly": null
@@ -1755,33 +1760,38 @@
      "level": 13,
      "core": [
       {
+       "name": "Combustion",
+       "slug": "combustion"
+      },
+      {
        "name": "Oathkeeper",
        "slug": "oathkeeper"
       },
       {
        "name": "Spirit Of Amir",
        "slug": "spirit-of-amir"
-      },
-      {
-       "name": "Wraith Leggings",
-       "slug": "wraith-leggings"
       }
      ],
      "headline": "rot10VsSquishy",
-     "headlineValue": 3361,
+     "headlineValue": 3018,
      "objectives": {
-      "burstVsSquishy": 2370.807650727651,
-      "teamfightVsSquishy": 3269.0131891891892,
-      "rot10VsSquishy": 3360.822153846154,
-      "rot20VsBruiser": 3404.013023255814,
+      "burstVsSquishy": 2140.9225225225227,
+      "teamfightVsSquishy": 2906.8088861588867,
+      "rot10VsSquishy": 3017.930303030303,
+      "rot20VsBruiser": 3113.497701149425,
       "autoDps10VsSquishy": 49.29552847490348,
       "ehpPhysical": 4818.5240390624995,
       "ehpMagical": 3676.8630234374996,
       "healShield10s": 0,
-      "utility": 29,
+      "utility": 25,
       "sustain10s": 0
      },
-     "betterEarly": null
+     "betterEarly": {
+      "inItem": "Orion",
+      "inSlug": "orion",
+      "outItem": "Combustion",
+      "edgePct": 14.2
+     }
     },
     {
      "label": "late",
@@ -1789,6 +1799,10 @@
      "minute": 37,
      "level": 17,
      "core": [
+      {
+       "name": "Combustion",
+       "slug": "combustion"
+      },
       {
        "name": "Oathkeeper",
        "slug": "oathkeeper"
@@ -1808,10 +1822,6 @@
       {
        "name": "Caustica",
        "slug": "caustica"
-      },
-      {
-       "name": "Combustion",
-       "slug": "combustion"
       }
      ],
      "headline": "rot10VsSquishy",
@@ -1952,7 +1962,7 @@
     {
      "enemy": "Gideon",
      "enemySlug": "gideon",
-     "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Gideon deals area damage — spread out so one cast can't catch the group.",
+     "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Gideon deals area damage — spread out so one cast can't catch the group.",
      "checkpoints": [
       {
        "minute": 5,
@@ -1960,11 +1970,11 @@
       },
       {
        "minute": 10,
-       "verdict": "even"
+       "verdict": "enemy"
       },
       {
        "minute": 15,
-       "verdict": "you"
+       "verdict": "enemy"
       },
       {
        "minute": 20,
@@ -1976,7 +1986,7 @@
       },
       {
        "minute": 30,
-       "verdict": "you"
+       "verdict": "even"
       }
      ],
      "counterSwap": {
@@ -1991,7 +2001,7 @@
     {
      "enemy": "Iggy & Scorch",
      "enemySlug": "iggy-scorch",
-     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Iggy & Scorch deals area damage — spread out so one cast can't catch the group.",
+     "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Iggy & Scorch deals area damage — spread out so one cast can't catch the group.",
      "checkpoints": [
       {
        "minute": 5,
@@ -1999,23 +2009,23 @@
       },
       {
        "minute": 10,
-       "verdict": "even"
+       "verdict": "you"
       },
       {
        "minute": 15,
-       "verdict": "you"
+       "verdict": "enemy"
       },
       {
        "minute": 20,
-       "verdict": "even"
+       "verdict": "you"
       },
       {
        "minute": 25,
-       "verdict": "you"
+       "verdict": "even"
       },
       {
        "minute": 30,
-       "verdict": "you"
+       "verdict": "even"
       }
      ],
      "counterSwap": {
@@ -2093,16 +2103,24 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Oathkeeper, which the field rarely builds (2.7% pick) — a sim-only call; compare the meta cores below"
+     "the sim opens on Combustion, which the field has tried and lost with (-0.6% winrate over 149 games) — treat this opener as a sim blind-spot and weight the field"
     ]
    },
    "build": {
     "title": "Magical Teamfight",
     "items": [
      {
+      "name": "Combustion",
+      "slug": "combustion",
+      "spikeMinute": 9,
+      "playRatePct": 44.1,
+      "evidenceDeltaWr": -0.6,
+      "evidenceN": 149
+     },
+     {
       "name": "Oathkeeper",
       "slug": "oathkeeper",
-      "spikeMinute": 9,
+      "spikeMinute": 16,
       "playRatePct": 2.7,
       "evidenceDeltaWr": null,
       "evidenceN": null
@@ -2110,7 +2128,7 @@
      {
       "name": "Spirit Of Amir",
       "slug": "spirit-of-amir",
-      "spikeMinute": 16,
+      "spikeMinute": 21,
       "playRatePct": 0,
       "evidenceDeltaWr": null,
       "evidenceN": null
@@ -2118,7 +2136,7 @@
      {
       "name": "Wraith Leggings",
       "slug": "wraith-leggings",
-      "spikeMinute": 22,
+      "spikeMinute": 27,
       "playRatePct": 34.9,
       "evidenceDeltaWr": 0.3,
       "evidenceN": 118
@@ -2126,7 +2144,7 @@
      {
       "name": "Oblivion Crown",
       "slug": "oblivion-crown",
-      "spikeMinute": 28,
+      "spikeMinute": 33,
       "playRatePct": 15.7,
       "evidenceDeltaWr": 1.7,
       "evidenceN": 53
@@ -2134,18 +2152,10 @@
      {
       "name": "Caustica",
       "slug": "caustica",
-      "spikeMinute": 33,
+      "spikeMinute": 38,
       "playRatePct": 10.7,
       "evidenceDeltaWr": 0.3,
       "evidenceN": 36
-     },
-     {
-      "name": "Combustion",
-      "slug": "combustion",
-      "spikeMinute": 38,
-      "playRatePct": 44.1,
-      "evidenceDeltaWr": -0.6,
-      "evidenceN": 149
      }
     ],
     "gold": 18500,
@@ -2167,7 +2177,7 @@
     },
     "manaFeasible": true
    },
-   "coachLine": "Sim-optimal for teamfight AoE and skirmish uptime: first spike lands around minute 9 (Oathkeeper), third item by minute 22. Take Demiurge: +15.7% on 20-second fights at minute 15.",
+   "coachLine": "Sim-optimal for teamfight AoE and skirmish uptime: first spike lands around minute 9 (Combustion), third item by minute 21. Take Demiurge: +15.7% on 20-second fights at minute 15.",
    "eternals": {
     "top": [
      {
@@ -2683,7 +2693,7 @@
      "spikeMinute": 22,
      "bestObjective": "10s rotation damage",
      "whyLine": "Strongest meta core for 10s rotation damage, online around minute 22 — about 2,877 damage over a 10s rotation in the sim.",
-     "optimizer": "Optimizer sees +17% more 10s rotation damage: try Oathkeeper over Combustion (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "optimizer": "Optimizer agrees: within 5% of our best core on 10s rotation damage. The winrate is earned, not luck."
     },
     {
      "title": "Magical Frontline",
@@ -2731,7 +2741,7 @@
      "spikeMinute": 22,
      "bestObjective": "one-combo burst",
      "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 2,506 damage in one combo in the sim.",
-     "optimizer": "Optimizer agrees: within 5% of our best core on one-combo burst. The winrate is earned, not luck."
+     "optimizer": null
     }
    ],
    "stages": [
@@ -2742,26 +2752,26 @@
      "level": 11,
      "core": [
       {
-       "name": "Oathkeeper",
-       "slug": "oathkeeper"
+       "name": "Combustion",
+       "slug": "combustion"
       },
       {
-       "name": "Spirit Of Amir",
-       "slug": "spirit-of-amir"
+       "name": "Oathkeeper",
+       "slug": "oathkeeper"
       }
      ],
      "headline": "rot10VsSquishy",
-     "headlineValue": 1911,
+     "headlineValue": 1959,
      "objectives": {
-      "burstVsSquishy": 1576.074563925628,
-      "teamfightVsSquishy": 2091.6490320107346,
-      "rot10VsSquishy": 1911.2340425531916,
-      "rot20VsBruiser": 2031.5628415300548,
+      "burstVsSquishy": 1628.265798172273,
+      "teamfightVsSquishy": 2140.3161578845034,
+      "rot10VsSquishy": 1959.3165467625897,
+      "rot20VsBruiser": 2102.4309392265195,
       "autoDps10VsSquishy": 43.65872526544402,
-      "ehpPhysical": 3963.524009765625,
-      "ehpMagical": 3182.7984433593747,
+      "ehpPhysical": 3617.355259765625,
+      "ehpMagical": 2904.817193359375,
       "healShield10s": 0,
-      "utility": 25,
+      "utility": 15,
       "sustain10s": 0
      },
      "betterEarly": null
@@ -2769,9 +2779,13 @@
     {
      "label": "mid",
      "itemCount": 3,
-     "minute": 22,
+     "minute": 21,
      "level": 13,
      "core": [
+      {
+       "name": "Combustion",
+       "slug": "combustion"
+      },
       {
        "name": "Oathkeeper",
        "slug": "oathkeeper"
@@ -2779,27 +2793,28 @@
       {
        "name": "Spirit Of Amir",
        "slug": "spirit-of-amir"
-      },
-      {
-       "name": "Wraith Leggings",
-       "slug": "wraith-leggings"
       }
      ],
      "headline": "rot10VsSquishy",
-     "headlineValue": 3361,
+     "headlineValue": 3018,
      "objectives": {
-      "burstVsSquishy": 2370.807650727651,
-      "teamfightVsSquishy": 3269.0131891891892,
-      "rot10VsSquishy": 3360.822153846154,
-      "rot20VsBruiser": 3404.013023255814,
+      "burstVsSquishy": 2140.9225225225227,
+      "teamfightVsSquishy": 2906.8088861588867,
+      "rot10VsSquishy": 3017.930303030303,
+      "rot20VsBruiser": 3113.497701149425,
       "autoDps10VsSquishy": 49.29552847490348,
       "ehpPhysical": 4818.5240390624995,
       "ehpMagical": 3676.8630234374996,
       "healShield10s": 0,
-      "utility": 29,
+      "utility": 25,
       "sustain10s": 0
      },
-     "betterEarly": null
+     "betterEarly": {
+      "inItem": "Orion",
+      "inSlug": "orion",
+      "outItem": "Combustion",
+      "edgePct": 14.2
+     }
     },
     {
      "label": "late",
@@ -2807,6 +2822,10 @@
      "minute": 38,
      "level": 17,
      "core": [
+      {
+       "name": "Combustion",
+       "slug": "combustion"
+      },
       {
        "name": "Oathkeeper",
        "slug": "oathkeeper"
@@ -2826,10 +2845,6 @@
       {
        "name": "Caustica",
        "slug": "caustica"
-      },
-      {
-       "name": "Combustion",
-       "slug": "combustion"
       }
      ],
      "headline": "rot10VsSquishy",
@@ -2908,7 +2923,7 @@
       },
       {
        "minute": 20,
-       "verdict": "you"
+       "verdict": "even"
       },
       {
        "minute": 25,
@@ -3017,7 +3032,7 @@
       },
       {
        "minute": 10,
-       "verdict": "you"
+       "verdict": "even"
       },
       {
        "minute": 15,

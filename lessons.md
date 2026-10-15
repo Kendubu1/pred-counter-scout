@@ -4195,3 +4195,36 @@ one Zinx support optimizer explanation were invalidated, with pending replacemen
 records preserved. No replacement advice was authored. All 198 tests pass;
 TypeScript and whitespace checks pass. Current-patch lane-eligible evidence
 remains zero; these results remain THEORY rather than validated winning builds.
+
+
+## 2026-10-15 mana-preserving displayed purchase timelines
+
+orderBuild now uses the same stagedManaAdequacy calculation as search. Its
+existing marginal-combat-per-gold heuristic may reorder a selected set only if
+the candidate prefix plus the remaining input order preserves at least the
+input build's mana score. The retained completion is a feasibility witness: at
+every step, choosing its next item remains possible. No new weights or game
+constants were introduced. A pure-mana first item can no longer be demoted
+behind raw damage when that would erase the search's early-mana benefit.
+
+This is conservative greedy ordering, not exhaustive order optimization. A
+candidate may be rejected even if a different tail permutation would be
+feasible. Input orders with poor mana can still remain poor; no gameplay
+sustainability claim follows from this heuristic. Four-combo targets, levels
+9/12/14, carry exemptions, unmodeled regeneration and ability resource costs
+remain limitations. Three tests cover mana-before-damage, all permutations of
+a small pool, unchanged resourceless ordering and empty builds.
+
+Hero display, item spike timelines and matchup checkpoints all use orderBuild,
+so the correction applies consistently without changing selected item sets.
+The controlled comparison report now records the shared mana floor and its
+heuristic status instead of the resolved ordering mismatch.
+
+
+Validation outcome: rebuilt all 55 heroes, 1,485 matchup pairs and 927 controlled
+comparisons. Purchase orders changed in 63 hero-role combinations across 33
+heroes, with zero final-item-set changes. 519 matchup-pair reports changed.
+Invalidated 15 stale coaching lines, preserving pending reviewed replacements;
+no optimizer explanation item sets became stale and no new advice was authored.
+The full 201-test harness and TypeScript checks pass. Current-patch eligible
+ordered-build evidence remains zero, so no meta-fidelity claim is made.

@@ -40,9 +40,10 @@ CLI --vs <enemy>; harness green; design doc + lessons.md updated;
 committed.
 
 2026-10-15 search follow-up: item-set deduplication now retains the best
-encountered early-mana purchase history. Shared scoring between search and the
-separate matchup ordering heuristic remains open; displayed purchase timelines
-are not yet mana-aware. No scoring coefficients were changed.
+encountered early-mana purchase history. Displayed purchase timelines now preserve
+at least that staged mana score while choosing marginal combat value per gold.
+No scoring coefficients were changed. Mana targets and stage levels remain
+heuristic; exhaustive order optimization and gameplay calibration remain open.
 
 ## 5. [DONE 2026-06-11] Statistical evidence layer v0
 
@@ -105,6 +106,11 @@ four-second guess. Ranked buff durations now reach the simulator.
 2026-10-15 finite-window follow-up: self attack-speed buffs now use actual
 active intervals, effective recast cooldowns and per-interval caps; five exact
 regression scenarios cover endpoints, overlap, haste and the old 3s discontinuity.
+Next source audit: 11 reported dropped scaling entries remain: health on
+Adele (2), Rampage (1), Riktor (1), Sevarog (2), Steel (1); armor on Terra (3);
+and Kira's untagged base/stack payload (1). Verify self versus target and total
+versus bonus stat basis before adding coefficients; Terra also has charge,
+multiple strikes and empowered states that must not be flattened silently.
 Still open: curate each passive trigger, general windowed effects and heal-from-damage behavior from verified mechanics, then
 rebuild derived outputs when actual model coefficients change.
 
