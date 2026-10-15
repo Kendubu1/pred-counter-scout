@@ -3996,3 +3996,18 @@ therefore not waiting on a permission any more; it is answered by counting.
 - **Top minors are now the field's picks** where the stream has them (most-
   picked minor per slot under that Eternal, with its pick share), the sim's
   conditioned pick otherwise; the minor-slot list marks which (★ field / ⚙ sim).
+
+## 2026-10-15: Do not accumulate absolute attributes
+
+- A catalog-wide asset check found Murdock, GRIM.exe and Legion attack range
+  multiplied by level. Repeated range values are absolute; most other hero
+  attributes are initial grants followed by growth increments. Normalize range
+  separately and reject unfamiliar shapes instead of inventing semantics.
+- All 55 listed heroes and 270 items have corresponding shipped assets. This
+  does not establish live availability: extra Golem/Frostbane tables were not
+  added as playable heroes.
+- Twelve tenacity discrepancies are exact complements (75 versus 25, etc.).
+  Record these as unresolved representation/binding questions. A curve name
+  alone is insufficient evidence for changing combat behavior.
+- Catalog evidence and regression checks are documented in
+  docs/catalog-asset-audit.md. No live data refresh was needed for this audit.

@@ -31,6 +31,7 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gql, hasCredentials } from './predgg.js';
+import { catalogBaseStat } from '../catalog-stats.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const OUT = path.join(ROOT, 'data/catalog');
@@ -91,16 +92,6 @@ const ITEM_STAT: Record<string, string> = {
 // MAGE -> Mage, ANTI_HEAL -> AntiHeal (omeda's enum spelling).
 const pascal = (s: string | null): string | null =>
   s == null ? null : s.toLowerCase().split('_').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join('');
-
-const round = (n: number): number => Math.round(n * 1e10) / 1e10;
-
-function baseStat(key: string, values: number[]): number[] {
-  const scale = key === 'attack_speed' ? 0.01 : 1; // pred.gg 130 = omeda 1.3
-  const out: number[] = [];
-  let run = 0;
-  for (const v of values) { run += v; out.push(round(run * scale)); }
-  return out.every((v) => v === out[0]) ? [out[0]!] : out;
-}
 
 // pred.gg closes markup with a bare `</>` and breaks lines with '\n'; omeda
 // wrote the named close tag and `<br>`. Copy passes and parsers read the
@@ -169,7 +160,7 @@ async function main() {
       const base_stats: Record<string, number[]> = {};
       for (const a of d.attributes) {
         const key = BASE_STAT[a.stat];
-        if (key) base_stats[key] = baseStat(key, a.values);
+        if (key) base_stats[key] = catalogBaseStat(key, a.values);
       }
       return {
         id: heroId(h.slug),
