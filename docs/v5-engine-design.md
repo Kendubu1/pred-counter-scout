@@ -348,6 +348,12 @@ remain as fast canaries but cannot detect staleness on their own: one pinned
   to predgg-augments.json. Minor-slot and minor-pair counts are new; the hero
   page's top minors are field picks wherever the window has them.
 
+- **Calibrated (Oct 15).** First practice-mode session: mitigation K=100,
+  ability haste, crit 1.65 (was 1.75) and bonus-only scaling verified; attack
+  speed measured as panel / basic_attack_time and fixed in the sim (Legion and
+  Revenant held back). Only the attack-speed cap remains assumed. Raw points:
+  engine/fixtures/calibration.json; pinned: test/calibration-measured.test.ts.
+
 **Two clocks.** The catalog patch and the match-window patch are separate and
 usually differ, because the public match feed runs behind live. Any surface
 quoting a number must say which clock it is on: hero and item numbers carry
