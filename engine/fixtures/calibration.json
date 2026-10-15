@@ -91,12 +91,26 @@
     1.8
    ],
    "verified": false,
-   "source": "Assumed 1.75. DATA EVIDENCE 2026-06-12: largest_critical_strike envelope over 6,657 crit builders, densest ratio bins 1.6-1.8 under bonus-only scaling (consistent with 1.75; confounded by crit-damage modifiers and possible post-mitigation recording). range [1.6,1.8] is swept by the robustness check. Confirm in practice mode."
+   "source": "Assumed 1.75. DATA EVIDENCE 2026-06-12: largest_critical_strike envelope over 6,657 crit builders, densest ratio bins 1.6-1.8 under bonus-only scaling (consistent with 1.75; confounded by crit-damage modifiers and possible post-mitigation recording). range [1.6,1.8] is swept by the robustness check. Confirm in practice mode. PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), point 1: Murdock, same bot, no items: basic hit 43 (twice); with Onixian Quiver (20% crit, NO physical power; Multishot side projectiles read separately; Onixia is melee-only) a crit showed 72. Ratio 1.674; with round-down display the true multiplier lies in 72/44..73/43 = 1.636..1.698, so the assumed 1.75 (would show 75) is RULED OUT. value left at 1.75 and verified false until a larger-number reading pins it (bigger base hit = tighter bound).",
+   "points": [
+    {
+     "hero": "murdock",
+     "normal": 43,
+     "crit": 72,
+     "items": "Onixian Quiver (20% crit, 0 power)",
+     "ratioRange": [
+      1.636,
+      1.698
+     ],
+     "date": "2026-10-15",
+     "patch": "1.17.2"
+    }
+   ]
   },
   "attackSpeedFormula": {
-   "formula": "attacksPerSecond = base_attack_speed[level] * (1 + item_attack_speed / 100)",
+   "formula": "MEASURED 2026-10-15: attacksPerSecond = (base_attack_speed[level] * (1 + item_attack_speed / 100)) / basic_attack_time. The sim still computes the old form (no / basic_attack_time); verified flips when the sim fix lands.",
    "verified": false,
-   "source": "Assumed. base_stats.attack_speed is per-level attacks/sec (omeda.city heroes.json); item attack_speed treated as percent. PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), point 1: Murdock, no attack-speed items, stats panel 125% attack speed; counted 18 attacks in 20s = 0.90/s. The CURRENT formula reads 125% as 1.25 attacks/s (37% too fast). Murdock's basic_attack_time is 1.45 (data/catalog/heroes.json); attack_speed / basic_attack_time = 1.25 / 1.45 = 0.86/s (17.2 per 20s) fits within counting error. Hypothesis to confirm with a +attack-speed reading: attacksPerSecond = attack_speed% / 100 / basic_attack_time.",
+   "source": "Assumed. base_stats.attack_speed is per-level attacks/sec (omeda.city heroes.json); item attack_speed treated as percent. PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), point 1: Murdock, no attack-speed items, stats panel 125% attack speed; counted 18 attacks in 20s = 0.90/s. The CURRENT formula reads 125% as 1.25 attacks/s (37% too fast). Murdock's basic_attack_time is 1.45 (data/catalog/heroes.json); attack_speed / basic_attack_time = 1.25 / 1.45 = 0.86/s (17.2 per 20s) fits within counting error. Hypothesis to confirm with a +attack-speed reading: attacksPerSecond = attack_speed% / 100 / basic_attack_time. Point 2: panel 180%, 26 swings in 20s = 25 intervals = 1.25/s; attack_speed/BAT = 1.80/1.45 = 1.24/s (point 1 re-read the same way: 17 intervals = 0.85/s vs 0.86). CONFIRMED: attacksPerSecond = panelAttackSpeed / basic_attack_time. The shipped formula (1.80/s) is ~45% fast for Murdock. Sim fix pending: apply to every hero except Legion (BAT 0.2, minigun) and Revenant (level-varying BAT, reload), which need their own check.",
    "points": [
     {
      "hero": "murdock",
@@ -106,6 +120,16 @@
      "seconds": 20,
      "observedAps": 0.9,
      "basicAttackTime": 1.45,
+     "date": "2026-10-15",
+     "patch": "1.17.2"
+    },
+    {
+     "hero": "murdock",
+     "panelAttackSpeedPct": 180,
+     "attacks": 26,
+     "seconds": 20,
+     "observedAps": 1.25,
+     "note": "26 swings = 25 intervals",
      "date": "2026-10-15",
      "patch": "1.17.2"
     }
