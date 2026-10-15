@@ -8,8 +8,8 @@
     100,
     150
    ],
-   "verified": false,
-   "source": "Assumed standard K=100 (damage*100/(100+armor)); shipped default stays 100. DATA WARNING 2026-06-12: implied K from total_damage_mitigated rises 122->150 with armor (n=23k players), meaning the field includes shields/DR and the formula cannot be verified from aggregates; if true K > 100, current EHP outputs OVERVALUE armor. range [100,150] is swept by the robustness check (src/robustness.ts) to flag picks that depend on the unknown. Measure in practice mode (highest-priority measurement). PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), point 1 of 3: Gideon L1, no items, Void Breach rank 1 hits 95 on minions and the river buff (0 magical armor, so raw = 95) and 72 on the Steel bot at L1 (magical armor 31, data/catalog/heroes.json). K=100 predicts 95*100/131 = 72.5 -> 72 shown; implied K = 97..102 given integer display. Consistent with K=100; two more armor values needed before flipping verified (CALIBRATION-CHECKLIST.md section 1). Point 2 of 3: Steel bot L4 (magical armor 34.3) took 70; K=100 predicts 70.7. Both points sit just under the prediction, consistent with the damage number being rounded DOWN. Point 3: Steel bot L5 (magical armor 35.5) took 70; K=100 predicts 70.1. All three points match K=100 exactly under round-down display (K=95 gives 71/69, K=105 gives 73/71). NOT yet flipped to verified: the three points span only 31-35.5 armor, and the 2026-06-12 data warning is about HIGH armor (implied K rising toward 150). One reading at ~50+ magical armor (Steel L15+ ~ 63 expected, L18 ~ 60) before flipping. Point 4: Steel bot L6 (magical armor 36.8) took 69; K=100 predicts 69.4.",
+   "verified": true,
+   "source": "Assumed standard K=100 (damage*100/(100+armor)); shipped default stays 100. DATA WARNING 2026-06-12: implied K from total_damage_mitigated rises 122->150 with armor (n=23k players), meaning the field includes shields/DR and the formula cannot be verified from aggregates; if true K > 100, current EHP outputs OVERVALUE armor. range [100,150] is swept by the robustness check (src/robustness.ts) to flag picks that depend on the unknown. Measure in practice mode (highest-priority measurement). PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), point 1 of 3: Gideon L1, no items, Void Breach rank 1 hits 95 on minions and the river buff (0 magical armor, so raw = 95) and 72 on the Steel bot at L1 (magical armor 31, data/catalog/heroes.json). K=100 predicts 95*100/131 = 72.5 -> 72 shown; implied K = 97..102 given integer display. Consistent with K=100; two more armor values needed before flipping verified (CALIBRATION-CHECKLIST.md section 1). Point 2 of 3: Steel bot L4 (magical armor 34.3) took 70; K=100 predicts 70.7. Both points sit just under the prediction, consistent with the damage number being rounded DOWN. Point 3: Steel bot L5 (magical armor 35.5) took 70; K=100 predicts 70.1. All three points match K=100 exactly under round-down display (K=95 gives 71/69, K=105 gives 73/71). NOT yet flipped to verified: the three points span only 31-35.5 armor, and the 2026-06-12 data warning is about HIGH armor (implied K rising toward 150). One reading at ~50+ magical armor (Steel L15+ ~ 63 expected, L18 ~ 60) before flipping. Point 4: Steel bot L6 (magical armor 36.8) took 69; K=100 predicts 69.4. VERIFIED 2026-10-15 by maintainer decision on the four points above (all within display rounding of K=100); the high-armor (50+) reading was waived. If a later high-armor measurement disagrees, reopen.",
    "points": [
     {
      "armor": 31,
@@ -52,8 +52,8 @@
   },
   "abilityHaste": {
    "formula": "cooldown * 100 / (100 + haste)",
-   "verified": false,
-   "source": "Assumed LoL-style ability haste. Measure: Timewarp + known-CD ability, stopwatch. PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), point 1: Gideon L8, no items, stats panel shows 6 ability haste; Cosmic Rift rank 1 (base 12s per data/catalog) tooltip shows 11s. Formula predicts 12*100/106 = 11.3s; tooltip shows whole seconds, so consistent. Integer display limits precision; need ~20 and ~60 AH readings (expect 10.0s and 7.5s). Point 2: 20 AH -> tooltip 10s; formula predicts 10.0s exactly. A flat-percent alternative (12*(1-AH/100)) predicts 9.6s, which a whole-second tooltip cannot separate from 10; the ~60 AH reading (formula 7.5s vs flat 4.8s) separates them cleanly, so verified waits for it.",
+   "verified": true,
+   "source": "Assumed LoL-style ability haste. Measure: Timewarp + known-CD ability, stopwatch. PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), point 1: Gideon L8, no items, stats panel shows 6 ability haste; Cosmic Rift rank 1 (base 12s per data/catalog) tooltip shows 11s. Formula predicts 12*100/106 = 11.3s; tooltip shows whole seconds, so consistent. Integer display limits precision; need ~20 and ~60 AH readings (expect 10.0s and 7.5s). Point 2: 20 AH -> tooltip 10s; formula predicts 10.0s exactly. A flat-percent alternative (12*(1-AH/100)) predicts 9.6s, which a whole-second tooltip cannot separate from 10; the ~60 AH reading (formula 7.5s vs flat 4.8s) separates them cleanly, so verified waits for it. Point 3: 61 AH -> tooltip 7s; formula predicts 7.45s (flat-percent alternative 4.7s, ruled out). VERIFIED 2026-10-15 at AH 6/20/61.",
    "points": [
     {
      "ah": 6,
@@ -68,6 +68,15 @@
      "ah": 20,
      "base": 12,
      "observed": 10,
+     "ability": "Gideon Cosmic Rift rank 1",
+     "note": "tooltip, whole seconds",
+     "date": "2026-10-15",
+     "patch": "1.17.2"
+    },
+    {
+     "ah": 61,
+     "base": 12,
+     "observed": 7,
      "ability": "Gideon Cosmic Rift rank 1",
      "note": "tooltip, whole seconds",
      "date": "2026-10-15",
@@ -87,7 +96,20 @@
   "attackSpeedFormula": {
    "formula": "attacksPerSecond = base_attack_speed[level] * (1 + item_attack_speed / 100)",
    "verified": false,
-   "source": "Assumed. base_stats.attack_speed is per-level attacks/sec (omeda.city heroes.json); item attack_speed treated as percent."
+   "source": "Assumed. base_stats.attack_speed is per-level attacks/sec (omeda.city heroes.json); item attack_speed treated as percent. PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), point 1: Murdock, no attack-speed items, stats panel 125% attack speed; counted 18 attacks in 20s = 0.90/s. The CURRENT formula reads 125% as 1.25 attacks/s (37% too fast). Murdock's basic_attack_time is 1.45 (data/catalog/heroes.json); attack_speed / basic_attack_time = 1.25 / 1.45 = 0.86/s (17.2 per 20s) fits within counting error. Hypothesis to confirm with a +attack-speed reading: attacksPerSecond = attack_speed% / 100 / basic_attack_time.",
+   "points": [
+    {
+     "hero": "murdock",
+     "panelAttackSpeedPct": 125,
+     "itemAttackSpeedPct": 0,
+     "attacks": 18,
+     "seconds": 20,
+     "observedAps": 0.9,
+     "basicAttackTime": 1.45,
+     "date": "2026-10-15",
+     "patch": "1.17.2"
+    }
+   ]
   },
   "abilityScalingUsesBonusPowerOnly": {
    "value": true,

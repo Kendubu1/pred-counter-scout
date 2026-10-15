@@ -26,10 +26,13 @@ describe('fixtures (Concept B layer 1: mechanics gates)', () => {
 
   it('lists unverified constants loudly', () => {
     const u = unverifiedConstants(cal);
-    // Until the first practice-mode calibration session these are expected;
-    // the gate is that nothing claims verification it does not have.
+    // The gate is that nothing claims verification it does not have.
+    // mitigation and abilityHaste were verified in practice mode on
+    // 2026-10-15; critMultiplier is still assumed.
     console.warn(`UNVERIFIED fixtures in use: ${u.join(', ')}`);
-    expect(u).toContain('mitigation');
+    expect(u).toContain('critMultiplier');
+    expect(u).not.toContain('mitigation');
+    expect(u).not.toContain('abilityHaste');
   });
 });
 

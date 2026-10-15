@@ -22,7 +22,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
     const a = buildHeroArtifact(data.kits.get('gideon')!, data, cal, { beamWidth: 8, matchupEnemies: 1 });
     expect(() => HeroArtifact.parse(a)).not.toThrow();
     expect(a.confidence.level).toBe('THEORY');
-    expect(a.confidence.unverifiedConstants).toContain('mitigation');
+    expect(a.confidence.unverifiedConstants).toContain('critMultiplier');
     // off-meta is either a proof-carrying candidate or an explicit absence
     expect(a.offMeta.candidates.length > 0 || a.offMeta.honestAbsence !== null).toBe(true);
     for (const c of a.offMeta.candidates) {
