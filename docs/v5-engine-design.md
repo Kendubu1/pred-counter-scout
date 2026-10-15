@@ -479,3 +479,30 @@ extensions or full combat scheduling. Catalog-model audit records those limits.
 Rebuild hero artifacts, matchup matrix and diagnostic reports after these
 numerical changes, and invalidate stale explanations rather than retaining
 advice for old builds or timings.
+
+## 2026-10-15 finite-window self-buff attack rates
+
+Replace duration/cooldown self-buff averaging with active/inactive intervals
+inside the requested engagement. The model explicitly starts with buffs ready,
+activates at time zero, recasts on effective cooldown (including haste and
+ability cooldown modifiers), clips intervals at the fight endpoint, and refreshes
+rather than stacks an already-active instance of the same buff. Attack-speed
+caps apply within each interval before rates are averaged. Distinct buffs can
+overlap. This removes the artificial discontinuity at the old 3s branch and the
+cap-after-average overvaluation near the attack-speed limit.
+
+Examples under a synthetic 1 attack/s baseline and +100% buff: a 6s duration,
+20s cooldown gives 16 continuous-rate attacks in a 10s fight, not 13. A 2s buff
+on a 4s cooldown contributes 6 active seconds in a 10s fight. With 2.5 attacks/s
+baseline, a 2s +100% buff and cap 3 yields 26 attacks over 10s, not 30.
+
+These are exact integrations of the declared rate model, not measured hit
+counts. Readiness, immediate activation, affordable recasts and uninterrupted
+attacking are scenario assumptions. Cast/attack animations, Sparrow's activation
+delay, takedown resets, stack mechanics, item-ramp timing and on-hit ICD event
+scheduling remain incomplete. The attack-speed cap remains unverified.
+
+Validation outcome: rebuilt all 55 heroes, 1,485 matchup pairs and 927 controlled
+comparison scenarios. 192 matchup-pair reports changed; Grux and Serath changed
+item recommendations in offlane and jungle. Three stale coaching lines were
+invalidated with pending replacements recorded. No new advice was authored.

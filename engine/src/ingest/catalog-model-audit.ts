@@ -37,7 +37,7 @@ const out = {
     'Self-buff durations are tied to their own grant clause; no four-second fallback is invented.',
     'Iggy turret attack speed is not hero attack speed. GRIM Sentry stacking and Valmont attack-speed theft need separate state/target models and are excluded from self steroids.',
     'Murdock reactivation stacks and takedown resets, Grux duration extensions, Sparrow delayed activation, and attack-speed ratios with additional stat scaling remain incomplete.',
-    'Sustained attack speed still uses duration/cooldown averaging; it is not a discrete cast/attack timeline.',
+    'Self attack-speed buffs use finite ready-at-start intervals, recast cooldowns and per-interval caps. Attack counts, item ramps and on-hit ICDs remain rate-based approximations; cast delays and attack animation timing are not simulated.',
   ],
   unresolvedAssets: evidence.unresolved,
   tenacityEvidence: 'Absolution shop 25 confirmed by user 2026-10-15; 11 other complementary values corrected from named client curves, not individually shop tested.',

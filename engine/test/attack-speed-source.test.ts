@@ -34,6 +34,6 @@ it('uses the duration at the selected rank in sustained attack-speed math', () =
   }]};
   const run = (rank: number) => simulate(kit, [], {level: 1, profile: null,
     ranks: new Map([['PRIMARY', rank]])}, loadCalibration()).autoDps;
-  // 100% steroid at 2/20 versus 6/20 uptime: base AS * 1.1 versus * 1.3.
-  expect(run(2) / run(1)).toBeCloseTo(1.3 / 1.1, 8);
+  // In a 10s ready-at-start fight: 2/10 versus 6/10 uptime, not duration/cooldown.
+  expect(run(2) / run(1)).toBeCloseTo(1.6 / 1.2, 8);
 });

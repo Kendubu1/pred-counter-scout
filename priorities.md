@@ -97,8 +97,10 @@ ability-scoped bonus damage; explicit dual ratios replace legacy scalar ratios.
 Existing fixtures remain unchanged. 2026-10-15 follow-up: scoped attack-speed grants to the correct subject and
 stated duration; removed unrelated timers, icon-tag false positives and the
 four-second guess. Ranked buff durations now reach the simulator.
-Still open: curate each passive trigger,
-windowed uptime and heal-from-damage behavior from verified mechanics, then
+2026-10-15 finite-window follow-up: self attack-speed buffs now use actual
+active intervals, effective recast cooldowns and per-interval caps; five exact
+regression scenarios cover endpoints, overlap, haste and the old 3s discontinuity.
+Still open: curate each passive trigger, general windowed effects and heal-from-damage behavior from verified mechanics, then
 rebuild derived outputs when actual model coefficients change.
 
 

@@ -299,7 +299,7 @@ export function attacksPerSecond(kit: HeroKit, level: number, t: ItemStats, cap?
   // every hero's auto-attacks too fast by its BAT (Murdock 1.45x).
   const bat = BAT_UNMEASURED.has(kit.slug) ? 1 : (kit.baseStats.basic_attack_time?.[0] ?? 1);
   // extraAsPct: attack speed from sources outside item stats (a hero's own
-  // steroid ability, uptime-weighted — see selfAttackSpeedPct).
+  // steroid ability during one interval — see windowAttackRate).
   const aps = (base * (1 + (t.attack_speed + extraAsPct) / 100)) / (bat > 0 ? bat : 1);
   // Predecessor caps attacks/sec (Cursed Ring's tooltip: "from 3 to 4", so the
   // default cap is 3.0). Without it, pen/AS-stacked builds reach 3.5+ and the
@@ -320,25 +320,39 @@ function applySelfStatBuffs(t: ItemStats, kit: HeroKit, ranks: Map<string, numbe
   return t;
 }
 
-/** Attack speed from a hero's own steroid abilities (Sparrow's Heightened Senses,
- *  Murdock's Hot Pursuit), uptime-weighted: full in a burst window (you pop it),
- *  buffDuration/cooldown across a sustained window. These have no damage line, so
- *  without this their auto-attack spike is invisible to the sim. */
-function selfAttackSpeedPct(kit: HeroKit, ranks: Map<string, number>, t: ItemStats, eff: ResolvedEffects, windowSec: number): number {
-  let pct = 0;
+/** Mean attack rate across a finite ready-at-start engagement. Each self buff
+ * activates at t=0 and recurs on its effective cooldown; intervals are clipped
+ * to the fight. Apply the attack-speed cap before time averaging. This models
+ * continuous attack rate, not individual attacks, cast delays or reset stacks. */
+function windowAttackRate(kit: HeroKit, level: number, ranks: Map<string, number>, t: ItemStats,
+  eff: ResolvedEffects, windowSec: number, cap?: number): number {
+  if (windowSec <= 0) return 0;
+  const events = new Map<number, number>([[0, 0], [windowSec, 0]]);
+  const add = (time: number, delta: number) => events.set(time, (events.get(time) ?? 0) + delta);
   for (const ab of kit.abilities) {
     const perRank = ab.selfAttackSpeedPctPerRank;
-    if (!perRank?.length) continue;
     const rank = ranks.get(ab.key) ?? 0;
-    if (rank <= 0) continue;
-    const val = perRank[Math.min(rank, perRank.length) - 1] ?? 0;
+    if (!perRank?.length || rank <= 0) continue;
+    const pct = perRank[Math.min(rank, perRank.length) - 1] ?? 0;
     const durations = ab.buffDurationSecPerRank;
     const duration = durations?.[Math.min(rank, durations.length) - 1] ?? ab.buffDurationSec;
-    if (duration === undefined) continue;
-    const uptime = windowSec <= BURST_WINDOW ? Math.min(1, duration / windowSec) : Math.min(1, duration / Math.max(abilityCooldown(ab, rank, t, eff), 1));
-    pct += val * uptime;
+    if (duration === undefined || duration <= 0 || pct === 0) continue;
+    const cd = abilityCooldown(ab, rank, t, eff);
+    // Refreshing an already active buff does not create another stack.
+    if (duration >= cd) { add(0, pct); add(windowSec, -pct); continue; }
+    for (let cast = 0; cast * cd < windowSec; cast++) {
+      const start = cast * cd;
+      add(start, pct); add(Math.min(start + duration, windowSec), -pct);
+    }
   }
-  return pct;
+  if (events.size === 2) return attacksPerSecond(kit, level, t, cap, events.get(0) ?? 0);
+  let activePct = 0, previous = 0, attacks = 0;
+  for (const [time, delta] of [...events].sort(([a], [b]) => a - b)) {
+    attacks += attacksPerSecond(kit, level, t, cap, activePct) * (time - previous);
+    activePct += delta;
+    previous = time;
+  }
+  return attacks / windowSec;
 }
 
 /** The attacks/sec cap for THIS build: the calibration default (3.0), raised
@@ -451,7 +465,7 @@ export function combatDamage(kit: HeroKit, items: Item[], opts: SimOptions, cal:
   const k = mitigationConstant(opts, cal);
   const isBurst = windowSec <= BURST_WINDOW;
   let total = rotationDamage(kit, { ...opts, ranks, mitigationK: k }, t, windowSec);
-  const aps = attacksPerSecond(kit, opts.level, t, effectiveAsCap(eff, cal), selfAttackSpeedPct(kit, ranks, t, eff, windowSec));
+  const aps = windowAttackRate(kit, opts.level, ranks, t, eff, windowSec, effectiveAsCap(eff, cal));
   const hits = aps * windowSec;
   const amp = ampFactorBasics(eff, isBurst, profile);
   total += mitigate(basicHit(kit, opts.level, t, critMult) * amp, 'physical', profile, t, eff, windowSec, k) * hits;
@@ -522,7 +536,7 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
 
   // Sustained auto DPS over a 10s engagement: AS ramps credit their mean.
   const asCap = effectiveAsCap(eff, cal);
-  const apsBase = attacksPerSecond(kit, lvl, t, asCap, selfAttackSpeedPct(kit, ranks, t, eff, AUTO_DPS_WINDOW));
+  const apsBase = windowAttackRate(kit, lvl, ranks, t, eff, AUTO_DPS_WINDOW, asCap);
   const apsRamped = apsBase * (1 + (eff.asRampPctPerSecond * (AUTO_DPS_WINDOW / 2)) / 100);
   const aps = asCap && asCap > 0 ? Math.min(apsRamped, asCap) : apsRamped;
   const basicAmp = ampFactorBasics(eff, false, profile);
