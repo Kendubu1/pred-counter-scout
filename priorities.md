@@ -89,6 +89,16 @@ fixture's sourceText (the fixture is hand-curated, not regenerated).
 
 ## 10. Augment coverage unlocks (agent-investigated 2026-06-13)
 
+2026-10-15 progress: retain all 55 catalog PASSIVE descriptions in HeroKit.passive,
+separate from castable abilities so they cannot spend skill points or gain
+invented cooldown casts. Catalog audit exposes this source-only coverage.
+Dual physical/magical scaling is supported for on-hit, on-ability-hit and
+ability-scoped bonus damage; explicit dual ratios replace legacy scalar ratios.
+Existing fixtures remain unchanged. Still open: curate each passive trigger,
+windowed uptime and heal-from-damage behavior from verified mechanics, then
+rebuild derived outputs when actual model coefficients change.
+
+
 Sim-pick UX shipped same day (badge + agree/disagree/no-opinion verdict
 lines + buildShift promoted). The engine unlocks, by expected coverage
 gain over the 110 unmodeled augments: (1) parse the PASSIVE ability slot

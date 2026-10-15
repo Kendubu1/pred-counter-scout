@@ -70,6 +70,8 @@ export interface HeroKit {
   resource: 'mana' | 'other';    // rage/charge heroes have no budgetable pool
   basicScalingPct: number;       // basic-attack ratio on bonus power, percent
   baseStats: BaseStats;
+  // Kept outside castable abilities: a passive must not spend skill points or recur on a cast cooldown.
+  passive?: { key: 'PASSIVE'; name: string; sourceText: string; source: 'catalog'; modelStatus: 'source-only' };
   abilities: AbilityDef[];       // damaging, castable abilities only
   // Field's recommended max-priority of the basic abilities (kit keys,
   // strongest-maxed-first) from pred.gg recommendedSkills; the sim levels

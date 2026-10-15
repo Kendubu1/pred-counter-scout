@@ -4096,3 +4096,19 @@ one/two-item searches and unavailable anti-heal silently escaped the condition.
 Reproduce these failures with small controlled pools, then enforce requirements
 at the boundary and at the relevant purchase slot. An empty result is honest
 when the requested scenario is infeasible. Unconstrained outputs are unaffected.
+
+## 2026-10-15 augment-coverage foundations (priority 10)
+
+The current catalog contains 55 Passive slots; the loader previously discarded
+them. HeroKit.passive now preserves their names and source text with an explicit
+source-only status. They remain outside castable AbilityDef: merely adding
+PASSIVE to that union would wrongly involve skill allocation and cooldown casts.
+No passive trigger, uptime, stack behavior, or damage is inferred from retention.
+
+On-hit, on-ability-hit and ability bonus damage now accept independent physical
+and magical powerScaling percentages. The schema, resolver, and burst/rotation
+math preserve both terms, then mitigate according to the effect's damage type.
+When present, this replaces the legacy scalar representation, including explicit
+zero ratios. Existing effects remain numerically unchanged. Exact synthetic tests
+cover dual scaling, mitigation, replacement, legacy behavior and all 55 passives.
+The catalog-model audit was regenerated; passive gameplay coverage remains open.

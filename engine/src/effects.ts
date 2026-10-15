@@ -30,6 +30,7 @@ const StatKey = z.enum([
 ]);
 
 const DmgType = z.enum(['physical', 'magical', 'true']);
+const PowerScaling = z.object({ physical: z.number().finite().optional(), magical: z.number().finite().optional() });
 
 // Ability-scoped effects (hero augments) target the kit slot, not the
 // display name: names drift between sources (and stale fallbacks), keys
@@ -53,6 +54,7 @@ const Primitive = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('on_hit'), flat: z.number().optional(), perLevelFlat: z.number().optional(),
     scalingPct: z.number().optional(), scaleStat: StatKey.optional(),
+    powerScaling: PowerScaling.optional(),
     pctTargetHealth: z.number().optional(), pctTargetHealthRanged: z.number().optional(),
     healthBasis: z.enum(['max', 'current']).optional(), minDamage: z.number().optional(),
     perLevelPctTargetHealth: z.number().optional(),
@@ -61,6 +63,7 @@ const Primitive = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('on_ability_hit'), flat: z.number().optional(), perLevelFlat: z.number().optional(),
     scalingPct: z.number().optional(), scaleStat: StatKey.optional(),
+    powerScaling: PowerScaling.optional(),
     pctTargetHealth: z.number().optional(), healthBasis: z.enum(['max', 'current']).optional(),
     damageType: DmgType, icdSeconds: z.number().optional(), rampSeconds: z.number().optional(),
   }),
@@ -95,6 +98,7 @@ const Primitive = z.discriminatedUnion('kind', [
     kind: z.literal('ability_bonus_damage'), abilityKey: AbilityKey,
     flat: z.number().optional(), perLevelFlat: z.number().optional(), valuesPerRank: z.array(z.number()).optional(),
     scalingPct: z.number().optional(), scaleStat: StatKey.optional(),
+    powerScaling: PowerScaling.optional(),
     pctTargetHealth: z.number().optional(), damageType: DmgType,
   }),
   z.object({
@@ -114,13 +118,13 @@ const Entry = z.object({
   effects: z.array(Primitive),
 });
 
-const Registry = z.object({
+export const EffectRegistrySchema = z.object({
   _readme: z.string().optional(),
   targets: z.record(z.string(), Entry), // keys: item:<slug> | eternal:<id>:major | eternal:<id>:<minor-slug> | augment:<hero>:<slug>
 });
 
 export type EffectEntry = z.infer<typeof Entry>;
-export type EffectRegistry = z.infer<typeof Registry>;
+export type EffectRegistry = z.infer<typeof EffectRegistrySchema>;
 
 let cached: EffectRegistry | null = null;
 
@@ -129,8 +133,8 @@ let cached: EffectRegistry | null = null;
  *  evidence joins directly). Both share the schema and one registry. */
 export function loadEffects(): EffectRegistry {
   if (!cached) {
-    const base = Registry.parse(JSON.parse(readFileSync(path.join(ROOT, 'engine/fixtures/effects.json'), 'utf8')));
-    const augments = Registry.parse(JSON.parse(readFileSync(path.join(ROOT, 'engine/fixtures/augments.json'), 'utf8')));
+    const base = EffectRegistrySchema.parse(JSON.parse(readFileSync(path.join(ROOT, 'engine/fixtures/effects.json'), 'utf8')));
+    const augments = EffectRegistrySchema.parse(JSON.parse(readFileSync(path.join(ROOT, 'engine/fixtures/augments.json'), 'utf8')));
     for (const [k, v] of Object.entries(augments.targets)) {
       if (base.targets[k]) throw new Error(`effect registry key collision: ${k}`);
       base.targets[k] = v;
@@ -143,6 +147,7 @@ export function loadEffects(): EffectRegistry {
 // ── Resolution: entries + context -> aggregate numbers for the simulator ──
 
 export interface ProcSpec {
+  powerScaling?: { physical?: number; magical?: number }; // replaces legacy scalar when present
   flat: number;
   scalingPct: number;
   scaleStat: keyof ItemStats | null;
@@ -194,6 +199,7 @@ export interface ResolvedEffects {
   abilityCooldownMods: Partial<Record<AbilityKeyT, { pct: number; flatSeconds: number }>>;
   abilityBonuses: {
     abilityKey: AbilityKeyT; flat: number; valuesPerRank: number[];
+    powerScaling?: { physical?: number; magical?: number };
     scalingPct: number; scaleStat: keyof ItemStats | null;
     pctTargetHealth: number; damageType: 'physical' | 'magical' | 'true';
   }[];
@@ -287,6 +293,7 @@ export function resolveEntries(keys: string[], ctx: ResolveCtx, registry: Effect
         case 'on_ability_hit': {
           const proc: ProcSpec = {
             flat: (fx.flat ?? 0) + ((fx as { perLevelFlat?: number }).perLevelFlat ?? 0) * lvl,
+            powerScaling: fx.powerScaling,
             scalingPct: fx.scalingPct ?? 0,
             scaleStat: fx.scaleStat ?? null,
             pctTargetHealth: (fx.pctTargetHealth ?? 0) + ((fx as { perLevelPctTargetHealth?: number }).perLevelPctTargetHealth ?? 0) * lvl,
@@ -370,6 +377,7 @@ export function resolveEntries(keys: string[], ctx: ResolveCtx, registry: Effect
             abilityKey: fx.abilityKey,
             flat: (fx.flat ?? 0) + (fx.perLevelFlat ?? 0) * lvl,
             valuesPerRank: fx.valuesPerRank ?? [],
+            powerScaling: fx.powerScaling,
             scalingPct: fx.scalingPct ?? 0,
             scaleStat: fx.scaleStat ?? null,
             pctTargetHealth: fx.pctTargetHealth ?? 0,

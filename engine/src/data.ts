@@ -478,6 +478,7 @@ export function loadData(): LoadedData {
       ?? (damageTypeVotes.physical && damageTypeVotes.magical ? 'hybrid'
         : damageTypeVotes.magical ? 'magical' : 'physical');
 
+    const passive = om.abilities?.find(a => a.key?.toUpperCase() === 'PASSIVE');
     kits.set(om.slug, {
       slug: om.slug,
       name: prof?.name ?? om.display_name,
@@ -487,6 +488,7 @@ export function loadData(): LoadedData {
       resource: bs.max_mana?.length ? 'mana' : 'other',
       basicScalingPct,
       baseStats: bs as unknown as BaseStats,
+      passive: passive ? { key: 'PASSIVE', name: passive.display_name ?? 'Passive', sourceText: passive.menu_description ?? passive.game_description ?? '', source: 'catalog', modelStatus: 'source-only' } : undefined,
       abilities: defs,
       recommendedMaxOrder: skillOrders[om.slug]?.maxOrder
         ?.map((o) => OMEDA_KEY_MAP[o.key])

@@ -228,7 +228,7 @@ function abilityBonusDamage(eff: ResolvedEffects, ab: AbilityDef, rank: number, 
   for (const b of eff.abilityBonuses) {
     if (b.abilityKey !== ab.key) continue;
     let raw = b.flat + (b.valuesPerRank[Math.min(rank, b.valuesPerRank.length) - 1] ?? 0);
-    if (b.scaleStat && b.scalingPct) raw += (b.scalingPct / 100) * t[b.scaleStat];
+    raw += procScaling(b, t);
     if (b.pctTargetHealth && profile) raw += (b.pctTargetHealth / 100) * profile.health;
     if (raw > 0) out.push({ raw, damageType: b.damageType });
   }
@@ -247,9 +247,16 @@ function ampFactorBasics(eff: ResolvedEffects, isBurst: boolean, profile: Defens
   return 1 + pct / 100;
 }
 
+/** Explicit dual-power ratios replace legacy scalar fields, preventing double counting. */
+function procScaling(p: {powerScaling?: {physical?: number; magical?: number}; scaleStat: keyof ItemStats | null; scalingPct: number}, t: ItemStats): number {
+  if (p.powerScaling) return (p.powerScaling.physical ?? 0) / 100 * t.physical_power
+    + (p.powerScaling.magical ?? 0) / 100 * t.magical_power;
+  return p.scaleStat ? p.scalingPct / 100 * t[p.scaleStat] : 0;
+}
+
 function procDamage(p: ProcSpec, t: ItemStats, profile: DefenseProfile | null, kit: HeroKit, isBurst: boolean, eff: ResolvedEffects): number {
   let dmg = p.flat;
-  if (p.scaleStat && p.scalingPct) dmg += (p.scalingPct / 100) * t[p.scaleStat];
+  dmg += procScaling(p, t);
   const pctHealth = kit.attackType === 'ranged' && p.pctTargetHealthRanged ? p.pctTargetHealthRanged : p.pctTargetHealth;
   if (pctHealth && profile) {
     const basisFactor = p.healthBasis === 'current' && !isBurst ? CURRENT_HP_FACTOR_WINDOW : 1;

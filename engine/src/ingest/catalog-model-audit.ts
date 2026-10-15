@@ -24,7 +24,7 @@ const out = {
   source: 'Committed catalog, effect registry, and dated installed-client audit; no network refresh',
   note: 'Presence and source alignment are not gameplay proof. Multi-hit timing, conditional states, and dropped scaling remain incomplete; keep simulation provisional.',
   heroes: [...data.kits.values()].map(k => ({
-    slug: k.slug, source: k.abilitySource,
+    slug: k.slug, source: k.abilitySource, passive: k.passive,
     abilities: k.abilities.map(a => ({ key: a.key, damageType: a.damageType,
       powerScaling: a.powerScaling, ignoresArmor: a.ignoresArmor ?? false })),
     staleFallbacks: data.staleFallbacks.filter(s => s.slug === k.slug),
