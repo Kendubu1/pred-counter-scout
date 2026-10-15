@@ -9,7 +9,17 @@
     150
    ],
    "verified": false,
-   "source": "Assumed standard K=100 (damage*100/(100+armor)); shipped default stays 100. DATA WARNING 2026-06-12: implied K from total_damage_mitigated rises 122->150 with armor (n=23k players), meaning the field includes shields/DR and the formula cannot be verified from aggregates; if true K > 100, current EHP outputs OVERVALUE armor. range [100,150] is swept by the robustness check (src/robustness.ts) to flag picks that depend on the unknown. Measure in practice mode (highest-priority measurement)."
+   "source": "Assumed standard K=100 (damage*100/(100+armor)); shipped default stays 100. DATA WARNING 2026-06-12: implied K from total_damage_mitigated rises 122->150 with armor (n=23k players), meaning the field includes shields/DR and the formula cannot be verified from aggregates; if true K > 100, current EHP outputs OVERVALUE armor. range [100,150] is swept by the robustness check (src/robustness.ts) to flag picks that depend on the unknown. Measure in practice mode (highest-priority measurement). PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), point 1 of 3: Gideon L1, no items, Void Breach rank 1 hits 95 on minions and the river buff (0 magical armor, so raw = 95) and 72 on the Steel bot at L1 (magical armor 31, data/catalog/heroes.json). K=100 predicts 95*100/131 = 72.5 -> 72 shown; implied K = 97..102 given integer display. Consistent with K=100; two more armor values needed before flipping verified (CALIBRATION-CHECKLIST.md section 1).",
+   "points": [
+    {
+     "armor": 31,
+     "raw": 95,
+     "observed": 72,
+     "target": "Steel bot L1",
+     "date": "2026-10-15",
+     "patch": "1.17.2"
+    }
+   ]
   },
   "percentPenMultiplicative": {
    "value": true,
