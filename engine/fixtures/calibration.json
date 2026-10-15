@@ -85,13 +85,13 @@
    ]
   },
   "critMultiplier": {
-   "value": 1.75,
+   "value": 1.65,
    "range": [
     1.6,
     1.8
    ],
-   "verified": false,
-   "source": "Assumed 1.75. DATA EVIDENCE 2026-06-12: largest_critical_strike envelope over 6,657 crit builders, densest ratio bins 1.6-1.8 under bonus-only scaling (consistent with 1.75; confounded by crit-damage modifiers and possible post-mitigation recording). range [1.6,1.8] is swept by the robustness check. Confirm in practice mode. PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), point 1: Murdock, same bot, no items: basic hit 43 (twice); with Onixian Quiver (20% crit, NO physical power; Multishot side projectiles read separately; Onixia is melee-only) a crit showed 72. Ratio 1.674; with round-down display the true multiplier lies in 72/44..73/43 = 1.636..1.698, so the assumed 1.75 (would show 75) is RULED OUT. value left at 1.75 and verified false until a larger-number reading pins it (bigger base hit = tighter bound).",
+   "verified": true,
+   "source": "Assumed 1.75. DATA EVIDENCE 2026-06-12: largest_critical_strike envelope over 6,657 crit builders, densest ratio bins 1.6-1.8 under bonus-only scaling (consistent with 1.75; confounded by crit-damage modifiers and possible post-mitigation recording). range [1.6,1.8] is swept by the robustness check. Confirm in practice mode. PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), point 1: Murdock, same bot, no items: basic hit 43 (twice); with Onixian Quiver (20% crit, NO physical power; Multishot side projectiles read separately; Onixia is melee-only) a crit showed 72. Ratio 1.674; with round-down display the true multiplier lies in 72/44..73/43 = 1.636..1.698, so the assumed 1.75 (would show 75) is RULED OUT. value left at 1.75 and verified false until a larger-number reading pins it (bigger base hit = tighter bound). Points 2-3: 41 -> 68 (1.619..1.683) and 107 -> 177 (1.639..1.664). All three ranges intersect at 1.639..1.664: VERIFIED 2026-10-15, value 1.65 (was assumed 1.75; crit-built damage was overstated ~6% per crit).",
    "points": [
     {
      "hero": "murdock",
@@ -101,6 +101,30 @@
      "ratioRange": [
       1.636,
       1.698
+     ],
+     "date": "2026-10-15",
+     "patch": "1.17.2"
+    },
+    {
+     "hero": "murdock",
+     "normal": 41,
+     "crit": 68,
+     "items": "Onixian Quiver",
+     "ratioRange": [
+      1.619,
+      1.683
+     ],
+     "date": "2026-10-15",
+     "patch": "1.17.2"
+    },
+    {
+     "hero": "murdock",
+     "normal": 107,
+     "crit": 177,
+     "items": "Onixian Quiver + 100 physical power",
+     "ratioRange": [
+      1.639,
+      1.664
      ],
      "date": "2026-10-15",
      "patch": "1.17.2"
@@ -138,7 +162,7 @@
   "abilityScalingUsesBonusPowerOnly": {
    "value": true,
    "verified": false,
-   "source": "base_stats.physical_power equals the basic-attack per-level damage line. DATA EVIDENCE 2026-06-12: the crit envelope is only plausible under bonus-only scaling (mode 1.6-1.8); total-power reading implies an absurd 1.2x crit multiplier. Confirm in practice mode."
+   "source": "base_stats.physical_power equals the basic-attack per-level damage line. DATA EVIDENCE 2026-06-12: the crit envelope is only plausible under bonus-only scaling (mode 1.6-1.8); total-power reading implies an absurd 1.2x crit multiplier. Confirm in practice mode. PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), basic-attack reading, INCONCLUSIVE: Murdock panel 61 physical power hit a bot for 41 (bot keeps 0.672..0.689); with +100 item power (panel 161) the hit was 107, i.e. raw ~155..159. The tooltip's '+85%' on bonus power predicts raw 146 (98..100 shown), on total power ~198 (133..136); 100% of bonus (raw 161, 108..111) is nearest. Open: the two items' passives and whether the bot levelled between hits. Not a verdict on ability scaling; needs a Grux Crush reading (checklist section 5)."
   },
   "ultRankLevels": {
    "value": [
