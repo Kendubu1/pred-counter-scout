@@ -411,3 +411,33 @@ Hero/item shrinkage caches are scoped to the supplied aggregate snapshot,
 preventing fitted prior reuse between development and evaluation cohorts.
 A future evaluation must freeze predictions and collect a later patch-matched
 ranked cohort with match-ID isolation and role/rank/opponent/duration controls.
+
+## 2026-10-15 review of search assumptions
+
+Scenario requirements are hard constraints. A zero gold budget is valid and
+must not behave like an omitted cap. Negative/nonfinite budgets are rejected.
+Required anti-heal must appear within the first three items, or by the final
+slot of a one/two-item checkpoint. If the pool, family restrictions, or budget
+cannot satisfy it, the search returns no valid build; it must not relax the
+requirement. Four regression cases failed before the fix and pass afterward.
+Default unconstrained searches follow the same path and need no artifact refresh.
+
+Further design issues to address with evidence-backed changes:
+- The optimizer deduplicates unordered item sets while staged mana scoring
+  depends on purchase order. Retaining the first order can discard a better
+  route to the same final inventory. A future change should compare feasible
+  purchase paths explicitly and validate checkpoint output, not just final DPS.
+- Closed-form ability rotations count immediate casts and recasts independently.
+  Cast animations, travel time, channel time, and shared action time with basics
+  are not a complete combat timeline. An event-based evaluator needs measured
+  timing inputs before it can replace this calculation honestly.
+- Role/power filters and mana penalties are search heuristics, not game laws.
+  Audit their exclusions with controlled candidate comparisons before widening
+  pools or changing coefficients; historical popularity is not a tuning target.
+- Current patch validation needs joint build observations and a held-out cohort.
+  Improving agreement with the inspected patch-1.15 cores would not demonstrate
+  improved patch-1.17.2 predictive accuracy.
+
+Keep the present engine as a fast, provisional mechanics comparator while
+addressing these issues incrementally. Do not claim exhaustive optimization,
+match win probabilities, or measured combat timelines from its current outputs.

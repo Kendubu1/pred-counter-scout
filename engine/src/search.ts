@@ -198,6 +198,10 @@ export function generateBuilds(
   const buildSize = opts.buildSize ?? 6;
   const beamWidth = opts.beamWidth ?? 24;
   const scenario = opts.scenario ?? {};
+  const budget = scenario.goldBudget;
+  if (budget !== undefined && (!Number.isFinite(budget) || budget < 0)) {
+    throw new Error('Gold budget must be finite and nonnegative');
+  }
   const role = opts.role ?? kit.roles[0] ?? 'midlane';
   const objectiveKeys = role === 'support' ? SUPPORT_KEYS : COMBAT_KEYS;
   // A declared playstyle (from a hero's lane augment) steers the search:
@@ -243,14 +247,13 @@ export function generateBuilds(
     const seen = new Set<string>();
     for (const state of beam) {
       let expandable = candidates.filter((c) => !violatesConstraints(state.items, c));
-      // Sustain-heavy scenario: anti-heal must be in the build by the third slot.
-      if (scenario.requireAntiHeal && depth === 2 && !state.items.some((i) => i.antiHeal)) {
-        const ah = expandable.filter((c) => c.antiHeal);
-        if (ah.length) expandable = ah;
+      // Required anti-heal must be online by slot three, or the final slot of a shorter build.
+      if (scenario.requireAntiHeal && depth === Math.min(3, buildSize) - 1 && !state.items.some((i) => i.antiHeal)) {
+        expandable = expandable.filter((c) => c.antiHeal);
       }
       for (const c of expandable) {
         const items = [...state.items, c];
-        if (scenario.goldBudget && items.reduce((s, i) => s + i.totalPrice, 0) > scenario.goldBudget) continue;
+        if (budget !== undefined && items.reduce((s, i) => s + i.totalPrice, 0) > budget) continue;
         const key = items.map((i) => i.slug).sort().join('|');
         if (seen.has(key)) continue;
         seen.add(key);

@@ -4087,3 +4087,12 @@ Hero/item shrinkage caches are scoped to the supplied aggregate snapshot,
 preventing fitted prior reuse between development and evaluation cohorts.
 A future evaluation must freeze predictions and collect a later patch-matched
 ranked cohort with match-ID isolation and role/rank/opponent/duration controls.
+
+## 2026-10-15 hard constraints must not degrade to preferences
+
+The search used a truthiness check for goldBudget, making zero unlimited.
+Anti-heal filtering only applied at slot three and only when a candidate existed;
+one/two-item searches and unavailable anti-heal silently escaped the condition.
+Reproduce these failures with small controlled pools, then enforce requirements
+at the boundary and at the relevant purchase slot. An empty result is honest
+when the requested scenario is infeasible. Unconstrained outputs are unaffected.
