@@ -9,7 +9,7 @@
     150
    ],
    "verified": false,
-   "source": "Assumed standard K=100 (damage*100/(100+armor)); shipped default stays 100. DATA WARNING 2026-06-12: implied K from total_damage_mitigated rises 122->150 with armor (n=23k players), meaning the field includes shields/DR and the formula cannot be verified from aggregates; if true K > 100, current EHP outputs OVERVALUE armor. range [100,150] is swept by the robustness check (src/robustness.ts) to flag picks that depend on the unknown. Measure in practice mode (highest-priority measurement). PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), point 1 of 3: Gideon L1, no items, Void Breach rank 1 hits 95 on minions and the river buff (0 magical armor, so raw = 95) and 72 on the Steel bot at L1 (magical armor 31, data/catalog/heroes.json). K=100 predicts 95*100/131 = 72.5 -> 72 shown; implied K = 97..102 given integer display. Consistent with K=100; two more armor values needed before flipping verified (CALIBRATION-CHECKLIST.md section 1). Point 2 of 3: Steel bot L4 (magical armor 34.3) took 70; K=100 predicts 70.7. Both points sit just under the prediction, consistent with the damage number being rounded DOWN. Point 3: Steel bot L5 (magical armor 35.5) took 70; K=100 predicts 70.1. All three points match K=100 exactly under round-down display (K=95 gives 71/69, K=105 gives 73/71). NOT yet flipped to verified: the three points span only 31-35.5 armor, and the 2026-06-12 data warning is about HIGH armor (implied K rising toward 150). One reading at ~50+ magical armor (Steel L15+ ~ 63 expected, L18 ~ 60) before flipping.",
+   "source": "Assumed standard K=100 (damage*100/(100+armor)); shipped default stays 100. DATA WARNING 2026-06-12: implied K from total_damage_mitigated rises 122->150 with armor (n=23k players), meaning the field includes shields/DR and the formula cannot be verified from aggregates; if true K > 100, current EHP outputs OVERVALUE armor. range [100,150] is swept by the robustness check (src/robustness.ts) to flag picks that depend on the unknown. Measure in practice mode (highest-priority measurement). PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), point 1 of 3: Gideon L1, no items, Void Breach rank 1 hits 95 on minions and the river buff (0 magical armor, so raw = 95) and 72 on the Steel bot at L1 (magical armor 31, data/catalog/heroes.json). K=100 predicts 95*100/131 = 72.5 -> 72 shown; implied K = 97..102 given integer display. Consistent with K=100; two more armor values needed before flipping verified (CALIBRATION-CHECKLIST.md section 1). Point 2 of 3: Steel bot L4 (magical armor 34.3) took 70; K=100 predicts 70.7. Both points sit just under the prediction, consistent with the damage number being rounded DOWN. Point 3: Steel bot L5 (magical armor 35.5) took 70; K=100 predicts 70.1. All three points match K=100 exactly under round-down display (K=95 gives 71/69, K=105 gives 73/71). NOT yet flipped to verified: the three points span only 31-35.5 armor, and the 2026-06-12 data warning is about HIGH armor (implied K rising toward 150). One reading at ~50+ magical armor (Steel L15+ ~ 63 expected, L18 ~ 60) before flipping. Point 4: Steel bot L6 (magical armor 36.8) took 69; K=100 predicts 69.4.",
    "points": [
     {
      "armor": 31,
@@ -32,6 +32,14 @@
      "raw": 95,
      "observed": 70,
      "target": "Steel bot L5",
+     "date": "2026-10-15",
+     "patch": "1.17.2"
+    },
+    {
+     "armor": 36.8,
+     "raw": 95,
+     "observed": 69,
+     "target": "Steel bot L6",
      "date": "2026-10-15",
      "patch": "1.17.2"
     }
