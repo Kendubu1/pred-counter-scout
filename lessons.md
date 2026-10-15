@@ -4297,3 +4297,49 @@ Do not infer health scaling basis from these armor findings.
 
 Validation: all 212 tests in 27 files pass; TypeScript and whitespace checks pass.
 No simulation outputs required regeneration because execution math is unchanged.
+
+
+## 2026-10-15: active app parity and Eternal client reconciliation
+
+The maintainer explicitly authorized updating the UI and its supporting data.
+The prior freeze description was stale: ui/index.html and ui/v2/index.html
+redirect to ui/v6, which already reads data/catalog and data/artifacts. Follow
+active imports instead of assuming the retired v2 app is live.
+
+Decoded all 16 Eternal string tables and 414 rows of the default-mode
+ct_Eternals curve table. The committed eternal-source-audit.json preserves
+34 asset hashes, raw descriptions, every decoded curve, 46 description
+corrections, a Millennia spelling correction, nine corrected simulator effect
+entries, and unresolved source conflicts. This is a partial source audit, not
+a certificate that all 112 major/minor mechanics execute correctly. Slot
+membership cannot be inferred from strings (retired entries are present).
+
+Correct Vesh to 7% +0.4%/minute, Xyris base to 3%, Thraex damage growth and
+Ferocity, Demiurge item stats/Construct/crit conversion, and Lotus expected
+reward magnitudes. Savage Strikes now credits only its base curve (1.5 at
+level 1; 8.3 at 18), not an assumed permanent doubled proc. Hero-hit stacks
+and healing are explicitly unmodeled. Lotus retains an unverified equal-roll
+expectation, with percentage movement excluded from the flat movement channel.
+
+UI item details now retain activation conditions, health, magical lifesteal,
+and stat-icon meanings; runtime counters such as {Activations} are omitted.
+Learn displays all 189 hero augment descriptions from the shared catalog.
+Ability text preserves scaling-stat names without inventing total/bonus basis.
+Kit patch labels use catalogPatch; offline build time is no longer called a
+live-data refresh. Eternal glossary generation uses corrected shared data.
+Changed Eternal advice is removed pending independent review (43 lines);
+changed glossary recommendations are not marked re-reviewed.
+
+Verification: ui:parity runs an offline browser against the actual v6 rendering
+functions and checks all 55 kits, 270 item dialogs (including every nonzero
+stat), 189 augments, 16 Eternal majors and 96 minors. It checks both entrypoint
+redirects, Absolution's 25 tenacity and immobilize trigger, and mobile/desktop
+Murdock layouts. It is source/render parity, not measured damage validation.
+The report is data/aggregates/ui-parity.json. Optional UI_PARITY_SHOTS writes
+screenshots outside the repo; PLAYWRIGHT_EXECUTABLE_PATH selects a local browser.
+
+Remaining: resolve Aion Runic Focus units, Pilow restoration ticks, Satariel
+conflicting stat/damage rows, Weald level-18 attack-speed jump, and Thraex
+reduction conversion. Current-patch joint-build outcomes and held-out gameplay
+measurements are still absent, so simulated gains do not establish winning
+builds or current-meta fidelity. No API refresh is needed for this batch.

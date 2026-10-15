@@ -493,6 +493,7 @@
   </footer>
 </div>
 
+<script src="game-text.js"></script>
 <script>
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -1322,7 +1323,7 @@ function renderHero(a, roleParam) {
           const ai = REVIEWS && REVIEWS.heroes && REVIEWS.heroes[a.slug] && REVIEWS.heroes[a.slug][role] && REVIEWS.heroes[a.slug][role][best.id];
           const whyLine = ai
             ? `${esc(ai)}`
-            : (adv !== null && adv >= 0.3 && ranked[1] ? `as ${esc(role)} it wins about ${adv.toFixed(1)} more games per 100 than ${esc(ranked[1].name)} — the field has voted` : esc((AUGS.catalog[best.id]?.description || '').replace(/<[^>]+>/g, '')));
+            : (adv !== null && adv >= 0.3 && ranked[1] ? `as ${esc(role)} it wins about ${adv.toFixed(1)} more games per 100 than ${esc(ranked[1].name)} — the field has voted` : esc(GameText.plain(AUGS.catalog[best.id]?.description)));
           return `
           <div style="display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .65rem;background:var(--bg-2);border:1px solid var(--green);border-radius:10px;box-shadow:0 0 0 2px rgba(0,196,140,.12)">
             <img src="../img/augments/${esc(best.id)}.webp" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:contain;background:var(--bg-3);flex:none;padding:2px;box-shadow:0 0 0 2px var(--green)" onerror="this.style.visibility='hidden'">
@@ -1348,7 +1349,7 @@ function renderHero(a, roleParam) {
             // Prefer the same authored review the BEST block uses (without the
             // 🧠), else fall back to the augment catalog description.
             const gAi = REVIEWS && REVIEWS.heroes && REVIEWS.heroes[a.slug] && REVIEWS.heroes[a.slug][role] && REVIEWS.heroes[a.slug][role][g.id];
-            const gWhy = gAi || (AUGS.catalog[g.id]?.description || '').replace(/<[^>]+>/g, '');
+            const gWhy = gAi || GameText.plain(AUGS.catalog[g.id]?.description);
             return `
             <div style="display:flex;gap:.55rem;align-items:center;padding:.28rem 0">
               <img src="../img/augments/${esc(g.id)}.webp" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:contain;background:var(--bg-2);flex:none;padding:1px;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">
@@ -1628,7 +1629,7 @@ function renderHero(a, roleParam) {
 
 // ── item info popup: tap any item icon for the v2-style quick view ──
 let ITEMS_RAW = null, ITEM_WHY = null;
-const STAT_LABELS = { physical_power: 'Physical Power', magical_power: 'Magical Power', attack_speed: 'Attack Speed %', critical_chance: 'Crit Chance %', physical_penetration: 'Physical Pen', magical_penetration: 'Magical Pen', ability_haste: 'Ability Haste', health: 'Health', physical_armor: 'Physical Armor', magical_armor: 'Magical Armor', max_mana: 'Mana', lifesteal: 'Lifesteal %', omnivamp: 'Omnivamp %', heal_shield_increase: 'Heal & Shield Power %', gold_per_second: 'Gold / sec', tenacity: 'Tenacity', movement_speed: 'Move Speed', health_regeneration: 'Health Regen', mana_regeneration: 'Mana Regen' };
+const STAT_LABELS = { physical_power: 'Physical Power', magical_power: 'Magical Power', attack_speed: 'Attack Speed %', critical_chance: 'Crit Chance %', physical_penetration: 'Physical Pen', magical_penetration: 'Magical Pen', ability_haste: 'Ability Haste', health: 'Health', max_health: 'Health', magical_lifesteal: 'Magical Lifesteal %', physical_armor: 'Physical Armor', magical_armor: 'Magical Armor', max_mana: 'Mana', lifesteal: 'Lifesteal %', omnivamp: 'Omnivamp %', heal_shield_increase: 'Heal & Shield Power %', gold_per_second: 'Gold / sec', tenacity: 'Tenacity', movement_speed: 'Move Speed', health_regeneration: 'Health Regen', mana_regeneration: 'Mana Regen' };
 async function showItem(slug) {
   if (!ITEMS_RAW) {
     const [raw, why] = await Promise.all([
@@ -1640,7 +1641,7 @@ async function showItem(slug) {
   }
   const it = ITEMS_RAW.get(slug);
   if (!it) return;
-  const clean = (t) => (t || '').replace(/<br\s*\/?>(\n)?/g, ' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  const clean = GameText.plain;
   const stats = Object.entries(it.stats || {}).filter(([k, v]) => v && STAT_LABELS[k]);
   const back = document.createElement('div');
   back.className = 'ipop-back';
@@ -1653,8 +1654,8 @@ async function showItem(slug) {
         </div>
       </div>
       ${stats.length ? `<div class="istats">${stats.map(([k, v]) => `<span>${STAT_LABELS[k]}</span><span class="v">+${v}</span>`).join('')}</div>` : ''}
-      ${(it.effects || []).filter((e) => e.menu_description || e.game_description).map((e) => `
-        <div class="ifx"><b>${esc(e.name || 'Effect')}${e.cooldown ? ` · ${esc(String(e.cooldown))} cooldown` : ''}</b><br>${esc(clean(e.menu_description || e.game_description))}</div>`).join('')}
+      ${(it.effects || []).filter((e) => GameText.hasEffectDescription(e)).map((e) => `
+        <div class="ifx"><b>${esc(e.name || 'Effect')}${e.cooldown ? ` · ${esc(String(e.cooldown))} cooldown` : ''}</b>${e.condition ? `<div class="icondition">${esc(clean(e.condition))}</div>` : '<br>'}${esc(clean(e.menu_description || e.game_description))}</div>`).join('')}
       ${ITEM_WHY[slug] ? `<div class="ifx" style="color:var(--text-0)">🧠 ${esc(ITEM_WHY[slug])}<div style="font-size:.64rem;color:var(--text-2);margin-top:.25rem">AI-written from this item's stats and effects only; numbers machine-verified</div></div>` : ''}
       <button class="iclose">close</button>
     </div>`;
@@ -1740,7 +1741,7 @@ async function renderLearn(a) {
   if (!hero) return '<section class="card"><h2>Learn the hero</h2><div class="muted">no kit data found</div></section>';
   const ORDER = { LMB: 0, RMB: 1, Q: 2, E: 3, R: 4 };
   const abilities = [...(hero.abilities || [])].sort((x, y) => (ORDER[x.key] ?? 9) - (ORDER[y.key] ?? 9));
-  const clean = (t) => (t || '').replace(/<br\s*\/?>(\n)?/g, ' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  const clean = GameText.plain;
   const fmtArr = (arr, unit) => Array.isArray(arr) && arr.length ? `${arr.join(' / ')}${unit}` : null;
   const sk = SKILLS[a.slug];
   const tips = ATIPS[a.slug] ?? {};
@@ -1766,7 +1767,7 @@ async function renderLearn(a) {
 
     ${sk && sk.maxOrder?.length ? `
     <section class="card">
-      <h2>Leveling order <span class="hint">what the field maxes first · current patch</span></h2>
+      <h2>Leveling order <span class="hint">in-game recommended path</span></h2>
       <div style="font-size:.78rem;color:var(--text-1);margin-bottom:.5rem">Put your early points into these abilities in this order${sk.ultLevels?.length ? ` — and take your ultimate at <b>${sk.ultLevels.join(' / ')}</b>` : ''}.</div>
       <div class="lvlorder">${sk.maxOrder.map((o, i) => {
         const ab = abilities.find((x) => x.key === o.key);
@@ -1776,7 +1777,7 @@ async function renderLearn(a) {
     </section>` : ''}
 
     <section class="card">
-      <h2>The kit <span class="hint">official ability data, patch ${esc(a.patch)}</span></h2>
+      <h2>The kit <span class="hint">catalog ability data, patch ${esc(INDEX.catalogPatch || 'unknown')}</span></h2>
       ${abilities.map((ab) => {
         const hash = (ab.image || '').split('/').pop();
         const cd = fmtArr(ab.cooldown, 's cooldown by rank');
@@ -1785,7 +1786,7 @@ async function renderLearn(a) {
         <div class="abil">
           ${hash ? `<img loading="lazy" src="../img/abilities/${esc(hash)}" alt="" onerror="this.style.visibility='hidden'">` : ''}
           <div style="min-width:0">
-            <b style="font-size:.92rem">${esc(ab.display_name)}</b>${ab.key ? `<span class="akey">${esc(ab.key)}</span>` : ''}${ab.key === 'R' ? `<span class="akey" style="color:var(--gold);border-color:var(--gold)">ULT${sk?.ultLevels?.length ? ' · ' + sk.ultLevels.join(' / ') : ''}</span>` : ''}${changedKeys.has(ab.key) ? `<span class="abilchg ${esc(changedKeys.get(ab.key))}">${(changedKeys.get(ab.key) === 'nerf' ? '▼ nerfed' : changedKeys.get(ab.key) === 'buff' ? '▲ buffed' : '◆ changed')} this patch</span>` : ''}
+            <b style="font-size:.92rem">${esc(ab.display_name)}</b>${ab.key ? `<span class="akey">${esc(ab.key)}</span>` : ''}${ab.key === 'R' ? `<span class="akey" style="color:var(--gold);border-color:var(--gold)">ULT${sk?.ultLevels?.length ? ' · ' + sk.ultLevels.join(' / ') : ''}</span>` : ''}${changedKeys.has(ab.key) ? `<span class="abilchg ${esc(changedKeys.get(ab.key))}">${(changedKeys.get(ab.key) === 'nerf' ? '▼ nerfed' : changedKeys.get(ab.key) === 'buff' ? '▲ buffed' : '◆ changed')} · patch ${esc(patch.patch || 'unknown')}</span>` : ''}
             ${cd || cost ? `<div class="ameta">${[cd, cost].filter(Boolean).join(' · ')}</div>` : ''}
             <div class="adesc">${esc(clean(ab.menu_description || ab.game_description))}</div>
             ${tips[ab.key] ? `<div class="atip">🎯 ${esc(tips[ab.key])}</div>` : ''}
@@ -1793,6 +1794,14 @@ async function renderLearn(a) {
         </div>`;
       }).join('')}
     </section>
+    <details class="hero-augment-catalog">
+      <summary>All hero augments</summary>
+      <div class="body">${Object.entries(AUGS?.catalog || {}).filter(([, aug]) => aug.hero === a.slug).map(([id, aug]) => `
+        <div class="abil" data-augment-id="${esc(id)}">
+          <div><b>${esc(aug.name)}</b><div class="adesc">${esc(GameText.plain(aug.description))}</div></div>
+        </div>`).join('') || '<p>No catalog augments available for this hero.</p>'}
+      </div>
+    </details>
     <section class="card">
       <h2>How this kit wants to play <span class="hint">${pend ? 'from the sim — field evidence pending' : 'from the sim + field evidence'}</span></h2>
       ${(() => {
@@ -1808,7 +1817,7 @@ async function renderLearn(a) {
       <div style="font-size:.78rem;color:var(--text-2);line-height:1.55;margin-top:.5rem">${esc(a.coachLine)}</div>`;
       })()}
       ${a.build.archetypes.length ? `<div class="chips" style="margin-top:.6rem">${a.build.archetypes.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>` : ''}
-      <div style="margin-top:.6rem;font-size:.72rem;color:var(--text-2)">leveling order and ult timing come from pred.gg's in-game recommended skill path (current patch) · 🎯 ability tips are AI-written from each ability's own text, machine-checked · 🧠 the how-to-play line is AI-written from this lane's own kit, build and timings, machine-checked, and reviewed by a second agent; the grey line under it is the engine's own timing summary · patch notes from the official 1.14 changelog · combat numbers stay THEORY until in-game calibration · augment-specific tips live on the Game plan tab</div>
+      <div style="margin-top:.6rem;font-size:.72rem;color:var(--text-2)">leveling order and ult timing come from pred.gg's in-game recommended skill path (current patch) · 🎯 ability tips are AI-written from each ability's own text, machine-checked · 🧠 the how-to-play line is AI-written from this lane's own kit, build and timings, machine-checked, and reviewed by a second agent; the grey line under it is the engine's own timing summary · patch history is labeled with the patch it describes · combat numbers stay THEORY until in-game calibration · augment-specific tips live on the Game plan tab</div>
     </section>
     <details>
       <summary>Numbers, data &amp; confidence</summary>
@@ -1825,7 +1834,7 @@ async function renderLearn(a) {
         <p style="margin-top:.6rem"><b>Why THEORY:</b> ${esc(a.confidence.notes.join(' · '))}</p>
         <p style="margin-top:.5rem"><b>Unverified constants:</b> ${esc(a.confidence.unverifiedConstants.join(', '))}</p>
         <p style="margin-top:.5rem"><b>Flags:</b> ${a.flags.map(esc).join(' · ')}</p>
-        <p style="margin-top:.5rem">Live match data + winrates last refreshed ${esc((window.INDEX_GENERATED || a.generatedAt).slice(0, 10))} · build generated ${esc(a.generatedAt.slice(0, 16).replace('T', ' '))} UTC · patch ${esc(a.patch)}</p>
+        <p style="margin-top:.5rem">Simulator rebuilt ${esc(a.generatedAt.slice(0, 16).replace('T', ' '))} UTC · catalog ${esc(INDEX.catalogPatch || 'unknown')} · lane boards ${esc(META?.patch || 'unknown')} · historical calibration window ${esc(a.patch)}. Rebuilding does not refresh match evidence.</p>
       </div>
     </details>`;
 }
@@ -1895,12 +1904,8 @@ window.onpopstate = route;
   // source pins the patch it pulled); INDEX.patch is the calibration window and
   // lags whenever the boards move to a fresher source.
   const kitP = INDEX.catalogPatch, boardP = (META && META.patch) || INDEX.patch;
-  $('#patchPill').textContent = kitP && boardP && !String(boardP).includes(String(kitP))
-    ? `kit ${kitP} · boards ${boardP}`
-    : `patch ${boardP}${dataDate ? ` · data ${dataDate}` : ''}`;
-  $('#patchPill').title = kitP && boardP && !String(boardP).includes(String(kitP))
-    ? `Hero and item numbers are patch ${kitP} (verified against the patch notes). Win rates and lane boards come from a match window collected in ${boardP} — the public match feed runs days behind live.${dataDate ? ` Last refreshed ${dataDate}.` : ''}`
-    : (dataDate ? `Live match data + winrates last refreshed ${dataDate}` : '');
+  $('#patchPill').textContent = `kit ${kitP || 'unknown'} · boards ${boardP || 'unknown'}`;
+  $('#patchPill').title = `Hero and item catalog: ${kitP || 'unknown'}. Lane-board evidence: ${boardP || 'unknown'}. ${dataDate ? `Simulator rebuilt ${dataDate}; this is not a live match-data refresh.` : ''} Combat results remain THEORY pending gameplay calibration.`;
   const allSum = document.querySelector('#allHeroes > summary .t');
   if (allSum) allSum.textContent = `Browse all ${INDEX.heroes.length} heroes`;
   await getMatrix();

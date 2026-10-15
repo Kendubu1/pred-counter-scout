@@ -383,3 +383,14 @@ lines — a responses-less `copy:ingest` wiped 182 committed item explanations o
 2026-08-07 and the hero page's item "why" lines have been blank since. The new
 writeAggregate() guard makes that failure mode impossible going forward, but
 the 182 lines still need re-authoring (one agent pass).
+
+
+### 2026-10-15 UI + Eternal source follow-up
+
+The active v6 app, catalog and simulator now share corrected Eternal values;
+46 descriptions and nine modeled entries were reconciled with client evidence.
+The offline UI parity bracket covers 55 kits, 270 items, 189 augments, and all
+16/96 Eternal major/minor descriptions. Remaining source conflicts are listed
+in data/aggregates/eternal-source-audit.json. Resolve those and verify minor slot
+membership before claiming a complete Eternal audit. Re-author invalidated
+Eternal advice only through the author/independent-judge workflow.

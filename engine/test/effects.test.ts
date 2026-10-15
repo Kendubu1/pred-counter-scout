@@ -145,19 +145,19 @@ describe('effect math (synthetic, exact)', () => {
     expect(r.burstCombo).toBeCloseTo(1220, 5);
   });
 
-  it('Vesh major: 6% +0.5%/min ability amp, minute-scaled', () => {
+  it('Vesh major: 7% +0.4%/min ability amp, minute-scaled', () => {
     const at0 = resolveEntries(['eternal:vesh:major'], { level: 13, minute: 0 });
     const at10 = resolveEntries(['eternal:vesh:major'], { level: 13, minute: 10 });
-    expect(at0.ampAbilitiesPct).toBe(6);
+    expect(at0.ampAbilitiesPct).toBe(7);
     expect(at10.ampAbilitiesPct).toBe(11);
   });
 
-  it('Demiurge: item stats x1.12, Cursed Corrupted converts and consumes crit', () => {
+  it('Demiurge: item stats x1.10, Cursed Corrupted converts and consumes crit', () => {
     const fx = resolveEntries(['eternal:demiurge:major', 'eternal:demiurge:cursed-corrupted'], { level: 13 });
     const t = effectiveTotals([mkItem('x', { magical_power: 100, critical_chance: 20 })], fx);
-    expect(t.magical_power).toBeCloseTo(112, 5);
+    expect(t.magical_power).toBeCloseTo(110, 5);
     expect(t.critical_chance).toBe(0);
-    expect(t.ability_haste).toBeCloseTo(22.4, 5); // 20 crit * 1.12 -> 22.4 AH
+    expect(t.ability_haste).toBeCloseTo(17.6, 5); // 20 crit * 1.10 * 0.8 -> 17.6 AH
   });
 
   it('percent pen stacks multiplicatively (1.14 rule)', () => {
@@ -211,12 +211,12 @@ describe('effects on live data', () => {
   });
 
   it('Lotus major: expected-value per-minute encoding (takedown procs excluded)', () => {
-    // One proc per 2 min, uniform over +1.5% dmg / +4 AH / +0.75% MS / +1.5% maxHP.
+    // One proc per 2 min, uniform over +1% dmg / +4 AH / +0.75% MS / +1.25% maxHP.
     const fx = resolveEntries(['eternal:lotus:major'], { level: 13, minute: 20 });
-    expect(fx.ampAllPct).toBeCloseTo(3.75, 6);            // 0.1875%/min * 20
+    expect(fx.ampAllPct).toBeCloseTo(2.5, 6);             // 0.125%/min * 20
     expect(fx.statFlat.ability_haste).toBeCloseTo(10, 6); // 0.5/min * 20
-    expect(fx.statFlat.movement_speed).toBeCloseTo(1.875, 6);
-    expect(fx.healthMultiplier).toBeCloseTo(1.0375, 6);
+    expect(fx.statFlat.movement_speed ?? 0).toBe(0); // percent movement omitted
+    expect(fx.healthMultiplier).toBeCloseTo(1.03125, 6);
     expect(fx.unmodeled.join(' ')).toMatch(/takedown/i);  // the floor caveat rides along
     // minute 0 (pre-game math): no procs yet, nothing credited
     const t0 = resolveEntries(['eternal:lotus:major'], { level: 13, minute: 0 });

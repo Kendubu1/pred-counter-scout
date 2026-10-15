@@ -84,7 +84,7 @@ function minorRow(m, recommended) {
 
 function card(e) {
   const tags = tagsFor(e);
-  const rec = new Set((e.recommend && e.recommend.default) || []);
+  const rec = new Set(e.copyReviewPending ? [] : ((e.recommend && e.recommend.default) || []));
   const roles = topRoles(e);
   return `
       <article class="le-card" id="et-${esc(e.id)}" data-styles="${tags.map((t) => t.id).join(' ')}">
@@ -261,7 +261,7 @@ const html = `<!DOCTYPE html>
       <div class="le-foot">
         Generated from <code>data/game-data/eternals.json</code> (patch ${esc(cat.patch)}, updated ${esc(cat.updated)}) by
         <code>scripts/build-learn-eternals.js</code>. Playstyle tags are derived from each Eternal's stored fit weights,
-        not hand-assigned. Major and minor text carries every stated change through patch ${esc(cat.patch)}.
+        not hand-assigned. Descriptions were reconciled with the installed client on ${esc(cat.updated)}. Some source conflicts and gameplay interactions remain unresolved; see the <a href="../data/aggregates/eternal-source-audit.json">source audit</a>. Simulator results remain THEORY.
         ${disc.length ? `<br><br><b>${disc.length} value${disc.length === 1 ? '' : 's'} corrected against the patch notes:</b> ${
           disc.map((d) => `${esc(d.target)} (we held “${esc(d.ourStoredValue)}”)`).join('; ')}.` : ''}
         <br><br>Per-Eternal win-rate statistics sit behind an operator-managed scope, so this is kit-synergy guidance
@@ -314,6 +314,6 @@ const html = `<!DOCTYPE html>
 `;
 
 const out = path.join(ROOT, 'ui/learn-eternals.html');
-fs.writeFileSync(out, html);
+fs.writeFileSync(out, html.replace(/[ \t]+$/gm, ''));
 const tagCount = eternals.reduce((a, e) => a + tagsFor(e).length, 0);
 console.log(`Wrote ${out} — ${eternals.length} Eternals, ${tagCount} playstyle tags, patch ${cat.patch}`);

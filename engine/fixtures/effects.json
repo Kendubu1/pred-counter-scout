@@ -267,13 +267,13 @@
   },
   "eternal:vesh:major": {
    "name": "Vesh (Major)",
-   "sourceText": "Ability damage on heroes deals 6% (+0.5% per minute) of the damage as a DoT over 3s.",
-   "source": "owned eternals.json, synced 1.14.4",
+   "sourceText": "Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s.",
+   "source": "installed client ct_Eternals + Eternal string tables, audited 2026-10-15; data/aggregates/eternal-source-audit.json",
    "effects": [
     {
      "kind": "damage_amp",
-     "pct": 6,
-     "perMinutePct": 0.5,
+     "pct": 7,
+     "perMinutePct": 0.4,
      "scope": "abilities",
      "dotSeconds": 3
     }
@@ -312,17 +312,17 @@
   },
   "eternal:xyris:major": {
    "name": "Xyris (Major)",
-   "sourceText": "Gain 4% Bonus Damage, increased by 0.6% per 10 Units killed. Encoded at base; CS scaling needs match context.",
-   "source": "owned eternals.json, synced 1.14.4",
+   "sourceText": "Deal 3% bonus damage, increased by 0.4% per 10 units killed, up to 400 units.",
+   "source": "installed client ct_Eternals + Eternal string tables, audited 2026-10-15; data/aggregates/eternal-source-audit.json",
    "effects": [
     {
      "kind": "damage_amp",
-     "pct": 4,
+     "pct": 3,
      "scope": "all"
     },
     {
      "kind": "unmodeled",
-     "note": "+0.6% per 10 units killed; needs CS-by-minute data (backlog item 2+)"
+     "note": "Additional 0.4% per 10 units killed, capped at 400 units; no CS-by-minute state, so only the base bonus is modeled."
     }
    ]
   },
@@ -341,13 +341,13 @@
   },
   "eternal:thraex:major": {
    "name": "Thraex (Major)",
-   "sourceText": "Mark last basic-attacked hero 3s: +3% (+0.5% per level) damage to them, they deal less to you. Credited in sustained windows only (mark requires an opening hit).",
-   "source": "owned eternals.json, synced 1.14.4",
+   "sourceText": "Mark the last Enemy Hero damaged by your Basic Attack for 3s, increasing your damage against them by 3% (+0.4% per level) and reducing the damage they deal to you by 1.5% (+0.35% per level).",
+   "source": "installed client ct_Eternals + Eternal string tables, audited 2026-10-15; data/aggregates/eternal-source-audit.json",
    "effects": [
     {
      "kind": "damage_amp",
      "pct": 3,
-     "perLevelPct": 0.5,
+     "perLevelPct": 0.4,
      "scope": "all",
      "appliesWhen": "window_only"
     }
@@ -355,25 +355,29 @@
   },
   "eternal:thraex:savage-strikes": {
    "name": "Thraex / Savage Strikes",
-   "sourceText": "On-hit 1.5 (+0.4 per level) physical, +100% for 3s vs heroes (encoded at the vs-hero doubled value).",
-   "source": "owned eternals.json, synced 1.14.4",
+   "sourceText": "Deal 1.5 (+0.4 per level) Physical Damage On-Hit. Attacking an Enemy Hero increases this by 100% for 3s, stacking up to 3 times. Heal for the damage dealt.",
+   "source": "installed client ct_Eternals + Eternal string tables, audited 2026-10-15; data/aggregates/eternal-source-audit.json",
    "effects": [
     {
      "kind": "on_hit",
-     "flat": 3,
-     "perLevelFlat": 0.8,
+     "flat": 1.1,
+     "perLevelFlat": 0.4,
      "damageType": "physical"
+    },
+    {
+     "kind": "unmodeled",
+     "note": "Hero-hit stacks (100% increase, up to 3 stacks for 3s) and on-hit healing are not modeled; only the base curve is credited."
     }
    ]
   },
   "eternal:thraex:ferocity": {
    "name": "Thraex / Ferocity",
-   "sourceText": "Gain 1.5% Total Attack Speed per 1s in Hero Combat, stacking infinitely.",
-   "source": "owned eternals.json, synced 1.14.4",
+   "sourceText": "Gain 1% Total Attack Speed per 1s in Hero Combat, stacking infinitely.",
+   "source": "installed client ct_Eternals + Eternal string tables, audited 2026-10-15; data/aggregates/eternal-source-audit.json",
    "effects": [
     {
      "kind": "as_ramp",
-     "pctPerSecond": 1.5
+     "pctPerSecond": 1
     }
    ]
   },
@@ -447,63 +451,63 @@
   },
   "eternal:demiurge:major": {
    "name": "Demiurge (Major)",
-   "sourceText": "Increase stats gained from Items by 12%, and damage dealt by Item Effects by 10%.",
-   "source": "owned eternals.json, synced 1.14.4",
+   "sourceText": "Increase stats gained from Items (excluding passives) by 10%, and damage dealt by Item Effects by 10%.",
+   "source": "installed client ct_Eternals + Eternal string tables, audited 2026-10-15; data/aggregates/eternal-source-audit.json",
    "effects": [
     {
      "kind": "stat_multiplier",
      "stat": "physical_power",
-     "pct": 12
+     "pct": 10
     },
     {
      "kind": "stat_multiplier",
      "stat": "magical_power",
-     "pct": 12
+     "pct": 10
     },
     {
      "kind": "stat_multiplier",
      "stat": "attack_speed",
-     "pct": 12
+     "pct": 10
     },
     {
      "kind": "stat_multiplier",
      "stat": "critical_chance",
-     "pct": 12
+     "pct": 10
     },
     {
      "kind": "stat_multiplier",
      "stat": "physical_penetration",
-     "pct": 12
+     "pct": 10
     },
     {
      "kind": "stat_multiplier",
      "stat": "magical_penetration",
-     "pct": 12
+     "pct": 10
     },
     {
      "kind": "stat_multiplier",
      "stat": "ability_haste",
-     "pct": 12
+     "pct": 10
     },
     {
      "kind": "stat_multiplier",
      "stat": "health",
-     "pct": 12
+     "pct": 10
     },
     {
      "kind": "stat_multiplier",
      "stat": "physical_armor",
-     "pct": 12
+     "pct": 10
     },
     {
      "kind": "stat_multiplier",
      "stat": "magical_armor",
-     "pct": 12
+     "pct": 10
     },
     {
      "kind": "stat_multiplier",
      "stat": "max_mana",
-     "pct": 12
+     "pct": 10
     },
     {
      "kind": "item_proc_amp",
@@ -513,8 +517,8 @@
   },
   "eternal:demiurge:construct": {
    "name": "Demiurge / Construct",
-   "sourceText": "Gain +10 Health and +1.25 Ability Haste per Level.",
-   "source": "owned eternals.json, synced 1.14.4",
+   "sourceText": "Gain 10 Health and 1 Ability Haste per Level.",
+   "source": "installed client ct_Eternals + Eternal string tables, audited 2026-10-15; data/aggregates/eternal-source-audit.json",
    "effects": [
     {
      "kind": "stat_flat",
@@ -526,20 +530,20 @@
      "kind": "stat_flat",
      "stat": "ability_haste",
      "base": 0,
-     "perLevel": 1.25
+     "perLevel": 1
     }
    ]
   },
   "eternal:demiurge:cursed-corrupted": {
    "name": "Demiurge / Cursed Corrupted",
-   "sourceText": "Convert each 1% Crit Chance into 1 Ability Haste (you lose the crit stat).",
-   "source": "owned eternals.json, synced 1.14.4",
+   "sourceText": "Convert each 1% Critical Chance into 0.8 Ability Haste (you lose the converted crit stat).",
+   "source": "installed client ct_Eternals + Eternal string tables, audited 2026-10-15; data/aggregates/eternal-source-audit.json",
    "effects": [
     {
      "kind": "stat_conversion",
      "from": "critical_chance",
      "to": "ability_haste",
-     "pct": 100,
+     "pct": 80,
      "consumesSource": true
     }
    ]
@@ -590,14 +594,14 @@
   },
   "eternal:lotus:major": {
    "name": "Lotus (Major)",
-   "sourceText": "Every 2 minutes and every Takedown randomly grants +1.5% Damage, +4 Ability Haste, +0.75% Move Speed, or +1.5% Max Health.",
-   "source": "owned eternals.json (1.14 Eternals system); encoded 2026-06-12 as expected value per proc (uniform over the four stated buffs), time-driven procs only (1 per 2 minutes)",
+   "sourceText": "Every 2 minutes and every Takedown randomly grants +1% Damage, +4 Ability Haste, +0.75% Move Speed, or +1.25% Max Health.",
+   "source": "installed client ct_Eternals + Eternal string tables, audited 2026-10-15; data/aggregates/eternal-source-audit.json",
    "provisional": false,
    "effects": [
     {
      "kind": "damage_amp",
      "pct": 0,
-     "perMinutePct": 0.1875,
+     "perMinutePct": 0.125,
      "scope": "all",
      "appliesWhen": "always"
     },
@@ -608,19 +612,17 @@
      "perMinute": 0.5
     },
     {
-     "kind": "stat_flat",
-     "stat": "movement_speed",
-     "base": 0,
-     "perMinute": 0.09375
-    },
-    {
      "kind": "health_multiplier",
      "pct": 0,
-     "perMinutePct": 0.1875
+     "perMinutePct": 0.15625
     },
     {
      "kind": "unmodeled",
      "note": "takedown-triggered procs excluded (no takedown model) — the encoding is a floor; in real games Lotus stacks faster, especially when ahead"
+    },
+    {
+     "kind": "unmodeled",
+     "note": "Random-roll probabilities are unverified: modeled values assume equal probability across four rewards. Percentage movement-speed reward omitted; no percent movement channel."
     }
    ]
   },
