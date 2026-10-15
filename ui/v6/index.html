@@ -1276,7 +1276,14 @@ function renderHero(a, roleParam) {
         const role = roleParam && hr[roleParam] ? roleParam : (hr[a.role] ? a.role : roles[0]);
         const mismatch = roleParam && !hr[roleParam];
         const cell = hr[role];
-        const ranked = [...cell.augments].sort((x, y) => (y.w / y.n) - (x.w / x.n));
+        // Evidence floor scales with the cell: 10% of its games, 30..300. A full
+        // patch sample keeps the old fixed 300; early in a patch (the public
+        // match stream accumulates daily) a thin cell still shows its leaders
+        // instead of nothing — and a 5-game fluke can never top a list.
+        const cellGames = cell.games || (cell.eternals || []).reduce((s, e) => s + e.n, 0);
+        const floor = Math.min(300, Math.max(30, Math.round(cellGames * 0.1)));
+        const augPool = cell.augments.filter((x) => x.n >= floor);
+        const ranked = [...(augPool.length ? augPool : cell.augments)].sort((x, y) => (y.w / y.n) - (x.w / x.n));
         const adv = ranked[1] ? ((ranked[0].w / ranked[0].n) - (ranked[1].w / ranked[1].n)) * 100 : null;
         const simBy = new Map((a.eternals.all ?? a.eternals.top.map((e) => ({ ...e, modeled: true, note: null }))).map((e) => [e.name.toLowerCase(), e]));
         // Order by SHRUNK winrate (method-of-moments prior toward the
@@ -1296,7 +1303,7 @@ function renderHero(a, roleParam) {
             const noise = usable.reduce((s, c) => s + (mean * (1 - mean)) / c.n, 0) / usable.length;
             k = Math.min(Math.max((mean * (1 - mean)) / Math.max(varObs - noise, 1e-5) - 1, 10), 500);
           }
-          return all.filter((e) => e.n >= 300)
+          return all.filter((e) => e.n >= floor)
             .map((e) => ({ ...e, shrunk: (e.w + k * mean) / (e.n + k) }))
             .sort((x, y) => y.shrunk - x.shrunk).slice(0, 3);
         })();
@@ -1410,12 +1417,21 @@ function renderHero(a, roleParam) {
           };
           // The recommended top minor for each slot, noted clearly per Eternal
           // (the full slot options stay in the bottom Kit-math (THEORY) block).
+          // The field's most-picked minor in each slot under this Eternal (public
+          // match stream), else the sim's conditioned pick.
+          const fieldMinors = (name) => {
+            const fe = (cell.eternals || []).find((e) => e.name.toLowerCase() === name.toLowerCase());
+            if (!fe || !fe.minor1 || !fe.minor2) return null;
+            const top = (arr) => { const t = (arr || [])[0]; return t && t.n >= 10 ? { name: t.name, field: true, n: t.n, wr: t.w / t.n, share: t.n / fe.n } : null; };
+            const m1 = top(fe.minor1), m2 = top(fe.minor2);
+            return m1 || m2 ? { minor1: m1, minor2: m2 } : null;
+          };
           const minorsLine = (name, indent) => {
-            const m = a.eternals.minorsByName && a.eternals.minorsByName[name.toLowerCase()];
+            const m = fieldMinors(name) || (a.eternals.minorsByName && a.eternals.minorsByName[name.toLowerCase()]);
             const mins = m ? [m.minor1, m.minor2].filter((x) => x && x.name) : [];
             if (!mins.length) return '';
             // Icon + name per pick so the minors read at a glance in draft.
-            const chip = (x) => `<span style="display:inline-flex;gap:.3rem;align-items:center;white-space:nowrap"><img src="${IMG.blessing(x.name)}" alt="" style="width:22px;height:22px;border-radius:50%;object-fit:cover;background:var(--bg-3);flex:none;border:1px solid var(--border)" onerror="this.style.display='none'">${esc(x.name)}</span>`;
+            const chip = (x) => `<span title="${x.field ? `picked in ${Math.round(x.share * 100)}% of these games · ${(x.wr * 100).toFixed(1)}% win rate over ${x.n.toLocaleString()}` : 'kit-math pick (no field sample yet)'}" style="display:inline-flex;gap:.3rem;align-items:center;white-space:nowrap"><img src="${IMG.blessing(x.name)}" alt="" style="width:22px;height:22px;border-radius:50%;object-fit:cover;background:var(--bg-3);flex:none;border:1px solid var(--border)" onerror="this.style.display='none'">${esc(x.name)}${x.field ? `<span style="color:var(--text-2);font-variant-numeric:tabular-nums">${Math.round(x.share * 100)}%</span>` : ''}</span>`;
             return `<div style="display:flex;gap:.3rem .6rem;align-items:center;flex-wrap:wrap;font-size:.7rem;color:var(--text-1);margin:.25rem 0 0 ${indent}"><b style="color:var(--text-0)">Top minors:</b> ${mins.map(chip).join('')}</div>`;
           };
           const e0 = ets[0], wr0 = e0.w / e0.n, et0 = ETMAP && ETMAP[e0.name.toLowerCase()];
@@ -1440,9 +1456,11 @@ function renderHero(a, roleParam) {
             const wr = e.w / e.n, why = renderWhy(e);
             const et = ETMAP && ETMAP[e.name.toLowerCase()];
             const ai = REVIEWS && REVIEWS.eternals && REVIEWS.eternals[a.slug] && REVIEWS.eternals[a.slug][role] && REVIEWS.eternals[a.slug][role][e.name];
-            const mb = a.eternals.minorsByName && a.eternals.minorsByName[e.name.toLowerCase()];
+            const mb = fieldMinors(e.name) || (a.eternals.minorsByName && a.eternals.minorsByName[e.name.toLowerCase()]);
             const pick1 = mb && mb.minor1 && mb.minor1.name, pick2 = mb && mb.minor2 && mb.minor2.name;
-            const slot = (opts, pick) => (opts || []).map((o) => `<div style="display:flex;gap:.35rem;align-items:flex-start;margin:.12rem 0;font-size:.66rem;color:${o.name === pick ? 'var(--accent)' : 'var(--text-2)'}"><img src="${IMG.blessing(o.name)}" alt="" style="width:18px;height:18px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;margin-top:.05rem;${o.name === pick ? 'box-shadow:0 0 0 1.5px var(--accent)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'"><span>${o.name === pick ? '⚙ ' : ''}<b>${esc(o.name)}</b> — ${esc(o.desc)}</span></div>`).join('');
+            const fieldPick = !!(mb && ((mb.minor1 && mb.minor1.field) || (mb.minor2 && mb.minor2.field)));
+            const mark = fieldPick ? '★ ' : '⚙ ';
+            const slot = (opts, pick) => (opts || []).map((o) => `<div style="display:flex;gap:.35rem;align-items:flex-start;margin:.12rem 0;font-size:.66rem;color:${o.name === pick ? 'var(--accent)' : 'var(--text-2)'}"><img src="${IMG.blessing(o.name)}" alt="" style="width:18px;height:18px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;margin-top:.05rem;${o.name === pick ? 'box-shadow:0 0 0 1.5px var(--accent)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'"><span>${o.name === pick ? mark : ''}<b>${esc(o.name)}</b> — ${esc(o.desc)}</span></div>`).join('');
             return `
             <div style="padding:.35rem 0;border-bottom:1px ${i === ets.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
               <div style="display:flex;gap:.6rem;align-items:center">
@@ -1454,7 +1472,7 @@ function renderHero(a, roleParam) {
               </div>
               <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.18rem 0 0 2.1rem">${et ? esc(et.major) : why}</div>
               ${ai ? `<div style="font-size:.68rem;line-height:1.45;color:var(--text-1);margin:.12rem 0 0 2.1rem">${esc(ai)}</div>` : ''}
-              ${et ? `<div style="margin:.2rem 0 0 2.1rem"><div style="font-size:.6rem;font-weight:800;letter-spacing:.06em;color:var(--text-2);margin-bottom:.1rem">MINOR SLOT 1 · pick one</div>${slot(et.minorSlot1, pick1)}<div style="font-size:.6rem;font-weight:800;letter-spacing:.06em;color:var(--text-2);margin:.3rem 0 .1rem">MINOR SLOT 2 · pick one</div>${slot(et.minorSlot2, pick2)}<div style="font-size:.62rem;color:var(--text-2);margin-top:.3rem">⚙ = the sim's pick · minor values are THEORY until calibration</div></div>` : ''}
+              ${et ? `<div style="margin:.2rem 0 0 2.1rem"><div style="font-size:.6rem;font-weight:800;letter-spacing:.06em;color:var(--text-2);margin-bottom:.1rem">MINOR SLOT 1 · pick one</div>${slot(et.minorSlot1, pick1)}<div style="font-size:.6rem;font-weight:800;letter-spacing:.06em;color:var(--text-2);margin:.3rem 0 .1rem">MINOR SLOT 2 · pick one</div>${slot(et.minorSlot2, pick2)}<div style="font-size:.62rem;color:var(--text-2);margin-top:.3rem">${fieldPick ? '★ = the most-picked minor in ranked games this patch' : "⚙ = the sim's pick · minor values are THEORY until calibration"}</div></div>` : ''}
               <div style="font-size:.66rem;color:var(--text-2);margin:.3rem 0 0 2.1rem">⚙ sim math: ${why}</div>
             </div>`;
           };
@@ -1509,7 +1527,7 @@ function renderHero(a, roleParam) {
           return `${lead}${runnerUps.length ? `<details class="sim-collapse"><summary>Other Eternals</summary><div class="body">${runnerUps.map((e, i) => runnerRow(e, i + 1)).join('')}</div></details>` : ''}`;
         })()}
         ${(() => {
-          const crs = (cell.crests || []).filter((c) => c.n >= 300).sort((x, y) => (y.w / y.n) - (x.w / x.n)).slice(0, 3);
+          const crs = (cell.crests || []).filter((c) => c.n >= floor).sort((x, y) => (y.w / y.n) - (x.w / x.n)).slice(0, 3);
           if (!crs.length) return '';
           const cslug = (n) => n.toLowerCase().replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
           // CREST is EXPANDED by default — a visible block titled like the

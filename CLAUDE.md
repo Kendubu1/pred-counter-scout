@@ -98,7 +98,14 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   samples from pred.gg via src/ingest/predgg-feed.ts — the omeda.city match feed
   they used went to 503 in 2026-09 and is retired),
   `npm run matrix` (all-pairs matchup matrix; rerun after catalog/artifacts),
-  `npm run augments` (per-hero-role augment/eternal/crest field evidence + icons),
+  `npm run perks` (per-hero-role augment / Eternal / minor / minor-pair / crest
+  win evidence, COUNTED from pred.gg's public match stream
+  https://pred.gg/api/public/get-matches-since/<unix>/ — our GraphQL tier is the
+  ceiling and cannot read simpleBuild, confirmed by the maintainer 2026-10-14;
+  resumes daily from data/aggregates/perk-stream.json and rewrites
+  predgg-augments.json),
+  `npm run augments` (the old simpleBuild pull; gated at our pred.gg tier, kept
+  only for the augment icon download),
   `npm run icons` (fills ui/img/ from the pred.gg catalog — heroes, items, crests,
   Eternals, their minors, augments, and every ability icon data/catalog links;
   needs PREDGG creds; skip-if-exists, so it only fetches what the repo lacks —

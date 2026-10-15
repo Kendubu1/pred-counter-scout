@@ -3957,3 +3957,42 @@ were returning 503; the catalog had been byte-identical since 2026-08-28.
 - **Substring item matching breaks when names nest.** The hero-coach test flagged
   12 lanes for coaching "Spectra" because they build "Spectral Schematics"; it
   now matches whole names.
+
+## 2026-10-14 — Augment / Eternal / minor evidence counted from pred.gg's public match stream
+
+Maintainer: our pred.gg GraphQL access is the ceiling — nothing more unlocks —
+"unless we use this route": https://pred.gg/api/public/get-matches-since/<unix>/.
+priorities item 1 (simpleBuild/coreBuild behind an Application scope) is
+therefore not waiting on a permission any more; it is answered by counting.
+
+- **What the route is.** Unauthenticated; each call returns the next 20
+  matches with endTime >= <unix seconds>, oldest first, every game mode mixed
+  (`since/0` returns December 2022). It is the whole global stream: ~13
+  finished matches a minute. Each player row carries `heroPerkData` — the
+  augment (`Perk_<Hero>_<Name>`), the Eternal (`Eternal_<Name>`) and both minors
+  (`Blessing_<Eternal>_<Name>`) — plus `roleName`, `teamId`, final
+  `inventoryData` and the AI flag. All 188 perk names seen map 1:1 onto the
+  GraphQL perk catalog's `name` field; hero names map onto the catalog's
+  internal `name` (case-insensitively: `TwinBlast`).
+- **`npm run perks` (src/ingest/perk-stream.ts)** pages it from the current
+  patch's release, keeps RANKED non-AI lane rows, and accumulates per hero ->
+  role: games/wins, augments, Eternals, each Eternal's minor-slot picks and
+  minor PAIRS (which the simpleBuild endpoint never offered), and crests (from
+  the inventory). Cursor + counts live in data/aggregates/perk-stream.json, so
+  a daily run reads only what finished since; raw matches are never stored. It
+  rewrites predgg-augments.json in the shape every consumer already read, so the
+  hero pages, augment copy pass and playstyle code needed no new loader.
+- **The stream throttles.** ~800 pages at a 1s delay drew an HTTP 403 that
+  cleared within minutes — and the first version only saved at the end, so the
+  whole run was lost. Now: 2s between pages, a checkpoint every 25 pages, and a
+  403/429 backs off (1, 2, 5 minutes) then saves and stops cleanly; the next
+  run resumes. Any long pull must checkpoint; "save at the end" is a bet that
+  nothing fails for an hour.
+- **Floors that assumed a big sample.** The hero page dropped every Eternal and
+  crest under a fixed 300 games and ranked augments by raw win rate with no
+  floor at all — harmless on simpleBuild's patch-wide counts, wrong for a
+  window that grows daily. One floor now scales with the cell (10% of its games,
+  30..300; 5% let a 30-game Demiurge outrank a 233-game Vesh on Valmont), identical to the old behaviour on a full sample.
+- **Top minors are now the field's picks** where the stream has them (most-
+  picked minor per slot under that Eternal, with its pick share), the sim's
+  conditioned pick otherwise; the minor-slot list marks which (★ field / ⚙ sim).

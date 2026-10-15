@@ -70,7 +70,11 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    `node ../scripts/build-measured.js <patch>` and
    `node ../scripts/build-patch-page.js <patch>` if a predictions file exists
    for the patch.
-4. `npm run aggregate && npm run matchups:feed` — the pred.gg match samples
+4. `npm run perks` — augment / Eternal / minor / crest win evidence counted
+   from pred.gg's public match stream (get-matches-since), resumed from the
+   committed cursor in data/aggregates/perk-stream.json (~1,000 requests a day;
+   a new patch starts a fresh window). Rewrites predgg-augments.json.
+   Then `npm run aggregate && npm run matchups:feed` — the pred.gg match samples
    (gold curves + item play rates; same-role head-to-head lanes, resumed
    incrementally inside the current patch family).
 5. `npm run artifacts && npm run matrix && npm run agreement` — fold the fresh

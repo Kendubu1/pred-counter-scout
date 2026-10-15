@@ -340,6 +340,13 @@ remain as fast canaries but cannot detect staleness on their own: one pinned
   match-feed consumers (aggregate, rank-split, matchup-feed, calibrate, probe)
   and the postgame lookups moved to pred.gg too, through one shared per-hero
   match sampler (src/ingest/predgg-feed.ts). No code calls omeda.city.
+- **Perk evidence is counted, not read (Oct 14).** Our pred.gg GraphQL tier is
+  the ceiling (maintainer, 2026-10-14), so augment / Eternal / minor / crest win
+  evidence comes from pred.gg's public match stream (`npm run perks`,
+  src/ingest/perk-stream.ts): every finished ranked match's per-player perks,
+  accumulated daily inside the current patch into perk-stream.json and written
+  to predgg-augments.json. Minor-slot and minor-pair counts are new; the hero
+  page's top minors are field picks wherever the window has them.
 
 **Two clocks.** The catalog patch and the match-window patch are separate and
 usually differ, because the public match feed runs behind live. Any surface
