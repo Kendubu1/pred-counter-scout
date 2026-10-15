@@ -134,7 +134,7 @@
   "attackSpeedFormula": {
    "formula": "MEASURED 2026-10-15: attacksPerSecond = (base_attack_speed[level] * (1 + item_attack_speed / 100)) / basic_attack_time. The sim still computes the old form (no / basic_attack_time); verified flips when the sim fix lands.",
    "verified": false,
-   "source": "Assumed. base_stats.attack_speed is per-level attacks/sec (omeda.city heroes.json); item attack_speed treated as percent. PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), point 1: Murdock, no attack-speed items, stats panel 125% attack speed; counted 18 attacks in 20s = 0.90/s. The CURRENT formula reads 125% as 1.25 attacks/s (37% too fast). Murdock's basic_attack_time is 1.45 (data/catalog/heroes.json); attack_speed / basic_attack_time = 1.25 / 1.45 = 0.86/s (17.2 per 20s) fits within counting error. Hypothesis to confirm with a +attack-speed reading: attacksPerSecond = attack_speed% / 100 / basic_attack_time. Point 2: panel 180%, 26 swings in 20s = 25 intervals = 1.25/s; attack_speed/BAT = 1.80/1.45 = 1.24/s (point 1 re-read the same way: 17 intervals = 0.85/s vs 0.86). CONFIRMED: attacksPerSecond = panelAttackSpeed / basic_attack_time. The shipped formula (1.80/s) is ~45% fast for Murdock. Sim fix pending: apply to every hero except Legion (BAT 0.2, minigun) and Revenant (level-varying BAT, reload), which need their own check.",
+   "source": "Assumed. base_stats.attack_speed is per-level attacks/sec (omeda.city heroes.json); item attack_speed treated as percent. PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), point 1: Murdock, no attack-speed items, stats panel 125% attack speed; counted 18 attacks in 20s = 0.90/s. The CURRENT formula reads 125% as 1.25 attacks/s (37% too fast). Murdock's basic_attack_time is 1.45 (data/catalog/heroes.json); attack_speed / basic_attack_time = 1.25 / 1.45 = 0.86/s (17.2 per 20s) fits within counting error. Hypothesis to confirm with a +attack-speed reading: attacksPerSecond = attack_speed% / 100 / basic_attack_time. Point 2: panel 180%, 26 swings in 20s = 25 intervals = 1.25/s; attack_speed/BAT = 1.80/1.45 = 1.24/s (point 1 re-read the same way: 17 intervals = 0.85/s vs 0.86). CONFIRMED: attacksPerSecond = panelAttackSpeed / basic_attack_time. The shipped formula (1.80/s) is ~45% fast for Murdock. Sim fix pending: apply to every hero except Legion (BAT 0.2, minigun) and Revenant (level-varying BAT, reload), which need their own check. Point 3 (stacked attack speed): panel 474%, 64 swings in 20s (3.15..3.2/s); panel/BAT predicts 4.74/1.45 = 3.27/s. Formula holds at the top end too.",
    "points": [
     {
      "hero": "murdock",
@@ -154,6 +154,16 @@
      "seconds": 20,
      "observedAps": 1.25,
      "note": "26 swings = 25 intervals",
+     "date": "2026-10-15",
+     "patch": "1.17.2"
+    },
+    {
+     "hero": "murdock",
+     "panelAttackSpeedPct": 474,
+     "attacks": 64,
+     "seconds": 20,
+     "observedAps": 3.17,
+     "predictedAps": 3.27,
      "date": "2026-10-15",
      "patch": "1.17.2"
     }
@@ -198,7 +208,7 @@
    "value": 3,
    "verified": false,
    "crossCheck": "Maintainer web research (2026-06-14) cites a 350-420% attack-speed cap. That is a percent-bonus figure, whereas the shipped 3.0 is an absolute attacks/sec ceiling from the Cursed Ring tooltip; the two are likely the same limit seen two ways (base AS x cap ~= 3/sec for most heroes). Shipped value left at 3.0 (stronger in-game source); confirm the units in practice mode before reconciling.",
-   "source": "STATED in item data: Cursed Ring (Broken Chains) reads \"Increase the Attacks per Second Cap from 3 to 4\", so the default cap is 3.0 attacks/sec (4.0 with that effect, currently unmodeled). Applied 2026-06-14 from the stated value; the formula interaction still merits a practice-mode check (checklist 7), so it stays verified:false (output remains THEORY)."
+   "source": "STATED in item data: Cursed Ring (Broken Chains) reads \"Increase the Attacks per Second Cap from 3 to 4\", so the default cap is 3.0 attacks/sec (4.0 with that effect, currently unmodeled). Applied 2026-06-14 from the stated value; the formula interaction still merits a practice-mode check (checklist 7), so it stays verified:false (output remains THEORY). PRACTICE MODE 2026-10-15: Murdock at panel 474% swung 64 times in 20s (3.15..3.2/s). A hard 3.0 attacks/s cap would allow 60. Either the cap is above ~3.2/s or it is not an attacks/s ceiling as modeled (the 350-420% figures can't apply either: the panel read 474% and the rate tracked it). Stopwatch drift could explain part of a 4-swing gap, so value left at 3.0, verified false, pending a cleaner high-AS count. Note: with attacks/s now divided by basic attack time, the 3.0 cap rarely binds in the sim anyway."
   }
  },
  "checkpoints": {
