@@ -3996,3 +3996,36 @@ therefore not waiting on a permission any more; it is answered by counting.
 - **Top minors are now the field's picks** where the stream has them (most-
   picked minor per slot under that Eternal, with its pick share), the sim's
   conditioned pick otherwise; the minor-slot list marks which (★ field / ⚙ sim).
+
+## 2026-10-15 — First practice-mode calibration session (maintainer, patch 1.17.2)
+
+Five of six unverified combat constants settled in one sitting; raw points live
+in engine/fixtures/calibration.json, the sim-facing ones are pinned in
+engine/test/calibration-measured.test.ts.
+
+- **Armor (mitigation): K=100 holds** — Gideon Void Breach 95 raw vs the Steel
+  bot at L1/L4/L5/L6 read 72/70/70/69, each the K=100 prediction rounded DOWN
+  (K=95 or 105 miss by one). Accepted by the maintainer on four low-armor
+  points; a 50+ armor reading was waived (reopen if one ever disagrees).
+- **Ability haste: cd x 100/(100+AH) holds** at AH 6/20/61 (Cosmic Rift 11/10/7s).
+  Void Breach is no longer a clean haste probe: since 1.17 its cooldown also
+  speeds up with max mana. Checklists name abilities, and abilities change.
+- **Crit is 1.65, not 1.75** — Murdock 43->72, 41->68, 107->177; the ranges
+  intersect at 1.639..1.664. Crit-built damage was overstated ~6% per crit.
+- **Ability ratios apply to bonus power** — an armor-free ratio test (same bot,
+  same level: 107/41 = 2.61) rules out total power (3.24). Side finding:
+  Murdock's basic attack behaves like ~95% of item power, not the tooltip's
+  85%; one hero, flagged, not generalised.
+- **Attack speed was the big one.** The panel's "125%" is attacks per BASIC
+  ATTACK TIME, not per second: Murdock (BAT 1.45) swung 0.85/s at 125%, 1.25/s at
+  180%, 2.70/s at 390% (all = panel / 1.45). The sim had read the panel as
+  attacks/s, so every hero's auto-attacks ran too fast by its BAT (1.0-1.8).
+  Fixed in src/sim.ts; Legion (minigun, BAT 0.2) and Revenant (reload) are held
+  on the old reading until measured. Counting swings: N swings in a window is
+  N-1 intervals — both early readings looked 5% off until that was applied.
+- **The 3.0 attacks/s cap is still unverified** — the 474% reading was taken
+  holding Cursed Ring (which lifts the cap to 4), and without it Murdock tops
+  out at 390% = 2.69/s, under the cap. Needs a BAT-1.15 hero (~345% to reach 3/s).
+- Practice-mode hygiene that mattered: a neutral Eternal (Idrisil + Cold
+  Hearted + Glacier) so nothing adds damage; integer damage displays round
+  down, so predictions are compared as floor(x), and ratios as ranges.
