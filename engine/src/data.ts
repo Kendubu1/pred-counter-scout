@@ -77,7 +77,28 @@ const OMEDA_KEY_MAP: Record<string, AbilityDef['key']> = {
 // power ratio on the percentage itself is conservatively dropped).
 type ParsedDamage = { values: number[]; scaling: number; pctMaxHealth?: number;
   damageType: AbilityDef['damageType']; powerScaling?: AbilityDef['powerScaling'];
-  ignoresArmor?: boolean; unmodeledScaling?: string };
+  ignoresArmor?: boolean; unmodeledScaling?: string;
+  omittedTerms?: OmittedScalingTerm[]; sourcePayload?: string };
+
+export interface OmittedScalingTerm {
+  sourceTag: string;
+  percentByRank: number[];
+  reason: 'unsupported-stat' | 'power-dropped-with-leading-stat';
+}
+
+/** Inventory only: source tags do not establish total/bonus or self/target basis.
+ * Stop at this damage payload so a following heal or conditional rider cannot
+ * be reported as a missing ratio on the selected base hit. */
+function omittedPayloadTerms(text: string): { sourcePayload: string; omittedTerms: OmittedScalingTerm[] } {
+  const end = /\b(?:physical|magical|true)\s+damage\b/i.exec(text);
+  const sourcePayload = end ? text.slice(0, end.index + end[0].length) : text;
+  const omittedTerms = [...sourcePayload.matchAll(/<(\w+Text)>\(\+([\d./]+)%/g)].map(m => ({
+    sourceTag: m[1]!, percentByRank: m[2]!.split('/').map(Number),
+    reason: (m[1] === 'AttackDamageText' || m[1] === 'AbilityPowerText'
+      ? 'power-dropped-with-leading-stat' : 'unsupported-stat') as OmittedScalingTerm['reason'],
+  }));
+  return { sourcePayload, omittedTerms };
+}
 
 // Restrict ratios to this payload: a subsequent heal or second hit must not
 // contribute power to the first hit. Damage type is independent of scaling stat.
@@ -131,7 +152,8 @@ export function parseDamage(md: string): ParsedDamage | null {
 //   2. the scaling tag is a stat the sim cannot scale on (ArmorText, HealthText,
 //      MRText — Terra scales off her own armor, Sevarog off his own health).
 //      The stated damage values are still correct, so they are taken and the
-//      ratio is dropped to 0 and REPORTED as unmodeled rather than guessed.
+//      unsupported ratio is REPORTED rather than guessed; supported power
+//      ratios in the same damage payload are retained.
 //   3. the base damage carries no tag at all and only a rider is tagged
 //      (Kira's Dusk: 45-125 base plus a 6-14 per-stack rider)
 //
@@ -192,9 +214,13 @@ export function parseDamageClauseScoped(md: string): ParsedDamage | null {
         const parts = m[3]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
         cands.push({ values, scaling: parts.length ? parts.reduce((s, n) => s + n, 0) / parts.length : 0, damageType: typeOf(power), conditional, ...taggedPayload(clause.slice(m.index!)) });
       } else {
-        // Scaling stat the sim has no channel for: keep the stated base, drop
-        // the ratio, and say so.
-        cands.push({ values, scaling: 0, damageType: typeOf('physical'), unmodeledScaling: tag.replace(/Text$/, ''), conditional });
+        // Unsupported leading stats must not hide supported power ratios in
+        // the same payload. Retain unresolved terms separately as evidence.
+        const payload = omittedPayloadTerms(clause.slice(m.index!));
+        const supported = taggedPayload(payload.sourcePayload);
+        if (supported) payload.omittedTerms = payload.omittedTerms.filter(t => t.reason === 'unsupported-stat');
+        cands.push({ values, scaling: 0, damageType: typeOf('physical'), unmodeledScaling: tag.replace(/Text$/, ''),
+          conditional, ...payload, ...supported });
       }
     }
 
@@ -202,7 +228,7 @@ export function parseDamageClauseScoped(md: string): ParsedDamage | null {
     const plain = clause.match(/(?:deal(?:ing|s)?|take|takes|receive|receives|suffer|suffers)\s+([\d][\d./]*)\s*(?:physical|magical|true)?\s*damage/i);
     if (plain) {
       const values = plain[1]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
-      if (values.length) cands.push({ values, scaling: 0, damageType: typeOf('physical'), unmodeledScaling: 'untagged-base', conditional: CONDITIONAL.test(clause.slice(0, plain.index!)) });
+      if (values.length) cands.push({ values, scaling: 0, damageType: typeOf('physical'), unmodeledScaling: 'untagged-base', sourcePayload: plain[0], omittedTerms: [], conditional: CONDITIONAL.test(clause.slice(0, plain.index!)) });
     }
   }
 
@@ -340,7 +366,8 @@ export interface LoadedData {
   staleFallbacks: { slug: string; key: string }[]; // ability numbers taken from stale owned data
   // Current-text damage kept, scaling ratio dropped because the sim has no
   // channel for it (caster armor/health scaling) or the base carried no tag.
-  unmodeledScalings: { slug: string; key: string; stat: string }[];
+  unmodeledScalings: { slug: string; key: string; stat: string;
+    sourceText: string; sourcePayload: string; omittedTerms: OmittedScalingTerm[] }[];
 }
 
 export function loadData(): LoadedData {
@@ -367,7 +394,7 @@ export function loadData(): LoadedData {
   // Abilities whose damage values are current but whose scaling ratio the sim
   // cannot represent (scales on the caster's own armor/health, or the base is
   // untagged). Damage is understated for these, so they are reported, not hidden.
-  const unmodeledScalings: { slug: string; key: string; stat: string }[] = [];
+  const unmodeledScalings: LoadedData['unmodeledScalings'] = [];
 
   for (const om of omedaHeroes) {
     const bs = om.base_stats;
@@ -394,7 +421,9 @@ export function loadData(): LoadedData {
       // abilities silently fall back to the frozen pre-1.14 owned scrape.
       const parsed = strict ?? (omAb?.menu_description ? parseDamageClauseScoped(omAb.menu_description) : null);
       const droppedScaling = !strict && parsed ? (parsed as { unmodeledScaling?: string }).unmodeledScaling : undefined;
-      if (droppedScaling) unmodeledScalings.push({ slug: om.slug, key, stat: droppedScaling });
+      if (droppedScaling) unmodeledScalings.push({ slug: om.slug, key, stat: droppedScaling,
+        sourceText: omAb?.menu_description ?? '', sourcePayload: parsed?.sourcePayload ?? '',
+        omittedTerms: parsed?.omittedTerms ?? [] });
       const healing = omAb?.menu_description ? parseHealing(omAb.menu_description) : [];
       const asBuff = omAb?.menu_description ? parseSelfAttackSpeed(omAb.menu_description) : null;
       const targetHealth = omAb?.menu_description ? parseTargetHealth(omAb.menu_description) : [];

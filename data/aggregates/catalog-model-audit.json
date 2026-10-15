@@ -1,7 +1,12 @@
 {
- "generatedAt": "2026-10-15T18:35:45.371Z",
+ "generatedAt": "2026-10-15T20:42:27.958Z",
  "source": "Committed catalog, effect registry, and dated installed-client audit; no network refresh",
  "note": "Presence and source alignment are not gameplay proof. Multi-hit timing, conditional states, and dropped scaling remain incomplete; keep simulation provisional.",
+ "scalingCoverage": {
+  "affectedAbilitySlots": 11,
+  "selectedPayloadOmittedRatioCount": 13,
+  "note": "Counts selected payload omissions only, not all unsupported mechanics. Source tags and ratios are retained as evidence, not executed. Health/armor stat basis needs verification; conditional riders, charge maxima and multi-hit counts need separate state models. Untagged-base entries can have zero selected-payload ratios while still omitting conditional riders."
+ },
  "heroes": [
   {
    "slug": "adele",
@@ -54,12 +59,34 @@
     {
      "slug": "adele",
      "key": "SECONDARY",
-     "stat": "Health"
+     "stat": "Health",
+     "sourceText": "Adele equips her shield for 4.5s, increasing her hitbox size and gaining 20/22.5/25/27.5/30% <ArmorText>(+4%</ArmorText><img id=\"ArmorOrange\"></img><ArmorText>)</ArmorText><MRText>(+4%</MRText><img id=\"MRIcon\"></img><MRText>)</MRText> Damage Reduction. This can be cast during other abilities.<br>\n<br>\nOn cast, she attaches a Thorned Vine to Enemy Heroes and Monsters within 800u. The Vine deals 6/8/10/12/14 <HealthText>(+0.7%</HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> true damage every 0.5s for the duration. The Vine snaps if an Enemy moves more than 1000u away.",
+     "sourcePayload": "6/8/10/12/14 <HealthText>(+0.7%</HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> true damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "HealthText",
+       "percentByRank": [
+        0.7
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
     },
     {
      "slug": "adele",
      "key": "ULTIMATE",
-     "stat": "Health"
+     "stat": "Health",
+     "sourceText": "Adele performs a small leap, slamming her shield into the ground, summoning a large Thornbush at her location for 8s. <br>\n<br>\nVines attach to all Enemies within the central section, dealing 55/90/125 <HealthText>(+5%</HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> physical damage. This Interrupts abilities, Roots Enemies for 0.5s, and pulls flying Enemies to the ground.<br>\n<br>\nAll Enemies inside the Thornbush are Slowed by 35/37.5/40% and take 4/7/10 true damage every 35u moved within it.",
+     "sourcePayload": "55/90/125 <HealthText>(+5%</HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> physical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "HealthText",
+       "percentByRank": [
+        5
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
     }
    ]
   },
@@ -1208,7 +1235,10 @@
     {
      "slug": "kira",
      "key": "PRIMARY",
-     "stat": "untagged-base"
+     "stat": "untagged-base",
+     "sourceText": "Passive: Apply Vengeance to enemies by dealing basic attack or ability damage, increasing damage you deal to them by 0.75% for 3.5s, stacking infinitely.<br>\n<br>\nActive: Purify all Enemy Units afflicted with Vengeance, dealing 45/65/85/105/125 physical damage, plus an additional 6/8/10/12/14 <AttackDamageText>(+12%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText> damage per stack, and Slowing them by 10/15/20/25/30% for 1s.<br>\n<br>\nThe cooldown is reset and 35% Mana is refunded if Dusk kills any target.",
+     "sourcePayload": "dealing 45/65/85/105/125 physical damage",
+     "omittedTerms": []
     }
    ]
   },
@@ -1864,7 +1894,18 @@
     {
      "slug": "rampage",
      "key": "ALTERNATE",
-     "stat": "Health"
+     "stat": "Health",
+     "sourceText": "Leap forward before slamming down to the ground, dealing 80/110/140/170/200 <HealthText>(+5% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> physical damage to nearby Enemies and launching damaged Heroes backwards. The leap can be cancelled early by basic attacking.<br>\n<br>\nUsing Pounce while Boulder Throw is active causes it to shatter upon landing, dealing its effects in the area.<br>\n<br>\nBehemoth: Range increases by 65%.",
+     "sourcePayload": "80/110/140/170/200 <HealthText>(+5% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> physical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "HealthText",
+       "percentByRank": [
+        5
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
     }
    ]
   },
@@ -2004,6 +2045,11 @@
     {
      "key": "SECONDARY",
      "damageType": "magical",
+     "powerScaling": {
+      "magical": [
+       35
+      ]
+     },
      "ignoresArmor": false
     },
     {
@@ -2022,7 +2068,18 @@
     {
      "slug": "riktor",
      "key": "SECONDARY",
-     "stat": "Health"
+     "stat": "Health",
+     "sourceText": "Emit an electrical aura for 4.5s, granting Riktor a 20 <HealthText>(+8/9.5/11/12.5/14% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> <AbilityPowerText>(+35%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> Shield and 8/9/10/11/12% Movement Speed for the duration. <br>\n<br>\nThe electrical aura deals 60/95/130/165/200 <HealthText>(+6% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> <AbilityPowerText>(+35%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage to all nearby Enemies over the duration.<br>\n<br>\nIf Riktor takes damage while the aura is active, he emits a pulse of energy that deals another tick of damage at 75% effectiveness. This can only occur once every 0.5s.",
+     "sourcePayload": "60/95/130/165/200 <HealthText>(+6% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> <AbilityPowerText>(+35%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "HealthText",
+       "percentByRank": [
+        6
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
     }
    ]
   },
@@ -2162,6 +2219,11 @@
     {
      "key": "PRIMARY",
      "damageType": "magical",
+     "powerScaling": {
+      "magical": [
+       40
+      ]
+     },
      "ignoresArmor": false
     },
     {
@@ -2190,12 +2252,34 @@
     {
      "slug": "sevarog",
      "key": "ALTERNATE",
-     "stat": "Health"
+     "stat": "Health",
+     "sourceText": "Sevarog dashes forward through the air, dealing 40/60/80/100/120 <HealthText>(+2.5%</HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> magical damage to all Enemies he passes through and Fearing them for 1s.",
+     "sourcePayload": "40/60/80/100/120 <HealthText>(+2.5%</HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> magical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "HealthText",
+       "percentByRank": [
+        2.5
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
     },
     {
      "slug": "sevarog",
      "key": "PRIMARY",
-     "stat": "Health"
+     "stat": "Health",
+     "sourceText": "Strike forward with a spectral hand, dealing 80/95/110/125/140 <HealthText>(+4% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText><AbilityPowerText>(+40%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage to all Enemies. <br>\n<br>\nDeals 40/45/50/55/60 additional damage to Monsters.<br>\n<br>\nIf Siphon damages an Enemy Hero, Sevarog steals 1.8/2/2.2/2.4/2.6% of their Maximum Health for 15s.",
+     "sourcePayload": "80/95/110/125/140 <HealthText>(+4% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText><AbilityPowerText>(+40%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "HealthText",
+       "percentByRank": [
+        4
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
     }
    ]
   },
@@ -2396,6 +2480,11 @@
     {
      "key": "PRIMARY",
      "damageType": "magical",
+     "powerScaling": {
+      "magical": [
+       70
+      ]
+     },
      "ignoresArmor": false
     },
     {
@@ -2424,7 +2513,18 @@
     {
      "slug": "steel",
      "key": "PRIMARY",
-     "stat": "Health"
+     "stat": "Health",
+     "sourceText": "Steel charges forward, becoming Unstoppable for the duration of the dash and dealing 85/125/165/205/245 <HealthText>(+5% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText><AbilityPowerText>(+70%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage to all Enemies in his path. <br>\n<br>\nEnemy Heroes struck by Bull Rush are Knocked Back. Monsters and Minions are Stunned for 2s. ",
+     "sourcePayload": "85/125/165/205/245 <HealthText>(+5% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText><AbilityPowerText>(+70%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "HealthText",
+       "percentByRank": [
+        5
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
     }
    ]
   },
@@ -2460,17 +2560,71 @@
     {
      "slug": "terra",
      "key": "ALTERNATE",
-     "stat": "Armor"
+     "stat": "Armor",
+     "sourceText": "Terra becomes Unstoppable and Channels for up to 3.5s before dashing. She deals 27/48/69/90/111 <ArmorText>(+40%</ArmorText><img id=\"ArmorOrange\"></img><ArmorText>)</ArmorText> <MRText>(+40%</MRText><img id=\"MRIcon\"></img><MRText>)</MRText> physical damage to all Enemies in her path, stopping if she collides with a Hero. Enemies hit are Knocked Back for 0.25s.<br>\n<br>\nFor the first 1.25s, dash range and damage increases, dealing up to 81/144/207/270/333 <ArmorText>(+120%</ArmorText><img id=\"ArmorOrange\"></img><ArmorText>)</ArmorText> <MRText>(+120%</MRText><img id=\"MRIcon\"></img><MRText>)</MRText> physical damage. <br>\n<br>\nEmpowered: On Enemy hit, gain a 5/65/125/185/245 <HealthText>(+10/12/14/16/18% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> shield for 3.5s.",
+     "sourcePayload": "27/48/69/90/111 <ArmorText>(+40%</ArmorText><img id=\"ArmorOrange\"></img><ArmorText>)</ArmorText> <MRText>(+40%</MRText><img id=\"MRIcon\"></img><MRText>)</MRText> physical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "ArmorText",
+       "percentByRank": [
+        40
+       ],
+       "reason": "unsupported-stat"
+      },
+      {
+       "sourceTag": "MRText",
+       "percentByRank": [
+        40
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
     },
     {
      "slug": "terra",
      "key": "PRIMARY",
-     "stat": "Armor"
+     "stat": "Armor",
+     "sourceText": "Terra spins her axe, striking all Enemies around her before slashing forward a second time. Each strike deals 50/80/110/140/170 <ArmorText>(+35%</ArmorText><img id=\"ArmorOrange\"></img><ArmorText>)</ArmorText><MRText>(+35%</MRText><img id=\"MRIcon\"></img><MRText>)</MRText> physical damage.<br>\n<br>\nEnemy Hero hits refund 10% of the cooldown per strike.<br>\n<br>\nEmpowered: Terra strikes three times, with the third strike dealing an additional <HealthText>(+5/6.25/7.5/8.75/10 Target's Max Health)%</HealthText> damage to all Enemies in front of her.",
+     "sourcePayload": "50/80/110/140/170 <ArmorText>(+35%</ArmorText><img id=\"ArmorOrange\"></img><ArmorText>)</ArmorText><MRText>(+35%</MRText><img id=\"MRIcon\"></img><MRText>)</MRText> physical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "ArmorText",
+       "percentByRank": [
+        35
+       ],
+       "reason": "unsupported-stat"
+      },
+      {
+       "sourceTag": "MRText",
+       "percentByRank": [
+        35
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
     },
     {
      "slug": "terra",
      "key": "SECONDARY",
-     "stat": "Armor"
+     "stat": "Armor",
+     "sourceText": "Throw a spectral axe, dealing 80/120/160/200/240 <ArmorText>(+40%</ArmorText><img id=\"ArmorOrange\"></img><ArmorText>)</ArmorText><MRText>(+40%</MRText><img id=\"MRIcon\"></img><MRText>)</MRText> physical damage to all Enemies in its path.<br>\n<br>\nEnemies hit by Highland Hurl are Slowed by 40% for 1.25s. and have their Physical Armor reduced by 20/22.5/25/27.5/30% for 4.5s.<br>\n<br>\nEmpowered: Roots Enemies instead for 1.25s.",
+     "sourcePayload": "80/120/160/200/240 <ArmorText>(+40%</ArmorText><img id=\"ArmorOrange\"></img><ArmorText>)</ArmorText><MRText>(+40%</MRText><img id=\"MRIcon\"></img><MRText>)</MRText> physical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "ArmorText",
+       "percentByRank": [
+        40
+       ],
+       "reason": "unsupported-stat"
+      },
+      {
+       "sourceTag": "MRText",
+       "percentByRank": [
+        40
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
     }
    ]
   },

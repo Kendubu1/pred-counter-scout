@@ -23,6 +23,11 @@ const out = {
   generatedAt: new Date().toISOString(),
   source: 'Committed catalog, effect registry, and dated installed-client audit; no network refresh',
   note: 'Presence and source alignment are not gameplay proof. Multi-hit timing, conditional states, and dropped scaling remain incomplete; keep simulation provisional.',
+  scalingCoverage: {
+    affectedAbilitySlots: data.unmodeledScalings.length,
+    selectedPayloadOmittedRatioCount: data.unmodeledScalings.reduce((n, s) => n + s.omittedTerms.length, 0),
+    note: 'Counts selected payload omissions only, not all unsupported mechanics. Source tags and ratios are retained as evidence, not executed. Health/armor stat basis needs verification; conditional riders, charge maxima and multi-hit counts need separate state models. Untagged-base entries can have zero selected-payload ratios while still omitting conditional riders.',
+  },
   heroes: [...data.kits.values()].map(k => ({
     slug: k.slug, source: k.abilitySource, passive: k.passive,
     abilities: k.abilities.map(a => ({ key: a.key, damageType: a.damageType,
@@ -43,4 +48,4 @@ const out = {
   tenacityEvidence: 'Absolution shop 25 confirmed by user 2026-10-15; 11 other complementary values corrected from named client curves, not individually shop tested.',
 };
 writeFileSync(path.join(root, 'data/aggregates/catalog-model-audit.json'), JSON.stringify(out, null, 1) + '\n');
-console.log(`${out.heroes.length} heroes, ${out.items.length} items, ${out.augments.length} hero augments inventoried; ${data.staleFallbacks.length} stale ability fallback(s), ${data.unmodeledScalings.length} dropped scaling terms`);
+console.log(`${out.heroes.length} heroes, ${out.items.length} items, ${out.augments.length} hero augments inventoried; ${data.staleFallbacks.length} stale ability fallback(s), ${out.scalingCoverage.affectedAbilitySlots} affected ability slots, ${out.scalingCoverage.selectedPayloadOmittedRatioCount} omitted selected-payload ratios`);

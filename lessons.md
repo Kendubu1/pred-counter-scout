@@ -4228,3 +4228,38 @@ Invalidated 15 stale coaching lines, preserving pending reviewed replacements;
 no optimizer explanation item sets became stale and no new advice was authored.
 The full 201-test harness and TypeScript checks pass. Current-patch eligible
 ordered-build evidence remains zero, so no meta-fidelity claim is made.
+
+
+## 2026-10-15 mixed-stat damage scaling and omission evidence
+
+The old coverage count represented 11 affected ability slots, not 11 omitted
+ratios. Inspection found 16 selected-payload ratios lost: a leading HealthText
+or ArmorText caused the fallback parser to drop every ratio in that payload,
+including otherwise-supported magical power. Restore Riktor Electrocute's 35%,
+Sevarog Siphon's 40%, and Steel Bull Rush's 70% magical-power ratios. Keep their
+health terms unresolved; do not infer total/bonus or self/target stat basis from
+an icon. Simulator kit comparison isolates changes to those three heroes.
+
+Coverage now retains the full source text, selected damage payload, and each
+omitted source tag with rank-specific percentages. There remain 13 selected-
+payload ratios across the same 11 flagged slots. Terra records both ArmorText
+and MRText, excluding its later charged maximum and shield. Kira's untagged
+base has zero selected-payload ratios; her full source preserves the separate
+per-stack rider for future state modeling. This count is not exhaustive coverage
+of conditional riders, multi-hit timing, empowered states, shields or passives.
+
+Eight regression cases cover mixed health/power recovery, all three affected
+heroes at low/high/unlearned ranks, both armor channels, excluded later heals,
+Kira's separated rider, and ranked source coefficients. No health/armor
+coefficients are applied without verification. Riktor's retaliatory aura pulses
+and HealthText-scaled shield remain outside this damage-ratio correction.
+All dependent builds and comparisons remain THEORY and require regeneration after this numerical change.
+
+
+Validation outcome: all 55 hero artifacts, 1,485 matchup pairs and 927 controlled
+comparisons rebuilt. 55 pair reports changed, all involving the three corrected
+heroes. Sevarog and Steel changed item sets in offlane and jungle; Riktor's
+final sets were unchanged. Four stale coaching lines and three optimizer
+explanations were invalidated, with pending replacements preserved. Full suite:
+209 tests in 26 files; TypeScript and whitespace checks pass. Current-patch
+lane-eligible ordered-build evidence remains zero; no validated-win claim.

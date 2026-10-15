@@ -106,7 +106,10 @@ four-second guess. Ranked buff durations now reach the simulator.
 2026-10-15 finite-window follow-up: self attack-speed buffs now use actual
 active intervals, effective recast cooldowns and per-interval caps; five exact
 regression scenarios cover endpoints, overlap, haste and the old 3s discontinuity.
-Next source audit: 11 reported dropped scaling entries remain: health on
+Source audit: the 11 flagged ability slots originally hid 16 omitted ratios.
+Restore the three supported magical-power ratios on Riktor E, Sevarog Q and
+Steel Q; retain full source, selected payload and 13 unresolved ratio entries.
+The affected slots remain: health on
 Adele (2), Rampage (1), Riktor (1), Sevarog (2), Steel (1); armor on Terra (3);
 and Kira's untagged base/stack payload (1). Verify self versus target and total
 versus bonus stat basis before adding coefficients; Terra also has charge,
