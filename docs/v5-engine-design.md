@@ -506,3 +506,37 @@ Validation outcome: rebuilt all 55 heroes, 1,485 matchup pairs and 927 controlle
 comparison scenarios. 192 matchup-pair reports changed; Grux and Serath changed
 item recommendations in offlane and jungle. Three stale coaching lines were
 invalidated with pending replacements recorded. No new advice was authored.
+
+
+## 2026-10-15 purchase-prefix preservation in build search
+
+The beam previously deduplicated completed item sets before comparing their
+purchase histories. A high-damage first item could therefore suppress the same
+set reached through an early mana item, even though the existing scoring rule
+explicitly penalizes mana-starved prefixes. Deduplication now retains the best
+encountered staged-mana factor for each item set, reevaluates the retained order,
+and leaves equal-factor ties stable. Scoring weights, mana targets, pool filters,
+gold caps and anti-heal deadlines are unchanged.
+
+For equal item sets, the staged score is the minimum of prior prefix adequacy
+and any newly reached stage. Keeping the stronger prior history preserves that
+advantage under a shared continuation. This is a beam-search correction, not a
+proof of a globally optimal purchase order: pruned paths remain unsearched.
+Three regressions cover the damage-first collision, exhaustive permutations of
+a small pool, and anti-heal by slot three with early mana retained.
+
+The separate matchup/artifact orderBuild heuristic still chooses purchases by
+marginal combat value per gold and can reorder the selected set. It does not yet
+share the search's mana objective. Accordingly, this change improves set scoring
+and selection but does not validate the displayed purchase timeline. Current
+meta agreement is still unverified: owned ordered-build evidence is patch 1.15,
+whereas the catalog is 1.17.2; no current-patch winning-build claim is justified.
+
+
+Validation outcome: all 55 hero artifacts, 1,485 matchup pairs and 927 controlled
+comparisons regenerated. Item sets changed in 22 hero-role combinations across
+13 heroes, and 164 matchup-pair reports changed. Five stale coaching lines and
+one Zinx support optimizer explanation were invalidated, with pending replacement
+records preserved. No replacement advice was authored. All 198 tests pass;
+TypeScript and whitespace checks pass. Current-patch lane-eligible evidence
+remains zero; these results remain THEORY rather than validated winning builds.

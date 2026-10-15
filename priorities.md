@@ -39,6 +39,11 @@ with drivers); levels-provisional and THEORY flags propagate to output;
 CLI --vs <enemy>; harness green; design doc + lessons.md updated;
 committed.
 
+2026-10-15 search follow-up: item-set deduplication now retains the best
+encountered early-mana purchase history. Shared scoring between search and the
+separate matchup ordering heuristic remains open; displayed purchase timelines
+are not yet mana-aware. No scoring coefficients were changed.
+
 ## 5. [DONE 2026-06-11] Statistical evidence layer v0
 
 Done when: the aggregator records per-hero per-item win counts; shrunk
