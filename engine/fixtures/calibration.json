@@ -161,8 +161,24 @@
   },
   "abilityScalingUsesBonusPowerOnly": {
    "value": true,
-   "verified": false,
-   "source": "base_stats.physical_power equals the basic-attack per-level damage line. DATA EVIDENCE 2026-06-12: the crit envelope is only plausible under bonus-only scaling (mode 1.6-1.8); total-power reading implies an absurd 1.2x crit multiplier. Confirm in practice mode. PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), basic-attack reading, INCONCLUSIVE: Murdock panel 61 physical power hit a bot for 41 (bot keeps 0.672..0.689); with +100 item power (panel 161) the hit was 107, i.e. raw ~155..159. The tooltip's '+85%' on bonus power predicts raw 146 (98..100 shown), on total power ~198 (133..136); 100% of bonus (raw 161, 108..111) is nearest. Open: the two items' passives and whether the bot levelled between hits. Not a verdict on ability scaling; needs a Grux Crush reading (checklist section 5)."
+   "verified": true,
+   "source": "base_stats.physical_power equals the basic-attack per-level damage line. DATA EVIDENCE 2026-06-12: the crit envelope is only plausible under bonus-only scaling (mode 1.6-1.8); total-power reading implies an absurd 1.2x crit multiplier. Confirm in practice mode. PRACTICE MODE 2026-10-15 (maintainer, patch 1.17.2), basic-attack reading, INCONCLUSIVE: Murdock panel 61 physical power hit a bot for 41 (bot keeps 0.672..0.689); with +100 item power (panel 161) the hit was 107, i.e. raw ~155..159. The tooltip's '+85%' on bonus power predicts raw 146 (98..100 shown), on total power ~198 (133..136); 100% of bonus (raw 161, 108..111) is nearest. Open: the two items' passives and whether the bot levelled between hits. Not a verdict on ability scaling; needs a Grux Crush reading (checklist section 5). RESOLVED same day: all hits were on the Steel bot at L3 (same armor), so the ratio is armor-free: 107/41 = 2.61 (2.548..2.634 with integer display). Ratio on TOTAL power predicts 3.24 -> ruled out; the ratio applies to BONUS (item) power: VERIFIED 2026-10-15 (Murdock, Mesmer + Tyranny = +100 physical power, no damage passives). Evidence is a basic attack; ability ratios are taken to follow the same rule. SIDE FINDING: the implied coefficient is ~0.93..0.98 of item power, not the tooltip's +85% (which predicts 2.39). The sim reads ratios from tooltip text, so Murdock's basic damage with items may be understated ~10%; one hero, flagged, not generalised.",
+   "points": [
+    {
+     "hero": "murdock",
+     "target": "Steel bot L3",
+     "noItemHit": 41,
+     "withItemsHit": 107,
+     "bonusPower": 100,
+     "ratio": 2.61,
+     "ratioRange": [
+      2.548,
+      2.634
+     ],
+     "date": "2026-10-15",
+     "patch": "1.17.2"
+    }
+   ]
   },
   "ultRankLevels": {
    "value": [
