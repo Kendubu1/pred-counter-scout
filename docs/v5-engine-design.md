@@ -389,3 +389,25 @@ backed by client curves and the user's Absolution shop confirmation (25).
 
 `audit:catalog` inventories all data and remaining model limitations offline.
 See `docs/catalog-asset-audit.md` for evidence, corrections, and remaining gaps.
+
+## 2026-10-15 validation evidence scope
+
+The ordered-core snapshot is patch 1.15 (July 6), while the catalog is
+1.17.2. Recomputing a comparison today does not refresh its observations.
+Agreement now carries source patch, fetch time, and role population; explicit
+empty role samples cannot borrow hero-wide rows. Invalid/unmapped cores are
+excluded. Historical overlap cannot establish current-meta fidelity.
+
+Removed rank correlation between observed three-item core winrates and an
+arbitrary six-item covering build: those are different treatments.
+`validate:meta` produces 927 controlled scenarios across 103 hero-role pairs,
+using levels 9/13/18 and gold caps 6000/9000/12000. Completed-item prefixes
+preserve purchase order, expose residual gold, and use equal reference defenses.
+They omit augments/Eternals and components, and are not win probabilities.
+The report explicitly records zero confirmed winning builds and no held-out
+validation. Current item marginals cannot reconstruct joint build outcomes.
+
+Hero/item shrinkage caches are scoped to the supplied aggregate snapshot,
+preventing fitted prior reuse between development and evaluation cohorts.
+A future evaluation must freeze predictions and collect a later patch-matched
+ranked cohort with match-ID isolation and role/rank/opponent/duration controls.

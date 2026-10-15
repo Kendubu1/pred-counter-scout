@@ -201,10 +201,9 @@ if (kitPs && top) {
   console.log(`\nrobustness (Option A): ${rob.stable ? 'STABLE' : 'FRAGILE'} — ${rob.note}`);
 
   const headlineKey = headlineOverride ?? headlineObjective(kit, role);
-  const agree = agreeWithField(builds, slug, data.itemsBySlug, headlineKey);
+  const agree = agreeWithField(builds, slug, data.itemsBySlug, headlineKey, { role });
   if (agree) {
-    const rc = Number.isNaN(agree.rankCorr) ? 'n/a' : agree.rankCorr.toFixed(2);
-    console.log(`agreement vs field: hit@6 ${agree.hitAtK ? 'YES' : 'no'} | coverage ${(agree.coverage * 100).toFixed(0)}% | rankCorr ${rc}`);
+    console.log(`descriptive core overlap: hit@6 ${agree.hitAtK ? 'YES' : 'no'} | coverage ${(agree.coverage * 100).toFixed(0)}% | evidence patch ${agree.evidence.patch ?? 'unknown'}`);
     console.log(`  ${agree.note}`);
   }
 }
