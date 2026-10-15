@@ -1,86 +1,158 @@
 {
- "generatedAt": "2026-10-14T20:27:02.465Z",
+ "generatedAt": "2026-10-15T02:11:32.510Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
- "reviewedLines": 53,
- "flaggedLines": 12,
- "agreementRate": 0.774,
- "rewritesGrounded": 11,
+ "reviewedLines": 56,
+ "flaggedLines": 24,
+ "agreementRate": 0.571,
+ "rewritesGrounded": 21,
  "rewritesDropped": 0,
- "applied": 11,
- "unmatched": 0,
+ "applied": 20,
+ "unmatched": 1,
  "games": {
-  "752e9e57-2cf4-4cd2-8723-036d953af1e8": [
+  "df3bb8df-14b3-4939-9a59-5cd70cfe8409": [
    {
-    "quote": "Revenant's carry lane read theirs all game against Kira from the start, and the carry still finished the full winning core, Vanquisher, Imperator and Terminus -- 2 kills on 4 deaths, and the worst individual ranked-point swing on the roster. The lone solo death, at 26.4, cost the Primal Fangtooth.",
+    "quote": "We opened well: Khaimera and Drongo caught Aurora and Maco 2-0 at the Fangtooth at 6.7 to secure our only major of the first ten minutes, and won another skirmish at 9.4. Neither got turned into a tower or a camp, while they cashed four of their five fight wins. The break came at 17.3: all five of us engaged a teamfight at our Outer Tower and lost it 2-5, and their Fangtooth fell a minute later. From there it cascaded - three more of their majors fell with several of us already dead going in, and we gave up an Inner Tower, the Inhibitor and the Core before the 27-minute mark. River was theirs most of the game (19 takes to our 5), and the team never built an answer to Maco's healing or the three magical damage sources on their side.",
     "severity": "high",
-    "issue": "invents a per-player ranked-point/VP swing metric not in SOURCE (SOURCE only gives team VP -16)",
-    "rewrite": "Revenant's carry lane read theirs all game against Kira from the start, and the carry still finished the full winning core, Vanquisher, Imperator and Terminus -- 2 kills on 4 deaths. The lone solo death, at 26.4, cost the Primal Fangtooth."
+    "issue": "three numeric errors vs SOURCE (we took two majors in the first 10 min, not one; only two more of their majors fell after 17.3, not three; two Inner Towers fell, not one, and Core fell at 27.2m, not before 27m)",
+    "rewrite": "We opened well: Khaimera and Drongo caught Aurora and Maco 2-0 at the Fangtooth at 6.7, one of two majors we took in the first ten minutes (the other a Seedling at 7), and won another skirmish at 9.4. Neither got turned into a tower or a camp, while they cashed four of their five fight wins. The break came at 17.3: all five of us engaged a teamfight at our Outer Tower and lost it 2-5, and their Fangtooth fell a minute later. From there it cascaded - their Primal Fangtooth fell at 24 with several of us already dead going in, and we gave up two Inner Towers, the Inhibitor and the Core by 27 minutes. River was theirs most of the game (19 takes to our 5), and the team never built an answer to Maco's healing or the three magical damage sources on their side."
    },
    {
-    "quote": "Caught alone by Feng Mao at 26.4, the only solo catch on our side; Primal Fangtooth fell to them at 27.5; completed the full winning core; 2 kills, 4 deaths, worst individual ranked-point swing on the roster at -48.",
-    "severity": "high",
-    "issue": "invents a specific per-player VP swing number (-48) absent from SOURCE",
-    "rewrite": "Caught alone by Feng Mao at 26.4, the only solo catch on our side; Primal Fangtooth fell to them at 27.5; completed the full winning core; 2 kills, 4 deaths."
-   },
-   {
-    "quote": "Led the team with 5,085 objective damage, but died a team-worst seven times.",
-    "severity": "high",
-    "issue": "false superlative: Khaimera's 15,707 objective damage is higher than Lt. Belica's 5,085",
-    "rewrite": "Dealt 5,085 objective damage, but died a team-worst seven times."
-   },
-   {
-    "quote": "Topped the team in objective damage at 5,085 and drew first blood on The Fey at 7.2.",
-    "severity": "high",
-    "issue": "false superlative: Khaimera's 15,707 objective damage is higher than Lt. Belica's 5,085",
-    "rewrite": "Dealt 5,085 objective damage and drew first blood on The Fey at 7.2."
-   },
-   {
-    "quote": "Lt. Belica's deaths preceded five separate tower or objective losses this match, more than any other player. Back off from a losing team fight once the engage is spent, rather than staying in it.",
-    "severity": "high",
-    "issue": "false superlative: Khaimera's deaths also precede five structure/objective losses per DEATH COSTS, a tie not a lead",
-    "rewrite": "Lt. Belica's deaths preceded five separate tower or objective losses this match, tied with Khaimera for the most on the roster. Back off from a losing team fight once the engage is spent, rather than staying in it."
-   },
-   {
-    "quote": "Khaimera again skipped the winning jungle core, Overlord, Basilisk and Rapture, finishing only Ashbringer, Claw of Hermes and Draconum -- the fewest completed items on the roster at three. Xeebs still killed Kira three times, but the match's four game-defining fight losses don't single out the build as the cause.",
+    "quote": "The instant a fight is won, path to the nearest contestable objective instead of resetting to lane - a won fight that buys nothing is wasted tempo.",
     "severity": "med",
-    "issue": "double miscount: Muriel also finished 3 items (tied, not sole fewest), and DECISIVE FIGHTS lists five fights tagged [game-defining], not four",
-    "rewrite": "Khaimera again skipped the winning jungle core, Overlord, Basilisk and Rapture, finishing only Ashbringer, Claw of Hermes and Draconum -- tied for the fewest completed items on the roster at three. Xeebs still killed Kira three times, but the match's five game-defining fight losses don't single out the build as the cause."
+    "issue": "generic focus action restates the scoreboard conversion stat already given in whatShiftedIt without naming a match-specific objective",
+    "rewrite": "The instant a fight is won, path to the nearest contestable objective instead of resetting to lane - we won at 6.7 and 9.4 but still conceded Fangtooth to them at 12 and 18, because a won fight that buys nothing is wasted tempo."
    },
    {
-    "quote": "MurderDekker killed Scarlett four times and died just three, yet was flagged alive and pinned in five of our fights.",
-    "severity": "med",
-    "issue": "miscounts the MACRO READS alive-but-pinned flags for Dekker: 17.7m, 22.8m, 26.9m, 32m = four, not five",
-    "rewrite": "MurderDekker killed Scarlett four times and died just three, yet was flagged alive and pinned in four of our fights."
-   },
-   {
-    "quote": "Flagged alive-but-pinned in five fights after minute 16 while losing his own lane; the offlane's job is to not get stuck there. Push back the matchup before the team's next contested fight, not after.",
+    "quote": "Drongo won the carry lane clean against Eden all game and posted the team's best KDA (2.2) with 6 kills, but finished below the team's hero-damage pace (724/min vs the 933 norm) and never answered Maco's healing with the anti-heal flagged for the matchup.",
     "severity": "high",
-    "issue": "miscounts the MACRO READS alive-but-pinned flags for Dekker after minute 16: 17.7, 22.8, 26.9, 32m = four, not five",
-    "rewrite": "Flagged alive-but-pinned in four fights after minute 16 while losing his own lane; the offlane's job is to not get stuck there. Push back the matchup before the team's next contested fight, not after."
+    "issue": "invented '933 norm' baseline not in SOURCE; the only computable team hero-damage rate from SOURCE numbers (~570/min average) makes Drongo's 724/min above average, not below",
+    "rewrite": "Drongo won the carry lane clean against Eden all game and posted the team's best KDA (2.2) with 6 kills, but never built the anti-heal (Tainted Rounds) the matchup against Maco's healing called for, finishing with Scattershot and Onixian Quiver instead."
    },
    {
-    "quote": "Killed Scarlett at 12.0, 13.5, 24.3 and 28.7; flagged alive-but-pinned in 5 fights after minute 16; none of 5 completed items matched the flagged core; 5 kills, 3 deaths.",
+    "quote": "Gadget led the team in hero damage (23,449) and killed Neon twice in a lane read 'ours all game', but two of his seven deaths were solo catches that directly preceded a lost objective - the Fangtooth at 12 and the Outer Tower at 15.3.",
     "severity": "high",
-    "issue": "stacks four timestamps in one clause and repeats the wrong pinned-fight count (should be four, not five)",
-    "rewrite": "Killed Scarlett four times across the match; flagged alive-but-pinned in 4 fights after minute 16; none of 5 completed items matched the flagged core; 5 kills, 3 deaths."
+    "issue": "the 10.8m death is listed in SOURCE as a death inside the 10.8m River fight, not a solo catch, and CONCEDED MAJORS attributes the Fangtooth@12m death to Bayle, not Gadget; only the 15.0 catch is tied to the Outer Tower@15.3 in SOURCE",
+    "rewrite": "Gadget led the team in hero damage (23,449) and killed Neon twice in a lane read 'ours all game', but one of his seven deaths was a solo catch (at 15.0) that directly preceded the Outer Tower falling at 15.3."
    },
    {
-    "quote": "Deaths at 11.9 (Scarlett), 13.5 (Kira), 23.0 (Feng Mao), 32.2 (Kira); 0 of 3 support-core items built; 12 assists, 10 wards placed, 1 destroyed.",
+    "quote": "Khaimera's jungle lane flipped from theirs early to ours late, and his 6 wards beat the role's usual norm (4.6), but the completed build - Ashbringer, Claw Of Hermes, Draconum - again skipped all three of the meta jungle core items for a second film running.",
     "severity": "med",
-    "issue": "stacks four timestamps in one clause",
-    "rewrite": "Died once to Scarlett, twice to Kira, and once to Feng Mao; 0 of 3 support-core items built; 12 assists, 10 wards placed, 1 destroyed."
+    "issue": "invented '4.6' jungle ward norm not present in SOURCE",
+    "rewrite": "Khaimera's jungle lane flipped from theirs early to ours late, and he placed 6 wards, but the completed build - Ashbringer, Claw Of Hermes, Draconum - again skipped all three of the meta jungle core items for a second film running."
    },
    {
-    "quote": "The only solo death on the team, to Feng Mao at 26.4 while caught alone, directly cost Primal Fangtooth at 27.5. Don't cross the map alone when the enemy jungler is unaccounted for.",
+    "quote": "Top hero damage but seven deaths, two of them solo catches that cost objectives outright.",
     "severity": "med",
-    "issue": "the 'enemy jungler unaccounted for' cause is not in SOURCE -- no vision/ward data ties to this death, only that Feng Mao (jungler) got the kill",
-    "rewrite": "The only solo death on the team, to Feng Mao at 26.4 while caught alone, directly cost Primal Fangtooth at 27.5. Group up before crossing the map alone in that kind of window."
+    "issue": "SOURCE only ties one of Gadget's solo catches (15.0) to a lost objective (Outer Tower@15.3); the 10.8 death was inside a fight, not a solo catch, and not tied to an objective loss",
+    "rewrite": "Top hero damage but seven deaths, one of them a solo catch that cost an objective outright."
    },
    {
-    "quote": "Muriel skipped the full support core, Marshal, Crystal Tear and Windcaller, building no armor against a comp flagged three-physical. All four deaths, two to Kira and one each to Scarlett and Feng Mao, were physical -- a pattern the missing armor doesn't disprove.",
+    "quote": "Khaimera and Drongo caught Aurora and Maco 2-0 at the Fangtooth - the right shape: commit only once the pick is already won, not because the camp timer is up.",
     "severity": "low",
-    "issue": "duplicates the microReads change card's death breakdown and missing-core claim almost verbatim without a distinct coaching purpose",
+    "issue": "duplicate moment - restates the same 6.7m Fangtooth pickoff already covered as its own moment with no new fact added",
     "rewrite": null
+   },
+   {
+    "quote": "Scattershot and Onixian Quiver over the meta Lightning Hawk and Tainted Rounds left Drongo without the anti-heal the matchup called for against Maco's healing, and the game's below-average hero damage (724/min) backs up the gap.",
+    "severity": "med",
+    "issue": "'below-average' claim has no sourced baseline; the only computable team average from SOURCE numbers puts 724/min above average, not below",
+    "rewrite": "Scattershot and Onixian Quiver over the meta Lightning Hawk and Tainted Rounds left Drongo without the anti-heal the matchup called for against Maco's healing (13,127 healing done)."
+   },
+   {
+    "quote": "Soulbinder, Azure Core and Oblivion Crown skip the meta's Entropy and Overseer, but Gadget still led the team in hero damage - the build wasn't what cost the two solo-catch deaths that fed the Fangtooth and Outer Tower losses.",
+    "severity": "med",
+    "issue": "only one of Gadget's deaths is a SOURCE-linked solo catch feeding an objective loss (15.0 -> Outer Tower@15.3); no SOURCE link ties a Gadget solo catch to the Fangtooth loss",
+    "rewrite": "Soulbinder, Azure Core and Oblivion Crown skip the meta's Entropy and Overseer, but Gadget still led the team in hero damage - the build wasn't what cost the solo-catch death that fed the Outer Tower loss at 15.3."
+   },
+   {
+    "quote": "Jungle is Khaimera's best-fit role on this roster, so the lesson here is the completed core, not the role.",
+    "severity": "high",
+    "issue": "preference framing - grades the jungle assignment by 'best-fit' role comfort instead of the draft/game, which SOURCE does not support",
+    "rewrite": null
+   },
+   {
+    "quote": "Led the team in hero damage at 23,449, but owned two of three solo-catch deaths.",
+    "severity": "high",
+    "issue": "SOURCE's three team-wide solo-catch-into-objective deaths are one each for Bayle, Gadget and Crunch; Gadget owns one of three, not two",
+    "rewrite": "Led the team in hero damage at 23,449, but owned one of the three solo-catch deaths that directly fed an enemy objective (the 15.0 catch before the Outer Tower fell at 15.3)."
+   },
+   {
+    "quote": "Out-warded the enemy support 14 wards to 9, with healing at 3,504 and mitigation at 13,654.",
+    "severity": "low",
+    "issue": "duplicate ranking row - restates the same ward/healing/mitigation numbers already paired with a conclusion elsewhere for Bayle with no added purpose",
+    "rewrite": null
+   },
+   {
+    "quote": "The 11.5 solo catch by Eden directly preceded their Fangtooth at 12.1 - hold position near the jungle entrance until Khaimera is confirmed alive before pushing a lane alone.",
+    "severity": "med",
+    "issue": "invented position ('jungle entrance') and invented reasoning tying the catch to Khaimera's status - neither is in SOURCE, which gives no position/wave data",
+    "rewrite": "The 11.5 solo catch by Eden directly preceded their Fangtooth at 12.1 - group up with a teammate before pushing out alone in that window."
+   },
+   {
+    "quote": "No anti-heal went into a build with Onixian Quiver while Maco kept healing the enemy all game - the flagged swap (Tainted Rounds for Onixian Quiver) was never made.",
+    "severity": "med",
+    "issue": "not an actionable fix - restates the build critique already given instead of a forward instruction for next film",
+    "rewrite": "Swap Onixian Quiver for Tainted Rounds as soon as the enemy comp shows a healer like Maco (13,127 healing this game) - that trade was never made."
+   },
+   {
+    "quote": "Lane verdict 'ours all game' vs Eden; 6 kills, best KDA on the roster at 2.2. antiHealRec flags Tainted Rounds over Onixian Quiver against Maco's healing (13,127).",
+    "severity": "high",
+    "issue": "internal field name 'antiHealRec' leaked into prose; trailing number (13,127) left unlabeled",
+    "rewrite": "Lane verdict 'ours all game' vs Eden; 6 kills, best KDA on the roster at 2.2. The matchup called for Tainted Rounds over Onixian Quiver against Maco's 13,127 healing."
+   },
+   {
+    "quote": "Caught alone three times (first blood to Zinx at 2.1, again at 18.4, again at 24.7, the last costing the Inner Tower at 25.2) - back off to the tower instead of holding a forward position solo.",
+    "severity": "med",
+    "issue": "stacks four timestamps in one sentence and invents a position ('forward position') not in SOURCE",
+    "rewrite": "Caught alone three times this game, most recently at 24.7, which cost the Inner Tower at 25.2 - group up with the team before engaging alone again."
+   },
+   {
+    "quote": "Mitigated 16,870 (second on the roster). caughtOut entries at 2.1 (by Zinx, first blood), 18.4 (by Zinx) and 24.7 (by Maco, solo, cost Inner Tower at 25.2).",
+    "severity": "high",
+    "issue": "internal field name 'caughtOut' leaked into prose, and the second sentence stacks four timestamps",
+    "rewrite": "Mitigated 16,870 (second on the roster), with three solo catches this game, the last (24.7, by Maco) costing the Inner Tower at 25.2."
+   },
+   {
+    "quote": "Two of seven deaths were solo catches that directly preceded a lost objective - the 10.8 death 72 seconds before their Fangtooth at 12, and the 15.0 death before the Outer Tower fell at 15.3. Stop pushing alone right after a kill.",
+    "severity": "high",
+    "issue": "the 10.8 death is listed in SOURCE as a death inside a fight (the 10.8m River skirmish), not a solo catch, and is not the death CONCEDED MAJORS ties to the Fangtooth@12m loss (that's Bayle's 11.5 solo death)",
+    "rewrite": "One of seven deaths was a solo catch that directly preceded a lost objective - the 15.0 death before the Outer Tower fell at 15.3. Stop pushing alone right after a kill."
+   },
+   {
+    "quote": "Zero solo-catch deaths within 90 seconds of a major, and wards at or above 11, next film.",
+    "severity": "low",
+    "issue": "near-verbatim repeat of the previous film's check rather than a target tied to this film's facts",
+    "rewrite": "Wards placed above 11 next film - down to 9 this game from 11 last, the wrong direction."
+   },
+   {
+    "quote": "Hero damage 23,449 (team high); kills on Neon at 13.3 and 19.1. Solo deaths at 10.8 (Fangtooth fell at 12) and 15.0 (Outer Tower fell at 15.3), out of 7 total deaths. Wards 9.",
+    "severity": "high",
+    "issue": "repeats the same fabricated '10.8 solo death' claim; SOURCE lists that death as inside a fight, not a solo catch, and not linked to the Fangtooth@12m loss",
+    "rewrite": "Hero damage 23,449 (team high); kills on Neon at 13.3 and 19.1. One solo death at 15.0 preceded the Outer Tower falling at 15.3, out of 7 total deaths. Wards 9."
+   },
+   {
+    "quote": "last check: \"Zero solo deaths within 90 seconds of an enemy major; wards placed above 11.\" → missed (Wards finished at 9, below the 11 bar. The solo death at 10.8 to Aurora preceded their Fangtooth at 12 by about 72 seconds.)",
+    "severity": "high",
+    "issue": "the verdict (missed) is correct on the ward count alone, but the supporting receipt fabricates a '10.8 solo death' - SOURCE lists that death as inside a fight, not a solo catch",
+    "rewrite": "last check: \"Zero solo deaths within 90 seconds of an enemy major; wards placed above 11.\" → missed (Wards finished at 9, below the 11 bar.)"
+   },
+   {
+    "quote": "Turned the jungle matchup around late (lane verdict 'theirs early, ours late') and placed 6 wards, above the role's 4.6 norm.",
+    "severity": "med",
+    "issue": "invented '4.6' jungle ward norm not present in SOURCE",
+    "rewrite": "Turned the jungle matchup around late (lane verdict 'theirs early, ours late') and placed 6 wards."
+   },
+   {
+    "quote": "At least one of Overlord, Basilisk or Rapture completed by minute 25, next film.",
+    "severity": "low",
+    "issue": "verbatim repeat of the previous film's check despite missing it twice running, with no tightening reflecting the repeat failure",
+    "rewrite": "At least one of Overlord, Basilisk or Rapture completed by minute 20 next film - the minute-25 bar has now been missed twice running."
+   },
+   {
+    "quote": "Final build: Ashbringer, Claw Of Hermes, Draconum (3 completed); missingCore lists Overlord, Basilisk, Rapture. Wards 6 vs the 4.6 jungle norm. Lane verdict 'theirs early, ours late'.",
+    "severity": "high",
+    "issue": "internal field name 'missingCore' leaked into prose, plus an invented '4.6' jungle ward norm not present in SOURCE",
+    "rewrite": "Final build: Ashbringer, Claw Of Hermes, Draconum (3 completed); missing core items are Overlord, Basilisk and Rapture. Wards 6. Lane verdict 'theirs early, ours late'."
    }
   ]
  }
