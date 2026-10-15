@@ -1,7 +1,304 @@
 {
- "generatedAt": "2026-10-15T20:42:27.958Z",
+ "generatedAt": "2026-10-15T22:13:39.349Z",
  "source": "Committed catalog, effect registry, and dated installed-client audit; no network refresh",
  "note": "Presence and source alignment are not gameplay proof. Multi-hit timing, conditional states, and dropped scaling remain incomplete; keep simulation provisional.",
+ "scalingBasisEvidence": {
+  "schemaVersion": 1,
+  "auditedAt": "2026-10-15",
+  "source": "Read-only installed client curve decoding and cooked damage-effect name tables",
+  "curveAsset": "Predecessor/Content/Characters/Heroes/Terra/Abilities/ct_Terra_Kit.uasset",
+  "curveFiles": [
+   {
+    "file": "ct_Terra_Kit.uasset",
+    "sha256": "7ce9b653a2d6cd4378125682866a7621fe3e41318aee39d9fb52fb4f937263ee"
+   },
+   {
+    "file": "ct_Terra_Kit.uexp",
+    "sha256": "8ec55dcad5a9b8094cc91228c97e1f0c242ab5362c9f47390341d66d5f653f51"
+   }
+  ],
+  "limitations": [
+   "Named rows and attribute references establish stored coefficient evidence, not execution semantics.",
+   "Gameplay-effect export properties, capture source and magnitude calculation mode were not decoded.",
+   "Bonus naming suggests a hypothesis; do not activate numerical scaling from this record.",
+   "The DoubleSweep damage asset names the physical-armor coefficient row but not the separate magical-armor row; both defensive attribute names are present. Shared-row use versus inheritance remains unresolved.",
+   "Charged, multi-hit and empowered states require separate modeling. No in-game measurement is claimed."
+  ],
+  "entries": [
+   {
+    "hero": "terra",
+    "abilityKey": "ALTERNATE",
+    "damageAsset": "Predecessor/Content/Characters/Heroes/Terra/Abilities/ShieldDash/GE_Terra_ShieldDash_Damage.uasset",
+    "observedDamageAssetReferences": [
+     "ShieldDash_BonusMagicalArmorScaling",
+     "ShieldDash_BonusPhysicalArmorScaling",
+     "PredAttributeSet_Defensive.Armor",
+     "PredAttributeSet_Defensive.MagicResist"
+    ],
+    "files": [
+     {
+      "file": "GE_Terra_ShieldDash_Damage.uasset",
+      "sha256": "7730fb57c1ec3851c554b0c6f9b1e99cf40ea580b5b7dfe42e5aa7c5729b7846"
+     },
+     {
+      "file": "GE_Terra_ShieldDash_Damage.uexp",
+      "sha256": "a9594bfe31e6f409da6e8418ecb254d93bc5d62b4ba941c54b12f0be9737d6bc"
+     }
+    ],
+    "channels": [
+     {
+      "stat": "physical_armor",
+      "sourceTag": "ArmorText",
+      "curveRow": "ShieldDash_BonusPhysicalArmorScaling",
+      "coefficientRowNamedInDamageAsset": true,
+      "attributeReference": "PredAttributeSet_Defensive.Armor",
+      "percentByRank": [
+       40.000001,
+       40.000001,
+       40.000001,
+       40.000001,
+       40.000001
+      ],
+      "curvePoints": [
+       {
+        "x": 1,
+        "value": 0.4000000059604645
+       },
+       {
+        "x": 5,
+        "value": 0.4000000059604645
+       },
+       {
+        "x": 6,
+        "value": 0
+       },
+       {
+        "x": 18,
+        "value": 0
+       }
+      ]
+     },
+     {
+      "stat": "magical_armor",
+      "sourceTag": "MRText",
+      "curveRow": "ShieldDash_BonusMagicalArmorScaling",
+      "coefficientRowNamedInDamageAsset": true,
+      "attributeReference": "PredAttributeSet_Defensive.MagicResist",
+      "percentByRank": [
+       40.000001,
+       40.000001,
+       40.000001,
+       40.000001,
+       40.000001
+      ],
+      "curvePoints": [
+       {
+        "x": 1,
+        "value": 0.4000000059604645
+       },
+       {
+        "x": 5,
+        "value": 0.4000000059604645
+       },
+       {
+        "x": 6,
+        "value": 0
+       },
+       {
+        "x": 18,
+        "value": 0
+       }
+      ]
+     }
+    ],
+    "status": "basis-unverified",
+    "suggestedBasisFromRowName": "bonus",
+    "captureSource": "unresolved",
+    "captureCalculationMode": "unresolved"
+   },
+   {
+    "hero": "terra",
+    "abilityKey": "PRIMARY",
+    "damageAsset": "Predecessor/Content/Characters/Heroes/Terra/Abilities/DoubleSweep/GE_Terra_DoubleSweep_Damage.uasset",
+    "observedDamageAssetReferences": [
+     "RuthlessAssault_BonusPhysicalArmorScaling",
+     "PredAttributeSet_Defensive.Armor",
+     "PredAttributeSet_Defensive.MagicResist"
+    ],
+    "files": [
+     {
+      "file": "GE_Terra_DoubleSweep_Damage.uasset",
+      "sha256": "cb0aa1a8000cbc5acc4f593475fef72dfd256262cf150fcf54c35ffc7d119d2d"
+     },
+     {
+      "file": "GE_Terra_DoubleSweep_Damage.uexp",
+      "sha256": "d3e34e3e4aeb3187429780bb320b61f2b12645c909038bc10524c0a049475f6c"
+     }
+    ],
+    "channels": [
+     {
+      "stat": "physical_armor",
+      "sourceTag": "ArmorText",
+      "curveRow": "RuthlessAssault_BonusPhysicalArmorScaling",
+      "coefficientRowNamedInDamageAsset": true,
+      "attributeReference": "PredAttributeSet_Defensive.Armor",
+      "percentByRank": [
+       34.999999,
+       34.999999,
+       34.999999,
+       34.999999,
+       34.999999
+      ],
+      "curvePoints": [
+       {
+        "x": 1,
+        "value": 0.3499999940395355
+       },
+       {
+        "x": 5,
+        "value": 0.3499999940395355
+       },
+       {
+        "x": 6,
+        "value": 0
+       },
+       {
+        "x": 18,
+        "value": 0
+       }
+      ]
+     },
+     {
+      "stat": "magical_armor",
+      "sourceTag": "MRText",
+      "curveRow": "RuthlessAssault_BonusMagicalArmorScaling",
+      "coefficientRowNamedInDamageAsset": false,
+      "attributeReference": "PredAttributeSet_Defensive.MagicResist",
+      "percentByRank": [
+       34.999999,
+       34.999999,
+       34.999999,
+       34.999999,
+       34.999999
+      ],
+      "curvePoints": [
+       {
+        "x": 1,
+        "value": 0.3499999940395355
+       },
+       {
+        "x": 5,
+        "value": 0.3499999940395355
+       },
+       {
+        "x": 6,
+        "value": 0
+       },
+       {
+        "x": 18,
+        "value": 0
+       }
+      ]
+     }
+    ],
+    "status": "basis-unverified",
+    "suggestedBasisFromRowName": "bonus",
+    "captureSource": "unresolved",
+    "captureCalculationMode": "unresolved"
+   },
+   {
+    "hero": "terra",
+    "abilityKey": "SECONDARY",
+    "damageAsset": "Predecessor/Content/Characters/Heroes/Terra/Abilities/AxeThrow/GE_Terra_AxeThrow_Damage.uasset",
+    "observedDamageAssetReferences": [
+     "AxeThrow_BonusMagicalArmorScaling",
+     "AxeThrow_BonusPhysicalArmorScaling",
+     "PredAttributeSet_Defensive.Armor",
+     "PredAttributeSet_Defensive.MagicResist"
+    ],
+    "files": [
+     {
+      "file": "GE_Terra_AxeThrow_Damage.uasset",
+      "sha256": "7f6a1cf0e566f8bd7de5b00bfb337355b6e4345ce543328f282530ee2505b96a"
+     },
+     {
+      "file": "GE_Terra_AxeThrow_Damage.uexp",
+      "sha256": "5b6bd8d46678b9311d72135d52687e037602ff8dcc4dbaf877ca3ba812a2e5b2"
+     }
+    ],
+    "channels": [
+     {
+      "stat": "physical_armor",
+      "sourceTag": "ArmorText",
+      "curveRow": "AxeThrow_BonusPhysicalArmorScaling",
+      "coefficientRowNamedInDamageAsset": true,
+      "attributeReference": "PredAttributeSet_Defensive.Armor",
+      "percentByRank": [
+       40.000001,
+       40.000001,
+       40.000001,
+       40.000001,
+       40.000001
+      ],
+      "curvePoints": [
+       {
+        "x": 1,
+        "value": 0.4000000059604645
+       },
+       {
+        "x": 5,
+        "value": 0.4000000059604645
+       },
+       {
+        "x": 6,
+        "value": 0
+       },
+       {
+        "x": 18,
+        "value": 0
+       }
+      ]
+     },
+     {
+      "stat": "magical_armor",
+      "sourceTag": "MRText",
+      "curveRow": "AxeThrow_BonusMagicalArmorScaling",
+      "coefficientRowNamedInDamageAsset": true,
+      "attributeReference": "PredAttributeSet_Defensive.MagicResist",
+      "percentByRank": [
+       40.000001,
+       40.000001,
+       40.000001,
+       40.000001,
+       40.000001
+      ],
+      "curvePoints": [
+       {
+        "x": 1,
+        "value": 0.4000000059604645
+       },
+       {
+        "x": 5,
+        "value": 0.4000000059604645
+       },
+       {
+        "x": 6,
+        "value": 0
+       },
+       {
+        "x": 18,
+        "value": 0
+       }
+      ]
+     }
+    ],
+    "status": "basis-unverified",
+    "suggestedBasisFromRowName": "bonus",
+    "captureSource": "unresolved",
+    "captureCalculationMode": "unresolved"
+   }
+  ]
+ },
  "scalingCoverage": {
   "affectedAbilitySlots": 11,
   "selectedPayloadOmittedRatioCount": 13,

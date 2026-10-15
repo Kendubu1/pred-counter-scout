@@ -4263,3 +4263,37 @@ final sets were unchanged. Four stale coaching lines and three optimizer
 explanations were invalidated, with pending replacements preserved. Full suite:
 209 tests in 26 files; TypeScript and whitespace checks pass. Current-patch
 lane-eligible ordered-build evidence remains zero; no validated-win claim.
+
+
+## 2026-10-15 installed-client scaling-basis investigation
+
+Decoded Terra's curve table and inspected three dedicated damage-effect asset
+name tables from the installed client. Six coefficient curves explicitly use
+BonusPhysicalArmor/BonusMagicalArmor names and match the catalog ratios: normal
+ShieldDash 40%/40%, each selected DoubleSweep payload 35%/35%, AxeThrow 40%/40%.
+The audit records raw curve points, rank-specific percentages, package paths,
+SHA-256 hashes of both asset/export files, and observed defensive attribute and
+coefficient references. This is reproducible static evidence, not an in-game test.
+
+Crucial limit: name tables do not decode attribute capture source or magnitude
+calculation mode. The captured attribute names are Armor and MagicResist, and
+bonus-named curves alone do not prove the calculation subtracts base stats.
+DoubleSweep additionally names only the physical-armor coefficient row despite
+having both defensive attribute references; equal curve values do not establish
+whether the magical channel shares that row or inherits another configuration.
+All six channels remain basis-unverified and unmodeled. No simulator numbers,
+hero recommendations or matchup reports changed in this batch.
+
+The catalog audit embeds this evidence without treating it as modeled coverage.
+Three tests check all six ratios at all ranks, keep unresolved basis from being
+promoted to executed scaling, and retain the DoubleSweep reference discrepancy.
+Next verification step: decode the gameplay-effect export's capture source and
+magnitude calculation enum, or measure unempowered Terra AxeThrow at a fixed
+rank with no bonus armor and then with a known armor-only addition. The absolute
+baseline separates total from bonus scaling; the item delta alone cannot.
+Control target mitigation, augments, passive empowerment and tower proximity;
+repeat outside and inside tower range only when explicitly testing that passive.
+Do not infer health scaling basis from these armor findings.
+
+Validation: all 212 tests in 27 files pass; TypeScript and whitespace checks pass.
+No simulation outputs required regeneration because execution math is unchanged.

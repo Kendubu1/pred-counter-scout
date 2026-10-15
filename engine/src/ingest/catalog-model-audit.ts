@@ -23,6 +23,7 @@ const out = {
   generatedAt: new Date().toISOString(),
   source: 'Committed catalog, effect registry, and dated installed-client audit; no network refresh',
   note: 'Presence and source alignment are not gameplay proof. Multi-hit timing, conditional states, and dropped scaling remain incomplete; keep simulation provisional.',
+  scalingBasisEvidence: read('engine/fixtures/scaling-basis-audit.json'),
   scalingCoverage: {
     affectedAbilitySlots: data.unmodeledScalings.length,
     selectedPayloadOmittedRatioCount: data.unmodeledScalings.reduce((n, s) => n + s.omittedTerms.length, 0),
