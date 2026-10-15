@@ -28,10 +28,11 @@ describe('fixtures (Concept B layer 1: mechanics gates)', () => {
     const u = unverifiedConstants(cal);
     // The gate is that nothing claims verification it does not have.
     // mitigation, abilityHaste, critMultiplier and bonus-only scaling were
-    // verified in practice mode on 2026-10-15; the attack-speed formula is
-    // measured but the sim fix has not landed, so it stays unverified.
+    // verified in practice mode on 2026-10-15, as was the attack-speed formula
+    // (sim fix landed the same day); the attack-speed CAP is still assumed.
     console.warn(`UNVERIFIED fixtures in use: ${u.join(', ')}`);
-    expect(u).toContain('attackSpeedFormula');
+    expect(u).toContain('attackSpeedCap');
+    expect(u).not.toContain('attackSpeedFormula');
     expect(u).not.toContain('critMultiplier');
     expect(u).not.toContain('abilityScalingUsesBonusPowerOnly');
     expect(u).not.toContain('mitigation');

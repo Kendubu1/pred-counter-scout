@@ -274,11 +274,21 @@ export function basicHit(kit: HeroKit, level: number, t: ItemStats, critMultipli
   return raw * critAvg;
 }
 
+// Heroes whose basic attack is not one swing per basic_attack_time: Legion
+// fires a minigun (BAT 0.2) and Revenant reloads (BAT varies by level). They
+// keep the pre-2026-10-15 reading until measured in practice mode.
+const BAT_UNMEASURED = new Set(['legion', 'revenant']);
+
 export function attacksPerSecond(kit: HeroKit, level: number, t: ItemStats, cap?: number, extraAsPct = 0): number {
   const base = kit.baseStats.attack_speed[level - 1] ?? 1;
+  // Measured 2026-10-15 (practice mode, Murdock at panel 125/180/390/474%):
+  // the panel's attack speed is attacks per BASIC ATTACK TIME, not per second —
+  // attacks/s = panel / basic_attack_time. Reading the panel as attacks/s ran
+  // every hero's auto-attacks too fast by its BAT (Murdock 1.45x).
+  const bat = BAT_UNMEASURED.has(kit.slug) ? 1 : (kit.baseStats.basic_attack_time?.[0] ?? 1);
   // extraAsPct: attack speed from sources outside item stats (a hero's own
   // steroid ability, uptime-weighted — see selfAttackSpeedPct).
-  const aps = base * (1 + (t.attack_speed + extraAsPct) / 100);
+  const aps = (base * (1 + (t.attack_speed + extraAsPct) / 100)) / (bat > 0 ? bat : 1);
   // Predecessor caps attacks/sec (Cursed Ring's tooltip: "from 3 to 4", so the
   // default cap is 3.0). Without it, pen/AS-stacked builds reach 3.5+ and the
   // sim over-credits sustained DPS. Cap value comes from calibration.
