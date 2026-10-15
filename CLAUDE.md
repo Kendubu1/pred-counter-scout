@@ -86,7 +86,7 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   `npm run catalog` (refresh data/catalog from pred.gg after a balance patch or
   a new hero/item; needs PREDGG creds; `npm run snapshot` is an alias),
   `npm run refresh` (FULL data refresh chain — needs PREDGG_CLIENT_ID/SECRET in
-  the env: catalog -> patchcheck -> augments -> icons -> buildstats -> skills ->
+  the env: catalog -> patchcheck -> perks -> icons -> buildstats -> skills ->
   lanestats -> aggregate -> artifacts -> matrix -> agreement; refreshes winrates
   + builds for every hero's main and
   flex lanes. Follow with the zero-API copy passes: `COPY_MODE=prepare npm run
