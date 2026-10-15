@@ -26,6 +26,8 @@ export interface AbilityDef {
   name: string;
   damagePerRank: number[];      // best damage entry per rank
   scalingPct: number;            // ratio applied to bonus power, in percent
+  powerScaling?: { physical?: number[]; magical?: number[] }; // independent ratios by rank
+  ignoresArmor?: boolean;        // stated armor bypass, without changing damage type
   pctMaxHealth?: number;         // bonus damage as % of target max health
   // Bonus damage scaled on target CURRENT or MISSING health (the execute pattern,
   // e.g. Lt. Belica's missing-HP ult), per rank. Credited with a health-state

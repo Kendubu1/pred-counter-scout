@@ -264,6 +264,11 @@ function procDamage(p: ProcSpec, t: ItemStats, profile: DefenseProfile | null, k
 export function abilityHit(ab: AbilityDef, rank: number, t: ItemStats): number {
   if (rank <= 0) return 0;
   const base = ab.damagePerRank[Math.min(rank, ab.damagePerRank.length) - 1] ?? 0;
+  if (ab.powerScaling) {
+    const atRank = (values?: number[]) => values?.[Math.min(rank, values.length) - 1] ?? 0;
+    return base + atRank(ab.powerScaling.physical) / 100 * t.physical_power
+      + atRank(ab.powerScaling.magical) / 100 * t.magical_power;
+  }
   return base + (ab.scalingPct / 100) * bonusPowerFor(ab.damageType, t);
 }
 
@@ -377,7 +382,7 @@ export function rotationDamage(kit: HeroKit, opts: SimOptions, t: ItemStats, win
     totalCasts += casts;
     const amp = ampFactorAbilities(eff, ab, isBurst, profile, t);
     const maxHpBonus = (ab.pctMaxHealth && profile ? (ab.pctMaxHealth / 100) * profile.health : 0) + targetHealthBonus(ab, rank, profile, isBurst);
-    total += mitigate((abilityHit(ab, rank, t) + maxHpBonus) * amp, ab.damageType, profile, t, eff, windowSec, k) * casts;
+    total += mitigate((abilityHit(ab, rank, t) + maxHpBonus) * amp, ab.damageType, ab.ignoresArmor ? null : profile, t, eff, windowSec, k) * casts;
     for (const b of abilityBonusDamage(eff, ab, rank, t, profile)) {
       total += mitigate(b.raw, b.damageType, profile, t, eff, windowSec, k) * casts;
     }
@@ -470,7 +475,7 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
     burstCasts++;
     const amp = ampFactorAbilities(eff, ab, true, profile, t);
     const maxHpBonus = (ab.pctMaxHealth && profile ? (ab.pctMaxHealth / 100) * profile.health : 0) + targetHealthBonus(ab, rank, profile, true);
-    let abDmg = mitigate((abilityHit(ab, rank, t) + maxHpBonus) * amp, ab.damageType, profile, t, eff, BURST_WINDOW, k);
+    let abDmg = mitigate((abilityHit(ab, rank, t) + maxHpBonus) * amp, ab.damageType, ab.ignoresArmor ? null : profile, t, eff, BURST_WINDOW, k);
     for (const b of abilityBonusDamage(eff, ab, rank, t, profile)) {
       abDmg += mitigate(b.raw, b.damageType, profile, t, eff, BURST_WINDOW, k);
     }

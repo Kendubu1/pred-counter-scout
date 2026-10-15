@@ -3,11 +3,11 @@
   "note": "Per-hero optimizer-vs-field-core agreement (primary lane, lane-augment steer). coreRecall = fraction of the field top-core items the optimizer builds anywhere in its front; missed = field core items never built. missTally reason: fixable = mechanic is modeled or pure stat stick (in-engine valuation gap); blocked = value rides an unmodeled mechanic with an unstated magnitude (needs measurement, must not be estimated). Validation only — popularity never feeds the objective. See engine/src/ingest/agreement-audit.ts.",
   "summary": {
     "heroes": 53,
-    "exactTrioHit": 4,
-    "avgCoreRecall": 0.6166037735849058,
-    "avgTrioCoverage": 0.08452830188679246,
-    "missesFixable": 31,
-    "missesBlocked": 30
+    "exactTrioHit": 3,
+    "avgCoreRecall": 0.5471698113207548,
+    "avgTrioCoverage": 0.0750943396226415,
+    "missesFixable": 38,
+    "missesBlocked": 34
   },
   "missTally": {
     "Entropy": {
@@ -18,13 +18,21 @@
       "n": 4,
       "reason": "blocked"
     },
-    "Malady": {
+    "Dynamo": {
       "n": 4,
+      "reason": "fixable"
+    },
+    "Xenia": {
+      "n": 3,
       "reason": "blocked"
     },
     "Azure Core": {
       "n": 3,
       "reason": "fixable"
+    },
+    "Malady": {
+      "n": 3,
+      "reason": "blocked"
     },
     "Megacosm": {
       "n": 3,
@@ -42,19 +50,23 @@
       "n": 3,
       "reason": "fixable"
     },
-    "Xenia": {
-      "n": 2,
-      "reason": "blocked"
-    },
     "Truesilver Bracelet": {
       "n": 2,
-      "reason": "fixable"
+      "reason": "blocked"
     },
     "Cursed Scroll": {
       "n": 2,
       "reason": "fixable"
     },
     "Crescelia": {
+      "n": 2,
+      "reason": "fixable"
+    },
+    "Lightning Hawk": {
+      "n": 2,
+      "reason": "blocked"
+    },
+    "Orb Of Growth": {
       "n": 2,
       "reason": "fixable"
     },
@@ -69,6 +81,22 @@
     "Dawnstar": {
       "n": 1,
       "reason": "blocked"
+    },
+    "Elafrost": {
+      "n": 1,
+      "reason": "fixable"
+    },
+    "Flux Matrix": {
+      "n": 1,
+      "reason": "fixable"
+    },
+    "Sky Splitter": {
+      "n": 1,
+      "reason": "fixable"
+    },
+    "Basilisk": {
+      "n": 1,
+      "reason": "fixable"
     },
     "Berserker's Axe": {
       "n": 1,
@@ -86,9 +114,9 @@
       "n": 1,
       "reason": "blocked"
     },
-    "Lightning Hawk": {
+    "Plasma Blade": {
       "n": 1,
-      "reason": "blocked"
+      "reason": "fixable"
     },
     "Dust Devil": {
       "n": 1,
@@ -130,13 +158,9 @@
       "n": 1,
       "reason": "blocked"
     },
-    "Tainted Guard": {
-      "n": 1,
-      "reason": "fixable"
-    },
     "Soulbinder": {
       "n": 1,
-      "reason": "fixable"
+      "reason": "blocked"
     },
     "Noxia": {
       "n": 1,
@@ -156,6 +180,72 @@
     }
   },
   "rows": [
+    {
+      "hero": "Dekker",
+      "lane": "support",
+      "augment": "Photon Efficiency",
+      "steer": "ability-burst",
+      "hitAtK": false,
+      "coverage": 0,
+      "rankCorr": null,
+      "topCore": [
+        "Crescelia",
+        "Timewarp",
+        "Dynamo"
+      ],
+      "topCoreN": 990,
+      "topCoreCovered": false,
+      "coreRecall": 0,
+      "missed": [
+        "Crescelia",
+        "Timewarp",
+        "Dynamo"
+      ]
+    },
+    {
+      "hero": "GRIM.exe",
+      "lane": "carry",
+      "augment": null,
+      "steer": null,
+      "hitAtK": false,
+      "coverage": 0,
+      "rankCorr": null,
+      "topCore": [
+        "Lightning Hawk",
+        "Plasma Blade",
+        "Dust Devil"
+      ],
+      "topCoreN": 339,
+      "topCoreCovered": false,
+      "coreRecall": 0,
+      "missed": [
+        "Lightning Hawk",
+        "Plasma Blade",
+        "Dust Devil"
+      ]
+    },
+    {
+      "hero": "Iggy & Scorch",
+      "lane": "midlane",
+      "augment": "Turret Maniac",
+      "steer": "sustain",
+      "hitAtK": false,
+      "coverage": 0,
+      "rankCorr": null,
+      "topCore": [
+        "Orb Of Growth",
+        "Entropy",
+        "Megacosm"
+      ],
+      "topCoreN": 538,
+      "topCoreCovered": false,
+      "coreRecall": 0,
+      "missed": [
+        "Orb Of Growth",
+        "Entropy",
+        "Megacosm"
+      ]
+    },
     {
       "hero": "Maco",
       "lane": "support",
@@ -201,10 +291,32 @@
       ]
     },
     {
+      "hero": "Steel",
+      "lane": "support",
+      "augment": "Heavy Metal",
+      "steer": "ability-burst",
+      "hitAtK": false,
+      "coverage": 0,
+      "rankCorr": null,
+      "topCore": [
+        "Xenia",
+        "Dynamo",
+        "Gaia Greaves"
+      ],
+      "topCoreN": 722,
+      "topCoreCovered": false,
+      "coreRecall": 0,
+      "missed": [
+        "Xenia",
+        "Dynamo",
+        "Gaia Greaves"
+      ]
+    },
+    {
       "hero": "Wraith",
       "lane": "midlane",
       "augment": "Sniper's Bounty",
-      "steer": null,
+      "steer": "ability-burst",
       "hitAtK": false,
       "coverage": 0.12,
       "rankCorr": null,
@@ -286,6 +398,27 @@
       ]
     },
     {
+      "hero": "Boris",
+      "lane": "jungle",
+      "augment": "Apex Hunter",
+      "steer": "sustain",
+      "hitAtK": false,
+      "coverage": 0,
+      "rankCorr": null,
+      "topCore": [
+        "Sky Splitter",
+        "Basilisk",
+        "Rapture"
+      ],
+      "topCoreN": 488,
+      "topCoreCovered": false,
+      "coreRecall": 0.33,
+      "missed": [
+        "Sky Splitter",
+        "Basilisk"
+      ]
+    },
+    {
       "hero": "Crunch",
       "lane": "offlane",
       "augment": "Combo Crunch",
@@ -304,27 +437,6 @@
       "missed": [
         "Berserker's Axe",
         "Salvation"
-      ]
-    },
-    {
-      "hero": "Dekker",
-      "lane": "support",
-      "augment": "Photon Efficiency",
-      "steer": "ability-burst",
-      "hitAtK": false,
-      "coverage": 0,
-      "rankCorr": null,
-      "topCore": [
-        "Crescelia",
-        "Timewarp",
-        "Dynamo"
-      ],
-      "topCoreN": 990,
-      "topCoreCovered": false,
-      "coreRecall": 0.33,
-      "missed": [
-        "Crescelia",
-        "Timewarp"
       ]
     },
     {
@@ -349,45 +461,87 @@
       ]
     },
     {
-      "hero": "GRIM.exe",
-      "lane": "carry",
-      "augment": null,
+      "hero": "Gadget",
+      "lane": "midlane",
+      "augment": "Auto-Lock Amp",
       "steer": null,
       "hitAtK": false,
       "coverage": 0,
       "rankCorr": null,
       "topCore": [
-        "Lightning Hawk",
-        "Plasma Blade",
-        "Dust Devil"
+        "Azure Core",
+        "Entropy",
+        "Overseer"
       ],
-      "topCoreN": 339,
+      "topCoreN": 261,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
-        "Lightning Hawk",
-        "Dust Devil"
+        "Azure Core",
+        "Entropy"
       ]
     },
     {
-      "hero": "Iggy & Scorch",
+      "hero": "Morigesh",
       "lane": "midlane",
-      "augment": "Turret Maniac",
-      "steer": "sustain",
+      "augment": "Cursed Infestation",
+      "steer": "ability-burst",
       "hitAtK": false,
       "coverage": 0,
       "rankCorr": null,
       "topCore": [
-        "Orb Of Growth",
-        "Entropy",
+        "Combustion",
+        "Lifebinder",
         "Megacosm"
       ],
-      "topCoreN": 538,
+      "topCoreN": 251,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
-        "Entropy",
+        "Lifebinder",
         "Megacosm"
+      ]
+    },
+    {
+      "hero": "Mourn",
+      "lane": "support",
+      "augment": "Nightstalker",
+      "steer": "poke",
+      "hitAtK": false,
+      "coverage": 0,
+      "rankCorr": null,
+      "topCore": [
+        "Hexbound Bracers",
+        "Dynamo",
+        "Enra's Blessing"
+      ],
+      "topCoreN": 307,
+      "topCoreCovered": false,
+      "coreRecall": 0.33,
+      "missed": [
+        "Dynamo",
+        "Enra's Blessing"
+      ]
+    },
+    {
+      "hero": "Narbash",
+      "lane": "support",
+      "augment": "Percussive Tear",
+      "steer": "tank",
+      "hitAtK": false,
+      "coverage": 0,
+      "rankCorr": null,
+      "topCore": [
+        "Truesilver Bracelet",
+        "Crystal Tear",
+        "Dynamo"
+      ],
+      "topCoreN": 394,
+      "topCoreCovered": false,
+      "coreRecall": 0.33,
+      "missed": [
+        "Truesilver Bracelet",
+        "Dynamo"
       ]
     },
     {
@@ -433,6 +587,27 @@
       ]
     },
     {
+      "hero": "Riktor",
+      "lane": "support",
+      "augment": "Wanton Warden",
+      "steer": "sustain",
+      "hitAtK": false,
+      "coverage": 0,
+      "rankCorr": null,
+      "topCore": [
+        "Dynamo",
+        "Xenia",
+        "Frosted Lure"
+      ],
+      "topCoreN": 535,
+      "topCoreCovered": false,
+      "coreRecall": 0.33,
+      "missed": [
+        "Xenia",
+        "Frosted Lure"
+      ]
+    },
+    {
       "hero": "Serath",
       "lane": "jungle",
       "augment": "Crushing Descent",
@@ -475,27 +650,6 @@
       ]
     },
     {
-      "hero": "Steel",
-      "lane": "support",
-      "augment": "Heavy Metal",
-      "steer": "ability-burst",
-      "hitAtK": false,
-      "coverage": 0,
-      "rankCorr": null,
-      "topCore": [
-        "Xenia",
-        "Dynamo",
-        "Gaia Greaves"
-      ],
-      "topCoreN": 722,
-      "topCoreCovered": false,
-      "coreRecall": 0.33,
-      "missed": [
-        "Xenia",
-        "Gaia Greaves"
-      ]
-    },
-    {
       "hero": "Zinx",
       "lane": "support",
       "augment": "Disc Of Demise",
@@ -517,45 +671,24 @@
       ]
     },
     {
-      "hero": "Morigesh",
-      "lane": "midlane",
-      "augment": "Cursed Infestation",
+      "hero": "Aurora",
+      "lane": "jungle",
+      "augment": "Glacial Thorns",
       "steer": "ability-burst",
       "hitAtK": false,
-      "coverage": 0.11,
-      "rankCorr": null,
+      "coverage": 0.24,
+      "rankCorr": -1,
       "topCore": [
-        "Combustion",
-        "Lifebinder",
-        "Megacosm"
+        "Magnify",
+        "Elafrost",
+        "Flux Matrix"
       ],
-      "topCoreN": 251,
+      "topCoreN": 350,
       "topCoreCovered": false,
       "coreRecall": 0.33,
       "missed": [
-        "Lifebinder",
-        "Megacosm"
-      ]
-    },
-    {
-      "hero": "Gadget",
-      "lane": "midlane",
-      "augment": "Auto-Lock Amp",
-      "steer": null,
-      "hitAtK": false,
-      "coverage": 0.21,
-      "rankCorr": null,
-      "topCore": [
-        "Azure Core",
-        "Entropy",
-        "Overseer"
-      ],
-      "topCoreN": 261,
-      "topCoreCovered": false,
-      "coreRecall": 0.33,
-      "missed": [
-        "Azure Core",
-        "Entropy"
+        "Elafrost",
+        "Flux Matrix"
       ]
     },
     {
@@ -576,6 +709,26 @@
       "coreRecall": 0.67,
       "missed": [
         "Truesilver Bracelet"
+      ]
+    },
+    {
+      "hero": "Drongo",
+      "lane": "carry",
+      "augment": "Bring The Boom",
+      "steer": "ability-burst",
+      "hitAtK": false,
+      "coverage": 0,
+      "rankCorr": null,
+      "topCore": [
+        "Lightning Hawk",
+        "Vanquisher",
+        "Imperator"
+      ],
+      "topCoreN": 675,
+      "topCoreCovered": false,
+      "coreRecall": 0.67,
+      "missed": [
+        "Lightning Hawk"
       ]
     },
     {
@@ -679,30 +832,10 @@
       ]
     },
     {
-      "hero": "Legion",
-      "lane": "carry",
-      "augment": "Press the Advantage",
-      "steer": "on-hit",
-      "hitAtK": false,
-      "coverage": 0,
-      "rankCorr": null,
-      "topCore": [
-        "Malady",
-        "Vanquisher",
-        "Deathstalker"
-      ],
-      "topCoreN": 1357,
-      "topCoreCovered": false,
-      "coreRecall": 0.67,
-      "missed": [
-        "Malady"
-      ]
-    },
-    {
       "hero": "Lt. Belica",
       "lane": "support",
       "augment": "Combat Veteran",
-      "steer": null,
+      "steer": "poke",
       "hitAtK": false,
       "coverage": 0,
       "rankCorr": null,
@@ -716,26 +849,6 @@
       "coreRecall": 0.67,
       "missed": [
         "Combustion"
-      ]
-    },
-    {
-      "hero": "Mourn",
-      "lane": "support",
-      "augment": "Nightstalker",
-      "steer": "poke",
-      "hitAtK": false,
-      "coverage": 0,
-      "rankCorr": null,
-      "topCore": [
-        "Hexbound Bracers",
-        "Dynamo",
-        "Enra's Blessing"
-      ],
-      "topCoreN": 307,
-      "topCoreCovered": false,
-      "coreRecall": 0.67,
-      "missed": [
-        "Enra's Blessing"
       ]
     },
     {
@@ -759,46 +872,6 @@
       ]
     },
     {
-      "hero": "Narbash",
-      "lane": "support",
-      "augment": "Percussive Tear",
-      "steer": "tank",
-      "hitAtK": false,
-      "coverage": 0,
-      "rankCorr": null,
-      "topCore": [
-        "Truesilver Bracelet",
-        "Crystal Tear",
-        "Dynamo"
-      ],
-      "topCoreN": 394,
-      "topCoreCovered": false,
-      "coreRecall": 0.67,
-      "missed": [
-        "Truesilver Bracelet"
-      ]
-    },
-    {
-      "hero": "Riktor",
-      "lane": "support",
-      "augment": "Wanton Warden",
-      "steer": "sustain",
-      "hitAtK": false,
-      "coverage": 0,
-      "rankCorr": null,
-      "topCore": [
-        "Dynamo",
-        "Xenia",
-        "Frosted Lure"
-      ],
-      "topCoreN": 535,
-      "topCoreCovered": false,
-      "coreRecall": 0.67,
-      "missed": [
-        "Frosted Lure"
-      ]
-    },
-    {
       "hero": "Sevarog",
       "lane": "offlane",
       "augment": null,
@@ -819,23 +892,23 @@
       ]
     },
     {
-      "hero": "Terra",
+      "hero": "Shinbi",
       "lane": "offlane",
-      "augment": "Iron Resolve",
-      "steer": "tank",
+      "augment": "Allegro",
+      "steer": "ability-burst",
       "hitAtK": false,
       "coverage": 0,
       "rankCorr": null,
       "topCore": [
-        "Fire Blossom",
-        "Tainted Guard",
-        "Inquisition"
+        "Orb Of Growth",
+        "Tainted Scepter",
+        "Oathkeeper"
       ],
-      "topCoreN": 169,
+      "topCoreN": 288,
       "topCoreCovered": false,
       "coreRecall": 0.67,
       "missed": [
-        "Tainted Guard"
+        "Orb Of Growth"
       ]
     },
     {
@@ -959,42 +1032,6 @@
       ]
     },
     {
-      "hero": "Boris",
-      "lane": "jungle",
-      "augment": "Apex Hunter",
-      "steer": "sustain",
-      "hitAtK": false,
-      "coverage": 0,
-      "rankCorr": null,
-      "topCore": [
-        "Sky Splitter",
-        "Basilisk",
-        "Rapture"
-      ],
-      "topCoreN": 488,
-      "topCoreCovered": false,
-      "coreRecall": 1,
-      "missed": []
-    },
-    {
-      "hero": "Countess",
-      "lane": "midlane",
-      "augment": "Shadow Echo",
-      "steer": "ability-burst",
-      "hitAtK": false,
-      "coverage": 0,
-      "rankCorr": null,
-      "topCore": [
-        "Combustion",
-        "Noxia",
-        "Wraith Leggings"
-      ],
-      "topCoreN": 407,
-      "topCoreCovered": false,
-      "coreRecall": 1,
-      "missed": []
-    },
-    {
       "hero": "Eden",
       "lane": "carry",
       "augment": "Focal Lens",
@@ -1013,19 +1050,55 @@
       "missed": []
     },
     {
-      "hero": "Shinbi",
-      "lane": "offlane",
-      "augment": "Allegro",
-      "steer": "ability-burst",
+      "hero": "Legion",
+      "lane": "carry",
+      "augment": "Press the Advantage",
+      "steer": "on-hit",
       "hitAtK": false,
       "coverage": 0,
       "rankCorr": null,
       "topCore": [
-        "Orb Of Growth",
-        "Tainted Scepter",
-        "Oathkeeper"
+        "Malady",
+        "Vanquisher",
+        "Deathstalker"
       ],
-      "topCoreN": 288,
+      "topCoreN": 1357,
+      "topCoreCovered": false,
+      "coreRecall": 1,
+      "missed": []
+    },
+    {
+      "hero": "Murdock",
+      "lane": "carry",
+      "augment": "Justice's Reach",
+      "steer": "poke",
+      "hitAtK": false,
+      "coverage": 0,
+      "rankCorr": null,
+      "topCore": [
+        "Lightning Hawk",
+        "Vanquisher",
+        "Imperator"
+      ],
+      "topCoreN": 1337,
+      "topCoreCovered": false,
+      "coreRecall": 1,
+      "missed": []
+    },
+    {
+      "hero": "Terra",
+      "lane": "offlane",
+      "augment": "Iron Resolve",
+      "steer": "tank",
+      "hitAtK": false,
+      "coverage": 0,
+      "rankCorr": null,
+      "topCore": [
+        "Fire Blossom",
+        "Tainted Guard",
+        "Inquisition"
+      ],
+      "topCoreN": 169,
       "topCoreCovered": false,
       "coreRecall": 1,
       "missed": []
@@ -1049,24 +1122,6 @@
       "missed": []
     },
     {
-      "hero": "Revenant",
-      "lane": "carry",
-      "augment": "Hellfire Blast",
-      "steer": "tank",
-      "hitAtK": false,
-      "coverage": 0.12,
-      "rankCorr": null,
-      "topCore": [
-        "Vanquisher",
-        "Imperator",
-        "Terminus"
-      ],
-      "topCoreN": 1095,
-      "topCoreCovered": false,
-      "coreRecall": 1,
-      "missed": []
-    },
-    {
       "hero": "Grux",
       "lane": "offlane",
       "augment": "Lust For Blood",
@@ -1085,19 +1140,37 @@
       "missed": []
     },
     {
-      "hero": "Aurora",
-      "lane": "jungle",
-      "augment": "Glacial Thorns",
+      "hero": "Howitzer",
+      "lane": "midlane",
+      "augment": "Combat Thrusters",
+      "steer": "poke",
+      "hitAtK": false,
+      "coverage": 0.21,
+      "rankCorr": 1,
+      "topCore": [
+        "Combustion",
+        "Wraith Leggings",
+        "Noxia"
+      ],
+      "topCoreN": 384,
+      "topCoreCovered": false,
+      "coreRecall": 1,
+      "missed": []
+    },
+    {
+      "hero": "Countess",
+      "lane": "midlane",
+      "augment": "Shadow Echo",
       "steer": "ability-burst",
       "hitAtK": false,
       "coverage": 0.24,
-      "rankCorr": -1,
+      "rankCorr": null,
       "topCore": [
-        "Magnify",
-        "Elafrost",
-        "Flux Matrix"
+        "Combustion",
+        "Noxia",
+        "Wraith Leggings"
       ],
-      "topCoreN": 350,
+      "topCoreN": 407,
       "topCoreCovered": false,
       "coreRecall": 1,
       "missed": []
@@ -1117,60 +1190,6 @@
       ],
       "topCoreN": 1079,
       "topCoreCovered": false,
-      "coreRecall": 1,
-      "missed": []
-    },
-    {
-      "hero": "Howitzer",
-      "lane": "midlane",
-      "augment": "Combat Thrusters",
-      "steer": "poke",
-      "hitAtK": false,
-      "coverage": 0.31,
-      "rankCorr": 0.5,
-      "topCore": [
-        "Combustion",
-        "Wraith Leggings",
-        "Noxia"
-      ],
-      "topCoreN": 384,
-      "topCoreCovered": false,
-      "coreRecall": 1,
-      "missed": []
-    },
-    {
-      "hero": "Drongo",
-      "lane": "carry",
-      "augment": "Bring The Boom",
-      "steer": "ability-burst",
-      "hitAtK": true,
-      "coverage": 0.45,
-      "rankCorr": null,
-      "topCore": [
-        "Lightning Hawk",
-        "Vanquisher",
-        "Imperator"
-      ],
-      "topCoreN": 675,
-      "topCoreCovered": true,
-      "coreRecall": 1,
-      "missed": []
-    },
-    {
-      "hero": "Murdock",
-      "lane": "carry",
-      "augment": "Justice's Reach",
-      "steer": "poke",
-      "hitAtK": true,
-      "coverage": 0.48,
-      "rankCorr": null,
-      "topCore": [
-        "Lightning Hawk",
-        "Vanquisher",
-        "Imperator"
-      ],
-      "topCoreN": 1337,
-      "topCoreCovered": true,
       "coreRecall": 1,
       "missed": []
     },
@@ -1198,14 +1217,32 @@
       "augment": "RAM",
       "steer": "poke",
       "hitAtK": true,
-      "coverage": 0.65,
-      "rankCorr": -1,
+      "coverage": 0.56,
+      "rankCorr": null,
       "topCore": [
         "Combustion",
         "Wraith Leggings",
         "Amulet Of Chaos"
       ],
       "topCoreN": 422,
+      "topCoreCovered": true,
+      "coreRecall": 1,
+      "missed": []
+    },
+    {
+      "hero": "Revenant",
+      "lane": "carry",
+      "augment": "Hellfire Blast",
+      "steer": "tank",
+      "hitAtK": true,
+      "coverage": 0.82,
+      "rankCorr": -0.5,
+      "topCore": [
+        "Vanquisher",
+        "Imperator",
+        "Terminus"
+      ],
+      "topCoreN": 1095,
       "topCoreCovered": true,
       "coreRecall": 1,
       "missed": []

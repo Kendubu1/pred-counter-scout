@@ -372,3 +372,20 @@ consistency tests. See [catalog-asset-audit.md](catalog-asset-audit.md) for scop
 source hashes, the attack-range correction, and unresolved item mappings.
 The fixture is build-specific numeric evidence; it does not certify gameplay
 bindings or change the simulator's confidence labels.
+
+## 2026-10-15 catalog and damage reconciliation
+
+AbilityDef now carries independent physical/magical `powerScaling` arrays and
+`ignoresArmor`. The damage type remains physical/magical/true independently of
+its scaling stat; both rotation and burst mitigation honor explicit bypass.
+Legacy scalar-only synthetic fixtures retain the prior path. Current non-damaging
+abilities cannot inherit stale damage from an owned slot (Muriel E).
+
+All 189 augment descriptions align to the committed catalog; 16 modeled entries
+were corrected. All 216 items with effects now have explicit registry coverage,
+including 83 unmodeled additions. Unsupported conditional bonuses are not treated
+as unconditional. Tenacity imports convert retained CC duration to reduction,
+backed by client curves and the user's Absolution shop confirmation (25).
+
+`audit:catalog` inventories all data and remaining model limitations offline.
+See `docs/catalog-asset-audit.md` for evidence, corrections, and remaining gaps.

@@ -172,7 +172,7 @@ describe('effect math (synthetic, exact)', () => {
   it('Sky Splitter encodes the ranged discount', () => {
     const fx = resolveEntries(['item:sky-splitter'], { level: 13 });
     const p = fx.onHitProcs[0]!;
-    expect(p.pctTargetHealth).toBe(5.5);
+    expect(p.pctTargetHealth).toBe(5); // current catalog Rend; ranged remains 3.5%
     expect(p.pctTargetHealthRanged).toBe(3.5);
     expect(p.healthBasis).toBe('current');
   });

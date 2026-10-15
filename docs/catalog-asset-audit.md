@@ -26,7 +26,7 @@ No upstream API refresh or live-site deployment was performed.
 - 11,844 comparable hero level/stat values were checked with 0.005 tolerance
   for floating-point storage. All match after the three range corrections.
 - 681 item stat values were compared using explicit field aliases and unit
-  conversions. 669 agree; the 12 tenacity cases below remain unresolved.
+  conversions. 681 agree after correcting the 12 complementary tenacity values below.
 - 220 price rows were compared. 217 agree; three exceptions remain unresolved.
 
 `engine/fixtures/catalog-asset-audit.json` preserves source file hashes,
@@ -47,14 +47,16 @@ Agreement with a curve is not proof of a passive's gameplay-effect binding.
 
 ## Unresolved — do not silently correct
 
-**Tenacity:** Absolution, Equinox, Heroic Guard, Legacy, Raiment of Renewal,
-Salvation, Tainted Charm, Tenacious Drape, Tenacious Gem, Unbroken Will,
-Vanguardian, and World Breaker have catalog values complementary to their
-named curves (e.g. 75 versus 25). The provider's own Absolution page also says
-75, so this is not just a local importer typo. Determine whether each value
-represents retained crowd-control duration or reduction, confirm its gameplay
-effect, and measure it before changing simulator semantics. Source:
-https://pred.gg/items/absolution (checked 2026-10-15).
+**Tenacity — resolved representation:** Absolution, Equinox, Heroic Guard,
+Legacy, Raiment of Renewal, Salvation, Tainted Charm, Tenacious Drape,
+Tenacious Gem, Unbroken Will, Vanguardian, and World Breaker carried retained
+CC-duration percentages rather than reduction. The user confirmed Absolution
+shows **25** in the in-game shop on 2026-10-15, matching its named game curve
+rather than the provider's 75. The importer now converts `100 - value` and the
+12 catalog entries use their named reduction curves. The other 11 were not
+individually shop-tested. The evidence fixture retains original values and the
+confirmation separately from the unresolved price and special-item cases.
+A future upstream representation change requires reviewing this conversion.
 
 **Prices:** Divine Potion is 250 in the catalog versus 1 in its named price
 curve; Hunt is 0 versus 50; Refillable Potion is 0 versus 100. These may use
@@ -66,18 +68,52 @@ match in the shared item-stat table. Orb of Enlightenment's power/health/mana
 require resolving its evolution/grant effects. These values were not verified
 by this pass. Missing table rows do not mean missing items.
 
-**Combat fidelity:** names, descriptions, availability, ability damage/scaling,
-passive activation/stacking, recipe totals, server overrides, and hit timing
-are not comprehensively verified here. In particular, the existing core
-ability formula uses one power channel, while extracted Murdock curves include
-both AD and AP coefficients; gameplay bindings must decide how those combine.
-This audit does not upgrade simulator output to Proven.
+**Combat fidelity:** the simulator now retains independent physical/magical
+power channels and per-rank ratios, reads the stated damage type independently,
+and honors Murdock's explicit ultimate armor bypass. Muriel's current shield-only
+E no longer inherits damage from its obsolete slot. These are source-backed
+corrections, not measurements of complete gameplay. Multi-hit timing, passive
+activation/stacking, server overrides, and 11 dropped scaling entries remain
+incomplete. This audit does not upgrade simulator output to Proven. Murdock Buckshot uses
+the stated close-range maximum; distance falloff, its ability-applied armor
+shred, and Shots Fired passive cadence are not implemented by this change.
+
+## Catalog and simulator reconciliation
+
+All 189 hero augments now quote the committed pred.gg catalog exactly. 71 source
+strings changed (including markup/whitespace); 16 modeled augments had numerical
+changes. Skylar's new missing-health explosion and Countess's isolated healing
+bonus are explicitly unmodeled. Murdock Martial Law is now 15%, not 12%.
+
+All 216 items with effect descriptions now have registry entries. Existing
+modeled entries retain their curation limitations; 83 previously absent items
+are explicitly unmodeled. Complete tagged source text preserves scaling icons,
+conditions, cooldowns, and evolved-form references. Corrected values include
+Sky Splitter, Oathkeeper, Solaris cooldown, Dynamo, Earthshaker, Resolution,
+Cursed Scroll, Manta Scythe, Tyranny, and both Orb forms. Viper, Soulbinder and
+Vainglory no longer receive unsupported unconditional bonuses for conditional
+mechanics. Oathkeeper/Solaris use the stated 1.5s trigger cooldown, not their 4s
+empowerment duration; the model still assumes a basic attack follows the cast.
+
+`npm run audit:catalog` writes `data/aggregates/catalog-model-audit.json`, with
+all 55 heroes, 270 items, 189 hero augments, stale fallbacks, dropped scaling,
+and per-effect limitations. It is an offline inventory, not a full accuracy
+certificate. The catalog source fetch date remains unchanged.
 
 ## Follow-up order
 
-1. Resolve the tenacity representation and special-item references.
+1. Resolve special-item references and the three price exceptions.
 2. Cross-check every hero's ability ranks, damage types and scaling channels
    against the associated gameplay effects, not row names alone.
 3. Pin controlled Murdock hits and timed sequences, including level, target
    defenses, item passives, passive state, crit state, and buffs.
 4. Extend those measured regression cases across heroes and item interactions.
+
+## Derived output reconciliation
+
+Rebuilt all 55 hero artifacts, the 1,485-pair matchup matrix, and the field
+agreement audit using the corrected model. Removed 71 optimizer explanations
+whose item sets no longer matched and 63 coaching lines that failed current
+numeric/item/timing/matchup checks. Their replacements are pending reviewed
+authoring; the updated builds remain available and passing guidance is retained.
+No new coaching prose was generated by this pass.

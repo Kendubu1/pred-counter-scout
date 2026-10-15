@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { catalogBaseStat } from '../src/catalog-stats.js';
+import { catalogBaseStat, catalogItemStat } from '../src/catalog-stats.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const read = (p: string) => JSON.parse(readFileSync(path.join(root, p), 'utf8'));
@@ -11,6 +11,12 @@ describe('installed-client catalog cross-check (2026-10-15)', () => {
   const evidence = read('engine/fixtures/catalog-asset-audit.json');
   const heroes = read('data/catalog/heroes.json');
   const items = read('data/catalog/items.json');
+  it('converts retained CC duration into reduction (shop confirmed Absolution 25)', () => {
+    expect(catalogItemStat('tenacity', 75)).toBe(25);
+    expect(catalogItemStat('tenacity', 100)).toBe(0);
+    expect(catalogItemStat('physical_power', 75)).toBe(75);
+    expect(() => catalogItemStat('tenacity', 101)).toThrow(/verify/);
+  });
 
   it('every catalog hero and item has a recorded named asset', () => {
     for (const h of heroes) expect(evidence.heroAssets, h.slug).toContain(h.name);

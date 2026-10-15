@@ -36,7 +36,7 @@ function explain(fx: any): string {
     case 'on_hit': return `every basic attack adds ${dmg()}${fx.everyN > 1 ? ` (every ${fx.everyN}${fx.everyN === 2 ? 'nd' : fx.everyN === 3 ? 'rd' : 'th'} hit)` : ''}${fx.icdSeconds ? ` (≤ once / ${fx.icdSeconds}s)` : ''} — rate-capped over the attack window.`;
     case 'on_ability_hit': return `each ability adds ${dmg()}${fx.icdSeconds ? ` (≤ once / ${fx.icdSeconds}s per target)` : ''} — credited per ability in a combo.`;
     case 'haste': return `+${fx.amount} ${fx.scope} haste — shortens the relevant cooldowns.`;
-    case 'cooldown_rate': return `${fx.bonus}% faster non-ultimate cooldowns — more casts per fight.`;
+    case 'cooldown_rate': return `${fx.bonus * 100}% faster non-ultimate cooldowns — more casts per fight.`;
     case 'percent_pen': return `${fx.pct}% ${fx.damageType} penetration (multiplicative, 1.14 rule).`;
     case 'flat_pen': return `${fx.amount} flat ${fx.damageType} pen${fx.rampSeconds ? ` (ramps over ${fx.rampSeconds}s)` : ''}.`;
     case 'armor_shred': return `strips ${fx.pct ?? fx.flat}${fx.pct ? '%' : ''} of the target's ${fx.damageType} armor${fx.rampSeconds ? ` (ramps over ${fx.rampSeconds}s)` : ''} — so ALL your ${fx.damageType} damage lands harder.`;

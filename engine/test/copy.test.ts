@@ -47,6 +47,16 @@ describe('copy ground-check (item 8 verifier core)', () => {
 });
 
 describe('committed copy still grounds against the current catalog', () => {
+  it('item guidance quotes only numbers present in the current item', () => {
+    const items = JSON.parse(readFileSync(new URL('../../data/catalog/items.json', import.meta.url), 'utf8'));
+    const reviews = JSON.parse(readFileSync(new URL('../../data/aggregates/item-reviews.json', import.meta.url), 'utf8')).items;
+    for (const item of items) {
+      if (!reviews[item.slug]) continue;
+      const allowed = buildAllowed([item.total_price ?? 0, ...Object.values(item.stats ?? {}) as number[]],
+        item.effects.map((e: any) => [e.condition, e.cooldown, e.menu_description].filter(Boolean).join(' ').replace(/<[^>]+>/g, ' ')));
+      expect(verifyLine(reviews[item.slug], allowed), item.slug).toBe(true);
+    }
+  });
   // The copy passes verify each line WHEN IT IS WRITTEN, but the catalog moves
   // underneath them: a tip written against last patch's ability text can quote a
   // number the ability no longer has. Refreshing to 1.16 surfaced two — Bayle's

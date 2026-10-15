@@ -4043,3 +4043,25 @@ engine/test/calibration-measured.test.ts.
 - Practice-mode hygiene that mattered: a neutral Eternal (Idrisil + Cold
   Hearted + Glacier) so nothing adds damage; integer damage displays round
   down, so predictions are compared as floor(x), and ratios as ranges.
+
+## 2026-10-15 — catalog text is not the simulator's effect registry
+
+A fresh catalog did not update hand-curated effects: 71 augment source strings
+and 16 modeled augments had drifted. Item passives also retained older numbers.
+Keep source-alignment tests for every hero augment and every item effect, and
+record absent mechanics explicitly as unmodeled. A complete item list is not
+a complete combat model.
+
+Damage type and power scaling are independent: Murdock traps are magical but
+scale with both powers, Buckshot's AD ratio varies by rank, and his ultimate
+ignores armor without becoming true damage. Current shield-only Muriel E must
+not fall back to damage from an obsolete slot.
+
+The user confirmed Absolution's shop tenacity is 25, not the provider's 75.
+All 12 complementary item values now use named client reduction curves; only
+Absolution was shop-confirmed. Preserve that distinction and review the importer
+if the upstream representation changes.
+
+Rebuilding derived outputs also invalidated 71 optimizer explanations and 63
+coaching lines. Remove stale claims explicitly (record pending replacements),
+rather than keeping advice tied to obsolete item sets, timing, or matchups.

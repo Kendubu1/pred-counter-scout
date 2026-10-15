@@ -31,7 +31,7 @@ import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gql, hasCredentials } from './predgg.js';
-import { catalogBaseStat } from '../catalog-stats.js';
+import { catalogBaseStat, catalogItemStat } from '../catalog-stats.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const OUT = path.join(ROOT, 'data/catalog');
@@ -198,7 +198,7 @@ async function main() {
       const stats: Record<string, number> = {};
       for (const s of d.stats) {
         const key = ITEM_STAT[s.stat];
-        if (key) stats[key] = s.value; else unknownStats.add(s.stat);
+        if (key) stats[key] = catalogItemStat(key, s.value); else unknownStats.add(s.stat);
       }
       return {
         id: itemId(i.slug!),

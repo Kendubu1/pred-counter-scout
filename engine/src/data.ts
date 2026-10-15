@@ -75,8 +75,27 @@ const OMEDA_KEY_MAP: Record<string, AbilityDef['key']> = {
 // covers ults like Countess: "deals 135/185/235 (+5% ... of the target's
 // maximum health) magical damage" (percent-max-health scaling; any inner
 // power ratio on the percentage itself is conservatively dropped).
-// Per-rank scaling arrays ("+110/115/.../130%") use the mean.
-export function parseDamage(md: string): { values: number[]; scaling: number; pctMaxHealth?: number; damageType: 'physical' | 'magical' } | null {
+type ParsedDamage = { values: number[]; scaling: number; pctMaxHealth?: number;
+  damageType: AbilityDef['damageType']; powerScaling?: AbilityDef['powerScaling'];
+  ignoresArmor?: boolean; unmodeledScaling?: string };
+
+// Restrict ratios to this payload: a subsequent heal or second hit must not
+// contribute power to the first hit. Damage type is independent of scaling stat.
+function taggedPayload(text: string): Pick<ParsedDamage, 'powerScaling' | 'damageType' | 'ignoresArmor'> | null {
+  const end = text.match(/\b(physical|magical|true)\s+damage\b/i);
+  if (!end) return null;
+  const payload = text.slice(0, end.index);
+  const powerScaling: NonNullable<AbilityDef['powerScaling']> = {};
+  for (const m of payload.matchAll(/<(AttackDamageText|AbilityPowerText)>\(\+([\d./]+)%/g)) {
+    const stat = m[1] === 'AttackDamageText' ? 'physical' : 'magical';
+    powerScaling[stat] = m[2]!.split('/').map(Number);
+  }
+  if (!Object.keys(powerScaling).length) return null;
+  return { powerScaling, damageType: end[1]!.toLowerCase() as AbilityDef['damageType'],
+    ignoresArmor: /ignoring (?:any|all) physical armor/i.test(text) || undefined };
+}
+
+export function parseDamage(md: string): ParsedDamage | null {
   const a = md.match(/deal(?:ing|s)?\s+([\d][\d./]*)\s*<(AttackDamageText|AbilityPowerText)>\(\+([\d./]+)%/);
   if (a) {
     const values = a[1]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
@@ -86,6 +105,7 @@ export function parseDamage(md: string): { values: number[]; scaling: number; pc
       values,
       scaling: scalingParts.reduce((s, n) => s + n, 0) / scalingParts.length,
       damageType: a[2] === 'AbilityPowerText' ? 'magical' : 'physical',
+      ...taggedPayload(md.slice(a.index!)),
     };
   }
   const b = md.match(/deal(?:ing|s)?\s+([\d][\d./]*)\s*\(\+([\d.]+)%/);
@@ -136,9 +156,9 @@ function isDamagePayload(clause: string, from: number): boolean {
   return !!m && m[1]!.toLowerCase() === 'damage';
 }
 
-export function parseDamageClauseScoped(md: string): { values: number[]; scaling: number; pctMaxHealth?: number; damageType: 'physical' | 'magical'; unmodeledScaling?: string } | null {
+export function parseDamageClauseScoped(md: string): ParsedDamage | null {
   const clauses = md.split(/<br>|\n|(?<=\.)\s+/).filter((c) => /damage/i.test(c));
-  type Cand = { values: number[]; scaling: number; pctMaxHealth?: number; damageType: 'physical' | 'magical'; unmodeledScaling?: string; conditional?: boolean };
+  type Cand = ParsedDamage & { conditional?: boolean };
   const cands: Cand[] = [];
   // A conditional maximum is not the ability's damage. Terra's Wild Rush deals
   // 27-111 on a normal dash and "up to" 81-333 only inside a 1.25s charge window;
@@ -170,7 +190,7 @@ export function parseDamageClauseScoped(md: string): { values: number[]; scaling
       const conditional = CONDITIONAL.test(clause.slice(0, m.index!));
       if (power) {
         const parts = m[3]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
-        cands.push({ values, scaling: parts.length ? parts.reduce((s, n) => s + n, 0) / parts.length : 0, damageType: typeOf(power), conditional });
+        cands.push({ values, scaling: parts.length ? parts.reduce((s, n) => s + n, 0) / parts.length : 0, damageType: typeOf(power), conditional, ...taggedPayload(clause.slice(m.index!)) });
       } else {
         // Scaling stat the sim has no channel for: keep the stated base, drop
         // the ratio, and say so.
@@ -353,7 +373,7 @@ export function loadData(): LoadedData {
     // Abilities: omeda numbers first, stale owned values only when the
     // current text does not parse (cooldowns/costs still come from omeda).
     const defs: AbilityDef[] = [];
-    const damageTypeVotes = { physical: 0, magical: 0 };
+    const damageTypeVotes = { physical: 0, magical: 0, true: 0 };
     for (const key of ['ALTERNATE', 'PRIMARY', 'SECONDARY', 'ULTIMATE'] as const) {
       const omAb = omAbs.get(key);
       const owned = ownedByKey.get(key);
@@ -379,6 +399,8 @@ export function loadData(): LoadedData {
           aoe: aoe || undefined,
           targetHealthPct: targetHealth.length ? targetHealth : undefined,
           scalingPct: parsed.scaling,
+          powerScaling: parsed.powerScaling,
+          ignoresArmor: parsed.ignoresArmor,
           pctMaxHealth: parsed.pctMaxHealth,
           damageType: parsed.damageType,
           healing: healing.length ? healing : undefined,
@@ -389,7 +411,9 @@ export function loadData(): LoadedData {
           maxRank: key === 'ULTIMATE' ? 3 : 5,
         });
         damageTypeVotes[parsed.damageType]++;
-      } else if (ownedDmg) {
+      } else if (ownedDmg && (!omAb?.menu_description || /damage/i.test(omAb.menu_description))) {
+        // A current non-damaging ability must never inherit damage from an old
+        // kit slot (Muriel's E is now Alacrity, not the old damaging bubble).
         staleFallbacks.push({ slug: om.slug, key });
         defs.push({
           key,

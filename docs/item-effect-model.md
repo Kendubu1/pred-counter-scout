@@ -6,7 +6,7 @@ passive split out (with the trigger condition), the effect primitive it maps
 to, and how that rolls into the simulator. Flat stats are always counted;
 this doc is about the **passives**. THEORY until in-game calibration.
 
-**Coverage: 69 modeled · 56 honestly unmodeled (with reasons) · 0 not yet reviewed · 125 total.**
+**Coverage: 67 modeled · 58 honestly unmodeled (with reasons) · 0 not yet reviewed · 125 total.**
 
 ---
 
@@ -45,7 +45,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 ---
 
 ### World Breaker  ·  3200g
-**Base stats:** magical power 45, max health 350, tenacity 75
+**Base stats:** magical power 45, max health 350, tenacity 25
 
 **Passive 1 — Fiend:** *[On dealing Magical Damage to a Hero:]* • Increases your Magical Damage dealt by 2% for 4.5s . • Stacks up to 6 times.
 **Passive 2 — Maya:** • Gain (+5% ) Magical Power .
@@ -78,7 +78,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 4 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes} Damage Dealt to Self: {DamageTaken}
 
 **→ Modeled as:**
-- `on_hit` — every basic attack adds 30 (+4% health) magical damage — rate-capped over the attack window.
+- `on_hit` — every basic attack adds 20 (+3.5% health) magical damage — rate-capped over the attack window.
 - `unmodeled` — **not modeled** — Forbidden Art scales AS/regen with the holder missing health; no health-state uptime model.
 
 ---
@@ -139,7 +139,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes} Times Applied to Heroes: {TimesApplied}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 60 (+35% magical power) magical damage (≤ once / 4s per target) — credited per ability in a combo.
+- `on_ability_hit` — each ability adds 65 (+35% magical power) magical damage (≤ once / 1.5s per target) — credited per ability in a combo.
+- `unmodeled` — **not modeled** — Spellblade assumes a basic attack after each cast; 4s is the empowerment duration, 1.5s the trigger cooldown.
 
 ---
 
@@ -173,7 +174,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Power Gained: {Power} Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `on_hit` — every basic attack adds (+2% max mana) physical damage — rate-capped over the attack window.
+- `on_hit` — every basic attack adds (+2.5% max mana) physical damage — rate-capped over the attack window.
 - `unmodeled` — **not modeled** — Potent Font is a per-kill max-mana farming stack (caps at 400 then grants PP); economy.
 
 ---
@@ -185,7 +186,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `on_hit` — every basic attack adds 5.5% of target current HP physical damage — rate-capped over the attack window.
+- `on_hit` — every basic attack adds 5% of target current HP physical damage — rate-capped over the attack window.
 
 ---
 
@@ -196,7 +197,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes} Health Restored: {HealthRestored}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 45 (+35% physical power) physical damage (≤ once / 4s per target) — credited per ability in a combo.
+- `on_ability_hit` — each ability adds 45 (+35% physical power) physical damage (≤ once / 1.5s per target) — credited per ability in a combo.
+- `unmodeled` — **not modeled** — Spellblade assumes a basic attack after each cast; critical strikes and its 50% damage healing are not represented.
 
 ---
 
@@ -209,19 +211,6 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **→ Modeled as:**
 - `anti_heal` — cuts the target's healing by 45% — matters vs sustain.
 - `damage_amp` — +5% to your damage (when window only, credited at partial uptime) — applied as an amp on every qualifying hit.
-
----
-
-### Vainglory  ·  3100g
-**Base stats:** max health 200, physical armor 45, magical armor 40
-
-**Passive 1 — Pride:** *[Upon dealing or taking Hero Damage:]* • Gain a stack of Vanity for 4s . • Each stack grants +0.5% increased Armors . • Max Stacks: 10 .
-**Passive 2 — In Vain:** *[While at Max Vanity stacks:]* • Gain an additional 12% increased Armors .
-**Passive 3 — :** Time In Vain: {TimeInVain}s
-
-**→ Modeled as:**
-- `armor_multiplier` — armor ×1.10 — raises effective HP vs that damage type.
-- `unmodeled` — **not modeled** — In Vain's unconditional +10% Armors credited; Pride's +0.5%/stack (to +5%) ramps on dealing/taking damage and is not.
 
 ---
 
@@ -245,7 +234,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 **→ Modeled as:**
 - `armor_shred` — strips 27% of the target's physical armor (ramps over 6s) — so ALL your physical damage lands harder.
-- `damage_amp` — +8% to your damage — applied as an amp on every qualifying hit.
+- `unmodeled` — **not modeled** — Diligence grants 10% increased On-Hit and Ability damage only against Eroded targets (6 stacks). The simulator lacks target stack state; do not amplify all basic damage unconditionally.
 
 ---
 
@@ -351,7 +340,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `damage_amp` — +10% to your ability damage (when window only, credited at partial uptime) — applied as an amp on every qualifying hit.
+- `damage_amp` — +12.5% to your ability damage (when window only, credited at partial uptime) — applied as an amp on every qualifying hit.
 
 ---
 
@@ -435,8 +424,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 **→ Modeled as:**
 - `stat_flat` — +0 (+3/level) magical power — straight into the build's stat totals.
-- `stat_flat` — +0 (+15/level) health — straight into the build's stat totals.
-- `unmodeled` — **not modeled** — Art of Fortitude restores 3% missing health over 3s on cast; out-of-combat-style sustain.
+- `stat_flat` — +0 (+12/level) health — straight into the build's stat totals.
+- `unmodeled` — **not modeled** — Art of Fortitude restores 3% missing health over 5s on cast; health-state-dependent sustain is unmodeled.
 
 ---
 
@@ -449,7 +438,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 **→ Modeled as:**
 - `stat_flat` — +0 (+3/level) magical power — straight into the build's stat totals.
-- `stat_flat` — +0 (+15/level) health — straight into the build's stat totals.
+- `stat_flat` — +0 (+12/level) health — straight into the build's stat totals.
 - `unmodeled` — **not modeled** — This is the item the field actually BUYS; it evolves (~500 bonus XP, mid-game) into Orb of Enlightenment, so it is credited at its evolved per-level MP/HP value. Inner Growth's bonus-XP economy (faster leveling) and Art of Fortitude's 3% missing-health heal stay unmodeled (out of combat scope). Pre-evolution the per-level growth is slightly optimistic; evolution-timing gating is a future refinement.
 
 ---
@@ -482,18 +471,6 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 **→ Modeled as:**
 - `on_hit` — every basic attack adds 20 (+15% magical power) magical damage — rate-capped over the attack window.
-
----
-
-### Soulbinder  ·  3000g
-**Base stats:** magical power 85, max mana 400, ability haste 20
-
-**Passive 1 — Arcane Salvo:** *[Damage Heroes from afar with Abilities:]* • Deal 8% bonus Damage . • Activates at 1450+ Range .
-**Passive 2 — Farseer:** *[Upon triggering Arcane Salvo:]* • Permanently gain 1 Magical Power .
-**Passive 3 — :** Damage Dealt: {DamageDealt}
-
-**→ Modeled as:**
-- `damage_amp` — +7% to your ability damage — applied as an amp on every qualifying hit.
 
 ---
 
@@ -575,7 +552,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive — Chime:** *[Every 8s:]* • Subtract 1s from Non-Ultimate Cooldowns .
 
 **→ Modeled as:**
-- `cooldown_rate` — 0.125% faster non-ultimate cooldowns — more casts per fight.
+- `cooldown_rate` — 12.5% faster non-ultimate cooldowns — more casts per fight.
 
 ---
 
@@ -592,7 +569,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 ---
 
 ### Equinox  ·  2950g
-**Base stats:** physical power 40, attack speed 30, critical chance 20, tenacity 80
+**Base stats:** physical power 40, attack speed 30, critical chance 20, tenacity 20
 
 **Passive — Adamance:** *[On going below 40% Health :]* • Gain a 350-750 Shield for 4s . • Shield size increases with Level .
 
@@ -747,7 +724,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Activations: {Activations} Times Retriggered: {Retriggers}
 
 **→ Modeled as:**
-- `haste` — +15 ultimate haste — shortens the relevant cooldowns.
+- `haste` — +20 ultimate haste — shortens the relevant cooldowns.
 - `unmodeled` — **not modeled** — Oppression grants a timed +20 ability haste window after ulting (uptime-dependent) plus MS; out of scope.
 
 ---
@@ -783,7 +760,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Insatiable Harvest Damage Dealt: {DamageDealt}
 
 **→ Modeled as:**
-- `damage_amp` — +10% to your damage — applied as an amp on every qualifying hit.
+- `damage_amp` — +8% to your damage — applied as an amp on every qualifying hit.
 - `unmodeled` — **not modeled** — Insatiable Harvest is a PvE 1.5x-to-minions + per-kill PP farming stack.
 
 ---
@@ -820,7 +797,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Times Applied: {TimesApplied}
 
 **→ Modeled as:**
-- `damage_amp` — +10% to your damage (when window only, credited at partial uptime) — applied as an amp on every qualifying hit.
+- `damage_amp` — +8% to your damage (when window only, credited at partial uptime) — applied as an amp on every qualifying hit.
+- `unmodeled` — **not modeled** — Immobilizer currently assumes an immobilization window; Adaptive Aggression (20 physical or 30 magical power depending on build) is not represented.
 
 ---
 
@@ -850,7 +828,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 ---
 
 ### Absolution  ·  3100g
-**Base stats:** physical power 30, attack speed 35, magical armor 40, tenacity 75
+**Base stats:** physical power 30, attack speed 35, magical armor 40, tenacity 25
 
 **Passive 1 — Bravery:** *[On being Immobilized :]* • Gain 25% Damage Mitigation . • Gain 40% Movement Speed . • Lasts 3s .
 **Passive 2 — :** Activations: {Activations}
@@ -884,7 +862,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 ---
 
 ### Raiment of Renewal  ·  3100g
-**Base stats:** max health 700, health regeneration 50, ability haste 15, tenacity 80
+**Base stats:** max health 700, health regeneration 50, ability haste 15, tenacity 20
 
 **Passive 1 — Regenerator:** *[While Out Of Combat:]* • Regenerate 3% of your Missing Health each second.
 **Passive 2 — Synthesis:** *[For each Level:]* • Gain 5% additional Base Health Regen .
@@ -914,6 +892,18 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 **→ Modeled as:**
 - `unmodeled` — **not modeled** — Stack-consume cadence and the scaling base are unstated/ambiguous.
+
+---
+
+### Vainglory  ·  3100g
+**Base stats:** max health 200, physical armor 45, magical armor 40
+
+**Passive 1 — Pride:** *[Upon dealing or taking Hero Damage:]* • Gain a stack of Vanity for 4s . • Each stack grants +0.5% increased Armors . • Max Stacks: 10 .
+**Passive 2 — In Vain:** *[While at Max Vanity stacks:]* • Gain an additional 12% increased Armors .
+**Passive 3 — :** Time In Vain: {TimeInVain}s
+
+**→ Modeled as:**
+- `unmodeled` — **not modeled** — Pride grants 0.5% armors per stack (10 maximum); In Vain grants an additional 12% only at maximum stacks. Neither is unconditional; stack state is not represented.
 
 ---
 
@@ -998,7 +988,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 ---
 
 ### Legacy  ·  3000g
-**Base stats:** physical power 40, max health 225, magical armor 40, tenacity 75
+**Base stats:** physical power 40, max health 225, magical armor 40, tenacity 25
 
 **Passive 1 — Tenacious Bravery:** *[On going below 40% Health :]* • Self Cleanse . • Gain CC Immunity for 3s .
 **Passive 2 — :** Activations: {Activations}
@@ -1076,12 +1066,24 @@ this doc is about the **passives**. THEORY until in-game calibration.
 ---
 
 ### Salvation  ·  3000g
-**Base stats:** physical power 40, max health 375, tenacity 75
+**Base stats:** physical power 40, max health 375, tenacity 25
 
 **Passive — Aegis:** *[On going below 30% Health :]* • Gain a (+25% ) Shield for 6s . • Reduced to 50% Effectiveness for Ranged Heroes. • Gain 10% Omnivamp for 6s .
 
 **→ Modeled as:**
 - `unmodeled` — **not modeled** — A defensive, health-state-gated shield/sustain.
+
+---
+
+### Soulbinder  ·  3000g
+**Base stats:** magical power 85, max mana 400, ability haste 20
+
+**Passive 1 — Arcane Salvo:** *[Damage Heroes from afar with Abilities:]* • Deal 8% bonus Damage . • Activates at 1450+ Range .
+**Passive 2 — Farseer:** *[Upon triggering Arcane Salvo:]* • Permanently gain 1 Magical Power .
+**Passive 3 — :** Damage Dealt: {DamageDealt}
+
+**→ Modeled as:**
+- `unmodeled` — **not modeled** — Arcane Salvo grants 8% bonus ability damage only at 1450+ range; Farseer permanently grants 1 magical power on triggering it (8s cooldown). Range and historical stacks are not represented.
 
 ---
 
@@ -1313,7 +1315,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 ---
 
 ### Unbroken Will  ·  2800g
-**Base stats:** max health 400, magical armor 45, tenacity 70
+**Base stats:** max health 400, magical armor 45, tenacity 30
 
 **Passive 1 — Undying:** *[On being Immobilized :]* • Increase your Physical Armor by 25% for 2.5s . • Increase your Magical Armor by 25% for 2.5s .
 **Passive 2 — :** Activations: {Activations}
@@ -1416,7 +1418,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 ---
 
 ### Vanguardian  ·  2450g
-**Base stats:** physical armor 35, magical armor 35, ability haste 10, tenacity 75
+**Base stats:** physical armor 35, magical armor 35, ability haste 10, tenacity 25
 
 **Passive — Guardian:** *[Nearby Allied Heroes gain:]* • 15 Physical Armor . • 15 Magical Armor .
 

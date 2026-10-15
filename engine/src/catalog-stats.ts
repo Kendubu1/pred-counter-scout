@@ -20,3 +20,12 @@ export function catalogBaseStat(key: string, values: number[]): number[] {
   });
   return out.length && out.every((v) => v === out[0]) ? [out[0]!] : out;
 }
+
+/** pred.gg TENACITY currently reports retained CC duration in percent.
+ * Installed-client curves and Absolution's in-game shop (25, user confirmed
+ * 2026-10-15) establish reduction = 100 - provider value. */
+export function catalogItemStat(key: string, value: number): number {
+  if (key !== 'tenacity') return value;
+  if (value < 0 || value > 100) throw new Error('Invalid tenacity percentage; verify provider units');
+  return 100 - value;
+}

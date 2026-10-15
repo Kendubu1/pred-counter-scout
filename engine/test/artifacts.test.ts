@@ -52,7 +52,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
     const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json'].includes(f));
     const roster = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8'));
     expect(files.length).toBe(Object.keys(roster).length);
-    for (const f of files.slice(0, 8)) {
+    for (const f of files) {
       const parsed = HeroArtifact.safeParse(JSON.parse(readFileSync(path.join(dir, f), 'utf8')));
       expect(parsed.success, f).toBe(true);
     }
