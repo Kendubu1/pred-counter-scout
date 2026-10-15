@@ -37,12 +37,15 @@ verified false; we will fit the real curve.
 
 What to verify: cooldown = base x 100 / (100 + AH).
 
-How:
-1. Same Gideon. Note Void Breach rank 1 base cooldown (11s current patch).
-2. Buy one item with ability haste only (e.g. 20 AH). Read the cooldown
-   the ability UI now shows, or stopwatch it.
-3. Expected if formula holds: 11 x 100/120 = 9.17s.
-4. Repeat at a higher AH total (e.g. 60+): expected 11 x 100/160 = 6.88s.
+How (updated 2026-10-15 for patch 1.17.2):
+1. Gideon, but use Cosmic Rift (Q), NOT Void Breach: since 1.17 Void Breach's
+   cooldown "progresses 1% faster per 100 Max Mana", which mixes a second
+   effect into the reading. Cosmic Rift rank 1 has a plain 12s cooldown.
+2. Buy any items with ability haste; read the TOTAL ability haste from the
+   stats panel and the cooldown from the ability tooltip (or stopwatch it).
+3. Expected if the formula holds: 12 x 100/(100+AH):
+   AH 10 -> 10.9s · AH 20 -> 10.0s · AH 40 -> 8.6s · AH 60 -> 7.5s.
+4. Two AH totals, ideally one low (~20) and one high (~60).
 
 Record: (AH, observed cooldown) pairs into `constants.abilityHaste.source`,
 flip verified when it matches at both points.
