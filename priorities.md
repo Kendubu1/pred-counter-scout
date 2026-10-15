@@ -94,7 +94,10 @@ separate from castable abilities so they cannot spend skill points or gain
 invented cooldown casts. Catalog audit exposes this source-only coverage.
 Dual physical/magical scaling is supported for on-hit, on-ability-hit and
 ability-scoped bonus damage; explicit dual ratios replace legacy scalar ratios.
-Existing fixtures remain unchanged. Still open: curate each passive trigger,
+Existing fixtures remain unchanged. 2026-10-15 follow-up: scoped attack-speed grants to the correct subject and
+stated duration; removed unrelated timers, icon-tag false positives and the
+four-second guess. Ranked buff durations now reach the simulator.
+Still open: curate each passive trigger,
 windowed uptime and heal-from-damage behavior from verified mechanics, then
 rebuild derived outputs when actual model coefficients change.
 

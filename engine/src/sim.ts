@@ -332,7 +332,10 @@ function selfAttackSpeedPct(kit: HeroKit, ranks: Map<string, number>, t: ItemSta
     const rank = ranks.get(ab.key) ?? 0;
     if (rank <= 0) continue;
     const val = perRank[Math.min(rank, perRank.length) - 1] ?? 0;
-    const uptime = windowSec <= BURST_WINDOW ? 1 : Math.min(1, (ab.buffDurationSec ?? 4) / Math.max(abilityCooldown(ab, rank, t, eff), 1));
+    const durations = ab.buffDurationSecPerRank;
+    const duration = durations?.[Math.min(rank, durations.length) - 1] ?? ab.buffDurationSec;
+    if (duration === undefined) continue;
+    const uptime = windowSec <= BURST_WINDOW ? Math.min(1, duration / windowSec) : Math.min(1, duration / Math.max(abilityCooldown(ab, rank, t, eff), 1));
     pct += val * uptime;
   }
   return pct;

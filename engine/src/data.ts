@@ -235,15 +235,27 @@ function parseTargetHealth(md: string): { pct: number[]; basis: 'current' | 'mis
 
 // Parse a self attack-speed steroid: a per-rank "X/Y/Z% Attack Speed" buff (e.g.
 // Sparrow 25/30/35/40/45%, Murdock 15/20/25/30/35%). Returns the per-rank values
-// and an approximate active duration ("for Ns") for uptime; null if no AS grant.
-function parseSelfAttackSpeed(md: string): { perRank: number[]; durationSec: number } | null {
-  const m = md.match(/(\d+(?:\.\d+)?(?:\/\d+(?:\.\d+)?)+)\s*%?\s*<?\s*Attack ?Speed/i)
-    ?? md.match(/(\d+(?:\.\d+)?)\s*%\s*<?\s*Attack ?Speed/i);
+// and stated rank-dependent durations for uptime; null for unsupported grants.
+export function parseSelfAttackSpeed(md: string): { perRank: number[]; durations: number[] } | null {
+  // Tags such as AttackSpeedText identify scaling icons, not an AS grant.
+  const text = md.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  // These need separate target/state/stack models, not a self cast-time steroid.
+  if (/turret|sentry mode|steals? .*attack speed/i.test(text)) return null;
+  const m = text.match(/(\d+(?:\.\d+)?(?:\/\d+(?:\.\d+)?)*)%\s+attack speed\b/i);
   if (!m) return null;
-  const perRank = m[1]!.split('/').map(Number).filter((n) => n > 0);
-  if (!perRank.length) return null;
-  const dur = md.match(/for\s+(\d+(?:\.\d+)?)\s*s/i);
-  return { perRank, durationSec: dur ? Number(dur[1]) : 4 };
+  const perRank = m[1]!.split('/').map(Number);
+  const after = text.slice(m.index! + m[0].length);
+  const before = text.slice(0, m.index);
+  const values = '(\\d+(?:\\.\\d+)?(?:\\/\\d+(?:\\.\\d+)?)*)';
+  // Bind the duration to this clause, never the first unrelated timer in the kit.
+  const direct = after.match(new RegExp('^\\s*for\\s+' + values + '\\s*s\\b', 'i'));
+  const group = after.split(/(?:[.!?](?=\s)|<br>)/)[0]?.match(new RegExp('for\\s+' + values + '\\s*s\\b', 'i'));
+  const leading = before.match(new RegExp('For the next\\s+' + values + '\\s*s,[^.!?]*$', 'i'));
+  const linked = before.match(new RegExp('for\\s+' + values + '\\s*s\\. During this time,[^.!?]*$', 'i'));
+  const duration = direct ?? group ?? leading ?? linked;
+  if (!duration) return null; // no invented four-second duration
+  const durations = duration[1]!.split('/').map(Number);
+  return { perRank, durations };
 }
 
 // A self-shield passive as % of max health (Steel's Cybernetic Shell: "shields
@@ -405,7 +417,8 @@ export function loadData(): LoadedData {
           damageType: parsed.damageType,
           healing: healing.length ? healing : undefined,
           selfAttackSpeedPctPerRank: asBuff?.perRank,
-          buffDurationSec: asBuff?.durationSec,
+          buffDurationSec: asBuff?.durations[0],
+          buffDurationSecPerRank: asBuff?.durations,
           selfStatBuffs: statBuffs.length ? statBuffs : undefined,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
@@ -423,7 +436,8 @@ export function loadData(): LoadedData {
           damageType: ownedDmg.damageType === 'magical' ? 'magical' : ownedDmg.damageType === 'true' ? 'true' : 'physical',
           healing: healing.length ? healing : undefined,
           selfAttackSpeedPctPerRank: asBuff?.perRank,
-          buffDurationSec: asBuff?.durationSec,
+          buffDurationSec: asBuff?.durations[0],
+          buffDurationSecPerRank: asBuff?.durations,
           selfStatBuffs: statBuffs.length ? statBuffs : undefined,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
@@ -439,7 +453,8 @@ export function loadData(): LoadedData {
           damageType: healing[0]!.powerType,
           healing,
           selfAttackSpeedPctPerRank: asBuff?.perRank,
-          buffDurationSec: asBuff?.durationSec,
+          buffDurationSec: asBuff?.durations[0],
+          buffDurationSecPerRank: asBuff?.durations,
           selfStatBuffs: statBuffs.length ? statBuffs : undefined,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
@@ -455,7 +470,8 @@ export function loadData(): LoadedData {
           scalingPct: 0,
           damageType: 'physical',
           selfAttackSpeedPctPerRank: asBuff?.perRank,
-          buffDurationSec: asBuff?.durationSec,
+          buffDurationSec: asBuff?.durations[0],
+          buffDurationSecPerRank: asBuff?.durations,
           selfStatBuffs: statBuffs.length ? statBuffs : undefined,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,

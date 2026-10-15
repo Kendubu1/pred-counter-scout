@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-15T17:58:52.383Z",
+ "generatedAt": "2026-10-15T18:19:27.815Z",
  "source": "Committed catalog, effect registry, and dated installed-client audit; no network refresh",
  "note": "Presence and source alignment are not gameplay proof. Multi-hit timing, conditional states, and dropped scaling remain incomplete; keep simulation provisional.",
  "heroes": [
@@ -525,7 +525,17 @@
        22
       ]
      },
-     "ignoresArmor": false
+     "ignoresArmor": false,
+     "selfAttackSpeedPctPerRank": [
+      20,
+      22.5,
+      25,
+      27.5,
+      30
+     ],
+     "buffDurationSecPerRank": [
+      4
+     ]
     },
     {
      "key": "ULTIMATE",
@@ -826,11 +836,6 @@
      "ignoresArmor": false
     },
     {
-     "key": "SECONDARY",
-     "damageType": "physical",
-     "ignoresArmor": false
-    },
-    {
      "key": "ULTIMATE",
      "damageType": "magical",
      "powerScaling": {
@@ -881,7 +886,17 @@
     {
      "key": "ULTIMATE",
      "damageType": "physical",
-     "ignoresArmor": false
+     "ignoresArmor": false,
+     "selfAttackSpeedPctPerRank": [
+      30,
+      60,
+      90
+     ],
+     "buffDurationSecPerRank": [
+      8,
+      10,
+      12
+     ]
     }
    ],
    "staleFallbacks": [],
@@ -1569,7 +1584,17 @@
     {
      "key": "SECONDARY",
      "damageType": "physical",
-     "ignoresArmor": false
+     "ignoresArmor": false,
+     "selfAttackSpeedPctPerRank": [
+      15,
+      20,
+      25,
+      30,
+      35
+     ],
+     "buffDurationSecPerRank": [
+      4
+     ]
     },
     {
      "key": "ULTIMATE",
@@ -1780,7 +1805,15 @@
     {
      "key": "ULTIMATE",
      "damageType": "physical",
-     "ignoresArmor": false
+     "ignoresArmor": false,
+     "selfAttackSpeedPctPerRank": [
+      35,
+      55,
+      75
+     ],
+     "buffDurationSecPerRank": [
+      8
+     ]
     }
    ],
    "staleFallbacks": [],
@@ -1896,11 +1929,6 @@
     "modelStatus": "source-only"
    },
    "abilities": [
-    {
-     "key": "ALTERNATE",
-     "damageType": "physical",
-     "ignoresArmor": false
-    },
     {
      "key": "PRIMARY",
      "damageType": "physical",
@@ -2101,7 +2129,15 @@
        80
       ]
      },
-     "ignoresArmor": false
+     "ignoresArmor": false,
+     "selfAttackSpeedPctPerRank": [
+      20,
+      40,
+      60
+     ],
+     "buffDurationSecPerRank": [
+      7
+     ]
     }
    ],
    "staleFallbacks": [],
@@ -2320,7 +2356,17 @@
     {
      "key": "SECONDARY",
      "damageType": "physical",
-     "ignoresArmor": false
+     "ignoresArmor": false,
+     "selfAttackSpeedPctPerRank": [
+      25,
+      30,
+      35,
+      40,
+      45
+     ],
+     "buffDurationSecPerRank": [
+      6
+     ]
     }
    ],
    "staleFallbacks": [],
@@ -2573,7 +2619,17 @@
        60
       ]
      },
-     "ignoresArmor": false
+     "ignoresArmor": false,
+     "selfAttackSpeedPctPerRank": [
+      20,
+      25,
+      30,
+      35,
+      40
+     ],
+     "buffDurationSecPerRank": [
+      4
+     ]
     },
     {
      "key": "ULTIMATE",
@@ -6521,6 +6577,12 @@
     "added 2026-10-14 when the public match stream first surfaced this augment; mechanics not yet encoded in the sim"
    ]
   }
+ ],
+ "attackSpeedLimitations": [
+  "Self-buff durations are tied to their own grant clause; no four-second fallback is invented.",
+  "Iggy turret attack speed is not hero attack speed. GRIM Sentry stacking and Valmont attack-speed theft need separate state/target models and are excluded from self steroids.",
+  "Murdock reactivation stacks and takedown resets, Grux duration extensions, Sparrow delayed activation, and attack-speed ratios with additional stat scaling remain incomplete.",
+  "Sustained attack speed still uses duration/cooldown averaging; it is not a discrete cast/attack timeline."
  ],
  "unresolvedAssets": {
   "itemDifferences": [],

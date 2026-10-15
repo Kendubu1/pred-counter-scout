@@ -457,3 +457,25 @@ When present, this replaces the legacy scalar representation, including explicit
 zero ratios. Existing effects remain numerically unchanged. Exact synthetic tests
 cover dual scaling, mitigation, replacement, legacy behavior and all 55 passives.
 The catalog-model audit was regenerated; passive gameplay coverage remains open.
+
+## 2026-10-15 attack-speed source scope
+
+The old parser treated any attack-speed-looking substring as a self steroid and
+borrowed the first duration anywhere in the tooltip, defaulting to four seconds.
+This credited Iggy with his turrets' buff and interpreted Revenant's scaling
+markup as a bonus. Sparrow borrowed the 1.5s stealth timer instead of her 6s
+attack-speed grant. Grux and Serath borrowed unrelated timers as well.
+
+Strip markup before matching a whole attack-speed phrase; bind the duration to
+the grant, its explicit preceding "For the next" clause, or "During this time"
+link. Retain ranked durations (Grux 8/10/12s). Require a stated duration and
+exclude turret grants, GRIM's Sentry stacking mode and Valmont's conditional
+stat theft from the ordinary self-cast model. Missing or unsupported models are
+not replaced by guessed magnitudes or timing. Short-window buff credit is capped
+by its stated duration; sustained output remains duration/cooldown averaged.
+
+This does not solve activation delays, stacking/recast resets, duration
+extensions or full combat scheduling. Catalog-model audit records those limits.
+Rebuild hero artifacts, matchup matrix and diagnostic reports after these
+numerical changes, and invalidate stale explanations rather than retaining
+advice for old builds or timings.

@@ -40,6 +40,7 @@ export interface AbilityDef {
   // Murdock's Hot Pursuit): a temporary AS buff with no damage line. Carries max
   // these early for the auto-attack spike, so it must feed auto DPS.
   selfAttackSpeedPctPerRank?: number[];
+  buffDurationSecPerRank?: number[]; // stated duration at each skill rank
   buffDurationSec?: number;      // approx active duration of the AS buff, for uptime
   // Permanent self stat gains from a leveled ability ("Passive: Gain X physical
   // power" — Feng Mao's Safeguard, Wraith's Surprise Surprise), credited at full
