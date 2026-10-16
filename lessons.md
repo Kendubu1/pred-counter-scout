@@ -4589,3 +4589,22 @@ contracts, then integrate movement/hit/consume event ordering before ranking.
 
 Validation: 264 tests in 37 files, TypeScript, 55 artifact schemas and rendered
 item checks pass. Affected audits regenerated. No merge/deployment.
+
+
+### Broad mechanics pass (2026-10-16)
+
+Use full-mechanics-inventory.json as the decoded coverage queue and
+broad-mechanics-review.json for six newly reviewed shared/hero calculations.
+Do not repeat extraction of priority families. Recover property/default schemas
+and native capture/event contracts, then review the remaining hero/item/Eternal
+functions and integrate only evidence-supported behavior. Full paths matter:
+Amalgamation and Barkskin have duplicate asset basenames. Decoded assets can be
+inactive content; extraction, manual review and production coverage are separate.
+
+Final scope: 5,630/5,630 selected assets decoded, zero selected parse errors or
+missing assets. All 11,304 recovered function streams pass byte/VM-size roundtrip;
+10,083 exports remain raw. Areas: heroes 2,950 assets/7,710 functions; items
+1,486/1,687; Eternals 336/491; shared character 82/321; world/framework 776/1,095.
+These include inactive content and overlap earlier batches; do not add counts.
+Validation: 264 engine tests, synthetic audit regression, TypeScript, all 55
+artifact schemas and rendered UI pass. No production formulas/rankings changed.

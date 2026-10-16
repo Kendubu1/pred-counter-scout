@@ -1020,3 +1020,34 @@ contracts, then integrate movement/hit/consume event ordering before ranking.
 
 Validation: 264 tests in 37 files, TypeScript, 55 artifact schemas and rendered
 item checks pass. Affected audits regenerated. No merge/deployment.
+
+
+### Broad installed-client mechanics inventory (2026-10-16)
+
+Expanded beyond priority items to GA_, GE_, GMMC_ and GCN_ assets across heroes,
+items, Eternals, shared character systems and world/framework mechanics. Full
+relative paths are retained because Amalgamation/Barkskin ability filenames occur
+in more than one directory. Raw decoded files remain private. Only coverage
+metadata, hashes, selected findings and offsets are committed.
+
+`engine/scripts/audit-decoded-mechanics.py` accounts for every selected asset as
+decoded, failed or missing. Its synthetic regression protects duplicate names,
+failed function roundtrips, missing files and removal of private payloads.
+`full-mechanics-inventory.json` records counts and gaps; it is not a certificate
+of manual review, active content, native/server parity or simulator integration.
+Prefix selection excludes other naming conventions outside selected directories.
+
+Six shared/hero calculations were reviewed in `broad-mechanics-review.json`.
+Cooldown and tenacity wrappers expose reciprocal formulas; basic attack timing
+calls native CalculateAttackCooldown. Kira Dusk and Belica missing-mana formulas
+are readable, but property defaults/capture semantics remain unresolved. Archive
+index has no usmap/pdb entries; schema recovery and native contracts remain the
+central blockers. No unknown constants were added and no production math changed.
+
+Final scope: 5,630/5,630 selected assets decoded, zero selected parse errors or
+missing assets. All 11,304 recovered function streams pass byte/VM-size roundtrip;
+10,083 exports remain raw. Areas: heroes 2,950 assets/7,710 functions; items
+1,486/1,687; Eternals 336/491; shared character 82/321; world/framework 776/1,095.
+These include inactive content and overlap earlier batches; do not add counts.
+Validation: 264 engine tests, synthetic audit regression, TypeScript, all 55
+artifact schemas and rendered UI pass. No production formulas/rankings changed.
