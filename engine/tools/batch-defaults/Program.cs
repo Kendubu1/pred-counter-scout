@@ -3,6 +3,20 @@ using UAssetAPI.ExportTypes;
 using UAssetAPI.Unversioned;
 using System.Text.Json;
 Directory.CreateDirectory(args[2]);
+var enums=new Dictionary<string,UsmapEnum>();
+if(args.Length>4) {
+ using var doc=JsonDocument.Parse(File.ReadAllText(args[4]));
+ foreach(var entry in doc.RootElement.GetProperty("enums").EnumerateObject()) {
+  var values=new System.Collections.Concurrent.ConcurrentDictionary<long,string>();
+  foreach(var value in entry.Value.EnumerateArray()) {
+   var number=value.GetProperty("value").GetInt64();var label=value.GetProperty("name").GetString()!;
+   if(!label.StartsWith(entry.Name+"::") || !values.TryAdd(number,label))throw new Exception("Invalid native enum mapping");
+  }
+  // UAssetAPI indexes these enum maps by numeric value; reject sparse profiles.
+  for(long i=0;i<values.Count;i++)if(!values.ContainsKey(i))throw new Exception("Sparse enum profile unsupported");
+  enums.Add(entry.Name,new UsmapEnum(entry.Name,values));
+ }
+}
 var shared=new Dictionary<string,UsmapSchema>();
 var ambiguous=new HashSet<string>();
 var schemaErrors=new List<object>();
@@ -14,7 +28,7 @@ foreach(var file in sources.Values) {
  var json=File.ReadAllText(file);if(!json.Contains("UAssetAPI.ExportTypes.ClassExport"))continue;
  try {
  var asset=UAsset.DeserializeJson(json);
- asset.Mappings=new Usmap { Schemas=new Dictionary<string,UsmapSchema>(), EnumMap=new Dictionary<string,UsmapEnum>() };
+ asset.Mappings=new Usmap { Schemas=new Dictionary<string,UsmapSchema>(), EnumMap=new Dictionary<string,UsmapEnum>(enums) };
  foreach(var cls in asset.Exports.OfType<ClassExport>()) {
   var name=cls.ObjectName.ToString();
   if(ambiguous.Contains(name))continue;
@@ -32,7 +46,7 @@ foreach(var file in Directory.EnumerateFiles(args[0],"*.uasset.json",SearchOptio
  var rel=Path.GetRelativePath(args[0],file);
  try {
  var a=UAsset.DeserializeJson(File.ReadAllText(file));
-a.Mappings=new Usmap { Schemas=new Dictionary<string,UsmapSchema>(shared), EnumMap=new Dictionary<string,UsmapEnum>() };
+a.Mappings=new Usmap { Schemas=new Dictionary<string,UsmapSchema>(shared), EnumMap=new Dictionary<string,UsmapEnum>(enums) };
 foreach(var c in a.Exports.OfType<ClassExport>()) {
  var s=Usmap.GetSchemaFromStructExport(c,true);a.Mappings.Schemas[c.ObjectName.ToString()]=s;
 

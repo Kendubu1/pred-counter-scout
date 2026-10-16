@@ -646,3 +646,27 @@ metadata is sanitized to counts; game bodies and private paths remain private.
 Validation includes aggregate privacy regression, native-probe regressions,
 reader build, full harness, TypeScript, artifact schemas and rendered UI parity.
 No production formulas or rankings changed.
+
+
+## 2026-10-16 native enum recovery
+
+Recovered five native enum tables (24 explicit values) from the installed
+executable. The probe validates unique descriptors, ownership, flags and numeric
+entries; it rejects duplicate/sparse profiles rather than assuming enum ordinals.
+The batch reader accepts the private mapping file and retains the actual numbers.
+
+All 1,237 recovered-class files now produce partial default records: the previous
+17 schema/file errors are eliminated. Shared class schemas increase to 5,626.
+Exact property spans increase 5,076 -> 5,579 (5,400 nonempty), including 60 enum
+properties; zero previously matching spans lose their match. New records expose
+five further unverified spans (45 total); this is still partial recovery. 95
+streams end, but zero complete CDOs are certified. No production math changed.
+
+Fixtures: default-enum-review.json and native-enum-review.json. Generated enum
+mappings and all decoded properties stay private. Native ability registration
+and 43 candidate property entries were located privately for the next inherited
+schema investigation; array/enum helper records must not be counted as ordinary
+class properties. Next: validate that layout and resolve nested filter schemas.
+
+Validation: three new enum regressions plus seven prior Python checks, recovery
+build, 264 engine tests, TypeScript, 55 artifact schemas and rendered UI parity.

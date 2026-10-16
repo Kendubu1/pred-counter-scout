@@ -25,3 +25,11 @@ assets and 17 per-file failures remain outside this default pass's recovered out
 Next common blockers: native/inherited class-property layouts (953 records),
 PredActorFilter (66), PredFilterAndEffectsContainer (47). Resolve shared schemas
 before attempting item-by-item numerical changes. No production rankings changed.
+
+
+An optional fifth argument supplies private JSON from recover_native_enums.py.
+The loader preserves explicit numeric values and rejects wrong owner labels,
+duplicate values and sparse maps unsupported by this UAssetAPI profile. Run the
+extractor against the installed executable before reuse; preserve its hash.
+Do not commit the generated mappings. The enum-enabled pass resolves all 17
+previous file-level errors; counts remain partial-property evidence.
