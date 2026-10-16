@@ -1631,3 +1631,34 @@ The existing reference scenarios therefore retain their recommendations; targete
 regressions demonstrate the corrected shield-sensitive calculation. The UI check
 covers 55 kits, 189 augments, 270 item dialogs and 16 Eternal majors/96 minors.
 This verifies display/source parity, not complete game-mechanic coverage.
+
+
+### Shared flat-reduction tag eligibility (2026-10-16)
+
+Closed the reduction-selection flag gap: BasicDamage OR PhysicalDamage selects
+ReducedPhysicalDamageTaken and its observed 20% local cap. Otherwise AbilityDamage
+OR MagicalBasicDamage selects ReducedMagicalDamageTaken; otherwise this stage
+is skipped. Bound getter names through their name/tag constructor calls and the
+same cache returned to callers, then followed saved flags and register reloads
+to the reduction branch. This is tag-based selection, not a blanket mapping of
+every event to the simulator's physical/magical damage label. Intervening
+execute/override behavior, event producers and final application remain open.
+
+Added a reusable observed-profile tag-cache binder. It rejects constructor,
+cache, stack-source and return-copy mismatches, gaps, branches and ambiguous
+setups. All seven inspected getters bind successfully. A string reference alone
+is not accepted as a tag getter. Raw traces, cache addresses and instruction
+bodies remain private in native-reduction-eligibility-private.json.
+
+Decoded effects identify Hexbound Bracers as a physical-reduction attribute
+producer and Devotion/Mistmeadow Buckler as magical-reduction producers. Hexbound
+uses a custom calculation class, not a standalone tooltip constant. Do not grant
+new simulator reduction credit before resolving each producer's calculation and
+filters. Production behavior, prior shield separation and generated artifacts
+are unchanged in this checkpoint. Next trace those custom magnitudes/filters or
+another actionable shared native gap; do not repeat the closed tag inventory.
+
+Validation: 52 Python recovery tests, all 276 engine tests across 38 files,
+TypeScript and whitespace checks pass. No production or displayed data change
+requires an artifact rebuild; prior full regeneration and rendered parity remain
+unchanged. This checkpoint is recovery evidence, not new winning-build validation.
