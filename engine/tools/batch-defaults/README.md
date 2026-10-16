@@ -58,3 +58,15 @@ traced native parent; it does not discover further native inheritance. Text,
 field-path, name and integer properties now have native type mappings. Unknown
 property kinds still stop recovery. Four trailing bytes observed in completed
 property streams remain opaque; reaching property end is not whole-CDO parity.
+
+
+Native behavior investigation uses engine/scripts/trace_native_control_flow.py.
+Install Capstone in a private analysis environment and expose it through PYTHONPATH
+for that tool and test_native_control_flow.py. Inputs: installed executable,
+reviewed entry address and PRIVATE JSON output; --limit bounds instructions.
+The tracer follows direct branches, reports calls/indirect branches, and rejects
+unmapped or overlapping instructions. It does not execute the game, resolve calls,
+or certify behavior. Exception-directory bounds may describe code fragments.
+Never commit generated instruction output. The curve-helper review documents why
+native override selection must be resolved before treating packaged defaults as
+effective gameplay values.

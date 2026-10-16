@@ -26,11 +26,11 @@
   },
   {
    "subject": "Knell",
-   "status": "runtime arithmetic and trigger branches traced; defaults unresolved",
+   "status": "runtime arithmetic and serialized curve bindings traced; native overrides and effect defaults unresolved",
    "evidence": "GA_Blessing_Knell.ExecuteUbergraph offsets 10-582, 1484-3122, 3731-4596",
    "finding": "Rejects ProcDamage and requires a hero target. Applies one stack, or four with Peal buff. Computes ShredPerStack = GetValueAtLevel(Shred,0) + GetValueAtLevel(ShredPerLevel,0) * actorLevel. Replaces target shred effect and passes 1-stackCount*ShredPerStack for armor and magic resist. Steal uses modified effect magnitude and post-application target attributes, tracked by target.",
    "impact": "Prior 17.6% level-13 statement from curve interpolation alone is not runtime-verified. If the default bindings use the named curves with endpoint clamping at zero, arithmetic would instead yield 18.4%; do not promote that conditional value yet.",
-   "open": "Decode Shred/ShredPerLevel/StealModifier defaults and native GetValueAtLevel/GetModifiedAttributeMagnitudeForHandle semantics; verify stacking, refresh and expiry settings."
+   "open": "Shred/ShredPerLevel/StealModifier now have exact serialized curve bindings. Trace native curve-table override selection, virtual curve evaluation and GetModifiedAttributeMagnitudeForHandle semantics; verify stacking, refresh and expiry settings. See native-curve-helper-review.json."
   },
   {
    "subject": "Solaris",

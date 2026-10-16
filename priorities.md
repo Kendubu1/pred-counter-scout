@@ -720,3 +720,25 @@ simulator evaluation, not completion of a decoding milestone.
 Validation: 264 engine tests, 16 Python regressions, TypeScript, 55 artifact
 schemas, rendered UI parity and the broad reader pass. Four new negative/positive
 regressions cover field counts/flags, repeat roots and missing constructors.
+
+
+## 2026-10-16 native curve-helper dispatch
+
+Traced the registered GetValueAtLevel wrapper into its native implementation.
+Before curve evaluation, an available PredCurveTableOverrideSubsystem can return
+a replacement scalable-float binding. The fallback uses the packaged binding.
+The resolved curve is evaluated via virtual dispatch and multiplied by the scalar.
+This explains why a recovered curve binding alone cannot establish runtime values;
+override configuration/selection and virtual endpoint handling are now priorities.
+Knell's previously unresolved serialized bindings are recovered, but native
+overrides, effect stack/expiry defaults and steal semantics remain open.
+
+Added a reusable bounded control-flow tracer that follows conditional/direct jumps
+instead of stopping at the first return or exception-directory fragment. It records
+calls and unresolved indirect branches without executing code. All instruction
+bodies remain private; the committed review contains findings and source hash only.
+The next step is override-source recovery and curve virtual dispatch, then supported
+mechanics integration and controlled simulator comparisons. No rankings changed.
+
+Validation: four new synthetic control-flow regressions, 264 engine tests,
+20 Python regressions, TypeScript, 55 artifact schemas and rendered UI parity.
