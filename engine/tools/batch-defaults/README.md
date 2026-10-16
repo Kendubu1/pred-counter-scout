@@ -125,3 +125,9 @@ folder preserves each optional value's nested definition (including enum-underly
 types), checks matching helper names, and rejects missing/wrong helpers. The
 default reader maps this shape to OptionalProperty using the existing serializer.
 Recovered layouts and exact spans remain separate from native filter evaluation.
+
+Comparison output separates previously inexact spans that now round-trip
+(resolvedUnverifiedSpans) from newly exact spans not present with the same identity
+and size in the baseline (newExactSpans). Both contribute to gainedExact, but only
+the latter indicates expansion beyond an already decoded span. Neither establishes
+native gameplay behavior; empty serialized handles remain empty-default evidence.

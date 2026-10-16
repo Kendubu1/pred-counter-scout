@@ -15,7 +15,23 @@ class RecoveryComparisonTest(unittest.TestCase):
         after = copy.deepcopy(self.before)
         after[0]['ended'] = True
         after[0]['values'].append({'name': 'B', 'offset': 4, 'bytes': 0, 'exact': True, 'property': {'Value': 0}})
-        self.assertEqual(compare_records(self.before, after), {'retainedExact': 1, 'gainedExact': 1, 'newlyEnded': 1})
+        self.assertEqual(compare_records(self.before, after), {'retainedExact': 1, 'gainedExact': 1, 'newlyEnded': 1,
+                         'resolvedUnverifiedSpans': 0, 'newExactSpans': 1})
+
+    def test_existing_unverified_span_is_not_a_new_property(self):
+        before = copy.deepcopy(self.before)
+        before[0]['values'][0]['exact'] = False
+        result = compare_records(before, self.before)
+        self.assertEqual(result['gainedExact'], 1)
+        self.assertEqual(result['resolvedUnverifiedSpans'], 1)
+        self.assertEqual(result['newExactSpans'], 0)
+        changed_span = copy.deepcopy(self.before)
+        changed_span[0]['values'][0]['bytes'] = 8
+        self.assertEqual(compare_records(before, changed_span)['resolvedUnverifiedSpans'], 0)
+        duplicate = copy.deepcopy(before)
+        duplicate[0]['values'].append(copy.deepcopy(self.before[0]['values'][0]))
+        with self.assertRaises(ValueError):
+            compare_records(duplicate, self.before)
 
     def test_rejects_lost_or_reinterpreted_values(self):
         for key, value in [('exact', False), ('offset', 1), ('bytes', 8), ('property', {'Value': 8})]:

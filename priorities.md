@@ -1015,3 +1015,32 @@ RPC timeouts; neither was accepted as green. A single-thread-worker rerun passes
 all 269 tests in 38 files without unhandled errors, and TypeScript passes.
 Reader builds and whitespace checks pass. No production/UI changes or artifact
 rebuild are required. Nothing from this checkpoint is merged or deployed.
+
+### Empty handle-span validation and honest recovery accounting (2026-10-16)
+
+All 45 remaining inexact spans in the selected 1,237-record corpus were writer
+failures from missing handle schemas: 42 GameplayAbilityTargetDataHandle, two
+GameplayEffectSpecHandle and one GameplayEffectContextHandle. Reused the reviewed
+event-handle descriptors and recovered the spec-handle descriptor from an existing
+native struct-property constructor reference. Each has zero reflected own fields.
+
+A targeted 42-record pass retains all 1,006 previously exact spans and validates
+the 45 previously decoded two-byte handles. Each selected handle has an empty
+property list. These are not newly discovered gameplay values; no populated
+handle payload, native state, copying, lifetime or replication behavior is claimed.
+All 42 streams had already ended before this pass and still do. Opaque tails remain.
+
+The comparison report now separates resolvedUnverifiedSpans from newExactSpans.
+It reports 45 resolved, zero new exact spans and zero newly ended streams for this
+pass. Regression tests cover inexact-to-exact transitions, changed span sizes,
+and conflicting duplicate identities so counts cannot become inflated or negative.
+Running totals are 12,916 exact spans, 1,197 ended streams and zero inexact spans
+among attempted properties. Forty records still stop at unresolved class boundaries;
+zero whole CDOs are certified. These numbers are not a gameplay coverage score.
+
+Next prioritize the remaining relevant native ancestry and shared combat behavior;
+do not rerun this completed empty-handle validation or infer runtime handle
+semantics from empty defaults. Private bodies, field maps and addresses stay private.
+Validation: private preservation gates, 31 Python tests, all 269 engine tests
+across 38 files in single-worker threads mode, TypeScript and whitespace checks
+pass. Production/UI files are unchanged; no artifact rebuild, merge or deployment.

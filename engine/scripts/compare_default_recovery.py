@@ -13,15 +13,19 @@ def compare_records(before, after):
     new = {r['name']: r for r in after}
     if len(old) != len(before) or len(new) != len(after) or old.keys() != new.keys():
         raise ValueError('Default record identities changed')
-    retained = gained = ended = 0
+    retained = gained = ended = resolved = 0
     for name, record in old.items():
         def exact_values(r):
+            identities = [(v['name'], v['offset']) for v in r['values']]
+            if len(set(identities)) != len(identities):
+                raise ValueError('Duplicate property identity')
             rows = [v for v in r['values'] if v['exact']]
             mapped = {(v['name'], v['offset']): v for v in rows}
             if len(mapped) != len(rows):
                 raise ValueError('Duplicate exact property identity')
             return mapped
         prior, current = exact_values(record), exact_values(new[name])
+        previously_unverified = {(v['name'], v['offset']): v for v in record['values'] if not v['exact']}
         for key, value in prior.items():
             candidate = current.get(key)
             if candidate is None or any(candidate[k] != value[k] for k in ('bytes', 'property')):
@@ -30,8 +34,11 @@ def compare_records(before, after):
             raise ValueError('Previously completed property stream regressed')
         retained += len(prior)
         gained += len(current) - len(prior)
+        resolved += sum(key in current and current[key]['bytes'] == value['bytes']
+                        for key, value in previously_unverified.items())
         ended += int(new[name]['ended']) - int(record['ended'])
-    return {'retainedExact': retained, 'gainedExact': gained, 'newlyEnded': ended}
+    return {'retainedExact': retained, 'gainedExact': gained, 'newlyEnded': ended,
+            'resolvedUnverifiedSpans': resolved, 'newExactSpans': gained - resolved}
 
 
 def selected_struct_count(records, struct_name):
@@ -43,7 +50,8 @@ def selected_struct_count(records, struct_name):
 
 
 def compare_roots(before, after, require_struct=None):
-    totals = {'files': 0, 'retainedExact': 0, 'gainedExact': 0, 'newlyEnded': 0}
+    totals = {'files': 0, 'retainedExact': 0, 'gainedExact': 0, 'newlyEnded': 0,
+              'resolvedUnverifiedSpans': 0, 'newExactSpans': 0}
     selected = 0
     for file in sorted(after.rglob('*.uasset.json')):
         baseline = before / file.relative_to(after)
