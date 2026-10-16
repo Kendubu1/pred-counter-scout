@@ -1,0 +1,15 @@
+{
+  "scope": "Knell effect defaults and native constructor review; not complete combat integration",
+  "findings": [
+    "The native GameplayEffect constructor explicitly zeros the reflected stack-duration-refresh and period-reset policy fields. Their enum registrations identify RefreshOnSuccessfulApplication and ResetOnSuccessfulApplication.",
+    "Knell Shred serializes Armor and MagicResist modifiers with operation 4 (MultiplyCompound); Steal uses operation 0 (AddBase). Both use SetByCaller magnitudes.",
+    "The native modifier enum has seven distinct numeric values and three legacy aliases. Alias-aware extraction preserves all labels and explicit numbers instead of mistaking repeated numeric values for corrupt data."
+  ],
+  "limits": [
+    "Expiry policy has no explicit constructor store in the traced function. Unreal documents zero initialization, but post-initialization and fork-specific behavior remain to verify.",
+    "Native modifier aggregation and steal magnitude calculations still require tracing.",
+    "No complete runtime timing or server-parity claim is established.",
+    "Instruction bodies, field maps and default payloads remain private."
+  ],
+  "reference": "https://dev.epicgames.com/documentation/unreal-engine/unreal-object-handling-in-unreal-engine"
+}

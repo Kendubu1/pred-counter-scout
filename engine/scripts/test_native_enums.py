@@ -22,6 +22,14 @@ class EnumTest(unittest.TestCase):
     pe=SyntheticPE();struct.pack_into('<'+fmt,pe.b,off,value)
     with self.assertRaises(ValueError):parse_enum(pe,32,'Example')
   with self.assertRaises(ValueError):parse_enum(SyntheticPE(),32,'Wrong')
+ def test_aliases_are_explicit_and_opt_in(self):
+  pe=SyntheticPE();struct.pack_into('<q',pe.b,124,0)
+  self.assertEqual(parse_enum(pe,32,'Example',True),[{'name':'Example::A','value':0,'aliases':['Example::B']}])
+  with self.assertRaises(ValueError):parse_enum(pe,32,'Example')
+ def test_alias_mode_still_rejects_duplicate_labels_and_sparse_values(self):
+  for off,fmt,value in [(116,'Q',320),(124,'q',3)]:
+   pe=SyntheticPE();struct.pack_into('<'+fmt,pe.b,off,value)
+   with self.assertRaises(ValueError):parse_enum(pe,32,'Example',True)
  def test_rejects_truncated_table(self):
   pe=SyntheticPE();struct.pack_into('<Q',pe.b,48,510)
   with self.assertRaises(struct.error):parse_enum(pe,32,'Example')

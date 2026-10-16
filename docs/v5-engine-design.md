@@ -1144,3 +1144,23 @@ for subsequent integration; no production behavior changed in this reader fix.
 Validation: reader build, failing-old/passing-new relocation regression, broad
 corpus comparison, 264 engine tests, 20 Python regressions, TypeScript, 55 artifact
 schemas and rendered UI parity. Private assets and field maps stay private.
+
+
+## 2026-10-16 native stack policies and modifier enum aliases
+
+Traced GameplayEffect constructor stores at reflected policy-field offsets:
+duration refresh and period reset are explicitly zero, corresponding to refresh
+and reset on successful application. Knell's exact modifier properties use
+MultiplyCompound for target Armor/MagicResist and AddBase for stolen defenses.
+The registered EGameplayModOp contains seven numeric values plus three legacy
+aliases. Added opt-in --allow-aliases recovery, preserving aliases in metadata and
+keeping strict behavior by default. Duplicate labels and sparse maps still fail.
+
+Expiry has no explicit store in the traced constructor. Epic documents UObject
+zero initialization, but that contract is supporting evidence, not a substitute
+for auditing post-initialization/fork-specific behavior. Native aggregation and
+steal calculations remain open. No production rankings changed. Private traces
+and field/default maps remain private; see knell-native-effect-review.json.
+
+Validation: five enum tests (including two alias regressions), 22 Python checks,
+264 engine tests, TypeScript, 55 artifact schemas and rendered UI parity.

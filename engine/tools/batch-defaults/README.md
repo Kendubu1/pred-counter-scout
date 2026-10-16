@@ -90,3 +90,11 @@ with a built reader, private decoded samples, original root, a fresh private
 scratch directory, baseline directory and profile arguments to test this invariant.
 It corrupts metadata and requires identical nonempty property results; no source
 assets are changed and all generated results remain private.
+
+
+For reviewed native enums with legacy aliases, recover_native_enums.py accepts
+--allow-aliases. It emits one entry per explicit numeric value and retains every
+additional registered name in aliases; the first registered name is the canonical
+label. Numeric values are sorted, never renumbered. Strict mode remains default;
+both modes reject duplicate labels, invalid ownership and sparse numeric profiles.
+The batch reader consumes canonical entries without losing the private alias map.
