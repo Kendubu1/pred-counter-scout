@@ -155,11 +155,24 @@ export interface SimOptions {
   ranks?: Map<string, number>;
   profile?: DefenseProfile | null;  // null disables mitigation
   burstBasics?: number;
+  // Initial state for the aggregate execute gate only; other damage assumptions
+  // are unchanged. Defaults to full profile health and no shield.
+  executeTargetState?: { health: number; shield: number };
   effects?: ResolvedEffects;
   // Mitigation constant K in damage*K/(K+armor). Defaults to 100 (the shipped,
   // behaviour-preserving value); the robustness sweep varies it to test whether
   // a recommendation survives the calibration's "K may be >100" warning.
   mitigationK?: number;
+}
+
+/** Remaining health removed by a qualifying execute. Inputs are POST-damage
+ * target state. The client uses an inclusive health-plus-shield threshold and
+ * rejects already-dead targets. This is not the native execute damage magnitude. */
+export function executeRemainingHealth(health: number, shield: number, maxHealth: number, thresholdPct: number): number {
+  if (![health, shield, maxHealth, thresholdPct].every(Number.isFinite)
+    || health <= 0 || shield < 0 || maxHealth <= 0 || thresholdPct <= 0) return 0;
+  // Absorb double-precision subtraction noise at an inclusive boundary.
+  return health + shield <= maxHealth * thresholdPct / 100 + Number.EPSILON * maxHealth ? health : 0;
 }
 
 // Modeling conventions (documented in effects.ts):
@@ -561,12 +574,17 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
     burst += d; teamfightBurst += d;
   }
 
-  // Execute: the bottom thresholdPct% of the target's HP is a free kill once
-  // your burst brings them there — credited as bonus burst (only meaningful
-  // against a killable target, so it rides the burst objective).
-  if (eff.executeThresholdPct > 0 && profile) {
-    const ex = (eff.executeThresholdPct / 100) * profile.health;
-    burst += ex; teamfightBurst += ex;
+  // Conservative end-of-burst execute check on ONE hero. Assume an ordinary
+  // shield absorbs damage first. Never use AoE-weighted damage to qualify a kill.
+  // This does not reconstruct intermediate hits, shield bypass or native damage.
+  if (eff.executeThresholdPct > 0 && profile && burst > 0) {
+    const initial = opts.executeTargetState ?? {health: profile.health, shield: 0};
+    if (initial.health > 0 && initial.shield >= 0) {
+      const health = initial.health - Math.max(0, burst - initial.shield);
+      const shield = Math.max(0, initial.shield - burst);
+      const ex = executeRemainingHealth(health, shield, profile.health, eff.executeThresholdPct);
+      burst += ex; teamfightBurst += ex;
+    }
   }
 
   const rotation: Record<number, number> = {};

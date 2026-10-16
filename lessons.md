@@ -4516,3 +4516,14 @@ blames the app tier) and fill in as the daily pull grows the window.
   Preserve the flag, label pooled sets, and exclude them from order-sensitive tests.
 - Recheck coaching and explanations after merging evidence; matching item sets are
   insufficient for first/second/third item advice when purchase order changed.
+
+
+### 2026-10-16 - execute eligibility versus free damage
+
+- Execute thresholds are conditions, not unconditional damage packets. Preserve
+  post-damage living-target checks and shields; credit actual surviving health.
+- Never use AoE-weighted damage to qualify execution of one target.
+- Inclusive thresholds need protection from floating-point subtraction noise;
+  use machine-precision tolerance, not an invented game constant.
+- Keep aggregate end-state execution distinct from event-level kill timing and
+  native damage magnitudes. Both remain explicit limitations.

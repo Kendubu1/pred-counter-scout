@@ -92,4 +92,10 @@ describe('Kira action replay', () => {
   it('rejects unreviewed items rather than silently treating them as modeled', () => {
     expect(() => replayKira([hit(0)], { ...base, items: ['unreviewed-item'] })).toThrow('coverage');
   });
+  it('executes at the inclusive threshold but never after an already lethal hit', () => {
+    const run=(raw:number)=>replayKira([{time:0,kind:'hit',source:'basic',raw}],{...base,health:1000,items:['vanquisher']});
+    expect(run(950).trace.filter(t=>t.source==='Vanquisher execute').map(t=>t.damage)).toEqual([50]);
+    expect(run(949).trace.some(t=>t.source==='Vanquisher execute')).toBe(false);
+    expect(run(1000).trace.some(t=>t.source==='Vanquisher execute')).toBe(false);
+  });
 });

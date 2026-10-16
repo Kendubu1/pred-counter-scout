@@ -889,3 +889,46 @@ for unsupported Onixian Quiver/Scattershot. The replay still rejects unsupported
 items; reporting now records skipped coverage rather than failing or omitting
 those effects silently. Removed 87 stale coaching lines and 273 outdated or
 order-unsupported core explanations; replacements still require copy review.
+
+
+### 2026-10-16: Vanquisher execute eligibility
+
+Removed the unconditional threshold-sized burst bonus. The recovered client
+listener runs after health changes, requires a living hero, and compares current
+health PLUS shield inclusively with max health times ExecuteThreshold. Production
+now checks the aggregate burst's end state and credits only surviving health when
+eligible. The check uses single-target burst, never the AoE-weighted teamfight
+total; its credit is added once to each metric. Natural kills and healthy targets
+receive no extra credit. Catalog 5% supplies the existing threshold; the Blueprint
+comparison supplies the eligibility semantics. Floating-point boundary tolerance
+is limited to machine epsilon times max health, not a gameplay tolerance.
+
+SimOptions.executeTargetState optionally supplies initial health/shield for this
+gate alone. Default ranking uses full profile health and zero shield. Ordinary
+shield-first absorption is an explicit assumption. Other damage formulas retain
+their existing health assumptions; this is not a full target-state engine.
+Intermediate hit execution, shield bypass, native execute damage and sustained
+execution remain omitted. Remaining-health credit represents removed health, not
+a recovered native damage magnitude. Kira's separate replay now uses the same
+inclusive eligibility helper; it still has no shield state.
+
+Further Combustion review identifies active cooldown tag queries, a shared gate
+closed before reduction, and a 0.05-second delayed gate reset. The scalar Time
+binding, overlapping callbacks and native cooldown semantics are still unresolved;
+production Combustion is unchanged by this review.
+
+Sky Splitter has separate hero/nonhero branches: the hero branch applies the
+minimum damage floor but no MobDamageCap; both use current health and the native
+EventDataFloat multiplier. Production percentages/floor remain catalog-backed,
+with native scaling and current-health timeline fidelity still unresolved.
+
+The production gate evaluates expected burst damage (including averaged critical
+hits), not a distribution of hit outcomes. Its threshold result is not an
+execution probability; stochastic event-level validation remains outstanding.
+
+Validation: 254 tests in 35 files, TypeScript, all 55 artifact schemas and the
+rendered UI audit pass. Rebuilt all 55 heroes/135 role views and dependent
+reports. Only Yin jungle changes its main item set; Kira carry stays unchanged.
+Vanquisher remains selected in 19/135 role views. No new coaching or optimizer
+explanation invalidations were necessary. This outcome does not establish
+current-meta performance or complete execute timing fidelity.

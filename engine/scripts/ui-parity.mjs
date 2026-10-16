@@ -117,6 +117,10 @@ try {
       assert.match(text, /ability-only rotations and basic-only DPS exclude the proc/);
       assert.match(text, /optimistic aggregate assumptions/);
     }
+    if (item.slug === 'vanquisher') {
+      assert.match(text, /remaining health plus shield/);
+      assert.match(text, /no unconditional 5% damage bonus/);
+    }
     if (item.slug === 'deathstalker') {
       assert.match(text, /prior basic-hit stacks only/);
       assert.match(text, /frame batching and cross-target state remain unmodeled/);

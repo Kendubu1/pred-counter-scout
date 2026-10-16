@@ -1,3 +1,4 @@
+import { executeRemainingHealth } from './sim.js';
 /** Diagnostic event replay. Deliberately separate from the production optimizer.
  * Callers supply hit times, raw payloads, cooldowns and crit outcomes. This does
  * not invent cast animations, Purge ticks, attack resets or target movement.
@@ -21,6 +22,7 @@ export const KIRA_REPLAY_LIMITS = [
   'Ruination drains uniformly over four seconds; refresh extends the existing drain rate. Tick cadence and refresh behavior require gameplay confirmation.',
   'Power ratios use the current engine bonus-power basis. Healing is potential output, not effective healing or shield value.',
   'Knell, augments, Dash power/reset stacks, actor mana budgets, projectile travel, attack animations, misses, incoming damage and target healing are excluded.',
+  'Vanquisher uses the inclusive post-damage threshold; this replay has no target shield state or native execute-damage model.',
   'All Tainted Rounds on-hit damage, anti-heal value, Terminus overheal shields and Manta farming stacks remain omitted.',
 ];
 
@@ -57,7 +59,7 @@ export function replayKira(actions: ReplayAction[], opts: ReplayOptions) {
     hp -= damage;
     const healed = canLeech ? damage * opts.lifesteal / 100 : 0;
     healing += healed; trace.push({ time, source, damage, healing: healed });
-    if (owns('vanquisher') && hp > 0 && hp < opts.health * 0.05) {
+    if (owns('vanquisher') && executeRemainingHealth(hp, 0, opts.health, 5) > 0) {
       trace.push({ time, source: 'Vanquisher execute', damage: hp, healing: 0 }); hp = 0;
     }
     return damage;

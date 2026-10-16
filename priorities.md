@@ -452,3 +452,12 @@ mechanics work. Next validate purchase transaction ordering, sale/undo semantics
 completion bias and match-level split isolation; current descriptive overlap is
 not held-out winning-build validation. Vanquisher and remaining native item
 interaction gaps remain next in the mechanics queue.
+
+
+### Vanquisher eligibility corrected (2026-10-16)
+
+Unconditional execute burst credit is removed. Production checks aggregate
+post-burst health plus shield and credits surviving health only; diagnostic Kira
+uses the inclusive threshold. Next: intermediate-hit execution and native shield
+behavior, then Combustion's filtered cooldown reductions/shared delayed gate.
+Do not count this as full event-level execution or complete item certification.
