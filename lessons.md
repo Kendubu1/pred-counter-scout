@@ -5216,10 +5216,28 @@ mapped spans are checked. Byte return fields retain enum-constructor references
 without inventing values. Synthetic tests cover ownership/name mismatch, bad
 profiles/counts/pointers, duplicate fields and plain bytes without enum bindings.
 
-A separate generated factory-table entry appears to select a neighboring
-function descriptor. That discrepancy remains unresolved and is not used as
-proof; the binding above uses independent name storage and owned metadata.
+The apparent neighboring-descriptor discrepancy is resolved: function links
+store factory before name, opposite the native registration table order. All
+13 interface links match their owned descriptors under the correct layout.
+The independent dispatch-name and enum binding remains valid.
 Private native-target-binding-chain-private.json records the executable hash,
 owner trace, return descriptor, enum and initializer. All raw evidence remains
 private. No hero-vs-hero simulator behavior or UI artifact changes are needed.
 Next continue owner-proven crit lifecycle/reset or another shared native gap.
+
+
+### Native function-link recovery (2026-10-16)
+
+Resolved the factory-table ordering error without changing gameplay assumptions.
+All 13 links in the target interface independently resolve to a descriptor with
+the same name and owner. The shared constructor reads the supplied descriptor
+directly; no neighboring-record adjustment is involved. Added a reusable
+factory-first link reader that requires externally established bounds and
+factory-to-descriptor resolution, then validates every owned descriptor.
+Regressions reject reversed layout, neighboring descriptors, wrong owners,
+duplicate names and invalid bounds. Native registration tables remain a
+distinct format. Private native-function-links-private.json and
+native-function-construction-private.json retain raw evidence and executable
+hashes. This closes a recovery-tool gap, not crit lifecycle/reset, server
+parity or runtime validation. Production calculations and app artifacts are
+unchanged. Next recover owner-proven lifecycle/reset or another shared gap.

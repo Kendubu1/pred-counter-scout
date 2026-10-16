@@ -12,7 +12,7 @@
     "The coefficient helper uses a bounded numerical search over a weighted waiting-time calculation. Constants and reachable branches were inspected privately, but constructor initialization and the imported random function are now traced; reset boundaries and cross-effect sharing remain open.",
     "The critical decision state belongs to PredAbilitySystemComponent. Its registered constructor initializes the failure counter to 1 and success counter to 0. This establishes construction-time initialization only, not the state on spawn, respawn or the first attack of a selected fight.",
     "The random comparison calls the named C runtime rand import. The masking and floating-point scaling were inspected privately. Runtime seed, global stream interactions and server implementation parity remain unverified.",
-    "The target-type binding is now traced independently of the ambiguous generated factory table: the name initializer writes GetMyTargetType into the same name storage read by reflected dispatch. Its owning interface descriptor has a byte ReturnValue bound to the EPredTargetType constructor, whose table maps Tower to 3. Combined with the earlier branch, the recovered shared crit path excludes that target type. This is static client-path evidence, not verification of every tower damage rule."
+    "The target-type binding is now traced using independently verified reflected dispatch and owned metadata: the name initializer writes GetMyTargetType into the same name storage read by reflected dispatch. Its owning interface descriptor has a byte ReturnValue bound to the EPredTargetType constructor, whose table maps Tower to 3. Combined with the earlier branch, the recovered shared crit path excludes that target type. This is static client-path evidence, not verification of every tower damage rule."
   ],
   "limits": [
     "Native execution was located through class construction and its overridden virtual slot. Reachable instructions and reflection layouts are private; static tracing is not server-parity validation.",
@@ -20,6 +20,6 @@
     "The default event multiplier must not be generalized to every event producer or bypass effect overrides.",
     "No projectile damage credit or automatic winning-build claim is introduced.",
     "Production basicHit still computes an average crit contribution. These traces do not validate short-window crit sequences or justify replacing that average with guessed initial state. No new critical probability or multiplier constant is introduced.",
-    "A generated function-factory table entry appears to point at the neighboring function descriptor. That factory-table discrepancy remains unresolved; the target binding uses the independently checked dispatch-name storage and owned return descriptor, not a presumed factory-table association."
+    "The generated function-link discrepancy is resolved: entries store factory before name, opposite native registration entries. All 13 interface links match independently owned descriptors. This corroborates the target binding; it does not establish runtime crit lifecycle or server parity."
   ]
 }

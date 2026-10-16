@@ -1,6 +1,6 @@
 import struct
 import unittest
-from recover_native_function import parse_function
+from recover_native_function import parse_function, parse_function_links
 
 
 class Image:
@@ -20,6 +20,22 @@ class Image:
 
 
 class FunctionTest(unittest.TestCase):
+    def test_factory_precedes_name_and_descriptor_must_agree(self):
+        pe=Image();struct.pack_into('<QQ',pe.b,400,250,300)
+        result=parse_function_links(pe,400,1,999,lambda getter:16 if getter==250 else 0)
+        self.assertEqual(result[0]['metadata']['name'],'Query')
+        self.assertEqual(result[0]['getter'],250)
+        # Native registration order must not silently associate a neighbor.
+        struct.pack_into('<QQ',pe.b,400,300,250)
+        with self.assertRaises(ValueError):parse_function_links(pe,400,1,999,lambda _:16)
+    def test_links_reject_duplicate_names_wrong_owner_and_bounds(self):
+        pe=Image();struct.pack_into('<4Q',pe.b,400,250,300,251,300)
+        for address,count,owner in [(400,2,999),(400,1,998),(505,1,999),(400,0,999),(400,257,999)]:
+            with self.assertRaises(ValueError):parse_function_links(pe,address,count,owner,lambda _:16)
+    def test_links_reject_neighbor_descriptor(self):
+        pe=Image();struct.pack_into('<QQ',pe.b,400,250,320)
+        with self.assertRaisesRegex(ValueError,'name mismatch'):
+            parse_function_links(pe,400,1,999,lambda _:16)
     def test_owned_byte_return_retains_enum_reference(self):
         result=parse_function(Image(),16,'Query',999)
         self.assertEqual(result['fields'],[{'name':'ReturnValue','kind':0,'record':160,'enumGetter':888}])

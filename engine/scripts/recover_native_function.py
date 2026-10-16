@@ -6,6 +6,33 @@ constructor reference is metadata, not its values or execution behavior.
 from resolve_native_import import read_at
 
 
+def parse_function_links(pe, address, count, owner_getter, descriptor_for_getter):
+    """Read factory-first links, validating every name against owned metadata.
+
+    The caller must independently establish table bounds and resolve each
+    factory's descriptor. Native registration tables use a different order;
+    do not infer either layout from an isolated string-pointer match.
+    """
+    if not 0 < count <= 256:
+        raise ValueError('Unsupported function link count')
+    links = []
+    names = set()
+    for i in range(count):
+        getter, name_pointer = read_at(pe, address+16*i, '<QQ')
+        if not getter:
+            raise ValueError('Missing function factory')
+        pe.offset(getter)
+        pe.offset(name_pointer)
+        name = pe.cstr(name_pointer)
+        if not name or not name.isascii() or not name.isidentifier() or name in names:
+            raise ValueError('Invalid function link name')
+        descriptor = descriptor_for_getter(getter)
+        metadata = parse_function(pe, descriptor, name, owner_getter)
+        names.add(name)
+        links.append({'getter':getter, 'descriptor':descriptor, 'metadata':metadata})
+    return links
+
+
 def parse_function(pe, address, expected_name, owner_getter):
     owner, delegate, name, rpc, response, properties = read_at(pe, address, '<6Q')
     count, parameter_size, profile, function_flags = read_at(pe, address+48, '<HHII')
