@@ -168,3 +168,39 @@ Review `focus.title`, `focus.evidence`, and `focus.action` as coaching lines. Fl
 ## Cross-section repetition audit (2026-09-29)
 
 Compare the focus against team summary, `whatShiftedIt`, moments, player notes, verdicts, and ranking. Flag a repeated conclusion or evidence line unless each placement adds a distinct coaching purpose. Keep the unique tactical lesson in `focus`; keep player notes role-specific and non-duplicative.
+
+## Player advice contract (2026-10-16; supersedes older player-card rules)
+
+The player section is one card, not a ranking or several verdicts. Set
+`coaching.playerReviewVersion = 2` only after reviewing every teammate against
+these rules. Use `microReads[pid]` with:
+- `keep`: one supported contribution, at most 25 words; omit if unsupported.
+- `change`: one practical, conditional next-game action, at most 40 words.
+  Omit when the facts support no individual correction. Never invent a fault
+  to fill a card. The UI explicitly says no correction is supported.
+- `check`: how to evaluate that action, at most 35 words; pair with
+  `checkMethod: "feed" | "replay"`. Mark replay whenever vision, routes,
+  positioning, ability use or an actual opportunity must be inspected.
+- `receipt`: up to 55 words explaining the particular event or totals behind
+  the advice AND the material uncertainty. Do not repeat the whole scoreboard.
+- Optional `lastCheck: {text,result,receipt}`: result is held, missed,
+  not applicable (prerequisite demonstrably did not occur), or not measurable
+  (required evidence unavailable). Never fail an unmet prerequisite or carry
+  a simulation-derived lane-state check forward as an observed fact.
+
+Do not author ranking, perPlayer or verdicts duplicates for reviewed matches.
+Build notes are optional: actual items, relevant threat, supported trade-off.
+Missing a popular/model core is not a mistake, and matching it is not proof of
+correctness. If no item-specific lesson is supported, omit the note. The UI
+shows actual items separately. Never present a suggested Eternal as selected.
+
+Alive is not available to contest; kill/death credit is not attendance;
+matchup simulation is not actual lane state; a death outside clustered fights
+is not proof of being alone; proximity to an objective loss is not causation;
+missing event coverage is not zero events. Two weak proxies do not make a
+causal proof. Replay questions may motivate conditional advice, but cannot
+be graded from match totals. Do not force a team-loss explanation from these
+proxies. Keep player advice distinct and concrete without manufacturing blame.
+
+Older reviews remain archived as unreviewed, not silently certified by a new
+layout. Preserve raw facts. Review current-patch evidence before reauthoring.

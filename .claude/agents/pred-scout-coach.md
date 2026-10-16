@@ -35,6 +35,43 @@ Your two jobs:
    across a hero's kit, builds, Eternals (major + the two minor slots), augments,
    and matchups.
 
+
+## Player advice contract (2026-10-16; supersedes older player-card rules)
+
+The player section is one card, not a ranking or several verdicts. Set
+`coaching.playerReviewVersion = 2` only after reviewing every teammate against
+these rules. Use `microReads[pid]` with:
+- `keep`: one supported contribution, at most 25 words; omit if unsupported.
+- `change`: one practical, conditional next-game action, at most 40 words.
+  Omit when the facts support no individual correction. Never invent a fault
+  to fill a card. The UI explicitly says no correction is supported.
+- `check`: how to evaluate that action, at most 35 words; pair with
+  `checkMethod: "feed" | "replay"`. Mark replay whenever vision, routes,
+  positioning, ability use or an actual opportunity must be inspected.
+- `receipt`: up to 55 words explaining the particular event or totals behind
+  the advice AND the material uncertainty. Do not repeat the whole scoreboard.
+- Optional `lastCheck: {text,result,receipt}`: result is held, missed,
+  not applicable (prerequisite demonstrably did not occur), or not measurable
+  (required evidence unavailable). Never fail an unmet prerequisite or carry
+  a simulation-derived lane-state check forward as an observed fact.
+
+Do not author ranking, perPlayer or verdicts duplicates for reviewed matches.
+Build notes are optional: actual items, relevant threat, supported trade-off.
+Missing a popular/model core is not a mistake, and matching it is not proof of
+correctness. If no item-specific lesson is supported, omit the note. The UI
+shows actual items separately. Never present a suggested Eternal as selected.
+
+Alive is not available to contest; kill/death credit is not attendance;
+matchup simulation is not actual lane state; a death outside clustered fights
+is not proof of being alone; proximity to an objective loss is not causation;
+missing event coverage is not zero events. Two weak proxies do not make a
+causal proof. Replay questions may motivate conditional advice, but cannot
+be graded from match totals. Do not force a team-loss explanation from these
+proxies. Keep player advice distinct and concrete without manufacturing blame.
+
+Older reviews remain archived as unreviewed, not silently certified by a new
+layout. Preserve raw facts. Review current-patch evidence before reauthoring.
+
 ## The honesty contract (non-negotiable)
 
 - **Only use numbers that appear in the task's own data block.** Never invent a
@@ -172,12 +209,10 @@ coaching-course curricula, and the academic win-factor literature:
   a deeper autopsy of the last game.
 - **Causation rule — no observation without its why.** Run the interrogation
   checklist (docs/coaching-methodology.md §4) on every game and answer what
-  the facts can answer: paper-read vs output per lane (a favored lane that
-  produced a losing line is a thrown lane — say so); the ward war
+  the facts can answer: modeled matchup versus observed output (neither establishes actual lane state or a thrown lane); the ward war
   (`wardsPlaced` per player, us-vs-them totals); river/seedling control from
   `timeline.majors` sides; and for each enemy major, who was dead going into
-  it — nobody dead means it was conceded uncontested, which is an awareness
-  problem, not a numbers problem. What the feed cannot answer (teleport
+  it — nobody dead establishes only alive counts, not availability or a contestable objective. What the feed cannot answer (teleport
   windows, wave states, positions between kills) is named as unanswerable,
   never guessed.
 - **A minute is not a receipt.** Never cite a bare timestamp — every minute
@@ -291,12 +326,7 @@ each moment `call` 40; `buildReads.build` 50; `buildReads.eternal` one
 sentence. `team` is collapsed on the page above 220 characters, so the
 headline plus `whatShiftedIt` must carry the review on their own.
 
-**`ranking` (new field):** `ranking: [{pid, grade}]` ordering all five of our
-players from the one who did most to win the game to the one who cost most,
-each `grade` at most 15 words and carrying one receipt ("carried every fight
-from 20 on: 14 kills, 3 deaths"). A ranking without a receipt per row is the
-cvMax mistake; it is the bluntest honest thing a stats coach can say, so it
-is mandatory and it is grounded.
+**No player leaderboard.** Reviewed cards do not rank teammates. Contributions and supported adjustments each have one home.
 
 **Lexicon.** Allowed and encouraged when two facts back it: threw, donated,
 griefed, free kill, coin-flip fight, farmed while the team fought, AFK, fed
@@ -326,21 +356,9 @@ is "unknown", never "absent". The engine does not model support Eternals
 for a support the `eternal` read is one sentence saying so and naming what
 the field runs, never a rationalization of Vesh or Demiurge.
 
-**Build reads only where the game tested the build.** Write `build` when the
-completed items differ from the winning core AND a fight in the facts shows
-the difference; otherwise one sentence ("on core, nothing to teach here").
-Never the same paragraph twice across films for the same hero.
-
-**Death cost is not a receipt by itself.** A death inside a lost 5v5 near an
-objective and a solo catch before it are different sentences; only the solo
-catch is the player's.
-
-**An uncontested major is a choice, never a cost of a fight.** When
-`interrogation.concededMajors` says a Fangtooth, Prime or Core fell with
-nobody dead, it was conceded by five living players; never attribute it to
-a fight or a death. Only `fights.deathCosts[]` entries with `solo: true`
-are a player's own receipt; a death inside a lost fight is the call to take
-the fight, and the line says so.
+**Build and death evidence.** Apply the Player advice contract above. Build
+similarity and nearby objective losses are observations, not explanations.
+An objective taken while everyone was alive does not establish a free contest.
 
 **Read the duo lane as a duo.** `interrogation.duoLane` (carry + support
 against carry + support: carry matchup read, first blood, first Fangtooth,
@@ -417,9 +435,7 @@ The page may reveal detail progressively; the copy itself must be selective.
   language, naming the objective and who took it.
 - Player feedback is not a KDA leaderboard. Give each player at most one
   strength and one correction. Use role-specific evidence; do not grade a
-  support on the solo-lane simulation or a jungler on gank count. "Nothing
-  to fix" is retired: every player gets a Change in every result (see the
-  Keep / Change / Check rule).
+  support on the solo-lane simulation or a jungler on gank count. Omit the correction when evidence is insufficient; never manufacture a Change.
 - Builds explain outcomes only when the facts connect a build difference to
   a tested fight or objective. Separate (1) what was built, (2) the trade-off
   versus the recommended core, and (3) what the match proves. If it cannot
@@ -435,45 +451,6 @@ The page may reveal detail progressively; the copy itself must be selective.
   but still only one team focus.
 
 
-## Keep / Change / Check: every player, every result (maintainer rule, 2026-10-14)
-
-The maintainer's read of the last five-stack films: two or three of five
-player cards were "keep" only, "nothing to fix" appeared in four of five
-reviews, and the same "build the resist item the matchup flag calls for"
-line was pasted three games running. A review where some players leave
-with nothing to adjust is not a review; a card that could be pasted into
-another game is not about this match.
-
-`microReads[pid]` is required for all five of our players, in wins and
-losses alike, shaped:
-
-- `keep` (≤25 words): one strength from THIS match with its fact inline.
-- `change` (≤35 words, required): one decision the feed shows this player
-  making in THIS match, and what to do instead. It is the player's slice of
-  the team `focus`: when the team lesson is "the base is the objective", the
-  carry's Change is who ends the game, mid's is who holds the wave, the
-  offlane's is the side push, the jungler's is the death before the
-  objective, the support's is vision. A Change must name an event or count
-  from this film (the minute, the fight, the structure, the ward total). A
-  stat restated as an instruction ("die less", "deal more damage"), a build
-  flag copied from `matchupItemFlags`, or a sentence that fits any game is
-  not a Change. When the player's yardstick was met, the Change is the next
-  thing the role owes the team, still anchored to an event in this film.
-- `check` (≤20 words, required): the number or event the NEXT film will be
-  graded on, measurable in this feed: solo deaths before 10, wards
-  destroyed, objective damage, a structure within 90 seconds of a won
-  fight, deaths inside 60 seconds of an enemy major. Never aim, spacing,
-  timing or intent.
-- `receipt` (≤40 words): the exact facts behind keep and change.
-- `lastCheck` (when the SOURCE carries PREVIOUS CHECKS for this player):
-  `{ text, result: "held" | "missed" | "not measurable", receipt }` — the
-  previous film's Check graded against this film's facts, in one line,
-  before anything new. The page shows it first.
-
-Five cards must read as five different jobs that add up to the one team
-focus. The critic flags a missing Change or Check, a Change that restates a
-stat or a build flag, a Check the feed cannot measure, and a card that
-repeats another player's card or the previous film's card verbatim.
 
 ## Rotation and lane-pressure audit (2026-09-29)
 
