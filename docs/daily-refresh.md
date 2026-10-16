@@ -94,9 +94,15 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
   lag live and move without announcement; the daily patchcheck is how the site
   notices it flipped. (omeda's lagged by days, then froze for good on
   2026-08-28; pred.gg had 1.17.2 the day after release.)
-- **The refresh chain's cred-gated steps** (`augments`, `buildstats`) stay OUT
-  of this Routine until the pred.gg app tier unlocks simpleBuild/coreBuild
-  (priorities item 1) — running them today just errors. When the permission
-  lands, add `RANKED_ONLY=1 npm run augments` and `npm run buildstats` between
-  steps 2 and 3, plus the copy passes per CLAUDE.md.
-- **Stopping:** disable or delete the "Daily data refresh" Routine.
+- **Gated endpoints are retired from the chain** (2026-10-16): `augments`
+  (simpleBuild) and `buildstats` (coreBuild) stay out for good. `npm run perks`
+  counts the same evidence (augments, Eternals + minors, crests, item cores)
+  from the public match stream, so nothing waits on an app-tier unlock.
+- **Worker v2 (2026-10-16):** the "Daily data refresh (v2)" Routine (08:56 UTC)
+  fires into the persistent session "Daily data refresh worker (v2, pred.gg
+  stream)". It reads PREDGG_CLIENT_ID / PREDGG_CLIENT_SECRET from the
+  ENVIRONMENT only (no credentials in any prompt), so rotating the keys means
+  updating the environment's variables, nothing else. When copy tests fail
+  because new lanes or builds appeared, it runs the zero-API copy loop plus one
+  critic round before committing. The 2026-08-30 worker Routine is disabled.
+- **Stopping:** disable or delete the "Daily data refresh (v2)" Routine.
