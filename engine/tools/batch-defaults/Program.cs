@@ -3,12 +3,36 @@ using UAssetAPI.ExportTypes;
 using UAssetAPI.Unversioned;
 using System.Text.Json;
 Directory.CreateDirectory(args[2]);
+var shared=new Dictionary<string,UsmapSchema>();
+var ambiguous=new HashSet<string>();
+var schemaErrors=new List<object>();
+var sources=new Dictionary<string,string>();
+foreach(var root in new[]{args[3],args[0]})
+ foreach(var file in Directory.EnumerateFiles(root,"*.uasset.json",SearchOption.AllDirectories))
+  sources[Path.GetRelativePath(root,file)]=file;
+foreach(var file in sources.Values) {
+ var json=File.ReadAllText(file);if(!json.Contains("UAssetAPI.ExportTypes.ClassExport"))continue;
+ try {
+ var asset=UAsset.DeserializeJson(json);
+ asset.Mappings=new Usmap { Schemas=new Dictionary<string,UsmapSchema>(), EnumMap=new Dictionary<string,UsmapEnum>() };
+ foreach(var cls in asset.Exports.OfType<ClassExport>()) {
+  var name=cls.ObjectName.ToString();
+  if(ambiguous.Contains(name))continue;
+  if(shared.ContainsKey(name)){shared.Remove(name);ambiguous.Add(name);continue;}
+  try{shared[name]=Usmap.GetSchemaFromStructExport(cls,true);}
+  catch(Exception ex){schemaErrors.Add(new {file,name,error=ex.Message});}
+ }
+ }catch(Exception ex){schemaErrors.Add(new {file,error=ex.Message});}
+}
+File.WriteAllText(Path.Combine(args[2],"schema-library.json"),JsonSerializer.Serialize(new {count=shared.Count,ambiguous,schemaErrors}));
+Console.WriteLine("Shared schemas "+shared.Count);
+
 var summary=new List<object>();
 foreach(var file in Directory.EnumerateFiles(args[0],"*.uasset.json",SearchOption.AllDirectories)) {
  var rel=Path.GetRelativePath(args[0],file);
  try {
  var a=UAsset.DeserializeJson(File.ReadAllText(file));
-a.Mappings=new Usmap { Schemas=new Dictionary<string,UsmapSchema>(), EnumMap=new Dictionary<string,UsmapEnum>() };
+a.Mappings=new Usmap { Schemas=new Dictionary<string,UsmapSchema>(shared), EnumMap=new Dictionary<string,UsmapEnum>() };
 foreach(var c in a.Exports.OfType<ClassExport>()) {
  var s=Usmap.GetSchemaFromStructExport(c,true);a.Mappings.Schemas[c.ObjectName.ToString()]=s;
 

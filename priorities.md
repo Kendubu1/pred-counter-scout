@@ -617,3 +617,32 @@ Tools: engine/tools/batch-defaults and engine/scripts/audit_default_batch.py.
 Private bodies and logs stay outside the repo. Native empty-struct and aggregate
 privacy/accounting regressions were added. Full engine harness, TypeScript,
 recovery builds, artifact schemas and rendered UI parity gate this commit.
+
+
+## 2026-10-16 inherited Blueprint schema library
+
+The broad reader previously loaded only each asset's own class schema. It now
+indexes baseline decoded classes plus recovered replacements by full path, making
+5,609 unique class schemas available to inherited-property lookup. Two duplicate
+short names (Amalgamation/Barkskin) are excluded from shared lookup; each asset
+still uses its own local class. Do not choose an arbitrary duplicate parent.
+
+Across the same 1,237 attempted assets, 1,220 partial CDOs now contain 5,076 exact
+property spans (4,988 nonempty), up 421 from the six-native-layout pass. Items
+account for 1,614, heroes 2,649, Eternals 374 and other systems 439. 95 streams
+reach their property end, but no whole CDO is certified. Inherited-index stops
+fall from 953 to 926; 199 records now stop on other missing schemas.
+
+The 17 per-file errors are now traced to missing native enum mappings for
+EGameplayTargetingConfirmation, EDrawDebugTrace, EPredMuzzleSocket,
+ECharacterHoverMovement and ECollisionEnabled. Preserve these errors instead
+of inventing enum labels or ordinal values. Native PredGameplayAbility ancestry,
+PredActorFilter and PredFilterAndEffectsContainer remain priority dependencies.
+Private static probes located actor-filter/team/type/occlusion field metadata,
+but nested tag-query and filter-array layouts still need completion before use.
+
+Report: engine/fixtures/default-inheritance-review.json. Shared-schema error
+metadata is sanitized to counts; game bodies and private paths remain private.
+Validation includes aggregate privacy regression, native-probe regressions,
+reader build, full harness, TypeScript, artifact schemas and rendered UI parity.
+No production formulas or rankings changed.

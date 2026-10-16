@@ -32,6 +32,12 @@ def audit(root):
             if stop.startswith(prefix):blockers['missing-struct-or-parent-schema']+=1
             elif stop.startswith('Failed to find a valid property for schema index '):blockers['unresolved-inherited-property-index']+=1
             elif stop:blockers['other-parse-stop']+=1
+    library = root/'schema-library.json'
+    shared = json.loads(library.read_text(encoding='utf8')) if library.exists() else None
+    if shared is not None:
+        totals['sharedSchemas'] = shared['count']
+        totals['ambiguousSharedNamesExcluded'] = len(shared['ambiguous'])
+        totals['schemaBuildErrors'] = len(shared['schemaErrors'])
     return {'scope':'Partial defaults across recovered-class subset, not the entire 5630-asset inventory or gameplay coverage','counts':dict(totals),'areas':{k:dict(v) for k,v in sorted(areas.items())},'stopCategories':dict(blockers),'limits':['Exact spans include zero-byte properties; nonempty spans are reported separately.','Property-span roundtrip does not establish runtime behavior, default inheritance or whole-asset parity.','Fully consumed records still require default inheritance and native behavior validation.','Manifest processing success does not mean default parsing completed.','No private values, parser messages or decoded bodies are exported.']}
 
 if __name__=='__main__':
