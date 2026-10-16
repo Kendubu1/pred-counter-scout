@@ -1563,3 +1563,37 @@ hero artifact schemas pass. Rendered parity verifies 55 hero kits, 189 augments,
 270 item dialogs and 16 Eternal majors/96 minors. The first browser attempt
 could not find its expected runtime; retrying with the installed Chromium
 passes. These checks verify source/display parity, not full gameplay coverage.
+
+
+### Shared shield/reduction output recovery (2026-10-16)
+
+Bound captured Shield/Health and ReducedPhysicalDamageTaken/
+ReducedMagicalDamageTaken through named constructor fields and capture calls.
+The ordinary positive-damage path allocates resistance-adjusted damage to shield
+first, then health. Later flat reduction removes the health portion first and
+then the shield portion, floored at zero. The physical reduction branch caps
+its reduction to 20% of the combined portions; the corresponding magical branch
+has no local cap in the inspected block. The referenced float is approximately
+0.200000003. Output construction negates the respective portions with a sign-bit
+mask and submits modifiers targeting the bound Shield and Health attributes.
+Eligibility flags, intervening execute/override paths, final modifier application
+and server parity remain unresolved. Do not generalize this to every damage path
+or assign the reduction attributes to an item without its own binding evidence.
+
+Added a reusable conservative capture-call setup reader. It identifies 40
+straight-line singleton-getter/evaluator setups in the existing damage trace,
+including the shield, health and both reduction captures. It rejects observed
+direct branch joins, discontinuous trace rows, intervening calls/branches, argument or base
+register clobbers, memory writes and unsupported arithmetic. It reports offsets
+and output locations only, never inferred attribute names or evaluated values.
+Synthetic regressions cover valid/reordered setup, signed and zero offsets,
+clobbers, incoming branches, discontinuities and stale argument reuse.
+Private native-capture-setups-private.json and native-shield-reduction-private.json
+retain exact evidence; published findings contain no native instruction bodies.
+Production behavior and generated app artifacts do not change in this checkpoint.
+Next bind reduction eligibility and output application, or another actionable
+shared-combat gap. Do not repeat this capture inventory as gameplay coverage.
+
+Validation: 48 Python recovery tests, all 273 engine tests across 38 files,
+TypeScript and whitespace checks pass. No production or surfaced data changes
+require an artifact rebuild; the previous rendered parity report is unchanged.
