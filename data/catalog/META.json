@@ -12,13 +12,27 @@
     169
   ],
   "fetchedAt": "2026-10-14T18:05:43.946Z",
-  "contentHash": "2628838fb325fdf7",
-  "contentChangedAt": "2026-10-14T17:51:00.259Z",
+  "contentHash": "c82b1cde421a51ae",
+  "contentChangedAt": "2026-10-15T16:34:53.514Z",
   "contentAgeDays": 0,
   "contentNote": "fetchedAt is when we asked; contentChangedAt is when the payload last actually differed. Surfaces that describe data freshness must use contentChangedAt.",
   "shapeNote": "Same shape as the retired data/omeda snapshot (see engine/src/ingest/catalog.ts), plus predgg_id.",
   "files": {
     "heroes.json": "55 heroes with 18-level base_stats arrays",
     "items.json": "270 items with structured stats and game_id (maps match inventory data)"
-  }
+  },
+  "localCorrections": [
+    {
+      "date": "2026-10-15",
+      "source": "engine/fixtures/catalog-asset-audit.json",
+      "fields": "attack_range for murdock, grim-exe, legion",
+      "note": "Repeated absolute range was incorrectly accumulated by the importer. No upstream refresh performed; fetchedAt retained."
+    },
+    {
+      "date": "2026-10-15",
+      "source": "engine/fixtures/catalog-asset-audit.json",
+      "fields": "tenacity for 12 items",
+      "note": "Converted retained duration to reduction using named game curves; user confirmed Absolution shop 25. fetchedAt retained."
+    }
+  ]
 }

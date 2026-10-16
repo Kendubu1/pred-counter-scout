@@ -49,19 +49,21 @@ function shrink(w: number, n: number, priorMean: number, k: number): ShrunkRate 
   };
 }
 
-let heroK: number | null = null;
+const heroPriorCache = new WeakMap<AggregateSnapshot, number>();
 
 /** Hero winrate shrunk toward the global 50% (every match has one winner). */
 export function heroWinRate(slug: string, agg: AggregateSnapshot | null = loadAggregates()): ShrunkRate | null {
   const h = agg?.heroes[slug];
   if (!h || !agg) return null;
+  let heroK = heroPriorCache.get(agg);
   if (heroK == null) {
     heroK = momPriorStrength(Object.values(agg.heroes).map((x) => ({ n: x.games, w: x.wins })), 0.5);
   }
+  heroPriorCache.set(agg, heroK);
   return shrink(h.wins, h.games, 0.5, heroK);
 }
 
-const itemKCache = new Map<string, number>();
+const itemPriorCache = new WeakMap<AggregateSnapshot, Map<string, number>>();
 
 /**
  * Item-on-hero winrate delta: the item cell shrunk toward the hero's own
@@ -78,6 +80,11 @@ export function itemWinDelta(
   if (!h || !hero || h.games < 30) return null;
   const cell = h.items[String(itemGameId)];
   if (!cell || cell.n < 10) return null;
+  let itemKCache = itemPriorCache.get(agg);
+  if (!itemKCache) {
+    itemKCache = new Map<string, number>();
+    itemPriorCache.set(agg, itemKCache);
+  }
   let k = itemKCache.get(slug);
   if (k == null) {
     k = momPriorStrength(Object.values(h.items), hero.shrunk);

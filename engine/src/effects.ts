@@ -30,6 +30,7 @@ const StatKey = z.enum([
 ]);
 
 const DmgType = z.enum(['physical', 'magical', 'true']);
+const PowerScaling = z.object({ physical: z.number().finite().optional(), magical: z.number().finite().optional() });
 
 // Ability-scoped effects (hero augments) target the kit slot, not the
 // display name: names drift between sources (and stale fallbacks), keys
@@ -53,14 +54,16 @@ const Primitive = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('on_hit'), flat: z.number().optional(), perLevelFlat: z.number().optional(),
     scalingPct: z.number().optional(), scaleStat: StatKey.optional(),
+    powerScaling: PowerScaling.optional(),
     pctTargetHealth: z.number().optional(), pctTargetHealthRanged: z.number().optional(),
     healthBasis: z.enum(['max', 'current']).optional(), minDamage: z.number().optional(),
     perLevelPctTargetHealth: z.number().optional(),
     damageType: DmgType, icdSeconds: z.number().optional(), everyN: z.number().optional(),
   }),
   z.object({
-    kind: z.literal('on_ability_hit'), flat: z.number().optional(), perLevelFlat: z.number().optional(),
+    kind: z.literal('on_ability_hit'), basePhysicalPowerPct: z.number().optional(), trigger: z.enum(['immobilize', 'cast_then_basic']).optional(), flat: z.number().optional(), perLevelFlat: z.number().optional(),
     scalingPct: z.number().optional(), scaleStat: StatKey.optional(),
+    powerScaling: PowerScaling.optional(),
     pctTargetHealth: z.number().optional(), healthBasis: z.enum(['max', 'current']).optional(),
     damageType: DmgType, icdSeconds: z.number().optional(), rampSeconds: z.number().optional(),
   }),
@@ -71,6 +74,8 @@ const Primitive = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('cooldown_rate'), bonus: z.number().min(0).max(0.9), scope: z.literal('non_ultimate') }),
   z.object({ kind: z.literal('percent_pen'), pct: z.number(), damageType: z.enum(['physical', 'magical', 'both']), perItemPct: z.number().optional() }),
   z.object({ kind: z.literal('flat_pen'), amount: z.number(), damageType: z.enum(['physical', 'magical']), rampSeconds: z.number().optional() }),
+  z.object({ kind: z.literal('on_hit_armor_shred'), perStack: z.number().positive(), maxStacks: z.number().int().positive(), duration: z.number().positive() }),
+  z.object({ kind: z.literal('state_armor_multiplier'), pctPerStack: z.number().nonnegative(), perLevelPctPerStack: z.number().nonnegative(), maxStacks: z.number().int().positive(), damageType: z.enum(['physical', 'magical']) }),
   z.object({ kind: z.literal('armor_shred'), pct: z.number().optional(), flat: z.number().optional(), damageType: z.enum(['physical', 'magical']), rampSeconds: z.number().optional() }),
   z.object({ kind: z.literal('health_multiplier'), pct: z.number(), perLevelPct: z.number().optional(), perMinutePct: z.number().optional() }),
   z.object({ kind: z.literal('armor_multiplier'), pct: z.number() }),
@@ -95,6 +100,7 @@ const Primitive = z.discriminatedUnion('kind', [
     kind: z.literal('ability_bonus_damage'), abilityKey: AbilityKey,
     flat: z.number().optional(), perLevelFlat: z.number().optional(), valuesPerRank: z.array(z.number()).optional(),
     scalingPct: z.number().optional(), scaleStat: StatKey.optional(),
+    powerScaling: PowerScaling.optional(),
     pctTargetHealth: z.number().optional(), damageType: DmgType,
   }),
   z.object({
@@ -114,13 +120,13 @@ const Entry = z.object({
   effects: z.array(Primitive),
 });
 
-const Registry = z.object({
+export const EffectRegistrySchema = z.object({
   _readme: z.string().optional(),
   targets: z.record(z.string(), Entry), // keys: item:<slug> | eternal:<id>:major | eternal:<id>:<minor-slug> | augment:<hero>:<slug>
 });
 
 export type EffectEntry = z.infer<typeof Entry>;
-export type EffectRegistry = z.infer<typeof Registry>;
+export type EffectRegistry = z.infer<typeof EffectRegistrySchema>;
 
 let cached: EffectRegistry | null = null;
 
@@ -129,8 +135,8 @@ let cached: EffectRegistry | null = null;
  *  evidence joins directly). Both share the schema and one registry. */
 export function loadEffects(): EffectRegistry {
   if (!cached) {
-    const base = Registry.parse(JSON.parse(readFileSync(path.join(ROOT, 'engine/fixtures/effects.json'), 'utf8')));
-    const augments = Registry.parse(JSON.parse(readFileSync(path.join(ROOT, 'engine/fixtures/augments.json'), 'utf8')));
+    const base = EffectRegistrySchema.parse(JSON.parse(readFileSync(path.join(ROOT, 'engine/fixtures/effects.json'), 'utf8')));
+    const augments = EffectRegistrySchema.parse(JSON.parse(readFileSync(path.join(ROOT, 'engine/fixtures/augments.json'), 'utf8')));
     for (const [k, v] of Object.entries(augments.targets)) {
       if (base.targets[k]) throw new Error(`effect registry key collision: ${k}`);
       base.targets[k] = v;
@@ -143,6 +149,9 @@ export function loadEffects(): EffectRegistry {
 // ── Resolution: entries + context -> aggregate numbers for the simulator ──
 
 export interface ProcSpec {
+  trigger?: 'immobilize' | 'cast_then_basic';
+  basePhysicalPowerPct?: number;
+  powerScaling?: { physical?: number; magical?: number }; // replaces legacy scalar when present
   flat: number;
   scalingPct: number;
   scaleStat: keyof ItemStats | null;
@@ -174,7 +183,9 @@ export interface ResolvedEffects {
   cooldownRateNonUlt: number;
   pctPen: { physical: number; magical: number };
   flatPen: { physical: number; magical: number; rampSeconds: number };
+  targetArmorMultiplier: { physical: number; magical: number };
   shredPct: { physical: number; magical: number; rampSeconds: number };
+  onHitArmorShred: { perStack: number; maxStacks: number; duration: number }[];
   onHitProcs: ProcSpec[];
   onAbilityProcs: ProcSpec[];
   healthMultiplier: number;
@@ -194,6 +205,7 @@ export interface ResolvedEffects {
   abilityCooldownMods: Partial<Record<AbilityKeyT, { pct: number; flatSeconds: number }>>;
   abilityBonuses: {
     abilityKey: AbilityKeyT; flat: number; valuesPerRank: number[];
+    powerScaling?: { physical?: number; magical?: number };
     scalingPct: number; scaleStat: keyof ItemStats | null;
     pctTargetHealth: number; damageType: 'physical' | 'magical' | 'true';
   }[];
@@ -214,7 +226,9 @@ export function emptyEffects(): ResolvedEffects {
     ultHaste: 0, cooldownRateNonUlt: 0,
     pctPen: { physical: 0, magical: 0 },
     flatPen: { physical: 0, magical: 0, rampSeconds: 0 },
+    targetArmorMultiplier: { physical: 1, magical: 1 },
     shredPct: { physical: 0, magical: 0, rampSeconds: 0 },
+    onHitArmorShred: [],
     onHitProcs: [], onAbilityProcs: [],
     healthMultiplier: 1, armorMultiplier: 1, dmgTakenMult: { physical: 1, magical: 1 }, shieldFlat: 0, shieldScaling: [], antiHealPct: 0,
     asRampPctPerSecond: 0, attackSpeedCapOverride: 0, executeThresholdPct: 0,
@@ -225,6 +239,8 @@ export function emptyEffects(): ResolvedEffects {
 
 export interface ResolveCtx {
   level: number;
+  /** Explicit active stacks held for the evaluated snapshot; omitted means no credit. */
+  effectStacks?: Record<string, number>;
   minute?: number;      // omitted -> time-scaling effects use base value
   itemCount?: number;   // for per-item scalings (Diamond Tip)
 }
@@ -287,6 +303,7 @@ export function resolveEntries(keys: string[], ctx: ResolveCtx, registry: Effect
         case 'on_ability_hit': {
           const proc: ProcSpec = {
             flat: (fx.flat ?? 0) + ((fx as { perLevelFlat?: number }).perLevelFlat ?? 0) * lvl,
+            powerScaling: fx.powerScaling,
             scalingPct: fx.scalingPct ?? 0,
             scaleStat: fx.scaleStat ?? null,
             pctTargetHealth: (fx.pctTargetHealth ?? 0) + ((fx as { perLevelPctTargetHealth?: number }).perLevelPctTargetHealth ?? 0) * lvl,
@@ -297,6 +314,8 @@ export function resolveEntries(keys: string[], ctx: ResolveCtx, registry: Effect
             icdSeconds: fx.icdSeconds ?? 0,
             everyN: (fx as { everyN?: number }).everyN ?? 1,
             rampSeconds: (fx as { rampSeconds?: number }).rampSeconds ?? 0,
+            trigger: fx.kind === 'on_ability_hit' ? fx.trigger : undefined,
+            basePhysicalPowerPct: fx.kind === 'on_ability_hit' ? fx.basePhysicalPowerPct : undefined,
             fromItem: key.startsWith('item:'),
           };
           (fx.kind === 'on_hit' ? out.onHitProcs : out.onAbilityProcs).push(proc);
@@ -324,6 +343,19 @@ export function resolveEntries(keys: string[], ctx: ResolveCtx, registry: Effect
           out.flatPen[fx.damageType] += fx.amount;
           out.flatPen.rampSeconds = Math.max(out.flatPen.rampSeconds, fx.rampSeconds ?? 0);
           break;
+        case 'on_hit_armor_shred':
+          out.onHitArmorShred.push({perStack: fx.perStack, maxStacks: fx.maxStacks, duration: fx.duration});
+          break;
+        case 'state_armor_multiplier': {
+          const stacks = ctx.effectStacks?.[key];
+          if (stacks === undefined) continue;
+          if (!Number.isInteger(stacks) || stacks < 0 || stacks > fx.maxStacks
+            || !Number.isInteger(lvl) || lvl < 1 || lvl > 18) throw new Error('Invalid active effect stack state');
+          const factor = 1 - stacks * (fx.pctPerStack + fx.perLevelPctPerStack * lvl) / 100;
+          if (factor < 0 || !Number.isFinite(factor)) throw new Error('Invalid armor multiplier');
+          out.targetArmorMultiplier[fx.damageType] *= factor;
+          break;
+        }
         case 'armor_shred':
           if (fx.pct) out.shredPct[fx.damageType] += fx.pct;
           if (fx.flat) out.flatPen[fx.damageType] += fx.flat; // same math as flat pen vs one target
@@ -370,6 +402,7 @@ export function resolveEntries(keys: string[], ctx: ResolveCtx, registry: Effect
             abilityKey: fx.abilityKey,
             flat: (fx.flat ?? 0) + (fx.perLevelFlat ?? 0) * lvl,
             valuesPerRank: fx.valuesPerRank ?? [],
+            powerScaling: fx.powerScaling,
             scalingPct: fx.scalingPct ?? 0,
             scaleStat: fx.scaleStat ?? null,
             pctTargetHealth: fx.pctTargetHealth ?? 0,
@@ -419,8 +452,11 @@ export function mergeEffects(a: ResolvedEffects, b: ResolvedEffects): ResolvedEf
     out.pctPen.magical = (1 - (1 - out.pctPen.magical / 100) * (1 - e.pctPen.magical / 100)) * 100;
     out.flatPen.physical += e.flatPen.physical; out.flatPen.magical += e.flatPen.magical;
     out.flatPen.rampSeconds = Math.max(out.flatPen.rampSeconds, e.flatPen.rampSeconds);
+    out.targetArmorMultiplier.physical *= e.targetArmorMultiplier.physical;
+    out.targetArmorMultiplier.magical *= e.targetArmorMultiplier.magical;
     out.shredPct.physical += e.shredPct.physical; out.shredPct.magical += e.shredPct.magical;
     out.shredPct.rampSeconds = Math.max(out.shredPct.rampSeconds, e.shredPct.rampSeconds);
+    out.onHitArmorShred.push(...e.onHitArmorShred);
     out.onHitProcs.push(...e.onHitProcs); out.onAbilityProcs.push(...e.onAbilityProcs);
     out.healthMultiplier *= e.healthMultiplier; out.armorMultiplier *= e.armorMultiplier;
     out.dmgTakenMult.physical *= e.dmgTakenMult.physical; out.dmgTakenMult.magical *= e.dmgTakenMult.magical;

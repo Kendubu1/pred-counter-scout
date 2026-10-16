@@ -55,3 +55,25 @@ describe('empirical Bayes shrinkage (evidence layer v0)', () => {
     expect(ev).toBeNull();
   });
 });
+
+// Two independent cohorts must not share fitted statistical priors.
+it('isolates hero and item priors across snapshots regardless of call order', () => {
+  const cohort = (rates: number[]): AggregateSnapshot => ({
+    meta: { generatedAt: '', matches: 1000, playerRows: 10000, patchNote: 'test' },
+    goldByMinute: {},
+    heroes: Object.fromEntries(rates.map((rate, i) => [`hero${i}`, {
+      games: 1000, wins: rate * 1000, byRole: {},
+      items: Object.fromEntries(rates.map((r, j) => [String(j), { n: 100, w: r * 100 }])),
+    }])),
+  });
+  const varied = cohort([0.1, 0.3, 0.5, 0.7, 0.9]);
+  const uniform = cohort([0.5, 0.5, 0.5, 0.5, 0.5]);
+  for (const sample of [varied, uniform, varied, uniform]) {
+    const hero = heroWinRate('hero0', sample)!;
+    expect(hero.priorStrength).toBe(momPriorStrength(
+      Object.values(sample.heroes).map(h => ({ n: h.games, w: h.wins })), 0.5));
+    const item = itemWinDelta('hero0', 0, sample)!;
+    expect(item.priorStrength).toBe(momPriorStrength(Object.values(sample.heroes.hero0!.items), hero.shrunk));
+  }
+  expect(heroWinRate('hero0', varied)!.priorStrength).not.toBe(heroWinRate('hero0', uniform)!.priorStrength);
+});

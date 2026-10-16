@@ -26,18 +26,22 @@ export interface AbilityDef {
   name: string;
   damagePerRank: number[];      // best damage entry per rank
   scalingPct: number;            // ratio applied to bonus power, in percent
+  powerScaling?: { physical?: number[]; magical?: number[] }; // independent ratios by rank
+  ignoresArmor?: boolean;        // stated armor bypass, without changing damage type
   pctMaxHealth?: number;         // bonus damage as % of target max health
   // Bonus damage scaled on target CURRENT or MISSING health (the execute pattern,
   // e.g. Lt. Belica's missing-HP ult), per rank. Credited with a health-state
   // factor: current at the assumed live-HP fraction, missing as its complement.
   targetHealthPct?: { pct: number[]; basis: 'current' | 'missing' }[];
   damageType: 'physical' | 'magical' | 'true';
+  immobilizes?: boolean;         // reviewed root/stun application, one per successful cast
   aoe?: boolean;                 // hits multiple targets (area/cone/line/all enemies)
   healing?: HealEntry[];         // heal/shield output per cast (may be the only payload)
   // Self attack-speed steroid per rank (e.g. Sparrow's Heightened Senses,
   // Murdock's Hot Pursuit): a temporary AS buff with no damage line. Carries max
   // these early for the auto-attack spike, so it must feed auto DPS.
   selfAttackSpeedPctPerRank?: number[];
+  buffDurationSecPerRank?: number[]; // stated duration at each skill rank
   buffDurationSec?: number;      // approx active duration of the AS buff, for uptime
   // Permanent self stat gains from a leveled ability ("Passive: Gain X physical
   // power" — Feng Mao's Safeguard, Wraith's Surprise Surprise), credited at full
@@ -68,6 +72,8 @@ export interface HeroKit {
   resource: 'mana' | 'other';    // rage/charge heroes have no budgetable pool
   basicScalingPct: number;       // basic-attack ratio on bonus power, percent
   baseStats: BaseStats;
+  // Kept outside castable abilities: a passive must not spend skill points or recur on a cast cooldown.
+  passive?: { key: 'PASSIVE'; name: string; sourceText: string; source: 'catalog'; modelStatus: 'source-only' };
   abilities: AbilityDef[];       // damaging, castable abilities only
   // Field's recommended max-priority of the basic abilities (kit keys,
   // strongest-maxed-first) from pred.gg recommendedSkills; the sim levels

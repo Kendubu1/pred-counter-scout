@@ -364,3 +364,901 @@ minutes read as approximate when the economy has since been reworked.
 ## Verification summary
 
 The loop ran three passes against the checklist before this document was finalized. Pass 1 caught three substantive problems: the worked Gideon example originally reported only the extended-fight window, which oversold the off-meta option; it now reports the burst tradeoff (A wins one-combo by 9%) alongside the uptime advantage, which is the shape every off-meta proof must have. Dropping pred.gg silently dropped skill-order data; the simulator now explicitly owns max-order derivation. And augment plus Eternal winrates turned out to be structurally unavailable from the API (no field in match payloads), so those recommendations were moved to mechanics-only with a mandatory Theory badge instead of implying observational backing. Pass 2 caught infrastructure and presentation issues: raw match storage in git was unrealistic at estimated volumes, replaced with aggregate-only persistence plus optional release-asset archives; the medium tier originally specified a managed database, replaced with a single VPS running DuckDB, which is cheaper and sufficient; and matchup output originally included predicted winrate points for unseen pairs, which reproduces the old ridge model's false-precision mistake, replaced with verdict chips and intervals. Pass 3 scored the deliverables: audit 5, data strategy 5, architecture 4 (the long pole is simulator fidelity for item passives, and the document says so), Concept A 5, Concept B 4 (it cannot see execution difficulty or macro effects, named explicitly), cost tiers 5, stack 5, UX 4 (the under-10-seconds claim holds on the spec, but only a prototype proves it). Remaining known weaknesses, stated rather than hidden: the mitigation and crit constants are unverified until the first calibration-fixture session; match-volume and API-field assumptions need one day of ingest prototyping to confirm; and lane-pressure and objective economics (Shrines) are deferred from the v1 simulator.
+
+## 2026-10-15: Installed-client catalog evidence
+
+The catalog now has an independent asset cross-check rather than only internal
+consistency tests. See [catalog-asset-audit.md](catalog-asset-audit.md) for scope,
+source hashes, the attack-range correction, and unresolved item mappings.
+The fixture is build-specific numeric evidence; it does not certify gameplay
+bindings or change the simulator's confidence labels.
+
+## 2026-10-15 catalog and damage reconciliation
+
+AbilityDef now carries independent physical/magical `powerScaling` arrays and
+`ignoresArmor`. The damage type remains physical/magical/true independently of
+its scaling stat; both rotation and burst mitigation honor explicit bypass.
+Legacy scalar-only synthetic fixtures retain the prior path. Current non-damaging
+abilities cannot inherit stale damage from an owned slot (Muriel E).
+
+All 189 augment descriptions align to the committed catalog; 16 modeled entries
+were corrected. All 216 items with effects now have explicit registry coverage,
+including 83 unmodeled additions. Unsupported conditional bonuses are not treated
+as unconditional. Tenacity imports convert retained CC duration to reduction,
+backed by client curves and the user's Absolution shop confirmation (25).
+
+`audit:catalog` inventories all data and remaining model limitations offline.
+See `docs/catalog-asset-audit.md` for evidence, corrections, and remaining gaps.
+
+## 2026-10-15 validation evidence scope
+
+The ordered-core snapshot is patch 1.15 (July 6), while the catalog is
+1.17.2. Recomputing a comparison today does not refresh its observations.
+Agreement now carries source patch, fetch time, and role population; explicit
+empty role samples cannot borrow hero-wide rows. Invalid/unmapped cores are
+excluded. Historical overlap cannot establish current-meta fidelity.
+
+Removed rank correlation between observed three-item core winrates and an
+arbitrary six-item covering build: those are different treatments.
+`validate:meta` produces 927 controlled scenarios across 103 hero-role pairs,
+using levels 9/13/18 and gold caps 6000/9000/12000. Completed-item prefixes
+preserve purchase order, expose residual gold, and use equal reference defenses.
+They omit augments/Eternals and components, and are not win probabilities.
+The report explicitly records zero confirmed winning builds and no held-out
+validation. Current item marginals cannot reconstruct joint build outcomes.
+
+Hero/item shrinkage caches are scoped to the supplied aggregate snapshot,
+preventing fitted prior reuse between development and evaluation cohorts.
+A future evaluation must freeze predictions and collect a later patch-matched
+ranked cohort with match-ID isolation and role/rank/opponent/duration controls.
+
+## 2026-10-15 review of search assumptions
+
+Scenario requirements are hard constraints. A zero gold budget is valid and
+must not behave like an omitted cap. Negative/nonfinite budgets are rejected.
+Required anti-heal must appear within the first three items, or by the final
+slot of a one/two-item checkpoint. If the pool, family restrictions, or budget
+cannot satisfy it, the search returns no valid build; it must not relax the
+requirement. Four regression cases failed before the fix and pass afterward.
+Default unconstrained searches follow the same path and need no artifact refresh.
+
+Further design issues to address with evidence-backed changes:
+- The optimizer deduplicates unordered item sets while staged mana scoring
+  depends on purchase order. Retaining the first order can discard a better
+  route to the same final inventory. A future change should compare feasible
+  purchase paths explicitly and validate checkpoint output, not just final DPS.
+- Closed-form ability rotations count immediate casts and recasts independently.
+  Cast animations, travel time, channel time, and shared action time with basics
+  are not a complete combat timeline. An event-based evaluator needs measured
+  timing inputs before it can replace this calculation honestly.
+- Role/power filters and mana penalties are search heuristics, not game laws.
+  Audit their exclusions with controlled candidate comparisons before widening
+  pools or changing coefficients; historical popularity is not a tuning target.
+- Current patch validation needs joint build observations and a held-out cohort.
+  Improving agreement with the inspected patch-1.15 cores would not demonstrate
+  improved patch-1.17.2 predictive accuracy.
+
+Keep the present engine as a fast, provisional mechanics comparator while
+addressing these issues incrementally. Do not claim exhaustive optimization,
+match win probabilities, or measured combat timelines from its current outputs.
+
+## 2026-10-15 augment-coverage foundations (priority 10)
+
+The current catalog contains 55 Passive slots; the loader previously discarded
+them. HeroKit.passive now preserves their names and source text with an explicit
+source-only status. They remain outside castable AbilityDef: merely adding
+PASSIVE to that union would wrongly involve skill allocation and cooldown casts.
+No passive trigger, uptime, stack behavior, or damage is inferred from retention.
+
+On-hit, on-ability-hit and ability bonus damage now accept independent physical
+and magical powerScaling percentages. The schema, resolver, and burst/rotation
+math preserve both terms, then mitigate according to the effect's damage type.
+When present, this replaces the legacy scalar representation, including explicit
+zero ratios. Existing effects remain numerically unchanged. Exact synthetic tests
+cover dual scaling, mitigation, replacement, legacy behavior and all 55 passives.
+The catalog-model audit was regenerated; passive gameplay coverage remains open.
+
+## 2026-10-15 attack-speed source scope
+
+The old parser treated any attack-speed-looking substring as a self steroid and
+borrowed the first duration anywhere in the tooltip, defaulting to four seconds.
+This credited Iggy with his turrets' buff and interpreted Revenant's scaling
+markup as a bonus. Sparrow borrowed the 1.5s stealth timer instead of her 6s
+attack-speed grant. Grux and Serath borrowed unrelated timers as well.
+
+Strip markup before matching a whole attack-speed phrase; bind the duration to
+the grant, its explicit preceding "For the next" clause, or "During this time"
+link. Retain ranked durations (Grux 8/10/12s). Require a stated duration and
+exclude turret grants, GRIM's Sentry stacking mode and Valmont's conditional
+stat theft from the ordinary self-cast model. Missing or unsupported models are
+not replaced by guessed magnitudes or timing. Short-window buff credit is capped
+by its stated duration; sustained output remains duration/cooldown averaged.
+
+This does not solve activation delays, stacking/recast resets, duration
+extensions or full combat scheduling. Catalog-model audit records those limits.
+Rebuild hero artifacts, matchup matrix and diagnostic reports after these
+numerical changes, and invalidate stale explanations rather than retaining
+advice for old builds or timings.
+
+## 2026-10-15 finite-window self-buff attack rates
+
+Replace duration/cooldown self-buff averaging with active/inactive intervals
+inside the requested engagement. The model explicitly starts with buffs ready,
+activates at time zero, recasts on effective cooldown (including haste and
+ability cooldown modifiers), clips intervals at the fight endpoint, and refreshes
+rather than stacks an already-active instance of the same buff. Attack-speed
+caps apply within each interval before rates are averaged. Distinct buffs can
+overlap. This removes the artificial discontinuity at the old 3s branch and the
+cap-after-average overvaluation near the attack-speed limit.
+
+Examples under a synthetic 1 attack/s baseline and +100% buff: a 6s duration,
+20s cooldown gives 16 continuous-rate attacks in a 10s fight, not 13. A 2s buff
+on a 4s cooldown contributes 6 active seconds in a 10s fight. With 2.5 attacks/s
+baseline, a 2s +100% buff and cap 3 yields 26 attacks over 10s, not 30.
+
+These are exact integrations of the declared rate model, not measured hit
+counts. Readiness, immediate activation, affordable recasts and uninterrupted
+attacking are scenario assumptions. Cast/attack animations, Sparrow's activation
+delay, takedown resets, stack mechanics, item-ramp timing and on-hit ICD event
+scheduling remain incomplete. The attack-speed cap remains unverified.
+
+Validation outcome: rebuilt all 55 heroes, 1,485 matchup pairs and 927 controlled
+comparison scenarios. 192 matchup-pair reports changed; Grux and Serath changed
+item recommendations in offlane and jungle. Three stale coaching lines were
+invalidated with pending replacements recorded. No new advice was authored.
+
+
+## 2026-10-15 purchase-prefix preservation in build search
+
+The beam previously deduplicated completed item sets before comparing their
+purchase histories. A high-damage first item could therefore suppress the same
+set reached through an early mana item, even though the existing scoring rule
+explicitly penalizes mana-starved prefixes. Deduplication now retains the best
+encountered staged-mana factor for each item set, reevaluates the retained order,
+and leaves equal-factor ties stable. Scoring weights, mana targets, pool filters,
+gold caps and anti-heal deadlines are unchanged.
+
+For equal item sets, the staged score is the minimum of prior prefix adequacy
+and any newly reached stage. Keeping the stronger prior history preserves that
+advantage under a shared continuation. This is a beam-search correction, not a
+proof of a globally optimal purchase order: pruned paths remain unsearched.
+Three regressions cover the damage-first collision, exhaustive permutations of
+a small pool, and anti-heal by slot three with early mana retained.
+
+The separate matchup/artifact orderBuild heuristic still chooses purchases by
+marginal combat value per gold and can reorder the selected set. It does not yet
+share the search's mana objective. Accordingly, this change improves set scoring
+and selection but does not validate the displayed purchase timeline. Current
+meta agreement is still unverified: owned ordered-build evidence is patch 1.15,
+whereas the catalog is 1.17.2; no current-patch winning-build claim is justified.
+
+
+Validation outcome: all 55 hero artifacts, 1,485 matchup pairs and 927 controlled
+comparisons regenerated. Item sets changed in 22 hero-role combinations across
+13 heroes, and 164 matchup-pair reports changed. Five stale coaching lines and
+one Zinx support optimizer explanation were invalidated, with pending replacement
+records preserved. No replacement advice was authored. All 198 tests pass;
+TypeScript and whitespace checks pass. Current-patch lane-eligible evidence
+remains zero; these results remain THEORY rather than validated winning builds.
+
+
+## 2026-10-15 mana-preserving displayed purchase timelines
+
+orderBuild now uses the same stagedManaAdequacy calculation as search. Its
+existing marginal-combat-per-gold heuristic may reorder a selected set only if
+the candidate prefix plus the remaining input order preserves at least the
+input build's mana score. The retained completion is a feasibility witness: at
+every step, choosing its next item remains possible. No new weights or game
+constants were introduced. A pure-mana first item can no longer be demoted
+behind raw damage when that would erase the search's early-mana benefit.
+
+This is conservative greedy ordering, not exhaustive order optimization. A
+candidate may be rejected even if a different tail permutation would be
+feasible. Input orders with poor mana can still remain poor; no gameplay
+sustainability claim follows from this heuristic. Four-combo targets, levels
+9/12/14, carry exemptions, unmodeled regeneration and ability resource costs
+remain limitations. Three tests cover mana-before-damage, all permutations of
+a small pool, unchanged resourceless ordering and empty builds.
+
+Hero display, item spike timelines and matchup checkpoints all use orderBuild,
+so the correction applies consistently without changing selected item sets.
+The controlled comparison report now records the shared mana floor and its
+heuristic status instead of the resolved ordering mismatch.
+
+
+Validation outcome: rebuilt all 55 heroes, 1,485 matchup pairs and 927 controlled
+comparisons. Purchase orders changed in 63 hero-role combinations across 33
+heroes, with zero final-item-set changes. 519 matchup-pair reports changed.
+Invalidated 15 stale coaching lines, preserving pending reviewed replacements;
+no optimizer explanation item sets became stale and no new advice was authored.
+The full 201-test harness and TypeScript checks pass. Current-patch eligible
+ordered-build evidence remains zero, so no meta-fidelity claim is made.
+
+
+## 2026-10-15 mixed-stat damage scaling and omission evidence
+
+The old coverage count represented 11 affected ability slots, not 11 omitted
+ratios. Inspection found 16 selected-payload ratios lost: a leading HealthText
+or ArmorText caused the fallback parser to drop every ratio in that payload,
+including otherwise-supported magical power. Restore Riktor Electrocute's 35%,
+Sevarog Siphon's 40%, and Steel Bull Rush's 70% magical-power ratios. Keep their
+health terms unresolved; do not infer total/bonus or self/target stat basis from
+an icon. Simulator kit comparison isolates changes to those three heroes.
+
+Coverage now retains the full source text, selected damage payload, and each
+omitted source tag with rank-specific percentages. There remain 13 selected-
+payload ratios across the same 11 flagged slots. Terra records both ArmorText
+and MRText, excluding its later charged maximum and shield. Kira's untagged
+base has zero selected-payload ratios; her full source preserves the separate
+per-stack rider for future state modeling. This count is not exhaustive coverage
+of conditional riders, multi-hit timing, empowered states, shields or passives.
+
+Eight regression cases cover mixed health/power recovery, all three affected
+heroes at low/high/unlearned ranks, both armor channels, excluded later heals,
+Kira's separated rider, and ranked source coefficients. No health/armor
+coefficients are applied without verification. Riktor's retaliatory aura pulses
+and HealthText-scaled shield remain outside this damage-ratio correction.
+All dependent builds and comparisons remain THEORY and require regeneration after this numerical change.
+
+
+Validation outcome: all 55 hero artifacts, 1,485 matchup pairs and 927 controlled
+comparisons rebuilt. 55 pair reports changed, all involving the three corrected
+heroes. Sevarog and Steel changed item sets in offlane and jungle; Riktor's
+final sets were unchanged. Four stale coaching lines and three optimizer
+explanations were invalidated, with pending replacements preserved. Full suite:
+209 tests in 26 files; TypeScript and whitespace checks pass. Current-patch
+lane-eligible ordered-build evidence remains zero; no validated-win claim.
+
+
+## 2026-10-15 installed-client scaling-basis investigation
+
+Decoded Terra's curve table and inspected three dedicated damage-effect asset
+name tables from the installed client. Six coefficient curves explicitly use
+BonusPhysicalArmor/BonusMagicalArmor names and match the catalog ratios: normal
+ShieldDash 40%/40%, each selected DoubleSweep payload 35%/35%, AxeThrow 40%/40%.
+The audit records raw curve points, rank-specific percentages, package paths,
+SHA-256 hashes of both asset/export files, and observed defensive attribute and
+coefficient references. This is reproducible static evidence, not an in-game test.
+
+Crucial limit: name tables do not decode attribute capture source or magnitude
+calculation mode. The captured attribute names are Armor and MagicResist, and
+bonus-named curves alone do not prove the calculation subtracts base stats.
+DoubleSweep additionally names only the physical-armor coefficient row despite
+having both defensive attribute references; equal curve values do not establish
+whether the magical channel shares that row or inherits another configuration.
+All six channels remain basis-unverified and unmodeled. No simulator numbers,
+hero recommendations or matchup reports changed in this batch.
+
+The catalog audit embeds this evidence without treating it as modeled coverage.
+Three tests check all six ratios at all ranks, keep unresolved basis from being
+promoted to executed scaling, and retain the DoubleSweep reference discrepancy.
+Next verification step: decode the gameplay-effect export's capture source and
+magnitude calculation enum, or measure unempowered Terra AxeThrow at a fixed
+rank with no bonus armor and then with a known armor-only addition. The absolute
+baseline separates total from bonus scaling; the item delta alone cannot.
+Control target mitigation, augments, passive empowerment and tower proximity;
+repeat outside and inside tower range only when explicitly testing that passive.
+Do not infer health scaling basis from these armor findings.
+
+Validation: all 212 tests in 27 files pass; TypeScript and whitespace checks pass.
+No simulation outputs required regeneration because execution math is unchanged.
+
+
+## 2026-10-15: active app parity and Eternal client reconciliation
+
+The maintainer explicitly authorized updating the UI and its supporting data.
+The prior freeze description was stale: ui/index.html and ui/v2/index.html
+redirect to ui/v6, which already reads data/catalog and data/artifacts. Follow
+active imports instead of assuming the retired v2 app is live.
+
+Decoded all 16 Eternal string tables and 414 rows of the default-mode
+ct_Eternals curve table. The committed eternal-source-audit.json preserves
+34 asset hashes, raw descriptions, every decoded curve, 46 description
+corrections, a Millennia spelling correction, nine corrected simulator effect
+entries, and unresolved source conflicts. This is a partial source audit, not
+a certificate that all 112 major/minor mechanics execute correctly. Slot
+membership cannot be inferred from strings (retired entries are present).
+
+Correct Vesh to 7% +0.4%/minute, Xyris base to 3%, Thraex damage growth and
+Ferocity, Demiurge item stats/Construct/crit conversion, and Lotus expected
+reward magnitudes. Savage Strikes now credits only its base curve (1.5 at
+level 1; 8.3 at 18), not an assumed permanent doubled proc. Hero-hit stacks
+and healing are explicitly unmodeled. Lotus retains an unverified equal-roll
+expectation, with percentage movement excluded from the flat movement channel.
+
+UI item details now retain activation conditions, health, magical lifesteal,
+and stat-icon meanings; runtime counters such as {Activations} are omitted.
+Learn displays all 189 hero augment descriptions from the shared catalog.
+Ability text preserves scaling-stat names without inventing total/bonus basis.
+Kit patch labels use catalogPatch; offline build time is no longer called a
+live-data refresh. Eternal glossary generation uses corrected shared data.
+Changed Eternal advice is removed pending independent review (43 lines);
+changed glossary recommendations are not marked re-reviewed.
+
+Verification: ui:parity runs an offline browser against the actual v6 rendering
+functions and checks all 55 kits, 270 item dialogs (including every nonzero
+stat), 189 augments, 16 Eternal majors and 96 minors. It checks both entrypoint
+redirects, Absolution's 25 tenacity and immobilize trigger, and mobile/desktop
+Murdock layouts. It is source/render parity, not measured damage validation.
+The report is data/aggregates/ui-parity.json. Optional UI_PARITY_SHOTS writes
+screenshots outside the repo; PLAYWRIGHT_EXECUTABLE_PATH selects a local browser.
+
+Remaining: resolve Aion Runic Focus units, Pilow restoration ticks, Satariel
+conflicting stat/damage rows, Weald level-18 attack-speed jump, and Thraex
+reduction conversion. Current-patch joint-build outcomes and held-out gameplay
+measurements are still absent, so simulated gains do not establish winning
+builds or current-meta fidelity. No API refresh is needed for this batch.
+
+Rebuild result: all 55 hero artifacts refreshed; seven hero-role Eternal loadouts
+changed (Bayle, Crunch, Greystone, Grux, Khaimera and Zarus jungle; Wraith
+midlane). Item sets did not change. The 1,485-pair matrix and 927 controlled
+scenarios were recomputed; these exclude Eternal selection, so no numerical
+change was expected. The current-meta evidence gate still reports zero eligible
+ordered-build rows and zero confirmed winning builds.
+
+
+## 2026-10-15: Spectral Schematics trigger correction (partial)
+
+Breakthrough's catalog condition is immobilizing an enemy. The old effect
+primitive credited every damaging cast, including kits with no immobilization.
+The same incorrect encoding existed in the one-shot item batch seed. Both now
+carry an explicit immobilize trigger. Burst and rotation maintain a separate
+eligible-cast count, before filtering out non-damaging abilities; Grux R counts,
+ordinary spells do not. One cast earns one proc, not one per damage tick or
+simultaneous root/stun tag. Ordinary spell-hit effects retain their existing path.
+
+The reviewed fixture pins full source descriptions and SHA-256 hashes for 23
+root/stun slots. Changed descriptions fail loading and require review. This is
+partial coverage, not a complete immobilization classifier: displacement-only,
+suppression, fear/mesmerize, empowered, stacked and stance-dependent cases still
+need game-event verification. They receive no proc credit in this pass, which
+can undercount real damage. Successful hit/root contact is assumed. Stored
+charges, delays, repeated CC, immunity and event-by-event current health are
+not simulated. The inherited full-health burst / 80%-health rotation assumption
+remains; these are not measured damage predictions.
+
+The item popup now exposes committed model limitations in an expandable section.
+Removed Spectral's generic mage recommendation because it omitted the trigger;
+a replacement needs the normal author/judge review. The corrected item doc and
+catalog audit expose the same limits. spectral-audit.ts compares the old
+unrestricted encoding, reviewed triggers and stats-only for all 55 heroes with
+identical items and target, and records current recommendation prevalence.
+
+Regression coverage checks non-CC kits, Murdock's trap, Grux's non-damaging stun,
+Khaimera's multi-hit ultimate, conditional abilities and source drift. The old
+Gideon-specific sensitivity expectation depended on the inflated item; replace
+it with a controlled ranking-reversal test for attribution, while retaining the
+real-kit sensitivity integration test. A fall in Spectral picks does not prove
+winning builds or agreement with the current meta.
+
+
+Validation result: rebuilt all 55 artifacts, 1,485 matchup pairs and 927
+controlled historical-core scenarios. Spectral appears in 1/107 recommended
+hero-role builds (Steel offlane), down from the prior 26/107; 27 item sets change.
+Removed four obsolete optimizer explanations and four stale coaching lines.
+At level 13 against the 1,900 HP / 48 magic-armor reference target, Spectral's
+burst contribution changes from 273.6 to 91.2 for Murdock, 364.9 to 0 for
+Morigesh, and 364.9 to 182.4 for Steel. The reduction includes omitted valid CC
+types, so the new count is conservative, not an estimate of true meta strength.
+Saved artifact schemas and browser source/render parity pass; the UI audit has
+no hard failures and retains two existing Coach typography findings.
+
+Final harness: 224 tests in 31 files pass with two workers and a 15-second
+default timeout. Two compute-heavy tests exceeded five seconds in the initial
+parallel run; reduced-concurrency rerun passed without changing assertions.
+TypeScript and whitespace checks pass. No live refresh, merge or deployment.
+
+
+## 2026-10-15: Kira mechanic replay and passive coverage inventory
+
+The historical winning-core comparison was systematically incomplete: Solaris
+critical procs/healing, Ashbringer cooldown changes, Ruination mana damage,
+Nevermore, Vengeance/Dusk stack damage, and Mercy/Purge crit rules were not all
+represented. Production DPS rankings cannot establish those cores are inferior.
+
+Added a separate source-pinned action replay (kira-replay.ts), with successful
+hits and casts as explicit inputs. It tracks real target health/mana, cooldown
+availability, one-use/expiring Solaris empowerment, one Ashbringer reduction per
+non-ultimate cooldown cycle, critical enhancement, Ruination drain/refresh,
+Nevermore availability, Vengeance stacks/expiration and Dusk eligibility,
+Deathstalker/Viper hit-built stacks, isolated-target Manta amplification and
+Vanquisher execute. Healing is potential, not effective healing. Unknown items
+are rejected rather than silently counted as fully modeled.
+
+This is diagnostic coverage, not a new production ranking engine. Full Purge
+per-tick behavior, Dash, Knell, augments, Tainted on-hit damage, Terminus shields,
+farm stacks, recovery/animation timing, incoming damage, resource spending and
+secondary-proc trigger ordering remain incomplete. It assumes shared-duration
+stack refresh, post-hit stack application, Solaris sharing the hit's crit
+outcome, and continuous Ruination drain whose refresh extends the existing
+rate. These are explicit hypotheses requiring game tests. It uses the current
+engine bonus-power basis. Source description changes invalidate the audit.
+
+Reproduce with tsx src/ingest/kira-mechanics-audit.ts from engine. The report
+compares seven three-item cores with 100 stratified crit sequences in three
+10-second scripts: fixed attack opportunities, interrupted contact, and an
+optimistic attack-rate ceiling with zero cast recovery. The last is not a
+measured feasible combo. Target: 10,000 HP, 85 armor, 1,000 mana; chosen to avoid
+premature death truncating mechanic observations. No Purge, Dash, Knell or
+augments. This target and action policy are scenario inputs, not game constants.
+
+Under fixed opportunities, optimizer / Solaris-Ashbringer-Imperator /
+Solaris-Ruination-Imperator deal approximately 2,437 / 2,794 / 3,304 damage.
+Interrupted contact gives 1,767 / 2,534 / 2,742. Under the attack-rate ceiling,
+they give 4,958 / 4,899 / 5,011. These are sensitivity demonstrations, not win
+probabilities or a new recommendation. The former clear auto-DPS advantage is
+not a robust overall-combat conclusion. Effect removal is non-additive;
+Ashbringer can shift casts into less favorable script/window positions, so a
+negative marginal value is not evidence that cooldown reduction is bad.
+
+Inventory all 55 heroes' named/embedded passive sections and all 270 items in
+passive-coverage-audit.json. Every entry remains explicitly not certified;
+registry presence does not equal complete modeling. Reproduce with
+python engine/scripts/passive-coverage-audit.py from any directory.
+
+Next: verify event ordering/ticks and raw scaling basis in game; implement the
+remaining hero/item behavior; add realistic cast recovery and mana budgets;
+then connect a validated timeline to production ranking and regenerate app
+results. Keep the current production recommendations THEORY until then.
+
+Validation: 234 tests in 32 files pass; TypeScript and whitespace checks pass.
+The replay and reports are diagnostic-only; production rankings, UI and live
+deployment are unchanged by this batch.
+
+
+### 2026-10-15: recovered Blueprint behavior incorporated
+
+The installed-client review recovered 188 function instruction streams from 139
+selected assets. Every decoded function reserialized to identical instruction
+bytes and VM size. Whole-asset serialization is not certified; 294 exports remain
+raw. `engine/fixtures/client-mechanics-review.json` records source hashes, function
+coverage, unresolved defaults/native helpers, and incorporation status. No game
+assets or archive key are committed.
+
+Solaris now has a `cast_then_basic` trigger. Production spell-only rotation and
+basic-only DPS no longer receive its proc. Burst and mixed combat cap procs by
+available learned casts, consuming basics and ICD. This is an optimistic aggregate
+bound, not temporal event simulation: four-second expiry, actual weaving, Mercy
+consumption, crit damage and healing remain omitted and are disclosed in the item
+model limitations consumed by v6. Existing generic spellblade effects were not
+silently migrated without their own source review.
+
+The Kira diagnostic replay removes Ashbringer's incorrect once-per-receiving-
+cooldown lockout. Basic/Mercy hits repeatedly reduce active non-ultimate cooldowns;
+8%/12% magnitudes retain the explicit unit event-scale assumption. Native payload
+scaling and nonbasic critical-event behavior are not certified. Solaris starts
+its ICD when the proc is consumed. Explicit Purge ticks can share an active cast
+until the channel ends; no first-hit time or total tick count is invented.
+
+Knell's previous curve-only 17.6% level-13 interpretation is superseded as runtime
+evidence: its Blueprint combines two scalar inputs with actor level. Defaults
+and native helpers must be decoded before selecting 17.6% or 18.4%. Ruination
+periodic damage/clamping and refresh semantics also remain unresolved. Production
+Ashbringer remains unmodeled; diagnostic improvements must not be described as a
+complete production passive implementation.
+
+
+### 2026-10-15: priority item interaction review
+
+Expanded extraction covers 35 priority item families, 239 assets and 196 function
+instruction streams with exact byte/VM-size roundtrips. This overlaps earlier
+extraction; counts must not be added as unique coverage. 787 exports remain raw.
+The top-item-client-review.json fixture records asset hashes, instruction offsets,
+pre-batch recommendation counts, historical weighted appearances and review status.
+Historical usage is overlapping patch-1.15 evidence, not current win-rate proof.
+
+Production Deathstalker now accumulates 3 flat armor reduction after each basic
+hit, capped at four stacks, instead of granting immediate penetration. Reduction
+precedes percentage penetration. The bounded aggregate calculation assumes uniform
+attack spacing and shared refresh, drops stacks when spacing reaches duration,
+and credits only later basics. Native next-engine-tick gating, Mercy, secondary
+packets and target changes remain omitted. Spell-only output receives no stacks.
+Oathkeeper and Augmentation now require cast/basic pairs, like Solaris; weaving
+and empowerment expiry remain aggregate limits. Augmentation uses 90% hero BASE
+physical power and 1.5-second ICD, supported by catalog wording; it no longer
+scales from item physical power or treats empowerment duration as its cooldown.
+Tainted Rounds' existing partial packet is magical per explicit catalog markup;
+its unresolved additional damage term and native attribute mode remain omitted.
+
+Further recovered filters include Mutilator's exclusion of item/proc/cleave
+damage and Combustion cooldown reduction's exclusion of item/DoT/proc damage.
+Vanquisher checks a living hero's Health PLUS Shield after damage against its
+max-health threshold. Production's unconditional execute burst credit remains
+a known discrepancy for the next iteration. Extracted scripts are not evidence
+that every item passive or server interaction has been reproduced.
+
+
+### 2026-10-16: current-patch match-stream integration
+
+Integrated main's ranked 1.17.2 transaction-derived core evidence while retaining
+the installed-client catalog and simulator corrections. Incoming catalog/effect
+code did not replace these fixes; generated artifacts and reviewed coaching had
+diverged and require reconciliation, not choosing one branch's outputs wholesale.
+The patch parser now accepts a colon after the version in match-stream metadata.
+Pooled anyOrder rows remain item-set overlap evidence but are excluded from
+order-sensitive controlled scenarios and labeled as pooled purchase orders in v6.
+All 55 hero artifacts, matrix, agreement, Spectral, Kira and validation reports
+are regenerated against the combined sources. Stale coaching and core explanations
+are removed pending reviewed replacements. Observed completion-conditioned wins
+are descriptive; no holdout validation or causal winning-build claim follows.
+
+Integration results: 135 rendered hero-role views; 123 core comparisons with
+1,107 controlled scenarios, of which 61 lane comparisons have current-patch
+ordered evidence. Five Kira cores replay; one observed core is explicitly skipped
+for unsupported Onixian Quiver/Scattershot. The replay still rejects unsupported
+items; reporting now records skipped coverage rather than failing or omitting
+those effects silently. Removed 87 stale coaching lines and 273 outdated or
+order-unsupported core explanations; replacements still require copy review.
+
+
+### 2026-10-16: Vanquisher execute eligibility
+
+Removed the unconditional threshold-sized burst bonus. The recovered client
+listener runs after health changes, requires a living hero, and compares current
+health PLUS shield inclusively with max health times ExecuteThreshold. Production
+now checks the aggregate burst's end state and credits only surviving health when
+eligible. The check uses single-target burst, never the AoE-weighted teamfight
+total; its credit is added once to each metric. Natural kills and healthy targets
+receive no extra credit. Catalog 5% supplies the existing threshold; the Blueprint
+comparison supplies the eligibility semantics. Floating-point boundary tolerance
+is limited to machine epsilon times max health, not a gameplay tolerance.
+
+SimOptions.executeTargetState optionally supplies initial health/shield for this
+gate alone. Default ranking uses full profile health and zero shield. Ordinary
+shield-first absorption is an explicit assumption. Other damage formulas retain
+their existing health assumptions; this is not a full target-state engine.
+Intermediate hit execution, shield bypass, native execute damage and sustained
+execution remain omitted. Remaining-health credit represents removed health, not
+a recovered native damage magnitude. Kira's separate replay now uses the same
+inclusive eligibility helper; it still has no shield state.
+
+Further Combustion review identifies active cooldown tag queries, a shared gate
+closed before reduction, and a 0.05-second delayed gate reset. The scalar Time
+binding, overlapping callbacks and native cooldown semantics are still unresolved;
+production Combustion is unchanged by this review.
+
+Sky Splitter has separate hero/nonhero branches: the hero branch applies the
+minimum damage floor but no MobDamageCap; both use current health and the native
+EventDataFloat multiplier. Production percentages/floor remain catalog-backed,
+with native scaling and current-health timeline fidelity still unresolved.
+
+The production gate evaluates expected burst damage (including averaged critical
+hits), not a distribution of hit outcomes. Its threshold result is not an
+execution probability; stochastic event-level validation remains outstanding.
+
+Validation: 254 tests in 35 files, TypeScript, all 55 artifact schemas and the
+rendered UI audit pass. Rebuilt all 55 heroes/135 role views and dependent
+reports. Only Yin jungle changes its main item set; Kira carry stays unchanged.
+Vanquisher remains selected in 19/135 role views. No new coaching or optimizer
+explanation invalidations were necessary. This outcome does not establish
+current-meta performance or complete execute timing fidelity.
+
+
+### Projectile item client review (2026-10-16)
+
+Recovered 24 assets and 36 byte-for-byte roundtripping function streams for
+Onixian Quiver and Scattershot. See `engine/fixtures/projectile-item-client-review.json`
+for hashes, instruction offsets, findings and unresolved defaults. These counts
+are this extraction batch, not a deduplicated all-game total. No damage credit
+was added and the current 1.17.2 match snapshots remain unchanged.
+
+Scattershot's two-attempt nearest-candidate loop removes its selected actor but
+clears ClosestActor only after both attempts. One eligible candidate can therefore
+remain selected for the second attempt in this recovered control flow. Do not
+assume either distinct victims or two successful hits on the original victim:
+the sphere's Filter/Radius/default entity list and native collision need recovery.
+Its on-hit listener excludes its own damage tag and closes a cooldown gate before
+target selection. This is not unrestricted recursive on-hit damage.
+
+Onixian's ranged projectiles follow primary-basic commit, targeting, next-tick
+delay and two angled spawn attempts. Its magnitude calculator uses projectile
+travel distance, a clamped ranged-range-plus-50 mapping, hero basic scaling and a
+separate camp-minion multiplier. Final damage-effect scaling, collision, crit and
+lifesteal are not established by that calculator. Melee crit and health-change
+mitigation use separate effects whose default bindings remain unresolved.
+
+The app's item limitations now disclose these specific gaps, and the Kira
+diagnostic's skipped cores retain their item omission reasons. No numerical
+production formula or ranked artifact changed; only affected audit outputs need
+regeneration. Next recover raw property schemas/native event contracts for these
+items, Combustion and Sky Splitter; continue other actionable families while
+these are unresolved. Keep all proposed builds THEORY.
+
+Current hero-wide reported cores contain Onixian in 260 player-core appearances
+and Scattershot in 186, across six rows each; these are not unique matches or
+causal item effects. The shared Kira row has 22 appearances/12 wins and remains
+skipped by the replay. Validation: 256 tests in 35 files, TypeScript, all 55
+artifact schemas and rendered catalog checks pass. Audit outputs were rebuilt.
+
+
+### Combustion and Sky Splitter disclosure parity (2026-10-16)
+
+Previously recovered mechanics were absent from active item limitations.
+Combustion now discloses the hero/event filters and shared delayed gate instead
+of an unrestricted "per hit" reduction description. Sky Splitter now discloses
+full-profile burst HP and fixed 80% sustained HP, plus unresolved native event
+scaling after the floor. These are model assumptions, not measured game rules.
+No damage formula changes: regenerate catalog/passive audits and verify dialogs,
+retain numerical ranked outputs. Recover scalar/default/native contracts before
+changing scheduling or packet scaling; do not repeat the completed extraction.
+
+Validation: all executable effect entries match the prior tree. 256 tests,
+TypeScript, all 55 artifact schemas and the rendered item checks pass.
+
+
+### Tainted Scepter Malice state review (2026-10-16)
+
+Prioritized from 1,090 hero-wide reported player-core appearances in the saved
+1.17.2 sample (not unique matches or evidence of causal superiority). Recovered
+Malice initializes full, consumes stacks after eligible hero damage and refills
+via callbacks/takedowns. Eligibility includes AbilityDamage OR PhysicalDamage OR
+TrueDamage, excluding Item/ProcDamage. Offsets/hashes remain in the item ledger.
+
+`malice-replay.ts` implements diagnostic state transitions with explicit resolved
+scalars and recharge events; it supplies no native defaults or timer phase.
+Tests cover consumption, nonhero/filter rejection, cap, refill and invalid inputs.
+It is not connected to the optimizer. The app now explicitly discloses that its
+existing ramp does not reproduce this cycle. Next integrate a validated event
+schedule and scalars, then rebuild numerical artifacts; do not silently treat
+the diagnostic as production coverage or infer damage timing from decoding.
+
+Validation: 260 tests in 36 files, TypeScript, all 55 artifact schemas and
+rendered item limitations pass. Affected audits regenerated; no merge/deploy.
+
+
+### Shared Momentum review (2026-10-16)
+
+Lightning Hawk appears in 925 saved hero-wide player-core observations (not
+unique matches or causal item value). Recovered its shared Energized dependency;
+hashes, offsets and limits are in momentum-client-review.json. Movement grants
+truncate sampled 3D displacement / 50, with a 0.25s callback delay and no local
+fraction carry. Diagnostic momentum.ts covers this calculation only. Hit grants
+use unresolved StacksOnHit and native EventDataFloat; AoE has a separate gate.
+Do not infer total proc cadence from the movement helper. App omission updated;
+production numerical outputs remain unchanged. Next recover scalar/native
+contracts, then integrate movement/hit/consume event ordering before ranking.
+
+Validation: 264 tests in 37 files, TypeScript, 55 artifact schemas and rendered
+item checks pass. Affected audits regenerated. No merge/deployment.
+
+
+### Broad installed-client mechanics inventory (2026-10-16)
+
+Expanded beyond priority items to GA_, GE_, GMMC_ and GCN_ assets across heroes,
+items, Eternals, shared character systems and world/framework mechanics. Full
+relative paths are retained because Amalgamation/Barkskin ability filenames occur
+in more than one directory. Raw decoded files remain private. Only coverage
+metadata, hashes, selected findings and offsets are committed.
+
+`engine/scripts/audit-decoded-mechanics.py` accounts for every selected asset as
+decoded, failed or missing. Its synthetic regression protects duplicate names,
+failed function roundtrips, missing files and removal of private payloads.
+`full-mechanics-inventory.json` records counts and gaps; it is not a certificate
+of manual review, active content, native/server parity or simulator integration.
+Prefix selection excludes other naming conventions outside selected directories.
+
+Six shared/hero calculations were reviewed in `broad-mechanics-review.json`.
+Cooldown and tenacity wrappers expose reciprocal formulas; basic attack timing
+calls native CalculateAttackCooldown. Kira Dusk and Belica missing-mana formulas
+are readable, but property defaults/capture semantics remain unresolved. Archive
+index has no usmap/pdb entries; schema recovery and native contracts remain the
+central blockers. No unknown constants were added and no production math changed.
+
+Final scope: 5,630/5,630 selected assets decoded, zero selected parse errors or
+missing assets. All 11,304 recovered function streams pass byte/VM-size roundtrip;
+10,083 exports remain raw. Areas: heroes 2,950 assets/7,710 functions; items
+1,486/1,687; Eternals 336/491; shared character 82/321; world/framework 776/1,095.
+These include inactive content and overlap earlier batches; do not add counts.
+Validation: 264 engine tests, synthetic audit regression, TypeScript, all 55
+artifact schemas and rendered UI pass. No production formulas/rankings changed.
+
+## 2026-10-16 shared native ability and filter dependencies
+
+Recovered GameplayAbility's 32 registration entries as 30 own fields and linked
+it to the previously recovered PredGameplayAbility parent. Added reusable native
+struct dependency recovery; reproduced 10 layouts, including AbilityInfo,
+GameplayAttribute, actor filters and tag-query storage, against the installed PE.
+These are serialized layouts, not validation of native targeting/query behavior.
+
+Same 1,237-class corpus: exact spans 6,092 -> 11,384 (10,981 nonempty), with zero
+previous exact spans lost. 1,050 property streams now reach end (previously 142).
+46 spans remain unverified; zero complete CDOs are certified. Four trailing bytes
+in completed sample streams stay opaque. The leading remaining blocker is
+PredFilterAndEffectsContainer (50 records), followed by AbilityTriggerData (28).
+All private bodies and generated field maps remain outside the repository.
+
+Sky Splitter, Combustion and Knell now expose readable scalable curve bindings;
+these still need object/curve resolution and native event semantics before
+changing production formulas. This chunk changes recovery tooling, not rankings.
+The active objective remains supported production integration and controlled
+simulator evaluation, not completion of a decoding milestone.
+
+Validation: 264 engine tests, 16 Python regressions, TypeScript, 55 artifact
+schemas, rendered UI parity and the broad reader pass. Four new negative/positive
+regressions cover field counts/flags, repeat roots and missing constructors.
+
+
+## 2026-10-16 native curve-helper dispatch
+
+Traced the registered GetValueAtLevel wrapper into its native implementation.
+Before curve evaluation, an available PredCurveTableOverrideSubsystem can return
+a replacement scalable-float binding. The fallback uses the packaged binding.
+The resolved curve is evaluated via virtual dispatch and multiplied by the scalar.
+This explains why a recovered curve binding alone cannot establish runtime values;
+override configuration/selection and virtual endpoint handling are now priorities.
+Knell's previously unresolved serialized bindings are recovered, but native
+overrides, effect stack/expiry defaults and steal semantics remain open.
+
+Added a reusable bounded control-flow tracer that follows conditional/direct jumps
+instead of stopping at the first return or exception-directory fragment. It records
+calls and unresolved indirect branches without executing code. All instruction
+bodies remain private; the committed review contains findings and source hash only.
+The next step is override-source recovery and curve virtual dispatch, then supported
+mechanics integration and controlled simulator comparisons. No rankings changed.
+
+Validation: four new synthetic control-flow regressions, 264 engine tests,
+20 Python regressions, TypeScript, 55 artifact schemas and rendered UI parity.
+
+
+## 2026-10-16 mode override configuration recovery
+
+Recovered the subsystem ActiveConfig field and the native configuration/map-value
+layouts. Decoded the two already-extracted mode configs: Daybreak has 22 table
+substitutions and 14 effect overrides; Overclocked has one table substitution.
+All three populated properties roundtrip exactly. None of these CurveTables maps
+substitutes item/Eternal tables, but standard-mode ActiveConfig selection remains
+unverified and the effect overrides require review. Four trailing bytes stay opaque.
+
+The reader now offers explicit --all-raw selection for reviewed non-default data
+assets; its default selection remains Default__ only. Native kind 13 uses soft
+class/reference serialization here, independently checked by resolved references
+and exact bytes. A package-index interpretation failed and was rejected. Detailed
+maps and native layouts remain private. See native-override-config-review.json.
+
+Validation: two real configuration fixtures, default-selection compatibility,
+reader build, 264 engine tests, 20 Python regressions, TypeScript, 55 artifact
+schemas and rendered UI parity. No production ranking changes. Next: configuration
+activation and virtual curve evaluation, then integrate supported mechanics.
+
+
+## 2026-10-16 raw-export offset isolation
+
+Fixed a real recovery-reader failure: earlier asset.Write calls can relocate saved
+SerialOffset values relative to the original file. Knell Stacks was displaced by
+two bytes and falsely stopped at inherited property index 108. Read the retained
+RawExport.Data in its own bounded stream and report that payload's actual size.
+Do not use relocated metadata as the source position or payload boundary.
+
+A reusable private integration regression corrupts saved offsets/sizes, then
+requires identical decoded records. It fails on the old reader and passes on the
+new reader (two sample records / 24 nonempty exact properties). The existing
+1,237-class corpus is unchanged: 11,384 exact spans, no previously exact span lost,
+46 unverified and 1,050 property streams ended. The newly attempted effect family
+was outside that corpus; a private native GameplayEffect profile and dependencies
+now expose 29 exact properties across Knell's four effect defaults. Stacks confirms
+AggregateBySource and limit four; durations bind ct_Eternals Knell_Major_Duration.
+Missing native policy defaults and components remain unresolved. Do not infer them
+from omitted serialized values. Native curve endpoint tracing is recorded privately
+for subsequent integration; no production behavior changed in this reader fix.
+
+Validation: reader build, failing-old/passing-new relocation regression, broad
+corpus comparison, 264 engine tests, 20 Python regressions, TypeScript, 55 artifact
+schemas and rendered UI parity. Private assets and field maps stay private.
+
+
+## 2026-10-16 native stack policies and modifier enum aliases
+
+Traced GameplayEffect constructor stores at reflected policy-field offsets:
+duration refresh and period reset are explicitly zero, corresponding to refresh
+and reset on successful application. Knell's exact modifier properties use
+MultiplyCompound for target Armor/MagicResist and AddBase for stolen defenses.
+The registered EGameplayModOp contains seven numeric values plus three legacy
+aliases. Added opt-in --allow-aliases recovery, preserving aliases in metadata and
+keeping strict behavior by default. Duplicate labels and sparse maps still fail.
+
+Expiry has no explicit store in the traced constructor. Epic documents UObject
+zero initialization, but that contract is supporting evidence, not a substitute
+for auditing post-initialization/fork-specific behavior. Native aggregation and
+steal calculations remain open. No production rankings changed. Private traces
+and field/default maps remain private; see knell-native-effect-review.json.
+
+Validation: five enum tests (including two alias regressions), 22 Python checks,
+264 engine tests, TypeScript, 55 artifact schemas and rendered UI parity.
+
+
+## 2026-10-16 explicit Knell state integration and broad effect defaults
+
+Production effect resolution now accepts an explicit active-stack snapshot. Knell
+uses the recovered actor-level arithmetic: each stack removes 2 + 0.2 * level
+percent of physical and magical armor. Its compound multiplier survives effect
+merging and applies in combatDamage and rotationDamage. Missing state grants no
+shred credit; default recommendations retain their unmodeled explanation. Invalid
+stack counts and levels fail rather than silently clamp. This is a held-state
+experiment, not an automatic timing model: acquisition, expiry, Peal, multiple
+sources and stolen defenses remain omitted.
+
+The native magnitude helper sums evaluated modifier magnitudes, not armor lost.
+The Blueprint steal expression uses a single-stack complement denominator; do not
+substitute a generic armor-loss formula. Further lifecycle/aggregation review is
+needed before adding stolen defenses.
+
+A separate 3,956-file GE pass recovered 14,508 exact property spans (14,433
+nonempty), zero mismatching spans, and 3,801 ended property streams. 152 default
+streams remain partial; three files have no raw default. Zero whole CDOs are
+certified. These counts overlap earlier inventories and are not gameplay coverage.
+Only sanitized counts are committed; bodies, schema maps and native traces stay
+private. See broad-effect-default-review.json.
+
+The reproducible knell-state-comparison pass compares equal three-item cores at
+level 13 against real reference profiles with 0/1/4 fixed stacks. Saved match
+cores are descriptive evidence; unequal costs, existing passive approximations
+and unsupported cores prevent a winning-build claim.
+
+Follow-up: all 152 blocked records now reach property end with zero span mismatches after resolving BaseGameplayEffect inheritance. Previous exact spans are preserved. This closes the observed inherited-index parsing gap, not whole-CDO or native behavior coverage. See the sanitized follow-up counts in broad-effect-default-review.json.
+
+Validation: 269 engine tests in 38 files, 22 Python regressions, TypeScript, complete 55-hero artifact rebuild, 55 artifact schemas and rendered UI parity pass. The controlled report contains 45 snapshots and skips one unsupported core. No live match refresh, merge or deployment.
+
+
+## 2026-10-16 shared damage-event scaling and projectile defaults
+
+Followed the native damage execution class through construction and its overridden
+virtual slot. The captured TempOnHitPerc value starts from a local fallback of 1,
+then flows into the reflected EventDataFloat member of the event-data object.
+GameplayEventData's reflected OptionalObject2 offset confirms the payload link;
+the object is retained in Event.OnDamageDealt. This resolves the producer-side
+scaling contract used by recovered Sky Splitter and other passive consumers. It
+does not prove every event's effective multiplier is 1, every event producer uses
+this path, or that all downstream scaling/critical/healing interactions are known.
+
+Scattershot execution defaults expose AttackDamage-based damage, the on-hit
+percentage override, and a lane-minion-only multiplier. Onixian exposes attack
+scaling and its custom distance magnitude; a post-additive row name has a null
+curve table and cannot supply an extra flat term. Added a reusable exact-span
+execution inspector that selects only the active magnitude union arm and preserves
+tag conditions. Generated details and native traces remain private.
+
+Refreshed app-facing omission notes and the catalog/passive/Kira reports. Removed
+Onixian's existing ranged-carry coaching line because it granted melee-only
+mitigation; replacement still requires author/judge review. Corrected the model
+document generator's stale unconditional-execute and unrestricted spell-trigger
+claims. No new damage credit or ranking change; target selection, collisions,
+critical/lifesteal resolution and full native composition remain open.
+
+Validation: 269 engine tests, 25 Python checks, TypeScript, regenerated catalog/passive/Kira reports and item-model documentation, 55 artifact schemas and rendered UI parity pass. New UI assertions verify refreshed projectile limitations and absence of the erroneous Onixian tip. Next: trace native critical/healing/aggregation rules and projectile target outcomes, then integrate supported damage behavior.
+
+
+## 2026-10-16 projectile ancestry and target exclusion
+
+Scattershot passes ExcludeAroundActor=true to its native sphere query. The
+registered parameter name and conditional ignored-actor append establish that
+the triggering enemy is excluded from candidate selection. The Blueprint makes
+two nearest-target passes, removes selected candidates, and retains its prior
+selection if none replaces it. With no eligible secondary candidate, it spawns
+no projectile. This supports zero Scattershot projectile contribution in a truly
+isolated one-enemy scene; populated-scene outcomes remain unresolved.
+
+Recovered three projectile Blueprint class layouts (12 declared fields), native
+PredProjectile (76 own fields), Actor (80 own fields), their dependencies and
+TimerHandle. Native registration confirms Actor ancestry. All three selected
+projectile property streams end with 59 exact spans. Scattershot explicitly sets
+lock-on-only collision, destroy-when-lock-on-dies and destroy-on-hit. The native
+overlap handler enforces the lock-on bit, with a conditional custom projectile
+hit-interface exception. Do not generalize this into immunity from all incidental
+collisions. Whole CDOs, component behavior and populated-scene hits remain open.
+
+The schema tool now accepts optional literal filename prefixes, retaining its
+old defaults. Native dictionary profiles can specify a reviewed superType; added
+primitive mappings cover reflected bitfield bools, UInt64 timers, weak references
+and delegates. A mapping alone does not validate native behavior or an unvisited
+serialized field. The private projectile integration gate checks exact spans,
+inherited root components, timer type and collision flags; changing a flag fails.
+
+Reused the shared filter/effect-container dependencies on the 187 previously
+partial class/default records. Fifty additional streams end, with 701 more exact
+spans, zero old exact spans lost and one fewer unverified span. The 1,237-file
+corpus now has 12,085 exact spans, 45 unverified and 1,100 ended streams; this
+inventory overlaps others and remains partial. Next shared gaps include
+AbilityTriggerData, PredMontagesArray and Transform. All generated field maps,
+raw/default bodies and native instruction traces remain private.
+
+Validation: 269 engine tests across 38 files, 25 Python recovery tests, TypeScript, rendered UI parity and all 55 saved artifact schemas pass. The private projectile gate passes 59 exact spans and rejects a changed collision flag. Numeric production rankings are unchanged in this recovery checkpoint.

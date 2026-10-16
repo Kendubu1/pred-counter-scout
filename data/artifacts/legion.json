@@ -42,20 +42,20 @@
     "evidenceN": 359
    },
    {
-    "name": "Deathstalker",
-    "slug": "deathstalker",
-    "spikeMinute": 27,
-    "playRatePct": 37.9,
-    "evidenceDeltaWr": 3.7,
-    "evidenceN": 457
-   },
-   {
     "name": "Viper",
     "slug": "viper",
-    "spikeMinute": 32,
+    "spikeMinute": 27,
     "playRatePct": 18.4,
     "evidenceDeltaWr": 6.4,
     "evidenceN": 222
+   },
+   {
+    "name": "Deathstalker",
+    "slug": "deathstalker",
+    "spikeMinute": 32,
+    "playRatePct": 37.9,
+    "evidenceDeltaWr": 3.7,
+    "evidenceN": 457
    },
    {
     "name": "Rapture",
@@ -71,35 +71,35 @@
    "sustained DPS"
   ],
   "objectives": {
-   "burstVsSquishy": 981.5314035461263,
-   "teamfightVsSquishy": 1729.148606180764,
-   "rot10VsSquishy": 998.1049935979514,
-   "rot20VsBruiser": 1221.5306275273326,
-   "autoDps10VsSquishy": 519.8410142536903,
+   "burstVsSquishy": 863.4902574198118,
+   "teamfightVsSquishy": 1510.218572999819,
+   "rot10VsSquishy": 857.8362498403371,
+   "rot20VsBruiser": 1071.8015665796345,
+   "autoDps10VsSquishy": 468.1479220881513,
    "ehpPhysical": 4442.7541875,
    "ehpMagical": 3333.0388124999995,
    "healShield10s": 182,
    "utility": 25,
-   "sustain10s": 696.0328278142565
+   "sustain10s": 634.7054260767097
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for sustained DPS: first spike lands around minute 9 (Sky Splitter), third item by minute 22. Take Demiurge: +18.1% on this kit’s main output at minute 15.",
+ "coachLine": "Sim-optimal for sustained DPS: first spike lands around minute 9 (Sky Splitter), third item by minute 22. Take Demiurge: +16.8% on this kit’s main output at minute 15.",
  "eternals": {
   "top": [
    {
     "name": "Demiurge",
     "id": "demiurge",
-    "headlinePct": 18.1,
-    "burstPct": 9.8,
-    "rot20Pct": 8.1,
-    "ehpPct": 1.5
+    "headlinePct": 16.8,
+    "burstPct": 8.6,
+    "rot20Pct": 6.7,
+    "ehpPct": 1.3
    },
    {
     "name": "Vermis",
     "id": "vermis",
     "headlinePct": 9.9,
-    "burstPct": 3.3,
+    "burstPct": 3.4,
     "rot20Pct": 0,
     "ehpPct": 0
    },
@@ -126,17 +126,17 @@
    {
     "name": "Demiurge",
     "modeled": true,
-    "headlinePct": 18.1,
-    "burstPct": 9.8,
-    "rot20Pct": 8.1,
-    "ehpPct": 1.5,
+    "headlinePct": 16.8,
+    "burstPct": 8.6,
+    "rot20Pct": 6.7,
+    "ehpPct": 1.3,
     "note": null
    },
    {
     "name": "Vermis",
     "modeled": true,
     "headlinePct": 9.9,
-    "burstPct": 3.3,
+    "burstPct": 3.4,
     "rot20Pct": 0,
     "ehpPct": 0,
     "note": null
@@ -153,9 +153,9 @@
    {
     "name": "Thraex",
     "modeled": true,
-    "headlinePct": 3.3,
+    "headlinePct": 3,
     "burstPct": 0,
-    "rot20Pct": 8.8,
+    "rot20Pct": 8.2,
     "ehpPct": 0,
     "note": null
    },
@@ -171,27 +171,27 @@
    {
     "name": "Xyris",
     "modeled": true,
-    "headlinePct": 1.4,
-    "burstPct": 2.7,
-    "rot20Pct": 3.7,
+    "headlinePct": 1.1,
+    "burstPct": 2.1,
+    "rot20Pct": 3,
     "ehpPct": 0,
     "note": null
    },
    {
     "name": "Lotus",
     "modeled": true,
-    "headlinePct": 1,
-    "burstPct": 1.9,
-    "rot20Pct": 2.6,
-    "ehpPct": 2.8,
+    "headlinePct": 0.7,
+    "burstPct": 1.3,
+    "rot20Pct": 1.9,
+    "ehpPct": 2.3,
     "note": null
    },
    {
     "name": "Vesh",
     "modeled": true,
     "headlinePct": 0,
-    "burstPct": 7.4,
-    "rot20Pct": 12.5,
+    "burstPct": 7.6,
+    "rot20Pct": 13,
     "ehpPct": 0,
     "note": null
    },
@@ -256,7 +256,7 @@
     "burstPct": null,
     "rot20Pct": null,
     "ehpPct": null,
-    "note": "Knell (Major): percent armor shred that scales per level (max stacks = 8% + 0.8%/level, both damage types); armor_shred takes a flat pct with no perLevel term, so encoding it would pin one level. Best modeling candidate of the 1.16 Eternals — see calibration checklist"
+    "note": "Knell (Major): Only an explicitly supplied active-stack snapshot is modeled; omitted state receives no shred credit. Stack acquisition, refresh/expiry over time, Peal interactions, multi-source behavior and stolen defenses are not simulated. No automatic full-stack uptime or winning-build claim."
    },
    {
     "name": "Satariel",
@@ -335,8 +335,8 @@
     "minor1": {
      "name": "Savage Strikes",
      "modeled": true,
-     "deltaPct": 6.8,
-     "note": "+6.8% autoDps on top of the major (modeled)"
+     "deltaPct": 3.2,
+     "note": "+3.2% autoDps on top of the major (modeled)"
     },
     "minor2": {
      "name": "Ferocity",
@@ -439,8 +439,8 @@
     "minor2": {
      "name": "Diamond Tip",
      "modeled": true,
-     "deltaPct": 5.8,
-     "note": "+5.8% autoDps on top of the major (modeled)"
+     "deltaPct": 9.2,
+     "note": "+9.2% autoDps on top of the major (modeled)"
     }
    },
    "lotus": {
@@ -565,13 +565,13 @@
     "item": "Spectra",
     "playRatePct": 0.2,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 118.2
+    "edgeVsPopularPct": 110.8
    },
    {
     "item": "Rapture",
     "playRatePct": 0.2,
     "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 118.2
+    "edgeVsPopularPct": 110.8
    }
   ],
   "honestAbsence": null
@@ -598,7 +598,7 @@
    "coreGold": 8800,
    "spikeMinute": 21,
    "bestObjective": "sustained auto DPS",
-   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 75 auto-attack DPS in the sim.",
+   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 74 auto-attack DPS in the sim.",
    "optimizer": "Optimizer sees 2.3× the sustained auto DPS: try Sky Splitter over Malady (sim-only — the popular pick may carry utility the sim can't see; test it)."
   },
   {
@@ -622,8 +622,8 @@
    "coreGold": 9000,
    "spikeMinute": 21,
    "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 602 damage in one combo in the sim.",
-   "optimizer": "Optimizer agrees: within 7% of our best core on one-combo burst. The winrate is earned, not luck."
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 516 damage in one combo in the sim.",
+   "optimizer": "Optimizer sees +10% more one-combo burst: try Sky Splitter over Malady (sim-only — the popular pick may carry utility the sim can't see; test it)."
   },
   {
    "title": "Lethality Burst",
@@ -646,8 +646,8 @@
    "coreGold": 9200,
    "spikeMinute": 22,
    "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 669 damage in one combo in the sim.",
-   "optimizer": null
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 585 damage in one combo in the sim.",
+   "optimizer": "Optimizer agrees: within 3% of our best core on one-combo burst. The winrate is earned, not luck."
   }
  ],
  "stages": [
@@ -704,10 +704,10 @@
    "headline": "autoDps10VsSquishy",
    "headlineValue": 171,
    "objectives": {
-    "burstVsSquishy": 560.2459637855678,
-    "teamfightVsSquishy": 973.1172509142806,
-    "rot10VsSquishy": 510.7590759075908,
-    "rot20VsBruiser": 626.7368421052631,
+    "burstVsSquishy": 565.5264918383731,
+    "teamfightVsSquishy": 986.3185710462938,
+    "rot10VsSquishy": 521.3201320132014,
+    "rot20VsBruiser": 639.3684210526316,
     "autoDps10VsSquishy": 170.93450628846668,
     "ehpPhysical": 3886.3666875,
     "ehpMagical": 2915.6263124999996,
@@ -741,12 +741,12 @@
      "slug": "the-perforator"
     },
     {
-     "name": "Deathstalker",
-     "slug": "deathstalker"
-    },
-    {
      "name": "Viper",
      "slug": "viper"
+    },
+    {
+     "name": "Deathstalker",
+     "slug": "deathstalker"
     },
     {
      "name": "Rapture",
@@ -754,18 +754,18 @@
     }
    ],
    "headline": "autoDps10VsSquishy",
-   "headlineValue": 547,
+   "headlineValue": 493,
    "objectives": {
-    "burstVsSquishy": 1053.6417106761933,
-    "teamfightVsSquishy": 1843.1031597269491,
-    "rot10VsSquishy": 1049.3213828425098,
-    "rot20VsBruiser": 1286.2303429683989,
-    "autoDps10VsSquishy": 547.488437169564,
+    "burstVsSquishy": 925.8387964282131,
+    "teamfightVsSquishy": 1607.683581632474,
+    "rot10VsSquishy": 900.4129944224463,
+    "rot20VsBruiser": 1126.7692730520819,
+    "autoDps10VsSquishy": 492.83455059729863,
     "ehpPhysical": 6370.162679999999,
     "ehpMagical": 4409.41284,
     "healShield10s": 182,
     "utility": 25,
-    "sustain10s": 729.3595148467246
+    "sustain10s": 664.6067980286346
    },
    "betterEarly": null
   }
@@ -805,9 +805,9 @@
     "out": "Viper",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 38,
-    "offenseLossPct": 25,
-    "line": "Losing lane? Third item Warden's Faith instead of Viper: their burst combo hits 38% less hard, and this kit gives up 25% of its damage for it."
+    "survivalGainPct": 36,
+    "offenseLossPct": 22,
+    "line": "Losing lane? Third item Warden's Faith instead of Viper: their burst combo hits 36% less hard, and this kit gives up 22% of its damage for it."
    }
   },
   {
@@ -844,9 +844,9 @@
     "out": "Viper",
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 25,
-    "offenseLossPct": 25,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 25% less hard, and this kit gives up 25% of its damage for it."
+    "survivalGainPct": 21,
+    "offenseLossPct": 22,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 21% less hard, and this kit gives up 22% of its damage for it."
    }
   },
   {
@@ -884,8 +884,8 @@
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
     "survivalGainPct": 25,
-    "offenseLossPct": 25,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 25% less hard, and this kit gives up 25% of its damage for it."
+    "offenseLossPct": 22,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 25% less hard, and this kit gives up 22% of its damage for it."
    }
   },
   {
@@ -899,7 +899,7 @@
     },
     {
      "minute": 10,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 15,
@@ -907,7 +907,7 @@
     },
     {
      "minute": 20,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 25,
@@ -923,8 +923,8 @@
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
     "survivalGainPct": 25,
-    "offenseLossPct": 25,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 25% less hard, and this kit gives up 25% of its damage for it."
+    "offenseLossPct": 22,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 25% less hard, and this kit gives up 22% of its damage for it."
    }
   },
   {
@@ -942,7 +942,7 @@
     },
     {
      "minute": 15,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 20,
@@ -962,8 +962,8 @@
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
     "survivalGainPct": 25,
-    "offenseLossPct": 25,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 25% less hard, and this kit gives up 25% of its damage for it."
+    "offenseLossPct": 22,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 25% less hard, and this kit gives up 22% of its damage for it."
    }
   },
   {
@@ -1000,9 +1000,9 @@
     "out": "Viper",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 36,
-    "offenseLossPct": 25,
-    "line": "Losing lane? Third item Warden's Faith instead of Viper: their burst combo hits 36% less hard, and this kit gives up 25% of its damage for it."
+    "survivalGainPct": 31,
+    "offenseLossPct": 22,
+    "line": "Losing lane? Third item Warden's Faith instead of Viper: their burst combo hits 31% less hard, and this kit gives up 22% of its damage for it."
    }
   }
  ],
@@ -1015,18 +1015,14 @@
   "modeled": false,
   "wr": 50.5,
   "n": 1498,
-  "shiftIn": [
-   "Tainted Rounds"
-  ],
-  "shiftOut": [
-   "Spectra"
-  ],
+  "shiftIn": [],
+  "shiftOut": [],
   "provenance": "“Press the Advantage” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 50.5% over 1,498 games, magnitude not simulated."
  },
  "slug": "legion",
  "name": "Legion",
  "patch": "1.15.3/1.15.4",
- "generatedAt": "2026-10-16T02:11:34.561Z",
+ "generatedAt": "2026-10-16T16:43:25.421Z",
  "damageType": "physical",
  "attackType": "ranged",
  "laneFlex": [
@@ -1046,24 +1042,24 @@
      "slug": "sky-splitter"
     },
     {
-     "name": "Viper",
-     "slug": "viper"
+     "name": "Spectra",
+     "slug": "spectra"
     },
     {
-     "name": "Deathstalker",
-     "slug": "deathstalker"
+     "name": "Viper",
+     "slug": "viper"
     },
     {
      "name": "Rapture",
      "slug": "rapture"
     },
     {
-     "name": "The Perforator",
-     "slug": "the-perforator"
+     "name": "Deathstalker",
+     "slug": "deathstalker"
     },
     {
-     "name": "Tainted Rounds",
-     "slug": "tainted-rounds"
+     "name": "The Perforator",
+     "slug": "the-perforator"
     }
    ],
    "headline": "sustained DPS",
@@ -1115,20 +1111,20 @@
       "evidenceN": 359
      },
      {
-      "name": "Deathstalker",
-      "slug": "deathstalker",
-      "spikeMinute": 27,
-      "playRatePct": 37.9,
-      "evidenceDeltaWr": 3.7,
-      "evidenceN": 457
-     },
-     {
       "name": "Viper",
       "slug": "viper",
-      "spikeMinute": 32,
+      "spikeMinute": 27,
       "playRatePct": 18.4,
       "evidenceDeltaWr": 6.4,
       "evidenceN": 222
+     },
+     {
+      "name": "Deathstalker",
+      "slug": "deathstalker",
+      "spikeMinute": 32,
+      "playRatePct": 37.9,
+      "evidenceDeltaWr": 3.7,
+      "evidenceN": 457
      },
      {
       "name": "Rapture",
@@ -1144,35 +1140,35 @@
      "sustained DPS"
     ],
     "objectives": {
-     "burstVsSquishy": 981.5314035461263,
-     "teamfightVsSquishy": 1729.148606180764,
-     "rot10VsSquishy": 998.1049935979514,
-     "rot20VsBruiser": 1221.5306275273326,
-     "autoDps10VsSquishy": 519.8410142536903,
+     "burstVsSquishy": 863.4902574198118,
+     "teamfightVsSquishy": 1510.218572999819,
+     "rot10VsSquishy": 857.8362498403371,
+     "rot20VsBruiser": 1071.8015665796345,
+     "autoDps10VsSquishy": 468.1479220881513,
      "ehpPhysical": 4442.7541875,
      "ehpMagical": 3333.0388124999995,
      "healShield10s": 182,
      "utility": 25,
-     "sustain10s": 696.0328278142565
+     "sustain10s": 634.7054260767097
     },
     "manaFeasible": true
    },
-   "coachLine": "Sim-optimal for sustained DPS: first spike lands around minute 9 (Sky Splitter), third item by minute 22. Take Demiurge: +18.1% on this kit’s main output at minute 15.",
+   "coachLine": "Sim-optimal for sustained DPS: first spike lands around minute 9 (Sky Splitter), third item by minute 22. Take Demiurge: +16.8% on this kit’s main output at minute 15.",
    "eternals": {
     "top": [
      {
       "name": "Demiurge",
       "id": "demiurge",
-      "headlinePct": 18.1,
-      "burstPct": 9.8,
-      "rot20Pct": 8.1,
-      "ehpPct": 1.5
+      "headlinePct": 16.8,
+      "burstPct": 8.6,
+      "rot20Pct": 6.7,
+      "ehpPct": 1.3
      },
      {
       "name": "Vermis",
       "id": "vermis",
       "headlinePct": 9.9,
-      "burstPct": 3.3,
+      "burstPct": 3.4,
       "rot20Pct": 0,
       "ehpPct": 0
      },
@@ -1199,17 +1195,17 @@
      {
       "name": "Demiurge",
       "modeled": true,
-      "headlinePct": 18.1,
-      "burstPct": 9.8,
-      "rot20Pct": 8.1,
-      "ehpPct": 1.5,
+      "headlinePct": 16.8,
+      "burstPct": 8.6,
+      "rot20Pct": 6.7,
+      "ehpPct": 1.3,
       "note": null
      },
      {
       "name": "Vermis",
       "modeled": true,
       "headlinePct": 9.9,
-      "burstPct": 3.3,
+      "burstPct": 3.4,
       "rot20Pct": 0,
       "ehpPct": 0,
       "note": null
@@ -1226,9 +1222,9 @@
      {
       "name": "Thraex",
       "modeled": true,
-      "headlinePct": 3.3,
+      "headlinePct": 3,
       "burstPct": 0,
-      "rot20Pct": 8.8,
+      "rot20Pct": 8.2,
       "ehpPct": 0,
       "note": null
      },
@@ -1244,27 +1240,27 @@
      {
       "name": "Xyris",
       "modeled": true,
-      "headlinePct": 1.4,
-      "burstPct": 2.7,
-      "rot20Pct": 3.7,
+      "headlinePct": 1.1,
+      "burstPct": 2.1,
+      "rot20Pct": 3,
       "ehpPct": 0,
       "note": null
      },
      {
       "name": "Lotus",
       "modeled": true,
-      "headlinePct": 1,
-      "burstPct": 1.9,
-      "rot20Pct": 2.6,
-      "ehpPct": 2.8,
+      "headlinePct": 0.7,
+      "burstPct": 1.3,
+      "rot20Pct": 1.9,
+      "ehpPct": 2.3,
       "note": null
      },
      {
       "name": "Vesh",
       "modeled": true,
       "headlinePct": 0,
-      "burstPct": 7.4,
-      "rot20Pct": 12.5,
+      "burstPct": 7.6,
+      "rot20Pct": 13,
       "ehpPct": 0,
       "note": null
      },
@@ -1329,7 +1325,7 @@
       "burstPct": null,
       "rot20Pct": null,
       "ehpPct": null,
-      "note": "Knell (Major): percent armor shred that scales per level (max stacks = 8% + 0.8%/level, both damage types); armor_shred takes a flat pct with no perLevel term, so encoding it would pin one level. Best modeling candidate of the 1.16 Eternals — see calibration checklist"
+      "note": "Knell (Major): Only an explicitly supplied active-stack snapshot is modeled; omitted state receives no shred credit. Stack acquisition, refresh/expiry over time, Peal interactions, multi-source behavior and stolen defenses are not simulated. No automatic full-stack uptime or winning-build claim."
      },
      {
       "name": "Satariel",
@@ -1408,8 +1404,8 @@
       "minor1": {
        "name": "Savage Strikes",
        "modeled": true,
-       "deltaPct": 6.8,
-       "note": "+6.8% autoDps on top of the major (modeled)"
+       "deltaPct": 3.2,
+       "note": "+3.2% autoDps on top of the major (modeled)"
       },
       "minor2": {
        "name": "Ferocity",
@@ -1512,8 +1508,8 @@
       "minor2": {
        "name": "Diamond Tip",
        "modeled": true,
-       "deltaPct": 5.8,
-       "note": "+5.8% autoDps on top of the major (modeled)"
+       "deltaPct": 9.2,
+       "note": "+9.2% autoDps on top of the major (modeled)"
       }
      },
      "lotus": {
@@ -1638,13 +1634,13 @@
       "item": "Spectra",
       "playRatePct": 0.2,
       "bestObjective": "sustained auto DPS",
-      "edgeVsPopularPct": 118.2
+      "edgeVsPopularPct": 110.8
      },
      {
       "item": "Rapture",
       "playRatePct": 0.2,
       "bestObjective": "sustained auto DPS",
-      "edgeVsPopularPct": 118.2
+      "edgeVsPopularPct": 110.8
      }
     ],
     "honestAbsence": null
@@ -1671,7 +1667,7 @@
      "coreGold": 8800,
      "spikeMinute": 21,
      "bestObjective": "sustained auto DPS",
-     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 75 auto-attack DPS in the sim.",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 74 auto-attack DPS in the sim.",
      "optimizer": "Optimizer sees 2.3× the sustained auto DPS: try Sky Splitter over Malady (sim-only — the popular pick may carry utility the sim can't see; test it)."
     },
     {
@@ -1695,8 +1691,8 @@
      "coreGold": 9000,
      "spikeMinute": 21,
      "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 602 damage in one combo in the sim.",
-     "optimizer": "Optimizer agrees: within 7% of our best core on one-combo burst. The winrate is earned, not luck."
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 516 damage in one combo in the sim.",
+     "optimizer": "Optimizer sees +10% more one-combo burst: try Sky Splitter over Malady (sim-only — the popular pick may carry utility the sim can't see; test it)."
     },
     {
      "title": "Lethality Burst",
@@ -1719,8 +1715,8 @@
      "coreGold": 9200,
      "spikeMinute": 22,
      "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 669 damage in one combo in the sim.",
-     "optimizer": null
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 585 damage in one combo in the sim.",
+     "optimizer": "Optimizer agrees: within 3% of our best core on one-combo burst. The winrate is earned, not luck."
     }
    ],
    "stages": [
@@ -1777,10 +1773,10 @@
      "headline": "autoDps10VsSquishy",
      "headlineValue": 171,
      "objectives": {
-      "burstVsSquishy": 560.2459637855678,
-      "teamfightVsSquishy": 973.1172509142806,
-      "rot10VsSquishy": 510.7590759075908,
-      "rot20VsBruiser": 626.7368421052631,
+      "burstVsSquishy": 565.5264918383731,
+      "teamfightVsSquishy": 986.3185710462938,
+      "rot10VsSquishy": 521.3201320132014,
+      "rot20VsBruiser": 639.3684210526316,
       "autoDps10VsSquishy": 170.93450628846668,
       "ehpPhysical": 3886.3666875,
       "ehpMagical": 2915.6263124999996,
@@ -1814,12 +1810,12 @@
        "slug": "the-perforator"
       },
       {
-       "name": "Deathstalker",
-       "slug": "deathstalker"
-      },
-      {
        "name": "Viper",
        "slug": "viper"
+      },
+      {
+       "name": "Deathstalker",
+       "slug": "deathstalker"
       },
       {
        "name": "Rapture",
@@ -1827,18 +1823,18 @@
       }
      ],
      "headline": "autoDps10VsSquishy",
-     "headlineValue": 547,
+     "headlineValue": 493,
      "objectives": {
-      "burstVsSquishy": 1053.6417106761933,
-      "teamfightVsSquishy": 1843.1031597269491,
-      "rot10VsSquishy": 1049.3213828425098,
-      "rot20VsBruiser": 1286.2303429683989,
-      "autoDps10VsSquishy": 547.488437169564,
+      "burstVsSquishy": 925.8387964282131,
+      "teamfightVsSquishy": 1607.683581632474,
+      "rot10VsSquishy": 900.4129944224463,
+      "rot20VsBruiser": 1126.7692730520819,
+      "autoDps10VsSquishy": 492.83455059729863,
       "ehpPhysical": 6370.162679999999,
       "ehpMagical": 4409.41284,
       "healShield10s": 182,
       "utility": 25,
-      "sustain10s": 729.3595148467246
+      "sustain10s": 664.6067980286346
      },
      "betterEarly": null
     }
@@ -1878,9 +1874,9 @@
       "out": "Viper",
       "in": "Warden's Faith",
       "inSlug": "wardens-faith",
-      "survivalGainPct": 38,
-      "offenseLossPct": 25,
-      "line": "Losing lane? Third item Warden's Faith instead of Viper: their burst combo hits 38% less hard, and this kit gives up 25% of its damage for it."
+      "survivalGainPct": 36,
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Warden's Faith instead of Viper: their burst combo hits 36% less hard, and this kit gives up 22% of its damage for it."
      }
     },
     {
@@ -1917,9 +1913,9 @@
       "out": "Viper",
       "in": "Raiment of Renewal",
       "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 25,
-      "offenseLossPct": 25,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 25% less hard, and this kit gives up 25% of its damage for it."
+      "survivalGainPct": 21,
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 21% less hard, and this kit gives up 22% of its damage for it."
      }
     },
     {
@@ -1957,8 +1953,8 @@
       "in": "Raiment of Renewal",
       "inSlug": "raiment-of-renewal",
       "survivalGainPct": 25,
-      "offenseLossPct": 25,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 25% less hard, and this kit gives up 25% of its damage for it."
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 25% less hard, and this kit gives up 22% of its damage for it."
      }
     },
     {
@@ -1972,7 +1968,7 @@
       },
       {
        "minute": 10,
-       "verdict": "even"
+       "verdict": "enemy"
       },
       {
        "minute": 15,
@@ -1980,7 +1976,7 @@
       },
       {
        "minute": 20,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 25,
@@ -1996,8 +1992,8 @@
       "in": "Raiment of Renewal",
       "inSlug": "raiment-of-renewal",
       "survivalGainPct": 25,
-      "offenseLossPct": 25,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 25% less hard, and this kit gives up 25% of its damage for it."
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 25% less hard, and this kit gives up 22% of its damage for it."
      }
     },
     {
@@ -2015,7 +2011,7 @@
       },
       {
        "minute": 15,
-       "verdict": "even"
+       "verdict": "enemy"
       },
       {
        "minute": 20,
@@ -2035,8 +2031,8 @@
       "in": "Raiment of Renewal",
       "inSlug": "raiment-of-renewal",
       "survivalGainPct": 25,
-      "offenseLossPct": 25,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 25% less hard, and this kit gives up 25% of its damage for it."
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 25% less hard, and this kit gives up 22% of its damage for it."
      }
     },
     {
@@ -2073,9 +2069,9 @@
       "out": "Viper",
       "in": "Warden's Faith",
       "inSlug": "wardens-faith",
-      "survivalGainPct": 36,
-      "offenseLossPct": 25,
-      "line": "Losing lane? Third item Warden's Faith instead of Viper: their burst combo hits 36% less hard, and this kit gives up 25% of its damage for it."
+      "survivalGainPct": 31,
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Warden's Faith instead of Viper: their burst combo hits 31% less hard, and this kit gives up 22% of its damage for it."
      }
     }
    ],
@@ -2088,12 +2084,8 @@
     "modeled": false,
     "wr": 50.5,
     "n": 1498,
-    "shiftIn": [
-     "Tainted Rounds"
-    ],
-    "shiftOut": [
-     "Spectra"
-    ],
+    "shiftIn": [],
+    "shiftOut": [],
     "provenance": "“Press the Advantage” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 50.5% over 1,498 games, magnitude not simulated."
    }
   },
@@ -2125,9 +2117,25 @@
       "evidenceN": 24
      },
      {
+      "name": "Spectra",
+      "slug": "spectra",
+      "spikeMinute": 15,
+      "playRatePct": 0.2,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
+     },
+     {
+      "name": "The Perforator",
+      "slug": "the-perforator",
+      "spikeMinute": 21,
+      "playRatePct": 29.8,
+      "evidenceDeltaWr": 7.2,
+      "evidenceN": 359
+     },
+     {
       "name": "Viper",
       "slug": "viper",
-      "spikeMinute": 16,
+      "spikeMinute": 27,
       "playRatePct": 18.4,
       "evidenceDeltaWr": 6.4,
       "evidenceN": 222
@@ -2135,70 +2143,54 @@
      {
       "name": "Deathstalker",
       "slug": "deathstalker",
-      "spikeMinute": 21,
+      "spikeMinute": 32,
       "playRatePct": 37.9,
       "evidenceDeltaWr": 3.7,
       "evidenceN": 457
      },
      {
-      "name": "The Perforator",
-      "slug": "the-perforator",
-      "spikeMinute": 27,
-      "playRatePct": 29.8,
-      "evidenceDeltaWr": 7.2,
-      "evidenceN": 359
-     },
-     {
       "name": "Rapture",
       "slug": "rapture",
-      "spikeMinute": 32,
+      "spikeMinute": 37,
       "playRatePct": 0.2,
       "evidenceDeltaWr": null,
       "evidenceN": null
-     },
-     {
-      "name": "Tainted Rounds",
-      "slug": "tainted-rounds",
-      "spikeMinute": 37,
-      "playRatePct": 11.3,
-      "evidenceDeltaWr": -1.8,
-      "evidenceN": 136
      }
     ],
-    "gold": 18500,
+    "gold": 18300,
     "archetypes": [
      "sustained DPS"
     ],
     "objectives": {
-     "burstVsSquishy": 1025.063760816221,
-     "teamfightVsSquishy": 1841.026565930518,
-     "rot10VsSquishy": 703.7131882202304,
-     "rot20VsBruiser": 964.0257600718887,
-     "autoDps10VsSquishy": 532.3283593209087,
+     "burstVsSquishy": 863.4902574198118,
+     "teamfightVsSquishy": 1510.218572999819,
+     "rot10VsSquishy": 857.8362498403371,
+     "rot20VsBruiser": 1071.8015665796345,
+     "autoDps10VsSquishy": 468.1479220881513,
      "ehpPhysical": 4442.7541875,
      "ehpMagical": 3333.0388124999995,
-     "healShield10s": 217,
-     "utility": 15,
-     "sustain10s": 689.7703818406471
+     "healShield10s": 182,
+     "utility": 25,
+     "sustain10s": 634.7054260767097
     },
     "manaFeasible": true
    },
-   "coachLine": "Sim-optimal for sustained DPS: first spike lands around minute 9 (Sky Splitter), third item by minute 21. Take Demiurge: +24% on this kit’s main output at minute 15.",
+   "coachLine": "Sim-optimal for sustained DPS: first spike lands around minute 9 (Sky Splitter), third item by minute 21. Take Demiurge: +16.8% on this kit’s main output at minute 15.",
    "eternals": {
     "top": [
      {
       "name": "Demiurge",
       "id": "demiurge",
-      "headlinePct": 24,
-      "burstPct": 11.1,
-      "rot20Pct": 9,
-      "ehpPct": 1.5
+      "headlinePct": 16.8,
+      "burstPct": 8.6,
+      "rot20Pct": 6.7,
+      "ehpPct": 1.3
      },
      {
       "name": "Vermis",
       "id": "vermis",
-      "headlinePct": 9,
-      "burstPct": 3.2,
+      "headlinePct": 9.9,
+      "burstPct": 3.4,
       "rot20Pct": 0,
       "ehpPct": 0
      },
@@ -2225,17 +2217,17 @@
      {
       "name": "Demiurge",
       "modeled": true,
-      "headlinePct": 24,
-      "burstPct": 11.1,
-      "rot20Pct": 9,
-      "ehpPct": 1.5,
+      "headlinePct": 16.8,
+      "burstPct": 8.6,
+      "rot20Pct": 6.7,
+      "ehpPct": 1.3,
       "note": null
      },
      {
       "name": "Vermis",
       "modeled": true,
-      "headlinePct": 9,
-      "burstPct": 3.2,
+      "headlinePct": 9.9,
+      "burstPct": 3.4,
       "rot20Pct": 0,
       "ehpPct": 0,
       "note": null
@@ -2252,9 +2244,9 @@
      {
       "name": "Thraex",
       "modeled": true,
-      "headlinePct": 3.7,
+      "headlinePct": 3,
       "burstPct": 0,
-      "rot20Pct": 8.8,
+      "rot20Pct": 8.2,
       "ehpPct": 0,
       "note": null
      },
@@ -2270,27 +2262,27 @@
      {
       "name": "Xyris",
       "modeled": true,
-      "headlinePct": 1.5,
-      "burstPct": 2.9,
-      "rot20Pct": 3.7,
+      "headlinePct": 1.1,
+      "burstPct": 2.1,
+      "rot20Pct": 3,
       "ehpPct": 0,
       "note": null
      },
      {
       "name": "Lotus",
       "modeled": true,
-      "headlinePct": 1.1,
-      "burstPct": 2,
-      "rot20Pct": 41.3,
-      "ehpPct": 2.8,
+      "headlinePct": 0.7,
+      "burstPct": 1.3,
+      "rot20Pct": 1.9,
+      "ehpPct": 2.3,
       "note": null
      },
      {
       "name": "Vesh",
       "modeled": true,
       "headlinePct": 0,
-      "burstPct": 7.8,
-      "rot20Pct": 12.5,
+      "burstPct": 7.6,
+      "rot20Pct": 13,
       "ehpPct": 0,
       "note": null
      },
@@ -2355,7 +2347,7 @@
       "burstPct": null,
       "rot20Pct": null,
       "ehpPct": null,
-      "note": "Knell (Major): percent armor shred that scales per level (max stacks = 8% + 0.8%/level, both damage types); armor_shred takes a flat pct with no perLevel term, so encoding it would pin one level. Best modeling candidate of the 1.16 Eternals — see calibration checklist"
+      "note": "Knell (Major): Only an explicitly supplied active-stack snapshot is modeled; omitted state receives no shred credit. Stack acquisition, refresh/expiry over time, Peal interactions, multi-source behavior and stolen defenses are not simulated. No automatic full-stack uptime or winning-build claim."
      },
      {
       "name": "Satariel",
@@ -2434,14 +2426,14 @@
       "minor1": {
        "name": "Savage Strikes",
        "modeled": true,
-       "deltaPct": 6.1,
-       "note": "+6.1% autoDps on top of the major (modeled)"
+       "deltaPct": 3.2,
+       "note": "+3.2% autoDps on top of the major (modeled)"
       },
       "minor2": {
        "name": "Ferocity",
        "modeled": true,
-       "deltaPct": 7.5,
-       "note": "+7.5% autoDps on top of the major (modeled)"
+       "deltaPct": 4.7,
+       "note": "+4.7% autoDps on top of the major (modeled)"
       }
      },
      "marrow": {
@@ -2482,8 +2474,8 @@
       "minor2": {
        "name": "Cursed Corrupted",
        "modeled": true,
-       "deltaPct": -5.1,
-       "note": "+-5.1% autoDps on top of the major (modeled)"
+       "deltaPct": 0,
+       "note": "+0.0% autoDps on top of the major (modeled)"
       }
      },
      "nihil": {
@@ -2538,8 +2530,8 @@
       "minor2": {
        "name": "Diamond Tip",
        "modeled": true,
-       "deltaPct": 5.4,
-       "note": "+5.4% autoDps on top of the major (modeled)"
+       "deltaPct": 9.2,
+       "note": "+9.2% autoDps on top of the major (modeled)"
       }
      },
      "lotus": {
@@ -2661,10 +2653,16 @@
    "offMeta": {
     "candidates": [
      {
+      "item": "Spectra",
+      "playRatePct": 0.2,
+      "bestObjective": "sustained auto DPS",
+      "edgeVsPopularPct": 110.8
+     },
+     {
       "item": "Rapture",
       "playRatePct": 0.2,
       "bestObjective": "sustained auto DPS",
-      "edgeVsPopularPct": 123.4
+      "edgeVsPopularPct": 110.8
      }
     ],
     "honestAbsence": null
@@ -2691,7 +2689,7 @@
      "coreGold": 8800,
      "spikeMinute": 21,
      "bestObjective": "sustained auto DPS",
-     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 75 auto-attack DPS in the sim.",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 74 auto-attack DPS in the sim.",
      "optimizer": "Optimizer sees 2.3× the sustained auto DPS: try Sky Splitter over Malady (sim-only — the popular pick may carry utility the sim can't see; test it)."
     },
     {
@@ -2715,8 +2713,8 @@
      "coreGold": 9200,
      "spikeMinute": 21,
      "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 669 damage in one combo in the sim.",
-     "optimizer": null
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 585 damage in one combo in the sim.",
+     "optimizer": "Optimizer agrees: within 3% of our best core on one-combo burst. The winrate is earned, not luck."
     },
     {
      "title": "Lethality Burst",
@@ -2739,15 +2737,15 @@
      "coreGold": 9000,
      "spikeMinute": 21,
      "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 602 damage in one combo in the sim.",
-     "optimizer": "Optimizer agrees: within 3% of our best core on one-combo burst. The winrate is earned, not luck."
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 516 damage in one combo in the sim.",
+     "optimizer": "Optimizer sees +10% more one-combo burst: try Sky Splitter over Malady (sim-only — the popular pick may carry utility the sim can't see; test it)."
     }
    ],
    "stages": [
     {
      "label": "early",
      "itemCount": 2,
-     "minute": 16,
+     "minute": 15,
      "level": 11,
      "core": [
       {
@@ -2755,30 +2753,25 @@
        "slug": "sky-splitter"
       },
       {
-       "name": "Viper",
-       "slug": "viper"
+       "name": "Spectra",
+       "slug": "spectra"
       }
      ],
      "headline": "autoDps10VsSquishy",
-     "headlineValue": 107,
+     "headlineValue": 135,
      "objectives": {
-      "burstVsSquishy": 386.98686152937694,
-      "teamfightVsSquishy": 695.9682609979332,
-      "rot10VsSquishy": 274.25900681596886,
-      "rot20VsBruiser": 367.1555097837282,
-      "autoDps10VsSquishy": 107.1165206101915,
+      "burstVsSquishy": 372.5236486486487,
+      "teamfightVsSquishy": 594.6858108108108,
+      "rot10VsSquishy": 180.05405405405406,
+      "rot20VsBruiser": 233.37500000000003,
+      "autoDps10VsSquishy": 135.2820945945946,
       "ehpPhysical": 3149.2781718749998,
       "ehpMagical": 2462.4873281249997,
-      "healShield10s": 87,
-      "utility": 0,
-      "sustain10s": 72.39809474768282
+      "healShield10s": 52,
+      "utility": 10,
+      "sustain10s": 85.0077179276316
      },
-     "betterEarly": {
-      "inItem": "Spectra",
-      "inSlug": "spectra",
-      "outItem": "Viper",
-      "edgePct": 26.3
-     }
+     "betterEarly": null
     },
     {
      "label": "mid",
@@ -2791,33 +2784,33 @@
        "slug": "sky-splitter"
       },
       {
-       "name": "Viper",
-       "slug": "viper"
+       "name": "Spectra",
+       "slug": "spectra"
       },
       {
-       "name": "Deathstalker",
-       "slug": "deathstalker"
+       "name": "The Perforator",
+       "slug": "the-perforator"
       }
      ],
      "headline": "autoDps10VsSquishy",
-     "headlineValue": 174,
+     "headlineValue": 171,
      "objectives": {
-      "burstVsSquishy": 581.9874448591788,
-      "teamfightVsSquishy": 1102.0145911096029,
-      "rot10VsSquishy": 453.2646724725483,
-      "rot20VsBruiser": 604.0975609756097,
-      "autoDps10VsSquishy": 174.25087088224157,
+      "burstVsSquishy": 565.5264918383731,
+      "teamfightVsSquishy": 986.3185710462938,
+      "rot10VsSquishy": 521.3201320132014,
+      "rot20VsBruiser": 639.3684210526316,
+      "autoDps10VsSquishy": 170.93450628846668,
       "ehpPhysical": 3886.3666875,
       "ehpMagical": 2915.6263124999996,
-      "healShield10s": 137,
-      "utility": 0,
-      "sustain10s": 111.5651524390244
+      "healShield10s": 97,
+      "utility": 25,
+      "sustain10s": 109.66375000000001
      },
      "betterEarly": {
-      "inItem": "Spectra",
-      "inSlug": "spectra",
-      "outItem": "Viper",
-      "edgePct": 17.7
+      "inItem": "Prophecy",
+      "inSlug": "prophecy",
+      "outItem": "The Perforator",
+      "edgePct": 20
      }
     },
     {
@@ -2831,6 +2824,14 @@
        "slug": "sky-splitter"
       },
       {
+       "name": "Spectra",
+       "slug": "spectra"
+      },
+      {
+       "name": "The Perforator",
+       "slug": "the-perforator"
+      },
+      {
        "name": "Viper",
        "slug": "viper"
       },
@@ -2839,31 +2840,23 @@
        "slug": "deathstalker"
       },
       {
-       "name": "The Perforator",
-       "slug": "the-perforator"
-      },
-      {
        "name": "Rapture",
        "slug": "rapture"
-      },
-      {
-       "name": "Tainted Rounds",
-       "slug": "tainted-rounds"
       }
      ],
      "headline": "autoDps10VsSquishy",
-     "headlineValue": 557,
+     "headlineValue": 493,
      "objectives": {
-      "burstVsSquishy": 1088.2880227302078,
-      "teamfightVsSquishy": 1946.0950742606226,
-      "rot10VsSquishy": 754.9295774647888,
-      "rot20VsBruiser": 1028.725475512955,
-      "autoDps10VsSquishy": 556.8404466448524,
+      "burstVsSquishy": 925.8387964282131,
+      "teamfightVsSquishy": 1607.683581632474,
+      "rot10VsSquishy": 900.4129944224463,
+      "rot20VsBruiser": 1126.7692730520819,
+      "autoDps10VsSquishy": 492.83455059729863,
       "ehpPhysical": 6370.162679999999,
       "ehpMagical": 4409.41284,
-      "healShield10s": 217,
-      "utility": 15,
-      "sustain10s": 719.695533089711
+      "healShield10s": 182,
+      "utility": 25,
+      "sustain10s": 664.6067980286346
      },
      "betterEarly": null
     }
@@ -2900,12 +2893,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Deathstalker",
+      "out": "Viper",
       "in": "Raiment of Renewal",
       "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 25,
-      "offenseLossPct": 32,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their burst combo hits 25% less hard, and this kit gives up 32% of its damage for it."
+      "survivalGainPct": 23,
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 23% less hard, and this kit gives up 22% of its damage for it."
      }
     },
     {
@@ -2939,12 +2932,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Deathstalker",
+      "out": "Viper",
       "in": "Raiment of Renewal",
       "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 20,
-      "offenseLossPct": 31,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their burst combo hits 20% less hard, and this kit gives up 31% of its damage for it."
+      "survivalGainPct": 24,
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 24% less hard, and this kit gives up 22% of its damage for it."
      }
     },
     {
@@ -2978,12 +2971,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Deathstalker",
+      "out": "Viper",
       "in": "Crystalline Cuirass",
       "inSlug": "crystalline-cuirass",
-      "survivalGainPct": 35,
-      "offenseLossPct": 31,
-      "line": "Losing lane? Third item Crystalline Cuirass instead of Deathstalker: their burst combo hits 35% less hard, and this kit gives up 31% of its damage for it."
+      "survivalGainPct": 33,
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Crystalline Cuirass instead of Viper: their burst combo hits 33% less hard, and this kit gives up 22% of its damage for it."
      }
     },
     {
@@ -3017,12 +3010,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Deathstalker",
+      "out": "Viper",
       "in": "Raiment of Renewal",
       "inSlug": "raiment-of-renewal",
       "survivalGainPct": 25,
-      "offenseLossPct": 32,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their burst combo hits 25% less hard, and this kit gives up 32% of its damage for it."
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 25% less hard, and this kit gives up 22% of its damage for it."
      }
     },
     {
@@ -3056,12 +3049,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Deathstalker",
+      "out": "Viper",
       "in": "Raiment of Renewal",
       "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 25,
-      "offenseLossPct": 32,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their burst combo hits 25% less hard, and this kit gives up 32% of its damage for it."
+      "survivalGainPct": 24,
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 24% less hard, and this kit gives up 22% of its damage for it."
      }
     },
     {
@@ -3075,7 +3068,7 @@
       },
       {
        "minute": 10,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 15,
@@ -3087,20 +3080,20 @@
       },
       {
        "minute": 25,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 30,
-       "verdict": "enemy"
+       "verdict": "even"
       }
      ],
      "counterSwap": {
-      "out": "Deathstalker",
+      "out": "Viper",
       "in": "Raiment of Renewal",
       "inSlug": "raiment-of-renewal",
       "survivalGainPct": 25,
-      "offenseLossPct": 32,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their burst combo hits 25% less hard, and this kit gives up 32% of its damage for it."
+      "offenseLossPct": 23,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 25% less hard, and this kit gives up 23% of its damage for it."
      }
     }
    ],
@@ -3134,9 +3127,25 @@
       "evidenceN": 24
      },
      {
+      "name": "Spectra",
+      "slug": "spectra",
+      "spikeMinute": 16,
+      "playRatePct": 0.2,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
+     },
+     {
+      "name": "The Perforator",
+      "slug": "the-perforator",
+      "spikeMinute": 22,
+      "playRatePct": 29.8,
+      "evidenceDeltaWr": 7.2,
+      "evidenceN": 359
+     },
+     {
       "name": "Viper",
       "slug": "viper",
-      "spikeMinute": 16,
+      "spikeMinute": 27,
       "playRatePct": 18.4,
       "evidenceDeltaWr": 6.4,
       "evidenceN": 222
@@ -3144,70 +3153,54 @@
      {
       "name": "Deathstalker",
       "slug": "deathstalker",
-      "spikeMinute": 22,
+      "spikeMinute": 32,
       "playRatePct": 37.9,
       "evidenceDeltaWr": 3.7,
       "evidenceN": 457
      },
      {
-      "name": "The Perforator",
-      "slug": "the-perforator",
-      "spikeMinute": 27,
-      "playRatePct": 29.8,
-      "evidenceDeltaWr": 7.2,
-      "evidenceN": 359
-     },
-     {
       "name": "Rapture",
       "slug": "rapture",
-      "spikeMinute": 33,
+      "spikeMinute": 37,
       "playRatePct": 0.2,
       "evidenceDeltaWr": null,
       "evidenceN": null
-     },
-     {
-      "name": "Tainted Rounds",
-      "slug": "tainted-rounds",
-      "spikeMinute": 38,
-      "playRatePct": 11.3,
-      "evidenceDeltaWr": -1.8,
-      "evidenceN": 136
      }
     ],
-    "gold": 18500,
+    "gold": 18300,
     "archetypes": [
      "sustained DPS"
     ],
     "objectives": {
-     "burstVsSquishy": 1025.063760816221,
-     "teamfightVsSquishy": 1841.026565930518,
-     "rot10VsSquishy": 703.7131882202304,
-     "rot20VsBruiser": 964.0257600718887,
-     "autoDps10VsSquishy": 532.3283593209087,
+     "burstVsSquishy": 863.4902574198118,
+     "teamfightVsSquishy": 1510.218572999819,
+     "rot10VsSquishy": 857.8362498403371,
+     "rot20VsBruiser": 1071.8015665796345,
+     "autoDps10VsSquishy": 468.1479220881513,
      "ehpPhysical": 4442.7541875,
      "ehpMagical": 3333.0388124999995,
-     "healShield10s": 217,
-     "utility": 15,
-     "sustain10s": 689.7703818406471
+     "healShield10s": 182,
+     "utility": 25,
+     "sustain10s": 634.7054260767097
     },
     "manaFeasible": true
    },
-   "coachLine": "Sim-optimal for sustained DPS: first spike lands around minute 9 (Sky Splitter), third item by minute 22. Take Demiurge: +24% on this kit’s main output at minute 15.",
+   "coachLine": "Sim-optimal for sustained DPS: first spike lands around minute 9 (Sky Splitter), third item by minute 22. Take Demiurge: +16.8% on this kit’s main output at minute 15.",
    "eternals": {
     "top": [
      {
       "name": "Demiurge",
       "id": "demiurge",
-      "headlinePct": 24,
-      "burstPct": 11.1,
-      "rot20Pct": 9,
-      "ehpPct": 1.5
+      "headlinePct": 16.8,
+      "burstPct": 8.6,
+      "rot20Pct": 6.7,
+      "ehpPct": 1.3
      },
      {
       "name": "Vermis",
       "id": "vermis",
-      "headlinePct": 9,
-      "burstPct": 3.2,
+      "headlinePct": 9.9,
+      "burstPct": 3.4,
       "rot20Pct": 0,
       "ehpPct": 0
      },
@@ -3234,17 +3227,17 @@
      {
       "name": "Demiurge",
       "modeled": true,
-      "headlinePct": 24,
-      "burstPct": 11.1,
-      "rot20Pct": 9,
-      "ehpPct": 1.5,
+      "headlinePct": 16.8,
+      "burstPct": 8.6,
+      "rot20Pct": 6.7,
+      "ehpPct": 1.3,
       "note": null
      },
      {
       "name": "Vermis",
       "modeled": true,
-      "headlinePct": 9,
-      "burstPct": 3.2,
+      "headlinePct": 9.9,
+      "burstPct": 3.4,
       "rot20Pct": 0,
       "ehpPct": 0,
       "note": null
@@ -3261,9 +3254,9 @@
      {
       "name": "Thraex",
       "modeled": true,
-      "headlinePct": 3.7,
+      "headlinePct": 3,
       "burstPct": 0,
-      "rot20Pct": 8.8,
+      "rot20Pct": 8.2,
       "ehpPct": 0,
       "note": null
      },
@@ -3279,27 +3272,27 @@
      {
       "name": "Xyris",
       "modeled": true,
-      "headlinePct": 1.5,
-      "burstPct": 2.9,
-      "rot20Pct": 3.7,
+      "headlinePct": 1.1,
+      "burstPct": 2.1,
+      "rot20Pct": 3,
       "ehpPct": 0,
       "note": null
      },
      {
       "name": "Lotus",
       "modeled": true,
-      "headlinePct": 1.1,
-      "burstPct": 2,
-      "rot20Pct": 41.3,
-      "ehpPct": 2.8,
+      "headlinePct": 0.7,
+      "burstPct": 1.3,
+      "rot20Pct": 1.9,
+      "ehpPct": 2.3,
       "note": null
      },
      {
       "name": "Vesh",
       "modeled": true,
       "headlinePct": 0,
-      "burstPct": 7.8,
-      "rot20Pct": 12.5,
+      "burstPct": 7.6,
+      "rot20Pct": 13,
       "ehpPct": 0,
       "note": null
      },
@@ -3364,7 +3357,7 @@
       "burstPct": null,
       "rot20Pct": null,
       "ehpPct": null,
-      "note": "Knell (Major): percent armor shred that scales per level (max stacks = 8% + 0.8%/level, both damage types); armor_shred takes a flat pct with no perLevel term, so encoding it would pin one level. Best modeling candidate of the 1.16 Eternals — see calibration checklist"
+      "note": "Knell (Major): Only an explicitly supplied active-stack snapshot is modeled; omitted state receives no shred credit. Stack acquisition, refresh/expiry over time, Peal interactions, multi-source behavior and stolen defenses are not simulated. No automatic full-stack uptime or winning-build claim."
      },
      {
       "name": "Satariel",
@@ -3443,14 +3436,14 @@
       "minor1": {
        "name": "Savage Strikes",
        "modeled": true,
-       "deltaPct": 6.1,
-       "note": "+6.1% autoDps on top of the major (modeled)"
+       "deltaPct": 3.2,
+       "note": "+3.2% autoDps on top of the major (modeled)"
       },
       "minor2": {
        "name": "Ferocity",
        "modeled": true,
-       "deltaPct": 7.5,
-       "note": "+7.5% autoDps on top of the major (modeled)"
+       "deltaPct": 4.7,
+       "note": "+4.7% autoDps on top of the major (modeled)"
       }
      },
      "marrow": {
@@ -3491,8 +3484,8 @@
       "minor2": {
        "name": "Cursed Corrupted",
        "modeled": true,
-       "deltaPct": -5.1,
-       "note": "+-5.1% autoDps on top of the major (modeled)"
+       "deltaPct": 0,
+       "note": "+0.0% autoDps on top of the major (modeled)"
       }
      },
      "nihil": {
@@ -3547,8 +3540,8 @@
       "minor2": {
        "name": "Diamond Tip",
        "modeled": true,
-       "deltaPct": 5.4,
-       "note": "+5.4% autoDps on top of the major (modeled)"
+       "deltaPct": 9.2,
+       "note": "+9.2% autoDps on top of the major (modeled)"
       }
      },
      "lotus": {
@@ -3670,10 +3663,16 @@
    "offMeta": {
     "candidates": [
      {
+      "item": "Spectra",
+      "playRatePct": 0.2,
+      "bestObjective": "sustained auto DPS",
+      "edgeVsPopularPct": 110.8
+     },
+     {
       "item": "Rapture",
       "playRatePct": 0.2,
       "bestObjective": "sustained auto DPS",
-      "edgeVsPopularPct": 123.4
+      "edgeVsPopularPct": 110.8
      }
     ],
     "honestAbsence": null
@@ -3700,7 +3699,7 @@
      "coreGold": 8800,
      "spikeMinute": 21,
      "bestObjective": "sustained auto DPS",
-     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 75 auto-attack DPS in the sim.",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 74 auto-attack DPS in the sim.",
      "optimizer": "Optimizer sees 2.3× the sustained auto DPS: try Sky Splitter over Malady (sim-only — the popular pick may carry utility the sim can't see; test it)."
     },
     {
@@ -3724,8 +3723,8 @@
      "coreGold": 9200,
      "spikeMinute": 22,
      "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 669 damage in one combo in the sim.",
-     "optimizer": null
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 585 damage in one combo in the sim.",
+     "optimizer": "Optimizer agrees: within 3% of our best core on one-combo burst. The winrate is earned, not luck."
     },
     {
      "title": "Lethality Burst",
@@ -3748,8 +3747,8 @@
      "coreGold": 9000,
      "spikeMinute": 21,
      "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 602 damage in one combo in the sim.",
-     "optimizer": "Optimizer agrees: within 3% of our best core on one-combo burst. The winrate is earned, not luck."
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 516 damage in one combo in the sim.",
+     "optimizer": "Optimizer sees +10% more one-combo burst: try Sky Splitter over Malady (sim-only — the popular pick may carry utility the sim can't see; test it)."
     }
    ],
    "stages": [
@@ -3764,30 +3763,25 @@
        "slug": "sky-splitter"
       },
       {
-       "name": "Viper",
-       "slug": "viper"
+       "name": "Spectra",
+       "slug": "spectra"
       }
      ],
      "headline": "autoDps10VsSquishy",
-     "headlineValue": 107,
+     "headlineValue": 135,
      "objectives": {
-      "burstVsSquishy": 386.98686152937694,
-      "teamfightVsSquishy": 695.9682609979332,
-      "rot10VsSquishy": 274.25900681596886,
-      "rot20VsBruiser": 367.1555097837282,
-      "autoDps10VsSquishy": 107.1165206101915,
+      "burstVsSquishy": 372.5236486486487,
+      "teamfightVsSquishy": 594.6858108108108,
+      "rot10VsSquishy": 180.05405405405406,
+      "rot20VsBruiser": 233.37500000000003,
+      "autoDps10VsSquishy": 135.2820945945946,
       "ehpPhysical": 3149.2781718749998,
       "ehpMagical": 2462.4873281249997,
-      "healShield10s": 87,
-      "utility": 0,
-      "sustain10s": 72.39809474768282
+      "healShield10s": 52,
+      "utility": 10,
+      "sustain10s": 85.0077179276316
      },
-     "betterEarly": {
-      "inItem": "Spectra",
-      "inSlug": "spectra",
-      "outItem": "Viper",
-      "edgePct": 26.3
-     }
+     "betterEarly": null
     },
     {
      "label": "mid",
@@ -3800,39 +3794,39 @@
        "slug": "sky-splitter"
       },
       {
-       "name": "Viper",
-       "slug": "viper"
+       "name": "Spectra",
+       "slug": "spectra"
       },
       {
-       "name": "Deathstalker",
-       "slug": "deathstalker"
+       "name": "The Perforator",
+       "slug": "the-perforator"
       }
      ],
      "headline": "autoDps10VsSquishy",
-     "headlineValue": 174,
+     "headlineValue": 171,
      "objectives": {
-      "burstVsSquishy": 581.9874448591788,
-      "teamfightVsSquishy": 1102.0145911096029,
-      "rot10VsSquishy": 453.2646724725483,
-      "rot20VsBruiser": 604.0975609756097,
-      "autoDps10VsSquishy": 174.25087088224157,
+      "burstVsSquishy": 565.5264918383731,
+      "teamfightVsSquishy": 986.3185710462938,
+      "rot10VsSquishy": 521.3201320132014,
+      "rot20VsBruiser": 639.3684210526316,
+      "autoDps10VsSquishy": 170.93450628846668,
       "ehpPhysical": 3886.3666875,
       "ehpMagical": 2915.6263124999996,
-      "healShield10s": 137,
-      "utility": 0,
-      "sustain10s": 111.5651524390244
+      "healShield10s": 97,
+      "utility": 25,
+      "sustain10s": 109.66375000000001
      },
      "betterEarly": {
-      "inItem": "Spectra",
-      "inSlug": "spectra",
-      "outItem": "Viper",
-      "edgePct": 17.7
+      "inItem": "Prophecy",
+      "inSlug": "prophecy",
+      "outItem": "The Perforator",
+      "edgePct": 20
      }
     },
     {
      "label": "late",
      "itemCount": 6,
-     "minute": 38,
+     "minute": 37,
      "level": 17,
      "core": [
       {
@@ -3840,6 +3834,14 @@
        "slug": "sky-splitter"
       },
       {
+       "name": "Spectra",
+       "slug": "spectra"
+      },
+      {
+       "name": "The Perforator",
+       "slug": "the-perforator"
+      },
+      {
        "name": "Viper",
        "slug": "viper"
       },
@@ -3848,31 +3850,23 @@
        "slug": "deathstalker"
       },
       {
-       "name": "The Perforator",
-       "slug": "the-perforator"
-      },
-      {
        "name": "Rapture",
        "slug": "rapture"
-      },
-      {
-       "name": "Tainted Rounds",
-       "slug": "tainted-rounds"
       }
      ],
      "headline": "autoDps10VsSquishy",
-     "headlineValue": 557,
+     "headlineValue": 493,
      "objectives": {
-      "burstVsSquishy": 1088.2880227302078,
-      "teamfightVsSquishy": 1946.0950742606226,
-      "rot10VsSquishy": 754.9295774647888,
-      "rot20VsBruiser": 1028.725475512955,
-      "autoDps10VsSquishy": 556.8404466448524,
+      "burstVsSquishy": 925.8387964282131,
+      "teamfightVsSquishy": 1607.683581632474,
+      "rot10VsSquishy": 900.4129944224463,
+      "rot20VsBruiser": 1126.7692730520819,
+      "autoDps10VsSquishy": 492.83455059729863,
       "ehpPhysical": 6370.162679999999,
       "ehpMagical": 4409.41284,
-      "healShield10s": 217,
-      "utility": 15,
-      "sustain10s": 719.695533089711
+      "healShield10s": 182,
+      "utility": 25,
+      "sustain10s": 664.6067980286346
      },
      "betterEarly": null
     }
@@ -3909,12 +3903,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Deathstalker",
+      "out": "Viper",
       "in": "Warden's Faith",
       "inSlug": "wardens-faith",
       "survivalGainPct": 37,
-      "offenseLossPct": 31,
-      "line": "Losing lane? Third item Warden's Faith instead of Deathstalker: their burst combo hits 37% less hard, and this kit gives up 31% of its damage for it."
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Warden's Faith instead of Viper: their burst combo hits 37% less hard, and this kit gives up 22% of its damage for it."
      }
     },
     {
@@ -3948,12 +3942,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Deathstalker",
+      "out": "Viper",
       "in": "Raiment of Renewal",
       "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 20,
-      "offenseLossPct": 31,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their burst combo hits 20% less hard, and this kit gives up 31% of its damage for it."
+      "survivalGainPct": 23,
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 23% less hard, and this kit gives up 22% of its damage for it."
      }
     },
     {
@@ -3987,12 +3981,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Deathstalker",
+      "out": "Viper",
       "in": "Warden's Faith",
       "inSlug": "wardens-faith",
-      "survivalGainPct": 33,
-      "offenseLossPct": 31,
-      "line": "Losing lane? Third item Warden's Faith instead of Deathstalker: their burst combo hits 33% less hard, and this kit gives up 31% of its damage for it."
+      "survivalGainPct": 35,
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Warden's Faith instead of Viper: their burst combo hits 35% less hard, and this kit gives up 22% of its damage for it."
      }
     },
     {
@@ -4026,12 +4020,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Deathstalker",
+      "out": "Viper",
       "in": "Warden's Faith",
       "inSlug": "wardens-faith",
-      "survivalGainPct": 33,
-      "offenseLossPct": 31,
-      "line": "Losing lane? Third item Warden's Faith instead of Deathstalker: their burst combo hits 33% less hard, and this kit gives up 31% of its damage for it."
+      "survivalGainPct": 34,
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Warden's Faith instead of Viper: their burst combo hits 34% less hard, and this kit gives up 22% of its damage for it."
      }
     },
     {
@@ -4065,12 +4059,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Deathstalker",
+      "out": "Viper",
       "in": "Raiment of Renewal",
       "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 25,
-      "offenseLossPct": 31,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their burst combo hits 25% less hard, and this kit gives up 31% of its damage for it."
+      "survivalGainPct": 23,
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Viper: their burst combo hits 23% less hard, and this kit gives up 22% of its damage for it."
      }
     },
     {
@@ -4104,12 +4098,12 @@
       }
      ],
      "counterSwap": {
-      "out": "Deathstalker",
+      "out": "Viper",
       "in": "Warden's Faith",
       "inSlug": "wardens-faith",
-      "survivalGainPct": 34,
-      "offenseLossPct": 31,
-      "line": "Losing lane? Third item Warden's Faith instead of Deathstalker: their burst combo hits 34% less hard, and this kit gives up 31% of its damage for it."
+      "survivalGainPct": 33,
+      "offenseLossPct": 22,
+      "line": "Losing lane? Third item Warden's Faith instead of Viper: their burst combo hits 33% less hard, and this kit gives up 22% of its damage for it."
      }
     }
    ],

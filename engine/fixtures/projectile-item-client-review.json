@@ -1,0 +1,508 @@
+{
+ "date": "2026-10-16",
+ "scope": "Targeted Onixian Quiver and Scattershot review; no production damage credit added",
+ "validation": "All decoded function streams roundtrip byte-for-byte with VM sizes using prior patched UAssetAPI UE5.4 serialization profile. Whole-asset/default/native behavior and server parity are not validated. No proprietary source assets included.",
+ "items": [
+  {
+   "slug": "onixian-quiver",
+   "status": "reviewed-unmodeled",
+   "limitation": "Multishot is not simulated: angled projectiles scale with travel distance and hero basic scaling. Recovered effect defaults bind attack-damage scaling and the custom distance calculation. Collision, critical-strike/lifesteal resolution and complete native aggregation still need integration. Melee Onixia crit and missing-health mitigation are also omitted; ranged carries receive no melee benefit.",
+   "findings": [
+    {
+     "asset": "GA_Item_OnixianQuiver",
+     "offsets": [
+      2570,
+      2782,
+      2809,
+      15,
+      620,
+      3483,
+      3575,
+      3649,
+      4503,
+      4754,
+      4829,
+      4917,
+      4992
+     ],
+     "finding": "Ranged branch waits for primary basic ability commit, obtains targeting and defers paired +7/-7 degree projectile attempts to next tick. Melee branch applies a crit effect and replaces a health-change damage-reduction effect. Its set-by-caller magnitude is 1 - (1 - Health/MaxHealth) * (ProportionMultiplier * 100) * DamageReduction; scalar bindings are unresolved."
+    },
+    {
+     "asset": "GMMC_Item_Onixian_Damage",
+     "function": "CalculateBaseMagnitude",
+     "offsets": [
+      0,
+      100,
+      200,
+      759,
+      866,
+      934,
+      1002,
+      1348,
+      1423,
+      1598,
+      1671
+     ],
+     "finding": "Distance from stored projectile origin maps clamped from [0, ranged default range + 50] to [1, MultishotDamageMultiplier], then multiplies hero BasicAttack_Scaling. Nearly-zero origin uses distance zero. CampMinion targets select MultishotMonsterDamageMultiplier instead of mapped distance. This is a magnitude component, not final physical damage; effect application/scalar bindings remain unresolved."
+    }
+   ],
+   "assets": [
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/OnixianQuiver/FX/P_Multishot_Projectile.uasset",
+     "sha256": "9ae3ebb7c171347fb911bcacee3308d17e08236700acebcb6ee24aa72c8ce2ec",
+     "functions": [],
+     "undecodedExportCount": 12,
+     "uexpSha256": "10382671e123c7022adddeec3acb89ccae4870290c558143fafb60c0d93c1ee3"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/OnixianQuiver/FX/P_Multishot_Projectile_HitCharacter.uasset",
+     "sha256": "1396f07f3fd4b50c3c93baf8bb3d42a0d56808c9b853b492043acf51ca6053d4",
+     "functions": [],
+     "undecodedExportCount": 87,
+     "uexpSha256": "fb001e824e92cee98a7b4f409fac2f02faf0a79f585c910e01c1ccbe70c3e3eb"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/OnixianQuiver/FX/P_Multishot_Projectile_HitWorld.uasset",
+     "sha256": "16005b896805918a9c89a831dd414ddac6266f8d546b7423920ce6637d318929",
+     "functions": [],
+     "undecodedExportCount": 125,
+     "uexpSha256": "b8303fc7b75ef4c91d3b54826e50bacc19a10febfbb1ee835fe8557e1c91e5cb"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/OnixianQuiver/FX/P_Multishot_Projectile_NoHit.uasset",
+     "sha256": "0d501ac68b78d949bcfb048472fec1280b683dd56b17c47150877d3434a1ceb4",
+     "functions": [],
+     "undecodedExportCount": 40,
+     "uexpSha256": "eecf6b0250787978959f340e361a21bbc8e777fd2f87a4719d64e52c28a3d204"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/OnixianQuiver/GA_Item_OnixianQuiver.uasset",
+     "sha256": "66b66f40b924e03dd40c19bb24cd804fbe3d0b29c9a9e0ff25ab93b113b7ad8d",
+     "functions": [
+      {
+       "name": "Cancelled_AB0C2B43483B81A0531D4F9D06C8D27F",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "Confirmed_AB0C2B43483B81A0531D4F9D06C8D27F",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "EventReceived_C506C1964AE59955EFD470800C1C7782",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "ExecuteUbergraph_GA_Item_OnixianQuiver",
+       "instructionCount": 175,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "FailedToSpawn_05A5ED984FA4EFCBE1EBA49837F3EA9C",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "FailedToSpawn_5A8395A34A3D359E5019A7A8D01E6B8E",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "K2_ActivateAbility",
+       "instructionCount": 3,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "K2_OnEndAbility",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "NotAuthority_05A5ED984FA4EFCBE1EBA49837F3EA9C",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "NotAuthority_5A8395A34A3D359E5019A7A8D01E6B8E",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "OnChange_25AAEDC849D7C06BB7D31F8D855628A5",
+       "instructionCount": 3,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "OnCommit_B467406E4DA1231D4DB41A97C9D1C3A0",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "OnTagAdded_686DC23940CD271DFE1B018BEB10D61A",
+       "instructionCount": 5,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "OnTagRemoved_686DC23940CD271DFE1B018BEB10D61A",
+       "instructionCount": 5,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "PreSpawned_05A5ED984FA4EFCBE1EBA49837F3EA9C",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "PreSpawned_5A8395A34A3D359E5019A7A8D01E6B8E",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "Success_05A5ED984FA4EFCBE1EBA49837F3EA9C",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "Success_5A8395A34A3D359E5019A7A8D01E6B8E",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      }
+     ],
+     "undecodedExportCount": 2,
+     "uexpSha256": "b8c502bdfcfd1bbec8ff80c896be96b60e7ed67a0474ac483b7fd72f42a82f9a"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/OnixianQuiver/GE_Item_OnixianQuiver.uasset",
+     "sha256": "04e982b99b6ee141e3971c7fc42e39a9bae0354471b13a930035f343f16952df",
+     "functions": [],
+     "undecodedExportCount": 1,
+     "uexpSha256": "6b713b8ea05da59dbc96150999caa3af5ee2b94ad7652b551207f3b9a3da5e92"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/OnixianQuiver/GE_Item_OnixianQuiver_Grant.uasset",
+     "sha256": "549c666adc10416f4fe45fd00aa2b8095d3b17c48f720bb3982ba33b0c4c92c0",
+     "functions": [],
+     "undecodedExportCount": 2,
+     "uexpSha256": "8e5eb84aa7a61daec9b70d6934efd8ccef8dfa8be83526d32768d1338dad3ef5"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/OnixianQuiver/GE_Item_OnixianQuiver_MeleeCrit.uasset",
+     "sha256": "e1c7524c0817bc3d1de7082869321d675d9e100733ce2514243f8d84dbb47329",
+     "functions": [],
+     "undecodedExportCount": 1,
+     "uexpSha256": "9ebd51e91683431dc162e2842d83342e10102f9e9fe24d429b9032667d88bc94"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/OnixianQuiver/GE_Item_OnixianQuiver_MeleeDamageReduction.uasset",
+     "sha256": "06be49f0260cb0fda42fbfcb2299e6cf4ead01ce12d14c5da7e4f701f0089cbe",
+     "functions": [],
+     "undecodedExportCount": 1,
+     "uexpSha256": "22c9b6a5339af2a771c092fdfdbe1fa72ad18702046c026ddcf90a66d72448bc"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/OnixianQuiver/GE_Item_OnixianQuiver_MultishotDamage.uasset",
+     "sha256": "c8911d2169e5f6b491e4a47e76bfc6049dbef2e1126b62fc4db6e0852e50f6f6",
+     "functions": [],
+     "undecodedExportCount": 2,
+     "uexpSha256": "56deaa0e001b8f9eeb3d3ce64295c8bb9ca9c493ed9a48ae60b8c4a962c1033c"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/OnixianQuiver/GMMC_Item_Onixian_Damage.uasset",
+     "sha256": "99fba3ff6efda36efffabe836a8741aabc0a45ef0873e87aeec23c1fabcea424",
+     "functions": [
+      {
+       "name": "CalculateBaseMagnitude",
+       "instructionCount": 45,
+       "bytecodeRoundtrip": true
+      }
+     ],
+     "undecodedExportCount": 1,
+     "uexpSha256": "ac42e4184da1512568915754a0d016d30cff2946bdb02dcd64365ff0825b0209"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/OnixianQuiver/Materials/M_Multishot_Projectile_Body.uasset",
+     "sha256": "db9f8c145401c1ce0f22ee94feccadd0c61eb0f29bcb085d28fb2e4a272b6269",
+     "functions": [],
+     "undecodedExportCount": 1,
+     "uexpSha256": "e992966a7ed7558b1d73daf372b4f3f01742c5b551bbeb327680ecf0c0bff584"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/OnixianQuiver/Materials/M_Multishot_Projectile_Tip.uasset",
+     "sha256": "6f9794f3b609f6e043a4c64ffe08db047a10604edc3abf066a874c07580f87e7",
+     "functions": [],
+     "undecodedExportCount": 1,
+     "uexpSha256": "314fbb6b688daccb67c80d500c66c01c2dc250939457d6bea9b345800c6b5daf"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/OnixianQuiver/Meshes/SM_Multishot_Projectile.uasset",
+     "sha256": "9e6f2b0db3eb81c372dc6400ef9362736dc22d0415c8acbf60a59acbe4c8ba6b",
+     "functions": [],
+     "undecodedExportCount": 2,
+     "uexpSha256": "0106dbdfa32b484dff798f398690524bbca5339a9e0dda0f8e5e0c519ad99ffd"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/OnixianQuiver/OnixianQuiver.uasset",
+     "sha256": "a2ed5f1a85aad7cf51dd6a909fc0db7ecfc4f09af474eb303710c95f32904ab6",
+     "functions": [],
+     "undecodedExportCount": 1,
+     "uexpSha256": "1fd1bfc73e6f9837f3213ea5121a30d7088d45e58fde3f9fce15bee2b5f09e9b"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/OnixianQuiver/Proj_Item_OnixianQuiver.uasset",
+     "sha256": "4e04d38e47ab814f9be8af92c3acda11c8f5a52ce2e7b499ef6bd6e9be4f1d5d",
+     "functions": [
+      {
+       "name": "ExecuteUbergraph_Proj_Item_OnixianQuiver",
+       "instructionCount": 23,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "K2_OnActive",
+       "instructionCount": 3,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "OnShutdown",
+       "instructionCount": 3,
+       "bytecodeRoundtrip": true
+      }
+     ],
+     "undecodedExportCount": 13,
+     "uexpSha256": "f57a6916c7db1ceefe5cfbdf0f027558b2da15268a9aa0619b9cb837a0f7a564"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/OnixianQuiver/TA_Item_OnixianQuiver.uasset",
+     "sha256": "3e235d463d89cd66afff763576980217841be1ec299f1d9db32edbc465a3872b",
+     "functions": [],
+     "undecodedExportCount": 4,
+     "uexpSha256": "29c6e0155a297f6189caaa747bb9566f9f9211d6370672a716b44f4044b6e0b0"
+    }
+   ],
+   "currentReportedCoreEvidence": {
+    "rows": 6,
+    "playerCoreAppearances": 260,
+    "heroes": [
+     "bayle",
+     "khaimera",
+     "kira",
+     "murdock",
+     "yin"
+    ],
+    "kiraRows": [
+     {
+      "hero": "kira",
+      "n": 22,
+      "w": 12,
+      "anyOrder": false,
+      "coreSlugs": [
+       "vanquisher",
+       "onixian-quiver",
+       "scattershot"
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "slug": "scattershot",
+   "status": "reviewed-unmodeled",
+   "limitation": "Scattershot is not simulated in populated scenes: its target search excludes the triggering enemy and attempts two nearby secondary-target projectiles behind a cooldown gate. The second attempt can retain the first target. With no eligible secondary targets it spawns none, so a truly isolated one-enemy scene gets no Scattershot projectile damage. Saved lock-on-only collision is enforced by a native guard, with a custom-hit-interface exception. Collision outcomes, critical-strike resolution and downstream passive interactions still need integration; the shared damage path passes its captured on-hit percentage through event data.",
+   "findings": [
+    {
+     "asset": "GA_Item_Scattershot",
+     "offsets": [
+      3629,
+      3695,
+      3790,
+      3836,
+      3951,
+      3236,
+      2937,
+      3001,
+      3135,
+      3177,
+      15
+     ],
+     "finding": "Requires TriggersOnHit, allowed target entity type and absence of own Scattershot damage tag. Closes bCanBeTriggered before sphere query; resets after scalar Cooldown delay. Radius, Filter, allowed entity types and cooldown default bindings remain unresolved."
+    },
+    {
+     "asset": "GA_Item_Scattershot",
+     "offsets": [
+      2391,
+      2221,
+      2119,
+      1318,
+      1499,
+      1751,
+      1983,
+      2043,
+      67,
+      337,
+      2152,
+      2379
+     ],
+     "finding": "Two loop iterations choose nearest actor with strict distance comparison, remove the selected actor from candidate array and spawn toward it if valid. ClosestActor is cleared only after both iterations, so one eligible candidate can remain selected for the second attempt. This is a static control-flow inference, not proof of two successful hits; initial target inclusion, native filtering, projectile collision and runtime validity remain unresolved."
+    }
+   ],
+   "assets": [
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/Scattershot/FX/P_Scattershot_Projectile.uasset",
+     "sha256": "0e8d9f4c2965553645f65251d61232c5a6d8106e6eb93208059c58fec054ebaa",
+     "functions": [],
+     "undecodedExportCount": 137,
+     "uexpSha256": "368afd6d10d74690dc7ceefdc8428a4ae72431b9a5c618d5d1c04f7d1ddaf5f8"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/Scattershot/GA_Item_Scattershot.uasset",
+     "sha256": "f31c03c2ad4a093aa624a6149ba2f9f0a0cfb9385a2fd07c4ab8263eeff0bbaf",
+     "functions": [
+      {
+       "name": "EventReceived_CBA282CB4F0A62277BA48EA342F53F3B",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "ExecuteUbergraph_GA_Item_Scattershot",
+       "instructionCount": 153,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "FailedToSpawn_4D8243774B304760DA11C281C164AE41",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "K2_ActivateAbility",
+       "instructionCount": 3,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "K2_OnEndAbility",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "NotAuthority_4D8243774B304760DA11C281C164AE41",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "PreSpawned_4D8243774B304760DA11C281C164AE41",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "Success_4D8243774B304760DA11C281C164AE41",
+       "instructionCount": 4,
+       "bytecodeRoundtrip": true
+      }
+     ],
+     "undecodedExportCount": 2,
+     "uexpSha256": "546b264856b6c4790a664d5cd2a9539162dc7348783ade753e67c7e5901b55e4"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/Scattershot/GE_Item_Scattershot.uasset",
+     "sha256": "506df870865e8e22a2acf46661a6030d0fa3d5061cf1ef55cd90d6c5a80945c8",
+     "functions": [],
+     "undecodedExportCount": 1,
+     "uexpSha256": "ecf7f6ee07fb97f666dcde028a4611e5cff8163b57a16069e8a51c9da722138a"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/Scattershot/GE_Item_Scattershot_Damage.uasset",
+     "sha256": "fd7f321bb893cdcd3bfc13a3e1483bfcaf7c2c5fd68092ff8b3c90eba8ae0e09",
+     "functions": [],
+     "undecodedExportCount": 2,
+     "uexpSha256": "91d28eb4431ef76af229637b3b8f09f61edef3f6fee85c5f9306cb5d67ed49c0"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/Scattershot/GE_Item_Scattershot_Grant.uasset",
+     "sha256": "29fbe3e728272209e93f01ff8440d0874bed6409fd3deb847596147eb6118971",
+     "functions": [],
+     "undecodedExportCount": 2,
+     "uexpSha256": "860fce2cdf788d34f5ea70b5102a9c87c02a153c6c67d41d0a1ad2715d2e763e"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/Scattershot/Proj_Item_Scattershot.uasset",
+     "sha256": "69cfe6175d8979a19b23180d18d923594e1ada5de600918898acd2df9320e46a",
+     "functions": [
+      {
+       "name": "ExecuteUbergraph_Proj_Item_Scattershot",
+       "instructionCount": 38,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "K2_OnActive",
+       "instructionCount": 3,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "OnNotifyTime",
+       "instructionCount": 3,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "OnShutdown",
+       "instructionCount": 3,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "SpeedUp",
+       "instructionCount": 3,
+       "bytecodeRoundtrip": true
+      },
+      {
+       "name": "UserConstructionScript",
+       "instructionCount": 5,
+       "bytecodeRoundtrip": true
+      }
+     ],
+     "undecodedExportCount": 12,
+     "uexpSha256": "54d7554b9176f576f0c357f02aec452eb19b06128fda40fecef19ebf3fe80b8a"
+    },
+    {
+     "path": "Predecessor/Content/Predecessor/Items/Tier3/Scattershot/Scattershot.uasset",
+     "sha256": "1daa71d6ee903a4ca908cf119c96dfb88025e7d43c6b202f429f1c9d9f722606",
+     "functions": [],
+     "undecodedExportCount": 1,
+     "uexpSha256": "fcf6151725b8a0d794e97b8acb5ba37a418621e5e7e8481d5e5e1e0907dd97d2"
+    }
+   ],
+   "currentReportedCoreEvidence": {
+    "rows": 6,
+    "playerCoreAppearances": 186,
+    "heroes": [
+     "drongo",
+     "eden",
+     "kira",
+     "revenant",
+     "skylar"
+    ],
+    "kiraRows": [
+     {
+      "hero": "kira",
+      "n": 22,
+      "w": 12,
+      "anyOrder": false,
+      "coreSlugs": [
+       "vanquisher",
+       "onixian-quiver",
+       "scattershot"
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "counts": {
+  "assets": 24,
+  "functions": 36
+ },
+ "priorityEvidence": {
+  "source": "pred.gg public match stream (get-matches-since), RANKED, patch 1.17.2: ordered 3-item cores (first three completed Epic items by purchase time; anyOrder rows group a set whose orders were each under the floor), 20+ games each, counted 2026-10-14T18:34 -> 2026-10-16T01:17; hero-wide + per-role. Counted by npm run perks.",
+  "generatedAt": "2026-10-16T02:02:44.135Z",
+  "method": "Hero-wide reported cores only; do not add per-role duplicates. Counts sum observed player-core appearances, not unique matches, causal item value or win probability."
+ },
+ "defaultFollowup": "Exact execution properties now expose active magnitude bindings, capture attributes and tag filters. Native EventDataFloat mapping is traced separately; native damage composition and projectile outcomes are not fully verified."
+}

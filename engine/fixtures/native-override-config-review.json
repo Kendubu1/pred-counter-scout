@@ -1,0 +1,37 @@
+{
+  "scope": "Two recovered mode override configurations, not a complete activation or server-state audit",
+  "configurations": {
+    "CurveTableOverride_DayBreak": {
+      "exactProperties": 2,
+      "propertyBytes": 780,
+      "opaqueTrailingBytes": 4,
+      "curveTableEntries": 22,
+      "effectOverrideEntries": 14
+    },
+    "CurveTableOverride_Overclocked": {
+      "exactProperties": 1,
+      "propertyBytes": 23,
+      "opaqueTrailingBytes": 4,
+      "curveTableEntries": 1,
+      "effectOverrideEntries": 0
+    }
+  },
+  "findings": [
+    "ActiveConfig is a reflected subsystem field; native lookup first checks cached bindings then configured overrides.",
+    "Daybreak contains 22 curve-table substitutions covering game-mode, jungle, minion and structure tables, plus 14 effect override entries.",
+    "Overclocked contains one game-mode table substitution.",
+    "Neither recovered CurveTables map substitutes ct_ItemStats or the Eternal curve table. This does not establish standard-mode selection or exclude other configurations."
+  ],
+  "validation": [
+    "All three populated map properties serialize byte-for-byte; reference targets were resolved against the asset import tables.",
+    "Native kind 13 uses the soft-class reference layout for effect-map keys; treating it as a package index failed and is not retained.",
+    "Default reader invocation still selects only Default__ exports; explicit --all-raw is required for these data assets."
+  ],
+  "remaining": [
+    "Recover where ActiveConfig is assigned and how standard matches select it.",
+    "Review the 14 effect-override entries and stack-limit controls.",
+    "Resolve virtual curve endpoint/extrapolation behavior.",
+    "Four bytes remain outside each verified property stream; no whole-asset semantic certification."
+  ],
+  "privacy": "Native layouts, complete property maps, instruction traces and proprietary assets remain private."
+}

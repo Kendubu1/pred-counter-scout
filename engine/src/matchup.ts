@@ -9,7 +9,7 @@
 
 import { goldAt, loadAggregates } from './aggregates.js';
 import { resolveItemEffects } from './effects.js';
-import { combatDamage, evaluateBuild, loadCalibration, effectiveTotals, resolvedShieldFlat, type Calibration } from './sim.js';
+import { combatDamage, evaluateBuild, loadCalibration, effectiveTotals, resolvedShieldFlat, stagedManaAdequacy, type Calibration } from './sim.js';
 import type { DefenseProfile, HeroKit, Item } from './types.js';
 
 const KILL_WINDOW_SEC = 3;     // a committed all-in: full combo + ~3s of swings
@@ -25,9 +25,12 @@ export interface OrderedBuild {
 /**
  * Gold-curve-aware purchase order: greedy on marginal headline gain per
  * gold, evaluated with the actual prefix (so synergies like Demiurge or
- * crit stacking order themselves correctly).
+ * crit stacking order themselves correctly). Reordering must preserve at least
+ * the input build's staged mana adequacy. A candidate is feasible when its
+ * prefix followed by the remaining input order preserves that floor.
  */
 export function orderBuild(kit: HeroKit, items: Item[], level: number, cal: Calibration): OrderedBuild {
+  const manaFloor = stagedManaAdequacy(kit, items);
   const remaining = [...items];
   const ordered: Item[] = [];
   const cumulativeGold: number[] = [];
@@ -37,6 +40,10 @@ export function orderBuild(kit: HeroKit, items: Item[], level: number, cal: Cali
     let bestScore = -Infinity;
     const base = evaluateBuild(kit, ordered, level, cal);
     for (const cand of remaining) {
+      // Retain a known feasible completion rather than greedily spending the
+      // early mana budget and hoping a later item can repair its history.
+      const completion = [...ordered, cand, ...remaining.filter(i => i !== cand)];
+      if (stagedManaAdequacy(kit, completion) < manaFloor) continue;
       const ev = evaluateBuild(kit, [...ordered, cand], level, cal);
       const gain =
         (ev.objectives.rot10VsSquishy - base.objectives.rot10VsSquishy) +

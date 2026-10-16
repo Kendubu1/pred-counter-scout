@@ -1,0 +1,2317 @@
+{
+ "scope": "Installed client targeted mechanics review, not complete game decompilation",
+ "date": "2026-10-15",
+ "assetsReviewed": 139,
+ "decodedFunctionStreams": 188,
+ "exportsByParseType": {
+  "RawExport": 294,
+  "FunctionExport": 188,
+  "ClassExport": 78,
+  "NormalExport": 36
+ },
+ "validation": {
+  "instructionStreams": "Every decoded function reserializes byte-for-byte and matches reported VM size.",
+  "wholeAssets": "Not roundtrip validated. Parsed exports lose empty-header bytes on whole-asset reserialization; no files written to game installation.",
+  "parser": "UAssetAPI 7ecaebdf9365798a74ea4ba03af0ee66f56dbfde; local net8 compatibility and empty-property-header handling changes; UE5.4 serialization profile. Profile does not prove installed engine release.",
+  "limits": "Raw exports retained undecoded; property schemas, inherited defaults and native functions remain unresolved. Source decoding does not establish server parity."
+ },
+ "findings": [
+  {
+   "subject": "Ashbringer",
+   "status": "runtime branch traced; native helper contract still open",
+   "evidence": "GA_Item_Ashbringer.ExecuteUbergraph offsets 2791-3363, 104-1137, 1831-2739",
+   "finding": "BasicDamage events bypass the ability-instance branch and process currently active non-ultimate cooldown effects on each qualifying event. Nonbasic events use a UniqueInstances array. On-hit and critical-damage paths exclude cleave. Reduction incorporates EventDataFloat and a critical multiplier.",
+   "impact": "The diagnostic replay one-reduction-per-receiving-cooldown rule is contradicted by the basic-damage branch. Production still omits this passive.",
+   "open": "Trace native event payload scaling, Array_AddUnique return semantics and ReduceGameplayEffectDurationRemainingByPercent before claiming exact nonbasic deduplication or reduction amount."
+  },
+  {
+   "subject": "Knell",
+   "status": "runtime arithmetic and serialized curve bindings traced; native overrides and effect defaults unresolved",
+   "evidence": "GA_Blessing_Knell.ExecuteUbergraph offsets 10-582, 1484-3122, 3731-4596",
+   "finding": "Rejects ProcDamage and requires a hero target. Applies one stack, or four with Peal buff. Computes ShredPerStack = GetValueAtLevel(Shred,0) + GetValueAtLevel(ShredPerLevel,0) * actorLevel. Replaces target shred effect and passes 1-stackCount*ShredPerStack for armor and magic resist. Steal uses modified effect magnitude and post-application target attributes, tracked by target.",
+   "impact": "Prior 17.6% level-13 statement from curve interpolation alone is not runtime-verified. If the default bindings use the named curves with endpoint clamping at zero, arithmetic would instead yield 18.4%; do not promote that conditional value yet.",
+   "open": "Shred/ShredPerLevel/StealModifier now have exact serialized curve bindings. Trace native curve-table override selection, virtual curve evaluation and GetModifiedAttributeMagnitudeForHandle semantics; verify stacking, refresh and expiry settings. See native-curve-helper-review.json."
+  },
+  {
+   "subject": "Solaris",
+   "status": "runtime trigger and healing paths traced",
+   "evidence": "GA_Item_Solaris.ExecuteUbergraph offsets 386-1049, 3020-3235",
+   "finding": "Registers an ability-commit listener. Damage handler checks TriggersOnHit plus Solaris stacks; its own damage-tagged events take a separate healing path using event damage magnitude times HealingPercent.",
+   "impact": "Production generic on-ability-hit implementation is not faithful. Diagnostic healing is closer but needs event ordering and defaults verified.",
+   "open": "Decode empowerment duration/cooldown/defaults; trace crit handling in damage effect and native damage executor."
+  },
+  {
+   "subject": "Kira Purge",
+   "status": "runtime loop recovered",
+   "evidence": "GA_Huntress_Ultimate.ExecuteUbergraph offsets 15-716",
+   "finding": "Iterates actors in range, filters target eligibility, applies ultimate damage effect, then delays 0.16666699945926666 seconds before repeating.",
+   "impact": "Aggregate ultimate damage hides repeated events that may interact with stacks and procs.",
+   "open": "Verify activation/animation first-hit timing, cancellation and last-hit boundary; decode per-tick damage defaults. Do not infer exact tick count solely from duration/interval."
+  },
+  {
+   "subject": "Ruination",
+   "status": "runtime calculation and refresh filtering recovered",
+   "evidence": "GA_Item_Ruination.ExecuteUbergraph offsets 2077-3072, 3119-3949",
+   "finding": "Initial per-application damage calculation uses target current/max mana, clamps the total drain, divides by Duration*2, applies a minimum of 1 before DamageModifier. Refresh path tests damage tags and excludes basic, magical-basic, cleave, item and proc tags.",
+   "impact": "Uniform continuous drain plus refresh-on-every-ability is an approximation, not the recovered behavior.",
+   "open": "Decode effect period, mana modifier, native refresh contract, and zero-mana edge case before replacing model."
+  }
+ ],
+ "productionChanged": true,
+ "priorityNext": [
+  "Recover class-default bindings and effect schemas for Knell and damage effects.",
+  "Correct Ashbringer diagnostic event rule and validate native event-scaling meaning.",
+  "Trace Kira Vengeance/Nevermore event ordering and Mercy/Purge interactions.",
+  "Resolve Deathstalker internal asset name; it was not selected by the display-name path filter.",
+  "Only then update production mechanics, regenerate UI artifacts and rerun build comparisons."
+ ],
+ "assets": [
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Dusk/AIAbilityConfig_Huntress_Dusk.uasset",
+   "assetAndExportSha256": "056123567e32cf6733b18aceadab303d064c27cc742990fa8443d93ddb947a7e",
+   "functions": [],
+   "undecodedExports": [
+    "AIAbilityConfig_Huntress_Dusk"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Dusk/GA_Huntress_Dusk.uasset",
+   "assetAndExportSha256": "15c8ec12c628df102afcd3156d29c1485d9e3c680dfc1ea18af8459fa9f441d7",
+   "functions": [
+    {
+     "name": "ExecuteUbergraph_GA_Huntress_Dusk",
+     "instructions": 126,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "GetAbilityDescription",
+     "instructions": 97,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnBlendOut_B1A6881E446EB054D50751AD91C3BF4A",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnCancelled_B1A6881E446EB054D50751AD91C3BF4A",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnCompleted_B1A6881E446EB054D50751AD91C3BF4A",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_2363DD36450AF700ECF70EA5E70E19CD",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_C9D2C3544306EBB6DC07D2958A3833BA",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnInterrupted_B1A6881E446EB054D50751AD91C3BF4A",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnNotifyBegin_B1A6881E446EB054D50751AD91C3BF4A",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnNotifyEnd_B1A6881E446EB054D50751AD91C3BF4A",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Huntress_Dusk_C",
+    "Default__GA_Huntress_Dusk_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Dusk/GE_Huntress_Dusk_Activatable.uasset",
+   "assetAndExportSha256": "ebb602ac0be93479638c959e47f22358fa4ecd8ad53d9c755e410336f241ab82",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_Dusk_Activatable_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Dusk/GE_Huntress_Dusk_Cooldown.uasset",
+   "assetAndExportSha256": "82782a83937b29d2e8526362cbba918d0376b1e1a02bd483132a755d8d723efe",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_Dusk_Cooldown_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Dusk/GE_Huntress_Dusk_Damage.uasset",
+   "assetAndExportSha256": "92696aa20d24801ac0cd9935e6fc70e833530b1951bde0dc7949eb866764f53a",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Huntress_Dusk_Damage_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Dusk/GE_Huntress_Dusk_ManaCost.uasset",
+   "assetAndExportSha256": "ca81acccb4f4f46c2e643411acc0b38e4a1efd8c9b136d4026224742018adcaf",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_Dusk_ManaCost_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Dusk/GE_Huntress_Dusk_Slow.uasset",
+   "assetAndExportSha256": "3b7e0efb0d29d611e95b62e6dedebb3d6e53709f4108872e366e2a7869f87e9e",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_Dusk_Slow_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Dusk/GMMC_Huntress_Dusk_Damage.uasset",
+   "assetAndExportSha256": "c554bfd9b8a1ac9933e0329d98aa7048ace0b8e7a3ee559cd9b02cc9427cc329",
+   "functions": [
+    {
+     "name": "CalculateBaseMagnitude",
+     "instructions": 26,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "Default__GMMC_Huntress_Dusk_Damage_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Dusk/Vengeance/BP_Huntress_Passive_Vengeance_Component.uasset",
+   "assetAndExportSha256": "69101f777beceb8f009c38d71d35247261530343a33126be3b9570cc286368b8",
+   "functions": [],
+   "undecodedExports": []
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Dusk/Vengeance/GA_Huntress_Dusk_Vengeance.uasset",
+   "assetAndExportSha256": "a1d94655c4c0fbe23fefa02a34a6250fcdfdcd20ee0b2fba13fcb280c85d56e3",
+   "functions": [
+    {
+     "name": "Added_A4B18B574082601E8A1C2D85633308F0",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ApplyStacks",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "CheckDuskActivatable",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "Event_0302F1AD449769AB68D0A5B9322E2315",
+     "instructions": 5,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "EventReceived_3C2B9C8D4F6A50D9172A5FADF1617234",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "EventReceived_934B79D141C9A720EDFE3A8B67E88445",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "EventReceived_CCEA78B748118B0781F9919C5280B96A",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ExecuteUbergraph_GA_Huntress_Dusk_Vengeance",
+     "instructions": 398,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnApplied_D785B66143F4AF321F9295BA901E2A0A",
+     "instructions": 6,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_634B1F804ADB93FCC23CF5A27A6B8A80",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_6A9C0D3F4B646DAEF3297888AF5707D5",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_C8A04C68450A5C84982E2FBAA162AC01",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnLevelUp_3C3E6CCC4473217D8D03E89DD7A629A9",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnLevelUp_D409681042A564CC125712B92BD66DFD",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnLevelUp_F36B66DE435AEDA02D9B36B638DBAF6B",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnTagAdded_99A447E4402C923D3D9DA58B48E33FBF",
+     "instructions": 5,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnTagRemoved_99A447E4402C923D3D9DA58B48E33FBF",
+     "instructions": 5,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "Removed_05B3A188462D57A7E938229EC631CED7",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Huntress_Dusk_Vengeance_C",
+    "Default__GA_Huntress_Dusk_Vengeance_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Dusk/Vengeance/GE_Huntress_Vengeance_MagicalDamage.uasset",
+   "assetAndExportSha256": "600757a60ac5919d1a7572a4529cb2844bd3dcbfcbccff186c483123fd365a5f",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Huntress_Vengeance_MagicalDamage_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Dusk/Vengeance/GE_Huntress_Vengeance_ManaRefund.uasset",
+   "assetAndExportSha256": "e94c06555ec94874a8b7e75b0d846848dcb157c3a8c2d5b922fae62e6696718b",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_Vengeance_ManaRefund_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Dusk/Vengeance/GE_Huntress_Vengeance_PhysicalDamage.uasset",
+   "assetAndExportSha256": "7f8fac1731781acc47ca681b2e4ebec79baf3c128e43f57e46f7dbb0301192dd",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Huntress_Vengeance_PhysicalDamage_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Dusk/Vengeance/GE_Huntress_Vengeance_Stacks.uasset",
+   "assetAndExportSha256": "ba86ca019ed18d348321a0f76826701e4a262610b09f543c6e9517b41f0ae135",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "CustomCanApplyGameplayEffectComponent_0",
+    "Default__GE_Huntress_Vengeance_Stacks_C",
+    "TargetTagRequirementsGameplayEffectComponent_0",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Dusk/Vengeance/GE_Huntress_Vengeance_TrueDamage.uasset",
+   "assetAndExportSha256": "fae22ee580922e380a7b567ac4cf1f5412313ec01dde6b81b265cf3ed5938e4c",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Huntress_Vengeance_TrueDamage_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Emote/GC_Huntress_Emote_AfterShot.uasset",
+   "assetAndExportSha256": "bdab17796437caaf8116fb5fb34fa434e1fbf672825bbe991f071a158a981bc2",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GC_Huntress_Emote_AfterShot_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Emote/GC_Huntress_Emote_Cast.uasset",
+   "assetAndExportSha256": "19045aa3cbb307f91f520134b74bc796adb00c93e78cdaea70c8add2a4b358f2",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GC_Huntress_Emote_Cast_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Emote/GC_Huntress_Emote_Grab.uasset",
+   "assetAndExportSha256": "9f0752eb24ed2917c59b266e44757cd00bc9826627612b318b87eb8596a41193",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GC_Huntress_Emote_Grab_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Emote/GC_Huntress_Emote_Shot.uasset",
+   "assetAndExportSha256": "0a23984872bafb8c638d0310b690f5f51e3647648d8f8f6f5e6e46574f39fbb7",
+   "functions": [
+    {
+     "name": "OnBurst",
+     "instructions": 8,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "Default__GC_Huntress_Emote_Shot_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/GC_Huntress_Foley.uasset",
+   "assetAndExportSha256": "846664aa486c3340862ee51f71fe443ef1dc75f89296b4efc5f340739f90d2c2",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GC_Huntress_Foley_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/GC_Huntress_FoleyMovement.uasset",
+   "assetAndExportSha256": "80fb082879c607ad8dc53dde90f497d49732ec95f556886459656d4df6ec9b96",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GC_Huntress_FoleyMovement_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/GC_Huntress_Foot.uasset",
+   "assetAndExportSha256": "f04ce972eed1ad7339a65739a607326d885057a99c2dbe53545910fd39d24849",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GC_Huntress_Foot_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/GC_Huntress_Footsteps.uasset",
+   "assetAndExportSha256": "b252d4da576d891cbc332a96fa3905e5cd6258f92bf5b853d492f50e5f523e19",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GC_Huntress_Footsteps_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/GC_Huntress_Jump.uasset",
+   "assetAndExportSha256": "0d168539e0e681808fb0b994dd9bc47c356515cbadde1a86dcab06b49f8b82b0",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GC_Huntress_Jump_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/GC_Huntress_JumpGC.uasset",
+   "assetAndExportSha256": "598d4475082b338fec9b33d1e8517e442c9b35eca31c734a0be5089932999a23",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GC_Huntress_JumpGC_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/GC_Huntress_Land.uasset",
+   "assetAndExportSha256": "8b6606b2bb0f150e3313a1b05c44515bae2cd661f8ac6096f271ee22ea534c1b",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GC_Huntress_Land_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/GC_Huntress_LandGC.uasset",
+   "assetAndExportSha256": "c4f0681ae9d4f9d22658a0773980f59d922c37f8e8ac6b60ec713da2a3405053",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GC_Huntress_LandGC_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/GE_ARAM_Huntress_DamageDone.uasset",
+   "assetAndExportSha256": "9a3be34bc1e35e65d7e773b22124cb81d101b6d43e132be8f265c683da2bf5c6",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_ARAM_Huntress_DamageDone_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/GE_Huntress_InitializeAttributes.uasset",
+   "assetAndExportSha256": "c77a46b4791d683788a5ba3e7901e3cf12f54065fb83a32bcb9dc768699e1b77",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_InitializeAttributes_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/GE_Huntress_LevelUp.uasset",
+   "assetAndExportSha256": "fe09337e5502a027eba3fc81ee00653bd4141cee1039d2b443eae1d592479e0f",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_LevelUp_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Mercy/AIAbilityConfig_Huntress_Mercy.uasset",
+   "assetAndExportSha256": "09310fc9329d64f8db1eff489b8d1025424d62427e766b419487e2f64cfe309e",
+   "functions": [],
+   "undecodedExports": []
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Mercy/GA_Huntress_Mercy.uasset",
+   "assetAndExportSha256": "ed14c62ee74a0e4f6ead6f9518c4cfa7cf433e3ddce55cacd3ebac7d69cbf6b1",
+   "functions": [
+    {
+     "name": "ExecuteUbergraph_GA_Huntress_Mercy",
+     "instructions": 63,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "FailedToSpawn_E4EF5AD4414E3D842AB305A3A93519F2",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "GetAbilityDescription",
+     "instructions": 49,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "NotAuthority_E4EF5AD4414E3D842AB305A3A93519F2",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnAbilityCast",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnAbilityTargetingConfirmed",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_A4D4CA82439C3183C0103580B220B95E",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_AC50D1474B5113A233FA8FBD176B15C7",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "PreSpawned_E4EF5AD4414E3D842AB305A3A93519F2",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "Success_E4EF5AD4414E3D842AB305A3A93519F2",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Huntress_Mercy_C",
+    "Default__GA_Huntress_Mercy_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Mercy/GA_Huntress_Mercy_Passive.uasset",
+   "assetAndExportSha256": "ea5238fd1a8af45a6024da0a83beab87972090fa8265b516ffba83768d499d16",
+   "functions": [
+    {
+     "name": "Added_21C03982463516CE8254FBBA19285419",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ExecuteUbergraph_GA_Huntress_Mercy_Passive",
+     "instructions": 31,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Huntress_Mercy_Passive_C",
+    "Default__GA_Huntress_Mercy_Passive_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Mercy/GE_Huntress_Mercy_Cooldown_Buffed.uasset",
+   "assetAndExportSha256": "1cbc3d92ee18a72f9b3c4c67460d88c169e2f37aae4003a5abc9efd5e8680970",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_Mercy_Cooldown_Buffed_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Mercy/GE_Huntress_Mercy_CritModifier.uasset",
+   "assetAndExportSha256": "d3f3e2da7783585e6912a7db6a38258cb8b363b180b8bdbfbdc72dcb2e993e07",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_Mercy_CritModifier_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Mercy/GE_Huntress_Mercy_Damage.uasset",
+   "assetAndExportSha256": "24028696ba8a940357799b0687828c5274018c6743f0511540dc5e00b6d05d63",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Huntress_Mercy_Damage_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Mercy/GE_Huntress_Mercy_ManaCost.uasset",
+   "assetAndExportSha256": "1530433b46b6a5c00f07d1e5aa6056364859a47fa5699862825b3b54d56b6996",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_Mercy_ManaCost_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Mercy/GE_Huntress_Mercy_MinionDamage.uasset",
+   "assetAndExportSha256": "b79e7192e00a6a795688a35a4116a68a1752192cbcb58253733f68f8f41fb123",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Huntress_Mercy_MinionDamage_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Mercy/GE_Mercy_Mercy_Cooldown.uasset",
+   "assetAndExportSha256": "d391893bc53a066ab5bdcfcd33725c99f534dbb88bf2314d32b835b844c33461",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Mercy_Mercy_Cooldown_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Mercy/Proj_Huntress_Mercy.uasset",
+   "assetAndExportSha256": "2d18c31352af9026e1dd79c9cbfa9a64abd6e5b781e6a6ec12bfd297ebc6a411",
+   "functions": [
+    {
+     "name": "ExecuteUbergraph_Proj_Huntress_Mercy",
+     "instructions": 21,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_OnActive",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnShutdown",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "LoopingComp0",
+    "Proj_Huntress_Mercy_C",
+    "CapsuleCollisionOverlapComp0",
+    "NiagaraTrailComp0",
+    "ParticleTrailComp0",
+    "ProjectileComp0",
+    "Default__Proj_Huntress_Mercy_C",
+    "VisualRootComp0",
+    "SCS_Node_0",
+    "SimpleConstructionScript_0",
+    "CollisionOverlapComp0",
+    "MeshComp0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Mercy/TA_Huntress_Mercyv2.uasset",
+   "assetAndExportSha256": "46d4ec89808d1dad76dea9c10e9a2caf6762a925994c495dd6ec5496f051c217",
+   "functions": [],
+   "undecodedExports": [
+    "TA_Huntress_Mercyv2_C",
+    "SCS_Node_0",
+    "SimpleConstructionScript_0",
+    "Default__TA_Huntress_Mercyv2_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Passive/GA_Huntress_Passive.uasset",
+   "assetAndExportSha256": "1b673ac072e5e1c48dd5d7e966c2a6061023c21fe0d07ad760d3b88e9e3959a7",
+   "functions": [
+    {
+     "name": "EventReceived_62B8F4F340B38FD188AFA09562D1DA59",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ExecuteUbergraph_GA_Huntress_Passive",
+     "instructions": 161,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "FailedToSpawn_4FEA7EBF459202C8B9CD6BB02AA1C1E9",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "GetAbilityDescription",
+     "instructions": 20,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_OnEndAbility",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "NotAuthority_4FEA7EBF459202C8B9CD6BB02AA1C1E9",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnChange_8BA427DA47C7F1229FFE1E8229E7B10A",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnKilled_7BDF9A5F4B4CA670EAE4F28AE59EC8F9",
+     "instructions": 5,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "PreSpawned_4FEA7EBF459202C8B9CD6BB02AA1C1E9",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "Removed_A3C3A0AB43A754A148B74C88EC5F35D2",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "Success_4FEA7EBF459202C8B9CD6BB02AA1C1E9",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Huntress_Passive_C",
+    "Default__GA_Huntress_Passive_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Passive/GE_Huntress_Passive_Cooldown.uasset",
+   "assetAndExportSha256": "60ccc2981fc84c4725769d5fe82adb1f1e39fba06e2e966cb42e39b107506203",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_Passive_Cooldown_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Passive/GE_Huntress_Passive_Damage.uasset",
+   "assetAndExportSha256": "20fff48ef7c65b908fb66c0d6f1d09b7d08ac4c08c04b8175ec07eaa9826c284",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Huntress_Passive_Damage_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Passive/GE_Huntress_Passive_Ready.uasset",
+   "assetAndExportSha256": "d07d57e8a5e421903a746446e41fb15a7f25b5fd5be8aa25457a2d0bd8ccd298",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_Passive_Ready_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Passive/GMMC_Huntress_Passive_Cooldown.uasset",
+   "assetAndExportSha256": "f748a11d822c089447cff94d8e0c349af40d96f312da2614af462cd433d3ba5f",
+   "functions": [
+    {
+     "name": "CalculateBaseMagnitude",
+     "instructions": 6,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "Default__GMMC_Huntress_Passive_Cooldown_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Passive/Proj_Huntress_Passive_Raven.uasset",
+   "assetAndExportSha256": "87c8fb713d0f7ea473a8a66acb367dd257c4fabd3def51bd48b0ebfa717ef53f",
+   "functions": [
+    {
+     "name": "ExecuteUbergraph_Proj_Huntress_Passive_Raven",
+     "instructions": 58,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_OnActive",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "LockOnActorDeath",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnHitActor",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OpenGates",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ReceiveBeginPlay",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ReceiveTick",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "LoopingComp0",
+    "Proj_Huntress_Passive_Raven_C",
+    "CapsuleCollisionOverlapComp0",
+    "NiagaraTrailComp0",
+    "ParticleTrailComp0",
+    "ProjectileComp0",
+    "Default__Proj_Huntress_Passive_Raven_C",
+    "VisualRootComp0",
+    "SCS_Node_0",
+    "SimpleConstructionScript_0",
+    "CollisionBlockComp0",
+    "CollisionOverlapComp0",
+    "MeshComp0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Primary/AIAbilityConfig_Huntress_Primary.uasset",
+   "assetAndExportSha256": "f20ab43593e9a6d737fc7874ffc2288bc007f80a436815947a4c47d9aaecc04b",
+   "functions": [],
+   "undecodedExports": [
+    "AIAbilityConfig_Huntress_Primary"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Primary/GA_Huntress_Primary.uasset",
+   "assetAndExportSha256": "35631a4b12386cd4a129fe8f41bb47997b16a94b0e03232c31f74fd7ad9ca5f2",
+   "functions": [
+    {
+     "name": "ExecuteUbergraph_GA_Huntress_Primary",
+     "instructions": 7,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "Fire",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "GetAbilityDescription",
+     "instructions": 170,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Huntress_Primary_C",
+    "Default__GA_Huntress_Primary_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Primary/GE_Huntress_BasicCombat.uasset",
+   "assetAndExportSha256": "b2df049de7ffd8aee42c86d9966cd54db7ddd9a7fb9704259e3bf55156068026",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_BasicCombat_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Primary/GE_Huntress_Primary_Cooldown.uasset",
+   "assetAndExportSha256": "b096e353c218488d4aaebf3b9adb7d1b270eae39dcbe07b69eebf2aa4a69dd05",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_Primary_Cooldown_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Primary/GE_Huntress_Primary_Damage.uasset",
+   "assetAndExportSha256": "c47f9bbbabb518a0819d507ea1741be44389297e1ecaa360d657e8e53d537b82",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Huntress_Primary_Damage_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Primary/Proj_Huntress_Primary.uasset",
+   "assetAndExportSha256": "4e111f19934634e6af3d37cd169181107b8835a538299b1ed59cfc1b22b5bc62",
+   "functions": [
+    {
+     "name": "ExecuteUbergraph_Proj_Huntress_Primary",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnStop",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "LoopingComp0",
+    "Proj_Huntress_Primary_C",
+    "CapsuleCollisionOverlapComp0",
+    "NiagaraTrailComp0",
+    "ParticleTrailComp0",
+    "ProjectileComp0",
+    "Default__Proj_Huntress_Primary_C",
+    "VisualRootComp0",
+    "SCS_Node_0",
+    "SimpleConstructionScript_0",
+    "CollisionBlockComp0",
+    "CollisionOverlapComp0",
+    "MeshComp0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Primary/TA_Huntress_Primary.uasset",
+   "assetAndExportSha256": "7482c4323eb333c077f284521090a8f8b7f2f83d5b8770be0075c425c120c70d",
+   "functions": [],
+   "undecodedExports": [
+    "TA_Huntress_Primary_C",
+    "InheritableComponentHandler",
+    "NSTrajectory_GEN_VARIABLE",
+    "SCS_Node_0",
+    "SimpleConstructionScript_0",
+    "Default__TA_Huntress_Primary_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/ShadowGlide/AIAbilityConfig_Huntress_ShadowGlide.uasset",
+   "assetAndExportSha256": "d3bf851c5197e164d16371430e0a3280954edfb1961a9dd6bc99cf8d84c2343a",
+   "functions": [],
+   "undecodedExports": [
+    "AIAbilityConfig_Huntress_ShadowGlide"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/ShadowGlide/Curve_Huntress_ShadowGlide_PathOffset.uasset",
+   "assetAndExportSha256": "aa43bac4bed98877606cd21dfdfff594f404aa91742343ac476838e414ff6a50",
+   "functions": [],
+   "undecodedExports": [
+    "Curve_Huntress_ShadowGlide_PathOffset"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/ShadowGlide/GA_Huntress_ShadowGlide.uasset",
+   "assetAndExportSha256": "9a074c9a36864f57d0a0e22e599b8f3ac2d8a9a70d90eb29e6da7529c8f8a6b7",
+   "functions": [
+    {
+     "name": "ExecuteUbergraph_GA_Huntress_ShadowGlide",
+     "instructions": 181,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "GetAbilityDescription",
+     "instructions": 62,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_OnEndAbility",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnBlendOut_7517C9D74E3F62464AF2C0BC01A091BA",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnCancelled_7517C9D74E3F62464AF2C0BC01A091BA",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnCompleted_7517C9D74E3F62464AF2C0BC01A091BA",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_124DD87B46039EDA1422149A81952565",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_514DB6B2408EF374382DDD8D2CA5BA53",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_B162D3154C1B3703E96C86B587C3E7FF",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_CF1C7EA64B6CBEF5A52AF19706B5207B",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_DDA107CA4DE7CFAB49913AA01A075992",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnInterrupted_7517C9D74E3F62464AF2C0BC01A091BA",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnLanded_DDA107CA4DE7CFAB49913AA01A075992",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnNotifyBegin_7517C9D74E3F62464AF2C0BC01A091BA",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnNotifyEnd_7517C9D74E3F62464AF2C0BC01A091BA",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnPress_D0CAC1B24F41E8273EF3C8870E9C8AC0",
+     "instructions": 5,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnSync_4D0C03294773A7BEE4C550828CEB91F9",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Huntress_ShadowGlide_C",
+    "Default__GA_Huntress_ShadowGlide_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/ShadowGlide/GA_Huntress_ShadowGlide_Passive.uasset",
+   "assetAndExportSha256": "df5fb0f4ef6f8af10ab26374393ace20c38f0e5a9465908f1672b66b909d0af2",
+   "functions": [
+    {
+     "name": "EventReceived_07C10784436F5EF15D74ADB8367F46CA",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "EventReceived_9AE48EFD41B88F5C0DE588A427760CFB",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ExecuteUbergraph_GA_Huntress_ShadowGlide_Passive",
+     "instructions": 23,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Huntress_ShadowGlide_Passive_C",
+    "Default__GA_Huntress_ShadowGlide_Passive_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/ShadowGlide/GE_Huntress_ShadowGlide_Buff.uasset",
+   "assetAndExportSha256": "88d12f2714f0a70c9a70e9b1bf6fca6fcb9734ec2d3a01a15172629798fb86ef",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Huntress_ShadowGlide_Buff_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/ShadowGlide/GE_Huntress_ShadowGlide_Cooldown.uasset",
+   "assetAndExportSha256": "dbffd91f0fb5b64c3ded07d871fd7dc8bb58037ddb6a69420e7ea14cfc0df4ca",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_ShadowGlide_Cooldown_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/ShadowGlide/GE_Huntress_ShadowGlide_ManaCost.uasset",
+   "assetAndExportSha256": "a0f41691b14c3ea2642e0b40688860c4202fb193cab4765a8547b85b3451f420",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_ShadowGlide_ManaCost_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/ShadowGlide/GE_Huntress_ShadowGlide_Unselectable.uasset",
+   "assetAndExportSha256": "0f420131c1df0cf071c5ecbe3343fd165159116c351700433b761539ef8423c5",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_ShadowGlide_Unselectable_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Ultimate/AIAbilityConfig_Huntress_Ultimate.uasset",
+   "assetAndExportSha256": "dcc3b5d8419b8a9263b364415a979626e3b05527e2a2dac4bc92496b3747e367",
+   "functions": [],
+   "undecodedExports": []
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Ultimate/BP_Huntress_Ultimate.uasset",
+   "assetAndExportSha256": "e52de667ce28b30f78076e7fe91d7b9191d9559544fb2b88b793e7e89b229107",
+   "functions": [
+    {
+     "name": "BndEvt__BP_Huntress_Ultimate_CollisionVolume_K2Node_ComponentBoundEvent_0_ComponentBeginOverlapSignature__DelegateSignature",
+     "instructions": 9,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "BndEvt__BP_Huntress_Ultimate_CollisionVolume_K2Node_ComponentBoundEvent_1_ComponentEndOverlapSignature__DelegateSignature",
+     "instructions": 7,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ExecuteUbergraph_BP_Huntress_Ultimate",
+     "instructions": 16,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ReceiveBeginPlay",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "BP_Huntress_Ultimate_C",
+    "Default__BP_Huntress_Ultimate_C",
+    "ComponentDelegateBinding_0",
+    "SCS_Node_0",
+    "SCS_Node_4",
+    "SimpleConstructionScript_0",
+    "CollisionVolume_GEN_VARIABLE"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Ultimate/GA_Huntress_Ultimate.uasset",
+   "assetAndExportSha256": "50e650e1d009cc588a01f38aa03aeb1cb59a9ceabf3a4cd16fad26279ccbabf2",
+   "functions": [
+    {
+     "name": "Cancelled_64076100404C97B9FEC9A8A82C996CC7",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "Confirmed_64076100404C97B9FEC9A8A82C996CC7",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ExecuteUbergraph_GA_Huntress_Ultimate",
+     "instructions": 188,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "FailedToSpawn_A1F7D1BD42082E74B584E190CF8BA190",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "GetAbilityDescription",
+     "instructions": 101,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_OnEndAbility",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "NotAuthority_A1F7D1BD42082E74B584E190CF8BA190",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnBlendOut_29CE90DC4864B4B5D6BBB185EAB78C33",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnBlendOut_C8866BEE449DE10A41C4479CC8B066FB",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnCancelled_29CE90DC4864B4B5D6BBB185EAB78C33",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnCancelled_C8866BEE449DE10A41C4479CC8B066FB",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnCompleted_29CE90DC4864B4B5D6BBB185EAB78C33",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnCompleted_C8866BEE449DE10A41C4479CC8B066FB",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_52C0722A479301B185FF0597EFBB0675",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_D078D9544A6A13F8502BBFA098AE7442",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnInterrupted_29CE90DC4864B4B5D6BBB185EAB78C33",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnInterrupted_C8866BEE449DE10A41C4479CC8B066FB",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnNotifyBegin_29CE90DC4864B4B5D6BBB185EAB78C33",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnNotifyBegin_C8866BEE449DE10A41C4479CC8B066FB",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnNotifyEnd_29CE90DC4864B4B5D6BBB185EAB78C33",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnNotifyEnd_C8866BEE449DE10A41C4479CC8B066FB",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnPress_5DF59F484E69716E4688949E958765C1",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "PreSpawned_A1F7D1BD42082E74B584E190CF8BA190",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "Success_A1F7D1BD42082E74B584E190CF8BA190",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Huntress_Ultimate_C",
+    "Default__GA_Huntress_Ultimate_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Ultimate/GE_Huntress_Ultimate_Blight.uasset",
+   "assetAndExportSha256": "212e368bb9035e7c82a30c6363fa3eda993dfecbc138cebdb1fcbb5138755cdd",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Huntress_Ultimate_Blight_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Ultimate/GE_Huntress_Ultimate_Cooldown.uasset",
+   "assetAndExportSha256": "e8e5a5d163df964e41856bc9bba472dc7421ef8e0146663629e76242c7f3cb03",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_Ultimate_Cooldown_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Ultimate/GE_Huntress_Ultimate_Damage.uasset",
+   "assetAndExportSha256": "e6c02b4e8487e7b34781b64722f1d418e82ac268c3a07603d415dd7593b60737",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Huntress_Ultimate_Damage_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Ultimate/GE_Huntress_Ultimate_ManaCost.uasset",
+   "assetAndExportSha256": "c9d3eaf0ec6fc7a993ff3a6935c75bea6287f26dda9911acaede0829c1b7d56a",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Huntress_Ultimate_ManaCost_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Ultimate/GE_Huntress_Ultimate_SlowSelf.uasset",
+   "assetAndExportSha256": "b823c63b3e6f4ec03b09adb64e9d65a0adb4bdc47f19a9ea89674f2e706334da",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Huntress_Ultimate_SlowSelf_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Ultimate/TA_Huntress_Ultimate.uasset",
+   "assetAndExportSha256": "b12732d927149dbd7ec64bd3e6046a1373090c2bdda7f6862ef6b4e399dc91d3",
+   "functions": [],
+   "undecodedExports": [
+    "TA_Huntress_Ultimate_C",
+    "SCS_Node_0",
+    "SimpleConstructionScript_0",
+    "Default__TA_Huntress_Ultimate_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/ct_Huntress_Kit.uasset",
+   "assetAndExportSha256": "fed3b583577f83a3b3a6103b6beadd7a37a32b808a7d677d9f64b191ad78f3f3",
+   "functions": [],
+   "undecodedExports": []
+  },
+  {
+   "path": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/dt_Huntress_AbilityDescriptions.uasset",
+   "assetAndExportSha256": "5bdec0f92733a204e880cd2dcff02b46bd1557dd493f8cd7d3ca109b59604304",
+   "functions": [],
+   "undecodedExports": [
+    "dt_Huntress_AbilityDescriptions"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Major/AbilitySet_Blessing_Knell.uasset",
+   "assetAndExportSha256": "7b50dc5fb134b4cb53e1ff59da6df34d3f39c8dc05c48d43defde70ccc5cb8fd",
+   "functions": [],
+   "undecodedExports": [
+    "AbilitySet_Blessing_Knell"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Major/Eternal_Knell.uasset",
+   "assetAndExportSha256": "00dae5fa5ea4019e788dec5c7b844e59ea20c8362cccc8dceec8710562d2474a",
+   "functions": [],
+   "undecodedExports": [
+    "Eternal_Knell"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Major/GA_Blessing_Knell.uasset",
+   "assetAndExportSha256": "4ca30e4476906eb055504bd58d4de9cd5ef0d37e88678106e202a6d2003b6714",
+   "functions": [
+    {
+     "name": "EventReceived_C44AE3444C4FD70EC960578ADB82E4B2",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ExecuteUbergraph_GA_Blessing_Knell",
+     "instructions": 127,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "Removed_1E843B624E4D51DB5214869649D8326B",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Blessing_Knell_C",
+    "Default__GA_Blessing_Knell_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Major/GA_Blessing_Knell_Target.uasset",
+   "assetAndExportSha256": "cec479998d4148d34182fc80318550be44ecaacf9320b95afcf18df306d8e6f6",
+   "functions": [
+    {
+     "name": "ExecuteUbergraph_GA_Blessing_Knell_Target",
+     "instructions": 24,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_OnEndAbility",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Blessing_Knell_Target_C",
+    "Default__GA_Blessing_Knell_Target_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Major/GE_Blessing_Knell_MaxStacks.uasset",
+   "assetAndExportSha256": "9cb2e623c21b4a392f7b5b25b187ec2484d4dae9a480e140056c49bae3417947",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Blessing_Knell_MaxStacks_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Major/GE_Blessing_Knell_Shred.uasset",
+   "assetAndExportSha256": "62692a5338af1c1099c228107d536a7f2d9d087eaf80d6f7e0b802a8b4cc5df9",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Blessing_Knell_Shred_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Major/GE_Blessing_Knell_Stacks.uasset",
+   "assetAndExportSha256": "7c72fb8cfab69026b85c1d4323acd5f6afcff236fc19a0d1c7c28d138caba004",
+   "functions": [],
+   "undecodedExports": [
+    "AbilitiesGameplayEffectComponent_0",
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Blessing_Knell_Stacks_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Major/GE_Blessing_Knell_Steal.uasset",
+   "assetAndExportSha256": "2bc9cc5d1689246bf9c764835ce2156c6fdfca17bd06107728360520d91f0ffb",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Blessing_Knell_Steal_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Dampening/AbilitySet_Blessing_Dampening.uasset",
+   "assetAndExportSha256": "5f5e34b4e504669d99330196481247a59aad32dcd5c820d1f29ec72b560bd934",
+   "functions": [],
+   "undecodedExports": [
+    "AbilitySet_Blessing_Dampening"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Dampening/BP_Blessing_Dampening.uasset",
+   "assetAndExportSha256": "23d3db5c17940a5ee10058208d4f5385556d227aa25461ed1e956baf0a757a34",
+   "functions": [
+    {
+     "name": "BndEvt__BP_Blessing_Dampening_NearbySphere_K2Node_ComponentBoundEvent_2_ComponentBeginOverlapSignature__DelegateSignature",
+     "instructions": 9,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "BndEvt__BP_Blessing_Dampening_NearbySphere_K2Node_ComponentBoundEvent_3_ComponentEndOverlapSignature__DelegateSignature",
+     "instructions": 7,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ExecuteUbergraph_BP_Blessing_Dampening",
+     "instructions": 89,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ReceiveBeginPlay",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ReceiveDestroyed",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "UpdateAllHeroes",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "UpdateState",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "UserConstructionScript",
+     "instructions": 5,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "BP_Blessing_Dampening_C",
+    "Default__BP_Blessing_Dampening_C",
+    "ComponentDelegateBinding_0",
+    "SCS_Node_0",
+    "SCS_Node_2",
+    "SimpleConstructionScript_0",
+    "NearbySphere_GEN_VARIABLE"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Dampening/Blessing_Knell_Dampening.uasset",
+   "assetAndExportSha256": "3a302e8e6aa06b6d0243537becaf6b3d736d88d42219edc4ab7c1d960617b484",
+   "functions": [],
+   "undecodedExports": [
+    "Blessing_Knell_Dampening"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Dampening/GA_Blessing_Dampening.uasset",
+   "assetAndExportSha256": "2db4e65e0bf308f4c906514506d69357594c6e80ae8de4f80e78b06a4836f172",
+   "functions": [
+    {
+     "name": "ExecuteUbergraph_GA_Blessing_Dampening",
+     "instructions": 55,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "FailedToSpawn_3A7EC0B546DB1D70DDF18E9B5BC663A6",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_OnEndAbility",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "NotAuthority_3A7EC0B546DB1D70DDF18E9B5BC663A6",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnKilled_EC39C04A4CF22B669214C5980D258BF9",
+     "instructions": 5,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "PreSpawned_3A7EC0B546DB1D70DDF18E9B5BC663A6",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "Success_3A7EC0B546DB1D70DDF18E9B5BC663A6",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Blessing_Dampening_C",
+    "Default__GA_Blessing_Dampening_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Dampening/GE_Blessing_Dampening_Target.uasset",
+   "assetAndExportSha256": "871b841369941862bcf6b8532ac2c1c94b9e03d4619ef3fe776062d325373d84",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Blessing_Dampening_Target_C",
+    "PredDamageModifierGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Fracture/AbilitySet_Blessing_Fracture.uasset",
+   "assetAndExportSha256": "40f61e4ae6cbeff48d70d3c44171cadc866fd8eb6adfa9f2c09cc6233275dffe",
+   "functions": [],
+   "undecodedExports": [
+    "AbilitySet_Blessing_Fracture"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Fracture/Blessing_Knell_Fracture.uasset",
+   "assetAndExportSha256": "3c9b37c69e553441c2262c7330e8b8b33a43e02a45ada0d8fcbd2225d0c6b868",
+   "functions": [],
+   "undecodedExports": [
+    "Blessing_Knell_Fracture"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Fracture/GA_Blessing_Fracture.uasset",
+   "assetAndExportSha256": "d6fce9fe2f8a691d2dbb833b8670dc9fbce0312d9d746e3e5f3c135c33215a34",
+   "functions": [
+    {
+     "name": "EventReceived_72E712B14A6484600D0867884460ABAB",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ExecuteUbergraph_GA_Blessing_Fracture",
+     "instructions": 46,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Blessing_Fracture_C",
+    "Default__GA_Blessing_Fracture_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Frequency/AbilitySet_Blessing_Frequency.uasset",
+   "assetAndExportSha256": "add3bf1fe2a8b4dd5d921f12e5447b2c3797209b3863ca220da3f0a0794b6a6c",
+   "functions": [],
+   "undecodedExports": [
+    "AbilitySet_Blessing_Frequency"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Frequency/Blessing_Knell_Frequency.uasset",
+   "assetAndExportSha256": "4baf773c6289496235293b9361aa571f3cf2436d24b928850fdb182666c35810",
+   "functions": [],
+   "undecodedExports": [
+    "Blessing_Knell_Frequency"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Frequency/GA_Blessing_Frequency.uasset",
+   "assetAndExportSha256": "dde0b8fe42227c18f6a4b55d27ff8d829c9b5876021b36b41a95e2aced1e5235",
+   "functions": [
+    {
+     "name": "EventReceived_18CC9A554095982BB06BD7940BED849A",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "EventReceived_826469464466689B2CB8B6947F678A64",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ExecuteUbergraph_GA_Blessing_Frequency",
+     "instructions": 75,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnTargetListChange",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Blessing_Frequency_C",
+    "Default__GA_Blessing_Frequency_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Frequency/GE_Blessing_Frequency_Stats.uasset",
+   "assetAndExportSha256": "d51d801dd8b8cf66e700092a533b13d995154c7a3240e809f68aa1e572801b3b",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Blessing_Frequency_Stats_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Patina/AbilitySet_Blessing_Patina.uasset",
+   "assetAndExportSha256": "2e93c4df3581c1ebc9d7865e9f4e16320d6a927e416dec1b3232bf814ea80bd9",
+   "functions": [],
+   "undecodedExports": [
+    "AbilitySet_Blessing_Patina"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Patina/Blessing_Knell_Patina.uasset",
+   "assetAndExportSha256": "3af872dc14cf2ed36aca4b8677e10b94ad6d0eb0cf7209a6e1bb0e97ceafa66f",
+   "functions": [],
+   "undecodedExports": [
+    "Blessing_Knell_Patina"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Patina/GA_Blessing_Patina.uasset",
+   "assetAndExportSha256": "2b0a6e85e213aa5b401a3220c86e4c7f882d124fbd5726070f8657e2a73cfb9c",
+   "functions": [
+    {
+     "name": "EventReceived_A15F074C4A99796C6B3802BCE3D32ADE",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ExecuteUbergraph_GA_Blessing_Patina",
+     "instructions": 57,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnChange_B87D9B7A48140385EB069E89F59F94AC",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_E287799A46E5C0D5202A8A945F65F97B",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "Removed_483969E042D92457831C5ABCB51DA186",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "Removed_7D44882A4A1BC4CDD8048D82C005DACE",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Blessing_Patina_C",
+    "Default__GA_Blessing_Patina_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Patina/GE_Blessing_Patina_Cooldown.uasset",
+   "assetAndExportSha256": "f0977525311ac3165443371cc9dc48d04e1063004ea3c8711fddfcab4ec9ab24",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Blessing_Patina_Cooldown_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Patina/GE_Blessing_Patina_Shield.uasset",
+   "assetAndExportSha256": "bb2c060f59e0bec41844da1b87ea563fab233ec2d662bfdff9c1685673ecc3f2",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Blessing_Patina_Shield_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Peal/AbilitySet_Blessing_Peal.uasset",
+   "assetAndExportSha256": "6c34793b2a8459bbaf3e39ce29a8ebdb39fb295386b409c5df5a00e3f7674580",
+   "functions": [],
+   "undecodedExports": [
+    "AbilitySet_Blessing_Peal"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Peal/Blessing_Knell_Peal.uasset",
+   "assetAndExportSha256": "13a1481cb7f665eb4ab83f7fd672e9f262b390f437b60e0de3b236288cd97306",
+   "functions": [],
+   "undecodedExports": [
+    "Blessing_Knell_Peal"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Peal/GA_Blessing_Peal.uasset",
+   "assetAndExportSha256": "7f60298924fe6d77f00052791c54dfa4f769053dc25e51c3e3ceeb24b1c7d0ad",
+   "functions": [
+    {
+     "name": "ExecuteUbergraph_GA_Blessing_Peal",
+     "instructions": 19,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnCommit_7A878FEF40F8A4B78E5580864111A6C4",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Blessing_Peal_C",
+    "Default__GA_Blessing_Peal_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Peal/GE_Blessing_Peal_Cooldown.uasset",
+   "assetAndExportSha256": "c6ea12f4c5fc37a85ad6f856b9584fb918c5428917a5ec7ac6bef84413e63d6d",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Blessing_Peal_Cooldown_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Peal/GE_Blessing_Peal_Haste.uasset",
+   "assetAndExportSha256": "fc48e3ac3ade0f195033d45eb94e90367aaf10ed606f11c16dcb3ac9cd5cc475",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Blessing_Peal_Haste_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_Peal/GE_Blessing_Peal_UltimateBuff.uasset",
+   "assetAndExportSha256": "42b1df39147183433d6e1ab1981f44dc42fa87f9e3d0eb2e706f45555afc0c39",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Blessing_Peal_UltimateBuff_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_ResonantRepair/AbilitySet_Blessing_ResonantRepair.uasset",
+   "assetAndExportSha256": "57fedc6cc8d924770a8a1ae37bc5e9dffd0e31de0427bd5a26f11801fa809aaa",
+   "functions": [],
+   "undecodedExports": [
+    "AbilitySet_Blessing_ResonantRepair"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_ResonantRepair/Blessing_Knell_ResonantRepair.uasset",
+   "assetAndExportSha256": "afc64c9b2f745e66a3f78141b470b60cc2bf478b73ed4e691b4e189ec5d92243",
+   "functions": [],
+   "undecodedExports": [
+    "Blessing_Knell_ResonantRepair"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_ResonantRepair/GA_Blessing_ResonantRepair.uasset",
+   "assetAndExportSha256": "96614abd95ddc11bd0cd9654ae7b1f33e8991330b64296e47a6ccb2ff6400617",
+   "functions": [
+    {
+     "name": "EventReceived_3ACED3244900F316B18861B72C81D1EB",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ExecuteUbergraph_GA_Blessing_ResonantRepair",
+     "instructions": 24,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "Triggered_2DBEE9024FDB9D39E999F28F8D42AF64",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Blessing_ResonantRepair_C",
+    "Default__GA_Blessing_ResonantRepair_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_ResonantRepair/GE_Blessing_ResonantRepair_Dummy.uasset",
+   "assetAndExportSha256": "c9f0078e32c23c827694b9c08926352f703089d395ce8fa112d400a04c564dd1",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Blessing_ResonantRepair_Dummy_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_ResonantRepair/GE_Blessing_ResonantRepair_Healing.uasset",
+   "assetAndExportSha256": "0b4bd3f7c0e12411019c5e445093e92f536547458af547cbfd382c89777380b1",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Blessing_ResonantRepair_Healing_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Characters/Shared/Eternals/Knell/Minor_ResonantRepair/GE_Blessing_ResonantRepair_Tenacity.uasset",
+   "assetAndExportSha256": "a80c2d966b8183da0e609cca24f5c18aafcf9b95dda44bb2b7fb6f79b3fe2568",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Blessing_ResonantRepair_Tenacity_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Audio/SFX/Shared/Eternals/Knell/SFX_Eternal_Knell_Cast.uasset",
+   "assetAndExportSha256": "f70f6694f72434617edcc5521bbffab4084ff364be493ddda26827cc92e6b952",
+   "functions": [],
+   "undecodedExports": [
+    "SFX_Eternal_Knell_Cast"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Audio/SFX/Shared/Eternals/Knell/SFX_Eternal_Knell_Remove.uasset",
+   "assetAndExportSha256": "080df240465f7eab77ee288fbc57b7b31c701a4bc05ce78301306d49d9eecb14",
+   "functions": [],
+   "undecodedExports": [
+    "SFX_Eternal_Knell_Remove"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Audio/SFX/Shared/Eternals/Knell/SFX_Eternal_Knell_Stack.uasset",
+   "assetAndExportSha256": "526275c5bf155e375306ec9b865ad043889ee0f603d22df5d414a639c64908a4",
+   "functions": [],
+   "undecodedExports": [
+    "SFX_Eternal_Knell_Stack"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Audio/SFX/Shared/Eternals/Knell/SFX_Eternals_Knell_Cast_Cue.uasset",
+   "assetAndExportSha256": "31a77b7dcc9521c8e999440e166632ada298847f9ebb872a9f01547cf5b81bf0",
+   "functions": [],
+   "undecodedExports": [
+    "SFX_Eternals_Knell_Cast_Cue",
+    "SoundNodeAttenuation_0",
+    "SoundNodeAttenuation_1",
+    "SoundNodeModulator_0",
+    "SoundNodePriority_2",
+    "SoundNodePriority_3",
+    "SoundNodeSwitch_0",
+    "SoundNodeWavePlayer_1"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Audio/SFX/Shared/Eternals/Knell/SFX_Eternals_Knell_Remove_Cue.uasset",
+   "assetAndExportSha256": "8d47f5ab21277da574f9f0c53d82372726415b53edcd30ca1d16766af2e5da20",
+   "functions": [],
+   "undecodedExports": [
+    "SFX_Eternals_Knell_Remove_Cue",
+    "SoundNodeAttenuation_0",
+    "SoundNodeAttenuation_1",
+    "SoundNodeModulator_0",
+    "SoundNodePriority_2",
+    "SoundNodePriority_3",
+    "SoundNodeSwitch_0",
+    "SoundNodeWavePlayer_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Audio/SFX/Shared/Eternals/Knell/SFX_Eternals_Knell_Stack_Cue.uasset",
+   "assetAndExportSha256": "4565eb482546e4d74980bcfa466a36ad04597ff5ab81a6d0e197cc26834174f1",
+   "functions": [],
+   "undecodedExports": [
+    "SFX_Eternals_Knell_Stack_Cue",
+    "SoundNodeAttenuation_0",
+    "SoundNodeAttenuation_1",
+    "SoundNodeModulator_0",
+    "SoundNodePriority_2",
+    "SoundNodePriority_3",
+    "SoundNodeSwitch_0",
+    "SoundNodeWavePlayer_1"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Ashbringer/Ashbringer.uasset",
+   "assetAndExportSha256": "a028b78aa778c9cf235e4c3b9e2f1aa85b93cc8590127cc56f259c3fb2353c24",
+   "functions": [],
+   "undecodedExports": [
+    "Ashbringer"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Ashbringer/GA_Item_Ashbringer.uasset",
+   "assetAndExportSha256": "5701fe6d854a9aca03184485d20502afc7aa6a8797b8ebcc3e73106a9c5e263a",
+   "functions": [
+    {
+     "name": "EventReceived_D4A1E114423679E8937B8F9790D9DF06",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ExecuteUbergraph_GA_Item_Ashbringer",
+     "instructions": 93,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "Removed_8F35184245FFA1F38711E88B6EC36EF2",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Item_Ashbringer_C",
+    "Default__GA_Item_Ashbringer_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Ashbringer/GE_Item_Ashbringer.uasset",
+   "assetAndExportSha256": "2999a7f5f90066bfc646f6eed63cf7138ee9859efa8b41b5e29bdb3c1740502d",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Item_Ashbringer_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Ashbringer/GE_Item_Ashbringer_Grant.uasset",
+   "assetAndExportSha256": "6e0521af984b3f6a5ddbdabcb006d0554e8b7afe1256f86ea0fbbc954bb4a6e3",
+   "functions": [],
+   "undecodedExports": [
+    "AbilitiesGameplayEffectComponent_0",
+    "Default__GE_Item_Ashbringer_Grant_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Ruination/GA_Item_Ruination.uasset",
+   "assetAndExportSha256": "5df638b4d97d8ca083b50db2e95625b9ca3f8c1b4b5a2ef8a5fcfa08cee4694f",
+   "functions": [
+    {
+     "name": "EventReceived_65F88EED46423D35910251A786E32BFA",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ExecuteUbergraph_GA_Item_Ruination",
+     "instructions": 109,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Item_Ruination_C",
+    "Default__GA_Item_Ruination_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Ruination/GE_Item_Ruination.uasset",
+   "assetAndExportSha256": "e8dc9447ec7fee71ef16efb3c8f506e38f8d139e922bce0ecfcd00e60924144c",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Item_Ruination_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Ruination/GE_Item_Ruination_Cooldown.uasset",
+   "assetAndExportSha256": "64e9555427b6d4a847a7f1f5138e1a4163e403d752944a50b89d3dc705b9aa34",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Item_Ruination_Cooldown_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Ruination/GE_Item_Ruination_DoT.uasset",
+   "assetAndExportSha256": "6988fc53c3d9fafe35b1dc16139ad13b78585397bed366937ed40da74489a944",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Item_Ruination_DoT_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Ruination/GE_Item_Ruination_Grant.uasset",
+   "assetAndExportSha256": "df41c96668c66d5d133f87d07665668e617af1b53c34dea379d4b8211aaa92f8",
+   "functions": [],
+   "undecodedExports": [
+    "AbilitiesGameplayEffectComponent_0",
+    "Default__GE_Item_Ruination_Grant_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Ruination/Ruination.uasset",
+   "assetAndExportSha256": "79b83f7c1edd363826b8e6c86a7967d1de44e50e2f19a120943e8ea7f1546f07",
+   "functions": [],
+   "undecodedExports": [
+    "Ruination"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Solaris/GA_Item_Solaris.uasset",
+   "assetAndExportSha256": "a9366218b3f75b42d20e9277ddcecef3a4b982243137275e6bbb867bd070dc7f",
+   "functions": [
+    {
+     "name": "EventReceived_246089DA4DC6E62E4DDB2CA379FBCEC3",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "EventReceived_BF17EF294BF93F2385894A961075D3EB",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ExecuteUbergraph_GA_Item_Solaris",
+     "instructions": 118,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "InvalidHandle_D75DA4084264483166C148AD5224B709",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnCommit_550AADE04413091B03C9899520257642",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnRemoved_D75DA4084264483166C148AD5224B709",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Item_Solaris_C",
+    "Default__GA_Item_Solaris_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Solaris/GE_Item_Solaris.uasset",
+   "assetAndExportSha256": "02031ecc71d4741f36e6efbba36083c24aed226e67a75fd93b6e11a48d6b4455",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Item_Solaris_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Solaris/GE_Item_Solaris_Cooldown.uasset",
+   "assetAndExportSha256": "ac5715f32e028e8352f6b84db113f8e524256e41f98dc415955b18ee4d2afa40",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Item_Solaris_Cooldown_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Solaris/GE_Item_Solaris_Damage.uasset",
+   "assetAndExportSha256": "284000dea9385658df6ab433c52a9682cd0e2e51b6d56d66a2012abea62c38e8",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Item_Solaris_Damage_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Solaris/GE_Item_Solaris_Grant.uasset",
+   "assetAndExportSha256": "f5133d4ced200615619eb02104787d9529f28f9df2ff2fcea9cd03382198e793",
+   "functions": [],
+   "undecodedExports": [
+    "AbilitiesGameplayEffectComponent_0",
+    "Default__GE_Item_Solaris_Grant_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Solaris/GE_Item_Solaris_Healing.uasset",
+   "assetAndExportSha256": "b358d95d0b420a209dca74b5aeaaf273caa29782a6a6cc419a9c54e73f56e7c6",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Item_Solaris_Healing_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Solaris/GE_Item_Solaris_Stacks.uasset",
+   "assetAndExportSha256": "2f487aa9a1d864f4d80b73291fcc94db2479e1a4ea72a10d680a27e471dd98b5",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Item_Solaris_Stacks_C",
+    "TargetTagsGameplayEffectComponent_0"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Solaris/Solaris.uasset",
+   "assetAndExportSha256": "396fe2c29b1b43bacadcf8da8c33b5d1cdf80e8fe98d6d21703414a4f1b96591",
+   "functions": [],
+   "undecodedExports": [
+    "Solaris"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Viper/GA_Item_Viper.uasset",
+   "assetAndExportSha256": "3c45fc933e4e291b5cc5bdfb2271291f2bded1cc00398b85ef551cbf1d7526f1",
+   "functions": [
+    {
+     "name": "EventReceived_1F66030040D198176EF524AD02CB9DA1",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "EventReceived_487195794533E9B6F384C7AE0E4A4E41",
+     "instructions": 4,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ExecuteUbergraph_GA_Item_Viper",
+     "instructions": 75,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "GetFilterTags",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "instructions": 3,
+     "bytecodeRoundtrip": true
+    }
+   ],
+   "undecodedExports": [
+    "GA_Item_Viper_C",
+    "Default__GA_Item_Viper_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Viper/GE_Item_Viper.uasset",
+   "assetAndExportSha256": "09177b8c53ce182ba96ecf532d9ee98c42f857767b2c30e49faae3b794e68bc8",
+   "functions": [],
+   "undecodedExports": [
+    "Default__GE_Item_Viper_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Viper/GE_Item_Viper_Damage.uasset",
+   "assetAndExportSha256": "e02bb369d3746f51ddc6864da7a654fa1ad727e76caae8c067760a63dfebaa74",
+   "functions": [],
+   "undecodedExports": [
+    "AssetTagsGameplayEffectComponent_0",
+    "Default__GE_Item_Viper_Damage_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Viper/GE_Item_Viper_Grant.uasset",
+   "assetAndExportSha256": "41a602a7b68300ca48f2b14cf739953f5778653fbbb93a25d260ace4cdc2a52c",
+   "functions": [],
+   "undecodedExports": [
+    "AbilitiesGameplayEffectComponent_0",
+    "Default__GE_Item_Viper_Grant_C"
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Tier3/Viper/Viper.uasset",
+   "assetAndExportSha256": "852e73a1ff1eff4dca0ca4b401d769baf4935c666e845ddc516ec27a717184b5",
+   "functions": [],
+   "undecodedExports": [
+    "Viper"
+   ]
+  }
+ ],
+ "incorporation": {
+  "production": [
+   "Solaris cast_then_basic trigger caps mixed-combat procs by available casts and basics; spell-only rotation and basic-only DPS excluded. Timing remains an optimistic aggregate bound."
+  ],
+  "diagnostic": [
+   "Ashbringer repeat reductions on basics/Mercy, no per-cooldown-cycle lockout.",
+   "Solaris cooldown starts on consumption.",
+   "Explicit repeated Purge hits accepted during an active channel, no automatic tick-count guess."
+  ],
+  "notPromoted": [
+   "Knell numeric defaults/armor-steal semantics",
+   "Ruination period and zero-mana rules",
+   "Native event scaling and global damage ordering"
+  ]
+ }
+}

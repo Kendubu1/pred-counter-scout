@@ -3,15 +3,17 @@
 ## Project
 
 Predecessor Scout: a build/counter companion for Predecessor (5v5 MOBA).
-Two halves:
+Active app and data (confirmed 2026-10-15):
 
-- `ui/v2/` + `data/game-data/` + `data/2026-02-08/`: the LIVE site and its
-  data. Frozen; do not modify without an explicit ask. Its game numbers are
-  known to be pre-patch-1.14 (see lessons.md and `npm run drift`).
-- `engine/`: the v5 kit-math engine, spec in `docs/v5-engine-design.md`.
-  All numbers come from the `data/catalog/` snapshot (current patch, pulled
-  from pred.gg by `npm run catalog`; it replaced the omeda.city snapshot on
-  2026-10-14 after omeda stopped publishing). This is where active work happens.
+- `ui/v6/` is the live app. `ui/index.html` and `ui/v2/index.html` redirect there.
+- `data/catalog/` supplies current hero/item descriptions and stats. `engine/`
+  computes committed `data/artifacts/` consumed by the UI.
+- `data/game-data/eternals.json` supplies Eternal descriptions to both the
+  engine and UI; it still needs a complete installed-client audit. Other files
+  in `data/game-data/` include historical/curated supporting information.
+- The maintainer explicitly authorized updating UI and supporting data on
+  2026-10-15. The old UI/data freeze no longer applies. Follow actual imports;
+  do not update retired app copies as though they were active.
 
 ## Data policy (permanent, set by the maintainer 2026-06-12)
 

@@ -6,7 +6,7 @@ passive split out (with the trigger condition), the effect primitive it maps
 to, and how that rolls into the simulator. Flat stats are always counted;
 this doc is about the **passives**. THEORY until in-game calibration.
 
-**Coverage: 69 modeled · 56 honestly unmodeled (with reasons) · 0 not yet reviewed · 125 total.**
+**Coverage: 67 modeled · 58 honestly unmodeled (with reasons) · 0 not yet reviewed · 125 total.**
 
 ---
 
@@ -45,7 +45,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 ---
 
 ### World Breaker  ·  3200g
-**Base stats:** magical power 45, max health 350, tenacity 75
+**Base stats:** magical power 45, max health 350, tenacity 25
 
 **Passive 1 — Fiend:** *[On dealing Magical Damage to a Hero:]* • Increases your Magical Damage dealt by 2% for 4.5s . • Stacks up to 6 times.
 **Passive 2 — Maya:** • Gain (+5% ) Magical Power .
@@ -78,7 +78,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 4 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes} Damage Dealt to Self: {DamageTaken}
 
 **→ Modeled as:**
-- `on_hit` — every basic attack adds 30 (+4% health) magical damage — rate-capped over the attack window.
+- `on_hit` — every basic attack adds 20 (+3.5% health) magical damage — rate-capped over the attack window.
 - `unmodeled` — **not modeled** — Forbidden Art scales AS/regen with the holder missing health; no health-state uptime model.
 
 ---
@@ -92,7 +92,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 **→ Modeled as:**
 - `on_hit` — every basic attack adds 1% of target max HP physical damage — rate-capped over the attack window.
-- `on_ability_hit` — each ability adds 3% of target max HP physical damage — credited per ability in a combo.
+- `on_ability_hit` — each eligible ability adds 3% of target max HP physical damage.
 
 ---
 
@@ -103,7 +103,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes} Times Applied to Heroes: {TimesApplied}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds (+90% physical power) physical damage (≤ once / 4s per target) — credited per ability in a combo.
+- `on_ability_hit` — bounded cast/basic pairs add (+90% base physical power) physical damage (≤ once / 1.5s per target).
+- `unmodeled` — **not modeled** — Client Blueprint requires ability-commit empowerment followed by an eligible on-hit event. Production uses bounded cast/basic pairs only; spell-only rotations and basic-only DPS omit this proc. Four-second expiry, actual weaving and ability on-hit consumers remain unmodeled.
 
 ---
 
@@ -139,7 +140,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes} Times Applied to Heroes: {TimesApplied}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 60 (+35% magical power) magical damage (≤ once / 4s per target) — credited per ability in a combo.
+- `on_ability_hit` — bounded cast/basic pairs add 65 (+35% magical power) magical damage (≤ once / 1.5s per target).
+- `unmodeled` — **not modeled** — Client Blueprint requires ability-commit empowerment followed by an eligible on-hit event. Production uses bounded cast/basic pairs only; spell-only rotations and basic-only DPS omit this proc. Four-second expiry, actual weaving and ability on-hit consumers remain unmodeled.
 
 ---
 
@@ -173,7 +175,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Power Gained: {Power} Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `on_hit` — every basic attack adds (+2% max mana) physical damage — rate-capped over the attack window.
+- `on_hit` — every basic attack adds (+2.5% max mana) physical damage — rate-capped over the attack window.
 - `unmodeled` — **not modeled** — Potent Font is a per-kill max-mana farming stack (caps at 400 then grants PP); economy.
 
 ---
@@ -185,7 +187,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `on_hit` — every basic attack adds 5.5% of target current HP physical damage — rate-capped over the attack window.
+- `on_hit` — every basic attack adds 5% of target current HP physical damage — rate-capped over the attack window.
+- `unmodeled` — **not modeled** — Rend uses fixed target-health assumptions: full profile health in burst and 80% in sustained damage, not health updated after each hit. The recovered hero branch applies the damage floor before native event scaling and has no monster damage cap. Native event scaling, default bindings and hit ordering remain unresolved; catalog percentages and the 12-damage floor are partial modeling, not verified event-level behavior.
 
 ---
 
@@ -196,7 +199,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes} Health Restored: {HealthRestored}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 45 (+35% physical power) physical damage (≤ once / 4s per target) — credited per ability in a combo.
+- `on_ability_hit` — bounded cast/basic pairs add 45 (+35% physical power) physical damage (≤ once / 1.5s per target).
+- `unmodeled` — **not modeled** — Client Blueprint confirms ability-commit empowerment consumed by an eligible on-hit event. Production counts only bounded cast/basic pairs in mixed combat; ability-only rotations and basic-only DPS exclude the proc. Pair timing and four-second expiry are optimistic aggregate assumptions; Mercy on-hit consumption, critical damage and 50% healing remain omitted. See client-mechanics-review.json.
 
 ---
 
@@ -212,19 +216,6 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 ---
 
-### Vainglory  ·  3100g
-**Base stats:** max health 200, physical armor 45, magical armor 40
-
-**Passive 1 — Pride:** *[Upon dealing or taking Hero Damage:]* • Gain a stack of Vanity for 4s . • Each stack grants +0.5% increased Armors . • Max Stacks: 10 .
-**Passive 2 — In Vain:** *[While at Max Vanity stacks:]* • Gain an additional 12% increased Armors .
-**Passive 3 — :** Time In Vain: {TimeInVain}s
-
-**→ Modeled as:**
-- `armor_multiplier` — armor ×1.10 — raises effective HP vs that damage type.
-- `unmodeled` — **not modeled** — In Vain's unconditional +10% Armors credited; Pride's +0.5%/stack (to +5%) ramps on dealing/taking damage and is not.
-
----
-
 ### Vanquisher  ·  3100g
 **Base stats:** physical power 50, physical penetration 12, critical chance 20
 
@@ -232,7 +223,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Executions: {Executions} Execute Damage Dealt: {DamageDealt}
 
 **→ Modeled as:**
-- `execute` — below 5% HP the target is a free kill — credited as 5% of their max HP as bonus burst.
+- `execute` — credits surviving health only when aggregate post-burst health plus shield is at most 5% of maximum health and the target is alive; no unconditional burst bonus.
+- `unmodeled` — **not modeled** — Client checks a living hero after damage: remaining health plus shield must be at most 5% of maximum health. Production checks only the end of the aggregate burst and credits remaining health, assuming ordinary shield absorption. Intermediate hit timing, shield bypass, native execute damage and sustained-window execution remain unmodeled; no unconditional 5% damage bonus is granted.
 
 ---
 
@@ -245,7 +237,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 **→ Modeled as:**
 - `armor_shred` — strips 27% of the target's physical armor (ramps over 6s) — so ALL your physical damage lands harder.
-- `damage_amp` — +8% to your damage — applied as an amp on every qualifying hit.
+- `unmodeled` — **not modeled** — Diligence grants 10% increased On-Hit and Ability damage only against Eroded targets (6 stacks). The simulator lacks target stack state; do not amplify all basic damage unconditionally.
 
 ---
 
@@ -327,8 +319,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 50 (+18% magical power) magical damage (≤ once / 15s per target) — credited per ability in a combo.
-- `unmodeled` — **not modeled** — Pyromaniac: damaging heroes reduces Pyro cooldown by 0.5s per hit
+- `on_ability_hit` — each eligible ability adds 50 (+18% magical power) magical damage (≤ once / 15s per target).
+- `unmodeled` — **not modeled** — Pyromaniac cooldown reduction is omitted. The recovered client requires a hero target, excludes Item, DoT and ProcDamage events, and uses a shared gate with a 0.05-second delayed reset. This is not unrestricted reduction on every damage packet. Scalar bindings, overlapping callbacks and native cooldown behavior remain unresolved; the simulator retains the catalog 15-second Pyro cooldown.
 
 ---
 
@@ -339,8 +331,9 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — Onslaught:** • Gain (+100% ) Attack Speed .
 
 **→ Modeled as:**
-- `armor_shred` — strips 12 of the target's physical armor (ramps over 3s) — so ALL your physical damage lands harder.
+- `on_hit_armor_shred` — prior basic hits reduce armor by 3 per stack, up to 4 stacks with 3s shared expiry; uniform attack spacing is assumed.
 - `stat_conversion` — converts 100% of physical penetration into attack speed.
+- `unmodeled` — **not modeled** — Client triggers on hero on-hit events with a next-engine-tick gate. Production credits prior basic-hit stacks only, using uniform attack spacing and shared refresh. Ability/proc benefits, Mercy triggers, frame batching and cross-target state remain unmodeled. Three seconds is expiry, not a time-to-full ramp.
 
 ---
 
@@ -351,7 +344,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `damage_amp` — +10% to your ability damage (when window only, credited at partial uptime) — applied as an amp on every qualifying hit.
+- `damage_amp` — +12.5% to your ability damage (when window only, credited at partial uptime) — applied as an amp on every qualifying hit.
 
 ---
 
@@ -362,7 +355,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 3 (+3% magical power) magical damage (≤ once / 0.2s per target) — credited per ability in a combo.
+- `on_ability_hit` — each eligible ability adds 3 (+3% magical power) magical damage (≤ once / 0.2s per target).
 
 ---
 
@@ -409,7 +402,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 2.5% of target max HP magical damage (≤ once / 3s per target) — credited per ability in a combo.
+- `on_ability_hit` — each eligible ability adds 2.5% of target max HP magical damage (≤ once / 3s per target).
 - `unmodeled` — **not modeled** — Star Killer (6% of target BONUS health) needs a base/bonus health split the reference profiles do not carry
 
 ---
@@ -422,7 +415,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Damage Dealt: {DamageDealt}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 6% of target max HP magical damage (≤ once / 8s per target) — credited per ability in a combo.
+- `on_ability_hit` — each eligible ability adds 6% of target max HP magical damage (≤ once / 8s per target).
 
 ---
 
@@ -435,8 +428,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 **→ Modeled as:**
 - `stat_flat` — +0 (+3/level) magical power — straight into the build's stat totals.
-- `stat_flat` — +0 (+15/level) health — straight into the build's stat totals.
-- `unmodeled` — **not modeled** — Art of Fortitude restores 3% missing health over 3s on cast; out-of-combat-style sustain.
+- `stat_flat` — +0 (+12/level) health — straight into the build's stat totals.
+- `unmodeled` — **not modeled** — Art of Fortitude restores 3% missing health over 5s on cast; health-state-dependent sustain is unmodeled.
 
 ---
 
@@ -449,7 +442,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 **→ Modeled as:**
 - `stat_flat` — +0 (+3/level) magical power — straight into the build's stat totals.
-- `stat_flat` — +0 (+15/level) health — straight into the build's stat totals.
+- `stat_flat` — +0 (+12/level) health — straight into the build's stat totals.
 - `unmodeled` — **not modeled** — This is the item the field actually BUYS; it evolves (~500 bonus XP, mid-game) into Orb of Enlightenment, so it is credited at its evolved per-level MP/HP value. Inner Growth's bonus-XP economy (faster leveling) and Art of Fortitude's 3% missing-health heal stay unmodeled (out of combat scope). Pre-evolution the per-level growth is slightly optimistic; evolution-timing gating is a future refinement.
 
 ---
@@ -485,18 +478,6 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 ---
 
-### Soulbinder  ·  3000g
-**Base stats:** magical power 85, max mana 400, ability haste 20
-
-**Passive 1 — Arcane Salvo:** *[Damage Heroes from afar with Abilities:]* • Deal 8% bonus Damage . • Activates at 1450+ Range .
-**Passive 2 — Farseer:** *[Upon triggering Arcane Salvo:]* • Permanently gain 1 Magical Power .
-**Passive 3 — :** Damage Dealt: {DamageDealt}
-
-**→ Modeled as:**
-- `damage_amp` — +7% to your ability damage — applied as an amp on every qualifying hit.
-
----
-
 ### Spectral Schematics  ·  3000g
 **Base stats:** magical power 55, max health 300, ability haste 20
 
@@ -504,7 +485,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 40 + 5% of target current HP magical damage — credited per ability in a combo.
+- `on_ability_hit` — each reviewed root/stun cast that lands adds 40 + 5% of target current HP magical damage.
+- `unmodeled` — **not modeled** — Partial trigger coverage: one proc per reviewed root/stun cast that lands on one target. Displacement-only, empowered, stacked and stance-dependent CC are not credited. Delays, stored charges, repeated applications, immunity and target current-health progression are unmodeled.
 
 ---
 
@@ -551,7 +533,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 **→ Modeled as:**
 - `anti_heal` — cuts the target's healing by 45% — matters vs sustain.
-- `on_hit` — every basic attack adds (+10% physical power) physical damage — rate-capped over the attack window.
+- `on_hit` — every basic attack adds (+10% physical power) magical damage — rate-capped over the attack window.
 - `unmodeled` — **not modeled** — second on-hit scaling term (icon-ambiguous) and missing-health amplification up to +100%
 
 ---
@@ -565,7 +547,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 **→ Modeled as:**
 - `anti_heal` — cuts the target's healing by 45% — matters vs sustain.
-- `on_ability_hit` — each ability adds 22.5 (+15% magical power) magical damage — credited per ability in a combo.
+- `on_ability_hit` — each eligible ability adds 22.5 (+15% magical power) magical damage.
+- `unmodeled` — **not modeled** — Malice currently uses a 15-second damage ramp in the production simulator. The recovered client instead starts with full stacks, consumes stacks on eligible hero damage, and replenishes them through timed callbacks or takedowns. Item and proc damage are excluded. Diagnostic state-transition tests exist, but native defaults, timer phase and event ordering are unresolved; this production ramp does not reproduce that stack cycle.
 
 ---
 
@@ -575,7 +558,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive — Chime:** *[Every 8s:]* • Subtract 1s from Non-Ultimate Cooldowns .
 
 **→ Modeled as:**
-- `cooldown_rate` — 0.125% faster non-ultimate cooldowns — more casts per fight.
+- `cooldown_rate` — 12.5% faster non-ultimate cooldowns — more casts per fight.
 
 ---
 
@@ -592,7 +575,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 ---
 
 ### Equinox  ·  2950g
-**Base stats:** physical power 40, attack speed 30, critical chance 20, tenacity 80
+**Base stats:** physical power 40, attack speed 30, critical chance 20, tenacity 20
 
 **Passive — Adamance:** *[On going below 40% Health :]* • Gain a 350-750 Shield for 4s . • Shield size increases with Level .
 
@@ -660,7 +643,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes} Times Applied to Heroes: {TimesApplied}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 70 (+2% health) magical damage (≤ once / 4s per target) — credited per ability in a combo.
+- `on_ability_hit` — each eligible ability adds 70 (+2% health) magical damage (≤ once / 4s per target).
 
 ---
 
@@ -671,7 +654,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 65 (+1.5% health) magical damage — credited per ability in a combo.
+- `on_ability_hit` — each eligible ability adds 65 (+1.5% health) magical damage.
 
 ---
 
@@ -747,7 +730,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Activations: {Activations} Times Retriggered: {Retriggers}
 
 **→ Modeled as:**
-- `haste` — +15 ultimate haste — shortens the relevant cooldowns.
+- `haste` — +20 ultimate haste — shortens the relevant cooldowns.
 - `unmodeled` — **not modeled** — Oppression grants a timed +20 ability haste window after ulting (uptime-dependent) plus MS; out of scope.
 
 ---
@@ -783,7 +766,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Insatiable Harvest Damage Dealt: {DamageDealt}
 
 **→ Modeled as:**
-- `damage_amp` — +10% to your damage — applied as an amp on every qualifying hit.
+- `damage_amp` — +8% to your damage — applied as an amp on every qualifying hit.
 - `unmodeled` — **not modeled** — Insatiable Harvest is a PvE 1.5x-to-minions + per-kill PP farming stack.
 
 ---
@@ -820,7 +803,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Times Applied: {TimesApplied}
 
 **→ Modeled as:**
-- `damage_amp` — +10% to your damage (when window only, credited at partial uptime) — applied as an amp on every qualifying hit.
+- `damage_amp` — +8% to your damage (when window only, credited at partial uptime) — applied as an amp on every qualifying hit.
+- `unmodeled` — **not modeled** — Immobilizer currently assumes an immobilization window; Adaptive Aggression (20 physical or 30 magical power depending on build) is not represented.
 
 ---
 
@@ -850,7 +834,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 ---
 
 ### Absolution  ·  3100g
-**Base stats:** physical power 30, attack speed 35, magical armor 40, tenacity 75
+**Base stats:** physical power 30, attack speed 35, magical armor 40, tenacity 25
 
 **Passive 1 — Bravery:** *[On being Immobilized :]* • Gain 25% Damage Mitigation . • Gain 40% Movement Speed . • Lasts 3s .
 **Passive 2 — :** Activations: {Activations}
@@ -879,12 +863,12 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `unmodeled` — **not modeled** — empowered basic procs every 100 Momentum stacks, but the stack-generation rate is unstated, so the proc cadence cannot be derived
+- `unmodeled` — **not modeled** — Momentum proc cadence remains unmodeled. Recovered movement grants use straight-line displacement sampled after 0.25 seconds, rounded down per 50 world units; fractional travel is not carried between samples. Basic-hit grants depend on unresolved scalar defaults and native event scaling, with separate AoE gating. Movement sampling is tested diagnostically, but total charge rate and successful proc timing are not verified.
 
 ---
 
 ### Raiment of Renewal  ·  3100g
-**Base stats:** max health 700, health regeneration 50, ability haste 15, tenacity 80
+**Base stats:** max health 700, health regeneration 50, ability haste 15, tenacity 20
 
 **Passive 1 — Regenerator:** *[While Out Of Combat:]* • Regenerate 3% of your Missing Health each second.
 **Passive 2 — Synthesis:** *[For each Level:]* • Gain 5% additional Base Health Regen .
@@ -901,7 +885,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `unmodeled` — **not modeled** — multi-target projectiles; single-target value unverified
+- `unmodeled` — **not modeled** — Scattershot is not simulated in populated scenes: its target search excludes the triggering enemy and attempts two nearby secondary-target projectiles behind a cooldown gate. The second attempt can retain the first target. With no eligible secondary targets it spawns none, so a truly isolated one-enemy scene gets no Scattershot projectile damage. Saved lock-on-only collision is enforced by a native guard, with a custom-hit-interface exception. Collision outcomes, critical-strike resolution and downstream passive interactions still need integration; the shared damage path passes its captured on-hit percentage through event data.
 
 ---
 
@@ -914,6 +898,18 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 **→ Modeled as:**
 - `unmodeled` — **not modeled** — Stack-consume cadence and the scaling base are unstated/ambiguous.
+
+---
+
+### Vainglory  ·  3100g
+**Base stats:** max health 200, physical armor 45, magical armor 40
+
+**Passive 1 — Pride:** *[Upon dealing or taking Hero Damage:]* • Gain a stack of Vanity for 4s . • Each stack grants +0.5% increased Armors . • Max Stacks: 10 .
+**Passive 2 — In Vain:** *[While at Max Vanity stacks:]* • Gain an additional 12% increased Armors .
+**Passive 3 — :** Time In Vain: {TimeInVain}s
+
+**→ Modeled as:**
+- `unmodeled` — **not modeled** — Pride grants 0.5% armors per stack (10 maximum); In Vain grants an additional 12% only at maximum stacks. Neither is unconditional; stack state is not represented.
 
 ---
 
@@ -998,7 +994,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 ---
 
 ### Legacy  ·  3000g
-**Base stats:** physical power 40, max health 225, magical armor 40, tenacity 75
+**Base stats:** physical power 40, max health 225, magical armor 40, tenacity 25
 
 **Passive 1 — Tenacious Bravery:** *[On going below 40% Health :]* • Self Cleanse . • Gain CC Immunity for 3s .
 **Passive 2 — :** Activations: {Activations}
@@ -1076,12 +1072,24 @@ this doc is about the **passives**. THEORY until in-game calibration.
 ---
 
 ### Salvation  ·  3000g
-**Base stats:** physical power 40, max health 375, tenacity 75
+**Base stats:** physical power 40, max health 375, tenacity 25
 
 **Passive — Aegis:** *[On going below 30% Health :]* • Gain a (+25% ) Shield for 6s . • Reduced to 50% Effectiveness for Ranged Heroes. • Gain 10% Omnivamp for 6s .
 
 **→ Modeled as:**
 - `unmodeled` — **not modeled** — A defensive, health-state-gated shield/sustain.
+
+---
+
+### Soulbinder  ·  3000g
+**Base stats:** magical power 85, max mana 400, ability haste 20
+
+**Passive 1 — Arcane Salvo:** *[Damage Heroes from afar with Abilities:]* • Deal 8% bonus Damage . • Activates at 1450+ Range .
+**Passive 2 — Farseer:** *[Upon triggering Arcane Salvo:]* • Permanently gain 1 Magical Power .
+**Passive 3 — :** Damage Dealt: {DamageDealt}
+
+**→ Modeled as:**
+- `unmodeled` — **not modeled** — Arcane Salvo grants 8% bonus ability damage only at 1450+ range; Farseer permanently grants 1 magical power on triggering it (8s cooldown). Range and historical stacks are not represented.
 
 ---
 
@@ -1313,7 +1321,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 ---
 
 ### Unbroken Will  ·  2800g
-**Base stats:** max health 400, magical armor 45, tenacity 70
+**Base stats:** max health 400, magical armor 45, tenacity 30
 
 **Passive 1 — Undying:** *[On being Immobilized :]* • Increase your Physical Armor by 25% for 2.5s . • Increase your Magical Armor by 25% for 2.5s .
 **Passive 2 — :** Activations: {Activations}
@@ -1331,7 +1339,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `unmodeled` — **not modeled** — Multishot is multi-projectile/splash and Onixia is melee-only; crediting it globally would overvalue ranged carries.
+- `unmodeled` — **not modeled** — Multishot is not simulated: angled projectiles scale with travel distance and hero basic scaling. Recovered effect defaults bind attack-damage scaling and the custom distance calculation. Collision, critical-strike/lifesteal resolution and complete native aggregation still need integration. Melee Onixia crit and missing-health mitigation are also omitted; ranged carries receive no melee benefit.
 
 ---
 
@@ -1416,7 +1424,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 ---
 
 ### Vanguardian  ·  2450g
-**Base stats:** physical armor 35, magical armor 35, ability haste 10, tenacity 75
+**Base stats:** physical armor 35, magical armor 35, ability haste 10, tenacity 25
 
 **Passive — Guardian:** *[Nearby Allied Heroes gain:]* • 15 Physical Armor . • 15 Magical Armor .
 

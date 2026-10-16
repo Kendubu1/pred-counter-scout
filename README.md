@@ -26,7 +26,7 @@ Most tools tell you WHAT to build and WHO to pick, but never WHY — and console
 
 Actively built; data, tips, and features improve daily. Known gaps:
 
-- Augment / Eternal / crest evidence currently blends **ranked + standard** games (ranked-only is on the roadmap).
+- Augment / Eternal / crest evidence uses the committed **ranked** match sample for patch 1.17.2. Lane boards use the broader 1.17 window; historical ordered builds are still patch 1.15.
 - Win-rate data spans all ranks; sample sizes vary on niche role picks.
 - Some augment interactions and combat constants aren't fully modeled yet (those outputs are flagged THEORY).
 
@@ -41,4 +41,4 @@ If something feels off, [tell us](https://forms.gle/hS9bXZvqiGFruSjy5) — this 
 
 ---
 
-Built by [@saint_kendrick](https://www.youtube.com/@saint_kendrick). Not affiliated with Omeda Studios. Built on the official Omeda Studios public API (omeda.city) and pred.gg.
+Built by [@saint_kendrick](https://www.youtube.com/@saint_kendrick). Not affiliated with Omeda Studios. Current catalog and match evidence come from pred.gg, with local game-file checks. Historical omeda.city snapshots remain archived; that provider is retired.

@@ -1,0 +1,7 @@
+import json
+from pathlib import Path
+r=Path(__file__).resolve().parents[2]
+h=json.loads((r/'data/catalog/heroes.json').read_text(encoding='utf8'));items=json.loads((r/'data/catalog/items.json').read_text(encoding='utf8'));fx=json.loads((r/'engine/fixtures/effects.json').read_text(encoding='utf8'))['targets']
+report={'note':'Inventory, not a certification. Encoded effects may be approximate. Every hero passive must receive event-level verification before declaring complete gameplay coverage. Only Kira has the new separate diagnostic replay; production ranks still use the older model.', 'heroes':[{'slug':hero['slug'],'passiveAbilities':[{'key':a['key'],'name':a['display_name'],'description':a.get('menu_description',''),'productionStatus':'partial: self-shield only' if hero['slug']=='steel' and a['key']=='Passive' else 'not certified','diagnosticReplay':hero['slug']=='kira'} for a in hero['abilities'] if a['key']=='Passive' or 'Passive:' in a.get('menu_description','')]} for hero in h], 'items':[{'slug':i['slug'],'effectNames':[e.get('name','') for e in i['effects']], 'encodedKinds':[e['kind'] for e in fx.get('item:'+i['slug'],{}).get('effects',[]) if e['kind']!='unmodeled'], 'omissions':[e['note'] for e in fx.get('item:'+i['slug'],{}).get('effects',[]) if e['kind']=='unmodeled'], 'status':'not certified'} for i in items]}
+(r/'data/aggregates/passive-coverage-audit.json').write_text(json.dumps(report,indent=1,ensure_ascii=False)+'\n',encoding='utf8')
+print('Coverage inventory:',len(h),'heroes;',len(items),'items')

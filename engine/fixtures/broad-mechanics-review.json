@@ -1,0 +1,109 @@
+{
+ "date": "2026-10-16",
+ "scope": "Selected shared/hero calculations reviewed during broader mechanics inventory",
+ "findings": [
+  {
+   "subject": "Shared tenacity",
+   "status": "formula-reviewed-not-new-production-coverage",
+   "asset": "Predecessor/Content/Characters/Shared/Calculations/GMMC_Tenacity.uasset",
+   "sha256": "c8693e13492767544ec8b85e476a52bde598be2bffd106b7f93ed59e70cb20da",
+   "uexpSha256": "1ed2acaa09f735814e39256f63357b02b4afcdc0fa64a3c9be86ca6ea7000ad8",
+   "function": "CalculateBaseMagnitude",
+   "instructionOffsets": [
+    0,
+    151,
+    197,
+    243
+   ],
+   "finding": "Returns 1/(1 + captured native Tenacity). Displayed-stat conversion, capture source and final effect application remain unverified."
+  },
+  {
+   "subject": "Shared cooldown",
+   "status": "formula-reviewed-not-new-production-coverage",
+   "asset": "Predecessor/Content/Characters/Shared/Calculations/GMMC_CooldownCalculation.uasset",
+   "sha256": "5b3094987ffeb17574758020f646d43408fb28caf471a457dbba13e27a1f7dc7",
+   "uexpSha256": "c2d6fe2394f4bac7bbd4bb964d3463a191f3da8491589d0713284a7e1f7793d6",
+   "function": "CalculateBaseMagnitude",
+   "instructionOffsets": [
+    0,
+    167,
+    213,
+    259
+   ],
+   "finding": "Returns 1/(1 + captured CooldownReduction). Native attribute units/bindings remain unresolved; this does not independently verify catalog conversion."
+  },
+  {
+   "subject": "Ultimate cooldown",
+   "status": "formula-reviewed-not-new-production-coverage",
+   "asset": "Predecessor/Content/Characters/Shared/Calculations/GMMC_UltimateCooldownCalculation.uasset",
+   "sha256": "c44e14eba31dba189586627da14da6344fbf72a9aff7caf910495a668e9a59ca",
+   "uexpSha256": "74b4c23f8ee7ff740a95e8ee3b0fbde6f9fbc7799bec33359f20ea0b41f35678",
+   "function": "CalculateBaseMagnitude",
+   "instructionOffsets": [
+    0,
+    138,
+    348,
+    394,
+    486
+   ],
+   "finding": "Adds captured CooldownReduction and UltimateAbilityHaste before reciprocal conversion. Capture modes/bindings still require verification."
+  },
+  {
+   "subject": "Basic attack timing",
+   "status": "formula-reviewed-not-new-production-coverage",
+   "asset": "Predecessor/Content/Characters/Shared/Calculations/GMMC_BasicAttackCooldownCalculation.uasset",
+   "sha256": "c339cd04058437caec3ecd73b02000555ef700b460ddd3e74d319ed989650d5c",
+   "uexpSha256": "b5b50f63c98433fc907003ed965f8d61bdcc222a9938abe7313163f2364e2598",
+   "function": "CalculateBaseMagnitude",
+   "instructionOffsets": [
+    0,
+    136,
+    264
+   ],
+   "finding": "Captures BasicAttackTime and AttackSpeed, then calls native CalculateAttackCooldown. The wrapper does not expose attack-speed cap, native clamps or animation timing."
+  },
+  {
+   "subject": "Kira Dusk",
+   "status": "formula-reviewed-not-new-production-coverage",
+   "asset": "Predecessor/Content/Characters/Heroes/Huntress/Abilities/Dusk/GMMC_Huntress_Dusk_Damage.uasset",
+   "sha256": "f1090505820872fd64cf682d6a849b5407a1015c85eed51d2dbafe9e71489c9f",
+   "uexpSha256": "f3541c2ba2dd84a626b280c5b600e61516d2db941c7dfae0dce3c97ae91079f6",
+   "function": "CalculateBaseMagnitude",
+   "instructionOffsets": [
+    55,
+    193,
+    379,
+    491,
+    566,
+    670,
+    745,
+    820,
+    895
+   ],
+   "finding": "Returns BaseDamage + SetByCaller.BonusDamage * (DamagePerStack + captured AttackDamage * PPScaling). Scalar fields use effect level; capture enum 2 and scalar default bindings remain unresolved. Caller meaning and timing must be traced before integration."
+  },
+  {
+   "subject": "Belica ultimate mana component",
+   "status": "formula-reviewed-not-new-production-coverage",
+   "asset": "Predecessor/Content/Characters/Heroes/LtBelica/Abilities/Ultimate/GMMC_LtBelica_Ultimate_ManaDamage.uasset",
+   "sha256": "ac19b9d87cccc4d7fab236bfbb289aea7123351bd99e499d6fdee9c39cd6ded7",
+   "uexpSha256": "7eb5e10e6162a9a8beaba7bfa26df7eae997cab4f64b65287d0b8216f9d9384a",
+   "function": "CalculateBaseMagnitude",
+   "instructionOffsets": [
+    100,
+    217,
+    435,
+    547,
+    622
+   ],
+   "finding": "Returns (captured MaxMana - captured Mana) * rank-dependent NeuralDisruptor_ManaToDamage curve. Target/source capture semantics and complete effect composition remain unresolved."
+  }
+ ],
+ "productionChange": false,
+ "nextActions": [
+  "Recover unversioned property schemas and inherited default bindings.",
+  "Trace caller/effect composition and capture enum contracts before applying reviewed formulas.",
+  "Review unexamined item, hero, Eternal and world function families from inventory; do not count decoding as review.",
+  "Validate cross-item proc ordering and state timelines before rebuilding recommendations."
+ ]
+}

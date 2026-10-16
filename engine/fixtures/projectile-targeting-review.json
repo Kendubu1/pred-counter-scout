@@ -1,0 +1,39 @@
+{
+  "scope": "Three projectile class/default records, not complete collision or gameplay coverage",
+  "classes": 3,
+  "declaredBlueprintFields": 12,
+  "exactPropertySpans": 59,
+  "endedPropertyStreams": 3,
+  "wholeCdosCertified": 0,
+  "nativeDependencies": {
+    "projectileOwnFields": 76,
+    "actorOwnFields": 80,
+    "projectileDependencyLayouts": 21,
+    "actorDependencyLayouts": 5,
+    "timerFields": 1
+  },
+  "findings": [
+    "Scattershot calls TargetingSphereAroundActor with ExcludeAroundActor true; native code adds that actor to the overlap-query exclusion list.",
+    "Two nearest-target selection passes remove each selected candidate but retain the last selected actor when no candidate replaces it.",
+    "Scattershot serializes bOnlyCollideWithLockOnActor and bDestroyWhenLockOnActorDies as true. Its native overlap handler enforces the lock-on guard, with a conditional PredCustomProjectileHitInterface exception.",
+    "With no eligible secondary targets, the selection loop has no actor and attempts no projectile spawn. This supports zero collateral projectile contribution in a truly isolated one-enemy scene.",
+    "PredProjectile inherits Actor; reflected native ancestry and TimerHandle unblock all three selected default property streams. Shared filter/effect-container schemas are also recovered."
+  ],
+  "limits": [
+    "Source query/filter native semantics and collision outcomes in populated scenes remain incomplete.",
+    "Primary-target exclusion is not a guarantee that every special custom collision path is harmless.",
+    "Component defaults and native initialization still need review; property streams ending do not certify whole CDOs.",
+    "Private class bodies, member maps and native instructions are not published."
+  ],
+  "sharedFollowup": {
+    "inputs": 187,
+    "previousExactRetained": 618,
+    "previousExactLost": 0,
+    "exactGain": 701,
+    "unverifiedDelta": -1,
+    "newlyEnded": 50,
+    "combinedExact": 12085,
+    "combinedUnverified": 45,
+    "combinedEnded": 1100
+  }
+}

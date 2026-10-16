@@ -1,0 +1,7311 @@
+{
+ "generatedAt": "2026-10-16T17:19:10.359Z",
+ "source": "Committed catalog, effect registry, and dated installed-client audit; no network refresh",
+ "note": "Presence and source alignment are not gameplay proof. Multi-hit timing, conditional states, and dropped scaling remain incomplete; keep simulation provisional.",
+ "scalingBasisEvidence": {
+  "schemaVersion": 1,
+  "auditedAt": "2026-10-15",
+  "source": "Read-only installed client curve decoding and cooked damage-effect name tables",
+  "curveAsset": "Predecessor/Content/Characters/Heroes/Terra/Abilities/ct_Terra_Kit.uasset",
+  "curveFiles": [
+   {
+    "file": "ct_Terra_Kit.uasset",
+    "sha256": "7ce9b653a2d6cd4378125682866a7621fe3e41318aee39d9fb52fb4f937263ee"
+   },
+   {
+    "file": "ct_Terra_Kit.uexp",
+    "sha256": "8ec55dcad5a9b8094cc91228c97e1f0c242ab5362c9f47390341d66d5f653f51"
+   }
+  ],
+  "limitations": [
+   "Named rows and attribute references establish stored coefficient evidence, not execution semantics.",
+   "Gameplay-effect export properties, capture source and magnitude calculation mode were not decoded.",
+   "Bonus naming suggests a hypothesis; do not activate numerical scaling from this record.",
+   "The DoubleSweep damage asset names the physical-armor coefficient row but not the separate magical-armor row; both defensive attribute names are present. Shared-row use versus inheritance remains unresolved.",
+   "Charged, multi-hit and empowered states require separate modeling. No in-game measurement is claimed."
+  ],
+  "entries": [
+   {
+    "hero": "terra",
+    "abilityKey": "ALTERNATE",
+    "damageAsset": "Predecessor/Content/Characters/Heroes/Terra/Abilities/ShieldDash/GE_Terra_ShieldDash_Damage.uasset",
+    "observedDamageAssetReferences": [
+     "ShieldDash_BonusMagicalArmorScaling",
+     "ShieldDash_BonusPhysicalArmorScaling",
+     "PredAttributeSet_Defensive.Armor",
+     "PredAttributeSet_Defensive.MagicResist"
+    ],
+    "files": [
+     {
+      "file": "GE_Terra_ShieldDash_Damage.uasset",
+      "sha256": "7730fb57c1ec3851c554b0c6f9b1e99cf40ea580b5b7dfe42e5aa7c5729b7846"
+     },
+     {
+      "file": "GE_Terra_ShieldDash_Damage.uexp",
+      "sha256": "a9594bfe31e6f409da6e8418ecb254d93bc5d62b4ba941c54b12f0be9737d6bc"
+     }
+    ],
+    "channels": [
+     {
+      "stat": "physical_armor",
+      "sourceTag": "ArmorText",
+      "curveRow": "ShieldDash_BonusPhysicalArmorScaling",
+      "coefficientRowNamedInDamageAsset": true,
+      "attributeReference": "PredAttributeSet_Defensive.Armor",
+      "percentByRank": [
+       40.000001,
+       40.000001,
+       40.000001,
+       40.000001,
+       40.000001
+      ],
+      "curvePoints": [
+       {
+        "x": 1,
+        "value": 0.4000000059604645
+       },
+       {
+        "x": 5,
+        "value": 0.4000000059604645
+       },
+       {
+        "x": 6,
+        "value": 0
+       },
+       {
+        "x": 18,
+        "value": 0
+       }
+      ]
+     },
+     {
+      "stat": "magical_armor",
+      "sourceTag": "MRText",
+      "curveRow": "ShieldDash_BonusMagicalArmorScaling",
+      "coefficientRowNamedInDamageAsset": true,
+      "attributeReference": "PredAttributeSet_Defensive.MagicResist",
+      "percentByRank": [
+       40.000001,
+       40.000001,
+       40.000001,
+       40.000001,
+       40.000001
+      ],
+      "curvePoints": [
+       {
+        "x": 1,
+        "value": 0.4000000059604645
+       },
+       {
+        "x": 5,
+        "value": 0.4000000059604645
+       },
+       {
+        "x": 6,
+        "value": 0
+       },
+       {
+        "x": 18,
+        "value": 0
+       }
+      ]
+     }
+    ],
+    "status": "basis-unverified",
+    "suggestedBasisFromRowName": "bonus",
+    "captureSource": "unresolved",
+    "captureCalculationMode": "unresolved"
+   },
+   {
+    "hero": "terra",
+    "abilityKey": "PRIMARY",
+    "damageAsset": "Predecessor/Content/Characters/Heroes/Terra/Abilities/DoubleSweep/GE_Terra_DoubleSweep_Damage.uasset",
+    "observedDamageAssetReferences": [
+     "RuthlessAssault_BonusPhysicalArmorScaling",
+     "PredAttributeSet_Defensive.Armor",
+     "PredAttributeSet_Defensive.MagicResist"
+    ],
+    "files": [
+     {
+      "file": "GE_Terra_DoubleSweep_Damage.uasset",
+      "sha256": "cb0aa1a8000cbc5acc4f593475fef72dfd256262cf150fcf54c35ffc7d119d2d"
+     },
+     {
+      "file": "GE_Terra_DoubleSweep_Damage.uexp",
+      "sha256": "d3e34e3e4aeb3187429780bb320b61f2b12645c909038bc10524c0a049475f6c"
+     }
+    ],
+    "channels": [
+     {
+      "stat": "physical_armor",
+      "sourceTag": "ArmorText",
+      "curveRow": "RuthlessAssault_BonusPhysicalArmorScaling",
+      "coefficientRowNamedInDamageAsset": true,
+      "attributeReference": "PredAttributeSet_Defensive.Armor",
+      "percentByRank": [
+       34.999999,
+       34.999999,
+       34.999999,
+       34.999999,
+       34.999999
+      ],
+      "curvePoints": [
+       {
+        "x": 1,
+        "value": 0.3499999940395355
+       },
+       {
+        "x": 5,
+        "value": 0.3499999940395355
+       },
+       {
+        "x": 6,
+        "value": 0
+       },
+       {
+        "x": 18,
+        "value": 0
+       }
+      ]
+     },
+     {
+      "stat": "magical_armor",
+      "sourceTag": "MRText",
+      "curveRow": "RuthlessAssault_BonusMagicalArmorScaling",
+      "coefficientRowNamedInDamageAsset": false,
+      "attributeReference": "PredAttributeSet_Defensive.MagicResist",
+      "percentByRank": [
+       34.999999,
+       34.999999,
+       34.999999,
+       34.999999,
+       34.999999
+      ],
+      "curvePoints": [
+       {
+        "x": 1,
+        "value": 0.3499999940395355
+       },
+       {
+        "x": 5,
+        "value": 0.3499999940395355
+       },
+       {
+        "x": 6,
+        "value": 0
+       },
+       {
+        "x": 18,
+        "value": 0
+       }
+      ]
+     }
+    ],
+    "status": "basis-unverified",
+    "suggestedBasisFromRowName": "bonus",
+    "captureSource": "unresolved",
+    "captureCalculationMode": "unresolved"
+   },
+   {
+    "hero": "terra",
+    "abilityKey": "SECONDARY",
+    "damageAsset": "Predecessor/Content/Characters/Heroes/Terra/Abilities/AxeThrow/GE_Terra_AxeThrow_Damage.uasset",
+    "observedDamageAssetReferences": [
+     "AxeThrow_BonusMagicalArmorScaling",
+     "AxeThrow_BonusPhysicalArmorScaling",
+     "PredAttributeSet_Defensive.Armor",
+     "PredAttributeSet_Defensive.MagicResist"
+    ],
+    "files": [
+     {
+      "file": "GE_Terra_AxeThrow_Damage.uasset",
+      "sha256": "7f6a1cf0e566f8bd7de5b00bfb337355b6e4345ce543328f282530ee2505b96a"
+     },
+     {
+      "file": "GE_Terra_AxeThrow_Damage.uexp",
+      "sha256": "5b6bd8d46678b9311d72135d52687e037602ff8dcc4dbaf877ca3ba812a2e5b2"
+     }
+    ],
+    "channels": [
+     {
+      "stat": "physical_armor",
+      "sourceTag": "ArmorText",
+      "curveRow": "AxeThrow_BonusPhysicalArmorScaling",
+      "coefficientRowNamedInDamageAsset": true,
+      "attributeReference": "PredAttributeSet_Defensive.Armor",
+      "percentByRank": [
+       40.000001,
+       40.000001,
+       40.000001,
+       40.000001,
+       40.000001
+      ],
+      "curvePoints": [
+       {
+        "x": 1,
+        "value": 0.4000000059604645
+       },
+       {
+        "x": 5,
+        "value": 0.4000000059604645
+       },
+       {
+        "x": 6,
+        "value": 0
+       },
+       {
+        "x": 18,
+        "value": 0
+       }
+      ]
+     },
+     {
+      "stat": "magical_armor",
+      "sourceTag": "MRText",
+      "curveRow": "AxeThrow_BonusMagicalArmorScaling",
+      "coefficientRowNamedInDamageAsset": true,
+      "attributeReference": "PredAttributeSet_Defensive.MagicResist",
+      "percentByRank": [
+       40.000001,
+       40.000001,
+       40.000001,
+       40.000001,
+       40.000001
+      ],
+      "curvePoints": [
+       {
+        "x": 1,
+        "value": 0.4000000059604645
+       },
+       {
+        "x": 5,
+        "value": 0.4000000059604645
+       },
+       {
+        "x": 6,
+        "value": 0
+       },
+       {
+        "x": 18,
+        "value": 0
+       }
+      ]
+     }
+    ],
+    "status": "basis-unverified",
+    "suggestedBasisFromRowName": "bonus",
+    "captureSource": "unresolved",
+    "captureCalculationMode": "unresolved"
+   }
+  ]
+ },
+ "scalingCoverage": {
+  "affectedAbilitySlots": 11,
+  "selectedPayloadOmittedRatioCount": 13,
+  "note": "Counts selected payload omissions only, not all unsupported mechanics. Source tags and ratios are retained as evidence, not executed. Health/armor stat basis needs verification; conditional riders, charge maxima and multi-hit counts need separate state models. Untagged-base entries can have zero selected-payload ratios while still omitting conditional riders."
+ },
+ "heroes": [
+  {
+   "slug": "adele",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Crown of Thorns",
+    "sourceText": "Damaging Enemy Heroes applies Thorns to the target for 4s. Additional applications refresh the duration. Cannot be applied to Epic Monsters.<br>\n<br>\nAllies deal 5% of their damage as bonus true damage to Enemies afflicted by Thorns.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "true",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "physical": [
+       80
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       50,
+       60,
+       70,
+       80,
+       90
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": true,
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": [
+    {
+     "slug": "adele",
+     "key": "SECONDARY",
+     "stat": "Health",
+     "sourceText": "Adele equips her shield for 4.5s, increasing her hitbox size and gaining 20/22.5/25/27.5/30% <ArmorText>(+4%</ArmorText><img id=\"ArmorOrange\"></img><ArmorText>)</ArmorText><MRText>(+4%</MRText><img id=\"MRIcon\"></img><MRText>)</MRText> Damage Reduction. This can be cast during other abilities.<br>\n<br>\nOn cast, she attaches a Thorned Vine to Enemy Heroes and Monsters within 800u. The Vine deals 6/8/10/12/14 <HealthText>(+0.7%</HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> true damage every 0.5s for the duration. The Vine snaps if an Enemy moves more than 1000u away.",
+     "sourcePayload": "6/8/10/12/14 <HealthText>(+0.7%</HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> true damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "HealthText",
+       "percentByRank": [
+        0.7
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
+    },
+    {
+     "slug": "adele",
+     "key": "ULTIMATE",
+     "stat": "Health",
+     "sourceText": "Adele performs a small leap, slamming her shield into the ground, summoning a large Thornbush at her location for 8s. <br>\n<br>\nVines attach to all Enemies within the central section, dealing 55/90/125 <HealthText>(+5%</HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> physical damage. This Interrupts abilities, Roots Enemies for 0.5s, and pulls flying Enemies to the ground.<br>\n<br>\nAll Enemies inside the Thornbush are Slowed by 35/37.5/40% and take 4/7/10 true damage every 35u moved within it.",
+     "sourcePayload": "55/90/125 <HealthText>(+5%</HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> physical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "HealthText",
+       "percentByRank": [
+        5
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "akeron",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Pact of the Devourer",
+    "sourceText": "Akeron gains up to 100 stacks of Hunger, each granting 0.25% increased healing and lasting 3s and refreshing on application.<br>\n<br>\nAkeron gains Hunger each time he hits an Enemy Unit with a basic attack or ability. He gains additional Hunger when damaged by an Enemy Hero.<br>\n<br>\nWhen Akeron reaches max stacks he becomes Awakened for 10s granting him 5/5.75/6.5/7.25/8/8.75/9.5/10.25/11/11.75/12.5/13.25/14/14.75/15.5/16.25/17/17.75% (+0.75% per level) Damage Reduction, and granting his basic abilities extra effects.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       65
+      ],
+      "magical": [
+       35
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       14
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "physical": [
+       50
+      ],
+      "magical": [
+       30
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       4
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "argus",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Disintegrate",
+    "sourceText": "Argus' abilities apply a stack of Disintegration for 2s, causing subsequent instances of ability damage to deal 4 <AbilityPowerText>(+3%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> bonus magical damage.<br>\n<br>\nEach stack of Disintegration deals 50% more damage, stacking infinitely (capped at 12 against Monsters).",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "magical": [
+       50
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       18
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       25
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "aurora",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Frozen Simulacrum",
+    "sourceText": "Aurora can jump whilst airborne to leap in the direction she is moving, leaving behind a Replica of herself. This cooldown is reduced by 4s when Immobilizing Heroes.<br>\n<br>\nThe Replica has <HealthText>(+20%</HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText><AbilityPowerText>(+150%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> <HealthText>Health</HealthText>, will draw aggro from Enemy Towers, and lasts for 8s.<br>\n<br>\nDamaging an Enemy Hero or Monster 4 times will summon a Frost Storm around Aurora for 3s, refreshing on additional damage dealt. The Storm deals 5 <AbilityPowerText> (+30%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> +1/1.2/1.4/1.6/1.8/2/2.2/2.4/2.6/2.8/3/3.2/3.4/3.6/3.8/4/4.2/4.4% (+0.2% per level) Enemy Max Health magical damage per second.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       35
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "magical": [
+       50
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "magical": [
+       70
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "bayle",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Berserk",
+    "sourceText": "When Bayle drops below <HealthText>35% of his Maximum Health</HealthText>, he enters Berserk for 7s.<br>\n<br>\nWhile Berserk, Bayle gains 15/19.5/24/28.5/33/37.5/42/46.5/51/55.5/60/64.5/69/73.5/78/82.5/87/91.5% (+4.5% per level) Attack Speed, 4/4.5/5/5.5/6/6.5/7/7.5/8/8.5/9/9.5/10/10.5/11/11.5/12/12.5% (+0.5% per level) Movement Speed, and 40 Tenacity.<br>\n<br>\nBayle can only enter Berserk once every 20s.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       125
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       85
+      ],
+      "magical": [
+       55
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       30
+      ],
+      "magical": [
+       65
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       24
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "boris",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Tesseract Device",
+    "sourceText": "Every second Basic Attack On-Hit against Heroes & Monsters grants Boris a Canister for 5s, up to a maximum of 4. <br>\n<br>\nEach Canister grants Boris 7/10/13/16% Attack Speed and 1/1.25/1.5/1.75/2/2.25/2.5/2.75/3/3.25/3.5/3.75/4/4.25/4.5/4.75/5/5.25 <AttackDamageText>(+2%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText>(+0.25 per Level) Healing On-Hit.<br>\n<br>\nAt max Canisters, Boris unleashes his Tesseract Core. <br>\n<br>\nThe Core zaps Enemies On-Hit, dealing 5/7/9/11/13/15/17/19/21/23/25/27/29/31/33/35/37/39 <AttackDamageText>(+10%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText><AbilityPowerText>(+12%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText>(+2 per Level) magical damage and Healing Boris for 4/5/6/7/8/9/10/11/12/13/14/15/16/17/18/19/20/21 <AttackDamageText>(+10%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText>(+1 per Level), reduced to 20% effectiveness against Non-Heroes.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       44,
+       48,
+       52,
+       56,
+       60
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       30
+      ],
+      "magical": [
+       70
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "countess",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Blood Tithe",
+    "sourceText": "Dealing damage to an Enemy Hero with abilities two times within 4s applies Haemorrhage, dealing 4% of their maximum health as true damage over 4s, granting Countess 5% movement speed for the same duration.<br>\n<br>\nThis effect can stack but will not refresh.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       60
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       35
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       80
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "crunch",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Cross Crunch",
+    "sourceText": "After casting an ability, Crunch amplifies his next basic attack to deal <AttackDamageText>(+28%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText><AbilityPowerText>(+30%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> bonus magical damage and reduce his current cooldowns by 1s.<br>\n<br>\nPassive: Upon using a basic ability, Crunch gains a stack of Turbo for 10s. While at 2 stacks, Crunch activates Turbo Crunch. The next ability used in this state consumes Turbo Crunch to deal enhanced effects.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "physical": [
+       75
+      ],
+      "magical": [
+       45
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       110,
+       115,
+       120,
+       125,
+       130
+      ],
+      "magical": [
+       75
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       110
+      ],
+      "magical": [
+       75
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "dekker",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Rocket Boots",
+    "sourceText": "Dekker can jump while airborne to activate Rocket Boots, propelling her upward. Nearby Allies within 1000 units gain 20% Decaying Movement Speed for 1.5s.<br>\n<br>\nRocket Boots' cooldown is reduced by 3s each time Dekker uses an ability.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "magical": [
+       45
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       80
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       80
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "drongo",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Wastelander",
+    "sourceText": "Drongo's Critical Strikes and Abilities also apply a Bleed to Enemies, dealing 2.25% of their maximum health as physical damage over 3s. <br>\n<br>\nBleed Damage is reduced to 0.3% for Monsters.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       55
+      ],
+      "magical": [
+       45
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       80
+      ],
+      "magical": [
+       120
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       22
+      ]
+     },
+     "ignoresArmor": false,
+     "selfAttackSpeedPctPerRank": [
+      20,
+      22.5,
+      25,
+      27.5,
+      30
+     ],
+     "buffDurationSecPerRank": [
+      4
+     ]
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       115
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "eden",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Helios Core",
+    "sourceText": "Eden generates Heat from dealing damage to Heroes. Upon reaching 300 Heat, Eden Overheats, gaining access to her Limit Break abilities. Heat will decay when not dealing damage to Heroes for 3.5s.<br>\n<br>\nHeat Generation is increased by 12.5%/30%/47.5%/65% based on Ultimate Level.<br>\n<br>\nEden converts 1% Attack Speed into 60% increased Physical Power.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       70
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       70,
+       75,
+       80,
+       85,
+       90
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       65
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "feng-mao",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Executioners Path",
+    "sourceText": "Upon achieving 1/3/5 Unique Hero Takedowns, permanently gain 3/7/12 bonus physical penetration.<br>\n<br>\nAdditionally increase all Physical Penetration by 40%.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       40
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       40
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       40
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "gadget",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Field Data Accumulation",
+    "sourceText": "Gadget acquires stacks of FDA that permanently grant 1 magical power for every 6 stacks gained.<br>\n<br>\nMinion & Monster Kills grant 1 stack.<br>\n<br>\nDamaging Enemy Heroes with abilties grants 5 stacks, once per activation.<br>\n<br>\nTakedowns grant 20 stacks.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       105
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       70
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "magical": [
+       40
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       220
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "gideon",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Cosmic Power",
+    "sourceText": "Damaging an Enemy Hero with an ability empowers Gideon's next basic attack for 3s, allowing him to attach a cosmic tether to his Target. <br>\n<br>\nTethered Enemies receive 40/49/58/67/76/85/94/103/112/121/130/139/148/157/166/175/184/193 (+9 per level) <AbilityPowerText>(+20%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage over 2.1s, after which they are Rooted for 1s.<br>\n<br>\nAdditionally gain 1% Bonus Maximum Mana per 20 Magical Power.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       45
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       60
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       250
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "greystone",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Stoicism",
+    "sourceText": "Deflect the next incoming basic attack every 15/14.4/13.8/13.2/12.6/12/11.4/10.8/10.2/9.6/9/8.4/7.8/7.2/6.6/6/5.4/4.8s.<br>\n<br>\nAdditionally, Greystone regenerates <HealthText>(+0.1%</HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> health per second and gains 4 (+0.5 per level) Physical Armor. <br>\n<br>\nThese values are increased by 1% per 1% missing health, and the regeneration is doubled while below 50% max health.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       100
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       90
+      ],
+      "magical": [
+       80
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       20
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       180
+      ],
+      "magical": [
+       100
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "grim-exe",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Pulsefire",
+    "sourceText": "Grim.exe’s basic attacks are modified to deal Magical Damage.<br>\n<br>\nGrim.exe’s basic attacks and abilities apply Pulsefire to Enemies hit for 4s. The next basic attack or ability will burst the Pulsefire and deal 15<AttackDamageText> (+15%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText><AbilityPowerText>(+30%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> true damage on-hit. ",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       105
+      ],
+      "magical": [
+       100
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       135
+      ],
+      "magical": [
+       110
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "grux",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Bloodlust",
+    "sourceText": "Grux's basic attacks apply a Bleed on-hit, dealing 8/9/10/11/12/13/14/15/16/17/18/19/20/21/22/23/24/25 (+1 per Level) <AttackDamageText>(+30%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText><AbilityPowerText>(+20%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> physical damage over 5s, stacking up to 6 times. ",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "physical": [
+       100
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       120
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": true,
+     "ignoresArmor": false,
+     "selfAttackSpeedPctPerRank": [
+      30,
+      60,
+      90
+     ],
+     "buffDurationSecPerRank": [
+      8,
+      10,
+      12
+     ]
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "howitzer",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Armed Salvo",
+    "sourceText": "Howitzer's next basic attack deals 20/25/30/35/40/45/50/55/60/65/70/75/80/85/90/95/100/105 (+5 per level)<AbilityPowerText>(+32%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> bonus magical damage around the Target. Howitzer restores 20% of the damage dealt as mana, increasing to 100% against Enemy Heroes. <br>\n<br>\nArmed Salvo's cooldown is reduced by 5s each time Howitzer uses an ability.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       30
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       80,
+       85,
+       90,
+       95,
+       100
+      ],
+      "physical": [
+       50
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "magical": [
+       50
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       240
+      ],
+      "physical": [
+       120
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "iggy-scorch",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Badlands Critter",
+    "sourceText": "Scorch hurls up oil with his basic attack that applies Slick to enemies hit, slowing them by 2.5% per stack for 3s, up to a maximum of 5 stacks.<br>\n<br>\nEnemies with any Slick that are damaged by Flame Turrets, Molotov or Inferno are Ignited for 3s taking 3/3.4/3.8/4.2/4.6/5/5.4/5.8/6.2/6.6/7/7.4/7.8/8.2/8.6/9/9.4/9.8 (+0.4 per level) <AbilityPowerText>(+3%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage per second per stack.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       40
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       30
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       50
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       260
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "ikra",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Herald",
+    "sourceText": "Based on the chosen Eternal Category, empower Ikras abilities.<br>\n<br>\nHarbingers: Ikra's Fathom deals <AbilityPowerText>+(10%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> as magical damage. Hitting an Enemy with Fathom reduces the cooldown of Brine by 0.5s.<br>\n<br>\nPrimarchs: Popping Hydroclasm now displaces Ikra. Gain 1% Movement Speed per 75 magical power.<br>\n<br>\nDreadnoughts: Narcosis' Suspension duration is increased by 25% and restores 100% Health of the Hero Damage dealt by it.<br>\n<br>\nSovereigns: Hydroclasm has 25% reduced Cooldown and Genesis is 25% larger.<br>\n<br>\nDivines: Hydroclasm's Bubbles project an aura that heals Ikra and Allied Heroes for 5/8/11/14/17/8/11/14/17 <AbilityPowerText>(+12%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> Health every second.<br>\n<br>\nAnomalies: Brine and Hydroclasm deal 3% of the Target’s Maximum Health over 4s and apply 45% Anti Heal for the same duration.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       45
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       50
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       15
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       85
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "kallari",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Death Mark",
+    "sourceText": "Dealing damage to an Enemy Target applies Death Mark, revealing them for 3.5s. After the duration, the Mark detonates, dealing 15 (+5 per level)(+7 <AttackDamageText>(+2%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText>% of Target's missing health) true damage.<br>\n<br>\nDeath Mark cannot be re-applied to a previous Target for 10s.<br>\n<br>\nAdditionally, Kallari can periodically jump up to 2 additional times. ",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       85
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       45
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       65,
+       75,
+       85
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "khaimera",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Ancestral Fury",
+    "sourceText": "Damaging Enemy Heroes or Jungle Monsters grants Khaimera Rage. Khaimera gains 0.1/0.14/0.18/0.2/0.26/0.32/0.38/0.44/0.5/0.56/0.66/0.76/0.86/0.96/1.06/1.22/1.38/1.54-1.5<AbilityPowerText>(+0.3%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> Health Regeneration (based on Level) and his Cooldowns progress 0.5% faster per 1 Rage.<br>\n<br>\nWhile above 50 Rage, Khaimera gains 8% Movement Speed.<br>\n<br>\nRage decays at a rate of 25 per second after not attacking for 2.5s.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       80
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "physical": [
+       200
+      ],
+      "magical": [
+       100
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "kira",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Nevermore",
+    "sourceText": "Nevermore activates every 15/14.5/14/13.5/13/12.5/12/11.5/11/10.5/10/9.5/9/8.5/8/7.5/7/6.5s (-0.5 per Level), empowering Kira.<br>\n<br>\nWhile empowered, Kira's next Basic Attack or Mercy blast fires a Raven at the target that explodes on impact, dealing <HealthText>(+7% of the Target's Current Health)</HealthText> physical damage to all targets in a small area.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       74,
+       78,
+       82,
+       86,
+       90
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       460
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": [
+    {
+     "slug": "kira",
+     "key": "PRIMARY",
+     "stat": "untagged-base",
+     "sourceText": "Passive: Apply Vengeance to enemies by dealing basic attack or ability damage, increasing damage you deal to them by 0.75% for 3.5s, stacking infinitely.<br>\n<br>\nActive: Purify all Enemy Units afflicted with Vengeance, dealing 45/65/85/105/125 physical damage, plus an additional 6/8/10/12/14 <AttackDamageText>(+12%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText> damage per stack, and Slowing them by 10/15/20/25/30% for 1s.<br>\n<br>\nThe cooldown is reset and 35% Mana is refunded if Dusk kills any target.",
+     "sourcePayload": "dealing 45/65/85/105/125 physical damage",
+     "omittedTerms": []
+    }
+   ]
+  },
+  {
+   "slug": "kwang",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Strike of the Heavens",
+    "sourceText": "When Kwang damages an Enemy with an ability his Heavenly Blade becomes Energized with electricity for 4s, stacking up to 3 times.<br>\n<br>\nWhilst Energized, Kwang gains 45% attack speed and his next basic attack strikes lightning from above dealing 10/12/14/16/18/21/24/27/30/33/37/41/45/49/53/57/62/67 (+4 per level)<AbilityPowerText>(+20%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage to the Target and nearby Enemies. <br>\n<br>\nIf this damages an Enemy Hero, Kwang reduces his basic ability cooldowns by 0.5s per stack.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       60
+      ],
+      "physical": [
+       70
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       40
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       80
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "legion",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Ballistic Calibration",
+    "sourceText": "Legion converts 1% Bonus Attack Speed into 0.75 Ability Haste.<br>\nLegion also gains bonuses based on purchased Item stats:<br>\n100 Physical Power: Saturation Charge Slow Duration increased by 0.75s.<br>\n<br>\n30 Physical Penetration: Orbital Sanction's Radius is increased by 33%.<br>\n<br>\n45 Ability Haste: Frag Order deals 10% of the Target's Missing Health as Physical Damage.<br>\n<br>\n80 Magical Power: Rally Point's Heal is increased by 50%.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       60,
+       65,
+       70,
+       75,
+       80
+      ],
+      "magical": [
+       40
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       50
+      ],
+      "magical": [
+       40
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       20
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       26
+      ],
+      "magical": [
+       10
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "lt-belica",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Innovation",
+    "sourceText": "Lt. Belica's abilities gain additional strength at maximum rank. <br>\n<br>\nAdditionally, she gains 8 Ability Haste each time she maxes out an ability.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       70
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "magical": [
+       60
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       17.5
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       65
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "maco",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Mach Speed!",
+    "sourceText": "As Maco moves, he gains stacks of Movement Speed up to 10% (+0.6% per level).<br>\n<br>\nWhen Maco reaches 25 stacks, he gains Mach Speed, which grants him Slow Immunity.<br>\n<br>\nTaking Damage from Enemy Heroes removes all of the buffs. Standing still for 3s also removes the buffs.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "magical": [
+       45
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       45
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       70
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       35
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "morigesh",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Pestilence",
+    "sourceText": "Morigesh's damaging abilities apply Pestilence for 3s, dealing 0.14% <AbilityPowerText>(+0.05% per 100 Magical Power</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> of the target's maximum health as magical damage every 0.5s, stacking up to 4 times.<br>\n<br>\nFetid Daggers refreshes the duration of Pestilence when it damages a target afflicted by it.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       45
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       65
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       75
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       80
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "mourn",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Extract",
+    "sourceText": "Mourn's next basic attack will deal an additional 20/28/36/44/52/60/68/76/84/92/100/108/116/124/132/140/148/156 <AbilityPowerText>(+50%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText><AttackDamageText>(+90%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText><HealthText>(+6% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> magical damage to all targets hit. Damaging an Enemy Target will restore (3%/5%/7%/9% Maximum Health) Health.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       85
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       8
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       45
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "murdock",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Shots Fired",
+    "sourceText": "Landing 5 successful Basic Attacks will cause Murdock's next Basic Attack to have 400 increased range and deal <AttackDamageText>(+36-60%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText> bonus damage. ",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       100,
+       120,
+       140,
+       160,
+       180
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "physical": [
+       100
+      ],
+      "magical": [
+       120
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false,
+     "selfAttackSpeedPctPerRank": [
+      15,
+      20,
+      25,
+      30,
+      35
+     ],
+     "buffDurationSecPerRank": [
+      4
+     ]
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       120
+      ],
+      "magical": [
+       100
+      ]
+     },
+     "ignoresArmor": true
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "muriel",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Sentinel",
+    "sourceText": "Muriel's damaging abilities reduce Enemy Healing by 25/25/25/25/25/25/35/35/35/35/35/35/45/45/45/45/45/45/35/45% for 4s.<br>\n<br>\nAllies affected by Muriel's abilities gain 10% (+0.4% per Level) increased Healing and Shielding Received for 4s.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       50
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       50
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       40
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "narbash",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Mosh Pit",
+    "sourceText": "Narbash gains 2/2.5/3/3.5/4/4.5/5/5.5/6/6.5/7/7.5/8/8.5/9/9.5/10/10.5 (+0.5 per level) Physical Power, Physical Armor and Magical Armor for each nearby Allied or Enemy Hero within a 1700u radius.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "magical": [
+       85
+      ],
+      "physical": [
+       130
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       80
+      ],
+      "physical": [
+       120
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "neon",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Neural Network",
+    "sourceText": "Casting a Basic Ability grants one Thread. At 3 Threads, Neon's next basic ability becomes<br>\nOverclocked, consuming the stacks to unleash a powerful additional effect.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       40
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       42.5
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       60
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       55,
+       60,
+       65
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "phase",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Essence Catalyst ",
+    "sourceText": "After casting an ability, restores 10/13/16/19/22/25/28/31/34/37/40/43/46/49/52/55/58/61 <AbilityPowerText>(+40%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> health over 3s. Linked allies receive the same healing. This effect can stack.<br>\n<br>\nAdditionally, Phase's Blink costs 40 mana but has a reduced Cooldown of 60s. Upon use, it increases her damage dealt by 15% for 3s.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       80
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       90
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false,
+     "selfAttackSpeedPctPerRank": [
+      35,
+      55,
+      75
+     ],
+     "buffDurationSecPerRank": [
+      8
+     ]
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "rampage",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "King of the Jungle",
+    "sourceText": "Rampage gains <HealthText>(+0.1/0.12/0.13/0.15/0.16/0.18/0.19/0.21/0.22/0.24/0.25/0.27/0.28/0.3/0.31/0.33/0.34/0.36%</HealthText> <img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> bonus health regeneration. This regeneration is doubled while in the Jungle. <br>\n<br>\nUpon being immobilised, Rampage gains 25 Tenacity for 4s and restores <HealthText>(+3% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> of his maximum health over the same duration.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "physical": [
+       60
+      ],
+      "magical": [
+       80
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       50
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": [
+    {
+     "slug": "rampage",
+     "key": "ALTERNATE",
+     "stat": "Health",
+     "sourceText": "Leap forward before slamming down to the ground, dealing 80/110/140/170/200 <HealthText>(+5% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> physical damage to nearby Enemies and launching damaged Heroes backwards. The leap can be cancelled early by basic attacking.<br>\n<br>\nUsing Pounce while Boulder Throw is active causes it to shatter upon landing, dealing its effects in the area.<br>\n<br>\nBehemoth: Range increases by 65%.",
+     "sourcePayload": "80/110/140/170/200 <HealthText>(+5% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> physical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "HealthText",
+       "percentByRank": [
+        5
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "renna",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Echoes of the Damned",
+    "sourceText": "Entities that die near Renna have a chance of leaving behind their Essence that can be consumed by moving nearby. Heroes always leave behind Essence. Essence enhances Renna's abilities directly.<br>\n<br>\nIf Renna Jumps while mid-air, she will begin to hover, falling slowly.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       60
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       50
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       24
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "revenant",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Bounty Hunter",
+    "sourceText": "Revenant's Physical Power is increased by 3/3.5/4/4.5/5/5.5/6/6.5/7/7.5/8/8.5/9/9.5/10/10.5/11/11.5% (+1% per 10% Critical Strike Chance)(+2% per 10% Bonus Attack Speed).<br>\n<br>\nKilling an Enemy Hero grants 25 (+25 per bounty stack) additional gold.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       40,
+       55,
+       70,
+       85,
+       100
+      ],
+      "magical": [
+       60,
+       65,
+       70,
+       75,
+       80
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       20
+      ],
+      "magical": [
+       30
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "riktor",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Suspended Sentence",
+    "sourceText": "When Riktor Immobilizes or Silences an Enemy Hero with his Abilities, he halts their cooldown progression for the duration of the effect.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       100
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       70
+      ],
+      "magical": [
+       60
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       35
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       45
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": [
+    {
+     "slug": "riktor",
+     "key": "SECONDARY",
+     "stat": "Health",
+     "sourceText": "Emit an electrical aura for 4.5s, granting Riktor a 20 <HealthText>(+8/9.5/11/12.5/14% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> <AbilityPowerText>(+35%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> Shield and 8/9/10/11/12% Movement Speed for the duration. <br>\n<br>\nThe electrical aura deals 60/95/130/165/200 <HealthText>(+6% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> <AbilityPowerText>(+35%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage to all nearby Enemies over the duration.<br>\n<br>\nIf Riktor takes damage while the aura is active, he emits a pulse of energy that deals another tick of damage at 75% effectiveness. This can only occur once every 0.5s.",
+     "sourcePayload": "60/95/130/165/200 <HealthText>(+6% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> <AbilityPowerText>(+35%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "HealthText",
+       "percentByRank": [
+        6
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "scarlett",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Last Light",
+    "sourceText": "Scarlett uses Energy instead of Mana:<br>\n• Max Energy: 200/400/600/800/1000/1200/1400/1600/1800/2000/2200/2400/2600/2800/3000/3200/3400/3600.<br>\n• Energy Regen: 10/20/30/40/50/60/70/80/90/100/110/120/130/140/150/160/170/180 per second.<br>\n• On Takedown: Scarlett restores 100 Energy immediately.<br>\n<br>\nScarlett also converts every 35 Bonus Mana she acquires into 1 Physical Power.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       60
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       80
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       100
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "serath",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Fallen Grace",
+    "sourceText": "Takedowns on Enemy Heroes leave behind a demonic visage for 10s.<br>\n<br>\nUpon touching it, Serath activates Heresy at no cost and reduces her current basic ability cooldowns by 65%.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       50
+      ],
+      "magical": [
+       40
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       20
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       80
+      ],
+      "magical": [
+       50
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       50
+      ],
+      "magical": [
+       80
+      ]
+     },
+     "ignoresArmor": false,
+     "selfAttackSpeedPctPerRank": [
+      20,
+      40,
+      60
+     ],
+     "buffDurationSecPerRank": [
+      7
+     ]
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "sevarog",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Reaper of Souls",
+    "sourceText": "Sevarog gains Souls when he Kills an Enemy with an ability. Each Soul grants 2 bonus health. <br>\n<br>\nSevarog reaches an additional Tier of power at 40/80/120/160 Souls, gaining 40/80/180/350 bonus health and new effects:<br>\n• Tier 1: +5% Omnivamp.<br>\n• Tier 2: Gain an Aura that Shreds nearby Enemy Heroes' Magical Armor by 15%.<br>\n• Tier 3: Siphon grants 2x Maximum Health from Stealing.<br>\n• Tier 4: Reflect 10% of damage taken to nearby enemies.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       40
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       40
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       75
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": [
+    {
+     "slug": "sevarog",
+     "key": "ALTERNATE",
+     "stat": "Health",
+     "sourceText": "Sevarog dashes forward through the air, dealing 40/60/80/100/120 <HealthText>(+2.5%</HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> magical damage to all Enemies he passes through and Fearing them for 1s.",
+     "sourcePayload": "40/60/80/100/120 <HealthText>(+2.5%</HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> magical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "HealthText",
+       "percentByRank": [
+        2.5
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
+    },
+    {
+     "slug": "sevarog",
+     "key": "PRIMARY",
+     "stat": "Health",
+     "sourceText": "Strike forward with a spectral hand, dealing 80/95/110/125/140 <HealthText>(+4% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText><AbilityPowerText>(+40%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage to all Enemies. <br>\n<br>\nDeals 40/45/50/55/60 additional damage to Monsters.<br>\n<br>\nIf Siphon damages an Enemy Hero, Sevarog steals 1.8/2/2.2/2.4/2.6% of their Maximum Health for 15s.",
+     "sourcePayload": "80/95/110/125/140 <HealthText>(+4% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText><AbilityPowerText>(+40%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "HealthText",
+       "percentByRank": [
+        4
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "shinbi",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Biting Melody",
+    "sourceText": "Shinbi's Basic Attacks deal an additional 12 <AttackDamageText>(+10%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText><AbilityPowerText>(+10%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage on-hit. <br>\n<br>\nEvery 10s (-0.4s per Level), Shinbi's next Basic Attack applies Biting Melody for 2.5x damage, applying Track to the target, and restoring 20/26/32/38/44/50/56/62/68/74/80/86/92/98/104/110/116/122 (+6 per Level) Mana.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       55
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       55
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       22
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       15
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "skylar",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Dissonance",
+    "sourceText": "Skylar gains additional Jump Height.<br>\n<br>\nKilling an Enemy Unit makes it explode after 0.75s, dealing 30 (+5 per level) physical damage to nearby targets.<br>\n<br>\nExplosions from Enemy Heroes are 3x larger and deal 3x more damage.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       10
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       20
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       20
+      ],
+      "magical": [
+       12
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       150
+      ],
+      "magical": [
+       90
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "sparrow",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Relentless",
+    "sourceText": "Sparrow's Basic Attacks and Abilities apply stacks of Relentless to Enemy Units. <br>\n<br>\nHer Basic Attacks against Targets afflicted by Relentless deal an additional 0.25% of their maximum health as bonus physical damage On-Hit, per stack.<br>\n<br>\nRelentless stacks last for 3s, stacking up to 8 times.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       140,
+       148,
+       156,
+       164,
+       172
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       100
+      ],
+      "magical": [
+       80
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false,
+     "selfAttackSpeedPctPerRank": [
+      25,
+      30,
+      35,
+      40,
+      45
+     ],
+     "buffDurationSecPerRank": [
+      6
+     ]
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "steel",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Cybernetic Shell",
+    "sourceText": "Steel passively shields himself for 7% of his maximum health.<br>\n<br>\nThe shield lasts until destroyed and refreshes if Steel has not taken damage in the last 10/10/10/10/10/9/9/9/9/9/8/8/8/8/8/7/7/7s.<br>\n<br>\nAdditionally Steel gains (+10% bonus Magical Armor) Physical Armor and (+10% bonus Physical Armor) Magical armor.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "magical": [
+       50
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       70
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       30
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "magical": [
+       90
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": [
+    {
+     "slug": "steel",
+     "key": "PRIMARY",
+     "stat": "Health",
+     "sourceText": "Steel charges forward, becoming Unstoppable for the duration of the dash and dealing 85/125/165/205/245 <HealthText>(+5% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText><AbilityPowerText>(+70%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage to all Enemies in his path. <br>\n<br>\nEnemy Heroes struck by Bull Rush are Knocked Back. Monsters and Minions are Stunned for 2s. ",
+     "sourcePayload": "85/125/165/205/245 <HealthText>(+5% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText><AbilityPowerText>(+70%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "HealthText",
+       "percentByRank": [
+        5
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "terra",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Hersir",
+    "sourceText": "Terra gains stacks of Hersir when damaging Enemies with her Basic Attacks and Abilities, up to a maximum of 5. At maximum stacks, Terra's next Basic Ability is Empowered with additional effects. <br>\n<br>\nEntering the Base grants Terra maximum Hersir stacks instantly.<br>\n<br>\nTerra also gains 10% increased Armors while under a Tower.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": [
+    {
+     "slug": "terra",
+     "key": "ALTERNATE",
+     "stat": "Armor",
+     "sourceText": "Terra becomes Unstoppable and Channels for up to 3.5s before dashing. She deals 27/48/69/90/111 <ArmorText>(+40%</ArmorText><img id=\"ArmorOrange\"></img><ArmorText>)</ArmorText> <MRText>(+40%</MRText><img id=\"MRIcon\"></img><MRText>)</MRText> physical damage to all Enemies in her path, stopping if she collides with a Hero. Enemies hit are Knocked Back for 0.25s.<br>\n<br>\nFor the first 1.25s, dash range and damage increases, dealing up to 81/144/207/270/333 <ArmorText>(+120%</ArmorText><img id=\"ArmorOrange\"></img><ArmorText>)</ArmorText> <MRText>(+120%</MRText><img id=\"MRIcon\"></img><MRText>)</MRText> physical damage. <br>\n<br>\nEmpowered: On Enemy hit, gain a 5/65/125/185/245 <HealthText>(+10/12/14/16/18% </HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> shield for 3.5s.",
+     "sourcePayload": "27/48/69/90/111 <ArmorText>(+40%</ArmorText><img id=\"ArmorOrange\"></img><ArmorText>)</ArmorText> <MRText>(+40%</MRText><img id=\"MRIcon\"></img><MRText>)</MRText> physical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "ArmorText",
+       "percentByRank": [
+        40
+       ],
+       "reason": "unsupported-stat"
+      },
+      {
+       "sourceTag": "MRText",
+       "percentByRank": [
+        40
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
+    },
+    {
+     "slug": "terra",
+     "key": "PRIMARY",
+     "stat": "Armor",
+     "sourceText": "Terra spins her axe, striking all Enemies around her before slashing forward a second time. Each strike deals 50/80/110/140/170 <ArmorText>(+35%</ArmorText><img id=\"ArmorOrange\"></img><ArmorText>)</ArmorText><MRText>(+35%</MRText><img id=\"MRIcon\"></img><MRText>)</MRText> physical damage.<br>\n<br>\nEnemy Hero hits refund 10% of the cooldown per strike.<br>\n<br>\nEmpowered: Terra strikes three times, with the third strike dealing an additional <HealthText>(+5/6.25/7.5/8.75/10 Target's Max Health)%</HealthText> damage to all Enemies in front of her.",
+     "sourcePayload": "50/80/110/140/170 <ArmorText>(+35%</ArmorText><img id=\"ArmorOrange\"></img><ArmorText>)</ArmorText><MRText>(+35%</MRText><img id=\"MRIcon\"></img><MRText>)</MRText> physical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "ArmorText",
+       "percentByRank": [
+        35
+       ],
+       "reason": "unsupported-stat"
+      },
+      {
+       "sourceTag": "MRText",
+       "percentByRank": [
+        35
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
+    },
+    {
+     "slug": "terra",
+     "key": "SECONDARY",
+     "stat": "Armor",
+     "sourceText": "Throw a spectral axe, dealing 80/120/160/200/240 <ArmorText>(+40%</ArmorText><img id=\"ArmorOrange\"></img><ArmorText>)</ArmorText><MRText>(+40%</MRText><img id=\"MRIcon\"></img><MRText>)</MRText> physical damage to all Enemies in its path.<br>\n<br>\nEnemies hit by Highland Hurl are Slowed by 40% for 1.25s. and have their Physical Armor reduced by 20/22.5/25/27.5/30% for 4.5s.<br>\n<br>\nEmpowered: Roots Enemies instead for 1.25s.",
+     "sourcePayload": "80/120/160/200/240 <ArmorText>(+40%</ArmorText><img id=\"ArmorOrange\"></img><ArmorText>)</ArmorText><MRText>(+40%</MRText><img id=\"MRIcon\"></img><MRText>)</MRText> physical damage",
+     "omittedTerms": [
+      {
+       "sourceTag": "ArmorText",
+       "percentByRank": [
+        40
+       ],
+       "reason": "unsupported-stat"
+      },
+      {
+       "sourceTag": "MRText",
+       "percentByRank": [
+        40
+       ],
+       "reason": "unsupported-stat"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "slug": "the-fey",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Nature's Vengeance",
+    "sourceText": "Each time The Fey achieves a Takedown she spawns an Untamed Growth from the Enemy Hero's corpse and gains 30% movement speed for 3s.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       100
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       70
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       55
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "magical": [
+       100
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "twinblast",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Gunslinger",
+    "sourceText": "Casting an ability grants TwinBlast 20% increased Total Attack Speed and will cause his next basic attack within 4s to fire three times for a total of 142.5% damage, with each shot applying on-hit effects at 60% effectiveness.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       45
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       95
+      ],
+      "magical": [
+       120
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       9
+      ],
+      "magical": [
+       9
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "valmont",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Hemophagia",
+    "sourceText": "When Valmont deals damage to an Enemy with Crimson Sigil or Bloodbound causes Lilith to strike them, dealing 12/20/28/36/44/23/31/39/47 (Based on Bloodbound Level) <AbilityPowerText>(+15%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage.<br>\n<br>\nThe more attack speed Valmont has, the shorter the delay between strikes is. <br>\n<br>\nOn Enemy Takedown their soul is consumed by Lilith and you restore 3/3/4/4/5/6/8/10/12/14/17/20/23/26/29/32/35/38-41 Mana (Based on Hero Level).<br>\n<br>\nConsuming the soul of an Enemy Hero restores 35% Maximum Mana additionally.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       60
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       15
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       60
+      ]
+     },
+     "ignoresArmor": false,
+     "selfAttackSpeedPctPerRank": [
+      20,
+      25,
+      30,
+      35,
+      40
+     ],
+     "buffDurationSecPerRank": [
+      4
+     ]
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       23
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "wraith",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Who's There?",
+    "sourceText": "Wraith's Vision Item becomes a Sonar Drone that will become Camouflaged upon deployment, revealing Enemies within 1000 units. <br>\n<br>\nSonar Drone can detect Enemy Heroes through walls. ",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       110
+      ],
+      "magical": [
+       70
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       60
+      ],
+      "magical": [
+       50
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "wukong",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Somersault",
+    "sourceText": "Double Jump to leap into the air.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "yin",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Rising Storm",
+    "sourceText": "Yin’s basic attacks against Heroes or Monsters grant her a stack of Rising Storm per Target hit for 3s, stacking up to 6 times, with the duration refreshing on subsequent attacks. <br>\n<br>\nEach stack grants 3/4/5/6% Total Attack Speed, for a maximum of 18/24/30/36% Total Attack Speed. ",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       100
+      ],
+      "magical": [
+       60
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       100
+      ],
+      "magical": [
+       80
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "yurei",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Hallowed Strikes",
+    "sourceText": "Casting an ability grants you ranged (850u) basic attacks and 30/30/30/30/30/36/36/36/36/36/42/42/42/42/42/48/48/48% attack speed for the next two basic attacks.<br>\n<br>\nThese attacks deal <AttackDamageText>(+8%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText> bonus physical damage and bounce 2 times, dealing 15/15/15/15/15/20/20/20/20/20/25/25/25/25/25/30/30/30% damage to targets hit.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       70
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       115
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       50
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "zarus",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Gladiator",
+    "sourceText": "Gain a stack of Gladiator when dealing damage with Basic Attacks or Abilities to Non-Minions, stacking up to 8 times. Each stack grants 1% increased Physical Power.<br>\n<br>\nAfter exiting combat for 5s, stacks will fall off once per second, restoring <HealthText>(+0.3/0.3/0.3/0.3/0.3/0.6/0.6/0.6/0.6/0.6/1.2/1.2/1.2/1.2/1.2/2.4/2.4/2.4%/0.6%/1.2%/2.4%</HealthText> <img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> Health per stack consumed.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       125
+      ],
+      "magical": [
+       80
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "physical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "physical": [
+       90
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "physical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "physical": [
+       90
+      ]
+     },
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  },
+  {
+   "slug": "zinx",
+   "source": "catalog",
+   "passive": {
+    "key": "PASSIVE",
+    "name": "Triage Protocol",
+    "sourceText": "Zinx gains a stack for 5s when damaging Enemy Heroes with Basic Attacks or Abilities, up to a maximum of 5.<br>\n<br>\nAt maximum stacks, Triage Protocol activates, removing any active combat penalty from Zinx, granting her 25% decaying Movement Speed, and +75% increased Infuse Healing for 5s. <br>\n<br>\nStacks cannot be gained while Triage Protocol is on cooldown.",
+    "source": "catalog",
+    "modelStatus": "source-only"
+   },
+   "abilities": [
+    {
+     "key": "ALTERNATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    },
+    {
+     "key": "PRIMARY",
+     "damageType": "magical",
+     "reviewedImmobilization": true,
+     "powerScaling": {
+      "magical": [
+       40
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "SECONDARY",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "powerScaling": {
+      "magical": [
+       40
+      ]
+     },
+     "ignoresArmor": false
+    },
+    {
+     "key": "ULTIMATE",
+     "damageType": "magical",
+     "reviewedImmobilization": false,
+     "ignoresArmor": false
+    }
+   ],
+   "staleFallbacks": [],
+   "droppedScaling": []
+  }
+ ],
+ "items": [
+  {
+   "slug": "absolution",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A defensive, CC-triggered mitigation buff; no incoming-mitigation primitive."
+   ]
+  },
+  {
+   "slug": "abyssal-dart",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "aegis-of-agawar",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Agawar's Protection doubles to 20% armor while below 40% Health; a health-state-gated defensive tier."
+   ]
+  },
+  {
+   "slug": "alchemical-rod",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "alternata",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Nata Style cooldown ripple (-12% of other current basic cooldowns per Alternate cast) depends on cast interleaving; not modeled"
+   ]
+  },
+  {
+   "slug": "alternator",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Adeptus is an evolve stack (15 hits with the Alternate Ability evolves into Alternata)."
+   ]
+  },
+  {
+   "slug": "amulet-of-chaos",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Takedown-gated; a 1v1 kill-window sim has no takedown model."
+   ]
+  },
+  {
+   "slug": "ashbringer",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "The cooldown ripple depends on ability interleaving the sim does not track."
+   ]
+  },
+  {
+   "slug": "assassin-crest",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "astral-catalyst",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Takedown-gated and enemy-shield-gated; neither state exists in the sim."
+   ]
+  },
+  {
+   "slug": "augmentation",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Client Blueprint requires ability-commit empowerment followed by an eligible on-hit event. Production uses bounded cast/basic pairs only; spell-only rotations and basic-only DPS omit this proc. Four-second expiry, actual weaving and ability on-hit consumers remain unmodeled."
+   ]
+  },
+  {
+   "slug": "azure-core",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "banded-emerald",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "barbaric-cleaver",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "barbed-pauldron",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "basilisk",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "berserkers-axe",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "The empowered-basic cadence depends on the hero mobility cooldowns, which are not modeled."
+   ]
+  },
+  {
+   "slug": "blood-tome",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "bloodletter",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "brimstone",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "brutallax",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "catalytic-drive",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "This is the buyable; it evolves into Cybernetic Drive, so it is credited with that form's +12% total armor (Cybernetic Conversion). The PvE execute/AoE/heal (Deconstruct) and the +gold stay unmodeled (out of combat scope)."
+   ]
+  },
+  {
+   "slug": "caustica",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Arcane Might: +0.2% damage per point of target bonus Magical Armor while above 50% health"
+   ]
+  },
+  {
+   "slug": "cerulean-stone",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "champion-crest",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "chaotic-core",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "chronomatic-wand",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "citadel",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Fortification is a defensive armor aura (+5 per nearby enemy)."
+   ]
+  },
+  {
+   "slug": "claw-of-hermes",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Damage scales with the target max/missing mana; target-mana-dependent, explicitly out of scope."
+   ]
+  },
+  {
+   "slug": "claymore",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "codex",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "combustion",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Pyromaniac cooldown reduction is omitted. The recovered client requires a hero target, excludes Item, DoT and ProcDamage events, and uses a shared gate with a 0.05-second delayed reset. This is not unrestricted reduction on every damage packet. Scalar bindings, overlapping callbacks and native cooldown behavior remain unresolved; the simulator retains the catalog 15-second Pyro cooldown."
+   ]
+  },
+  {
+   "slug": "composite-bow",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "consort-crest",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "crescelia",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "the -12% non-ult cooldown fires per ability cast (a CD ripple); like Volcanica/Ashbringer its value depends on cast interleaving the sim doesn't track. (Was wrongly encoded as cooldown_rate 12, i.e. a 12x divisor, which collapsed cooldowns and inflated rotation ~7x.)"
+   ]
+  },
+  {
+   "slug": "crimson-edge",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "crossbow",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "crystal-tear",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A support, team-side buff on heal/shield cast."
+   ]
+  },
+  {
+   "slug": "crystalline-cuirass",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A defensive stack gained from incoming magical damage."
+   ]
+  },
+  {
+   "slug": "cursed-ring",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Curse of Swiftness (+20% total AS with a basics-only -25% damage penalty) has no basics-only negative-amp primitive, so the AS upside stays uncredited; only Broken Chains (attacks/sec cap 3->4) is modeled."
+   ]
+  },
+  {
+   "slug": "cursed-scroll",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Forbidden Art scales AS/regen with the holder missing health; no health-state uptime model."
+   ]
+  },
+  {
+   "slug": "cybernetic-drive",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Lesser Deconstruct executes minions/small monsters (PvE)."
+   ]
+  },
+  {
+   "slug": "dawnstar",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A defensive enemy-damage debuff; the AS rider is immobilize-gated team utility."
+   ]
+  },
+  {
+   "slug": "deathstalker",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Client triggers on hero on-hit events with a next-engine-tick gate. Production credits prior basic-hit stacks only, using uniform attack spacing and shared refresh. Ability/proc benefits, Mercy triggers, frame batching and cross-target state remain unmodeled. Three seconds is expiry, not a time-to-full ramp."
+   ]
+  },
+  {
+   "slug": "demolisher",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Trauma ignores 30% of BONUS physical armor only; reference profiles do not split base vs bonus armor."
+   ]
+  },
+  {
+   "slug": "demon-edge",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Requires the enemy to be Shielded; no enemy-shield state in the sim."
+   ]
+  },
+  {
+   "slug": "devotion",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Both are support/defensive (team-side heal boost, incoming-magical mitigation)."
+   ]
+  },
+  {
+   "slug": "diffusal-cane",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "divine-potion",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "divine-pouch",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "divine-wreath",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "dox",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "draconum",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "healing-amp stacks and an on-takedown heal — sustain/economy, not single-target combat damage"
+   ]
+  },
+  {
+   "slug": "dread",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A defensive, incoming-damage effect with no offensive component."
+   ]
+  },
+  {
+   "slug": "dreambinder",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A slow only (CC)."
+   ]
+  },
+  {
+   "slug": "dusk-stave",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "dust-devil",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "At 5 stacks grants 10% movement speed (out of scope)."
+   ]
+  },
+  {
+   "slug": "dynamo",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Immobilizer currently assumes an immobilization window; Adaptive Aggression (20 physical or 30 magical power depending on build) is not represented."
+   ]
+  },
+  {
+   "slug": "earthshaker",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "echelon-cloak",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Camouflage requires standing still 2s and grants missing-HP/mana regen; only the opener burst is credited."
+   ]
+  },
+  {
+   "slug": "elafrost",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "energy-stream",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "enras-blessing",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "shields an immobilized ally — team-side value outside the single-hero sim"
+   ]
+  },
+  {
+   "slug": "entropy",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "envy",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "The guaranteed-crit cadence depends on mobility uptime; Hush is a silence (CC)."
+   ]
+  },
+  {
+   "slug": "epoch",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "equinox",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "essence-ring",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "everbloom",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A support, team-side defensive grant."
+   ]
+  },
+  {
+   "slug": "eviscerator",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "exodus",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "fire-blossom",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "proximity burn aura; uptime depends on positioning the closed-form sim cannot observe"
+   ]
+  },
+  {
+   "slug": "fist-of-razuul",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "florescence",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "flux-matrix",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "fortified-mantle",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "frosted-lure",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A proximity AoE nuke (multi-target) with an ambiguous scaling stat and a self-shield."
+   ]
+  },
+  {
+   "slug": "frostguard",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A defensive, incoming-basic-gated debuff."
+   ]
+  },
+  {
+   "slug": "gaia-greaves",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "The bonus-damage cadence is movement-stack-dependent and unstated."
+   ]
+  },
+  {
+   "slug": "galaxy-greaves",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Movement and out-of-combat MS utility; no combat damage component."
+   ]
+  },
+  {
+   "slug": "gamma-gloop",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "gaussian-greaves",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A mobility-gated AoE, not a sustained combat proc."
+   ]
+  },
+  {
+   "slug": "giants-ring",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Cooldown refunds and a defensive ult buff gated on being attacked."
+   ]
+  },
+  {
+   "slug": "gilded-pendant",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "golems-gift",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Stacks build out of combat and deplete in a fight; net in-fight uptime is indeterminate."
+   ]
+  },
+  {
+   "slug": "goliath-crest",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "gravitum",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "greatsword",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "guardian-crest",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "heroic-guard",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "hexbound-bracers",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Mana sustain and basic-attack mitigation; defensive/economy."
+   ]
+  },
+  {
+   "slug": "honed-kris",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "horned-plate",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "hunt",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "iceskorn-talons",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "imbued-amulet",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "imperator",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "infernum",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Cinder also adds +1.5%-of-physical-power to the %max-health (stat-scaled %health) and Furnace scales with enemy bonus armor; neither is cleanly expressible."
+   ]
+  },
+  {
+   "slug": "inquisition",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "intellect-tonic",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "ironwood-warbow",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "judgement",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "keeper-crest",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "leafsong",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "leather-tunic",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "legacy",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A defensive, health-state-gated cleanse/immunity."
+   ]
+  },
+  {
+   "slug": "liberator",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "life-ring",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "life-stream",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "lifebinder",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Scales with the holder missing health; no health-state uptime model."
+   ]
+  },
+  {
+   "slug": "lifecore",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A team-side ally heal, not the holder damage."
+   ]
+  },
+  {
+   "slug": "lightning-hawk",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Momentum proc cadence remains unmodeled. Recovered movement grants use straight-line displacement sampled after 0.25 seconds, rounded down per 50 world units; fractional travel is not carried between samples. Basic-hit grants depend on unresolved scalar defaults and native event scaling, with separate AoE gating. Movement sampling is tested diagnostically, but total charge rate and successful proc timing are not verified."
+   ]
+  },
+  {
+   "slug": "loch-shawl",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "longbow",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "lucky-feather",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "lunaria",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A support, team-side heal-conversion."
+   ]
+  },
+  {
+   "slug": "luxforge-lantern",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A permanent economy/farming stack."
+   ]
+  },
+  {
+   "slug": "magician-crest",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "magnify",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "malady",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Demise's finisher fires only on sub-40%-health targets and ramps +4 per stack at an unstated cadence; Parting Gift's on-kill explosion deals an unstated % of Max Health. A fixed-target damage-over-window sim can neither gate nor stack it."
+   ]
+  },
+  {
+   "slug": "manta-scythe",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Insatiable Harvest is a PvE 1.5x-to-minions + per-kill PP farming stack."
+   ]
+  },
+  {
+   "slug": "marksman-crest",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "marshal",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "megacosm",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Star Killer (6% of target BONUS health) needs a base/bonus health split the reference profiles do not carry"
+   ]
+  },
+  {
+   "slug": "mesmer",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A defensive spell shield; carries no damage effect."
+   ]
+  },
+  {
+   "slug": "mindrazor",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Razor Cleave is AoE splash around the target (multi-target), no single-target value."
+   ]
+  },
+  {
+   "slug": "mistmeadow-buckler",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Defensive, incoming-magical mitigation from a regenerating charge pool."
+   ]
+  },
+  {
+   "slug": "mutilator",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "mystic-cane",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "necrosis",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "nether-shard",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "nex",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "nightfall",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Ability sustain (no damage component) and a takedown-gated shield."
+   ]
+  },
+  {
+   "slug": "noxia",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "nuclear-rounds",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "nullifying-mask",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "nyr-warboots",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "oathkeeper",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Client Blueprint requires ability-commit empowerment followed by an eligible on-hit event. Production uses bounded cast/basic pairs only; spell-only rotations and basic-only DPS omit this proc. Four-second expiry, actual weaving and ability on-hit consumers remain unmodeled."
+   ]
+  },
+  {
+   "slug": "obelisk",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "oblivion-crown",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "occult-crest",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "omen",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "The Momentum stack cadence (movement + attacks) is unstated."
+   ]
+  },
+  {
+   "slug": "onixian-quiver",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Multishot is not simulated: angled projectiles scale with travel distance and hero basic scaling. Recovered effect defaults bind attack-damage scaling and the custom distance calculation. Collision, critical-strike/lifesteal resolution and complete native aggregation still need integration. Melee Onixia crit and missing-health mitigation are also omitted; ranged carries receive no melee benefit."
+   ]
+  },
+  {
+   "slug": "orb-of-enlightenment",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Art of Fortitude restores 3% missing health over 5s on cast; health-state-dependent sustain is unmodeled."
+   ]
+  },
+  {
+   "slug": "orb-of-growth",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "This is the item the field actually BUYS; it evolves (~500 bonus XP, mid-game) into Orb of Enlightenment, so it is credited at its evolved per-level MP/HP value. Inner Growth's bonus-XP economy (faster leveling) and Art of Fortitude's 3% missing-health heal stay unmodeled (out of combat scope). Pre-evolution the per-level growth is slightly optimistic; evolution-timing gating is a future refinement."
+   ]
+  },
+  {
+   "slug": "orion",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "ortus",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "overlord",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "cleave is multi-target value (no single-target change at this text precision); Devourer health stacking is kill-economy"
+   ]
+  },
+  {
+   "slug": "overseer",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "pacifier",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "painweaver",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "pendant",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "penumbra",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Takedown-gated; no takedown model in a 1v1 kill window."
+   ]
+  },
+  {
+   "slug": "plasma-blade",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "polar-treads",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "potent-staff",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "prophecy",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "protection-tonic",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "pygmy-dust",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "raiment-of-renewal",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "out-of-combat missing-health regen — outside the in-fight window"
+   ]
+  },
+  {
+   "slug": "rapid-rapier",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "rapture",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "razorback",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "razorclaw",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "rebirth",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A death-revive mechanic; out of any damage/EHP model."
+   ]
+  },
+  {
+   "slug": "reclamation",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "redwood-shortbow",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "refillable-potion",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "rejuvenation-robe",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "resolution",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Potent Font is a per-kill max-mana farming stack (caps at 400 then grants PP); economy."
+   ]
+  },
+  {
+   "slug": "rift-walkers",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "robust-arbalest",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "rogue-crest",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "ruination",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Damage scales with the target max mana; target-mana-dependent, out of scope."
+   ]
+  },
+  {
+   "slug": "rune-bow",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "runic-veil",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "ruthless-broadsword",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "sabre",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "sai",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "salvation",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A defensive, health-state-gated shield/sustain."
+   ]
+  },
+  {
+   "slug": "sanctification",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "saphirs-mantle",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "scalding-sceptre",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "scattershot",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Scattershot is not simulated in populated scenes: its target search excludes the triggering enemy and attempts two nearby secondary-target projectiles behind a cooldown gate. The second attempt can retain the first target. With no eligible secondary targets it spawns none, so a truly isolated one-enemy scene gets no Scattershot projectile damage. Saved lock-on-only collision is enforced by a native guard, with a custom-hit-interface exception. Collision outcomes, critical-strike resolution and downstream passive interactions still need integration; the shared damage path passes its captured on-hit percentage through event data."
+   ]
+  },
+  {
+   "slug": "scepter",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "sentry",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "serrated-blade",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "sharpshooter-crest",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "shortsword",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "silentium",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "sky-splitter",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Rend uses fixed target-health assumptions: full profile health in burst and 80% in sustained damage, not health updated after each hit. The recovered hero branch applies the damage floor before native event scaling and has no monster damage cap. Native event scaling, default bindings and hit ordering remain unresolved; catalog percentages and the 12-damage floor are partial modeling, not verified event-level behavior."
+   ]
+  },
+  {
+   "slug": "solaris",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Client Blueprint confirms ability-commit empowerment consumed by an eligible on-hit event. Production counts only bounded cast/basic pairs in mixed combat; ability-only rotations and basic-only DPS exclude the proc. Pair timing and four-second expiry are optimistic aggregate assumptions; Mercy on-hit consumption, critical damage and 50% healing remain omitted. See client-mechanics-review.json."
+   ]
+  },
+  {
+   "slug": "solstice",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Stack-consume cadence and the scaling base are unstated/ambiguous."
+   ]
+  },
+  {
+   "slug": "solstone",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "solstone-drone",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "sonar-drone",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "soul-chalice",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "soulbearer",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "soulbinder",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Arcane Salvo grants 8% bonus ability damage only at 1450+ range; Farseer permanently grants 1 magical power on triggering it (8s cooldown). Range and historical stacks are not represented."
+   ]
+  },
+  {
+   "slug": "spear-of-desolation",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "spectra",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "spectral-schematics",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Partial trigger coverage: one proc per reviewed root/stun cast that lands on one target. Displacement-only, empowered, stacked and stance-dependent CC are not credited. Delays, stored charges, repeated applications, immunity and target current-health progression are unmodeled."
+   ]
+  },
+  {
+   "slug": "spell-slasher",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "spellbreaker",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "The +15% holds only until the Veil blocks an ability and breaks; in-fight uptime is indeterminate."
+   ]
+  },
+  {
+   "slug": "spiked-birch",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "spirit-beads",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "spirit-locket",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "spirit-of-amir",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Jungle branch grants magical lifesteal instead, and Monster Slayer is +12% vs monsters (PvE)."
+   ]
+  },
+  {
+   "slug": "spirit-shiv",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "stalwart-gauntlets",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "stamina-tonic",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "stealth-ward",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "steel-mail",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "stone-of-strength",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "stonewall",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Base 5% physical mitigation credited to physical EHP; the (+5%) scaling term (per-stat, unstated) is not."
+   ]
+  },
+  {
+   "slug": "storm-breaker",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "empowered basic procs every 100 Momentum stacks; the generation rate is unstated so the cadence cannot be derived"
+   ]
+  },
+  {
+   "slug": "strength-tonic",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "syonic-echo",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A windowed 3-basic AS burst with no clean primitive (Close Combat reset is melee-only)."
+   ]
+  },
+  {
+   "slug": "tainted-bastion",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Colossus is flat damage mitigation (defensive)."
+   ]
+  },
+  {
+   "slug": "tainted-blade",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "tainted-charm",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Blighted Presence also slows 12% (CC); only the anti-heal is credited."
+   ]
+  },
+  {
+   "slug": "tainted-guard",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Bleed thorns require incoming basic attacks; no incoming-attack model yet"
+   ]
+  },
+  {
+   "slug": "tainted-rounds",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "second on-hit scaling term (icon-ambiguous) and missing-health amplification up to +100%"
+   ]
+  },
+  {
+   "slug": "tainted-scepter",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Malice currently uses a 15-second damage ramp in the production simulator. The recovered client instead starts with full stacks, consumes stacks on eligible hero damage, and replenishes them through timed callbacks or takedowns. Item and proc damage are excluded. Diagnostic state-transition tests exist, but native defaults, timer phase and event ordering are unresolved; this production ramp does not reproduce that stack cycle."
+   ]
+  },
+  {
+   "slug": "tainted-totem",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Blighted Well spreads the anti-heal to allies on heal/shield; team-side, not extra holder damage."
+   ]
+  },
+  {
+   "slug": "tainted-trident",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Woundseeker adds a small ability bonus that scales with physical penetration (3 +6%-of-pen %), gated on a self-applied Blighted mark; a stat-scaled conditional amp with no clean primitive."
+   ]
+  },
+  {
+   "slug": "tempest",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "temporal-ripper",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "tenacious-drape",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "tenacious-gem",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "terminus",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "overheal-to-shield needs a health-state model; the 15% lifesteal line is valued by the sustain objective"
+   ]
+  },
+  {
+   "slug": "the-perforator",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Chilling Spells is a 10% slow (CC) on ability damage."
+   ]
+  },
+  {
+   "slug": "time-flux-band",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "timewarp",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "titan-crest",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "tranquility",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "transference",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Defensive, shield-state-gated."
+   ]
+  },
+  {
+   "slug": "truesilver-bracelet",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "tunic",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "typhoon",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "tyranny",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Oppression grants a timed +20 ability haste window after ulting (uptime-dependent) plus MS; out of scope."
+   ]
+  },
+  {
+   "slug": "unbroken-will",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A defensive, CC-triggered armor buff."
+   ]
+  },
+  {
+   "slug": "vainglory",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Pride grants 0.5% armors per stack (10 maximum); In Vain grants an additional 12% only at maximum stacks. Neither is unconditional; stack state is not represented."
+   ]
+  },
+  {
+   "slug": "vanguardian",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A team-side defensive aura."
+   ]
+  },
+  {
+   "slug": "vanquisher",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Client checks a living hero after damage: remaining health plus shield must be at most 5% of maximum health. Production checks only the end of the aggregate burst and credits remaining health, assuming ordinary shield absorption. Intermediate hit timing, shield bypass, native execute damage and sustained-window execution remain unmodeled; no unconditional 5% damage bonus is granted."
+   ]
+  },
+  {
+   "slug": "vigorous-amulet",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "violet-brooch",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "viper",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Diligence grants 10% increased On-Hit and Ability damage only against Eroded targets (6 stacks). The simulator lacks target stack state; do not amplify all basic damage unconditionally."
+   ]
+  },
+  {
+   "slug": "vitality-beads",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "void-conduit",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A team-side sustain aura."
+   ]
+  },
+  {
+   "slug": "void-crystal",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "void-helm",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A healing-received amp (sustain); not a damage or EHP primitive."
+   ]
+  },
+  {
+   "slug": "voidgazer",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "volcanica",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "The cooldown ripple depends on ability interleaving the sim does not track."
+   ]
+  },
+  {
+   "slug": "vyzar-carapace",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "The proc damage type is ambiguous and it grants a self-shield; a clean credit is unsafe."
+   ]
+  },
+  {
+   "slug": "warden-crest",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "wardens-faith",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Both are defensive/debuff (crit mitigation, enemy-power reduction); no offensive primitive."
+   ]
+  },
+  {
+   "slug": "warlock-crest",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "warp-stream",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": [
+    "Tele-Blink is a mobility blink swap (out of scope)."
+   ]
+  },
+  {
+   "slug": "warrior-crest",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "wild-hunt",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "windcaller",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "A team-side movement utility."
+   ]
+  },
+  {
+   "slug": "winters-fury",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "witchstalker",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "wizard-crest",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  },
+  {
+   "slug": "world-breaker",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "wraith-leggings",
+   "hasCatalogEffects": true,
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "slug": "wraps",
+   "hasCatalogEffects": false,
+   "modeled": false,
+   "limitations": []
+  },
+  {
+   "slug": "xenia",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "shields a nearby ally — team-side value outside the single-hero sim"
+   ]
+  },
+  {
+   "slug": "zealous-tomahawk",
+   "hasCatalogEffects": true,
+   "modeled": false,
+   "limitations": [
+    "Catalog effect is listed but its combat behavior has not been encoded; only catalog base stats are credited."
+   ]
+  }
+ ],
+ "augments": [
+  {
+   "id": "11",
+   "hero": "aurora",
+   "name": "Deep Freeze",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "12",
+   "hero": "aurora",
+   "name": "Frozen Fury",
+   "modeled": false,
+   "limitations": [
+    "attack speed only while Frost Storm is active; uptime unstated"
+   ]
+  },
+  {
+   "id": "13",
+   "hero": "aurora",
+   "name": "Ice Age",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "14",
+   "hero": "skylar",
+   "name": "Atomised Artillery",
+   "modeled": true,
+   "limitations": [
+    "3 blasts x 60% = 180% of the original single blast"
+   ]
+  },
+  {
+   "id": "15",
+   "hero": "skylar",
+   "name": "Plasma Barrage",
+   "modeled": true,
+   "limitations": [
+    "hero-attach conditional, modeled as hitting (sim convention)",
+    "Explosion adds 6% target missing health; missing-health augment damage is not represented."
+   ]
+  },
+  {
+   "id": "16",
+   "hero": "skylar",
+   "name": "Suppressive Fire",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "17",
+   "hero": "boris",
+   "name": "Bolster Bearicade",
+   "modeled": false,
+   "limitations": [
+    "15% armors only while Tesseract Core is active; uptime unstated"
+   ]
+  },
+  {
+   "id": "18",
+   "hero": "boris",
+   "name": "Savage Shred",
+   "modeled": true,
+   "limitations": [
+    "mark-consume counted as maintained during the window (Q + basic flow)"
+   ]
+  },
+  {
+   "id": "19",
+   "hero": "boris",
+   "name": "Apex Hunter",
+   "modeled": false,
+   "limitations": [
+    "execute-threshold conditional (+70% below 20% HP); window-dependent"
+   ]
+  },
+  {
+   "id": "20",
+   "hero": "countess",
+   "name": "Blood Well",
+   "modeled": false,
+   "limitations": [
+    "takedown-conditional pool sustain; out-of-combat economy"
+   ]
+  },
+  {
+   "id": "21",
+   "hero": "countess",
+   "name": "Sanguine Slash",
+   "modeled": true,
+   "limitations": [
+    "isolated-target condition modeled as met: kill-window sims are 1v1",
+    "50% increased isolated-target healing is not represented by ability-scoped healing amplification."
+   ]
+  },
+  {
+   "id": "22",
+   "hero": "countess",
+   "name": "Shadow Strike",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "23",
+   "hero": "crunch",
+   "name": "Combo Crunch",
+   "modeled": false,
+   "limitations": [
+    "stacking attack speed off passive hits; cadence unobservable"
+   ]
+  },
+  {
+   "id": "24",
+   "hero": "crunch",
+   "name": "Lunge Crunch",
+   "modeled": false,
+   "limitations": [
+    "dash range utility"
+   ]
+  },
+  {
+   "id": "25",
+   "hero": "crunch",
+   "name": "Falcon Crunch",
+   "modeled": false,
+   "limitations": [
+    "conditional mid-air empowerment with cooldown penalty; situational"
+   ]
+  },
+  {
+   "id": "26",
+   "hero": "dekker",
+   "name": "Momentum Boost",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "27",
+   "hero": "dekker",
+   "name": "Ionic Surge",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "28",
+   "hero": "dekker",
+   "name": "Photon Efficiency",
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "id": "29",
+   "hero": "drongo",
+   "name": "Bring The Boom",
+   "modeled": false,
+   "limitations": [
+    "splash to nearby enemies; multi-target value, no single-target change"
+   ]
+  },
+  {
+   "id": "30",
+   "hero": "drongo",
+   "name": "Shred Spree",
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "id": "31",
+   "hero": "drongo",
+   "name": "Smog Therapy",
+   "modeled": true,
+   "limitations": [
+    "assumes the full zone lifetime is stood in; one-beneficiary convention"
+   ]
+  },
+  {
+   "id": "32",
+   "hero": "argus",
+   "name": "Mana Catalyst",
+   "modeled": false,
+   "limitations": [
+    "mana restoration from damage; resource economy not in the combat model"
+   ]
+  },
+  {
+   "id": "33",
+   "hero": "argus",
+   "name": "Arcane Engine",
+   "modeled": false,
+   "limitations": [
+    "stacking movement speed; cadence and uptime unobservable"
+   ]
+  },
+  {
+   "id": "34",
+   "hero": "argus",
+   "name": "Infinite Obliteration",
+   "modeled": false,
+   "limitations": [
+    "projectile range/speed/slow utility; no damage change"
+   ]
+  },
+  {
+   "id": "35",
+   "hero": "feng-mao",
+   "name": "Imperial Duelist",
+   "modeled": true,
+   "limitations": [
+    "assumes the basic-attack debuff is maintained in combat; the 5% damage-taken reduction is not scored"
+   ]
+  },
+  {
+   "id": "36",
+   "hero": "feng-mao",
+   "name": "Ichorous Glaive",
+   "modeled": false,
+   "limitations": [
+    "kill-conditional missing-health restore; execution economy"
+   ]
+  },
+  {
+   "id": "37",
+   "hero": "feng-mao",
+   "name": "Seismic Smash",
+   "modeled": false,
+   "limitations": [
+    "knock-up/stun utility; CC not scored"
+   ]
+  },
+  {
+   "id": "38",
+   "hero": "the-fey",
+   "name": "Verdant Embrace",
+   "modeled": true,
+   "limitations": [
+    "30 (+24% MP) doubled for the explosion repeat; one-beneficiary convention"
+   ]
+  },
+  {
+   "id": "39",
+   "hero": "the-fey",
+   "name": "Wild Growth",
+   "modeled": false,
+   "limitations": [
+    "range utility"
+   ]
+  },
+  {
+   "id": "40",
+   "hero": "the-fey",
+   "name": "Natural Infusion",
+   "modeled": false,
+   "limitations": [
+    "stacking ability haste on hits; stack uptime vs 6s window unobservable"
+   ]
+  },
+  {
+   "id": "41",
+   "hero": "grim-exe",
+   "name": "Instant Reload",
+   "modeled": false,
+   "limitations": [
+    "execute threshold + recast window; kill-conditional"
+   ]
+  },
+  {
+   "id": "42",
+   "hero": "grim-exe",
+   "name": "Reboot.exe",
+   "modeled": false,
+   "limitations": [
+    "passive-triggered cooldown refund; trigger cadence unobservable"
+   ]
+  },
+  {
+   "id": "43",
+   "hero": "grim-exe",
+   "name": "System Restore",
+   "modeled": false,
+   "limitations": [
+    "block-conditional heal and movement; reactive, unmodeled"
+   ]
+  },
+  {
+   "id": "44",
+   "hero": "gadget",
+   "name": "Auto-Lock Amp",
+   "modeled": false,
+   "limitations": [
+    "projectile homing speed; reliability utility"
+   ]
+  },
+  {
+   "id": "45",
+   "hero": "gadget",
+   "name": "Blast Zone",
+   "modeled": false,
+   "limitations": [
+    "explosion radius + passive stack economy"
+   ]
+  },
+  {
+   "id": "46",
+   "hero": "gadget",
+   "name": "Ion Barrier",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "47",
+   "hero": "gideon",
+   "name": "Abyssal Mantle",
+   "modeled": true,
+   "limitations": [
+    "credited once per fight (ult activation); supersedes the stale owned-scrape encoding"
+   ]
+  },
+  {
+   "id": "48",
+   "hero": "gideon",
+   "name": "Event Horizon",
+   "modeled": true,
+   "limitations": [
+    "assumes center hit"
+   ]
+  },
+  {
+   "id": "49",
+   "hero": "gideon",
+   "name": "Infinite Impact",
+   "modeled": false,
+   "limitations": [
+    "infinite cast range; positional utility"
+   ]
+  },
+  {
+   "id": "50",
+   "hero": "greystone",
+   "name": "Tainted Oath ",
+   "modeled": true,
+   "limitations": [
+    "applies through Sacred Oath hits; assumed maintained in extended fights"
+   ]
+  },
+  {
+   "id": "51",
+   "hero": "greystone",
+   "name": "Imperial Soul",
+   "modeled": true,
+   "limitations": [
+    "20% larger radius is multi-target value, not scored"
+   ]
+  },
+  {
+   "id": "52",
+   "hero": "greystone",
+   "name": "Close Cut",
+   "modeled": true,
+   "limitations": [
+    "nearest-enemy condition modeled as met: kill-window sims are 1v1"
+   ]
+  },
+  {
+   "id": "53",
+   "hero": "grux",
+   "name": "Chieftain's Blink",
+   "modeled": false,
+   "limitations": [
+    "Blink trinket cooldown; trinkets are outside the kit model"
+   ]
+  },
+  {
+   "id": "54",
+   "hero": "grux",
+   "name": "Lust For Blood",
+   "modeled": false,
+   "limitations": [
+    "heal scales with damage at max Bloodlust stacks; stack-state conditional"
+   ]
+  },
+  {
+   "id": "55",
+   "hero": "grux",
+   "name": "Warlord's Might",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "56",
+   "hero": "howitzer",
+   "name": "Blast Off!",
+   "modeled": true,
+   "limitations": [
+    "stronger knockback not scored"
+   ]
+  },
+  {
+   "id": "57",
+   "hero": "howitzer",
+   "name": "Combat Thrusters",
+   "modeled": false,
+   "limitations": [
+    "movement speed during ult; mobility utility"
+   ]
+  },
+  {
+   "id": "58",
+   "hero": "howitzer",
+   "name": "Sniper Shells",
+   "modeled": false,
+   "limitations": [
+    "on-hit AS/omnivamp stacking; cadence unobservable"
+   ]
+  },
+  {
+   "id": "59",
+   "hero": "kira",
+   "name": "Bringer Of Mercy",
+   "modeled": false,
+   "limitations": [
+    "per-hit ripple reduction of all current cooldowns; cross-ability cadence not yet modeled (mana discount not scored)"
+   ]
+  },
+  {
+   "id": "60",
+   "hero": "kira",
+   "name": "Siphoning Purge",
+   "modeled": false,
+   "limitations": [
+    "heals 25% of ult damage dealt; damage-coupled healing not yet modeled"
+   ]
+  },
+  {
+   "id": "61",
+   "hero": "kira",
+   "name": "Dusk's Embrace",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "62",
+   "hero": "iggy-scorch",
+   "name": "Badlands Belch",
+   "modeled": false,
+   "limitations": [
+    "targets passive Belch, which is outside the kit model"
+   ]
+  },
+  {
+   "id": "63",
+   "hero": "iggy-scorch",
+   "name": "Hold This!",
+   "modeled": false,
+   "limitations": [
+    "permanent per-hit damage stacking; accumulation cadence unobservable"
+   ]
+  },
+  {
+   "id": "64",
+   "hero": "iggy-scorch",
+   "name": "Turret Maniac",
+   "modeled": false,
+   "limitations": [
+    "turret count/health economy"
+   ]
+  },
+  {
+   "id": "65",
+   "hero": "kallari",
+   "name": "Critical Override",
+   "modeled": true,
+   "limitations": [
+    "maxPct bakes the UNVERIFIED 1.75 crit multiplier: 100% crit x (1.75 - 1.35) = +40%; remeasure with critMultiplier"
+   ]
+  },
+  {
+   "id": "66",
+   "hero": "kallari",
+   "name": "Execution Mandate",
+   "modeled": false,
+   "limitations": [
+    "takedown-conditional cooldown refund"
+   ]
+  },
+  {
+   "id": "67",
+   "hero": "kallari",
+   "name": "Deadly Finesse",
+   "modeled": true,
+   "limitations": [
+    "hit-conditional, modeled as hitting; 20 mana refund not scored"
+   ]
+  },
+  {
+   "id": "68",
+   "hero": "khaimera",
+   "name": "Feral Ambush",
+   "modeled": false,
+   "limitations": [
+    "dash range utility"
+   ]
+  },
+  {
+   "id": "69",
+   "hero": "khaimera",
+   "name": "Jungle Invasion",
+   "modeled": false,
+   "limitations": [
+    "jungle-location-conditional power"
+   ]
+  },
+  {
+   "id": "70",
+   "hero": "khaimera",
+   "name": "Lane Lurker",
+   "modeled": false,
+   "limitations": [
+    "passive trade-off vs minions with regen penalty; lane-state dependent"
+   ]
+  },
+  {
+   "id": "71",
+   "hero": "kwang",
+   "name": "Heavenly Tactician",
+   "modeled": true,
+   "limitations": [
+    "blade-retrieval change not scored"
+   ]
+  },
+  {
+   "id": "72",
+   "hero": "kwang",
+   "name": "Aura of the Heavens",
+   "modeled": true,
+   "limitations": [
+    "ally aura share is team-side, not scored"
+   ]
+  },
+  {
+   "id": "73",
+   "hero": "kwang",
+   "name": "Slayer of the Heavens",
+   "modeled": false,
+   "limitations": [
+    "targets passive Strike of the Heavens, which is outside the kit model"
+   ]
+  },
+  {
+   "id": "74",
+   "hero": "zarus",
+   "name": "Flow State",
+   "modeled": false,
+   "limitations": [
+    "Evade is outside the damage/heal model and the reset is takedown-conditional"
+   ]
+  },
+  {
+   "id": "75",
+   "hero": "zarus",
+   "name": "Master Of Spears",
+   "modeled": false,
+   "limitations": [
+    "halves a conditional cooldown penalty; throw-state dependent"
+   ]
+  },
+  {
+   "id": "76",
+   "hero": "zarus",
+   "name": "The Ascended",
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "id": "77",
+   "hero": "lt-belica",
+   "name": "Devastating Bombs",
+   "modeled": true,
+   "limitations": [
+    "isolated-target condition modeled as met: kill-window sims are 1v1"
+   ]
+  },
+  {
+   "id": "78",
+   "hero": "lt-belica",
+   "name": "Pulsefire Rounds",
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "id": "79",
+   "hero": "lt-belica",
+   "name": "Combat Veteran",
+   "modeled": false,
+   "limitations": [
+    "passive experience income; economy not scored"
+   ]
+  },
+  {
+   "id": "80",
+   "hero": "morigesh",
+   "name": "Cursed Infestation",
+   "modeled": true,
+   "limitations": [
+    "10% range not scored"
+   ]
+  },
+  {
+   "id": "81",
+   "hero": "morigesh",
+   "name": "Ritual Of Death",
+   "modeled": false,
+   "limitations": [
+    "heals 70-90% of ult damage dealt (damage-coupled) and takedown cooldown refund; not yet modeled"
+   ]
+  },
+  {
+   "id": "82",
+   "hero": "morigesh",
+   "name": "Spirit Shred",
+   "modeled": true,
+   "limitations": [
+    "5 stacks x 3.5%; ramp assumes one stack per second of basic attacks"
+   ]
+  },
+  {
+   "id": "83",
+   "hero": "murdock",
+   "name": "Justice's Reach",
+   "modeled": false,
+   "limitations": [
+    "targets passive Shots Fired (pierce/range), outside the kit model"
+   ]
+  },
+  {
+   "id": "84",
+   "hero": "murdock",
+   "name": "Sting Operation",
+   "modeled": false,
+   "limitations": [
+    "trap charges/size; zone control utility"
+   ]
+  },
+  {
+   "id": "85",
+   "hero": "murdock",
+   "name": "Martial Law",
+   "modeled": true,
+   "limitations": [
+    "kill gold not scored"
+   ]
+  },
+  {
+   "id": "86",
+   "hero": "muriel",
+   "name": "Circuit Reset",
+   "modeled": false,
+   "limitations": [
+    "reduces the shielded ALLY's cooldowns; team-side value outside the single-hero sim"
+   ]
+  },
+  {
+   "id": "87",
+   "hero": "muriel",
+   "name": "Essence Nullifier",
+   "modeled": false,
+   "limitations": [
+    "drains and converts target mana; target resource state unknown"
+   ]
+  },
+  {
+   "id": "88",
+   "hero": "muriel",
+   "name": "Aerial Assistance",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "89",
+   "hero": "narbash",
+   "name": "Berserker Beat",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "90",
+   "hero": "narbash",
+   "name": "Percussive Tear",
+   "modeled": true,
+   "limitations": [
+    "per-hit shred counted once (ult hit count unstated); undercounts multi-hit channels"
+   ]
+  },
+  {
+   "id": "91",
+   "hero": "narbash",
+   "name": "Rhythmic Recharge",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "92",
+   "hero": "phase",
+   "name": "Psychic Support",
+   "modeled": false,
+   "limitations": [
+    "restores the Linked ALLY's mana; team-side value outside the single-hero sim"
+   ]
+  },
+  {
+   "id": "93",
+   "hero": "phase",
+   "name": "Kindred Surge",
+   "modeled": false,
+   "limitations": [
+    "ult-duration regen and movement speed; uptime-bound utility"
+   ]
+  },
+  {
+   "id": "94",
+   "hero": "phase",
+   "name": "Final Flash",
+   "modeled": true,
+   "limitations": [
+    "per-rank 20/30/40/50/70% encoded as the mean (damage-parser convention); 30% shorter lance is positional, not scored"
+   ]
+  },
+  {
+   "id": "95",
+   "hero": "rampage",
+   "name": "Rock & Awe",
+   "modeled": false,
+   "limitations": [
+    "damage scales with throw distance; positional"
+   ]
+  },
+  {
+   "id": "96",
+   "hero": "rampage",
+   "name": "The Rumbling",
+   "modeled": false,
+   "limitations": [
+    "refund-on-damage loop with damage/mana/self-slow penalties; net value depends on uptime loops, not mappable"
+   ]
+  },
+  {
+   "id": "97",
+   "hero": "rampage",
+   "name": "Tiny Titan",
+   "modeled": false,
+   "limitations": [
+    "conditional ult form trade (AS for +45% damage taken); risk profile outside the sim"
+   ]
+  },
+  {
+   "id": "98",
+   "hero": "revenant",
+   "name": "Quickdraw",
+   "modeled": false,
+   "limitations": [
+    "reload speed and jump height; cadence utility"
+   ]
+  },
+  {
+   "id": "99",
+   "hero": "revenant",
+   "name": "Hellfire Blast",
+   "modeled": false,
+   "limitations": [
+    "fourth-shot-only amp and bonus-armor bypass; ~1.75% mean basic amp is below the modeling floor"
+   ]
+  },
+  {
+   "id": "100",
+   "hero": "revenant",
+   "name": "Spectral Bounty",
+   "modeled": false,
+   "limitations": [
+    "kill-conditional bounty gold and stat steal; economy"
+   ]
+  },
+  {
+   "id": "101",
+   "hero": "riktor",
+   "name": "Brutal Chains",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "102",
+   "hero": "riktor",
+   "name": "Current Overload",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "103",
+   "hero": "riktor",
+   "name": "Wanton Warden",
+   "modeled": false,
+   "limitations": [
+    "regenerates a share of damage taken; incoming-damage-coupled sustain not modeled"
+   ]
+  },
+  {
+   "id": "104",
+   "hero": "serath",
+   "name": "Crushing Descent",
+   "modeled": false,
+   "limitations": [
+    "adds a stun; CC not scored"
+   ]
+  },
+  {
+   "id": "105",
+   "hero": "serath",
+   "name": "Vital Resonance",
+   "modeled": false,
+   "limitations": [
+    "pickup-conditional healing; positional"
+   ]
+  },
+  {
+   "id": "106",
+   "hero": "serath",
+   "name": "Wrath Unleashed",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "107",
+   "hero": "sevarog",
+   "name": "Gravebreaker",
+   "modeled": false,
+   "limitations": [
+    "knockback strength; CC utility"
+   ]
+  },
+  {
+   "id": "108",
+   "hero": "sevarog",
+   "name": "Unholy Pursuit",
+   "modeled": false,
+   "limitations": [
+    "soul economy and conditional cooldown reset"
+   ]
+  },
+  {
+   "id": "109",
+   "hero": "sevarog",
+   "name": "Grim Harvest",
+   "modeled": false,
+   "limitations": [
+    "execute threshold; kill-conditional"
+   ]
+  },
+  {
+   "id": "110",
+   "hero": "shinbi",
+   "name": "Showstopper",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "111",
+   "hero": "shinbi",
+   "name": "Natural Talent",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "112",
+   "hero": "shinbi",
+   "name": "Bites Per Minute",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "113",
+   "hero": "sparrow",
+   "name": "Endless Hunt",
+   "modeled": false,
+   "limitations": [
+    "takedown resets and permanent pen stacking; game-state economy"
+   ]
+  },
+  {
+   "id": "114",
+   "hero": "sparrow",
+   "name": "Veiled Stalker",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "115",
+   "hero": "sparrow",
+   "name": "Inner Fury",
+   "modeled": false,
+   "limitations": [
+    "arrow fan and extra volleys; single-target share of the spread is unstated"
+   ]
+  },
+  {
+   "id": "116",
+   "hero": "steel",
+   "name": "Adaptive Force",
+   "modeled": false,
+   "limitations": [
+    "Force Shield charges; the ability is outside the damage/heal model so the cooldown change scores nothing"
+   ]
+  },
+  {
+   "id": "117",
+   "hero": "steel",
+   "name": "Bulldozer",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "118",
+   "hero": "steel",
+   "name": "Colossal Crash",
+   "modeled": false,
+   "limitations": [
+    "range/area/knockback; CC utility"
+   ]
+  },
+  {
+   "id": "119",
+   "hero": "terra",
+   "name": "Axe Retrieval",
+   "modeled": false,
+   "limitations": [
+    "pickup-conditional cooldown refund; positional"
+   ]
+  },
+  {
+   "id": "120",
+   "hero": "terra",
+   "name": "Iron Resolve",
+   "modeled": false,
+   "limitations": [
+    "damage reduction while channeling; uptime-bound"
+   ]
+  },
+  {
+   "id": "121",
+   "hero": "terra",
+   "name": "Hersir's Will",
+   "modeled": false,
+   "limitations": [
+    "passive stack generation during ult; stack economy"
+   ]
+  },
+  {
+   "id": "122",
+   "hero": "yurei",
+   "name": "Soul Weaver",
+   "modeled": true,
+   "limitations": [
+    "damage reduction while active is uptime-bound, not scored"
+   ]
+  },
+  {
+   "id": "123",
+   "hero": "yurei",
+   "name": "Hallowed Reverberation",
+   "modeled": false,
+   "limitations": [
+    "targets passive Hallowed Strikes (range/bounces), outside the kit model"
+   ]
+  },
+  {
+   "id": "124",
+   "hero": "yurei",
+   "name": "Ephemeral Surge",
+   "modeled": false,
+   "limitations": [
+    "pickup-conditional mana/speed; positional"
+   ]
+  },
+  {
+   "id": "125",
+   "hero": "twinblast",
+   "name": "Amplified Burst",
+   "modeled": false,
+   "limitations": [
+    "range utility"
+   ]
+  },
+  {
+   "id": "126",
+   "hero": "twinblast",
+   "name": "Grenadier",
+   "modeled": false,
+   "limitations": [
+    "grenade charges; cadence economy"
+   ]
+  },
+  {
+   "id": "127",
+   "hero": "twinblast",
+   "name": "Hotshot",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "128",
+   "hero": "mourn",
+   "name": "Contagioned Eclipse",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "129",
+   "hero": "mourn",
+   "name": "Nightmare Extractor",
+   "modeled": false,
+   "limitations": [
+    "targets passive Extract, which is outside the kit model"
+   ]
+  },
+  {
+   "id": "130",
+   "hero": "mourn",
+   "name": "Dreadful Roots",
+   "modeled": false,
+   "limitations": [
+    "terrain-pull mobility"
+   ]
+  },
+  {
+   "id": "131",
+   "hero": "wraith",
+   "name": "Mystic Marksman",
+   "modeled": false,
+   "limitations": [
+    "swaps Knock Knock to magical damage; situational vs armor profiles, no magnitude change"
+   ]
+  },
+  {
+   "id": "132",
+   "hero": "wraith",
+   "name": "Sniper's Bounty",
+   "modeled": false,
+   "limitations": [
+    "kill gold; economy"
+   ]
+  },
+  {
+   "id": "133",
+   "hero": "wraith",
+   "name": "Illusionist",
+   "modeled": false,
+   "limitations": [
+    "shares passive effects with allies at a 20% cooldown penalty; team-side value, solo cost"
+   ]
+  },
+  {
+   "id": "134",
+   "hero": "wukong",
+   "name": "Prosperous Path",
+   "modeled": false,
+   "limitations": [
+    "kill-conditional gold/heal per stance; economy"
+   ]
+  },
+  {
+   "id": "135",
+   "hero": "wukong",
+   "name": "Masterful Mimicry",
+   "modeled": false,
+   "limitations": [
+    "clone and stack economy"
+   ]
+  },
+  {
+   "id": "136",
+   "hero": "wukong",
+   "name": "From Up High",
+   "modeled": false,
+   "limitations": [
+    "height-scaled damage cap removal; positional"
+   ]
+  },
+  {
+   "id": "137",
+   "hero": "yin",
+   "name": "Energy Transfer",
+   "modeled": false,
+   "limitations": [
+    "deflect-conditional shield/speed; reactive"
+   ]
+  },
+  {
+   "id": "138",
+   "hero": "yin",
+   "name": "Storm of Salvation",
+   "modeled": false,
+   "limitations": [
+    "own-missing-health on-hit healing during Windburn; health-state conditional"
+   ]
+  },
+  {
+   "id": "139",
+   "hero": "yin",
+   "name": "Serpent's Blessing",
+   "modeled": false,
+   "limitations": [
+    "terrain-conditional cooldown reduction; positional"
+   ]
+  },
+  {
+   "id": "140",
+   "hero": "zinx",
+   "name": "Disc Of Demise",
+   "modeled": true,
+   "limitations": [
+    "credits the minimum one hero hit per cast; extra bounce hits not counted"
+   ]
+  },
+  {
+   "id": "141",
+   "hero": "zinx",
+   "name": "Heal Matrix",
+   "modeled": false,
+   "limitations": [
+    "charge semantics (2 charges, -15% heal): burst-vs-throughput trade not mappable onto cooldown math"
+   ]
+  },
+  {
+   "id": "142",
+   "hero": "zinx",
+   "name": "Terminal Treatment",
+   "modeled": false,
+   "limitations": [
+    "targets passive on-hit damage, missing-health scaled; outside the kit model"
+   ]
+  },
+  {
+   "id": "143",
+   "hero": "renna",
+   "name": "Netherward",
+   "modeled": true,
+   "limitations": [
+    "credited once per fight (Soulfire cast)"
+   ]
+  },
+  {
+   "id": "144",
+   "hero": "renna",
+   "name": "Vital Essence",
+   "modeled": false,
+   "limitations": [
+    "essence pickup gold/restore; economy"
+   ]
+  },
+  {
+   "id": "145",
+   "hero": "renna",
+   "name": "Communion",
+   "modeled": false,
+   "limitations": [
+    "converts Mortal Coil execute into an ally self-heal zone; team-side rework"
+   ]
+  },
+  {
+   "id": "146",
+   "hero": "akeron",
+   "name": "Death From Above",
+   "modeled": false,
+   "limitations": [
+    "mobility/root utility; no stated combat numbers"
+   ]
+  },
+  {
+   "id": "147",
+   "hero": "akeron",
+   "name": "Roar of Torment",
+   "modeled": false,
+   "limitations": [
+    "Consume tick-vs-bite damage split is unstated, so the 200% tick amp cannot be valued"
+   ]
+  },
+  {
+   "id": "148",
+   "hero": "akeron",
+   "name": "Insatiable Hunger",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "149",
+   "hero": "bayle",
+   "name": "Frenzied Fighter",
+   "modeled": false,
+   "limitations": [
+    "removes Berserk cooldown below a health threshold; uptime-conditional"
+   ]
+  },
+  {
+   "id": "150",
+   "hero": "bayle",
+   "name": "Betrayer's Reqiuem",
+   "modeled": true,
+   "limitations": [
+    "area uppercut is multi-target value; no single-target change"
+   ]
+  },
+  {
+   "id": "151",
+   "hero": "bayle",
+   "name": "Swift Strikes",
+   "modeled": false,
+   "limitations": [
+    "one-attack AS windows and chain restructure; cadence unobservable"
+   ]
+  },
+  {
+   "id": "152",
+   "hero": "eden",
+   "name": "Focal Lens",
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "id": "153",
+   "hero": "eden",
+   "name": "Kinetic Waltz",
+   "modeled": true,
+   "limitations": [
+    "applies to the Axiom Strike stance of the shared slot; movement speed not scored"
+   ]
+  },
+  {
+   "id": "154",
+   "hero": "eden",
+   "name": "Limit Break: Echo",
+   "modeled": false,
+   "limitations": [
+    "full basic-cooldown refresh on ult cast; rotation restructure, no tractable closed form yet"
+   ]
+  },
+  {
+   "id": "155",
+   "hero": "maco",
+   "name": "Ferocious Flight",
+   "modeled": true,
+   "limitations": [
+    "counted for one enemy hit (single-target convention); own-max-health shield scaling not counted (base health outside item stats)"
+   ]
+  },
+  {
+   "id": "156",
+   "hero": "maco",
+   "name": "Longshot",
+   "modeled": false,
+   "limitations": [
+    "damage scales with projectile travel distance; positional"
+   ]
+  },
+  {
+   "id": "157",
+   "hero": "maco",
+   "name": "Shatterbloom",
+   "modeled": true,
+   "limitations": [
+    "20 ticks x 20/30/40 (+4% MP each) folded to per-cast totals; assumes full field uptime, one beneficiary"
+   ]
+  },
+  {
+   "id": "158",
+   "hero": "neon",
+   "name": "Ghost in the Machine",
+   "modeled": false,
+   "limitations": [
+    "invisibility utility"
+   ]
+  },
+  {
+   "id": "159",
+   "hero": "neon",
+   "name": "Dox",
+   "modeled": true,
+   "limitations": [
+    "replaces the trinket; active vision not scored"
+   ]
+  },
+  {
+   "id": "160",
+   "hero": "neon",
+   "name": "RAM",
+   "modeled": false,
+   "limitations": [
+    "takedown stacking with death decay; game-state economy"
+   ]
+  },
+  {
+   "id": "161",
+   "hero": "kira",
+   "name": "Lenore",
+   "modeled": false,
+   "limitations": [
+    "targets passive Nevermore, which is outside the kit model"
+   ]
+  },
+  {
+   "id": "162",
+   "hero": "mourn",
+   "name": "Nightstalker",
+   "modeled": false,
+   "limitations": [
+    "ult movement speed; mobility utility"
+   ]
+  },
+  {
+   "id": "163",
+   "hero": "narbash",
+   "name": "War Anthem",
+   "modeled": false,
+   "limitations": [
+    "removes March/Song healing for power while active; WARNING - taking this invalidates the kit heal model for those abilities, and toggle uptime is unstated"
+   ]
+  },
+  {
+   "id": "164",
+   "hero": "sparrow",
+   "name": "Sun Shards",
+   "modeled": false,
+   "limitations": [
+    "ricochets hit other targets; no single-target change"
+   ]
+  },
+  {
+   "id": "165",
+   "hero": "shinbi",
+   "name": "Crescendo",
+   "modeled": false,
+   "limitations": [
+    "chain-final basic bonus; chain length is unstated in our data"
+   ]
+  },
+  {
+   "id": "166",
+   "hero": "steel",
+   "name": "Heavy Metal",
+   "modeled": true,
+   "limitations": [
+    "item-granted armor only (base armor is outside item stats) - undercounts; heavy-punch half needs chain cadence, not scored"
+   ]
+  },
+  {
+   "id": "167",
+   "hero": "aurora",
+   "name": "Glacial Thorns",
+   "modeled": true,
+   "limitations": [
+    "0.5s root not scored"
+   ]
+  },
+  {
+   "id": "168",
+   "hero": "riktor",
+   "name": "Zap O' 9-Chains",
+   "modeled": true,
+   "limitations": [
+    "fires once per ability cast (next-basic zap); single-target convention counts one of the 9 chains"
+   ]
+  },
+  {
+   "id": "169",
+   "hero": "skylar",
+   "name": "Assault MK-II ",
+   "modeled": false,
+   "limitations": [
+    "extra missile per attack; per-missile damage share unstated"
+   ]
+  },
+  {
+   "id": "170",
+   "hero": "grux",
+   "name": "Red Mist",
+   "modeled": false,
+   "limitations": [
+    "attack speed per marked enemy in radius; proximity stacking"
+   ]
+  },
+  {
+   "id": "171",
+   "hero": "muriel",
+   "name": "Sacrosanct",
+   "modeled": true,
+   "limitations": [
+    "the free Consecrated Ground is credited at its rank-5 stated heal (140 +20% MP); assumes Q maxed by the time R matters"
+   ]
+  },
+  {
+   "id": "172",
+   "hero": "shinbi",
+   "name": "Encore",
+   "modeled": false,
+   "limitations": [
+    "kill-conditional ult reset"
+   ]
+  },
+  {
+   "id": "173",
+   "hero": "aurora",
+   "name": "Hypothermia",
+   "modeled": true,
+   "limitations": [
+    "enemy attack-speed slow not scored"
+   ]
+  },
+  {
+   "id": "174",
+   "hero": "akeron",
+   "name": "Trapdoor Demon",
+   "modeled": false,
+   "limitations": [
+    "terrain-attach camouflage regen/resource; positional"
+   ]
+  },
+  {
+   "id": "175",
+   "hero": "gadget",
+   "name": "Eureka!",
+   "modeled": false,
+   "limitations": [
+    "level/jump-height economy at passive stack thresholds"
+   ]
+  },
+  {
+   "id": "176",
+   "hero": "riktor",
+   "name": "Warden's Leash",
+   "modeled": false,
+   "limitations": [
+    "ally-hook refund; team-side and positional"
+   ]
+  },
+  {
+   "id": "177",
+   "hero": "countess",
+   "name": "Shadow Echo",
+   "modeled": true,
+   "limitations": [
+    "assumes the Shadow Slip swap recast is taken every cast (the damage repeat is the point of the augment)"
+   ]
+  },
+  {
+   "id": "178",
+   "hero": "dekker",
+   "name": "Nothin' But Net",
+   "modeled": false,
+   "limitations": [
+    "per-hit gold and Magical Power grants; stack duration unstated, economy not scored"
+   ]
+  },
+  {
+   "id": "179",
+   "hero": "dekker",
+   "name": "Polarity Strike",
+   "modeled": true,
+   "limitations": [
+    "missing-health bonus shield not counted (target state unknown); one-beneficiary convention"
+   ]
+  },
+  {
+   "id": "180",
+   "hero": "twinblast",
+   "name": "Spray 'N Pray",
+   "modeled": true,
+   "limitations": [
+    "accuracy penalty at long range is positional, not scored - treat as close-range value"
+   ]
+  },
+  {
+   "id": "181",
+   "hero": "narbash",
+   "name": "Thonk",
+   "modeled": false,
+   "limitations": [
+    "pickup-positional cooldown/mana refund"
+   ]
+  },
+  {
+   "id": "182",
+   "hero": "serath",
+   "name": "Wrath Unleashed",
+   "modeled": false,
+   "limitations": [
+    "infinite on-hit AS stacking; cadence unobservable"
+   ]
+  },
+  {
+   "id": "183",
+   "hero": "shinbi",
+   "name": "Allegro",
+   "modeled": true,
+   "limitations": []
+  },
+  {
+   "id": "184",
+   "hero": "adele",
+   "name": "Court of Roses",
+   "modeled": false,
+   "limitations": [
+    "ally barrier + thorned-vine zone; team-side and positional, outside the single-hero sim"
+   ]
+  },
+  {
+   "id": "186",
+   "hero": "adele",
+   "name": "Tyrant of Thorns",
+   "modeled": false,
+   "limitations": [
+    "rewrites passive effectiveness and overrides Royal Flourish cooldown/CC; structural rework, no tractable mapping"
+   ]
+  },
+  {
+   "id": "193",
+   "hero": "adele",
+   "name": "Seeds of Dominion",
+   "modeled": true,
+   "limitations": [
+    "Thornbush slow and movement-metered true damage are positional, not scored"
+   ]
+  },
+  {
+   "id": "635",
+   "hero": "legion",
+   "name": "Press the Advantage",
+   "modeled": false,
+   "limitations": [
+    "reworks Rally Point into a team fire-rate aura; team-side and takedown-conditional"
+   ]
+  },
+  {
+   "id": "636",
+   "hero": "legion",
+   "name": "Scorched Earth",
+   "modeled": false,
+   "limitations": [
+    "napalm zone DoTs; zone uptime and overlap unobservable"
+   ]
+  },
+  {
+   "id": "661",
+   "hero": "legion",
+   "name": "Heavy Caliber",
+   "modeled": false,
+   "limitations": [
+    "basic-attack restructure (timer set to 0.75s, magazine 6); not mappable onto the attack-speed model"
+   ]
+  },
+  {
+   "id": "723",
+   "hero": "scarlett",
+   "name": "Radiant Reprise",
+   "modeled": false,
+   "limitations": [
+    "added 2026-10-14 when the public match stream first surfaced this augment; mechanics not yet encoded in the sim"
+   ]
+  },
+  {
+   "id": "736",
+   "hero": "scarlett",
+   "name": "Volcaic Slam",
+   "modeled": false,
+   "limitations": [
+    "added 2026-10-14 when the public match stream first surfaced this augment; mechanics not yet encoded in the sim"
+   ]
+  },
+  {
+   "id": "737",
+   "hero": "ikra",
+   "name": "Cascade",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "738",
+   "hero": "ikra",
+   "name": "The Gloom",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "739",
+   "hero": "ikra",
+   "name": "Undertow",
+   "modeled": false,
+   "limitations": [
+    "new 1.15 hero augment; effect not yet modeled by the sim"
+   ]
+  },
+  {
+   "id": "756",
+   "hero": "scarlett",
+   "name": "Scarlet Dawn",
+   "modeled": false,
+   "limitations": [
+    "added 2026-10-14 when the public match stream first surfaced this augment; mechanics not yet encoded in the sim"
+   ]
+  },
+  {
+   "id": "757",
+   "hero": "scarlett",
+   "name": "Coup De Grâce",
+   "modeled": false,
+   "limitations": [
+    "added 2026-10-14 when the public match stream first surfaced this augment; mechanics not yet encoded in the sim"
+   ]
+  },
+  {
+   "id": "771",
+   "hero": "valmont",
+   "name": "Sanguine Banquet",
+   "modeled": false,
+   "limitations": [
+    "added 2026-10-14 when the public match stream first surfaced this augment; mechanics not yet encoded in the sim"
+   ]
+  },
+  {
+   "id": "779",
+   "hero": "valmont",
+   "name": "Vein Splitter",
+   "modeled": false,
+   "limitations": [
+    "added 2026-10-14 when the public match stream first surfaced this augment; mechanics not yet encoded in the sim"
+   ]
+  },
+  {
+   "id": "788",
+   "hero": "valmont",
+   "name": "Rupturing Fangs",
+   "modeled": false,
+   "limitations": [
+    "added 2026-10-14 when the public match stream first surfaced this augment; mechanics not yet encoded in the sim"
+   ]
+  }
+ ],
+ "attackSpeedLimitations": [
+  "Self-buff durations are tied to their own grant clause; no four-second fallback is invented.",
+  "Iggy turret attack speed is not hero attack speed. GRIM Sentry stacking and Valmont attack-speed theft need separate state/target models and are excluded from self steroids.",
+  "Murdock reactivation stacks and takedown resets, Grux duration extensions, Sparrow delayed activation, and attack-speed ratios with additional stat scaling remain incomplete.",
+  "Self attack-speed buffs use finite ready-at-start intervals, recast cooldowns and per-interval caps. Attack counts, item ramps and on-hit ICDs remain rate-based approximations; cast delays and attack animation timing are not simulated."
+ ],
+ "unresolvedAssets": {
+  "itemDifferences": [],
+  "itemPriceDifferences": [
+   {
+    "item": "divine-potion",
+    "catalog": 250,
+    "asset": 1
+   },
+   {
+    "item": "hunt",
+    "catalog": 0,
+    "asset": 50
+   },
+   {
+    "item": "refillable-potion",
+    "catalog": 0,
+    "asset": 100
+   }
+  ],
+  "itemMissingPrefix": [
+   {
+    "slug": "dox",
+    "internalName": "Weaver_Scan"
+   },
+   {
+    "slug": "solstone-drone",
+    "internalName": "Wraith_SolstoneDrone"
+   },
+   {
+    "slug": "sonar-drone",
+    "internalName": "Wraith_SonarDrone"
+   },
+   {
+    "slug": "stealth-ward",
+    "internalName": "StealthWard"
+   },
+   {
+    "slug": "tainted-totem",
+    "internalName": "TaintedTotem"
+   },
+   {
+    "slug": "the-perforator",
+    "internalName": "ThePerforator"
+   },
+   {
+    "slug": "wild-hunt",
+    "internalName": "WildHunt"
+   }
+  ],
+  "itemUnmappedStats": [
+   {
+    "item": "orb-of-enlightenment",
+    "stat": "magical_power"
+   },
+   {
+    "item": "orb-of-enlightenment",
+    "stat": "max_health"
+   },
+   {
+    "item": "orb-of-enlightenment",
+    "stat": "max_mana"
+   }
+  ],
+  "extraHeroTables": [
+   "frostbane",
+   "golem"
+  ]
+ },
+ "tenacityEvidence": "Absolution shop 25 confirmed by user 2026-10-15; 11 other complementary values corrected from named client curves, not individually shop tested."
+}

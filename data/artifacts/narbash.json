@@ -11,7 +11,8 @@
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
    "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)",
-   "the sim opens on Wraith Leggings, which the field rarely builds (0.4% pick) — a sim-only call; compare the meta cores below"
+   "the sim opens on Wraith Leggings, which the field rarely builds (0.4% pick) — a sim-only call; compare the meta cores below",
+   "the sim build reproduces only 33% of the field's core for Narbash (it never builds Truesilver Bracelet, Dynamo) — some of those items ride mechanics the sim doesn't model yet"
   ]
  },
  "build": {
@@ -75,7 +76,7 @@
    "teamfightVsSquishy": 3375.3194386694395,
    "rot10VsSquishy": 2013.3076923076928,
    "rot20VsBruiser": 2604.6186046511634,
-   "autoDps10VsSquishy": 68.2179222972973,
+   "autoDps10VsSquishy": 68.21792229729729,
    "ehpPhysical": 4195.8457499999995,
    "ehpMagical": 3405.1383906250003,
    "healShield10s": 917.94905,
@@ -84,15 +85,15 @@
   },
   "manaFeasible": true
  },
- "coachLine": "Sim-optimal for heal/shield output: first spike lands around minute 11 (Wraith Leggings), third item by minute 26. Take Vesh: +12.1% on the damage rotation at minute 15.",
+ "coachLine": "Sim-optimal for heal/shield output: first spike lands around minute 11 (Wraith Leggings), third item by minute 26. Take Vesh: +11.6% on the damage rotation at minute 15.",
  "eternals": {
   "top": [
    {
     "name": "Vesh",
     "id": "vesh",
-    "headlinePct": 12.1,
-    "burstPct": 10.9,
-    "rot20Pct": 12.1,
+    "headlinePct": 11.6,
+    "burstPct": 10.5,
+    "rot20Pct": 11.6,
     "ehpPct": 0
    },
    {
@@ -106,10 +107,10 @@
    {
     "name": "Demiurge",
     "id": "demiurge",
-    "headlinePct": 10.3,
-    "burstPct": 9.5,
-    "rot20Pct": 10.1,
-    "ehpPct": 1.1
+    "headlinePct": 8.5,
+    "burstPct": 7.9,
+    "rot20Pct": 8.4,
+    "ehpPct": 0.9
    }
   ],
   "unmodeled": [
@@ -126,9 +127,9 @@
    {
     "name": "Vesh",
     "modeled": true,
-    "headlinePct": 12.1,
-    "burstPct": 10.9,
-    "rot20Pct": 12.1,
+    "headlinePct": 11.6,
+    "burstPct": 10.5,
+    "rot20Pct": 11.6,
     "ehpPct": 0,
     "note": null
    },
@@ -144,18 +145,18 @@
    {
     "name": "Demiurge",
     "modeled": true,
-    "headlinePct": 10.3,
-    "burstPct": 9.5,
-    "rot20Pct": 10.1,
-    "ehpPct": 1.1,
+    "headlinePct": 8.5,
+    "burstPct": 7.9,
+    "rot20Pct": 8.4,
+    "ehpPct": 0.9,
     "note": null
    },
    {
     "name": "Thraex",
     "modeled": true,
-    "headlinePct": 8.5,
+    "headlinePct": 7.3,
     "burstPct": 0,
-    "rot20Pct": 8.5,
+    "rot20Pct": 7.3,
     "ehpPct": 0,
     "note": null
    },
@@ -171,19 +172,19 @@
    {
     "name": "Xyris",
     "modeled": true,
-    "headlinePct": 3.6,
-    "burstPct": 3.6,
-    "rot20Pct": 3.6,
+    "headlinePct": 2.7,
+    "burstPct": 2.7,
+    "rot20Pct": 2.7,
     "ehpPct": 0,
     "note": null
    },
    {
     "name": "Lotus",
     "modeled": true,
-    "headlinePct": 2.5,
-    "burstPct": 2.5,
-    "rot20Pct": 2.5,
-    "ehpPct": 2.8,
+    "headlinePct": 1.7,
+    "burstPct": 1.7,
+    "rot20Pct": 1.7,
+    "ehpPct": 2.3,
     "note": null
    },
    {
@@ -256,7 +257,7 @@
     "burstPct": null,
     "rot20Pct": null,
     "ehpPct": null,
-    "note": "Knell (Major): percent armor shred that scales per level (max stacks = 8% + 0.8%/level, both damage types); armor_shred takes a flat pct with no perLevel term, so encoding it would pin one level. Best modeling candidate of the 1.16 Eternals — see calibration checklist"
+    "note": "Knell (Major): Only an explicitly supplied active-stack snapshot is modeled; omitted state receives no shred credit. Stack acquisition, refresh/expiry over time, Peal interactions, multi-source behavior and stolen defenses are not simulated. No automatic full-stack uptime or winning-build claim."
    },
    {
     "name": "Satariel",
@@ -632,8 +633,8 @@
    "coreGold": 7150,
    "spikeMinute": 21,
    "bestObjective": "sustained auto DPS",
-   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 75 auto-attack DPS in the sim.",
-   "optimizer": null
+   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 74 auto-attack DPS in the sim.",
+   "optimizer": "Optimizer agrees: within 7% of our best core on sustained auto DPS. The winrate is earned, not luck."
   },
   {
    "title": "Magical Burst",
@@ -707,7 +708,7 @@
     "teamfightVsSquishy": 1929.0394555139083,
     "rot10VsSquishy": 1134.3065693430658,
     "rot20VsBruiser": 1186.4804469273743,
-    "autoDps10VsSquishy": 68.2179222972973,
+    "autoDps10VsSquishy": 68.21792229729729,
     "ehpPhysical": 3827.44575,
     "ehpMagical": 3106.1633906250004,
     "healShield10s": 269,
@@ -837,11 +838,11 @@
    ],
    "counterSwap": {
     "out": "Oblivion Crown",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 24,
-    "offenseLossPct": 24,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Oblivion Crown: their burst combo hits 24% less hard, and this kit gives up 24% of its damage for it."
+    "in": "Aegis Of Agawar",
+    "inSlug": "aegis-of-agawar",
+    "survivalGainPct": 19,
+    "offenseLossPct": 4,
+    "line": "Losing lane? Third item Aegis Of Agawar instead of Oblivion Crown: their burst combo hits 19% less hard, and this kit gives up 4% of its damage for it."
    }
   },
   {
@@ -878,15 +879,15 @@
     "out": "Oblivion Crown",
     "in": "Aegis Of Agawar",
     "inSlug": "aegis-of-agawar",
-    "survivalGainPct": 18,
-    "offenseLossPct": 11,
-    "line": "Losing lane? Third item Aegis Of Agawar instead of Oblivion Crown: their burst combo hits 18% less hard, and this kit gives up 11% of its damage for it."
+    "survivalGainPct": 19,
+    "offenseLossPct": 4,
+    "line": "Losing lane? Third item Aegis Of Agawar instead of Oblivion Crown: their burst combo hits 19% less hard, and this kit gives up 4% of its damage for it."
    }
   },
   {
    "enemy": "Mourn",
    "enemySlug": "mourn",
-   "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange. Mourn's main threat is Abduct; bait it before you commit, and mixed resist softens the trade.",
+   "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Mourn's main threat is Abduct; bait it before you commit, and mixed resist softens the trade.",
    "checkpoints": [
     {
      "minute": 5,
@@ -902,7 +903,7 @@
     },
     {
      "minute": 20,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 25,
@@ -910,16 +911,16 @@
     },
     {
      "minute": 30,
-     "verdict": "even"
+     "verdict": "you"
     }
    ],
    "counterSwap": {
     "out": "Oblivion Crown",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 24,
-    "offenseLossPct": 25,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Oblivion Crown: their burst combo hits 24% less hard, and this kit gives up 25% of its damage for it."
+    "in": "Aegis Of Agawar",
+    "inSlug": "aegis-of-agawar",
+    "survivalGainPct": 19,
+    "offenseLossPct": 9,
+    "line": "Losing lane? Third item Aegis Of Agawar instead of Oblivion Crown: their burst combo hits 19% less hard, and this kit gives up 9% of its damage for it."
    }
   },
   {
@@ -933,7 +934,7 @@
     },
     {
      "minute": 10,
-     "verdict": "you"
+     "verdict": "even"
     },
     {
      "minute": 15,
@@ -956,9 +957,9 @@
     "out": "Oblivion Crown",
     "in": "Warden's Faith",
     "inSlug": "wardens-faith",
-    "survivalGainPct": 36,
-    "offenseLossPct": 25,
-    "line": "Losing lane? Third item Warden's Faith instead of Oblivion Crown: their burst combo hits 36% less hard, and this kit gives up 25% of its damage for it."
+    "survivalGainPct": 33,
+    "offenseLossPct": 23,
+    "line": "Losing lane? Third item Warden's Faith instead of Oblivion Crown: their burst combo hits 33% less hard, and this kit gives up 23% of its damage for it."
    }
   },
   {
@@ -993,17 +994,17 @@
    ],
    "counterSwap": {
     "out": "Oblivion Crown",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 24,
-    "offenseLossPct": 25,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Oblivion Crown: their burst combo hits 24% less hard, and this kit gives up 25% of its damage for it."
+    "in": "Aegis Of Agawar",
+    "inSlug": "aegis-of-agawar",
+    "survivalGainPct": 19,
+    "offenseLossPct": 10,
+    "line": "Losing lane? Third item Aegis Of Agawar instead of Oblivion Crown: their burst combo hits 19% less hard, and this kit gives up 10% of its damage for it."
    }
   },
   {
    "enemy": "Phase",
    "enemySlug": "phase",
-   "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
+   "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
    "checkpoints": [
     {
      "minute": 5,
@@ -1011,11 +1012,11 @@
     },
     {
      "minute": 10,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 15,
-     "verdict": "you"
+     "verdict": "even"
     },
     {
      "minute": 20,
@@ -1032,11 +1033,11 @@
    ],
    "counterSwap": {
     "out": "Oblivion Crown",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 24,
-    "offenseLossPct": 24,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Oblivion Crown: their burst combo hits 24% less hard, and this kit gives up 24% of its damage for it."
+    "in": "Aegis Of Agawar",
+    "inSlug": "aegis-of-agawar",
+    "survivalGainPct": 19,
+    "offenseLossPct": 6,
+    "line": "Losing lane? Third item Aegis Of Agawar instead of Oblivion Crown: their burst combo hits 19% less hard, and this kit gives up 6% of its damage for it."
    }
   }
  ],
@@ -1050,18 +1051,18 @@
   "wr": 54.9,
   "n": 1185,
   "shiftIn": [
-   "Vainglory",
    "Stonewall",
    "Warden's Faith",
    "Fire Blossom",
+   "Raiment of Renewal",
    "Catalytic Drive",
    "Giant's Ring"
   ],
   "shiftOut": [
    "Lifecore",
-   "Spirit Of Amir",
-   "Oblivion Crown",
    "Lunaria",
+   "Oblivion Crown",
+   "Spirit Of Amir",
    "Wraith Leggings",
    "Windcaller"
   ],
@@ -1070,7 +1071,7 @@
  "slug": "narbash",
  "name": "Narbash",
  "patch": "1.15.3/1.15.4",
- "generatedAt": "2026-10-16T02:12:58.615Z",
+ "generatedAt": "2026-10-16T16:44:49.504Z",
  "damageType": "hybrid",
  "attackType": "melee",
  "laneFlex": [
@@ -1086,10 +1087,6 @@
    "n": 1185,
    "core": [
     {
-     "name": "Vainglory",
-     "slug": "vainglory"
-    },
-    {
      "name": "Stonewall",
      "slug": "stonewall"
     },
@@ -1100,6 +1097,10 @@
     {
      "name": "Fire Blossom",
      "slug": "fire-blossom"
+    },
+    {
+     "name": "Raiment of Renewal",
+     "slug": "raiment-of-renewal"
     },
     {
      "name": "Catalytic Drive",
@@ -1128,7 +1129,8 @@
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
      "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)",
-     "the sim opens on Wraith Leggings, which the field rarely builds (0.4% pick) — a sim-only call; compare the meta cores below"
+     "the sim opens on Wraith Leggings, which the field rarely builds (0.4% pick) — a sim-only call; compare the meta cores below",
+     "the sim build reproduces only 33% of the field's core for Narbash (it never builds Truesilver Bracelet, Dynamo) — some of those items ride mechanics the sim doesn't model yet"
     ]
    },
    "build": {
@@ -1192,7 +1194,7 @@
      "teamfightVsSquishy": 3375.3194386694395,
      "rot10VsSquishy": 2013.3076923076928,
      "rot20VsBruiser": 2604.6186046511634,
-     "autoDps10VsSquishy": 68.2179222972973,
+     "autoDps10VsSquishy": 68.21792229729729,
      "ehpPhysical": 4195.8457499999995,
      "ehpMagical": 3405.1383906250003,
      "healShield10s": 917.94905,
@@ -1201,15 +1203,15 @@
     },
     "manaFeasible": true
    },
-   "coachLine": "Sim-optimal for heal/shield output: first spike lands around minute 11 (Wraith Leggings), third item by minute 26. Take Vesh: +12.1% on the damage rotation at minute 15.",
+   "coachLine": "Sim-optimal for heal/shield output: first spike lands around minute 11 (Wraith Leggings), third item by minute 26. Take Vesh: +11.6% on the damage rotation at minute 15.",
    "eternals": {
     "top": [
      {
       "name": "Vesh",
       "id": "vesh",
-      "headlinePct": 12.1,
-      "burstPct": 10.9,
-      "rot20Pct": 12.1,
+      "headlinePct": 11.6,
+      "burstPct": 10.5,
+      "rot20Pct": 11.6,
       "ehpPct": 0
      },
      {
@@ -1223,10 +1225,10 @@
      {
       "name": "Demiurge",
       "id": "demiurge",
-      "headlinePct": 10.3,
-      "burstPct": 9.5,
-      "rot20Pct": 10.1,
-      "ehpPct": 1.1
+      "headlinePct": 8.5,
+      "burstPct": 7.9,
+      "rot20Pct": 8.4,
+      "ehpPct": 0.9
      }
     ],
     "unmodeled": [
@@ -1243,9 +1245,9 @@
      {
       "name": "Vesh",
       "modeled": true,
-      "headlinePct": 12.1,
-      "burstPct": 10.9,
-      "rot20Pct": 12.1,
+      "headlinePct": 11.6,
+      "burstPct": 10.5,
+      "rot20Pct": 11.6,
       "ehpPct": 0,
       "note": null
      },
@@ -1261,18 +1263,18 @@
      {
       "name": "Demiurge",
       "modeled": true,
-      "headlinePct": 10.3,
-      "burstPct": 9.5,
-      "rot20Pct": 10.1,
-      "ehpPct": 1.1,
+      "headlinePct": 8.5,
+      "burstPct": 7.9,
+      "rot20Pct": 8.4,
+      "ehpPct": 0.9,
       "note": null
      },
      {
       "name": "Thraex",
       "modeled": true,
-      "headlinePct": 8.5,
+      "headlinePct": 7.3,
       "burstPct": 0,
-      "rot20Pct": 8.5,
+      "rot20Pct": 7.3,
       "ehpPct": 0,
       "note": null
      },
@@ -1288,19 +1290,19 @@
      {
       "name": "Xyris",
       "modeled": true,
-      "headlinePct": 3.6,
-      "burstPct": 3.6,
-      "rot20Pct": 3.6,
+      "headlinePct": 2.7,
+      "burstPct": 2.7,
+      "rot20Pct": 2.7,
       "ehpPct": 0,
       "note": null
      },
      {
       "name": "Lotus",
       "modeled": true,
-      "headlinePct": 2.5,
-      "burstPct": 2.5,
-      "rot20Pct": 2.5,
-      "ehpPct": 2.8,
+      "headlinePct": 1.7,
+      "burstPct": 1.7,
+      "rot20Pct": 1.7,
+      "ehpPct": 2.3,
       "note": null
      },
      {
@@ -1373,7 +1375,7 @@
       "burstPct": null,
       "rot20Pct": null,
       "ehpPct": null,
-      "note": "Knell (Major): percent armor shred that scales per level (max stacks = 8% + 0.8%/level, both damage types); armor_shred takes a flat pct with no perLevel term, so encoding it would pin one level. Best modeling candidate of the 1.16 Eternals — see calibration checklist"
+      "note": "Knell (Major): Only an explicitly supplied active-stack snapshot is modeled; omitted state receives no shred credit. Stack acquisition, refresh/expiry over time, Peal interactions, multi-source behavior and stolen defenses are not simulated. No automatic full-stack uptime or winning-build claim."
      },
      {
       "name": "Satariel",
@@ -1749,8 +1751,8 @@
      "coreGold": 7150,
      "spikeMinute": 21,
      "bestObjective": "sustained auto DPS",
-     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 75 auto-attack DPS in the sim.",
-     "optimizer": null
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 74 auto-attack DPS in the sim.",
+     "optimizer": "Optimizer agrees: within 7% of our best core on sustained auto DPS. The winrate is earned, not luck."
     },
     {
      "title": "Magical Burst",
@@ -1824,7 +1826,7 @@
       "teamfightVsSquishy": 1929.0394555139083,
       "rot10VsSquishy": 1134.3065693430658,
       "rot20VsBruiser": 1186.4804469273743,
-      "autoDps10VsSquishy": 68.2179222972973,
+      "autoDps10VsSquishy": 68.21792229729729,
       "ehpPhysical": 3827.44575,
       "ehpMagical": 3106.1633906250004,
       "healShield10s": 269,
@@ -1954,11 +1956,11 @@
      ],
      "counterSwap": {
       "out": "Oblivion Crown",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 24,
-      "offenseLossPct": 24,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Oblivion Crown: their burst combo hits 24% less hard, and this kit gives up 24% of its damage for it."
+      "in": "Aegis Of Agawar",
+      "inSlug": "aegis-of-agawar",
+      "survivalGainPct": 19,
+      "offenseLossPct": 4,
+      "line": "Losing lane? Third item Aegis Of Agawar instead of Oblivion Crown: their burst combo hits 19% less hard, and this kit gives up 4% of its damage for it."
      }
     },
     {
@@ -1995,15 +1997,15 @@
       "out": "Oblivion Crown",
       "in": "Aegis Of Agawar",
       "inSlug": "aegis-of-agawar",
-      "survivalGainPct": 18,
-      "offenseLossPct": 11,
-      "line": "Losing lane? Third item Aegis Of Agawar instead of Oblivion Crown: their burst combo hits 18% less hard, and this kit gives up 11% of its damage for it."
+      "survivalGainPct": 19,
+      "offenseLossPct": 4,
+      "line": "Losing lane? Third item Aegis Of Agawar instead of Oblivion Crown: their burst combo hits 19% less hard, and this kit gives up 4% of its damage for it."
      }
     },
     {
      "enemy": "Mourn",
      "enemySlug": "mourn",
-     "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange. Mourn's main threat is Abduct; bait it before you commit, and mixed resist softens the trade.",
+     "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Mourn's main threat is Abduct; bait it before you commit, and mixed resist softens the trade.",
      "checkpoints": [
       {
        "minute": 5,
@@ -2019,7 +2021,7 @@
       },
       {
        "minute": 20,
-       "verdict": "even"
+       "verdict": "you"
       },
       {
        "minute": 25,
@@ -2027,16 +2029,16 @@
       },
       {
        "minute": 30,
-       "verdict": "even"
+       "verdict": "you"
       }
      ],
      "counterSwap": {
       "out": "Oblivion Crown",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 24,
-      "offenseLossPct": 25,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Oblivion Crown: their burst combo hits 24% less hard, and this kit gives up 25% of its damage for it."
+      "in": "Aegis Of Agawar",
+      "inSlug": "aegis-of-agawar",
+      "survivalGainPct": 19,
+      "offenseLossPct": 9,
+      "line": "Losing lane? Third item Aegis Of Agawar instead of Oblivion Crown: their burst combo hits 19% less hard, and this kit gives up 9% of its damage for it."
      }
     },
     {
@@ -2050,7 +2052,7 @@
       },
       {
        "minute": 10,
-       "verdict": "you"
+       "verdict": "even"
       },
       {
        "minute": 15,
@@ -2073,9 +2075,9 @@
       "out": "Oblivion Crown",
       "in": "Warden's Faith",
       "inSlug": "wardens-faith",
-      "survivalGainPct": 36,
-      "offenseLossPct": 25,
-      "line": "Losing lane? Third item Warden's Faith instead of Oblivion Crown: their burst combo hits 36% less hard, and this kit gives up 25% of its damage for it."
+      "survivalGainPct": 33,
+      "offenseLossPct": 23,
+      "line": "Losing lane? Third item Warden's Faith instead of Oblivion Crown: their burst combo hits 33% less hard, and this kit gives up 23% of its damage for it."
      }
     },
     {
@@ -2110,17 +2112,17 @@
      ],
      "counterSwap": {
       "out": "Oblivion Crown",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 24,
-      "offenseLossPct": 25,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Oblivion Crown: their burst combo hits 24% less hard, and this kit gives up 25% of its damage for it."
+      "in": "Aegis Of Agawar",
+      "inSlug": "aegis-of-agawar",
+      "survivalGainPct": 19,
+      "offenseLossPct": 10,
+      "line": "Losing lane? Third item Aegis Of Agawar instead of Oblivion Crown: their burst combo hits 19% less hard, and this kit gives up 10% of its damage for it."
      }
     },
     {
      "enemy": "Phase",
      "enemySlug": "phase",
-     "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
+     "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
      "checkpoints": [
       {
        "minute": 5,
@@ -2128,11 +2130,11 @@
       },
       {
        "minute": 10,
-       "verdict": "even"
+       "verdict": "enemy"
       },
       {
        "minute": 15,
-       "verdict": "you"
+       "verdict": "even"
       },
       {
        "minute": 20,
@@ -2149,11 +2151,11 @@
      ],
      "counterSwap": {
       "out": "Oblivion Crown",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 24,
-      "offenseLossPct": 24,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Oblivion Crown: their burst combo hits 24% less hard, and this kit gives up 24% of its damage for it."
+      "in": "Aegis Of Agawar",
+      "inSlug": "aegis-of-agawar",
+      "survivalGainPct": 19,
+      "offenseLossPct": 6,
+      "line": "Losing lane? Third item Aegis Of Agawar instead of Oblivion Crown: their burst combo hits 19% less hard, and this kit gives up 6% of its damage for it."
      }
     }
    ],
@@ -2167,18 +2169,18 @@
     "wr": 54.9,
     "n": 1185,
     "shiftIn": [
-     "Vainglory",
      "Stonewall",
      "Warden's Faith",
      "Fire Blossom",
+     "Raiment of Renewal",
      "Catalytic Drive",
      "Giant's Ring"
     ],
     "shiftOut": [
      "Lifecore",
-     "Spirit Of Amir",
-     "Oblivion Crown",
      "Lunaria",
+     "Oblivion Crown",
+     "Spirit Of Amir",
      "Wraith Leggings",
      "Windcaller"
     ],

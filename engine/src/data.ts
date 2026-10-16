@@ -10,6 +10,7 @@
 //
 // All joins are by slug.
 
+import { reviewedImmobilization } from './immobilization.js';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -75,8 +76,48 @@ const OMEDA_KEY_MAP: Record<string, AbilityDef['key']> = {
 // covers ults like Countess: "deals 135/185/235 (+5% ... of the target's
 // maximum health) magical damage" (percent-max-health scaling; any inner
 // power ratio on the percentage itself is conservatively dropped).
-// Per-rank scaling arrays ("+110/115/.../130%") use the mean.
-export function parseDamage(md: string): { values: number[]; scaling: number; pctMaxHealth?: number; damageType: 'physical' | 'magical' } | null {
+type ParsedDamage = { values: number[]; scaling: number; pctMaxHealth?: number;
+  damageType: AbilityDef['damageType']; powerScaling?: AbilityDef['powerScaling'];
+  ignoresArmor?: boolean; unmodeledScaling?: string;
+  omittedTerms?: OmittedScalingTerm[]; sourcePayload?: string };
+
+export interface OmittedScalingTerm {
+  sourceTag: string;
+  percentByRank: number[];
+  reason: 'unsupported-stat' | 'power-dropped-with-leading-stat';
+}
+
+/** Inventory only: source tags do not establish total/bonus or self/target basis.
+ * Stop at this damage payload so a following heal or conditional rider cannot
+ * be reported as a missing ratio on the selected base hit. */
+function omittedPayloadTerms(text: string): { sourcePayload: string; omittedTerms: OmittedScalingTerm[] } {
+  const end = /\b(?:physical|magical|true)\s+damage\b/i.exec(text);
+  const sourcePayload = end ? text.slice(0, end.index + end[0].length) : text;
+  const omittedTerms = [...sourcePayload.matchAll(/<(\w+Text)>\(\+([\d./]+)%/g)].map(m => ({
+    sourceTag: m[1]!, percentByRank: m[2]!.split('/').map(Number),
+    reason: (m[1] === 'AttackDamageText' || m[1] === 'AbilityPowerText'
+      ? 'power-dropped-with-leading-stat' : 'unsupported-stat') as OmittedScalingTerm['reason'],
+  }));
+  return { sourcePayload, omittedTerms };
+}
+
+// Restrict ratios to this payload: a subsequent heal or second hit must not
+// contribute power to the first hit. Damage type is independent of scaling stat.
+function taggedPayload(text: string): Pick<ParsedDamage, 'powerScaling' | 'damageType' | 'ignoresArmor'> | null {
+  const end = text.match(/\b(physical|magical|true)\s+damage\b/i);
+  if (!end) return null;
+  const payload = text.slice(0, end.index);
+  const powerScaling: NonNullable<AbilityDef['powerScaling']> = {};
+  for (const m of payload.matchAll(/<(AttackDamageText|AbilityPowerText)>\(\+([\d./]+)%/g)) {
+    const stat = m[1] === 'AttackDamageText' ? 'physical' : 'magical';
+    powerScaling[stat] = m[2]!.split('/').map(Number);
+  }
+  if (!Object.keys(powerScaling).length) return null;
+  return { powerScaling, damageType: end[1]!.toLowerCase() as AbilityDef['damageType'],
+    ignoresArmor: /ignoring (?:any|all) physical armor/i.test(text) || undefined };
+}
+
+export function parseDamage(md: string): ParsedDamage | null {
   const a = md.match(/deal(?:ing|s)?\s+([\d][\d./]*)\s*<(AttackDamageText|AbilityPowerText)>\(\+([\d./]+)%/);
   if (a) {
     const values = a[1]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
@@ -86,6 +127,7 @@ export function parseDamage(md: string): { values: number[]; scaling: number; pc
       values,
       scaling: scalingParts.reduce((s, n) => s + n, 0) / scalingParts.length,
       damageType: a[2] === 'AbilityPowerText' ? 'magical' : 'physical',
+      ...taggedPayload(md.slice(a.index!)),
     };
   }
   const b = md.match(/deal(?:ing|s)?\s+([\d][\d./]*)\s*\(\+([\d.]+)%/);
@@ -111,7 +153,8 @@ export function parseDamage(md: string): { values: number[]; scaling: number; pc
 //   2. the scaling tag is a stat the sim cannot scale on (ArmorText, HealthText,
 //      MRText — Terra scales off her own armor, Sevarog off his own health).
 //      The stated damage values are still correct, so they are taken and the
-//      ratio is dropped to 0 and REPORTED as unmodeled rather than guessed.
+//      unsupported ratio is REPORTED rather than guessed; supported power
+//      ratios in the same damage payload are retained.
 //   3. the base damage carries no tag at all and only a rider is tagged
 //      (Kira's Dusk: 45-125 base plus a 6-14 per-stack rider)
 //
@@ -136,9 +179,9 @@ function isDamagePayload(clause: string, from: number): boolean {
   return !!m && m[1]!.toLowerCase() === 'damage';
 }
 
-export function parseDamageClauseScoped(md: string): { values: number[]; scaling: number; pctMaxHealth?: number; damageType: 'physical' | 'magical'; unmodeledScaling?: string } | null {
+export function parseDamageClauseScoped(md: string): ParsedDamage | null {
   const clauses = md.split(/<br>|\n|(?<=\.)\s+/).filter((c) => /damage/i.test(c));
-  type Cand = { values: number[]; scaling: number; pctMaxHealth?: number; damageType: 'physical' | 'magical'; unmodeledScaling?: string; conditional?: boolean };
+  type Cand = ParsedDamage & { conditional?: boolean };
   const cands: Cand[] = [];
   // A conditional maximum is not the ability's damage. Terra's Wild Rush deals
   // 27-111 on a normal dash and "up to" 81-333 only inside a 1.25s charge window;
@@ -170,11 +213,15 @@ export function parseDamageClauseScoped(md: string): { values: number[]; scaling
       const conditional = CONDITIONAL.test(clause.slice(0, m.index!));
       if (power) {
         const parts = m[3]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
-        cands.push({ values, scaling: parts.length ? parts.reduce((s, n) => s + n, 0) / parts.length : 0, damageType: typeOf(power), conditional });
+        cands.push({ values, scaling: parts.length ? parts.reduce((s, n) => s + n, 0) / parts.length : 0, damageType: typeOf(power), conditional, ...taggedPayload(clause.slice(m.index!)) });
       } else {
-        // Scaling stat the sim has no channel for: keep the stated base, drop
-        // the ratio, and say so.
-        cands.push({ values, scaling: 0, damageType: typeOf('physical'), unmodeledScaling: tag.replace(/Text$/, ''), conditional });
+        // Unsupported leading stats must not hide supported power ratios in
+        // the same payload. Retain unresolved terms separately as evidence.
+        const payload = omittedPayloadTerms(clause.slice(m.index!));
+        const supported = taggedPayload(payload.sourcePayload);
+        if (supported) payload.omittedTerms = payload.omittedTerms.filter(t => t.reason === 'unsupported-stat');
+        cands.push({ values, scaling: 0, damageType: typeOf('physical'), unmodeledScaling: tag.replace(/Text$/, ''),
+          conditional, ...payload, ...supported });
       }
     }
 
@@ -182,7 +229,7 @@ export function parseDamageClauseScoped(md: string): { values: number[]; scaling
     const plain = clause.match(/(?:deal(?:ing|s)?|take|takes|receive|receives|suffer|suffers)\s+([\d][\d./]*)\s*(?:physical|magical|true)?\s*damage/i);
     if (plain) {
       const values = plain[1]!.split('/').map(Number).filter((n) => !Number.isNaN(n));
-      if (values.length) cands.push({ values, scaling: 0, damageType: typeOf('physical'), unmodeledScaling: 'untagged-base', conditional: CONDITIONAL.test(clause.slice(0, plain.index!)) });
+      if (values.length) cands.push({ values, scaling: 0, damageType: typeOf('physical'), unmodeledScaling: 'untagged-base', sourcePayload: plain[0], omittedTerms: [], conditional: CONDITIONAL.test(clause.slice(0, plain.index!)) });
     }
   }
 
@@ -215,15 +262,27 @@ function parseTargetHealth(md: string): { pct: number[]; basis: 'current' | 'mis
 
 // Parse a self attack-speed steroid: a per-rank "X/Y/Z% Attack Speed" buff (e.g.
 // Sparrow 25/30/35/40/45%, Murdock 15/20/25/30/35%). Returns the per-rank values
-// and an approximate active duration ("for Ns") for uptime; null if no AS grant.
-function parseSelfAttackSpeed(md: string): { perRank: number[]; durationSec: number } | null {
-  const m = md.match(/(\d+(?:\.\d+)?(?:\/\d+(?:\.\d+)?)+)\s*%?\s*<?\s*Attack ?Speed/i)
-    ?? md.match(/(\d+(?:\.\d+)?)\s*%\s*<?\s*Attack ?Speed/i);
+// and stated rank-dependent durations for uptime; null for unsupported grants.
+export function parseSelfAttackSpeed(md: string): { perRank: number[]; durations: number[] } | null {
+  // Tags such as AttackSpeedText identify scaling icons, not an AS grant.
+  const text = md.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  // These need separate target/state/stack models, not a self cast-time steroid.
+  if (/turret|sentry mode|steals? .*attack speed/i.test(text)) return null;
+  const m = text.match(/(\d+(?:\.\d+)?(?:\/\d+(?:\.\d+)?)*)%\s+attack speed\b/i);
   if (!m) return null;
-  const perRank = m[1]!.split('/').map(Number).filter((n) => n > 0);
-  if (!perRank.length) return null;
-  const dur = md.match(/for\s+(\d+(?:\.\d+)?)\s*s/i);
-  return { perRank, durationSec: dur ? Number(dur[1]) : 4 };
+  const perRank = m[1]!.split('/').map(Number);
+  const after = text.slice(m.index! + m[0].length);
+  const before = text.slice(0, m.index);
+  const values = '(\\d+(?:\\.\\d+)?(?:\\/\\d+(?:\\.\\d+)?)*)';
+  // Bind the duration to this clause, never the first unrelated timer in the kit.
+  const direct = after.match(new RegExp('^\\s*for\\s+' + values + '\\s*s\\b', 'i'));
+  const group = after.split(/(?:[.!?](?=\s)|<br>)/)[0]?.match(new RegExp('for\\s+' + values + '\\s*s\\b', 'i'));
+  const leading = before.match(new RegExp('For the next\\s+' + values + '\\s*s,[^.!?]*$', 'i'));
+  const linked = before.match(new RegExp('for\\s+' + values + '\\s*s\\. During this time,[^.!?]*$', 'i'));
+  const duration = direct ?? group ?? leading ?? linked;
+  if (!duration) return null; // no invented four-second duration
+  const durations = duration[1]!.split('/').map(Number);
+  return { perRank, durations };
 }
 
 // A self-shield passive as % of max health (Steel's Cybernetic Shell: "shields
@@ -308,7 +367,8 @@ export interface LoadedData {
   staleFallbacks: { slug: string; key: string }[]; // ability numbers taken from stale owned data
   // Current-text damage kept, scaling ratio dropped because the sim has no
   // channel for it (caster armor/health scaling) or the base carried no tag.
-  unmodeledScalings: { slug: string; key: string; stat: string }[];
+  unmodeledScalings: { slug: string; key: string; stat: string;
+    sourceText: string; sourcePayload: string; omittedTerms: OmittedScalingTerm[] }[];
 }
 
 export function loadData(): LoadedData {
@@ -335,7 +395,7 @@ export function loadData(): LoadedData {
   // Abilities whose damage values are current but whose scaling ratio the sim
   // cannot represent (scales on the caster's own armor/health, or the base is
   // untagged). Damage is understated for these, so they are reported, not hidden.
-  const unmodeledScalings: { slug: string; key: string; stat: string }[] = [];
+  const unmodeledScalings: LoadedData['unmodeledScalings'] = [];
 
   for (const om of omedaHeroes) {
     const bs = om.base_stats;
@@ -353,16 +413,19 @@ export function loadData(): LoadedData {
     // Abilities: omeda numbers first, stale owned values only when the
     // current text does not parse (cooldowns/costs still come from omeda).
     const defs: AbilityDef[] = [];
-    const damageTypeVotes = { physical: 0, magical: 0 };
+    const damageTypeVotes = { physical: 0, magical: 0, true: 0 };
     for (const key of ['ALTERNATE', 'PRIMARY', 'SECONDARY', 'ULTIMATE'] as const) {
       const omAb = omAbs.get(key);
+      const immobilizes = reviewedImmobilization(om.slug, omAb?.key ?? '', omAb?.menu_description ?? '');
       const owned = ownedByKey.get(key);
       const strict = omAb?.menu_description ? parseDamage(omAb.menu_description) : null;
       // Pattern C runs only where the strict patterns fail; without it these
       // abilities silently fall back to the frozen pre-1.14 owned scrape.
       const parsed = strict ?? (omAb?.menu_description ? parseDamageClauseScoped(omAb.menu_description) : null);
       const droppedScaling = !strict && parsed ? (parsed as { unmodeledScaling?: string }).unmodeledScaling : undefined;
-      if (droppedScaling) unmodeledScalings.push({ slug: om.slug, key, stat: droppedScaling });
+      if (droppedScaling) unmodeledScalings.push({ slug: om.slug, key, stat: droppedScaling,
+        sourceText: omAb?.menu_description ?? '', sourcePayload: parsed?.sourcePayload ?? '',
+        omittedTerms: parsed?.omittedTerms ?? [] });
       const healing = omAb?.menu_description ? parseHealing(omAb.menu_description) : [];
       const asBuff = omAb?.menu_description ? parseSelfAttackSpeed(omAb.menu_description) : null;
       const targetHealth = omAb?.menu_description ? parseTargetHealth(omAb.menu_description) : [];
@@ -373,33 +436,39 @@ export function loadData(): LoadedData {
       const costs = omAb?.cost?.length ? omAb.cost : owned?.costs ?? [];
       if (parsed) {
         defs.push({
-          key,
+          key, immobilizes,
           name: omAb?.display_name ?? owned?.name ?? key,
           damagePerRank: parsed.values,
           aoe: aoe || undefined,
           targetHealthPct: targetHealth.length ? targetHealth : undefined,
           scalingPct: parsed.scaling,
+          powerScaling: parsed.powerScaling,
+          ignoresArmor: parsed.ignoresArmor,
           pctMaxHealth: parsed.pctMaxHealth,
           damageType: parsed.damageType,
           healing: healing.length ? healing : undefined,
           selfAttackSpeedPctPerRank: asBuff?.perRank,
-          buffDurationSec: asBuff?.durationSec,
+          buffDurationSec: asBuff?.durations[0],
+          buffDurationSecPerRank: asBuff?.durations,
           selfStatBuffs: statBuffs.length ? statBuffs : undefined,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
         });
         damageTypeVotes[parsed.damageType]++;
-      } else if (ownedDmg) {
+      } else if (ownedDmg && (!omAb?.menu_description || /damage/i.test(omAb.menu_description))) {
+        // A current non-damaging ability must never inherit damage from an old
+        // kit slot (Muriel's E is now Alacrity, not the old damaging bubble).
         staleFallbacks.push({ slug: om.slug, key });
         defs.push({
-          key,
+          key, immobilizes,
           name: owned!.name,
           damagePerRank: ownedDmg.values,
           scalingPct: ownedDmg.scaling ?? 0,
           damageType: ownedDmg.damageType === 'magical' ? 'magical' : ownedDmg.damageType === 'true' ? 'true' : 'physical',
           healing: healing.length ? healing : undefined,
           selfAttackSpeedPctPerRank: asBuff?.perRank,
-          buffDurationSec: asBuff?.durationSec,
+          buffDurationSec: asBuff?.durations[0],
+          buffDurationSecPerRank: asBuff?.durations,
           selfStatBuffs: statBuffs.length ? statBuffs : undefined,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
@@ -408,30 +477,32 @@ export function loadData(): LoadedData {
         // Pure heal/shield ability (e.g. Muriel's Alacrity): no damage to
         // parse, but it is the support model's whole point.
         defs.push({
-          key,
+          key, immobilizes,
           name: omAb?.display_name ?? owned?.name ?? key,
           damagePerRank: [],
           scalingPct: 0,
           damageType: healing[0]!.powerType,
           healing,
           selfAttackSpeedPctPerRank: asBuff?.perRank,
-          buffDurationSec: asBuff?.durationSec,
+          buffDurationSec: asBuff?.durations[0],
+          buffDurationSecPerRank: asBuff?.durations,
           selfStatBuffs: statBuffs.length ? statBuffs : undefined,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
         });
-      } else if (asBuff || statBuffs.length) {
-        // Buff-only ability with no damage/heal line (Sparrow/Murdock AS steroid;
+      } else if (asBuff || statBuffs.length || immobilizes) {
+        // Buff or immobilization ability with no damage/heal line (Sparrow/Murdock AS steroid;
         // Feng Mao/Wraith passive power gain): retained so its self-buffs feed the
         // sim, and so it is leveled in the skill order rather than dropped.
         defs.push({
-          key,
+          key, immobilizes,
           name: omAb?.display_name ?? owned?.name ?? key,
           damagePerRank: [],
           scalingPct: 0,
           damageType: 'physical',
           selfAttackSpeedPctPerRank: asBuff?.perRank,
-          buffDurationSec: asBuff?.durationSec,
+          buffDurationSec: asBuff?.durations[0],
+          buffDurationSecPerRank: asBuff?.durations,
           selfStatBuffs: statBuffs.length ? statBuffs : undefined,
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
@@ -454,6 +525,7 @@ export function loadData(): LoadedData {
       ?? (damageTypeVotes.physical && damageTypeVotes.magical ? 'hybrid'
         : damageTypeVotes.magical ? 'magical' : 'physical');
 
+    const passive = om.abilities?.find(a => a.key?.toUpperCase() === 'PASSIVE');
     kits.set(om.slug, {
       slug: om.slug,
       name: prof?.name ?? om.display_name,
@@ -463,6 +535,7 @@ export function loadData(): LoadedData {
       resource: bs.max_mana?.length ? 'mana' : 'other',
       basicScalingPct,
       baseStats: bs as unknown as BaseStats,
+      passive: passive ? { key: 'PASSIVE', name: passive.display_name ?? 'Passive', sourceText: passive.menu_description ?? passive.game_description ?? '', source: 'catalog', modelStatus: 'source-only' } : undefined,
       abilities: defs,
       recommendedMaxOrder: skillOrders[om.slug]?.maxOrder
         ?.map((o) => OMEDA_KEY_MAP[o.key])

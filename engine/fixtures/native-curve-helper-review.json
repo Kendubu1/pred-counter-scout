@@ -1,0 +1,34 @@
+{
+  "scope": "Static installed-client curve helper tracing; not runtime or server parity",
+  "executableSha256": "58dced3d01dffeab3b6921510b1626a798d3d6827d308fa85f9d206d4f068f38",
+  "findings": [
+    {
+      "subject": "GetValueAtLevel",
+      "status": "native dispatch traced",
+      "finding": "The reflected wrapper forwards the supplied level to a helper. With its subsystem available, the helper requests an overridden scalable float before evaluation; otherwise it evaluates the original binding. The override routine can return either the original binding or a replacement. Its diagnostic string identifies PredCurveTableOverrideSubsystem.",
+      "remaining": "Recover subsystem configuration, override source and selection conditions. Do not assume packaged curve rows are always effective runtime values."
+    },
+    {
+      "subject": "Scalable float evaluation",
+      "status": "native arithmetic traced; virtual curve evaluator unresolved",
+      "finding": "The resolved-curve branch passes the supplied level to a virtual curve evaluator and multiplies the result by the scalable coefficient. The branch with no row-name binding returns the coefficient; a named but unresolved curve is a different path. Registry and error paths are separate.",
+      "remaining": "Resolve virtual dispatch and endpoint/extrapolation semantics; validate missing-row and registry cases before implementing a general evaluator."
+    },
+    {
+      "subject": "Knell, Combustion and Sky Splitter",
+      "status": "serialized curve bindings recovered; effective values incomplete",
+      "finding": "Exact property spans identify the named curves for Knell shred, per-level shred and steal; Combustion damage, scaling, radius and cooldown reduction; Sky Splitter ranged/melee percent health, floor and monster cap.",
+      "remaining": "Combine resolved object paths, curve data, override selection, effect defaults and event scaling before claiming complete production behavior."
+    }
+  ],
+  "validation": [
+    "Bounded direct-control-flow traversal follows conditional branches beyond an early return and records calls without executing them.",
+    "Synthetic tests cover conditional branches, direct loops, indirect jumps, overlap, budget exhaustion and unmapped targets."
+  ],
+  "limits": [
+    "Static reachability does not prove runtime execution.",
+    "Calls and indirect dispatch remain unresolved dependencies.",
+    "Exception-directory ranges can be fragments; stopping at their first boundary loses reachable code.",
+    "All native instruction traces, detailed addresses and decoded bodies remain private."
+  ]
+}
