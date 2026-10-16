@@ -86,7 +86,7 @@
     },
     {
      "kind": "unmodeled",
-     "note": "Pyromaniac: damaging heroes reduces Pyro cooldown by 0.5s per hit"
+     "note": "Pyromaniac cooldown reduction is omitted. The recovered client requires a hero target, excludes Item, DoT and ProcDamage events, and uses a shared gate with a 0.05-second delayed reset. This is not unrestricted reduction on every damage packet. Scalar bindings, overlapping callbacks and native cooldown behavior remain unresolved; the simulator retains the catalog 15-second Pyro cooldown."
     }
    ]
   },
@@ -157,6 +157,10 @@
      "healthBasis": "current",
      "minDamage": 12,
      "damageType": "physical"
+    },
+    {
+     "kind": "unmodeled",
+     "note": "Rend uses fixed target-health assumptions: full profile health in burst and 80% in sustained damage, not health updated after each hit. The recovered hero branch applies the damage floor before native event scaling and has no monster damage cap. Native event scaling, default bindings and hit ordering remain unresolved; catalog percentages and the 12-damage floor are partial modeling, not verified event-level behavior."
     }
    ]
   },

@@ -137,6 +137,16 @@ try {
       assert.match(text, /second attempt can retain the first selected target/);
       assert.match(text, /neither zero nor two extra hits on the original target is verified/);
     }
+    if (item.slug === 'combustion') {
+      assert.match(text, /excludes Item, DoT and ProcDamage events/);
+      assert.match(text, /shared gate with a 0.05-second delayed reset/);
+      assert.match(text, /simulator retains the catalog 15-second Pyro cooldown/);
+    }
+    if (item.slug === 'sky-splitter') {
+      assert.match(text, /full profile health in burst and 80% in sustained damage/);
+      assert.match(text, /damage floor before native event scaling/);
+      assert.match(text, /not verified event-level behavior/);
+    }
     if (item.slug === 'absolution') {
       assert.match(text, /Tenacity\s*\+25/);
       assert.match(text, /On being Immobilized:/);

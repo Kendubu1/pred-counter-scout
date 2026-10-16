@@ -471,3 +471,18 @@ next; then revisit the skipped Kira core. Continue Combustion/Sky Splitter nativ
 contracts and other actionable families without inventing these constants.
 Validation: 256 tests, TypeScript, 55 artifact schemas and rendered UI pass.
 No ranking, match snapshot, merge or deployment change.
+
+
+### Combustion and Sky Splitter disclosure parity (2026-10-16)
+
+Previously recovered mechanics were absent from active item limitations.
+Combustion now discloses the hero/event filters and shared delayed gate instead
+of an unrestricted "per hit" reduction description. Sky Splitter now discloses
+full-profile burst HP and fixed 80% sustained HP, plus unresolved native event
+scaling after the floor. These are model assumptions, not measured game rules.
+No damage formula changes: regenerate catalog/passive audits and verify dialogs,
+retain numerical ranked outputs. Recover scalar/default/native contracts before
+changing scheduling or packet scaling; do not repeat the completed extraction.
+
+Validation: all executable effect entries match the prior tree. 256 tests,
+TypeScript, all 55 artifact schemas and the rendered item checks pass.
