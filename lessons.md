@@ -4762,3 +4762,28 @@ additional names with the same descriptor checks. Metadata reports are sanitized
 all generated field trees, enum maps and decoded bodies remain private.
 Validation: 264 engine tests, 12 Python regressions, recovery build, TypeScript,
 55 artifact schemas and rendered UI parity pass.
+
+## 2026-10-16 shared native ability and filter dependencies
+
+Recovered GameplayAbility's 32 registration entries as 30 own fields and linked
+it to the previously recovered PredGameplayAbility parent. Added reusable native
+struct dependency recovery; reproduced 10 layouts, including AbilityInfo,
+GameplayAttribute, actor filters and tag-query storage, against the installed PE.
+These are serialized layouts, not validation of native targeting/query behavior.
+
+Same 1,237-class corpus: exact spans 6,092 -> 11,384 (10,981 nonempty), with zero
+previous exact spans lost. 1,050 property streams now reach end (previously 142).
+46 spans remain unverified; zero complete CDOs are certified. Four trailing bytes
+in completed sample streams stay opaque. The leading remaining blocker is
+PredFilterAndEffectsContainer (50 records), followed by AbilityTriggerData (28).
+All private bodies and generated field maps remain outside the repository.
+
+Sky Splitter, Combustion and Knell now expose readable scalable curve bindings;
+these still need object/curve resolution and native event semantics before
+changing production formulas. This chunk changes recovery tooling, not rankings.
+The active objective remains supported production integration and controlled
+simulator evaluation, not completion of a decoding milestone.
+
+Validation: 264 engine tests, 16 Python regressions, TypeScript, 55 artifact
+schemas, rendered UI parity and the broad reader pass. Four new negative/positive
+regressions cover field counts/flags, repeat roots and missing constructors.

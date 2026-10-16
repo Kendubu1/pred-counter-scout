@@ -43,3 +43,18 @@ probe interprets the observed packed descriptor profile and folds array/map/enum
 helper entries; unknown native superclass fields remain unsupported. Supply the
 additional native enums with the fifth argument. The enum extractor supports
 repeated --additional-name options with the same descriptor validation.
+
+The seventh optional argument supplies reviewed PRIVATE native struct dependencies
+from recover_native_dependencies.py; pass explicitly traced --root parameter
+addresses for this executable build. The tool follows struct registration
+constructors, folds helper entries and rejects conflicting owners or malformed
+metadata. Its output carries the executable hash and must never be committed.
+It currently covers AbilityInfo/GameplayAttribute and shared actor/tag filters.
+Layout recovery does not establish query evaluation or targeting behavior.
+
+The eighth optional argument supplies the reviewed GameplayAbility own-field tree
+from recover_native_class.py. This explicitly links PredGameplayAbility to its
+traced native parent; it does not discover further native inheritance. Text,
+field-path, name and integer properties now have native type mappings. Unknown
+property kinds still stop recovery. Four trailing bytes observed in completed
+property streams remain opaque; reaching property end is not whole-CDO parity.
