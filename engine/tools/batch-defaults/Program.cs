@@ -47,7 +47,7 @@ if(args.Length>5) {
   if(kind==22)return new UsmapArrayData(UsmapPropertyType.ArrayProperty){InnerType=NativeType(node.GetProperty("inner"))};
   if(kind==23)return new UsmapMapData(){InnerType=NativeType(node.GetProperty("key")),ValueType=NativeType(node.GetProperty("value"))};
   if(kind==30){var name=node.GetProperty("typeName").GetString()!;return new UsmapEnumData(name,enums[name].Values.OrderBy(x=>x.Key).Select(x=>x.Value).ToList()){InnerType=NativeType(node.GetProperty("inner"))};}
-  return new UsmapPropertyData(kind switch {0=>UsmapPropertyType.ByteProperty,3=>UsmapPropertyType.IntProperty,20=>UsmapPropertyType.NameProperty,10=>UsmapPropertyType.FloatProperty,76=>UsmapPropertyType.BoolProperty,17 or 82=>UsmapPropertyType.ObjectProperty,13 or 16=>UsmapPropertyType.SoftObjectProperty,29=>UsmapPropertyType.TextProperty,21=>UsmapPropertyType.StrProperty,31=>UsmapPropertyType.FieldPathProperty,_=>throw new Exception("Unsupported native kind "+kind)});
+  return new UsmapPropertyData(kind switch {0=>UsmapPropertyType.ByteProperty,3=>UsmapPropertyType.IntProperty,7=>UsmapPropertyType.UInt64Property,20=>UsmapPropertyType.NameProperty,10=>UsmapPropertyType.FloatProperty,12 or 76=>UsmapPropertyType.BoolProperty,17 or 82=>UsmapPropertyType.ObjectProperty,14=>UsmapPropertyType.WeakObjectProperty,26=>UsmapPropertyType.DelegateProperty,27 or 28=>UsmapPropertyType.MulticastDelegateProperty,13 or 16=>UsmapPropertyType.SoftObjectProperty,29=>UsmapPropertyType.TextProperty,21=>UsmapPropertyType.StrProperty,31=>UsmapPropertyType.FieldPathProperty,_=>throw new Exception("Unsupported native kind "+kind)});
  }
  using var doc=JsonDocument.Parse(File.ReadAllText(args[5]));
  var props=new System.Collections.Concurrent.ConcurrentDictionary<int,UsmapProperty>();int i=0;
@@ -66,7 +66,7 @@ if(args.Length>5) {
   foreach(var entry in structs.RootElement.EnumerateObject()) {
    var fields=new System.Collections.Concurrent.ConcurrentDictionary<int,UsmapProperty>();int n=0;
    foreach(var field in entry.Value.GetProperty("fields").EnumerateArray()){fields[n]=new UsmapProperty(field.GetProperty("name").GetString(),n,0,1,NativeType(field));n++;}
-   shared[entry.Name]=new UsmapSchema(entry.Name,null,n,fields,true,null);
+   shared[entry.Name]=new UsmapSchema(entry.Name,entry.Value.TryGetProperty("superType",out var super)?super.GetString():null,n,fields,true,null);
   }
  }
 

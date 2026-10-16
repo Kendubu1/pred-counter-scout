@@ -38,3 +38,5 @@ The 4096-byte prefix search limit is a probe bound, not a game constant.
 with baseline raw exports and emits aggregate-only metadata. It independently
 checks identity and opaque boundaries; it cannot reverify body serialization
 from JSON alone. Keep the original source, reader and scan log privately.
+
+Optional third argument: comma-separated literal filename prefixes (for example Proj_). Omission preserves GA_, GE_, GMMC_, GCN_. Empty, wildcard and path prefixes are rejected. Generated class bodies remain private.

@@ -138,7 +138,9 @@ try {
     if (item.slug === 'scattershot') {
       assert.match(text, /second attempt can retain the first target/);
       assert.match(text, /passes its captured on-hit percentage through event data/);
-      assert.match(text, /neither zero nor two extra hits on the original target is verified/);
+      assert.match(text, /target search excludes the triggering enemy/);
+      assert.match(text, /With no eligible secondary targets it spawns none/);
+      assert.match(text, /custom-hit-interface exception/);
     }
     if (item.slug === 'combustion') {
       assert.match(text, /excludes Item, DoT and ProcDamage events/);

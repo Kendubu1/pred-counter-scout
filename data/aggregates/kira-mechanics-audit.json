@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-16T17:04:13.999Z",
+ "generatedAt": "2026-10-16T17:19:11.005Z",
  "status": "diagnostic-only",
  "level": 13,
  "evidenceSource": "pred.gg public match stream (get-matches-since), RANKED, patch 1.17.2: ordered 3-item cores (first three completed Epic items by purchase time; anyOrder rows group a set whose orders were each under the floor), 20+ games each, counted 2026-10-14T18:34 -> 2026-10-16T01:17; hero-wide + per-role. Counted by npm run perks.",
@@ -37,7 +37,7 @@
    ],
    "limitations": [
     "Onixian Quiver / Multishot + Onixia: Multishot is not simulated: angled projectiles scale with travel distance and hero basic scaling. Recovered effect defaults bind attack-damage scaling and the custom distance calculation. Collision, critical-strike/lifesteal resolution and complete native aggregation still need integration. Melee Onixia crit and missing-health mitigation are also omitted; ranged carries receive no melee benefit.",
-    "Scattershot / Scatter: Scattershot is not simulated: its filtered on-hit trigger attempts two nearby-target projectiles behind a cooldown gate. Defaults recover the target filter, radius and damage/on-hit bindings; the shared damage path passes its captured on-hit percentage through event data. Target selection, collision, critical-strike resolution and downstream passive interactions still need integration. The second attempt can retain the first target; neither zero nor two extra hits on the original target is verified."
+    "Scattershot / Scatter: Scattershot is not simulated in populated scenes: its target search excludes the triggering enemy and attempts two nearby secondary-target projectiles behind a cooldown gate. The second attempt can retain the first target. With no eligible secondary targets it spawns none, so a truly isolated one-enemy scene gets no Scattershot projectile damage. Saved lock-on-only collision is enforced by a native guard, with a custom-hit-interface exception. Collision outcomes, critical-strike resolution and downstream passive interactions still need integration; the shared damage path passes its captured on-hit percentage through event data."
    ],
    "reason": "Outside reviewed diagnostic replay coverage"
   }

@@ -2,7 +2,9 @@ using UAssetAPI;
 using UAssetAPI.UnrealTypes;
 using UAssetAPI.ExportTypes;
 Directory.CreateDirectory(args[1]);
-foreach(var path in Directory.EnumerateFiles(args[0],"*.uasset",SearchOption.AllDirectories).Where(p=>new[]{"GA_","GE_","GMMC_","GCN_"}.Any(prefix=>Path.GetFileName(p).StartsWith(prefix)))) {
+var prefixes=args.Length>2?args[2].Split(','):new[]{"GA_","GE_","GMMC_","GCN_"};
+if(prefixes.Any(p=>string.IsNullOrWhiteSpace(p)||p.IndexOfAny(new[]{'/', '\\', '*', '?'})>=0))throw new ArgumentException("Expected comma-separated literal filename prefixes");
+foreach(var path in Directory.EnumerateFiles(args[0],"*.uasset",SearchOption.AllDirectories).Where(p=>prefixes.Any(prefix=>Path.GetFileName(p).StartsWith(prefix,StringComparison.Ordinal)))) {
  var a=new UAsset(path,EngineVersion.VER_UE5_4); var recovered=0;
  for(int i=0;i<a.Exports.Count;i++) {
   if(a.Exports[i] is not RawExport raw || raw.ObjectName.ToString().StartsWith("Default__") || raw.SuperIndex.Index==0)continue;

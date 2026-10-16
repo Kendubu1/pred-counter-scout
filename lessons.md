@@ -4936,3 +4936,40 @@ claims. No new damage credit or ranking change; target selection, collisions,
 critical/lifesteal resolution and full native composition remain open.
 
 Validation: 269 engine tests, 25 Python checks, TypeScript, regenerated catalog/passive/Kira reports and item-model documentation, 55 artifact schemas and rendered UI parity pass. New UI assertions verify refreshed projectile limitations and absence of the erroneous Onixian tip. Next: trace native critical/healing/aggregation rules and projectile target outcomes, then integrate supported damage behavior.
+
+
+## 2026-10-16 projectile ancestry and target exclusion
+
+Scattershot passes ExcludeAroundActor=true to its native sphere query. The
+registered parameter name and conditional ignored-actor append establish that
+the triggering enemy is excluded from candidate selection. The Blueprint makes
+two nearest-target passes, removes selected candidates, and retains its prior
+selection if none replaces it. With no eligible secondary candidate, it spawns
+no projectile. This supports zero Scattershot projectile contribution in a truly
+isolated one-enemy scene; populated-scene outcomes remain unresolved.
+
+Recovered three projectile Blueprint class layouts (12 declared fields), native
+PredProjectile (76 own fields), Actor (80 own fields), their dependencies and
+TimerHandle. Native registration confirms Actor ancestry. All three selected
+projectile property streams end with 59 exact spans. Scattershot explicitly sets
+lock-on-only collision, destroy-when-lock-on-dies and destroy-on-hit. The native
+overlap handler enforces the lock-on bit, with a conditional custom projectile
+hit-interface exception. Do not generalize this into immunity from all incidental
+collisions. Whole CDOs, component behavior and populated-scene hits remain open.
+
+The schema tool now accepts optional literal filename prefixes, retaining its
+old defaults. Native dictionary profiles can specify a reviewed superType; added
+primitive mappings cover reflected bitfield bools, UInt64 timers, weak references
+and delegates. A mapping alone does not validate native behavior or an unvisited
+serialized field. The private projectile integration gate checks exact spans,
+inherited root components, timer type and collision flags; changing a flag fails.
+
+Reused the shared filter/effect-container dependencies on the 187 previously
+partial class/default records. Fifty additional streams end, with 701 more exact
+spans, zero old exact spans lost and one fewer unverified span. The 1,237-file
+corpus now has 12,085 exact spans, 45 unverified and 1,100 ended streams; this
+inventory overlaps others and remains partial. Next shared gaps include
+AbilityTriggerData, PredMontagesArray and Transform. All generated field maps,
+raw/default bodies and native instruction traces remain private.
+
+Validation: 269 engine tests across 38 files, 25 Python recovery tests, TypeScript, rendered UI parity and all 55 saved artifact schemas pass. The private projectile gate passes 59 exact spans and rejects a changed collision flag. Numeric production rankings are unchanged in this recovery checkpoint.

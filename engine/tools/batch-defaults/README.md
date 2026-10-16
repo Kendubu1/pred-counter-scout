@@ -98,3 +98,5 @@ additional registered name in aliases; the first registered name is the canonica
 label. Numeric values are sorted, never renumbered. Strict mode remains default;
 both modes reject duplicate labels, invalid ownership and sparse numeric profiles.
 The batch reader consumes canonical entries without losing the private alias map.
+
+Native dictionary entries may specify a reviewed superType name, preserving own-field indices and explicit ancestry. Added primitive mappings include bitfield bools, UInt64, weak objects and delegates. Unvisited serialized fields are not validated merely because a mapping exists. Run verify_projectile_defaults.py against the private three-record projectile recovery to gate exact spans, inherited Actor fields, UInt64 timer storage and reviewed collision flags. This does not certify whole exports or gameplay.

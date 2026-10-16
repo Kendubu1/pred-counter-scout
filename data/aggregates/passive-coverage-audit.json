@@ -2841,7 +2841,7 @@
    ],
    "encodedKinds": [],
    "omissions": [
-    "Scattershot is not simulated: its filtered on-hit trigger attempts two nearby-target projectiles behind a cooldown gate. Defaults recover the target filter, radius and damage/on-hit bindings; the shared damage path passes its captured on-hit percentage through event data. Target selection, collision, critical-strike resolution and downstream passive interactions still need integration. The second attempt can retain the first target; neither zero nor two extra hits on the original target is verified."
+    "Scattershot is not simulated in populated scenes: its target search excludes the triggering enemy and attempts two nearby secondary-target projectiles behind a cooldown gate. The second attempt can retain the first target. With no eligible secondary targets it spawns none, so a truly isolated one-enemy scene gets no Scattershot projectile damage. Saved lock-on-only collision is enforced by a native guard, with a custom-hit-interface exception. Collision outcomes, critical-strike resolution and downstream passive interactions still need integration; the shared damage path passes its captured on-hit percentage through event data."
    ],
    "status": "not certified"
   },
