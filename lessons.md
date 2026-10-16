@@ -4737,3 +4737,28 @@ class properties. Next: validate that layout and resolve nested filter schemas.
 
 Validation: three new enum regressions plus seven prior Python checks, recovery
 build, 264 engine tests, TypeScript, 55 artifact schemas and rendered UI parity.
+
+
+## 2026-10-16 partial native ability-parent layout
+
+Traced native PredGameplayAbility registration through its constructor to class
+parameters and 43 property-registration entries. Folding 11 array/map/enum helper
+entries yields 32 own fields; helper entries must not shift subsequent serialized
+indices. Five additional native enum tables bring the private map to 10 tables /
+43 explicit values. The partial parent profile deliberately leaves its native
+superclass unresolved. The parser uses the observed installed-build descriptor
+layout, not a universal ABI claim.
+
+On the same 1,237-file corpus, exact property spans rise 5,579 -> 6,092 (5,854
+nonempty), with no prior matching spans lost and 45 still unverified. 142 property
+streams reach end, but zero whole CDOs are certified. Inherited-index stops fall
+to 430; the newly reachable AbilityInfo struct now blocks 439 records. Recover
+AbilityInfo next, then remaining native ancestry and actor-filter dependencies.
+No production formulas or rankings changed.
+
+Added native class/helper-tree probe, optional partial-parent reader input and
+negative helper regressions. Extended enum recovery accepts explicitly requested
+additional names with the same descriptor checks. Metadata reports are sanitized;
+all generated field trees, enum maps and decoded bodies remain private.
+Validation: 264 engine tests, 12 Python regressions, recovery build, TypeScript,
+55 artifact schemas and rendered UI parity pass.

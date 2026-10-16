@@ -33,3 +33,13 @@ duplicate values and sparse maps unsupported by this UAssetAPI profile. Run the
 extractor against the installed executable before reuse; preserve its hash.
 Do not commit the generated mappings. The enum-enabled pass resolves all 17
 previous file-level errors; counts remain partial-property evidence.
+
+
+An optional sixth argument is the reviewed PRIVATE PredGameplayAbility field tree
+from recover_native_class.py. This is a specific partial parent profile, not an
+automatic native superclass resolver. Its ownership must first be traced from the
+native registration entry to the constructor/class-parameter record. The class
+probe interprets the observed packed descriptor profile and folds array/map/enum
+helper entries; unknown native superclass fields remain unsupported. Supply the
+additional native enums with the fifth argument. The enum extractor supports
+repeated --additional-name options with the same descriptor validation.

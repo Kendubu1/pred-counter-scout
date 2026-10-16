@@ -38,6 +38,20 @@ foreach(var file in sources.Values) {
  }
  }catch(Exception ex){schemaErrors.Add(new {file,error=ex.Message});}
 }
+if(args.Length>5) {
+ UsmapPropertyData NativeType(JsonElement node) {
+  var kind=node.GetProperty("kind").GetInt32();
+  if(kind==25)return new UsmapStructData(node.GetProperty("typeName").GetString());
+  if(kind==22)return new UsmapArrayData(UsmapPropertyType.ArrayProperty){InnerType=NativeType(node.GetProperty("inner"))};
+  if(kind==23)return new UsmapMapData(){InnerType=NativeType(node.GetProperty("key")),ValueType=NativeType(node.GetProperty("value"))};
+  if(kind==30){var name=node.GetProperty("typeName").GetString()!;return new UsmapEnumData(name,enums[name].Values.OrderBy(x=>x.Key).Select(x=>x.Value).ToList()){InnerType=NativeType(node.GetProperty("inner"))};}
+  return new UsmapPropertyData(kind switch {0=>UsmapPropertyType.ByteProperty,10=>UsmapPropertyType.FloatProperty,76=>UsmapPropertyType.BoolProperty,17 or 82=>UsmapPropertyType.ObjectProperty,16=>UsmapPropertyType.SoftObjectProperty,_=>throw new Exception("Unsupported native kind "+kind)});
+ }
+ using var doc=JsonDocument.Parse(File.ReadAllText(args[5]));
+ var props=new System.Collections.Concurrent.ConcurrentDictionary<int,UsmapProperty>();int i=0;
+ foreach(var field in (doc.RootElement.ValueKind==JsonValueKind.Array?doc.RootElement:doc.RootElement.GetProperty("fields")).EnumerateArray()){props[i]=new UsmapProperty(field.GetProperty("name").GetString(),i,0,1,NativeType(field));i++;}
+ shared["PredGameplayAbility"]=new UsmapSchema("PredGameplayAbility",null,i,props,true,null);
+}
 File.WriteAllText(Path.Combine(args[2],"schema-library.json"),JsonSerializer.Serialize(new {count=shared.Count,ambiguous,schemaErrors}));
 Console.WriteLine("Shared schemas "+shared.Count);
 

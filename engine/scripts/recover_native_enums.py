@@ -37,7 +37,8 @@ def recover(pe):
     return result
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('executable',type=Path);p.add_argument('private_output',type=Path);args=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('executable',type=Path);p.add_argument('private_output',type=Path);p.add_argument('--additional-name',action='append',default=[]);args=p.parse_args()
+    NAMES=tuple(dict.fromkeys((*NAMES,*args.additional_name)))
     with args.executable.open('rb') as f,mmap.mmap(f.fileno(),0,access=mmap.ACCESS_READ) as b:
         result={'executableSha256':hashlib.sha256(b).hexdigest(),'enums':recover(PE(b))}
     args.private_output.write_text(json.dumps(result,indent=2)+'\n',encoding='utf8')
