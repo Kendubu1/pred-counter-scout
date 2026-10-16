@@ -1,152 +1,116 @@
 {
- "generatedAt": "2026-10-16T18:15:15.814Z",
+ "generatedAt": "2026-10-16T20:12:59.641Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
- "reviewedLines": 54,
- "flaggedLines": 23,
- "agreementRate": 0.574,
- "rewritesGrounded": 23,
+ "reviewedLines": 56,
+ "flaggedLines": 17,
+ "agreementRate": 0.696,
+ "rewritesGrounded": 14,
  "rewritesDropped": 0,
- "applied": 21,
- "unmatched": 2,
+ "applied": 14,
+ "unmatched": 0,
  "games": {
-  "23397aba-0764-47df-b109-3ed18579b802": [
+  "7f2d94e6-5d00-4927-9818-ee86d6f6349f": [
    {
-    "quote": "Goldilocks324's jungle lane was unfavored all game against Countess, and the death count shows it: 7 deaths against a 3.25 norm, though the damage output stayed well above average.",
+    "quote": "We won every late fight while down on items, including both Fangtooth takes at 2 items to their 4 or 5.",
     "severity": "med",
-    "issue": "invented death-count norm (3.25) not in SOURCE",
-    "rewrite": "Goldilocks324's jungle lane was unfavored all game against Countess, and the death count shows it: 7 deaths, even though hero damage (36,562) and objective damage (19,509, the team's highest) stayed strong."
+    "issue": "overgeneralizes item deficit to every late fight; 11.3m and 13.7m engages were even on items",
+    "rewrite": "We won both Fangtooth takes while down on items, 2 to their 4 at 9.1 minutes and 2 to their 5 at 15.5 minutes, though the 11.3 and 13.7-minute fights were even on items."
    },
    {
-    "quote": "Outdamaged the jungle norm by 69% but lost the lane all game and died 115% above it.",
+    "quote": "Clean offlane lane but the lightest combat footprint of the five, and absent from all three fights built around the Fangtooth takes.",
     "severity": "med",
-    "issue": "invented damage/death norm percentages not in SOURCE",
-    "rewrite": "Lost the jungle lane to Countess all game and died 7 times, while still topping the team in objective damage at 19,509."
+    "issue": "wrong count, source shows two Fangtooth fights not three",
+    "rewrite": "Clean offlane lane but the lightest combat footprint of the five, and not kill/death-credited in either of the two Fangtooth fights."
    },
    {
-    "quote": "Six kills didn't offset three solo catches and four team fights never joined while even in lane.",
+    "quote": "Grouping onto the Fangtooth timer and bursting the moment it spawned is why this went 5-0 instead of a coinflip.",
+    "severity": "med",
+    "issue": "invented tactical mechanism not shown in the source",
+    "rewrite": "The 9.1-minute Fangtooth fight went 5-0 even though we were down on items 2 to their 4, the clearest sign the numbers mattered more than the item lead."
+   },
+   {
+    "quote": "Repeating the same group-on-the-objective read paid off again: three kills for zero at the second Fangtooth sealed the mid-game.",
+    "severity": "med",
+    "issue": "invented repeated-tactic causation not shown in the source",
+    "rewrite": "The second Fangtooth at 15.5 minutes went 3-0 for us, again while down on items (2 to their 5), sealing the mid-game lead."
+   },
+   {
+    "quote": "No objective was up at 18.4 minutes, but our item and kill lead made the pick free value, not a risk.",
     "severity": "high",
-    "issue": "false 'even in lane' (LANES has Wraith unfavored/theirs all game) plus aggregating 4 unproven absent flags into a repeat-pattern verdict",
-    "rewrite": "Six kills didn't offset three solo catches (9.2, 11.3, 34.4) in a midlane matchup that read unfavored against Lt. Belica all game."
+    "issue": "inverts the fact; item count at 18.4m shows us down 2 to their 5, not ahead",
+    "rewrite": "No objective was up at 18.4 minutes, and we still won the fight 3-0 despite being down on items 2 to their 5."
    },
    {
-    "quote": "Flipped a losing matchup into the team's best damage rate and 8 kills by the end.",
+    "quote": "Manta Scythe and Infernum are off the suggested build entirely, and he skipped magic resist against a three-magical-damage draft, but he finished the game with zero deaths, so nothing here is proven to have cost us.",
     "severity": "high",
-    "issue": "factually wrong superlative — Murdock's hero damage (59,843) is the team's actual highest, not Shinbi's",
-    "rewrite": "Flipped a losing matchup against Valmont into 8 kills by the end, with hero damage (42,051) second only to Murdock's on the team."
+    "issue": "invents a meta-core comparison; no missing/winning core data is given for Wukong in the source",
+    "rewrite": "Wukong skipped magic resist against a three-magical-damage draft but finished the game with zero deaths, so nothing here is proven to have cost us; no meta-core comparison is available for his build this game."
    },
    {
-    "quote": "Five against four at Orb Prime and we took it clean — that's the fight-up standard to repeat for the rest of the game.",
-    "severity": "high",
-    "issue": "invented 5v4 headcount (SOURCE lists no headcount for the 41.1m fight, only 4 named per side) plus 'rest of the game' when this was the closing fight",
-    "rewrite": "Won the 41.1m Orb Prime fight 4-1 and took the objective clean — a fight-winning habit worth repeating."
-   },
-   {
-    "quote": "Primal Fangtooth fell in a 1-4 loss while Wraith sat alive and even in lane — joining there evens the fight.",
+    "quote": "Mutilator and Terminus swap out all three recommended core items (Alternator, Earthshaker, Perforator), and he skipped magic resist into a three-magical-damage draft; his one death, to Shinbi's on-hit magic at 11.3 minutes, came in a fight we still won, so it's a flag, not a proven cost.",
     "severity": "med",
-    "issue": "false 'even in lane' (LANES has Wraith unfavored/theirs all game)",
-    "rewrite": "Primal Fangtooth fell in a 1-4 loss at 29.7m while Wraith was alive and never joined the fight — getting him there changes the count."
+    "issue": "invents the kill mechanism (on-hit magic); source only credits the kill, not how it was dealt",
+    "rewrite": "Mutilator and Terminus swap out all three recommended core items (Alternator, Earthshaker, Perforator), and he skipped magic resist into a three-magical-damage draft; his one death, to Shinbi at 11.3 minutes, came in a fight we still won, so it's a flag, not a proven cost."
    },
    {
-    "quote": "Won 3-0 a body down for an Inhibitor — a good outcome from a risky start, not a plan to repeat.",
-    "severity": "med",
-    "issue": "omits that we still lost the Inhibitor in that same window per the structure ledger, despite winning the fight",
-    "rewrite": "Won the 37.2m fight 3-0 a body down, but still lost the Inhibitor in the same window — the fight was worth winning; opening a body down isn't a plan to repeat."
-   },
-   {
-    "quote": "Built none of the winning Wraith core (Combustion, Noxia, Wraith Leggings, 61.9% win in 27 games), running Alternata/Tainted Trident/Mutilator/Tainted Bastion instead. Three solo catches happened regardless — the match doesn't tie those deaths to the item choice.",
-    "severity": "high",
-    "issue": "wrong item name (SOURCE winning core is Soulbinder, not Combustion) plus invented sample size (27 games)",
-    "rewrite": "Built none of the winning Wraith core (Soulbinder, Noxia, Wraith Leggings, 61.9% win rate), running Alternata/Tainted Trident/Mutilator/Tainted Bastion instead. Three solo catches happened regardless — the match doesn't tie those deaths to the item choice."
-   },
-   {
-    "quote": "Skipped the winning support core (Fire Blossom, Raiment of Renewal, Tainted Charm, 50% win in 69 games) for Xenia/Dynamo/Cursed Scroll/Tainted Guard/Flux Matrix. The duo lane held clean either way — no build impact proven in this match.",
-    "severity": "med",
-    "issue": "invented sample size (69 games) not in SOURCE",
-    "rewrite": "Skipped the winning support core (Fire Blossom, Raiment of Renewal, Tainted Charm, 50% win rate) for Xenia/Dynamo/Cursed Scroll/Tainted Guard/Flux Matrix. The duo lane held clean either way — no build impact proven in this match."
-   },
-   {
-    "quote": "On the full winning core (Lightning Hawk, Vanquisher, Imperator, 53.2% win in 137 games) — no build impact to teach here.",
-    "severity": "med",
-    "issue": "invented sample size (137 games) not in SOURCE",
-    "rewrite": "On the full winning core (Lightning Hawk, Vanquisher, Imperator, 53.2% win rate) — no build impact to teach here."
-   },
-   {
-    "quote": "Ran 2 of the 3 winning-core items (Tainted Scepter, Oathkeeper) but skipped Orb Of Growth (48.8% win in 41 games), an early defensive piece. The early losses to Valmont line up with that gap, though the match doesn't prove it caused them.",
-    "severity": "med",
-    "issue": "invented sample size (41 games) not in SOURCE",
-    "rewrite": "Ran 2 of the 3 winning-core items (Tainted Scepter, Oathkeeper) but skipped Orb Of Growth (48.8% win rate), an early defensive piece. The early losses to Valmont line up with that gap, though the match doesn't prove it caused them."
-   },
-   {
-    "quote": "Converted the full meta core (Lightning Hawk, Vanquisher, Imperator) into the team's highest damage: 1,425 per minute vs. a 990 norm.",
-    "severity": "med",
-    "issue": "invented damage norm (990) not in SOURCE, and line is duplicated verbatim elsewhere in the review",
-    "rewrite": "Converted the full meta core (Lightning Hawk, Vanquisher, Imperator) into the team's highest damage at 1,425 per minute."
-   },
-   {
-    "quote": "Flipped a losing matchup late for 8 kills and the game's best damage rate, 1,001 per minute.",
-    "severity": "high",
-    "issue": "factually wrong superlative — Murdock's rate (1,425/min) is actually the team's highest",
-    "rewrite": "Flipped a losing matchup late for 8 kills and 1,001 damage per minute, second on the team only to Murdock's 1,425."
-   },
-   {
-    "quote": "Caught alone for 3 of the team's 6 solo deaths and sat out 4 team fights while even.",
-    "severity": "high",
-    "issue": "false 'even' lane framing (LANES has Wraith unfavored/theirs all game) plus aggregating unproven absent flags into a pattern verdict",
-    "rewrite": "Caught alone for 3 of the team's 6 solo deaths, in a midlane matchup that read unfavored against Lt. Belica all game."
-   },
-   {
-    "quote": "Hero damage stayed well above the norm (871 per minute vs. 514, +69%) despite losing the jungle lane all game.",
-    "severity": "med",
-    "issue": "invented damage norm (514) and percentage not in SOURCE",
-    "rewrite": "Hero damage stayed strong at 871 per minute despite losing the jungle lane to Countess all game."
-   },
-   {
-    "quote": "Lane verdict: jungle unfavored, \"theirs all game\" (Countess 10/4/11). Diagnostics: 7 deaths vs 3.25 norm (+115%). Skirmish at 25.9 (bad-trade, lost 0-2) macro note: alive but losing lane and pinned.",
-    "severity": "med",
-    "issue": "invented death norm (3.25) and percentage not in SOURCE",
-    "rewrite": "Lane verdict: jungle unfavored, \"theirs all game\" (Countess 10/4/11). Diagnostics: 7 deaths. Skirmish at 25.9 (bad-trade, lost 0-2) macro note: alive but losing lane and pinned."
-   },
-   {
-    "quote": "fights.caughtOut.us credits Wraith with 3 of the game's 6 solo catches — twice to Lt. Belica early, once to Sparrow at 34.4; structureLedger shows zero dead-before entries across the 8 structures lost.",
+    "quote": "Zero deaths again, with first blood on Argus at 3.2 minutes and team-high objective damage at 12,726.",
     "severity": "low",
-    "issue": "internal-artifact voice (raw field-path names)",
-    "rewrite": "Wraith was caught alone for 3 of the game's 6 solo deaths — twice to Lt. Belica early, once to Sparrow at 34.4 — and shows zero dead-before credits across the 8 structures lost."
+    "issue": "duplicate of an earlier Wukong ranking line with no new purpose",
+    "rewrite": null
    },
    {
-    "quote": "last check: \"Dead-before count on tower/major losses at two or fewer next film.\" → held (structureLedger lists 8 lost structures (matches structures.themTaken: 8); Wraith appears in ourDeadBefore on zero of them, well under the two-or-fewer bar.)",
-    "severity": "low",
-    "issue": "internal-artifact voice (raw field-path names)",
-    "rewrite": "last check: \"Dead-before count on tower/major losses at two or fewer next film.\" → held (8 structures were lost this match; Wraith was dead-before on zero of them, well under the two-or-fewer bar.)"
-   },
-   {
-    "quote": "interrogation.support: wardsDestroyed 0, enemySupportWards 19. interrogation.vision: usDestroyed 4 vs themDestroyed 13. duoLane: duoDeathsBefore10 us 0, firstFangtooth us, read \"ours\".",
-    "severity": "low",
-    "issue": "internal-artifact voice (raw field-path names)",
-    "rewrite": "Support diagnostics: 0 enemy wards destroyed vs their support's 19 placed; vision war 4 destroyed by us vs 13 by them. Duo lane: 0 deaths before minute 10, first Fangtooth ours — read as ours."
-   },
-   {
-    "quote": "last check: \"Won fights cashed into a structure within 90 seconds next film — fewer than three of five missed.\" → not measurable (structureLedger only timestamps structures the enemy took (8 entries, matches themTaken: 8) — there's no our-side structure-take timeline to pair against the 4 won-fight timestamps at 90-second precision.)",
-    "severity": "low",
-    "issue": "internal-artifact voice (raw field-path names)",
-    "rewrite": "last check: \"Won fights cashed into a structure within 90 seconds next film — fewer than three of five missed.\" → not measurable (only the 8 structures the enemy took are timestamped this film — there's no our-side structure-take timeline to pair against the 4 won-fight timestamps at 90-second precision.)"
-   },
-   {
-    "quote": "fights.caughtOut.us: Murdock caught by Rampage at 35.7. fights.deathCosts marks it solo:true, costing Primal Fangtooth@36.4 and Inner Tower@36.9. metaCore fully built (missingCore: []).",
-    "severity": "low",
-    "issue": "internal-artifact voice (raw field-path names)",
-    "rewrite": "Murdock was caught alone by Rampage at 35.7, a solo death that cost Primal Fangtooth@36.4 and Inner Tower@36.9. Full meta core built, nothing missing."
-   },
-   {
-    "quote": "Flipped a losing matchup late against Valmont, finishing with 8 kills and the team's best damage rate (1,001 per minute vs. 798).",
+    "quote": "5 kills, 0 deaths, 0 assists; 1 ward placed against a 9.9 average, flagged bad at -90%; hero damage per minute at 382 against a 508 average, flagged bad at -25%; objective damage 12,726, highest on the team.",
     "severity": "high",
-    "issue": "factually wrong superlative (Murdock's 1,425/min is higher) plus invented damage norm (798)",
-    "rewrite": "Flipped a losing matchup late against Valmont, finishing with 8 kills and 1,001 damage per minute, second on the team only to Murdock's 1,425."
+    "issue": "invented benchmark averages and percentages not present in the source",
+    "rewrite": "5 kills, 0 deaths, 0 assists; 1 ward placed; objective damage 12,726, highest on the team."
    },
    {
-    "quote": "fights.caughtOut.us: Shinbi caught twice solo — by Valmont at 20.6 (deathCosts solo:true, fed the Fangtooth loss) and by Countess at 36.7. matchupItemFlags: \"no magic resist vs a 3-magical enemy comp\". Diagnostics: dmg 1,001 vs 798 norm.",
+    "quote": "11 kills on 1 death, the team's highest hero damage at 18,293, and a Vanquisher spike by minute 16 against the typical minute 27.",
+    "severity": "low",
+    "issue": "duplicate of an earlier Murdock line with no new purpose",
+    "rewrite": null
+   },
+   {
+    "quote": "He was absent from all three fights built around the Fangtooth takes, including the 9.1-minute one while his lane read winning; next game, join once the lane is even or ahead.",
     "severity": "med",
-    "issue": "internal-artifact voice (raw field-path names) plus invented damage norm (798)",
-    "rewrite": "Shinbi was caught alone twice — by Valmont at 20.6 (a solo death that fed the Fangtooth loss at 22) and by Countess at 36.7. Matchup flag: no magic resist built against their 3-magical comp. Diagnostics: 1,001 damage per minute."
+    "issue": "wrong count, source shows two Fangtooth fights not three",
+    "rewrite": "He wasn't kill/death-credited in either Fangtooth fight (9.1 and 15.5 minutes), including the 9.1-minute one while his lane read winning; next game, join the group fight once the lane allows it."
+   },
+   {
+    "quote": "Credited in at least one of the match's three biggest fights next film, not zero.",
+    "severity": "med",
+    "issue": "wrong count, source lists two decisive (game-defining) fights not three",
+    "rewrite": "Credited in at least one of the match's two decisive Fangtooth fights next film, not zero."
+   },
+   {
+    "quote": "1 kill, 1 death, 1 assist, 0 objective damage; the fight log marks him absent from all three fights built around the Fangtooth takes, lane state winning then even twice.",
+    "severity": "med",
+    "issue": "wrong count, source shows two Fangtooth fights not three",
+    "rewrite": "1 kill, 1 death, 1 assist, 0 objective damage; not kill/death-credited in either Fangtooth fight, with the offlane reading favored early and even late."
+   },
+   {
+    "quote": "He was caught alone by Bayle at 5.6 minutes, the game's only caught-out death, in a mid lane that read as losing already; next time, don't rotate solo that early without vision.",
+    "severity": "med",
+    "issue": "invents a cause (solo rotation without vision) the source doesn't show",
+    "rewrite": "He was caught alone by Bayle at 5.6 minutes, the game's only caught-out death, in a mid lane that read as losing already."
+   },
+   {
+    "quote": "2 kills, 2 deaths, 3 assists; the only caught-out death in the match, alone to Bayle at 5.6 minutes; hero damage per minute at 484 against a 668 average, flagged bad at -28%; mid read unfavored all game.",
+    "severity": "high",
+    "issue": "invented benchmark average and percentage not present in the source",
+    "rewrite": "2 kills, 2 deaths, 3 assists; the only caught-out death in the match, alone to Bayle at 5.6 minutes; mid read unfavored all game."
+   },
+   {
+    "quote": "71% kill participation with 13 assists, and the support lane read favored all game against Argus.",
+    "severity": "med",
+    "issue": "grades the support partly on the 1v1 lane-read row, which never applies to supports",
+    "rewrite": "71% kill participation with 13 assists, and the Murdock-Steel duo lane read favored all game against Drongo and Argus."
+   },
+   {
+    "quote": "3 wards placed vs the enemy support's 6; 0 wards destroyed; 71% kill participation, 13 assists, 17,054 mitigated, team-high.",
+    "severity": "low",
+    "issue": "duplicate of earlier Steel lines with no new purpose",
+    "rewrite": null
    }
   ]
  }
