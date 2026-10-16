@@ -151,6 +151,10 @@ try {
       assert.match(text, /starts with full stacks, consumes stacks/);
       assert.match(text, /production ramp does not reproduce that stack cycle/);
     }
+    if (item.slug === 'lightning-hawk') {
+      assert.match(text, /rounded down per 50 world units/);
+      assert.match(text, /total charge rate and successful proc timing are not verified/);
+    }
     if (item.slug === 'absolution') {
       assert.match(text, /Tenacity\s*\+25/);
       assert.match(text, /On being Immobilized:/);

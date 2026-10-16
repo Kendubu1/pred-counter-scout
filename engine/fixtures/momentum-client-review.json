@@ -1,0 +1,108 @@
+{
+ "date": "2026-10-16",
+ "status": "diagnostic-only",
+ "validation": "Function byte/VM-size roundtrip only; whole assets, defaults, native effect contracts and server parity unverified. No source assets committed.",
+ "assets": [
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Shared/Energized/GA_Item_Shared_Energized.uasset",
+   "sha256": "775fc709414c4f138b88767a1a6fe1b83b06f8ed868c0792a14d748e0fe6036b",
+   "uexpSha256": "00c36df239955a50f1dbc7cbb1255063a24e52d4f482ec2a60cd4ce526adfbe0",
+   "functions": [
+    {
+     "name": "EventReceived_AD3A811448733E257A715E87A97FE2FE",
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "ExecuteUbergraph_GA_Item_Shared_Energized",
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "InvalidHandle_818BC8AE4310EE17818752A854438CC4",
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_ActivateAbility",
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "K2_OnEndAbility",
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_B18809FD49693BC700AC57833F20E6D3",
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_C58FD8A944E0B90793BC62B5BA34DFC0",
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnFinish_D08648C84760FED4B316329DB0DD6362",
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnGameplayEffectInhibitionChange_CE54422A4F898AC651EF57A8285261A0",
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnGameplayEffectStackChange_CE54422A4F898AC651EF57A8285261A0",
+     "bytecodeRoundtrip": true
+    },
+    {
+     "name": "OnRemoved_818BC8AE4310EE17818752A854438CC4",
+     "bytecodeRoundtrip": true
+    }
+   ]
+  },
+  {
+   "path": "Predecessor/Content/Predecessor/Items/Shared/Energized/GE_Item_Shared_Energized_Grant.uasset",
+   "sha256": "faac48873f7e6178e0e05579c271adf75947012d25a8333926e237572935a077",
+   "uexpSha256": "0b8905204fb29cb47e7a0f077a6958a2d171526b18f8cd371973ebb644f49e3a",
+   "functions": []
+  }
+ ],
+ "findings": [
+  {
+   "offsets": [
+    2945,
+    3078,
+    3105,
+    4261,
+    4331,
+    4377,
+    4423,
+    4460,
+    4511
+   ],
+   "finding": "Sample actor displacement after a 0.25-second delay; grant trunc(3D endpoint distance / 50), then capture new origin. Fractional remainder is not carried by this Blueprint. Scheduling latency, native effect zero-count handling and movement during unavailable-avatar intervals remain unresolved."
+  },
+  {
+   "offsets": [
+    493,
+    598,
+    664,
+    807,
+    916,
+    987,
+    1084,
+    2514,
+    2585
+   ],
+   "finding": "BasicDamage hit grants exclude ProcDamage/CleaveDamage, use trunc(StacksOnHit * EventDataFloat); AoE branch has shared 0.1-second delayed gate. Scalar binding and native multiplier unresolved."
+  },
+  {
+   "offsets": [
+    1173,
+    1474,
+    1685,
+    1789,
+    1894,
+    2323,
+    2373,
+    2443,
+    4558
+   ],
+   "finding": "At >=100 stacks applies active effect; valid on-hit target excludes Actor/Structure/Cleave. Sets Triggered before shared event dispatch then removes active and momentum effects. Native stack-removal semantics and cross-item ordering unresolved."
+  }
+ ]
+}

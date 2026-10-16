@@ -4573,3 +4573,19 @@ the diagnostic as production coverage or infer damage timing from decoding.
 
 Validation: 260 tests in 36 files, TypeScript, all 55 artifact schemas and
 rendered item limitations pass. Affected audits regenerated; no merge/deploy.
+
+
+### Shared Momentum review (2026-10-16)
+
+Lightning Hawk appears in 925 saved hero-wide player-core observations (not
+unique matches or causal item value). Recovered its shared Energized dependency;
+hashes, offsets and limits are in momentum-client-review.json. Movement grants
+truncate sampled 3D displacement / 50, with a 0.25s callback delay and no local
+fraction carry. Diagnostic momentum.ts covers this calculation only. Hit grants
+use unresolved StacksOnHit and native EventDataFloat; AoE has a separate gate.
+Do not infer total proc cadence from the movement helper. App omission updated;
+production numerical outputs remain unchanged. Next recover scalar/native
+contracts, then integrate movement/hit/consume event ordering before ranking.
+
+Validation: 264 tests in 37 files, TypeScript, 55 artifact schemas and rendered
+item checks pass. Affected audits regenerated. No merge/deployment.
