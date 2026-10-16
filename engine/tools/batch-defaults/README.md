@@ -100,3 +100,9 @@ both modes reject duplicate labels, invalid ownership and sparse numeric profile
 The batch reader consumes canonical entries without losing the private alias map.
 
 Native dictionary entries may specify a reviewed superType name, preserving own-field indices and explicit ancestry. Added primitive mappings include bitfield bools, UInt64, weak objects and delegates. Unvisited serialized fields are not validated merely because a mapping exists. Run verify_projectile_defaults.py against the private three-record projectile recovery to gate exact spans, inherited Actor fields, UInt64 timer storage and reviewed collision flags. This does not certify whole exports or gameplay.
+
+For targeted schema follow-ups, run compare_default_recovery.py with private
+baseline and follow-up directory arguments. The follow-up may be a subset, but
+every record in it must retain all previously exact property identities, spans
+and decoded values. The gate rejects completion regressions and emits counts
+only. A passing gate proves preservation, not runtime semantics.

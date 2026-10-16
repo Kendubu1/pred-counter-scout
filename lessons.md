@@ -4973,3 +4973,33 @@ AbilityTriggerData, PredMontagesArray and Transform. All generated field maps,
 raw/default bodies and native instruction traces remain private.
 
 Validation: 269 engine tests across 38 files, 25 Python recovery tests, TypeScript, rendered UI parity and all 55 saved artifact schemas pass. The private projectile gate passes 59 exact spans and rejects a changed collision flag. Numeric production rankings are unchanged in this recovery checkpoint.
+
+### Shared ability-trigger and montage defaults (2026-10-16)
+
+Follow-up to merged PR224, on fix/shared-ability-trigger-recovery. The prior
+production/UI baseline is unchanged. Recovered AbilityTriggerData through the
+registered GameplayAbility AbilityTriggers inner-property constructor, and
+PredMontagesArray through its unique matching reflected struct descriptor.
+The former has a gameplay tag and byte source field; the latter wraps an array
+of object references. Numeric trigger-source semantics remain unverified.
+
+Private targeted reruns completed all 32 trigger-blocked and 24 montage-blocked
+property streams. The reusable compare_default_recovery.py gate retained all
+374 previously exact spans with identical decoded values and byte spans, added
+409 exact spans, and found 56 newly ended streams. Across the original 1,237
+class/default corpus this raises the running totals to 12,494 exact spans and
+1,156 ended streams; 45 unverified spans remain elsewhere. Zero whole CDOs are
+certified. These overlapping inventories do not measure gameplay completeness.
+
+Transform produced ten candidate descriptors; none was selected. Next recover
+its actual owning reference or native struct identity instead of guessing from
+a shared short name. Trigger dispatch semantics, inherited defaults, montage
+timing and native execution remain separate tasks. No numeric production change
+or artifact rebuild is warranted for this recovery-only checkpoint. Raw default
+records, schemas, addresses and native instructions remain private.
+
+Validation: all 56 private follow-up records pass the preservation gate. Three
+synthetic regressions cover schema expansion, lost/reinterpreted values,
+duplicate records and stream-completion regressions; 28 Python tests pass.
+Full harness: 269 engine tests in 38 files and TypeScript pass. Production/UI
+files are unchanged from the verified merged baseline.
