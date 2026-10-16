@@ -1970,12 +1970,28 @@
   },
   {
    "slug": "tainted-scepter",
-   "status": "extracted-awaiting-review",
+   "status": "reviewed-partial",
    "appRecommendationCountBeforeBatch": 7,
    "historicalCoreWeightedAppearances": 5881,
-   "finding": "No complete mechanics interpretation yet; decoded names/functions are not certification.",
-   "evidenceAsset": null,
-   "instructionOffsets": [],
+   "finding": "Malice activation and hero takedowns set Stacks to MaxStacks. Eligible hero damage matches any AbilityDamage/PhysicalDamage/TrueDamage and excludes Item/ProcDamage; applies (DamagePerStack + ScalingPerStack * AbilityPower) * Stacks, then clears all stacks. One-second callbacks replenish stacks up to MaxStacks. Diagnostic replay models explicit state transitions with caller-supplied scalars/recharge events; production ramp remains inaccurate. Native scalar defaults, callback phase, reentrancy and mitigation remain unverified.",
+   "evidenceAsset": "GA_Item_TaintedScepter_Malice",
+   "instructionOffsets": [
+    37,
+    145,
+    1867,
+    2161,
+    2509,
+    2620,
+    2648,
+    2830,
+    3115,
+    3252,
+    3487,
+    3591,
+    4159,
+    4353,
+    4399
+   ],
    "assets": [
     {
      "path": "Predecessor/Content/Predecessor/Items/Tier3/TaintedScepter/GA_Item_TaintedScepter_Malice.uasset",

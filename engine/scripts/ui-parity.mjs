@@ -147,6 +147,10 @@ try {
       assert.match(text, /damage floor before native event scaling/);
       assert.match(text, /not verified event-level behavior/);
     }
+    if (item.slug === 'tainted-scepter') {
+      assert.match(text, /starts with full stacks, consumes stacks/);
+      assert.match(text, /production ramp does not reproduce that stack cycle/);
+    }
     if (item.slug === 'absolution') {
       assert.match(text, /Tenacity\s*\+25/);
       assert.match(text, /On being Immobilized:/);

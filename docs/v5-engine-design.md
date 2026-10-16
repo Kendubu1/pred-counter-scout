@@ -984,3 +984,23 @@ changing scheduling or packet scaling; do not repeat the completed extraction.
 
 Validation: all executable effect entries match the prior tree. 256 tests,
 TypeScript, all 55 artifact schemas and the rendered item checks pass.
+
+
+### Tainted Scepter Malice state review (2026-10-16)
+
+Prioritized from 1,090 hero-wide reported player-core appearances in the saved
+1.17.2 sample (not unique matches or evidence of causal superiority). Recovered
+Malice initializes full, consumes stacks after eligible hero damage and refills
+via callbacks/takedowns. Eligibility includes AbilityDamage OR PhysicalDamage OR
+TrueDamage, excluding Item/ProcDamage. Offsets/hashes remain in the item ledger.
+
+`malice-replay.ts` implements diagnostic state transitions with explicit resolved
+scalars and recharge events; it supplies no native defaults or timer phase.
+Tests cover consumption, nonhero/filter rejection, cap, refill and invalid inputs.
+It is not connected to the optimizer. The app now explicitly discloses that its
+existing ramp does not reproduce this cycle. Next integrate a validated event
+schedule and scalars, then rebuild numerical artifacts; do not silently treat
+the diagnostic as production coverage or infer damage timing from decoding.
+
+Validation: 260 tests in 36 files, TypeScript, all 55 artifact schemas and
+rendered item limitations pass. Affected audits regenerated; no merge/deploy.
