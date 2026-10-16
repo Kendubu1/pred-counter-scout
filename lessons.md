@@ -4830,3 +4830,28 @@ Validation: two real configuration fixtures, default-selection compatibility,
 reader build, 264 engine tests, 20 Python regressions, TypeScript, 55 artifact
 schemas and rendered UI parity. No production ranking changes. Next: configuration
 activation and virtual curve evaluation, then integrate supported mechanics.
+
+
+## 2026-10-16 raw-export offset isolation
+
+Fixed a real recovery-reader failure: earlier asset.Write calls can relocate saved
+SerialOffset values relative to the original file. Knell Stacks was displaced by
+two bytes and falsely stopped at inherited property index 108. Read the retained
+RawExport.Data in its own bounded stream and report that payload's actual size.
+Do not use relocated metadata as the source position or payload boundary.
+
+A reusable private integration regression corrupts saved offsets/sizes, then
+requires identical decoded records. It fails on the old reader and passes on the
+new reader (two sample records / 24 nonempty exact properties). The existing
+1,237-class corpus is unchanged: 11,384 exact spans, no previously exact span lost,
+46 unverified and 1,050 property streams ended. The newly attempted effect family
+was outside that corpus; a private native GameplayEffect profile and dependencies
+now expose 29 exact properties across Knell's four effect defaults. Stacks confirms
+AggregateBySource and limit four; durations bind ct_Eternals Knell_Major_Duration.
+Missing native policy defaults and components remain unresolved. Do not infer them
+from omitted serialized values. Native curve endpoint tracing is recorded privately
+for subsequent integration; no production behavior changed in this reader fix.
+
+Validation: reader build, failing-old/passing-new relocation regression, broad
+corpus comparison, 264 engine tests, 20 Python regressions, TypeScript, 55 artifact
+schemas and rendered UI parity. Private assets and field maps stay private.

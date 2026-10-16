@@ -80,3 +80,13 @@ to soft-object serialization for the observed soft-class references. Two private
 mode configurations verify exact map bytes and reference targets. Do not use
 CDO-specific aggregate terminology for these non-default exports, or treat an
 opaque trailing span as verified property data.
+
+
+RawExport.Data is the parsing source and bound. Earlier serialization can change
+saved SerialOffset/SerialSize metadata relative to original files. The original
+asset-root argument is retained for invocation compatibility, but raw-property
+reads no longer seek into those files. Use verify_default_offset_relocation.py
+with a built reader, private decoded samples, original root, a fresh private
+scratch directory, baseline directory and profile arguments to test this invariant.
+It corrupts metadata and requires identical nonempty property results; no source
+assets are changed and all generated results remain private.

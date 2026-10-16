@@ -101,7 +101,9 @@ Add("PointerToUberGraphFrame");
 
  var records=new List<object>();
  foreach(var raw in a.Exports.OfType<RawExport>().Where(e=>allRaw || e.ObjectName.ToString().StartsWith("Default__"))) {
-  using var reader=a.PathToReader(Path.Combine(args[1],rel[..^5]));reader.BaseStream.Position=raw.SerialOffset;
+  // Serialized export offsets may have moved during earlier asset.Write calls.
+  // RawExport.Data retains the original payload; use its own bounded stream.
+  using var reader=new AssetBinaryReader(new MemoryStream(raw.Data),a);
   var header=new FUnversionedHeader(reader);
   var parent=raw.GetClassTypeForAncestry(a,out var module);
   var values=new List<object>();string stop="";bool ended=false;
@@ -111,18 +113,18 @@ Add("PointerToUberGraphFrame");
     var value=MainSerializer.Read(reader,null,parent,module,header,true);
     if(value==null){ended=true;break;}
     var end=reader.BaseStream.Position;
-    if(end>raw.SerialOffset+raw.SerialSize)throw new Exception("Read beyond export");
+    if(end>raw.Data.Length)throw new Exception("Read beyond export");
     bool exact=false;string writeError="";
     try {
      using var ms=new MemoryStream();using var writer=new AssetBinaryWriter(ms,a);
      MainSerializer.Write(value,writer,true);
-     exact=ms.ToArray().SequenceEqual(raw.Data.Skip((int)(start-raw.SerialOffset)).Take((int)(end-start)));
+     exact=ms.ToArray().SequenceEqual(raw.Data.Skip((int)(start)).Take((int)(end-start)));
      if(!exact)writeError="Property roundtrip mismatch";
     }catch(Exception ex){writeError=ex.Message;}
-    values.Add(new {name=value.Name.ToString(),offset=start-raw.SerialOffset,bytes=end-start,exact,writeError,property=JsonDocument.Parse(a.SerializeJsonObject(value)).RootElement.Clone()});
+    values.Add(new {name=value.Name.ToString(),offset=start,bytes=end-start,exact,writeError,property=JsonDocument.Parse(a.SerializeJsonObject(value)).RootElement.Clone()});
    }catch(Exception ex){stop=ex.Message;break;}
   }
-  records.Add(new {name=raw.ObjectName.ToString(),ended,consumed=reader.BaseStream.Position-raw.SerialOffset,size=raw.SerialSize,stop,values});
+  records.Add(new {name=raw.ObjectName.ToString(),ended,consumed=reader.BaseStream.Position,size=raw.Data.Length,stop,values});
  }
  var dest=Path.Combine(args[2],rel);Directory.CreateDirectory(Path.GetDirectoryName(dest)!);
  File.WriteAllText(dest,JsonSerializer.Serialize(records));summary.Add(new {path=rel,status="processed"});
