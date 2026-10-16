@@ -119,3 +119,9 @@ the same short class name remain ambiguous and excluded. Supplementary files
 supply schemas only and are not added to the selected decode inventory.
 This allows already-decoded parent classes to participate without repeating
 extraction or replacing recovered class layouts. --all-raw remains independent.
+
+The observed native collection profile includes kind 33 optional values. The shared field
+folder preserves each optional value's nested definition (including enum-underlying
+types), checks matching helper names, and rejects missing/wrong helpers. The
+default reader maps this shape to OptionalProperty using the existing serializer.
+Recovered layouts and exact spans remain separate from native filter evaluation.

@@ -51,7 +51,7 @@ if(args.Length>5) {
  UsmapPropertyData NativeType(JsonElement node) {
   var kind=node.GetProperty("kind").GetInt32();
   if(kind==25)return new UsmapStructData(node.GetProperty("typeName").GetString());
-  if(kind==22)return new UsmapArrayData(UsmapPropertyType.ArrayProperty){InnerType=NativeType(node.GetProperty("inner"))};
+  if(kind==22 || kind==33)return new UsmapArrayData(kind==22?UsmapPropertyType.ArrayProperty:UsmapPropertyType.OptionalProperty){InnerType=NativeType(node.GetProperty("inner"))};
   if(kind==23)return new UsmapMapData(){InnerType=NativeType(node.GetProperty("key")),ValueType=NativeType(node.GetProperty("value"))};
   if(kind==30){var name=node.GetProperty("typeName").GetString()!;return new UsmapEnumData(name,enums[name].Values.OrderBy(x=>x.Key).Select(x=>x.Value).ToList()){InnerType=NativeType(node.GetProperty("inner"))};}
   return new UsmapPropertyData(kind switch {0=>UsmapPropertyType.ByteProperty,3=>UsmapPropertyType.IntProperty,7=>UsmapPropertyType.UInt64Property,20=>UsmapPropertyType.NameProperty,10=>UsmapPropertyType.FloatProperty,12 or 76=>UsmapPropertyType.BoolProperty,17 or 82=>UsmapPropertyType.ObjectProperty,14=>UsmapPropertyType.WeakObjectProperty,26=>UsmapPropertyType.DelegateProperty,27 or 28=>UsmapPropertyType.MulticastDelegateProperty,13 or 16=>UsmapPropertyType.SoftObjectProperty,29=>UsmapPropertyType.TextProperty,21=>UsmapPropertyType.StrProperty,31=>UsmapPropertyType.FieldPathProperty,_=>throw new Exception("Unsupported native kind "+kind)});

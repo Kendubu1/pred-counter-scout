@@ -12,4 +12,13 @@ class NativeClassTest(unittest.TestCase):
   for records in [[{'name':'A','kind':22}],[{'name':'X','kind':0},{'name':'Mode','kind':30}],[{'name':'UnderlyingType','kind':0}],[{'name':'A','kind':10},{'name':'A','kind':10}]]:
    with self.subTest(records=records):
     with self.assertRaises(ValueError):fold_fields(records)
+ def test_optional_enums_preserve_inner_type_and_next_field(self):
+  fields=fold_fields([{'name':'UnderlyingType','kind':0},{'name':'Modes','kind':30},
+                      {'name':'Modes','kind':33},{'name':'After','kind':10}])
+  self.assertEqual([f['name'] for f in fields],['Modes','After'])
+  self.assertEqual(fields[0]['inner']['kind'],30)
+  self.assertEqual(fields[0]['inner']['inner']['kind'],0)
+  for records in [[{'name':'Modes','kind':33}],
+                  [{'name':'Wrong','kind':0},{'name':'Modes','kind':33}]]:
+   with self.assertRaises(ValueError):fold_fields(records)
 if __name__=='__main__':unittest.main()

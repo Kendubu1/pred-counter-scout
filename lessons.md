@@ -5060,3 +5060,40 @@ rankings remain unchanged. Next apply the supplementary parents to the three
 newly exposed item boundaries, then resolve remaining native class ancestry and
 PredInventoryItemFilter. Do not treat empty reflected handle layouts as proof of
 native handle behavior. All proprietary bodies and native maps remain private.
+
+### Item parents and optional inventory filters (2026-10-16)
+
+The supplementary-parent pass now completes Citadel, Orion and Tainted Trident's
+ability-damage defaults: all 22 prior exact spans survive, six more are exact,
+and all three streams end. These are default properties, not verified aura/proc
+execution, so no production damage or resistance calculation changes.
+
+Recovered PredInventoryItemFilter (six own fields) and its stat-filter dependency
+(three fields) plus six referenced enum tables. The initial collection hypothesis
+was rejected: treating native kind 33 as a set produces overflows and fails the
+required-structure gate. The accepted optional-value adapter preserves the nested
+enum and byte type. Both selected inventory filters round-trip exactly, including
+three present and five absent optional payloads. Missing or mismatched inner
+helpers are rejected by the shared field folder.
+
+With the already-decoded Blessing base supplied, both filter-containing streams
+end: 13 exact nonempty spans, retaining two prior spans and adding 11. Only the
+two selected inputs and their known parent were needed for the final integration
+check. No current-meta or native filter-comparison behavior is inferred.
+Combined with the item-parent pass, this adds 17 exact spans and five ended
+streams. Running original-corpus totals: 12,871 exact, 1,197 ended, 45 unverified
+spans elsewhere; zero whole CDOs certified. All raw/default bodies, field maps,
+enum maps and native addresses remain private.
+
+Regression evidence includes enum-under-optional helper preservation, following
+field alignment, malformed helpers, exact decoded-value preservation, and a
+required-structure gate that rejected the failed set interpretation. Next focus
+on remaining native class ancestry and unresolved inexact spans rather than
+counting completed serialization as complete gameplay coverage.
+
+Validation: 30 Python tests and all private preservation/structure gates pass.
+Two fork-worker harness runs passed all assertions but failed with onTaskUpdate
+RPC timeouts; neither was accepted as green. A single-thread-worker rerun passes
+all 269 tests in 38 files without unhandled errors, and TypeScript passes.
+Reader builds and whitespace checks pass. No production/UI changes or artifact
+rebuild are required. Nothing from this checkpoint is merged or deployed.

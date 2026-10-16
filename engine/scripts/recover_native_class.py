@@ -7,11 +7,11 @@ def fold_fields(records):
     stack=[]
     for source in records:
         field=dict(source);kind=field['kind']
-        if kind in (22,30):
+        if kind in (22,30,33):
             if not stack:raise ValueError('Missing inner property')
             inner=stack.pop()
             if kind==30 and inner['name']!='UnderlyingType':raise ValueError('Wrong enum helper')
-            if kind==22 and inner['name']!=field['name']:raise ValueError('Wrong array helper')
+            if kind in (22,33) and inner['name']!=field['name']:raise ValueError('Wrong collection helper')
             field['inner']=inner
         elif kind==23:
             if len(stack)<2:raise ValueError('Missing map helpers')
