@@ -8,6 +8,10 @@ const base: ReplayOptions = { level: 13, duration: 10, health: 10000, armor: 0, 
 const hit = (time: number): ReplayAction => ({ time, kind: 'hit', source: 'basic', raw: 100 });
 
 describe('Kira action replay', () => {
+  it('distinguishes negative captured armor from penetration crossing zero', () => {
+    expect(replayKira([hit(0)], { ...base, armor: -100, flatPen: 500 }).trace[0]?.damage).toBe(150);
+    expect(replayKira([hit(0)], { ...base, armor: 100, flatPen: 500 }).trace[0]?.damage).toBe(100);
+  });
   it('pins reviewed descriptions and stats to the current catalog', () => {
     const read = (p: string) => JSON.parse(readFileSync(new URL(p, import.meta.url), 'utf8'));
     const source = read('../fixtures/kira-mechanics-sources.json').sources;

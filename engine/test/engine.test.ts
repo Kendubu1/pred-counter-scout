@@ -148,6 +148,37 @@ describe('simulator exact math (synthetic fixtures, immune to data refreshes)', 
     expect(walled).toBeCloseTo(open / 2, 6);
   });
 
+  it.each(['physical', 'magical'] as const)('preserves negative captured %s armor without penetration amplification', damageType => {
+    const targetKit = { ...kit, abilities: kit.abilities.map(a => ({ ...a, damageType })) };
+    const ranks = new Map([['PRIMARY', 5]]);
+    const stats = itemTotals([]);
+    const raw = rotationDamage(targetKit, { level: 13, ranks, profile: null }, stats, 1);
+    const damage = (armor: number, pen: number) => rotationDamage(targetKit,
+      { level: 13, ranks, profile: { health: 1000, physicalArmor: armor, magicalArmor: armor } },
+      { ...stats, physical_penetration: pen, magical_penetration: pen }, 1);
+    expect(damage(-100, 0)).toBeCloseTo(raw * 1.5);
+    expect(damage(-100, 500)).toBeCloseTo(raw * 1.5);
+    expect(damage(0, 500)).toBeCloseTo(raw);
+    expect(damage(100, 500)).toBeCloseTo(raw);
+    expect(damage(100, 0)).toBeCloseTo(raw / 2);
+  });
+
+  it('true damage bypasses negative resistance amplification', () => {
+    const trueKit = { ...kit, abilities: kit.abilities.map(a => ({ ...a, damageType: 'true' as const })) };
+    const ranks = new Map([['PRIMARY', 5]]), stats = itemTotals([]);
+    const raw = rotationDamage(trueKit, { level: 13, ranks, profile: null }, stats, 1);
+    expect(rotationDamage(trueKit, { level: 13, ranks,
+      profile: { health: 1000, physicalArmor: -100, magicalArmor: -100 } }, stats, 1)).toBe(raw);
+  });
+
+  it('shields do not become maximum health for percent-health ability scaling', () => {
+    const percentKit = { ...kit, abilities: kit.abilities.map(a => ({ ...a, pctMaxHealth: 10 })) };
+    const ranks = new Map([['PRIMARY', 5]]), stats = itemTotals([]);
+    const profile = { health: 1000, physicalArmor: 0, magicalArmor: 0 };
+    const plain = rotationDamage(percentKit, { level: 13, ranks, profile }, stats, 1);
+    expect(rotationDamage(percentKit, { level: 13, ranks, profile: { ...profile, shield: 9000 } }, stats, 1)).toBe(plain);
+  });
+
   it('mana feasibility: pool bounds the 10s rotation', () => {
     // 2 casts in 10s at 50 mana = 100 <= 500 pool: feasible.
     const r = simulate(kit, [mpItem(200)], { level: 13, ranks: new Map([['PRIMARY', 5]]), profile: null }, cal);

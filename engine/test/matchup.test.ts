@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { loadData, completedItems, type LoadedData } from '../src/data.js';
 import { loadCalibration, type Calibration } from '../src/sim.js';
-import { orderBuild, spikeTimeline, levelAtMinute, matchupCheckpoints } from '../src/matchup.js';
+import { orderBuild, spikeTimeline, levelAtMinute, matchupCheckpoints, defenseOf, defensePool } from '../src/matchup.js';
 import { generateBuilds } from '../src/search.js';
 import type { Item } from '../src/types.js';
 
@@ -20,6 +20,14 @@ const get = (n: string): Item => {
 };
 
 describe('purchase order and spike timeline', () => {
+  it('keeps shield durability separate from maximum health', () => {
+    const kit = data.kits.get('gideon')!;
+    const item = get('Azure Core');
+    const withShield = defenseOf(kit, [item], 13);
+    expect(withShield.shield).toBeGreaterThan(0);
+    expect(withShield.health).toBe(kit.baseStats.max_health[12]! + item.stats.health);
+    expect(defensePool(withShield)).toBe(withShield.health + withShield.shield!);
+  });
   it('orderBuild returns a permutation with monotone cumulative gold', () => {
     const kit = data.kits.get('gideon')!;
     const items = ['Oblivion Crown', 'Timewarp', 'Noxia', 'Tainted Scepter'].map(get);

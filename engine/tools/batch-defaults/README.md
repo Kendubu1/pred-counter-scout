@@ -100,3 +100,34 @@ both modes reject duplicate labels, invalid ownership and sparse numeric profile
 The batch reader consumes canonical entries without losing the private alias map.
 
 Native dictionary entries may specify a reviewed superType name, preserving own-field indices and explicit ancestry. Added primitive mappings include bitfield bools, UInt64, weak objects and delegates. Unvisited serialized fields are not validated merely because a mapping exists. Run verify_projectile_defaults.py against the private three-record projectile recovery to gate exact spans, inherited Actor fields, UInt64 timer storage and reviewed collision flags. This does not certify whole exports or gameplay.
+
+For targeted schema follow-ups, run compare_default_recovery.py with private
+baseline and follow-up directory arguments. The follow-up may be a subset, but
+every record in it must retain all previously exact property identities, spans
+and decoded values. The gate rejects completion regressions and emits counts
+only. A passing gate proves preservation, not runtime semantics.
+
+Add --require-struct Transform to require at least one top-level Transform
+property and exact spans for every selected property. This is a serialization
+gate only; missing structures and inexact spans fail rather than silently passing.
+
+Supplementary schema libraries can be supplied after the eight positional
+arguments with repeated --schema-root=PRIVATE_DIRECTORY options. These roots
+are read before the recovered baseline and selected input roots; matching full
+relative paths are overlaid by the recovered versions. Distinct assets declaring
+the same short class name remain ambiguous and excluded. Supplementary files
+supply schemas only and are not added to the selected decode inventory.
+This allows already-decoded parent classes to participate without repeating
+extraction or replacing recovered class layouts. --all-raw remains independent.
+
+The observed native collection profile includes kind 33 optional values. The shared field
+folder preserves each optional value's nested definition (including enum-underlying
+types), checks matching helper names, and rejects missing/wrong helpers. The
+default reader maps this shape to OptionalProperty using the existing serializer.
+Recovered layouts and exact spans remain separate from native filter evaluation.
+
+Comparison output separates previously inexact spans that now round-trip
+(resolvedUnverifiedSpans) from newly exact spans not present with the same identity
+and size in the baseline (newExactSpans). Both contribute to gainedExact, but only
+the latter indicates expansion beyond an already decoded span. Neither establishes
+native gameplay behavior; empty serialized handles remain empty-default evidence.

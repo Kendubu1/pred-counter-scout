@@ -1262,3 +1262,403 @@ AbilityTriggerData, PredMontagesArray and Transform. All generated field maps,
 raw/default bodies and native instruction traces remain private.
 
 Validation: 269 engine tests across 38 files, 25 Python recovery tests, TypeScript, rendered UI parity and all 55 saved artifact schemas pass. The private projectile gate passes 59 exact spans and rejects a changed collision flag. Numeric production rankings are unchanged in this recovery checkpoint.
+
+### Shared ability-trigger and montage defaults (2026-10-16)
+
+Follow-up to merged PR224, on fix/shared-ability-trigger-recovery. The prior
+production/UI baseline is unchanged. Recovered AbilityTriggerData through the
+registered GameplayAbility AbilityTriggers inner-property constructor, and
+PredMontagesArray through its unique matching reflected struct descriptor.
+The former has a gameplay tag and byte source field; the latter wraps an array
+of object references. Numeric trigger-source semantics remain unverified.
+
+Private targeted reruns completed all 32 trigger-blocked and 24 montage-blocked
+property streams. The reusable compare_default_recovery.py gate retained all
+374 previously exact spans with identical decoded values and byte spans, added
+409 exact spans, and found 56 newly ended streams. Across the original 1,237
+class/default corpus this raises the running totals to 12,494 exact spans and
+1,156 ended streams; 45 unverified spans remain elsewhere. Zero whole CDOs are
+certified. These overlapping inventories do not measure gameplay completeness.
+
+Transform produced ten candidate descriptors; none was selected. Next recover
+its actual owning reference or native struct identity instead of guessing from
+a shared short name. Trigger dispatch semantics, inherited defaults, montage
+timing and native execution remain separate tasks. No numeric production change
+or artifact rebuild is warranted for this recovery-only checkpoint. Raw default
+records, schemas, addresses and native instructions remain private.
+
+Validation: all 56 private follow-up records pass the preservation gate. Three
+synthetic regressions cover schema expansion, lost/reinterpreted values,
+duplicate records and stream-completion regressions; 28 Python tests pass.
+Full harness: 269 engine tests in 38 files and TypeScript pass. Production/UI
+files are unchanged from the verified merged baseline.
+
+### Transform ownership and default recovery (2026-10-16)
+
+Resolved the prior Transform ambiguity by checking native package ownership,
+not by choosing an arbitrary short-name match. Nine scanned candidates had no
+fields. The three-field descriptor references the CoreUObject package getter,
+matching the cooked ScriptStruct imports. Rotation binds Quat; translation and
+scale bind Vector. Native reflection identifies the fields, not runtime motion.
+
+The 13 previously blocked records now reach property-stream end. All 38 prior
+exact spans survive unchanged; 225 additional spans are exact, including 15
+top-level Transform properties. Two existing unverified properties remain
+unverified. Running totals for the 1,237-record corpus are 12,719 exact spans,
+1,169 ended streams and 45 unverified spans; no whole CDO is certified.
+No production movement, range, collision or animation behavior is inferred.
+
+The comparison gate now accepts --require-struct, rejects unverified selected
+spans and fails when the requested struct is absent. Its regression checks
+prevent an empty selection or inexact decoding from appearing verified.
+All private bodies, native layouts, addresses and traces remain private.
+
+The unchanged reader with its built-in Quat serializer reproduces all 263 exact
+spans from the exploratory decode; no new numeric native-type mapping is kept.
+Validation: 269 engine tests, 29 Python tests, TypeScript, private preservation
+and required-Transform gates pass. Production/UI files and rankings are unchanged.
+
+### Event/aura defaults and supplementary parent schemas (2026-10-16)
+
+Recovered PredAuraHandle from the native ability field's constructor reference
+and reused the reviewed GameplayEventData dependency tree. An 11-record targeted
+pass retains 58 exact spans, gains 113, and completes eight property streams.
+All five aura and six event-data top-level structures have nonempty exact spans.
+Citadel, Orion and Tainted Trident ability-damage records reach new inherited
+property boundaries; they remain incomplete.
+
+Found a library assembly gap: already-decoded parent classes were excluded when
+the recovered-class subset was used as the baseline. GA_Blessing_Base is an
+already-decoded zero-own-field class inheriting PredGameplayAbility; item passive
+bases also depend on already-decoded parents. The reader now accepts additional
+--schema-root= directories, overlays by full relative path with recovered inputs
+taking precedence, and still excludes distinct assets with ambiguous short names.
+Supplementary roots supply schemas only; no repeat extraction was performed.
+
+A 54-record targeted pass retains all 134 earlier exact spans, gains 22, and
+completes 15 streams. The expanded library has 5,679 schemas, the same two
+ambiguous short names, and zero schema-build errors. Across both disjoint passes,
+135 exact spans and 23 completed streams are added without reinterpreting any
+previously exact value. Running corpus totals: 12,854 exact spans, 1,192 ended
+streams, 45 unverified spans elsewhere, zero whole CDOs certified.
+
+Validation: both private preservation gates pass; malformed empty schema-root
+options fail. Reader build has zero warnings/errors; 269 engine tests, 29 Python
+tests, TypeScript and whitespace checks pass. Production/UI files and numerical
+rankings remain unchanged. Next apply the supplementary parents to the three
+newly exposed item boundaries, then resolve remaining native class ancestry and
+PredInventoryItemFilter. Do not treat empty reflected handle layouts as proof of
+native handle behavior. All proprietary bodies and native maps remain private.
+
+### Item parents and optional inventory filters (2026-10-16)
+
+The supplementary-parent pass now completes Citadel, Orion and Tainted Trident's
+ability-damage defaults: all 22 prior exact spans survive, six more are exact,
+and all three streams end. These are default properties, not verified aura/proc
+execution, so no production damage or resistance calculation changes.
+
+Recovered PredInventoryItemFilter (six own fields) and its stat-filter dependency
+(three fields) plus six referenced enum tables. The initial collection hypothesis
+was rejected: treating native kind 33 as a set produces overflows and fails the
+required-structure gate. The accepted optional-value adapter preserves the nested
+enum and byte type. Both selected inventory filters round-trip exactly, including
+three present and five absent optional payloads. Missing or mismatched inner
+helpers are rejected by the shared field folder.
+
+With the already-decoded Blessing base supplied, both filter-containing streams
+end: 13 exact nonempty spans, retaining two prior spans and adding 11. Only the
+two selected inputs and their known parent were needed for the final integration
+check. No current-meta or native filter-comparison behavior is inferred.
+Combined with the item-parent pass, this adds 17 exact spans and five ended
+streams. Running original-corpus totals: 12,871 exact, 1,197 ended, 45 unverified
+spans elsewhere; zero whole CDOs certified. All raw/default bodies, field maps,
+enum maps and native addresses remain private.
+
+Regression evidence includes enum-under-optional helper preservation, following
+field alignment, malformed helpers, exact decoded-value preservation, and a
+required-structure gate that rejected the failed set interpretation. Next focus
+on remaining native class ancestry and unresolved inexact spans rather than
+counting completed serialization as complete gameplay coverage.
+
+Validation: 30 Python tests and all private preservation/structure gates pass.
+Two fork-worker harness runs passed all assertions but failed with onTaskUpdate
+RPC timeouts; neither was accepted as green. A single-thread-worker rerun passes
+all 269 tests in 38 files without unhandled errors, and TypeScript passes.
+Reader builds and whitespace checks pass. No production/UI changes or artifact
+rebuild are required. Nothing from this checkpoint is merged or deployed.
+
+### Empty handle-span validation and honest recovery accounting (2026-10-16)
+
+All 45 remaining inexact spans in the selected 1,237-record corpus were writer
+failures from missing handle schemas: 42 GameplayAbilityTargetDataHandle, two
+GameplayEffectSpecHandle and one GameplayEffectContextHandle. Reused the reviewed
+event-handle descriptors and recovered the spec-handle descriptor from an existing
+native struct-property constructor reference. Each has zero reflected own fields.
+
+A targeted 42-record pass retains all 1,006 previously exact spans and validates
+the 45 previously decoded two-byte handles. Each selected handle has an empty
+property list. These are not newly discovered gameplay values; no populated
+handle payload, native state, copying, lifetime or replication behavior is claimed.
+All 42 streams had already ended before this pass and still do. Opaque tails remain.
+
+The comparison report now separates resolvedUnverifiedSpans from newExactSpans.
+It reports 45 resolved, zero new exact spans and zero newly ended streams for this
+pass. Regression tests cover inexact-to-exact transitions, changed span sizes,
+and conflicting duplicate identities so counts cannot become inflated or negative.
+Running totals are 12,916 exact spans, 1,197 ended streams and zero inexact spans
+among attempted properties. Forty records still stop at unresolved class boundaries;
+zero whole CDOs are certified. These numbers are not a gameplay coverage score.
+
+Next prioritize the remaining relevant native ancestry and shared combat behavior;
+do not rerun this completed empty-handle validation or infer runtime handle
+semantics from empty defaults. Private bodies, field maps and addresses stay private.
+Validation: private preservation gates, 31 Python tests, all 269 engine tests
+across 38 files in single-worker threads mode, TypeScript and whitespace checks
+pass. Production/UI files are unchanged; no artifact rebuild, merge or deployment.
+
+
+### Shared critical-strike native checkpoint (2026-10-16)
+
+Moved beyond the remaining mostly tutorial/emote property boundaries into shared
+damage execution. The eligible path evaluates OverrideCriticalChance and
+CriticalBonus, requires a valid owner, and on success marks CriticalDamage and
+multiplies the current damage term by 1 + evaluated bonus. CanCriticallyStrike
+is required; an additional enum gate is still unnamed. No universal bonus default
+or final mitigation order is claimed.
+
+The decision helper is stateful: finite chance is clamped to [0,1]; interior
+chances use success/failure counters and coefficients for chance and complement.
+Success clears failures and increments successes; failure does the converse.
+Coefficient generation is a bounded numerical search over weighted waiting times.
+Initialization, resets, random-source identity and sharing across attacks/procs
+remain unresolved. Production basicHit remains an average contribution, not a
+validated short-window sequence. Do not invent starting counters or change the
+measured base crit multiplier based on this trace.
+
+The generic native tracer now records RIP-relative reference targets, file
+mapping, operand width and address-only LEA operations without interpreting
+bytes or resolving indirect calls. Synthetic regressions cover signed offsets,
+next-instruction addressing and unmapped indirect call slots. Private evidence:
+shared-critical-chain-private.json (executable hash, five bounded traces and
+resolved numerical constants). Published evidence contains only semantic findings
+in shared-damage-event-review.json. No production/UI behavior changed, so no
+artifact rebuild is needed.
+
+
+### Critical-state construction and random import (2026-10-16)
+
+The shared damage owner check resolves to PredAbilitySystemComponent. Its
+registered constructor writes the same embedded state used by the critical
+decision helper: failure counter 1, success counter 0. This is a constructor
+finding, not a guarantee about spawn/respawn or the next fight's initial state.
+The random comparison resolves through the PE import table to the C runtime
+rand function. Seed, other consumers of the random stream, resets and server
+parity remain open. Production average damage is unchanged.
+
+Added a reusable read-only import-slot resolver. It maps named/ordinal imports
+from the original thunk table, rejects truncated/unmapped records, and declines
+to infer names from a bound IAT without the original table. Synthetic tests
+cover names, ordinals, unaligned/absent slots and malformed records. This can
+resolve imported dependencies for any native mechanic; it does not execute code.
+
+Private evidence: native-asc-construction-private.json (registered construction
+path), native-critical-rng-import-private.json, and the previous shared-critical
+chain. The full-file reset-candidate scan terminated without a diagnostic on
+two attempts and yielded no usable reset evidence; do not interpret that as no
+resets. A bounded first-section retry succeeded: 108 byte candidates map to
+75 runtime-function ranges; these include unrelated objects and stack slots,
+so none is certified as a reset. Continue with owner-proven lifecycle functions. Keep raw instructions, addresses and generated profiles private.
+
+
+### Shared target gate and bounded native search (2026-10-16)
+
+The remaining critical gate reaches PredAimTargetInterface. The native fallback
+uses the same virtual slot as its registered GetMyTargetType wrapper. A unique
+EPredTargetType registration table maps Tower to the excluded value 3. This is
+strong evidence for a tower exclusion, but reflected dispatch-name/return-type
+binding remains unresolved; do not claim complete target behavior or change
+production math from this alone. Reset candidates still lack owner proof.
+
+Replaced whole-mapping byte searches in the shared PE helper with bounded chunks
+and overlap. All match offsets, including overlapping and cross-boundary matches,
+are preserved; matches in the overlap are emitted once. Tests include needles
+longer than chunks, short/empty inputs and invalid sizes. Targeted enum recovery
+now completes using this shared path without repeating broad extraction.
+Private evidence: native-critical-enum-gate-private.json,
+native-target-type-wrapper-private.json and native-target-type-enum-private.json.
+Raw tables, native instructions and addresses remain private. Production data
+and calculations are unchanged; no app artifact rebuild is required.
+
+
+### Reflected target-type binding (2026-10-16)
+
+Closed the previous dispatch-name/return-type gap. A bounded initializer writes
+GetMyTargetType into the exact name storage read by reflected dispatch. The
+owned interface function descriptor contains ReturnValue as a byte linked to
+the EPredTargetType constructor; the unique enum table maps Tower to 3. The
+existing shared critical eligibility branch excludes that type. This is static
+client-path evidence, not blanket tower-damage or server-parity validation.
+
+Added a reusable native function-parameter descriptor reader: caller-supplied
+owner getter and exact name are mandatory; count/profile/field identity and
+mapped spans are checked. Byte return fields retain enum-constructor references
+without inventing values. Synthetic tests cover ownership/name mismatch, bad
+profiles/counts/pointers, duplicate fields and plain bytes without enum bindings.
+
+The apparent neighboring-descriptor discrepancy is resolved: function links
+store factory before name, opposite the native registration table order. All
+13 interface links match their owned descriptors under the correct layout.
+The independent dispatch-name and enum binding remains valid.
+Private native-target-binding-chain-private.json records the executable hash,
+owner trace, return descriptor, enum and initializer. All raw evidence remains
+private. No hero-vs-hero simulator behavior or UI artifact changes are needed.
+Next continue owner-proven crit lifecycle/reset or another shared native gap.
+
+
+### Native function-link recovery (2026-10-16)
+
+Resolved the factory-table ordering error without changing gameplay assumptions.
+All 13 links in the target interface independently resolve to a descriptor with
+the same name and owner. The shared constructor reads the supplied descriptor
+directly; no neighboring-record adjustment is involved. Added a reusable
+factory-first link reader that requires externally established bounds and
+factory-to-descriptor resolution, then validates every owned descriptor.
+Regressions reject reversed layout, neighboring descriptors, wrong owners,
+duplicate names and invalid bounds. Native registration tables remain a
+distinct format. Private native-function-links-private.json and
+native-function-construction-private.json retain raw evidence and executable
+hashes. This closes a recovery-tool gap, not crit lifecycle/reset, server
+parity or runtime validation. Production calculations and app artifacts are
+unchanged. Next recover owner-proven lifecycle/reset or another shared gap.
+
+
+### Shared resistance branch integration (2026-10-16)
+
+Recovered the negative-resistance branch in shared native damage execution.
+Constructor attribute names and capture destinations bind the two inputs to
+Armor and MagicResist. The branch tests the captured input before reductions
+and penetration: non-positive values bypass those adjustments. Negative input
+uses 2 - 100/(100 - resistance); zero gives 1. Positive input passes through
+adjustments and a final zero floor, then 100/(100 + effective resistance).
+Referenced executable floats independently confirm constants 100, 2 and 1.
+This is static client-path evidence, not proof that a specific item can create
+negative captured resistance. Bonus-armor penetration, complete modifier order,
+server parity and live negative-resistance reproduction remain open.
+
+Production mitigation and diagnostic Kira replay now share the branch rule.
+Previously both incorrectly flattened negative starting resistance to zero.
+Physical/magical regression cases distinguish negative starting resistance from
+penetration crossing zero; true damage remains unaffected. The configurable
+calibration K is preserved, with native K=100 documented rather than changing
+measurement flags. Existing positive-resistance arithmetic is unchanged.
+Private native-mitigation-branches-private.json retains the executable hash,
+constructor/capture associations, arithmetic branches and resolved constants.
+No raw instructions, addresses or game assets are published.
+
+Validation: all 273 engine tests across 38 files, 44 Python recovery tests,
+TypeScript and whitespace checks pass. Rebuilt Kira and Gideon artifacts are
+identical to committed results except generation time; no numeric artifact
+replacement is needed for these positive-resistance scenarios. All 55 saved
+hero artifact schemas pass. Rendered parity verifies 55 hero kits, 189 augments,
+270 item dialogs and 16 Eternal majors/96 minors. The first browser attempt
+could not find its expected runtime; retrying with the installed Chromium
+passes. These checks verify source/display parity, not full gameplay coverage.
+
+
+### Shared shield/reduction output recovery (2026-10-16)
+
+Bound captured Shield/Health and ReducedPhysicalDamageTaken/
+ReducedMagicalDamageTaken through named constructor fields and capture calls.
+The ordinary positive-damage path allocates resistance-adjusted damage to shield
+first, then health. Later flat reduction removes the health portion first and
+then the shield portion, floored at zero. The physical reduction branch caps
+its reduction to 20% of the combined portions; the corresponding magical branch
+has no local cap in the inspected block. The referenced float is approximately
+0.200000003. Output construction negates the respective portions with a sign-bit
+mask and submits modifiers targeting the bound Shield and Health attributes.
+Eligibility flags, intervening execute/override paths, final modifier application
+and server parity remain unresolved. Do not generalize this to every damage path
+or assign the reduction attributes to an item without its own binding evidence.
+
+Added a reusable conservative capture-call setup reader. It identifies 40
+straight-line singleton-getter/evaluator setups in the existing damage trace,
+including the shield, health and both reduction captures. It rejects observed
+direct branch joins, discontinuous trace rows, intervening calls/branches, argument or base
+register clobbers, memory writes and unsupported arithmetic. It reports offsets
+and output locations only, never inferred attribute names or evaluated values.
+Synthetic regressions cover valid/reordered setup, signed and zero offsets,
+clobbers, incoming branches, discontinuities and stale argument reuse.
+Private native-capture-setups-private.json and native-shield-reduction-private.json
+retain exact evidence; published findings contain no native instruction bodies.
+Production behavior and generated app artifacts do not change in this checkpoint.
+Next bind reduction eligibility and output application, or another actionable
+shared-combat gap. Do not repeat this capture inventory as gameplay coverage.
+
+Validation: 48 Python recovery tests, all 273 engine tests across 38 files,
+TypeScript and whitespace checks pass. No production or surfaced data changes
+require an artifact rebuild; the previous rendered parity report is unchanged.
+
+
+### Keep shield durability out of maximum-health scaling (2026-10-16)
+
+Production defenseOf previously added its modeled shield directly to health.
+This made the same inflated value feed percent-health abilities/procs and
+Vanquisher's maximum-health threshold. The recovered shared damage path binds
+Health and Shield separately, and the recovered execute predicate compares
+remaining Health + Shield against a fraction of MaxHealth.
+
+DefenseProfile now carries an optional shield independently of maximum health.
+Defense construction retains the existing shield estimate in that field.
+Matchup kill ratios and defensive-swap comparisons use health plus shield, so
+this correction does not discard shield durability. Existing checkpoint hp is
+still the combined durability display value. Percent-health damage uses only
+health, and aggregate execute checks default to the profile's separate shield.
+An explicitly supplied executeTargetState still overrides the initial state.
+Shield trigger timing, expiry, bypass and replenishment remain approximate;
+this change does not make existing shield estimates event-accurate.
+
+Regressions check real Azure Core defense construction, percent-health ability
+scaling with shields, and default shield propagation through execute checks.
+All hero recommendation artifacts and the all-pairs matchup matrix are rebuilt
+from committed inputs, without upstream API calls. No merge or deployment.
+
+Validation: full final harness passes 276 tests across 38 files; 48 Python
+recovery tests, TypeScript, 55 artifact schemas and rendered UI parity pass.
+All 55 hero artifacts and 1,485 matrix pairs were regenerated offline. Comparing
+58 artifact files against the previous tree found no content differences after
+excluding generation timestamps, and no headline-build or matrix-verdict changes.
+The existing reference scenarios therefore retain their recommendations; targeted
+regressions demonstrate the corrected shield-sensitive calculation. The UI check
+covers 55 kits, 189 augments, 270 item dialogs and 16 Eternal majors/96 minors.
+This verifies display/source parity, not complete game-mechanic coverage.
+
+
+### Shared flat-reduction tag eligibility (2026-10-16)
+
+Closed the reduction-selection flag gap: BasicDamage OR PhysicalDamage selects
+ReducedPhysicalDamageTaken and its observed 20% local cap. Otherwise AbilityDamage
+OR MagicalBasicDamage selects ReducedMagicalDamageTaken; otherwise this stage
+is skipped. Bound getter names through their name/tag constructor calls and the
+same cache returned to callers, then followed saved flags and register reloads
+to the reduction branch. This is tag-based selection, not a blanket mapping of
+every event to the simulator's physical/magical damage label. Intervening
+execute/override behavior, event producers and final application remain open.
+
+Added a reusable observed-profile tag-cache binder. It rejects constructor,
+cache, stack-source and return-copy mismatches, gaps, branches and ambiguous
+setups. All seven inspected getters bind successfully. A string reference alone
+is not accepted as a tag getter. Raw traces, cache addresses and instruction
+bodies remain private in native-reduction-eligibility-private.json.
+
+Decoded effects identify Hexbound Bracers as a physical-reduction attribute
+producer and Devotion/Mistmeadow Buckler as magical-reduction producers. Hexbound
+uses a custom calculation class, not a standalone tooltip constant. Do not grant
+new simulator reduction credit before resolving each producer's calculation and
+filters. Production behavior, prior shield separation and generated artifacts
+are unchanged in this checkpoint. Next trace those custom magnitudes/filters or
+another actionable shared native gap; do not repeat the closed tag inventory.
+
+Validation: 52 Python recovery tests, all 276 engine tests across 38 files,
+TypeScript and whitespace checks pass. No production or displayed data change
+requires an artifact rebuild; prior full regeneration and rendered parity remain
+unchanged. This checkpoint is recovery evidence, not new winning-build validation.

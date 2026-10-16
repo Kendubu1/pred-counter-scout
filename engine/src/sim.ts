@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import type { AbilityDef, BuildEval, DefenseProfile, HeroKit, Item, ItemStats, SimResult } from './types.js';
 import { emptyEffects, resolveItemEffects, type ProcSpec, type ResolvedEffects } from './effects.js';
+import { resistanceMultiplier } from './resistance.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -156,7 +157,7 @@ export interface SimOptions {
   profile?: DefenseProfile | null;  // null disables mitigation
   burstBasics?: number;
   // Initial state for the aggregate execute gate only; other damage assumptions
-  // are unchanged. Defaults to full profile health and no shield.
+  // are unchanged. Defaults to full profile health and its separately supplied shield.
   executeTargetState?: { health: number; shield: number };
   effects?: ResolvedEffects;
   // Mitigation constant K in damage*K/(K+armor). Defaults to 100 (the shipped,
@@ -235,7 +236,7 @@ function mitigate(
   // Order: shred reduces target armor, percent pen ignores a share of the
   // rest (multiplicative per 1.14), flat pen subtracts last.
   const effective = Math.max(0, Math.max(0, armor - flatShred) * eff.targetArmorMultiplier[type === 'magical' ? 'magical' : 'physical'] * (1 - shred / 100) * (1 - pctPen / 100) - flatPenBase - flatPenFx);
-  return raw * (k / (k + effective));
+  return raw * resistanceMultiplier(armor, effective, k);
 }
 
 function ampFactorAbilities(eff: ResolvedEffects, ab: AbilityDef, isBurst: boolean, profile: DefenseProfile | null, t: ItemStats): number {
@@ -578,7 +579,7 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
   // shield absorbs damage first. Never use AoE-weighted damage to qualify a kill.
   // This does not reconstruct intermediate hits, shield bypass or native damage.
   if (eff.executeThresholdPct > 0 && profile && burst > 0) {
-    const initial = opts.executeTargetState ?? {health: profile.health, shield: 0};
+    const initial = opts.executeTargetState ?? {health: profile.health, shield: profile.shield ?? 0};
     if (initial.health > 0 && initial.shield >= 0) {
       const health = initial.health - Math.max(0, burst - initial.shield);
       const shield = Math.max(0, initial.shield - burst);
