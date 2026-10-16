@@ -747,3 +747,60 @@ Final harness: 224 tests in 31 files pass with two workers and a 15-second
 default timeout. Two compute-heavy tests exceeded five seconds in the initial
 parallel run; reduced-concurrency rerun passed without changing assertions.
 TypeScript and whitespace checks pass. No live refresh, merge or deployment.
+
+
+## 2026-10-15: Kira mechanic replay and passive coverage inventory
+
+The historical winning-core comparison was systematically incomplete: Solaris
+critical procs/healing, Ashbringer cooldown changes, Ruination mana damage,
+Nevermore, Vengeance/Dusk stack damage, and Mercy/Purge crit rules were not all
+represented. Production DPS rankings cannot establish those cores are inferior.
+
+Added a separate source-pinned action replay (kira-replay.ts), with successful
+hits and casts as explicit inputs. It tracks real target health/mana, cooldown
+availability, one-use/expiring Solaris empowerment, one Ashbringer reduction per
+non-ultimate cooldown cycle, critical enhancement, Ruination drain/refresh,
+Nevermore availability, Vengeance stacks/expiration and Dusk eligibility,
+Deathstalker/Viper hit-built stacks, isolated-target Manta amplification and
+Vanquisher execute. Healing is potential, not effective healing. Unknown items
+are rejected rather than silently counted as fully modeled.
+
+This is diagnostic coverage, not a new production ranking engine. Full Purge
+per-tick behavior, Dash, Knell, augments, Tainted on-hit damage, Terminus shields,
+farm stacks, recovery/animation timing, incoming damage, resource spending and
+secondary-proc trigger ordering remain incomplete. It assumes shared-duration
+stack refresh, post-hit stack application, Solaris sharing the hit's crit
+outcome, and continuous Ruination drain whose refresh extends the existing
+rate. These are explicit hypotheses requiring game tests. It uses the current
+engine bonus-power basis. Source description changes invalidate the audit.
+
+Reproduce with tsx src/ingest/kira-mechanics-audit.ts from engine. The report
+compares seven three-item cores with 100 stratified crit sequences in three
+10-second scripts: fixed attack opportunities, interrupted contact, and an
+optimistic attack-rate ceiling with zero cast recovery. The last is not a
+measured feasible combo. Target: 10,000 HP, 85 armor, 1,000 mana; chosen to avoid
+premature death truncating mechanic observations. No Purge, Dash, Knell or
+augments. This target and action policy are scenario inputs, not game constants.
+
+Under fixed opportunities, optimizer / Solaris-Ashbringer-Imperator /
+Solaris-Ruination-Imperator deal approximately 2,437 / 2,794 / 3,304 damage.
+Interrupted contact gives 1,767 / 2,534 / 2,742. Under the attack-rate ceiling,
+they give 4,958 / 4,899 / 5,011. These are sensitivity demonstrations, not win
+probabilities or a new recommendation. The former clear auto-DPS advantage is
+not a robust overall-combat conclusion. Effect removal is non-additive;
+Ashbringer can shift casts into less favorable script/window positions, so a
+negative marginal value is not evidence that cooldown reduction is bad.
+
+Inventory all 55 heroes' named/embedded passive sections and all 270 items in
+passive-coverage-audit.json. Every entry remains explicitly not certified;
+registry presence does not equal complete modeling. Reproduce with
+python engine/scripts/passive-coverage-audit.py from any directory.
+
+Next: verify event ordering/ticks and raw scaling basis in game; implement the
+remaining hero/item behavior; add realistic cast recovery and mana budgets;
+then connect a validated timeline to production ranking and regenerate app
+results. Keep the current production recommendations THEORY until then.
+
+Validation: 234 tests in 32 files pass; TypeScript and whitespace checks pass.
+The replay and reports are diagnostic-only; production rankings, UI and live
+deployment are unchanged by this batch.

@@ -404,3 +404,13 @@ fear/mesmerize and conditional/repeated CC; add charge and health-state timeline
 Do not promote current recommendations from THEORY based on reduced Spectral
 prevalence. Re-run spectral-audit and all dependent artifacts after extending
 coverage. Source/render parity is not in-game damage validation.
+
+
+## Kira/passive fidelity follow-up (2026-10-15)
+
+Separate action replay now diagnoses popular-core mechanics; production optimizer
+is unchanged. Verify trigger ordering, Ruination ticks/refresh and Ashbringer
+semantics in game. Add Knell, Purge tick cadence, Dash, Tainted, Terminus and
+resource/animation state, then integrate before regenerating ranked builds.
+Use passive-coverage-audit.json to work through all hero and item effects; no
+entry is a complete gameplay certificate.
