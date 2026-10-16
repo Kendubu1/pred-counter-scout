@@ -1,12 +1,12 @@
 {
- "generatedAt": "2026-10-14T19:32:29.242Z",
+ "generatedAt": "2026-10-16T02:33:57.593Z",
  "scope": [
   "herocoach"
  ],
  "source": "independent (non-author) general-purpose agent reviewing data/aggregates/build-reasoning.json + hero-coach-lines.json + the coach report against their own source blocks; suggested rewrites ground-checked by copy-verify, then applied back",
- "reviewedLines": 172,
+ "reviewedLines": 270,
  "flaggedLines": 10,
- "agreementRate": 0.942,
+ "agreementRate": 0.963,
  "rewritesGrounded": 10,
  "rewritesDropped": 0,
  "applied": 10,
@@ -14,102 +14,100 @@
  "heroes": {},
  "heroCoach": {
   "argus": {
-   "support": [
+   "midlane": [
     {
-     "quote": "Riktor, Dekker, Mourn and Narbash win this lane on our sim; hide behind minions and lift your carry out with Ether Crystal.",
+     "quote": "Poke with Particle Shredder, then lob Dread Nova to stun and follow with Ether Crystal so the storm stacks Disintegrate. After Spectral Schematics and Timewarp, start Synaptic Obliterator only from a safe spot once their divers have used their escapes.",
      "severity": "low",
-     "issue": "Ether Crystal lifts allies in place, it does not move them out",
-     "rewrite": "Riktor, Dekker, Mourn and Narbash win this lane on our sim; hide behind minions and drop Ether Crystal on your carry to push divers off them."
-    }
-   ]
-  },
-  "aurora": {
-   "support": [
-    {
-     "quote": "Dekker wins this lane on our sim; don't trade into her fences, stay by your carry and root her with Hoarfrost when she engages.",
-     "severity": "med",
-     "issue": "Dekker's fences are not in the SOURCE",
-     "rewrite": "Dekker wins this lane on our sim; don't trade into her, stay by your carry and root her with Hoarfrost when she engages."
-    }
-   ]
-  },
-  "boris": {
-   "jungle": [
-    {
-     "quote": "Mark a target with Detection Protocol, follow the trail in, Chrono Swipe through them, then Primeval Roar to fear and Ursine Burst to slam them toward your team. After Deathstalker lands around minute 16, stick to squishy targets in short fights.",
-     "severity": "med",
-     "issue": "Ursine Burst is not described as slamming toward your team",
-     "rewrite": "Mark a target with Detection Protocol, follow the trail in, Chrono Swipe through them, then Primeval Roar to fear and Ursine Burst to grab and slam them. After Deathstalker lands around minute 16, stick to squishy targets in short fights."
+     "issue": "logic slip: divers spend their engage, not their escapes",
+     "rewrite": "Poke with Particle Shredder, then lob Dread Nova to stun and follow with Ether Crystal so the storm stacks Disintegrate. After Spectral Schematics and Timewarp, start Synaptic Obliterator only from a safe spot once their divers have used their engage."
     }
    ]
   },
   "crunch": {
-   "jungle": [
+   "offlane": [
     {
-     "quote": "Gank with Forward Crunch to stun, then Right Crunch to slow and Left Crunch to hit hard, with a basic attack between each to lower cooldowns. After Basilisk lands around minute 16, repeat your best empowered ability with Re-Crunch.",
+     "quote": "Dash in with Forward Crunch, then weave a basic attack after each ability so Cross Crunch empowers it, using Right Crunch to slow them. Once Viper and Basilisk are done, use Re-Crunch to repeat your best hit as they try to escape.",
      "severity": "med",
-     "issue": "Re-Crunch repeats the last ability used, not your best one",
-     "rewrite": "Gank with Forward Crunch to stun, then Right Crunch to slow and Left Crunch to hit hard, with a basic attack between each to lower cooldowns. After Basilisk lands around minute 16, use Re-Crunch right after your strongest hit to repeat it."
+     "issue": "Re-Crunch repeats the LAST ability used, not your best hit",
+     "rewrite": "Dash in with Forward Crunch, then weave a basic attack after each ability so Cross Crunch empowers it, using Right Crunch to slow them. Once Viper and Basilisk are done, cast Re-Crunch right after Right Crunch to repeat its slow as they try to escape."
     }
    ]
   },
-  "ikra": {
-   "carry": [
-    {
-     "quote": "You beat every listed carry on our sim, but a missed Narcosis leaves nothing to stop divers; back off until it's ready again.",
-     "severity": "low",
-     "issue": "overstates: Hydroclasm and Genesis still slow and knock up",
-     "rewrite": "You beat every listed carry on our sim, but a missed Narcosis leaves you open to divers; back off until it's ready again."
-    }
-   ]
-  },
-  "neon": {
+  "gideon": {
    "midlane": [
     {
-     "quote": "Slow them with E Data Burst, send Q L.I.N.X through them, then dash with RMB Erase Vector for an empowered Jolt; every third ability gets Overclocked. Once Spectral Schematics and Oathkeeper are done around minute 16, chain R Final Thread into its recast bomb.",
+     "quote": "Black Hole roots you in place while it channels; if their team can still stun you, wait until they're spent.",
+     "severity": "low",
+     "issue": "'roots you' misuses a crowd-control term; Black Hole is a channel that holds you in place",
+     "rewrite": "While you channel Black Hole you stay in place; if their team can still stun you, wait until they're spent."
+    }
+   ]
+  },
+  "howitzer": {
+   "midlane": [
+    {
+     "quote": "Lay H11 Cluster Grenades ahead of the wave, lob Land Mine behind your target to knock them into the grenades, then fire a charged R2000 Missile. Once Spirit Of Amir is done, keep casting so Armed Salvo refills your mana.",
+     "severity": "low",
+     "issue": "misdescribes Armed Salvo: mana comes back from its empowered basic attack, casting only shortens its cooldown",
+     "rewrite": "Lay H11 Cluster Grenades ahead of the wave, lob Land Mine behind your target to knock them into the grenades, then fire a charged R2000 Missile. Once Spirit Of Amir is done, weave a basic attack between casts so Armed Salvo refills your mana."
+    }
+   ]
+  },
+  "iggy-scorch": {
+   "support": [
+    {
+     "quote": "Melee divers break turrets fast; against Dekker, which is theirs on our read, keep turrets behind you and save Inferno's knockback for her engage.",
      "severity": "med",
-     "issue": "misstates the passive: Overclock lands on the ability after three casts, not every third",
-     "rewrite": "Slow them with E Data Burst, send Q L.I.N.X through them, then dash with RMB Erase Vector for an empowered Jolt; after three abilities, your next one gets Overclocked. Once Spectral Schematics and Oathkeeper are done around minute 16, chain R Final Thread into its recast bomb."
+     "issue": "pairs 'melee divers' with Dekker, implying she is a melee diver; misleading",
+     "rewrite": "Against Dekker, which is theirs on our read, keep turrets behind you and save Inferno's knockback for her engage."
     }
    ]
   },
-  "phase": {
-   "support": [
-    {
-     "quote": "Against Riktor, Dekker, Mourn or Narbash, stay behind your carry and reactivate Telekinetic Link to pull them out when caught.",
-     "severity": "low",
-     "issue": "Immobilized allies cannot be pulled, so pulling them out once caught can fail",
-     "rewrite": "Against Riktor, Dekker, Mourn or Narbash, stay behind your carry and reactivate Telekinetic Link to pull them out before they get stunned or rooted."
-    }
-   ]
-  },
-  "the-fey": {
-   "support": [
-    {
-     "quote": "Before your tank items land you are fragile; if you wander ahead of your carry you get picked, so stay with them and poke.",
-     "severity": "low",
-     "issue": "jargon: \"get picked\"",
-     "rewrite": "Before your tank items land you are fragile; if you wander ahead of your carry you get caught alone and killed, so stay with them and poke."
-    }
-   ]
-  },
-  "wukong": {
+  "khaimera": {
    "jungle": [
     {
-     "quote": "Dash in with RMB Windsurge in Spirit stance, throw E Cyclebreaker to stun, then switch stance with R and keep basic attacking to spawn Clones. Once Viper and Solaris are done around minute 16, use Pole Vault to leap onto the backline.",
+     "quote": "Kwang wins this matchup on our read: do not fight him at his Blade, where he can teleport in; take camps on the other side.",
      "severity": "low",
-     "issue": "jargon: \"backline\"",
-     "rewrite": "Dash in with RMB Windsurge in Spirit stance, throw E Cyclebreaker to stun, then switch stance with R and keep basic attacking to spawn Clones. Once Viper and Solaris are done around minute 16, use Q Pole Vault in Body stance to leap onto the enemy damage dealers standing at the back."
+     "issue": "cites Kwang's Blade/teleport, which is not in the SOURCE and is jargon to a new player",
+     "rewrite": "Kwang wins this matchup on our read: do not duel him early; take camps on the other side."
     }
    ]
   },
-  "zarus": {
+  "kwang": {
    "jungle": [
     {
-     "quote": "Leaping in with Coliseum before your team arrives gets you collapsed on; wait for a teammate and keep Evade to escape.",
+     "quote": "This build's opener is a sim blind spot the field has lost with; if you fall behind early, follow the common build instead.",
      "severity": "low",
-     "issue": "jargon: \"collapsed on\"",
-     "rewrite": "Leaping in with Coliseum before your team arrives gets you surrounded and killed; wait for a teammate and keep Evade to escape."
+     "issue": "jargon a new player won't get ('sim blind spot', 'the field', 'common build')",
+     "rewrite": "Players who open with Orion have lost slightly more than they've won; if you fall behind early, switch to the build most players use."
+    }
+   ]
+  },
+  "murdock": {
+   "carry": [
+    {
+     "quote": "This build's opener is a sim blind spot the field has lost with; if lane goes badly, copy the common carry build instead.",
+     "severity": "low",
+     "issue": "jargon: 'sim blind spot' means nothing to a new player",
+     "rewrite": "Players who open with Viper have lost more often, so if lane goes badly, switch to the build most carries use."
+    }
+   ]
+  },
+  "rampage": {
+   "jungle": [
+    {
+     "quote": "Clear camps fast, then carry Boulder Throw into a lane and stun your target, follow with Pounce and Rumble to slow them. Once Spear Of Desolation is done around minute 15, use Behemoth to stay alive in fights.",
+     "severity": "low",
+     "issue": "run-on sentence (comma splice)",
+     "rewrite": "Clear camps fast, then carry Boulder Throw into a lane, stun your target, and follow with Pounce and Rumble to slow them. Once Spear Of Desolation is done around minute 15, use Behemoth to stay alive in fights."
+    }
+   ],
+   "support": [
+    {
+     "quote": "Stun a target with Boulder Throw, then Pounce in to knock them toward your carry and use Rumble to slow them. Once Inquisition and Stonewall are done, use Behemoth to stand in front of your team and soak hits.",
+     "severity": "med",
+     "issue": "Pounce launches heroes backwards, away from Rampage, not toward your carry",
+     "rewrite": "Stun a target with Boulder Throw, then Pounce in and use Rumble to slow them so your carry can follow up. Once Inquisition and Stonewall are done, use Behemoth to stand in front of your team and soak hits."
     }
    ]
   }
