@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-16",
+  "status": "partial defaults recovered; no production behavior change",
+  "executableSha256": "58dced3d01dffeab3b6921510b1626a798d3d6827d308fa85f9d206d4f068f38",
+  "nativeStructs": [
+    "ScalableFloat",
+    "ActiveGameplayEffectHandle",
+    "CurveTableRowHandle",
+    "DataRegistryType"
+  ],
+  "method": "Read-only installed PE reflection records: unique owner descriptor, ordered property pointers, names, kinds and flags. Native struct constructor references independently traced for CurveTableRowHandle and DataRegistryType. Defaults parsed using recovered class schemas and native field order; individual spans reserialized exactly.",
+  "energized": {
+    "verifiedDefaultProperties": [
+      "StackEffectToApply",
+      "MaxStackEffectToApply",
+      "DamageEffectToApply",
+      "RapidRapier_Active_Handle",
+      "StacksOnHit"
+    ],
+    "stacksOnHit": {
+      "coefficient": 1,
+      "curveTable": "ct_ItemStats",
+      "row": "RapidRapier.StacksOnHit",
+      "propertyOffset": 30,
+      "propertyBytes": 23,
+      "blueprintCurveInput": 0,
+      "callOffset": 916
+    },
+    "stop": "Inherited class schema index 12 at CDO offset 53"
+  },
+  "stormBreaker": {
+    "verifiedScalableProperties": [
+      "CollisionRadius",
+      "StacksPerKill",
+      "ADScaling",
+      "BaseDamage",
+      "StackDamage",
+      "CampLeaderStacks"
+    ],
+    "verifiedHandleProperties": [
+      "StormBreaker_Owned_Handle",
+      "GE_Handle_Energized"
+    ],
+    "stop": "GameplayTag at CDO offset 174"
+  },
+  "limits": [
+    "Property roundtrip does not verify entire CDO, native behavior or server parity.",
+    "PointerToUberGraphFrame reads but its write schema remains unresolved.",
+    "Inherited overrides and native EventDataFloat remain unresolved. Do not replace the curve with a flat 12-stack assumption.",
+    "Cooked ScalableFloat ElementSize is 56; native struct size is 40. Memory size is not serialized span size. Whole ABI parity is not established.",
+    "Native layouts are tied to the recorded executable; rerun the static validation after updates."
+  ]
+}

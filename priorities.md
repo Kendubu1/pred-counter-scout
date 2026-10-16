@@ -565,3 +565,31 @@ all decoded game bodies remain private. No app math or rankings changed.
 Validation: recovery tool builds with zero warnings; both synthetic audit
 regressions pass. Full engine harness, TypeScript, 55 artifact schemas and
 rendered catalog parity are checked before committing.
+
+
+## 2026-10-16 native struct recovery and default bindings
+
+Static inspection of the installed executable recovered ordered native reflection
+metadata for ActiveGameplayEffectHandle, ScalableFloat, CurveTableRowHandle and
+DataRegistryType. This removes the previously missing struct schemas for these
+properties. The reusable native probe validates unique descriptors, names, kinds
+and flags; output stays private and is tied to an executable hash.
+
+Energized StacksOnHit now parses and reserializes its complete 23-byte property:
+coefficient 1, ct_ItemStats row RapidRapier.StacksOnHit. The recovered Blueprint
+calls GetValueAtLevel with input 0 at bytecode offset 916. The native event
+multiplier, inherited overrides and exact native curve evaluation remain open.
+Do not apply a flat 12-stack rule merely from the curve's input-1 key.
+StormBreaker independently roundtrips six scalable properties and two handles.
+
+This is partial default recovery, not whole-CDO or gameplay certification.
+UberGraphFrame write schema, inherited schema index 12 (Energized), and GameplayTag
+(StormBreaker) remain next dependencies. Cooked ScalableFloat ElementSize 56 differs
+from native size 40; use parsed spans, never memory size to skip serialized data.
+See engine/fixtures/native-default-review.json and engine/tools/defaults-recovery/.
+No simulator rankings changed. Next prioritize native parent layouts and remaining
+struct dependencies, then supported integration. Reuse the recovered bindings.
+
+Validation: three native-probe regression cases and both earlier audit tests
+pass; default-recovery tool builds without warnings. Full engine harness,
+TypeScript, 55 artifact schemas and rendered UI parity gate this commit.
