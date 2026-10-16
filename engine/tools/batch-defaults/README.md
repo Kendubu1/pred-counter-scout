@@ -106,3 +106,7 @@ baseline and follow-up directory arguments. The follow-up may be a subset, but
 every record in it must retain all previously exact property identities, spans
 and decoded values. The gate rejects completion regressions and emits counts
 only. A passing gate proves preservation, not runtime semantics.
+
+Add --require-struct Transform to require at least one top-level Transform
+property and exact spans for every selected property. This is a serialization
+gate only; missing structures and inexact spans fail rather than silently passing.

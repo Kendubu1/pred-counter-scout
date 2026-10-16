@@ -1,6 +1,9 @@
 import copy
 import unittest
-from compare_default_recovery import compare_records
+from compare_default_recovery import compare_records, compare_roots, selected_struct_count
+import json
+import tempfile
+from pathlib import Path
 
 
 class RecoveryComparisonTest(unittest.TestCase):
@@ -28,6 +31,19 @@ class RecoveryComparisonTest(unittest.TestCase):
         before[0]['ended'] = True
         with self.assertRaises(ValueError):
             compare_records(before, self.before)
+
+    def test_selected_struct_must_be_exact_and_present(self):
+        rows = copy.deepcopy(self.before)
+        rows[0]['values'][0]['property']['StructType'] = 'SyntheticStruct'
+        self.assertEqual(selected_struct_count(rows, 'SyntheticStruct'), 1)
+        rows[0]['values'][0]['exact'] = False
+        with self.assertRaises(ValueError):
+            selected_struct_count(rows, 'SyntheticStruct')
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'sample.uasset.json').write_text(json.dumps(self.before), encoding='utf8')
+            with self.assertRaises(ValueError):
+                compare_roots(root, root, 'AbsentStruct')
 
 
 if __name__ == '__main__':

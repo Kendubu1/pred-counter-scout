@@ -34,17 +34,33 @@ def compare_records(before, after):
     return {'retainedExact': retained, 'gainedExact': gained, 'newlyEnded': ended}
 
 
-def compare_roots(before, after):
+def selected_struct_count(records, struct_name):
+    values = [v for r in records for v in r['values']
+              if v.get('property', {}).get('StructType') == struct_name]
+    if any(not v['exact'] for v in values):
+        raise ValueError('Selected struct contains an unverified property span')
+    return len(values)
+
+
+def compare_roots(before, after, require_struct=None):
     totals = {'files': 0, 'retainedExact': 0, 'gainedExact': 0, 'newlyEnded': 0}
+    selected = 0
     for file in sorted(after.rglob('*.uasset.json')):
         baseline = before / file.relative_to(after)
+        records = json.loads(file.read_text(encoding='utf8'))
         result = compare_records(json.loads(baseline.read_text(encoding='utf8')),
-                                 json.loads(file.read_text(encoding='utf8')))
+                                 records)
+        if require_struct:
+            selected += selected_struct_count(records, require_struct)
         totals['files'] += 1
         for key, value in result.items():
             totals[key] += value
     if not totals['files']:
         raise ValueError('No comparison inputs')
+    if require_struct:
+        if not selected:
+            raise ValueError('Required struct absent from follow-up')
+        totals['exactSelectedStructProperties'] = selected
     return totals
 
 
@@ -52,5 +68,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('baseline', type=Path)
     parser.add_argument('followup', type=Path)
+    parser.add_argument('--require-struct', help='Require exact top-level spans of this struct type')
     args = parser.parse_args()
-    print(json.dumps(compare_roots(args.baseline, args.followup)))
+    print(json.dumps(compare_roots(args.baseline, args.followup, args.require_struct)))

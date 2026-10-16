@@ -921,3 +921,28 @@ synthetic regressions cover schema expansion, lost/reinterpreted values,
 duplicate records and stream-completion regressions; 28 Python tests pass.
 Full harness: 269 engine tests in 38 files and TypeScript pass. Production/UI
 files are unchanged from the verified merged baseline.
+
+### Transform ownership and default recovery (2026-10-16)
+
+Resolved the prior Transform ambiguity by checking native package ownership,
+not by choosing an arbitrary short-name match. Nine scanned candidates had no
+fields. The three-field descriptor references the CoreUObject package getter,
+matching the cooked ScriptStruct imports. Rotation binds Quat; translation and
+scale bind Vector. Native reflection identifies the fields, not runtime motion.
+
+The 13 previously blocked records now reach property-stream end. All 38 prior
+exact spans survive unchanged; 225 additional spans are exact, including 15
+top-level Transform properties. Two existing unverified properties remain
+unverified. Running totals for the 1,237-record corpus are 12,719 exact spans,
+1,169 ended streams and 45 unverified spans; no whole CDO is certified.
+No production movement, range, collision or animation behavior is inferred.
+
+The comparison gate now accepts --require-struct, rejects unverified selected
+spans and fails when the requested struct is absent. Its regression checks
+prevent an empty selection or inexact decoding from appearing verified.
+All private bodies, native layouts, addresses and traces remain private.
+
+The unchanged reader with its built-in Quat serializer reproduces all 263 exact
+spans from the exploratory decode; no new numeric native-type mapping is kept.
+Validation: 269 engine tests, 29 Python tests, TypeScript, private preservation
+and required-Transform gates pass. Production/UI files and rankings are unchanged.
