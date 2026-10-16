@@ -122,7 +122,7 @@
      "kind": "on_hit",
      "scalingPct": 10,
      "scaleStat": "physical_power",
-     "damageType": "physical"
+     "damageType": "magical"
     },
     {
      "kind": "unmodeled",
@@ -180,16 +180,20 @@
    "source": "Committed data/catalog/items.json, reconciled 2026-10-15; effect encodings remain partial where noted",
    "effects": [
     {
-     "kind": "armor_shred",
-     "flat": 12,
-     "damageType": "physical",
-     "rampSeconds": 3
+     "kind": "on_hit_armor_shred",
+     "perStack": 3,
+     "maxStacks": 4,
+     "duration": 3
     },
     {
      "kind": "stat_conversion",
      "from": "physical_penetration",
      "to": "attack_speed",
      "pct": 100
+    },
+    {
+     "kind": "unmodeled",
+     "note": "Client triggers on hero on-hit events with a next-engine-tick gate. Production credits prior basic-hit stacks only, using uniform attack spacing and shared refresh. Ability/proc benefits, Mercy triggers, frame batching and cross-target state remain unmodeled. Three seconds is expiry, not a time-to-full ramp."
     }
    ]
   },
@@ -750,11 +754,12 @@
      "scalingPct": 35,
      "scaleStat": "magical_power",
      "damageType": "magical",
-     "icdSeconds": 1.5
+     "icdSeconds": 1.5,
+     "trigger": "cast_then_basic"
     },
     {
      "kind": "unmodeled",
-     "note": "Spellblade assumes a basic attack after each cast; 4s is the empowerment duration, 1.5s the trigger cooldown."
+     "note": "Client Blueprint requires ability-commit empowerment followed by an eligible on-hit event. Production uses bounded cast/basic pairs only; spell-only rotations and basic-only DPS omit this proc. Four-second expiry, actual weaving and ability on-hit consumers remain unmodeled."
     }
    ]
   },
@@ -881,10 +886,14 @@
    "effects": [
     {
      "kind": "on_ability_hit",
-     "scalingPct": 90,
-     "scaleStat": "physical_power",
      "damageType": "physical",
-     "icdSeconds": 4
+     "icdSeconds": 1.5,
+     "trigger": "cast_then_basic",
+     "basePhysicalPowerPct": 90
+    },
+    {
+     "kind": "unmodeled",
+     "note": "Client Blueprint requires ability-commit empowerment followed by an eligible on-hit event. Production uses bounded cast/basic pairs only; spell-only rotations and basic-only DPS omit this proc. Four-second expiry, actual weaving and ability on-hit consumers remain unmodeled."
     }
    ]
   },

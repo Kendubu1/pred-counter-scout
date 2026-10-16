@@ -172,6 +172,23 @@ function bonusPowerFor(type: AbilityDef['damageType'], t: ItemStats): number {
   return type === 'magical' ? t.magical_power : t.physical_power;
 }
 
+/** Basic-only target debuff model. Each hit sees stacks from earlier basics.
+ * Uniform spacing and shared refresh are explicit assumptions; no free stacks
+ * are credited to independent ability rotations or secondary proc packets. */
+export function basicDamageWithShred(raw: number, hits: number, aps: number,
+  profile: DefenseProfile | null, t: ItemStats, eff: ResolvedEffects, windowSec: number, k = 100): number {
+  const shreds = eff.onHitArmorShred.filter(s => aps > 0 && 1 / aps < s.duration);
+  if (!shreds.length) return mitigate(raw, 'physical', profile, t, eff, windowSec, k) * hits;
+  const cap = Math.max(...shreds.map(s => s.maxStacks));
+  let total = 0;
+  for (let priorHits = 0; priorHits <= cap && priorHits < hits; priorHits++) {
+    const count = priorHits === cap ? hits - cap : Math.min(1, hits - priorHits);
+    const flat = shreds.reduce((n, s) => n + Math.min(priorHits, s.maxStacks) * s.perStack, 0);
+    total += mitigate(raw, 'physical', profile, t, eff, windowSec, k, flat) * count;
+  }
+  return total;
+}
+
 /** Bonus damage from current/missing-health scaling (the execute pattern). Current
  *  health is credited at the assumed live-HP fraction (full in a burst, 80% over a
  *  sustained window); missing health as its complement, so a missing-HP finisher is
@@ -194,7 +211,7 @@ function rampFactor(windowSec: number, rampSeconds: number): number {
 
 function mitigate(
   raw: number, type: AbilityDef['damageType'], profile: DefenseProfile | null,
-  t: ItemStats, eff: ResolvedEffects, windowSec: number, k = 100,
+  t: ItemStats, eff: ResolvedEffects, windowSec: number, k = 100, flatShred = 0,
 ): number {
   if (!profile || type === 'true') return raw;
   const armor = type === 'magical' ? profile.magicalArmor : profile.physicalArmor;
@@ -204,7 +221,7 @@ function mitigate(
   const flatPenFx = (type === 'magical' ? eff.flatPen.magical : eff.flatPen.physical) * rampFactor(windowSec, eff.flatPen.rampSeconds);
   // Order: shred reduces target armor, percent pen ignores a share of the
   // rest (multiplicative per 1.14), flat pen subtracts last.
-  const effective = Math.max(0, armor * (1 - shred / 100) * (1 - pctPen / 100) - flatPenBase - flatPenFx);
+  const effective = Math.max(0, Math.max(0, armor - flatShred) * (1 - shred / 100) * (1 - pctPen / 100) - flatPenBase - flatPenFx);
   return raw * (k / (k + effective));
 }
 
@@ -254,8 +271,8 @@ function procScaling(p: {powerScaling?: {physical?: number; magical?: number}; s
   return p.scaleStat ? p.scalingPct / 100 * t[p.scaleStat] : 0;
 }
 
-function procDamage(p: ProcSpec, t: ItemStats, profile: DefenseProfile | null, kit: HeroKit, isBurst: boolean, eff: ResolvedEffects): number {
-  let dmg = p.flat;
+function procDamage(p: ProcSpec, t: ItemStats, profile: DefenseProfile | null, kit: HeroKit, isBurst: boolean, eff: ResolvedEffects, level: number): number {
+  let dmg = p.flat + (p.basePhysicalPowerPct ?? 0) / 100 * (kit.baseStats.physical_power[level - 1] ?? 0);
   dmg += procScaling(p, t);
   const pctHealth = kit.attackType === 'ranged' && p.pctTargetHealthRanged ? p.pctTargetHealthRanged : p.pctTargetHealth;
   if (pctHealth && profile) {
@@ -421,7 +438,7 @@ export function rotationDamage(kit: HeroKit, opts: SimOptions, t: ItemStats, win
     // Ability-only rotations contain no confirmed consuming attacks.
     if (p.trigger === 'cast_then_basic') continue;
     const procs = procCount(p.trigger === 'immobilize' ? immobilizingCasts : totalCasts, windowSec, p.icdSeconds) * rampFactor(windowSec, p.rampSeconds);
-    total += mitigate(procDamage(p, t, profile, kit, isBurst, eff), p.damageType, profile, t, eff, windowSec, k) * procs;
+    total += mitigate(procDamage(p, t, profile, kit, isBurst, eff, opts.level), p.damageType, profile, t, eff, windowSec, k) * procs;
   }
   return total;
 }
@@ -473,10 +490,10 @@ export function combatDamage(kit: HeroKit, items: Item[], opts: SimOptions, cal:
   const aps = windowAttackRate(kit, opts.level, ranks, t, eff, windowSec, effectiveAsCap(eff, cal));
   const hits = aps * windowSec;
   const amp = ampFactorBasics(eff, isBurst, profile);
-  total += mitigate(basicHit(kit, opts.level, t, critMult) * amp, 'physical', profile, t, eff, windowSec, k) * hits;
+  total += basicDamageWithShred(basicHit(kit, opts.level, t, critMult) * amp, hits, aps, profile, t, eff, windowSec, k);
   for (const p of eff.onHitProcs) {
     const procs = Math.min(hits / p.everyN, p.icdSeconds > 0 ? windowSec / p.icdSeconds : hits / p.everyN);
-    total += mitigate(procDamage(p, t, profile, kit, isBurst, eff), p.damageType, profile, t, eff, windowSec, k) * procs;
+    total += mitigate(procDamage(p, t, profile, kit, isBurst, eff, opts.level), p.damageType, profile, t, eff, windowSec, k) * procs;
   }
   for (const p of eff.onAbilityProcs.filter(p => p.trigger === 'cast_then_basic')) {
     const commits = kit.abilities.reduce((n, ab) => {
@@ -485,7 +502,7 @@ export function combatDamage(kit: HeroKit, items: Item[], opts: SimOptions, cal:
     }, 0);
     // Optimistic aggregate bound: contact/cast timing is not an event replay.
     const procs = procCount(Math.min(commits, hits), windowSec, p.icdSeconds);
-    total += mitigate(procDamage(p, t, profile, kit, isBurst, eff), p.damageType, profile, t, eff, windowSec, k) * procs;
+    total += mitigate(procDamage(p, t, profile, kit, isBurst, eff, opts.level), p.damageType, profile, t, eff, windowSec, k) * procs;
   }
   return total;
 }
@@ -531,16 +548,16 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
     const events = p.trigger === 'cast_then_basic' ? Math.min(burstCommits, opts.burstBasics ?? 2)
       : p.trigger === 'immobilize' ? burstImmobilizations : burstCasts;
     const procs = procCount(events, BURST_WINDOW, p.icdSeconds) * rampFactor(BURST_WINDOW, p.rampSeconds);
-    const d = mitigate(procDamage(p, t, profile, kit, true, eff), p.damageType, profile, t, eff, BURST_WINDOW, k) * procs;
+    const d = mitigate(procDamage(p, t, profile, kit, true, eff, opts.level), p.damageType, profile, t, eff, BURST_WINDOW, k) * procs;
     burst += d; teamfightBurst += d;
   }
   const basics = opts.burstBasics ?? 2;
   const basicAmpBurst = ampFactorBasics(eff, true, profile);
-  const basicDmg = mitigate(basicHit(kit, lvl, t, critMult) * basicAmpBurst, 'physical', profile, t, eff, BURST_WINDOW, k) * basics;
+  const basicDmg = basicDamageWithShred(basicHit(kit, lvl, t, critMult) * basicAmpBurst, basics, basics / BURST_WINDOW, profile, t, eff, BURST_WINDOW, k);
   burst += basicDmg; teamfightBurst += basicDmg;
   for (const p of eff.onHitProcs) {
     const procs = Math.min(basics / p.everyN, p.icdSeconds > 0 ? 1 : basics);
-    const d = mitigate(procDamage(p, t, profile, kit, true, eff), p.damageType, profile, t, eff, BURST_WINDOW, k) * procs;
+    const d = mitigate(procDamage(p, t, profile, kit, true, eff, opts.level), p.damageType, profile, t, eff, BURST_WINDOW, k) * procs;
     burst += d; teamfightBurst += d;
   }
 
@@ -561,10 +578,10 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
   const apsRamped = apsBase * (1 + (eff.asRampPctPerSecond * (AUTO_DPS_WINDOW / 2)) / 100);
   const aps = asCap && asCap > 0 ? Math.min(apsRamped, asCap) : apsRamped;
   const basicAmp = ampFactorBasics(eff, false, profile);
-  let autoDps = mitigate(basicHit(kit, lvl, t, critMult) * basicAmp, 'physical', profile, t, eff, AUTO_DPS_WINDOW, k) * aps;
+  let autoDps = basicDamageWithShred(basicHit(kit, lvl, t, critMult) * basicAmp, aps * AUTO_DPS_WINDOW, aps, profile, t, eff, AUTO_DPS_WINDOW, k) / AUTO_DPS_WINDOW;
   for (const p of eff.onHitProcs) {
     const rate = Math.min(aps / p.everyN, p.icdSeconds > 0 ? 1 / p.icdSeconds : aps / p.everyN);
-    autoDps += mitigate(procDamage(p, t, profile, kit, false, eff), p.damageType, profile, t, eff, AUTO_DPS_WINDOW, k) * rate;
+    autoDps += mitigate(procDamage(p, t, profile, kit, false, eff, opts.level), p.damageType, profile, t, eff, AUTO_DPS_WINDOW, k) * rate;
   }
 
   // Mana over a 10s rotation. Rage/resourceless heroes have no pool to budget.

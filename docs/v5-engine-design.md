@@ -836,3 +836,33 @@ and native helpers must be decoded before selecting 17.6% or 18.4%. Ruination
 periodic damage/clamping and refresh semantics also remain unresolved. Production
 Ashbringer remains unmodeled; diagnostic improvements must not be described as a
 complete production passive implementation.
+
+
+### 2026-10-15: priority item interaction review
+
+Expanded extraction covers 35 priority item families, 239 assets and 196 function
+instruction streams with exact byte/VM-size roundtrips. This overlaps earlier
+extraction; counts must not be added as unique coverage. 787 exports remain raw.
+The top-item-client-review.json fixture records asset hashes, instruction offsets,
+pre-batch recommendation counts, historical weighted appearances and review status.
+Historical usage is overlapping patch-1.15 evidence, not current win-rate proof.
+
+Production Deathstalker now accumulates 3 flat armor reduction after each basic
+hit, capped at four stacks, instead of granting immediate penetration. Reduction
+precedes percentage penetration. The bounded aggregate calculation assumes uniform
+attack spacing and shared refresh, drops stacks when spacing reaches duration,
+and credits only later basics. Native next-engine-tick gating, Mercy, secondary
+packets and target changes remain omitted. Spell-only output receives no stacks.
+Oathkeeper and Augmentation now require cast/basic pairs, like Solaris; weaving
+and empowerment expiry remain aggregate limits. Augmentation uses 90% hero BASE
+physical power and 1.5-second ICD, supported by catalog wording; it no longer
+scales from item physical power or treats empowerment duration as its cooldown.
+Tainted Rounds' existing partial packet is magical per explicit catalog markup;
+its unresolved additional damage term and native attribute mode remain omitted.
+
+Further recovered filters include Mutilator's exclusion of item/proc/cleave
+damage and Combustion cooldown reduction's exclusion of item/DoT/proc damage.
+Vanquisher checks a living hero's Health PLUS Shield after damage against its
+max-health threshold. Production's unconditional execute burst credit remains
+a known discrepancy for the next iteration. Extracted scripts are not evidence
+that every item passive or server interaction has been reproduced.

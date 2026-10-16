@@ -427,3 +427,18 @@ entry is a complete gameplay certificate.
 - Recover Purge first/final tick boundaries, Vengeance ordering, Ruination effect
   period and Deathstalker's internal asset path. Rebuild app artifacts after any
   production numeric change; preserve explicit omissions.
+
+
+### Priority item review continuation (2026-10-15)
+
+Deathstalker's internal family is Tier3/FellBlade; its Blueprint has now been
+recovered. Production has partial hit-stack behavior, not full native gating.
+Oathkeeper/Augmentation cast-consume behavior and Augmentation base-power scaling
+are incorporated; Tainted Rounds' partial packet type is corrected.
+
+Next: replace Vanquisher's unconditional execute bonus with health/shield-aware
+post-damage execution, including nonlethal and already-dead cases. Resolve
+Combustion cooldown reduction, Sky Splitter floors/caps and native on-hit event
+scale before promoting those findings. Continue the remaining item families in
+top-item-client-review.json, including raw-only defaults; extraction is not
+completion. All-item/passive coverage remains uncertified and builds stay THEORY.

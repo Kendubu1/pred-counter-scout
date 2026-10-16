@@ -4465,3 +4465,17 @@ deployment are unchanged by this batch.
   Knell's level-13 curve-only calculation is not runtime proof.
 - Byte-for-byte function instruction roundtrip validates decoding, not inferred
   defaults, native function contracts, server parity or the full asset parser.
+
+
+### 2026-10-15 - priority item trigger and scaling audit
+
+- Flat armor reduction is target state accumulated after eligible hits, not
+  immediate owner penetration. Apply it before percentage penetration.
+- Base physical power excludes purchased item power. Keep its scaling separate
+  from bonus/item power rather than trusting similarly named internal fields.
+- Spellblade procs require an empowering cast AND consuming basic. An empowerment
+  lifetime is not necessarily the item's cooldown.
+- Damage listeners may exclude item, proc, DoT or cleave tags; never propagate
+  every damage packet recursively through every passive.
+- Vanquisher's recovered execute condition includes shields and post-hit health.
+  Unconditional threshold credit is a known remaining ranking bias.

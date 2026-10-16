@@ -98,6 +98,14 @@ try {
       assert.match(text, /ability-only rotations and basic-only DPS exclude the proc/);
       assert.match(text, /optimistic aggregate assumptions/);
     }
+    if (item.slug === 'deathstalker') {
+      assert.match(text, /prior basic-hit stacks only/);
+      assert.match(text, /frame batching and cross-target state remain unmodeled/);
+    }
+    if (['oathkeeper', 'augmentation'].includes(item.slug)) {
+      assert.match(text, /bounded cast\/basic pairs only/);
+      assert.match(text, /Four-second expiry, actual weaving/);
+    }
     if (item.slug === 'absolution') {
       assert.match(text, /Tenacity\s*\+25/);
       assert.match(text, /On being Immobilized:/);

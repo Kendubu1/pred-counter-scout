@@ -889,7 +889,9 @@
    "encodedKinds": [
     "on_ability_hit"
    ],
-   "omissions": [],
+   "omissions": [
+    "Client Blueprint requires ability-commit empowerment followed by an eligible on-hit event. Production uses bounded cast/basic pairs only; spell-only rotations and basic-only DPS omit this proc. Four-second expiry, actual weaving and ability on-hit consumers remain unmodeled."
+   ],
    "status": "not certified"
   },
   {
@@ -1257,10 +1259,12 @@
     "Onslaught"
    ],
    "encodedKinds": [
-    "armor_shred",
+    "on_hit_armor_shred",
     "stat_conversion"
    ],
-   "omissions": [],
+   "omissions": [
+    "Client triggers on hero on-hit events with a next-engine-tick gate. Production credits prior basic-hit stacks only, using uniform attack spacing and shared refresh. Ability/proc benefits, Mercy triggers, frame batching and cross-target state remain unmodeled. Three seconds is expiry, not a time-to-full ramp."
+   ],
    "status": "not certified"
   },
   {
@@ -2327,7 +2331,7 @@
     "on_ability_hit"
    ],
    "omissions": [
-    "Spellblade assumes a basic attack after each cast; 4s is the empowerment duration, 1.5s the trigger cooldown."
+    "Client Blueprint requires ability-commit empowerment followed by an eligible on-hit event. Production uses bounded cast/basic pairs only; spell-only rotations and basic-only DPS omit this proc. Four-second expiry, actual weaving and ability on-hit consumers remain unmodeled."
    ],
    "status": "not certified"
   },
@@ -2924,7 +2928,7 @@
     "on_ability_hit"
    ],
    "omissions": [
-    "Spellblade assumes a basic attack after each cast; critical strikes and its 50% damage healing are not represented."
+    "Client Blueprint confirms ability-commit empowerment consumed by an eligible on-hit event. Production counts only bounded cast/basic pairs in mixed combat; ability-only rotations and basic-only DPS exclude the proc. Pair timing and four-second expiry are optimistic aggregate assumptions; Mercy on-hit consumption, critical damage and 50% healing remain omitted. See client-mechanics-review.json."
    ],
    "status": "not certified"
   },
