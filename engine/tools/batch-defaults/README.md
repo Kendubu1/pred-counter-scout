@@ -70,3 +70,13 @@ or certify behavior. Exception-directory bounds may describe code fragments.
 Never commit generated instruction output. The curve-helper review documents why
 native override selection must be resolved before treating packaged defaults as
 effective gameplay values.
+
+
+An explicit ninth argument, --all-raw, opts into reviewed non-default raw exports
+such as native configuration data assets. Omit it to retain Default__ selection.
+The native schema dictionary can contain reviewed class-own layouts as well as
+struct layouts; unprovided ancestors remain unresolved. Native kind 13 is mapped
+to soft-object serialization for the observed soft-class references. Two private
+mode configurations verify exact map bytes and reference targets. Do not use
+CDO-specific aggregate terminology for these non-default exports, or treat an
+opaque trailing span as verified property data.

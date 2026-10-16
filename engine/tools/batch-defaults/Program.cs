@@ -2,6 +2,8 @@ using UAssetAPI;
 using UAssetAPI.ExportTypes;
 using UAssetAPI.Unversioned;
 using System.Text.Json;
+if(args.Length>8 && args[8]!="--all-raw")throw new ArgumentException("Unknown export-selection option");
+bool allRaw=args.Length>8;
 Directory.CreateDirectory(args[2]);
 var enums=new Dictionary<string,UsmapEnum>();
 if(args.Length>4) {
@@ -45,7 +47,7 @@ if(args.Length>5) {
   if(kind==22)return new UsmapArrayData(UsmapPropertyType.ArrayProperty){InnerType=NativeType(node.GetProperty("inner"))};
   if(kind==23)return new UsmapMapData(){InnerType=NativeType(node.GetProperty("key")),ValueType=NativeType(node.GetProperty("value"))};
   if(kind==30){var name=node.GetProperty("typeName").GetString()!;return new UsmapEnumData(name,enums[name].Values.OrderBy(x=>x.Key).Select(x=>x.Value).ToList()){InnerType=NativeType(node.GetProperty("inner"))};}
-  return new UsmapPropertyData(kind switch {0=>UsmapPropertyType.ByteProperty,3=>UsmapPropertyType.IntProperty,20=>UsmapPropertyType.NameProperty,10=>UsmapPropertyType.FloatProperty,76=>UsmapPropertyType.BoolProperty,17 or 82=>UsmapPropertyType.ObjectProperty,16=>UsmapPropertyType.SoftObjectProperty,29=>UsmapPropertyType.TextProperty,21=>UsmapPropertyType.StrProperty,31=>UsmapPropertyType.FieldPathProperty,_=>throw new Exception("Unsupported native kind "+kind)});
+  return new UsmapPropertyData(kind switch {0=>UsmapPropertyType.ByteProperty,3=>UsmapPropertyType.IntProperty,20=>UsmapPropertyType.NameProperty,10=>UsmapPropertyType.FloatProperty,76=>UsmapPropertyType.BoolProperty,17 or 82=>UsmapPropertyType.ObjectProperty,13 or 16=>UsmapPropertyType.SoftObjectProperty,29=>UsmapPropertyType.TextProperty,21=>UsmapPropertyType.StrProperty,31=>UsmapPropertyType.FieldPathProperty,_=>throw new Exception("Unsupported native kind "+kind)});
  }
  using var doc=JsonDocument.Parse(File.ReadAllText(args[5]));
  var props=new System.Collections.Concurrent.ConcurrentDictionary<int,UsmapProperty>();int i=0;
@@ -98,7 +100,7 @@ Add("PointerToUberGraphFrame");
 
 
  var records=new List<object>();
- foreach(var raw in a.Exports.OfType<RawExport>().Where(e=>e.ObjectName.ToString().StartsWith("Default__"))) {
+ foreach(var raw in a.Exports.OfType<RawExport>().Where(e=>allRaw || e.ObjectName.ToString().StartsWith("Default__"))) {
   using var reader=a.PathToReader(Path.Combine(args[1],rel[..^5]));reader.BaseStream.Position=raw.SerialOffset;
   var header=new FUnversionedHeader(reader);
   var parent=raw.GetClassTypeForAncestry(a,out var module);

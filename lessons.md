@@ -4809,3 +4809,24 @@ mechanics integration and controlled simulator comparisons. No rankings changed.
 
 Validation: four new synthetic control-flow regressions, 264 engine tests,
 20 Python regressions, TypeScript, 55 artifact schemas and rendered UI parity.
+
+
+## 2026-10-16 mode override configuration recovery
+
+Recovered the subsystem ActiveConfig field and the native configuration/map-value
+layouts. Decoded the two already-extracted mode configs: Daybreak has 22 table
+substitutions and 14 effect overrides; Overclocked has one table substitution.
+All three populated properties roundtrip exactly. None of these CurveTables maps
+substitutes item/Eternal tables, but standard-mode ActiveConfig selection remains
+unverified and the effect overrides require review. Four trailing bytes stay opaque.
+
+The reader now offers explicit --all-raw selection for reviewed non-default data
+assets; its default selection remains Default__ only. Native kind 13 uses soft
+class/reference serialization here, independently checked by resolved references
+and exact bytes. A package-index interpretation failed and was rejected. Detailed
+maps and native layouts remain private. See native-override-config-review.json.
+
+Validation: two real configuration fixtures, default-selection compatibility,
+reader build, 264 engine tests, 20 Python regressions, TypeScript, 55 artifact
+schemas and rendered UI parity. No production ranking changes. Next: configuration
+activation and virtual curve evaluation, then integrate supported mechanics.
