@@ -18,6 +18,8 @@ Add("ActiveGameplayEffectHandle",("Handle",P(UsmapPropertyType.IntProperty)),("b
 Add("ScalableFloat",("Value",P(UsmapPropertyType.FloatProperty)),("Curve",new UsmapStructData("CurveTableRowHandle")),("RegistryType",new UsmapStructData("DataRegistryType")));
 Add("CurveTableRowHandle",("CurveTable",P(UsmapPropertyType.ObjectProperty)),("RowName",P(UsmapPropertyType.NameProperty)));
 Add("DataRegistryType",("Name",P(UsmapPropertyType.NameProperty)));
+Add("GameplayTag",("TagName",P(UsmapPropertyType.NameProperty)));
+Add("PointerToUberGraphFrame");
 
 foreach(var raw in a.Exports.OfType<RawExport>().Where(e=>e.ObjectName.ToString().StartsWith("Default__"))) {
  using var reader=a.PathToReader(args[1]);reader.BaseStream.Position=raw.SerialOffset;

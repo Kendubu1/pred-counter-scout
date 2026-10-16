@@ -593,3 +593,27 @@ struct dependencies, then supported integration. Reuse the recovered bindings.
 Validation: three native-probe regression cases and both earlier audit tests
 pass; default-recovery tool builds without warnings. Full engine harness,
 TypeScript, 55 artifact schemas and rendered UI parity gate this commit.
+
+
+## 2026-10-16 broad default recovery follow-up
+
+Applied the native layouts to all 1,237 recovered-class assets, spanning heroes,
+items, Eternals and shared/world systems. 1,220 files produced partial default
+records; 17 failed with InvalidOperationException and remain explicitly unprocessed.
+Recovered GameplayTag and empty PointerToUberGraphFrame using unique native
+reflection descriptors. Shared recovery increased exact property spans from
+3,103 to 4,655 (4,574 nonempty), while unverified spans fell from 1,260 to 40.
+The extra checks include newly verified UberGraphFrame spans, not just new values.
+
+Exact spans by area: heroes 2,613; items 1,231; Eternals 374; other 437.
+78 records reach the property-stream end, but ZERO fully consume the CDO with
+all properties exact; do not report full-default or gameplay verification.
+953 records stop on unresolved inherited property indices; another 189 need
+schemas, led by PredActorFilter (66) and PredFilterAndEffectsContainer (47).
+These shared dependencies are the next priority. The reports preserve the
+4-layout baseline and 6-layout result separately. No production math changed.
+
+Tools: engine/tools/batch-defaults and engine/scripts/audit_default_batch.py.
+Private bodies and logs stay outside the repo. Native empty-struct and aggregate
+privacy/accounting regressions were added. Full engine harness, TypeScript,
+recovery builds, artifact schemas and rendered UI parity gate this commit.

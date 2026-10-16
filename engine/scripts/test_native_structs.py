@@ -25,6 +25,14 @@ class NativeStructTest(unittest.TestCase):
             with self.subTest(offset=off):
                 b=self.fixture();struct.pack_into('<'+fmt,b,off,value)
                 with self.assertRaises(ValueError):self.parse(b)
+    def test_empty_struct_requires_null_array(self):
+        b=self.fixture()
+        name=b'PointerToUberGraphFrame\0'
+        b[300:300+len(name)]=name
+        struct.pack_into('<QH',b,40,0,0)
+        self.assertEqual(self.parse(b)['fields'],[])
+        struct.pack_into('<Q',b,40,80)
+        with self.assertRaises(ValueError):self.parse(b)
     def test_reject_non_pe(self):
         with self.assertRaises(ValueError):PE(b'not executable')
 

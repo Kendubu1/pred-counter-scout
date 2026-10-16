@@ -9,6 +9,8 @@ EXPECTED = {
  'ActiveGameplayEffectHandle': [('Handle', 3), ('bPassedFiltersAndWasExecuted', 76)],
  'CurveTableRowHandle': [('CurveTable', 82), ('RowName', 20)],
  'DataRegistryType': [('Name', 20)],
+ 'GameplayTag': [('TagName', 20)],
+ 'PointerToUberGraphFrame': [],
 }
 
 def parse_descriptor(b, offset, cstr, ref):
@@ -17,7 +19,9 @@ def parse_descriptor(b, offset, cstr, ref):
     if name not in EXPECTED: raise ValueError('Unknown owner')
     count = struct.unpack_from('<H', b, ref + 16)[0]
     if count != len(EXPECTED[name]): raise ValueError('Unexpected property count')
-    array = offset(struct.unpack_from('<Q', b, ref + 8)[0])
+    array_address = struct.unpack_from('<Q', b, ref + 8)[0]
+    if count == 0 and array_address != 0: raise ValueError('Non-null empty property array')
+    array = offset(array_address) if count else None
     fields = []
     for i, (expected_name, expected_type) in enumerate(EXPECTED[name]):
         record = offset(struct.unpack_from('<Q', b, array + 8*i)[0])
@@ -82,6 +86,6 @@ if __name__ == '__main__':
     p.add_argument('output', type=Path, help='Private output path; contains native reflection metadata')
     args = p.parse_args()
     with args.executable.open('rb') as f, mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as b:
-        result = {'sha256': hashlib.sha256(b).hexdigest(), 'scope': 'Four native reflected struct layouts; not runtime behavior', 'structs': PE(b).recover()}
+        result = {'sha256': hashlib.sha256(b).hexdigest(), 'scope': 'Six native reflected struct layouts; not runtime behavior', 'structs': PE(b).recover()}
     args.output.write_text(json.dumps(result, indent=2)+'\n', encoding='utf8')
     print('Recovered',len(result['structs']),'native struct layouts; private output written')
