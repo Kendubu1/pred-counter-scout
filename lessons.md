@@ -4029,3 +4029,19 @@ engine/test/calibration-measured.test.ts.
 - Practice-mode hygiene that mattered: a neutral Eternal (Idrisil + Cold
   Hearted + Glacier) so nothing adds damage; integer damage displays round
   down, so predictions are compared as floor(x), and ratios as ranges.
+
+## 2026-10-16 — Core builds counted from the purchase log (maintainer: "why are item builds from 1.15?")
+
+The hero pages' field builds came from pred.gg `coreBuild`, gated with
+simpleBuild in August, so data/aggregates/predgg-builds.json had been frozen at
+patch 1.15 (pulled 2026-07-06) — the same staleness the augments had, unnoticed
+because the builds section never printed its patch prominently. The public match
+stream carries `incomeData.transactions` (itemId, gameTime, transactionType:
+10 = purchase, 11 = starting items): the ordered 3-item core (first three
+distinct Epic passives bought) is exactly the shape coreBuild returned (every
+item in the old file was an Epic passive). `npm run perks` now counts cores per
+hero/role alongside perks and writes predgg-builds.json; cores are counted from
+2026-10-14 18:34 onward (`coresFrom`), so their window is shorter than the
+perks'. `buildstats` is out of the refresh chain (it would fail on the gate).
+Lesson: when one endpoint goes behind a gate, audit every artifact that came
+from the same family, not just the one that visibly broke.

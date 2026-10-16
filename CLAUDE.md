@@ -86,7 +86,7 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   `npm run catalog` (refresh data/catalog from pred.gg after a balance patch or
   a new hero/item; needs PREDGG creds; `npm run snapshot` is an alias),
   `npm run refresh` (FULL data refresh chain — needs PREDGG_CLIENT_ID/SECRET in
-  the env: catalog -> patchcheck -> perks -> icons -> buildstats -> skills ->
+  the env: catalog -> patchcheck -> perks -> icons -> skills ->
   lanestats -> aggregate -> artifacts -> matrix -> agreement; refreshes winrates
   + builds for every hero's main and
   flex lanes. Follow with the zero-API copy passes: `COPY_MODE=prepare npm run
@@ -103,7 +103,10 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   https://pred.gg/api/public/get-matches-since/<unix>/ — our GraphQL tier is the
   ceiling and cannot read simpleBuild, confirmed by the maintainer 2026-10-14;
   resumes daily from data/aggregates/perk-stream.json and rewrites
-  predgg-augments.json),
+  predgg-augments.json AND predgg-builds.json — ordered 3-item core builds from
+  each player's purchase log, replacing the gated coreBuild pull),
+  `npm run buildstats` (the old coreBuild pull; gated at our tier, no longer in
+  the refresh chain),
   `npm run augments` (the old simpleBuild pull; gated at our pred.gg tier, kept
   only for the augment icon download),
   `npm run icons` (fills ui/img/ from the pred.gg catalog — heroes, items, crests,
