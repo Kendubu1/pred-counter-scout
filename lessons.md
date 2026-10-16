@@ -5028,3 +5028,35 @@ The unchanged reader with its built-in Quat serializer reproduces all 263 exact
 spans from the exploratory decode; no new numeric native-type mapping is kept.
 Validation: 269 engine tests, 29 Python tests, TypeScript, private preservation
 and required-Transform gates pass. Production/UI files and rankings are unchanged.
+
+### Event/aura defaults and supplementary parent schemas (2026-10-16)
+
+Recovered PredAuraHandle from the native ability field's constructor reference
+and reused the reviewed GameplayEventData dependency tree. An 11-record targeted
+pass retains 58 exact spans, gains 113, and completes eight property streams.
+All five aura and six event-data top-level structures have nonempty exact spans.
+Citadel, Orion and Tainted Trident ability-damage records reach new inherited
+property boundaries; they remain incomplete.
+
+Found a library assembly gap: already-decoded parent classes were excluded when
+the recovered-class subset was used as the baseline. GA_Blessing_Base is an
+already-decoded zero-own-field class inheriting PredGameplayAbility; item passive
+bases also depend on already-decoded parents. The reader now accepts additional
+--schema-root= directories, overlays by full relative path with recovered inputs
+taking precedence, and still excludes distinct assets with ambiguous short names.
+Supplementary roots supply schemas only; no repeat extraction was performed.
+
+A 54-record targeted pass retains all 134 earlier exact spans, gains 22, and
+completes 15 streams. The expanded library has 5,679 schemas, the same two
+ambiguous short names, and zero schema-build errors. Across both disjoint passes,
+135 exact spans and 23 completed streams are added without reinterpreting any
+previously exact value. Running corpus totals: 12,854 exact spans, 1,192 ended
+streams, 45 unverified spans elsewhere, zero whole CDOs certified.
+
+Validation: both private preservation gates pass; malformed empty schema-root
+options fail. Reader build has zero warnings/errors; 269 engine tests, 29 Python
+tests, TypeScript and whitespace checks pass. Production/UI files and numerical
+rankings remain unchanged. Next apply the supplementary parents to the three
+newly exposed item boundaries, then resolve remaining native class ancestry and
+PredInventoryItemFilter. Do not treat empty reflected handle layouts as proof of
+native handle behavior. All proprietary bodies and native maps remain private.

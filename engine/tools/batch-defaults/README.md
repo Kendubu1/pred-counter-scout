@@ -110,3 +110,12 @@ only. A passing gate proves preservation, not runtime semantics.
 Add --require-struct Transform to require at least one top-level Transform
 property and exact spans for every selected property. This is a serialization
 gate only; missing structures and inexact spans fail rather than silently passing.
+
+Supplementary schema libraries can be supplied after the eight positional
+arguments with repeated --schema-root=PRIVATE_DIRECTORY options. These roots
+are read before the recovered baseline and selected input roots; matching full
+relative paths are overlaid by the recovered versions. Distinct assets declaring
+the same short class name remain ambiguous and excluded. Supplementary files
+supply schemas only and are not added to the selected decode inventory.
+This allows already-decoded parent classes to participate without repeating
+extraction or replacing recovered class layouts. --all-raw remains independent.

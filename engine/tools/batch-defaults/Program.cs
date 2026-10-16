@@ -2,8 +2,13 @@ using UAssetAPI;
 using UAssetAPI.ExportTypes;
 using UAssetAPI.Unversioned;
 using System.Text.Json;
-if(args.Length>8 && args[8]!="--all-raw")throw new ArgumentException("Unknown export-selection option");
-bool allRaw=args.Length>8;
+bool allRaw=false;
+var extraSchemaRoots=new List<string>();
+foreach(var option in args.Skip(8)) {
+ if(option=="--all-raw")allRaw=true;
+ else if(option.StartsWith("--schema-root=",StringComparison.Ordinal) && option.Length>14)extraSchemaRoots.Add(option.Substring(14));
+ else throw new ArgumentException("Unknown or empty recovery option");
+}
 Directory.CreateDirectory(args[2]);
 var enums=new Dictionary<string,UsmapEnum>();
 if(args.Length>4) {
@@ -23,7 +28,9 @@ var shared=new Dictionary<string,UsmapSchema>();
 var ambiguous=new HashSet<string>();
 var schemaErrors=new List<object>();
 var sources=new Dictionary<string,string>();
-foreach(var root in new[]{args[3],args[0]})
+// Lower-priority already-decoded parents supplement recovered layouts. Exact
+// relative paths are overlaid; distinct assets with the same class stay ambiguous.
+foreach(var root in extraSchemaRoots.Concat(new[]{args[3],args[0]}))
  foreach(var file in Directory.EnumerateFiles(root,"*.uasset.json",SearchOption.AllDirectories))
   sources[Path.GetRelativePath(root,file)]=file;
 foreach(var file in sources.Values) {
