@@ -461,3 +461,13 @@ post-burst health plus shield and credits surviving health only; diagnostic Kira
 uses the inclusive threshold. Next: intermediate-hit execution and native shield
 behavior, then Combustion's filtered cooldown reductions/shared delayed gate.
 Do not count this as full event-level execution or complete item certification.
+
+
+### Projectile item client review (2026-10-16)
+
+Onixian/Scattershot evidence and app omissions are updated; neither is numerically
+modeled. Recover target filter/radius, native collision and damage-effect defaults
+next; then revisit the skipped Kira core. Continue Combustion/Sky Splitter native
+contracts and other actionable families without inventing these constants.
+Validation: 256 tests, TypeScript, 55 artifact schemas and rendered UI pass.
+No ranking, match snapshot, merge or deployment change.

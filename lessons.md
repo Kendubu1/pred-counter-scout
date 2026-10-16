@@ -4527,3 +4527,14 @@ blames the app tier) and fill in as the daily pull grows the window.
   use machine-precision tolerance, not an invented game constant.
 - Keep aggregate end-state execution distinct from event-level kill timing and
   native damage magnitudes. Both remain explicit limitations.
+
+
+### Projectile item client review (2026-10-16)
+
+Onixian/Scattershot: 24 assets, 36 verified function streams; findings and gaps
+in engine/fixtures/projectile-item-client-review.json. Scattershot retains its
+selected target between attempts; do not assume two distinct victims or two hits
+on the original victim. Onixian uses projectile travel distance and hero basic
+scaling, not a universal flat bonus. Native/default contracts remain unknown.
+Validation: 256 tests, TypeScript, 55 artifact schemas and rendered UI pass.
+No ranking, match snapshot, merge or deployment change.

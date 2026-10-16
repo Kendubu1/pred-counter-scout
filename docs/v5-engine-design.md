@@ -932,3 +932,40 @@ reports. Only Yin jungle changes its main item set; Kira carry stays unchanged.
 Vanquisher remains selected in 19/135 role views. No new coaching or optimizer
 explanation invalidations were necessary. This outcome does not establish
 current-meta performance or complete execute timing fidelity.
+
+
+### Projectile item client review (2026-10-16)
+
+Recovered 24 assets and 36 byte-for-byte roundtripping function streams for
+Onixian Quiver and Scattershot. See `engine/fixtures/projectile-item-client-review.json`
+for hashes, instruction offsets, findings and unresolved defaults. These counts
+are this extraction batch, not a deduplicated all-game total. No damage credit
+was added and the current 1.17.2 match snapshots remain unchanged.
+
+Scattershot's two-attempt nearest-candidate loop removes its selected actor but
+clears ClosestActor only after both attempts. One eligible candidate can therefore
+remain selected for the second attempt in this recovered control flow. Do not
+assume either distinct victims or two successful hits on the original victim:
+the sphere's Filter/Radius/default entity list and native collision need recovery.
+Its on-hit listener excludes its own damage tag and closes a cooldown gate before
+target selection. This is not unrestricted recursive on-hit damage.
+
+Onixian's ranged projectiles follow primary-basic commit, targeting, next-tick
+delay and two angled spawn attempts. Its magnitude calculator uses projectile
+travel distance, a clamped ranged-range-plus-50 mapping, hero basic scaling and a
+separate camp-minion multiplier. Final damage-effect scaling, collision, crit and
+lifesteal are not established by that calculator. Melee crit and health-change
+mitigation use separate effects whose default bindings remain unresolved.
+
+The app's item limitations now disclose these specific gaps, and the Kira
+diagnostic's skipped cores retain their item omission reasons. No numerical
+production formula or ranked artifact changed; only affected audit outputs need
+regeneration. Next recover raw property schemas/native event contracts for these
+items, Combustion and Sky Splitter; continue other actionable families while
+these are unresolved. Keep all proposed builds THEORY.
+
+Current hero-wide reported cores contain Onixian in 260 player-core appearances
+and Scattershot in 186, across six rows each; these are not unique matches or
+causal item effects. The shared Kira row has 22 appearances/12 wins and remains
+skipped by the replay. Validation: 256 tests in 35 files, TypeScript, all 55
+artifact schemas and rendered catalog checks pass. Audit outputs were rebuilt.

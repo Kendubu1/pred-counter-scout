@@ -31,7 +31,11 @@ const scenarios = [
 const rows = [], skipped = [];
 for (const core of cores) {
   const unsupported = core.slugs.filter((s: string) => !(KIRA_REPLAY_ITEMS as readonly string[]).includes(s));
-  if (unsupported.length) { skipped.push({...core, unsupported, reason: 'Outside reviewed diagnostic replay coverage'}); continue; }
+  if (unsupported.length) {
+    const limitations = resolveItemEffects(unsupported.map((s: string) => data.itemsBySlug.get(s)!), { level }).unmodeled;
+    skipped.push({...core, unsupported, limitations, reason: 'Outside reviewed diagnostic replay coverage'});
+    continue;
+  }
   const items = core.slugs.map((s: string) => data.itemsBySlug.get(s)!);
   const effects = resolveItemEffects(items, { level });
   const stats = effectiveTotals(items, effects);

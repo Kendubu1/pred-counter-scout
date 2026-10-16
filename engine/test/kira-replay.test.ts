@@ -89,8 +89,8 @@ describe('Kira action replay', () => {
   it('rejects unsorted events instead of calculating time backwards', () => {
     expect(() => replayKira([hit(2), hit(1)], base)).toThrow('ordered');
   });
-  it('rejects unreviewed items rather than silently treating them as modeled', () => {
-    expect(() => replayKira([hit(0)], { ...base, items: ['unreviewed-item'] })).toThrow('coverage');
+  it.each(['unreviewed-item', 'onixian-quiver', 'scattershot'])('rejects %s rather than silently treating omitted effects as modeled', (item) => {
+    expect(() => replayKira([hit(0)], { ...base, items: [item] })).toThrow('coverage');
   });
   it('executes at the inclusive threshold but never after an already lethal hit', () => {
     const run=(raw:number)=>replayKira([{time:0,kind:'hit',source:'basic',raw}],{...base,health:1000,items:['vanquisher']});

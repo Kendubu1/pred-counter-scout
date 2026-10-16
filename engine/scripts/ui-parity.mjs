@@ -129,6 +129,14 @@ try {
       assert.match(text, /bounded cast\/basic pairs only/);
       assert.match(text, /Four-second expiry, actual weaving/);
     }
+    if (item.slug === 'onixian-quiver') {
+      assert.match(text, /projectile travel distance and hero basic scaling/);
+      assert.match(text, /ranged carries receive no melee benefit/);
+    }
+    if (item.slug === 'scattershot') {
+      assert.match(text, /second attempt can retain the first selected target/);
+      assert.match(text, /neither zero nor two extra hits on the original target is verified/);
+    }
     if (item.slug === 'absolution') {
       assert.match(text, /Tenacity\s*\+25/);
       assert.match(text, /On being Immobilized:/);
