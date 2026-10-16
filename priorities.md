@@ -1044,3 +1044,31 @@ semantics from empty defaults. Private bodies, field maps and addresses stay pri
 Validation: private preservation gates, 31 Python tests, all 269 engine tests
 across 38 files in single-worker threads mode, TypeScript and whitespace checks
 pass. Production/UI files are unchanged; no artifact rebuild, merge or deployment.
+
+
+### Shared critical-strike native checkpoint (2026-10-16)
+
+Moved beyond the remaining mostly tutorial/emote property boundaries into shared
+damage execution. The eligible path evaluates OverrideCriticalChance and
+CriticalBonus, requires a valid owner, and on success marks CriticalDamage and
+multiplies the current damage term by 1 + evaluated bonus. CanCriticallyStrike
+is required; an additional enum gate is still unnamed. No universal bonus default
+or final mitigation order is claimed.
+
+The decision helper is stateful: finite chance is clamped to [0,1]; interior
+chances use success/failure counters and coefficients for chance and complement.
+Success clears failures and increments successes; failure does the converse.
+Coefficient generation is a bounded numerical search over weighted waiting times.
+Initialization, resets, random-source identity and sharing across attacks/procs
+remain unresolved. Production basicHit remains an average contribution, not a
+validated short-window sequence. Do not invent starting counters or change the
+measured base crit multiplier based on this trace.
+
+The generic native tracer now records RIP-relative reference targets, file
+mapping, operand width and address-only LEA operations without interpreting
+bytes or resolving indirect calls. Synthetic regressions cover signed offsets,
+next-instruction addressing and unmapped indirect call slots. Private evidence:
+shared-critical-chain-private.json (executable hash, five bounded traces and
+resolved numerical constants). Published evidence contains only semantic findings
+in shared-damage-event-review.json. No production/UI behavior changed, so no
+artifact rebuild is needed.
