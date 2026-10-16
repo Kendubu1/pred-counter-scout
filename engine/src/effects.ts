@@ -75,6 +75,7 @@ const Primitive = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('percent_pen'), pct: z.number(), damageType: z.enum(['physical', 'magical', 'both']), perItemPct: z.number().optional() }),
   z.object({ kind: z.literal('flat_pen'), amount: z.number(), damageType: z.enum(['physical', 'magical']), rampSeconds: z.number().optional() }),
   z.object({ kind: z.literal('on_hit_armor_shred'), perStack: z.number().positive(), maxStacks: z.number().int().positive(), duration: z.number().positive() }),
+  z.object({ kind: z.literal('state_armor_multiplier'), pctPerStack: z.number().nonnegative(), perLevelPctPerStack: z.number().nonnegative(), maxStacks: z.number().int().positive(), damageType: z.enum(['physical', 'magical']) }),
   z.object({ kind: z.literal('armor_shred'), pct: z.number().optional(), flat: z.number().optional(), damageType: z.enum(['physical', 'magical']), rampSeconds: z.number().optional() }),
   z.object({ kind: z.literal('health_multiplier'), pct: z.number(), perLevelPct: z.number().optional(), perMinutePct: z.number().optional() }),
   z.object({ kind: z.literal('armor_multiplier'), pct: z.number() }),
@@ -182,6 +183,7 @@ export interface ResolvedEffects {
   cooldownRateNonUlt: number;
   pctPen: { physical: number; magical: number };
   flatPen: { physical: number; magical: number; rampSeconds: number };
+  targetArmorMultiplier: { physical: number; magical: number };
   shredPct: { physical: number; magical: number; rampSeconds: number };
   onHitArmorShred: { perStack: number; maxStacks: number; duration: number }[];
   onHitProcs: ProcSpec[];
@@ -224,6 +226,7 @@ export function emptyEffects(): ResolvedEffects {
     ultHaste: 0, cooldownRateNonUlt: 0,
     pctPen: { physical: 0, magical: 0 },
     flatPen: { physical: 0, magical: 0, rampSeconds: 0 },
+    targetArmorMultiplier: { physical: 1, magical: 1 },
     shredPct: { physical: 0, magical: 0, rampSeconds: 0 },
     onHitArmorShred: [],
     onHitProcs: [], onAbilityProcs: [],
@@ -236,6 +239,8 @@ export function emptyEffects(): ResolvedEffects {
 
 export interface ResolveCtx {
   level: number;
+  /** Explicit active stacks held for the evaluated snapshot; omitted means no credit. */
+  effectStacks?: Record<string, number>;
   minute?: number;      // omitted -> time-scaling effects use base value
   itemCount?: number;   // for per-item scalings (Diamond Tip)
 }
@@ -341,6 +346,16 @@ export function resolveEntries(keys: string[], ctx: ResolveCtx, registry: Effect
         case 'on_hit_armor_shred':
           out.onHitArmorShred.push({perStack: fx.perStack, maxStacks: fx.maxStacks, duration: fx.duration});
           break;
+        case 'state_armor_multiplier': {
+          const stacks = ctx.effectStacks?.[key];
+          if (stacks === undefined) continue;
+          if (!Number.isInteger(stacks) || stacks < 0 || stacks > fx.maxStacks
+            || !Number.isInteger(lvl) || lvl < 1 || lvl > 18) throw new Error('Invalid active effect stack state');
+          const factor = 1 - stacks * (fx.pctPerStack + fx.perLevelPctPerStack * lvl) / 100;
+          if (factor < 0 || !Number.isFinite(factor)) throw new Error('Invalid armor multiplier');
+          out.targetArmorMultiplier[fx.damageType] *= factor;
+          break;
+        }
         case 'armor_shred':
           if (fx.pct) out.shredPct[fx.damageType] += fx.pct;
           if (fx.flat) out.flatPen[fx.damageType] += fx.flat; // same math as flat pen vs one target
@@ -437,6 +452,8 @@ export function mergeEffects(a: ResolvedEffects, b: ResolvedEffects): ResolvedEf
     out.pctPen.magical = (1 - (1 - out.pctPen.magical / 100) * (1 - e.pctPen.magical / 100)) * 100;
     out.flatPen.physical += e.flatPen.physical; out.flatPen.magical += e.flatPen.magical;
     out.flatPen.rampSeconds = Math.max(out.flatPen.rampSeconds, e.flatPen.rampSeconds);
+    out.targetArmorMultiplier.physical *= e.targetArmorMultiplier.physical;
+    out.targetArmorMultiplier.magical *= e.targetArmorMultiplier.magical;
     out.shredPct.physical += e.shredPct.physical; out.shredPct.magical += e.shredPct.magical;
     out.shredPct.rampSeconds = Math.max(out.shredPct.rampSeconds, e.shredPct.rampSeconds);
     out.onHitArmorShred.push(...e.onHitArmorShred);

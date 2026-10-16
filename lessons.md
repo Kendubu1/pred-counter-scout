@@ -4875,3 +4875,36 @@ and field/default maps remain private; see knell-native-effect-review.json.
 
 Validation: five enum tests (including two alias regressions), 22 Python checks,
 264 engine tests, TypeScript, 55 artifact schemas and rendered UI parity.
+
+
+## 2026-10-16 explicit Knell state integration and broad effect defaults
+
+Production effect resolution now accepts an explicit active-stack snapshot. Knell
+uses the recovered actor-level arithmetic: each stack removes 2 + 0.2 * level
+percent of physical and magical armor. Its compound multiplier survives effect
+merging and applies in combatDamage and rotationDamage. Missing state grants no
+shred credit; default recommendations retain their unmodeled explanation. Invalid
+stack counts and levels fail rather than silently clamp. This is a held-state
+experiment, not an automatic timing model: acquisition, expiry, Peal, multiple
+sources and stolen defenses remain omitted.
+
+The native magnitude helper sums evaluated modifier magnitudes, not armor lost.
+The Blueprint steal expression uses a single-stack complement denominator; do not
+substitute a generic armor-loss formula. Further lifecycle/aggregation review is
+needed before adding stolen defenses.
+
+A separate 3,956-file GE pass recovered 14,508 exact property spans (14,433
+nonempty), zero mismatching spans, and 3,801 ended property streams. 152 default
+streams remain partial; three files have no raw default. Zero whole CDOs are
+certified. These counts overlap earlier inventories and are not gameplay coverage.
+Only sanitized counts are committed; bodies, schema maps and native traces stay
+private. See broad-effect-default-review.json.
+
+The reproducible knell-state-comparison pass compares equal three-item cores at
+level 13 against real reference profiles with 0/1/4 fixed stacks. Saved match
+cores are descriptive evidence; unequal costs, existing passive approximations
+and unsupported cores prevent a winning-build claim.
+
+Follow-up: all 152 blocked records now reach property end with zero span mismatches after resolving BaseGameplayEffect inheritance. Previous exact spans are preserved. This closes the observed inherited-index parsing gap, not whole-CDO or native behavior coverage. See the sanitized follow-up counts in broad-effect-default-review.json.
+
+Validation: 269 engine tests in 38 files, 22 Python regressions, TypeScript, complete 55-hero artifact rebuild, 55 artifact schemas and rendered UI parity pass. The controlled report contains 45 snapshots and skips one unsupported core. No live match refresh, merge or deployment.

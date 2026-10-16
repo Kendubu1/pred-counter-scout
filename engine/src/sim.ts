@@ -234,7 +234,7 @@ function mitigate(
   const flatPenFx = (type === 'magical' ? eff.flatPen.magical : eff.flatPen.physical) * rampFactor(windowSec, eff.flatPen.rampSeconds);
   // Order: shred reduces target armor, percent pen ignores a share of the
   // rest (multiplicative per 1.14), flat pen subtracts last.
-  const effective = Math.max(0, Math.max(0, armor - flatShred) * (1 - shred / 100) * (1 - pctPen / 100) - flatPenBase - flatPenFx);
+  const effective = Math.max(0, Math.max(0, armor - flatShred) * eff.targetArmorMultiplier[type === 'magical' ? 'magical' : 'physical'] * (1 - shred / 100) * (1 - pctPen / 100) - flatPenBase - flatPenFx);
   return raw * (k / (k + effective));
 }
 

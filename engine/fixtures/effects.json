@@ -2233,13 +2233,28 @@
   "eternal:knell:major": {
    "name": "Knell (Major)",
    "sourceText": "Attacks and abilities against Enemy Heroes apply a stack of Rust for 5s. Each stack shreds 2% (+0.2% per Level) Physical Armor and Magical Armor, stacking up to 4 times.",
-   "source": "owned eternals.json, synced 1.16; renamed Rust->Knell 1.17 (Rust is the debuff, Knell the Eternal)",
+   "source": "Installed-client Blueprint, exact effect-default properties, native simple-curve evaluation and modifier enum registration; controlled active-stack state only",
    "effects": [
     {
+     "kind": "state_armor_multiplier",
+     "pctPerStack": 2,
+     "perLevelPctPerStack": 0.2,
+     "maxStacks": 4,
+     "damageType": "physical"
+    },
+    {
+     "kind": "state_armor_multiplier",
+     "pctPerStack": 2,
+     "perLevelPctPerStack": 0.2,
+     "maxStacks": 4,
+     "damageType": "magical"
+    },
+    {
      "kind": "unmodeled",
-     "note": "percent armor shred that scales per level (max stacks = 8% + 0.8%/level, both damage types); armor_shred takes a flat pct with no perLevel term, so encoding it would pin one level. Best modeling candidate of the 1.16 Eternals — see calibration checklist"
+     "note": "Only an explicitly supplied active-stack snapshot is modeled; omitted state receives no shred credit. Stack acquisition, refresh/expiry over time, Peal interactions, multi-source behavior and stolen defenses are not simulated. No automatic full-stack uptime or winning-build claim."
     }
-   ]
+   ],
+   "provisional": true
   },
   "eternal:satariel:major": {
    "name": "Satariel (Major)",
