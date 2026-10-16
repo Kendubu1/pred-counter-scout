@@ -1,7 +1,16 @@
 import struct, unittest
-from recover_native_structs import parse_descriptor, PE
+from recover_native_structs import parse_descriptor, PE, bounded_hits
 
 class NativeStructTest(unittest.TestCase):
+    def test_bounded_search_preserves_cross_chunk_and_overlapping_matches(self):
+        for data, needle in [(b'aaaaaaa', b'aaa'), (b'xxabcdefxxabcdef', b'abcdef'),
+                             (b'abc', b'abcdef'), (b'abcabc', b'c'), (b'', b'x')]:
+            expected=[i for i in range(len(data)) if data.startswith(needle,i)]
+            for size in [1,2,3,5,20]:
+                self.assertEqual(list(bounded_hits(data,needle,size)),expected)
+    def test_bounded_search_rejects_invalid_parameters(self):
+        for needle,size in [(b'',1),(b'x',0),(b'x',-1)]:
+            with self.assertRaises(ValueError):list(bounded_hits(b'abc',needle,size))
     def fixture(self):
         b=bytearray(512)
         # Synthetic addresses map directly to offsets.

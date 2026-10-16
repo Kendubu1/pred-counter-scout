@@ -5179,3 +5179,23 @@ two attempts and yielded no usable reset evidence; do not interpret that as no
 resets. A bounded first-section retry succeeded: 108 byte candidates map to
 75 runtime-function ranges; these include unrelated objects and stack slots,
 so none is certified as a reset. Continue with owner-proven lifecycle functions. Keep raw instructions, addresses and generated profiles private.
+
+
+### Shared target gate and bounded native search (2026-10-16)
+
+The remaining critical gate reaches PredAimTargetInterface. The native fallback
+uses the same virtual slot as its registered GetMyTargetType wrapper. A unique
+EPredTargetType registration table maps Tower to the excluded value 3. This is
+strong evidence for a tower exclusion, but reflected dispatch-name/return-type
+binding remains unresolved; do not claim complete target behavior or change
+production math from this alone. Reset candidates still lack owner proof.
+
+Replaced whole-mapping byte searches in the shared PE helper with bounded chunks
+and overlap. All match offsets, including overlapping and cross-boundary matches,
+are preserved; matches in the overlap are emitted once. Tests include needles
+longer than chunks, short/empty inputs and invalid sizes. Targeted enum recovery
+now completes using this shared path without repeating broad extraction.
+Private evidence: native-critical-enum-gate-private.json,
+native-target-type-wrapper-private.json and native-target-type-enum-private.json.
+Raw tables, native instructions and addresses remain private. Production data
+and calculations are unchanged; no app artifact rebuild is required.

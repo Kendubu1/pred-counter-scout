@@ -4,6 +4,20 @@ Record layouts are an observed parser profile, not general Unreal ABI guarantees
 import argparse, hashlib, json, mmap, struct
 from pathlib import Path
 
+def bounded_hits(data, needle, chunk_size=1024*1024):
+    """Find all overlapping matches without searching a whole mapped image."""
+    if not needle or chunk_size < 1:
+        raise ValueError('Nonempty needle and positive chunk size required')
+    for start in range(0, len(data), chunk_size):
+        chunk = data[start:min(len(data), start+chunk_size+len(needle)-1)]
+        pos = 0
+        while True:
+            pos = chunk.find(needle, pos)
+            if pos < 0 or pos >= chunk_size:
+                break
+            yield start + pos
+            pos += 1
+
 EXPECTED = {
  'ScalableFloat': [('Value', 10), ('Curve', 25), ('RegistryType', 25)],
  'ActiveGameplayEffectHandle': [('Handle', 3), ('bPassedFiltersAndWasExecuted', 76)],
@@ -59,12 +73,7 @@ class PE:
         if end < 0: raise ValueError('Unterminated name')
         return self.b[o:end].decode('ascii')
     def hits(self, needle):
-        pos = 0
-        while True:
-            pos = self.b.find(needle, pos)
-            if pos < 0: return
-            yield pos
-            pos += 1
+        yield from bounded_hits(self.b, needle)
     def recover(self):
         result = {}
         for name in EXPECTED:
