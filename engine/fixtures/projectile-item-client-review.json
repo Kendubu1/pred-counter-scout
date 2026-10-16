@@ -6,7 +6,7 @@
   {
    "slug": "onixian-quiver",
    "status": "reviewed-unmodeled",
-   "limitation": "Multishot is not simulated: the recovered client spawns angled projectiles after a basic-attack commit and scales damage with projectile travel distance and hero basic scaling. Collision, damage-effect defaults and native crit/lifesteal behavior remain unresolved. Melee Onixia crit and missing-health mitigation are also omitted; ranged carries receive no melee benefit.",
+   "limitation": "Multishot is not simulated: angled projectiles scale with travel distance and hero basic scaling. Recovered effect defaults bind attack-damage scaling and the custom distance calculation. Collision, critical-strike/lifesteal resolution and complete native aggregation still need integration. Melee Onixia crit and missing-health mitigation are also omitted; ranged carries receive no melee benefit.",
    "findings": [
     {
      "asset": "GA_Item_OnixianQuiver",
@@ -308,7 +308,7 @@
   {
    "slug": "scattershot",
    "status": "reviewed-unmodeled",
-   "limitation": "Scattershot is not simulated: the recovered client filters on-hit events, blocks self-retriggering and attempts two nearby-target projectiles behind a cooldown gate. The second attempt can retain the first selected target when no candidates remain. Target filters, radius, damage-effect defaults and native on-hit scaling remain unresolved; neither zero nor two extra hits on the original target is verified.",
+   "limitation": "Scattershot is not simulated: its filtered on-hit trigger attempts two nearby-target projectiles behind a cooldown gate. Defaults recover the target filter, radius and damage/on-hit bindings; the shared damage path passes its captured on-hit percentage through event data. Target selection, collision, critical-strike resolution and downstream passive interactions still need integration. The second attempt can retain the first target; neither zero nor two extra hits on the original target is verified.",
    "findings": [
     {
      "asset": "GA_Item_Scattershot",
@@ -503,5 +503,6 @@
   "source": "pred.gg public match stream (get-matches-since), RANKED, patch 1.17.2: ordered 3-item cores (first three completed Epic items by purchase time; anyOrder rows group a set whose orders were each under the floor), 20+ games each, counted 2026-10-14T18:34 -> 2026-10-16T01:17; hero-wide + per-role. Counted by npm run perks.",
   "generatedAt": "2026-10-16T02:02:44.135Z",
   "method": "Hero-wide reported cores only; do not add per-role duplicates. Counts sum observed player-core appearances, not unique matches, causal item value or win probability."
- }
+ },
+ "defaultFollowup": "Exact execution properties now expose active magnitude bindings, capture attributes and tag filters. Native EventDataFloat mapping is traced separately; native damage composition and projectile outcomes are not fully verified."
 }

@@ -4908,3 +4908,31 @@ and unsupported cores prevent a winning-build claim.
 Follow-up: all 152 blocked records now reach property end with zero span mismatches after resolving BaseGameplayEffect inheritance. Previous exact spans are preserved. This closes the observed inherited-index parsing gap, not whole-CDO or native behavior coverage. See the sanitized follow-up counts in broad-effect-default-review.json.
 
 Validation: 269 engine tests in 38 files, 22 Python regressions, TypeScript, complete 55-hero artifact rebuild, 55 artifact schemas and rendered UI parity pass. The controlled report contains 45 snapshots and skips one unsupported core. No live match refresh, merge or deployment.
+
+
+## 2026-10-16 shared damage-event scaling and projectile defaults
+
+Followed the native damage execution class through construction and its overridden
+virtual slot. The captured TempOnHitPerc value starts from a local fallback of 1,
+then flows into the reflected EventDataFloat member of the event-data object.
+GameplayEventData's reflected OptionalObject2 offset confirms the payload link;
+the object is retained in Event.OnDamageDealt. This resolves the producer-side
+scaling contract used by recovered Sky Splitter and other passive consumers. It
+does not prove every event's effective multiplier is 1, every event producer uses
+this path, or that all downstream scaling/critical/healing interactions are known.
+
+Scattershot execution defaults expose AttackDamage-based damage, the on-hit
+percentage override, and a lane-minion-only multiplier. Onixian exposes attack
+scaling and its custom distance magnitude; a post-additive row name has a null
+curve table and cannot supply an extra flat term. Added a reusable exact-span
+execution inspector that selects only the active magnitude union arm and preserves
+tag conditions. Generated details and native traces remain private.
+
+Refreshed app-facing omission notes and the catalog/passive/Kira reports. Removed
+Onixian's existing ranged-carry coaching line because it granted melee-only
+mitigation; replacement still requires author/judge review. Corrected the model
+document generator's stale unconditional-execute and unrestricted spell-trigger
+claims. No new damage credit or ranking change; target selection, collisions,
+critical/lifesteal resolution and full native composition remain open.
+
+Validation: 269 engine tests, 25 Python checks, TypeScript, regenerated catalog/passive/Kira reports and item-model documentation, 55 artifact schemas and rendered UI parity pass. New UI assertions verify refreshed projectile limitations and absence of the erroneous Onixian tip. Next: trace native critical/healing/aggregation rules and projectile target outcomes, then integrate supported damage behavior.

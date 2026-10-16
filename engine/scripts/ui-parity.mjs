@@ -130,11 +130,14 @@ try {
       assert.match(text, /Four-second expiry, actual weaving/);
     }
     if (item.slug === 'onixian-quiver') {
-      assert.match(text, /projectile travel distance and hero basic scaling/);
+      assert.match(text, /travel distance and hero basic scaling/);
+      assert.match(text, /Recovered effect defaults bind attack-damage scaling/);
       assert.match(text, /ranged carries receive no melee benefit/);
+      assert.doesNotMatch(text, /For ranged crit carries:.*you take less damage when low/);
     }
     if (item.slug === 'scattershot') {
-      assert.match(text, /second attempt can retain the first selected target/);
+      assert.match(text, /second attempt can retain the first target/);
+      assert.match(text, /passes its captured on-hit percentage through event data/);
       assert.match(text, /neither zero nor two extra hits on the original target is verified/);
     }
     if (item.slug === 'combustion') {

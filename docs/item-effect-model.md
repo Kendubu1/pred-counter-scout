@@ -92,7 +92,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 **→ Modeled as:**
 - `on_hit` — every basic attack adds 1% of target max HP physical damage — rate-capped over the attack window.
-- `on_ability_hit` — each ability adds 3% of target max HP physical damage — credited per ability in a combo.
+- `on_ability_hit` — each eligible ability adds 3% of target max HP physical damage.
 
 ---
 
@@ -103,7 +103,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes} Times Applied to Heroes: {TimesApplied}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds (+90% physical power) physical damage (≤ once / 4s per target) — credited per ability in a combo.
+- `on_ability_hit` — bounded cast/basic pairs add (+90% base physical power) physical damage (≤ once / 1.5s per target).
+- `unmodeled` — **not modeled** — Client Blueprint requires ability-commit empowerment followed by an eligible on-hit event. Production uses bounded cast/basic pairs only; spell-only rotations and basic-only DPS omit this proc. Four-second expiry, actual weaving and ability on-hit consumers remain unmodeled.
 
 ---
 
@@ -139,8 +140,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes} Times Applied to Heroes: {TimesApplied}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 65 (+35% magical power) magical damage (≤ once / 1.5s per target) — credited per ability in a combo.
-- `unmodeled` — **not modeled** — Spellblade assumes a basic attack after each cast; 4s is the empowerment duration, 1.5s the trigger cooldown.
+- `on_ability_hit` — bounded cast/basic pairs add 65 (+35% magical power) magical damage (≤ once / 1.5s per target).
+- `unmodeled` — **not modeled** — Client Blueprint requires ability-commit empowerment followed by an eligible on-hit event. Production uses bounded cast/basic pairs only; spell-only rotations and basic-only DPS omit this proc. Four-second expiry, actual weaving and ability on-hit consumers remain unmodeled.
 
 ---
 
@@ -187,6 +188,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 **→ Modeled as:**
 - `on_hit` — every basic attack adds 5% of target current HP physical damage — rate-capped over the attack window.
+- `unmodeled` — **not modeled** — Rend uses fixed target-health assumptions: full profile health in burst and 80% in sustained damage, not health updated after each hit. The recovered hero branch applies the damage floor before native event scaling and has no monster damage cap. Native event scaling, default bindings and hit ordering remain unresolved; catalog percentages and the 12-damage floor are partial modeling, not verified event-level behavior.
 
 ---
 
@@ -197,8 +199,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes} Health Restored: {HealthRestored}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 45 (+35% physical power) physical damage (≤ once / 1.5s per target) — credited per ability in a combo.
-- `unmodeled` — **not modeled** — Spellblade assumes a basic attack after each cast; critical strikes and its 50% damage healing are not represented.
+- `on_ability_hit` — bounded cast/basic pairs add 45 (+35% physical power) physical damage (≤ once / 1.5s per target).
+- `unmodeled` — **not modeled** — Client Blueprint confirms ability-commit empowerment consumed by an eligible on-hit event. Production counts only bounded cast/basic pairs in mixed combat; ability-only rotations and basic-only DPS exclude the proc. Pair timing and four-second expiry are optimistic aggregate assumptions; Mercy on-hit consumption, critical damage and 50% healing remain omitted. See client-mechanics-review.json.
 
 ---
 
@@ -221,7 +223,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Executions: {Executions} Execute Damage Dealt: {DamageDealt}
 
 **→ Modeled as:**
-- `execute` — below 5% HP the target is a free kill — credited as 5% of their max HP as bonus burst.
+- `execute` — credits surviving health only when aggregate post-burst health plus shield is at most 5% of maximum health and the target is alive; no unconditional burst bonus.
+- `unmodeled` — **not modeled** — Client checks a living hero after damage: remaining health plus shield must be at most 5% of maximum health. Production checks only the end of the aggregate burst and credits remaining health, assuming ordinary shield absorption. Intermediate hit timing, shield bypass, native execute damage and sustained-window execution remain unmodeled; no unconditional 5% damage bonus is granted.
 
 ---
 
@@ -316,8 +319,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 50 (+18% magical power) magical damage (≤ once / 15s per target) — credited per ability in a combo.
-- `unmodeled` — **not modeled** — Pyromaniac: damaging heroes reduces Pyro cooldown by 0.5s per hit
+- `on_ability_hit` — each eligible ability adds 50 (+18% magical power) magical damage (≤ once / 15s per target).
+- `unmodeled` — **not modeled** — Pyromaniac cooldown reduction is omitted. The recovered client requires a hero target, excludes Item, DoT and ProcDamage events, and uses a shared gate with a 0.05-second delayed reset. This is not unrestricted reduction on every damage packet. Scalar bindings, overlapping callbacks and native cooldown behavior remain unresolved; the simulator retains the catalog 15-second Pyro cooldown.
 
 ---
 
@@ -328,8 +331,9 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — Onslaught:** • Gain (+100% ) Attack Speed .
 
 **→ Modeled as:**
-- `armor_shred` — strips 12 of the target's physical armor (ramps over 3s) — so ALL your physical damage lands harder.
+- `on_hit_armor_shred` — prior basic hits reduce armor by 3 per stack, up to 4 stacks with 3s shared expiry; uniform attack spacing is assumed.
 - `stat_conversion` — converts 100% of physical penetration into attack speed.
+- `unmodeled` — **not modeled** — Client triggers on hero on-hit events with a next-engine-tick gate. Production credits prior basic-hit stacks only, using uniform attack spacing and shared refresh. Ability/proc benefits, Mercy triggers, frame batching and cross-target state remain unmodeled. Three seconds is expiry, not a time-to-full ramp.
 
 ---
 
@@ -351,7 +355,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 3 (+3% magical power) magical damage (≤ once / 0.2s per target) — credited per ability in a combo.
+- `on_ability_hit` — each eligible ability adds 3 (+3% magical power) magical damage (≤ once / 0.2s per target).
 
 ---
 
@@ -398,7 +402,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 2.5% of target max HP magical damage (≤ once / 3s per target) — credited per ability in a combo.
+- `on_ability_hit` — each eligible ability adds 2.5% of target max HP magical damage (≤ once / 3s per target).
 - `unmodeled` — **not modeled** — Star Killer (6% of target BONUS health) needs a base/bonus health split the reference profiles do not carry
 
 ---
@@ -411,7 +415,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Damage Dealt: {DamageDealt}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 6% of target max HP magical damage (≤ once / 8s per target) — credited per ability in a combo.
+- `on_ability_hit` — each eligible ability adds 6% of target max HP magical damage (≤ once / 8s per target).
 
 ---
 
@@ -481,8 +485,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `on_ability_hit` with `trigger: immobilize` — 40 + 5% target current HP magical damage per reviewed root/stun cast that lands. Ordinary damage spells do not trigger it.
-- Partial coverage: 23 reviewed root/stun slots, including non-damaging Grux R. Displacement-only and conditional CC are not credited. Stored charges, delays, repeats, immunity and actual current-health progression remain unmodeled; this can undercount valid in-game procs.
+- `on_ability_hit` — each reviewed root/stun cast that lands adds 40 + 5% of target current HP magical damage.
+- `unmodeled` — **not modeled** — Partial trigger coverage: one proc per reviewed root/stun cast that lands on one target. Displacement-only, empowered, stacked and stance-dependent CC are not credited. Delays, stored charges, repeated applications, immunity and target current-health progression are unmodeled.
 
 ---
 
@@ -529,7 +533,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 **→ Modeled as:**
 - `anti_heal` — cuts the target's healing by 45% — matters vs sustain.
-- `on_hit` — every basic attack adds (+10% physical power) physical damage — rate-capped over the attack window.
+- `on_hit` — every basic attack adds (+10% physical power) magical damage — rate-capped over the attack window.
 - `unmodeled` — **not modeled** — second on-hit scaling term (icon-ambiguous) and missing-health amplification up to +100%
 
 ---
@@ -543,7 +547,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 **→ Modeled as:**
 - `anti_heal` — cuts the target's healing by 45% — matters vs sustain.
-- `on_ability_hit` — each ability adds 22.5 (+15% magical power) magical damage — credited per ability in a combo.
+- `on_ability_hit` — each eligible ability adds 22.5 (+15% magical power) magical damage.
+- `unmodeled` — **not modeled** — Malice currently uses a 15-second damage ramp in the production simulator. The recovered client instead starts with full stacks, consumes stacks on eligible hero damage, and replenishes them through timed callbacks or takedowns. Item and proc damage are excluded. Diagnostic state-transition tests exist, but native defaults, timer phase and event ordering are unresolved; this production ramp does not reproduce that stack cycle.
 
 ---
 
@@ -638,7 +643,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes} Times Applied to Heroes: {TimesApplied}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 70 (+2% health) magical damage (≤ once / 4s per target) — credited per ability in a combo.
+- `on_ability_hit` — each eligible ability adds 70 (+2% health) magical damage (≤ once / 4s per target).
 
 ---
 
@@ -649,7 +654,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 65 (+1.5% health) magical damage — credited per ability in a combo.
+- `on_ability_hit` — each eligible ability adds 65 (+1.5% health) magical damage.
 
 ---
 
@@ -858,7 +863,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `unmodeled` — **not modeled** — empowered basic procs every 100 Momentum stacks, but the stack-generation rate is unstated, so the proc cadence cannot be derived
+- `unmodeled` — **not modeled** — Momentum proc cadence remains unmodeled. Recovered movement grants use straight-line displacement sampled after 0.25 seconds, rounded down per 50 world units; fractional travel is not carried between samples. Basic-hit grants depend on unresolved scalar defaults and native event scaling, with separate AoE gating. Movement sampling is tested diagnostically, but total charge rate and successful proc timing are not verified.
 
 ---
 
@@ -880,7 +885,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `unmodeled` — **not modeled** — multi-target projectiles; single-target value unverified
+- `unmodeled` — **not modeled** — Scattershot is not simulated: its filtered on-hit trigger attempts two nearby-target projectiles behind a cooldown gate. Defaults recover the target filter, radius and damage/on-hit bindings; the shared damage path passes its captured on-hit percentage through event data. Target selection, collision, critical-strike resolution and downstream passive interactions still need integration. The second attempt can retain the first target; neither zero nor two extra hits on the original target is verified.
 
 ---
 
@@ -1334,7 +1339,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `unmodeled` — **not modeled** — Multishot is multi-projectile/splash and Onixia is melee-only; crediting it globally would overvalue ranged carries.
+- `unmodeled` — **not modeled** — Multishot is not simulated: angled projectiles scale with travel distance and hero basic scaling. Recovered effect defaults bind attack-damage scaling and the custom distance calculation. Collision, critical-strike/lifesteal resolution and complete native aggregation still need integration. Melee Onixia crit and missing-health mitigation are also omitted; ranged carries receive no melee benefit.
 
 ---
 

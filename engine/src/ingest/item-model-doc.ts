@@ -24,6 +24,7 @@ function explain(fx: any): string {
     if (fx.flat) parts.push(`${fx.flat}`);
     if (fx.perLevelFlat) parts.push(`(+${fx.perLevelFlat}/lvl)`);
     if (fx.scalingPct) parts.push(`(+${fx.scalingPct}% ${st(fx.scaleStat)})`);
+    if (fx.basePhysicalPowerPct) parts.push(`(+${fx.basePhysicalPowerPct}% base physical power)`);
     if (fx.pctTargetHealth) parts.push(`${parts.length ? '+ ' : ''}${fx.pctTargetHealth}% of target ${fx.healthBasis ?? 'max'} HP`);
     return (parts.join(' ') || 'bonus') + ` ${fx.damageType} damage`;
   };
@@ -34,7 +35,8 @@ function explain(fx: any): string {
     case 'damage_amp': return `+${fx.pct}% to your ${fx.scope === 'all' ? 'damage' : fx.scope === 'abilities' ? 'ability damage' : fx.scope === 'ultimate' ? 'ultimate damage' : fx.scope}${fx.appliesWhen && fx.appliesWhen !== 'always' ? ` (when ${st(fx.appliesWhen)}, credited at partial uptime)` : ''} — applied as an amp on every qualifying hit.`;
     case 'crit_damage_amp': return `crits deal ${fx.pct}% more — boosts the crit multiplier.`;
     case 'on_hit': return `every basic attack adds ${dmg()}${fx.everyN > 1 ? ` (every ${fx.everyN}${fx.everyN === 2 ? 'nd' : fx.everyN === 3 ? 'rd' : 'th'} hit)` : ''}${fx.icdSeconds ? ` (≤ once / ${fx.icdSeconds}s)` : ''} — rate-capped over the attack window.`;
-    case 'on_ability_hit': return `each ability adds ${dmg()}${fx.icdSeconds ? ` (≤ once / ${fx.icdSeconds}s per target)` : ''} — credited per ability in a combo.`;
+    case 'on_ability_hit': return `${fx.trigger === 'immobilize' ? 'each reviewed root/stun cast that lands adds' : fx.trigger === 'cast_then_basic' ? 'bounded cast/basic pairs add' : 'each eligible ability adds'} ${dmg()}${fx.icdSeconds ? ` (≤ once / ${fx.icdSeconds}s per target)` : ''}.`;
+    case 'on_hit_armor_shred': return `prior basic hits reduce armor by ${fx.perStack} per stack, up to ${fx.maxStacks} stacks with ${fx.duration}s shared expiry; uniform attack spacing is assumed.`;
     case 'haste': return `+${fx.amount} ${fx.scope} haste — shortens the relevant cooldowns.`;
     case 'cooldown_rate': return `${fx.bonus * 100}% faster non-ultimate cooldowns — more casts per fight.`;
     case 'percent_pen': return `${fx.pct}% ${fx.damageType} penetration (multiplicative, 1.14 rule).`;
@@ -46,7 +48,7 @@ function explain(fx: any): string {
     case 'anti_heal': return `cuts the target's healing by ${fx.pct}% — matters vs sustain.`;
     case 'as_ramp': return `attack speed ramps +${fx.pctPerSecond}%/s in a fight — credited at mean uptime.`;
     case 'ramp_to_stat': return `stacks up to +${fx.perStack * fx.maxStacks} ${st(fx.stat)} over a fight; credited at ${(fx.meanUptime ?? 0.6) * 100}% mean uptime.`;
-    case 'execute': return `below ${fx.thresholdPct}% HP the target is a free kill — credited as ${fx.thresholdPct}% of their max HP as bonus burst.`;
+    case 'execute': return `credits surviving health only when aggregate post-burst health plus shield is at most ${fx.thresholdPct}% of maximum health and the target is alive; no unconditional burst bonus.`;
     case 'unmodeled': return `**not modeled** — ${fx.note}`;
     default: return JSON.stringify(fx);
   }
