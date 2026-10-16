@@ -1628,19 +1628,22 @@ function renderHero(a, roleParam) {
 }
 
 // ── item info popup: tap any item icon for the v2-style quick view ──
-let ITEMS_RAW = null, ITEM_WHY = null;
+let ITEMS_RAW = null, ITEM_WHY = null, ITEM_MODEL = null;
 const STAT_LABELS = { physical_power: 'Physical Power', magical_power: 'Magical Power', attack_speed: 'Attack Speed %', critical_chance: 'Crit Chance %', physical_penetration: 'Physical Pen', magical_penetration: 'Magical Pen', ability_haste: 'Ability Haste', health: 'Health', max_health: 'Health', magical_lifesteal: 'Magical Lifesteal %', physical_armor: 'Physical Armor', magical_armor: 'Magical Armor', max_mana: 'Mana', lifesteal: 'Lifesteal %', omnivamp: 'Omnivamp %', heal_shield_increase: 'Heal & Shield Power %', gold_per_second: 'Gold / sec', tenacity: 'Tenacity', movement_speed: 'Move Speed', health_regeneration: 'Health Regen', mana_regeneration: 'Mana Regen' };
 async function showItem(slug) {
   if (!ITEMS_RAW) {
-    const [raw, why] = await Promise.all([
+    const [raw, why, model] = await Promise.all([
       getJson('../../data/catalog/items.json').catch(() => null),
       getJson('../../data/aggregates/item-reviews.json').catch(() => null),
+      getJson('../../data/aggregates/catalog-model-audit.json').catch(() => null),
     ]);
     ITEMS_RAW = new Map((Array.isArray(raw) ? raw : raw?.items ?? []).map((i) => [i.slug, i]));
     ITEM_WHY = why?.items ?? {};
+    ITEM_MODEL = new Map((model?.items ?? []).map(i => [i.slug, i]));
   }
   const it = ITEMS_RAW.get(slug);
   if (!it) return;
+  const limitations = ITEM_MODEL?.get(slug)?.limitations ?? [];
   const clean = GameText.plain;
   const stats = Object.entries(it.stats || {}).filter(([k, v]) => v && STAT_LABELS[k]);
   const back = document.createElement('div');
@@ -1657,6 +1660,7 @@ async function showItem(slug) {
       ${(it.effects || []).filter((e) => GameText.hasEffectDescription(e)).map((e) => `
         <div class="ifx"><b>${esc(e.name || 'Effect')}${e.cooldown ? ` · ${esc(String(e.cooldown))} cooldown` : ''}</b>${e.condition ? `<div class="icondition">${esc(clean(e.condition))}</div>` : '<br>'}${esc(clean(e.menu_description || e.game_description))}</div>`).join('')}
       ${ITEM_WHY[slug] ? `<div class="ifx" style="color:var(--text-0)">🧠 ${esc(ITEM_WHY[slug])}<div style="font-size:.64rem;color:var(--text-2);margin-top:.25rem">AI-written from this item's stats and effects only; numbers machine-verified</div></div>` : ''}
+      ${limitations.length ? `<details class="ifx"><summary>What the simulator does not fully count</summary>${limitations.map(note => `<p>${esc(note)}</p>`).join('')}</details>` : ''}
       <button class="iclose">close</button>
     </div>`;
   const opener = document.activeElement;            // restore focus here on close

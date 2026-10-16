@@ -481,7 +481,8 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 2 — :** Damage Dealt: {DamageDealt} Damage Dealt to Heroes: {DamageDealtHeroes}
 
 **→ Modeled as:**
-- `on_ability_hit` — each ability adds 40 + 5% of target current HP magical damage — credited per ability in a combo.
+- `on_ability_hit` with `trigger: immobilize` — 40 + 5% target current HP magical damage per reviewed root/stun cast that lands. Ordinary damage spells do not trigger it.
+- Partial coverage: 23 reviewed root/stun slots, including non-damaging Grux R. Displacement-only and conditional CC are not credited. Stored charges, delays, repeats, immunity and actual current-health progression remain unmodeled; this can undercount valid in-game procs.
 
 ---
 

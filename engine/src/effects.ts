@@ -61,7 +61,7 @@ const Primitive = z.discriminatedUnion('kind', [
     damageType: DmgType, icdSeconds: z.number().optional(), everyN: z.number().optional(),
   }),
   z.object({
-    kind: z.literal('on_ability_hit'), flat: z.number().optional(), perLevelFlat: z.number().optional(),
+    kind: z.literal('on_ability_hit'), trigger: z.literal('immobilize').optional(), flat: z.number().optional(), perLevelFlat: z.number().optional(),
     scalingPct: z.number().optional(), scaleStat: StatKey.optional(),
     powerScaling: PowerScaling.optional(),
     pctTargetHealth: z.number().optional(), healthBasis: z.enum(['max', 'current']).optional(),
@@ -147,6 +147,7 @@ export function loadEffects(): EffectRegistry {
 // ── Resolution: entries + context -> aggregate numbers for the simulator ──
 
 export interface ProcSpec {
+  trigger?: 'immobilize';
   powerScaling?: { physical?: number; magical?: number }; // replaces legacy scalar when present
   flat: number;
   scalingPct: number;
@@ -304,6 +305,7 @@ export function resolveEntries(keys: string[], ctx: ResolveCtx, registry: Effect
             icdSeconds: fx.icdSeconds ?? 0,
             everyN: (fx as { everyN?: number }).everyN ?? 1,
             rampSeconds: (fx as { rampSeconds?: number }).rampSeconds ?? 0,
+            trigger: fx.kind === 'on_ability_hit' ? fx.trigger : undefined,
             fromItem: key.startsWith('item:'),
           };
           (fx.kind === 'on_hit' ? out.onHitProcs : out.onAbilityProcs).push(proc);

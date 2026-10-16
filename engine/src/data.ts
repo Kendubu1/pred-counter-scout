@@ -10,6 +10,7 @@
 //
 // All joins are by slug.
 
+import { reviewedImmobilization } from './immobilization.js';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -415,6 +416,7 @@ export function loadData(): LoadedData {
     const damageTypeVotes = { physical: 0, magical: 0, true: 0 };
     for (const key of ['ALTERNATE', 'PRIMARY', 'SECONDARY', 'ULTIMATE'] as const) {
       const omAb = omAbs.get(key);
+      const immobilizes = reviewedImmobilization(om.slug, omAb?.key ?? '', omAb?.menu_description ?? '');
       const owned = ownedByKey.get(key);
       const strict = omAb?.menu_description ? parseDamage(omAb.menu_description) : null;
       // Pattern C runs only where the strict patterns fail; without it these
@@ -434,7 +436,7 @@ export function loadData(): LoadedData {
       const costs = omAb?.cost?.length ? omAb.cost : owned?.costs ?? [];
       if (parsed) {
         defs.push({
-          key,
+          key, immobilizes,
           name: omAb?.display_name ?? owned?.name ?? key,
           damagePerRank: parsed.values,
           aoe: aoe || undefined,
@@ -458,7 +460,7 @@ export function loadData(): LoadedData {
         // kit slot (Muriel's E is now Alacrity, not the old damaging bubble).
         staleFallbacks.push({ slug: om.slug, key });
         defs.push({
-          key,
+          key, immobilizes,
           name: owned!.name,
           damagePerRank: ownedDmg.values,
           scalingPct: ownedDmg.scaling ?? 0,
@@ -475,7 +477,7 @@ export function loadData(): LoadedData {
         // Pure heal/shield ability (e.g. Muriel's Alacrity): no damage to
         // parse, but it is the support model's whole point.
         defs.push({
-          key,
+          key, immobilizes,
           name: omAb?.display_name ?? owned?.name ?? key,
           damagePerRank: [],
           scalingPct: 0,
@@ -488,12 +490,12 @@ export function loadData(): LoadedData {
           cooldowns, costs,
           maxRank: key === 'ULTIMATE' ? 3 : 5,
         });
-      } else if (asBuff || statBuffs.length) {
-        // Buff-only ability with no damage/heal line (Sparrow/Murdock AS steroid;
+      } else if (asBuff || statBuffs.length || immobilizes) {
+        // Buff or immobilization ability with no damage/heal line (Sparrow/Murdock AS steroid;
         // Feng Mao/Wraith passive power gain): retained so its self-buffs feed the
         // sim, and so it is leveled in the skill order rather than dropped.
         defs.push({
-          key,
+          key, immobilizes,
           name: omAb?.display_name ?? owned?.name ?? key,
           damagePerRank: [],
           scalingPct: 0,

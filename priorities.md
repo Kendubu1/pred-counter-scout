@@ -394,3 +394,13 @@ The offline UI parity bracket covers 55 kits, 270 items, 189 augments, and all
 in data/aggregates/eternal-source-audit.json. Resolve those and verify minor slot
 membership before claiming a complete Eternal audit. Re-author invalidated
 Eternal advice only through the author/independent-judge workflow.
+
+
+## Spectral trigger follow-up (2026-10-15)
+
+The unrestricted spell-hit bug is corrected with partial source-pinned root/stun
+coverage. Next verify actual immobilization events for displacement, suppression,
+fear/mesmerize and conditional/repeated CC; add charge and health-state timelines.
+Do not promote current recommendations from THEORY based on reduced Spectral
+prevalence. Re-run spectral-audit and all dependent artifacts after extending
+coverage. Source/render parity is not in-game damage validation.

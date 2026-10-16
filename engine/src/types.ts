@@ -34,6 +34,7 @@ export interface AbilityDef {
   // factor: current at the assumed live-HP fraction, missing as its complement.
   targetHealthPct?: { pct: number[]; basis: 'current' | 'missing' }[];
   damageType: 'physical' | 'magical' | 'true';
+  immobilizes?: boolean;         // reviewed root/stun application, one per successful cast
   aoe?: boolean;                 // hits multiple targets (area/cone/line/all enemies)
   healing?: HealEntry[];         // heal/shield output per cast (may be the only payload)
   // Self attack-speed steroid per rank (e.g. Sparrow's Heightened Senses,

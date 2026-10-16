@@ -39,9 +39,12 @@ const modeled: Record<string, Entry> = {
   },
   'item:spectral-schematics': {
     name: 'Spectral Schematics / Breakthrough',
-    sourceText: 'Upon Immobilizing an Enemy: 40 (+5% target current Health) additional Damage. Modeled assuming the immobilize lands.',
-    source: SRC,
-    effects: [{ kind: 'on_ability_hit', flat: 40, pctTargetHealth: 5, healthBasis: 'current', damageType: 'magical' }],
+    sourceText: 'Upon Immobilizing an Enemy: 40 (+5% target current Health) additional magical damage.',
+    source: 'Committed catalog, 2026-10-15; partial root/stun trigger coverage',
+    effects: [
+      { kind: 'on_ability_hit', trigger: 'immobilize', flat: 40, pctTargetHealth: 5, healthBasis: 'current', damageType: 'magical' },
+      { kind: 'unmodeled', note: 'Partial trigger coverage: one proc per reviewed root/stun cast that lands on one target. Displacement-only, empowered, stacked and stance-dependent CC are not credited. Delays, stored charges, repeated applications, immunity and target current-health progression are unmodeled.' },
+    ],
   },
   'item:fist-of-razuul': {
     name: "Fist Of Razuul / Razuul's Might",

@@ -1,0 +1,120 @@
+{
+  "_readme": "Partial source-reviewed root/stun coverage. One successful application per cast to one target, not per damage tick or CC tag. Assumes the root/stun portion lands. Conditional empowered/stacked/stance effects and displacement-only CC are not credited. Delays, charges, repeats, immunity and actual target health progression remain unmodeled. Source drift is a hard failure, requiring review.",
+  "abilities": {
+    "adele:RMB": {
+      "name": "Imperial Lash",
+      "sourceText": "Adele unfurls her Sword in a straight line, dealing 40/55/70/85/100 <AttackDamageText>(+80%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText> true damage to all Enemies it passes through.<br>\n<br>\nIf she hits an Enemy Hero or Monster, they are Rooted for 0.6s and Adele dashes to the furthest target hit.",
+      "sha256": "5be5b14fddd73b3bf7120e40ad5d79e38faf935cdd259ca450e729b3b65eb91f"
+    },
+    "adele:R": {
+      "name": "Queen\u2019s Garden",
+      "sourceText": "Adele performs a small leap, slamming her shield into the ground, summoning a large Thornbush at her location for 8s. <br>\n<br>\nVines attach to all Enemies within the central section, dealing 55/90/125 <HealthText>(+5%</HealthText><img id=\"HealthIconGreen\"></img><HealthText>)</HealthText> physical damage. This Interrupts abilities, Roots Enemies for 0.5s, and pulls flying Enemies to the ground.<br>\n<br>\nAll Enemies inside the Thornbush are Slowed by 35/37.5/40% and take 4/7/10 true damage every 35u moved within it.",
+      "sha256": "d2cf4aa1337ac667f9b2bc4764659753079a2a9ad9ddf0f2b859b70e2b50a809"
+    },
+    "akeron:E": {
+      "name": "Web Lash",
+      "sourceText": "Akeron fires a web, stopping on the first Target hit and causing various effects depending on the Target's type.<br>\n<br>\n<EffectText>Heroes or Units:</EffectText> Damages for 70/95/120/145/170 <AbilityPowerText>(+30%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage and Roots for 1s, also creating a web field that Slows Enemies by 35%.<br>\n<br>\n<EffectText>World:</EffectText> Lashes to it for up to 5s. While attached to terrain, Akeron can use abilities or leap to the ground, dealing 60/85/110/135/160 <AttackDamageText>(+50%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText><AbilityPowerText>(+30%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> physical damage, Knocking Up, and Stunning Enemies for 1s.<br>\n<br>\nAwakened: Root and Stun Duration increased to 1.25.",
+      "sha256": "53b4098ad3721a88d4fc982ca334e5d272797114cf78f8e12239aca35e7158a2"
+    },
+    "argus:Q": {
+      "name": "Dread Nova",
+      "sourceText": "Argus lobs an unstable orb of energy.<br>\n<br>\nUpon landing it explodes, dealing 85/125/165/205/245 <AbilityPowerText>(+50%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage to all nearby Targets and Stuns them for 1/1.05/1.1/1.15/1.2s.",
+      "sha256": "afe5a5fa71f6e4891833133ced882cd979bbc694ab7d9606c885c088213d386c"
+    },
+    "aurora:E": {
+      "name": "Hoarfrost",
+      "sourceText": "Aurora creates a ring of frost on the ground around her. Enemies that touch the ring take 70/110/150/190/230 <AbilityPowerText>(+50%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage and are Rooted for 1/1.05/1.1/1.15/1.2s.<br>\n<br>\nThe ring remains in the world for 2.5s.",
+      "sha256": "b5d6b7fca464baf257b0ed6447692067d6b5402072bf50a16ee30dbad6158d70"
+    },
+    "aurora:R": {
+      "name": "Cryoseism",
+      "sourceText": "Aurora freezes an area, applying a 50% Slow to all Enemies for 1.5s. After 1.5s, the ice freezes, Stunning the target for 1s. After the Stun, the Target explodes dealing 200/300/400 <AbilityPowerText>(+70%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage to them and nearby Enemies.<br>\n<br>\nEnemies damaged by Cryoseism will be Slowed by 50% for 0.5s before exploding, dealing 60/90/120 <AbilityPowerText>(+20%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage to them and nearby Enemies. Targets can only be slowed this way once per Cryoseism.",
+      "sha256": "f8d1c8af54761f6f5fbf7e4be66cb671ca19b3e5c501ba698a886f9560a7feaf"
+    },
+    "crunch:RMB": {
+      "name": "Forward Crunch",
+      "sourceText": "Dash forward, dealing 60/85/110/135/160 <AttackDamageText>(+75%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText><AbilityPowerText>(+45%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> physical damage on contact and Stunning them for 0.25s.<br>\n<br>\nEmpowered: Dash an extended distance and pushes Enemy Heroes.",
+      "sha256": "8c6f697d5af6be9230869cd31f7d4e199138414ccdbcaa7160f31da118681f4f"
+    },
+    "dekker:RMB": {
+      "name": "Stasis Bomb",
+      "sourceText": "Launch a bouncing bomb, dealing 70/95/120/145/170 <AbilityPowerText>(+45%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage and Stunning Enemies hit in a small area for 0.9s. <br>\n<br>\nStun duration increases up to 1.6s based on distance (3500 units max).",
+      "sha256": "3adf36631b9f797c04fcb5e03893d3f4385c75e9f2844d457fd3260d4507e697"
+    },
+    "gadget:E": {
+      "name": "Security Gate",
+      "sourceText": "Throw forward an electrical gate that lasts 2.5s, granting Allied Units that pass through it 50% decaying movement speed for 2.5s. <br>\n<br>\nIf an Enemy passes through, the gate deals 70/90/110/130/150 <AbilityPowerText>(+40%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage and Roots them for 1s.",
+      "sha256": "fd22126ba3f2e4a033d0555c49e50fd5b23d044d2ebdde116c1cfb943cb4a664"
+    },
+    "grux:Q": {
+      "name": "Smash 'n Grab",
+      "sourceText": "Grux raises his clubs in the air before smashing the ground, sending forth a shockwave that Pulls all Enemies in its path towards Grux, dealing 60/85/110/135/160 <AttackDamageText>(+100%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText> physical damage and Stunning them for 0.75s.<br>\n<br>\nRange increases based on Channel Duration.",
+      "sha256": "c04ebbf0a766e74cc1fac0d5b3572c0f7d024c669be31c3f18a37d41574f7ac4"
+    },
+    "grux:R": {
+      "name": "Warlord's Challenge",
+      "sourceText": "Grux slams his clubs together, Stunning all nearby Enemy Heroes for 0.75s. <br>\n<br>\nFor the next 8/10/12s, Grux gains 30/60/90% Attack Speed and empowers his attacks against Enemy Heroes to repeatedly steal 3/4/5 <AbilityPowerText>(+1.5%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> Physical Power on-hit, returning after 4s.<br>\n<br>\nThis abilities duration is extended by 0.5s on-hit when Grux attacks Enemy Heroes that are afflicted with Max Bloodlust stacks. ",
+      "sha256": "72af9bbacbd02d6910c40f70d26e033541e51be422c0ddfa8dbf8854226e5fb6"
+    },
+    "howitzer:E": {
+      "name": "Land Mine",
+      "sourceText": "Lob a mine that will explode 2.5s after landing, dealing 90/125/160/195/230 <AbilityPowerText>(+50%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage to all Enemies in the area and Knocking Back any Enemy Heroes (and Howitzer) caught in the blast. Enemy Heroes are additionally Stunned for 0.5s.<br>\n<br>\nExplodes early upon reactivation.<br>\n",
+      "sha256": "1cdf1ffd63299bd4516d9e82fcef569547c6536de85c1eec71a4c0694390183f"
+    },
+    "khaimera:R": {
+      "name": "Cull",
+      "sourceText": "After a brief channel, Khaimera slices all Enemies in front of him, Stunning them for 1.25s and dealing 200/400/600 <AttackDamageText>(+200%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText><AbilityPowerText>(+100%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> physical damage over 6 hits. The final hit Slows by 25% for 1.25s.<br>\n<br>\nGrants 20 Rage stacks for each Enemy Hero or Monster hit.",
+      "sha256": "8c8e12c4725d0d73b474d9f058c7f55e615ff413fba109a6ca9b2eb9e3fabd1b"
+    },
+    "lt-belica:Q": {
+      "name": "Seismic Assault",
+      "sourceText": "Slam the ground, sending forth a seismic wave that erupts after 0.5s, dealing 100/140/180/220/260 <AbilityPowerText>(+60%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage to all Enemies in its path, Knocking Up and Stunning them for 1s. <br>\n<br>\nInnovation: Stun duration increases to 1.4s.",
+      "sha256": "302bd29d5d85d3129efff71402c72ce509f9f60161a69e9d92877e143aecab10"
+    },
+    "maco:RMB": {
+      "name": "Maco Sparkle!",
+      "sourceText": "Maco throws a slow-moving gemstone that explodes at its max range, or when detonated early by reactivating the ability.<br>\n<br>\nWhen the gemstone explodes, it deals 70/95/120/145/170 <AbilityPowerText>(+45%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage and Stuns Enemies for 0.5s.<br>\n<br>\nStun Duration increases up to 1.1/1.15/1.2/1.25/1.3s, based on the distance it travels.",
+      "sha256": "82c40ad69fdb4c33e8373f6aa42a5822ad20ddef683bd261f836ebc7f4061902"
+    },
+    "murdock:Q": {
+      "name": "Static Trap",
+      "sourceText": "Place a trap that arms after a short delay, dealing 40/80/120/160/200 <AttackDamageText>(+100%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText><AbilityPowerText>(+120%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage to any Enemy Hero that steps on it and Rooting them for 1.25s. <br>\n<br>\nTraps last for 40/45/50/55/60s and up to 3/3/4/4/5 may be placed at one time.<br>\n<br>\nMax Charges: 2.",
+      "sha256": "d91988da4109658879fe5a3370ead4f71d8d0556f3241fcff7b6e8688d3d088c"
+    },
+    "narbash:RMB": {
+      "name": "Thunk",
+      "sourceText": "Toss a drumstick that deals 95/140/185/230/275 <AbilityPowerText>(+85%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText><AttackDamageText>(+130%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText> magical damage in a tiny area of effect, Knocking Back and Stunning the Enemies hit for 1.1/1.15/1.2/1.25/1.3s.",
+      "sha256": "f60ef10c7a5daf4c8ba6e4dceca85b2574a1377410b5143cd9d7f4e53e7bd8d3"
+    },
+    "rampage:Q": {
+      "name": "Boulder Throw",
+      "sourceText": "Rip a boulder from the earth and carry it for up to 5s. Rampage can throw the boulder, dealing 100/135/170/205/240 <AttackDamageText>(+60%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText><AbilityPowerText>(+80%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage to all Enemies in its path, Stunning them for 1.2/1.25/1.3/1.35/1.4s. Shatters on contact with Enemy Heroes.<br>\n<br>\nBehemoth: Throw the boulder instantly.",
+      "sha256": "d620379ee8f2d25884dfef6aba9be0a7cc1c97fd73838cb4680d9b5dcfb8d80c"
+    },
+    "steel:RMB": {
+      "name": "Shield Bash",
+      "sourceText": "Swipe forward with Steel's shield, dealing 35/65/95/125/155 <AbilityPowerText>(+50%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> (+5/5.75/6.5/7.25/8% of the Target's maximum health) magical damage to all Enemies in front of him and Stunning them for 0.5s.<br>\n<br>\nDeals 50/55/60/65/70 additional damage to Monsters.",
+      "sha256": "96a4d67d4d4b821412abc47b1e6a30a8d35e8a50e3b90f61522091c70a8ae3ab"
+    },
+    "steel:R": {
+      "name": "Shield Slam",
+      "sourceText": "Leap into the sky, crashing down at the target location to deal 200/320/440 <AbilityPowerText>(+90%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage to all Enemies in the area, Knocking them Up and Stunning them for 1.5s.",
+      "sha256": "68814f05de5fd76e2e79aa6faa119bcf1fa42bd1e7f1afd3a93634fa40cd809e"
+    },
+    "the-fey:R": {
+      "name": "Fly Trap",
+      "sourceText": "Plant a magical seedling, awakening a giant fly trap that attaches itself to all nearby Enemy Heroes. <br>\n<br>\nAfter a brief delay, it Pulls its victims inward, dealing 250/375/500 <AbilityPowerText>(+100%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage and Stunning them for 1s.",
+      "sha256": "66c9c9352dc9ad2c0c6926c975a5912a567eb6d85dac491a8211e120e2a8ca81"
+    },
+    "zarus:Q": {
+      "name": "Barricade",
+      "sourceText": "Unfold a shield for 1.5s, reducing incoming damage by 75%.<br>\n<br>\nUpon recasting or after the duration, swing the shield dealing 54/70/86/102/118 <AttackDamageText>(+90%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText> physical damage increased up to 135/175/215/255/295 <AttackDamageText>(+225%</AttackDamageText><img id=\"ADIconOrange\"></img><AttackDamageText>)</AttackDamageText> and Stunning targets hit for 0.75s.",
+      "sha256": "5cd4478d2c62d9e0436b9071b798df4e51c70ed8be8927ebd2c37ae547052bea"
+    },
+    "zinx:Q": {
+      "name": "Ricochet",
+      "sourceText": "Throw an electromagnetic disk dealing 65/90/115/140/165 <AbilityPowerText>(+40%</AbilityPowerText><img id=\"APIconBlue\"></img><AbilityPowerText>)</AbilityPowerText> magical damage and Stunning for 1/1.05/1.1/1.15/1.2s.<br>\n<br>\nThe disk can ricochet up to 5 times, dealing its damage again and Stunning each target for 50% of the original duration. <br>\n<br>\nWill not ricochet to previously hit targets.",
+      "sha256": "2d6ec560eda9f02bf44ba2e385926deb3aee3bacf735b39c1f33bac5ed89e8a6"
+    }
+  }
+}

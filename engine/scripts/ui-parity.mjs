@@ -88,6 +88,11 @@ try {
     assert.equal(result.stats, Object.values(item.stats || {}).filter(Boolean).length, `${item.slug}: hidden catalog stat`);
     const text = result.text;
     assert.ok(text.includes(item.display_name), item.slug);
+    if (item.slug === 'spectral-schematics') {
+      assert.match(text, /What the simulator does not fully count/);
+      assert.match(text, /one proc per reviewed root\/stun cast/);
+      assert.match(text, /Displacement-only, empowered, stacked and stance-dependent CC are not credited/);
+    }
     if (item.slug === 'absolution') {
       assert.match(text, /Tenacity\s*\+25/);
       assert.match(text, /On being Immobilized:/);
@@ -103,6 +108,14 @@ try {
     }
   }
   checks.push('All 270 item dialogs retain every nonzero stat and effect condition; Absolution shows 25 tenacity');
+  checks.push('Spectral Schematics dialog exposes partial trigger coverage');
+  if (shots) {
+    await page.evaluate(() => window.eval('showItem')('spectral-schematics'));
+    await page.locator('.ipop details summary').click();
+    const shot = path.join(shots, 'spectral-schematics.png');
+    await page.screenshot({ path: shot }); screenshots.push(shot);
+    await page.locator('.iclose').click();
+  }
   await page.evaluate(() => window.eval('showItem')('absolution'));
   if (shots) {
     const shot = path.join(shots, 'absolution.png');

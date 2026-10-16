@@ -32,6 +32,7 @@ const out = {
   heroes: [...data.kits.values()].map(k => ({
     slug: k.slug, source: k.abilitySource, passive: k.passive,
     abilities: k.abilities.map(a => ({ key: a.key, damageType: a.damageType,
+      reviewedImmobilization: a.immobilizes ?? false,
       powerScaling: a.powerScaling, ignoresArmor: a.ignoresArmor ?? false,
       selfAttackSpeedPctPerRank: a.selfAttackSpeedPctPerRank, buffDurationSecPerRank: a.buffDurationSecPerRank })),
     staleFallbacks: data.staleFallbacks.filter(s => s.slug === k.slug),

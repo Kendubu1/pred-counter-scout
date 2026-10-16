@@ -4343,3 +4343,55 @@ conflicting stat/damage rows, Weald level-18 attack-speed jump, and Thraex
 reduction conversion. Current-patch joint-build outcomes and held-out gameplay
 measurements are still absent, so simulated gains do not establish winning
 builds or current-meta fidelity. No API refresh is needed for this batch.
+
+
+## 2026-10-15: Spectral Schematics trigger correction (partial)
+
+Breakthrough's catalog condition is immobilizing an enemy. The old effect
+primitive credited every damaging cast, including kits with no immobilization.
+The same incorrect encoding existed in the one-shot item batch seed. Both now
+carry an explicit immobilize trigger. Burst and rotation maintain a separate
+eligible-cast count, before filtering out non-damaging abilities; Grux R counts,
+ordinary spells do not. One cast earns one proc, not one per damage tick or
+simultaneous root/stun tag. Ordinary spell-hit effects retain their existing path.
+
+The reviewed fixture pins full source descriptions and SHA-256 hashes for 23
+root/stun slots. Changed descriptions fail loading and require review. This is
+partial coverage, not a complete immobilization classifier: displacement-only,
+suppression, fear/mesmerize, empowered, stacked and stance-dependent cases still
+need game-event verification. They receive no proc credit in this pass, which
+can undercount real damage. Successful hit/root contact is assumed. Stored
+charges, delays, repeated CC, immunity and event-by-event current health are
+not simulated. The inherited full-health burst / 80%-health rotation assumption
+remains; these are not measured damage predictions.
+
+The item popup now exposes committed model limitations in an expandable section.
+Removed Spectral's generic mage recommendation because it omitted the trigger;
+a replacement needs the normal author/judge review. The corrected item doc and
+catalog audit expose the same limits. spectral-audit.ts compares the old
+unrestricted encoding, reviewed triggers and stats-only for all 55 heroes with
+identical items and target, and records current recommendation prevalence.
+
+Regression coverage checks non-CC kits, Murdock's trap, Grux's non-damaging stun,
+Khaimera's multi-hit ultimate, conditional abilities and source drift. The old
+Gideon-specific sensitivity expectation depended on the inflated item; replace
+it with a controlled ranking-reversal test for attribution, while retaining the
+real-kit sensitivity integration test. A fall in Spectral picks does not prove
+winning builds or agreement with the current meta.
+
+
+Validation result: rebuilt all 55 artifacts, 1,485 matchup pairs and 927
+controlled historical-core scenarios. Spectral appears in 1/107 recommended
+hero-role builds (Steel offlane), down from the prior 26/107; 27 item sets change.
+Removed four obsolete optimizer explanations and four stale coaching lines.
+At level 13 against the 1,900 HP / 48 magic-armor reference target, Spectral's
+burst contribution changes from 273.6 to 91.2 for Murdock, 364.9 to 0 for
+Morigesh, and 364.9 to 182.4 for Steel. The reduction includes omitted valid CC
+types, so the new count is conservative, not an estimate of true meta strength.
+Saved artifact schemas and browser source/render parity pass; the UI audit has
+no hard failures and retains two existing Coach typography findings.
+
+Final harness: 224 tests in 31 files pass with two workers and a 15-second
+default timeout. Two compute-heavy tests exceeded five seconds in the initial
+parallel run; reduced-concurrency rerun passed without changing assertions.
+TypeScript and whitespace checks pass. No live refresh, merge or deployment.

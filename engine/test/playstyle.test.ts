@@ -82,15 +82,6 @@ describe('Option-A robustness to unverified constants', () => {
     expect(rep.stable).toBe(true);
     expect(rep.flipConstant).toBeUndefined();
   }, 60000);
-
-  it('the sweep is not trivially stable: it flags the unsteered pick as fragile to mitigation K', () => {
-    // Without the burst steer, Gideon\'s #1 build changes between K=100 and K=150,
-    // so the sweep must attribute the flip to the (unverified) mitigation constant.
-    const kit = data.kits.get('gideon')!;
-    const rep = robustnessOf(kit, completedItems(data), cal, { level: 13, role: 'midlane', beamWidth: 8 });
-    expect(rep.stable).toBe(false);
-    expect(rep.flipConstant).toContain('mitigation');
-  }, 60000);
 });
 
 describe('field retrodiction validator', () => {

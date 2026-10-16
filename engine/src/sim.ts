@@ -398,11 +398,14 @@ export function rotationDamage(kit: HeroKit, opts: SimOptions, t: ItemStats, win
   const isBurst = windowSec <= BURST_WINDOW;
   let total = 0;
   let totalCasts = 0;
+  let immobilizingCasts = 0;
   for (const ab of kit.abilities) {
     const rank = ranks.get(ab.key) ?? 0;
-    if (rank <= 0 || !ab.damagePerRank.length) continue;
+    if (rank <= 0) continue;
     const cd = abilityCooldown(ab, rank, t, eff);
     const casts = 1 + Math.floor(windowSec / cd);
+    if (ab.immobilizes) immobilizingCasts += casts;
+    if (!ab.damagePerRank.length) continue;
     totalCasts += casts;
     const amp = ampFactorAbilities(eff, ab, isBurst, profile, t);
     const maxHpBonus = (ab.pctMaxHealth && profile ? (ab.pctMaxHealth / 100) * profile.health : 0) + targetHealthBonus(ab, rank, profile, isBurst);
@@ -415,7 +418,7 @@ export function rotationDamage(kit: HeroKit, opts: SimOptions, t: ItemStats, win
   // ability loop let a 4-ability kit collect 4x the procs an 8s ICD
   // allows (the Noxia audit finding, 2026-06-12).
   for (const p of eff.onAbilityProcs) {
-    const procs = procCount(totalCasts, windowSec, p.icdSeconds) * rampFactor(windowSec, p.rampSeconds);
+    const procs = procCount(p.trigger === 'immobilize' ? immobilizingCasts : totalCasts, windowSec, p.icdSeconds) * rampFactor(windowSec, p.rampSeconds);
     total += mitigate(procDamage(p, t, profile, kit, isBurst, eff), p.damageType, profile, t, eff, windowSec, k) * procs;
   }
   return total;
@@ -493,9 +496,12 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
   let burst = 0;
   let teamfightBurst = 0;
   let burstCasts = 0;
+  let burstImmobilizations = 0;
   for (const ab of kit.abilities) {
     const rank = ranks.get(ab.key) ?? 0;
-    if (rank <= 0 || !ab.damagePerRank.length) continue;
+    if (rank <= 0) continue;
+    if (ab.immobilizes) burstImmobilizations++;
+    if (!ab.damagePerRank.length) continue;
     burstCasts++;
     const amp = ampFactorAbilities(eff, ab, true, profile, t);
     const maxHpBonus = (ab.pctMaxHealth && profile ? (ab.pctMaxHealth / 100) * profile.health : 0) + targetHealthBonus(ab, rank, profile, true);
@@ -509,7 +515,7 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
   // Global item ICDs: one proc budget for the whole combo, not one per
   // ability (see rotationDamage).
   for (const p of eff.onAbilityProcs) {
-    const procs = procCount(burstCasts, BURST_WINDOW, p.icdSeconds) * rampFactor(BURST_WINDOW, p.rampSeconds);
+    const procs = procCount(p.trigger === 'immobilize' ? burstImmobilizations : burstCasts, BURST_WINDOW, p.icdSeconds) * rampFactor(BURST_WINDOW, p.rampSeconds);
     const d = mitigate(procDamage(p, t, profile, kit, true, eff), p.damageType, profile, t, eff, BURST_WINDOW, k) * procs;
     burst += d; teamfightBurst += d;
   }
