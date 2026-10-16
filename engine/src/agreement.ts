@@ -7,7 +7,7 @@ import type { GeneratedBuild, ObjKey } from './search.js';
 import type { Item } from './types.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-interface CoreRow { coreSlugs: (string | null)[]; n: number; w: number }
+interface CoreRow { coreSlugs: (string | null)[]; n: number; w: number; anyOrder?: boolean }
 export interface BuildEvidence {
   generatedAt?: string; source?: string; patch?: string;
   heroes: Record<string, CoreRow[]>;
@@ -18,7 +18,7 @@ export interface EvidenceScope {
   role: string | null; population: 'role' | 'hero-wide';
   currentMetaEligible: boolean; limitations: string[];
 }
-export interface FieldCore { items: string[]; n: number; w: number; wr: number; covered: boolean }
+export interface FieldCore { items: string[]; n: number; w: number; wr: number; covered: boolean; anyOrder?: boolean }
 export interface AgreementScore {
   hero: string; cores: FieldCore[]; topCore: FieldCore | null;
   hitAtK: boolean; coverage: number;
@@ -27,7 +27,7 @@ export interface AgreementScore {
   evidence: EvidenceScope; rejectedRows: number; note: string;
 }
 export function buildEvidencePatch(evidence: BuildEvidence): string | null {
-  return evidence.patch ?? evidence.source?.match(/\bpatch\s+(\d+\.\d+(?:\.\d+)?)(?=\s|\(|;|,|$)/i)?.[1] ?? null;
+  return evidence.patch ?? evidence.source?.match(/\bpatch\s+(\d+\.\d+(?:\.\d+)?)(?=\s|\(|;|,|:|$)/i)?.[1] ?? null;
 }
 export function agreementFromEvidence(
   front: Pick<GeneratedBuild, 'items'>[], slug: string, itemsBySlug: Map<string, Item>,
@@ -58,7 +58,7 @@ export function agreementFromEvidence(
     if (row.n < (opts.minGames ?? 20)) continue;
     const items = row.coreSlugs.map(s => itemsBySlug.get(s!)!.name);
     const covered = front.some(b => items.every(it => b.items.slice(0, opts.k ?? 6).includes(it)));
-    cores.push({items, n: row.n, w: row.w, wr: row.w / row.n, covered});
+    cores.push({items, n: row.n, w: row.w, wr: row.w / row.n, covered, ...(row.anyOrder ? {anyOrder: true} : {})});
   }
   if (!cores.length) return null;
   const topCore = [...cores].sort((a, b) => b.n - a.n)[0]!;

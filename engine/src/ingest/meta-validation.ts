@@ -18,6 +18,7 @@ for(const kit of data.kits.values()){
   for(const view of artifact.roles??[]){
     const agreement=agreementFromEvidence([{items:view.build.items.map((i:any)=>i.name)}],kit.slug,data.itemsBySlug,source,meta.patch,{role:view.role});
     if(!agreement?.topCore){skipped.push({hero:kit.slug,role:view.role,reason:'No valid observed three-item core with at least 20 games'});continue;}
+    if(agreement.topCore.anyOrder){skipped.push({hero:kit.slug,role:view.role,reason:'Pooled item-set observations do not establish purchase-order performance'});continue;}
     const field=agreement.topCore.items.map(n=>data.items.get(n)!);
     const candidate=view.build.items.slice(0,3).map((i:any)=>data.itemsBySlug.get(i.slug));
     if(candidate.some((i:any)=>!i)){skipped.push({hero:kit.slug,role:view.role,reason:'Unmapped candidate item'});continue;}
@@ -34,8 +35,8 @@ const out={
   summary:{heroRoleComparisons:rows.length,currentPatchLaneEligible:eligible.length,controlledScenarios:rows.reduce((s,r)=>s+r.scenarios.length,0),
     holdoutValidated:false,winningBuildsConfirmed:0},
   limitations:[
-    'Historical cores are diagnostic inputs, not the current meta. Hero-wide fallback comparisons are labeled and not lane validation.',
-    'Current patch item marginals cannot reconstruct joint builds or purchase order. No synthetic build observations are invented.',
+    'Current-patch ordered cores support descriptive diagnostics; historical and hero-wide fallback comparisons remain labeled and are not current lane validation.',
+    'Purchase cores come from observed transactions. Pooled any-order sets are excluded from order-sensitive scenarios; completion, sale/undo handling and selection bias still require validation.',
     'Same gold CAP is not identical spending: completed-item prefixes preserve purchase order and report residual gold; components are unmodeled.',
     'All scenarios exclude Eternals and augments equally and use the engine reference defenses. Conditional effects and unsupported mechanics remain incomplete.',
     'Candidate timelines use marginal combat gain per gold while preserving the input search order\'s staged mana adequacy. That mana target and its stage levels remain heuristics, not measured sustainable rotations.',

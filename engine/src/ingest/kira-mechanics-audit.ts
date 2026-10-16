@@ -4,7 +4,7 @@ import { isDeepStrictEqual } from 'node:util';
 import { loadData } from '../data.js';
 import { loadCalibration, effectiveTotals, basicHit, abilityHit, ranksAtLevel, attacksPerSecond } from '../sim.js';
 import { resolveItemEffects } from '../effects.js';
-import { replayKira, KIRA_REPLAY_LIMITS, type ReplayAction } from '../kira-replay.js';
+import { replayKira, KIRA_REPLAY_LIMITS, KIRA_REPLAY_ITEMS, type ReplayAction } from '../kira-replay.js';
 
 const read = (rel: string) => JSON.parse(readFileSync(new URL(`../../../${rel}`, import.meta.url), 'utf8'));
 const catalog = read('data/catalog/heroes.json'), catalogItems = read('data/catalog/items.json');
@@ -17,8 +17,10 @@ for (const [slug, expected] of Object.entries(source.items)) {
 const data = loadData(), cal = loadCalibration(), kit = data.kits.get('kira')!;
 const level = 13, ranks = ranksAtLevel(kit, level);
 const evidence = read('data/aggregates/predgg-builds.json');
+const artifact = read('data/artifacts/kira.json');
+const carry = artifact.roles?.find((v: any) => v.role === 'carry' && v.build) ?? artifact;
 const cores = [
-  { name: 'Current optimizer opening', slugs: ['deathstalker', 'viper', 'manta-scythe'], games: null, wins: null },
+  { name: 'Current optimizer opening', slugs: carry.build.items.slice(0, 3).map((i: any) => i.slug), games: null, wins: null },
   ...evidence.heroes.kira.map((r: any) => ({ name: r.core.join(' / '), slugs: r.coreSlugs, games: r.n, wins: r.w })),
 ];
 const scenarios = [
@@ -26,8 +28,10 @@ const scenarios = [
   { name: 'Interrupted contact: attacks only early and late', duration: 10, attacks: [0.2, 2.2, 7.2, 9.2], isolated: false },
   { name: 'Attack-rate ceiling: uninterrupted contact, zero cast recovery', duration: 10, attacks: [] as number[], isolated: true },
 ];
-const rows = [];
+const rows = [], skipped = [];
 for (const core of cores) {
+  const unsupported = core.slugs.filter((s: string) => !(KIRA_REPLAY_ITEMS as readonly string[]).includes(s));
+  if (unsupported.length) { skipped.push({...core, unsupported, reason: 'Outside reviewed diagnostic replay coverage'}); continue; }
   const items = core.slugs.map((s: string) => data.itemsBySlug.get(s)!);
   const effects = resolveItemEffects(items, { level });
   const stats = effectiveTotals(items, effects);
@@ -85,7 +89,7 @@ const report = { generatedAt: new Date().toISOString(), status: 'diagnostic-only
   evidenceSource: evidence.source, evidenceDate: evidence.generatedAt,
   target: { health: 10000, physicalArmor: 85, maxMana: 1000 },
   method: '100 stratified crit sequences; high-health diagnostic target; three-item cores with actual costs. First two scenarios fix attack opportunities to isolate mechanics. Third uses each build attack rate with zero cast recovery: an optimistic contact ceiling, not a feasible measured combo. No Purge or Dash. Ablations retain item stats and stat conversions; only replay event behavior is disabled. Deltas interact and must not be added together. Removing Vengeance also removes Dusk eligibility.',
-  limitations: KIRA_REPLAY_LIMITS, rows };
+  limitations: KIRA_REPLAY_LIMITS, skipped, rows };
 writeFileSync(new URL('../../../data/aggregates/kira-mechanics-audit.json', import.meta.url), JSON.stringify(report, null, 1) + '\n');
 for (const row of rows) console.log(JSON.stringify({ name: row.name, cells: row.cells.map((c: any) => ({ scenario: c.scenario,
   damage: Math.round(c.damage), healing: Math.round(c.potentialHealing), ablations: c.ablations.map((a: any) => ({ effect: a.effect, damage: Math.round(a.marginalDamage) })) })) }));

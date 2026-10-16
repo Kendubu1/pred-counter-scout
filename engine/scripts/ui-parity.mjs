@@ -12,6 +12,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const read = (p) => JSON.parse(readFileSync(path.join(root, p), 'utf8'));
 const heroes = read('data/catalog/heroes.json');
 const items = read('data/catalog/items.json');
+const buildEvidence = read('data/aggregates/predgg-builds.json');
 const augments = read('data/aggregates/predgg-augments.json').catalog;
 const eternals = read('data/game-data/eternals.json').eternals;
 const mime = { '.html': 'text/html', '.json': 'application/json', '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml' };
@@ -63,6 +64,23 @@ try {
       return { count: panel.querySelectorAll('.abil:not([data-augment-id])').length, text: panel.textContent, augments: [...panel.querySelectorAll('[data-augment-id]')].map((el) => ({ id: el.dataset.augmentId, text: el.textContent })) };
     }, { artifact });
     assert.equal(result.count, hero.abilities.length, hero.slug);
+    for (const view of artifact.roles ?? [artifact]) {
+      const sourceRows = buildEvidence.byRole?.[hero.slug]?.[view.role] ?? buildEvidence.heroes[hero.slug] ?? [];
+      for (const m of view.metaBuilds ?? []) {
+        const source = sourceRows.find(r => JSON.stringify(r.coreSlugs) === JSON.stringify(m.items.map(i => i.slug)));
+        assert.ok(source, `${hero.slug}/${view.role}: displayed core absent from evidence`);
+        assert.equal(Boolean(m.anyOrder), Boolean(source.anyOrder), `${hero.slug}/${view.role}: lost pooled-order provenance`);
+      }
+      const pooled = (view.metaBuilds ?? []).filter(m => m.anyOrder);
+      if (!pooled.length) continue;
+      assert.ok(pooled.every(m => m.optimizer === null), `${hero.slug}: pooled order has positional swap advice`);
+      const count = await page.evaluate(a => {
+        const panel = document.createElement('section');
+        panel.innerHTML = window.eval('buildsCard')(a);
+        return [...panel.querySelectorAll('.mb-n')].filter(e => e.textContent.includes('purchase orders pooled')).length;
+      }, {...artifact, ...view});
+      assert.equal(count, pooled.length, `${hero.slug}/${view.role}: pooled-order label missing`);
+    }
     const expectedAugments = Object.entries(augments).filter(([, a]) => a.hero === hero.slug);
     assert.equal(result.augments.length, expectedAugments.length, `${hero.slug}: missing augment`);
     for (const [id, a] of expectedAugments) {
@@ -77,6 +95,7 @@ try {
   }
   assert.equal(augmentCount, 189);
   checks.push('All 55 hero kits and 189 hero augments render their catalog descriptions');
+  checks.push('Pooled item cores retain explicit order labels and omit positional swap advice');
   for (const item of items) {
     const result = await page.evaluate(async (slug) => {
       await window.eval('showItem')(slug);

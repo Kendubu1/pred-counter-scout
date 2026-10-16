@@ -24,8 +24,10 @@ export const KIRA_REPLAY_LIMITS = [
   'All Tainted Rounds on-hit damage, anti-heal value, Terminus overheal shields and Manta farming stacks remain omitted.',
 ];
 
+export const KIRA_REPLAY_ITEMS = ['deathstalker', 'viper', 'manta-scythe', 'solaris', 'ashbringer', 'imperator', 'ruination', 'terminus', 'vanquisher', 'tainted-rounds'] as const;
+
 export function replayKira(actions: ReplayAction[], opts: ReplayOptions) {
-  const supported = new Set(['deathstalker', 'viper', 'manta-scythe', 'solaris', 'ashbringer', 'imperator', 'ruination', 'terminus', 'vanquisher', 'tainted-rounds']);
+  const supported = new Set<string>(KIRA_REPLAY_ITEMS);
   for (const item of opts.items) if (!supported.has(item)) throw new Error(`Item outside reviewed replay coverage: ${item}`);
   if (!Number.isInteger(opts.level) || opts.level < 1 || opts.level > 18 || opts.duration < 0 || opts.health <= 0 || opts.maxMana < 0) throw new Error('Invalid replay inputs');
   for (let i = 0; i < actions.length; i++) {

@@ -442,3 +442,13 @@ Combustion cooldown reduction, Sky Splitter floors/caps and native on-hit event
 scale before promoting those findings. Continue the remaining item families in
 top-item-client-review.json, including raw-only defaults; extraction is not
 completion. All-item/passive coverage remains uncertified and builds stay THEORY.
+
+
+### Fresh 1.17.2 evidence integrated (2026-10-16)
+
+The historical-only evidence limitation is superseded for current match-stream
+cores. Preserve the new transaction ingestion and anyOrder flags while continuing
+mechanics work. Next validate purchase transaction ordering, sale/undo semantics,
+completion bias and match-level split isolation; current descriptive overlap is
+not held-out winning-build validation. Vanquisher and remaining native item
+interaction gaps remain next in the mechanics queue.

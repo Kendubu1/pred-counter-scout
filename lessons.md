@@ -4479,3 +4479,40 @@ deployment are unchanged by this batch.
   every damage packet recursively through every passive.
 - Vanquisher's recovered execute condition includes shields and post-hit health.
   Unconditional threshold credit is a known remaining ranking bias.
+
+
+### Incoming refresh notes preserved during integration
+
+## 2026-10-16 — Core builds counted from the purchase log (maintainer: "why are item builds from 1.15?")
+
+The hero pages' field builds came from pred.gg `coreBuild`, gated with
+simpleBuild in August, so data/aggregates/predgg-builds.json had been frozen at
+patch 1.15 (pulled 2026-07-06) — the same staleness the augments had, unnoticed
+because the builds section never printed its patch prominently. The public match
+stream carries `incomeData.transactions` (itemId, gameTime, transactionType:
+10 = purchase, 11 = starting items): the ordered 3-item core (first three
+distinct Epic passives bought) is exactly the shape coreBuild returned (every
+item in the old file was an Epic passive). `npm run perks` now counts cores per
+hero/role alongside perks and writes predgg-builds.json; cores are counted from
+2026-10-14 18:34 onward (`coresFrom`), so their window is shorter than the
+perks'. `buildstats` is out of the refresh chain (it would fail on the gate).
+Lesson: when one endpoint goes behind a gate, audit every artifact that came
+from the same family, not just the one that visibly broke.
+First full window (1.17.2, 2026-10-14 18:34 -> 10-16 01:17, ~6.5k ranked
+matches) covered 51/55 heroes by exact order. Akeron and Sevarog split one core
+across several purchase orders, none of which reached 20 games, so a hero/role
+with no ordered core falls back to the item SET (shown in its most common
+order, flagged `anyOrder`). Maco and Wukong still have no core at the floor;
+they are declared in field-data-pending.json (whose reason text no longer
+blames the app tier) and fill in as the daily pull grows the window.
+
+
+### 2026-10-16 - combining fresh evidence with mechanics corrections
+
+- A refresh on main did not overwrite draft-branch mechanics, but generated outputs
+  conflicted. Preserve source changes from both branches and regenerate outputs.
+- Parse patch metadata with its actual delimiter: `1.17.2:` was previously missed.
+- Any-order pooled win counts cannot validate the displayed representative order.
+  Preserve the flag, label pooled sets, and exclude them from order-sensitive tests.
+- Recheck coaching and explanations after merging evidence; matching item sets are
+  insufficient for first/second/third item advice when purchase order changed.

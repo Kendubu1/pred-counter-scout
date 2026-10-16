@@ -52,7 +52,10 @@ const ROLES = new Set(['carry', 'midlane', 'offlane', 'jungle', 'support']);
 
 type NW = { n: number; w: number };
 interface EternalCell extends NW { minor1: Record<string, NW>; minor2: Record<string, NW>; pairs: Record<string, NW> }
-interface RoleCell extends NW { augments: Record<string, NW>; eternals: Record<string, EternalCell>; crests: Record<string, NW> }
+// cores: the first three distinct completed items (Epic passives) in PURCHASE
+// order, keyed "slug|slug|slug" — the same definition pred.gg's gated coreBuild
+// used, rebuilt from each player's incomeData.transactions.
+interface RoleCell extends NW { augments: Record<string, NW>; eternals: Record<string, EternalCell>; crests: Record<string, NW>; cores?: Record<string, NW> }
 interface State {
   source: string; note: string; generatedAt: string;
   patch: string | null; patchReleasedAt: string;
@@ -60,6 +63,9 @@ interface State {
   /** cursor: endTime (unix s) of the newest match counted; boundaryIds = matches ending at that second. */
   cursor: number; boundaryIds: string[];
   unknown: { heroes: string[]; perks: string[] };
+  /** Core builds were added on 2026-10-16, after the window opened: they are
+   *  counted from this cursor onward, so their sample is smaller than the perks'. */
+  coresFrom?: string;
   heroes: Record<string, Record<string, RoleCell>>;
 }
 
@@ -99,7 +105,9 @@ async function main() {
   if (!meta.patchReleasedAt) throw new Error('data/catalog/META.json has no patchReleasedAt — run npm run catalog');
   const heroes = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8')) as { slug: string; name: string }[];
   const slugByName = new Map(heroes.map((h) => [h.name.toLowerCase(), h.slug]));
-  const items = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/items.json'), 'utf8')) as { game_id: number | null; display_name: string; slot_type: string | null }[];
+  const items = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/items.json'), 'utf8')) as { game_id: number | null; name: string; slug: string; display_name: string; slot_type: string | null; rarity: string | null }[];
+  const coreItemByGameId = new Map(items.filter((i) => i.rarity === 'Epic' && i.slot_type === 'Passive' && i.game_id != null).map((i) => [i.game_id!, i]));
+  const itemBySlug = new Map(items.map((i) => [i.slug, i]));
   const crestByGameId = new Map(items.filter((i) => i.slot_type === 'Crest' && i.game_id != null).map((i) => [i.game_id!, i.display_name]));
 
   // Perk catalog: internal name -> id / display name / slot (one GraphQL call).
@@ -136,6 +144,7 @@ async function main() {
         unknown: { heroes: [], perks: [] }, heroes: {},
       }
     : prev!;
+  st.coresFrom ??= new Date(st.cursor * 1000).toISOString();
   if (fresh && prev) console.log(`patch changed (${prev.patch} -> ${meta.patch}); starting a fresh window`);
   console.log(`match stream from ${new Date(st.cursor * 1000).toISOString()} (${fresh ? 'fresh' : 'resuming'}), up to ${MAX_REQUESTS} requests`);
 
@@ -192,6 +201,15 @@ async function main() {
           const crest = crestByGameId.get(it?.itemId);
           if (crest) { bump(cell.crests, crest, won); break; }
         }
+        // transactionType 10 = purchase (11 = starting items, others = sells/undos).
+        const core: string[] = [];
+        for (const t of p.incomeData?.transactions ?? []) {
+          if (t?.transactionType !== 10) continue;
+          const it = coreItemByGameId.get(t.itemId);
+          if (it && !core.includes(it.slug)) core.push(it.slug);
+          if (core.length === 3) break;
+        }
+        if (core.length === 3) bump((cell.cores ??= {}), core.join('|'), won);
       }
     }
     if (!page.length) break;
@@ -233,6 +251,49 @@ async function main() {
     note: 'n = games, w = wins. eternals[].minor1/minor2 = minor-slot picks under that Eternal; pairs = the most-played minor combinations.',
     catalog: augCatalog,
     heroes: out,
+  }, null, 1));
+
+  // Core builds -> predgg-builds.json, the shape the gated coreBuild pull wrote
+  // (core = internal item names, coreSlugs, n, w; 20+ games per core).
+  const MIN_CORE_GAMES = 20;
+  const coreRows = (o: Record<string, NW>) => sorted(o).filter(([, v]) => v.n >= MIN_CORE_GAMES).slice(0, 10).map(([k, v]) => {
+    const coreSlugs = k.split('|');
+    return { core: coreSlugs.map((sl) => itemBySlug.get(sl)?.name ?? sl), coreSlugs, n: v.n, w: v.w };
+  });
+  // Some heroes split one core across several purchase orders, so no single
+  // order reaches the floor. Fall back to the item SET (any order), shown in
+  // its most common order and flagged anyOrder.
+  const coreRowsOrSets = (o: Record<string, NW>) => {
+    const rows: Array<{ core: string[]; coreSlugs: string[]; n: number; w: number; anyOrder?: true }> = coreRows(o);
+    if (rows.length) return rows;
+    const sets: Record<string, NW & { top: string; topN: number }> = {};
+    for (const [k, v] of Object.entries(o)) {
+      const s = (sets[k.split('|').sort().join('|')] ??= { n: 0, w: 0, top: k, topN: 0 });
+      s.n += v.n; s.w += v.w;
+      if (v.n > s.topN) { s.top = k; s.topN = v.n; }
+    }
+    return Object.values(sets).filter((s) => s.n >= MIN_CORE_GAMES).sort((a, b) => b.n - a.n).slice(0, 10).map((s) => {
+      const coreSlugs = s.top.split('|');
+      return { core: coreSlugs.map((sl) => itemBySlug.get(sl)?.name ?? sl), coreSlugs, n: s.n, w: s.w, anyOrder: true as const };
+    });
+  };
+  const buildHeroes: Record<string, unknown[]> = {};
+  const buildByRole: Record<string, Record<string, unknown[]>> = {};
+  for (const [slug, roles] of Object.entries(st.heroes)) {
+    const all: Record<string, NW> = {};
+    for (const [role, c] of Object.entries(roles)) {
+      for (const [k, v] of Object.entries(c.cores ?? {})) { const a = (all[k] ??= { n: 0, w: 0 }); a.n += v.n; a.w += v.w; }
+      const rows = coreRowsOrSets(c.cores ?? {});
+      if (rows.length) (buildByRole[slug] ??= {})[role] = rows;
+    }
+    const rows = coreRowsOrSets(all);
+    if (rows.length) buildHeroes[slug] = rows;
+  }
+  writeFileSync(path.join(ROOT, 'data/aggregates/predgg-builds.json'), JSON.stringify({
+    generatedAt: st.generatedAt,
+    source: `pred.gg public match stream (get-matches-since), RANKED, patch ${meta.patch ?? '?'}: ordered 3-item cores (first three completed Epic items by purchase time; anyOrder rows group a set whose orders were each under the floor), ${MIN_CORE_GAMES}+ games each, counted ${String(st.coresFrom).slice(0, 16)} -> ${st.window.to.slice(0, 16)}; hero-wide + per-role. Counted by npm run perks.`,
+    heroes: buildHeroes,
+    byRole: buildByRole,
   }, null, 1));
 
   const cells = Object.values(out).reduce((t, r) => t + Object.keys(r).length, 0);

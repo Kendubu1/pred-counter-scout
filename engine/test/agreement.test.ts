@@ -37,3 +37,16 @@ describe('meta evidence validity', () => {
     expect(Number.isNaN(score({patch:'1.17.2',heroes:{gideon:[core]}})!.rankCorr)).toBe(true);
   });
 });
+
+
+describe('match-stream evidence compatibility', () => {
+  it('recognizes colon-delimited patch metadata without truncating longer versions', () => {
+    expect(buildEvidencePatch({source:'RANKED, patch 1.17.2: ordered cores',heroes:{}})).toBe('1.17.2');
+    expect(buildEvidencePatch({source:'patch 1.17.20: ordered cores',heroes:{}})).toBe('1.17.20');
+  });
+  it('preserves pooled order status for order-sensitive consumers', () => {
+    const r=score({patch:'1.17.2',heroes:{gideon:[{...core,anyOrder:true}]},byRole:{gideon:{midlane:[{...core,anyOrder:true}]}}})!;
+    expect(r.topCore?.anyOrder).toBe(true);
+    expect(r.evidence.currentMetaEligible).toBe(true);
+  });
+});

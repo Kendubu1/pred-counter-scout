@@ -866,3 +866,26 @@ Vanquisher checks a living hero's Health PLUS Shield after damage against its
 max-health threshold. Production's unconditional execute burst credit remains
 a known discrepancy for the next iteration. Extracted scripts are not evidence
 that every item passive or server interaction has been reproduced.
+
+
+### 2026-10-16: current-patch match-stream integration
+
+Integrated main's ranked 1.17.2 transaction-derived core evidence while retaining
+the installed-client catalog and simulator corrections. Incoming catalog/effect
+code did not replace these fixes; generated artifacts and reviewed coaching had
+diverged and require reconciliation, not choosing one branch's outputs wholesale.
+The patch parser now accepts a colon after the version in match-stream metadata.
+Pooled anyOrder rows remain item-set overlap evidence but are excluded from
+order-sensitive controlled scenarios and labeled as pooled purchase orders in v6.
+All 55 hero artifacts, matrix, agreement, Spectral, Kira and validation reports
+are regenerated against the combined sources. Stale coaching and core explanations
+are removed pending reviewed replacements. Observed completion-conditioned wins
+are descriptive; no holdout validation or causal winning-build claim follows.
+
+Integration results: 135 rendered hero-role views; 123 core comparisons with
+1,107 controlled scenarios, of which 61 lane comparisons have current-patch
+ordered evidence. Five Kira cores replay; one observed core is explicitly skipped
+for unsupported Onixian Quiver/Scattershot. The replay still rejects unsupported
+items; reporting now records skipped coverage rather than failing or omitting
+those effects silently. Removed 87 stale coaching lines and 273 outdated or
+order-unsupported core explanations; replacements still require copy review.

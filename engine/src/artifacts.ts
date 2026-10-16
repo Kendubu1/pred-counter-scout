@@ -21,8 +21,8 @@ import type { HeroKit, Item } from './types.js';
 const ARTIFACTS_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
 interface PredggBuilds {
-  heroes: Record<string, { core: string[]; coreSlugs: (string | null)[]; n: number; w: number }[]>;
-  byRole?: Record<string, Record<string, { core: string[]; coreSlugs: (string | null)[]; n: number; w: number }[]>>;
+  heroes: Record<string, { core: string[]; coreSlugs: (string | null)[]; n: number; w: number; anyOrder?: boolean }[]>;
+  byRole?: Record<string, Record<string, { core: string[]; coreSlugs: (string | null)[]; n: number; w: number; anyOrder?: boolean }[]>>;
 }
 let predggBuildsCache: PredggBuilds | null | undefined;
 function loadPredggBuilds(): PredggBuilds | null {
@@ -159,6 +159,7 @@ const RoleView = z.object({
     honestAbsence: z.string().nullable(),
   }),
   metaBuilds: z.array(z.object({
+    anyOrder: z.boolean().optional(),
     title: z.string(),
     items: z.array(z.object({ name: z.string(), slug: z.string().nullable() })),
     n: z.number(),
@@ -697,13 +698,14 @@ function buildRoleView(
     return {
       title,
       items: c.core.map((name, i) => ({ name, slug: c.coreSlugs[i] ?? null })),
+      ...(c.anyOrder ? {anyOrder: true} : {}),
       n: c.n,
       shrunkWr: Math.round(shrunkWr * 1000) / 1000,
       coreGold: gold,
       spikeMinute,
       bestObjective,
       whyLine,
-      optimizer,
+      optimizer: c.anyOrder ? null : optimizer,
     };
   });
 

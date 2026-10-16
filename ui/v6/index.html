@@ -1117,7 +1117,7 @@ function buildsCard(a) {
     const wrCls = m.shrunkWr >= 0.53 ? 'up' : m.shrunkWr <= 0.5 ? 'down' : 'flat';
     const rail = m.items.map((it) => it.slug
       ? `<img loading="lazy" data-ipop="${esc(it.slug)}" src="../img/items/${esc(it.slug)}.webp" title="${esc(it.name)} · tap for details" onerror="this.style.visibility='hidden'">`
-      : `<span class="chip">${esc(it.name)}</span>`).join('<span class="arrow">→</span>');
+      : `<span class="chip">${esc(it.name)}</span>`).join(m.anyOrder ? '<span class="arrow">+</span>' : '<span class="arrow">→</span>');
     // Build explanation (synergy + the 1/2/3 item reasons) is visible by default;
     // only the sim-specific line collapses behind "The sim math".
     const explain = `${rsn && rsn.synergy ? `<div class="mb-why" style="color:var(--text-0)">🧩 ${esc(rsn.synergy)}</div>` : ''}${rsn ? itemWhyRows(m.items, rsn.items) : ''}`;
@@ -1127,7 +1127,7 @@ function buildsCard(a) {
         <div class="mb-items" style="flex-wrap:wrap;margin-bottom:.5rem">${rail}</div>
         <div style="display:flex;align-items:center;gap:.6rem">
           <span class="bwr ${wrCls}">${(m.shrunkWr * 100).toFixed(1)}%</span>
-          <span class="mb-n">${m.n} games</span>
+          <span class="mb-n">${m.n} games${m.anyOrder ? ' · item set, purchase orders pooled' : ''}</span>
         </div>
         ${explain}
         <details class="sim-collapse"><summary>The sim math</summary><div class="body">${simLine}</div></details>
