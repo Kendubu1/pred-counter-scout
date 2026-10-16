@@ -1072,3 +1072,28 @@ shared-critical-chain-private.json (executable hash, five bounded traces and
 resolved numerical constants). Published evidence contains only semantic findings
 in shared-damage-event-review.json. No production/UI behavior changed, so no
 artifact rebuild is needed.
+
+
+### Critical-state construction and random import (2026-10-16)
+
+The shared damage owner check resolves to PredAbilitySystemComponent. Its
+registered constructor writes the same embedded state used by the critical
+decision helper: failure counter 1, success counter 0. This is a constructor
+finding, not a guarantee about spawn/respawn or the next fight's initial state.
+The random comparison resolves through the PE import table to the C runtime
+rand function. Seed, other consumers of the random stream, resets and server
+parity remain open. Production average damage is unchanged.
+
+Added a reusable read-only import-slot resolver. It maps named/ordinal imports
+from the original thunk table, rejects truncated/unmapped records, and declines
+to infer names from a bound IAT without the original table. Synthetic tests
+cover names, ordinals, unaligned/absent slots and malformed records. This can
+resolve imported dependencies for any native mechanic; it does not execute code.
+
+Private evidence: native-asc-construction-private.json (registered construction
+path), native-critical-rng-import-private.json, and the previous shared-critical
+chain. The full-file reset-candidate scan terminated without a diagnostic on
+two attempts and yielded no usable reset evidence; do not interpret that as no
+resets. A bounded first-section retry succeeded: 108 byte candidates map to
+75 runtime-function ranges; these include unrelated objects and stack slots,
+so none is certified as a reset. Continue with owner-proven lifecycle functions. Keep raw instructions, addresses and generated profiles private.
