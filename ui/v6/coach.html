@@ -298,6 +298,13 @@
     .fm-mark.on, .fm-halo.on, .fight-flash { animation:none; }
     .fm-mark.on { stroke:var(--gold); } .fm-halo.on { opacity:.5; }
   }
+  .player-advice p { margin:.4rem 0 .85rem; line-height:1.55; }
+  .advice-label { display:block; color:var(--text-2); font-size:.72rem; font-weight:700; margin-bottom:.2rem; }
+  .player-next { border-left:3px solid var(--gold); padding-left:.7rem; }
+  .player-review-pending { color:var(--text-2); font-size:.82rem; line-height:1.5; }
+  .player-build { margin-top:.85rem; }
+  .player-build .items { margin:.6rem 0; }
+  .player-advice, .plobby > div { min-width:0; overflow-wrap:anywhere; }
 </style>
 </head>
 <body>
@@ -660,7 +667,7 @@ function pgReview(f) {
       <div style="color:var(--text-1);margin-top:.35rem;font-size:.92rem">${esc(co.team)}</div>
     </details>
     <div style="border-left:3px solid var(--gold);padding:.5rem .8rem;background:rgba(240,180,41,.07);border-radius:6px;margin-top:.6rem;font-size:.9rem"><b>What shifted it:</b> ${esc(co.whatShiftedIt)}</div>
-    ${Array.isArray(co.ranking) && co.ranking.length ? `<div style="margin-top:.6rem"><div style="font-size:.7rem;font-weight:700;letter-spacing:.06em;color:var(--text-2);text-transform:uppercase">The ranking · who won it, who cost it</div><ol style="margin:.3rem 0 0;padding-left:1.3rem;font-size:.88rem;line-height:1.5">${co.ranking.map((r) => { const pl = f.players.find((p) => p.pid === r.pid); return `<li><b>${pl ? pgName(pl) : ''}</b>${pl ? ` <span style="color:var(--text-2);font-size:.78rem">${esc(pl.heroName)}</span>` : ''} — ${esc(r.grade || '')}</li>`; }).join('')}</ol></div>` : ''}` :
+` :
     `<div style="color:var(--text-2);margin-top:.5rem;font-size:.9rem">Facts computed; coaching narrative not yet authored for this match.</div>`}`);
 
   // ── The three moments: tagged fights first, then by significance — capped at 3.
@@ -793,14 +800,8 @@ function pgReview(f) {
   const lobbyRow = (p) => {
     const lane = (f.lanes || []).find((l) => l.role === p.role && l.ourSlug === p.heroSlug);
     const built = (p.items || []).filter((i) => !/Potion|Ward|Crest/i.test(i.name));
-    const wc = p.winningCore;
-    const bits = [`${p.completedCount ?? built.length} completed`];
-    if (wc && (p.missingCore || []).length) bits.push(`missing <b>${esc(p.missingCore.join(', '))}</b> from the ${wc.wr}% core`);
-    else if (wc) bits.push(`on the ${wc.wr}%-winning core`);
-    if ((p.offMeta || []).length) bits.push(`off-list: ${esc(p.offMeta.join(', '))}`);
-    if ((p.matchupItemFlags || []).length) bits.push(`<span style="color:var(--gold)">${esc(p.matchupItemFlags.join(' · '))}</span>`);
-    if (p.antiHealRec) bits.push(`<span style="color:var(--gold)">anti-heal: add ${esc(p.antiHealRec.item)}</span>`);
-    const v = co && co.verdicts ? co.verdicts[p.pid] : null;
+    const m = co?.microReads?.[p.pid];
+    const reviewed = co?.playerReviewVersion === 2;
     const br = co && co.buildReads ? co.buildReads[p.pid] : null;
     return `<div class="plobby">
       <div class="who">
@@ -810,28 +811,27 @@ function pgReview(f) {
         <span class="kda">${p.kills} / ${p.deaths} / ${p.assists}</span></span>
       </div>
       <div>
-        ${co?.perPlayer?.[p.pid] ? `<div class="line">${esc(co.perPlayer[p.pid])}</div>` : ''}
-        <div class="items">${built.map((i) => `<img src="${iimg(i.slug)}" title="${esc(i.name)}" onerror="this.style.display='none'">`).join('')}</div>
-        <div class="lrow"><span class="ltag">build</span>${bits.join(' · ')}</div>
-        ${br?.build ? `<details class="whyd"><summary>why — what this build gained vs gave up</summary><div>${esc(br.build)}</div></details>` : ''}
-        <div class="lrow" data-et-slug="${esc(p.heroSlug)}" data-et-role="${esc(p.role)}" data-et-opp="${lane ? esc(lane.theirSlug) : ''}"><span class="ltag">eternal</span><span style="opacity:.6">loading the engine's pick…</span></div>
-        ${br?.eternal ? `<details class="whyd"><summary>why — why this loadout fits the matchup</summary><div>${esc(br.eternal)}</div></details>` : ''}
-        ${(() => { const m = co && co.microReads ? co.microReads[p.pid] : null; if (!m || !(m.keep || m.change || m.check)) return ''; return `<div class="kcc">
-          ${m.lastCheck && m.lastCheck.text ? `<div class="lrow"><span class="ltag" style="color:${m.lastCheck.result === 'held' ? 'var(--green)' : m.lastCheck.result === 'missed' ? 'var(--red)' : 'var(--text-2)'}">last check · ${esc(m.lastCheck.result || '')}</span>${esc(m.lastCheck.text)}${m.lastCheck.receipt ? ` <span style="color:var(--text-2)">(${esc(m.lastCheck.receipt)})</span>` : ''}</div>` : ''}
-          ${m.keep ? `<div class="lrow"><span class="ltag" style="color:var(--green)">keep</span>${esc(m.keep)}</div>` : ''}
-          ${m.change ? `<div class="lrow"><span class="ltag" style="color:var(--gold)">change</span><b>${esc(m.change)}</b></div>` : ''}
-          ${m.check ? `<div class="lrow"><span class="ltag">check</span>${esc(m.check)}</div>` : ''}
-          ${m.receipt ? `<div class="lrow" style="color:var(--text-2);font-size:.74rem"><span class="ltag">receipt</span>${esc(m.receipt)}</div>` : ''}
-        </div>`; })()}
-        ${v && v.text ? `<div class="vline ${v.mood === 'pos' ? 'pos' : 'neg'}"><span class="ltag">verdict</span>${esc(v.text)}</div>` : ''}
+        ${reviewed && m ? `<div class="player-advice">
+          ${m.keep ? `<p><span class="advice-label">What worked</span>${esc(m.keep)}</p>` : ''}
+          <p class="player-next"><span class="advice-label">Next game</span>${esc(m.change || 'No individual correction supported by this match data.')}</p>
+          ${m.check ? `<p><span class="advice-label">How to check · ${m.checkMethod === 'replay' ? 'replay review' : 'match data'}</span>${esc(m.check)}</p>` : ''}
+          ${m.receipt ? `<details class="whyd"><summary>Evidence behind this advice</summary><div>${esc(m.receipt)}</div></details>` : ''}
+          ${m.lastCheck?.text ? `<details class="whyd"><summary>Previous focus · ${esc(m.lastCheck.result || 'not measurable')}</summary><div>${esc(m.lastCheck.text)} ${esc(m.lastCheck.receipt || '')}</div></details>` : ''}
+        </div>` : `<p class="player-review-pending">This older player review has not been checked against the updated evidence rules.</p>
+          ${m ? `<details class="whyd"><summary>Earlier advice · unreviewed</summary><div>${esc(m.keep || '')}</div><div>${esc(m.change || '')}</div><div>${esc(m.check || '')}</div></details>` : ''}`}
+        <details class="whyd player-build"><summary>Items &amp; build context</summary>
+          <div class="items">${built.map((i) => `<img src="${iimg(i.slug)}" alt="${esc(i.name)}" title="${esc(i.name)}" onerror="this.style.display='none'">`).join('')}</div>
+          <div>${built.map((i) => esc(i.name)).join(' · ') || 'No completed items recorded.'}</div>
+          ${reviewed && br?.build ? `<p>${esc(br.build)}</p>` : '<p>A different build is not evidence of a mistake. No reviewed item correction is available here.</p>'}
+          <p class="player-review-pending">The selected Eternal is not recorded in this match feed.</p>
+        </details>
       </div>
     </div>`;
   };
   const cb = f.counterBuild;
-  const lobby = card(`${eyebrow('The lobby — squad &amp; randoms', 'build reads from the match; Eternal loadouts are the engine’s pick for the kit &amp; matchup (the feed doesn’t record what was run) — THEORY')}
-    ${cb && (cb.notes || []).length ? `<div class="bverdict">${cb.notes.slice(0, 2).map(esc).join(' ')}</div>` : ''}
-    ${us.map(lobbyRow).join('')}
-    `);  // draftNote (role-fit "queued off a bottom-two lane") is preference coaching the squad rule bans — not rendered (coach audit 2026-09-21)
+  const lobby = card(`${eyebrow('Player advice', 'one useful takeaway each — evidence and items underneath')}
+    ${us.map(lobbyRow).join('')}`);
+
 
   // ── Deep dive: lanes, fight map + per-fight breakdowns, comp, kit ──
   const wrColor = (w) => w >= 52 ? 'var(--green)' : w <= 48 ? 'var(--red)' : 'var(--text-1)';
@@ -890,7 +890,7 @@ function pgReview(f) {
     ${lanes}${fightMap(f)}${comp}${kit}
   </details>`;
 
-  return head + moments + deepDive + coachEvidence + timeline + worked + lobby + deep;
+  return head + lobby + moments + deepDive + coachEvidence + timeline + worked + deep;
 }
 
 // The lobby's ETERNAL line joins the per-hero artifact (engine loadout + the

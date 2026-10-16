@@ -1262,3 +1262,22 @@ AbilityTriggerData, PredMontagesArray and Transform. All generated field maps,
 raw/default bodies and native instruction traces remain private.
 
 Validation: 269 engine tests across 38 files, 25 Python recovery tests, TypeScript, rendered UI parity and all 55 saved artifact schemas pass. The private projectile gate passes 59 exact spans and rejects a changed collision flag. Numeric production rankings are unchanged in this recovery checkpoint.
+
+
+### Player coaching clarity (2026-10-16)
+
+Player advice now follows the match headline: one supported contribution, one
+optional next-game action and a check labeled match data or replay review.
+Evidence, prior focus and actual items are expandable. Removed player ranking,
+duplicate verdicts, automatic missing-core warnings and suggested Eternal picks
+from this section. A different build is not a demonstrated mistake.
+
+The latest two matches have all ten player cards reviewed under
+playerReviewVersion 2. Unsupported rotation/actual-lane/zero-tower conclusions
+and event-order errors were corrected; untestable prerequisites are not failed.
+Older player commentary stays explicitly unreviewed in a collapsed archive.
+The remaining historical reviews have not been reauthored or certified.
+Author and critic contracts allow no supported correction and distinguish feed
+checks from replay checks; observations are not causal proof. Actual match facts,
+combat math and generated build artifacts are unchanged. Browser regression
+checks exercise reviewed/legacy cards, escaping, absent corrections and mobile.
