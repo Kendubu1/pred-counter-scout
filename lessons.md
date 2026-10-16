@@ -4608,3 +4608,27 @@ missing assets. All 11,304 recovered function streams pass byte/VM-size roundtri
 These include inactive content and overlap earlier batches; do not add counts.
 Validation: 264 engine tests, synthetic audit regression, TypeScript, all 55
 artifact schemas and rendered UI pass. No production formulas/rankings changed.
+
+
+## 2026-10-16 foundational class-layout recovery
+
+The new static probe recovered 1,237 class layouts with 7,025 declared fields
+across the existing broad extraction. Each accepted class had one candidate
+whose interpreted body reserialized byte-for-byte. Prefixes (17,318 bytes total)
+and trailers (37,217 bytes total) remain explicitly opaque. The separate audit
+checks those boundaries against original raw exports and publishes only counts
+in `engine/fixtures/recovered-schema-summary.json`. The original inventory's
+10,083 raw exports describes the baseline decoder and remains historical.
+
+This addresses a shared blocker rather than adding an isolated item replay.
+Energized's nine declared fields include StacksOnHit, but its default value is
+still unresolved. Do not promote field declarations, bool descriptor values,
+or byte-roundtrip success to verified CDO values or native gameplay semantics.
+Next: resolve native parent/struct schemas and CDO bindings, then integrate
+verified values and event ordering into production with behavioral regressions.
+The probe and adapter instructions are in `engine/tools/schema-recovery/`;
+all decoded game bodies remain private. No app math or rankings changed.
+
+Validation: recovery tool builds with zero warnings; both synthetic audit
+regressions pass. Full engine harness, TypeScript, 55 artifact schemas and
+rendered catalog parity are checked before committing.
