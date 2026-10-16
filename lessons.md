@@ -5199,3 +5199,27 @@ Private evidence: native-critical-enum-gate-private.json,
 native-target-type-wrapper-private.json and native-target-type-enum-private.json.
 Raw tables, native instructions and addresses remain private. Production data
 and calculations are unchanged; no app artifact rebuild is required.
+
+
+### Reflected target-type binding (2026-10-16)
+
+Closed the previous dispatch-name/return-type gap. A bounded initializer writes
+GetMyTargetType into the exact name storage read by reflected dispatch. The
+owned interface function descriptor contains ReturnValue as a byte linked to
+the EPredTargetType constructor; the unique enum table maps Tower to 3. The
+existing shared critical eligibility branch excludes that type. This is static
+client-path evidence, not blanket tower-damage or server-parity validation.
+
+Added a reusable native function-parameter descriptor reader: caller-supplied
+owner getter and exact name are mandatory; count/profile/field identity and
+mapped spans are checked. Byte return fields retain enum-constructor references
+without inventing values. Synthetic tests cover ownership/name mismatch, bad
+profiles/counts/pointers, duplicate fields and plain bytes without enum bindings.
+
+A separate generated factory-table entry appears to select a neighboring
+function descriptor. That discrepancy remains unresolved and is not used as
+proof; the binding above uses independent name storage and owned metadata.
+Private native-target-binding-chain-private.json records the executable hash,
+owner trace, return descriptor, enum and initializer. All raw evidence remains
+private. No hero-vs-hero simulator behavior or UI artifact changes are needed.
+Next continue owner-proven crit lifecycle/reset or another shared native gap.
