@@ -7,6 +7,26 @@ const profile={...cal.referenceProfiles.squishy!,health:10000};
 const base=emptyEffects(), exec={...base,executeThresholdPct:5};
 const run=(effects=base,executeTargetState?:{health:number;shield:number})=>simulate(kit,[],{level:13,profile,effects,executeTargetState},cal);
 describe('Vanquisher post-damage execute',()=>{
+ it('uses the profile shield by default without inflating the execute threshold',()=>{
+  const damage=run().burstCombo, shield=damage/2;
+  const shielded={...profile,shield};
+  const implicit=simulate(kit,[],{level:13,profile:shielded,effects:exec},cal);
+  const explicit=simulate(kit,[],{level:13,profile:shielded,effects:exec,
+   executeTargetState:{health:profile.health,shield}},cal);
+  expect(implicit.burstCombo).toBe(explicit.burstCombo);
+  // Place the same raw burst just outside the true max-health threshold.
+  const qualifyingHp=(damage-shield)/0.96;
+  expect(qualifyingHp).toBeGreaterThan(0);
+  const qualifying={...profile,health:qualifyingHp,shield};
+  const qPlain=simulate(kit,[],{level:13,profile:qualifying,effects:base},cal);
+  const qExec=simulate(kit,[],{level:13,profile:qualifying,effects:exec},cal);
+  expect(qExec.burstCombo-qPlain.burstCombo).toBeCloseTo(qualifyingHp*0.04);
+  const hp=(damage-shield)/0.94;
+  const p={...profile,health:hp,shield};
+  const plain=simulate(kit,[],{level:13,profile:p,effects:base},cal);
+  const executing=simulate(kit,[],{level:13,profile:p,effects:exec},cal);
+  expect(executing.burstCombo).toBe(plain.burstCombo);
+ });
  it('uses inclusive health plus shield and credits actual remaining health',()=>{
   expect(executeRemainingHealth(50,0,1000,5)).toBe(50);
   expect(executeRemainingHealth(20,30,1000,5)).toBe(20);

@@ -1597,3 +1597,37 @@ shared-combat gap. Do not repeat this capture inventory as gameplay coverage.
 Validation: 48 Python recovery tests, all 273 engine tests across 38 files,
 TypeScript and whitespace checks pass. No production or surfaced data changes
 require an artifact rebuild; the previous rendered parity report is unchanged.
+
+
+### Keep shield durability out of maximum-health scaling (2026-10-16)
+
+Production defenseOf previously added its modeled shield directly to health.
+This made the same inflated value feed percent-health abilities/procs and
+Vanquisher's maximum-health threshold. The recovered shared damage path binds
+Health and Shield separately, and the recovered execute predicate compares
+remaining Health + Shield against a fraction of MaxHealth.
+
+DefenseProfile now carries an optional shield independently of maximum health.
+Defense construction retains the existing shield estimate in that field.
+Matchup kill ratios and defensive-swap comparisons use health plus shield, so
+this correction does not discard shield durability. Existing checkpoint hp is
+still the combined durability display value. Percent-health damage uses only
+health, and aggregate execute checks default to the profile's separate shield.
+An explicitly supplied executeTargetState still overrides the initial state.
+Shield trigger timing, expiry, bypass and replenishment remain approximate;
+this change does not make existing shield estimates event-accurate.
+
+Regressions check real Azure Core defense construction, percent-health ability
+scaling with shields, and default shield propagation through execute checks.
+All hero recommendation artifacts and the all-pairs matchup matrix are rebuilt
+from committed inputs, without upstream API calls. No merge or deployment.
+
+Validation: full final harness passes 276 tests across 38 files; 48 Python
+recovery tests, TypeScript, 55 artifact schemas and rendered UI parity pass.
+All 55 hero artifacts and 1,485 matrix pairs were regenerated offline. Comparing
+58 artifact files against the previous tree found no content differences after
+excluding generation timestamps, and no headline-build or matrix-verdict changes.
+The existing reference scenarios therefore retain their recommendations; targeted
+regressions demonstrate the corrected shield-sensitive calculation. The UI check
+covers 55 kits, 189 augments, 270 item dialogs and 16 Eternal majors/96 minors.
+This verifies display/source parity, not complete game-mechanic coverage.

@@ -102,10 +102,15 @@ export function defenseOf(kit: HeroKit, items: Item[], level: number): DefensePr
   const eff = resolveItemEffects(items, { level });
   const t = effectiveTotals(items, eff);
   return {
-    health: ((kit.baseStats.max_health[level - 1] ?? 0) + t.health) * eff.healthMultiplier + resolvedShieldFlat(eff, t),
+    health: ((kit.baseStats.max_health[level - 1] ?? 0) + t.health) * eff.healthMultiplier,
+    shield: resolvedShieldFlat(eff, t),
     physicalArmor: ((kit.baseStats.physical_armor[level - 1] ?? 0) + t.physical_armor) * eff.armorMultiplier,
     magicalArmor: ((kit.baseStats.magical_armor[level - 1] ?? 0) + t.magical_armor) * eff.armorMultiplier,
   };
+}
+
+export function defensePool(profile: DefenseProfile): number {
+  return profile.health + Math.max(0, profile.shield ?? 0);
 }
 
 export interface CheckpointSide {
@@ -170,8 +175,8 @@ export function matchupCheckpoints(
     const yourDmg = combatDamage(you.kit, yourItems, { level, profile: enemyDef, effects: yourFx }, cal, KILL_WINDOW_SEC);
     const enemyDmg = combatDamage(enemy.kit, enemyItems, { level, profile: yourDef, effects: enemyFx }, cal, KILL_WINDOW_SEC);
 
-    const yourRatio = yourDmg / enemyDef.health;
-    const enemyRatio = enemyDmg / yourDef.health;
+    const yourRatio = yourDmg / defensePool(enemyDef);
+    const enemyRatio = enemyDmg / defensePool(yourDef);
     const rel = yourRatio / Math.max(enemyRatio, 1e-9);
     const verdict: CheckpointReport['verdict'] = rel > 1 + VERDICT_MARGIN ? 'you' : rel < 1 / (1 + VERDICT_MARGIN) ? 'enemy' : 'even';
 
@@ -189,8 +194,8 @@ export function matchupCheckpoints(
     return {
       minute,
       levelProvisional: level,
-      you: { gold: yourGold, items: yourItems.map((i) => i.name), hp: Math.round(yourDef.health), killRatio: yourRatio },
-      enemy: { gold: enemyGold, items: enemyItems.map((i) => i.name), hp: Math.round(enemyDef.health), killRatio: enemyRatio },
+      you: { gold: yourGold, items: yourItems.map((i) => i.name), hp: Math.round(defensePool(yourDef)), killRatio: yourRatio },
+      enemy: { gold: enemyGold, items: enemyItems.map((i) => i.name), hp: Math.round(defensePool(enemyDef)), killRatio: enemyRatio },
       verdict,
       driver,
     };
@@ -226,6 +231,7 @@ export function matchupCheckpoints(
       'THEORY: unverified combat constants (see calibration checklist)',
       'levels at checkpoints are provisional (no level timeline in the match feed)',
       'crest and consumable gold not yet modeled in affordability',
+      'modeled shields add durability, not maximum health; shield trigger timing and expiration remain approximate',
     ],
     gameplan,
   };

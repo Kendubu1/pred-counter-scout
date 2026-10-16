@@ -128,7 +128,8 @@ export interface Item {
 }
 
 export interface DefenseProfile {
-  health: number;
+  health: number; // Maximum health; shields must not inflate health-based damage.
+  shield?: number; // Assumed available shield, separate from maximum health.
   physicalArmor: number;
   magicalArmor: number;
 }

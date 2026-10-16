@@ -14,7 +14,7 @@ import { combatDamage, evaluateBuild, itemTotals, loadCalibration, unverifiedCon
 import { allEternalMinors, rankAugments, rankBlessings, selectEternalLoadout } from './eternals.js';
 import { heroGames, itemPlayRate, loadAggregates } from './aggregates.js';
 import { itemWinDelta, momPriorStrength } from './evidence.js';
-import { defenseOf, matchupCheckpoints, orderBuild, spikeTimeline, levelAtMinute, type OrderedBuild } from './matchup.js';
+import { defenseOf, defensePool, matchupCheckpoints, orderBuild, spikeTimeline, levelAtMinute, type OrderedBuild } from './matchup.js';
 import { resolveEntries, resolveItemEffects } from './effects.js';
 import type { HeroKit, Item } from './types.js';
 
@@ -287,7 +287,7 @@ function counterSwap(kit: HeroKit, items: Item[], enemy: HeroKit, enemyItems: It
   const enemyFx = resolveItemEffects(enemyPrefix, { level });
   const threat = (defenders: Item[]) =>
     combatDamage(enemy, enemyPrefix, { level, profile: defenseOf(kit, defenders, level), effects: enemyFx }, cal, 3) /
-    defenseOf(kit, defenders, level).health;
+    defensePool(defenseOf(kit, defenders, level));
   const myDamage = (own: Item[]) =>
     combatDamage(kit, own, { level, profile: defenseOf(enemy, enemyPrefix, level), effects: resolveItemEffects(own, { level }) }, cal, 3);
 
