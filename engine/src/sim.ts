@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import type { AbilityDef, BuildEval, DefenseProfile, HeroKit, Item, ItemStats, SimResult } from './types.js';
 import { emptyEffects, resolveItemEffects, type ProcSpec, type ResolvedEffects } from './effects.js';
+import { resistanceMultiplier } from './resistance.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -235,7 +236,7 @@ function mitigate(
   // Order: shred reduces target armor, percent pen ignores a share of the
   // rest (multiplicative per 1.14), flat pen subtracts last.
   const effective = Math.max(0, Math.max(0, armor - flatShred) * eff.targetArmorMultiplier[type === 'magical' ? 'magical' : 'physical'] * (1 - shred / 100) * (1 - pctPen / 100) - flatPenBase - flatPenFx);
-  return raw * (k / (k + effective));
+  return raw * resistanceMultiplier(armor, effective, k);
 }
 
 function ampFactorAbilities(eff: ResolvedEffects, ab: AbilityDef, isBurst: boolean, profile: DefenseProfile | null, t: ItemStats): number {

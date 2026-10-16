@@ -5241,3 +5241,36 @@ native-function-construction-private.json retain raw evidence and executable
 hashes. This closes a recovery-tool gap, not crit lifecycle/reset, server
 parity or runtime validation. Production calculations and app artifacts are
 unchanged. Next recover owner-proven lifecycle/reset or another shared gap.
+
+
+### Shared resistance branch integration (2026-10-16)
+
+Recovered the negative-resistance branch in shared native damage execution.
+Constructor attribute names and capture destinations bind the two inputs to
+Armor and MagicResist. The branch tests the captured input before reductions
+and penetration: non-positive values bypass those adjustments. Negative input
+uses 2 - 100/(100 - resistance); zero gives 1. Positive input passes through
+adjustments and a final zero floor, then 100/(100 + effective resistance).
+Referenced executable floats independently confirm constants 100, 2 and 1.
+This is static client-path evidence, not proof that a specific item can create
+negative captured resistance. Bonus-armor penetration, complete modifier order,
+server parity and live negative-resistance reproduction remain open.
+
+Production mitigation and diagnostic Kira replay now share the branch rule.
+Previously both incorrectly flattened negative starting resistance to zero.
+Physical/magical regression cases distinguish negative starting resistance from
+penetration crossing zero; true damage remains unaffected. The configurable
+calibration K is preserved, with native K=100 documented rather than changing
+measurement flags. Existing positive-resistance arithmetic is unchanged.
+Private native-mitigation-branches-private.json retains the executable hash,
+constructor/capture associations, arithmetic branches and resolved constants.
+No raw instructions, addresses or game assets are published.
+
+Validation: all 273 engine tests across 38 files, 44 Python recovery tests,
+TypeScript and whitespace checks pass. Rebuilt Kira and Gideon artifacts are
+identical to committed results except generation time; no numeric artifact
+replacement is needed for these positive-resistance scenarios. All 55 saved
+hero artifact schemas pass. Rendered parity verifies 55 hero kits, 189 augments,
+270 item dialogs and 16 Eternal majors/96 minors. The first browser attempt
+could not find its expected runtime; retrying with the installed Chromium
+passes. These checks verify source/display parity, not full gameplay coverage.

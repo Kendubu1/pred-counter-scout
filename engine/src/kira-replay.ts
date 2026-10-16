@@ -1,4 +1,5 @@
 import { executeRemainingHealth } from './sim.js';
+import { resistanceMultiplier } from './resistance.js';
 /** Diagnostic event replay. Deliberately separate from the production optimizer.
  * Callers supply hit times, raw payloads, cooldowns and crit outcomes. This does
  * not invent cast animations, Purge ticks, attack resets or target movement.
@@ -55,7 +56,7 @@ export function replayKira(actions: ReplayAction[], opts: ReplayOptions) {
     const armor = Math.max(0, (Math.max(0, opts.armor - death * 3) * (1 - viper * 0.045)) - opts.flatPen);
     const amp = (1 + vengeance * 0.0075) * (owns('manta-scythe') && opts.isolated ? 1.08 : 1)
       * (owns('viper') && viper === 6 && abilityOrOnHit ? 1.1 : 1);
-    const damage = Math.min(hp, raw * amp * (type === 'true' ? 1 : 100 / (100 + armor)));
+    const damage = Math.min(hp, raw * amp * (type === 'true' ? 1 : resistanceMultiplier(opts.armor, armor)));
     hp -= damage;
     const healed = canLeech ? damage * opts.lifesteal / 100 : 0;
     healing += healed; trace.push({ time, source, damage, healing: healed });
