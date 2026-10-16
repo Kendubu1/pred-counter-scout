@@ -106,9 +106,9 @@ for (const { slug, name } of index) {
   const byRole = laneCells[slug]?.byRole ?? {};
   const matchSample = Object.values(byRole).reduce((t, c) => t + (c?.n ?? 0), 0);
   // Three honest reasons, in order of what actually happened: the hero has no
-  // recorded games; the hero has games but the missing pieces are the fields
-  // the current pred.gg app tier cannot read (simpleBuild/coreBuild — see
-  // priorities item 1); or the sample is genuinely below the floor.
+  // recorded games; the hero has games but no augment pick or item core has
+  // reached its evidence floor yet in the public match-stream window (npm run
+  // perks; it grows daily); or the sample is genuinely below the floor.
   const onlyGatedFields = missing.every((m) => m === 'augment and Eternal win evidence' || m === 'field build statistics');
   fieldPending[slug] = {
     name,
@@ -117,7 +117,7 @@ for (const { slug, name } of index) {
     reason: matchSample === 0
       ? 'no games in our committed match sample yet — released after the last field pull'
       : onlyGatedFields
-        ? `${matchSample.toLocaleString()} ranked games this patch, but the augment and build evidence fields are not readable at the current pred.gg app tier (priorities item 1)`
+        ? `${matchSample.toLocaleString()} ranked games this patch, but no single item core or augment pick has reached its evidence floor in the match-stream window yet; it fills in as the daily pull accumulates games`
         : `only ${matchSample} games in our committed match sample — below the evidence floor`,
   };
 }

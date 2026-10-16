@@ -4045,3 +4045,10 @@ hero/role alongside perks and writes predgg-builds.json; cores are counted from
 perks'. `buildstats` is out of the refresh chain (it would fail on the gate).
 Lesson: when one endpoint goes behind a gate, audit every artifact that came
 from the same family, not just the one that visibly broke.
+First full window (1.17.2, 2026-10-14 18:34 -> 10-16 01:17, ~6.5k ranked
+matches) covered 51/55 heroes by exact order. Akeron and Sevarog split one core
+across several purchase orders, none of which reached 20 games, so a hero/role
+with no ordered core falls back to the item SET (shown in its most common
+order, flagged `anyOrder`). Maco and Wukong still have no core at the floor;
+they are declared in field-data-pending.json (whose reason text no longer
+blames the app tier) and fill in as the daily pull grows the window.
