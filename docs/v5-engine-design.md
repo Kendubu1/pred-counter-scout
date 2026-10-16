@@ -804,3 +804,35 @@ results. Keep the current production recommendations THEORY until then.
 Validation: 234 tests in 32 files pass; TypeScript and whitespace checks pass.
 The replay and reports are diagnostic-only; production rankings, UI and live
 deployment are unchanged by this batch.
+
+
+### 2026-10-15: recovered Blueprint behavior incorporated
+
+The installed-client review recovered 188 function instruction streams from 139
+selected assets. Every decoded function reserialized to identical instruction
+bytes and VM size. Whole-asset serialization is not certified; 294 exports remain
+raw. `engine/fixtures/client-mechanics-review.json` records source hashes, function
+coverage, unresolved defaults/native helpers, and incorporation status. No game
+assets or archive key are committed.
+
+Solaris now has a `cast_then_basic` trigger. Production spell-only rotation and
+basic-only DPS no longer receive its proc. Burst and mixed combat cap procs by
+available learned casts, consuming basics and ICD. This is an optimistic aggregate
+bound, not temporal event simulation: four-second expiry, actual weaving, Mercy
+consumption, crit damage and healing remain omitted and are disclosed in the item
+model limitations consumed by v6. Existing generic spellblade effects were not
+silently migrated without their own source review.
+
+The Kira diagnostic replay removes Ashbringer's incorrect once-per-receiving-
+cooldown lockout. Basic/Mercy hits repeatedly reduce active non-ultimate cooldowns;
+8%/12% magnitudes retain the explicit unit event-scale assumption. Native payload
+scaling and nonbasic critical-event behavior are not certified. Solaris starts
+its ICD when the proc is consumed. Explicit Purge ticks can share an active cast
+until the channel ends; no first-hit time or total tick count is invented.
+
+Knell's previous curve-only 17.6% level-13 interpretation is superseded as runtime
+evidence: its Blueprint combines two scalar inputs with actor level. Defaults
+and native helpers must be decoded before selecting 17.6% or 18.4%. Ruination
+periodic damage/clamping and refresh semantics also remain unresolved. Production
+Ashbringer remains unmodeled; diagnostic improvements must not be described as a
+complete production passive implementation.

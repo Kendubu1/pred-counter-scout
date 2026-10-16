@@ -4452,3 +4452,16 @@ results. Keep the current production recommendations THEORY until then.
 Validation: 234 tests in 32 files pass; TypeScript and whitespace checks pass.
 The replay and reports are diagnostic-only; production rankings, UI and live
 deployment are unchanged by this batch.
+
+
+### 2026-10-15 — runtime triggers versus tooltip shorthand
+
+- Ashbringer's "once per ability" wording does not justify locking each receiving
+  cooldown after its first reduction. The basic-damage Blueprint branch processes
+  active cooldowns repeatedly. Native event scaling still needs verification.
+- Solaris commits its item ability on consumption. Starting its ICD when the
+  empowering cast happens admits early subsequent procs after delayed attacks.
+- A curve can supply one term of runtime arithmetic instead of the final result.
+  Knell's level-13 curve-only calculation is not runtime proof.
+- Byte-for-byte function instruction roundtrip validates decoding, not inferred
+  defaults, native function contracts, server parity or the full asset parser.

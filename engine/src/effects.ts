@@ -61,7 +61,7 @@ const Primitive = z.discriminatedUnion('kind', [
     damageType: DmgType, icdSeconds: z.number().optional(), everyN: z.number().optional(),
   }),
   z.object({
-    kind: z.literal('on_ability_hit'), trigger: z.literal('immobilize').optional(), flat: z.number().optional(), perLevelFlat: z.number().optional(),
+    kind: z.literal('on_ability_hit'), trigger: z.enum(['immobilize', 'cast_then_basic']).optional(), flat: z.number().optional(), perLevelFlat: z.number().optional(),
     scalingPct: z.number().optional(), scaleStat: StatKey.optional(),
     powerScaling: PowerScaling.optional(),
     pctTargetHealth: z.number().optional(), healthBasis: z.enum(['max', 'current']).optional(),
@@ -147,7 +147,7 @@ export function loadEffects(): EffectRegistry {
 // ── Resolution: entries + context -> aggregate numbers for the simulator ──
 
 export interface ProcSpec {
-  trigger?: 'immobilize';
+  trigger?: 'immobilize' | 'cast_then_basic';
   powerScaling?: { physical?: number; magical?: number }; // replaces legacy scalar when present
   flat: number;
   scalingPct: number;

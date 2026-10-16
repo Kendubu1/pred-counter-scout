@@ -29,12 +29,20 @@ describe('Kira action replay', () => {
     expect(r.trace.find(t => t.source === 'Solaris')!.damage).toBe(160);
     expect(r.potentialHealing).toBe(80);
   });
-  it('Ashbringer reduces each non-ultimate cooldown once, with critical enhancement', () => {
+  it('Ashbringer repeatedly reduces active non-ultimate cooldowns, with critical enhancement', () => {
     const r = replayKira([{ time: 0, kind: 'cast', ability: 'PRIMARY', cooldown: 10 },
       { time: 0, kind: 'cast', ability: 'ULTIMATE', cooldown: 100 },
       { time: 1, kind: 'hit', source: 'basic', raw: 100, critical: true }, hit(2)], { ...base, items: ['ashbringer'] });
-    expect(r.ready.PRIMARY).toBeCloseTo(1 + 9 * 0.88);
+    expect(r.ready.PRIMARY).toBeCloseTo(2 + (1 + 9 * 0.88 - 2) * 0.92);
     expect(r.ready.ULTIMATE).toBe(100);
+  });
+  it('Solaris cooldown starts on consumption, not the empowering cast', () => {
+    const r = replayKira([
+      { time: 0, kind: 'cast', ability: 'PRIMARY', cooldown: 0 }, hit(3),
+      { time: 3.1, kind: 'cast', ability: 'PRIMARY', cooldown: 0 }, hit(3.2),
+      { time: 4.5, kind: 'cast', ability: 'PRIMARY', cooldown: 0 }, hit(4.6),
+    ], { ...base, items: ['solaris'] });
+    expect(r.trace.filter(t => t.source === 'Solaris').map(t => t.time)).toEqual([3, 4.6]);
   });
   it('Nevermore uses current health and waits for its level-scaled cooldown', () => {
     const r = replayKira([hit(0), hit(1), hit(9)], { ...base, disabled: ['vengeance'] });
@@ -67,6 +75,16 @@ describe('Kira action replay', () => {
       { time: 1, kind: 'hit', source: 'mercy', raw: 100 }, hit(3)], base);
     expect(r.damage).toBe(100);
     expect(replayKira([{ time: 0, kind: 'hit', source: 'mercy', raw: 100 }], base).damage).toBe(0);
+  });
+  it('accepts explicitly supplied Purge ticks only during the successful channel', () => {
+    const r = replayKira([
+      { time: 0, kind: 'cast', ability: 'ULTIMATE', cooldown: 100, channel: 2.5 },
+      { time: 0.1, kind: 'hit', source: 'purge', raw: 10 },
+      { time: 0.266667, kind: 'hit', source: 'purge', raw: 10 },
+      { time: 2.5, kind: 'hit', source: 'purge', raw: 10 },
+    ], base);
+    expect(r.trace.filter(t => t.source === 'purge')).toHaveLength(2);
+    expect(r.damage).toBe(20);
   });
   it('rejects unsorted events instead of calculating time backwards', () => {
     expect(() => replayKira([hit(2), hit(1)], base)).toThrow('ordered');

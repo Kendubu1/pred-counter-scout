@@ -17,7 +17,7 @@ export const KIRA_REPLAY_LIMITS = [
   'Controlled action replay, not a fight policy or win-probability model. Hit times/raw payloads/crit outcomes are explicit scenario inputs.',
   'Vengeance and shred stacks refresh together; damage uses pre-hit stacks, then applies new stacks. Trigger ordering needs gameplay confirmation.',
   'Secondary item/passive packets do not recursively trigger stack effects. Purge tick count and per-tick triggers are not inferred.',
-  'Solaris uses the triggering hit critical outcome. Ashbringer is allowed once per ability cooldown cycle, following the catalog wording.',
+  'Solaris uses the triggering hit critical outcome. Ashbringer reduces active non-ultimate cooldowns on each basic or Mercy hit. Native EventDataFloat scaling remains assumed to be one; nonbasic critical/Purge triggers remain omitted.',
   'Ruination drains uniformly over four seconds; refresh extends the existing drain rate. Tick cadence and refresh behavior require gameplay confirmation.',
   'Power ratios use the current engine bonus-power basis. Healing is potential output, not effective healing or shield value.',
   'Knell, augments, Dash power/reset stacks, actor mana budgets, projectile travel, attack animations, misses, incoming damage and target healing are excluded.',
@@ -36,7 +36,7 @@ export function replayKira(actions: ReplayAction[], opts: ReplayOptions) {
   }
   const enabled = (key: string) => !opts.disabled?.includes(key);
   const owns = (key: string) => opts.items.includes(key) && enabled(key);
-  const ready: Record<string, number> = {}, reduced = new Set<string>(), pending = new Set<string>();
+  const ready: Record<string, number> = {}, pending = new Set<string>();
   const trace: { time: number; source: string; damage: number; healing: number; detail?: string }[] = [];
   let hp = opts.health, mana = opts.maxMana, healing = 0, now = 0, channelUntil = 0;
   let vengeance = 0, vengeanceUntil = -1, death = 0, deathUntil = -1, viper = 0, viperUntil = -1;
@@ -73,6 +73,7 @@ export function replayKira(actions: ReplayAction[], opts: ReplayOptions) {
       }
     }
     expired(time); now = time;
+    if (channelUntil > 0 && time >= channelUntil) { pending.delete('ULTIMATE'); channelUntil = 0; }
   };
   for (const action of actions) {
     advance(action.time);
@@ -83,10 +84,9 @@ export function replayKira(actions: ReplayAction[], opts: ReplayOptions) {
       }
       ready[action.ability] = action.time + action.cooldown;
       pending.add(action.ability);
-      reduced.delete(action.ability);
-      channelUntil = Math.max(channelUntil, action.time + (action.channel ?? 0));
+      if (action.channel) channelUntil = action.time + action.channel;
       if (owns('solaris') && action.time >= spellReady) {
-        spellUntil = action.time + 4; spellReady = action.time + 1.5;
+        spellUntil = action.time + 4;
       }
       trace.push({ time: action.time, source: 'cast', damage: 0, healing: 0, detail: action.ability });
       continue;
@@ -100,7 +100,7 @@ export function replayKira(actions: ReplayAction[], opts: ReplayOptions) {
     if (ability && !pending.has(key)) {
       trace.push({ time: action.time, source: 'blocked hit without cast', damage: 0, healing: 0, detail: action.source }); continue;
     }
-    if (ability) pending.delete(key);
+    if (ability && !(action.source === 'purge' && action.time < channelUntil)) pending.delete(key);
     if (action.source === 'dusk' && vengeance === 0) {
       trace.push({ time: action.time, source: 'Dusk without afflicted target', damage: 0, healing: 0 }); continue;
     }
@@ -113,18 +113,17 @@ export function replayKira(actions: ReplayAction[], opts: ReplayOptions) {
       deal(action.time, 'Nevermore', before * 0.07, 'physical', false, true);
       ravenReady = action.time + (15 - 0.5 * (opts.level - 1));
     }
-    if (onHit && owns('solaris') && action.time < spellUntil && hp > 0) {
+    if (onHit && owns('solaris') && action.time < spellUntil && action.time >= spellReady && hp > 0) {
       const index = trace.length;
       const dealt = deal(action.time, 'Solaris', (45 + opts.bonusPower * 0.35) * critical, 'physical', false, true);
       healing += dealt * 0.5;
       trace[index]!.healing += dealt * 0.5;
-      spellUntil = -1;
+      spellUntil = -1; spellReady = action.time + 1.5;
     }
     if (onHit && owns('ashbringer')) {
       for (const key of Object.keys(ready)) {
-        if (key === 'ULTIMATE' || reduced.has(key) || ready[key]! <= action.time) continue;
+        if (key === 'ULTIMATE' || ready[key]! <= action.time) continue;
         ready[key] = action.time + (ready[key]! - action.time) * (1 - (action.critical ? 0.12 : 0.08));
-        reduced.add(key);
       }
     }
     if (onHit && owns('ruination') && action.time >= ruinReady) {

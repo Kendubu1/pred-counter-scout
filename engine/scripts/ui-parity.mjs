@@ -93,6 +93,11 @@ try {
       assert.match(text, /one proc per reviewed root\/stun cast/);
       assert.match(text, /Displacement-only, empowered, stacked and stance-dependent CC are not credited/);
     }
+    if (item.slug === 'solaris') {
+      assert.match(text, /What the simulator does not fully count/);
+      assert.match(text, /ability-only rotations and basic-only DPS exclude the proc/);
+      assert.match(text, /optimistic aggregate assumptions/);
+    }
     if (item.slug === 'absolution') {
       assert.match(text, /Tenacity\s*\+25/);
       assert.match(text, /On being Immobilized:/);

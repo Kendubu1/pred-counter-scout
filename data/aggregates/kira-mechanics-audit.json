@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-16T00:48:24.333Z",
+ "generatedAt": "2026-10-16T01:30:31.851Z",
  "status": "diagnostic-only",
  "level": 13,
  "evidenceSource": "pred.gg coreBuild (RANKED only, patch 1.15 (pred.gg version ids 152+153); ordered 3-item cores, 20+ games each); hero-wide + per-role for flex heroes",
@@ -14,7 +14,7 @@
   "Controlled action replay, not a fight policy or win-probability model. Hit times/raw payloads/crit outcomes are explicit scenario inputs.",
   "Vengeance and shred stacks refresh together; damage uses pre-hit stacks, then applies new stacks. Trigger ordering needs gameplay confirmation.",
   "Secondary item/passive packets do not recursively trigger stack effects. Purge tick count and per-tick triggers are not inferred.",
-  "Solaris uses the triggering hit critical outcome. Ashbringer is allowed once per ability cooldown cycle, following the catalog wording.",
+  "Solaris uses the triggering hit critical outcome. Ashbringer reduces active non-ultimate cooldowns on each basic or Mercy hit. Native EventDataFloat scaling remains assumed to be one; nonbasic critical/Purge triggers remain omitted.",
   "Ruination drains uniformly over four seconds; refresh extends the existing drain rate. Tick cadence and refresh behavior require gameplay confirmation.",
   "Power ratios use the current engine bonus-power basis. Healing is potential output, not effective healing or shield value.",
   "Knell, augments, Dash power/reset stacks, actor mana budgets, projectile travel, attack animations, misses, incoming damage and target healing are excluded.",
@@ -1667,31 +1667,31 @@
    "cells": [
     {
      "scenario": "Controlled 10-second single-target contact",
-     "damage": 2793.6844547128385,
-     "potentialHealing": 143.6776864864865,
+     "damage": 3107.049377654709,
+     "potentialHealing": 169.24306922297308,
      "ablations": [
       {
        "effect": "nevermore",
-       "damageWithout": 2415.30607633446,
-       "marginalDamage": 378.37837837837833,
-       "healingWithout": 143.6776864864865
+       "damageWithout": 2553.3726775473,
+       "marginalDamage": 553.676700107409,
+       "healingWithout": 169.24306922297308
       },
       {
        "effect": "vengeance",
-       "damageWithout": 2180.4477364864847,
-       "marginalDamage": 613.2367182263538,
-       "healingWithout": 138.15162162162176
+       "damageWithout": 2490.5935811285613,
+       "marginalDamage": 616.4557965261479,
+       "healingWithout": 161.16870270270286
       },
       {
        "effect": "solaris",
-       "damageWithout": 2506.3290817398643,
-       "marginalDamage": 287.35537297297424,
+       "damageWithout": 2777.614428796784,
+       "marginalDamage": 329.43494885792506,
        "healingWithout": 0
       },
       {
        "effect": "ashbringer",
        "damageWithout": 2889.930084442566,
-       "marginalDamage": -96.24562972972763,
+       "marginalDamage": 217.11929321214302,
        "healingWithout": 191.80050135135116
       }
      ],
@@ -1838,17 +1838,16 @@
       },
       {
        "time": 3,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 3.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 228.99904054054056,
+       "healing": 0
       },
       {
        "time": 3.02,
@@ -1866,16 +1865,17 @@
       },
       {
        "time": 3.5,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 3.51,
-       "source": "mercy",
-       "damage": 228.99904054054056,
-       "healing": 0
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "mercy"
       },
       {
        "time": 3.52,
@@ -2011,17 +2011,22 @@
       },
       {
        "time": 6,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 6.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 235.5731756756757,
+       "healing": 0
+      },
+      {
+       "time": 6.01,
+       "source": "Solaris",
+       "damage": 125.88831081081081,
+       "healing": 62.944155405405404
       },
       {
        "time": 6.02,
@@ -2040,7 +2045,7 @@
       {
        "time": 6.2,
        "source": "basic",
-       "damage": 275.75460557432433,
+       "damage": 281.52621359797297,
        "healing": 0
       },
       {
@@ -2073,22 +2078,17 @@
       },
       {
        "time": 7,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 7.01,
-       "source": "mercy",
-       "damage": 110.59054054054054,
-       "healing": 0
-      },
-      {
-       "time": 7.01,
-       "source": "Solaris",
-       "damage": 59.09864864864865,
-       "healing": 29.549324324324324
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "mercy"
       },
       {
        "time": 7.02,
@@ -2120,17 +2120,16 @@
       },
       {
        "time": 7.52,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
       },
       {
        "time": 7.53,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "dusk"
+       "source": "dusk",
+       "damage": 352.28594594594597,
+       "healing": 0
       },
       {
        "time": 8,
@@ -2163,8 +2162,14 @@
       {
        "time": 8.2,
        "source": "basic",
-       "damage": 132.14456081081082,
+       "damage": 133.04146959459462,
        "healing": 0
+      },
+      {
+       "time": 8.2,
+       "source": "Solaris",
+       "damage": 60.7364864864865,
+       "healing": 30.36824324324325
       },
       {
        "time": 8.5,
@@ -2196,30 +2201,36 @@
       },
       {
        "time": 9,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 9.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 114.42162162162163,
+       "healing": 0
+      },
+      {
+       "time": 9.01,
+       "source": "Nevermore",
+       "damage": 302.87709510781605,
+       "healing": 0
       },
       {
        "time": 9.02,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
       },
       {
        "time": 9.03,
-       "source": "dusk",
-       "damage": 374.6418918918919,
-       "healing": 0
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "dusk"
       },
       {
        "time": 9.5,
@@ -2251,8 +2262,8 @@
       }
      ],
      "finalCooldowns": {
-      "ALTERNATE": 10.3128,
-      "PRIMARY": 16.22
+      "ALTERNATE": 12.3128,
+      "PRIMARY": 13.783328000000001
      }
     },
     {
@@ -2537,17 +2548,16 @@
       },
       {
        "time": 8.52,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
       },
       {
        "time": 8.53,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "dusk"
+       "source": "dusk",
+       "damage": 143.5318918918919,
+       "healing": 0
       },
       {
        "time": 9,
@@ -2565,16 +2575,17 @@
       },
       {
        "time": 9.02,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
       },
       {
        "time": 9.03,
-       "source": "dusk",
-       "damage": 143.5318918918919,
-       "healing": 0
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "dusk"
       },
       {
        "time": 9.2,
@@ -2624,38 +2635,38 @@
       }
      ],
      "finalCooldowns": {
-      "ALTERNATE": 10.1692,
-      "PRIMARY": 15.3776
+      "ALTERNATE": 9.73934848,
+      "PRIMARY": 14.9376
      }
     },
     {
      "scenario": "Attack-rate ceiling: uninterrupted contact, zero cast recovery",
-     "damage": 4898.578007919464,
-     "potentialHealing": 198.12502239864895,
+     "damage": 5060.718500711782,
+     "potentialHealing": 199.05346148648673,
      "ablations": [
       {
        "effect": "nevermore",
-       "damageWithout": 4271.867456085308,
-       "marginalDamage": 626.7105518341559,
-       "healingWithout": 198.12502239864895
+       "damageWithout": 4429.316497347979,
+       "marginalDamage": 631.4020033638035,
+       "healingWithout": 199.05346148648673
       },
       {
        "effect": "vengeance",
-       "damageWithout": 3931.128961979548,
-       "marginalDamage": 967.4490459399158,
-       "healingWithout": 183.26450000000037
+       "damageWithout": 4107.1826172023375,
+       "marginalDamage": 953.5358835094448,
+       "healingWithout": 184.20216216216258
       },
       {
        "effect": "solaris",
-       "damageWithout": 4517.646356269473,
-       "marginalDamage": 380.9316516499912,
+       "damageWithout": 4675.430760054772,
+       "marginalDamage": 385.28774065701054,
        "healingWithout": 0
       },
       {
        "effect": "ashbringer",
-       "damageWithout": 5002.577169204337,
-       "marginalDamage": -103.99916128487348,
-       "healingWithout": 249.2485506756761
+       "damageWithout": 4908.593224650617,
+       "marginalDamage": 152.1252760611651,
+       "healingWithout": 200.0895986486487
       }
      ],
      "representativeTrace": [
@@ -2813,17 +2824,16 @@
       },
       {
        "time": 3,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 3.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 108.2918918918919,
+       "healing": 0
       },
       {
        "time": 3.02,
@@ -2841,16 +2851,17 @@
       },
       {
        "time": 3.5,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 3.51,
-       "source": "mercy",
-       "damage": 232.28610810810815,
-       "healing": 0
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "mercy"
       },
       {
        "time": 3.52,
@@ -2998,17 +3009,22 @@
       },
       {
        "time": 6,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 6.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 112.8891891891892,
+       "healing": 0
+      },
+      {
+       "time": 6.01,
+       "source": "Solaris",
+       "damage": 60.327027027027036,
+       "healing": 30.163513513513518
       },
       {
        "time": 6.02,
@@ -3027,7 +3043,7 @@
       {
        "time": 6.218269747447609,
        "source": "basic",
-       "damage": 132.14456081081082,
+       "damage": 134.83528716216216,
        "healing": 0
       },
       {
@@ -3060,41 +3076,35 @@
       },
       {
        "time": 7,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 7.01,
-       "source": "mercy",
-       "damage": 243.79084459459463,
-       "healing": 0
-      },
-      {
-       "time": 7.01,
-       "source": "Solaris",
-       "damage": 130.27976351351353,
-       "healing": 65.13988175675676
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "mercy"
       },
       {
        "time": 7.02,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
       },
       {
        "time": 7.03,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "dusk"
+       "source": "dusk",
+       "damage": 443.32486486486494,
+       "healing": 0
       },
       {
        "time": 7.078022568511553,
        "source": "basic",
-       "damage": 291.14556030405413,
+       "damage": 293.0694296452703,
        "healing": 0
       },
       {
@@ -3128,7 +3138,7 @@
       {
        "time": 7.937775389575497,
        "source": "basic",
-       "damage": 293.0694296452703,
+       "damage": 294.9932989864865,
        "healing": 0
       },
       {
@@ -3175,16 +3185,17 @@
       },
       {
        "time": 8.52,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
       },
       {
        "time": 8.53,
-       "source": "dusk",
-       "damage": 490.4594594594594,
-       "healing": 0
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "dusk"
       },
       {
        "time": 8.79752821063944,
@@ -3193,24 +3204,29 @@
        "healing": 0
       },
       {
-       "time": 8.79752821063944,
-       "source": "Solaris",
-       "damage": 135.54950675675678,
-       "healing": 67.77475337837839
-      },
-      {
        "time": 9,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 9.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 255.29558108108114,
+       "healing": 0
+      },
+      {
+       "time": 9.01,
+       "source": "Nevermore",
+       "damage": 247.51505987618478,
+       "healing": 0
+      },
+      {
+       "time": 9.01,
+       "source": "Solaris",
+       "damage": 136.42779729729733,
+       "healing": 68.21389864864867
       },
       {
        "time": 9.02,
@@ -3257,19 +3273,13 @@
       {
        "time": 9.657281031703384,
        "source": "basic",
-       "damage": 139.3198310810811,
-       "healing": 0
-      },
-      {
-       "time": 9.657281031703384,
-       "source": "Nevermore",
-       "damage": 225.43069196650157,
+       "damage": 142.01055743243242,
        "healing": 0
       }
      ],
      "finalCooldowns": {
-      "ALTERNATE": 10.1692,
-      "PRIMARY": 14.889303385276733
+      "ALTERNATE": 11.968246482536271,
+      "PRIMARY": 11.678580336227867
      }
     }
    ]
@@ -5763,31 +5773,31 @@
    "cells": [
     {
      "scenario": "Controlled 10-second single-target contact",
-     "damage": 2235.4325478040537,
-     "potentialHealing": 106.07578378378388,
+     "damage": 2525.0607207861503,
+     "potentialHealing": 126.80373868243244,
      "ablations": [
       {
        "effect": "nevermore",
-       "damageWithout": 1857.0541694256758,
-       "marginalDamage": 378.3783783783779,
-       "healingWithout": 106.07578378378388
+       "damageWithout": 1957.1117071959486,
+       "marginalDamage": 567.9490135902017,
+       "healingWithout": 126.80373868243244
       },
       {
        "effect": "vengeance",
-       "damageWithout": 1688.5003378378392,
-       "marginalDamage": 546.9322099662145,
-       "healingWithout": 101.99594594594606
+       "damageWithout": 1974.7751775383526,
+       "marginalDamage": 550.2855432477977,
+       "healingWithout": 120.6829729729731
       },
       {
        "effect": "solaris",
-       "damageWithout": 2023.2809802364902,
-       "marginalDamage": 212.15156756756346,
+       "damageWithout": 2278.2339146046306,
+       "marginalDamage": 246.82680618151971,
        "healingWithout": 0
       },
       {
        "effect": "ashbringer",
        "damageWithout": 2306.4897234797304,
-       "marginalDamage": -71.05717567567672,
+       "marginalDamage": 218.57099730641994,
        "healingWithout": 141.60437162162165
       }
      ],
@@ -5934,17 +5944,16 @@
       },
       {
        "time": 3,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 3.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 150.9883783783784,
+       "healing": 0
       },
       {
        "time": 3.02,
@@ -5962,16 +5971,17 @@
       },
       {
        "time": 3.5,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 3.51,
-       "source": "mercy",
-       "damage": 150.9883783783784,
-       "healing": 0
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "mercy"
       },
       {
        "time": 3.52,
@@ -6107,17 +6117,22 @@
       },
       {
        "time": 6,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 6.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 155.322972972973,
+       "healing": 0
+      },
+      {
+       "time": 6.01,
+       "source": "Solaris",
+       "damage": 86.76993243243243,
+       "healing": 43.38496621621621
       },
       {
        "time": 6.02,
@@ -6136,7 +6151,7 @@
       {
        "time": 6.2,
        "source": "basic",
-       "damage": 189.10811655405405,
+       "damage": 193.06619341216214,
        "healing": 0
       },
       {
@@ -6169,22 +6184,17 @@
       },
       {
        "time": 7,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 7.01,
-       "source": "mercy",
-       "damage": 94.79189189189191,
-       "healing": 0
-      },
-      {
-       "time": 7.01,
-       "source": "Solaris",
-       "damage": 52.954729729729735,
-       "healing": 26.477364864864867
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "mercy"
       },
       {
        "time": 7.02,
@@ -6216,17 +6226,16 @@
       },
       {
        "time": 7.52,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
       },
       {
        "time": 7.53,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "dusk"
+       "source": "dusk",
+       "damage": 322.1821621621622,
+       "healing": 0
       },
       {
        "time": 8,
@@ -6259,8 +6268,14 @@
       {
        "time": 8.2,
        "source": "basic",
-       "damage": 117.80942567567568,
+       "damage": 118.60903716216218,
        "healing": 0
+      },
+      {
+       "time": 8.2,
+       "source": "Solaris",
+       "damage": 54.422297297297305,
+       "healing": 27.211148648648653
       },
       {
        "time": 8.5,
@@ -6292,30 +6307,36 @@
       },
       {
        "time": 9,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 9.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 98.0756756756757,
+       "healing": 0
+      },
+      {
+       "time": 9.01,
+       "source": "Nevermore",
+       "damage": 327.2193340993426,
+       "healing": 0
       },
       {
        "time": 9.02,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
       },
       {
        "time": 9.03,
-       "source": "dusk",
-       "damage": 342.16891891891896,
-       "healing": 0
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "dusk"
       },
       {
        "time": 9.5,
@@ -6347,8 +6368,8 @@
       }
      ],
      "finalCooldowns": {
-      "ALTERNATE": 10.3128,
-      "PRIMARY": 16.22
+      "ALTERNATE": 12.3128,
+      "PRIMARY": 13.783328000000001
      }
     },
     {
@@ -6633,17 +6654,16 @@
       },
       {
        "time": 8.52,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
       },
       {
        "time": 8.53,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "dusk"
+       "source": "dusk",
+       "damage": 135.5145945945946,
+       "healing": 0
       },
       {
        "time": 9,
@@ -6661,16 +6681,17 @@
       },
       {
        "time": 9.02,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
       },
       {
        "time": 9.03,
-       "source": "dusk",
-       "damage": 135.5145945945946,
-       "healing": 0
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "dusk"
       },
       {
        "time": 9.2,
@@ -6720,37 +6741,37 @@
       }
      ],
      "finalCooldowns": {
-      "ALTERNATE": 10.1692,
-      "PRIMARY": 15.3776
+      "ALTERNATE": 9.73934848,
+      "PRIMARY": 14.9376
      }
     },
     {
      "scenario": "Attack-rate ceiling: uninterrupted contact, zero cast recovery",
-     "damage": 4483.453020315375,
-     "potentialHealing": 151.6706621621622,
+     "damage": 4575.383292822826,
+     "potentialHealing": 148.09407770270272,
      "ablations": [
       {
        "effect": "nevermore",
-       "damageWithout": 3829.0794167229733,
-       "marginalDamage": 654.3736035924021,
-       "healingWithout": 151.6706621621622
+       "damageWithout": 3917.1499561486517,
+       "marginalDamage": 658.2333366741741,
+       "healingWithout": 148.09407770270272
       },
       {
        "effect": "vengeance",
-       "damageWithout": 3512.842119795471,
-       "marginalDamage": 970.6109005199046,
-       "healingWithout": 139.17432432432426
+       "damageWithout": 3631.8486566837164,
+       "marginalDamage": 943.5346361391094,
+       "healingWithout": 136.15358108108097
       },
       {
        "effect": "solaris",
-       "damageWithout": 4191.954449571768,
-       "marginalDamage": 291.49857074360716,
+       "damageWithout": 4289.36639622733,
+       "marginalDamage": 286.0168965954954,
        "healingWithout": 0
       },
       {
        "effect": "ashbringer",
        "damageWithout": 4585.089338842218,
-       "marginalDamage": -101.63631852684284,
+       "marginalDamage": -9.706046019392488,
        "healingWithout": 185.54762500000007
       }
      ],
@@ -6915,17 +6936,16 @@
       },
       {
        "time": 3,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 3.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 154.23932432432431,
+       "healing": 0
       },
       {
        "time": 3.02,
@@ -6943,16 +6963,17 @@
       },
       {
        "time": 3.5,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 3.51,
-       "source": "mercy",
-       "damage": 93.47837837837837,
-       "healing": 0
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "mercy"
       },
       {
        "time": 3.52,
@@ -7106,17 +7127,22 @@
       },
       {
        "time": 6,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 6.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 161.82486486486488,
+       "healing": 0
+      },
+      {
+       "time": 6.01,
+       "source": "Solaris",
+       "damage": 90.40216216216217,
+       "healing": 45.201081081081085
       },
       {
        "time": 6.02,
@@ -7135,7 +7161,7 @@
       {
        "time": 6.440141443206046,
        "source": "basic",
-       "damage": 119.40864864864868,
+       "damage": 121.80748310810813,
        "healing": 0
       },
       {
@@ -7154,36 +7180,30 @@
       },
       {
        "time": 6.52,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
       },
       {
        "time": 6.53,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "dusk"
+       "source": "dusk",
+       "damage": 445.7027027027027,
+       "healing": 0
       },
       {
        "time": 7,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 7.01,
-       "source": "mercy",
-       "damage": 98.73243243243243,
-       "healing": 0
-      },
-      {
-       "time": 7.01,
-       "source": "Solaris",
-       "damage": 55.15608108108108,
-       "healing": 27.57804054054054
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "mercy"
       },
       {
        "time": 7.02,
@@ -7202,7 +7222,7 @@
       {
        "time": 7.133490492451162,
        "source": "basic",
-       "damage": 122.6070945945946,
+       "damage": 123.4067060810811,
        "healing": 0
       },
       {
@@ -7236,7 +7256,7 @@
       {
        "time": 7.826839541696278,
        "source": "basic",
-       "damage": 123.4067060810811,
+       "damage": 124.2063175675676,
        "healing": 0
       },
       {
@@ -7283,7 +7303,7 @@
       },
       {
        "time": 8.52,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
@@ -7291,34 +7311,40 @@
       {
        "time": 8.520188590941393,
        "source": "basic",
-       "damage": 124.2063175675676,
+       "damage": 125.00592905405405,
        "healing": 0
-      },
-      {
-       "time": 8.520188590941393,
-       "source": "Solaris",
-       "damage": 56.99054054054054,
-       "healing": 28.49527027027027
       },
       {
        "time": 8.53,
-       "source": "dusk",
-       "damage": 510.702972972973,
-       "healing": 0
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "dusk"
       },
       {
        "time": 9,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 9.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 103.32972972972973,
+       "healing": 0
+      },
+      {
+       "time": 9.01,
+       "source": "Nevermore",
+       "damage": 292.3230642180423,
+       "healing": 0
+      },
+      {
+       "time": 9.01,
+       "source": "Solaris",
+       "damage": 57.72432432432432,
+       "healing": 28.86216216216216
       },
       {
        "time": 9.02,
@@ -7337,13 +7363,7 @@
       {
        "time": 9.213537640186509,
        "source": "basic",
-       "damage": 125.80554054054055,
-       "healing": 0
-      },
-      {
-       "time": 9.213537640186509,
-       "source": "Nevermore",
-       "damage": 294.1941246672753,
+       "damage": 128.204375,
        "healing": 0
       },
       {
@@ -7377,13 +7397,13 @@
       {
        "time": 9.906886689431625,
        "source": "basic",
-       "damage": 126.60515202702705,
+       "damage": 129.0039864864865,
        "healing": 0
       }
      ],
      "finalCooldowns": {
-      "ALTERNATE": 10.3128,
-      "PRIMARY": 15.14401508727531
+      "ALTERNATE": 11.892221225472257,
+      "PRIMARY": 11.755400095089637
      }
     }
    ]
@@ -7406,31 +7426,31 @@
    "cells": [
     {
      "scenario": "Controlled 10-second single-target contact",
-     "damage": 2510.3980063222552,
-     "potentialHealing": 120.01404624277478,
+     "damage": 2820.9386770666283,
+     "potentialHealing": 143.46563574783224,
      "ablations": [
       {
        "effect": "nevermore",
-       "damageWithout": 2105.773728865606,
-       "marginalDamage": 404.62427745664945,
-       "healingWithout": 120.01404624277478
+       "damageWithout": 2221.0136097543354,
+       "marginalDamage": 599.9250673122929,
+       "healingWithout": 143.46563574783224
       },
       {
        "effect": "vengeance",
-       "damageWithout": 1899.0249277456658,
-       "marginalDamage": 611.3730785765895,
-       "healingWithout": 115.39812138728318
+       "damageWithout": 2208.3791319038387,
+       "marginalDamage": 612.5595451627896,
+       "healingWithout": 136.54060693641622
       },
       {
        "effect": "solaris",
-       "damageWithout": 2270.369913836705,
-       "marginalDamage": 240.02809248555013,
+       "damageWithout": 2542.2111880854163,
+       "marginalDamage": 278.727488981212,
        "healingWithout": 0
       },
       {
        "effect": "ashbringer",
        "damageWithout": 2590.7920308887315,
-       "marginalDamage": -80.39402456647622,
+       "marginalDamage": 230.14664617789686,
        "healingWithout": 160.21105852601167
       }
      ],
@@ -7577,17 +7597,16 @@
       },
       {
        "time": 3,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 3.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 174.9166907514451,
+       "healing": 0
       },
       {
        "time": 3.02,
@@ -7605,16 +7624,17 @@
       },
       {
        "time": 3.5,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 3.51,
-       "source": "mercy",
-       "damage": 174.9166907514451,
-       "healing": 0
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "mercy"
       },
       {
        "time": 3.52,
@@ -7750,17 +7770,22 @@
       },
       {
        "time": 6,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 6.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 179.9382225433526,
+       "healing": 0
+      },
+      {
+       "time": 6.01,
+       "source": "Solaris",
+       "damage": 98.17142341040463,
+       "healing": 49.085711705202314
       },
       {
        "time": 6.02,
@@ -7779,7 +7804,7 @@
       {
        "time": 6.2,
        "source": "basic",
-       "damage": 214.52891076589597,
+       "damage": 219.01905075867052,
        "healing": 0
       },
       {
@@ -7812,22 +7837,17 @@
       },
       {
        "time": 7,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 7.01,
-       "source": "mercy",
-       "damage": 109.8143063583815,
-       "healing": 0
-      },
-      {
-       "time": 7.01,
-       "source": "Solaris",
-       "damage": 59.91293352601157,
-       "healing": 29.956466763005785
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "mercy"
       },
       {
        "time": 7.02,
@@ -7859,17 +7879,16 @@
       },
       {
        "time": 7.52,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
       },
       {
        "time": 7.53,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "dusk"
+       "source": "dusk",
+       "damage": 360.6260115606936,
+       "healing": 0
       },
       {
        "time": 8,
@@ -7902,8 +7921,14 @@
       {
        "time": 8.2,
        "source": "basic",
-       "damage": 133.64591763005782,
+       "damage": 134.55301661849714,
        "healing": 0
+      },
+      {
+       "time": 8.2,
+       "source": "Solaris",
+       "damage": 61.573338150289025,
+       "healing": 30.786669075144513
       },
       {
        "time": 8.5,
@@ -7935,30 +7960,36 @@
       },
       {
        "time": 9,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 9.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 113.61849710982662,
+       "healing": 0
+      },
+      {
+       "time": 9.01,
+       "source": "Nevermore",
+       "damage": 337.12298127401533,
+       "healing": 0
       },
       {
        "time": 9.02,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
       },
       {
        "time": 9.03,
-       "source": "dusk",
-       "damage": 383.2658959537573,
-       "healing": 0
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "dusk"
       },
       {
        "time": 9.5,
@@ -7990,8 +8021,8 @@
       }
      ],
      "finalCooldowns": {
-      "ALTERNATE": 10.3128,
-      "PRIMARY": 16.22
+      "ALTERNATE": 12.3128,
+      "PRIMARY": 13.783328000000001
      }
     },
     {
@@ -8276,17 +8307,16 @@
       },
       {
        "time": 8.52,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
       },
       {
        "time": 8.53,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "dusk"
+       "source": "dusk",
+       "damage": 149.20115606936417,
+       "healing": 0
       },
       {
        "time": 9,
@@ -8304,16 +8334,17 @@
       },
       {
        "time": 9.02,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
       },
       {
        "time": 9.03,
-       "source": "dusk",
-       "damage": 149.20115606936417,
-       "healing": 0
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "dusk"
       },
       {
        "time": 9.2,
@@ -8363,38 +8394,38 @@
       }
      ],
      "finalCooldowns": {
-      "ALTERNATE": 10.1692,
-      "PRIMARY": 15.3776
+      "ALTERNATE": 9.73934848,
+      "PRIMARY": 14.9376
      }
     },
     {
      "scenario": "Attack-rate ceiling: uninterrupted contact, zero cast recovery",
-     "damage": 4377.546432008581,
-     "potentialHealing": 165.77102718569364,
+     "damage": 4499.74088742641,
+     "potentialHealing": 166.26945989884388,
      "ablations": [
       {
        "effect": "nevermore",
-       "damageWithout": 3683.1468683616354,
-       "marginalDamage": 694.3995636469458,
-       "healingWithout": 165.77102718569364
+       "damageWithout": 3800.577993316473,
+       "marginalDamage": 699.162894109937,
+       "healingWithout": 166.26945989884388
       },
       {
        "effect": "vengeance",
-       "damageWithout": 3436.950814009821,
-       "marginalDamage": 940.5956179987602,
-       "healingWithout": 153.32453034682092
+       "damageWithout": 3580.746340923519,
+       "marginalDamage": 918.9945465028914,
+       "healingWithout": 153.86416184971108
       },
       {
        "effect": "solaris",
-       "damageWithout": 4059.784856638098,
-       "marginalDamage": 317.7615753704831,
+       "damageWithout": 4178.652579687782,
+       "marginalDamage": 321.0883077386279,
        "healingWithout": 0
       },
       {
        "effect": "ashbringer",
-       "damageWithout": 4466.204976823581,
-       "marginalDamage": -88.65854481499991,
-       "healingWithout": 208.19744400289025
+       "damageWithout": 4387.95124832958,
+       "marginalDamage": 111.78963909682989,
+       "healingWithout": 167.13494580924882
       }
      ],
      "representativeTrace": [
@@ -8552,17 +8583,16 @@
       },
       {
        "time": 3,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 3.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 107.53179190751446,
+       "healing": 0
       },
       {
        "time": 3.02,
@@ -8580,16 +8610,17 @@
       },
       {
        "time": 3.5,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 3.51,
-       "source": "mercy",
-       "damage": 177.42745664739886,
-       "healing": 0
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "mercy"
       },
       {
        "time": 3.52,
@@ -8737,17 +8768,22 @@
       },
       {
        "time": 6,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 6.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 112.09682080924857,
+       "healing": 0
+      },
+      {
+       "time": 6.01,
+       "source": "Solaris",
+       "damage": 61.158236994219656,
+       "healing": 30.579118497109828
       },
       {
        "time": 6.02,
@@ -8766,7 +8802,7 @@
       {
        "time": 6.218269747447609,
        "source": "basic",
-       "damage": 133.64591763005782,
+       "damage": 136.36721459537574,
        "healing": 0
       },
       {
@@ -8799,41 +8835,35 @@
       },
       {
        "time": 7,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 7.01,
-       "source": "mercy",
-       "damage": 186.21513728323703,
-       "healing": 0
-      },
-      {
-       "time": 7.01,
-       "source": "Solaris",
-       "damage": 101.59600794797687,
-       "healing": 50.798003973988436
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "mercy"
       },
       {
        "time": 7.02,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
       },
       {
        "time": 7.03,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "dusk"
+       "source": "dusk",
+       "damage": 452.8190751445087,
+       "healing": 0
       },
       {
        "time": 7.078022568511553,
        "source": "basic",
-       "damage": 226.50261741329481,
+       "damage": 227.9993307442197,
        "healing": 0
       },
       {
@@ -8867,7 +8897,7 @@
       {
        "time": 7.937775389575497,
        "source": "basic",
-       "damage": 227.9993307442197,
+       "damage": 229.49604407514448,
        "healing": 0
       },
       {
@@ -8914,16 +8944,17 @@
       },
       {
        "time": 8.52,
-       "source": "cast",
+       "source": "blocked cast",
        "damage": 0,
        "healing": 0,
        "detail": "PRIMARY"
       },
       {
        "time": 8.53,
-       "source": "dusk",
-       "damage": 500.5491329479769,
-       "healing": 0
+       "source": "blocked hit without cast",
+       "damage": 0,
+       "healing": 0,
+       "detail": "dusk"
       },
       {
        "time": 8.79752821063944,
@@ -8932,24 +8963,29 @@
        "healing": 0
       },
       {
-       "time": 8.79752821063944,
-       "source": "Solaris",
-       "damage": 105.70550939306358,
-       "healing": 52.85275469653179
-      },
-      {
        "time": 9,
-       "source": "blocked cast",
+       "source": "cast",
        "damage": 0,
        "healing": 0,
        "detail": "ALTERNATE"
       },
       {
        "time": 9.01,
-       "source": "blocked hit without cast",
-       "damage": 0,
-       "healing": 0,
-       "detail": "mercy"
+       "source": "mercy",
+       "damage": 195.00281791907514,
+       "healing": 0
+      },
+      {
+       "time": 9.01,
+       "source": "Nevermore",
+       "damage": 291.104215959098,
+       "healing": 0
+      },
+      {
+       "time": 9.01,
+       "source": "Solaris",
+       "damage": 106.39042630057803,
+       "healing": 53.195213150289014
       },
       {
        "time": 9.02,
@@ -8996,19 +9032,13 @@
       {
        "time": 9.657281031703384,
        "source": "basic",
-       "damage": 140.90270953757226,
-       "healing": 0
-      },
-      {
-       "time": 9.657281031703384,
-       "source": "Nevermore",
-       "damage": 275.44602221207384,
+       "damage": 143.62400650289018,
        "healing": 0
       }
      ],
      "finalCooldowns": {
-      "ALTERNATE": 10.1692,
-      "PRIMARY": 14.889303385276733
+      "ALTERNATE": 11.968246482536271,
+      "PRIMARY": 11.678580336227867
      }
     }
    ]
@@ -11582,25 +11612,25 @@
     },
     {
      "scenario": "Attack-rate ceiling: uninterrupted contact, zero cast recovery",
-     "damage": 3755.4603300452495,
-     "potentialHealing": 157.4122272398844,
+     "damage": 3680.043039830122,
+     "potentialHealing": 117.85070809248563,
      "ablations": [
       {
        "effect": "nevermore",
-       "damageWithout": 3034.804601517341,
-       "marginalDamage": 720.6557285279086,
-       "healingWithout": 157.4122272398844
+       "damageWithout": 2955.6815632225453,
+       "marginalDamage": 724.3614766075766,
+       "healingWithout": 117.85070809248563
       },
       {
        "effect": "vengeance",
-       "damageWithout": 3330.743492515625,
-       "marginalDamage": 424.7168375296246,
-       "healingWithout": 148.2398843930638
+       "damageWithout": 3259.6226231247306,
+       "marginalDamage": 420.4204167053913,
+       "healingWithout": 111.17991329479761
       },
       {
        "effect": "solaris",
        "damageWithout": 3455.380760781792,
-       "marginalDamage": 300.0795692634574,
+       "marginalDamage": 224.66227904832976,
        "healingWithout": 0
       }
      ],
@@ -11831,12 +11861,6 @@
        "source": "mercy",
        "damage": 169.5196170520231,
        "healing": 0
-      },
-      {
-       "time": 4.01,
-       "source": "Solaris",
-       "damage": 93.92303106936416,
-       "healing": 46.96151553468208
       },
       {
        "time": 4.02,
@@ -12182,7 +12206,7 @@
       {
        "time": 9.293539453560946,
        "source": "Nevermore",
-       "damage": 313.1453674287742,
+       "damage": 317.544277019754,
        "healing": 0
       },
       {

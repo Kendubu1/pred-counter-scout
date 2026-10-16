@@ -414,3 +414,16 @@ semantics in game. Add Knell, Purge tick cadence, Dash, Tainted, Terminus and
 resource/animation state, then integrate before regenerating ranked builds.
 Use passive-coverage-audit.json to work through all hero and item effects; no
 entry is a complete gameplay certificate.
+
+
+### Installed-client follow-up after Blueprint incorporation (2026-10-15)
+
+- Recover Knell scalar default bindings and native attribute-magnitude contract;
+  do not use earlier curve-only level-13 shred as verified runtime output.
+- Recover native damage event scale before moving repeated Ashbringer cooldown
+  reduction from the diagnostic replay into production scheduling.
+- Replace Solaris aggregate cast/basic bounds with validated event timing; audit
+  other spellblade items separately. Verify crit/heal and Mercy consumption.
+- Recover Purge first/final tick boundaries, Vengeance ordering, Ruination effect
+  period and Deathstalker's internal asset path. Rebuild app artifacts after any
+  production numeric change; preserve explicit omissions.
