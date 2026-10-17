@@ -1662,3 +1662,45 @@ Validation: 52 Python recovery tests, all 276 engine tests across 38 files,
 TypeScript and whitespace checks pass. No production or displayed data change
 requires an artifact rebuild; prior full regeneration and rendered parity remain
 unchanged. This checkpoint is recovery evidence, not new winning-build validation.
+
+
+### Belica/Aion pilot recovery (2026-10-16)
+
+Three latest coach matches identify Combustion/Wraith Leggings, plus Caustica
+and Noxia in the longest match. Aion/Bottomless Vial/Runic Focus are user-reported;
+coach Eternal suggestions and estimated purchase times are not observations.
+Both minors lack production effect entries; the major is explicitly unmodeled.
+Runic Focus reads captured Mana/MaxMana and evaluates bound curves at input zero.
+The catalog says 0.2 while the extracted first curve key is approximately 0.15.
+First-key inspection does not verify input-zero evaluation; the conversational
+20%-at-full-mana example was catalog-derived, not verified gameplay.
+Bottomless Vial's jungle-kill listener, River target filter, owner power-effect
+application and potion event are recovered. Inherited stack limit, death
+persistence, potion receiver, Runic capture refresh and aggregation remain open.
+See engine/fixtures/belica-aion-review.json for source-hashed evidence and gaps.
+Next resolve curve evaluation/version alignment and stack/capture lifecycle.
+M0 remains open (augment and combat-state observations missing); these missing
+production mechanics are concrete M1 blockers. No production or artifact change.
+
+
+### Belica item-first milestone: Wraith Leggings correction (2026-10-16)
+
+The user prioritized core combat and item interactions before Eternals. Pilot
+scope is Belica with Combustion/Wraith Leggings, then Caustica/Noxia at equal
+gold and level. Aion remains a later loadout-validation gate, not an item-only
+pilot blocker. Augment effects must likewise be excluded explicitly until known.
+
+Wraith Leggings previously granted unconditional 12% ability amplification.
+Recovered GA_Item_WraithLeggings_AbilityDamage listens before mitigation,
+accepts any AbilityDamage/PhysicalDamage/TrueDamage tag, rejects Item/Cleave,
+requires a hero entity and Threshold > Health/MaxHealth, then constructs a
+separate effect using EventMagnitude times the Damage value. It is not a
+universal amplifier. Numeric defaults and final nested damage ordering still
+need confirmation. Production aggregate rotations lack event-time health, so
+the false unconditional credit is removed and Carnage explicitly unmodeled.
+Item stats remain active. No guessed 40% uptime replaces the removed bonus.
+This is a correction of false credit, not completion of low-health simulation.
+
+A Belica regression verifies full-health damage matches the same item's stats
+without phantom passive credit. Combustion cooldown reduction, Noxia's separate
+ability/mark lifecycle and Caustica Arcane Might remain next pilot dependencies.

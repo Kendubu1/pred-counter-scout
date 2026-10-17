@@ -1,0 +1,18 @@
+{
+  "scope": "Wraith Leggings false unconditional credit removal",
+  "sourceDecodedSha256": "cadcb4aee4049350eec7f008d1149786ef80bc08cbc9e6d82a39a286b914b7c6",
+  "sourceAsset": "GA_Item_WraithLeggings_AbilityDamage",
+  "recovered": [
+    "Listens on Event.OnDamageDealt.PreMitigation.",
+    "Requires any AbilityDamage, PhysicalDamage or TrueDamage tag and excludes CleaveDamage and Item tags.",
+    "Requires target entity type Hero.",
+    "Compares Threshold > target Health / MaxHealth before generating a separate effect from EventMagnitude * Damage."
+  ],
+  "productionDecision": "Remove unconditional 12% ability amplifier; preserve item stats and label Carnage unmodeled until event-time state and effect ordering can be represented.",
+  "limits": [
+    "Threshold/Damage inherited scalar defaults and curve evaluation not certified by this review.",
+    "Separate magical damage execution and all nested-event interactions remain to be integrated.",
+    "No substitute uptime fraction or assumption that the target remains below threshold is used.",
+    "This intentionally omits low-health benefit and is not a complete Carnage model."
+  ]
+}

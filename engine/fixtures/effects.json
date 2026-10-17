@@ -245,13 +245,12 @@
   },
   "item:wraith-leggings": {
    "name": "Wraith Leggings / Carnage",
-   "sourceText": "Carnage <Condition>Against Heroes below</Condition> <HealthText>40% Health</HealthText><Condition>:</Condition>  • Abilities deal <AbilityPowerText>12%</AbilityPowerText> bonus <AbilityPowerText>Magical Damage</AbilityPowerText>.\nDamage Dealt: <EffectText>{DamageDealt}</EffectText>",
+   "sourceText": "Carnage <Condition>Against Heroes below</Condition> <HealthText>40% Health</HealthText><Condition>:</Condition>  \u2022 Abilities deal <AbilityPowerText>12%</AbilityPowerText> bonus <AbilityPowerText>Magical Damage</AbilityPowerText>.\nDamage Dealt: <EffectText>{DamageDealt}</EffectText>",
    "source": "Committed data/catalog/items.json, reconciled 2026-10-15; effect encodings remain partial where noted",
    "effects": [
     {
-     "kind": "damage_amp",
-     "pct": 12,
-     "scope": "abilities"
+     "kind": "unmodeled",
+     "note": "Carnage is conditional bonus magical damage, not an unconditional ability amplifier. The recovered pre-mitigation listener checks a hero target, excludes Item/Cleave events, and requires Health/MaxHealth strictly below its threshold before emitting a separate damage effect. Production does not yet track that event-time health and nested damage ordering, so it grants no Carnage damage credit. Item stats remain active. The former unconditional 12% ability bonus was incorrect; no fixed uptime is substituted."
     }
    ]
   },

@@ -1,0 +1,50 @@
+{
+  "scope": "Belica mid pilot: Aion dependency recovery, not production integration or game validation",
+  "reviewedAt": "2026-10-16",
+  "privateEvidence": [
+    {
+      "asset": "Minor_RunicFocus/GMMC_Blessing_RunicFocus_MagicalPower.uasset.json",
+      "decodedFileSha256": "7a35cf42eca675ac3595da61d6b4684acccd385658b3918ac03b12e3a95b6783"
+    },
+    {
+      "asset": "Minor_RunicFocus/GA_Blessing_RunicFocus.uasset.json",
+      "decodedFileSha256": "72363bcddfc7883129e41beb8da482fa0530b7e5ebd5721a8acb2bcaa252730d"
+    },
+    {
+      "asset": "Minor_BottomlessVial/GA_Blessing_BottomlessVial.uasset.json",
+      "decodedFileSha256": "0d328a2264d0737cf6d4d0c814d597e4127374cebb72597118f2796d13d24368"
+    }
+  ],
+  "findings": [
+    {
+      "mechanic": "Runic Focus",
+      "state": "evidence recovered, coefficient conflict unresolved",
+      "production": "No eternal:aion:runic-focus target exists in effects.json",
+      "rule": "The recovered custom magnitude reads captured Mana and MaxMana, evaluates both named curve rows at input zero, and returns 1 + (Mana / MaxMana) * PerCurrentManaRow(0) * MagicalPowerRow(0).",
+      "binding": "GE_Blessing_RunicFocus_Power has an Infinite policy and an AbilityPower modifier with operation byte 1, using the custom calculation. Activation applies the effect to the owner. Final modifier aggregation and capture refresh timing are not validated.",
+      "conflict": "Saved description says 0.2% per 1% current mana. The extracted MagicalPower curve has a first key of approximately 0.15, and PerCurrentMana a first key of 1. Do not equate the first key with verified evaluation at zero.",
+      "next": "Validate curve decoding and input-zero evaluation, source version alignment, capture refresh and modifier aggregation before integrating a multiplier."
+    },
+    {
+      "mechanic": "Bottomless Vial",
+      "state": "trigger and effect binding recovered; stack lifecycle open",
+      "production": "No eternal:aion:bottomless-vial target exists in effects.json",
+      "rule": "The recovered ability listens to Event.OnJungleMinionKilled, checks the payload target for Type.Entity.Character.CampMinion.River, emits the potion trigger event, and applies the stacks effect to the owner.",
+      "binding": "The effect has Infinite duration, AbilityPower modifier operation byte 0, active ScalableFloat magnitude bound to Aion_Minor_BottomlessVial_Power, and AggregateBySource stacking. Curve first key is 5.",
+      "next": "Resolve curve evaluation, inherited stack limit and stack/death lifecycle; verify potion receiver independently. Actual river kill count is not available from the saved coach report."
+    },
+    {
+      "mechanic": "Aion major",
+      "state": "unmodeled in production",
+      "production": "eternal:aion:major explicitly records an unmodeled economy effect; this does not implement the described on-cast mana regeneration either.",
+      "next": "Recover mana regeneration stacking/expiry and damage-to-gold eligibility; separate equal-gold combat comparison from economy progression."
+    }
+  ],
+  "limits": [
+    "Decoded function bodies and proprietary assets remain private.",
+    "No numeric gameplay coefficient is promoted from this review.",
+    "No simulator or deployed app behavior changes in this checkpoint.",
+    "User-reported Aion/minors are not observed match-feed selections.",
+    "Augment, actual purchase times, river kills, current mana and per-cast observations remain absent."
+  ]
+}

@@ -7,6 +7,16 @@ const kit = data.kits.get('kira')!, death = data.itemsBySlug.get('deathstalker')
 const profile = {...cal.referenceProfiles.squishy!, physicalArmor: 100};
 const t = effectiveTotals([], emptyEffects());
 describe('reviewed top-item interactions', () => {
+ it('does not grant Carnage to Belica against a full-health target', () => {
+   const belica = data.kits.get('lt-belica')!;
+   const leggings = data.itemsBySlug.get('wraith-leggings')!;
+   const actual = simulate(belica, [leggings], {level:13, profile, effects:resolveItemEffects([leggings], {level:13})}, cal);
+   const statsOnly = simulate(belica, [leggings], {level:13, profile, effects:emptyEffects()}, cal);
+   expect(actual.burstCombo).toBe(statsOnly.burstCombo);
+   expect(actual.rotation).toEqual(statsOnly.rotation);
+   // No replacement low-health uptime estimate may leak into sustained basics.
+   expect(actual.autoDps).toBe(statsOnly.autoDps);
+ });
  it('builds Deathstalker after hits and respects expiry between sparse hits', () => {
    const eff = resolveItemEffects([death], {level: 13});
    expect(eff.flatPen.physical).toBe(0);

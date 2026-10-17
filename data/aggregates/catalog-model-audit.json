@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-16T17:19:10.359Z",
+ "generatedAt": "2026-10-17T00:37:41.936Z",
  "source": "Committed catalog, effect registry, and dated installed-client audit; no network refresh",
  "note": "Presence and source alignment are not gameplay proof. Multi-hit timing, conditional states, and dropped scaling remain incomplete; keep simulation provisional.",
  "scalingBasisEvidence": {
@@ -5514,8 +5514,10 @@
   {
    "slug": "wraith-leggings",
    "hasCatalogEffects": true,
-   "modeled": true,
-   "limitations": []
+   "modeled": false,
+   "limitations": [
+    "Carnage is conditional bonus magical damage, not an unconditional ability amplifier. The recovered pre-mitigation listener checks a hero target, excludes Item/Cleave events, and requires Health/MaxHealth strictly below its threshold before emitting a separate damage effect. Production does not yet track that event-time health and nested damage ordering, so it grants no Carnage damage credit. Item stats remain active. The former unconditional 12% ability bonus was incorrect; no fixed uptime is substituted."
+   ]
   },
   {
    "slug": "wraps",
