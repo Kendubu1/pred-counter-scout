@@ -22,7 +22,10 @@
     "nativeAbilityEndCleanup": "6cf78013d7ff394611531dd4688439ce4e04c751747bc64ca4b9cbfe42a09dfc",
     "nativeVolumeDisableAndLinked": "5488b99a39aa1491aaf8d7f3df86c55bf726619b196911032c47ba197e19e092",
     "storedSpecCopyIdentity": "267af94d6e71db113a96f3606c4c8c47d5e0599462e38f9f067834a10c4f8e24",
-    "damageParentAndDuration": "23c5895dc4255c45f9a2f6be6ac482cd300c8385a63460fa7700947e218655fb"
+    "damageParentAndDuration": "23c5895dc4255c45f9a2f6be6ac482cd300c8385a63460fa7700947e218655fb",
+    "damageEventContext": "169e9e3a6c4bf7ca346d03855d4890d0e43b8d23a9c2292fa3e732bde7aa5841",
+    "schemaAncestrySelection": "b759342cbebc244898612da7104ed15d3d77cdfa72ee2d1f977540ac10e558ea",
+    "targetRegrantLifecycle": "2a4df437b239041e94cc607aebf3e4f285b63fbe2a168457df90fc710a8a31f1"
   },
   "recovery": {
     "newActorClassFields": 44,
@@ -56,18 +59,21 @@
     "The effect-component OnActiveGameplayEffectRemoved callback reaches RemoveAbilities. The verified CancelAbilityImmediately policy dispatches ClearAbility; the PredAbilitySystemComponent removal override calls its base, which directly ends active ability instances. This bypasses the ordinary CancelAbility cancelability check and connects effect removal to the previously traced latent cleanup. Authority/spec prerequisites and scope-lock deferral still apply.",
     "Native ongoing-tag requirement failure calls SetActiveGameplayEffectInhibit. Its state-change delegate is bound by the ability component: inhibition removes granted abilities via the recovered policy; uninhibition invokes its grant path. Thus losing the required Dummy tag can end the target ability and clear its pending zap, separately from explicit actor-exit effect removal. Inhibition is not full effect deletion; reactivation identity/timing and shared tag sources remain qualified.",
     "Native owner application forwards the stored damage spec. The traced instant-effect spec-copy helper retains the context object and reference controller rather than minting a per-application identity. This supports shared identity through that boundary, not final Noxia damage-event identity. The packaged inherited Instant duration policy is corroborated by the subsequent parent/default recovery; runtime overrides remain possible.",
-    "Adding the already-decoded GE_AbilityDamageEffect parent schema resolves the prior inherited-index stop. Drone damage and parent CDO property streams end at 605/609 and 70/74 bytes with all recovered properties exact. Neither overrides DurationPolicy; verified native GameplayEffect constructor assignment and enum mapping establish the inherited packaged Instant policy. Four trailing bytes remain per stream."
+    "Adding the already-decoded GE_AbilityDamageEffect parent schema resolves the prior inherited-index stop. Drone damage and parent CDO property streams end at 605/609 and 70/74 bytes with all recovered properties exact. Neither overrides DurationPolicy; verified native GameplayEffect constructor assignment and enum mapping establish the inherited packaged Instant policy. Four trailing bytes remain per stream.",
+    "The bound native damage execution reads its owning spec and populates OnDamageDealt/OnDamaged ContextHandle from that spec. Event copies and ASC forwarding preserve the same context object/control pointers; these boundaries do not mint a fresh per-zap identity. This does not certify absence of intervening shared-context mutation or bypass target/event guards.",
+    "The target CDO explicitly sets AlwaysActive. Its direct native parent, absence of an instancing override, verified enum and native constructor assignment support packaged InstancedPerExecution. Grant suppresses duplicates with the same ability and granting effect; a new grant attempts automatic activation under runtime guards and may enter a pending retry collection.",
+    "Successful per-execution activation constructs an execution instance and continues on it. Delay coalescing belongs to that callback lifetime, not globally across regrants. A new callback instance does not imply a new damage/Noxia context identity because Drone retains its stored damage spec."
   ],
   "limits": [
     "Timer dispatch order and same-frame expiry versus removal remain unresolved. Successful ability end queues latent cleanup; CancelAbilityImmediately uses ClearAbility to end active instances, with authority/spec prerequisites and scope-lock deferral.",
     "Remaining actor defaults, overlap radius, destruction cleanup, cross-volume shared stacking and grant reactivation/instance identity still require recovery. Normal entry/exit, disable and linked-overlap processing are traced; runtime overrides remain possible.",
-    "Owner application and instant-spec copying preserve the stored context through the traced boundary; final damage-event/Noxia identity remains unverified.",
+    "Owner application, instant-spec copying, damage-event production and ASC forwarding preserve the executing spec context. Intervening shared-context mutation, activation reinitialization and listener interleaving remain unverified.",
     "No in-game measurement was made. Instruction byte agreement is not whole-asset/default/native certification.",
     "Production still approximates Drone delivery as one immediate damage packet per damaging activation; this native recovery does not itself change Drone damage or live data.",
     "Recovered effect-component and damage/default properties roundtrip exactly but retain four trailing bytes outside completed streams. Completion of property streams is not whole-asset or runtime-override certification."
   ],
   "next": [
-    "Resolve grant reactivation/instance identity, destruction cleanup and stored-spec identity semantics for a bounded Drone event simulation.",
+    "Integrate a bounded conditional Drone event schedule with explicit successful activation/end lifetimes and retained damage-context identity; keep retry timing, destruction and intervening mutation qualified.",
     "Retain explicit assumptions for scope-lock deferral, shared stacking and boundary-frame ordering.",
     "Integrate supported conditional hit delivery with explicit target/cast assumptions, Noxia identity and Combustion filters, then rebuild the comparison."
   ]

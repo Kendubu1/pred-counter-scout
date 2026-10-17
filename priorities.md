@@ -11,8 +11,11 @@ integrated. Fixed-cooldown ability/immobilize procs now require chronological hi
 events; cooldown readiness alone does not generate damage. Next: validate Belica
 conditional hit delivery and Combustion filtered reductions. Drone normal volume
 entry/exit, disable, linked callbacks and ClearAbility-to-latent cleanup are traced.
-Remaining Drone gaps include grant reactivation, destruction, final event identity
-and boundary-frame ordering; do not treat those as verified gameplay parity.
+Drone event production/forwarding preserves the executing spec context; successful
+regrant has a separate callback lifetime. Next integrate a bounded conditional
+event schedule, keeping retry timing, destruction, context mutation and boundary
+ordering qualified. Combustion fresh-listener reducer-before-Pyro order is traced;
+producer tags and initial gate state remain open. Native recovery is not game parity.
 Noxia multi-tick/source cases remain open. Eternals remain deferred.
 The historical backlog below remains supporting evidence. A completed recovery
 checkpoint or green harness does not close a readiness milestone.

@@ -95,7 +95,7 @@ If a shared primitive is corrected, rerun affected consumer scenarios.
 ## Verified baseline and open gaps
 
 - Latest harness: 291 tests across 40 files; these are software checks, not 291
-  independent game validations. Recovery tools have 58 Python tests.
+  independent game validations. Recovery tools have 67 Python tests.
 - All 55 hero artifacts and 1,485 matchup pairs were regenerated after the fixed-
   cooldown timing correction. 35 hero artifacts and the matrix changed; 12 role
   item orders changed and 10 stale optimizer explanations were cleared.
@@ -353,3 +353,37 @@ changed; ten stale optimizer explanations were cleared and no additional coachin
 lines failed reconciliation. Timestamp-only changes were discarded. This is a
 provisional model correction on draft PR225, not a live deployment or a validated
 winning-build claim.
+
+
+### Reusable schema ancestry and retained damage-event context
+
+Added a private-output Blueprint superclass resolver. It follows existing decoded
+parents through explicit root overlays, checks expected class exports, detects
+local/cross-package cycles, and reports missing decoded parents and native schema
+boundaries separately. It never treats a found class as verified defaults. The
+actual Drone damage selection now locates GE_AbilityDamageEffect in the existing
+corpus and explicitly stops at native GameplayEffect; no extraction is repeated.
+Nine regressions cover indexed same-name parents, empty input, multilevel/shared/local ancestry, missing files, cycles,
+wrong exports/indices, overlay precedence and invalid native-package claims.
+
+The native damage producer uses the executing spec context for OnDamageDealt and
+OnDamaged. Event copies and ASC forwarding retain that context; no fresh identity
+is generated at these boundaries. This advances the retained-Drone-identity
+chain but does not prove all intervening callbacks leave shared context untouched.
+Target guards, listener interleaving and game measurements remain separate.
+No production damage or app artifacts changed in this recovery increment.
+
+Regrant recovery supports packaged AlwaysActive plus InstancedPerExecution. Grant
+skips a matching existing spec; a genuinely new grant attempts activation, which
+may fail or be deferred. Successful execution uses its own callback lifetime, so
+Delay coalescing must not span regrants globally. This does not create a new stored
+damage-context identity. Retry timing and runtime policy changes remain qualified.
+
+For Combustion's freshly registered, unchanged live listener pair, exact-tag native
+broadcast reverses the copied registration list: reducer precedes Pyro. A reducer
+with no cooldown cannot reduce one created afterward by Pyro on that outer event.
+Mutation/compaction, reentrancy and other triggered abilities can change state;
+this is not a universal priority guarantee. Producer tags and initial gate state
+remain next integration dependencies.
+
+Validation: all 291 simulator tests across 40 files and all 67 Python recovery tests pass. Production code and saved app artifacts are unchanged in this increment; the previous artifact and rendered-data checks still describe that unchanged tree.

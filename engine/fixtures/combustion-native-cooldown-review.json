@@ -13,7 +13,8 @@
     "abilityBlueprint": "c36de8aff0dcb9b25375fbd8f477c86215e8e410584ccc175bf86bc4862a11a3",
     "simpleCurveEvaluation": "94df18510f11a3cdccc1c3e346a38df033362de0587632237b8c53412a651ad7",
     "waitDelayTasks": "36f59a7d83eac45a299cc1a701b12a071beacf095ba529f9a9e019c15855fcf4",
-    "reductionCallbackReview": "84e305f3b4d17898519f406bbf82fdb5e87fbbbe0e29e6238afb8be2bf42722e"
+    "reductionCallbackReview": "84e305f3b4d17898519f406bbf82fdb5e87fbbbe0e29e6238afb8be2bf42722e",
+    "boundedListenerOrder": "6dcb454eee55c4e4e83775ce1b46b749251651cced7a6787b6997cab21cc54d7"
   },
   "recovered": [
     "The named ReduceGameplayEffectDurationRemainingByTime registration belongs to PredGameplayAbility and forwards an active-effect handle and reduction amount to the traced helper.",
@@ -23,13 +24,14 @@
     "The exact Time default binds coefficient 1 to ct_ItemStats/Combustion.PyroCDR. The Blueprint evaluates it at input zero; the recovered row has pre-extrapolation mode 4 and first value 0.5. Previously traced native simple-curve endpoint behavior therefore supports 0.5 seconds without runtime overrides.",
     "Eligible reduction callbacks request AbilityTask WaitDelay after the active-effect loop even when the shared gate is closed or the handle list is empty. The task completion reopens the gate; this is not an ordinary fixed cooldown after successful reductions.",
     "The named WaitDelay factory constructs separate task objects. Activation supplies a zero timer handle with a weak task callback, bypassing replacement of an existing timer; requests do not use the UUID coalescing of Kismet Delay.",
-    "WaitDelay completion checks its owning ability before broadcasting. Successful ability-end processing destroys tracked tasks and clears the ability pointer, suppressing later completion broadcasts. Physical timer-record deletion and exact callback timing are not certified."
+    "WaitDelay completion checks its owning ability before broadcasting. Successful ability-end processing destroys tracked tasks and clears the ability pointer, suppressing later completion broadcasts. Physical timer-record deletion and exact callback timing are not certified.",
+    "For the freshly registered, unchanged live exact-match pair, Blueprint registers Pyro before the reducer; native dispatch copies registrations in order then iterates backwards. Reducer therefore runs before Pyro on that outer event. With no matching cooldown at reducer time, it cannot shorten a cooldown created afterward by Pyro. This is a bounded order, not permanent priority under listener mutation or reentrancy."
   ],
   "limits": [
     "The 0.01-second arithmetic remainder is not a certified engine-frame expiry time. Timer tolerance, callbacks, authority and same-frame ordering remain unresolved.",
     "The helper contains an infinite-duration sentinel branch; this review does not generalize its behavior to arbitrary effects or invalid reduction inputs.",
     "Active runtime override selection, eligible damage event delivery and overlapping shared-gate callbacks still need integration evidence; the packaged reduction scalar is resolved without overrides.",
     "No controlled game measurement has validated this behavior. Production retains fixed 15-second Pyro cooldown and explicitly omits Pyromaniac.",
-    "Pyro and reducer listener dispatch order, final event-producer tags, initial shared-gate state and multiple-handle query order remain unverified. Production now uses chronological hits for the fixed cooldown; Pyromaniac reduction remains omitted."
+    "Fresh unmutated listener order is traced; order under mutation/reentrancy, final event-producer tags, initial shared-gate state and multiple-handle query order remain unverified. Production now uses chronological hits for the fixed cooldown; Pyromaniac reduction remains omitted."
   ]
 }

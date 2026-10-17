@@ -8,26 +8,37 @@ import json
 from pathlib import Path
 
 
+def import_package(imports, entry):
+    current, seen = entry, set()
+    while current.get('OuterIndex', 0):
+        index = current['OuterIndex']
+        if type(index) is not int or index >= 0 or -index > len(imports) or index in seen:
+            raise ValueError('Invalid or cyclic Blueprint import outer chain')
+        seen.add(index)
+        current = imports[-index - 1]
+    if current.get('ClassName') != 'Package' or not isinstance(current.get('ObjectName'), str):
+        raise ValueError('Import chain does not terminate in a package')
+    return current['ObjectName']
+
+
+def blueprint_path(package):
+    if not package.startswith('/Game/'):
+        return None
+    relative = package[len('/Game/'):]
+    if any(part in ('', '.', '..') for part in relative.split('/')) or '\\' in relative:
+        raise ValueError('Invalid package path')
+    return 'Predecessor/Content/' + relative + '.uasset'
+
+
 def select(asset, inventory, decoded_root=None):
     imports = asset['Imports']
     result = {}
     for entry in imports:
         if entry.get('ClassName') != 'BlueprintGeneratedClass':
             continue
-        current, seen = entry, set()
-        while current.get('OuterIndex', 0):
-            index = current['OuterIndex']
-            if not isinstance(index, int) or index >= 0 or -index > len(imports) or index in seen:
-                raise ValueError('Invalid or cyclic Blueprint import outer chain')
-            seen.add(index)
-            current = imports[-index - 1]
-        package = current['ObjectName']
-        if not package.startswith('/Game/'):
+        path = blueprint_path(import_package(imports, entry))
+        if path is None:
             continue
-        relative = package[len('/Game/'):]
-        if any(part in ('', '.', '..') for part in relative.split('/')) or '\\' in relative:
-            raise ValueError('Invalid package path')
-        path = 'Predecessor/Content/' + relative + '.uasset'
         row = result.setdefault(path, {'path': path, 'classes': [], 'packaged': path in inventory})
         row['classes'].append(entry['ObjectName'])
         if decoded_root is not None:
