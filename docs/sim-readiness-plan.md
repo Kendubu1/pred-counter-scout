@@ -250,3 +250,26 @@ against the package inventory and decoded corpus, avoiding another prefix-only
 coverage assumption. Synthetic tests reject invalid/cyclic outer chains and
 path traversal, exclude native classes, and distinguish packaged from decoded.
 No production behavior or app artifacts change in this recovery checkpoint.
+
+## Belica component grant and shared latent Delay recovery
+
+Recovered nine native component/struct layouts. Exact component properties now
+identify the Drone target ability grant and CancelAbilityImmediately policy, the
+required presence tag, and the damage categories. Dummy supplies the presence
+tag with Infinite duration and AggregateByTarget/limit-one settings. Four trailing
+bytes remain outside completed component property streams; the damage default's
+inherited schema is still incomplete. No opaque bytes are treated as values.
+
+The registered KismetSystemLibrary Delay path looks up callback target plus UUID
+and returns unchanged when an action is pending. Drone repeats that same delay ID
+with Self, so nearby triggers coalesce per callback object rather than queueing
+one zap per event. The action counts down using the response time step. Exact
+frame order and cancellation when the granted ability ends remain unresolved.
+
+The reusable native class reader now accepts a verified zero-own-field layout
+only with a null property array, and rejects a null array for a nonempty layout.
+This enables empty shared component bases without inventing their fields.
+The regression covers both inconsistent-pointer cases and the valid empty case.
+No simulator math or generated app data changes in this recovery checkpoint.
+Next: trace Dummy application/removal and native grant/cancellation behavior, then
+connect supported events to the production timeline.

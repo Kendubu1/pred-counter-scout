@@ -1,7 +1,18 @@
-import unittest
-from recover_native_class import fold_fields
+import struct, unittest
+from recover_native_class import fold_fields, recover
 
 class NativeClassTest(unittest.TestCase):
+ def test_empty_component_layout_requires_null_property_array(self):
+  class Image:
+   b=bytearray(128)
+   def offset(self,address):return address
+  image=Image()
+  self.assertEqual(recover(image,0),{'registrationEntryCount':0,'fields':[]})
+  struct.pack_into('<Q',image.b,40,80)
+  with self.assertRaisesRegex(ValueError,'Non-null empty'):recover(image,0)
+  struct.pack_into('<Q',image.b,40,0)
+  struct.pack_into('<I',image.b,56,1<<15)
+  with self.assertRaisesRegex(ValueError,'Null nonempty'):recover(image,0)
  def test_helpers_do_not_shift_following_field(self):
   records=[{'name':'Items','kind':17},{'name':'Items','kind':22},{'name':'UnderlyingType','kind':0},{'name':'Mode','kind':30},{'name':'Lookup','kind':82},{'name':'Lookup_Key','kind':25},{'name':'Lookup','kind':23},{'name':'Damage','kind':10}]
   fields=fold_fields(records)

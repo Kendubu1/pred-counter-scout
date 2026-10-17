@@ -34,8 +34,13 @@ def nested_name(pe, record, kind):
 def recover(pe, params):
     off=pe.offset(params);packed=struct.unpack_from('<I',pe.b,off+56)[0]
     count=(packed>>15)&2047
-    if not 0<count<=2047:raise ValueError('Invalid property count')
-    array=pe.offset(struct.unpack_from('<Q',pe.b,off+40)[0]);records=[]
+    pointer=struct.unpack_from('<Q',pe.b,off+40)[0]
+    if not count:
+        if pointer:raise ValueError('Non-null empty property array')
+        # No own reflected fields does not imply no inherited fields or defaults.
+        return {'registrationEntryCount':0,'fields':[]}
+    if not pointer:raise ValueError('Null nonempty property array')
+    array=pe.offset(pointer);records=[]
     for i in range(count):
         record=pe.offset(struct.unpack_from('<Q',pe.b,array+8*i)[0])
         kind,flags=struct.unpack_from('<II',pe.b,record+24)

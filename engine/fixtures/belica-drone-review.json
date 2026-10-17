@@ -4,7 +4,17 @@
     "droneActor": "42928d1f6e7434df1e260169da7e655fbc0a4f68db3f6c82b6af2452b8714d1f",
     "droneSentry": "739ebb9ce4f7374f3aa1cebc47f60a216b328da9edc3f4c766b2a3afc6e1199f",
     "targetAbility": "b4ef98cfaea703809404bb1481fef6a50d38fff5ab9739e29aef65830244e394",
-    "manaDrainProperties": "f567cb9a80c7ede788e878fb8d4ec86adc2db6326502571cce3bab7eb2788270"
+    "manaDrainProperties": "f567cb9a80c7ede788e878fb8d4ec86adc2db6326502571cce3bab7eb2788270",
+    "componentLayouts": "ab02039027d4c85b7f120811af0a47f2c60e785705ed4cfa692f0910e56b10b5",
+    "manaDrainComponents": "ed9edebfdfbfc32e2337f2ff53e4c5a1eb84e66ac8c5d1628a1c7d5f6483903a",
+    "presenceComponents": "ce58fa984532a68cdebbdfe2b3471ab04230c58f93ca423273ec39070dae5b81",
+    "damageComponents": "ff36760b2d1d02db8ce9afabbd2cf5e840e0662fe7b936a4de583efbf37f94ef",
+    "delayRegistration": "71a6b53b00aaf771c943ece2b84ac467f3a39d8852c7e7577ddbf836880bcb21",
+    "delayOwner": "cfae0c79615e1e0333ee9669655c568a3097156786645de546479128d915dab3",
+    "delayThunk": "0c018beaca0f677c2a221b46e6062250524e23222bcaa5cc03c82dde23e24b9c",
+    "pendingActionLookup": "822dea3af8a49970216b245640eaf17751c7776d7b1cbd84a92eb7f9fd91ea32",
+    "delayUpdate": "0c14fb1e82b9db7a6b05547896b8479024eadc8b4dcb4441efa3c7ef06b5ebe5",
+    "latentInfoLayout": "4fef7be99cc318a165ddcfa06f786d71d915997ffc6d04889631b74e53439c23"
   },
   "recovery": {
     "newActorClassFields": 44,
@@ -18,18 +28,25 @@
     "The target ability listens for ability commits with AbilityType.Ability and for Event.OnDamaged. Its damage-event branch requires GameplayEffect.LtBelica.VoidDrone.TriggerDamage and equality between the event instigator and the instigator of the stored Drone damage spec.",
     "FireDroneLaserAtTarget resolves the Drone from the granting context source object and requests a serialized approximately 0.1-second latent Delay before applying ZapDrain and the stored GE_DamageSpec to the target ability owner. It does not construct a fresh damage spec at this application site.",
     "A separate approximately 0.01-second WaitDelay in activation ends in an execution-flow return; it must not be mistaken for automatic firing or the zap delay.",
-    "The recovered ManaDrain default is Infinite and contains an attribute-based ManaRegen modifier capturing target Mana without snapshot. Its legacy GrantedAbilities entry has a null Ability, while GEComponents is populated: that legacy entry alone cannot establish the effective ability grant."
+    "The legacy GrantedAbilities entry is null, but the exact AbilitiesGameplayEffectComponent GrantAbilityConfigs property grants GA_LtBelica_VoidDrone_Target_C. It binds level to VoidDrone_Level and records CancelAbilityImmediately removal policy. Native cancellation callbacks and pending latent-action cleanup are not certified by the stored policy.",
+    "Native component reflection exposes GrantAbilityConfigs through GameplayAbilitySpecConfig, not the legacy GameplayAbilitySpecDef layout. The shared GameplayEffectComponent base has zero own reflected fields; this does not imply no native state or inherited defaults.",
+    "The exact ongoing-tag requirement on ManaDrain requires LtBelica.AbilityE.Drone.Dummy. The Dummy effect grants that tag, has Infinite duration, AggregateByTarget stacking and limit one. Actor/aura application and removal of Dummy still need tracing.",
+    "The exact damage AssetTags component includes AbilityDamage, SpellVamp, TriggersSpellShield, AoE, Summon and Damage.Ability.Secondary tags. These are recovered properties, not tags inferred only from a name table.",
+    "The 274-entry KismetSystemLibrary registration table identifies the Delay thunk. Its supplied LatentActionInfo fields are used to look up a pending action by callback target and UUID. If an action is found, the path returns without allocating another or rewriting its remaining time; otherwise it stores the supplied duration and callback information in a new action.",
+    "Drone FireDroneLaserAtTarget uses the same serialized latent UUID and Self callback target for each call at that site. Pending repeated calls therefore coalesce for the same callback object; different callback objects are not automatically coalesced together.",
+    "The created delay action update subtracts the response time-step value and requests completion when the remaining value is nonpositive. This supports delayed/coalesced delivery, not a frame-exact timing guarantee."
   ],
   "limits": [
-    "Timer and latent-action runtime behavior, repeated-call coalescing/cancellation and same-frame ordering remain unverified.",
-    "Actor defaults, overlap radius, effective target-ability grant components, team enum interpretation, lifecycle and native damage-category eligibility require further recovery.",
+    "Timer scheduling, callback dispatch order, native ability-removal handling and pending latent-action cancellation remain unverified; same-object pending Delay coalescing is now statically traced.",
+    "Actor defaults, overlap radius, effective presence-effect application/removal and native grant activation/inhibition lifecycle still require recovery. Stored grant/removal policy and damage tags are decoded.",
     "Stored-spec reuse does not by itself certify context identity or native application copying on every zap.",
     "No in-game measurement was made. Instruction byte agreement is not whole-asset/default/native certification.",
-    "Production still approximates one immediate damage packet per damaging activation; this recovery does not yet change simulator damage or live data."
+    "Production still approximates one immediate damage packet per damaging activation; this recovery does not yet change simulator damage or live data.",
+    "Component properties roundtrip exactly but retain four trailing bytes outside each completed property stream. The damage default still stops at an unresolved inherited schema index; no complete effect-body certification."
   ],
   "next": [
-    "Recover ManaDrain gameplay-effect components and the target ability grant/removal lifecycle.",
-    "Trace the native latent Delay contract and repeated-trigger behavior before generating Drone hit events.",
-    "Combine conditional hit delivery with Noxia identity and Combustion eligibility; then rebuild the production comparison."
+    "Trace the actor/aura presence-effect application and removal path, and native grant activation/inhibition behavior.",
+    "Resolve whether target ability removal cancels an already pending zap delay.",
+    "Integrate supported conditional hit delivery with explicit target/cast assumptions, Noxia identity and Combustion filters, then rebuild the comparison."
   ]
 }
