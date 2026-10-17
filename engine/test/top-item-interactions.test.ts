@@ -1,12 +1,35 @@
 import { describe, it, expect } from 'vitest';
 import { loadData } from '../src/data.js';
 import { emptyEffects, resolveItemEffects, mergeEffects } from '../src/effects.js';
-import { basicDamageWithShred, effectiveTotals, simulate, loadCalibration } from '../src/sim.js';
+import { basicDamageWithShred, effectiveTotals, rotationDamage, simulate, loadCalibration } from '../src/sim.js';
 const data = loadData(), cal = loadCalibration();
 const kit = data.kits.get('kira')!, death = data.itemsBySlug.get('deathstalker')!;
 const profile = {...cal.referenceProfiles.squishy!, physicalArmor: 100};
 const t = effectiveTotals([], emptyEffects());
 describe('reviewed top-item interactions', () => {
+ it('Noxia cannot damage an initially unmarked target on a lone ability hit', () => {
+   const belica = data.kits.get('lt-belica')!;
+   const item = data.itemsBySlug.get('noxia')!;
+   const eff = resolveItemEffects([item], {level:13});
+   const none = {...eff, onAbilityProcs:[]};
+   const damageAbilities = belica.abilities.filter(a => a.damagePerRank.length);
+   const single = {...belica, abilities:damageAbilities.slice(0,1)};
+   const ranks = new Map(single.abilities.map(a => [a.key, 1]));
+   const opts = {level:13, ranks, profile, burstBasics:0};
+   expect(simulate(single,[item],{...opts,effects:eff},cal).burstCombo)
+     .toBe(simulate(single,[item],{...opts,effects:none},cal).burstCombo);
+   const totals = effectiveTotals([item],eff);
+   expect(rotationDamage(single,{...opts,effects:eff},totals,0))
+     .toBe(rotationDamage(single,{...opts,effects:none},totals,0));
+   // A second ability preserves the existing one-proc combo estimate.
+   // This does not certify repeated ticks, mark expiry or the identity predicate.
+   const pair = {...belica, abilities:damageAbilities.slice(0,2)};
+   const pairOpts = {...opts, profile:null, ranks:new Map(pair.abilities.map(a => [a.key,1]))};
+   const target = {...profile, magicalArmor:0};
+   const delta = simulate(pair,[item],{...pairOpts,profile:target,effects:eff},cal).burstCombo
+     - simulate(pair,[item],{...pairOpts,profile:target,effects:none},cal).burstCombo;
+   expect(delta).toBeCloseTo(target.health * .06);
+ });
  it('does not grant Carnage to Belica against a full-health target', () => {
    const belica = data.kits.get('lt-belica')!;
    const leggings = data.itemsBySlug.get('wraith-leggings')!;

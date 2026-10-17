@@ -415,7 +415,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Damage Dealt: {DamageDealt}
 
 **→ Modeled as:**
-- `on_ability_hit` — each eligible ability adds 6% of target max HP magical damage (≤ once / 8s per target).
+- `on_ability_hit`, `marked_target` — reserve the first ability hit for marking; remaining hits receive aggregate 6% max-HP magical proc credit capped by the global 8s cooldown. This is provisional: mark expiry, ability identity, repeated ticks and source ownership are not simulated. A lone hit on an initially unmarked target gives no proc damage.
 
 ---
 

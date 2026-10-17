@@ -22,7 +22,7 @@
    "evidence": "GA_Item_Ashbringer.ExecuteUbergraph offsets 2791-3363, 104-1137, 1831-2739",
    "finding": "BasicDamage events bypass the ability-instance branch and process currently active non-ultimate cooldown effects on each qualifying event. Nonbasic events use a UniqueInstances array. On-hit and critical-damage paths exclude cleave. Reduction incorporates EventDataFloat and a critical multiplier.",
    "impact": "The diagnostic replay one-reduction-per-receiving-cooldown rule is contradicted by the basic-damage branch. Production still omits this passive.",
-   "open": "Trace native event payload scaling, Array_AddUnique return semantics and ReduceGameplayEffectDurationRemainingByPercent before claiming exact nonbasic deduplication or reduction amount."
+   "open": "Trace native event payload scaling and ReduceGameplayEffectDurationRemainingByPercent before claiming exact reduction amount. Array_AddUnique now has a static native trace: duplicate identities return -1 (noxia-review.json); Ashbringer call-site and identity lifecycle still require validation."
   },
   {
    "subject": "Knell",

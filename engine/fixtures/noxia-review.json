@@ -1,0 +1,37 @@
+{
+  "scope": "Noxia initial mark prerequisite; partial aggregate production correction",
+  "sourceDecodedSha256": {
+    "GA_Item_Noxia": "dc65ee2c6a06ab629306cf8809c60fe461c45a9d17e509150476885aa69acafd",
+    "GE_Item_Noxia_DamagedStacks": "2e20fdcd6247d313142c8f3a7662bbb175a0745fb9c327b880064e071d1de278"
+  },
+  "recovered": [
+    "Cooldown readiness is checked before hero target and excluded damage-category checks.",
+    "A target without Item.Noxia.Stacks receives DamageStackToApply; that branch does not apply DamageEffectToApply.",
+    "The marked branch tests Array_AddUnique return value >= 0 before committing and applying damage. This is not an array-length >= 2 test.",
+    "Static native trace of the registered Array_AddUnique thunk and its helper: the lookup returns an existing index or -1; the helper returns -1 on the existing-index branch and the new index only after insertion. Thus >=0 rejects previously recorded identities.",
+    "The mark effect has duration bound to Noxia.Duration, AggregateBySource and StackLimitCount 1."
+  ],
+  "productionDecision": "Require one setup ability hit before any Noxia proc credit against the initially unmarked single target. Retain the existing global ICD cap; remaining credit is an optimistic aggregate estimate, not event replay.",
+  "limits": [
+    "Mark expiry, per-source ownership and repeated marks after cooldown are not represented.",
+    "The new-identity requirement is recovered, but mapping identities to casts/slots and filtering repeated ticks remain unresolved in production.",
+    "Existing 6% max-health and 8-second values remain catalog-derived, not newly verified native constants.",
+    "No game observation certifies this approximation."
+  ],
+  "nativeEvidence": {
+    "executableSha256": "58dced3d01dffeab3b6921510b1626a798d3d6827d308fa85f9d206d4f068f38",
+    "privateTraceSha256": {
+      "arrayAddUniqueThunk": "5950da1af636e24f665478df6c9d94307ca26bc5bb00c19c5f5ab165486bfc15",
+      "arrayAddUniqueImplementation": "917a7dc60e4dd23d80016a60824a5c88d6270e8d1cb5d90ab6dc40110f6d0421",
+      "arrayLookupImplementation": "8484dc9d7c3b9328e3df04e67f13c83cd6460c79dbfc8c4a0932c6cc7098b046",
+      "abilityIdentityThunk": "f8e7b9c603c2217c6e2d29c367db25d0faace2dc399f6a83cefcaa6e2cfbce3e",
+      "contextConstructor": "92fdac1bafaa633d104bea5b3fd8f388f8b81fae1676921da58ddbf36e0297bd",
+      "contextZeroConstructor": "f6cbe5e1fdc1e83d77ea4df50d8da7515c7b9d6e81406aa592b866a72fe1891d",
+      "contextIdentityGetter": "e7f2b7a7e37eef29d6ec7911e10c200389b6b7a14b6556147edcf535966e5ec2",
+      "contextStructureLeads": "f0cdd5d49a1dbcc1e020d7b8761262d7876f276e0698aef29a78d7f25fbe98cc"
+    },
+    "identityGetter": "PredAbilityLibrary delegates through effect-context virtual dispatch. PredGameplayEffectContext struct operations construct a context with a zero-initialized identity field; its matching virtual getter returns that field. Population, copy behavior and per-cast lifetime remain unresolved.",
+    "registration": "Validated the 32-entry KismetArrayLibrary native registration table and the 19-entry PredAbilityLibrary table against their class constructors; the named entries resolve to the traced thunks.",
+    "privateRegistrationSha256": "98352d52d251666832316b6580aee6e21109148e2e59d4ef0e39512bee72daa2"
+  }
+}

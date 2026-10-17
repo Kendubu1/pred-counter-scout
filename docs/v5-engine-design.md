@@ -1704,3 +1704,23 @@ This is a correction of false credit, not completion of low-health simulation.
 A Belica regression verifies full-health damage matches the same item's stats
 without phantom passive credit. Combustion cooldown reduction, Noxia's separate
 ability/mark lifecycle and Caustica Arcane Might remain next pilot dependencies.
+
+
+### Noxia initial mark prerequisite (2026-10-16)
+
+The production aggregate model now reserves the first ability hit for marking an
+initially unmarked target. A lone hit grants no Dark Matter damage; two damaging
+abilities retain the existing one-proc combo estimate. This corrects first-hit
+false credit without inventing an uptime fraction. Evidence and remaining gaps
+are recorded in engine/fixtures/noxia-review.json.
+
+The Blueprint checks Array_AddUnique's result >= 0, not array length >= 2.
+Static native tracing now confirms that this installed helper returns -1 when
+lookup finds an existing identity, and returns a new index only after insertion.
+Therefore Noxia rejects previously recorded identities. The identity getter
+resolves to a field in PredGameplayEffectContext, zeroed by its constructors.
+Population and cast lifetime remain unresolved, so this is not proof that
+different ability slots are needed.
+Production still lacks identity tracking, mark expiry, repeated-hit filtering,
+source ownership and mark renewal after cooldown. Remaining Noxia credit is an
+optimistic aggregate estimate. M1 remains open; M2 needs game observations.

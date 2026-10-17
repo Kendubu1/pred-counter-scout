@@ -451,7 +451,12 @@ export function rotationDamage(kit: HeroKit, opts: SimOptions, t: ItemStats, win
   for (const p of eff.onAbilityProcs) {
     // Ability-only rotations contain no confirmed consuming attacks.
     if (p.trigger === 'cast_then_basic') continue;
-    const procs = procCount(p.trigger === 'immobilize' ? immobilizingCasts : totalCasts, windowSec, p.icdSeconds) * rampFactor(windowSec, p.rampSeconds);
+    // An initially unmarked target requires a setup hit before Noxia can deal damage.
+    // This is only an aggregate upper bound: expiry, identity and later re-marks
+    // require an event timeline; do not interpret this as a full Noxia replay.
+    const events = p.trigger === 'immobilize' ? immobilizingCasts
+      : p.trigger === 'marked_target' ? Math.max(0, totalCasts - 1) : totalCasts;
+    const procs = procCount(events, windowSec, p.icdSeconds) * rampFactor(windowSec, p.rampSeconds);
     total += mitigate(procDamage(p, t, profile, kit, isBurst, eff, opts.level), p.damageType, profile, t, eff, windowSec, k) * procs;
   }
   return total;
@@ -560,7 +565,8 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
   // ability (see rotationDamage).
   for (const p of eff.onAbilityProcs) {
     const events = p.trigger === 'cast_then_basic' ? Math.min(burstCommits, opts.burstBasics ?? 2)
-      : p.trigger === 'immobilize' ? burstImmobilizations : burstCasts;
+      : p.trigger === 'immobilize' ? burstImmobilizations
+      : p.trigger === 'marked_target' ? Math.max(0, burstCasts - 1) : burstCasts;
     const procs = procCount(events, BURST_WINDOW, p.icdSeconds) * rampFactor(BURST_WINDOW, p.rampSeconds);
     const d = mitigate(procDamage(p, t, profile, kit, true, eff, opts.level), p.damageType, profile, t, eff, BURST_WINDOW, k) * procs;
     burst += d; teamfightBurst += d;
