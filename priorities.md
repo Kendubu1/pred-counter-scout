@@ -9,7 +9,8 @@ Item-first progress: Wraith unconditional amplification removed; Noxia first-hit
 mark prerequisite corrected, then chronological activation/mark/cooldown handling
 integrated. Next: validate Belica hit delivery and Combustion filtered cooldown
 behavior. Drone actor targeting/delay paths are recovered; next resolve its
-presence-effect application/removal and pending-zap cancellation. Component
+native presence-effect application/removal and pending-zap cancellation. The volume
+presence binding/filter and actor exit removal are now decoded. Component
 grant policy and same-object pending Delay coalescing are now recovered.
 Noxia multi-tick/source cases remain open. Eternals remain deferred.
 The historical backlog below remains supporting evidence. A completed recovery

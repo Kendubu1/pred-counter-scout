@@ -14,7 +14,10 @@
     "delayThunk": "0c018beaca0f677c2a221b46e6062250524e23222bcaa5cc03c82dde23e24b9c",
     "pendingActionLookup": "822dea3af8a49970216b245640eaf17751c7776d7b1cbd84a92eb7f9fd91ea32",
     "delayUpdate": "0c14fb1e82b9db7a6b05547896b8479024eadc8b4dcb4441efa3c7ef06b5ebe5",
-    "latentInfoLayout": "4fef7be99cc318a165ddcfa06f786d71d915997ffc6d04889631b74e53439c23"
+    "latentInfoLayout": "4fef7be99cc318a165ddcfa06f786d71d915997ffc6d04889631b74e53439c23",
+    "volumeLayouts": "654a9b3df7616e4aab1042cbce63290de1605c79548f7e6be82d8f894ed954cf",
+    "volumeEnums": "8047f23e6c0faabd6acca2642e110796dd72a86333bb4070a17d4ec7061c35f0",
+    "volumeProperties": "0d1371baa3701e6fc34bf85e70258abb38d8fd231b0967c28378852bf45fe2af"
   },
   "recovery": {
     "newActorClassFields": 44,
@@ -30,22 +33,26 @@
     "A separate approximately 0.01-second WaitDelay in activation ends in an execution-flow return; it must not be mistaken for automatic firing or the zap delay.",
     "The legacy GrantedAbilities entry is null, but the exact AbilitiesGameplayEffectComponent GrantAbilityConfigs property grants GA_LtBelica_VoidDrone_Target_C. It binds level to VoidDrone_Level and records CancelAbilityImmediately removal policy. Native cancellation callbacks and pending latent-action cleanup are not certified by the stored policy.",
     "Native component reflection exposes GrantAbilityConfigs through GameplayAbilitySpecConfig, not the legacy GameplayAbilitySpecDef layout. The shared GameplayEffectComponent base has zero own reflected fields; this does not imply no native state or inherited defaults.",
-    "The exact ongoing-tag requirement on ManaDrain requires LtBelica.AbilityE.Drone.Dummy. The Dummy effect grants that tag, has Infinite duration, AggregateByTarget stacking and limit one. Actor/aura application and removal of Dummy still need tracing.",
+    "The exact ongoing-tag requirement on ManaDrain requires LtBelica.AbilityE.Drone.Dummy. The Dummy effect grants that tag, has Infinite duration, AggregateByTarget stacking and limit one. The actor volume now has a decoded Dummy-effect binding; native overlap application and removal still need tracing.",
     "The exact damage AssetTags component includes AbilityDamage, SpellVamp, TriggersSpellShield, AoE, Summon and Damage.Ability.Secondary tags. These are recovered properties, not tags inferred only from a name table.",
     "The 274-entry KismetSystemLibrary registration table identifies the Delay thunk. Its supplied LatentActionInfo fields are used to look up a pending action by callback target and UUID. If an action is found, the path returns without allocating another or rewriting its remaining time; otherwise it stores the supplied duration and callback information in a new action.",
     "Drone FireDroneLaserAtTarget uses the same serialized latent UUID and Self callback target for each call at that site. Pending repeated calls therefore coalesce for the same callback object; different callback objects are not automatically coalesced together.",
-    "The created delay action update subtracts the response time-step value and requests completion when the remaining value is nonpositive. This supports delayed/coalesced delivery, not a frame-exact timing guarantee."
+    "The created delay action update subtracts the response time-step value and requests completion when the remaining value is nonpositive. This supports delayed/coalesced delivery, not a frame-exact timing guarantee.",
+    "The Drone actor PredGameplayVolume component has an exact FilterAndEffectsContainers property whose entry selects enemy heroes, excludes self/minions/structures/damageables, checks targetability, permits stealthed targets, and does not require line of sight. Its configured stacked effect is GE_LtBelica_Drone_ManaDrainDummy_C with StackCount one. This establishes the serialized presence-effect binding, not native overlap application/removal behavior.",
+    "The volume component property stream reaches its end after 82 of 90 bytes; both recovered properties roundtrip exactly. Eight trailing bytes remain opaque. SnapshotSourceForPeriodicEffects is explicitly false; absent properties and inherited defaults have not been certified.",
+    "RemoveEnemy casts the departing actor to a hero and branches on CompareTeams result equal to byte one. On the selected branch it removes GE_LtBelica_Drone_ManaDrain_C with no instigator filter and stack count minus one, removes that hero from PossibleTargets, and stops tracking if it was CurrentTarget. The team enum label and native removal/cancellation effects are not inferred from the byte value.",
+    "Native reflection recovered the PredGameplayVolumeComponent and ActorComponent own field layouts plus fifteen dependent struct layouts. These are reusable schemas, not evidence of inherited default values or native lifecycle behavior."
   ],
   "limits": [
     "Timer scheduling, callback dispatch order, native ability-removal handling and pending latent-action cancellation remain unverified; same-object pending Delay coalescing is now statically traced.",
-    "Actor defaults, overlap radius, effective presence-effect application/removal and native grant activation/inhibition lifecycle still require recovery. Stored grant/removal policy and damage tags are decoded.",
+    "Remaining actor defaults, overlap radius, native presence-effect application/removal and native grant activation/inhibition lifecycle still require recovery. Stored grant/removal policy and damage tags are decoded.",
     "Stored-spec reuse does not by itself certify context identity or native application copying on every zap.",
     "No in-game measurement was made. Instruction byte agreement is not whole-asset/default/native certification.",
     "Production still approximates one immediate damage packet per damaging activation; this recovery does not yet change simulator damage or live data.",
-    "Component properties roundtrip exactly but retain four trailing bytes outside each completed property stream. The damage default still stops at an unresolved inherited schema index; no complete effect-body certification."
+    "Previously recovered effect-component properties roundtrip exactly but retain four trailing bytes outside each completed property stream. The damage default still stops at an unresolved inherited schema index; no complete effect-body certification."
   ],
   "next": [
-    "Trace the actor/aura presence-effect application and removal path, and native grant activation/inhibition behavior.",
+    "Trace native PredGameplayVolume overlap application/removal and grant activation/inhibition, using the recovered presence-effect binding and filter.",
     "Resolve whether target ability removal cancels an already pending zap delay.",
     "Integrate supported conditional hit delivery with explicit target/cast assumptions, Noxia identity and Combustion filters, then rebuild the comparison."
   ]

@@ -5521,3 +5521,22 @@ The regression covers both inconsistent-pointer cases and the valid empty case.
 No simulator math or generated app data changes in this recovery checkpoint.
 Next: trace Dummy application/removal and native grant/cancellation behavior, then
 connect supported events to the production timeline.
+
+
+### Drone presence binding checkpoint
+
+Recovered the actor's gameplay-volume configuration using 17 native class/struct
+layouts and native enum registrations. The exact property selects enemy heroes,
+checks targetability, permits stealthed targets and does not require line of sight;
+it binds the Dummy presence effect with one stack. The separate actor targeting
+loop still checks line of sight before applying ManaDrain. These are distinct gates.
+The volume property stream ends at 82/90 bytes with exact property roundtrips;
+eight trailing bytes remain unresolved. Native overlap application/removal and
+inherited defaults are not certified by these fields.
+
+The actor exit function explicitly removes ManaDrain, removes the candidate and
+stops tracking its current target. Its team branch uses byte one; the enum label
+has not been recovered. Pending zap cancellation remains open, as do native
+presence-effect cleanup and grant activation/inhibition. This recovery changes no
+production damage, build recommendations or live data. Next: native volume cleanup
+and ability-end latent-action handling, then conditional hit delivery integration.
