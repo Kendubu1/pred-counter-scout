@@ -115,6 +115,9 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   Eternals, their minors, augments, and every ability icon data/catalog links;
   needs PREDGG creds; skip-if-exists, so it only fetches what the repo lacks —
   run after any catalog change),
+  `npm run postgame:loadout` (what each player RAN in every reviewed game —
+  augment, Eternal, minors, crest — looked up per film in the same public match
+  stream by match id; idempotent, `-- --all` re-decodes; part of the coach job),
   `npm run lanestats` (per-hero-role RANKED lane stats for the CURRENT patch from
   pred.gg generalStatistic — the meta board's source),
   `npm run skills` (per-hero recommended leveling order from pred.gg),

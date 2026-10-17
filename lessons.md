@@ -4973,3 +4973,21 @@ AbilityTriggerData, PredMontagesArray and Transform. All generated field maps,
 raw/default bodies and native instruction traces remain private.
 
 Validation: 269 engine tests across 38 files, 25 Python recovery tests, TypeScript, rendered UI parity and all 55 saved artifact schemas pass. The private projectile gate passes 59 exact spans and rejects a changed collision flag. Numeric production rankings are unchanged in this recovery checkpoint.
+
+## 2026-10-17 — Reviewed games now record the Eternal each player ran (maintainer: "we are missing what Eternals we are running")
+
+The post-game films came from pred.gg GraphQL, which cannot return perks at our
+app tier, so a review knew every item but not the augment, Eternal, minors or
+crest; the review page's "eternal" row was the ENGINE's pick, which read as if
+it were what the player ran. The public match stream's matchId and playerId are
+the same UUIDs the films store, and it reaches back to 2022, so each film is
+found by its own id (start + duration says where to look; ~3 calls a film) and
+decoded by the same `loadoutOf` the perk counter uses (`src/ingest/
+match-stream.ts`, now shared by both). The page shows "ran" with icons and keeps
+"engine pick" beside it ("same Eternal you ran" / "you ran X"); the critic's
+SOURCE carries all ten loadouts so a line naming someone's Eternal is not
+flagged as invented. Bonus found on the way: the same stream row carries every
+purchase with its gameTime, so `itemTimeline` (estimated from gold curves) could
+become measured.
+Lesson: a label that names a thing ("eternal") but shows a recommendation reads
+as a fact about the game; label recommendations as recommendations.

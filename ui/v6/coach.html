@@ -316,6 +316,18 @@ const pct = (x, d = 1) => (x * 100).toFixed(d);
 // ── Post-game review rendering (match facts + the coaching pass) ──
 const himg = (slug) => `../img/heroes/${slug}.webp`;
 const iimg = (slug) => `../img/items/${slug}.webp`;
+// What a player actually RAN (players[i].loadout, decoded from pred.gg's public
+// match stream by npm run postgame:loadout): augment, Eternal, minors, crest.
+const nslug = (name) => String(name || '').toLowerCase().normalize('NFKD').replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const ico = (src, title, ipop) => `<img${ipop ? ` data-ipop="${esc(ipop)}"` : ''} src="${src}" title="${esc(title)}" alt="" style="display:inline-block;width:18px;height:18px;border-radius:4px;border:1px solid var(--border);vertical-align:-4px;margin-right:.2rem" onerror="this.style.display='none'">`;
+const ranLine = (lo) => {
+  if (!lo || !(lo.eternal || lo.augment || lo.crest)) return '';
+  const bits = [];
+  if (lo.eternal) bits.push(`${ico(`../img/eternals/${nslug(lo.eternal)}.webp`, lo.eternal)}<b>${esc(lo.eternal)}</b>${[lo.minor1, lo.minor2].filter(Boolean).map((m) => ` + ${ico(`../img/blessings/${nslug(m)}.webp`, m)}${esc(m)}`).join('')}`);
+  if (lo.augment) bits.push(`${ico(`../img/augments/${esc(lo.augment.id)}.webp`, lo.augment.name)}${esc(lo.augment.name)}`);
+  if (lo.crest) bits.push(`${ico(`../img/crests/${esc(lo.crestSlug || nslug(lo.crest))}.webp`, lo.crest, lo.crestSlug)}${esc(lo.crest)}`);
+  return `<div class="lrow"><span class="ltag">ran</span>${bits.join(' <span style="color:var(--text-2)">·</span> ')}</div>`;
+};
 // Prefer the mapped squad name: some omeda profiles are private and report a
 // placeholder display_name like "🎮 user-<id>"; squadName is the real handle.
 const pgName = (p) => esc(p.squadName || (String(p.name || '').startsWith('\u{1F3AE}') ? 'Random' : p.name));
@@ -395,12 +407,12 @@ function fightDetail(s, f) {
     if (Array.isArray(p.itemTimeline) && p.itemTimeline.length) {
       const rows = p.itemTimeline.slice(0, 6);
       const onCount = rows.filter((i) => i.estMin != null && i.estMin <= s.startMin + 0.5).length;
-      const icons = rows.map((i) => { const on = i.estMin != null && i.estMin <= s.startMin + 0.5; return `<img src="${iimg(i.slug)}" title="${esc(i.name)} · ${i.estMin != null ? `est. online ~${i.estMin}m` : 'est. very late'}${on ? '' : ' — NOT yet at this fight'}" style="width:17px;height:17px;border-radius:3px;${on ? '' : 'opacity:.28;filter:grayscale(.7)'}" onerror="this.style.display='none'">`; }).join('');
+      const icons = rows.map((i) => { const on = i.estMin != null && i.estMin <= s.startMin + 0.5; return `<img data-ipop="${esc(i.slug)}" src="${iimg(i.slug)}" title="${esc(i.name)} · ${i.estMin != null ? `est. online ~${i.estMin}m` : 'est. very late'}${on ? '' : ' — NOT yet at this fight'}" style="width:17px;height:17px;border-radius:3px;${on ? '' : 'opacity:.28;filter:grayscale(.7)'}" onerror="this.style.display='none'">`; }).join('');
       return `<div style="display:flex;align-items:center;gap:.25rem;font-size:.72rem;margin-top:.18rem"><b style="min-width:4.6rem">${esc(hName(slug))}</b>${icons}<span style="color:var(--text-2)"> · ~${onCount}/${rows.length} online</span></div>`;
     }
     const items = (p.items || []).filter((i) => !/Potion|Ward|Crest/i.test(i.name)).slice(0, 6);
     const online = (p.spikes || []).filter((sp) => sp.spikeMinute <= s.startMin + 0.5);
-    return `<div style="display:flex;align-items:center;gap:.25rem;font-size:.72rem;margin-top:.18rem"><b style="min-width:4.6rem">${esc(hName(slug))}</b>${items.map((i) => `<img src="${iimg(i.slug)}" title="${esc(i.name)}" style="width:17px;height:17px;border-radius:3px" onerror="this.style.display='none'">`).join('') || '<span style="color:var(--text-2)">no items</span>'}<span style="color:var(--text-2)">${online.length ? ` · ${online.map((o) => esc(o.name)).join(', ')} online` : ` · no spike online yet`}</span></div>`;
+    return `<div style="display:flex;align-items:center;gap:.25rem;font-size:.72rem;margin-top:.18rem"><b style="min-width:4.6rem">${esc(hName(slug))}</b>${items.map((i) => `<img data-ipop="${esc(i.slug)}" src="${iimg(i.slug)}" title="${esc(i.name)}" style="width:17px;height:17px;border-radius:3px" onerror="this.style.display='none'">`).join('') || '<span style="color:var(--text-2)">no items</span>'}<span style="color:var(--text-2)">${online.length ? ` · ${online.map((o) => esc(o.name)).join(', ')} online` : ` · no spike online yet`}</span></div>`;
   }).join('');
 
   // Sustain check BOTH WAYS: was OUR anti-heal (the Tainted family) online into
@@ -811,10 +823,11 @@ function pgReview(f) {
       </div>
       <div>
         ${co?.perPlayer?.[p.pid] ? `<div class="line">${esc(co.perPlayer[p.pid])}</div>` : ''}
-        <div class="items">${built.map((i) => `<img src="${iimg(i.slug)}" title="${esc(i.name)}" onerror="this.style.display='none'">`).join('')}</div>
+        <div class="items">${built.map((i) => `<img data-ipop="${esc(i.slug)}" src="${iimg(i.slug)}" title="${esc(i.name)}" onerror="this.style.display='none'">`).join('')}</div>
         <div class="lrow"><span class="ltag">build</span>${bits.join(' · ')}</div>
         ${br?.build ? `<details class="whyd"><summary>why — what this build gained vs gave up</summary><div>${esc(br.build)}</div></details>` : ''}
-        <div class="lrow" data-et-slug="${esc(p.heroSlug)}" data-et-role="${esc(p.role)}" data-et-opp="${lane ? esc(lane.theirSlug) : ''}"><span class="ltag">eternal</span><span style="opacity:.6">loading the engine's pick…</span></div>
+        ${ranLine(p.loadout)}
+        <div class="lrow" data-et-slug="${esc(p.heroSlug)}" data-et-role="${esc(p.role)}" data-et-opp="${lane ? esc(lane.theirSlug) : ''}" data-et-ran="${esc(p.loadout?.eternal || '')}"><span class="ltag">engine pick</span><span style="opacity:.6">loading the engine's pick…</span></div>
         ${br?.eternal ? `<details class="whyd"><summary>why — why this loadout fits the matchup</summary><div>${esc(br.eternal)}</div></details>` : ''}
         ${(() => { const m = co && co.microReads ? co.microReads[p.pid] : null; if (!m || !(m.keep || m.change || m.check)) return ''; return `<div class="kcc">
           ${m.lastCheck && m.lastCheck.text ? `<div class="lrow"><span class="ltag" style="color:${m.lastCheck.result === 'held' ? 'var(--green)' : m.lastCheck.result === 'missed' ? 'var(--red)' : 'var(--text-2)'}">last check · ${esc(m.lastCheck.result || '')}</span>${esc(m.lastCheck.text)}${m.lastCheck.receipt ? ` <span style="color:var(--text-2)">(${esc(m.lastCheck.receipt)})</span>` : ''}</div>` : ''}
@@ -913,8 +926,9 @@ async function fillEternals() {
       // Thraex...), the support majors (Exarch, Aion, Lotus, Marrow, Nihil,
       // Weald, Pilow, Satariel) are unmodeled — so a Vesh row on an enchanter is
       // the model's blind spot, not a recommendation (coach audit 2026-09-21).
-      if (role === 'support') { el.innerHTML = `<span class="ltag">eternal</span><span style="color:var(--text-2)">support loadouts are not modeled by the engine (the field runs Exarch on healers and shielders, Krix on tank supports)</span>`; continue; }
-      if (lo && lo.major) el.innerHTML = `<span class="ltag">eternal</span><b>${esc(lo.major.name)}</b>${lo.minor1 ? ` + ${esc(lo.minor1.name)}` : ''}${lo.minor2 ? ` + ${esc(lo.minor2.name)}` : ''}${cs && typeof cs.in === 'string' && cs.out ? ` <span class="swap">· matchup swap vs ${esc(oppName)}: ${esc(cs.in)} in for ${esc(cs.out)}</span>` : ''}`;
+      const ran = el.dataset.etRan;
+      if (role === 'support') { el.innerHTML = `<span class="ltag">engine pick</span><span style="color:var(--text-2)">support loadouts are not modeled by the engine (the field runs Exarch on healers and shielders, Krix on tank supports)</span>`; continue; }
+      if (lo && lo.major) el.innerHTML = `<span class="ltag">engine pick</span><b>${esc(lo.major.name)}</b>${lo.minor1 ? ` + ${esc(lo.minor1.name)}` : ''}${lo.minor2 ? ` + ${esc(lo.minor2.name)}` : ''}${ran ? (ran === lo.major.name ? ' <span style="color:var(--green)">(same Eternal you ran)</span>' : ` <span style="color:var(--text-2)">(you ran ${esc(ran)})</span>`) : ''}${cs && typeof cs.in === 'string' && cs.out ? ` <span class="swap">· matchup swap vs ${esc(oppName)}: ${esc(cs.in)} in for ${esc(cs.out)}</span>` : ''}`;
       else el.remove();
     } catch { el.remove(); }
   }
@@ -1192,6 +1206,8 @@ function buildSubnav() {
   cards.forEach((c) => io.observe(c));
 }
 </script>
+<script src="game-text.js"></script>
+<script defer src="item-popup.js"></script>
 <script defer src="icons.js"></script>
 <script defer src="nav.js"></script>
 </body>
