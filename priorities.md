@@ -7,11 +7,12 @@ for simulator-accuracy work. Start at M0: freeze the user's Belica mid compariso
 dependencies, then close production, measured-validation and release gates.
 Item-first progress: Wraith unconditional amplification removed; Noxia first-hit
 mark prerequisite corrected, then chronological activation/mark/cooldown handling
-integrated. Next: validate Belica hit delivery and Combustion filtered cooldown
-behavior. Drone actor targeting/delay paths are recovered; next resolve its
-native presence-effect application/removal and pending-zap cancellation. The volume
-presence binding/filter and actor exit removal are now decoded. Component
-grant policy and same-object pending Delay coalescing are now recovered.
+integrated. Fixed-cooldown ability/immobilize procs now require chronological hit
+events; cooldown readiness alone does not generate damage. Next: validate Belica
+conditional hit delivery and Combustion filtered reductions. Drone normal volume
+entry/exit, disable, linked callbacks and ClearAbility-to-latent cleanup are traced.
+Remaining Drone gaps include grant reactivation, destruction, final event identity
+and boundary-frame ordering; do not treat those as verified gameplay parity.
 Noxia multi-tick/source cases remain open. Eternals remain deferred.
 The historical backlog below remains supporting evidence. A completed recovery
 checkpoint or green harness does not close a readiness milestone.

@@ -5540,3 +5540,63 @@ has not been recovered. Pending zap cancellation remains open, as do native
 presence-effect cleanup and grant activation/inhibition. This recovery changes no
 production damage, build recommendations or live data. Next: native volume cleanup
 and ability-end latent-action handling, then conditional hit delivery integration.
+
+
+### Chronological fixed-cooldown procs and Drone lifetime recovery
+
+Fixed-cooldown ability-hit and immobilize effects now consume the modeled event
+timeline rather than a cast-count/window upper bound. Previously, two opening hits
+could grant a second Combustion proc in a 20-second window without any later hit.
+The isolated Belica two-ability regression changes the proc contribution from
+130.6 to 65.3 damage. This is a synthetic reproduction, not an in-game measurement.
+Burst follows its existing simultaneous-opening-hit convention. Noxia retains its
+specialized mark/identity timeline; cast-then-basic retains its documented aggregate
+approximation. Pyromaniac and true conditional Drone delivery remain unmodeled.
+
+Parallel native investigations recovered normal volume overlap handle tracking,
+reference-counted exit removal, disable cleanup, and deferred linked callbacks.
+A net-zero linked count emits entry then exit, rather than dropping both events.
+The Drone template points directly to the native component default. The separate
+effect removal chain uses ClearAbility to directly end active instances, bypassing
+the ordinary cancelability check. Successful end queues latent-action removal;
+Delay abort/destruction does not fire the pending zap. Authority/spec prerequisites,
+scope-lock deferral and same-frame dispatch order remain qualifications.
+
+Remaining work: grant reactivation/instance identity, destruction cleanup, shared stacking and stored
+spec/context identity, then a bounded conditional-hit scenario. Controlled game
+observations remain a separate readiness gate. Sanitized findings and private
+evidence hashes are in belica-drone-review.json; raw bodies remain private.
+
+The ongoing-tag native path is also traced: losing the required presence tag
+inhibits ManaDrain, whose bound ability-component callback removes its granted
+ability through the same ClearAbility/end cleanup chain. Restoring the tag invokes
+the grant path. This is distinct from explicit actor-exit effect removal. Grant
+reactivation/instance identity, shared tag sources and frame ordering remain open.
+
+The previously unresolved Drone damage parent schema was found in the existing
+decoded corpus. Including that parent resolves the inherited-property stop:
+Drone and parent streams end at 605/609 and 70/74 bytes, with exact properties and
+four opaque trailing bytes each. Neither overrides duration; verified native
+constructor/default enum evidence establishes packaged Instant duration. Native
+owner application and the instant spec-copy step retain the stored context object.
+This supports shared identity through that boundary, not final damage-event identity
+or absence of runtime overrides. No new extraction was needed.
+
+Combustion task recovery found another shared timing distinction: every eligible
+reduction callback requests an AbilityTask WaitDelay reset, even with a closed gate
+or empty cooldown-handle list. Native WaitDelay constructs separate tasks/timers;
+it does not use Drone's UUID-based coalescing. Normally tracked tasks suppress
+completion broadcasts after successful owner end. Listener order, producer tags,
+initial gate state and multi-handle order remain open, so Pyromaniac stays omitted.
+The fixed-cooldown chronological correction is independent of that recovery.
+
+Validation for this increment: 291 simulator tests across 40 files, 58 Python
+recovery tests, TypeScript, all 55 saved artifact schemas and rendered source parity
+passed. All 55 heroes and 1,485 matchup pairs were rebuilt offline using the same
+production builder; 12 completed serial heroes were retained and the remaining
+43 ran in four disjoint batches before shared index/meta finalization. Thirty-five
+hero artifacts plus the matrix changed substantively. Twelve role item orders
+changed; ten stale optimizer explanations were cleared and no additional coaching
+lines failed reconciliation. Timestamp-only changes were discarded. This is a
+provisional model correction on draft PR225, not a live deployment or a validated
+winning-build claim.

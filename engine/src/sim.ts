@@ -13,6 +13,7 @@ import type { AbilityDef, BuildEval, DefenseProfile, HeroKit, Item, ItemStats, S
 import { emptyEffects, resolveItemEffects, type ProcSpec, type ResolvedEffects } from './effects.js';
 import { resistanceMultiplier } from './resistance.js';
 import { markedTargetProcCount, type MarkHit } from './marked-target.js';
+import { fixedCooldownProcCount } from './proc-timeline.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -434,18 +435,20 @@ export function rotationDamage(kit: HeroKit, opts: SimOptions, t: ItemStats, win
   const k = opts.mitigationK ?? 100;
   const isBurst = windowSec <= BURST_WINDOW;
   let total = 0;
-  let totalCasts = 0;
+  const abilityHitTimes: number[] = [];
+  const immobilizationTimes: number[] = [];
   const markedHits: MarkHit[] = [];
   const needsMarkedTimeline = eff.onAbilityProcs.some(p => p.trigger === 'marked_target');
-  let immobilizingCasts = 0;
   for (const ab of kit.abilities) {
     const rank = ranks.get(ab.key) ?? 0;
     if (rank <= 0) continue;
     const cd = abilityCooldown(ab, rank, t, eff);
     const casts = 1 + Math.floor(windowSec / cd);
-    if (ab.immobilizes) immobilizingCasts += casts;
+    if (ab.immobilizes) {
+      for (let cast = 0; cast < casts; cast++) immobilizationTimes.push(cast * cd);
+    }
     if (!ab.damagePerRank.length) continue;
-    totalCasts += casts;
+    for (let cast = 0; cast < casts; cast++) abilityHitTimes.push(cast * cd);
     if (needsMarkedTimeline) {
       // Match the existing rotation convention: one immediate hit per activation.
       // Fresh activation identities are not ability-slot identities or tick IDs.
@@ -466,10 +469,10 @@ export function rotationDamage(kit: HeroKit, opts: SimOptions, t: ItemStats, win
   for (const p of eff.onAbilityProcs) {
     // Ability-only rotations contain no confirmed consuming attacks.
     if (p.trigger === 'cast_then_basic') continue;
-    const events = p.trigger === 'immobilize' ? immobilizingCasts : totalCasts;
+    const events = p.trigger === 'immobilize' ? immobilizationTimes : abilityHitTimes;
     const procs = (p.trigger === 'marked_target'
       ? markedTargetProcCount(markedHits, requiredMarkDuration(p), p.icdSeconds)
-      : procCount(events, windowSec, p.icdSeconds)) * rampFactor(windowSec, p.rampSeconds);
+      : fixedCooldownProcCount(events, p.icdSeconds)) * rampFactor(windowSec, p.rampSeconds);
     total += mitigate(procDamage(p, t, profile, kit, isBurst, eff, opts.level), p.damageType, profile, t, eff, windowSec, k) * procs;
   }
   return total;
@@ -583,7 +586,10 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
       : p.trigger === 'immobilize' ? burstImmobilizations : burstCasts;
     const procs = (p.trigger === 'marked_target'
       ? markedTargetProcCount(burstMarkedHits, requiredMarkDuration(p), p.icdSeconds)
-      : procCount(events, BURST_WINDOW, p.icdSeconds)) * rampFactor(BURST_WINDOW, p.rampSeconds);
+      : p.trigger === 'cast_then_basic'
+        ? procCount(events, BURST_WINDOW, p.icdSeconds)
+        // The burst convention delivers every modeled ability hit at time zero.
+        : fixedCooldownProcCount(Array<number>(events).fill(0), p.icdSeconds)) * rampFactor(BURST_WINDOW, p.rampSeconds);
     const d = mitigate(procDamage(p, t, profile, kit, true, eff, opts.level), p.damageType, profile, t, eff, BURST_WINDOW, k) * procs;
     burst += d; teamfightBurst += d;
   }
