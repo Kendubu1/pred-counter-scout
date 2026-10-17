@@ -1724,3 +1724,30 @@ different ability slots are needed.
 Production still lacks identity tracking, mark expiry, repeated-hit filtering,
 source ownership and mark renewal after cooldown. Remaining Noxia credit is an
 optimistic aggregate estimate. M1 remains open; M2 needs game observations.
+
+
+### Noxia chronological activation model (2026-10-16)
+
+Production burst/rotation evaluation now processes Noxia in timestamp order.
+The first eligible hit marks, a new activation identity can trigger while marked,
+cooldown hits cannot mark or enter the identity set, and expired marks need setup
+again. Identity history survives mark expiry and clears after a proc. Successful
+mark reapplication refreshes its duration. The existing single-target rotation
+still supplies one immediate hit per ability activation; this does not reconstruct
+multi-tick abilities, missed hits, source ownership or actual animation timing.
+Expiry-before-hit is the explicit equal-timestamp convention, not measured engine
+ordering. Existing 3s/8s/6% catalog values are corroborated by level-1 packaged
+curve keys but remain subject to runtime overrides and damage execution checks.
+
+Native tracing closes the earlier producer/copy gap: context ability assignment
+reads PredGameplayAbility's activation GUID and converts it to the identity name;
+context duplication preserves it. Named GenerateNewAbilityActivationGuid and
+three native dispatch paths refresh that GUID via CoCreateGuid. Basic-attack
+Blueprints also explicitly reset it. Identity is therefore not a permanent
+ability-slot label; consumer-specific lifecycle exceptions remain possible.
+See engine/fixtures/noxia-review.json for private-evidence hashes and limits.
+
+Regression cases cover repeated ticks, fresh identities, sparse casts, mark
+expiry, cooldown suppression, identity persistence/reset and the chosen timestamp
+boundary. A production rotation test prevents phantom procs when every mark
+expires between casts. M1 advances; M2 remains unverified without game measurements.

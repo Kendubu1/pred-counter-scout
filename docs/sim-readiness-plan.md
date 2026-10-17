@@ -11,6 +11,20 @@ from both sides of this item-only comparison. Aion recovery remains a later
 phase and must not block this pilot. This scope update supersedes Aion-dependent
 requirements below for M0-M3; actual-match reproduction still needs the loadout.
 
+## Item-first pilot checkpoint
+
+| Item | Production state | Next blocker |
+|---|---|---|
+| Noxia | Initial marking, activation identity, expiry and cooldown processed chronologically under one-hit-per-cast assumptions | Validate conditional Void Drone zaps, Bomb follow-up delivery and hit timing; multi-tick/tag/source cases remain partial |
+| Combustion | Pyro damage and fixed 15s cooldown modeled | Integrate filtered Pyromaniac reduction and shared delayed gate with verified event delivery and native scheduling |
+| Wraith Leggings | Stats active; false unconditional amplifier removed | Integrate conditional separate damage at event-time target health |
+| Caustica | 35% magical penetration active | Arcane Might needs target bonus armor and event-time health |
+
+Exit for this checkpoint: all ranking-relevant effects for the frozen Belica
+item comparison represented or bounded, then controlled game measurements.
+Passing software tests does not close the measurement gate. Eternals follow this
+item milestone; their recovery must not redirect the current work.
+
 ## Goal and first useful milestone
 
 Goal: the live app compares builds using game-supported mechanics, shows correct
@@ -41,7 +55,7 @@ closed solely because extraction, test counts or generated artifact counts grow.
 
 1. Build M0 from committed build/match snapshots and current source audits. Use
    the installed-client hash separately from match patch labels; verify alignment.
-   First obtain the user's Belica build, purchase order, augment, Eternal/minors and a match reference. Do not infer their identity from stored matches. Include that setup and popular Belica build dependencies, plus
+   The three saved coach matches identify the Belica item inventory; actual purchase timestamps and augment remain unknown. The item-only pilot excludes Eternals and augments rather than claiming a match replay. Include that setup and popular Belica build dependencies, plus
    Deathstalker and Spectral Schematics as explicit overrecommendation checks.
 2. Audit Belica's production ability/passive behavior against recovered evidence and close the
    highest-impact dependency first. Keep Kira as a later cross-check. Do not assume replay support means the live
@@ -180,3 +194,40 @@ different ability slots are needed.
 Production still lacks identity tracking, mark expiry, repeated-hit filtering,
 source ownership and mark renewal after cooldown. Remaining Noxia credit is an
 optimistic aggregate estimate. M1 remains open; M2 needs game observations.
+
+
+### Noxia chronological activation model (2026-10-16)
+
+Production burst/rotation evaluation now processes Noxia in timestamp order.
+The first eligible hit marks, a new activation identity can trigger while marked,
+cooldown hits cannot mark or enter the identity set, and expired marks need setup
+again. Identity history survives mark expiry and clears after a proc. Successful
+mark reapplication refreshes its duration. The existing single-target rotation
+still supplies one immediate hit per ability activation; this does not reconstruct
+multi-tick abilities, missed hits, source ownership or actual animation timing.
+Expiry-before-hit is the explicit equal-timestamp convention, not measured engine
+ordering. Existing 3s/8s/6% catalog values are corroborated by level-1 packaged
+curve keys but remain subject to runtime overrides and damage execution checks.
+
+Native tracing closes the earlier producer/copy gap: context ability assignment
+reads PredGameplayAbility's activation GUID and converts it to the identity name;
+context duplication preserves it. Named GenerateNewAbilityActivationGuid and
+three native dispatch paths refresh that GUID via CoCreateGuid. Basic-attack
+Blueprints also explicitly reset it. Identity is therefore not a permanent
+ability-slot label; consumer-specific lifecycle exceptions remain possible.
+See engine/fixtures/noxia-review.json for private-evidence hashes and limits.
+
+Regression cases cover repeated ticks, fresh identities, sparse casts, mark
+expiry, cooldown suppression, identity persistence/reset and the chosen timestamp
+boundary. A production rotation test prevents phantom procs when every mark
+expires between casts. M1 advances; M2 remains unverified without game measurements.
+
+### Combustion native cooldown follow-up
+
+The named native duration-reduction helper now has a bounded static trace: it
+shifts active-effect timestamps, clamping a reduction that would exhaust the
+remaining time to leave an arithmetic 0.01-second remainder, then invokes expiry
+scheduling and notifications. This is not proof of frame-exact expiry. Evidence
+hashes and remaining callback/scalar/delivery gaps are recorded in
+`engine/fixtures/combustion-native-cooldown-review.json`. Pyromaniac remains
+explicitly omitted until those event semantics can be integrated safely.

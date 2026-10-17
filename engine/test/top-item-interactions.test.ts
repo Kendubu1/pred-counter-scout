@@ -30,6 +30,16 @@ describe('reviewed top-item interactions', () => {
      - simulate(pair,[item],{...pairOpts,profile:target,effects:none},cal).burstCombo;
    expect(delta).toBeCloseTo(target.health * .06);
  });
+ it('production rotations do not credit Noxia when every mark expires between casts', () => {
+   const belica=data.kits.get('lt-belica')!, item=data.itemsBySlug.get('noxia')!;
+   const ability={...belica.abilities.find(a=>a.damagePerRank.length)!,cooldowns:[12]};
+   const sparse={...belica,abilities:[ability]};
+   const eff=resolveItemEffects([item],{level:13}),none={...eff,onAbilityProcs:[]};
+   const opts={level:13,profile,ranks:new Map([[ability.key,1]])};
+   const totals=effectiveTotals([item],eff);
+   expect(rotationDamage(sparse,{...opts,effects:eff},totals,20))
+     .toBe(rotationDamage(sparse,{...opts,effects:none},totals,20));
+ });
  it('does not grant Carnage to Belica against a full-health target', () => {
    const belica = data.kits.get('lt-belica')!;
    const leggings = data.itemsBySlug.get('wraith-leggings')!;

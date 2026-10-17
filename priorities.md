@@ -6,8 +6,9 @@ Use [Simulator readiness plan](docs/sim-readiness-plan.md) as the execution orde
 for simulator-accuracy work. Start at M0: freeze the user's Belica mid comparison
 dependencies, then close production, measured-validation and release gates.
 Item-first progress: Wraith unconditional amplification removed; Noxia first-hit
-mark prerequisite corrected. Next close Noxia mark timing/identity and Combustion
-filtered cooldown behavior for the Belica pilot. Eternals remain deferred.
+mark prerequisite corrected, then chronological activation/mark/cooldown handling
+integrated. Next: validate Belica hit delivery and Combustion filtered cooldown
+behavior. Noxia multi-tick/source cases remain open. Eternals remain deferred.
 The historical backlog below remains supporting evidence. A completed recovery
 checkpoint or green harness does not close a readiness milestone.
 

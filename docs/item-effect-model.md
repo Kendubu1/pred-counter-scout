@@ -320,7 +320,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 
 **→ Modeled as:**
 - `on_ability_hit` — each eligible ability adds 50 (+18% magical power) magical damage (≤ once / 15s per target).
-- `unmodeled` — **not modeled** — Pyromaniac cooldown reduction is omitted. The recovered client requires a hero target, excludes Item, DoT and ProcDamage events, and uses a shared gate with a 0.05-second delayed reset. This is not unrestricted reduction on every damage packet. Scalar bindings, overlapping callbacks and native cooldown behavior remain unresolved; the simulator retains the catalog 15-second Pyro cooldown.
+- `unmodeled` — **not modeled** — Pyromaniac cooldown reduction is omitted. The recovered client requires a hero target, excludes Item, DoT and ProcDamage events, and uses a shared gate with a 0.05-second delayed reset. This is not unrestricted reduction on every damage packet. The packaged reduction evaluates to 0.5s without runtime overrides. The native helper leaves a 0.01s arithmetic remainder when a reduction exhausts remaining time, then reschedules expiry. Active overrides, overlapping callbacks and frame ordering remain unresolved; the simulator retains the catalog 15-second Pyro cooldown.
 
 ---
 
@@ -415,7 +415,7 @@ this doc is about the **passives**. THEORY until in-game calibration.
 **Passive 3 — :** Damage Dealt: {DamageDealt}
 
 **→ Modeled as:**
-- `on_ability_hit`, `marked_target` — reserve the first ability hit for marking; remaining hits receive aggregate 6% max-HP magical proc credit capped by the global 8s cooldown. This is provisional: mark expiry, ability identity, repeated ticks and source ownership are not simulated. A lone hit on an initially unmarked target gives no proc damage.
+- `on_ability_hit`, `marked_target` — chronological single-target processing of a 3s mark, new activation identities and an 8s cooldown; a qualifying proc deals the existing 6% max-HP magical estimate. Cooldown hits cannot mark or register identities, and expired marks require setup again. Production assumes one immediate eligible hit per cast. Repeated-tick delivery, actual hit timing, multiple sources/targets, failed applications and native same-frame ordering remain unmodeled.
 
 ---
 

@@ -1,0 +1,29 @@
+{
+  "scope": "Combustion native cooldown-reduction helper; static evidence, not production integration",
+  "executableSha256": "58dced3d01dffeab3b6921510b1626a798d3d6827d308fa85f9d206d4f068f38",
+  "privateTraceSha256": {
+    "registration": "3a3ec14694096b0ffc1fa75f1e6a19757a8b636a3e6e2cae6ed4aba9d6aceff6",
+    "reductionThunk": "d20005bb9fe6d1d7493274e4c1dc5a70b5fa6bac7da9bd5a926bb95d3770ce31",
+    "reductionHelper": "88590d49e5ab98d327f55afa5fa450ccec02c0b0b5c22c23f3dfa850bdb3e2ba",
+    "constants": "c82a0e239ade7c0471eb1f2b8cc5dea45710e0016e6273406497136b5f312f30",
+    "durationGetter": "5e2f71090214bfa0ab4e03e8d9d0b44231ddc297900261bb73e5b336c312818b",
+    "timeGetter": "ff30a3b0720b3fc2dafcf71b1c7218e509c39eea82564af507cf7d88e54ad042",
+    "expiryScheduling": "07b12bdf479e4e842fc1b9b2a420693227aafa60c016a37ccade9515e270e57b",
+    "abilityDefaults": "0aea0e8a602cac419e2146967cae84e70982fae18777fc7cc06f01c1b3ab9fa8",
+    "abilityBlueprint": "c36de8aff0dcb9b25375fbd8f477c86215e8e410584ccc175bf86bc4862a11a3",
+    "simpleCurveEvaluation": "94df18510f11a3cdccc1c3e346a38df033362de0587632237b8c53412a651ad7"
+  },
+  "recovered": [
+    "The named ReduceGameplayEffectDurationRemainingByTime registration belongs to PredGameplayAbility and forwards an active-effect handle and reduction amount to the traced helper.",
+    "Invalid or missing active-effect handles return false. For finite duration, remaining time is computed from duration minus elapsed time since the stored start timestamp.",
+    "If remaining time exceeds the requested reduction, the full requested reduction is applied. Otherwise the applied reduction is remaining time minus a binary-verified 0.01 seconds. Three stored timestamps are shifted by the resulting amount.",
+    "The helper then invokes effect-update, expiry-scheduling and notification paths. The scheduling path recomputes remaining duration from the adjusted timestamp.",
+    "The exact Time default binds coefficient 1 to ct_ItemStats/Combustion.PyroCDR. The Blueprint evaluates it at input zero; the recovered row has pre-extrapolation mode 4 and first value 0.5. Previously traced native simple-curve endpoint behavior therefore supports 0.5 seconds without runtime overrides."
+  ],
+  "limits": [
+    "The 0.01-second arithmetic remainder is not a certified engine-frame expiry time. Timer tolerance, callbacks, authority and same-frame ordering remain unresolved.",
+    "The helper contains an infinite-duration sentinel branch; this review does not generalize its behavior to arbitrary effects or invalid reduction inputs.",
+    "Active runtime override selection, eligible damage event delivery and overlapping shared-gate callbacks still need integration evidence; the packaged reduction scalar is resolved without overrides.",
+    "No controlled game measurement has validated this behavior. Production retains fixed 15-second Pyro cooldown and explicitly omits Pyromaniac."
+  ]
+}

@@ -86,7 +86,7 @@
     },
     {
      "kind": "unmodeled",
-     "note": "Pyromaniac cooldown reduction is omitted. The recovered client requires a hero target, excludes Item, DoT and ProcDamage events, and uses a shared gate with a 0.05-second delayed reset. This is not unrestricted reduction on every damage packet. Scalar bindings, overlapping callbacks and native cooldown behavior remain unresolved; the simulator retains the catalog 15-second Pyro cooldown."
+     "note": "Pyromaniac cooldown reduction is omitted. The recovered client requires a hero target, excludes Item, DoT and ProcDamage events, and uses a shared gate with a 0.05-second delayed reset. This is not unrestricted reduction on every damage packet. The packaged reduction evaluates to 0.5s without runtime overrides. The native helper leaves a 0.01s arithmetic remainder when a reduction exhausts remaining time, then reschedules expiry. Active overrides, overlapping callbacks and frame ordering remain unresolved; the simulator retains the catalog 15-second Pyro cooldown."
     }
    ]
   },
@@ -176,6 +176,7 @@
     {
      "kind": "on_ability_hit",
      "trigger": "marked_target",
+     "markDurationSeconds": 3,
      "pctTargetHealth": 6,
      "healthBasis": "max",
      "damageType": "magical",

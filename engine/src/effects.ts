@@ -61,7 +61,7 @@ const Primitive = z.discriminatedUnion('kind', [
     damageType: DmgType, icdSeconds: z.number().optional(), everyN: z.number().optional(),
   }),
   z.object({
-    kind: z.literal('on_ability_hit'), basePhysicalPowerPct: z.number().optional(), trigger: z.enum(['immobilize', 'cast_then_basic', 'marked_target']).optional(), flat: z.number().optional(), perLevelFlat: z.number().optional(),
+    kind: z.literal('on_ability_hit'), markDurationSeconds: z.number().positive().optional(), basePhysicalPowerPct: z.number().optional(), trigger: z.enum(['immobilize', 'cast_then_basic', 'marked_target']).optional(), flat: z.number().optional(), perLevelFlat: z.number().optional(),
     scalingPct: z.number().optional(), scaleStat: StatKey.optional(),
     powerScaling: PowerScaling.optional(),
     pctTargetHealth: z.number().optional(), healthBasis: z.enum(['max', 'current']).optional(),
@@ -150,6 +150,7 @@ export function loadEffects(): EffectRegistry {
 
 export interface ProcSpec {
   trigger?: 'immobilize' | 'cast_then_basic' | 'marked_target';
+  markDurationSeconds?: number;
   basePhysicalPowerPct?: number;
   powerScaling?: { physical?: number; magical?: number }; // replaces legacy scalar when present
   flat: number;
@@ -315,6 +316,7 @@ export function resolveEntries(keys: string[], ctx: ResolveCtx, registry: Effect
             everyN: (fx as { everyN?: number }).everyN ?? 1,
             rampSeconds: (fx as { rampSeconds?: number }).rampSeconds ?? 0,
             trigger: fx.kind === 'on_ability_hit' ? fx.trigger : undefined,
+            markDurationSeconds: fx.kind === 'on_ability_hit' ? fx.markDurationSeconds : undefined,
             basePhysicalPowerPct: fx.kind === 'on_ability_hit' ? fx.basePhysicalPowerPct : undefined,
             fromItem: key.startsWith('item:'),
           };

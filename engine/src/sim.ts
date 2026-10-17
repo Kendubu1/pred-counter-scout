@@ -12,6 +12,7 @@ import path from 'node:path';
 import type { AbilityDef, BuildEval, DefenseProfile, HeroKit, Item, ItemStats, SimResult } from './types.js';
 import { emptyEffects, resolveItemEffects, type ProcSpec, type ResolvedEffects } from './effects.js';
 import { resistanceMultiplier } from './resistance.js';
+import { markedTargetProcCount, type MarkHit } from './marked-target.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -415,6 +416,11 @@ function abilityCooldown(ab: AbilityDef, rank: number, t: ItemStats, eff: Resolv
   return Math.max(cd, 0.5);
 }
 
+function requiredMarkDuration(proc: ProcSpec): number {
+  if (proc.markDurationSeconds === undefined) throw new Error('Missing mark duration');
+  return proc.markDurationSeconds;
+}
+
 function procCount(casts: number, windowSec: number, icdSeconds: number): number {
   if (icdSeconds <= 0) return casts;
   return Math.min(casts, 1 + Math.floor(windowSec / icdSeconds));
@@ -429,6 +435,8 @@ export function rotationDamage(kit: HeroKit, opts: SimOptions, t: ItemStats, win
   const isBurst = windowSec <= BURST_WINDOW;
   let total = 0;
   let totalCasts = 0;
+  const markedHits: MarkHit[] = [];
+  const needsMarkedTimeline = eff.onAbilityProcs.some(p => p.trigger === 'marked_target');
   let immobilizingCasts = 0;
   for (const ab of kit.abilities) {
     const rank = ranks.get(ab.key) ?? 0;
@@ -438,6 +446,13 @@ export function rotationDamage(kit: HeroKit, opts: SimOptions, t: ItemStats, win
     if (ab.immobilizes) immobilizingCasts += casts;
     if (!ab.damagePerRank.length) continue;
     totalCasts += casts;
+    if (needsMarkedTimeline) {
+      // Match the existing rotation convention: one immediate hit per activation.
+      // Fresh activation identities are not ability-slot identities or tick IDs.
+      for (let cast = 0; cast < casts; cast++) {
+        markedHits.push({time: cast * cd, activationId: `${ab.key}:${cast}`});
+      }
+    }
     const amp = ampFactorAbilities(eff, ab, isBurst, profile, t);
     const maxHpBonus = (ab.pctMaxHealth && profile ? (ab.pctMaxHealth / 100) * profile.health : 0) + targetHealthBonus(ab, rank, profile, isBurst);
     total += mitigate((abilityHit(ab, rank, t) + maxHpBonus) * amp, ab.damageType, ab.ignoresArmor ? null : profile, t, eff, windowSec, k) * casts;
@@ -451,12 +466,10 @@ export function rotationDamage(kit: HeroKit, opts: SimOptions, t: ItemStats, win
   for (const p of eff.onAbilityProcs) {
     // Ability-only rotations contain no confirmed consuming attacks.
     if (p.trigger === 'cast_then_basic') continue;
-    // An initially unmarked target requires a setup hit before Noxia can deal damage.
-    // This is only an aggregate upper bound: expiry, identity and later re-marks
-    // require an event timeline; do not interpret this as a full Noxia replay.
-    const events = p.trigger === 'immobilize' ? immobilizingCasts
-      : p.trigger === 'marked_target' ? Math.max(0, totalCasts - 1) : totalCasts;
-    const procs = procCount(events, windowSec, p.icdSeconds) * rampFactor(windowSec, p.rampSeconds);
+    const events = p.trigger === 'immobilize' ? immobilizingCasts : totalCasts;
+    const procs = (p.trigger === 'marked_target'
+      ? markedTargetProcCount(markedHits, requiredMarkDuration(p), p.icdSeconds)
+      : procCount(events, windowSec, p.icdSeconds)) * rampFactor(windowSec, p.rampSeconds);
     total += mitigate(procDamage(p, t, profile, kit, isBurst, eff, opts.level), p.damageType, profile, t, eff, windowSec, k) * procs;
   }
   return total;
@@ -543,6 +556,7 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
   let burst = 0;
   let teamfightBurst = 0;
   let burstCasts = 0;
+  const burstMarkedHits: MarkHit[] = [];
   let burstImmobilizations = 0;
   let burstCommits = 0;
   for (const ab of kit.abilities) {
@@ -552,6 +566,7 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
     if (ab.immobilizes) burstImmobilizations++;
     if (!ab.damagePerRank.length) continue;
     burstCasts++;
+    burstMarkedHits.push({time:0, activationId:ab.key});
     const amp = ampFactorAbilities(eff, ab, true, profile, t);
     const maxHpBonus = (ab.pctMaxHealth && profile ? (ab.pctMaxHealth / 100) * profile.health : 0) + targetHealthBonus(ab, rank, profile, true);
     let abDmg = mitigate((abilityHit(ab, rank, t) + maxHpBonus) * amp, ab.damageType, ab.ignoresArmor ? null : profile, t, eff, BURST_WINDOW, k);
@@ -565,9 +580,10 @@ export function simulate(kit: HeroKit, items: Item[], opts: SimOptions, cal: Cal
   // ability (see rotationDamage).
   for (const p of eff.onAbilityProcs) {
     const events = p.trigger === 'cast_then_basic' ? Math.min(burstCommits, opts.burstBasics ?? 2)
-      : p.trigger === 'immobilize' ? burstImmobilizations
-      : p.trigger === 'marked_target' ? Math.max(0, burstCasts - 1) : burstCasts;
-    const procs = procCount(events, BURST_WINDOW, p.icdSeconds) * rampFactor(BURST_WINDOW, p.rampSeconds);
+      : p.trigger === 'immobilize' ? burstImmobilizations : burstCasts;
+    const procs = (p.trigger === 'marked_target'
+      ? markedTargetProcCount(burstMarkedHits, requiredMarkDuration(p), p.icdSeconds)
+      : procCount(events, BURST_WINDOW, p.icdSeconds)) * rampFactor(BURST_WINDOW, p.rampSeconds);
     const d = mitigate(procDamage(p, t, profile, kit, true, eff, opts.level), p.damageType, profile, t, eff, BURST_WINDOW, k) * procs;
     burst += d; teamfightBurst += d;
   }

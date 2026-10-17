@@ -1,5 +1,5 @@
 {
-  "scope": "Noxia initial mark prerequisite; partial aggregate production correction",
+  "scope": "Noxia single-target activation timeline; partial production integration",
   "sourceDecodedSha256": {
     "GA_Item_Noxia": "dc65ee2c6a06ab629306cf8809c60fe461c45a9d17e509150476885aa69acafd",
     "GE_Item_Noxia_DamagedStacks": "2e20fdcd6247d313142c8f3a7662bbb175a0745fb9c327b880064e071d1de278"
@@ -9,14 +9,23 @@
     "A target without Item.Noxia.Stacks receives DamageStackToApply; that branch does not apply DamageEffectToApply.",
     "The marked branch tests Array_AddUnique return value >= 0 before committing and applying damage. This is not an array-length >= 2 test.",
     "Static native trace of the registered Array_AddUnique thunk and its helper: the lookup returns an existing index or -1; the helper returns -1 on the existing-index branch and the new index only after insertion. Thus >=0 rejects previously recorded identities.",
-    "The mark effect has duration bound to Noxia.Duration, AggregateBySource and StackLimitCount 1."
+    "The mark effect has duration bound to Noxia.Duration, AggregateBySource and StackLimitCount 1.",
+    "PredGameplayEffectContext copies the identity field into duplicated contexts. Its ability-assignment override obtains the PredGameplayAbility activation GUID and converts it to the identity name.",
+    "GenerateNewAbilityActivationGuid is a named native registration on PredGameplayAbility; its thunk refreshes the same GUID field read by the context producer. The generation helper resolves to ole32 CoCreateGuid.",
+    "Three traced native ability dispatch paths generate and store a fresh GUID before the shared base dispatch. Basic-attack Blueprints also explicitly call GenerateNewAbilityActivationGuid; an ability slot must not be used as a permanent identity.",
+    "The Blueprint clears its identity array after a proc, on death and on ability end; expiry of the target mark alone does not clear that array.",
+    "No mark removal is present in the damage branch. Both an unmarked target and an already-recorded identity take the mark-application branch.",
+    "The mark inherits directly from native GameplayEffect. The prior native constructor/enum review identifies RefreshOnSuccessfulApplication; the model assumes successful applications. Packaged level-1 curve keys corroborate 3s mark duration, 8s cooldown and 6% max-health damage, without resolving runtime overrides."
   ],
-  "productionDecision": "Require one setup ability hit before any Noxia proc credit against the initially unmarked single target. Retain the existing global ICD cap; remaining credit is an optimistic aggregate estimate, not event replay.",
+  "productionDecision": "Process Noxia hits chronologically in production rotations and bursts: one immediate hit and a fresh identity per modeled activation, mark expiry/reapplication, cooldown before identity/mark processing, identity persistence across expiry, and reset after proc. Uses the existing single-source single-target rotation convention.",
   "limits": [
-    "Mark expiry, per-source ownership and repeated marks after cooldown are not represented.",
-    "The new-identity requirement is recovered, but mapping identities to casts/slots and filtering repeated ticks remain unresolved in production.",
-    "Existing 6% max-health and 8-second values remain catalog-derived, not newly verified native constants.",
-    "No game observation certifies this approximation."
+    "The production schedule still assumes one immediate eligible hit per damaging ability cast, all hitting the same hero. Multi-tick delivery, actual cast/hit delays, damage-category tags and missed/blocked hits remain unresolved.",
+    "Multiple targets/sources, pre-existing marks, death/reactivation during the simulated window, immunity and unsuccessful effect applications are not represented.",
+    "Successful reapplication refreshes the mark; expiry precedes damage at an exactly equal timestamp in this model. Native same-frame scheduling is not game-validated.",
+    "The curve keys corroborate catalog values but runtime curve overrides and damage execution scaling are not newly certified.",
+    "Fresh identities are supported by the traced dispatch/reset paths. Per-hero exceptions and retained contexts across later activations still require consumer-specific checks.",
+    "No controlled game observation certifies this approximation.",
+    "Belica-specific delivery gap: the catalog describes Void Drone zaps as conditional on enemy casting or Belica ability damage, while HeroKit still counts one damage packet on its cast. The recovered target ability listens for OnDamaged and WaitForAbilityCommit; this needs an event-level follow-up before pilot certification."
   ],
   "nativeEvidence": {
     "executableSha256": "58dced3d01dffeab3b6921510b1626a798d3d6827d308fa85f9d206d4f068f38",
@@ -28,9 +37,18 @@
       "contextConstructor": "92fdac1bafaa633d104bea5b3fd8f388f8b81fae1676921da58ddbf36e0297bd",
       "contextZeroConstructor": "f6cbe5e1fdc1e83d77ea4df50d8da7515c7b9d6e81406aa592b866a72fe1891d",
       "contextIdentityGetter": "e7f2b7a7e37eef29d6ec7911e10c200389b6b7a14b6556147edcf535966e5ec2",
-      "contextStructureLeads": "f0cdd5d49a1dbcc1e020d7b8761262d7876f276e0698aef29a78d7f25fbe98cc"
+      "contextStructureLeads": "f0cdd5d49a1dbcc1e020d7b8761262d7876f276e0698aef29a78d7f25fbe98cc",
+      "contextAbilityAssignment": "26e4dc8fd302358e5f235c901b24e8a31851e675ccd5a6233dceed558be390b0",
+      "contextDuplication": "b851f7dfba2a6e4413cc5607677c7f749398c9d7007db319995af66de52601ea",
+      "abilityGuidGetter": "ee199c6df7c7482ba50a14b4f44d7b2f4cd813805b51c0bde4ddf52fa92ded04",
+      "abilityDispatchOne": "a9aa2b846d6aa31ab816e7bd84788bf42141ebf9f3df5f292f918513d125843e",
+      "abilityDispatchTwo": "7f0d0662edd560b073b9ec0777149743782d8c9cdd128d9b24922a8f76ec10d5",
+      "abilityDispatchThree": "a92cbfa1d9b4da9fddb31fcecbade44acb7dbdd5173098d4731d9a46b49574e3",
+      "explicitGuidReset": "b33170073a0340ac2a2cfd5b995e060d627dba7a7d697448751723b9c25c2f6b",
+      "guidResetRegistration": "671568fe22e16d33dd6a4669f41e5dbd3c9cb632ed1344542e1e4bba0dc0975e",
+      "guidNativeImport": "a1d1c64babb947f097e9c328d0f63b3675c1abfb3bb7f55647c2ee5bb826d61e"
     },
-    "identityGetter": "PredAbilityLibrary delegates through effect-context virtual dispatch. PredGameplayEffectContext struct operations construct a context with a zero-initialized identity field; its matching virtual getter returns that field. Population, copy behavior and per-cast lifetime remain unresolved.",
+    "identityGetter": "Context creation copies the PredGameplayAbility activation GUID into the context identity name; duplication preserves the context identity. The named activation-GUID reset and three native dispatch paths generate a fresh GUID. Per-hero lifecycle exceptions remain to validate.",
     "registration": "Validated the 32-entry KismetArrayLibrary native registration table and the 19-entry PredAbilityLibrary table against their class constructors; the named entries resolve to the traced thunks.",
     "privateRegistrationSha256": "98352d52d251666832316b6580aee6e21109148e2e59d4ef0e39512bee72daa2"
   }
