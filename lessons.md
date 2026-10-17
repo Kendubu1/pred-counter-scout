@@ -5632,3 +5632,26 @@ with no cooldown cannot reduce one created afterward by Pyro on that outer event
 Mutation/compaction, reentrancy and other triggered abilities can change state;
 this is not a universal priority guarantee. Producer tags and initial gate state
 remain next integration dependencies.
+
+## Fast-track integration: explicit delivered ability scenarios
+
+The production rotation calculator now accepts an optional complete delivered-hit
+schedule. Direct ability damage and item triggers consume the same packets;
+missing or empty schedules do not fall back to automatic casts. Each packet carries
+its time, ability key, retained activation identity and separate eligibility for
+ordinary ability, marked-target and immobilize procs. Future packets are excluded
+from the requested window. Caller order is retained for equal-time mark events.
+
+This is an opt-in comparison input, not automatic native event recovery. A packet
+means one full modeled ability damage amount (which may already aggregate ticks);
+raw ticks must not be supplied as full packets. Damage modifiers still use the
+existing aggregate window/health assumptions. Schedules do not establish native
+trigger tags, delivery probability, resource costs or legal cast timing. Default
+optimizer output and saved app artifacts are unchanged. No deployment occurred.
+
+Six regressions cover missing/delayed delivery, shared damage/proc timing,
+independent eligibility, retained versus fresh identities, immobilization and
+invalid inputs. Next: use reviewed scenario schedules for the frozen Belica build
+comparison; add conditional effect state only where event metadata supports it.
+Combustion filtered reductions remain excluded until its source tags and initial
+shared gate can be supplied without guessing. Eternals remain deferred.

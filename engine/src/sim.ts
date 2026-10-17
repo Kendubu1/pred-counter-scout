@@ -427,8 +427,25 @@ function procCount(casts: number, windowSec: number, icdSeconds: number): number
   return Math.min(casts, 1 + Math.floor(windowSec / icdSeconds));
 }
 
-/** Ability-only rotation damage over a window: 1 cast up front + recasts off cooldown. */
-export function rotationDamage(kit: HeroKit, opts: SimOptions, t: ItemStats, windowSec: number): number {
+/** One delivered full modeled ability packet against the scenario's single target.
+ * Eligibility is supplied separately per trigger; it is never inferred from damage.
+ * Not a raw tick: damagePerRank may already aggregate an ability's entire duration.
+ */
+export interface DeliveredAbilityHit {
+  time: number;
+  abilityKey: string;
+  activationId: string;
+  abilityProcEligible: boolean;
+  markedProcEligible: boolean;
+  immobilizeProcEligible: boolean;
+}
+
+/** Ability-only rotation. An explicit schedule replaces ALL automatic hit delivery.
+ * Missing/empty entries are misses or undelivered packets, not fallback casts.
+ * This scenario input does not infer delivery, costs, native tags or cooldown legality.
+ */
+export function rotationDamage(kit: HeroKit, opts: SimOptions, t: ItemStats, windowSec: number,
+  deliveredHits?: readonly DeliveredAbilityHit[]): number {
   const eff = opts.effects ?? emptyEffects();
   const ranks = opts.ranks ?? ranksAtLevel(kit, opts.level);
   const profile = opts.profile ?? null;
@@ -438,18 +455,36 @@ export function rotationDamage(kit: HeroKit, opts: SimOptions, t: ItemStats, win
   const abilityHitTimes: number[] = [];
   const immobilizationTimes: number[] = [];
   const markedHits: MarkHit[] = [];
+  if (deliveredHits && (!Number.isFinite(windowSec) || windowSec < 0 || deliveredHits.some(hit =>
+    !Number.isFinite(hit.time) || hit.time < 0 || !hit.activationId
+    || typeof hit.activationId !== 'string'
+    || ![hit.abilityProcEligible, hit.markedProcEligible, hit.immobilizeProcEligible].every(v => typeof v === 'boolean')
+    || !kit.abilities.some(ab => ab.key === hit.abilityKey && (ranks.get(ab.key) ?? 0) > 0)))) {
+    throw new Error('Invalid delivered ability schedule');
+  }
+  // Preserve caller order for equal-time mark events across different ability slots.
+  if (deliveredHits) for (const hit of deliveredHits) {
+    if (hit.time > windowSec) continue;
+    const ab = kit.abilities.find(a => a.key === hit.abilityKey)!;
+    if (hit.immobilizeProcEligible) immobilizationTimes.push(hit.time);
+    if (!ab.damagePerRank.length) continue;
+    if (hit.abilityProcEligible) abilityHitTimes.push(hit.time);
+    if (hit.markedProcEligible) markedHits.push({time: hit.time, activationId: hit.activationId});
+  }
   const needsMarkedTimeline = eff.onAbilityProcs.some(p => p.trigger === 'marked_target');
   for (const ab of kit.abilities) {
     const rank = ranks.get(ab.key) ?? 0;
     if (rank <= 0) continue;
     const cd = abilityCooldown(ab, rank, t, eff);
-    const casts = 1 + Math.floor(windowSec / cd);
-    if (ab.immobilizes) {
+    const casts = deliveredHits
+      ? deliveredHits.filter(hit => hit.abilityKey === ab.key && hit.time <= windowSec).length
+      : 1 + Math.floor(windowSec / cd);
+    if (!deliveredHits && ab.immobilizes) {
       for (let cast = 0; cast < casts; cast++) immobilizationTimes.push(cast * cd);
     }
     if (!ab.damagePerRank.length) continue;
-    for (let cast = 0; cast < casts; cast++) abilityHitTimes.push(cast * cd);
-    if (needsMarkedTimeline) {
+    if (!deliveredHits) for (let cast = 0; cast < casts; cast++) abilityHitTimes.push(cast * cd);
+    if (!deliveredHits && needsMarkedTimeline) {
       // Match the existing rotation convention: one immediate hit per activation.
       // Fresh activation identities are not ability-slot identities or tick IDs.
       for (let cast = 0; cast < casts; cast++) {

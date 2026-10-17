@@ -16,7 +16,11 @@ regrant has a separate callback lifetime. Next integrate a bounded conditional
 event schedule, keeping retry timing, destruction, context mutation and boundary
 ordering qualified. Combustion fresh-listener reducer-before-Pyro order is traced;
 producer tags and initial gate state remain open. Native recovery is not game parity.
-Noxia multi-tick/source cases remain open. Eternals remain deferred.
+Production rotation now accepts explicit delivered full-packet schedules, shared
+by direct damage and separately eligible item triggers. Default optimizer delivery
+is unchanged. Next use bounded Belica schedules; do not treat them as verified
+raw ticks or infer unknown trigger tags. Noxia multi-tick/source cases remain open.
+Eternals remain deferred.
 The historical backlog below remains supporting evidence. A completed recovery
 checkpoint or green harness does not close a readiness milestone.
 
