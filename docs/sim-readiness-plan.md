@@ -231,3 +231,22 @@ scheduling and notifications. This is not proof of frame-exact expiry. Evidence
 hashes and remaining callback/scalar/delivery gaps are recorded in
 `engine/fixtures/combustion-native-cooldown-review.json`. Pyromaniac remains
 explicitly omitted until those event semantics can be integrated safely.
+
+## Belica Drone dependency recovery
+
+Recovered the actor omitted by the GA/GE filename selection using its imported
+Blueprint class dependency. The existing raw asset required no new extraction.
+The actor exposes 44 class fields and 38 functions with matching instruction
+bytes; its Sentry subclass has zero own fields. Both class tails remain opaque.
+Target updates use an authority-guarded 0.15s repeating timer and line traces to
+apply/remove ManaDrain. The target ability filters damage by trigger tag and
+instigator, then applies a stored damage spec after a 0.1s latent delay. Its
+separate 0.01s setup wait is not a zap. Repeated latent calls, component-based
+ability grants, overlap/defaults and actual delivery remain open.
+
+`engine/fixtures/belica-drone-review.json` records hashes, findings and limits.
+`engine/scripts/select_blueprint_dependencies.py` selects direct imported classes
+against the package inventory and decoded corpus, avoiding another prefix-only
+coverage assumption. Synthetic tests reject invalid/cyclic outer chains and
+path traversal, exclude native classes, and distinguish packaged from decoded.
+No production behavior or app artifacts change in this recovery checkpoint.

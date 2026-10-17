@@ -8,7 +8,9 @@ dependencies, then close production, measured-validation and release gates.
 Item-first progress: Wraith unconditional amplification removed; Noxia first-hit
 mark prerequisite corrected, then chronological activation/mark/cooldown handling
 integrated. Next: validate Belica hit delivery and Combustion filtered cooldown
-behavior. Noxia multi-tick/source cases remain open. Eternals remain deferred.
+behavior. Drone actor targeting/delay paths are recovered; next resolve its
+component-based target ability grant and repeated latent-delay behavior.
+Noxia multi-tick/source cases remain open. Eternals remain deferred.
 The historical backlog below remains supporting evidence. A completed recovery
 checkpoint or green harness does not close a readiness milestone.
 

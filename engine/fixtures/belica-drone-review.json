@@ -1,0 +1,35 @@
+{
+  "scope": "Belica Void Drone actor and target-event recovery; not production integration",
+  "evidenceSha256": {
+    "droneActor": "42928d1f6e7434df1e260169da7e655fbc0a4f68db3f6c82b6af2452b8714d1f",
+    "droneSentry": "739ebb9ce4f7374f3aa1cebc47f60a216b328da9edc3f4c766b2a3afc6e1199f",
+    "targetAbility": "b4ef98cfaea703809404bb1481fef6a50d38fff5ab9739e29aef65830244e394",
+    "manaDrainProperties": "f567cb9a80c7ede788e878fb8d4ec86adc2db6326502571cce3bab7eb2788270"
+  },
+  "recovery": {
+    "newActorClassFields": 44,
+    "newSentryClassFields": 0,
+    "actorFunctionsWithMatchingInstructionBytes": 38,
+    "opaqueClassTailBytesEach": 30
+  },
+  "findings": [
+    "The GA/GE/GMMC/GCN filename-selected corpus omitted the Drone actor Blueprint even though its raw asset was already extracted. Direct Blueprint class imports identify this dependency without re-extracting the game.",
+    "The authority-guarded actor path registers DroneUpdateTargets on a repeating timer with a serialized interval of approximately 0.15 seconds. It loops candidate targets and performs a line trace; the blocked branch removes GE_LtBelica_Drone_ManaDrain and the unblocked branch adds the target and applies that effect from the instigator ability system, with the Drone as source object.",
+    "The target ability listens for ability commits with AbilityType.Ability and for Event.OnDamaged. Its damage-event branch requires GameplayEffect.LtBelica.VoidDrone.TriggerDamage and equality between the event instigator and the instigator of the stored Drone damage spec.",
+    "FireDroneLaserAtTarget resolves the Drone from the granting context source object and requests a serialized approximately 0.1-second latent Delay before applying ZapDrain and the stored GE_DamageSpec to the target ability owner. It does not construct a fresh damage spec at this application site.",
+    "A separate approximately 0.01-second WaitDelay in activation ends in an execution-flow return; it must not be mistaken for automatic firing or the zap delay.",
+    "The recovered ManaDrain default is Infinite and contains an attribute-based ManaRegen modifier capturing target Mana without snapshot. Its legacy GrantedAbilities entry has a null Ability, while GEComponents is populated: that legacy entry alone cannot establish the effective ability grant."
+  ],
+  "limits": [
+    "Timer and latent-action runtime behavior, repeated-call coalescing/cancellation and same-frame ordering remain unverified.",
+    "Actor defaults, overlap radius, effective target-ability grant components, team enum interpretation, lifecycle and native damage-category eligibility require further recovery.",
+    "Stored-spec reuse does not by itself certify context identity or native application copying on every zap.",
+    "No in-game measurement was made. Instruction byte agreement is not whole-asset/default/native certification.",
+    "Production still approximates one immediate damage packet per damaging activation; this recovery does not yet change simulator damage or live data."
+  ],
+  "next": [
+    "Recover ManaDrain gameplay-effect components and the target ability grant/removal lifecycle.",
+    "Trace the native latent Delay contract and repeated-trigger behavior before generating Drone hit events.",
+    "Combine conditional hit delivery with Noxia identity and Combustion eligibility; then rebuild the production comparison."
+  ]
+}
