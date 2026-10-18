@@ -9,8 +9,7 @@
   "notes": [
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
-   "evidence deltas carry finished-inventory survivorship bias",
-   "the sim opens on Orion, which the field has tried and lost with (-0.7% winrate over 30 games) — treat this opener as a sim blind-spot and weight the field"
+   "evidence deltas carry finished-inventory survivorship bias"
   ]
  },
  "build": {
@@ -20,49 +19,49 @@
     "name": "Orion",
     "slug": "orion",
     "spikeMinute": 8,
-    "playRatePct": 9.6,
-    "evidenceDeltaWr": -0.7,
-    "evidenceN": 30
+    "playRatePct": 7.5,
+    "evidenceDeltaWr": 3.3,
+    "evidenceN": 23
    },
    {
     "name": "Wraith Leggings",
     "slug": "wraith-leggings",
     "spikeMinute": 16,
-    "playRatePct": 36.3,
-    "evidenceDeltaWr": 1.3,
-    "evidenceN": 114
+    "playRatePct": 36.5,
+    "evidenceDeltaWr": 5.8,
+    "evidenceN": 112
    },
    {
     "name": "Tainted Scepter",
     "slug": "tainted-scepter",
     "spikeMinute": 21,
-    "playRatePct": 16.9,
-    "evidenceDeltaWr": 1.5,
-    "evidenceN": 53
+    "playRatePct": 21.5,
+    "evidenceDeltaWr": 2.1,
+    "evidenceN": 66
    },
    {
     "name": "Magnify",
     "slug": "magnify",
     "spikeMinute": 27,
-    "playRatePct": 6.7,
-    "evidenceDeltaWr": -1.8,
-    "evidenceN": 21
+    "playRatePct": 3.3,
+    "evidenceDeltaWr": -9.9,
+    "evidenceN": 10
    },
    {
     "name": "Oblivion Crown",
     "slug": "oblivion-crown",
     "spikeMinute": 32,
-    "playRatePct": 27.7,
-    "evidenceDeltaWr": 4.6,
-    "evidenceN": 87
+    "playRatePct": 26.4,
+    "evidenceDeltaWr": 10.1,
+    "evidenceN": 81
    },
    {
     "name": "Combustion",
     "slug": "combustion",
     "spikeMinute": 37,
-    "playRatePct": 57,
-    "evidenceDeltaWr": -4.7,
-    "evidenceN": 179
+    "playRatePct": 52.1,
+    "evidenceDeltaWr": 0.3,
+    "evidenceN": 160
    }
   ],
   "gold": 18400,
@@ -579,13 +578,61 @@
      "slug": "noxia"
     }
    ],
-   "n": 39,
-   "shrunkWr": 0.359,
+   "n": 110,
+   "shrunkWr": 0.417,
    "coreGold": 9100,
    "spikeMinute": 22,
    "bestObjective": "10s rotation damage",
    "whyLine": "Strongest meta core for 10s rotation damage, online around minute 22 — about 1,723 damage over a 10s rotation in the sim.",
    "optimizer": "Optimizer agrees: within 2% of our best core on 10s rotation damage. The winrate is earned, not luck."
+  },
+  {
+   "title": "Magical Burst",
+   "items": [
+    {
+     "name": "Combustion",
+     "slug": "combustion"
+    },
+    {
+     "name": "Overseer",
+     "slug": "overseer"
+    },
+    {
+     "name": "WraithLeggings",
+     "slug": "wraith-leggings"
+    }
+   ],
+   "n": 25,
+   "shrunkWr": 0.482,
+   "coreGold": 9200,
+   "spikeMinute": 22,
+   "bestObjective": "one-combo burst",
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 1,536 damage in one combo in the sim.",
+   "optimizer": null
+  },
+  {
+   "title": "Magical Frontline",
+   "items": [
+    {
+     "name": "Combustion",
+     "slug": "combustion"
+    },
+    {
+     "name": "AzureCore",
+     "slug": "azure-core"
+    },
+    {
+     "name": "WraithLeggings",
+     "slug": "wraith-leggings"
+    }
+   ],
+   "n": 24,
+   "shrunkWr": 0.415,
+   "coreGold": 9100,
+   "spikeMinute": 22,
+   "bestObjective": "physical survivability",
+   "whyLine": "Strongest meta core for physical survivability, online around minute 22 — about 4,248 effective HP vs physical in the sim.",
+   "optimizer": "Optimizer agrees: within 4% of our best core on physical survivability. The winrate is earned, not luck."
   }
  ],
  "stages": [
@@ -710,6 +757,45 @@
  ],
  "matchups": [
   {
+   "enemy": "Sparrow",
+   "enemySlug": "sparrow",
+   "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Sparrow deals area damage — spread out so one cast can't catch the group.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "even"
+    },
+    {
+     "minute": 10,
+     "verdict": "you"
+    },
+    {
+     "minute": 15,
+     "verdict": "you"
+    },
+    {
+     "minute": 20,
+     "verdict": "you"
+    },
+    {
+     "minute": 25,
+     "verdict": "even"
+    },
+    {
+     "minute": 30,
+     "verdict": "even"
+    }
+   ],
+   "counterSwap": {
+    "out": "Magnify",
+    "in": "Warden's Faith",
+    "inSlug": "wardens-faith",
+    "survivalGainPct": 27,
+    "offenseLossPct": 12,
+    "line": "Losing lane? Third item Warden's Faith instead of Magnify: their burst combo hits 27% less hard, and this kit gives up 12% of its damage for it."
+   }
+  },
+  {
    "enemy": "Legion",
    "enemySlug": "legion",
    "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Legion deals area damage — spread out so one cast can't catch the group.",
@@ -749,13 +835,13 @@
    }
   },
   {
-   "enemy": "Sparrow",
-   "enemySlug": "sparrow",
-   "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Sparrow deals area damage — spread out so one cast can't catch the group.",
+   "enemy": "Revenant",
+   "enemySlug": "revenant",
+   "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Revenant ramps on auto-attacks — pressure their positioning before they itemize, and mixed resist blunts them later.",
    "checkpoints": [
     {
      "minute": 5,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 10,
@@ -771,20 +857,20 @@
     },
     {
      "minute": 25,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 30,
-     "verdict": "even"
+     "verdict": "you"
     }
    ],
    "counterSwap": {
     "out": "Magnify",
-    "in": "Warden's Faith",
-    "inSlug": "wardens-faith",
-    "survivalGainPct": 27,
-    "offenseLossPct": 12,
-    "line": "Losing lane? Third item Warden's Faith instead of Magnify: their burst combo hits 27% less hard, and this kit gives up 12% of its damage for it."
+    "in": "Raiment of Renewal",
+    "inSlug": "raiment-of-renewal",
+    "survivalGainPct": 13,
+    "offenseLossPct": 10,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Magnify: their burst combo hits 13% less hard, and this kit gives up 10% of its damage for it."
    }
   },
   {
@@ -866,45 +952,6 @@
    }
   },
   {
-   "enemy": "Revenant",
-   "enemySlug": "revenant",
-   "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Revenant ramps on auto-attacks — pressure their positioning before they itemize, and mixed resist blunts them later.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "you"
-    },
-    {
-     "minute": 10,
-     "verdict": "you"
-    },
-    {
-     "minute": 15,
-     "verdict": "you"
-    },
-    {
-     "minute": 20,
-     "verdict": "you"
-    },
-    {
-     "minute": 25,
-     "verdict": "you"
-    },
-    {
-     "minute": 30,
-     "verdict": "you"
-    }
-   ],
-   "counterSwap": {
-    "out": "Magnify",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 13,
-    "offenseLossPct": 10,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Magnify: their burst combo hits 13% less hard, and this kit gives up 10% of its damage for it."
-   }
-  },
-  {
    "enemy": "Drongo",
    "enemySlug": "drongo",
    "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Drongo deals area damage — spread out so one cast can't catch the group.",
@@ -948,50 +995,10 @@
  "slug": "ikra",
  "name": "Ikra",
  "patch": "1.15.3/1.15.4",
- "generatedAt": "2026-10-16T16:42:32.841Z",
+ "generatedAt": "2026-10-18T21:18:28.405Z",
  "damageType": "magical",
  "attackType": "ranged",
- "laneFlex": [
-  {
-   "lane": "midlane",
-   "augment": {
-    "id": "737",
-    "name": "Cascade"
-   },
-   "playstyle": "on-hit",
-   "modeled": false,
-   "wr": 44.7,
-   "n": 387,
-   "core": [
-    {
-     "name": "Orion",
-     "slug": "orion"
-    },
-    {
-     "name": "Magnify",
-     "slug": "magnify"
-    },
-    {
-     "name": "Tainted Scepter",
-     "slug": "tainted-scepter"
-    },
-    {
-     "name": "Wraith Leggings",
-     "slug": "wraith-leggings"
-    },
-    {
-     "name": "Oblivion Crown",
-     "slug": "oblivion-crown"
-    },
-    {
-     "name": "Combustion",
-     "slug": "combustion"
-    }
-   ],
-   "headline": "skirmish uptime",
-   "provenance": "“Cascade” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field midlane 44.7% over 387 games, magnitude not simulated."
-  }
- ],
+ "laneFlex": [],
  "roles": [
   {
    "role": "carry",
@@ -1004,8 +1011,7 @@
     "notes": [
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
-     "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Orion, which the field has tried and lost with (-0.7% winrate over 30 games) — treat this opener as a sim blind-spot and weight the field"
+     "evidence deltas carry finished-inventory survivorship bias"
     ]
    },
    "build": {
@@ -1015,49 +1021,49 @@
       "name": "Orion",
       "slug": "orion",
       "spikeMinute": 8,
-      "playRatePct": 9.6,
-      "evidenceDeltaWr": -0.7,
-      "evidenceN": 30
+      "playRatePct": 7.5,
+      "evidenceDeltaWr": 3.3,
+      "evidenceN": 23
      },
      {
       "name": "Wraith Leggings",
       "slug": "wraith-leggings",
       "spikeMinute": 16,
-      "playRatePct": 36.3,
-      "evidenceDeltaWr": 1.3,
-      "evidenceN": 114
+      "playRatePct": 36.5,
+      "evidenceDeltaWr": 5.8,
+      "evidenceN": 112
      },
      {
       "name": "Tainted Scepter",
       "slug": "tainted-scepter",
       "spikeMinute": 21,
-      "playRatePct": 16.9,
-      "evidenceDeltaWr": 1.5,
-      "evidenceN": 53
+      "playRatePct": 21.5,
+      "evidenceDeltaWr": 2.1,
+      "evidenceN": 66
      },
      {
       "name": "Magnify",
       "slug": "magnify",
       "spikeMinute": 27,
-      "playRatePct": 6.7,
-      "evidenceDeltaWr": -1.8,
-      "evidenceN": 21
+      "playRatePct": 3.3,
+      "evidenceDeltaWr": -9.9,
+      "evidenceN": 10
      },
      {
       "name": "Oblivion Crown",
       "slug": "oblivion-crown",
       "spikeMinute": 32,
-      "playRatePct": 27.7,
-      "evidenceDeltaWr": 4.6,
-      "evidenceN": 87
+      "playRatePct": 26.4,
+      "evidenceDeltaWr": 10.1,
+      "evidenceN": 81
      },
      {
       "name": "Combustion",
       "slug": "combustion",
       "spikeMinute": 37,
-      "playRatePct": 57,
-      "evidenceDeltaWr": -4.7,
-      "evidenceN": 179
+      "playRatePct": 52.1,
+      "evidenceDeltaWr": 0.3,
+      "evidenceN": 160
      }
     ],
     "gold": 18400,
@@ -1574,13 +1580,61 @@
        "slug": "noxia"
       }
      ],
-     "n": 39,
-     "shrunkWr": 0.359,
+     "n": 110,
+     "shrunkWr": 0.417,
      "coreGold": 9100,
      "spikeMinute": 22,
      "bestObjective": "10s rotation damage",
      "whyLine": "Strongest meta core for 10s rotation damage, online around minute 22 — about 1,723 damage over a 10s rotation in the sim.",
      "optimizer": "Optimizer agrees: within 2% of our best core on 10s rotation damage. The winrate is earned, not luck."
+    },
+    {
+     "title": "Magical Burst",
+     "items": [
+      {
+       "name": "Combustion",
+       "slug": "combustion"
+      },
+      {
+       "name": "Overseer",
+       "slug": "overseer"
+      },
+      {
+       "name": "WraithLeggings",
+       "slug": "wraith-leggings"
+      }
+     ],
+     "n": 25,
+     "shrunkWr": 0.482,
+     "coreGold": 9200,
+     "spikeMinute": 22,
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 1,536 damage in one combo in the sim.",
+     "optimizer": null
+    },
+    {
+     "title": "Magical Frontline",
+     "items": [
+      {
+       "name": "Combustion",
+       "slug": "combustion"
+      },
+      {
+       "name": "AzureCore",
+       "slug": "azure-core"
+      },
+      {
+       "name": "WraithLeggings",
+       "slug": "wraith-leggings"
+      }
+     ],
+     "n": 24,
+     "shrunkWr": 0.415,
+     "coreGold": 9100,
+     "spikeMinute": 22,
+     "bestObjective": "physical survivability",
+     "whyLine": "Strongest meta core for physical survivability, online around minute 22 — about 4,248 effective HP vs physical in the sim.",
+     "optimizer": "Optimizer agrees: within 4% of our best core on physical survivability. The winrate is earned, not luck."
     }
    ],
    "stages": [
@@ -1705,6 +1759,45 @@
    ],
    "matchups": [
     {
+     "enemy": "Sparrow",
+     "enemySlug": "sparrow",
+     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Sparrow deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "you"
+      },
+      {
+       "minute": 15,
+       "verdict": "you"
+      },
+      {
+       "minute": 20,
+       "verdict": "you"
+      },
+      {
+       "minute": 25,
+       "verdict": "even"
+      },
+      {
+       "minute": 30,
+       "verdict": "even"
+      }
+     ],
+     "counterSwap": {
+      "out": "Magnify",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 27,
+      "offenseLossPct": 12,
+      "line": "Losing lane? Third item Warden's Faith instead of Magnify: their burst combo hits 27% less hard, and this kit gives up 12% of its damage for it."
+     }
+    },
+    {
      "enemy": "Legion",
      "enemySlug": "legion",
      "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Legion deals area damage — spread out so one cast can't catch the group.",
@@ -1744,13 +1837,13 @@
      }
     },
     {
-     "enemy": "Sparrow",
-     "enemySlug": "sparrow",
-     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Sparrow deals area damage — spread out so one cast can't catch the group.",
+     "enemy": "Revenant",
+     "enemySlug": "revenant",
+     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Revenant ramps on auto-attacks — pressure their positioning before they itemize, and mixed resist blunts them later.",
      "checkpoints": [
       {
        "minute": 5,
-       "verdict": "even"
+       "verdict": "you"
       },
       {
        "minute": 10,
@@ -1766,20 +1859,20 @@
       },
       {
        "minute": 25,
-       "verdict": "even"
+       "verdict": "you"
       },
       {
        "minute": 30,
-       "verdict": "even"
+       "verdict": "you"
       }
      ],
      "counterSwap": {
       "out": "Magnify",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 27,
-      "offenseLossPct": 12,
-      "line": "Losing lane? Third item Warden's Faith instead of Magnify: their burst combo hits 27% less hard, and this kit gives up 12% of its damage for it."
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 13,
+      "offenseLossPct": 10,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Magnify: their burst combo hits 13% less hard, and this kit gives up 10% of its damage for it."
      }
     },
     {
@@ -1861,45 +1954,6 @@
      }
     },
     {
-     "enemy": "Revenant",
-     "enemySlug": "revenant",
-     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Revenant ramps on auto-attacks — pressure their positioning before they itemize, and mixed resist blunts them later.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "you"
-      },
-      {
-       "minute": 10,
-       "verdict": "you"
-      },
-      {
-       "minute": 15,
-       "verdict": "you"
-      },
-      {
-       "minute": 20,
-       "verdict": "you"
-      },
-      {
-       "minute": 25,
-       "verdict": "you"
-      },
-      {
-       "minute": 30,
-       "verdict": "you"
-      }
-     ],
-     "counterSwap": {
-      "out": "Magnify",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 13,
-      "offenseLossPct": 10,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Magnify: their burst combo hits 13% less hard, and this kit gives up 10% of its damage for it."
-     }
-    },
-    {
      "enemy": "Drongo",
      "enemySlug": "drongo",
      "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Drongo deals area damage — spread out so one cast can't catch the group.",
@@ -1952,8 +2006,7 @@
     "notes": [
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
-     "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Orion, which the field has tried and lost with (-0.7% winrate over 30 games) — treat this opener as a sim blind-spot and weight the field"
+     "evidence deltas carry finished-inventory survivorship bias"
     ]
    },
    "build": {
@@ -1963,49 +2016,49 @@
       "name": "Orion",
       "slug": "orion",
       "spikeMinute": 8,
-      "playRatePct": 9.6,
-      "evidenceDeltaWr": -0.7,
-      "evidenceN": 30
+      "playRatePct": 7.5,
+      "evidenceDeltaWr": 3.3,
+      "evidenceN": 23
      },
      {
       "name": "Wraith Leggings",
       "slug": "wraith-leggings",
       "spikeMinute": 15,
-      "playRatePct": 36.3,
-      "evidenceDeltaWr": 1.3,
-      "evidenceN": 114
+      "playRatePct": 36.5,
+      "evidenceDeltaWr": 5.8,
+      "evidenceN": 112
      },
      {
       "name": "Tainted Scepter",
       "slug": "tainted-scepter",
       "spikeMinute": 21,
-      "playRatePct": 16.9,
-      "evidenceDeltaWr": 1.5,
-      "evidenceN": 53
+      "playRatePct": 21.5,
+      "evidenceDeltaWr": 2.1,
+      "evidenceN": 66
      },
      {
       "name": "Magnify",
       "slug": "magnify",
       "spikeMinute": 26,
-      "playRatePct": 6.7,
-      "evidenceDeltaWr": -1.8,
-      "evidenceN": 21
+      "playRatePct": 3.3,
+      "evidenceDeltaWr": -9.9,
+      "evidenceN": 10
      },
      {
       "name": "Oblivion Crown",
       "slug": "oblivion-crown",
       "spikeMinute": 32,
-      "playRatePct": 27.7,
-      "evidenceDeltaWr": 4.6,
-      "evidenceN": 87
+      "playRatePct": 26.4,
+      "evidenceDeltaWr": 10.1,
+      "evidenceN": 81
      },
      {
       "name": "Combustion",
       "slug": "combustion",
-      "spikeMinute": 37,
-      "playRatePct": 57,
-      "evidenceDeltaWr": -4.7,
-      "evidenceN": 179
+      "spikeMinute": 36,
+      "playRatePct": 52.1,
+      "evidenceDeltaWr": 0.3,
+      "evidenceN": 160
      }
     ],
     "gold": 18400,
@@ -2522,13 +2575,61 @@
        "slug": "noxia"
       }
      ],
-     "n": 39,
-     "shrunkWr": 0.359,
+     "n": 106,
+     "shrunkWr": 0.405,
      "coreGold": 9100,
      "spikeMinute": 21,
      "bestObjective": "10s rotation damage",
      "whyLine": "Strongest meta core for 10s rotation damage, online around minute 21 — about 1,723 damage over a 10s rotation in the sim.",
      "optimizer": "Optimizer agrees: within 2% of our best core on 10s rotation damage. The winrate is earned, not luck."
+    },
+    {
+     "title": "Magical Frontline",
+     "items": [
+      {
+       "name": "AzureCore",
+       "slug": "azure-core"
+      },
+      {
+       "name": "Combustion",
+       "slug": "combustion"
+      },
+      {
+       "name": "WraithLeggings",
+       "slug": "wraith-leggings"
+      }
+     ],
+     "n": 24,
+     "shrunkWr": 0.469,
+     "coreGold": 9100,
+     "spikeMinute": 21,
+     "bestObjective": "physical survivability",
+     "whyLine": "Strongest meta core for physical survivability, online around minute 21 — about 4,248 effective HP vs physical in the sim.",
+     "optimizer": "Optimizer agrees: within 4% of our best core on physical survivability. The winrate is earned, not luck."
+    },
+    {
+     "title": "Magical Burst",
+     "items": [
+      {
+       "name": "Combustion",
+       "slug": "combustion"
+      },
+      {
+       "name": "Overseer",
+       "slug": "overseer"
+      },
+      {
+       "name": "WraithLeggings",
+       "slug": "wraith-leggings"
+      }
+     ],
+     "n": 24,
+     "shrunkWr": 0.5,
+     "coreGold": 9200,
+     "spikeMinute": 21,
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 1,536 damage in one combo in the sim.",
+     "optimizer": null
     }
    ],
    "stages": [
@@ -2606,7 +2707,7 @@
     {
      "label": "late",
      "itemCount": 6,
-     "minute": 37,
+     "minute": 36,
      "level": 17,
      "core": [
       {
@@ -2809,45 +2910,6 @@
      }
     },
     {
-     "enemy": "Iggy & Scorch",
-     "enemySlug": "iggy-scorch",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Iggy & Scorch deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "even"
-      },
-      {
-       "minute": 10,
-       "verdict": "even"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Magnify",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 12,
-      "offenseLossPct": 10,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Magnify: their burst combo hits 12% less hard, and this kit gives up 10% of its damage for it."
-     }
-    },
-    {
      "enemy": "Argus",
      "enemySlug": "argus",
      "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Argus deals area damage — spread out so one cast can't catch the group.",
@@ -2885,21 +2947,48 @@
       "offenseLossPct": 11,
       "line": "Losing lane? Third item Raiment of Renewal instead of Magnify: their burst combo hits 13% less hard, and this kit gives up 11% of its damage for it."
      }
+    },
+    {
+     "enemy": "Iggy & Scorch",
+     "enemySlug": "iggy-scorch",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Iggy & Scorch deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "even"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Magnify",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 12,
+      "offenseLossPct": 10,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Magnify: their burst combo hits 12% less hard, and this kit gives up 10% of its damage for it."
+     }
     }
    ],
-   "laneSteer": {
-    "augment": {
-     "id": "737",
-     "name": "Cascade"
-    },
-    "playstyle": "on-hit",
-    "modeled": false,
-    "wr": 44.7,
-    "n": 387,
-    "shiftIn": [],
-    "shiftOut": [],
-    "provenance": "“Cascade” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field midlane 44.7% over 387 games, magnitude not simulated."
-   }
+   "laneSteer": null
   },
   {
    "role": "support",
@@ -2931,7 +3020,7 @@
      {
       "name": "Stonewall",
       "slug": "stonewall",
-      "spikeMinute": 17,
+      "spikeMinute": 16,
       "playRatePct": 0,
       "evidenceDeltaWr": null,
       "evidenceN": null
@@ -2948,7 +3037,7 @@
       "name": "Raiment of Renewal",
       "slug": "raiment-of-renewal",
       "spikeMinute": 29,
-      "playRatePct": 0.3,
+      "playRatePct": 1,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -2956,7 +3045,7 @@
       "name": "Catalytic Drive",
       "slug": "catalytic-drive",
       "spikeMinute": 35,
-      "playRatePct": 0,
+      "playRatePct": 0.3,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -2964,7 +3053,7 @@
       "name": "Unbroken Will",
       "slug": "unbroken-will",
       "spikeMinute": 40,
-      "playRatePct": 0.3,
+      "playRatePct": 0,
       "evidenceDeltaWr": null,
       "evidenceN": null
      }
@@ -3468,44 +3557,44 @@
       "item": "Warp Stream",
       "playRatePct": 0,
       "bestObjective": "magical survivability",
-      "edgeVsPopularPct": 290.3
+      "edgeVsPopularPct": 258.9
      },
      {
       "item": "Stonewall",
       "playRatePct": 0,
       "bestObjective": "magical survivability",
-      "edgeVsPopularPct": 290.3
+      "edgeVsPopularPct": 258.9
      },
      {
       "item": "Vainglory",
       "playRatePct": 0,
       "bestObjective": "magical survivability",
-      "edgeVsPopularPct": 290.3
+      "edgeVsPopularPct": 258.9
      },
      {
       "item": "Raiment of Renewal",
-      "playRatePct": 0.3,
+      "playRatePct": 1,
       "bestObjective": "magical survivability",
-      "edgeVsPopularPct": 290.3
+      "edgeVsPopularPct": 258.9
      },
      {
       "item": "Catalytic Drive",
-      "playRatePct": 0,
+      "playRatePct": 0.3,
       "bestObjective": "magical survivability",
-      "edgeVsPopularPct": 290.3
+      "edgeVsPopularPct": 258.9
      },
      {
       "item": "Unbroken Will",
-      "playRatePct": 0.3,
+      "playRatePct": 0,
       "bestObjective": "magical survivability",
-      "edgeVsPopularPct": 290.3
+      "edgeVsPopularPct": 258.9
      }
     ],
     "honestAbsence": null
    },
    "metaBuilds": [
     {
-     "title": "Magical Frontline",
+     "title": "Magical Skirmisher",
      "items": [
       {
        "name": "Combustion",
@@ -3520,20 +3609,68 @@
        "slug": "noxia"
       }
      ],
-     "n": 39,
-     "shrunkWr": 0.359,
+     "n": 110,
+     "shrunkWr": 0.417,
+     "coreGold": 9100,
+     "spikeMinute": 25,
+     "bestObjective": "10s rotation damage",
+     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 25 — about 1,723 damage over a 10s rotation in the sim.",
+     "optimizer": null
+    },
+    {
+     "title": "Magical Burst",
+     "items": [
+      {
+       "name": "Combustion",
+       "slug": "combustion"
+      },
+      {
+       "name": "Overseer",
+       "slug": "overseer"
+      },
+      {
+       "name": "WraithLeggings",
+       "slug": "wraith-leggings"
+      }
+     ],
+     "n": 25,
+     "shrunkWr": 0.482,
+     "coreGold": 9200,
+     "spikeMinute": 25,
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 1,536 damage in one combo in the sim.",
+     "optimizer": null
+    },
+    {
+     "title": "Magical Frontline",
+     "items": [
+      {
+       "name": "Combustion",
+       "slug": "combustion"
+      },
+      {
+       "name": "AzureCore",
+       "slug": "azure-core"
+      },
+      {
+       "name": "WraithLeggings",
+       "slug": "wraith-leggings"
+      }
+     ],
+     "n": 24,
+     "shrunkWr": 0.415,
      "coreGold": 9100,
      "spikeMinute": 25,
      "bestObjective": "physical survivability",
-     "whyLine": "Strongest meta core for physical survivability, online around minute 25 — about 4,063 effective HP vs physical in the sim.",
-     "optimizer": "Optimizer sees 2.4× the physical survivability: try Warp Stream over Combustion (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "whyLine": "Strongest meta core for physical survivability, online around minute 25 — about 4,248 effective HP vs physical in the sim.",
+     "optimizer": "Optimizer sees 2.3× the physical survivability: try Warp Stream over Combustion (sim-only — the popular pick may carry utility the sim can't see; test it)."
     }
    ],
    "stages": [
     {
      "label": "early",
      "itemCount": 2,
-     "minute": 17,
+     "minute": 16,
      "level": 11,
      "core": [
       {
@@ -3710,6 +3847,38 @@
      "counterSwap": null
     },
     {
+     "enemy": "Zinx",
+     "enemySlug": "zinx",
+     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Zinx's main threat is Ricochet; bait it before you commit, and mixed resist softens the trade.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "you"
+      },
+      {
+       "minute": 10,
+       "verdict": "you"
+      },
+      {
+       "minute": 15,
+       "verdict": "you"
+      },
+      {
+       "minute": 20,
+       "verdict": "you"
+      },
+      {
+       "minute": 25,
+       "verdict": "you"
+      },
+      {
+       "minute": 30,
+       "verdict": "you"
+      }
+     ],
+     "counterSwap": null
+    },
+    {
      "enemy": "Mourn",
      "enemySlug": "mourn",
      "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Mourn's main threat is Abduct; bait it before you commit, and mixed resist softens the trade.",
@@ -3781,45 +3950,13 @@
      }
     },
     {
-     "enemy": "Narbash",
-     "enemySlug": "narbash",
-     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Narbash deals area damage — spread out so one cast can't catch the group.",
+     "enemy": "Phase",
+     "enemySlug": "phase",
+     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
      "checkpoints": [
       {
        "minute": 5,
-       "verdict": "you"
-      },
-      {
-       "minute": 10,
-       "verdict": "you"
-      },
-      {
-       "minute": 15,
-       "verdict": "you"
-      },
-      {
-       "minute": 20,
        "verdict": "even"
-      },
-      {
-       "minute": 25,
-       "verdict": "you"
-      },
-      {
-       "minute": 30,
-       "verdict": "you"
-      }
-     ],
-     "counterSwap": null
-    },
-    {
-     "enemy": "Zinx",
-     "enemySlug": "zinx",
-     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Zinx's main threat is Ricochet; bait it before you commit, and mixed resist softens the trade.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "you"
       },
       {
        "minute": 10,

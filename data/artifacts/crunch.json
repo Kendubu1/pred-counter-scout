@@ -10,7 +10,7 @@
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
-   "the sim opens on Basilisk, which the field rarely builds (2.1% pick) — a sim-only call; compare the meta cores below"
+   "the sim opens on Basilisk, which the field rarely builds (1.9% pick) — a sim-only call; compare the meta cores below"
   ]
  },
  "build": {
@@ -20,15 +20,15 @@
     "name": "Basilisk",
     "slug": "basilisk",
     "spikeMinute": 9,
-    "playRatePct": 2.1,
-    "evidenceDeltaWr": 7.9,
-    "evidenceN": 13
+    "playRatePct": 1.9,
+    "evidenceDeltaWr": -3.8,
+    "evidenceN": 11
    },
    {
     "name": "Spear Of Desolation",
     "slug": "spear-of-desolation",
     "spikeMinute": 16,
-    "playRatePct": 0.8,
+    "playRatePct": 0,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -36,7 +36,7 @@
     "name": "Penumbra",
     "slug": "penumbra",
     "spikeMinute": 21,
-    "playRatePct": 0.2,
+    "playRatePct": 0.9,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -44,7 +44,7 @@
     "name": "The Perforator",
     "slug": "the-perforator",
     "spikeMinute": 27,
-    "playRatePct": 0.8,
+    "playRatePct": 0.7,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -52,9 +52,9 @@
     "name": "Mutilator",
     "slug": "mutilator",
     "spikeMinute": 32,
-    "playRatePct": 42.1,
-    "evidenceDeltaWr": 1.7,
-    "evidenceN": 263
+    "playRatePct": 44.2,
+    "evidenceDeltaWr": 4.7,
+    "evidenceN": 257
    },
    {
     "name": "Painweaver",
@@ -561,20 +561,26 @@
  "offMeta": {
   "candidates": [
    {
+    "item": "Basilisk",
+    "playRatePct": 1.9,
+    "bestObjective": "10s rotation vs squishies",
+    "edgeVsPopularPct": 140.1
+   },
+   {
     "item": "Spear Of Desolation",
-    "playRatePct": 0.8,
+    "playRatePct": 0,
     "bestObjective": "10s rotation vs squishies",
     "edgeVsPopularPct": 140.1
    },
    {
     "item": "Penumbra",
-    "playRatePct": 0.2,
+    "playRatePct": 0.9,
     "bestObjective": "10s rotation vs squishies",
     "edgeVsPopularPct": 140.1
    },
    {
     "item": "The Perforator",
-    "playRatePct": 0.8,
+    "playRatePct": 0.7,
     "bestObjective": "10s rotation vs squishies",
     "edgeVsPopularPct": 140.1
    },
@@ -589,7 +595,7 @@
  },
  "metaBuilds": [
   {
-   "title": "Physical Skirmisher",
+   "title": "Physical Burst",
    "items": [
     {
      "name": "Augmentation",
@@ -604,13 +610,61 @@
      "slug": "salvation"
     }
    ],
-   "n": 22,
-   "shrunkWr": 0.682,
+   "n": 74,
+   "shrunkWr": 0.507,
    "coreGold": 9250,
    "spikeMinute": 22,
-   "bestObjective": "10s rotation damage",
-   "whyLine": "Strongest meta core for 10s rotation damage, online around minute 22 — about 910 damage over a 10s rotation in the sim.",
-   "optimizer": "Optimizer sees +45% more 10s rotation damage: try Basilisk over Augmentation (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "bestObjective": "one-combo burst",
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 802 damage in one combo in the sim.",
+   "optimizer": null
+  },
+  {
+   "title": "Physical Burst",
+   "items": [
+    {
+     "name": "Augmentation",
+     "slug": "augmentation"
+    },
+    {
+     "name": "Mutilator",
+     "slug": "mutilator"
+    },
+    {
+     "name": "TaintedBlade",
+     "slug": "tainted-blade"
+    }
+   ],
+   "n": 33,
+   "shrunkWr": 0.495,
+   "coreGold": 9350,
+   "spikeMinute": 22,
+   "bestObjective": "one-combo burst",
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 802 damage in one combo in the sim.",
+   "optimizer": null
+  },
+  {
+   "title": "Physical Burst",
+   "items": [
+    {
+     "name": "Mutilator",
+     "slug": "mutilator"
+    },
+    {
+     "name": "Augmentation",
+     "slug": "augmentation"
+    },
+    {
+     "name": "TaintedBlade",
+     "slug": "tainted-blade"
+    }
+   ],
+   "n": 31,
+   "shrunkWr": 0.495,
+   "coreGold": 9350,
+   "spikeMinute": 22,
+   "bestObjective": "one-combo burst",
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 802 damage in one combo in the sim.",
+   "optimizer": null
   }
  ],
  "stages": [
@@ -847,6 +901,45 @@
    }
   },
   {
+   "enemy": "Aurora",
+   "enemySlug": "aurora",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Aurora deals area damage — spread out so one cast can't catch the group.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 10,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 15,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 20,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 25,
+     "verdict": "even"
+    },
+    {
+     "minute": 30,
+     "verdict": "even"
+    }
+   ],
+   "counterSwap": {
+    "out": "Basilisk",
+    "in": "Raiment of Renewal",
+    "inSlug": "raiment-of-renewal",
+    "survivalGainPct": 13,
+    "offenseLossPct": 19,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Basilisk: their burst combo hits 13% less hard, and this kit gives up 19% of its damage for it."
+   }
+  },
+  {
    "enemy": "Scarlett",
    "enemySlug": "scarlett",
    "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Scarlett deals area damage — spread out so one cast can't catch the group.",
@@ -883,45 +976,6 @@
     "survivalGainPct": 24,
     "offenseLossPct": 19,
     "line": "Losing lane? Third item Warden's Faith instead of Basilisk: their burst combo hits 24% less hard, and this kit gives up 19% of its damage for it."
-   }
-  },
-  {
-   "enemy": "Aurora",
-   "enemySlug": "aurora",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Aurora deals area damage — spread out so one cast can't catch the group.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 10,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 15,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 20,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 25,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 30,
-     "verdict": "even"
-    }
-   ],
-   "counterSwap": {
-    "out": "Basilisk",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 13,
-    "offenseLossPct": 19,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Basilisk: their burst combo hits 13% less hard, and this kit gives up 19% of its damage for it."
    }
   },
   {
@@ -971,16 +1025,16 @@
   },
   "playstyle": "on-hit",
   "modeled": false,
-  "wr": 48.8,
-  "n": 1000,
+  "wr": 49.4,
+  "n": 2115,
   "shiftIn": [],
   "shiftOut": [],
-  "provenance": "“Combo Crunch” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 48.8% over 1,000 games, magnitude not simulated."
+  "provenance": "“Combo Crunch” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 49.4% over 2,115 games, magnitude not simulated."
  },
  "slug": "crunch",
  "name": "Crunch",
  "patch": "1.15.3/1.15.4",
- "generatedAt": "2026-10-16T16:39:35.382Z",
+ "generatedAt": "2026-10-18T21:13:06.783Z",
  "damageType": "hybrid",
  "attackType": "melee",
  "laneFlex": [
@@ -992,8 +1046,8 @@
    },
    "playstyle": "on-hit",
    "modeled": false,
-   "wr": 48.8,
-   "n": 1000,
+   "wr": 49.4,
+   "n": 2115,
    "core": [
     {
      "name": "Mutilator",
@@ -1021,7 +1075,7 @@
     }
    ],
    "headline": "skirmish uptime",
-   "provenance": "“Combo Crunch” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 48.8% over 1,000 games, magnitude not simulated."
+   "provenance": "“Combo Crunch” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 49.4% over 2,115 games, magnitude not simulated."
   },
   {
    "lane": "jungle",
@@ -1031,8 +1085,8 @@
    },
    "playstyle": "on-hit",
    "modeled": false,
-   "wr": 47.9,
-   "n": 572,
+   "wr": 50.9,
+   "n": 1143,
    "core": [
     {
      "name": "Mutilator",
@@ -1060,7 +1114,7 @@
     }
    ],
    "headline": "skirmish uptime",
-   "provenance": "“Combo Crunch” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 47.9% over 572 games, magnitude not simulated."
+   "provenance": "“Combo Crunch” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 50.9% over 1,143 games, magnitude not simulated."
   }
  ],
  "roles": [
@@ -1076,7 +1130,7 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Basilisk, which the field rarely builds (2.1% pick) — a sim-only call; compare the meta cores below"
+     "the sim opens on Basilisk, which the field rarely builds (1.9% pick) — a sim-only call; compare the meta cores below"
     ]
    },
    "build": {
@@ -1086,15 +1140,15 @@
       "name": "Basilisk",
       "slug": "basilisk",
       "spikeMinute": 9,
-      "playRatePct": 2.1,
-      "evidenceDeltaWr": 7.9,
-      "evidenceN": 13
+      "playRatePct": 1.9,
+      "evidenceDeltaWr": -3.8,
+      "evidenceN": 11
      },
      {
       "name": "Spear Of Desolation",
       "slug": "spear-of-desolation",
       "spikeMinute": 16,
-      "playRatePct": 0.8,
+      "playRatePct": 0,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1102,7 +1156,7 @@
       "name": "Penumbra",
       "slug": "penumbra",
       "spikeMinute": 21,
-      "playRatePct": 0.2,
+      "playRatePct": 0.9,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1110,7 +1164,7 @@
       "name": "The Perforator",
       "slug": "the-perforator",
       "spikeMinute": 27,
-      "playRatePct": 0.8,
+      "playRatePct": 0.7,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1118,9 +1172,9 @@
       "name": "Mutilator",
       "slug": "mutilator",
       "spikeMinute": 32,
-      "playRatePct": 42.1,
-      "evidenceDeltaWr": 1.7,
-      "evidenceN": 263
+      "playRatePct": 44.2,
+      "evidenceDeltaWr": 4.7,
+      "evidenceN": 257
      },
      {
       "name": "Painweaver",
@@ -1627,20 +1681,26 @@
    "offMeta": {
     "candidates": [
      {
+      "item": "Basilisk",
+      "playRatePct": 1.9,
+      "bestObjective": "10s rotation vs squishies",
+      "edgeVsPopularPct": 140.1
+     },
+     {
       "item": "Spear Of Desolation",
-      "playRatePct": 0.8,
+      "playRatePct": 0,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 140.1
      },
      {
       "item": "Penumbra",
-      "playRatePct": 0.2,
+      "playRatePct": 0.9,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 140.1
      },
      {
       "item": "The Perforator",
-      "playRatePct": 0.8,
+      "playRatePct": 0.7,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 140.1
      },
@@ -1655,7 +1715,7 @@
    },
    "metaBuilds": [
     {
-     "title": "Physical Skirmisher",
+     "title": "Physical Burst",
      "items": [
       {
        "name": "Augmentation",
@@ -1670,13 +1730,61 @@
        "slug": "salvation"
       }
      ],
-     "n": 22,
-     "shrunkWr": 0.682,
+     "n": 74,
+     "shrunkWr": 0.507,
      "coreGold": 9250,
      "spikeMinute": 22,
-     "bestObjective": "10s rotation damage",
-     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 22 — about 910 damage over a 10s rotation in the sim.",
-     "optimizer": "Optimizer sees +45% more 10s rotation damage: try Basilisk over Augmentation (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 802 damage in one combo in the sim.",
+     "optimizer": null
+    },
+    {
+     "title": "Physical Burst",
+     "items": [
+      {
+       "name": "Augmentation",
+       "slug": "augmentation"
+      },
+      {
+       "name": "Mutilator",
+       "slug": "mutilator"
+      },
+      {
+       "name": "TaintedBlade",
+       "slug": "tainted-blade"
+      }
+     ],
+     "n": 33,
+     "shrunkWr": 0.495,
+     "coreGold": 9350,
+     "spikeMinute": 22,
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 802 damage in one combo in the sim.",
+     "optimizer": null
+    },
+    {
+     "title": "Physical Burst",
+     "items": [
+      {
+       "name": "Mutilator",
+       "slug": "mutilator"
+      },
+      {
+       "name": "Augmentation",
+       "slug": "augmentation"
+      },
+      {
+       "name": "TaintedBlade",
+       "slug": "tainted-blade"
+      }
+     ],
+     "n": 31,
+     "shrunkWr": 0.495,
+     "coreGold": 9350,
+     "spikeMinute": 22,
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 802 damage in one combo in the sim.",
+     "optimizer": null
     }
    ],
    "stages": [
@@ -1913,6 +2021,45 @@
      }
     },
     {
+     "enemy": "Aurora",
+     "enemySlug": "aurora",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Aurora deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "even"
+      },
+      {
+       "minute": 30,
+       "verdict": "even"
+      }
+     ],
+     "counterSwap": {
+      "out": "Basilisk",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 13,
+      "offenseLossPct": 19,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Basilisk: their burst combo hits 13% less hard, and this kit gives up 19% of its damage for it."
+     }
+    },
+    {
      "enemy": "Scarlett",
      "enemySlug": "scarlett",
      "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Scarlett deals area damage — spread out so one cast can't catch the group.",
@@ -1949,45 +2096,6 @@
       "survivalGainPct": 24,
       "offenseLossPct": 19,
       "line": "Losing lane? Third item Warden's Faith instead of Basilisk: their burst combo hits 24% less hard, and this kit gives up 19% of its damage for it."
-     }
-    },
-    {
-     "enemy": "Aurora",
-     "enemySlug": "aurora",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Aurora deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "even"
-      }
-     ],
-     "counterSwap": {
-      "out": "Basilisk",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 13,
-      "offenseLossPct": 19,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Basilisk: their burst combo hits 13% less hard, and this kit gives up 19% of its damage for it."
      }
     },
     {
@@ -2037,11 +2145,11 @@
     },
     "playstyle": "on-hit",
     "modeled": false,
-    "wr": 48.8,
-    "n": 1000,
+    "wr": 49.4,
+    "n": 2115,
     "shiftIn": [],
     "shiftOut": [],
-    "provenance": "“Combo Crunch” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 48.8% over 1,000 games, magnitude not simulated."
+    "provenance": "“Combo Crunch” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 49.4% over 2,115 games, magnitude not simulated."
    }
   },
   {
@@ -2056,7 +2164,7 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "the sim opens on Basilisk, which the field rarely builds (2.1% pick) — a sim-only call; compare the meta cores below"
+     "the sim opens on Basilisk, which the field rarely builds (1.9% pick) — a sim-only call; compare the meta cores below"
     ]
    },
    "build": {
@@ -2065,16 +2173,16 @@
      {
       "name": "Basilisk",
       "slug": "basilisk",
-      "spikeMinute": 9,
-      "playRatePct": 2.1,
-      "evidenceDeltaWr": 7.9,
-      "evidenceN": 13
+      "spikeMinute": 8,
+      "playRatePct": 1.9,
+      "evidenceDeltaWr": -3.8,
+      "evidenceN": 11
      },
      {
       "name": "Spear Of Desolation",
       "slug": "spear-of-desolation",
       "spikeMinute": 15,
-      "playRatePct": 0.8,
+      "playRatePct": 0,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -2082,7 +2190,7 @@
       "name": "Penumbra",
       "slug": "penumbra",
       "spikeMinute": 21,
-      "playRatePct": 0.2,
+      "playRatePct": 0.9,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -2090,7 +2198,7 @@
       "name": "The Perforator",
       "slug": "the-perforator",
       "spikeMinute": 28,
-      "playRatePct": 0.8,
+      "playRatePct": 0.7,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -2098,14 +2206,14 @@
       "name": "Mutilator",
       "slug": "mutilator",
       "spikeMinute": 34,
-      "playRatePct": 42.1,
-      "evidenceDeltaWr": 1.7,
-      "evidenceN": 263
+      "playRatePct": 44.2,
+      "evidenceDeltaWr": 4.7,
+      "evidenceN": 257
      },
      {
       "name": "Painweaver",
       "slug": "painweaver",
-      "spikeMinute": 40,
+      "spikeMinute": 39,
       "playRatePct": 0.3,
       "evidenceDeltaWr": null,
       "evidenceN": null
@@ -2129,7 +2237,7 @@
     },
     "manaFeasible": true
    },
-   "coachLine": "Sim-optimal for skirmish uptime: first spike lands around minute 9 (Basilisk), third item by minute 21. Take Krix: +18% on effective HP at minute 15.",
+   "coachLine": "Sim-optimal for skirmish uptime: first spike lands around minute 8 (Basilisk), third item by minute 21. Take Krix: +18% on effective HP at minute 15.",
    "eternals": {
     "top": [
      {
@@ -2607,20 +2715,26 @@
    "offMeta": {
     "candidates": [
      {
+      "item": "Basilisk",
+      "playRatePct": 1.9,
+      "bestObjective": "10s rotation vs squishies",
+      "edgeVsPopularPct": 140.1
+     },
+     {
       "item": "Spear Of Desolation",
-      "playRatePct": 0.8,
+      "playRatePct": 0,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 140.1
      },
      {
       "item": "Penumbra",
-      "playRatePct": 0.2,
+      "playRatePct": 0.9,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 140.1
      },
      {
       "item": "The Perforator",
-      "playRatePct": 0.8,
+      "playRatePct": 0.7,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 140.1
      },
@@ -2650,16 +2764,16 @@
        "slug": "salvation"
       }
      ],
-     "n": 31,
-     "shrunkWr": 0.72,
+     "n": 97,
+     "shrunkWr": 0.594,
      "coreGold": 9150,
      "spikeMinute": 22,
-     "bestObjective": "physical survivability",
-     "whyLine": "Strongest meta core for physical survivability, online around minute 22 — about 6,250 effective HP vs physical in the sim.",
+     "bestObjective": "magical survivability",
+     "whyLine": "Strongest meta core for magical survivability, online around minute 22 — about 4,709 effective HP vs magical in the sim.",
      "optimizer": null
     },
     {
-     "title": "Physical Skirmisher",
+     "title": "Physical DPS Carry",
      "items": [
       {
        "name": "SyonicEcho",
@@ -2674,13 +2788,37 @@
        "slug": "draconum"
       }
      ],
-     "n": 23,
-     "shrunkWr": 0.607,
+     "n": 46,
+     "shrunkWr": 0.571,
      "coreGold": 8900,
      "spikeMinute": 21,
-     "bestObjective": "10s rotation damage",
-     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 21 — about 836 damage over a 10s rotation in the sim.",
-     "optimizer": "Optimizer sees +58% more 10s rotation damage: try Basilisk over Syonic Echo (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 204 auto-attack DPS in the sim.",
+     "optimizer": "Optimizer agrees: within 4% of our best core on sustained auto DPS. The winrate is earned, not luck."
+    },
+    {
+     "title": "Physical Frontline",
+     "items": [
+      {
+       "name": "BerserkersAxe",
+       "slug": "berserkers-axe"
+      },
+      {
+       "name": "Augmentation",
+       "slug": "augmentation"
+      },
+      {
+       "name": "TaintedBlade",
+       "slug": "tainted-blade"
+      }
+     ],
+     "n": 40,
+     "shrunkWr": 0.581,
+     "coreGold": 9250,
+     "spikeMinute": 22,
+     "bestObjective": "magical survivability",
+     "whyLine": "Strongest meta core for magical survivability, online around minute 22 — about 4,519 effective HP vs magical in the sim.",
+     "optimizer": null
     }
    ],
    "stages": [
@@ -2753,7 +2891,7 @@
     {
      "label": "late",
      "itemCount": 6,
-     "minute": 40,
+     "minute": 39,
      "level": 17,
      "core": [
       {
@@ -2839,45 +2977,6 @@
      }
     },
     {
-     "enemy": "Serath",
-     "enemySlug": "serath",
-     "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange. Serath's main threat is Chastise; bait it before you commit, and armor softens the trade.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "even"
-      },
-      {
-       "minute": 10,
-       "verdict": "even"
-      },
-      {
-       "minute": 15,
-       "verdict": "you"
-      },
-      {
-       "minute": 20,
-       "verdict": "even"
-      },
-      {
-       "minute": 25,
-       "verdict": "even"
-      },
-      {
-       "minute": 30,
-       "verdict": "even"
-      }
-     ],
-     "counterSwap": {
-      "out": "Basilisk",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 21,
-      "offenseLossPct": 19,
-      "line": "Losing lane? Third item Warden's Faith instead of Basilisk: their burst combo hits 21% less hard, and this kit gives up 19% of its damage for it."
-     }
-    },
-    {
      "enemy": "Kwang",
      "enemySlug": "kwang",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Kwang ramps on auto-attacks — pressure them before they itemize, and mixed resist blunts them later.",
@@ -2914,6 +3013,45 @@
       "survivalGainPct": 14,
       "offenseLossPct": 19,
       "line": "Losing lane? Third item Raiment of Renewal instead of Basilisk: their burst combo hits 14% less hard, and this kit gives up 19% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Serath",
+     "enemySlug": "serath",
+     "gameplan": "Your kill threat peaks early-to-mid: cash it in before their later items level the exchange. Serath's main threat is Chastise; bait it before you commit, and armor softens the trade.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "even"
+      },
+      {
+       "minute": 15,
+       "verdict": "you"
+      },
+      {
+       "minute": 20,
+       "verdict": "even"
+      },
+      {
+       "minute": 25,
+       "verdict": "even"
+      },
+      {
+       "minute": 30,
+       "verdict": "even"
+      }
+     ],
+     "counterSwap": {
+      "out": "Basilisk",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 21,
+      "offenseLossPct": 19,
+      "line": "Losing lane? Third item Warden's Faith instead of Basilisk: their burst combo hits 21% less hard, and this kit gives up 19% of its damage for it."
      }
     },
     {
@@ -3041,11 +3179,11 @@
     },
     "playstyle": "on-hit",
     "modeled": false,
-    "wr": 47.9,
-    "n": 572,
+    "wr": 50.9,
+    "n": 1143,
     "shiftIn": [],
     "shiftOut": [],
-    "provenance": "“Combo Crunch” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 47.9% over 572 games, magnitude not simulated."
+    "provenance": "“Combo Crunch” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field jungle 50.9% over 1,143 games, magnitude not simulated."
    }
   }
  ],

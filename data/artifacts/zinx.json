@@ -11,7 +11,6 @@
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
    "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)",
-   "the sim opens on Lifecore, which the field has tried and lost with (-3.1% winrate over 59 games) — treat this opener as a sim blind-spot and weight the field",
    "the sim build reproduces only 33% of the field's core for Zinx (it never builds Prophecy, Spectra) — some of those items ride mechanics the sim doesn't model yet"
   ]
  },
@@ -22,25 +21,25 @@
     "name": "Lifecore",
     "slug": "lifecore",
     "spikeMinute": 11,
-    "playRatePct": 11.8,
-    "evidenceDeltaWr": -3.1,
-    "evidenceN": 59
+    "playRatePct": 14.3,
+    "evidenceDeltaWr": 0.7,
+    "evidenceN": 88
    },
    {
     "name": "Lunaria",
     "slug": "lunaria",
     "spikeMinute": 17,
-    "playRatePct": 24,
-    "evidenceDeltaWr": 0.5,
-    "evidenceN": 120
+    "playRatePct": 22.1,
+    "evidenceDeltaWr": 0.3,
+    "evidenceN": 136
    },
    {
     "name": "Oblivion Crown",
     "slug": "oblivion-crown",
     "spikeMinute": 25,
-    "playRatePct": 3.6,
-    "evidenceDeltaWr": 2.8,
-    "evidenceN": 18
+    "playRatePct": 1.8,
+    "evidenceDeltaWr": -0.8,
+    "evidenceN": 11
    },
    {
     "name": "Spirit Of Amir",
@@ -54,17 +53,17 @@
     "name": "Timewarp",
     "slug": "timewarp",
     "spikeMinute": 36,
-    "playRatePct": 6.2,
-    "evidenceDeltaWr": 1.4,
-    "evidenceN": 31
+    "playRatePct": 11.6,
+    "evidenceDeltaWr": -0.2,
+    "evidenceN": 71
    },
    {
     "name": "Windcaller",
     "slug": "windcaller",
     "spikeMinute": 40,
-    "playRatePct": 14.4,
-    "evidenceDeltaWr": 4.7,
-    "evidenceN": 72
+    "playRatePct": 15.6,
+    "evidenceDeltaWr": 0,
+    "evidenceN": 96
    }
   ],
   "gold": 17200,
@@ -563,6 +562,12 @@
  "offMeta": {
   "candidates": [
    {
+    "item": "Oblivion Crown",
+    "playRatePct": 1.8,
+    "bestObjective": "heal/shield output",
+    "edgeVsPopularPct": 143.1
+   },
+   {
     "item": "Spirit Of Amir",
     "playRatePct": 0,
     "bestObjective": "heal/shield output",
@@ -573,7 +578,7 @@
  },
  "metaBuilds": [
   {
-   "title": "Magical Enchanter",
+   "title": "Magical Burst",
    "items": [
     {
      "name": "Prophecy",
@@ -588,16 +593,16 @@
      "slug": "orion"
     }
    ],
-   "n": 36,
-   "shrunkWr": 0.483,
+   "n": 141,
+   "shrunkWr": 0.493,
    "coreGold": 8650,
    "spikeMinute": 24,
-   "bestObjective": "heal/shield output",
-   "whyLine": "Strongest meta core for heal/shield output, online around minute 24 — about 986 HP healed or shielded over 10s in the sim.",
-   "optimizer": "Optimizer sees +73% more heal/shield output: try Lifecore over Prophecy (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "bestObjective": "one-combo burst",
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 477 damage in one combo in the sim.",
+   "optimizer": null
   },
   {
-   "title": "Magical Enchanter",
+   "title": "Magical Burst",
    "items": [
     {
      "name": "Prophecy",
@@ -612,13 +617,37 @@
      "slug": "spectra"
     }
    ],
-   "n": 23,
-   "shrunkWr": 0.501,
+   "n": 70,
+   "shrunkWr": 0.503,
    "coreGold": 8650,
    "spikeMinute": 24,
-   "bestObjective": "heal/shield output",
-   "whyLine": "Strongest meta core for heal/shield output, online around minute 24 — about 986 HP healed or shielded over 10s in the sim.",
-   "optimizer": "Optimizer sees +73% more heal/shield output: try Lifecore over Prophecy (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "bestObjective": "one-combo burst",
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 477 damage in one combo in the sim.",
+   "optimizer": null
+  },
+  {
+   "title": "Magical Bruiser (Physical-Def)",
+   "items": [
+    {
+     "name": "Marshal",
+     "slug": "marshal"
+    },
+    {
+     "name": "Lunaria",
+     "slug": "lunaria"
+    },
+    {
+     "name": "Dynamo",
+     "slug": "dynamo"
+    }
+   ],
+   "n": 59,
+   "shrunkWr": 0.522,
+   "coreGold": 7250,
+   "spikeMinute": 21,
+   "bestObjective": "physical survivability",
+   "whyLine": "Strongest meta core for physical survivability, online around minute 21 — about 5,106 effective HP vs physical in the sim.",
+   "optimizer": null
   }
  ],
  "stages": [
@@ -894,13 +923,13 @@
    }
   },
   {
-   "enemy": "Narbash",
-   "enemySlug": "narbash",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Narbash deals area damage — spread out so one cast can't catch the group.",
+   "enemy": "Phase",
+   "enemySlug": "phase",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
    "checkpoints": [
     {
      "minute": 5,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 10,
@@ -933,13 +962,13 @@
    }
   },
   {
-   "enemy": "Phase",
-   "enemySlug": "phase",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
+   "enemy": "Narbash",
+   "enemySlug": "narbash",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Narbash deals area damage — spread out so one cast can't catch the group.",
    "checkpoints": [
     {
      "minute": 5,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 10,
@@ -979,16 +1008,16 @@
   },
   "playstyle": "ability-burst",
   "modeled": true,
-  "wr": 49.5,
-  "n": 612,
+  "wr": 50.1,
+  "n": 1406,
   "shiftIn": [],
   "shiftOut": [],
-  "provenance": "“Disc Of Demise” ⇒ ability-burst; the sim models this augment — field support 49.5% over 612 games."
+  "provenance": "“Disc Of Demise” ⇒ ability-burst; the sim models this augment — field support 50.1% over 1,406 games."
  },
  "slug": "zinx",
  "name": "Zinx",
  "patch": "1.15.3/1.15.4",
- "generatedAt": "2026-10-16T16:49:07.387Z",
+ "generatedAt": "2026-10-18T21:30:13.304Z",
  "damageType": "hybrid",
  "attackType": "ranged",
  "laneFlex": [
@@ -1000,8 +1029,8 @@
    },
    "playstyle": "ability-burst",
    "modeled": true,
-   "wr": 49.5,
-   "n": 612,
+   "wr": 50.1,
+   "n": 1406,
    "core": [
     {
      "name": "Lifecore",
@@ -1029,7 +1058,46 @@
     }
    ],
    "headline": "heal/shield output",
-   "provenance": "“Disc Of Demise” ⇒ ability-burst; the sim models this augment — field support 49.5% over 612 games."
+   "provenance": "“Disc Of Demise” ⇒ ability-burst; the sim models this augment — field support 50.1% over 1,406 games."
+  },
+  {
+   "lane": "offlane",
+   "augment": {
+    "id": "142",
+    "name": "Terminal Treatment"
+   },
+   "playstyle": "on-hit",
+   "modeled": false,
+   "wr": 51.2,
+   "n": 389,
+   "core": [
+    {
+     "name": "Combustion",
+     "slug": "combustion"
+    },
+    {
+     "name": "Noxia",
+     "slug": "noxia"
+    },
+    {
+     "name": "Crescelia",
+     "slug": "crescelia"
+    },
+    {
+     "name": "Timewarp",
+     "slug": "timewarp"
+    },
+    {
+     "name": "Wraith Leggings",
+     "slug": "wraith-leggings"
+    },
+    {
+     "name": "Oblivion Crown",
+     "slug": "oblivion-crown"
+    }
+   ],
+   "headline": "skirmish uptime",
+   "provenance": "“Terminal Treatment” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 51.2% over 389 games, magnitude not simulated."
   }
  ],
  "roles": [
@@ -1046,7 +1114,6 @@
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
      "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)",
-     "the sim opens on Lifecore, which the field has tried and lost with (-3.1% winrate over 59 games) — treat this opener as a sim blind-spot and weight the field",
      "the sim build reproduces only 33% of the field's core for Zinx (it never builds Prophecy, Spectra) — some of those items ride mechanics the sim doesn't model yet"
     ]
    },
@@ -1057,25 +1124,25 @@
       "name": "Lifecore",
       "slug": "lifecore",
       "spikeMinute": 11,
-      "playRatePct": 11.8,
-      "evidenceDeltaWr": -3.1,
-      "evidenceN": 59
+      "playRatePct": 14.3,
+      "evidenceDeltaWr": 0.7,
+      "evidenceN": 88
      },
      {
       "name": "Lunaria",
       "slug": "lunaria",
       "spikeMinute": 17,
-      "playRatePct": 24,
-      "evidenceDeltaWr": 0.5,
-      "evidenceN": 120
+      "playRatePct": 22.1,
+      "evidenceDeltaWr": 0.3,
+      "evidenceN": 136
      },
      {
       "name": "Oblivion Crown",
       "slug": "oblivion-crown",
       "spikeMinute": 25,
-      "playRatePct": 3.6,
-      "evidenceDeltaWr": 2.8,
-      "evidenceN": 18
+      "playRatePct": 1.8,
+      "evidenceDeltaWr": -0.8,
+      "evidenceN": 11
      },
      {
       "name": "Spirit Of Amir",
@@ -1089,17 +1156,17 @@
       "name": "Timewarp",
       "slug": "timewarp",
       "spikeMinute": 36,
-      "playRatePct": 6.2,
-      "evidenceDeltaWr": 1.4,
-      "evidenceN": 31
+      "playRatePct": 11.6,
+      "evidenceDeltaWr": -0.2,
+      "evidenceN": 71
      },
      {
       "name": "Windcaller",
       "slug": "windcaller",
       "spikeMinute": 40,
-      "playRatePct": 14.4,
-      "evidenceDeltaWr": 4.7,
-      "evidenceN": 72
+      "playRatePct": 15.6,
+      "evidenceDeltaWr": 0,
+      "evidenceN": 96
      }
     ],
     "gold": 17200,
@@ -1598,6 +1665,12 @@
    "offMeta": {
     "candidates": [
      {
+      "item": "Oblivion Crown",
+      "playRatePct": 1.8,
+      "bestObjective": "heal/shield output",
+      "edgeVsPopularPct": 143.1
+     },
+     {
       "item": "Spirit Of Amir",
       "playRatePct": 0,
       "bestObjective": "heal/shield output",
@@ -1608,7 +1681,7 @@
    },
    "metaBuilds": [
     {
-     "title": "Magical Enchanter",
+     "title": "Magical Burst",
      "items": [
       {
        "name": "Prophecy",
@@ -1623,16 +1696,16 @@
        "slug": "orion"
       }
      ],
-     "n": 36,
-     "shrunkWr": 0.483,
+     "n": 141,
+     "shrunkWr": 0.493,
      "coreGold": 8650,
      "spikeMinute": 24,
-     "bestObjective": "heal/shield output",
-     "whyLine": "Strongest meta core for heal/shield output, online around minute 24 — about 986 HP healed or shielded over 10s in the sim.",
-     "optimizer": "Optimizer sees +73% more heal/shield output: try Lifecore over Prophecy (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 477 damage in one combo in the sim.",
+     "optimizer": null
     },
     {
-     "title": "Magical Enchanter",
+     "title": "Magical Burst",
      "items": [
       {
        "name": "Prophecy",
@@ -1647,13 +1720,37 @@
        "slug": "spectra"
       }
      ],
-     "n": 23,
-     "shrunkWr": 0.501,
+     "n": 70,
+     "shrunkWr": 0.503,
      "coreGold": 8650,
      "spikeMinute": 24,
-     "bestObjective": "heal/shield output",
-     "whyLine": "Strongest meta core for heal/shield output, online around minute 24 — about 986 HP healed or shielded over 10s in the sim.",
-     "optimizer": "Optimizer sees +73% more heal/shield output: try Lifecore over Prophecy (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 477 damage in one combo in the sim.",
+     "optimizer": null
+    },
+    {
+     "title": "Magical Bruiser (Physical-Def)",
+     "items": [
+      {
+       "name": "Marshal",
+       "slug": "marshal"
+      },
+      {
+       "name": "Lunaria",
+       "slug": "lunaria"
+      },
+      {
+       "name": "Dynamo",
+       "slug": "dynamo"
+      }
+     ],
+     "n": 59,
+     "shrunkWr": 0.522,
+     "coreGold": 7250,
+     "spikeMinute": 21,
+     "bestObjective": "physical survivability",
+     "whyLine": "Strongest meta core for physical survivability, online around minute 21 — about 5,106 effective HP vs physical in the sim.",
+     "optimizer": null
     }
    ],
    "stages": [
@@ -1929,13 +2026,13 @@
      }
     },
     {
-     "enemy": "Narbash",
-     "enemySlug": "narbash",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Narbash deals area damage — spread out so one cast can't catch the group.",
+     "enemy": "Phase",
+     "enemySlug": "phase",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
      "checkpoints": [
       {
        "minute": 5,
-       "verdict": "even"
+       "verdict": "enemy"
       },
       {
        "minute": 10,
@@ -1968,13 +2065,13 @@
      }
     },
     {
-     "enemy": "Phase",
-     "enemySlug": "phase",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Phase's main threat is Energy Lance; bait it before you commit, and mixed resist softens the trade.",
+     "enemy": "Narbash",
+     "enemySlug": "narbash",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Narbash deals area damage — spread out so one cast can't catch the group.",
      "checkpoints": [
       {
        "minute": 5,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 10,
@@ -2014,11 +2111,11 @@
     },
     "playstyle": "ability-burst",
     "modeled": true,
-    "wr": 49.5,
-    "n": 612,
+    "wr": 50.1,
+    "n": 1406,
     "shiftIn": [],
     "shiftOut": [],
-    "provenance": "“Disc Of Demise” ⇒ ability-burst; the sim models this augment — field support 49.5% over 612 games."
+    "provenance": "“Disc Of Demise” ⇒ ability-burst; the sim models this augment — field support 50.1% over 1,406 games."
    }
   },
   {
@@ -2044,14 +2141,14 @@
       "slug": "combustion",
       "spikeMinute": 9,
       "playRatePct": 1.8,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
+      "evidenceDeltaWr": -0.6,
+      "evidenceN": 11
      },
      {
       "name": "Noxia",
       "slug": "noxia",
       "spikeMinute": 16,
-      "playRatePct": 0.4,
+      "playRatePct": 0.2,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -2059,33 +2156,33 @@
       "name": "Oblivion Crown",
       "slug": "oblivion-crown",
       "spikeMinute": 22,
-      "playRatePct": 3.6,
-      "evidenceDeltaWr": 2.8,
-      "evidenceN": 18
+      "playRatePct": 1.8,
+      "evidenceDeltaWr": -0.8,
+      "evidenceN": 11
      },
      {
       "name": "Crescelia",
       "slug": "crescelia",
       "spikeMinute": 26,
-      "playRatePct": 4.8,
-      "evidenceDeltaWr": -1,
-      "evidenceN": 24
+      "playRatePct": 5.7,
+      "evidenceDeltaWr": -0.1,
+      "evidenceN": 35
      },
      {
       "name": "Timewarp",
       "slug": "timewarp",
       "spikeMinute": 31,
-      "playRatePct": 6.2,
-      "evidenceDeltaWr": 1.4,
-      "evidenceN": 31
+      "playRatePct": 11.6,
+      "evidenceDeltaWr": -0.2,
+      "evidenceN": 71
      },
      {
       "name": "Wraith Leggings",
       "slug": "wraith-leggings",
       "spikeMinute": 36,
-      "playRatePct": 2.2,
-      "evidenceDeltaWr": 1.1,
-      "evidenceN": 11
+      "playRatePct": 0.8,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
      }
     ],
     "gold": 17850,
@@ -2598,7 +2695,19 @@
      },
      {
       "item": "Noxia",
-      "playRatePct": 0.4,
+      "playRatePct": 0.2,
+      "bestObjective": "10s rotation vs squishies",
+      "edgeVsPopularPct": 190.9
+     },
+     {
+      "item": "Oblivion Crown",
+      "playRatePct": 1.8,
+      "bestObjective": "10s rotation vs squishies",
+      "edgeVsPopularPct": 190.9
+     },
+     {
+      "item": "Wraith Leggings",
+      "playRatePct": 0.8,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 190.9
      }
@@ -2607,7 +2716,30 @@
    },
    "metaBuilds": [
     {
-     "anyOrder": true,
+     "title": "Magical Skirmisher",
+     "items": [
+      {
+       "name": "Prophecy",
+       "slug": "prophecy"
+      },
+      {
+       "name": "Orion",
+       "slug": "orion"
+      },
+      {
+       "name": "Spectra",
+       "slug": "spectra"
+      }
+     ],
+     "n": 58,
+     "shrunkWr": 0.535,
+     "coreGold": 8650,
+     "spikeMinute": 21,
+     "bestObjective": "10s rotation damage",
+     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 21 — about 578 damage over a 10s rotation in the sim.",
+     "optimizer": "Optimizer sees +77% more 10s rotation damage: try Combustion over Prophecy (sim-only — the popular pick may carry utility the sim can't see; test it)."
+    },
+    {
      "title": "Magical Skirmisher",
      "items": [
       {
@@ -2623,13 +2755,13 @@
        "slug": "orion"
       }
      ],
-     "n": 27,
-     "shrunkWr": 0.667,
+     "n": 39,
+     "shrunkWr": 0.537,
      "coreGold": 8650,
      "spikeMinute": 21,
      "bestObjective": "10s rotation damage",
      "whyLine": "Strongest meta core for 10s rotation damage, online around minute 21 — about 578 damage over a 10s rotation in the sim.",
-     "optimizer": null
+     "optimizer": "Optimizer sees +77% more 10s rotation damage: try Combustion over Prophecy (sim-only — the popular pick may carry utility the sim can't see; test it)."
     }
    ],
    "stages": [
@@ -2871,45 +3003,6 @@
      }
     },
     {
-     "enemy": "Scarlett",
-     "enemySlug": "scarlett",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Scarlett deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Crescelia",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 34,
-      "offenseLossPct": 16,
-      "line": "Losing lane? Third item Warden's Faith instead of Crescelia: their burst combo hits 34% less hard, and this kit gives up 16% of its damage for it."
-     }
-    },
-    {
      "enemy": "Aurora",
      "enemySlug": "aurora",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Aurora deals area damage — spread out so one cast can't catch the group.",
@@ -2946,6 +3039,45 @@
       "survivalGainPct": 23,
       "offenseLossPct": 16,
       "line": "Losing lane? Third item Raiment of Renewal instead of Crescelia: their burst combo hits 23% less hard, and this kit gives up 16% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Scarlett",
+     "enemySlug": "scarlett",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Scarlett deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Crescelia",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 34,
+      "offenseLossPct": 16,
+      "line": "Losing lane? Third item Warden's Faith instead of Crescelia: their burst combo hits 34% less hard, and this kit gives up 16% of its damage for it."
      }
     },
     {
@@ -2988,7 +3120,19 @@
      }
     }
    ],
-   "laneSteer": null
+   "laneSteer": {
+    "augment": {
+     "id": "142",
+     "name": "Terminal Treatment"
+    },
+    "playstyle": "on-hit",
+    "modeled": false,
+    "wr": 51.2,
+    "n": 389,
+    "shiftIn": [],
+    "shiftOut": [],
+    "provenance": "“Terminal Treatment” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field offlane 51.2% over 389 games, magnitude not simulated."
+   }
   },
   {
    "role": "midlane",
@@ -3013,14 +3157,14 @@
       "slug": "combustion",
       "spikeMinute": 9,
       "playRatePct": 1.8,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
+      "evidenceDeltaWr": -0.6,
+      "evidenceN": 11
      },
      {
       "name": "Noxia",
       "slug": "noxia",
       "spikeMinute": 15,
-      "playRatePct": 0.4,
+      "playRatePct": 0.2,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -3028,33 +3172,33 @@
       "name": "Oblivion Crown",
       "slug": "oblivion-crown",
       "spikeMinute": 22,
-      "playRatePct": 3.6,
-      "evidenceDeltaWr": 2.8,
-      "evidenceN": 18
+      "playRatePct": 1.8,
+      "evidenceDeltaWr": -0.8,
+      "evidenceN": 11
      },
      {
       "name": "Crescelia",
       "slug": "crescelia",
       "spikeMinute": 26,
-      "playRatePct": 4.8,
-      "evidenceDeltaWr": -1,
-      "evidenceN": 24
+      "playRatePct": 5.7,
+      "evidenceDeltaWr": -0.1,
+      "evidenceN": 35
      },
      {
       "name": "Timewarp",
       "slug": "timewarp",
       "spikeMinute": 31,
-      "playRatePct": 6.2,
-      "evidenceDeltaWr": 1.4,
-      "evidenceN": 31
+      "playRatePct": 11.6,
+      "evidenceDeltaWr": -0.2,
+      "evidenceN": 71
      },
      {
       "name": "Wraith Leggings",
       "slug": "wraith-leggings",
       "spikeMinute": 36,
-      "playRatePct": 2.2,
-      "evidenceDeltaWr": 1.1,
-      "evidenceN": 11
+      "playRatePct": 0.8,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
      }
     ],
     "gold": 17850,
@@ -3567,7 +3711,19 @@
      },
      {
       "item": "Noxia",
-      "playRatePct": 0.4,
+      "playRatePct": 0.2,
+      "bestObjective": "10s rotation vs squishies",
+      "edgeVsPopularPct": 190.9
+     },
+     {
+      "item": "Oblivion Crown",
+      "playRatePct": 1.8,
+      "bestObjective": "10s rotation vs squishies",
+      "edgeVsPopularPct": 190.9
+     },
+     {
+      "item": "Wraith Leggings",
+      "playRatePct": 0.8,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 190.9
      }
@@ -3576,6 +3732,7 @@
    },
    "metaBuilds": [
     {
+     "anyOrder": true,
      "title": "Magical Skirmisher",
      "items": [
       {
@@ -3583,24 +3740,25 @@
        "slug": "prophecy"
       },
       {
-       "name": "Spectra",
-       "slug": "spectra"
+       "name": "CursedRing",
+       "slug": "cursed-ring"
       },
       {
        "name": "Orion",
        "slug": "orion"
       }
      ],
-     "n": 55,
-     "shrunkWr": 0.546,
-     "coreGold": 8650,
-     "spikeMinute": 20,
+     "n": 24,
+     "shrunkWr": 0.694,
+     "coreGold": 8950,
+     "spikeMinute": 21,
      "bestObjective": "10s rotation damage",
-     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 20 — about 578 damage over a 10s rotation in the sim.",
-     "optimizer": "Optimizer sees +77% more 10s rotation damage: try Combustion over Prophecy (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 21 — about 622 damage over a 10s rotation in the sim.",
+     "optimizer": null
     },
     {
-     "title": "Magical Skirmisher",
+     "anyOrder": true,
+     "title": "Magical Burst",
      "items": [
       {
        "name": "Prophecy",
@@ -3615,13 +3773,13 @@
        "slug": "spectra"
       }
      ],
-     "n": 53,
-     "shrunkWr": 0.547,
+     "n": 24,
+     "shrunkWr": 0.681,
      "coreGold": 8650,
      "spikeMinute": 20,
-     "bestObjective": "10s rotation damage",
-     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 20 — about 578 damage over a 10s rotation in the sim.",
-     "optimizer": "Optimizer sees +77% more 10s rotation damage: try Combustion over Prophecy (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 20 — about 477 damage in one combo in the sim.",
+     "optimizer": null
     }
    ],
    "stages": [
@@ -3902,45 +4060,6 @@
      }
     },
     {
-     "enemy": "Iggy & Scorch",
-     "enemySlug": "iggy-scorch",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Iggy & Scorch deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Crescelia",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 24,
-      "offenseLossPct": 15,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Crescelia: their burst combo hits 24% less hard, and this kit gives up 15% of its damage for it."
-     }
-    },
-    {
      "enemy": "Argus",
      "enemySlug": "argus",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Argus deals area damage — spread out so one cast can't catch the group.",
@@ -3977,6 +4096,45 @@
       "survivalGainPct": 25,
       "offenseLossPct": 15,
       "line": "Losing lane? Third item Raiment of Renewal instead of Crescelia: their burst combo hits 25% less hard, and this kit gives up 15% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Iggy & Scorch",
+     "enemySlug": "iggy-scorch",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Iggy & Scorch deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Crescelia",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 24,
+      "offenseLossPct": 15,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Crescelia: their burst combo hits 24% less hard, and this kit gives up 15% of its damage for it."
      }
     }
    ],

@@ -90,7 +90,14 @@ describe('hero-page coach lines (copy pass, item 8)', () => {
           // Whole-name match: "Spectra" is an item AND the head of the item
           // "Spectral Schematics", so a substring test flags every lane that
           // builds the latter.
-          const named = new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`).test(text);
+          // A whole word can still be the TAIL of a longer item: "Scepter" is
+          // an item and the end of "Tainted Scepter". Mask the longer names
+          // that contain this one before testing, so only a standalone mention
+          // counts (2026-10-18: three correct Tainted Scepter lines flagged).
+          const word = (n: string) => new RegExp(`\\b${n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'g');
+          let rest = text;
+          for (const longer of vocab) if (longer !== name && longer.length > name.length && word(name).test(longer)) rest = rest.replace(word(longer), ' ');
+          const named = word(name).test(rest);
           if (name.length > 4 && named && !build.has(name)) {
             wrong.push(`${a.slug}/${rv.role}: coaches "${name}", which is not in this lane's build`);
           }

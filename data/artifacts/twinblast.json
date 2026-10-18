@@ -10,7 +10,8 @@
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
-   "this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check"
+   "this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check",
+   "the sim opens on Sky Splitter, which the field has tried and lost with (-0.2% winrate over 153 games) — treat this opener as a sim blind-spot and weight the field"
   ]
  },
  "build": {
@@ -20,49 +21,49 @@
     "name": "Sky Splitter",
     "slug": "sky-splitter",
     "spikeMinute": 9,
-    "playRatePct": 18.7,
-    "evidenceDeltaWr": 2.4,
-    "evidenceN": 176
+    "playRatePct": 17.8,
+    "evidenceDeltaWr": -0.2,
+    "evidenceN": 153
    },
    {
     "name": "Viper",
     "slug": "viper",
     "spikeMinute": 16,
-    "playRatePct": 5.7,
-    "evidenceDeltaWr": 2.5,
-    "evidenceN": 54
+    "playRatePct": 3.7,
+    "evidenceDeltaWr": -8.7,
+    "evidenceN": 32
    },
    {
     "name": "Deathstalker",
     "slug": "deathstalker",
     "spikeMinute": 22,
-    "playRatePct": 4,
-    "evidenceDeltaWr": -0.7,
-    "evidenceN": 38
+    "playRatePct": 2.1,
+    "evidenceDeltaWr": -3.8,
+    "evidenceN": 18
    },
    {
     "name": "Plasma Blade",
     "slug": "plasma-blade",
     "spikeMinute": 27,
-    "playRatePct": 2,
-    "evidenceDeltaWr": 2,
-    "evidenceN": 19
+    "playRatePct": 1.6,
+    "evidenceDeltaWr": -2.6,
+    "evidenceN": 14
    },
    {
     "name": "Imperator",
     "slug": "imperator",
-    "spikeMinute": 33,
-    "playRatePct": 37.2,
-    "evidenceDeltaWr": 3.2,
-    "evidenceN": 350
+    "spikeMinute": 32,
+    "playRatePct": 38.9,
+    "evidenceDeltaWr": 2.9,
+    "evidenceN": 334
    },
    {
     "name": "Tainted Rounds",
     "slug": "tainted-rounds",
     "spikeMinute": 37,
-    "playRatePct": 36.6,
-    "evidenceDeltaWr": 1.4,
-    "evidenceN": 344
+    "playRatePct": 36.9,
+    "evidenceDeltaWr": 4.2,
+    "evidenceN": 317
    }
   ],
   "gold": 18600,
@@ -573,12 +574,19 @@
   }
  ],
  "offMeta": {
-  "candidates": [],
-  "honestAbsence": "no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)"
+  "candidates": [
+   {
+    "item": "Plasma Blade",
+    "playRatePct": 1.6,
+    "bestObjective": "sustained auto DPS",
+    "edgeVsPopularPct": 53.9
+   }
+  ],
+  "honestAbsence": null
  },
  "metaBuilds": [
   {
-   "title": "Crit Brawler",
+   "title": "Crit Skirmisher",
    "items": [
     {
      "name": "Solaris",
@@ -593,13 +601,13 @@
      "slug": "imperator"
     }
    ],
-   "n": 141,
-   "shrunkWr": 0.573,
+   "n": 453,
+   "shrunkWr": 0.515,
    "coreGold": 9400,
    "spikeMinute": 22,
-   "bestObjective": "extended fights vs bruisers",
-   "whyLine": "Strongest meta core for extended fights vs bruisers, online around minute 22 — about 1,311 damage over a 20s fight in the sim.",
-   "optimizer": "Optimizer agrees: within 6% of our best core on extended fights vs bruisers. The winrate is earned, not luck."
+   "bestObjective": "10s rotation damage",
+   "whyLine": "Strongest meta core for 10s rotation damage, online around minute 22 — about 969 damage over a 10s rotation in the sim.",
+   "optimizer": null
   },
   {
    "title": "Crit DPS Carry",
@@ -617,8 +625,8 @@
      "slug": "vanquisher"
     }
    ],
-   "n": 79,
-   "shrunkWr": 0.567,
+   "n": 250,
+   "shrunkWr": 0.522,
    "coreGold": 9200,
    "spikeMinute": 22,
    "bestObjective": "sustained auto DPS",
@@ -626,7 +634,7 @@
    "optimizer": "Optimizer sees +64% more sustained auto DPS: try Sky Splitter over Solaris (sim-only — the popular pick may carry utility the sim can't see; test it)."
   },
   {
-   "title": "Crit Burst",
+   "title": "Crit DPS Carry",
    "items": [
     {
      "name": "Solaris",
@@ -637,17 +645,17 @@
      "slug": "vanquisher"
     },
     {
-     "name": "Imperator",
-     "slug": "imperator"
+     "name": "TaintedRounds",
+     "slug": "tainted-rounds"
     }
    ],
-   "n": 70,
-   "shrunkWr": 0.562,
-   "coreGold": 9600,
-   "spikeMinute": 23,
-   "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 23 — about 879 damage in one combo in the sim.",
-   "optimizer": null
+   "n": 213,
+   "shrunkWr": 0.525,
+   "coreGold": 9200,
+   "spikeMinute": 22,
+   "bestObjective": "sustained auto DPS",
+   "whyLine": "Strongest meta core for sustained auto DPS, online around minute 22 — about 190 auto-attack DPS in the sim.",
+   "optimizer": "Optimizer sees +64% more sustained auto DPS: try Sky Splitter over Solaris (sim-only — the popular pick may carry utility the sim can't see; test it)."
   }
  ],
  "stages": [
@@ -767,45 +775,6 @@
  ],
  "matchups": [
   {
-   "enemy": "Legion",
-   "enemySlug": "legion",
-   "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Legion deals area damage — spread out so one cast can't catch the group.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "you"
-    },
-    {
-     "minute": 10,
-     "verdict": "you"
-    },
-    {
-     "minute": 15,
-     "verdict": "even"
-    },
-    {
-     "minute": 20,
-     "verdict": "you"
-    },
-    {
-     "minute": 25,
-     "verdict": "you"
-    },
-    {
-     "minute": 30,
-     "verdict": "you"
-    }
-   ],
-   "counterSwap": {
-    "out": "Deathstalker",
-    "in": "Warden's Faith",
-    "inSlug": "wardens-faith",
-    "survivalGainPct": 29,
-    "offenseLossPct": 28,
-    "line": "Losing lane? Third item Warden's Faith instead of Deathstalker: their burst combo hits 29% less hard, and this kit gives up 28% of its damage for it."
-   }
-  },
-  {
    "enemy": "Sparrow",
    "enemySlug": "sparrow",
    "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Sparrow deals area damage — spread out so one cast can't catch the group.",
@@ -845,9 +814,9 @@
    }
   },
   {
-   "enemy": "Murdock",
-   "enemySlug": "murdock",
-   "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Murdock deals area damage — spread out so one cast can't catch the group.",
+   "enemy": "Legion",
+   "enemySlug": "legion",
+   "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Legion deals area damage — spread out so one cast can't catch the group.",
    "checkpoints": [
     {
      "minute": 5,
@@ -855,32 +824,32 @@
     },
     {
      "minute": 10,
-     "verdict": "enemy"
+     "verdict": "you"
     },
     {
      "minute": 15,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 20,
-     "verdict": "enemy"
+     "verdict": "you"
     },
     {
      "minute": 25,
-     "verdict": "enemy"
+     "verdict": "you"
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "you"
     }
    ],
    "counterSwap": {
     "out": "Deathstalker",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 24,
+    "in": "Warden's Faith",
+    "inSlug": "wardens-faith",
+    "survivalGainPct": 29,
     "offenseLossPct": 28,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their burst combo hits 24% less hard, and this kit gives up 28% of its damage for it."
+    "line": "Losing lane? Third item Warden's Faith instead of Deathstalker: their burst combo hits 29% less hard, and this kit gives up 28% of its damage for it."
    }
   },
   {
@@ -911,6 +880,45 @@
     {
      "minute": 30,
      "verdict": "even"
+    }
+   ],
+   "counterSwap": {
+    "out": "Deathstalker",
+    "in": "Raiment of Renewal",
+    "inSlug": "raiment-of-renewal",
+    "survivalGainPct": 24,
+    "offenseLossPct": 28,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their burst combo hits 24% less hard, and this kit gives up 28% of its damage for it."
+   }
+  },
+  {
+   "enemy": "Murdock",
+   "enemySlug": "murdock",
+   "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Murdock deals area damage — spread out so one cast can't catch the group.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "you"
+    },
+    {
+     "minute": 10,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 15,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 20,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 25,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 30,
+     "verdict": "enemy"
     }
    ],
    "counterSwap": {
@@ -1008,8 +1016,8 @@
   },
   "playstyle": "poke",
   "modeled": false,
-  "wr": 52.1,
-  "n": 2299,
+  "wr": 50.3,
+  "n": 4910,
   "shiftIn": [
    "Mutilator",
    "The Perforator",
@@ -1026,12 +1034,12 @@
    "Imperator",
    "Tainted Rounds"
   ],
-  "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 52.1% over 2,299 games, magnitude not simulated."
+  "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 50.3% over 4,910 games, magnitude not simulated."
  },
  "slug": "twinblast",
  "name": "TwinBlast",
  "patch": "1.15.3/1.15.4",
- "generatedAt": "2026-10-16T16:47:46.955Z",
+ "generatedAt": "2026-10-18T21:27:49.050Z",
  "damageType": "hybrid",
  "attackType": "ranged",
  "laneFlex": [
@@ -1043,8 +1051,8 @@
    },
    "playstyle": "poke",
    "modeled": false,
-   "wr": 52.1,
-   "n": 2299,
+   "wr": 50.3,
+   "n": 4910,
    "core": [
     {
      "name": "Mutilator",
@@ -1072,7 +1080,7 @@
     }
    ],
    "headline": "skirmish uptime",
-   "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 52.1% over 2,299 games, magnitude not simulated."
+   "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 50.3% over 4,910 games, magnitude not simulated."
   }
  ],
  "roles": [
@@ -1088,7 +1096,8 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check"
+     "this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check",
+     "the sim opens on Sky Splitter, which the field has tried and lost with (-0.2% winrate over 153 games) — treat this opener as a sim blind-spot and weight the field"
     ]
    },
    "build": {
@@ -1098,49 +1107,49 @@
       "name": "Sky Splitter",
       "slug": "sky-splitter",
       "spikeMinute": 9,
-      "playRatePct": 18.7,
-      "evidenceDeltaWr": 2.4,
-      "evidenceN": 176
+      "playRatePct": 17.8,
+      "evidenceDeltaWr": -0.2,
+      "evidenceN": 153
      },
      {
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 16,
-      "playRatePct": 5.7,
-      "evidenceDeltaWr": 2.5,
-      "evidenceN": 54
+      "playRatePct": 3.7,
+      "evidenceDeltaWr": -8.7,
+      "evidenceN": 32
      },
      {
       "name": "Deathstalker",
       "slug": "deathstalker",
       "spikeMinute": 22,
-      "playRatePct": 4,
-      "evidenceDeltaWr": -0.7,
-      "evidenceN": 38
+      "playRatePct": 2.1,
+      "evidenceDeltaWr": -3.8,
+      "evidenceN": 18
      },
      {
       "name": "Plasma Blade",
       "slug": "plasma-blade",
       "spikeMinute": 27,
-      "playRatePct": 2,
-      "evidenceDeltaWr": 2,
-      "evidenceN": 19
+      "playRatePct": 1.6,
+      "evidenceDeltaWr": -2.6,
+      "evidenceN": 14
      },
      {
       "name": "Imperator",
       "slug": "imperator",
-      "spikeMinute": 33,
-      "playRatePct": 37.2,
-      "evidenceDeltaWr": 3.2,
-      "evidenceN": 350
+      "spikeMinute": 32,
+      "playRatePct": 38.9,
+      "evidenceDeltaWr": 2.9,
+      "evidenceN": 334
      },
      {
       "name": "Tainted Rounds",
       "slug": "tainted-rounds",
       "spikeMinute": 37,
-      "playRatePct": 36.6,
-      "evidenceDeltaWr": 1.4,
-      "evidenceN": 344
+      "playRatePct": 36.9,
+      "evidenceDeltaWr": 4.2,
+      "evidenceN": 317
      }
     ],
     "gold": 18600,
@@ -1651,12 +1660,19 @@
     }
    ],
    "offMeta": {
-    "candidates": [],
-    "honestAbsence": "no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)"
+    "candidates": [
+     {
+      "item": "Plasma Blade",
+      "playRatePct": 1.6,
+      "bestObjective": "sustained auto DPS",
+      "edgeVsPopularPct": 53.9
+     }
+    ],
+    "honestAbsence": null
    },
    "metaBuilds": [
     {
-     "title": "Crit Brawler",
+     "title": "Crit Skirmisher",
      "items": [
       {
        "name": "Solaris",
@@ -1671,13 +1687,13 @@
        "slug": "imperator"
       }
      ],
-     "n": 141,
-     "shrunkWr": 0.573,
+     "n": 453,
+     "shrunkWr": 0.515,
      "coreGold": 9400,
      "spikeMinute": 22,
-     "bestObjective": "extended fights vs bruisers",
-     "whyLine": "Strongest meta core for extended fights vs bruisers, online around minute 22 — about 1,311 damage over a 20s fight in the sim.",
-     "optimizer": "Optimizer agrees: within 6% of our best core on extended fights vs bruisers. The winrate is earned, not luck."
+     "bestObjective": "10s rotation damage",
+     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 22 — about 969 damage over a 10s rotation in the sim.",
+     "optimizer": null
     },
     {
      "title": "Crit DPS Carry",
@@ -1695,8 +1711,8 @@
        "slug": "vanquisher"
       }
      ],
-     "n": 79,
-     "shrunkWr": 0.567,
+     "n": 250,
+     "shrunkWr": 0.522,
      "coreGold": 9200,
      "spikeMinute": 22,
      "bestObjective": "sustained auto DPS",
@@ -1704,7 +1720,7 @@
      "optimizer": "Optimizer sees +64% more sustained auto DPS: try Sky Splitter over Solaris (sim-only — the popular pick may carry utility the sim can't see; test it)."
     },
     {
-     "title": "Crit Burst",
+     "title": "Crit DPS Carry",
      "items": [
       {
        "name": "Solaris",
@@ -1715,17 +1731,17 @@
        "slug": "vanquisher"
       },
       {
-       "name": "Imperator",
-       "slug": "imperator"
+       "name": "TaintedRounds",
+       "slug": "tainted-rounds"
       }
      ],
-     "n": 70,
-     "shrunkWr": 0.562,
-     "coreGold": 9600,
-     "spikeMinute": 23,
-     "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 23 — about 879 damage in one combo in the sim.",
-     "optimizer": null
+     "n": 213,
+     "shrunkWr": 0.525,
+     "coreGold": 9200,
+     "spikeMinute": 22,
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 22 — about 190 auto-attack DPS in the sim.",
+     "optimizer": "Optimizer sees +64% more sustained auto DPS: try Sky Splitter over Solaris (sim-only — the popular pick may carry utility the sim can't see; test it)."
     }
    ],
    "stages": [
@@ -1845,45 +1861,6 @@
    ],
    "matchups": [
     {
-     "enemy": "Legion",
-     "enemySlug": "legion",
-     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Legion deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "you"
-      },
-      {
-       "minute": 10,
-       "verdict": "you"
-      },
-      {
-       "minute": 15,
-       "verdict": "even"
-      },
-      {
-       "minute": 20,
-       "verdict": "you"
-      },
-      {
-       "minute": 25,
-       "verdict": "you"
-      },
-      {
-       "minute": 30,
-       "verdict": "you"
-      }
-     ],
-     "counterSwap": {
-      "out": "Deathstalker",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 29,
-      "offenseLossPct": 28,
-      "line": "Losing lane? Third item Warden's Faith instead of Deathstalker: their burst combo hits 29% less hard, and this kit gives up 28% of its damage for it."
-     }
-    },
-    {
      "enemy": "Sparrow",
      "enemySlug": "sparrow",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Sparrow deals area damage — spread out so one cast can't catch the group.",
@@ -1923,9 +1900,9 @@
      }
     },
     {
-     "enemy": "Murdock",
-     "enemySlug": "murdock",
-     "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Murdock deals area damage — spread out so one cast can't catch the group.",
+     "enemy": "Legion",
+     "enemySlug": "legion",
+     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Legion deals area damage — spread out so one cast can't catch the group.",
      "checkpoints": [
       {
        "minute": 5,
@@ -1933,32 +1910,32 @@
       },
       {
        "minute": 10,
-       "verdict": "enemy"
+       "verdict": "you"
       },
       {
        "minute": 15,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 20,
-       "verdict": "enemy"
+       "verdict": "you"
       },
       {
        "minute": 25,
-       "verdict": "enemy"
+       "verdict": "you"
       },
       {
        "minute": 30,
-       "verdict": "enemy"
+       "verdict": "you"
       }
      ],
      "counterSwap": {
       "out": "Deathstalker",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 24,
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 29,
       "offenseLossPct": 28,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their burst combo hits 24% less hard, and this kit gives up 28% of its damage for it."
+      "line": "Losing lane? Third item Warden's Faith instead of Deathstalker: their burst combo hits 29% less hard, and this kit gives up 28% of its damage for it."
      }
     },
     {
@@ -1989,6 +1966,45 @@
       {
        "minute": 30,
        "verdict": "even"
+      }
+     ],
+     "counterSwap": {
+      "out": "Deathstalker",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 24,
+      "offenseLossPct": 28,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their burst combo hits 24% less hard, and this kit gives up 28% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Murdock",
+     "enemySlug": "murdock",
+     "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Murdock deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "you"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
       }
      ],
      "counterSwap": {
@@ -2086,8 +2102,8 @@
     },
     "playstyle": "poke",
     "modeled": false,
-    "wr": 52.1,
-    "n": 2299,
+    "wr": 50.3,
+    "n": 4910,
     "shiftIn": [
      "Mutilator",
      "The Perforator",
@@ -2104,7 +2120,7 @@
      "Imperator",
      "Tainted Rounds"
     ],
-    "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 52.1% over 2,299 games, magnitude not simulated."
+    "provenance": "“Amplified Burst” ⇒ poke; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 50.3% over 4,910 games, magnitude not simulated."
    }
   },
   {
@@ -2119,7 +2135,8 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check"
+     "this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check",
+     "the sim opens on Sky Splitter, which the field has tried and lost with (-0.2% winrate over 153 games) — treat this opener as a sim blind-spot and weight the field"
     ]
    },
    "build": {
@@ -2129,49 +2146,49 @@
       "name": "Sky Splitter",
       "slug": "sky-splitter",
       "spikeMinute": 9,
-      "playRatePct": 18.7,
-      "evidenceDeltaWr": 2.4,
-      "evidenceN": 176
+      "playRatePct": 17.8,
+      "evidenceDeltaWr": -0.2,
+      "evidenceN": 153
      },
      {
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 16,
-      "playRatePct": 5.7,
-      "evidenceDeltaWr": 2.5,
-      "evidenceN": 54
+      "playRatePct": 3.7,
+      "evidenceDeltaWr": -8.7,
+      "evidenceN": 32
      },
      {
       "name": "Deathstalker",
       "slug": "deathstalker",
       "spikeMinute": 22,
-      "playRatePct": 4,
-      "evidenceDeltaWr": -0.7,
-      "evidenceN": 38
+      "playRatePct": 2.1,
+      "evidenceDeltaWr": -3.8,
+      "evidenceN": 18
      },
      {
       "name": "Plasma Blade",
       "slug": "plasma-blade",
       "spikeMinute": 27,
-      "playRatePct": 2,
-      "evidenceDeltaWr": 2,
-      "evidenceN": 19
+      "playRatePct": 1.6,
+      "evidenceDeltaWr": -2.6,
+      "evidenceN": 14
      },
      {
       "name": "Imperator",
       "slug": "imperator",
       "spikeMinute": 33,
-      "playRatePct": 37.2,
-      "evidenceDeltaWr": 3.2,
-      "evidenceN": 350
+      "playRatePct": 38.9,
+      "evidenceDeltaWr": 2.9,
+      "evidenceN": 334
      },
      {
       "name": "Tainted Rounds",
       "slug": "tainted-rounds",
       "spikeMinute": 38,
-      "playRatePct": 36.6,
-      "evidenceDeltaWr": 1.4,
-      "evidenceN": 344
+      "playRatePct": 36.9,
+      "evidenceDeltaWr": 4.2,
+      "evidenceN": 317
      }
     ],
     "gold": 18600,
@@ -2682,8 +2699,15 @@
     }
    ],
    "offMeta": {
-    "candidates": [],
-    "honestAbsence": "no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)"
+    "candidates": [
+     {
+      "item": "Plasma Blade",
+      "playRatePct": 1.6,
+      "bestObjective": "sustained auto DPS",
+      "edgeVsPopularPct": 53.9
+     }
+    ],
+    "honestAbsence": null
    },
    "metaBuilds": [
     {
@@ -2702,8 +2726,8 @@
        "slug": "imperator"
       }
      ],
-     "n": 146,
-     "shrunkWr": 0.56,
+     "n": 467,
+     "shrunkWr": 0.516,
      "coreGold": 9400,
      "spikeMinute": 22,
      "bestObjective": "10s rotation damage",
@@ -2726,8 +2750,8 @@
        "slug": "vanquisher"
       }
      ],
-     "n": 81,
-     "shrunkWr": 0.553,
+     "n": 255,
+     "shrunkWr": 0.52,
      "coreGold": 9200,
      "spikeMinute": 22,
      "bestObjective": "sustained auto DPS",
@@ -2735,7 +2759,7 @@
      "optimizer": "Optimizer sees +64% more sustained auto DPS: try Sky Splitter over Solaris (sim-only — the popular pick may carry utility the sim can't see; test it)."
     },
     {
-     "title": "Crit Burst",
+     "title": "Crit DPS Carry",
      "items": [
       {
        "name": "Solaris",
@@ -2746,17 +2770,17 @@
        "slug": "vanquisher"
       },
       {
-       "name": "Imperator",
-       "slug": "imperator"
+       "name": "TaintedRounds",
+       "slug": "tainted-rounds"
       }
      ],
-     "n": 71,
-     "shrunkWr": 0.549,
-     "coreGold": 9600,
+     "n": 217,
+     "shrunkWr": 0.523,
+     "coreGold": 9200,
      "spikeMinute": 22,
-     "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 879 damage in one combo in the sim.",
-     "optimizer": null
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 22 — about 190 auto-attack DPS in the sim.",
+     "optimizer": "Optimizer sees +64% more sustained auto DPS: try Sky Splitter over Solaris (sim-only — the popular pick may carry utility the sim can't see; test it)."
     }
    ],
    "stages": [
@@ -2993,6 +3017,45 @@
      }
     },
     {
+     "enemy": "Aurora",
+     "enemySlug": "aurora",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Aurora deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "even"
+      },
+      {
+       "minute": 30,
+       "verdict": "even"
+      }
+     ],
+     "counterSwap": {
+      "out": "Deathstalker",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 23,
+      "offenseLossPct": 28,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their burst combo hits 23% less hard, and this kit gives up 28% of its damage for it."
+     }
+    },
+    {
      "enemy": "Scarlett",
      "enemySlug": "scarlett",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Scarlett deals area damage — spread out so one cast can't catch the group.",
@@ -3029,45 +3092,6 @@
       "survivalGainPct": 33,
       "offenseLossPct": 28,
       "line": "Losing lane? Third item Warden's Faith instead of Deathstalker: their burst combo hits 33% less hard, and this kit gives up 28% of its damage for it."
-     }
-    },
-    {
-     "enemy": "Aurora",
-     "enemySlug": "aurora",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Aurora deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "even"
-      }
-     ],
-     "counterSwap": {
-      "out": "Deathstalker",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 23,
-      "offenseLossPct": 28,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their burst combo hits 23% less hard, and this kit gives up 28% of its damage for it."
      }
     },
     {
@@ -3124,7 +3148,8 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check"
+     "this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check",
+     "the sim opens on Sky Splitter, which the field has tried and lost with (-0.2% winrate over 153 games) — treat this opener as a sim blind-spot and weight the field"
     ]
    },
    "build": {
@@ -3134,49 +3159,49 @@
       "name": "Sky Splitter",
       "slug": "sky-splitter",
       "spikeMinute": 9,
-      "playRatePct": 18.7,
-      "evidenceDeltaWr": 2.4,
-      "evidenceN": 176
+      "playRatePct": 17.8,
+      "evidenceDeltaWr": -0.2,
+      "evidenceN": 153
      },
      {
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 16,
-      "playRatePct": 5.7,
-      "evidenceDeltaWr": 2.5,
-      "evidenceN": 54
+      "playRatePct": 3.7,
+      "evidenceDeltaWr": -8.7,
+      "evidenceN": 32
      },
      {
       "name": "Deathstalker",
       "slug": "deathstalker",
       "spikeMinute": 21,
-      "playRatePct": 4,
-      "evidenceDeltaWr": -0.7,
-      "evidenceN": 38
+      "playRatePct": 2.1,
+      "evidenceDeltaWr": -3.8,
+      "evidenceN": 18
      },
      {
       "name": "Plasma Blade",
       "slug": "plasma-blade",
       "spikeMinute": 27,
-      "playRatePct": 2,
-      "evidenceDeltaWr": 2,
-      "evidenceN": 19
+      "playRatePct": 1.6,
+      "evidenceDeltaWr": -2.6,
+      "evidenceN": 14
      },
      {
       "name": "Imperator",
       "slug": "imperator",
       "spikeMinute": 32,
-      "playRatePct": 37.2,
-      "evidenceDeltaWr": 3.2,
-      "evidenceN": 350
+      "playRatePct": 38.9,
+      "evidenceDeltaWr": 2.9,
+      "evidenceN": 334
      },
      {
       "name": "Tainted Rounds",
       "slug": "tainted-rounds",
       "spikeMinute": 37,
-      "playRatePct": 36.6,
-      "evidenceDeltaWr": 1.4,
-      "evidenceN": 344
+      "playRatePct": 36.9,
+      "evidenceDeltaWr": 4.2,
+      "evidenceN": 317
      }
     ],
     "gold": 18600,
@@ -3687,8 +3712,15 @@
     }
    ],
    "offMeta": {
-    "candidates": [],
-    "honestAbsence": "no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)"
+    "candidates": [
+     {
+      "item": "Plasma Blade",
+      "playRatePct": 1.6,
+      "bestObjective": "sustained auto DPS",
+      "edgeVsPopularPct": 53.9
+     }
+    ],
+    "honestAbsence": null
    },
    "metaBuilds": [
     {
@@ -3707,8 +3739,8 @@
        "slug": "imperator"
       }
      ],
-     "n": 146,
-     "shrunkWr": 0.56,
+     "n": 467,
+     "shrunkWr": 0.516,
      "coreGold": 9400,
      "spikeMinute": 22,
      "bestObjective": "10s rotation damage",
@@ -3731,8 +3763,8 @@
        "slug": "vanquisher"
       }
      ],
-     "n": 81,
-     "shrunkWr": 0.553,
+     "n": 255,
+     "shrunkWr": 0.52,
      "coreGold": 9200,
      "spikeMinute": 21,
      "bestObjective": "sustained auto DPS",
@@ -3740,7 +3772,7 @@
      "optimizer": "Optimizer sees +64% more sustained auto DPS: try Sky Splitter over Solaris (sim-only — the popular pick may carry utility the sim can't see; test it)."
     },
     {
-     "title": "Crit Burst",
+     "title": "Crit DPS Carry",
      "items": [
       {
        "name": "Solaris",
@@ -3751,17 +3783,17 @@
        "slug": "vanquisher"
       },
       {
-       "name": "Imperator",
-       "slug": "imperator"
+       "name": "TaintedRounds",
+       "slug": "tainted-rounds"
       }
      ],
-     "n": 71,
-     "shrunkWr": 0.549,
-     "coreGold": 9600,
-     "spikeMinute": 22,
-     "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 22 — about 879 damage in one combo in the sim.",
-     "optimizer": null
+     "n": 217,
+     "shrunkWr": 0.523,
+     "coreGold": 9200,
+     "spikeMinute": 21,
+     "bestObjective": "sustained auto DPS",
+     "whyLine": "Strongest meta core for sustained auto DPS, online around minute 21 — about 190 auto-attack DPS in the sim.",
+     "optimizer": "Optimizer sees +64% more sustained auto DPS: try Sky Splitter over Solaris (sim-only — the popular pick may carry utility the sim can't see; test it)."
     }
    ],
    "stages": [
@@ -4037,45 +4069,6 @@
      }
     },
     {
-     "enemy": "Iggy & Scorch",
-     "enemySlug": "iggy-scorch",
-     "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Iggy & Scorch deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "you"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Deathstalker",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 23,
-      "offenseLossPct": 28,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their burst combo hits 23% less hard, and this kit gives up 28% of its damage for it."
-     }
-    },
-    {
      "enemy": "Argus",
      "enemySlug": "argus",
      "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Argus deals area damage — spread out so one cast can't catch the group.",
@@ -4112,6 +4105,45 @@
       "survivalGainPct": 24,
       "offenseLossPct": 29,
       "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their burst combo hits 24% less hard, and this kit gives up 29% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Iggy & Scorch",
+     "enemySlug": "iggy-scorch",
+     "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Iggy & Scorch deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "you"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Deathstalker",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 23,
+      "offenseLossPct": 28,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Deathstalker: their burst combo hits 23% less hard, and this kit gives up 28% of its damage for it."
      }
     }
    ],
