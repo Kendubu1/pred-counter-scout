@@ -77,7 +77,11 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    predgg-builds.json (core builds from each player's purchase order).
    Then `npm run aggregate && npm run matchups:feed` — the pred.gg match samples
    (gold curves + item play rates; same-role head-to-head lanes, resumed
-   incrementally inside the current patch family).
+   incrementally inside the current patch family). Then `npm run checkpoints`
+   — re-derives the checkpoint gold in engine/fixtures/calibration.json from
+   the new snapshot. Required: the harness holds that fixture within 15 gold of
+   its snapshot, and the medians drift daily (2026-10-18 refresh went red on
+   midlane@15, 6062 vs 6081, before this step existed).
 5. `npm run artifacts && npm run matrix && npm run agreement` — fold the fresh
    evidence into the hero pages and boards.
 6. `npm test` — commit ONLY on green.

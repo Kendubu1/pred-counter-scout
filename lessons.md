@@ -4991,3 +4991,18 @@ purchase with its gameTime, so `itemTimeline` (estimated from gold curves) could
 become measured.
 Lesson: a label that names a thing ("eternal") but shows a recommendation reads
 as a fact about the game; label recommendations as recommendations.
+
+## 2026-10-18 — The daily refresh needs to re-derive the checkpoint gold
+
+The first credentialed daily run pulled 2½ days of matches cleanly and then
+went red: `aggregate` wrote a new gold-curve snapshot, but the checkpoint gold
+in engine/fixtures/calibration.json was still the hand-derived 2026-10-14
+table, and the binding gate (within 15 gold of its source) caught midlane@15 at
+6062 vs 6081. The gate is right — the fixture must track its source — but
+nothing re-derived it, so every daily run would have failed the same way. The
+worker correctly refused to commit on red and to edit the engine. New
+`npm run checkpoints` (src/ingest/checkpoint-gold.ts) rewrites the gold column
+and its source note from the latest snapshot (levels untouched: provisional);
+it runs after `aggregate` and before `artifacts`, since the sim reads it.
+Lesson: a gate that binds a fixture to refreshed data needs the refresh to own
+the re-derivation, or the gate becomes a daily outage.
