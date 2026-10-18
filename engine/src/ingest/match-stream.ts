@@ -23,9 +23,11 @@ export const epoch = (s: string) => Math.floor(Date.parse(`${s.replace(' ', 'T')
 // null = the stream is refusing us right now (HTTP 403/429 that outlasts the
 // backoff). Seen 2026-10-14 after ~800 back-to-back pages at a 1s delay: a
 // temporary 403 that cleared within minutes. The caller saves and stops; the
-// next run resumes.
+// next run resumes. The ladder runs to ~38 minutes in total (1/2/5/10/20) —
+// on 2026-10-18 a block outlasted the old 8-minute ladder and ended the daily
+// run 2.5 days behind; waiting is cheap, a stopped run costs a day.
 export async function fetchPage(since: number): Promise<any[] | null> {
-  const throttleWaits = [60_000, 120_000, 300_000];
+  const throttleWaits = [60_000, 120_000, 300_000, 600_000, 1_200_000];
   let throttled = 0;
   for (let attempt = 0; attempt < 8; attempt++) {
     try {
