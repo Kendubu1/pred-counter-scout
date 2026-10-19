@@ -913,7 +913,11 @@ function pgReview(f) {
     const next = focus?.action ? card(`${eyebrow('Next game', '')}<p style="font-size:1rem;line-height:1.5;margin:0">${esc(focus.action)}</p>`) : '';
     const players = card(`${eyebrow('Your team', '')}${us.map((p) => `<div class="plobby">
       <div class="who">${hIcon(p.heroSlug, 34)}<span><b>${pgName(p)}</b><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span></span></div>
-      <div class="line">${co.perPlayer?.[p.pid] ? esc(co.perPlayer[p.pid]) : 'Individual feedback has not been written for this player.'}</div>
+      <div class="line">${(() => {
+        const actions = co.microReads?.[p.pid];
+        if (actions?.keep || actions?.change) return `${actions.keep ? `<p style="margin:0 0 .5rem"><b style="color:var(--green)">Keep:</b> ${esc(actions.keep)}</p>` : ''}${actions.change ? `<p style="margin:0"><b style="color:var(--gold)">Change:</b> ${esc(actions.change)}</p>` : ''}`;
+        return co.perPlayer?.[p.pid] ? esc(co.perPlayer[p.pid]) : 'Individual feedback has not been written for this player.';
+      })()}</div>
     </div>`).join('')}`);
     const loadouts = card(`${eyebrow('Builds & recorded loadouts', '')}${us.map((p) => {
       const br = co.buildReads?.[p.pid];

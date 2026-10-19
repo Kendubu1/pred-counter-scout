@@ -7,3 +7,5 @@ From `engine/`, run `npm run coach:preset -- classic-v0` to switch instructions 
 Restoration replaces only coaching for matches in the selected snapshot; current players, facts, events and other metadata survive. All inputs are validated before writing. Missing snapshots or invalid match/player identities fail without writes. Disk failures during writing are not transactional; retain version control. Other matches remain untouched.
 
 Snapshots live under `data/coaching/review-presets/` with `id`, `sourceCommit`, `note`, and `reviews` keyed by match ID. All three snapshots include the five newest matches from the October 19 release. Selecting a preset does not regenerate copy or fetch data. Both prompt generators and agent directives load the active profile; intentionally empty concise ranking/verdicts/microReads/whatShiftedIt/whatWorked are permitted.
+
+Active `blunt-actions-v3` renders optional Keep and Change actions instead of each player paragraph. Empty actions are omitted; no praise or criticism is forced. The first five matches have a saved v3 snapshot, and v2 remains available for rollback.

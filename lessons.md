@@ -5056,3 +5056,7 @@ these saved match reviews. Draft branch only; no merge or deployment.
 Whole-match coaching now has one verdict, one team action and one distinct note per player. Main prose avoids stat ledgers, exact timestamps and internal audit caveats; the facts stay in collapsed evidence. Three saved persona versions separate style selection from optional restoration of authored coaching, which preserves match facts. Five newest matches were rewritten; older reports use the layout but are not represented as newly authored.
 
 Validation: 278 tests across 41 files, TypeScript, numeric grounding of 108 strings, independent critique 0/93 flagged, browser checks of all five concise reports, and actual five-match rollback through all three saved profiles passed. Match facts remain unchanged.
+
+## 2026-10-19 — restore actionable player feedback
+
+Concise does not mean removing useful Keep/Change signposts. Five latest reviews now show those optional actions instead of a repeated paragraph. Independent review corrected inferred ward locations and assumed repeated death causes. Earlier tone snapshots remain preserved.
