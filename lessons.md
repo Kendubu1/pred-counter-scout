@@ -5017,3 +5017,15 @@ The sync is now fetch → `git stash push -u` for any leftovers (reversible) →
 `git merge --ff-only`. Lesson: an unattended job's routine first step has to be
 something the permission layer will always allow, including in the dirty state
 a failed run leaves behind.
+
+## 2026-10-19 — "272 passed" is not green: check the exit code
+
+`npm test` had been exiting 1 on every run with all 272 tests passing: three
+artifact tests run a full hero build-search synchronously (~23s each), and back
+to back they held the worker's event loop past vitest's 60s RPC timeout
+("[vitest-worker]: Timeout calling onTaskUpdate"). The daily worker caught it
+by reading the exit code and refused to commit; the main session had been
+grepping the pass count and calling that green. `pool: 'forks'` did not help;
+yielding one macrotask before each test in artifacts.test.ts (beforeEach →
+setImmediate) did — 3/3 runs exit 0. Lesson: the gate is the process exit
+status, never a grep of the summary line.

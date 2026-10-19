@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -16,6 +16,13 @@ beforeAll(() => {
   data = loadData();
   cal = loadCalibration();
 });
+
+// Several tests below run a full hero build-search synchronously (~23s each).
+// Back to back they kept this worker's event loop busy past vitest's 60s RPC
+// timeout, so the run exited 1 with "Timeout calling onTaskUpdate" although
+// every test passed (2026-10-19). Yielding one macrotask before each test lets
+// the pending RPC replies land between the long synchronous stretches.
+beforeEach(() => new Promise<void>((resolve) => setImmediate(resolve)));
 
 describe('hero artifacts (Concept A engine stage)', () => {
   it('builds a schema-valid artifact with honesty fields intact', { timeout: 60000 }, () => {
