@@ -1,3 +1,4 @@
+import { coachingPresetPrompt } from '../coaching-presets.js';
 // Coach assessment copy pass: rewrite the deterministic plan/insights from
 // buildCoachReport (playerProfile.ts) into grounded, action-first, GAME-AWARE
 // coaching via the IN-SESSION pred-scout-coach agent (no Anthropic API key).
@@ -73,7 +74,7 @@ function buildPrompt(c: Report): string {
   const topHeroes = [...c.pool].sort((a, b) => b.games - a.games).slice(0, 5);
   const recent = recentGamesFor(c.player.uuid);
 
-  return `You are coaching ${c.player.name} in Predecessor (a MOBA). Give REAL, game-specific coaching based on how they ACTUALLY played recently and what to drill on their heroes — NOT generic "queue a different role" advice. The data below is the ONLY source of truth; use ONLY numbers that appear here.
+  return `${coachingPresetPrompt(ROOT)}\n\nYou are coaching ${c.player.name} in Predecessor (a MOBA). Give REAL, game-specific coaching based on how they ACTUALLY played recently and what to drill on their heroes — NOT generic "queue a different role" advice. The data below is the ONLY source of truth; use ONLY numbers that appear here.
 
 RECENT REVIEWED GAMES (most recent first — lead your coaching with these):
   ${recent.length ? recent.join('\n  ') : 'no recent reviewed games on record — coach from their hero pool and kit reads below'}

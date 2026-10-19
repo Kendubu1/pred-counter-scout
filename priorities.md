@@ -897,3 +897,7 @@ AbilityTriggerData, PredMontagesArray and Transform. All generated field maps,
 raw/default bodies and native instruction traces remain private.
 
 Validation: 269 engine tests across 38 files, 25 Python recovery tests, TypeScript, rendered UI parity and all 55 saved artifact schemas pass. The private projectile gate passes 59 exact spans and rejects a changed collision flag. Numeric production rankings are unchanged in this recovery checkpoint.
+
+## Completed 2026-10-19 — concise coach release
+
+Saved classic, blunt-detailed and blunt-concise personas with review snapshots; rewrote the five newest matches and moved replay/stat detail behind an expandable evidence section. Release explicitly authorized by maintainer. Simulator/decompile work remains separate.

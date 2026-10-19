@@ -1,3 +1,4 @@
+import { coachingPresetPrompt } from '../coaching-presets.js';
 // Independent critic over post-game COACHING. A SEPARATE agent (NOT the author
 // pred-scout-coach) reviews each game's coaching narrative against the match
 // FACTS and flags any line that (a) coaches a player's hero/role PREFERENCE
@@ -196,7 +197,7 @@ async function main() {
     const lines = lineList(f.coaching!);
     if (!lines.length) continue;
     const id = f.matchId || fn.replace('.json', '');
-    const prompt = `You are an INDEPENDENT reviewer of post-game COACHING for a Predecessor (MOBA) squad match. Another agent wrote the COPY; you did NOT. The coach's job is to critique the GAME and the DRAFT — the fights, the objectives, the picks — NOT a player's personal hero/role preference. Judge the copy against the SOURCE (match facts) ONLY.
+    const prompt = `${coachingPresetPrompt(ROOT)}\n\nYou are an INDEPENDENT reviewer of post-game COACHING for a Predecessor (MOBA) squad match. Another agent wrote the COPY; you did NOT. The coach's job is to critique the GAME and the DRAFT — the fights, the objectives, the picks — NOT a player's personal hero/role preference. Judge the copy against the SOURCE (match facts) ONLY.
 
 SOURCE (match facts):
 ${sourceOf(f)}
@@ -218,7 +219,8 @@ Flag ONLY real problems:
 BLUNT IS THE HOUSE STYLE: a harsh verdict backed by two or more SOURCE facts is CORRECT — do not flag or soften it; flag a blunt line only when its receipts are not in the SOURCE.
 GAME KNOWLEDGE IS NOT A MATCH CLAIM: plain-word item/Eternal mechanics and map-economy concepts (objective spawn windows and cadence, "power farm"/"invade"/"deward", build-swap conditions like "against heavy healing") need NO SOURCE support — do not flag them as ungrounded. Any NUMBER, and any claim about what happened in THIS game, still requires the SOURCE.
 LATEST MAINTAINER OVERRIDE (2026-10-19): preserve blunt competitive coaching with occasional profanity and adult locker-room humor. A concise joke about play is allowed; reject personal/identity attacks or jokes replacing evidence. This overrides older metaphor/maxim restrictions. Do not force a mistake: a strong performance may get a maintainable standard instead. Reject simulated lane advantage as actual lane victory, missing kill/death credit as absence, alive counts as local fighting numbers, and chronological proximity as proven causation. Never reward a death as evidence of attendance; old invalid attendance checks are not measurable. Verify team-high comparisons against all players.
-Do NOT nitpick style beyond the voice rule. Return strict JSON: {"flags":[{"quote":"<the exact line text>","severity":"high|med|low","issue":"<what's wrong, one phrase>","rewrite":"<a game/draft/fight-focused corrected line grounded in the SOURCE, or null to drop the line>"}]}. If all fine, return {"flags":[]}.`;
+${coachingPresetPrompt(ROOT)}
+Judge against the active preset. Empty optional concise sections are not omissions. Do NOT nitpick style beyond its rules. Return strict JSON: {"flags":[{"quote":"<the exact line text>","severity":"high|med|low","issue":"<what's wrong, one phrase>","rewrite":"<a game/draft/fight-focused corrected line grounded in the SOURCE, or null to drop the line>"}]}. If all fine, return {"flags":[]}.`;
 
     const raw = (await ask('coach-critique', id, prompt)).trim().replace(/^```json?\s*|```$/g, '');
     reviewed += lines.length;

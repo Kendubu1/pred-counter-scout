@@ -605,6 +605,7 @@ function fightMap(f) {
 // the breakdown all point at the same fight. Degrades gracefully when the map/detail
 // isn't present (e.g. an old game with no located kills).
 function focusFight(n) {
+  const evidence = document.getElementById('coach-evidence'); if (evidence) evidence.open = true;
   const dd = document.getElementById('deepdive'); if (dd) dd.open = true;
   document.querySelectorAll('.fm-mark.on, .fm-halo.on').forEach((e) => e.classList.remove('on'));
   document.querySelectorAll('.tlmark.sel, .fchip.sel').forEach((e) => e.classList.remove('sel'));
@@ -648,6 +649,7 @@ function tlFilter(kind, btn) {
 document.addEventListener('keydown', (e) => {
   if ((e.key === 'Enter' || e.key === ' ') && e.target.closest && e.target.closest('.tlmark, .tlobj, .tltower')) { e.preventDefault(); e.target.click(); }
 });
+let COACH_LAYOUT = 'classic';
 function pgReview(f) {
   const us = f.players.filter((p) => p.us);
   const ourOf = (role) => f.players.find((p) => p.us && p.role === role);
@@ -841,7 +843,7 @@ function pgReview(f) {
     </div>`;
   };
   const cb = f.counterBuild;
-  const lobby = card(`${eyebrow('The lobby — squad &amp; randoms', 'build reads from the match; Eternal loadouts are the engine’s pick for the kit &amp; matchup (the feed doesn’t record what was run) — THEORY')}
+  const lobby = card(`${eyebrow('The lobby — squad &amp; randoms', 'build reads from the match; recorded loadouts where available; engine picks are separate simulator suggestions — THEORY')}
     ${cb && (cb.notes || []).length ? `<div class="bverdict">${cb.notes.slice(0, 2).map(esc).join(' ')}</div>` : ''}
     ${us.map(lobbyRow).join('')}
     `);  // draftNote (role-fit "queued off a bottom-two lane") is preference coaching the squad rule bans — not rendered (coach audit 2026-09-21)
@@ -903,6 +905,28 @@ function pgReview(f) {
     ${lanes}${fightMap(f)}${comp}${kit}
   </details>`;
 
+  if (COACH_LAYOUT === 'concise' && co) {
+    const verdict = card(`
+      <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap"><b style="color:${resColor}">${f.result.toUpperCase()}</b><span style="color:var(--text-2)">${new Date(f.startTime).toLocaleDateString()} · ${f.durationMin} min</span></div>
+      <h2 style="font-size:1.2rem;line-height:1.4;margin:.65rem 0">${esc(co.headline || 'Match review')}</h2>
+      ${co.team ? `<p style="color:var(--text-1);line-height:1.6;margin:0">${esc(co.team)}</p>` : ''}`);
+    const next = focus?.action ? card(`${eyebrow('Next game', '')}<p style="font-size:1rem;line-height:1.5;margin:0">${esc(focus.action)}</p>`) : '';
+    const players = card(`${eyebrow('Your team — straight talk', '')}${us.map((p) => `<div class="plobby">
+      <div class="who">${hIcon(p.heroSlug, 34)}<span><b>${pgName(p)}</b><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span></span></div>
+      <div class="line">${co.perPlayer?.[p.pid] ? esc(co.perPlayer[p.pid]) : 'Individual feedback has not been written for this player.'}</div>
+    </div>`).join('')}`);
+    const loadouts = card(`${eyebrow('Builds & recorded loadouts', '')}${us.map((p) => {
+      const br = co.buildReads?.[p.pid];
+      return `<div class="plobby"><div class="who"><b>${pgName(p)}</b> ${esc(p.heroName)}</div><div>
+        <div class="items">${(p.items || []).map((i) => `<img data-ipop="${esc(i.slug)}" src="${iimg(i.slug)}" title="${esc(i.name)}" onerror="this.style.display='none'">`).join('')}</div>
+        ${ranLine(p.loadout)}
+        ${br?.build ? `<p>${esc(br.build)}</p>` : ''}${br?.eternal ? `<p>${esc(br.eternal)}</p>` : ''}
+      </div></div>`;
+    }).join('')}`);
+    return verdict + next + players + `<details class="deepdive" id="coach-evidence"><summary>Evidence & replay details — stats, builds and timestamps</summary>
+      ${card(eyebrow('Match totals', '') + statline)}${loadouts}${moments}${timeline}${deep}
+    </details>`;
+  }
   return head + moments + deepDive + coachEvidence + timeline + worked + lobby + deep;
 }
 
@@ -953,6 +977,7 @@ async function fillEternals() {
       try {
         const PG = await (await fetch('../../data/postgame/index.json')).json();
         pgList = (PG.matches || []).filter((m) => m.matchId);
+        try { const persona = await (await fetch('../../data/coaching/personas.json')).json(); COACH_LAYOUT = persona.presets.find((p) => p.id === persona.active)?.layout || 'classic'; } catch {}
         try { MAP = await (await fetch('../../data/game-data/map-landmarks.json')).json(); } catch {}
       } catch {}
 

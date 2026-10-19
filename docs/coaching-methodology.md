@@ -525,3 +525,7 @@ tests across 40 files pass. Browser checks confirm all three revised reviews,
 newest reviewed marker, and removal of the old engage-number claim. Profile/API
 refresh and simulator artifact rebuild are unnecessary: the page directly reads
 these saved match reviews. Draft branch only; no merge or deployment.
+
+## Concise whole-match view (2026-10-19)
+
+The active preset governs authoring and rendering. The concise view has a verdict and short explanation, one next-game team call, and distinct allied-player feedback. Ranking, repeated verdicts and Keep/Change/Check sections are omitted. Raw totals, loadouts and event times remain collapsed; no source-limitations boilerplate belongs in the main coaching voice. Preset selection and restoration instructions are in `docs/coaching-presets.md`. Five latest reviews are authored to this format; older narratives are retained.
