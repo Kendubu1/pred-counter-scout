@@ -10,7 +10,8 @@
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
-   "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)"
+   "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)",
+   "the sim build reproduces only 0% of the field's core for Maco (it never builds Crescelia, Enra's Blessing, Windcaller) — some of those items ride mechanics the sim doesn't model yet"
   ]
  },
  "build": {
@@ -20,15 +21,15 @@
     "name": "Lifecore",
     "slug": "lifecore",
     "spikeMinute": 11,
-    "playRatePct": 5,
-    "evidenceDeltaWr": -1.3,
-    "evidenceN": 15
+    "playRatePct": 7.1,
+    "evidenceDeltaWr": 9,
+    "evidenceN": 22
    },
    {
     "name": "Noxia",
     "slug": "noxia",
     "spikeMinute": 18,
-    "playRatePct": 3,
+    "playRatePct": 1.9,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -36,9 +37,9 @@
     "name": "Oblivion Crown",
     "slug": "oblivion-crown",
     "spikeMinute": 26,
-    "playRatePct": 3.3,
-    "evidenceDeltaWr": 0.1,
-    "evidenceN": 10
+    "playRatePct": 2.6,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
    },
    {
     "name": "Spirit Of Amir",
@@ -52,17 +53,17 @@
     "name": "Timewarp",
     "slug": "timewarp",
     "spikeMinute": 37,
-    "playRatePct": 24.4,
-    "evidenceDeltaWr": -0.8,
-    "evidenceN": 74
+    "playRatePct": 23.2,
+    "evidenceDeltaWr": 9.7,
+    "evidenceN": 72
    },
    {
     "name": "Lunaria",
     "slug": "lunaria",
     "spikeMinute": 41,
-    "playRatePct": 8.6,
-    "evidenceDeltaWr": -1.5,
-    "evidenceN": 26
+    "playRatePct": 2.6,
+    "evidenceDeltaWr": null,
+    "evidenceN": null
    }
   ],
   "gold": 17850,
@@ -568,17 +569,23 @@
  "offMeta": {
   "candidates": [
    {
+    "item": "Noxia",
+    "playRatePct": 1.9,
+    "bestObjective": "heal/shield output",
+    "edgeVsPopularPct": 220.2
+   },
+   {
     "item": "Spirit Of Amir",
     "playRatePct": 0.3,
     "bestObjective": "heal/shield output",
-    "edgeVsPopularPct": 207.5
+    "edgeVsPopularPct": 220.2
    }
   ],
   "honestAbsence": null
  },
  "metaBuilds": [
   {
-   "title": "Magical Burst",
+   "title": "Magical Skirmisher",
    "items": [
     {
      "name": "Crescelia",
@@ -593,13 +600,13 @@
      "slug": "windcaller"
     }
    ],
-   "n": 35,
-   "shrunkWr": 0.317,
+   "n": 41,
+   "shrunkWr": 0.357,
    "coreGold": 7050,
    "spikeMinute": 21,
-   "bestObjective": "one-combo burst",
-   "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 696 damage in one combo in the sim.",
-   "optimizer": "Optimizer sees +49% more one-combo burst: try Lifecore over Crescelia (sim-only — the popular pick may carry utility the sim can't see; test it)."
+   "bestObjective": "10s rotation damage",
+   "whyLine": "Strongest meta core for 10s rotation damage, online around minute 21 — about 980 damage over a 10s rotation in the sim.",
+   "optimizer": "Optimizer sees +51% more 10s rotation damage: try Lifecore over Crescelia (sim-only — the popular pick may carry utility the sim can't see; test it)."
   },
   {
    "title": "Magical Bruiser (Physical-Def)",
@@ -617,13 +624,37 @@
      "slug": "gaussian-greaves"
     }
    ],
-   "n": 22,
-   "shrunkWr": 0.277,
+   "n": 31,
+   "shrunkWr": 0.339,
    "coreGold": 8150,
    "spikeMinute": 23,
    "bestObjective": "physical survivability",
    "whyLine": "Strongest meta core for physical survivability, online around minute 23 — about 7,768 effective HP vs physical in the sim.",
    "optimizer": null
+  },
+  {
+   "title": "Magical Burst",
+   "items": [
+    {
+     "name": "Crescelia",
+     "slug": "crescelia"
+    },
+    {
+     "name": "Windcaller",
+     "slug": "windcaller"
+    },
+    {
+     "name": "Everbloom",
+     "slug": "everbloom"
+    }
+   ],
+   "n": 20,
+   "shrunkWr": 0.421,
+   "coreGold": 7100,
+   "spikeMinute": 21,
+   "bestObjective": "one-combo burst",
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 704 damage in one combo in the sim.",
+   "optimizer": "Optimizer sees +47% more one-combo burst: try Lifecore over Crescelia (sim-only — the popular pick may carry utility the sim can't see; test it)."
   }
  ],
  "stages": [
@@ -826,45 +857,6 @@
    }
   },
   {
-   "enemy": "Zinx",
-   "enemySlug": "zinx",
-   "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Zinx's main threat is Ricochet; bait it before you commit, and mixed resist softens the trade.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "you"
-    },
-    {
-     "minute": 10,
-     "verdict": "you"
-    },
-    {
-     "minute": 15,
-     "verdict": "you"
-    },
-    {
-     "minute": 20,
-     "verdict": "you"
-    },
-    {
-     "minute": 25,
-     "verdict": "you"
-    },
-    {
-     "minute": 30,
-     "verdict": "you"
-    }
-   ],
-   "counterSwap": {
-    "out": "Spirit Of Amir",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 18,
-    "offenseLossPct": 20,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Spirit Of Amir: their burst combo hits 18% less hard, and this kit gives up 20% of its damage for it."
-   }
-  },
-  {
    "enemy": "Mourn",
    "enemySlug": "mourn",
    "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Mourn's main threat is Abduct; bait it before you commit, and mixed resist softens the trade.",
@@ -892,6 +884,45 @@
     {
      "minute": 30,
      "verdict": "even"
+    }
+   ],
+   "counterSwap": {
+    "out": "Spirit Of Amir",
+    "in": "Raiment of Renewal",
+    "inSlug": "raiment-of-renewal",
+    "survivalGainPct": 18,
+    "offenseLossPct": 20,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Spirit Of Amir: their burst combo hits 18% less hard, and this kit gives up 20% of its damage for it."
+   }
+  },
+  {
+   "enemy": "Zinx",
+   "enemySlug": "zinx",
+   "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Zinx's main threat is Ricochet; bait it before you commit, and mixed resist softens the trade.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "you"
+    },
+    {
+     "minute": 10,
+     "verdict": "you"
+    },
+    {
+     "minute": 15,
+     "verdict": "you"
+    },
+    {
+     "minute": 20,
+     "verdict": "you"
+    },
+    {
+     "minute": 25,
+     "verdict": "you"
+    },
+    {
+     "minute": 30,
+     "verdict": "you"
     }
    ],
    "counterSwap": {
@@ -989,16 +1020,16 @@
   },
   "playstyle": "sustain",
   "modeled": true,
-  "wr": 45.8,
-  "n": 602,
+  "wr": 45.9,
+  "n": 695,
   "shiftIn": [],
   "shiftOut": [],
-  "provenance": "“Ferocious Flight” ⇒ sustain; the sim models this augment — field support 45.8% over 602 games."
+  "provenance": "“Ferocious Flight” ⇒ sustain; the sim models this augment — field support 45.9% over 695 games."
  },
  "slug": "maco",
  "name": "Maco",
  "patch": "1.15.3/1.15.4",
- "generatedAt": "2026-10-18T21:20:39.000Z",
+ "generatedAt": "2026-10-19T10:02:15.539Z",
  "damageType": "hybrid",
  "attackType": "ranged",
  "laneFlex": [
@@ -1010,8 +1041,8 @@
    },
    "playstyle": "sustain",
    "modeled": true,
-   "wr": 45.8,
-   "n": 602,
+   "wr": 45.9,
+   "n": 695,
    "core": [
     {
      "name": "Lifecore",
@@ -1039,7 +1070,7 @@
     }
    ],
    "headline": "heal/shield output",
-   "provenance": "“Ferocious Flight” ⇒ sustain; the sim models this augment — field support 45.8% over 602 games."
+   "provenance": "“Ferocious Flight” ⇒ sustain; the sim models this augment — field support 45.9% over 695 games."
   }
  ],
  "roles": [
@@ -1055,7 +1086,8 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)"
+     "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)",
+     "the sim build reproduces only 0% of the field's core for Maco (it never builds Crescelia, Enra's Blessing, Windcaller) — some of those items ride mechanics the sim doesn't model yet"
     ]
    },
    "build": {
@@ -1065,15 +1097,15 @@
       "name": "Lifecore",
       "slug": "lifecore",
       "spikeMinute": 11,
-      "playRatePct": 5,
-      "evidenceDeltaWr": -1.3,
-      "evidenceN": 15
+      "playRatePct": 7.1,
+      "evidenceDeltaWr": 9,
+      "evidenceN": 22
      },
      {
       "name": "Noxia",
       "slug": "noxia",
       "spikeMinute": 18,
-      "playRatePct": 3,
+      "playRatePct": 1.9,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1081,9 +1113,9 @@
       "name": "Oblivion Crown",
       "slug": "oblivion-crown",
       "spikeMinute": 26,
-      "playRatePct": 3.3,
-      "evidenceDeltaWr": 0.1,
-      "evidenceN": 10
+      "playRatePct": 2.6,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
      },
      {
       "name": "Spirit Of Amir",
@@ -1097,17 +1129,17 @@
       "name": "Timewarp",
       "slug": "timewarp",
       "spikeMinute": 37,
-      "playRatePct": 24.4,
-      "evidenceDeltaWr": -0.8,
-      "evidenceN": 74
+      "playRatePct": 23.2,
+      "evidenceDeltaWr": 9.7,
+      "evidenceN": 72
      },
      {
       "name": "Lunaria",
       "slug": "lunaria",
       "spikeMinute": 41,
-      "playRatePct": 8.6,
-      "evidenceDeltaWr": -1.5,
-      "evidenceN": 26
+      "playRatePct": 2.6,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
      }
     ],
     "gold": 17850,
@@ -1613,17 +1645,23 @@
    "offMeta": {
     "candidates": [
      {
+      "item": "Noxia",
+      "playRatePct": 1.9,
+      "bestObjective": "heal/shield output",
+      "edgeVsPopularPct": 220.2
+     },
+     {
       "item": "Spirit Of Amir",
       "playRatePct": 0.3,
       "bestObjective": "heal/shield output",
-      "edgeVsPopularPct": 207.5
+      "edgeVsPopularPct": 220.2
      }
     ],
     "honestAbsence": null
    },
    "metaBuilds": [
     {
-     "title": "Magical Burst",
+     "title": "Magical Skirmisher",
      "items": [
       {
        "name": "Crescelia",
@@ -1638,13 +1676,13 @@
        "slug": "windcaller"
       }
      ],
-     "n": 35,
-     "shrunkWr": 0.317,
+     "n": 41,
+     "shrunkWr": 0.357,
      "coreGold": 7050,
      "spikeMinute": 21,
-     "bestObjective": "one-combo burst",
-     "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 696 damage in one combo in the sim.",
-     "optimizer": "Optimizer sees +49% more one-combo burst: try Lifecore over Crescelia (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "bestObjective": "10s rotation damage",
+     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 21 — about 980 damage over a 10s rotation in the sim.",
+     "optimizer": "Optimizer sees +51% more 10s rotation damage: try Lifecore over Crescelia (sim-only — the popular pick may carry utility the sim can't see; test it)."
     },
     {
      "title": "Magical Bruiser (Physical-Def)",
@@ -1662,13 +1700,37 @@
        "slug": "gaussian-greaves"
       }
      ],
-     "n": 22,
-     "shrunkWr": 0.277,
+     "n": 31,
+     "shrunkWr": 0.339,
      "coreGold": 8150,
      "spikeMinute": 23,
      "bestObjective": "physical survivability",
      "whyLine": "Strongest meta core for physical survivability, online around minute 23 — about 7,768 effective HP vs physical in the sim.",
      "optimizer": null
+    },
+    {
+     "title": "Magical Burst",
+     "items": [
+      {
+       "name": "Crescelia",
+       "slug": "crescelia"
+      },
+      {
+       "name": "Windcaller",
+       "slug": "windcaller"
+      },
+      {
+       "name": "Everbloom",
+       "slug": "everbloom"
+      }
+     ],
+     "n": 20,
+     "shrunkWr": 0.421,
+     "coreGold": 7100,
+     "spikeMinute": 21,
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 704 damage in one combo in the sim.",
+     "optimizer": "Optimizer sees +47% more one-combo burst: try Lifecore over Crescelia (sim-only — the popular pick may carry utility the sim can't see; test it)."
     }
    ],
    "stages": [
@@ -1871,45 +1933,6 @@
      }
     },
     {
-     "enemy": "Zinx",
-     "enemySlug": "zinx",
-     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Zinx's main threat is Ricochet; bait it before you commit, and mixed resist softens the trade.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "you"
-      },
-      {
-       "minute": 10,
-       "verdict": "you"
-      },
-      {
-       "minute": 15,
-       "verdict": "you"
-      },
-      {
-       "minute": 20,
-       "verdict": "you"
-      },
-      {
-       "minute": 25,
-       "verdict": "you"
-      },
-      {
-       "minute": 30,
-       "verdict": "you"
-      }
-     ],
-     "counterSwap": {
-      "out": "Spirit Of Amir",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 18,
-      "offenseLossPct": 20,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Spirit Of Amir: their burst combo hits 18% less hard, and this kit gives up 20% of its damage for it."
-     }
-    },
-    {
      "enemy": "Mourn",
      "enemySlug": "mourn",
      "gameplan": "Respect their early kill threat; the exchange levels out later, so trade patiently and scale. Mourn's main threat is Abduct; bait it before you commit, and mixed resist softens the trade.",
@@ -1937,6 +1960,45 @@
       {
        "minute": 30,
        "verdict": "even"
+      }
+     ],
+     "counterSwap": {
+      "out": "Spirit Of Amir",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 18,
+      "offenseLossPct": 20,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Spirit Of Amir: their burst combo hits 18% less hard, and this kit gives up 20% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Zinx",
+     "enemySlug": "zinx",
+     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Zinx's main threat is Ricochet; bait it before you commit, and mixed resist softens the trade.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "you"
+      },
+      {
+       "minute": 10,
+       "verdict": "you"
+      },
+      {
+       "minute": 15,
+       "verdict": "you"
+      },
+      {
+       "minute": 20,
+       "verdict": "you"
+      },
+      {
+       "minute": 25,
+       "verdict": "you"
+      },
+      {
+       "minute": 30,
+       "verdict": "you"
       }
      ],
      "counterSwap": {
@@ -2034,11 +2096,11 @@
     },
     "playstyle": "sustain",
     "modeled": true,
-    "wr": 45.8,
-    "n": 602,
+    "wr": 45.9,
+    "n": 695,
     "shiftIn": [],
     "shiftOut": [],
-    "provenance": "“Ferocious Flight” ⇒ sustain; the sim models this augment — field support 45.8% over 602 games."
+    "provenance": "“Ferocious Flight” ⇒ sustain; the sim models this augment — field support 45.9% over 695 games."
    }
   }
  ],
