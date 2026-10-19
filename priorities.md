@@ -1,5 +1,11 @@
 # Priorities
 
+Coach voice update (2026-10-19): blunt competitive verdicts plus occasional adult
+humor; latest two trio losses and latest win rewritten and independently reviewed.
+Preserve factual limits: simulated lane advantage is not an observed lead, and
+missing kill/death credit is not absence. See docs/coaching-methodology.md.
+
+
 Worked top to bottom under the autonomy policy in CLAUDE.md. Future
 sessions: pick up at the first item not marked done.
 

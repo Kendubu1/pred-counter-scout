@@ -40,3 +40,8 @@ export function winrateNumbers(cells: { n: number; w: number }[]): number[] {
   for (const a of wrs) for (const b of wrs) if (a !== b) out.push(Math.abs(a - b));
   return out;
 }
+
+/** Strip a numbered review-list prefix without corrupting a decimal timestamp. */
+export function stripReviewLineNumber(line: string): string {
+  return line.replace(/^\s*\d+\.\s+/, '');
+}

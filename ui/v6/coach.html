@@ -447,10 +447,7 @@ function fightDetail(s, f) {
   // couldn't help, who was alive and didn't rotate, cross-map trades. Coaches the
   // GAME (rotations, tempo), not the hero matchup.
   const mac = s.macro || null;
-  const numLine = mac && (mac.outnumbered || (mac.manAdv > 0 && s.result !== 'won'))
-    ? `<span style="color:${mac.outnumbered ? 'var(--red)' : 'var(--gold)'};font-weight:700">${mac.ourAlive}v${mac.theirAlive}</span> standing at the engage · ` : '';
-  const macNotes = mac && (mac.notes || []).length
-    ? `<div style="font-size:.76rem;color:var(--text-1);margin-top:.3rem;border-top:1px dashed var(--border);padding-top:.3rem"><b style="color:var(--text-0)">Macro read</b> <span style="color:var(--text-2);font-size:.62rem">(rotations · numbers · tempo — THEORY)</span><div style="margin-top:.15rem">${numLine}${mac.notes.map((n) => `<div style="color:var(--text-1)">› ${esc(n)}</div>`).join('')}</div></div>` : '';
+  const macNotes = mac ? `<div style="font-size:.76rem;color:var(--text-2);margin-top:.3rem">${esc(macroAvailability(mac))}</div>` : '';
   return `
     ${fread}
     ${ladder ? `<div style="font-size:.68rem;color:var(--text-2);margin-top:.35rem"><b style="color:var(--text-0);font-size:.74rem">Death sequence</b> · first column = clock / seconds after the opener · right column = bodies standing (us v them)</div>${ladder}` : '<div style="font-size:.76rem;color:var(--text-2)">No located kills for this fight.</div>'}
@@ -460,6 +457,11 @@ function fightDetail(s, f) {
     ${sustain}
     ${after.length ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.2rem"><b>What it meant:</b> ${after.join('; ')}.</div>` : ''}
     ${macNotes}`;
+}
+// Global death timers do not establish presence, positioning or a local numbers edge.
+function macroAvailability(mac) {
+  return mac && Number.isFinite(mac.ourAlive) && Number.isFinite(mac.theirAlive)
+    ? `Alive across the map: ${mac.ourAlive} us, ${mac.theirAlive} opponents. Positions are not established.` : '';
 }
 let MAP = null;   // data/game-data/map-landmarks.json (towers/lanes/objectives), loaded once
 // Fight map: the kill stream as a density heat layer (us green / them red) on the
@@ -672,7 +674,7 @@ function pgReview(f) {
       <div style="color:var(--text-1);margin-top:.35rem;font-size:.92rem">${esc(co.team)}</div>
     </details>
     <div style="border-left:3px solid var(--gold);padding:.5rem .8rem;background:rgba(240,180,41,.07);border-radius:6px;margin-top:.6rem;font-size:.9rem"><b>What shifted it:</b> ${esc(co.whatShiftedIt)}</div>
-    ${Array.isArray(co.ranking) && co.ranking.length ? `<div style="margin-top:.6rem"><div style="font-size:.7rem;font-weight:700;letter-spacing:.06em;color:var(--text-2);text-transform:uppercase">The ranking · who won it, who cost it</div><ol style="margin:.3rem 0 0;padding-left:1.3rem;font-size:.88rem;line-height:1.5">${co.ranking.map((r) => { const pl = f.players.find((p) => p.pid === r.pid); return `<li><b>${pl ? pgName(pl) : ''}</b>${pl ? ` <span style="color:var(--text-2);font-size:.78rem">${esc(pl.heroName)}</span>` : ''} — ${esc(r.grade || '')}</li>`; }).join('')}</ol></div>` : ''}` :
+    ${Array.isArray(co.ranking) && co.ranking.length ? `<div style="margin-top:.6rem"><div style="font-size:.7rem;font-weight:700;letter-spacing:.06em;color:var(--text-2);text-transform:uppercase">Player verdicts</div><ol style="margin:.3rem 0 0;padding-left:1.3rem;font-size:.88rem;line-height:1.5">${co.ranking.map((r) => { const pl = f.players.find((p) => p.pid === r.pid); return `<li><b>${pl ? pgName(pl) : ''}</b>${pl ? ` <span style="color:var(--text-2);font-size:.78rem">${esc(pl.heroName)}</span>` : ''} — ${esc(r.grade || '')}</li>`; }).join('')}</ol></div>` : ''}` :
     `<div style="color:var(--text-2);margin-top:.5rem;font-size:.9rem">Facts computed; coaching narrative not yet authored for this match.</div>`}`);
 
   // ── The three moments: tagged fights first, then by significance — capped at 3.
@@ -693,15 +695,14 @@ function pgReview(f) {
     const call = co && co.moments && (co.moments[String(sk.startMin)] || {}).call;
     const after = (f.timeline ? f.timeline.majors : []).filter((m) => m.minute >= sk.startMin - 0.3 && m.minute <= sk.startMin + 2.5 && /FANG|PRIME|ORB|CORE/i.test(m.type))
       .map((m) => `${m.side === 'us' ? 'we took' : 'they took'} ${esc(m.type.replace(/_/g, ' ').toLowerCase())} (${m.minute}m)`);
-    const why = (sk.macro && (sk.macro.notes || []).length) ? sk.macro.notes.map((n) => esc(scrub(n))).join(' ') : '';
-    const numLine = sk.macro && sk.macro.ourAlive != null && sk.macro.ourAlive !== sk.macro.theirAlive ? `${sk.macro.ourAlive}v${sk.macro.theirAlive} at the engage. ` : '';
+    const why = esc(macroAvailability(sk.macro));
     return `<div class="mo">
       <div class="t">${sk.startMin}<small>min</small></div>
       <div>
         <h3>${esc(sk.kind)} at ${esc(sk.place)}${sk.tag ? `<span class="tagchip ${sk.tag === 'game-defining' ? 'def' : 'bad'}">${sk.tag.replace('-', ' ')}</span>` : ''}</h3>
         <div class="facts">${rword(sk.result)} ${sk.ourKills}–${sk.theirKills}</div>
         <div class="fighters">${sk.ourHeroes.map((h) => hIcon(h, 17)).join('')} <span style="margin:0 .2rem">vs</span> ${sk.theirHeroes.map((h) => hIcon(h, 17)).join('')}</div>
-        ${why || numLine ? `<div class="why">${numLine}${why}</div>` : ''}
+        ${why ? `<div class="why">${why}</div>` : ''}
         ${costs.length || after.length ? `<div class="cost">${[...costs, ...after.map((a) => `→ ${a}`)].join(' · ')}</div>` : ''}
         ${call ? `<div class="mocall"><b>The call</b>${esc(call)}</div>` : ''}
         <div style="margin-top:.3rem"><a href="#" onclick="focusFight(${idx});return false" style="font-size:.72rem">locate on the fight map ↓</a></div>
@@ -735,14 +736,13 @@ function pgReview(f) {
   const tlFightMarks = sks.map((sk, i) => { const x = xOf(sk.startMin); const d = Math.min(22, 9 + sk.size * 2); const ring = keySet.has(sk) ? ';box-shadow:0 0 0 2px var(--gold)' : ''; const lbl = `${sk.startMin}m ${sk.kind}: ${sk.result} ${sk.ourKills}-${sk.theirKills} · ${sk.place}${sk.tag ? ' · ' + sk.tag.replace('-', ' ') : ''}`; return `<div id="tlmark-${i}" class="tlmark" role="button" tabindex="0" aria-label="${esc(lbl)}" onclick="tlSelect('f',${i})" title="${esc(lbl)} · tap for detail" style="position:absolute;left:${x}%;top:${40 - d / 2}px;transform:translateX(-50%);width:${d}px;height:${d}px;border-radius:50%;background:${skCol(sk.result)}${ring};display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">${sk.net > 0 ? '+' + sk.net : sk.net < 0 ? sk.net : ''}</div>`; }).join('');
   // the hidden per-mark breakdowns tlSelect() swaps into the panel under the strip
   const tlFightSums = sks.map((sk, i) => {
-    const why = (sk.macro && (sk.macro.notes || []).length) ? sk.macro.notes.map((n) => esc(scrub(n))).join(' ') : '';
-    const numLine = sk.macro && sk.macro.ourAlive != null && sk.macro.ourAlive !== sk.macro.theirAlive ? `<b>${sk.macro.ourAlive}v${sk.macro.theirAlive}</b> at the engage. ` : '';
+    const why = esc(macroAvailability(sk.macro));
     const after = (f.timeline ? f.timeline.majors : []).filter((m) => m.minute >= sk.startMin - 0.3 && m.minute <= sk.startMin + 2.5 && /FANG|PRIME|ORB|CORE/i.test(m.type))
       .map((m) => `${m.side === 'us' ? 'we took' : 'they took'} ${esc(objName(m.type))} (${m.minute}m)`);
     return `<div data-i="${i}">
       <div style="font-weight:700;color:var(--text-0)">${sk.startMin}m · ${esc(sk.kind)} <span style="color:${skCol(sk.result)}">${sk.result} ${sk.ourKills}–${sk.theirKills}</span><span style="font-weight:400;color:var(--text-2)"> · ${esc(sk.place)}</span>${sk.tag ? `<span class="tagchip ${sk.tag === 'game-defining' ? 'def' : 'bad'}">${sk.tag.replace('-', ' ')}</span>` : ''}</div>
       <div class="tlfighters" style="margin:.25rem 0">${sk.ourHeroes.map((h) => hIcon(h, 17)).join('')} <span style="color:var(--text-2);margin:0 .2rem;font-size:.72rem">vs</span> ${sk.theirHeroes.map((h) => hIcon(h, 17)).join('')}</div>
-      ${why || numLine ? `<div>${numLine}${why}</div>` : ''}
+      ${why ? `<div>${why}</div>` : ''}
       ${after.length ? `<div style="color:var(--gold);margin-top:.2rem">→ ${after.join('; ')}</div>` : ''}
       <div style="margin-top:.3rem"><a href="#" onclick="focusFight(${i});return false" style="font-size:.72rem">full breakdown + where it happened — fight map ↓</a></div>
     </div>`;

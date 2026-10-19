@@ -168,3 +168,18 @@ Review `focus.title`, `focus.evidence`, and `focus.action` as coaching lines. Fl
 ## Cross-section repetition audit (2026-09-29)
 
 Compare the focus against team summary, `whatShiftedIt`, moments, player notes, verdicts, and ranking. Flag a repeated conclusion or evidence line unless each placement adds a distinct coaching purpose. Keep the unique tactical lesson in `focus`; keep player notes role-specific and non-duplicative.
+
+## Tone and truth update (maintainer choice, 2026-10-19)
+Preserve blunt competitive verdicts, profanity and occasional adult innuendo under
+pred-scout-coach's latest tone contract. Do not neutralize a grounded criticism
+because it sounds harsh. Flag jokes that replace evidence or target identity,
+sexuality, body or personal worth. Require a concise verdict, evidence and useful
+next action; earned wins can still receive corrections. Do not force a mistake
+when the feed supports none. This supersedes forced Change requirements.
+
+Explicitly reject simulated lane advantage presented as an actual lane win;
+missing kill/death credit presented as absence; alive counts presented as local
+fight numbers; and chronological death/objective proximity presented as proven
+causation. Attendance checks based on kill OR death credit are invalid incentives;
+mark old checks not measurable and replace with a supported standard. Validate
+comparatives (team-high etc.) against all players, not prior coaching prose.

@@ -465,3 +465,63 @@ Keep flat K/D/A, damage, mitigation, and ward totals in the squad statline. The 
 ## 9. One finding, one home (2026-09-29)
 
 Do not repeat a match lesson across the team summary, `whatShiftedIt`, moments, unique focus, player notes, verdicts, and ranking. Give the finding one primary home. Other sections may provide distinct facts, but should not restate the same reasoning. The statline owns flat totals; the unique focus owns the match-specific lesson; a player note adds a separate role-specific observation or is omitted.
+
+## Blunt coaching with adult humor (maintainer choice, 2026-10-19)
+
+This overrides earlier neutral-tone, one-metaphor and forced-correction guidance.
+Use a demanding competitive coach's verdict with occasional filthy locker-room
+humor. Lead each player card with the actual performance judgment, anchor it to
+match evidence, and finish with one specific action. Praise earned wins directly;
+a win does not excuse a documented mistake. A loss does not make every player bad.
+
+- Swearing and brief adult innuendo are welcome. At most one punchline per player
+  card and three across the review; never repeat it in verdict, ranking and body.
+  The joke targets the play, not a person's worth, identity, body or sexuality.
+  Avoid threats, slurs and sexual claims about actual people. No comedy quota:
+  the evidence and correction must still read cleanly without the joke.
+- Use plain verdicts: strong output, costly deaths, poor vision contribution,
+  effective conversion. No praise sandwich or vague consolation. Keep third-person
+  player/hero names for the shared squad report. Aim for 35-55 words per player.
+- A favorable SIMULATED matchup is not an observed lane win, gold lead or farming
+  lead. Say 'favored on paper' only when that distinction is useful; otherwise omit
+  it. Never say 'won lane but lost' without observed lane evidence and a supported
+  explanation of the disconnect.
+- Missing kill/death event credit is not absence, passivity or a failed rotation.
+  Match-wide assists do not locate a player at a specific fight either. Alive
+  counts are not local fighting numbers. A death followed by a tower loss is a
+  sequence, not proof that this player caused the tower loss.
+- Checks must reward useful behavior. Never demand a kill OR DEATH to prove
+  attendance. Mark an old attendance check 'not measurable' if that is all the
+  feed offers. Remove invented blame; do not merely make it sound tougher.
+- A concrete correction needs evidence. If no specific mistake is established,
+  give an earned verdict and a maintainable next-game standard, explicitly without
+  pretending a new mistake was found. Avoid forced build blame and death quotas.
+- Example loss: 'Howie's death count needs the autopsy, not another build excuse.
+  Eleven deaths is a bloody mess. Review the repeated deaths first; the matchup
+  model cannot tell us he actually won lane or skipped those fights.'
+- Example win: 'Good damage, actual follow-through. Keep that shit. The win still
+  does not buy a free pass for a documented death immediately before an objective.'
+
+The independent critic must preserve this voice when facts support it, flag
+unsupported blame and hollow jokes, and verify one actionable point per player.
+
+## Coach voice and grounded recent rewrites (2026-10-19)
+
+Applied the maintainer's blunt competitive / adult-humor blend to future author
+and critic guidance and the latest two trio losses plus the latest win. Rewrote
+all fifteen player cards and reconciled verdicts, moments, checks and build reads.
+Match facts remain unchanged. The newest review now has its reviewed index flag.
+
+Favorable simulated matchups are not observed lane wins, kill/death-credit gaps
+are not attendance evidence, global alive counts are not local fight numbers,
+and chronological death/structure proximity does not prove individual blame.
+The page now presents global availability without legacy speculative macro prose.
+Grounded profanity is retained; correction never requires inventing a mistake.
+
+Independent critique: two rounds, final 168 lines with zero flags. All 220 copy
+strings pass numeric grounding. Fixed critique prefix stripping that corrupted
+unprefixed decimal timestamps (12.4); added a regression. TypeScript and all 273
+tests across 40 files pass. Browser checks confirm all three revised reviews,
+newest reviewed marker, and removal of the old engage-number claim. Profile/API
+refresh and simulator artifact rebuild are unnecessary: the page directly reads
+these saved match reviews. Draft branch only; no merge or deployment.

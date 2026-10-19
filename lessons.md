@@ -5029,3 +5029,24 @@ grepping the pass count and calling that green. `pool: 'forks'` did not help;
 yielding one macrotask before each test in artifacts.test.ts (beforeEach →
 setImmediate) did — 3/3 runs exit 0. Lesson: the gate is the process exit
 status, never a grep of the summary line.
+
+## Coach voice and grounded recent rewrites (2026-10-19)
+
+Applied the maintainer's blunt competitive / adult-humor blend to future author
+and critic guidance and the latest two trio losses plus the latest win. Rewrote
+all fifteen player cards and reconciled verdicts, moments, checks and build reads.
+Match facts remain unchanged. The newest review now has its reviewed index flag.
+
+Favorable simulated matchups are not observed lane wins, kill/death-credit gaps
+are not attendance evidence, global alive counts are not local fight numbers,
+and chronological death/structure proximity does not prove individual blame.
+The page now presents global availability without legacy speculative macro prose.
+Grounded profanity is retained; correction never requires inventing a mistake.
+
+Independent critique: two rounds, final 168 lines with zero flags. All 220 copy
+strings pass numeric grounding. Fixed critique prefix stripping that corrupted
+unprefixed decimal timestamps (12.4); added a regression. TypeScript and all 273
+tests across 40 files pass. Browser checks confirm all three revised reviews,
+newest reviewed marker, and removal of the old engage-number claim. Profile/API
+refresh and simulator artifact rebuild are unnecessary: the page directly reads
+these saved match reviews. Draft branch only; no merge or deployment.
