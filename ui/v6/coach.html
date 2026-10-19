@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Coach report — Pred Scout</title>
+<title>Coach report · Pred Scout</title>
 <style>
   :root {
     --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
@@ -238,7 +238,7 @@
   .tlobj.sel > div { box-shadow:0 0 0 2px var(--gold); }
   .tl-tick { position:absolute; top:32px; height:16px; width:1px; background:var(--border); opacity:.7; }
   .tl-ticklbl { position:absolute; top:54px; transform:translateX(-50%); font-size:.6rem; color:var(--text-2); font-variant-numeric:tabular-nums; }
-  /* structure falls: triangles between the objective row and the axis — direction
+  /* structure falls: triangles between the objective row and the axis · direction
      is the non-color encoding (▲ we took theirs, ▼ they took ours) */
   .tltower { position:absolute; transform:translateX(-50%); cursor:pointer; padding:4px 3px; transition:filter .12s; }
   .tltower:hover { filter:brightness(1.35); }
@@ -268,7 +268,7 @@
             border:1px solid var(--border); border-radius:8px; padding:.55rem .65rem; transition:border-color .2s; scroll-margin-top:92px; }
   .fm-detail.lit { border-color:var(--gold); }
   .fm-detail .mt { color:var(--gold); }
-  /* compact "all fights" chip row — replaces the old full-detail re-expansion; a chip
+  /* compact "all fights" chip row · replaces the old full-detail re-expansion; a chip
      loads its fight into the single map panel (links timeline ↔ map ↔ breakdown). */
   .fchips { display:flex; gap:.35rem; overflow-x:auto; padding:.4rem 0 .2rem; scrollbar-width:thin; -webkit-overflow-scrolling:touch; }
   .fchips::-webkit-scrollbar { height:5px; } .fchips::-webkit-scrollbar-thumb { background:var(--border); border-radius:99px; }
@@ -276,7 +276,7 @@
            border-radius:8px; padding:.3rem .55rem; color:var(--text-1); white-space:nowrap; display:inline-flex; gap:.25rem; align-items:center; -webkit-appearance:none; appearance:none; }
   .fchip:hover { border-color:var(--text-2); }
   .fchip.sel { border-color:var(--gold); background:var(--bg-3); box-shadow:0 0 0 1px var(--gold); }
-  /* kill ladder: the fight's death sequence, one row per kill — who fell, in
+  /* kill ladder: the fight's death sequence, one row per kill · who fell, in
      what order, and the body count it left standing. The opener row is the story. */
   .kl { margin:.35rem 0 .1rem; border-left:2px solid var(--border); }
   .kl-row { display:flex; align-items:center; gap:.45rem; padding:.16rem 0 .16rem .55rem; font-size:.76rem; flex-wrap:wrap; }
@@ -310,7 +310,7 @@
 </div><div class="subnav" id="subnav"></div></div>
 <div class="wrap" id="page">loading…</div>
 <script>
-const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const esc = (s) => String(s ?? '').replace(/\s*\u2014\s*/g, ', ').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct = (x, d = 1) => (x * 100).toFixed(d);
 
 // ── Post-game review rendering (match facts + the coaching pass) ──
@@ -338,7 +338,7 @@ function pgDots(v) {
 }
 // Per-fight breakdown: the kill-by-kill, who fought (with kit archetypes), each of
 // our fighters' builds + which spikes were online by then, and what the fight MEANT
-// (the major objective that fell as a result). All from the match facts — honest:
+// (the major objective that fell as a result). All from the match facts · honest:
 // items shown are end-game (pred.gg gives no purchase timeline), the spike minute is
 // the modeled "online" time, and the objective consequence is the real event stream.
 function fightDetail(s, f) {
@@ -351,7 +351,7 @@ function fightDetail(s, f) {
 
   // ── Kill ladder: the death sequence with the running body count. Alive
   // counts open from the macro read at the engage (fallback 5v5) and each
-  // death decrements its side — so every row shows the fight state it left.
+  // death decrements its side · so every row shows the fight state it left.
   const roleOf = (slug) => { const p = f.players.find((x) => x.heroSlug === slug); return p && p.role ? p.role : null; };
   let aliveUs = (s.macro && s.macro.ourAlive != null) ? s.macro.ourAlive : 5;
   let aliveThem = (s.macro && s.macro.theirAlive != null) ? s.macro.theirAlive : 5;
@@ -375,7 +375,7 @@ function fightDetail(s, f) {
   const ladder = ks.length ? `<div class="kl">${ladderRows}</div>` : '';
 
   // ── Fight read: who opened on whom, and whether the first death decided it.
-  // Pure arithmetic on the kill stream — no model, no guesses.
+  // Pure arithmetic on the kill stream · no model, no guesses.
   let fread = '';
   if (ks.length) {
     const first = ks[0];
@@ -385,21 +385,21 @@ function fightDetail(s, f) {
     const ourAfter = after.filter((k) => k.killedSide === 'them').length;
     const theirAfter = after.filter((k) => k.killedSide === 'us').length;
     const fightLen = ks.length > 1 ? (ks[ks.length - 1].t - t0) : 0;
-    let line = `${usOpened ? 'We drew first blood' : 'They drew first blood'} — <b style="color:${usOpened ? 'var(--green)' : 'var(--red)'}">${esc(hName(first.killerSlug))}</b> killed <b>${esc(hName(first.killedSlug))}</b>${vRole ? ` (${esc(vRole)})` : ''}${fightLen ? `, and the fight ran ${fightLen}s more` : ', and it ended there'}. `;
+    let line = `${usOpened ? 'We drew first blood' : 'They drew first blood'} · <b style="color:${usOpened ? 'var(--green)' : 'var(--red)'}">${esc(hName(first.killerSlug))}</b> killed <b>${esc(hName(first.killedSlug))}</b>${vRole ? ` (${esc(vRole)})` : ''}${fightLen ? `, and the fight ran ${fightLen}s more` : ', and it ended there'}. `;
     if (after.length) {
       if (usOpened && ourAfter >= theirAfter) line += `The pick held: we closed it ${s.ourKills}–${s.theirKills}.`;
-      else if (usOpened && ourAfter < theirAfter) line += `But it flipped — they traded back ${theirAfter}–${ourAfter} after the opener. A pick is only a win if we cash it or leave.`;
-      else if (!usOpened && theirAfter > ourAfter) line += `Down a body, the fight collapsed ${theirAfter}–${ourAfter} from there — after a first pick like that, the percentage play is to back off, not re-engage.`;
-      else line += `We fought back from the deficit ${ourAfter}–${theirAfter} after the opener — losing the first pick didn't decide it.`;
+      else if (usOpened && ourAfter < theirAfter) line += `But it flipped · they traded back ${theirAfter}–${ourAfter} after the opener. A pick is only a win if we cash it or leave.`;
+      else if (!usOpened && theirAfter > ourAfter) line += `Down a body, the fight collapsed ${theirAfter}–${ourAfter} from there · after a first pick like that, the percentage play is to back off, not re-engage.`;
+      else line += `We fought back from the deficit ${ourAfter}–${theirAfter} after the opener · losing the first pick didn't decide it.`;
     }
     if (vRole === 'carry' || vRole === 'support') {
       line += ` ${first.killedSide === 'us' ? 'Losing' : 'Taking'} the ${esc(vRole)} first ${first.killedSide === 'us' ? 'gutted our damage/peel for the rest of the fight' : 'took their ' + (vRole === 'carry' ? 'damage' : 'peel') + ' out of the fight up front'}.`;
     }
     fread = `<div class="fread">${line}</div>`;
   }
-  const who = (slugs, side) => slugs.map((slug) => { const k = kitOf(hName(slug)); return `${hlink(slug, `<b style="color:${side === 'us' ? 'var(--green)' : 'var(--red)'}">${esc(hName(slug))}</b>`)}${k && k.archetype ? `<span style="color:var(--text-2);font-size:.66rem"> ${esc(k.archetype)}</span>` : ''}`; }).join(', ') || '—';
+  const who = (slugs, side) => slugs.map((slug) => { const k = kitOf(hName(slug)); return `${hlink(slug, `<b style="color:${side === 'us' ? 'var(--green)' : 'var(--red)'}">${esc(hName(slug))}</b>`)}${k && k.archetype ? `<span style="color:var(--text-2);font-size:.66rem"> ${esc(k.archetype)}</span>` : ''}`; }).join(', ') || '·';
   // Builds AT FIGHT TIME: itemTimeline (est online minute from the measured
-  // median gold curve — THEORY) says which of the end-game items were likely
+  // median gold curve · THEORY) says which of the end-game items were likely
   // purchased by this fight; offline ones render dimmed. Falls back to the
   // sim-spike read on un-enriched files.
   const builds = s.ourHeroes.map((slug) => {
@@ -407,7 +407,7 @@ function fightDetail(s, f) {
     if (Array.isArray(p.itemTimeline) && p.itemTimeline.length) {
       const rows = p.itemTimeline.slice(0, 6);
       const onCount = rows.filter((i) => i.estMin != null && i.estMin <= s.startMin + 0.5).length;
-      const icons = rows.map((i) => { const on = i.estMin != null && i.estMin <= s.startMin + 0.5; return `<img data-ipop="${esc(i.slug)}" src="${iimg(i.slug)}" title="${esc(i.name)} · ${i.estMin != null ? `est. online ~${i.estMin}m` : 'est. very late'}${on ? '' : ' — NOT yet at this fight'}" style="width:17px;height:17px;border-radius:3px;${on ? '' : 'opacity:.28;filter:grayscale(.7)'}" onerror="this.style.display='none'">`; }).join('');
+      const icons = rows.map((i) => { const on = i.estMin != null && i.estMin <= s.startMin + 0.5; return `<img data-ipop="${esc(i.slug)}" src="${iimg(i.slug)}" title="${esc(i.name)} · ${i.estMin != null ? `est. online ~${i.estMin}m` : 'est. very late'}${on ? '' : ' · NOT yet at this fight'}" style="width:17px;height:17px;border-radius:3px;${on ? '' : 'opacity:.28;filter:grayscale(.7)'}" onerror="this.style.display='none'">`; }).join('');
       return `<div style="display:flex;align-items:center;gap:.25rem;font-size:.72rem;margin-top:.18rem"><b style="min-width:4.6rem">${esc(hName(slug))}</b>${icons}<span style="color:var(--text-2)"> · ~${onCount}/${rows.length} online</span></div>`;
     }
     const items = (p.items || []).filter((i) => !/Potion|Ward|Crest/i.test(i.name)).slice(0, 6);
@@ -416,7 +416,7 @@ function fightDetail(s, f) {
   }).join('');
 
   // Sustain check BOTH WAYS: was OUR anti-heal (the Tainted family) online into
-  // their healers — and was THEIRS online into ours? The most common invisible
+  // their healers · and was THEIRS online into ours? The most common invisible
   // reason a fight "randomly" went one way.
   const taintedOf = (slugs) => { const out = []; for (const slug of slugs) { const p = playerByHero(slug); if (!p || !Array.isArray(p.itemTimeline)) continue; for (const it of p.itemTimeline) if (/^tainted-/.test(it.slug)) out.push({ hero: hName(slug), item: it.name, est: it.estMin, on: it.estMin != null && it.estMin <= s.startMin + 0.5 }); } return out; };
   let sustain = '';
@@ -424,15 +424,15 @@ function fightDetail(s, f) {
   if (theirHealers.length) {
     const carriers = taintedOf(s.ourHeroes);
     const on = carriers.filter((c) => c.on);
-    if (on.length) sustain = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--green)">✓ <b>Sustain check:</b> ${esc(on.map((c) => `${c.item} (${c.hero})`).join(', '))} online into ${esc(theirHealers.join('/'))} — their healing was answered.</div>`;
-    else if (carriers.length) sustain = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--gold)">⚠ <b>Sustain check:</b> ${esc(theirHealers.join('/'))} heal for their side, but the anti-heal wasn't online yet (${esc(carriers.map((c) => `${c.hero}'s ${c.item} est. ~${c.est ?? 'late'}${c.est != null ? 'm' : ''}`).join(', '))}) — this fight ran unanswered.</div>`;
+    if (on.length) sustain = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--green)">✓ <b>Sustain check:</b> ${esc(on.map((c) => `${c.item} (${c.hero})`).join(', '))} online into ${esc(theirHealers.join('/'))} · their healing was answered.</div>`;
+    else if (carriers.length) sustain = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--gold)">⚠ <b>Sustain check:</b> ${esc(theirHealers.join('/'))} heal for their side, but the anti-heal wasn't online yet (${esc(carriers.map((c) => `${c.hero}'s ${c.item} est. ~${c.est ?? 'late'}${c.est != null ? 'm' : ''}`).join(', '))}) · this fight ran unanswered.</div>`;
     else if (s.ourHeroes.some((slug) => { const p = playerByHero(slug); return p && Array.isArray(p.itemTimeline); })) sustain = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--red)">✕ <b>Sustain check:</b> ${esc(theirHealers.join('/'))} heal for their side and nobody in this fight built anti-heal all game.</div>`;
   }
   // mirror: their Tainted into OUR healers explains "our healing stopped working"
   const ourHealers = (f.comp && f.comp.ourHealers) || [];
   if (ourHealers.length) {
     const theirsOn = taintedOf(s.theirHeroes).filter((c) => c.on);
-    if (theirsOn.length) sustain += `<div style="font-size:.76rem;margin-top:.25rem;color:var(--text-1)">↩ <b>Their side:</b> ${esc(theirsOn.map((c) => `${c.item} (${c.hero})`).join(', '))} was online against our ${esc(ourHealers.join('/'))} — expect our healing to have been cut in this fight.</div>`;
+    if (theirsOn.length) sustain += `<div style="font-size:.76rem;margin-top:.25rem;color:var(--text-1)">↩ <b>Their side:</b> ${esc(theirsOn.map((c) => `${c.item} (${c.hero})`).join(', '))} was online against our ${esc(ourHealers.join('/'))} · expect our healing to have been cut in this fight.</div>`;
   }
   // Item gap: participants' items est. online, us vs them (from the fights pass)
   let gapLine = '';
@@ -440,10 +440,10 @@ function fightDetail(s, f) {
   if (gap && (gap.us || gap.them)) {
     const diff = gap.us - gap.them;
     const col = diff < 0 ? 'var(--red)' : diff > 0 ? 'var(--green)' : 'var(--text-2)';
-    gapLine = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--text-1)"><b style="color:var(--text-0)">Item count at engage:</b> <b style="color:${col}">us ~${gap.us} v them ~${gap.them}</b>${diff <= -3 ? ' — we took this fight well behind on items; that gap, not the mechanics, is often the whole story' : diff >= 3 ? ' — we had the item lead; fights like this are ours to force' : ''} <span style="color:var(--text-2);font-size:.62rem">(participants only, median-gold model — THEORY)</span></div>`;
+    gapLine = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--text-1)"><b style="color:var(--text-0)">Item count at engage:</b> <b style="color:${col}">us ~${gap.us} v them ~${gap.them}</b>${diff <= -3 ? ' · we took this fight well behind on items; that gap, not the mechanics, is often the whole story' : diff >= 3 ? ' · we had the item lead; fights like this are ours to force' : ''} <span style="color:var(--text-2);font-size:.62rem">(participants only, median-gold model · THEORY)</span></div>`;
   }
   const after = (f.timeline ? f.timeline.majors : []).filter((m) => m.minute >= s.startMin - 0.3 && m.minute <= s.startMin + 2.5 && /FANG|PRIME|ORB/i.test(m.type)).map((m) => `${m.side === 'us' ? 'we took' : 'they took'} ${esc(m.type.replace(/_/g, ' '))} (${m.minute}m)`);
-  // Macro read (THEORY): the cross-map story — numbers at engage, who was dead and
+  // Macro read (THEORY): the cross-map story · numbers at engage, who was dead and
   // couldn't help, who was alive and didn't rotate, cross-map trades. Coaches the
   // GAME (rotations, tempo), not the hero matchup.
   const mac = s.macro || null;
@@ -452,7 +452,7 @@ function fightDetail(s, f) {
     ${fread}
     ${ladder ? `<div style="font-size:.68rem;color:var(--text-2);margin-top:.35rem"><b style="color:var(--text-0);font-size:.74rem">Death sequence</b> · first column = clock / seconds after the opener · right column = bodies standing (us v them)</div>${ladder}` : '<div style="font-size:.76rem;color:var(--text-2)">No located kills for this fight.</div>'}
     <div style="font-size:.76rem;color:var(--text-1);margin:.35rem 0 .25rem"><b style="color:var(--text-0)">Who fought:</b> ${who(s.ourHeroes, 'us')} <span style="color:var(--text-2)">vs</span> ${who(s.theirHeroes, 'them')}</div>
-    ${builds ? `<div style="font-size:.76rem;color:var(--text-1)"><b style="color:var(--text-0)">Online at this fight</b> <span style="color:var(--text-2);font-size:.64rem">(dimmed = est. not purchased yet — median-gold model, THEORY; entry HP isn't in the feed)</span>${builds}</div>` : ''}
+    ${builds ? `<div style="font-size:.76rem;color:var(--text-1)"><b style="color:var(--text-0)">Online at this fight</b> <span style="color:var(--text-2);font-size:.64rem">(dimmed = est. not purchased yet · median-gold model, THEORY; entry HP isn't in the feed)</span>${builds}</div>` : ''}
     ${gapLine}
     ${sustain}
     ${after.length ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.2rem"><b>What it meant:</b> ${after.join('; ')}.</div>` : ''}
@@ -465,7 +465,7 @@ function macroAvailability(mac) {
 }
 let MAP = null;   // data/game-data/map-landmarks.json (towers/lanes/objectives), loaded once
 // Fight map: the kill stream as a density heat layer (us green / them red) on the
-// REAL map geometry — lanes, turrets, Fangtooth/Prime — with the key fights ringed.
+// REAL map geometry · lanes, turrets, Fangtooth/Prime · with the key fights ringed.
 // Player-centric (our base bottom): dusk sits low-Y so we map it to the bottom;
 // for a dawn game we rotate 180°. Positions are real coordinates; reads are THEORY.
 function fightMap(f) {
@@ -477,7 +477,7 @@ function fightMap(f) {
   const W = 320, H = 360, pad = 16, mw = W - pad * 2, mh = H - pad * 2;
   // Us at the bottom in every game; the two views are 180° rotations of each
   // other. Flank handedness verified against the in-game minimap (the previous
-  // transform mirrored the map — Fang/Prime rendered on the wrong side).
+  // transform mirrored the map · Fang/Prime rendered on the wrong side).
   const sx = (x, y) => {
     const fx = usDawn ? (x - WX0) : (WX1 - x);
     const fy = usDawn ? (y - WY0) : (WY1 - y);
@@ -544,7 +544,7 @@ function fightMap(f) {
   const cen = (s) => { const ks = kills.filter((k) => k.t >= s.startSec - 1 && k.t <= s.endSec + 1); return ks.length ? sx(mean(ks.map((k) => k.x)), mean(ks.map((k) => k.y))) : null; };
   const keySk = [...sks].filter((s) => s.tag || s.significance >= 6).sort((a, b) => (b.tag ? 1 : 0) - (a.tag ? 1 : 0) || b.significance - a.significance).slice(0, 3);
   const decIdx = keySk.length ? sks.indexOf(keySk[0]) : (sks.length ? 0 : -1);   // the fight the panel + map lead with
-  // a hidden marching-ants ring per fight (lit by focusFight) — the dotted "where".
+  // a hidden marching-ants ring per fight (lit by focusFight) · the dotted "where".
   // The lead fight's ring starts lit so the map + panel agree on first paint.
   const marks = sks.map((s, i) => { const p = cen(s); if (!p) return ''; return `<g style="cursor:pointer" onclick="focusFight(${i})"><circle class="fm-halo" id="fhalo-${i}" cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="13"/><circle class="fm-mark${i === decIdx ? ' on' : ''}" id="fmark-${i}" cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="13"/></g>`; }).join('');
   // Per-fight kill SEQUENCE overlay (hidden until focused): each kill numbered
@@ -560,18 +560,18 @@ function fightMap(f) {
       <text x="${p.px.toFixed(1)}" y="${(p.py + 2.6).toFixed(1)}" fill="${died === 'us' ? 'var(--red)' : 'var(--green)'}" font-size="7.5" font-weight="800" text-anchor="middle">${n + 1}</text>`; }).join('');
     return `<g class="fseq" id="fseq-${i}"${i === decIdx ? '' : ' visibility="hidden"'}>${path}${nodes}</g>`;
   }).join('');
-  // caught-out deaths (outside every fight): small ✕ marks — the picks that
+  // caught-out deaths (outside every fight): small ✕ marks · the picks that
   // gave away free tempo, visible as geography (usually mid-rotation spots).
   const caughtHtml = ((f.fights && f.fights.caughtOut && f.fights.caughtOut.us) || []).map((c) => {
     const k = kills.find((x) => x.t === c.t); if (!k) return '';
     const p = sx(k.x, k.y);
-    return `<g><title>${Math.round(c.min)}m — ${esc(c.hero)} caught out (by ${esc(c.by)}), no fight around</title>
+    return `<g><title>${Math.round(c.min)}m · ${esc(c.hero)} caught out (by ${esc(c.by)}), no fight around</title>
       <path d="M${(p.px - 3.4).toFixed(1)} ${(p.py - 3.4).toFixed(1)}l6.8 6.8M${(p.px + 3.4).toFixed(1)} ${(p.py - 3.4).toFixed(1)}l-6.8 6.8" stroke="var(--gold)" stroke-width="2" stroke-linecap="round"/></g>`;
   }).join('');
   // the key few stay labelled & clickable so the map reads on its own
   const keyHtml = keySk.map((s) => { const p = cen(s); if (!p) return ''; const i = sks.indexOf(s); const ring = s.tag === 'game-defining' ? 'var(--gold)' : s.tag === 'bad-trade' ? 'var(--red)' : 'var(--text-2)'; return `<g style="cursor:pointer" onclick="focusFight(${i})"><circle cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="8" fill="none" stroke="${ring}" stroke-width="2"/><text x="${p.px.toFixed(1)}" y="${(p.py - 11).toFixed(1)}" fill="${ring}" font-size="9" font-weight="700" text-anchor="middle" style="pointer-events:none">${Math.round(s.startMin)}m</text></g>`; }).join('');
   // the FULL per-fight breakdown the click handler swaps into the panel under the map
-  // (one place — replaces the old "Every fight" re-expansion AND the lesser caption).
+  // (one place · replaces the old "Every fight" re-expansion AND the lesser caption).
   const fhead = (s) => `<div style="font-size:.86rem;font-weight:700;margin-bottom:.1rem">${s.startMin}m · ${esc(s.kind)} <span style="color:${rcol(s.result)}">${s.result} ${s.ourKills}–${s.theirKills}</span><span style="font-weight:400;color:var(--text-2)"> · ${esc(s.place)}${s.tag ? ` · <b style="color:${s.tag === 'game-defining' ? 'var(--gold)' : 'var(--red)'}">${esc(s.tag.replace('-', ' '))}</b>` : ''}</span></div>`;
   const details = sks.map((s, i) => `<div data-i="${i}">${fhead(s)}${fightDetail(s, f)}</div>`).join('');
   return `<div id="fightmap" style="background:var(--bg-1);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;margin-top:1rem;scroll-margin-top:92px">
@@ -600,7 +600,7 @@ function fightMap(f) {
   </div>`;
 }
 // Click a fight (timeline marker, "all fights" chip, OR its ring on the map): light a
-// marching-ants dotted outline WHERE it happened and break it down — its FULL detail —
+// marching-ants dotted outline WHERE it happened and break it down · its FULL detail ·
 // in the single panel under the map. One linked expansion; the timeline, the map and
 // the breakdown all point at the same fight. Degrades gracefully when the map/detail
 // isn't present (e.g. an old game with no located kills).
@@ -622,7 +622,7 @@ function focusFight(n) {
   if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 // Tap a strip mark (fight circle or objective dot): break it down in the panel
-// right under the strip — no scroll-jump. Tapping the same mark again closes it;
+// right under the strip · no scroll-jump. Tapping the same mark again closes it;
 // the panel's own link is the (explicit) way into the fight map.
 function tlSelect(kind, n) {
   const el = document.getElementById((kind === 'o' ? 'tlobj-' : kind === 't' ? 'tltw-' : 'tlmark-') + n);
@@ -645,7 +645,7 @@ function tlFilter(kind, btn) {
   const sel = document.querySelector('.tlmark.sel, .tlobj.sel, .tltower.sel');
   if (sel && sel.offsetParent === null) { sel.classList.remove('sel'); const p = document.getElementById('tldetail'); if (p) p.hidden = true; }
 }
-// strip marks are divs — make Enter/Space activate them like buttons
+// strip marks are divs · make Enter/Space activate them like buttons
 document.addEventListener('keydown', (e) => {
   if ((e.key === 'Enter' || e.key === ' ') && e.target.closest && e.target.closest('.tlmark, .tlobj, .tltower')) { e.preventDefault(); e.target.click(); }
 });
@@ -668,7 +668,7 @@ function pgReview(f) {
     <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap">
       <span style="font-weight:800;padding:.2rem .7rem;border-radius:8px;background:${resBg};color:${resColor}">${f.result.toUpperCase()}</span>
       <span style="color:var(--text-1);font-size:.85rem">${f.durationMin} min · ${esc(f.mode)} · ${new Date(f.startTime).toLocaleDateString()}${f.vpSwing != null ? ` · VP ${f.vpSwing >= 0 ? '+' : ''}${f.vpSwing}` : ''}${f.squad ? ` · stack ${f.squad.stackSize}` : ''}</span>
-      <span title="Combat math here is THEORY — our simulator's output on constants not yet measured in-game. Shown whenever a number rests on an unverified constant; the field win rates next to it are real." style="margin-left:auto;font-size:.62rem;font-weight:700;color:var(--gold);border:1px solid var(--gold);border-radius:99px;padding:.1rem .5rem;cursor:help">THEORY</span>
+      <span title="Combat math here is THEORY · our simulator's output on constants not yet measured in-game. Shown whenever a number rests on an unverified constant; the field win rates next to it are real." style="margin-left:auto;font-size:.62rem;font-weight:700;color:var(--gold);border:1px solid var(--gold);border-radius:99px;padding:.1rem .5rem;cursor:help">THEORY</span>
     </div>
     ${heroline}
     ${co ? `<div style="font-size:1.05rem;font-weight:700;line-height:1.45;margin-top:.7rem">${esc(co.headline)}</div>
@@ -676,10 +676,10 @@ function pgReview(f) {
       <div style="color:var(--text-1);margin-top:.35rem;font-size:.92rem">${esc(co.team)}</div>
     </details>
     <div style="border-left:3px solid var(--gold);padding:.5rem .8rem;background:rgba(240,180,41,.07);border-radius:6px;margin-top:.6rem;font-size:.9rem"><b>What shifted it:</b> ${esc(co.whatShiftedIt)}</div>
-    ${Array.isArray(co.ranking) && co.ranking.length ? `<div style="margin-top:.6rem"><div style="font-size:.7rem;font-weight:700;letter-spacing:.06em;color:var(--text-2);text-transform:uppercase">Player verdicts</div><ol style="margin:.3rem 0 0;padding-left:1.3rem;font-size:.88rem;line-height:1.5">${co.ranking.map((r) => { const pl = f.players.find((p) => p.pid === r.pid); return `<li><b>${pl ? pgName(pl) : ''}</b>${pl ? ` <span style="color:var(--text-2);font-size:.78rem">${esc(pl.heroName)}</span>` : ''} — ${esc(r.grade || '')}</li>`; }).join('')}</ol></div>` : ''}` :
+    ${Array.isArray(co.ranking) && co.ranking.length ? `<div style="margin-top:.6rem"><div style="font-size:.7rem;font-weight:700;letter-spacing:.06em;color:var(--text-2);text-transform:uppercase">Player verdicts</div><ol style="margin:.3rem 0 0;padding-left:1.3rem;font-size:.88rem;line-height:1.5">${co.ranking.map((r) => { const pl = f.players.find((p) => p.pid === r.pid); return `<li><b>${pl ? pgName(pl) : ''}</b>${pl ? ` <span style="color:var(--text-2);font-size:.78rem">${esc(pl.heroName)}</span>` : ''} · ${esc(r.grade || '')}</li>`; }).join('')}</ol></div>` : ''}` :
     `<div style="color:var(--text-2);margin-top:.5rem;font-size:.9rem">Facts computed; coaching narrative not yet authored for this match.</div>`}`);
 
-  // ── The three moments: tagged fights first, then by significance — capped at 3.
+  // ── The three moments: tagged fights first, then by significance · capped at 3.
   // Why = the computed macro read; cost = deaths in the fight priced at prizes +
   // the majors that fell right after (all from the facts; tags/places THEORY). ──
   const sks = (f.skirmishes || []);
@@ -711,7 +711,7 @@ function pgReview(f) {
       </div>
     </div>`;
   };
-  const moments = keyMoments.length ? card(`${eyebrow('The moments that decided it', 'capped at three — everything else is in “the full story” below')}${keyMoments.map(momentRow).join('')}`) : '';
+  const moments = keyMoments.length ? card(`${eyebrow('The moments that decided it', 'capped at three · everything else is in “the full story” below')}${keyMoments.map(momentRow).join('')}`) : '';
 
   // ── Scoreboard facts: useful context, not coach calls ──
   const statline = `<div class="coach-stat-wrap"><table class="coach-stats"><thead><tr><th>Squad · role</th><th>K / D / A</th><th>Hero dmg</th><th>Objective dmg</th><th>Mitigated</th><th>Wards</th></tr></thead><tbody>${us.map((p) => `<tr><td><b>${esc(pgName(p))}</b> <span class="role">· ${esc(p.heroName)} / ${esc(p.role)}</span></td><td>${p.kills} / ${p.deaths} / ${p.assists}</td><td>${Number(p.damageToHeroes || 0).toLocaleString()}</td><td>${Number(p.damageToObjectives || 0).toLocaleString()}</td><td>${Number(p.mitigated || 0).toLocaleString()}</td><td>${p.wardsPlaced || 0}</td></tr>`).join('')}</tbody></table><div style="font-size:.66rem;color:var(--text-2);margin-top:.25rem">Match totals only; they do not place a player in a specific fight.</div></div>`;
@@ -730,11 +730,11 @@ function pgReview(f) {
   let tlTicks = '';
   for (let t = 0; t <= tlDur; t += tickStep) tlTicks += `<div class="tl-tick" style="left:${xOf(t)}%"></div><div class="tl-ticklbl" style="left:${xOf(t)}%">${t === 0 ? '0m' : t}</div>`;
   if (tlDur % tickStep > 2) tlTicks += `<div class="tl-tick" style="left:${xOf(tlDur)}%"></div><div class="tl-ticklbl" style="left:${xOf(tlDur)}%">${tlDur}m</div>`;
-  const tlObjMarks = tlMajors.map((m, j) => { const x = xOf(m.minute); const mine = m.side === 'us'; const lbl = `${m.minute}m ${objName(m.type)} — taken by ${mine ? 'us' : 'them'}`; return `<div id="tlobj-${j}" class="tlobj" role="button" tabindex="0" aria-label="${esc(lbl)}" onclick="tlSelect('o',${j})" title="${esc(lbl)} · tap for detail" style="position:absolute;left:${x}%;top:0;transform:translateX(-50%);padding:3px"><div style="position:relative;width:9px;height:9px;border-radius:2px;background:${objColor(m.type)};border:1.5px solid ${mine ? 'var(--green)' : 'var(--red)'}">${mine ? '<span style="position:absolute;inset:0;margin:auto;width:3px;height:3px;border-radius:50%;background:#fff"></span>' : ''}</div></div>`; }).join('');
+  const tlObjMarks = tlMajors.map((m, j) => { const x = xOf(m.minute); const mine = m.side === 'us'; const lbl = `${m.minute}m ${objName(m.type)} · taken by ${mine ? 'us' : 'them'}`; return `<div id="tlobj-${j}" class="tlobj" role="button" tabindex="0" aria-label="${esc(lbl)}" onclick="tlSelect('o',${j})" title="${esc(lbl)} · tap for detail" style="position:absolute;left:${x}%;top:0;transform:translateX(-50%);padding:3px"><div style="position:relative;width:9px;height:9px;border-radius:2px;background:${objColor(m.type)};border:1.5px solid ${mine ? 'var(--green)' : 'var(--red)'}">${mine ? '<span style="position:absolute;inset:0;margin:auto;width:3px;height:3px;border-radius:50%;background:#fff"></span>' : ''}</div></div>`; }).join('');
   // structure falls (towers/inhibs/core) from the per-event stream; older films
   // without f.events simply have no tower band
   const tlTowers = (f.events || []).filter((e) => e.kind === 'tower').map((e) => ({ min: Math.round(e.sec / 6) / 10, type: e.type, side: e.side })).sort((a, b) => a.min - b.min);
-  const tlTowerMarks = tlTowers.map((e, j) => { const x = xOf(e.min); const mine = e.side === 'us'; const lbl = `${e.min}m ${objName(e.type)} — ${mine ? 'we took theirs' : 'they took ours'}`; return `<div id="tltw-${j}" class="tltower ${mine ? 'up' : 'down'}" role="button" tabindex="0" aria-label="${esc(lbl)}" onclick="tlSelect('t',${j})" title="${esc(lbl)} · tap for detail" style="left:${x}%;top:14px"><i></i></div>`; }).join('');
+  const tlTowerMarks = tlTowers.map((e, j) => { const x = xOf(e.min); const mine = e.side === 'us'; const lbl = `${e.min}m ${objName(e.type)} · ${mine ? 'we took theirs' : 'they took ours'}`; return `<div id="tltw-${j}" class="tltower ${mine ? 'up' : 'down'}" role="button" tabindex="0" aria-label="${esc(lbl)}" onclick="tlSelect('t',${j})" title="${esc(lbl)} · tap for detail" style="left:${x}%;top:14px"><i></i></div>`; }).join('');
   const tlFightMarks = sks.map((sk, i) => { const x = xOf(sk.startMin); const d = Math.min(22, 9 + sk.size * 2); const ring = keySet.has(sk) ? ';box-shadow:0 0 0 2px var(--gold)' : ''; const lbl = `${sk.startMin}m ${sk.kind}: ${sk.result} ${sk.ourKills}-${sk.theirKills} · ${sk.place}${sk.tag ? ' · ' + sk.tag.replace('-', ' ') : ''}`; return `<div id="tlmark-${i}" class="tlmark" role="button" tabindex="0" aria-label="${esc(lbl)}" onclick="tlSelect('f',${i})" title="${esc(lbl)} · tap for detail" style="position:absolute;left:${x}%;top:${40 - d / 2}px;transform:translateX(-50%);width:${d}px;height:${d}px;border-radius:50%;background:${skCol(sk.result)}${ring};display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">${sk.net > 0 ? '+' + sk.net : sk.net < 0 ? sk.net : ''}</div>`; }).join('');
   // the hidden per-mark breakdowns tlSelect() swaps into the panel under the strip
   const tlFightSums = sks.map((sk, i) => {
@@ -746,16 +746,16 @@ function pgReview(f) {
       <div class="tlfighters" style="margin:.25rem 0">${sk.ourHeroes.map((h) => hIcon(h, 17)).join('')} <span style="color:var(--text-2);margin:0 .2rem;font-size:.72rem">vs</span> ${sk.theirHeroes.map((h) => hIcon(h, 17)).join('')}</div>
       ${why ? `<div>${why}</div>` : ''}
       ${after.length ? `<div style="color:var(--gold);margin-top:.2rem">→ ${after.join('; ')}</div>` : ''}
-      <div style="margin-top:.3rem"><a href="#" onclick="focusFight(${i});return false" style="font-size:.72rem">full breakdown + where it happened — fight map ↓</a></div>
+      <div style="margin-top:.3rem"><a href="#" onclick="focusFight(${i});return false" style="font-size:.72rem">full breakdown + where it happened · fight map ↓</a></div>
     </div>`;
   }).join('');
   const tlObjSums = tlMajors.map((m, j) => `<div data-o="${j}">
       <div style="font-weight:700;color:var(--text-0)">${m.minute}m · ${esc(objName(m.type))} <span style="color:${m.side === 'us' ? 'var(--green)' : 'var(--red)'}">taken by ${m.side === 'us' ? 'us' : 'them'}</span></div>
-      <div style="color:var(--text-2);font-size:.74rem;margin-top:.15rem">A major objective from the real event stream — the nearest fight circles on the strip are usually why it fell (or fell free).</div>
+      <div style="color:var(--text-2);font-size:.74rem;margin-top:.15rem">A major objective from the real event stream · the nearest fight circles on the strip are usually why it fell (or fell free).</div>
     </div>`).join('');
   const tlTowerSums = tlTowers.map((e, j) => `<div data-t="${j}">
       <div style="font-weight:700;color:var(--text-0)">${e.min}m · ${esc(objName(e.type))} <span style="color:${e.side === 'us' ? 'var(--green)' : 'var(--red)'}">${e.side === 'us' ? 'we took theirs' : 'they took ours'}</span></div>
-      <div style="color:var(--text-2);font-size:.74rem;margin-top:.15rem">A structure fall from the real event stream — check the fights just before it on the line; that's usually what paid for it.</div>
+      <div style="color:var(--text-2);font-size:.74rem;margin-top:.15rem">A structure fall from the real event stream · check the fights just before it on the line; that's usually what paid for it.</div>
     </div>`).join('');
   const tlKey = `<div class="tlkey">
       <span class="tk"><i class="tkc" style="background:var(--green)"></i> won fight (+n)</span>
@@ -803,7 +803,7 @@ function pgReview(f) {
     ? `<div class="focus-call"><div class="eyebrow">Match-specific coach call</div><h3>${esc(focus.title)}</h3><p><b>Why this match:</b> ${esc(focus.evidence)}</p><p class="action"><b>Next time:</b> ${esc(focus.action)}</p></div>`
     : '';
   const coachEvidence = card(`${eyebrow('Squad statline & coach call', 'totals for context; the call must teach something unique')}${statline}${focusCall}`);
-  // ── The lobby: every player — portrait, coach line, build read, eternal (lazy), verdict ──
+  // ── The lobby: every player · portrait, coach line, build read, eternal (lazy), verdict ──
   const lobbyRow = (p) => {
     const lane = (f.lanes || []).find((l) => l.role === p.role && l.ourSlug === p.heroSlug);
     const built = (p.items || []).filter((i) => !/Potion|Ward|Crest/i.test(i.name));
@@ -827,10 +827,10 @@ function pgReview(f) {
         ${co?.perPlayer?.[p.pid] ? `<div class="line">${esc(co.perPlayer[p.pid])}</div>` : ''}
         <div class="items">${built.map((i) => `<img data-ipop="${esc(i.slug)}" src="${iimg(i.slug)}" title="${esc(i.name)}" onerror="this.style.display='none'">`).join('')}</div>
         <div class="lrow"><span class="ltag">build</span>${bits.join(' · ')}</div>
-        ${br?.build ? `<details class="whyd"><summary>why — what this build gained vs gave up</summary><div>${esc(br.build)}</div></details>` : ''}
+        ${br?.build ? `<details class="whyd"><summary>why · what this build gained vs gave up</summary><div>${esc(br.build)}</div></details>` : ''}
         ${ranLine(p.loadout)}
         <div class="lrow" data-et-slug="${esc(p.heroSlug)}" data-et-role="${esc(p.role)}" data-et-opp="${lane ? esc(lane.theirSlug) : ''}" data-et-ran="${esc(p.loadout?.eternal || '')}"><span class="ltag">engine pick</span><span style="opacity:.6">loading the engine's pick…</span></div>
-        ${br?.eternal ? `<details class="whyd"><summary>why — why this loadout fits the matchup</summary><div>${esc(br.eternal)}</div></details>` : ''}
+        ${br?.eternal ? `<details class="whyd"><summary>why · why this loadout fits the matchup</summary><div>${esc(br.eternal)}</div></details>` : ''}
         ${(() => { const m = co && co.microReads ? co.microReads[p.pid] : null; if (!m || !(m.keep || m.change || m.check)) return ''; return `<div class="kcc">
           ${m.lastCheck && m.lastCheck.text ? `<div class="lrow"><span class="ltag" style="color:${m.lastCheck.result === 'held' ? 'var(--green)' : m.lastCheck.result === 'missed' ? 'var(--red)' : 'var(--text-2)'}">last check · ${esc(m.lastCheck.result || '')}</span>${esc(m.lastCheck.text)}${m.lastCheck.receipt ? ` <span style="color:var(--text-2)">(${esc(m.lastCheck.receipt)})</span>` : ''}</div>` : ''}
           ${m.keep ? `<div class="lrow"><span class="ltag" style="color:var(--green)">keep</span>${esc(m.keep)}</div>` : ''}
@@ -843,10 +843,10 @@ function pgReview(f) {
     </div>`;
   };
   const cb = f.counterBuild;
-  const lobby = card(`${eyebrow('The lobby — squad &amp; randoms', 'build reads from the match; recorded loadouts where available; engine picks are separate simulator suggestions — THEORY')}
+  const lobby = card(`${eyebrow('The lobby · squad &amp; randoms', 'build reads from the match; recorded loadouts where available; engine picks are separate simulator suggestions · THEORY')}
     ${cb && (cb.notes || []).length ? `<div class="bverdict">${cb.notes.slice(0, 2).map(esc).join(' ')}</div>` : ''}
     ${us.map(lobbyRow).join('')}
-    `);  // draftNote (role-fit "queued off a bottom-two lane") is preference coaching the squad rule bans — not rendered (coach audit 2026-09-21)
+    `);  // draftNote (role-fit "queued off a bottom-two lane") is preference coaching the squad rule bans · not rendered (coach audit 2026-09-21)
 
   // ── Deep dive: lanes, fight map + per-fight breakdowns, comp, kit ──
   const wrColor = (w) => w >= 52 ? 'var(--green)' : w <= 48 ? 'var(--red)' : 'var(--text-1)';
@@ -858,7 +858,7 @@ function pgReview(f) {
         const cs = (l.counters || []).slice(0, 2);
         const counterTxt = cs.length
           ? cs.map((c) => `${esc(c.hero)}${c.inPool ? ' <span style="color:var(--green)" title="in that player’s pool">●</span>' : ''}`).join(', ')
-          : '—';
+          : '·';
         const mu = l.predggMatchup;
         return `<div style="border:1px solid var(--border);border-radius:8px;padding:.5rem .6rem;background:var(--bg-2)">
           <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
@@ -875,12 +875,12 @@ function pgReview(f) {
         </div>`;
       }).join('')}
     </div>
-    <div style="margin-top:.5rem;font-size:.72rem;color:var(--text-2)">Dots = minutes 5·10·15·20·25·30 — green = the minutes the fight is winnable for us. Counter = a role-eligible hero that beats the enemy laner (matchup matrix, THEORY); <span style="color:var(--green)">●</span> = in that player’s pool.</div>`);
+    <div style="margin-top:.5rem;font-size:.72rem;color:var(--text-2)">Dots = minutes 5·10·15·20·25·30 · green = the minutes the fight is winnable for us. Counter = a role-eligible hero that beats the enemy laner (matchup matrix, THEORY); <span style="color:var(--green)">●</span> = in that player’s pool.</div>`);
 
   const comp = card(`
     ${eyebrow('Team comp &amp; objectives', '')}
-    <div style="font-size:.84rem;color:var(--text-1)">Damage — us: ${f.comp.ourDamage.physical}P/${f.comp.ourDamage.magical}M · them: ${f.comp.theirDamage.physical}P/${f.comp.theirDamage.magical}M · healers them: ${f.comp.theirHealers.join(', ') || 'none'}</div>
-    <div style="font-size:.84rem;color:var(--text-1)">Objectives — us: ${f.objectives.ourKills}${f.timeline ? ' majors' : ' kills'} · them: ${f.objectives.theirKills}${f.timeline ? ` · towers ${f.timeline.towers.us}–${f.timeline.towers.them}` : ''}</div>
+    <div style="font-size:.84rem;color:var(--text-1)">Damage · us: ${f.comp.ourDamage.physical}P/${f.comp.ourDamage.magical}M · them: ${f.comp.theirDamage.physical}P/${f.comp.theirDamage.magical}M · healers them: ${f.comp.theirHealers.join(', ') || 'none'}</div>
+    <div style="font-size:.84rem;color:var(--text-1)">Objectives · us: ${f.objectives.ourKills}${f.timeline ? ' majors' : ' kills'} · them: ${f.objectives.theirKills}${f.timeline ? ` · towers ${f.timeline.towers.us}–${f.timeline.towers.them}` : ''}</div>
     ${f.closingNote ? `<div style="font-size:.82rem;color:var(--gold);margin-top:.45rem">⏱ ${esc(f.closingNote)}</div>` : ''}
     ${f.comp.flags.length ? `<div style="font-size:.8rem;color:var(--gold);margin-top:.4rem">${f.comp.flags.map((x) => '• ' + esc(x)).join('<br>')}</div>` : ''}`);
 
@@ -889,19 +889,19 @@ function pgReview(f) {
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem">
       <div>
         <div style="font-weight:700;color:var(--green);font-size:.82rem;margin-bottom:.3rem">How our comp should play</div>
-        ${(f.kit.synergy || []).map((x) => `<div style="font-size:.84rem;color:var(--text-1);margin-bottom:.35rem">• ${esc(x)}</div>`).join('') || '<div style="color:var(--text-2);font-size:.82rem">—</div>'}
+        ${(f.kit.synergy || []).map((x) => `<div style="font-size:.84rem;color:var(--text-1);margin-bottom:.35rem">• ${esc(x)}</div>`).join('') || '<div style="color:var(--text-2);font-size:.82rem">·</div>'}
       </div>
       <div>
         <div style="font-weight:700;color:var(--red);font-size:.82rem;margin-bottom:.3rem">What the enemy kit threatens</div>
         ${(f.kit.threats || []).map((x) => `<div style="font-size:.84rem;color:var(--text-1);margin-bottom:.35rem">• ${esc(x)}</div>`).join('') || '<div style="color:var(--text-2);font-size:.82rem">no standout threats flagged</div>'}
       </div>
     </div>
-    ${(f.kit.enemyKits || []).some((k) => k.playAgainst) ? `<details style="margin-top:.7rem"><summary style="cursor:pointer;font-weight:700;color:var(--red);font-size:.82rem">Enemy kits — how to play against each ▾</summary>
+    ${(f.kit.enemyKits || []).some((k) => k.playAgainst) ? `<details style="margin-top:.7rem"><summary style="cursor:pointer;font-weight:700;color:var(--red);font-size:.82rem">Enemy kits · how to play against each ▾</summary>
       <div style="margin-top:.4rem">${f.kit.enemyKits.filter((k) => k.archetype).map((k) => `<div style="font-size:.82rem;margin-bottom:.4rem"><b>${esc(k.hero)}</b> <span style="color:var(--text-2)">· ${esc(k.archetype)}</span>${k.playAgainst ? `<div style="color:var(--text-1)">↳ ${esc(k.playAgainst)}</div>` : ''}</div>`).join('')}</div></details>` : ''}
-    ${(f.kit.ourKits || []).some((k) => k.winCondition) ? `<details style="margin-top:.4rem"><summary style="cursor:pointer;font-weight:700;color:var(--green);font-size:.82rem">Our kits — win conditions &amp; combos ▾</summary>
+    ${(f.kit.ourKits || []).some((k) => k.winCondition) ? `<details style="margin-top:.4rem"><summary style="cursor:pointer;font-weight:700;color:var(--green);font-size:.82rem">Our kits · win conditions &amp; combos ▾</summary>
       <div style="margin-top:.4rem">${f.kit.ourKits.filter((k) => k.archetype).map((k) => `<div style="font-size:.82rem;margin-bottom:.4rem"><b>${esc(k.hero)}</b> <span style="color:var(--text-2)">· ${esc(k.archetype)}</span>${k.winCondition ? `<div style="color:var(--text-1)">↳ Win: ${esc(k.winCondition)}</div>` : ''}</div>`).join('')}</div></details>` : ''}`) : '';
 
-  const deep = `<details class="deepdive" id="deepdive"><summary>The full story — lanes, the fight map, every fight, comp &amp; kits</summary>
+  const deep = `<details class="deepdive" id="deepdive"><summary>The full story · lanes, the fight map, every fight, comp &amp; kits</summary>
     ${lanes}${fightMap(f)}${comp}${kit}
   </details>`;
 
@@ -911,7 +911,7 @@ function pgReview(f) {
       <h2 style="font-size:1.2rem;line-height:1.4;margin:.65rem 0">${esc(co.headline || 'Match review')}</h2>
       ${co.team ? `<p style="color:var(--text-1);line-height:1.6;margin:0">${esc(co.team)}</p>` : ''}`);
     const next = focus?.action ? card(`${eyebrow('Next game', '')}<p style="font-size:1rem;line-height:1.5;margin:0">${esc(focus.action)}</p>`) : '';
-    const players = card(`${eyebrow('Your team — straight talk', '')}${us.map((p) => `<div class="plobby">
+    const players = card(`${eyebrow('Your team', '')}${us.map((p) => `<div class="plobby">
       <div class="who">${hIcon(p.heroSlug, 34)}<span><b>${pgName(p)}</b><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span></span></div>
       <div class="line">${co.perPlayer?.[p.pid] ? esc(co.perPlayer[p.pid]) : 'Individual feedback has not been written for this player.'}</div>
     </div>`).join('')}`);
@@ -923,7 +923,7 @@ function pgReview(f) {
         ${br?.build ? `<p>${esc(br.build)}</p>` : ''}${br?.eternal ? `<p>${esc(br.eternal)}</p>` : ''}
       </div></div>`;
     }).join('')}`);
-    return verdict + next + players + `<details class="deepdive" id="coach-evidence"><summary>Evidence & replay details — stats, builds and timestamps</summary>
+    return verdict + next + players + `<details class="deepdive" id="coach-evidence"><summary>Evidence & replay details · stats, builds and timestamps</summary>
       ${card(eyebrow('Match totals', '') + statline)}${loadouts}${moments}${timeline}${deep}
     </details>`;
   }
@@ -931,7 +931,7 @@ function pgReview(f) {
 }
 
 // The lobby's ETERNAL line joins the per-hero artifact (engine loadout + the
-// matchup item swap vs the actual lane opponent). Lazy + cached — artifacts are
+// matchup item swap vs the actual lane opponent). Lazy + cached · artifacts are
 // only fetched for the five heroes on screen, after the review renders.
 const ARTCACHE = {};
 async function fillEternals() {
@@ -948,7 +948,7 @@ async function fillEternals() {
       const oppName = mu ? mu.enemy : opp;
       // Support loadouts: the engine models only damage majors (Vesh/Demiurge/
       // Thraex...), the support majors (Exarch, Aion, Lotus, Marrow, Nihil,
-      // Weald, Pilow, Satariel) are unmodeled — so a Vesh row on an enchanter is
+      // Weald, Pilow, Satariel) are unmodeled · so a Vesh row on an enchanter is
       // the model's blind spot, not a recommendation (coach audit 2026-09-21).
       const ran = el.dataset.etRan;
       if (role === 'support') { el.innerHTML = `<span class="ltag">engine pick</span><span style="color:var(--text-2)">support loadouts are not modeled by the engine (the field runs Exarch on healers and shielders, Krix on tank supports)</span>`; continue; }
@@ -969,7 +969,7 @@ async function fillEternals() {
     let sq = null;
     try { sq = await (await fetch('../../data/artifacts/squad.json')).json(); } catch {}
     if (sq) {
-      document.title = 'Coach reports — pick a member';
+      document.title = 'Coach reports · pick a member';
       // Post-game reviews of the squad's recent ranked games (committed, zero-API).
       // Only the small index loads up front; each match's full facts are fetched
       // lazily on click (and cached), so the list scales to any number of games.
@@ -983,7 +983,7 @@ async function fillEternals() {
 
       document.getElementById('page').innerHTML = `
         <details class="rostermenu">
-          <summary><span class="rm-t">Coach reports</span><span class="rm-s">— open a member’s report</span></summary>
+          <summary><span class="rm-t">Coach reports</span><span class="rm-s">· open a member’s report</span></summary>
           <div class="roster">
             ${sq.members.map((m) => `
               <a class="rost" href="coach.html?player=${esc(m.uuid)}">
@@ -1067,12 +1067,12 @@ async function fillEternals() {
       }
       return;
     }
-    // no squad report on disk — fall through to the lead's standalone report
+    // no squad report on disk · fall through to the lead's standalone report
   }
   const src = who ? `../../data/artifacts/players/${who}.json` : '../../data/artifacts/coach.json';
   try { c = await (await fetch(src)).json(); }
   catch { document.getElementById('page').textContent = 'no coach report generated yet'; return; }
-  document.title = `${c.player.name} — coach report`;
+  document.title = `${c.player.name} · coach report`;
   const p = c.player;
   const fillPct = Math.min(100, (p.current.points / c.goal.vp) * 100);
   const peakPct = Math.min(100, (c.goal.peakAllTime / c.goal.vp) * 100);
@@ -1084,7 +1084,7 @@ async function fillEternals() {
   try { metaInfo = await (await fetch('../../data/artifacts/meta.json')).json(); } catch {}
 
   document.getElementById('page').innerHTML = `
-    <div class="scope">📊 <b>Data scope:</b> this player's pred.gg public profile — career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked split history, last 40 matches · field baselines: ${metaInfo ? metaInfo.matches.toLocaleString() + ' matches, patch ' + esc(metaInfo.patch) : 'current-patch matches'}, all ranks · winrates adjusted toward the player's own average (thin samples count less) · combat math is THEORY pending in-game calibration · generated ${esc(c.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
+    <div class="scope">📊 <b>Data scope:</b> this player's pred.gg public profile · career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked split history, last 40 matches · field baselines: ${metaInfo ? metaInfo.matches.toLocaleString() + ' matches, patch ' + esc(metaInfo.patch) : 'current-patch matches'}, all ranks · winrates adjusted toward the player's own average (thin samples count less) · combat math is THEORY pending in-game calibration · generated ${esc(c.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
     <h1>${c.pool?.[0] ? `<img class="pav" src="../img/heroes/${esc(c.pool[0].slug)}.webp" alt="" onerror="this.remove()">` : ''}${esc(p.name)} <a class="ext" href="https://pred.gg/players/${esc(p.uuid)}" target="_blank" rel="noopener">pred.gg ↗</a></h1>
     ${c.archetype ? `<div class="arch">“${esc(c.archetype.label)}” <span class="arch-r">${esc(c.archetype.receipt)}</span></div>` : ''}
     <div class="sub">
@@ -1171,7 +1171,7 @@ async function fillEternals() {
       return `
     <div class="card">
       <h2>Meta picks in ${esc(p.name)}’s lanes · what the field is winning with right now</h2>
-      <div style="font-size:.78rem;color:var(--text-1);margin-bottom:.7rem">Comfort picks earn their spot, but the meta moves — these are the strongest current-patch heroes in the roles ${esc(p.name)} actually queues. “New pick” means under 30 of their own games; the field winrate still makes them worth a look when the comfort pick gets countered or the team needs a different shape.</div>
+      <div style="font-size:.78rem;color:var(--text-1);margin-bottom:.7rem">Comfort picks earn their spot, but the meta moves · these are the strongest current-patch heroes in the roles ${esc(p.name)} actually queues. “New pick” means under 30 of their own games; the field winrate still makes them worth a look when the comfort pick gets countered or the team needs a different shape.</div>
       ${myRoles.map((r) => `
         <div style="margin-top:.6rem">
           <div style="font-size:.72rem;font-weight:800;text-transform:capitalize;color:var(--accent);letter-spacing:.06em">${esc(r.role)} · own record ${pct(r.shrunkWr)}% over ${r.games} games</div>
@@ -1217,7 +1217,7 @@ function buildSubnav() {
   document.documentElement.style.setProperty('--toph', `${document.querySelector('.top')?.offsetHeight ?? 96}px`);
   const pills = [...host.querySelectorAll('.snpill')];
   pills.forEach((p) => { p.onclick = () => document.getElementById(p.dataset.t)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-  // center the active pill by scrolling the pill ROW only — letting the
+  // center the active pill by scrolling the pill ROW only · letting the
   // browser scroll ancestors pans the pinch-zoom viewport on iOS
   const centerPill = (p) => host.scrollTo({ left: p.offsetLeft - host.clientWidth / 2 + p.offsetWidth / 2, behavior: 'smooth' });
   const byId = new Map(pills.map((p) => [p.dataset.t, p]));
