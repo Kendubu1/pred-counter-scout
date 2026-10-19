@@ -5006,3 +5006,14 @@ and its source note from the latest snapshot (levels untouched: provisional);
 it runs after `aggregate` and before `artifacts`, since the sim reads it.
 Lesson: a gate that binds a fixture to refreshed data needs the refresh to own
 the re-derivation, or the gate becomes a daily outage.
+
+## 2026-10-19 — A worker's sync step must not be destructive
+
+The daily worker's first step was `git fetch && git reset --hard origin/main`.
+After one interrupted run left 71 uncommitted data files, its auto-mode
+permission check classified the reset as irreversible local destruction and
+refused it on every later fire (10-18, 10-19), so no run got past the sync.
+The sync is now fetch → `git stash push -u` for any leftovers (reversible) →
+`git merge --ff-only`. Lesson: an unattended job's routine first step has to be
+something the permission layer will always allow, including in the dirty state
+a failed run leaves behind.

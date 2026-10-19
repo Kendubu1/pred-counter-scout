@@ -22,9 +22,15 @@ lives on a SESSION, and Routines cannot attach sources to the fresh
 sessions they spawn — so the Routine now fires into a PERSISTENT WORKER
 session created with the repo attached as a source (push access to main),
 which survives container recycling. Consequences:
-- Each fire starts with `git fetch origin main && git reset --hard
-  origin/main` — the worker's clone is disposable; leftovers from an
-  interrupted run are debris, never work to keep.
+- Each fire starts with a NON-destructive sync (changed 2026-10-19):
+  `git fetch origin main`, then, if the tree is dirty from an interrupted
+  run, `git stash push -u -m "leftover <date>"` (reversible — the leftovers
+  are debris, but a stash is not a deletion), then `git checkout main &&
+  git merge --ff-only origin/main`. Never `git reset --hard`: the worker's
+  auto-mode permission check treats it as irreversible local destruction
+  whenever the tree is dirty and refuses it, which blocked the 10-18 and
+  10-19 fires before any work ran. If the fast-forward fails (local commits
+  that never pushed), stop and report rather than discarding them.
 - A stranded-commit failure is impossible to lose data to: the watch
   marker only advances when a push lands, so an interrupted run's games
   are re-detected and re-coached on the next fire (this is the standing
