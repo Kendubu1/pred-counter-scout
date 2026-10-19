@@ -1,3 +1,4 @@
+import { coachingPresetPrompt } from '../coaching-presets.js';
 // Independent critic over post-game COACHING. A SEPARATE agent (NOT the author
 // pred-scout-coach) reviews each game's coaching narrative against the match
 // FACTS and flags any line that (a) coaches a player's hero/role PREFERENCE
@@ -15,7 +16,7 @@
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildAllowed, verifyLine } from '../copy-verify.js';
+import { buildAllowed, verifyLine, stripReviewLineNumber } from '../copy-verify.js';
 import { ask, flushTasks, isPrepare } from '../copy-session.js';
 
 // What each player actually ran (players[i].loadout, npm run postgame:loadout):
@@ -44,6 +45,7 @@ function sourceOf(f: Facts): string {
   // hero-vs-hero, to explain the fights.
   const withMacro = sk.filter((s) => s.macro && (s.macro.notes ?? []).length);
   return [
+    `EVIDENCE LIMITS: Lane verdicts are simulations, not observed lane results. Missing kill/death credit does not establish absence. Alive counts are not local fight numbers. Chronology alone does not prove causation. Preserve grounded blunt coaching and adult humor; do not invent corrections.`,
     `RESULT: ${f.result} in ${f.durationMin}m${f.vpSwing != null ? `, VP ${f.vpSwing >= 0 ? '+' : ''}${f.vpSwing}` : ''}.`,
     `DECISIVE FIGHTS: ${tagged.length ? tagged.map((s) => `${s.startMin}m ${s.kind} ${s.result} ${s.ourKills}-${s.theirKills} @ ${s.place} [${s.tag}]`).join('; ') : 'none tagged'}.`,
     `ALL SKIRMISHES (n=${sk.length}): ${sk.map((s) => `${s.startMin}m ${s.result} ${s.ourKills}-${s.theirKills} @ ${s.place} (${(s.ourHeroes ?? []).join('/')} v ${(s.theirHeroes ?? []).join('/')})`).join(', ') || 'none'}.`,
@@ -178,7 +180,7 @@ function deepReplace(o: unknown, from: string, to: string): unknown {
 }
 // The prompt numbers each line ("3. <line>"); the critic echoes that prefix in
 // both quote and rewrite. Strip it so the quote matches the actual coaching text.
-const stripNum = (s: string) => s.replace(/^\s*\d+\.\s*/, '');
+const stripNum = stripReviewLineNumber;
 
 async function main() {
   const files = readdirSync(PG).filter((f) => f.endsWith('.json') && f !== 'index.json');
@@ -195,7 +197,7 @@ async function main() {
     const lines = lineList(f.coaching!);
     if (!lines.length) continue;
     const id = f.matchId || fn.replace('.json', '');
-    const prompt = `You are an INDEPENDENT reviewer of post-game COACHING for a Predecessor (MOBA) squad match. Another agent wrote the COPY; you did NOT. The coach's job is to critique the GAME and the DRAFT — the fights, the objectives, the picks — NOT a player's personal hero/role preference. Judge the copy against the SOURCE (match facts) ONLY.
+    const prompt = `${coachingPresetPrompt(ROOT)}\n\nYou are an INDEPENDENT reviewer of post-game COACHING for a Predecessor (MOBA) squad match. Another agent wrote the COPY; you did NOT. The coach's job is to critique the GAME and the DRAFT — the fights, the objectives, the picks — NOT a player's personal hero/role preference. Judge the copy against the SOURCE (match facts) ONLY.
 
 SOURCE (match facts):
 ${sourceOf(f)}
@@ -216,7 +218,9 @@ Flag ONLY real problems:
 (i) PLAYER CARD (maintainer rule 2026-10-14) — microReads must exist for all five of our players with a non-empty "change" and "check" in every result; flag a missing one, a "change" that restates a stat or copies a build flag or would fit any game (not anchored to an event, minute, fight, structure or count in THIS SOURCE), a "check" the feed cannot measure (aim, spacing, timing, intent), a card that repeats another player's card or the previous film's card, and a "lastCheck" whose held/missed verdict contradicts the facts or that is missing when a PREVIOUS CHECK line exists for that player.
 BLUNT IS THE HOUSE STYLE: a harsh verdict backed by two or more SOURCE facts is CORRECT — do not flag or soften it; flag a blunt line only when its receipts are not in the SOURCE.
 GAME KNOWLEDGE IS NOT A MATCH CLAIM: plain-word item/Eternal mechanics and map-economy concepts (objective spawn windows and cadence, "power farm"/"invade"/"deward", build-swap conditions like "against heavy healing") need NO SOURCE support — do not flag them as ungrounded. Any NUMBER, and any claim about what happened in THIS game, still requires the SOURCE.
-Do NOT nitpick style beyond the voice rule. Return strict JSON: {"flags":[{"quote":"<the exact line text>","severity":"high|med|low","issue":"<what's wrong, one phrase>","rewrite":"<a game/draft/fight-focused corrected line grounded in the SOURCE, or null to drop the line>"}]}. If all fine, return {"flags":[]}.`;
+LATEST MAINTAINER OVERRIDE (2026-10-19): preserve blunt competitive coaching with occasional profanity and adult locker-room humor. A concise joke about play is allowed; reject personal/identity attacks or jokes replacing evidence. This overrides older metaphor/maxim restrictions. Do not force a mistake: a strong performance may get a maintainable standard instead. Reject simulated lane advantage as actual lane victory, missing kill/death credit as absence, alive counts as local fighting numbers, and chronological proximity as proven causation. Never reward a death as evidence of attendance; old invalid attendance checks are not measurable. Verify team-high comparisons against all players.
+${coachingPresetPrompt(ROOT)}
+Judge against the active preset. Empty optional concise sections are not omissions. Do NOT nitpick style beyond its rules. Return strict JSON: {"flags":[{"quote":"<the exact line text>","severity":"high|med|low","issue":"<what's wrong, one phrase>","rewrite":"<a game/draft/fight-focused corrected line grounded in the SOURCE, or null to drop the line>"}]}. If all fine, return {"flags":[]}.`;
 
     const raw = (await ask('coach-critique', id, prompt)).trim().replace(/^```json?\s*|```$/g, '');
     reviewed += lines.length;

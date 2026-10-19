@@ -123,3 +123,14 @@ not in the env, stop immediately and report — no partial work.
   catching the moment omeda publishes a new balance patch — belongs to the
   separate daily pull (docs/daily-refresh.md), not here. One reacts to events,
   the other keeps the shelves stocked.
+
+
+## Review voice and evidence gate (2026-10-19)
+
+Use the latest maintainer tone section in `.claude/agents/pred-scout-coach.md`:
+blunt competitive verdicts, occasional adult humor, and specific player advice.
+The independent critic preserves grounded harshness. Before reusing a prior
+review, remove simulated lane wins presented as actual wins, unproven attendance
+claims and checks rewarding kill/death credit. Update the reviewed-match index
+from the saved coaching objects. A copy-only refresh uses stored match facts;
+it does not require a new profile or match API pull.
