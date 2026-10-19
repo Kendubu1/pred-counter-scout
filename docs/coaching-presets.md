@@ -9,3 +9,5 @@ Restoration replaces only coaching for matches in the selected snapshot; current
 Snapshots live under `data/coaching/review-presets/` with `id`, `sourceCommit`, `note`, and `reviews` keyed by match ID. All three snapshots include the five newest matches from the October 19 release. Selecting a preset does not regenerate copy or fetch data. Both prompt generators and agent directives load the active profile; intentionally empty concise ranking/verdicts/microReads/whatShiftedIt/whatWorked are permitted.
 
 Active `blunt-actions-v3` renders optional Keep and Change actions instead of each player paragraph. Empty actions are omitted; no praise or criticism is forced. The first five matches have a saved v3 snapshot, and v2 remains available for rollback.
+
+Active `blunt-paragraph-v4` restores one paragraph per player with the behavior to keep and change woven into the prose. The optional playerFormat distinguishes paragraphs from v3 action labels, so selecting/restoring an older preset also restores its presentation.

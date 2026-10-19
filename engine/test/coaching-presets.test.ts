@@ -9,7 +9,7 @@ function setup() {
  const root = mkdtempSync(path.join(tmpdir(), 'coach-presets-')); roots.push(root);
  mkdirSync(path.join(root, 'data/coaching/review-presets'), { recursive: true }); mkdirSync(path.join(root, 'data/postgame'), { recursive: true });
  const put = (f: string, d: unknown) => writeFileSync(path.join(root, f), JSON.stringify(d));
- put('data/coaching/personas.json', { active: 'new', presets: [{ id: 'new', layout: 'concise', instructions: 'Short.' }, { id: 'old', layout: 'classic', instructions: 'Detailed.' }] });
+ put('data/coaching/personas.json', { active: 'new', presets: [{ id: 'new', layout: 'concise', instructions: 'Short.' }, { id: 'old', layout: 'classic', playerFormat: 'actions', instructions: 'Detailed.' }] });
  const old = { headline: 'Old', team: 'Why', perPlayer: { p: 'Advice' } };
  const snapshot = { id: 'old', sourceCommit: 'abc', note: '', reviews: { match: old } };
  put('data/coaching/review-presets/old.json', snapshot);
@@ -17,7 +17,7 @@ function setup() {
  put('data/postgame/match.json', match);
  return { root, put, old, snapshot, match, read: () => JSON.parse(readFileSync(path.join(root, 'data/postgame/match.json'), 'utf8')) };
 }
-it('selects layout and instructions without replacing review', () => { const s=setup(); expect(selectCoachingPreset(s.root,'old')).toBe(0); expect(loadCoachingPreset(s.root).layout).toBe('classic'); expect(coachingPresetPrompt(s.root)).toContain('Detailed.'); expect(s.read()).toEqual(s.match); });
+it('selects layout and instructions without replacing review', () => { const s=setup(); expect(selectCoachingPreset(s.root,'old')).toBe(0); expect(loadCoachingPreset(s.root).layout).toBe('classic'); expect(loadCoachingPreset(s.root).playerFormat).toBe('actions'); expect(coachingPresetPrompt(s.root)).toContain('Detailed.'); expect(s.read()).toEqual(s.match); });
 it('restores only coaching preserving updated facts and unknown fields', () => { const s=setup(); expect(selectCoachingPreset(s.root,'old',true)).toBe(1); expect(s.read()).toEqual({...s.match,coaching:s.old}); });
 it('rejects unknown selection without writes', () => { const s=setup(); expect(()=>selectCoachingPreset(s.root,'../escape',true)).toThrow('Unknown'); expect(loadCoachingPreset(s.root).id).toBe('new'); expect(s.read()).toEqual(s.match); });
 it('validates all matches before first write', () => { const s=setup(); s.put('data/coaching/review-presets/old.json',{...s.snapshot,reviews:{match:s.old,missing:s.old}}); expect(()=>selectCoachingPreset(s.root,'old',true)).toThrow(); expect(loadCoachingPreset(s.root).id).toBe('new'); expect(s.read()).toEqual(s.match); });

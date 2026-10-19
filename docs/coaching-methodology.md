@@ -531,3 +531,5 @@ these saved match reviews. Draft branch only; no merge or deployment.
 The active preset governs authoring and rendering. The concise view has a verdict and short explanation, one next-game team call, and distinct allied-player feedback. Ranking, repeated verdicts and Keep/Change/Check sections are omitted. Raw totals, loadouts and event times remain collapsed; no source-limitations boilerplate belongs in the main coaching voice. Preset selection and restoration instructions are in `docs/coaching-presets.md`. Five latest reviews are authored to this format; older narratives are retained.
 
 The October 19 v3 refinement restores optional per-player Keep and Change actions. They replace the concise player paragraph, not additional repeated advice. Main prose still omits stat receipts and previous-check blocks.
+
+The v4 refinement keeps reinforcement and correction inside a single purposeful paragraph. Stronger accountability targets supported behavior, never inferred motives. Separate Keep/Change labels are reserved for the archived v3 preset.

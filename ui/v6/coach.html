@@ -650,6 +650,7 @@ document.addEventListener('keydown', (e) => {
   if ((e.key === 'Enter' || e.key === ' ') && e.target.closest && e.target.closest('.tlmark, .tlobj, .tltower')) { e.preventDefault(); e.target.click(); }
 });
 let COACH_LAYOUT = 'classic';
+let COACH_PLAYER_FORMAT = 'paragraph';
 function pgReview(f) {
   const us = f.players.filter((p) => p.us);
   const ourOf = (role) => f.players.find((p) => p.us && p.role === role);
@@ -915,7 +916,7 @@ function pgReview(f) {
       <div class="who">${hIcon(p.heroSlug, 34)}<span><b>${pgName(p)}</b><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span></span></div>
       <div class="line">${(() => {
         const actions = co.microReads?.[p.pid];
-        if (actions?.keep || actions?.change) return `${actions.keep ? `<p style="margin:0 0 .5rem"><b style="color:var(--green)">Keep:</b> ${esc(actions.keep)}</p>` : ''}${actions.change ? `<p style="margin:0"><b style="color:var(--gold)">Change:</b> ${esc(actions.change)}</p>` : ''}`;
+        if (COACH_PLAYER_FORMAT === 'actions' && (actions?.keep || actions?.change)) return `${actions.keep ? `<p style="margin:0 0 .5rem"><b style="color:var(--green)">Keep:</b> ${esc(actions.keep)}</p>` : ''}${actions.change ? `<p style="margin:0"><b style="color:var(--gold)">Change:</b> ${esc(actions.change)}</p>` : ''}`;
         return co.perPlayer?.[p.pid] ? esc(co.perPlayer[p.pid]) : 'Individual feedback has not been written for this player.';
       })()}</div>
     </div>`).join('')}`);
@@ -981,7 +982,7 @@ async function fillEternals() {
       try {
         const PG = await (await fetch('../../data/postgame/index.json')).json();
         pgList = (PG.matches || []).filter((m) => m.matchId);
-        try { const persona = await (await fetch('../../data/coaching/personas.json')).json(); COACH_LAYOUT = persona.presets.find((p) => p.id === persona.active)?.layout || 'classic'; } catch {}
+        try { const persona = await (await fetch('../../data/coaching/personas.json')).json(); const selected = persona.presets.find((p) => p.id === persona.active); COACH_LAYOUT = selected?.layout || 'classic'; COACH_PLAYER_FORMAT = selected?.playerFormat || 'paragraph'; } catch {}
         try { MAP = await (await fetch('../../data/game-data/map-landmarks.json')).json(); } catch {}
       } catch {}
 

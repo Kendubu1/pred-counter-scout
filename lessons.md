@@ -5060,3 +5060,7 @@ Validation: 278 tests across 41 files, TypeScript, numeric grounding of 108 stri
 ## 2026-10-19 — restore actionable player feedback
 
 Concise does not mean removing useful Keep/Change signposts. Five latest reviews now show those optional actions instead of a repeated paragraph. Independent review corrected inferred ward locations and assumed repeated death causes. Earlier tone snapshots remain preserved.
+
+## 2026-10-19 — integrated paragraph coaching
+
+The maintainer wanted Keep/Change advice retained inside paragraphs, not labeled rows. v4 uses one paragraph with supported reinforcement and direct correction, keeps earlier formats reversible and avoids forced criticism on strong games.
