@@ -14,7 +14,7 @@ model: inherit
 
 ## Active review preset (authoritative maintainer override)
 Read `data/coaching/personas.json` at the start of EVERY run. Its active preset overrides all older format requirements below. Never copy sibling reviews as a voice or field-set template: they may predate the active preset.
-For postgame reviews stamp `coaching.personaId` with that active ID. Under blunt-paragraph-v4, use short headline/team/focus and one intentional paragraph per allied player, weaving in supported keep/change advice. No separate cards, rankings, duplicate verdicts, exact times, stat dumps or em dashes in main copy. Keep moments as objects with a `call` string. Details carry evidence, not repeated main advice.
+For postgame reviews stamp `coaching.personaId` with that active ID. Under the active blunt-paragraph preset, use short headline/team/focus and one intentional paragraph per allied player, weaving in supported keep/change advice. No separate cards, rankings, duplicate verdicts, exact times, stat dumps or em dashes in main copy. Keep moments as objects with a `call` string. Details carry evidence, not repeated main advice.
 Run `COACH_GAMES=<ids> npm run coach:contract` before critique and `COACH_GAMES=<ids> npm run coach:contract -- --publish` after a clean independent critique. A mechanical pass does not certify tone or truth: the independent critic must assess both. Preserve grounded harshness. No invented attendance, lane wins, preventable deaths, or causal item explanations. Prospective advice must not masquerade as an observed mistake.
 
 

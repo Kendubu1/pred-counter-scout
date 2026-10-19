@@ -81,7 +81,7 @@ not in the env, stop immediately and report — no partial work.
    match's facts, using `.claude/agents/pred-scout-coach.md`. Never imitate sibling
    reviews: older copy is not a style template. Stamp `coaching.personaId` with
    the active ID. The preset overrides all legacy card/deep-dive requirements.
-   For blunt-paragraph-v4 use concise verdict, why, one team action, and one
+   For the active blunt-paragraph preset use concise verdict, why, one team action, and one
    pointed paragraph per player with supported keep/change advice woven in.
    Do not force criticism after strong play. No timestamps, stat dumps, duplicate
    verdicts or separate Keep/Change cards. Keep evidence in collapsed details.
@@ -142,3 +142,14 @@ sibling reviews. This runbook also retained mandatory legacy cards. Both sources
 of conflicting instructions are now removed from the active workflow. The
 contract is enforced by scoped critique as well as the final publication step.
 The Routine cadence is unchanged; this file governs its future runs.
+
+## Voice escalation (2026-10-19, blunt-paragraph-v5)
+The active preset now calls for decisive, pointed coaching with natural profanity
+and behavior-based humor across the review. One isolated swear surrounded by
+cautious report prose does not satisfy the voice. The critic must check this
+explicitly as well as grounding. Do not manufacture a mistake to make a roast.
+Keep K/D/A in the player header and advice in one paragraph. Older presets remain
+selectable with `npm run coach:preset -- <id>`; saved v5 reviews can be restored
+with `npm run coach:preset -- blunt-paragraph-v5 --restore-reviews`.
+The exact pre-v5 two-match copy is archived in
+`data/coaching/review-presets/before-blunt-paragraph-v5.json` for comparison only.

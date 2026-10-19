@@ -1,8 +1,9 @@
 import { expect, it } from 'vitest';
 import path from 'node:path';
+import { loadCoachingPreset } from '../src/coaching-presets.js';
 import { reviewDigest, selectReviewScope, validateCoachContract, validatePublication } from '../src/coach-contract.js';
 const root = path.resolve('..');
-const match = () => ({ matchId: 'abc-123', players: [{pid:'p', us:true}], coaching: {personaId:'blunt-paragraph-v4',headline:'Finish the damn job.',team:'The final push ended it. Keep that commitment.',focus:{action:'Call the next objective before chasing.'},perPlayer:{p:'Sparrow delivered. Keep the damage coming without giving away the shutdown.'},moments:{final:{call:'The Core fell after the final fight.'}}} });
+const match = () => ({ matchId: 'abc-123', players: [{pid:'p', us:true}], coaching: {personaId:loadCoachingPreset(root).id,headline:'Finish the damn job.',team:'The final push ended it. Keep that commitment.',focus:{action:'Call the next objective before chasing.'},perPlayer:{p:'Sparrow delivered. Keep the damage coming without giving away the shutdown.'},moments:{final:{call:'The Core fell after the final fight.'}}} });
 it('accepts concise paragraphs without forcing criticism or cards', () => expect(()=>validateCoachContract(root,match())).not.toThrow());
 it.each(['old',''])('rejects stale or absent persona %s', id => { const f=match();f.coaching.personaId=id;expect(()=>validateCoachContract(root,f)).toThrow('personaId'); });
 it('rejects missing allied advice and invisible string moments', () => { const f:any=match();f.players.push({pid:'q',us:true});expect(()=>validateCoachContract(root,f)).toThrow('every allied');f.players.pop();f.coaching.moments.final='Hidden evidence';expect(()=>validateCoachContract(root,f)).toThrow('call string'); });

@@ -5073,3 +5073,12 @@ and require a clean critique fingerprint of the saved facts plus copy before
 marking the match reviewed. Loop convergence alone is not publication approval.
 Numeric checks must exclude authored coaching so invented numbers cannot ground
 themselves. Main copy remains concise; the independent critic checks meaning.
+
+### 2026-10-19: blunt voice must survive the factual review
+The user rejected cautious reports with a single isolated swear. Saved v5
+requires direct supported judgments, natural profanity and pointed humor across
+the review, with practical player actions. Rewrote the latest win and loss;
+independent review corrected five of ten fights being called most and retained
+the edge. Preserve facts, K/D/A and rollback snapshots; never invent blame.
+Validation: 291 tests passed, typecheck passed, 44 reviewed lines clean, both
+match views checked in the browser.

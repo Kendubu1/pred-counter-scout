@@ -22,7 +22,7 @@ export function validateCoachContract(root: string, f: any): void {
   const allies = f.players.filter((p: any) => p.us).map((p: any) => p.pid);
   if (!allies.length || allies.some((id: string) => !c.perPlayer?.[id]?.trim()) || Object.keys(c.perPlayer ?? {}).some(id => !allies.includes(id))) fail('every allied player needs a review, with no unknown players');
   for (const m of Object.values(c.moments ?? {}) as any[]) if (!m || typeof m.call !== 'string') fail('moments must be objects with a call string');
-  if (preset.id !== 'blunt-paragraph-v4') return;
+  if (preset.layout !== 'concise' || preset.playerFormat !== 'paragraph') return;
   const lines: [string, unknown, number][] = [['headline', c.headline, 25], ['team', c.team, 90], ['focus', c.focus?.action, 50], ...Object.entries(c.perPlayer).map(([id, text]) => [id, text, 80] as [string, unknown, number])];
   for (const [field, text, cap] of lines) {
     if (typeof text !== 'string' || !text.trim()) fail(`${field} is empty`);
@@ -31,7 +31,7 @@ export function validateCoachContract(root: string, f: any): void {
     if (/[\r\n\u2014]/.test(s) || /\b(?:keep|change|check|receipt)\s*:/i.test(s)) fail(`${field} must be a paragraph without card labels or em dashes`);
     if (/\b\d{1,2}:\d{2}\b|\b\d+(?:\.\d+)?\s*(?:m|min|minutes)\b/i.test(s)) fail(`${field} contains an exact time; put evidence in details`);
   }
-  if (Object.keys(c.microReads ?? {}).length || Object.keys(c.verdicts ?? {}).length || c.ranking?.length || c.whatShiftedIt || c.whatWorked || c.deepDive) fail('v4 uses the main paragraphs, not duplicate cards/verdicts/deep dives');
+  if (Object.keys(c.microReads ?? {}).length || Object.keys(c.verdicts ?? {}).length || c.ranking?.length || c.whatShiftedIt || c.whatWorked || c.deepDive) fail('Paragraph presets use the main paragraphs, not duplicate cards/verdicts/deep dives');
 }
 
 export function validatePublication(games: any[], report: any): void {
