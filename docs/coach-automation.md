@@ -77,23 +77,24 @@ not in the env, stop immediately and report — no partial work.
    Eternal the player actually ran, not the engine's pick: the review page
    shows both ("ran" and "engine pick"), and the critic's SOURCE carries the
    loadouts for all ten players.
-4. Coaching narrative (session compute, NO API key — the standing copy policy):
-   author the `coaching` block for each new game the way the pred-scout-coach
-   agent does — grounded ONLY in that game's facts file, including the
-   buildReads teaching layer (gained-vs-lost reasoning per player); when the
-   facts carry `interrogation.upset.isUpset` (a loss the stat sheet says we
-   should have won) the block MUST also carry `deepDive` (coach spec
-   "Upset losses get a deep dive"); every film carries a Keep / Change /
-   Check card per squad player in `microReads` (coach spec, 2026-10-14:
-   a Change and a measurable Check for all five in every result, and
-   `lastCheck` grading the previous film's Check) — then run the
-   independent critique loop SCOPED TO THE NEW GAMES ONLY:
-   `COACH_GAMES=<id,id,...> COPY_MODE=prepare npm run coach:critique:prepare`,
-   the independent critic pass, `COACH_GAMES=<same ids> npm run coach:critique`,
-   and `npm run coach:loop:gate` until it converges (docs/agent-loops.md).
-   COACH_GAMES takes comma-separated match-id prefixes; without it the loop
-   re-judges the ENTIRE film library (~100 games) on every fire — never do
-   that in the automation (added 2026-08-30 after a fire did exactly this).
+4. Read `data/coaching/personas.json` fresh. Author the active preset from each
+   match's facts, using `.claude/agents/pred-scout-coach.md`. Never imitate sibling
+   reviews: older copy is not a style template. Stamp `coaching.personaId` with
+   the active ID. The preset overrides all legacy card/deep-dive requirements.
+   For blunt-paragraph-v4 use concise verdict, why, one team action, and one
+   pointed paragraph per player with supported keep/change advice woven in.
+   Do not force criticism after strong play. No timestamps, stat dumps, duplicate
+   verdicts or separate Keep/Change cards. Keep evidence in collapsed details.
+   Run `COACH_GAMES=<id,id,...> npm run coach:contract`, then the independent
+   critique loop SCOPED TO THESE GAMES ONLY:
+   `COACH_GAMES=<ids> COPY_MODE=prepare npm run coach:critique:prepare`, independent
+   critic responses, then `COACH_GAMES=<ids> npm run coach:critique`.
+   Correct all flags and repeat until a fresh critique is clean. A loop STOP
+   from plateau or maximum rounds is NOT permission to publish.
+   Finally run `COACH_GAMES=<ids> npm run coach:contract -- --publish`.
+   This requires a clean critique of the exact saved match facts and copy, and
+   updates the reviewed marker in the index. Any later edit requires critique
+   again. Do not publish pre-critique commits or advance the watch marker alone.
 5. Refresh the reports: `npm run coach -- <lead-uuid>` and
    `npm run squad -- <lead-uuid>` (lead = `data/artifacts/squad.json` `.lead`).
 6. `npm test` — commit only on green (autonomy rule 1).
@@ -134,3 +135,10 @@ review, remove simulated lane wins presented as actual wins, unproven attendance
 claims and checks rewarding kill/death credit. Update the reviewed-match index
 from the saved coaching objects. A copy-only refresh uses stored match facts;
 it does not require a new profile or match API pull.
+
+## Regression found 2026-10-19
+The persistent worker authored e89f68db while naming v4 but imitating older
+sibling reviews. This runbook also retained mandatory legacy cards. Both sources
+of conflicting instructions are now removed from the active workflow. The
+contract is enforced by scoped critique as well as the final publication step.
+The Routine cadence is unchanged; this file governs its future runs.

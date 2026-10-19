@@ -5064,3 +5064,12 @@ Concise does not mean removing useful Keep/Change signposts. Five latest reviews
 ## 2026-10-19 — integrated paragraph coaching
 
 The maintainer wanted Keep/Change advice retained inside paragraphs, not labeled rows. v4 uses one paragraph with supported reinforcement and direct correction, keeps earlier formats reversible and avoids forced criticism on strong games.
+
+### 2026-10-19: automated coaching must follow the saved persona
+The Squad postgame coach worker named v4 but copied stale sibling reviews while
+the runbook still required old cards. Make the registry authoritative, stamp
+new coaching with its persona, reject invalid scoped reviews before critique,
+and require a clean critique fingerprint of the saved facts plus copy before
+marking the match reviewed. Loop convergence alone is not publication approval.
+Numeric checks must exclude authored coaching so invented numbers cannot ground
+themselves. Main copy remains concise; the independent critic checks meaning.

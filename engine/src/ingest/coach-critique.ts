@@ -1,3 +1,4 @@
+import { reviewDigest, selectReviewScope, validateCoachContract } from '../coach-contract.js';
 import { coachingPresetPrompt } from '../coaching-presets.js';
 // Independent critic over post-game COACHING. A SEPARATE agent (NOT the author
 // pred-scout-coach) reviews each game's coaching narrative against the match
@@ -13,7 +14,7 @@ import { coachingPresetPrompt } from '../coaching-presets.js';
 //   npm run coach:critique                              # aggregate + apply + report
 //   npm run coach:loop:gate                             # CONTINUE / STOP
 
-import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildAllowed, verifyLine, stripReviewLineNumber } from '../copy-verify.js';
@@ -49,12 +50,12 @@ function sourceOf(f: Facts): string {
     `RESULT: ${f.result} in ${f.durationMin}m${f.vpSwing != null ? `, VP ${f.vpSwing >= 0 ? '+' : ''}${f.vpSwing}` : ''}.`,
     `DECISIVE FIGHTS: ${tagged.length ? tagged.map((s) => `${s.startMin}m ${s.kind} ${s.result} ${s.ourKills}-${s.theirKills} @ ${s.place} [${s.tag}]`).join('; ') : 'none tagged'}.`,
     `ALL SKIRMISHES (n=${sk.length}): ${sk.map((s) => `${s.startMin}m ${s.result} ${s.ourKills}-${s.theirKills} @ ${s.place} (${(s.ourHeroes ?? []).join('/')} v ${(s.theirHeroes ?? []).join('/')})`).join(', ') || 'none'}.`,
-    `MACRO READS (rotations/numbers/trades — THEORY): ${withMacro.length ? withMacro.map((s) => `${s.startMin}m (${s.macro.ourAlive}v${s.macro.theirAlive}): ${s.macro.notes.join(' ')}`).join(' | ') : 'none'}.`,
+    `GLOBAL ALIVE COUNTS (not local attendance): ${withMacro.length ? withMacro.map((s) => `${s.startMin}m (${s.macro.ourAlive}v${s.macro.theirAlive}): attendance unknown`).join(' | ') : 'none'}.`,
     `OBJECTIVES: majors you ${f.objectives?.ourKills}-${f.objectives?.theirKills} them${f.timeline ? `, towers ${f.timeline.towers.us}-${f.timeline.towers.them}` : ''}${(f.objectives as any)?.ourObjDamage != null ? `, objective damage us ${(f.objectives as any).ourObjDamage} vs them ${(f.objectives as any).theirObjDamage}` : ''}.`,
     // Named-prize timeline (round-12 lesson: Genesis Core@29m WAS in the facts;
     // a SOURCE without the majors stream makes the critic flag true lines).
     `MAJOR TIMELINE: ${((f.timeline as any)?.majors ?? []).filter((m: any) => m.type !== 'RIVER').map((m: any) => `${m.type}@${m.minute}m ${m.side}`).join(', ') || 'none'}.`,
-    `LANES: ${f.lanes.map((l) => `${l.role} ${l.ourHero} vs ${l.theirHero} (${l.edge}${l.predggMatchup ? `, ${l.predggMatchup.winrate}%` : ''}${(l as any).summary ? `, lane read: ${(l as any).summary}` : ''})`).join('; ')}.`,
+    `SIMULATED LANES (not observed results): ${f.lanes.map((l) => `${l.role} ${l.ourHero} vs ${l.theirHero} (${l.edge}${l.predggMatchup ? `, ${l.predggMatchup.winrate}%` : ''}${(l as any).summary ? `, lane read: ${(l as any).summary}` : ''})`).join('; ')}.`,
     `COMP: you ${f.comp?.ourDamage?.physical}P/${f.comp?.ourDamage?.magical}M, them ${f.comp?.theirDamage?.physical}P/${f.comp?.theirDamage?.magical}M; their healers ${f.comp?.theirHealers?.join(', ') || 'none'}.`,
     `OUR PLAYERS: ${us.map((p) => `${p.squadName || p.name} ${p.heroName} ${p.role}${ranOf(p)} ${p.kills}/${p.deaths}/${p.assists} (kill participation ${Math.round(((p.kills + p.assists) / Math.max(1, us.reduce((a, q) => a + q.kills, 0))) * 100)}% of ${us.reduce((a, q) => a + q.kills, 0)} team kills), ${(p as any).damageToHeroes ?? '?'} hero dmg, ${(p as any).damageToObjectives ?? '?'} obj dmg, ${(p as any).goldEarned ?? '?'} gold, ${(p as any).healingDone ?? '?'} healing, ${(p as any).mitigated ?? '?'} mitigated, ${(p as any).damageTaken ?? '?'} damage taken, ${(p as any).wardsPlaced ?? '?'} wards placed + ${(p as any).wardsDestroyed ?? 0} cleared, items [${((p as any).items ?? []).map((i: any) => i.name ?? i).join(', ')}]${((p as any).itemTimeline ?? []).length ? `, est online [${(p as any).itemTimeline.map((t: any) => `${t.name}~${t.estMin}m`).join(', ')}]` : ''}${((p as any).matchupItemFlags ?? []).length ? `, film flags [${(p as any).matchupItemFlags.join('; ')}]` : ''}${((p as any).missingCore ?? []).length ? `, missing meta core [${(p as any).missingCore.join(', ')}]` : ''}${(p as any).winningCore ? `, winning core [${(p as any).winningCore.items.join(', ')}] at ${(p as any).winningCore.wr}%` : ''}${(p.spikes ?? []).length ? ` (spikes ${p.spikes.map((s: any) => `${s.name}~${s.spikeMinute}m`).join(', ')})` : ''}${p.roleFit?.concern ? ` [off bottom-two lane]` : ''}`).join('; ')}.`,
     // Enemy rows too (round-13 lesson: enemy healing/damage figures cited from
@@ -190,6 +191,9 @@ async function main() {
   const inScope = (fn: string, id: string) => !scope.length || scope.some((s) => fn.startsWith(s) || id.startsWith(s));
   const games = files.map((fn) => ({ fn, f: JSON.parse(readFileSync(path.join(PG, fn), 'utf8')) as Facts })).filter((g) => g.f.coaching && inScope(g.fn, g.f.matchId ?? ''));
 
+  if (scope.length) for (const f of selectReviewScope(games.map(g => g.f), scope)) validateCoachContract(ROOT, f);
+  const reviewedDigests: Record<string, string> = {};
+
   const report: Record<string, { quote: string; severity: string; issue: string; rewrite: string | null }[]> = {};
   let reviewed = 0, flagged = 0, grounded = 0, dropped = 0, applied = 0, unmatched = 0;
 
@@ -213,21 +217,29 @@ Flag ONLY real problems:
 (d) VOICE — uses second person ("you/your/you're") as if addressed to one reader, or uses the map side names dawn/dusk as the team's voice (rewrite to we/they). The review is read by the WHOLE squad: team lines must speak as "we/our/the team"; per-player lines must name the player (squad name or hero) in third person. Rewrite keeping the exact same facts and numbers, changing only the voice.
 (e) METHOD — blames an ally's play instead of the decision made around them; judges a role by the wrong yardstick (a support on KDA/farm, a carry on wards, an offlaner on lane kills instead of survival); or makes an execution claim the SOURCE cannot show ("missed the combo") where it only proves a decision error (numbers, items-down, timing).
 (f) CAUSATION — a game-deciding claim with no why attached when the SOURCE carries one (a lost stretch without its cause; an enemy objective without who was dead or that NOBODY was); a bare timestamp with no event named ("absent at 20.5" when the SOURCE says what the 20.5 fight was); or a "why" the SOURCE cannot support (a guessed teleport, wave state, or position).
-(g) READABILITY — SCOPED to exactly these patterns (never general style): ledger jargon other than "cashed" ("priced/pricing", "receipt", "banked", "ledger", "cost column"); three or more timestamps in one sentence; a scoreline used as a noun ("the 0-2 at 14.6" — should be "the fight at 14.6, lost 0-2"); a bare unitless number like "(13464)"; internal-artifact voice ("the file says", "the sheet"); more than one coined maxim or more than one "not X, but Y" formula in the same review; pretend-depth announcers ("the line to remember is"). Rewrite preserving every fact and exact number, changing only the wording.
+(g) READABILITY — enforce the active preset, concise paragraphs and no duplicate advice, plus these patterns: ledger jargon other than "cashed" ("priced/pricing", "receipt", "banked", "ledger", "cost column"); three or more timestamps in one sentence; a scoreline used as a noun ("the 0-2 at 14.6" — should be "the fight at 14.6, lost 0-2"); a bare unitless number like "(13464)"; internal-artifact voice ("the file says", "the sheet"); more than one coined maxim or more than one "not X, but Y" formula in the same review; pretend-depth announcers ("the line to remember is"). Rewrite preserving every fact and exact number, changing only the wording.
 (h) ROLE MISREAD (coach audit 2026-09-21) — a support graded on the 1v1 lane read ("lost the support lane", "pinned in a losing lane") or on its kill/death line; an "absent"/"never joined" claim about a player whose kill participation (printed per player) and the FIGHT PRESENCE RULE make it unprovable (an unproven absent entry is not absence); an Eternal "why this fits" paragraph for a support loadout the engine does not model (Vesh/Demiurge on an enchanter) instead of the one-line unmodeled read; a ranking grade with no receipt; a hedge the coach contract bans (arguably, likely, might have, could have, defensible, reasonable, a real, worth carrying forward); the stock phrases "the shape worth repeating", "the clearest strength", "the one throughline"; a second "cashed" or "on paper" in one review; or the Eternal-is-theoretical disclaimer. Rewrite to the participation/ward/peel yardstick, drop the hedge, or drop the line. Blunt lexicon (threw, donated, griefed, free kill, coin-flip, farmed while the team fought) is house style, never a flag when two SOURCE facts back it.
-(i) PLAYER CARD (maintainer rule 2026-10-14) — microReads must exist for all five of our players with a non-empty "change" and "check" in every result; flag a missing one, a "change" that restates a stat or copies a build flag or would fit any game (not anchored to an event, minute, fight, structure or count in THIS SOURCE), a "check" the feed cannot measure (aim, spacing, timing, intent), a card that repeats another player's card or the previous film's card, and a "lastCheck" whose held/missed verdict contradicts the facts or that is missing when a PREVIOUS CHECK line exists for that player.
+(i) LEGACY PLAYER CARD (only when active preset explicitly requires cards; otherwise ignore this rule) — microReads must exist for all five of our players with a non-empty "change" and "check" in every result; flag a missing one, a "change" that restates a stat or copies a build flag or would fit any game (not anchored to an event, minute, fight, structure or count in THIS SOURCE), a "check" the feed cannot measure (aim, spacing, timing, intent), a card that repeats another player's card or the previous film's card, and a "lastCheck" whose held/missed verdict contradicts the facts or that is missing when a PREVIOUS CHECK line exists for that player.
 BLUNT IS THE HOUSE STYLE: a harsh verdict backed by two or more SOURCE facts is CORRECT — do not flag or soften it; flag a blunt line only when its receipts are not in the SOURCE.
-GAME KNOWLEDGE IS NOT A MATCH CLAIM: plain-word item/Eternal mechanics and map-economy concepts (objective spawn windows and cadence, "power farm"/"invade"/"deward", build-swap conditions like "against heavy healing") need NO SOURCE support — do not flag them as ungrounded. Any NUMBER, and any claim about what happened in THIS game, still requires the SOURCE.
+ITEM MECHANICS REQUIRE VERIFICATION: verify item/Eternal mechanics against the current catalog before using them; if unavailable, omit that advice. Missing popular items is not proof of a bad build. General coaching concepts do not establish match events. Every number and match claim needs factual source support.
 LATEST MAINTAINER OVERRIDE (2026-10-19): preserve blunt competitive coaching with occasional profanity and adult locker-room humor. A concise joke about play is allowed; reject personal/identity attacks or jokes replacing evidence. This overrides older metaphor/maxim restrictions. Do not force a mistake: a strong performance may get a maintainable standard instead. Reject simulated lane advantage as actual lane victory, missing kill/death credit as absence, alive counts as local fighting numbers, and chronological proximity as proven causation. Never reward a death as evidence of attendance; old invalid attendance checks are not measurable. Verify team-high comparisons against all players.
 ${coachingPresetPrompt(ROOT)}
 Judge against the active preset. Empty optional concise sections are not omissions. Do NOT nitpick style beyond its rules. Return strict JSON: {"flags":[{"quote":"<the exact line text>","severity":"high|med|low","issue":"<what's wrong, one phrase>","rewrite":"<a game/draft/fight-focused corrected line grounded in the SOURCE, or null to drop the line>"}]}. If all fine, return {"flags":[]}.`;
 
+    if (scope.length && !isPrepare()) {
+      const taskPath = path.join(ROOT, 'engine/copy-tasks/coach-critique.tasks.json');
+      const responsePath = path.join(ROOT, 'engine/copy-tasks/coach-critique.responses.json');
+      const prepared = JSON.parse(readFileSync(taskPath, 'utf8'));
+      if (!prepared.tasks?.some((t: any) => t.id === id && t.prompt === prompt) || statSync(responsePath).mtimeMs < statSync(taskPath).mtimeMs) throw new Error(`Stale critique task/response for ${id}; prepare and independently review again`);
+    }
     const raw = (await ask('coach-critique', id, prompt)).trim().replace(/^```json?\s*|```$/g, '');
     reviewed += lines.length;
     if (isPrepare()) continue;
     try {
       const parsed = JSON.parse(raw) as { flags?: { quote?: string; severity?: string; issue?: string; rewrite?: string | null }[] };
-      const allowed = buildAllowed([], [JSON.stringify(f)]);   // numbers must exist in the facts
+      if (!Array.isArray(parsed.flags)) throw new Error('Critic response must contain flags');
+      const { coaching: _copy, ...factsOnly } = f;
+      const allowed = buildAllowed([], [JSON.stringify(factsOnly)]);   // numbers must exist in the facts
       const flags = (parsed.flags ?? []).filter((fl) => fl.quote).map((fl) => {
         const quote = stripNum(fl.quote!);
         let rewrite = fl.rewrite != null ? stripNum(fl.rewrite) : null;
@@ -238,9 +250,10 @@ Judge against the active preset. Empty optional concise sections are not omissio
       // apply grounded rewrites back into this game's coaching
       let co: unknown = f.coaching;
       for (const fl of flags) { if (!fl.rewrite) continue; const before = JSON.stringify(co); co = deepReplace(co, fl.quote, fl.rewrite); if (JSON.stringify(co) !== before) applied++; else unmatched++; }
-      if (applied) { f.coaching = co as Coaching; writeFileSync(path.join(PG, fn), JSON.stringify(f, null, 1)); }
+      if (JSON.stringify(co) !== JSON.stringify(f.coaching)) { f.coaching = co as Coaching; if (scope.length) validateCoachContract(ROOT, f); writeFileSync(path.join(PG, fn), JSON.stringify(f, null, 1)); }
+      reviewedDigests[id] = reviewDigest(f);
       process.stdout.write('.');
-    } catch { process.stdout.write('x'); }
+    } catch (error) { throw new Error(`Critique failed for ${id}: ${String(error)}`); }
   }
 
   flushTasks('coach-critique');
@@ -251,7 +264,7 @@ Judge against the active preset. Empty optional concise sections are not omissio
   writeFileSync(path.join(ROOT, 'data/aggregates/coach-critique.json'), JSON.stringify({
     generatedAt: new Date().toISOString(),
     source: 'independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back',
-    reviewedLines: reviewed, flaggedLines: flagged, agreementRate, rewritesGrounded: grounded, rewritesDropped: dropped, applied, unmatched, games: report,
+    reviewedDigests, reviewedLines: reviewed, flaggedLines: flagged, agreementRate, rewritesGrounded: grounded, rewritesDropped: dropped, applied, unmatched, games: report,
   }, null, 1));
 
   const histPath = path.join(ROOT, 'data/aggregates/coach-critique-history.json');
