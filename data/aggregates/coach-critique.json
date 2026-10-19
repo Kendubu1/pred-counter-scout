@@ -1,160 +1,128 @@
 {
- "generatedAt": "2026-10-16T21:32:59.114Z",
+ "generatedAt": "2026-10-19T02:34:50.107Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
- "reviewedLines": 108,
- "flaggedLines": 24,
- "agreementRate": 0.778,
- "rewritesGrounded": 23,
- "rewritesDropped": 1,
- "applied": 21,
+ "reviewedLines": 54,
+ "flaggedLines": 19,
+ "agreementRate": 0.648,
+ "rewritesGrounded": 19,
+ "rewritesDropped": 0,
+ "applied": 17,
  "unmatched": 2,
  "games": {
-  "05ad9a23-e6d6-42ec-893d-726fdb33a84c": [
+  "90a87d12-ad66-4c03-8137-3999c53e0999": [
    {
-    "quote": "A full 5v5 teamfight won 5-0 against all five enemy heroes together, taken at their Inner Tower.",
+    "quote": "Murdock and Steel's duo lane read favored against Revenant and Lt. Belica the entire game.",
+    "severity": "med",
+    "issue": "support graded via the 1v1/duo lane read instead of participation stats",
+    "rewrite": "Murdock's lane read favored against Revenant the entire game."
+   },
+   {
+    "quote": "At 13.9 minutes we won a 3-man fight near their seedling, 2-1, but the conversion log shows it was never cashed into an objective — the enemy converted 2 of their 4 won fights.",
+    "severity": "med",
+    "issue": "invented fight location (SOURCE says 'deep in their half', not near a seedling)",
+    "rewrite": "At 13.9 minutes we won a fight deep in their half, 2-1, but it was never cashed into an objective — the enemy converted 2 of their 4 won fights."
+   },
+   {
+    "quote": "Gadget led the team in hero damage at 12,085 while winning his lane outright, but sat out the 10, 12.4, and 16-minute fights the team fought short-handed.",
+    "severity": "med",
+    "issue": "ungrounded 'short-handed': macro reads label 10m/12.4m/16m as 5v5 overall, and the 16m fight was 3v2 in our favor",
+    "rewrite": "Gadget led the team in hero damage at 12,085 while winning his lane outright, but sat out the 10, 12.4, and 16-minute fights despite being alive and ahead — all three were lost."
+   },
+   {
+    "quote": "Murdock's CS/min, 4.8, ran 33% below the carry norm, and his hero damage per minute landed 57% under it, while placing more wards, 7, than the team's own support, 3.",
+    "severity": "high",
+    "issue": "fabricated stats not in SOURCE (no CS/min data at all, no carry-norm baseline given)",
+    "rewrite": "Murdock placed more wards, 7, than the team's own support, 3, despite finishing with the team's most deaths, 5, and just 1 kill."
+   },
+   {
+    "quote": "Steel closed with the team's highest damage mitigated, 17,390, but just 3 wards placed, well under the 6.2 norm for the support role.",
+    "severity": "med",
+    "issue": "fabricated ward-norm baseline (6.2) not present in SOURCE",
+    "rewrite": "Steel closed with the team's highest damage mitigated, 17,390, but tied Yin for the fewest wards placed on the team at 3."
+   },
+   {
+    "quote": "Led the team in hero damage at 12,085 but was absent from three fights his won lane should have joined.",
     "severity": "low",
-    "issue": "claims a full 5v5 for our side when only 3 of our heroes are named as participants in that skirmish",
-    "rewrite": "A teamfight won 5-0 at their Inner Tower against their full five-man squad, with only three of our heroes credited in the kills."
+    "issue": "per-player line with no name/hero identifier (voice/attribution)",
+    "rewrite": "Gadget led the team in hero damage at 12,085 but was absent from the 10, 12.4, and 16-minute fights his won lane should have joined."
    },
    {
-    "quote": "The 4-0 fight that took their Core: even numbers, no one of ours dead going in, a clean finish to close the game.",
+    "quote": "Zero completed items and the team's lowest gold after getting caught alone by Serath at 5.2 minutes, with no armor against their 3-physical comp.",
     "severity": "low",
-    "issue": "invents an 'even numbers' claim the source doesn't state for this fight",
-    "rewrite": "The 4-0 fight that took their Core: our full squad alive going in, a clean finish to close the game."
+    "issue": "per-player line with no name/hero identifier (voice/attribution)",
+    "rewrite": "Aurora finished with zero completed items and the team's lowest gold after getting caught alone by Serath at 5.2 minutes, with no armor against their 3-physical comp."
    },
    {
-    "quote": "Steel skipped the recommended Fire Blossom-Raiment of Renewal-Tainted Charm core for a frontline-heavy path (Xenia, Dynamo, Prophecy); zero deaths and team-high 34,390 mitigated went with it, though the match can't isolate which single item made that difference.",
-    "severity": "high",
-    "issue": "factually wrong -- Steel's items include Fire Blossom, one of the three recommended core items, so he didn't skip the whole core",
-    "rewrite": "Steel built one of the recommended Fire Blossom-Raiment of Renewal-Tainted Charm core (Fire Blossom) and substituted Xenia, Dynamo, and Prophecy for the rest; zero deaths and team-high 34,390 mitigated went with it, though the match can't isolate which single item made that difference."
-   },
-   {
-    "quote": "He was pinned-losing and absent from three of the five fights we won (19.9, 23.5, 27.8); next game, rotate to group once losing the jungle duel instead of continuing to farm alone.",
-    "severity": "high",
-    "issue": "turns a kill/death-credit-only absence into a repeat-pattern verdict and invents 'farming alone' -- ignores his 5 match assists and 22,837 objective damage",
-    "rewrite": "He wasn't kill/death-credited in three of the five fights we won (19.9, 23.5, 27.8), though his 22,837 objective damage and 5 match assists show he wasn't idle; next game, look for a kill/death credit in more of the fights the team takes objectives in."
-   },
-   {
-    "quote": "Fewer than three of five won fights marked absent-and-losing next film, down from three this game.",
+    "quote": "Led the team with 5 kills and team-high 12,024 objective damage despite an all-game unfavored matchup against Serath.",
     "severity": "med",
-    "issue": "forward check built on the same unproven absence-pattern premise",
-    "rewrite": "A kill or death credit in more of next film's won fights than the two he reached this game (20.4, 24.7)."
+    "issue": "no name/role identifier, and Serath also killed two other players this game — risks misattribution",
+    "rewrite": "Yin led the team with 5 kills and team-high 12,024 objective damage despite an all-game unfavored jungle matchup against Serath."
    },
    {
-    "quote": "2 kills, 1 death, 5 assists; team-high 22,837 objective damage; just 1 ward placed; marked absent and pinned-losing in the 19.9, 23.5, and 27.8 won fights, present in the 20.4 and 24.7 game-defining wins.",
+    "quote": "1 kill on 5 deaths and hero damage 57% below the carry norm, with a death inside the one fight the team won.",
     "severity": "med",
-    "issue": "restates the unproven absence-pattern/'pinned-losing' framing as a stat line",
-    "rewrite": "2 kills, 1 death, 5 assists; team-high 22,837 objective damage; just 1 ward placed; kill/death credited in the 20.4 and 24.7 game-defining wins, not in 19.9, 23.5, or 27.8."
+    "issue": "fabricated carry-norm baseline (57%) not present in SOURCE, and no name given",
+    "rewrite": "Murdock finished 1 kill on 5 deaths, with a death inside the one fight the team won."
    },
    {
-    "quote": "last check: \"Present, not marked absent or pinned-losing, in at least one of next film's key fights, not zero.\" → held (He was credited and not marked absent in the 15.4-minute skirmish and present in both of the game's 20.4 and 24.7 game-defining fights, clearly not zero.)",
+    "quote": "Team-high 17,390 damage mitigated anchored the frontline, but just 3 wards placed, well under the 6.2 norm for the support role.",
+    "severity": "med",
+    "issue": "fabricated ward-norm baseline (6.2) not present in SOURCE, and no name given",
+    "rewrite": "Steel closed with the team-high 17,390 damage mitigated, but tied Yin for the fewest wards placed on the team at 3."
+   },
+   {
+    "quote": "Aurora completed zero items in 18 minutes and never answered the matchup flag for armor against the enemy's 3-physical damage comp; with only 2,953 gold earned, this reads as a farm problem, not a build choice.",
     "severity": "low",
-    "issue": "cites the non-decisive 15.4-minute skirmish as satisfying a 'key fights' check",
-    "rewrite": "last check: \"Present, not marked absent or pinned-losing, in at least one of next film's key fights, not zero.\" → held (He was present in both of the game's 20.4 and 24.7 game-defining fights, clearly not zero.)"
+    "issue": "second 'not X, but Y' coined-maxim formula in the same review (first used in the Fangtooth/Outer-Tower trade line)",
+    "rewrite": "Aurora completed zero items in 18 minutes and never answered the matchup flag for armor against the enemy's 3-physical damage comp; with only 2,953 gold earned, the low output traces to the 2 deaths that limited her farm this game."
    },
    {
-    "quote": "He died 28 seconds before the 20.4-minute fight that took their Outer Tower, missing it entirely, and closed with zero objective damage; next game, hold position once a group fight is already forming nearby.",
+    "quote": "1 kill on 5 deaths, hero damage 57% below the carry norm.",
     "severity": "med",
-    "issue": "invents a positional/intent cause ('hold position') the source doesn't show",
-    "rewrite": "He died 28 seconds before the 20.4-minute fight that took their Outer Tower, missing it entirely, and closed with zero objective damage; next game, be alive for the next tagged fight instead of trading a death right before it."
+    "issue": "fabricated carry-norm baseline (57%) not present in SOURCE, and no name given",
+    "rewrite": "Murdock finished 1 kill on 5 deaths."
    },
    {
-    "quote": "last check: \"Credited with a kill or assist in at least one of next film's key fights, not zero.\" → held (He's credited in the 15.4-minute and 19.9-minute skirmishes this film, not zero.)",
+    "quote": "Gadget was marked absent, winning his lane, from the 10, 12.4, and 16-minute fights we lost or traded; next game, rotate off a won lane when the team fights short-handed.",
+    "severity": "med",
+    "issue": "ungrounded 'short-handed' (macro reads show 5v5 overall, 16m was 3v2 in our favor)",
+    "rewrite": "Gadget was marked absent, winning his lane, from the 10, 12.4, and 16-minute fights we lost or traded; next game, rotate off a won lane when he's alive and ahead."
+   },
+   {
+    "quote": "Aurora's offlane read favored early against Grux before settling even, per the lane verdict.",
     "severity": "high",
-    "issue": "verdict contradicts the facts -- neither 15.4 nor 19.9 is a game-defining/key fight, and he has zero kill/death credit in any of the four actual game-defining fights (20.4, 23.5, 24.7, 27.8), so the correct verdict is missed",
-    "rewrite": "last check: \"Credited with a kill or assist in at least one of next film's key fights, not zero.\" → missed (He wasn't kill/death-credited in any of the four game-defining fights this film -- 20.4, 23.5, 24.7, or 27.8 -- only in the non-decisive 15.4 and 19.9 skirmishes.)"
+    "issue": "factually wrong vs SOURCE: the lane read is 'ours early, theirs late', not a settle to even",
+    "rewrite": "Aurora's offlane read favored early against Grux before swinging to Grux's favor late, per the lane verdict."
    },
    {
-    "quote": "Objective damage turned nonzero, 3,571, and he led the kill sheet with 7 kills and 1 death all game.",
-    "severity": "high",
-    "issue": "factually wrong -- Murdock led the team in kills with 8, not Lt. Belica's 7",
-    "rewrite": "Objective damage turned nonzero, 3,571, up from 0 last film, with 7 kills and 1 death on the game, second on the team to Murdock's 8."
-   },
-   {
-    "quote": "He was pinned in a losing mid lane and absent from three fights (15.4, 23.5, 26) where the team fought without him; next game, trade the losing matchup for safer farm until it turns.",
-    "severity": "high",
-    "issue": "turns a kill/death-credit-only absence into a repeat-pattern verdict and invents a 'keeps forcing the losing matchup' narrative, despite his 6 match assists and being present in three of the four game-defining fights with team-second hero damage",
-    "rewrite": "He wasn't kill/death-credited in three fights (15.4, 23.5, 26), though his 6 match assists and presence in three of the four game-defining fights (20.4, 24.7, 27.8) say otherwise; next game, keep showing up to the fights that take objectives."
-   },
-   {
-    "quote": "Zero fights marked absent-and-losing for him next film, down from three this game.",
+    "quote": "Aurora finished 0 completed items and the team's lowest gold, 2,953, after Serath caught her alone at 5.2 minutes; next game, play safer before the jungler's first rotation instead of farming exposed.",
     "severity": "med",
-    "issue": "forward check built on the same unproven absence-pattern premise",
-    "rewrite": "A kill or death credit in all four of next film's game-defining fights, up from three of four this game."
+    "issue": "unprovable execution/intent claim — SOURCE shows only that she was caught alone, not that she was farming exposed or when the jungler's 'first rotation' was",
+    "rewrite": "Aurora finished 0 completed items and the team's lowest gold, 2,953, after Serath caught her alone at 5.2 minutes; next game, avoid being caught alone again that early."
    },
    {
-    "quote": "7 kills, 1 death, 6 assists; 31,192 hero damage, just behind Mr_Meat31's 31,415; objective damage 3,571, up from 0 last film; absent-losing in the 15.4, 23.5, and 26-minute fights.",
+    "quote": "1 kill, 5 deaths, 0 assists; hero damage/min 411 vs the 954 norm (-57%); marked absent, winning lane, from the 11.6-minute Fangtooth fight we lost 0-2.",
     "severity": "med",
-    "issue": "restates the unproven absence-pattern/'absent-losing' framing as a stat line",
-    "rewrite": "7 kills, 1 death, 6 assists; 31,192 hero damage, just behind Mr_Meat31's 31,415; objective damage 3,571, up from 0 last film; no kill/death credit in the 15.4, 23.5, or 26-minute fights, credited in the other five."
-   }
-  ],
-  "33247683-e032-4d42-aa29-19fa4f201ce1": [
+    "issue": "fabricated hero-dmg/min norm (954/-57%) not present in SOURCE, and no name given",
+    "rewrite": "Murdock finished 1 kill, 5 deaths, 0 assists, and was marked absent, winning lane, from the 11.6-minute Fangtooth fight we lost 0-2."
+   },
    {
-    "quote": "We held river control 10-5 and never let the enemy swing momentum back. The only tagged fight of the game, Murdock soloing Phase and Zinx 2-0 at Mini Prime, converted straight into the objective. The one loss came at 15.3 minutes, a 5v5 we didn't need to take, with the jungle and offlane both pinned in losing lanes elsewhere at the time.",
+    "quote": "last check: \"No deaths inside a numbers-up fight (5-vs-3 or better) next film, unlike the 26-minute trade this game.\" → held (Every fight Murdock died in this film (10, 12.4, 13.9, 16, 18.3 minutes) shows ourAlive equal to theirAlive at 5-and-5; none were a numbers-up fight like the 26-minute trade being checked.)",
     "severity": "med",
-    "issue": "calls the Mini Prime fight 'the only tagged fight of the game' then immediately describes a second tagged fight at 15.3 -- the match had two skirmishes, not one",
-    "rewrite": "We held river control 10-5 and never let the enemy swing momentum back. The game's decisive fight, Murdock soloing Phase and Zinx 2-0 at Mini Prime, converted straight into the objective. The other fight came at 15.3 minutes, a 5v5 we didn't need to take, with the jungle and offlane both pinned in losing lanes elsewhere at the time."
+    "issue": "overreach: macro reads only confirm 5v5 at 10, 12.4, and 16 minutes — the 13.9 and 18.3 fights have no alive-count data in SOURCE",
+    "rewrite": "last check: \"No deaths inside a numbers-up fight (5-vs-3 or better) next film, unlike the 26-minute trade this game.\" → held (The tagged fights confirmed at full strength when Murdock died — 10, 12.4, and 16 minutes — each show 5-and-5 numbers; none was a numbers-up fight like the 26-minute trade being checked.)"
    },
    {
-    "quote": "Wukong's jungle matchup read unfavored against Grux all game, and diagnostics flag low wards, CS, and hero damage, but zero deaths and team-high objective damage kept it from costing us.",
-    "severity": "high",
-    "issue": "invents a 'CS' stat that doesn't exist in the source and misstates hero damage -- Riktor's 2,717 hero damage is lower than Wukong's 5,934",
-    "rewrite": "Wukong's jungle matchup read unfavored against Grux all game, and he placed only 1 ward, but zero deaths and team-high 5,382 objective damage kept it from costing us."
-   },
-   {
-    "quote": "Greystone's offlane read even overall, but he was pinned in a losing lane at both of the match's fights, present for neither; zero deaths and team-high wards were the clean side of it.",
-    "severity": "high",
-    "issue": "self-contradicts its own 'even overall' lane read with 'losing lane', and 'present for neither' ignores his 2 match assists in a 2-fight game",
-    "rewrite": "Greystone's offlane read even overall; he wasn't kill/death-credited in either of the match's two fights, though his 2 assists and team-high wards were the clean side of a quiet game."
-   },
-   {
-    "quote": "Zero deaths and team-high wards, but pinned in a losing lane and absent from both of the match's two fights.",
+    "quote": "Steel placed just 3 wards, well under the 6.2 norm for the role; next game, put down the vision the support role owes even while mitigating well.",
     "severity": "med",
-    "issue": "'absent from both' ignores his 2 match assists, and contradicts the 'even all game' lane read",
-    "rewrite": "Zero deaths and team-high wards, but no kill/death credit in either of the match's two fights, despite an even lane all game."
+    "issue": "fabricated ward-norm baseline (6.2) not present in SOURCE",
+    "rewrite": "Steel placed just 3 wards, tied with Yin for fewest on the team; next game, put down more vision while still mitigating well."
    },
    {
-    "quote": "At 12.9 minutes, Murdock won this 1-vs-2 while an item behind (1 to their 2), the right pickoff, worth repeating.",
+    "quote": "0 kills, 3 deaths, 2 assists; 3 wards placed vs the 6.2 norm (-52%); 1 ward destroyed; team-high 17,390 damage mitigated; duo lane read favored against Lt. Belica all game.",
     "severity": "med",
-    "issue": "banned hedge/stock phrase ('worth repeating')",
-    "rewrite": "At 12.9 minutes, Murdock won this 1-vs-2 while an item behind (1 to their 2), the pickoff that set up the Mini Prime take."
-   },
-   {
-    "quote": "Zero deaths, team-high 6 wards, but absent from both decisive fights in a losing lane.",
-    "severity": "med",
-    "issue": "wrong reference -- only one fight (12.9m) is decisive/game-defining, the 15.3m fight is not; also ignores his 2 match assists and the 'even all game' lane read",
-    "rewrite": "Zero deaths, team-high 6 wards, but no kill/death credit in either of the match's two fights, in a lane that read even all game."
-   },
-   {
-    "quote": "He was caught alone twice, at 6.9 and 9.9 minutes, the second handing the enemy a Fangtooth soon after; next game, regroup instead of solo-resetting once overextended.",
-    "severity": "med",
-    "issue": "invents a positional/intent cause ('solo-resetting once overextended') the source doesn't show",
-    "rewrite": "He was caught alone twice, at 6.9 and 9.9 minutes, the second handing the enemy a Fangtooth soon after; next game, avoid a second solo death before minute 10."
-   },
-   {
-    "quote": "last check: \"A tower taken within 90 seconds of his next big fight win, not zero again.\" → held (The team's one won fight, at 12.9 minutes, converted into the Mini Prime objective inside the window, not zero this time.)",
-    "severity": "med",
-    "issue": "wrong reference -- the check asks about a tower, but the cited receipt (Mini Prime) isn't a tower; the Outer Tower at 13.5m is the one that actually satisfies it",
-    "rewrite": null
-   },
-   {
-    "quote": "Pinned in a losing lane at both of the match's fights (12.9 and 15.3), present for neither; next game, close the lane gap before the team fights without him again.",
-    "severity": "med",
-    "issue": "'present for neither' ignores his 2 match assists in a 2-fight game, and contradicts the 'even all game' lane read",
-    "rewrite": "No kill/death credit in either of the match's two fights (12.9, 15.3) despite 2 match assists; next game, pick up a kill or death credit in the next tagged fight."
-   },
-   {
-    "quote": "0 kills, 0 deaths, 2 assists; 6 wards placed, team-high; marked absent and pinned-losing in both of the match's two fights (12.9, 15.3).",
-    "severity": "high",
-    "issue": "directly self-contradicts -- the same line lists 2 assists, which in a 2-fight game had to come from one or both of the fights it calls him absent from",
-    "rewrite": "0 kills, 0 deaths, 2 assists; 6 wards placed, team-high; no kill/death credit in either of the match's two fights (12.9, 15.3)."
-   },
-   {
-    "quote": "On the recommended Lightning Hawk into Vanquisher core, missing only Imperator because the game ended at 18 minutes; Vanquisher landed by minute 16 against the typical spike at 27, the same early timing as last film.",
-    "severity": "med",
-    "issue": "invents a cross-film timing comparison -- the previous-film data given has no item-timing information to compare against",
-    "rewrite": "On the recommended Lightning Hawk into Vanquisher core, missing only Imperator because the game ended at 18 minutes; Vanquisher landed by minute 16 against the typical spike at 27."
+    "issue": "fabricated ward-norm baseline (6.2/-52%) and support graded via the duo lane read instead of participation/wards/mitigation",
+    "rewrite": "Steel finished 0 kills, 3 deaths, 2 assists; 3 wards placed, 1 destroyed; team-high 17,390 damage mitigated."
    }
   ]
  }
