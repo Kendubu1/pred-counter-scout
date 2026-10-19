@@ -5655,3 +5655,7 @@ invalid inputs. Next: use reviewed scenario schedules for the frozen Belica buil
 comparison; add conditional effect state only where event metadata supports it.
 Combustion filtered reductions remain excluded until its source tags and initial
 shared gate can be supplied without guessing. Eternals remain deferred.
+
+## 2026-10-19 — scalable binding inspector
+
+Recovered floats may be decimal strings and absent fields are not defaults. The reusable inspector now keeps both distinctions explicit, checks curve object class/package identity, and leaves registry/runtime evaluation unresolved. Across 3,956 existing recovered effect files it retained 43,353 serialized bindings, including 1,503 partial records; these are not active effect counts. 76 Python tests and 297 engine tests plus TypeScript pass. Private evidence stays outside git; no production behavior changed.

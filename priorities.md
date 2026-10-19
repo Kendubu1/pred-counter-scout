@@ -20,6 +20,9 @@ Production rotation now accepts explicit delivered full-packet schedules, shared
 by direct damage and separately eligible item triggers. Default optimizer delivery
 is unchanged. Next use bounded Belica schedules; do not treat them as verified
 raw ticks or infer unknown trigger tags. Noxia multi-tick/source cases remain open.
+Scalable binding inspector now preserves missing fields and verifies referenced
+table types across the recovered effect corpus. Next bind selected active magnitude
+arms; serialized inactive fields must not be credited as gameplay.
 Eternals remain deferred.
 The historical backlog below remains supporting evidence. A completed recovery
 checkpoint or green harness does not close a readiness milestone.

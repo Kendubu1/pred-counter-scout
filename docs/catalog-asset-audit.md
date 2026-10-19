@@ -271,3 +271,33 @@ additional names with the same descriptor checks. Metadata reports are sanitized
 all generated field trees, enum maps and decoded bodies remain private.
 Validation: 264 engine tests, 12 Python regressions, recovery build, TypeScript,
 55 artifact schemas and rendered UI parity pass.
+
+## 2026-10-19 — serialized scalable binding recovery
+
+Added `engine/scripts/inspect_scalable_bindings.py` and nine synthetic regression
+cases. The inspector walks exact recovered property spans and preserves object
+indices, coefficient, row, registry and property path without evaluating gameplay.
+Imported tables require a CurveTable import with a valid package chain. Local
+tables require the native Engine CurveTable class; names alone are insufficient.
+Numeric strings such as +0 are decoded only with finite decimal syntax. Missing
+serialized fields are individually unresolved, never filled with native defaults.
+Null tables are not joined to unrelated rows. Inactive magnitude arms remain
+serialized evidence, not active damage contributions.
+
+Private corpus pass: all 3,956 recovered effect files inspected without errors;
+43,353 serialized bindings include 6,183 imported references, 36,751 explicit null
+tables and 419 absent table references. 1,503 bindings have at least one unresolved
+field (overlaps those categories). No local-table binding occurred in this corpus.
+These are serialization counts, not distinct mechanics or gameplay validation.
+Private report SHA-256: 765d37f9b2a771611584e2309bcf36bc4bf156b37b9300dc87d27ebbcce94fee.
+
+Run the inspector with recovered-properties JSON, matching decoded-asset JSON,
+and a private output filename. Keep output outside the repository. The corpus
+report is retained under `work/scalable-binding-recovery-private/`; all game paths,
+values and decoded bodies remain private.
+
+Validation: 76 Python recovery tests, TypeScript and 297 engine tests (41 files)
+passed. Production code and app artifacts did not change; no artifact rebuild or
+new rendered-parity claim is appropriate. Next: connect selected active magnitude
+arms to these bindings, resolve missing/inherited fields and verify native curve
+evaluation before enabling conditional item math.

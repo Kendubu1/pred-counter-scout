@@ -415,3 +415,11 @@ Validation: 297 simulator tests across 41 files and TypeScript pass. Existing ap
 artifacts remain on the unchanged automatic-delivery path; this opt-in API does
 not require regenerating their values. The previous 67 recovery tests cover
 unchanged recovery code and were not rerun for this simulator-only change.
+
+## 2026-10-19 recovery checkpoint — curve references
+
+M1 remains partial. Reusable serialized-binding inspection covers 3,956 recovered
+effect files, with absent fields retained as unresolved rather than guessed defaults.
+See catalog-asset-audit.md for counts and private-report fingerprint. No mechanics
+moved to implemented or game-checked, and no app artifacts changed. Next close the
+active magnitude/curve evaluation join; null-table row names are not bindings.
