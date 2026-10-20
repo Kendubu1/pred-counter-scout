@@ -5113,3 +5113,21 @@ rollback and saved v6. Raw match facts are unchanged.
 - Version the loadout script by its LF-normalized content hash so cached individual-popup code cannot run with the grouped-dialog styles.
 - The single loadout trigger includes Eternal, both minors, augment and crest. One dialog exposes all descriptions and the recorded build.
 - Validation: 300 tests passed; verified the complete dialog at 390px mobile width.
+
+### 2026-10-20: coach-critique's apply step cannot execute a flagged deletion
+`engine/src/ingest/coach-critique.ts`'s per-flag apply loop (`for (const fl of
+flags) { if (!fl.rewrite) continue; ... }`) treats `rewrite: null` as a pure
+skip, not a removal. A flag correctly judged "pure duplicate, drop it" by the
+independent critic is therefore a permanent no-op: the duplicate line survives
+every future round untouched and gets re-flagged indefinitely (observed on
+match 0be308cb's "20.7" moment, re-flagged identically across 3 consecutive
+rounds before being noticed). Worked around by deleting the one duplicate
+moment entry by hand once the critic had independently confirmed the same
+drop three times, then re-running the contract gate to confirm the file still
+validated. For any future match, if a flag's rewrite is null and the quoted
+line is still present in the next round's SOURCE, don't just re-run
+prepare/critic/ingest expecting it to resolve itself — delete the line
+directly. A real fix would make the ingest script support true deletion for
+`rewrite: null` (e.g. splice the quoted text out, or drop the whole dict
+key when the quote is an exact moment/buildRead value), but that's an
+engine-code change outside this pass's scope.
