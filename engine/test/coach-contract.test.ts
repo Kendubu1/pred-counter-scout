@@ -12,3 +12,16 @@ it('rejects duplicated card advice',()=>{const f:any=match();f.coaching.microRea
 it('requires explicit, unambiguous complete scope',()=>{const games=[match(),{...match(),matchId:'abc-456'}];for(const scope of [[],['missing'],['abc'],['abc-1','missing']])expect(()=>selectReviewScope(games,scope)).toThrow();expect(selectReviewScope(games,['abc-1'])).toEqual([games[0]]);});
 it('blocks publication after copy or facts change',()=>{const f=match();const report={reviewedLines:5,flaggedLines:0,unmatched:0,rewritesDropped:0,reviewedDigests:{[f.matchId]:reviewDigest(f)}};expect(()=>validatePublication([f],report)).not.toThrow();f.coaching.team='Changed after critique.';expect(()=>validatePublication([f],report)).toThrow();const original=match();(original.players[0] as any).kills=5;expect(()=>validatePublication([original],report)).toThrow();});
 it('rejects flagged, dropped, incomplete or empty critic results',()=>{const f=match();const clean={reviewedLines:5,flaggedLines:0,unmatched:0,rewritesDropped:0,reviewedDigests:{[f.matchId]:reviewDigest(f)}};for(const report of [{...clean,flaggedLines:1},{...clean,unmatched:1},{...clean,rewritesDropped:1},{...clean,reviewedDigests:{}},{...clean,reviewedLines:0}])expect(()=>validatePublication([f],report)).toThrow();});
+
+it('requires reflection for losses under the active reflection preset, never wins',()=>{
+ const f:any=match(); f.result='loss';
+ expect(()=>validateCoachContract(root,f)).toThrow('lossReflection');
+ f.coaching.lossReflection='Prepare a safe approach together before the contest, or call a reachable trade.';
+ expect(()=>validateCoachContract(root,f)).not.toThrow();
+ f.result='win'; expect(()=>validateCoachContract(root,f)).toThrow('only on losses');
+});
+it('validates reflection readability and length like the main review',()=>{
+ const f:any=match(); f.result='loss'; f.coaching.lossReflection='Reset at 12:34.';
+ expect(()=>validateCoachContract(root,f)).toThrow('exact time');
+ f.coaching.lossReflection='word '.repeat(101); expect(()=>validateCoachContract(root,f)).toThrow('too long');
+});

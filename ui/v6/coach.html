@@ -936,7 +936,8 @@ function pgReview(f) {
       <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap"><b style="color:${resColor}">${f.result.toUpperCase()}</b><span style="color:var(--text-2)">${new Date(f.startTime).toLocaleDateString()} · ${f.durationMin} min</span></div>
       <h2 style="font-size:1.2rem;line-height:1.4;margin:.65rem 0">${esc(co.headline || 'Match review')}</h2>
       ${co.team ? `<p style="color:var(--text-1);line-height:1.6;margin:0">${esc(co.team)}</p>` : ''}`);
-    const next = focus?.action ? card(`${eyebrow('Next game', '')}<p style="font-size:1rem;line-height:1.5;margin:0">${esc(focus.action)}</p>`) : '';
+    const reflection = f.result === 'loss' && co.lossReflection ? `${eyebrow('What could have changed this game?', '')}<p style="line-height:1.6">${esc(co.lossReflection)}</p>` : '';
+    const next = focus?.action || reflection ? card(`${reflection}${focus?.action ? `${eyebrow('Next game', '')}<p style="font-size:1rem;line-height:1.5;margin:0">${esc(focus.action)}</p>` : ''}`) : '';
     const players = card(`${eyebrow('Your team', '')}${us.map((p) => `<div class="plobby">
       <div class="who">${hIcon(p.heroSlug, 34)}<span><b>${pgName(p)}</b><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span></span>${CoachLoadouts.icons(p.loadout,p)}</div>
       <div class="line">${(() => {

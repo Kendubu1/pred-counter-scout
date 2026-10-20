@@ -23,7 +23,9 @@ export function validateCoachContract(root: string, f: any): void {
   if (!allies.length || allies.some((id: string) => !c.perPlayer?.[id]?.trim()) || Object.keys(c.perPlayer ?? {}).some(id => !allies.includes(id))) fail('every allied player needs a review, with no unknown players');
   for (const m of Object.values(c.moments ?? {}) as any[]) if (!m || typeof m.call !== 'string') fail('moments must be objects with a call string');
   if (preset.layout !== 'concise' || preset.playerFormat !== 'paragraph') return;
-  const lines: [string, unknown, number][] = [['headline', c.headline, 25], ['team', c.team, 90], ['focus', c.focus?.action, 50], ...Object.entries(c.perPlayer).map(([id, text]) => [id, text, 80] as [string, unknown, number])];
+  if (preset.lossReflection && f.result === 'loss' && !c.lossReflection?.trim()) fail('lossReflection is required for a loss');
+  if (f.result === 'win' && c.lossReflection) fail('lossReflection belongs only on losses');
+  const lines: [string, unknown, number][] = [...(c.lossReflection ? [['lossReflection', c.lossReflection, 100] as [string, unknown, number]] : []), ['headline', c.headline, 25], ['team', c.team, 90], ['focus', c.focus?.action, 50], ...Object.entries(c.perPlayer).map(([id, text]) => [id, text, 80] as [string, unknown, number])];
   for (const [field, text, cap] of lines) {
     if (typeof text !== 'string' || !text.trim()) fail(`${field} is empty`);
     const s = text as string;

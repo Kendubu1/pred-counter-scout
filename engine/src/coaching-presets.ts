@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
 
-const profile = z.object({ id: z.string().regex(/^[a-z0-9-]+$/), layout: z.enum(['classic', 'concise']), playerFormat: z.enum(['paragraph', 'actions']).optional(), instructions: z.string().min(1) });
+const profile = z.object({ id: z.string().regex(/^[a-z0-9-]+$/), layout: z.enum(['classic', 'concise']), lossReflection: z.boolean().optional(), playerFormat: z.enum(['paragraph', 'actions']).optional(), instructions: z.string().min(1) });
 const registry = z.object({ active: z.string(), presets: z.array(profile).min(1) }).superRefine((v, ctx) => {
   if (new Set(v.presets.map(p => p.id)).size !== v.presets.length || !v.presets.some(p => p.id === v.active)) ctx.addIssue({ code: 'custom', message: 'Duplicate or missing active preset' });
 });
