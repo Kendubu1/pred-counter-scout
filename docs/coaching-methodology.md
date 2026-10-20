@@ -20,6 +20,18 @@ Provenance labels used below:
 - **THEORY** — reasonable transfer from another MOBA; may not hold in
   Predecessor.
 
+
+
+## Automated review correction, 2026-10-20
+The latest three wins exposed a grounding failure despite the correct v7 label.
+Judge the complete review for useful advice, not just format and literal numbers.
+- `caughtOut` and `solo` mean outside detected kill clusters. They do not establish that a player was alone, abandoned, overextended or taking a duel. Kill-credit lists are not attendance lists.
+- Aggregate objective damage does not identify tower damage, safe siege opportunities or a player refusing to help. Do not prescribe tanking tower shots to repair a low number. Account for waves, defenders and the player's job prospectively.
+- Do not turn an enemy anti-heal item into an unconditional instruction to dive a protected backline. Target access and safety still matter.
+- Strong wins need forceful, specific praise and a repeatable standard, not an invented flaw for every player. Distinct match stories should not become the same escort, ward or objective lecture.
+- Read the final five paragraphs together: each should sound like useful adult coaching, with varied cadence and natural edge. A preset ID and one swear do not establish compliance.
+- Preserve the previous coaching in a dated review snapshot before a requested rewrite. Independently critique the full saved result, including expanded build analysis, before publication.
+
 ## 1. How real coaches review a game (methodology)
 
 Distilled from pro LoL/Dota coaching practice (BSJ's replay-review template,

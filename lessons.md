@@ -5147,3 +5147,10 @@ match avoids output-token failures; catalog-only digits in an existing line get
 any rewrite of that line dropped by the ground-check, so phrase them
 qualitatively; a match that comes back clean can be ingested and published on
 its own scope without waiting for its siblings.
+
+
+## 2026-10-20: latest three automated reviews
+- Correct v7 persona labels did not prevent unsupported coaching. The critic source itself called unclustered deaths "caught alone" and inferred minion siege from aggregate objective damage. Removed those assertions and added a regression retaining chronology without isolation/causation.
+- Reauthored the 25-, 24-, and 23-minute Oct 19 evening wins from stored facts, including all fifteen player paragraphs and matchup build analysis. Preserve previous coaching in `data/coaching/review-presets/before-2026-10-20-three-review-refresh.json`.
+- Require role-aware advice without manufactured flaws, mandatory escorts, or tower-tanking prescriptions from low aggregate objective damage. Historical stats and final inventories do not establish execution or passive uptime.
+- Verification: 304 tests across 44 files passed; exact-match independent critique and publication gate required before publishing. Match facts preserved.

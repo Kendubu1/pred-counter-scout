@@ -179,3 +179,14 @@ Sentry use does not itself require an escort. Recommend communicating the gank t
 
 ### Role-specific build analysis in expanded evidence
 For newly authored reviews set coaching.buildAnalysisVersion=1 and supply buildReads for every allied player with matchup, build, eternal, augment, crest and improvement paragraphs. Distinguish the actual role matchup (duo pairs for support/carry; jungle opponent and gank targets for jungle) from whole-team threats. Explain owned item/passive trigger conditions and relevant enemy defenses, then recorded Eternal/minors, augment and crest fit. Offer conditional alternatives with the benefit and sacrificed value, including a defensible keep when no swap is supported. Do not equate meta popularity with fit, final inventory with purchase timing, or catalog mechanics with actual procs, stacks, hit accuracy or active use. Draft choices are draft alternatives, not mid-match swaps. Avoid duplicating the main execution takeaway or listing the inventory again; the grouped popup already supplies it. Critique all six fields against catalogs and match facts.
+
+
+## Automated review correction, 2026-10-20
+The latest three wins exposed a grounding failure despite the correct v7 label.
+Judge the complete review for useful advice, not just format and literal numbers.
+- `caughtOut` and `solo` mean outside detected kill clusters. They do not establish that a player was alone, abandoned, overextended or taking a duel. Kill-credit lists are not attendance lists.
+- Aggregate objective damage does not identify tower damage, safe siege opportunities or a player refusing to help. Do not prescribe tanking tower shots to repair a low number. Account for waves, defenders and the player's job prospectively.
+- Do not turn an enemy anti-heal item into an unconditional instruction to dive a protected backline. Target access and safety still matter.
+- Strong wins need forceful, specific praise and a repeatable standard, not an invented flaw for every player. Distinct match stories should not become the same escort, ward or objective lecture.
+- Read the final five paragraphs together: each should sound like useful adult coaching, with varied cadence and natural edge. A preset ID and one swear do not establish compliance.
+- Preserve the previous coaching in a dated review snapshot before a requested rewrite. Independently critique the full saved result, including expanded build analysis, before publication.
