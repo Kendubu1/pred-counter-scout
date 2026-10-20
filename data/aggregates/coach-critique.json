@@ -1,29 +1,65 @@
 {
- "generatedAt": "2026-10-20T06:44:43.877Z",
+ "generatedAt": "2026-10-20T06:56:37.894Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
  "reviewedDigests": {
-  "66b1d403-af84-4f1c-bf87-57e0c41df0ba": "bf07265349fec9d5640e378a00b35ac69ceb701b87c8e863a498eeaafa47adaa"
+  "ea696257-4943-4784-805b-dedb3e74b1fa": "41afc672db3ec352babd59ab213fbf52c13efe39f1b9aa5f0e577e3f4795c4a7"
  },
  "reviewedLines": 23,
- "flaggedLines": 2,
- "agreementRate": 0.913,
- "rewritesGrounded": 1,
+ "flaggedLines": 8,
+ "agreementRate": 0.652,
+ "rewritesGrounded": 8,
  "rewritesDropped": 0,
- "applied": 0,
- "unmatched": 1,
+ "applied": 8,
+ "unmatched": 0,
  "games": {
-  "66b1d403-af84-4f1c-bf87-57e0c41df0ba": [
+  "ea696257-4943-4784-805b-dedb3e74b1fa": [
    {
-    "quote": "Khaimera's stat line was excellent: twelve kills, team-leading damage well above the jungle norm, and only three deaths. One blemish: a solo death to their carry early, one of two caught-out deaths we gave up all game. At the Mini Prime fight where the team fought two kills down, Khaimera wasn't among the credited kills or deaths, so keep closing that early jungle lead into every contested fight instead of skipping it.",
-    "severity": "med",
-    "issue": "turns one absent-credit window into a repeat-pattern 'skipping' verdict, when Khaimera was credited in 9 of 13 skirmishes match-wide",
-    "rewrite": "Khaimera's stat line was excellent: twelve kills, team-leading damage well above the jungle norm, and only three deaths. One blemish: a solo death to their carry early, one of two caught-out deaths we gave up all game. At the Mini Prime fight where the team fought two kills down, Khaimera wasn't among the credited kills or deaths; force that jungle lead into the next fight like that one."
+    "quote": "Carry, mid and offlane held favorable matchups while jungle fought Kwang's edge all game. An early solo death gave them first blood, but the team's objective control erased that deficit. The team kept winning fights without converting next to them, twice taking a fight clean and still losing the tower or ceding Fangtooth in the same window. A full five-on-five at Fangtooth, five kills to one, was the night's cleanest moment, and objective damage finished nearly five times theirs.",
+    "severity": "high",
+    "issue": "sim-lane read stated as a sustained fact ('all game') and undercounts the won-fight-but-lost-objective pattern as 'twice' when the facts show three instances (17.7m tower, 19.6m Fangtooth, 21.7m tower)",
+    "rewrite": "Carry, mid and offlane held favorable matchups while jungle faced a tougher matchup against Kwang. An early solo death gave them first blood, but the team's objective control erased that deficit. The team kept winning fights without converting next to them, three times taking a fight clean and still losing the tower or ceding Fangtooth in the same window. A full five-on-five at Fangtooth, five kills to one, was the night's cleanest moment, and objective damage finished nearly five times theirs."
    },
    {
-    "quote": "We won that fight three kills to none, yet our Outer Tower still fell in the same window. Winning the bodies there wasn't enough without someone staying back to hold the lane.",
+    "quote": "Rotate the lane lead into close fights",
+    "severity": "low",
+    "issue": "generic action disconnected from its own evidence (Drongo's death before the Outer Tower fight); not a concrete, match-tied check",
+    "rewrite": "Don't contest objectives when a teammate is already dead; regroup first."
+   },
+   {
+    "quote": "Gideon held the favored mid matchup against Zinx all game, finishing seven kills on two deaths and neither death came from being caught alone. The build is the one thing worth questioning: none of Azure Core, Combustion or Wraith Leggings got finished, replaced by Soulbinder and Truesilver Bracelet, and damage still landed just under the midlane norm despite the kill lead. Start the recommended core next game and see whether that damage number climbs.",
+    "severity": "high",
+    "issue": "sim-lane stated as a sustained fact ('all game'), and forces an unsupported item-swap demand off a damage delta flagged 'normal' (-9%) on a 7/2 kill game, directly contradicting this same review's own build-read line that says there's 'no swap to force off this result alone'",
+    "rewrite": "Gideon held the favored mid matchup against Zinx, finishing seven kills on two deaths and neither death came from being caught alone. None of Azure Core, Combustion or Wraith Leggings got finished, replaced by Soulbinder and Truesilver Bracelet, and damage landed just under the midlane norm despite the kill lead, but that's not enough to blame the build for this result."
+   },
+   {
+    "quote": "Drongo held the favored matchup against Skylar all game, yet still finished with five deaths and damage well under the carry norm. Two of those deaths were solo catches late, and the one at the Outer Tower directly preceded losing that tower shortly after, an issue that cost a tower before too. Group up before pushing near a tower alone next time instead of trading it away solo.",
+    "severity": "high",
+    "issue": "sim-lane stated as a sustained fact ('all game'), and 'cost a tower before too' wrongly folds the earlier 16.4m death-inside-a-fight into a repeat of Drongo's personal fault, when the source marks a death inside a fight as the team's call to engage, not the player's own receipt",
+    "rewrite": "Drongo held the favored matchup against Skylar, yet still finished with five deaths and damage well under the carry norm. Two of those deaths were solo catches late, and the one at the Outer Tower directly preceded losing that tower shortly after. Group up before pushing near a tower alone next time instead of trading it away solo."
+   },
+   {
+    "quote": "Greystone was the cleanest performance of the night: eight kills, zero deaths, and the most damage mitigated on the roster while still beating the role's own damage norm by thirty percent. The lane was favored against Grux all game, and Greystone soaked every bit of it. Keep leading the frontline into every fight exactly like that, letting the squishier four follow a body that can actually take the hits.",
     "severity": "med",
-    "issue": "duplicates the same Outer Tower fight and hold-the-lane advice already given in the focus lines earlier in the review",
-    "rewrite": null
+    "issue": "sim-lane read ('favored... all game') stated as an observed, sustained result rather than the draft-level matchup label",
+    "rewrite": "Greystone was the cleanest performance of the night: eight kills, zero deaths, and the most damage mitigated on the roster while still beating the role's own damage norm by thirty percent. The lane was favored against Grux, and Greystone soaked every bit of it. Keep leading the frontline into every fight exactly like that, letting the squishier four follow a body that can actually take the hits."
+   },
+   {
+    "quote": "Khaimera fought Kwang's edge in the jungle matchup all game and still turned in nearly thirty-nine thousand objective damage, more than double his own hero damage, while keeping deaths well below the jungle norm. None of his three deaths were solo catches either, all coming inside team fights rather than alone. That is how a losing jungle matchup gets erased: keep pressuring objectives and structures instead of chasing even fights with the enemy jungler.",
+    "severity": "med",
+    "issue": "sim-lane stated as a sustained fact ('all game'), and 'all coming inside team fights rather than alone' overclaims location/context the source only proves as 'not a solo catch,' not that each death happened inside a tracked team fight",
+    "rewrite": "Khaimera fought Kwang's edge in the jungle matchup and still turned in nearly thirty-nine thousand objective damage, more than double his own hero damage, while keeping deaths well below the jungle norm. None of his three deaths were solo catches. That is how a losing jungle matchup gets erased: keep pressuring objectives and structures instead of chasing even fights with the enemy jungler."
+   },
+   {
+    "quote": "Three kills to nothing was a great trade, but Fangtooth still went to them in the same window. Worth it at that kill margin, but it is their buff running now.",
+    "severity": "med",
+    "issue": "enemy objective conceded with no 'why' attached when the source names it: Phase and Drongo were dead going into that Fangtooth",
+    "rewrite": "Three kills to nothing was a great trade, but Fangtooth still went to them in the same window, with Phase and Drongo already dead going into it. Worth it at that kill margin, but it is their buff running now."
+   },
+   {
+    "quote": "We won that fight three kills to none and still lost our Outer Tower in the same window.",
+    "severity": "med",
+    "issue": "enemy structure loss stated with no cause noted, when the source confirms nobody on our side was dead beforehand, the more useful 'why' (a tempo/wave loss, not a death)",
+    "rewrite": "We won that fight three kills to none, with nobody of ours even dead beforehand, and still lost our Outer Tower in the same window."
    }
   ]
  }
