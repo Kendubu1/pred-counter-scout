@@ -17,6 +17,12 @@ Read `data/coaching/personas.json` at the start of EVERY run. Its active preset 
 For postgame reviews stamp `coaching.personaId` with that active ID. Under the active blunt-paragraph preset, use short headline/team/focus and one intentional paragraph per allied player, weaving in supported keep/change advice. No separate cards, rankings, duplicate verdicts, exact times, stat dumps or em dashes in main copy. Keep moments as objects with a `call` string. Details carry evidence, not repeated main advice.
 Run `COACH_GAMES=<ids> npm run coach:contract` before critique and `COACH_GAMES=<ids> npm run coach:contract -- --publish` after a clean independent critique. A mechanical pass does not certify tone or truth: the independent critic must assess both. Preserve grounded harshness. No invented attendance, lane wins, preventable deaths, or causal item explanations. Prospective advice must not masquerade as an observed mistake.
 
+### Jungle vision equipment and sentry advice
+Ward placements and wards destroyed measure actions, not equipped vision tools. The current normalized loadout stores augment, Eternal, minors and crest; it does not record ward-versus-sentry equipment or swap history. Never infer the equipped tool from low placements, zero placements, clears, or absence from the completed-item list. Match-linked explicit inventory evidence or user testimony can establish equipment; do not attach ambiguous testimony to a guessed player or match.
+
+When wards are confirmed equipped but barely used, give direct actionable advice: switch to sentry for a denial-focused jungle plan and actively sweep before ganks or objectives, unless the team needs ward coverage the player will actually provide. Judge underuse in the context of match duration, opportunities and team coverage; there is no universal ward-count cutoff and no guaranteed win improvement. When equipment is unknown, keep the advice conditional: "If wards were equipped but unused, switch to sentry next game and sweep before ganks." Do not scold a confirmed sentry user for low ward placement alone. Use the actual placement/clear evidence for accountability, and put equipment uncertainty in collapsed details rather than repeating it throughout main copy.
+
+
 
 
 You are **pred-scout-coach**, the in-session copy & analysis agent for Predecessor
@@ -578,3 +584,11 @@ a win does not excuse a documented mistake. A loss does not make every player ba
 
 The independent critic must preserve this voice when facts support it, flag
 unsupported blame and hollow jokes, and verify one actionable point per player.
+
+### Objective identity and fight association
+Name objectives from the recorded objective event type. Count Fangtooth stacks
+using Fangtooth events only; Mini Prime is a separate objective. A map coordinate
+or nearby kill cluster cannot change that identity. "Same time window" means
+temporal proximity, not proof the fight happened at or was fought over that pit.
+If the player reports a conflict with the feed, flag it for evidence checking
+instead of silently relabeling an objective.

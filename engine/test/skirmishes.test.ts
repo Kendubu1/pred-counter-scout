@@ -53,7 +53,7 @@ describe('skirmish detection', () => {
   it('flags the late teamfight as game-defining and anchors it to Prime', () => {
     expect(sk[1]!.tag).toBe('game-defining');
     expect(sk[1]!.nearObjective).toEqual({ type: 'PRIME_GUARDIAN', side: 'us', kind: 'objective' });
-    expect(sk[1]!.place).toBe('Prime Guardian (we took it)');
+    expect(sk[1]!.place).toBe('Same time window: Prime Guardian (we took it)');
   });
 
   it('surfaces both tagged fights, the game-defining one most significant', () => {
@@ -172,5 +172,20 @@ describe('skirmish macro: support presence is unproven, never "pinned"', () => {
     expect(notes).toContain('absence is unproven');
     expect(notes).not.toMatch(/Phase \(support\) was alive/);
     expect(notes).not.toMatch(/support\) was alive but losing lane/);
+  });
+});
+
+
+describe('objective identity versus temporal fight association', () => {
+  it('keeps Mini Prime and Fangtooth identities without inferring type from kill coordinates', () => {
+    const kills = [kill(580, 'us', 'khaimera', 'grux'), kill(590, 'them', 'grux', 'khaimera'), kill(750, 'us', 'khaimera', 'grux'), kill(755, 'us', 'belica', 'murdock')].map(k => ({ ...k, x: -5000, y: 0 }));
+    const events: ObjEvent[] = [
+      { sec: 592, type: 'MINI_PRIME', side: 'us', kind: 'objective' },
+      { sec: 760, type: 'FANGTOOTH', side: 'us', kind: 'objective' },
+    ];
+    const fights = detectSkirmishes(kills, events, 26);
+    expect(fights.map(f => f.nearObjective?.type)).toEqual(['MINI_PRIME', 'FANGTOOTH']);
+    expect(fights.map(f => f.place)).toEqual(['Same time window: Mini Prime (we took it)', 'Same time window: Fangtooth (we took it)']);
+    expect(detectSkirmishes(kills.map(k => ({ ...k, x: 6700 })), events, 26).map(f => f.nearObjective)).toEqual(fights.map(f => f.nearObjective));
   });
 });

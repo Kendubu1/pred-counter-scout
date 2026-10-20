@@ -298,6 +298,16 @@
     .fm-mark.on, .fm-halo.on, .fight-flash { animation:none; }
     .fm-mark.on { stroke:var(--gold); } .fm-halo.on { opacity:.5; }
   }
+  .ran-icons { display:flex; gap:5px; margin-top:.45rem; flex-wrap:wrap; }
+  .ran-icon { width:34px; height:34px; padding:2px; border:1px solid var(--border); border-radius:7px; background:var(--bg-2); cursor:pointer; }
+  .plobby .who .ran-icon img { width:28px; height:28px; border:0; border-radius:4px; object-fit:contain; }
+  .ran-icon:hover, .ran-icon:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .loadout-back { position:fixed; inset:0; background:rgba(5,5,10,.7); z-index:60; display:flex; align-items:center; justify-content:center; padding:1rem; }
+  .loadout-dialog { background:var(--bg-1); color:var(--text-1); border:1px solid var(--border); border-radius:14px; padding:1rem; width:min(380px,100%); max-height:80vh; overflow:auto; line-height:1.5; }
+  .loadout-title { display:flex; gap:.7rem; align-items:center; }
+  .loadout-title img { width:48px; height:48px; object-fit:contain; }
+  .loadout-title small { display:block; color:var(--text-2); }
+  .loadout-dialog button { width:100%; padding:.5rem; border:1px solid var(--border); border-radius:7px; background:var(--bg-2); color:var(--text-0); cursor:pointer; }
 </style>
 </head>
 <body>
@@ -309,6 +319,7 @@
   <a class="navlink active" href="coach.html">Coach</a>
 </div><div class="subnav" id="subnav"></div></div>
 <div class="wrap" id="page">loading…</div>
+<script src="coach-loadouts.js"></script>
 <script>
 const esc = (s) => String(s ?? '').replace(/\s*\u2014\s*/g, ', ').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct = (x, d = 1) => (x * 100).toFixed(d);
@@ -913,7 +924,7 @@ function pgReview(f) {
       ${co.team ? `<p style="color:var(--text-1);line-height:1.6;margin:0">${esc(co.team)}</p>` : ''}`);
     const next = focus?.action ? card(`${eyebrow('Next game', '')}<p style="font-size:1rem;line-height:1.5;margin:0">${esc(focus.action)}</p>`) : '';
     const players = card(`${eyebrow('Your team', '')}${us.map((p) => `<div class="plobby">
-      <div class="who">${hIcon(p.heroSlug, 34)}<span><b>${pgName(p)}</b><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists} K/D/A</span></span></div>
+      <div class="who">${hIcon(p.heroSlug, 34)}<span><b>${pgName(p)}</b><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists} K/D/A</span>${CoachLoadouts.icons(p.loadout)}</span></div>
       <div class="line">${(() => {
         const actions = co.microReads?.[p.pid];
         if (COACH_PLAYER_FORMAT === 'actions' && (actions?.keep || actions?.change)) return `${actions.keep ? `<p style="margin:0 0 .5rem"><b style="color:var(--green)">Keep:</b> ${esc(actions.keep)}</p>` : ''}${actions.change ? `<p style="margin:0"><b style="color:var(--gold)">Change:</b> ${esc(actions.change)}</p>` : ''}`;

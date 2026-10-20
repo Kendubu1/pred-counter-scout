@@ -5082,3 +5082,14 @@ independent review corrected five of ten fights being called most and retained
 the edge. Preserve facts, K/D/A and rollback snapshots; never invent blame.
 Validation: 291 tests passed, typecheck passed, 44 reviewed lines clean, both
 match views checked in the browser.
+
+### 2026-10-19: objective identity, jungle vision and recorded loadouts
+Nearest objective timestamps are not fight locations. Label them as same-time
+context; preserve raw Mini Prime/Fangtooth event identities regardless of map
+coordinates. Corrected the latest two films' association labels. Ward placement
+and clearing totals cannot identify equipped ward/sentry tools. Recommend sentry
+for confirmed unused wards, or conditionally when equipment is unknown.
+Recorded Eternal/minor/augment icons now sit under player K/D/A with accessible
+click/tap detail dialogs using committed catalog descriptions.
+Validation: 296 tests, TypeScript, two clean independent reviews (44 lines),
+rendered icon rows, minor/augment/Eternal dialogs and keyboard open/close checked.

@@ -153,3 +153,9 @@ selectable with `npm run coach:preset -- <id>`; saved v5 reviews can be restored
 with `npm run coach:preset -- blunt-paragraph-v5 --restore-reviews`.
 The exact pre-v5 two-match copy is archived in
 `data/coaching/review-presets/before-blunt-paragraph-v5.json` for comparison only.
+
+
+### Jungle vision equipment and sentry advice
+Ward placements and wards destroyed measure actions, not equipped vision tools. The current normalized loadout stores augment, Eternal, minors and crest; it does not record ward-versus-sentry equipment or swap history. Never infer the equipped tool from low placements, zero placements, clears, or absence from the completed-item list. Match-linked explicit inventory evidence or user testimony can establish equipment; do not attach ambiguous testimony to a guessed player or match.
+
+When wards are confirmed equipped but barely used, give direct actionable advice: switch to sentry for a denial-focused jungle plan and actively sweep before ganks or objectives, unless the team needs ward coverage the player will actually provide. Judge underuse in the context of match duration, opportunities and team coverage; there is no universal ward-count cutoff and no guaranteed win improvement. When equipment is unknown, keep the advice conditional: "If wards were equipped but unused, switch to sentry next game and sweep before ganks." Do not scold a confirmed sentry user for low ward placement alone. Use the actual placement/clear evidence for accountability, and put equipment uncertainty in collapsed details rather than repeating it throughout main copy.

@@ -4,9 +4,9 @@
 // two things the coach cares about: the game-defining teamfights and the dumb
 // losing battles we took for nothing.
 //
-// "Where" is deliberately coarse and honest: we anchor a fight to a contemporaneous
-// objective/tower (reliable) rather than claim a precise map position from raw x/y
-// (which would need map calibration we don't have). Everything here is THEORY-light
+// Objective anchors are temporal context, not verified fight locations or proof
+// that a fight contested that objective. Located-kill regions remain approximate.
+// Everything here is THEORY-light
 // — it's measured kill data, but the game-defining / bad-trade *labels* are heuristics.
 
 import type { FactKill } from './postgame.js';
@@ -226,7 +226,7 @@ export function detectSkirmishes(kills: FactKill[], objEvents: ObjEvent[], durat
     const placeOf = (e: ObjEvent) => e.kind === 'tower'
       ? `${e.side === 'us' ? 'their' : 'our'} ${titleCase(e.type)} (${e.side === 'us' ? 'we took it' : 'they took it'})`
       : `${titleCase(e.type)} (${e.side === 'us' ? 'we took it' : 'they took it'})`;
-    const place = nearMajor ? placeOf(nearMajor) : region ?? (anchor ? placeOf(anchor) : 'open map');
+    const place = nearMajor ? `Same time window: ${placeOf(nearMajor)}` : region ?? (anchor ? `Same time window: ${placeOf(anchor)}` : 'open map');
 
     // significance: bodies + decisiveness + a MAJOR prize on the line + lateness
     const lateness = durationMin > 0 ? Math.min(1, endSec / 60 / durationMin) : 0.5;
