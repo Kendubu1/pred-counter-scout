@@ -5108,3 +5108,8 @@ the blunt tone but varies judgment, advice and humor placement, including plain
 paragraphs without a joke. Judge the set of player reviews together rather than
 mechanically rotating templates. Revised latest two reviews; retained v5 for
 rollback and saved v6. Raw match facts are unchanged.
+
+### 2026-10-19: Keep coach popup scripts synchronized
+- Version the loadout script by its LF-normalized content hash so cached individual-popup code cannot run with the grouped-dialog styles.
+- The single loadout trigger includes Eternal, both minors, augment and crest. One dialog exposes all descriptions and the recorded build.
+- Validation: 300 tests passed; verified the complete dialog at 390px mobile width.

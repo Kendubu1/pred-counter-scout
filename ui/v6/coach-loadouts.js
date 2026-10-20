@@ -15,6 +15,7 @@
   let nextPlayer = 0;
   function icons(lo, player = {}) {
     const list = choices(lo);
+    if (lo?.crest) list.push({name:lo.crest,image:`crests/${lo.crestSlug || slug(lo.crest)}`});
     if (!list.length && !(player.items || []).length && !lo?.crest) return '';
     const id = String(++nextPlayer);
     players.set(id, { ...player, loadout: lo });

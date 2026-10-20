@@ -1,5 +1,6 @@
 import { expect, it } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { runInNewContext } from 'node:vm';
 const context:any={window:{},document:{addEventListener:()=>{}}};
 runInNewContext(readFileSync(new URL('../../ui/v6/coach-loadouts.js',import.meta.url),'utf8'),context);
@@ -41,4 +42,20 @@ it('groups every recorded pick into one tap target and renders build alongside a
 it('build remains accessible when perk records are missing',()=>{
  expect(ui.icons(null,{items:[{slug:'example'}]})).toContain('view complete loadout');
  expect(ui.renderDetails({items:[{slug:'example',name:'Example Item'}]},null,null,null)).toContain('Example Item');
+});
+
+it('includes the crest in the single grouped trigger and complete popup',()=>{
+ const player={loadout:{eternal:'Vesh',minor1:'Lich',minor2:'Mind Rot',augment:{id:11,name:'Deep Freeze'},crest:'Epoch',crestSlug:'epoch'},items:[]};
+ const html=ui.icons(player.loadout,player);
+ expect((html.match(/<button/g)||[])).toHaveLength(1);
+ expect((html.match(/<img/g)||[])).toHaveLength(5);
+ expect(html).toContain('crests/epoch.webp');
+ expect(ui.renderDetails(player,eternals,augments,[])).toContain('Epoch');
+});
+it('versions the popup script by content so new markup cannot reuse the old individual-popup script',()=>{
+ const source=readFileSync(new URL('../../ui/v6/coach-loadouts.js',import.meta.url));
+ // Git normalizes line endings; hash the same LF content on every platform.
+ const hash=createHash('sha256').update(source.toString().replace(/\r\n/g,'\n')).digest('hex').slice(0,12);
+ const page=readFileSync(new URL('../../ui/v6/coach.html',import.meta.url),'utf8');
+ expect(page).toContain(`coach-loadouts.js?v=${hash}`);
 });
