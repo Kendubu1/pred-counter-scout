@@ -5154,3 +5154,7 @@ its own scope without waiting for its siblings.
 - Reauthored the 25-, 24-, and 23-minute Oct 19 evening wins from stored facts, including all fifteen player paragraphs and matchup build analysis. Preserve previous coaching in `data/coaching/review-presets/before-2026-10-20-three-review-refresh.json`.
 - Require role-aware advice without manufactured flaws, mandatory escorts, or tower-tanking prescriptions from low aggregate objective damage. Historical stats and final inventories do not establish execution or passive uptime.
 - Verification: 304 tests across 44 files passed; exact-match independent critique and publication gate required before publishing. Match facts preserved.
+
+
+## 2026-10-20: scannable expanded coach evidence
+Replaced the five-player text wall with player disclosures and labeled analysis cards. Put the build decision first and moved totals/timeline into separate disclosures. Preserve authored text; no automatic sentence splitting or duplicated advice. Verify keyboard disclosures, all six fields, and narrow-screen overflow before publishing.

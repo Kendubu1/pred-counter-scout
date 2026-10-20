@@ -180,8 +180,31 @@
   .plobby .who b { display:block; font-size:.86rem; }
   .plobby .who .h { font-size:.7rem; color:var(--text-2); }
   .plobby .who .kda { font-size:.72rem; color:var(--text-1); font-variant-numeric:tabular-nums; }
-  .build-analysis p { margin:0 0 1rem; line-height:1.6; }
-  .build-analysis p:last-child { margin-bottom:0; }
+  .build-player { margin:.75rem 0; border:1px solid var(--border); border-radius:12px; background:var(--bg-1); overflow:hidden; }
+  .build-player > summary { display:flex; align-items:center; gap:.75rem; padding:1rem; cursor:pointer; list-style:none; min-height:44px; }
+  .build-player > summary::-webkit-details-marker { display:none; }
+  .build-player > summary::after { content:'+'; margin-left:auto; color:var(--accent); font-size:1.3rem; }
+  .build-player[open] > summary::after { content:'−'; }
+  .build-player > summary:focus-visible { outline:2px solid var(--accent); outline-offset:-3px; }
+  .build-player > summary img { width:36px; height:36px; border-radius:8px; }
+  .build-player .build-identity { display:grid; gap:.2rem; min-width:0; }
+  .build-player .build-identity b { font-size:.92rem; overflow-wrap:anywhere; }
+  .build-player .build-identity span { font-size:.76rem; color:var(--text-2); }
+  .build-analysis { padding:0 1rem 1rem; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.8rem; }
+  .build-section { padding:1rem; border:1px solid var(--border); border-radius:9px; min-width:0; }
+  .build-section h3 { margin:0 0 .6rem; font-size:.82rem; color:var(--text-0); }
+  .build-section p { margin:0; font-size:.85rem; line-height:1.7; color:var(--text-1); max-width:72ch; }
+  .build-section.wide { grid-column:1/-1; }
+  .build-section.recommendation { border-left:3px solid var(--accent); background:var(--accent-soft); }
+  .build-section.recommendation h3 { color:var(--accent); }
+  .build-help { color:var(--text-2); font-size:.8rem; line-height:1.6; margin:.5rem 0 1rem; }
+  .evidence-section { margin:1rem 0; }
+  .evidence-section > summary { padding:.8rem 0; cursor:pointer; font-weight:700; font-size:.86rem; }
+  @media (max-width:700px) {
+    .build-analysis { grid-template-columns:minmax(0,1fr); padding:0 .65rem .65rem; gap:.65rem; }
+    .build-section { padding:.85rem; }
+    .build-player > summary { padding:.85rem; }
+  }
   .plobby .line { font-size:.84rem; color:var(--text-1); }
   .plobby .items { display:flex; gap:.2rem; margin-top:.3rem; }
   .plobby .items img { width:20px; height:20px; border-radius:4px; border:1px solid var(--border); }
@@ -952,15 +975,16 @@ function pgReview(f) {
         return co.perPlayer?.[p.pid] ? esc(co.perPlayer[p.pid]) : 'Individual feedback has not been written for this player.';
       })()}</div>
     </div>`).join('')}`);
-    const loadouts = card(`${eyebrow('Builds & matchup analysis', '')}<p class="loadout-note">Final inventory and recorded draft choices. Purchase timing, active use and passive uptime are not verified. Alternatives are conditional matchup options, not proven winning swaps.</p>${us.map((p) => {
+    const loadouts = card(`${eyebrow('Builds & matchup analysis', '')}<p class="build-help">Choose a player to see the recommendation, matchup and loadout breakdown.</p>${us.map((p) => {
       const br = co.buildReads?.[p.pid];
-      return `<div class="plobby"><div class="who"><b>${pgName(p)}</b> ${esc(p.heroName)}</div><div class="build-analysis">
-        ${[['matchup','Lane & team threats'],['build','Item interactions'],['eternal','Eternal & minors'],['augment','Hero augment'],['crest','Crest'],['improvement','What to consider changing']].map(([key,label]) => br?.[key] ? `<p><b>${label}</b><br>${esc(br[key])}</p>` : '').join('')}
-        ${!br ? '<p>Matchup analysis has not been written for this player.</p>' : ''}
-      </div></div>`;
-    }).join('')}`);
+      const sections = [['improvement','Build decision','wide recommendation'],['matchup','Lane & team threats','wide'],['build','Item interactions','wide'],['eternal','Eternal & minors',''],['augment','Hero augment',''],['crest','Crest','']];
+      return `<details class="build-player"><summary>${hIcon(p.heroSlug,36).replace(/<\/?a\b[^>]*>/g,'')}<span class="build-identity"><b>${pgName(p)}</b><span>${esc(p.heroName)} · ${esc(p.role)}</span></span></summary><div class="build-analysis">
+        ${sections.map(([key,label,style]) => br?.[key] ? `<section class="build-section ${style}"><h3>${label}</h3><p>${esc(br[key])}</p></section>` : '').join('')}
+        ${!br ? '<p class="build-help">Matchup analysis has not been written for this player.</p>' : ''}
+      </div></details>`;
+    }).join('')}<p class="build-help">Based on final inventory and recorded draft choices. Purchase timing, active use and passive uptime are unverified. Alternatives describe matchup tradeoffs, not proven winning swaps.</p>`);
     return verdict + next + players + `<details class="deepdive" id="coach-evidence"><summary>Evidence & replay details · stats, builds and timestamps</summary>
-      ${card(eyebrow('Match totals', '') + statline)}${loadouts}${moments}${timeline}${deep}
+      ${loadouts}<details class="evidence-section"><summary>Match totals · compare player stats</summary>${card(statline)}</details><details class="evidence-section"><summary>Key moments & objective timeline</summary>${moments}${timeline}</details>${deep}
     </details>`;
   }
   return head + moments + deepDive + coachEvidence + timeline + worked + lobby + deep;

@@ -11,3 +11,7 @@ Snapshots live under `data/coaching/review-presets/` with `id`, `sourceCommit`, 
 Active `blunt-actions-v3` renders optional Keep and Change actions instead of each player paragraph. Empty actions are omitted; no praise or criticism is forced. The first five matches have a saved v3 snapshot, and v2 remains available for rollback.
 
 Active `blunt-paragraph-v4` restores one paragraph per player with the behavior to keep and change woven into the prose. The optional playerFormat distinguishes paragraphs from v3 action labels, so selecting/restoring an older preset also restores its presentation.
+
+
+### Expanded evidence layout
+Build analysis is grouped in per-player disclosures. Each opens with the build decision, followed by separate matchup, item, Eternal/minor, augment and crest sections. Desktop uses paired loadout cards; mobile stacks them. Totals and event timelines are separate disclosures. Existing review prose and legacy missing-field support are preserved.
