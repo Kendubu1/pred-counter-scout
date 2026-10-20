@@ -5093,3 +5093,11 @@ Recorded Eternal/minor/augment icons now sit under player K/D/A with accessible
 click/tap detail dialogs using committed catalog descriptions.
 Validation: 296 tests, TypeScript, two clean independent reviews (44 lines),
 rendered icon rows, minor/augment/Eternal dialogs and keyboard open/close checked.
+
+### 2026-10-19: one mobile loadout view
+Group the recorded perk icons into one right-aligned mobile button. Open all
+Eternal/minor/augment descriptions and the end-of-match build including crest
+in one scrollable accessible dialog; retain item effect triggers and cooldowns.
+Never label final inventory as purchase order. Verified at 390px: every group
+aligns to its player header's right edge; all four perks and build appear in
+one panel. Full suite: 298 tests passed.

@@ -29,3 +29,16 @@ it('escapes recorded labels and exposes keyboard buttons with accessible names',
  const html=ui.icons({eternal:'<img " onerror="alert(1)>'});
  expect(html).not.toContain('<img "');expect(html).toContain('&lt;img');expect(html).toContain('type="button"');expect(html).toContain('aria-label=');
 });
+
+it('groups every recorded pick into one tap target and renders build alongside all perk descriptions',()=>{
+ const player={squadName:'Test',loadout:{eternal:'Vesh',minor1:'Lich',minor2:'Mind Rot',augment:{id:11,name:'Deep Freeze'}},items:[{slug:'example',name:'Example Item'}]};
+ const html=ui.icons(player.loadout,player);
+ expect((html.match(/<button/g)||[])).toHaveLength(1);
+ expect((html.match(/<img/g)||[])).toHaveLength(4);
+ const detail=ui.renderDetails(player,eternals,augments,[{slug:'example',stats:{health:100},effects:[{name:'Passive',condition:'On taking damage:',cooldown:'10s',menu_description:'Extra protection.'}]}]);
+ for(const text of ['Vesh','Lich','Mind Rot','Deep Freeze','Example Item','Extra protection.','On taking damage:','10s cooldown','health: 100','not purchase order']) expect(detail).toContain(text);
+});
+it('build remains accessible when perk records are missing',()=>{
+ expect(ui.icons(null,{items:[{slug:'example'}]})).toContain('view complete loadout');
+ expect(ui.renderDetails({items:[{slug:'example',name:'Example Item'}]},null,null,null)).toContain('Example Item');
+});
