@@ -5131,3 +5131,19 @@ directly. A real fix would make the ingest script support true deletion for
 `rewrite: null` (e.g. splice the quoted text out, or drop the whole dict
 key when the quote is an exact moment/buildRead value), but that's an
 engine-code change outside this pass's scope.
+
+### 2026-10-20: the routine prompt outlived the coaching principles
+The maintainer flagged the three newest reviews (0be308cb, 66b1d403, ea696257)
+as wrong: report-style tone, editorialized moments, and no expanded build
+analysis. Root cause: the Routine's stored prompt (written 2026-08-30) still
+asked for "whatWorked/verdicts/moment calls", and the worker's own author and
+critic prompts layered caution rules on top of the v7 preset, which sanded off
+the voice. The prompt now defers to docs/coach-automation.md and the active
+preset and names e89f68db and 768794a7 as the approved references. All three
+were re-authored with buildAnalysisVersion=1 six-field build reads and
+re-critiqued until clean. Practical notes: keep critic prompts short and tell
+them the approved moment format (evidence-limited, not advice); one critic per
+match avoids output-token failures; catalog-only digits in an existing line get
+any rewrite of that line dropped by the ground-check, so phrase them
+qualitatively; a match that comes back clean can be ingested and published on
+its own scope without waiting for its siblings.
