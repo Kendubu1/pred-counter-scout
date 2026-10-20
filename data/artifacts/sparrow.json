@@ -11,6 +11,7 @@
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
    "this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check",
+   "the sim opens on Deathstalker, which the field has tried and lost with (-0.2% winrate over 56 games) — treat this opener as a sim blind-spot and weight the field",
    "the sim build reproduces only 33% of the field's core for Sparrow (it never builds Storm Breaker, Spectra) — some of those items ride mechanics the sim doesn't model yet"
   ]
  },
@@ -21,41 +22,41 @@
     "name": "Deathstalker",
     "slug": "deathstalker",
     "spikeMinute": 9,
-    "playRatePct": 6.8,
-    "evidenceDeltaWr": 0.1,
-    "evidenceN": 73
+    "playRatePct": 5.1,
+    "evidenceDeltaWr": -0.2,
+    "evidenceN": 56
    },
    {
     "name": "Viper",
     "slug": "viper",
     "spikeMinute": 16,
-    "playRatePct": 7.2,
-    "evidenceDeltaWr": 1.8,
-    "evidenceN": 77
+    "playRatePct": 8.3,
+    "evidenceDeltaWr": -0.2,
+    "evidenceN": 91
    },
    {
     "name": "Manta Scythe",
     "slug": "manta-scythe",
     "spikeMinute": 21,
-    "playRatePct": 1,
-    "evidenceDeltaWr": -0.3,
-    "evidenceN": 11
+    "playRatePct": 1.6,
+    "evidenceDeltaWr": 0,
+    "evidenceN": 18
    },
    {
     "name": "Vanquisher",
     "slug": "vanquisher",
     "spikeMinute": 27,
-    "playRatePct": 45,
-    "evidenceDeltaWr": 0.3,
-    "evidenceN": 483
+    "playRatePct": 42.9,
+    "evidenceDeltaWr": 0.7,
+    "evidenceN": 473
    },
    {
     "name": "Imperator",
     "slug": "imperator",
-    "spikeMinute": 32,
-    "playRatePct": 28.2,
-    "evidenceDeltaWr": 2.7,
-    "evidenceN": 303
+    "spikeMinute": 33,
+    "playRatePct": 26.3,
+    "evidenceDeltaWr": 2.8,
+    "evidenceN": 290
    },
    {
     "name": "Plasma Blade",
@@ -577,7 +578,7 @@
   "candidates": [
    {
     "item": "Manta Scythe",
-    "playRatePct": 1,
+    "playRatePct": 1.6,
     "bestObjective": "10s rotation vs squishies",
     "edgeVsPopularPct": 54.9
    },
@@ -607,7 +608,7 @@
      "slug": "spectra"
     }
    ],
-   "n": 342,
+   "n": 389,
    "shrunkWr": 0.536,
    "coreGold": 8900,
    "spikeMinute": 21,
@@ -631,8 +632,8 @@
      "slug": "tainted-rounds"
     }
    ],
-   "n": 247,
-   "shrunkWr": 0.556,
+   "n": 299,
+   "shrunkWr": 0.55,
    "coreGold": 9200,
    "spikeMinute": 22,
    "bestObjective": "10s rotation damage",
@@ -655,8 +656,8 @@
      "slug": "imperator"
     }
    ],
-   "n": 192,
-   "shrunkWr": 0.548,
+   "n": 229,
+   "shrunkWr": 0.546,
    "coreGold": 9450,
    "spikeMinute": 22,
    "bestObjective": "one-combo burst",
@@ -795,7 +796,7 @@
     },
     {
      "minute": 15,
-     "verdict": "even"
+     "verdict": "you"
     },
     {
      "minute": 20,
@@ -817,45 +818,6 @@
     "survivalGainPct": 30,
     "offenseLossPct": 30,
     "line": "Losing lane? Third item Warden's Faith instead of Viper: their burst combo hits 30% less hard, and this kit gives up 30% of its damage for it."
-   }
-  },
-  {
-   "enemy": "Murdock",
-   "enemySlug": "murdock",
-   "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Murdock deals area damage — spread out so one cast can't catch the group.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "you"
-    },
-    {
-     "minute": 10,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 15,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 20,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 25,
-     "verdict": "enemy"
-    },
-    {
-     "minute": 30,
-     "verdict": "enemy"
-    }
-   ],
-   "counterSwap": {
-    "out": "Viper",
-    "in": "Aegis Of Agawar",
-    "inSlug": "aegis-of-agawar",
-    "survivalGainPct": 18,
-    "offenseLossPct": 16,
-    "line": "Losing lane? Third item Aegis Of Agawar instead of Viper: their burst combo hits 18% less hard, and this kit gives up 16% of its damage for it."
    }
   },
   {
@@ -934,6 +896,45 @@
     "survivalGainPct": 19,
     "offenseLossPct": 16,
     "line": "Losing lane? Third item Aegis Of Agawar instead of Viper: their burst combo hits 19% less hard, and this kit gives up 16% of its damage for it."
+   }
+  },
+  {
+   "enemy": "Murdock",
+   "enemySlug": "murdock",
+   "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Murdock deals area damage — spread out so one cast can't catch the group.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "you"
+    },
+    {
+     "minute": 10,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 15,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 20,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 25,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 30,
+     "verdict": "enemy"
+    }
+   ],
+   "counterSwap": {
+    "out": "Viper",
+    "in": "Aegis Of Agawar",
+    "inSlug": "aegis-of-agawar",
+    "survivalGainPct": 18,
+    "offenseLossPct": 16,
+    "line": "Losing lane? Third item Aegis Of Agawar instead of Viper: their burst combo hits 18% less hard, and this kit gives up 16% of its damage for it."
    }
   },
   {
@@ -1022,16 +1023,16 @@
   },
   "playstyle": "on-hit",
   "modeled": false,
-  "wr": 52.3,
-  "n": 3531,
+  "wr": 52.5,
+  "n": 4128,
   "shiftIn": [],
   "shiftOut": [],
-  "provenance": "“Sun Shards” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 52.3% over 3,531 games, magnitude not simulated."
+  "provenance": "“Sun Shards” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 52.5% over 4,128 games, magnitude not simulated."
  },
  "slug": "sparrow",
  "name": "Sparrow",
  "patch": "1.15.3/1.15.4",
- "generatedAt": "2026-10-19T10:07:13.812Z",
+ "generatedAt": "2026-10-20T10:26:57.686Z",
  "damageType": "physical",
  "attackType": "ranged",
  "laneFlex": [
@@ -1043,8 +1044,8 @@
    },
    "playstyle": "on-hit",
    "modeled": false,
-   "wr": 52.3,
-   "n": 3531,
+   "wr": 52.5,
+   "n": 4128,
    "core": [
     {
      "name": "Imperator",
@@ -1072,7 +1073,7 @@
     }
    ],
    "headline": "sustained DPS",
-   "provenance": "“Sun Shards” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 52.3% over 3,531 games, magnitude not simulated."
+   "provenance": "“Sun Shards” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 52.5% over 4,128 games, magnitude not simulated."
   }
  ],
  "roles": [
@@ -1089,6 +1090,7 @@
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
      "this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check",
+     "the sim opens on Deathstalker, which the field has tried and lost with (-0.2% winrate over 56 games) — treat this opener as a sim blind-spot and weight the field",
      "the sim build reproduces only 33% of the field's core for Sparrow (it never builds Storm Breaker, Spectra) — some of those items ride mechanics the sim doesn't model yet"
     ]
    },
@@ -1099,41 +1101,41 @@
       "name": "Deathstalker",
       "slug": "deathstalker",
       "spikeMinute": 9,
-      "playRatePct": 6.8,
-      "evidenceDeltaWr": 0.1,
-      "evidenceN": 73
+      "playRatePct": 5.1,
+      "evidenceDeltaWr": -0.2,
+      "evidenceN": 56
      },
      {
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 16,
-      "playRatePct": 7.2,
-      "evidenceDeltaWr": 1.8,
-      "evidenceN": 77
+      "playRatePct": 8.3,
+      "evidenceDeltaWr": -0.2,
+      "evidenceN": 91
      },
      {
       "name": "Manta Scythe",
       "slug": "manta-scythe",
       "spikeMinute": 21,
-      "playRatePct": 1,
-      "evidenceDeltaWr": -0.3,
-      "evidenceN": 11
+      "playRatePct": 1.6,
+      "evidenceDeltaWr": 0,
+      "evidenceN": 18
      },
      {
       "name": "Vanquisher",
       "slug": "vanquisher",
       "spikeMinute": 27,
-      "playRatePct": 45,
-      "evidenceDeltaWr": 0.3,
-      "evidenceN": 483
+      "playRatePct": 42.9,
+      "evidenceDeltaWr": 0.7,
+      "evidenceN": 473
      },
      {
       "name": "Imperator",
       "slug": "imperator",
-      "spikeMinute": 32,
-      "playRatePct": 28.2,
-      "evidenceDeltaWr": 2.7,
-      "evidenceN": 303
+      "spikeMinute": 33,
+      "playRatePct": 26.3,
+      "evidenceDeltaWr": 2.8,
+      "evidenceN": 290
      },
      {
       "name": "Plasma Blade",
@@ -1655,7 +1657,7 @@
     "candidates": [
      {
       "item": "Manta Scythe",
-      "playRatePct": 1,
+      "playRatePct": 1.6,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 54.9
      },
@@ -1685,7 +1687,7 @@
        "slug": "spectra"
       }
      ],
-     "n": 342,
+     "n": 389,
      "shrunkWr": 0.536,
      "coreGold": 8900,
      "spikeMinute": 21,
@@ -1709,8 +1711,8 @@
        "slug": "tainted-rounds"
       }
      ],
-     "n": 247,
-     "shrunkWr": 0.556,
+     "n": 299,
+     "shrunkWr": 0.55,
      "coreGold": 9200,
      "spikeMinute": 22,
      "bestObjective": "10s rotation damage",
@@ -1733,8 +1735,8 @@
        "slug": "imperator"
       }
      ],
-     "n": 192,
-     "shrunkWr": 0.548,
+     "n": 229,
+     "shrunkWr": 0.546,
      "coreGold": 9450,
      "spikeMinute": 22,
      "bestObjective": "one-combo burst",
@@ -1873,7 +1875,7 @@
       },
       {
        "minute": 15,
-       "verdict": "even"
+       "verdict": "you"
       },
       {
        "minute": 20,
@@ -1895,45 +1897,6 @@
       "survivalGainPct": 30,
       "offenseLossPct": 30,
       "line": "Losing lane? Third item Warden's Faith instead of Viper: their burst combo hits 30% less hard, and this kit gives up 30% of its damage for it."
-     }
-    },
-    {
-     "enemy": "Murdock",
-     "enemySlug": "murdock",
-     "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Murdock deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "you"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Viper",
-      "in": "Aegis Of Agawar",
-      "inSlug": "aegis-of-agawar",
-      "survivalGainPct": 18,
-      "offenseLossPct": 16,
-      "line": "Losing lane? Third item Aegis Of Agawar instead of Viper: their burst combo hits 18% less hard, and this kit gives up 16% of its damage for it."
      }
     },
     {
@@ -2012,6 +1975,45 @@
       "survivalGainPct": 19,
       "offenseLossPct": 16,
       "line": "Losing lane? Third item Aegis Of Agawar instead of Viper: their burst combo hits 19% less hard, and this kit gives up 16% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Murdock",
+     "enemySlug": "murdock",
+     "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Murdock deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "you"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Viper",
+      "in": "Aegis Of Agawar",
+      "inSlug": "aegis-of-agawar",
+      "survivalGainPct": 18,
+      "offenseLossPct": 16,
+      "line": "Losing lane? Third item Aegis Of Agawar instead of Viper: their burst combo hits 18% less hard, and this kit gives up 16% of its damage for it."
      }
     },
     {
@@ -2100,11 +2102,11 @@
     },
     "playstyle": "on-hit",
     "modeled": false,
-    "wr": 52.3,
-    "n": 3531,
+    "wr": 52.5,
+    "n": 4128,
     "shiftIn": [],
     "shiftOut": [],
-    "provenance": "“Sun Shards” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 52.3% over 3,531 games, magnitude not simulated."
+    "provenance": "“Sun Shards” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field carry 52.5% over 4,128 games, magnitude not simulated."
    }
   },
   {
@@ -2119,7 +2121,8 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check"
+     "this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check",
+     "the sim opens on Deathstalker, which the field has tried and lost with (-0.2% winrate over 56 games) — treat this opener as a sim blind-spot and weight the field"
     ]
    },
    "build": {
@@ -2129,41 +2132,41 @@
       "name": "Deathstalker",
       "slug": "deathstalker",
       "spikeMinute": 9,
-      "playRatePct": 6.8,
-      "evidenceDeltaWr": 0.1,
-      "evidenceN": 73
+      "playRatePct": 5.1,
+      "evidenceDeltaWr": -0.2,
+      "evidenceN": 56
      },
      {
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 16,
-      "playRatePct": 7.2,
-      "evidenceDeltaWr": 1.8,
-      "evidenceN": 77
+      "playRatePct": 8.3,
+      "evidenceDeltaWr": -0.2,
+      "evidenceN": 91
      },
      {
       "name": "Manta Scythe",
       "slug": "manta-scythe",
       "spikeMinute": 21,
-      "playRatePct": 1,
-      "evidenceDeltaWr": -0.3,
-      "evidenceN": 11
+      "playRatePct": 1.6,
+      "evidenceDeltaWr": 0,
+      "evidenceN": 18
      },
      {
       "name": "Vanquisher",
       "slug": "vanquisher",
       "spikeMinute": 27,
-      "playRatePct": 45,
-      "evidenceDeltaWr": 0.3,
-      "evidenceN": 483
+      "playRatePct": 42.9,
+      "evidenceDeltaWr": 0.7,
+      "evidenceN": 473
      },
      {
       "name": "Imperator",
       "slug": "imperator",
       "spikeMinute": 32,
-      "playRatePct": 28.2,
-      "evidenceDeltaWr": 2.7,
-      "evidenceN": 303
+      "playRatePct": 26.3,
+      "evidenceDeltaWr": 2.8,
+      "evidenceN": 290
      },
      {
       "name": "Plasma Blade",
@@ -2685,7 +2688,7 @@
     "candidates": [
      {
       "item": "Manta Scythe",
-      "playRatePct": 1,
+      "playRatePct": 1.6,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 54.9
      },
@@ -2715,7 +2718,7 @@
        "slug": "spectra"
       }
      ],
-     "n": 346,
+     "n": 393,
      "shrunkWr": 0.538,
      "coreGold": 8900,
      "spikeMinute": 21,
@@ -2739,8 +2742,8 @@
        "slug": "tainted-rounds"
       }
      ],
-     "n": 252,
-     "shrunkWr": 0.557,
+     "n": 304,
+     "shrunkWr": 0.551,
      "coreGold": 9200,
      "spikeMinute": 22,
      "bestObjective": "10s rotation damage",
@@ -2763,8 +2766,8 @@
        "slug": "imperator"
       }
      ],
-     "n": 200,
-     "shrunkWr": 0.551,
+     "n": 237,
+     "shrunkWr": 0.55,
      "coreGold": 9450,
      "spikeMinute": 22,
      "bestObjective": "one-combo burst",
@@ -3084,9 +3087,9 @@
      }
     },
     {
-     "enemy": "Bayle",
-     "enemySlug": "bayle",
-     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Bayle deals area damage — spread out so one cast can't catch the group.",
+     "enemy": "Crunch",
+     "enemySlug": "crunch",
+     "gameplan": "Even kill threat throughout: this lane is decided by mechanics and wave control, not scaling. Crunch deals area damage — spread out so one cast can't catch the group.",
      "checkpoints": [
       {
        "minute": 5,
@@ -3106,20 +3109,20 @@
       },
       {
        "minute": 25,
-       "verdict": "you"
+       "verdict": "even"
       },
       {
        "minute": 30,
-       "verdict": "you"
+       "verdict": "even"
       }
      ],
      "counterSwap": {
       "out": "Viper",
-      "in": "Warden's Faith",
-      "inSlug": "wardens-faith",
-      "survivalGainPct": 34,
-      "offenseLossPct": 30,
-      "line": "Losing lane? Third item Warden's Faith instead of Viper: their burst combo hits 34% less hard, and this kit gives up 30% of its damage for it."
+      "in": "Aegis Of Agawar",
+      "inSlug": "aegis-of-agawar",
+      "survivalGainPct": 16,
+      "offenseLossPct": 16,
+      "line": "Losing lane? Third item Aegis Of Agawar instead of Viper: their burst combo hits 16% less hard, and this kit gives up 16% of its damage for it."
      }
     }
    ],
@@ -3137,7 +3140,8 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check"
+     "this build stacks over +100% attack speed; the sim now caps attacks/sec at the stated 3.0 (Cursed Ring tooltip), so sustained-DPS is no longer uncapped — the exact cap interaction still merits a practice-mode check",
+     "the sim opens on Deathstalker, which the field has tried and lost with (-0.2% winrate over 56 games) — treat this opener as a sim blind-spot and weight the field"
     ]
    },
    "build": {
@@ -3147,46 +3151,46 @@
       "name": "Deathstalker",
       "slug": "deathstalker",
       "spikeMinute": 9,
-      "playRatePct": 6.8,
-      "evidenceDeltaWr": 0.1,
-      "evidenceN": 73
+      "playRatePct": 5.1,
+      "evidenceDeltaWr": -0.2,
+      "evidenceN": 56
      },
      {
       "name": "Viper",
       "slug": "viper",
       "spikeMinute": 16,
-      "playRatePct": 7.2,
-      "evidenceDeltaWr": 1.8,
-      "evidenceN": 77
+      "playRatePct": 8.3,
+      "evidenceDeltaWr": -0.2,
+      "evidenceN": 91
      },
      {
       "name": "Manta Scythe",
       "slug": "manta-scythe",
       "spikeMinute": 21,
-      "playRatePct": 1,
-      "evidenceDeltaWr": -0.3,
-      "evidenceN": 11
+      "playRatePct": 1.6,
+      "evidenceDeltaWr": 0,
+      "evidenceN": 18
      },
      {
       "name": "Vanquisher",
       "slug": "vanquisher",
       "spikeMinute": 26,
-      "playRatePct": 45,
-      "evidenceDeltaWr": 0.3,
-      "evidenceN": 483
+      "playRatePct": 42.9,
+      "evidenceDeltaWr": 0.7,
+      "evidenceN": 473
      },
      {
       "name": "Imperator",
       "slug": "imperator",
       "spikeMinute": 32,
-      "playRatePct": 28.2,
-      "evidenceDeltaWr": 2.7,
-      "evidenceN": 303
+      "playRatePct": 26.3,
+      "evidenceDeltaWr": 2.8,
+      "evidenceN": 290
      },
      {
       "name": "Plasma Blade",
       "slug": "plasma-blade",
-      "spikeMinute": 36,
+      "spikeMinute": 37,
       "playRatePct": 0.7,
       "evidenceDeltaWr": null,
       "evidenceN": null
@@ -3703,7 +3707,7 @@
     "candidates": [
      {
       "item": "Manta Scythe",
-      "playRatePct": 1,
+      "playRatePct": 1.6,
       "bestObjective": "10s rotation vs squishies",
       "edgeVsPopularPct": 54.9
      },
@@ -3733,7 +3737,7 @@
        "slug": "spectra"
       }
      ],
-     "n": 346,
+     "n": 393,
      "shrunkWr": 0.538,
      "coreGold": 8900,
      "spikeMinute": 21,
@@ -3757,8 +3761,8 @@
        "slug": "tainted-rounds"
       }
      ],
-     "n": 252,
-     "shrunkWr": 0.557,
+     "n": 304,
+     "shrunkWr": 0.551,
      "coreGold": 9200,
      "spikeMinute": 21,
      "bestObjective": "10s rotation damage",
@@ -3781,8 +3785,8 @@
        "slug": "imperator"
       }
      ],
-     "n": 200,
-     "shrunkWr": 0.551,
+     "n": 237,
+     "shrunkWr": 0.55,
      "coreGold": 9450,
      "spikeMinute": 22,
      "bestObjective": "one-combo burst",
@@ -3860,7 +3864,7 @@
     {
      "label": "late",
      "itemCount": 6,
-     "minute": 36,
+     "minute": 37,
      "level": 17,
      "core": [
       {
@@ -4063,45 +4067,6 @@
      }
     },
     {
-     "enemy": "Iggy & Scorch",
-     "enemySlug": "iggy-scorch",
-     "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Iggy & Scorch deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "you"
-      },
-      {
-       "minute": 10,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 15,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 20,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 25,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 30,
-       "verdict": "enemy"
-      }
-     ],
-     "counterSwap": {
-      "out": "Viper",
-      "in": "Aegis Of Agawar",
-      "inSlug": "aegis-of-agawar",
-      "survivalGainPct": 17,
-      "offenseLossPct": 15,
-      "line": "Losing lane? Third item Aegis Of Agawar instead of Viper: their burst combo hits 17% less hard, and this kit gives up 15% of its damage for it."
-     }
-    },
-    {
      "enemy": "Gideon",
      "enemySlug": "gideon",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Gideon deals area damage — spread out so one cast can't catch the group.",
@@ -4138,6 +4103,45 @@
       "survivalGainPct": 18,
       "offenseLossPct": 16,
       "line": "Losing lane? Third item Aegis Of Agawar instead of Viper: their burst combo hits 18% less hard, and this kit gives up 16% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Iggy & Scorch",
+     "enemySlug": "iggy-scorch",
+     "gameplan": "Your window is early: force trades before their core completes, and do not coin-flip fights past the crossover. Iggy & Scorch deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "you"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Viper",
+      "in": "Aegis Of Agawar",
+      "inSlug": "aegis-of-agawar",
+      "survivalGainPct": 17,
+      "offenseLossPct": 15,
+      "line": "Losing lane? Third item Aegis Of Agawar instead of Viper: their burst combo hits 17% less hard, and this kit gives up 15% of its damage for it."
      }
     }
    ],
