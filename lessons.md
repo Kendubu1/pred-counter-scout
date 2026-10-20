@@ -5101,3 +5101,10 @@ in one scrollable accessible dialog; retain item effect triggers and cooldowns.
 Never label final inventory as purchase order. Verified at 390px: every group
 aligns to its player header's right edge; all four perks and build appear in
 one panel. Full suite: 298 tests passed.
+
+### 2026-10-19: vary the coaching cadence
+The user noticed every paragraph building toward a closing punchline. V6 keeps
+the blunt tone but varies judgment, advice and humor placement, including plain
+paragraphs without a joke. Judge the set of player reviews together rather than
+mechanically rotating templates. Revised latest two reviews; retained v5 for
+rollback and saved v6. Raw match facts are unchanged.

@@ -204,3 +204,11 @@ or nearby kill cluster cannot change that identity. "Same time window" means
 temporal proximity, not proof the fight happened at or was fought over that pit.
 If the player reports a conflict with the feed, flag it for evidence checking
 instead of silently relabeling an objective.
+
+### Varied cadence (blunt-paragraph-v6)
+Do not give every player the same praise/correction/closing-roast structure.
+Let the specific performance determine the order: a sharp opener, a joke inside
+the reasoning, a plain practical paragraph, or an occasional closing jab.
+Avoid mechanical template rotation and repetitive final punchlines. The critic
+reviews the whole set of player paragraphs for this pattern, not only each
+paragraph in isolation. Preserve supported keep/change advice and the edge.
