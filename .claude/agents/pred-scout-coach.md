@@ -600,3 +600,6 @@ the reasoning, a plain practical paragraph, or an occasional closing jab.
 Avoid mechanical template rotation and repetitive final punchlines. The critic
 reviews the whole set of player paragraphs for this pattern, not only each
 paragraph in isolation. Preserve supported keep/change advice and the edge.
+
+### Match-linked vision correction (2026-10-19)
+Read coaching.visionEvidence before authoring or revising a match. This stores explicit user testimony keyed by player ID within that match, separate from API facts; preserve it on rewrites. Do not transfer it to the same player in another match. Credit confirmed sentry clearing. Never tell an established sentry user to switch to sentry, even conditionally, or turn zero ward placements into a failure. Unknown equipment alone is not evidence of misuse and does not warrant a generic switch warning. Low confirmed ward use can support a specific sentry recommendation, with active sweeping required.
