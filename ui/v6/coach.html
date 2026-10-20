@@ -180,6 +180,8 @@
   .plobby .who b { display:block; font-size:.86rem; }
   .plobby .who .h { font-size:.7rem; color:var(--text-2); }
   .plobby .who .kda { font-size:.72rem; color:var(--text-1); font-variant-numeric:tabular-nums; }
+  .build-analysis p { margin:0 0 1rem; line-height:1.6; }
+  .build-analysis p:last-child { margin-bottom:0; }
   .plobby .line { font-size:.84rem; color:var(--text-1); }
   .plobby .items { display:flex; gap:.2rem; margin-top:.3rem; }
   .plobby .items img { width:20px; height:20px; border-radius:4px; border:1px solid var(--border); }
@@ -950,12 +952,11 @@ function pgReview(f) {
         return co.perPlayer?.[p.pid] ? esc(co.perPlayer[p.pid]) : 'Individual feedback has not been written for this player.';
       })()}</div>
     </div>`).join('')}`);
-    const loadouts = card(`${eyebrow('Builds & recorded loadouts', '')}${us.map((p) => {
+    const loadouts = card(`${eyebrow('Builds & matchup analysis', '')}<p class="loadout-note">Final inventory and recorded draft choices. Purchase timing, active use and passive uptime are not verified. Alternatives are conditional matchup options, not proven winning swaps.</p>${us.map((p) => {
       const br = co.buildReads?.[p.pid];
-      return `<div class="plobby"><div class="who"><b>${pgName(p)}</b> ${esc(p.heroName)}</div><div>
-        <div class="items">${(p.items || []).map((i) => `<img data-ipop="${esc(i.slug)}" src="${iimg(i.slug)}" title="${esc(i.name)}" onerror="this.style.display='none'">`).join('')}</div>
-        ${ranLine(p.loadout)}
-        ${br?.build ? `<p>${esc(br.build)}</p>` : ''}${br?.eternal ? `<p>${esc(br.eternal)}</p>` : ''}
+      return `<div class="plobby"><div class="who"><b>${pgName(p)}</b> ${esc(p.heroName)}</div><div class="build-analysis">
+        ${[['matchup','Lane & team threats'],['build','Item interactions'],['eternal','Eternal & minors'],['augment','Hero augment'],['crest','Crest'],['improvement','What to consider changing']].map(([key,label]) => br?.[key] ? `<p><b>${label}</b><br>${esc(br[key])}</p>` : '').join('')}
+        ${!br ? '<p>Matchup analysis has not been written for this player.</p>' : ''}
       </div></div>`;
     }).join('')}`);
     return verdict + next + players + `<details class="deepdive" id="coach-evidence"><summary>Evidence & replay details · stats, builds and timestamps</summary>

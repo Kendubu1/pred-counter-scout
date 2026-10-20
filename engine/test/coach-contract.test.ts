@@ -25,3 +25,11 @@ it('validates reflection readability and length like the main review',()=>{
  expect(()=>validateCoachContract(root,f)).toThrow('exact time');
  f.coaching.lossReflection='word '.repeat(101); expect(()=>validateCoachContract(root,f)).toThrow('too long');
 });
+
+it('requires complete role-specific build analysis for every ally when enabled',()=>{
+ const f:any=match(); f.coaching.buildAnalysisVersion=1;
+ expect(()=>validateCoachContract(root,f)).toThrow('build analysis missing');
+ f.coaching.buildReads={p:Object.fromEntries(['matchup','build','eternal','augment','crest','improvement'].map(k=>[k,'A grounded matchup tradeoff.']))};
+ expect(()=>validateCoachContract(root,f)).not.toThrow();
+ delete f.coaching.buildReads.p.augment; expect(()=>validateCoachContract(root,f)).toThrow('augment');
+});

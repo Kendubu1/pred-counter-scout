@@ -22,6 +22,14 @@ export function validateCoachContract(root: string, f: any): void {
   const allies = f.players.filter((p: any) => p.us).map((p: any) => p.pid);
   if (!allies.length || allies.some((id: string) => !c.perPlayer?.[id]?.trim()) || Object.keys(c.perPlayer ?? {}).some(id => !allies.includes(id))) fail('every allied player needs a review, with no unknown players');
   for (const m of Object.values(c.moments ?? {}) as any[]) if (!m || typeof m.call !== 'string') fail('moments must be objects with a call string');
+  if (c.buildAnalysisVersion === 1) {
+    for (const id of allies) for (const field of ['matchup','build','eternal','augment','crest','improvement']) {
+      const text = c.buildReads?.[id]?.[field];
+      if (typeof text !== 'string' || !text.trim()) fail(`build analysis missing ${field} for ${id}`);
+      if (text.trim().split(/\s+/).length > 110) fail(`build analysis ${field} is too long for ${id}`);
+    }
+    if (Object.keys(c.buildReads ?? {}).some(id => !allies.includes(id))) fail('unknown build analysis player');
+  }
   if (preset.layout !== 'concise' || preset.playerFormat !== 'paragraph') return;
   if (preset.lossReflection && f.result === 'loss' && !c.lossReflection?.trim()) fail('lossReflection is required for a loss');
   if (f.result === 'win' && c.lossReflection) fail('lossReflection belongs only on losses');
