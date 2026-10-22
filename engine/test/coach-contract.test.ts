@@ -3,11 +3,11 @@ import path from 'node:path';
 import { loadCoachingPreset } from '../src/coaching-presets.js';
 import { reviewDigest, selectReviewScope, validateCoachContract, validatePublication } from '../src/coach-contract.js';
 const root = path.resolve('..');
-const match = () => ({ matchId: 'abc-123', players: [{pid:'p', us:true}], coaching: {personaId:loadCoachingPreset(root).id,headline:'Finish the damn job.',team:'The final push ended it. Keep that commitment.',focus:{action:'Call the next objective before chasing.'},perPlayer:{p:'Sparrow delivered. Keep the damage coming without giving away the shutdown.'},moments:{final:{call:'The Core fell after the final fight.'}}} });
+const match = () => ({ matchId: 'abc-123', players: [{pid:'p', us:true}], coaching: {personaId:loadCoachingPreset(root).id,headline:'Finish the damn job.',team:'The final push ended it. Keep that commitment.',focus:{action:'Call the next objective before chasing.'},perPlayer:{},playerBullets:{p:['Sparrow delivered. Keep the damage coming without giving away the shutdown.','When the fight ends, call the safe structure before pursuing another target.']},moments:{final:{call:'The Core fell after the final fight.'}}} });
 it('accepts concise paragraphs without forcing criticism or cards', () => expect(()=>validateCoachContract(root,match())).not.toThrow());
 it.each(['old',''])('rejects stale or absent persona %s', id => { const f=match();f.coaching.personaId=id;expect(()=>validateCoachContract(root,f)).toThrow('personaId'); });
 it('rejects missing allied advice and invisible string moments', () => { const f:any=match();f.players.push({pid:'q',us:true});expect(()=>validateCoachContract(root,f)).toThrow('every allied');f.players.pop();f.coaching.moments.final='Hidden evidence';expect(()=>validateCoachContract(root,f)).toThrow('call string'); });
-it.each(['Keep: do this. Change: do that.', 'Good job at 12:34.', 'Good job at 12.5m.', 'First paragraph.\nSecond paragraph.', 'Good job\u2014do it again.'])('rejects old presentation: %s', text => {const f=match();f.coaching.perPlayer.p=text;expect(()=>validateCoachContract(root,f)).toThrow();});
+it.each(['Keep: do this. Change: do that.', 'Good job at 12:34.', 'Good job at 12.5m.', 'First paragraph.\nSecond paragraph.', 'Good job\u2014do it again.'])('rejects old presentation: %s', text => {const f=match();f.coaching.playerBullets.p[0]=text;expect(()=>validateCoachContract(root,f)).toThrow();});
 it('rejects duplicated card advice',()=>{const f:any=match();f.coaching.microReads={p:{keep:'Same advice'}};expect(()=>validateCoachContract(root,f)).toThrow('duplicate');});
 it('requires explicit, unambiguous complete scope',()=>{const games=[match(),{...match(),matchId:'abc-456'}];for(const scope of [[],['missing'],['abc'],['abc-1','missing']])expect(()=>selectReviewScope(games,scope)).toThrow();expect(selectReviewScope(games,['abc-1'])).toEqual([games[0]]);});
 it('blocks publication after copy or facts change',()=>{const f=match();const report={reviewedLines:5,flaggedLines:0,unmatched:0,rewritesDropped:0,reviewedDigests:{[f.matchId]:reviewDigest(f)}};expect(()=>validatePublication([f],report)).not.toThrow();f.coaching.team='Changed after critique.';expect(()=>validatePublication([f],report)).toThrow();const original=match();(original.players[0] as any).kills=5;expect(()=>validatePublication([original],report)).toThrow();});
@@ -33,3 +33,5 @@ it('requires complete role-specific build analysis for every ally when enabled',
  expect(()=>validateCoachContract(root,f)).not.toThrow();
  delete f.coaching.buildReads.p.augment; expect(()=>validateCoachContract(root,f)).toThrow('augment');
 });
+
+it.each([[], ['Only one'], ['a','b','c','d'], ['a','']])('rejects incomplete or excessive bullets %j', value => { const f:any=match();f.coaching.playerBullets.p=value;expect(()=>validateCoachContract(root,f)).toThrow(); });

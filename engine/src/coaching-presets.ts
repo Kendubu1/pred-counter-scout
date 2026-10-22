@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
 
-const profile = z.object({ id: z.string().regex(/^[a-z0-9-]+$/), layout: z.enum(['classic', 'concise']), lossReflection: z.boolean().optional(), playerFormat: z.enum(['paragraph', 'actions']).optional(), instructions: z.string().min(1) });
+const profile = z.object({ id: z.string().regex(/^[a-z0-9-]+$/), layout: z.enum(['classic', 'concise']), lossReflection: z.boolean().optional(), playerFormat: z.enum(['paragraph', 'actions', 'bullets']).optional(), instructions: z.string().min(1) });
 const registry = z.object({ active: z.string(), presets: z.array(profile).min(1) }).superRefine((v, ctx) => {
   if (new Set(v.presets.map(p => p.id)).size !== v.presets.length || !v.presets.some(p => p.id === v.active)) ctx.addIssue({ code: 'custom', message: 'Duplicate or missing active preset' });
 });
@@ -14,7 +14,7 @@ export function coachingPresetPrompt(root: string): string {
   const preset = loadCoachingPreset(root);
   return `ACTIVE COACHING PRESET: ${preset.id} (layout: ${preset.layout}). These format/tone rules override older format requirements in this prompt and agent instructions; factual grounding and safety still apply. ${preset.instructions}`;
 }
-const coaching = z.object({ headline: z.string(), team: z.string(), perPlayer: z.record(z.string()) }).passthrough();
+const coaching = z.object({ headline: z.string(), team: z.string(), perPlayer: z.record(z.string()).default({}), playerBullets: z.record(z.array(z.string().min(1)).min(2).max(3)).optional() }).passthrough();
 const snapshot = z.object({ id: z.string(), sourceCommit: z.string().min(1), note: z.string(), reviews: z.record(coaching) });
 /** Validate every target before changing anything. Restore only authored coaching. */
 export function selectCoachingPreset(root: string, id: string, restoreReviews = false): number {
@@ -30,7 +30,7 @@ export function selectCoachingPreset(root: string, id: string, restoreReviews = 
       if (!/^[a-zA-Z0-9-]+$/.test(matchId)) throw new Error('Invalid match identity');
       const file = path.join(root, 'data/postgame', `${matchId}.json`);
       const match = z.object({ matchId: z.literal(matchId), players: z.array(z.object({ pid: z.string() }).passthrough()) }).passthrough().parse(JSON.parse(readFileSync(file, 'utf8')));
-      if (Object.keys(review.perPlayer).some(pid => !match.players.some(p => p.pid === pid))) throw new Error(`Unknown review player in ${matchId}`);
+      if ([...Object.keys(review.perPlayer), ...Object.keys(review.playerBullets ?? {})].some(pid => !match.players.some(p => p.pid === pid))) throw new Error(`Unknown review player in ${matchId}`);
       pending.push({ file, text: JSON.stringify({ ...match, coaching: review }, null, 2) + '\n' });
     }
   }

@@ -20,7 +20,12 @@ export function validateCoachContract(root: string, f: any): void {
   const fail = (why: string): never => { throw new Error(`${f.matchId}: ${why}`); };
   if (!c || c.personaId !== preset.id) fail(`coaching must declare active personaId ${preset.id}`);
   const allies = f.players.filter((p: any) => p.us).map((p: any) => p.pid);
-  if (!allies.length || allies.some((id: string) => !c.perPlayer?.[id]?.trim()) || Object.keys(c.perPlayer ?? {}).some(id => !allies.includes(id))) fail('every allied player needs a review, with no unknown players');
+  const bullets = preset.playerFormat === 'bullets';
+  if (bullets) {
+    if (!allies.length || allies.some((id: string) => !Array.isArray(c.playerBullets?.[id]) || c.playerBullets[id].length < 2 || c.playerBullets[id].length > 3 || c.playerBullets[id].some((s: any) => typeof s !== 'string' || !s.trim())) || Object.keys(c.playerBullets ?? {}).some(id => !allies.includes(id))) fail('every allied player needs 2-3 nonempty bullets, with no unknown players');
+    if (Object.keys(c.perPlayer ?? {}).length) fail('bullets must not duplicate perPlayer paragraphs');
+  }
+  if (!bullets && (!allies.length || allies.some((id: string) => !c.perPlayer?.[id]?.trim()) || Object.keys(c.perPlayer ?? {}).some(id => !allies.includes(id)))) fail('every allied player needs a review, with no unknown players');
   for (const m of Object.values(c.moments ?? {}) as any[]) if (!m || typeof m.call !== 'string') fail('moments must be objects with a call string');
   if (c.buildAnalysisVersion === 1) {
     for (const id of allies) for (const field of ['matchup','build','eternal','augment','crest','improvement']) {
@@ -30,10 +35,10 @@ export function validateCoachContract(root: string, f: any): void {
     }
     if (Object.keys(c.buildReads ?? {}).some(id => !allies.includes(id))) fail('unknown build analysis player');
   }
-  if (preset.layout !== 'concise' || preset.playerFormat !== 'paragraph') return;
+  if (preset.layout !== 'concise' || !['paragraph', 'bullets'].includes(preset.playerFormat ?? '')) return;
   if (preset.lossReflection && f.result === 'loss' && !c.lossReflection?.trim()) fail('lossReflection is required for a loss');
   if (f.result === 'win' && c.lossReflection) fail('lossReflection belongs only on losses');
-  const lines: [string, unknown, number][] = [...(c.lossReflection ? [['lossReflection', c.lossReflection, 100] as [string, unknown, number]] : []), ['headline', c.headline, 25], ['team', c.team, 90], ['focus', c.focus?.action, 50], ...Object.entries(c.perPlayer).map(([id, text]) => [id, text, 80] as [string, unknown, number])];
+  const lines: [string, unknown, number][] = [...(c.lossReflection ? [['lossReflection', c.lossReflection, 100] as [string, unknown, number]] : []), ['headline', c.headline, 25], ['team', c.team, 90], ['focus', c.focus?.action, 50], ...(bullets ? Object.entries(c.playerBullets).flatMap(([id, texts]) => (texts as string[]).map((text, i) => [`${id}.${i}`, text, 40] as [string, unknown, number])) : Object.entries(c.perPlayer).map(([id, text]) => [id, text, 80] as [string, unknown, number]))];
   for (const [field, text, cap] of lines) {
     if (typeof text !== 'string' || !text.trim()) fail(`${field} is empty`);
     const s = text as string;

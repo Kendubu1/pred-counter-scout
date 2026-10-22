@@ -20,6 +20,10 @@ describe('unfinished coach recovery', () => {
       expect(pendingCoachMatches(root)).toEqual([id]);
       save(id+'.json', {players:[{pid:'p',us:true}],coaching:{personaId:'blunt-paragraph-v7',headline:'Done',perPlayer:{p:'Advice'}}});
       expect(pendingCoachMatches(root)).toEqual([]);
+      save(id+'.json', {players:[{pid:'p',us:true}],coaching:{personaId:'blunt-bullets-v8',headline:'Draft',playerBullets:{p:['Only one']}}});
+      expect(pendingCoachMatches(root)).toEqual([id]);
+      save(id+'.json', {players:[{pid:'p',us:true}],coaching:{personaId:'blunt-bullets-v8',headline:'Done',playerBullets:{p:['Maintain pressure.','Reset together.']}}});
+      expect(pendingCoachMatches(root)).toEqual([]);
       save(id+'.json', {coaching:{headline:'Published classic',microReads:{}}});
       expect(pendingCoachMatches(root)).toEqual([]);
     } finally { rmSync(root, {recursive:true,force:true}); }

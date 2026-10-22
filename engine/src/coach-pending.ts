@@ -14,6 +14,7 @@ export function pendingCoachMatches(root: string): string[] {
     const f = JSON.parse(readFileSync(file, 'utf8'));
     const allies = (f.players ?? []).filter((p: any) => p.us);
     if (!m.hasCoaching || !f.coaching?.headline) return true;
+    if (f.coaching.personaId?.startsWith('blunt-bullets-')) return !allies.length || allies.some((p: any) => !Array.isArray(f.coaching.playerBullets?.[p.pid]) || f.coaching.playerBullets[p.pid].length < 2 || f.coaching.playerBullets[p.pid].some((s: any) => typeof s !== 'string' || !s.trim()));
     // Published classic reviews may use another player-card schema.
     return !!f.coaching.personaId?.startsWith('blunt-paragraph-') && (!allies.length || allies.some((p: any) => !f.coaching?.perPlayer?.[p.pid]?.trim()));
   }).map((m: any) => m.matchId))];

@@ -330,6 +330,9 @@
   .ran-icons:hover, .ran-icons:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
   @media (min-width:601px) {
     .plobby.coach-player { grid-template-columns:210px minmax(0,1fr); gap:1.1rem; }
+    .coach-bullets { margin:0; padding-left:1.15rem; }
+    .coach-bullets li + li { margin-top:.6rem; }
+    .coach-bullets li::marker { color:var(--muted); }
     .coach-player .who .ran-icons { margin-left:42px; margin-top:0; }
   }
   .loadout-back { position:fixed; inset:0; background:rgba(5,5,10,.7); z-index:60; display:flex; align-items:center; justify-content:center; padding:1rem; }
@@ -970,6 +973,7 @@ function pgReview(f) {
     const players = card(`${eyebrow('Your team', '')}${us.map((p) => `<div class="plobby coach-player">
       <div class="who">${hIcon(p.heroSlug, 34)}<span><b>${pgName(p)}</b><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span></span>${CoachLoadouts.icons(p.loadout,p)}</div>
       <div class="line">${(() => {
+        if (co.playerBullets?.[p.pid]?.length) return `<ul class="coach-bullets">${co.playerBullets[p.pid].map(text => `<li>${esc(text)}</li>`).join('')}</ul>`;
         const actions = co.microReads?.[p.pid];
         if (COACH_PLAYER_FORMAT === 'actions' && (actions?.keep || actions?.change)) return `${actions.keep ? `<p style="margin:0 0 .5rem"><b style="color:var(--green)">Keep:</b> ${esc(actions.keep)}</p>` : ''}${actions.change ? `<p style="margin:0"><b style="color:var(--gold)">Change:</b> ${esc(actions.change)}</p>` : ''}`;
         return co.perPlayer?.[p.pid] ? esc(co.perPlayer[p.pid]) : 'Individual feedback has not been written for this player.';

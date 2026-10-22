@@ -5164,3 +5164,5 @@ Replaced the five-player text wall with player disclosures and labeled analysis 
 The latest three-stack 0b5db31c was indexed without coaching while watch-state advanced. Detection was incorrectly treated as completion. The watcher now returns unfinished indexed stacked reviews before credentials/polling, including partial paragraph reviews, while retaining published classic formats. Test an advanced cursor plus empty, partial and completed coaching. Match-linked friends testimony is explicitly attributed and included in independent critique; it is not reconstructed telemetry.
 
 The worker subsequently committed an unreviewed draft while the manual repair was running, confirming delay rather than a proven crash. Archived that concurrent draft; its non-coaching match facts match the manual review. Publish with an expected-head check to preserve concurrent work.
+
+2026-10-22: Bullet preset v8 keeps two short playerBullets per ally, with detailed builds separate. Older paragraph reviews still render. The latest previous review is preserved in the v7 snapshot. Every bullet requires independent grounding review.

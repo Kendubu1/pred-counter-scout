@@ -15,3 +15,5 @@ Active `blunt-paragraph-v4` restores one paragraph per player with the behavior 
 
 ### Expanded evidence layout
 Build analysis is grouped in per-player disclosures. Each opens with the build decision, followed by separate matchup, item, Eternal/minor, augment and crest sections. Desktop uses paired loadout cards; mobile stacks them. Totals and event timelines are separate disclosures. Existing review prose and legacy missing-field support are preserved.
+
+2026-10-22: Bullet preset v8 keeps two short playerBullets per ally, with detailed builds separate. Older paragraph reviews still render. The latest previous review is preserved in the v7 snapshot. Every bullet requires independent grounding review.
