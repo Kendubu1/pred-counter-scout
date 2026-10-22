@@ -22,6 +22,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gql, hasCredentials } from './predgg.js';
+import { pendingCoachMatches } from '../coach-pending.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const STATE = path.join(ROOT, 'data/postgame/watch-state.json');
@@ -44,6 +45,13 @@ interface Row {
 }
 
 async function main() {
+  const pending = pendingCoachMatches(ROOT);
+  if (pending.length) {
+    console.log(`squad-watch: ${pending.length} unfinished review(s), resume before polling:`);
+    for (const id of pending) console.log(`  match ${id}`);
+    console.log('next: use stored facts; finish authoring, independent critique and coach:contract -- --publish. Pull only missing facts with credentials.');
+    process.exit(3);
+  }
   if (!hasCredentials()) {
     // The credentials gate, loudly: a watcher that silently no-ops when creds
     // are missing looks identical to "no games played" forever.

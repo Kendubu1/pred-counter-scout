@@ -5158,3 +5158,9 @@ its own scope without waiting for its siblings.
 
 ## 2026-10-20: scannable expanded coach evidence
 Replaced the five-player text wall with player disclosures and labeled analysis cards. Put the build decision first and moved totals/timeline into separate disclosures. Preserve authored text; no automatic sentence splitting or duplicated advice. Verify keyboard disclosures, all six fields, and narrow-screen overflow before publishing.
+
+
+## 2026-10-22: resume coaching after facts-only publication
+The latest three-stack 0b5db31c was indexed without coaching while watch-state advanced. Detection was incorrectly treated as completion. The watcher now returns unfinished indexed stacked reviews before credentials/polling, including partial paragraph reviews, while retaining published classic formats. Test an advanced cursor plus empty, partial and completed coaching. Match-linked friends testimony is explicitly attributed and included in independent critique; it is not reconstructed telemetry.
+
+The worker subsequently committed an unreviewed draft while the manual repair was running, confirming delay rather than a proven crash. Archived that concurrent draft; its non-coaching match facts match the manual review. Publish with an expected-head check to preserve concurrent work.

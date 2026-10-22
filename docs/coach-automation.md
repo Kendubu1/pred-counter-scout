@@ -51,7 +51,7 @@ because the environment forgot the checkout.
 
 ## What the fired session does
 
-All commands from `engine/` after `npm install`. **Credentials gate first**
+All commands from `engine/` after `npm install`. **Resume unfinished stored reviews first.** `squad:watch` returns exit 3 for unfinished indexed reviews even if the detection marker has advanced. Author and publish these from stored facts; no API credentials are needed for that copy-only work. **Credentials gate before live pulls**
 (CLAUDE.md autonomy rule 4): if `PREDGG_CLIENT_ID`/`PREDGG_CLIENT_SECRET` are
 not in the env, stop immediately and report — no partial work.
 
@@ -190,3 +190,7 @@ Judge the complete review for useful advice, not just format and literal numbers
 - Strong wins need forceful, specific praise and a repeatable standard, not an invented flaw for every player. Distinct match stories should not become the same escort, ward or objective lecture.
 - Read the final five paragraphs together: each should sound like useful adult coaching, with varied cadence and natural edge. A preset ID and one swear do not establish compliance.
 - Preserve the previous coaching in a dated review snapshot before a requested rewrite. Independently critique the full saved result, including expanded build analysis, before publication.
+
+
+## Interrupted review recovery (2026-10-22)
+The 0b5db31c run published enriched facts and its detection marker without coaching. The marker therefore measures detection, not completed review publication. `squad:watch` now checks indexed stacked matches for missing/incomplete coaching before credentials or polling and returns exit 3 to resume them. Never treat a data-only commit as completed coaching. Do not advance the reviewed flag until exact saved-copy critique and publication checks pass. A worker interruption may leave partial facts; the next fire must resume authoring rather than exiting because no newer game exists.

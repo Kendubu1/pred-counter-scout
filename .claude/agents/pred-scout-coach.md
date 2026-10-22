@@ -623,3 +623,7 @@ Judge the complete review for useful advice, not just format and literal numbers
 - Strong wins need forceful, specific praise and a repeatable standard, not an invented flaw for every player. Distinct match stories should not become the same escort, ward or objective lecture.
 - Read the final five paragraphs together: each should sound like useful adult coaching, with varied cadence and natural edge. A preset ID and one swear do not establish compliance.
 - Preserve the previous coaching in a dated review snapshot before a requested rewrite. Independently critique the full saved result, including expanded build analysis, before publication.
+
+
+### Match-linked player accounts
+Preserve `coaching.playerTestimony` when rewriting. These are user or teammate accounts, separate from telemetry. Attribute reported tower dives, chasing or intent explicitly; do not convert them into detected counts, timestamps or causal certainty. Do not overwrite a newer completed user-requested review with an older automation draft. Refresh main and check the review before publishing.
