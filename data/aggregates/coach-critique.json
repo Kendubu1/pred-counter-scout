@@ -1,110 +1,68 @@
 {
- "generatedAt": "2026-10-23T04:05:56.345Z",
+ "generatedAt": "2026-10-23T04:10:00.091Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
  "reviewedDigests": {
-  "1f7c658b-e27d-4fa7-bc1d-22608017299c": "59da571479adc9d022e72d0b0782dbb7a1e19733e238fc0e2085f66b9d775d69",
-  "63e6f40e-caad-4452-be54-7c4484d72bfe": "a2ee09f8f7be1f65c7fcf55d3f4c4061ef7bfe5dee8e038bffc9da0db3142a0a"
+  "1f7c658b-e27d-4fa7-bc1d-22608017299c": "b932ab9c9027e6a41637275f3faf799cafb2725bc93b36a538c597f716fd04b1",
+  "63e6f40e-caad-4452-be54-7c4484d72bfe": "a8fa03b9e7f874f9dc0d2fc7c488a92760c5eb90433ed33d8247aa277cba46a8"
  },
  "reviewedLines": 97,
- "flaggedLines": 15,
- "agreementRate": 0.845,
- "rewritesGrounded": 15,
+ "flaggedLines": 8,
+ "agreementRate": 0.918,
+ "rewritesGrounded": 8,
  "rewritesDropped": 0,
- "applied": 15,
+ "applied": 8,
  "unmatched": 0,
  "games": {
   "1f7c658b-e27d-4fa7-bc1d-22608017299c": [
    {
-    "quote": "We drew first blood and took the first Fangtooth, then watched them take all four Fangtooth and Primal Fangtooth spawns after it and finish with ten structures to our four. Every one of those takes followed at least one of our deaths. Countess and Belica brought the damage; Rampage and Argus kept collecting bodies.",
-    "severity": "med",
-    "issue": "'every one of those takes' reads as covering the ten structures, but the inner tower at 33.9m and both inhibitors at 36.1m/36.3m came with nobody of ours dead in the prior minute",
-    "rewrite": "We drew first blood and took the first Fangtooth, then watched them take all four Fangtooth and Primal Fangtooth spawns after it and finish with ten structures to our four. Each of those Fangtooth takes came within a minute of at least one of our deaths. Countess and Belica brought the damage; Rampage and Argus kept collecting bodies."
-   },
-   {
-    "quote": "Goldilocks324 on a near-new Countess led our hero damage, killed Scarlett three times while dying to Scarlett twice, and died only three times all game. That is a fucking solid offlane line. Keep it.",
-    "severity": "med",
-    "issue": "'near-new Countess' is ungrounded: an empty baseline metrics list does not establish how many Countess games this player has",
-    "rewrite": "Goldilocks324 on Countess led our hero damage, killed Scarlett three times while dying to Scarlett twice, and died only three times all game. That is a fucking solid offlane line. Keep it."
-   },
-   {
-    "quote": "The expensive death was the one outside any fight just before their first Primal Fangtooth. With a Primal timer close, send Void Drone ahead to check the approach and stay behind the team until it shows clear.",
-    "severity": "med",
-    "issue": "'expensive' turns timing into a measured cost; the source says prize timing is an association, and 'outside any fight' means outside detected kill clusters only",
-    "rewrite": "Belica's death outside any detected fight came just before their first Primal Fangtooth. With a Primal timer close, send Void Drone ahead to check the approach and stay behind the team until it shows clear."
-   },
-   {
-    "quote": "Once Rampage is ahead, stop taking the duel. Ping where Rampage last showed, farm and pressure the opposite side, and only meet Rampage with Countess or Belica close enough to follow.",
+    "quote": "First Fangtooth was ours. Every one after that came with one of our bodies already on the floor.",
     "severity": "low",
-    "issue": "'stop taking the duel' asserts observed duels; deaths outside kill clusters do not establish a 1v1",
-    "rewrite": "Once Rampage is ahead, do not take a duel with Rampage. Ping where Rampage last showed, farm and pressure the opposite side, and only meet Rampage with Countess or Belica close enough to follow."
+    "issue": "source only shows a death in the prior minute, not that the player was still dead at the take",
+    "rewrite": "First Fangtooth was ours. Every one after that came within a minute of one of our deaths."
    },
    {
-    "quote": "We took Orb Prime while losing four heroes in a 0-4 sequence, and the Core fell shortly after with all three inhibitors already gone. With the base open, whoever is alive needs to be home for the waves; the record cannot show who hit the Core.",
-    "severity": "med",
-    "issue": "'home for the waves' invents wave state and implies nobody alive was defending; positions and Core attackers are not in the data",
-    "rewrite": "We took Orb Prime while losing four heroes in a 0-4 sequence, and the Core fell shortly after with all three inhibitors already gone. With the base open, only commit to Orb Prime if we can still get back to defend; the record cannot show who hit the Core."
-   },
-   {
-    "quote": "Tranquility heals Zinx and nearby allies with brief mitigation and raises the ward cap. Zinx placed six wards to Steel's fifteen, so the extra ward capacity went largely unused. Whether Grace was available in the closing fights is not recorded.",
+    "quote": "Sparrow took first blood off Wraith, farmed well and led our objective damage. Then Wraith killed Sparrow three times outside any fight, and one of those came right before two outer towers fell.",
     "severity": "low",
-    "issue": "placement totals cannot show whether the ward cap was filled, and vision equipment is unknown; Zinx's six wards also sit above the player's baseline",
-    "rewrite": "Tranquility heals Zinx and nearby allies with brief mitigation and raises the ward cap. Zinx placed six wards to Steel's fifteen; placement totals cannot show how often the higher cap was filled. Whether Grace was available in the closing fights is not recorded."
+    "issue": "outside detected kill clusters overstated as outside any fight",
+    "rewrite": "Sparrow took first blood off Wraith, farmed well and led our objective damage. Then Wraith killed Sparrow three times outside any detected fight, and one of those came right before two outer towers fell."
+   },
+   {
+    "quote": "The defensible keep is the damage package: Countess led our hero damage with three deaths. Spellbreaker still answers an Argus stun orb, but its magical armor does nothing against Rampage or Scarlett. If those two start ending fights before Feast lands, a physical armor item in a damage slot is the comparison, trading burst for staying alive through the first engage.",
+    "severity": "med",
+    "issue": "wrong mechanic: Rampage's Boulder Throw deals magical damage, so magical armor is not useless against Rampage; also banned hedge 'defensible'",
+    "rewrite": "Keep the damage package: Countess led our hero damage with three deaths. Spellbreaker answers an Argus stun orb and its magical armor also blunts Rampage's Boulder Throw, but it does nothing against Scarlett's physical damage or Rampage's basic attacks. If Scarlett and Rampage start ending fights before Feast lands, a physical armor item in a damage slot is the comparison, trading burst for staying alive through the first engage."
+   },
+   {
+    "quote": "Soulbearer gives a shield, magical lifesteal and movement speed on activation. It is the only defensive active in this kit and build, so holding it for a Scarlett, Argus or Rampage engage is its job. Actual use is not recorded.",
+    "severity": "med",
+    "issue": "false: every hero has Blink and Belica's kit has the Seismic Assault stun, so Soulbearer is not the only defensive active",
+    "rewrite": "Soulbearer gives a shield, magical lifesteal and movement speed on activation. It is the only defensive item active in this build, so holding it for a Scarlett, Argus or Rampage engage is its job. Actual use is not recorded."
+   },
+   {
+    "quote": "If Rampage keeps winning the duel, the first comparison is a physical armor item over Sky Splitter, trading current-health damage for surviving Behemoth. Safeguard's spell shield can already block one ability, such as the boulder stun. Neither choice makes the duel safe; avoiding it once Rampage is ahead is the cheaper fix.",
+    "severity": "med",
+    "issue": "presents duels as observed; deaths outside kill clusters and kill credits do not establish a 1v1 duel",
+    "rewrite": "If Rampage keeps killing Feng Mao, the first comparison is a physical armor item over Sky Splitter, trading current-health damage for surviving Behemoth. Safeguard's spell shield can already block one ability, such as the boulder stun. Neither choice makes a solo fight with Rampage safe; avoiding those once Rampage is ahead is the cheaper fix."
    }
   ],
   "63e6f40e-caad-4452-be54-7c4484d72bfe": [
    {
-    "quote": "Muriel went down first in both early skirmishes, first blood to Yurei included. Until Yurei shows on the map, the support stands no further forward than Ikra; the shield bank can't heal anyone from the respawn screen.",
-    "severity": "med",
-    "issue": "positioning fault inferred from first-death credits; the second early death was to Drongo deep in their jungle beside Feng Mao, not ahead of Ikra",
-    "rewrite": "Muriel died first in two early skirmishes: first blood to Yurei, then to Drongo deep in their jungle beside Feng Mao. Before following an early invade, Muriel waits until Yurei is visible; dead supports shield nobody."
-   },
-   {
-    "quote": "Second recorded game on Ikra and it showed: the lowest damage of our four damage dealers. That is a reps problem, not a character flaw, and the low death count is a decent base to build on.",
-    "severity": "med",
-    "issue": "Ikra game count is not in the source, and 'reps problem' asserts an unproven cause for low damage (comfort framing)",
-    "rewrite": "Lowest hero damage of our four damage dealers, so Ikra's output is the gap to close. Only three deaths is a decent base; now Willy Guggenheim needs the damage to come with it."
-   },
-   {
-    "quote": "If Feng Mao's vision slot was a ward that mostly sat unused, run sentry next game and sweep the Fangtooth entrance before each spawn. Our side cleared almost none of their vision.",
-    "severity": "med",
-    "issue": "equipment unknown; generic conditional switch-to-sentry warning is barred by the 2026-10-19 vision rule",
-    "rewrite": "Feng Mao cleared no enemy wards again while they cleared ten of ours. Next game Xeebs calls the Fangtooth plan before each spawn and checks the pit entrances for their vision before the team commits."
-   },
-   {
-    "quote": "Physical armor is the clearest adjustment. Skylar, Drongo and Yurei are physical and accounted for half of Grux's deaths, while the only defensive item answers magic. Swapping Tainted Rounds for a physical armor item gives up anti-heal and some on-hit damage; that is a fair trade here because Nerb's Tainted Scepter and Muriel's Sentinel passive also reduce enemy healing.",
-    "severity": "med",
-    "issue": "circular anti-heal logic: Nerb's read waives Tainted Scepter because Grux has Tainted Rounds, and Tainted Scepter only came online as Nerb's last item; Tainted Rounds was the earliest anti-heal item against Yurei and Sevarog",
-    "rewrite": "Physical armor is the clearest adjustment. Skylar, Drongo and Yurei are physical and accounted for half of Grux's deaths, while the only defensive item answers magic. Tainted Rounds is not the slot to cut: it was Grux's first item and the team's earliest anti-heal item against Yurei's and Sevarog's healing, while Nerb's Tainted Scepter came last. If armor goes in, it replaces a later damage item such as Augmentation, trading some on-hit damage and haste for surviving the physical follow-up."
-   },
-   {
-    "quote": "Scattershot, Terminus and Viper are physical crit and on-hit items, and Prophecy adds magical on-hit damage with attack speed. With Typhoon and Cascade this is a basic-attack Ikra. It is consistent with itself, but only Prophecy adds magical power, so Brine, Narcosis, Hydroclasm and Genesis get little extra from the inventory.",
+    "quote": "We won the first two real fights and turned neither into a structure, then lost nine structures while taking four. Sevarog got fat off our offlane, the one Fangtooth we took was followed by two of our towers falling, and the third Fangtooth went to them with nobody on our side dead. They cleared ten of our wards and we cleared one. That is a team playing late and blind.",
     "severity": "low",
-    "issue": "catalog: the Typhoon crest named in the same line also grants magical power",
-    "rewrite": "Scattershot, Terminus and Viper are physical crit and on-hit items, and Prophecy adds magical on-hit damage with attack speed. With Typhoon and Cascade this is a basic-attack Ikra. It is consistent with itself, but only Prophecy and the Typhoon crest add magical power, so Brine, Narcosis, Hydroclasm and Genesis get little extra from the build."
+    "issue": "wrong order: the opening skirmish in their jungle was lost; our two wins were the second and fourth skirmishes",
+    "rewrite": "We won two early fights and turned neither into a structure, then lost nine structures while taking four. Sevarog got fat off our offlane, the one Fangtooth we took was followed by two of our towers falling, and the third Fangtooth went to them with nobody on our side dead. They cleared ten of our wards and we cleared one. That is a team playing late and blind."
    },
    {
-    "quote": "Satariel grants Fearless stacks on takedowns that raise power and attack speed while lowering max health, and death removes them. Risen adds omnivamp at three or more stacks, and Psychosis raises damage to the nearest enemy hero while lowering it against everyone else. That is a snowball glass-cannon setup on a hero with two recorded games; Rite is the alternative to Psychosis, trading the target restriction for haste paid in health.",
-    "severity": "low",
-    "issue": "Ikra game count is not in the source",
-    "rewrite": "Satariel grants Fearless stacks on takedowns that raise power and attack speed while lowering max health, and death removes them. Risen adds omnivamp at three or more stacks, and Psychosis raises damage to the nearest enemy hero while lowering it against everyone else. That is a snowball glass-cannon setup on Ikra; Rite is the alternative to Psychosis, trading the target restriction for haste paid in health."
-   },
-   {
-    "quote": "Feng Mao was already dead and their Orb Prime was taken, and the exchange in our jungle went 2-3 while our inhibitor and Core fell. With a body down and their buff secured, the job is clearing waves at the inhibitor until the respawn, not trading kills. A stalled base at least buys the next respawn.",
+    "quote": "Top hero damage on the team, so the fire was landing. The early lane was not: Skylar killed Iggy & Scorch twice. Place turrets and oil from behind the wave while Skylar's Air Assault is up.",
     "severity": "med",
-    "issue": "'in our jungle' is invented; the source gives no location for the 34.1 fight, only the same time window as our inhibitor",
-    "rewrite": "Feng Mao was already dead and their Orb Prime was taken, and the exchange went 2-3 while our inhibitor and Core fell. With a body down and their buff secured, the job is clearing waves at the inhibitor until the respawn, not trading kills. A stalled base at least buys the next respawn."
+    "issue": "wrong reference: both early Skylar kills came in skirmishes in their jungle and their half, not in lane; advice built on lane trades",
+    "rewrite": "Top hero damage on the team, so the fire was landing. The early skirmishes were not: Skylar killed Iggy & Scorch in both opening skirmishes. Iggy & Scorch sets turrets and oil before following an invade into Skylar."
    },
    {
-    "quote": "Iggy & Scorch opened by killing Yurei and the exchange still went 2-3, with Drongo finishing Ikra and Feng Mao. Their inner tower and ours both fell in that window. After an opening pick deep in their half, take the structure and leave before Drongo gets a clean shooting line.",
-    "severity": "low",
-    "issue": "'deep in their half' is an invented location; the 27.3 fight has only a time-window association",
-    "rewrite": "Iggy & Scorch opened by killing Yurei and the exchange still went 2-3, with Drongo finishing Ikra and Feng Mao. Their inner tower and ours both fell in that window. After an opening pick, take the structure and leave before Drongo gets a clean shooting line."
-   },
-   {
-    "quote": "We took their outer tower while their Mini Prime went to them in the same window, and the exchange went 2-3 with Iggy & Scorch and Grux falling first. That is a trade, not a disaster. Decide before the spawn: everyone contests Mini Prime or everyone takes the tower, not half of each.",
-    "severity": "low",
-    "issue": "'not half of each' implies a team split the time-window data cannot show; adds another not-X-but-Y formula",
-    "rewrite": "We took their outer tower while their Mini Prime went to them in the same window, and the exchange went 2-3 with Iggy & Scorch and Grux falling first. Before the spawn, the team calls one target, Mini Prime or the tower, and commits to it together."
+    "quote": "The mid opponent was Skylar, their top damage dealer, who killed Iggy & Scorch twice in the early lane. Skylar fires from Air Assault's hover and Plasma Grenade slows. Later threats were Yurei and Sevarog, who both reach an immobile mage, plus Belica's silence.",
+    "severity": "med",
+    "issue": "wrong reference: the two early Skylar kills were in skirmishes in their jungle and their half, not the lane",
+    "rewrite": "The mid opponent was Skylar, their top damage dealer, who killed Iggy & Scorch in both opening skirmishes, the first in their jungle. Skylar fires from Air Assault's hover and Plasma Grenade slows. Later threats were Yurei and Sevarog, who both reach an immobile mage, plus Belica's silence."
    }
   ]
  }
