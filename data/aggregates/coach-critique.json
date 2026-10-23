@@ -1,15 +1,81 @@
 {
- "generatedAt": "2026-10-23T04:32:03.260Z",
+ "generatedAt": "2026-10-23T18:05:18.207Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
  "reviewedDigests": {
-  "63e6f40e-caad-4452-be54-7c4484d72bfe": "7bec953936ce4a810fc591d85aa2cf50268fc9ec1d4928c87b82517d334b27eb"
+  "1a5558a0-9549-459f-9f25-0694b6b5bd55": "e8084e20df513625f1eb53a0c34f87cb1da0c540a1d2ba12c71e85d5b0fdf0af",
+  "e05259a0-3d58-4190-9e32-730a61a2e73f": "e97ba57f9afe3b464731188a43833a472a5436c8fb9d7208070c81249e7dd94a"
  },
- "reviewedLines": 49,
- "flaggedLines": 0,
- "agreementRate": 1,
- "rewritesGrounded": 0,
+ "reviewedLines": 93,
+ "flaggedLines": 10,
+ "agreementRate": 0.892,
+ "rewritesGrounded": 10,
  "rewritesDropped": 0,
- "applied": 0,
+ "applied": 10,
  "unmatched": 0,
- "games": {}
+ "games": {
+  "1a5558a0-9549-459f-9f25-0694b6b5bd55": [
+   {
+    "quote": "Cuban Noobster ate the second most damage on our team and died once, early, to Grux. Kwang finished the game without a kill. That is what a frontline offlane is supposed to look like.",
+    "severity": "med",
+    "issue": "implied credit: Kwang's zero kills is not attributable to Scarlett (Kwang out-damaged Scarlett 36593 to 32927; Bayle took three of Kwang's five deaths)",
+    "rewrite": "Cuban Noobster ate the second most damage on the team and died once, early, to Grux. Soaking that much damage for a single death is what a frontline offlane is supposed to look like."
+   },
+   {
+    "quote": "Skylar died first, to Legion, and the team still turned it 4-1 while their outer and inner towers fell. One of our outer towers dropped in the same window. Winning after losing the carry first is a bailout, not a plan; the frontline stands between Legion and Skylar.",
+    "severity": "med",
+    "issue": "positioning not in data: 'the frontline stands between Legion and Skylar' and 'bailout' imply an observed positioning failure; a first death does not prove a preventable mistake",
+    "rewrite": "Skylar died first, to Legion, and the team still turned the fight 4-1 while the enemy outer and inner towers fell. One allied outer tower dropped in the same window, so the trade still came out ahead on structures."
+   },
+   {
+    "quote": "Scarlett opened on Grux, Skylar dropped Legion and Gideon, Steel finished Kwang, and we lost nobody. Orb Prime followed and the base went with it. That is how a game gets closed: win the fight at the prize, then walk straight to the Core.",
+    "severity": "low",
+    "issue": "'win the fight at the prize' asserts location; Orb Prime is only the same time window, not proof the fight was at the pit",
+    "rewrite": "Scarlett opened on Grux, Skylar dropped Legion and Gideon, Steel finished Kwang, and the team lost nobody. Orb Prime followed, then the base fell. That is how a game gets closed: win the fight, take the prize, then walk straight to the Core."
+   },
+   {
+    "quote": "Duo was Steel and Skylar against carry Legion and support Adele. Adele roots with Imperial Lash and Queen's Garden, mesmerizes with Royal Flourish and supplied most of their healing; Legion slows with Saturation Charge and knocks back with Rally Point. Across the match Gideon was their top damage dealer with magical burst, while Grux's pull and stuns and Kwang's knockup were the lockdown threats.",
+    "severity": "med",
+    "issue": "wrong: Adele did not supply most of the enemy healing (Grux 25876 vs Adele 14325); source only lists Adele as the healer",
+    "rewrite": "Duo was Steel and Skylar against carry Legion and support Adele. Adele roots with Imperial Lash and Queen's Garden, mesmerizes with Royal Flourish and was the enemy's only listed healer; Legion slows with Saturation Charge and knocks back with Rally Point. Across the match Gideon was the enemy's top damage dealer with magical burst, while Grux's pull and stuns and Kwang's knockup were the lockdown threats."
+   },
+   {
+    "quote": "Heavy Metal adds magical on-hit damage to Steel's punches and Shield Bash based on total physical and magical armor. Every armor item in this build feeds it, so the augment and the inventory pull the same way. Colossal Crash is the alternative when a longer, wider Shield Slam matters more, trading its knockup and stun for a knockback.",
+    "severity": "low",
+    "issue": "augment mechanic overstated: catalog says Colossal Crash knocks back 'instead' of the knockup; it does not say the stun is lost",
+    "rewrite": "Heavy Metal adds magical on-hit damage to Steel's heavy punches and Shield Bash based on total physical and magical armor. Every armor item in this build feeds Heavy Metal, so the augment and the inventory pull the same way. Colossal Crash is the alternative when a longer, wider Shield Slam matters more, trading the knockup for a knockback."
+   },
+   {
+    "quote": "The build carries the full winning core plus two situational slots. Void Conduit already answers Gideon's magic; if Gideon keeps finding kills, another magical armor item over Caustica is the comparison, trading penetration against Grux and Adele for survival. Otherwise keep it.",
+    "severity": "med",
+    "issue": "count wrong: six items minus the three-item winning core leaves three extra slots, not two",
+    "rewrite": "The build carries the full winning core plus three more slots. Void Conduit already answers Gideon's magic; if Gideon keeps finding kills, another magical armor item over Caustica is the comparison, trading penetration against Grux and Adele for survival. Otherwise keep Caustica."
+   }
+  ],
+  "e05259a0-3d58-4190-9e32-730a61a2e73f": [
+   {
+    "quote": "We took the early river buffs, both Fangtooths, the Mini Prime and all three seedlings, and nobody on our side died once. All four recorded fights went our way, and the two biggest landed in the same windows as our Mini Prime and second Fangtooth. The enemy got one river buff all game. That was a squad stomp from start to finish.",
+    "severity": "low",
+    "issue": "wrong comparison and ungrounded timing: the fight at the open map (won 3-0) was bigger than the Fangtooth fight (won 2-0), and river buff timing is not recorded",
+    "rewrite": "We took all but one river buff, both Fangtooths, the Mini Prime and all three seedlings, and our side took zero deaths. All four recorded fights went our way, and the two game-defining fights landed in the same windows as our Mini Prime and second Fangtooth. That was a squad stomp from start to finish."
+   },
+   {
+    "quote": "Rift Walkers lets Steel hold an extra ward. Next game, keep that spare ward landing on the approach to each Fangtooth and Prime before the team walks in, and the setup stays this clean.",
+    "severity": "med",
+    "issue": "'keep that spare ward landing' and 'the setup stays this clean' present ward placement on objective approaches as observed and as the cause of clean setups; ward counts cannot show where wards went or prove pit coverage",
+    "rewrite": "Rift Walkers gives Steel a third ward slot. Next game, put that spare ward on the approach to each Fangtooth and Prime before the team walks in."
+   },
+   {
+    "quote": "Belica and Steel took kills on Crunch and Sparrow, and the second Fangtooth was ours shortly after. Same pattern as the Mini Prime: win the exchange near the timer, then take the objective.",
+    "severity": "low",
+    "issue": "repeats the focus action and the Mini Prime moment's maxim nearly word for word",
+    "rewrite": "Belica and Steel took kills on Crunch and Sparrow, and the second Fangtooth was ours shortly after, with zero deaths on our side."
+   },
+   {
+    "quote": "No build change is proven here: one completed item and zero deaths. Sky Splitter is a defensible keep against a front line of Crunch, Countess and Mourn, because current-health damage hits hardest on healthy, durable targets. If the reachable targets are mostly squishy, the crit core from Plasma Blade is the comparison, trading that current-health damage for critical strikes and the Vanquisher execute.",
+    "severity": "low",
+    "issue": "contract-banned hedge 'defensible'",
+    "rewrite": "No build change is proven here: one completed item and zero deaths. Sky Splitter is a sound keep against a front line of Crunch, Countess and Mourn, because current-health damage hits hardest on healthy, durable targets. If the reachable targets are mostly squishy, the crit core from Plasma Blade is the comparison, trading current-health damage for critical strikes and the Vanquisher execute."
+   }
+  ]
+ }
 }
