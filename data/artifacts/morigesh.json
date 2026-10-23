@@ -10,6 +10,7 @@
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
+   "the sim opens on Orion, which the field has tried and lost with (-1% winrate over 51 games) — treat this opener as a sim blind-spot and weight the field",
    "the sim build reproduces only 33% of the field's core for Morigesh (it never builds Lifebinder, Megacosm) — some of those items ride mechanics the sim doesn't model yet"
   ]
  },
@@ -20,48 +21,48 @@
     "name": "Orion",
     "slug": "orion",
     "spikeMinute": 8,
-    "playRatePct": 8.8,
-    "evidenceDeltaWr": 3.2,
-    "evidenceN": 43
+    "playRatePct": 11.1,
+    "evidenceDeltaWr": -1,
+    "evidenceN": 51
    },
    {
     "name": "Timewarp",
     "slug": "timewarp",
     "spikeMinute": 15,
-    "playRatePct": 31.2,
-    "evidenceDeltaWr": 6.4,
-    "evidenceN": 153
+    "playRatePct": 29.7,
+    "evidenceDeltaWr": 3.8,
+    "evidenceN": 137
    },
    {
     "name": "Spirit Of Amir",
     "slug": "spirit-of-amir",
     "spikeMinute": 21,
-    "playRatePct": 0.2,
-    "evidenceDeltaWr": null,
-    "evidenceN": null
+    "playRatePct": 2.6,
+    "evidenceDeltaWr": -3.2,
+    "evidenceN": 12
    },
    {
     "name": "Tainted Scepter",
     "slug": "tainted-scepter",
     "spikeMinute": 26,
-    "playRatePct": 29.7,
-    "evidenceDeltaWr": 4.7,
-    "evidenceN": 146
+    "playRatePct": 25.4,
+    "evidenceDeltaWr": -0.3,
+    "evidenceN": 117
    },
    {
     "name": "Wraith Leggings",
     "slug": "wraith-leggings",
     "spikeMinute": 31,
-    "playRatePct": 26.5,
-    "evidenceDeltaWr": 10.3,
-    "evidenceN": 130
+    "playRatePct": 21.9,
+    "evidenceDeltaWr": -2.8,
+    "evidenceN": 101
    },
    {
     "name": "Oblivion Crown",
     "slug": "oblivion-crown",
     "spikeMinute": 37,
-    "playRatePct": 19.6,
-    "evidenceDeltaWr": 10.8,
+    "playRatePct": 20.8,
+    "evidenceDeltaWr": 2.6,
     "evidenceN": 96
    }
   ],
@@ -575,15 +576,8 @@
   }
  ],
  "offMeta": {
-  "candidates": [
-   {
-    "item": "Spirit Of Amir",
-    "playRatePct": 0.2,
-    "bestObjective": "sustained auto DPS",
-    "edgeVsPopularPct": 71.7
-   }
-  ],
-  "honestAbsence": null
+  "candidates": [],
+  "honestAbsence": "no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)"
  },
  "metaBuilds": [
   {
@@ -602,8 +596,8 @@
      "slug": "megacosm"
     }
    ],
-   "n": 246,
-   "shrunkWr": 0.508,
+   "n": 281,
+   "shrunkWr": 0.509,
    "coreGold": 8800,
    "spikeMinute": 21,
    "bestObjective": "one-combo burst",
@@ -626,7 +620,7 @@
      "slug": "megacosm"
     }
    ],
-   "n": 127,
+   "n": 132,
    "shrunkWr": 0.51,
    "coreGold": 9000,
    "spikeMinute": 21,
@@ -650,7 +644,7 @@
      "slug": "tainted-scepter"
     }
    ],
-   "n": 86,
+   "n": 93,
    "shrunkWr": 0.518,
    "coreGold": 9000,
    "spikeMinute": 21,
@@ -859,6 +853,45 @@
    }
   },
   {
+   "enemy": "Gideon",
+   "enemySlug": "gideon",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Gideon deals area damage — spread out so one cast can't catch the group.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 10,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 15,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 20,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 25,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 30,
+     "verdict": "enemy"
+    }
+   ],
+   "counterSwap": {
+    "out": "Tainted Scepter",
+    "in": "Raiment of Renewal",
+    "inSlug": "raiment-of-renewal",
+    "survivalGainPct": 18,
+    "offenseLossPct": 13,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 18% less hard, and this kit gives up 13% of its damage for it."
+   }
+  },
+  {
    "enemy": "Valmont",
    "enemySlug": "valmont",
    "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Valmont's main threat is Arterial Grip; bait it before you commit, and magic resist softens the trade.",
@@ -937,13 +970,13 @@
    }
   },
   {
-   "enemy": "Gideon",
-   "enemySlug": "gideon",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Gideon deals area damage — spread out so one cast can't catch the group.",
+   "enemy": "Gadget",
+   "enemySlug": "gadget",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Gadget deals area damage — spread out so one cast can't catch the group.",
    "checkpoints": [
     {
      "minute": 5,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 10,
@@ -974,45 +1007,6 @@
     "offenseLossPct": 13,
     "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 18% less hard, and this kit gives up 13% of its damage for it."
    }
-  },
-  {
-   "enemy": "Argus",
-   "enemySlug": "argus",
-   "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Argus deals area damage — spread out so one cast can't catch the group.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "you"
-    },
-    {
-     "minute": 10,
-     "verdict": "you"
-    },
-    {
-     "minute": 15,
-     "verdict": "you"
-    },
-    {
-     "minute": 20,
-     "verdict": "you"
-    },
-    {
-     "minute": 25,
-     "verdict": "you"
-    },
-    {
-     "minute": 30,
-     "verdict": "you"
-    }
-   ],
-   "counterSwap": {
-    "out": "Tainted Scepter",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 18,
-    "offenseLossPct": 12,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 18% less hard, and this kit gives up 12% of its damage for it."
-   }
   }
  ],
  "laneSteer": {
@@ -1022,8 +1016,8 @@
   },
   "playstyle": "ability-burst",
   "modeled": true,
-  "wr": 50.9,
-  "n": 2734,
+  "wr": 50.4,
+  "n": 2974,
   "shiftIn": [
    "Combustion",
    "Oathkeeper",
@@ -1036,12 +1030,12 @@
    "Tainted Scepter",
    "Spirit Of Amir"
   ],
-  "provenance": "“Cursed Infestation” ⇒ ability-burst; the sim models this augment — field midlane 50.9% over 2,734 games."
+  "provenance": "“Cursed Infestation” ⇒ ability-burst; the sim models this augment — field midlane 50.4% over 2,974 games."
  },
  "slug": "morigesh",
  "name": "Morigesh",
  "patch": "1.15.3/1.15.4",
- "generatedAt": "2026-10-22T10:19:32.708Z",
+ "generatedAt": "2026-10-23T10:05:29.383Z",
  "damageType": "hybrid",
  "attackType": "ranged",
  "laneFlex": [
@@ -1053,8 +1047,8 @@
    },
    "playstyle": "ability-burst",
    "modeled": true,
-   "wr": 50.9,
-   "n": 2734,
+   "wr": 50.4,
+   "n": 2974,
    "core": [
     {
      "name": "Combustion",
@@ -1082,7 +1076,7 @@
     }
    ],
    "headline": "burst",
-   "provenance": "“Cursed Infestation” ⇒ ability-burst; the sim models this augment — field midlane 50.9% over 2,734 games."
+   "provenance": "“Cursed Infestation” ⇒ ability-burst; the sim models this augment — field midlane 50.4% over 2,974 games."
   },
   {
    "lane": "offlane",
@@ -1092,8 +1086,8 @@
    },
    "playstyle": "ability-burst",
    "modeled": true,
-   "wr": 54.3,
-   "n": 775,
+   "wr": 54.8,
+   "n": 862,
    "core": [
     {
      "name": "Combustion",
@@ -1121,7 +1115,7 @@
     }
    ],
    "headline": "burst",
-   "provenance": "“Cursed Infestation” ⇒ ability-burst; the sim models this augment — field offlane 54.3% over 775 games."
+   "provenance": "“Cursed Infestation” ⇒ ability-burst; the sim models this augment — field offlane 54.8% over 862 games."
   }
  ],
  "roles": [
@@ -1137,6 +1131,7 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
+     "the sim opens on Orion, which the field has tried and lost with (-1% winrate over 51 games) — treat this opener as a sim blind-spot and weight the field",
      "the sim build reproduces only 33% of the field's core for Morigesh (it never builds Lifebinder, Megacosm) — some of those items ride mechanics the sim doesn't model yet"
     ]
    },
@@ -1147,48 +1142,48 @@
       "name": "Orion",
       "slug": "orion",
       "spikeMinute": 8,
-      "playRatePct": 8.8,
-      "evidenceDeltaWr": 3.2,
-      "evidenceN": 43
+      "playRatePct": 11.1,
+      "evidenceDeltaWr": -1,
+      "evidenceN": 51
      },
      {
       "name": "Timewarp",
       "slug": "timewarp",
       "spikeMinute": 15,
-      "playRatePct": 31.2,
-      "evidenceDeltaWr": 6.4,
-      "evidenceN": 153
+      "playRatePct": 29.7,
+      "evidenceDeltaWr": 3.8,
+      "evidenceN": 137
      },
      {
       "name": "Spirit Of Amir",
       "slug": "spirit-of-amir",
       "spikeMinute": 21,
-      "playRatePct": 0.2,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
+      "playRatePct": 2.6,
+      "evidenceDeltaWr": -3.2,
+      "evidenceN": 12
      },
      {
       "name": "Tainted Scepter",
       "slug": "tainted-scepter",
       "spikeMinute": 26,
-      "playRatePct": 29.7,
-      "evidenceDeltaWr": 4.7,
-      "evidenceN": 146
+      "playRatePct": 25.4,
+      "evidenceDeltaWr": -0.3,
+      "evidenceN": 117
      },
      {
       "name": "Wraith Leggings",
       "slug": "wraith-leggings",
       "spikeMinute": 31,
-      "playRatePct": 26.5,
-      "evidenceDeltaWr": 10.3,
-      "evidenceN": 130
+      "playRatePct": 21.9,
+      "evidenceDeltaWr": -2.8,
+      "evidenceN": 101
      },
      {
       "name": "Oblivion Crown",
       "slug": "oblivion-crown",
       "spikeMinute": 37,
-      "playRatePct": 19.6,
-      "evidenceDeltaWr": 10.8,
+      "playRatePct": 20.8,
+      "evidenceDeltaWr": 2.6,
       "evidenceN": 96
      }
     ],
@@ -1702,15 +1697,8 @@
     }
    ],
    "offMeta": {
-    "candidates": [
-     {
-      "item": "Spirit Of Amir",
-      "playRatePct": 0.2,
-      "bestObjective": "sustained auto DPS",
-      "edgeVsPopularPct": 71.7
-     }
-    ],
-    "honestAbsence": null
+    "candidates": [],
+    "honestAbsence": "no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)"
    },
    "metaBuilds": [
     {
@@ -1729,8 +1717,8 @@
        "slug": "megacosm"
       }
      ],
-     "n": 246,
-     "shrunkWr": 0.508,
+     "n": 281,
+     "shrunkWr": 0.509,
      "coreGold": 8800,
      "spikeMinute": 21,
      "bestObjective": "one-combo burst",
@@ -1753,7 +1741,7 @@
        "slug": "megacosm"
       }
      ],
-     "n": 127,
+     "n": 132,
      "shrunkWr": 0.51,
      "coreGold": 9000,
      "spikeMinute": 21,
@@ -1777,7 +1765,7 @@
        "slug": "tainted-scepter"
       }
      ],
-     "n": 86,
+     "n": 93,
      "shrunkWr": 0.518,
      "coreGold": 9000,
      "spikeMinute": 21,
@@ -1986,6 +1974,45 @@
      }
     },
     {
+     "enemy": "Gideon",
+     "enemySlug": "gideon",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Gideon deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Tainted Scepter",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 18,
+      "offenseLossPct": 13,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 18% less hard, and this kit gives up 13% of its damage for it."
+     }
+    },
+    {
      "enemy": "Valmont",
      "enemySlug": "valmont",
      "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Valmont's main threat is Arterial Grip; bait it before you commit, and magic resist softens the trade.",
@@ -2064,13 +2091,13 @@
      }
     },
     {
-     "enemy": "Gideon",
-     "enemySlug": "gideon",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Gideon deals area damage — spread out so one cast can't catch the group.",
+     "enemy": "Gadget",
+     "enemySlug": "gadget",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Gadget deals area damage — spread out so one cast can't catch the group.",
      "checkpoints": [
       {
        "minute": 5,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 10,
@@ -2101,45 +2128,6 @@
       "offenseLossPct": 13,
       "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 18% less hard, and this kit gives up 13% of its damage for it."
      }
-    },
-    {
-     "enemy": "Argus",
-     "enemySlug": "argus",
-     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Argus deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "you"
-      },
-      {
-       "minute": 10,
-       "verdict": "you"
-      },
-      {
-       "minute": 15,
-       "verdict": "you"
-      },
-      {
-       "minute": 20,
-       "verdict": "you"
-      },
-      {
-       "minute": 25,
-       "verdict": "you"
-      },
-      {
-       "minute": 30,
-       "verdict": "you"
-      }
-     ],
-     "counterSwap": {
-      "out": "Tainted Scepter",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 18,
-      "offenseLossPct": 12,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 18% less hard, and this kit gives up 12% of its damage for it."
-     }
     }
    ],
    "laneSteer": {
@@ -2149,8 +2137,8 @@
     },
     "playstyle": "ability-burst",
     "modeled": true,
-    "wr": 50.9,
-    "n": 2734,
+    "wr": 50.4,
+    "n": 2974,
     "shiftIn": [
      "Combustion",
      "Oathkeeper",
@@ -2163,7 +2151,7 @@
      "Tainted Scepter",
      "Spirit Of Amir"
     ],
-    "provenance": "“Cursed Infestation” ⇒ ability-burst; the sim models this augment — field midlane 50.9% over 2,734 games."
+    "provenance": "“Cursed Infestation” ⇒ ability-burst; the sim models this augment — field midlane 50.4% over 2,974 games."
    }
   },
   {
@@ -2177,7 +2165,8 @@
     "notes": [
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
-     "evidence deltas carry finished-inventory survivorship bias"
+     "evidence deltas carry finished-inventory survivorship bias",
+     "the sim opens on Orion, which the field has tried and lost with (-1% winrate over 51 games) — treat this opener as a sim blind-spot and weight the field"
     ]
    },
    "build": {
@@ -2187,48 +2176,48 @@
       "name": "Orion",
       "slug": "orion",
       "spikeMinute": 9,
-      "playRatePct": 8.8,
-      "evidenceDeltaWr": 3.2,
-      "evidenceN": 43
+      "playRatePct": 11.1,
+      "evidenceDeltaWr": -1,
+      "evidenceN": 51
      },
      {
       "name": "Timewarp",
       "slug": "timewarp",
       "spikeMinute": 16,
-      "playRatePct": 31.2,
-      "evidenceDeltaWr": 6.4,
-      "evidenceN": 153
+      "playRatePct": 29.7,
+      "evidenceDeltaWr": 3.8,
+      "evidenceN": 137
      },
      {
       "name": "Spirit Of Amir",
       "slug": "spirit-of-amir",
       "spikeMinute": 21,
-      "playRatePct": 0.2,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
+      "playRatePct": 2.6,
+      "evidenceDeltaWr": -3.2,
+      "evidenceN": 12
      },
      {
       "name": "Tainted Scepter",
       "slug": "tainted-scepter",
       "spikeMinute": 26,
-      "playRatePct": 29.7,
-      "evidenceDeltaWr": 4.7,
-      "evidenceN": 146
+      "playRatePct": 25.4,
+      "evidenceDeltaWr": -0.3,
+      "evidenceN": 117
      },
      {
       "name": "Wraith Leggings",
       "slug": "wraith-leggings",
-      "spikeMinute": 31,
-      "playRatePct": 26.5,
-      "evidenceDeltaWr": 10.3,
-      "evidenceN": 130
+      "spikeMinute": 32,
+      "playRatePct": 21.9,
+      "evidenceDeltaWr": -2.8,
+      "evidenceN": 101
      },
      {
       "name": "Oblivion Crown",
       "slug": "oblivion-crown",
       "spikeMinute": 37,
-      "playRatePct": 19.6,
-      "evidenceDeltaWr": 10.8,
+      "playRatePct": 20.8,
+      "evidenceDeltaWr": 2.6,
       "evidenceN": 96
      }
     ],
@@ -2742,44 +2731,35 @@
     }
    ],
    "offMeta": {
-    "candidates": [
-     {
-      "item": "Spirit Of Amir",
-      "playRatePct": 0.2,
-      "bestObjective": "sustained auto DPS",
-      "edgeVsPopularPct": 71.7
-     }
-    ],
-    "honestAbsence": null
+    "candidates": [],
+    "honestAbsence": "no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)"
    },
    "metaBuilds": [
     {
-     "anyOrder": true,
-     "title": "Magical Skirmisher",
+     "title": "Magical Frontline",
      "items": [
       {
-       "name": "Timewarp",
-       "slug": "timewarp"
+       "name": "Oathkeeper",
+       "slug": "oathkeeper"
+      },
+      {
+       "name": "Megacosm",
+       "slug": "megacosm"
       },
       {
        "name": "Lifebinder",
        "slug": "lifebinder"
-      },
-      {
-       "name": "TaintedScepter",
-       "slug": "tainted-scepter"
       }
      ],
-     "n": 40,
-     "shrunkWr": 0.569,
-     "coreGold": 8800,
+     "n": 21,
+     "shrunkWr": 0.57,
+     "coreGold": 8900,
      "spikeMinute": 21,
-     "bestObjective": "10s rotation damage",
-     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 21 — about 2,253 damage over a 10s rotation in the sim.",
+     "bestObjective": "physical survivability",
+     "whyLine": "Strongest meta core for physical survivability, online around minute 21 — about 4,449 effective HP vs physical in the sim.",
      "optimizer": null
     },
     {
-     "anyOrder": true,
      "title": "Magical Frontline",
      "items": [
       {
@@ -2795,8 +2775,8 @@
        "slug": "lifebinder"
       }
      ],
-     "n": 37,
-     "shrunkWr": 0.568,
+     "n": 21,
+     "shrunkWr": 0.655,
      "coreGold": 8800,
      "spikeMinute": 21,
      "bestObjective": "magical survivability",
@@ -2804,28 +2784,27 @@
      "optimizer": null
     },
     {
-     "anyOrder": true,
-     "title": "Magical Skirmisher",
+     "title": "Magical Burst",
      "items": [
       {
        "name": "Timewarp",
        "slug": "timewarp"
       },
       {
-       "name": "TaintedScepter",
-       "slug": "tainted-scepter"
+       "name": "Lifebinder",
+       "slug": "lifebinder"
       },
       {
-       "name": "Megacosm",
-       "slug": "megacosm"
+       "name": "WraithLeggings",
+       "slug": "wraith-leggings"
       }
      ],
-     "n": 35,
-     "shrunkWr": 0.562,
-     "coreGold": 9000,
+     "n": 20,
+     "shrunkWr": 0.593,
+     "coreGold": 8900,
      "spikeMinute": 21,
-     "bestObjective": "10s rotation damage",
-     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 21 — about 2,317 damage over a 10s rotation in the sim.",
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 1,438 damage in one combo in the sim.",
      "optimizer": null
     }
    ],
@@ -3068,45 +3047,6 @@
      }
     },
     {
-     "enemy": "Aurora",
-     "enemySlug": "aurora",
-     "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Aurora deals area damage — spread out so one cast can't catch the group.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "enemy"
-      },
-      {
-       "minute": 10,
-       "verdict": "even"
-      },
-      {
-       "minute": 15,
-       "verdict": "even"
-      },
-      {
-       "minute": 20,
-       "verdict": "even"
-      },
-      {
-       "minute": 25,
-       "verdict": "you"
-      },
-      {
-       "minute": 30,
-       "verdict": "you"
-      }
-     ],
-     "counterSwap": {
-      "out": "Tainted Scepter",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 17,
-      "offenseLossPct": 13,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 17% less hard, and this kit gives up 13% of its damage for it."
-     }
-    },
-    {
      "enemy": "Scarlett",
      "enemySlug": "scarlett",
      "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Scarlett deals area damage — spread out so one cast can't catch the group.",
@@ -3143,6 +3083,45 @@
       "survivalGainPct": 29,
       "offenseLossPct": 14,
       "line": "Losing lane? Third item Warden's Faith instead of Tainted Scepter: their burst combo hits 29% less hard, and this kit gives up 14% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Aurora",
+     "enemySlug": "aurora",
+     "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Aurora deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "even"
+      },
+      {
+       "minute": 15,
+       "verdict": "even"
+      },
+      {
+       "minute": 20,
+       "verdict": "even"
+      },
+      {
+       "minute": 25,
+       "verdict": "you"
+      },
+      {
+       "minute": 30,
+       "verdict": "you"
+      }
+     ],
+     "counterSwap": {
+      "out": "Tainted Scepter",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 17,
+      "offenseLossPct": 13,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 17% less hard, and this kit gives up 13% of its damage for it."
      }
     },
     {
@@ -3192,8 +3171,8 @@
     },
     "playstyle": "ability-burst",
     "modeled": true,
-    "wr": 54.3,
-    "n": 775,
+    "wr": 54.8,
+    "n": 862,
     "shiftIn": [
      "Combustion",
      "Oathkeeper",
@@ -3206,7 +3185,7 @@
      "Tainted Scepter",
      "Spirit Of Amir"
     ],
-    "provenance": "“Cursed Infestation” ⇒ ability-burst; the sim models this augment — field offlane 54.3% over 775 games."
+    "provenance": "“Cursed Infestation” ⇒ ability-burst; the sim models this augment — field offlane 54.8% over 862 games."
    }
   },
   {
@@ -3222,7 +3201,7 @@
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
      "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)",
-     "the sim opens on Lifecore, which the field rarely builds (0.6% pick) — a sim-only call; compare the meta cores below"
+     "the sim opens on Lifecore, which the field rarely builds (0.4% pick) — a sim-only call; compare the meta cores below"
     ]
    },
    "build": {
@@ -3232,7 +3211,7 @@
       "name": "Lifecore",
       "slug": "lifecore",
       "spikeMinute": 11,
-      "playRatePct": 0.6,
+      "playRatePct": 0.4,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -3240,33 +3219,33 @@
       "name": "Noxia",
       "slug": "noxia",
       "spikeMinute": 18,
-      "playRatePct": 7.3,
-      "evidenceDeltaWr": 2.8,
-      "evidenceN": 36
+      "playRatePct": 10.6,
+      "evidenceDeltaWr": 0.6,
+      "evidenceN": 49
      },
      {
       "name": "Timewarp",
       "slug": "timewarp",
       "spikeMinute": 25,
-      "playRatePct": 31.2,
-      "evidenceDeltaWr": 6.4,
-      "evidenceN": 153
+      "playRatePct": 29.7,
+      "evidenceDeltaWr": 3.8,
+      "evidenceN": 137
      },
      {
       "name": "Oblivion Crown",
       "slug": "oblivion-crown",
       "spikeMinute": 32,
-      "playRatePct": 19.6,
-      "evidenceDeltaWr": 10.8,
+      "playRatePct": 20.8,
+      "evidenceDeltaWr": 2.6,
       "evidenceN": 96
      },
      {
       "name": "Spirit Of Amir",
       "slug": "spirit-of-amir",
       "spikeMinute": 37,
-      "playRatePct": 0.2,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
+      "playRatePct": 2.6,
+      "evidenceDeltaWr": -3.2,
+      "evidenceN": 12
      },
      {
       "name": "Lunaria",
@@ -3774,13 +3753,7 @@
     "candidates": [
      {
       "item": "Lifecore",
-      "playRatePct": 0.6,
-      "bestObjective": "heal/shield output",
-      "edgeVsPopularPct": 62.6
-     },
-     {
-      "item": "Spirit Of Amir",
-      "playRatePct": 0.2,
+      "playRatePct": 0.4,
       "bestObjective": "heal/shield output",
       "edgeVsPopularPct": 62.6
      },
@@ -3810,8 +3783,8 @@
        "slug": "megacosm"
       }
      ],
-     "n": 247,
-     "shrunkWr": 0.511,
+     "n": 282,
+     "shrunkWr": 0.512,
      "coreGold": 8800,
      "spikeMinute": 24,
      "bestObjective": "one-combo burst",
@@ -3834,8 +3807,8 @@
        "slug": "megacosm"
       }
      ],
-     "n": 146,
-     "shrunkWr": 0.513,
+     "n": 152,
+     "shrunkWr": 0.515,
      "coreGold": 9000,
      "spikeMinute": 25,
      "bestObjective": "physical survivability",
@@ -3843,28 +3816,28 @@
      "optimizer": null
     },
     {
-     "title": "Magical Enchanter",
+     "title": "Magical Burst",
      "items": [
-      {
-       "name": "OrbOfGrowth",
-       "slug": "orb-of-growth"
-      },
       {
        "name": "Timewarp",
        "slug": "timewarp"
       },
       {
-       "name": "TaintedScepter",
-       "slug": "tainted-scepter"
+       "name": "Lifebinder",
+       "slug": "lifebinder"
+      },
+      {
+       "name": "WraithLeggings",
+       "slug": "wraith-leggings"
       }
      ],
-     "n": 100,
-     "shrunkWr": 0.529,
-     "coreGold": 9000,
+     "n": 109,
+     "shrunkWr": 0.531,
+     "coreGold": 8900,
      "spikeMinute": 25,
-     "bestObjective": "heal/shield output",
-     "whyLine": "Strongest meta core for heal/shield output, online around minute 25 — about 399 HP healed or shielded over 10s in the sim.",
-     "optimizer": "Optimizer sees +37% more heal/shield output: try Lifecore over Orb Of Growth (sim-only — the popular pick may carry utility the sim can't see; test it)."
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 25 — about 1,438 damage in one combo in the sim.",
+     "optimizer": null
     }
    ],
    "stages": [
@@ -4049,7 +4022,7 @@
       },
       {
        "minute": 30,
-       "verdict": "even"
+       "verdict": "enemy"
       }
      ],
      "counterSwap": {
