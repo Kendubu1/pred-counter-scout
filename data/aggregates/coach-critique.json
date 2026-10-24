@@ -1,15 +1,36 @@
 {
- "generatedAt": "2026-10-23T22:15:02.117Z",
+ "generatedAt": "2026-10-24T03:04:27.514Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
  "reviewedDigests": {
-  "50d26b02-a772-41e7-b684-8c19fadccb37": "caab59d7964309b1b6d5a83c7debc78e3f3acfe723e649c3bd1407431fb0381b"
+  "6c0a10f5-ad58-4c58-a160-a755684ad9c0": "5325320ec751f07a803caa545074103b4a30a67b8d7896dcb52197eb0283cb24"
  },
- "reviewedLines": 48,
- "flaggedLines": 0,
- "agreementRate": 1,
- "rewritesGrounded": 0,
+ "reviewedLines": 47,
+ "flaggedLines": 3,
+ "agreementRate": 0.936,
+ "rewritesGrounded": 3,
  "rewritesDropped": 0,
- "applied": 0,
+ "applied": 3,
  "unmatched": 0,
- "games": {}
+ "games": {
+  "6c0a10f5-ad58-4c58-a160-a755684ad9c0": [
+   {
+    "quote": "Serath took the most damage on our team without an armor item. Scarlett's Swan Song restrains the first hero hit, so keep Heaven's Fury available while Swan Song is up: the dash leaves Serath immune to crowd control and invulnerable.",
+    "severity": "med",
+    "issue": "Heaven's Fury CC immunity/invulnerability appears only in game_description; menu_description omits it, so the dodge claim is unsafe",
+    "rewrite": "Serath took the most damage among the allies without an armor item. Scarlett's Swan Song restrains the first enemy hero hit, so Serath waits for Swan Song to be spent before diving onto Scarlett's team."
+   },
+   {
+    "quote": "Renna farmed well above the recorded Renna norm, scored our first kill of the game on Skylar, later killed Gadget and died only twice. The lane gave the team nothing to clean up.",
+    "severity": "low",
+    "issue": "lane state is not recorded (and Renna gave up first blood); 'nothing to clean up' asserts an unobserved lane result",
+    "rewrite": "Renna farmed well above the recorded Renna norm, scored the first kill of the game on Skylar, later killed Gadget and died only twice. Skylar finished with one kill and five deaths."
+   },
+   {
+    "quote": "Serath killed Scarlett and then Sparrow, the last two kills of the game, in the same window as our third outer tower. With the enemy jungler and carry dead, the next call is the inner tower, all together.",
+    "severity": "low",
+    "issue": "prescribes a next call that never existed: the game ended right after this window",
+    "rewrite": "Serath killed Scarlett and then Sparrow, the last two kills of the game, in the same window as the third enemy outer tower falling, and the game ended shortly after. With the enemy jungler and carry dead, the whole team pushes together."
+   }
+  ]
+ }
 }
