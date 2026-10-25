@@ -73,7 +73,7 @@ async function main() {
     matches ? +(Object.values(out).reduce((s, h) => s + pick(h), 0) / matches).toFixed(2) : null;
   const bansPerMatch = {
     all: perMatch((h) => h.bans, lane.matchesApprox),
-    ...Object.fromEntries(lane.rankBands.map((bd) => [bd.key, perMatch((h) => h.bands[bd.key] ?? 0, lane.matchesApproxByBand[bd.key])])),
+    ...Object.fromEntries(lane.rankBands.map((bd) => [bd.key, perMatch((h) => h.bands[bd.key] ?? 0, lane.matchesApproxByBand[bd.key] ?? 0)])),
   };
   for (const [k, v] of Object.entries(bansPerMatch)) {
     if (v != null && (v < 3 || v > 5)) console.warn(`\n  ! ${k}: ${v} bans per match, expected ~4 — pred.gg may have changed the field`);

@@ -1123,19 +1123,25 @@ function laneSteerBlock(a) {
       </div>`;
 }
 
-// ── ONE image-forward, tabbed "Builds" card: one tab per meta build (by title,
-// highest field winrate first) + the kit-math build last. Only the active tab
+// ── ONE image-forward, tabbed "Builds" card: one tab per meta build (most
+// played first — what the lane actually builds) + the kit-math build last. Only the active tab
 // body shows; the prose lives behind a per-tab "why these items" disclosure.
 function buildsCard(a) {
   const rsnRoot = REASONING && REASONING.heroes && REASONING.heroes[a.slug] && REASONING.heroes[a.slug][a.role];
-  // Field meta builds, sorted so the highest shrunk-winrate build is the first/default tab.
-  const metas = (a.metaBuilds || []).map((m, mi) => ({ m, rsn: rsnRoot && rsnRoot.metaBuilds && rsnRoot.metaBuilds[mi] }))
-    .sort((x, y) => (y.m.shrunkWr || 0) - (x.m.shrunkWr || 0));
+  // Field meta builds, MOST PLAYED first (the default tab). Sorting by win rate
+  // put a 2%-of-games core ahead of the lane's real build whenever its small
+  // sample read a point higher. Explanations match by item set, not position.
+  const setKey = (names) => names.map((n) => String(n).toLowerCase().replace(/[^a-z0-9]/g, '')).sort().join('|');
+  const rsnBySet = new Map(((rsnRoot && rsnRoot.metaBuilds) || []).filter((r) => r && r.items).map((r) => [setKey(Object.keys(r.items)), r]));
+  const metas = (a.metaBuilds || []).map((m) => ({ m, rsn: rsnBySet.get(setKey(m.items.map((it) => it.name))) || null }))
+    .sort((x, y) => (y.m.n || 0) - (x.m.n || 0));
+  // "best win %" only when a different build has real volume (100+ games).
+  const bestIdx = metas.length > 1 ? metas.reduce((b, e, i) => ((e.m.n || 0) >= 100 && (e.m.shrunkWr || 0) > (metas[b].m.shrunkWr || 0) ? i : b), 0) : 0;
   const opt = rsnRoot && rsnRoot.optimizer;
 
   // Tab strip: one per meta build (title), then the kit-math build (⚙).
   const tabs = metas.map((e, i) =>
-    `<button class="btab${i === 0 ? ' active' : ''}" data-btab="${i}">${esc(e.m.title || `Build ${i + 1}`)} <span class="btab-wr">${(e.m.shrunkWr * 100).toFixed(0)}%</span></button>`).join('')
+    `<button class="btab${i === 0 ? ' active' : ''}" data-btab="${i}">${i === 0 ? '<span title="most played in this lane">🔥</span> ' : i === bestIdx && bestIdx !== 0 ? '<span title="highest win rate among builds with 100+ games">★</span> ' : ''}${esc(e.m.title || `Build ${i + 1}`)} <span class="btab-wr">${(e.m.shrunkWr * 100).toFixed(0)}%</span></button>`).join('')
     + `<button class="btab simtab${metas.length ? '' : ' active'}" data-btab="sim">⚙ ${esc(a.build.title || 'Kit-math build')}</button>`;
 
   // One meta-build tab body: icon rail + win%/games + a "why these items" disclosure.
@@ -1154,7 +1160,7 @@ function buildsCard(a) {
         <div class="mb-items" style="flex-wrap:wrap;margin-bottom:.5rem">${rail}</div>
         <div style="display:flex;align-items:center;gap:.6rem">
           <span class="bwr ${wrCls}">${(m.shrunkWr * 100).toFixed(1)}%</span>
-          <span class="mb-n">${m.n} games${m.anyOrder ? ' · item set, purchase orders pooled' : ''}</span>
+          <span class="mb-n">${m.n.toLocaleString()} games${m.shareOfCores ? ` · ${Math.round(m.shareOfCores * 100)}% of tracked builds` : ''}${i === 0 ? ' · most played' : i === bestIdx ? ' · best win rate' : ''}${m.anyOrder ? ' · item set, purchase orders pooled' : m.otherOrderGames ? ` · ${m.otherOrderGames.toLocaleString()} bought these in another order` : ''}</span>
         </div>
         ${explain}
         <details class="sim-collapse"><summary>The sim math</summary><div class="body">${simLine}</div></details>
@@ -1572,6 +1578,45 @@ function renderHero(a, roleParam) {
             <span style="font-size:.7rem;color:var(--text-2)">${c.n.toLocaleString()} games</span>
           </div>`).join('')}
           <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.3rem 0 0 2.1rem">Best win rate as ${esc(role)} — ${(c0.w / c0.n * 100).toFixed(1)}% over ${c0.n.toLocaleString()} games.</div>`;
+        })()}
+        ${(() => {
+          // ── HIGH-RANK (Gold+) view ── the same counts for players Gold or higher
+          // on the ranked ladder (predgg-augments goldPlus). Pick shares always
+          // show; "Gold+ wins more with X" only when X beats our pick INSIDE the
+          // band with 50+ games each and p < .05 (two-proportion z). Current rank,
+          // not rank at match time, and winners climb, so only within-band
+          // comparisons are made — never Gold+ vs all ranks.
+          const G = cell.goldPlus;
+          if (!G || !G.games) return '';
+          const z = (x, y) => { const p1 = x.w / x.n, p2 = y.w / y.n, p = (x.w + y.w) / (x.n + y.n); const se = Math.sqrt(p * (1 - p) * (1 / x.n + 1 / y.n)); return se ? (p1 - p2) / se : 0; };
+          const MIN = 50;
+          const row = (label, list, ourKey, keyOf, nameOf) => {
+            if (!list || !list.length) return '';
+            const tot = list.reduce((t, x) => t + x.n, 0) || 1;
+            const top = [...list].sort((x, y) => y.n - x.n)[0];
+            const ours = ourKey ? list.find((x) => keyOf(x) === ourKey) : null;
+            const same = ours && keyOf(top) === keyOf(ours);
+            const challenger = ours && ours.n >= MIN ? [...list].filter((x) => x.n >= MIN && keyOf(x) !== ourKey).sort((x, y) => y.w / y.n - x.w / x.n)[0] : null;
+            const flag = challenger && z(challenger, ours) >= 1.96
+              ? `<div style="font-size:.7rem;color:var(--gold);margin:.15rem 0 0 0">▲ Gold+ wins more with <b>${esc(nameOf(challenger))}</b>: ${(challenger.w / challenger.n * 100).toFixed(1)}% over ${challenger.n} vs our pick ${(ours.w / ours.n * 100).toFixed(1)}% over ${ours.n}</div>` : '';
+            return `<div style="padding:.3rem 0;border-bottom:1px dashed var(--border)">
+              <div style="display:flex;gap:.5rem;align-items:baseline;flex-wrap:wrap;font-size:.8rem">
+                <b style="font-size:.64rem;letter-spacing:.06em;color:var(--text-2);min-width:4.6rem">${label}</b>
+                <span>Gold+ run <b>${esc(nameOf(top))}</b> <span style="color:var(--text-2)">${Math.round(top.n / tot * 100)}% of picks · ${(top.w / top.n * 100).toFixed(1)}% win · ${top.n} games</span></span>
+                <span style="margin-left:auto;font-size:.7rem;${same ? 'color:var(--green)' : 'color:var(--text-2)'}">${same ? '✓ same as our pick' : ours ? `our pick ${esc(nameOf(ours))}: ${Math.round(ours.n / tot * 100)}% of Gold+ picks` : ourKey ? 'our pick: not seen in Gold+' : ''}</span>
+              </div>${flag}</div>`;
+          };
+          const ourAug = ranked[0] ? ranked[0].id : null;
+          const ourEt = ets[0] ? ets[0].name : null;
+          const crs0 = (cell.crests || []).filter((c) => c.n >= floor).sort((x, y) => (y.w / y.n) - (x.w / x.n))[0];
+          const since = String(AUGS.goldFrom || '').slice(0, 10);
+          return `
+          <div style="font-size:.74rem;color:var(--text-2);margin:.8rem 0 .3rem" title="Players Gold or higher on the ranked ladder (their current rank, not their rank when the game was played). Players who win climb, so Gold+ win rates run high overall: only compare options within Gold+.">
+            <b style="letter-spacing:.06em">HIGH-RANK (GOLD+)</b> · ${G.games.toLocaleString()} ${esc(role)} games${since ? ` since ${esc(since)}` : ''} · what Gold+ players actually pick
+          </div>
+          ${row('AUGMENT', G.augments, ourAug, (x) => x.id, (x) => x.name)}
+          ${row('ETERNAL', G.eternals, ourEt, (x) => x.name, (x) => x.name)}
+          ${row('CREST', G.crests, crs0 ? crs0.name : null, (x) => x.name, (x) => x.name)}`;
         })()}
         ${(() => {
           // ── ONE merged kit-math (THEORY) block at the very bottom of this card ──

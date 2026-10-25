@@ -91,7 +91,7 @@ function window(games: PgMatch[], roster: Map<string, string>) {
       slug, name: a.name, games: a.n, wins: a.w, losses: a.n - a.w,
       winRate: r3(a.w / a.n), baseline: r3(loo), shrunkWinRate: r3(shrunk),
       threat: Math.round(100 * (a.n / N) * (loo - shrunk) * 100) / 100,
-      mainRole: Object.entries(a.roles).sort(([, x], [, y]) => y - x)[0][0],
+      mainRole: Object.entries(a.roles).sort(([, x], [, y]) => y - x)[0]?.[0] ?? '',
       kda: { kills: r3(a.kills / a.n), deaths: r3(a.deaths / a.n), assists: r3(a.assists / a.n) },
       kd: a.deaths ? r3(a.kills / a.deaths) : null,
       killsOnUsPerGame: r3(a.killsOnUs / a.n),

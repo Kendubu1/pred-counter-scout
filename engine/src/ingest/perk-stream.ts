@@ -35,7 +35,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { hasCredentials } from './predgg.js';
+import { gql, hasCredentials, currentRatingId } from './predgg.js';
 import { epoch, fetchPage, loadPerkCatalog, loadoutOf, sleep, type PerkInfo } from './match-stream.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -54,7 +54,10 @@ interface EternalCell extends NW { minor1: Record<string, NW>; minor2: Record<st
 // cores: the first three distinct completed items (Epic passives) in PURCHASE
 // order, keyed "slug|slug|slug" — the same definition pred.gg's gated coreBuild
 // used, rebuilt from each player's incomeData.transactions.
-interface RoleCell extends NW { augments: Record<string, NW>; eternals: Record<string, EternalCell>; crests: Record<string, NW>; cores?: Record<string, NW> }
+interface CountCell extends NW { augments: Record<string, NW>; eternals: Record<string, EternalCell>; crests: Record<string, NW>; cores?: Record<string, NW> }
+// gold: the same counts for rows whose player is Gold or higher on the ranked
+// ladder (added 2026-10-25, counted from goldFrom onward).
+interface RoleCell extends CountCell { gold?: CountCell }
 interface State {
   source: string; note: string; generatedAt: string;
   patch: string | null; patchReleasedAt: string;
@@ -65,10 +68,41 @@ interface State {
   /** Core builds were added on 2026-10-16, after the window opened: they are
    *  counted from this cursor onward, so their sample is smaller than the perks'. */
   coresFrom?: string;
+  /** Gold+ sub-counts started here (2026-10-25), so their window is shorter. */
+  goldFrom?: string;
+  ladder?: { fetchedAt: string; ratingId: string; goldPlusPlayers: number; ladderPlayers: number };
   heroes: Record<string, Record<string, RoleCell>>;
 }
 
 const bump = (o: Record<string, NW>, k: string, won: boolean) => { const c = (o[k] ??= { n: 0, w: 0 }); c.n++; if (won) c.w++; };
+
+// RANK BAND: stream rows carry no rank, but playerId is the pred.gg player
+// uuid, and the ranked ladder (leaderboardPaginated, 500 per page, sorted by
+// points) lists every placed player with their rank. Paging until the first
+// sub-Gold row yields the Gold+ set: ~28k players in ~60 calls. It is the
+// player's CURRENT rank, not their rank when the match was played; within one
+// patch that is a fair proxy, but winners climb, so Gold+ win rates read high
+// overall — compare options WITHIN the band only.
+const GOLD_TIER = 2;
+async function goldPlusPlayers(): Promise<{ ids: Set<string>; ratingId: string; ladderPlayers: number }> {
+  const ratingId = await currentRatingId();
+  const ids = new Set<string>();
+  let total = 0;
+  for (let offset = 0; ; offset += 500) {
+    const d = await gql<{ leaderboardPaginated: { totalCount: number; results: { rank: { tierIdx: number } | null; player: { uuid: string | null } | null }[] } }>(
+      `{ leaderboardPaginated(ratingId: "${ratingId}", limit: 500, offset: ${offset}) { totalCount results { rank { tierIdx } player { uuid } } } }`);
+    total = d.leaderboardPaginated.totalCount;
+    const rows = d.leaderboardPaginated.results;
+    let below = false;
+    for (const r of rows) {
+      if ((r.rank?.tierIdx ?? -1) < GOLD_TIER) { below = true; break; }
+      if (r.player?.uuid) ids.add(r.player.uuid);
+    }
+    if (below || rows.length < 500 || offset + 500 >= total) break;
+    await sleep(300);
+  }
+  return { ids, ratingId, ladderPlayers: total };
+}
 
 async function main() {
   const meta = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/META.json'), 'utf8')) as { patch?: string; patchReleasedAt?: string };
@@ -110,7 +144,11 @@ async function main() {
       }
     : prev!;
   st.coresFrom ??= new Date(st.cursor * 1000).toISOString();
+  st.goldFrom ??= new Date(st.cursor * 1000).toISOString();
   if (fresh && prev) console.log(`patch changed (${prev.patch} -> ${meta.patch}); starting a fresh window`);
+  const ladder = await goldPlusPlayers();
+  st.ladder = { fetchedAt: new Date().toISOString(), ratingId: ladder.ratingId, goldPlusPlayers: ladder.ids.size, ladderPlayers: ladder.ladderPlayers };
+  console.log(`ranked ladder: ${ladder.ids.size.toLocaleString()} Gold+ of ${ladder.ladderPlayers.toLocaleString()} placed players`);
   console.log(`match stream from ${new Date(st.cursor * 1000).toISOString()} (${fresh ? 'fresh' : 'resuming'}), up to ${MAX_REQUESTS} requests`);
 
   const unknownHeroes = new Set(st.unknown.heroes), unknownPerks = new Set(st.unknown.perks);
@@ -145,17 +183,7 @@ async function main() {
         if (!slug) { unknownHeroes.add(String(p.heroName)); continue; }
         const won = p.teamId === m.winningTeam;
         const cell = ((st.heroes[slug] ??= {})[role] ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} });
-        cell.n++; if (won) cell.w++;
         const lo = loadoutOf(p, perkByName, crestByGameId, unknownPerks);
-        if (lo.augment) bump(cell.augments, lo.augment.id, won);
-        if (lo.eternal) {
-          const e = (cell.eternals[lo.eternal] ??= { n: 0, w: 0, minor1: {}, minor2: {}, pairs: {} });
-          e.n++; if (won) e.w++;
-          if (lo.minor1) bump(e.minor1, lo.minor1, won);
-          if (lo.minor2) bump(e.minor2, lo.minor2, won);
-          if (lo.minor1 && lo.minor2) bump(e.pairs, `${lo.minor1}|${lo.minor2}`, won);
-        }
-        if (lo.crest) bump(cell.crests, lo.crest, won);
         // transactionType 10 = purchase (11 = starting items, others = sells/undos).
         const core: string[] = [];
         for (const t of p.incomeData?.transactions ?? []) {
@@ -164,7 +192,21 @@ async function main() {
           if (it && !core.includes(it.slug)) core.push(it.slug);
           if (core.length === 3) break;
         }
-        if (core.length === 3) bump((cell.cores ??= {}), core.join('|'), won);
+        const count = (c: CountCell) => {
+          c.n++; if (won) c.w++;
+          if (lo.augment) bump(c.augments, lo.augment.id, won);
+          if (lo.eternal) {
+            const e = (c.eternals[lo.eternal] ??= { n: 0, w: 0, minor1: {}, minor2: {}, pairs: {} });
+            e.n++; if (won) e.w++;
+            if (lo.minor1) bump(e.minor1, lo.minor1, won);
+            if (lo.minor2) bump(e.minor2, lo.minor2, won);
+            if (lo.minor1 && lo.minor2) bump(e.pairs, `${lo.minor1}|${lo.minor2}`, won);
+          }
+          if (lo.crest) bump(c.crests, lo.crest, won);
+          if (core.length === 3) bump((c.cores ??= {}), core.join('|'), won);
+        };
+        count(cell);
+        if (ladder.ids.has(String(p.playerId))) count((cell.gold ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
       }
     }
     if (!page.length) break;
@@ -184,26 +226,34 @@ async function main() {
   // Consumer file, same shape the simpleBuild pull wrote, now current-patch.
   const sorted = <T extends NW>(o: Record<string, T>) => Object.entries(o).sort((a, b) => b[1].n - a[1].n);
   const out: Record<string, Record<string, unknown>> = {};
+  const cellOut = (c: CountCell) => ({
+    games: c.n, wins: c.w,
+    augments: sorted(c.augments).map(([id, v]) => ({ id, name: augCatalog[id]?.name ?? id, n: v.n, w: v.w })),
+    eternals: sorted(c.eternals).map(([name, e]) => ({
+      name, n: e.n, w: e.w,
+      minor1: sorted(e.minor1).map(([m, v]) => ({ name: m, n: v.n, w: v.w })),
+      minor2: sorted(e.minor2).map(([m, v]) => ({ name: m, n: v.n, w: v.w })),
+      pairs: sorted(e.pairs).slice(0, 5).map(([k, v]) => { const [a, b] = k.split('|'); return { minor1: a, minor2: b, n: v.n, w: v.w }; }),
+    })),
+    crests: sorted(c.crests).map(([name, v]) => ({ name, n: v.n, w: v.w })),
+  });
+  // Gold+ cells ship once they hold this many games; thinner ones stay in state.
+  const MIN_GOLD_GAMES = 30;
   for (const [slug, roles] of Object.entries(st.heroes)) {
     for (const [role, c] of Object.entries(roles)) {
       if (c.n < MIN_ROLE_GAMES) continue;
       (out[slug] ??= {})[role] = {
-        games: c.n, wins: c.w,
-        augments: sorted(c.augments).map(([id, v]) => ({ id, name: augCatalog[id]?.name ?? id, n: v.n, w: v.w })),
-        eternals: sorted(c.eternals).map(([name, e]) => ({
-          name, n: e.n, w: e.w,
-          minor1: sorted(e.minor1).map(([m, v]) => ({ name: m, n: v.n, w: v.w })),
-          minor2: sorted(e.minor2).map(([m, v]) => ({ name: m, n: v.n, w: v.w })),
-          pairs: sorted(e.pairs).slice(0, 5).map(([k, v]) => { const [a, b] = k.split('|'); return { minor1: a, minor2: b, n: v.n, w: v.w }; }),
-        })),
-        crests: sorted(c.crests).map(([name, v]) => ({ name, n: v.n, w: v.w })),
+        ...cellOut(c),
+        ...(c.gold && c.gold.n >= MIN_GOLD_GAMES ? { goldPlus: cellOut(c.gold) } : {}),
       };
     }
   }
   writeFileSync(AUG_OUT, JSON.stringify({
     generatedAt: st.generatedAt,
     source: `pred.gg public match stream (get-matches-since), RANKED, patch ${meta.patch ?? '?'} window ${st.window.from.slice(0, 16)} -> ${st.window.to.slice(0, 16)}, ${st.window.rankedMatches.toLocaleString()} ranked matches; (hero, role) cells with ${MIN_ROLE_GAMES}+ games. Counted by npm run perks from data/aggregates/perk-stream.json.`,
-    note: 'n = games, w = wins. eternals[].minor1/minor2 = minor-slot picks under that Eternal; pairs = the most-played minor combinations.',
+    note: 'n = games, w = wins. eternals[].minor1/minor2 = minor-slot picks under that Eternal; pairs = the most-played minor combinations. goldPlus = the same counts for players Gold or higher on the ranked ladder (current rank, not rank at match time; winners climb, so compare options within the band only), counted from goldFrom, shipped at 30+ games.',
+    goldFrom: st.goldFrom,
+    ladder: st.ladder,
     catalog: augCatalog,
     heroes: out,
   }, null, 1));
@@ -234,12 +284,15 @@ async function main() {
   };
   const buildHeroes: Record<string, unknown[]> = {};
   const buildByRole: Record<string, Record<string, unknown[]>> = {};
+  const goldBuildByRole: Record<string, Record<string, unknown[]>> = {};
   for (const [slug, roles] of Object.entries(st.heroes)) {
     const all: Record<string, NW> = {};
     for (const [role, c] of Object.entries(roles)) {
       for (const [k, v] of Object.entries(c.cores ?? {})) { const a = (all[k] ??= { n: 0, w: 0 }); a.n += v.n; a.w += v.w; }
       const rows = coreRowsOrSets(c.cores ?? {});
       if (rows.length) (buildByRole[slug] ??= {})[role] = rows;
+      const goldRows = coreRowsOrSets(c.gold?.cores ?? {});
+      if (goldRows.length) (goldBuildByRole[slug] ??= {})[role] = goldRows;
     }
     const rows = coreRowsOrSets(all);
     if (rows.length) buildHeroes[slug] = rows;
@@ -249,6 +302,8 @@ async function main() {
     source: `pred.gg public match stream (get-matches-since), RANKED, patch ${meta.patch ?? '?'}: ordered 3-item cores (first three completed Epic items by purchase time; anyOrder rows group a set whose orders were each under the floor), ${MIN_CORE_GAMES}+ games each, counted ${String(st.coresFrom).slice(0, 16)} -> ${st.window.to.slice(0, 16)}; hero-wide + per-role. Counted by npm run perks.`,
     heroes: buildHeroes,
     byRole: buildByRole,
+    goldFrom: st.goldFrom,
+    goldByRole: goldBuildByRole,
   }, null, 1));
 
   const cells = Object.values(out).reduce((t, r) => t + Object.keys(r).length, 0);

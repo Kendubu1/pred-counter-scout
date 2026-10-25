@@ -86,6 +86,11 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    committed cursor in data/aggregates/perk-stream.json (~1,000 requests a day;
    a new patch starts a fresh window). Rewrites predgg-augments.json and
    predgg-builds.json (core builds from each player's purchase order).
+   Since 2026-10-25 perks also pages the ranked ladder first (~45 GraphQL
+   calls) to tag Gold+ players: every hero-role cell keeps a `gold` sub-count,
+   shipped as `goldPlus` in predgg-augments.json and `goldByRole` cores in
+   predgg-builds.json, and shown as the hero page's HIGH-RANK (GOLD+) line.
+   It is CURRENT rank, not rank at match time; compare options within the band.
    Then `npm run aggregate && npm run matchups:feed` — the pred.gg match samples
    (gold curves + item play rates; same-role head-to-head lanes, resumed
    incrementally inside the current patch family). Then `npm run checkpoints`

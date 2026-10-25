@@ -160,6 +160,8 @@ const RoleView = z.object({
   }),
   metaBuilds: z.array(z.object({
     anyOrder: z.boolean().optional(),
+    otherOrderGames: z.number().optional(),
+    shareOfCores: z.number().optional(),
     title: z.string(),
     items: z.array(z.object({ name: z.string(), slug: z.string().nullable() })),
     n: z.number(),
@@ -620,7 +622,24 @@ function buildRoleView(
   // role you're viewing, e.g. support Argus gets tank-support cores, not his
   // midlane mage cores); fall back to hero-wide evidence when a role has none.
   const pgBuilds = loadPredggBuilds();
-  const evidence = pgBuilds?.byRole?.[kit.slug]?.[role] ?? pgBuilds?.heroes[kit.slug] ?? [];
+  const rawEvidence = pgBuilds?.byRole?.[kit.slug]?.[role] ?? pgBuilds?.heroes[kit.slug] ?? [];
+  // One build per item SET: the same three items bought in another order used
+  // to ship as a second, near-identical build (Belica showed Combustion > Noxia
+  // > Wraith Leggings and Combustion > Wraith Leggings > Noxia as two tabs).
+  // Orders are pooled into the set; the most-played order is the one shown and
+  // otherOrderGames says how many games bought it differently. Sorted by games,
+  // so build 1 is what the lane actually plays.
+  const bySet = new Map<string, (typeof rawEvidence)[number] & { otherOrderGames: number }>();
+  for (const c of rawEvidence) {
+    const key = c.coreSlugs.map((s, i) => s ?? c.core[i]).slice().sort().join('|');
+    const prev = bySet.get(key);
+    if (!prev) { bySet.set(key, { ...c, otherOrderGames: 0 }); continue; }
+    const keepPrev = prev.n >= c.n;
+    const head = keepPrev ? prev : { ...c, otherOrderGames: 0 };
+    bySet.set(key, { ...head, n: prev.n + c.n, w: prev.w + c.w, otherOrderGames: prev.otherOrderGames + (keepPrev ? c.n : prev.n - prev.otherOrderGames) });
+  }
+  const evidence = [...bySet.values()].sort((a, b) => b.n - a.n);
+  const coreGamesTotal = evidence.reduce((s, c) => s + c.n, 0);
   const cores = evidence.slice(0, 5);
   const coreCells = cores.map((c) => ({ n: c.n, w: c.w }));
   const coreMean = coreCells.reduce((s, c) => s + c.w, 0) / Math.max(coreCells.reduce((s, c) => s + c.n, 0), 1);
@@ -697,9 +716,15 @@ function buildRoleView(
       : 'Meta Core';
     return {
       title,
-      items: c.core.map((name, i) => ({ name, slug: c.coreSlugs[i] ?? null })),
+      // Display names (the counted core carries internal ones: WraithLeggings).
+      items: c.core.map((name, i) => ({
+        name: (c.coreSlugs[i] && data.itemsBySlug.get(c.coreSlugs[i]!)?.name) ?? name.replace(/([a-z])([A-Z])/g, '$1 $2'),
+        slug: c.coreSlugs[i] ?? null,
+      })),
       ...(c.anyOrder ? {anyOrder: true} : {}),
       n: c.n,
+      ...(c.otherOrderGames ? { otherOrderGames: c.otherOrderGames } : {}),
+      shareOfCores: coreGamesTotal ? Math.round((c.n / coreGamesTotal) * 1000) / 1000 : 0,
       shrunkWr: Math.round(shrunkWr * 1000) / 1000,
       coreGold: gold,
       spikeMinute,

@@ -68,6 +68,24 @@ describe('hero artifacts (Concept A engine stage)', () => {
     expect(index.patch).toBe(cal.patch);
   });
 
+  it('meta builds: one entry per item set, most played first, display names', () => {
+    // 2026-10-25: 33 of 157 lane views listed one item set twice (two buy orders)
+    // and the page defaulted to a 2%-of-games core over the lane's real build.
+    const dir = path.join(ROOT, 'data/artifacts');
+    const bad: string[] = [];
+    for (const f of readdirSync(dir).filter((x) => x.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json'].includes(x))) {
+      const a = JSON.parse(readFileSync(path.join(dir, f), 'utf8'));
+      for (const v of [a, ...(a.roles ?? [])]) {
+        const mb: { items: { name: string; slug: string | null }[]; n: number }[] = v.metaBuilds ?? [];
+        const sets = mb.map((m) => m.items.map((i) => i.slug ?? i.name).sort().join('|'));
+        if (new Set(sets).size !== sets.length) bad.push(`${f}/${v.role}: duplicate item set`);
+        for (let i = 1; i < mb.length; i++) if (mb[i - 1]!.n < mb[i]!.n) bad.push(`${f}/${v.role}: not sorted by games`);
+        for (const m of mb) for (const it of m.items) if (/[a-z][A-Z]/.test(it.name)) bad.push(`${f}/${v.role}: internal item name ${it.name}`);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
   it('ban board: all ranks + every rank band, sorted, rates in range, same patch as the meta board', () => {
     const p = path.join(ROOT, 'data/artifacts/bans.json');
     if (!existsSync(p)) return; // ships only once npm run bans has run
