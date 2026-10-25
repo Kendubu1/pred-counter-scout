@@ -9,7 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { completedItems, type LoadedData } from './data.js';
 import { archetypeLabel, buildTitle, generateBuilds, headlineObjective, type ObjKey } from './search.js';
-import { classifyAugment, kitPlaystyle, laneTopAugment, lanesFor, playstyleObjectives } from './playstyle.js';
+import { classifyAugment, kitPlaystyle, laneTopAugment, lanesFor, playstyleObjectives, lanesByGames } from './playstyle.js';
 import { combatDamage, evaluateBuild, itemTotals, loadCalibration, unverifiedConstants, type Calibration } from './sim.js';
 import { allEternalMinors, rankAugments, rankBlessings, selectEternalLoadout } from './eternals.js';
 import { heroGames, itemPlayRate, loadAggregates } from './aggregates.js';
@@ -830,12 +830,15 @@ function buildRoleView(
   });
 }
 
-/** Which roles a hero gets a full build for: its declared roles plus any lane it
- *  has real augment evidence in (the flex the field actually plays), primary
- *  first, deduped and capped so we don't generate builds for noise lanes. */
+/** Which roles a hero gets a full build for: the primary role first, then the
+ *  lanes the field ACTUALLY plays, by games, capped at three. Declared roles only
+ *  fill in when the hero has no field lanes yet (a brand-new hero). Until
+ *  2026-10-25 declared roles came before field lanes, so Lt. Belica got a carry
+ *  page with no carry data and no offlane page despite 301 offlane games. */
 function flexRolesFor(kit: HeroKit): string[] {
   const primary = kit.roles[0] ?? 'midlane';
-  const ordered = [primary, ...kit.roles, ...lanesFor(kit.slug)];
+  const field = lanesByGames(kit.slug).map((l) => l.lane);
+  const ordered = [primary, ...(field.length ? field : kit.roles)];
   const seen = new Set<string>();
   const out: string[] = [];
   for (const r of ordered) {
