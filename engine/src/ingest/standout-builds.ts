@@ -75,6 +75,36 @@ const spread = (rs: { p: StandoutPlayer; film: StandoutFilm }[]) => {
 };
 const BUILD_MIN_PLAYERS = 3, BUILD_MAX_TOP_SHARE = 60;
 
+/** The same piece in every ranked 1.17.2 game pred.gg streamed (all players,
+ *  all ranks): win rate with vs without it on this hero-role. Win rate, not our
+ *  performance score, so it checks direction only. Core items compare against
+ *  the other listed top cores, not every game. agrees = same sign and >= 1
+ *  point apart on 200+ games each side; otherwise unclear. */
+function publicCheck(hero: string, role: string, kind: string, value: string, delta: number) {
+  const cell = augData.heroes?.[hero]?.[role];
+  if (!cell) return null;
+  const sum = (xs: NW[]) => ({ n: xs.reduce((a, x) => a + x.n, 0), w: xs.reduce((a, x) => a + x.w, 0) });
+  let on: NW | undefined, off: NW[] = [];
+  const pick = (xs: any[] = [], match: (x: any) => boolean) => { on = xs.find(match); off = xs.filter((x) => !match(x)); };
+  if (kind === 'augment') pick(cell.augments, (a) => a.name === value);
+  else if (kind === 'eternal') pick(cell.eternals, (e) => e.name === value);
+  else if (kind === 'crest') pick(cell.crests, (c) => c.name === value);
+  else if (kind === 'minors') {
+    const [et, pair] = value.split(': '); const [m1, m2] = (pair ?? '').split(' + ');
+    pick(cell.eternals?.find((e: any) => e.name === et)?.pairs, (x) => x.minor1 === m1 && x.minor2 === m2);
+  } else if (kind === 'coreItem') {
+    const cores: { coreSlugs: string[]; n: number; w: number }[] = buildData.byRole?.[hero]?.[role] ?? [];
+    const has = cores.filter((c) => c.coreSlugs.includes(value));
+    on = has.length ? sum(has) : undefined; off = cores.filter((c) => !c.coreSlugs.includes(value));
+  }
+  const without = sum(off);
+  if (!on || !on.n) return { patch: META_PATCH, with: null, without: without.n ? { n: without.n, wr: pct(without.w, without.n) } : null, agrees: 'unclear' };
+  const wrOn = (on.w / on.n) * 100, wrOff = without.n ? (without.w / without.n) * 100 : null;
+  const diff = wrOff == null ? null : wrOn - wrOff;
+  const agrees = diff == null || on.n < 200 || without.n < 200 || Math.abs(diff) < 1 ? 'unclear' : Math.sign(diff) === Math.sign(delta) ? 'yes' : 'no';
+  return { patch: META_PATCH, with: { n: on.n, wr: r2(wrOn) }, without: without.n ? { n: without.n, wr: r2(wrOff!) } : null, wrDiff: diff == null ? null : r2(diff), agrees };
+}
+
 const trends: any[] = [];
 for (const [k, rs] of byHR) {
   if (rs.length < 6) continue;
@@ -93,6 +123,7 @@ for (const [k, rs] of byHR) {
       with: { n: w.length, ...spread(w), avgScore: r2(mw), standouts: w.filter((r) => r.score >= STANDOUT_Z).length, winrate: pct(winsW, w.length) },
       without: { n: wo.length, avgScore: r2(mwo), standouts: wo.filter((r) => r.score >= STANDOUT_Z).length, winrate: pct(winsWo, wo.length) },
       delta: r2(delta), t: r2(tStat),
+      public: publicCheck(hero!, role!, t.kind, t.value, delta),
     });
   }
 }
@@ -161,9 +192,14 @@ const standouts = scored.filter((s) => s.score >= STANDOUT_Z).sort((a, b) => b.s
   const offMeta = meta && ((meta.augmentSharePct ?? 0) < 15 || (meta.eternalSharePct ?? 0) < 15 || !meta.coreIsMeta);
   // A trend spread over several players is the build; one carried by a single
   // player (usually a squad main on their comfort setup) is that player.
-  const buildBacked = backed.filter((b) => b.players >= BUILD_MIN_PLAYERS && b.topPlayerShare <= BUILD_MAX_TOP_SHARE);
+  // ...and the public 1.17.2 games must not point the other way.
+  const publicSays = (b: { kind: string; value: string; delta: number }) => publicCheck(p.heroSlug, p.role, b.kind, b.value, b.delta)?.agrees ?? 'unclear';
+  const spreadOk = backed.filter((b) => b.players >= BUILD_MIN_PLAYERS && b.topPlayerShare <= BUILD_MAX_TOP_SHARE);
+  const buildBacked = spreadOk.filter((b) => publicSays(b) !== 'no');
   if (buildBacked.length) factors.push('build-trend');
-  if (backed.length > buildBacked.length) factors.push('one-player-trend');
+  if (buildBacked.some((b) => publicSays(b) === 'yes')) factors.push('public-confirms');
+  if (spreadOk.length > buildBacked.length) factors.push('public-contradicts');
+  if (backed.length > spreadOk.length) factors.push('one-player-trend');
   if (offMeta) factors.push('off-meta-build');
   if (laneWr != null ? laneWr >= 52.5 : laneEdge === 'favored') factors.push('favored-lane');
   if (laneWr != null ? laneWr <= 47.5 : laneEdge === 'unfavored') factors.push('unfavored-lane');
@@ -184,7 +220,7 @@ const standouts = scored.filter((s) => s.score >= STANDOUT_Z).sort((a, b) => b.s
     killDiff: teamKills - foeKills, opponent, laneWr, laneEdge,
     build: { core: coreOf(p), items: p.items.map((i) => i.slug), ...(p.loadout ?? {}) },
     meta, experience: p.experience ?? null,
-    buildTrends: buildBacked.map((t) => `${t.kind}: ${t.value}`),
+    buildTrends: buildBacked.map((t) => `${t.kind}: ${t.value}${publicSays(t) === 'yes' ? ' (public 1.17.2 agrees)' : ''}`),
     trendSupport: backed.map((t) => `${t.kind}: ${t.value} (+${t.delta} over ${t.n} other games, ${t.players} players, top ${t.topPlayerShare}%)`),
     factors, verdict,
   };
@@ -207,7 +243,7 @@ const report = {
     score: `Role-weighted mean of per-metric z-scores (capped ±3). Each metric is compared with the hero-role mean from the other films (leave-one-out), shrunk toward the role mean with k=${SHRINK_K} games, divided by the role-wide spread. pred.gg performanceScore is 0 on every film row, so it is not used.`,
     weights: ROLE_WEIGHTS,
     standoutBar: STANDOUT_Z,
-    verdict: "build = a loadout piece this player ran also scores higher on this hero-role in the OTHER films (this game left out; delta >= 0.4 and t >= 2, >=3 games each side) AND that trend spans >= 3 players with none over 60% of its games — otherwise it is one player's comfort setup and counts as player; team = teammates also scored >= 0.5 or the team won kills by 15+; matchup = pred.gg lane winrate >= 52.5% for their side (the engine matrix edge is listed as a factor only); player = none of those. Heuristic: a lead to check in the film, not proof.",
+    verdict: "build = a loadout piece this player ran also scores higher on this hero-role in the OTHER films (this game left out; delta >= 0.4 and t >= 2, >=3 games each side) AND that trend spans >= 3 players with none over 60% of its games — otherwise it is one player's comfort setup and counts as player; and the public 1.17.2 win rate with vs without that piece (predgg-augments/builds, all ranked players) must not point the other way (trends[].public); team = teammates also scored >= 0.5 or the team won kills by 15+; matchup = pred.gg lane winrate >= 52.5% for their side (the engine matrix edge is listed as a factor only); player = none of those. Heuristic: a lead to check in the film, not proof.",
     caveats: 'Baselines come from our own films (182 games) across patches since April, against our squad\'s ranked bracket; most hero-roles have under 20 games. Treat trends with n < 5 as leads.',
   },
   films: films.length, playerRows: rows.length,

@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-25T17:47:48.539Z",
+ "generatedAt": "2026-10-25T18:30:07.678Z",
  "source": "data/postgame films (our squad ranked games, both teams), zero-API; meta shares from predgg-augments.json / predgg-builds.json (1.17.2)",
  "method": {
   "score": "Role-weighted mean of per-metric z-scores (capped ±3). Each metric is compared with the hero-role mean from the other films (leave-one-out), shrunk toward the role mean with k=10 games, divided by the role-wide spread. pred.gg performanceScore is 0 on every film row, so it is not used.",
@@ -42,7 +42,7 @@
    }
   },
   "standoutBar": 1,
-  "verdict": "build = a loadout piece this player ran also scores higher on this hero-role in the OTHER films (this game left out; delta >= 0.4 and t >= 2, >=3 games each side) AND that trend spans >= 3 players with none over 60% of its games — otherwise it is one player's comfort setup and counts as player; team = teammates also scored >= 0.5 or the team won kills by 15+; matchup = pred.gg lane winrate >= 52.5% for their side (the engine matrix edge is listed as a factor only); player = none of those. Heuristic: a lead to check in the film, not proof.",
+  "verdict": "build = a loadout piece this player ran also scores higher on this hero-role in the OTHER films (this game left out; delta >= 0.4 and t >= 2, >=3 games each side) AND that trend spans >= 3 players with none over 60% of its games — otherwise it is one player's comfort setup and counts as player; and the public 1.17.2 win rate with vs without that piece (predgg-augments/builds, all ranked players) must not point the other way (trends[].public); team = teammates also scored >= 0.5 or the team won kills by 15+; matchup = pred.gg lane winrate >= 52.5% for their side (the engine matrix edge is listed as a factor only); player = none of those. Heuristic: a lead to check in the film, not proof.",
   "caveats": "Baselines come from our own films (182 games) across patches since April, against our squad's ranked bracket; most hero-roles have under 20 games. Treat trends with n < 5 as leads."
  },
  "films": 182,
@@ -291,7 +291,7 @@
     }
    ],
    "pieces": [
-    "eternal: Thraex",
+    "eternal: Thraex (public 1.17.2 agrees)",
     "coreItem: tainted-rounds"
    ]
   },
@@ -473,7 +473,7 @@
    ],
    "pieces": [
     "coreItem: combustion",
-    "coreItem: wraith-leggings"
+    "coreItem: wraith-leggings (public 1.17.2 agrees)"
    ]
   },
   {
@@ -617,8 +617,8 @@
    ],
    "pieces": [
     "eternal: Thraex",
-    "minors: Thraex: Savage Strikes + Ferocity",
-    "crest: Pacifier"
+    "minors: Thraex: Savage Strikes + Ferocity (public 1.17.2 agrees)",
+    "crest: Pacifier (public 1.17.2 agrees)"
    ]
   },
   {
@@ -898,7 +898,7 @@
     }
    ],
    "pieces": [
-    "augment: System Restore"
+    "augment: System Restore (public 1.17.2 agrees)"
    ]
   },
   {
@@ -1010,7 +1010,7 @@
     }
    ],
    "pieces": [
-    "crest: Epoch"
+    "crest: Epoch (public 1.17.2 agrees)"
    ]
   },
   {
@@ -1092,49 +1092,6 @@
    ]
   },
   {
-   "hero": "gadget",
-   "heroName": "Gadget",
-   "role": "midlane",
-   "games": [
-    {
-     "matchId": "768794a7-cdc9-4365-b767-4c70fefc3fb2",
-     "date": "2026-10-19",
-     "patch": "1.17.2",
-     "side": "enemy",
-     "player": "🎮 private",
-     "kda": "6/2/4",
-     "score": 1.5,
-     "won": true,
-     "build": {
-      "core": [
-       "azure-core",
-       "soulbinder",
-       "tainted-scepter"
-      ],
-      "items": [
-       "azure-core",
-       "soulbinder",
-       "tainted-scepter",
-       "megacosm",
-       "entropy"
-      ],
-      "augment": {
-       "id": "45",
-       "name": "Blast Zone"
-      },
-      "eternal": "Aion",
-      "minor1": "Sacrifice",
-      "minor2": "Runic Focus",
-      "crest": "Soulbearer",
-      "crestSlug": "soulbearer"
-     }
-    }
-   ],
-   "pieces": [
-    "augment: Blast Zone"
-   ]
-  },
-  {
    "hero": "revenant",
    "heroName": "Revenant",
    "role": "carry",
@@ -1175,7 +1132,7 @@
     }
    ],
    "pieces": [
-    "augment: Quickdraw"
+    "augment: Quickdraw (public 1.17.2 agrees)"
    ]
   },
   {
@@ -1219,7 +1176,7 @@
     }
    ],
    "pieces": [
-    "coreItem: tainted-guard"
+    "coreItem: tainted-guard (public 1.17.2 agrees)"
    ]
   },
   {
@@ -1307,7 +1264,7 @@
     }
    ],
    "pieces": [
-    "coreItem: storm-breaker"
+    "coreItem: storm-breaker (public 1.17.2 agrees)"
    ]
   }
  ],
@@ -1439,8 +1396,8 @@
    },
    "buildTrends": [
     "eternal: Thraex",
-    "minors: Thraex: Savage Strikes + Ferocity",
-    "crest: Pacifier"
+    "minors: Thraex: Savage Strikes + Ferocity (public 1.17.2 agrees)",
+    "crest: Pacifier (public 1.17.2 agrees)"
    ],
    "trendSupport": [
     "eternal: Thraex (+0.68 over 6 other games, 5 players, top 33%)",
@@ -1449,6 +1406,7 @@
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "team-stomp"
    ],
    "verdict": "build"
@@ -1726,7 +1684,7 @@
    "meta": null,
    "experience": null,
    "buildTrends": [
-    "coreItem: wraith-leggings",
+    "coreItem: wraith-leggings (public 1.17.2 agrees)",
     "coreItem: combustion"
    ],
    "trendSupport": [
@@ -1734,7 +1692,8 @@
     "coreItem: combustion (+0.64 over 32 other games, 28 players, top 9%)"
    ],
    "factors": [
-    "build-trend"
+    "build-trend",
+    "public-confirms"
    ],
    "verdict": "build"
   },
@@ -1855,13 +1814,14 @@
     "avgPerf": 146
    },
    "buildTrends": [
-    "crest: Epoch"
+    "crest: Epoch (public 1.17.2 agrees)"
    ],
    "trendSupport": [
     "crest: Epoch (+0.75 over 15 other games, 11 players, top 33%)"
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "team-stomp",
     "practised"
    ],
@@ -2813,15 +2773,16 @@
    "meta": null,
    "experience": null,
    "buildTrends": [
-    "minors: Thraex: Savage Strikes + Ferocity",
-    "crest: Pacifier"
+    "minors: Thraex: Savage Strikes + Ferocity (public 1.17.2 agrees)",
+    "crest: Pacifier (public 1.17.2 agrees)"
    ],
    "trendSupport": [
     "minors: Thraex: Savage Strikes + Ferocity (+0.96 over 5 other games, 3 players, top 60%)",
     "crest: Pacifier (+0.94 over 27 other games, 16 players, top 37%)"
    ],
    "factors": [
-    "build-trend"
+    "build-trend",
+    "public-confirms"
    ],
    "verdict": "build"
   },
@@ -2884,13 +2845,14 @@
     "avgPerf": 0
    },
    "buildTrends": [
-    "crest: Pacifier"
+    "crest: Pacifier (public 1.17.2 agrees)"
    ],
    "trendSupport": [
     "crest: Pacifier (+0.94 over 27 other games, 17 players, top 33%)"
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "favored-lane",
     "team-stomp",
     "practised"
@@ -2961,17 +2923,15 @@
     "offMetaCoreItems": []
    },
    "experience": null,
-   "buildTrends": [
-    "augment: Blast Zone"
-   ],
+   "buildTrends": [],
    "trendSupport": [
     "augment: Blast Zone (+0.51 over 5 other games, 5 players, top 20%)"
    ],
    "factors": [
-    "build-trend",
+    "public-contradicts",
     "unfavored-lane"
    ],
-   "verdict": "build"
+   "verdict": "player"
   },
   {
    "matchId": "716cbfd6-20e7-4b6c-b03c-ed2f14dcd7c3",
@@ -3104,13 +3064,14 @@
     "avgPerf": 0
    },
    "buildTrends": [
-    "crest: Pacifier"
+    "crest: Pacifier (public 1.17.2 agrees)"
    ],
    "trendSupport": [
     "crest: Pacifier (+0.94 over 27 other games, 16 players, top 37%)"
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "unfavored-lane",
     "practised"
    ],
@@ -3366,7 +3327,7 @@
     "avgPerf": 0
    },
    "buildTrends": [
-    "eternal: Thraex",
+    "eternal: Thraex (public 1.17.2 agrees)",
     "coreItem: tainted-rounds"
    ],
    "trendSupport": [
@@ -3376,6 +3337,7 @@
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "one-player-trend",
     "favored-lane",
     "team-stomp",
@@ -3625,13 +3587,14 @@
     "avgPerf": 138
    },
    "buildTrends": [
-    "augment: System Restore"
+    "augment: System Restore (public 1.17.2 agrees)"
    ],
    "trendSupport": [
     "augment: System Restore (+1.42 over 12 other games, 4 players, top 42%)"
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "unfavored-lane",
     "team-stomp"
    ],
@@ -3849,13 +3812,14 @@
     "avgPerf": 0
    },
    "buildTrends": [
-    "augment: Quickdraw"
+    "augment: Quickdraw (public 1.17.2 agrees)"
    ],
    "trendSupport": [
     "augment: Quickdraw (+0.64 over 10 other games, 9 players, top 20%)"
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "off-meta-build",
     "favored-lane"
    ],
@@ -4332,13 +4296,14 @@
     "avgPerf": 0
    },
    "buildTrends": [
-    "crest: Epoch"
+    "crest: Epoch (public 1.17.2 agrees)"
    ],
    "trendSupport": [
     "crest: Epoch (+0.78 over 15 other games, 11 players, top 33%)"
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "off-meta-build",
     "unfavored-lane",
     "practised"
@@ -4462,13 +4427,14 @@
    "meta": null,
    "experience": null,
    "buildTrends": [
-    "coreItem: tainted-guard"
+    "coreItem: tainted-guard (public 1.17.2 agrees)"
    ],
    "trendSupport": [
     "coreItem: tainted-guard (+0.49 over 5 other games, 5 players, top 20%)"
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "team-stomp"
    ],
    "verdict": "build"
@@ -4531,7 +4497,7 @@
     "avgPerf": 0
    },
    "buildTrends": [
-    "eternal: Thraex"
+    "eternal: Thraex (public 1.17.2 agrees)"
    ],
    "trendSupport": [
     "eternal: Thraex (+0.43 over 26 other games, 12 players, top 58%)",
@@ -4539,6 +4505,7 @@
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "one-player-trend",
     "team-stomp",
     "practised"
@@ -4674,13 +4641,14 @@
    "meta": null,
    "experience": null,
    "buildTrends": [
-    "crest: Epoch"
+    "crest: Epoch (public 1.17.2 agrees)"
    ],
    "trendSupport": [
     "crest: Epoch (+0.78 over 15 other games, 11 players, top 33%)"
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "unfavored-lane"
    ],
    "verdict": "build"
@@ -4882,7 +4850,7 @@
    "meta": null,
    "experience": null,
    "buildTrends": [
-    "coreItem: wraith-leggings",
+    "coreItem: wraith-leggings (public 1.17.2 agrees)",
     "coreItem: combustion"
    ],
    "trendSupport": [
@@ -4891,6 +4859,7 @@
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "lost-anyway"
    ],
    "verdict": "build"
@@ -5897,7 +5866,7 @@
     "avgPerf": 0
    },
    "buildTrends": [
-    "eternal: Thraex",
+    "eternal: Thraex (public 1.17.2 agrees)",
     "coreItem: tainted-rounds"
    ],
    "trendSupport": [
@@ -5907,6 +5876,7 @@
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "one-player-trend",
     "favored-lane",
     "team-stomp",
@@ -6638,7 +6608,7 @@
     "avgPerf": 0
    },
    "buildTrends": [
-    "eternal: Thraex",
+    "eternal: Thraex (public 1.17.2 agrees)",
     "coreItem: tainted-rounds"
    ],
    "trendSupport": [
@@ -6648,6 +6618,7 @@
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "one-player-trend",
     "unfavored-lane",
     "practised"
@@ -7291,13 +7262,14 @@
    "meta": null,
    "experience": null,
    "buildTrends": [
-    "augment: System Restore"
+    "augment: System Restore (public 1.17.2 agrees)"
    ],
    "trendSupport": [
     "augment: System Restore (+1.44 over 12 other games, 4 players, top 42%)"
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "favored-lane",
     "team-stomp"
    ],
@@ -7854,13 +7826,14 @@
     "avgPerf": 142
    },
    "buildTrends": [
-    "augment: System Restore"
+    "augment: System Restore (public 1.17.2 agrees)"
    ],
    "trendSupport": [
     "augment: System Restore (+1.45 over 12 other games, 4 players, top 42%)"
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "favored-lane",
     "lost-anyway"
    ],
@@ -7995,13 +7968,14 @@
     "avgPerf": 0
    },
    "buildTrends": [
-    "coreItem: storm-breaker"
+    "coreItem: storm-breaker (public 1.17.2 agrees)"
    ],
    "trendSupport": [
     "coreItem: storm-breaker (+0.43 over 10 other games, 7 players, top 30%)"
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "off-meta-build",
     "unfavored-lane",
     "lost-anyway",
@@ -8135,13 +8109,14 @@
     "avgPerf": 127
    },
    "buildTrends": [
-    "augment: System Restore"
+    "augment: System Restore (public 1.17.2 agrees)"
    ],
    "trendSupport": [
     "augment: System Restore (+1.45 over 12 other games, 4 players, top 42%)"
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "unfavored-lane",
     "lost-anyway"
    ],
@@ -8357,7 +8332,7 @@
     "avgPerf": 0
    },
    "buildTrends": [
-    "eternal: Thraex",
+    "eternal: Thraex (public 1.17.2 agrees)",
     "coreItem: tainted-rounds"
    ],
    "trendSupport": [
@@ -8367,6 +8342,7 @@
    ],
    "factors": [
     "build-trend",
+    "public-confirms",
     "one-player-trend",
     "favored-lane",
     "practised"
@@ -8406,7 +8382,20 @@
     "winrate": 40
    },
    "delta": 1.49,
-   "t": 5.74
+   "t": 5.74,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 1277,
+     "wr": 51.06
+    },
+    "without": {
+     "n": 2120,
+     "wr": 47.83
+    },
+    "wrDiff": 3.23,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "drongo",
@@ -8440,7 +8429,20 @@
     "winrate": 12.5
    },
    "delta": 0.99,
-   "t": 3.67
+   "t": 3.67,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 9022,
+     "wr": 51.23
+    },
+    "without": {
+     "n": 3729,
+     "wr": 48.97
+    },
+    "wrDiff": 2.26,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "gideon",
@@ -8474,7 +8476,20 @@
     "winrate": 63.2
    },
    "delta": 0.69,
-   "t": 3.52
+   "t": 3.52,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 3356,
+     "wr": 51.64
+    },
+    "without": {
+     "n": 186,
+     "wr": 47.85
+    },
+    "wrDiff": 3.79,
+    "agrees": "unclear"
+   }
   },
   {
    "hero": "crunch",
@@ -8505,7 +8520,20 @@
     "winrate": 66.7
    },
    "delta": -1.44,
-   "t": -3.2
+   "t": -3.2,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 2705,
+     "wr": 51.87
+    },
+    "without": {
+     "n": 2368,
+     "wr": 48.31
+    },
+    "wrDiff": 3.56,
+    "agrees": "no"
+   }
   },
   {
    "hero": "revenant",
@@ -8537,7 +8565,20 @@
     "winrate": 73.3
    },
    "delta": -1.01,
-   "t": -3.85
+   "t": -3.85,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 6003,
+     "wr": 48.33
+    },
+    "without": {
+     "n": 7263,
+     "wr": 52.97
+    },
+    "wrDiff": -4.64,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "revenant",
@@ -8570,7 +8611,17 @@
     "winrate": 66.7
    },
    "delta": -0.81,
-   "t": -2.85
+   "t": -2.85,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 5268,
+     "wr": 56.23
+    },
+    "without": null,
+    "wrDiff": null,
+    "agrees": "unclear"
+   }
   },
   {
    "hero": "iggy-scorch",
@@ -8603,7 +8654,20 @@
     "winrate": 20
    },
    "delta": 0.84,
-   "t": 3.42
+   "t": 3.42,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 6199,
+     "wr": 51.48
+    },
+    "without": {
+     "n": 2268,
+     "wr": 48.46
+    },
+    "wrDiff": 3.02,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "grim-exe",
@@ -8634,7 +8698,20 @@
     "winrate": 38.5
    },
    "delta": -1.49,
-   "t": -5.74
+   "t": -5.74,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 1829,
+     "wr": 47.79
+    },
+    "without": {
+     "n": 1568,
+     "wr": 50.51
+    },
+    "wrDiff": -2.72,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "kira",
@@ -8664,7 +8741,20 @@
     "winrate": 37.5
    },
    "delta": 0.89,
-   "t": 3.93
+   "t": 3.93,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 2311,
+     "wr": 48.12
+    },
+    "without": {
+     "n": 5648,
+     "wr": 48.9
+    },
+    "wrDiff": -0.78,
+    "agrees": "unclear"
+   }
   },
   {
    "hero": "yin",
@@ -8697,7 +8787,20 @@
     "winrate": 33.3
    },
    "delta": 0.77,
-   "t": 3.61
+   "t": 3.61,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 753,
+     "wr": 52.99
+    },
+    "without": {
+     "n": 136,
+     "wr": 51.47
+    },
+    "wrDiff": 1.52,
+    "agrees": "unclear"
+   }
   },
   {
    "hero": "gadget",
@@ -8732,7 +8835,20 @@
     "winrate": 50
    },
    "delta": -0.59,
-   "t": -2.67
+   "t": -2.67,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 7401,
+     "wr": 51.76
+    },
+    "without": {
+     "n": 3439,
+     "wr": 48.71
+    },
+    "wrDiff": 3.06,
+    "agrees": "no"
+   }
   },
   {
    "hero": "lt-belica",
@@ -8761,7 +8877,20 @@
     "winrate": 54.8
    },
    "delta": 0.64,
-   "t": 3.49
+   "t": 3.49,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 872,
+     "wr": 51.61
+    },
+    "without": {
+     "n": 7886,
+     "wr": 49.4
+    },
+    "wrDiff": 2.2,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "sparrow",
@@ -8795,7 +8924,20 @@
     "winrate": 47.4
    },
    "delta": 0.41,
-   "t": 2.59
+   "t": 2.59,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 1242,
+     "wr": 54.19
+    },
+    "without": {
+     "n": 1845,
+     "wr": 55.5
+    },
+    "wrDiff": -1.31,
+    "agrees": "no"
+   }
   },
   {
    "hero": "lt-belica",
@@ -8824,7 +8966,20 @@
     "winrate": 54.1
    },
    "delta": 0.7,
-   "t": 3.5
+   "t": 3.5,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 375,
+     "wr": 54.4
+    },
+    "without": {
+     "n": 393,
+     "wr": 46.82
+    },
+    "wrDiff": 7.58,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "gideon",
@@ -8857,7 +9012,20 @@
     "winrate": 55.9
    },
    "delta": 0.65,
-   "t": 3.22
+   "t": 3.22,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 2518,
+     "wr": 52.3
+    },
+    "without": {
+     "n": 1024,
+     "wr": 49.32
+    },
+    "wrDiff": 2.99,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "sparrow",
@@ -8892,7 +9060,20 @@
     "winrate": 51
    },
    "delta": 0.47,
-   "t": 3.1
+   "t": 3.1,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 1463,
+     "wr": 54.75
+    },
+    "without": {
+     "n": 1624,
+     "wr": 55.17
+    },
+    "wrDiff": -0.42,
+    "agrees": "unclear"
+   }
   },
   {
    "hero": "drongo",
@@ -8926,7 +9107,20 @@
     "winrate": 25
    },
    "delta": 0.55,
-   "t": 2.06
+   "t": 2.06,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 2766,
+     "wr": 53.33
+    },
+    "without": {
+     "n": 228,
+     "wr": 52.19
+    },
+    "wrDiff": 1.13,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "drongo",
@@ -8955,7 +9149,20 @@
     "winrate": 36.7
    },
    "delta": 1.09,
-   "t": 2.88
+   "t": 2.88,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 724,
+     "wr": 52.49
+    },
+    "without": {
+     "n": 279,
+     "wr": 47.31
+    },
+    "wrDiff": 5.17,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "sparrow",
@@ -8987,7 +9194,20 @@
     "winrate": 52.5
    },
    "delta": 0.54,
-   "t": 3.45
+   "t": 3.45,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 1403,
+     "wr": 52.25
+    },
+    "without": {
+     "n": 359,
+     "wr": 59.05
+    },
+    "wrDiff": -6.81,
+    "agrees": "no"
+   }
   },
   {
    "hero": "countess",
@@ -9015,7 +9235,20 @@
     "winrate": 42.9
    },
    "delta": 1.48,
-   "t": 4.03
+   "t": 4.03,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 132,
+     "wr": 51.52
+    },
+    "without": {
+     "n": 387,
+     "wr": 55.81
+    },
+    "wrDiff": -4.3,
+    "agrees": "unclear"
+   }
   },
   {
    "hero": "drongo",
@@ -9043,7 +9276,20 @@
     "winrate": 45.5
    },
    "delta": -1.47,
-   "t": -7.06
+   "t": -7.06,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 389,
+     "wr": 28.53
+    },
+    "without": {
+     "n": 12362,
+     "wr": 51.26
+    },
+    "wrDiff": -22.73,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "lt-belica",
@@ -9074,7 +9320,20 @@
     "winrate": 56
    },
    "delta": 0.47,
-   "t": 2.53
+   "t": 2.53,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 1548,
+     "wr": 52.71
+    },
+    "without": {
+     "n": 556,
+     "wr": 53.24
+    },
+    "wrDiff": -0.52,
+    "agrees": "unclear"
+   }
   },
   {
    "hero": "revenant",
@@ -9104,7 +9363,20 @@
     "winrate": 17.6
    },
    "delta": 0.74,
-   "t": 2.42
+   "t": 2.42,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 4638,
+     "wr": 53.47
+    },
+    "without": {
+     "n": 8628,
+     "wr": 49.47
+    },
+    "wrDiff": 4,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "sparrow",
@@ -9136,7 +9408,20 @@
     "winrate": 51.7
    },
    "delta": 0.47,
-   "t": 2.74
+   "t": 2.74,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 1792,
+     "wr": 53.79
+    },
+    "without": {
+     "n": 16515,
+     "wr": 51.57
+    },
+    "wrDiff": 2.22,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "drongo",
@@ -9165,7 +9450,20 @@
     "winrate": 34.5
    },
    "delta": 0.91,
-   "t": 2.44
+   "t": 2.44,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 1024,
+     "wr": 50.88
+    },
+    "without": {
+     "n": 11727,
+     "wr": 50.54
+    },
+    "wrDiff": 0.34,
+    "agrees": "unclear"
+   }
   },
   {
    "hero": "grim-exe",
@@ -9196,7 +9494,20 @@
     "winrate": 33.3
    },
    "delta": 0.8,
-   "t": 2.08
+   "t": 2.08,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 602,
+     "wr": 51.5
+    },
+    "without": {
+     "n": 2795,
+     "wr": 48.52
+    },
+    "wrDiff": 2.98,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "legion",
@@ -9225,7 +9536,20 @@
     "winrate": 56
    },
    "delta": -1.2,
-   "t": -3.25
+   "t": -3.25,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 669,
+     "wr": 60.24
+    },
+    "without": {
+     "n": 2680,
+     "wr": 54.7
+    },
+    "wrDiff": 5.54,
+    "agrees": "no"
+   }
   },
   {
    "hero": "kira",
@@ -9258,7 +9582,20 @@
     "winrate": 35.7
    },
    "delta": 0.6,
-   "t": 2.27
+   "t": 2.27,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 500,
+     "wr": 50.2
+    },
+    "without": {
+     "n": 1206,
+     "wr": 55.64
+    },
+    "wrDiff": -5.44,
+    "agrees": "no"
+   }
   },
   {
    "hero": "drongo",
@@ -9289,7 +9626,20 @@
     "winrate": 44
    },
    "delta": -0.69,
-   "t": -2.71
+   "t": -2.71,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 3165,
+     "wr": 46.92
+    },
+    "without": {
+     "n": 9586,
+     "wr": 51.77
+    },
+    "wrDiff": -4.85,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "skylar",
@@ -9317,7 +9667,20 @@
     "winrate": 40
    },
    "delta": 1.29,
-   "t": 4.78
+   "t": 4.78,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 1193,
+     "wr": 50.88
+    },
+    "without": {
+     "n": 1636,
+     "wr": 47.74
+    },
+    "wrDiff": 3.14,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "revenant",
@@ -9345,7 +9708,20 @@
     "winrate": 32
    },
    "delta": 1.28,
-   "t": 3.76
+   "t": 3.76,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 1915,
+     "wr": 55.61
+    },
+    "without": {
+     "n": 11351,
+     "wr": 50.07
+    },
+    "wrDiff": 5.55,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "lt-belica",
@@ -9376,7 +9752,20 @@
     "winrate": 46.7
    },
    "delta": 0.45,
-   "t": 2.32
+   "t": 2.32,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 726,
+     "wr": 47.93
+    },
+    "without": {
+     "n": 8032,
+     "wr": 49.78
+    },
+    "wrDiff": -1.84,
+    "agrees": "no"
+   }
   },
   {
    "hero": "the-fey",
@@ -9408,7 +9797,20 @@
     "winrate": 36.8
    },
    "delta": 0.64,
-   "t": 2.38
+   "t": 2.38,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 3944,
+     "wr": 51.93
+    },
+    "without": {
+     "n": 2700,
+     "wr": 50.04
+    },
+    "wrDiff": 1.89,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "gadget",
@@ -9442,7 +9844,20 @@
     "winrate": 43.8
    },
    "delta": 0.48,
-   "t": 2.09
+   "t": 2.09,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 977,
+     "wr": 54.66
+    },
+    "without": {
+     "n": 746,
+     "wr": 51.88
+    },
+    "wrDiff": 2.78,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "revenant",
@@ -9474,7 +9889,20 @@
     "winrate": 55.6
    },
    "delta": -0.66,
-   "t": -2.17
+   "t": -2.17,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 2504,
+     "wr": 44.41
+    },
+    "without": {
+     "n": 10762,
+     "wr": 52.37
+    },
+    "wrDiff": -7.96,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "revenant",
@@ -9506,7 +9934,20 @@
     "winrate": 55.6
    },
    "delta": -0.66,
-   "t": -2.17
+   "t": -2.17,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 2198,
+     "wr": 44.13
+    },
+    "without": {
+     "n": 281,
+     "wr": 46.98
+    },
+    "wrDiff": -2.84,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "serath",
@@ -9540,7 +9981,20 @@
     "winrate": 61.9
    },
    "delta": 0.51,
-   "t": 2.04
+   "t": 2.04,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 1135,
+     "wr": 54.1
+    },
+    "without": {
+     "n": 1520,
+     "wr": 53.03
+    },
+    "wrDiff": 1.07,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "kira",
@@ -9573,7 +10027,20 @@
     "winrate": 56.3
    },
    "delta": -0.56,
-   "t": -2.26
+   "t": -2.26,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 4453,
+     "wr": 49.14
+    },
+    "without": {
+     "n": 3506,
+     "wr": 48.09
+    },
+    "wrDiff": 1.05,
+    "agrees": "no"
+   }
   },
   {
    "hero": "kira",
@@ -9601,7 +10068,20 @@
     "winrate": 41.7
    },
    "delta": 0.87,
-   "t": 3.47
+   "t": 3.47,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 518,
+     "wr": 44.79
+    },
+    "without": {
+     "n": 7441,
+     "wr": 48.95
+    },
+    "wrDiff": -4.16,
+    "agrees": "no"
+   }
   },
   {
    "hero": "kira",
@@ -9629,7 +10109,20 @@
     "winrate": 41.7
    },
    "delta": 0.87,
-   "t": 3.47
+   "t": 3.47,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 329,
+     "wr": 44.98
+    },
+    "without": {
+     "n": 161,
+     "wr": 44.72
+    },
+    "wrDiff": 0.26,
+    "agrees": "unclear"
+   }
   },
   {
    "hero": "iggy-scorch",
@@ -9659,7 +10152,20 @@
     "winrate": 50
    },
    "delta": -0.97,
-   "t": -4.41
+   "t": -4.41,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 1321,
+     "wr": 53.52
+    },
+    "without": {
+     "n": 211,
+     "wr": 48.82
+    },
+    "wrDiff": 4.7,
+    "agrees": "no"
+   }
   },
   {
    "hero": "countess",
@@ -9688,7 +10194,20 @@
     "winrate": 0
    },
    "delta": 0.94,
-   "t": 2.03
+   "t": 2.03,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 775,
+     "wr": 50.58
+    },
+    "without": {
+     "n": 51,
+     "wr": 37.25
+    },
+    "wrDiff": 13.33,
+    "agrees": "unclear"
+   }
   },
   {
    "hero": "zinx",
@@ -9720,7 +10239,20 @@
     "winrate": 25
    },
    "delta": 0.53,
-   "t": 3.31
+   "t": 3.31,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 3687,
+     "wr": 48.44
+    },
+    "without": {
+     "n": 3564,
+     "wr": 46.1
+    },
+    "wrDiff": 2.34,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "sparrow",
@@ -9751,7 +10283,20 @@
     "winrate": 67.6
    },
    "delta": -0.55,
-   "t": -2.21
+   "t": -2.21,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 3621,
+     "wr": 48.38
+    },
+    "without": {
+     "n": 488,
+     "wr": 48.57
+    },
+    "wrDiff": -0.18,
+    "agrees": "unclear"
+   }
   },
   {
    "hero": "sparrow",
@@ -9782,7 +10327,20 @@
     "winrate": 67.1
    },
    "delta": -0.52,
-   "t": -2.23
+   "t": -2.23,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 4132,
+     "wr": 48.43
+    },
+    "without": {
+     "n": 14175,
+     "wr": 52.77
+    },
+    "wrDiff": -4.34,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "aurora",
@@ -9810,7 +10368,20 @@
     "winrate": 71
    },
    "delta": -1.04,
-   "t": -2.14
+   "t": -2.14,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 235,
+     "wr": 40
+    },
+    "without": {
+     "n": 8020,
+     "wr": 54.46
+    },
+    "wrDiff": -14.46,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "murdock",
@@ -9842,7 +10413,20 @@
     "winrate": 50
    },
    "delta": 0.48,
-   "t": 2.78
+   "t": 2.78,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 564,
+     "wr": 46.1
+    },
+    "without": {
+     "n": 1528,
+     "wr": 50.2
+    },
+    "wrDiff": -4.1,
+    "agrees": "no"
+   }
   },
   {
    "hero": "murdock",
@@ -9874,7 +10458,20 @@
     "winrate": 50
    },
    "delta": 0.48,
-   "t": 2.78
+   "t": 2.78,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 525,
+     "wr": 46.86
+    },
+    "without": {
+     "n": 37,
+     "wr": 35.14
+    },
+    "wrDiff": 11.72,
+    "agrees": "unclear"
+   }
   },
   {
    "hero": "mourn",
@@ -9907,7 +10504,20 @@
     "winrate": 36.4
    },
    "delta": 0.63,
-   "t": 2.89
+   "t": 2.89,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 5197,
+     "wr": 53.17
+    },
+    "without": {
+     "n": 4419,
+     "wr": 52.86
+    },
+    "wrDiff": 0.3,
+    "agrees": "unclear"
+   }
   },
   {
    "hero": "maco",
@@ -9938,7 +10548,20 @@
     "winrate": 28.6
    },
    "delta": 0.59,
-   "t": 2.2
+   "t": 2.2,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 1514,
+     "wr": 48.28
+    },
+    "without": {
+     "n": 1823,
+     "wr": 44.82
+    },
+    "wrDiff": 3.47,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "khaimera",
@@ -9967,7 +10590,20 @@
     "winrate": 50
    },
    "delta": 1,
-   "t": 2.79
+   "t": 2.79,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 2160,
+     "wr": 58.8
+    },
+    "without": {
+     "n": 17858,
+     "wr": 54.02
+    },
+    "wrDiff": 4.78,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "the-fey",
@@ -9996,7 +10632,20 @@
     "winrate": 40.7
    },
    "delta": 1,
-   "t": 2.1
+   "t": 2.1,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 949,
+     "wr": 55.43
+    },
+    "without": {
+     "n": 1437,
+     "wr": 52.96
+    },
+    "wrDiff": 2.47,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "khaimera",
@@ -10025,7 +10674,20 @@
     "winrate": 46.9
    },
    "delta": 0.46,
-   "t": 3.34
+   "t": 3.34,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 923,
+     "wr": 58.94
+    },
+    "without": {
+     "n": 2085,
+     "wr": 56.4
+    },
+    "wrDiff": 2.54,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "gadget",
@@ -10054,7 +10716,20 @@
     "winrate": 51.7
    },
    "delta": 0.7,
-   "t": 2.88
+   "t": 2.88,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 3096,
+     "wr": 48.84
+    },
+    "without": {
+     "n": 7744,
+     "wr": 51.58
+    },
+    "wrDiff": -2.74,
+    "agrees": "no"
+   }
   },
   {
    "hero": "iggy-scorch",
@@ -10084,7 +10759,20 @@
     "winrate": 57.1
    },
    "delta": 0.76,
-   "t": 3.69
+   "t": 3.69,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 196,
+     "wr": 64.8
+    },
+    "without": {
+     "n": 282,
+     "wr": 56.74
+    },
+    "wrDiff": 8.06,
+    "agrees": "unclear"
+   }
   },
   {
    "hero": "serath",
@@ -10117,7 +10805,20 @@
     "winrate": 61.5
    },
    "delta": 0.49,
-   "t": 2.47
+   "t": 2.47,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 1271,
+     "wr": 54.13
+    },
+    "without": {
+     "n": 1384,
+     "wr": 52.89
+    },
+    "wrDiff": 1.24,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "eden",
@@ -10148,7 +10849,20 @@
     "winrate": 42.9
    },
    "delta": -0.51,
-   "t": -2.13
+   "t": -2.13,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 1237,
+     "wr": 43.17
+    },
+    "without": {
+     "n": 5063,
+     "wr": 51.51
+    },
+    "wrDiff": -8.34,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "lt-belica",
@@ -10182,7 +10896,20 @@
     "winrate": 65
    },
    "delta": -0.44,
-   "t": -2.13
+   "t": -2.13,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 3718,
+     "wr": 47.5
+    },
+    "without": {
+     "n": 5040,
+     "wr": 51.19
+    },
+    "wrDiff": -3.69,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "riktor",
@@ -10212,7 +10939,20 @@
     "winrate": 77.8
    },
    "delta": 0.64,
-   "t": 3.34
+   "t": 3.34,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 235,
+     "wr": 54.04
+    },
+    "without": {
+     "n": 1410,
+     "wr": 52.13
+    },
+    "wrDiff": 1.91,
+    "agrees": "yes"
+   }
   },
   {
    "hero": "murdock",
@@ -10243,7 +10983,20 @@
     "winrate": 42.9
    },
    "delta": 0.47,
-   "t": 2.99
+   "t": 2.99,
+   "public": {
+    "patch": "1.17.2",
+    "with": {
+     "n": 788,
+     "wr": 52.16
+    },
+    "without": {
+     "n": 1304,
+     "wr": 47.24
+    },
+    "wrDiff": 4.92,
+    "agrees": "yes"
+   }
   }
  ]
 }
