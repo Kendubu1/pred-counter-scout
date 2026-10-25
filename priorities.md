@@ -401,6 +401,36 @@ copy-verify ground-check -> the independent critic judges -> apply until
   switches with the augment, every line passes the ground-check, and the judge loop
   converges.
 
+## 18. Patch tagging — keep match data per patch, filter by patch (backlogged 2026-10-25)
+
+Context: the meta board pools a whole patch family. `npm run lanestats` asks pred.gg
+generalStatistic for every 1.17.x version id at once (167+168+169), so
+predgg-lane-stats.json holds one total per (hero, role) and 1.17.2 games cannot be
+split from 1.17 / 1.17.1 after the fact. The site now says "patch 1.17 (includes
+1.17.2) · last refreshed <date>" (meta.json pulledAt / versionIds). Builds and
+augments are already single-patch: the public match stream carries each match's
+version and perk-stream.json resets its window at a patch release. The maintainer
+does not want a re-pull for this; it starts at the next scheduled refresh.
+
+**18a. Pull lane stats per patch.** On each refresh, query only the newest version id
+and write it to its own snapshot (e.g. data/aggregates/predgg-lane-stats-1.17.2.json),
+keeping earlier patches' snapshots. Same request count as today.
+- Depends on: nothing. Code change now, data arrives with the next `npm run refresh`.
+- Consider: keep predgg-lane-stats.json as the "current" alias so the artifacts
+  build and every reader keep working unchanged.
+
+**18b. Archive the perk stream at a patch rollover.** When perk-stream.json resets for
+a new patch, save the finished patch's counts (augments, Eternals, crests, cores) to
+a per-patch file instead of discarding them.
+- Consider: file size. perk-stream.json is ~14 MB; archive the per-hero aggregates,
+  not the cursor or boundary bookkeeping.
+
+**18c. Patch filter on the meta board.** List the patches that have snapshots; picking
+one swaps the boards' source. Until 18a has run once, only today's pooled 1.17
+snapshot exists, so hide the filter while there is a single option.
+- Done when: the meta board can show 1.17.2-only numbers from committed snapshots,
+  with zero API calls from the site.
+
 ## Parked ideas (not yet scheduled)
 
 - Comfort-vs-meta flex logic (parked by maintainer 2026-06-12): when a
