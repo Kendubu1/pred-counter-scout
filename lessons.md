@@ -5180,3 +5180,33 @@ The worker subsequently committed an unreviewed draft while the manual repair wa
 2026-10-25: Role pages are now chosen by field games (primary role, then the most-played lanes, top 3); declared roles only fill in for a hero with no field lanes. Only Howitzer gained a page (support replaced carry); Riktor and Twinblast reordered. The 40 lanes with field data but no page are 4th/5th lanes (e.g. Belica offlane 301 games) and get the hero page's fallback banner. Adding a page needs hero-coach copy: seed engine/copy-tasks/herocoach.responses.json from the committed hero-coach-lines.json, author only the new lanes, then put scoped critic rewrites in hero-coach-fixes.json so the ingest re-applies and re-verifies them; a 3-lane critique run would overwrite the full-roster critique report.
 
 2026-10-25: Eternal card copy. The hero page's Eternal card printed the raw major text (a stat dump); it now shows one line per hero/role/shown Eternal saying what it does for that kit and how to play it (`npm run review:eternalcards` -> data/aggregates/eternal-cards.json; full text stays in the Eternal popup). Facts block = kit + lane augment + major + the field's top minors (src/eternal-copy.ts, shared by author, critic and harness). Minor chips now read "61% pick": a bare 61% beside a 51% winrate read as a winrate. Judge loop (opt-in `eternalcards` surface, own history): 83.2% -> 87.2% -> 87.2%, plateau stop, 96 fixes. Recurring author errors to brief against next time: Weald sold as "your finisher" with missiles that "chase" (source: a few small true-damage missiles through walls, per-hero cooldown); Wind-Rider claimed to add Weald missiles alone; "finish/rush items" advice on Demiurge; regen or heal-over-time said to trigger Exarch; partial restores called refills; another hero's augment named. Judges were uneven on these until round 3 got explicit shared standards: give the critic the standards up front. Fix files chain across rounds (a round-2 fix is keyed to the round-1 fix), so the ingest follows the chain; '' records a judge drop.
+
+## 2026-10-25 — Fork in the Road PoC (docs/fork-in-the-road.md §14)
+
+- The public match stream carries per-minute gold (`goldEarnedAtInterval`,
+  index = minute + 3) and a kill timeline (`heroKills[].gameTime`). State-adjusted
+  item analysis needs no per-match GraphQL.
+- Interval bug caught by a null calibration test: comparing an option with a
+  cell average that CONTAINS it, plus the wrong variance for smoothed rates,
+  made 80% intervals cover ~96% under no effect. Real effects were hidden.
+  Compare with the rest of the cell, and pin calibration with a test.
+- Never build a context from what a team realized in the match (healing, damage
+  dealt). Winning teams heal and deal more, so the context encodes the result.
+  Use each hero-role's typical rate, which is knowable at draft.
+- Pooling rates across roles can flip a sign. Physical armor looked bought MORE
+  into magical laners until it was compared within hero-role, because carry
+  lanes are all-physical and carries never buy armor.
+- Rank bands: high ranks counter-build more (Plat+ vs below Gold is clear on
+  three checks). But Diamond+ is too thin per hero, and Plat+ gives the most
+  repeatable per-item signal.
+- A list of "top N" findings means nothing without a shuffled null. 40 Plat+
+  build-shift rises looked right, and shuffled opponents produced ~34.
+- Rare off-role picks with high win rates are mostly streaks over a 40h window
+  (22/100 won both halves, ~25 expected by chance). Promote only on fresh data.
+- Counter checks (2026-10-25, §14c): Plat+ react to lane damage type, healing,
+  team magic share and visible enemy armor (armor shred 17.8 vs 10.1 per 100,
+  the biggest scoreboard reaction). They do NOT react to CC-heavy teams
+  (tenacity), tanks (percent-health) or being behind (defense, except at item
+  4). Put every number a page cites in a committed file the page can be traced
+  to: the first Climb draft quoted minutes from a scratch script that the
+  committed run then moved by 1-2.

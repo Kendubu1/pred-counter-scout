@@ -91,6 +91,12 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    shipped as `goldPlus` in predgg-augments.json and `goldByRole` cores in
    predgg-builds.json, and shown as the hero page's HIGH-RANK (GOLD+) line.
    It is CURRENT rank, not rank at match time; compare options within the band.
+   Since 2026-10-25 perks also writes data/aggregates/build-matchups.json
+   (no extra requests): each hero-role's first 3 core items, split by lane
+   opponent and by every enemy hero, for all ranks and Plat+. Commit it with
+   the other aggregates. It resets with the patch window like perk-stream.json.
+   `window.segments` lists the counted stretches, including a one-off
+   `seed:fork-poc` (Oct 22-24). Read it with `npm run matchups:builds -- <hero>`.
    Then `npm run aggregate && npm run matchups:feed` — the pred.gg match samples
    (gold curves + item play rates; same-role head-to-head lanes, resumed
    incrementally inside the current patch family). Then `npm run checkpoints`
