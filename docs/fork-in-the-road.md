@@ -254,3 +254,65 @@ If neither holds, phase 2 is parked. It is not estimated.
   or wait for phase 3?
 - Floors (150 / 300) are starting values. Is "fewer, trustworthy cards"
   preferred over "more cards marked noise"?
+
+## 14. PoC findings and decisions (2026-10-25, 8,331 ranked matches, 1.17.2)
+
+Measured on the PoC extract (Oct 22 18:02 to Oct 24 10:29 UTC). The scripts behind
+the band and coverage numbers were scratch analyses; fold them into
+`npm run fork:poc` before relying on them.
+
+**Method fixes found by the PoC (committed):** compare each option with the
+rest of its cell, not with a cell average that contains it, and use the
+variance of the smoothed per-stratum rate. Before the fix, ~4% of null
+options fell outside the 80% interval instead of ~20%, which hid real
+effects. A harness test pins the calibration.
+
+**Stream fields (answers section 9):** each public-stream player row carries
+`goldEarnedAtInterval` (index = minute + 3) and the match carries `heroKills`
+with `gameTime`. The section 5 gold-diff adjustment and the section 9 swing
+are both available at full volume, with no per-match GraphQL needed.
+
+**Expert band = Plat+ (current ladder tier >= 3).** Two signals per card:
+- *What experts build:* how much more often Plat+ players buy the item into
+  this context than otherwise. Choices converge with far fewer games than
+  win rates do.
+- *Does it win:* the all-ranks, state-adjusted win delta (section 6).
+
+Evidence for Plat+:
+- Higher ranks counter-build more. Plat+ vs below Gold is clearly higher on
+  all three checks: magical armor, physical armor and anti-heal.
+- Diamond+ reacts most but is too thin: its per-item signals split-half
+  correlate at 0.00 over 12 hero-roles.
+- Plat+ is the most repeatable cut. Split-half r is 0.41 for Plat+, 0.26 for
+  Gold+, 0.29 for all ranks, and 0.34 for Diamond-else-Plat. At about 2x the
+  data, Plat+ projects to r ~0.73.
+- Gold and Platinum buy rates are nearly identical, but Gold+ per-item
+  signals are less repeatable.
+
+**Lane-aware context.** Contrasting the lane opponent's damage type does not
+exist for whole lanes. Carry opponents are almost all physical; mid and
+support opponents are almost all magical. So popular, winning picks got no
+card: Revenant carry (58% in Plat+), Riktor support (58%), The Fey mid (60%).
+The cell's win rate did not differ between covered and uncovered hero-roles
+(53.9% vs 53.9% in Plat+), so card coverage says nothing about viability.
+Use the enemy-team context for those lanes (magic-heavy team, healing team,
+tanky front line), and keep the lane opponent type for offlane and jungle.
+
+**Rare and off-role picks (maintainer rule).** Skip hero-roles under 100
+Plat+ games and under 15% of the hero's games, UNLESS they are winning,
+because they may be the next build to catch on. Rare samples make "winning"
+mostly luck. On the PoC window, 22 of 100 rare picks won both halves of the
+window, against ~25 expected from coin flips, and 9 of 107 cleared an 80%
+bar above 50%, about what luck alone gives. So winning is promoted in two
+steps:
+1. *Watchlist* (not shown as a recommendation): the luck-adjusted win rate,
+   pulled toward 50% by 100 games, is above 52%.
+2. *Rising* (shown, labeled as emerging): it KEEPS winning in fresh games
+   collected after it was flagged, with at least 7 more days and a credible
+   lead in that new data alone. Data that picked the candidate is never
+   used to confirm it.
+
+The PoC watchlist, which is unconfirmed and should be re-checked once the
+daily run has fresh data: Argus offlane (42/66), Revenant offlane (30/46),
+Drongo offlane (31/49) and Twinblast midlane (50/86), plus several with
+fewer than 20 games.
