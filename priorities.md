@@ -379,6 +379,58 @@ ranked games Oct 22–24.
 - Depends on: 16a, or a fresh extract pull.
 - Consider: if a number flips sign, rewrite the tip instead of only updating the figure.
 
+## 17. Augment playstyle tips — copy pass (backlogged 2026-10-25, maintainer: "later, it's a large pass")
+
+Context: the hero page's Game plan tab has a collapsed "How to play" dropdown under
+the leveling chart (shipped 2026-10-25). It shows the lane coach line + watch-out
+(hero-coach-lines.json) and one tip per ability in combat order, passive and basic
+attack first (ability-tips.json). What no file holds yet: how each AUGMENT changes the
+way the hero plays — which attacks to lean on, how the combo or passive use shifts.
+augment-reviews.json only says when to take an augment, not how to play it.
+
+**17a. Write the per-augment playstyle layer.** 2-3 short tips per (hero, lane,
+augment), about 300 sets, on the existing deterministic copy loop:
+`COPY_MODE=prepare` emits grounded tasks (kit text incl. passive, the augment's
+catalog text, the lane's build) -> pred-scout-coach writes -> ingest runs the
+copy-verify ground-check -> the independent critic judges -> apply until
+`npm run review:loop:gate` passes (docs/agent-loops.md).
+- Depends on: nothing. Zero-API: kit and augment text are committed.
+- Consider: model the prepare/ingest step on augment-review.ts; store as
+  data/aggregates/augment-playstyle.json keyed hero -> role -> augment id.
+- Done when: the How to play dropdown shows the selected/best augment's tips and
+  switches with the augment, every line passes the ground-check, and the judge loop
+  converges.
+
+## 18. Patch tagging — keep match data per patch, filter by patch (backlogged 2026-10-25)
+
+Context: the meta board pools a whole patch family. `npm run lanestats` asks pred.gg
+generalStatistic for every 1.17.x version id at once (167+168+169), so
+predgg-lane-stats.json holds one total per (hero, role) and 1.17.2 games cannot be
+split from 1.17 / 1.17.1 after the fact. The site now says "patch 1.17 (includes
+1.17.2) · last refreshed <date>" (meta.json pulledAt / versionIds). Builds and
+augments are already single-patch: the public match stream carries each match's
+version and perk-stream.json resets its window at a patch release. The maintainer
+does not want a re-pull for this; it starts at the next scheduled refresh.
+
+**18a. Pull lane stats per patch.** On each refresh, query only the newest version id
+and write it to its own snapshot (e.g. data/aggregates/predgg-lane-stats-1.17.2.json),
+keeping earlier patches' snapshots. Same request count as today.
+- Depends on: nothing. Code change now, data arrives with the next `npm run refresh`.
+- Consider: keep predgg-lane-stats.json as the "current" alias so the artifacts
+  build and every reader keep working unchanged.
+
+**18b. Archive the perk stream at a patch rollover.** When perk-stream.json resets for
+a new patch, save the finished patch's counts (augments, Eternals, crests, cores) to
+a per-patch file instead of discarding them.
+- Consider: file size. perk-stream.json is ~14 MB; archive the per-hero aggregates,
+  not the cursor or boundary bookkeeping.
+
+**18c. Patch filter on the meta board.** List the patches that have snapshots; picking
+one swaps the boards' source. Until 18a has run once, only today's pooled 1.17
+snapshot exists, so hide the filter while there is a single option.
+- Done when: the meta board can show 1.17.2-only numbers from committed snapshots,
+  with zero API calls from the site.
+
 ## Parked ideas (not yet scheduled)
 
 - Comfort-vs-meta flex logic (parked by maintainer 2026-06-12): when a
