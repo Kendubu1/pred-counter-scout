@@ -5210,3 +5210,7 @@ The worker subsequently committed an unreviewed draft while the manual repair wa
   4). Put every number a page cites in a committed file the page can be traced
   to: the first Climb draft quoted minutes from a scratch script that the
   committed run then moved by 1-2.
+
+2026-10-25 (correction): the "Meta builds" entry above says the hero page defaults to
+the most-played build. Later that day the default changed to the highest shrunk win rate
+among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is live.
