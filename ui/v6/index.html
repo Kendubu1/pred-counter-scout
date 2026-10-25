@@ -176,19 +176,24 @@
   .bhead { display:flex; align-items:center; gap:.6rem; margin-bottom:.7rem; }
   .bhead h2 { margin:0; }
   .bnav { margin-left:auto; display:flex; align-items:center; gap:.3rem; }
+  .bnav[hidden] { display:none; }
   .bcount { font-size:.75rem; color:var(--text-1); font-variant-numeric:tabular-nums; margin-right:.25rem; }
   .bstep { width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; background:var(--bg-2); color:var(--text-0); border:1px solid var(--border); border-radius:8px; font-size:1rem; line-height:1; cursor:pointer; }
   .bstep:hover:not(:disabled) { border-color:var(--text-2); }
   .bstep:disabled { opacity:.35; cursor:default; }
-  .btabs { display:flex; gap:.4rem; margin-bottom:.8rem; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; scroll-behavior:smooth; }
+  .btabs { display:flex; gap:2px; padding:2px; margin-bottom:.8rem; background:var(--bg-0); border:1px solid var(--border); border-radius:10px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; scroll-behavior:smooth; }
   .btabs::-webkit-scrollbar { display:none; }
   .btabs.fade-r { -webkit-mask-image:linear-gradient(to right, #000 calc(100% - 40px), transparent); mask-image:linear-gradient(to right, #000 calc(100% - 40px), transparent); }
   .btabs.fade-l { -webkit-mask-image:linear-gradient(to left, #000 calc(100% - 40px), transparent); mask-image:linear-gradient(to left, #000 calc(100% - 40px), transparent); }
   .btabs.fade-l.fade-r { -webkit-mask-image:linear-gradient(to right, transparent, #000 40px, #000 calc(100% - 40px), transparent); mask-image:linear-gradient(to right, transparent, #000 40px, #000 calc(100% - 40px), transparent); }
-  .btab { flex:none; background:transparent; color:var(--text-1); border:1px solid var(--border); border-radius:99px; padding:.3rem .85rem; font-size:.8rem; white-space:nowrap; cursor:pointer; }
-  .btab:hover { color:var(--text-0); border-color:var(--text-2); }
-  .btab.active { background:var(--bg-3); color:var(--text-0); border-color:var(--text-1); font-weight:600; }
-  .btab-wr { font-weight:700; font-size:.85em; font-variant-numeric:tabular-nums; margin-left:.15rem; }
+  /* same segmented look as the lane switcher: one track, neutral selected fill */
+  .btab { flex:none; display:flex; flex-direction:column; align-items:flex-start; gap:.05rem; background:transparent; color:var(--text-1); border:0; border-radius:8px; padding:.4rem .8rem; text-align:left; white-space:nowrap; cursor:pointer; }
+  .btab:hover { color:var(--text-0); }
+  .btab.active { background:var(--bg-3); color:var(--text-0); }
+  .bt-name { font-size:.82rem; font-weight:500; }
+  .btab.active .bt-name { font-weight:600; }
+  .bt-sub { font-size:.72rem; color:var(--text-2); }
+  .btab-wr { font-weight:700; font-variant-numeric:tabular-nums; }
   /* one win% colour scale site-wide (same bands as wrColor / the legend) */
   .wr-up { color:var(--green); } .wr-down { color:var(--red); } .wr-mid { color:var(--text-1); }
   .bbody.hidden { display:none; }
@@ -1174,9 +1179,13 @@ function buildsCard(a) {
   const opt = rsnRoot && rsnRoot.optimizer;
 
   // Tab strip: one per meta build (title), then the kit-math build (⚙).
-  const tabs = metas.map((e, i) =>
-    `<button class="btab${i === 0 ? ' active' : ''}" data-btab="${i}">${i === 0 ? '<span title="most played in this lane">🔥</span> ' : i === bestIdx && bestIdx !== 0 ? '<span title="highest win rate among builds with 100+ games">★</span> ' : ''}${esc(e.m.title || `Build ${i + 1}`)} <span class="btab-wr ${wrBand(e.m.shrunkWr)}">${(e.m.shrunkWr * 100).toFixed(0)}%</span></button>`).join('')
-    + `<button class="btab simtab${metas.length ? '' : ' active'}" data-btab="sim">⚙ ${esc(a.build.title || 'Kit-math build')}</button>`;
+  // Each option says in words what it is (most played / best win rate / kit-math)
+  // under its name — an icon like 🔥 read as "best" beside a losing win rate.
+  const tabs = metas.map((e, i) => {
+    const tag = i === 0 ? (metas.length > 1 && bestIdx === 0 ? 'most played · best win rate' : 'most played') : i === bestIdx ? 'best win rate' : `${(e.m.n || 0).toLocaleString()} games`;
+    return `<button class="btab${i === 0 ? ' active' : ''}" data-btab="${i}"><span class="bt-name">${esc(e.m.title || `Build ${i + 1}`)}</span><span class="bt-sub"><span class="btab-wr ${wrBand(e.m.shrunkWr)}">${(e.m.shrunkWr * 100).toFixed(0)}% win</span> · ${tag}</span></button>`;
+  }).join('')
+    + `<button class="btab simtab${metas.length ? '' : ' active'}" data-btab="sim"><span class="bt-name">${esc(a.build.title || 'Kit-math build')}</span><span class="bt-sub">kit-math sim</span></button>`;
 
   // One meta-build tab body: icon rail + win%/games + a "why these items" disclosure.
   const metaBody = (e, i) => {
@@ -1739,6 +1748,9 @@ function renderHero(a, roleParam) {
     if (!strip) return;
     strip.classList.toggle('fade-l', strip.scrollLeft > 2);
     strip.classList.toggle('fade-r', strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 2);
+    // counter + arrows only when some builds are off-screen
+    const bnav = document.querySelector('.bnav');
+    if (bnav) bnav.hidden = strip.scrollWidth <= strip.clientWidth + 2;
   };
   const pickBuild = (b) => {
     const key = b.dataset.btab, idx = btabs.indexOf(b);
