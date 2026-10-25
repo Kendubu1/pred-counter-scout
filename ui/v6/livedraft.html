@@ -232,7 +232,7 @@ const dotsHtml = (cps) => `<div class="dots">${cps.map((c) => `<span class="dot 
 function slotHtml(lane, side) {
   const slug = state[lane][side];
   const cls = side === 'enemy' ? 'enemy' : 'you';
-  if (slug) return `<div class="slot ${cls} filled" data-slot="${side}" data-lane="${lane}"><img src="${IMG(slug)}" alt="${esc(nameOf(slug))}" onerror="this.style.display='none'"><button class="clr" data-clr="${side}" data-lane="${lane}" title="Clear">✕</button></div>`;
+  if (slug) return `<div class="slot ${cls} filled" data-hero-pick data-slot="${side}" data-lane="${lane}"><img src="${IMG(slug)}" alt="${esc(nameOf(slug))}" onerror="this.style.display='none'"><button class="clr" data-clr="${side}" data-lane="${lane}" title="Clear">✕</button></div>`;
   return `<div class="slot ${cls}" data-slot="${side}" data-lane="${lane}"><span class="plus">+</span></div>`;
 }
 
@@ -429,6 +429,7 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal
 })();
 </script>
 <script defer src="icons.js"></script>
+<script defer src="hero-links.js"></script>
 <script defer src="nav.js"></script>
 </body>
 </html>
