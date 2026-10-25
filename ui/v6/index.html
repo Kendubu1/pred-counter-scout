@@ -729,6 +729,13 @@ function spikeCaveat() {
   return ` <span title="${esc(g.note || '')}" style="color:var(--gold)">Spike minutes come from ${esc(g.measuredIn)} gold curves — ${esc(g.staleAgainst)} changed the economy, so treat them as approximate.</span>`;
 }
 
+// When the boards' match data was last pulled from pred.gg (meta.json pulledAt),
+// so players can see how fresh the win rates are.
+function metaPulledNote() {
+  const t = META && META.pulledAt ? new Date(META.pulledAt) : null;
+  if (!t || isNaN(t)) return '';
+  return ` · last match refresh <b>${t.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</b>`;
+}
 function metaWindowNote() {
   if (!LATEST_PATCH || !META || !META.patch) return '';
   const board = String(META.patch), latest = String(LATEST_PATCH);
@@ -921,7 +928,7 @@ async function renderLaneDetail() {
   box.innerHTML = `
     <div class="lanepanel">
       <h2>${LANE_LABELS[role]} · lane room</h2>
-      <div class="lp-sub">${filterSt.boardMatches.toLocaleString()} matches, patch ${esc(META.patch)}, ${esc(META.scope || 'all ranks')}${filterSt.bandLabel}${metaWindowNote()}</div>
+      <div class="lp-sub">${filterSt.boardMatches.toLocaleString()} matches, patch ${esc(META.patch)}, ${esc(META.scope || 'all ranks')}${filterSt.bandLabel}${metaWindowNote()}${metaPulledNote()}</div>
       <div class="mb-head" style="margin-top:.4rem">${metaFilterControlsHtml()}</div>
       <div class="lmode">
         <button data-m="first" class="${laneMode === 'first' ? 'active' : ''}"><span data-bic="counter-pick" data-bic-size="15"></span> picking first</button>
@@ -1009,7 +1016,7 @@ function renderMetaboard() {
   $('#metaboard').innerHTML = `
     <div class="mb-head">
       <h2>The meta board</h2>
-      <span class="mb-sub">each lane's strongest picks by <b>win rate</b> · ${boardMatches.toLocaleString()} matches, patch ${esc(META.patch)}, ${esc(META.scope || 'all ranks')}${bandLabel}${metaWindowNote()}</span>
+      <span class="mb-sub">each lane's strongest picks by <b>win rate</b> · ${boardMatches.toLocaleString()} matches, patch ${esc(META.patch)}, ${esc(META.scope || 'all ranks')}${bandLabel}${metaWindowNote()}${metaPulledNote()}</span>
       ${metaFilterControlsHtml()}
     </div>
     <details class="sim-collapse uxlegend" id="uxLegend"><summary>What the win-rate colors &amp; pick tags mean</summary><div class="lp-sub">${LEGEND_HTML}</div></details>
