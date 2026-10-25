@@ -630,7 +630,7 @@ function metaFilterState() {
 function metaFilterControlsHtml() {
   const st = metaFilterState();
   return `
-      <button class="mb-toggle mb-bigonly${metaBigOnly ? ' active' : ''}" title="Hide picks with under ${st.minSample.toLocaleString()} games this patch (~1% of the window) — small samples read as Sleeper and can swing patch to patch">${st.minSample.toLocaleString()}+ games only</button>
+      <button class="mb-toggle mb-bigonly${metaBigOnly ? ' active' : ''}" title="Hide heroes with fewer than ${st.minSample.toLocaleString()} games in the lane (~1% of the board's matches) — small samples read as Sleeper and can swing patch to patch">Only heroes with ${st.minSample.toLocaleString()}+ games</button>
       ${st.bands ? `<div class="mb-bands" title="Filter the boards to games played at a rank band — the meta shifts with skill level. All ranks includes players without a placed rank.">${[{ key: 'all', label: 'All ranks' }, ...st.bands].map((b) => `<button class="mb-toggle band${metaBand === b.key ? ' active' : ''}" data-band="${esc(b.key)}">${esc(b.label)}</button>`).join('')}</div>` : ''}`;
 }
 function bindMetaFilterControls(container) {
@@ -734,7 +734,13 @@ function spikeCaveat() {
 function metaPulledNote() {
   const t = META && META.pulledAt ? new Date(META.pulledAt) : null;
   if (!t || isNaN(t)) return '';
-  return ` · last match refresh <b>${t.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</b>`;
+  return ` · last refreshed <b style="white-space:nowrap">${t.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</b>`;
+}
+// "159,201 ranked matches on patch 1.17 (includes 1.17.2) · last refreshed Oct 25, 2026".
+// The match count is the whole board; the games filter is a per-hero minimum.
+function metaScopeLine(matches, bandLabel) {
+  const scope = META.scope === 'ranked' ? 'ranked ' : '';
+  return `${matches.toLocaleString()} ${scope}matches on patch ${esc(META.patch)}${metaWindowNote()}${bandLabel}${metaPulledNote()}`;
 }
 function metaWindowNote() {
   if (!LATEST_PATCH || !META || !META.patch) return '';
@@ -743,7 +749,7 @@ function metaWindowNote() {
   // The board pools a whole patch family (lane-stats pins every 1.17.x version
   // id), so "1.17" already holds 1.17.2 games. Comparing the strings as if they
   // were different patches once told players their current patch was missing.
-  if (latest.startsWith(board + '.')) return ` · includes ${esc(latest)} games`;
+  if (latest.startsWith(board + '.')) return ` (includes ${esc(latest)})`;
   return ` · <b>collected before ${esc(latest)}</b> — these boards do not include ${esc(latest)} games yet`;
 }
 async function getMatrix() {
@@ -928,7 +934,7 @@ async function renderLaneDetail() {
   box.innerHTML = `
     <div class="lanepanel">
       <h2>${LANE_LABELS[role]} · lane room</h2>
-      <div class="lp-sub">${filterSt.boardMatches.toLocaleString()} matches, patch ${esc(META.patch)}, ${esc(META.scope || 'all ranks')}${filterSt.bandLabel}${metaWindowNote()}${metaPulledNote()}</div>
+      <div class="lp-sub">${metaScopeLine(filterSt.boardMatches, filterSt.bandLabel)}</div>
       <div class="mb-head" style="margin-top:.4rem">${metaFilterControlsHtml()}</div>
       <div class="lmode">
         <button data-m="first" class="${laneMode === 'first' ? 'active' : ''}"><span data-bic="counter-pick" data-bic-size="15"></span> picking first</button>
@@ -1016,7 +1022,7 @@ function renderMetaboard() {
   $('#metaboard').innerHTML = `
     <div class="mb-head">
       <h2>The meta board</h2>
-      <span class="mb-sub">each lane's strongest picks by <b>win rate</b> · ${boardMatches.toLocaleString()} matches, patch ${esc(META.patch)}, ${esc(META.scope || 'all ranks')}${bandLabel}${metaWindowNote()}${metaPulledNote()}</span>
+      <span class="mb-sub">Each lane's strongest picks by <b>win rate</b> · ${metaScopeLine(boardMatches, bandLabel)}</span>
       ${metaFilterControlsHtml()}
     </div>
     <details class="sim-collapse uxlegend" id="uxLegend"><summary>What the win-rate colors &amp; pick tags mean</summary><div class="lp-sub">${LEGEND_HTML}</div></details>
