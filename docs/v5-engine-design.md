@@ -369,9 +369,11 @@ remain as fast canaries but cannot detect staleness on their own: one pinned
   Plat+ (maintainer's call, 2026-10-25, accepting thin Plat+ samples). perks still
   counts Gold+ so the choice can be re-checked. A lane opens on Plat+ at 100 games
   on its top Plat+ build, else all ranks; the builds card's rank filter offers
-  Plat+ whenever the lane has Plat+ builds (`metaBuildsByBand`: the same
-  meta-build pipeline run per band, each with that band's hero-role baseline),
-  and the HIGH-RANK perk panel is Plat+. The viewer's pick is remembered in
+  Plat+ whenever the lane has Plat+ data (`metaBuildsByBand`: the same
+  meta-build pipeline run per band, each with that band's hero-role baseline).
+  The filter is page-level: it drives the opening picks (augment, Eternal,
+  minors, crest from `platPlus`) and the builds together, replacing the old
+  separate HIGH-RANK panel; matchups have no banded source and stay all ranks. The viewer's pick is remembered in
   localStorage; a thin band says so.
 
 - **Calibrated (Oct 15).** First practice-mode session: mitigation K=100,

@@ -99,9 +99,11 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    The page's high-rank band is Plat+ only (Gold+ stays in the files, unshown).
    A lane OPENS on Plat+ once its most-played Plat+ build has 100+ games
    (MIN_BAND_BUILD_GAMES in src/artifacts.ts), else all ranks; the builds
-   card's rank filter (All ranks / Plat+) offers Plat+ as soon as the lane has
-   any Plat+ builds, with a thin-sample note, from `metaBuildsByBand`. The
-   HIGH-RANK perk panel reads `platPlus`. There is no backfill, so expect lanes
+   page's rank filter (All ranks / Plat+, in the hero header) switches the
+   opening picks (`platPlus`: augment, Eternal, minors, crest) and the builds
+   (`metaBuildsByBand`) together, as soon as the lane has any Plat+ data, with
+   thin-sample notes; a section with no Plat+ data falls back to all ranks and
+   says so. Matchups stay all ranks. There is no backfill, so expect lanes
    to fill over the following weeks, popular ones first (1.17 volumes: median
    lane ~34 days to a 100-game top Plat+ build).
    Then `npm run aggregate && npm run matchups:feed` — the pred.gg match samples
