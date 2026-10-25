@@ -1,8 +1,9 @@
 /* Shared sticky section menu (the pill row under the top bar) for every v6 page.
  * Each page picks its sections and labels; this wires the pills, gives each
  * section a readable id (#wave-control, #matchups), keeps the address bar on the
- * section being read so a copied link opens right there, and on page load jumps
- * to the section a shared link names.
+ * section being read so a copied link opens right there (and previews as that
+ * section where the page has share pages), and on page load jumps to the
+ * section a shared link names.
  *
  *   SectionNav.build(hostEl, [{ el: sectionEl, label: 'Matchups' }, ...])
  *
@@ -10,7 +11,16 @@
  * script: most pages build their menu as soon as their data renders. */
 (function () {
   const slug = (t) => String(t).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'section';
-  const setHash = (id) => { try { history.replaceState(history.state, '', '#' + id); } catch { /* file:// etc. */ } };
+  // Sections listed in <meta name="section-share"> have a generated preview page
+  // (climb-when-to-swap.html, engine/scripts/share-pages.mjs) that redirects back
+  // here. Link previews ignore the #fragment, so the bar shows that page instead
+  // and a copied link previews the section, not the whole page.
+  const shared = new Set((document.querySelector('meta[name="section-share"]')?.content || '').split(/\s+/).filter(Boolean));
+  const page = location.pathname.split('/').pop().replace(/\.html$/, '') || 'index';
+  const setHash = (id) => {
+    const url = shared.has(id) ? `${page}-${id}.html` : '#' + id;
+    try { history.replaceState(history.state, '', url); } catch { /* file:// etc. */ }
+  };
   let firstBuild = true;
   let ready = false;
 
