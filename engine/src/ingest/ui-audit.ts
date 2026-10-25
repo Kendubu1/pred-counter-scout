@@ -238,7 +238,7 @@ function main() {
   //     (allowlisted). This is the check the first design review lacked — the
   //     Sim Build tip (.coach) was 1.04rem, larger than the page's reading size.
   const TYPE_MAX_REM = 1.0;
-  const TYPE_ALLOW = new Set(['.verdict', '.ledg .lv', '.ipop .ihead b']); // short callouts / big numbers, not paragraphs
+  const TYPE_ALLOW = new Set(['.verdict', '.ledg .lv', '.ipop .ihead b', '.mo .t', '.tile .n', '.build-player > summary::after']); // short callouts / big numbers / the + disclosure glyph, not paragraphs
   for (const p of PAGES) {
     for (const m of baseRules(csss[p]!).matchAll(/([^{}]+)\{([^}]*)\}/g)) {
       const sel = m[1]!.trim().replace(/\s+/g, ' ');

@@ -22,10 +22,10 @@ style.textContent = `
   .epop .ex { position:absolute; top:.6rem; right:.6rem; width:36px; height:36px; display:flex; align-items:center; justify-content:center; background:var(--bg-2); border:1px solid var(--border); border-radius:50%; color:var(--text-1); font-size:1.1rem; line-height:1; cursor:pointer; }
   .epop .ex:hover, .epop .ex:focus-visible { color:var(--text-0); border-color:var(--accent); }
   .epop .etags { display:flex; flex-wrap:wrap; gap:.3rem; margin-top:.65rem; }
-  .epop .etags span { font-size:.66rem; font-weight:600; color:var(--accent); background:var(--accent-dim, rgba(124,92,255,.14)); border-radius:999px; padding:.12rem .5rem; }
+  .epop .etags span { font-size:.6875rem; font-weight:600; color:var(--accent-ink); background:var(--accent-dim, rgba(124,92,255,.14)); border-radius:999px; padding:.12rem .5rem; }
   .epop .epick { color:var(--gold); font-size:.84rem; font-weight:500; margin-top:.6rem; }
   .epop .eminor .ewm { display:block; color:var(--gold); margin-top:.15rem; }
-  .epop .eminor .esh { color:var(--text-2); font-size:.68rem; font-variant-numeric:tabular-nums; font-weight:400; margin-left:.3rem; }
+  .epop .eminor .esh { color:var(--text-2); font-size:.6875rem; font-variant-numeric:tabular-nums; font-weight:400; margin-left:.3rem; }
   .epop .ewho { font-size:.76rem; }
   .epop .ewho .eroles { color:var(--text-1); }
   .epop .eheroes { display:flex; flex-wrap:wrap; gap:.35rem .7rem; margin-top:.35rem; }
@@ -34,7 +34,7 @@ style.textContent = `
   .epop .ehead img { width:52px; height:52px; border-radius:50%; object-fit:cover; background:var(--bg-2); border:2px solid var(--accent); flex:none; }
   .epop .ehead b { font-size:1.05rem; color:var(--text-0); display:block; }
   .epop .ehead small { font-size:.74rem; color:var(--text-2); }
-  .epop .ek { display:block; color:var(--text-2); font-weight:700; text-transform:uppercase; font-size:.64rem; letter-spacing:.05em; margin:.8rem 0 .2rem; }
+  .epop .ek { display:block; color:var(--text-2); font-weight:700; font-size:.6875rem; letter-spacing:0; margin:.8rem 0 .2rem; }
   .epop .emajor { font-size:.84rem; }
   .epop .eminor { display:flex; gap:.5rem; align-items:flex-start; font-size:.78rem; color:var(--text-2); padding:.35rem 0 .35rem .55rem; border-left:2px solid var(--border); margin-bottom:.25rem; border-radius:0 6px 6px 0; }
   .epop .eminor img { width:24px; height:24px; border-radius:50%; object-fit:cover; background:var(--bg-2); flex:none; border:1px solid var(--border); }
@@ -42,10 +42,10 @@ style.textContent = `
   .epop .eminor.pick { border-left-color:var(--green); }
   .epop .eminor.pick b { color:var(--text-0); }
   .epop .eminor.here { background:var(--bg-2); box-shadow:0 0 0 1px var(--accent) inset; }
-  .epop .etag { font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--green); background:rgba(0,196,140,.16); border-radius:999px; padding:.05rem .4rem; margin-left:.3rem; white-space:nowrap; }
+  .epop .etag { font-size:.6875rem; font-weight:700; letter-spacing:0; color:var(--green); background:rgba(0,196,140,.16); border-radius:999px; padding:.05rem .4rem; margin-left:.3rem; white-space:nowrap; }
   .epop .enote { font-size:.7rem; color:var(--text-2); margin:.3rem 0 0; }
   .epop .ecounter { font-size:.78rem; color:var(--text-2); border-top:1px dashed var(--border); padding-top:.5rem; margin-top:.7rem; }
-  .epop .ecounter b { color:var(--text-1); display:block; font-size:.64rem; text-transform:uppercase; letter-spacing:.05em; }
+  .epop .ecounter b { color:var(--text-1); display:block; font-size:.6875rem; letter-spacing:0; }
   .epop .efoot { display:flex; gap:.5rem; margin-top:.9rem; }
   .epop .efoot a, .epop .efoot button { flex:1; text-align:center; background:var(--bg-2); border:1px solid var(--border); border-radius:10px; color:var(--text-1); padding:.45rem; font:inherit; font-size:.8rem; text-decoration:none; cursor:pointer; }
   [data-epop] { cursor:pointer; }
