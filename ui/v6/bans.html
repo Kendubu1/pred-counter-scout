@@ -129,7 +129,6 @@
   <a class="wordmark" href="./"><img src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</a>
   <span class="spacer"></span>
   <a class="navlink" href="./">Pick &amp; Build</a>
-  <a class="navlink" href="squad.html">Pre-Game</a>
   <a class="navlink" href="coach.html">Coach</a>
 </div><nav class="subnav" id="subnav" aria-label="Jump to section">
   <a class="snpill" href="#our" data-sq>Our ban list</a>
@@ -249,14 +248,20 @@ function renderSquad() {
   $('#stomp').innerHTML = w.stompers.map((s) => `<a class="st" href="./?hero=${esc(s.slug)}"><img loading="lazy" src="../img/heroes/${esc(s.slug)}.webp" alt="" onerror="this.style.visibility='hidden'"><span>${esc(s.name)}<small>${s.killsOnUsPerGame.toFixed(1)} kills/game · K/D vs us ${s.kdVsUs == null ? '—' : s.kdVsUs.toFixed(2)} · ${s.games} games</small></span></a>`).join('');
   $('#sqMethod').textContent = `Method: ${SQ.method} Updated ${String(SQ.generatedAt).slice(0, 10)}.`;
 }
-fetch('../../data/artifacts/squad-bans.json').then((r) => r.json()).then((d) => { SQ = d; renderSquad(); })
+const sqLoad = fetch('../../data/artifacts/squad-bans.json').then((r) => r.json()).then((d) => { SQ = d; renderSquad(); })
   .catch(() => {
     $('#squadCard').style.display = 'none'; $('#sqWin').style.display = 'none';
     $('#our').style.display = 'none'; document.querySelectorAll('#subnav [data-sq]').forEach((a) => { a.style.display = 'none'; });
   });
 
-fetch('../../data/artifacts/bans.json').then((r) => r.json()).then((d) => { BANS = d; render(); })
+const bansLoad = fetch('../../data/artifacts/bans.json').then((r) => r.json()).then((d) => { BANS = d; render(); })
   .catch(() => { $('#board').innerHTML = '<li class="sub">Ban data isn\'t available right now.</li>'; });
+// A shared link (#bylane): the browser jumps before the boards render and push
+// the section down, so jump again once both have drawn.
+Promise.allSettled([sqLoad, bansLoad]).then(() => {
+  const t = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  if (t) t.scrollIntoView({ block: 'start' });
+});
 
 // Section jumper (static anchor pills in the sticky top bar): scrollspy keeps
 // the current section highlighted, same feel as the Coach page's jumper.
@@ -274,9 +279,13 @@ fetch('../../data/artifacts/bans.json').then((r) => r.json()).then((d) => { BANS
       if (!e.isIntersecting) continue;
       pills.forEach((p) => p.classList.toggle('active', p === byId.get(e.target.id)));
       centerPill(byId.get(e.target.id));
+      // the address follows the section being read, so a copied link opens there
+      if (ready) { try { history.replaceState(history.state, '', '#' + e.target.id); } catch { /* file:// */ } }
     }
   }, { rootMargin: '-15% 0px -75% 0px' });
   byId.forEach((_, id) => io.observe(document.getElementById(id)));
+  let ready = false;
+  setTimeout(() => { ready = true; }, 700);
 })();
 </script>
 <script defer src="icons.js"></script>

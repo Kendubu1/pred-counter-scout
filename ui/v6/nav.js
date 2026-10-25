@@ -1,21 +1,23 @@
 /* Shared side-drawer ("hamburger") navigation for all v6 pages.
- * Augments the existing top tabs — it does not replace them. One source of
+ * Augments the existing top tabs (Pick & Build, Coach) — it does not replace them. One source of
  * truth for every destination; include with <script defer src="nav.js"></script>.
  * All v6 pages live in ui/v6/, so these relative links are identical per page. */
 (function () {
   const LINKS = [
     { href: './',                    label: 'Pick & Build',           icon: 'counter-pick',     match: ['', 'index.html'] },
-    { href: 'squad.html',            label: 'Pre-Game',               icon: 'team-comp',        match: ['squad.html'] },
     { href: 'coach.html',            label: 'Coach',                  icon: 'scout',            match: ['coach.html'] },
     { href: 'climb.html',            label: 'The Climb — ranked guide', icon: 'power-spike', tag: 'new', match: ['climb.html'] },
     { href: 'bans.html',             label: 'Most banned — by rank',  icon: 'meta-guide', tag: 'new', match: ['bans.html'] },
     { sep: true },
-    { href: 'livedraft.html',        label: 'Live draft',             icon: 'weakness-counter', match: ['livedraft.html'] },
     { href: '../patch-1.17.2.html',  label: 'Patch 1.17.2 review',    icon: 'patch-strategy', tag: 'new', match: ['patch-1.17.2.html'] },
     { href: '../patch-1.17.html',    label: 'Patch 1.17 review',      icon: 'patch-strategy', match: ['patch-1.17.html'] },
     { href: '../patch-1.16.4.html',  label: 'Patch 1.16.4 review',    icon: 'patch-strategy', match: ['patch-1.16.4.html'] },
     { href: '../learn-eternals.html',label: 'Learn Eternals',         icon: 'eternal-augment',  match: ['learn-eternals.html'] },
     { href: 'about.html',            label: 'About & how this works', icon: 'tap-to-learn',     match: ['about.html'] },
+    // Tools still being proven: grouped so nobody mistakes them for finished pages.
+    { group: 'Experimental' },
+    { href: 'squad.html',            label: 'Squad planner',          icon: 'team-comp',        match: ['squad.html'] },
+    { href: 'livedraft.html',        label: 'Live draft counter',     icon: 'weakness-counter', match: ['livedraft.html'] },
   ];
   const bic = (name) => (window.BrandIcons ? window.BrandIcons.svg(name, 18) : '');
 
@@ -44,6 +46,7 @@
   .nav-list { list-style:none; margin:0; padding:.5rem; overflow-y:auto; }
   .nav-list li { margin:0; }
   .nav-list li.nav-sep { height:1px; background:var(--border); margin:.5rem .6rem; }
+  .nav-list li.nav-group { padding:.35rem .7rem .2rem; font-size:.8rem; font-weight:600; color:var(--text-2); }
   .nav-list a { display:flex; align-items:center; gap:.7rem; padding:.7rem .7rem; border-radius:10px;
     color:var(--text-1); text-decoration:none; font-size:.9rem; }
   .nav-list a:hover { background:var(--bg-2); color:var(--text-0); }
@@ -188,6 +191,7 @@
 
     const items = LINKS.map((l) => {
       if (l.sep) return '<li class="nav-sep" role="separator"></li>';
+      if (l.group) return `<li class="nav-sep" role="separator"></li><li class="nav-group">${l.group}</li>`;
       const active = l.match && l.match.includes(here) ? ' active' : '';
       const tag = l.tag ? `<span class="nav-tag">${l.tag}</span>` : '';
       return `<li><a class="${active.trim()}" href="${l.href}"><span class="nav-ic">${bic(l.icon)}</span><span>${l.label}</span>${tag}</a></li>`;
