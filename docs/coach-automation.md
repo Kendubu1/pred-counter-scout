@@ -103,6 +103,8 @@ not in the env, stop immediately and report — no partial work.
    again. Do not publish pre-critique commits or advance the watch marker alone.
 5. Refresh the reports: `npm run coach -- <lead-uuid>` and
    `npm run squad -- <lead-uuid>` (lead = `data/artifacts/squad.json` `.lead`).
+   `squad` also rebuilds `data/artifacts/squad-bans.json` (the squad ban list on
+   ui/v6/bans.html, zero-API from data/postgame; `npm run squad-bans` alone).
 6. `npm test` — commit only on green (autonomy rule 1).
 7. Commit to `main` and push. **Data only**: `data/postgame/*`,
    `data/artifacts/coach.json`, `data/artifacts/squad*.json`,

@@ -14,6 +14,7 @@ import { gql, hasCredentials } from './predgg.js';
 import { analyzeProfile, assignDistinctArchetypes, buildCoachReport, pullHeroRoleStats, pullProfile, pullRecentMatches, shrink, type AnalyzedPlayer, type HeroRoleCell, type RawProfile, type RecentMatch } from './playerProfile.js';
 import { computeInsights, squadBaselines, type DeepMember } from './insights.js';
 import { loadData } from '../data.js';
+import { buildSquadBans } from './squad-bans.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const ROLES = ['carry', 'midlane', 'offlane', 'jungle', 'support'];
@@ -330,6 +331,8 @@ async function main() {
   console.log(`squad report (${members.length} members, ${pairs.length} pairs) -> data/artifacts/squad.json + players/`);
   for (const a of assignment) console.log(`  ${a.role.padEnd(8)} ${a.name}${a.isMove ? ' (move)' : ''} ${(a.roleWr * 100).toFixed(1)}%/${a.roleGames}g`);
   for (const p of pairs) console.log(`  pair ${p.aName} + ${p.bName}: ${(p.winrate * 100).toFixed(0)}% / ${p.games}g`);
+  // Squad ban list (ui/v6/bans.html) reads the roster just written; zero-API.
+  buildSquadBans();
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

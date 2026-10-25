@@ -56,7 +56,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
 
   it('the committed artifact set covers the full roster and parses', () => {
     const dir = path.join(ROOT, 'data/artifacts');
-    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json'].includes(f));
+    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json'].includes(f));
     const roster = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8'));
     expect(files.length).toBe(Object.keys(roster).length);
     for (const f of files) {
@@ -88,6 +88,23 @@ describe('hero artifacts (Concept A engine stage)', () => {
       const sum = board.heroes.reduce((s: number, h: { banRate: number }) => s + h.banRate, 0);
       expect(sum).toBeGreaterThan(3);
       expect(sum).toBeLessThan(5);
+    }
+  });
+
+  it('squad ban list: threats sorted, records add up, nemesis is a squad member', () => {
+    const p = path.join(ROOT, 'data/artifacts/squad-bans.json');
+    if (!existsSync(p)) return;
+    const sb = JSON.parse(readFileSync(p, 'utf8'));
+    for (const w of Object.values(sb.windows) as any[]) {
+      expect(w.list.length).toBeLessThanOrEqual(10);
+      for (let i = 1; i < w.list.length; i++) expect(w.list[i - 1].threat).toBeGreaterThanOrEqual(w.list[i].threat);
+      for (const r of w.list) {
+        expect(r.wins + r.losses).toBe(r.games);
+        expect(r.threat).toBeGreaterThan(0);
+        expect(r.shrunkWinRate).toBeLessThan(r.baseline);
+        if (r.laneNemesis) expect(sb.members).toContain(r.laneNemesis.name);
+        if (r.mostKilled) expect(sb.members).toContain(r.mostKilled.name);
+      }
     }
   });
 
@@ -213,7 +230,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
 
   it('off-meta promotion respects the evidence gate: no negative-evidence finds', () => {
     const dir = path.join(ROOT, 'data/artifacts');
-    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json'].includes(f));
+    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json'].includes(f));
     for (const f of files) {
       const a = JSON.parse(readFileSync(path.join(dir, f), 'utf8')) as {
         offMeta: { candidates: { item: string }[] };
