@@ -110,6 +110,24 @@ describe('standardization removes the "bought by players already ahead" bias', (
   });
 });
 
+describe('interval calibration', () => {
+  it('with no real effects, ~20% of options fall outside the 80% interval', () => {
+    const rand = rng(11);
+    let outside = 0, total = 0;
+    for (let cell = 0; cell < 200; cell++) {
+      const rs: ForkRow[] = [];
+      for (let i = 0; i < 600; i++) {
+        const stratum = Math.floor(rand() * 15);
+        rs.push(row({ item: ['a', 'b', 'c'][Math.floor(rand() * 3)]!, stratum, won: rand() < 0.3 + stratum * 0.03 }));
+      }
+      for (const o of standardize(rs, 10)) { total++; if (Math.abs(o.adjusted) > 1.2816 * o.se) outside++; }
+    }
+    // the cell-overlap bug (comparing to a cell average that contains the option) gave ~4% here
+    expect(outside / total).toBeGreaterThan(0.14);
+    expect(outside / total).toBeLessThan(0.26);
+  });
+});
+
 describe('shrinkage', () => {
   it('pulls noisy estimates toward the prior, keeps precise ones', () => {
     expect(shrinkToward({ adjusted: 0.1, se: 0.1 }, 0, 0.01 ** 2).mean).toBeLessThan(0.01);

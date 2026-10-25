@@ -155,6 +155,21 @@ export function buildRows(matches: ForkMatch[], labels: Labels, maxSlot = 3): Fo
 
 // ── standardization ──
 
+/** Win rate of `rs` standardized to the cell's stratum mix; per-stratum rates smoothed toward the cell's. */
+function stdRate(rs: ForkRow[], strata: Map<number, NW>, n: number): { p: number; v: number } {
+  const per = new Map<number, NW>();
+  for (const r of rs) { const s = per.get(r.stratum) ?? { n: 0, w: 0 }; s.n++; if (r.won) s.w++; per.set(r.stratum, s); }
+  let p = 0, v = 0;
+  for (const [sid, cs] of strata) {
+    const ws = cs.n / n, pc = cs.w / cs.n, o = per.get(sid) ?? { n: 0, w: 0 };
+    const ps = (o.w + STRATUM_K * pc) / (o.n + STRATUM_K);
+    p += ws * ps;
+    // variance of the smoothed rate: the prior part is shared with the comparison side, so only the data part counts
+    v += ws * ws * o.n * (ps * (1 - ps)) / (o.n + STRATUM_K) ** 2;
+  }
+  return { p, v };
+}
+
 export interface OptionStat {
   item: string; n: number; w: number; share: number;
   /** raw win rate minus the cell's raw win rate */
@@ -187,16 +202,14 @@ export function standardize(rows: ForkRow[], minOption: number): ForkCell['optio
   const out: OptionStat[] = [];
   for (const [item, rs] of byItem) {
     if (rs.length < minOption) continue;
-    const per = new Map<number, NW>();
-    for (const r of rs) { const s = per.get(r.stratum) ?? { n: 0, w: 0 }; s.n++; if (r.won) s.w++; per.set(r.stratum, s); }
-    let adj = 0, varSum = 0;
-    for (const [sid, cs] of strata) {
-      const ws = cs.n / n, pc = cs.w / cs.n;
-      const o = per.get(sid) ?? { n: 0, w: 0 };
-      const p = (o.w + STRATUM_K * pc) / (o.n + STRATUM_K);
-      adj += ws * p;
-      varSum += ws * ws * (p * (1 - p)) / (o.n + STRATUM_K);
-    }
+    // The option vs the REST of the cell, both standardized to the cell's
+    // stratum mix. delta vs the cell = (1 - share) * (option - rest); its
+    // variance counts both sides (the cell average contains the option, so
+    // comparing to it directly would overstate the noise).
+    const share = rs.length / n;
+    const opt = stdRate(rs, strata, n), rest = stdRate(rows.filter((r) => r.item !== item), strata, n);
+    const adjDelta = (1 - share) * (opt.p - rest.p);
+    const seDelta = (1 - share) * Math.sqrt(opt.v + rest.v);
     // swing, standardized the same way (stratum means smoothed toward the cell's)
     const sw = rs.filter((r) => r.swing != null);
     let swing: number | null = null;
@@ -213,10 +226,10 @@ export function standardize(rows: ForkRow[], minOption: number): ForkCell['optio
     }
     const w = rs.filter((r) => r.won).length;
     out.push({
-      item, n: rs.length, w, share: rs.length / n,
+      item, n: rs.length, w, share,
       naive: w / rs.length - cellRate,
-      adjusted: adj - cellRate, se: Math.sqrt(varSum),
-      shrunk: adj - cellRate, shrunkSe: Math.sqrt(varSum), lo: 0, hi: 0, confidence: 'noise',
+      adjusted: adjDelta, se: seDelta,
+      shrunk: adjDelta, shrunkSe: seDelta, lo: 0, hi: 0, confidence: 'noise',
       swing, swingN: sw.length,
       fromBehind: rs.filter((r) => r.stratum < 6).length / rs.length,
     });
@@ -292,7 +305,7 @@ export function computeForks(rows: ForkRow[], opts: ForkOptions): ForkCell[] {
 
 // ── order fork: item X at slot j vs slot j+1 ──
 
-export interface OrderFork { hero: string; role: string; ctx: string; item: string; early: NW; late: NW; adjusted: number; se: number; lo: number; hi: number; confidence: OptionStat['confidence'] }
+export interface OrderFork { hero: string; role: string; ctx: string; item: string; early: NW; late: NW; adjusted: number; se: number; shrunk: number; lo: number; hi: number; confidence: OptionStat['confidence'] }
 
 /**
  * For each hero-role-item bought in slot 1 or 2: was it 1st or 2nd? Both
@@ -329,19 +342,25 @@ export function orderForks(rows: ForkRow[], minEach: number, ctxFilter: (c: stri
       for (const [sid, cs] of strata) {
         const ws = cs.n / both.length, pc = cs.w / cs.n, o = per.get(sid) ?? { n: 0, w: 0 };
         const p = (o.w + STRATUM_K * pc) / (o.n + STRATUM_K);
-        m += ws * p; v += ws * ws * p * (1 - p) / (o.n + STRATUM_K);
+        m += ws * p; v += ws * ws * o.n * p * (1 - p) / (o.n + STRATUM_K) ** 2;
       }
       return { m, v };
     };
     const e = std(g.early), l = std(g.late);
     const adjusted = e.m - l.m, se = Math.sqrt(e.v + l.v);
-    const lo = adjusted - Z80 * se, hi = adjusted + Z80 * se;
     out.push({
       hero, role, ctx, item,
       early: { n: g.early.length, w: g.early.filter((r) => r.won).length },
       late: { n: g.late.length, w: g.late.filter((r) => r.won).length },
-      adjusted, se, lo, hi, confidence: confidenceOf(lo, hi, adjusted),
+      adjusted, se, shrunk: adjusted, lo: 0, hi: 0, confidence: 'noise',
     });
+  }
+  // same rule as item forks: shrink toward 0 with a prior learned from the order forks themselves
+  const tau2 = priorVariance(out);
+  for (const f of out) {
+    const s = shrinkToward(f, 0, tau2);
+    f.shrunk = s.mean; f.lo = s.mean - Z80 * s.se; f.hi = s.mean + Z80 * s.se;
+    f.confidence = confidenceOf(f.lo, f.hi, s.mean);
   }
   return out;
 }
@@ -370,6 +389,11 @@ export function interaction(cells: ForkCell[], group: Set<string>, a: string, b:
     }
   }
   return den ? { estimate: num / den, se: Math.sqrt(1 / den), pairs } : { estimate: 0, se: Infinity, pairs: 0 };
+}
+
+/** Collapse every item in `group` into one option `label`, so a validation check pools e.g. all magical-armor items. */
+export function groupItems(rows: ForkRow[], group: Set<string>, label: string): ForkRow[] {
+  return rows.map((r) => (group.has(r.item) ? { ...r, item: label } : r));
 }
 
 /** Deterministic PRNG for the placebo shuffle (mulberry32). */

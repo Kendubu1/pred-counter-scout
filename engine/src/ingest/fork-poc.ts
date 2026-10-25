@@ -9,7 +9,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  buildRows, computeForks, interaction, learnLabels, orderForks, shuffleOppType,
+  buildRows, computeForks, groupItems, interaction, learnLabels, orderForks, shuffleOppType,
   type ForkCell, type ForkMatch,
 } from '../forks.js';
 
@@ -47,25 +47,42 @@ function main() {
 
   // ── validation ──
   // 1. labels mean something: do players buy more magical armor into magical lane opponents?
+  // compared WITHIN each hero-role (pooling across roles mixes carry lanes, where nobody buys armor, with the rest),
+  // then averaged with the smaller side's row count as weight
   const later = rows.filter((r) => r.slot >= 2);
-  const buyRate = (set: Set<string>, ctx: string) => { const rs = later.filter((r) => r.ctx.includes(ctx)); return rs.filter((r) => set.has(r.item)).length / Math.max(1, rs.length); };
+  const byHR = new Map<string, typeof later>();
+  for (const r of later) (byHR.get(`${r.hero}|${r.role}`) ?? byHR.set(`${r.hero}|${r.role}`, []).get(`${r.hero}|${r.role}`)!).push(r);
+  const buyRate = (set: Set<string>, a: string, b: string) => {
+    let wa = 0, wb = 0, wt = 0;
+    for (const rs of byHR.values()) {
+      const A = rs.filter((r) => r.ctx.includes(a)), B = rs.filter((r) => r.ctx.includes(b));
+      if (A.length < 20 || B.length < 20) continue;
+      const w = Math.min(A.length, B.length);
+      wa += w * A.filter((r) => set.has(r.item)).length / A.length; wb += w * B.filter((r) => set.has(r.item)).length / B.length; wt += w;
+    }
+    return wt ? [wa / wt, wb / wt] as const : [0, 0] as const;
+  };
+  const [mrM, mrP] = buyRate(mr, 'oppType:magical', 'oppType:physical');
+  const [paP, paM] = buyRate(pa, 'oppType:physical', 'oppType:magical');
+  const [ahH, ahL] = buyRate(antiHeal, 'enemyHeal:high', 'enemyHeal:low');
   const react = {
-    magicalArmorRate: { vsMagical: buyRate(mr, 'oppType:magical'), vsPhysical: buyRate(mr, 'oppType:physical') },
-    physicalArmorRate: { vsMagical: buyRate(pa, 'oppType:magical'), vsPhysical: buyRate(pa, 'oppType:physical') },
-    antiHealRate: { vsHighHeal: buyRate(antiHeal, 'enemyHeal:high'), vsLowHeal: buyRate(antiHeal, 'enemyHeal:low') },
+    magicalArmorRate: { vsMagical: mrM, vsPhysical: mrP },
+    physicalArmorRate: { vsMagical: paM, vsPhysical: paP },
+    antiHealRate: { vsHighHeal: ahH, vsLowHeal: ahL },
   };
   // 2. known answers on outcomes: item delta in the matching context minus the opposite one
-  const valCells = computeForks(rows, { minOption: VAL_MIN, minOptionOpp: Infinity, contexts: (c) => c.startsWith('oppType:') || c.startsWith('enemyHeal:') });
+  // each item group pooled into one option per cell, so the check has power
+  const valCells = (group: Set<string>, label: string, ctx: string) => computeForks(groupItems(rows, group, label), { minOption: VAL_MIN, minOptionOpp: Infinity, contexts: (c) => c.startsWith(ctx) });
   const known = {
-    magicalArmorVsMagical: interaction(valCells, mr, 'oppType:magical', 'oppType:physical'),
-    physicalArmorVsPhysical: interaction(valCells, pa, 'oppType:physical', 'oppType:magical'),
-    antiHealVsHealers: interaction(valCells, antiHeal, 'enemyHeal:high', 'enemyHeal:low'),
+    magicalArmorVsMagical: interaction(valCells(mr, '#mr', 'oppType:'), new Set(['#mr']), 'oppType:magical', 'oppType:physical'),
+    physicalArmorVsPhysical: interaction(valCells(pa, '#pa', 'oppType:'), new Set(['#pa']), 'oppType:physical', 'oppType:magical'),
+    antiHealVsHealers: interaction(valCells(antiHeal, '#ah', 'enemyHeal:'), new Set(['#ah']), 'enemyHeal:high', 'enemyHeal:low'),
   };
   // 3. placebo: shuffle the opponent type, the magical-armor interaction should vanish
   const placebo: number[] = [];
   for (let s = 1; s <= PLACEBO_RUNS; s++) {
-    const shuffled = computeForks(shuffleOppType(rows, s), { minOption: VAL_MIN, minOptionOpp: Infinity, contexts: (c) => c.startsWith('oppType:') });
-    placebo.push(interaction(shuffled, mr, 'oppType:magical', 'oppType:physical').estimate);
+    const shuffled = computeForks(shuffleOppType(groupItems(rows, mr, '#mr'), s), { minOption: VAL_MIN, minOptionOpp: Infinity, contexts: (c) => c.startsWith('oppType:') });
+    placebo.push(interaction(shuffled, new Set(['#mr']), 'oppType:magical', 'oppType:physical').estimate);
   }
   const pMean = placebo.reduce((a, b) => a + b, 0) / placebo.length;
   const pSd = Math.sqrt(placebo.reduce((a, b) => a + (b - pMean) ** 2, 0) / placebo.length);
@@ -88,7 +105,7 @@ function main() {
   console.log('  known answers (adjusted win-% pts, matching context minus opposite; should be > 0):');
   for (const [k, v] of Object.entries(known)) console.log(`  ${k.padEnd(26)} ${pct(v.estimate)} ± ${(v.se * 100).toFixed(1)} (${v.pairs} item-cell pairs)`);
   console.log(`  placebo (shuffled opp type) ${pct(pMean)} ± ${(pSd * 100).toFixed(1)}; real beats ${PLACEBO_RUNS - beatsPlacebo}/${PLACEBO_RUNS} shuffles`);
-  console.log(`  adjustment moves deltas by ${(meanAbsShift * 100).toFixed(1)} pts on average; armor items move ${pct(defShift)} (expected > 0: bought from behind)`);
+  console.log(`  adjustment moves deltas by ${(meanAbsShift * 100).toFixed(1)} pts on average; armor items move ${pct(defShift)} (> 0 would mean armor is mostly bought from behind)`);
 
   const shown = cells.flatMap((c) => c.options.filter((o) => o.confidence !== 'noise').map((o) => ({ c, o })));
   console.log(`\n${shown.length} options clear "likely" or better across ${cells.length} cells. Strongest context forks:`);
@@ -96,8 +113,8 @@ function main() {
     console.log(`  ${label(c).padEnd(48)} ${(name.get(o.item) ?? o.item).padEnd(22)} ${pct(o.shrunk)} [${pct(o.lo)}, ${pct(o.hi)}] ${o.confidence.padEnd(6)} n=${o.n} naive ${pct(o.naive)}${o.swing != null ? ` swing ${o.swing >= 0 ? '+' : ''}${o.swing.toFixed(2)}` : ''}`);
   }
   console.log(`\nOrder forks (1st vs 2nd) that clear "likely":`);
-  for (const f of orders.filter((f) => f.confidence !== 'noise').sort((a, b) => Math.abs(b.adjusted) - Math.abs(a.adjusted)).slice(0, 15)) {
-    console.log(`  ${f.hero} ${f.role} [${f.ctx}] ${name.get(f.item) ?? f.item}: 1st ${pct(f.adjusted)} vs 2nd (n ${f.early.n}/${f.late.n}) ${f.confidence}`);
+  for (const f of orders.filter((f) => f.confidence !== 'noise').sort((a, b) => Math.abs(b.shrunk) - Math.abs(a.shrunk)).slice(0, 15)) {
+    console.log(`  ${f.hero} ${f.role} [${f.ctx}] ${name.get(f.item) ?? f.item}: 1st ${pct(f.shrunk)} vs 2nd [${pct(f.lo)}, ${pct(f.hi)}] (raw ${pct(f.adjusted)}, n ${f.early.n}/${f.late.n}) ${f.confidence}`);
   }
 
   writeFileSync(OUT, JSON.stringify({
