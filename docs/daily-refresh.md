@@ -86,14 +86,31 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    committed cursor in data/aggregates/perk-stream.json (~1,000 requests a day;
    a new patch starts a fresh window). Rewrites predgg-augments.json and
    predgg-builds.json (core builds from each player's purchase order).
-   Since 2026-10-25 perks also pages the ranked ladder first (~45 GraphQL
-   calls) to tag Gold+ players: every hero-role cell keeps a `gold` sub-count,
-   shipped as `goldPlus` in predgg-augments.json and `goldByRole` cores in
-   predgg-builds.json, and shown as the hero page's HIGH-RANK (GOLD+) line.
-   It is CURRENT rank, not rank at match time; compare options within the band.
+   Gold+ is tagged by rank AT MATCH TIME: each page's ranked matches go to
+   one aliased GraphQL `match(by: { id })` call (src/ingest/match-rank.ts,
+   ~0.7s a page, inside the 2s stream delay) for the rank every player held in
+   that game. Every hero-role cell keeps a `gold` sub-count, shipped as
+   `goldPlus` in predgg-augments.json (20+ games; its games/wins are the
+   hero-role Gold+ baseline) and `goldByRole` cores + `baselineByRole` in
+   predgg-builds.json (`goldBasis: "match-time"`). The first run after this
+   change drops the one day of ladder-basis (current-rank) Gold+ counts and
+   restarts `goldFrom`. Plat+ (`plat` cells, `platPlus`, `platByRole`,
+   `baselineByRole.*.plat`) is counted from the same lookup at no extra cost.
+   The page's high-rank band is Plat+ only (Gold+ stays in the files, unshown).
+   A lane OPENS on Plat+ once its most-played Plat+ build has 100+ games
+   (MIN_BAND_BUILD_GAMES in src/artifacts.ts), else all ranks; the builds
+   page's rank filter (All ranks / Plat+, in the hero header) switches the
+   opening picks (`platPlus`: augment, Eternal, minors, crest) and the builds
+   (`metaBuildsByBand`) together, as soon as the lane has any Plat+ data, with
+   thin-sample notes; a section with no Plat+ data falls back to all ranks and
+   says so. Matchups stay all ranks. There is no backfill, so expect lanes
+   to fill over the following weeks, popular ones first (1.17 volumes: median
+   lane ~34 days to a 100-game top Plat+ build).
    Since 2026-10-25 perks also writes data/aggregates/build-matchups.json
    (no extra requests): each hero-role's first 3 core items, split by lane
-   opponent and by every enemy hero, for all ranks and Plat+. Commit it with
+   opponent and by every enemy hero, for all ranks and Plat+ (rank at match time from the same lookup; the
+   seed's and first runs' ladder-basis Plat+ counts are dropped on migration,
+   see `platFrom`). Commit it with
    the other aggregates. It resets with the patch window like perk-stream.json.
    `window.segments` lists the counted stretches, including a one-off
    `seed:fork-poc` (Oct 22-24). Read it with `npm run matchups:builds -- <hero>`.

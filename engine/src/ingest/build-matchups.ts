@@ -10,7 +10,10 @@
 //
 // Cell C = { n, i: { itemSlug: count }, p?: C-without-p } where n = players
 // who completed 3 core items, i = how many had the item among those three,
-// p = the same counts for Plat+ players (current ladder tier >= 3).
+// p = the same counts for Plat+ players: tier >= 3 IN THAT GAME (rank at match
+// time, from match-rank.ts) since platBasis 'match-time'; the seed and the first
+// daily runs used the ladder's CURRENT tier, which reads high (winners climb),
+// so those p counts are dropped on migration and platFrom says when p restarted.
 // The window resets with the patch, like perk-stream.json.
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -29,6 +32,9 @@ export interface BuildMatchups {
   patch: string | null; patchReleasedAt: string;
   /** segments of the stream that were counted (seeded or daily), so gaps are visible */
   window: { matches: number; segments: { from: string; to: string; via: string }[] };
+  /** 'match-time' once p is counted by rank at match time; p counts start at platFrom. */
+  platBasis?: 'match-time';
+  platFrom?: string;
   heroes: Record<string, HeroRoleCells>;
 }
 
@@ -38,7 +44,7 @@ export interface MatchPlayer { hero: string; role: string; team: number; core: s
 export function emptyState(patch: string | null, patchReleasedAt: string): BuildMatchups {
   return {
     source: 'pred.gg public match stream (get-matches-since), RANKED, counted by npm run perks',
-    note: 'heroes["hero|role"]: all = every player who completed 3 core items; lane[opp] = into that lane opponent; team[enemy] = with that hero anywhere on the other team (lane opponent included). n = players, i = players with the item among their first 3 core items, p = the same for Plat+ (CURRENT ladder tier, not tier at match time).',
+    note: 'heroes["hero|role"]: all = every player who completed 3 core items; lane[opp] = into that lane opponent; team[enemy] = with that hero anywhere on the other team (lane opponent included). n = players, i = players with the item among their first 3 core items, p = the same for Plat+ (tier >= 3 IN THAT GAME, counted from platFrom).',
     generatedAt: '', patch, patchReleasedAt, window: { matches: 0, segments: [] }, heroes: {},
   };
 }
@@ -46,6 +52,16 @@ export function emptyState(patch: string | null, patchReleasedAt: string): Build
 export function loadState(patch: string | null, patchReleasedAt: string): BuildMatchups {
   const prev = existsSync(BUILD_MATCHUPS) ? JSON.parse(readFileSync(BUILD_MATCHUPS, 'utf8')) as BuildMatchups : null;
   return prev && prev.patchReleasedAt === patchReleasedAt ? prev : emptyState(patch, patchReleasedAt);
+}
+
+/** Drop Plat+ (p) counts made on any basis but rank at match time; p restarts at `from`. */
+export function migratePlatBasis(st: BuildMatchups, from: string): boolean {
+  if (st.platBasis === 'match-time') return false;
+  const strip = (c: Cell) => { delete c.p; };
+  for (const h of Object.values(st.heroes)) { strip(h.all); Object.values(h.lane).forEach(strip); Object.values(h.team).forEach(strip); }
+  st.platBasis = 'match-time';
+  st.platFrom = from;
+  return true;
 }
 
 export function saveState(st: BuildMatchups) {

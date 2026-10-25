@@ -4,6 +4,10 @@
 // twice or into another patch's window.
 //
 //   npx tsx src/ingest/build-matchups-seed.ts
+//
+// NOTE (2026-10-25): its Plat+ flag comes from the ladder's CURRENT tier; perks drops
+// those p counts on its next run (migratePlatBasis). Re-seeding brings them back.
+
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

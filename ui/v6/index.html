@@ -133,7 +133,7 @@
 
   /* hero header: avatar + identity, lane switcher, then a quiet underline tab bar.
      Descriptors are plain muted text (not chips) so the name carries the weight. */
-  .hero-head { display:grid; grid-template-columns:auto 1fr; grid-template-areas:"img id" "img seg"; column-gap:1rem; row-gap:.6rem; align-items:center; }
+  .hero-head { display:grid; grid-template-columns:auto 1fr; grid-template-areas:"img id" "img seg" "img band"; column-gap:1rem; row-gap:.6rem; align-items:center; }
   .hero-head img {
     grid-area:img; width:88px; height:88px; border-radius:16px; object-fit:cover;
     border:1px solid var(--border);
@@ -147,6 +147,13 @@
   .seg-roles button { background:transparent; border:0; border-radius:8px; padding:.28rem .85rem; font-size:.8rem; color:var(--text-2); text-transform:capitalize; }
   .seg-roles button:hover { color:var(--text-0); }
   .seg-roles button.active { background:var(--bg-3); color:var(--text-0); font-weight:600; }
+  /* builds rank filter: the same segmented track as the lane switcher */
+  .bband { display:inline-flex; gap:2px; padding:2px; margin:0 0 .5rem; background:var(--bg-1); border:1px solid var(--border); border-radius:10px; }
+  .bband button { background:transparent; border:0; border-radius:8px; padding:.28rem .75rem; font-size:.78rem; color:var(--text-2); cursor:pointer; }
+  .bband button:hover:not(:disabled) { color:var(--text-0); }
+  .bband button.active { background:var(--bg-3); color:var(--text-0); font-weight:600; }
+  .bband button:disabled { opacity:.4; cursor:default; }
+  .pageband { grid-area:band; justify-self:start; align-self:start; margin:0; }
   .chips { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.45rem; }
   .chip {
     white-space:nowrap; background:var(--bg-2); border:1px solid var(--border); border-radius:99px;
@@ -391,7 +398,7 @@
     .mp .g { font-size:.6875rem; }
     /* phone hero header: identity row, then a full-width lane switcher with
        equal segments (40px tap height), then the tab bar (44px via the union list) */
-    .hero-head { grid-template-areas:"img id" "seg seg"; column-gap:.8rem; row-gap:.8rem; }
+    .hero-head { grid-template-areas:"img id" "seg seg" "band band"; column-gap:.8rem; row-gap:.8rem; }
     .hh-id { align-self:center; }
     .hh-meta { font-size:.76rem; }
     /* lane switcher: 40px tap height, but the visible pill is an inset 32px
@@ -1172,7 +1179,20 @@ function laneSteerBlock(a) {
 // ── ONE image-forward, tabbed "Builds" card: one tab per meta build (highest
 // win rate first — the field's clear winner opens) + the experimental kit-math build last. Only the active tab
 // body shows; the prose lives behind a per-tab "why these items" disclosure.
-function buildsCard(a) {
+// Rank filter labels (All ranks / Plat+, rank at match time); the switch itself
+// is page-level, in renderHero. Gold+ is counted but not shown: it sat within
+// its own noise of all ranks and overlapped Plat+.
+const BAND_LABELS = { all: 'All ranks', 'plat+': 'Plat+' };
+const BAND_KEY = 'pred-scout:build-band';
+function savedBand() { try { return localStorage.getItem(BAND_KEY); } catch { return null; } }
+function saveBand(b) { try { localStorage.setItem(BAND_KEY, b); } catch { /* private window: not remembered */ } }
+function buildsCard(a, pageBand) {
+  // Only this lane's own bands: a lane with no builds must not show the hero-level ones.
+  const byBand = a.metaBuilds && a.metaBuilds.length && a.metaBuildsByBand ? a.metaBuildsByBand : null;
+  // Follows the page's rank filter; a band with no builds here falls back to all ranks.
+  const band = byBand && byBand[pageBand] ? pageBand : 'all';
+  const missing = pageBand !== 'all' && band !== pageBand;
+  const sel = byBand && byBand[band] ? byBand[band] : { builds: a.metaBuilds, baseline: a.metaBuildsBaseline };
   const rsnRoot = REASONING && REASONING.heroes && REASONING.heroes[a.slug] && REASONING.heroes[a.slug][a.role];
   // Field meta builds, HIGHEST WIN RATE first (the default tab), by shrunk win
   // rate. Builds under 100 games sort after the rest (still by win rate): a raw
@@ -1181,7 +1201,7 @@ function buildsCard(a) {
   const MIN_LEAD_GAMES = 100;
   const setKey = (names) => names.map((n) => String(n).toLowerCase().replace(/[^a-z0-9]/g, '')).sort().join('|');
   const rsnBySet = new Map(((rsnRoot && rsnRoot.metaBuilds) || []).filter((r) => r && r.items).map((r) => [setKey(Object.keys(r.items)), r]));
-  const metas = (a.metaBuilds || []).map((m) => ({ m, rsn: rsnBySet.get(setKey(m.items.map((it) => it.name))) || null }))
+  const metas = (sel.builds || []).map((m) => ({ m, rsn: rsnBySet.get(setKey(m.items.map((it) => it.name))) || null }))
     .sort((x, y) => (((y.m.n || 0) >= MIN_LEAD_GAMES) - ((x.m.n || 0) >= MIN_LEAD_GAMES))
       || ((y.m.shrunkWr || 0) - (x.m.shrunkWr || 0)) || ((y.m.n || 0) - (x.m.n || 0)));
   const opt = rsnRoot && rsnRoot.optimizer;
@@ -1189,6 +1209,17 @@ function buildsCard(a) {
   // hero's builds across all roles. Say so instead of passing them as lane data.
   const allRolesNote = a.metaBuildsSource === 'all-roles' && metas.length
     ? `<div class="mb-why" style="color:var(--gold);margin:0 0 .5rem">No ${esc(a.role)} build data for ${esc(a.name)} yet — these are the most-played builds across all of ${esc(a.name)}'s roles.</div>` : '';
+  // Each build is read against the hero's own win rate in this role and band,
+  // not a number from other games. A thin band says so: its win rates lean on
+  // the band average (the engine's shrinkage) until its games say otherwise.
+  const ranked = band !== 'all';
+  const base = sel.baseline && sel.baseline.n ? sel.baseline : null;
+  const baseWr = base ? base.w / base.n : null;
+  const topN = Math.max(0, ...metas.map((e) => e.m.n || 0));
+  const missingNote = missing && metas.length
+    ? `<div class="mb-why" style="color:var(--gold);margin:0 0 .5rem">No ${BAND_LABELS[pageBand]} builds for ${esc(a.name)} ${esc(a.role)} yet — showing all ranks.</div>` : '';
+  const bandNote = metas.length && (ranked || base)
+    ? `<div class="mb-why" style="color:var(--text-2);margin:0 0 .5rem">${ranked ? `<b style="color:var(--gold)">${BAND_LABELS[band]} games</b> (rank in that game)` : 'All ranks'}${base ? ` · ${esc(a.name)} wins ${(baseWr * 100).toFixed(1)}% as ${esc(a.role)} here (${base.n.toLocaleString()} games)` : ''}${ranked && topN < MIN_LEAD_GAMES ? `<br><span style="color:var(--gold)">Thin sample: the top build has ${topN} games, so these win rates stay close to ${esc(a.name)}'s ${BAND_LABELS[band]} average until more games come in.</span>` : ''}</div>` : '';
 
   // Tab strip: one per meta build (title), then the kit-math build.
   // Each option shows its win rate and sample under its name (order already says
@@ -1214,6 +1245,7 @@ function buildsCard(a) {
         <div class="mb-items" style="flex-wrap:wrap;margin-bottom:.5rem">${rail}</div>
         <div style="display:flex;align-items:center;gap:.6rem">
           <span class="bwr ${wrBand(m.shrunkWr)}">${(m.shrunkWr * 100).toFixed(1)}%</span>
+          ${baseWr != null ? `<span class="mb-n" style="${m.shrunkWr >= baseWr ? 'color:var(--green)' : 'color:var(--text-2)'}">${m.shrunkWr >= baseWr ? '+' : ''}${((m.shrunkWr - baseWr) * 100).toFixed(1)} vs hero</span>` : ''}
           <span class="mb-n">${m.n.toLocaleString()} games${m.shareOfCores ? ` · ${Math.round(m.shareOfCores * 100)}% of tracked builds` : ''}${m.anyOrder ? ' · item set, purchase orders pooled' : m.otherOrderGames ? ` · ${m.otherOrderGames.toLocaleString()} bought these in another order` : ''}</span>
         </div>
         ${explain}
@@ -1262,7 +1294,7 @@ function buildsCard(a) {
       </div>`;
 
   return `
-    <section class="card answer">
+    <section class="card answer" id="builds-card">
       <div class="bhead">
         <h2>Builds</h2>
         ${metas.length ? `<div class="bnav">
@@ -1272,6 +1304,8 @@ function buildsCard(a) {
         </div>` : ''}
       </div>
       ${allRolesNote}
+      ${missingNote}
+      ${bandNote}
       <div class="btabs">${tabs}</div>
       ${metas.map(metaBody).join('')}
       ${simBody}
@@ -1309,6 +1343,22 @@ function renderHero(a, roleParam) {
       <b style="color:var(--gold)">No ${esc(fellBackFrom)} build for ${esc(a.name)}</b>${share}. Showing <b>${esc(activeRole)}</b> instead${activeRole === (roleViews[0] && roleViews[0].role) ? ', the most-played role' : ''}. Everything on this page is the ${esc(activeRole)} view.
     </div>`;
   })();
+  // ── PAGE RANK FILTER (All ranks / Plat+, rank at match time) ── one switch
+  // for every section with banded data: opening picks (augment, Eternal,
+  // minors, crest) and builds. Matchups stay all ranks (no banded source). The
+  // viewer's pick is remembered; otherwise the lane opens on the engine's band
+  // (Plat+ once its top Plat+ build has 100 games). A section with no Plat+
+  // data for this lane falls back to all ranks and says so.
+  const augCell = AUGS && AUGS.heroes && AUGS.heroes[a.slug] && AUGS.heroes[a.slug][activeRole];
+  const platPicks = AUGS && AUGS.goldBasis === 'match-time' && augCell && augCell.platPlus && augCell.platPlus.games ? augCell.platPlus : null;
+  const platBuilds = !!(a.metaBuilds && a.metaBuilds.length && a.metaBuildsByBand && a.metaBuildsByBand['plat+']);
+  const hasPlat = !!platPicks || platBuilds;
+  const saved = savedBand();
+  const pageBand = hasPlat ? (saved && BAND_LABELS[saved] ? saved : (a.metaBuildsBand === 'plat+' ? 'plat+' : 'all')) : 'all';
+  const bandSwitch = hasPlat ? `
+      <div class="bband pageband" role="group" aria-label="Rank filter — opening picks and builds counted at these ranks (rank in that game)">
+        ${Object.keys(BAND_LABELS).map((b) => `<button data-pageband="${b}" class="${b === pageBand ? 'active' : ''}" aria-pressed="${b === pageBand}">${BAND_LABELS[b]}</button>`).join('')}
+      </div>` : '';
   const o = a.build.objectives;
   const top = a.eternals.top[0];
   const dots = (cps) => `<div class="dots">${cps.map((c) =>
@@ -1352,8 +1402,10 @@ function renderHero(a, roleParam) {
       <div class="seg-roles flexroles" role="group" aria-label="Lane — build, spikes, Eternals and matchups change per lane">
         ${roleViews.map((v) => `<button data-flexrole="${esc(v.role)}" class="${v.role === activeRole ? 'active' : ''}" aria-pressed="${v.role === activeRole}">${laneIcon(esc(v.role))}${esc(v.role)}</button>`).join('')}
       </div>` : ''}
+      ${bandSwitch}
       ${fallbackNote}
     </header>
+    ${pageBand === 'plat+' ? `<div class="mb-why" style="color:var(--text-2);margin:.2rem 0 .6rem"><b style="color:var(--gold)">Plat+</b> — opening picks and builds below are from games where the player was Platinum or higher at the time. Matchups use all ranks.</div>` : ''}
 
     <div class="htabs" role="tablist">
       <button class="htab active" data-tab="play">Game plan</button>
@@ -1388,7 +1440,12 @@ function renderHero(a, roleParam) {
         // Follow the lane the page shows (activeRole), never the raw URL role.
         const role = hr[activeRole] ? activeRole : (hr[a.role] ? a.role : roles[0]);
         const mismatch = role !== activeRole;
-        const cell = hr[role];
+        // Rank filter: Plat+ counts have the same shape as the all-ranks cell.
+        const platCell = pageBand === 'plat+' && AUGS.goldBasis === 'match-time' && hr[role].platPlus && hr[role].platPlus.games ? hr[role].platPlus : null;
+        const cell = platCell || hr[role];
+        const picksBandNote = pageBand !== 'plat+' ? ''
+          : platCell ? `<div style="font-size:.72rem;color:var(--text-2);margin-bottom:.45rem"><b style="color:var(--gold)">Plat+</b> · ${platCell.games.toLocaleString()} ${esc(role)} games · ${esc(a.name)} wins ${(platCell.wins / platCell.games * 100).toFixed(1)}% here (${(hr[role].wins / hr[role].games * 100).toFixed(1)}% all ranks)${platCell.games < 300 ? ' · thin sample: picks firm up as games come in' : ''}</div>`
+          : `<div style="font-size:.72rem;color:var(--gold);margin-bottom:.45rem">No Plat+ picks for ${esc(a.name)} ${esc(role)} yet — showing all ranks.</div>`;
         // Evidence floor scales with the cell: 10% of its games, 30..300. A full
         // patch sample keeps the old fixed 300; early in a patch (the public
         // match stream accumulates daily) a thin cell still shows its leaders
@@ -1421,6 +1478,7 @@ function renderHero(a, roleParam) {
             .sort((x, y) => y.shrunk - x.shrunk).slice(0, 3);
         })();
         return `
+        ${picksBandNote}
         ${mismatch ? `<div style="font-size:.72rem;color:var(--gold);margin-bottom:.45rem">the field sample for ${esc(a.name)} ${esc(activeRole)} is too thin — these picks are ${esc(role)} evidence</div>` : ''}
         ${(() => { window.__simPick = (a.augments || []).find((x) => x.modeled) ?? null; window.__augTheory = ''; window.__etTheory = ''; return ''; })()}
         <div style="font-size:.74rem;color:var(--text-2);margin:0 0 .45rem"><b>Augment</b> · recommended as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
@@ -1680,45 +1738,6 @@ function renderHero(a, roleParam) {
           <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.3rem 0 0 2.1rem">Best win rate as ${esc(role)} — ${(c0.w / c0.n * 100).toFixed(1)}% over ${c0.n.toLocaleString()} games.</div>`;
         })()}
         ${(() => {
-          // ── HIGH-RANK (Gold+) view ── the same counts for players Gold or higher
-          // on the ranked ladder (predgg-augments goldPlus). Pick shares always
-          // show; "Gold+ wins more with X" only when X beats our pick INSIDE the
-          // band with 50+ games each and p < .05 (two-proportion z). Current rank,
-          // not rank at match time, and winners climb, so only within-band
-          // comparisons are made — never Gold+ vs all ranks.
-          const G = cell.goldPlus;
-          if (!G || !G.games) return '';
-          const z = (x, y) => { const p1 = x.w / x.n, p2 = y.w / y.n, p = (x.w + y.w) / (x.n + y.n); const se = Math.sqrt(p * (1 - p) * (1 / x.n + 1 / y.n)); return se ? (p1 - p2) / se : 0; };
-          const MIN = 50;
-          const row = (label, list, ourKey, keyOf, nameOf) => {
-            if (!list || !list.length) return '';
-            const tot = list.reduce((t, x) => t + x.n, 0) || 1;
-            const top = [...list].sort((x, y) => y.n - x.n)[0];
-            const ours = ourKey ? list.find((x) => keyOf(x) === ourKey) : null;
-            const same = ours && keyOf(top) === keyOf(ours);
-            const challenger = ours && ours.n >= MIN ? [...list].filter((x) => x.n >= MIN && keyOf(x) !== ourKey).sort((x, y) => y.w / y.n - x.w / x.n)[0] : null;
-            const flag = challenger && z(challenger, ours) >= 1.96
-              ? `<div style="font-size:.7rem;color:var(--gold);margin:.15rem 0 0 0">▲ Gold+ wins more with <b>${esc(nameOf(challenger))}</b>: ${(challenger.w / challenger.n * 100).toFixed(1)}% over ${challenger.n} vs our pick ${(ours.w / ours.n * 100).toFixed(1)}% over ${ours.n}</div>` : '';
-            return `<div style="padding:.3rem 0;border-bottom:1px dashed var(--border)">
-              <div style="display:flex;gap:.5rem;align-items:baseline;flex-wrap:wrap;font-size:.8rem">
-                <b style="font-size:.6875rem;letter-spacing:.06em;color:var(--text-2);min-width:4.6rem">${label}</b>
-                <span>Gold+ run <b>${esc(nameOf(top))}</b> <span style="color:var(--text-2)">${Math.round(top.n / tot * 100)}% of picks · ${(top.w / top.n * 100).toFixed(1)}% win · ${top.n} games</span></span>
-                <span style="margin-left:auto;font-size:.7rem;${same ? 'color:var(--green)' : 'color:var(--text-2)'}">${same ? 'same as our pick' : ours ? `our pick ${esc(nameOf(ours))}: ${Math.round(ours.n / tot * 100)}% of Gold+ picks` : ourKey ? 'our pick: not seen in Gold+' : ''}</span>
-              </div>${flag}</div>`;
-          };
-          const ourAug = ranked[0] ? ranked[0].id : null;
-          const ourEt = ets[0] ? ets[0].name : null;
-          const crs0 = (cell.crests || []).filter((c) => c.n >= floor).sort((x, y) => (y.w / y.n) - (x.w / x.n))[0];
-          const since = String(AUGS.goldFrom || '').slice(0, 10);
-          return `
-          <div style="font-size:.74rem;color:var(--text-2);margin:.8rem 0 .3rem" title="Players Gold or higher on the ranked ladder (their current rank, not their rank when the game was played). Players who win climb, so Gold+ win rates run high overall: only compare options within Gold+.">
-            <b>High-rank (Gold+)</b> · ${G.games.toLocaleString()} ${esc(role)} games${since ? ` since ${esc(since)}` : ''} · what Gold+ players actually pick
-          </div>
-          ${row('Augment', G.augments, ourAug, (x) => x.id, (x) => x.name)}
-          ${row('Eternal', G.eternals, ourEt, (x) => x.name, (x) => x.name)}
-          ${row('Crest', G.crests, crs0 ? crs0.name : null, (x) => x.name, (x) => x.name)}`;
-        })()}
-        ${(() => {
           // ── ONE merged kit-math (THEORY) block at the very bottom of this card ──
           // The augment THEORY + Eternal THEORY (per-Eternal sim-math/minors, the
           // sim-pick block, the agreement lines) are RELOCATED here, never deleted.
@@ -1732,7 +1751,7 @@ function renderHero(a, roleParam) {
       })()}
     </section>
 
-    ${buildsCard(a)}
+    ${buildsCard(a, pageBand)}
 
     <section class="card">
       <h2>Matchups <span class="hint">vs the most-played ${esc(a.role)} you'll face · green = when you can win the fight</span></h2>
@@ -1784,6 +1803,24 @@ function renderHero(a, roleParam) {
       window.scrollTo({ top: 0 });
     };
   });
+  wireBuilds();
+  // Page rank filter: remember the pick and redraw this lane, keeping the scroll.
+  document.querySelectorAll('.pageband button[data-pageband]').forEach((b) => {
+    b.onclick = async () => {
+      if (b.classList.contains('active')) return;
+      const y = window.scrollY;
+      saveBand(b.dataset.pageband);
+      await nav(a.slug, true, activeRole);
+      window.scrollTo({ top: y });
+    };
+  });
+  // Matchup rows are clickable — open the enemy hero's page (reuses global nav).
+  document.querySelectorAll('.murow[data-slug]').forEach((el) => {
+    el.onclick = () => nav(el.dataset.slug, false);
+  });
+}
+
+function wireBuilds() {
   // Build tabs: pure show/hide — toggle .active on the strip and .hidden on the
   // matching body. No re-render; scoped to the new .btab buttons (mirrors .htab).
   // The counter, prev/next and edge fades all follow the selected tab and the
@@ -1821,10 +1858,6 @@ function renderHero(a, roleParam) {
   });
   if (strip) { strip.addEventListener('scroll', fades, { passive: true }); requestAnimationFrame(fades); }
   _buildFades = fades;
-  // Matchup rows are clickable — open the enemy hero's page (reuses global nav).
-  document.querySelectorAll('.murow[data-slug]').forEach((el) => {
-    el.onclick = () => nav(el.dataset.slug, false);
-  });
 }
 
 // Tap-to-explain for [data-tip] tags (verdict labels etc.): title tooltips don't work

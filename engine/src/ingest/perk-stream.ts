@@ -28,16 +28,21 @@
 // consumer already reads (augments / eternals / crests per hero-role, plus the
 // minor-slot and minor-pair counts that file never had).
 //
-// Politeness: sequential, 1s between calls, identified UA, retry with backoff.
+// RANK BAND: each page's ranked matches are looked up in one aliased GraphQL
+// call for the rank every player held in that game (match-rank.ts); rows of
+// Gold+ players are also counted into a `gold` cell. See goldBasis.
+//
+// Politeness: sequential, 2s between stream calls, identified UA, retry with backoff.
 // The augment catalog (names + descriptions) needs one authenticated pred.gg
 // GraphQL call; without creds the previous catalog is kept.
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { gql, hasCredentials, currentRatingId } from './predgg.js';
+import { hasCredentials } from './predgg.js';
+import { isGoldPlus, isPlatPlus, matchTimeRanks } from './match-rank.js';
 import { epoch, fetchPage, loadPerkCatalog, loadoutOf, sleep, type PerkInfo } from './match-stream.js';
-import { PLAT_TIER, countMatch, loadState as loadBuildMatchups, saveState as saveBuildMatchups, addSegment, type MatchPlayer } from './build-matchups.js';
+import { countMatch, migratePlatBasis, loadState as loadBuildMatchups, saveState as saveBuildMatchups, addSegment, type MatchPlayer } from './build-matchups.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const STATE = path.join(ROOT, 'data/aggregates/perk-stream.json');
@@ -56,9 +61,10 @@ interface EternalCell extends NW { minor1: Record<string, NW>; minor2: Record<st
 // order, keyed "slug|slug|slug" — the same definition pred.gg's gated coreBuild
 // used, rebuilt from each player's incomeData.transactions.
 interface CountCell extends NW { augments: Record<string, NW>; eternals: Record<string, EternalCell>; crests: Record<string, NW>; cores?: Record<string, NW> }
-// gold: the same counts for rows whose player is Gold or higher on the ranked
-// ladder (added 2026-10-25, counted from goldFrom onward).
-interface RoleCell extends CountCell { gold?: CountCell }
+// gold: the same counts for rows whose player was Gold or higher IN THAT GAME
+// (rank at match time, see match-rank.ts), counted from goldFrom onward.
+// plat: the same for Platinum or higher, over the same window (a subset of gold).
+interface RoleCell extends CountCell { gold?: CountCell; plat?: CountCell }
 interface State {
   source: string; note: string; generatedAt: string;
   patch: string | null; patchReleasedAt: string;
@@ -69,43 +75,20 @@ interface State {
   /** Core builds were added on 2026-10-16, after the window opened: they are
    *  counted from this cursor onward, so their sample is smaller than the perks'. */
   coresFrom?: string;
-  /** Gold+ sub-counts started here (2026-10-25), so their window is shorter. */
+  /** Gold+ and Plat+ sub-counts started here, so their window is shorter. */
   goldFrom?: string;
-  ladder?: { fetchedAt: string; ratingId: string; goldPlusPlayers: number; ladderPlayers: number };
+  /** 'match-time': the rank each player held in that game. Counts made on any
+   *  other basis (the 2026-10-24 ladder proxy, a player's CURRENT rank) are
+   *  dropped and goldFrom restarts when this is missing. */
+  goldBasis?: 'match-time';
+  /** Ranked matches whose ranks pred.gg could not resolve (rows stay out of Gold+). */
+  goldUnresolvedMatches?: number;
+  /** Retired ladder-proxy metadata; deleted on migration. */
+  ladder?: unknown;
   heroes: Record<string, Record<string, RoleCell>>;
 }
 
 const bump = (o: Record<string, NW>, k: string, won: boolean) => { const c = (o[k] ??= { n: 0, w: 0 }); c.n++; if (won) c.w++; };
-
-// RANK BAND: stream rows carry no rank, but playerId is the pred.gg player
-// uuid, and the ranked ladder (leaderboardPaginated, 500 per page, sorted by
-// points) lists every placed player with their rank. Paging until the first
-// sub-Gold row yields the Gold+ set: ~28k players in ~60 calls. It is the
-// player's CURRENT rank, not their rank when the match was played; within one
-// patch that is a fair proxy, but winners climb, so Gold+ win rates read high
-// overall — compare options WITHIN the band only.
-const GOLD_TIER = 2;
-// tiers: Gold+ player uuid -> tierIdx (2 Gold, 3 Platinum, 4 Diamond, 5 Paragon); Plat+ feeds build-matchups.json.
-async function goldPlusPlayers(): Promise<{ ids: Set<string>; tiers: Map<string, number>; ratingId: string; ladderPlayers: number }> {
-  const ratingId = await currentRatingId();
-  const ids = new Set<string>();
-  const tiers = new Map<string, number>();
-  let total = 0;
-  for (let offset = 0; ; offset += 500) {
-    const d = await gql<{ leaderboardPaginated: { totalCount: number; results: { rank: { tierIdx: number } | null; player: { uuid: string | null } | null }[] } }>(
-      `{ leaderboardPaginated(ratingId: "${ratingId}", limit: 500, offset: ${offset}) { totalCount results { rank { tierIdx } player { uuid } } } }`);
-    total = d.leaderboardPaginated.totalCount;
-    const rows = d.leaderboardPaginated.results;
-    let below = false;
-    for (const r of rows) {
-      if ((r.rank?.tierIdx ?? -1) < GOLD_TIER) { below = true; break; }
-      if (r.player?.uuid) { ids.add(r.player.uuid); tiers.set(r.player.uuid, r.rank!.tierIdx); }
-    }
-    if (below || rows.length < 500 || offset + 500 >= total) break;
-    await sleep(300);
-  }
-  return { ids, tiers, ratingId, ladderPlayers: total };
-}
 
 async function main() {
   const meta = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/META.json'), 'utf8')) as { patch?: string; patchReleasedAt?: string };
@@ -147,15 +130,24 @@ async function main() {
       }
     : prev!;
   st.coresFrom ??= new Date(st.cursor * 1000).toISOString();
+  // Gold+ is rank AT MATCH TIME. Counts made on the old ladder basis (current
+  // rank, which reads high because winners climb) cannot be mixed in: drop
+  // them and restart the Gold+ window here.
+  if (st.goldBasis !== 'match-time') {
+    for (const roles of Object.values(st.heroes)) for (const c of Object.values(roles)) { delete c.gold; delete c.plat; }
+    delete st.ladder;
+    st.goldFrom = new Date(st.cursor * 1000).toISOString();
+    st.goldBasis = 'match-time';
+    st.goldUnresolvedMatches = 0;
+    if (prev && !fresh) console.log(`Gold+ basis -> rank at match time; Gold+ counts restart at ${st.goldFrom}`);
+  }
   st.goldFrom ??= new Date(st.cursor * 1000).toISOString();
   if (fresh && prev) console.log(`patch changed (${prev.patch} -> ${meta.patch}); starting a fresh window`);
-  const ladder = await goldPlusPlayers();
-  st.ladder = { fetchedAt: new Date().toISOString(), ratingId: ladder.ratingId, goldPlusPlayers: ladder.ids.size, ladderPlayers: ladder.ladderPlayers };
-  console.log(`ranked ladder: ${ladder.ids.size.toLocaleString()} Gold+ of ${ladder.ladderPlayers.toLocaleString()} placed players`);
   console.log(`match stream from ${new Date(st.cursor * 1000).toISOString()} (${fresh ? 'fresh' : 'resuming'}), up to ${MAX_REQUESTS} requests`);
   // Matchup build counts ride the same pages (data/aggregates/build-matchups.json).
   const bm = loadBuildMatchups(meta.patch ?? null, meta.patchReleasedAt);
   const runFrom = new Date(st.cursor * 1000).toISOString();
+  if (migratePlatBasis(bm, runFrom)) console.log(`build-matchups Plat+ basis -> rank at match time; p counts restart at ${runFrom}`);
   addSegment(bm, runFrom, runFrom, 'daily');
   const bmSegment = bm.window.segments[bm.window.segments.length - 1]!;
 
@@ -181,10 +173,15 @@ async function main() {
     requests++;
     const boundary = new Set(st.boundaryIds);
     const newMatches = page.filter((m) => m?.matchId && !boundary.has(m.matchId) && epoch(m.endTime) >= st.cursor);
+    // ~3 ranked matches a page: one aliased GraphQL call (~0.7s) for the rank
+    // each player held in that game.
+    const ranks = await matchTimeRanks(newMatches.filter((m) => m.gameMode === 'RANKED').map((m) => String(m.matchId)));
     for (const m of newMatches) {
       seenThisRun++;
       if (m.gameMode !== 'RANKED') continue;
       rankedThisRun++;
+      const matchRanks = ranks.get(String(m.matchId));
+      if (!matchRanks) st.goldUnresolvedMatches = (st.goldUnresolvedMatches ?? 0) + 1;
       const matchPlayers: MatchPlayer[] = [];
       for (const p of m.playerData ?? []) {
         if (p.bIsAIPlayer) continue;
@@ -217,8 +214,10 @@ async function main() {
           if (core.length === 3) bump((c.cores ??= {}), core.join('|'), won);
         };
         count(cell);
-        if (ladder.ids.has(String(p.playerId))) count((cell.gold ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
-        matchPlayers.push({ hero: slug, role, team: p.teamId, core, plat: (ladder.tiers.get(String(p.playerId)) ?? -1) >= PLAT_TIER });
+        const tier = matchRanks?.get(String(p.playerId));
+        if (isGoldPlus(tier)) count((cell.gold ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
+        if (isPlatPlus(tier)) count((cell.plat ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
+        matchPlayers.push({ hero: slug, role, team: p.teamId, core, plat: isPlatPlus(tier) });
       }
       countMatch(bm, matchPlayers);
     }
@@ -250,23 +249,27 @@ async function main() {
     })),
     crests: sorted(c.crests).map(([name, v]) => ({ name, n: v.n, w: v.w })),
   });
-  // Gold+ cells ship once they hold this many games; thinner ones stay in state.
-  const MIN_GOLD_GAMES = 30;
+  // Gold+ cells ship from this many games; thinner ones stay in state. The page
+  // pulls thin Gold+ numbers toward the hero's Gold+ role win rate, so a low
+  // floor shows early data without overstating it.
+  const MIN_GOLD_GAMES = 20;
   for (const [slug, roles] of Object.entries(st.heroes)) {
     for (const [role, c] of Object.entries(roles)) {
       if (c.n < MIN_ROLE_GAMES) continue;
       (out[slug] ??= {})[role] = {
         ...cellOut(c),
         ...(c.gold && c.gold.n >= MIN_GOLD_GAMES ? { goldPlus: cellOut(c.gold) } : {}),
+        ...(c.plat && c.plat.n >= MIN_GOLD_GAMES ? { platPlus: cellOut(c.plat) } : {}),
       };
     }
   }
   writeFileSync(AUG_OUT, JSON.stringify({
     generatedAt: st.generatedAt,
     source: `pred.gg public match stream (get-matches-since), RANKED, patch ${meta.patch ?? '?'} window ${st.window.from.slice(0, 16)} -> ${st.window.to.slice(0, 16)}, ${st.window.rankedMatches.toLocaleString()} ranked matches; (hero, role) cells with ${MIN_ROLE_GAMES}+ games. Counted by npm run perks from data/aggregates/perk-stream.json.`,
-    note: 'n = games, w = wins. eternals[].minor1/minor2 = minor-slot picks under that Eternal; pairs = the most-played minor combinations. goldPlus = the same counts for players Gold or higher on the ranked ladder (current rank, not rank at match time; winners climb, so compare options within the band only), counted from goldFrom, shipped at 30+ games.',
+    note: 'n = games, w = wins. eternals[].minor1/minor2 = minor-slot picks under that Eternal; pairs = the most-played minor combinations. goldPlus = the same counts for players who were Gold or higher IN THAT GAME (rank at match time, pred.gg match rating), counted from goldFrom, shipped at 20+ games; goldPlus.games/wins is the hero-role Gold+ baseline. platPlus = the same for Platinum or higher.',
     goldFrom: st.goldFrom,
-    ladder: st.ladder,
+    goldBasis: st.goldBasis,
+    goldUnresolvedMatches: st.goldUnresolvedMatches ?? 0,
     catalog: augCatalog,
     heroes: out,
   }, null, 1));
@@ -298,6 +301,9 @@ async function main() {
   const buildHeroes: Record<string, unknown[]> = {};
   const buildByRole: Record<string, Record<string, unknown[]>> = {};
   const goldBuildByRole: Record<string, Record<string, unknown[]>> = {};
+  // Hero-role win rate in each band: what a build's win rate is read against.
+  const platBuildByRole: Record<string, Record<string, unknown[]>> = {};
+  const baselineByRole: Record<string, Record<string, { all: NW; gold: NW | null; plat: NW | null }>> = {};
   for (const [slug, roles] of Object.entries(st.heroes)) {
     const all: Record<string, NW> = {};
     for (const [role, c] of Object.entries(roles)) {
@@ -306,6 +312,10 @@ async function main() {
       if (rows.length) (buildByRole[slug] ??= {})[role] = rows;
       const goldRows = coreRowsOrSets(c.gold?.cores ?? {});
       if (goldRows.length) (goldBuildByRole[slug] ??= {})[role] = goldRows;
+      const platRows = coreRowsOrSets(c.plat?.cores ?? {});
+      if (platRows.length) (platBuildByRole[slug] ??= {})[role] = platRows;
+      const band = (x?: CountCell) => (x && x.n >= MIN_GOLD_GAMES ? { n: x.n, w: x.w } : null);
+      if (c.n >= MIN_ROLE_GAMES) (baselineByRole[slug] ??= {})[role] = { all: { n: c.n, w: c.w }, gold: band(c.gold), plat: band(c.plat) };
     }
     const rows = coreRowsOrSets(all);
     if (rows.length) buildHeroes[slug] = rows;
@@ -316,7 +326,10 @@ async function main() {
     heroes: buildHeroes,
     byRole: buildByRole,
     goldFrom: st.goldFrom,
+    goldBasis: st.goldBasis,
     goldByRole: goldBuildByRole,
+    platByRole: platBuildByRole,
+    baselineByRole,
   }, null, 1));
 
   const cells = Object.values(out).reduce((t, r) => t + Object.keys(r).length, 0);
