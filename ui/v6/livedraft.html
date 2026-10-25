@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Live Draft — Pred Scout</title>
+<title>Live draft counter — Pred Scout</title>
 <meta name="description" content="Lane-by-lane counter board for live Predecessor drafts: add each enemy pick and get the best counters, kit-math win-the-fight reads, and the build that beats them.">
 <style>
   :root {
     --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
-    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#82829a;
-    --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#8e8ea6;
+    --accent:#6c5ce7; --accent-ink:#9a8ef2; --accent-soft:rgba(108,92,231,.14);
     --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px; --maxw:980px;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
   html { scroll-behavior:smooth; }
-  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; font-variant-numeric:tabular-nums; }
   a { color:var(--blue); text-decoration:none; }
   img { display:block; }
   button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; color:inherit; background:none; border:none; }
@@ -24,7 +24,7 @@
   .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .spacer { flex:1; }
   .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
-  .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .navlink.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
   .navlink:hover { color:var(--text-0); }
   .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
   .subnav::-webkit-scrollbar { display:none; }
@@ -40,10 +40,10 @@
 
   /* lane rows */
   .ld-row { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:.7rem .8rem; margin-top:.7rem; }
-  .ld-head { display:flex; align-items:center; gap:.4rem; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--text-2); }
+  .ld-head { display:flex; align-items:center; gap:.4rem; font-size:.8rem; font-weight:600; letter-spacing:0; color:var(--text-1); }
   .ld-matchup { display:flex; align-items:center; gap:.5rem; margin-top:.45rem; }
   .ld-side { display:flex; flex-direction:column; align-items:center; gap:.2rem; }
-  .ld-side-lbl { font-size:.6rem; text-transform:uppercase; letter-spacing:.06em; }
+  .ld-side-lbl { font-size:.6875rem; letter-spacing:0; }
   .ld-side-lbl.enemy { color:var(--red); }
   .ld-side-lbl.you { color:var(--green); }
   .ld-vs { color:var(--text-2); font-weight:700; font-size:.78rem; }
@@ -55,8 +55,8 @@
   .slot .plus { font-size:1rem; color:var(--text-2); font-weight:400; line-height:1; transform:scale(1.6); }
   .slot .clr { position:absolute; top:-7px; right:-7px; width:20px; height:20px; border-radius:50%; background:var(--bg-3); border:1px solid var(--border); color:var(--text-1); font-size:.7rem; line-height:1; display:flex; align-items:center; justify-content:center; }
   .ld-name { font-size:.74rem; color:var(--text-1); max-width:8ch; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .ld-guess { font-size:.68rem; color:var(--text-2); margin-left:auto; }
-  .ld-guess button { color:var(--blue); font-size:.68rem; text-decoration:underline; }
+  .ld-guess { font-size:.6875rem; color:var(--text-2); margin-left:auto; }
+  .ld-guess button { color:var(--blue); font-size:.6875rem; text-decoration:underline; }
 
   /* counters */
   .ld-panel { margin-top:.6rem; border-top:1px solid var(--border); padding-top:.5rem; }
@@ -68,12 +68,12 @@
   .cchip.best { border-color:var(--accent); background:var(--accent-soft); width:92px; }
   .cchip.chosen { border-color:var(--green); background:rgba(0,196,140,.12); }
   .cchip:hover { border-color:var(--accent); }
-  .cchip .crank { display:block; font-size:.56rem; color:var(--text-2); margin-bottom:.15rem; letter-spacing:.03em; }
-  .cchip.best .crank { color:var(--accent); font-weight:800; }
+  .cchip .crank { display:block; font-size:.6875rem; color:var(--text-2); margin-bottom:.15rem; letter-spacing:.03em; }
+  .cchip.best .crank { color:var(--accent-ink); font-weight:800; }
   .cchip img { width:38px; height:38px; border-radius:8px; margin:0 auto .2rem; }
   .cchip.best img { width:44px; height:44px; }
-  .cchip .cn { font-size:.68rem; color:var(--text-0); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .cchip .ce { font-size:.62rem; font-weight:700; margin-top:.1rem; }
+  .cchip .cn { font-size:.6875rem; color:var(--text-0); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .cchip .ce { font-size:.6875rem; font-weight:700; margin-top:.1rem; }
   .ldkey { font-size:.7rem; color:var(--text-2); background:var(--bg-1); border:1px solid var(--border); border-radius:8px; padding:.4rem .6rem; margin-top:.7rem; line-height:1.5; }
   .ldkey .dot { display:inline-block; vertical-align:middle; }
   .dots { display:flex; gap:2px; justify-content:center; margin-top:.25rem; }
@@ -84,7 +84,7 @@
 
   /* summary */
   .summary { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:.8rem .9rem; margin-top:1rem; }
-  .summary h2 { font-size:.78rem; text-transform:uppercase; letter-spacing:.1em; color:var(--text-2); margin-bottom:.5rem; }
+  .summary h2 { font-size:1rem; font-weight:600; letter-spacing:0; color:var(--text-0); margin-bottom:.5rem; }
   .sumrow { display:flex; gap:.4rem; flex-wrap:wrap; align-items:center; font-size:.82rem; color:var(--text-1); }
   .sbar { flex:1; min-width:120px; height:10px; border-radius:5px; background:var(--bg-3); overflow:hidden; display:flex; }
   .sbar .p { background:#e08a4a; } .sbar .m { background:#6c8ce7; }
@@ -92,11 +92,11 @@
   /* enemy-counter summary at the top */
   .ctop { background:var(--accent-soft); border:1px solid var(--accent); border-radius:var(--radius); padding:.85rem .95rem; margin:.6rem 0 1.1rem; }
   .ctop-h { font-weight:800; font-size:.98rem; color:var(--text-0); display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; margin-bottom:.55rem; }
-  .ctop-n { font-size:.68rem; font-weight:600; color:var(--text-2); }
+  .ctop-n { font-size:.6875rem; font-weight:600; color:var(--text-2); }
   .ctop-recs { list-style:none; margin:.55rem 0 0; padding:0; display:flex; flex-direction:column; gap:.42rem; }
   .ctop-recs li { font-size:.85rem; color:var(--text-1); line-height:1.45; }
   .ctop-recs li b { color:var(--text-0); }
-  .ctop-k { display:inline-block; font-size:.59rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--accent); background:var(--bg-1); border:1px solid var(--accent); border-radius:99px; padding:.06rem .45rem; margin-right:.35rem; vertical-align:1px; }
+  .ctop-k { display:inline-block; font-size:.6875rem; font-weight:800; letter-spacing:0; color:var(--accent-ink); background:var(--bg-1); border:1px solid var(--accent); border-radius:99px; padding:.06rem .45rem; margin-right:.35rem; vertical-align:1px; }
   .ctop-sub { font-size:.8rem; color:var(--text-2); margin-top:.6rem; line-height:1.5; }
   .ctop-sub b { color:var(--text-1); }
 
@@ -116,7 +116,7 @@
   .mh { text-align:center; border:1px solid transparent; border-radius:10px; padding:.3rem .1rem; }
   .mh:hover { border-color:var(--accent); background:var(--bg-2); }
   .mh img { width:42px; height:42px; border-radius:9px; margin:0 auto .2rem; }
-  .mh span { font-size:.64rem; color:var(--text-1); display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .mh span { font-size:.6875rem; color:var(--text-1); display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
 
   @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } * { transition:none !important; animation:none !important; } }
@@ -128,7 +128,7 @@
     .top-inner { padding:.5rem .7rem; gap:.3rem; }
     .wordmark { font-size:.82rem; }
     .top-inner a.navlink { font-size:.72rem; }
-    .wrap { padding:.9rem .7rem 3rem; }
+    .wrap { padding:.9rem 1rem 3rem; }
     h1 { font-size:1.3rem; }
   }
 </style>
@@ -138,18 +138,17 @@
   <a class="wordmark" href="./"><img src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</a>
   <span class="spacer"></span>
   <a class="navlink" href="./">Pick &amp; Build</a>
-  <a class="navlink" href="squad.html">Pre-Game</a>
   <a class="navlink" href="coach.html">Coach</a>
 </div><div class="subnav" id="subnav"></div></div>
 
 <div class="wrap">
-  <h1>📡 Live Draft</h1>
+  <h1>Live draft counter</h1>
   <p class="lede">Lane by lane, add each enemy pick and get the heroes that beat them — ranked by who
   wins the early fights. Tap a counter to slot your pick, then open its full build.</p>
 
   <div class="actions">
-    <button class="btn primary" id="addEnemy">➕ Add enemy pick</button>
-    <button class="btn ghost" id="clearAll">🗑 Clear all</button>
+    <button class="btn primary" id="addEnemy">Add enemy pick</button>
+    <button class="btn ghost" id="clearAll">Clear all</button>
   </div>
 
   <div id="countertop"></div>
@@ -172,12 +171,13 @@
 </div></div>
 
 <script>
+// Lane mark placeholder; icons.js fills it (also after async renders).
+const laneIcon = (r) => `<span class="lane-ic" data-bic="lane-${r}" aria-hidden="true"></span>`;
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
 const IMG = (s) => `../img/heroes/${s}.webp`;
 const LANES = ['offlane', 'jungle', 'midlane', 'carry', 'support'];
 const LANE_LABELS = { carry:'Carry', midlane:'Midlane', offlane:'Offlane', jungle:'Jungle', support:'Support' };
-const LANE_EMOJI = { offlane:'🛡', jungle:'🌳', midlane:'✨', carry:'🏹', support:'💚' };
 const MIN_GAMES = 0;
 
 let INDEX = null, MX = null, META = null, PROFILES = null;
@@ -243,7 +243,7 @@ function laneRow(lane) {
   if (st.enemy) {
     const cs = counters(lane, st.enemy);
     if (!cs.length) panel = `<div class="ld-empty">No matchup data for ${esc(nameOf(st.enemy))} in ${esc(LANE_LABELS[lane])} yet.</div>`;
-    else panel = `<div class="ld-panel-h">🏆 Best vs <b>${esc(nameOf(st.enemy))}</b> <span style="color:var(--text-2)">· tap to pick, strongest first</span></div>
+    else panel = `<div class="ld-panel-h">Best vs <b>${esc(nameOf(st.enemy))}</b> <span style="color:var(--text-2)">· tap to pick, strongest first</span></div>
       <div class="cgrid">${cs.map((c, i) => { const e = edgeLabel(c.score); return `<button class="cchip${i === 0 ? ' best' : ''}${st.you === c.slug ? ' chosen' : ''}" data-pick="${c.slug}" data-lane="${lane}" title="Pick ${esc(c.name)} into ${esc(LANE_LABELS[lane])}">
         <span class="crank">${i === 0 ? '★ best' : '#' + (i + 1)}</span>
         <img src="${IMG(c.slug)}" alt="" onerror="this.style.visibility='hidden'">
@@ -252,7 +252,7 @@ function laneRow(lane) {
       <a class="ld-full" href="index.html?hero=${esc(st.enemy)}">Full counter breakdown for ${esc(nameOf(st.enemy))} →</a>`;
   }
   return `<div class="ld-row" data-row="${lane}">
-    <div class="ld-head"><span style="font-size:1rem">${LANE_EMOJI[lane]}</span> ${esc(LANE_LABELS[lane])}${guess}</div>
+    <div class="ld-head">${laneIcon(lane)}${esc(LANE_LABELS[lane])}${guess}</div>
     <div class="ld-matchup">
       <div class="ld-side"><span class="ld-side-lbl enemy">Enemy</span>${slotHtml(lane, 'enemy')}${st.enemy ? `<span class="ld-name">${esc(nameOf(st.enemy))}</span>` : ''}</div>
       <span class="ld-vs">VS</span>
@@ -277,7 +277,7 @@ async function renderSummary() {
     <h2>Your team so far · ${yours.length}/5 picked</h2>
     <div class="sumrow"><span>Damage</span><span class="sbar"><span class="p" style="width:${pPct}%"></span><span class="m" style="width:${mPct}%"></span></span><span class="pill">${pPct}% physical</span><span class="pill">${mPct}% magical</span></div>
     <div class="sumrow" style="margin-top:.5rem">${yours.map((s) => `<a class="pill" href="index.html?hero=${esc(s)}">${esc(nameOf(s))} →</a>`).join('')}</div>
-    ${pPct >= 80 || mPct >= 80 ? `<div style="font-size:.76rem;color:var(--gold);margin-top:.5rem">⚠ Damage is one-sided (${pPct >= 80 ? 'mostly physical' : 'mostly magical'}) — one enemy resist item blunts most of it. Mix in a ${pPct >= 80 ? 'magical' : 'physical'} threat.</div>` : ''}
+    ${pPct >= 80 || mPct >= 80 ? `<div style="font-size:.76rem;color:var(--gold);margin-top:.5rem">Damage is one-sided (${pPct >= 80 ? 'mostly physical' : 'mostly magical'}) — one enemy resist item blunts most of it. Mix in a ${pPct >= 80 ? 'magical' : 'physical'} threat.</div>` : ''}
   </div>`;
 }
 
@@ -334,12 +334,12 @@ function renderCounterTop() {
   // best counter for any enemy lane you haven't answered yet
   const openRecs = enemies.filter((e) => !state[e.lane].you).map((e) => {
     const cs = counters(e.lane, e.slug);
-    return cs.length ? `${LANE_EMOJI[e.lane]} ${LANE_LABELS[e.lane]}: <b>${esc(cs[0].name)}</b>${cs[1] ? `, ${esc(cs[1].name)}` : ''}` : null;
+    return cs.length ? `${LANE_LABELS[e.lane]}: <b>${esc(cs[0].name)}</b>${cs[1] ? `, ${esc(cs[1].name)}` : ''}` : null;
   }).filter(Boolean);
 
   const n = enemies.length;
   el.innerHTML = `<div class="ctop">
-    <div class="ctop-h">🎯 How to beat this team <span class="ctop-n">${n}/5 enemy picked${n < 5 ? ' · sharpens as they lock in' : ''}</span></div>
+    <div class="ctop-h">How to beat this team <span class="ctop-n">${n}/5 enemy picked${n < 5 ? ' · sharpens as they lock in' : ''}</span></div>
     <div class="sumrow"><span>Their damage</span><span class="sbar"><span class="p" style="width:${pPct}%"></span><span class="m" style="width:${mPct}%"></span></span><span class="pill">${pPct}% phys</span><span class="pill">${mPct}% mag</span></div>
     <ul class="ctop-recs">${recs.map((r) => `<li><span class="ctop-k">${r.k}</span>${r.t}</li>`).join('')}</ul>
     ${openRecs.length ? `<div class="ctop-sub"><b>Best counters for open lanes:</b> ${openRecs.join(' · ')}</div>` : ''}
@@ -386,7 +386,7 @@ function openMove(fromLane) {
   const slug = state[fromLane].enemy;
   $('#mTitle').textContent = `Move ${nameOf(slug)} to which lane?`;
   $('#msearchWrap').style.display = 'none'; $('#mRoles').style.display = 'none';
-  $('#mGrid').innerHTML = LANES.map((l) => `<button class="mh" data-lane="${l}"><div style="font-size:1.5rem">${LANE_EMOJI[l]}</div><span>${LANE_LABELS[l]}${state[l].enemy && l !== fromLane ? ' ⇄' : ''}</span></button>`).join('');
+  $('#mGrid').innerHTML = LANES.map((l) => `<button class="mh" data-lane="${l}"><div style="font-size:1.3rem;color:var(--text-1);margin-bottom:.15rem">${laneIcon(l)}</div><span>${LANE_LABELS[l]}${state[l].enemy && l !== fromLane ? ' ⇄' : ''}</span></button>`).join('');
   $('#mGrid').querySelectorAll('[data-lane]').forEach((b) => b.onclick = () => {
     const to = b.dataset.lane;
     if (to !== fromLane) { const tmp = state[to].enemy; state[to].enemy = slug; state[fromLane].enemy = tmp; }

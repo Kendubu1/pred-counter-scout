@@ -8,15 +8,15 @@
 <style>
   :root {
     --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
-    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#82829a;
-    --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#8e8ea6;
+    --accent:#6c5ce7; --accent-ink:#9a8ef2; --accent-soft:rgba(108,92,231,.14);
     --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7;
     --radius:12px; --maxw:980px;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
   html { scroll-behavior:smooth; }
-  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; font-variant-numeric:tabular-nums; }
   a { color:var(--blue); text-decoration:none; }
   img { display:block; }
   button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
@@ -29,7 +29,7 @@
   .wordmark { font-weight:800; letter-spacing:.02em; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .top .spacer { flex:1; }
   .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
-  .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .navlink.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
   .navlink:hover { color:var(--text-0); }
   .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
   .subnav::-webkit-scrollbar { display:none; }
@@ -65,7 +65,7 @@
   .suggest .srow .sr { margin-left:auto; font-size:.7rem; color:var(--text-2); text-transform:capitalize; }
   .landing-mode { display:inline-flex; flex-wrap:wrap; justify-content:center; gap:.2rem; margin:1rem auto 0; background:var(--bg-1); border:1px solid var(--border); border-radius:99px; padding:.2rem; }
   .landing-mode button { background:transparent; border:none; color:var(--text-1); border-radius:99px; padding:.4rem 1rem; font:inherit; font-size:.85rem; cursor:pointer; min-height:38px; display:inline-flex; align-items:center; gap:.4rem; }
-  .landing-mode button.active { background:var(--accent); color:#fff; font-weight:600; }
+  .landing-mode button.active { background:var(--bg-3); color:var(--text-0); font-weight:600; }
   .landing-mode .lm-link { display:inline-flex; align-items:center; color:var(--text-1); border-radius:99px; padding:.4rem 1rem; font-size:.85rem; min-height:38px; border-left:1px solid var(--border); }
   .landing-mode .lm-link:hover { color:var(--text-0); background:var(--bg-2); }
   .rolebar { display:flex; gap:.45rem; justify-content:center; flex-wrap:wrap; margin-top:.9rem; }
@@ -73,7 +73,8 @@
     background:var(--bg-1); color:var(--text-1); border:1px solid var(--border);
     border-radius:99px; padding:.28rem .85rem; font-size:.82rem; text-transform:capitalize;
   }
-  .rolebar button.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .rolebar button, .seg-roles button { display:inline-flex; align-items:center; justify-content:center; gap:.4rem; }
+  .rolebar button.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
   /* ── 3-step "how it works" strip ── */
   /* slim one-line patch strip (replaced the multi-bullet endcard) */
   .patchstrip { display:flex; align-items:center; gap:.55rem; margin-top:1.4rem; padding:.55rem .85rem; background:var(--accent-soft); border:1px solid var(--accent); border-radius:99px; text-decoration:none; color:var(--text-1); font-size:.8rem; flex-wrap:wrap; }
@@ -87,7 +88,7 @@
   #allHeroes > summary.allsum .chev { flex:none; transition:transform .15s; }
   #allHeroes[open] > summary.allsum .chev { transform:rotate(180deg); }
   #allHeroes > summary.allsum:hover { color:var(--text-0); }
-  .lane-more { display:block; width:100%; margin-top:.5rem; background:none; border:none; border-top:1px dashed var(--border); padding:.45rem 0 .1rem; color:var(--accent); font:inherit; font-size:.72rem; font-weight:700; text-align:left; cursor:pointer; }
+  .lane-more { display:block; width:100%; margin-top:.5rem; background:none; border:none; border-top:1px dashed var(--border); padding:.45rem 0 .1rem; color:var(--accent-ink); font:inherit; font-size:.72rem; font-weight:700; text-align:left; cursor:pointer; }
   .lane-more:hover { color:var(--text-0); }
   /* ── end-of-selection cards: live draft + patch review, side by side ── */
   a.patch-pill:hover { color:var(--text-0); border-color:var(--accent); }
@@ -96,16 +97,16 @@
   .endcard:hover { border-color:var(--accent); background:var(--bg-2); }
   .endcard--patch { border-color:var(--accent); background:var(--accent-soft); }
   .endcard--patch:hover { background:var(--bg-2); }
-  .ec-icon { line-height:1; flex-shrink:0; display:inline-flex; align-items:center; color:var(--accent); }
+  .ec-icon { line-height:1; flex-shrink:0; display:inline-flex; align-items:center; color:var(--accent-ink); }
   .ec-title { font-weight:800; font-size:.96rem; color:var(--text-0); display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; }
-  .ec-tag { font-size:.58rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; background:var(--accent); color:#fff; border-radius:99px; padding:.1rem .42rem; }
+  .ec-tag { font-size:.6875rem; font-weight:700; letter-spacing:0; background:var(--accent); color:#fff; border-radius:99px; padding:.1rem .42rem; }
   .ec-sub { font-size:.78rem; color:var(--text-2); margin:.28rem 0 .35rem; line-height:1.45; }
   .ec-hi { list-style:none; padding:0; margin:.3rem 0 .5rem; display:flex; flex-direction:column; gap:.18rem; }
   .ec-hi li { font-size:.74rem; color:var(--text-1); display:flex; align-items:center; gap:.4rem; }
   .ec-hi .hi-ic { display:inline-flex; flex:none; }
-  .ec-cta { font-size:.76rem; font-weight:700; color:var(--accent); }
+  .ec-cta { font-size:.76rem; font-weight:700; color:var(--accent-ink); }
   /* ── divider that pushes the meta board + grid below the fold ── */
-  .browse-head { display:flex; align-items:center; gap:.7rem; margin:2.6rem 0 .4rem; color:var(--text-2); font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.09em; }
+  .browse-head { display:flex; align-items:center; gap:.7rem; margin:2.6rem 0 .4rem; font-size:.8rem; font-weight:600; letter-spacing:0; color:var(--text-1); }
   .browse-head::before, .browse-head::after { content:""; flex:1; height:1px; background:var(--border); }
   .receipt {
     max-width:640px; margin:1.1rem auto 0; font-size:.8rem; color:var(--text-2);
@@ -123,7 +124,7 @@
   .hcard:hover { transform:translateY(-2px); border-color:var(--accent); }
   .hcard img { width:100%; aspect-ratio:1; object-fit:cover; background:var(--bg-2); }
   .hcard .nm { padding:.4rem .5rem .15rem; font-size:.82rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .hcard .rl { padding:0 .5rem .45rem; font-size:.68rem; color:var(--text-2); text-transform:capitalize; }
+  .hcard .rl { padding:0 .5rem .45rem; font-size:.6875rem; color:var(--text-2); text-transform:capitalize; }
 
   /* ── hero page ── */
   .backrow { display:flex; align-items:center; gap:.7rem; margin-bottom:1rem; }
@@ -160,8 +161,8 @@
   }
 
   .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1.1rem; }
-  .card h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.8rem; }
-  .card h2 .hint { float:right; letter-spacing:0; text-transform:none; font-weight:400; }
+  .card h2 { font-size:1rem; font-weight:600; letter-spacing:0; color:var(--text-0); margin-bottom:.8rem; }
+  .card h2 .hint { float:right; letter-spacing:0; text-transform:none; font-weight:400; font-size:.78rem; color:var(--text-2); }
 
   .htabs { display:flex; gap:1.4rem; margin-top:1.1rem; border-bottom:1px solid var(--border); overflow-x:auto; scrollbar-width:none; }
   .htabs::-webkit-scrollbar { display:none; }
@@ -205,39 +206,39 @@
   .wr-up { color:var(--green); } .wr-down { color:var(--red); } .wr-mid { color:var(--text-1); }
   .bbody.hidden { display:none; }
   .bwr { font-weight:800; font-variant-numeric:tabular-nums; }
-  .tabtrend { font-size:.6rem; vertical-align:.12em; margin-left:.3rem; }
+  .tabtrend { font-size:.6875rem; vertical-align:.12em; margin-left:.3rem; }
   .tabtrend.buff { color:var(--green); }
   .tabtrend.nerf { color:var(--red); }
   .tabtrend.mixed, .tabtrend.rework { color:var(--gold); }
   .patchhead { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
-  .trend { font-size:.62rem; font-weight:800; letter-spacing:.04em; border-radius:6px; padding:.05rem .45rem; border:1px solid; }
+  .trend { font-size:.6875rem; font-weight:800; letter-spacing:.04em; border-radius:6px; padding:.05rem .45rem; border:1px solid; }
   .trend.buff { color:var(--green); border-color:var(--green); background:rgba(0,196,140,.1); }
   .trend.nerf { color:var(--red); border-color:var(--red); background:rgba(255,90,90,.1); }
   .trend.mixed, .trend.rework { color:var(--gold); border-color:var(--gold); background:rgba(240,180,41,.1); }
   .pgrid { display:grid; grid-template-columns:1fr 1fr; gap:.5rem; margin-top:.7rem; }
   @media (max-width:520px){ .pgrid { grid-template-columns:1fr; } }
   .pgrid > div { background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:.55rem .7rem; font-size:.78rem; color:var(--text-1); }
-  .pgrid .pl { font-size:.62rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--text-2); display:block; margin-bottom:.2rem; }
+  .pgrid .pl { font-size:.6875rem; font-weight:800; letter-spacing:0; color:var(--text-2); display:block; margin-bottom:.2rem; }
   ul.pchanges { margin:.6rem 0 0 1.1rem; font-size:.78rem; color:var(--text-1); }
   ul.pchanges li { margin:.25rem 0; }
   .lvlorder { display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; margin-top:.2rem; }
   .lvlpip { display:flex; align-items:center; gap:.4rem; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.22rem .6rem; font-size:.8rem; }
   .lvlpip img { width:24px; height:24px; border-radius:6px; object-fit:cover; }
-  .lvlpip .num { font-size:.62rem; font-weight:800; color:var(--accent); }
+  .lvlpip .num { font-size:.6875rem; font-weight:800; color:var(--accent-ink); }
   .lvlarrow { color:var(--text-2); font-size:.9rem; }
-  .abilchg { font-size:.6rem; font-weight:800; border-radius:5px; padding:.03rem .35rem; border:1px solid; vertical-align:middle; }
+  .abilchg { font-size:.6875rem; font-weight:800; border-radius:5px; padding:.03rem .35rem; border:1px solid; vertical-align:middle; }
   .abilchg.buff { color:var(--green); border-color:var(--green); }
   .abilchg.nerf { color:var(--red); border-color:var(--red); }
   .abilchg.mixed, .abilchg.rework { color:var(--gold); border-color:var(--gold); }
-  .abil .atip { font-size:.74rem; color:var(--accent); margin-top:.3rem; }
+  .abil .atip { font-size:.74rem; color:var(--accent-ink); margin-top:.3rem; }
   .abil { display:flex; gap:.7rem; padding:.55rem 0; border-bottom:1px solid var(--border); align-items:flex-start; }
   .abil:last-of-type { border-bottom:none; }
   .abil img { width:44px; height:44px; border-radius:10px; object-fit:cover; background:var(--bg-2); border:1px solid var(--border); flex:none; }
-  .abil .akey { display:inline-block; background:var(--bg-2); border:1px solid var(--border); border-radius:6px; font-size:.64rem; font-weight:800; padding:.04rem .4rem; color:var(--text-1); vertical-align:middle; margin-left:.35rem; }
+  .abil .akey { display:inline-block; background:var(--bg-2); border:1px solid var(--border); border-radius:6px; font-size:.6875rem; font-weight:800; padding:.04rem .4rem; color:var(--text-1); vertical-align:middle; margin-left:.35rem; }
   .abil .ameta { font-size:.7rem; color:var(--gold); margin-top:.1rem; }
   .abil .adesc { font-size:.74rem; color:var(--text-1); margin-top:.25rem; line-height:1.5; overflow-wrap:anywhere; }
   .abil .ameta { overflow-wrap:anywhere; }
-  .answer { border-color:#3b3470; background:linear-gradient(180deg, rgba(108,92,231,.07), rgba(18,18,26,0) 55%), var(--bg-1); }
+  .answer { border-color:#3b3470; background:var(--bg-1); }
   .rail { display:grid; grid-template-columns:repeat(6, 1fr); gap:.6rem; }
   @media (max-width:680px) { .rail { grid-template-columns:repeat(3, 1fr); } }
   .itile { position:relative; background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:.5rem; text-align:center; }
@@ -249,10 +250,10 @@
     display:flex; align-items:center; justify-content:center; border:2px solid var(--bg-1);
   }
   .itile .nm { font-size:.7rem; font-weight:600; margin-top:.4rem; line-height:1.25; }
-  .itile .spike { font-size:.68rem; color:var(--gold); margin-top:.1rem; }
-  .itile .meta { font-size:.64rem; color:var(--text-2); margin-top:.15rem; min-height:.9rem; }
+  .itile .spike { font-size:.6875rem; color:var(--gold); margin-top:.1rem; }
+  .itile .meta { font-size:.6875rem; color:var(--text-2); margin-top:.15rem; min-height:.9rem; }
   .itile .meta .pos { color:var(--green); } .itile .meta .neg { color:var(--red); }
-  .itile .tag { position:absolute; top:-8px; right:-6px; background:var(--gold); color:#1a1405; font-size:.56rem; font-weight:800; border-radius:6px; padding:.05rem .3rem; letter-spacing:.03em; }
+  .itile .tag { position:absolute; top:-8px; right:-6px; background:var(--gold); color:#1a1405; font-size:.6875rem; font-weight:800; border-radius:6px; padding:.05rem .3rem; letter-spacing:.03em; }
 
   .coach {
     margin-top:1rem; font-size:.88rem; line-height:1.55; color:var(--text-1);
@@ -289,7 +290,7 @@
   .dotwrap { text-align:center; }
   .dot { width:12px; height:12px; border-radius:50%; margin:0 auto; }
   .dot.you { background:var(--green); } .dot.even { background:var(--bg-3); border:1px solid var(--text-2); } .dot.enemy { background:var(--red); }
-  .dotwrap .m { font-size:.56rem; color:var(--text-2); margin-top:.15rem; }
+  .dotwrap .m { font-size:.6875rem; color:var(--text-2); margin-top:.15rem; }
   .murow .plan { grid-column:2; font-size:.78rem; color:var(--text-1); }
   .cswap { color:var(--gold); font-size:.74rem; }
   .metabuild { padding:.55rem 0; border-top:1px solid var(--border); }
@@ -306,7 +307,7 @@
   /* Per-item "why this item, in this order" list (build reasoning). */
   .mb-items-why { margin-top:.35rem; display:flex; flex-direction:column; gap:.2rem; }
   .mb-items-why > div { font-size:.74rem; color:var(--text-1); line-height:1.42; }
-  .mb-items-why .ord { display:inline-flex; align-items:center; justify-content:center; width:15px; height:15px; border-radius:50%; background:var(--accent); color:#fff; font-size:.58rem; font-weight:700; margin-right:.35rem; vertical-align:middle; }
+  .mb-items-why .ord { display:inline-flex; align-items:center; justify-content:center; width:15px; height:15px; border-radius:50%; background:var(--accent); color:#fff; font-size:.6875rem; font-weight:700; margin-right:.35rem; vertical-align:middle; }
 
   /* Playstyle-by-lane: what the sim can't see, exposed */
   .flexrow { padding:.6rem 0; border-top:1px solid var(--border); }
@@ -314,7 +315,7 @@
   .flex-head { display:flex; align-items:center; gap:.55rem; flex-wrap:wrap; }
   .flex-lane { font-weight:800; text-transform:capitalize; min-width:4.6rem; }
   .flex-aug { font-size:.8rem; color:var(--text-1); }
-  .flex-ps { font-size:.66rem; font-weight:700; letter-spacing:.03em; text-transform:uppercase; padding:.1rem .42rem; border-radius:999px; background:var(--bg-3); color:var(--text-1); }
+  .flex-ps { font-size:.6875rem; font-weight:700; letter-spacing:0; padding:.1rem .42rem; border-radius:999px; background:var(--bg-3); color:var(--text-1); }
   .flex-prov { font-size:.7rem; padding:.1rem .42rem; border-radius:999px; }
   .flex-prov.modeled { background:rgba(80,200,120,.14); color:var(--green); }
   .flex-prov.steered { background:rgba(120,160,255,.14); color:var(--blue); }
@@ -338,7 +339,7 @@
   }
   details summary::-webkit-details-marker { display:none; } /* hide native triangle; we draw our own ▸ */
   details summary::marker { content:""; }
-  details summary::before { content:"▸"; color:var(--accent); transition:transform .15s; }
+  details summary::before { content:"▸"; color:var(--accent-ink); transition:transform .15s; }
   details[open] summary::before { transform:rotate(90deg); }
   details summary:hover { color:var(--text-0); }
   details .body { padding:0 1.1rem 1rem; font-size:.85rem; color:var(--text-1); }
@@ -367,7 +368,7 @@
   .lanepanel .lp-sub { font-size:.72rem; color:var(--text-2); margin-top:.15rem; }
   .lmode { display:flex; gap:.5rem; margin:.7rem 0 .8rem; flex-wrap:wrap; }
   .lmode button { background:var(--bg-2); border:1px solid var(--border); color:var(--text-1); border-radius:99px; padding:.3rem .9rem; font-size:.8rem; display:inline-flex; align-items:center; gap:.35rem; }
-  .lmode button.active { background:var(--accent-soft); border-color:var(--accent); color:var(--text-0); }
+  .lmode button.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
   .lrow { display:grid; grid-template-columns:auto 1fr auto; gap:.7rem; align-items:center; padding:.45rem 0; border-bottom:1px solid var(--border); cursor:pointer; }
   .lrow:last-of-type { border-bottom:none; }
   .lrow img { width:34px; height:34px; border-radius:8px; object-fit:cover; }
@@ -394,7 +395,7 @@
     }
     .snpill { font-size:.8rem; }
     .navlink { border-radius:10px; } /* 44px tap height reads as a tab, not a stadium */
-    .mp .g { font-size:.66rem; }
+    .mp .g { font-size:.6875rem; }
     /* phone hero header: identity row, then a full-width lane switcher with
        equal segments (40px tap height), then the tab bar (44px via the union list) */
     .hero-head { grid-template-areas:"img id" "seg seg" "band band"; column-gap:.8rem; row-gap:.8rem; }
@@ -414,16 +415,22 @@
   }
 
   /* ── meta board ── */
-  .simpicks h4 { color:var(--accent); }
+  .simpicks h4 { color:var(--accent-ink); }
   .simpicks .pilot { cursor:pointer; }
-  .theory-mini { font-size:.56rem; font-weight:800; color:var(--blue); border:1px solid var(--blue); border-radius:5px; padding:.02rem .3rem; margin-left:.3rem; cursor:help; }
+  .theory-mini { font-size:.6875rem; font-weight:800; color:var(--blue); border:1px solid var(--blue); border-radius:5px; padding:.02rem .3rem; margin-left:.3rem; cursor:help; }
   .metaboard { margin-top:2rem; }
-  .metaboard .mb-head { display:flex; align-items:baseline; gap:.7rem; flex-wrap:wrap; }
+  .metaboard .mb-head { display:flex; align-items:center; gap:.5rem .7rem; flex-wrap:wrap; }
+  /* heading and its games filter share the first row; the description and the
+     rank bands sit underneath at full width */
+  .metaboard .mb-head h2 { order:0; }
+  .metaboard .mb-head .mb-offmeta { order:1; }
+  .metaboard .mb-head .mb-sub { order:2; flex-basis:100%; }
+  .metaboard .mb-head .mb-bands { order:3; }
   .metaboard h2 { font-size:1.05rem; font-weight:800; }
   .metaboard .mb-sub { font-size:.74rem; color:var(--text-2); }
   .mb-toggle { margin-left:auto; background:var(--bg-1); border:1px solid var(--border); border-radius:99px; padding:.28rem .7rem; color:var(--text-2); font:inherit; font-size:.72rem; font-weight:700; cursor:pointer; white-space:nowrap; }
   .mb-toggle:hover { color:var(--text-0); }
-  .mb-toggle.active { color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
+  .mb-toggle.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
   .mb-bands { flex-basis:100%; display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.15rem; }
   .mb-bands .mb-toggle { margin-left:0; }
   .lanepanel .mb-head { align-items:center; }
@@ -436,9 +443,9 @@
   .banboard .lane-more { text-decoration:none; }
   .lanes { display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:.7rem; margin-top:.8rem; }
   .lane { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:.7rem .75rem; }
-  .lane h3 { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.45rem; }
+  .lane h3 { font-size:.8rem; font-weight:600; letter-spacing:0; color:var(--text-1); margin-bottom:.45rem; }
   .lane h3.lane-go { cursor:pointer; }
-  .lane h3.lane-go:hover { color:var(--accent); }
+  .lane h3.lane-go:hover { color:var(--accent-ink); }
   .mp { display:flex; align-items:center; gap:.5rem; padding:.26rem .3rem; border-radius:8px; cursor:pointer; }
   .mp:hover { background:var(--bg-2); }
   .mp img { width:30px; height:30px; border-radius:8px; object-fit:cover; background:var(--bg-2); flex:none; }
@@ -447,9 +454,9 @@
   .mp .n { flex:1; min-width:0; font-size:.8rem; font-weight:600; overflow-wrap:anywhere; }
   .mp .wr { font-size:.74rem; font-variant-numeric:tabular-nums; font-weight:700; flex:none; }
   .wr.up { color:var(--green); } .wr.down { color:var(--red); } .wr.flat { color:var(--text-2); }
-  .mp .g { display:block; font-size:.62rem; color:var(--text-2); font-weight:400; }
+  .mp .g { display:block; font-size:.6875rem; color:var(--text-2); font-weight:400; }
   .pilots { margin-top:.55rem; padding-top:.5rem; border-top:1px dashed var(--border); }
-  .pilots h4 { font-size:.6rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.3rem; }
+  .pilots h4 { font-size:.8rem; font-weight:600; letter-spacing:0; color:var(--text-1); margin-bottom:.3rem; }
   .pilot { display:flex; align-items:center; gap:.45rem; padding:.16rem .3rem; font-size:.72rem; color:var(--text-1); border-radius:6px; }
   a.pilot { color:var(--text-1); } a.pilot:hover { background:var(--bg-3); }
   .pilot img { width:18px; height:18px; border-radius:5px; object-fit:cover; background:var(--bg-2); flex:none; }
@@ -485,7 +492,6 @@
     <span class="spacer"></span>
     <a class="patch-pill" id="patchPill" href="../patch-1.17.2.html" title="Read the patch 1.17.2 review">patch —</a>
     <a class="navlink active" href="./">Pick &amp; Build</a>
-    <a class="navlink" href="squad.html">Pre-Game</a>
     <a class="navlink" href="coach.html">Coach</a>
   </div>
   <div class="subnav" id="subnav"></div>
@@ -527,10 +533,13 @@
   </footer>
 </div>
 
+<script src="section-nav.js"></script>
 <script src="game-text.js"></script>
 <script defer src="item-popup.js"></script>
 <script defer src="eternal-popup.js"></script>
 <script>
+// Lane mark placeholder; icons.js fills it (also after async renders).
+const laneIcon = (r) => `<span class="lane-ic" data-bic="lane-${r}" aria-hidden="true"></span>`;
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // Meta score 0-100 -> green (high) through yellow to red (low), so the number's
@@ -540,7 +549,7 @@ const metaColor = (score) => `hsl(${Math.round(Math.max(0, Math.min(100, score))
 // the bare meta number isn't left to interpret. wr/ms are 0-1 fractions.
 function metaVerdict(wr, ms, badge) {
   const tail = ` · meta score ${Math.round(ms * 100)}/100 (how popular AND winning it is in this lane)`;
-  if (badge === 'sleeper') return { label: 'Sleeper', color: 'var(--blue)', tip: 'Wins above average but rarely picked — strong, but a smaller / less-proven sample. Worth a try.' + tail };
+  if (badge === 'sleeper') return { label: 'Off-meta', color: 'var(--blue)', tip: 'Wins above average but rarely picked — strong, but a smaller / less-proven sample. Worth a try.' + tail };
   if (badge === 'popular but losing') return { label: 'Overpicked', color: 'var(--gold)', tip: 'Heavily picked but below-average win rate — the popularity isn’t backed by results. Pick with care.' + tail };
   if (wr >= 0.52) return ms >= 0.6
     ? { label: 'Proven', color: 'var(--green)', tip: 'Commonly picked AND winning — a safe, proven meta pick.' + tail }
@@ -591,7 +600,7 @@ const LEGEND_HTML = `<ul class="legend-list">`
   + `<li><b>%</b> — win rate this patch. A hero with only a few games is pulled toward the lane's average, so a tiny sample can't fluke its way to the top.</li>`
   + `<li><span style="color:var(--green)">green</span> = 52%+ &nbsp;·&nbsp; <span style="color:var(--red)">red</span> = 48% or less.</li>`
   + `<li><b style="color:var(--green)">Proven / Strong</b> — take it.</li>`
-  + `<li><b style="color:var(--blue)">Sleeper</b> — winning, but rarely picked.</li>`
+  + `<li><b style="color:var(--blue)">Off-meta</b> — winning, but rarely picked in this lane, so the win rate rests on few games. Hidden unless you turn on “Show off-meta picks”.</li>`
   + `<li><b>Solid</b> — a fine, standard pick.</li>`
   + `<li><b style="color:var(--gold)">Overpicked</b> — popular, but the results don't back it.</li>`
   + `<li><b style="color:var(--red)">Weak</b> — below average; comfort pick only.</li>`
@@ -599,19 +608,20 @@ const LEGEND_HTML = `<ul class="legend-list">`
 let INDEX = null;
 let META = null;
 let roleFilter = 'all';
-// Meta-board "big samples only" toggle — hides rows whose game count is under
-// ~1% of the window's matches (same scale-with-the-window idea as the
-// pipeline's games floor). Sticky per browser; off by default so sleepers
-// stay discoverable.
-let metaBigOnly = false;
-try { metaBigOnly = localStorage.getItem('metaBigOnly') === '1'; } catch { /* private mode */ }
-function metaMinSample(matches) { return Math.max(300, Math.round((matches || 0) / 100)); }
+// Meta-board "Show off-meta picks" toggle. Off-meta = the engine's 'sleeper'
+// badge: a top-30% win rate on a bottom-35% pick rate within the lane, which in
+// practice is a thin off-lane sample (Valmont carry, 796 games). Sorting by win
+// rate floated those over 40k-game lane staples, so they are hidden by default
+// and shown, tagged Off-meta, on request. Sticky per browser.
+let metaShowOffMeta = false;
+try { metaShowOffMeta = localStorage.getItem('metaShowOffMeta') === '1'; } catch { /* private mode */ }
+const metaVisible = (h) => metaShowOffMeta || h.badge !== 'sleeper';
 // Rank-band selector (all | low | mid | high) — boards exist only when the
 // committed meta.json carries rolesByBand. Sticky per browser.
 let metaBand = 'all';
 try { metaBand = localStorage.getItem('metaBand') || 'all'; } catch { /* private mode */ }
 // The one source of truth for the board filters, shared by the meta board AND
-// the lane room so expanding a lane keeps the selected band + sample floor.
+// the lane room so expanding a lane keeps the selected band + off-meta choice.
 function metaFilterState() {
   const bands = (META?.rankBands && META?.rolesByBand) ? META.rankBands : null;
   if (metaBand !== 'all' && !(bands && META.rolesByBand[metaBand])) metaBand = 'all';
@@ -619,7 +629,6 @@ function metaFilterState() {
   const boardMatches = metaBand === 'all' ? META.matches : (META.matchesByBand?.[metaBand] ?? META.matches);
   return {
     bands, boardRoles, boardMatches,
-    minSample: metaMinSample(boardMatches),
     bandLabel: metaBand === 'all' ? '' : ` · ${bands.find((b) => b.key === metaBand)?.label ?? metaBand} only`,
   };
 }
@@ -628,7 +637,7 @@ function metaFilterState() {
 function metaFilterControlsHtml() {
   const st = metaFilterState();
   return `
-      <button class="mb-toggle mb-bigonly${metaBigOnly ? ' active' : ''}" title="Hide picks with under ${st.minSample.toLocaleString()} games this patch (~1% of the window) — small samples read as Sleeper 💤 and can swing patch to patch">${metaBigOnly ? '✓ ' : ''}${st.minSample.toLocaleString()}+ games only</button>
+      <button class="mb-toggle mb-offmeta${metaShowOffMeta ? ' active' : ''}" aria-pressed="${metaShowOffMeta}" title="Off-meta picks win above average but are rarely played in this lane, so their win rate rests on few games and can swing patch to patch">Show off-meta picks</button>
       ${st.bands ? `<div class="mb-bands" title="Filter the boards to games played at a rank band — the meta shifts with skill level. All ranks includes players without a placed rank.">${[{ key: 'all', label: 'All ranks' }, ...st.bands].map((b) => `<button class="mb-toggle band${metaBand === b.key ? ' active' : ''}" data-band="${esc(b.key)}">${esc(b.label)}</button>`).join('')}</div>` : ''}`;
 }
 function bindMetaFilterControls(container) {
@@ -640,10 +649,10 @@ function bindMetaFilterControls(container) {
       rerender();
     };
   });
-  const big = container.querySelector('.mb-bigonly');
-  if (big) big.onclick = () => {
-    metaBigOnly = !metaBigOnly;
-    try { localStorage.setItem('metaBigOnly', metaBigOnly ? '1' : '0'); } catch { /* private mode */ }
+  const off = container.querySelector('.mb-offmeta');
+  if (off) off.onclick = () => {
+    metaShowOffMeta = !metaShowOffMeta;
+    try { localStorage.setItem('metaShowOffMeta', metaShowOffMeta ? '1' : '0'); } catch { /* private mode */ }
     rerender();
   };
 }
@@ -657,47 +666,27 @@ function show(view) {
 
 // Sticky section jumper: pills from the visible view's section headers,
 // scrollspy highlights the one you're in. Rebuilt on every view change.
-let subnavIO = null;
 function buildSubnav() {
   const host = $('#subnav');
-  if (subnavIO) { subnavIO.disconnect(); subnavIO = null; }
   const view = $('#hero').classList.contains('hidden') ? '#landing' : '#hero';
   const secs = [...document.querySelectorAll(`${view} section.card, ${view} .lanepanel, ${view} .metaboard`)]
     .filter((c) => c.querySelector('h2') && c.offsetParent !== null);
   // A one-item jumper is pointless and adds a "double header" row above the title
   // (e.g. the lone "The Meta Board" pill on the landing). Only show it with 2+ sections.
   if (secs.length < 2) {
-    host.innerHTML = '';
-    document.documentElement.style.setProperty('--toph', `${document.querySelector('.top')?.offsetHeight ?? 96}px`);
+    SectionNav.build(host, []);
     return;
   }
-  host.innerHTML = secs.map((c, i) => {
-    c.id = c.id || 'sec' + i;
+  SectionNav.build(host, secs.map((c) => {
     const h = c.querySelector('h2');
-    const label = (h.childNodes[0]?.textContent || h.textContent).split('·')[0].trim().toLowerCase();
-    return `<button class="snpill" data-t="${c.id}">${esc(label)}</button>`;
-  }).join('');
-  document.documentElement.style.setProperty('--toph', `${document.querySelector('.top')?.offsetHeight ?? 96}px`);
-  const pills = [...host.querySelectorAll('.snpill')];
-  pills.forEach((p) => { p.onclick = () => document.getElementById(p.dataset.t)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-  // center the active pill by scrolling the pill ROW only — letting the
-  // browser scroll ancestors pans the pinch-zoom viewport on iOS
-  const centerPill = (p) => host.scrollTo({ left: p.offsetLeft - host.clientWidth / 2 + p.offsetWidth / 2, behavior: 'smooth' });
-  const byId = new Map(pills.map((p) => [p.dataset.t, p]));
-  subnavIO = new IntersectionObserver((es) => {
-    for (const e of es) {
-      if (!e.isIntersecting) continue;
-      pills.forEach((p) => p.classList.toggle('active', p.dataset.t === e.target.id));
-      { const p = byId.get(e.target.id); if (p) centerPill(p); }
-    }
-  }, { rootMargin: '-15% 0px -75% 0px' });
-  secs.forEach((c) => subnavIO.observe(c));
+    return { el: c, label: (h.childNodes[0]?.textContent || h.textContent).split('·')[0].trim().toLowerCase() };
+  }));
 }
 
 /* ── landing ── */
 function renderRolebar() {
   $('#rolebar').innerHTML = ROLES.map((r) =>
-    `<button data-r="${r}" class="${r === roleFilter ? 'active' : ''}">${r === 'all' ? 'All roles' : r}</button>`).join('');
+    `<button data-r="${r}" class="${r === roleFilter ? 'active' : ''}">${r === 'all' ? 'All roles' : laneIcon(r) + r}</button>`).join('');
   document.querySelectorAll('#rolebar button').forEach((b) => {
     b.onclick = () => { roleFilter = b.dataset.r; laneEnemy = null; renderRolebar(); renderGrid(); renderLaneDetail(); };
   });
@@ -727,10 +716,28 @@ function spikeCaveat() {
   return ` <span title="${esc(g.note || '')}" style="color:var(--gold)">Spike minutes come from ${esc(g.measuredIn)} gold curves — ${esc(g.staleAgainst)} changed the economy, so treat them as approximate.</span>`;
 }
 
+// When the boards' match data was last pulled from pred.gg (meta.json pulledAt),
+// so players can see how fresh the win rates are.
+function metaPulledNote() {
+  const t = META && META.pulledAt ? new Date(META.pulledAt) : null;
+  if (!t || isNaN(t)) return '';
+  return ` · last refreshed <b style="white-space:nowrap">${t.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</b>`;
+}
+// "159,201 ranked matches on patch 1.17 (includes 1.17.2) · last refreshed Oct 25, 2026".
+// The match count is the whole board; the games filter is a per-hero minimum.
+function metaScopeLine(matches, bandLabel) {
+  const scope = META.scope === 'ranked' ? 'ranked ' : '';
+  return `${matches.toLocaleString()} ${scope}matches on patch ${esc(META.patch)}${metaWindowNote()}${bandLabel}${metaPulledNote()}`;
+}
 function metaWindowNote() {
   if (!LATEST_PATCH || !META || !META.patch) return '';
-  if (String(META.patch).includes(String(LATEST_PATCH))) return '';
-  return ` · <b>collected before ${LATEST_PATCH}</b> — the public match feed runs behind live, so these boards do not include ${LATEST_PATCH} games yet`;
+  const board = String(META.patch), latest = String(LATEST_PATCH);
+  if (board === latest) return '';
+  // The board pools a whole patch family (lane-stats pins every 1.17.x version
+  // id), so "1.17" already holds 1.17.2 games. Comparing the strings as if they
+  // were different patches once told players their current patch was missing.
+  if (latest.startsWith(board + '.')) return ` (includes ${esc(latest)})`;
+  return ` · <b>collected before ${esc(latest)}</b> — these boards do not include ${esc(latest)} games yet`;
 }
 async function getMatrix() {
   if (!MATRIX) MATRIX = await getJson('../../data/artifacts/matchup-matrix.json').catch(() => null);
@@ -782,7 +789,7 @@ async function renderLaneDetail() {
   // The lane room follows the meta board's filters (rank band + sample floor)
   // instead of silently reverting to the unfiltered all-ranks board.
   const filterSt = metaFilterState();
-  const laneMeta = (filterSt.boardRoles[role] || []).filter((h) => !metaBigOnly || h.games >= filterSt.minSample);
+  const laneMeta = (filterSt.boardRoles[role] || []).filter(metaVisible);
   const laneSlugs = INDEX.heroes.filter((h) => h.role === role).map((h) => h.slug);
   box.innerHTML = '<div class="lanepanel">loading lane sims…</div>';
   const arts = new Map();
@@ -794,7 +801,7 @@ async function renderLaneDetail() {
   if (laneMode === 'first') {
     const mx = await getMatrix();
     const ranked = [...laneMeta].sort((a, b) => b.shrunkWr - a.shrunkWr); // sort by the win rate we show, highest first
-    body = '<div class="lp-sub wr-legend" style="margin:.2rem 0 .5rem">Win rate vs the lane average — <b style="color:var(--green)">●&nbsp;≥52% strong</b> · <b style="color:var(--text-2)">●&nbsp;48–52% even</b> · <b style="color:var(--red)">●&nbsp;≤48% weak</b>. Sorted highest first; tap a hero for its build, hover its tag (Proven / Strong / Sleeper …) for what it means.</div>' + ranked.map((h, i) => {
+    body = '<div class="lp-sub wr-legend" style="margin:.2rem 0 .5rem">Win rate vs the lane average — <b style="color:var(--green)">●&nbsp;≥52% strong</b> · <b style="color:var(--text-2)">●&nbsp;48–52% even</b> · <b style="color:var(--red)">●&nbsp;≤48% weak</b>. Sorted highest first; tap a hero for its build, hover its tag (Proven / Strong / Off-meta …) for what it means.</div>' + ranked.map((h, i) => {
       // blind-pick safety vs the heroes actually in THIS lane's meta,
       // from the all-pairs matrix (artifact matchups are primary-role only)
       let trouble = '';
@@ -810,7 +817,7 @@ async function renderLaneDetail() {
       return `
       <div class="lrow" data-slug="${h.slug}">
         <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
-        <span><b>${i === 0 ? '👑 ' : ''}${esc(h.name)}</b>${h.badge ? ` <span style="color:var(--gold)">${h.badge === 'sleeper' ? '💤 sleeper' : '⚠ popular but losing'}</span>` : ''}
+        <span><b>${esc(h.name)}</b>${h.badge ? ` <span style="color:var(--gold)">${h.badge === 'sleeper' ? 'off-meta' : 'popular but losing'}</span>` : ''}
           <div class="sub">${trouble ? esc(trouble) : 'no sim data for this hero'}</div></span>
         <span class="wrr"><b style="color:${wrColor(h.shrunkWr)}" title="${esc(wrTip(h.shrunkWr))}">${(h.shrunkWr * 100).toFixed(1)}%</b><div class="sub" style="text-align:right">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b class="vtag" style="color:${v.color}" data-tip="${esc(v.tip)}" title="${esc(v.tip)}">${v.label}</b>`; })()}</div></span>
       </div>`;
@@ -828,7 +835,7 @@ async function renderLaneDetail() {
       const tag = wr; // both rest and flex chips: just the win% (section header already says which group)
       return `
         <span class="echip" data-slug="${h.slug}" data-go="hero"${isFlex ? ` data-role="${role}"` : ''}>
-          <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">${esc(h.name)}${tag ? `<span style="color:var(--text-2);font-size:.62rem;margin-left:.25rem">${tag}</span>` : ''}</span>`;
+          <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">${esc(h.name)}${tag ? `<span style="color:var(--text-2);font-size:.6875rem;margin-left:.25rem">${tag}</span>` : ''}</span>`;
     };
     if (rest.length) {
       body += `<div class="lp-sub" style="margin-top:.6rem">rest of the lane:</div><div class="echips">${rest.map((h) => echip(h, false)).join('')}</div>`;
@@ -857,7 +864,7 @@ async function renderLaneDetail() {
       const fieldGames = enemyIdx && enemyIdx.roleWr
         ? Object.fromEntries(Object.entries(enemyIdx.roleWr).map(([r, c]) => [r, c.n]))
         : null;
-      body += `<div class="lp-sub" style="margin:.55rem 0 .25rem;color:var(--accent);font-weight:700;font-size:.8rem">Where are they playing ${esc(nameOf(laneEnemy))}? <span style="font-weight:400;color:var(--text-2)">— pick the lane to counter</span></div>
+      body += `<div class="lp-sub" style="margin:.55rem 0 .25rem;color:var(--accent-ink);font-weight:700;font-size:.8rem">Where are they playing ${esc(nameOf(laneEnemy))}? <span style="font-weight:400;color:var(--text-2)">— pick the lane to counter</span></div>
         <div class="echips">${Object.keys(LANE_LABELS).map((r) => `
           <span class="echip lane-switch ${r === role ? 'active' : ''}" data-lane="${r}" title="Show the best answers to ${esc(nameOf(laneEnemy))} in ${esc(LANE_LABELS[r])}${fieldGames && fieldGames[r] ? ` — the field plays them there (${fieldGames[r].toLocaleString()} ranked games this patch)` : ''}">${esc(LANE_LABELS[r])}</span>`).join('')}
         </div>`;
@@ -879,16 +886,16 @@ async function renderLaneDetail() {
       const rank = (a, b) => (b.ev ? b.ev.wr : -1) - (a.ev ? a.ev.wr : -1) || b.score - a.score;
       const evTag = (r) => {
         if (!MU) return '';
-        if (!r.ev) return `<span style="color:var(--text-2);font-size:.66rem">sim read — no head-to-head sample yet</span>`;
+        if (!r.ev) return `<span style="color:var(--text-2);font-size:.6875rem">sim read — no head-to-head sample yet</span>`;
         const simCall = r.score > 0 ? 1 : r.score < 0 ? -1 : 0;
         const fieldCall = r.ev.wr >= 52 ? 1 : r.ev.wr <= 48 ? -1 : 0;
-        const check = simCall && fieldCall ? (simCall === fieldCall ? ' · sim agrees ✓' : ' · sim disagrees — trust the record') : '';
-        return `<b style="color:${wrColor(r.ev.wr / 100)}">${r.ev.wr}% win</b> <span style="color:var(--text-2);font-size:.66rem">over ${r.ev.n.toLocaleString()} lane games${esc(check)}</span>`;
+        const check = simCall && fieldCall ? (simCall === fieldCall ? ' · sim agrees' : ' · sim disagrees — trust the record') : '';
+        return `<b style="color:${wrColor(r.ev.wr / 100)}">${r.ev.wr}% win</b> <span style="color:var(--text-2);font-size:.6875rem">over ${r.ev.n.toLocaleString()} lane games${esc(check)}</span>`;
       };
       const rowHtml = (r, showLane) => `
         <div class="lrow" data-slug="${r.slug}" data-role="${r.lane}">
           <img loading="lazy" src="${IMG.hero(r.slug)}" alt="" onerror="this.style.visibility='hidden'">
-          <span><b>${esc(r.name)}</b>${showLane ? ` <span style="color:var(--text-2);font-size:.68rem;text-transform:capitalize">${esc(LANE_LABELS[r.lane] || r.lane)}</span>` : ''} <span style="margin-left:.25rem">${evTag(r)}</span><div class="sub">${esc(r.line)}</div></span>
+          <span><b>${esc(r.name)}</b>${showLane ? ` <span style="color:var(--text-2);font-size:.6875rem;text-transform:capitalize">${esc(LANE_LABELS[r.lane] || r.lane)}</span>` : ''} <span style="margin-left:.25rem">${evTag(r)}</span><div class="sub">${esc(r.line)}</div></span>
           ${vdots(r.cps)}
         </div>`;
       // Lane picks first: every hero in the enemy's OWN lane, ranked — your direct
@@ -914,7 +921,7 @@ async function renderLaneDetail() {
   box.innerHTML = `
     <div class="lanepanel">
       <h2>${LANE_LABELS[role]} · lane room</h2>
-      <div class="lp-sub">${filterSt.boardMatches.toLocaleString()} matches, patch ${esc(META.patch)}, ${esc(META.scope || 'all ranks')}${filterSt.bandLabel}${metaWindowNote()}</div>
+      <div class="lp-sub">${metaScopeLine(filterSt.boardMatches, filterSt.bandLabel)}</div>
       <div class="mb-head" style="margin-top:.4rem">${metaFilterControlsHtml()}</div>
       <div class="lmode">
         <button data-m="first" class="${laneMode === 'first' ? 'active' : ''}"><span data-bic="counter-pick" data-bic-size="15"></span> picking first</button>
@@ -993,27 +1000,27 @@ function simPickBlock(role) {
         <img loading="lazy" src="${IMG.hero(p.slug)}" alt="" onerror="this.style.visibility='hidden'">
         <span class="pn">${esc(p.name)}</span>
       </div>`).join('');
-  return `<div class="pilots simpicks"><h4 title="${esc(tip)}">⚙ Kit-math pick</h4>${rows}</div>`;
+  return `<div class="pilots simpicks"><h4 title="${esc(tip)}">Kit-math pick</h4>${rows}</div>`;
 }
 function renderMetaboard() {
   if (!META) { $('#metaboard').innerHTML = ''; return; }
   const wrClass = (wr) => (wr >= 0.52 ? 'up' : wr <= 0.48 ? 'down' : 'flat');
-  const { boardRoles, boardMatches, minSample, bandLabel } = metaFilterState();
+  const { boardRoles, boardMatches, bandLabel } = metaFilterState();
   $('#metaboard').innerHTML = `
     <div class="mb-head">
       <h2>The meta board</h2>
-      <span class="mb-sub">each lane's strongest picks by <b>win rate</b> · ${boardMatches.toLocaleString()} matches, patch ${esc(META.patch)}, ${esc(META.scope || 'all ranks')}${bandLabel}${metaWindowNote()}</span>
+      <span class="mb-sub">Each lane's strongest picks by <b>win rate</b> · ${metaScopeLine(boardMatches, bandLabel)}</span>
       ${metaFilterControlsHtml()}
     </div>
     <details class="sim-collapse uxlegend" id="uxLegend"><summary>What the win-rate colors &amp; pick tags mean</summary><div class="lp-sub">${LEGEND_HTML}</div></details>
     <div class="lanes">
       ${Object.keys(LANE_LABELS).map((role) => `
         <div class="lane">
-          <h3 class="lane-go" data-lane="${role}" title="Open the ${esc(LANE_LABELS[role])} lane room">${LANE_LABELS[role]} <span style="color:var(--text-2)">→</span></h3>
-          ${[...(boardRoles[role] || [])].filter((h) => !metaBigOnly || h.games >= minSample).sort((a, b) => b.shrunkWr - a.shrunkWr).slice(0, 5).map((h, i) => `
+          <h3 class="lane-go" data-lane="${role}" title="Open the ${esc(LANE_LABELS[role])} lane room">${laneIcon(role)} ${LANE_LABELS[role]} <span style="color:var(--text-2)">→</span></h3>
+          ${[...(boardRoles[role] || [])].filter(metaVisible).sort((a, b) => b.shrunkWr - a.shrunkWr).slice(0, 5).map((h, i) => `
             <div class="mp" data-slug="${h.slug}" data-role="${role}" title="${esc(h.name)}: ${h.games} ${role} games, ${(h.shrunkWr * 100).toFixed(1)}% shrunk winrate, meta score ${(h.metaScore * 100).toFixed(0)}${h.badge ? ' — ' + esc(h.badge) : ''}">
               <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
-              <span class="n">${i === 0 ? '👑 ' : ''}${esc(h.name)}${h.badge === 'sleeper' ? ' 💤' : h.badge ? ' ⚠' : ''}<span class="g">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b class="vtag" style="color:${v.color}" data-tip="${esc(v.tip)}" title="${esc(v.tip)}">${v.label}</b>`; })()}</span></span>
+              <span class="n">${esc(h.name)}<span class="g">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b class="vtag" style="color:${v.color}" data-tip="${esc(v.tip)}" title="${esc(v.tip)}">${v.label}</b>`; })()}</span></span>
               <span class="wr ${wrClass(h.shrunkWr)}">${(h.shrunkWr * 100).toFixed(1)}%</span>
             </div>`).join('')}
           <button class="lane-more" data-lane="${role}">full lane — more picks, top players &amp; kit-math →</button>
@@ -1105,7 +1112,7 @@ function renderGrid() {
     q ? h.name.toLowerCase().includes(q) : (roleFilter === 'all' || h.role === roleFilter));
   $('#heroGrid').innerHTML = heroes.map((h) => `
     <div class="hcard" data-slug="${h.slug}">
-      <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph',style:'aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:var(--text-2)',textContent:'⚔'}))">
+      <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph',style:'aspect-ratio:1;display:flex;align-items:center;justify-content:center;color:var(--text-2)',textContent:'${esc(h.name).charAt(0)}'}))">
       <div class="nm">${esc(h.name)}</div><div class="rl">${esc(h.role)}</div>
     </div>`).join('');
   document.querySelectorAll('.hcard').forEach((c) => { c.onclick = () => { if (landingMode === 'counter') counterHero(c.dataset.slug); else nav(c.dataset.slug, false, roleFilter !== 'all' ? roleFilter : null); }; });
@@ -1122,7 +1129,7 @@ function itile(i, idx) {
   return `
     <div class="itile${under && !disputed ? ' gold' : ''}" data-ipop="${esc(i.slug)}" title="${esc(i.name)}${i.playRatePct === null ? '' : ` — in ${i.playRatePct}% of games`}${disputed ? ' — the sim rates this higher than the field’s results do; unverified constants (attack-speed cap) may flatter it' : ''} · tap for details">
       <span class="ord">${idx + 1}</span>
-      ${disputed ? '<span class="tag" style="color:var(--gold)">SIM-ONLY ⚠</span>' : under ? '<span class="tag">OFF-META</span>' : ''}
+      ${disputed ? '<span class="tag" style="color:var(--gold)">SIM-ONLY</span>' : under ? '<span class="tag">OFF-META</span>' : ''}
       <img loading="lazy" src="${IMG.item(i.slug)}" alt="" onerror="this.style.visibility='hidden'">
       <div class="nm">${esc(i.name)}</div>
       <div class="spike">${i.spikeMinute ? `spike ~${i.spikeMinute}'` : 'late game'}</div>
@@ -1214,7 +1221,7 @@ function buildsCard(a, pageBand) {
   const bandNote = metas.length && (ranked || base)
     ? `<div class="mb-why" style="color:var(--text-2);margin:0 0 .5rem">${ranked ? `<b style="color:var(--gold)">${BAND_LABELS[band]} games</b> (rank in that game)` : 'All ranks'}${base ? ` · ${esc(a.name)} wins ${(baseWr * 100).toFixed(1)}% as ${esc(a.role)} here (${base.n.toLocaleString()} games)` : ''}${ranked && topN < MIN_LEAD_GAMES ? `<br><span style="color:var(--gold)">Thin sample: the top build has ${topN} games, so these win rates stay close to ${esc(a.name)}'s ${BAND_LABELS[band]} average until more games come in.</span>` : ''}</div>` : '';
 
-  // Tab strip: one per meta build (title), then the kit-math build (⚙).
+  // Tab strip: one per meta build (title), then the kit-math build.
   // Each option shows its win rate and sample under its name (order already says
   // which wins most).
   const tabs = metas.map((e, i) => {
@@ -1231,7 +1238,7 @@ function buildsCard(a, pageBand) {
       : `<span class="chip">${esc(it.name)}</span>`).join(m.anyOrder ? '<span class="arrow">+</span>' : '<span class="arrow">→</span>');
     // Build explanation (synergy + the 1/2/3 item reasons) is visible by default;
     // only the sim-specific line collapses behind "The sim math".
-    const explain = `${rsn && rsn.synergy ? `<div class="mb-why" style="color:var(--text-0)">🧩 ${esc(rsn.synergy)}</div>` : ''}${rsn ? itemWhyRows(m.items, rsn.items) : ''}`;
+    const explain = `${rsn && rsn.synergy ? `<div class="mb-why" style="color:var(--text-0)">${esc(rsn.synergy)}</div>` : ''}${rsn ? itemWhyRows(m.items, rsn.items) : ''}`;
     const simLine = `<div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div>`;
     return `
       <div class="bbody${i === 0 ? '' : ' hidden'}" data-bbody="${i}">
@@ -1257,14 +1264,14 @@ function buildsCard(a, pageBand) {
   // by default; the swap table + holes collapse into "The sim math" with proofs.
   const optExplain = (() => {
     if (!opt) return '';
-    return `${opt.synergy ? `<div style="font-size:.82rem;color:var(--text-0)">🧩 ${esc(opt.synergy)}</div>` : ''}${itemWhyRows(a.build.items, opt.items)}`;
+    return `${opt.synergy ? `<div style="font-size:.82rem;color:var(--text-0)">${esc(opt.synergy)}</div>` : ''}${itemWhyRows(a.build.items, opt.items)}`;
   })();
   const optSwaps = (() => {
     if (!opt) return '';
     const seenSwap = new Set();
     const swaps = (opt.swaps || []).filter((s) => { if (!(s.gain || s.lose)) return false; const k = `${s.out}|${s.in}`; if (seenSwap.has(k)) return false; seenSwap.add(k); return true; }).map((s) =>
       `<div style="font-size:.78rem;color:var(--text-1);margin-top:.35rem"><b>${esc(s.in)}</b> over <b>${esc(s.out)}</b> — <span style="color:var(--green)">gain</span> ${esc(s.gain || '—')} · <span style="color:var(--red)">lose</span> ${esc(s.lose || '—')}</div>`).join('');
-    return `${swaps ? `<div style="margin-top:.4rem"><div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-2);margin-bottom:.1rem">why the sim build swaps off the meta</div>${swaps}</div>` : ''}${opt.holes ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.4rem">⚠ ${esc(opt.holes)}</div>` : ''}`;
+    return `${swaps ? `<div style="margin-top:.4rem"><div style="font-size:.6875rem;letter-spacing:0;color:var(--text-2);margin-bottom:.1rem">why the sim build swaps off the meta</div>${swaps}</div>` : ''}${opt.holes ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.4rem">${esc(opt.holes)}</div>` : ''}`;
   })();
   const ev = a.build.items.filter((i) => i.evidenceDeltaWr !== null && i.evidenceN >= 100)
     .sort((x, y) => Math.abs(y.evidenceDeltaWr) - Math.abs(x.evidenceDeltaWr))[0];
@@ -1276,14 +1283,14 @@ function buildsCard(a, pageBand) {
       </div>`;
   const simBody = `
       <div class="bbody${metas.length ? ' hidden' : ''}" data-bbody="sim">
-        ${a.roleCaveat ? `<div class="caveat">⚠ ${esc(a.roleCaveat)}</div>` : ''}
+        ${a.roleCaveat ? `<div class="caveat">${esc(a.roleCaveat)}</div>` : ''}
         ${laneSteerBlock(a)}
         <div class="rail" style="margin-bottom:.5rem">${a.build.items.map(itile).join('')}</div>
-        <div class="mb-why" style="color:var(--text-1)">⚙ kit-math second opinion · ${a.build.gold.toLocaleString()}g full</div>
+        <div class="mb-why" style="color:var(--text-1)">Kit-math second opinion · ${a.build.gold.toLocaleString()}g full</div>
         ${orderCap}
         ${optExplain}
         ${optSwaps || proofs ? `<details class="sim-collapse"><summary>The sim math</summary><div class="body">${optSwaps}${proofs}</div></details>` : ''}
-        ${a.build.manaFeasible ? '' : '<div class="warn">⚠ mana-hungry rotation — weave basic attacks between casts</div>'}
+        ${a.build.manaFeasible ? '' : '<div class="warn">Mana-hungry rotation — weave basic attacks between casts</div>'}
       </div>`;
 
   return `
@@ -1393,7 +1400,7 @@ function renderHero(a, roleParam) {
       </div>
       ${roleViews.length > 1 ? `
       <div class="seg-roles flexroles" role="group" aria-label="Lane — build, spikes, Eternals and matchups change per lane">
-        ${roleViews.map((v) => `<button data-flexrole="${esc(v.role)}" class="${v.role === activeRole ? 'active' : ''}" aria-pressed="${v.role === activeRole}">${esc(v.role)}</button>`).join('')}
+        ${roleViews.map((v) => `<button data-flexrole="${esc(v.role)}" class="${v.role === activeRole ? 'active' : ''}" aria-pressed="${v.role === activeRole}">${laneIcon(esc(v.role))}${esc(v.role)}</button>`).join('')}
       </div>` : ''}
       ${bandSwitch}
       ${fallbackNote}
@@ -1474,7 +1481,7 @@ function renderHero(a, roleParam) {
         ${picksBandNote}
         ${mismatch ? `<div style="font-size:.72rem;color:var(--gold);margin-bottom:.45rem">the field sample for ${esc(a.name)} ${esc(activeRole)} is too thin — these picks are ${esc(role)} evidence</div>` : ''}
         ${(() => { window.__simPick = (a.augments || []).find((x) => x.modeled) ?? null; window.__augTheory = ''; window.__etTheory = ''; return ''; })()}
-        <div style="font-size:.74rem;color:var(--text-2);margin:0 0 .45rem"><b style="letter-spacing:.06em">AUGMENT</b> · recommended as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
+        <div style="font-size:.74rem;color:var(--text-2);margin:0 0 .45rem"><b>Augment</b> · recommended as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
         ${(() => {
           // ── BEST AUGMENT = the hero element ── one big block for ranked[0]: icon
           // + name + win% + games + a SINGLE plain "why" (AI note preferred, else
@@ -1492,9 +1499,9 @@ function renderHero(a, roleParam) {
             <img src="../img/augments/${esc(best.id)}.webp" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:contain;background:var(--bg-3);flex:none;padding:2px;box-shadow:0 0 0 2px var(--green)" onerror="this.style.visibility='hidden'">
             <div style="min-width:0;flex:1">
               <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-                <span style="font-size:.6rem;font-weight:800;letter-spacing:.06em;color:#062;background:var(--green);border-radius:6px;padding:.05rem .4rem">BEST</span>
+                <span style="font-size:.6875rem;font-weight:800;color:#04250e;background:var(--green);border-radius:6px;padding:.05rem .4rem">Best</span>
                 <span style="font-size:1rem;font-weight:800;color:var(--green)">${esc(best.name)}</span>
-                ${simPick && simPick.id === best.id ? '<span style="font-size:.6rem;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">⚙ SIM PICK</span>' : ''}
+                ${simPick && simPick.id === best.id ? '<span style="font-size:.6875rem;font-weight:800;color:var(--accent-ink);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">Sim pick</span>' : ''}
               </div>
               <div style="display:flex;gap:.6rem;align-items:baseline;margin-top:.15rem">
                 <span style="font-variant-numeric:tabular-nums;font-size:1rem;font-weight:800;color:var(--green)">${(wr * 100).toFixed(1)}%</span>
@@ -1510,18 +1517,18 @@ function renderHero(a, roleParam) {
             const wr = g.w / g.n;
             const simPick = window.__simPick;
             // Prefer the same authored review the BEST block uses (without the
-            // 🧠), else fall back to the augment catalog description.
+            // the coach line), else fall back to the augment catalog description.
             const gAi = REVIEWS && REVIEWS.heroes && REVIEWS.heroes[a.slug] && REVIEWS.heroes[a.slug][role] && REVIEWS.heroes[a.slug][role][g.id];
             const gWhy = gAi || GameText.plain(AUGS.catalog[g.id]?.description);
             return `
             <div style="display:flex;gap:.55rem;align-items:center;padding:.28rem 0">
               <img src="../img/augments/${esc(g.id)}.webp" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:contain;background:var(--bg-2);flex:none;padding:1px;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">
               <span style="font-size:.82rem;font-weight:600">${esc(g.name)}</span>
-              ${simPick && simPick.id === g.id ? '<span style="font-size:.58rem;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:.02rem .3rem;white-space:nowrap">⚙ SIM PICK</span>' : ''}
+              ${simPick && simPick.id === g.id ? '<span style="font-size:.6875rem;font-weight:800;color:var(--accent-ink);border:1px solid var(--accent);border-radius:6px;padding:.02rem .3rem;white-space:nowrap">Sim pick</span>' : ''}
               <span style="margin-left:auto;font-variant-numeric:tabular-nums;font-size:.78rem;color:var(--text-1)">${(wr * 100).toFixed(1)}%</span>
-              <span style="font-size:.68rem;color:var(--text-2)">${g.n.toLocaleString()}</span>
+              <span style="font-size:.6875rem;color:var(--text-2)">${g.n.toLocaleString()}</span>
             </div>
-            ${gWhy ? `<div style="font-size:.68rem;line-height:1.4;color:var(--text-2);margin:0 0 .28rem 2.1rem;border-bottom:1px dashed var(--border);padding-bottom:.28rem">${esc(gWhy)}</div>` : '<div style="border-bottom:1px dashed var(--border);margin-bottom:.28rem"></div>'}`;
+            ${gWhy ? `<div style="font-size:.6875rem;line-height:1.4;color:var(--text-2);margin:0 0 .28rem 2.1rem;border-bottom:1px dashed var(--border);padding-bottom:.28rem">${esc(gWhy)}</div>` : '<div style="border-bottom:1px dashed var(--border);margin-bottom:.28rem"></div>'}`;
           }).join('')}
         </div></details>` : ''}
         ${(() => {
@@ -1532,9 +1539,9 @@ function renderHero(a, roleParam) {
           ${ranked.map((g) => {
             const simPick = window.__simPick;
             const sa = (a.augments || []).find((x) => x.id === g.id);
-            const head = `<div style="font-size:.74rem;font-weight:700;color:var(--text-0);margin:.3rem 0 .1rem">${esc(g.name)}${simPick && simPick.id === g.id ? ' <span style="font-size:.58rem;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:.02rem .3rem">⚙ SIM PICK</span>' : ''}</div>`;
-            if (!sa) return `${head}<div style="font-size:.66rem;color:var(--text-2)">🔬 not in the sim</div>`;
-            if (!sa.modeled) return `${head}<div style="font-size:.66rem;color:var(--text-2)">🔬 not in the sim: ${esc(sa.note || 'no tractable math')}</div>`;
+            const head = `<div style="font-size:.74rem;font-weight:700;color:var(--text-0);margin:.3rem 0 .1rem">${esc(g.name)}${simPick && simPick.id === g.id ? ' <span style="font-size:.6875rem;font-weight:800;color:var(--accent-ink);border:1px solid var(--accent);border-radius:6px;padding:.02rem .3rem">Sim pick</span>' : ''}</div>`;
+            if (!sa) return `${head}<div style="font-size:.6875rem;color:var(--text-2)">Not in the sim</div>`;
+            if (!sa.modeled) return `${head}<div style="font-size:.6875rem;color:var(--text-2)">Not in the sim: ${esc(sa.note || 'no tractable math')}</div>`;
             const parts = [];
             if (sa.rot20Pct) parts.push(`20s fights ${sa.rot20Pct > 0 ? '+' : ''}${sa.rot20Pct}%`);
             if (sa.burstPct) parts.push(`burst ${sa.burstPct > 0 ? '+' : ''}${sa.burstPct}%`);
@@ -1542,26 +1549,26 @@ function renderHero(a, roleParam) {
             if (sa.healShieldPct) parts.push(`heal/shield ${sa.healShieldPct > 0 ? '+' : ''}${sa.healShieldPct}%`);
             else if (sa.healShieldAbs) parts.push(`adds ~${sa.healShieldAbs.toLocaleString()} HP of heal/shield per 10s`);
             const shift = sa.buildShift
-              ? `<div style="font-size:.66rem;color:var(--accent);margin-top:.1rem">⚙ locking this shifts the sim build: <b>${sa.buildShift.in.map(esc).join(', ')}</b> over ${sa.buildShift.out.map(esc).join(', ')}</div>`
-              : (simPick && simPick.id === g.id ? `<div style="font-size:.66rem;color:var(--text-2);margin-top:.1rem">⚙ build unchanged — the same six items stay optimal with this augment locked</div>` : '');
-            return `${head}<div style="font-size:.66rem;color:var(--accent)">⚙ in the sim: ${parts.length ? esc(parts.join(' · ')) : 'no change to this kit’s main numbers'}${sa.provisional ? ' (provisional constant)' : ''}</div>${shift}`;
+              ? `<div style="font-size:.6875rem;color:var(--accent-ink);margin-top:.1rem">Locking this shifts the sim build: <b>${sa.buildShift.in.map(esc).join(', ')}</b> over ${sa.buildShift.out.map(esc).join(', ')}</div>`
+              : (simPick && simPick.id === g.id ? `<div style="font-size:.6875rem;color:var(--text-2);margin-top:.1rem">Build unchanged — the same six items stay optimal with this augment locked</div>` : '');
+            return `${head}<div style="font-size:.6875rem;color:var(--accent-ink)">In the sim: ${parts.length ? esc(parts.join(' · ')) : 'no change to this kit’s main numbers'}${sa.provisional ? ' (provisional constant)' : ''}</div>${shift}`;
           }).join('')}
           ${(() => {
             const simPick = window.__simPick;
             const fieldTop = ranked[0];
-            if (!simPick) return `<div style="font-size:.7rem;color:var(--text-2);margin:.45rem 0 0">⚙ the sim has no pick here — none of this hero's augments have tractable math yet</div>`;
+            if (!simPick) return `<div style="font-size:.7rem;color:var(--text-2);margin:.45rem 0 0">The sim has no pick here — none of this hero's augments have tractable math yet</div>`;
             const best = [['20s fights', simPick.rot20Pct], ['burst', simPick.burstPct], ['survivability', simPick.ehpPct], ['heal/shield', simPick.healShieldPct]].filter(([, v]) => v).sort((x, y) => y[1] - x[1]);
             const gains = best.slice(0, 2).map(([l, v]) => `${v > 0 ? '+' : ''}${v}% ${l}`).join(', ');
             if (fieldTop && simPick.id === fieldTop.id) {
-              return `<div style="font-size:.7rem;color:var(--green);margin:.45rem 0 0">✓⚙ field and kit math agree: best winrate here AND the biggest simulated gain${gains ? ` (${esc(gains)} — THEORY until calibration)` : ''}</div>`;
+              return `<div style="font-size:.7rem;color:var(--green);margin:.45rem 0 0">Field and kit math agree: best winrate here AND the biggest simulated gain${gains ? ` (${esc(gains)} — THEORY until calibration)` : ''}</div>`;
             }
             const ftEntry = (a.augments || []).find((x) => x.id === fieldTop?.id);
             const whyNot = ftEntry && !ftEntry.modeled && ftEntry.note ? `, and the sim can't score the field's pick (${esc(ftEntry.note)})` : '';
-            return `<div style="font-size:.7rem;color:var(--gold);margin:.45rem 0 0">⚖ our kit math prefers <b>${esc(simPick.name)}</b>${gains ? ` (${esc(gains)} — THEORY)` : ''} over the field's pick; ${fieldTop ? `${fieldTop.n.toLocaleString()} games back ${esc(fieldTop.name)}` : 'the field disagrees'}${whyNot} — weight the field until calibration lands</div>`;
+            return `<div style="font-size:.7rem;color:var(--gold);margin:.45rem 0 0">Our kit math prefers <b>${esc(simPick.name)}</b>${gains ? ` (${esc(gains)} — THEORY)` : ''} over the field's pick; ${fieldTop ? `${fieldTop.n.toLocaleString()} games back ${esc(fieldTop.name)}` : 'the field disagrees'}${whyNot} — weight the field until calibration lands</div>`;
           })()}`;
           return '';
         })()}
-        <div style="font-size:.74rem;color:var(--text-2);margin:.7rem 0 .45rem"><b style="letter-spacing:.06em">ETERNAL</b> · recommended as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
+        <div style="font-size:.74rem;color:var(--text-2);margin:.7rem 0 .45rem"><b>Eternal</b> · recommended as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
         ${(() => {
           // ── recommended Eternal = lead element ── ets[0] shown prominently with a
           // plain "what it does" (the major effect). Eternals 2-3, the minors/sim
@@ -1617,8 +1624,8 @@ function renderHero(a, roleParam) {
             <img${epop(e0.name)} src="${IMG.eternal(e0.name.toLowerCase())}" alt="" title="${esc(e0.name)} — tap for the full Eternal" style="width:42px;height:42px;border-radius:50%;object-fit:cover;background:var(--bg-3);flex:none;box-shadow:0 0 0 2px var(--green)" onerror="this.style.visibility='hidden'">
             <div style="min-width:0;flex:1">
               <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-                <span${epop(e0.name)} style="font-size:.94rem;font-weight:800;color:var(--green)">✓ ${esc(e0.name)}</span>
-                ${top && top.name.toLowerCase() === e0.name.toLowerCase() ? '<span style="font-size:.6rem;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">⚙ SIM PICK</span>' : ''}
+                <span${epop(e0.name)} style="font-size:.94rem;font-weight:800;color:var(--green)">${esc(e0.name)}</span>
+                ${top && top.name.toLowerCase() === e0.name.toLowerCase() ? '<span style="font-size:.6875rem;font-weight:800;color:var(--accent-ink);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">Sim pick</span>' : ''}
                 <span title="raw ${(wr0 * 100).toFixed(1)}% — shown shrunk toward the role's pick-weighted mean" style="font-variant-numeric:tabular-nums;font-size:.86rem;font-weight:800;color:var(--green)">${(e0.shrunk * 100).toFixed(1)}%</span>
                 <span style="font-size:.7rem;color:var(--text-2)">${e0.n.toLocaleString()} games</span>
               </div>
@@ -1634,21 +1641,21 @@ function renderHero(a, roleParam) {
             const mb = fieldMinors(e.name) || (a.eternals.minorsByName && a.eternals.minorsByName[e.name.toLowerCase()]);
             const pick1 = mb && mb.minor1 && mb.minor1.name, pick2 = mb && mb.minor2 && mb.minor2.name;
             const fieldPick = !!(mb && ((mb.minor1 && mb.minor1.field) || (mb.minor2 && mb.minor2.field)));
-            const mark = fieldPick ? '★ ' : '⚙ ';
-            const slot = (opts, pick) => (opts || []).map((o) => `<div${epop(e.name, o.name)} style="display:flex;gap:.35rem;align-items:flex-start;margin:.12rem 0;font-size:.66rem;color:${o.name === pick ? 'var(--accent)' : 'var(--text-2)'}"><img src="${IMG.blessing(o.name)}" alt="" style="width:18px;height:18px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;margin-top:.05rem;${o.name === pick ? 'box-shadow:0 0 0 1.5px var(--accent)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'"><span>${o.name === pick ? mark : ''}<b>${esc(o.name)}</b> — ${esc(o.desc)}</span></div>`).join('');
+            const mark = fieldPick ? '★ ' : '';
+            const slot = (opts, pick) => (opts || []).map((o) => `<div${epop(e.name, o.name)} style="display:flex;gap:.35rem;align-items:flex-start;margin:.12rem 0;font-size:.6875rem;color:${o.name === pick ? 'var(--accent-ink)' : 'var(--text-2)'}"><img src="${IMG.blessing(o.name)}" alt="" style="width:18px;height:18px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;margin-top:.05rem;${o.name === pick ? 'box-shadow:0 0 0 1.5px var(--accent)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'"><span>${o.name === pick ? mark : ''}<b>${esc(o.name)}</b> — ${esc(o.desc)}</span></div>`).join('');
             return `
             <div style="padding:.35rem 0;border-bottom:1px ${i === ets.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
               <div style="display:flex;gap:.6rem;align-items:center">
                 <img${epop(e.name)} src="${IMG.eternal(e.name.toLowerCase())}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">
                 <span${epop(e.name)} style="font-size:.84rem;font-weight:600">${esc(e.name)}</span>
-                ${top && top.name.toLowerCase() === e.name.toLowerCase() ? '<span style="font-size:.6rem;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">⚙ SIM PICK</span>' : ''}
+                ${top && top.name.toLowerCase() === e.name.toLowerCase() ? '<span style="font-size:.6875rem;font-weight:800;color:var(--accent-ink);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">Sim pick</span>' : ''}
                 <span title="raw ${(wr * 100).toFixed(1)}% — shown shrunk toward the role's pick-weighted mean" style="font-variant-numeric:tabular-nums;font-size:.78rem;color:var(--text-1)">${(e.shrunk * 100).toFixed(1)}%</span>
                 <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
               </div>
               <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.18rem 0 0 2.1rem">${et ? esc(et.major) : why}</div>
-              ${ai ? `<div style="font-size:.68rem;line-height:1.45;color:var(--text-1);margin:.12rem 0 0 2.1rem">${esc(ai)}</div>` : ''}
-              ${et ? `<div style="margin:.2rem 0 0 2.1rem"><div style="font-size:.6rem;font-weight:800;letter-spacing:.06em;color:var(--text-2);margin-bottom:.1rem">MINOR SLOT 1 · pick one</div>${slot(et.minorSlot1, pick1)}<div style="font-size:.6rem;font-weight:800;letter-spacing:.06em;color:var(--text-2);margin:.3rem 0 .1rem">MINOR SLOT 2 · pick one</div>${slot(et.minorSlot2, pick2)}<div style="font-size:.62rem;color:var(--text-2);margin-top:.3rem">${fieldPick ? '★ = the most-picked minor in ranked games this patch' : "⚙ = the sim's pick · minor values are THEORY until calibration"}</div></div>` : ''}
-              <div style="font-size:.66rem;color:var(--text-2);margin:.3rem 0 0 2.1rem">⚙ sim math: ${why}</div>
+              ${ai ? `<div style="font-size:.6875rem;line-height:1.45;color:var(--text-1);margin:.12rem 0 0 2.1rem">${esc(ai)}</div>` : ''}
+              ${et ? `<div style="margin:.2rem 0 0 2.1rem"><div style="font-size:.6875rem;font-weight:800;letter-spacing:.06em;color:var(--text-2);margin-bottom:.1rem">Minor slot 1 · pick one</div>${slot(et.minorSlot1, pick1)}<div style="font-size:.6875rem;font-weight:800;letter-spacing:.06em;color:var(--text-2);margin:.3rem 0 .1rem">Minor slot 2 · pick one</div>${slot(et.minorSlot2, pick2)}<div style="font-size:.6875rem;color:var(--text-2);margin-top:.3rem">${fieldPick ? '★ = the most-picked minor in ranked games this patch' : "the highlighted minor is the sim's pick · minor values are THEORY until calibration"}</div></div>` : ''}
+              <div style="font-size:.6875rem;color:var(--text-2);margin:.3rem 0 0 2.1rem">Sim math: ${why}</div>
             </div>`;
           };
           const simPickBlock = (() => {
@@ -1662,23 +1669,23 @@ function renderHero(a, roleParam) {
               <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
                 <img${epop(top.name)} src="${IMG.eternal(top.name.toLowerCase())}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;box-shadow:0 0 0 2px var(--accent)" onerror="this.style.visibility='hidden'">
                 <span${epop(top.name)} style="font-size:.84rem;font-weight:800;color:var(--text-0)">${esc(top.name)}</span>
-                <span style="font-size:.6rem;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">⚙ SIM PICK</span>
-                <span style="font-size:.68rem;color:var(--text-2)">the sim's pick — not in the field's list above</span>
+                <span style="font-size:.6875rem;font-weight:800;color:var(--accent-ink);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">Sim pick</span>
+                <span style="font-size:.6875rem;color:var(--text-2)">the sim's pick — not in the field's list above</span>
               </div>
               ${minors.map((m) => `
                 <div style="font-size:.76rem;color:var(--text-1);margin:.22rem 0 0 2.1rem">↳ <b>${esc(m.name)}</b> <span style="color:var(--text-2)">— ${m.modeled && m.deltaPct != null ? `the sim gains +${m.deltaPct}% on top of the major` : esc(m.note || 'curated pick')}</span></div>`).join('')}
-              <div style="font-size:.64rem;color:var(--text-2);margin:.3rem 0 0 2.1rem">pick one from each minor slot in the draft screen · minor values are THEORY until calibration</div>
+              <div style="font-size:.6875rem;color:var(--text-2);margin:.3rem 0 0 2.1rem">pick one from each minor slot in the draft screen · minor values are THEORY until calibration</div>
             </div>`;
           })();
           const agree = `${top && ets.length && top.name.toLowerCase() === ets[0].name.toLowerCase()
-            ? `<div style="margin-top:.45rem;font-size:.7rem;color:var(--green)">✓⚙ field and kit math agree on ${esc(top.name)}: top winrate in this role AND the biggest simulated gain${top.headlinePct ? ` (+${top.headlinePct}% main output — THEORY until calibration)` : ''}</div>` : ''}${!top && ets.length ? `<div style="margin-top:.45rem;font-size:.7rem;color:var(--text-2)">⚙ the sim has no Eternal pick for this kit — no modeled Eternal moves its numbers</div>` : ''}${top && ets.length && top.name.toLowerCase() !== ets[0].name.toLowerCase()
+            ? `<div style="margin-top:.45rem;font-size:.7rem;color:var(--green)">Field and kit math agree on ${esc(top.name)}: top winrate in this role AND the biggest simulated gain${top.headlinePct ? ` (+${top.headlinePct}% main output — THEORY until calibration)` : ''}</div>` : ''}${!top && ets.length ? `<div style="margin-top:.45rem;font-size:.7rem;color:var(--text-2)">The sim has no Eternal pick for this kit — no modeled Eternal moves its numbers</div>` : ''}${top && ets.length && top.name.toLowerCase() !== ets[0].name.toLowerCase()
             ? (a.eternals.augmentAware
-              ? `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">⚖ our kit math — run with ${esc(a.eternals.augmentAware)} modeled — prefers ${esc(top.name)} (+${top.headlinePct}% on this kit’s main output); when math and field disagree, the field's sample is the safer default for this role</div>`
-              : `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">⚖ our kit math prefers ${esc(top.name)} (+${top.headlinePct}% on this kit’s main output), but the field's top augment for this role isn't in the simulator, so this comparison is augment-blind — weight the field</div>`)
+              ? `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">Our kit math — run with ${esc(a.eternals.augmentAware)} modeled — prefers ${esc(top.name)} (+${top.headlinePct}% on this kit’s main output); when math and field disagree, the field's sample is the safer default for this role</div>`
+              : `<div style="margin-top:.45rem;font-size:.72rem;color:var(--gold)">Our kit math prefers ${esc(top.name)} (+${top.headlinePct}% on this kit’s main output), but the field's top augment for this role isn't in the simulator, so this comparison is augment-blind — weight the field</div>`)
             : ''}`;
           // Slim runner-up row for the inline "Other Eternals" disclosure: just the
           // Eternal's identity + win% + games + its what-it-does major. All the
-          // ⚙/sim-math/minors prose lives in the merged bottom THEORY block.
+          // sim-math/minors prose lives in the merged bottom THEORY block.
           const runnerRow = (e, i) => {
             const wr = e.w / e.n, et = ETMAP && ETMAP[e.name.toLowerCase()];
             return `
@@ -1686,7 +1693,7 @@ function renderHero(a, roleParam) {
               <div style="display:flex;gap:.6rem;align-items:center">
                 <img${epop(e.name)} src="${IMG.eternal(e.name.toLowerCase())}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">
                 <span${epop(e.name)} style="font-size:.84rem;font-weight:600">${esc(e.name)}</span>
-                ${top && top.name.toLowerCase() === e.name.toLowerCase() ? '<span style="font-size:.6rem;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">⚙ SIM PICK</span>' : ''}
+                ${top && top.name.toLowerCase() === e.name.toLowerCase() ? '<span style="font-size:.6875rem;font-weight:800;color:var(--accent-ink);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">Sim pick</span>' : ''}
                 <span title="raw ${(wr * 100).toFixed(1)}% — shown shrunk toward the role's pick-weighted mean" style="font-variant-numeric:tabular-nums;font-size:.78rem;color:var(--text-1)">${(e.shrunk * 100).toFixed(1)}%</span>
                 <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
               </div>
@@ -1710,11 +1717,11 @@ function renderHero(a, roleParam) {
           // description data exists, so the #1 is explained from its win rate.
           const c0 = crs[0];
           return `
-          <div style="font-size:.74rem;color:var(--text-2);margin:.7rem 0 .45rem"><b style="letter-spacing:.06em">CREST</b> · recommended as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
+          <div style="font-size:.74rem;color:var(--text-2);margin:.7rem 0 .45rem"><b>Crest</b> · recommended as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
           ${crs.map((c, i) => `
           <div style="display:flex;gap:.6rem;align-items:center;padding:.3rem 0;border-bottom:1px ${i === crs.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
             <img loading="lazy" data-ipop="${esc(cslug(c.name))}" src="../img/items/${esc(cslug(c.name))}.webp" alt="" style="width:28px;height:28px;border-radius:8px;object-fit:cover;background:var(--bg-2);flex:none;${i === 0 ? 'box-shadow:0 0 0 2px var(--green)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'">
-            <span style="font-size:.88rem;font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${i === 0 ? '✓ ' : ''}${esc(c.name)}</span>
+            <span style="font-size:.88rem;font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${esc(c.name)}</span>
             <span style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(c.w / c.n * 100).toFixed(1)}%</span>
             <span style="font-size:.7rem;color:var(--text-2)">${c.n.toLocaleString()} games</span>
           </div>`).join('')}
@@ -1726,9 +1733,9 @@ function renderHero(a, roleParam) {
           // sim-pick block, the agreement lines) are RELOCATED here, never deleted.
           const augT = window.__augTheory || '', etT = window.__etTheory || '';
           if (!augT.trim() && !etT.trim()) return '';
-          return `<details class="sim-collapse" style="margin-top:.7rem"><summary>⚙ Kit-math (THEORY)</summary><div class="body">
-            ${augT.trim() ? `<div style="font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-2);margin:.2rem 0 .1rem">Augments</div>${augT}` : ''}
-            ${etT.trim() ? `<div style="font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-2);margin:.5rem 0 .1rem">Eternals</div>${etT}` : ''}
+          return `<details class="sim-collapse" style="margin-top:.7rem"><summary>Kit-math (THEORY)</summary><div class="body">
+            ${augT.trim() ? `<div style="font-size:.6875rem;font-weight:800;letter-spacing:0;color:var(--text-2);margin:.2rem 0 .1rem">Augments</div>${augT}` : ''}
+            ${etT.trim() ? `<div style="font-size:.6875rem;font-weight:800;letter-spacing:0;color:var(--text-2);margin:.5rem 0 .1rem">Eternals</div>${etT}` : ''}
           </div></details>`;
         })()}`;
       })()}
@@ -1751,13 +1758,13 @@ function renderHero(a, roleParam) {
         const shared = swapRows.length >= 3 && pairs.size === 1 ? pairOf(swapRows[0].counterSwap.line) : null;
         const rowSwap = (m) => {
           if (!m.counterSwap) return '';
-          if (!shared) return `<br><span class="cswap">⚙ ${esc(m.counterSwap.line)}</span>`;
+          if (!shared) return `<br><span class="cswap">${esc(m.counterSwap.line)}</span>`;
           const [theirLoss, ourCost] = nums(m.counterSwap.line);
           return theirLoss != null && ourCost != null
-            ? `<br><span class="cswap">⚙ with the swap: their burst −${theirLoss}% · our damage −${ourCost}%</span>`
-            : `<br><span class="cswap">⚙ ${esc(m.counterSwap.line)}</span>`;
+            ? `<br><span class="cswap">With the swap: their burst −${theirLoss}% · our damage −${ourCost}%</span>`
+            : `<br><span class="cswap">${esc(m.counterSwap.line)}</span>`;
         };
-        return (shared ? `<div class="cswap" style="margin-bottom:.55rem">⚙ ${esc(shared)} — blunts their burst at some damage cost; per-matchup numbers on each row.</div>` : '') +
+        return (shared ? `<div class="cswap" style="margin-bottom:.55rem">${esc(shared)} — blunts their burst at some damage cost; per-matchup numbers on each row.</div>` : '') +
           a.matchups.map((m) => `
         <div class="murow" data-slug="${esc(m.enemySlug)}" style="cursor:pointer">
           <img src="${IMG.hero(m.enemySlug)}" alt="" onerror="this.style.visibility='hidden'">
@@ -1933,7 +1940,7 @@ async function renderLearn(a) {
             <b style="font-size:.92rem">${esc(ab.display_name)}</b>${ab.key ? `<span class="akey">${esc(ab.key)}</span>` : ''}${ab.key === 'R' ? `<span class="akey" style="color:var(--gold);border-color:var(--gold)">ULT${sk?.ultLevels?.length ? ' · ' + sk.ultLevels.join(' / ') : ''}</span>` : ''}${changedKeys.has(ab.key) ? `<span class="abilchg ${esc(changedKeys.get(ab.key))}">${(changedKeys.get(ab.key) === 'nerf' ? '▼ nerfed' : changedKeys.get(ab.key) === 'buff' ? '▲ buffed' : '◆ changed')} · patch ${esc(patch.patch || 'unknown')}</span>` : ''}
             ${cd || cost ? `<div class="ameta">${[cd, cost].filter(Boolean).join(' · ')}</div>` : ''}
             <div class="adesc">${esc(clean(ab.menu_description || ab.game_description))}</div>
-            ${tips[ab.key] ? `<div class="atip">🎯 ${esc(tips[ab.key])}</div>` : ''}
+            ${tips[ab.key] ? `<div class="atip">${esc(tips[ab.key])}</div>` : ''}
           </div>
         </div>`;
       }).join('')}
@@ -1956,12 +1963,12 @@ async function renderLearn(a) {
         const hc = HEROCOACH && HEROCOACH.heroes && HEROCOACH.heroes[a.slug] && HEROCOACH.heroes[a.slug][a.role];
         if (!hc || !(hc.line || hc.watchout)) return `<div style="font-size:.86rem;color:var(--text-1);line-height:1.6">${esc(a.coachLine)}</div>`;
         return `
-      ${hc.line ? `<div style="font-size:.92rem;color:var(--text-0);line-height:1.6">🧠 ${esc(hc.line)}</div>` : ''}
-      ${hc.watchout ? `<div style="font-size:.82rem;color:var(--gold);line-height:1.5;margin-top:.45rem">⚠ ${esc(hc.watchout)}</div>` : ''}
+      ${hc.line ? `<div style="font-size:.92rem;color:var(--text-0);line-height:1.6">${esc(hc.line)}</div>` : ''}
+      ${hc.watchout ? `<div style="font-size:.82rem;color:var(--gold);line-height:1.5;margin-top:.45rem">${esc(hc.watchout)}</div>` : ''}
       <div style="font-size:.78rem;color:var(--text-2);line-height:1.55;margin-top:.5rem">${esc(a.coachLine)}</div>`;
       })()}
       ${a.build.archetypes.length ? `<div class="chips" style="margin-top:.6rem">${a.build.archetypes.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>` : ''}
-      <div style="margin-top:.6rem;font-size:.72rem;color:var(--text-2)">leveling order and ult timing come from pred.gg's in-game recommended skill path (current patch) · 🎯 ability tips are AI-written from each ability's own text, machine-checked · 🧠 the how-to-play line is AI-written from this lane's own kit, build and timings, machine-checked, and reviewed by a second agent; the grey line under it is the engine's own timing summary · patch history is labeled with the patch it describes · combat numbers stay THEORY until in-game calibration · augment-specific tips live on the Game plan tab</div>
+      <div style="margin-top:.6rem;font-size:.72rem;color:var(--text-2)">leveling order and ult timing come from pred.gg's in-game recommended skill path (current patch) · ability tips are AI-written from each ability's own text, machine-checked · the how-to-play line is AI-written from this lane's own kit, build and timings, machine-checked, and reviewed by a second agent; the grey line under it is the engine's own timing summary · patch history is labeled with the patch it describes · combat numbers stay THEORY until in-game calibration · augment-specific tips live on the Game plan tab</div>
     </section>
     <details>
       <summary>Numbers, data &amp; confidence</summary>

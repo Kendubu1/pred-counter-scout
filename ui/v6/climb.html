@@ -8,14 +8,14 @@
 <style>
   :root {
     --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
-    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#82829a;
-    --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#8e8ea6;
+    --accent:#6c5ce7; --accent-ink:#9a8ef2; --accent-soft:rgba(108,92,231,.14);
     --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px; --maxw:980px;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
   html { scroll-behavior:smooth; }
-  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; font-variant-numeric:tabular-nums; }
   a { color:var(--blue); text-decoration:none; }
   img { display:block; }
   button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
@@ -24,17 +24,20 @@
   .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .spacer { flex:1; }
   .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
-  .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .navlink.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
   .navlink:hover { color:var(--text-0); }
   .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
   .subnav::-webkit-scrollbar { display:none; }
   .subnav:empty { display:none; }
+  .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; text-transform:capitalize; -webkit-appearance:none; appearance:none; }
+  .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
+  .card { scroll-margin-top:calc(var(--toph, 96px) + 10px); }
   .wrap { max-width:var(--maxw); margin:0 auto; padding:1.25rem 1rem 4rem; }
   .lede { font-size:1rem; color:var(--text-1); line-height:1.65; max-width:64ch; }
   h1 { font-size:1.7rem; font-weight:800; }
-  .kicker { font-size:.7rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); margin-bottom:.3rem; }
+  .kicker { font-size:.8rem; font-weight:600; letter-spacing:0; color:var(--text-1); margin-bottom:.3rem; }
   .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; }
-  .card h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.6rem; }
+  .card h2 { font-size:1rem; font-weight:600; letter-spacing:0; color:var(--text-0); margin-bottom:.6rem; }
   .card h3 { font-size:.9rem; color:var(--text-0); margin:.9rem 0 .25rem; }
   .card p { color:var(--text-1); line-height:1.65; }
   .card ul { margin:.5rem 0 0 1.15rem; padding:0; }
@@ -43,10 +46,10 @@
   .card b { color:var(--text-0); }
   .maxim { border-left:3px solid var(--accent); background:var(--accent-soft); border-radius:0 8px 8px 0; padding:.6rem .85rem; margin:.7rem 0 0; color:var(--text-0); font-size:.92rem; line-height:1.55; }
   .maxim i { color:var(--text-2); font-size:.78rem; font-style:normal; display:block; margin-top:.25rem; }
-  .tag { display:inline-block; font-size:.66rem; font-weight:800; letter-spacing:.06em; color:var(--blue); border:1px solid var(--blue); border-radius:6px; padding:.04rem .35rem; vertical-align:middle; }
+  .tag { display:inline-block; font-size:.6875rem; font-weight:800; letter-spacing:.06em; color:var(--blue); border:1px solid var(--blue); border-radius:6px; padding:.04rem .35rem; vertical-align:middle; }
   .tag.gold { color:var(--gold); border-color:var(--gold); }
   table.clock { width:100%; border-collapse:collapse; margin-top:.6rem; font-size:.86rem; }
-  table.clock th { text-align:left; color:var(--text-2); font-size:.68rem; text-transform:uppercase; letter-spacing:.1em; padding:.35rem .5rem; border-bottom:1px solid var(--border); }
+  table.clock th { text-align:left; color:var(--text-2); font-size:.6875rem; letter-spacing:0; padding:.35rem .5rem; border-bottom:1px solid var(--border); }
   table.clock td { padding:.42rem .5rem; border-bottom:1px solid var(--border); color:var(--text-1); vertical-align:top; }
   table.clock td:first-child { color:var(--text-0); font-weight:700; white-space:nowrap; }
   .tblwrap { overflow-x:auto; }
@@ -62,13 +65,27 @@
     .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle {
       min-height:44px; display:inline-flex; align-items:center; justify-content:center;
     }
+    .snpill { font-size:.8rem; }
     .navlink { border-radius:10px; }
     .top-inner { padding:.5rem .7rem; gap:.3rem; }
     .wordmark { font-size:.82rem; white-space:nowrap; }
     .top-inner a { font-size:.72rem; white-space:nowrap; }
-    .wrap { padding:.9rem .7rem 3rem; }
+    .wrap { padding:.9rem 1rem 3rem; }
     h1 { font-size:1.35rem; }
     .card { padding:.8rem .8rem; }
+    /* Three columns cannot fit at phone width. The objective clock keeps a two-column
+       table (the time tucks under the name); the build-swap table stacks one card per row. */
+    table.clock.objectives td:first-child { white-space:normal; width:38%; }
+    table.clock.objectives td:nth-child(2) { display:none; }
+    table.clock.objectives th:nth-child(2) { display:none; }
+    table.clock.objectives td:first-child[data-clock]::after { content:attr(data-clock); display:block; color:var(--text-2); font-weight:400; font-size:.8rem; margin-top:.15rem; }
+    table.clock.swaps, table.clock.swaps tbody, table.clock.swaps tr, table.clock.swaps td { display:block; width:100%; }
+    table.clock.swaps tr:first-child { display:none; }
+    table.clock.swaps tr { padding:.55rem 0; border-bottom:1px solid var(--border); }
+    table.clock.swaps td { border:0; padding:.08rem 0; }
+    table.clock.swaps td:first-child { white-space:normal; font-size:.95rem; }
+    table.clock.swaps td:nth-child(2) { color:var(--text-2); font-size:.82rem; }
+    table.clock.swaps td[data-label]::before { content:attr(data-label) " "; color:var(--text-2); font-weight:600; }
   }
 </style>
 </head>
@@ -77,7 +94,6 @@
   <a class="wordmark" href="./"><img src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</a>
   <span class="spacer"></span>
   <a class="navlink" href="./">Pick &amp; Build</a>
-  <a class="navlink" href="squad.html">Pre-Game</a>
   <a class="navlink" href="coach.html">Coach</a>
 </div><div class="subnav" id="subnav"></div></div>
 
@@ -92,18 +108,18 @@
   by making better decisions than you made yesterday."<i>— The Wraith Codex, one of the community's
   best-regarded guides. The rest of this page is what those decisions are.</i></p>
 
-  <section class="card">
+  <section class="card" data-nav="The clock">
     <h2>1 · Play the clock, not the kills</h2>
     <p>High-level Predecessor is scheduled. Every deep macro guide structures the whole game
     around objective respawns, and our own match films confirm the cadence — the schedule
     below is measured across ranked games, not folklore.</p>
-    <div class="tblwrap"><table class="clock">
+    <div class="tblwrap"><table class="clock objectives">
       <tr><th>Objective</th><th>Clock</th><th>What it means for your plan</th></tr>
-      <tr><td>River buffs</td><td>from ~3:00, ~every minute</td><td>Continuous side income. Whoever holds river tempo holds the map's cash flow.</td></tr>
-      <tr><td>Seedlings</td><td>from ~4:00, ~3-min cycle</td><td>The between-windows farm. An idle window with no seedling taken is income handed over.</td></tr>
-      <tr><td>Fangtooth</td><td>5:00, ~5–6 min cycle</td><td>Permanent, stacking, team-wide damage. It is a race counted in stacks, not a one-off prize.</td></tr>
-      <tr><td>Mini Prime (Mini Orb)</td><td>~7:00 / ~13:00 / ~19:00</td><td>A <b>conversion</b> buff — it exists to melt plated towers in the minutes after the take.</td></tr>
-      <tr><td>Orb Prime &amp; Primal Fangtooth</td><td>from ~20:00</td><td>The game-enders. Late deaths near these windows hand the game over — death timers run ~40s+ by then.</td></tr>
+      <tr><td data-clock="from ~3:00, ~every minute">River buffs</td><td>from ~3:00, ~every minute</td><td>Continuous side income. Whoever holds river tempo holds the map's cash flow.</td></tr>
+      <tr><td data-clock="from ~4:00, ~3-min cycle">Seedlings</td><td>from ~4:00, ~3-min cycle</td><td>The between-windows farm. An idle window with no seedling taken is income handed over.</td></tr>
+      <tr><td data-clock="5:00, ~5–6 min cycle">Fangtooth</td><td>5:00, ~5–6 min cycle</td><td>Permanent, stacking, team-wide damage. It is a race counted in stacks, not a one-off prize.</td></tr>
+      <tr><td data-clock="~7:00 / ~13:00 / ~19:00">Mini Prime (Mini Orb)</td><td>~7:00 / ~13:00 / ~19:00</td><td>A <b>conversion</b> buff — it exists to melt plated towers in the minutes after the take.</td></tr>
+      <tr><td data-clock="from ~20:00">Orb Prime &amp; Primal Fangtooth</td><td>from ~20:00</td><td>The game-enders. Late deaths near these windows hand the game over — death timers run ~40s+ by then.</td></tr>
     </table></div>
     <h3>The rules the clock creates</h3>
     <ul>
@@ -121,7 +137,7 @@
     </ul>
   </section>
 
-  <section class="card">
+  <section class="card" data-nav="Tempo">
     <h2>2 · Tempo economics — fights are loans, not wins</h2>
     <p>The scoreboard lies to climbers. A won fight is a <b>loan of tempo</b> that expires with
     the enemy death timers: if nothing is collected before they respawn — an objective, a tower,
@@ -146,7 +162,7 @@
     <p class="maxim">A won fight spent on no objective is tempo left on the table.</p>
   </section>
 
-  <section class="card">
+  <section class="card" data-nav="Your role">
     <h2>3 · Your role's real yardstick</h2>
     <p>Most ladder players grade every role on the carry's scoreboard. High-level guides —
     written by the people who main these roles — grade very differently. Hold yourself to the
@@ -223,7 +239,7 @@
     </ul>
   </section>
 
-  <section class="card">
+  <section class="card" data-nav="Wave control">
     <h2>4 · Wave control — how to freeze effectively</h2>
     <p>Freezing is the strongest lane tool most of the ladder never uses on purpose: you hold
     the enemy wave <b>just outside your tower's range</b> and refuse to let it move. They must
@@ -302,7 +318,7 @@
     the clock are one decision, not two.</p>
   </section>
 
-  <section class="card">
+  <section class="card" data-nav="Builds">
     <h2>5 · Build like the top of the ladder builds</h2>
     <p>High-level players don't memorize builds — they hold a small grammar of reasons. Every
     serious guide in the catalog writes builds the same five ways:</p>
@@ -336,12 +352,60 @@
       but you need to be ahead — if you fall behind you need to change." A greedy build isn't
       wrong in general; it's wrong for a game state. Re-check the condition every recall.</p>
     </details>
+  </section>
+
+  <section class="card" id="when-to-swap" data-nav="Item swaps">
+    <h2>6 · Item swaps — when the counter actually happens <span class="tag">MEASURED · 1.17.2</span></h2>
+    <p>We counted what Platinum-and-up players build in 8,331 ranked games, comparing games where
+    the matchup calls for a counter with games where it doesn't. The guides say to flex the last
+    one or two slots. The ladder flexes <b>early</b>: most of the matchup-driven buying happens at
+    the 2nd item, and by the 4th almost everyone adds defense anyway, so it stops being a counter.</p>
+    <div class="tblwrap"><table class="clock swaps">
+      <tr><th>Counter</th><th>Built when the matchup calls for it</th><th>Where the swap lands</th></tr>
+      <tr><td>Anti-heal</td><td data-label="When:">Enemy team has healers</td><td data-label="Swap lands:"><b>Item 2</b> (56% of the swaps), around minute 18</td></tr>
+      <tr><td>Physical armor</td><td data-label="When:">Physical-damage laner</td><td data-label="Swap lands:"><b>Items 1–2</b> (71%), around minute 18</td></tr>
+      <tr><td>Magic armor</td><td data-label="When:">Magic-damage laner</td><td data-label="Swap lands:">Items 1–3 (83%); the one lane counter with a real share at item 4 (17%)</td></tr>
+      <tr><td>Armor shred</td><td data-label="When:">Enemies already show 3+ physical armor items</td><td data-label="Swap lands:">Items 2–4, spread evenly, around minute 25</td></tr>
+    </table></div>
+    <h3>The rule of thumb</h3>
+    <ul>
+      <li><b>Item 1 is for your lane, item 2 answers the biggest threat, item 3 goes back to your
+      engine.</b> The fork in the road is the 2nd item far more often than the last.</li>
+      <li><b>Counter your laner early or not at all.</b> Into a magic laner, Plat+ players open
+      magic armor as their first item 8 times in 100, against almost never otherwise. By the
+      4th item the gap is small, because everyone is buying defense by then.</li>
+      <li><b>Healers on the other team → anti-heal 2nd.</b> It's the one swap every role makes.
+      With Khaimera on the enemy team, junglers build Tainted Blade 16 times in 100 instead of 9,
+      mids Tainted Scepter 29 instead of 20 <span style="color:var(--text-2)">(all ranks)</span>.</li>
+      <li><b>Read the scoreboard for armor.</b> When the enemies have already finished 3 or more
+      physical armor items, Plat+ physical heroes pick an armor-shred item (The Perforator,
+      Demolisher, Basilisk, Viper, Deathstalker) 18 times in 100 instead of 10. It's the biggest
+      high-rank reaction we measured beyond the lane matchup.</li>
+      <li><b>Swap out a damage item, not your engine.</b> The counter takes the place of a second
+      damage item: into Khaimera, carries pick Tainted Rounds 36 times in 100 instead of 29, and
+      Vanquisher 49 instead of 53 <span style="color:var(--text-2)">(all ranks)</span>.</li>
+    </ul>
+    <h3>What the ladder doesn't adjust for</h3>
+    <p>Three swaps the guides recommend barely move, even at high rank:</p>
+    <ul>
+      <li><b>Tenacity or cleanse into a CC-heavy team:</b> 3 in 100 either way. CC is counted from
+      each kit's ability text.</li>
+      <li><b>Percent-health damage into tanks:</b> 7 in 100 whether or not the enemies have
+      stacked armor.</li>
+      <li><b>Defense when your team is behind:</b> 18 in 100 behind vs 17.5 ahead, and almost all
+      of that gap comes at the 4th item.</li>
+    </ul>
+    <p>Whether adjusting here would win more is untested. It's simply where the ladder doesn't react.</p>
+    <p class="maxim">Item 1 for your lane, item 2 for their biggest threat, item 3 back to your build.
+    <i>What high-rank players do, not a proven win-rate gain: at this sample the win-rate
+    differences between item choices are still inside the noise. Rank is each player's current
+    ladder rank. Patch 1.17.2, ranked games Oct 22–24.</i></p>
     <p style="margin-top:.6rem">Per-hero specifics live in <a href="./">Pick &amp; Build</a> —
     the sim's opinion and the field's real win rates, side by side.</p>
   </section>
 
-  <section class="card">
-    <h2>6 · The splitpush doctrine</h2>
+  <section class="card" data-nav="Splitpush">
+    <h2>7 · The splitpush doctrine</h2>
     <p>Splitpushing is the most misplayed macro tool on the ladder, and the community's one
     dedicated macro guide lays out the actual doctrine:</p>
     <ul>
@@ -361,8 +425,8 @@
     exactly one answer, and take the 4v4 fight or the objective their splitter isn't at.</p>
   </section>
 
-  <section class="card">
-    <h2>7 · Micro that's assumed up here</h2>
+  <section class="card" data-nav="Micro">
+    <h2>8 · Micro that's assumed up here</h2>
     <p>Above Gold, this is table stakes — opponents are doing all of it:</p>
     <ul>
       <li><b>Animation canceling</b> — cutting an ability's follow-through the moment its damage
@@ -394,8 +458,8 @@
     </details>
   </section>
 
-  <section class="card">
-    <h2>8 · Review your own film — the interrogation</h2>
+  <section class="card" data-nav="Film review">
+    <h2>9 · Review your own film — the interrogation</h2>
     <p>Every rank above Platinum reviews film. Don't rewatch to relive it — interrogate it.
     The questions a real coach asks of a lost game, in order:</p>
     <ul>
@@ -426,6 +490,13 @@
     claims we haven't independently verified. Not affiliated with Omeda Studios.
   </footer>
 </div>
+<script src="section-nav.js"></script>
+<script>
+// Section menu: one short-labelled pill per section (data-nav); shared
+// behaviour (readable ids, address follows you, shared links) in section-nav.js.
+SectionNav.build(document.getElementById('subnav'),
+  [...document.querySelectorAll('.wrap .card[data-nav]')].map((c) => ({ el: c, label: c.dataset.nav })));
+</script>
 <script defer src="icons.js"></script>
 <script defer src="hero-links.js"></script>
 <script defer src="nav.js"></script>

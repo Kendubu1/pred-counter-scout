@@ -7,14 +7,14 @@
 <style>
   :root {
     --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
-    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#82829a;
-    --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#8e8ea6;
+    --accent:#6c5ce7; --accent-ink:#9a8ef2; --accent-soft:rgba(108,92,231,.14);
     --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px; --maxw:980px;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
   html { scroll-behavior:smooth; }
-  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; font-variant-numeric:tabular-nums; }
   a { color:var(--blue); text-decoration:none; }
   img { display:block; }
   button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
@@ -23,7 +23,7 @@
   .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .spacer { flex:1; }
   .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
-  .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .navlink.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
   .navlink:hover { color:var(--text-0); }
   .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
   .subnav::-webkit-scrollbar { display:none; }
@@ -39,7 +39,7 @@
   .scope b { color:var(--text-1); }
   h1 .ext { font-size:.7rem; vertical-align:middle; font-weight:400; }
   .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; }
-  .card h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.8rem; }
+  .card h2 { font-size:1rem; font-weight:600; letter-spacing:0; color:var(--text-0); margin-bottom:.8rem; }
   h1 { font-size:1.7rem; font-weight:800; }
   h1 img.pav { width:34px; height:34px; border-radius:50%; object-fit:cover; border:1px solid var(--border); vertical-align:-7px; margin-right:.25rem; }
   .roster { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:.7rem; }
@@ -51,7 +51,7 @@
   .rostermenu { max-width:480px; border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-1); margin-bottom:1.2rem; }
   .rostermenu > summary { cursor:pointer; list-style:none; padding:.7rem .9rem; display:flex; align-items:center; gap:.5rem; }
   .rostermenu > summary::-webkit-details-marker { display:none; }
-  .rostermenu > summary::before { content:"▸"; color:var(--accent); font-size:.8rem; }
+  .rostermenu > summary::before { content:"▸"; color:var(--accent-ink); font-size:.8rem; }
   .rostermenu[open] > summary::before { content:"▾"; }
   .rostermenu .rm-t { font-weight:800; font-size:.96rem; }
   .rostermenu .rm-s { color:var(--text-2); font-size:.76rem; }
@@ -64,9 +64,9 @@
 
   .goal { margin-top:.9rem; }
   .goalbar { position:relative; height:14px; border-radius:99px; background:var(--bg-2); border:1px solid var(--border); overflow:visible; }
-  .goalbar .fill { height:100%; border-radius:99px; background:linear-gradient(90deg, var(--accent), var(--blue)); }
+  .goalbar .fill { height:100%; border-radius:99px; background:var(--accent); }
   .goalbar .peak { position:absolute; top:-5px; width:2px; height:24px; background:var(--gold); }
-  .goalbar .peak::after { content:"peak"; position:absolute; top:-16px; left:-12px; font-size:.6rem; color:var(--gold); }
+  .goalbar .peak::after { content:"peak"; position:absolute; top:-16px; left:-12px; font-size:.6875rem; color:var(--gold); }
   .goal .lbl { display:flex; justify-content:space-between; font-size:.74rem; color:var(--text-2); margin-top:.45rem; }
 
   .verdict { font-size:1.05rem; border-left:3px solid var(--accent); padding:.5rem .9rem; background:var(--accent-soft); border-radius:0 8px 8px 0; margin-top:1rem; }
@@ -100,7 +100,7 @@
 
   ol.plan { padding-left:1.2rem; }
   ol.plan li { margin:.55rem 0; color:var(--text-1); }
-  ol.plan li::marker { color:var(--accent); font-weight:700; }
+  ol.plan li::marker { color:var(--accent-ink); font-weight:700; }
   .splits { width:100%; border-collapse:collapse; font-size:.8rem; }
   .splits td, .splits th { padding:.3rem .4rem; border-bottom:1px solid var(--border); text-align:left; }
   .splits th { color:var(--text-2); }
@@ -111,7 +111,7 @@
      (lazy-loaded detail) so the list stays one row no matter how many games. */
   .pgfilter { display:flex; gap:.4rem; margin-bottom:.6rem; flex-wrap:wrap; }
   .pgf { font:inherit; font-size:.74rem; cursor:pointer; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.2rem .7rem; color:var(--text-2); -webkit-appearance:none; appearance:none; }
-  .pgf.on { color:var(--text-0); border-color:var(--accent); background:var(--accent-soft); }
+  .pgf.on { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
   .pgpick { display:flex; gap:.45rem; overflow-x:auto; padding-bottom:.5rem; scrollbar-width:thin; -webkit-overflow-scrolling:touch; }
   .pgpick::-webkit-scrollbar { height:6px; }
   .pgpick::-webkit-scrollbar-thumb { background:var(--border); border-radius:99px; }
@@ -128,7 +128,7 @@
   .mo { display:grid; grid-template-columns:54px 1fr; gap:.75rem; padding:.7rem 0; border-bottom:1px solid var(--border); }
   .mo:last-of-type { border-bottom:none; padding-bottom:.15rem; }
   .mo .t { font-size:1.3rem; font-weight:800; font-variant-numeric:tabular-nums; line-height:1.1; }
-  .mo .t small { display:block; font-size:.6rem; color:var(--text-2); font-weight:400; letter-spacing:.05em; }
+  .mo .t small { display:block; font-size:.6875rem; color:var(--text-2); font-weight:400; letter-spacing:.05em; }
   .mo h3 { font-size:.95rem; font-weight:700; }
   .mo .facts { font-size:.76rem; color:var(--text-2); margin-top:.1rem; }
   .mo .why { font-size:.84rem; color:var(--text-1); margin-top:.3rem; }
@@ -137,8 +137,8 @@
   .mo .fighters img { display:inline-block; width:17px; height:17px; border-radius:4px; vertical-align:-4px; }
   .mo .fighters a, .heroline a { display:inline-block; }
   .mocall { margin-top:.35rem; font-size:.86rem; color:var(--text-0); border-left:2px solid var(--accent); padding:.1rem 0 .1rem .6rem; }
-  .mocall b { color:var(--accent); text-transform:uppercase; font-size:.68rem; letter-spacing:.08em; margin-right:.3rem; }
-  .tagchip { font-size:.62rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; border-radius:99px; padding:.03rem .45rem; margin-left:.4rem; vertical-align:1px; white-space:nowrap; }
+  .mocall b { color:var(--accent-ink); font-size:.6875rem; letter-spacing:0; margin-right:.3rem; }
+  .tagchip { font-size:.6875rem; font-weight:700; letter-spacing:0; border-radius:99px; padding:.03rem .45rem; margin-left:.4rem; vertical-align:1px; white-space:nowrap; }
   .tagchip.def { color:var(--gold); border:1px solid var(--gold); }
   .tagchip.bad { color:var(--red); border:1px solid var(--red); }
   .tiles { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.6rem; }
@@ -147,11 +147,11 @@
   .tile .n .vs { color:var(--text-2); font-size:.85rem; font-weight:500; }
   .tile.bad .n { color:var(--red); } .tile.good .n { color:var(--green); }
   .tile .lbl { font-size:.72rem; color:var(--text-1); margin-top:.1rem; }
-  .tile .read { font-size:.68rem; color:var(--text-2); margin-top:.25rem; line-height:1.4; }
+  .tile .read { font-size:.6875rem; color:var(--text-2); margin-top:.25rem; line-height:1.4; }
   .whyd { margin:.1rem 0 .25rem .1rem; }
   .kcc { margin:.35rem 0 .2rem; padding:.4rem .6rem; border:1px solid var(--border); border-radius:8px; background:var(--bg-1); }
   .kcc .lrow { margin:.12rem 0; }
-  .whyd>summary { cursor:pointer; list-style:none; font-size:.7rem; color:var(--accent); }
+  .whyd>summary { cursor:pointer; list-style:none; font-size:.7rem; color:var(--accent-ink); }
   .whyd>summary::before { content:"▸ "; }
   .whyd[open]>summary::before { content:"▾ "; }
   .whyd>div { font-size:.8rem; color:var(--text-1); padding:.35rem .55rem; border-left:2px solid var(--border); margin-top:.2rem; line-height:1.55; }
@@ -170,8 +170,8 @@
   .coach-stats { width:100%; min-width:670px; border-collapse:collapse; font-size:.74rem; }
   .coach-stats td,.coach-stats th { padding:.35rem .45rem; border-bottom:1px solid var(--border); text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
   .coach-stats td:first-child,.coach-stats th:first-child { text-align:left; }
-  .coach-stats th { color:var(--text-2); font-size:.66rem; text-transform:uppercase; letter-spacing:.04em; }
-  .coach-stats .role { color:var(--text-2); font-size:.66rem; }
+  .coach-stats th { color:var(--text-2); font-size:.6875rem; letter-spacing:0; }
+  .coach-stats .role { color:var(--text-2); font-size:.6875rem; }
   .bverdict { margin:.5rem 0 .2rem; font-size:.86rem; color:var(--text-1); border-left:3px solid var(--red); padding:.35rem .65rem; background:rgba(255,90,90,.06); border-radius:0 8px 8px 0; }
   .plobby { display:grid; grid-template-columns:150px 1fr; gap:.7rem; padding:.65rem 0; border-bottom:1px solid var(--border); }
   .plobby:last-of-type { border-bottom:none; }
@@ -183,7 +183,7 @@
   .build-player { margin:.75rem 0; border:1px solid var(--border); border-radius:12px; background:var(--bg-1); overflow:hidden; }
   .build-player > summary { display:flex; align-items:center; gap:.75rem; padding:1rem; cursor:pointer; list-style:none; min-height:44px; }
   .build-player > summary::-webkit-details-marker { display:none; }
-  .build-player > summary::after { content:'+'; margin-left:auto; color:var(--accent); font-size:1.3rem; }
+  .build-player > summary::after { content:'+'; margin-left:auto; color:var(--accent-ink); font-size:1.3rem; }
   .build-player[open] > summary::after { content:'−'; }
   .build-player > summary:focus-visible { outline:2px solid var(--accent); outline-offset:-3px; }
   .build-player > summary img { width:36px; height:36px; border-radius:8px; }
@@ -196,7 +196,7 @@
   .build-section p { margin:0; font-size:.85rem; line-height:1.7; color:var(--text-1); max-width:72ch; }
   .build-section.wide { grid-column:1/-1; }
   .build-section.recommendation { border-left:3px solid var(--accent); background:var(--accent-soft); }
-  .build-section.recommendation h3 { color:var(--accent); }
+  .build-section.recommendation h3 { color:var(--accent-ink); }
   .build-help { color:var(--text-2); font-size:.8rem; line-height:1.6; margin:.5rem 0 1rem; }
   .evidence-section { margin:1rem 0; }
   .evidence-section > summary { padding:.8rem 0; cursor:pointer; font-weight:700; font-size:.86rem; }
@@ -208,7 +208,7 @@
   .plobby .line { font-size:.84rem; color:var(--text-1); }
   .plobby .items { display:flex; gap:.2rem; margin-top:.3rem; }
   .plobby .items img { width:20px; height:20px; border-radius:4px; border:1px solid var(--border); }
-  .ltag { font-size:.6rem; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:var(--accent); margin-right:.35rem; }
+  .ltag { font-size:.6875rem; font-weight:800; letter-spacing:0; color:var(--accent-ink); margin-right:.35rem; }
   .lrow { font-size:.74rem; color:var(--text-2); margin-top:.25rem; line-height:1.5; }
   .lrow b { color:var(--text-1); }
   .lrow .swap { color:var(--gold); }
@@ -216,7 +216,7 @@
   .vline.pos { border-left:2px solid var(--green); } .vline.neg { border-left:2px solid var(--red); }
   .vline.pos .ltag::after { content:" +"; color:var(--green); } .vline.neg .ltag::after { content:" −"; color:var(--red); }
   details.deepdive { margin-top:1rem; border:1px dashed var(--border); border-radius:12px; padding:.6rem .9rem; }
-  details.deepdive > summary { cursor:pointer; font-size:.78rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--text-2); }
+  details.deepdive > summary { cursor:pointer; font-size:.8rem; font-weight:600; letter-spacing:0; color:var(--text-1); }
 
   /* ── mobile: smaller, crisp, nothing bleeds ── */
   @media (max-width:600px) {
@@ -231,11 +231,11 @@
     .top-inner { padding:.5rem .7rem; gap:.3rem; }
     .wordmark { font-size:.82rem; white-space:nowrap; }
     .top-inner a { font-size:.72rem; white-space:nowrap; }
-    .wrap { padding:.9rem .7rem 3rem; }
+    .wrap { padding:.9rem 1rem 3rem; }
     h1 { font-size:1.35rem; }
     .arch { font-size:.86rem; }
     .arch .arch-r { display:block; margin-top:.1rem; }
-    .sub .chip { font-size:.66rem; padding:.1rem .5rem; }
+    .sub .chip { font-size:.6875rem; padding:.1rem .5rem; }
     .card { padding:.8rem .8rem; }
     .card h2 { font-size:.7rem; }
     .verdict { font-size:.86rem; padding:.4rem .7rem; }
@@ -262,7 +262,7 @@
   .tlobj:hover { filter:brightness(1.35); }
   .tlobj.sel > div { box-shadow:0 0 0 2px var(--gold); }
   .tl-tick { position:absolute; top:32px; height:16px; width:1px; background:var(--border); opacity:.7; }
-  .tl-ticklbl { position:absolute; top:54px; transform:translateX(-50%); font-size:.6rem; color:var(--text-2); font-variant-numeric:tabular-nums; }
+  .tl-ticklbl { position:absolute; top:54px; transform:translateX(-50%); font-size:.6875rem; color:var(--text-2); font-variant-numeric:tabular-nums; }
   /* structure falls: triangles between the objective row and the axis · direction
      is the non-color encoding (▲ we took theirs, ▼ they took ours) */
   .tltower { position:absolute; transform:translateX(-50%); cursor:pointer; padding:4px 3px; transition:filter .12s; }
@@ -273,7 +273,7 @@
   .tltower.sel i { filter:drop-shadow(0 0 3px var(--gold)) brightness(1.25); }
   .tlkey .tkt { width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-radius:0; }
   /* the strip's key + tap-to-open breakdown panel (replaces the crammed eyebrow key) */
-  .tlkey { display:flex; flex-wrap:wrap; gap:.3rem .75rem; margin-top:.55rem; font-size:.68rem; color:var(--text-2); border-top:1px dashed var(--border); padding-top:.5rem; }
+  .tlkey { display:flex; flex-wrap:wrap; gap:.3rem .75rem; margin-top:.55rem; font-size:.6875rem; color:var(--text-2); border-top:1px dashed var(--border); padding-top:.5rem; }
   .tlkey .tk { display:inline-flex; align-items:center; gap:.32rem; white-space:nowrap; }
   .tlkey i { display:inline-block; flex:none; border-radius:50%; }
   .tlkey .tkc { width:11px; height:11px; }
@@ -305,12 +305,12 @@
      what order, and the body count it left standing. The opener row is the story. */
   .kl { margin:.35rem 0 .1rem; border-left:2px solid var(--border); }
   .kl-row { display:flex; align-items:center; gap:.45rem; padding:.16rem 0 .16rem .55rem; font-size:.76rem; flex-wrap:wrap; }
-  .kl-row.opener { background:linear-gradient(90deg, rgba(240,180,41,.10), transparent 70%); border-radius:0 6px 6px 0; }
-  .kl-t { color:var(--text-2); font-size:.64rem; font-variant-numeric:tabular-nums; min-width:2.7rem; }
-  .kl-role { font-size:.58rem; text-transform:uppercase; letter-spacing:.04em; color:var(--text-2);
+  .kl-row.opener { background:rgba(240,180,41,.08); border-radius:0 6px 6px 0; }
+  .kl-t { color:var(--text-2); font-size:.6875rem; font-variant-numeric:tabular-nums; min-width:2.7rem; }
+  .kl-role { font-size:.6875rem; letter-spacing:0; color:var(--text-2);
              border:1px solid var(--border); border-radius:4px; padding:0 .3rem; }
-  .kl-count { margin-left:auto; font-size:.66rem; font-variant-numeric:tabular-nums; font-weight:700; white-space:nowrap; }
-  .kl-open-tag { font-size:.56rem; font-weight:800; letter-spacing:.06em; color:var(--gold); border:1px solid var(--gold);
+  .kl-count { margin-left:auto; font-size:.6875rem; font-variant-numeric:tabular-nums; font-weight:700; white-space:nowrap; }
+  .kl-open-tag { font-size:.6875rem; font-weight:800; letter-spacing:.06em; color:var(--gold); border:1px solid var(--gold);
                  border-radius:99px; padding:0 .35rem; }
   .fread { font-size:.8rem; color:var(--text-0); background:var(--bg-3); border-left:3px solid var(--accent);
            border-radius:0 8px 8px 0; padding:.45rem .65rem; margin:.4rem 0 .3rem; line-height:1.5; }
@@ -361,11 +361,11 @@
   <a class="wordmark" href="./"><img src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</a>
   <span class="spacer"></span>
   <a class="navlink" href="./">Pick &amp; Build</a>
-  <a class="navlink" href="squad.html">Pre-Game</a>
   <a class="navlink active" href="coach.html">Coach</a>
 </div><div class="subnav" id="subnav"></div></div>
 <div class="wrap" id="page">loading…</div>
 <script src="coach-loadouts.js?v=0574a2b8128c"></script>
+<script src="section-nav.js"></script>
 <script>
 const esc = (s) => String(s ?? '').replace(/\s*\u2014\s*/g, ', ').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct = (x, d = 1) => (x * 100).toFixed(d);
@@ -460,7 +460,7 @@ function fightDetail(s, f) {
     }
     fread = `<div class="fread">${line}</div>`;
   }
-  const who = (slugs, side) => slugs.map((slug) => { const k = kitOf(hName(slug)); return `${hlink(slug, `<b style="color:${side === 'us' ? 'var(--green)' : 'var(--red)'}">${esc(hName(slug))}</b>`)}${k && k.archetype ? `<span style="color:var(--text-2);font-size:.66rem"> ${esc(k.archetype)}</span>` : ''}`; }).join(', ') || '·';
+  const who = (slugs, side) => slugs.map((slug) => { const k = kitOf(hName(slug)); return `${hlink(slug, `<b style="color:${side === 'us' ? 'var(--green)' : 'var(--red)'}">${esc(hName(slug))}</b>`)}${k && k.archetype ? `<span style="color:var(--text-2);font-size:.6875rem"> ${esc(k.archetype)}</span>` : ''}`; }).join(', ') || '·';
   // Builds AT FIGHT TIME: itemTimeline (est online minute from the measured
   // median gold curve · THEORY) says which of the end-game items were likely
   // purchased by this fight; offline ones render dimmed. Falls back to the
@@ -487,8 +487,8 @@ function fightDetail(s, f) {
   if (theirHealers.length) {
     const carriers = taintedOf(s.ourHeroes);
     const on = carriers.filter((c) => c.on);
-    if (on.length) sustain = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--green)">✓ <b>Sustain check:</b> ${esc(on.map((c) => `${c.item} (${c.hero})`).join(', '))} online into ${esc(theirHealers.join('/'))} · their healing was answered.</div>`;
-    else if (carriers.length) sustain = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--gold)">⚠ <b>Sustain check:</b> ${esc(theirHealers.join('/'))} heal for their side, but the anti-heal wasn't online yet (${esc(carriers.map((c) => `${c.hero}'s ${c.item} est. ~${c.est ?? 'late'}${c.est != null ? 'm' : ''}`).join(', '))}) · this fight ran unanswered.</div>`;
+    if (on.length) sustain = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--green)"><b>Sustain check:</b> ${esc(on.map((c) => `${c.item} (${c.hero})`).join(', '))} online into ${esc(theirHealers.join('/'))} · their healing was answered.</div>`;
+    else if (carriers.length) sustain = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--gold)"><b>Sustain check:</b> ${esc(theirHealers.join('/'))} heal for their side, but the anti-heal wasn't online yet (${esc(carriers.map((c) => `${c.hero}'s ${c.item} est. ~${c.est ?? 'late'}${c.est != null ? 'm' : ''}`).join(', '))}) · this fight ran unanswered.</div>`;
     else if (s.ourHeroes.some((slug) => { const p = playerByHero(slug); return p && Array.isArray(p.itemTimeline); })) sustain = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--red)">✕ <b>Sustain check:</b> ${esc(theirHealers.join('/'))} heal for their side and nobody in this fight built anti-heal all game.</div>`;
   }
   // mirror: their Tainted into OUR healers explains "our healing stopped working"
@@ -503,7 +503,7 @@ function fightDetail(s, f) {
   if (gap && (gap.us || gap.them)) {
     const diff = gap.us - gap.them;
     const col = diff < 0 ? 'var(--red)' : diff > 0 ? 'var(--green)' : 'var(--text-2)';
-    gapLine = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--text-1)"><b style="color:var(--text-0)">Item count at engage:</b> <b style="color:${col}">us ~${gap.us} v them ~${gap.them}</b>${diff <= -3 ? ' · we took this fight well behind on items; that gap, not the mechanics, is often the whole story' : diff >= 3 ? ' · we had the item lead; fights like this are ours to force' : ''} <span style="color:var(--text-2);font-size:.62rem">(participants only, median-gold model · THEORY)</span></div>`;
+    gapLine = `<div style="font-size:.76rem;margin-top:.3rem;color:var(--text-1)"><b style="color:var(--text-0)">Item count at engage:</b> <b style="color:${col}">us ~${gap.us} v them ~${gap.them}</b>${diff <= -3 ? ' · we took this fight well behind on items; that gap, not the mechanics, is often the whole story' : diff >= 3 ? ' · we had the item lead; fights like this are ours to force' : ''} <span style="color:var(--text-2);font-size:.6875rem">(participants only, median-gold model · THEORY)</span></div>`;
   }
   const after = (f.timeline ? f.timeline.majors : []).filter((m) => m.minute >= s.startMin - 0.3 && m.minute <= s.startMin + 2.5 && /FANG|PRIME|ORB/i.test(m.type)).map((m) => `${m.side === 'us' ? 'we took' : 'they took'} ${esc(m.type.replace(/_/g, ' '))} (${m.minute}m)`);
   // Macro read (THEORY): the cross-map story · numbers at engage, who was dead and
@@ -513,9 +513,9 @@ function fightDetail(s, f) {
   const macNotes = mac ? `<div style="font-size:.76rem;color:var(--text-2);margin-top:.3rem">${esc(macroAvailability(mac))}</div>` : '';
   return `
     ${fread}
-    ${ladder ? `<div style="font-size:.68rem;color:var(--text-2);margin-top:.35rem"><b style="color:var(--text-0);font-size:.74rem">Death sequence</b> · first column = clock / seconds after the opener · right column = bodies standing (us v them)</div>${ladder}` : '<div style="font-size:.76rem;color:var(--text-2)">No located kills for this fight.</div>'}
+    ${ladder ? `<div style="font-size:.6875rem;color:var(--text-2);margin-top:.35rem"><b style="color:var(--text-0);font-size:.74rem">Death sequence</b> · first column = clock / seconds after the opener · right column = bodies standing (us v them)</div>${ladder}` : '<div style="font-size:.76rem;color:var(--text-2)">No located kills for this fight.</div>'}
     <div style="font-size:.76rem;color:var(--text-1);margin:.35rem 0 .25rem"><b style="color:var(--text-0)">Who fought:</b> ${who(s.ourHeroes, 'us')} <span style="color:var(--text-2)">vs</span> ${who(s.theirHeroes, 'them')}</div>
-    ${builds ? `<div style="font-size:.76rem;color:var(--text-1)"><b style="color:var(--text-0)">Online at this fight</b> <span style="color:var(--text-2);font-size:.64rem">(dimmed = est. not purchased yet · median-gold model, THEORY; entry HP isn't in the feed)</span>${builds}</div>` : ''}
+    ${builds ? `<div style="font-size:.76rem;color:var(--text-1)"><b style="color:var(--text-0)">Online at this fight</b> <span style="color:var(--text-2);font-size:.6875rem">(dimmed = est. not purchased yet · median-gold model, THEORY; entry HP isn't in the feed)</span>${builds}</div>` : ''}
     ${gapLine}
     ${sustain}
     ${after.length ? `<div style="font-size:.78rem;color:var(--gold);margin-top:.2rem"><b>What it meant:</b> ${after.join('; ')}.</div>` : ''}
@@ -638,7 +638,7 @@ function fightMap(f) {
   const fhead = (s) => `<div style="font-size:.86rem;font-weight:700;margin-bottom:.1rem">${s.startMin}m · ${esc(s.kind)} <span style="color:${rcol(s.result)}">${s.result} ${s.ourKills}–${s.theirKills}</span><span style="font-weight:400;color:var(--text-2)"> · ${esc(s.place)}${s.tag ? ` · <b style="color:${s.tag === 'game-defining' ? 'var(--gold)' : 'var(--red)'}">${esc(s.tag.replace('-', ' '))}</b>` : ''}</span></div>`;
   const details = sks.map((s, i) => `<div data-i="${i}">${fhead(s)}${fightDetail(s, f)}</div>`).join('');
   return `<div id="fightmap" style="background:var(--bg-1);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;margin-top:1rem;scroll-margin-top:92px">
-    <h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.5rem">Fight map <span style="font-weight:400;text-transform:none;letter-spacing:0">· where the kills happened · tap a fight to locate it</span></h2>
+    <h2 style="font-size:1rem;font-weight:600;letter-spacing:0;color:var(--text-0);margin-bottom:.5rem">Fight map <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.78rem;color:var(--text-2)">· where the kills happened · tap a fight to locate it</span></h2>
     <div style="text-align:center"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="max-width:100%;height:auto">
       <defs>
         <radialGradient id="fmh-us"><stop offset="0%" stop-color="#00e6a4" stop-opacity=".9"/><stop offset="55%" stop-color="#00c48c" stop-opacity=".2"/><stop offset="100%" stop-color="#00c48c" stop-opacity="0"/></radialGradient>
@@ -656,7 +656,7 @@ function fightMap(f) {
     </svg></div>
     <div style="font-size:.72rem;color:var(--text-1);margin-top:.4rem">Our base is always at the <b>bottom</b> · the <span style="color:#60a5fa">blue band</span> is the river · <span style="color:var(--green)">green glow</span> = our kills, <span style="color:var(--red)">red</span> = our deaths.</div>
     <details class="sim-collapse" style="margin-top:.25rem"><summary>Full map key</summary>
-      <div style="font-size:.68rem;color:var(--text-2);line-height:1.6;margin-top:.3rem">Green shading = jungle · ◆ towers · ● Fang/Prime pits · <span style="color:#e0a93e">Gold</span>/<span style="color:#22d3ee">Cyan</span> dots = flank buffs · rings = the key fights (gold ring = the game-defining one, defined in the timeline key above) · <span style="color:var(--gold)">✕</span> = caught out alone (a death with no fight around it) · numbered dots = the focused fight's kills in death order (<span style="color:var(--red)">red ring</span> = we died, <span style="color:var(--green)">green</span> = they died; dotted line = which way the fight moved). Real map coordinates; reads approximate (THEORY).</div>
+      <div style="font-size:.6875rem;color:var(--text-2);line-height:1.6;margin-top:.3rem">Green shading = jungle · ◆ towers · ● Fang/Prime pits · <span style="color:#e0a93e">Gold</span>/<span style="color:#22d3ee">Cyan</span> dots = flank buffs · rings = the key fights (gold ring = the game-defining one, defined in the timeline key above) · <span style="color:var(--gold)">✕</span> = caught out alone (a death with no fight around it) · numbered dots = the focused fight's kills in death order (<span style="color:var(--red)">red ring</span> = we died, <span style="color:var(--green)">green</span> = they died; dotted line = which way the fight moved). Real map coordinates; reads approximate (THEORY).</div>
     </details>
     <div id="fmdetail" class="fm-detail${decIdx >= 0 ? ' lit' : ''}">${decIdx >= 0 ? `${fhead(sks[decIdx])}${fightDetail(sks[decIdx], f)}` : '<span style="color:var(--text-2)">No fights to break down.</span>'}</div>
     <div id="fmdetails" hidden>${details}</div>
@@ -723,7 +723,7 @@ function pgReview(f) {
   const resBg = f.result === 'win' ? 'rgba(0,196,140,.16)' : 'rgba(255,90,90,.16)';
   const edgeStyle = (e) => e === 'favored' ? 'color:var(--green)' : e === 'unfavored' ? 'color:var(--red)' : 'color:var(--text-1)';
   const card = (inner) => `<div style="background:var(--bg-1);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;margin-top:1rem">${inner}</div>`;
-  const eyebrow = (t, why) => `<h2 style="font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-2);margin-bottom:.5rem">${t}${why ? ` <span style="font-weight:400;text-transform:none;letter-spacing:0">· ${why}</span>` : ''}</h2>`;
+  const eyebrow = (t, why) => `<h2 style="font-size:1rem;font-weight:600;letter-spacing:0;color:var(--text-0);margin-bottom:.5rem">${t}${why ? ` <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.78rem;color:var(--text-2)">· ${why}</span>` : ''}</h2>`;
   const hIcon = (slug, size) => hlink(slug, `<img src="${himg(slug)}" title="${esc(slug)}" style="width:${size}px;height:${size}px;border-radius:${Math.round(size / 4)}px;object-fit:cover;border:1px solid var(--border);vertical-align:-4px" onerror="this.style.display='none'">`);
 
   // ── Verdict: result, the coach's headline, what shifted it, both teams' heroes ──
@@ -732,7 +732,7 @@ function pgReview(f) {
     <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap">
       <span style="font-weight:800;padding:.2rem .7rem;border-radius:8px;background:${resBg};color:${resColor}">${f.result.toUpperCase()}</span>
       <span style="color:var(--text-1);font-size:.85rem">${f.durationMin} min · ${esc(f.mode)} · ${new Date(f.startTime).toLocaleDateString()}${f.vpSwing != null ? ` · VP ${f.vpSwing >= 0 ? '+' : ''}${f.vpSwing}` : ''}${f.squad ? ` · stack ${f.squad.stackSize}` : ''}</span>
-      <span title="Combat math here is THEORY · our simulator's output on constants not yet measured in-game. Shown whenever a number rests on an unverified constant; the field win rates next to it are real." style="margin-left:auto;font-size:.62rem;font-weight:700;color:var(--gold);border:1px solid var(--gold);border-radius:99px;padding:.1rem .5rem;cursor:help">THEORY</span>
+      <span title="Combat math here is THEORY · our simulator's output on constants not yet measured in-game. Shown whenever a number rests on an unverified constant; the field win rates next to it are real." style="margin-left:auto;font-size:.6875rem;font-weight:700;color:var(--gold);border:1px solid var(--gold);border-radius:99px;padding:.1rem .5rem;cursor:help">THEORY</span>
     </div>
     ${heroline}
     ${co ? `<div style="font-size:1.05rem;font-weight:700;line-height:1.45;margin-top:.7rem">${esc(co.headline)}</div>
@@ -740,7 +740,7 @@ function pgReview(f) {
       <div style="color:var(--text-1);margin-top:.35rem;font-size:.92rem">${esc(co.team)}</div>
     </details>
     <div style="border-left:3px solid var(--gold);padding:.5rem .8rem;background:rgba(240,180,41,.07);border-radius:6px;margin-top:.6rem;font-size:.9rem"><b>What shifted it:</b> ${esc(co.whatShiftedIt)}</div>
-    ${Array.isArray(co.ranking) && co.ranking.length ? `<div style="margin-top:.6rem"><div style="font-size:.7rem;font-weight:700;letter-spacing:.06em;color:var(--text-2);text-transform:uppercase">Player verdicts</div><ol style="margin:.3rem 0 0;padding-left:1.3rem;font-size:.88rem;line-height:1.5">${co.ranking.map((r) => { const pl = f.players.find((p) => p.pid === r.pid); return `<li><b>${pl ? pgName(pl) : ''}</b>${pl ? ` <span style="color:var(--text-2);font-size:.78rem">${esc(pl.heroName)}</span>` : ''} · ${esc(r.grade || '')}</li>`; }).join('')}</ol></div>` : ''}` :
+    ${Array.isArray(co.ranking) && co.ranking.length ? `<div style="margin-top:.6rem"><div style="font-size:.7rem;font-weight:700;letter-spacing:0;color:var(--text-2);">Player verdicts</div><ol style="margin:.3rem 0 0;padding-left:1.3rem;font-size:.88rem;line-height:1.5">${co.ranking.map((r) => { const pl = f.players.find((p) => p.pid === r.pid); return `<li><b>${pl ? pgName(pl) : ''}</b>${pl ? ` <span style="color:var(--text-2);font-size:.78rem">${esc(pl.heroName)}</span>` : ''} · ${esc(r.grade || '')}</li>`; }).join('')}</ol></div>` : ''}` :
     `<div style="color:var(--text-2);margin-top:.5rem;font-size:.9rem">Facts computed; coaching narrative not yet authored for this match.</div>`}`);
 
   // ── The three moments: tagged fights first, then by significance · capped at 3.
@@ -778,7 +778,7 @@ function pgReview(f) {
   const moments = keyMoments.length ? card(`${eyebrow('The moments that decided it', 'capped at three · everything else is in “the full story” below')}${keyMoments.map(momentRow).join('')}`) : '';
 
   // ── Scoreboard facts: useful context, not coach calls ──
-  const statline = `<div class="coach-stat-wrap"><table class="coach-stats"><thead><tr><th>Squad · role</th><th>K / D / A</th><th>Hero dmg</th><th>Objective dmg</th><th>Mitigated</th><th>Wards</th></tr></thead><tbody>${us.map((p) => `<tr><td><b>${esc(pgName(p))}</b> <span class="role">· ${esc(p.heroName)} / ${esc(p.role)}</span></td><td>${p.kills} / ${p.deaths} / ${p.assists}</td><td>${Number(p.damageToHeroes || 0).toLocaleString()}</td><td>${Number(p.damageToObjectives || 0).toLocaleString()}</td><td>${Number(p.mitigated || 0).toLocaleString()}</td><td>${p.wardsPlaced || 0}</td></tr>`).join('')}</tbody></table><div style="font-size:.66rem;color:var(--text-2);margin-top:.25rem">Match totals only; they do not place a player in a specific fight.</div></div>`;
+  const statline = `<div class="coach-stat-wrap"><table class="coach-stats"><thead><tr><th>Squad · role</th><th>K / D / A</th><th>Hero dmg</th><th>Objective dmg</th><th>Mitigated</th><th>Wards</th></tr></thead><tbody>${us.map((p) => `<tr><td><b>${esc(pgName(p))}</b> <span class="role">· ${esc(p.heroName)} / ${esc(p.role)}</span></td><td>${p.kills} / ${p.deaths} / ${p.assists}</td><td>${Number(p.damageToHeroes || 0).toLocaleString()}</td><td>${Number(p.damageToObjectives || 0).toLocaleString()}</td><td>${Number(p.mitigated || 0).toLocaleString()}</td><td>${p.wardsPlaced || 0}</td></tr>`).join('')}</tbody></table><div style="font-size:.6875rem;color:var(--text-2);margin-top:.25rem">Match totals only; they do not place a player in a specific fight.</div></div>`;
 
   // ── The game in one strip: fights on the line, objectives above, a labeled
   // minute axis, a real key, and a tap-to-open breakdown panel IN PLACE (the
@@ -799,7 +799,7 @@ function pgReview(f) {
   // without f.events simply have no tower band
   const tlTowers = (f.events || []).filter((e) => e.kind === 'tower').map((e) => ({ min: Math.round(e.sec / 6) / 10, type: e.type, side: e.side })).sort((a, b) => a.min - b.min);
   const tlTowerMarks = tlTowers.map((e, j) => { const x = xOf(e.min); const mine = e.side === 'us'; const lbl = `${e.min}m ${objName(e.type)} · ${mine ? 'we took theirs' : 'they took ours'}`; return `<div id="tltw-${j}" class="tltower ${mine ? 'up' : 'down'}" role="button" tabindex="0" aria-label="${esc(lbl)}" onclick="tlSelect('t',${j})" title="${esc(lbl)} · tap for detail" style="left:${x}%;top:14px"><i></i></div>`; }).join('');
-  const tlFightMarks = sks.map((sk, i) => { const x = xOf(sk.startMin); const d = Math.min(22, 9 + sk.size * 2); const ring = keySet.has(sk) ? ';box-shadow:0 0 0 2px var(--gold)' : ''; const lbl = `${sk.startMin}m ${sk.kind}: ${sk.result} ${sk.ourKills}-${sk.theirKills} · ${sk.place}${sk.tag ? ' · ' + sk.tag.replace('-', ' ') : ''}`; return `<div id="tlmark-${i}" class="tlmark" role="button" tabindex="0" aria-label="${esc(lbl)}" onclick="tlSelect('f',${i})" title="${esc(lbl)} · tap for detail" style="position:absolute;left:${x}%;top:${40 - d / 2}px;transform:translateX(-50%);width:${d}px;height:${d}px;border-radius:50%;background:${skCol(sk.result)}${ring};display:flex;align-items:center;justify-content:center;font-size:.5rem;color:#fff;font-weight:800">${sk.net > 0 ? '+' + sk.net : sk.net < 0 ? sk.net : ''}</div>`; }).join('');
+  const tlFightMarks = sks.map((sk, i) => { const x = xOf(sk.startMin); const d = Math.min(22, 9 + sk.size * 2); const ring = keySet.has(sk) ? ';box-shadow:0 0 0 2px var(--gold)' : ''; const lbl = `${sk.startMin}m ${sk.kind}: ${sk.result} ${sk.ourKills}-${sk.theirKills} · ${sk.place}${sk.tag ? ' · ' + sk.tag.replace('-', ' ') : ''}`; return `<div id="tlmark-${i}" class="tlmark" role="button" tabindex="0" aria-label="${esc(lbl)}" onclick="tlSelect('f',${i})" title="${esc(lbl)} · tap for detail" style="position:absolute;left:${x}%;top:${40 - d / 2}px;transform:translateX(-50%);width:${d}px;height:${d}px;border-radius:50%;background:${skCol(sk.result)}${ring};display:flex;align-items:center;justify-content:center;font-size:.6875rem;color:#fff;font-weight:800">${sk.net > 0 ? '+' + sk.net : sk.net < 0 ? sk.net : ''}</div>`; }).join('');
   // the hidden per-mark breakdowns tlSelect() swaps into the panel under the strip
   const tlFightSums = sks.map((sk, i) => {
     const why = esc(macroAvailability(sk.macro));
@@ -926,7 +926,7 @@ function pgReview(f) {
         const mu = l.predggMatchup;
         return `<div style="border:1px solid var(--border);border-radius:8px;padding:.5rem .6rem;background:var(--bg-2)">
           <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
-            <span style="font-size:.66rem;text-transform:uppercase;color:var(--text-2);min-width:3.6rem">${esc(l.role)}</span>
+            <span style="font-size:.6875rem;color:var(--text-2);min-width:3.6rem">${esc(l.role)}</span>
             ${hlink(l.ourSlug, `<img src="${himg(l.ourSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'">`)} <b>${o ? pgName(o) : ''}</b>
             <span style="color:var(--text-2)">vs</span>
             ${hlink(l.theirSlug, `<img src="${himg(l.theirSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'">`)} ${esc(l.theirHero)}
@@ -1117,7 +1117,7 @@ async function fillEternals() {
               <b style="color:${c}">${m.result === 'win' ? 'W' : 'L'}</b>
               <span class="d">${fmtDate(m.startTime)}</span>
               <span class="s">${m.durationMin}m${m.stackSize ? ` · ${m.stackSize}-stack` : ''}</span>
-              ${m.hasCoaching ? '<span class="c" title="coached">✎</span>' : ''}
+              ${m.hasCoaching ? '<span class="c" title="coached">coached</span>' : ''}
             </button>`;
           }).join('');
           [...pick.children].forEach((b) => b.onclick = () => draw(Number(b.dataset.i)));
@@ -1156,7 +1156,7 @@ async function fillEternals() {
   try { metaInfo = await (await fetch('../../data/artifacts/meta.json')).json(); } catch {}
 
   document.getElementById('page').innerHTML = `
-    <div class="scope">📊 <b>Data scope:</b> this player's pred.gg public profile · career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked split history, last 40 matches · field baselines: ${metaInfo ? metaInfo.matches.toLocaleString() + ' matches, patch ' + esc(metaInfo.patch) : 'current-patch matches'}, all ranks · winrates adjusted toward the player's own average (thin samples count less) · combat math is THEORY pending in-game calibration · generated ${esc(c.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
+    <div class="scope"><b>Data scope:</b> this player's pred.gg public profile · career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked split history, last 40 matches · field baselines: ${metaInfo ? metaInfo.matches.toLocaleString() + ' matches, patch ' + esc(metaInfo.patch) : 'current-patch matches'}, all ranks · winrates adjusted toward the player's own average (thin samples count less) · combat math is THEORY pending in-game calibration · generated ${esc(c.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
     <h1>${c.pool?.[0] ? `<img class="pav" src="../img/heroes/${esc(c.pool[0].slug)}.webp" alt="" onerror="this.remove()">` : ''}${esc(p.name)} <a class="ext" href="https://pred.gg/players/${esc(p.uuid)}" target="_blank" rel="noopener">pred.gg ↗</a></h1>
     ${c.archetype ? `<div class="arch">“${esc(c.archetype.label)}” <span class="arch-r">${esc(c.archetype.receipt)}</span></div>` : ''}
     <div class="sub">
@@ -1200,7 +1200,7 @@ async function fillEternals() {
         <div class="insight">
           <b>${esc(i.title)}</b>
           <div>${esc(i.finding)}</div>
-          ${i.receipt ? `<div class="ir">🧾 ${esc(i.receipt)}</div>` : ''}
+          ${i.receipt ? `<div class="ir">${esc(i.receipt)}</div>` : ''}
         </div>`).join('')}
     </div>`;
     })()}
@@ -1246,7 +1246,7 @@ async function fillEternals() {
       <div style="font-size:.78rem;color:var(--text-1);margin-bottom:.7rem">Comfort picks earn their spot, but the meta moves · these are the strongest current-patch heroes in the roles ${esc(p.name)} actually queues. “New pick” means under 30 of their own games; the field winrate still makes them worth a look when the comfort pick gets countered or the team needs a different shape.</div>
       ${myRoles.map((r) => `
         <div style="margin-top:.6rem">
-          <div style="font-size:.72rem;font-weight:800;text-transform:capitalize;color:var(--accent);letter-spacing:.06em">${esc(r.role)} · own record ${pct(r.shrunkWr)}% over ${r.games} games</div>
+          <div style="font-size:.72rem;font-weight:800;text-transform:capitalize;color:var(--accent-ink);letter-spacing:.06em">${esc(r.role)} · own record ${pct(r.shrunkWr)}% over ${r.games} games</div>
           ${(metaInfo.roles[r.role] || []).slice(0, 4).map((h) => {
             const mine = poolBySlug.get(h.slug);
             const note = mine && mine.games >= 30
@@ -1280,27 +1280,10 @@ async function fillEternals() {
 function buildSubnav() {
   const host = document.getElementById('subnav');
   const cards = [...document.querySelectorAll('.wrap .card')].filter((c) => c.querySelector('h2'));
-  host.innerHTML = cards.map((c, i) => {
-    c.id = c.id || 'sec' + i;
+  SectionNav.build(host, cards.map((c) => {
     const h = c.querySelector('h2');
-    const label = (h.childNodes[0]?.textContent || h.textContent).split('·')[0].trim().toLowerCase();
-    return `<button class="snpill" data-t="${c.id}">${esc(label)}</button>`;
-  }).join('');
-  document.documentElement.style.setProperty('--toph', `${document.querySelector('.top')?.offsetHeight ?? 96}px`);
-  const pills = [...host.querySelectorAll('.snpill')];
-  pills.forEach((p) => { p.onclick = () => document.getElementById(p.dataset.t)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-  // center the active pill by scrolling the pill ROW only · letting the
-  // browser scroll ancestors pans the pinch-zoom viewport on iOS
-  const centerPill = (p) => host.scrollTo({ left: p.offsetLeft - host.clientWidth / 2 + p.offsetWidth / 2, behavior: 'smooth' });
-  const byId = new Map(pills.map((p) => [p.dataset.t, p]));
-  const io = new IntersectionObserver((es) => {
-    for (const e of es) {
-      if (!e.isIntersecting) continue;
-      pills.forEach((p) => p.classList.toggle('active', p.dataset.t === e.target.id));
-      { const p = byId.get(e.target.id); if (p) centerPill(p); }
-    }
-  }, { rootMargin: '-15% 0px -75% 0px' });
-  cards.forEach((c) => io.observe(c));
+    return { el: c, label: (h.childNodes[0]?.textContent || h.textContent).split('·')[0].trim().toLowerCase() };
+  }));
 }
 </script>
 <script src="game-text.js"></script>

@@ -42,6 +42,7 @@ import { fileURLToPath } from 'node:url';
 import { hasCredentials } from './predgg.js';
 import { isGoldPlus, isPlatPlus, matchTimeRanks } from './match-rank.js';
 import { epoch, fetchPage, loadPerkCatalog, loadoutOf, sleep, type PerkInfo } from './match-stream.js';
+import { countMatch, migratePlatBasis, loadState as loadBuildMatchups, saveState as saveBuildMatchups, addSegment, type MatchPlayer } from './build-matchups.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const STATE = path.join(ROOT, 'data/aggregates/perk-stream.json');
@@ -143,6 +144,12 @@ async function main() {
   st.goldFrom ??= new Date(st.cursor * 1000).toISOString();
   if (fresh && prev) console.log(`patch changed (${prev.patch} -> ${meta.patch}); starting a fresh window`);
   console.log(`match stream from ${new Date(st.cursor * 1000).toISOString()} (${fresh ? 'fresh' : 'resuming'}), up to ${MAX_REQUESTS} requests`);
+  // Matchup build counts ride the same pages (data/aggregates/build-matchups.json).
+  const bm = loadBuildMatchups(meta.patch ?? null, meta.patchReleasedAt);
+  const runFrom = new Date(st.cursor * 1000).toISOString();
+  if (migratePlatBasis(bm, runFrom)) console.log(`build-matchups Plat+ basis -> rank at match time; p counts restart at ${runFrom}`);
+  addSegment(bm, runFrom, runFrom, 'daily');
+  const bmSegment = bm.window.segments[bm.window.segments.length - 1]!;
 
   const unknownHeroes = new Set(st.unknown.heroes), unknownPerks = new Set(st.unknown.perks);
   let requests = 0, seenThisRun = 0, rankedThisRun = 0, stoppedEarly = false;
@@ -156,6 +163,8 @@ async function main() {
     st.generatedAt = new Date().toISOString();
     st.unknown = { heroes: [...unknownHeroes].sort(), perks: [...unknownPerks].sort() };
     writeFileSync(STATE, JSON.stringify(st, null, 1));
+    bmSegment.to = st.window.to;
+    saveBuildMatchups(bm);
   };
   const stopAt = Math.floor(Date.now() / 1000) - 60;
   while (requests < MAX_REQUESTS && st.cursor < stopAt) {
@@ -173,6 +182,7 @@ async function main() {
       rankedThisRun++;
       const matchRanks = ranks.get(String(m.matchId));
       if (!matchRanks) st.goldUnresolvedMatches = (st.goldUnresolvedMatches ?? 0) + 1;
+      const matchPlayers: MatchPlayer[] = [];
       for (const p of m.playerData ?? []) {
         if (p.bIsAIPlayer) continue;
         const role = String(p.roleName ?? '').replace('ESelectedRole::', '').toLowerCase();
@@ -207,7 +217,9 @@ async function main() {
         const tier = matchRanks?.get(String(p.playerId));
         if (isGoldPlus(tier)) count((cell.gold ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
         if (isPlatPlus(tier)) count((cell.plat ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
+        matchPlayers.push({ hero: slug, role, team: p.teamId, core, plat: isPlatPlus(tier) });
       }
+      countMatch(bm, matchPlayers);
     }
     if (!page.length) break;
     const newest = Math.max(...page.map((m) => epoch(m.endTime)));

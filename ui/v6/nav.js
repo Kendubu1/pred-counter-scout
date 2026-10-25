@@ -1,21 +1,23 @@
 /* Shared side-drawer ("hamburger") navigation for all v6 pages.
- * Augments the existing top tabs — it does not replace them. One source of
+ * Augments the existing top tabs (Pick & Build, Coach) — it does not replace them. One source of
  * truth for every destination; include with <script defer src="nav.js"></script>.
  * All v6 pages live in ui/v6/, so these relative links are identical per page. */
 (function () {
   const LINKS = [
     { href: './',                    label: 'Pick & Build',           icon: 'counter-pick',     match: ['', 'index.html'] },
-    { href: 'squad.html',            label: 'Pre-Game',               icon: 'team-comp',        match: ['squad.html'] },
     { href: 'coach.html',            label: 'Coach',                  icon: 'scout',            match: ['coach.html'] },
     { href: 'climb.html',            label: 'The Climb — ranked guide', icon: 'power-spike', tag: 'new', match: ['climb.html'] },
     { href: 'bans.html',             label: 'Most banned — by rank',  icon: 'meta-guide', tag: 'new', match: ['bans.html'] },
     { sep: true },
-    { href: 'livedraft.html',        label: 'Live draft',             icon: 'weakness-counter', match: ['livedraft.html'] },
     { href: '../patch-1.17.2.html',  label: 'Patch 1.17.2 review',    icon: 'patch-strategy', tag: 'new', match: ['patch-1.17.2.html'] },
     { href: '../patch-1.17.html',    label: 'Patch 1.17 review',      icon: 'patch-strategy', match: ['patch-1.17.html'] },
     { href: '../patch-1.16.4.html',  label: 'Patch 1.16.4 review',    icon: 'patch-strategy', match: ['patch-1.16.4.html'] },
     { href: '../learn-eternals.html',label: 'Learn Eternals',         icon: 'eternal-augment',  match: ['learn-eternals.html'] },
     { href: 'about.html',            label: 'About & how this works', icon: 'tap-to-learn',     match: ['about.html'] },
+    // Tools still being proven: grouped so nobody mistakes them for finished pages.
+    { group: 'Experimental' },
+    { href: 'squad.html',            label: '5-stack picker',         icon: 'team-comp',        match: ['squad.html'] },
+    { href: 'livedraft.html',        label: 'Live draft counter',     icon: 'weakness-counter', match: ['livedraft.html'] },
   ];
   const bic = (name) => (window.BrandIcons ? window.BrandIcons.svg(name, 18) : '');
 
@@ -33,8 +35,8 @@
   .nav-drawer { position:fixed; top:0; left:0; bottom:0; width:min(82vw, 320px);
     background:var(--bg-1); border-right:1px solid var(--border); z-index:9999;
     transform:translateX(-100%); transition:transform .22s cubic-bezier(.4,0,.2,1);
-    display:flex; flex-direction:column; box-shadow:12px 0 40px rgba(0,0,0,.45); }
-  .nav-drawer.open { transform:translateX(0); }
+    display:flex; flex-direction:column; }
+  .nav-drawer.open { transform:translateX(0); box-shadow:12px 0 40px rgba(0,0,0,.45); }
   .nav-drawer-head { display:flex; align-items:center; justify-content:space-between;
     padding:.85rem 1rem; border-bottom:1px solid var(--border); }
   .nav-drawer-head b { font-size:.9rem; color:var(--text-0); font-weight:800; }
@@ -44,22 +46,22 @@
   .nav-list { list-style:none; margin:0; padding:.5rem; overflow-y:auto; }
   .nav-list li { margin:0; }
   .nav-list li.nav-sep { height:1px; background:var(--border); margin:.5rem .6rem; }
+  .nav-list li.nav-group { padding:.35rem .7rem .2rem; font-size:.8rem; font-weight:600; color:var(--text-2); }
   .nav-list a { display:flex; align-items:center; gap:.7rem; padding:.7rem .7rem; border-radius:10px;
     color:var(--text-1); text-decoration:none; font-size:.9rem; }
   .nav-list a:hover { background:var(--bg-2); color:var(--text-0); }
-  .nav-list a.active { background:var(--accent-soft); color:var(--text-0); font-weight:700; }
+  .nav-list a.active { background:var(--bg-3); color:var(--text-0); font-weight:700; }
   .nav-list a .nav-ic { display:inline-flex; width:20px; color:var(--text-2); flex:none; }
   .nav-list a:hover .nav-ic, .nav-list a.active .nav-ic { color:var(--text-0); }
   .nav-drawer-head b { display:inline-flex; align-items:center; gap:.5rem; }
   .nav-logo { display:block; }
-  .nav-list a .nav-tag { margin-left:auto; font-size:.56rem; font-weight:700; text-transform:uppercase;
-    letter-spacing:.06em; background:var(--accent); color:#fff; border-radius:99px; padding:.1rem .42rem; }
+  .nav-list a .nav-tag { margin-left:auto; font-size:.6875rem; font-weight:700; letter-spacing:0; background:var(--accent); color:#fff; border-radius:99px; padding:.1rem .42rem; }
   /* ── global hero search (every page): topbar pill + overlay ── */
   .gs-pill { margin-left:auto; display:inline-flex; align-items:center; gap:.4rem; background:var(--bg-2);
     border:1px solid var(--border); border-radius:99px; padding:.28rem .7rem; color:var(--text-2);
     font:inherit; font-size:.78rem; cursor:pointer; flex-shrink:1; min-width:0; }
   .gs-pill:hover { color:var(--text-0); border-color:var(--accent); }
-  .gs-pill .gs-kbd { border:1px solid var(--border); border-radius:4px; padding:0 .3rem; font-size:.66rem; }
+  .gs-pill .gs-kbd { border:1px solid var(--border); border-radius:4px; padding:0 .3rem; font-size:.6875rem; }
   .gs-pill svg { width:14px; height:14px; flex:none; }
   /* On phones the burger drawer IS the nav, so the inline top-bar tabs + the
      patch pill are redundant and squeeze the wordmark down to "Pred". Hide both
@@ -82,7 +84,7 @@
   .gs-row .gs-acts button { background:transparent; border:1px solid var(--border); border-radius:8px;
     color:var(--text-1); font:inherit; font-size:.7rem; padding:.22rem .55rem; cursor:pointer; white-space:nowrap; }
   .gs-row .gs-acts button:hover { border-color:var(--accent); color:var(--text-0); }
-  .gs-hint { padding:.45rem .8rem .6rem; color:var(--text-2); font-size:.68rem; border-top:1px solid var(--border); }
+  .gs-hint { padding:.45rem .8rem .6rem; color:var(--text-2); font-size:.6875rem; border-top:1px solid var(--border); }
   .gs-hint b { color:var(--text-1); }
   .nav-list .nav-search-item button { display:flex; align-items:center; gap:.7rem; width:100%; padding:.7rem;
     border-radius:10px; background:transparent; border:none; color:var(--text-1); font:inherit; font-size:.9rem;
@@ -119,7 +121,7 @@
       list.innerHTML = rows.map((h, i) => '<div class="gs-row' + (i === sel ? ' sel' : '') + '" data-slug="' + h.slug + '">' +
         '<img loading="lazy" src="' + IMGP + h.slug + '.webp" alt="" onerror="this.style.visibility=\'hidden\'">' +
         '<span><span class="gs-n">' + h.name + '</span> <span class="gs-r">' + h.role + '</span></span>' +
-        '<span class="gs-acts"><button data-act="build">build</button><button data-act="counter">⚔ beat them</button></span></div>').join('') ||
+        '<span class="gs-acts"><button data-act="build">build</button><button data-act="counter">beat them</button></span></div>').join('') ||
         '<div class="gs-hint">no hero matches</div>';
       list.querySelectorAll('.gs-row').forEach((r, i) => {
         r.onclick = (e) => { const act = e.target.dataset && e.target.dataset.act; go(r.dataset.slug, act === 'counter'); };
@@ -189,6 +191,7 @@
 
     const items = LINKS.map((l) => {
       if (l.sep) return '<li class="nav-sep" role="separator"></li>';
+      if (l.group) return `<li class="nav-sep" role="separator"></li><li class="nav-group">${l.group}</li>`;
       const active = l.match && l.match.includes(here) ? ' active' : '';
       const tag = l.tag ? `<span class="nav-tag">${l.tag}</span>` : '';
       return `<li><a class="${active.trim()}" href="${l.href}"><span class="nav-ic">${bic(l.icon)}</span><span>${l.label}</span>${tag}</a></li>`;

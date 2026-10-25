@@ -33,7 +33,7 @@ const aggForIndex = loadAggregates();
 const laneStatsPath = path.join(ROOT, 'data/aggregates/predgg-lane-stats.json');
 const laneStats = existsSync(laneStatsPath)
   ? JSON.parse(readFileSync(laneStatsPath, 'utf8')) as {
-      patch: string; scopeLabel: string; matchesApprox: number; generatedAt: string;
+      patch: string; scopeLabel: string; matchesApprox: number; generatedAt: string; versionIds?: string[];
       rankBands?: { key: string; label: string; rankIds: string[] }[];
       matchesApproxByBand?: Record<string, number>;
       heroes: Record<string, { byRole: Record<string, { n: number; w: number; bands?: Record<string, { n: number; w: number }> }> }>;
@@ -284,6 +284,11 @@ if (agg || laneStats) {
     scope: laneScope,
     laneSource: laneStats ? `pred.gg ranked general statistics, patch ${lanePatch}` : 'omeda public match feed window',
     generatedAt: new Date().toISOString(),
+    // When the lane stats were pulled from pred.gg (generatedAt above is only
+    // the artifact rebuild) and which version ids they pool — the site shows
+    // the pull date as the boards' last match refresh.
+    pulledAt: laneStats?.generatedAt ?? null,
+    versionIds: laneStats?.versionIds,
     matches: laneMatches,
     note: `meta score blends how often a lane picks a hero with how often it wins (small samples adjusted down), both rank-averaged within the lane; ${laneScope}, current-patch window. Badges mark high-winrate/low-pick sleepers and high-pick/low-winrate traps.`,
     roles,

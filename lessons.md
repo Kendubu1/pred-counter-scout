@@ -5181,6 +5181,40 @@ The worker subsequently committed an unreviewed draft while the manual repair wa
 
 2026-10-25: Eternal card copy. The hero page's Eternal card printed the raw major text (a stat dump); it now shows one line per hero/role/shown Eternal saying what it does for that kit and how to play it (`npm run review:eternalcards` -> data/aggregates/eternal-cards.json; full text stays in the Eternal popup). Facts block = kit + lane augment + major + the field's top minors (src/eternal-copy.ts, shared by author, critic and harness). Minor chips now read "61% pick": a bare 61% beside a 51% winrate read as a winrate. Judge loop (opt-in `eternalcards` surface, own history): 83.2% -> 87.2% -> 87.2%, plateau stop, 96 fixes. Recurring author errors to brief against next time: Weald sold as "your finisher" with missiles that "chase" (source: a few small true-damage missiles through walls, per-hero cooldown); Wind-Rider claimed to add Weald missiles alone; "finish/rush items" advice on Demiurge; regen or heal-over-time said to trigger Exarch; partial restores called refills; another hero's augment named. Judges were uneven on these until round 3 got explicit shared standards: give the critic the standards up front. Fix files chain across rounds (a round-2 fix is keyed to the round-1 fix), so the ingest follows the chain; '' records a judge drop.
 
+## 2026-10-25 — Fork in the Road PoC (docs/fork-in-the-road.md §14)
+
+- The public match stream carries per-minute gold (`goldEarnedAtInterval`,
+  index = minute + 3) and a kill timeline (`heroKills[].gameTime`). State-adjusted
+  item analysis needs no per-match GraphQL.
+- Interval bug caught by a null calibration test: comparing an option with a
+  cell average that CONTAINS it, plus the wrong variance for smoothed rates,
+  made 80% intervals cover ~96% under no effect. Real effects were hidden.
+  Compare with the rest of the cell, and pin calibration with a test.
+- Never build a context from what a team realized in the match (healing, damage
+  dealt). Winning teams heal and deal more, so the context encodes the result.
+  Use each hero-role's typical rate, which is knowable at draft.
+- Pooling rates across roles can flip a sign. Physical armor looked bought MORE
+  into magical laners until it was compared within hero-role, because carry
+  lanes are all-physical and carries never buy armor.
+- Rank bands: high ranks counter-build more (Plat+ vs below Gold is clear on
+  three checks). But Diamond+ is too thin per hero, and Plat+ gives the most
+  repeatable per-item signal.
+- A list of "top N" findings means nothing without a shuffled null. 40 Plat+
+  build-shift rises looked right, and shuffled opponents produced ~34.
+- Rare off-role picks with high win rates are mostly streaks over a 40h window
+  (22/100 won both halves, ~25 expected by chance). Promote only on fresh data.
+- Counter checks (2026-10-25, §14c): Plat+ react to lane damage type, healing,
+  team magic share and visible enemy armor (armor shred 17.8 vs 10.1 per 100,
+  the biggest scoreboard reaction). They do NOT react to CC-heavy teams
+  (tenacity), tanks (percent-health) or being behind (defense, except at item
+  4). Put every number a page cites in a committed file the page can be traced
+  to: the first Climb draft quoted minutes from a scratch script that the
+  committed run then moved by 1-2.
+
+2026-10-25 (correction): the "Meta builds" entry above says the hero page defaults to
+the most-played build. Later that day the default changed to the highest shrunk win rate
+among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is live.
+
 2026-10-25: Gold+ by rank at match time. The ladder-tagged Gold+ band (a player's CURRENT rank) ran +3.2 points above all ranks (median, 90 hero-role cells) because winners climb, so Gold+ build win rates could not be read against the hero's overall number, and one day of data put Riktor support's Wanton Warden at 45.6% over 472 games (vs Zap 50.8% over 124, z = 1.0: noise). The rank-at-match-time lane stats show the real effect is small: Riktor support 50.7% Bronze-Silver, 49.1% Gold-Plat, 49.4% Diamond+. Stream rows have no rank, but GraphQL match(by: { id }) returns every player's rating for that game (24/24 stream matches found, 50/50 player ids joined, ~0.23s a match aliased), so perks tags Gold+ that way now (src/ingest/match-rank.ts) and drops the old basis on migration. Read a band's builds against the hero's win rate IN THAT BAND (baselineByRole), and handle thin samples by pulling toward that baseline plus a significance test rather than a hard game-count floor. A lane's builds switch to Gold+ at 100 games on its top Gold+ build; forward-only, no backfill.
 
 2026-10-25: Builds rank filter (All ranks / Gold+ / Plat+). Gold+ barely differs from all ranks on 1.17 (real spread ~0.8 pt, about its own noise; 62% of Gold+ games are Gold tier), Plat+ does (~1.9 pt; Gold vs Plat+ significant in 21/113 big lanes vs ~6 by chance), at 16.6% of games vs 43.8%. Counting Plat+ costs nothing once ranks come from the match-time lookup, so perks keeps both and the meta-build pipeline runs per band (metaBuildsByBand) with each band's own baseline. Flex heroes spread a role view over the hero-level artifact, so a per-role key that is only sometimes written leaks another lane's data into the page: write metaBuildsByBand whenever the lane has builds, and have the page ignore it when the lane has none.
@@ -5195,4 +5229,5 @@ The worker subsequently committed an unreviewed draft while the manual repair wa
 - Project time-to-sample from our own window, not intuition: days to N games = N / (top build games per day x band share). On 1.17 a 100-game top build took a median lane ~12 days in Gold+, ~34 in Plat+.
 - The maintainer wants forward-only data changes (no backfill), Plat+ as the one high-rank band, thin samples shown with a note rather than hidden, and one page-level filter over every section with banded data.
 - When a filter is added, list what does NOT follow it on the page (matchups) and fall back per section with a note.
+- Parallel branches can copy a method you are retiring: main's build-matchups (same day) tagged Plat+ from the ladder too. On merge, perks feeds it match-time tiers and migratePlatBasis drops the ladder-basis p counts. Grep for leaderboardPaginated / CURRENT rank before trusting any rank band.
 - Process traps hit this session: pkill -f / pgrep -f matching their own shell (use ps -eo pid,comm,args and match comm); a git stash while the artifact build ran (it may load stashed code: restart it); python string-splicing that put a schema between a comment and its constant (re-read the spliced region); `npm run artifacts` dropping meta.json topPlayers.

@@ -106,6 +106,14 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    says so. Matchups stay all ranks. There is no backfill, so expect lanes
    to fill over the following weeks, popular ones first (1.17 volumes: median
    lane ~34 days to a 100-game top Plat+ build).
+   Since 2026-10-25 perks also writes data/aggregates/build-matchups.json
+   (no extra requests): each hero-role's first 3 core items, split by lane
+   opponent and by every enemy hero, for all ranks and Plat+ (rank at match time from the same lookup; the
+   seed's and first runs' ladder-basis Plat+ counts are dropped on migration,
+   see `platFrom`). Commit it with
+   the other aggregates. It resets with the patch window like perk-stream.json.
+   `window.segments` lists the counted stretches, including a one-off
+   `seed:fork-poc` (Oct 22-24). Read it with `npm run matchups:builds -- <hero>`.
    Then `npm run aggregate && npm run matchups:feed` — the pred.gg match samples
    (gold curves + item play rates; same-role head-to-head lanes, resumed
    incrementally inside the current patch family). Then `npm run checkpoints`

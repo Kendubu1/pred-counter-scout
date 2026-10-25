@@ -325,6 +325,60 @@ data-only commit to main. DEPENDENCY: the execution environment must carry
 PREDGG_CLIENT_ID/SECRET as secrets; until then every fire exits loudly at the
 credentials gate (watcher exit 2), by design.
 
+## 16. Fork in the Road follow-ups (backlogged 2026-10-25)
+
+Context: docs/fork-in-the-road.md (§14–14c) and lessons.md 2026-10-25. Shipped in
+PR #228/#229. The daily `perks` run writes data/aggregates/build-matchups.json: the
+first 3 items by lane opponent and by enemy hero, all ranks and Plat+.
+`npm run fork:counters` measured nine counters. The Climb page cites them.
+
+**16a. Keep purchase timing and the scoreboard in the daily counts.** The Climb
+numbers ("item 2, around minute 18", armor shred into visible armor) come from a
+one-off extract, which is scratch and gitignored, not from the daily counts. So they
+cannot refresh. Store per count: the item slot, a coarse minute bin, and how many
+armor items the enemy had already completed.
+- Depends on: nothing. Can start now.
+- Consider: file size. Item 4 alone made the counts 54% bigger (5.1 to 7.8 MB at
+  8k matches). Store bins, not raw times, and keep the patch-window reset.
+- Done when: counter-reactions.ts can run from committed data, and the Climb numbers
+  regenerate from it.
+
+**16b. Hero page: "what enemies build against you" and "your counter swap".**
+- Depends on: about 1–2 weeks of daily counts. Plat+ per-opponent shifts were about
+  luck at 8k matches (40 found vs ~34 under a shuffled null). All ranks was about
+  half real.
+- Consider: show all-ranks rows that clear the luck bar, with a "Plat+ agree"
+  badge. Label them "what players do". Team-level rows (e.g. anti-heal into
+  Khaimera) are ready sooner than per-lane-opponent rows.
+- Done when: rows on the hero page carry an expected-by-luck count, and the harness
+  checks the floor.
+
+**16c. "Does it win" column on counter cards.**
+- Depends on: weeks of data, roughly 4–5x the PoC sample. At 8k matches the
+  known-answer win checks were inside the noise (magical armor +1.0 ± 0.9).
+- Done when: the known-answer checks are positive and clear of noise. Until then the
+  cards show behavior only.
+
+**16d. Confirm or drop the rising-pick watchlist.** Argus offlane (42/66),
+Revenant offlane (30/46), Drongo offlane (31/49), Twinblast midlane (50/86).
+- Depends on: at least 7 days of fresh games after 2026-10-25 (fork doc §14 rule:
+  the data that flagged a pick never confirms it). perk-stream.json already has
+  hero-role games and wins.
+- Done when: each is promoted to "Rising" or dropped, and the rule is coded rather
+  than hand-run.
+
+**16e. Better crowd-control labels.** The "CC-heavy team" label counts `<CC_Text>`
+tags in the ability text, and some kits tag none. So "no tenacity reaction" may partly
+be a weak label.
+- Depends on: nothing. Extend engine/fixtures/immobilizing-abilities.json, which
+  covers 19 heroes, to the full roster.
+- Done when: the tenacity check re-runs on reviewed labels.
+
+**16f. Refresh the Climb section on the next patch.** Its numbers are 1.17.2, from
+ranked games Oct 22–24.
+- Depends on: 16a, or a fresh extract pull.
+- Consider: if a number flips sign, rewrite the tip instead of only updating the figure.
+
 ## Parked ideas (not yet scheduled)
 
 - Comfort-vs-meta flex logic (parked by maintainer 2026-06-12): when a
