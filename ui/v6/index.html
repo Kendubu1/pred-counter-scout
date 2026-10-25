@@ -1148,13 +1148,21 @@ function buildsCard(a) {
   const rsnBySet = new Map(((rsnRoot && rsnRoot.metaBuilds) || []).filter((r) => r && r.items).map((r) => [setKey(Object.keys(r.items)), r]));
   const metas = (a.metaBuilds || []).map((m) => ({ m, rsn: rsnBySet.get(setKey(m.items.map((it) => it.name))) || null }))
     .sort((x, y) => (y.m.n || 0) - (x.m.n || 0));
-  // "best win %" only when a different build has real volume (100+ games).
-  const bestIdx = metas.length > 1 ? metas.reduce((b, e, i) => ((e.m.n || 0) >= 100 && (e.m.shrunkWr || 0) > (metas[b].m.shrunkWr || 0) ? i : b), 0) : 0;
+  // DEFAULT TAB = highest win rate among builds with real volume (100+ games);
+  // with none that large, the most-played. Tabs stay in most-played order.
+  // (A raw win-rate default once opened Belica on a 2%-of-games core.)
+  const MIN_DEFAULT_GAMES = 100;
+  const bestIdx = metas.reduce((b, e, i) => ((e.m.n || 0) >= MIN_DEFAULT_GAMES && (b < 0 || (e.m.shrunkWr || 0) > (metas[b].m.shrunkWr || 0)) ? i : b), -1);
+  const defIdx = bestIdx >= 0 ? bestIdx : 0;
   const opt = rsnRoot && rsnRoot.optimizer;
+  // Off-role view with no lane-specific core data: the engine fell back to the
+  // hero's builds across all roles. Say so instead of passing them as lane data.
+  const allRolesNote = a.metaBuildsSource === 'all-roles' && metas.length
+    ? `<div class="mb-why" style="color:var(--gold);margin:0 0 .5rem">No ${esc(a.role)} build data for ${esc(a.name)} yet — these are the most-played builds across all of ${esc(a.name)}'s roles.</div>` : '';
 
   // Tab strip: one per meta build (title), then the kit-math build (⚙).
   const tabs = metas.map((e, i) =>
-    `<button class="btab${i === 0 ? ' active' : ''}" data-btab="${i}">${i === 0 ? '<span title="most played in this lane">🔥</span> ' : i === bestIdx && bestIdx !== 0 ? '<span title="highest win rate among builds with 100+ games">★</span> ' : ''}${esc(e.m.title || `Build ${i + 1}`)} <span class="btab-wr">${(e.m.shrunkWr * 100).toFixed(0)}%</span></button>`).join('')
+    `<button class="btab${i === defIdx ? ' active' : ''}" data-btab="${i}">${i === bestIdx ? '<span title="highest win rate among builds with 100+ games">★</span> ' : ''}${i === 0 ? '<span title="most played in this lane">🔥</span> ' : ''}${esc(e.m.title || `Build ${i + 1}`)} <span class="btab-wr">${(e.m.shrunkWr * 100).toFixed(1)}%</span></button>`).join('')
     + `<button class="btab simtab${metas.length ? '' : ' active'}" data-btab="sim">⚙ ${esc(a.build.title || 'Kit-math build')}</button>`;
 
   // One meta-build tab body: icon rail + win%/games + a "why these items" disclosure.
@@ -1169,11 +1177,11 @@ function buildsCard(a) {
     const explain = `${rsn && rsn.synergy ? `<div class="mb-why" style="color:var(--text-0)">🧩 ${esc(rsn.synergy)}</div>` : ''}${rsn ? itemWhyRows(m.items, rsn.items) : ''}`;
     const simLine = `<div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div>`;
     return `
-      <div class="bbody${i === 0 ? '' : ' hidden'}" data-bbody="${i}">
+      <div class="bbody${i === defIdx ? '' : ' hidden'}" data-bbody="${i}">
         <div class="mb-items" style="flex-wrap:wrap;margin-bottom:.5rem">${rail}</div>
         <div style="display:flex;align-items:center;gap:.6rem">
           <span class="bwr ${wrCls}">${(m.shrunkWr * 100).toFixed(1)}%</span>
-          <span class="mb-n">${m.n.toLocaleString()} games${m.shareOfCores ? ` · ${Math.round(m.shareOfCores * 100)}% of tracked builds` : ''}${i === 0 ? ' · most played' : i === bestIdx ? ' · best win rate' : ''}${m.anyOrder ? ' · item set, purchase orders pooled' : m.otherOrderGames ? ` · ${m.otherOrderGames.toLocaleString()} bought these in another order` : ''}</span>
+          <span class="mb-n">${m.n.toLocaleString()} games${m.shareOfCores ? ` · ${Math.round(m.shareOfCores * 100)}% of tracked builds` : ''}${[i === bestIdx ? 'best win rate' : '', i === 0 ? 'most played' : ''].filter(Boolean).map((t) => ` · ${t}`).join('')}${m.anyOrder ? ' · item set, purchase orders pooled' : m.otherOrderGames ? ` · ${m.otherOrderGames.toLocaleString()} bought these in another order` : ''}</span>
         </div>
         ${explain}
         <details class="sim-collapse"><summary>The sim math</summary><div class="body">${simLine}</div></details>
@@ -1223,6 +1231,7 @@ function buildsCard(a) {
   return `
     <section class="card answer">
       <h2>Builds</h2>
+      ${allRolesNote}
       <div class="btabs">${tabs}</div>
       ${metas.map(metaBody).join('')}
       ${simBody}
@@ -1242,6 +1251,24 @@ function renderHero(a, roleParam) {
   const activeRole = (roleViews.find((r) => r.role === roleParam)?.role) || a.role;
   const activeView = roleViews.find((r) => r.role === activeRole);
   if (activeView) a = { ...a, ...activeView };
+  // FALLBACK: the asked-for lane has no full build (the engine builds the top
+  // three lanes per hero). Every block below then follows activeRole, never
+  // roleParam, so the selector, builds and opening picks can't disagree — and
+  // the URL is rewritten to the lane actually shown.
+  const fellBackFrom = roleParam && roleParam !== activeRole ? roleParam : null;
+  if (fellBackFrom) {
+    try { const u = new URL(location.href); u.searchParams.set('role', activeRole); history.replaceState(history.state, '', u); } catch { /* ignore */ }
+  }
+  const fallbackNote = (() => {
+    if (!fellBackFrom) return '';
+    const hr0 = AUGS && AUGS.heroes && AUGS.heroes[a.slug];
+    const tot = hr0 ? Object.values(hr0).reduce((t, c) => t + (c.games || 0), 0) : 0;
+    const asked = hr0 && hr0[fellBackFrom] ? hr0[fellBackFrom].games : 0;
+    const share = tot && asked ? ` — only ${Math.round((asked / tot) * 100)}% of ${esc(a.name)} games this patch (${asked.toLocaleString()})` : '';
+    return `<div class="fallback-note" style="margin:.6rem 0 0;padding:.5rem .7rem;border:1px solid var(--gold);border-radius:10px;font-size:.8rem;color:var(--text-1);background:rgba(240,180,41,.08)">
+      <b style="color:var(--gold)">No ${esc(fellBackFrom)} build for ${esc(a.name)}</b>${share}. Showing <b>${esc(activeRole)}</b> instead${activeRole === (roleViews[0] && roleViews[0].role) ? ', the most-played role' : ''}. Everything on this page is the ${esc(activeRole)} view.
+    </div>`;
+  })();
   const o = a.build.objectives;
   const top = a.eternals.top[0];
   const dots = (cps) => `<div class="dots">${cps.map((c) =>
@@ -1285,6 +1312,7 @@ function renderHero(a, roleParam) {
       <div class="seg-roles flexroles" role="group" aria-label="Lane — build, spikes, Eternals and matchups change per lane">
         ${roleViews.map((v) => `<button data-flexrole="${esc(v.role)}" class="${v.role === activeRole ? 'active' : ''}" aria-pressed="${v.role === activeRole}">${esc(v.role)}</button>`).join('')}
       </div>` : ''}
+      ${fallbackNote}
     </header>
 
     <div class="htabs" role="tablist">
@@ -1317,8 +1345,9 @@ function renderHero(a, roleParam) {
           return `<div class="muted" style="margin-bottom:.8rem">${lead}${kitPick}</div>`;
         }
         const roles = Object.keys(hr);
-        const role = roleParam && hr[roleParam] ? roleParam : (hr[a.role] ? a.role : roles[0]);
-        const mismatch = roleParam && !hr[roleParam];
+        // Follow the lane the page shows (activeRole), never the raw URL role.
+        const role = hr[activeRole] ? activeRole : (hr[a.role] ? a.role : roles[0]);
+        const mismatch = role !== activeRole;
         const cell = hr[role];
         // Evidence floor scales with the cell: 10% of its games, 30..300. A full
         // patch sample keeps the old fixed 300; early in a patch (the public
@@ -1352,7 +1381,7 @@ function renderHero(a, roleParam) {
             .sort((x, y) => y.shrunk - x.shrunk).slice(0, 3);
         })();
         return `
-        ${mismatch ? `<div style="font-size:.72rem;color:var(--gold);margin-bottom:.45rem">you came here as ${esc(roleParam)}, but the field sample for ${esc(a.name)} ${esc(roleParam)} is too thin — showing ${esc(role)} evidence instead</div>` : ''}
+        ${mismatch ? `<div style="font-size:.72rem;color:var(--gold);margin-bottom:.45rem">the field sample for ${esc(a.name)} ${esc(activeRole)} is too thin — these picks are ${esc(role)} evidence</div>` : ''}
         ${(() => { window.__simPick = (a.augments || []).find((x) => x.modeled) ?? null; window.__augTheory = ''; window.__etTheory = ''; return ''; })()}
         <div style="font-size:.74rem;color:var(--text-2);margin:0 0 .45rem"><b style="letter-spacing:.06em">AUGMENT</b> · recommended as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
         ${(() => {

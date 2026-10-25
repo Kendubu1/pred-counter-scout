@@ -158,6 +158,7 @@ const RoleView = z.object({
     })),
     honestAbsence: z.string().nullable(),
   }),
+  metaBuildsSource: z.enum(['role', 'all-roles']).optional(),
   metaBuilds: z.array(z.object({
     anyOrder: z.boolean().optional(),
     otherOrderGames: z.number().optional(),
@@ -622,7 +623,11 @@ function buildRoleView(
   // role you're viewing, e.g. support Argus gets tank-support cores, not his
   // midlane mage cores); fall back to hero-wide evidence when a role has none.
   const pgBuilds = loadPredggBuilds();
-  const rawEvidence = pgBuilds?.byRole?.[kit.slug]?.[role] ?? pgBuilds?.heroes[kit.slug] ?? [];
+  const roleEvidence = pgBuilds?.byRole?.[kit.slug]?.[role];
+  const rawEvidence = roleEvidence ?? pgBuilds?.heroes[kit.slug] ?? [];
+  // Said out loud on the page: an off-role view showing the hero's all-roles
+  // builds (Adele jungle showed her support cores) must not pass as role data.
+  const metaBuildsSource: 'role' | 'all-roles' = roleEvidence ? 'role' : 'all-roles';
   // One build per item SET: the same three items bought in another order used
   // to ship as a second, near-identical build (Belica showed Combustion > Noxia
   // > Wraith Leggings and Combustion > Wraith Leggings > Noxia as two tabs).
@@ -818,6 +823,7 @@ function buildRoleView(
       honestAbsence: candidates.length ? null : 'no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)',
     },
     metaBuilds,
+    ...(metaBuilds.length ? { metaBuildsSource } : {}),
     stages: computeStages(kit, ordered, spikes, role, pool, cal),
     matchups,
     laneSteer: laneSteerFor(kit, role, pool, cal, top.items),

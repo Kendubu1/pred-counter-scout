@@ -81,6 +81,8 @@ describe('hero artifacts (Concept A engine stage)', () => {
         if (new Set(sets).size !== sets.length) bad.push(`${f}/${v.role}: duplicate item set`);
         for (let i = 1; i < mb.length; i++) if (mb[i - 1]!.n < mb[i]!.n) bad.push(`${f}/${v.role}: not sorted by games`);
         for (const m of mb) for (const it of m.items) if (/[a-z][A-Z]/.test(it.name)) bad.push(`${f}/${v.role}: internal item name ${it.name}`);
+        // An off-role view falling back to all-roles builds must say so.
+        if (mb.length && !['role', 'all-roles'].includes(v.metaBuildsSource)) bad.push(`${f}/${v.role}: metaBuildsSource missing`);
       }
     }
     expect(bad).toEqual([]);
