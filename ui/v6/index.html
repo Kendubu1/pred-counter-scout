@@ -1512,11 +1512,15 @@ function renderHero(a, roleParam) {
             const mins = m ? [m.minor1, m.minor2].filter((x) => x && x.name) : [];
             if (!mins.length) return '';
             // Icon + name per pick so the minors read at a glance in draft.
-            const chip = (x) => `<span${epop(name, x.name)} title="${x.field ? `picked in ${Math.round(x.share * 100)}% of these games · ${(x.wr * 100).toFixed(1)}% win rate over ${x.n.toLocaleString()}` : 'kit-math pick (no field sample yet)'}" style="display:inline-flex;gap:.3rem;align-items:center;white-space:nowrap"><img src="${IMG.blessing(x.name)}" alt="" style="width:22px;height:22px;border-radius:50%;object-fit:cover;background:var(--bg-3);flex:none;border:1px solid var(--border)" onerror="this.style.display='none'">${esc(x.name)}${x.field ? `<span style="color:var(--text-2);font-variant-numeric:tabular-nums">${Math.round(x.share * 100)}%</span>` : ''}</span>`;
+            const chip = (x) => `<span${epop(name, x.name)} title="${x.field ? `picked in ${Math.round(x.share * 100)}% of these games · ${(x.wr * 100).toFixed(1)}% win rate over ${x.n.toLocaleString()}` : 'kit-math pick (no field sample yet)'}" style="display:inline-flex;gap:.3rem;align-items:center;white-space:nowrap"><img src="${IMG.blessing(x.name)}" alt="" style="width:22px;height:22px;border-radius:50%;object-fit:cover;background:var(--bg-3);flex:none;border:1px solid var(--border)" onerror="this.style.display='none'">${esc(x.name)}${x.field ? `<span style="color:var(--text-2);font-variant-numeric:tabular-nums">${Math.round(x.share * 100)}% pick</span>` : ''}</span>`;
             return `<div style="display:flex;gap:.3rem .6rem;align-items:center;flex-wrap:wrap;font-size:.7rem;color:var(--text-1);margin:.25rem 0 0 ${indent}"><b style="color:var(--text-0)">Top minors:</b> ${mins.map(chip).join('')}</div>`;
           };
+          // What this Eternal does for THIS hero/role and how to play it
+          // (eternal-reviews.json, judged copy). It replaces the raw stat text on
+          // the card; the full description is one tap away in the Eternal popup.
+          const etLine = (name) => (ETREV && ETREV.heroes && ETREV.heroes[a.slug] && ETREV.heroes[a.slug][role] && ETREV.heroes[a.slug][role][name]) || null;
           const e0 = ets[0], wr0 = e0.w / e0.n, et0 = ETMAP && ETMAP[e0.name.toLowerCase()];
-          const ai0 = REVIEWS && REVIEWS.eternals && REVIEWS.eternals[a.slug] && REVIEWS.eternals[a.slug][role] && REVIEWS.eternals[a.slug][role][e0.name];
+          const ai0 = etLine(e0.name);
           const lead = `
           <div style="display:flex;gap:.7rem;align-items:flex-start;padding:.5rem .6rem;background:var(--bg-2);border:1px solid var(--green);border-radius:10px;box-shadow:0 0 0 2px rgba(0,196,140,.1)">
             <img${epop(e0.name)} src="${IMG.eternal(e0.name.toLowerCase())}" alt="" title="${esc(e0.name)} — tap for the full Eternal" style="width:42px;height:42px;border-radius:50%;object-fit:cover;background:var(--bg-3);flex:none;box-shadow:0 0 0 2px var(--green)" onerror="this.style.visibility='hidden'">
@@ -1527,8 +1531,7 @@ function renderHero(a, roleParam) {
                 <span title="raw ${(wr0 * 100).toFixed(1)}% — shown shrunk toward the role's pick-weighted mean" style="font-variant-numeric:tabular-nums;font-size:.86rem;font-weight:800;color:var(--green)">${(e0.shrunk * 100).toFixed(1)}%</span>
                 <span style="font-size:.7rem;color:var(--text-2)">${e0.n.toLocaleString()} games</span>
               </div>
-              <div style="font-size:.72rem;line-height:1.45;color:var(--text-1);margin-top:.2rem">${et0 ? esc(et0.major) : renderWhy(e0)}</div>
-              ${ai0 ? `<div style="font-size:.68rem;line-height:1.45;color:var(--green);margin-top:.12rem">${esc(ai0)}</div>` : ''}
+              <div style="font-size:.74rem;line-height:1.45;color:var(--text-1);margin-top:.2rem">${ai0 ? esc(ai0) : et0 ? esc(et0.major) : renderWhy(e0)}</div>
               ${minorsLine(e0.name, '0')}
             </div>
           </div>`;
@@ -1536,7 +1539,7 @@ function renderHero(a, roleParam) {
           const detailRow = (e, i) => {
             const wr = e.w / e.n, why = renderWhy(e);
             const et = ETMAP && ETMAP[e.name.toLowerCase()];
-            const ai = REVIEWS && REVIEWS.eternals && REVIEWS.eternals[a.slug] && REVIEWS.eternals[a.slug][role] && REVIEWS.eternals[a.slug][role][e.name];
+            const ai = etLine(e.name);
             const mb = fieldMinors(e.name) || (a.eternals.minorsByName && a.eternals.minorsByName[e.name.toLowerCase()]);
             const pick1 = mb && mb.minor1 && mb.minor1.name, pick2 = mb && mb.minor2 && mb.minor2.name;
             const fieldPick = !!(mb && ((mb.minor1 && mb.minor1.field) || (mb.minor2 && mb.minor2.field)));
@@ -1596,7 +1599,7 @@ function renderHero(a, roleParam) {
                 <span title="raw ${(wr * 100).toFixed(1)}% — shown shrunk toward the role's pick-weighted mean" style="font-variant-numeric:tabular-nums;font-size:.78rem;color:var(--text-1)">${(e.shrunk * 100).toFixed(1)}%</span>
                 <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
               </div>
-              <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.18rem 0 0 2.1rem">${et ? esc(et.major) : renderWhy(e)}</div>
+              <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.18rem 0 0 2.1rem">${etLine(e.name) ? esc(etLine(e.name)) : et ? esc(et.major) : renderWhy(e)}</div>
               ${minorsLine(e.name, '2.1rem')}
             </div>`;
           };
@@ -1893,17 +1896,18 @@ async function nav(slug, replace = false, role = null) {
   await route();
   window.scrollTo({ top: 0 });
 }
-let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null, PENDING = null, HEROCOACH = null;
+let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null, PENDING = null, HEROCOACH = null, ETREV = null;
 async function getAugs() {
   if (!AUGS) {
     let eternals, pending;
-    [AUGS, REVIEWS, REASONING, eternals, pending, HEROCOACH] = await Promise.all([
+    [AUGS, REVIEWS, REASONING, eternals, pending, HEROCOACH, ETREV] = await Promise.all([
       getJson('../../data/aggregates/predgg-augments.json').catch(() => null),
       getJson('../../data/aggregates/augment-reviews.json').catch(() => null),
       getJson('../../data/aggregates/build-reasoning.json').catch(() => null),
       getJson('../../data/game-data/eternals.json').catch(() => null),
       getJson('../../data/aggregates/field-data-pending.json').catch(() => null),
       getJson('../../data/aggregates/hero-coach-lines.json').catch(() => null),
+      getJson('../../data/aggregates/eternal-reviews.json').catch(() => null),
     ]);
     PENDING = (pending && pending.heroes) || {};
     // name -> { major, minorSlot1, minorSlot2 } so an Eternal can be explained in

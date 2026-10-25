@@ -123,6 +123,14 @@ CRITIQUE_HISTORY=data/aggregates/hero-coach-critique-history.json \
 Every round records its own `scope` in both the report and the history entry.
 Unset, all three surfaces are judged into the shared history exactly as before.
 
+The Eternal card lines (`data/aggregates/eternal-reviews.json`, authored by
+`npm run review:eternals`) are a fourth surface, `eternals`, that is **opt-in
+only**: it never joins the default round. Run it with `npm run
+eternals:critique:prepare` → independent critic → `npm run eternals:critique` →
+`npm run eternals:loop:gate`. Applied rewrites persist in
+`data/aggregates/eternal-fixes.json` (an empty string records a dropped line) and
+are re-applied and re-verified on every ingest.
+
 > The subagent dispatch (build, judge) is driven by the orchestrating session — it
 > is not a pure shell script, because spawning a fresh independent agent is the
 > session's job. Everything *around* the agent (plan, bracket, apply, gate) is
