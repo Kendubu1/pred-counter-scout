@@ -47,14 +47,16 @@ async function main() {
         const allowed = buildAllowed([], [facts]);
         const laneFix = fixes[id] ?? {};
         for (const e of ets) {
-          let line = parsed[e.name];
+          let line: string | undefined = parsed[e.name];
           if (!line) continue;
           if (!verifyLine(line, allowed)) { rejected++; continue; }
           written++;
           // A judged fix replaces the authored line ('' = the judge dropped it).
-          const fixed = laneFix[line];
-          if (fixed !== undefined) {
-            if (verifyLine(fixed, allowed)) { line = fixed; judged++; } else rejected++;
+          // Follow the chain: a later round's fix is keyed to the earlier fix.
+          for (let hop = 0; line && hop < 10 && laneFix[line] !== undefined; hop++) {
+            const fixed: string = laneFix[line]!;
+            if (!verifyLine(fixed, allowed)) { rejected++; break; }
+            line = fixed; judged++;
           }
           if (line) ((out[slug] ??= {})[role] ??= {})[e.name] = line;
         }
