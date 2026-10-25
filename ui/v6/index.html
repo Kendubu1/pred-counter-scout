@@ -170,15 +170,34 @@
   .htab-beat:hover { color:var(--red); }
   @media (min-width:721px) { .htab-beat { margin-left:auto; } }
   /* build tabs — one per build path, modelled on .htab but scoped/scrollable */
-  .btabs { display:flex; gap:.4rem; margin-bottom:.8rem; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  /* build switcher: a "1 of 4" counter + prev/next beside the heading, and a strip
+     whose edge fades on whichever side has more builds, so it's clear there is
+     more and which way it goes. Selected = neutral fill, so the win% keeps its colour. */
+  .bhead { display:flex; align-items:center; gap:.6rem; margin-bottom:.7rem; }
+  .bhead h2 { margin:0; }
+  .bnav { margin-left:auto; display:flex; align-items:center; gap:.3rem; }
+  .bnav[hidden] { display:none; }
+  .bcount { font-size:.75rem; color:var(--text-1); font-variant-numeric:tabular-nums; margin-right:.25rem; }
+  .bstep { width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; background:var(--bg-2); color:var(--text-0); border:1px solid var(--border); border-radius:8px; font-size:1rem; line-height:1; cursor:pointer; }
+  .bstep:hover:not(:disabled) { border-color:var(--text-2); }
+  .bstep:disabled { opacity:.35; cursor:default; }
+  .btabs { display:flex; gap:2px; padding:2px; margin-bottom:.8rem; background:var(--bg-0); border:1px solid var(--border); border-radius:10px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; scroll-behavior:smooth; }
   .btabs::-webkit-scrollbar { display:none; }
-  .btab { flex:none; background:transparent; color:var(--text-2); border:1px solid var(--border); border-radius:99px; padding:.3rem .85rem; font-size:.8rem; white-space:nowrap; }
-  .btab.active { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
-  .btab.simtab.active { background:var(--bg-3); color:var(--text-0); border-color:var(--accent); }
-  .btab-wr { color:var(--text-2); font-weight:700; font-size:.85em; }
+  .btabs.fade-r { -webkit-mask-image:linear-gradient(to right, #000 calc(100% - 40px), transparent); mask-image:linear-gradient(to right, #000 calc(100% - 40px), transparent); }
+  .btabs.fade-l { -webkit-mask-image:linear-gradient(to left, #000 calc(100% - 40px), transparent); mask-image:linear-gradient(to left, #000 calc(100% - 40px), transparent); }
+  .btabs.fade-l.fade-r { -webkit-mask-image:linear-gradient(to right, transparent, #000 40px, #000 calc(100% - 40px), transparent); mask-image:linear-gradient(to right, transparent, #000 40px, #000 calc(100% - 40px), transparent); }
+  /* same segmented look as the lane switcher: one track, neutral selected fill */
+  .btab { flex:none; display:flex; flex-direction:column; align-items:flex-start; gap:.05rem; background:transparent; color:var(--text-1); border:0; border-radius:8px; padding:.4rem .8rem; text-align:left; white-space:nowrap; cursor:pointer; }
+  .btab:hover { color:var(--text-0); }
+  .btab.active { background:var(--bg-3); color:var(--text-0); }
+  .bt-name { font-size:.82rem; font-weight:500; }
+  .btab.active .bt-name { font-weight:600; }
+  .bt-sub { font-size:.72rem; color:var(--text-2); }
+  .btab-wr { font-weight:700; font-variant-numeric:tabular-nums; }
+  /* one win% colour scale site-wide (same bands as wrColor / the legend) */
+  .wr-up { color:var(--green); } .wr-down { color:var(--red); } .wr-mid { color:var(--text-1); }
   .bbody.hidden { display:none; }
   .bwr { font-weight:800; font-variant-numeric:tabular-nums; }
-  .bwr.up { color:var(--green); } .bwr.down { color:var(--red); } .bwr.flat { color:var(--text-1); }
   .tabtrend { font-size:.6rem; vertical-align:.12em; margin-left:.3rem; }
   .tabtrend.buff { color:var(--green); }
   .tabtrend.nerf { color:var(--red); }
@@ -384,6 +403,7 @@
     .htab { flex:1 1 auto; font-size:.84rem; padding:0 .5rem; }
     .htab:active { background:var(--bg-2); }
     .hh-name { display:none; }
+    .bstep { width:36px; height:36px; }
   }
 
   /* ── meta board ── */
@@ -524,6 +544,12 @@ function metaVerdict(wr, ms, badge) {
 // One shared win-rate color band used everywhere: green >=52% (clearly above the 50%
 // break-even), red <=48% (clearly below), neutral in between. Matches wrClass below.
 const wrColor = (wr) => wr >= 0.52 ? 'var(--green)' : wr <= 0.48 ? 'var(--red)' : 'var(--text-2)';
+// Re-check the build strip's edge fades on resize; one listener for the page,
+// pointed at whichever hero is rendered.
+let _buildFades = null;
+addEventListener('resize', () => _buildFades && _buildFades());
+// Class form of the same bands, for text that sits on a fill (build tabs).
+const wrBand = (wr) => wr >= 0.52 ? 'wr-up' : wr <= 0.48 ? 'wr-down' : 'wr-mid';
 // Plain-language tooltip for the colored win-rate number, so the green/grey/red
 // coding is explained on hover (not just in the legend).
 const wrTip = (wr) => { const p = (wr * 100).toFixed(1); return wr >= 0.52 ? `${p}% win rate — above the lane average (strong)` : wr <= 0.48 ? `${p}% win rate — below the lane average (weak)` : `${p}% win rate — around the lane average (even)`; };
@@ -1136,24 +1162,21 @@ function laneSteerBlock(a) {
       </div>`;
 }
 
-// ── ONE image-forward, tabbed "Builds" card: one tab per meta build (most
-// played first — what the lane actually builds) + the kit-math build last. Only the active tab
+// ── ONE image-forward, tabbed "Builds" card: one tab per meta build (highest
+// win rate first) + the kit-math build last. Only the active tab
 // body shows; the prose lives behind a per-tab "why these items" disclosure.
 function buildsCard(a) {
   const rsnRoot = REASONING && REASONING.heroes && REASONING.heroes[a.slug] && REASONING.heroes[a.slug][a.role];
-  // Field meta builds, MOST PLAYED first (the default tab). Sorting by win rate
-  // put a 2%-of-games core ahead of the lane's real build whenever its small
-  // sample read a point higher. Explanations match by item set, not position.
+  // Field meta builds, HIGHEST WIN RATE first (the default tab), by shrunk win
+  // rate. Builds under 100 games sort after the rest (still by win rate): a raw
+  // win-rate lead once opened Belica on a 2%-of-games core. Games break ties.
+  // Explanations match by item set, not position.
+  const MIN_LEAD_GAMES = 100;
   const setKey = (names) => names.map((n) => String(n).toLowerCase().replace(/[^a-z0-9]/g, '')).sort().join('|');
   const rsnBySet = new Map(((rsnRoot && rsnRoot.metaBuilds) || []).filter((r) => r && r.items).map((r) => [setKey(Object.keys(r.items)), r]));
   const metas = (a.metaBuilds || []).map((m) => ({ m, rsn: rsnBySet.get(setKey(m.items.map((it) => it.name))) || null }))
-    .sort((x, y) => (y.m.n || 0) - (x.m.n || 0));
-  // DEFAULT TAB = highest win rate among builds with real volume (100+ games);
-  // with none that large, the most-played. Tabs stay in most-played order.
-  // (A raw win-rate default once opened Belica on a 2%-of-games core.)
-  const MIN_DEFAULT_GAMES = 100;
-  const bestIdx = metas.reduce((b, e, i) => ((e.m.n || 0) >= MIN_DEFAULT_GAMES && (b < 0 || (e.m.shrunkWr || 0) > (metas[b].m.shrunkWr || 0)) ? i : b), -1);
-  const defIdx = bestIdx >= 0 ? bestIdx : 0;
+    .sort((x, y) => (((y.m.n || 0) >= MIN_LEAD_GAMES) - ((x.m.n || 0) >= MIN_LEAD_GAMES))
+      || ((y.m.shrunkWr || 0) - (x.m.shrunkWr || 0)) || ((y.m.n || 0) - (x.m.n || 0)));
   const opt = rsnRoot && rsnRoot.optimizer;
   // Off-role view with no lane-specific core data: the engine fell back to the
   // hero's builds across all roles. Say so instead of passing them as lane data.
@@ -1161,14 +1184,17 @@ function buildsCard(a) {
     ? `<div class="mb-why" style="color:var(--gold);margin:0 0 .5rem">No ${esc(a.role)} build data for ${esc(a.name)} yet — these are the most-played builds across all of ${esc(a.name)}'s roles.</div>` : '';
 
   // Tab strip: one per meta build (title), then the kit-math build (⚙).
-  const tabs = metas.map((e, i) =>
-    `<button class="btab${i === defIdx ? ' active' : ''}" data-btab="${i}">${i === bestIdx ? '<span title="highest win rate among builds with 100+ games">★</span> ' : ''}${i === 0 ? '<span title="most played in this lane">🔥</span> ' : ''}${esc(e.m.title || `Build ${i + 1}`)} <span class="btab-wr">${(e.m.shrunkWr * 100).toFixed(1)}%</span></button>`).join('')
-    + `<button class="btab simtab${metas.length ? '' : ' active'}" data-btab="sim">⚙ ${esc(a.build.title || 'Kit-math build')}</button>`;
+  // Each option shows its win rate and sample under its name (order already says
+  // which wins most).
+  const tabs = metas.map((e, i) => {
+    const tag = `${(e.m.n || 0).toLocaleString()} games`;
+    return `<button class="btab${i === 0 ? ' active' : ''}" data-btab="${i}"><span class="bt-name">${esc(e.m.title || `Build ${i + 1}`)}</span><span class="bt-sub"><span class="btab-wr ${wrBand(e.m.shrunkWr)}">${(e.m.shrunkWr * 100).toFixed(0)}% win</span> · ${tag}</span></button>`;
+  }).join('')
+    + `<button class="btab simtab${metas.length ? '' : ' active'}" data-btab="sim"><span class="bt-name">${esc(a.build.title || 'Kit-math build')}</span><span class="bt-sub">kit-math sim</span></button>`;
 
   // One meta-build tab body: icon rail + win%/games + a "why these items" disclosure.
   const metaBody = (e, i) => {
     const m = e.m, rsn = e.rsn;
-    const wrCls = m.shrunkWr >= 0.53 ? 'up' : m.shrunkWr <= 0.5 ? 'down' : 'flat';
     const rail = m.items.map((it) => it.slug
       ? `<img loading="lazy" data-ipop="${esc(it.slug)}" src="../img/items/${esc(it.slug)}.webp" title="${esc(it.name)} · tap for details" onerror="this.style.visibility='hidden'">`
       : `<span class="chip">${esc(it.name)}</span>`).join(m.anyOrder ? '<span class="arrow">+</span>' : '<span class="arrow">→</span>');
@@ -1177,11 +1203,11 @@ function buildsCard(a) {
     const explain = `${rsn && rsn.synergy ? `<div class="mb-why" style="color:var(--text-0)">🧩 ${esc(rsn.synergy)}</div>` : ''}${rsn ? itemWhyRows(m.items, rsn.items) : ''}`;
     const simLine = `<div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div>`;
     return `
-      <div class="bbody${i === defIdx ? '' : ' hidden'}" data-bbody="${i}">
+      <div class="bbody${i === 0 ? '' : ' hidden'}" data-bbody="${i}">
         <div class="mb-items" style="flex-wrap:wrap;margin-bottom:.5rem">${rail}</div>
         <div style="display:flex;align-items:center;gap:.6rem">
-          <span class="bwr ${wrCls}">${(m.shrunkWr * 100).toFixed(1)}%</span>
-          <span class="mb-n">${m.n.toLocaleString()} games${m.shareOfCores ? ` · ${Math.round(m.shareOfCores * 100)}% of tracked builds` : ''}${[i === bestIdx ? 'best win rate' : '', i === 0 ? 'most played' : ''].filter(Boolean).map((t) => ` · ${t}`).join('')}${m.anyOrder ? ' · item set, purchase orders pooled' : m.otherOrderGames ? ` · ${m.otherOrderGames.toLocaleString()} bought these in another order` : ''}</span>
+          <span class="bwr ${wrBand(m.shrunkWr)}">${(m.shrunkWr * 100).toFixed(1)}%</span>
+          <span class="mb-n">${m.n.toLocaleString()} games${m.shareOfCores ? ` · ${Math.round(m.shareOfCores * 100)}% of tracked builds` : ''}${m.anyOrder ? ' · item set, purchase orders pooled' : m.otherOrderGames ? ` · ${m.otherOrderGames.toLocaleString()} bought these in another order` : ''}</span>
         </div>
         ${explain}
         <details class="sim-collapse"><summary>The sim math</summary><div class="body">${simLine}</div></details>
@@ -1230,7 +1256,14 @@ function buildsCard(a) {
 
   return `
     <section class="card answer">
-      <h2>Builds</h2>
+      <div class="bhead">
+        <h2>Builds</h2>
+        ${metas.length ? `<div class="bnav">
+          <span class="bcount" aria-live="polite">1 of ${metas.length + 1}</span>
+          <button class="bstep" data-bstep="-1" aria-label="Previous build" disabled>‹</button>
+          <button class="bstep" data-bstep="1" aria-label="Next build">›</button>
+        </div>` : ''}
+      </div>
       ${allRolesNote}
       <div class="btabs">${tabs}</div>
       ${metas.map(metaBody).join('')}
@@ -1736,13 +1769,41 @@ function renderHero(a, roleParam) {
   });
   // Build tabs: pure show/hide — toggle .active on the strip and .hidden on the
   // matching body. No re-render; scoped to the new .btab buttons (mirrors .htab).
-  document.querySelectorAll('.btab').forEach((b) => {
-    b.onclick = () => {
-      const key = b.dataset.btab;
-      document.querySelectorAll('.btab').forEach((x) => x.classList.toggle('active', x === b));
-      document.querySelectorAll('.bbody').forEach((x) => x.classList.toggle('hidden', x.dataset.bbody !== key));
+  // The counter, prev/next and edge fades all follow the selected tab and the
+  // strip's scroll position.
+  const btabs = [...document.querySelectorAll('.btab')];
+  const strip = document.querySelector('.btabs');
+  const fades = () => {
+    if (!strip) return;
+    strip.classList.toggle('fade-l', strip.scrollLeft > 2);
+    strip.classList.toggle('fade-r', strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 2);
+    // counter + arrows only when some builds are off-screen
+    const bnav = document.querySelector('.bnav');
+    if (bnav) bnav.hidden = strip.scrollWidth <= strip.clientWidth + 2;
+  };
+  const pickBuild = (b) => {
+    const key = b.dataset.btab, idx = btabs.indexOf(b);
+    btabs.forEach((x) => x.classList.toggle('active', x === b));
+    document.querySelectorAll('.bbody').forEach((x) => x.classList.toggle('hidden', x.dataset.bbody !== key));
+    const count = document.querySelector('.bcount');
+    if (count) count.textContent = `${idx + 1} of ${btabs.length}`;
+    document.querySelectorAll('.bstep').forEach((s) => { s.disabled = s.dataset.bstep === '-1' ? idx === 0 : idx === btabs.length - 1; });
+    // scroll the strip only (not the page) so the chosen tab is fully visible
+    if (strip) {
+      const l = b.offsetLeft - strip.offsetLeft, r = l + b.offsetWidth;
+      if (l < strip.scrollLeft + 24) strip.scrollLeft = Math.max(0, l - 24);
+      else if (r > strip.scrollLeft + strip.clientWidth - 24) strip.scrollLeft = r - strip.clientWidth + 24;
+    }
+  };
+  btabs.forEach((b) => { b.onclick = () => pickBuild(b); });
+  document.querySelectorAll('.bstep').forEach((s) => {
+    s.onclick = () => {
+      const idx = btabs.findIndex((x) => x.classList.contains('active')) + Number(s.dataset.bstep);
+      if (btabs[idx]) pickBuild(btabs[idx]);
     };
   });
+  if (strip) { strip.addEventListener('scroll', fades, { passive: true }); requestAnimationFrame(fades); }
+  _buildFades = fades;
   // Matchup rows are clickable — open the enemy hero's page (reuses global nav).
   document.querySelectorAll('.murow[data-slug]').forEach((el) => {
     el.onclick = () => nav(el.dataset.slug, false);
