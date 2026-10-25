@@ -37,6 +37,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gql, hasCredentials, currentRatingId } from './predgg.js';
 import { epoch, fetchPage, loadPerkCatalog, loadoutOf, sleep, type PerkInfo } from './match-stream.js';
+import { PLAT_TIER, countMatch, loadState as loadBuildMatchups, saveState as saveBuildMatchups, addSegment, type MatchPlayer } from './build-matchups.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const STATE = path.join(ROOT, 'data/aggregates/perk-stream.json');
@@ -84,9 +85,11 @@ const bump = (o: Record<string, NW>, k: string, won: boolean) => { const c = (o[
 // patch that is a fair proxy, but winners climb, so Gold+ win rates read high
 // overall — compare options WITHIN the band only.
 const GOLD_TIER = 2;
-async function goldPlusPlayers(): Promise<{ ids: Set<string>; ratingId: string; ladderPlayers: number }> {
+// tiers: Gold+ player uuid -> tierIdx (2 Gold, 3 Platinum, 4 Diamond, 5 Paragon); Plat+ feeds build-matchups.json.
+async function goldPlusPlayers(): Promise<{ ids: Set<string>; tiers: Map<string, number>; ratingId: string; ladderPlayers: number }> {
   const ratingId = await currentRatingId();
   const ids = new Set<string>();
+  const tiers = new Map<string, number>();
   let total = 0;
   for (let offset = 0; ; offset += 500) {
     const d = await gql<{ leaderboardPaginated: { totalCount: number; results: { rank: { tierIdx: number } | null; player: { uuid: string | null } | null }[] } }>(
@@ -96,12 +99,12 @@ async function goldPlusPlayers(): Promise<{ ids: Set<string>; ratingId: string; 
     let below = false;
     for (const r of rows) {
       if ((r.rank?.tierIdx ?? -1) < GOLD_TIER) { below = true; break; }
-      if (r.player?.uuid) ids.add(r.player.uuid);
+      if (r.player?.uuid) { ids.add(r.player.uuid); tiers.set(r.player.uuid, r.rank!.tierIdx); }
     }
     if (below || rows.length < 500 || offset + 500 >= total) break;
     await sleep(300);
   }
-  return { ids, ratingId, ladderPlayers: total };
+  return { ids, tiers, ratingId, ladderPlayers: total };
 }
 
 async function main() {
@@ -150,6 +153,11 @@ async function main() {
   st.ladder = { fetchedAt: new Date().toISOString(), ratingId: ladder.ratingId, goldPlusPlayers: ladder.ids.size, ladderPlayers: ladder.ladderPlayers };
   console.log(`ranked ladder: ${ladder.ids.size.toLocaleString()} Gold+ of ${ladder.ladderPlayers.toLocaleString()} placed players`);
   console.log(`match stream from ${new Date(st.cursor * 1000).toISOString()} (${fresh ? 'fresh' : 'resuming'}), up to ${MAX_REQUESTS} requests`);
+  // Matchup build counts ride the same pages (data/aggregates/build-matchups.json).
+  const bm = loadBuildMatchups(meta.patch ?? null, meta.patchReleasedAt);
+  const runFrom = new Date(st.cursor * 1000).toISOString();
+  addSegment(bm, runFrom, runFrom, 'daily');
+  const bmSegment = bm.window.segments[bm.window.segments.length - 1]!;
 
   const unknownHeroes = new Set(st.unknown.heroes), unknownPerks = new Set(st.unknown.perks);
   let requests = 0, seenThisRun = 0, rankedThisRun = 0, stoppedEarly = false;
@@ -163,6 +171,8 @@ async function main() {
     st.generatedAt = new Date().toISOString();
     st.unknown = { heroes: [...unknownHeroes].sort(), perks: [...unknownPerks].sort() };
     writeFileSync(STATE, JSON.stringify(st, null, 1));
+    bmSegment.to = st.window.to;
+    saveBuildMatchups(bm);
   };
   const stopAt = Math.floor(Date.now() / 1000) - 60;
   while (requests < MAX_REQUESTS && st.cursor < stopAt) {
@@ -175,6 +185,7 @@ async function main() {
       seenThisRun++;
       if (m.gameMode !== 'RANKED') continue;
       rankedThisRun++;
+      const matchPlayers: MatchPlayer[] = [];
       for (const p of m.playerData ?? []) {
         if (p.bIsAIPlayer) continue;
         const role = String(p.roleName ?? '').replace('ESelectedRole::', '').toLowerCase();
@@ -207,7 +218,9 @@ async function main() {
         };
         count(cell);
         if (ladder.ids.has(String(p.playerId))) count((cell.gold ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
+        matchPlayers.push({ hero: slug, role, team: p.teamId, core, plat: (ladder.tiers.get(String(p.playerId)) ?? -1) >= PLAT_TIER });
       }
+      countMatch(bm, matchPlayers);
     }
     if (!page.length) break;
     const newest = Math.max(...page.map((m) => epoch(m.endTime)));
