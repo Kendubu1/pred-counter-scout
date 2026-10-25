@@ -31,6 +31,7 @@
   .subnav:empty { display:none; }
   .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; text-transform:capitalize; -webkit-appearance:none; appearance:none; }
   .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
+  .card { scroll-margin-top:calc(var(--toph, 96px) + 10px); }
   .wrap { max-width:var(--maxw); margin:0 auto; padding:1.25rem 1rem 4rem; }
   .lede { font-size:1rem; color:var(--text-1); line-height:1.65; max-width:62ch; }
   h1 { font-size:1.7rem; font-weight:800; }
@@ -74,7 +75,6 @@
   <a class="wordmark" href="./"><img src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</a>
   <span class="spacer"></span>
   <a class="navlink" href="./">Pick &amp; Build</a>
-  <a class="navlink" href="squad.html">Pre-Game</a>
   <a class="navlink" href="coach.html">Coach</a>
 </div><div class="subnav" id="subnav"></div></div>
 
@@ -84,7 +84,7 @@
   kit math and real match data into builds, lane counters, and coaching — and labels every
   number honestly so you know what's measured and what's still a model.</p>
 
-  <section class="card">
+  <section class="card" data-nav="Builds">
     <h2>How builds are made</h2>
     <p>A <b>simulator</b> scores every viable item set against your kit's ability ratios,
     cooldowns, and the current patch's gold economy — then ranks them for burst, sustained
@@ -95,7 +95,7 @@
     likes, and what the data shows.</p>
   </section>
 
-  <section class="card">
+  <section class="card" data-nav="Simulator">
     <h2>What the simulator models</h2>
     <p>The sim plays out a fight on paper from each kit's real numbers, then scores the
     build for the engagements its kit wants to win.</p>
@@ -147,7 +147,7 @@
     </details>
   </section>
 
-  <section class="card">
+  <section class="card" data-nav="Theory">
     <h2>What <span class="tag">THEORY</span> means</h2>
     <p>Some combat constants — the armor/mitigation formula, ability haste, the crit
     multiplier, the attack-speed cap — haven't been measured directly in-game yet. Anything
@@ -156,7 +156,7 @@
     on the field data instead. Honesty about uncertainty is the whole point.</p>
   </section>
 
-  <section class="card">
+  <section class="card" data-nav="Data sources">
     <h2>Where the numbers come from</h2>
     <p>Hero kits, item stats and play rates come from <b>the current patch's game data and
     thousands of current-patch matches</b> via pred.gg.</p>
@@ -170,7 +170,7 @@
     </details>
   </section>
 
-  <section class="card">
+  <section class="card" data-nav="Writing checks">
     <h2>How the writing is checked</h2>
     <p>The explanations, item reasoning, and coaching are written and then <b>machine-checked</b>:
     every number a sentence cites has to exist in its source data, and an independent reviewer
@@ -182,6 +182,13 @@
     THEORY = simulator output on constants not yet measured in-game. Evidence deltas carry finished-inventory bias and are comparative, not absolute.
   </footer>
 </div>
+<script src="section-nav.js"></script>
+<script>
+// Section menu: one short-labelled pill per section (data-nav); shared
+// behaviour (readable ids, address follows you, shared links) in section-nav.js.
+SectionNav.build(document.getElementById('subnav'),
+  [...document.querySelectorAll('.wrap .card[data-nav]')].map((c) => ({ el: c, label: c.dataset.nav })));
+</script>
 <script defer src="icons.js"></script>
 <script defer src="hero-links.js"></script>
 <script defer src="nav.js"></script>

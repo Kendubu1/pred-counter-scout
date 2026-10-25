@@ -485,7 +485,6 @@
     <span class="spacer"></span>
     <a class="patch-pill" id="patchPill" href="../patch-1.17.2.html" title="Read the patch 1.17.2 review">patch —</a>
     <a class="navlink active" href="./">Pick &amp; Build</a>
-    <a class="navlink" href="squad.html">Pre-Game</a>
     <a class="navlink" href="coach.html">Coach</a>
   </div>
   <div class="subnav" id="subnav"></div>
@@ -527,6 +526,7 @@
   </footer>
 </div>
 
+<script src="section-nav.js"></script>
 <script src="game-text.js"></script>
 <script defer src="item-popup.js"></script>
 <script defer src="eternal-popup.js"></script>
@@ -659,41 +659,21 @@ function show(view) {
 
 // Sticky section jumper: pills from the visible view's section headers,
 // scrollspy highlights the one you're in. Rebuilt on every view change.
-let subnavIO = null;
 function buildSubnav() {
   const host = $('#subnav');
-  if (subnavIO) { subnavIO.disconnect(); subnavIO = null; }
   const view = $('#hero').classList.contains('hidden') ? '#landing' : '#hero';
   const secs = [...document.querySelectorAll(`${view} section.card, ${view} .lanepanel, ${view} .metaboard`)]
     .filter((c) => c.querySelector('h2') && c.offsetParent !== null);
   // A one-item jumper is pointless and adds a "double header" row above the title
   // (e.g. the lone "The Meta Board" pill on the landing). Only show it with 2+ sections.
   if (secs.length < 2) {
-    host.innerHTML = '';
-    document.documentElement.style.setProperty('--toph', `${document.querySelector('.top')?.offsetHeight ?? 96}px`);
+    SectionNav.build(host, []);
     return;
   }
-  host.innerHTML = secs.map((c, i) => {
-    c.id = c.id || 'sec' + i;
+  SectionNav.build(host, secs.map((c) => {
     const h = c.querySelector('h2');
-    const label = (h.childNodes[0]?.textContent || h.textContent).split('·')[0].trim().toLowerCase();
-    return `<button class="snpill" data-t="${c.id}">${esc(label)}</button>`;
-  }).join('');
-  document.documentElement.style.setProperty('--toph', `${document.querySelector('.top')?.offsetHeight ?? 96}px`);
-  const pills = [...host.querySelectorAll('.snpill')];
-  pills.forEach((p) => { p.onclick = () => document.getElementById(p.dataset.t)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-  // center the active pill by scrolling the pill ROW only — letting the
-  // browser scroll ancestors pans the pinch-zoom viewport on iOS
-  const centerPill = (p) => host.scrollTo({ left: p.offsetLeft - host.clientWidth / 2 + p.offsetWidth / 2, behavior: 'smooth' });
-  const byId = new Map(pills.map((p) => [p.dataset.t, p]));
-  subnavIO = new IntersectionObserver((es) => {
-    for (const e of es) {
-      if (!e.isIntersecting) continue;
-      pills.forEach((p) => p.classList.toggle('active', p.dataset.t === e.target.id));
-      { const p = byId.get(e.target.id); if (p) centerPill(p); }
-    }
-  }, { rootMargin: '-15% 0px -75% 0px' });
-  secs.forEach((c) => subnavIO.observe(c));
+    return { el: c, label: (h.childNodes[0]?.textContent || h.textContent).split('·')[0].trim().toLowerCase() };
+  }));
 }
 
 /* ── landing ── */
