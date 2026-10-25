@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-25T18:33:27.367Z",
+ "generatedAt": "2026-10-25T18:35:49.302Z",
  "source": "in-session Claude Code agent (pred-scout-coach) over each hero/role facts block (kit, lane augment, data/game-data/eternals.json majors + field minors) only; every number ground-checked, failing lines dropped; independent-critic fixes re-applied from eternal-fixes.json",
  "written": 226,
  "rejected": 0,
@@ -8,7 +8,7 @@
    "carry": {
     "Knell": "Every rifle shot and grenade shreds a hero's armor and hands some to you, so keep firing at one target. Fracture adds extra damage once that target is fully stacked.",
     "Xyris": "Farm first: each minion and monster you kill raises your damage bonus, so clear waves before roaming. Bone Collector later adds permanent critical chance to your rifle.",
-    "Demiurge": "Makes the stats on every item you buy stronger, so it rewards hitting your item spikes on time. Bloatware grows with each item slot you fill, favoring long games."
+    "Demiurge": "Makes the stats on every item you buy stronger, so it scales as your build fills out. Bloatware adds a little damage and damage reduction per item you own."
    }
   },
   "sparrow": {
@@ -52,7 +52,7 @@
     "Vesh": "Boreal Sweep, Hoarfrost and Cryoseism keep burning after they land. Chain them onto the same hero, and Lich heals you off your magic damage in long fights."
    },
    "support": {
-    "Krix": "Extra health lets you stand in front and land Hoarfrost and Cryoseism without dying first. Regenerative Tissue refills you between fights, so you can stay in lane longer.",
+    "Krix": "Extra health lets you stand in front and land Hoarfrost and Cryoseism without dying first. Regenerative Tissue slowly regenerates health once you avoid hero damage for a few seconds.",
     "Idrisil": "Bonus armor while healthy and a big shield when you drop low let you dive in with Glacial Charge. Frost Snap adds damage to anyone you've slowed or rooted."
    }
   },
@@ -77,13 +77,13 @@
     "Nihil": "Stay in the fight: Doom builds power and armor while you keep hitting heroes, and Electrocute's aura keeps it going. Levels and takedowns make it permanently stronger."
    },
    "jungle": {
-    "Krix": "Extra health and size make you a sturdier front line. Pull with Riplash and hold them in Skewer; Regenerative Tissue refills you between camps when no hero is hitting you."
+    "Krix": "Extra health and size make you a sturdier front line. Pull with Riplash and hold them in Skewer; Regenerative Tissue regenerates health between camps once heroes stop hitting you."
    }
   },
   "serath": {
    "jungle": {
-    "Weald": "Hitting a hero under 30% health fires missiles that follow them through walls, adding a little damage. Wind-Rider's attack speed after Heaven's Fury can add missiles.",
-    "Lotus": "You grow stronger over time and with every takedown, and Fallen Grace already sends you diving for kills. Masterpiece stacks damage and speed on kills, so chain resets in fights.",
+    "Weald": "Hitting a hero under 30% health fires a few small true-damage missiles that fly through walls. Extra missiles need more bonus attack speed, which Wind-Rider after Heaven's Fury helps build.",
+    "Lotus": "You grow stronger over time and with every takedown, and Fallen Grace cuts your cooldowns after takedowns. Masterpiece stacks damage and speed on kills, so keep fighting while it lasts.",
     "Thraex": "Locks onto whoever your basic attacks hit, so pick one target and stay on them. Chastise resets your attack to keep it up; Savage Strikes heals as you hit."
    },
    "offlane": {
@@ -92,7 +92,7 @@
   },
   "shinbi": {
    "offlane": {
-    "Pilow": "Every cast weakens nearby enemy heroes' damage, so stay close and keep weaving Rushing Beat and Line Tempo. Allegro means more dashes; Harmonic Currents refunds health and mana each cast.",
+    "Pilow": "Every cast weakens nearby enemy heroes' damage, so stay close and keep weaving Rushing Beat and Line Tempo. Harmonic Currents restores a little missing health and mana each cast.",
     "Vesh": "Rushing Beat, Line Tempo and Circle Rhythm all leave a burn on heroes between casts. Mind Rot hits healthy targets harder, so trade early and often.",
     "Aion": "Each cast stacks mana regeneration, and ability damage on heroes pays extra gold. Poke with Line Tempo in lane; Arcane Resonance speeds your basic cooldowns as regen builds."
    },
@@ -110,7 +110,7 @@
   },
   "kwang": {
    "jungle": {
-    "Demiurge": "Your items give more stats and their effects hit harder. Rush your core purchases and lean on your build; Bloatware adds damage and toughness with every item you finish.",
+    "Demiurge": "Your items give more stats and their effects hit harder, so each item counts for more. Bloatware adds damage and toughness with every item you finish.",
     "Lotus": "Grows a random bonus over time and with each takedown, so join fights. Fragrance boosts Light of the Heavens' true damage when the Blade is out in the world.",
     "Vesh": "Judgement of the Heavens, Surge and Fury all leave a burn on heroes. Chain your abilities in fights, and Lich heals you off your magic damage."
    },
@@ -126,7 +126,7 @@
     "Aion": "Casting keeps stacking mana regen, which Arcane Resonance turns into faster cooldowns. Keep Particle Shredder and Dread Nova hitting heroes, since that damage also earns gold."
    },
    "midlane": {
-    "Aion": "Spamming Particle Shredder and Dread Nova keeps your mana flowing and pays gold off hero damage. Poke constantly in lane; Runic Focus rewards staying high on mana.",
+    "Aion": "Each cast adds a little mana regeneration, and ability damage on heroes pays extra gold. Poke with Dread Nova in lane; Runic Focus rewards keeping your mana bar high.",
     "Vesh": "Your Disintegrate-boosted ability damage keeps burning after each hit. Keep Particle Shredder on one hero; Mind Rot hurts healthy targets most, so start poking early in trades."
    }
   },
@@ -155,7 +155,7 @@
    },
    "support": {
     "Aion": "Every cast stacks mana regen, which Arcane Resonance turns into faster cooldowns, and Harvest Nettles or Untamed Growth hits on heroes earn gold. Philosopher adds steady gold while you roam.",
-    "Vesh": "Leaves extra burn after each ability hit, so Untamed Growth and Bramble Patch keep enemies hurting. Tithe of Death refills mana and adds ability haste on takedowns."
+    "Vesh": "Leaves extra burn after each ability hit, so Untamed Growth and Bramble Patch keep enemies hurting. Tithe of Death restores some mana and adds ability haste on takedowns."
    }
   },
   "twinblast": {
@@ -172,7 +172,7 @@
     "Marrow": "Heals you off hero damage, more as your health drops, so stay in long trades instead of backing off. Leech cuts nearby enemies' health regeneration."
    },
    "jungle": {
-    "Weald": "Once a hero drops low, missiles chase them through walls for a little extra damage to help finish runners. Dryad's Boon lets each club swing bring Double Pain back sooner.",
+    "Weald": "Hitting a low-health hero fires a few small true-damage missiles that fly through walls at them. Dryad's Boon lets each club swing bring Double Pain back sooner.",
     "Thraex": "Your attacks mark one hero for more damage dealt and less taken. Grab them with Smash 'n Grab and stay on them; Savage Strikes heals you each swing.",
     "Krix": "Extra health makes you a sturdier front-liner and boosts Double Pain's healing, which scales with max health. Festering Wounds cuts enemy healing when your stuns land."
    }
@@ -186,7 +186,7 @@
   },
   "boris": {
    "jungle": {
-    "Weald": "Hitting a hero under 30% health fires missiles that follow them through walls for a little extra damage. Wind-Rider's attack speed after Chrono Swipe or Ursine Burst can add missiles.",
+    "Weald": "Hitting a hero under 30% health fires a few small true-damage missiles that fly through walls. More bonus attack speed adds missiles; Wind-Rider after Chrono Swipe or Ursine Burst helps.",
     "Thraex": "Mark whoever you're basic attacking and stay on them: you deal more damage to them and take less from them. Savage Strikes heals you as you keep hitting.",
     "Marrow": "Heals you from hero damage, more when you're low, so commit to fights rather than backing out. Roses pays extra gold for repeat takedowns and boosts the healing after kills."
    }
@@ -203,7 +203,7 @@
   },
   "drongo": {
    "carry": {
-    "Weald": "Hitting a hero under 30% health fires missiles that follow them through walls for a little extra damage. Taproot heals you each Lucy shot, and Forage adds gold and XP.",
+    "Weald": "Hitting a hero under 30% health fires a few small true-damage missiles that fly through walls at them. Taproot heals you each Lucy shot, and Forage adds gold and XP.",
     "Xyris": "Farm hard: bonus damage grows with every minion and monster you kill. Bone Collector later adds crit chance, and your crits also apply Wastelander's bleed.",
     "Knell": "Lucy shots and abilities strip armor and give some to you, so focus one target. It stacks with Shrapnel Cannon's shred; Frequency adds attack speed while Rust stacks hold."
    }
@@ -216,8 +216,8 @@
    },
    "jungle": {
     "Lotus": "Grows a random bonus over time and with every takedown. Hunt Coliseum kills to stack it, and Masterpiece speeds you toward the next target after each kill.",
-    "Demiurge": "Items give more stats and their effects hit harder, on top of The Ascended's steady growth. Buy your core early; Bloatware adds damage and toughness per item.",
-    "Weald": "Your finisher. Once a hero drops low, missiles chase through walls, and Spear of Nyr already hits low targets harder. Evade's dash triggers Wind-Rider for extra attack speed."
+    "Demiurge": "Items give more stats and their effects hit harder, on top of The Ascended's steady growth. Bloatware adds damage and toughness for each item you own.",
+    "Weald": "Once a hero drops low, a few small true-damage missiles fly through walls at them, on a per-hero cooldown. Spear of Nyr also hits low targets harder; Evade triggers Wind-Rider."
    }
   },
   "feng-mao": {
@@ -245,7 +245,7 @@
    },
    "jungle": {
     "Lotus": "Random upgrades on a timer and per takedown. Fragrance boosts magic and true damage up close, which fits Cross Crunch's magic hits and Empowered Left Crunch's true damage.",
-    "Demiurge": "Every item stat you buy gets stronger, rewarding fast clears to reach item spikes. Tri-Core adds random bonus damage to each hit, pairing well with Combo Crunch's faster attacks.",
+    "Demiurge": "Every item stat you buy gets stronger, so it scales as your build fills out. Tri-Core adds random bonus damage to each hit, pairing well with Combo Crunch's faster attacks.",
     "Pilow": "Every ability cast weakens nearby heroes' damage, and Crunch casts constantly, so fight up close. Harmonic Currents restores some missing health and mana each time you use an ability."
    }
   },
@@ -289,7 +289,7 @@
    },
    "offlane": {
     "Thraex": "Marks whoever your Refibrillator shots hit, so pick one laner and keep shooting them. Ferocity adds attack speed in long fights, stacking Refibrillator's damage faster.",
-    "Weald": "Hitting a hero under 30% health fires missiles that follow them through walls for a little extra damage. Taproot heals on each Refibrillator shot; Forage speeds up gold and levels."
+    "Weald": "Hitting a hero under 30% health fires a few small true-damage missiles that fly through walls at them. Taproot heals on each Refibrillator shot; Forage speeds up gold and levels."
    }
   },
   "akeron": {
@@ -312,7 +312,7 @@
    "carry": {
     "Xyris": "Farm hard early: every minion and monster kill raises your damage, and Dissonance explosions help clear waves. Bone Collector adds permanent critical chance once you've farmed enough.",
     "Satariel": "A risky snowball: takedowns stack power and attack speed but cut your max health, and dying wipes it. Fight from Air Assault's longer range and avoid needless deaths.",
-    "Weald": "Hit a low-health hero and missiles chase them through walls, adding a little damage that can finish runners. Forage adds gold and XP from every farm kill."
+    "Weald": "Hitting a low-health hero fires a few small true-damage missiles that fly through walls at them. Forage adds gold and XP from every farm kill."
    }
   },
   "lt-belica": {
@@ -337,13 +337,13 @@
   "greystone": {
    "jungle": {
     "Krix": "Extra health lets you dive in and soak hits for your team, and Stoicism's armor and regen grow as you lose health. Cannibalism adds health with every takedown.",
-    "Weald": "A finisher: once a hero drops low, missiles chase them through walls. Assault The Gates is a leap, so it triggers Wind-Rider's attack speed on engage.",
+    "Weald": "Once a hero drops low, a few small true-damage missiles fly through walls at them. Assault The Gates is a leap, so it triggers Wind-Rider's attack speed on engage.",
     "Thraex": "Your basic attacks mark one hero, who takes more from you and hits you softer. Open with Sacred Oath on them and stay put; Savage Strikes heals each hit."
    },
    "offlane": {
     "Nihil": "Keep hitting heroes and Doom keeps building power and armor, growing on each level-up. From the Abyss heals you mid-fight, so you can stay in long brawls.",
     "Krix": "More health also strengthens Stone Forged Soul's heal, since it restores a share of max health. Voracity heals you whenever you kill a minion, keeping you healthy in lane.",
-    "Weald": "Hitting an enemy under 30% health fires missiles that follow them through walls for a little extra damage. Forage adds gold and XP from every minion and monster."
+    "Weald": "Hitting an enemy under 30% health fires a few small true-damage missiles that fly through walls at them. Forage adds gold and XP from every minion and monster."
    }
   },
   "wraith": {
@@ -353,8 +353,8 @@
     "Demiurge": "Strengthens the stats from every item, including the physical power behind Knock, Knock! burst. Tri-Core adds random bonus damage to each basic attack you land."
    },
    "carry": {
-    "Demiurge": "Your items give more stats and their effects hit harder, so buy core items on time. Memory Leak grows your mana from Knock, Knock! casts and eventually adds movement speed.",
-    "Weald": "A long-range Knock, Knock! on a low hero sends missiles after them through walls. Forage speeds your farm between fights.",
+    "Demiurge": "Your items give more stats and their effects hit harder. Memory Leak grows your max mana as you cast abilities like Knock, Knock! and eventually adds movement speed.",
+    "Weald": "A long-range Knock, Knock! on a low hero fires a few small true-damage missiles that fly through walls at them. Forage speeds your farm between fights.",
     "Vesh": "Knock, Knock! and Peekaboo! keep burning after they land, adding chip to your long-range poke. Tithe of Death restores some mana and adds ability haste with each takedown."
    }
   },
@@ -373,10 +373,10 @@
    "carry": {
     "Thraex": "Your basic attacks mark one hero, who takes more from you and hits you softer. Keep shooting the same target, including long-range Shots Fired from Justice's Reach.",
     "Xyris": "Rewards farming; each kill adds damage. Clear waves with Buckshot, and Bone Collector later gives your basic attacks crit chance.",
-    "Weald": "Hitting a low hero fires missiles that pass through walls for bonus true damage; Long Arm of the Law can reach fleeing targets. Taproot heals you with each basic attack."
+    "Weald": "Hitting a low hero fires a few small true-damage missiles that pass through walls, on a per-hero cooldown. Taproot heals you with each basic attack."
    },
    "offlane": {
-    "Weald": "Once a hero drops under 30%, your next hit fires missiles that chase them through walls, so keep poking runners. Taproot heals you on each Enforcer shot.",
+    "Weald": "Once a hero drops under 30%, your next hit fires a few small true-damage missiles that fly through walls at them. Taproot heals you on each Enforcer shot.",
     "Vermis": "Every third basic attack on the same hero hits for a chunk of their health, so stick to one target. Hot Pursuit gets you there faster; Serration punishes wounded enemies."
    }
   },
@@ -412,7 +412,7 @@
     "Weald": "Hitting a low hero fires missiles that pass through walls for bonus true damage. Taproot heals on every basic attack, which suits Nova Repeater's rapid rounds."
    },
    "offlane": {
-    "Weald": "Hitting a hero under 30% health fires missiles that follow them through walls for a little extra damage. Taproot heals on each basic attack; Forage adds gold and XP.",
+    "Weald": "Hitting a hero under 30% health fires a few small true-damage missiles that fly through walls at them. Taproot heals on each basic attack; Forage adds gold and XP.",
     "Vermis": "Stay on one hero: every third basic attack in a row deals a chunk of their health. Serration adds more as they get low; Melting Point punishes armored targets."
    }
   },
@@ -451,11 +451,11 @@
   },
   "yin": {
    "jungle": {
-    "Weald": "Once a hero drops low, missiles chase them through walls, adding a little damage that can finish runners. Forage adds gold and XP; Taproot heals you every swing.",
+    "Weald": "Hitting a low-health hero fires a few small true-damage missiles that fly through walls at them. Forage adds gold and XP; Taproot heals you every swing.",
     "Vermis": "Rewards steady three-hit chains on one hero, matching Windburn's own third-hit bonus. Stick to your target with Lash Kick; Serration hits harder as their health drops."
    },
    "offlane": {
-    "Weald": "Hitting a low hero fires missiles that pass through walls, so one Lash Kick hit can add damage without chasing blindly. Taproot heals each swing; Forage speeds farming."
+    "Weald": "When a hero drops low, your hits fire a few small true-damage missiles that pass through walls. Taproot heals each swing; Forage speeds farming."
    }
   },
   "phase": {
@@ -479,7 +479,7 @@
   },
   "wukong": {
    "jungle": {
-    "Weald": "Once a hero drops under 30%, missiles chase them through walls. Pole Vault's leap triggers Wind-Rider for extra attack speed and missiles, and Forage adds gold and XP per kill.",
+    "Weald": "Once a hero drops under 30%, a few small missiles fly through walls at them. Pole Vault plus Wind-Rider stacks attack speed, adding missiles; Forage adds gold and XP.",
     "Demiurge": "Every item you buy gives a bit more stats. Construct adds health and ability haste every level, helping you cast more often.",
     "Thraex": "Stick to one target with basic attacks to keep the mark on them. Ferocity stacks attack speed in long fights; Alpha's Court adds damage when no ally is near."
    }
@@ -493,7 +493,7 @@
   "kallari": {
    "jungle": {
     "Lotus": "Random bonuses build over time and with each takedown. Guillotine wounded targets to secure kills; Prima Donna boosts hero damage but makes you squishier, so strike first.",
-    "Demiurge": "Your items give more stats and their effects hit harder, so finish core items quickly. Tri-Core adds damage to every hit, and Bloatware toughens you per item.",
+    "Demiurge": "Your items give more stats and their effects hit harder. Tri-Core adds damage to every hit, and Bloatware toughens you for each item you own.",
     "Satariel": "Each takedown makes you hit harder but lowers your health, and dying wipes it. Use Shadow Walk to catch isolated targets; Demonic Bargain's gold speeds your start."
    }
   },
@@ -516,7 +516,7 @@
   "howitzer": {
    "midlane": {
     "Vesh": "Missiles, mines and Make It Rain each leave a burn, so poke from range. The Tenth Seal makes Make It Rain stronger and faster to return.",
-    "Demiurge": "Every item you buy gives a bit more stats. Memory Leak grows your max mana as you cast, and Armed Salvo refills mana when it hits heroes.",
+    "Demiurge": "Every item you buy gives a bit more stats. Memory Leak grows your max mana as you cast, and Armed Salvo restores mana when it hits heroes.",
     "Aion": "Pays gold whenever your spells hit heroes, and each cast feeds mana regeneration, so keep casting. Runic Focus adds magical power while mana is high, which Armed Salvo helps refill."
    }
   }
