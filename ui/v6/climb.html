@@ -340,7 +340,10 @@
       but you need to be ahead — if you fall behind you need to change." A greedy build isn't
       wrong in general; it's wrong for a game state. Re-check the condition every recall.</p>
     </details>
-    <h3 id="when-to-swap">When the swap actually happens <span class="tag">MEASURED · 1.17.2</span></h3>
+  </section>
+
+  <section class="card" id="when-to-swap" data-nav="Item swaps">
+    <h2>6 · Item swaps — when the counter actually happens <span class="tag">MEASURED · 1.17.2</span></h2>
     <p>We counted what Platinum-and-up players build in 8,331 ranked games, comparing games where
     the matchup calls for a counter with games where it doesn't. The guides say to flex the last
     one or two slots. The ladder flexes <b>early</b>: most of the matchup-driven buying happens at
@@ -390,7 +393,7 @@
   </section>
 
   <section class="card" data-nav="Splitpush">
-    <h2>6 · The splitpush doctrine</h2>
+    <h2>7 · The splitpush doctrine</h2>
     <p>Splitpushing is the most misplayed macro tool on the ladder, and the community's one
     dedicated macro guide lays out the actual doctrine:</p>
     <ul>
@@ -411,7 +414,7 @@
   </section>
 
   <section class="card" data-nav="Micro">
-    <h2>7 · Micro that's assumed up here</h2>
+    <h2>8 · Micro that's assumed up here</h2>
     <p>Above Gold, this is table stakes — opponents are doing all of it:</p>
     <ul>
       <li><b>Animation canceling</b> — cutting an ability's follow-through the moment its damage
@@ -444,7 +447,7 @@
   </section>
 
   <section class="card" data-nav="Film review">
-    <h2>8 · Review your own film — the interrogation</h2>
+    <h2>9 · Review your own film — the interrogation</h2>
     <p>Every rank above Platinum reviews film. Don't rewatch to relive it — interrogate it.
     The questions a real coach asks of a lost game, in order:</p>
     <ul>
@@ -478,18 +481,21 @@
 <script>
 // Sticky section jumper (same pattern as squad/bans): one pill per section,
 // labelled by its short data-nav name; scrollspy highlights the current one.
+// Each section gets a readable id (#wave-control) and the address bar follows
+// the section you are reading, so a copied link opens right there.
 (function buildSubnav() {
   const host = document.getElementById('subnav');
   const cards = [...document.querySelectorAll('.wrap .card[data-nav]')];
   host.innerHTML = cards.map((c, i) => {
-    c.id = c.id || 'sec' + i;
+    c.id = c.id || c.dataset.nav.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     const b = document.createElement('button');
     b.className = 'snpill'; b.dataset.t = c.id; b.textContent = c.dataset.nav;
     return b.outerHTML;
   }).join('');
   document.documentElement.style.setProperty('--toph', `${document.querySelector('.top')?.offsetHeight ?? 96}px`);
   const pills = [...host.querySelectorAll('.snpill')];
-  pills.forEach((p) => { p.onclick = () => document.getElementById(p.dataset.t)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+  const setHash = (id) => { try { history.replaceState(null, '', '#' + id); } catch { /* file:// etc. */ } };
+  pills.forEach((p) => { p.onclick = () => { document.getElementById(p.dataset.t)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); setHash(p.dataset.t); }; });
   // centre the active pill by scrolling the pill row only (scrolling ancestors
   // pans the pinch-zoom viewport on iOS)
   const centerPill = (p) => host.scrollTo({ left: p.offsetLeft - host.clientWidth / 2 + p.offsetWidth / 2, behavior: 'smooth' });
@@ -499,9 +505,17 @@
       if (!e.isIntersecting) continue;
       pills.forEach((p) => p.classList.toggle('active', p.dataset.t === e.target.id));
       { const p = byId.get(e.target.id); if (p) centerPill(p); }
+      if (ready) setHash(e.target.id);
     }
   }, { rootMargin: '-15% 0px -75% 0px' });
   cards.forEach((c) => io.observe(c));
+  // A shared link (#wave-control): the ids are set by this script, after the
+  // browser's own anchor jump, so jump once here. Hash updates from scrolling
+  // start after that, so landing on the page doesn't rewrite the link.
+  let ready = false;
+  const target = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  if (target) target.scrollIntoView({ block: 'start' });
+  setTimeout(() => { ready = true; }, 600);
 })();
 </script>
 <script defer src="icons.js"></script>
