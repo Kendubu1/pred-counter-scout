@@ -214,20 +214,25 @@
   .pgrid .pl { font-size:.6875rem; font-weight:800; letter-spacing:0; color:var(--text-2); display:block; margin-bottom:.2rem; }
   ul.pchanges { margin:.6rem 0 0 1.1rem; font-size:.78rem; color:var(--text-1); }
   ul.pchanges li { margin:.25rem 0; }
-  /* leveling chart: label column + one column per hero level */
-  .lvsum { font-size:.82rem; color:var(--text-1); margin-bottom:.6rem; }
+  /* leveling chart: label column + one column per hero level. Filled squares
+     carry the level number; empty ones are a faint tone step, not boxes. */
+  .lvsum { display:flex; flex-wrap:wrap; align-items:center; gap:.35rem .4rem; font-size:.82rem; color:var(--text-1); margin-bottom:.75rem; }
   .lvsum b { color:var(--text-0); font-weight:600; }
-  .lvkey { font-size:.6875rem; color:var(--text-2); margin-left:.15rem; }
-  .lvchart { display:grid; gap:3px; }
+  .lvab { display:inline-flex; align-items:center; gap:.3rem; }
+  .lvab img { width:20px; height:20px; border-radius:5px; object-fit:cover; }
+  .lvarr { color:var(--text-2); }
+  .lvult { margin-left:.35rem; }
+  .lvchart { display:grid; gap:4px; }
   .lvrow { display:grid; grid-template-columns:185px repeat(var(--lvn), minmax(0, 1fr)); gap:3px; align-items:center; }
-  .lvlab { display:flex; align-items:center; gap:.45rem; min-width:0; font-size:.8rem; color:var(--text-1); }
-  .lvlab img { width:24px; height:24px; border-radius:6px; object-fit:cover; flex:none; }
+  .lvlab { display:flex; align-items:center; gap:.5rem; min-width:0; font-size:.8rem; color:var(--text-1); }
+  .lvic { flex:none; display:inline-flex; }
+  .lvic img { width:26px; height:26px; border-radius:6px; object-fit:cover; display:block; }
+  .lvkey { font-size:.6875rem; color:var(--text-2); flex:none; }
   .lvname { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .lvhead .lvlab { font-size:.6875rem; color:var(--text-2); }
-  .lvnum { text-align:center; font-size:.6875rem; color:var(--text-2); font-variant-numeric:tabular-nums; }
-  .lvcell { height:26px; border-radius:5px; background:var(--bg-2); display:flex; align-items:center; justify-content:center; font-size:.6875rem; font-weight:700; font-variant-numeric:tabular-nums; }
+  .lvcell { height:26px; border-radius:5px; background:rgba(255,255,255,.035); display:flex; align-items:center; justify-content:center; font-size:.6875rem; font-weight:700; font-variant-numeric:tabular-nums; }
   .lvcell.on { background:var(--accent); color:#fff; }
   .lvcell.ult { background:var(--gold); color:#1a1405; }
+  .lvsrc { margin-top:.6rem; font-size:.6875rem; color:var(--text-2); }
   .abilchg { font-size:.6875rem; font-weight:800; border-radius:5px; padding:.03rem .35rem; border:1px solid; vertical-align:middle; }
   .abilchg.buff { color:var(--green); border-color:var(--green); }
   .abilchg.nerf { color:var(--red); border-color:var(--red); }
@@ -414,11 +419,12 @@
     .htab:active { background:var(--bg-2); }
     .hh-name { display:none; }
     .bstep { width:36px; height:36px; }
-    .lvrow { grid-template-columns:28px repeat(var(--lvn), minmax(0, 1fr)); gap:2px; }
-    .lvchart { gap:2px; }
+    .lvrow { grid-template-columns:30px repeat(var(--lvn), minmax(0, 1fr)); gap:2px; }
+    .lvchart { gap:5px; }
     .lvname, .lvlab .lvkey { display:none; }
-    .lvhead .lvlab { font-size:0; }
-    .lvcell { height:24px; border-radius:4px; }
+    .lvic img { width:24px; height:24px; }
+    .lvcell { height:26px; border-radius:4px; }
+    .lvsum { font-size:.8rem; }
   }
 
   /* ── meta board ── */
@@ -1886,16 +1892,18 @@ async function fillLevelChart(a) {
   const nameOf = (k) => abil.get(k)?.display_name || (sk.maxOrder || []).find((o) => o.key === k)?.name || k;
   const icon = (k) => { const h = (abil.get(k)?.image || '').split('/').pop(); return h ? `<img loading="lazy" src="../img/abilities/${esc(h)}" alt="">` : ''; };
   const n = sk.sequence.length;
-  const max = (sk.maxOrder || []).map((o) => `<b>${esc(nameOf(o.key))}</b> <span class="lvkey">${esc(o.key)}</span>`).join(' → ');
+  // The summary doubles as the legend: icon + name teaches which icon is which
+  // ability, so the chart rows can stay icon-only on a phone.
+  const max = (sk.maxOrder || []).map((o) => `<span class="lvab">${icon(o.key)}<b>${esc(nameOf(o.key))}</b></span>`).join('<span class="lvarr">→</span>');
   card.innerHTML = `
-      <h2>Leveling order <span class="hint">in-game recommended path</span></h2>
-      <div class="lvsum">${max ? `Max ${max}` : ''}${sk.ultLevels?.length ? `${max ? ' · ' : ''}ultimate at <b>${sk.ultLevels.join(' / ')}</b>` : ''}</div>
+      <h2>Leveling order</h2>
+      <div class="lvsum">${max ? `<span class="lvmax">Max</span>${max}` : ''}${sk.ultLevels?.length ? `<span class="lvult">ult at <b>${sk.ultLevels.join(' / ')}</b></span>` : ''}</div>
       <div class="lvchart" style="--lvn:${n}" role="table" aria-label="Ability to level at each hero level">
-        <div class="lvrow lvhead" role="row"><span class="lvlab" role="columnheader">Level</span>${sk.sequence.map((_, i) => `<span class="lvnum" role="columnheader">${i + 1}</span>`).join('')}</div>
-        ${keys.map((k) => `<div class="lvrow" role="row"><span class="lvlab" role="rowheader" title="${esc(nameOf(k))} (${esc(k)})">${icon(k)}<span class="lvname">${esc(nameOf(k))}</span><span class="lvkey">${esc(k)}</span></span>${sk.sequence.map((s, i) => s === k
+        ${keys.map((k) => `<div class="lvrow" role="row"><span class="lvlab" role="rowheader" title="${esc(nameOf(k))} (${esc(k)})"><span class="lvic">${icon(k)}</span><span class="lvname">${esc(nameOf(k))}</span><span class="lvkey">${esc(k)}</span></span>${sk.sequence.map((s, i) => s === k
           ? `<span class="lvcell on${k === 'R' ? ' ult' : ''}" role="cell" aria-label="level ${i + 1}">${i + 1}</span>`
           : '<span class="lvcell" role="cell"></span>').join('')}</div>`).join('')}
-      </div>`;
+      </div>
+      <div class="lvsrc">In-game recommended path · current patch</div>`;
   card.hidden = false;
   if (!$('#tabPlay')?.classList.contains('hidden')) buildSubnav();
 }
