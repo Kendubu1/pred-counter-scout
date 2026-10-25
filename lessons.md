@@ -5203,3 +5203,10 @@ The worker subsequently committed an unreviewed draft while the manual repair wa
   build-shift rises looked right, and shuffled opponents produced ~34.
 - Rare off-role picks with high win rates are mostly streaks over a 40h window
   (22/100 won both halves, ~25 expected by chance). Promote only on fresh data.
+- Counter checks (2026-10-25, §14c): Plat+ react to lane damage type, healing,
+  team magic share and visible enemy armor (armor shred 17.8 vs 10.1 per 100,
+  the biggest scoreboard reaction). They do NOT react to CC-heavy teams
+  (tenacity), tanks (percent-health) or being behind (defense, except at item
+  4). Put every number a page cites in a committed file the page can be traced
+  to: the first Climb draft quoted minutes from a scratch script that the
+  committed run then moved by 1-2.

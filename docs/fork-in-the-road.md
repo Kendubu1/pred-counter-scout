@@ -348,3 +348,29 @@ fewer than 20 games.
   accumulator must keep counts keyed by (hero, role, lane-opponent hero,
   item in first 3), split by band. The current perks counters drop the
   opponent.
+
+### 14c. Every counter the catalog can express (`npm run fork:counters`)
+
+`data/aggregates/counter-reactions.json` has nine checks over the PoC extract,
+with 90% match-bootstrap ranges. Each compares the same hero-role at the same
+item slot, and for scoreboard checks the same 5-minute window. It counts per
+100 buys when the counter is called for vs not. Plat+ results:
+
+| Check | Called for | Otherwise |
+| --- | --- | --- |
+| Magic armor into a magic laner | 10.8 | 3.2 |
+| Physical armor into a physical laner | 13.7 | 8.3 |
+| Armor shred into visible enemy armor (3+ items) | 17.8 | 10.1 |
+| Anti-heal into a healing team | 13.7 | 10.6 |
+| Magic armor into a magic-heavy team | 6.1 | 2.5 |
+| Magic-armor shred into visible magic armor | 10.3 | 7.1 |
+| Percent-health into visible tanks | 7.4 | 7.1 (no reaction) |
+| Tenacity/cleanse into a CC-heavy team | 3.4 | 3.5 (no reaction) |
+| Defense when the team is behind | 18.0 | 17.5 (86% of the small gap at item 4) |
+
+Anti-shield cannot be tested: no current item reduces shields. CC is counted
+from the `<CC_Text>` tags in each kit's ability text (slows excluded). Some
+kits tag none, so the CC-heavy label is the weakest of the contexts. The
+Climb page (section 5, "When the swap actually happens") cites only numbers
+from this file and from build-matchups.json. Re-run when a new extract
+exists; the extract itself is scratch.
