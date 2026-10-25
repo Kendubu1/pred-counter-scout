@@ -222,8 +222,12 @@ function renderSquad() {
   $('#sqSub').textContent = `Heroes we lose to most, from ${w.games} of our ranked games (we win ${pct(w.winRate)} overall). Ranked by wins a ban would win back.`;
   $('#sqList').innerHTML = w.list.map((r, i) => {
     const chips = [];
-    if (r.laneNemesis) chips.push(`<span class="chip hot" title="${esc(r.laneNemesis.name)} laned against ${esc(r.name)} ${r.laneNemesis.games} times">Nemesis of ${esc(r.laneNemesis.name)}: ${r.laneNemesis.wins}-${r.laneNemesis.games - r.laneNemesis.wins} in lane</span>`);
-    if (r.mostKilled && r.mostKilled.perGame >= 0.5) chips.push(`<span class="chip" title="kills on this member per game faced">Hunts ${esc(r.mostKilled.name)} · ${r.mostKilled.perGame.toFixed(1)} kills/game</span>`);
+    if (r.nemesis) {
+      const n = r.nemesis;
+      const bits = [n.lane ? `${n.lane.wins}-${n.lane.games - n.lane.wins} ${n.lane.role === '*' ? 'in lane' : `as ${LANE1[n.lane.role] || n.lane.role}`}` : null, n.killsPerGame > 0 ? `${n.killsPerGame.toFixed(1)} kills/game` : null].filter(Boolean);
+      const tip = `${n.name}: ${n.lane ? `team record ${n.lane.wins}-${n.lane.games - n.lane.wins} when ${n.name} ${n.lane.role === '*' ? 'laned' : `played ${n.lane.role}`} against ${r.name} (carry + support share the duo lane)` : `no losing lane record against it`}; ${r.name} kills ${n.name} ${n.killsPerGame.toFixed(1)} times per game faced, whole game.`;
+      chips.push(`<span class="chip hot" title="${esc(tip)}">Nemesis of ${esc(n.name)}${bits.length ? ` · ${bits.join(' · ')}` : ''}</span>`);
+    }
     if (r.kdVsUs != null && r.killsOnUsPerGame > 0) chips.push(`<span class="chip${r.kdVsUs >= 1.5 ? ' hot' : ''}" title="kills on squad members ÷ deaths to squad members">K/D vs us ${r.kdVsUs.toFixed(2)} · ${r.killsOnUsPerGame.toFixed(1)} kills/game</span>`);
     if (r.leagueBanRate != null) chips.push(`<span class="chip${r.leagueBanRate < 0.1 ? ' free' : ''}" title="share of all ranked matches it's banned in">${r.leagueBanRate < 0.1 ? 'Rarely banned: ' : 'League bans '}${pct(r.leagueBanRate)}</span>`);
     return `<li><div class="sr">

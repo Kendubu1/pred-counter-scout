@@ -11,9 +11,12 @@
 // presence x (baseline - shrunk). Doubling or halving K left the top four
 // unchanged on 2026-10-25 (181 games). The page shows the raw record beside it.
 //
-// NEMESIS: per hero, the member with the worst record laned against it (same
-// role, 3+ games), and the member it kills most per game faced. STOMP: the
-// hero's kills on squad members over its deaths to them.
+// NEMESIS: per hero, ONE squad member it hurts most. A member with a losing
+// record laned against it (3+ games) comes first, worst record wins; otherwise
+// the member it kills most per game faced (0.5+). Lanes: carry and support
+// share the duo lane, so an enemy support counts against our carry and vice
+// versa. The chip shows that member's lane record and kills per game together.
+// STOMP: the hero's kills on squad members over its deaths to them.
 
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -23,6 +26,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.
 const K = 20;
 const MIN_GAMES = 4;
 const MIN_LANE_GAMES = 3;
+const MIN_HUNT_PER_GAME = 0.5;
+const LANE_OF: Record<string, string> = { carry: 'duo', support: 'duo', midlane: 'mid', offlane: 'off', jungle: 'jungle' };
 
 interface PgPlayer { pid: string; team: string; role: string; heroSlug: string; heroName: string; kills: number; deaths: number; assists: number }
 interface PgKill { killerPid: string; killedPid: string }
@@ -40,7 +45,7 @@ function window(games: PgMatch[], roster: Map<string, string>) {
   const by = new Map<string, Agg>();
   for (const g of games) {
     const won = g.result === 'win';
-    const ours = new Map(g.players.filter((p) => roster.has(p.pid)).map((p) => [p.role, p]));
+    const ours = g.players.filter((p) => roster.has(p.pid));
     for (const e of g.players.filter((p) => p.team !== g.ourTeam)) {
       const a = by.get(e.heroSlug) ?? { n: 0, w: 0, name: e.heroName, roles: {}, kills: 0, deaths: 0, assists: 0, killsOnUs: 0, deathsToUs: 0, lane: {}, killedMember: {} };
       a.n++; if (won) a.w++;
@@ -54,11 +59,14 @@ function window(games: PgMatch[], roster: Map<string, string>) {
         }
         if (k.killedPid === e.pid && roster.has(k.killerPid)) a.deathsToUs++;
       }
-      const vs = ours.get(e.role);
-      if (vs) {
-        const who = roster.get(vs.pid)!;
-        const l = (a.lane[who] ??= { n: 0, w: 0 });
-        l.n++; if (won) l.w++;
+      for (const vs of ours.filter((p) => LANE_OF[p.role] && LANE_OF[p.role] === LANE_OF[e.role])) {
+        // keyed per member AND the role they played, so one member's 3-0 as
+        // carry can't dilute their 0-5 as support into a harmless 3-5.
+        // '*' pools that member's lane games across roles; both compete.
+        for (const key of [`${roster.get(vs.pid)!}|${vs.role}`, `${roster.get(vs.pid)!}|*`]) {
+          const l = (a.lane[key] ??= { n: 0, w: 0 });
+          l.n++; if (won) l.w++;
+        }
       }
       by.set(e.heroSlug, a);
     }
@@ -67,10 +75,18 @@ function window(games: PgMatch[], roster: Map<string, string>) {
   const rows = [...by.entries()].filter(([, a]) => a.n >= MIN_GAMES).map(([slug, a]) => {
     const loo = N > a.n ? (W - a.w) / (N - a.n) : W / N;
     const shrunk = (a.w + K * loo) / (a.n + K);
-    const lanes = Object.entries(a.lane).filter(([, l]) => l.n >= MIN_LANE_GAMES)
+    const losing = Object.entries(a.lane).filter(([, l]) => l.n >= MIN_LANE_GAMES && l.w < l.n - l.w)
       .sort(([, x], [, y]) => x.w / x.n - y.w / y.n || y.n - x.n);
-    const worst = lanes[0] && lanes[0][1].w / lanes[0][1].n < loo ? { name: lanes[0][0], games: lanes[0][1].n, wins: lanes[0][1].w } : null;
     const hunted = Object.entries(a.killedMember).sort(([, x], [, y]) => y - x)[0];
+    const laneKey = losing[0]?.[0] ?? null;
+    const pick = laneKey ? laneKey.split('|')[0] : (hunted && hunted[1] / a.n >= MIN_HUNT_PER_GAME ? hunted[0] : null);
+    const lane = laneKey ? a.lane[laneKey] : undefined;
+    const nemesis = pick ? {
+      name: pick,
+      reason: laneKey ? 'lane' : 'kills',
+      lane: lane ? { role: laneKey!.split('|')[1], games: lane.n, wins: lane.w } : null,
+      killsPerGame: r3((a.killedMember[pick] ?? 0) / a.n),
+    } : null;
     return {
       slug, name: a.name, games: a.n, wins: a.w, losses: a.n - a.w,
       winRate: r3(a.w / a.n), baseline: r3(loo), shrunkWinRate: r3(shrunk),
@@ -80,8 +96,7 @@ function window(games: PgMatch[], roster: Map<string, string>) {
       kd: a.deaths ? r3(a.kills / a.deaths) : null,
       killsOnUsPerGame: r3(a.killsOnUs / a.n),
       kdVsUs: a.deathsToUs ? r3(a.killsOnUs / a.deathsToUs) : null,
-      laneNemesis: worst,
-      mostKilled: hunted ? { name: hunted[0], perGame: r3(hunted[1] / a.n) } : null,
+      nemesis,
     };
   });
   const threats = rows.filter((r) => r.threat > 0).sort((a, b) => b.threat - a.threat);
@@ -106,7 +121,7 @@ export function buildSquadBans(): void {
   writeFileSync(path.join(ROOT, 'data/artifacts/squad-bans.json'), JSON.stringify({
     generatedAt: new Date().toISOString(),
     source: `data/postgame reviewed ranked games of the 5-stack (${games.length}); a game counts when at least two members played`,
-    method: `Each enemy hero's squad record is pulled toward the squad's win rate in games without it, weighted as ${K} extra games; threat = wins per 100 games a ban would recover (how often it shows up x how much worse the squad does). ${MIN_GAMES}+ games to list; lane nemesis needs ${MIN_LANE_GAMES}+ games laned against it.`,
+    method: `Each enemy hero's squad record is pulled toward the squad's win rate in games without it, weighted as ${K} extra games; threat = wins per 100 games a ban would recover (how often it shows up x how much worse the squad does). ${MIN_GAMES}+ games to list; nemesis = the member with the worst losing lane record against it (${MIN_LANE_GAMES}+ games; carry and support share the duo lane), else the member it kills most (${MIN_HUNT_PER_GAME}+ per game).`,
     members: squad.members.map((m) => m.name),
     windows: {
       patch: { label: `Patch ${meta.patchFamily}`, since, ...withBans(window(games.filter((g) => g.startTime >= since), roster)) },

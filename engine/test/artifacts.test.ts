@@ -102,8 +102,10 @@ describe('hero artifacts (Concept A engine stage)', () => {
         expect(r.wins + r.losses).toBe(r.games);
         expect(r.threat).toBeGreaterThan(0);
         expect(r.shrunkWinRate).toBeLessThan(r.baseline);
-        if (r.laneNemesis) expect(sb.members).toContain(r.laneNemesis.name);
-        if (r.mostKilled) expect(sb.members).toContain(r.mostKilled.name);
+        if (r.nemesis) {
+          expect(sb.members).toContain(r.nemesis.name);
+          if (r.nemesis.reason === 'lane') expect(r.nemesis.lane.wins).toBeLessThan(r.nemesis.lane.games - r.nemesis.lane.wins);
+        }
       }
     }
   });
