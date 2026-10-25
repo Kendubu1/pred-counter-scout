@@ -59,3 +59,12 @@ it('versions the popup script by content so new markup cannot reuse the old indi
  const page=readFileSync(new URL('../../ui/v6/coach.html',import.meta.url),'utf8');
  expect(page).toContain(`coach-loadouts.js?v=${hash}`);
 });
+
+it('makes Eternal and minor entries open the full Eternal with the ran minors marked, but not the augment',()=>{
+ const player={loadout:{eternal:'Vesh',minor1:'Lich',minor2:'Mind Rot',augment:{id:11,name:'Deep Freeze'}},items:[]};
+ const detail=ui.renderDetails(player,eternals,augments,[]);
+ expect((detail.match(/data-epop="Vesh"/g)||[])).toHaveLength(3);
+ expect(detail).toContain('data-epop-minor="Lich"');
+ expect(detail).toContain('data-epop-picks="Lich|Mind Rot"');
+ expect(detail).not.toMatch(/data-epop="[^"]*"[^>]*><img src="..\/img\/augments/);
+});

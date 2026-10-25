@@ -365,7 +365,7 @@
   <a class="navlink active" href="coach.html">Coach</a>
 </div><div class="subnav" id="subnav"></div></div>
 <div class="wrap" id="page">loading…</div>
-<script src="coach-loadouts.js?v=2fe4edc9cdb1"></script>
+<script src="coach-loadouts.js?v=0574a2b8128c"></script>
 <script>
 const esc = (s) => String(s ?? '').replace(/\s*\u2014\s*/g, ', ').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct = (x, d = 1) => (x * 100).toFixed(d);
@@ -377,10 +377,16 @@ const iimg = (slug) => `../img/items/${slug}.webp`;
 // match stream by npm run postgame:loadout): augment, Eternal, minors, crest.
 const nslug = (name) => String(name || '').toLowerCase().normalize('NFKD').replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const ico = (src, title, ipop) => `<img${ipop ? ` data-ipop="${esc(ipop)}"` : ''} src="${src}" title="${esc(title)}" alt="" style="display:inline-block;width:18px;height:18px;border-radius:4px;border:1px solid var(--border);vertical-align:-4px;margin-right:.2rem" onerror="this.style.display='none'">`;
+// data-epop opens the whole Eternal (eternal-popup.js) with the given minors marked.
+const epopAttr = (eternal, minor, picks, label, note) => ` data-epop="${esc(eternal)}"${minor ? ` data-epop-minor="${esc(minor)}"` : ''}${picks.length ? ` data-epop-picks="${esc(picks.join('|'))}" data-epop-label="${esc(label)}" data-epop-note="${esc(note)}"` : ''}`;
 const ranLine = (lo) => {
   if (!lo || !(lo.eternal || lo.augment || lo.crest)) return '';
   const bits = [];
-  if (lo.eternal) bits.push(`${ico(`../img/eternals/${nslug(lo.eternal)}.webp`, lo.eternal)}<b>${esc(lo.eternal)}</b>${[lo.minor1, lo.minor2].filter(Boolean).map((m) => ` + ${ico(`../img/blessings/${nslug(m)}.webp`, m)}${esc(m)}`).join('')}`);
+  if (lo.eternal) {
+    const ran = [lo.minor1, lo.minor2].filter(Boolean);
+    const ep = (m) => epopAttr(lo.eternal, m, ran, 'ran', 'the minors this player ran this game');
+    bits.push(`<span${ep()} title="${esc(lo.eternal)} — tap for the full Eternal">${ico(`../img/eternals/${nslug(lo.eternal)}.webp`, lo.eternal)}<b>${esc(lo.eternal)}</b></span>${ran.map((m) => ` + <span${ep(m)} title="${esc(m)} — tap for the full Eternal">${ico(`../img/blessings/${nslug(m)}.webp`, m)}${esc(m)}</span>`).join('')}`);
+  }
   if (lo.augment) bits.push(`${ico(`../img/augments/${esc(lo.augment.id)}.webp`, lo.augment.name)}${esc(lo.augment.name)}`);
   if (lo.crest) bits.push(`${ico(`../img/crests/${esc(lo.crestSlug || nslug(lo.crest))}.webp`, lo.crest, lo.crestSlug)}${esc(lo.crest)}`);
   return `<div class="lrow"><span class="ltag">ran</span>${bits.join(' <span style="color:var(--text-2)">·</span> ')}</div>`;
@@ -1016,7 +1022,9 @@ async function fillEternals() {
       // the model's blind spot, not a recommendation (coach audit 2026-09-21).
       const ran = el.dataset.etRan;
       if (role === 'support') { el.innerHTML = `<span class="ltag">engine pick</span><span style="color:var(--text-2)">support loadouts are not modeled by the engine (the field runs Exarch on healers and shielders, Krix on tank supports)</span>`; continue; }
-      if (lo && lo.major) el.innerHTML = `<span class="ltag">engine pick</span><b>${esc(lo.major.name)}</b>${lo.minor1 ? ` + ${esc(lo.minor1.name)}` : ''}${lo.minor2 ? ` + ${esc(lo.minor2.name)}` : ''}${ran ? (ran === lo.major.name ? ' <span style="color:var(--green)">(same Eternal you ran)</span>' : ` <span style="color:var(--text-2)">(you ran ${esc(ran)})</span>`) : ''}${cs && typeof cs.in === 'string' && cs.out ? ` <span class="swap">· matchup swap vs ${esc(oppName)}: ${esc(cs.in)} in for ${esc(cs.out)}</span>` : ''}`;
+      const epicks = lo && lo.major ? [lo.minor1, lo.minor2].filter(Boolean).map((m) => m.name) : [];
+      const eep = (m) => epopAttr(lo.major.name, m, epicks, 'engine pick', "the engine's minor picks for this hero and role");
+      if (lo && lo.major) el.innerHTML = `<span class="ltag">engine pick</span><b${eep()}>${esc(lo.major.name)}</b>${lo.minor1 ? ` + <span${eep(lo.minor1.name)}>${esc(lo.minor1.name)}</span>` : ''}${lo.minor2 ? ` + <span${eep(lo.minor2.name)}>${esc(lo.minor2.name)}</span>` : ''}${ran ? (ran === lo.major.name ? ' <span style="color:var(--green)">(same Eternal you ran)</span>' : ` <span style="color:var(--text-2)">(you ran ${esc(ran)})</span>`) : ''}${cs && typeof cs.in === 'string' && cs.out ? ` <span class="swap">· matchup swap vs ${esc(oppName)}: ${esc(cs.in)} in for ${esc(cs.out)}</span>` : ''}`;
       else el.remove();
     } catch { el.remove(); }
   }
@@ -1297,6 +1305,7 @@ function buildSubnav() {
 </script>
 <script src="game-text.js"></script>
 <script defer src="item-popup.js"></script>
+<script defer src="eternal-popup.js"></script>
 <script defer src="icons.js"></script>
 <script defer src="nav.js"></script>
 </body>

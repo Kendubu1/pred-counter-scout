@@ -490,6 +490,7 @@
 
 <script src="game-text.js"></script>
 <script defer src="item-popup.js"></script>
+<script defer src="eternal-popup.js"></script>
 <script>
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -1460,22 +1461,30 @@ function renderHero(a, roleParam) {
             const m1 = top(fe.minor1), m2 = top(fe.minor2);
             return m1 || m2 ? { minor1: m1, minor2: m2 } : null;
           };
+          // data-epop opens the whole Eternal (eternal-popup.js), with this
+          // hero/role's minor picks marked and the clicked minor highlighted.
+          const epop = (name, minor) => {
+            const m = fieldMinors(name) || (a.eternals.minorsByName && a.eternals.minorsByName[name.toLowerCase()]);
+            const picks = m ? [m.minor1, m.minor2].filter((x) => x && x.name) : [];
+            const field = picks.some((x) => x.field);
+            return ` data-epop="${esc(name)}"${minor ? ` data-epop-minor="${esc(minor)}"` : ''}${picks.length ? ` data-epop-picks="${esc(picks.map((x) => x.name).join('|'))}" data-epop-label="${field ? 'top pick' : 'sim pick'}" data-epop-note="${esc(field ? `the most-picked minors with ${name} for ${a.name} ${role} in ranked games this patch` : `the simulator's minor picks for ${a.name} ${role}`)}"` : ''}`;
+          };
           const minorsLine = (name, indent) => {
             const m = fieldMinors(name) || (a.eternals.minorsByName && a.eternals.minorsByName[name.toLowerCase()]);
             const mins = m ? [m.minor1, m.minor2].filter((x) => x && x.name) : [];
             if (!mins.length) return '';
             // Icon + name per pick so the minors read at a glance in draft.
-            const chip = (x) => `<span title="${x.field ? `picked in ${Math.round(x.share * 100)}% of these games · ${(x.wr * 100).toFixed(1)}% win rate over ${x.n.toLocaleString()}` : 'kit-math pick (no field sample yet)'}" style="display:inline-flex;gap:.3rem;align-items:center;white-space:nowrap"><img src="${IMG.blessing(x.name)}" alt="" style="width:22px;height:22px;border-radius:50%;object-fit:cover;background:var(--bg-3);flex:none;border:1px solid var(--border)" onerror="this.style.display='none'">${esc(x.name)}${x.field ? `<span style="color:var(--text-2);font-variant-numeric:tabular-nums">${Math.round(x.share * 100)}%</span>` : ''}</span>`;
+            const chip = (x) => `<span${epop(name, x.name)} title="${x.field ? `picked in ${Math.round(x.share * 100)}% of these games · ${(x.wr * 100).toFixed(1)}% win rate over ${x.n.toLocaleString()}` : 'kit-math pick (no field sample yet)'}" style="display:inline-flex;gap:.3rem;align-items:center;white-space:nowrap"><img src="${IMG.blessing(x.name)}" alt="" style="width:22px;height:22px;border-radius:50%;object-fit:cover;background:var(--bg-3);flex:none;border:1px solid var(--border)" onerror="this.style.display='none'">${esc(x.name)}${x.field ? `<span style="color:var(--text-2);font-variant-numeric:tabular-nums">${Math.round(x.share * 100)}%</span>` : ''}</span>`;
             return `<div style="display:flex;gap:.3rem .6rem;align-items:center;flex-wrap:wrap;font-size:.7rem;color:var(--text-1);margin:.25rem 0 0 ${indent}"><b style="color:var(--text-0)">Top minors:</b> ${mins.map(chip).join('')}</div>`;
           };
           const e0 = ets[0], wr0 = e0.w / e0.n, et0 = ETMAP && ETMAP[e0.name.toLowerCase()];
           const ai0 = REVIEWS && REVIEWS.eternals && REVIEWS.eternals[a.slug] && REVIEWS.eternals[a.slug][role] && REVIEWS.eternals[a.slug][role][e0.name];
           const lead = `
           <div style="display:flex;gap:.7rem;align-items:flex-start;padding:.5rem .6rem;background:var(--bg-2);border:1px solid var(--green);border-radius:10px;box-shadow:0 0 0 2px rgba(0,196,140,.1)">
-            <img src="${IMG.eternal(e0.name.toLowerCase())}" alt="" style="width:42px;height:42px;border-radius:50%;object-fit:cover;background:var(--bg-3);flex:none;box-shadow:0 0 0 2px var(--green)" onerror="this.style.visibility='hidden'">
+            <img${epop(e0.name)} src="${IMG.eternal(e0.name.toLowerCase())}" alt="" title="${esc(e0.name)} — tap for the full Eternal" style="width:42px;height:42px;border-radius:50%;object-fit:cover;background:var(--bg-3);flex:none;box-shadow:0 0 0 2px var(--green)" onerror="this.style.visibility='hidden'">
             <div style="min-width:0;flex:1">
               <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-                <span style="font-size:.94rem;font-weight:800;color:var(--green)">✓ ${esc(e0.name)}</span>
+                <span${epop(e0.name)} style="font-size:.94rem;font-weight:800;color:var(--green)">✓ ${esc(e0.name)}</span>
                 ${top && top.name.toLowerCase() === e0.name.toLowerCase() ? '<span style="font-size:.6rem;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">⚙ SIM PICK</span>' : ''}
                 <span title="raw ${(wr0 * 100).toFixed(1)}% — shown shrunk toward the role's pick-weighted mean" style="font-variant-numeric:tabular-nums;font-size:.86rem;font-weight:800;color:var(--green)">${(e0.shrunk * 100).toFixed(1)}%</span>
                 <span style="font-size:.7rem;color:var(--text-2)">${e0.n.toLocaleString()} games</span>
@@ -1494,12 +1503,12 @@ function renderHero(a, roleParam) {
             const pick1 = mb && mb.minor1 && mb.minor1.name, pick2 = mb && mb.minor2 && mb.minor2.name;
             const fieldPick = !!(mb && ((mb.minor1 && mb.minor1.field) || (mb.minor2 && mb.minor2.field)));
             const mark = fieldPick ? '★ ' : '⚙ ';
-            const slot = (opts, pick) => (opts || []).map((o) => `<div style="display:flex;gap:.35rem;align-items:flex-start;margin:.12rem 0;font-size:.66rem;color:${o.name === pick ? 'var(--accent)' : 'var(--text-2)'}"><img src="${IMG.blessing(o.name)}" alt="" style="width:18px;height:18px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;margin-top:.05rem;${o.name === pick ? 'box-shadow:0 0 0 1.5px var(--accent)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'"><span>${o.name === pick ? mark : ''}<b>${esc(o.name)}</b> — ${esc(o.desc)}</span></div>`).join('');
+            const slot = (opts, pick) => (opts || []).map((o) => `<div${epop(e.name, o.name)} style="display:flex;gap:.35rem;align-items:flex-start;margin:.12rem 0;font-size:.66rem;color:${o.name === pick ? 'var(--accent)' : 'var(--text-2)'}"><img src="${IMG.blessing(o.name)}" alt="" style="width:18px;height:18px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;margin-top:.05rem;${o.name === pick ? 'box-shadow:0 0 0 1.5px var(--accent)' : 'border:1px solid var(--border)'}" onerror="this.style.visibility='hidden'"><span>${o.name === pick ? mark : ''}<b>${esc(o.name)}</b> — ${esc(o.desc)}</span></div>`).join('');
             return `
             <div style="padding:.35rem 0;border-bottom:1px ${i === ets.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
               <div style="display:flex;gap:.6rem;align-items:center">
-                <img src="${IMG.eternal(e.name.toLowerCase())}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">
-                <span style="font-size:.84rem;font-weight:600">${esc(e.name)}</span>
+                <img${epop(e.name)} src="${IMG.eternal(e.name.toLowerCase())}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">
+                <span${epop(e.name)} style="font-size:.84rem;font-weight:600">${esc(e.name)}</span>
                 ${top && top.name.toLowerCase() === e.name.toLowerCase() ? '<span style="font-size:.6rem;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">⚙ SIM PICK</span>' : ''}
                 <span title="raw ${(wr * 100).toFixed(1)}% — shown shrunk toward the role's pick-weighted mean" style="font-variant-numeric:tabular-nums;font-size:.78rem;color:var(--text-1)">${(e.shrunk * 100).toFixed(1)}%</span>
                 <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
@@ -1519,8 +1528,8 @@ function renderHero(a, roleParam) {
             return `
             <div style="margin-top:.6rem;padding:.55rem .65rem;background:var(--bg-2);border:1px solid var(--border);border-radius:8px">
               <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-                <img src="${IMG.eternal(top.name.toLowerCase())}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;box-shadow:0 0 0 2px var(--accent)" onerror="this.style.visibility='hidden'">
-                <span style="font-size:.84rem;font-weight:800;color:var(--text-0)">${esc(top.name)}</span>
+                <img${epop(top.name)} src="${IMG.eternal(top.name.toLowerCase())}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;box-shadow:0 0 0 2px var(--accent)" onerror="this.style.visibility='hidden'">
+                <span${epop(top.name)} style="font-size:.84rem;font-weight:800;color:var(--text-0)">${esc(top.name)}</span>
                 <span style="font-size:.6rem;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">⚙ SIM PICK</span>
                 <span style="font-size:.68rem;color:var(--text-2)">the sim's pick — not in the field's list above</span>
               </div>
@@ -1543,8 +1552,8 @@ function renderHero(a, roleParam) {
             return `
             <div style="padding:.35rem 0;border-bottom:1px ${i === ets.length - 1 ? 'solid transparent' : 'dashed var(--border)'}">
               <div style="display:flex;gap:.6rem;align-items:center">
-                <img src="${IMG.eternal(e.name.toLowerCase())}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">
-                <span style="font-size:.84rem;font-weight:600">${esc(e.name)}</span>
+                <img${epop(e.name)} src="${IMG.eternal(e.name.toLowerCase())}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">
+                <span${epop(e.name)} style="font-size:.84rem;font-weight:600">${esc(e.name)}</span>
                 ${top && top.name.toLowerCase() === e.name.toLowerCase() ? '<span style="font-size:.6rem;font-weight:800;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">⚙ SIM PICK</span>' : ''}
                 <span title="raw ${(wr * 100).toFixed(1)}% — shown shrunk toward the role's pick-weighted mean" style="font-variant-numeric:tabular-nums;font-size:.78rem;color:var(--text-1)">${(e.shrunk * 100).toFixed(1)}%</span>
                 <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
