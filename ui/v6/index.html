@@ -221,11 +221,25 @@
   .pgrid .pl { font-size:.6875rem; font-weight:800; letter-spacing:0; color:var(--text-2); display:block; margin-bottom:.2rem; }
   ul.pchanges { margin:.6rem 0 0 1.1rem; font-size:.78rem; color:var(--text-1); }
   ul.pchanges li { margin:.25rem 0; }
-  .lvlorder { display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; margin-top:.2rem; }
-  .lvlpip { display:flex; align-items:center; gap:.4rem; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.22rem .6rem; font-size:.8rem; }
-  .lvlpip img { width:24px; height:24px; border-radius:6px; object-fit:cover; }
-  .lvlpip .num { font-size:.6875rem; font-weight:800; color:var(--accent-ink); }
-  .lvlarrow { color:var(--text-2); font-size:.9rem; }
+  /* leveling chart: label column + one column per hero level. Filled squares
+     carry the level number; empty ones are a faint tone step, not boxes. */
+  .lvsum { display:flex; flex-wrap:wrap; align-items:center; gap:.35rem .4rem; font-size:.82rem; color:var(--text-1); margin-bottom:.75rem; }
+  .lvsum b { color:var(--text-0); font-weight:600; }
+  .lvab { display:inline-flex; align-items:center; gap:.3rem; }
+  .lvab img { width:20px; height:20px; border-radius:5px; object-fit:cover; }
+  .lvarr { color:var(--text-2); }
+  .lvult { margin-left:.35rem; }
+  .lvchart { display:grid; gap:4px; }
+  .lvrow { display:grid; grid-template-columns:185px repeat(var(--lvn), minmax(0, 1fr)); gap:3px; align-items:center; }
+  .lvlab { display:flex; align-items:center; gap:.5rem; min-width:0; font-size:.8rem; color:var(--text-1); }
+  .lvic { flex:none; display:inline-flex; }
+  .lvic img { width:26px; height:26px; border-radius:6px; object-fit:cover; display:block; }
+  .lvkey { font-size:.6875rem; color:var(--text-2); flex:none; }
+  .lvname { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lvcell { height:26px; border-radius:5px; background:rgba(255,255,255,.035); display:flex; align-items:center; justify-content:center; font-size:.6875rem; font-weight:700; font-variant-numeric:tabular-nums; }
+  .lvcell.on { background:var(--accent); color:#fff; }
+  .lvcell.ult { background:var(--gold); color:#1a1405; }
+  .lvsrc { margin-top:.6rem; font-size:.6875rem; color:var(--text-2); }
   .abilchg { font-size:.6875rem; font-weight:800; border-radius:5px; padding:.03rem .35rem; border:1px solid; vertical-align:middle; }
   .abilchg.buff { color:var(--green); border-color:var(--green); }
   .abilchg.nerf { color:var(--red); border-color:var(--red); }
@@ -412,6 +426,12 @@
     .htab:active { background:var(--bg-2); }
     .hh-name { display:none; }
     .bstep { width:36px; height:36px; }
+    .lvrow { grid-template-columns:30px repeat(var(--lvn), minmax(0, 1fr)); gap:2px; }
+    .lvchart { gap:5px; }
+    .lvname, .lvlab .lvkey { display:none; }
+    .lvic img { width:24px; height:24px; }
+    .lvcell { height:26px; border-radius:4px; }
+    .lvsum { font-size:.8rem; }
   }
 
   /* ── meta board ── */
@@ -1743,6 +1763,8 @@ function renderHero(a, roleParam) {
 
     ${buildsCard(a, pageBand)}
 
+    <section class="card lvlcard" id="lvlCard" data-slug="${esc(a.slug)}" hidden></section>
+
     <section class="card">
       <h2>Matchups <span class="hint">vs the most-played ${esc(a.role)} you'll face · green = when you can win the fight</span></h2>
       ${(() => {
@@ -1793,6 +1815,7 @@ function renderHero(a, roleParam) {
       window.scrollTo({ top: 0 });
     };
   });
+  fillLevelChart(a);
   wireBuilds();
   // Page rank filter: remember the pick and redraw this lane, keeping the scroll.
   document.querySelectorAll('.pageband button[data-pageband]').forEach((b) => {
@@ -1871,23 +1894,57 @@ document.addEventListener('click', (ev) => {
 window.addEventListener('scroll', closeTip, { passive: true });
 
 let HEROES_RAW = null;
-let SKILLS = null, ATIPS = null, PATCHES = null;
-async function renderLearn(a) {
-  // Same field-evidence declaration renderHero makes: a hero with no field layer
-  // yet must not have her coach line labelled "field evidence".
-  const pend = (typeof PENDING === 'object' && PENDING) ? PENDING[a.slug] : null;
-  if (!HEROES_RAW) {
-    const [raw, sk, tp, pa] = await Promise.all([
-      getJson('../../data/catalog/heroes.json').catch(() => null),
-      getJson('../../data/aggregates/skill-orders.json').catch(() => null),
-      getJson('../../data/aggregates/ability-tips.json').catch(() => null),
-      getJson('../../data/game-data/hero-patch-state.json').catch(() => null),
-    ]);
+let SKILLS = null, ATIPS = null, PATCHES = null, KIT_LOAD = null;
+// Kit data for the Learn tab and the Game plan leveling chart, fetched once.
+function loadKitData() {
+  if (!KIT_LOAD) KIT_LOAD = Promise.all([
+    getJson('../../data/catalog/heroes.json').catch(() => null),
+    getJson('../../data/aggregates/skill-orders.json').catch(() => null),
+    getJson('../../data/aggregates/ability-tips.json').catch(() => null),
+    getJson('../../data/game-data/hero-patch-state.json').catch(() => null),
+  ]).then(([raw, sk, tp, pa]) => {
     HEROES_RAW = Array.isArray(raw) ? raw : raw?.heroes ?? [];
     SKILLS = sk?.heroes ?? {};
     ATIPS = tp?.heroes ?? {};
     PATCHES = pa?.heroes ?? {};
-  }
+  });
+  return KIT_LOAD;
+}
+// Leveling chart on the Game plan tab: the in-game recommended path as an
+// 18-level grid (one row per ability), so the order is readable mid-game
+// without leaving the build. Filled in after the page draws.
+async function fillLevelChart(a) {
+  await loadKitData();
+  const card = document.getElementById('lvlCard');
+  if (!card || card.dataset.slug !== a.slug) return; // navigated away meanwhile
+  const sk = SKILLS[a.slug];
+  if (!sk || !Array.isArray(sk.sequence) || !sk.sequence.length) return;
+  const hero = HEROES_RAW.find((h) => h.slug === a.slug);
+  const abil = new Map((hero?.abilities || []).map((ab) => [ab.key, ab]));
+  const keys = ['LMB', 'RMB', 'Q', 'E', 'R'].filter((k) => sk.sequence.includes(k));
+  const nameOf = (k) => abil.get(k)?.display_name || (sk.maxOrder || []).find((o) => o.key === k)?.name || k;
+  const icon = (k) => { const h = (abil.get(k)?.image || '').split('/').pop(); return h ? `<img loading="lazy" src="../img/abilities/${esc(h)}" alt="">` : ''; };
+  const n = sk.sequence.length;
+  // The summary doubles as the legend: icon + name teaches which icon is which
+  // ability, so the chart rows can stay icon-only on a phone.
+  const max = (sk.maxOrder || []).map((o) => `<span class="lvab">${icon(o.key)}<b>${esc(nameOf(o.key))}</b></span>`).join('<span class="lvarr">→</span>');
+  card.innerHTML = `
+      <h2>Leveling order</h2>
+      <div class="lvsum">${max ? `<span class="lvmax">Max</span>${max}` : ''}${sk.ultLevels?.length ? `<span class="lvult">ult at <b>${sk.ultLevels.join(' / ')}</b></span>` : ''}</div>
+      <div class="lvchart" style="--lvn:${n}" role="table" aria-label="Ability to level at each hero level">
+        ${keys.map((k) => `<div class="lvrow" role="row"><span class="lvlab" role="rowheader" title="${esc(nameOf(k))} (${esc(k)})"><span class="lvic">${icon(k)}</span><span class="lvname">${esc(nameOf(k))}</span><span class="lvkey">${esc(k)}</span></span>${sk.sequence.map((s, i) => s === k
+          ? `<span class="lvcell on${k === 'R' ? ' ult' : ''}" role="cell" aria-label="level ${i + 1}">${i + 1}</span>`
+          : '<span class="lvcell" role="cell"></span>').join('')}</div>`).join('')}
+      </div>
+      <div class="lvsrc">In-game recommended path · current patch</div>`;
+  card.hidden = false;
+  if (!$('#tabPlay')?.classList.contains('hidden')) buildSubnav();
+}
+async function renderLearn(a) {
+  // Same field-evidence declaration renderHero makes: a hero with no field layer
+  // yet must not have her coach line labelled "field evidence".
+  const pend = (typeof PENDING === 'object' && PENDING) ? PENDING[a.slug] : null;
+  await loadKitData();
   const hero = HEROES_RAW.find((h) => h.slug === a.slug);
   if (!hero) return '<section class="card"><h2>Learn the hero</h2><div class="muted">no kit data found</div></section>';
   const ORDER = { LMB: 0, RMB: 1, Q: 2, E: 3, R: 4 };
@@ -1916,16 +1973,6 @@ async function renderLearn(a) {
       ${(patch.changes || []).length ? `<ul class="pchanges">${patch.changes.map((c) => `<li>${esc(c)}</li>`).join('')}</ul>` : ''}
     </section>` : ''}
 
-    ${sk && sk.maxOrder?.length ? `
-    <section class="card">
-      <h2>Leveling order <span class="hint">in-game recommended path</span></h2>
-      <div style="font-size:.78rem;color:var(--text-1);margin-bottom:.5rem">Put your early points into these abilities in this order${sk.ultLevels?.length ? ` — and take your ultimate at <b>${sk.ultLevels.join(' / ')}</b>` : ''}.</div>
-      <div class="lvlorder">${sk.maxOrder.map((o, i) => {
-        const ab = abilities.find((x) => x.key === o.key);
-        const hash = ab ? (ab.image || '').split('/').pop() : '';
-        return `${i ? '<span class="lvlarrow">→</span>' : ''}<span class="lvlpip"><span class="num">${i + 1}</span>${hash ? `<img loading="lazy" src="../img/abilities/${esc(hash)}" alt="">` : ''}${esc(o.name)}</span>`;
-      }).join('')}</div>
-    </section>` : ''}
 
     <section class="card">
       <h2>The kit <span class="hint">catalog ability data, patch ${esc(INDEX.catalogPatch || 'unknown')}</span></h2>
