@@ -893,7 +893,7 @@ function pgReview(f) {
         <div class="lrow"><span class="ltag">build</span>${bits.join(' · ')}</div>
         ${br?.build ? `<details class="whyd"><summary>why · what this build gained vs gave up</summary><div>${esc(br.build)}</div></details>` : ''}
         ${ranLine(p.loadout)}
-        <div class="lrow" data-et-slug="${esc(p.heroSlug)}" data-et-role="${esc(p.role)}" data-et-opp="${lane ? esc(lane.theirSlug) : ''}" data-et-ran="${esc(p.loadout?.eternal || '')}"><span class="ltag">engine pick</span><span style="opacity:.6">loading the engine's pick…</span></div>
+        <div class="lrow" data-et-slug="${esc(p.heroSlug)}" data-et-role="${esc(p.role)}" data-et-opp="${lane ? esc(lane.theirSlug) : ''}" data-et-ran="${esc(p.loadout?.eternal || '')}"><span class="ltag">field pick</span><span style="opacity:.6">loading the field's pick…</span></div>
         ${br?.eternal ? `<details class="whyd"><summary>why · why this loadout fits the matchup</summary><div>${esc(br.eternal)}</div></details>` : ''}
         ${(() => { const m = co && co.microReads ? co.microReads[p.pid] : null; if (!m || !(m.keep || m.change || m.check)) return ''; return `<div class="kcc">
           ${m.lastCheck && m.lastCheck.text ? `<div class="lrow"><span class="ltag" style="color:${m.lastCheck.result === 'held' ? 'var(--green)' : m.lastCheck.result === 'missed' ? 'var(--red)' : 'var(--text-2)'}">last check · ${esc(m.lastCheck.result || '')}</span>${esc(m.lastCheck.text)}${m.lastCheck.receipt ? ` <span style="color:var(--text-2)">(${esc(m.lastCheck.receipt)})</span>` : ''}</div>` : ''}
@@ -907,7 +907,7 @@ function pgReview(f) {
     </div>`;
   };
   const cb = f.counterBuild;
-  const lobby = card(`${eyebrow('The lobby · squad &amp; randoms', 'build reads from the match; recorded loadouts where available; engine picks are separate simulator suggestions · THEORY')}
+  const lobby = card(`${eyebrow('The lobby · squad &amp; randoms', 'build reads from the match; recorded loadouts where available; field picks are this patch’s highest win rate with enough ranked games')}
     ${cb && (cb.notes || []).length ? `<div class="bverdict">${cb.notes.slice(0, 2).map(esc).join(' ')}</div>` : ''}
     ${us.map(lobbyRow).join('')}
     `);  // draftNote (role-fit "queued off a bottom-two lane") is preference coaching the squad rule bans · not rendered (coach audit 2026-09-21)
@@ -1000,8 +1000,8 @@ function pgReview(f) {
   return head + moments + deepDive + coachEvidence + timeline + worked + lobby + deep;
 }
 
-// The lobby's ETERNAL line joins the per-hero artifact (engine loadout + the
-// matchup item swap vs the actual lane opponent). Lazy + cached · artifacts are
+// The lobby's ETERNAL line joins the per-hero artifact (the field pick + the
+// experimental sim's matchup item swap vs the actual lane opponent). Lazy + cached · artifacts are
 // only fetched for the five heroes on screen, after the review renders.
 const ARTCACHE = {};
 async function fillEternals() {
@@ -1012,19 +1012,18 @@ async function fillEternals() {
       const d = await ARTCACHE[slug];
       let src = d;
       for (const r of d.roles || []) if (r.role === role) src = r;
-      const lo = ((src.eternals || d.eternals) || {}).loadout;
+      // The field's clear winner (artifact fieldPick: highest win rate with
+      // enough ranked games this patch), never the kit-math sim's Eternal —
+      // the sim is experimental (maintainer 2026-10-25). Covers supports too.
+      const fp = src.fieldPick || null;
       const mu = (src.matchups || d.matchups || []).find((m) => m.enemySlug === opp);
       const cs = mu && mu.counterSwap;
       const oppName = mu ? mu.enemy : opp;
-      // Support loadouts: the engine models only damage majors (Vesh/Demiurge/
-      // Thraex...), the support majors (Exarch, Aion, Lotus, Marrow, Nihil,
-      // Weald, Pilow, Satariel) are unmodeled · so a Vesh row on an enchanter is
-      // the model's blind spot, not a recommendation (coach audit 2026-09-21).
       const ran = el.dataset.etRan;
-      if (role === 'support') { el.innerHTML = `<span class="ltag">engine pick</span><span style="color:var(--text-2)">support loadouts are not modeled by the engine (the field runs Exarch on healers and shielders, Krix on tank supports)</span>`; continue; }
-      const epicks = lo && lo.major ? [lo.minor1, lo.minor2].filter(Boolean).map((m) => m.name) : [];
-      const eep = (m) => epopAttr(lo.major.name, m, epicks, 'engine pick', "the engine's minor picks for this hero and role");
-      if (lo && lo.major) el.innerHTML = `<span class="ltag">engine pick</span><b${eep()}>${esc(lo.major.name)}</b>${lo.minor1 ? ` + <span${eep(lo.minor1.name)}>${esc(lo.minor1.name)}</span>` : ''}${lo.minor2 ? ` + <span${eep(lo.minor2.name)}>${esc(lo.minor2.name)}</span>` : ''}${ran ? (ran === lo.major.name ? ' <span style="color:var(--green)">(same Eternal you ran)</span>' : ` <span style="color:var(--text-2)">(you ran ${esc(ran)})</span>`) : ''}${cs && typeof cs.in === 'string' && cs.out ? ` <span class="swap">· matchup swap vs ${esc(oppName)}: ${esc(cs.in)} in for ${esc(cs.out)}</span>` : ''}`;
+      const et = fp && fp.eternal;
+      const fpicks = et && fp.minors ? [fp.minors.minor1, fp.minors.minor2] : [];
+      const fep = (m) => epopAttr(et.name, m, fpicks, 'field pick', "the minor pair the ranked field wins most with for this hero and role");
+      if (et) el.innerHTML = `<span class="ltag">field pick</span><b${fep()}>${esc(et.name)}</b>${fp.minors ? ` + <span${fep(fp.minors.minor1)}>${esc(fp.minors.minor1)}</span> + <span${fep(fp.minors.minor2)}>${esc(fp.minors.minor2)}</span>` : ''} <span style="color:var(--text-2)">${et.wr}% over ${et.n.toLocaleString()} ranked games</span>${ran ? (ran === et.name ? ' <span style="color:var(--green)">(same Eternal you ran)</span>' : ` <span style="color:var(--text-2)">(you ran ${esc(ran)})</span>`) : ''}${cs && typeof cs.in === 'string' && cs.out ? ` <span class="swap" title="kit-math sim · experimental, not a recommendation">· experimental sim vs ${esc(oppName)}: ${esc(cs.in)} in for ${esc(cs.out)}</span>` : ''}`;
       else el.remove();
     } catch { el.remove(); }
   }
