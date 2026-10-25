@@ -1182,6 +1182,14 @@ function buildsCard(a) {
   // hero's builds across all roles. Say so instead of passing them as lane data.
   const allRolesNote = a.metaBuildsSource === 'all-roles' && metas.length
     ? `<div class="mb-why" style="color:var(--gold);margin:0 0 .5rem">No ${esc(a.role)} build data for ${esc(a.name)} yet — these are the most-played builds across all of ${esc(a.name)}'s roles.</div>` : '';
+  // Rank band + baseline: builds come from Gold+ games (rank at match time) once
+  // the lane has enough of them, else all ranks. Each build is read against the
+  // hero's own win rate in this role and band, not a number from other games.
+  const gold = a.metaBuildsBand === 'gold+';
+  const base = a.metaBuildsBaseline && a.metaBuildsBaseline.n ? a.metaBuildsBaseline : null;
+  const baseWr = base ? base.w / base.n : null;
+  const bandNote = metas.length && (gold || base)
+    ? `<div class="mb-why" style="color:var(--text-2);margin:0 0 .5rem">${gold ? '<b style="color:var(--gold)">Gold+ games</b> (rank in that game)' : 'All ranks'}${base ? ` · ${esc(a.name)} wins ${(baseWr * 100).toFixed(1)}% as ${esc(a.role)} here (${base.n.toLocaleString()} games)` : ''}</div>` : '';
 
   // Tab strip: one per meta build (title), then the kit-math build (⚙).
   // Each option shows its win rate and sample under its name (order already says
@@ -1207,6 +1215,7 @@ function buildsCard(a) {
         <div class="mb-items" style="flex-wrap:wrap;margin-bottom:.5rem">${rail}</div>
         <div style="display:flex;align-items:center;gap:.6rem">
           <span class="bwr ${wrBand(m.shrunkWr)}">${(m.shrunkWr * 100).toFixed(1)}%</span>
+          ${baseWr != null ? `<span class="mb-n" style="${m.shrunkWr >= baseWr ? 'color:var(--green)' : 'color:var(--text-2)'}">${m.shrunkWr >= baseWr ? '+' : ''}${((m.shrunkWr - baseWr) * 100).toFixed(1)} vs hero</span>` : ''}
           <span class="mb-n">${m.n.toLocaleString()} games${m.shareOfCores ? ` · ${Math.round(m.shareOfCores * 100)}% of tracked builds` : ''}${m.anyOrder ? ' · item set, purchase orders pooled' : m.otherOrderGames ? ` · ${m.otherOrderGames.toLocaleString()} bought these in another order` : ''}</span>
         </div>
         ${explain}
@@ -1265,6 +1274,7 @@ function buildsCard(a) {
         </div>` : ''}
       </div>
       ${allRolesNote}
+      ${bandNote}
       <div class="btabs">${tabs}</div>
       ${metas.map(metaBody).join('')}
       ${simBody}
@@ -1663,16 +1673,18 @@ function renderHero(a, roleParam) {
           <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.3rem 0 0 2.1rem">Best win rate as ${esc(role)} — ${(c0.w / c0.n * 100).toFixed(1)}% over ${c0.n.toLocaleString()} games.</div>`;
         })()}
         ${(() => {
-          // ── HIGH-RANK (Gold+) view ── the same counts for players Gold or higher
-          // on the ranked ladder (predgg-augments goldPlus). Pick shares always
-          // show; "Gold+ wins more with X" only when X beats our pick INSIDE the
-          // band with 50+ games each and p < .05 (two-proportion z). Current rank,
-          // not rank at match time, and winners climb, so only within-band
-          // comparisons are made — never Gold+ vs all ranks.
+          // ── HIGH-RANK (Gold+) view ── the same counts for players who were Gold
+          // or higher IN THAT GAME (predgg-augments goldPlus, rank at match time).
+          // Older files counted by the ladder's CURRENT rank (winners climb, so it
+          // read high); those are not shown. Win rates are pulled toward the
+          // hero's Gold+ role win rate by PRIOR_GAMES, so a thin option sits near
+          // the baseline until its games say otherwise. "Gold+ wins more with X"
+          // needs MIN games each and p < .05 (two-proportion z) on raw counts.
           const G = cell.goldPlus;
-          if (!G || !G.games) return '';
+          if (!G || !G.games || AUGS.goldBasis !== 'match-time') return '';
           const z = (x, y) => { const p1 = x.w / x.n, p2 = y.w / y.n, p = (x.w + y.w) / (x.n + y.n); const se = Math.sqrt(p * (1 - p) * (1 / x.n + 1 / y.n)); return se ? (p1 - p2) / se : 0; };
-          const MIN = 50;
+          const MIN = 20, PRIOR_GAMES = 50, gBase = G.wins / G.games;
+          const shrunk = (x) => (x.w + PRIOR_GAMES * gBase) / (x.n + PRIOR_GAMES);
           const row = (label, list, ourKey, keyOf, nameOf) => {
             if (!list || !list.length) return '';
             const tot = list.reduce((t, x) => t + x.n, 0) || 1;
@@ -1685,7 +1697,7 @@ function renderHero(a, roleParam) {
             return `<div style="padding:.3rem 0;border-bottom:1px dashed var(--border)">
               <div style="display:flex;gap:.5rem;align-items:baseline;flex-wrap:wrap;font-size:.8rem">
                 <b style="font-size:.64rem;letter-spacing:.06em;color:var(--text-2);min-width:4.6rem">${label}</b>
-                <span>Gold+ run <b>${esc(nameOf(top))}</b> <span style="color:var(--text-2)">${Math.round(top.n / tot * 100)}% of picks · ${(top.w / top.n * 100).toFixed(1)}% win · ${top.n} games</span></span>
+                <span>Gold+ run <b>${esc(nameOf(top))}</b> <span style="color:var(--text-2)">${Math.round(top.n / tot * 100)}% of picks · ${(shrunk(top) * 100).toFixed(1)}% win · ${top.n} games</span></span>
                 <span style="margin-left:auto;font-size:.7rem;${same ? 'color:var(--green)' : 'color:var(--text-2)'}">${same ? '✓ same as our pick' : ours ? `our pick ${esc(nameOf(ours))}: ${Math.round(ours.n / tot * 100)}% of Gold+ picks` : ourKey ? 'our pick: not seen in Gold+' : ''}</span>
               </div>${flag}</div>`;
           };
@@ -1694,8 +1706,8 @@ function renderHero(a, roleParam) {
           const crs0 = (cell.crests || []).filter((c) => c.n >= floor).sort((x, y) => (y.w / y.n) - (x.w / x.n))[0];
           const since = String(AUGS.goldFrom || '').slice(0, 10);
           return `
-          <div style="font-size:.74rem;color:var(--text-2);margin:.8rem 0 .3rem" title="Players Gold or higher on the ranked ladder (their current rank, not their rank when the game was played). Players who win climb, so Gold+ win rates run high overall: only compare options within Gold+.">
-            <b style="letter-spacing:.06em">HIGH-RANK (GOLD+)</b> · ${G.games.toLocaleString()} ${esc(role)} games${since ? ` since ${esc(since)}` : ''} · what Gold+ players actually pick
+          <div style="font-size:.74rem;color:var(--text-2);margin:.8rem 0 .3rem" title="Players who were Gold or higher in that game (their rank when it was played). Win rates are pulled toward ${esc(a.name)}'s Gold+ ${esc(role)} win rate until an option has enough games of its own.">
+            <b style="letter-spacing:.06em">HIGH-RANK (GOLD+)</b> · ${G.games.toLocaleString()} ${esc(role)} games${since ? ` since ${esc(since)}` : ''} · ${esc(a.name)} wins ${(gBase * 100).toFixed(1)}% here${cell.games ? ` (${(cell.wins / cell.games * 100).toFixed(1)}% all ranks)` : ''} · what Gold+ players actually pick
           </div>
           ${row('AUGMENT', G.augments, ourAug, (x) => x.id, (x) => x.name)}
           ${row('ETERNAL', G.eternals, ourEt, (x) => x.name, (x) => x.name)}

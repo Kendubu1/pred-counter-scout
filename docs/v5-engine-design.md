@@ -347,6 +347,18 @@ remain as fast canaries but cannot detect staleness on their own: one pinned
   accumulated daily inside the current patch into perk-stream.json and written
   to predgg-augments.json. Minor-slot and minor-pair counts are new; the hero
   page's top minors are field picks wherever the window has them.
+- **Gold+ by rank at match time (Oct 25).** The first Gold+ band used the
+  ranked ladder's CURRENT rank; winners climb, so it read ~+3.2 points high
+  (median across 90 hero-role cells) and could not sit beside the all-ranks
+  hero number. Stream rows carry no rank, but their match and player ids are
+  pred.gg uuids, and GraphQL `match(by: { id })` returns each player's rating
+  in that game, so perks now tags rows by it. Meta builds come from Gold+ once
+  a lane's most-played Gold+ build has 100+ games, otherwise all ranks; either
+  way the artifact carries `metaBuildsBand` and `metaBuildsBaseline` (the
+  hero's win rate in that role and band) and the page reads each build against
+  that baseline. The Gold+ perk panel pulls each option toward the Gold+ role
+  win rate with a 50-game prior and flags a better pick at 20+ games each and
+  p < .05, instead of hiding everything under 50 games. Forward-only: no backfill.
 
 - **Calibrated (Oct 15).** First practice-mode session: mitigation K=100,
   ability haste, crit 1.65 (was 1.75) and bonus-only scaling verified; attack

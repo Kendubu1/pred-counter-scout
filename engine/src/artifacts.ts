@@ -20,9 +20,48 @@ import type { HeroKit, Item } from './types.js';
 
 const ARTIFACTS_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
+type CoreRow = { core: string[]; coreSlugs: (string | null)[]; n: number; w: number; anyOrder?: boolean };
+type NW = { n: number; w: number };
 interface PredggBuilds {
-  heroes: Record<string, { core: string[]; coreSlugs: (string | null)[]; n: number; w: number; anyOrder?: boolean }[]>;
-  byRole?: Record<string, Record<string, { core: string[]; coreSlugs: (string | null)[]; n: number; w: number; anyOrder?: boolean }[]>>;
+  heroes: Record<string, CoreRow[]>;
+  byRole?: Record<string, Record<string, CoreRow[]>>;
+  /** 'match-time' = Gold+ by the rank each player held in that game. Gold+
+   *  rows on any other basis (the retired ladder proxy) are never used. */
+  goldBasis?: 'match-time';
+  goldByRole?: Record<string, Record<string, CoreRow[]>>;
+  baselineByRole?: Record<string, Record<string, { all: NW; gold: NW | null }>>;
+}
+
+// A lane's builds come from Gold+ games once its most-played Gold+ build has
+// this many games (the page's own floor for leading with a build); until then
+// all ranks. Each lane switches on its own as the Gold+ sample grows.
+export const MIN_GOLD_BUILD_GAMES = 100;
+
+// One build per item SET: the same three items bought in another order used
+// to ship as a second, near-identical build (Belica showed Combustion > Noxia
+// > Wraith Leggings and Combustion > Wraith Leggings > Noxia as two tabs).
+// Orders are pooled into the set; the most-played order is the one shown and
+// otherOrderGames says how many games bought it differently. Sorted by games,
+// so build 1 is what the lane actually plays.
+export function poolBySet(rows: CoreRow[]): (CoreRow & { otherOrderGames: number })[] {
+  const bySet = new Map<string, CoreRow & { otherOrderGames: number }>();
+  for (const c of rows) {
+    const key = c.coreSlugs.map((s, i) => s ?? c.core[i]).slice().sort().join('|');
+    const prev = bySet.get(key);
+    if (!prev) { bySet.set(key, { ...c, otherOrderGames: 0 }); continue; }
+    const keepPrev = prev.n >= c.n;
+    const head = keepPrev ? prev : { ...c, otherOrderGames: 0 };
+    bySet.set(key, { ...head, n: prev.n + c.n, w: prev.w + c.w, otherOrderGames: prev.otherOrderGames + (keepPrev ? c.n : prev.n - prev.otherOrderGames) });
+  }
+  return [...bySet.values()].sort((a, b) => b.n - a.n);
+}
+
+/** Which rank band a lane's builds come from, and the hero-role win rate in that band. */
+export function pickBuildBand(pg: PredggBuilds | null, slug: string, role: string): { band: 'gold+' | 'all'; rows: CoreRow[] | undefined; baseline: NW | null } {
+  const gold = pg?.goldBasis === 'match-time' ? pg.goldByRole?.[slug]?.[role] : undefined;
+  const goldBase = pg?.baselineByRole?.[slug]?.[role]?.gold ?? null;
+  if (gold && goldBase && (poolBySet(gold)[0]?.n ?? 0) >= MIN_GOLD_BUILD_GAMES) return { band: 'gold+', rows: gold, baseline: goldBase };
+  return { band: 'all', rows: pg?.byRole?.[slug]?.[role], baseline: pg?.baselineByRole?.[slug]?.[role]?.all ?? null };
 }
 let predggBuildsCache: PredggBuilds | null | undefined;
 function loadPredggBuilds(): PredggBuilds | null {
@@ -159,6 +198,10 @@ const RoleView = z.object({
     honestAbsence: z.string().nullable(),
   }),
   metaBuildsSource: z.enum(['role', 'all-roles']).optional(),
+  /** Rank band the meta builds were counted in ('gold+' = Gold or higher at match time). */
+  metaBuildsBand: z.enum(['gold+', 'all']).optional(),
+  /** The hero's win rate in this role and band: what each build's win rate is read against. */
+  metaBuildsBaseline: z.object({ n: z.number(), w: z.number() }).nullable().optional(),
   metaBuilds: z.array(z.object({
     anyOrder: z.boolean().optional(),
     otherOrderGames: z.number().optional(),
@@ -622,28 +665,17 @@ function buildRoleView(
   // Prefer this lane's own field cores (so a flex hero shows the build for the
   // role you're viewing, e.g. support Argus gets tank-support cores, not his
   // midlane mage cores); fall back to hero-wide evidence when a role has none.
+  // Gold+ (rank at match time) once the lane has enough Gold+ games, else all ranks.
   const pgBuilds = loadPredggBuilds();
-  const roleEvidence = pgBuilds?.byRole?.[kit.slug]?.[role];
+  const pick = pickBuildBand(pgBuilds, kit.slug, role);
+  const roleEvidence = pick.rows;
   const rawEvidence = roleEvidence ?? pgBuilds?.heroes[kit.slug] ?? [];
+  const metaBuildsBand = roleEvidence ? pick.band : 'all';
+  const metaBuildsBaseline = roleEvidence && pick.baseline ? { n: pick.baseline.n, w: pick.baseline.w } : null;
   // Said out loud on the page: an off-role view showing the hero's all-roles
   // builds (Adele jungle showed her support cores) must not pass as role data.
   const metaBuildsSource: 'role' | 'all-roles' = roleEvidence ? 'role' : 'all-roles';
-  // One build per item SET: the same three items bought in another order used
-  // to ship as a second, near-identical build (Belica showed Combustion > Noxia
-  // > Wraith Leggings and Combustion > Wraith Leggings > Noxia as two tabs).
-  // Orders are pooled into the set; the most-played order is the one shown and
-  // otherOrderGames says how many games bought it differently. Sorted by games,
-  // so build 1 is what the lane actually plays.
-  const bySet = new Map<string, (typeof rawEvidence)[number] & { otherOrderGames: number }>();
-  for (const c of rawEvidence) {
-    const key = c.coreSlugs.map((s, i) => s ?? c.core[i]).slice().sort().join('|');
-    const prev = bySet.get(key);
-    if (!prev) { bySet.set(key, { ...c, otherOrderGames: 0 }); continue; }
-    const keepPrev = prev.n >= c.n;
-    const head = keepPrev ? prev : { ...c, otherOrderGames: 0 };
-    bySet.set(key, { ...head, n: prev.n + c.n, w: prev.w + c.w, otherOrderGames: prev.otherOrderGames + (keepPrev ? c.n : prev.n - prev.otherOrderGames) });
-  }
-  const evidence = [...bySet.values()].sort((a, b) => b.n - a.n);
+  const evidence = poolBySet(rawEvidence);
   const coreGamesTotal = evidence.reduce((s, c) => s + c.n, 0);
   const cores = evidence.slice(0, 5);
   const coreCells = cores.map((c) => ({ n: c.n, w: c.w }));
@@ -823,7 +855,7 @@ function buildRoleView(
       honestAbsence: candidates.length ? null : 'no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)',
     },
     metaBuilds,
-    ...(metaBuilds.length ? { metaBuildsSource } : {}),
+    ...(metaBuilds.length ? { metaBuildsSource, metaBuildsBand, metaBuildsBaseline } : {}),
     stages: computeStages(kit, ordered, spikes, role, pool, cal),
     matchups,
     laneSteer: laneSteerFor(kit, role, pool, cal, top.items),

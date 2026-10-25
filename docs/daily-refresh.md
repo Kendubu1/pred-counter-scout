@@ -86,11 +86,18 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    committed cursor in data/aggregates/perk-stream.json (~1,000 requests a day;
    a new patch starts a fresh window). Rewrites predgg-augments.json and
    predgg-builds.json (core builds from each player's purchase order).
-   Since 2026-10-25 perks also pages the ranked ladder first (~45 GraphQL
-   calls) to tag Gold+ players: every hero-role cell keeps a `gold` sub-count,
-   shipped as `goldPlus` in predgg-augments.json and `goldByRole` cores in
-   predgg-builds.json, and shown as the hero page's HIGH-RANK (GOLD+) line.
-   It is CURRENT rank, not rank at match time; compare options within the band.
+   Gold+ is tagged by rank AT MATCH TIME: each page's ranked matches go to
+   one aliased GraphQL `match(by: { id })` call (src/ingest/match-rank.ts,
+   ~0.7s a page, inside the 2s stream delay) for the rank every player held in
+   that game. Every hero-role cell keeps a `gold` sub-count, shipped as
+   `goldPlus` in predgg-augments.json (20+ games; its games/wins are the
+   hero-role Gold+ baseline) and `goldByRole` cores + `baselineByRole` in
+   predgg-builds.json (`goldBasis: "match-time"`). The first run after this
+   change drops the one day of ladder-basis (current-rank) Gold+ counts and
+   restarts `goldFrom`. A lane's meta builds switch to Gold+ on their own once
+   its most-played Gold+ build reaches 100 games (MIN_GOLD_BUILD_GAMES in
+   src/artifacts.ts); there is no backfill, so expect lanes to flip over the
+   following weeks, popular ones first.
    Then `npm run aggregate && npm run matchups:feed` — the pred.gg match samples
    (gold curves + item play rates; same-role head-to-head lanes, resumed
    incrementally inside the current patch family). Then `npm run checkpoints`

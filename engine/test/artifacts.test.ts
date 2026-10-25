@@ -96,6 +96,8 @@ describe('hero artifacts (Concept A engine stage)', () => {
         for (const m of mb) for (const it of m.items) if (/[a-z][A-Z]/.test(it.name)) bad.push(`${f}/${v.role}: internal item name ${it.name}`);
         // An off-role view falling back to all-roles builds must say so.
         if (mb.length && !['role', 'all-roles'].includes(v.metaBuildsSource)) bad.push(`${f}/${v.role}: metaBuildsSource missing`);
+        // Gold+ builds must carry the Gold+ baseline they are read against.
+        if (v.metaBuildsBand === 'gold+' && !v.metaBuildsBaseline?.n) bad.push(`${f}/${v.role}: Gold+ builds without a Gold+ baseline`);
       }
     }
     expect(bad).toEqual([]);
