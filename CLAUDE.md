@@ -115,6 +115,10 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   Eternals, their minors, augments, and every ability icon data/catalog links;
   needs PREDGG creds; skip-if-exists, so it only fetches what the repo lacks —
   run after any catalog change),
+  `npm run standouts` (zero-API: hero-games on EITHER team that far out-played that
+  hero-role norm in our squad films, with build/Eternal/augment, matchup and team
+  context, a verdict build/team/matchup/player, within-squad loadout trends and a
+  saved-builds library; rerun after new films),
   `npm run postgame:loadout` (what each player RAN in every reviewed game —
   augment, Eternal, minors, crest — looked up per film in the same public match
   stream by match id; idempotent, `-- --all` re-decodes; part of the coach job),
