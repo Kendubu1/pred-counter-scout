@@ -5166,3 +5166,5 @@ The latest three-stack 0b5db31c was indexed without coaching while watch-state a
 The worker subsequently committed an unreviewed draft while the manual repair was running, confirming delay rather than a proven crash. Archived that concurrent draft; its non-coaching match facts match the manual review. Publish with an expected-head check to preserve concurrent work.
 
 2026-10-22: Bullet preset v8 keeps two short playerBullets per ally, with detailed builds separate. Older paragraph reviews still render. The latest previous review is preserved in the v7 snapshot. Every bullet requires independent grounding review.
+
+2026-10-25: Most banned board (npm run bans -> npm run ban-board -> ui/v6/bans.html + homepage strip). Rank-filtered matchesBanned follows the rank of the player in the filtered ROLE slot, so it differs ~1-3% by role (unfiltered by rank it is identical across roles, the true count). Take the mean over the five roles per band. Sanity gate: league bans per match ~4 in every band (4.06 / 4.07 / 4.05 / 4.00 on 1.17). New files in data/artifacts/ must be added to the hero-roster exclusion list in engine/test/artifacts.test.ts.
