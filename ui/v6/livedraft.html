@@ -172,6 +172,8 @@
 </div></div>
 
 <script>
+// Lane mark placeholder; icons.js fills it (also after async renders).
+const laneIcon = (r) => `<span class="lane-ic" data-bic="lane-${r}" aria-hidden="true"></span>`;
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
 const IMG = (s) => `../img/heroes/${s}.webp`;
@@ -251,7 +253,7 @@ function laneRow(lane) {
       <a class="ld-full" href="index.html?hero=${esc(st.enemy)}">Full counter breakdown for ${esc(nameOf(st.enemy))} →</a>`;
   }
   return `<div class="ld-row" data-row="${lane}">
-    <div class="ld-head">${esc(LANE_LABELS[lane])}${guess}</div>
+    <div class="ld-head">${laneIcon(lane)}${esc(LANE_LABELS[lane])}${guess}</div>
     <div class="ld-matchup">
       <div class="ld-side"><span class="ld-side-lbl enemy">Enemy</span>${slotHtml(lane, 'enemy')}${st.enemy ? `<span class="ld-name">${esc(nameOf(st.enemy))}</span>` : ''}</div>
       <span class="ld-vs">VS</span>
@@ -385,7 +387,7 @@ function openMove(fromLane) {
   const slug = state[fromLane].enemy;
   $('#mTitle').textContent = `Move ${nameOf(slug)} to which lane?`;
   $('#msearchWrap').style.display = 'none'; $('#mRoles').style.display = 'none';
-  $('#mGrid').innerHTML = LANES.map((l) => `<button class="mh" data-lane="${l}"><span>${LANE_LABELS[l]}${state[l].enemy && l !== fromLane ? ' ⇄' : ''}</span></button>`).join('');
+  $('#mGrid').innerHTML = LANES.map((l) => `<button class="mh" data-lane="${l}"><div style="font-size:1.3rem;color:var(--text-1);margin-bottom:.15rem">${laneIcon(l)}</div><span>${LANE_LABELS[l]}${state[l].enemy && l !== fromLane ? ' ⇄' : ''}</span></button>`).join('');
   $('#mGrid').querySelectorAll('[data-lane]').forEach((b) => b.onclick = () => {
     const to = b.dataset.lane;
     if (to !== fromLane) { const tmp = state[to].enemy; state[to].enemy = slug; state[fromLane].enemy = tmp; }

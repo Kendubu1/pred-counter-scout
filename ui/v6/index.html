@@ -73,6 +73,7 @@
     background:var(--bg-1); color:var(--text-1); border:1px solid var(--border);
     border-radius:99px; padding:.28rem .85rem; font-size:.82rem; text-transform:capitalize;
   }
+  .rolebar button, .seg-roles button { display:inline-flex; align-items:center; justify-content:center; gap:.4rem; }
   .rolebar button.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
   /* ── 3-step "how it works" strip ── */
   /* slim one-line patch strip (replaced the multi-bullet endcard) */
@@ -524,6 +525,8 @@
 <script defer src="item-popup.js"></script>
 <script defer src="eternal-popup.js"></script>
 <script>
+// Lane mark placeholder; icons.js fills it (also after async renders).
+const laneIcon = (r) => `<span class="lane-ic" data-bic="lane-${r}" aria-hidden="true"></span>`;
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // Meta score 0-100 -> green (high) through yellow to red (low), so the number's
@@ -690,7 +693,7 @@ function buildSubnav() {
 /* ── landing ── */
 function renderRolebar() {
   $('#rolebar').innerHTML = ROLES.map((r) =>
-    `<button data-r="${r}" class="${r === roleFilter ? 'active' : ''}">${r === 'all' ? 'All roles' : r}</button>`).join('');
+    `<button data-r="${r}" class="${r === roleFilter ? 'active' : ''}">${r === 'all' ? 'All roles' : laneIcon(r) + r}</button>`).join('');
   document.querySelectorAll('#rolebar button').forEach((b) => {
     b.onclick = () => { roleFilter = b.dataset.r; laneEnemy = null; renderRolebar(); renderGrid(); renderLaneDetail(); };
   });
@@ -1002,7 +1005,7 @@ function renderMetaboard() {
     <div class="lanes">
       ${Object.keys(LANE_LABELS).map((role) => `
         <div class="lane">
-          <h3 class="lane-go" data-lane="${role}" title="Open the ${esc(LANE_LABELS[role])} lane room">${LANE_LABELS[role]} <span style="color:var(--text-2)">→</span></h3>
+          <h3 class="lane-go" data-lane="${role}" title="Open the ${esc(LANE_LABELS[role])} lane room">${laneIcon(role)} ${LANE_LABELS[role]} <span style="color:var(--text-2)">→</span></h3>
           ${[...(boardRoles[role] || [])].filter((h) => !metaBigOnly || h.games >= minSample).sort((a, b) => b.shrunkWr - a.shrunkWr).slice(0, 5).map((h, i) => `
             <div class="mp" data-slug="${h.slug}" data-role="${role}" title="${esc(h.name)}: ${h.games} ${role} games, ${(h.shrunkWr * 100).toFixed(1)}% shrunk winrate, meta score ${(h.metaScore * 100).toFixed(0)}${h.badge ? ' — ' + esc(h.badge) : ''}">
               <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
@@ -1343,7 +1346,7 @@ function renderHero(a, roleParam) {
       </div>
       ${roleViews.length > 1 ? `
       <div class="seg-roles flexroles" role="group" aria-label="Lane — build, spikes, Eternals and matchups change per lane">
-        ${roleViews.map((v) => `<button data-flexrole="${esc(v.role)}" class="${v.role === activeRole ? 'active' : ''}" aria-pressed="${v.role === activeRole}">${esc(v.role)}</button>`).join('')}
+        ${roleViews.map((v) => `<button data-flexrole="${esc(v.role)}" class="${v.role === activeRole ? 'active' : ''}" aria-pressed="${v.role === activeRole}">${laneIcon(esc(v.role))}${esc(v.role)}</button>`).join('')}
       </div>` : ''}
       ${fallbackNote}
     </header>

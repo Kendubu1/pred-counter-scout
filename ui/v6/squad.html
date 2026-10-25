@@ -172,6 +172,8 @@
 </div><div class="subnav" id="subnav"></div></div>
 <div class="wrap" id="page">loading…</div>
 <script>
+// Lane mark placeholder; icons.js fills it (also after async renders).
+const laneIcon = (r) => `<span class="lane-ic" data-bic="lane-${r}" aria-hidden="true"></span>`;
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct = (x, d = 1) => (x * 100).toFixed(d);
 const plink = (uuid, name) => uuid
@@ -393,7 +395,7 @@ const plink = (uuid, name) => uuid
         ${opt.seats.map((seat, si) => `
         <div class="seat">
           <div class="seathead">
-            <span class="role">${esc(seat.role)}</span>
+            <span class="role">${laneIcon(esc(seat.role))} ${esc(seat.role)}</span>
             <span class="rwr">${pct(seat.wr)}%</span>
             ${pav(seat.uuid)}${plink(seat.uuid, seat.name)}
             <span class="sgames">${seat.games} games in role</span>
