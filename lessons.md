@@ -5170,3 +5170,26 @@ The worker subsequently committed an unreviewed draft while the manual repair wa
 2026-10-25: Most banned board (npm run bans -> npm run ban-board -> ui/v6/bans.html + homepage strip). Rank-filtered matchesBanned follows the rank of the player in the filtered ROLE slot, so it differs ~1-3% by role (unfiltered by rank it is identical across roles, the true count). Take the mean over the five roles per band. Sanity gate: league bans per match ~4 in every band (4.06 / 4.07 / 4.05 / 4.00 on 1.17). New files in data/artifacts/ must be added to the hero-roster exclusion list in engine/test/artifacts.test.ts.
 
 2026-10-25: Meta builds. The hero page sorted meta builds by shrunk win rate, so 71 of 157 lane views opened on a low-play core (Belica mid led with a 2%-of-games build over the 55% one), and 33 listed one item set twice as two buy orders. The engine now pools buy orders per item set (otherOrderGames) and the page defaults to the most-played build, marking a 100+-game best-win-rate build with a star; build explanations match by item set, not position. Gold+ band: stream rows have no rank but playerId is the pred.gg uuid, so the ranked ladder (leaderboardPaginated, 500/page) tags Gold+ rows; ~22k of ~60.5k placed players. Current rank is a proxy and winners climb: only within-band comparisons.
+
+## 2026-10-25 — Fork in the Road PoC (docs/fork-in-the-road.md §14)
+
+- The public match stream carries per-minute gold (`goldEarnedAtInterval`,
+  index = minute + 3) and a kill timeline (`heroKills[].gameTime`). State-adjusted
+  item analysis needs no per-match GraphQL.
+- Interval bug caught by a null calibration test: comparing an option with a
+  cell average that CONTAINS it, plus the wrong variance for smoothed rates,
+  made 80% intervals cover ~96% under no effect. Real effects were hidden.
+  Compare with the rest of the cell, and pin calibration with a test.
+- Never build a context from what a team realized in the match (healing, damage
+  dealt). Winning teams heal and deal more, so the context encodes the result.
+  Use each hero-role's typical rate, which is knowable at draft.
+- Pooling rates across roles can flip a sign. Physical armor looked bought MORE
+  into magical laners until it was compared within hero-role, because carry
+  lanes are all-physical and carries never buy armor.
+- Rank bands: high ranks counter-build more (Plat+ vs below Gold is clear on
+  three checks). But Diamond+ is too thin per hero, and Plat+ gives the most
+  repeatable per-item signal.
+- A list of "top N" findings means nothing without a shuffled null. 40 Plat+
+  build-shift rises looked right, and shuffled opponents produced ~34.
+- Rare off-role picks with high win rates are mostly streaks over a 40h window
+  (22/100 won both halves, ~25 expected by chance). Promote only on fresh data.

@@ -316,3 +316,35 @@ The PoC watchlist, which is unconfirmed and should be re-checked once the
 daily run has fresh data: Argus offlane (42/66), Revenant offlane (30/46),
 Drongo offlane (31/49) and Twinblast midlane (50/86), plus several with
 fewer than 20 games.
+
+### 14b. Lane-aware rerun and build shifts (same 8,331 matches)
+
+- **Team contexts are draft-time now.** Enemy healing and magic share come from
+  each hero-role's typical rates, not what the team realized in that match.
+  Realized healing leaks the result, because winning teams heal more.
+  Players react to the team context too: carries build magical armor in 5.9 of
+  100 games into magic-heavy teams vs 2.6 into magic-light ones.
+- **Win-rate forks are still not supported at this sample.** 5 of 627 cells clear
+  "likely". The outcome known-answers are about zero (magical armor +1.0 ± 0.9,
+  anti-heal -0.1 ± 0.3), so the "does it win" column needs weeks of daily data.
+- **Build shifts vs a specific lane opponent** (`buildShifts`: share of players
+  with the item in their first 3 into this opponent vs into everyone else).
+  The rises look right: junglers into Khaimera add anti-heal (Serath Tainted
+  Rounds 58 vs 33 per 100), Riktor support into Narbash adds Tainted Guard, and
+  into Dekker it adds Unbroken Will. But a shuffled-opponent null produces
+  nearly as many rises:
+
+  | Band | Rises | From luck (shuffled opponent) | Real, approx. |
+  | --- | --- | --- | --- |
+  | Plat+ | 40 | ~34 | ~6 |
+  | Gold+ | 187 | ~108 | ~80 |
+  | All ranks | 319 | ~172 | ~150 |
+
+  Per-opponent shifts need volume. Pool all ranks for the per-hero card, and
+  show "Plat+ agree" as a badge where the expert sample supports it. Every
+  shown shift must clear a threshold set from the shuffled null, so the
+  luck share is known, not assumed.
+- **Storage requirement for production:** to support this view, the daily
+  accumulator must keep counts keyed by (hero, role, lane-opponent hero,
+  item in first 3), split by band. The current perks counters drop the
+  opponent.

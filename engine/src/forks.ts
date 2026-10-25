@@ -70,32 +70,45 @@ export interface Labels {
   /** hero|role -> share of hero damage that is magical (of physical+magical) */
   magicShare: Map<string, number>;
   type: Map<string, DamageType>;
-  /** cut points of enemy-team healing per minute (terciles) */
+  /** hero|role -> typical healing per minute */
+  healRate: Map<string, number>;
+  /** tercile cut points of the enemy team's EXPECTED healing per minute (sum of its heroes' typical rates) */
   healCuts: number[];
+  /** tercile cut points of the enemy team's expected magical share (mean of its heroes' typical shares) */
+  magicCuts: number[];
 }
 /** Magical share >= 0.6 reads magical, <= 0.4 physical, else mixed. */
 export const TYPE_CUT = 0.6;
 
+// Team contexts use each hero-role's TYPICAL damage split and healing (knowable at draft), never what the
+// team realized in that match: a winning team heals and deals more, which would leak the result into the context.
 export function learnLabels(matches: ForkMatch[]): Labels {
-  const acc = new Map<string, { p: number; m: number }>();
-  const teamHeal: number[] = [];
+  const acc = new Map<string, { p: number; m: number; heal: number; mins: number }>();
   for (const m of matches) {
     const mins = Math.max(1, m.dur / 60);
-    for (const team of [0, 1]) teamHeal.push(m.players.filter((p) => p.team === team).reduce((s, p) => s + p.heal, 0) / mins);
     for (const p of m.players) {
-      const a = acc.get(`${p.hero}|${p.role}`) ?? { p: 0, m: 0 };
-      a.p += p.dmg[0]; a.m += p.dmg[1];
+      const a = acc.get(`${p.hero}|${p.role}`) ?? { p: 0, m: 0, heal: 0, mins: 0 };
+      a.p += p.dmg[0]; a.m += p.dmg[1]; a.heal += p.heal; a.mins += mins;
       acc.set(`${p.hero}|${p.role}`, a);
     }
   }
-  const magicShare = new Map<string, number>(), type = new Map<string, DamageType>();
+  const magicShare = new Map<string, number>(), type = new Map<string, DamageType>(), healRate = new Map<string, number>();
   for (const [k, a] of acc) {
     const share = a.p + a.m > 0 ? a.m / (a.p + a.m) : 0.5;
     magicShare.set(k, share);
     type.set(k, share >= TYPE_CUT ? 'magical' : share <= 1 - TYPE_CUT ? 'physical' : 'mixed');
+    healRate.set(k, a.heal / Math.max(1, a.mins));
   }
-  return { magicShare, type, healCuts: quantileCuts(teamHeal, 3) };
+  const teamHeal: number[] = [], teamMagic: number[] = [];
+  for (const m of matches) for (const team of [0, 1]) {
+    const t = m.players.filter((p) => p.team === team);
+    teamHeal.push(t.reduce((s, p) => s + healRate.get(`${p.hero}|${p.role}`)!, 0));
+    teamMagic.push(t.reduce((s, p) => s + magicShare.get(`${p.hero}|${p.role}`)!, 0) / Math.max(1, t.length));
+  }
+  return { magicShare, type, healRate, healCuts: quantileCuts(teamHeal, 3), magicCuts: quantileCuts(teamMagic, 3) };
 }
+
+const tercile = (x: number, cuts: number[]) => (bucketOf(x, cuts) === 2 ? 'high' : bucketOf(x, cuts) === 0 ? 'low' : 'mid');
 
 // ── rows: one per (player, slot) that reached the slot ──
 
@@ -105,7 +118,7 @@ export interface ForkRow {
   hero: string; role: string; slot: number; item: string; won: boolean;
   /** stratum id (team-gold quintile * 3 + lane-gold tercile) */
   stratum: number;
-  /** context keys this row belongs to, e.g. "all", "oppType:magical", "opp:gideon", "enemyHeal:high" */
+  /** context keys this row belongs to, e.g. "all", "oppType:magical", "opp:gideon", "enemyHeal:high", "enemyMagic:high" */
   ctx: string[];
   /** (K-D) after completion minus before; null when the window runs past the game */
   swing: number | null;
@@ -117,17 +130,16 @@ export function buildRows(matches: ForkMatch[], labels: Labels, maxSlot = 3): Fo
   type Pre = Omit<ForkRow, 'stratum'>;
   const pre: Pre[] = [];
   for (const m of matches) {
-    const mins = Math.max(1, m.dur / 60);
-    const healOf = (team: number) => m.players.filter((p) => p.team === team).reduce((s, p) => s + p.heal, 0) / mins;
+    const team = (t: number) => m.players.filter((p) => p.team === t);
+    const healOf = (t: number) => team(t).reduce((s, p) => s + (labels.healRate.get(`${p.hero}|${p.role}`) ?? 0), 0);
+    const magicOf = (t: number) => team(t).reduce((s, p) => s + (labels.magicShare.get(`${p.hero}|${p.role}`) ?? 0.5), 0) / Math.max(1, team(t).length);
     for (const p of m.players) {
       const opp = m.players.filter((o) => o.team !== p.team && o.role === p.role);
       if (opp.length !== 1) continue;
       const o = opp[0]!;
       const allies = m.players.filter((x) => x.team === p.team), enemies = m.players.filter((x) => x.team !== p.team);
       const oppType = labels.type.get(`${o.hero}|${o.role}`) ?? 'mixed';
-      const heal = healOf(o.team);
-      const enemyHeal = bucketOf(heal, labels.healCuts) === 2 ? 'high' : bucketOf(heal, labels.healCuts) === 0 ? 'low' : 'mid';
-      const ctx = ['all', `oppType:${oppType}`, `opp:${o.hero}`, `enemyHeal:${enemyHeal}`];
+      const ctx = ['all', `oppType:${oppType}`, `opp:${o.hero}`, `enemyHeal:${tercile(healOf(o.team), labels.healCuts)}`, `enemyMagic:${tercile(magicOf(o.team), labels.magicCuts)}`];
       for (let k = 1; k <= Math.min(maxSlot, p.cores.length); k++) {
         const [item, done] = p.cores[k - 1]!;
         const tDec = k === 1 ? SLOT1_DECISION_S : p.cores[k - 2]![1];
@@ -411,6 +423,66 @@ export function shuffleOppType(rows: ForkRow[], seed: number): ForkRow[] {
     const types = idx.map((i) => rows[i]!.ctx.find((c) => c.startsWith('oppType:'))!);
     for (let i = types.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [types[i], types[j]] = [types[j]!, types[i]!]; }
     idx.forEach((i, n) => { const r = out[i]!; r.ctx = r.ctx.map((c) => (c.startsWith('oppType:') ? types[n]! : c)); });
+  }
+  return out;
+}
+
+// ── build shift: how a hero-role's build changes against a specific lane opponent ──
+//
+// Choice-based, not win-based: "Plat+ Scarlett offlane has Absolution in its
+// first 3 items 31 times in 100 into Gideon, 12 otherwise". Each player counts
+// once (item present in their first `depth` cores). The vs-opponent rate is
+// smoothed toward the usual rate by SHIFT_K games, so a handful of games cannot
+// headline; `others` excludes the opponent's own games.
+
+export const SHIFT_K = 20;
+
+export interface BuildShift {
+  hero: string; role: string; opp: string; item: string;
+  /** players into this opponent / with the item */
+  n: number; has: number;
+  /** players into everyone else / with the item */
+  baseN: number; baseHas: number;
+  /** per 100 players: smoothed rate into this opponent, usual rate */
+  per100: number; usual100: number;
+  /** per100 - usual100, and an 80% range on it */
+  shift: number; lo: number; hi: number;
+}
+
+export function buildShifts(matches: ForkMatch[], include: (p: ForkPlayer) => boolean, opts: { depth?: number; minN?: number } = {}): BuildShift[] {
+  const depth = opts.depth ?? 3, minN = opts.minN ?? 25;
+  type Acc = { n: number; items: Map<string, number> };
+  const byHR = new Map<string, { all: Acc; opp: Map<string, Acc> }>();
+  const add = (a: Acc, items: string[]) => { a.n++; for (const it of items) a.items.set(it, (a.items.get(it) ?? 0) + 1); };
+  for (const m of matches) for (const p of m.players) {
+    if (!include(p) || p.cores.length < depth) continue;
+    const o = m.players.filter((x) => x.team !== p.team && x.role === p.role);
+    if (o.length !== 1) continue;
+    const k = `${p.hero}|${p.role}`;
+    const g = byHR.get(k) ?? { all: { n: 0, items: new Map() }, opp: new Map() };
+    const items = p.cores.slice(0, depth).map((c) => c[0]);
+    add(g.all, items);
+    const oa = g.opp.get(o[0]!.hero) ?? { n: 0, items: new Map() };
+    add(oa, items);
+    g.opp.set(o[0]!.hero, oa);
+    byHR.set(k, g);
+  }
+  const out: BuildShift[] = [];
+  for (const [k, g] of byHR) {
+    const [hero, role] = k.split('|') as [string, string];
+    for (const [opp, oa] of g.opp) {
+      if (oa.n < minN) continue;
+      const baseN = g.all.n - oa.n;
+      if (baseN < minN) continue;
+      for (const [item, allHas] of g.all.items) {
+        const has = oa.items.get(item) ?? 0, baseHas = allHas - has;
+        const usual = baseHas / baseN;
+        const rate = (has + SHIFT_K * usual) / (oa.n + SHIFT_K);
+        const se = Math.sqrt((oa.n * rate * (1 - rate)) / (oa.n + SHIFT_K) ** 2 + (usual * (1 - usual)) / baseN);
+        const shift = rate - usual;
+        out.push({ hero, role, opp, item, n: oa.n, has, baseN, baseHas, per100: rate * 100, usual100: usual * 100, shift: shift * 100, lo: (shift - Z80 * se) * 100, hi: (shift + Z80 * se) * 100 });
+      }
+    }
   }
   return out;
 }

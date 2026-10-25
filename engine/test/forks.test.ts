@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   goldAt, quantileCuts, bucketOf, countIn, learnLabels, buildRows, standardize, shrinkToward,
-  computeForks, orderForks, interaction, shuffleOppType, rng, priorVariance,
+  computeForks, orderForks, interaction, shuffleOppType, rng, priorVariance, buildShifts,
   type ForkMatch, type ForkPlayer, type ForkRow,
 } from '../src/forks.js';
 
@@ -186,4 +186,36 @@ describe('computeForks + validation tools', () => {
     expect(f.adjusted).toBeCloseTo(0.4, 1); // 80% vs 40% wins, minus smoothing
   });
 
+});
+
+describe('build shift vs a lane opponent', () => {
+  const ms: ForkMatch[] = [];
+  for (let i = 0; i < 300; i++) {
+    const vsMage = i % 3 === 0;
+    // into the mage, 60% swap 'dmg2' for 'mr'; otherwise 10% buy 'mr'
+    const buyMr = vsMage ? i % 5 < 3 : i % 10 === 1;
+    const me = player(0, 'offlane', 'scarlett', { cores: [['a', 400], [buyMr ? 'mr' : 'dmg2', 800], ['c', 1200]] });
+    ms.push(match(`s${i}`, 0, [me, player(1, 'offlane', vsMage ? 'gideon' : 'grux')]));
+  }
+  const shifts = buildShifts(ms, (p) => p.hero === 'scarlett', { minN: 25 });
+
+  it('finds the counter item rising into the opponent and the swapped item falling', () => {
+    const mr = shifts.find((s) => s.opp === 'gideon' && s.item === 'mr')!;
+    expect(mr.n).toBe(100);
+    expect(mr.usual100).toBeCloseTo(10, 0);
+    expect(mr.per100).toBeGreaterThan(45);
+    expect(mr.lo).toBeGreaterThan(0);
+    const dmg = shifts.find((s) => s.opp === 'gideon' && s.item === 'dmg2')!;
+    expect(dmg.shift).toBeLessThan(-30);
+  });
+
+  it('items every build has show no shift', () => {
+    const a = shifts.find((s) => s.opp === 'gideon' && s.item === 'a')!;
+    expect(Math.abs(a.shift)).toBeLessThan(1);
+  });
+
+  it('a few games cannot headline: small samples are pulled to the usual rate', () => {
+    const tiny = buildShifts(ms.slice(0, 30), (p) => p.hero === 'scarlett', { minN: 5 }).find((s) => s.opp === 'gideon' && s.item === 'mr')!;
+    expect(tiny.per100).toBeLessThan(tiny.has / tiny.n * 100);
+  });
 });
