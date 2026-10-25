@@ -412,7 +412,13 @@
   .simpicks .pilot { cursor:pointer; }
   .theory-mini { font-size:.6875rem; font-weight:800; color:var(--blue); border:1px solid var(--blue); border-radius:5px; padding:.02rem .3rem; margin-left:.3rem; cursor:help; }
   .metaboard { margin-top:2rem; }
-  .metaboard .mb-head { display:flex; align-items:baseline; gap:.7rem; flex-wrap:wrap; }
+  .metaboard .mb-head { display:flex; align-items:center; gap:.5rem .7rem; flex-wrap:wrap; }
+  /* heading and its games filter share the first row; the description and the
+     rank bands sit underneath at full width */
+  .metaboard .mb-head h2 { order:0; }
+  .metaboard .mb-head .mb-bigonly { order:1; }
+  .metaboard .mb-head .mb-sub { order:2; flex-basis:100%; }
+  .metaboard .mb-head .mb-bands { order:3; }
   .metaboard h2 { font-size:1.05rem; font-weight:800; }
   .metaboard .mb-sub { font-size:.74rem; color:var(--text-2); }
   .mb-toggle { margin-left:auto; background:var(--bg-1); border:1px solid var(--border); border-radius:99px; padding:.28rem .7rem; color:var(--text-2); font:inherit; font-size:.72rem; font-weight:700; cursor:pointer; white-space:nowrap; }
@@ -725,8 +731,13 @@ function spikeCaveat() {
 
 function metaWindowNote() {
   if (!LATEST_PATCH || !META || !META.patch) return '';
-  if (String(META.patch).includes(String(LATEST_PATCH))) return '';
-  return ` · <b>collected before ${LATEST_PATCH}</b> — the public match feed runs behind live, so these boards do not include ${LATEST_PATCH} games yet`;
+  const board = String(META.patch), latest = String(LATEST_PATCH);
+  if (board === latest) return '';
+  // The board pools a whole patch family (lane-stats pins every 1.17.x version
+  // id), so "1.17" already holds 1.17.2 games. Comparing the strings as if they
+  // were different patches once told players their current patch was missing.
+  if (latest.startsWith(board + '.')) return ` · includes ${esc(latest)} games`;
+  return ` · <b>collected before ${esc(latest)}</b> — these boards do not include ${esc(latest)} games yet`;
 }
 async function getMatrix() {
   if (!MATRIX) MATRIX = await getJson('../../data/artifacts/matchup-matrix.json').catch(() => null);
