@@ -1167,22 +1167,20 @@ function laneSteerBlock(a) {
 // body shows; the prose lives behind a per-tab "why these items" disclosure.
 function buildsCard(a) {
   const rsnRoot = REASONING && REASONING.heroes && REASONING.heroes[a.slug] && REASONING.heroes[a.slug][a.role];
-  // Field meta builds, MOST PLAYED first (the default tab). Sorting by win rate
-  // put a 2%-of-games core ahead of the lane's real build whenever its small
-  // sample read a point higher. Explanations match by item set, not position.
+  // Field meta builds, HIGHEST WIN RATE first (the default tab), by the shrunk
+  // win rate so a thin sample is pulled toward the lane average before it can
+  // lead. Games break ties. Explanations match by item set, not position.
   const setKey = (names) => names.map((n) => String(n).toLowerCase().replace(/[^a-z0-9]/g, '')).sort().join('|');
   const rsnBySet = new Map(((rsnRoot && rsnRoot.metaBuilds) || []).filter((r) => r && r.items).map((r) => [setKey(Object.keys(r.items)), r]));
   const metas = (a.metaBuilds || []).map((m) => ({ m, rsn: rsnBySet.get(setKey(m.items.map((it) => it.name))) || null }))
-    .sort((x, y) => (y.m.n || 0) - (x.m.n || 0));
-  // "best win %" only when a different build has real volume (100+ games).
-  const bestIdx = metas.length > 1 ? metas.reduce((b, e, i) => ((e.m.n || 0) >= 100 && (e.m.shrunkWr || 0) > (metas[b].m.shrunkWr || 0) ? i : b), 0) : 0;
+    .sort((x, y) => ((y.m.shrunkWr || 0) - (x.m.shrunkWr || 0)) || ((y.m.n || 0) - (x.m.n || 0)));
   const opt = rsnRoot && rsnRoot.optimizer;
 
   // Tab strip: one per meta build (title), then the kit-math build (⚙).
-  // Each option says in words what it is (most played / best win rate / kit-math)
-  // under its name — an icon like 🔥 read as "best" beside a losing win rate.
+  // Each option says in words what it is (best win rate / games / kit-math)
+  // under its name.
   const tabs = metas.map((e, i) => {
-    const tag = i === 0 ? (metas.length > 1 && bestIdx === 0 ? 'most played · best win rate' : 'most played') : i === bestIdx ? 'best win rate' : `${(e.m.n || 0).toLocaleString()} games`;
+    const tag = i === 0 && metas.length > 1 ? 'best win rate' : `${(e.m.n || 0).toLocaleString()} games`;
     return `<button class="btab${i === 0 ? ' active' : ''}" data-btab="${i}"><span class="bt-name">${esc(e.m.title || `Build ${i + 1}`)}</span><span class="bt-sub"><span class="btab-wr ${wrBand(e.m.shrunkWr)}">${(e.m.shrunkWr * 100).toFixed(0)}% win</span> · ${tag}</span></button>`;
   }).join('')
     + `<button class="btab simtab${metas.length ? '' : ' active'}" data-btab="sim"><span class="bt-name">${esc(a.build.title || 'Kit-math build')}</span><span class="bt-sub">kit-math sim</span></button>`;
@@ -1202,7 +1200,7 @@ function buildsCard(a) {
         <div class="mb-items" style="flex-wrap:wrap;margin-bottom:.5rem">${rail}</div>
         <div style="display:flex;align-items:center;gap:.6rem">
           <span class="bwr ${wrBand(m.shrunkWr)}">${(m.shrunkWr * 100).toFixed(1)}%</span>
-          <span class="mb-n">${m.n.toLocaleString()} games${m.shareOfCores ? ` · ${Math.round(m.shareOfCores * 100)}% of tracked builds` : ''}${i === 0 ? ' · most played' : i === bestIdx ? ' · best win rate' : ''}${m.anyOrder ? ' · item set, purchase orders pooled' : m.otherOrderGames ? ` · ${m.otherOrderGames.toLocaleString()} bought these in another order` : ''}</span>
+          <span class="mb-n">${m.n.toLocaleString()} games${m.shareOfCores ? ` · ${Math.round(m.shareOfCores * 100)}% of tracked builds` : ''}${i === 0 && metas.length > 1 ? ' · best win rate' : ''}${m.anyOrder ? ' · item set, purchase orders pooled' : m.otherOrderGames ? ` · ${m.otherOrderGames.toLocaleString()} bought these in another order` : ''}</span>
         </div>
         ${explain}
         <details class="sim-collapse"><summary>The sim math</summary><div class="body">${simLine}</div></details>
