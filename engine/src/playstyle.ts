@@ -152,6 +152,17 @@ export function lanesFor(heroSlug: string): string[] {
   });
 }
 
+/** Lanes the hero is actually played in, by total games (each lane cell in
+ *  predgg-augments.json has 50+ games). Unlike lanesFor, which ranks by the top
+ *  augment's count, this is the real share of games per lane. */
+export function lanesByGames(heroSlug: string): { lane: string; games: number }[] {
+  const hero = predggAugments().heroes?.[heroSlug];
+  if (!hero) return [];
+  return Object.entries(hero)
+    .map(([lane, c]) => ({ lane, games: (c as { games?: number }).games ?? 0 }))
+    .sort((a, b) => b.games - a.games);
+}
+
 // ── Kit-derived playstyle (first-principles, NOT field-derived) ──
 //
 // The shipped steer above reads INTENT from the augment the field runs — useful,

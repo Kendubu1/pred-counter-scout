@@ -12,7 +12,7 @@ import { buildAllowed, verifyLine } from '../src/copy-verify.js';
 import { factsFor, loadEternalInputs, topEternals } from '../src/eternal-copy.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const LINES = path.join(ROOT, 'data/aggregates/eternal-reviews.json');
+const LINES = path.join(ROOT, 'data/aggregates/eternal-cards.json');
 const load = () => (existsSync(LINES) ? (JSON.parse(readFileSync(LINES, 'utf8')) as { heroes: Record<string, Record<string, Record<string, string>>> }) : null);
 
 describe('Eternal card lines (copy pass)', () => {

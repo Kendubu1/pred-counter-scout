@@ -1516,7 +1516,7 @@ function renderHero(a, roleParam) {
             return `<div style="display:flex;gap:.3rem .6rem;align-items:center;flex-wrap:wrap;font-size:.7rem;color:var(--text-1);margin:.25rem 0 0 ${indent}"><b style="color:var(--text-0)">Top minors:</b> ${mins.map(chip).join('')}</div>`;
           };
           // What this Eternal does for THIS hero/role and how to play it
-          // (eternal-reviews.json, judged copy). It replaces the raw stat text on
+          // (eternal-cards.json, judged copy). It replaces the raw stat text on
           // the card; the full description is one tap away in the Eternal popup.
           const etLine = (name) => (ETREV && ETREV.heroes && ETREV.heroes[a.slug] && ETREV.heroes[a.slug][role] && ETREV.heroes[a.slug][role][name]) || null;
           const e0 = ets[0], wr0 = e0.w / e0.n, et0 = ETMAP && ETMAP[e0.name.toLowerCase()];
@@ -1907,7 +1907,7 @@ async function getAugs() {
       getJson('../../data/game-data/eternals.json').catch(() => null),
       getJson('../../data/aggregates/field-data-pending.json').catch(() => null),
       getJson('../../data/aggregates/hero-coach-lines.json').catch(() => null),
-      getJson('../../data/aggregates/eternal-reviews.json').catch(() => null),
+      getJson('../../data/aggregates/eternal-cards.json').catch(() => null),
     ]);
     PENDING = (pending && pending.heroes) || {};
     // name -> { major, minorSlot1, minorSlot2 } so an Eternal can be explained in
@@ -1999,6 +1999,7 @@ window.onpopstate = route;
 })();
 </script>
 <script defer src="icons.js"></script>
+<script defer src="hero-links.js"></script>
 <script defer src="nav.js"></script>
 </body>
 </html>

@@ -123,12 +123,12 @@ CRITIQUE_HISTORY=data/aggregates/hero-coach-critique-history.json \
 Every round records its own `scope` in both the report and the history entry.
 Unset, all three surfaces are judged into the shared history exactly as before.
 
-The Eternal card lines (`data/aggregates/eternal-reviews.json`, authored by
-`npm run review:eternals`) are a fourth surface, `eternals`, that is **opt-in
+The Eternal card lines (`data/aggregates/eternal-cards.json`, authored by
+`npm run review:eternalcards`) are a fourth surface, `eternalcards`, that is **opt-in
 only**: it never joins the default round. Run it with `npm run
-eternals:critique:prepare` → independent critic → `npm run eternals:critique` →
-`npm run eternals:loop:gate`. Applied rewrites persist in
-`data/aggregates/eternal-fixes.json` (an empty string records a dropped line) and
+eternalcards:critique:prepare` → independent critic → `npm run eternalcards:critique` →
+`npm run eternalcards:loop:gate`. Applied rewrites persist in
+`data/aggregates/eternal-card-fixes.json` (an empty string records a dropped line) and
 are re-applied and re-verified on every ingest.
 
 > The subagent dispatch (build, judge) is driven by the orchestrating session — it
@@ -165,6 +165,7 @@ To add a self-correcting loop for a new artifact:
 | **Build copy** | `build-review.ts` prepare | `pred-scout-coach` | `copy-critique.ts` independent critic | `copy-verify` per clause | `review:loop:gate` over `copy-critique-history.json` |
 | **Coach copy** (lead + every squad member's report) | `coach-review.ts` prepare | `pred-scout-coach` | same critic, **scoped** (`CRITIQUE_ONLY=coach`), grounded on that player's stats + kit reads; also flags second-person voice | `copy-verify` | `coachreport:loop:gate` over `coach-report-critique-history.json` |
 | **Hero-page coach lines** | `hero-coach-review.ts` prepare (facts block from `src/hero-coach-copy.ts`) | `pred-scout-coach` | same critic, **scoped** (`CRITIQUE_ONLY=herocoach`), grounded on the identical facts block | `copy-verify` on every line and every rewrite, re-run in `test/hero-coach.test.ts` | `herocoach:loop:gate` over `hero-coach-critique-history.json` |
+| **Eternal "why it's picked"** (popup + Learn Eternals) | `review:eternals` prepare (facts block from `src/eternal-usage.ts`: blessing text, parsed mechanics, ranked usage) | `pred-scout-coach` | independent general-purpose judge via `eternals:critique` (same facts block) | `copy-verify` on every line and rewrite, minor names must exist on that Eternal; fixes persisted in `eternal-why-fixes.json` | `eternals:loop:gate` over `eternal-why-critique-history.json` |
 | **Augments / items / abilities** | `*-review.ts` prepare | `pred-scout-coach` | (number bracket only today; critic-extensible) | `copy-verify` | — |
 | **Mobile UI review** | `ui-audit.ts` (consistency facts + findings) | the CSS fix author | independent mobile-UI judge over rendered screenshots | `ui-audit` hard invariants + `ui-render` no-overflow | `review:loop:gate` over `ui-review-history.json` |
 | **UX v0 (Senior-UX)** | `ux:critique:prepare` (rubric + per-surface shots) | the page author (session / `pred-scout-coach`) | `pred-scout-ux-judge`, independent, over `docs/reviews/v0/shots` | `ui-audit:v0` hard invariants (incl. `single-legend` / `reduced-motion` / `above-fold-primary`) + `ui-render:v0` no-overflow | `ux:loop:gate` over `ux-v0-history.json` |

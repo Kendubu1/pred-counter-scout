@@ -67,6 +67,21 @@
     .lm-pick { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
       color: var(--green); background: var(--green-dim, rgba(0,196,140,0.16)); border-radius: 999px;
       padding: 0.05rem 0.4rem; margin-left: 0.3rem; }
+    .le-mechs { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.4rem; }
+    .le-mech { font-size: 0.68rem; font-weight: 600; color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+      border-radius: 999px; padding: 0.1rem 0.5rem; cursor: help; }
+    .le-pick { color: var(--gold); }
+    .le-pick b { display: block; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .le-who { font-size: 0.78rem; color: var(--text-2); margin-bottom: 0.55rem; }
+    .le-who .k { display: block; font-weight: 700; text-transform: uppercase; font-size: 0.64rem; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
+    .le-whoroles { color: var(--text-1); }
+    .le-heroes { display: flex; flex-wrap: wrap; gap: 0.3rem 0.7rem; margin-top: 0.3rem; }
+    .le-hero { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--text-1); white-space: nowrap; }
+    .le-hero img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); background: var(--bg-3); }
+    .le-pair { margin-top: 0.3rem; }
+    .le-pair b { color: var(--text-1); }
+    .lm-share { font-size: 0.66rem; font-weight: 400; color: var(--text-2); margin-left: 0.3rem; }
+    .lm-why { display: block; color: var(--gold); margin-top: 0.15rem; }
     .le-recnote { font-size: 0.7rem; color: var(--text-2); margin: 0.3rem 0 0; }
     .le-counter { font-size: 0.78rem; color: var(--text-2); line-height: 1.5; border-top: 1px dashed var(--border);
       padding-top: 0.5rem; margin-top: auto; }
@@ -142,38 +157,51 @@
           <span class="le-roles">Midlane · Support</span>
         </header>
 
+        <div class="le-mechs"><span class="le-mech" title="from Major, Philosopher">Gold income</span><span class="le-mech" title="from Major, Sacrifice, Arcane Resonance, Runic Focus">Mana</span><span class="le-mech" title="from Arcane Resonance, Perfection">Cooldowns</span><span class="le-mech" title="from Bottomless Vial">Grows over the game</span><span class="le-mech" title="from Bottomless Vial">Farming &amp; camps</span></div>
         <div class="le-tags"><span class="le-tag" data-style="spells">I cast abilities</span></div>
 
         <div class="le-major"><span class="k">Major blessing — always on</span>Casting a spell grants 1 Mana Regeneration for 8s (stacks 5x). Spells also grant gold equal to 6% of damage dealt to Enemy Heroes.</div>
 
+        <div class="le-pick"><b>Why it's picked</b> Mana regen each time you cast a spell, plus gold income from spell damage on enemy heroes: mid-lane mages and some ability-focused supports and off-laners take it to cast freely and buy items sooner.</div>
 
+        <div class="le-who"><span class="k">Who runs it · ranked, this patch</span>
+          <div class="le-whoroles">Midlane 17% · Support 9% · Offlane 5% of games in each role</div>
+          <div class="le-heroes"><span class="le-hero" title="Aion in 23% of Dekker Support ranked games"><img src="img/heroes/dekker.webp" alt="" loading="lazy" onerror="this.style.display='none'">Dekker</span><span class="le-hero" title="Aion in 27% of Gadget Midlane ranked games"><img src="img/heroes/gadget.webp" alt="" loading="lazy" onerror="this.style.display='none'">Gadget</span><span class="le-hero" title="Aion in 24% of The Fey Midlane ranked games"><img src="img/heroes/the-fey.webp" alt="" loading="lazy" onerror="this.style.display='none'">The Fey</span><span class="le-hero" title="Aion in 36% of Shinbi Offlane ranked games"><img src="img/heroes/shinbi.webp" alt="" loading="lazy" onerror="this.style.display='none'">Shinbi</span><span class="le-hero" title="Aion in 30% of Argus Midlane ranked games"><img src="img/heroes/argus.webp" alt="" loading="lazy" onerror="this.style.display='none'">Argus</span></div>
+          <div class="le-pair">Most common pair: <b>Philosopher + Arcane Resonance</b> (26%)</div>
+        </div>
 
         <details class="le-slots">
           <summary>The two minor slots — pick one from each<span class="chev">▾</span></summary>
           <div class="le-slot">
             <b>Slot 1</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Philosopher</span>
+            <span class="lm-name">Philosopher <span class="lm-share">38% take it</span></span>
             <span class="lm-desc">Every 10s, generate 4 gold (faster with Ability Haste).</span>
+            <span class="lm-why">The common pick for steady gold income: free gold on a timer, coming faster with more ability haste.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Sacrifice</span>
+            <span class="lm-name">Sacrifice <span class="lm-share">29% take it</span></span>
             <span class="lm-desc">Damaging an Enemy Hero with an ability grants 3.5% Missing Mana regeneration over 5s. Hero kills regenerate 25% Missing Mana over 5s.</span>
+            <span class="lm-why">For heroes who run dry in long trades: ability hits and hero kills refill missing mana.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Bottomless Vial</span>
+            <span class="lm-name">Bottomless Vial <span class="lm-share">33% take it</span></span>
             <span class="lm-desc">Killing a River Buff restores a Potion charge and grants +5 Magical Power permanently.</span>
+            <span class="lm-why">When you take river buffs often: each one refills a potion charge and adds permanent magical power.</span>
           </li></ul>
           </div>
           <div class="le-slot">
             <b>Slot 2</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Arcane Resonance</span>
+            <span class="lm-name">Arcane Resonance <span class="lm-share">45% take it</span></span>
             <span class="lm-desc">Basic ability cooldowns and Philosopher progress 0.75% faster per 1 Mana Regen, up to 50%.</span>
+            <span class="lm-why">The common pick, best paired with Philosopher: more mana regen speeds up basic ability cooldowns and Philosopher's gold.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Perfection</span>
+            <span class="lm-name">Perfection <span class="lm-share">19% take it</span></span>
             <span class="lm-desc">While above 85% Health, gain 30 Ability Haste.</span>
+            <span class="lm-why">For mages who poke from a safe distance and rarely get hit: shorter cooldowns while near full health.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Runic Focus</span>
+            <span class="lm-name">Runic Focus <span class="lm-share">36% take it</span></span>
             <span class="lm-desc">Gain 0.2% increased Magical Power per 1% current Mana.</span>
+            <span class="lm-why">For heroes with a big mana pool who keep it full: more magical power the fuller your mana bar.</span>
           </li></ul>
           </div>
 
@@ -193,38 +221,51 @@
           <span class="le-roles">Carry · Midlane</span>
         </header>
 
+        <div class="le-mechs"><span class="le-mech" title="from Memory Leak">Mana</span><span class="le-mech" title="from Construct, Bloatware">Toughness</span><span class="le-mech" title="from Major, Tri-Core, Bloatware">Damage boost</span><span class="le-mech" title="from Construct, Cursed Corrupted">Cooldowns</span><span class="le-mech" title="from Tri-Core">Basic attacks</span><span class="le-mech" title="from Memory Leak">Movement speed</span><span class="le-mech" title="from Construct, Memory Leak">Grows over the game</span></div>
         <div class="le-tags"><span class="le-tag" data-style="scale">I scale late</span></div>
 
         <div class="le-major"><span class="k">Major blessing — always on</span>Increase stats gained from Items (excluding passives) by 10%, and damage dealt by Item Effects by 10%.</div>
 
+        <div class="le-pick"><b>Why it's picked</b> Makes your items stronger, raising the stats they give and the damage of item effects: junglers, plus some carries and mid-laners, take it to get more out of every item they buy.</div>
 
+        <div class="le-who"><span class="k">Who runs it · ranked, this patch</span>
+          <div class="le-whoroles">Jungle 6% · Carry 5% · Midlane 5% of games in each role</div>
+          <div class="le-heroes"><span class="le-hero" title="Demiurge in 30% of Feng Mao Jungle ranked games"><img src="img/heroes/feng-mao.webp" alt="" loading="lazy" onerror="this.style.display='none'">Feng Mao</span><span class="le-hero" title="Demiurge in 10% of Gideon Midlane ranked games"><img src="img/heroes/gideon.webp" alt="" loading="lazy" onerror="this.style.display='none'">Gideon</span><span class="le-hero" title="Demiurge in 28% of Yurei Jungle ranked games"><img src="img/heroes/yurei.webp" alt="" loading="lazy" onerror="this.style.display='none'">Yurei</span><span class="le-hero" title="Demiurge in 9% of Legion Carry ranked games"><img src="img/heroes/legion.webp" alt="" loading="lazy" onerror="this.style.display='none'">Legion</span><span class="le-hero" title="Demiurge in 7% of TwinBlast Carry ranked games"><img src="img/heroes/twinblast.webp" alt="" loading="lazy" onerror="this.style.display='none'">TwinBlast</span></div>
+          <div class="le-pair">Most common pair: <b>Construct + Memory Leak</b> (27%)</div>
+        </div>
 
         <details class="le-slots">
           <summary>The two minor slots — pick one from each<span class="chev">▾</span></summary>
           <div class="le-slot">
             <b>Slot 1</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Tri-Core</span>
+            <span class="lm-name">Tri-Core <span class="lm-share">42% take it</span></span>
             <span class="lm-desc">Deal 5% bonus damage On-Hit, randomly Physical, Magical or True.</span>
+            <span class="lm-why">For auto-attack heroes: every hit deals bonus damage of a random type.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Construct</span>
+            <span class="lm-name">Construct <span class="lm-share">46% take it</span></span>
             <span class="lm-desc">Gain 10 Health and 1 Ability Haste per Level.</span>
+            <span class="lm-why">The usual pick for steady value: more health and shorter cooldowns every level.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Bio-Mechanical Fusion</span>
+            <span class="lm-name">Bio-Mechanical Fusion <span class="lm-share">12% take it</span></span>
             <span class="lm-desc">Gain +1 Physical Power per 8 Magical Power you possess.</span>
+            <span class="lm-why">For hybrid heroes who build magical power but deal physical damage: turns some magical power into physical power.</span>
           </li></ul>
           </div>
           <div class="le-slot">
             <b>Slot 2</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Cursed Corrupted</span>
+            <span class="lm-name">Cursed Corrupted <span class="lm-share">11% take it</span></span>
             <span class="lm-desc">Convert each 1% Critical Chance into 0.8 Ability Haste (you lose the converted crit stat).</span>
+            <span class="lm-why">For ability heroes whose items give critical chance they do not use: turns it into shorter cooldowns.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Memory Leak</span>
+            <span class="lm-name">Memory Leak <span class="lm-share">50% take it</span></span>
             <span class="lm-desc">Ability casts grant 5% of their Mana or Energy cost as permanent Max Mana. At 500 bonus Max Mana, gain 5% Movement Speed.</span>
+            <span class="lm-why">The usual pick for heroes who cast often: casts permanently raise max mana, and enough bonus mana adds movement speed.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Bloatware</span>
+            <span class="lm-name">Bloatware <span class="lm-share">39% take it</span></span>
             <span class="lm-desc">Gain 0.5% increased Damage and 0.75% Damage Reduction per Item.</span>
+            <span class="lm-why">For long games: more damage and less damage taken for each item you own.</span>
           </li></ul>
           </div>
 
@@ -244,38 +285,51 @@
           <span class="le-roles">Support · Midlane</span>
         </header>
 
+        <div class="le-mechs"><span class="le-mech" title="from Illumination">Mana</span><span class="le-mech" title="from Major, Illumination, Preservation, Fervour">Healing &amp; lifesteal</span><span class="le-mech" title="from Major, Preservation">Shields</span><span class="le-mech" title="from Major">Damage boost</span><span class="le-mech" title="from Revelation">Cooldowns</span><span class="le-mech" title="from Major, Fervour">Basic attacks</span><span class="le-mech" title="from Omnipresent">Movement speed</span><span class="le-mech" title="from Fervour">Grows over the game</span><span class="le-mech" title="from Major, Fervour">Helps allies</span></div>
         <div class="le-tags"><span class="le-tag" data-style="sustain">I heal off damage</span><span class="le-tag" data-style="tank">I hold the front</span><span class="le-tag" data-style="allies">I keep allies alive</span></div>
 
         <div class="le-major"><span class="k">Major blessing — always on</span>Healing or Shielding a target (including yourself) grants them 10% Total Attack Speed and empowers their Basic Attacks to deal 10% bonus Magical Damage On-Hit for 4s.</div>
 
+        <div class="le-pick"><b>Why it's picked</b> Healing or shielding someone, yourself included, gives them faster attacks and bonus magic damage on hits: healing and shielding supports take it to make their carries hit harder.</div>
 
+        <div class="le-who"><span class="k">Who runs it · ranked, this patch</span>
+          <div class="le-whoroles">Support 21% · Jungle 1% of games in each role</div>
+          <div class="le-heroes"><span class="le-hero" title="Exarch in 78% of Narbash Support ranked games"><img src="img/heroes/narbash.webp" alt="" loading="lazy" onerror="this.style.display='none'">Narbash</span><span class="le-hero" title="Exarch in 68% of Phase Support ranked games"><img src="img/heroes/phase.webp" alt="" loading="lazy" onerror="this.style.display='none'">Phase</span><span class="le-hero" title="Exarch in 76% of Muriel Support ranked games"><img src="img/heroes/muriel.webp" alt="" loading="lazy" onerror="this.style.display='none'">Muriel</span><span class="le-hero" title="Exarch in 51% of Zinx Support ranked games"><img src="img/heroes/zinx.webp" alt="" loading="lazy" onerror="this.style.display='none'">Zinx</span><span class="le-hero" title="Exarch in 25% of Mourn Support ranked games"><img src="img/heroes/mourn.webp" alt="" loading="lazy" onerror="this.style.display='none'">Mourn</span></div>
+          <div class="le-pair">Most common pair: <b>Preservation + Fervour</b> (26%)</div>
+        </div>
 
         <details class="le-slots">
           <summary>The two minor slots — pick one from each<span class="chev">▾</span></summary>
           <div class="le-slot">
             <b>Slot 1</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Illumination</span>
+            <span class="lm-name">Illumination <span class="lm-share">17% take it</span></span>
             <span class="lm-desc">Gain Health Regeneration equal to your Bonus Mana Regeneration.</span>
+            <span class="lm-why">When building mana regen items: you also gain that much health regen.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Preservation</span>
+            <span class="lm-name">Preservation <span class="lm-share">58% take it</span></span>
             <span class="lm-desc">Healing or shielding you receive is increased by 10%.</span>
+            <span class="lm-why">The usual pick: healing and shields you receive are stronger.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Revelation</span>
+            <span class="lm-name">Revelation <span class="lm-share">25% take it</span></span>
             <span class="lm-desc">Casting an Ability reduces current Basic Ability Cooldowns by 0.3s.</span>
+            <span class="lm-why">For supports who cast often: every ability cast shortens your basic ability cooldowns, so heals come back sooner.</span>
           </li></ul>
           </div>
           <div class="le-slot">
             <b>Slot 2</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Fervour</span>
+            <span class="lm-name">Fervour <span class="lm-share">56% take it</span></span>
             <span class="lm-desc">Basic Attacks against Enemy Heroes heal you and allies within 1000 units for 2 (+0.5 per level)(+5% Magical Power).</span>
+            <span class="lm-why">The usual pick for supports who auto-attack in lane: hitting enemy heroes heals you and nearby allies.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Omnipresent</span>
+            <span class="lm-name">Omnipresent <span class="lm-share">29% take it</span></span>
             <span class="lm-desc">Gain 7% Movement Speed when out of combat.</span>
+            <span class="lm-why">For roaming supports: extra movement speed while out of combat.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Delayed Fate</span>
+            <span class="lm-name">Delayed Fate <span class="lm-share">14% take it</span></span>
             <span class="lm-desc">20% of Ability damage taken is dealt to you as a 3s DoT instead.</span>
+            <span class="lm-why">Against burst mages: part of ability damage you take is spread out over a few seconds.</span>
           </li></ul>
           </div>
 
@@ -295,38 +349,51 @@
           <span class="le-roles">Offlane · Support</span>
         </header>
 
+        <div class="le-mechs"><span class="le-mech" title="from Mending">Healing &amp; lifesteal</span><span class="le-mech" title="from Major">Shields</span><span class="le-mech" title="from Major, Glacier">Toughness</span><span class="le-mech" title="from Diamond Tip">Armor shred</span><span class="le-mech" title="from Frost Snap">Damage boost</span><span class="le-mech" title="from Icy Touch">Basic attacks</span><span class="le-mech" title="from Cold Hearted, Frost Snap">Slows enemies</span><span class="le-mech" title="from Mending, Glacier">Grows over the game</span></div>
         <div class="le-tags"><span class="le-tag" data-style="tank">I hold the front</span></div>
 
         <div class="le-major"><span class="k">Major blessing — always on</span>While off cooldown and above 30% Max Health, gain 15% increased Physical and Magical Armor. Falling below 30% Health consumes this bonus to grant a 4s Shield equal to 150% of your total Armor (CD: 75–32.5s).</div>
 
+        <div class="le-pick"><b>Why it's picked</b> Extra armor while healthy that turns into a big shield when your health drops low: tank supports, off-lane tanks and some junglers take it to survive burst damage.</div>
 
+        <div class="le-who"><span class="k">Who runs it · ranked, this patch</span>
+          <div class="le-whoroles">Support 7% · Offlane 4% · Jungle 3% of games in each role</div>
+          <div class="le-heroes"><span class="le-hero" title="Idrisil in 19% of Steel Support ranked games"><img src="img/heroes/steel.webp" alt="" loading="lazy" onerror="this.style.display='none'">Steel</span><span class="le-hero" title="Idrisil in 20% of Riktor Support ranked games"><img src="img/heroes/riktor.webp" alt="" loading="lazy" onerror="this.style.display='none'">Riktor</span><span class="le-hero" title="Idrisil in 46% of Terra Offlane ranked games"><img src="img/heroes/terra.webp" alt="" loading="lazy" onerror="this.style.display='none'">Terra</span><span class="le-hero" title="Idrisil in 15% of Steel Offlane ranked games"><img src="img/heroes/steel.webp" alt="" loading="lazy" onerror="this.style.display='none'">Steel</span><span class="le-hero" title="Idrisil in 4% of Greystone Offlane ranked games"><img src="img/heroes/greystone.webp" alt="" loading="lazy" onerror="this.style.display='none'">Greystone</span></div>
+          <div class="le-pair">Most common pair: <b>Mending + Glacier</b> (24%)</div>
+        </div>
 
         <details class="le-slots">
           <summary>The two minor slots — pick one from each<span class="chev">▾</span></summary>
           <div class="le-slot">
             <b>Slot 1</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Cold Hearted</span>
+            <span class="lm-name">Cold Hearted <span class="lm-share">25% take it</span></span>
             <span class="lm-desc">Enemies that basic attack you lose 3% movement speed for 2s (stacks 4x).</span>
+            <span class="lm-why">Against auto-attack carries: enemies who basic attack you get slowed.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Mending</span>
+            <span class="lm-name">Mending <span class="lm-share">40% take it</span></span>
             <span class="lm-desc">After taking Hero damage, restore 3/4/5/6% Missing Health at Levels 1/6/11/16 over 8s.</span>
+            <span class="lm-why">The usual pick: after taking hero damage, you heal part of your missing health.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Frost Snap</span>
+            <span class="lm-name">Frost Snap <span class="lm-share">35% take it</span></span>
             <span class="lm-desc">Deal 10% Bonus Damage to Immobilized or Slowed Targets.</span>
+            <span class="lm-why">For tanks with slows, stuns or roots: bonus damage to slowed or immobilized targets.</span>
           </li></ul>
           </div>
           <div class="le-slot">
             <b>Slot 2</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Icy Touch</span>
+            <span class="lm-name">Icy Touch <span class="lm-share">37% take it</span></span>
             <span class="lm-desc">Your Basic Attacks reduce enemy Attack Speed by 3% for 3s (stacks 4x).</span>
+            <span class="lm-why">Against auto-attack carries and fighters: your basic attacks slow their attack speed.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Glacier</span>
+            <span class="lm-name">Glacier <span class="lm-share">46% take it</span></span>
             <span class="lm-desc">Permanently gain 1 Magical Armor per 300 total gold earned.</span>
+            <span class="lm-why">The usual pick against magic damage: magical armor keeps growing as you earn gold.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Diamond Tip</span>
+            <span class="lm-name">Diamond Tip <span class="lm-share">17% take it</span></span>
             <span class="lm-desc">Gain 4% increased Physical and Magical Penetration per finished item.</span>
+            <span class="lm-why">For tanks who want to deal damage: more armor penetration for each finished item.</span>
           </li></ul>
           </div>
 
@@ -346,38 +413,51 @@
           <span class="le-roles">Carry · Jungle</span>
         </header>
 
+        <div class="le-mechs"><span class="le-mech" title="from Resonant Repair">Healing &amp; lifesteal</span><span class="le-mech" title="from Patina">Shields</span><span class="le-mech" title="from Major, Dampening, Resonant Repair">Toughness</span><span class="le-mech" title="from Major">Armor shred</span><span class="le-mech" title="from Fracture">Damage boost</span><span class="le-mech" title="from Frequency, Peal">Cooldowns</span><span class="le-mech" title="from Peal">Ultimate</span><span class="le-mech" title="from Frequency">Basic attacks</span><span class="le-mech" title="from Patina">Movement speed</span><span class="le-mech" title="from Major, Patina, Fracture">Grows over the game</span></div>
         <div class="le-tags"><span class="le-tag" data-style="autos">I auto-attack</span><span class="le-tag" data-style="spells">I cast abilities</span><span class="le-tag" data-style="dive">I dive and duel</span></div>
 
         <div class="le-major"><span class="k">Major blessing — always on</span>Attacks and abilities against Enemy Heroes apply a stack of Rust for 5s. Each stack shreds 2% (+0.2% per Level) Physical Armor and Magical Armor, stacking up to 4 times. Gain 75% of the Armors shredded.</div>
 
+        <div class="le-pick"><b>Why it's picked</b> Your hits on heroes stack Rust, which shreds their armor and gives you part of it: off-laners, supports and some carries and junglers take it to make enemies easier for the whole team to damage.</div>
 
+        <div class="le-who"><span class="k">Who runs it · ranked, this patch</span>
+          <div class="le-whoroles">Offlane 7% · Support 5% · Jungle 2% of games in each role</div>
+          <div class="le-heroes"><span class="le-hero" title="Knell in 37% of Scarlett Offlane ranked games"><img src="img/heroes/scarlett.webp" alt="" loading="lazy" onerror="this.style.display='none'">Scarlett</span><span class="le-hero" title="Knell in 15% of Mourn Support ranked games"><img src="img/heroes/mourn.webp" alt="" loading="lazy" onerror="this.style.display='none'">Mourn</span><span class="le-hero" title="Knell in 8% of Riktor Support ranked games"><img src="img/heroes/riktor.webp" alt="" loading="lazy" onerror="this.style.display='none'">Riktor</span><span class="le-hero" title="Knell in 6% of Legion Carry ranked games"><img src="img/heroes/legion.webp" alt="" loading="lazy" onerror="this.style.display='none'">Legion</span><span class="le-hero" title="Knell in 4% of Greystone Offlane ranked games"><img src="img/heroes/greystone.webp" alt="" loading="lazy" onerror="this.style.display='none'">Greystone</span></div>
+          <div class="le-pair">Most common pair: <b>Patina + Fracture</b> (27%)</div>
+        </div>
 
         <details class="le-slots">
           <summary>The two minor slots — pick one from each<span class="chev">▾</span></summary>
           <div class="le-slot">
             <b>Slot 1</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Frequency</span>
+            <span class="lm-name">Frequency <span class="lm-share">42% take it</span></span>
             <span class="lm-desc">Gain 2% Total Attack Speed and 2 Ability Haste per Rust stack currently applied.</span>
+            <span class="lm-why">For heroes who hit often: faster attacks and shorter cooldowns for each Rust stack on enemies.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Patina</span>
+            <span class="lm-name">Patina <span class="lm-share">54% take it</span></span>
             <span class="lm-desc">Gain a 30 (+14 per level) Shield when not taking damage for 10s. Gain 4% Movement Speed while the shield holds.</span>
+            <span class="lm-why">The usual pick: a shield after a break from damage, plus speed while it holds.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Dampening</span>
+            <span class="lm-name">Dampening <span class="lm-share">4% take it</span></span>
             <span class="lm-desc">Incoming damage from enemies farther than 1100 units away is reduced by 10%.</span>
+            <span class="lm-why">Against long-range poke: take less damage from enemies far away.</span>
           </li></ul>
           </div>
           <div class="le-slot">
             <b>Slot 2</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Peal</span>
+            <span class="lm-name">Peal <span class="lm-share">39% take it</span></span>
             <span class="lm-desc">Gain 15 Ultimate Ability Haste. Upon casting your ultimate, attacks and abilities apply maximum stacks of Rust for 4s. 20s cooldown.</span>
+            <span class="lm-why">For heroes whose ultimate starts fights: shorter ultimate cooldown, and casting it applies full Rust instantly.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Fracture</span>
+            <span class="lm-name">Fracture <span class="lm-share">48% take it</span></span>
             <span class="lm-desc">Deal 4% (+0.2% per level) more damage against targets with maximum stacks of Rust.</span>
+            <span class="lm-why">The usual pick: more damage against targets with full Rust stacks.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Resonant Repair</span>
+            <span class="lm-name">Resonant Repair <span class="lm-share">13% take it</span></span>
             <span class="lm-desc">Whenever you are Immobilized, you restore 3% of your Maximum Health over 4s and gain 20 Tenacity for 4s.</span>
+            <span class="lm-why">Against heavy crowd control: being stunned or rooted heals you and helps you shake it off.</span>
           </li></ul>
           </div>
 
@@ -397,38 +477,51 @@
           <span class="le-roles">Support · Offlane</span>
         </header>
 
+        <div class="le-mechs"><span class="le-mech" title="from Voracity">Gold income</span><span class="le-mech" title="from Voracity, Regenerative Tissue">Healing &amp; lifesteal</span><span class="le-mech" title="from Festering Wounds">Anti-heal</span><span class="le-mech" title="from Major, Cannibalism">Toughness</span><span class="le-mech" title="from Predator">Damage boost</span><span class="le-mech" title="from Feeding Frenzy">Basic attacks</span><span class="le-mech" title="from Predator">Movement speed</span><span class="le-mech" title="from Major, Regenerative Tissue, Cannibalism">Grows over the game</span><span class="le-mech" title="from Voracity, Predator">Farming &amp; camps</span></div>
         <div class="le-tags"><span class="le-tag" data-style="tank">I hold the front</span></div>
 
         <div class="le-major"><span class="k">Major blessing — always on</span>Gain 5% (+1% per Level) increased Maximum Health, and bonus size equal to 0.5% of your Maximum Health.</div>
 
+        <div class="le-pick"><b>Why it's picked</b> More max health that grows with level, plus a bigger body: tank supports, off-lane tanks and some junglers take it to soak damage. The Voracity minor adds small gold income from unit kills.</div>
 
+        <div class="le-who"><span class="k">Who runs it · ranked, this patch</span>
+          <div class="le-whoroles">Support 24% · Offlane 19% · Jungle 13% of games in each role</div>
+          <div class="le-heroes"><span class="le-hero" title="Krix in 68% of Steel Support ranked games"><img src="img/heroes/steel.webp" alt="" loading="lazy" onerror="this.style.display='none'">Steel</span><span class="le-hero" title="Krix in 62% of Riktor Support ranked games"><img src="img/heroes/riktor.webp" alt="" loading="lazy" onerror="this.style.display='none'">Riktor</span><span class="le-hero" title="Krix in 41% of Greystone Offlane ranked games"><img src="img/heroes/greystone.webp" alt="" loading="lazy" onerror="this.style.display='none'">Greystone</span><span class="le-hero" title="Krix in 86% of Rampage Jungle ranked games"><img src="img/heroes/rampage.webp" alt="" loading="lazy" onerror="this.style.display='none'">Rampage</span><span class="le-hero" title="Krix in 66% of Adele Support ranked games"><img src="img/heroes/adele.webp" alt="" loading="lazy" onerror="this.style.display='none'">Adele</span></div>
+          <div class="le-pair">Most common pair: <b>Regenerative Tissue + Cannibalism</b> (42%)</div>
+        </div>
 
         <details class="le-slots">
           <summary>The two minor slots — pick one from each<span class="chev">▾</span></summary>
           <div class="le-slot">
             <b>Slot 1</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Voracity</span>
+            <span class="lm-name">Voracity <span class="lm-share">31% take it</span></span>
             <span class="lm-desc">Killing an Enemy Unit restores 0.75% of your Maximum Health and grants 2 Gold.</span>
+            <span class="lm-why">For gold income while farming: each unit kill heals you a little and gives gold.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Regenerative Tissue</span>
+            <span class="lm-name">Regenerative Tissue <span class="lm-share">60% take it</span></span>
             <span class="lm-desc">After 8s without taking Hero damage, regenerate 0.2/0.4/0.7/1% Max Health per second at Levels 1/6/11/16.</span>
+            <span class="lm-why">The usual pick: health regen after a short break from hero damage, so you stay in lane longer.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Festering Wounds</span>
+            <span class="lm-name">Festering Wounds <span class="lm-share">9% take it</span></span>
             <span class="lm-desc">Your DoT abilities and Immobilizing Effects reduce Enemy Heroes' healing by 45% for 3s.</span>
+            <span class="lm-why">Against healing-heavy teams: your damage over time and stuns or roots cut enemy healing.</span>
           </li></ul>
           </div>
           <div class="le-slot">
             <b>Slot 2</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Cannibalism</span>
+            <span class="lm-name">Cannibalism <span class="lm-share">68% take it</span></span>
             <span class="lm-desc">Takedowns permanently increase your Maximum Health by 25.</span>
+            <span class="lm-why">The usual pick: every takedown permanently adds max health.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Feeding Frenzy</span>
+            <span class="lm-name">Feeding Frenzy <span class="lm-share">21% take it</span></span>
             <span class="lm-desc">Gain +10% Attack Speed per Enemy Hero within 1200 units.</span>
+            <span class="lm-why">For tanks who basic attack in fights: faster attacks for each enemy hero nearby.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Predator</span>
+            <span class="lm-name">Predator <span class="lm-share">11% take it</span></span>
             <span class="lm-desc">Camp Leader kills grant 10% Bonus Damage and 4% Movement Speed for 20s, with 100% bonus duration for Epic Monsters.</span>
+            <span class="lm-why">For junglers: killing camp leaders gives bonus damage and speed, lasting longer after epic monsters.</span>
           </li></ul>
           </div>
 
@@ -448,38 +541,51 @@
 
         </header>
 
+        <div class="le-mechs"><span class="le-mech" title="from Flawless">Healing &amp; lifesteal</span><span class="le-mech" title="from Major, Immaculate">Toughness</span><span class="le-mech" title="from Major, Masterpiece, Prima Donna, Fragrance">Damage boost</span><span class="le-mech" title="from Major">Cooldowns</span><span class="le-mech" title="from Major, Masterpiece">Movement speed</span><span class="le-mech" title="from Major, Early Bloom">Grows over the game</span><span class="le-mech" title="from Flawless">Helps allies</span></div>
         <div class="le-tags"><span class="le-tag" data-style="flex">I want a bit of everything</span></div>
 
         <div class="le-major"><span class="k">Major blessing — always on</span>Every 2 minutes and every Takedown randomly grants +1% Damage, +4 Ability Haste, +0.75% Move Speed, or +1.25% Max Health.</div>
 
+        <div class="le-pick"><b>Why it's picked</b> Random small boosts to damage, cooldowns, speed or health on a timer and with every takedown: junglers, mid-laners, supports and carries take it as a flexible pick that keeps growing all game.</div>
 
+        <div class="le-who"><span class="k">Who runs it · ranked, this patch</span>
+          <div class="le-whoroles">Jungle 12% · Midlane 8% · Support 7% of games in each role</div>
+          <div class="le-heroes"><span class="le-hero" title="Lotus in 40% of Zarus Jungle ranked games"><img src="img/heroes/zarus.webp" alt="" loading="lazy" onerror="this.style.display='none'">Zarus</span><span class="le-hero" title="Lotus in 26% of Lt. Belica Midlane ranked games"><img src="img/heroes/lt-belica.webp" alt="" loading="lazy" onerror="this.style.display='none'">Lt. Belica</span><span class="le-hero" title="Lotus in 14% of Revenant Carry ranked games"><img src="img/heroes/revenant.webp" alt="" loading="lazy" onerror="this.style.display='none'">Revenant</span><span class="le-hero" title="Lotus in 32% of Feng Mao Jungle ranked games"><img src="img/heroes/feng-mao.webp" alt="" loading="lazy" onerror="this.style.display='none'">Feng Mao</span><span class="le-hero" title="Lotus in 9% of Khaimera Jungle ranked games"><img src="img/heroes/khaimera.webp" alt="" loading="lazy" onerror="this.style.display='none'">Khaimera</span></div>
+          <div class="le-pair">Most common pair: <b>Early Bloom + Immaculate</b> (20%)</div>
+        </div>
 
         <details class="le-slots">
           <summary>The two minor slots — pick one from each<span class="chev">▾</span></summary>
           <div class="le-slot">
             <b>Slot 1</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Early Bloom</span>
+            <span class="lm-name">Early Bloom <span class="lm-share">38% take it</span></span>
             <span class="lm-desc">Gain an additional Level upon reaching Level 12.</span>
+            <span class="lm-why">The most common pick: an extra level partway through the game, for heroes who spike with levels.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Flawless</span>
+            <span class="lm-name">Flawless <span class="lm-share">32% take it</span></span>
             <span class="lm-desc">Ability hits on Enemy Heroes heal you and allies within 1000 units for 8 (+10% Magical Power), once per cast.</span>
+            <span class="lm-why">For ability heroes and supports: ability hits on enemy heroes heal you and nearby allies.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Masterpiece</span>
+            <span class="lm-name">Masterpiece <span class="lm-share">30% take it</span></span>
             <span class="lm-desc">Kills grant 4% Bonus Damage and 5% Movement Speed for 12s, stacking up to 5 times.</span>
+            <span class="lm-why">When you expect to chain kills: each kill gives stacking damage and speed for a short time.</span>
           </li></ul>
           </div>
           <div class="le-slot">
             <b>Slot 2</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Immaculate</span>
+            <span class="lm-name">Immaculate <span class="lm-share">38% take it</span></span>
             <span class="lm-desc">Gain 10% Damage Reduction above 85% current health.</span>
+            <span class="lm-why">The most common pick: take less damage while near full health, good for backline heroes.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Prima Donna</span>
+            <span class="lm-name">Prima Donna <span class="lm-share">31% take it</span></span>
             <span class="lm-desc">Deal 10% increased damage to Enemy Heroes, but take 6% increased damage from all sources.</span>
+            <span class="lm-why">For heroes who avoid getting hit: more damage to heroes, but you take more damage too.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Fragrance</span>
+            <span class="lm-name">Fragrance <span class="lm-share">32% take it</span></span>
             <span class="lm-desc">Deal 4% increased Magical Damage and 12% increased True Damage to Enemy Heroes within 800 units.</span>
+            <span class="lm-why">For close-range magic or true damage heroes: more damage to enemy heroes near you.</span>
           </li></ul>
           </div>
 
@@ -499,38 +605,51 @@
           <span class="le-roles">Jungle · Offlane</span>
         </header>
 
+        <div class="le-mechs"><span class="le-mech" title="from Roses">Gold income</span><span class="le-mech" title="from Major, Blood Bank">Healing &amp; lifesteal</span><span class="le-mech" title="from Leech">Anti-heal</span><span class="le-mech" title="from Taste of Iron, Jealousy, The Maw">Damage boost</span><span class="le-mech" title="from The Maw">Basic attacks</span><span class="le-mech" title="from The Maw">Execute &amp; %health damage</span></div>
         <div class="le-tags"><span class="le-tag" data-style="tank">I hold the front</span><span class="le-tag" data-style="sustain">I heal off damage</span><span class="le-tag" data-style="dive">I dive and duel</span></div>
 
         <div class="le-major"><span class="k">Major blessing — always on</span>Heal for 6%/7%/8%/9% of damage dealt to Heroes, increased up to 15%/20%/25%/30% based on your Missing Health. (65% effectiveness for AoE attacks, 15% against monsters.)</div>
 
+        <div class="le-pick"><b>Why it's picked</b> Heals you for part of the damage you deal to heroes, healing more the lower your health: off-lane and jungle fighters, plus some carries, take it to survive long fights. The Roses minor adds gold income from takedowns.</div>
 
+        <div class="le-who"><span class="k">Who runs it · ranked, this patch</span>
+          <div class="le-whoroles">Offlane 4% · Jungle 4% · Carry 3% of games in each role</div>
+          <div class="le-heroes"><span class="le-hero" title="Marrow in 13% of Revenant Carry ranked games"><img src="img/heroes/revenant.webp" alt="" loading="lazy" onerror="this.style.display='none'">Revenant</span><span class="le-hero" title="Marrow in 12% of Grux Offlane ranked games"><img src="img/heroes/grux.webp" alt="" loading="lazy" onerror="this.style.display='none'">Grux</span><span class="le-hero" title="Marrow in 5% of Khaimera Jungle ranked games"><img src="img/heroes/khaimera.webp" alt="" loading="lazy" onerror="this.style.display='none'">Khaimera</span><span class="le-hero" title="Marrow in 17% of Bayle Offlane ranked games"><img src="img/heroes/bayle.webp" alt="" loading="lazy" onerror="this.style.display='none'">Bayle</span><span class="le-hero" title="Marrow in 11% of Scarlett Offlane ranked games"><img src="img/heroes/scarlett.webp" alt="" loading="lazy" onerror="this.style.display='none'">Scarlett</span></div>
+          <div class="le-pair">Most common pair: <b>Blood Bank + Roses</b> (20%)</div>
+        </div>
 
         <details class="le-slots">
           <summary>The two minor slots — pick one from each<span class="chev">▾</span></summary>
           <div class="le-slot">
             <b>Slot 1</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Leech</span>
+            <span class="lm-name">Leech <span class="lm-share">46% take it</span></span>
             <span class="lm-desc">Enemy heroes within 550 units have base Health Regen reduced by 200%.</span>
+            <span class="lm-why">Against lane opponents who rely on natural health regen: enemies near you regenerate much less.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Blood Bank</span>
+            <span class="lm-name">Blood Bank <span class="lm-share">45% take it</span></span>
             <span class="lm-desc">Store 100% of Hero damage as charges for 3s. Gain 0.75% Lifesteal per 100 charges.</span>
+            <span class="lm-why">For heroes who deal lots of damage quickly: heavy damage builds up extra lifesteal.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Taste of Iron</span>
+            <span class="lm-name">Taste of Iron <span class="lm-share">9% take it</span></span>
             <span class="lm-desc">Damaging a hero with a DoT increases your damage by 6% for 3s.</span>
+            <span class="lm-why">For heroes with damage over time abilities like burns or bleeds: those hits boost your damage briefly.</span>
           </li></ul>
           </div>
           <div class="le-slot">
             <b>Slot 2</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Roses</span>
+            <span class="lm-name">Roses <span class="lm-share">39% take it</span></span>
             <span class="lm-desc">Takedowns grant 20 bonus gold per previous takedown, capped at +100g (5 takedowns). Hero kills also grant +50% effectiveness of Marrow’s Major for 8s.</span>
+            <span class="lm-why">For gold income when kills come often: each takedown pays more bonus gold, and kills boost your healing.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Jealousy</span>
+            <span class="lm-name">Jealousy <span class="lm-share">27% take it</span></span>
             <span class="lm-desc">Deal 1%-8% increased damage as your Health falls from 100% to 20%.</span>
+            <span class="lm-why">For fighters who keep swinging while low: you deal more damage as your health drops.</span>
           </li><li class="le-minor">
-            <span class="lm-name">The Maw</span>
+            <span class="lm-name">The Maw <span class="lm-share">33% take it</span></span>
             <span class="lm-desc">Basic Attacks deal 10% bonus True Damage to targets below 40% Max Health.</span>
+            <span class="lm-why">For auto-attack heroes who finish kills: basic attacks deal bonus true damage, which ignores armor, to low targets.</span>
           </li></ul>
           </div>
 
@@ -550,38 +669,51 @@
           <span class="le-roles">Offlane · Jungle</span>
         </header>
 
+        <div class="le-mechs"><span class="le-mech" title="from Mana Siphon">Mana</span><span class="le-mech" title="from Growing Threat, From the Abyss">Healing &amp; lifesteal</span><span class="le-mech" title="from Major, Adaptive Plating, Terror">Toughness</span><span class="le-mech" title="from Growing Threat">Damage boost</span><span class="le-mech" title="from Inescapable">Slows enemies</span><span class="le-mech" title="from Major, Growing Threat, From the Abyss">Grows over the game</span><span class="le-mech" title="from Terror">Farming &amp; camps</span></div>
         <div class="le-tags"><span class="le-tag" data-style="tank">I hold the front</span><span class="le-tag" data-style="scale">I scale late</span><span class="le-tag" data-style="sustain">I heal off damage</span></div>
 
         <div class="le-major"><span class="k">Major blessing — always on</span>Damage a hero to gain Doom for 3s. Doom grants 1 Physical Power, 2 Magical Power, 1 Physical Armor &amp; 1 Magical Armor for every 3s it persists. On level-up or Takedown, the stats Doom grants are permanently increased by 20%.</div>
 
+        <div class="le-pick"><b>Why it's picked</b> Damaging heroes builds Doom, which adds power and armor the longer a fight lasts, and levels and takedowns make it permanently stronger: off-lane and jungle fighters take it for long, drawn-out fights.</div>
 
+        <div class="le-who"><span class="k">Who runs it · ranked, this patch</span>
+          <div class="le-whoroles">Offlane 4% · Jungle 3% · Support 1% of games in each role</div>
+          <div class="le-heroes"><span class="le-hero" title="Nihil in 6% of Khaimera Jungle ranked games"><img src="img/heroes/khaimera.webp" alt="" loading="lazy" onerror="this.style.display='none'">Khaimera</span><span class="le-hero" title="Nihil in 3% of Greystone Offlane ranked games"><img src="img/heroes/greystone.webp" alt="" loading="lazy" onerror="this.style.display='none'">Greystone</span><span class="le-hero" title="Nihil in 3% of Riktor Support ranked games"><img src="img/heroes/riktor.webp" alt="" loading="lazy" onerror="this.style.display='none'">Riktor</span><span class="le-hero" title="Nihil in 19% of Akeron Offlane ranked games"><img src="img/heroes/akeron.webp" alt="" loading="lazy" onerror="this.style.display='none'">Akeron</span><span class="le-hero" title="Nihil in 12% of Terra Offlane ranked games"><img src="img/heroes/terra.webp" alt="" loading="lazy" onerror="this.style.display='none'">Terra</span></div>
+          <div class="le-pair">Most common pair: <b>From the Abyss + Adaptive Plating</b> (42%)</div>
+        </div>
 
         <details class="le-slots">
           <summary>The two minor slots — pick one from each<span class="chev">▾</span></summary>
           <div class="le-slot">
             <b>Slot 1</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Growing Threat</span>
+            <span class="lm-name">Growing Threat <span class="lm-share">33% take it</span></span>
             <span class="lm-desc">At 16 minutes, gain +12% Bonus Damage and 5% Omnivamp permanently.</span>
+            <span class="lm-why">For late-game fighters: past a mid-game timer, permanent bonus damage and healing from all damage dealt.</span>
           </li><li class="le-minor">
-            <span class="lm-name">From the Abyss</span>
+            <span class="lm-name">From the Abyss <span class="lm-share">53% take it</span></span>
             <span class="lm-desc">Restore 0.2/0.4/0.7/1% Max Health/s (Levels 1/6/11/16) while in Hero Combat or out of enemy vision.</span>
+            <span class="lm-why">The usual pick: steady health regen during hero fights or while hidden from enemies.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Mana Siphon</span>
+            <span class="lm-name">Mana Siphon <span class="lm-share">14% take it</span></span>
             <span class="lm-desc">Ability hits on Enemy Heroes steal 10 (+1% of the target's Max Mana) Mana.</span>
+            <span class="lm-why">For mana-hungry heroes: ability hits on enemy heroes steal mana.</span>
           </li></ul>
           </div>
           <div class="le-slot">
             <b>Slot 2</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Adaptive Plating</span>
+            <span class="lm-name">Adaptive Plating <span class="lm-share">72% take it</span></span>
             <span class="lm-desc">Taking damage grants matching Armor (1% per hit, stacks 10x).</span>
+            <span class="lm-why">The usual pick: taking damage grants matching armor, so you toughen up mid-fight.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Inescapable</span>
+            <span class="lm-name">Inescapable <span class="lm-share">12% take it</span></span>
             <span class="lm-desc">Enemies within 800u that dash/leap/blink are slowed 25% for 1.75s.</span>
+            <span class="lm-why">Against slippery heroes: nearby enemies who dash, leap or blink get slowed.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Terror</span>
+            <span class="lm-name">Terror <span class="lm-share">17% take it</span></span>
             <span class="lm-desc">Take 35% less damage from Minions and Monsters, and 25% less from Towers.</span>
+            <span class="lm-why">For junglers and tower divers: much less damage from minions, monsters and towers.</span>
           </li></ul>
           </div>
 
@@ -601,38 +733,51 @@
           <span class="le-roles">Support · Offlane</span>
         </header>
 
+        <div class="le-mechs"><span class="le-mech" title="from Harmonic Currents">Mana</span><span class="le-mech" title="from Harmonic Currents">Healing &amp; lifesteal</span><span class="le-mech" title="from Major, Convection">Toughness</span><span class="le-mech" title="from Bioluminescence, Neurotoxin">Damage boost</span><span class="le-mech" title="from Lil Sucker">Basic attacks</span><span class="le-mech" title="from Lil Sucker">Movement speed</span><span class="le-mech" title="from Bioluminescence">Vision</span></div>
         <div class="le-tags"><span class="le-tag" data-style="tank">I hold the front</span><span class="le-tag" data-style="spells">I cast abilities</span><span class="le-tag" data-style="allies">I keep allies alive</span></div>
 
         <div class="le-major"><span class="k">Major blessing — always on</span>Decrease your size by 10%. Upon casting an ability, nearby enemy Heroes within 600 units are debuffed, dealing 4% decreased damage for 3.5s, stacking up to 3 times.</div>
 
-        <div class="le-pick"><b>Why you'd take it</b> Harmonic Currents replaces the sustain the potion nerfs took away, and Convection turns the debuff pulse into free resistances while standing in the fight. Take Neurotoxin instead when the team needs the group damage amp.</div>
+        <div class="le-pick"><b>Why it's picked</b> Casting abilities weakens the damage of nearby enemy heroes, stacking, and makes you smaller: some off-laners, junglers and supports take it to blunt enemy damage in close fights.</div>
+
+        <div class="le-who"><span class="k">Who runs it · ranked, this patch</span>
+          <div class="le-whoroles">Support 2% · Offlane 2% of games in each role</div>
+          <div class="le-heroes"><span class="le-hero" title="Pilow in 15% of Crunch Offlane ranked games"><img src="img/heroes/crunch.webp" alt="" loading="lazy" onerror="this.style.display='none'">Crunch</span><span class="le-hero" title="Pilow in 10% of Crunch Jungle ranked games"><img src="img/heroes/crunch.webp" alt="" loading="lazy" onerror="this.style.display='none'">Crunch</span><span class="le-hero" title="Pilow in 13% of Maco Support ranked games"><img src="img/heroes/maco.webp" alt="" loading="lazy" onerror="this.style.display='none'">Maco</span><span class="le-hero" title="Pilow in 5% of Shinbi Offlane ranked games"><img src="img/heroes/shinbi.webp" alt="" loading="lazy" onerror="this.style.display='none'">Shinbi</span><span class="le-hero" title="Pilow in 2% of Riktor Support ranked games"><img src="img/heroes/riktor.webp" alt="" loading="lazy" onerror="this.style.display='none'">Riktor</span></div>
+          <div class="le-pair">Most common pair: <b>Bioluminescence + Neurotoxin</b> (31%)</div>
+        </div>
 
         <details class="le-slots">
           <summary>The two minor slots — pick one from each<span class="chev">▾</span></summary>
           <div class="le-slot">
             <b>Slot 1</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Bioluminescence</span>
+            <span class="lm-name">Bioluminescence <span class="lm-share">41% take it</span></span>
             <span class="lm-desc">Enemies you damage take 3% bonus Damage and are Revealed for 4s.</span>
+            <span class="lm-why">Against stealthy or slippery heroes: enemies you damage take extra damage and are revealed. Common partner for Neurotoxin.</span>
           </li><li class="le-minor rec">
-            <span class="lm-name">Harmonic Currents <span class="lm-pick">picked</span></span>
+            <span class="lm-name">Harmonic Currents <span class="lm-pick">picked</span> <span class="lm-share">49% take it</span></span>
             <span class="lm-desc">Casting an ability restores 2.5% of your Missing Health and Missing Mana over 3s (1 tick on cast, then 3 once a second).</span>
+            <span class="lm-why">The most common pick: each ability cast restores some missing health and mana.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Diffusion</span>
+            <span class="lm-name">Diffusion <span class="lm-share">10% take it</span></span>
             <span class="lm-desc">Increases the radius of Pilow’s debuff pulse by 50% and its duration by 1.5s.</span>
+            <span class="lm-why">For big team fights: the weakening pulse reaches farther and lasts longer.</span>
           </li></ul>
           </div>
           <div class="le-slot">
             <b>Slot 2</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Neurotoxin</span>
+            <span class="lm-name">Neurotoxin <span class="lm-share">64% take it</span></span>
             <span class="lm-desc">Pilow additionally increases damage enemies take by 1.5% per stack.</span>
+            <span class="lm-why">The most common pick: the weakening also makes enemies take more damage per stack.</span>
           </li><li class="le-minor rec">
-            <span class="lm-name">Convection <span class="lm-pick">picked</span></span>
+            <span class="lm-name">Convection <span class="lm-pick">picked</span> <span class="lm-share">21% take it</span></span>
             <span class="lm-desc">Gain 4 Physical Armor and 4 Magical Armor for every active stack of Pilow on nearby enemy Heroes.</span>
+            <span class="lm-why">For front-liners: extra armor for each active weakening stack on nearby enemy heroes.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Lil Sucker</span>
+            <span class="lm-name">Lil Sucker <span class="lm-share">15% take it</span></span>
             <span class="lm-desc">Basic Attacks steal 2% of the target’s Movement Speed for 3s, stacking up to 3 times.</span>
+            <span class="lm-why">For chasing or sticking to targets: basic attacks steal movement speed.</span>
           </li></ul>
           </div>
           <p class="le-recnote">“Picked” marks this project's default pair for the Eternal. Open a hero in the tool for a pick tuned to that hero and role.</p>
@@ -652,38 +797,51 @@
           <span class="le-roles">Jungle · Midlane</span>
         </header>
 
+        <div class="le-mechs"><span class="le-mech" title="from Demonic Bargain">Gold income</span><span class="le-mech" title="from Risen">Healing &amp; lifesteal</span><span class="le-mech" title="from Psychosis">Damage boost</span><span class="le-mech" title="from Rite">Cooldowns</span><span class="le-mech" title="from Major, Hellfire Strikes">Basic attacks</span><span class="le-mech" title="from Broken Wings">Movement speed</span><span class="le-mech" title="from Demonic Bargain, Hellfire Strikes, Rite, Psychosis">Grows over the game</span></div>
         <div class="le-tags"><span class="le-tag" data-style="spells">I cast abilities</span><span class="le-tag" data-style="dive">I dive and duel</span><span class="le-tag" data-style="scale">I scale late</span></div>
 
         <div class="le-major"><span class="k">Major blessing — always on</span>Takedowns grant a stack of Fearless (max 6). Max Health is reduced by 6% (+6.5% melee / +7.5% ranged per Fearless), and you gain 4% (+4% per Fearless) increased Physical Power, Magical Power and Attack Speed. Fearless stacks are lost on death.</div>
 
+        <div class="le-pick"><b>Why it's picked</b> Takedowns build Fearless stacks that trade max health for more power and attack speed, lost on death: some junglers, carries and mid-laners take it to grow stronger from early kills. The Demonic Bargain minor adds gold income.</div>
 
+        <div class="le-who"><span class="k">Who runs it · ranked, this patch</span>
+          <div class="le-whoroles">Jungle 3% · Carry 2% · Midlane 1% of games in each role</div>
+          <div class="le-heroes"><span class="le-hero" title="Satariel in 4% of Khaimera Jungle ranked games"><img src="img/heroes/khaimera.webp" alt="" loading="lazy" onerror="this.style.display='none'">Khaimera</span><span class="le-hero" title="Satariel in 4% of Revenant Carry ranked games"><img src="img/heroes/revenant.webp" alt="" loading="lazy" onerror="this.style.display='none'">Revenant</span><span class="le-hero" title="Satariel in 3% of TwinBlast Carry ranked games"><img src="img/heroes/twinblast.webp" alt="" loading="lazy" onerror="this.style.display='none'">TwinBlast</span><span class="le-hero" title="Satariel in 12% of Kallari Jungle ranked games"><img src="img/heroes/kallari.webp" alt="" loading="lazy" onerror="this.style.display='none'">Kallari</span><span class="le-hero" title="Satariel in 5% of Skylar Carry ranked games"><img src="img/heroes/skylar.webp" alt="" loading="lazy" onerror="this.style.display='none'">Skylar</span></div>
+          <div class="le-pair">Most common pair: <b>Hellfire Strikes + Psychosis</b> (22%)</div>
+        </div>
 
         <details class="le-slots">
           <summary>The two minor slots — pick one from each<span class="chev">▾</span></summary>
           <div class="le-slot">
             <b>Slot 1</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Demonic Bargain</span>
+            <span class="lm-name">Demonic Bargain <span class="lm-share">41% take it</span></span>
             <span class="lm-desc">Gain 350 additional Gold at levels 1 and 10.</span>
+            <span class="lm-why">The most common pick for gold income: a lump of extra gold at two set levels.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Risen</span>
+            <span class="lm-name">Risen <span class="lm-share">24% take it</span></span>
             <span class="lm-desc">When at 3 or more Fearless stacks, gain 15% Omnivamp.</span>
+            <span class="lm-why">For heroes who keep stacks alive: once you hold enough Fearless stacks, heal from all damage dealt.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Hellfire Strikes</span>
+            <span class="lm-name">Hellfire Strikes <span class="lm-share">35% take it</span></span>
             <span class="lm-desc">Basic Attacks deal 1.5 (+1.25 per level) True Damage on-hit.</span>
+            <span class="lm-why">For auto-attack heroes: basic attacks deal bonus true damage that grows with level.</span>
           </li></ul>
           </div>
           <div class="le-slot">
             <b>Slot 2</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Broken Wings</span>
+            <span class="lm-name">Broken Wings <span class="lm-share">30% take it</span></span>
             <span class="lm-desc">Your Movement Speed cannot be altered by items or abilities.</span>
+            <span class="lm-why">Against heavy slows: your movement speed cannot be changed, but speed boosts are lost too.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Rite</span>
+            <span class="lm-name">Rite <span class="lm-share">16% take it</span></span>
             <span class="lm-desc">Abilities cost an additional 5 (+2.5 per Level) Health to cast, but you permanently gain 15 (+1 per Level) Ability Haste.</span>
+            <span class="lm-why">For ability heroes: abilities cost some health, but permanently come back faster.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Psychosis</span>
+            <span class="lm-name">Psychosis <span class="lm-share">55% take it</span></span>
             <span class="lm-desc">Deal 3% (+0.3% per Level) more damage to the closest Enemy Hero, but 10% less damage to any other Enemy Hero.</span>
+            <span class="lm-why">The usual pick for divers locking one target: more damage to the closest hero, less to others.</span>
           </li></ul>
           </div>
 
@@ -703,38 +861,51 @@
           <span class="le-roles">Carry · Offlane</span>
         </header>
 
+        <div class="le-mechs"><span class="le-mech" title="from The King">Gold income</span><span class="le-mech" title="from Savage Strikes">Healing &amp; lifesteal</span><span class="le-mech" title="from Major, Golden Mane">Toughness</span><span class="le-mech" title="from Major, Alpha's Court">Damage boost</span><span class="le-mech" title="from Rallying Roar">Cooldowns</span><span class="le-mech" title="from Rallying Roar">Ultimate</span><span class="le-mech" title="from Major, Savage Strikes, The King, Ferocity">Basic attacks</span><span class="le-mech" title="from Rallying Roar">Movement speed</span><span class="le-mech" title="from Major, Savage Strikes">Grows over the game</span><span class="le-mech" title="from Rallying Roar">Helps allies</span></div>
         <div class="le-tags"><span class="le-tag" data-style="autos">I auto-attack</span><span class="le-tag" data-style="dive">I dive and duel</span><span class="le-tag" data-style="sustain">I heal off damage</span></div>
 
         <div class="le-major"><span class="k">Major blessing — always on</span>Mark the last Enemy Hero damaged by your Basic Attack for 3s, increasing your damage against them by 3% (+0.4% per level) and reducing the damage they deal to you by 1.5% (+0.35% per level).</div>
 
+        <div class="le-pick"><b>Why it's picked</b> The last hero you basic attacked takes more damage from you and deals less to you, growing with level: off-lane and jungle fighters, plus some carries, take it for long one-on-one fights. The King minor adds gold income.</div>
 
+        <div class="le-who"><span class="k">Who runs it · ranked, this patch</span>
+          <div class="le-whoroles">Offlane 19% · Jungle 19% · Carry 10% of games in each role</div>
+          <div class="le-heroes"><span class="le-hero" title="Thraex in 40% of Khaimera Jungle ranked games"><img src="img/heroes/khaimera.webp" alt="" loading="lazy" onerror="this.style.display='none'">Khaimera</span><span class="le-hero" title="Thraex in 57% of Grux Offlane ranked games"><img src="img/heroes/grux.webp" alt="" loading="lazy" onerror="this.style.display='none'">Grux</span><span class="le-hero" title="Thraex in 34% of Greystone Offlane ranked games"><img src="img/heroes/greystone.webp" alt="" loading="lazy" onerror="this.style.display='none'">Greystone</span><span class="le-hero" title="Thraex in 38% of Legion Carry ranked games"><img src="img/heroes/legion.webp" alt="" loading="lazy" onerror="this.style.display='none'">Legion</span><span class="le-hero" title="Thraex in 31% of Serath Jungle ranked games"><img src="img/heroes/serath.webp" alt="" loading="lazy" onerror="this.style.display='none'">Serath</span></div>
+          <div class="le-pair">Most common pair: <b>Savage Strikes + Ferocity</b> (61%)</div>
+        </div>
 
         <details class="le-slots">
           <summary>The two minor slots — pick one from each<span class="chev">▾</span></summary>
           <div class="le-slot">
             <b>Slot 1</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Alpha's Court</span>
+            <span class="lm-name">Alpha's Court <span class="lm-share">21% take it</span></span>
             <span class="lm-desc">Deal 6% bonus damage when no allied hero is within 800 units.</span>
+            <span class="lm-why">For solo laners and junglers who fight alone: bonus damage when no ally is nearby.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Savage Strikes</span>
+            <span class="lm-name">Savage Strikes <span class="lm-share">74% take it</span></span>
             <span class="lm-desc">Deal 1.5 (+0.4 per level) Physical Damage On-Hit. Attacking an Enemy Hero increases this by 100% for 3s, stacking up to 3 times. Heal for the damage dealt.</span>
+            <span class="lm-why">The usual pick: extra damage on every hit that ramps against heroes and heals you.</span>
           </li><li class="le-minor">
-            <span class="lm-name">The King</span>
+            <span class="lm-name">The King <span class="lm-share">4% take it</span></span>
             <span class="lm-desc">Basic Attacks against Enemy Heroes grant you 6 gold.</span>
+            <span class="lm-why">For gold income: every basic attack on an enemy hero earns gold, great in lanes with constant trading.</span>
           </li></ul>
           </div>
           <div class="le-slot">
             <b>Slot 2</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Ferocity</span>
+            <span class="lm-name">Ferocity <span class="lm-share">83% take it</span></span>
             <span class="lm-desc">Gain 1% Total Attack Speed per 1s in Hero Combat, stacking infinitely.</span>
+            <span class="lm-why">The usual pick: attack speed keeps climbing the longer you stay in a fight with heroes.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Rallying Roar</span>
+            <span class="lm-name">Rallying Roar <span class="lm-share">14% take it</span></span>
             <span class="lm-desc">Gain 10 Ultimate Haste. Casting your Ultimate grants you and allies within 1500 units 25% Movement Speed for 4s. 20s cooldown.</span>
+            <span class="lm-why">For heroes whose ultimate starts fights: shorter ultimate cooldown and a speed boost for you and nearby allies.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Golden Mane</span>
+            <span class="lm-name">Golden Mane <span class="lm-share">3% take it</span></span>
             <span class="lm-desc">Take 8% less damage from all non-AoE attacks and abilities.</span>
+            <span class="lm-why">Against single-target damage: you take less from attacks and abilities that are not area damage.</span>
           </li></ul>
           </div>
 
@@ -754,38 +925,51 @@
           <span class="le-roles">Carry · Jungle</span>
         </header>
 
+        <div class="le-mechs"><span class="le-mech" title="from Sub-Surface">Toughness</span><span class="le-mech" title="from Breach">Armor shred</span><span class="le-mech" title="from Major, Serration, Crush, Melting Point">Damage boost</span><span class="le-mech" title="from Mechadrive">Cooldowns</span><span class="le-mech" title="from Breach">Ultimate</span><span class="le-mech" title="from Major, Mechadrive">Basic attacks</span><span class="le-mech" title="from Major, Serration, Crush">Execute &amp; %health damage</span><span class="le-mech" title="from Major">Grows over the game</span></div>
         <div class="le-tags"><span class="le-tag" data-style="autos">I auto-attack</span><span class="le-tag" data-style="sustain">I heal off damage</span><span class="le-tag" data-style="scale">I scale late</span></div>
 
         <div class="le-major"><span class="k">Major blessing — always on</span>Every 3rd consecutive Basic Attack on the same Enemy Hero within 2.5s deals 3% (+0.25% per Level) of their Max Health as bonus Physical Damage.</div>
 
+        <div class="le-pick"><b>Why it's picked</b> Every third basic attack in a row on the same hero deals bonus damage based on their max health: carries who auto-attack, plus some junglers, take it to break down tanks and high-health fighters.</div>
 
+        <div class="le-who"><span class="k">Who runs it · ranked, this patch</span>
+          <div class="le-whoroles">Carry 21% · Jungle 4% · Offlane 3% of games in each role</div>
+          <div class="le-heroes"><span class="le-hero" title="Vermis in 23% of Sparrow Carry ranked games"><img src="img/heroes/sparrow.webp" alt="" loading="lazy" onerror="this.style.display='none'">Sparrow</span><span class="le-hero" title="Vermis in 28% of Murdock Carry ranked games"><img src="img/heroes/murdock.webp" alt="" loading="lazy" onerror="this.style.display='none'">Murdock</span><span class="le-hero" title="Vermis in 24% of TwinBlast Carry ranked games"><img src="img/heroes/twinblast.webp" alt="" loading="lazy" onerror="this.style.display='none'">TwinBlast</span><span class="le-hero" title="Vermis in 25% of Drongo Carry ranked games"><img src="img/heroes/drongo.webp" alt="" loading="lazy" onerror="this.style.display='none'">Drongo</span><span class="le-hero" title="Vermis in 19% of Revenant Carry ranked games"><img src="img/heroes/revenant.webp" alt="" loading="lazy" onerror="this.style.display='none'">Revenant</span></div>
+          <div class="le-pair">Most common pair: <b>Serration + Melting Point</b> (55%)</div>
+        </div>
 
         <details class="le-slots">
           <summary>The two minor slots — pick one from each<span class="chev">▾</span></summary>
           <div class="le-slot">
             <b>Slot 1</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Serration</span>
+            <span class="lm-name">Serration <span class="lm-share">84% take it</span></span>
             <span class="lm-desc">Vermis also deals 3.5% of the target's Missing Health as bonus Physical Damage.</span>
+            <span class="lm-why">The usual pick: the bonus hit also scales with missing health, so it finishes low targets faster.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Crush</span>
+            <span class="lm-name">Crush <span class="lm-share">14% take it</span></span>
             <span class="lm-desc">Immobilizing an Enemy Hero deals 8% of their Max Health as bonus Physical Damage, with an 8s cooldown per target.</span>
+            <span class="lm-why">For heroes with stuns or roots: immobilizing a hero deals a big chunk of their max health.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Mechadrive</span>
+            <span class="lm-name">Mechadrive <span class="lm-share">3% take it</span></span>
             <span class="lm-desc">Basic Attacks reduce your Secondary ability’s current cooldown by 10% on-hit (5% against non-heroes).</span>
+            <span class="lm-why">For heroes whose secondary ability matters most: basic attacks keep shortening its cooldown.</span>
           </li></ul>
           </div>
           <div class="le-slot">
             <b>Slot 2</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Melting Point</span>
+            <span class="lm-name">Melting Point <span class="lm-share">60% take it</span></span>
             <span class="lm-desc">Deal 10% bonus damage to targets with more than 125 Physical Armor.</span>
+            <span class="lm-why">The usual pick: bonus damage against heavily armored targets, great when enemies stack physical armor.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Breach</span>
+            <span class="lm-name">Breach <span class="lm-share">30% take it</span></span>
             <span class="lm-desc">Ultimate damage reduces an Enemy Hero's Physical Armor by 35% for 4s.</span>
+            <span class="lm-why">For heroes with a damaging ultimate: it strips a target's physical armor briefly so your team hits harder.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Sub-Surface</span>
+            <span class="lm-name">Sub-Surface <span class="lm-share">11% take it</span></span>
             <span class="lm-desc">Take 7% less damage from AoE Abilities.</span>
+            <span class="lm-why">Against teams with many area spells: you take less damage from area abilities.</span>
           </li></ul>
           </div>
 
@@ -805,38 +989,51 @@
           <span class="le-roles">Midlane · Support</span>
         </header>
 
+        <div class="le-mechs"><span class="le-mech" title="from Tithe of Death, Phylactery">Mana</span><span class="le-mech" title="from Lich">Healing &amp; lifesteal</span><span class="le-mech" title="from Phylactery">Shields</span><span class="le-mech" title="from Major, Mind Rot">Damage boost</span><span class="le-mech" title="from Tithe of Death, The Tenth Seal, Phylactery">Cooldowns</span><span class="le-mech" title="from The Tenth Seal, Phylactery, Millennia">Ultimate</span><span class="le-mech" title="from Mind Rot">Execute &amp; %health damage</span><span class="le-mech" title="from Major, Lich, Tithe of Death, The Tenth Seal, Millennia">Grows over the game</span></div>
         <div class="le-tags"><span class="le-tag" data-style="spells">I cast abilities</span></div>
 
         <div class="le-major"><span class="k">Major blessing — always on</span>Ability damage dealt to Enemy Heroes deals 7% (+0.4% per minute) of that damage as a DoT over 3s.</div>
 
+        <div class="le-pick"><b>Why it's picked</b> Extra damage over time whenever your abilities hit enemy heroes, growing stronger each minute: mid-lane mages and other ability-damage heroes, including some supports and off-laners, take it to make every spell hit harder.</div>
 
+        <div class="le-who"><span class="k">Who runs it · ranked, this patch</span>
+          <div class="le-whoroles">Midlane 57% · Support 17% · Offlane 16% of games in each role</div>
+          <div class="le-heroes"><span class="le-hero" title="Vesh in 74% of Renna Midlane ranked games"><img src="img/heroes/renna.webp" alt="" loading="lazy" onerror="this.style.display='none'">Renna</span><span class="le-hero" title="Vesh in 70% of Gideon Midlane ranked games"><img src="img/heroes/gideon.webp" alt="" loading="lazy" onerror="this.style.display='none'">Gideon</span><span class="le-hero" title="Vesh in 57% of The Fey Midlane ranked games"><img src="img/heroes/the-fey.webp" alt="" loading="lazy" onerror="this.style.display='none'">The Fey</span><span class="le-hero" title="Vesh in 52% of Dekker Support ranked games"><img src="img/heroes/dekker.webp" alt="" loading="lazy" onerror="this.style.display='none'">Dekker</span><span class="le-hero" title="Vesh in 59% of Gadget Midlane ranked games"><img src="img/heroes/gadget.webp" alt="" loading="lazy" onerror="this.style.display='none'">Gadget</span></div>
+          <div class="le-pair">Most common pair: <b>Lich + Mind Rot</b> (34%)</div>
+        </div>
 
         <details class="le-slots">
           <summary>The two minor slots — pick one from each<span class="chev">▾</span></summary>
           <div class="le-slot">
             <b>Slot 1</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Lich</span>
+            <span class="lm-name">Lich <span class="lm-share">54% take it</span></span>
             <span class="lm-desc">Gain 4%/7%/10%/14% Magical Lifesteal at Levels 1/6/11/16.</span>
+            <span class="lm-why">The common pick: healing from your spell damage that grows with level, for staying healthy in lane.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Tithe of Death</span>
+            <span class="lm-name">Tithe of Death <span class="lm-share">29% take it</span></span>
             <span class="lm-desc">Takedowns restore 15% Max Mana and permanently grant 2 Ability Haste, up to 30 Ability Haste.</span>
+            <span class="lm-why">Take it when you expect many kills and assists; each refills mana and permanently shortens your cooldowns.</span>
           </li><li class="le-minor">
-            <span class="lm-name">The Tenth Seal</span>
+            <span class="lm-name">The Tenth Seal <span class="lm-share">17% take it</span></span>
             <span class="lm-desc">At Level 10, gain 5% Ultimate Damage and 25 Ultimate Ability Haste.</span>
+            <span class="lm-why">For heroes whose ultimate is their main damage: from mid-game, a stronger ultimate that comes back sooner.</span>
           </li></ul>
           </div>
           <div class="le-slot">
             <b>Slot 2</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Mind Rot</span>
+            <span class="lm-name">Mind Rot <span class="lm-share">60% take it</span></span>
             <span class="lm-desc">The major also deals 2% of the target's current health as bonus damage.</span>
+            <span class="lm-why">The common pick: the extra damage also takes a slice of the target's current health, best against healthy, tanky targets.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Phylactery</span>
+            <span class="lm-name">Phylactery <span class="lm-share">12% take it</span></span>
             <span class="lm-desc">After your Ultimate, gain 100% Cooldown Progression for 4s and a shield equal to 15% of Max Mana for 4s. 20s cooldown.</span>
+            <span class="lm-why">For heroes who follow their ultimate with more spells: briefly faster cooldowns plus a shield based on your mana.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Millennia</span>
+            <span class="lm-name">Millennia <span class="lm-share">28% take it</span></span>
             <span class="lm-desc">Every 60s, increase your Ultimate Ability Damage by 0.75%.</span>
+            <span class="lm-why">For long games on ultimate-heavy heroes: your ultimate damage keeps creeping up every minute.</span>
           </li></ul>
           </div>
 
@@ -856,38 +1053,51 @@
           <span class="le-roles">Carry · Jungle</span>
         </header>
 
+        <div class="le-mechs"><span class="le-mech" title="from Forage">Gold income</span><span class="le-mech" title="from Taproot">Healing &amp; lifesteal</span><span class="le-mech" title="from Natural Resistance">Toughness</span><span class="le-mech" title="from Dryad’s Boon">Cooldowns</span><span class="le-mech" title="from Major, Dryad’s Boon, Wind-Rider, Barkskin, Taproot">Basic attacks</span><span class="le-mech" title="from Major">Execute &amp; %health damage</span><span class="le-mech" title="from Major, Wind-Rider, Barkskin">Grows over the game</span><span class="le-mech" title="from Forage">Farming &amp; camps</span></div>
         <div class="le-tags"><span class="le-tag" data-style="autos">I auto-attack</span><span class="le-tag" data-style="dive">I dive and duel</span></div>
 
         <div class="le-major"><span class="k">Major blessing — always on</span>Damaging an Enemy Hero below 30% Health fires 4 (+1 per 30% Bonus Attack Speed) projectiles that each deal 7 (+1 per level) True Damage. Missiles travel through walls and disappear after 3000u. 10s cooldown per Hero. On-hit effects apply at 20% effectiveness.</div>
 
+        <div class="le-pick"><b>Why it's picked</b> Hitting a low-health hero fires missiles of true damage that pass through walls: carries who auto-attack and some junglers take it to finish kills. The Forage minor adds gold income from minions and monsters.</div>
 
+        <div class="le-who"><span class="k">Who runs it · ranked, this patch</span>
+          <div class="le-whoroles">Carry 36% · Jungle 17% · Offlane 7% of games in each role</div>
+          <div class="le-heroes"><span class="le-hero" title="Weald in 57% of Sparrow Carry ranked games"><img src="img/heroes/sparrow.webp" alt="" loading="lazy" onerror="this.style.display='none'">Sparrow</span><span class="le-hero" title="Weald in 49% of TwinBlast Carry ranked games"><img src="img/heroes/twinblast.webp" alt="" loading="lazy" onerror="this.style.display='none'">TwinBlast</span><span class="le-hero" title="Weald in 45% of Drongo Carry ranked games"><img src="img/heroes/drongo.webp" alt="" loading="lazy" onerror="this.style.display='none'">Drongo</span><span class="le-hero" title="Weald in 52% of Serath Jungle ranked games"><img src="img/heroes/serath.webp" alt="" loading="lazy" onerror="this.style.display='none'">Serath</span><span class="le-hero" title="Weald in 33% of Murdock Carry ranked games"><img src="img/heroes/murdock.webp" alt="" loading="lazy" onerror="this.style.display='none'">Murdock</span></div>
+          <div class="le-pair">Most common pair: <b>Forage + Wind-Rider</b> (33%)</div>
+        </div>
 
         <details class="le-slots">
           <summary>The two minor slots — pick one from each<span class="chev">▾</span></summary>
           <div class="le-slot">
             <b>Slot 1</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Forage</span>
+            <span class="lm-name">Forage <span class="lm-share">62% take it</span></span>
             <span class="lm-desc">Gain 3 additional Gold and 3 additional XP per Minion or Monster kill.</span>
+            <span class="lm-why">The usual pick for gold income: extra gold and experience from every minion and monster kill.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Dryad’s Boon</span>
+            <span class="lm-name">Dryad’s Boon <span class="lm-share">31% take it</span></span>
             <span class="lm-desc">Basic Attacks decrease basic ability cooldowns by 0.15s on-hit.</span>
+            <span class="lm-why">For heroes who mix abilities with basic attacks: each hit shortens basic ability cooldowns.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Natural Resistance</span>
+            <span class="lm-name">Natural Resistance <span class="lm-share">7% take it</span></span>
             <span class="lm-desc">Cleanse all crowd control and gain 400 Tenacity when below 25% Maximum Health. Cleanse has a 20s cooldown.</span>
+            <span class="lm-why">Against heavy stuns and roots: when very low, you break free and resist crowd control.</span>
           </li></ul>
           </div>
           <div class="le-slot">
             <b>Slot 2</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Wind-Rider</span>
+            <span class="lm-name">Wind-Rider <span class="lm-share">52% take it</span></span>
             <span class="lm-desc">Gain 15% (+1% per Level) Bonus Attack Speed for 4s after using a Dash, Leap, Teleport, or upon leaving Stealth.</span>
+            <span class="lm-why">The usual pick for heroes with dashes or stealth: faster attacks right after using them.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Barkskin</span>
+            <span class="lm-name">Barkskin <span class="lm-share">13% take it</span></span>
             <span class="lm-desc">Deal 3 (+1 per Level) Physical Damage to Enemy Heroes that Basic Attack you, triggering On-Hit effects at 50% effectiveness.</span>
+            <span class="lm-why">Against auto-attackers in lane: enemies who basic attack you take damage back.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Taproot</span>
+            <span class="lm-name">Taproot <span class="lm-share">35% take it</span></span>
             <span class="lm-desc">Basic Attacks restore 1 (+6% Bonus Physical Power) Health on-hit. Does not heal from Tower damage.</span>
+            <span class="lm-why">When you need healing in lane: basic attacks heal you, more with physical power.</span>
           </li></ul>
           </div>
 
@@ -907,38 +1117,51 @@
           <span class="le-roles">Carry · Midlane</span>
         </header>
 
+        <div class="le-mechs"><span class="le-mech" title="from Cull the Weak">Mana</span><span class="le-mech" title="from Dominance, Iron Will">Healing &amp; lifesteal</span><span class="le-mech" title="from Major, Cull the Weak, Eviscerate">Damage boost</span><span class="le-mech" title="from Furor, Iron Will">Basic attacks</span><span class="le-mech" title="from Major, Bone Collector">Grows over the game</span><span class="le-mech" title="from Major, Cull the Weak, Bone Collector">Farming &amp; camps</span></div>
         <div class="le-tags"><span class="le-tag" data-style="scale">I scale late</span><span class="le-tag" data-style="autos">I auto-attack</span><span class="le-tag" data-style="sustain">I heal off damage</span></div>
 
         <div class="le-major"><span class="k">Major blessing — always on</span>Deal 3% bonus damage, increased by 0.4% per 10 units killed, up to 400 units.</div>
 
+        <div class="le-pick"><b>Why it's picked</b> Bonus damage that keeps growing as you kill minions and monsters, up to a cap: carries who farm, plus some junglers and off-laners, take it to grow stronger the more they clear.</div>
 
+        <div class="le-who"><span class="k">Who runs it · ranked, this patch</span>
+          <div class="le-whoroles">Carry 11% · Jungle 4% · Midlane 3% of games in each role</div>
+          <div class="le-heroes"><span class="le-hero" title="Xyris in 27% of Revenant Carry ranked games"><img src="img/heroes/revenant.webp" alt="" loading="lazy" onerror="this.style.display='none'">Revenant</span><span class="le-hero" title="Xyris in 17% of Murdock Carry ranked games"><img src="img/heroes/murdock.webp" alt="" loading="lazy" onerror="this.style.display='none'">Murdock</span><span class="le-hero" title="Xyris in 13% of Drongo Carry ranked games"><img src="img/heroes/drongo.webp" alt="" loading="lazy" onerror="this.style.display='none'">Drongo</span><span class="le-hero" title="Xyris in 10% of Legion Carry ranked games"><img src="img/heroes/legion.webp" alt="" loading="lazy" onerror="this.style.display='none'">Legion</span><span class="le-hero" title="Xyris in 7% of TwinBlast Carry ranked games"><img src="img/heroes/twinblast.webp" alt="" loading="lazy" onerror="this.style.display='none'">TwinBlast</span></div>
+          <div class="le-pair">Most common pair: <b>Iron Will + Bone Collector</b> (38%)</div>
+        </div>
 
         <details class="le-slots">
           <summary>The two minor slots — pick one from each<span class="chev">▾</span></summary>
           <div class="le-slot">
             <b>Slot 1</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Furor</span>
+            <span class="lm-name">Furor <span class="lm-share">28% take it</span></span>
             <span class="lm-desc">Entering Hero Combat grants 20% Total Attack Speed for 4s.</span>
+            <span class="lm-why">For short fights: a burst of attack speed each time you start fighting heroes.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Dominance</span>
+            <span class="lm-name">Dominance <span class="lm-share">16% take it</span></span>
             <span class="lm-desc">Takedowns heal you for 100 (+15% Missing Health).</span>
+            <span class="lm-why">When you chain fights: each takedown heals you, more when you are low.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Iron Will</span>
+            <span class="lm-name">Iron Will <span class="lm-share">56% take it</span></span>
             <span class="lm-desc">Restore Health equal to 3% of Basic Attack damage dealt, increased to 6% for Critical Strikes.</span>
+            <span class="lm-why">The usual pick for critical strike carries: basic attacks heal you, more on critical strikes.</span>
           </li></ul>
           </div>
           <div class="le-slot">
             <b>Slot 2</b>
             <ul><li class="le-minor">
-            <span class="lm-name">Cull the Weak</span>
+            <span class="lm-name">Cull the Weak <span class="lm-share">27% take it</span></span>
             <span class="lm-desc">Deal 7% bonus damage to Minions and Monsters, and restore 1% Missing Mana on unit kill.</span>
+            <span class="lm-why">For faster farming: more damage to minions and monsters, and mana back on each kill.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Bone Collector</span>
+            <span class="lm-name">Bone Collector <span class="lm-share">53% take it</span></span>
             <span class="lm-desc">After killing 150 units, permanently gain 20% Critical Chance.</span>
+            <span class="lm-why">The usual pick for farming carries: after enough kills you permanently gain critical strike chance.</span>
           </li><li class="le-minor">
-            <span class="lm-name">Eviscerate</span>
+            <span class="lm-name">Eviscerate <span class="lm-share">21% take it</span></span>
             <span class="lm-desc">Deal +15% bonus damage to targets above 80% Health.</span>
+            <span class="lm-why">For burst heroes who open fights: bonus damage to targets near full health.</span>
           </li></ul>
           </div>
 
@@ -1004,5 +1227,6 @@
   })();
   </script>
   <script defer src="v6/icons.js"></script>
+  <script defer src="v6/hero-links.js"></script>
 </body>
 </html>

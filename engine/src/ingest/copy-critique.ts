@@ -27,9 +27,9 @@ const clean = (t?: string) => (t || '').replace(/<br\s*\/?>(\n)?/g, ' ').replace
 // copy that already converged. Default is every surface, as before. The scope is
 // recorded in the round so an agreement rate can never be read wider than it was
 // measured; a scoped loop points CRITIQUE_HISTORY/CRITIQUE_REPORT at its own files.
-// `eternals` (the Eternal card lines) is opt-in only: it has its own history
-// (npm run eternals:critique), so the default round's scope is unchanged.
-const SURFACES = ['builds', 'herocoach', 'coach', 'eternals'] as const;
+// `eternalcards` (the hero-page Eternal card lines) is opt-in only: it has its
+// own history (npm run eternalcards:critique), so the default round's scope is unchanged.
+const SURFACES = ['builds', 'herocoach', 'coach', 'eternalcards'] as const;
 const DEFAULT_SURFACES = ['builds', 'herocoach', 'coach'];
 type Surface = typeof SURFACES[number];
 const SCOPE = new Set<string>((process.env.CRITIQUE_ONLY ?? DEFAULT_SURFACES.join(',')).split(',').map((s) => s.trim()).filter(Boolean));
@@ -190,14 +190,14 @@ Return strict JSON: {"flags":[{"quote":"<the exact line text>","severity":"high|
     }
   }
 
-  // Eternal card lines (data/aggregates/eternal-reviews.json) — the SAME critic,
+  // Eternal card lines (data/aggregates/eternal-cards.json) — the SAME critic,
   // graded against the identical facts block the author was handed (rebuilt by
   // the shared pure builder in eternal-copy.ts). One task per hero/role; each
   // copy line is prefixed with its Eternal so the judge knows which one it is.
-  const ET_PATH = path.join(ROOT, 'data/aggregates/eternal-reviews.json');
+  const ET_PATH = path.join(ROOT, 'data/aggregates/eternal-cards.json');
   let etDoc: { heroes: Record<string, Record<string, Record<string, string>>>; [k: string]: unknown } | null = null;
   const etFlags: Record<string, Record<string, { quote: string; severity: string; issue: string; rewrite: string | null }[]>> = {};
-  if (inScope('eternals') && existsSync(ET_PATH)) {
+  if (inScope('eternalcards') && existsSync(ET_PATH)) {
     etDoc = JSON.parse(readFileSync(ET_PATH, 'utf8')) as { heroes: Record<string, Record<string, Record<string, string>>> };
     const { augs, heroBySlug: etHeroes, eternals } = loadEternalInputs();
     for (const [slug, roles] of Object.entries(etDoc.heroes)) {
@@ -220,7 +220,7 @@ ${Object.entries(byEternal).map(([e, l], i) => `${i + 1}. ${e}: ${l}`).join('\n'
 
 Flag ONLY real problems: a line that (a) misdescribes the Eternal, a minor, an ability or the augment vs the SOURCE, (b) claims an interaction the SOURCE does not support (e.g. says an ability feeds a "bonus attack speed" scaling when the ability grants something else), (c) is overconfident/misleading or promises wins, (d) uses jargon a brand-new player won't get, (e) just recites the description's numbers instead of saying how to play, or (f) is broken/ungrammatical English. Do not nitpick style.
 Return strict JSON: {"flags":[{"quote":"<the exact line text, WITHOUT the '<Eternal>: ' prefix>","severity":"high|med|low","issue":"<what's wrong, one phrase>","rewrite":"<a corrected line (max 30 words), or null if it should just be dropped>"}]}. If the copy is all fine, return {"flags":[]}.`;
-        const raw = (await ask('critique', `eternals:${slug}:${role}`, prompt)).trim().replace(/^```json?\s*|```$/g, '');
+        const raw = (await ask('critique', `eternalcards:${slug}:${role}`, prompt)).trim().replace(/^```json?\s*|```$/g, '');
         reviewedLines += copyLines.length;
         totalTasks++; if (raw && raw !== '{}') answeredTasks++;
         if (isPrepare()) continue;
@@ -367,13 +367,13 @@ Return strict JSON: {"flags":[{"quote":"<exact line text>","severity":"high|med|
     writeFileSync(fixPath, JSON.stringify(fixDoc, null, 1));
   }
 
-  // Apply Eternal rewrites to eternal-reviews.json (exact match on the flagged
-  // cell's own lines) and persist them in eternal-fixes.json, which
-  // eternal-review.ts re-applies and re-verifies on every ingest so a re-run
+  // Apply Eternal rewrites to eternal-cards.json (exact match on the flagged
+  // cell's own lines) and persist them in eternal-card-fixes.json, which
+  // eternal-card-review.ts re-applies and re-verifies on every ingest so a re-run
   // cannot revert to the pre-judge draft. A null rewrite drops the line: the
   // card then falls back to the raw description.
   if (etDoc && Object.keys(etFlags).length) {
-    const fixPath = path.join(ROOT, 'data/aggregates/eternal-fixes.json');
+    const fixPath = path.join(ROOT, 'data/aggregates/eternal-card-fixes.json');
     const fixDoc = existsSync(fixPath)
       ? (JSON.parse(readFileSync(fixPath, 'utf8')) as { lanes: Record<string, Record<string, string>>; [k: string]: unknown })
       : { source: 'applied rewrites from the independent-critic rounds over the Eternal card lines, re-applied and re-verified on every ingest', lanes: {} };
@@ -423,7 +423,7 @@ Return strict JSON: {"flags":[{"quote":"<exact line text>","severity":"high|med|
     heroes: report,
     heroCoach: hcFlags,
     coach: coachFlags,
-    eternals: etFlags,
+    eternalCards: etFlags,
   }, null, 1));
 
   // Append this judge round to the loop history so the convergence gate

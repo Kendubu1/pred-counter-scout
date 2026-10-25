@@ -124,7 +124,7 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   `npm run copy:prepare` then (pred-scout-coach agent fills responses) then
   `npm run copy:ingest` (copy passes on session compute — NO API key; each line
   verified by src/copy-verify.ts). `review` / `review:items` / `review:abilities` /
-  `review:eternals` (the Eternal card lines) are the per-pass ingest steps; prefix with `COPY_MODE=prepare` to emit tasks.
+  `review:eternalcards` (the hero-page Eternal card lines) are the per-pass ingest steps; prefix with `COPY_MODE=prepare` to emit tasks.
 - Confidence rule: any output touching an unverified fixture constant is
   THEORY at best. The harness prints unverified constants on every run.
 - omeda.city is retired as a dependency (2026-10-14): its catalog froze on
