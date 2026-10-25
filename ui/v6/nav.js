@@ -16,7 +16,7 @@
     { href: 'about.html',            label: 'About & how this works', icon: 'tap-to-learn',     match: ['about.html'] },
     // Tools still being proven: grouped so nobody mistakes them for finished pages.
     { group: 'Experimental' },
-    { href: 'squad.html',            label: 'Squad planner',          icon: 'team-comp',        match: ['squad.html'] },
+    { href: 'squad.html',            label: '5-stack picker',         icon: 'team-comp',        match: ['squad.html'] },
     { href: 'livedraft.html',        label: 'Live draft counter',     icon: 'weakness-counter', match: ['livedraft.html'] },
   ];
   const bic = (name) => (window.BrandIcons ? window.BrandIcons.svg(name, 18) : '');
