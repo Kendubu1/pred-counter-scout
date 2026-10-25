@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Most Banned — Pred Scout</title>
+<meta name="description" content="The most-banned Predecessor heroes this patch, by rank: ban rate, pick rate and win rate from ranked matches.">
+<style>
+  :root {
+    --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#82829a;
+    --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
+    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px; --maxw:980px;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  a { color:var(--blue); text-decoration:none; }
+  img { display:block; }
+  button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
+  .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:rgba(10,10,15,.78); border-bottom:1px solid var(--border); }
+  .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
+  .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .spacer { flex:1; }
+  .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
+  .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .navlink:hover { color:var(--text-0); }
+  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .subnav::-webkit-scrollbar { display:none; }
+  .subnav:empty { display:none; }
+  .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; text-transform:capitalize; -webkit-appearance:none; appearance:none; }
+  .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:1.25rem 1rem 4rem; }
+  .lede { font-size:1rem; color:var(--text-1); line-height:1.65; max-width:62ch; }
+  h1 { font-size:1.7rem; font-weight:800; }
+  .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; }
+  .card h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.6rem; }
+  .card p { color:var(--text-1); line-height:1.65; }
+  .card ul { margin:.5rem 0 0 1.15rem; padding:0; }
+  .card li { color:var(--text-1); line-height:1.6; margin:.4rem 0; }
+  .card p + p { margin-top:.6rem; }
+  .card b { color:var(--text-0); }
+  .tag { display:inline-block; font-size:.66rem; font-weight:800; letter-spacing:.06em; color:var(--blue); border:1px solid var(--blue); border-radius:6px; padding:.04rem .35rem; vertical-align:middle; }
+  /* progressive disclosure: each long section opens collapsed so the page is a
+     scannable index (docs/ux-rubric.md R2). */
+  details.disc { margin-top:.6rem; border-top:1px solid var(--border); padding-top:.2rem; }
+  details.disc > summary { cursor:pointer; color:var(--blue); font-size:.86rem; padding:.35rem 0; list-style:none; }
+  details.disc > summary::-webkit-details-marker { display:none; }
+  details.disc > summary::before { content:"▸ "; color:var(--text-2); }
+  details.disc[open] > summary { color:var(--text-2); }
+  details.disc[open] > summary::before { content:"▾ "; }
+  footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
+  @media (max-width:600px) {
+    body { font-size:15px; }
+    /* tap targets: >=44px hit area on touch (Apple HIG 44 / WCAG floor 24).
+       Shared union list across all pages (absent selectors are no-ops). */
+    .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle {
+      min-height:44px; display:inline-flex; align-items:center; justify-content:center;
+    }
+    .snpill { font-size:.8rem; }
+    .navlink { border-radius:10px; }
+    .top-inner { padding:.5rem .7rem; gap:.3rem; }
+    .wordmark { font-size:.82rem; white-space:nowrap; }
+    .top-inner a { font-size:.72rem; white-space:nowrap; }
+    .wrap { padding:.9rem .7rem 3rem; }
+    h1 { font-size:1.35rem; }
+    .card { padding:.8rem .8rem; }
+  }
+  .bands { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:1rem; }
+  .band { background:var(--bg-1); border:1px solid var(--border); border-radius:99px; padding:.3rem .8rem; color:var(--text-2); font-size:.78rem; font-weight:700; }
+  .band:hover { color:var(--text-0); }
+  .band.active { color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
+  .sub { font-size:.76rem; color:var(--text-2); margin-top:.6rem; }
+  .bl { list-style:none; margin-top:.4rem; }
+  .br { display:grid; grid-template-columns:1.6rem 40px 1fr minmax(90px, 34%); align-items:center; gap:.65rem; padding:.5rem .3rem; border-top:1px solid var(--border); color:inherit; }
+  .bl li:first-child .br { border-top:none; }
+  .br:hover { background:var(--bg-2); border-radius:8px; }
+  .br .rk { font-size:.8rem; font-weight:800; color:var(--text-2); text-align:right; font-variant-numeric:tabular-nums; }
+  .br img { width:40px; height:40px; border-radius:9px; object-fit:cover; background:var(--bg-2); }
+  .br .nm { font-weight:700; color:var(--text-0); font-size:.92rem; min-width:0; overflow-wrap:anywhere; }
+  .br .meta { display:block; font-size:.7rem; color:var(--text-2); font-weight:400; font-variant-numeric:tabular-nums; }
+  .br .bar { display:flex; flex-direction:column; gap:.25rem; align-items:flex-end; }
+  .br .pct { font-weight:800; font-size:.95rem; font-variant-numeric:tabular-nums; color:var(--red); }
+  .br .track { display:block; width:100%; height:6px; border-radius:99px; background:var(--bg-3); overflow:hidden; }
+  .br .fill { display:block; height:100%; background:var(--red); border-radius:99px; }
+  .up { color:var(--green); } .down { color:var(--red); }
+  .more { margin-top:.5rem; background:none; border:none; border-top:1px dashed var(--border); width:100%; text-align:left; padding:.5rem 0 .1rem; color:var(--accent); font-size:.78rem; font-weight:700; }
+  .more:hover { color:var(--text-0); }
+  .lanes { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:.7rem; margin-top:.4rem; }
+  .lane { background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:.6rem .65rem; }
+  .lane h3 { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.35rem; }
+  .lr { display:flex; align-items:center; gap:.5rem; padding:.28rem .2rem; border-radius:8px; color:inherit; }
+  .lr:hover { background:var(--bg-3); }
+  .lr img { width:28px; height:28px; border-radius:7px; object-fit:cover; background:var(--bg-3); flex:none; }
+  .lr .nm { flex:1; min-width:0; font-size:.8rem; font-weight:600; color:var(--text-0); overflow-wrap:anywhere; }
+  .lr .nm small { display:block; white-space:nowrap; font-size:.62rem; color:var(--text-2); font-weight:400; }
+  .lr .pct { font-size:.78rem; font-weight:800; color:var(--red); font-variant-numeric:tabular-nums; }
+  @media (max-width:600px) { .more { min-height:44px; } .band { min-height:44px; } .br { grid-template-columns:1.3rem 34px 1fr 30%; gap:.5rem; } .br img { width:34px; height:34px; } }
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <a class="wordmark" href="./"><img src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</a>
+  <span class="spacer"></span>
+  <a class="navlink" href="./">Pick &amp; Build</a>
+  <a class="navlink" href="squad.html">Pre-Game</a>
+  <a class="navlink" href="coach.html">Coach</a>
+</div><div class="subnav" id="subnav"></div></div>
+
+<div class="wrap">
+  <h1>Most banned</h1>
+  <p class="lede">The heroes ranked players ban out most this patch, overall and by lane. The ban list shifts a lot by rank, so pick yours.</p>
+  <div class="bands" id="bands"></div>
+  <section class="card">
+    <h2 id="boardTitle">Top 10 bans</h2>
+    <ol class="bl" id="board"><li class="sub">Loading…</li></ol>
+    <button class="more" id="more"></button>
+    <p class="sub" id="boardSub"></p>
+  </section>
+  <section class="card">
+    <h2 id="laneTitle">Top 5 bans by lane</h2>
+    <p class="sub" style="margin:0 0 .5rem">You ban a hero, not a lane, so each hero sits under the lane it's played in most at this rank.</p>
+    <div class="lanes" id="lanes"></div>
+  </section>
+  <footer>
+    Ban rate = share of ranked matches the hero was banned in (4 bans per draft). Pick and win rate count every lane the hero was played in.
+    Rank bands use each player's rank this split; games by unplaced players only count under All ranks.<br>
+    Game data via pred.gg · not affiliated with Omeda Studios.
+  </footer>
+</div>
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pct = (x) => `${(x * 100).toFixed(1)}%`;
+// Same sticky rank band as the homepage boards (localStorage 'metaBand').
+let band = 'all';
+try { band = new URLSearchParams(location.search).get('rank') || localStorage.getItem('metaBand') || 'all'; } catch { /* private mode */ }
+let BANS = null;
+let showTen = false;
+const LANES = { carry: 'Carry', midlane: 'Midlane', offlane: 'Offlane', jungle: 'Jungle', support: 'Support' };
+
+function render() {
+  const bands = [{ key: 'all', label: 'All ranks' }, ...(BANS.rankBands || [])];
+  if (!bands.some((b) => b.key === band)) band = 'all';
+  $('#bands').innerHTML = bands.map((b) => `<button class="band${b.key === band ? ' active' : ''}" data-band="${esc(b.key)}">${esc(b.label)}</button>`).join('');
+  $('#bands').querySelectorAll('.band').forEach((b) => { b.onclick = () => {
+    band = b.dataset.band;
+    try { localStorage.setItem('metaBand', band); } catch { /* private mode */ }
+    history.replaceState(null, '', band === 'all' ? 'bans.html' : `bans.html?rank=${band}`);
+    render();
+  }; });
+  const board = band === 'all' ? BANS.all : BANS.byBand[band];
+  const rows = board.heroes.slice(0, showTen ? 10 : 5);
+  const top = rows[0]?.banRate || 1;
+  const label = bands.find((b) => b.key === band).label;
+  $('#boardTitle').textContent = `Top ${showTen ? 10 : 5} bans overall · ${label}`;
+  $('#more').textContent = showTen ? 'show top 5 ↑' : 'show top 10 ↓';
+  $('#more').onclick = () => { showTen = !showTen; render(); };
+  $('#board').innerHTML = rows.map((h, i) => `<li><a class="br" href="./?hero=${esc(h.slug)}" title="Open ${esc(h.name)}">
+      <span class="rk">${i + 1}</span>
+      <img loading="lazy" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.style.visibility='hidden'">
+      <span class="nm">${esc(h.name)}<span class="meta">${h.lane ? `${LANES[h.lane]} · ` : ''}picked ${pct(h.pickRate)} · ${h.winRate == null ? 'no games' : `<b class="${h.winRate >= 0.52 ? 'up' : h.winRate <= 0.48 ? 'down' : ''}">${pct(h.winRate)} win</b>`} · ${h.bans.toLocaleString()} bans</span></span>
+      <span class="bar"><span class="pct">${pct(h.banRate)}</span><span class="track"><span class="fill" style="width:${Math.round((h.banRate / top) * 100)}%"></span></span></span>
+    </a></li>`).join('');
+  $('#laneTitle').textContent = `Top 5 bans by lane · ${label}`;
+  $('#lanes').innerHTML = Object.entries(LANES).map(([key, name]) => `<div class="lane"><h3>${name}</h3>${board.heroes.filter((h) => h.lane === key).slice(0, 5).map((h) => `
+      <a class="lr" href="./?hero=${esc(h.slug)}" title="${esc(h.name)}: played ${Math.round((h.laneShare || 0) * 100)}% of the time in ${name}">
+        <img loading="lazy" src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.style.visibility='hidden'">
+        <span class="nm">${esc(h.name)}<small>${pct(h.pickRate)} pick${h.winRate == null ? '' : ` · ${pct(h.winRate)} win`}</small></span>
+        <span class="pct">${pct(h.banRate)}</span>
+      </a>`).join('') || '<p class="sub">No bans recorded.</p>'}</div>`).join('');
+  $('#boardSub').textContent = `${board.matches.toLocaleString()} ranked matches · patch ${BANS.patch} · updated ${String(BANS.generatedAt).slice(0, 10)}`;
+}
+
+fetch('../../data/artifacts/bans.json').then((r) => r.json()).then((d) => { BANS = d; render(); })
+  .catch(() => { $('#board').innerHTML = '<li class="sub">Ban data isn\'t available right now.</li>'; });
+</script>
+<script defer src="icons.js"></script>
+<script defer src="nav.js"></script>
+</body>
+</html>

@@ -70,6 +70,11 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
      icons, augments) before step 4.
 2. `npm run lanestats` — the meta board's lane matrix, ranked, version-pinned
    to the current patch (14 aliased calls).
+   It chains `npm run bans` (14 aliased calls, added 2026-10-25): per-hero
+   ranked ban counts, all ranks and per rank band, into
+   data/aggregates/predgg-bans.json. `npm run artifacts` then chains
+   `npm run ban-board` (zero-API) to write data/artifacts/bans.json for the
+   homepage "Most banned" strip and ui/v6/bans.html.
 3. `VERSIONS=<current ids> OUT=data/aggregates/predgg-general-stats-<patch>.json
    npm run genstats` — the measured patch window (ids from the lanestats output
    or `data/aggregates/predgg-lane-stats.json` .versionIds). Then

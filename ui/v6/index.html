@@ -389,6 +389,12 @@
   .mb-bands .mb-toggle { margin-left:0; }
   .lanepanel .mb-head { align-items:center; }
   .lanepanel .mb-toggle { margin-left:0; }
+  .banboard { margin-top:1.4rem; }
+  .banboard:empty { display:none; }
+  .banboard .lane { padding:.8rem .85rem; }
+  .banboard .bans5 { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:.3rem .7rem; }
+  .banboard .mp .wr { color:var(--red); }
+  .banboard .lane-more { text-decoration:none; }
   .lanes { display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:.7rem; margin-top:.8rem; }
   .lane { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:.7rem .75rem; }
   .lane h3 { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.45rem; }
@@ -467,6 +473,7 @@
     </a>
     <div class="browse-head">Winning right now</div>
     <div class="metaboard" id="metaboard"></div>
+    <div class="banboard" id="banboard"></div>
     <details id="allHeroes">
       <summary class="browse-head allsum"><span class="t">Browse all heroes</span><span class="chev">▾</span></summary>
       <div class="grid" id="heroGrid"></div>
@@ -579,7 +586,7 @@ function metaFilterControlsHtml() {
       ${st.bands ? `<div class="mb-bands" title="Filter the boards to games played at a rank band — the meta shifts with skill level. All ranks includes players without a placed rank.">${[{ key: 'all', label: 'All ranks' }, ...st.bands].map((b) => `<button class="mb-toggle band${metaBand === b.key ? ' active' : ''}" data-band="${esc(b.key)}">${esc(b.label)}</button>`).join('')}</div>` : ''}`;
 }
 function bindMetaFilterControls(container) {
-  const rerender = () => { renderMetaboard(); if (roleFilter !== 'all') renderLaneDetail(); };
+  const rerender = () => { renderMetaboard(); renderBanboard(); if (roleFilter !== 'all') renderLaneDetail(); };
   container.querySelectorAll('.mb-bands .mb-toggle').forEach((b) => {
     b.onclick = () => {
       metaBand = b.dataset.band;
@@ -970,6 +977,37 @@ function renderMetaboard() {
   mb.querySelectorAll('.mp').forEach((c) => { c.onclick = () => nav(c.dataset.slug, false, c.dataset.role); });
   mb.querySelectorAll('.lane-go, .lane-more').forEach((h) => { h.onclick = () => pickLane(h.dataset.lane); });
   bindMetaFilterControls(mb);
+}
+
+// Most-banned strip: top 5 at the meta board's rank band, linking to the full
+// top-10 page (bans.html). Band buttons share metaBand with the meta board.
+let BANS = null;
+function renderBanboard() {
+  const el = $('#banboard');
+  if (!BANS) { el.innerHTML = ''; return; }
+  const bands = [{ key: 'all', label: 'All ranks' }, ...(BANS.rankBands || [])];
+  const key = BANS.byBand?.[metaBand] ? metaBand : 'all';
+  const board = key === 'all' ? BANS.all : BANS.byBand[key];
+  const label = bands.find((b) => b.key === key)?.label ?? 'All ranks';
+  el.innerHTML = `
+    <div class="mb-head">
+      <h2>Most banned</h2>
+      <span class="mb-sub">top 5 bans by <b>ban rate</b> · ${board.matches.toLocaleString()} ranked matches, patch ${esc(BANS.patch)} · ${esc(label)}</span>
+      <div class="mb-bands">${bands.map((b) => `<button class="mb-toggle band${key === b.key ? ' active' : ''}" data-band="${esc(b.key)}">${esc(b.label)}</button>`).join('')}</div>
+    </div>
+    <div class="lane" style="margin-top:.8rem">
+      <div class="bans5">
+      ${board.heroes.slice(0, 5).map((h, i) => `
+        <div class="mp" data-slug="${esc(h.slug)}" title="${esc(h.name)}: banned in ${(h.banRate * 100).toFixed(1)}% of ${board.matches.toLocaleString()} ranked matches">
+          <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
+          <span class="n">${i + 1}. ${esc(h.name)}<span class="g">picked ${(h.pickRate * 100).toFixed(1)}%${h.winRate == null ? '' : ` · ${(h.winRate * 100).toFixed(1)}% win`}</span></span>
+          <span class="wr">${(h.banRate * 100).toFixed(0)}%</span>
+        </div>`).join('')}
+      </div>
+      <a class="lane-more" href="bans.html${key === 'all' ? '' : `?rank=${esc(key)}`}">all bans, by rank &amp; lane →</a>
+    </div>`;
+  el.querySelectorAll('.mp').forEach((c) => { c.onclick = () => nav(c.dataset.slug, false); });
+  bindMetaFilterControls(el);
 }
 
 // Open a lane's "lane room" as if the rolebar lane was picked, and scroll to it.
@@ -1808,6 +1846,7 @@ window.onpopstate = route;
 (async function init() {
   INDEX = await getJson('../../data/artifacts/index.json');
   META = await getJson('../../data/artifacts/meta.json').catch(() => null);
+  BANS = await getJson('../../data/artifacts/bans.json').catch(() => null);
   window.INDEX_GENERATED = INDEX.generatedAt || '';
   // One canonical THEORY definition + one shared win%/verdict legend (docs/ux-rubric.md R3).
   $('#theoryDef').textContent = THEORY_DEF + '.';
@@ -1831,6 +1870,7 @@ window.onpopstate = route;
   LATEST_PATCH = _ps?.patch ?? null;
   renderRolebar();
   renderMetaboard();
+  renderBanboard();
   let selIdx = -1;
   function suggestions() {
     const q = ($('#search').value || '').toLowerCase().trim();

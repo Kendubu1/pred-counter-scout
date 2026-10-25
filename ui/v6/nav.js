@@ -8,6 +8,7 @@
     { href: 'squad.html',            label: 'Pre-Game',               icon: 'team-comp',        match: ['squad.html'] },
     { href: 'coach.html',            label: 'Coach',                  icon: 'scout',            match: ['coach.html'] },
     { href: 'climb.html',            label: 'The Climb — ranked guide', icon: 'power-spike', tag: 'new', match: ['climb.html'] },
+    { href: 'bans.html',             label: 'Most banned — by rank',  icon: 'meta-guide', tag: 'new', match: ['bans.html'] },
     { sep: true },
     { href: 'livedraft.html',        label: 'Live draft',             icon: 'weakness-counter', match: ['livedraft.html'] },
     { href: '../patch-1.17.2.html',  label: 'Patch 1.17.2 review',    icon: 'patch-strategy', tag: 'new', match: ['patch-1.17.2.html'] },

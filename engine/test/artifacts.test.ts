@@ -56,7 +56,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
 
   it('the committed artifact set covers the full roster and parses', () => {
     const dir = path.join(ROOT, 'data/artifacts');
-    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json'].includes(f));
+    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json'].includes(f));
     const roster = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8'));
     expect(files.length).toBe(Object.keys(roster).length);
     for (const f of files) {
@@ -66,6 +66,29 @@ describe('hero artifacts (Concept A engine stage)', () => {
     const index = JSON.parse(readFileSync(path.join(dir, 'index.json'), 'utf8'));
     expect(index.heroes.length).toBe(files.length);
     expect(index.patch).toBe(cal.patch);
+  });
+
+  it('ban board: all ranks + every rank band, sorted, rates in range, same patch as the meta board', () => {
+    const p = path.join(ROOT, 'data/artifacts/bans.json');
+    if (!existsSync(p)) return; // ships only once npm run bans has run
+    const bans = JSON.parse(readFileSync(p, 'utf8'));
+    const meta = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/meta.json'), 'utf8'));
+    expect(bans.patch).toBe(meta.patch);
+    const boards = [bans.all, ...bans.rankBands.map((b: { key: string }) => bans.byBand[b.key])];
+    for (const board of boards) {
+      expect(board.matches).toBeGreaterThan(0);
+      expect(board.heroes.length).toBeGreaterThanOrEqual(10);
+      for (let i = 1; i < board.heroes.length; i++) expect(board.heroes[i - 1].bans).toBeGreaterThanOrEqual(board.heroes[i].bans);
+      for (const h of board.heroes) {
+        expect(h.banRate).toBeGreaterThanOrEqual(0);
+        expect(h.banRate).toBeLessThanOrEqual(1);
+        if (h.winRate != null) expect(h.winRate).toBeGreaterThan(0.2), expect(h.winRate).toBeLessThan(0.8);
+      }
+      // A 4-ban draft: the league bans ~4 heroes per match, so ban rates sum near 4.
+      const sum = board.heroes.reduce((s: number, h: { banRate: number }) => s + h.banRate, 0);
+      expect(sum).toBeGreaterThan(3);
+      expect(sum).toBeLessThan(5);
+    }
   });
 
   it('meta board: five lanes of most-played heroes with sane shrunk winrates', () => {
@@ -190,7 +213,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
 
   it('off-meta promotion respects the evidence gate: no negative-evidence finds', () => {
     const dir = path.join(ROOT, 'data/artifacts');
-    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json'].includes(f));
+    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json'].includes(f));
     for (const f of files) {
       const a = JSON.parse(readFileSync(path.join(dir, f), 'utf8')) as {
         offMeta: { candidates: { item: string }[] };
