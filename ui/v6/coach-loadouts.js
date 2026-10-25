@@ -31,13 +31,15 @@
     return [...(deity?.minorSlot1 || []), ...(deity?.minorSlot2 || [])].find(m=>m.name===key)?.desc || null;
   }
   const clean = text => (window.GameText?.plain || (s=>String(s ?? '').replace(/<[^>]+>/g,'')))(text);
+  // The Eternal popup (eternal-popup.js) marks the minors this player ran.
+  const minorPicks = lo => { const ran=[lo?.minor1,lo?.minor2].filter(Boolean); return ran.length ? ` data-epop-picks="${esc(ran.join('|'))}" data-epop-label="ran" data-epop-note="the minors this player ran this game"` : ''; };
   function renderDetails(player, eternals, augments, itemCatalog) {
     const lo = player.loadout;
     const perks = choices(lo);
     const catalogItems = Array.isArray(itemCatalog) ? itemCatalog : itemCatalog?.items || [];
     const items = (player.items || []).map(i => ({ ...i, category: 'Item' }));
     if (lo?.crest) items.unshift({ name:lo.crest, slug:lo.crestSlug || slug(lo.crest), category:'Crest' });
-    return `<h3>Eternal, minors &amp; augment</h3>${perks.length ? perks.map(c => `<div class="loadout-entry"><img src="../img/${esc(c.image)}.webp" alt=""><div><b>${esc(c.name)}</b><small>${c.kind === 'minor' ? 'Minor blessing' : c.kind === 'augment' ? 'Hero augment' : 'Eternal'}</small><p>${esc(clean(detail(c.kind,c.key,c.parent,eternals,augments) || 'Description unavailable in the saved catalog.'))}</p></div></div>`).join('') : '<p>No perks recorded for this match.</p>'}
+    return `<h3>Eternal, minors &amp; augment</h3>${perks.length ? perks.map(c => `<div class="loadout-entry"${c.kind === 'augment' ? '' : ` data-epop="${esc(c.kind === 'eternal' ? c.name : c.parent || '')}"${c.kind === 'minor' ? ` data-epop-minor="${esc(c.name)}"` : ''}${minorPicks(lo)} title="Tap for the full Eternal: both minor slots and when to pick it"`}><img src="../img/${esc(c.image)}.webp" alt=""><div><b>${esc(c.name)}</b><small>${c.kind === 'minor' ? 'Minor blessing' : c.kind === 'augment' ? 'Hero augment' : 'Eternal'}</small><p>${esc(clean(detail(c.kind,c.key,c.parent,eternals,augments) || 'Description unavailable in the saved catalog.'))}</p></div></div>`).join('') : '<p>No perks recorded for this match.</p>'}
       <h3>Build</h3><p class="loadout-note">Recorded end-of-match inventory, not purchase order.</p>${items.length ? items.map(i => {
         const it = catalogItems.find(x=>x.slug===i.slug);
         const stats = Object.entries(it?.stats || {}).filter(([,v])=>v).map(([k,v])=>`${String(k).replace(/_/g,' ')}: ${v}`).join(' · ');

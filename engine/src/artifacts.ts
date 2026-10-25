@@ -9,7 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { completedItems, type LoadedData } from './data.js';
 import { archetypeLabel, buildTitle, generateBuilds, headlineObjective, type ObjKey } from './search.js';
-import { classifyAugment, kitPlaystyle, laneTopAugment, lanesFor, playstyleObjectives } from './playstyle.js';
+import { classifyAugment, kitPlaystyle, laneTopAugment, lanesFor, playstyleObjectives, lanesByGames, significantlyWinningLanes } from './playstyle.js';
 import { combatDamage, evaluateBuild, itemTotals, loadCalibration, unverifiedConstants, type Calibration } from './sim.js';
 import { allEternalMinors, rankAugments, rankBlessings, selectEternalLoadout } from './eternals.js';
 import { heroGames, itemPlayRate, loadAggregates } from './aggregates.js';
@@ -158,6 +158,7 @@ const RoleView = z.object({
     })),
     honestAbsence: z.string().nullable(),
   }),
+  metaBuildsSource: z.enum(['role', 'all-roles']).optional(),
   metaBuilds: z.array(z.object({
     anyOrder: z.boolean().optional(),
     otherOrderGames: z.number().optional(),
@@ -622,7 +623,11 @@ function buildRoleView(
   // role you're viewing, e.g. support Argus gets tank-support cores, not his
   // midlane mage cores); fall back to hero-wide evidence when a role has none.
   const pgBuilds = loadPredggBuilds();
-  const rawEvidence = pgBuilds?.byRole?.[kit.slug]?.[role] ?? pgBuilds?.heroes[kit.slug] ?? [];
+  const roleEvidence = pgBuilds?.byRole?.[kit.slug]?.[role];
+  const rawEvidence = roleEvidence ?? pgBuilds?.heroes[kit.slug] ?? [];
+  // Said out loud on the page: an off-role view showing the hero's all-roles
+  // builds (Adele jungle showed her support cores) must not pass as role data.
+  const metaBuildsSource: 'role' | 'all-roles' = roleEvidence ? 'role' : 'all-roles';
   // One build per item SET: the same three items bought in another order used
   // to ship as a second, near-identical build (Belica showed Combustion > Noxia
   // > Wraith Leggings and Combustion > Wraith Leggings > Noxia as two tabs).
@@ -818,18 +823,22 @@ function buildRoleView(
       honestAbsence: candidates.length ? null : 'no defensible off-meta option this patch (no underexplored item clears the 8% objective edge vs the popular build)',
     },
     metaBuilds,
+    ...(metaBuilds.length ? { metaBuildsSource } : {}),
     stages: computeStages(kit, ordered, spikes, role, pool, cal),
     matchups,
     laneSteer: laneSteerFor(kit, role, pool, cal, top.items),
   });
 }
 
-/** Which roles a hero gets a full build for: its declared roles plus any lane it
- *  has real augment evidence in (the flex the field actually plays), primary
- *  first, deduped and capped so we don't generate builds for noise lanes. */
+/** Which roles a hero gets a full build for: the primary role first, then the
+ *  lanes the field ACTUALLY plays, by games, capped at three. Declared roles only
+ *  fill in when the hero has no field lanes yet (a brand-new hero). Until
+ *  2026-10-25 declared roles came before field lanes, so Lt. Belica got a carry
+ *  page with no carry data and no offlane page despite 301 offlane games. */
 function flexRolesFor(kit: HeroKit): string[] {
   const primary = kit.roles[0] ?? 'midlane';
-  const ordered = [primary, ...kit.roles, ...lanesFor(kit.slug)];
+  const field = lanesByGames(kit.slug).map((l) => l.lane);
+  const ordered = [primary, ...(field.length ? field : kit.roles)];
   const seen = new Set<string>();
   const out: string[] = [];
   for (const r of ordered) {
@@ -837,7 +846,11 @@ function flexRolesFor(kit: HeroKit): string[] {
     seen.add(r);
     out.push(r);
   }
-  return out.slice(0, 3);
+  // A 4th page only where the hero is significantly winning (see
+  // significantlyWinningLanes); merely-played lanes get the fallback banner.
+  const top = out.slice(0, 3);
+  const extra = significantlyWinningLanes(kit.slug).find((l) => !top.includes(l.lane));
+  return extra ? [...top, extra.lane] : top;
 }
 
 export function buildHeroArtifact(

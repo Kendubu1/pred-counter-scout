@@ -55,7 +55,7 @@ async function showItem(slug) {
       ${stats.length ? `<div class="istats">${stats.map(([k, v]) => `<span>${STAT_LABELS[k]}</span><span class="v">+${v}</span>`).join('')}</div>` : ''}
       ${(it.effects || []).filter((e) => GameText.hasEffectDescription(e)).map((e) => `
         <div class="ifx"><b>${esc(e.name || 'Effect')}${e.cooldown ? ` · ${esc(String(e.cooldown))} cooldown` : ''}</b>${e.condition ? `<div class="icondition">${esc(clean(e.condition))}</div>` : '<br>'}${esc(clean(e.menu_description || e.game_description))}</div>`).join('')}
-      ${ITEM_WHY[slug] ? `<div class="ifx" style="color:var(--text-0)">🧠 ${esc(ITEM_WHY[slug])}<div style="font-size:.64rem;color:var(--text-2);margin-top:.25rem">AI-written from this item's stats and effects only; numbers machine-verified</div></div>` : ''}
+      ${ITEM_WHY[slug] ? `<div class="ifx" style="color:var(--text-0)">${esc(ITEM_WHY[slug])}<div style="font-size:.6875rem;color:var(--text-2);margin-top:.25rem">AI-written from this item's stats and effects only; numbers machine-verified</div></div>` : ''}
       ${limitations.length ? `<details class="ifx"><summary>What the simulator does not fully count</summary>${limitations.map(note => `<p>${esc(note)}</p>`).join('')}</details>` : ''}
       <button class="iclose">close</button>
     </div>`;

@@ -22,6 +22,15 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 const cat = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/game-data/eternals.json'), 'utf8'));
+// Optional, both committed: who runs each Eternal + what each blessing gives
+// (engine: npm run eternals:usage) and the verified "why it's picked" lines
+// (engine: npm run review:eternals, judged by an independent agent).
+const optional = (p) => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, p), 'utf8')); } catch { return null; } };
+const USAGE = (optional('data/aggregates/eternal-usage.json') || {}).eternals || {};
+const WHY = (optional('data/aggregates/eternal-why.json') || {}).eternals || {};
+const nkey = (s) => String(s || '').toLowerCase().replace(/['’]/g, '');
+const lookup = (obj, name) => { const k = Object.keys(obj || {}).find((n) => nkey(n) === nkey(name)); return k ? obj[k] : null; };
+const pct = (x) => `${Math.round(x * 100)}%`;
 
 const esc = (s) => String(s ?? '')
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -74,12 +83,32 @@ function topRoles(e) {
     .map(([r]) => ROLE_LABEL[r] || r);
 }
 
-function minorRow(m, recommended) {
+function minorRow(m, recommended, e) {
   const on = recommended.has(m.name);
+  const sh = lookup((USAGE[e.id] || {}).minors, m.name);
+  const why = lookup((WHY[e.id] || {}).minors, m.name);
   return `<li class="le-minor${on ? ' rec' : ''}">
-            <span class="lm-name">${esc(m.name)}${on ? ' <span class="lm-pick">picked</span>' : ''}</span>
-            <span class="lm-desc">${esc(m.desc)}</span>
+            <span class="lm-name">${esc(m.name)}${on ? ' <span class="lm-pick">picked</span>' : ''}${sh ? ` <span class="lm-share">${pct(sh.share)} take it</span>` : ''}</span>
+            <span class="lm-desc">${esc(m.desc)}</span>${why ? `
+            <span class="lm-why">${esc(why)}</span>` : ''}
           </li>`;
+}
+
+// What the blessings give, each tag naming its source blessing on hover.
+function mechTags(e) {
+  const m = (USAGE[e.id] || {}).mechanics || [];
+  return m.length ? `<div class="le-mechs">${m.map((x) => `<span class="le-mech" title="from ${esc(x.from.join(', '))}">${esc(x.label)}</span>`).join('')}</div>` : '';
+}
+function whoRuns(e) {
+  const u = USAGE[e.id];
+  if (!u || !u.games) return '';
+  const roles = u.roles.filter((r) => r.pickRate >= 0.01).slice(0, 3).map((r) => `${ROLE_LABEL[r.role] || r.role} ${pct(r.pickRate)}`);
+  const heroes = u.heroes.slice(0, 5).map((h) => `<span class="le-hero" title="${esc(e.name)} in ${pct(h.pickRate)} of ${esc(h.name)} ${esc(ROLE_LABEL[h.role] || h.role)} ranked games"><img src="img/heroes/${esc(h.slug)}.webp" alt="" loading="lazy" onerror="this.style.display='none'">${esc(h.name)}</span>`).join('');
+  return `<div class="le-who"><span class="k">Who runs it · ranked, this patch</span>
+          ${roles.length ? `<div class="le-whoroles">${esc(roles.join(' · '))} of games in each role</div>` : ''}
+          <div class="le-heroes">${heroes}</div>
+          ${u.topPair ? `<div class="le-pair">Most common pair: <b>${esc(u.topPair.minor1)} + ${esc(u.topPair.minor2)}</b> (${pct(u.topPair.share)})</div>` : ''}
+        </div>`;
 }
 
 function card(e) {
@@ -97,21 +126,24 @@ function card(e) {
           ${roles.length ? `<span class="le-roles">${roles.map(esc).join(' · ')}</span>` : ''}
         </header>
 
+        ${mechTags(e)}
         ${tags.length ? `<div class="le-tags">${tags.map((t) => `<span class="le-tag" data-style="${t.id}">${esc(t.label)}</span>`).join('')}</div>` : ''}
 
         <div class="le-major"><span class="k">Major blessing — always on</span>${esc(e.major)}</div>
 
-        ${e.recommend && e.recommend.note ? `<div class="le-pick"><b>Why you'd take it</b> ${esc(e.recommend.note)}</div>` : ''}
+        ${(WHY[e.id] && WHY[e.id].why) || (e.recommend && e.recommend.note) ? `<div class="le-pick"><b>Why it's picked</b> ${esc((WHY[e.id] && WHY[e.id].why) || e.recommend.note)}</div>` : ''}
+
+        ${whoRuns(e)}
 
         <details class="le-slots">
           <summary>The two minor slots — pick one from each<span class="chev">▾</span></summary>
           <div class="le-slot">
             <b>Slot 1</b>
-            <ul>${(e.minorSlot1 || []).map((m) => minorRow(m, rec)).join('')}</ul>
+            <ul>${(e.minorSlot1 || []).map((m) => minorRow(m, rec, e)).join('')}</ul>
           </div>
           <div class="le-slot">
             <b>Slot 2</b>
-            <ul>${(e.minorSlot2 || []).map((m) => minorRow(m, rec)).join('')}</ul>
+            <ul>${(e.minorSlot2 || []).map((m) => minorRow(m, rec, e)).join('')}</ul>
           </div>
           ${rec.size ? `<p class="le-recnote">“Picked” marks this project's default pair for the Eternal. Open a hero in the tool for a pick tuned to that hero and role.</p>` : ''}
         </details>
@@ -193,6 +225,21 @@ const html = `<!DOCTYPE html>
     .lm-pick { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
       color: var(--green); background: var(--green-dim, rgba(0,196,140,0.16)); border-radius: 999px;
       padding: 0.05rem 0.4rem; margin-left: 0.3rem; }
+    .le-mechs { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.4rem; }
+    .le-mech { font-size: 0.68rem; font-weight: 600; color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+      border-radius: 999px; padding: 0.1rem 0.5rem; cursor: help; }
+    .le-pick { color: var(--gold); }
+    .le-pick b { display: block; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .le-who { font-size: 0.78rem; color: var(--text-2); margin-bottom: 0.55rem; }
+    .le-who .k { display: block; font-weight: 700; text-transform: uppercase; font-size: 0.64rem; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
+    .le-whoroles { color: var(--text-1); }
+    .le-heroes { display: flex; flex-wrap: wrap; gap: 0.3rem 0.7rem; margin-top: 0.3rem; }
+    .le-hero { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--text-1); white-space: nowrap; }
+    .le-hero img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border); background: var(--bg-3); }
+    .le-pair { margin-top: 0.3rem; }
+    .le-pair b { color: var(--text-1); }
+    .lm-share { font-size: 0.66rem; font-weight: 400; color: var(--text-2); margin-left: 0.3rem; }
+    .lm-why { display: block; color: var(--gold); margin-top: 0.15rem; }
     .le-recnote { font-size: 0.7rem; color: var(--text-2); margin: 0.3rem 0 0; }
     .le-counter { font-size: 0.78rem; color: var(--text-2); line-height: 1.5; border-top: 1px dashed var(--border);
       padding-top: 0.5rem; margin-top: auto; }

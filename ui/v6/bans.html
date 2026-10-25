@@ -8,14 +8,14 @@
 <style>
   :root {
     --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
-    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#82829a;
-    --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#8e8ea6;
+    --accent:#6c5ce7; --accent-ink:#9a8ef2; --accent-soft:rgba(108,92,231,.14);
     --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px; --maxw:980px;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
   html { scroll-behavior:smooth; }
-  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; font-variant-numeric:tabular-nums; }
   a { color:var(--blue); text-decoration:none; }
   img { display:block; }
   button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
@@ -24,24 +24,27 @@
   .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .spacer { flex:1; }
   .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
-  .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .navlink.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
   .navlink:hover { color:var(--text-0); }
   .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
   .subnav::-webkit-scrollbar { display:none; }
   .subnav:empty { display:none; }
   .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; text-transform:capitalize; -webkit-appearance:none; appearance:none; }
   .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
+  a.snpill:hover { color:var(--text-0); }
+  /* jump targets land below the sticky top bar + section jumper */
+  .jump { scroll-margin-top:calc(var(--toph, 96px) + 10px); }
   .wrap { max-width:var(--maxw); margin:0 auto; padding:1.25rem 1rem 4rem; }
   .lede { font-size:1rem; color:var(--text-1); line-height:1.65; max-width:62ch; }
   h1 { font-size:1.7rem; font-weight:800; }
   .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; }
-  .card h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.6rem; }
+  .card h2 { font-size:1rem; font-weight:600; letter-spacing:0; color:var(--text-0); margin-bottom:.6rem; }
   .card p { color:var(--text-1); line-height:1.65; }
   .card ul { margin:.5rem 0 0 1.15rem; padding:0; }
   .card li { color:var(--text-1); line-height:1.6; margin:.4rem 0; }
   .card p + p { margin-top:.6rem; }
   .card b { color:var(--text-0); }
-  .tag { display:inline-block; font-size:.66rem; font-weight:800; letter-spacing:.06em; color:var(--blue); border:1px solid var(--blue); border-radius:6px; padding:.04rem .35rem; vertical-align:middle; }
+  .tag { display:inline-block; font-size:.6875rem; font-weight:800; letter-spacing:.06em; color:var(--blue); border:1px solid var(--blue); border-radius:6px; padding:.04rem .35rem; vertical-align:middle; }
   /* progressive disclosure: each long section opens collapsed so the page is a
      scannable index (docs/ux-rubric.md R2). */
   details.disc { margin-top:.6rem; border-top:1px solid var(--border); padding-top:.2rem; }
@@ -52,7 +55,7 @@
   details.disc[open] > summary::before { content:"▾ "; }
   footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
   @media (max-width:600px) {
-    body { font-size:15px; }
+    body { font-size:14px; }
     /* tap targets: >=44px hit area on touch (Apple HIG 44 / WCAG floor 24).
        Shared union list across all pages (absent selectors are no-ops). */
     .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle {
@@ -63,14 +66,14 @@
     .top-inner { padding:.5rem .7rem; gap:.3rem; }
     .wordmark { font-size:.82rem; white-space:nowrap; }
     .top-inner a { font-size:.72rem; white-space:nowrap; }
-    .wrap { padding:.9rem .7rem 3rem; }
+    .wrap { padding:.9rem 1rem 3rem; }
     h1 { font-size:1.35rem; }
     .card { padding:.8rem .8rem; }
   }
   .bands { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:1rem; }
   .band { background:var(--bg-1); border:1px solid var(--border); border-radius:99px; padding:.3rem .8rem; color:var(--text-2); font-size:.78rem; font-weight:700; }
   .band:hover { color:var(--text-0); }
-  .band.active { color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
+  .band.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
   .sub { font-size:.76rem; color:var(--text-2); margin-top:.6rem; }
   .bl { list-style:none; margin-top:.4rem; }
   .br { display:grid; grid-template-columns:1.6rem 40px 1fr minmax(90px, 34%); align-items:center; gap:.65rem; padding:.5rem .3rem; border-top:1px solid var(--border); color:inherit; }
@@ -85,18 +88,18 @@
   .br .track { display:block; width:100%; height:6px; border-radius:99px; background:var(--bg-3); overflow:hidden; }
   .br .fill { display:block; height:100%; background:var(--red); border-radius:99px; }
   .up { color:var(--green); } .down { color:var(--red); }
-  .more { margin-top:.5rem; background:none; border:none; border-top:1px dashed var(--border); width:100%; text-align:left; padding:.5rem 0 .1rem; color:var(--accent); font-size:.78rem; font-weight:700; }
+  .more { margin-top:.5rem; background:none; border:none; border-top:1px dashed var(--border); width:100%; text-align:left; padding:.5rem 0 .1rem; color:var(--accent-ink); font-size:.78rem; font-weight:700; }
   .more:hover { color:var(--text-0); }
   .lanes { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:.7rem; margin-top:.4rem; }
   .lane { background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:.6rem .65rem; }
-  .lane h3 { font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.35rem; }
+  .lane h3 { font-size:.8rem; font-weight:600; letter-spacing:0; color:var(--text-1); margin-bottom:.35rem; }
   .lr { display:flex; align-items:center; gap:.5rem; padding:.28rem .2rem; border-radius:8px; color:inherit; }
   .lr:hover { background:var(--bg-3); }
   .lr img { width:28px; height:28px; border-radius:7px; object-fit:cover; background:var(--bg-3); flex:none; }
   .lr .nm { flex:1; min-width:0; font-size:.8rem; font-weight:600; color:var(--text-0); overflow-wrap:anywhere; }
-  .lr .nm small { display:block; white-space:nowrap; font-size:.62rem; color:var(--text-2); font-weight:400; }
+  .lr .nm small { display:block; white-space:nowrap; font-size:.6875rem; color:var(--text-2); font-weight:400; }
   .lr .pct { font-size:.78rem; font-weight:800; color:var(--red); font-variant-numeric:tabular-nums; }
-  .sec { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.09em; color:var(--text-2); margin:2rem 0 0; display:flex; align-items:center; gap:.7rem; }
+  .sec { font-size:.8rem; font-weight:600; letter-spacing:0; color:var(--text-1); margin:2rem 0 0; display:flex; align-items:center; gap:.7rem; }
   .sec::after { content:""; flex:1; height:1px; background:var(--border); }
   .sq { list-style:none; margin-top:.4rem; }
   .sr { display:grid; grid-template-columns:1.6rem 40px 1fr auto; gap:.3rem .65rem; align-items:center; padding:.6rem .3rem; border-top:1px solid var(--border); }
@@ -107,16 +110,16 @@
   .sr .nm a { color:inherit; }
   .sr .rec { display:block; font-size:.72rem; color:var(--text-2); font-weight:400; font-variant-numeric:tabular-nums; }
   .sr .rec b { color:var(--red); }
-  .sr .thr { text-align:right; font-size:.68rem; color:var(--text-2); line-height:1.25; }
+  .sr .thr { text-align:right; font-size:.6875rem; color:var(--text-2); line-height:1.25; }
   .sr .thr b { display:block; font-size:.95rem; color:var(--red); font-variant-numeric:tabular-nums; }
   .chips { grid-column:3 / -1; display:flex; flex-wrap:wrap; gap:.3rem; }
-  .chip { font-size:.68rem; border:1px solid var(--border); border-radius:99px; padding:.1rem .5rem; color:var(--text-1); background:var(--bg-2); }
+  .chip { font-size:.6875rem; border:1px solid var(--border); border-radius:99px; padding:.1rem .5rem; color:var(--text-1); background:var(--bg-2); }
   .chip.hot { border-color:var(--red); color:var(--text-0); }
   .chip.free { border-color:var(--green); color:var(--green); }
   .stomp { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.4rem; }
   .st { display:flex; align-items:center; gap:.45rem; background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:.35rem .55rem; font-size:.78rem; color:var(--text-0); }
   .st img { width:26px; height:26px; border-radius:7px; object-fit:cover; }
-  .st small { display:block; font-size:.64rem; color:var(--text-2); }
+  .st small { display:block; font-size:.6875rem; color:var(--text-2); }
   @media (max-width:600px) { .sr { grid-template-columns:1.3rem 34px 1fr auto; gap:.3rem .5rem; } .sr img { width:34px; height:34px; } .chips { grid-column:1 / -1; } }
   @media (max-width:600px) { .more { min-height:44px; } .band { min-height:44px; } .br { grid-template-columns:1.3rem 34px 1fr 30%; gap:.5rem; } .br img { width:34px; height:34px; } }
 </style>
@@ -128,23 +131,28 @@
   <a class="navlink" href="./">Pick &amp; Build</a>
   <a class="navlink" href="squad.html">Pre-Game</a>
   <a class="navlink" href="coach.html">Coach</a>
-</div><div class="subnav" id="subnav"></div></div>
+</div><nav class="subnav" id="subnav" aria-label="Jump to section">
+  <a class="snpill" href="#our" data-sq>Our ban list</a>
+  <a class="snpill" href="#stompers" data-sq>Who stomps us</a>
+  <a class="snpill" href="#league">League top bans</a>
+  <a class="snpill" href="#bylane">Bans by lane</a>
+</nav></div>
 
 <div class="wrap">
   <h1>Most banned</h1>
   <p class="lede">Who our squad should ban, from the heroes that actually beat us, and what the whole ranked ladder bans, overall and by lane.</p>
-  <div class="sec">Our ban list</div>
+  <div class="sec jump" id="our">Our ban list</div>
   <div class="bands" id="sqWin"></div>
   <section class="card" id="squadCard">
     <h2 id="sqTitle">Squad top 10 bans</h2>
     <p class="sub" id="sqSub" style="margin:0 0 .3rem"></p>
     <ol class="sq" id="sqList"><li class="sub">Loading…</li></ol>
-    <h2 style="margin-top:1.2rem">Who stomps us</h2>
+    <h2 class="jump" id="stompers" style="margin-top:1.2rem">Who stomps us</h2>
     <p class="sub" style="margin:0">Most kills on squad members per game faced.</p>
     <div class="stomp" id="stomp"></div>
     <p class="sub" id="sqMethod"></p>
   </section>
-  <div class="sec">League bans</div>
+  <div class="sec jump" id="league">League bans</div>
   <div class="bands" id="bands"></div>
   <section class="card">
     <h2 id="boardTitle">Top 10 bans</h2>
@@ -152,7 +160,7 @@
     <button class="more" id="more"></button>
     <p class="sub" id="boardSub"></p>
   </section>
-  <section class="card">
+  <section class="card jump" id="bylane">
     <h2 id="laneTitle">Top 5 bans by lane</h2>
     <p class="sub" style="margin:0 0 .5rem">You ban a hero, not a lane, so each hero sits under the lane it's played in most at this rank.</p>
     <div class="lanes" id="lanes"></div>
@@ -242,12 +250,37 @@ function renderSquad() {
   $('#sqMethod').textContent = `Method: ${SQ.method} Updated ${String(SQ.generatedAt).slice(0, 10)}.`;
 }
 fetch('../../data/artifacts/squad-bans.json').then((r) => r.json()).then((d) => { SQ = d; renderSquad(); })
-  .catch(() => { $('#squadCard').style.display = 'none'; $('#sqWin').style.display = 'none'; });
+  .catch(() => {
+    $('#squadCard').style.display = 'none'; $('#sqWin').style.display = 'none';
+    $('#our').style.display = 'none'; document.querySelectorAll('#subnav [data-sq]').forEach((a) => { a.style.display = 'none'; });
+  });
 
 fetch('../../data/artifacts/bans.json').then((r) => r.json()).then((d) => { BANS = d; render(); })
   .catch(() => { $('#board').innerHTML = '<li class="sub">Ban data isn\'t available right now.</li>'; });
+
+// Section jumper (static anchor pills in the sticky top bar): scrollspy keeps
+// the current section highlighted, same feel as the Coach page's jumper.
+(function jumper() {
+  const host = $('#subnav');
+  const setTop = () => document.documentElement.style.setProperty('--toph', `${$('.top')?.offsetHeight ?? 96}px`);
+  setTop(); addEventListener('resize', setTop);
+  const pills = [...host.querySelectorAll('.snpill')];
+  const byId = new Map(pills.map((p) => [p.getAttribute('href').slice(1), p]));
+  pills[0].classList.add('active');
+  // scroll the pill ROW only; letting the browser scroll ancestors pans the iOS pinch-zoom viewport
+  const centerPill = (p) => host.scrollTo({ left: p.offsetLeft - host.clientWidth / 2 + p.offsetWidth / 2, behavior: 'smooth' });
+  const io = new IntersectionObserver((es) => {
+    for (const e of es) {
+      if (!e.isIntersecting) continue;
+      pills.forEach((p) => p.classList.toggle('active', p === byId.get(e.target.id)));
+      centerPill(byId.get(e.target.id));
+    }
+  }, { rootMargin: '-15% 0px -75% 0px' });
+  byId.forEach((_, id) => io.observe(document.getElementById(id)));
+})();
 </script>
 <script defer src="icons.js"></script>
+<script defer src="hero-links.js"></script>
 <script defer src="nav.js"></script>
 </body>
 </html>

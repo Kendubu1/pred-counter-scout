@@ -8,7 +8,7 @@
 // SAME curated text a human reads (effects.json sourceText + effect kinds), so
 // nothing is invented; low-confidence reads steer nothing (graceful default).
 
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadEffects } from './effects.js';
@@ -151,6 +151,40 @@ export function lanesFor(heroSlug: string): string[] {
     return nb - na;
   });
 }
+
+/** Lanes the hero is actually played in, by total games (each lane cell in
+ *  predgg-augments.json has 50+ games). Unlike lanesFor, which ranks by the top
+ *  augment's count, this is the real share of games per lane. */
+export function lanesByGames(heroSlug: string): { lane: string; games: number }[] {
+  const hero = predggAugments().heroes?.[heroSlug];
+  if (!hero) return [];
+  return Object.entries(hero)
+    .map(([lane, c]) => ({ lane, games: (c as { games?: number }).games ?? 0 }))
+    .sort((a, b) => b.games - a.games);
+}
+
+/** Lanes beyond a hero's top three that still earn a page: only where the hero
+ *  is SIGNIFICANTLY winning — 300+ ranked games this patch and a 95% Wilson
+ *  lower bound on win rate of at least 50% (predgg-lane-stats.json). A lane that
+ *  is merely played gets the hero page's fallback banner instead. On 2026-10-25
+ *  one lane qualified: Valmont carry, 56.5% over 796 games. */
+export const EXTRA_LANE_MIN_GAMES = 300;
+export function significantlyWinningLanes(heroSlug: string): { lane: string; games: number; winRate: number; lower: number }[] {
+  const p = path.join(ROOT, 'data/aggregates/predgg-lane-stats.json');
+  if (!existsSync(p)) return [];
+  laneStatsCache ??= JSON.parse(readFileSync(p, 'utf8')) as { heroes: Record<string, { byRole: Record<string, { n: number; w: number }> }> };
+  const z = 1.96;
+  return Object.entries(laneStatsCache.heroes[heroSlug]?.byRole ?? {})
+    .filter(([, c]) => c.n >= EXTRA_LANE_MIN_GAMES)
+    .map(([lane, c]) => {
+      const p0 = c.w / c.n;
+      const lower = (p0 + z * z / (2 * c.n) - z * Math.sqrt(p0 * (1 - p0) / c.n + z * z / (4 * c.n * c.n))) / (1 + z * z / c.n);
+      return { lane, games: c.n, winRate: p0, lower };
+    })
+    .filter((x) => x.lower >= 0.5)
+    .sort((a, b) => b.lower - a.lower);
+}
+let laneStatsCache: { heroes: Record<string, { byRole: Record<string, { n: number; w: number }> }> } | undefined;
 
 // ── Kit-derived playstyle (first-principles, NOT field-derived) ──
 //

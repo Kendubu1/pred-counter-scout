@@ -17,6 +17,7 @@ import { fileURLToPath } from 'node:url';
 import { buildAllowed, verifyLine } from '../copy-verify.js';
 import { ask, flushTasks, isPrepare } from '../copy-session.js';
 import { factsFor, isHeroArtifact, type Artifact as HeroArt, type RawHero as KitHero } from '../hero-coach-copy.js';
+import { factsFor as eternalFacts, loadEternalInputs } from '../eternal-copy.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const clean = (t?: string) => (t || '').replace(/<br\s*\/?>(\n)?/g, ' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
@@ -26,9 +27,12 @@ const clean = (t?: string) => (t || '').replace(/<br\s*\/?>(\n)?/g, ' ').replace
 // copy that already converged. Default is every surface, as before. The scope is
 // recorded in the round so an agreement rate can never be read wider than it was
 // measured; a scoped loop points CRITIQUE_HISTORY/CRITIQUE_REPORT at its own files.
-const SURFACES = ['builds', 'herocoach', 'coach'] as const;
+// `eternalcards` (the hero-page Eternal card lines) is opt-in only: it has its
+// own history (npm run eternalcards:critique), so the default round's scope is unchanged.
+const SURFACES = ['builds', 'herocoach', 'coach', 'eternalcards'] as const;
+const DEFAULT_SURFACES = ['builds', 'herocoach', 'coach'];
 type Surface = typeof SURFACES[number];
-const SCOPE = new Set<string>((process.env.CRITIQUE_ONLY ?? SURFACES.join(',')).split(',').map((s) => s.trim()).filter(Boolean));
+const SCOPE = new Set<string>((process.env.CRITIQUE_ONLY ?? DEFAULT_SURFACES.join(',')).split(',').map((s) => s.trim()).filter(Boolean));
 const inScope = (s: Surface) => SCOPE.has(s);
 const REPORT_PATH = path.join(ROOT, process.env.CRITIQUE_REPORT ?? 'data/aggregates/copy-critique.json');
 const HISTORY_PATH = path.join(ROOT, process.env.CRITIQUE_HISTORY ?? 'data/aggregates/copy-critique-history.json');
@@ -186,6 +190,55 @@ Return strict JSON: {"flags":[{"quote":"<the exact line text>","severity":"high|
     }
   }
 
+  // Eternal card lines (data/aggregates/eternal-cards.json) — the SAME critic,
+  // graded against the identical facts block the author was handed (rebuilt by
+  // the shared pure builder in eternal-copy.ts). One task per hero/role; each
+  // copy line is prefixed with its Eternal so the judge knows which one it is.
+  const ET_PATH = path.join(ROOT, 'data/aggregates/eternal-cards.json');
+  let etDoc: { heroes: Record<string, Record<string, Record<string, string>>>; [k: string]: unknown } | null = null;
+  const etFlags: Record<string, Record<string, { quote: string; severity: string; issue: string; rewrite: string | null }[]>> = {};
+  if (inScope('eternalcards') && existsSync(ET_PATH)) {
+    etDoc = JSON.parse(readFileSync(ET_PATH, 'utf8')) as { heroes: Record<string, Record<string, Record<string, string>>> };
+    const { augs, heroBySlug: etHeroes, eternals } = loadEternalInputs();
+    for (const [slug, roles] of Object.entries(etDoc.heroes)) {
+      const kit = etHeroes.get(slug);
+      if (!kit) continue;
+      const name = kit.display_name ?? kit.name ?? slug;
+      for (const [role, byEternal] of Object.entries(roles)) {
+        const cell = augs.heroes[slug]?.[role];
+        if (!cell) continue;
+        const facts = eternalFacts(name, role, cell, kit, augs.catalog, eternals);
+        const copyLines = Object.values(byEternal);
+        if (!copyLines.length) continue;
+        const prompt = `You are an INDEPENDENT reviewer of Eternal card copy for ${name} (${role}) in Predecessor (a MOBA). Each line replaces the Eternal's raw stat description on the hero page and should say what the Eternal does for THIS hero and how it changes how you play. Another agent wrote the COPY below; you did NOT write it. Judge it against the SOURCE only.
+
+SOURCE (everything the author was allowed to use):
+${facts}
+
+COPY UNDER REVIEW (one per line, "<Eternal>: <line>"):
+${Object.entries(byEternal).map(([e, l], i) => `${i + 1}. ${e}: ${l}`).join('\n')}
+
+Flag ONLY real problems: a line that (a) misdescribes the Eternal, a minor, an ability or the augment vs the SOURCE, (b) claims an interaction the SOURCE does not support (e.g. says an ability feeds a "bonus attack speed" scaling when the ability grants something else), (c) is overconfident/misleading or promises wins, (d) uses jargon a brand-new player won't get, (e) just recites the description's numbers instead of saying how to play, or (f) is broken/ungrammatical English. Do not nitpick style.
+Return strict JSON: {"flags":[{"quote":"<the exact line text, WITHOUT the '<Eternal>: ' prefix>","severity":"high|med|low","issue":"<what's wrong, one phrase>","rewrite":"<a corrected line (max 30 words), or null if it should just be dropped>"}]}. If the copy is all fine, return {"flags":[]}.`;
+        const raw = (await ask('critique', `eternalcards:${slug}:${role}`, prompt)).trim().replace(/^```json?\s*|```$/g, '');
+        reviewedLines += copyLines.length;
+        totalTasks++; if (raw && raw !== '{}') answeredTasks++;
+        if (isPrepare()) continue;
+        try {
+          const parsed = JSON.parse(raw) as { flags?: { quote?: string; severity?: string; issue?: string; rewrite?: string | null }[] };
+          const allowed = buildAllowed([], [facts]);
+          const flags = (parsed.flags ?? []).filter((fl) => fl.quote).map((fl) => {
+            let rewrite = fl.rewrite ?? null;
+            if (rewrite) { if (verifyLine(rewrite, allowed)) rewritesGrounded++; else { rewrite = null; rewritesDropped++; } }
+            return { quote: fl.quote!, severity: fl.severity ?? 'low', issue: fl.issue ?? '', rewrite };
+          });
+          if (flags.length) { (etFlags[slug] ??= {})[role] = flags; flaggedLines += flags.length; }
+          process.stdout.write('.');
+        } catch { process.stdout.write('x'); }
+      }
+    }
+  }
+
   // Coach report critique — the SAME independent critic, different source (the
   // player's stats + our kit reads). Reviews the agent-written coachReasoning on
   // the lead's coach.json AND on every squad member's report, because that is
@@ -314,6 +367,35 @@ Return strict JSON: {"flags":[{"quote":"<exact line text>","severity":"high|med|
     writeFileSync(fixPath, JSON.stringify(fixDoc, null, 1));
   }
 
+  // Apply Eternal rewrites to eternal-cards.json (exact match on the flagged
+  // cell's own lines) and persist them in eternal-card-fixes.json, which
+  // eternal-card-review.ts re-applies and re-verifies on every ingest so a re-run
+  // cannot revert to the pre-judge draft. A null rewrite drops the line: the
+  // card then falls back to the raw description.
+  if (etDoc && Object.keys(etFlags).length) {
+    const fixPath = path.join(ROOT, 'data/aggregates/eternal-card-fixes.json');
+    const fixDoc = existsSync(fixPath)
+      ? (JSON.parse(readFileSync(fixPath, 'utf8')) as { lanes: Record<string, Record<string, string>>; [k: string]: unknown })
+      : { source: 'applied rewrites from the independent-critic rounds over the Eternal card lines, re-applied and re-verified on every ingest', lanes: {} };
+    for (const slug in etFlags) {
+      for (const role in etFlags[slug]!) {
+        const cell = etDoc.heroes[slug]?.[role];
+        if (!cell) continue;
+        for (const fl of etFlags[slug]![role]!) {
+          const key = Object.keys(cell).find((e) => cell[e] === fl.quote);
+          if (!key) { unmatched++; continue; }
+          // '' records a drop, so the ingest drops it again instead of restoring it.
+          ((fixDoc.lanes ??= {})[`${slug}:${role}`] ??= {})[fl.quote] = fl.rewrite ?? '';
+          if (fl.rewrite) cell[key] = fl.rewrite; else delete cell[key];
+          applied++;
+        }
+      }
+    }
+    writeFileSync(ET_PATH, JSON.stringify(etDoc, null, 1));
+    fixDoc.generatedAt = new Date().toISOString();
+    writeFileSync(fixPath, JSON.stringify(fixDoc, null, 1));
+  }
+
   // Apply coach rewrites back into each report they came from (lead + members).
   for (const rep of coachReports) {
     const fls = coachFlags[rep.id];
@@ -341,6 +423,7 @@ Return strict JSON: {"flags":[{"quote":"<exact line text>","severity":"high|med|
     heroes: report,
     heroCoach: hcFlags,
     coach: coachFlags,
+    eternalCards: etFlags,
   }, null, 1));
 
   // Append this judge round to the loop history so the convergence gate

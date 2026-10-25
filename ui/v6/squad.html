@@ -7,14 +7,14 @@
 <style>
   :root {
     --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
-    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#82829a;
-    --accent:#6c5ce7; --accent-soft:rgba(108,92,231,.14);
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#8e8ea6;
+    --accent:#6c5ce7; --accent-ink:#9a8ef2; --accent-soft:rgba(108,92,231,.14);
     --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px; --maxw:980px;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
   html { scroll-behavior:smooth; }
-  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; font-variant-numeric:tabular-nums; }
   a { color:var(--blue); text-decoration:none; }
   img { display:block; }
   button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
@@ -23,7 +23,7 @@
   .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .spacer { flex:1; }
   .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
-  .navlink.active { background:var(--accent-soft); color:var(--text-0); border-color:var(--accent); }
+  .navlink.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
   .navlink:hover { color:var(--text-0); }
   .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
   .subnav::-webkit-scrollbar { display:none; }
@@ -38,13 +38,13 @@
   }
   .scope > summary { cursor:pointer; font-weight:600; color:var(--text-1); list-style:none; }
   .scope > summary::-webkit-details-marker { display:none; }
-  .scope > summary::before { content:"▸ "; color:var(--accent); }
+  .scope > summary::before { content:"▸ "; color:var(--accent-ink); }
   .scope[open] > summary::before { content:"▾ "; }
   .scope b { color:var(--text-1); }
   .alts { margin-top:.6rem; }
   .alts > summary { cursor:pointer; font-size:.74rem; font-weight:700; color:var(--text-2); letter-spacing:.04em; list-style:none; padding:.35rem 0; }
   .alts > summary::-webkit-details-marker { display:none; }
-  .alts > summary::before { content:"▸ "; color:var(--accent); }
+  .alts > summary::before { content:"▸ "; color:var(--accent-ink); }
   .alts[open] > summary::before { content:"▾ "; }
   a.plink { color:inherit; text-decoration:none; border-bottom:1px dotted var(--blue); }
   a.plink:hover { color:var(--blue); }
@@ -53,14 +53,14 @@
   .sub { color:var(--text-1); margin-top:.3rem; display:flex; gap:.4rem; flex-wrap:wrap; }
   .chip { white-space:nowrap; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.13rem .62rem; font-size:.76rem; color:var(--text-1); }
   .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; }
-  .card h2 { font-size:.8rem; text-transform:uppercase; letter-spacing:.12em; color:var(--text-2); margin-bottom:.8rem; }
+  .card h2 { font-size:1rem; font-weight:600; letter-spacing:0; color:var(--text-0); margin-bottom:.8rem; }
   .verdict { font-size:1rem; border-left:3px solid var(--accent); padding:.5rem .9rem; background:var(--accent-soft); border-radius:0 8px 8px 0; margin-top:.8rem; color:var(--text-1); }
   .verdict b { color:var(--text-0); }
 
   .seat { padding:.6rem 0; border-bottom:1px solid var(--border); }
   .seat:last-of-type { border-bottom:none; }
   .seathead { display:flex; align-items:baseline; gap:.55rem; flex-wrap:wrap; }
-  .seathead .role { font-weight:800; text-transform:capitalize; color:var(--accent); min-width:64px; }
+  .seathead .role { font-weight:800; text-transform:capitalize; color:var(--accent-ink); min-width:64px; }
   .seathead .rwr { font-weight:800; font-variant-numeric:tabular-nums; }
   .seathead .sgames { margin-left:auto; color:var(--text-2); font-size:.72rem; font-variant-numeric:tabular-nums; white-space:nowrap; }
   .seat .picks { margin-top:.4rem; }
@@ -80,21 +80,21 @@
   .rolemini .n { text-align:right; color:var(--text-2); font-variant-numeric:tabular-nums; white-space:nowrap; }
   .who { display:flex; gap:.45rem; flex-wrap:wrap; }
   .plansplit { display:grid; grid-template-columns:1fr auto; gap:1rem; align-items:start; padding-bottom:.7rem; border-bottom:1px dashed var(--border); }
-  .grouplabel { font-size:.62rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--text-2); margin-bottom:.35rem; }
+  .grouplabel { font-size:.8rem; font-weight:600; letter-spacing:0; color:var(--text-1); margin-bottom:.35rem; }
   .planstep { margin-bottom:.9rem; }
   .steplabel { display:flex; align-items:center; gap:.45rem; font-size:.84rem; font-weight:700; color:var(--text-0); margin-bottom:.5rem; }
-  .stepn { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; background:var(--accent); color:#fff; font-size:.66rem; font-weight:800; flex:none; }
-  .stephint { font-size:.68rem; color:var(--text-2); margin-top:.4rem; }
+  .stepn { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; background:var(--accent); color:#fff; font-size:.6875rem; font-weight:800; flex:none; }
+  .stephint { font-size:.6875rem; color:var(--text-2); margin-top:.4rem; }
   .ptoggles { display:flex; gap:.5rem; flex-wrap:wrap; }
   .ptoggle { display:flex; align-items:center; gap:.4rem; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.28rem .7rem .28rem .35rem; font:inherit; font-size:.82rem; color:var(--text-2); cursor:pointer; transition:border-color .12s, color .12s, background .12s; }
   .ptoggle img { width:26px; height:26px; border-radius:50%; object-fit:cover; border:1px solid var(--border); filter:grayscale(1) opacity(.5); transition:filter .12s; margin:0; }
-  .ptoggle[aria-pressed="true"] { background:var(--accent-soft); border-color:var(--accent); color:var(--text-0); font-weight:600; }
+  .ptoggle[aria-pressed="true"] { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); font-weight:600; }
   .ptoggle[aria-pressed="true"] img { filter:none; border-color:var(--accent); }
-  .ptoggle::before { content:""; width:14px; height:14px; border-radius:50%; border:1.5px solid var(--text-2); flex:none; display:inline-flex; align-items:center; justify-content:center; font-size:.6rem; }
+  .ptoggle::before { content:""; width:14px; height:14px; border-radius:50%; border:1.5px solid var(--text-2); flex:none; display:inline-flex; align-items:center; justify-content:center; font-size:.6875rem; }
   .ptoggle[aria-pressed="true"]::before { content:"✓"; background:var(--accent); border-color:var(--accent); color:#fff; }
   .segmented { display:inline-flex; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.15rem; gap:.1rem; }
   .seg { font:inherit; font-size:.8rem; border:none; background:transparent; color:var(--text-2); border-radius:99px; padding:.28rem .8rem; cursor:pointer; white-space:nowrap; }
-  .seg[aria-pressed="true"] { background:var(--accent); color:#fff; font-weight:600; }
+  .seg[aria-pressed="true"] { background:var(--bg-3); color:var(--text-0); font-weight:600; }
   .ghostbtn { margin-left:auto; font:inherit; font-size:.76rem; background:var(--bg-2); border:1px solid var(--border); color:var(--text-1); border-radius:99px; padding:.2rem .65rem; cursor:pointer; }
   .ghostbtn:hover { border-color:var(--accent); color:var(--text-0); }
   .pick { display:flex; align-items:center; gap:.35rem; background:var(--bg-2); border:1px solid var(--border); border-radius:99px; padding:.24rem .6rem; font-size:.78rem; cursor:pointer; user-select:none; }
@@ -102,7 +102,7 @@
   .pick input { accent-color:var(--accent); }
   .planseat { display:grid; grid-template-columns:84px 1fr auto; gap:.7rem; align-items:center; padding:.4rem 0; border-bottom:1px solid var(--border); font-size:.86rem; }
   .planseat:last-of-type { border-bottom:none; }
-  .planseat .r { font-weight:800; text-transform:capitalize; color:var(--accent); }
+  .planseat .r { font-weight:800; text-transform:capitalize; color:var(--accent-ink); }
   .planseat .picks-mini { font-size:.74rem; color:var(--text-2); }
   .picks-mini .hico { width:20px; height:20px; border-radius:5px; object-fit:cover; vertical-align:-5px; margin-right:.25rem; }
   .pairrow { display:grid; grid-template-columns:minmax(170px, 310px) 1fr 96px; gap:.7rem; align-items:center; padding:.3rem 0; font-size:.82rem; }
@@ -116,7 +116,7 @@
 
   /* ── mobile: smaller, stacked, nothing bleeds ── */
   @media (max-width:600px) {
-    body { font-size:15px; }
+    body { font-size:14px; }
     /* tap targets: >=44px hit area on touch (Apple HIG 44 / WCAG floor 24).
        Shared union list across all three pages (absent selectors are no-ops). */
     .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle {
@@ -127,9 +127,9 @@
     .top-inner { padding:.5rem .7rem; gap:.3rem; }
     .wordmark { font-size:.82rem; white-space:nowrap; }
     .top-inner a { font-size:.72rem; white-space:nowrap; }
-    .wrap { padding:.9rem .7rem 3rem; }
+    .wrap { padding:.9rem 1rem 3rem; }
     h1 { font-size:1.35rem; }
-    .sub .chip { font-size:.66rem; padding:.1rem .5rem; }
+    .sub .chip { font-size:.6875rem; padding:.1rem .5rem; }
     .card { padding:.8rem .8rem; }
     .card h2 { font-size:.7rem; }
     .verdict { font-size:.84rem; padding:.4rem .7rem; }
@@ -145,18 +145,18 @@
     .plansplit { grid-template-columns:1fr; gap:.55rem; }
     .pick { font-size:.7rem; padding:.18rem .5rem; }
     .planseat { grid-template-columns:64px 1fr; gap:.1rem .5rem; padding:.45rem 0; font-size:.8rem; }
-    .planseat .picks-mini { grid-column:1 / -1; font-size:.68rem; }
+    .planseat .picks-mini { grid-column:1 / -1; font-size:.6875rem; }
 
     /* duo synergy rows */
     .pairrow { grid-template-columns:1fr 84px; gap:.2rem .5rem; }
     .pairrow .names { grid-column:1 / -1; font-size:.76rem; white-space:normal; overflow:visible; line-height:1.8; }
-    .pairrow .n { font-size:.68rem; }
+    .pairrow .n { font-size:.6875rem; }
 
     /* member cards */
     .members { grid-template-columns:1fr; gap:.55rem; }
     .member { padding:.65rem; }
     .member .nm { font-size:.92rem; }
-    .rolemini { grid-template-columns:62px 1fr 86px; font-size:.68rem; }
+    .rolemini { grid-template-columns:62px 1fr 86px; font-size:.6875rem; }
     ul.notes li { font-size:.8rem; }
   }
   @media (prefers-reduced-motion:reduce) { * { animation:none !important; transition:none !important; scroll-behavior:auto !important; } }
@@ -172,6 +172,8 @@
 </div><div class="subnav" id="subnav"></div></div>
 <div class="wrap" id="page">loading…</div>
 <script>
+// Lane mark placeholder; icons.js fills it (also after async renders).
+const laneIcon = (r) => `<span class="lane-ic" data-bic="lane-${r}" aria-hidden="true"></span>`;
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pct = (x, d = 1) => (x * 100).toFixed(d);
 const plink = (uuid, name) => uuid
@@ -202,7 +204,7 @@ const plink = (uuid, name) => uuid
 
   const lead = s.members[0];
   document.getElementById('page').innerHTML = `
-    <details class="scope"><summary>📊 Data scope &amp; sources</summary><div style="margin-top:.45rem">pred.gg public profiles — career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked splits, last 40 matches each · field baselines: ${META ? META.matches.toLocaleString() + ' matches, patch ' + esc(META.patch) : 'current-patch matches'}, all ranks · combat math is THEORY pending in-game calibration · generated ${esc(s.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div></details>
+    <details class="scope"><summary>Data scope &amp; sources</summary><div style="margin-top:.45rem">pred.gg public profiles — career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked splits, last 40 matches each · field baselines: ${META ? META.matches.toLocaleString() + ' matches, patch ' + esc(META.patch) : 'current-patch matches'}, all ranks · combat math is THEORY pending in-game calibration · generated ${esc(s.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div></details>
     <h1>The five stack</h1>
 
     <div class="card">
@@ -217,11 +219,11 @@ const plink = (uuid, name) => uuid
         </div>
       </div>
       <div class="planstep">
-        <div class="steplabel"><span class="stepn">2</span> Hero pool <button id="shuffle" class="ghostbtn" type="button">🎲 shuffle</button></div>
+        <div class="steplabel"><span class="stepn">2</span> Hero pool <button id="shuffle" class="ghostbtn" type="button">Shuffle</button></div>
         <div class="segmented" id="mode" role="radiogroup" aria-label="Hero pool">
-          <button class="seg" type="button" data-v="wheel" aria-pressed="true">🏠 Wheelhouse</button>
-          <button class="seg" type="button" data-v="meta" aria-pressed="false">🔥 Meta</button>
-          <button class="seg" type="button" data-v="any" aria-pressed="false">🌊 Any lane</button>
+          <button class="seg" type="button" data-v="wheel" aria-pressed="true">Wheelhouse</button>
+          <button class="seg" type="button" data-v="meta" aria-pressed="false">Meta</button>
+          <button class="seg" type="button" data-v="any" aria-pressed="false">Any lane</button>
         </div>
         <div class="stephint">Wheelhouse = heroes each player has real games on · Meta = the current patch's best · Any = the whole lane's roster</div>
       </div>
@@ -246,7 +248,7 @@ const plink = (uuid, name) => uuid
           <div class="member">
             <div class="nm">${pav(m.uuid)}<a href="coach.html?player=${esc(m.uuid)}">${esc(m.name)} →</a></div>
             ${m.archetype ? `<div style="color:var(--gold);font-size:.72rem;font-weight:700" title="${esc(m.archetype.receipt)}">“${esc(m.archetype.label)}”</div>` : ''}
-            ${m.topInsight ? `<div style="font-size:.72rem;color:var(--text-1);margin-top:.25rem" title="${esc(m.topInsight.receipt)}">🎬 ${esc(m.topInsight.title)}</div>` : ''}
+            ${m.topInsight ? `<div style="font-size:.72rem;color:var(--text-1);margin-top:.25rem" title="${esc(m.topInsight.receipt)}">${esc(m.topInsight.title)}</div>` : ''}
             <div class="meta">${m.career.games.toLocaleString()} games · ${pct(m.career.winrate)}% career · KDA ${m.career.kda.toFixed(2)}${m.peakAllTime ? ` · peak ${m.peakAllTime} VP` : ''}</div>
             ${m.roles.slice(0, 3).map((r) => `
               <div class="rolemini"><span style="text-transform:capitalize">${esc(r.role)}</span>
@@ -282,7 +284,7 @@ const plink = (uuid, name) => uuid
           </div>
         </div>`).join('')}
       </div>
-      <div style="font-size:.66rem;color:var(--text-2);margin-top:.5rem;line-height:1.5">${esc(HABITS.note || '')} · derived from the reviewed films (data/postgame), not the full career.</div>
+      <div style="font-size:.6875rem;color:var(--text-2);margin-top:.5rem;line-height:1.5">${esc(HABITS.note || '')} · derived from the reviewed films (data/postgame), not the full career.</div>
     </div>`;
     })() : ''}
 
@@ -385,15 +387,15 @@ const plink = (uuid, name) => uuid
         // the winning option, rendered rich — this IS the optimal lineup
         // when everyone is in, wheelhouse, unshuffled
         const head = isOptimal
-          ? `OPTIMAL LINEUP · all ${[1, 2, 6, 24, 120][opt.seats.length - 1] ?? ''} permutations scored${typeof s.lineupGainPer100 === 'number' && s.lineupGainPer100 >= 0.5 ? ` · <span style="color:var(--green)">about ${s.lineupGainPer100} more wins per 100 games than the usual queue picks</span>` : ''}`
-          : `${shuffleSeed % 3 === 0 ? 'BEST FOR THIS GROUP' : '🎲 SHUFFLED SET'} · seats average ${pct(avg)}%`;
+          ? `Optimal lineup · all ${[1, 2, 6, 24, 120][opt.seats.length - 1] ?? ''} permutations scored${typeof s.lineupGainPer100 === 'number' && s.lineupGainPer100 >= 0.5 ? ` · <span style="color:var(--green)">about ${s.lineupGainPer100} more wins per 100 games than the usual queue picks</span>` : ''}`
+          : `${shuffleSeed % 3 === 0 ? 'Best for this group' : 'Shuffled set'} · seats average ${pct(avg)}%`;
         return `
       <div style="margin-top:.8rem">
         <div style="font-size:.74rem; font-weight:800; color:var(--green); letter-spacing:.06em">${head}</div>
         ${opt.seats.map((seat, si) => `
         <div class="seat">
           <div class="seathead">
-            <span class="role">${esc(seat.role)}</span>
+            <span class="role">${laneIcon(esc(seat.role))} ${esc(seat.role)}</span>
             <span class="rwr">${pct(seat.wr)}%</span>
             ${pav(seat.uuid)}${plink(seat.uuid, seat.name)}
             <span class="sgames">${seat.games} games in role</span>
@@ -406,7 +408,7 @@ const plink = (uuid, name) => uuid
           const rec = (s.duoLane || {})[duoKey(carry.uuid, support.uuid)];
           if (!rec) return '';
           const col = rec.winrate >= 0.53 ? 'var(--green)' : rec.winrate <= 0.48 ? 'var(--red)' : 'var(--gold)';
-          return `<div class="snote" style="color:${col};margin-top:.5rem">🤝 <b>${esc(carry.name.split(' ')[0])} + ${esc(support.name.split(' ')[0])}</b> have won ${pct(rec.winrate, 0)}% of ${rec.games} games laning together — part of why they're paired here.</div>`;
+          return `<div class="snote" style="color:${col};margin-top:.5rem"><b>${esc(carry.name.split(' ')[0])} + ${esc(support.name.split(' ')[0])}</b> have won ${pct(rec.winrate, 0)}% of ${rec.games} games laning together — part of why they're paired here.</div>`;
         })()}
         ${opt.seats.length >= 3 ? '<div class="snote" style="margin-top:.5rem">Seats are scored as a set — someone can look stronger in a seat they did not get, but moving them gives up more wins in the role they leave than it adds. The carry+support pairing also weighs their real duo-lane record.</div>' : ''}
       </div>`;
@@ -414,7 +416,7 @@ const plink = (uuid, name) => uuid
       return `
       <div style="margin-top:.8rem; opacity:.88">
         <div style="font-size:.74rem; font-weight:800; color:var(--text-2); letter-spacing:.06em">
-          ${shuffleSeed % 3 === 0 ? '' : '🎲 '}ALSO WORKS · seats average ${pct(avg)}% · ${vsA}
+          Also works · seats average ${pct(avg)}% · ${vsA}
         </div>
         ${opt.seats.map((seat, si) => `
           <div class="planseat">
@@ -509,6 +511,7 @@ function buildSubnav() {
 }
 </script>
 <script defer src="icons.js"></script>
+<script defer src="hero-links.js"></script>
 <script defer src="nav.js"></script>
 </body>
 </html>

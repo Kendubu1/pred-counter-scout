@@ -68,6 +68,19 @@ describe('hero artifacts (Concept A engine stage)', () => {
     expect(index.patch).toBe(cal.patch);
   });
 
+  it('role pages: at most three, plus a 4th only where the hero is significantly winning', async () => {
+    const { significantlyWinningLanes } = await import('../src/playstyle.js');
+    const dir = path.join(ROOT, 'data/artifacts');
+    const bad: string[] = [];
+    for (const f of readdirSync(dir).filter((x) => x.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json'].includes(x))) {
+      const a = JSON.parse(readFileSync(path.join(dir, f), 'utf8'));
+      const roles: string[] = (a.roles ?? []).map((v: { role: string }) => v.role);
+      if (roles.length > 4) bad.push(`${f}: ${roles.length} role pages`);
+      if (roles.length === 4 && !significantlyWinningLanes(a.slug).some((l) => l.lane === roles[3])) bad.push(`${f}: 4th page ${roles[3]} is not significantly winning`);
+    }
+    expect(bad).toEqual([]);
+  });
+
   it('meta builds: one entry per item set, most played first, display names', () => {
     // 2026-10-25: 33 of 157 lane views listed one item set twice (two buy orders)
     // and the page defaulted to a 2%-of-games core over the lane's real build.
@@ -81,6 +94,8 @@ describe('hero artifacts (Concept A engine stage)', () => {
         if (new Set(sets).size !== sets.length) bad.push(`${f}/${v.role}: duplicate item set`);
         for (let i = 1; i < mb.length; i++) if (mb[i - 1]!.n < mb[i]!.n) bad.push(`${f}/${v.role}: not sorted by games`);
         for (const m of mb) for (const it of m.items) if (/[a-z][A-Z]/.test(it.name)) bad.push(`${f}/${v.role}: internal item name ${it.name}`);
+        // An off-role view falling back to all-roles builds must say so.
+        if (mb.length && !['role', 'all-roles'].includes(v.metaBuildsSource)) bad.push(`${f}/${v.role}: metaBuildsSource missing`);
       }
     }
     expect(bad).toEqual([]);
