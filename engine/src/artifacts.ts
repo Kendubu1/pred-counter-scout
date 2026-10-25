@@ -9,7 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { completedItems, type LoadedData } from './data.js';
 import { archetypeLabel, buildTitle, generateBuilds, headlineObjective, type ObjKey } from './search.js';
-import { classifyAugment, kitPlaystyle, laneTopAugment, lanesFor, playstyleObjectives, lanesByGames } from './playstyle.js';
+import { classifyAugment, kitPlaystyle, laneTopAugment, lanesFor, playstyleObjectives, lanesByGames, significantlyWinningLanes } from './playstyle.js';
 import { combatDamage, evaluateBuild, itemTotals, loadCalibration, unverifiedConstants, type Calibration } from './sim.js';
 import { allEternalMinors, rankAugments, rankBlessings, selectEternalLoadout } from './eternals.js';
 import { heroGames, itemPlayRate, loadAggregates } from './aggregates.js';
@@ -846,7 +846,11 @@ function flexRolesFor(kit: HeroKit): string[] {
     seen.add(r);
     out.push(r);
   }
-  return out.slice(0, 3);
+  // A 4th page only where the hero is significantly winning (see
+  // significantlyWinningLanes); merely-played lanes get the fallback banner.
+  const top = out.slice(0, 3);
+  const extra = significantlyWinningLanes(kit.slug).find((l) => !top.includes(l.lane));
+  return extra ? [...top, extra.lane] : top;
 }
 
 export function buildHeroArtifact(
