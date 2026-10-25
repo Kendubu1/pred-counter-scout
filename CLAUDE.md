@@ -28,6 +28,16 @@ features should be built against committed artifacts (zero-API) by
 default. The 2026-06-12 provider outage proved the architecture: the
 site served uninterrupted while both upstreams were down.
 
+## Recommendation policy (permanent, set by the maintainer 2026-10-25)
+
+Every pick the site or CLI recommends (augment, Eternal, minors, crest, default
+build) is what the ranked field CLEARLY wins with: the highest win rate among
+options with enough games (`engine/src/field-pick.ts`; floor = 10% of the
+hero-role's games, 30..300; Eternals and minor pairs shrunk). This holds even
+when the kit-math sim disagrees. The sim is not vetted: it is experimental,
+shown only under "experimental" labels, and never presented as a build
+recommendation.
+
 ## Copy & analysis policy (permanent, set by the maintainer 2026-06-20)
 
 No Anthropic API key. This project does NOT use `ANTHROPIC_API_KEY` for any

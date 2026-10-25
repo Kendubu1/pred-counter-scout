@@ -17,6 +17,7 @@ import { itemWinDelta, momPriorStrength } from './evidence.js';
 import { defenseOf, matchupCheckpoints, orderBuild, spikeTimeline, levelAtMinute, type OrderedBuild } from './matchup.js';
 import { resolveEntries, resolveItemEffects } from './effects.js';
 import type { HeroKit, Item } from './types.js';
+import { fieldPickOf, type FieldCell } from './field-pick.js';
 
 const ARTIFACTS_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -33,7 +34,7 @@ function loadPredggBuilds(): PredggBuilds | null {
 }
 
 interface PredggAugments {
-  heroes: Record<string, Record<string, { augments: { id: string; name: string; n: number; w: number }[] }>>;
+  heroes: Record<string, Record<string, FieldCell & { augments: { id: string; name: string; n: number; w: number }[] }>>;
 }
 let predggAugmentsCache: PredggAugments | null | undefined;
 function loadPredggAugments(): PredggAugments | null {
@@ -62,8 +63,18 @@ function loadAgreementAudit(): AgreementAudit | null {
 // support vs mid) gets a distinct view per lane it plays — its own build,
 // stage timeline, eternals, augments, meta cores, and matchups — because the
 // right items, spikes, and counters change completely with the role.
+const FieldPickSchema = z.object({
+  augment: z.object({ id: z.string(), name: z.string(), wr: z.number(), n: z.number() }).nullable(),
+  eternal: z.object({ name: z.string(), wr: z.number(), shrunkWr: z.number(), n: z.number() }).nullable(),
+  minors: z.object({ minor1: z.string(), minor2: z.string(), wr: z.number(), n: z.number(), basis: z.enum(['best-pair', 'most-picked']) }).nullable(),
+  crest: z.object({ name: z.string(), wr: z.number(), n: z.number() }).nullable(),
+}).nullable();
+
 const RoleView = z.object({
   role: z.string(),
+  // What the ranked field clearly wins with in this role (field-pick.ts): the
+  // recommendation. The sim's picks (eternals.loadout, build) are experimental.
+  fieldPick: FieldPickSchema,
   // Honest limitation surfaced on the page (e.g. supports: the model has
   // no heal/shield/aura objectives yet, so the build is max-damage only).
   roleCaveat: z.string().nullable(),
@@ -739,21 +750,15 @@ function buildRoleView(
   const archList = top.archetypes.length > 2
     ? `${top.archetypes.slice(0, -1).join(', ')} and ${top.archetypes[top.archetypes.length - 1]}`
     : top.archetypes.join(' and ');
-  const e0 = eternals.top[0];
-  // Eternal deltas are damage/EHP math; on a support page "headline
-  // output" would read as heal/shield, which Eternals do not touch.
-  const e0headlineLabel = role === 'support' ? 'the damage rotation' : 'this kit’s main output';
-  const e0best = e0
-    ? ([[e0.headlinePct, e0headlineLabel], [e0.burstPct, 'the burst combo'], [e0.rot20Pct, '20-second fights'], [e0.ehpPct, 'effective HP']] as [number, string][])
-        .sort((x, y) => y[0] - x[0])[0]!
-    : null;
+  // The field's clear winner, never the sim's Eternal (maintainer 2026-10-25).
+  const fieldPick = fieldPickOf(loadPredggAugments()?.heroes[kit.slug]?.[role]);
   const coachLine =
-    `Sim-optimal for ${top.archetypes.length ? archList : headline}: ` +
+    `Experimental sim build for ${top.archetypes.length ? archList : headline}: ` +
     `first spike ${firstSpike ? `lands around minute ${firstSpike.minute} (${firstSpike.item})` : 'is late'}, ` +
     `third item by ${spikes[2]?.minute != null ? `minute ${spikes[2]!.minute}` : 'the 30+ minute mark'}.` +
-    (e0 && e0best ? (e0best[0] > 0
-      ? ` Take ${e0.name}: +${e0best[0]}% on ${e0best[1]} at minute 15.`
-      : ` No modeled Eternal moves this kit's numbers much — check the field's pick on the page.`) : '');
+    (fieldPick?.eternal
+      ? ` The field wins most with ${fieldPick.eternal.name} here (${fieldPick.eternal.wr}% over ${fieldPick.eternal.n.toLocaleString('en-US')} games).`
+      : '');
 
   // D1 — disclose when the sim's first item diverges from the field. The
   // off-meta promoter already gates on a negative evidence delta; the headline
@@ -810,6 +815,7 @@ function buildRoleView(
       objectives: top.objectives as unknown as Record<string, number>,
       manaFeasible: top.manaFeasible,
     },
+    fieldPick,
     coachLine,
     eternals,
     augments,

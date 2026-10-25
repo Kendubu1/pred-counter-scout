@@ -51,7 +51,7 @@ export function factsFor(art: Artifact, rv: RoleV, hero: RawHero): string {
     ? `${e0.name} — sim deltas at minute 15: headline output ${e0.headlinePct}%, burst ${e0.burstPct}%, 20-second fights ${e0.rot20Pct}%, tankiness ${e0.ehpPct}%`
     : 'no modeled Eternal moves this kit much';
   const steer = rv.laneSteer
-    ? `the field's ${rv.role} augment is "${rv.laneSteer.augment.name}" — a ${rv.laneSteer.playstyle} playstyle${rv.laneSteer.wr != null && rv.laneSteer.n != null ? ` (${rv.laneSteer.wr}% over ${rv.laneSteer.n} games)` : ''}; the sim ${rv.laneSteer.modeled ? 'models this augment' : "cannot model this augment, so the build is steered by the declared playstyle, not by simulated magnitude"}`
+    ? `the field's best-winning ${rv.role} augment is "${rv.laneSteer.augment.name}" — a ${rv.laneSteer.playstyle} playstyle${rv.laneSteer.wr != null && rv.laneSteer.n != null ? ` (${rv.laneSteer.wr}% over ${rv.laneSteer.n} games)` : ''}; the sim ${rv.laneSteer.modeled ? 'models this augment' : "cannot model this augment, so the build is steered by the declared playstyle, not by simulated magnitude"}`
     : 'no augment evidence in this lane';
   // Matchups as verdict shape, not raw dots: which enemies the checkpoints say
   // this kit beats / loses, so the line can coach the lane instead of listing.

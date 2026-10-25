@@ -940,14 +940,14 @@ function playersBlock(role) {
 function simPickBlock(role) {
   const picks = laneSimPicks(role);
   if (!picks.length) return '';
-  const tip = "Kit-math second opinion — who'd win a 1v1 from their kit alone, regardless of how often they're picked. A model estimate, not a win rate.";
+  const tip = "Experimental kit-math sim (not vetted) — who'd win a 1v1 from their kit alone, regardless of how often they're picked. A model estimate, not a win rate.";
   const rows = picks.slice(0, 3).map((p, i) => `
       <div class="pilot" data-slug="${esc(p.slug)}" data-role="${esc(role)}" title="${esc(p.name)} — the kit-math pick to win a 1v1">
         <span class="rk">${i + 1}</span>
         <img loading="lazy" src="${IMG.hero(p.slug)}" alt="" onerror="this.style.visibility='hidden'">
         <span class="pn">${esc(p.name)}</span>
       </div>`).join('');
-  return `<div class="pilots simpicks"><h4 title="${esc(tip)}">⚙ Kit-math pick</h4>${rows}</div>`;
+  return `<div class="pilots simpicks"><h4 title="${esc(tip)}">⚙ Kit-math pick · experimental</h4>${rows}</div>`;
 }
 function renderMetaboard() {
   if (!META) { $('#metaboard').innerHTML = ''; return; }
@@ -1111,7 +1111,7 @@ function laneSteerBlock(a) {
       <div class="lanesteer">
         <div class="ls-head">
           <span class="ls-lane">${esc(a.role)}</span>
-          <span class="ls-aug">the field takes <b>${esc(ls.augment.name)}</b> here</span>
+          <span class="ls-aug">the field wins most with <b>${esc(ls.augment.name)}</b> here</span>
           <span class="flex-ps">${esc(ps)}</span>
           <span class="flex-prov ${ls.modeled ? 'modeled' : 'steered'}" title="${ls.modeled
             ? 'our math includes this augment’s effect'
@@ -1124,7 +1124,8 @@ function laneSteerBlock(a) {
 }
 
 // ── ONE image-forward, tabbed "Builds" card: one tab per meta build (most
-// played first — what the lane actually builds) + the kit-math build last. Only the active tab
+// played first in the strip; the CLEAR WINNER — best shrunk win rate with 100+
+// games — opens by default) + the experimental kit-math build last. Only the active tab
 // body shows; the prose lives behind a per-tab "why these items" disclosure.
 function buildsCard(a) {
   const rsnRoot = REASONING && REASONING.heroes && REASONING.heroes[a.slug] && REASONING.heroes[a.slug][a.role];
@@ -1136,13 +1137,15 @@ function buildsCard(a) {
   const metas = (a.metaBuilds || []).map((m) => ({ m, rsn: rsnBySet.get(setKey(m.items.map((it) => it.name))) || null }))
     .sort((x, y) => (y.m.n || 0) - (x.m.n || 0));
   // "best win %" only when a different build has real volume (100+ games).
+  // It is the tab that opens: the field's clear winner leads (maintainer
+  // 2026-10-25), the most-played build keeps its 🔥 tab beside it.
   const bestIdx = metas.length > 1 ? metas.reduce((b, e, i) => ((e.m.n || 0) >= 100 && (e.m.shrunkWr || 0) > (metas[b].m.shrunkWr || 0) ? i : b), 0) : 0;
   const opt = rsnRoot && rsnRoot.optimizer;
 
   // Tab strip: one per meta build (title), then the kit-math build (⚙).
   const tabs = metas.map((e, i) =>
-    `<button class="btab${i === 0 ? ' active' : ''}" data-btab="${i}">${i === 0 ? '<span title="most played in this lane">🔥</span> ' : i === bestIdx && bestIdx !== 0 ? '<span title="highest win rate among builds with 100+ games">★</span> ' : ''}${esc(e.m.title || `Build ${i + 1}`)} <span class="btab-wr">${(e.m.shrunkWr * 100).toFixed(0)}%</span></button>`).join('')
-    + `<button class="btab simtab${metas.length ? '' : ' active'}" data-btab="sim">⚙ ${esc(a.build.title || 'Kit-math build')}</button>`;
+    `<button class="btab${i === bestIdx ? ' active' : ''}" data-btab="${i}">${i === 0 ? '<span title="most played in this lane">🔥</span> ' : i === bestIdx && bestIdx !== 0 ? '<span title="highest win rate among builds with 100+ games">★</span> ' : ''}${esc(e.m.title || `Build ${i + 1}`)} <span class="btab-wr">${(e.m.shrunkWr * 100).toFixed(0)}%</span></button>`).join('')
+    + `<button class="btab simtab${metas.length ? '' : ' active'}" data-btab="sim" title="experimental kit-math sim — not vetted, not a recommendation">⚙ Experimental: ${esc(a.build.title || 'kit-math build')}</button>`;
 
   // One meta-build tab body: icon rail + win%/games + a "why these items" disclosure.
   const metaBody = (e, i) => {
@@ -1156,7 +1159,7 @@ function buildsCard(a) {
     const explain = `${rsn && rsn.synergy ? `<div class="mb-why" style="color:var(--text-0)">🧩 ${esc(rsn.synergy)}</div>` : ''}${rsn ? itemWhyRows(m.items, rsn.items) : ''}`;
     const simLine = `<div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div>`;
     return `
-      <div class="bbody${i === 0 ? '' : ' hidden'}" data-bbody="${i}">
+      <div class="bbody${i === bestIdx ? '' : ' hidden'}" data-bbody="${i}">
         <div class="mb-items" style="flex-wrap:wrap;margin-bottom:.5rem">${rail}</div>
         <div style="display:flex;align-items:center;gap:.6rem">
           <span class="bwr ${wrCls}">${(m.shrunkWr * 100).toFixed(1)}%</span>
@@ -1200,7 +1203,7 @@ function buildsCard(a) {
         ${a.roleCaveat ? `<div class="caveat">⚠ ${esc(a.roleCaveat)}</div>` : ''}
         ${laneSteerBlock(a)}
         <div class="rail" style="margin-bottom:.5rem">${a.build.items.map(itile).join('')}</div>
-        <div class="mb-why" style="color:var(--text-1)">⚙ kit-math second opinion · ${a.build.gold.toLocaleString()}g full</div>
+        <div class="mb-why" style="color:var(--text-1)">⚙ experimental kit-math sim · not vetted, not a recommendation — the field builds in the other tabs are · ${a.build.gold.toLocaleString()}g full</div>
         ${orderCap}
         ${optExplain}
         ${optSwaps || proofs ? `<details class="sim-collapse"><summary>The sim math</summary><div class="body">${optSwaps}${proofs}</div></details>` : ''}
@@ -1451,11 +1454,21 @@ function renderHero(a, roleParam) {
           };
           // The recommended top minor for each slot, noted clearly per Eternal
           // (the full slot options stay in the bottom Kit-math (THEORY) block).
-          // The field's most-picked minor in each slot under this Eternal (public
-          // match stream), else the sim's conditioned pick.
+          // The minor PAIR that wins most under this Eternal (public match
+          // stream): pairs with 10% of the Eternal's games (min 30), shrunk 50
+          // games toward the Eternal's own rate — engine/src/field-pick.ts
+          // bestMinors, mirrored. Falls back to the most-picked minor per slot,
+          // then to the sim's conditioned pick.
           const fieldMinors = (name) => {
             const fe = (cell.eternals || []).find((e) => e.name.toLowerCase() === name.toLowerCase());
-            if (!fe || !fe.minor1 || !fe.minor2) return null;
+            if (!fe) return null;
+            const pfloor = Math.max(30, Math.round(fe.n * 0.1)), base = fe.n ? fe.w / fe.n : 0.5;
+            const bp = (fe.pairs || []).filter((p) => p.n >= pfloor).sort((x, y) => (y.w + 50 * base) / (y.n + 50) - (x.w + 50 * base) / (x.n + 50))[0];
+            if (bp) {
+              const one = (nm) => ({ name: nm, field: true, n: bp.n, wr: bp.w / bp.n, share: bp.n / fe.n, pair: true });
+              return { minor1: one(bp.minor1), minor2: one(bp.minor2) };
+            }
+            if (!fe.minor1 || !fe.minor2) return null;
             const top = (arr) => { const t = (arr || [])[0]; return t && t.n >= 10 ? { name: t.name, field: true, n: t.n, wr: t.w / t.n, share: t.n / fe.n } : null; };
             const m1 = top(fe.minor1), m2 = top(fe.minor2);
             return m1 || m2 ? { minor1: m1, minor2: m2 } : null;
@@ -1465,8 +1478,8 @@ function renderHero(a, roleParam) {
             const mins = m ? [m.minor1, m.minor2].filter((x) => x && x.name) : [];
             if (!mins.length) return '';
             // Icon + name per pick so the minors read at a glance in draft.
-            const chip = (x) => `<span title="${x.field ? `picked in ${Math.round(x.share * 100)}% of these games · ${(x.wr * 100).toFixed(1)}% win rate over ${x.n.toLocaleString()}` : 'kit-math pick (no field sample yet)'}" style="display:inline-flex;gap:.3rem;align-items:center;white-space:nowrap"><img src="${IMG.blessing(x.name)}" alt="" style="width:22px;height:22px;border-radius:50%;object-fit:cover;background:var(--bg-3);flex:none;border:1px solid var(--border)" onerror="this.style.display='none'">${esc(x.name)}${x.field ? `<span style="color:var(--text-2);font-variant-numeric:tabular-nums">${Math.round(x.share * 100)}%</span>` : ''}</span>`;
-            return `<div style="display:flex;gap:.3rem .6rem;align-items:center;flex-wrap:wrap;font-size:.7rem;color:var(--text-1);margin:.25rem 0 0 ${indent}"><b style="color:var(--text-0)">Top minors:</b> ${mins.map(chip).join('')}</div>`;
+            const chip = (x) => `<span title="${x.field ? (x.pair ? `best-winning minor pair under this Eternal: ${(x.wr * 100).toFixed(1)}% over ${x.n.toLocaleString()} games (${Math.round(x.share * 100)}% of its games)` : `picked in ${Math.round(x.share * 100)}% of these games · ${(x.wr * 100).toFixed(1)}% win rate over ${x.n.toLocaleString()}`) : 'experimental kit-math pick (no field sample yet)'}" style="display:inline-flex;gap:.3rem;align-items:center;white-space:nowrap"><img src="${IMG.blessing(x.name)}" alt="" style="width:22px;height:22px;border-radius:50%;object-fit:cover;background:var(--bg-3);flex:none;border:1px solid var(--border)" onerror="this.style.display='none'">${esc(x.name)}${x.field && !x.pair ? `<span style="color:var(--text-2);font-variant-numeric:tabular-nums">${Math.round(x.share * 100)}%</span>` : ''}</span>`;
+            return `<div style="display:flex;gap:.3rem .6rem;align-items:center;flex-wrap:wrap;font-size:.7rem;color:var(--text-1);margin:.25rem 0 0 ${indent}"><b style="color:var(--text-0)">${mins[0] && mins[0].pair ? 'Best minors:' : 'Top minors:'}</b> ${mins.map(chip).join('')}${mins[0] && mins[0].pair ? `<span style="color:var(--text-2);font-variant-numeric:tabular-nums">${(mins[0].wr * 100).toFixed(1)}% · ${mins[0].n.toLocaleString()} games</span>` : ''}</div>`;
           };
           const e0 = ets[0], wr0 = e0.w / e0.n, et0 = ETMAP && ETMAP[e0.name.toLowerCase()];
           const ai0 = REVIEWS && REVIEWS.eternals && REVIEWS.eternals[a.slug] && REVIEWS.eternals[a.slug][role] && REVIEWS.eternals[a.slug][role][e0.name];
@@ -1506,7 +1519,7 @@ function renderHero(a, roleParam) {
               </div>
               <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.18rem 0 0 2.1rem">${et ? esc(et.major) : why}</div>
               ${ai ? `<div style="font-size:.68rem;line-height:1.45;color:var(--text-1);margin:.12rem 0 0 2.1rem">${esc(ai)}</div>` : ''}
-              ${et ? `<div style="margin:.2rem 0 0 2.1rem"><div style="font-size:.6rem;font-weight:800;letter-spacing:.06em;color:var(--text-2);margin-bottom:.1rem">MINOR SLOT 1 · pick one</div>${slot(et.minorSlot1, pick1)}<div style="font-size:.6rem;font-weight:800;letter-spacing:.06em;color:var(--text-2);margin:.3rem 0 .1rem">MINOR SLOT 2 · pick one</div>${slot(et.minorSlot2, pick2)}<div style="font-size:.62rem;color:var(--text-2);margin-top:.3rem">${fieldPick ? '★ = the most-picked minor in ranked games this patch' : "⚙ = the sim's pick · minor values are THEORY until calibration"}</div></div>` : ''}
+              ${et ? `<div style="margin:.2rem 0 0 2.1rem"><div style="font-size:.6rem;font-weight:800;letter-spacing:.06em;color:var(--text-2);margin-bottom:.1rem">MINOR SLOT 1 · pick one</div>${slot(et.minorSlot1, pick1)}<div style="font-size:.6rem;font-weight:800;letter-spacing:.06em;color:var(--text-2);margin:.3rem 0 .1rem">MINOR SLOT 2 · pick one</div>${slot(et.minorSlot2, pick2)}<div style="font-size:.62rem;color:var(--text-2);margin-top:.3rem">${fieldPick ? (mb.minor1 && mb.minor1.pair ? '★ = the best-winning minor pair in ranked games this patch' : '★ = the most-picked minor in ranked games this patch') : "⚙ = the experimental sim's pick · minor values are THEORY until calibration"}</div></div>` : ''}
               <div style="font-size:.66rem;color:var(--text-2);margin:.3rem 0 0 2.1rem">⚙ sim math: ${why}</div>
             </div>`;
           };
@@ -1624,7 +1637,7 @@ function renderHero(a, roleParam) {
           // sim-pick block, the agreement lines) are RELOCATED here, never deleted.
           const augT = window.__augTheory || '', etT = window.__etTheory || '';
           if (!augT.trim() && !etT.trim()) return '';
-          return `<details class="sim-collapse" style="margin-top:.7rem"><summary>⚙ Kit-math (THEORY)</summary><div class="body">
+          return `<details class="sim-collapse" style="margin-top:.7rem"><summary>⚙ Experimental kit-math sim (THEORY · not a recommendation)</summary><div class="body">
             ${augT.trim() ? `<div style="font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-2);margin:.2rem 0 .1rem">Augments</div>${augT}` : ''}
             ${etT.trim() ? `<div style="font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--text-2);margin:.5rem 0 .1rem">Eternals</div>${etT}` : ''}
           </div></details>`;

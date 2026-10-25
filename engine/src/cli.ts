@@ -13,6 +13,8 @@ import { classifyAugment, fuseSteer, kitPlaystyle, laneTopAugment, playstyleObje
 import { robustnessOf } from './robustness.js';
 import { agreeWithField } from './agreement.js';
 import { loadEffects } from './effects.js';
+import { fieldPickOf } from './field-pick.js';
+import { readFileSync as readFieldFile } from 'node:fs';
 
 const args = process.argv.slice(2);
 const slug = args.find((a) => !a.startsWith('--'));
@@ -57,6 +59,21 @@ console.log('');
 
 const prio = skillPriority(kit);
 console.log(`skill max order: ${prio.map((a) => a.name).join(' > ')} (ult at 6/11/16)`);
+
+// The recommendation is what the ranked field clearly wins with; the sim's
+// loadout below is experimental (maintainer 2026-10-25).
+try {
+  const augs = JSON.parse(readFieldFile(new URL('../../data/aggregates/predgg-augments.json', import.meta.url), 'utf8'));
+  const fp = fieldPickOf(augs.heroes?.[kit.slug]?.[role]);
+  if (fp) {
+    console.log(`\nField pick (${role}, highest win rate with enough ranked games, patch ${augs.source?.match(/patch ([\d.]+)/)?.[1] ?? 'current'}):`);
+    if (fp.augment) console.log(`  augment: ${fp.augment.name}  ${fp.augment.wr}% over ${fp.augment.n} games`);
+    if (fp.eternal) console.log(`  eternal: ${fp.eternal.name}  ${fp.eternal.wr}% over ${fp.eternal.n} games`);
+    if (fp.minors) console.log(`  minors:  ${fp.minors.minor1} + ${fp.minors.minor2}  ${fp.minors.wr}% over ${fp.minors.n} games${fp.minors.basis === 'most-picked' ? ' (most-picked; no pair clears the sample floor)' : ''}`);
+    if (fp.crest) console.log(`  crest:   ${fp.crest.name}  ${fp.crest.wr}% over ${fp.crest.n} games`);
+  }
+} catch { /* no field data committed */ }
+console.log('\neverything below is the kit-math sim: EXPERIMENTAL, not a build recommendation');
 
 // ── Augment-as-playstyle steer (expose what the sim can't see) ──
 // The lane's chosen augment declares a playstyle; we steer the build toward
@@ -185,7 +202,7 @@ if (kitPs && top) {
 
   const loadout = selectEternalLoadout(kit, topItems, level, cal, kitPs, { minute: opt('minute'), role });
   if (loadout) {
-    console.log('\nEternal loadout (kit-fit major → conditional minors):');
+    console.log('\nExperimental sim Eternal loadout (not a recommendation; kit-fit major → conditional minors):');
     console.log(`  major:  ${loadout.major.name}  (${loadout.note})${loadout.major.modeled ? '' : ' — major mechanic unmodeled'}`);
     console.log(`  slot 1: ${loadout.minor1.name}  — ${loadout.minor1.note}`);
     console.log(`  slot 2: ${loadout.minor2.name}  — ${loadout.minor2.note}`);
