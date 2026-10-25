@@ -96,6 +96,16 @@ describe('hero artifacts (Concept A engine stage)', () => {
         for (const m of mb) for (const it of m.items) if (/[a-z][A-Z]/.test(it.name)) bad.push(`${f}/${v.role}: internal item name ${it.name}`);
         // An off-role view falling back to all-roles builds must say so.
         if (mb.length && !['role', 'all-roles'].includes(v.metaBuildsSource)) bad.push(`${f}/${v.role}: metaBuildsSource missing`);
+        // Gold+ builds must carry the Gold+ baseline they are read against.
+        if (v.metaBuildsBand && v.metaBuildsBand !== 'all' && !v.metaBuildsBaseline?.n) bad.push(`${f}/${v.role}: ${v.metaBuildsBand} builds without a baseline`);
+        // The rank filter's bands each carry builds and their own baseline; the opening band is one of them.
+        if (v.metaBuildsByBand) {
+          if (!v.metaBuildsByBand[v.metaBuildsBand]) bad.push(`${f}/${v.role}: opening band missing from metaBuildsByBand`);
+          for (const [b, e] of Object.entries<{ builds: unknown[]; baseline: { n: number } | null }>(v.metaBuildsByBand)) {
+            if (!e.builds.length) bad.push(`${f}/${v.role}: ${b} band has no builds`);
+            if (b !== 'all' && !e.baseline?.n) bad.push(`${f}/${v.role}: ${b} band has no baseline`);
+          }
+        }
       }
     }
     expect(bad).toEqual([]);

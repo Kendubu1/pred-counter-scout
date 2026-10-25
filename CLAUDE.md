@@ -106,7 +106,12 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   ceiling and cannot read simpleBuild, confirmed by the maintainer 2026-10-14;
   resumes daily from data/aggregates/perk-stream.json and rewrites
   predgg-augments.json AND predgg-builds.json — ordered 3-item core builds from
-  each player's purchase log, replacing the gated coreBuild pull),
+  each player's purchase log, replacing the gated coreBuild pull; since
+  2026-10-25 it also tags each row by the player's rank AT MATCH TIME via one
+  aliased GraphQL match(by: { id }) call per page (src/ingest/match-rank.ts) and
+  keeps Gold+ and Plat+ sub-counts; the page shows only All ranks / Plat+ through
+  one page-level rank filter — never tag rank from the ladder, which is CURRENT
+  rank and reads ~+3 pt high),
   `npm run buildstats` (the old coreBuild pull; gated at our tier, no longer in
   the refresh chain),
   `npm run augments` (the old simpleBuild pull; gated at our pred.gg tier, kept
@@ -125,6 +130,11 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   `npm run copy:ingest` (copy passes on session compute — NO API key; each line
   verified by src/copy-verify.ts). `review` / `review:items` / `review:abilities` /
   `review:eternalcards` (the hero-page Eternal card lines) are the per-pass ingest steps; prefix with `COPY_MODE=prepare` to emit tasks.
+- `npm run artifacts` takes ~25 min (run it in the background) and also
+  rewrites data/artifacts/meta.json WITHOUT its topPlayers block and bumps
+  timestamps in every file: restore meta.json and timestamp-only files before
+  committing. Don't `git stash` while it runs, and don't `pkill -f <pattern>` with
+  a pattern that appears in your own command line (it kills your shell).
 - Confidence rule: any output touching an unverified fixture constant is
   THEORY at best. The harness prints unverified constants on every run.
 - omeda.city is retired as a dependency (2026-10-14): its catalog froze on

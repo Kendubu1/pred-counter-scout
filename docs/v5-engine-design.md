@@ -347,6 +347,34 @@ remain as fast canaries but cannot detect staleness on their own: one pinned
   accumulated daily inside the current patch into perk-stream.json and written
   to predgg-augments.json. Minor-slot and minor-pair counts are new; the hero
   page's top minors are field picks wherever the window has them.
+- **Gold+ by rank at match time (Oct 25).** The first Gold+ band used the
+  ranked ladder's CURRENT rank; winners climb, so it read ~+3.2 points high
+  (median across 90 hero-role cells) and could not sit beside the all-ranks
+  hero number. Stream rows carry no rank, but their match and player ids are
+  pred.gg uuids, and GraphQL `match(by: { id })` returns each player's rating
+  in that game, so perks now tags rows by it. Meta builds come from Gold+ once
+  a lane's most-played Gold+ build has 100+ games, otherwise all ranks; either
+  way the artifact carries `metaBuildsBand` and `metaBuildsBaseline` (the
+  hero's win rate in that role and band) and the page reads each build against
+  that baseline. The Gold+ perk panel pulls each option toward the Gold+ role
+  win rate with a 50-game prior and flags a better pick at 20+ games each and
+  p < .05, instead of hiding everything under 50 games. Forward-only: no backfill.
+- **Plat+ band and the builds rank filter (Oct 25).** On 1.17's rank-at-match-time
+  lane stats, Gold+ is 43.8% of ranked role-games but differs from all ranks by
+  only ~0.8 pt of real (non-noise) spread, about its own noise (62% of it is Gold
+  tier); Plat+ is 16.6% of games with ~1.9 pt of real spread, and Gold vs Plat+
+  win rates differ significantly in 21 of 113 big lanes (~6 expected by chance).
+  So Plat+ is the high-rank read; Gold+ mostly re-shows all ranks and overlaps
+  Plat+ (every Plat+ game is a Gold+ game), so the page shows only All ranks and
+  Plat+ (maintainer's call, 2026-10-25, accepting thin Plat+ samples). perks still
+  counts Gold+ so the choice can be re-checked. A lane opens on Plat+ at 100 games
+  on its top Plat+ build, else all ranks; the builds card's rank filter offers
+  Plat+ whenever the lane has Plat+ data (`metaBuildsByBand`: the same
+  meta-build pipeline run per band, each with that band's hero-role baseline).
+  The filter is page-level: it drives the opening picks (augment, Eternal,
+  minors, crest from `platPlus`) and the builds together, replacing the old
+  separate HIGH-RANK panel; matchups have no banded source and stay all ranks. The viewer's pick is remembered in
+  localStorage; a thin band says so.
 
 - **Calibrated (Oct 15).** First practice-mode session: mitigation K=100,
   ability haste, crit 1.65 (was 1.75) and bonus-only scaling verified; attack
