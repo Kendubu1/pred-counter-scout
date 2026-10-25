@@ -158,13 +158,15 @@
 
   .htabs { display:flex; gap:1.4rem; margin-top:1.1rem; border-bottom:1px solid var(--border); overflow-x:auto; scrollbar-width:none; }
   .htabs::-webkit-scrollbar { display:none; }
-  .htab { flex:none; background:transparent; color:var(--text-2); border:0; border-radius:0; padding:.55rem 0; font-size:.88rem; white-space:nowrap; box-shadow:inset 0 -2px 0 transparent; }
-  .htab:hover { color:var(--text-0); }
+  /* inactive tabs stay in readable ink (text-1, not the meta grey) so they read
+     as choices; the active one gets full ink plus a 2px indicator on the rule */
+  .htab { flex:none; background:transparent; color:var(--text-1); border:0; border-radius:6px 6px 0 0; padding:.55rem .15rem; font-size:.88rem; font-weight:500; white-space:nowrap; cursor:pointer; box-shadow:inset 0 -2px 0 transparent; transition:color .12s, box-shadow .12s, background .12s; }
+  .htab:hover { color:var(--text-0); box-shadow:inset 0 -2px 0 var(--bg-3); }
   .htab.active { color:var(--text-0); font-weight:600; box-shadow:inset 0 -2px 0 var(--accent); }
   /* the "beat them" tab is an action, not a view — tinted so it reads distinct.
      On phones it flows inline with the tabs (judge R1: right-aligned on its own
      row read as a detached competing CTA). */
-  .htab-beat { color:color-mix(in srgb, var(--red) 80%, var(--text-2)); }
+  .htab-beat { color:color-mix(in srgb, var(--red) 85%, var(--text-1)); }
   .htab-beat:hover { color:var(--red); }
   @media (min-width:721px) { .htab-beat { margin-left:auto; } }
   /* build tabs — one per build path, modelled on .htab but scoped/scrollable */
@@ -357,7 +359,7 @@
     .lanepanel { padding:.8rem .8rem; }
     .lrow { grid-template-columns:28px 1fr auto; gap:.5rem; }
     .lrow img { width:28px; height:28px; }
-    body { font-size:15px; }
+    body { font-size:14px; }
     /* tap targets: >=44px hit area on touch (Apple HIG 44 / WCAG floor 24).
        Shared union list across all three pages — a control type gets the same
        treatment wherever it appears (selectors absent on this page are no-ops). */
@@ -372,10 +374,15 @@
     .hero-head { grid-template-areas:"img id" "seg seg"; column-gap:.8rem; row-gap:.8rem; }
     .hh-id { align-self:center; }
     .hh-meta { font-size:.76rem; }
-    .seg-roles { display:flex; width:100%; }
-    .seg-roles button { flex:1; min-height:40px; padding:0 .4rem; }
-    .htabs { margin-top:.9rem; gap:1.2rem; }
-    .htab { font-size:.86rem; padding:0; }
+    /* lane switcher: 40px tap height, but the visible pill is an inset 32px
+       (transparent border + padding-box fill) so the track reads as a slim control */
+    .seg-roles { display:flex; width:100%; gap:0; padding:0; }
+    .seg-roles button { flex:1; min-height:40px; padding:0 .4rem; font-size:.8125rem; border:4px solid transparent; background-clip:padding-box; }
+    /* phone tab bar: tabs share the row (each sized by its label), labels centred,
+       the indicator spans the whole tab — reads as a tab bar, not loose links */
+    .htabs { margin-top:.75rem; gap:0; }
+    .htab { flex:1 1 auto; font-size:.84rem; padding:0 .5rem; }
+    .htab:active { background:var(--bg-2); }
     .hh-name { display:none; }
   }
 
