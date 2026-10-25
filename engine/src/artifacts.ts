@@ -33,29 +33,17 @@ interface PredggBuilds {
   baselineByRole?: Record<string, Record<string, { all: NW; gold: NW | null; plat?: NW | null }>>;
 }
 
-export type RankBand = 'all' | 'gold+' | 'plat+';
-export const RANK_BANDS: RankBand[] = ['all', 'gold+', 'plat+'];
+// The page's high-rank band is Plat+ only. Gold+ is still counted (perks) but
+// not shown: on 1.17 it sat within its own noise of all ranks (~0.8 pt real
+// spread, 62% of it Gold tier) while Plat+ differed (~1.9 pt), and Gold+ beside
+// Plat+ was two overlapping options (every Plat+ game is a Gold+ game).
+export type RankBand = 'all' | 'plat+';
+export const RANK_BANDS: RankBand[] = ['all', 'plat+'];
 
-// A lane OPENS on the highest band whose most-played build has this many games
-// (the page's own floor for leading with a build): Plat+, then Gold+, then all
-// ranks. Each lane moves up on its own as the sample grows; the page's rank
-// filter can still show any band that has builds.
-const MetaBuildSchema = z.object({
-  anyOrder: z.boolean().optional(),
-  otherOrderGames: z.number().optional(),
-  shareOfCores: z.number().optional(),
-  title: z.string(),
-  items: z.array(z.object({ name: z.string(), slug: z.string().nullable() })),
-  n: z.number(),
-  shrunkWr: z.number(),
-  coreGold: z.number().nullable(),
-  spikeMinute: z.number().nullable(),
-  bestObjective: z.string().nullable(),
-  whyLine: z.string(),
-  optimizer: z.string().nullable(),
-});
-
-export const MIN_GOLD_BUILD_GAMES = 100;
+// A lane OPENS on Plat+ once its most-played Plat+ build has this many games
+// (the page's own floor for leading with a build), else all ranks. The rank
+// filter offers Plat+ as soon as the lane has any Plat+ builds, thin or not.
+export const MIN_BAND_BUILD_GAMES = 100;
 
 /** One band's role cores and the hero-role win rate in that band. */
 export function bandEvidence(pg: PredggBuilds | null, slug: string, role: string, band: RankBand): { rows: CoreRow[] | undefined; baseline: NW | null } {
@@ -63,8 +51,8 @@ export function bandEvidence(pg: PredggBuilds | null, slug: string, role: string
   if (band === 'all') return { rows: pg?.byRole?.[slug]?.[role], baseline: base?.all ?? null };
   // Banded rows on any basis but match-time rank (the retired ladder proxy) are never used.
   if (pg?.goldBasis !== 'match-time') return { rows: undefined, baseline: null };
-  const rows = (band === 'gold+' ? pg.goldByRole : pg.platByRole)?.[slug]?.[role];
-  const baseline = (band === 'gold+' ? base?.gold : base?.plat) ?? null;
+  const rows = pg.platByRole?.[slug]?.[role];
+  const baseline = base?.plat ?? null;
   return rows && baseline ? { rows, baseline } : { rows: undefined, baseline: null };
 }
 
@@ -87,12 +75,10 @@ export function poolBySet(rows: CoreRow[]): (CoreRow & { otherOrderGames: number
   return [...bySet.values()].sort((a, b) => b.n - a.n);
 }
 
-/** The band a lane opens on (Plat+, then Gold+, then all ranks), with its rows and baseline. */
+/** The band a lane opens on (Plat+ once it has the games, else all ranks), with its rows and baseline. */
 export function pickBuildBand(pg: PredggBuilds | null, slug: string, role: string): { band: RankBand; rows: CoreRow[] | undefined; baseline: NW | null } {
-  for (const band of ['plat+', 'gold+'] as const) {
-    const e = bandEvidence(pg, slug, role, band);
-    if (e.rows && (poolBySet(e.rows)[0]?.n ?? 0) >= MIN_GOLD_BUILD_GAMES) return { band, ...e };
-  }
+  const plat = bandEvidence(pg, slug, role, 'plat+');
+  if (plat.rows && (poolBySet(plat.rows)[0]?.n ?? 0) >= MIN_BAND_BUILD_GAMES) return { band: 'plat+', ...plat };
   return { band: 'all', ...bandEvidence(pg, slug, role, 'all') };
 }
 let predggBuildsCache: PredggBuilds | null | undefined;
@@ -128,6 +114,21 @@ function loadAgreementAudit(): AgreementAudit | null {
   agreementCache = existsSync(p) ? (JSON.parse(readFileSync(p, 'utf8')) as AgreementAudit) : null;
   return agreementCache;
 }
+
+const MetaBuildSchema = z.object({
+  anyOrder: z.boolean().optional(),
+  otherOrderGames: z.number().optional(),
+  shareOfCores: z.number().optional(),
+  title: z.string(),
+  items: z.array(z.object({ name: z.string(), slug: z.string().nullable() })),
+  n: z.number(),
+  shrunkWr: z.number(),
+  coreGold: z.number().nullable(),
+  spikeMinute: z.number().nullable(),
+  bestObjective: z.string().nullable(),
+  whyLine: z.string(),
+  optimizer: z.string().nullable(),
+});
 
 // A RoleView is the full optimized build for ONE role: a flex hero (Zinx
 // support vs mid) gets a distinct view per lane it plays — its own build,
@@ -231,7 +232,7 @@ const RoleView = z.object({
   }),
   metaBuildsSource: z.enum(['role', 'all-roles']).optional(),
   /** Rank band the meta builds were counted in (rank at match time); the band the page opens on. */
-  metaBuildsBand: z.enum(['all', 'gold+', 'plat+']).optional(),
+  metaBuildsBand: z.enum(['all', 'plat+']).optional(),
   /** The hero's win rate in this role and band: what each build's win rate is read against. */
   metaBuildsBaseline: z.object({ n: z.number(), w: z.number() }).nullable().optional(),
   /** Every band with lane builds, for the page's rank filter: the same build
@@ -690,9 +691,9 @@ function buildRoleView(
   // Prefer this lane's own field cores (so a flex hero shows the build for the
   // role you're viewing, e.g. support Argus gets tank-support cores, not his
   // midlane mage cores); fall back to hero-wide evidence when a role has none.
-  // Opens on Plat+, then Gold+, then all ranks (rank at match time), whichever
-  // band first has enough games; every band with lane builds also ships in
-  // metaBuildsByBand for the page's rank filter.
+  // Opens on Plat+ (rank at match time) once the lane has enough Plat+ games,
+  // else all ranks; every band with lane builds also ships in metaBuildsByBand
+  // for the page's rank filter.
   const pgBuilds = loadPredggBuilds();
   const pick = pickBuildBand(pgBuilds, kit.slug, role);
   const roleEvidence = pick.rows;

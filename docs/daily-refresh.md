@@ -96,12 +96,14 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    change drops the one day of ladder-basis (current-rank) Gold+ counts and
    restarts `goldFrom`. Plat+ (`plat` cells, `platPlus`, `platByRole`,
    `baselineByRole.*.plat`) is counted from the same lookup at no extra cost.
-   A lane OPENS on the highest band whose most-played build has 100+ games
-   (Plat+, then Gold+, then all ranks; MIN_GOLD_BUILD_GAMES in
-   src/artifacts.ts), and the builds card's rank filter (All ranks / Gold+ /
-   Plat+) shows any band with builds, from `metaBuildsByBand`. There is no
-   backfill, so expect lanes to move up over the following weeks, popular ones
-   first (on 1.17 volumes: median lane ~12 days to Gold+, ~34 to Plat+).
+   The page's high-rank band is Plat+ only (Gold+ stays in the files, unshown).
+   A lane OPENS on Plat+ once its most-played Plat+ build has 100+ games
+   (MIN_BAND_BUILD_GAMES in src/artifacts.ts), else all ranks; the builds
+   card's rank filter (All ranks / Plat+) offers Plat+ as soon as the lane has
+   any Plat+ builds, with a thin-sample note, from `metaBuildsByBand`. The
+   HIGH-RANK perk panel reads `platPlus`. There is no backfill, so expect lanes
+   to fill over the following weeks, popular ones first (1.17 volumes: median
+   lane ~34 days to a 100-game top Plat+ build).
    Then `npm run aggregate && npm run matchups:feed` — the pred.gg match samples
    (gold curves + item play rates; same-role head-to-head lanes, resumed
    incrementally inside the current patch family). Then `npm run checkpoints`

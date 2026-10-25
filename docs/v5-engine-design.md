@@ -364,11 +364,14 @@ remain as fast canaries but cannot detect staleness on their own: one pinned
   only ~0.8 pt of real (non-noise) spread, about its own noise (62% of it is Gold
   tier); Plat+ is 16.6% of games with ~1.9 pt of real spread, and Gold vs Plat+
   win rates differ significantly in 21 of 113 big lanes (~6 expected by chance).
-  So Plat+ is the more informative high-rank read and Gold+ the faster one. perks
-  counts both; a lane opens on Plat+, then Gold+, then all ranks (100 games on
-  the top build), and the builds card has a rank filter over every band with
-  builds (`metaBuildsByBand`: the same meta-build pipeline run per band, each
-  with that band's hero-role baseline). The viewer's pick is remembered in
+  So Plat+ is the high-rank read; Gold+ mostly re-shows all ranks and overlaps
+  Plat+ (every Plat+ game is a Gold+ game), so the page shows only All ranks and
+  Plat+ (maintainer's call, 2026-10-25, accepting thin Plat+ samples). perks still
+  counts Gold+ so the choice can be re-checked. A lane opens on Plat+ at 100 games
+  on its top Plat+ build, else all ranks; the builds card's rank filter offers
+  Plat+ whenever the lane has Plat+ builds (`metaBuildsByBand`: the same
+  meta-build pipeline run per band, each with that band's hero-role baseline),
+  and the HIGH-RANK perk panel is Plat+. The viewer's pick is remembered in
   localStorage; a thin band says so.
 
 - **Calibrated (Oct 15).** First practice-mode session: mitigation K=100,
