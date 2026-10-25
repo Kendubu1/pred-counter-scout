@@ -146,6 +146,12 @@
   .seg-roles button { background:transparent; border:0; border-radius:8px; padding:.28rem .85rem; font-size:.8rem; color:var(--text-2); text-transform:capitalize; }
   .seg-roles button:hover { color:var(--text-0); }
   .seg-roles button.active { background:var(--bg-3); color:var(--text-0); font-weight:600; }
+  /* builds rank filter: the same segmented track as the lane switcher */
+  .bband { display:inline-flex; gap:2px; padding:2px; margin:0 0 .5rem; background:var(--bg-1); border:1px solid var(--border); border-radius:10px; }
+  .bband button { background:transparent; border:0; border-radius:8px; padding:.28rem .75rem; font-size:.78rem; color:var(--text-2); cursor:pointer; }
+  .bband button:hover:not(:disabled) { color:var(--text-0); }
+  .bband button.active { background:var(--bg-3); color:var(--text-0); font-weight:600; }
+  .bband button:disabled { opacity:.4; cursor:default; }
   .chips { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.45rem; }
   .chip {
     white-space:nowrap; background:var(--bg-2); border:1px solid var(--border); border-radius:99px;
@@ -1165,7 +1171,20 @@ function laneSteerBlock(a) {
 // ── ONE image-forward, tabbed "Builds" card: one tab per meta build (highest
 // win rate first) + the kit-math build last. Only the active tab
 // body shows; the prose lives behind a per-tab "why these items" disclosure.
-function buildsCard(a) {
+// Rank filter (All ranks / Gold+ / Plat+, rank at match time). The engine opens
+// a lane on the highest band with 100+ games on its top build; a viewer's own
+// pick is remembered per browser and wins when that band has builds here.
+const BAND_LABELS = { all: 'All ranks', 'gold+': 'Gold+', 'plat+': 'Plat+' };
+const BAND_KEY = 'pred-scout:build-band';
+function savedBand() { try { return localStorage.getItem(BAND_KEY); } catch { return null; } }
+function saveBand(b) { try { localStorage.setItem(BAND_KEY, b); } catch { /* private window: not remembered */ } }
+function buildsCard(a, wantBand) {
+  // Only this lane's own bands: a lane with no builds must not show the hero-level ones.
+  const byBand = a.metaBuilds && a.metaBuilds.length && a.metaBuildsByBand ? a.metaBuildsByBand : null;
+  const openBand = a.metaBuildsBand || 'all';
+  const want = wantBand || savedBand();
+  const band = byBand && want && byBand[want] ? want : openBand;
+  const sel = byBand && byBand[band] ? byBand[band] : { builds: a.metaBuilds, baseline: a.metaBuildsBaseline };
   const rsnRoot = REASONING && REASONING.heroes && REASONING.heroes[a.slug] && REASONING.heroes[a.slug][a.role];
   // Field meta builds, HIGHEST WIN RATE first (the default tab), by shrunk win
   // rate. Builds under 100 games sort after the rest (still by win rate): a raw
@@ -1174,7 +1193,7 @@ function buildsCard(a) {
   const MIN_LEAD_GAMES = 100;
   const setKey = (names) => names.map((n) => String(n).toLowerCase().replace(/[^a-z0-9]/g, '')).sort().join('|');
   const rsnBySet = new Map(((rsnRoot && rsnRoot.metaBuilds) || []).filter((r) => r && r.items).map((r) => [setKey(Object.keys(r.items)), r]));
-  const metas = (a.metaBuilds || []).map((m) => ({ m, rsn: rsnBySet.get(setKey(m.items.map((it) => it.name))) || null }))
+  const metas = (sel.builds || []).map((m) => ({ m, rsn: rsnBySet.get(setKey(m.items.map((it) => it.name))) || null }))
     .sort((x, y) => (((y.m.n || 0) >= MIN_LEAD_GAMES) - ((x.m.n || 0) >= MIN_LEAD_GAMES))
       || ((y.m.shrunkWr || 0) - (x.m.shrunkWr || 0)) || ((y.m.n || 0) - (x.m.n || 0)));
   const opt = rsnRoot && rsnRoot.optimizer;
@@ -1182,14 +1201,17 @@ function buildsCard(a) {
   // hero's builds across all roles. Say so instead of passing them as lane data.
   const allRolesNote = a.metaBuildsSource === 'all-roles' && metas.length
     ? `<div class="mb-why" style="color:var(--gold);margin:0 0 .5rem">No ${esc(a.role)} build data for ${esc(a.name)} yet — these are the most-played builds across all of ${esc(a.name)}'s roles.</div>` : '';
-  // Rank band + baseline: builds come from Gold+ games (rank at match time) once
-  // the lane has enough of them, else all ranks. Each build is read against the
-  // hero's own win rate in this role and band, not a number from other games.
-  const gold = a.metaBuildsBand === 'gold+';
-  const base = a.metaBuildsBaseline && a.metaBuildsBaseline.n ? a.metaBuildsBaseline : null;
+  // Each build is read against the hero's own win rate in this role and band,
+  // not a number from other games. A thin band says so: its win rates lean on
+  // the band average (the engine's shrinkage) until its games say otherwise.
+  const ranked = band !== 'all';
+  const base = sel.baseline && sel.baseline.n ? sel.baseline : null;
   const baseWr = base ? base.w / base.n : null;
-  const bandNote = metas.length && (gold || base)
-    ? `<div class="mb-why" style="color:var(--text-2);margin:0 0 .5rem">${gold ? '<b style="color:var(--gold)">Gold+ games</b> (rank in that game)' : 'All ranks'}${base ? ` · ${esc(a.name)} wins ${(baseWr * 100).toFixed(1)}% as ${esc(a.role)} here (${base.n.toLocaleString()} games)` : ''}</div>` : '';
+  const topN = Math.max(0, ...metas.map((e) => e.m.n || 0));
+  const bandSwitch = byBand && Object.keys(byBand).length > 1
+    ? `<div class="bband" role="group" aria-label="Rank filter — builds counted at these ranks (rank in that game)">${Object.keys(BAND_LABELS).map((b) => `<button data-bband="${b}" class="${b === band ? 'active' : ''}"${byBand[b] ? '' : ' disabled title="Not enough games at these ranks yet"'}>${BAND_LABELS[b]}</button>`).join('')}</div>` : '';
+  const bandNote = metas.length && (ranked || base)
+    ? `<div class="mb-why" style="color:var(--text-2);margin:0 0 .5rem">${ranked ? `<b style="color:var(--gold)">${BAND_LABELS[band]} games</b> (rank in that game)` : 'All ranks'}${base ? ` · ${esc(a.name)} wins ${(baseWr * 100).toFixed(1)}% as ${esc(a.role)} here (${base.n.toLocaleString()} games)` : ''}${ranked && topN < MIN_LEAD_GAMES ? `<br><span style="color:var(--gold)">Thin sample: the top build has ${topN} games, so these win rates stay close to ${esc(a.name)}'s ${BAND_LABELS[band]} average until more games come in.</span>` : ''}</div>` : '';
 
   // Tab strip: one per meta build (title), then the kit-math build (⚙).
   // Each option shows its win rate and sample under its name (order already says
@@ -1264,7 +1286,7 @@ function buildsCard(a) {
       </div>`;
 
   return `
-    <section class="card answer">
+    <section class="card answer" id="builds-card">
       <div class="bhead">
         <h2>Builds</h2>
         ${metas.length ? `<div class="bnav">
@@ -1274,6 +1296,7 @@ function buildsCard(a) {
         </div>` : ''}
       </div>
       ${allRolesNote}
+      ${bandSwitch}
       ${bandNote}
       <div class="btabs">${tabs}</div>
       ${metas.map(metaBody).join('')}
@@ -1779,6 +1802,22 @@ function renderHero(a, roleParam) {
       window.scrollTo({ top: 0 });
     };
   });
+  wireBuilds(a);
+  // Matchup rows are clickable — open the enemy hero's page (reuses global nav).
+  document.querySelectorAll('.murow[data-slug]').forEach((el) => {
+    el.onclick = () => nav(el.dataset.slug, false);
+  });
+}
+
+function wireBuilds(a) {
+  // Rank filter: re-render just this card for the chosen band, then rewire it.
+  document.querySelectorAll('.bband button[data-bband]:not(:disabled)').forEach((b) => {
+    b.onclick = () => {
+      saveBand(b.dataset.bband);
+      const card = document.getElementById('builds-card');
+      if (card) { card.outerHTML = buildsCard(a, b.dataset.bband); wireBuilds(a); }
+    };
+  });
   // Build tabs: pure show/hide — toggle .active on the strip and .hidden on the
   // matching body. No re-render; scoped to the new .btab buttons (mirrors .htab).
   // The counter, prev/next and edge fades all follow the selected tab and the
@@ -1816,10 +1855,6 @@ function renderHero(a, roleParam) {
   });
   if (strip) { strip.addEventListener('scroll', fades, { passive: true }); requestAnimationFrame(fades); }
   _buildFades = fades;
-  // Matchup rows are clickable — open the enemy hero's page (reuses global nav).
-  document.querySelectorAll('.murow[data-slug]').forEach((el) => {
-    el.onclick = () => nav(el.dataset.slug, false);
-  });
 }
 
 // Tap-to-explain for [data-tip] tags (verdict labels etc.): title tooltips don't work

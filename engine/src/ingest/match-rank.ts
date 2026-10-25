@@ -13,6 +13,7 @@ import { gql } from './predgg.js';
 
 /** Rank tier index: 0 Bronze, 1 Silver, 2 Gold, 3 Platinum, 4 Diamond, 5 Paragon. */
 export const GOLD_TIER = 2;
+export const PLAT_TIER = 3;
 export const RANK_BATCH = 12;
 
 type Gql = <T>(query: string) => Promise<T>;
@@ -50,3 +51,5 @@ export async function matchTimeRanks(ids: string[], query: Gql = gql): Promise<M
 
 /** Gold or higher in that game. Unplaced (null) and unresolved (undefined) are not. */
 export const isGoldPlus = (tierIdx: number | null | undefined) => tierIdx != null && tierIdx >= GOLD_TIER;
+/** Platinum or higher in that game. */
+export const isPlatPlus = (tierIdx: number | null | undefined) => tierIdx != null && tierIdx >= PLAT_TIER;

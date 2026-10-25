@@ -29,13 +29,44 @@ interface PredggBuilds {
    *  rows on any other basis (the retired ladder proxy) are never used. */
   goldBasis?: 'match-time';
   goldByRole?: Record<string, Record<string, CoreRow[]>>;
-  baselineByRole?: Record<string, Record<string, { all: NW; gold: NW | null }>>;
+  platByRole?: Record<string, Record<string, CoreRow[]>>;
+  baselineByRole?: Record<string, Record<string, { all: NW; gold: NW | null; plat?: NW | null }>>;
 }
 
-// A lane's builds come from Gold+ games once its most-played Gold+ build has
-// this many games (the page's own floor for leading with a build); until then
-// all ranks. Each lane switches on its own as the Gold+ sample grows.
+export type RankBand = 'all' | 'gold+' | 'plat+';
+export const RANK_BANDS: RankBand[] = ['all', 'gold+', 'plat+'];
+
+// A lane OPENS on the highest band whose most-played build has this many games
+// (the page's own floor for leading with a build): Plat+, then Gold+, then all
+// ranks. Each lane moves up on its own as the sample grows; the page's rank
+// filter can still show any band that has builds.
+const MetaBuildSchema = z.object({
+  anyOrder: z.boolean().optional(),
+  otherOrderGames: z.number().optional(),
+  shareOfCores: z.number().optional(),
+  title: z.string(),
+  items: z.array(z.object({ name: z.string(), slug: z.string().nullable() })),
+  n: z.number(),
+  shrunkWr: z.number(),
+  coreGold: z.number().nullable(),
+  spikeMinute: z.number().nullable(),
+  bestObjective: z.string().nullable(),
+  whyLine: z.string(),
+  optimizer: z.string().nullable(),
+});
+
 export const MIN_GOLD_BUILD_GAMES = 100;
+
+/** One band's role cores and the hero-role win rate in that band. */
+export function bandEvidence(pg: PredggBuilds | null, slug: string, role: string, band: RankBand): { rows: CoreRow[] | undefined; baseline: NW | null } {
+  const base = pg?.baselineByRole?.[slug]?.[role];
+  if (band === 'all') return { rows: pg?.byRole?.[slug]?.[role], baseline: base?.all ?? null };
+  // Banded rows on any basis but match-time rank (the retired ladder proxy) are never used.
+  if (pg?.goldBasis !== 'match-time') return { rows: undefined, baseline: null };
+  const rows = (band === 'gold+' ? pg.goldByRole : pg.platByRole)?.[slug]?.[role];
+  const baseline = (band === 'gold+' ? base?.gold : base?.plat) ?? null;
+  return rows && baseline ? { rows, baseline } : { rows: undefined, baseline: null };
+}
 
 // One build per item SET: the same three items bought in another order used
 // to ship as a second, near-identical build (Belica showed Combustion > Noxia
@@ -56,12 +87,13 @@ export function poolBySet(rows: CoreRow[]): (CoreRow & { otherOrderGames: number
   return [...bySet.values()].sort((a, b) => b.n - a.n);
 }
 
-/** Which rank band a lane's builds come from, and the hero-role win rate in that band. */
-export function pickBuildBand(pg: PredggBuilds | null, slug: string, role: string): { band: 'gold+' | 'all'; rows: CoreRow[] | undefined; baseline: NW | null } {
-  const gold = pg?.goldBasis === 'match-time' ? pg.goldByRole?.[slug]?.[role] : undefined;
-  const goldBase = pg?.baselineByRole?.[slug]?.[role]?.gold ?? null;
-  if (gold && goldBase && (poolBySet(gold)[0]?.n ?? 0) >= MIN_GOLD_BUILD_GAMES) return { band: 'gold+', rows: gold, baseline: goldBase };
-  return { band: 'all', rows: pg?.byRole?.[slug]?.[role], baseline: pg?.baselineByRole?.[slug]?.[role]?.all ?? null };
+/** The band a lane opens on (Plat+, then Gold+, then all ranks), with its rows and baseline. */
+export function pickBuildBand(pg: PredggBuilds | null, slug: string, role: string): { band: RankBand; rows: CoreRow[] | undefined; baseline: NW | null } {
+  for (const band of ['plat+', 'gold+'] as const) {
+    const e = bandEvidence(pg, slug, role, band);
+    if (e.rows && (poolBySet(e.rows)[0]?.n ?? 0) >= MIN_GOLD_BUILD_GAMES) return { band, ...e };
+  }
+  return { band: 'all', ...bandEvidence(pg, slug, role, 'all') };
 }
 let predggBuildsCache: PredggBuilds | null | undefined;
 function loadPredggBuilds(): PredggBuilds | null {
@@ -198,24 +230,17 @@ const RoleView = z.object({
     honestAbsence: z.string().nullable(),
   }),
   metaBuildsSource: z.enum(['role', 'all-roles']).optional(),
-  /** Rank band the meta builds were counted in ('gold+' = Gold or higher at match time). */
-  metaBuildsBand: z.enum(['gold+', 'all']).optional(),
+  /** Rank band the meta builds were counted in (rank at match time); the band the page opens on. */
+  metaBuildsBand: z.enum(['all', 'gold+', 'plat+']).optional(),
   /** The hero's win rate in this role and band: what each build's win rate is read against. */
   metaBuildsBaseline: z.object({ n: z.number(), w: z.number() }).nullable().optional(),
-  metaBuilds: z.array(z.object({
-    anyOrder: z.boolean().optional(),
-    otherOrderGames: z.number().optional(),
-    shareOfCores: z.number().optional(),
-    title: z.string(),
-    items: z.array(z.object({ name: z.string(), slug: z.string().nullable() })),
-    n: z.number(),
-    shrunkWr: z.number(),
-    coreGold: z.number().nullable(),
-    spikeMinute: z.number().nullable(),
-    bestObjective: z.string().nullable(),
-    whyLine: z.string(),
-    optimizer: z.string().nullable(),
-  })),
+  /** Every band with lane builds, for the page's rank filter: the same build
+   *  rows as metaBuilds, counted in that band, plus that band's baseline. */
+  metaBuildsByBand: z.record(z.string(), z.object({
+    builds: z.array(MetaBuildSchema),
+    baseline: z.object({ n: z.number(), w: z.number() }).nullable(),
+  })).optional(),
+  metaBuilds: z.array(MetaBuildSchema),
   // The build is not one fixed thing across the game: its prefix is evaluated
   // at early / mid / late stages (2 / 3 / 6 items, each at the level it
   // completes by from the gold curves). betterEarly flags when a stronger
@@ -665,22 +690,17 @@ function buildRoleView(
   // Prefer this lane's own field cores (so a flex hero shows the build for the
   // role you're viewing, e.g. support Argus gets tank-support cores, not his
   // midlane mage cores); fall back to hero-wide evidence when a role has none.
-  // Gold+ (rank at match time) once the lane has enough Gold+ games, else all ranks.
+  // Opens on Plat+, then Gold+, then all ranks (rank at match time), whichever
+  // band first has enough games; every band with lane builds also ships in
+  // metaBuildsByBand for the page's rank filter.
   const pgBuilds = loadPredggBuilds();
   const pick = pickBuildBand(pgBuilds, kit.slug, role);
   const roleEvidence = pick.rows;
-  const rawEvidence = roleEvidence ?? pgBuilds?.heroes[kit.slug] ?? [];
-  const metaBuildsBand = roleEvidence ? pick.band : 'all';
+  const metaBuildsBand: RankBand = roleEvidence ? pick.band : 'all';
   const metaBuildsBaseline = roleEvidence && pick.baseline ? { n: pick.baseline.n, w: pick.baseline.w } : null;
   // Said out loud on the page: an off-role view showing the hero's all-roles
   // builds (Adele jungle showed her support cores) must not pass as role data.
   const metaBuildsSource: 'role' | 'all-roles' = roleEvidence ? 'role' : 'all-roles';
-  const evidence = poolBySet(rawEvidence);
-  const coreGamesTotal = evidence.reduce((s, c) => s + c.n, 0);
-  const cores = evidence.slice(0, 5);
-  const coreCells = cores.map((c) => ({ n: c.n, w: c.w }));
-  const coreMean = coreCells.reduce((s, c) => s + c.w, 0) / Math.max(coreCells.reduce((s, c) => s + c.n, 0), 1);
-  const kCore = momPriorStrength(coreCells, coreMean || 0.5);
   const OBJ_LABELS: Record<string, string> = {
     burstVsSquishy: 'one-combo burst', rot10VsSquishy: '10s rotation damage',
     rot20VsBruiser: 'extended fights vs bruisers', autoDps10VsSquishy: 'sustained auto DPS',
@@ -688,88 +708,103 @@ function buildRoleView(
     sustain10s: 'lifesteal sustain',
     ...(role === 'support' ? { healShield10s: 'heal/shield output' } : {}),
   };
-  const evaluated = cores.map((c) => {
-    const coreItems = c.coreSlugs.every(Boolean) ? c.coreSlugs.map((s) => data.itemsBySlug.get(s!)).filter((x): x is Item => !!x) : null;
-    const ev = coreItems && coreItems.length === 3 ? evaluateBuild(kit, coreItems, 13, cal) : null;
-    const gold = coreItems ? coreItems.reduce((s, i) => s + i.totalPrice, 0) : null;
-    let spikeMinute: number | null = null;
-    if (coreItems) {
-      const cum = coreItems.map((_, i) => coreItems.slice(0, i + 1).reduce((s, x) => s + x.totalPrice, 0));
-      spikeMinute = spikeTimeline(role, { ordered: coreItems, cumulativeGold: cum })[2]?.minute ?? null;
-    }
-    return { c, ev, gold, spikeMinute, coreItems };
-  });
-  // An objective only explains a core if it separates the meta cores at
-  // all (>=5% spread); otherwise every core would claim it on a tie.
-  const objMax: Record<string, number> = {};
-  const objDiscriminates: Record<string, boolean> = {};
-  for (const key of Object.keys(OBJ_LABELS)) {
-    const vals = evaluated.map((e) => e.ev?.objectives[key as keyof typeof e.ev.objectives] ?? 0).filter((v) => v > 0);
-    objMax[key] = Math.max(...vals, 1e-9);
-    objDiscriminates[key] = vals.length >= 2 && Math.max(...vals) / Math.max(Math.min(...vals), 1e-9) >= 1.05;
-  }
   const headlineKey = headlineObjective(kit, role);
   const ourCoreEval = evaluateBuild(kit, ordered.ordered.slice(0, 3), 13, cal);
-  const metaBuilds = evaluated.slice(0, 3).map(({ c, ev, gold, spikeMinute, coreItems }) => {
-    const shrunkWr = (c.w + kCore * (coreMean || 0.5)) / (c.n + kCore);
-    let bestObjective: string | null = null;
-    let whyLine: string;
-    let optimizer: string | null = null;
-    let bestKey = '';
-    if (ev) {
-      let bestRel = -1;
-      for (const key of Object.keys(OBJ_LABELS)) {
-        if (!objDiscriminates[key]) continue;
-        const rel = (ev.objectives[key as keyof typeof ev.objectives] ?? 0) / objMax[key]!;
-        if (rel > bestRel) { bestRel = rel; bestKey = key; }
+  const metaBuildsFrom = (rawEvidence: CoreRow[]) => {
+    const evidence = poolBySet(rawEvidence);
+    const coreGamesTotal = evidence.reduce((s, c) => s + c.n, 0);
+    const cores = evidence.slice(0, 5);
+    const coreCells = cores.map((c) => ({ n: c.n, w: c.w }));
+    const coreMean = coreCells.reduce((s, c) => s + c.w, 0) / Math.max(coreCells.reduce((s, c) => s + c.n, 0), 1);
+    const kCore = momPriorStrength(coreCells, coreMean || 0.5);
+    const evaluated = cores.map((c) => {
+      const coreItems = c.coreSlugs.every(Boolean) ? c.coreSlugs.map((s) => data.itemsBySlug.get(s!)).filter((x): x is Item => !!x) : null;
+      const ev = coreItems && coreItems.length === 3 ? evaluateBuild(kit, coreItems, 13, cal) : null;
+      const gold = coreItems ? coreItems.reduce((s, i) => s + i.totalPrice, 0) : null;
+      let spikeMinute: number | null = null;
+      if (coreItems) {
+        const cum = coreItems.map((_, i) => coreItems.slice(0, i + 1).reduce((s, x) => s + x.totalPrice, 0));
+        spikeMinute = spikeTimeline(role, { ordered: coreItems, cumulativeGold: cum })[2]?.minute ?? null;
       }
-      if (!bestKey) bestKey = headlineKey;
-      bestObjective = OBJ_LABELS[bestKey]!;
-      const OBJ_UNITS: Record<string, string> = {
-        burstVsSquishy: 'damage in one combo', rot10VsSquishy: 'damage over a 10s rotation',
-        rot20VsBruiser: 'damage over a 20s fight', autoDps10VsSquishy: 'auto-attack DPS',
-        ehpPhysical: 'effective HP vs physical', ehpMagical: 'effective HP vs magical',
-        healShield10s: 'HP healed or shielded over 10s',
-        sustain10s: 'HP drained back over a 10s fight',
-      };
-      whyLine = `Strongest meta core for ${bestObjective}${spikeMinute ? `, online around minute ${spikeMinute}` : ''} — about ${Math.round(ev.objectives[bestKey as keyof typeof ev.objectives] ?? 0).toLocaleString('en-US')} ${OBJ_UNITS[bestKey] ?? ''} in the sim.`;
-      const ours = ourCoreEval.objectives[bestKey as keyof typeof ourCoreEval.objectives] ?? 0;
-      const theirs = ev.objectives[bestKey as keyof typeof ev.objectives] ?? 0;
-      const edge = theirs > 0 ? ((ours - theirs) / theirs) * 100 : 0;
-      const diffIdx = c.coreSlugs.findIndex((s, i) => s !== (ordered.ordered[i]?.slug ?? null));
-      if (edge >= 8 && diffIdx >= 0) {
-        const overName = (c.coreSlugs[diffIdx] && data.itemsBySlug.get(c.coreSlugs[diffIdx]!)?.name)
-          ?? c.core[diffIdx]!.replace(/([a-z])([A-Z])/g, '$1 $2');
-        const gain = edge >= 100 ? `${(edge / 100 + 1).toFixed(1)}× the` : `+${edge.toFixed(0)}% more`;
-        optimizer = `Optimizer sees ${gain} ${bestObjective}: try ${ordered.ordered[diffIdx]!.name} over ${overName} (sim-only — the popular pick may carry utility the sim can't see; test it).`;
-      } else if (Math.abs(edge) < 8) {
-        optimizer = `Optimizer agrees: within ${Math.abs(edge).toFixed(0)}% of our best core on ${bestObjective}. The winrate is earned, not luck.`;
-      }
-    } else {
-      whyLine = 'Evidence-only: one item in this core is not in our mechanics data yet, so the sim cannot decompose it.';
+      return { c, ev, gold, spikeMinute, coreItems };
+    });
+    // An objective only explains a core if it separates the meta cores at
+    // all (>=5% spread); otherwise every core would claim it on a tie.
+    const objMax: Record<string, number> = {};
+    const objDiscriminates: Record<string, boolean> = {};
+    for (const key of Object.keys(OBJ_LABELS)) {
+      const vals = evaluated.map((e) => e.ev?.objectives[key as keyof typeof e.ev.objectives] ?? 0).filter((v) => v > 0);
+      objMax[key] = Math.max(...vals, 1e-9);
+      objDiscriminates[key] = vals.length >= 2 && Math.max(...vals) / Math.max(Math.min(...vals), 1e-9) >= 1.05;
     }
-    const title = coreItems && coreItems.length
-      ? buildTitle(bestKey ? [archetypeLabel(bestKey)] : [], kit, coreItems)
-      : 'Meta Core';
-    return {
-      title,
-      // Display names (the counted core carries internal ones: WraithLeggings).
-      items: c.core.map((name, i) => ({
-        name: (c.coreSlugs[i] && data.itemsBySlug.get(c.coreSlugs[i]!)?.name) ?? name.replace(/([a-z])([A-Z])/g, '$1 $2'),
-        slug: c.coreSlugs[i] ?? null,
-      })),
-      ...(c.anyOrder ? {anyOrder: true} : {}),
-      n: c.n,
-      ...(c.otherOrderGames ? { otherOrderGames: c.otherOrderGames } : {}),
-      shareOfCores: coreGamesTotal ? Math.round((c.n / coreGamesTotal) * 1000) / 1000 : 0,
-      shrunkWr: Math.round(shrunkWr * 1000) / 1000,
-      coreGold: gold,
-      spikeMinute,
-      bestObjective,
-      whyLine,
-      optimizer: c.anyOrder ? null : optimizer,
-    };
-  });
+    return evaluated.slice(0, 3).map(({ c, ev, gold, spikeMinute, coreItems }) => {
+      const shrunkWr = (c.w + kCore * (coreMean || 0.5)) / (c.n + kCore);
+      let bestObjective: string | null = null;
+      let whyLine: string;
+      let optimizer: string | null = null;
+      let bestKey = '';
+      if (ev) {
+        let bestRel = -1;
+        for (const key of Object.keys(OBJ_LABELS)) {
+          if (!objDiscriminates[key]) continue;
+          const rel = (ev.objectives[key as keyof typeof ev.objectives] ?? 0) / objMax[key]!;
+          if (rel > bestRel) { bestRel = rel; bestKey = key; }
+        }
+        if (!bestKey) bestKey = headlineKey;
+        bestObjective = OBJ_LABELS[bestKey]!;
+        const OBJ_UNITS: Record<string, string> = {
+          burstVsSquishy: 'damage in one combo', rot10VsSquishy: 'damage over a 10s rotation',
+          rot20VsBruiser: 'damage over a 20s fight', autoDps10VsSquishy: 'auto-attack DPS',
+          ehpPhysical: 'effective HP vs physical', ehpMagical: 'effective HP vs magical',
+          healShield10s: 'HP healed or shielded over 10s',
+          sustain10s: 'HP drained back over a 10s fight',
+        };
+        whyLine = `Strongest meta core for ${bestObjective}${spikeMinute ? `, online around minute ${spikeMinute}` : ''} — about ${Math.round(ev.objectives[bestKey as keyof typeof ev.objectives] ?? 0).toLocaleString('en-US')} ${OBJ_UNITS[bestKey] ?? ''} in the sim.`;
+        const ours = ourCoreEval.objectives[bestKey as keyof typeof ourCoreEval.objectives] ?? 0;
+        const theirs = ev.objectives[bestKey as keyof typeof ev.objectives] ?? 0;
+        const edge = theirs > 0 ? ((ours - theirs) / theirs) * 100 : 0;
+        const diffIdx = c.coreSlugs.findIndex((s, i) => s !== (ordered.ordered[i]?.slug ?? null));
+        if (edge >= 8 && diffIdx >= 0) {
+          const overName = (c.coreSlugs[diffIdx] && data.itemsBySlug.get(c.coreSlugs[diffIdx]!)?.name)
+            ?? c.core[diffIdx]!.replace(/([a-z])([A-Z])/g, '$1 $2');
+          const gain = edge >= 100 ? `${(edge / 100 + 1).toFixed(1)}× the` : `+${edge.toFixed(0)}% more`;
+          optimizer = `Optimizer sees ${gain} ${bestObjective}: try ${ordered.ordered[diffIdx]!.name} over ${overName} (sim-only — the popular pick may carry utility the sim can't see; test it).`;
+        } else if (Math.abs(edge) < 8) {
+          optimizer = `Optimizer agrees: within ${Math.abs(edge).toFixed(0)}% of our best core on ${bestObjective}. The winrate is earned, not luck.`;
+        }
+      } else {
+        whyLine = 'Evidence-only: one item in this core is not in our mechanics data yet, so the sim cannot decompose it.';
+      }
+      const title = coreItems && coreItems.length
+        ? buildTitle(bestKey ? [archetypeLabel(bestKey)] : [], kit, coreItems)
+        : 'Meta Core';
+      return {
+        title,
+        // Display names (the counted core carries internal ones: WraithLeggings).
+        items: c.core.map((name, i) => ({
+          name: (c.coreSlugs[i] && data.itemsBySlug.get(c.coreSlugs[i]!)?.name) ?? name.replace(/([a-z])([A-Z])/g, '$1 $2'),
+          slug: c.coreSlugs[i] ?? null,
+        })),
+        ...(c.anyOrder ? {anyOrder: true} : {}),
+        n: c.n,
+        ...(c.otherOrderGames ? { otherOrderGames: c.otherOrderGames } : {}),
+        shareOfCores: coreGamesTotal ? Math.round((c.n / coreGamesTotal) * 1000) / 1000 : 0,
+        shrunkWr: Math.round(shrunkWr * 1000) / 1000,
+        coreGold: gold,
+        spikeMinute,
+        bestObjective,
+        whyLine,
+        optimizer: c.anyOrder ? null : optimizer,
+      };
+    });
+  };
+  const metaBuilds = metaBuildsFrom(roleEvidence ?? pgBuilds?.heroes[kit.slug] ?? []);
+  const metaBuildsByBand: Record<string, { builds: ReturnType<typeof metaBuildsFrom>; baseline: NW | null }> = {};
+  for (const band of RANK_BANDS) {
+    const e = bandEvidence(pgBuilds, kit.slug, role, band);
+    if (!e.rows?.length) continue;
+    metaBuildsByBand[band] = { builds: band === metaBuildsBand && roleEvidence ? metaBuilds : metaBuildsFrom(e.rows), baseline: e.baseline ? { n: e.baseline.n, w: e.baseline.w } : null };
+  }
 
   const firstSpike = spikes.find((s) => s.minute != null);
   const headline = objectiveLabels[headlineKey] ?? 'damage';
@@ -856,6 +891,9 @@ function buildRoleView(
     },
     metaBuilds,
     ...(metaBuilds.length ? { metaBuildsSource, metaBuildsBand, metaBuildsBaseline } : {}),
+    // Always with the builds (not only when 2+ bands): a flex hero's role view is
+    // spread over the hero-level one, so a missing key would inherit another lane's bands.
+    ...(metaBuilds.length && Object.keys(metaBuildsByBand).length ? { metaBuildsByBand } : {}),
     stages: computeStages(kit, ordered, spikes, role, pool, cal),
     matchups,
     laneSteer: laneSteerFor(kit, role, pool, cal, top.items),

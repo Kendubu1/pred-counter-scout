@@ -359,6 +359,17 @@ remain as fast canaries but cannot detect staleness on their own: one pinned
   that baseline. The Gold+ perk panel pulls each option toward the Gold+ role
   win rate with a 50-game prior and flags a better pick at 20+ games each and
   p < .05, instead of hiding everything under 50 games. Forward-only: no backfill.
+- **Plat+ band and the builds rank filter (Oct 25).** On 1.17's rank-at-match-time
+  lane stats, Gold+ is 43.8% of ranked role-games but differs from all ranks by
+  only ~0.8 pt of real (non-noise) spread, about its own noise (62% of it is Gold
+  tier); Plat+ is 16.6% of games with ~1.9 pt of real spread, and Gold vs Plat+
+  win rates differ significantly in 21 of 113 big lanes (~6 expected by chance).
+  So Plat+ is the more informative high-rank read and Gold+ the faster one. perks
+  counts both; a lane opens on Plat+, then Gold+, then all ranks (100 games on
+  the top build), and the builds card has a rank filter over every band with
+  builds (`metaBuildsByBand`: the same meta-build pipeline run per band, each
+  with that band's hero-role baseline). The viewer's pick is remembered in
+  localStorage; a thin band says so.
 
 - **Calibrated (Oct 15).** First practice-mode session: mitigation K=100,
   ability haste, crit 1.65 (was 1.75) and bonus-only scaling verified; attack

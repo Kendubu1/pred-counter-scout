@@ -94,10 +94,14 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    hero-role Gold+ baseline) and `goldByRole` cores + `baselineByRole` in
    predgg-builds.json (`goldBasis: "match-time"`). The first run after this
    change drops the one day of ladder-basis (current-rank) Gold+ counts and
-   restarts `goldFrom`. A lane's meta builds switch to Gold+ on their own once
-   its most-played Gold+ build reaches 100 games (MIN_GOLD_BUILD_GAMES in
-   src/artifacts.ts); there is no backfill, so expect lanes to flip over the
-   following weeks, popular ones first.
+   restarts `goldFrom`. Plat+ (`plat` cells, `platPlus`, `platByRole`,
+   `baselineByRole.*.plat`) is counted from the same lookup at no extra cost.
+   A lane OPENS on the highest band whose most-played build has 100+ games
+   (Plat+, then Gold+, then all ranks; MIN_GOLD_BUILD_GAMES in
+   src/artifacts.ts), and the builds card's rank filter (All ranks / Gold+ /
+   Plat+) shows any band with builds, from `metaBuildsByBand`. There is no
+   backfill, so expect lanes to move up over the following weeks, popular ones
+   first (on 1.17 volumes: median lane ~12 days to Gold+, ~34 to Plat+).
    Then `npm run aggregate && npm run matchups:feed` — the pred.gg match samples
    (gold curves + item play rates; same-role head-to-head lanes, resumed
    incrementally inside the current patch family). Then `npm run checkpoints`

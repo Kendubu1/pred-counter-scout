@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { isGoldPlus, matchTimeRanks, RANK_BATCH } from '../src/ingest/match-rank.js';
-import { MIN_GOLD_BUILD_GAMES, pickBuildBand, poolBySet } from '../src/artifacts.js';
+import { isGoldPlus, isPlatPlus, matchTimeRanks, RANK_BATCH } from '../src/ingest/match-rank.js';
+import { bandEvidence, MIN_GOLD_BUILD_GAMES, pickBuildBand, poolBySet } from '../src/artifacts.js';
 
 // 2026-10-25: Gold+ moved from the ladder's CURRENT rank (winners climb, so the
 // band read ~+3 points high) to the rank each player held in that game.
@@ -17,6 +17,7 @@ describe('Gold+ by rank at match time', () => {
     const a = r.get('a')!;
     expect([a.get('p1'), a.get('p2'), a.get('p3')]).toEqual([2, 1, null]);
     expect([isGoldPlus(a.get('p1')), isGoldPlus(a.get('p2')), isGoldPlus(a.get('p3')), isGoldPlus(undefined)]).toEqual([true, false, false, false]);
+    expect([isPlatPlus(2), isPlatPlus(3), isPlatPlus(5), isPlatPlus(null)]).toEqual([false, true, true, false]);
   });
 
   it('batches lookups and retries a failed batch one match at a time', async () => {
@@ -34,24 +35,35 @@ describe('Gold+ by rank at match time', () => {
   });
 });
 
-describe('build band: Gold+ only once a lane has the games', () => {
+describe('build band: a lane moves up a band only once it has the games', () => {
   const row = (slugs: string[], n: number, w: number) => ({ core: slugs, coreSlugs: slugs, n, w });
-  const base = { all: { n: 1000, w: 500 }, gold: { n: 400, w: 210 } };
+  const base = { all: { n: 1000, w: 500 }, gold: { n: 400, w: 210 }, plat: { n: 150, w: 80 } };
 
   it('pools buy orders of one item set', () => {
     const p = poolBySet([row(['a', 'b', 'c'], 60, 30), row(['b', 'a', 'c'], 50, 30), row(['x', 'y', 'z'], 70, 35)]);
     expect(p.map((x) => [x.n, x.otherOrderGames])).toEqual([[110, 50], [70, 0]]);
   });
 
-  it('stays on all ranks below the floor, switches to Gold+ at it, with the matching baseline', () => {
-    const pg = (goldN: number, basis?: 'match-time') => ({
-      heroes: {}, byRole: { h: { support: [row(['a', 'b', 'c'], 500, 260)] } },
-      goldBasis: basis, goldByRole: { h: { support: [row(['a', 'b', 'c'], goldN, Math.round(goldN / 2))] } },
-      baselineByRole: { h: { support: base } },
-    });
-    expect(pickBuildBand(pg(MIN_GOLD_BUILD_GAMES - 1, 'match-time'), 'h', 'support')).toMatchObject({ band: 'all', baseline: base.all });
-    expect(pickBuildBand(pg(MIN_GOLD_BUILD_GAMES, 'match-time'), 'h', 'support')).toMatchObject({ band: 'gold+', baseline: base.gold });
-    // Gold+ rows counted on the retired ladder basis are never used.
-    expect(pickBuildBand(pg(5000), 'h', 'support').band).toBe('all');
+  const pg = (goldN: number, platN: number, basis?: 'match-time') => ({
+    heroes: {}, byRole: { h: { support: [row(['a', 'b', 'c'], 500, 260)] } },
+    goldBasis: basis,
+    goldByRole: { h: { support: [row(['a', 'b', 'c'], goldN, Math.round(goldN / 2))] } },
+    platByRole: { h: { support: [row(['a', 'b', 'c'], platN, Math.round(platN / 2))] } },
+    baselineByRole: { h: { support: base } },
+  });
+
+  it('opens on Plat+, then Gold+, then all ranks, each with its own baseline', () => {
+    const F = MIN_GOLD_BUILD_GAMES;
+    expect(pickBuildBand(pg(F - 1, F - 1, 'match-time'), 'h', 'support')).toMatchObject({ band: 'all', baseline: base.all });
+    expect(pickBuildBand(pg(F, F - 1, 'match-time'), 'h', 'support')).toMatchObject({ band: 'gold+', baseline: base.gold });
+    expect(pickBuildBand(pg(F * 3, F, 'match-time'), 'h', 'support')).toMatchObject({ band: 'plat+', baseline: base.plat });
+  });
+
+  it('a band needs its own baseline, and ladder-basis rows are never used', () => {
+    const noPlatBase = { ...pg(500, 500, 'match-time'), baselineByRole: { h: { support: { ...base, plat: null } } } };
+    expect(bandEvidence(noPlatBase, 'h', 'support', 'plat+').rows).toBeUndefined();
+    expect(pickBuildBand(noPlatBase, 'h', 'support').band).toBe('gold+');
+    expect(pickBuildBand(pg(5000, 5000), 'h', 'support').band).toBe('all');
+    expect(bandEvidence(pg(5000, 5000), 'h', 'support', 'gold+').rows).toBeUndefined();
   });
 });

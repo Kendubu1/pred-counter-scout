@@ -40,7 +40,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hasCredentials } from './predgg.js';
-import { isGoldPlus, matchTimeRanks } from './match-rank.js';
+import { isGoldPlus, isPlatPlus, matchTimeRanks } from './match-rank.js';
 import { epoch, fetchPage, loadPerkCatalog, loadoutOf, sleep, type PerkInfo } from './match-stream.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -62,7 +62,8 @@ interface EternalCell extends NW { minor1: Record<string, NW>; minor2: Record<st
 interface CountCell extends NW { augments: Record<string, NW>; eternals: Record<string, EternalCell>; crests: Record<string, NW>; cores?: Record<string, NW> }
 // gold: the same counts for rows whose player was Gold or higher IN THAT GAME
 // (rank at match time, see match-rank.ts), counted from goldFrom onward.
-interface RoleCell extends CountCell { gold?: CountCell }
+// plat: the same for Platinum or higher, over the same window (a subset of gold).
+interface RoleCell extends CountCell { gold?: CountCell; plat?: CountCell }
 interface State {
   source: string; note: string; generatedAt: string;
   patch: string | null; patchReleasedAt: string;
@@ -73,7 +74,7 @@ interface State {
   /** Core builds were added on 2026-10-16, after the window opened: they are
    *  counted from this cursor onward, so their sample is smaller than the perks'. */
   coresFrom?: string;
-  /** Gold+ sub-counts started here, so their window is shorter. */
+  /** Gold+ and Plat+ sub-counts started here, so their window is shorter. */
   goldFrom?: string;
   /** 'match-time': the rank each player held in that game. Counts made on any
    *  other basis (the 2026-10-24 ladder proxy, a player's CURRENT rank) are
@@ -132,7 +133,7 @@ async function main() {
   // rank, which reads high because winners climb) cannot be mixed in: drop
   // them and restart the Gold+ window here.
   if (st.goldBasis !== 'match-time') {
-    for (const roles of Object.values(st.heroes)) for (const c of Object.values(roles)) delete c.gold;
+    for (const roles of Object.values(st.heroes)) for (const c of Object.values(roles)) { delete c.gold; delete c.plat; }
     delete st.ladder;
     st.goldFrom = new Date(st.cursor * 1000).toISOString();
     st.goldBasis = 'match-time';
@@ -203,7 +204,9 @@ async function main() {
           if (core.length === 3) bump((c.cores ??= {}), core.join('|'), won);
         };
         count(cell);
-        if (isGoldPlus(matchRanks?.get(String(p.playerId)))) count((cell.gold ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
+        const tier = matchRanks?.get(String(p.playerId));
+        if (isGoldPlus(tier)) count((cell.gold ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
+        if (isPlatPlus(tier)) count((cell.plat ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
       }
     }
     if (!page.length) break;
@@ -244,13 +247,14 @@ async function main() {
       (out[slug] ??= {})[role] = {
         ...cellOut(c),
         ...(c.gold && c.gold.n >= MIN_GOLD_GAMES ? { goldPlus: cellOut(c.gold) } : {}),
+        ...(c.plat && c.plat.n >= MIN_GOLD_GAMES ? { platPlus: cellOut(c.plat) } : {}),
       };
     }
   }
   writeFileSync(AUG_OUT, JSON.stringify({
     generatedAt: st.generatedAt,
     source: `pred.gg public match stream (get-matches-since), RANKED, patch ${meta.patch ?? '?'} window ${st.window.from.slice(0, 16)} -> ${st.window.to.slice(0, 16)}, ${st.window.rankedMatches.toLocaleString()} ranked matches; (hero, role) cells with ${MIN_ROLE_GAMES}+ games. Counted by npm run perks from data/aggregates/perk-stream.json.`,
-    note: 'n = games, w = wins. eternals[].minor1/minor2 = minor-slot picks under that Eternal; pairs = the most-played minor combinations. goldPlus = the same counts for players who were Gold or higher IN THAT GAME (rank at match time, pred.gg match rating), counted from goldFrom, shipped at 20+ games; goldPlus.games/wins is the hero-role Gold+ baseline.',
+    note: 'n = games, w = wins. eternals[].minor1/minor2 = minor-slot picks under that Eternal; pairs = the most-played minor combinations. goldPlus = the same counts for players who were Gold or higher IN THAT GAME (rank at match time, pred.gg match rating), counted from goldFrom, shipped at 20+ games; goldPlus.games/wins is the hero-role Gold+ baseline. platPlus = the same for Platinum or higher.',
     goldFrom: st.goldFrom,
     goldBasis: st.goldBasis,
     goldUnresolvedMatches: st.goldUnresolvedMatches ?? 0,
@@ -286,7 +290,8 @@ async function main() {
   const buildByRole: Record<string, Record<string, unknown[]>> = {};
   const goldBuildByRole: Record<string, Record<string, unknown[]>> = {};
   // Hero-role win rate in each band: what a build's win rate is read against.
-  const baselineByRole: Record<string, Record<string, { all: NW; gold: NW | null }>> = {};
+  const platBuildByRole: Record<string, Record<string, unknown[]>> = {};
+  const baselineByRole: Record<string, Record<string, { all: NW; gold: NW | null; plat: NW | null }>> = {};
   for (const [slug, roles] of Object.entries(st.heroes)) {
     const all: Record<string, NW> = {};
     for (const [role, c] of Object.entries(roles)) {
@@ -295,7 +300,10 @@ async function main() {
       if (rows.length) (buildByRole[slug] ??= {})[role] = rows;
       const goldRows = coreRowsOrSets(c.gold?.cores ?? {});
       if (goldRows.length) (goldBuildByRole[slug] ??= {})[role] = goldRows;
-      if (c.n >= MIN_ROLE_GAMES) (baselineByRole[slug] ??= {})[role] = { all: { n: c.n, w: c.w }, gold: c.gold && c.gold.n >= MIN_GOLD_GAMES ? { n: c.gold.n, w: c.gold.w } : null };
+      const platRows = coreRowsOrSets(c.plat?.cores ?? {});
+      if (platRows.length) (platBuildByRole[slug] ??= {})[role] = platRows;
+      const band = (x?: CountCell) => (x && x.n >= MIN_GOLD_GAMES ? { n: x.n, w: x.w } : null);
+      if (c.n >= MIN_ROLE_GAMES) (baselineByRole[slug] ??= {})[role] = { all: { n: c.n, w: c.w }, gold: band(c.gold), plat: band(c.plat) };
     }
     const rows = coreRowsOrSets(all);
     if (rows.length) buildHeroes[slug] = rows;
@@ -308,6 +316,7 @@ async function main() {
     goldFrom: st.goldFrom,
     goldBasis: st.goldBasis,
     goldByRole: goldBuildByRole,
+    platByRole: platBuildByRole,
     baselineByRole,
   }, null, 1));
 
