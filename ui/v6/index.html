@@ -240,6 +240,17 @@
   .lvcell.on { background:var(--accent); color:#fff; }
   .lvcell.ult { background:var(--gold); color:#1a1405; }
   .lvsrc { margin-top:.6rem; font-size:.6875rem; color:var(--text-2); }
+  /* How to play dropdown */
+  details.sim-collapse.howto { margin-top:1.1rem; background:var(--bg-1); border-radius:var(--radius); }
+  details.sim-collapse.howto > summary { padding:.85rem 1.2rem; font-size:1rem; font-weight:600; color:var(--text-0); cursor:pointer; }
+  details.sim-collapse.howto > .body { padding:0 1.2rem 1rem; }
+  .ht-line { font-size:.86rem; color:var(--text-0); line-height:1.6; }
+  .ht-watch { font-size:.82rem; color:var(--gold); line-height:1.5; margin-top:.4rem; }
+  .ht-abs { list-style:none; margin:.7rem 0 0; padding:0; display:grid; gap:.6rem; }
+  .ht-ab { display:flex; gap:.6rem; align-items:flex-start; font-size:.82rem; }
+  .ht-ab img, .ht-noimg { width:28px; height:28px; border-radius:6px; object-fit:cover; flex:none; background:var(--bg-2); }
+  .ht-ab b { color:var(--text-0); font-weight:600; }
+  .ht-tip { color:var(--text-1); line-height:1.5; margin-top:.1rem; }
   .abilchg { font-size:.6875rem; font-weight:800; border-radius:5px; padding:.03rem .35rem; border:1px solid; vertical-align:middle; }
   .abilchg.buff { color:var(--green); border-color:var(--green); }
   .abilchg.nerf { color:var(--red); border-color:var(--red); }
@@ -1764,6 +1775,7 @@ function renderHero(a, roleParam) {
     ${buildsCard(a, pageBand)}
 
     <section class="card lvlcard" id="lvlCard" data-slug="${esc(a.slug)}" hidden></section>
+    <details class="sim-collapse howto" id="howtoCard" data-slug="${esc(a.slug)}" hidden></details>
 
     <section class="card">
       <h2>Matchups <span class="hint">vs the most-played ${esc(a.role)} you'll face · green = when you can win the fight</span></h2>
@@ -1939,6 +1951,33 @@ async function fillLevelChart(a) {
       <div class="lvsrc">In-game recommended path · current patch</div>`;
   card.hidden = false;
   if (!$('#tabPlay')?.classList.contains('hidden')) buildSubnav();
+  fillHowTo(a, abil);
+}
+// "How to play" dropdown under the leveling chart: the lane's coach line and
+// watch-out, then a tip per ability in combat order (passive and basic attack
+// first). All of it is the already machine-checked copy the Learn tab uses
+// (hero-coach-lines.json, ability-tips.json), gathered where it's needed mid-game.
+function fillHowTo(a, abil) {
+  const box = document.getElementById('howtoCard');
+  if (!box || box.dataset.slug !== a.slug) return;
+  const hc = HEROCOACH && HEROCOACH.heroes && HEROCOACH.heroes[a.slug] && HEROCOACH.heroes[a.slug][a.role];
+  const tips = ATIPS[a.slug] || {};
+  const order = ['Passive', 'LMB', 'RMB', 'Q', 'E', 'R'].filter((k) => tips[k]);
+  if (!hc && !order.length) return;
+  const keyLabel = { Passive: 'passive', LMB: 'basic attack' };
+  const rows = order.map((k) => {
+    const ab = abil.get(k);
+    const h = (ab?.image || '').split('/').pop();
+    return `<li class="ht-ab">${h ? `<img loading="lazy" src="../img/abilities/${esc(h)}" alt="">` : '<span class="ht-noimg"></span>'}<div><b>${esc(ab?.display_name || k)}</b> <span class="lvkey">${esc(keyLabel[k] || k)}</span><div class="ht-tip">${esc(tips[k])}</div></div></li>`;
+  }).join('');
+  box.innerHTML = `
+      <summary>How to play ${esc(a.name)} · <span style="text-transform:capitalize">${esc(a.role)}</span></summary>
+      <div class="body">
+        ${hc?.line ? `<p class="ht-line">${esc(hc.line)}</p>` : ''}
+        ${hc?.watchout ? `<p class="ht-watch">${esc(hc.watchout)}</p>` : ''}
+        ${rows ? `<ul class="ht-abs">${rows}</ul>` : ''}
+      </div>`;
+  box.hidden = false;
 }
 async function renderLearn(a) {
   // Same field-evidence declaration renderHero makes: a hero with no field layer
