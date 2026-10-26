@@ -97,15 +97,16 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    restarts `goldFrom`. Plat+ (`plat` cells, `platPlus`, `platByRole`,
    `baselineByRole.*.plat`) is counted from the same lookup at no extra cost.
    The page's high-rank band is Plat+ only (Gold+ stays in the files, unshown).
-   A lane OPENS on Plat+ once its most-played Plat+ build has 100+ games
-   (MIN_BAND_BUILD_GAMES in src/artifacts.ts), else all ranks; the builds
+   A lane OPENS on Plat+ once its most-played Plat+ build has 50+ games
+   (MIN_BAND_BUILD_GAMES in src/artifacts.ts, sized so about half the lanes
+   flip by mid-patch, since the window resets every ~3-week patch), else all ranks; the builds
    page's rank filter (All ranks / Plat+, in the hero header) switches the
    opening picks (`platPlus`: augment, Eternal, minors, crest) and the builds
    (`metaBuildsByBand`) together, as soon as the lane has any Plat+ data, with
    thin-sample notes; a section with no Plat+ data falls back to all ranks and
    says so. Matchups stay all ranks. There is no backfill, so expect lanes
-   to fill over the following weeks, popular ones first (1.17 volumes: median
-   lane ~34 days to a 100-game top Plat+ build).
+   to fill over each patch, popular ones first (1.17 volumes: ~30 of 118
+   lanes open on Plat+ by day 7, ~55 by day 14, ~62 by patch end).
    Since 2026-10-25 perks also writes data/aggregates/build-matchups.json
    (no extra requests): each hero-role's first 3 core items, split by lane
    opponent and by every enemy hero, for all ranks and Plat+ (rank at match time from the same lookup; the
