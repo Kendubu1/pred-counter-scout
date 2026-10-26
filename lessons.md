@@ -5293,3 +5293,17 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   moves a lane's field pick. `.claude/agents/pred-scout-coach.md` does not load as an agent
   type (preset text sits above its frontmatter), so the pass ran on general-purpose agents
   given that file as their brief.
+
+## 2026-10-26 · Rotations read against lane state
+- pred.gg `StructureDestruction` has `location` and `destructionHero/Player`; we only ever asked
+  for time/type/team, so the coach rules said "towers have no lane". Introspect the type before
+  writing a limitation into the methodology. Tower positions are static (spread 0 over 1,264
+  events), so lane geometry is measured once (`engine/src/map-lanes.ts`). The -x side lane is
+  the duo lane and +x the offlane for BOTH teams (early carry credits 397 vs 0).
+- Fresh pulls never passed `assists` into the skirmish context, so a laner with assists still
+  read "alive and never joined" (130ed284: a 4/0/4 mid). `postgame:macro` passed them; the pull
+  did not. Keep the two ctx builders in step.
+- Time-only clustering merges picks on opposite sides of the map: 560 of 2,029 committed fights
+  have kills 12,000+ units apart. The macro now labels them two plays and drops absence notes;
+  re-clustering by distance would change the `startMin` keys coaching moments hang on, so it is
+  a separate job.

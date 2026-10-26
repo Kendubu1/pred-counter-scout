@@ -455,6 +455,27 @@ a lane, and the feed has no wave state or between-kill positions. So:
   the claim out.
 
 
+### Update 2026-10-26: towers have lanes, rotations have context
+
+The "tower events do not identify a lane" limit above is lifted. pred.gg's
+`StructureDestruction` carries `location` and the destroying hero/player; the
+film pull now asks for them, and `npm run postgame:structures` backfilled 1,264
+tower events across 122 films. Tower positions are static, so
+`engine/src/map-lanes.ts` draws the three lanes through the measured tower
+positions (Dawn base +y; the -x side lane is the duo lane and +x the offlane
+for both teams, checked against early laner kill locations).
+
+`engine/src/rotations.ts` turns that into the rotation read the maintainer asked
+for: a laner's kill or death on another lane is a rotation credit, judged
+against the state of their own lane. A rotation is EXPECTED once the enemy outer
+tower on the home lane is down (lane pushed and opened); before that it is a
+proactive play, credited when it answered an ally's death or paid off and
+charged when the home lane lost a structure. The fight macro read follows the
+same rule: a laner holding an unopened lane while a fight happened on another
+lane gets an "expected play" note instead of "never joined", and a time cluster
+whose kills sit 12,000+ units apart is labelled two separate plays. Still not
+in the feed: wave state, positions between kills, and timestamped assists.
+
 ## 6. One statline, one coaching review (2026-09-29)
 
 The post-game page should not split the same evidence across an interrogation, a numbers panel, a match call, and repeated player paragraphs. Use a compact team statline once: K/D/A, hero damage, objective damage, plus a role-relevant measure (for example mitigation, healing, wards, or jungle objective contribution). Pair it with team outcomes such as objective ownership, towers, and fight conversion. These are receipts, not grades; a stat alone is not a coaching point.

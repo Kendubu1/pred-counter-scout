@@ -137,6 +137,12 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   `npm run postgame:loadout` (what each player RAN in every reviewed game —
   augment, Eternal, minors, crest — looked up per film in the same public match
   stream by match id; idempotent, `-- --all` re-decodes; part of the coach job),
+  `npm run postgame:rotations` (zero-API: lane-labels located tower events and
+  writes each film's `rotations` block, a laner's kills/deaths on other lanes
+  judged against whether their own lane's outer tower was down, plus
+  data/aggregates/rotation-habits.json; part of the coach job),
+  `npm run postgame:structures` (pred.gg backfill of tower location + destroyer
+  for films pulled before 2026-10-26; new pulls already carry them),
   `npm run lanestats` (per-hero-role RANKED lane stats for the CURRENT patch from
   pred.gg generalStatistic — the meta board's source),
   `npm run skills` (per-hero recommended leveling order from pred.gg),

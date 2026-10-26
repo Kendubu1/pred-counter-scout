@@ -1986,7 +1986,11 @@
     ],
     "dead": [],
     "crossMap": [],
-    "notes": []
+    "notes": [],
+    "lanes": [
+     "duo"
+    ],
+    "split": false
    }
   },
   {
@@ -2052,7 +2056,9 @@
     ],
     "dead": [],
     "crossMap": [],
-    "notes": []
+    "notes": [],
+    "lanes": [],
+    "split": false
    }
   },
   {
@@ -2075,7 +2081,7 @@
     "muriel"
    ],
    "region": "deep in their half",
-   "place": "our Outer Tower (they took it)",
+   "place": "Same time window: our Outer Tower (they took it)",
    "nearObjective": {
     "type": "OUTER_TOWER",
     "side": "them",
@@ -2117,7 +2123,11 @@
       "side": "us"
      }
     ],
-    "notes": []
+    "notes": [],
+    "lanes": [
+     "duo"
+    ],
+    "split": false
    }
   },
   {
@@ -2139,7 +2149,7 @@
     "sparrow"
    ],
    "region": "our half",
-   "place": "Fangtooth (we took it)",
+   "place": "Same time window: Fangtooth (we took it)",
    "nearObjective": {
     "type": "FANGTOOTH",
     "side": "us",
@@ -2183,8 +2193,14 @@
      }
     ],
     "notes": [
+     "The kills in this window fell on opposite sides of the map (offlane and duo lane): two separate plays, not one fight.",
      "🎮 private (midlane) was dead — went down 36s earlier, so this was never a full-strength fight."
-    ]
+    ],
+    "lanes": [
+     "offlane",
+     "duo"
+    ],
+    "split": true
    }
   }
  ],
@@ -2367,31 +2383,56 @@
    "sec": 937,
    "type": "OUTER_TOWER",
    "side": "us",
-   "kind": "tower"
+   "kind": "tower",
+   "x": 2592.1787109375,
+   "y": -2060.37353515625,
+   "byPid": "da17faed-aa25-41ee-abf2-c6899930249e",
+   "bySlug": "gideon",
+   "lane": "mid"
   },
   {
    "sec": 1163,
    "type": "OUTER_TOWER",
    "side": "us",
-   "kind": "tower"
+   "kind": "tower",
+   "x": 11639.1787109375,
+   "y": -4290.7939453125,
+   "byPid": null,
+   "bySlug": null,
+   "lane": "offlane"
   },
   {
    "sec": 1406,
    "type": "OUTER_TOWER",
    "side": "them",
-   "kind": "tower"
+   "kind": "tower",
+   "x": -10052.5,
+   "y": 6415.6025390625,
+   "byPid": null,
+   "bySlug": null,
+   "lane": "duo"
   },
   {
    "sec": 1456,
    "type": "OUTER_TOWER",
    "side": "us",
-   "kind": "tower"
+   "kind": "tower",
+   "x": -9945.703125,
+   "y": -3458.904052734375,
+   "byPid": "51344a32-b96e-482e-9335-dd9429e8e280",
+   "bySlug": "yin",
+   "lane": "duo"
   },
   {
    "sec": 1490,
    "type": "OUTER_TOWER",
    "side": "them",
-   "kind": "tower"
+   "kind": "tower",
+   "x": 11577.9365234375,
+   "y": 7204,
+   "byPid": "dc3478d4-18f3-495a-b3a0-f53283b9605a",
+   "bySlug": "howitzer",
+   "lane": "offlane"
   }
  ],
  "counterBuild": {
@@ -2798,5 +2839,171 @@
   "source": "pred.gg public match stream (get-matches-since)",
   "fetchedAt": "2026-10-17T00:40:20.313Z",
   "found": true
+ },
+ "rotations": {
+  "note": "rotation = a laner's kill/death credited on another lane (kill location, lane radius from data/postgame tower positions; jungle/river excluded). expected = the enemy outer tower on their home lane was already down. answered = an ally died on that lane within 30s before. payoff/homeCost = our prize / our home-lane structure lost within 90s. windowsAfterOpen lists fights elsewhere after the lane opened with no kill/death credit; assists are not timestamped, so presence there is unknown. THEORY at lane edges.",
+  "located": true,
+  "lanes": [
+   {
+    "lane": "duo",
+    "theirOuterDownMin": 24.3,
+    "ourOuterDownMin": 23.4
+   },
+   {
+    "lane": "mid",
+    "theirOuterDownMin": 15.6,
+    "ourOuterDownMin": null
+   },
+   {
+    "lane": "offlane",
+    "theirOuterDownMin": 19.4,
+    "ourOuterDownMin": 24.8
+   }
+  ],
+  "credits": [
+   {
+    "min": 17.2,
+    "pid": "51344a32-b96e-482e-9335-dd9429e8e280",
+    "name": "pake",
+    "hero": "Yin",
+    "role": "offlane",
+    "home": "offlane",
+    "at": "mid",
+    "credit": "death",
+    "other": "Greystone",
+    "expected": false,
+    "answered": null,
+    "payoff": [],
+    "homeCost": []
+   },
+   {
+    "min": 18.5,
+    "pid": "da17faed-aa25-41ee-abf2-c6899930249e",
+    "name": "🎮 private",
+    "hero": "Gideon",
+    "role": "midlane",
+    "home": "mid",
+    "at": "offlane",
+    "credit": "kill",
+    "other": "Howitzer",
+    "expected": true,
+    "answered": null,
+    "payoff": [
+     {
+      "type": "OUTER_TOWER",
+      "min": 19.4
+     }
+    ],
+    "homeCost": []
+   },
+   {
+    "min": 24.7,
+    "pid": "da17faed-aa25-41ee-abf2-c6899930249e",
+    "name": "🎮 private",
+    "hero": "Gideon",
+    "role": "midlane",
+    "home": "mid",
+    "at": "duo",
+    "credit": "kill",
+    "other": "Neon",
+    "expected": true,
+    "answered": null,
+    "payoff": [],
+    "homeCost": []
+   },
+   {
+    "min": 25.1,
+    "pid": "da17faed-aa25-41ee-abf2-c6899930249e",
+    "name": "🎮 private",
+    "hero": "Gideon",
+    "role": "midlane",
+    "home": "mid",
+    "at": "duo",
+    "credit": "death",
+    "other": "Greystone",
+    "expected": true,
+    "answered": null,
+    "payoff": [],
+    "homeCost": []
+   }
+  ],
+  "players": [
+   {
+    "pid": "7c8ab99c-31c5-4ea5-a6fa-e0d6417c3f1b",
+    "name": "Mr_Meat31",
+    "hero": "Phase",
+    "role": "support",
+    "home": "duo",
+    "laneOpenedMin": 24.3,
+    "rotationKills": 0,
+    "rotationDeaths": 0,
+    "beforeOpen": 0,
+    "answered": 0,
+    "paidOff": 0,
+    "costHome": 0,
+    "windowsAfterOpen": [],
+    "assists": 6
+   },
+   {
+    "pid": "da17faed-aa25-41ee-abf2-c6899930249e",
+    "name": "🎮 private",
+    "hero": "Gideon",
+    "role": "midlane",
+    "home": "mid",
+    "laneOpenedMin": 15.6,
+    "rotationKills": 2,
+    "rotationDeaths": 1,
+    "beforeOpen": 0,
+    "answered": 0,
+    "paidOff": 1,
+    "costHome": 0,
+    "windowsAfterOpen": [
+     {
+      "startMin": 25.7,
+      "at": "offlane",
+      "result": "even"
+     }
+    ],
+    "assists": 2
+   },
+   {
+    "pid": "10edbf65-457d-48d0-9151-9df5b4fcb40a",
+    "name": "Willy Guggenheim",
+    "hero": "Skylar",
+    "role": "carry",
+    "home": "duo",
+    "laneOpenedMin": 24.3,
+    "rotationKills": 0,
+    "rotationDeaths": 0,
+    "beforeOpen": 0,
+    "answered": 0,
+    "paidOff": 0,
+    "costHome": 0,
+    "windowsAfterOpen": [],
+    "assists": 4
+   },
+   {
+    "pid": "51344a32-b96e-482e-9335-dd9429e8e280",
+    "name": "pake",
+    "hero": "Yin",
+    "role": "offlane",
+    "home": "offlane",
+    "laneOpenedMin": 19.4,
+    "rotationKills": 0,
+    "rotationDeaths": 1,
+    "beforeOpen": 1,
+    "answered": 0,
+    "paidOff": 0,
+    "costHome": 0,
+    "windowsAfterOpen": [
+     {
+      "startMin": 24.7,
+      "at": "duo",
+      "result": "won"
+     }
+    ],
+    "assists": 1
+   }
+  ]
  }
 }

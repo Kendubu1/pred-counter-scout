@@ -10,9 +10,10 @@
 // — it's measured kill data, but the game-defining / bad-trade *labels* are heuristics.
 
 import type { FactKill } from './postgame.js';
+import { laneOfPoint, laneLabel, HOME_LANE, type MapLane } from './map-lanes.js';
 
 /** Objective/tower event normalised to us/them, in seconds — what a fight was over. */
-export interface ObjEvent { sec: number; type: string; side: 'us' | 'them'; kind: 'objective' | 'tower'; }   // side = who TOOK it (for a tower: who destroyed it, i.e. the structure belonged to the other side)
+export interface ObjEvent { sec: number; type: string; side: 'us' | 'them'; kind: 'objective' | 'tower'; x?: number | null; y?: number | null; lane?: MapLane | null; byPid?: string | null; bySlug?: string | null; }   // side = who TOOK it (for a tower: who destroyed it, i.e. the structure belonged to the other side)
 
 export interface Skirmish {
   startSec: number; endSec: number; startMin: number;   // when (startMin for display)
@@ -36,6 +37,9 @@ export interface SkirmishContext {
   enemyPids: string[];
   lanes: { role: string; verdict: string }[];
   majors?: { minute: number; type: string; side: 'us' | 'them' }[];
+  // Located structures (side = who TOOK it). Lets the absent read tell "held a
+  // lane whose towers still stand" (expected) from "lane open, no rotation".
+  towers?: { sec: number; type: string; side: 'us' | 'them'; lane?: MapLane | null }[];
 }
 
 /** The macro picture of a fight — the part that's about the GAME, not the matchup:
@@ -52,8 +56,11 @@ export interface SkirmishMacro {
   dead: { name: string; role: string; hero: string; agoSec: number }[];   // dead at engage — couldn't contest
   crossMap: { type: string; side: 'us' | 'them' }[];        // majors that fell in the same window
   notes: string[];                                          // ready-to-read macro reads (THEORY)
+  lanes?: MapLane[];                                        // lanes the located kills fell on (jungle/river excluded)
+  split?: boolean;                                          // kills on opposite sides of the map: two plays, not one fight
 }
 
+const SPLIT_DIST = 12000;  // world units: kills further apart than this in one window are separate plays
 const GAP = 25;          // seconds: kills within GAP of the running cluster join the same fight
 const OBJ_WINDOW = 45;   // seconds: an objective/tower within this of a fight is "on the line"
 // "Major" = a game-swinging prize. The objective stream is noisy with frequent
@@ -146,15 +153,36 @@ export function skirmishMacro(
   // minor camps (River/Seedling) we must not read as a game-swinging objective.
   const crossMap = (ctx.majors ?? []).filter((m) => m.minute >= s.startMin - 0.3 && m.minute <= s.startMin + 2.5 && MAJOR_OBJ.test(m.type)).map((m) => ({ type: m.type, side: m.side }));
 
+  // Where the kills fell. Time clustering alone merges a pick in the duo lane
+  // with a pick on the offlane 10s later (130ed284 at 13.7), which then read a
+  // laner "never joined" a fight that did not exist as one place.
+  const loc = win.filter((k) => k.x != null && k.y != null);
+  let spread = 0;
+  for (let i = 0; i < loc.length; i++) for (let j = i + 1; j < loc.length; j++) spread = Math.max(spread, Math.hypot(loc[i]!.x! - loc[j]!.x!, loc[i]!.y! - loc[j]!.y!));
+  const split = spread > SPLIT_DIST;
+  const lanes = [...new Set(loc.map((k) => laneOfPoint(k.x!, k.y!)).filter((l) => l !== 'jungle'))];
+  const laneOpen = (lane: MapLane) => (ctx.towers ?? []).find((t) => t.lane === lane && t.type === 'OUTER_TOWER' && t.side === 'us' && t.sec <= s.startSec);
+  const located = (ctx.towers ?? []).some((t) => t.lane);
+
   const notes: string[] = [];
   const adverse = s.result === 'lost' || s.net < 0 || manAdv < 0;
+  if (split) notes.push(`The kills in this window fell on opposite sides of the map (${lanes.map(laneLabel).join(' and ') || 'far apart'}): two separate plays, not one fight${adverse ? ', so nobody could have been at both' : ''}.`);
   // numbers at the engage — the single biggest "why did we lose that"
   if (manAdv <= -1) notes.push(`We opened it a ${Math.abs(manAdv)}-body down (${ourAlive}v${theirAlive}) — the numbers were lost before the fight was.`);
   else if (manAdv >= 1 && s.result !== 'won') notes.push(`We had the bodies (${ourAlive}v${theirAlive}) and it still went ${s.ourKills}-${s.theirKills} — that's a fight to win with the man up.`);
   // dead teammates: exculpatory — they literally couldn't be there
   for (const d of dead.slice(0, 2)) notes.push(`${d.name} (${d.role}) was dead — went down ${d.agoSec}s earlier, so this was never a full-strength fight.`);
   // rotations: only raise when the fight went badly (don't nag a clean win)
-  if (adverse) for (const a of absent.slice(0, 2)) {
+  if (adverse && !split) for (const a of absent.slice(0, 2)) {
+    const home = a.role === 'support' ? undefined : HOME_LANE[a.role];
+    if (home && located && lanes.length && !(lanes as MapLane[]).includes(home)) {
+      // A laner away from a fight on ANOTHER lane: expected while their own
+      // lane's towers stand; a rotation window once their lane is open.
+      const open = laneOpen(home);
+      if (!open) notes.push(`${a.name} (${a.role}) was holding the ${laneLabel(home)} with both outer towers standing and this fight was on the ${laneLabel(lanes[0]!)}: staying in lane was the expected play.`);
+      else notes.push(`${a.name} (${a.role}) had an open lane (the enemy ${laneLabel(home)} outer tower was already down) and has no kill or death credited in this fight on the ${laneLabel(lanes[0]!)}${a.unproven ? '; assists are not tracked per fight, so presence is unknown' : ''}: that is the window to rotate.`);
+      continue;
+    }
     if (a.unproven && a.role === 'support') notes.push(`${a.name} (support) has no kill or death credited in this fight — assists aren't tracked per fight, so absence is unproven; grade the support on participation and peel, not on this.`);
     else if (a.unproven) notes.push(`${a.name} (${a.role}) has no kill or death credited in this fight; assists aren't tracked per fight, so presence is unknown${a.lane === 'winning' ? ' — if free, the lane read says ahead, and a shove-and-rotate was available' : a.lane === 'losing' ? ' — the lane read says pinned, so the fight was the wrong call regardless' : ''}.`);
     else if (a.lane === 'winning') notes.push(`${a.name} (${a.role}) was alive and ahead in lane — a shove-and-rotate there flips a ${s.ourKills}-${s.theirKills} into a numbers advantage.`);
@@ -172,7 +200,7 @@ export function skirmishMacro(
       : `They traded the fight for ${titleCase(cm.type)} across the map — we won bodies but gave the objective.`);
   }
 
-  return { ourAlive, theirAlive, manAdv, outnumbered: manAdv < 0, absent, dead, crossMap, notes: notes.slice(0, 4) };
+  return { ourAlive, theirAlive, manAdv, outnumbered: manAdv < 0, absent, dead, crossMap, notes: notes.slice(0, 4), lanes, split };
 }
 
 /** Cluster the kill stream into fights and classify each. `objEvents` are the

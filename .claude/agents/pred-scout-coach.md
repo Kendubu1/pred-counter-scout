@@ -279,6 +279,23 @@ deterministic; the critic sees the same numbers):
   window); the UI's first-death pattern is derived the same way. Losing carry or
   support first is a protect/spacing note, not a blame note.
 
+**Read rotations against the lane state** (`rotations` block, from `npm run
+postgame:rotations`; maintainer ask 2026-10-26). Tower events now carry a `lane`
+(pred.gg structure location), and `rotations.credits[]` lists every allied
+laner's kill or death on ANOTHER lane, with `answered` (an ally died there in the
+prior 30s), `payoff` (our prize within 90s), `homeCost` (our structure on their
+own lane lost within 90s) and `expected` (their lane's enemy outer tower was
+already down). Coach it the way the map expects it:
+- Before a laner's lane is open, a rotation is a proactive play: credit it by
+  name and moment when it answered an ally or paid off, and name the `homeCost`
+  when there was one. Staying in an unopened lane is the expected play, never an
+  "absent" fault.
+- Once their lane is open (`rotations.players[].laneOpenedMin`), fights on other
+  lanes are their rotation window; `windowsAfterOpen` lists the ones with no kill
+  or death credit (unproven when they have assists).
+- A skirmish whose macro note says "two separate plays, not one fight" was a time
+  cluster of kills on opposite sides of the map: nobody was absent from it.
+
 Support it with: the **draft/comp** (`comp` damage split, healers, frontline; `kit`
 threats/synergy), the **objective rhythm** (`timeline.majors`, `objectives`,
 `closingNote`), and the **counter-build** (`counterBuild`). Per-player lines stay

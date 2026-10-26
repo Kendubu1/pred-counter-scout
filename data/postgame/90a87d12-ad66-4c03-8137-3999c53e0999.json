@@ -1811,9 +1811,13 @@
      }
     ],
     "notes": [
-     "🎮 private (midlane) was alive and ahead in lane — a shove-and-rotate there flips a 2-3 into a numbers advantage.",
-     "🎮 private (offlane) was alive and ahead in lane — a shove-and-rotate there flips a 2-3 into a numbers advantage."
-    ]
+     "🎮 private (midlane) was holding the mid lane with both outer towers standing and this fight was on the duo lane: staying in lane was the expected play.",
+     "🎮 private (offlane) was holding the offlane with both outer towers standing and this fight was on the duo lane: staying in lane was the expected play."
+    ],
+    "lanes": [
+     "duo"
+    ],
+    "split": false
    }
   },
   {
@@ -1835,7 +1839,7 @@
     "serath"
    ],
    "region": "midmap / river",
-   "place": "Fangtooth (they took it)",
+   "place": "Same time window: Fangtooth (they took it)",
    "nearObjective": {
     "type": "FANGTOOTH",
     "side": "them",
@@ -1877,9 +1881,13 @@
      }
     ],
     "notes": [
-     "🎮 private (offlane) was alive and ahead in lane — a shove-and-rotate there flips a 0-2 into a numbers advantage.",
-     "Mr_Meat31 (carry) was alive and ahead in lane — a shove-and-rotate there flips a 0-2 into a numbers advantage."
-    ]
+     "🎮 private (offlane) was holding the offlane with both outer towers standing and this fight was on the mid lane: staying in lane was the expected play.",
+     "Mr_Meat31 (carry) was holding the duo lane with both outer towers standing and this fight was on the mid lane: staying in lane was the expected play."
+    ],
+    "lanes": [
+     "mid"
+    ],
+    "split": false
    }
   },
   {
@@ -1903,7 +1911,7 @@
     "renna"
    ],
    "region": "their half",
-   "place": "Fangtooth (they took it)",
+   "place": "Same time window: Fangtooth (they took it)",
    "nearObjective": {
     "type": "FANGTOOTH",
     "side": "them",
@@ -1935,7 +1943,9 @@
     "notes": [
      "🎮 private (midlane) was alive and ahead in lane — a shove-and-rotate there flips a 2-3 into a numbers advantage.",
      "🎮 private (offlane) was alive and ahead in lane — a shove-and-rotate there flips a 2-3 into a numbers advantage."
-    ]
+    ],
+    "lanes": [],
+    "split": false
    }
   },
   {
@@ -1988,7 +1998,14 @@
     ],
     "dead": [],
     "crossMap": [],
-    "notes": []
+    "notes": [
+     "The kills in this window fell on opposite sides of the map (mid lane and duo lane): two separate plays, not one fight."
+    ],
+    "lanes": [
+     "mid",
+     "duo"
+    ],
+    "split": true
    }
   },
   {
@@ -2011,7 +2028,7 @@
     "grux"
    ],
    "region": "midmap / river",
-   "place": "our Outer Tower (they took it)",
+   "place": "Same time window: our Outer Tower (they took it)",
    "nearObjective": {
     "type": "OUTER_TOWER",
     "side": "them",
@@ -2035,7 +2052,8 @@
       "name": "Willy Guggenheim",
       "role": "jungle",
       "hero": "yin",
-      "lane": "losing"
+      "lane": "losing",
+      "unproven": true
      }
     ],
     "dead": [],
@@ -2050,10 +2068,14 @@
      }
     ],
     "notes": [
-     "🎮 private (midlane) was alive and ahead in lane — a shove-and-rotate there flips a 0-3 into a numbers advantage.",
-     "Willy Guggenheim (jungle) was alive but losing lane and pinned — with them stuck across the map, this was the wrong fight to start.",
+     "The kills in this window fell on opposite sides of the map (duo lane and offlane): two separate plays, not one fight, so nobody could have been at both.",
      "We took Fangtooth in the same window — read it as a trade, not a clean loss."
-    ]
+    ],
+    "lanes": [
+     "duo",
+     "offlane"
+    ],
+    "split": true
    }
   },
   {
@@ -2075,7 +2097,7 @@
     "revenant"
    ],
    "region": "deep in their jungle",
-   "place": "Fangtooth (we took it)",
+   "place": "Same time window: Fangtooth (we took it)",
    "nearObjective": {
     "type": "FANGTOOTH",
     "side": "us",
@@ -2116,7 +2138,11 @@
       "side": "us"
      }
     ],
-    "notes": []
+    "notes": [],
+    "lanes": [
+     "duo"
+    ],
+    "split": false
    }
   }
  ],
@@ -2269,13 +2295,23 @@
    "sec": 978,
    "type": "OUTER_TOWER",
    "side": "them",
-   "kind": "tower"
+   "kind": "tower",
+   "x": -10052.5,
+   "y": 6415.6025390625,
+   "byPid": "7ffce725-026e-4df5-8b61-7ba029095189",
+   "bySlug": "lt-belica",
+   "lane": "duo"
   },
   {
    "sec": 1080,
    "type": "OUTER_TOWER",
    "side": "them",
-   "kind": "tower"
+   "kind": "tower",
+   "x": 11577.9365234375,
+   "y": 7204,
+   "byPid": "c3b84057-b3d6-42b6-99b2-efc751e916cd",
+   "bySlug": "serath",
+   "lane": "offlane"
   }
  ],
  "counterBuild": {
@@ -2865,6 +2901,94 @@
     "minute": 17,
     "deadBefore": [],
     "uncontested": true
+   }
+  ]
+ },
+ "rotations": {
+  "note": "rotation = a laner's kill/death credited on another lane (kill location, lane radius from data/postgame tower positions; jungle/river excluded). expected = the enemy outer tower on their home lane was already down. answered = an ally died on that lane within 30s before. payoff/homeCost = our prize / our home-lane structure lost within 90s. windowsAfterOpen lists fights elsewhere after the lane opened with no kill/death credit; assists are not timestamped, so presence there is unknown. THEORY at lane edges.",
+  "located": true,
+  "lanes": [
+   {
+    "lane": "duo",
+    "theirOuterDownMin": null,
+    "ourOuterDownMin": 16.3
+   },
+   {
+    "lane": "mid",
+    "theirOuterDownMin": null,
+    "ourOuterDownMin": null
+   },
+   {
+    "lane": "offlane",
+    "theirOuterDownMin": null,
+    "ourOuterDownMin": 18
+   }
+  ],
+  "credits": [],
+  "players": [
+   {
+    "pid": "9681844e-07b6-4b92-8247-00a5a393b35a",
+    "name": "🎮 private",
+    "hero": "Gadget",
+    "role": "midlane",
+    "home": "mid",
+    "laneOpenedMin": null,
+    "rotationKills": 0,
+    "rotationDeaths": 0,
+    "beforeOpen": 0,
+    "answered": 0,
+    "paidOff": 0,
+    "costHome": 0,
+    "windowsAfterOpen": [],
+    "assists": 0
+   },
+   {
+    "pid": "8cc8b136-b5f5-4d0b-be88-2a425b3927e3",
+    "name": "🎮 private",
+    "hero": "Aurora",
+    "role": "offlane",
+    "home": "offlane",
+    "laneOpenedMin": null,
+    "rotationKills": 0,
+    "rotationDeaths": 0,
+    "beforeOpen": 0,
+    "answered": 0,
+    "paidOff": 0,
+    "costHome": 0,
+    "windowsAfterOpen": [],
+    "assists": 0
+   },
+   {
+    "pid": "7c8ab99c-31c5-4ea5-a6fa-e0d6417c3f1b",
+    "name": "Mr_Meat31",
+    "hero": "Murdock",
+    "role": "carry",
+    "home": "duo",
+    "laneOpenedMin": null,
+    "rotationKills": 0,
+    "rotationDeaths": 0,
+    "beforeOpen": 0,
+    "answered": 0,
+    "paidOff": 0,
+    "costHome": 0,
+    "windowsAfterOpen": [],
+    "assists": 0
+   },
+   {
+    "pid": "a412baf3-dd17-4f89-8ecf-9d0704f3a79e",
+    "name": "Xeebs",
+    "hero": "Steel",
+    "role": "support",
+    "home": "duo",
+    "laneOpenedMin": null,
+    "rotationKills": 0,
+    "rotationDeaths": 0,
+    "beforeOpen": 0,
+    "answered": 0,
+    "paidOff": 0,
+    "costHome": 0,
+    "windowsAfterOpen": [],
+    "assists": 2
    }
   ]
  }

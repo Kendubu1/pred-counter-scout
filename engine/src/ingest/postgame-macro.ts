@@ -15,6 +15,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { detectSkirmishes, skirmishMacro, type Skirmish, type SkirmishContext } from '../skirmishes.js';
 import type { PostGameFacts } from '../postgame.js';
+import { laneOfPoint } from '../map-lanes.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const OUT_DIR = path.join(ROOT, 'data/postgame');
@@ -36,6 +37,7 @@ function main() {
       enemyPids: f.players.filter((p) => !p.us).map((p) => p.pid),
       lanes: f.lanes.map((l) => ({ role: l.role, verdict: l.verdict })),
       majors: f.timeline?.majors,
+      towers: ((f.events ?? []) as any[]).filter((e) => e.kind === 'tower').map((e) => ({ sec: e.sec, type: e.type, side: e.side, lane: e.lane ?? (e.x != null && e.y != null ? laneOfPoint(e.x, e.y) : null) })),
     };
     // --all also re-runs the detector when the film carries the event stream, so
     // label/tag fixes in skirmishes.ts reach committed films (same kills, same

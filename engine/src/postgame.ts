@@ -11,6 +11,7 @@
 import { completedItems } from './data.js';
 import { kitPowerType } from './sim.js';
 import { detectSkirmishes, type Skirmish, type ObjEvent } from './skirmishes.js';
+import { laneOfPoint } from './map-lanes.js';
 import type { LoadedData } from './data.js';
 import type { Item } from './types.js';
 
@@ -40,7 +41,7 @@ export interface HeroStatCell {
 }
 
 // Optional match timeline (pred.gg only — omeda's feed has no event stream).
-export interface MatchEvent { gameTime: number; type: string; team: string; } // team = DAWN/DUSK (objective: killer; structure: the side that LOST it)
+export interface MatchEvent { gameTime: number; type: string; team: string; x?: number | null; y?: number | null; byPid?: string | null; bySlug?: string | null; } // team = DAWN/DUSK (objective: killer; structure: the side that LOST it); x/y/by* on structures only (pred.gg location + destroyer, 2026-10-26)
 // Per-kill event stream (pred.gg `heroKills`). Teams are dawn/dusk; the engine
 // normalises killer/killed to us/them once it knows ourTeam.
 export interface KillEvent {
@@ -582,15 +583,17 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
     ...(inp.objectiveEvents ?? []).filter((e) => !JUNGLE_BUFF.test(e.type))
       .map((e) => ({ sec: e.gameTime, type: e.type, side: (e.team === ourTeam ? 'us' : 'them') as 'us' | 'them', kind: 'objective' as const })),
     ...(inp.structureEvents ?? []).filter((e) => /TOWER|INHIBITOR|CORE|BASE/i.test(e.type))
-      .map((e) => ({ sec: e.gameTime, type: e.type, side: (e.team === enemyTeam ? 'us' : 'them') as 'us' | 'them', kind: 'tower' as const })),
+      .map((e) => ({ sec: e.gameTime, type: e.type, side: (e.team === enemyTeam ? 'us' : 'them') as 'us' | 'them', kind: 'tower' as const,
+        ...(e.x != null && e.y != null ? { x: e.x, y: e.y, lane: laneOfPoint(e.x, e.y) } : {}), ...(e.byPid ? { byPid: e.byPid } : {}), ...(e.bySlug ? { bySlug: e.bySlug } : {}) })),
   ];
   // Macro context for the skirmish read: our five (pid/role/hero), the enemy pids,
   // lane verdict strings, and the major timeline — all already computed above.
   const skirmishCtx = {
-    ourPlayers: players.filter((p) => p.us).map((p) => ({ pid: p.pid, name: p.name, heroSlug: p.heroSlug, role: p.role })),
+    ourPlayers: players.filter((p) => p.us).map((p) => ({ pid: p.pid, name: p.name, heroSlug: p.heroSlug, role: p.role, assists: p.assists })),   // assists mark a laner's absence unproven (2026-10-26: fresh pulls dropped them, so a 4-assist mid read "never joined")
     enemyPids: players.filter((p) => !p.us).map((p) => p.pid),
     lanes: lanes.map((l) => ({ role: l.role, verdict: l.verdict })),
     majors: timeline?.majors,
+    towers: objForSkirmish.filter((e) => e.kind === 'tower').map((e) => ({ sec: e.sec, type: e.type, side: e.side, lane: e.lane ?? null })),
   };
   const skirmishes = detectSkirmishes(kills, objForSkirmish, dur, kills.length ? skirmishCtx : undefined);
 
@@ -660,7 +663,7 @@ export function computeMatchFacts(data: LoadedData, inp: PostGameInputs): PostGa
     // Per-event objective/tower stream (sec + side), persisted so downstream
     // passes can tie deaths and won fights to what they cost/earned WITH tower
     // times. Older films lack it — consumers degrade to timeline.majors.
-    events: objForSkirmish.map((e) => ({ sec: e.sec, type: e.type, side: e.side, kind: e.kind })),
+    events: objForSkirmish.map((e) => ({ sec: e.sec, type: e.type, side: e.side, kind: e.kind, ...(e.x != null ? { x: e.x, y: e.y, lane: e.lane, byPid: e.byPid, bySlug: e.bySlug } : {}) })),
     counterBuild,
     closingNote,
     draftNote,

@@ -75,7 +75,7 @@ not in the env, stop immediately and report — no partial work.
    omeda is 503 (postgame.ts handles it); the review still lands.
 3. Deterministic enrichment over the whole set: `npm run postgame:kit`,
    `npm run postgame:items`, `npm run postgame:fights`, `npm run postgame:macro`,
-   `npm run postgame:loadout` (all idempotent — they only touch films missing
+   `npm run postgame:loadout`, `npm run postgame:rotations` (all idempotent — they only touch films missing
    their block). `postgame:loadout` (added 2026-10-17) looks each film up in
    pred.gg's public match stream by its own match id and writes what every
    player RAN — augment, Eternal, both minors, crest — onto

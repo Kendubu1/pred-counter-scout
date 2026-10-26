@@ -17,7 +17,7 @@ export interface PredggGame {
 const MATCH_FIELDS = `
   uuid startTime duration gameMode winningTeam
   objectiveKills { gameTime killedEntityType killerTeam }
-  structureDestructions { gameTime structureEntityType structureTeam }
+  structureDestructions { gameTime structureEntityType structureTeam location { x y } destructionHero { slug } destructionPlayer { uuid } }
   heroKills { gameTime isFirstBlood killerTeam killedTeam killerEntityType
     killerHero { slug } killedHero { slug } killerPlayer { uuid } killedPlayer { uuid } location { x y } }
   matchPlayers {
@@ -68,7 +68,7 @@ function mapMatch(m: any, slugToId: Map<string, number>): { match: OmedaMatch; o
     game_mode: String(m.gameMode).toLowerCase(), winning_team: String(m.winningTeam).toLowerCase(), players,
   };
   const objectiveEvents: MatchEvent[] = (m.objectiveKills ?? []).map((o: any) => ({ gameTime: o.gameTime, type: o.killedEntityType, team: String(o.killerTeam).toLowerCase() }));
-  const structureEvents: MatchEvent[] = (m.structureDestructions ?? []).map((s: any) => ({ gameTime: s.gameTime, type: s.structureEntityType, team: String(s.structureTeam).toLowerCase() }));
+  const structureEvents: MatchEvent[] = (m.structureDestructions ?? []).map((s: any) => ({ gameTime: s.gameTime, type: s.structureEntityType, team: String(s.structureTeam).toLowerCase(), x: s.location?.x ?? null, y: s.location?.y ?? null, byPid: s.destructionPlayer?.uuid ?? null, bySlug: s.destructionHero?.slug ?? null }));
   // Hero victims only (filter out minion/structure entries the stream may carry).
   const killEvents: KillEvent[] = (m.heroKills ?? []).filter((k: any) => k.killedHero?.slug).map((k: any) => ({
     gameTime: k.gameTime, firstBlood: !!k.isFirstBlood,
