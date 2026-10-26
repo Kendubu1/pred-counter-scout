@@ -89,7 +89,7 @@ export function gameFlags(f: any): GameFlag[] {
     if (new Set(dead.map((k) => k.killedPid)).size < 3) continue;
     const lost = theirLosses.filter((e) => e.sec > m.sec && e.sec <= m.sec + 150);
     out.push({
-      id: `objective-for-bodies@${fmt(m1(m.sec))}`, kind: 'objective-for-bodies', tone: 'bad',
+      id: `objective-for-bodies@${m1(m.sec).toFixed(1)}`, kind: 'objective-for-bodies', tone: 'bad',
       summary: `${NAME[m.type]} cost ${new Set(dead.map((k) => k.killedPid)).size} allied deaths${lost.length ? ` and ${lost.length} structures right after` : ''}`,
       evidence: [`We took ${NAME[m.type]} at ${fmt(m1(m.sec))}.`, ...dead.map(deathLine),
         ...(lost.length ? [`Then they took ${lost.map((e) => `${e.lane === 'jungle' ? '' : `${e.lane} `}${NAME[e.type] ?? e.type} (${fmt(m1(e.sec))})`).join(', ')}.`] : [])],

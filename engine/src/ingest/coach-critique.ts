@@ -174,7 +174,7 @@ export function fightEconLines(f: Facts & { fights?: any; kills?: any[] }): stri
   }
   // Tower/objective event times (newer films) — grounds structure timestamps.
   const evs = ((f as any).events ?? []).filter((e: any) => e.kind === 'tower' || /FANG|PRIME|ORB/i.test(e.type));
-  if (evs.length) out.push(`EVENTS: ${evs.map((e: any) => `${e.side} ${String(e.type).replace(/_/g, ' ')}@${Math.round(e.sec / 6) / 10}m`).join(', ')}.`);
+  if (evs.length) out.push(`EVENTS: ${evs.map((e: any) => `${e.side} ${e.lane && e.lane !== 'jungle' ? `${e.lane} ` : ''}${String(e.type).replace(/_/g, ' ')}@${Math.round(e.sec / 6) / 10}m${e.byPid ? ` (destroyed by ${f.players.find((p) => p.pid === e.byPid)?.heroName ?? e.bySlug})` : ''}`).join(', ')}.`);
   return out;
 }
 

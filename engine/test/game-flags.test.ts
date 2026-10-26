@@ -31,6 +31,7 @@ describe('game flags', () => {
     f.kills = [kill(2190, 'them', 'ecarry', 'mid'), kill(2200, 'them', 'ecarry', 'adc'), kill(2230, 'them', 'ejg', 'sup')];
     const g = gameFlags(f).find((x) => x.kind === 'objective-for-bodies')!;
     expect(g.summary).toBe('Orb Prime cost 3 allied deaths and 1 structures right after');
+    expect(g.id).toBe('objective-for-bodies@36.7'); // ids are display-independent: reviews cite them
     f.kills.pop(); expect(gameFlags(f).some((x) => x.kind === 'objective-for-bodies')).toBe(false);
   });
 
