@@ -5265,3 +5265,6 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   of What's new instead of the menu; only What's new carries a "new" tag.
 
 2026-10-26: First live perks run on match-time rank (Oct 25 09:00 -> Oct 26 00:28, 839 pages, 3,910 ranked matches): 0 unresolved matches, 17,252 Gold+ and 6,389 Plat+ rows (Plat+ ~37% of Gold+, as the lane-stat bands predicted), 75 hero-role cells with Plat+ picks and 9 lanes with Plat+ builds after one day; one stream 403 mid-run recovered on its 300s backoff. The run also exposed a daily-refresh trap unrelated to rank: copy passes keyed to "what the page shows" (Eternal card lines) went stale when a day of data reshuffled a lane's top Eternals (13 lines). Copy ingest needs responses, which the scheduled refresh never has, so review:eternalcards now carries still-shown lines (re-verified against today's facts) and prunes the rest, and the daily doc runs it after artifacts. The Plat+ opening floor dropped to 50 games, sized to the ~3-week patch window rather than to the page's 100-game lead floor.
+- Commit timestamps are UTC; the maintainer's day runs behind (evening commits land on the
+  next UTC date). Date change-notes cards by the maintainer's day, not `git log`'s. Keep
+  cards plain: one short card per day, major changes only, no colored badges.
