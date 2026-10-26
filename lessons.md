@@ -5243,3 +5243,15 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
 - When a filter is added, list what does NOT follow it on the page (matchups) and fall back per section with a note.
 - Parallel branches can copy a method you are retiring: main's build-matchups (same day) tagged Plat+ from the ladder too. On merge, perks feeds it match-time tiers and migratePlatBasis drops the ladder-basis p counts. Grep for leaderboardPaginated / CURRENT rank before trusting any rank band.
 - Process traps hit this session: pkill -f / pgrep -f matching their own shell (use ps -eo pid,comm,args and match comm); a git stash while the artifact build ran (it may load stashed code: restart it); python string-splicing that put a schema between a comment and its constant (re-read the spliced region); `npm run artifacts` dropping meta.json topPlayers.
+
+## 2026-10-25 · Section links preview as the whole page
+- Link-preview crawlers (iMessage, Discord, Slack) drop the `#fragment`, so `climb.html#when-to-swap`
+  can only ever preview as climb.html. Fix: `engine/scripts/share-pages.mjs` (`npm run ui:share`)
+  writes one same-directory page per data-nav section of climb.html / about.html with that
+  section's title + lede as og tags, redirecting to `page.html#id`; `section-nav.js` shows that
+  URL in the address bar while you read, so a copied link previews the section. Same directory
+  keeps every relative URL resolving. `test/share-pages.test.ts` fails if a heading/lede changes
+  without regenerating.
+- Homepage patch notice moved from the mid-page pill to a one-line bar above the top bar.
+- Climb swap table: two columns at every width (trigger tucked under the counter) instead of
+  stacked cards on phones.

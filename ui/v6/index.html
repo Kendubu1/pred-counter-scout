@@ -76,12 +76,11 @@
   .rolebar button, .seg-roles button { display:inline-flex; align-items:center; justify-content:center; gap:.4rem; }
   .rolebar button.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
   /* ── 3-step "how it works" strip ── */
-  /* slim one-line patch strip (replaced the multi-bullet endcard) */
-  .patchstrip { display:flex; align-items:center; gap:.55rem; margin-top:1.4rem; padding:.55rem .85rem; background:var(--accent-soft); border:1px solid var(--accent); border-radius:99px; text-decoration:none; color:var(--text-1); font-size:.8rem; flex-wrap:wrap; }
-  .patchstrip b { color:var(--text-0); font-size:.82rem; white-space:nowrap; }
-  .patchstrip .ps-sub { color:var(--text-2); font-size:.74rem; flex:1; min-width:0; }
-  .patchstrip:hover { background:var(--bg-2); }
-  .patchstrip .ec-cta { margin-left:auto; }
+  /* patch notice: one thin line pinned above the top bar (replaced the in-page strip) */
+  .patchbar { display:block; text-align:center; padding:.22rem 1rem; background:var(--accent-soft); border-bottom:1px solid var(--border); color:var(--text-1); font-size:.74rem; text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .patchbar b { color:var(--text-0); }
+  .patchbar .pb-cta { color:var(--accent-ink); font-weight:700; margin-left:.35rem; }
+  .patchbar:hover .pb-cta { text-decoration:underline; }
   /* collapsed all-heroes browser */
   #allHeroes > summary.allsum { cursor:pointer; list-style:none; user-select:none; }
   #allHeroes > summary.allsum::-webkit-details-marker { display:none; }
@@ -518,6 +517,7 @@
 </head>
 <body>
 <div class="top">
+  <a class="patchbar" href="../patch-1.17.2.html"><b>Patch 1.17.2</b> is live<span class="pb-cta">Read the review →</span></a>
   <div class="top-inner">
     <a class="wordmark" href="./"><img src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</a>
     <span class="spacer"></span>
@@ -541,12 +541,6 @@
       <div class="rolebar" id="rolebar"></div>
     </div>
     <div id="lanedetail"></div>
-    <a class="patchstrip" href="../patch-1.17.2.html" aria-label="Read the patch 1.17.2 review">
-      <span class="ec-icon" data-bic="patch-strategy" data-bic-size="17"></span>
-      <b>Patch <span id="ecPatchVer">1.17.2</span> review <span class="ec-tag">new</span></b>
-      <span class="ps-sub">Valmont cut back · carry order reshuffled · Crucible on live values · coach predictions inside</span>
-      <span class="ec-cta">→</span>
-    </a>
     <div class="browse-head">Winning right now</div>
     <div class="metaboard" id="metaboard"></div>
     <div class="banboard" id="banboard"></div>
