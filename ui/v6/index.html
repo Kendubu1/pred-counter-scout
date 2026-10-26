@@ -807,8 +807,6 @@ function matrixCps(mx, our, enemy) {
     verdict: ch === '=' ? 'even' : (ch === 'y') === !flip ? 'you' : 'enemy',
   }));
 }
-const vdots = (cps) => `<div class="dots">${cps.map((c) =>
-  `<div class="dotwrap"><div class="dot ${c.verdict}" title="minute ${c.minute}: ${c.verdict === 'you' ? 'you can win the fight' : c.verdict === 'enemy' ? 'they can win the fight' : 'even'}"></div><div class="m">${c.minute}</div></div>`).join('')}</div>`;
 const invertV = (v) => (v === 'you' ? 'enemy' : v === 'enemy' ? 'you' : 'even');
 const phaseLine = (cps) => {
   const w = (arr) => arr.filter((c) => c.verdict === 'you').length - arr.filter((c) => c.verdict === 'enemy').length;
@@ -934,7 +932,6 @@ async function renderLaneDetail() {
         <div class="lrow" data-slug="${r.slug}" data-role="${r.lane}">
           <img loading="lazy" src="${IMG.hero(r.slug)}" alt="" onerror="this.style.visibility='hidden'">
           <span><b>${esc(r.name)}</b>${showLane ? ` <span style="color:var(--text-2);font-size:.6875rem;text-transform:capitalize">${esc(LANE_LABELS[r.lane] || r.lane)}</span>` : ''} <span style="margin-left:.25rem">${evTag(r)}</span><div class="sub">${esc(r.line)}</div></span>
-          ${vdots(r.cps)}
         </div>`;
       // Lane picks first: every hero in the enemy's OWN lane, ranked — your direct
       // mirror-lane options vs them, best first (even when few clearly beat them).
@@ -948,8 +945,8 @@ async function renderLaneDetail() {
         body += cross.map((r) => rowHtml(r, true)).join('');
       }
       body += MU
-        ? `<div class="lp-sub" style="margin-top:.4rem">ranked by the REAL head-to-head lane record (ranked games this patch, 20+ per pair) where one exists. The kill-window sim ranks the rest — honestly: measured against real records it calls lane winners only ~45% of the time, so treat sim-only rows as kit theory, not a prediction. Green dots = the sim's stage-by-stage read.</div>`
-        : `<div class="lp-sub" style="margin-top:.4rem">ranked by who wins the fight at each stage (kit-math sim, THEORY until calibrated) — green dots = you win · sims assume each kit's standard build and primary-role income · not head-to-head match data</div>`;
+        ? `<div class="lp-sub" style="margin-top:.4rem">ranked by the REAL head-to-head lane record (ranked games this patch, 20+ per pair) where one exists. The kill-window sim ranks the rest — honestly: measured against real records it calls lane winners only ~45% of the time, so treat sim-only rows as kit theory, not a prediction.</div>`
+        : `<div class="lp-sub" style="margin-top:.4rem">ranked by who wins the fight at each stage (kit-math sim, THEORY until calibrated) · sims assume each kit's standard build and primary-role income · not head-to-head match data</div>`;
     } else {
       body += '<div class="lp-sub">pick the enemy hero — including an off-meta flex via the dropdown — to see who answers them best</div>';
     }
