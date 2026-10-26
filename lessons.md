@@ -5317,3 +5317,15 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   time windows blurred ("before minute ten" -> "early"), hedges turned into verdicts,
   alternatives listed without what they trade away, "physical-armor" shortened to "armor".
 - 130ed284 was skipped: another session was mid-critique on it. Condense it after it publishes.
+
+## 2026-10-26 — site-wide sim switch
+
+- `ui/v6/sim-flag.js` (loaded sync in every v6 page's <head>) sets `window.SIM_ON` and
+  `html[data-sim]`; `SIM_DEFAULT = false` hides all kit-math sim output. `?sim=1` previews it
+  (remembered per browser until `?sim=0`). New sim UI must check `SIM` / `window.SIM_ON` or carry
+  `class="sim-only"`.
+- With the sim off, the counter view ranks by the real head-to-head record only; same-lane heroes
+  under 20 games sit at the bottom, unranked. The hero-page Matchups card, the Experimental build
+  tab, Sim pick badges and the Live draft counter nav link are hidden.
+- Section share pages (`climb-*`, `about-*`, `changes-*`) are generated: never edit them by hand;
+  run `node engine/scripts/share-pages.mjs`.

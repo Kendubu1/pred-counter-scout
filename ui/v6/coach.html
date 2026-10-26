@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script src="sim-flag.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Coach report · Pred Scout</title>
@@ -733,7 +734,7 @@ function pgReview(f) {
     <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap">
       <span style="font-weight:800;padding:.2rem .7rem;border-radius:8px;background:${resBg};color:${resColor}">${f.result.toUpperCase()}</span>
       <span style="color:var(--text-1);font-size:.85rem">${f.durationMin} min · ${esc(f.mode)} · ${new Date(f.startTime).toLocaleDateString()}${f.vpSwing != null ? ` · VP ${f.vpSwing >= 0 ? '+' : ''}${f.vpSwing}` : ''}${f.squad ? ` · stack ${f.squad.stackSize}` : ''}</span>
-      <span title="Combat math here is THEORY · our simulator's output on constants not yet measured in-game. Shown whenever a number rests on an unverified constant; the field win rates next to it are real." style="margin-left:auto;font-size:.6875rem;font-weight:700;color:var(--gold);border:1px solid var(--gold);border-radius:99px;padding:.1rem .5rem;cursor:help">THEORY</span>
+      <span class="sim-only" title="Combat math here is THEORY · our simulator's output on constants not yet measured in-game. Shown whenever a number rests on an unverified constant; the field win rates next to it are real." style="margin-left:auto;font-size:.6875rem;font-weight:700;color:var(--gold);border:1px solid var(--gold);border-radius:99px;padding:.1rem .5rem;cursor:help">THEORY</span>
     </div>
     ${heroline}
     ${co ? `<div style="font-size:1.05rem;font-weight:700;line-height:1.45;margin-top:.7rem">${esc(co.headline)}</div>
@@ -916,7 +917,7 @@ function pgReview(f) {
   // ── Deep dive: lanes, fight map + per-fight breakdowns, comp, kit ──
   const wrColor = (w) => w >= 52 ? 'var(--green)' : w <= 48 ? 'var(--red)' : 'var(--text-1)';
   const lanes = card(`
-    ${eyebrow('Draft &amp; lane matchups', 'pred.gg win rate vs the laner (empirical) · the sim’s fight read as a second opinion')}
+    ${eyebrow('Draft &amp; lane matchups', window.SIM_ON ? 'pred.gg win rate vs the laner (empirical) · the sim’s fight read as a second opinion' : 'pred.gg win rate vs the laner (ranked games this patch)')}
     <div style="display:flex;flex-direction:column;gap:.5rem">
       ${f.lanes.map((l) => {
         const o = ourOf(l.role), t = theirOf(l.role);
@@ -931,11 +932,11 @@ function pgReview(f) {
             ${hlink(l.ourSlug, `<img src="${himg(l.ourSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'">`)} <b>${o ? pgName(o) : ''}</b>
             <span style="color:var(--text-2)">vs</span>
             ${hlink(l.theirSlug, `<img src="${himg(l.theirSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'">`)} ${esc(l.theirHero)}
-            ${mu ? `<span style="margin-left:auto;font-weight:800;color:${wrColor(mu.winrate)}" title="pred.gg empirical, ${mu.matchesPlayed.toLocaleString()} games">${mu.winrate}%</span>` : `<span style="margin-left:auto;font-weight:700;${edgeStyle(l.edge)}">${l.edge}</span>`}
+            ${mu ? `<span style="margin-left:auto;font-weight:800;color:${wrColor(mu.winrate)}" title="pred.gg empirical, ${mu.matchesPlayed.toLocaleString()} games">${mu.winrate}%</span>` : window.SIM_ON ? `<span style="margin-left:auto;font-weight:700;${edgeStyle(l.edge)}">${l.edge}</span>` : ''}
           </div>
           <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.35rem;font-size:.76rem;color:var(--text-2)">
-            ${mu ? `<span>pred.gg ${mu.winrate}% over ${mu.matchesPlayed.toLocaleString()}${mu.firstTowerDiff != null ? ` · 1st tower ${mu.firstTowerDiff > 0 ? '+' : ''}${mu.firstTowerDiff}s` : ''}</span> <span style="opacity:.7">· sim: ${l.edge}</span>` : `${pgDots(l.verdict)} <span>sim: ${esc(l.summary)}</span>`}
-            <span style="margin-left:auto">counter: <span style="color:var(--text-1)">${counterTxt}</span></span>
+            ${mu ? `<span>pred.gg ${mu.winrate}% over ${mu.matchesPlayed.toLocaleString()}${mu.firstTowerDiff != null ? ` · 1st tower ${mu.firstTowerDiff > 0 ? '+' : ''}${mu.firstTowerDiff}s` : ''}</span>${window.SIM_ON ? ` <span style="opacity:.7">· sim: ${l.edge}</span>` : ''}` : window.SIM_ON ? `${pgDots(l.verdict)} <span>sim: ${esc(l.summary)}</span>` : '<span>not enough head-to-head games yet</span>'}
+            <span class="sim-only" style="margin-left:auto">counter: <span style="color:var(--text-1)">${counterTxt}</span></span>
           </div>
         </div>`;
       }).join('')}
@@ -1033,7 +1034,7 @@ async function fillEternals() {
       const et = fp && fp.eternal;
       const fpicks = et && fp.minors ? [fp.minors.minor1, fp.minors.minor2] : [];
       const fep = (m) => epopAttr(et.name, m, fpicks, 'field pick', "the minor pair the ranked field wins most with for this hero and role");
-      if (et) el.innerHTML = `<span class="ltag">field pick</span><b${fep()}>${esc(et.name)}</b>${fp.minors ? ` + <span${fep(fp.minors.minor1)}>${esc(fp.minors.minor1)}</span> + <span${fep(fp.minors.minor2)}>${esc(fp.minors.minor2)}</span>` : ''} <span style="color:var(--text-2)">${et.wr}% over ${et.n.toLocaleString()} ranked games</span>${ran ? (ran === et.name ? ' <span style="color:var(--green)">(same Eternal you ran)</span>' : ` <span style="color:var(--text-2)">(you ran ${esc(ran)})</span>`) : ''}${cs && typeof cs.in === 'string' && cs.out ? ` <span class="swap" title="kit-math sim · experimental, not a recommendation">· experimental sim vs ${esc(oppName)}: ${esc(cs.in)} in for ${esc(cs.out)}</span>` : ''}`;
+      if (et) el.innerHTML = `<span class="ltag">field pick</span><b${fep()}>${esc(et.name)}</b>${fp.minors ? ` + <span${fep(fp.minors.minor1)}>${esc(fp.minors.minor1)}</span> + <span${fep(fp.minors.minor2)}>${esc(fp.minors.minor2)}</span>` : ''} <span style="color:var(--text-2)">${et.wr}% over ${et.n.toLocaleString()} ranked games</span>${ran ? (ran === et.name ? ' <span style="color:var(--green)">(same Eternal you ran)</span>' : ` <span style="color:var(--text-2)">(you ran ${esc(ran)})</span>`) : ''}${window.SIM_ON && cs && typeof cs.in === 'string' && cs.out ? ` <span class="swap" title="kit-math sim · experimental, not a recommendation">· experimental sim vs ${esc(oppName)}: ${esc(cs.in)} in for ${esc(cs.out)}</span>` : ''}`;
       else el.remove();
     } catch { el.remove(); }
   }
