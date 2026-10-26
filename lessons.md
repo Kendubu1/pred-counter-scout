@@ -5353,4 +5353,7 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
 - Fix: the floor decides what can be crowned Best, not what is listed. Below-floor augments follow
   the qualified ones; crests fill to three with the most-played below-floor ones; both are tagged
   "few games". The "wins N more per 100 than X" line compares qualified augments only.
+- Follow-up: the Eternal list had the same floor, so "Other Eternals" vanished in 66 of 171 cells
+  (Kwang offlane Plat+: only Vesh cleared 30 games). Same fix: qualified Eternals lead, runner-up
+  slots fill with the most-played below-floor ones, tagged.
 - Check any new band or filter against the thinnest cell it can select, not the main lane.

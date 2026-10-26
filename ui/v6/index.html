@@ -1595,9 +1595,12 @@ function renderHero(a, roleParam) {
             const noise = usable.reduce((s, c) => s + (mean * (1 - mean)) / c.n, 0) / usable.length;
             k = Math.min(Math.max((mean * (1 - mean)) / Math.max(varObs - noise, 1e-5) - 1, 10), 500);
           }
-          return all.filter((e) => e.n >= floor)
-            .map((e) => ({ ...e, shrunk: (e.w + k * mean) / (e.n + k) }))
-            .sort((x, y) => y.shrunk - x.shrunk).slice(0, 3);
+          const shrink = (e) => ({ ...e, shrunk: (e.w + k * mean) / (e.n + k) });
+          const ok = all.filter((e) => e.n >= floor).map(shrink).sort((x, y) => y.shrunk - x.shrunk);
+          if (!ok.length) return [];
+          // Same rule as augments and crests: only qualified Eternals can lead;
+          // empty runner-up slots fill with the most-played below-floor ones.
+          return [...ok, ...all.filter((e) => e.n < floor).sort((x, y) => y.n - x.n).map(shrink)].slice(0, 3);
         })();
         return `
         ${picksBandNote}
@@ -1830,6 +1833,7 @@ function renderHero(a, roleParam) {
                 ${top && top.name.toLowerCase() === e.name.toLowerCase() ? '<span style="font-size:.6875rem;font-weight:800;color:var(--accent-ink);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">Sim pick</span>' : ''}
                 <span title="raw ${(wr * 100).toFixed(1)}% — shown shrunk toward the role's pick-weighted mean" style="font-variant-numeric:tabular-nums;font-size:.78rem;color:var(--text-1)">${(e.shrunk * 100).toFixed(1)}%</span>
                 <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
+                ${e.n < floor ? '<span style="font-size:.6875rem;color:var(--gold);white-space:nowrap">few games</span>' : ''}
               </div>
               <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.18rem 0 0 2.1rem">${etLine(e.name) ? esc(etLine(e.name)) : et ? esc(et.major) : renderWhy(e)}</div>
               ${minorsLine(e.name, '2.1rem')}
