@@ -337,9 +337,8 @@
   .bc-row img { width:34px; height:34px; border-radius:8px; object-fit:cover; background:var(--bg-3); border:1px solid var(--border); }
   .bc-top { display:flex; flex-wrap:wrap; gap:.4rem; align-items:baseline; font-size:.82rem; color:var(--text-0); }
   .bc-wr { font-size:.6875rem; font-variant-numeric:tabular-nums; }
-  .bc-wr.up { color:var(--green); } .bc-wr.down { color:var(--text-2); }
+  .bc-wr.up { color:var(--green); font-weight:700; }
   .bc-sim { font-size:.6875rem; color:var(--accent-ink); border:1px solid var(--accent); border-radius:6px; padding:0 .3rem; }
-  .bc-use { font-size:.6875rem; color:var(--text-2); margin-top:.1rem; }
   .bc-why { font-size:.74rem; color:var(--text-1); line-height:1.42; margin-top:.15rem; }
   .bc-note { font-size:.6875rem; color:var(--text-2); margin-top:.45rem; }
   .mb-opt { color:var(--blue); }
@@ -1268,19 +1267,15 @@ function beyondCore(a, shown, band, simItems) {
   }
   const reviewOf = (slug) => (ITEMREV && ITEMREV.items && ITEMREV.items[slug]) || '';
   const row = (x, kind) => {
-    const c = coreOf(x), wr = wrOf(x);
+    const wr = wrOf(x);
     const d = wr != null ? (wr - finWr) * 100 : null;
-    const bits = [];
-    if (c >= 0.01) bits.push(`in ${Math.round(c * 100)}% of ${usePlat ? 'Plat+ ' : ''}${lane} first-three builds`);
-    if (x.share >= 0.02) bits.push(`finished in ${Math.round(x.share * 100)}% of ${esc(a.name)} games${roleDominant ? '' : ' (all lanes)'}`);
     const why = [];
     if (x.tag) why.push(`<b>Buy it ${esc(x.tag)}.</b>`);
     const rev = reviewOf(x.slug);
     return `<div class="bc-row">
       <img loading="lazy" data-ipop="${esc(x.slug)}" src="../img/items/${esc(x.slug)}.webp" alt="" title="${esc(x.name)} · tap for details" onerror="this.style.visibility='hidden'">
       <div style="min-width:0">
-        <div class="bc-top"><b>${esc(x.name)}</b>${d != null && Math.abs(d) >= 1 ? `<span class="bc-wr ${d > 0 ? 'up' : 'down'}" title="win rate of ${esc(a.name)} games that finished it, against ${esc(a.name)}'s other finished items (${(finWr * 100).toFixed(1)}%)">${d > 0 ? '+' : ''}${d.toFixed(1)} win vs other items</span>` : ''}${simSet.has(x.slug) ? '<span class="bc-sim" title="the experimental kit-math sim also builds it">sim builds it too</span>' : ''}</div>
-        ${bits.length ? `<div class="bc-use">${bits.join(' · ')}</div>` : ''}
+        <div class="bc-top"><b>${esc(x.name)}</b>${d != null && d >= 1 ? `<span class="bc-wr up" title="${esc(a.name)} games that finished it win more than games that finished ${esc(a.name)}'s other items">+${d.toFixed(1)} win</span>` : ''}${simSet.has(x.slug) ? '<span class="bc-sim" title="the experimental kit-math sim also builds it">sim builds it too</span>' : ''}</div>
         ${why.length || rev ? `<div class="bc-why">${why.join(' ')}${rev ? `${why.length ? ' ' : ''}${esc(rev)}` : ''}</div>` : ''}
       </div>
     </div>`;
@@ -1292,7 +1287,7 @@ function beyondCore(a, shown, band, simItems) {
   if (!body) return '';
   return `<details class="sim-collapse beyond" open><summary>Beyond the core — more items ${esc(a.name)} players build</summary><div class="body">
     ${body}
-    <div class="bc-note">Usage: ${usePlat ? 'Plat+ (rank at match time)' : 'all ranks'} first-three builds for ${lane}; finished items from ${pool.games.toLocaleString()} sampled ${esc(a.name)} games this patch${band === 'plat+' && !usePlat ? ' (Plat+ too thin here, so all ranks)' : ''}. Items in this tab's build are left out. Tap an icon for the item.</div>
+    <div class="bc-note">From ${usePlat ? 'Plat+' : 'all-rank'} ${lane} builds and ${esc(a.name)} games this patch. <b>+ win</b> marks an item that wins more than ${esc(a.name)}'s other items. Items in this tab's build are left out. Tap an icon for the item.</div>
   </div></details>`;
 }
 

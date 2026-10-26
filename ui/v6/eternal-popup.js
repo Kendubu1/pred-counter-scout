@@ -1,9 +1,9 @@
 // Eternal detail popup, shared by the build page (index.html) and the coach
 // page (coach.html): any element with data-epop="<Eternal name>" opens the whole
-// Eternal the way Learn Eternals shows it — major, both minor slots with every
-// option, why you'd take it, and how to play against it — plus what each
-// blessing gives (eternal-usage.json mechanics), who runs it in ranked, and the
-// verified "why it's picked" lines (eternal-why.json). Optional attributes:
+// Eternal — major, both minor slots with every option and why you'd take each,
+// what each blessing gives (eternal-usage.json mechanics), the verified "why
+// it's picked" lines (eternal-why.json), and last, who runs it in ranked.
+// Every Eternal renders the same sections in the same order. Optional attributes:
 //   data-epop-minor="<minor name>"   highlight the minor that was clicked
 //   data-epop-picks="<m1>|<m2>"      the minors this hero/role/player took
 //   data-epop-label="<text>"         what those picks are ("ran this game", …)
@@ -44,8 +44,6 @@ style.textContent = `
   .epop .eminor.here { background:var(--bg-2); box-shadow:0 0 0 1px var(--accent) inset; }
   .epop .etag { font-size:.6875rem; font-weight:700; letter-spacing:0; color:var(--green); background:rgba(0,196,140,.16); border-radius:999px; padding:.05rem .4rem; margin-left:.3rem; white-space:nowrap; }
   .epop .enote { font-size:.7rem; color:var(--text-2); margin:.3rem 0 0; }
-  .epop .ecounter { font-size:.78rem; color:var(--text-2); border-top:1px dashed var(--border); padding-top:.5rem; margin-top:.7rem; }
-  .epop .ecounter b { color:var(--text-1); display:block; font-size:.6875rem; letter-spacing:0; }
   .epop .efoot { display:flex; gap:.5rem; margin-top:.9rem; }
   .epop .efoot a, .epop .efoot button { flex:1; text-align:center; background:var(--bg-2); border:1px solid var(--border); border-radius:10px; color:var(--text-1); padding:.45rem; font:inherit; font-size:.8rem; text-decoration:none; cursor:pointer; }
   [data-epop] { cursor:pointer; }
@@ -80,11 +78,12 @@ async function showEternal(name, opts = {}) {
   const e = (name && map.get(key(name))) || (opts.minor && ownerOf(map, opts.minor));
   if (!e) return;
   const picks = new Set((opts.picks || []).map(key));
-  // Same rule as Learn Eternals: the project default pair shows only once its
-  // copy review has cleared.
-  const defaults = new Set(e.copyReviewPending ? [] : ((e.recommend && e.recommend.default) || []).map(key));
-  const usePicks = picks.size ? picks : defaults;
-  const pickLabel = picks.size ? (opts.label || 'picked') : 'default';
+  // Every Eternal opens the same way: with no picks from the caller, the pair
+  // ranked players take most is marked (every Eternal has one), never a
+  // per-Eternal project default that only some have cleared review for.
+  const top = e.usage && e.usage.topPair;
+  const usePicks = picks.size ? picks : new Set(top ? [key(top.minor1), key(top.minor2)] : []);
+  const pickLabel = picks.size ? (opts.label || 'picked') : 'most picked';
   const here = key(opts.minor);
   const roles = Object.entries((e.fit && e.fit.roles) || {}).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([r]) => ROLE_LABEL[r] || r);
   const u = e.usage, copy = e.copy;
@@ -115,13 +114,12 @@ async function showEternal(name, opts = {}) {
       ${pickLine ? `<div class="epick">${esc(pickLine)}</div>` : ''}
       <span class="ek">Major blessing — always on</span>
       <div class="emajor">${esc(clean(e.major))}</div>
-      ${who}
       <span class="ek">Minor slot 1 — pick one</span>
       ${(e.minorSlot1 || []).map(row).join('')}
       <span class="ek">Minor slot 2 — pick one</span>
       ${(e.minorSlot2 || []).map(row).join('')}
-      ${usePicks.size ? `<p class="enote">${picks.size ? `“${esc(pickLabel)}” marks ${esc(opts.labelNote || 'the minors taken here')}.` : '“Default” marks this project\'s default pair for the Eternal. Open a hero for a pick tuned to that hero and role.'}</p>` : ''}
-      ${e.counterTip ? `<div class="ecounter"><b>Playing against it</b>${esc(e.counterTip)}</div>` : ''}
+      ${usePicks.size ? `<p class="enote">${picks.size ? `“${esc(pickLabel)}” marks ${esc(opts.labelNote || 'the minors taken here')}.` : '“Most picked” marks the pair ranked players take most with this Eternal. Open a hero for the pick that wins for that hero and lane.'}</p>` : ''}
+      ${who}
       <div class="efoot"><a href="../learn-eternals.html#et-${esc(e.id || slug(e.name))}">All Eternals</a><button type="button" class="eclose efoot-close">close</button></div>
     </div>`;
   const opener = document.activeElement;
