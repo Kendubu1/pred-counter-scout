@@ -149,6 +149,10 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   timestamps in every file: restore meta.json and timestamp-only files before
   committing. Don't `git stash` while it runs, and don't `pkill -f <pattern>` with
   a pattern that appears in your own command line (it kills your shell).
+- Change notes: `ui/v6/changes.html` ("What's new", in the menu) is the ongoing
+  player-facing changelog. When a user-facing change ships, add it there (newest
+  card first, plain player language, "Coming next" kept in step with
+  `priorities.md`), then `npm run ui:share` so section links preview.
 - Confidence rule: any output touching an unverified fixture constant is
   THEORY at best. The harness prints unverified constants on every run.
 - omeda.city is retired as a dependency (2026-10-14): its catalog froze on

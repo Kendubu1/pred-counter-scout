@@ -1,6 +1,6 @@
 // Link previews for section links (climb.html#when-to-swap).
 // Link-preview crawlers drop the #fragment, so every section link previews as
-// the whole page. For each data-nav section of the static guide pages this
+// the whole page. For each data-nav section of the static pages this
 // writes a tiny same-directory page (climb-when-to-swap.html) carrying that
 // section's own title/description and redirecting to climb.html#when-to-swap,
 // and lists the covered ids in the page's <meta name="section-share"> so
@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const dir = path.join(root, 'ui/v6');
 const SITE = 'https://kendubu1.github.io/pred-counter-scout/ui/v6/';
-const PAGES = ['climb.html', 'about.html'];
+const PAGES = ['climb.html', 'about.html', 'changes.html'];
 const check = process.argv.includes('--check');
 
 // same rule as section-nav.js
@@ -44,8 +44,15 @@ for (const page of PAGES) {
     if (!id) { const b = slug(text(label)); id = b; let n = 2; while (used.has(id)) id = `${b}-${n++}`; }
     used.add(id); ids.push(id);
     const h2 = body.match(/<h2>([\s\S]*?)<\/h2>/);
-    const heading = h2 ? text(h2[1].replace(/\s*<span class="tag">[^<]*<\/span>\s*$/, '')).replace(/^\d+\s*·\s*/, '') : text(label);
-    const desc = clip(text((body.match(/<p\b[^>]*>([\s\S]*?)<\/p>/) || ['', pageDesc])[1]), 200);
+    // a trailing tag (MEASURED · 1.17.2) is dropped; a change-notes date leads the title
+    const date = h2 && h2[1].match(/<span class="entry-date">([^<]*)<\/span>/);
+    const bare = h2 ? text(h2[1].replace(/\s*<span class="(?:tag|entry-date)">[^<]*<\/span>\s*$/, '')).replace(/^\d+\s*·\s*/, '') : text(label);
+    const heading = date ? `${text(date[1])}: ${bare}` : bare;
+    // the section's first paragraph, else its first bullets (change notes), minus the New/Fix badges
+    const lead = body.match(/<p\b[^>]*>([\s\S]*?)<\/p>/)?.[1]
+      ?? [...body.matchAll(/<li>([\s\S]*?)<\/li>/g)].slice(0, 3).map((li) => text(li[1].replace(/<span class="k [^"]*">[^<]*<\/span>/g, ''))).join(' · ')
+      ?? '';
+    const desc = clip(text(lead || pageDesc), 200);
     const title = `${heading} · ${site} · Pred Scout`;
     const stub = `${base}-${id}.html`;
     const target = `${page}#${id}`;

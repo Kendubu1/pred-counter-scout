@@ -6,18 +6,19 @@
   const LINKS = [
     { href: './',                    label: 'Pick & Build',           icon: 'counter-pick',     match: ['', 'index.html'] },
     { href: 'coach.html',            label: 'Coach',                  icon: 'scout',            match: ['coach.html'] },
-    { href: 'climb.html',            label: 'The Climb — ranked guide', icon: 'power-spike', tag: 'new', match: ['climb.html'] },
-    { href: 'bans.html',             label: 'Most banned — by rank',  icon: 'meta-guide', tag: 'new', match: ['bans.html'] },
-    { sep: true },
-    { href: '../patch-1.17.2.html',  label: 'Patch 1.17.2 review',    icon: 'patch-strategy', tag: 'new', match: ['patch-1.17.2.html'] },
-    { href: '../patch-1.17.html',    label: 'Patch 1.17 review',      icon: 'patch-strategy', match: ['patch-1.17.html'] },
-    { href: '../patch-1.16.4.html',  label: 'Patch 1.16.4 review',    icon: 'patch-strategy', match: ['patch-1.16.4.html'] },
+    { group: 'Meta & guides' },
+    { href: 'climb.html',            label: 'The Climb — ranked guide', icon: 'power-spike',    match: ['climb.html'] },
+    { href: 'bans.html',             label: 'Most banned',            icon: 'meta-guide',       match: ['bans.html'] },
     { href: '../learn-eternals.html',label: 'Learn Eternals',         icon: 'eternal-augment',  match: ['learn-eternals.html'] },
-    { href: 'about.html',            label: 'About & how this works', icon: 'tap-to-learn',     match: ['about.html'] },
+    // only the current review; older ones are listed at the bottom of What's new
+    { href: '../patch-1.17.2.html',  label: 'Patch 1.17.2 review',    icon: 'patch-strategy',   match: ['patch-1.17.2.html'] },
     // Tools still being proven: grouped so nobody mistakes them for finished pages.
     { group: 'Experimental' },
     { href: 'squad.html',            label: '5-stack picker',         icon: 'team-comp',        match: ['squad.html'] },
     { href: 'livedraft.html',        label: 'Live draft counter',     icon: 'weakness-counter', match: ['livedraft.html'] },
+    { sep: true },
+    { href: 'changes.html',          label: "What's new",             icon: 'role-path', tag: 'new', match: ['changes.html'] },
+    { href: 'about.html',            label: 'About & how this works', icon: 'tap-to-learn',     match: ['about.html'] },
   ];
   const bic = (name) => (window.BrandIcons ? window.BrandIcons.svg(name, 18) : '');
 

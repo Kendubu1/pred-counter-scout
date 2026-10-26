@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What's new — Pred Scout</title>
+<meta name="description" content="What changed on Pred Scout and what's coming next: hero pages, builds, the meta board, guides and coaching, newest first.">
+<!-- share:begin (engine/scripts/share-pages.mjs) -->
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Pred Scout">
+<meta property="og:title" content="What's new — Pred Scout">
+<meta property="og:description" content="What changed on Pred Scout and what's coming next: hero pages, builds, the meta board, guides and coaching, newest first.">
+<meta property="og:url" content="https://kendubu1.github.io/pred-counter-scout/ui/v6/changes.html">
+<meta name="section-share" content="coming oct-26 oct-25 oct-24 past-patches">
+<!-- share:end -->
+<style>
+  :root {
+    --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#8e8ea6;
+    --accent:#6c5ce7; --accent-ink:#9a8ef2; --accent-soft:rgba(108,92,231,.14);
+    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px; --maxw:980px;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; font-variant-numeric:tabular-nums; }
+  a { color:var(--blue); text-decoration:none; }
+  img { display:block; }
+  button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
+  .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:rgba(10,10,15,.78); border-bottom:1px solid var(--border); }
+  .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
+  .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .spacer { flex:1; }
+  .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
+  .navlink.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
+  .navlink:hover { color:var(--text-0); }
+  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .subnav::-webkit-scrollbar { display:none; }
+  .subnav:empty { display:none; }
+  .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; text-transform:capitalize; -webkit-appearance:none; appearance:none; }
+  .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
+  .card { scroll-margin-top:calc(var(--toph, 96px) + 10px); }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:1.25rem 1rem 4rem; }
+  .lede { font-size:1rem; color:var(--text-1); line-height:1.65; max-width:64ch; }
+  h1 { font-size:1.7rem; font-weight:800; }
+  .kicker { font-size:.8rem; font-weight:600; letter-spacing:0; color:var(--text-1); margin-bottom:.3rem; }
+  .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; }
+  .card h2 { font-size:1rem; font-weight:600; letter-spacing:0; color:var(--text-0); margin-bottom:.6rem; }
+  .card h3 { font-size:.9rem; color:var(--text-0); margin:.9rem 0 .25rem; }
+  .card p { color:var(--text-1); line-height:1.65; }
+  .card ul { margin:.5rem 0 0 1.15rem; padding:0; }
+  .card li { color:var(--text-1); line-height:1.6; margin:.4rem 0; }
+  .card p + p { margin-top:.6rem; }
+  .card b { color:var(--text-0); }
+  .maxim { border-left:3px solid var(--accent); background:var(--accent-soft); border-radius:0 8px 8px 0; padding:.6rem .85rem; margin:.7rem 0 0; color:var(--text-0); font-size:.92rem; line-height:1.55; }
+  .maxim i { color:var(--text-2); font-size:.78rem; font-style:normal; display:block; margin-top:.25rem; }
+  .tag { display:inline-block; font-size:.6875rem; font-weight:800; letter-spacing:.06em; color:var(--blue); border:1px solid var(--blue); border-radius:6px; padding:.04rem .35rem; vertical-align:middle; }
+  .tag.gold { color:var(--gold); border-color:var(--gold); }
+  table.clock { width:100%; border-collapse:collapse; margin-top:.6rem; font-size:.86rem; }
+  table.clock th { text-align:left; color:var(--text-2); font-size:.6875rem; letter-spacing:0; padding:.35rem .5rem; border-bottom:1px solid var(--border); }
+  table.clock td { padding:.42rem .5rem; border-bottom:1px solid var(--border); color:var(--text-1); vertical-align:top; }
+  table.clock td:first-child { color:var(--text-0); font-weight:700; white-space:nowrap; }
+  .tblwrap { overflow-x:auto; }
+  details.disc { margin-top:.6rem; border-top:1px solid var(--border); padding-top:.2rem; }
+  details.disc > summary { cursor:pointer; color:var(--blue); font-size:.86rem; padding:.35rem 0; list-style:none; }
+  details.disc > summary::-webkit-details-marker { display:none; }
+  details.disc > summary::before { content:"▸ "; color:var(--text-2); }
+  details.disc[open] > summary { color:var(--text-2); }
+  details.disc[open] > summary::before { content:"▾ "; }
+  footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
+  @media (max-width:600px) {
+    body { font-size:14px; }
+    .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle {
+      min-height:44px; display:inline-flex; align-items:center; justify-content:center;
+    }
+    .snpill { font-size:.8rem; }
+    .navlink { border-radius:10px; }
+    .top-inner { padding:.5rem .7rem; gap:.3rem; }
+    .wordmark { font-size:.82rem; white-space:nowrap; }
+    .top-inner a { font-size:.72rem; white-space:nowrap; }
+    .wrap { padding:.9rem 1rem 3rem; }
+    h1 { font-size:1.35rem; }
+    .card { padding:.8rem .8rem; }
+  }
+  .entry-date { font-size:.74rem; color:var(--text-2); font-weight:600; margin-left:.4rem; }
+  .card h3:first-of-type { margin-top:.4rem; }
+  .k { display:inline-block; font-size:.6875rem; font-weight:700; border-radius:99px; padding:.02rem .42rem; margin-right:.35rem; vertical-align:1px; }
+  .k.new { background:var(--accent); color:#fff; }
+  .k.better { border:1px solid var(--green); color:var(--green); }
+  .k.fix { border:1px solid var(--gold); color:var(--gold); }
+  .k.soon { border:1px solid var(--blue); color:var(--blue); }
+  .when { color:var(--text-2); font-size:.82rem; }
+
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <a class="wordmark" href="./"><img src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</a>
+  <span class="spacer"></span>
+  <a class="navlink" href="./">Pick &amp; Build</a>
+  <a class="navlink" href="coach.html">Coach</a>
+</div><div class="subnav" id="subnav"></div></div>
+
+<!-- Ongoing change notes. Add each release as a new card directly under
+     "Coming next" (newest first), with an explicit id (#oct-27) and a short
+     data-nav label, then run `npm run ui:share` so its link previews.
+     Write for players: what changed on the page, not how it was built. -->
+<div class="wrap">
+  <div class="kicker">Change notes</div>
+  <h1>What's new</h1>
+  <p class="lede">What changed on Pred Scout and what's coming next, newest first. Short version for
+  players and the 5-stack. The page grows with every update.</p>
+
+  <section class="card" id="coming" data-nav="Coming next">
+    <h2>Coming next</h2>
+    <ul>
+      <li><span class="k soon">Soon</span><b>Patch-only meta board.</b> Today's board pools all of 1.17
+      (1.17.2 included). From the next data refresh each patch keeps its own numbers, and the board
+      gets a patch filter once there's more than one to pick.</li>
+      <li><span class="k soon">Soon</span><b>Item swap numbers that refresh daily.</b> The Climb's
+      "when the counter swap lands" figures come from one snapshot (Oct 22–24). They'll move into
+      the daily data run so they stay current, and get rechecked on the next patch.</li>
+      <li><span class="k soon">Soon</span><b>Augment playstyle tips.</b> The hero page's "How to play"
+      dropdown will change with your augment: which abilities to lean on and how the combo shifts.</li>
+      <li><span class="k soon">~1 week</span><b>Rising picks, confirmed or dropped.</b> Argus, Revenant
+      and Drongo offlane and Twinblast mid look like they're climbing. We wait for a week of new
+      games before calling them rising.</li>
+      <li><span class="k soon">1–2 weeks</span><b>"What enemies build against you" and "your counter
+      swap"</b> on hero pages, once enough daily games are in to tell real shifts from luck.</li>
+      <li><span class="k soon">Later</span><b>"Does it win?" on counter items.</b> Right now we can show
+      what high-rank players buy, not whether it wins more. That needs a few more weeks of games.</li>
+    </ul>
+  </section>
+
+  <section class="card" id="oct-26" data-nav="Oct 26">
+    <h2>Cleaner header, shareable sections<span class="entry-date">Oct 26</span></h2>
+    <ul>
+      <li><span class="k better">Better</span><b>Patch notice is a slim bar</b> at the top of the
+      homepage instead of a block in the middle. The "kit · boards" pill is gone; hover the bar to see
+      which patch the numbers come from.</li>
+      <li><span class="k better">Better</span><b>Menu regrouped:</b> Meta &amp; guides,
+      Experimental, then What's new and About. Older patch reviews moved here (bottom of this page).</li>
+      <li><span class="k better">Better</span><b>Item swaps on The Climb</b> is a proper two-column table,
+      phones included.</li>
+      <li><span class="k new">New</span><b>Section links preview the section.</b> Copy the address
+      while reading a section of The Climb, About or this page and paste it in Discord or iMessage:
+      the preview shows that section, not just the page title.</li>
+      <li><span class="k new">New</span><b>This page.</b></li>
+    </ul>
+  </section>
+
+  <section class="card" id="oct-25" data-nav="Oct 25">
+    <h2>Plat+ builds, Eternal popups, Most banned<span class="entry-date">Oct 25</span></h2>
+    <h3>Hero pages</h3>
+    <ul>
+      <li><span class="k new">New</span><b>All ranks / Plat+ switch</b> in the hero header. It changes
+      the whole page together: augment, Eternal, minors, crest and builds. Matchups stay all ranks.
+      Your choice is remembered.</li>
+      <li><span class="k better">Better</span><b>Builds open on the best-winning build</b> with 100+
+      games, and every tab shows its win rate. Recommendations everywhere follow what's actually
+      winning in ranked; the simulator's kit math is labeled experimental.</li>
+      <li><span class="k new">New</span><b>Leveling chart</b> on the Game plan tab: all 18 levels at
+      a glance, readable mid-game.</li>
+      <li><span class="k new">New</span><b>"How to play" dropdown</b> under the chart: the lane plan,
+      what to watch out for, and a tip per ability.</li>
+      <li><span class="k new">New</span><b>Tap any Eternal or minor</b> for the whole Eternal: what it
+      gives, why players pick it, who runs it and how often each minor is taken. Learn Eternals shows
+      the same. Eternal lines on hero pages now say what it does for <i>that</i> hero.</li>
+      <li><span class="k new">New</span><b>Valmont carry</b> gets its own page. It's the one off-lane
+      pick winning clearly (56.5% over 796 ranked games).</li>
+      <li><span class="k better">Better</span>Hero portraits open that hero's page everywhere. A lighter
+      header, tabs that read as tabs, and larger text on phones.</li>
+      <li><span class="k fix">Fix</span>Asking for a lane a hero has no full build for no longer mixes
+      two lanes' data. The page shows the nearest lane and says so.</li>
+    </ul>
+    <h3>Meta board &amp; bans</h3>
+    <ul>
+      <li><span class="k new">New</span><b><a href="bans.html">Most banned</a></b>: top bans overall and
+      per lane, by rank. The homepage shows the top 5.</li>
+      <li><span class="k new">New</span><b>5-stack ban list</b> on the same page: the heroes that beat
+      us most, each one's nemesis on our team, and who stomps us.</li>
+      <li><span class="k better">Better</span><b>"Show off-meta picks"</b> replaces the games-floor
+      button. Rarely played picks are hidden by default so lane staples lead the board.</li>
+      <li><span class="k better">Better</span>The board shows when match data was last refreshed and
+      explains its two numbers. New lane icons.</li>
+      <li><span class="k fix">Fix</span>The false "no 1.17.2 data" note: the board covers 1.17
+      including 1.17.2.</li>
+    </ul>
+    <h3>Guides</h3>
+    <ul>
+      <li><span class="k new">New</span><b><a href="climb.html#when-to-swap">Item swaps on The Climb</a></b>:
+      when Plat+ players actually buy counter items, from 8,331 ranked games. Short version: item 1
+      for your lane, item 2 for their biggest threat, item 3 back to your build.</li>
+      <li><span class="k better">Better</span>Every page gets a sticky section menu, and section links
+      open right at that section.</li>
+    </ul>
+    <h3>Coach &amp; 5-stack</h3>
+    <ul>
+      <li><span class="k new">New</span>Postgame coaching for two more of our games, each checked by an
+      independent reviewer before publishing.</li>
+      <li><span class="k new">New</span><b>Standout builds</b>: games where someone outplayed what that
+      hero usually does in that lane, and why. Every trend is checked against public 1.17.2 win
+      rates.</li>
+      <li><span class="k better">Better</span>Squad planner is now <b>5-stack picker</b>, in the menu's
+      Experimental group with Live draft counter.</li>
+    </ul>
+  </section>
+
+  <section class="card" id="oct-24" data-nav="Oct 24">
+    <h2>Coaching and fresh data<span class="entry-date">Oct 24</span></h2>
+    <ul>
+      <li><span class="k new">New</span>Postgame coaching for three of our games.</li>
+      <li><span class="k better">Better</span>Daily data refresh: hero pages rebuilt from ranked games
+      through Oct 24.</li>
+    </ul>
+  </section>
+
+  <section class="card" id="past-patches" data-nav="Patch reviews">
+    <h2>Past patch reviews</h2>
+    <ul>
+      <li><a href="../patch-1.17.2.html">Patch 1.17.2</a> (current)</li>
+      <li><a href="../patch-1.17.html">Patch 1.17</a></li>
+      <li><a href="../patch-1.16.4.html">Patch 1.16.4</a></li>
+      <li><a href="../patch-1.16.html">Patch 1.16</a></li>
+      <li><a href="../patch-1.15.3.html">Patch 1.15.3</a></li>
+      <li><a href="../patch-1.15.html">Patch 1.15</a></li>
+    </ul>
+  </section>
+
+  <footer>Game data via pred.gg · not affiliated with Omeda Studios.</footer>
+</div>
+<script src="section-nav.js"></script>
+<script>
+SectionNav.build(document.getElementById('subnav'),
+  [...document.querySelectorAll('.wrap .card[data-nav]')].map((c) => ({ el: c, label: c.dataset.nav })));
+</script>
+<script defer src="icons.js"></script>
+<script defer src="hero-links.js"></script>
+<script defer src="nav.js"></script>
+</body>
+</html>
