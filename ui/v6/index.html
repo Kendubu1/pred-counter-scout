@@ -37,7 +37,6 @@
   .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; text-transform:capitalize; }
   .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
   section.card, .lanepanel, .metaboard { scroll-margin-top:calc(var(--toph, 96px) + 10px); }
-  .patch-pill { font-size:.74rem; color:var(--text-1); border:1px solid var(--border); border-radius:99px; padding:.15rem .6rem; }
   /* new-hero state: kit math present, field evidence declared absent */
   .pending-note { border:1px solid var(--gold); background:var(--bg-2); border-radius:10px;
     padding:.7rem .85rem; margin:.2rem 0 .9rem; font-size:.78rem; line-height:1.5; color:var(--text-1); }
@@ -90,7 +89,6 @@
   .lane-more { display:block; width:100%; margin-top:.5rem; background:none; border:none; border-top:1px dashed var(--border); padding:.45rem 0 .1rem; color:var(--accent-ink); font:inherit; font-size:.72rem; font-weight:700; text-align:left; cursor:pointer; }
   .lane-more:hover { color:var(--text-0); }
   /* ── end-of-selection cards: live draft + patch review, side by side ── */
-  a.patch-pill:hover { color:var(--text-0); border-color:var(--accent); }
   .endcards { display:grid; grid-template-columns:1fr; gap:.7rem; margin-top:1.6rem; }
   .endcard { display:flex; gap:.75rem; align-items:flex-start; background:var(--bg-1); border:1px solid var(--border); border-radius:14px; padding:.95rem 1rem; text-decoration:none; color:inherit; transition:border-color .15s, background .15s; }
   .endcard:hover { border-color:var(--accent); background:var(--bg-2); }
@@ -498,7 +496,6 @@
     .wordmark { font-size:.86rem; white-space:nowrap; }
     .top-inner { padding:.5rem .7rem; gap:.55rem; }
     .top-inner a { font-size:.72rem; white-space:nowrap; }
-    .patch-pill { display:none; }
     .murow { grid-template-columns:32px 1fr; gap:.3rem .6rem; }
     .murow img { grid-row:1; width:32px; height:32px; }
     .murow .head { gap:.5rem; }
@@ -517,11 +514,10 @@
 </head>
 <body>
 <div class="top">
-  <a class="patchbar" href="../patch-1.17.2.html"><b>Patch 1.17.2</b> is live<span class="pb-cta">Read the review →</span></a>
+  <a class="patchbar" id="patchBar" href="../patch-1.17.2.html"><b>Patch 1.17.2</b> is live<span class="pb-cta">Read the review →</span></a>
   <div class="top-inner">
     <a class="wordmark" href="./"><img src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</a>
     <span class="spacer"></span>
-    <a class="patch-pill" id="patchPill" href="../patch-1.17.2.html" title="Read the patch 1.17.2 review">patch —</a>
     <a class="navlink active" href="./">Pick &amp; Build</a>
     <a class="navlink" href="coach.html">Coach</a>
   </div>
@@ -2147,8 +2143,8 @@ window.onpopstate = route;
   // source pins the patch it pulled); INDEX.patch is the calibration window and
   // lags whenever the boards move to a fresher source.
   const kitP = INDEX.catalogPatch, boardP = (META && META.patch) || INDEX.patch;
-  $('#patchPill').textContent = `kit ${kitP || 'unknown'} · boards ${boardP || 'unknown'}`;
-  $('#patchPill').title = `Hero and item catalog: ${kitP || 'unknown'}. Lane-board evidence: ${boardP || 'unknown'}. ${dataDate ? `Simulator rebuilt ${dataDate}; this is not a live match-data refresh.` : ''} Combat results remain THEORY pending gameplay calibration.`;
+  // the patch bar's tooltip carries both labels (the old kit/boards pill is gone)
+  $('#patchBar').title = `Read the patch review. Hero and item catalog: ${kitP || 'unknown'}. Lane-board evidence: ${boardP || 'unknown'}. ${dataDate ? `Simulator rebuilt ${dataDate}; this is not a live match-data refresh.` : ''} Combat results remain THEORY pending gameplay calibration.`;
   const allSum = document.querySelector('#allHeroes > summary .t');
   if (allSum) allSum.textContent = `Browse all ${INDEX.heroes.length} heroes`;
   await getMatrix();

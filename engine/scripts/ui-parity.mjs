@@ -39,7 +39,7 @@ try {
   await page.waitForURL('**/ui/v6/');
   await page.waitForFunction(() => document.querySelector('#allHeroes summary')?.textContent.includes('55'));
   checks.push('Root redirects to v6; all 55 heroes available');
-  assert.match(await page.locator('#patchPill').getAttribute('title'), /not a live match-data refresh/);
+  assert.match(await page.locator('#patchBar').getAttribute('title'), /not a live match-data refresh/);
   await page.goto(`${origin}/ui/v2/index.html`);
   await page.waitForURL('**/ui/v6/');
   checks.push('Legacy v2 entry redirects to v6');

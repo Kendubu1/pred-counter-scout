@@ -66,7 +66,7 @@
   /* On phones the burger drawer IS the nav, so the inline top-bar tabs + the
      patch pill are redundant and squeeze the wordmark down to "Pred". Hide both
      so the full "Pred Scout" lockup fits (the compact search pill stays). */
-  @media (max-width:720px) { .top .navlink, .top .patch-pill { display:none; } .gs-pill .gs-txt, .gs-pill .gs-kbd { display:none; } .gs-pill { padding:.34rem .55rem; } }
+  @media (max-width:720px) { .top .navlink { display:none; } .gs-pill .gs-txt, .gs-pill .gs-kbd { display:none; } .gs-pill { padding:.34rem .55rem; } }
   .gs-overlay { position:fixed; inset:0; background:rgba(4,4,8,.72); z-index:10000; display:none;
     align-items:flex-start; justify-content:center; padding:10vh 1rem 1rem; }
   .gs-overlay.open { display:flex; }
@@ -177,7 +177,7 @@
     pill.title = 'Search a hero — build or how to beat them (press /)';
     pill.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span class="gs-txt">Search heroes</span><span class="gs-kbd">/</span>';
     pill.onclick = () => search.open();
-    const firstLink = topInner.querySelector('.navlink, .patch-pill');
+    const firstLink = topInner.querySelector('.navlink');
     topInner.insertBefore(pill, firstLink || null);
 
     const overlay = document.createElement('div');
