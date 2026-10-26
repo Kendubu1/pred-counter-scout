@@ -325,6 +325,23 @@
   .mb-wr.up { color:var(--green); } .mb-wr.down { color:var(--red); } .mb-wr.flat { color:var(--text-1); }
   .mb-n { color:var(--text-2); font-size:.74rem; font-variant-numeric:tabular-nums; }
   .mb-why { font-size:.76rem; color:var(--text-1); margin-top:.3rem; }
+  .bandchip { font-size:.6875rem; font-weight:700; color:var(--gold); border:1px solid var(--gold); border-radius:999px; padding:.05rem .45rem; margin-left:.4rem; vertical-align:middle; white-space:nowrap; }
+  .bandchip.fallback { color:var(--text-2); border-color:var(--border); border-style:dashed; }
+  details.beyond { margin-top:.6rem; }
+  details.beyond > summary { font-size:.78rem; color:var(--text-1); }
+  .bc-group { margin-top:.35rem; }
+  .bc-h { font-size:.6875rem; font-weight:700; color:var(--text-1); margin:.4rem 0 .15rem; }
+  .bc-h span { font-weight:400; color:var(--text-2); }
+  .bc-why b { color:var(--gold); font-weight:600; }
+  .bc-row { display:grid; grid-template-columns:34px 1fr; gap:.55rem; align-items:start; padding:.35rem 0; border-top:1px dashed var(--border); }
+  .bc-row img { width:34px; height:34px; border-radius:8px; object-fit:cover; background:var(--bg-3); border:1px solid var(--border); }
+  .bc-top { display:flex; flex-wrap:wrap; gap:.4rem; align-items:baseline; font-size:.82rem; color:var(--text-0); }
+  .bc-wr { font-size:.6875rem; font-variant-numeric:tabular-nums; }
+  .bc-wr.up { color:var(--green); } .bc-wr.down { color:var(--text-2); }
+  .bc-sim { font-size:.6875rem; color:var(--accent-ink); border:1px solid var(--accent); border-radius:6px; padding:0 .3rem; }
+  .bc-use { font-size:.6875rem; color:var(--text-2); margin-top:.1rem; }
+  .bc-why { font-size:.74rem; color:var(--text-1); line-height:1.42; margin-top:.15rem; }
+  .bc-note { font-size:.6875rem; color:var(--text-2); margin-top:.45rem; }
   .mb-opt { color:var(--blue); }
   /* Per-item "why this item, in this order" list (build reasoning). */
   .mb-items-why { margin-top:.35rem; display:flex; flex-direction:column; gap:.2rem; }
@@ -558,6 +575,7 @@
 <script src="game-text.js"></script>
 <script defer src="item-popup.js"></script>
 <script defer src="eternal-popup.js"></script>
+<script defer src="augment-popup.js"></script>
 <script>
 // Lane mark placeholder; icons.js fills it (also after async renders).
 const laneIcon = (r) => `<span class="lane-ic" data-bic="lane-${r}" aria-hidden="true"></span>`;
@@ -1207,6 +1225,77 @@ const BAND_LABELS = { all: 'All ranks', 'plat+': 'Plat+' };
 const BAND_KEY = 'pred-scout:build-band';
 function savedBand() { try { return localStorage.getItem(BAND_KEY); } catch { return null; } }
 function saveBand(b) { try { localStorage.setItem(BAND_KEY, b); } catch { /* private window: not remembered */ } }
+// When Plat+ (rank at match time) counting began; builds and picks before it are all ranks only.
+const PLAT_SINCE = 'Oct 25';
+
+// ── BEYOND THE CORE ── what else this hero commonly builds once the three items
+// of the open build tab are done, read from item-pool.json (npm run itempool).
+// Dynamic per tab: the tab's own three items are dropped, so nothing repeats.
+// Three groups, each item with its usage for THIS hero and lane and a reason:
+//   swaps        — often in this lane's first three items instead of one of these
+//   finishers    — commonly finished later, rarely rushed
+//   situational  — answers a specific enemy threat (catalog aggression type)
+// Win rates compare an item with this hero's OTHER finished items, never with the
+// hero's average: a team that is ahead finishes more items, so every finished
+// item would look like a winner against the average.
+function beyondCore(a, shown, band, simItems) {
+  const pool = ITEMPOOL && ITEMPOOL.heroes && ITEMPOOL.heroes[a.slug];
+  if (!pool || !pool.items || !pool.items.length) return '';
+  const role = a.role;
+  const shownSet = new Set(shown.map((it) => it.slug).filter(Boolean));
+  const usePlat = band === 'plat+' && (pool.coreGamesPlat[role] || 0) >= 30;
+  const coreOf = (x) => ((usePlat ? x.corePlat : x.core) || {})[role] || 0;
+  const roleDominant = (pool.roleShare[role] || 0) >= 0.75;
+  // A flex hero's finished items are hero-wide, so an item only counts for this
+  // lane if this lane actually builds it early too.
+  const fits = (x) => coreOf(x) >= 0.03 || (roleDominant && x.share >= 0.06);
+  const cand = pool.items.filter((x) => !shownSet.has(x.slug) && fits(x));
+  if (!cand.length) return '';
+  const fin = pool.items.filter((x) => x.n >= 30);
+  const finN = fin.reduce((t, x) => t + x.n, 0), finW = fin.reduce((t, x) => t + x.w, 0);
+  const finWr = finN ? finW / finN : null;
+  const K = 40;
+  // 300+ inventories before a win delta shows: items that upgrade or get sold
+  // (Orb of Growth) sit in losing inventories, and a small count exaggerates that.
+  const wrOf = (x) => (finWr == null || x.n < 300 ? null : (x.w + K * finWr) / (x.n + K));
+  const simSet = new Set((simItems || []).map((i) => i.slug));
+  const lane = esc(role);
+  const swaps = [], finishers = [], situational = [];
+  for (const x of cand) {
+    if (x.tag && coreOf(x) < 0.25) situational.push(x);
+    else if (coreOf(x) >= 0.1) swaps.push(x);
+    else finishers.push(x);
+  }
+  const reviewOf = (slug) => (ITEMREV && ITEMREV.items && ITEMREV.items[slug]) || '';
+  const row = (x, kind) => {
+    const c = coreOf(x), wr = wrOf(x);
+    const d = wr != null ? (wr - finWr) * 100 : null;
+    const bits = [];
+    if (c >= 0.01) bits.push(`in ${Math.round(c * 100)}% of ${usePlat ? 'Plat+ ' : ''}${lane} first-three builds`);
+    if (x.share >= 0.02) bits.push(`finished in ${Math.round(x.share * 100)}% of ${esc(a.name)} games${roleDominant ? '' : ' (all lanes)'}`);
+    const why = [];
+    if (x.tag) why.push(`<b>Buy it ${esc(x.tag)}.</b>`);
+    const rev = reviewOf(x.slug);
+    return `<div class="bc-row">
+      <img loading="lazy" data-ipop="${esc(x.slug)}" src="../img/items/${esc(x.slug)}.webp" alt="" title="${esc(x.name)} · tap for details" onerror="this.style.visibility='hidden'">
+      <div style="min-width:0">
+        <div class="bc-top"><b>${esc(x.name)}</b>${d != null && Math.abs(d) >= 1 ? `<span class="bc-wr ${d > 0 ? 'up' : 'down'}" title="win rate of ${esc(a.name)} games that finished it, against ${esc(a.name)}'s other finished items (${(finWr * 100).toFixed(1)}%)">${d > 0 ? '+' : ''}${d.toFixed(1)} win vs other items</span>` : ''}${simSet.has(x.slug) ? '<span class="bc-sim" title="the experimental kit-math sim also builds it">sim builds it too</span>' : ''}</div>
+        ${bits.length ? `<div class="bc-use">${bits.join(' · ')}</div>` : ''}
+        ${why.length || rev ? `<div class="bc-why">${why.join(' ')}${rev ? `${why.length ? ' ' : ''}${esc(rev)}` : ''}</div>` : ''}
+      </div>
+    </div>`;
+  };
+  const group = (title, sub, list, kind) => list.length ? `<div class="bc-group"><div class="bc-h">${title} <span>${sub}</span></div>${list.slice(0, 3).map((x) => row(x, kind)).join('')}</div>` : '';
+  const body = group('Swap into the core', '— players rush these in place of one of the three above', swaps, 'swap')
+    + group('Finish the build with', '— usually bought after the core, as items 4–6', finishers, 'finish')
+    + group('Situational', '— answers to a specific enemy threat', situational, 'sit');
+  if (!body) return '';
+  return `<details class="sim-collapse beyond" open><summary>Beyond the core — more items ${esc(a.name)} players build</summary><div class="body">
+    ${body}
+    <div class="bc-note">Usage: ${usePlat ? 'Plat+ (rank at match time)' : 'all ranks'} first-three builds for ${lane}; finished items from ${pool.games.toLocaleString()} sampled ${esc(a.name)} games this patch${band === 'plat+' && !usePlat ? ' (Plat+ too thin here, so all ranks)' : ''}. Items in this tab's build are left out. Tap an icon for the item.</div>
+  </div></details>`;
+}
+
 function buildsCard(a, pageBand) {
   // Only this lane's own bands: a lane with no builds must not show the hero-level ones.
   const byBand = a.metaBuilds && a.metaBuilds.length && a.metaBuildsByBand ? a.metaBuildsByBand : null;
@@ -1238,7 +1327,7 @@ function buildsCard(a, pageBand) {
   const baseWr = base ? base.w / base.n : null;
   const topN = Math.max(0, ...metas.map((e) => e.m.n || 0));
   const missingNote = missing && metas.length
-    ? `<div class="mb-why" style="color:var(--gold);margin:0 0 .5rem">No ${BAND_LABELS[pageBand]} builds for ${esc(a.name)} ${esc(a.role)} yet — showing all ranks.</div>` : '';
+    ? `<div class="mb-why" style="color:var(--gold);margin:0 0 .5rem">No ${BAND_LABELS[pageBand]} builds for ${esc(a.name)} ${esc(a.role)} yet, so these are <b>all-rank</b> builds. Plat+ counting started ${PLAT_SINCE}; a build shows under Plat+ once one three-item set has 20 Plat+ games. Opening picks fill in sooner because they need only 20 Plat+ games for the whole lane.</div>` : '';
   const bandNote = metas.length && (ranked || base)
     ? `<div class="mb-why" style="color:var(--text-2);margin:0 0 .5rem">${ranked ? `<b style="color:var(--gold)">${BAND_LABELS[band]} games</b> (rank in that game)` : 'All ranks'}${base ? ` · ${esc(a.name)} wins ${(baseWr * 100).toFixed(1)}% as ${esc(a.role)} here (${base.n.toLocaleString()} games)` : ''}${ranked && topN < MIN_LEAD_GAMES ? `<br><span style="color:var(--gold)">Thin sample: the top build has ${topN} games, so these win rates stay close to ${esc(a.name)}'s ${BAND_LABELS[band]} average until more games come in.</span>` : ''}</div>` : '';
 
@@ -1270,6 +1359,7 @@ function buildsCard(a, pageBand) {
           <span class="mb-n">${m.n.toLocaleString()} games${m.shareOfCores ? ` · ${Math.round(m.shareOfCores * 100)}% of tracked builds` : ''}${m.anyOrder ? ' · item set, purchase orders pooled' : m.otherOrderGames ? ` · ${m.otherOrderGames.toLocaleString()} bought these in another order` : ''}</span>
         </div>
         ${explain}
+        ${beyondCore(a, m.items, band, items)}
         <details class="sim-collapse"><summary>The sim math</summary><div class="body">${simLine}</div></details>
       </div>`;
   };
@@ -1317,7 +1407,7 @@ function buildsCard(a, pageBand) {
   return `
     <section class="card answer" id="builds-card">
       <div class="bhead">
-        <h2>Builds</h2>
+        <h2>Builds <span class="bandchip${missing ? ' fallback' : ''}" title="${missing ? `No ${BAND_LABELS[pageBand]} builds yet for this lane` : 'Rank filter applied'}">${BAND_LABELS[band]}${missing ? ' · Plat+ not ready' : ''}</span></h2>
         ${metas.length ? `<div class="bnav">
           <span class="bcount" aria-live="polite">1 of ${metas.length + 1}</span>
           <button class="bstep" data-bstep="-1" aria-label="Previous build" disabled>‹</button>
@@ -1516,7 +1606,7 @@ function renderHero(a, roleParam) {
             ? `${esc(ai)}`
             : (adv !== null && adv >= 0.3 && ranked[1] ? `as ${esc(role)} it wins about ${adv.toFixed(1)} more games per 100 than ${esc(ranked[1].name)} — the field has voted` : esc(GameText.plain(AUGS.catalog[best.id]?.description)));
           return `
-          <div style="display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .65rem;background:var(--bg-2);border:1px solid var(--green);border-radius:10px;box-shadow:0 0 0 2px rgba(0,196,140,.12)">
+          <div data-apop="${esc(best.id)}" data-apop-role="${esc(role)}" data-apop-band="${platCell ? 'plat+' : 'all'}" title="${esc(best.name)} — tap for the full augment" style="display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .65rem;background:var(--bg-2);border:1px solid var(--green);border-radius:10px;box-shadow:0 0 0 2px rgba(0,196,140,.12)">
             <img src="../img/augments/${esc(best.id)}.webp" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:contain;background:var(--bg-3);flex:none;padding:2px;box-shadow:0 0 0 2px var(--green)" onerror="this.style.visibility='hidden'">
             <div style="min-width:0;flex:1">
               <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
@@ -1542,7 +1632,7 @@ function renderHero(a, roleParam) {
             const gAi = REVIEWS && REVIEWS.heroes && REVIEWS.heroes[a.slug] && REVIEWS.heroes[a.slug][role] && REVIEWS.heroes[a.slug][role][g.id];
             const gWhy = gAi || GameText.plain(AUGS.catalog[g.id]?.description);
             return `
-            <div style="display:flex;gap:.55rem;align-items:center;padding:.28rem 0">
+            <div data-apop="${esc(g.id)}" data-apop-role="${esc(role)}" data-apop-band="${platCell ? 'plat+' : 'all'}" title="${esc(g.name)} — tap for the full augment" style="display:flex;gap:.55rem;align-items:center;padding:.28rem 0">
               <img src="../img/augments/${esc(g.id)}.webp" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:contain;background:var(--bg-2);flex:none;padding:1px;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">
               <span style="font-size:.82rem;font-weight:600">${esc(g.name)}</span>
               ${simPick && simPick.id === g.id ? '<span style="font-size:.6875rem;font-weight:800;color:var(--accent-ink);border:1px solid var(--accent);border-radius:6px;padding:.02rem .3rem;white-space:nowrap">Sim pick</span>' : ''}
@@ -2034,7 +2124,7 @@ async function renderLearn(a) {
     <details class="hero-augment-catalog">
       <summary>All hero augments</summary>
       <div class="body">${Object.entries(AUGS?.catalog || {}).filter(([, aug]) => aug.hero === a.slug).map(([id, aug]) => `
-        <div class="abil" data-augment-id="${esc(id)}">
+        <div class="abil" data-augment-id="${esc(id)}" data-apop="${esc(id)}" data-apop-role="${esc(a.role)}" title="${esc(aug.name)} — tap for the full augment">
           <div><b>${esc(aug.name)}</b><div class="adesc">${esc(GameText.plain(aug.description))}</div></div>
         </div>`).join('') || '<p>No catalog augments available for this hero.</p>'}
       </div>
@@ -2083,11 +2173,11 @@ async function nav(slug, replace = false, role = null) {
   await route();
   window.scrollTo({ top: 0 });
 }
-let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null, PENDING = null, HEROCOACH = null, ETREV = null;
+let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null, PENDING = null, HEROCOACH = null, ETREV = null, ITEMPOOL = null, ITEMREV = null;
 async function getAugs() {
   if (!AUGS) {
     let eternals, pending;
-    [AUGS, REVIEWS, REASONING, eternals, pending, HEROCOACH, ETREV] = await Promise.all([
+    [AUGS, REVIEWS, REASONING, eternals, pending, HEROCOACH, ETREV, ITEMPOOL, ITEMREV] = await Promise.all([
       getJson('../../data/aggregates/predgg-augments.json').catch(() => null),
       getJson('../../data/aggregates/augment-reviews.json').catch(() => null),
       getJson('../../data/aggregates/build-reasoning.json').catch(() => null),
@@ -2095,6 +2185,8 @@ async function getAugs() {
       getJson('../../data/aggregates/field-data-pending.json').catch(() => null),
       getJson('../../data/aggregates/hero-coach-lines.json').catch(() => null),
       getJson('../../data/aggregates/eternal-cards.json').catch(() => null),
+      getJson('../../data/aggregates/item-pool.json').catch(() => null),
+      getJson('../../data/aggregates/item-reviews.json').catch(() => null),
     ]);
     PENDING = (pending && pending.heroes) || {};
     // name -> { major, minorSlot1, minorSlot2 } so an Eternal can be explained in

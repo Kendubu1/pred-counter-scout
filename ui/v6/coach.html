@@ -387,7 +387,7 @@ const ranLine = (lo) => {
     const ep = (m) => epopAttr(lo.eternal, m, ran, 'ran', 'the minors this player ran this game');
     bits.push(`<span${ep()} title="${esc(lo.eternal)} — tap for the full Eternal">${ico(`../img/eternals/${nslug(lo.eternal)}.webp`, lo.eternal)}<b>${esc(lo.eternal)}</b></span>${ran.map((m) => ` + <span${ep(m)} title="${esc(m)} — tap for the full Eternal">${ico(`../img/blessings/${nslug(m)}.webp`, m)}${esc(m)}</span>`).join('')}`);
   }
-  if (lo.augment) bits.push(`${ico(`../img/augments/${esc(lo.augment.id)}.webp`, lo.augment.name)}${esc(lo.augment.name)}`);
+  if (lo.augment) bits.push(`<span data-apop="${esc(lo.augment.id)}" data-apop-label="ran" title="${esc(lo.augment.name)} — tap for the full augment">${ico(`../img/augments/${esc(lo.augment.id)}.webp`, lo.augment.name)}${esc(lo.augment.name)}</span>`);
   if (lo.crest) bits.push(`${ico(`../img/crests/${esc(lo.crestSlug || nslug(lo.crest))}.webp`, lo.crest, lo.crestSlug)}${esc(lo.crest)}`);
   return `<div class="lrow"><span class="ltag">ran</span>${bits.join(' <span style="color:var(--text-2)">·</span> ')}</div>`;
 };
@@ -1288,6 +1288,7 @@ function buildSubnav() {
 <script src="game-text.js"></script>
 <script defer src="item-popup.js"></script>
 <script defer src="eternal-popup.js"></script>
+<script defer src="augment-popup.js"></script>
 <script defer src="icons.js"></script>
 <script defer src="hero-links.js"></script>
 <script defer src="nav.js"></script>

@@ -5268,3 +5268,20 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
 - Commit timestamps are UTC; the maintainer's day runs behind (evening commits land on the
   next UTC date). Date change-notes cards by the maintainer's day, not `git log`'s. Keep
   cards plain: one short card per day, major changes only, no colored badges.
+
+## 2026-10-26 · Augment popup, Beyond the core, Plat+ builds fallback
+- Plat+ filter "not changing builds": not a render bug. Opening picks show Plat+ once the
+  LANE has 20 Plat+ games (84 lanes after a day), but a build needs one exact three-item SET with
+  20 Plat+ games (12 lanes). The builds card fell back to all ranks with a one-line note that
+  was easy to miss; the Builds heading now carries a band chip ("All ranks · Plat+ not ready").
+  It fills in as Plat+ days accumulate; do not lower the 20-game core floor to force it.
+- Beyond the core (`npm run itempool` -> data/aggregates/item-pool.json, in the refresh chain
+  after `aggregate`): finished items come from the daily samples, which overlap (36h windows,
+  daily). Sum only a non-overlapping chain (newest first) of current-patch windows, or matches
+  count twice. Those inventories are hero-wide, so a flex hero's item only shows in a lane
+  that also builds it early (3%+ of that lane's first-three cores).
+- Finished-item win rates are biased up (teams ahead finish more items) and down for items
+  that get upgraded or sold (Orb of Growth reads -11). Compare against the hero's OTHER
+  finished items, never the hero average, and show a delta only at 300+ inventories.
+- The per-item reasons reuse item-reviews.json (verified, but written per item class, not per
+  hero). Hero-specific item lines would be a new copy pass through pred-scout-coach.
