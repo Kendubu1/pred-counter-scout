@@ -5340,3 +5340,6 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   tab, Sim pick badges and the Live draft counter nav link are hidden.
 - Section share pages (`climb-*`, `about-*`, `changes-*`) are generated: never edit them by hand;
   run `node engine/scripts/share-pages.mjs`.
+- 2026-10-26 follow-up: player bullets kept opening with the player's name or hero ("Steel ran the
+  vision", "Twoattack on Kira died"), which the row header already shows. The contract now rejects
+  a player's own name/hero in their bullets and caps them at 30 words under blunt-flags-v9.

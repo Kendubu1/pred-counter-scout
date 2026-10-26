@@ -67,8 +67,16 @@ export function validateCoachContract(root: string, f: any): void {
     if (PROFANITY.test(c.focus?.action ?? '')) fail('the lesson (focus.action) stays clean');
     const hits = [c.headline, ...(flags as any[]).map(fl => fl.text), ...Object.values(c.playerBullets ?? {}).flat()].join(' ').match(new RegExp(PROFANITY.source, 'gi')) ?? [];
     if (hits.length > 3) fail(`profanity is a spotlight: ${hits.length} explicit words, maximum 3`);
+    // The row already shows the player and hero (2026-10-26): bullets start with the point.
+    for (const p of f.players.filter((q: any) => q.us)) {
+      const own = [p.heroName, p.squadName, p.name].filter((n: any) => typeof n === 'string' && n.length >= 3 && !/private/i.test(n));
+      for (const [i, b] of ((c.playerBullets?.[p.pid] ?? []) as string[]).entries()) {
+        const named = own.find((n: string) => b.toLowerCase().includes(n.toLowerCase()));
+        if (named) fail(`${p.pid}.${i} repeats "${named}"; the row already names the player and hero`);
+      }
+    }
   }
-  const lines: [string, unknown, number][] = [...(c.lossReflection ? [['lossReflection', c.lossReflection, 100] as [string, unknown, number]] : []), ['headline', c.headline, 25], ...(flagsFormat ? (c.flags as any[]).map((fl, i) => [`flags.${i}`, fl.text, 18] as [string, unknown, number]) : [['team', c.team, 90] as [string, unknown, number]]), ['focus', c.focus?.action, flagsFormat ? 35 : 50], ...(bullets ? Object.entries(c.playerBullets).flatMap(([id, texts]) => (texts as string[]).map((text, i) => [`${id}.${i}`, text, 40] as [string, unknown, number])) : Object.entries(c.perPlayer).map(([id, text]) => [id, text, 80] as [string, unknown, number]))];
+  const lines: [string, unknown, number][] = [...(c.lossReflection ? [['lossReflection', c.lossReflection, 100] as [string, unknown, number]] : []), ['headline', c.headline, 25], ...(flagsFormat ? (c.flags as any[]).map((fl, i) => [`flags.${i}`, fl.text, 18] as [string, unknown, number]) : [['team', c.team, 90] as [string, unknown, number]]), ['focus', c.focus?.action, flagsFormat ? 35 : 50], ...(bullets ? Object.entries(c.playerBullets).flatMap(([id, texts]) => (texts as string[]).map((text, i) => [`${id}.${i}`, text, flagsFormat ? 30 : 40] as [string, unknown, number])) : Object.entries(c.perPlayer).map(([id, text]) => [id, text, 80] as [string, unknown, number]))];
   for (const [field, text, cap] of lines) {
     if (typeof text !== 'string' || !text.trim()) fail(`${field} is empty`);
     const s = text as string;

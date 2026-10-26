@@ -3,7 +3,7 @@ import path from 'node:path';
 import { loadCoachingPreset } from '../src/coaching-presets.js';
 import { reviewDigest, selectReviewScope, validateCoachContract, validatePublication } from '../src/coach-contract.js';
 const root = path.resolve('..');
-const match = () => ({ matchId: 'abc-123', players: [{pid:'p', us:true}], interrogation: {gameFlags:[{id:'no-close'},{id:'standout:p'}]}, coaching: {personaId:loadCoachingPreset(root).id,headline:'Finish the damn job.',team:'',flags:[{ref:'no-close',text:'Two inhibitors down and we never touched the Core.'},{ref:'other',text:'The bot lane held even all game.'}],focus:{action:'Call the next objective before chasing.'},perPlayer:{},playerBullets:{p:['Sparrow delivered. Keep the damage coming without giving away the shutdown.','When the fight ends, call the safe structure before pursuing another target.']},moments:{final:{call:'The Core fell after the final fight.'}}} });
+const match = () => ({ matchId: 'abc-123', players: [{pid:'p', us:true, heroName:'Steel', squadName:'Goldilocks324', name:'Goldilocks324'}], interrogation: {gameFlags:[{id:'no-close'},{id:'standout:p'}]}, coaching: {personaId:loadCoachingPreset(root).id,headline:'Finish the damn job.',team:'',flags:[{ref:'no-close',text:'Two inhibitors down and we never touched the Core.'},{ref:'other',text:'The bot lane held even all game.'}],focus:{action:'Call the next objective before chasing.'},perPlayer:{},playerBullets:{p:['Sparrow delivered. Keep the damage coming without giving away the shutdown.','When the fight ends, call the safe structure before pursuing another target.']},moments:{final:{call:'The Core fell after the final fight.'}}} });
 it('accepts concise paragraphs without forcing criticism or cards', () => expect(()=>validateCoachContract(root,match())).not.toThrow());
 it.each(['old',''])('rejects stale or absent persona %s', id => { const f=match();f.coaching.personaId=id;expect(()=>validateCoachContract(root,f)).toThrow('personaId'); });
 it('rejects missing allied advice and invisible string moments', () => { const f:any=match();f.players.push({pid:'q',us:true});expect(()=>validateCoachContract(root,f)).toThrow('every allied');f.players.pop();f.coaching.moments.final='Hidden evidence';expect(()=>validateCoachContract(root,f)).toThrow('call string'); });
@@ -52,4 +52,12 @@ it('requires short bullet arrays for version 2 build analysis',()=>{
  f.coaching.buildReads.p.crest='A paragraph.'; expect(()=>validateCoachContract(root,f)).toThrow('crest');
  f.coaching.buildReads.p.crest=['a','b','c','d']; expect(()=>validateCoachContract(root,f)).toThrow('more than 3');
  f.coaching.buildReads.p.crest=['word '.repeat(23)]; expect(()=>validateCoachContract(root,f)).toThrow('too long');
+});
+
+it('player bullets never repeat that player\'s own name or hero, and stay at 30 words',()=>{
+ const f:any=match();
+ f.coaching.playerBullets.p[0]='Steel ran the vision with the most wards in the game.'; expect(()=>validateCoachContract(root,f)).toThrow('repeats "Steel"');
+ f.coaching.playerBullets.p[0]='Goldilocks324 ran the vision.'; expect(()=>validateCoachContract(root,f)).toThrow('repeats "Goldilocks324"');
+ f.coaching.playerBullets.p[0]='Ran the vision: the most wards in the game, over the Sparrow carry too.'; expect(()=>validateCoachContract(root,f)).not.toThrow();
+ f.coaching.playerBullets.p[0]='word '.repeat(31); expect(()=>validateCoachContract(root,f)).toThrow('maximum 30');
 });
