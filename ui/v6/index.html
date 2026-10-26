@@ -1568,9 +1568,15 @@ function renderHero(a, roleParam) {
         // instead of nothing — and a 5-game fluke can never top a list.
         const cellGames = cell.games || (cell.eternals || []).reduce((s, e) => s + e.n, 0);
         const floor = Math.min(300, Math.max(30, Math.round(cellGames * 0.1)));
-        const augPool = cell.augments.filter((x) => x.n >= floor);
-        const ranked = [...(augPool.length ? augPool : cell.augments)].sort((x, y) => (y.w / y.n) - (x.w / x.n));
-        const adv = ranked[1] ? ((ranked[0].w / ranked[0].n) - (ranked[1].w / ranked[1].n)) * 100 : null;
+        // The floor decides what can be crowned, not what is listed: a thin
+        // cell (most Plat+ lanes hold 100-300 games) would otherwise drop
+        // augments and crests from the page. Below-floor options follow the
+        // qualified ones, tagged "few games".
+        const byWr = (x, y) => (y.w / y.n) - (x.w / x.n);
+        const augPool = cell.augments.filter((x) => x.n >= floor).sort(byWr);
+        const ranked = augPool.length ? [...augPool, ...cell.augments.filter((x) => x.n < floor).sort(byWr)] : [...cell.augments].sort(byWr);
+        const fewTag = (x) => augPool.length && x.n < floor ? '<span style="font-size:.6875rem;color:var(--gold);white-space:nowrap">few games</span>' : '';
+        const adv = augPool[1] ? ((augPool[0].w / augPool[0].n) - (augPool[1].w / augPool[1].n)) * 100 : null;
         const simBy = new Map((a.eternals.all ?? a.eternals.top.map((e) => ({ ...e, modeled: true, note: null }))).map((e) => [e.name.toLowerCase(), e]));
         // Order by SHRUNK winrate (method-of-moments prior toward the
         // cell's pick-weighted mean): Eternal pick shares are wildly
@@ -1609,7 +1615,7 @@ function renderHero(a, roleParam) {
           const ai = REVIEWS && REVIEWS.heroes && REVIEWS.heroes[a.slug] && REVIEWS.heroes[a.slug][role] && REVIEWS.heroes[a.slug][role][best.id];
           const whyLine = ai
             ? `${esc(ai)}`
-            : (adv !== null && adv >= 0.3 && ranked[1] ? `as ${esc(role)} it wins about ${adv.toFixed(1)} more games per 100 than ${esc(ranked[1].name)} — the field has voted` : esc(GameText.plain(AUGS.catalog[best.id]?.description)));
+            : (adv !== null && adv >= 0.3 ? `as ${esc(role)} it wins about ${adv.toFixed(1)} more games per 100 than ${esc(augPool[1].name)} — the field has voted` : esc(GameText.plain(AUGS.catalog[best.id]?.description)));
           return `
           <div data-apop="${esc(best.id)}" data-apop-role="${esc(role)}" data-apop-band="${platCell ? 'plat+' : 'all'}" title="${esc(best.name)} — tap for the full augment" style="display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .65rem;background:var(--bg-2);border:1px solid var(--green);border-radius:10px;box-shadow:0 0 0 2px rgba(0,196,140,.12)">
             <img src="../img/augments/${esc(best.id)}.webp" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:contain;background:var(--bg-3);flex:none;padding:2px;box-shadow:0 0 0 2px var(--green)" onerror="this.style.visibility='hidden'">
@@ -1640,6 +1646,7 @@ function renderHero(a, roleParam) {
             <div data-apop="${esc(g.id)}" data-apop-role="${esc(role)}" data-apop-band="${platCell ? 'plat+' : 'all'}" title="${esc(g.name)} — tap for the full augment" style="display:flex;gap:.55rem;align-items:center;padding:.28rem 0">
               <img src="../img/augments/${esc(g.id)}.webp" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:contain;background:var(--bg-2);flex:none;padding:1px;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">
               <span style="font-size:.82rem;font-weight:600">${esc(g.name)}</span>
+              ${fewTag(g)}
               ${simPick && simPick.id === g.id ? '<span style="font-size:.6875rem;font-weight:800;color:var(--accent-ink);border:1px solid var(--accent);border-radius:6px;padding:.02rem .3rem;white-space:nowrap">Sim pick</span>' : ''}
               <span style="margin-left:auto;font-variant-numeric:tabular-nums;font-size:.78rem;color:var(--text-1)">${(wr * 100).toFixed(1)}%</span>
               <span style="font-size:.6875rem;color:var(--text-2)">${g.n.toLocaleString()}</span>
@@ -1836,8 +1843,11 @@ function renderHero(a, roleParam) {
           return `${lead}${runnerUps.length ? `<details class="sim-collapse"><summary>Other Eternals</summary><div class="body">${runnerUps.map((e, i) => runnerRow(e, i + 1)).join('')}</div></details>` : ''}`;
         })()}
         ${(() => {
-          const crs = (cell.crests || []).filter((c) => c.n >= floor).sort((x, y) => (y.w / y.n) - (x.w / x.n)).slice(0, 3);
-          if (!crs.length) return '';
+          // Qualified crests first; empty slots up to three fill with the
+          // most-played below-floor crests (tagged), never a 3-game fluke.
+          const crOk = (cell.crests || []).filter((c) => c.n >= floor).sort(byWr);
+          if (!crOk.length) return '';
+          const crs = [...crOk, ...(cell.crests || []).filter((c) => c.n < floor).sort((x, y) => y.n - x.n)].slice(0, 3);
           const cslug = (n) => n.toLowerCase().replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
           // CREST is EXPANDED by default — a visible block titled like the
           // ETERNAL/AUGMENT labels, top 3 rows with #1 highlighted. No crest
@@ -1851,6 +1861,7 @@ function renderHero(a, roleParam) {
             <span style="font-size:.88rem;font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${esc(c.name)}</span>
             <span style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(c.w / c.n * 100).toFixed(1)}%</span>
             <span style="font-size:.7rem;color:var(--text-2)">${c.n.toLocaleString()} games</span>
+            ${c.n < floor ? '<span style="font-size:.6875rem;color:var(--gold);white-space:nowrap">few games</span>' : ''}
           </div>`).join('')}
           <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.3rem 0 0 2.1rem">Best win rate as ${esc(role)} — ${(c0.w / c0.n * 100).toFixed(1)}% over ${c0.n.toLocaleString()} games.</div>`;
         })()}

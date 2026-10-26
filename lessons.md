@@ -5343,3 +5343,14 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
 - 2026-10-26 follow-up: player bullets kept opening with the player's name or hero ("Steel ran the
   vision", "Twoattack on Kira died"), which the row header already shows. The contract now rejects
   a player's own name/hero in their bullets and caps them at 30 words under blunt-flags-v9.
+
+## 2026-10-26 — Plat+ dropped augments and crests from the opening picks
+
+- Regression from df72c5d (rank filter drives the whole hero page): Plat+ perk cells hold 100-300
+  games, so the 30-game evidence floor cut most lanes to 1-2 augments and 1-2 crests (77 of 84
+  Plat+ cells). The choice is remembered per browser, so one tap on Plat+ shrank every hero page.
+  All-ranks lists were unchanged.
+- Fix: the floor decides what can be crowned Best, not what is listed. Below-floor augments follow
+  the qualified ones; crests fill to three with the most-played below-floor ones; both are tagged
+  "few games". The "wins N more per 100 than X" line compares qualified augments only.
+- Check any new band or filter against the thinnest cell it can select, not the main lane.
