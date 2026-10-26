@@ -367,8 +367,8 @@ remain as fast canaries but cannot detect staleness on their own: one pinned
   So Plat+ is the high-rank read; Gold+ mostly re-shows all ranks and overlaps
   Plat+ (every Plat+ game is a Gold+ game), so the page shows only All ranks and
   Plat+ (maintainer's call, 2026-10-25, accepting thin Plat+ samples). perks still
-  counts Gold+ so the choice can be re-checked. A lane opens on Plat+ at 100 games
-  on its top Plat+ build, else all ranks; the builds card's rank filter offers
+  counts Gold+ so the choice can be re-checked. A lane opens on Plat+ at 50 games
+  on its top Plat+ build (sized to the ~3-week patch window), else all ranks; the builds card's rank filter offers
   Plat+ whenever the lane has Plat+ data (`metaBuildsByBand`: the same
   meta-build pipeline run per band, each with that band's hero-role baseline).
   The filter is page-level: it drives the opening picks (augment, Eternal,

@@ -41,10 +41,13 @@ interface PredggBuilds {
 export type RankBand = 'all' | 'plat+';
 export const RANK_BANDS: RankBand[] = ['all', 'plat+'];
 
-// A lane OPENS on Plat+ once its most-played Plat+ build has this many games
-// (the page's own floor for leading with a build), else all ranks. The rank
-// filter offers Plat+ as soon as the lane has any Plat+ builds, thin or not.
-export const MIN_BAND_BUILD_GAMES = 100;
+// A lane OPENS on Plat+ once its most-played Plat+ build has this many games,
+// else all ranks. Sized to the patch, not to the page's 100-game lead floor:
+// the window resets every patch (~3 weeks), and on 1.17 volumes 50 games puts
+// ~55 of 118 lanes on Plat+ by day 14 (100 games: 30; 30 games: 67 but ±9 pt a
+// build). Shrinkage and the thin-sample note (under 100) carry the rest. The
+// rank filter offers Plat+ as soon as the lane has any Plat+ builds.
+export const MIN_BAND_BUILD_GAMES = 50;
 
 /** One band's role cores and the hero-role win rate in that band. */
 export function bandEvidence(pg: PredggBuilds | null, slug: string, role: string, band: RankBand): { rows: CoreRow[] | undefined; baseline: NW | null } {
