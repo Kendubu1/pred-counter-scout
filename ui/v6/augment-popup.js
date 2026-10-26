@@ -29,7 +29,12 @@ style.textContent = `
   .apop .atag { font-size:.6875rem; font-weight:700; color:var(--green); background:rgba(0,196,140,.16); border-radius:999px; padding:.05rem .4rem; margin-left:.35rem; white-space:nowrap; }
   .apop .arow { display:grid; grid-template-columns:24px 1fr auto auto; gap:.5rem; align-items:center; font-size:.78rem; padding:.3rem .4rem; border-radius:8px; }
   .apop .arow img { width:24px; height:24px; border-radius:50%; object-fit:contain; background:var(--bg-2); border:1px solid var(--border); }
-  .apop .arow.here { background:var(--bg-2); box-shadow:0 0 0 1px var(--accent) inset; color:var(--text-0); font-weight:600; }
+  .apop .aitem { border-radius:8px; padding:.1rem 0; border-bottom:1px dashed var(--border); }
+  .apop .aitem:last-of-type { border-bottom:0; }
+  .apop .aitem.here { background:var(--bg-2); box-shadow:0 0 0 1px var(--accent) inset; border-bottom-color:transparent; }
+  .apop .aitem.here .arow { color:var(--text-0); font-weight:600; }
+  .apop .aexp { font-size:.74rem; color:var(--text-2); line-height:1.45; padding:0 .4rem .4rem calc(.4rem + 24px + .5rem); }
+  .apop .aexp .aw { display:block; color:var(--text-1); margin-bottom:.15rem; }
   .apop .arow .n { color:var(--text-2); font-size:.6875rem; font-variant-numeric:tabular-nums; text-align:right; }
   .apop .arow .wr { font-variant-numeric:tabular-nums; text-align:right; min-width:3.2em; }
   .apop .wr.good { color:var(--green); } .apop .wr.bad { color:var(--red); }
@@ -75,19 +80,43 @@ async function showAugment(id, opts = {}) {
   const plat = !!(role && platOf(cells[role]));
   const why = role && d.reviews && d.reviews.heroes && d.reviews.heroes[hero] && d.reviews.heroes[hero][role] && d.reviews.heroes[hero][role][id];
 
-  const augRow = (g, games) => {
-    const wr = g.w / g.n;
-    return `<div class="arow${g.id === id ? ' here' : ''}">
-      <img src="../img/augments/${esc(g.id)}.webp" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
-      <span>${esc(g.name)}${g.id === id && opts.label ? `<span class="atag">${esc(opts.label)}</span>` : ''}</span>
-      <span class="n">${games ? `${pct(g.n / games)} pick · ` : ''}${g.n.toLocaleString()}</span>
-      <span class="wr ${wrClass(wr)}">${pct(wr, 1)}</span>
-    </div>`;
+  // Every other augment is explained in place (what it does + the verified
+  // "why" for this lane), so the lane list reads as a comparison, not just numbers.
+  // The clicked augment's own text is already at the top.
+  const reviewOf = (aid) => role && d.reviews && d.reviews.heroes && d.reviews.heroes[hero] && d.reviews.heroes[hero][role] && d.reviews.heroes[hero][role][aid];
+  const explain = (aid) => {
+    if (aid === id) return '';
+    const desc = clean(d.augs.catalog[aid] && d.augs.catalog[aid].description);
+    const w = reviewOf(aid);
+    return desc || w ? `<div class="aexp">${w ? `<span class="aw">${esc(w)}</span>` : ''}${desc ? `<span>${esc(desc)}</span>` : ''}</div>` : '';
   };
-  const laneBlock = roleCell && roleCell.augments && roleCell.augments.length ? `
-      <span class="ak">${esc(heroName)} ${esc(ROLE_LABEL[role] || role)} · ${plat ? 'Plat+ (rank in that game)' : 'ranked, all ranks'} · this patch</span>
-      ${[...roleCell.augments].sort((x, y) => y.n - x.n).map((g) => augRow(g, roleCell.games)).join('')}
-      <p class="anote">pick = share of ${roleCell.games.toLocaleString()} ${esc(heroName)} ${esc(role)} games · win rate on the right${roleCell.games < 300 ? ' · thin sample, read loosely' : ''}</p>` : '';
+  const augRow = (g, games) => {
+    const wr = g.n ? g.w / g.n : null;
+    return `<div class="aitem${g.id === id ? ' here' : ''}"><div class="arow">
+      <img src="../img/augments/${esc(g.id)}.webp" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
+      <span>${esc(g.name)}${g.id === id ? `<span class="atag">${esc(opts.label || 'this one')}</span>` : ''}</span>
+      <span class="n">${g.n ? `${games ? `${pct(g.n / games)} pick · ` : ''}${g.n.toLocaleString()}` : 'not picked here'}</span>
+      <span class="wr ${wr == null ? '' : wrClass(wr)}">${wr == null ? '—' : pct(wr, 1)}</span>
+    </div>${explain(g.id)}</div>`;
+  };
+  // The hero's whole augment list: the lane's counted ones by games, then any
+  // catalog augment this lane never took.
+  // No lane given (coach page): every lane summed.
+  const allLanes = () => {
+    const sum = new Map();
+    for (const c of Object.values(cells)) for (const g of c.augments || []) {
+      const p = sum.get(g.id) || { id: g.id, name: g.name, n: 0, w: 0 };
+      sum.set(g.id, { ...p, n: p.n + g.n, w: p.w + g.w });
+    }
+    return [...sum.values()];
+  };
+  const laneAugs = (role ? (roleCell && roleCell.augments) || [] : allLanes()).slice().sort((x, y) => y.n - x.n);
+  const laneGames = role ? roleCell && roleCell.games : Object.values(cells).reduce((t, c) => t + (c.games || 0), 0);
+  const unpicked = Object.entries(d.augs.catalog).filter(([aid, c]) => c.hero === hero && !laneAugs.some((g) => g.id === aid)).map(([aid, c]) => ({ id: aid, name: c.name, n: 0, w: 0 }));
+  const laneBlock = laneAugs.length || unpicked.length ? `
+      <span class="ak">All ${esc(heroName)} augments · ${role ? esc(ROLE_LABEL[role] || role) : 'every lane'} · ${plat ? 'Plat+ (rank in that game)' : 'ranked, all ranks'} · this patch</span>
+      ${[...laneAugs, ...unpicked].map((g) => augRow(g, laneGames)).join('')}
+      ${laneGames ? `<p class="anote">pick = share of ${laneGames.toLocaleString()} ${esc(heroName)} ${role ? esc(role) + ' ' : ''}games · win rate on the right${laneGames < 300 ? ' · thin sample, read loosely' : ''}</p>` : ''}` : '';
   // The same augment in the hero's other lanes (or every lane when none was given).
   const others = Object.entries(cells).filter(([r]) => r !== role).map(([r, c]) => {
     const g = (c.augments || []).find((x) => x.id === id);
