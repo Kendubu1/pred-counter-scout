@@ -35,6 +35,16 @@ export function validateCoachContract(root: string, f: any): void {
     }
     if (Object.keys(c.buildReads ?? {}).some(id => !allies.includes(id))) fail('unknown build analysis player');
   }
+  // Version 2: each field is 1-3 short bullets (the page renders them as a list).
+  if (c.buildAnalysisVersion === 2) {
+    for (const id of allies) for (const field of ['matchup','build','eternal','augment','crest','improvement']) {
+      const list = c.buildReads?.[id]?.[field];
+      if (!Array.isArray(list) || !list.length || list.some((b: any) => typeof b !== 'string' || !b.trim())) fail(`build analysis missing ${field} for ${id}`);
+      if (list.length > 3) fail(`build analysis ${field} has more than 3 bullets for ${id}`);
+      if (list.some((b: string) => b.trim().split(/\s+/).length > 22)) fail(`build analysis ${field} bullet is too long for ${id}`);
+    }
+    if (Object.keys(c.buildReads ?? {}).some(id => !allies.includes(id))) fail('unknown build analysis player');
+  }
   if (preset.layout !== 'concise' || !['paragraph', 'bullets'].includes(preset.playerFormat ?? '')) return;
   if (preset.lossReflection && f.result === 'loss' && !c.lossReflection?.trim()) fail('lossReflection is required for a loss');
   if (f.result === 'win' && c.lossReflection) fail('lossReflection belongs only on losses');

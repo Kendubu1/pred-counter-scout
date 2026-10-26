@@ -5307,3 +5307,13 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   have kills 12,000+ units apart. The macro now labels them two plays and drops absence notes;
   re-clustering by distance would change the `startMin` keys coaching moments hang on, so it is
   a separate job.
+
+## 2026-10-26 · Build & matchup analysis condensed to bullets
+- buildAnalysisVersion 2: each buildReads field is 1-3 bullets of <=22 words (contract-enforced).
+  The coach page still splits older v1 paragraphs into sentence bullets.
+- The 23 published v1 reviews were condensed (44k -> 23k words) by writer agents, held to a
+  script guard (every number and capitalized name must appear in that field's source paragraph),
+  then an independent critic reviewed all 720 fields; 25 fixes applied. Common failures it caught:
+  time windows blurred ("before minute ten" -> "early"), hedges turned into verdicts,
+  alternatives listed without what they trade away, "physical-armor" shortened to "armor".
+- 130ed284 was skipped: another session was mid-critique on it. Condense it after it publishes.

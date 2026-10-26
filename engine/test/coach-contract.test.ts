@@ -35,3 +35,12 @@ it('requires complete role-specific build analysis for every ally when enabled',
 });
 
 it.each([[], ['Only one'], ['a','b','c','d'], ['a','']])('rejects incomplete or excessive bullets %j', value => { const f:any=match();f.coaching.playerBullets.p=value;expect(()=>validateCoachContract(root,f)).toThrow(); });
+
+it('requires short bullet arrays for version 2 build analysis',()=>{
+ const f:any=match(); f.coaching.buildAnalysisVersion=2;
+ f.coaching.buildReads={p:Object.fromEntries(['matchup','build','eternal','augment','crest','improvement'].map(k=>[k,['A grounded matchup tradeoff.','Keep the core.']]))};
+ expect(()=>validateCoachContract(root,f)).not.toThrow();
+ f.coaching.buildReads.p.crest='A paragraph.'; expect(()=>validateCoachContract(root,f)).toThrow('crest');
+ f.coaching.buildReads.p.crest=['a','b','c','d']; expect(()=>validateCoachContract(root,f)).toThrow('more than 3');
+ f.coaching.buildReads.p.crest=['word '.repeat(23)]; expect(()=>validateCoachContract(root,f)).toThrow('too long');
+});

@@ -190,19 +190,20 @@
   .build-player .build-identity { display:grid; gap:.2rem; min-width:0; }
   .build-player .build-identity b { font-size:.92rem; overflow-wrap:anywhere; }
   .build-player .build-identity span { font-size:.76rem; color:var(--text-2); }
-  .build-analysis { padding:0 1rem 1rem; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.8rem; }
-  .build-section { padding:1rem; border:1px solid var(--border); border-radius:9px; min-width:0; }
-  .build-section h3 { margin:0 0 .6rem; font-size:.82rem; color:var(--text-0); }
-  .build-section p { margin:0; font-size:.85rem; line-height:1.7; color:var(--text-1); max-width:72ch; }
-  .build-section.wide { grid-column:1/-1; }
-  .build-section.recommendation { border-left:3px solid var(--accent); background:var(--accent-soft); }
+  .build-analysis { padding:0 1rem .5rem; }
+  .build-section { display:grid; grid-template-columns:8.5rem minmax(0,1fr); gap:.9rem; padding:.7rem 0; border-top:1px solid var(--border); min-width:0; }
+  .build-section h3 { margin:0; font-size:.78rem; line-height:1.55; color:var(--text-0); }
+  .build-section ul { margin:0; padding-left:1rem; font-size:.85rem; line-height:1.55; color:var(--text-1); max-width:72ch; }
+  .build-section li + li { margin-top:.3rem; }
+  .build-section li::marker { color:var(--muted); }
+  .build-section.recommendation { border-top:0; border-left:3px solid var(--accent); background:var(--accent-soft); border-radius:0 9px 9px 0; padding:.7rem .8rem; margin-bottom:.2rem; }
   .build-section.recommendation h3 { color:var(--accent-ink); }
   .build-help { color:var(--text-2); font-size:.8rem; line-height:1.6; margin:.5rem 0 1rem; }
   .evidence-section { margin:1rem 0; }
   .evidence-section > summary { padding:.8rem 0; cursor:pointer; font-weight:700; font-size:.86rem; }
   @media (max-width:700px) {
-    .build-analysis { grid-template-columns:minmax(0,1fr); padding:0 .65rem .65rem; gap:.65rem; }
-    .build-section { padding:.85rem; }
+    .build-analysis { padding:0 .65rem .4rem; }
+    .build-section { grid-template-columns:minmax(0,1fr); gap:.35rem; }
     .build-player > summary { padding:.85rem; }
   }
   .plobby .line { font-size:.84rem; color:var(--text-1); }
@@ -891,10 +892,10 @@ function pgReview(f) {
         ${co?.perPlayer?.[p.pid] ? `<div class="line">${esc(co.perPlayer[p.pid])}</div>` : ''}
         <div class="items">${built.map((i) => `<img data-ipop="${esc(i.slug)}" src="${iimg(i.slug)}" title="${esc(i.name)}" onerror="this.style.display='none'">`).join('')}</div>
         <div class="lrow"><span class="ltag">build</span>${bits.join(' · ')}</div>
-        ${br?.build ? `<details class="whyd"><summary>why · what this build gained vs gave up</summary><div>${esc(br.build)}</div></details>` : ''}
+        ${br?.build ? `<details class="whyd"><summary>why · what this build gained vs gave up</summary><div>${esc(buildBullets(br.build).join(' '))}</div></details>` : ''}
         ${ranLine(p.loadout)}
         <div class="lrow" data-et-slug="${esc(p.heroSlug)}" data-et-role="${esc(p.role)}" data-et-opp="${lane ? esc(lane.theirSlug) : ''}" data-et-ran="${esc(p.loadout?.eternal || '')}"><span class="ltag">field pick</span><span style="opacity:.6">loading the field's pick…</span></div>
-        ${br?.eternal ? `<details class="whyd"><summary>why · why this loadout fits the matchup</summary><div>${esc(br.eternal)}</div></details>` : ''}
+        ${br?.eternal ? `<details class="whyd"><summary>why · why this loadout fits the matchup</summary><div>${esc(buildBullets(br.eternal).join(' '))}</div></details>` : ''}
         ${(() => { const m = co && co.microReads ? co.microReads[p.pid] : null; if (!m || !(m.keep || m.change || m.check)) return ''; return `<div class="kcc">
           ${m.lastCheck && m.lastCheck.text ? `<div class="lrow"><span class="ltag" style="color:${m.lastCheck.result === 'held' ? 'var(--green)' : m.lastCheck.result === 'missed' ? 'var(--red)' : 'var(--text-2)'}">last check · ${esc(m.lastCheck.result || '')}</span>${esc(m.lastCheck.text)}${m.lastCheck.receipt ? ` <span style="color:var(--text-2)">(${esc(m.lastCheck.receipt)})</span>` : ''}</div>` : ''}
           ${m.keep ? `<div class="lrow"><span class="ltag" style="color:var(--green)">keep</span>${esc(m.keep)}</div>` : ''}
@@ -987,9 +988,9 @@ function pgReview(f) {
     </div>`).join('')}`);
     const loadouts = card(`${eyebrow('Builds & matchup analysis', '')}<p class="build-help">Choose a player to see the recommendation, matchup and loadout breakdown.</p>${us.map((p) => {
       const br = co.buildReads?.[p.pid];
-      const sections = [['improvement','Build decision','wide recommendation'],['matchup','Lane & team threats','wide'],['build','Item interactions','wide'],['eternal','Eternal & minors',''],['augment','Hero augment',''],['crest','Crest','']];
+      const sections = [['improvement','Build decision','recommendation'],['matchup','Lane & team threats',''],['build','Item interactions',''],['eternal','Eternal & minors',''],['augment','Hero augment',''],['crest','Crest','']];
       return `<details class="build-player"><summary>${hIcon(p.heroSlug,36).replace(/<\/?a\b[^>]*>/g,'')}<span class="build-identity"><b>${pgName(p)}</b><span>${esc(p.heroName)} · ${esc(p.role)}</span></span></summary><div class="build-analysis">
-        ${sections.map(([key,label,style]) => br?.[key] ? `<section class="build-section ${style}"><h3>${label}</h3><p>${esc(br[key])}</p></section>` : '').join('')}
+        ${sections.map(([key,label,style]) => buildBullets(br?.[key]).length ? `<section class="build-section ${style}"><h3>${label}</h3><ul>${buildBullets(br[key]).map(b => `<li>${esc(b)}</li>`).join('')}</ul></section>` : '').join('')}
         ${!br ? '<p class="build-help">Matchup analysis has not been written for this player.</p>' : ''}
       </div></details>`;
     }).join('')}<p class="build-help">Based on final inventory and recorded draft choices. Purchase timing, active use and passive uptime are unverified. Alternatives describe matchup tradeoffs, not proven winning swaps.</p>`);
@@ -998,6 +999,15 @@ function pgReview(f) {
     </details>`;
   }
   return head + moments + deepDive + coachEvidence + timeline + worked + lobby + deep;
+}
+
+// Build analysis reads as bullets. Newer reviews author short bullet arrays;
+// older paragraphs are split into sentences (the abbreviation guard keeps
+// "Lt. Belica" whole). "X is not recorded" caveats are dropped because the
+// note under the section already says active use and uptime are unverified.
+function buildBullets(v) {
+  const list = Array.isArray(v) ? v : typeof v === 'string' ? v.split(/(?<!\b(?:Lt|vs|Dr|Mr|St)\.)(?<=[.!?])\s+(?=[A-Z0-9"])/) : [];
+  return list.map(b => String(b).trim()).filter(b => b && !(/\b(?:is|are) not recorded\.?$/i.test(b) && b.split(/\s+/).length <= 8));
 }
 
 // The lobby's ETERNAL line joins the per-hero artifact (the field pick + the
