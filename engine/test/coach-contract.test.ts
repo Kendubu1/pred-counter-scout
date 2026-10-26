@@ -3,7 +3,7 @@ import path from 'node:path';
 import { loadCoachingPreset } from '../src/coaching-presets.js';
 import { reviewDigest, selectReviewScope, validateCoachContract, validatePublication } from '../src/coach-contract.js';
 const root = path.resolve('..');
-const match = () => ({ matchId: 'abc-123', players: [{pid:'p', us:true}], coaching: {personaId:loadCoachingPreset(root).id,headline:'Finish the damn job.',team:'The final push ended it. Keep that commitment.',focus:{action:'Call the next objective before chasing.'},perPlayer:{},playerBullets:{p:['Sparrow delivered. Keep the damage coming without giving away the shutdown.','When the fight ends, call the safe structure before pursuing another target.']},moments:{final:{call:'The Core fell after the final fight.'}}} });
+const match = () => ({ matchId: 'abc-123', players: [{pid:'p', us:true}], interrogation: {gameFlags:[{id:'no-close'},{id:'standout:p'}]}, coaching: {personaId:loadCoachingPreset(root).id,headline:'Finish the damn job.',team:'',flags:[{ref:'no-close',text:'Two inhibitors down and we never touched the Core.'},{ref:'other',text:'The bot lane held even all game.'}],focus:{action:'Call the next objective before chasing.'},perPlayer:{},playerBullets:{p:['Sparrow delivered. Keep the damage coming without giving away the shutdown.','When the fight ends, call the safe structure before pursuing another target.']},moments:{final:{call:'The Core fell after the final fight.'}}} });
 it('accepts concise paragraphs without forcing criticism or cards', () => expect(()=>validateCoachContract(root,match())).not.toThrow());
 it.each(['old',''])('rejects stale or absent persona %s', id => { const f=match();f.coaching.personaId=id;expect(()=>validateCoachContract(root,f)).toThrow('personaId'); });
 it('rejects missing allied advice and invisible string moments', () => { const f:any=match();f.players.push({pid:'q',us:true});expect(()=>validateCoachContract(root,f)).toThrow('every allied');f.players.pop();f.coaching.moments.final='Hidden evidence';expect(()=>validateCoachContract(root,f)).toThrow('call string'); });
@@ -13,17 +13,26 @@ it('requires explicit, unambiguous complete scope',()=>{const games=[match(),{..
 it('blocks publication after copy or facts change',()=>{const f=match();const report={reviewedLines:5,flaggedLines:0,unmatched:0,rewritesDropped:0,reviewedDigests:{[f.matchId]:reviewDigest(f)}};expect(()=>validatePublication([f],report)).not.toThrow();f.coaching.team='Changed after critique.';expect(()=>validatePublication([f],report)).toThrow();const original=match();(original.players[0] as any).kills=5;expect(()=>validatePublication([original],report)).toThrow();});
 it('rejects flagged, dropped, incomplete or empty critic results',()=>{const f=match();const clean={reviewedLines:5,flaggedLines:0,unmatched:0,rewritesDropped:0,reviewedDigests:{[f.matchId]:reviewDigest(f)}};for(const report of [{...clean,flaggedLines:1},{...clean,unmatched:1},{...clean,rewritesDropped:1},{...clean,reviewedDigests:{}},{...clean,reviewedLines:0}])expect(()=>validatePublication([f],report)).toThrow();});
 
-it('requires reflection for losses under the active reflection preset, never wins',()=>{
+it('flags replace the team paragraph and loss reflection',()=>{
  const f:any=match(); f.result='loss';
- expect(()=>validateCoachContract(root,f)).toThrow('lossReflection');
- f.coaching.lossReflection='Prepare a safe approach together before the contest, or call a reachable trade.';
  expect(()=>validateCoachContract(root,f)).not.toThrow();
- f.result='win'; expect(()=>validateCoachContract(root,f)).toThrow('only on losses');
+ f.coaching.lossReflection='Reset together next time.'; expect(()=>validateCoachContract(root,f)).toThrow('replace');
+ f.coaching.lossReflection=''; f.coaching.team='A team paragraph.'; expect(()=>validateCoachContract(root,f)).toThrow('replace');
 });
-it('validates reflection readability and length like the main review',()=>{
- const f:any=match(); f.result='loss'; f.coaching.lossReflection='Reset at 12:34.';
- expect(()=>validateCoachContract(root,f)).toThrow('exact time');
- f.coaching.lossReflection='word '.repeat(101); expect(()=>validateCoachContract(root,f)).toThrow('too long');
+it('requires 2-4 short flags citing computed game flags',()=>{
+ const f:any=match();
+ f.coaching.flags=[f.coaching.flags[0]]; expect(()=>validateCoachContract(root,f)).toThrow('2-4');
+ f.coaching.flags=[{ref:'invented',text:'Made up.'},{ref:'other',text:'Fine.'}]; expect(()=>validateCoachContract(root,f)).toThrow('gameFlags id');
+ f.coaching.flags=[{ref:'no-close',text:'One.'},{ref:'no-close',text:'Two.'}]; expect(()=>validateCoachContract(root,f)).toThrow('twice');
+ f.coaching.flags=[{ref:'no-close',text:'word '.repeat(19)},{ref:'other',text:'Fine.'}]; expect(()=>validateCoachContract(root,f)).toThrow('18 words');
+ f.coaching.flags=[{ref:'no-close',text:'Core fell at 37:50.'},{ref:'other',text:'Fine.'}]; expect(()=>validateCoachContract(root,f)).toThrow('exact time');
+});
+it('spends profanity on the big moments only: three words maximum, none in the lesson',()=>{
+ const f:any=match();
+ f.coaching.focus.action='Call the next damn objective.'; expect(()=>validateCoachContract(root,f)).toThrow('clean');
+ f.coaching.focus.action='Call the next objective before chasing.';
+ f.coaching.flags[1].text='Shit fight, fucking awful, hell no.'; expect(()=>validateCoachContract(root,f)).toThrow('maximum 3');
+ f.coaching.flags[1].text='Fucking awful fight.'; expect(()=>validateCoachContract(root,f)).not.toThrow();
 });
 
 it('requires complete role-specific build analysis for every ally when enabled',()=>{

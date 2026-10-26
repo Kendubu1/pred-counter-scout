@@ -198,6 +198,15 @@
   .build-section li::marker { color:var(--muted); }
   .build-section.recommendation { border-top:0; border-left:3px solid var(--accent); background:var(--accent-soft); border-radius:0 9px 9px 0; padding:.7rem .8rem; margin-bottom:.2rem; }
   .build-section.recommendation h3 { color:var(--accent-ink); }
+  .flags-h { margin:.9rem 0 .45rem; font-size:.8rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--text-2); }
+  .game-flags { list-style:none; margin:0; padding:0; display:grid; gap:.45rem; }
+  .game-flags .flag { position:relative; padding-left:1.1rem; line-height:1.5; color:var(--text-0); }
+  .game-flags .flag::before { content:''; position:absolute; left:0; top:.55em; width:.5rem; height:.5rem; border-radius:50%; background:var(--red); }
+  .game-flags .flag.good::before { background:var(--green); }
+  .flag-evidence { margin-top:.8rem; font-size:.82rem; color:var(--text-1); }
+  .flag-evidence > summary { cursor:pointer; color:var(--text-2); }
+  .flag-evidence p { margin:.6rem 0 .2rem; }
+  .flag-evidence ul { margin:0; padding-left:1.1rem; line-height:1.55; }
   .build-help { color:var(--text-2); font-size:.8rem; line-height:1.6; margin:.5rem 0 1rem; }
   .evidence-section { margin:1rem 0; }
   .evidence-section > summary { padding:.8rem 0; cursor:pointer; font-weight:700; font-size:.86rem; }
@@ -974,7 +983,7 @@ function pgReview(f) {
     const verdict = card(`
       <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap"><b style="color:${resColor}">${f.result.toUpperCase()}</b><span style="color:var(--text-2)">${new Date(f.startTime).toLocaleDateString()} · ${f.durationMin} min</span></div>
       <h2 style="font-size:1.2rem;line-height:1.4;margin:.65rem 0">${esc(co.headline || 'Match review')}</h2>
-      ${co.team ? `<p style="color:var(--text-1);line-height:1.6;margin:0">${esc(co.team)}</p>` : ''}`);
+      ${co.flags?.length ? flagList(co.flags, f) : co.team ? `<p style="color:var(--text-1);line-height:1.6;margin:0">${esc(co.team)}</p>` : ''}`);
     const reflection = f.result === 'loss' && co.lossReflection ? `${eyebrow('What could have changed this game?', '')}<p style="line-height:1.6">${esc(co.lossReflection)}</p>` : '';
     const next = focus?.action || reflection ? card(`${reflection}${focus?.action ? `${eyebrow('Next game', '')}<p style="font-size:1rem;line-height:1.5;margin:0">${esc(focus.action)}</p>` : ''}`) : '';
     const players = card(`${eyebrow('Your team', '')}${us.map((p) => `<div class="plobby coach-player">
@@ -999,6 +1008,16 @@ function pgReview(f) {
     </details>`;
   }
   return head + moments + deepDive + coachEvidence + timeline + worked + lobby + deep;
+}
+
+// Flags format (blunt-flags-v9): the review's ranked "what lost / won it"
+// one-liners, then the engine's evidence for each cited flag, collapsed.
+function flagList(flags, f) {
+  const byId = new Map(((f.interrogation && f.interrogation.gameFlags) || []).map((g) => [g.id, g]));
+  const heading = f.result === 'loss' ? 'What lost it' : 'What won it';
+  const items = flags.map((fl) => { const g = byId.get(fl.ref); const good = g ? g.tone === 'good' : f.result !== 'loss'; return `<li class="flag ${good ? 'good' : 'bad'}">${esc(fl.text)}</li>`; }).join('');
+  const ev = flags.map((fl) => byId.get(fl.ref)).filter(Boolean);
+  return `<h3 class="flags-h">${heading}</h3><ul class="game-flags">${items}</ul>${ev.length ? `<details class="flag-evidence"><summary>Evidence · times, who died where</summary>${ev.map((g) => `<p><b>${esc(g.summary.charAt(0).toUpperCase() + g.summary.slice(1))}</b></p><ul>${g.evidence.map((e) => `<li>${esc(e)}</li>`).join('')}</ul>`).join('')}</details>` : ''}`;
 }
 
 // Build analysis reads as bullets. Newer reviews author short bullet arrays;

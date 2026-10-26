@@ -13,6 +13,8 @@ export function selectReviewScope<T extends { matchId: string }>(games: T[], sco
   });
   return [...new Set(selected)];
 }
+/** Explicit words the flags format budgets (the tone is in the wording, not the swear count). */
+export const PROFANITY = /\b(?:fuck\w*|shit\w*|damn\w*|bitch\w*|bastard\w*|piss\w*|cock\w*|dick\w*|asshole\w*|ass|hell|crap\w*|hard-on)\b/i;
 /** Format guard only. The independent critic still judges truth, usefulness and tone. */
 export function validateCoachContract(root: string, f: any): void {
   const preset = loadCoachingPreset(root);
@@ -48,7 +50,25 @@ export function validateCoachContract(root: string, f: any): void {
   if (preset.layout !== 'concise' || !['paragraph', 'bullets'].includes(preset.playerFormat ?? '')) return;
   if (preset.lossReflection && f.result === 'loss' && !c.lossReflection?.trim()) fail('lossReflection is required for a loss');
   if (f.result === 'win' && c.lossReflection) fail('lossReflection belongs only on losses');
-  const lines: [string, unknown, number][] = [...(c.lossReflection ? [['lossReflection', c.lossReflection, 100] as [string, unknown, number]] : []), ['headline', c.headline, 25], ['team', c.team, 90], ['focus', c.focus?.action, 50], ...(bullets ? Object.entries(c.playerBullets).flatMap(([id, texts]) => (texts as string[]).map((text, i) => [`${id}.${i}`, text, 40] as [string, unknown, number])) : Object.entries(c.perPlayer).map(([id, text]) => [id, text, 80] as [string, unknown, number]))];
+  const flagsFormat = preset.summaryFormat === 'flags';
+  if (flagsFormat) {
+    // Flags replace the team paragraph and the loss reflection (2026-10-26):
+    // 2-4 ranked one-liners, each citing an engine flag (interrogation.gameFlags) or "other".
+    const known = new Set(((f.interrogation?.gameFlags ?? []) as { id: string }[]).map(g => g.id));
+    const flags = c.flags;
+    if (!Array.isArray(flags) || flags.length < 2 || flags.length > 4) fail('flags needs 2-4 entries');
+    for (const [i, fl] of (flags as any[]).entries()) {
+      if (!fl || typeof fl.ref !== 'string' || (fl.ref !== 'other' && !known.has(fl.ref))) fail(`flags.${i} must cite a gameFlags id or "other"`);
+      if (typeof fl.text !== 'string' || fl.text.trim().split(/\s+/).length > 18) fail(`flags.${i} needs one line of at most 18 words`);
+    }
+    const refs = (flags as any[]).map(fl => fl.ref).filter(r => r !== 'other');
+    if (new Set(refs).size !== refs.length) fail('flags cite the same game flag twice');
+    if (c.team?.trim() || c.lossReflection?.trim()) fail('flags replace team and lossReflection; leave them empty');
+    if (PROFANITY.test(c.focus?.action ?? '')) fail('the lesson (focus.action) stays clean');
+    const hits = [c.headline, ...(flags as any[]).map(fl => fl.text), ...Object.values(c.playerBullets ?? {}).flat()].join(' ').match(new RegExp(PROFANITY.source, 'gi')) ?? [];
+    if (hits.length > 3) fail(`profanity is a spotlight: ${hits.length} explicit words, maximum 3`);
+  }
+  const lines: [string, unknown, number][] = [...(c.lossReflection ? [['lossReflection', c.lossReflection, 100] as [string, unknown, number]] : []), ['headline', c.headline, 25], ...(flagsFormat ? (c.flags as any[]).map((fl, i) => [`flags.${i}`, fl.text, 18] as [string, unknown, number]) : [['team', c.team, 90] as [string, unknown, number]]), ['focus', c.focus?.action, flagsFormat ? 35 : 50], ...(bullets ? Object.entries(c.playerBullets).flatMap(([id, texts]) => (texts as string[]).map((text, i) => [`${id}.${i}`, text, 40] as [string, unknown, number])) : Object.entries(c.perPlayer).map(([id, text]) => [id, text, 80] as [string, unknown, number]))];
   for (const [field, text, cap] of lines) {
     if (typeof text !== 'string' || !text.trim()) fail(`${field} is empty`);
     const s = text as string;

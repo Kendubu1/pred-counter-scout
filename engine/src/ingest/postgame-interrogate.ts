@@ -13,6 +13,9 @@
 //   concededMajors— every enemy non-river major with who on our side was dead
 //                   in the prior 60s; nobody dead => `uncontested: true` (five
 //                   alive and it fell anyway — an awareness read, THEORY)
+//   gameFlags     — what lost/won it: inhibitors with no finish, objectives
+//                   bought with deaths, fights started down, struggling
+//                   players, standouts (src/game-flags.ts)
 //
 // Pure local — NO API calls; fully reproducible from the committed kill stream,
 // player rows, and objective timeline.
@@ -21,6 +24,7 @@ import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { PostGameFacts } from '../postgame.js';
+import { gameFlags, type GameFlag } from '../game-flags.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const OUT_DIR = path.join(ROOT, 'data/postgame');
@@ -38,6 +42,8 @@ export interface Interrogation {
   structures?: { usTaken: number; themTaken: number; inhibitorsLost: number; theirPlayerObjDamage: number; ourPlayerObjDamage: number };
   /** A loss the stat sheet says we should have won. Deterministic triggers; when set, the coach owes a `deepDive`. */
   upset?: { isUpset: boolean; reasons: string[] };
+  /** The few things that decided the game (src/game-flags.ts); reviews cite them by id in coaching.flags. */
+  gameFlags?: GameFlag[];
   duoLane?: { ourCarry: string; ourSupport: string; theirCarry: string; theirSupport: string; carryRead: string | null; firstBlood: string | null; firstFangtooth: 'us' | 'them' | null; duoDeathsBefore10: { us: number; them: number }; read: 'ours' | 'theirs' | 'even' } | null;
 }
 
@@ -126,7 +132,7 @@ function interrogate(f: PostGameFacts): Interrogation | null {
   }
   const upset = { isUpset: upsetReasons.length >= 2, reasons: upsetReasons };
   return {
-    support, duoLane, structureLedger, structures, upset,
+    support, duoLane, structureLedger, structures, upset, gameFlags: gameFlags(f),
     vision: {
       usWards: sum(us, 'wardsPlaced'), themWards: sum(them, 'wardsPlaced'),
       usDestroyed: sum(us, 'wardsDestroyed'), themDestroyed: sum(them, 'wardsDestroyed'),

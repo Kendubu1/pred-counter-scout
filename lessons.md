@@ -5317,3 +5317,14 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   time windows blurred ("before minute ten" -> "early"), hedges turned into verdicts,
   alternatives listed without what they trade away, "physical-armor" shortened to "armor".
 - 130ed284 was skipped: another session was mid-critique on it. Condense it after it publishes.
+
+## 2026-10-26 · Reviews lead with flags (blunt-flags-v9)
+- The loss write-ups read as stat ledgers. src/game-flags.ts now computes the deciding flags per game
+  (inhibitors with no finish, an objective bought with deaths, fights started down, a struggling
+  player against their own norm, kill lead without gold lead, closing kill streak, standout) into
+  interrogation.gameFlags; reviews cite them by id, so the writer ranks and phrases but cannot invent.
+- Hand-reading the data overstated twice ("three of the last four fights started down" was two;
+  Orb Prime cost five deaths in the window, not four). Compute first, then write.
+- objectives.ourKills/theirKills count objectives taken, not hero kills; not a bug.
+- Profanity is budgeted by the contract (max 3 explicit words, none in the lesson): the maintainer
+  wants the explicit language on the biggest mistake and the standout, not everywhere.
