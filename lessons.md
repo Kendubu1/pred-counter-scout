@@ -5260,6 +5260,6 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
 - `ui/v6/changes.html` is the ongoing change-notes page (newest first, "Coming next" from
   priorities.md 16–18). Its date cards get share pages like Climb/About; the share
   script now titles them "Oct 25: …" and, with no lede paragraph, previews the first bullets.
-- Menu: Pick & Build, Coach · Meta & guides (Climb, Most banned, Learn Eternals, current
-  patch review) · Experimental · What's new, About. Older patch reviews live at the bottom
+- Menu: Pick & Build, Coach · Meta (Most banned, current patch review) · Learn (Climb,
+  Learn Eternals) · Experimental · What's new, About. Older patch reviews live at the bottom
   of What's new instead of the menu; only What's new carries a "new" tag.

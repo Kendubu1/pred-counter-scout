@@ -6,12 +6,13 @@
   const LINKS = [
     { href: './',                    label: 'Pick & Build',           icon: 'counter-pick',     match: ['', 'index.html'] },
     { href: 'coach.html',            label: 'Coach',                  icon: 'scout',            match: ['coach.html'] },
-    { group: 'Meta & guides' },
-    { href: 'climb.html',            label: 'The Climb — ranked guide', icon: 'power-spike',    match: ['climb.html'] },
+    { group: 'Meta' },
     { href: 'bans.html',             label: 'Most banned',            icon: 'meta-guide',       match: ['bans.html'] },
-    { href: '../learn-eternals.html',label: 'Learn Eternals',         icon: 'eternal-augment',  match: ['learn-eternals.html'] },
     // only the current review; older ones are listed at the bottom of What's new
     { href: '../patch-1.17.2.html',  label: 'Patch 1.17.2 review',    icon: 'patch-strategy',   match: ['patch-1.17.2.html'] },
+    { group: 'Learn' },
+    { href: 'climb.html',            label: 'The Climb — ranked guide', icon: 'power-spike',    match: ['climb.html'] },
+    { href: '../learn-eternals.html',label: 'Learn Eternals',         icon: 'eternal-augment',  match: ['learn-eternals.html'] },
     // Tools still being proven: grouped so nobody mistakes them for finished pages.
     { group: 'Experimental' },
     { href: 'squad.html',            label: '5-stack picker',         icon: 'team-comp',        match: ['squad.html'] },
