@@ -31,7 +31,8 @@ const FANG_PIT: [number, number] = [-5178, 3789];
 const CORES = { dawn: [948, 16292] as [number, number], dusk: [582, -13172] as [number, number] };
 const near = (x: number, y: number, p: [number, number], r: number) => Math.hypot(x - p[0], y - p[1]) <= r;
 const m1 = (sec: number) => Math.round(sec / 6) / 10;
-const fmt = (min: number) => min.toFixed(1);
+const fmt = (min: number) => `${min.toFixed(1)}m`;
+const kGold = (g: number) => `${(g / 1000).toFixed(1)}k`;
 
 /** "at the Orb Prime pit", "in our base", "on the offlane in their half". THEORY at the edges. */
 export function placeOf(x: number, y: number, ourTeam: 'dawn' | 'dusk'): string {
@@ -74,11 +75,11 @@ export function gameFlags(f: any): GameFlag[] {
     if (theirDown.length) ev.push(`Already down on their side by then: ${theirDown.join(', ')}.`);
     for (const m of ourMajorsAfter) {
       const next = ourStructAfter.find((e) => e.sec > m.sec);
-      ev.push(`${NAME[m.type]} at ${fmt(m1(m.sec))}: ${next ? `next structure we took came at ${fmt(m1(next.sec))}, ${fmt((next.sec - m.sec) / 60)} min later` : 'no structure taken after it'}.`);
+      ev.push(`${NAME[m.type]} at ${fmt(m1(m.sec))}: ${next ? `next structure we took came at ${fmt(m1(next.sec))}, ${((next.sec - m.sec) / 60).toFixed(1)} min later` : 'no structure taken after it'}.`);
     }
     const lostAfter = theirLosses.filter((e) => e.sec > first.sec);
     if (lostAfter.length) ev.push(`Meanwhile they took ${lostAfter.length} of our structures, ending with the ${NAME[lostAfter[lostAfter.length - 1]!.type] ?? 'Core'}.`);
-    ev.push(`The game ended ${fmt((endSec - first.sec) / 60)} min after the first inhibitor fell; we never hit their Core.`);
+    ev.push(`The game ended ${((endSec - first.sec) / 60).toFixed(1)} min after the first inhibitor fell; we never hit their Core.`);
     out.push({ id: 'no-close', kind: 'no-close', tone: 'bad', summary: `${inhibs.length} enemy ${inhibs.length === 1 ? 'inhibitor' : 'inhibitors'} down and no finish`, evidence: ev });
   }
 
@@ -118,7 +119,7 @@ export function gameFlags(f: any): GameFlag[] {
     const opp = them.find((q) => q.role === p.role);
     const ev = [`${p.deaths} deaths${p.deaths === maxDeaths ? ', the most in the game' : ''}${d ? ` (their norm on ${p.heroName}: ${d.avg})` : ''}.`];
     if (topKiller && topN >= 3) ev.push(`${topN} of them to ${hero.get(topKiller)}.`);
-    if (opp?.goldEarned && p.goldEarned) ev.push(`Gold ${p.goldEarned} vs ${opp.heroName} ${opp.goldEarned}.`);
+    if (opp?.goldEarned && p.goldEarned) ev.push(`Gold ${kGold(p.goldEarned)} vs ${opp.heroName} ${kGold(opp.goldEarned)}.`);
     out.push({ id: `struggling:${p.pid}`, kind: 'struggling-player', tone: 'bad', pid: p.pid, summary: `${p.heroName} died ${p.deaths} times`, evidence: ev });
   }
 
@@ -129,7 +130,7 @@ export function gameFlags(f: any): GameFlag[] {
   const [gUs, gThem] = [gold(us), gold(them)];
   if (peak >= 4 && gUs && gThem && gUs <= gThem) {
     out.push({ id: 'kills-no-gold', kind: 'kills-no-gold', tone: 'bad', summary: `kill lead never became a gold lead`,
-      evidence: [`Peak kill lead +${peak} at ${fmt(peakAt)}; kills ended ${usK}-${themK}.`, `Team gold ${gUs} vs ${gThem}.`] });
+      evidence: [`Peak kill lead +${peak} at ${fmt(peakAt)}; kills ended ${usK}-${themK}.`, `Team gold ${kGold(gUs)} vs ${kGold(gThem)}.`] });
   }
 
   // 6. The game ended on an enemy kill streak.

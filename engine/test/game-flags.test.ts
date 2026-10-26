@@ -20,8 +20,8 @@ describe('game flags', () => {
     f.events = [ev(1727, 'INHIBITOR', 'us', 'tower', 'offlane'), ev(1770, 'PRIMAL_FANGTOOTH', 'us', 'objective'), ev(2091, 'INNER_TOWER', 'us', 'tower', 'duo'), ev(2268, 'CORE', 'them', 'tower', 'jungle')];
     const g = gameFlags(f).find((x) => x.id === 'no-close')!;
     expect(g.tone).toBe('bad');
-    expect(g.evidence.join(' ')).toMatch(/offlane \(28\.8\)/);
-    expect(g.evidence.join(' ')).toMatch(/Primal Fangtooth at 29\.5: next structure we took came at 34\.9/);
+    expect(g.evidence.join(' ')).toMatch(/offlane \(28\.8m\)/);
+    expect(g.evidence.join(' ')).toMatch(/Primal Fangtooth at 29\.5m: next structure we took came at 34\.9m/);
     f.result = 'win'; expect(gameFlags(f).some((x) => x.id === 'no-close')).toBe(false);
   });
 
