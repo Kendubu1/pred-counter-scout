@@ -5285,3 +5285,11 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   finished items, never the hero average, and show a delta only at 300+ inventories.
 - The per-item reasons reuse item-reviews.json (verified, but written per item class, not per
   hero). Hero-specific item lines would be a new copy pass through pred-scout-coach.
+- Augment copy (augment-reviews.json) was last written Oct 15: 17 lines called a non-pick
+  augment "the default" and 96 of 202 lanes had no line for their current field pick. The
+  writer was never told the field pick. The prompt now marks each role's FIELD PICK
+  (field-pick.ts) and ingest drops any line crowning another augment (default/best/go-to...).
+  Rerun 2026-10-26: 601 lines, 0 rejected, 0 conflicts. Rerun this pass whenever a refresh
+  moves a lane's field pick. `.claude/agents/pred-scout-coach.md` does not load as an agent
+  type (preset text sits above its frontmatter), so the pass ran on general-purpose agents
+  given that file as their brief.
