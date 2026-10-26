@@ -13,6 +13,12 @@
 //   COPY_MODE=prepare npm run review:eternalcards   # emit grounded prompts
 //   (pred-scout-coach agent fills engine/copy-tasks/eternalcards.responses.json)
 //   npm run review:eternalcards                      # verify + write
+//
+// Without fresh responses (the daily refresh: copy-tasks/ is scratch), each lane
+// CARRIES its committed line for every Eternal the page still shows, re-verified
+// against today's facts, and lines for Eternals that left the lane's top list
+// are pruned. So the daily data drift that drops an Eternal from a lane no
+// longer leaves a stale card line behind (Steel offlane / Vermis, 2026-10-26).
 
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
@@ -28,8 +34,9 @@ const FIXES = path.join(ROOT, 'data/aggregates/eternal-card-fixes.json');
 async function main() {
   const { augs, heroBySlug, eternals } = loadEternalInputs();
   const fixes = existsSync(FIXES) ? (JSON.parse(readFileSync(FIXES, 'utf8')) as { lanes: Record<string, Record<string, string>> }).lanes ?? {} : {};
+  const prev = existsSync(OUT) ? (JSON.parse(readFileSync(OUT, 'utf8')) as { heroes?: Record<string, Record<string, Record<string, string>>> }).heroes ?? {} : {};
   const out: Record<string, Record<string, Record<string, string>>> = {};
-  let written = 0, rejected = 0, judged = 0;
+  let written = 0, rejected = 0, judged = 0, carried = 0, pruned = 0;
 
   for (const [slug, cells] of Object.entries(augs.heroes)) {
     const hero = heroBySlug.get(slug);
@@ -46,9 +53,20 @@ async function main() {
         const parsed = JSON.parse(raw) as Record<string, string>;
         const allowed = buildAllowed([], [facts]);
         const laneFix = fixes[id] ?? {};
+        const shown = new Set(ets.map((e) => e.name));
+        for (const et of Object.keys(prev[slug]?.[role] ?? {})) if (!shown.has(et)) pruned++;
         for (const e of ets) {
           let line: string | undefined = parsed[e.name];
-          if (!line) continue;
+          if (!line) {
+            // No fresh line: carry the committed one (already judged) if it
+            // still checks out against today's numbers.
+            const kept = prev[slug]?.[role]?.[e.name];
+            if (!kept) continue;
+            if (!verifyLine(kept, allowed)) { rejected++; continue; }
+            ((out[slug] ??= {})[role] ??= {})[e.name] = kept;
+            written++; carried++;
+            continue;
+          }
           if (!verifyLine(line, allowed)) { rejected++; continue; }
           written++;
           // A judged fix replaces the authored line ('' = the judge dropped it).
@@ -70,9 +88,9 @@ async function main() {
   if (!writeAggregate(OUT, {
     generatedAt: new Date().toISOString(),
     source: 'in-session Claude Code agent (pred-scout-coach) over each hero/role facts block (kit, lane augment, data/game-data/eternals.json majors + field minors) only; every number ground-checked, failing lines dropped; independent-critic fixes re-applied from eternal-card-fixes.json',
-    written, rejected, heroes: out,
+    written, rejected, carried, pruned, heroes: out,
   })) return;
-  console.log(`\n${written} Eternal lines written, ${rejected} rejected, ${judged} judged fixes re-applied -> data/aggregates/eternal-cards.json`);
+  console.log(`\n${written} Eternal lines written (${carried} carried from the committed file), ${rejected} rejected, ${pruned} pruned (Eternal no longer shown), ${judged} judged fixes re-applied -> data/aggregates/eternal-cards.json`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
