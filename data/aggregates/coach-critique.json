@@ -1,15 +1,54 @@
 {
- "generatedAt": "2026-10-26T20:00:03.719Z",
+ "generatedAt": "2026-10-26T20:11:07.084Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
  "reviewedDigests": {
-  "130ed284-ea30-49eb-9e2a-af154c091cfd": "849e3add3fa7ff4cde4612022641e527bfa28957c48414e3d57ab2a5cdec021d"
+  "5e1df3fa-f82c-4eb8-a58e-47b3e9166b12": "dac263a72fed7eba82234e987697460faa3cdadc4d0d2f9d679feaabd292f339"
  },
- "reviewedLines": 49,
- "flaggedLines": 0,
- "agreementRate": 1,
- "rewritesGrounded": 0,
+ "reviewedLines": 95,
+ "flaggedLines": 6,
+ "agreementRate": 0.937,
+ "rewritesGrounded": 6,
  "rewritesDropped": 0,
- "applied": 0,
+ "applied": 6,
  "unmatched": 0,
- "games": {}
+ "games": {
+  "5e1df3fa-f82c-4eb8-a58e-47b3e9166b12": [
+   {
+    "quote": "Legion played the offlane like a siege engine: the enemy offlane outer tower and inhibitor both fell to Legion, and both trips to mid before the lane opened scored a kill, the second paying off with the team's Fangtooth.",
+    "severity": "high",
+    "issue": "ungrounded: structure events record only the taking side, not that Legion took the offlane outer tower or inhibitor",
+    "rewrite": "Legion's two trips to mid before the offlane opened both scored a kill, on Serath and then Renna, and the second paid off with the team's Fangtooth."
+   },
+   {
+    "quote": "Ten deaths, the most in the game, and Serath took five. Twoattack farmed well over the recorded Kira norm and took down the enemy duo outer tower, but the carry spent the game as Serath's favorite fucking snack.",
+    "severity": "high",
+    "issue": "ungrounded: the duo outer tower is recorded as a team take, not credited to Kira",
+    "rewrite": "Ten deaths, the most in the game, and Serath took five. Twoattack farmed well over the recorded Kira norm, but the carry spent the game as Serath's favorite fucking snack."
+   },
+   {
+    "quote": "The objective trade still leaked: the enemy took two of three Fangtooths and the second Primal Fangtooth, and four wards placed sat well under the recorded Aurora norm. Before each Fangtooth, Aurora calls the timer and where Serath last showed.",
+    "severity": "med",
+    "issue": "implies Aurora's low ward count caused the objective losses; ward totals cannot prove pit coverage, and the source gives the actual dead state",
+    "rewrite": "The enemy took two of three Fangtooths and the second Primal Fangtooth, the second Fangtooth with Aurora dead. Before each Fangtooth, Aurora calls the timer and where Serath last showed."
+   },
+   {
+    "quote": "Serath was the real threat, killing Kira five times with crowd-control-immune Heaven's Fury dives.",
+    "severity": "med",
+    "issue": "ungrounded execution claim: no cast telemetry shows Heaven's Fury in those kills",
+    "rewrite": "Serath was the real threat, killing Kira five times, more than any other enemy."
+   },
+   {
+    "quote": "Every item carries physical penetration, raising rifle damage and clearing the Saturation Charge and Orbital Sanction thresholds.",
+    "severity": "med",
+    "issue": "wrong mechanic: the Saturation Charge threshold is physical power, not penetration; penetration clears only the Orbital Sanction radius threshold",
+    "rewrite": "Every item carries physical penetration, raising rifle damage and clearing the Orbital Sanction radius threshold; the physical power clears Saturation Charge's too."
+   },
+   {
+    "quote": "The lead needed spending, not more coin-flip fights. The alternative: once the first enemy inhibitor fell, group all five behind an allied minion wave for the next structure, and treat any allied death as the signal to back off until that player respawns. Steel died outside any detected fight and the next fight went 2-3; four allies later died in the Orb Prime window. No plan guarantees the win, but this one ended with nine straight allied deaths.",
+    "severity": "low",
+    "issue": "misleading: 'this one' reads as the alternative plan ending in nine straight deaths, when that was the game as played",
+    "rewrite": "The lead needed spending, not more coin-flip fights. The alternative: once the first enemy inhibitor fell, group all five behind an allied minion wave for the next structure, and treat any allied death as the signal to back off until that player respawns. Steel died outside any detected fight and the next fight went 2-3; four allies later died in the Orb Prime window. No plan guarantees the win, but the game as played ended with nine straight allied deaths."
+   }
+  ]
+ }
 }
