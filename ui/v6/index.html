@@ -1275,7 +1275,7 @@ function beyondCore(a, shown, band, simItems) {
     return `<div class="bc-row">
       <img loading="lazy" data-ipop="${esc(x.slug)}" src="../img/items/${esc(x.slug)}.webp" alt="" title="${esc(x.name)} · tap for details" onerror="this.style.visibility='hidden'">
       <div style="min-width:0">
-        <div class="bc-top"><b>${esc(x.name)}</b>${d != null && d >= 1 ? `<span class="bc-wr up" title="${esc(a.name)} games that finished it win more than games that finished ${esc(a.name)}'s other items">+${d.toFixed(1)} win</span>` : ''}${simSet.has(x.slug) ? '<span class="bc-sim" title="the experimental kit-math sim also builds it">sim builds it too</span>' : ''}</div>
+        <div class="bc-top"><b>${esc(x.name)}</b>${d != null && Math.round(d) >= 1 ? `<span class="bc-wr up" title="Out of 100 ${esc(a.name)} games with ${esc(x.name)}, about ${Math.round(d)} more end in a win than with a typical ${esc(a.name)} item">+${Math.round(d)} ${Math.round(d) === 1 ? 'win' : 'wins'} per 100 games</span>` : ''}${simSet.has(x.slug) ? '<span class="bc-sim" title="the experimental kit-math sim also builds it">sim builds it too</span>' : ''}</div>
         ${why.length || rev ? `<div class="bc-why">${why.join(' ')}${rev ? `${why.length ? ' ' : ''}${esc(rev)}` : ''}</div>` : ''}
       </div>
     </div>`;
@@ -1287,7 +1287,7 @@ function beyondCore(a, shown, band, simItems) {
   if (!body) return '';
   return `<details class="sim-collapse beyond" open><summary>Beyond the core — more items ${esc(a.name)} players build</summary><div class="body">
     ${body}
-    <div class="bc-note">From ${usePlat ? 'Plat+' : 'all-rank'} ${lane} builds and ${esc(a.name)} games this patch. <b>+ win</b> marks an item that wins more than ${esc(a.name)}'s other items. Items in this tab's build are left out. Tap an icon for the item.</div>
+    <div class="bc-note">From ${usePlat ? 'Plat+' : 'all-rank'} ${lane} builds and ${esc(a.name)} games this patch. <b>+3 wins per 100 games</b> means: out of 100 ${esc(a.name)} games, about 3 more wins with that item than with a typical ${esc(a.name)} item. Items in this tab's build are left out. Tap an icon for the item.</div>
   </div></details>`;
 }
 
