@@ -151,7 +151,7 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   a pattern that appears in your own command line (it kills your shell).
 - Change notes: `ui/v6/changes.html` ("What's new", in the menu) is the ongoing
   player-facing changelog. When a user-facing change ships, add it there (newest
-  card first, plain player language, "Coming next" kept in step with
+  card first, "Coming next" last; plain player language, "Coming next" kept in step with
   `priorities.md`), then `npm run ui:share` so section links preview.
 - Confidence rule: any output touching an unverified fixture constant is
   THEORY at best. The harness prints unverified constants on every run.
