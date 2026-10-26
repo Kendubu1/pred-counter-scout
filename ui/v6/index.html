@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script src="sim-flag.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pred Scout — Pick &amp; Build</title>
@@ -566,7 +567,7 @@
 
   <footer>
     <a href="about.html">About &amp; how this works</a> · Game data via pred.gg · not affiliated with Omeda Studios.<br>
-    THEORY = <span id="theoryDef"></span> Evidence deltas carry finished-inventory bias and are comparative, not absolute.
+    <span class="sim-only">THEORY = <span id="theoryDef"></span></span> Evidence deltas carry finished-inventory bias and are comparative, not absolute.
   </footer>
 </div>
 
@@ -631,6 +632,8 @@ const LANE_LABELS = { carry: 'Carry', midlane: 'Midlane', offlane: 'Offlane', ju
 // and the footer (so the win%/verdict/THEORY legends are never duplicated; see
 // docs/ux-rubric.md R3).
 const THEORY_DEF = 'simulator output on constants not yet measured in-game';
+// Experimental sim output on/off, site-wide (sim-flag.js).
+const SIM = window.SIM_ON !== false;
 // The single shared legend for the win-rate colors + verdict tags. Rendered once
 // (the collapsible #uxLegend); the per-row tags keep their own hover tooltips as
 // the on-demand detail layer.
@@ -807,8 +810,6 @@ function matrixCps(mx, our, enemy) {
     verdict: ch === '=' ? 'even' : (ch === 'y') === !flip ? 'you' : 'enemy',
   }));
 }
-const vdots = (cps) => `<div class="dots">${cps.map((c) =>
-  `<div class="dotwrap"><div class="dot ${c.verdict}" title="minute ${c.minute}: ${c.verdict === 'you' ? 'you can win the fight' : c.verdict === 'enemy' ? 'they can win the fight' : 'even'}"></div><div class="m">${c.minute}</div></div>`).join('')}</div>`;
 const invertV = (v) => (v === 'you' ? 'enemy' : v === 'enemy' ? 'you' : 'even');
 const phaseLine = (cps) => {
   const w = (arr) => arr.filter((c) => c.verdict === 'you').length - arr.filter((c) => c.verdict === 'enemy').length;
@@ -829,7 +830,7 @@ async function renderLaneDetail() {
   const filterSt = metaFilterState();
   const laneMeta = (filterSt.boardRoles[role] || []).filter(metaVisible);
   const laneSlugs = INDEX.heroes.filter((h) => h.role === role).map((h) => h.slug);
-  box.innerHTML = '<div class="lanepanel">loading lane sims…</div>';
+  box.innerHTML = '<div class="lanepanel">loading lane…</div>';
   const arts = new Map();
   await Promise.all(laneSlugs.map(async (s) => { const a = await getArtifact(s); if (a) arts.set(s, a); }));
   if (roleFilter !== role) return; // user switched lanes while loading
@@ -843,7 +844,7 @@ async function renderLaneDetail() {
       // blind-pick safety vs the heroes actually in THIS lane's meta,
       // from the all-pairs matrix (artifact matchups are primary-role only)
       let trouble = '';
-      if (mx) {
+      if (mx && SIM) {
         const worst = laneMeta.filter((o) => o.slug !== h.slug)
           .map((o) => ({ o, bad: (matrixCps(mx, h.slug, o.slug) || []).filter((c) => c.verdict === 'enemy').length }))
           .sort((x, y) => y.bad - x.bad)[0];
@@ -856,7 +857,7 @@ async function renderLaneDetail() {
       <div class="lrow" data-slug="${h.slug}">
         <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
         <span><b>${esc(h.name)}</b>${h.badge ? ` <span style="color:var(--gold)">${h.badge === 'sleeper' ? 'off-meta' : 'popular but losing'}</span>` : ''}
-          <div class="sub">${trouble ? esc(trouble) : 'no sim data for this hero'}</div></span>
+          ${SIM ? `<div class="sub">${trouble ? esc(trouble) : 'no sim data for this hero'}</div>` : ''}</span>
         <span class="wrr"><b style="color:${wrColor(h.shrunkWr)}" title="${esc(wrTip(h.shrunkWr))}">${(h.shrunkWr * 100).toFixed(1)}%</b><div class="sub" style="text-align:right">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b class="vtag" style="color:${v.color}" data-tip="${esc(v.tip)}" title="${esc(v.tip)}">${v.label}</b>`; })()}</div></span>
       </div>`;
     }).join('');
@@ -881,7 +882,7 @@ async function renderLaneDetail() {
     if (flex.length) {
       body += `<div class="lp-sub" style="margin-top:.6rem">also flexed into ${esc(LANE_LABELS[role] || role).toLowerCase()} (their main lane is elsewhere):</div><div class="echips">${flex.map((h) => echip(h, true)).join('')}</div>`;
     }
-    body += `<div class="lp-sub" style="margin-top:.6rem">Tap a hero for its full build. The lane-safety notes (“loses lane to …”) are kit-math estimates, not head-to-head records.</div>`;
+    body += `<div class="lp-sub" style="margin-top:.6rem">Tap a hero for its full build.${SIM ? ' The lane-safety notes (“loses lane to …”) are kit-math estimates, not head-to-head records.' : ''}</div>`;
   } else {
     const mx = await getMatrix();
     const metaSlugs = new Set(laneMeta.map((h) => h.slug));
@@ -916,40 +917,49 @@ async function renderLaneDetail() {
         if (h.slug === laneEnemy) continue;
         const direct = arts.get(h.slug)?.matchups.find((m) => m.enemySlug === laneEnemy);
         const cps = direct ? direct.checkpoints : matrixCps(mx, h.slug, laneEnemy);
-        if (!cps) continue;
-        const score = cps.filter((c) => c.verdict === 'you').length - cps.filter((c) => c.verdict === 'enemy').length;
-        rows.push({ slug: h.slug, name: h.name, lane: h.role, cps, score, ev: evOf(h.slug), line: direct?.gameplan ?? phaseLine(cps) });
+        // Sim off: every hero gets a row; ones without a real record sit at the bottom.
+        if (!cps && SIM) continue;
+        const score = cps ? cps.filter((c) => c.verdict === 'you').length - cps.filter((c) => c.verdict === 'enemy').length : 0;
+        rows.push({ slug: h.slug, name: h.name, lane: h.role, cps, score, ev: evOf(h.slug), line: SIM ? (direct?.gameplan ?? phaseLine(cps)) : '' });
       }
       // evidence first (winrate desc), sim-only after (net verdict desc)
-      const rank = (a, b) => (b.ev ? b.ev.wr : -1) - (a.ev ? a.ev.wr : -1) || b.score - a.score;
+      // (sim off: evidence by winrate, then the rest alphabetically — unranked)
+      const rank = (a, b) => (b.ev ? b.ev.wr : -1) - (a.ev ? a.ev.wr : -1) || (SIM ? b.score - a.score : a.name.localeCompare(b.name));
       const evTag = (r) => {
         if (!MU) return '';
-        if (!r.ev) return `<span style="color:var(--text-2);font-size:.6875rem">sim read — no head-to-head sample yet</span>`;
+        if (!r.ev) return SIM ? `<span style="color:var(--text-2);font-size:.6875rem">sim read — no head-to-head sample yet</span>` : '';
         const simCall = r.score > 0 ? 1 : r.score < 0 ? -1 : 0;
         const fieldCall = r.ev.wr >= 52 ? 1 : r.ev.wr <= 48 ? -1 : 0;
-        const check = simCall && fieldCall ? (simCall === fieldCall ? ' · sim agrees' : ' · sim disagrees — trust the record') : '';
+        const check = SIM && simCall && fieldCall ? (simCall === fieldCall ? ' · sim agrees' : ' · sim disagrees — trust the record') : '';
         return `<b style="color:${wrColor(r.ev.wr / 100)}">${r.ev.wr}% win</b> <span style="color:var(--text-2);font-size:.6875rem">over ${r.ev.n.toLocaleString()} lane games${esc(check)}</span>`;
       };
       const rowHtml = (r, showLane) => `
         <div class="lrow" data-slug="${r.slug}" data-role="${r.lane}">
           <img loading="lazy" src="${IMG.hero(r.slug)}" alt="" onerror="this.style.visibility='hidden'">
-          <span><b>${esc(r.name)}</b>${showLane ? ` <span style="color:var(--text-2);font-size:.6875rem;text-transform:capitalize">${esc(LANE_LABELS[r.lane] || r.lane)}</span>` : ''} <span style="margin-left:.25rem">${evTag(r)}</span><div class="sub">${esc(r.line)}</div></span>
-          ${vdots(r.cps)}
+          <span><b>${esc(r.name)}</b>${showLane ? ` <span style="color:var(--text-2);font-size:.6875rem;text-transform:capitalize">${esc(LANE_LABELS[r.lane] || r.lane)}</span>` : ''} <span style="margin-left:.25rem">${evTag(r)}</span>${r.line ? `<div class="sub">${esc(r.line)}</div>` : ''}</span>
         </div>`;
       // Lane picks first: every hero in the enemy's OWN lane, ranked — your direct
       // mirror-lane options vs them, best first (even when few clearly beat them).
-      const same = rows.filter((r) => r.lane === role).sort(rank).slice(0, 8);
+      const sameAll = rows.filter((r) => r.lane === role).sort(rank);
+      const same = (SIM ? sameAll : sameAll.filter((r) => r.ev)).slice(0, 8);
+      const thin = SIM ? [] : sameAll.filter((r) => !r.ev);
       body += `<div class="lp-sub" style="margin:.2rem 0 .4rem">In their lane (<b>${esc(LANE_LABELS[role])}</b>) — your picks vs <b>${esc(nameOf(laneEnemy))}</b>, best first:</div>`;
-      body += same.map((r) => rowHtml(r, false)).join('') || `<div class="lp-sub">no ${esc(LANE_LABELS[role].toLowerCase())} sim vs ${esc(nameOf(laneEnemy))} yet</div>`;
+      body += same.map((r) => rowHtml(r, false)).join('') || `<div class="lp-sub">${SIM ? `no ${esc(LANE_LABELS[role].toLowerCase())} sim vs ${esc(nameOf(laneEnemy))} yet` : `no ${esc(LANE_LABELS[role].toLowerCase())} hero has 20+ lane games against ${esc(nameOf(laneEnemy))} yet`}</div>`;
+      if (thin.length) {
+        body += `<div class="lp-sub" style="margin-top:.7rem">Not enough head-to-head games yet — simulated picks for these matchups are switched off while the simulator is being polished:</div>`;
+        body += thin.map((r) => rowHtml(r, false)).join('');
+      }
       // Off-meta answers from other lanes underneath: real evidence or a positive sim read.
-      const cross = rows.filter((r) => r.lane !== role && ((r.ev && r.ev.wr >= 50) || r.score > 0)).sort(rank).slice(0, 8);
+      const cross = rows.filter((r) => r.lane !== role && ((r.ev && r.ev.wr >= 50) || (SIM && r.score > 0))).sort(rank).slice(0, 8);
       if (cross.length) {
         body += `<div class="lp-sub" style="margin-top:.7rem">Off-meta answers from other lanes — strong into <b>${esc(nameOf(laneEnemy))}</b> if they run them off-role:</div>`;
         body += cross.map((r) => rowHtml(r, true)).join('');
       }
-      body += MU
-        ? `<div class="lp-sub" style="margin-top:.4rem">ranked by the REAL head-to-head lane record (ranked games this patch, 20+ per pair) where one exists. The kill-window sim ranks the rest — honestly: measured against real records it calls lane winners only ~45% of the time, so treat sim-only rows as kit theory, not a prediction. Green dots = the sim's stage-by-stage read.</div>`
-        : `<div class="lp-sub" style="margin-top:.4rem">ranked by who wins the fight at each stage (kit-math sim, THEORY until calibrated) — green dots = you win · sims assume each kit's standard build and primary-role income · not head-to-head match data</div>`;
+      body += !SIM
+        ? `<div class="lp-sub" style="margin-top:.4rem">ranked by the real head-to-head lane record (ranked games this patch, 20+ per pair). Matchups with fewer games sit at the bottom, unranked.</div>`
+        : MU
+        ? `<div class="lp-sub" style="margin-top:.4rem">ranked by the REAL head-to-head lane record (ranked games this patch, 20+ per pair) where one exists. The kill-window sim ranks the rest — honestly: measured against real records it calls lane winners only ~45% of the time, so treat sim-only rows as kit theory, not a prediction.</div>`
+        : `<div class="lp-sub" style="margin-top:.4rem">ranked by who wins the fight at each stage (kit-math sim, THEORY until calibrated) · sims assume each kit's standard build and primary-role income · not head-to-head match data</div>`;
     } else {
       body += '<div class="lp-sub">pick the enemy hero — including an off-meta flex via the dropdown — to see who answers them best</div>';
     }
@@ -967,7 +977,7 @@ async function renderLaneDetail() {
       </div>
       ${body}
       ${playersBlock(role)}
-      ${simPickBlock(role)}
+      ${SIM ? simPickBlock(role) : ''}
     </div>`;
   if (window.BrandIcons) window.BrandIcons.hydrate(box);
   bindMetaFilterControls(box);
@@ -1061,7 +1071,7 @@ function renderMetaboard() {
               <span class="n">${esc(h.name)}<span class="g">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b class="vtag" style="color:${v.color}" data-tip="${esc(v.tip)}" title="${esc(v.tip)}">${v.label}</b>`; })()}</span></span>
               <span class="wr ${wrClass(h.shrunkWr)}">${(h.shrunkWr * 100).toFixed(1)}%</span>
             </div>`).join('')}
-          <button class="lane-more" data-lane="${role}">full lane — more picks, top players &amp; kit-math →</button>
+          <button class="lane-more" data-lane="${role}">full lane — more picks${SIM ? ', top players &amp; kit-math' : ' &amp; top players'} →</button>
         </div>`).join('')}
     </div>`;
   const mb = $('#metaboard');
@@ -1275,7 +1285,7 @@ function beyondCore(a, shown, band, simItems) {
     return `<div class="bc-row">
       <img loading="lazy" data-ipop="${esc(x.slug)}" src="../img/items/${esc(x.slug)}.webp" alt="" title="${esc(x.name)} · tap for details" onerror="this.style.visibility='hidden'">
       <div style="min-width:0">
-        <div class="bc-top"><b>${esc(x.name)}</b>${d != null && Math.round(d) >= 1 ? `<span class="bc-wr up" title="Out of 100 ${esc(a.name)} games with ${esc(x.name)}, about ${Math.round(d)} more end in a win than with a typical ${esc(a.name)} item">+${Math.round(d)} ${Math.round(d) === 1 ? 'win' : 'wins'} per 100 games</span>` : ''}${simSet.has(x.slug) ? '<span class="bc-sim" title="the experimental kit-math sim also builds it">sim builds it too</span>' : ''}</div>
+        <div class="bc-top"><b>${esc(x.name)}</b>${d != null && Math.round(d) >= 1 ? `<span class="bc-wr up" title="Out of 100 ${esc(a.name)} games with ${esc(x.name)}, about ${Math.round(d)} more end in a win than with a typical ${esc(a.name)} item">+${Math.round(d)} ${Math.round(d) === 1 ? 'win' : 'wins'} per 100 games</span>` : ''}${SIM && simSet.has(x.slug) ? '<span class="bc-sim" title="the experimental kit-math sim also builds it">sim builds it too</span>' : ''}</div>
         ${why.length || rev ? `<div class="bc-why">${why.join(' ')}${rev ? `${why.length ? ' ' : ''}${esc(rev)}` : ''}</div>` : ''}
       </div>
     </div>`;
@@ -1333,7 +1343,7 @@ function buildsCard(a, pageBand) {
     const tag = `${(e.m.n || 0).toLocaleString()} games`;
     return `<button class="btab${i === 0 ? ' active' : ''}" data-btab="${i}"><span class="bt-name">${esc(e.m.title || `Build ${i + 1}`)}</span><span class="bt-sub"><span class="btab-wr ${wrBand(e.m.shrunkWr)}">${(e.m.shrunkWr * 100).toFixed(0)}% win</span> · ${tag}</span></button>`;
   }).join('')
-    + `<button class="btab simtab${metas.length ? '' : ' active'}" data-btab="sim" title="experimental kit-math sim — not vetted, not a recommendation"><span class="bt-name">Experimental: ${esc(a.build.title || 'kit-math build')}</span><span class="bt-sub">kit-math sim · not a recommendation</span></button>`;
+    + (!SIM ? '' : `<button class="btab simtab${metas.length ? '' : ' active'}" data-btab="sim" title="experimental kit-math sim — not vetted, not a recommendation"><span class="bt-name">Experimental: ${esc(a.build.title || 'kit-math build')}</span><span class="bt-sub">kit-math sim · not a recommendation</span></button>`);
 
   // One meta-build tab body: icon rail + win%/games + a "why these items" disclosure.
   const metaBody = (e, i) => {
@@ -1355,7 +1365,7 @@ function buildsCard(a, pageBand) {
         </div>
         ${explain}
         ${beyondCore(a, m.items, band, items)}
-        <details class="sim-collapse"><summary>The sim math</summary><div class="body">${simLine}</div></details>
+        ${SIM ? `<details class="sim-collapse"><summary>The sim math</summary><div class="body">${simLine}</div></details>` : ''}
       </div>`;
   };
 
@@ -1403,8 +1413,8 @@ function buildsCard(a, pageBand) {
     <section class="card answer" id="builds-card">
       <div class="bhead">
         <h2>Builds <span class="bandchip${missing ? ' fallback' : ''}" title="${missing ? `No ${BAND_LABELS[pageBand]} builds yet for this lane` : 'Rank filter applied'}">${BAND_LABELS[band]}${missing ? ' · Plat+ not ready' : ''}</span></h2>
-        ${metas.length ? `<div class="bnav">
-          <span class="bcount" aria-live="polite">1 of ${metas.length + 1}</span>
+        ${metas.length + (SIM ? 1 : 0) > 1 ? `<div class="bnav">
+          <span class="bcount" aria-live="polite">1 of ${metas.length + (SIM ? 1 : 0)}</span>
           <button class="bstep" data-bstep="-1" aria-label="Previous build" disabled>‹</button>
           <button class="bstep" data-bstep="1" aria-label="Next build">›</button>
         </div>` : ''}
@@ -1414,7 +1424,7 @@ function buildsCard(a, pageBand) {
       ${bandNote}
       <div class="btabs">${tabs}</div>
       ${metas.map(metaBody).join('')}
-      ${simBody}
+      ${SIM ? simBody : metas.length ? '' : `<div class="muted">No ${esc(a.role)} field builds for ${esc(a.name)} yet.</div>`}
     </section>`;
 }
 
@@ -1466,7 +1476,7 @@ function renderHero(a, roleParam) {
         ${Object.keys(BAND_LABELS).map((b) => `<button data-pageband="${b}" class="${b === pageBand ? 'active' : ''}" aria-pressed="${b === pageBand}">${BAND_LABELS[b]}</button>`).join('')}
       </div>` : '';
   const o = a.build.objectives;
-  const top = a.eternals.top[0];
+  const top = SIM ? a.eternals.top[0] : null; // the sim's Eternal pick
   const dots = (cps) => `<div class="dots">${cps.map((c) =>
     `<div class="dotwrap"><div class="dot ${c.verdict}" title="minute ${c.minute}: ${c.verdict === 'you' ? 'you can win the fight' : c.verdict === 'enemy' ? 'they can win the fight' : 'even'}"></div><div class="m">${c.minute}</div></div>`).join('')}</div>`;
 
@@ -1477,9 +1487,9 @@ function renderHero(a, roleParam) {
   const pend = (typeof PENDING === 'object' && PENDING) ? PENDING[a.slug] : null;
   const pendingBanner = !pend ? '' : `
     <div class="pending-note">
-      <b>New hero — kit math only.</b> ${esc(a.name)}'s numbers below come from the
+      ${SIM ? `<b>New hero — kit math only.</b> ${esc(a.name)}'s numbers below come from the
       current-patch catalog and our own simulator, so the build, matchups and
-      ability breakdown are real. What is missing is the <b>field layer</b>:
+      ability breakdown are real.` : `<b>New hero.</b> ${esc(a.name)}'s abilities below come from the current-patch catalog.`} What is missing is the <b>field layer</b>:
       ${esc(pend.missing.join(', '))}. ${esc(pend.reason.charAt(0).toUpperCase() + pend.reason.slice(1))}.
       We would rather show you nothing there than a win rate we made up — it fills in
       as soon as that evidence can be measured.
@@ -1586,7 +1596,7 @@ function renderHero(a, roleParam) {
         return `
         ${picksBandNote}
         ${mismatch ? `<div style="font-size:.72rem;color:var(--gold);margin-bottom:.45rem">the field sample for ${esc(a.name)} ${esc(activeRole)} is too thin — these picks are ${esc(role)} evidence</div>` : ''}
-        ${(() => { window.__simPick = (a.augments || []).find((x) => x.modeled) ?? null; window.__augTheory = ''; window.__etTheory = ''; return ''; })()}
+        ${(() => { window.__simPick = SIM ? (a.augments || []).find((x) => x.modeled) ?? null : null; window.__augTheory = ''; window.__etTheory = ''; return ''; })()}
         <div style="font-size:.74rem;color:var(--text-2);margin:0 0 .45rem"><b>Augment</b> · recommended as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
         ${(() => {
           // ── BEST AUGMENT = the hero element ── one big block for ranked[0]: icon
@@ -1681,6 +1691,7 @@ function renderHero(a, roleParam) {
           // math, the sim-pick block, and the agreement lines all collapse below.
           if (!ets.length) return '<div class="muted">no Eternal sample for this role yet</div>';
           const renderWhy = (e) => {
+            if (!SIM) return '';
             const sim = simBy.get(e.name.toLowerCase());
             return sim && sim.modeled !== false
               ? (() => {
@@ -1716,13 +1727,13 @@ function renderHero(a, roleParam) {
           // data-epop opens the whole Eternal (eternal-popup.js), with this
           // hero/role's minor picks marked and the clicked minor highlighted.
           const epop = (name, minor) => {
-            const m = fieldMinors(name) || (a.eternals.minorsByName && a.eternals.minorsByName[name.toLowerCase()]);
+            const m = fieldMinors(name) || (SIM && a.eternals.minorsByName && a.eternals.minorsByName[name.toLowerCase()]);
             const picks = m ? [m.minor1, m.minor2].filter((x) => x && x.name) : [];
             const field = picks.some((x) => x.field);
             return ` data-epop="${esc(name)}"${minor ? ` data-epop-minor="${esc(minor)}"` : ''}${picks.length ? ` data-epop-picks="${esc(picks.map((x) => x.name).join('|'))}" data-epop-label="${field ? 'top pick' : 'sim pick'}" data-epop-note="${esc(field ? `the most-picked minors with ${name} for ${a.name} ${role} in ranked games this patch` : `the simulator's minor picks for ${a.name} ${role}`)}"` : ''}`;
           };
           const minorsLine = (name, indent) => {
-            const m = fieldMinors(name) || (a.eternals.minorsByName && a.eternals.minorsByName[name.toLowerCase()]);
+            const m = fieldMinors(name) || (SIM && a.eternals.minorsByName && a.eternals.minorsByName[name.toLowerCase()]);
             const mins = m ? [m.minor1, m.minor2].filter((x) => x && x.name) : [];
             if (!mins.length) return '';
             // Icon + name per pick so the minors read at a glance in draft.
@@ -1848,7 +1859,7 @@ function renderHero(a, roleParam) {
           // The augment THEORY + Eternal THEORY (per-Eternal sim-math/minors, the
           // sim-pick block, the agreement lines) are RELOCATED here, never deleted.
           const augT = window.__augTheory || '', etT = window.__etTheory || '';
-          if (!augT.trim() && !etT.trim()) return '';
+          if (!SIM || (!augT.trim() && !etT.trim())) return '';
           return `<details class="sim-collapse" style="margin-top:.7rem"><summary>Experimental kit-math sim (THEORY · not a recommendation)</summary><div class="body">
             ${augT.trim() ? `<div style="font-size:.6875rem;font-weight:800;letter-spacing:0;color:var(--text-2);margin:.2rem 0 .1rem">Augments</div>${augT}` : ''}
             ${etT.trim() ? `<div style="font-size:.6875rem;font-weight:800;letter-spacing:0;color:var(--text-2);margin:.5rem 0 .1rem">Eternals</div>${etT}` : ''}
@@ -1862,7 +1873,7 @@ function renderHero(a, roleParam) {
     <section class="card lvlcard" id="lvlCard" data-slug="${esc(a.slug)}" hidden></section>
     <details class="sim-collapse howto" id="howtoCard" data-slug="${esc(a.slug)}" hidden></details>
 
-    <section class="card">
+    <section class="card sim-only">
       <h2>Matchups <span class="hint">vs the most-played ${esc(a.role)} you'll face · green = when you can win the fight</span></h2>
       ${(() => {
         if (!a.matchups.length) return '<div style="color:var(--text-2)">no same-role opponents with enough games this patch</div>';
@@ -2125,7 +2136,7 @@ async function renderLearn(a) {
       </div>
     </details>
     <section class="card">
-      <h2>How this kit wants to play <span class="hint">${pend ? 'from the sim — field evidence pending' : 'from the sim + field evidence'}</span></h2>
+      <h2>How this kit wants to play ${SIM ? `<span class="hint">${pend ? 'from the sim — field evidence pending' : 'from the sim + field evidence'}</span>` : ''}</h2>
       ${(() => {
         // The authored, action-first line for THIS lane (hero-coach-lines.json,
         // written by the in-session agent from this role view's own facts and
@@ -2141,7 +2152,7 @@ async function renderLearn(a) {
       ${a.build.archetypes.length ? `<div class="chips" style="margin-top:.6rem">${a.build.archetypes.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>` : ''}
       <div style="margin-top:.6rem;font-size:.72rem;color:var(--text-2)">leveling order and ult timing come from pred.gg's in-game recommended skill path (current patch) · ability tips are AI-written from each ability's own text, machine-checked · the how-to-play line is AI-written from this lane's own kit, build and timings, machine-checked, and reviewed by a second agent; the grey line under it is the engine's own timing summary · patch history is labeled with the patch it describes · combat numbers stay THEORY until in-game calibration · augment-specific tips live on the Game plan tab</div>
     </section>
-    <details>
+    <details class="sim-only">
       <summary>Numbers, data &amp; confidence</summary>
       <div class="body">
         <table>

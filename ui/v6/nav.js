@@ -16,7 +16,8 @@
     // Tools still being proven: grouped so nobody mistakes them for finished pages.
     { group: 'Experimental' },
     { href: 'squad.html',            label: '5-stack picker',         icon: 'team-comp',        match: ['squad.html'] },
-    { href: 'livedraft.html',        label: 'Live draft counter',     icon: 'weakness-counter', match: ['livedraft.html'] },
+    // built on the kit-math sim: hidden while sim-flag.js has the sim switched off
+    { href: 'livedraft.html',        label: 'Live draft counter',     icon: 'weakness-counter', match: ['livedraft.html'], sim: true },
     { sep: true },
     { href: 'changes.html',          label: "What's new",             icon: 'role-path', tag: 'new', match: ['changes.html'] },
     { href: 'about.html',            label: 'About & how this works', icon: 'tap-to-learn',     match: ['about.html'] },
@@ -191,7 +192,7 @@
     drawer.setAttribute('aria-label', 'Site menu');
     drawer.setAttribute('aria-hidden', 'true');
 
-    const items = LINKS.map((l) => {
+    const items = LINKS.filter((l) => !l.sim || window.SIM_ON === true).map((l) => {
       if (l.sep) return '<li class="nav-sep" role="separator"></li>';
       if (l.group) return `<li class="nav-sep" role="separator"></li><li class="nav-group">${l.group}</li>`;
       const active = l.match && l.match.includes(here) ? ' active' : '';
