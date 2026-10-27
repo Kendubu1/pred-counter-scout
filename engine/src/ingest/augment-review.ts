@@ -40,6 +40,9 @@ const verify = verifyLine;
 // called the default. A line that
 // crowns any other augment contradicts the page right beside it.
 const CROWNS = /\b(default|best|go-to|always take|first choice|core pick|standard pick|main pick)\b/i;
+// The page prints how sure the pick is beside the line; copy that restates it
+// goes stale on the next data refresh (a toss-up becomes a clear edge).
+const RESTATES = /\b(clear edge|slight edge|toss-?up|could flip|most played|equal option)\b/i;
 
 async function main() {
   const reviews: Record<string, Record<string, Record<string, string>>> = {};
@@ -51,7 +54,7 @@ async function main() {
       const pick = bestAugment(cell);
       const how = !pick ? '' : pick.confidence === 'clear' ? ' (clear edge over the others)'
         : pick.confidence === 'slight' ? ' (slight edge; could flip)'
-        : pick.confidence === 'toss-up' ? ' (TOSS-UP: the others win about as often; this one has the most games)' : ' (too few games to compare)';
+        : pick.confidence === 'toss-up' ? ' (TOSS-UP: the others win about as often; this one has the best odds so far)' : ' (too few games to compare)';
       lines.push(`ROLE ${role}:${pick ? ` FIELD PICK = id=${pick.id} "${pick.name}"${how}` : ''}`);
       for (const g of cell.augments) {
         const wr = (g.w / g.n * 100).toFixed(1);
@@ -63,7 +66,7 @@ async function main() {
 ${lines.join('\n')}
 
 For each augment in each role, write ONE sentence (max 26 words) on when/why to take it in that role. START with the ACTION (take it / skip it / situational) and WHY in plain language tied to the role's job and the mechanics — that imperative is the point of the sentence. Do NOT lead with or build the sentence around a winrate number; a bare winrate is not advice. You may cite a winrate only as light support at the end if it genuinely changes the call, and you may only use numbers that appear in the data above. Never use the word "points" for winrate. If an augment clearly loses in a role, say what situation would still justify it or advise against it.
-Each role names its FIELD PICK: the augment the site recommends there (highest winrate with enough games). Only the field pick may be called the default, best or go-to. Every other augment is an alternative: say when it is worth taking over the field pick (a matchup, team need or playstyle) or advise skipping it. Never use the words "default", "best", "go-to", "first choice", "core pick", "standard pick" or "main pick" for a non-pick augment. When the field pick is marked TOSS-UP, the alternatives are about as strong: present them as equal options for a specific situation, never as weaker picks.
+Each role names its FIELD PICK: the augment the site recommends there (highest winrate with enough games). Only the field pick may be called the default, best or go-to. Every other augment is an alternative: say when it is worth taking over the field pick (a matchup, team need or playstyle) or advise skipping it. Never use the words "default", "best", "go-to", "first choice", "core pick", "standard pick" or "main pick" for a non-pick augment. When the field pick is marked TOSS-UP, the alternatives are about as strong: present them as equal options for a specific situation, never as weaker picks. Do not restate how sure the pick is (no "clear edge", "slight edge", "toss-up", "could flip", "most played"): the page shows that label beside your line.
 
 Return strict JSON only, shaped: {"<role>": {"<id>": "<sentence>", ...}, ...}`;
     try {
@@ -75,7 +78,7 @@ Return strict JSON only, shaped: {"<role>": {"<id>": "<sentence>", ...}, ...}`;
         for (const g of cell.augments) {
           const line = parsed[role]?.[g.id];
           if (!line) continue;
-          if (verify(line, allowed) && !(pick && pick.id !== g.id && CROWNS.test(line))) {
+          if (verify(line, allowed) && !RESTATES.test(line) && !(pick && pick.id !== g.id && CROWNS.test(line))) {
             ((reviews[slug] ??= {})[role] ??= {})[g.id] = line;
             written++;
           } else rejected++;
