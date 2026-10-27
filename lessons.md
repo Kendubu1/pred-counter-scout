@@ -5402,3 +5402,4 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
 - `npm run perks` now keeps the build-to-pick link per core item (build-links.json) from
   2026-10-27; the tag itself is priorities item 19.
 
+- 2026-10-27: The four 1.16 Eternals (Weald, Knell, Pilow, Satariel) had `deity: null` because the patch notes omit their family. pred.gg exposes it as `perks { data { eternalCategoryData { displayName } } }`, which matches our family for all 12 older Eternals, so it is a trustworthy source: Weald=Harbingers, Knell=Dreadnoughts, Pilow=Divines, Satariel=Anomalies. Read it there for any new Eternal instead of leaving the family blank (it drives hero passives like Ikra's Herald).
