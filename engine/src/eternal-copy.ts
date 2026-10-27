@@ -47,8 +47,9 @@ export function kitTerms(hero: RawHero, augName?: string): string[] {
 }
 
 // Letters, digits and single spaces only, so "Maco Sparkle!" matches "Maco
-// Sparkle" and a catalog name's trailing space doesn't matter.
-const kitNorm = (s: string) => s.toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+// Sparkle", "Electrocute's" matches "Electrocute", and a catalog name's
+// trailing space doesn't matter.
+const kitNorm = (s: string) => s.toLowerCase().replace(/[’']s\b/g, '').replace(/[’']/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 
 /** A card line must name the hero's kit (an ability or the lane augment):
  *  the maintainer asked how each Eternal works with THIS hero (2026-10-27), and
