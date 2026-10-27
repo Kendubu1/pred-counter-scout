@@ -5386,3 +5386,19 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   (Plat+) pushed Lotus (1,647 games, 18% of junglers, tied with the lead) off Aurora jungle.
   Display order is now lead, options with enough games, then few-games fillers (shownOptions and
   the page's list order). A row's slot is earned by being a real option, not by a lucky sample.
+
+## 2026-10-27 — pred.gg comparison: their pick panel is per build
+
+- Maintainer screenshots (Aurora, Revenant, Steel, Mourn, Belica): pred.gg's Augments / Eternals /
+  Crests panel counts only the games of the build selected above it (Revenant Crit/Sustain 287 =
+  144 + 87 + 56). That is why its rows read 55-61% (they inherit the build's win rate) and why its
+  samples are small. Hero-level, our ranked sample matches pred.gg's own lane stats: 0.91 win-rate
+  correlation over 114 lanes, median gap 0.6 pt; we hold ~38% of their games because they span all
+  of 1.17 and we count 1.17.2 only (Belica mid differs 2.6 pt: nerfed in 1.17.2).
+- Scored with our own test, 6 of 8 of their per-build leads were toss-ups. The build mostly moves
+  the level, rarely the pick; the real exception was Revenant's Hellfire Blast (worst lane-wide,
+  level inside Crit/Sustain).
+- pred.gg serves a decoy page to automated browsers: don't scrape it; ask for screenshots.
+- `npm run perks` now keeps the build-to-pick link per core item (build-links.json) from
+  2026-10-27; the tag itself is priorities item 19.
+

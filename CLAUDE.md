@@ -128,7 +128,10 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   each player's purchase log, replacing the gated coreBuild pull; since
   2026-10-25 it also tags each row by the player's rank AT MATCH TIME via one
   aliased GraphQL match(by: { id }) call per page (src/ingest/match-rank.ts) and
-  keeps Gold+ and Plat+ sub-counts; the page shows only All ranks / Plat+ through
+  keeps Gold+ and Plat+ sub-counts; since 2026-10-27 it also keeps the
+  build-to-pick link (per core item: the augment / Eternal / crest that player ran,
+  all ranks, from linksFrom) in data/aggregates/build-links.json, the input for
+  priorities item 19; the page shows only All ranks / Plat+ through
   one page-level rank filter — never tag rank from the ladder, which is CURRENT
   rank and reads ~+3 pt high),
   `npm run buildstats` (the old coreBuild pull; gated at our tier, no longer in

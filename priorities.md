@@ -431,6 +431,30 @@ snapshot exists, so hide the filter while there is a single option.
 - Done when: the meta board can show 1.17.2-only numbers from committed snapshots,
   with zero API calls from the site.
 
+## 19. Build-dependent picks — tag when the build changes the augment / Eternal / crest (backlogged 2026-10-27)
+
+Maintainer, comparing with pred.gg: pred.gg's Augments / Eternals / Crests panel
+shows only the games of the build selected above it (augment counts sum to the
+build's match count), and "the build influences both choices". Our picks are
+lane-wide. Data collection STARTED 2026-10-27: `npm run perks` now keeps, per
+hero-role and per core item, the augment / Eternal / crest each player ran
+(perk-stream.json `links`, consumer `data/aggregates/build-links.json`, all
+ranks, counted from `linksFrom`).
+
+Done when: for each hero-role and pick, (1) signature items = core items bought
+much more often by players on that pick than by players on the others; (2) a
+pairing test on LIFT (pick win rate minus that item group's own win rate, so a
+60% build doesn't inflate its picks) inside vs outside the signature items;
+tag only at >= 3 pt difference, >= 95% sure (many tests), 100+ games each side;
+(3) one line under the pick / on the Builds card ("Players on The Gloom usually
+finish Oblivion Crown or Overseer; Cascade players lean Noxia") only when the
+tag triggers; broad stat-family styles (crit / attack speed / magical power /
+sustain / tank / enchanter, from items.json stats) only where a hero's builds
+actually split (Zinx carry, Belica on-hit vs burst). First lanes expected:
+Ikra mid (The Gloom 48.2% vs Cascade 42.7%), Revenant carry (Hellfire Blast
+48.3% lane-wide but level with Quickdraw inside Crit/Sustain), Belica mid.
+Harness green, What's new card, lessons.md, committed.
+
 ## Parked ideas (not yet scheduled)
 
 - Comfort-vs-meta flex logic (parked by maintainer 2026-06-12): when a

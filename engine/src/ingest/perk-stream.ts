@@ -64,7 +64,12 @@ interface CountCell extends NW { augments: Record<string, NW>; eternals: Record<
 // gold: the same counts for rows whose player was Gold or higher IN THAT GAME
 // (rank at match time, see match-rank.ts), counted from goldFrom onward.
 // plat: the same for Platinum or higher, over the same window (a subset of gold).
-interface RoleCell extends CountCell { gold?: CountCell; plat?: CountCell }
+// links: per core item (any of the player's first three completed Epic items),
+// the augment / Eternal / crest that player ran with it — the build-to-pick link
+// pred.gg's per-build panel shows. Counted from linksFrom (2026-10-27) onward,
+// all ranks only; data/aggregates/build-links.json is the consumer file.
+interface LinkCell extends NW { augments: Record<string, NW>; eternals: Record<string, NW>; crests: Record<string, NW> }
+interface RoleCell extends CountCell { gold?: CountCell; plat?: CountCell; links?: Record<string, LinkCell> }
 interface State {
   source: string; note: string; generatedAt: string;
   patch: string | null; patchReleasedAt: string;
@@ -77,6 +82,8 @@ interface State {
   coresFrom?: string;
   /** Gold+ and Plat+ sub-counts started here, so their window is shorter. */
   goldFrom?: string;
+  /** The build-to-pick links (RoleCell.links) started here: their window is shorter still. */
+  linksFrom?: string;
   /** 'match-time': the rank each player held in that game. Counts made on any
    *  other basis (the 2026-10-24 ladder proxy, a player's CURRENT rank) are
    *  dropped and goldFrom restarts when this is missing. */
@@ -142,6 +149,7 @@ async function main() {
     if (prev && !fresh) console.log(`Gold+ basis -> rank at match time; Gold+ counts restart at ${st.goldFrom}`);
   }
   st.goldFrom ??= new Date(st.cursor * 1000).toISOString();
+  st.linksFrom ??= new Date(st.cursor * 1000).toISOString();
   if (fresh && prev) console.log(`patch changed (${prev.patch} -> ${meta.patch}); starting a fresh window`);
   console.log(`match stream from ${new Date(st.cursor * 1000).toISOString()} (${fresh ? 'fresh' : 'resuming'}), up to ${MAX_REQUESTS} requests`);
   // Matchup build counts ride the same pages (data/aggregates/build-matchups.json).
@@ -214,6 +222,13 @@ async function main() {
           if (core.length === 3) bump((c.cores ??= {}), core.join('|'), won);
         };
         count(cell);
+        for (const item of core) {
+          const l = ((cell.links ??= {})[item] ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} });
+          l.n++; if (won) l.w++;
+          if (lo.augment) bump(l.augments, lo.augment.id, won);
+          if (lo.eternal) bump(l.eternals, lo.eternal, won);
+          if (lo.crest) bump(l.crests, lo.crest, won);
+        }
         const tier = matchRanks?.get(String(p.playerId));
         if (isGoldPlus(tier)) count((cell.gold ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
         if (isPlatPlus(tier)) count((cell.plat ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
@@ -330,6 +345,34 @@ async function main() {
     goldByRole: goldBuildByRole,
     platByRole: platBuildByRole,
     baselineByRole,
+  }, null, 1));
+
+  // Build-to-pick links -> build-links.json: per hero-role, per core item with
+  // MIN_LINK_GAMES+ games, what those players ran. Read against the hero-role
+  // totals in predgg-augments.json to find each pick's signature items.
+  const MIN_LINK_GAMES = 20;
+  const linkOut: Record<string, Record<string, Record<string, unknown>>> = {};
+  for (const [slug, roles] of Object.entries(st.heroes)) {
+    for (const [role, c] of Object.entries(roles)) {
+      if (c.n < MIN_ROLE_GAMES) continue;
+      for (const [item, l] of Object.entries(c.links ?? {})) {
+        if (l.n < MIN_LINK_GAMES) continue;
+        ((linkOut[slug] ??= {})[role] ??= {})[item] = {
+          n: l.n, w: l.w,
+          augments: sorted(l.augments).map(([id, v]) => ({ id, name: augCatalog[id]?.name ?? id, n: v.n, w: v.w })),
+          eternals: sorted(l.eternals).map(([name, v]) => ({ name, n: v.n, w: v.w })),
+          crests: sorted(l.crests).map(([name, v]) => ({ name, n: v.n, w: v.w })),
+        };
+      }
+    }
+  }
+  writeFileSync(path.join(ROOT, 'data/aggregates/build-links.json'), JSON.stringify({
+    generatedAt: st.generatedAt,
+    source: `pred.gg public match stream (get-matches-since), RANKED, patch ${meta.patch ?? '?'}, counted ${String(st.linksFrom).slice(0, 16)} -> ${st.window.to.slice(0, 16)}. Counted by npm run perks.`,
+    note: 'Per hero -> role -> core item (one of the first three completed Epic items by purchase time): n/w = games with that item, and the augment, Eternal and crest those players ran (n/w each). A player counts once under each of their core items. All ranks only. Window starts at linksFrom, later than the perk window.',
+    linksFrom: st.linksFrom,
+    minGames: MIN_LINK_GAMES,
+    heroes: linkOut,
   }, null, 1));
 
   const cells = Object.values(out).reduce((t, r) => t + Object.keys(r).length, 0);
