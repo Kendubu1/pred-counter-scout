@@ -17,8 +17,13 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.
 const read = (p: string) => JSON.parse(readFileSync(path.join(ROOT, p), 'utf8'));
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.json$/i;
 
-function filmRows(): { rows: FilmRow[]; films: number } {
+// Squad members' games since the current patch, for the Reports page's
+// "Since patch" view: [date, role, heroSlug, heroName, win].
+type RecentGame = [string, string, string, string, boolean];
+
+function filmRows(since: string): { rows: FilmRow[]; films: number; recent: Record<string, RecentGame[]> } {
   const rows: FilmRow[] = [];
+  const recent: Record<string, RecentGame[]> = {};
   let films = 0;
   const dir = path.join(ROOT, 'data/postgame');
   for (const fn of readdirSync(dir).filter((f) => UUID_RE.test(f))) {
@@ -35,16 +40,21 @@ function filmRows(): { rows: FilmRow[]; films: number } {
         kp: tk ? ((p.kills ?? 0) + (p.assists ?? 0)) / tk : null,
         date: (f.startTime ?? '').slice(0, 10) || undefined, win: f.result === 'win', hero: p.heroName,
       });
+      if (p.squadName && (f.startTime ?? '') >= since) (recent[p.squadName] ??= []).push([f.startTime.slice(0, 10), p.role, p.heroSlug, p.heroName, f.result === 'win']);
     }
   }
-  return { rows, films };
+  for (const g of Object.values(recent)) g.sort((a, b) => a[0].localeCompare(b[0]));
+  return { rows, films, recent };
 }
 
 function main() {
   const squad = read('data/artifacts/squad.json');
   const fights = read('data/aggregates/fight-habits.json').members;
   const rot = read('data/aggregates/rotation-habits.json').members;
-  const { rows, films } = filmRows();
+  // "Since patch" = the current patch's release, as recorded by npm run perks.
+  const patch = read('data/aggregates/perk-stream.json');
+  const since: string = (patch.patchReleasedAt ?? '').slice(0, 10);
+  const { rows, films, recent } = filmRows(since);
   const members: Record<string, unknown> = {};
   for (const m of squad.members) {
     let profile: Profile;
@@ -64,6 +74,11 @@ function main() {
       '"Pattern, not proof" marks a link in the games that may have another cause.',
     ],
     members,
+    recent: {
+      since, patch: patch.patch ?? null,
+      note: 'squad games only (the reviewed films), not solo queue',
+      games: Object.fromEntries(squad.members.map((m: { uuid: string; name: string }) => [m.uuid, recent[m.name] ?? []])),
+    },
   };
   writeFileSync(path.join(ROOT, 'data/artifacts/player-reviews.json'), JSON.stringify(out, null, 1) + '\n');
   console.log('-> data/artifacts/player-reviews.json');

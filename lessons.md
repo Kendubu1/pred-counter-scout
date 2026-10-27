@@ -5439,3 +5439,9 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   as few as 10 games; Mr_Meat31 + Cuban at 14-3 moves three players off their best solo lane.
   That is kept but SAID on the page ("why this split"), and Best / Your usual / Worst are all
   scored and displayed with that same rating so the numbers always order correctly.
+- 2026-10-27: Reports lineup got a "Since <patch date>" view (default) next to All-time.
+  player-reviews.json now carries `recent` (each member's squad games since perk-stream's
+  patchReleasedAt: date, role, hero, win). Recent seats blend recent wins against a 10-game prior
+  at the all-time role score; recent heroes need 5+ squad games in that role. Caveat shown on the
+  page: squad games only, and the squad has been winning ~70% since the patch, so recent ratings
+  run high (compare lineups, don't read them as predictions).

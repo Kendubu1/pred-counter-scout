@@ -109,6 +109,10 @@
   .seg { display:flex; background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:3px; gap:3px; }
   .seg button { flex:1; min-height:40px; border:0; border-radius:8px; background:transparent; color:var(--text-1); font-weight:700; font-size:.86rem; }
   .seg button.on { background:var(--bg-3); color:var(--text-0); box-shadow:inset 0 0 0 1px var(--text-2); }
+  .seg.period { margin-bottom:.45rem; background:transparent; border:0; padding:0; }
+  .seg.period button { min-height:36px; font-size:.78rem; border:1px solid var(--border); }
+  .seg.period button.on { background:var(--accent-soft); box-shadow:inset 0 0 0 1px var(--accent); }
+  .alltime { font-size:.7rem; color:var(--text-2); align-self:center; }
   .lu-avg { font-size:.82rem; color:var(--text-1); margin:.7rem 0 .2rem; }
   .lu-avg b { color:var(--text-0); font-size:1.05rem; }
   .lu-row { display:flex; gap:.65rem; padding:.6rem 0; border-bottom:1px solid var(--border); }
@@ -168,7 +172,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
   const goals = profiles.map((p) => p?.goal ?? null);
   const rows = sq.members.map((m, i) => ({ m, goal: goals[i], r: rv?.members?.[m.uuid] }))
     .sort((a, b) => (b.m.current?.points ?? 0) - (a.m.current?.points ?? 0));
-  renderTeam(sq, profiles);
+  renderTeam(sq, profiles, rv);
   host.innerHTML = rows.map(({ m, goal, r }) => {
     const vp = m.current?.points ?? 0, target = goal?.vp ?? 900, peak = goal?.peakAllTime ?? m.peakAllTime ?? 0;
     const pctOf = (x) => Math.min(100, (x / target) * 100);
@@ -201,70 +205,102 @@ const ROLES = ['offlane', 'jungle', 'midlane', 'carry', 'support'];
 const RL = { midlane: 'Mid', jungle: 'Jungle', carry: 'Carry', support: 'Support', offlane: 'Offlane' };
 const perms = (a) => a.length <= 1 ? [a] : a.flatMap((x, i) => perms([...a.slice(0, i), ...a.slice(i + 1)]).map((r) => [x, ...r]));
 
-async function renderTeam(sq, profiles) {
+async function renderTeam(sq, profiles, rv) {
   const host = document.getElementById('teambody');
   const pct = (x) => (x * 100).toFixed(0);
   const first = (n) => esc(String(n).split(' ')[0]);
   let fh = null;
   try { fh = await (await fetch('../../data/aggregates/fight-habits.json')).json(); } catch {}
   const ms = sq.roleScores || [];
-  const byUuid = new Map(ms.map((m) => [m.uuid, m]));
   const duo = (a, b) => sq.duoLane?.[`${a}|${b}`] || sq.duoLane?.[`${b}|${a}`] || null;
-  const score = (order) => {
-    const base = order.reduce((t, r, i) => t + (ms[i].scores[r]?.score ?? 0.49), 0);
-    const c = order.indexOf('carry'), su = order.indexOf('support');
-    const d = duo(ms[c].uuid, ms[su].uuid);
-    return { total: base + (d && d.games >= 10 ? (d.shrunkWr - 0.5) * 0.6 : 0), avg: order.reduce((t, r, i) => t + (ms[i].scores[r]?.wr ?? 0.49), 0) / 5, duo: d };
-  };
-  let worst = null;
-  for (const o of perms(ROLES)) { const v = score(o); if (!worst || v.total < worst.v.total) worst = { o, v }; }
-  const bestOrder = ms.map((m) => sq.assignment.find((a) => a.uuid === m.uuid)?.role);
   const usualOrder = ms.map((m) => (sq.assignment.find((a) => a.uuid === m.uuid)?.favRole || '').toLowerCase());
   const usualValid = new Set(usualOrder).size === 5 && usualOrder.every((r) => ROLES.includes(r));
-  const options = [
-    { key: 'best', label: 'Best', o: bestOrder },
-    ...(usualValid ? [{ key: 'usual', label: 'Your usual', o: usualOrder }] : []),
-    { key: 'worst', label: 'Worst', o: worst.o },
-  ].map((x) => ({ ...x, v: score(x.o) }));
 
-  // Heroes for a seat: the player's own games on the hero in THAT role, 20+
-  // games to be suggested, shrunk toward their career rate (k = 25, as the
-  // squad script does). Candidates: the squad script's picks plus every pool
-  // hero they have played in that role, so a most-played hero is not hidden.
-  const heroesFor = (i, role) => {
+  // Two periods. "All-time": squad.ts role scores (career, confidence-weighted).
+  // "Since patch": the same score with the squad games since the patch blended
+  // in, recent wins weighted against a 10-game prior at the all-time score, so a
+  // 5-game run nudges a seat and 25 games move it. Squad games only.
+  const R = rv?.recent;
+  const since = R?.since;
+  const sinceLabel = since ? new Date(since + 'T00:00:00Z').toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' }) : '';
+  const recentOf = (i, role) => (R?.games?.[ms[i].uuid] || []).filter((g) => g[1] === role);
+  const rec = (i, role) => { const g = recentOf(i, role); return { n: g.length, w: g.filter((x) => x[4]).length }; };
+  const K = 10;
+  const roleScore = (period, i, r) => {
+    const base = ms[i].scores[r]?.score ?? 0.49;
+    if (period !== 'recent') return base;
+    const { n, w } = rec(i, r);
+    return (w + K * base) / (n + K);
+  };
+  const score = (period, order) => {
+    const base = order.reduce((t, r, i) => t + roleScore(period, i, r), 0);
+    const d = duo(ms[order.indexOf('carry')].uuid, ms[order.indexOf('support')].uuid);
+    return { total: base + (d && d.games >= 10 ? (d.shrunkWr - 0.5) * 0.6 : 0), duo: d };
+  };
+  const lineups = (period) => {
+    let best = null, worst = null;
+    for (const o of perms(ROLES)) { const v = score(period, o); if (!best || v.total > best.v.total) best = { o, v }; if (!worst || v.total < worst.v.total) worst = { o, v }; }
+    // All-time Best is squad.json's own assignment (same scoring), so the
+    // Reports page and the squad script never disagree.
+    const bestO = period === 'all' ? ms.map((m) => sq.assignment.find((a) => a.uuid === m.uuid)?.role) : best.o;
+    return [
+      { key: 'best', label: 'Best', o: bestO },
+      ...(usualValid ? [{ key: 'usual', label: 'Your usual', o: usualOrder }] : []),
+      { key: 'worst', label: 'Worst', o: worst.o },
+    ].map((x) => ({ ...x, period, v: score(period, x.o) }));
+  };
+
+  // Heroes for a seat. All-time: the player's own games on the hero in THAT
+  // role, 20+ games, shrunk toward their career rate (k = 25, as squad.ts).
+  // Since patch: their squad games on the hero in that role, 5+ games.
+  const chip = (h, txt) => `<span class="hc"><img src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} <i>${txt}</i></span>`;
+  const heroesAllTime = (i, role) => {
     const m = ms[i], prof = profiles.find((p) => p?.player?.uuid === m.uuid);
     const career = prof?.player?.career?.winrate ?? 0.5;
     const cand = new Map();
     for (const h of m.scores[role]?.picks || []) cand.set(h.slug, { slug: h.slug, name: h.name, games: h.games, wr: h.shrunkWr });
     for (const h of prof?.pool || []) for (const r of h.myRoles || []) {
       if (r.role !== role || cand.has(h.slug)) continue;
-      const w = r.rawWr * r.games;
-      cand.set(h.slug, { slug: h.slug, name: h.name, games: r.games, wr: (w + 25 * career) / (r.games + 25) });
+      cand.set(h.slug, { slug: h.slug, name: h.name, games: r.games, wr: (r.rawWr * r.games + 25 * career) / (r.games + 25) });
     }
     const all = [...cand.values()];
     const ok = all.filter((h) => h.games >= 20).sort((a, b) => b.wr - a.wr).slice(0, 2);
-    if (ok.length) return ok.map((h) => `<span class="hc"><img src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} <i>${pct(h.wr)}% · ${h.games}g</i></span>`).join('');
+    if (ok.length) return ok.map((h) => chip(h, `${pct(h.wr)}% · ${h.games}g`)).join('');
     const most = all.sort((a, b) => b.games - a.games)[0];
     return `<span class="thin">No ${RL[role].toLowerCase()} hero with 20+ games yet${most ? ` (most played: ${esc(most.name)}, ${most.games})` : ''}</span>`;
   };
-  const seat = (i, r) => `${first(ms[i].name)} on ${RL[r].toLowerCase()} (${pct(ms[i].scores[r]?.wr ?? 0)}% over ${ms[i].scores[r]?.games ?? 0} games)`;
+  const heroesRecent = (i, role) => {
+    const by = new Map();
+    for (const g of recentOf(i, role)) { const h = by.get(g[2]) ?? { slug: g[2], name: g[3], games: 0, wins: 0 }; h.games++; if (g[4]) h.wins++; by.set(g[2], h); }
+    const ok = [...by.values()].filter((h) => h.games >= 5).sort((a, b) => b.games - a.games || b.wins / b.games - a.wins / a.games).slice(0, 2);
+    if (ok.length) return ok.map((h) => chip(h, `${h.wins}-${h.games - h.wins}`)).join('');
+    return `<span class="thin">No ${RL[role].toLowerCase()} hero with 5+ games since ${esc(sinceLabel)}</span> ${heroesAllTime(i, role).includes('class="hc"') ? `<span class="alltime">all-time:</span> ${heroesAllTime(i, role)}` : ''}`;
+  };
+
+  const seatTxt = (period, i, r) => {
+    const sc = ms[i].scores[r];
+    if (period === 'recent') { const { n, w } = rec(i, r); return n ? `${w}-${n - w} since ${sinceLabel}` : `no games since ${sinceLabel} · ${pct(sc?.wr ?? 0)}% all-time`; }
+    return `${pct(sc?.wr ?? 0)}% · ${sc?.games ?? 0}g`;
+  };
+  const seat = (period, i, r) => `${first(ms[i].name)} on ${RL[r].toLowerCase()} (${seatTxt(period, i, r)})`;
   const why = (opt) => {
     if (opt.key === 'usual') return ['everyone in their usual role'];
+    const rs = (i, r) => roleScore(opt.period, i, r);
     if (opt.key === 'worst') {
-      const weakest = opt.o.map((r, i) => ({ i, r, wr: ms[i].scores[r]?.wr ?? 0 })).sort((a, b) => a.wr - b.wr).slice(0, 2);
-      return [`everyone off their usual role, and the weakest seats are ${weakest.map((w) => seat(w.i, w.r)).join(' and ')}`];
+      const weakest = opt.o.map((r, i) => ({ i, r })).sort((a, b) => rs(a.i, a.r) - rs(b.i, b.r)).slice(0, 2);
+      return [`the weakest seats are ${weakest.map((w) => seat(opt.period, w.i, w.r)).join(' and ')}`];
     }
-    const lines = ms.map((m, i) => opt.o[i] !== usualOrder[i] ? `${seat(i, opt.o[i])} instead of ${RL[usualOrder[i]]?.toLowerCase() ?? 'their usual'} (${pct(m.scores[usualOrder[i]]?.wr ?? 0)}%)` : null).filter(Boolean);
+    const lines = ms.map((m, i) => opt.o[i] !== usualOrder[i] ? `${seat(opt.period, i, opt.o[i])} instead of ${RL[usualOrder[i]]?.toLowerCase() ?? 'their usual'}` : null).filter(Boolean);
     const d = opt.v.duo, c = ms[opt.o.indexOf('carry')], su = ms[opt.o.indexOf('support')];
     if (d && d.games >= 10 && d.shrunkWr > 0.55) lines.push(`${first(c.name)} + ${first(su.name)} go ${Math.round(d.winrate * d.games)}-${d.games - Math.round(d.winrate * d.games)} together in bot lane`);
-    return lines;
+    return lines.length ? lines : ['everyone in their usual role already'];
   };
   const lineupHtml = (opt) => `
-    <div class="lu-avg"><b>${(opt.v.total / 5 * 100).toFixed(1)}%</b> lineup rating${opt.key === 'best' && usualValid ? ` · about +${esc(sq.lineupGainPer100)} wins per 100 over your usual` : ''}</div>
-    ${ROLES.map((role) => { const i = opt.o.indexOf(role), m = ms[i]; const sc = m.scores[role];
+    <div class="lu-avg"><b>${(opt.v.total / 5 * 100).toFixed(1)}%</b> lineup rating${opt.key === 'best' && usualValid ? ` · ${opt.period === 'all' ? `about +${esc(sq.lineupGainPer100)} wins per 100 over your usual` : `vs ${(score(opt.period, usualOrder).total / 5 * 100).toFixed(1)}% for your usual`}` : ''}</div>
+    ${ROLES.map((role) => { const i = opt.o.indexOf(role), m = ms[i];
       return `<div class="lu-row"><span class="lu-role">${RL[role]}</span><div class="lu-main">
-        <div class="lu-name"><a href="coach.html?player=${esc(m.uuid)}">${esc(m.name)}</a><span class="lu-wr">${pct(sc?.wr ?? 0)}% · ${sc?.games ?? 0}g</span></div>
-        <div class="lu-heroes">${heroesFor(i, role)}</div></div></div>`; }).join('')}
+        <div class="lu-name"><a href="coach.html?player=${esc(m.uuid)}">${esc(m.name)}</a><span class="lu-wr">${seatTxt(opt.period, i, role)}</span></div>
+        <div class="lu-heroes">${opt.period === 'recent' ? heroesRecent(i, role) : heroesAllTime(i, role)}</div></div></div>`; }).join('')}
     <div class="lu-why"><b>${opt.key === 'worst' ? 'Why it loses' : opt.key === 'usual' ? 'Baseline' : 'Why this split'}:</b> ${why(opt).map(esc).join('; ')}.</div>`;
 
   const stackNote = (sq.notes || []).find((n) => /^Stack synergy/i.test(n));
@@ -276,9 +312,12 @@ async function renderTeam(sq, profiles) {
   host.innerHTML = `
     ${stackNote ? `<div class="callout">${esc(stackNote.replace(/^Stack synergy:\s*/, '').replace(/^./, (c) => c.toUpperCase()))}</div>` : ''}
     <h3>Lineup when all five queue</h3>
-    <div class="seg" role="tablist">${options.map((x, i) => `<button role="tab" class="${i === 0 ? 'on' : ''}" data-k="${x.key}" aria-selected="${i === 0}">${esc(x.label)}</button>`).join('')}</div>
-    <div id="lineup">${lineupHtml(options[0])}</div>
-    <div class="tnote">Lineup rating: each player's career win rate in that role (thin samples pulled toward their overall rate), averaged, plus a bonus when the carry and support win together in bot lane. Heroes need 20+ of your own games in that role.</div>
+    ${since ? `<div class="seg period" role="tablist" aria-label="Period">
+      <button role="tab" class="on" data-p="recent" aria-selected="true">Since ${esc(sinceLabel)}</button>
+      <button role="tab" data-p="all" aria-selected="false">All-time</button></div>` : ''}
+    <div class="seg pick" role="tablist" aria-label="Lineup"></div>
+    <div id="lineup"></div>
+    <div class="tnote" id="lunote"></div>
 
     <h3>Best pairs to queue</h3>
     ${pairs.map((p) => `<div class="stat"><b>${first(p.aName)} + ${first(p.bName)}</b><span class="n">${pct(p.winrate)}%</span><span class="sub">${p.games} ranked games together</span></div>`).join('')}
@@ -292,10 +331,25 @@ async function renderTeam(sq, profiles) {
     ${conv ? `<h3>Team habit to fix</h3>
     <div class="stat"><b>Turn won fights into objectives</b><span class="n">${pct(conv.cashed / conv.wonFights)}%</span><span class="sub">Of ${conv.wonFights} fights the squad won, only ${conv.cashed} became a tower or major objective soon after. After a won fight, group on the nearest tower or objective before anyone farms.</span></div>
     <div class="tnote">From ${fh.films} reviewed squad games.</div>` : ''}`;
-  host.querySelectorAll('.seg button').forEach((b) => b.addEventListener('click', () => {
-    host.querySelectorAll('.seg button').forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', x === b); });
-    document.getElementById('lineup').innerHTML = lineupHtml(options.find((x) => x.key === b.dataset.k));
+  let period = since ? 'recent' : 'all', pick = 'best';
+  const NOTE = {
+    recent: `Since ${sinceLabel} (patch ${R?.patch ?? ''}): your squad games only (not solo queue), blended into your all-time role record so a short run nudges a seat instead of replacing it. Heroes need 5+ squad games in that role. The squad has been winning a lot lately, so ratings here run high; use them to compare lineups.`,
+    all: "All-time: each player's career win rate in that role (thin samples pulled toward their overall rate), averaged, plus a bonus when the carry and support win together in bot lane. Heroes need 20+ of your own games in that role.",
+  };
+  const draw = () => {
+    const opts = lineups(period);
+    const segPick = host.querySelector('.seg.pick');
+    segPick.innerHTML = opts.map((x) => `<button role="tab" class="${x.key === pick ? 'on' : ''}" data-k="${x.key}" aria-selected="${x.key === pick}">${esc(x.label)}</button>`).join('');
+    segPick.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => { pick = b.dataset.k; draw(); }));
+    document.getElementById('lineup').innerHTML = lineupHtml(opts.find((x) => x.key === pick) || opts[0]);
+    document.getElementById('lunote').textContent = NOTE[period];
+  };
+  host.querySelectorAll('.seg.period button').forEach((b) => b.addEventListener('click', () => {
+    period = b.dataset.p;
+    host.querySelectorAll('.seg.period button').forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', x === b); });
+    draw();
   }));
+  draw();
 }
 </script>
 <script src="section-nav.js"></script>
