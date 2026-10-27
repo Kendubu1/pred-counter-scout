@@ -67,9 +67,12 @@ async function main() {
         for (const e of ets) {
           let line: string | undefined = parsed[e.name];
           if (!line) {
-            // No fresh line: carry the committed one (already judged) if it
-            // still checks out against today's numbers.
-            const kept = prev[slug]?.[role]?.[e.name];
+            // No fresh line: carry the committed one if it still checks out
+            // against today's numbers. A critique round can flag a carried
+            // line too, so its fix chain applies here as well.
+            let kept = prev[slug]?.[role]?.[e.name];
+            if (!kept) continue;
+            for (let hop = 0; kept && hop < 10 && laneFix[kept] !== undefined; hop++) { kept = laneFix[kept]!; judged++; }
             if (!kept) continue;
             if (!ok(kept)) { rejected++; continue; }
             ((out[slug] ??= {})[role] ??= {})[e.name] = kept;
