@@ -5357,3 +5357,5 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   (Kwang offlane Plat+: only Vesh cleared 30 games). Same fix: qualified Eternals lead, runner-up
   slots fill with the most-played below-floor ones, tagged.
 - Check any new band or filter against the thinnest cell it can select, not the main lane.
+
+- 2026-10-27: The four 1.16 Eternals (Weald, Knell, Pilow, Satariel) had `deity: null` because the patch notes omit their family. pred.gg exposes it as `perks { data { eternalCategoryData { displayName } } }`, which matches our family for all 12 older Eternals, so it is a trustworthy source: Weald=Harbingers, Knell=Dreadnoughts, Pilow=Divines, Satariel=Anomalies. Read it there for any new Eternal instead of leaving the family blank (it drives hero passives like Ikra's Herald).
