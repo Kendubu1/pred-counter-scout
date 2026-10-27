@@ -1,35 +1,47 @@
 {
- "generatedAt": "2026-10-27T02:04:21.336Z",
+ "generatedAt": "2026-10-27T02:05:21.383Z",
  "source": "independent (non-author) pred-scout-coach-critic reviewing data/postgame/*.json coaching against the match facts; preference-based / ungrounded lines flagged; grounded rewrites applied back",
  "reviewedDigests": {
-  "bde2abc7-2bb1-4fa0-984b-00adcb4782f7": "fecfb2e722ed9bb6b655d19a90597315b8950afa35339386896f59cd0a4d393b"
+  "68e713af-33d7-4758-a70c-930b5533b994": "b55df7781b1f7fecb6a87eed9a7e8b85662a39adb8276ae80c09ec73243674f4"
  },
- "reviewedLines": 95,
- "flaggedLines": 3,
- "agreementRate": 0.968,
- "rewritesGrounded": 3,
+ "reviewedLines": 99,
+ "flaggedLines": 5,
+ "agreementRate": 0.949,
+ "rewritesGrounded": 5,
  "rewritesDropped": 0,
- "applied": 3,
+ "applied": 5,
  "unmatched": 0,
  "games": {
-  "bde2abc7-2bb1-4fa0-984b-00adcb4782f7": [
+  "68e713af-33d7-4758-a70c-930b5533b994": [
    {
-    "quote": "Steel's Shield Bash, Bull Rush and Shield Slam all stun, so Steel's lockdown is the duo lane danger.",
+    "quote": "No fight won in five: four lost and one even, with the lone Fangtooth the team's only major.",
     "severity": "med",
-    "issue": "Bull Rush stun is unsafe: game_description says it stuns heroes, menu_description says heroes are knocked back and only minions and monsters are stunned",
-    "rewrite": "Steel's Shield Bash and Shield Slam both stun and Bull Rush knocks heroes back, so Steel's lockdown is the duo lane danger."
+    "issue": "ungrounded: the SOURCE major timeline also credits the team two Seedlings, so Fangtooth was not the team's only major",
+    "rewrite": "No fight won in five: four lost, one even; the lone Fangtooth was the game's only epic monster."
    },
    {
-    "quote": "Every item carries critical chance, and Imperator makes critical strikes hit harder.",
+    "quote": "Dynamo next makes each stunned target take more damage, a payoff for Shield Bash, Bull Rush and Shield Slam.",
     "severity": "med",
-    "issue": "Liberator crest carries no critical chance (physical power, attack speed, lifesteal); crests count as items for stat claims",
-    "rewrite": "Every item except the Liberator crest carries critical chance, and Imperator makes critical strikes hit harder."
+    "issue": "kit misread: Bull Rush knocks heroes back and stuns only minions and monsters per the menu text (game text conflicts), so it is not a safe Dynamo trigger on heroes",
+    "rewrite": "Dynamo next makes each immobilized enemy take more damage, a payoff for the Shield Bash and Shield Slam stuns."
    },
    {
-    "quote": "Credited with the duo inner, mid inner and mid inhibitor. All 4 deaths were to Skylar, so Skylar is the one threat to track next game.",
+    "quote": "The monster damage suits the most objective damage in the game; the item adds nothing against Eden's physical damage.",
+    "severity": "med",
+    "issue": "catalog error: Spirit Of Amir carries max health, which does help against physical damage; it lacks armor, not all defense",
+    "rewrite": "The monster damage suits the most objective damage in the game; against Eden's physical damage the item adds health but no armor."
+   },
+   {
+    "quote": "If Eden keeps winning trades, compare Draconum: physical armor and takedown healing, giving up critical chance and attack speed.",
     "severity": "low",
-    "issue": "wrong reference: this enemy Skylar is not in the next game; the advice belongs to this match's fights",
-    "rewrite": "Credited with the duo inner, mid inner and mid inhibitor. All 4 deaths came from Skylar, so Skylar was the one threat to track in every fight."
+    "issue": "catalog error: the core items Draconum would replace (Solaris, Imperator) carry no attack speed, so attack speed is not given up",
+    "rewrite": "If Eden keeps winning trades, compare Draconum: physical armor and takedown healing, giving up the critical chance Solaris or Imperator adds."
+   },
+   {
+    "quote": "Wraith Leggings next adds magical power, penetration and bonus ability damage, the core path toward closing the hero damage gap.",
+    "severity": "low",
+    "issue": "conditional effect stated as flat: the bonus ability damage applies only against low-health heroes",
+    "rewrite": "Wraith Leggings next adds magical power, penetration and bonus ability damage on low-health heroes, the core path to closing the damage gap."
    }
   ]
  }
