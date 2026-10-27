@@ -39,17 +39,23 @@ export function topEternals(cell: AugCell): (FieldEternal & { shrunk: number })[
   return out;
 }
 
-/** Words that tie a line to this hero: ability names and the lane augment. */
+/** Words that tie a line to this hero: ability names and the lane augment.
+ *  Paired names ("Windsurge/Force Push") count as either half. */
 export function kitTerms(hero: RawHero, augName?: string): string[] {
-  return [...(hero.abilities ?? []).map((a) => a.display_name), ...(augName ? [augName] : [])].filter((t) => t && t.length > 2);
+  return [...(hero.abilities ?? []).flatMap((a) => (a.display_name ?? '').split('/')), ...(augName ? [augName] : [])]
+    .map(kitNorm).filter((t) => t.length > 2);
 }
+
+// Letters, digits and single spaces only, so "Maco Sparkle!" matches "Maco
+// Sparkle" and a catalog name's trailing space doesn't matter.
+const kitNorm = (s: string) => s.toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 
 /** A card line must name the hero's kit (an ability or the lane augment):
  *  the maintainer asked how each Eternal works with THIS hero (2026-10-27), and
  *  a line with no kit word is the raw description retold. */
 export function namesKit(line: string, terms: string[]): boolean {
-  const l = line.toLowerCase().replace(/[’']/g, "'");
-  return terms.some((t) => l.includes(t.toLowerCase().replace(/[’']/g, "'")));
+  const l = ` ${kitNorm(line)} `;
+  return terms.some((t) => l.includes(` ${t} `));
 }
 
 const norm = (s: string) => s.toLowerCase().replace(/[’']/g, "'");
