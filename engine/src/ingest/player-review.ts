@@ -33,6 +33,7 @@ function filmRows(): { rows: FilmRow[]; films: number } {
         squadName: p.squadName ?? null, role: p.role, durationMin: f.durationMin,
         deaths: p.deaths ?? 0, wardsPlaced: p.wardsPlaced ?? 0, damageToHeroes: p.damageToHeroes ?? 0, goldEarned: p.goldEarned ?? 0,
         kp: tk ? ((p.kills ?? 0) + (p.assists ?? 0)) / tk : null,
+        date: (f.startTime ?? '').slice(0, 10) || undefined, win: f.result === 'win', hero: p.heroName,
       });
     }
   }

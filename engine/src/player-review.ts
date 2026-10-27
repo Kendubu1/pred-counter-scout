@@ -53,7 +53,41 @@ export interface FightMember { games: number; deaths: number; firstToFall: numbe
 export interface RotationMember { games: number; rotationKills: number; rotationDeaths: number; costHome: number }
 // One player-game in a film, flattened: role, the per-game stats we compare,
 // and squadName (null for lobby players).
-export interface FilmRow { squadName: string | null; role: string; durationMin: number; deaths: number; wardsPlaced: number; damageToHeroes: number; goldEarned: number; kp: number | null }
+export interface FilmRow { squadName: string | null; role: string; durationMin: number; deaths: number; wardsPlaced: number; damageToHeroes: number; goldEarned: number; kp: number | null; date?: string; win?: boolean; hero?: string }
+
+// Recent form: the profile's lane numbers are all-time, which hides a lane the
+// player has turned around lately (Goldilocks324's Wukong jungle went 9-2 from
+// Oct 13 against a 51.1% all-time jungle). From the dated squad films: a lane
+// with 8+ games in the last 30 days (counted back from the newest film) and a
+// win rate of 60%+ that is also 10+ points above its all-time rate.
+export interface HotLane { role: string; games: number; wins: number; allTime: number; hero: string | null; heroGames: number; heroWins: number }
+export function hotLanes(name: string, rows: FilmRow[], p: Profile): HotLane[] {
+  const dated = rows.filter((r) => r.date);
+  if (!dated.length) return [];
+  const newest = dated.reduce((a, r) => (r.date! > a ? r.date! : a), '');
+  const since = new Date(Date.parse(newest) - 30 * 86400e3).toISOString().slice(0, 10);
+  const out: HotLane[] = [];
+  for (const role of p.roles) {
+    const mine = dated.filter((r) => r.squadName === name && r.role === role.role && r.date! >= since);
+    const wins = mine.filter((r) => r.win).length;
+    if (mine.length < 8 || wins / mine.length < 0.6 || wins / mine.length - role.shrunkWr < 0.1) continue;
+    const byHero = new Map<string, { g: number; w: number }>();
+    for (const r of mine) if (r.hero) { const h = byHero.get(r.hero) ?? { g: 0, w: 0 }; h.g++; if (r.win) h.w++; byHero.set(r.hero, h); }
+    const top = [...byHero].sort((a, b) => b[1].g - a[1].g)[0];
+    out.push({ role: role.role, games: mine.length, wins, allTime: role.shrunkWr, hero: top && top[1].g >= 4 ? top[0] : null, heroGames: top?.[1].g ?? 0, heroWins: top?.[1].w ?? 0 });
+  }
+  return out;
+}
+
+function hotTips(hot: HotLane[]): Tip[] {
+  return hot.map((h) => ({
+    kind: 'keep' as const, area: 'lanes' as const, level: (h.games >= 20 ? 'solid' : 'association') as Level, weight: h.wins / h.games - h.allTime,
+    title: `Your ${roleName(h.role)} is on form lately`,
+    finding: `${h.wins} wins in your last ${h.games} ${roleName(h.role)} games (last 30 days), against ${pct(h.allTime)}% all-time.${h.hero ? ` Most of it on ${h.hero}: ${h.heroWins}-${h.heroGames - h.heroWins}.` : ''}`,
+    action: `Keep ${roleName(h.role)}${h.hero ? ` on ${h.hero}` : ''} in your rotation while it is working.`,
+    receipt: `${h.games} squad games in the last 30 days · all-time is your pred.gg career record`,
+  }));
+}
 
 const pct = (x: number, d = 1) => (x * 100).toFixed(d);
 const ROLE_LABEL: Record<string, string> = { midlane: 'mid', carry: 'carry', support: 'support', jungle: 'jungle', offlane: 'offlane' };
@@ -64,7 +98,7 @@ const roleName = (r: string) => ROLE_LABEL[r] ?? r;
 // Lanes: compare roles with 100+ games on the shrunk winrate. A 2-point gap
 // between the best and worst such lane is a lane tip; inside 2 points the
 // player is lane-flexible and the tip says so (hero choice matters more).
-function laneTips(p: Profile): Tip[] {
+function laneTips(p: Profile, hot: HotLane[] = []): Tip[] {
   const solid = p.roles.filter((r) => r.games >= 100).sort((a, b) => b.shrunkWr - a.shrunkWr);
   if (solid.length < 2) return [];
   const best = solid[0], worst = solid[solid.length - 1];
@@ -83,12 +117,28 @@ function laneTips(p: Profile): Tip[] {
   // still wins (Mr_Meat31's support at 50.7% over 507 games) is a backup, not
   // a lane to drop, and it may hold the strengths the lobby tips praise.
   const Best = roleName(best.role)[0].toUpperCase() + roleName(best.role).slice(1);
+  // A lane that is on form lately is never the "weakest" or "avoid" lane,
+  // whatever its all-time number; the on-form tip covers it instead.
+  const hotWorst = hot.find((h) => h.role === worst.role);
+  // Any other lane on form lately (not the best, not the worst) is named on the
+  // tip too, so "queue support" never sits next to a mid lane going 22-7.
+  const hotOther = hot.filter((h) => h.role !== best.role && h.role !== worst.role).sort((a, b) => b.wins / b.games - a.wins / a.games)[0];
+  const also = hotOther ? ` Right now your ${roleName(hotOther.role)} is on form (${hotOther.wins}-${hotOther.games - hotOther.wins}), so it is a strong first pick too.` : '';
+  if (hotWorst) {
+    return [{
+      kind: 'fix', area: 'lanes', level, weight: gap,
+      title: `Queue ${roleName(best.role)} first`,
+      finding: `${Best} is your best lane all-time at ${pct(best.shrunkWr)}%. ${roleName(worst.role)[0].toUpperCase() + roleName(worst.role).slice(1)} is lower all-time (${pct(worst.shrunkWr)}%) but on form lately (${hotWorst.wins}-${hotWorst.games - hotWorst.wins}).`,
+      action: `Put ${roleName(best.role)} first and keep ${roleName(worst.role)} as your second pick while the recent run holds.${also}`,
+      receipt: `${roleName(best.role)} ${best.games} games · ${roleName(worst.role)} ${worst.games} games all-time, ${hotWorst.games} in the last 30 days`,
+    }];
+  }
   if (worst.shrunkWr >= 0.5) {
     return [{
       kind: 'fix', area: 'lanes', level, weight: gap,
       title: `Queue ${roleName(best.role)} first`,
       finding: `${Best} is your best lane at ${pct(best.shrunkWr)}%. Your weakest, ${roleName(worst.role)}, still wins at ${pct(worst.shrunkWr)}%, ${pct(gap)} points lower.`,
-      action: `Put ${roleName(best.role)} first in queue. ${roleName(worst.role)[0].toUpperCase() + roleName(worst.role).slice(1)} is a fine backup, not a lane to drop.`,
+      action: `Put ${roleName(best.role)} first in queue. ${roleName(worst.role)[0].toUpperCase() + roleName(worst.role).slice(1)} is a fine backup, not a lane to drop.${also}`,
       receipt: `${roleName(best.role)} ${best.games} games · ${roleName(worst.role)} ${worst.games} games${ledgerGain(p, worst.role, best.role)}`,
     }];
   }
@@ -96,7 +146,7 @@ function laneTips(p: Profile): Tip[] {
     kind: 'fix', area: 'lanes', level, weight: gap,
     title: `Queue ${roleName(best.role)}, avoid ${roleName(worst.role)}`,
     finding: `${Best} is your best lane at ${pct(best.shrunkWr)}%; ${roleName(worst.role)} is your worst and losing at ${pct(worst.shrunkWr)}%, a ${pct(gap)}-point gap.`,
-    action: `Put ${roleName(best.role)} first in queue and leave ${roleName(worst.role)} off. When you are filled there, play your safest comfort hero.`,
+    action: `Put ${roleName(best.role)} first in queue and leave ${roleName(worst.role)} off. When you are filled there, play your safest comfort hero.${also}`,
     receipt: `${roleName(best.role)} ${best.games} games · ${roleName(worst.role)} ${worst.games} games (raw ${pct(worst.rawWr)}%)${ledgerGain(p, worst.role, best.role)}`,
   }];
 }
@@ -380,11 +430,12 @@ const order = (a: Tip, b: Tip) => LEVEL_ORDER[a.level] - LEVEL_ORDER[b.level] ||
 
 export function buildReview(profile: Profile, pairs: Pair[], fights: Record<string, FightMember>, rot: Record<string, RotationMember>, rows: FilmRow[]): Review {
   const name = profile.player.name;
+  const hot = hotLanes(name, rows, profile);
   const roleCount = new Map<string, number>();
   for (const r of rows) if (r.squadName === name) roleCount.set(r.role, (roleCount.get(r.role) ?? 0) + 1);
   const mainRole = [...roleCount].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
   const tips = [
-    ...laneTips(profile), ...heroTips(profile), ...poolTip(profile), ...duoTip(profile, pairs),
+    ...laneTips(profile, hot), ...hotTips(hot), ...heroTips(profile), ...poolTip(profile), ...duoTip(profile, pairs),
     ...deathTips(name, fights, profile), ...rotationTips(name, rot, mainRole), ...fightTip(name, fights),
     ...lobbyTips(name, rows),
   ];

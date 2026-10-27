@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildReview, lobbyTips, type FilmRow, type Profile } from '../src/player-review.js';
+import { buildReview, hotLanes, lobbyTips, type FilmRow, type Profile } from '../src/player-review.js';
 
 const hero = (name: string, games: number, rawWr: number, edge: number, deathsPerGame = 4) =>
   ({ slug: name.toLowerCase(), name, games, rawWr, shrunkWr: rawWr, edge, deathsPerGame });
@@ -47,6 +47,20 @@ describe('player review', () => {
     const lane = r.fix.find((t) => t.area === 'lanes')!;
     expect(lane.title).toBe('Queue offlane first');
     expect(lane.action).toContain('fine backup');
+  });
+
+  it('a lane on form in the last 30 days is never called weakest or "avoid"', () => {
+    const row = (date: string, win: boolean): FilmRow => ({ squadName: 'A', role: 'offlane', durationMin: 30, deaths: 3, wardsPlaced: 5, damageToHeroes: 15000, goldEarned: 12000, kp: 0.5, date, win, hero: 'Wukong' });
+    const rows = [...Array.from({ length: 9 }, (_, i) => row(`2026-10-${10 + i}`, true)), ...Array.from({ length: 3 }, (_, i) => row(`2026-10-${20 + i}`, false))];
+    expect(hotLanes('A', rows, profile())[0]).toMatchObject({ role: 'offlane', games: 12, wins: 9, hero: 'Wukong' });
+    const r = buildReview(profile(), [], {}, {}, rows);
+    const lane = r.fix.find((t) => t.area === 'lanes')!;
+    expect(lane.title).toBe('Queue mid first');
+    expect(lane.title).not.toContain('avoid');
+    expect(r.keep.map((t) => t.title)).toContain('Your offlane is on form lately');
+    // The same run spread over months is outside the 30-day window: no override.
+    const old = rows.map((x, i) => ({ ...x, date: `2026-0${1 + (i % 9)}-01` }));
+    expect(hotLanes('A', old, profile())).toEqual([]);
   });
 
   it('judges the fights gap against the squad average gap, not against zero', () => {

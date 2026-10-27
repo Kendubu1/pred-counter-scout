@@ -5420,3 +5420,8 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   are harder); it now compares each member's gap with the squad's average gap. Lesson: before
   shipping a per-person rule, run it on everyone and check whether a "finding" is true of all of
   them, which makes it a property of the measure, not the person.
+- 2026-10-27 (review pass 2): the profile's lane numbers are ALL-TIME career, which hid a
+  turnaround (Goldilocks324 Wukong jungle 9-2 since Oct 13, jungle 11-7 over 30 days, vs 51.1%
+  all-time). The dated squad films now give a 30-day recent-form check (8+ games, 60%+, 10+ points
+  over all-time): such a lane gets an "on form" tip and is never the "weakest"/"avoid" lane. A true
+  per-season split would need a new pred.gg per-split role pull (not done; data policy applies).
