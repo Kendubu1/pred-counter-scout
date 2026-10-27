@@ -78,9 +78,14 @@ export interface EdgeRanking<T> {
   below: Ranked<T>[];
 }
 
-/** The rows a page list shows: ranked first, then under-30 ones filling slots. */
+/** The rows a page list shows: the lead, then options with enough games to
+ *  lead (so tied, well-played picks like Lotus on Aurora jungle are never
+ *  pushed off by a 52-game Vermis), and only then few-games and under-30 ones
+ *  filling the slots left. */
 export function shownOptions<T extends NW>(r: EdgeRanking<T>, max = 3): Ranked<T>[] {
-  return [...r.ranked, ...r.below].slice(0, max);
+  const [lead, ...rest] = r.ranked;
+  if (!lead) return r.below.slice(0, max);
+  return [lead, ...rest.filter((x) => !x.few), ...rest.filter((x) => x.few), ...r.below].slice(0, max);
 }
 
 export interface RankOpts<T> {

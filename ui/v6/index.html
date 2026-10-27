@@ -1277,7 +1277,9 @@ function rankByEdge(xs, cellGames, prior) {
   const lead = byShrunk.find((x) => !x.few);
   if (!lead) { out.thin = true; out.ranked = byShrunk.sort((a, b) => b.n - a.n); return out; }
   const others = byShrunk.filter((x) => x !== lead);
-  out.ranked = [lead, ...others];
+  // List order (and so which rows a 3-slot list keeps): options with enough games
+  // first, few-games ones after, so a tied, well-played pick is never pushed off.
+  out.ranked = [lead, ...others.filter((x) => !x.few), ...others.filter((x) => x.few)];
   // Only options that could lead move the label; few-games ones are just listed.
   const rivals = others.filter((x) => !x.few);
   if (!rivals.length) return out; // one option with enough games: no edge claimed

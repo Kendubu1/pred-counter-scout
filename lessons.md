@@ -5381,3 +5381,8 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   "whatever everyone uses", which is what the maintainer asked us not to do.
 - Toss-up UI: the other options open by default with tied ones tagged Even; Eternal rows show raw
   win rates (the order uses the adjusted odds), so the number beside a pick matches its record.
+- Regression caught by the maintainer the same day: the three-row Eternal list took the top three
+  by expected odds INCLUDING few-games options, so a 52-game Vermis (All ranks) and a 5-game Nihil
+  (Plat+) pushed Lotus (1,647 games, 18% of junglers, tied with the lead) off Aurora jungle.
+  Display order is now lead, options with enough games, then few-games fillers (shownOptions and
+  the page's list order). A row's slot is earned by being a real option, not by a lucky sample.

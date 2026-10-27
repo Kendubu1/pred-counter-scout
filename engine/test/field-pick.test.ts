@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { bestAugment, bestCrest, bestMinors, fieldPickOf, leadFloor, phi, rankBand, rankByEdge, rankedEternals, sampleFloor } from '../src/field-pick.js';
+import { bestAugment, bestCrest, bestMinors, fieldPickOf, leadFloor, phi, rankBand, rankByEdge, rankedEternals, sampleFloor, shownOptions } from '../src/field-pick.js';
 
 describe('field pick: the best statistical edge leads, never the sim', () => {
   it('scales the sample floor with the cell, clamped 30..300', () => {
@@ -114,5 +114,16 @@ describe('field pick: the best statistical edge leads, never the sim', () => {
     const r = rankByEdge([{ name: 'Lucky', n: 6, w: 6 }, { name: 'Common', n: 8, w: 4 }], 14);
     expect(r).toMatchObject({ thin: true, confidence: null });
     expect(r.ranked[0]!.name).toBe('Common');
+  });
+
+  it('a three-row list keeps tied, well-played picks over few-games ones (Aurora jungle Lotus, 2026-10-27)', () => {
+    const ets = [
+      { name: 'Krix', n: 3248, w: 1747 }, { name: 'Lotus', n: 1647, w: 922 }, { name: 'Vesh', n: 1436, w: 786 },
+      { name: 'Idrisil', n: 720, w: 387 }, { name: 'Xyris', n: 525, w: 297 }, { name: 'Nihil', n: 305, w: 175 },
+      { name: 'Vermis', n: 52, w: 33 }, { name: 'Knell', n: 240, w: 133 },
+    ];
+    const shown = shownOptions(rankByEdge(ets, 9019)).map((e) => e.name);
+    expect(shown).toContain('Lotus');
+    expect(shown).not.toContain('Vermis');
   });
 });
