@@ -1306,7 +1306,7 @@ function edgeNote(r, kind) {
   else if (r.confidence === 'slight') txt = `Slight edge over ${esc(next.name)} (${Math.round(r.pBeat * 100)}% sure it's ahead), so this could flip as games come in.`;
   else {
     const others = r.contenders.filter((x) => x !== lead);
-    txt = `Toss-up: ${others.map((x) => `${esc(x.name)} (${x.n.toLocaleString()} games)`).join(', ')} ${others.length > 1 ? 'win' : 'wins'} about the same. ${esc(lead.name)} has the most games, so its number is the most reliable.`;
+    txt = `Toss-up: ${others.map((x) => `${esc(x.name)} (${x.n.toLocaleString()} games)`).join(', ')} ${others.length > 1 ? 'win' : 'wins'} about the same. Of these, ${esc(lead.name)} has the most games, so its number is the most reliable.`;
   }
   return `<div style="font-size:.6875rem;line-height:1.45;color:var(--text-2);margin:.3rem 0 0">${txt}</div>`;
 }
