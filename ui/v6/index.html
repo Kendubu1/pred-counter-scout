@@ -1238,56 +1238,74 @@ function saveBand(b) { try { localStorage.setItem(BAND_KEY, b); } catch { /* pri
 const PLAT_SINCE = 'Oct 25';
 
 // ── OPENING PICKS: best statistical edge ── mirrors engine/src/field-pick.ts
-// rankByEdge; keep the two in step. Win rates shrink toward the lane average by
-// empirical Bayes (weight grows with games, 30-game junk floor), the highest
-// shrunk rate leads, and the page says how sure: P(lead beats the next) >= 90%
-// clear, >= 70% slight, else a toss-up led by the most-played tied option.
-const PICK_MIN_GAMES = 30;
+// rankByEdge / bandPrior; keep the two in step. Win rates shrink by empirical
+// Bayes: All ranks toward the lane average (30-game junk floor), Plat+ toward
+// each option's own all-ranks rate (BAND_K games), so a thin Plat+ sample
+// borrows that evidence. The lead is the best shrunk rate among options with
+// enough games (pickLeadFloor: 10% of the lane, 10..300); P(lead beats the next
+// best) >= 90% clear, >= 70% slight, else a toss-up.
+const PICK_MIN_GAMES = 30, PICK_BAND_K = 100;
+const pickLeadFloor = (g) => Math.min(300, Math.max(10, Math.round(g * 0.1)));
 function phiCdf(z) {
   const x = Math.abs(z) / Math.SQRT2, t = 1 / (1 + 0.3275911 * x);
   const erf = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
   return z >= 0 ? (1 + erf) / 2 : (1 - erf) / 2;
 }
-function rankByEdge(xs, cellGames) {
-  const usable = xs.filter((x) => x.n >= PICK_MIN_GAMES);
-  const thin = !usable.length;
-  const pool = thin ? xs.filter((x) => x.n > 0) : usable;
+function rankByEdge(xs, cellGames, prior) {
+  const live = xs.filter((x) => x.n > 0);
+  const usable = prior ? live : live.filter((x) => x.n >= PICK_MIN_GAMES);
+  const pool = usable.length ? usable : live;
   const totN = pool.reduce((s, x) => s + x.n, 0);
   const mean = totN ? pool.reduce((s, x) => s + x.w, 0) / totN : 0.5;
   let k = 100;
-  if (pool.length >= 5) {
+  if (!prior && pool.length >= 5) {
     const rates = pool.map((x) => x.w / x.n);
     const m = rates.reduce((s, r) => s + r, 0) / rates.length;
     const varObs = rates.reduce((s, r) => s + (r - m) ** 2, 0) / rates.length;
     const noise = pool.reduce((s, x) => s + (mean * (1 - mean)) / x.n, 0) / pool.length;
     k = Math.min(Math.max((mean * (1 - mean)) / Math.max(varObs - noise, 1e-5) - 1, 10), 1000);
   }
-  const games = cellGames || totN;
+  const games = cellGames || totN, floor = pickLeadFloor(games);
   const shrink = (x) => {
-    const shrunk = (x.w + k * mean) / (x.n + k);
-    return { ...x, shrunk, sd: Math.sqrt((shrunk * (1 - shrunk)) / (x.n + k)), pickRate: games ? x.n / games : 0 };
+    const pm = prior ? prior(x) : mean, kk = prior ? PICK_BAND_K : k;
+    const shrunk = (x.w + kk * pm) / (x.n + kk);
+    return { ...x, shrunk, sd: Math.sqrt((shrunk * (1 - shrunk)) / (x.n + kk)), pickRate: games ? x.n / games : 0, few: x.n < floor };
   };
   const byShrunk = pool.map(shrink).sort((a, b) => b.shrunk - a.shrunk);
-  // Below-floor options are listed after the ranked ones (by games), never ranked.
-  const below = thin ? [] : xs.filter((x) => x.n < PICK_MIN_GAMES).sort((a, b) => b.n - a.n).map((x) => ({ ...shrink(x), few: true }));
-  const out = { ranked: byShrunk, below, confidence: null, pBeat: null, edgePts: null, contenders: [], thin };
-  if (thin) { out.ranked = byShrunk.sort((a, b) => b.n - a.n); return out; }
-  if (byShrunk.length < 2) return out; // one option: nothing compared, no edge claimed
+  const below = usable.length && !prior ? live.filter((x) => x.n < PICK_MIN_GAMES).sort((a, b) => b.n - a.n).map(shrink) : [];
+  const out = { ranked: byShrunk, below, confidence: null, pBeat: null, edgePts: null, contenders: [], thin: false };
+  const lead = byShrunk.find((x) => !x.few);
+  if (!lead) { out.thin = true; out.ranked = byShrunk.sort((a, b) => b.n - a.n); return out; }
+  const others = byShrunk.filter((x) => x !== lead);
+  out.ranked = [lead, ...others];
+  // Only options that could lead move the label; few-games ones are just listed.
+  const rivals = others.filter((x) => !x.few);
+  if (!rivals.length) return out; // one option with enough games: no edge claimed
   const pOver = (a, b) => phiCdf((a.shrunk - b.shrunk) / Math.hypot(a.sd, b.sd));
-  const top = byShrunk[0], p = pOver(top, byShrunk[1]);
+  const p = pOver(lead, rivals[0]);
   out.confidence = p >= 0.9 ? 'clear' : p >= 0.7 ? 'slight' : 'toss-up';
-  if (out.confidence === 'toss-up') {
-    out.contenders = byShrunk.filter((x) => x === top || pOver(top, x) < 0.7);
-    const lead = [...out.contenders].sort((a, b) => b.n - a.n)[0];
-    out.ranked = [lead, ...byShrunk.filter((x) => x !== lead)];
-  } else out.pBeat = p;
-  out.edgePts = (out.ranked[0].shrunk - out.ranked[1].shrunk) * 100;
+  if (out.confidence === 'toss-up') out.contenders = [lead, ...rivals.filter((x) => pOver(lead, x) < 0.7)];
+  else out.pBeat = p;
+  out.next = rivals[0];
+  out.edgePts = (lead.shrunk - rivals[0].shrunk) * 100;
   return out;
+}
+// Plat+ prior: each option's all-ranks shrunk rate plus the band's win-rate gap.
+function bandPrior(allXs, allCell, band) {
+  const all = rankByEdge(allXs || [], allCell.games);
+  const key = (x) => String(x.id ?? x.name);
+  const rate = new Map([...all.ranked, ...all.below].filter((x) => x.n >= PICK_MIN_GAMES).map((x) => [key(x), x.shrunk]));
+  const bandMean = band.games ? (band.wins || 0) / band.games : 0.5;
+  const gap = allCell.games ? bandMean - (allCell.wins || 0) / allCell.games : 0;
+  return (x) => { const r = rate.get(key(x)); return r === undefined ? bandMean : Math.min(0.95, Math.max(0.05, r + gap)); };
 }
 // "of junglers" etc. for the pick-rate line.
 const ROLE_PLAYERS = { jungle: 'junglers', carry: 'carries', support: 'supports', midlane: 'mid laners', offlane: 'off laners' };
 const pickShare = (x, role) => `${Math.max(1, Math.round(x.pickRate * 100))}% of ${ROLE_PLAYERS[role] || `${role} players`}`;
-const FEW_TAG = '<span style="font-size:.6875rem;color:var(--gold);white-space:nowrap" title="Under 30 games: too few to rank">few games</span>';
+const FEW_TAG = '<span style="font-size:.6875rem;color:var(--gold);white-space:nowrap" title="Too few games to be the recommendation">few games</span>';
+// Toss-up: the options tied with the lead carry this chip, and their list opens by default.
+const TIED_TAG = '<span style="font-size:.6875rem;font-weight:800;color:#2a1d00;background:var(--gold);border-radius:6px;padding:.02rem .35rem;white-space:nowrap" title="Wins about as often as the top pick">Even</span>';
+const isTied = (r, x) => r.confidence === 'toss-up' && r.contenders.some((c) => String(c.id ?? c.name) === String(x.id ?? x.name)) && String(r.ranked[0].id ?? r.ranked[0].name) !== String(x.id ?? x.name);
 // The lead's badge and the one line that says how sure it is.
 function edgeBadge(r) {
   const [label, bg, ink] = r.thin || !r.confidence ? ['Most played', 'var(--bg-3)', 'var(--text-1)']
@@ -1297,16 +1315,16 @@ function edgeBadge(r) {
   return `<span style="font-size:.6875rem;font-weight:800;color:${ink};background:${bg};border-radius:6px;padding:.05rem .4rem;white-space:nowrap">${label}</span>`;
 }
 function edgeNote(r, kind) {
-  const lead = r.ranked[0], next = r.ranked[1];
+  const lead = r.ranked[0], next = r.next;
   if (!lead) return '';
   let txt;
-  if (r.thin) txt = `Too few games to rank ${kind}s by win rate yet, so this is the most played.`;
-  else if (!next) txt = `The only ${kind} with 30+ games here, so there is nothing to compare it with yet.`;
+  if (r.thin) txt = `Too few games to recommend one ${kind} yet, so these are listed by how often players pick them.`;
+  else if (!next) txt = `The only ${kind} with enough games here, so there is nothing to compare it with yet.`;
   else if (r.confidence === 'clear') txt = `Clear edge: wins about ${r.edgePts.toFixed(1)} more games per 100 than ${esc(next.name)}, ${Math.round(r.pBeat * 100)}% sure it's ahead.`;
   else if (r.confidence === 'slight') txt = `Slight edge over ${esc(next.name)} (${Math.round(r.pBeat * 100)}% sure it's ahead), so this could flip as games come in.`;
   else {
     const others = r.contenders.filter((x) => x !== lead);
-    txt = `Toss-up: ${others.map((x) => `${esc(x.name)} (${x.n.toLocaleString()} games)`).join(', ')} ${others.length > 1 ? 'win' : 'wins'} about the same. Of these, ${esc(lead.name)} has the most games, so its number is the most reliable.`;
+    txt = `Toss-up: ${others.map((x) => esc(x.name)).join(', ')} ${others.length > 1 ? 'win' : 'wins'} about as often, so any of these is a fair pick. ${esc(lead.name)} has the best odds on the games so far; the ones marked <b>Even</b> say when to take them instead.`;
   }
   return `<div style="font-size:.6875rem;line-height:1.45;color:var(--text-2);margin:.3rem 0 0">${txt}</div>`;
 }
@@ -1639,7 +1657,9 @@ function renderHero(a, roleParam) {
         // Every list ranks by statistical edge (rankByEdge above): ranked options
         // first, then any under 30 games, tagged "few games" and never ranked.
         const cellGames = cell.games || (cell.eternals || []).reduce((s, e) => s + e.n, 0);
-        const augR = rankByEdge(cell.augments || [], cellGames);
+        // Plat+ lists borrow each option's all-ranks rate (bandPrior).
+        const rankList = (kind) => rankByEdge(cell[kind] || [], cellGames, platCell ? bandPrior(hr[role][kind], hr[role], platCell) : null);
+        const augR = rankList('augments');
         const ranked = [...augR.ranked, ...augR.below];
         const fewTag = (x) => x.few ? FEW_TAG : '';
         // Authored augment lines are written against the ALL-RANKS lead. When
@@ -1651,7 +1671,7 @@ function renderHero(a, roleParam) {
         // Eternal pick shares are wildly asymmetric, so raw-winrate ordering let
         // lucky minority picks top every list (the flaw-4 mistake, via Lotus);
         // rankByEdge shrinks them. Top three, under-30 ones filling empty slots.
-        const etR = rankByEdge(cell.eternals || [], cellGames);
+        const etR = rankList('eternals');
         const ets = [...etR.ranked, ...etR.below].slice(0, 3);
         return `
         ${picksBandNote}
@@ -1687,7 +1707,7 @@ function renderHero(a, roleParam) {
           </div>`;
         })()}
         ${ranked.length > 1 ? `
-        <details class="sim-collapse"><summary>Other augments</summary><div class="body">
+        <details class="sim-collapse"${augR.confidence === 'toss-up' ? ' open' : ''}><summary>${augR.confidence === 'toss-up' ? 'Even picks and other augments' : 'Other augments'}</summary><div class="body">
           ${ranked.slice(1).map((g) => {
             const wr = g.w / g.n;
             const simPick = window.__simPick;
@@ -1699,7 +1719,7 @@ function renderHero(a, roleParam) {
             <div data-apop="${esc(g.id)}" data-apop-role="${esc(role)}" data-apop-band="${platCell ? 'plat+' : 'all'}" title="${esc(g.name)} — tap for the full augment" style="display:flex;gap:.55rem;align-items:center;padding:.28rem 0">
               <img src="../img/augments/${esc(g.id)}.webp" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:contain;background:var(--bg-2);flex:none;padding:1px;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">
               <span style="font-size:.82rem;font-weight:600">${esc(g.name)}</span>
-              ${fewTag(g)}
+              ${isTied(augR, g) ? TIED_TAG : fewTag(g)}
               ${simPick && simPick.id === g.id ? '<span style="font-size:.6875rem;font-weight:800;color:var(--accent-ink);border:1px solid var(--accent);border-radius:6px;padding:.02rem .3rem;white-space:nowrap">Sim pick</span>' : ''}
               <span style="margin-left:auto;font-variant-numeric:tabular-nums;font-size:.78rem;color:var(--text-1)">${(wr * 100).toFixed(1)}%</span>
               <span style="font-size:.6875rem;color:var(--text-2)" title="${pickShare(g, role)}">${g.n.toLocaleString()}</span>
@@ -1814,7 +1834,7 @@ function renderHero(a, roleParam) {
                 ${edgeBadge(etR)}
                 <span${epop(e0.name)} style="font-size:.94rem;font-weight:800;color:var(--green)">${esc(e0.name)}</span>
                 ${top && top.name.toLowerCase() === e0.name.toLowerCase() ? '<span style="font-size:.6875rem;font-weight:800;color:var(--accent-ink);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">Sim pick</span>' : ''}
-                <span title="raw ${(wr0 * 100).toFixed(1)}% — shown shrunk toward the role's pick-weighted mean" style="font-variant-numeric:tabular-nums;font-size:.86rem;font-weight:800;color:var(--green)">${(e0.shrunk * 100).toFixed(1)}%</span>
+                <span title="win rate over ${e0.n.toLocaleString()} games; the order uses odds adjusted for sample size" style="font-variant-numeric:tabular-nums;font-size:.86rem;font-weight:800;color:var(--green)">${(wr0 * 100).toFixed(1)}%</span>
                 <span style="font-size:.7rem;color:var(--text-2)">${e0.n.toLocaleString()} games · ${pickShare(e0, role)}</span>
               </div>
               ${edgeNote(etR, 'Eternal')}
@@ -1838,7 +1858,7 @@ function renderHero(a, roleParam) {
                 <img${epop(e.name)} src="${IMG.eternal(e.name.toLowerCase())}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">
                 <span${epop(e.name)} style="font-size:.84rem;font-weight:600">${esc(e.name)}</span>
                 ${top && top.name.toLowerCase() === e.name.toLowerCase() ? '<span style="font-size:.6875rem;font-weight:800;color:var(--accent-ink);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">Sim pick</span>' : ''}
-                <span title="raw ${(wr * 100).toFixed(1)}% — shown shrunk toward the role's pick-weighted mean" style="font-variant-numeric:tabular-nums;font-size:.78rem;color:var(--text-1)">${(e.shrunk * 100).toFixed(1)}%</span>
+                <span title="win rate over ${e.n.toLocaleString()} games; the order uses odds adjusted for sample size" style="font-variant-numeric:tabular-nums;font-size:.78rem;color:var(--text-1)">${(wr * 100).toFixed(1)}%</span>
                 <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games</span>
               </div>
               <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.18rem 0 0 2.1rem">${et ? esc(et.major) : why}</div>
@@ -1883,9 +1903,9 @@ function renderHero(a, roleParam) {
                 <img${epop(e.name)} src="${IMG.eternal(e.name.toLowerCase())}" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:cover;background:var(--bg-2);flex:none;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">
                 <span${epop(e.name)} style="font-size:.84rem;font-weight:600">${esc(e.name)}</span>
                 ${top && top.name.toLowerCase() === e.name.toLowerCase() ? '<span style="font-size:.6875rem;font-weight:800;color:var(--accent-ink);border:1px solid var(--accent);border-radius:6px;padding:.02rem .35rem;white-space:nowrap">Sim pick</span>' : ''}
-                <span title="raw ${(wr * 100).toFixed(1)}% — shown shrunk toward the role's pick-weighted mean" style="font-variant-numeric:tabular-nums;font-size:.78rem;color:var(--text-1)">${(e.shrunk * 100).toFixed(1)}%</span>
+                <span title="win rate over ${e.n.toLocaleString()} games; the order uses odds adjusted for sample size" style="font-variant-numeric:tabular-nums;font-size:.78rem;color:var(--text-1)">${(wr * 100).toFixed(1)}%</span>
                 <span style="font-size:.7rem;color:var(--text-2)">${e.n.toLocaleString()} games · ${pickShare(e, role)}</span>
-                ${e.few ? FEW_TAG : ''}
+                ${isTied(etR, e) ? TIED_TAG : e.few ? FEW_TAG : ''}
               </div>
               <div style="font-size:.7rem;line-height:1.45;color:var(--text-1);margin:.18rem 0 0 2.1rem">${etLine(e.name) ? esc(etLine(e.name)) : et ? esc(et.major) : renderWhy(e)}</div>
               ${minorsLine(e.name, '2.1rem')}
@@ -1896,10 +1916,10 @@ function renderHero(a, roleParam) {
           // THEORY block. The inline disclosure keeps only the runner-up identities.
           window.__etTheory = `${ets.map(detailRow).join('')}${simPickBlock}${agree}`;
           const runnerUps = ets.slice(1);
-          return `${lead}${runnerUps.length ? `<details class="sim-collapse"><summary>Other Eternals</summary><div class="body">${runnerUps.map((e, i) => runnerRow(e, i + 1)).join('')}</div></details>` : ''}`;
+          return `${lead}${runnerUps.length ? `<details class="sim-collapse"${etR.confidence === 'toss-up' ? ' open' : ''}><summary>${etR.confidence === 'toss-up' ? 'Even picks and other Eternals' : 'Other Eternals'}</summary><div class="body">${runnerUps.map((e, i) => runnerRow(e, i + 1)).join('')}</div></details>` : ''}`;
         })()}
         ${(() => {
-          const crR = rankByEdge(cell.crests || [], cellGames);
+          const crR = rankList('crests');
           if (!crR.ranked.length) return '';
           const crs = [...crR.ranked, ...crR.below].slice(0, 3);
           const cslug = (n) => n.toLowerCase().replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -1915,7 +1935,7 @@ function renderHero(a, roleParam) {
             <span style="font-size:.88rem;font-weight:${i === 0 ? '800' : '600'};${i === 0 ? 'color:var(--green)' : ''}">${esc(c.name)}</span>
             <span style="font-variant-numeric:tabular-nums;font-size:.8rem;${i === 0 ? 'color:var(--green)' : 'color:var(--text-1)'}">${(c.w / c.n * 100).toFixed(1)}%</span>
             <span style="font-size:.7rem;color:var(--text-2)">${c.n.toLocaleString()} games · ${pickShare(c, role)}</span>
-            ${c.few ? FEW_TAG : ''}
+            ${isTied(crR, c) ? TIED_TAG : c.few ? FEW_TAG : ''}
           </div>`).join('')}
           <div style="margin-left:2.1rem">${edgeNote(crR, 'crest')}</div>`;
         })()}

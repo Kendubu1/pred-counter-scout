@@ -14,11 +14,11 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { clean, kitText, type RawHero } from './hero-coach-copy.js';
-import { rankByEdge, shownOptions } from './field-pick.js';
+import { rankBand, rankByEdge, shownOptions } from './field-pick.js';
 
 export interface Minor { name: string; n: number; w: number }
 export interface FieldEternal { name: string; n: number; w: number; minor1?: Minor[]; minor2?: Minor[] }
-export interface AugCell { games?: number; augments: { id: string; name: string; n: number; w: number }[]; eternals?: FieldEternal[]; platPlus?: { games?: number; eternals?: FieldEternal[] } }
+export interface AugCell { games?: number; wins?: number; augments: { id: string; name: string; n: number; w: number }[]; eternals?: FieldEternal[]; platPlus?: { games?: number; wins?: number; augments?: { id: string; name: string; n: number; w: number }[]; eternals?: FieldEternal[] } }
 export interface EternalDef { name: string; major: string; minorSlot1: { name: string; desc: string }[]; minorSlot2: { name: string; desc: string }[] }
 
 /** The Eternals the hero page can show for this hero-role: the top three
@@ -26,10 +26,9 @@ export interface EternalDef { name: string; major: string; minorSlot1: { name: s
  *  the Plat+ view shows. Card lines are keyed by hero/role/Eternal, not by rank
  *  band, so one line serves both views. All-ranks rows come first. */
 export function topEternals(cell: AugCell): (FieldEternal & { shrunk: number })[] {
-  const shown = (c: { games?: number; eternals?: FieldEternal[] }) => shownOptions(rankByEdge(c.eternals ?? [], c.games || (c.eternals ?? []).reduce((s, e) => s + e.n, 0)));
-  const out: (FieldEternal & { shrunk: number })[] = shown(cell);
+  const out: (FieldEternal & { shrunk: number })[] = shownOptions(rankByEdge(cell.eternals ?? [], cell.games || (cell.eternals ?? []).reduce((s, e) => s + e.n, 0)));
   const have = new Set(out.map((e) => e.name));
-  for (const e of cell.platPlus?.games ? shown(cell.platPlus) : []) {
+  for (const e of cell.platPlus?.games ? shownOptions(rankBand(cell, cell.platPlus, 'eternals')) : []) {
     if (have.has(e.name)) continue;
     have.add(e.name);
     // Prefer the all-ranks row: its minors rest on far more games.

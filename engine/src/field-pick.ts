@@ -5,13 +5,16 @@
 // kit-math sim is experimental and never overrides it (maintainer, 2026-10-25).
 //
 // Rule (maintainer, 2026-10-27: "a statistical edge, not whatever everyone uses
-// unless it's winning"): every option's win rate is shrunk toward the lane's
-// average by empirical Bayes, so its weight grows with its games (no 300-game
-// cliff; a 30-game junk floor only). The highest shrunk rate leads, and the page
-// says how sure that is: P(lead beats the runner-up) >= 90% "clear", >= 70%
-// "slight", else a "toss-up". In a toss-up the options statistically tied with
-// the top are equal bets, so the most-played of them leads (its number moves
-// least). ui/v6/index.html mirrors these rules client-side; keep the two in step.
+// unless it's winning"): every option's win rate is shrunk by empirical Bayes,
+// so its weight grows with its games. All ranks: toward the lane's average
+// (30-game junk floor). Plat+: toward that option's OWN all-ranks rate, shifted
+// by the band gap (BAND_K games of prior), so a thin Plat+ sample borrows the
+// all-ranks evidence instead of standing alone. The lead is the highest shrunk
+// rate among options with enough games to lead (leadFloor: 10% of the lane,
+// 10..300), and the page says how sure: P(lead beats the next best) >= 90%
+// "clear", >= 70% "slight", else a "toss-up" (maintainer, 2026-10-27: toss-ups
+// lead with the best odds, not the most-played). ui/v6/index.html mirrors these
+// rules client-side; keep the two in step.
 
 type NW = { n: number; w: number };
 export interface AugmentCell { id: string; name: string; n: number; w: number }
@@ -29,14 +32,22 @@ export interface FieldPick {
 
 const r1 = (x: number) => Math.round(x * 1000) / 10;
 
-/** Options with fewer games than this are noise and never ranked. */
+/** All ranks: options with fewer games than this are noise and never ranked. */
 export const MIN_GAMES = 30;
-/** Confidence tiers on P(lead beats the runner-up). */
+/** Plat+: prior weight (games) of an option's all-ranks rate. */
+export const BAND_K = 100;
+/** Confidence tiers on P(lead beats the next best). */
 export const CLEAR_P = 0.9, SLIGHT_P = 0.7;
 export type Confidence = 'clear' | 'slight' | 'toss-up';
 
+/** Games an option needs to lead (or be crowned): 10% of the lane, 10..300.
+ *  Ranked options under it are listed, tagged few, and never move the label. */
+export function leadFloor(cellGames: number): number {
+  return Math.min(300, Math.max(10, Math.round(cellGames * 0.1)));
+}
+
 /** The old relative floor (10% of the cell, 30..300). Kept for the minor-pair
- *  and build code that still uses it; picks no longer do. */
+ *  and build code that still uses it; picks use leadFloor. */
 export function sampleFloor(cellGames: number): number {
   return Math.min(300, Math.max(30, Math.round(cellGames * 0.1)));
 }
@@ -50,20 +61,20 @@ export function phi(z: number): number {
   return z >= 0 ? (1 + erf) / 2 : (1 - erf) / 2;
 }
 
-export type Ranked<T> = T & { shrunk: number; sd: number; pickRate: number };
+export type Ranked<T> = T & { shrunk: number; sd: number; pickRate: number; few: boolean };
 export interface EdgeRanking<T> {
   /** Lead first, then the rest by shrunk win rate. */
   ranked: Ranked<T>[];
   confidence: Confidence | null;
-  /** P(lead beats the next option); null with fewer than two options. */
+  /** P(lead beats the next option with enough games); null unless clear or slight. */
   pBeat: number | null;
-  /** Shrunk win-rate gap to the next option, percentage points. */
+  /** Shrunk win-rate gap to the next best, percentage points. */
   edgePts: number | null;
-  /** Options statistically tied with the top (toss-up only, lead included). */
+  /** Toss-up only: the options statistically tied with the lead (lead first). */
   contenders: Ranked<T>[];
-  /** True when no option reaches MIN_GAMES: ranked is then by games, unrated. */
+  /** True when nothing has enough games to lead: ranked is then by games, unrated. */
   thin: boolean;
-  /** Options under MIN_GAMES (by games), listed after the ranked ones, never ranked. */
+  /** All ranks: options under MIN_GAMES (by games), listed after, never ranked. */
   below: Ranked<T>[];
 }
 
@@ -72,18 +83,24 @@ export function shownOptions<T extends NW>(r: EdgeRanking<T>, max = 3): Ranked<T
   return [...r.ranked, ...r.below].slice(0, max);
 }
 
+export interface RankOpts<T> {
+  /** Per-option prior mean (Plat+: the option's all-ranks rate); BAND_K games strong. */
+  prior?: (x: T) => number;
+}
+
 /** Rank options by empirical-Bayes win rate and say how sure the lead is.
- *  Prior mean = the pick-weighted mean of the options; prior strength k from
- *  the spread of their rates (method of moments, 10..1000 games), 100 when
- *  there are too few options to fit it (augments: three per hero). */
-export function rankByEdge<T extends NW>(xs: T[], cellGames: number): EdgeRanking<T> {
-  const usable = xs.filter((x) => x.n >= MIN_GAMES);
-  const thin = !usable.length;
-  const pool = thin ? xs.filter((x) => x.n > 0) : usable;
+ *  Without a prior: mean = the options' pick-weighted mean, strength k from the
+ *  spread of their rates (method of moments, 10..1000 games), 100 when there are
+ *  too few options to fit it (augments: three per hero). */
+export function rankByEdge<T extends NW>(xs: T[], cellGames: number, opts: RankOpts<T> = {}): EdgeRanking<T> {
+  const prior = opts.prior;
+  const live = xs.filter((x) => x.n > 0);
+  const usable = prior ? live : live.filter((x) => x.n >= MIN_GAMES);
+  const pool = usable.length ? usable : live;
   const totN = pool.reduce((s, x) => s + x.n, 0);
   const mean = totN ? pool.reduce((s, x) => s + x.w, 0) / totN : 0.5;
   let k = 100;
-  if (pool.length >= 5) {
+  if (!prior && pool.length >= 5) {
     const rates = pool.map((x) => x.w / x.n);
     const m = rates.reduce((s, r) => s + r, 0) / rates.length;
     const varObs = rates.reduce((s, r) => s + (r - m) ** 2, 0) / rates.length;
@@ -91,28 +108,51 @@ export function rankByEdge<T extends NW>(xs: T[], cellGames: number): EdgeRankin
     k = Math.min(Math.max((mean * (1 - mean)) / Math.max(varObs - noise, 1e-5) - 1, 10), 1000);
   }
   const games = cellGames || totN;
+  const floor = leadFloor(games);
   const shrink = (x: T): Ranked<T> => {
-    const shrunk = (x.w + k * mean) / (x.n + k);
-    return { ...x, shrunk, sd: Math.sqrt((shrunk * (1 - shrunk)) / (x.n + k)), pickRate: games ? x.n / games : 0 };
+    const pm = prior ? prior(x) : mean, kk = prior ? BAND_K : k;
+    const shrunk = (x.w + kk * pm) / (x.n + kk);
+    return { ...x, shrunk, sd: Math.sqrt((shrunk * (1 - shrunk)) / (x.n + kk)), pickRate: games ? x.n / games : 0, few: x.n < floor };
   };
   const byShrunk = pool.map(shrink).sort((a, b) => b.shrunk - a.shrunk);
-  const pOver = (a: Ranked<T>, b: Ranked<T>) => phi((a.shrunk - b.shrunk) / Math.hypot(a.sd, b.sd));
-  const below = thin ? [] : xs.filter((x) => x.n < MIN_GAMES).sort((a, b) => b.n - a.n).map(shrink);
-  // Nothing has enough games to rank: say so and lead with the most-played.
-  if (thin) return { ranked: byShrunk.sort((a, b) => b.n - a.n), confidence: null, pBeat: null, edgePts: null, contenders: [], thin, below };
+  const below = usable.length && !prior ? live.filter((x) => x.n < MIN_GAMES).sort((a, b) => b.n - a.n).map(shrink) : [];
+  const none = { pBeat: null, edgePts: null, contenders: [] as Ranked<T>[], below };
+  const lead = byShrunk.find((x) => !x.few);
+  // Nothing has enough games to lead: say so and list by games.
+  if (!lead) return { ranked: byShrunk.sort((a, b) => b.n - a.n), confidence: null, thin: true, ...none };
+  const others = byShrunk.filter((x) => x !== lead);
+  const ranked = [lead, ...others];
+  // Confidence compares the lead with options that could lead too; ones under
+  // the lead floor are listed (tagged few) but never move the label.
+  const rivals = others.filter((x) => !x.few);
   // One option with enough games: nothing to compare, so no edge is claimed.
-  if (byShrunk.length < 2) return { ranked: byShrunk, confidence: null, pBeat: null, edgePts: null, contenders: [], thin, below };
-  const top = byShrunk[0]!;
-  const p = pOver(top, byShrunk[1]!);
+  if (!rivals.length) return { ranked, confidence: null, thin: false, ...none };
+  const pOver = (a: Ranked<T>, b: Ranked<T>) => phi((a.shrunk - b.shrunk) / Math.hypot(a.sd, b.sd));
+  const next = rivals[0]!;
+  const p = pOver(lead, next);
   const confidence: Confidence = p >= CLEAR_P ? 'clear' : p >= SLIGHT_P ? 'slight' : 'toss-up';
-  let ranked = byShrunk, contenders: Ranked<T>[] = [];
-  if (confidence === 'toss-up') {
-    contenders = byShrunk.filter((x) => x === top || pOver(top, x) < SLIGHT_P);
-    const lead = [...contenders].sort((a, b) => b.n - a.n)[0]!;
-    ranked = [lead, ...byShrunk.filter((x) => x !== lead)];
-  }
-  const next = ranked[1]!;
-  return { ranked, confidence, pBeat: confidence === 'toss-up' ? null : p, edgePts: (ranked[0]!.shrunk - next.shrunk) * 100, contenders, thin, below };
+  const contenders = confidence === 'toss-up' ? [lead, ...rivals.filter((x) => pOver(lead, x) < SLIGHT_P)] : [];
+  return { ranked, confidence, pBeat: confidence === 'toss-up' ? null : p, edgePts: (lead.shrunk - next.shrunk) * 100, contenders, thin: false, below };
+}
+
+type Keyed = NW & { id?: string | number; name: string };
+const keyOf = (x: Keyed) => String(x.id ?? x.name);
+
+/** Plat+ prior: each option's all-ranks shrunk rate plus the band's win-rate gap
+ *  (an option with no all-ranks evidence gets the band's average). */
+export function bandPrior<T extends Keyed>(allXs: T[], allCell: { games?: number; wins?: number }, band: { games?: number; wins?: number }): (x: T) => number {
+  const all = rankByEdge(allXs, allCell.games ?? 0);
+  const rate = new Map([...all.ranked, ...all.below].filter((x) => x.n >= MIN_GAMES).map((x) => [keyOf(x), x.shrunk]));
+  const bandMean = band.games ? (band.wins ?? 0) / band.games : 0.5;
+  const gap = allCell.games ? bandMean - (allCell.wins ?? 0) / allCell.games : 0;
+  return (x) => { const r = rate.get(keyOf(x)); return r === undefined ? bandMean : Math.min(0.95, Math.max(0.05, r + gap)); };
+}
+
+/** Rank one list of a Plat+ cell, borrowing each option's all-ranks rate. */
+export function rankBand<K extends 'augments' | 'eternals' | 'crests'>(allCell: FieldCell, band: FieldCell, kind: K): EdgeRanking<NonNullable<FieldCell[K]>[number]> {
+  type T = NonNullable<FieldCell[K]>[number];
+  const allXs = (allCell[kind] ?? []) as T[];
+  return rankByEdge((band[kind] ?? []) as T[], cellGamesOf(band), { prior: bandPrior<T & Keyed>(allXs as (T & Keyed)[], allCell, band) as (x: T) => number });
 }
 
 const meta = <T>(r: EdgeRanking<T>): PickInfo => ({
