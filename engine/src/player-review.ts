@@ -79,10 +79,23 @@ function laneTips(p: Profile): Tip[] {
       receipt: solid.map((r) => `${roleName(r.role)} ${r.games} games`).join(' · '),
     }];
   }
+  // Only say "avoid" when the worst lane actually loses. A weakest lane that
+  // still wins (Mr_Meat31's support at 50.7% over 507 games) is a backup, not
+  // a lane to drop, and it may hold the strengths the lobby tips praise.
+  const Best = roleName(best.role)[0].toUpperCase() + roleName(best.role).slice(1);
+  if (worst.shrunkWr >= 0.5) {
+    return [{
+      kind: 'fix', area: 'lanes', level, weight: gap,
+      title: `Queue ${roleName(best.role)} first`,
+      finding: `${Best} is your best lane at ${pct(best.shrunkWr)}%. Your weakest, ${roleName(worst.role)}, still wins at ${pct(worst.shrunkWr)}%, ${pct(gap)} points lower.`,
+      action: `Put ${roleName(best.role)} first in queue. ${roleName(worst.role)[0].toUpperCase() + roleName(worst.role).slice(1)} is a fine backup, not a lane to drop.`,
+      receipt: `${roleName(best.role)} ${best.games} games · ${roleName(worst.role)} ${worst.games} games${ledgerGain(p, worst.role, best.role)}`,
+    }];
+  }
   return [{
     kind: 'fix', area: 'lanes', level, weight: gap,
     title: `Queue ${roleName(best.role)}, avoid ${roleName(worst.role)}`,
-    finding: `${roleName(best.role)[0].toUpperCase() + roleName(best.role).slice(1)} is your best lane at ${pct(best.shrunkWr)}%; ${roleName(worst.role)} is your worst at ${pct(worst.shrunkWr)}%, a ${pct(gap)}-point gap.`,
+    finding: `${Best} is your best lane at ${pct(best.shrunkWr)}%; ${roleName(worst.role)} is your worst and losing at ${pct(worst.shrunkWr)}%, a ${pct(gap)}-point gap.`,
     action: `Put ${roleName(best.role)} first in queue and leave ${roleName(worst.role)} off. When you are filled there, play your safest comfort hero.`,
     receipt: `${roleName(best.role)} ${best.games} games · ${roleName(worst.role)} ${worst.games} games (raw ${pct(worst.rawWr)}%)${ledgerGain(p, worst.role, best.role)}`,
   }];
@@ -247,25 +260,32 @@ function rotationTips(name: string, rot: Record<string, RotationMember>, mainRol
   return out;
 }
 
-// Fights: team result with vs without the member present. Association only,
-// and only when 300+ fights on each side and a 4-point gap.
+// Fights: team result with vs without the member present, measured against the
+// squad's AVERAGE with/without gap. Every member shows the team doing worse in
+// fights they are in (bigger fights are harder), so the raw gap is not about
+// one person. Association only; 300+ fights each side and 4 points beyond the
+// squad average.
 function fightTip(name: string, fights: Record<string, FightMember>): Tip[] {
   const me = fights[name];
   if (!me || me.fightsPresent < 300 || me.fightsAbsent < 300) return [];
+  const gapOf = (m: FightMember) => m.fightsPresentWon / m.fightsPresent - m.fightsAbsentWon / m.fightsAbsent;
+  const all = Object.values(fights);
+  const avg = all.reduce((a, m) => a + gapOf(m), 0) / all.length;
   const w = me.fightsPresentWon / me.fightsPresent, wo = me.fightsAbsentWon / me.fightsAbsent;
-  const d = w - wo;
+  const d = gapOf(me) - avg;
   if (Math.abs(d) < 0.04) return [];
+  const squadNote = ` Across the squad the team wins ${pct(Math.abs(avg))} points ${avg < 0 ? 'fewer' : 'more'} fights with a given player in them, so yours is ${pct(Math.abs(d))} points ${d < 0 ? 'worse' : 'better'} than usual.`;
   return [d < 0 ? {
     kind: 'fix', area: 'fights', level: 'association', weight: -d,
     title: 'The team wins fewer fights with you in them',
-    finding: `The squad wins ${pct(w)}% of fights you are in and ${pct(wo)}% of the ones you are not.`,
+    finding: `The squad wins ${pct(w)}% of fights you are in and ${pct(wo)}% of the ones you are not.${squadNote}`,
     action: 'This is a pattern, not proof. Check your positioning on replays: are you arriving after the fight has already turned, or starting fights alone?',
     receipt: `${me.fightsPresent} fights in, ${me.fightsAbsent} fights out`,
   } : {
     kind: 'keep', area: 'fights', level: 'association', weight: d,
-    title: 'Fights go better with you there',
-    finding: `The squad wins ${pct(w)}% of fights you are in and ${pct(wo)}% of the ones you are not.`,
-    action: 'Show up to the big fights. Your presence moves the result.',
+    title: 'Your fights hold up better than the squad norm',
+    finding: `The squad wins ${pct(w)}% of fights you are in and ${pct(wo)}% of the ones you are not.${squadNote}`,
+    action: 'Keep showing up to the big fights, and keep the same positioning.',
     receipt: `${me.fightsPresent} fights in, ${me.fightsAbsent} fights out`,
   }];
 }
@@ -339,7 +359,11 @@ export function lobbyTips(name: string, rows: FilmRow[]): Tip[] {
 function insightTips(p: Profile): { tips: Tip[]; form: string | null; extras: string | null } {
   const tips: Tip[] = [];
   let form: string | null = null, extras: string | null = null;
-  for (const i of p.insights ?? []) {
+  // Insights are written in the third person ("Cuban's profile", "Goldilocks324
+  // wins"); the review talks to the player, so swap the leading name for "you".
+  const you = (t: string) => t.replace(/^\S+'s /, 'Your ').replace(/^\S+ wins MORE /, 'You win more ').replace(/^\S+ wins /, 'You win ');
+  for (const raw of p.insights ?? []) {
+    const i = { ...raw, finding: you(raw.finding) };
     if (/running hotter|running colder|cooler than/i.test(i.title)) form = `${i.finding.split('. ')[0]}.${i.receipt ? ` (${i.receipt})` : ''}`;
     else if (/group chat/i.test(i.title)) extras = i.finding;
     else if (/tilt/i.test(i.title)) tips.push({ kind: 'fix', area: 'fights', level: 'association', weight: 0.05, title: 'Losses carry into the next game', finding: i.finding.replace(/ One cooldown break.*$/, ''), action: 'Take a short break after a loss before you queue again.', receipt: i.receipt ?? '' });

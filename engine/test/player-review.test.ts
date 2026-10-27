@@ -39,6 +39,25 @@ describe('player review', () => {
     expect(flex.keep.map((t) => t.title)).toContain('Lane barely matters for you');
   });
 
+  it('says "avoid" only for a losing lane; a weakest lane that still wins is a backup', () => {
+    const r = buildReview(profile({ roles: [
+      { role: 'offlane', games: 150, rawWr: 0.55, shrunkWr: 0.543 },
+      { role: 'support', games: 507, rawWr: 0.501, shrunkWr: 0.507 },
+    ] }), [], {}, {}, []);
+    const lane = r.fix.find((t) => t.area === 'lanes')!;
+    expect(lane.title).toBe('Queue offlane first');
+    expect(lane.action).toContain('fine backup');
+  });
+
+  it('judges the fights gap against the squad average gap, not against zero', () => {
+    const m = (pw: number, aw: number) => ({ games: 100, deaths: 400, firstToFall: 100, caughtOut: 60, fightsPresent: 400, fightsPresentWon: pw, fightsAbsent: 400, fightsAbsentWon: aw });
+    // Everyone's fights go 5 points worse with them in; only E is far beyond that.
+    const fights = { A: m(160, 180), B: m(160, 180), C: m(160, 180), D: m(160, 180), E: m(130, 190) };
+    expect(buildReview(profile(), [], fights, {}, []).fix.map((t) => t.title)).not.toContain('The team wins fewer fights with you in them');
+    const e = buildReview(profile({ player: { ...profile().player, name: 'E' } }), [], fights, {}, []);
+    expect(e.fix.map((t) => t.title)).toContain('The team wins fewer fights with you in them');
+  });
+
   it('flags squad-relative habits only for the extreme member with a 15% margin', () => {
     const fights = { ...squad('A', 90), ...squad('B', 60), ...squad('C', 55), ...squad('D', 50), ...squad('E', 45) };
     expect(buildReview(profile(), [], fights, {}, []).fix.map((t) => t.title)).toContain('Getting caught alone the most');

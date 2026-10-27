@@ -5413,3 +5413,10 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   advice twice. The most unbiased baseline in the films is the NON-squad players in the same role
   in the same games (~240 per role over 186 films). New files in data/artifacts/ must be added to
   the non-hero list in test/artifacts.test.ts.
+- 2026-10-27 (review pass): two review rules contradicted the page. "Avoid <lane>" fired for a
+  weakest lane that still WINS (Mr_Meat31 support 50.7% over 507 games, next to two support
+  strengths); "avoid" now needs the lane under 50%, otherwise it is a backup. The fights tip fired
+  for 3 of 5 because ALL five show the team winning fewer of the fights they are in (bigger fights
+  are harder); it now compares each member's gap with the squad's average gap. Lesson: before
+  shipping a per-person rule, run it on everyone and check whether a "finding" is true of all of
+  them, which makes it a property of the measure, not the person.
