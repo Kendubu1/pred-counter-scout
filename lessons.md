@@ -5432,3 +5432,10 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   player's solo-queue lane tip (Mr_Meat31: support in the lineup, offlane first solo); the
   page says so instead of hiding it. share-pages.mjs only covers static data-nav pages, so
   reports.html carries its own og tags.
+- 2026-10-27: the Reports lineup read as "off" for two reasons. (1) Seat heroes came from a
+  10-game floor ranked by shrunk win rate (Goldilocks offlane Steel 11g / Wukong 14g; Willy's
+  186-game mid Gadget hidden). The page now needs 20+ role games, merges the pool's per-role
+  records, and shows the count. (2) squad.ts adds a bot-lane duo bonus, (shrunkWr - .5) * .6, from
+  as few as 10 games; Mr_Meat31 + Cuban at 14-3 moves three players off their best solo lane.
+  That is kept but SAID on the page ("why this split"), and Best / Your usual / Worst are all
+  scored and displayed with that same rating so the numbers always order correctly.
