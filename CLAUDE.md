@@ -31,15 +31,19 @@ site served uninterrupted while both upstreams were down.
 ## Recommendation policy (permanent, set by the maintainer 2026-10-25; edge rule 2026-10-27)
 
 Every pick the site or CLI recommends (augment, Eternal, crest) is the best
-STATISTICAL EDGE in the ranked field (`engine/src/field-pick.ts` rankByEdge,
-mirrored in `ui/v6/index.html`): win rates shrunk toward the hero-role's average
-by empirical Bayes (weight grows with games; options under 30 games are listed
-but never ranked), highest shrunk rate leads. The page says how sure:
-P(lead beats the runner-up) >= 90% "Best" (clear), >= 70% "Leans" (slight),
-otherwise "Toss-up", where the most-played of the statistically tied options
-leads. With nothing at 30 games, or only one option there, the most-played
-leads, labelled "Most played", with no edge claimed. Minor pairs keep their own
-shrunk rule; default builds keep theirs. This holds even when the kit-math sim
+STATISTICAL EDGE in the ranked field (`engine/src/field-pick.ts` rankByEdge /
+rankBand, mirrored in `ui/v6/index.html`). Win rates are shrunk by empirical
+Bayes: under All ranks toward the hero-role's average (options under 30 games
+listed but never ranked); under Plat+ toward each option's OWN all-ranks rate
+plus the band gap (100 games of prior), so thin Plat+ samples borrow the
+all-ranks evidence. The lead is the best shrunk rate among options with enough
+games to lead (10% of the hero-role's games, 10..300); fewer-game options are
+listed, tagged "few games", and never move the label. Label from P(lead beats
+the next option with enough games): >= 90% "Best", >= 70% "Leans", else
+"Toss-up" (the lead still has the best odds, never just the most-played; tied
+options are tagged "Even" and their list opens by default). One option with
+enough games: "Most played", no edge claimed; none: listed by games. Minor pairs
+and default builds keep their own rules. This holds even when the kit-math sim
 disagrees. The sim is not vetted: it is experimental, shown only under
 "experimental" labels, and never presented as a build recommendation.
 

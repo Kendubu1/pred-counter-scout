@@ -5373,3 +5373,11 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
 - Copy keyed per hero/role must follow the page's lead. Augment lines are written against the
   all-ranks lead, so the Plat+ view drops them when its lead differs. Eternal card lines now cover
   every Eternal either band can show and must name an ability or the lane augment (namesKit).
+- Follow-up the same day (maintainer): toss-ups must lead with the best odds, not the most-played
+  (Argus support Plat+ led Vesh at 8-14 over Aion at 8-4). Final rule: lead = best shrunk rate among
+  options with 10% of the lane's games (10..300); few-games options never move the label; Plat+
+  shrinks each option toward its own all-ranks rate (bandPrior) instead of a flat mean, so thin
+  Plat+ cells rank rather than fall back to most played. A tiebreak toward popularity reads as
+  "whatever everyone uses", which is what the maintainer asked us not to do.
+- Toss-up UI: the other options open by default with tied ones tagged Even; Eternal rows show raw
+  win rates (the order uses the adjusted odds), so the number beside a pick matches its record.
