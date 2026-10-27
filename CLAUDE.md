@@ -153,6 +153,9 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   writes each film's `rotations` block, a laner's kills/deaths on other lanes
   judged against whether their own lane's outer tower was down, plus
   data/aggregates/rotation-habits.json; part of the coach job),
+  `npm run review:players` (zero-API: the "Your review" card on each squad member's
+  coach page, data/artifacts/player-reviews.json; same rules for everyone, rules in
+  src/player-review.ts; rerun after `npm run squad` or new films),
   `npm run postgame:structures` (pred.gg backfill of tower location + destroyer
   for films pulled before 2026-10-26; new pulls already carry them),
   `npm run lanestats` (per-hero-role RANKED lane stats for the CURRENT patch from

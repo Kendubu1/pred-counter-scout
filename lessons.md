@@ -5403,3 +5403,13 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   2026-10-27; the tag itself is priorities item 19.
 
 - 2026-10-27: The four 1.16 Eternals (Weald, Knell, Pilow, Satariel) had `deity: null` because the patch notes omit their family. pred.gg exposes it as `perks { data { eternalCategoryData { displayName } } }`, which matches our family for all 12 older Eternals, so it is a trustworthy source: Weald=Harbingers, Knell=Dreadnoughts, Pilow=Divines, Satariel=Anomalies. Read it there for any new Eternal instead of leaving the family blank (it drives hero passives like Ikra's Herald).
+- 2026-10-27: Per-member reviews (`npm run review:players`, engine/src/player-review.ts) hold every
+  member to the same rules and replace the coach page's ledger, film-room and plan cards. Fairness
+  fixes came from reading the first output, not the code: (1) a "climb hero" must beat the player's
+  OWN average too, not only the field (Murdock at 47.6% beat its field but still lost for that
+  player), and it reuses the profile's leanInto list so the review and the "Lean into these" card
+  never disagree; (2) supports and junglers are not judged on low roam kills, which the rotation
+  tally structurally gives them; (3) one lobby tip per stat, or a multi-role player gets the same
+  advice twice. The most unbiased baseline in the films is the NON-squad players in the same role
+  in the same games (~240 per role over 186 films). New files in data/artifacts/ must be added to
+  the non-hero list in test/artifacts.test.ts.
