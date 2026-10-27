@@ -28,11 +28,13 @@ export interface RawProfile {
   gamemodeStatistics: { results: { gameMode: string; matchesPlayed: number; pentaKills: number }[] };
 }
 
-// Career/hero/role stats count REAL 5v5s only. Unfiltered, the API blends
+// Career/hero/role stats count RANKED games only. Unfiltered, the API blends
 // ARAM/brawl/co-op into every number (one member's "20 pentakills" was 17
-// ARAM ones; half his "career games" weren't 5v5). gamemodeStatistics is
-// pulled unfiltered so casual-mode flexes can be attributed honestly.
-const REAL_MODES = 'filter: { gameModes: [RANKED, STANDARD] }';
+// ARAM ones; half his "career games" weren't 5v5), and STANDARD (casual 5v5)
+// is not how the squad is graded either (maintainer 2026-10-27: player
+// reports are ranked data only). gamemodeStatistics is pulled unfiltered so
+// casual-mode flexes can be attributed honestly.
+const REAL_MODES = 'filter: { gameModes: [RANKED] }';
 
 export async function pullProfile(uuid: string): Promise<RawProfile> {
   const d = await gql<{ player: RawProfile }>(`{ player(by: { uuid: "${uuid}" }) {
@@ -68,16 +70,14 @@ export async function pullRecentMatches(uuid: string, limit = 40): Promise<Recen
     heroDamage: number; wardsPlaced: number;
     hero: { slug: string } | null;
     match: { duration: number; winningTeam: string; startTime: string; gameMode: string };
-  }[] } } }>(`{ player(by: { uuid: "${uuid}" }) { matchesPaginated(limit: ${limit}) { results {
+  }[] } } }>(`{ player(by: { uuid: "${uuid}" }) { matchesPaginated(limit: ${limit}, filter: { gameModes: [RANKED] }) { results {
       kills deaths assists team role heroDamage wardsPlaced
       hero { slug }
       match { duration winningTeam startTime gameMode }
     } } } }`);
-  // Real 5v5s only. The enum is RANKED/STANDARD/ARAM/... — an earlier
-  // 'pvp' guess matched nothing, silently dropping standard games from
-  // the film-room sample (ARAM was excluded by luck, not design).
+  // Ranked only (the query filters; this guards the enum: RANKED/STANDARD/ARAM/...).
   return d.player.matchesPaginated.results
-    .filter((r) => ['RANKED', 'STANDARD'].includes(r.match.gameMode))
+    .filter((r) => r.match.gameMode === 'RANKED')
     .map((r) => ({
       won: r.team === r.match.winningTeam,
       duration: r.match.duration,
@@ -106,7 +106,7 @@ export async function pullHeroRoleStats(uuid: string): Promise<HeroRoleCell[]> {
   const out: HeroRoleCell[] = [];
   for (const role of ROLES) {
     const d = await gql<{ player: { heroStatistics: { results: { hero: { slug: string }; matchesPlayed: number; matchesWon: number }[] } } }>(
-      `{ player(by: { uuid: "${uuid}" }) { heroStatistics(filter: { roles: [${role}], gameModes: [RANKED, STANDARD] }) {
+      `{ player(by: { uuid: "${uuid}" }) { heroStatistics(filter: { roles: [${role}], gameModes: [RANKED] }) {
         results { hero { slug } matchesPlayed matchesWon } } } }`);
     for (const r of d.player.heroStatistics.results) {
       out.push({ role: role.toLowerCase(), slug: r.hero.slug, n: r.matchesPlayed, w: r.matchesWon });

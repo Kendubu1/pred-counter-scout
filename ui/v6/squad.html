@@ -206,7 +206,7 @@ const plink = (uuid, name) => uuid
 
   const lead = s.members[0];
   document.getElementById('page').innerHTML = `
-    <details class="scope"><summary>Data scope &amp; sources</summary><div style="margin-top:.45rem">pred.gg public profiles — career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked splits, last 40 matches each · field baselines: ${META ? META.matches.toLocaleString() + ' matches, patch ' + esc(META.patch) : 'current-patch matches'}, all ranks · combat math is THEORY pending in-game calibration · generated ${esc(s.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div></details>
+    <details class="scope"><summary>Data scope &amp; sources</summary><div style="margin-top:.45rem">pred.gg public profiles — career and hero stats count ranked games only (casual, ARAM and brawls excluded), ranked splits, last 40 ranked matches each · field baselines: ${META ? META.matches.toLocaleString() + ' matches, patch ' + esc(META.patch) : 'current-patch matches'}, all ranks · combat math is THEORY pending in-game calibration · generated ${esc(s.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div></details>
     <h1>5-stack picker</h1>
 
     <div class="card">
@@ -437,7 +437,7 @@ const plink = (uuid, name) => uuid
           ? '<b>Meta</b> — the lane’s top winning heroes by field win rate, any hero (comfort aside). “new pick” = under 30 of that player’s games on it.'
           : mode === 'any'
             ? '<b>Any lane</b> — a wider shuffle of heroes winning in this lane, each player’s own most-played first (they pilot those better than average), then the lane’s other field winners.'
-            : '<b>Wheelhouse</b> — each player’s best heroes in this role from their real 5v5s (their own winning record); thin samples under 20 games say so.'}
+            : '<b>Wheelhouse</b> — each player’s best heroes in this role from their ranked games (their own winning record); thin samples under 20 games say so.'}
         · seats go to whoever wins most there, with thin role records counting less</div>`;
     out.innerHTML = parts[0] + (altCount > 0
       ? `<details class="alts"><summary>Show ${altCount} alternate lineup${altCount > 1 ? 's' : ''}</summary>${parts.slice(1).join('')}</details>`

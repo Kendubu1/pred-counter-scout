@@ -5318,6 +5318,15 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   alternatives listed without what they trade away, "physical-armor" shortened to "armor".
 - 130ed284 was skipped: another session was mid-critique on it. Condense it after it publishes.
 
+## 2026-10-27 · Player reports are ranked only
+- playerProfile.ts pulled career / role / hero / hero-per-role stats and the recent-match sample
+  with gameModes [RANKED, STANDARD]; STANDARD is casual 5v5. Casual was 23-50% of each member's
+  "career" (Mr_Meat31 1069 -> 539 ranked games, Goldilocks324 1018 -> 518). Every profile query is
+  now RANKED only; the films, pairs and trios already were. Re-pulled the squad (npm run squad)
+  and rebuilt review:players in one pass; lane advice, climb heroes and recent-form tips moved.
+- The hero-page field pulls (aggregate.ts, augments.ts) still default to RANKED+STANDARD; that is
+  field data, not player grading, and was left alone.
+
 ## 2026-10-27 · Reviews answer why (blunt-why-v10)
 - The v9 flags still read as stat lines ("Feng Mao fed ... 46137 objective damage", "Shinbi died
   eight times, seven to Feng Mao"). Two causes: the engine computed only counts, and the rules

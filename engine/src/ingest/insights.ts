@@ -236,21 +236,22 @@ export function computeInsights(m: DeepMember, base: SquadBaselines, bestPair?: 
   }
 
   // ── one earned flex, if they have it ──
-  // g.* counts real 5v5s only (ranked + standard). Casual-mode pentas are
-  // attributed, not blended — one member's "20 pentas" was 17 ARAM ones.
+  // g.* counts ranked games only (2026-10-27). Pentas in every other mode
+  // (casual 5v5, ARAM, brawls) are attributed, not blended — one member's
+  // "20 pentas" was 17 ARAM ones.
   const casualPentas = (m.raw.gamemodeStatistics?.results ?? [])
-    .filter((r) => !['RANKED', 'STANDARD'].includes(r.gameMode))
+    .filter((r) => r.gameMode !== 'RANKED')
     .reduce((s, r) => s + r.pentaKills, 0);
   if (g.pentaKills > 0 || g.maxKillingSpree >= 12 || casualPentas > 0) {
-    const casualTail = casualPentas > 0 ? ` (plus ${casualPentas} more in ARAM and brawls — the group chat can rule on whether those count)` : '';
+    const casualTail = casualPentas > 0 ? ` (plus ${casualPentas} more in casual modes — the group chat can rule on whether those count)` : '';
     out.push({
       title: 'For the group chat',
       finding: g.pentaKills > 0
-        ? `${g.pentaKills} pentakill${g.pentaKills > 1 ? 's' : ''} in real 5v5s and a longest spree of ${g.maxKillingSpree}${casualTail}. ${first} has receipts.`
+        ? `${g.pentaKills} pentakill${g.pentaKills > 1 ? 's' : ''} in ranked and a longest spree of ${g.maxKillingSpree}${casualTail}. ${first} has receipts.`
         : g.maxKillingSpree >= 12
-          ? `A longest killing spree of ${g.maxKillingSpree} in real 5v5s${casualTail}. ${first} has receipts.`
-          : `${casualPentas} pentakill${casualPentas > 1 ? 's' : ''} — every one in ARAM or brawls. The group chat decides if those count.`,
-      receipt: `${Math.round(g.totalTime / 3600).toLocaleString()} hours in real 5v5s`,
+          ? `A longest ranked killing spree of ${g.maxKillingSpree}${casualTail}. ${first} has receipts.`
+          : `${casualPentas} pentakill${casualPentas > 1 ? 's' : ''} — every one in casual modes. The group chat decides if those count.`,
+      receipt: `${Math.round(g.totalTime / 3600).toLocaleString()} hours in ranked`,
       salience: 0.02,
     });
   }

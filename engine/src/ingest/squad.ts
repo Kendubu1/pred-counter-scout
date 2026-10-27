@@ -324,7 +324,7 @@ async function main() {
       'role winrates are career-wide, adjusted toward each player’s own average so thin samples don’t overclaim',
       'pair winrates count ranked games where both were allies; they include games with randoms filling the rest',
       'trio records come from a recent-match window, not all-time history',
-      'hero suggestions require 10+ of the player’s own games on the hero in that exact role (real 5v5s only); samples under 20 games show their count',
+      'hero suggestions require 10+ of the player’s own games on the hero in that exact role (ranked games only); samples under 20 games show their count',
     ],
   };
   writeFileSync(path.join(ROOT, 'data/artifacts/squad.json'), JSON.stringify(out, null, 1));
