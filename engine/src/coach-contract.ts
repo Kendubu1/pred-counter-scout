@@ -15,6 +15,8 @@ export function selectReviewScope<T extends { matchId: string }>(games: T[], sco
 }
 /** Explicit words the flags format budgets (the tone is in the wording, not the swear count). */
 export const PROFANITY = /\b(?:fuck\w*|shit\w*|damn\w*|bitch\w*|bastard\w*|piss\w*|cock\w*|dick\w*|asshole\w*|ass|hell|crap\w*|hard-on)\b/i;
+/** Team totals a whyFirst review may not lead with (maintainer 2026-10-27: objective damage is a stat line, not the story). */
+export const TOTALS = /\bobjective damage\b|\bteam gold\b|\bgold finished\b/i;
 /** Format guard only. The independent critic still judges truth, usefulness and tone. */
 export function validateCoachContract(root: string, f: any): void {
   const preset = loadCoachingPreset(root);
@@ -56,10 +58,18 @@ export function validateCoachContract(root: string, f: any): void {
     // 2-4 ranked one-liners, each citing an engine flag (interrogation.gameFlags) or "other".
     const known = new Set(((f.interrogation?.gameFlags ?? []) as { id: string }[]).map(g => g.id));
     const flags = c.flags;
+    const flagWords = preset.flagWords ?? 18;
     if (!Array.isArray(flags) || flags.length < 2 || flags.length > 4) fail('flags needs 2-4 entries');
     for (const [i, fl] of (flags as any[]).entries()) {
       if (!fl || typeof fl.ref !== 'string' || (fl.ref !== 'other' && !known.has(fl.ref))) fail(`flags.${i} must cite a gameFlags id or "other"`);
-      if (typeof fl.text !== 'string' || fl.text.trim().split(/\s+/).length > 18) fail(`flags.${i} needs one line of at most 18 words`);
+      if (typeof fl.text !== 'string' || fl.text.trim().split(/\s+/).length > flagWords) fail(`flags.${i} needs one line of at most ${flagWords} words`);
+    }
+    // whyFirst (blunt-why-v10, 2026-10-27): totals are the consequence, never the lead.
+    if (preset.whyFirst) {
+      for (const [field, text] of [['headline', c.headline], ...(flags as any[]).map((fl, i) => [`flags.${i}`, fl.text])] as [string, string][]) {
+        if (TOTALS.test(text ?? '')) fail(`${field} leads with a total (objective damage, team gold); say what happened and why, totals stay in the evidence`);
+      }
+      if ((String(c.headline ?? '').match(/\d[\d,.]*k?/g) ?? []).length > 1) fail('headline carries more than one number; name the mechanism, not the stat line');
     }
     const refs = (flags as any[]).map(fl => fl.ref).filter(r => r !== 'other');
     if (new Set(refs).size !== refs.length) fail('flags cite the same game flag twice');
@@ -76,7 +86,7 @@ export function validateCoachContract(root: string, f: any): void {
       }
     }
   }
-  const lines: [string, unknown, number][] = [...(c.lossReflection ? [['lossReflection', c.lossReflection, 100] as [string, unknown, number]] : []), ['headline', c.headline, 25], ...(flagsFormat ? (c.flags as any[]).map((fl, i) => [`flags.${i}`, fl.text, 18] as [string, unknown, number]) : [['team', c.team, 90] as [string, unknown, number]]), ['focus', c.focus?.action, flagsFormat ? 35 : 50], ...(bullets ? Object.entries(c.playerBullets).flatMap(([id, texts]) => (texts as string[]).map((text, i) => [`${id}.${i}`, text, flagsFormat ? 30 : 40] as [string, unknown, number])) : Object.entries(c.perPlayer).map(([id, text]) => [id, text, 80] as [string, unknown, number]))];
+  const lines: [string, unknown, number][] = [...(c.lossReflection ? [['lossReflection', c.lossReflection, 100] as [string, unknown, number]] : []), ['headline', c.headline, 25], ...(flagsFormat ? (c.flags as any[]).map((fl, i) => [`flags.${i}`, fl.text, preset.flagWords ?? 18] as [string, unknown, number]) : [['team', c.team, 90] as [string, unknown, number]]), ['focus', c.focus?.action, flagsFormat ? 35 : 50], ...(bullets ? Object.entries(c.playerBullets).flatMap(([id, texts]) => (texts as string[]).map((text, i) => [`${id}.${i}`, text, flagsFormat ? 30 : 40] as [string, unknown, number])) : Object.entries(c.perPlayer).map(([id, text]) => [id, text, 80] as [string, unknown, number]))];
   for (const [field, text, cap] of lines) {
     if (typeof text !== 'string' || !text.trim()) fail(`${field} is empty`);
     const s = text as string;

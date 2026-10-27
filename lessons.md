@@ -5318,6 +5318,21 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   alternatives listed without what they trade away, "physical-armor" shortened to "armor".
 - 130ed284 was skipped: another session was mid-critique on it. Condense it after it publishes.
 
+## 2026-10-27 · Reviews answer why (blunt-why-v10)
+- The v9 flags still read as stat lines ("Feng Mao fed ... 46137 objective damage", "Shinbi died
+  eight times, seven to Feng Mao"). Two causes: the engine computed only counts, and the rules
+  banned guessing causes, so the writer could only restate counts. A ban without a supply of
+  provable causes produces stat dumps.
+- Fix: the engine computes the provable causes (`why` on each game flag): where and after what the
+  deaths came, where each jungler spent the game and whether the enemy one was ever answered,
+  who fell first before each lost window, two lanes dying at once, what a kill lead bought.
+  The writer still may not guess intent or positioning; it now has causes it is allowed to state.
+- On the 10/26 loss the real story was in the kill stream, not the totals: Feng Mao was never
+  killed after the 13th minute (14 kills without a death), Serath's kills went to Lt. Belica, and
+  both late collapses opened with Serath dead first (6 of 13 losses).
+- Totals are the consequence. The contract now rejects objective damage / team gold in the
+  headline and flags under whyFirst presets.
+
 ## 2026-10-26 · Reviews lead with flags (blunt-flags-v9)
 - The loss write-ups read as stat ledgers. src/game-flags.ts now computes the deciding flags per game
   (inhibitors with no finish, an objective bought with deaths, fights started down, a struggling

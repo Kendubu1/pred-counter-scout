@@ -59,6 +59,65 @@ describe('game flags', () => {
     expect(ids).toEqual(expect.arrayContaining(['kills-no-gold', 'closing-collapse', 'standout:mid']));
   });
 
+  // The why lines (2026-10-27): causes the kill stream proves, not restated totals.
+  it('explains a jungler who ran the map: never answered, and where our jungler was', () => {
+    const f = base();
+    f.players.push(pl('jg', true, 'jungle', { goldEarned: 9000 }), pl('emid', false, 'midlane'));
+    const ejg = f.players.find((p) => p.pid === 'ejg')!; Object.assign(ejg, { kills: 9, deaths: 1, goldEarned: 16000 });
+    f.kills = [kill(100, 'us', 'jg', 'ejg', 11639, -4291), kill(200, 'us', 'jg', 'emid', 2592, -2060), kill(260, 'us', 'jg', 'emid', 2592, -2060),
+      ...[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => kill(300 + i * 90, 'them', 'ejg', i % 3 ? 'adc' : 'mid', 11578, 7204))];
+    const g = gameFlags(f).find((x) => x.id === 'jungle-run:them')!;
+    expect(g.tone).toBe('bad');
+    expect(g.why).toContain('EJG was killed once, last at 1.7m; 9 kills came after that with no death.');
+    expect(g.why!.join(' ')).toMatch(/EJG's kills by lane: offlane 9, 9 of them in our half/);
+    expect(g.why!.join(' ')).toMatch(/JG's kills went elsewhere: EMID on the mid lane 2 and EJG on the offlane 1/);
+    expect(g.why).toContain("None of EJG's 9 kills was answered with a kill on EJG within 45s.");
+  });
+
+  it('names who fell first in a collapse and whether it was two fights at once', () => {
+    const f = base();
+    f.players.push(pl('top', true, 'offlane'), pl('jg', true, 'jungle'));
+    f.kills = [kill(1500, 'them', 'ejg', 'jg', 11578, 7204), kill(1510, 'them', 'ejg', 'top', 11578, 7204), kill(1520, 'them', 'ecarry', 'adc', -10052, 6416), kill(1530, 'them', 'ecarry', 'sup', -10052, 6416)];
+    f.events = [ev(1580, 'INNER_TOWER', 'them', 'tower', 'offlane'), ev(1600, 'FANGTOOTH', 'them', 'objective')];
+    const g = gameFlags(f).find((x) => x.kind === 'collapse')!;
+    expect(g.id).toBe('collapse@25.0');
+    expect(g.why![0]).toBe('JG (jungle) fell first, to EJG on the offlane in our half; 3 more died in the next 30s.');
+    expect(g.why![1]).toMatch(/split across the offlane \(2\) and the duo lane \(2\)/);
+    expect(g.why).toContain('Then they took the offlane inner tower and Fangtooth.');
+    // One more kill of ours in the window and it is a fight, not a collapse.
+    f.kills.push(kill(1515, 'us', 'mid', 'ecarry'), kill(1525, 'us', 'mid', 'ejg'));
+    expect(gameFlags(f).some((x) => x.kind === 'collapse')).toBe(false);
+  });
+
+  it('flags the ally who went down first before repeated losses', () => {
+    const f = base();
+    f.kills = [kill(1000, 'them', 'ecarry', 'sup'), kill(1010, 'them', 'ecarry', 'adc'), kill(1600, 'them', 'ejg', 'sup')];
+    f.events = [ev(1040, 'OUTER_TOWER', 'them', 'tower', 'duo'), ev(1050, 'FANGTOOTH', 'them', 'objective'), ev(1630, 'INNER_TOWER', 'them', 'tower', 'duo'), ev(1650, 'INHIBITOR', 'them', 'tower', 'duo')];
+    const g = gameFlags(f).find((x) => x.kind === 'opened-map')!;
+    expect(g.id).toBe('opened-map:sup');
+    expect(g.summary).toBe('SUP went down first before 4 of the 4 structures and majors we lost');
+    expect(g.evidence[0]).toMatch(/then the duo outer tower \(17\.3m\) and Fangtooth \(17\.5m\)/);
+  });
+
+  it('says what a kill lead was spent on and who soaked the kills', () => {
+    const f = base();
+    for (const p of f.players) if (!p.us) p.goldEarned = 20000;
+    f.kills = [1, 2, 3, 4].map((i) => kill(i * 60, 'us', 'mid', 'ecarry'));
+    f.events = [ev(400, 'FANGTOOTH', 'them', 'objective')];
+    const why = gameFlags(f).find((x) => x.id === 'kills-no-gold')!.why!;
+    expect(why[0]).toBe('Ahead on kills from 1.0m to the end and the lead bought no structure or major.');
+    expect(why[1]).toBe('4 of our 4 kills were on ECARRY, who still out-earned ADC 20.0k to 10.0k: killing the same player again did not slow their gold.');
+    expect(why).toContain('Their kills turned into objectives: 1 Fangtooth, plus 0 of our structures.');
+  });
+
+  it('places a struggling player\'s deaths: half, lane, right after their own kill', () => {
+    const f = base();
+    f.kills = [kill(90, 'us', 'adc', 'ecarry', -10052, 6416), kill(100, 'them', 'ejg', 'adc', -9946, -3459), kill(300, 'us', 'adc', 'ecarry', -9946, -3459), kill(320, 'them', 'ejg', 'adc', -9946, -3459), kill(500, 'them', 'ejg', 'adc', -9946, -3459)];
+    const why = gameFlags(f).find((x) => x.id === 'struggling:adc')!.why!;
+    expect(why).toEqual(expect.arrayContaining(['3 of 3 deaths came in their half of the map, past the river.', 'All of the 3 deaths to EJG came on the duo lane.',
+      '2 deaths came within 45s of a kill of their own: each kill was answered before the lead could be spent.']));
+  });
+
   it('labels places by map geometry from our side', () => {
     expect(placeOf(1615, 14500, 'dawn')).toBe('in our base');
     expect(placeOf(6425, 1143, 'dawn')).toBe('at the Prime pit');

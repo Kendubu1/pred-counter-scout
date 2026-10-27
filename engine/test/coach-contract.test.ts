@@ -19,12 +19,20 @@ it('flags replace the team paragraph and loss reflection',()=>{
  f.coaching.lossReflection='Reset together next time.'; expect(()=>validateCoachContract(root,f)).toThrow('replace');
  f.coaching.lossReflection=''; f.coaching.team='A team paragraph.'; expect(()=>validateCoachContract(root,f)).toThrow('replace');
 });
+// blunt-why-v10 (2026-10-27): totals are the consequence, never the lead.
+it('rejects a headline or flag that leads with a team total',()=>{
+ const f=match();
+ f.coaching.headline='Feng Mao fed all game, 15 kills and 46137 objective damage.'; expect(()=>validateCoachContract(root,f)).toThrow('total');
+ f.coaching.headline='Feng Mao took 15 kills and 21.6k gold.'; expect(()=>validateCoachContract(root,f)).toThrow('more than one number');
+ f.coaching.headline='Nobody answered Feng Mao after the Mini Prime fight.'; expect(()=>validateCoachContract(root,f)).not.toThrow();
+ f.coaching.flags[1].text='Kill lead never became gold: team gold finished behind.'; expect(()=>validateCoachContract(root,f)).toThrow('total');
+});
 it('requires 2-4 short flags citing computed game flags',()=>{
  const f:any=match();
  f.coaching.flags=[f.coaching.flags[0]]; expect(()=>validateCoachContract(root,f)).toThrow('2-4');
  f.coaching.flags=[{ref:'invented',text:'Made up.'},{ref:'other',text:'Fine.'}]; expect(()=>validateCoachContract(root,f)).toThrow('gameFlags id');
  f.coaching.flags=[{ref:'no-close',text:'One.'},{ref:'no-close',text:'Two.'}]; expect(()=>validateCoachContract(root,f)).toThrow('twice');
- f.coaching.flags=[{ref:'no-close',text:'word '.repeat(19)},{ref:'other',text:'Fine.'}]; expect(()=>validateCoachContract(root,f)).toThrow('18 words');
+ f.coaching.flags=[{ref:'no-close',text:'word '.repeat(27)},{ref:'other',text:'Fine.'}]; expect(()=>validateCoachContract(root,f)).toThrow('26 words');
  f.coaching.flags=[{ref:'no-close',text:'Core fell at 37:50.'},{ref:'other',text:'Fine.'}]; expect(()=>validateCoachContract(root,f)).toThrow('exact time');
 });
 it('spends profanity on the big moments only: three words maximum, none in the lesson',()=>{
