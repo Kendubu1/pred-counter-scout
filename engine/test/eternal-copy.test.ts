@@ -9,7 +9,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildAllowed, verifyLine } from '../src/copy-verify.js';
-import { factsFor, loadEternalInputs, topEternals } from '../src/eternal-copy.js';
+import { factsFor, kitTerms, loadEternalInputs, namesKit, topEternals } from '../src/eternal-copy.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const LINES = path.join(ROOT, 'data/aggregates/eternal-cards.json');
@@ -43,6 +43,8 @@ describe('Eternal card lines (copy pass)', () => {
           checked++;
           expect(verifyLine(line, allowed), `${slug}/${role}/${et}: ungrounded number in "${line}"`).toBe(true);
           expect(line.split(/\s+/).length, `${slug}/${role}/${et}: over the card's word budget`).toBeLessThanOrEqual(36);
+          const terms = kitTerms(hero!, [...cell!.augments].sort((a, b) => b.n - a.n)[0]?.name);
+          expect(namesKit(line, terms), `${slug}/${role}/${et}: names none of the hero's abilities or the lane augment: "${line}"`).toBe(true);
         }
       }
     }

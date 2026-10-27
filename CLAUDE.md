@@ -28,15 +28,20 @@ features should be built against committed artifacts (zero-API) by
 default. The 2026-06-12 provider outage proved the architecture: the
 site served uninterrupted while both upstreams were down.
 
-## Recommendation policy (permanent, set by the maintainer 2026-10-25)
+## Recommendation policy (permanent, set by the maintainer 2026-10-25; edge rule 2026-10-27)
 
-Every pick the site or CLI recommends (augment, Eternal, minors, crest, default
-build) is what the ranked field CLEARLY wins with: the highest win rate among
-options with enough games (`engine/src/field-pick.ts`; floor = 10% of the
-hero-role's games, 30..300; Eternals and minor pairs shrunk). This holds even
-when the kit-math sim disagrees. The sim is not vetted: it is experimental,
-shown only under "experimental" labels, and never presented as a build
-recommendation.
+Every pick the site or CLI recommends (augment, Eternal, crest) is the best
+STATISTICAL EDGE in the ranked field (`engine/src/field-pick.ts` rankByEdge,
+mirrored in `ui/v6/index.html`): win rates shrunk toward the hero-role's average
+by empirical Bayes (weight grows with games; options under 30 games are listed
+but never ranked), highest shrunk rate leads. The page says how sure:
+P(lead beats the runner-up) >= 90% "Best" (clear), >= 70% "Leans" (slight),
+otherwise "Toss-up", where the most-played of the statistically tied options
+leads. With nothing at 30 games, or only one option there, the most-played
+leads, labelled "Most played", with no edge claimed. Minor pairs keep their own
+shrunk rule; default builds keep theirs. This holds even when the kit-math sim
+disagrees. The sim is not vetted: it is experimental, shown only under
+"experimental" labels, and never presented as a build recommendation.
 
 ## Copy & analysis policy (permanent, set by the maintainer 2026-06-20)
 

@@ -138,11 +138,17 @@ const MetaBuildSchema = z.object({
 // support vs mid) gets a distinct view per lane it plays — its own build,
 // stage timeline, eternals, augments, meta cores, and matchups — because the
 // right items, spikes, and counters change completely with the role.
+// confidence: how sure the lead is (field-pick.ts rankByEdge); optional so
+// artifacts written before 2026-10-27 still parse.
+const PickInfo = {
+  shrunkWr: z.number().optional(), pickRate: z.number().optional(),
+  confidence: z.enum(['clear', 'slight', 'toss-up']).nullable().optional(), pBeat: z.number().nullable().optional(),
+};
 const FieldPickSchema = z.object({
-  augment: z.object({ id: z.string(), name: z.string(), wr: z.number(), n: z.number() }).nullable(),
-  eternal: z.object({ name: z.string(), wr: z.number(), shrunkWr: z.number(), n: z.number() }).nullable(),
+  augment: z.object({ id: z.string(), name: z.string(), wr: z.number(), n: z.number(), ...PickInfo }).nullable(),
+  eternal: z.object({ name: z.string(), wr: z.number(), n: z.number(), ...PickInfo }).nullable(),
   minors: z.object({ minor1: z.string(), minor2: z.string(), wr: z.number(), n: z.number(), basis: z.enum(['best-pair', 'most-picked']) }).nullable(),
-  crest: z.object({ name: z.string(), wr: z.number(), n: z.number() }).nullable(),
+  crest: z.object({ name: z.string(), wr: z.number(), n: z.number(), ...PickInfo }).nullable(),
 }).nullable();
 
 const RoleView = z.object({
@@ -833,7 +839,9 @@ function buildRoleView(
     `first spike ${firstSpike ? `lands around minute ${firstSpike.minute} (${firstSpike.item})` : 'is late'}, ` +
     `third item by ${spikes[2]?.minute != null ? `minute ${spikes[2]!.minute}` : 'the 30+ minute mark'}.` +
     (fieldPick?.eternal
-      ? ` The field wins most with ${fieldPick.eternal.name} here (${fieldPick.eternal.wr}% over ${fieldPick.eternal.n.toLocaleString('en-US')} games).`
+      ? fieldPick.eternal.confidence === 'toss-up'
+        ? ` No Eternal clearly wins here; ${fieldPick.eternal.name} is the most-played of the tied options (${fieldPick.eternal.wr}% over ${fieldPick.eternal.n.toLocaleString('en-US')} games).`
+        : ` The field wins most with ${fieldPick.eternal.name} here (${fieldPick.eternal.wr}% over ${fieldPick.eternal.n.toLocaleString('en-US')} games).`
       : '');
 
   // D1 — disclose when the sim's first item diverges from the field. The

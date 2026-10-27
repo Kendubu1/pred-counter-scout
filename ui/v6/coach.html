@@ -1042,7 +1042,7 @@ async function fillEternals() {
       const d = await ARTCACHE[slug];
       let src = d;
       for (const r of d.roles || []) if (r.role === role) src = r;
-      // The field's clear winner (artifact fieldPick: highest win rate with
+      // The field's best edge (artifact fieldPick: best shrunk win rate, with
       // enough ranked games this patch), never the kit-math sim's Eternal —
       // the sim is experimental (maintainer 2026-10-25). Covers supports too.
       const fp = src.fieldPick || null;
@@ -1053,7 +1053,7 @@ async function fillEternals() {
       const et = fp && fp.eternal;
       const fpicks = et && fp.minors ? [fp.minors.minor1, fp.minors.minor2] : [];
       const fep = (m) => epopAttr(et.name, m, fpicks, 'field pick', "the minor pair the ranked field wins most with for this hero and role");
-      if (et) el.innerHTML = `<span class="ltag">field pick</span><b${fep()}>${esc(et.name)}</b>${fp.minors ? ` + <span${fep(fp.minors.minor1)}>${esc(fp.minors.minor1)}</span> + <span${fep(fp.minors.minor2)}>${esc(fp.minors.minor2)}</span>` : ''} <span style="color:var(--text-2)">${et.wr}% over ${et.n.toLocaleString()} ranked games</span>${ran ? (ran === et.name ? ' <span style="color:var(--green)">(same Eternal you ran)</span>' : ` <span style="color:var(--text-2)">(you ran ${esc(ran)})</span>`) : ''}${window.SIM_ON && cs && typeof cs.in === 'string' && cs.out ? ` <span class="swap" title="kit-math sim · experimental, not a recommendation">· experimental sim vs ${esc(oppName)}: ${esc(cs.in)} in for ${esc(cs.out)}</span>` : ''}`;
+      if (et) el.innerHTML = `<span class="ltag">field pick</span><b${fep()}>${esc(et.name)}</b>${fp.minors ? ` + <span${fep(fp.minors.minor1)}>${esc(fp.minors.minor1)}</span> + <span${fep(fp.minors.minor2)}>${esc(fp.minors.minor2)}</span>` : ''} <span style="color:var(--text-2)">${et.wr}% over ${et.n.toLocaleString()} ranked games${et.confidence === 'toss-up' ? ' · toss-up: no Eternal clearly wins here' : ''}</span>${ran ? (ran === et.name ? ' <span style="color:var(--green)">(same Eternal you ran)</span>' : ` <span style="color:var(--text-2)">(you ran ${esc(ran)})</span>`) : ''}${window.SIM_ON && cs && typeof cs.in === 'string' && cs.out ? ` <span class="swap" title="kit-math sim · experimental, not a recommendation">· experimental sim vs ${esc(oppName)}: ${esc(cs.in)} in for ${esc(cs.out)}</span>` : ''}`;
       else el.remove();
     } catch { el.remove(); }
   }

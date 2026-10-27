@@ -14,26 +14,42 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { clean, kitText, type RawHero } from './hero-coach-copy.js';
-import { momPriorStrength } from './evidence.js';
+import { rankByEdge, shownOptions } from './field-pick.js';
 
 export interface Minor { name: string; n: number; w: number }
 export interface FieldEternal { name: string; n: number; w: number; minor1?: Minor[]; minor2?: Minor[] }
-export interface AugCell { augments: { id: string; name: string; n: number; w: number }[]; eternals?: FieldEternal[] }
+export interface AugCell { games?: number; augments: { id: string; name: string; n: number; w: number }[]; eternals?: FieldEternal[]; platPlus?: { games?: number; eternals?: FieldEternal[] } }
 export interface EternalDef { name: string; major: string; minorSlot1: { name: string; desc: string }[]; minorSlot2: { name: string; desc: string }[] }
 
-export const ETERNAL_MIN_GAMES = 300; // matches the hero page's display filter
-
-/** The same top-3 the hero page shows: n >= floor, by SHRUNK winrate. */
+/** The Eternals the hero page can show for this hero-role: the top three
+ *  (field-pick.ts rankByEdge + under-30 fillers) under All ranks, plus any extra
+ *  the Plat+ view shows. Card lines are keyed by hero/role/Eternal, not by rank
+ *  band, so one line serves both views. All-ranks rows come first. */
 export function topEternals(cell: AugCell): (FieldEternal & { shrunk: number })[] {
-  const all = cell.eternals ?? [];
-  const totN = all.reduce((s, e) => s + e.n, 0);
-  const mean = totN ? all.reduce((s, e) => s + e.w, 0) / totN : 0.5;
-  const k = momPriorStrength(all, mean);
-  return all
-    .filter((e) => e.n >= ETERNAL_MIN_GAMES)
-    .map((e) => ({ ...e, shrunk: (e.w + k * mean) / (e.n + k) }))
-    .sort((x, y) => y.shrunk - x.shrunk)
-    .slice(0, 3);
+  const shown = (c: { games?: number; eternals?: FieldEternal[] }) => shownOptions(rankByEdge(c.eternals ?? [], c.games || (c.eternals ?? []).reduce((s, e) => s + e.n, 0)));
+  const out: (FieldEternal & { shrunk: number })[] = shown(cell);
+  const have = new Set(out.map((e) => e.name));
+  for (const e of cell.platPlus?.games ? shown(cell.platPlus) : []) {
+    if (have.has(e.name)) continue;
+    have.add(e.name);
+    // Prefer the all-ranks row: its minors rest on far more games.
+    const wide = (cell.eternals ?? []).find((x) => x.name === e.name);
+    out.push(wide ? { ...wide, shrunk: e.shrunk } : e);
+  }
+  return out;
+}
+
+/** Words that tie a line to this hero: ability names and the lane augment. */
+export function kitTerms(hero: RawHero, augName?: string): string[] {
+  return [...(hero.abilities ?? []).map((a) => a.display_name), ...(augName ? [augName] : [])].filter((t) => t && t.length > 2);
+}
+
+/** A card line must name the hero's kit (an ability or the lane augment):
+ *  the maintainer asked how each Eternal works with THIS hero (2026-10-27), and
+ *  a line with no kit word is the raw description retold. */
+export function namesKit(line: string, terms: string[]): boolean {
+  const l = line.toLowerCase().replace(/[’']/g, "'");
+  return terms.some((t) => l.includes(t.toLowerCase().replace(/[’']/g, "'")));
 }
 
 const norm = (s: string) => s.toLowerCase().replace(/[’']/g, "'");
@@ -69,7 +85,7 @@ export function promptFor(heroName: string, role: string, facts: string): string
 
 ${facts}
 
-For EACH Eternal listed, write ONE line (max 30 words, one or two short sentences) that tells the player what this Eternal does FOR ${heroName.toUpperCase()} and how it changes the way they should play. Name the hero's own abilities (by name) or the listed augment where they genuinely interact with the Eternal, and mention a listed minor only when it changes how you play. Do NOT restate the description or recite its numbers; the full text is one tap away. Prefer no numbers at all; if you must cite one, it has to appear in the facts above. Plain words a new player gets: no "proc", "DPS", "eHP", "CC", "on-hit scaling". Never claim an interaction the facts don't support, and never promise it wins games.
+For EACH Eternal listed, write ONE line (max 30 words, one or two short sentences) that says why this Eternal fits ${heroName.toUpperCase()}'s kit and play style in this role, and how it changes the way they should play. Every line MUST name at least one of ${heroName}'s abilities (exactly as spelled in KIT) or the listed augment, tied to a real interaction: which ability triggers or feeds the Eternal, or which part of how ${heroName} fights (ganking, poking, sustained trades, farming) it rewards. If an Eternal has no direct ability interaction, name the ability that defines the play pattern it rewards. Mention a listed minor only when it changes how you play. Do NOT restate the description or recite its numbers; the full text is one tap away. Prefer no numbers at all; if you must cite one, it has to appear in the facts above. Plain words a new player gets: no "proc", "DPS", "eHP", "CC", "on-hit scaling". Never claim an interaction the facts don't support, and never promise it wins games.
 
 Return strict JSON only, shaped: {"<eternal name>": "<line>", ...}`;
 }

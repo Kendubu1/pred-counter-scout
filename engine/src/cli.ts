@@ -66,11 +66,12 @@ try {
   const augs = JSON.parse(readFieldFile(new URL('../../data/aggregates/predgg-augments.json', import.meta.url), 'utf8'));
   const fp = fieldPickOf(augs.heroes?.[kit.slug]?.[role]);
   if (fp) {
-    console.log(`\nField pick (${role}, highest win rate with enough ranked games, patch ${augs.source?.match(/patch ([\d.]+)/)?.[1] ?? 'current'}):`);
-    if (fp.augment) console.log(`  augment: ${fp.augment.name}  ${fp.augment.wr}% over ${fp.augment.n} games`);
-    if (fp.eternal) console.log(`  eternal: ${fp.eternal.name}  ${fp.eternal.wr}% over ${fp.eternal.n} games`);
+    console.log(`\nField pick (${role}, best shrunk win rate in ranked games, patch ${augs.source?.match(/patch ([\d.]+)/)?.[1] ?? 'current'}):`);
+    const conf = (x: { confidence: string | null; pBeat: number | null }) => x.confidence === 'toss-up' ? '  [toss-up: most-played of the tied options]' : x.confidence && x.pBeat != null ? `  [${x.confidence} edge: ${Math.round(x.pBeat * 100)}% sure it beats the next]` : '';
+    if (fp.augment) console.log(`  augment: ${fp.augment.name}  ${fp.augment.wr}% over ${fp.augment.n} games${conf(fp.augment)}`);
+    if (fp.eternal) console.log(`  eternal: ${fp.eternal.name}  ${fp.eternal.wr}% over ${fp.eternal.n} games${conf(fp.eternal)}`);
     if (fp.minors) console.log(`  minors:  ${fp.minors.minor1} + ${fp.minors.minor2}  ${fp.minors.wr}% over ${fp.minors.n} games${fp.minors.basis === 'most-picked' ? ' (most-picked; no pair clears the sample floor)' : ''}`);
-    if (fp.crest) console.log(`  crest:   ${fp.crest.name}  ${fp.crest.wr}% over ${fp.crest.n} games`);
+    if (fp.crest) console.log(`  crest:   ${fp.crest.name}  ${fp.crest.wr}% over ${fp.crest.n} games${conf(fp.crest)}`);
   }
 } catch { /* no field data committed */ }
 console.log('\neverything below is the kit-math sim: EXPERIMENTAL, not a build recommendation');

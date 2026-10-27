@@ -118,9 +118,9 @@ function predggAugments() {
 const SHRINK_K = 400;        // empirical-Bayes prior strength (toward 50%)
 const LANE_MIN_GAMES = 200;  // ignore tiny samples for the steer
 
-/** The augment the field WINS with in a given lane: the highest win rate among
- *  augments with enough games (field-pick.ts sample floor: 10% of the lane's
- *  games, 30..300), the same pick the hero page card leads with. It used to be
+/** The augment the field WINS with in a given lane: the best shrunk win rate
+ *  (field-pick.ts rankByEdge, the most-played of the tied options in a
+ *  toss-up), the same pick the hero page card leads with. It used to be
  *  the most-played augment, which steered Revenant's build toward Hellfire
  *  Blast (48.3%) while the card recommended Quickdraw (53.5%); the maintainer
  *  ruled 2026-10-25 that the clear winner leads everywhere. Returns null if the

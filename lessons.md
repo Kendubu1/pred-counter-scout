@@ -5357,3 +5357,19 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   (Kwang offlane Plat+: only Vesh cleared 30 games). Same fix: qualified Eternals lead, runner-up
   slots fill with the most-played below-floor ones, tagged.
 - Check any new band or filter against the thinnest cell it can select, not the main lane.
+
+## 2026-10-27 — picks rank by statistical edge, with a confidence label
+
+- A friend spotted Aurora jungle crowning Nihil (305 games, 57.4%) over Lotus (1,647, 56.0%). The
+  300-game floor was a cliff: an option just over it counted as fully as one with ten times the
+  games, and "Best" was shown with equal confidence whether the lead was real or noise. Measured
+  across the 87 main lanes, only 2-3 Eternal leads were clearly ahead (P >= 90%); 63 were toss-ups.
+- Rule now (field-pick.ts rankByEdge, mirrored in ui/v6/index.html): empirical-Bayes shrinkage
+  toward the lane mean for augments, Eternals and crests; 30-game junk floor; P(lead beats next)
+  from the shrunk rates gives Best / Leans / Toss-up; a toss-up leads with the most-played of the
+  tied options; nothing (or only one option) at 30 games = "Most played", no edge claimed.
+- "Default to most played" alone gives up the edge; "highest win rate" alone crowns noise. The
+  decision is the highest expected win rate; popularity only breaks statistical ties.
+- Copy keyed per hero/role must follow the page's lead. Augment lines are written against the
+  all-ranks lead, so the Plat+ view drops them when its lead differs. Eternal card lines now cover
+  every Eternal either band can show and must name an ability or the lane augment (namesKit).
