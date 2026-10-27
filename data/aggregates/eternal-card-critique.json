@@ -1,289 +1,445 @@
 {
- "generatedAt": "2026-10-25T18:35:48.561Z",
+ "generatedAt": "2026-10-27T00:40:04.911Z",
  "scope": [
-  "eternals"
+  "eternalcards"
  ],
  "source": "independent (non-author) general-purpose agent reviewing data/aggregates/build-reasoning.json + hero-coach-lines.json + the coach report against their own source blocks; suggested rewrites ground-checked by copy-verify, then applied back",
- "reviewedLines": 226,
- "flaggedLines": 29,
- "agreementRate": 0.872,
- "rewritesGrounded": 29,
+ "reviewedLines": 737,
+ "flaggedLines": 48,
+ "agreementRate": 0.935,
+ "rewritesGrounded": 48,
  "rewritesDropped": 0,
- "applied": 29,
+ "applied": 48,
  "unmatched": 0,
  "heroes": {},
  "heroCoach": {},
  "coach": {},
- "eternals": {
+ "eternalCards": {
   "legion": {
    "carry": [
     {
-     "quote": "Makes the stats on every item you buy stronger, so it rewards hitting your item spikes on time. Bloatware grows with each item slot you fill, favoring long games.",
-     "severity": "med",
-     "issue": "'hit item spikes on time' advice unsupported; Demiurge just boosts item stats",
-     "rewrite": "Makes the stats on every item you buy stronger, so it scales as your build fills out. Bloatware adds a little damage and damage reduction per item you own."
+     "quote": "Saturation Charge slows fleeing heroes; once they're low, Weald's missiles finish them through walls. Bonus attack speed, which also feeds Ballistic Calibration, adds more missiles.",
+     "severity": "low",
+     "issue": "overclaim: Weald missiles are small true-damage chip, they do not reliably finish a hero",
+     "rewrite": "Saturation Charge slows fleeing heroes; once they're low, Weald's missiles chip them through walls. Bonus attack speed, which also feeds Ballistic Calibration, adds more missiles."
     }
-   ]
-  },
-  "aurora": {
+   ],
    "support": [
     {
-     "quote": "Extra health lets you stand in front and land Hoarfrost and Cryoseism without dying first. Regenerative Tissue refills you between fights, so you can stay in lane longer.",
+     "quote": "Saturation Charge slows low-health heroes, and Weald's missiles chase them through walls. Poke them low, then let it finish the escape.",
      "severity": "low",
-     "issue": "Regenerative Tissue is slow regen after avoiding hero damage, not a refill",
-     "rewrite": "Extra health lets you stand in front and land Hoarfrost and Cryoseism without dying first. Regenerative Tissue slowly regenerates health once you avoid hero damage for a few seconds."
+     "issue": "unclear \"let it finish the escape\" reads as helping them escape; overclaims a finish",
+     "rewrite": "Poke heroes low, then slow them with Saturation Charge; Weald's missiles chase them through walls and add damage as they try to escape."
     }
    ]
   },
-  "riktor": {
-   "jungle": [
+  "sparrow": {
+   "midlane": [
     {
-     "quote": "Extra health and size make you a sturdier front line. Pull with Riplash and hold them in Skewer; Regenerative Tissue refills you between camps when no hero is hitting you.",
+     "quote": "Piercing Shot reaches through terrain and Weald's missiles go through walls, so low enemies escaping mid still get finished. Attack speed adds more missiles.",
      "severity": "low",
-     "issue": "Regenerative Tissue is slow regen after a delay, not a refill",
-     "rewrite": "Extra health and size make you a sturdier front line. Pull with Riplash and hold them in Skewer; Regenerative Tissue regenerates health between camps once heroes stop hitting you."
+     "issue": "overclaim: Weald missiles are small true-damage chip, they do not reliably finish a hero",
+     "rewrite": "Piercing Shot reaches through terrain and Weald's missiles go through walls, so low enemies escaping mid still take damage. Bonus attack speed adds more missiles."
+    }
+   ]
+  },
+  "ikra": {
+   "carry": [
+    {
+     "quote": "Narcosis holds a hero in place; once they're low, Weald's missiles finish them through walls. Cascade's attack speed adds more missiles.",
+     "severity": "low",
+     "issue": "overclaim: Weald missiles are small true-damage chip, they do not reliably finish a hero",
+     "rewrite": "Narcosis holds a hero in place; once they're low, Weald's missiles chip them through walls. Cascade's attack speed adds more missiles."
     }
    ]
   },
   "serath": {
-   "jungle": [
+   "offlane": [
     {
-     "quote": "Hitting a hero under 30% health fires missiles that follow them through walls, adding a little damage. Wind-Rider's attack speed after Heaven's Fury can add missiles.",
-     "severity": "med",
-     "issue": "missiles don't follow; Wind-Rider alone not shown to add missiles",
-     "rewrite": "Hitting a hero under 30% health fires a few small true-damage missiles that fly through walls. Extra missiles need more bonus attack speed, which Wind-Rider after Heaven's Fury helps build."
-    },
-    {
-     "quote": "You grow stronger over time and with every takedown, and Fallen Grace already sends you diving for kills. Masterpiece stacks damage and speed on kills, so chain resets in fights.",
+     "quote": "Heresy and Wrath Unleashed attack speed add more missiles to finish low heroes through walls. Wind-Rider rewards diving in with Ascend.",
      "severity": "low",
-     "issue": "'chain resets' is jargon; Masterpiece resets nothing",
-     "rewrite": "You grow stronger over time and with every takedown, and Fallen Grace cuts your cooldowns after takedowns. Masterpiece stacks damage and speed on kills, so keep fighting while it lasts."
+     "issue": "overclaim: Weald missiles are small true-damage chip, they do not reliably finish a hero",
+     "rewrite": "Heresy and Wrath Unleashed attack speed add more Weald missiles, which chase low heroes through walls. Wind-Rider rewards diving in with Ascend."
     }
    ]
   },
   "shinbi": {
-   "offlane": [
+   "midlane": [
     {
-     "quote": "Every cast weakens nearby enemy heroes' damage, so stay close and keep weaving Rushing Beat and Line Tempo. Allegro means more dashes; Harmonic Currents refunds health and mana each cast.",
+     "quote": "Rushing Beat dashes chase low heroes, and Weald's missiles finish them through walls. Wind-Rider adds attack speed after each Rushing Beat dash.",
      "severity": "low",
-     "issue": "Harmonic Currents restores a small part of missing health/mana, not a refund",
-     "rewrite": "Every cast weakens nearby enemy heroes' damage, so stay close and keep weaving Rushing Beat and Line Tempo. Harmonic Currents restores a little missing health and mana each cast."
-    }
-   ]
-  },
-  "kwang": {
-   "jungle": [
-    {
-     "quote": "Your items give more stats and their effects hit harder. Rush your core purchases and lean on your build; Bloatware adds damage and toughness with every item you finish.",
-     "severity": "med",
-     "issue": "'rush your core' advice unsupported by Demiurge",
-     "rewrite": "Your items give more stats and their effects hit harder, so each item counts for more. Bloatware adds damage and toughness with every item you finish."
+     "issue": "overclaim: Weald missiles are small true-damage chip, they do not reliably finish a hero",
+     "rewrite": "Rushing Beat dashes chase low heroes, and Weald's missiles follow them through walls. Wind-Rider adds attack speed after each Rushing Beat dash."
     }
    ]
   },
   "argus": {
    "midlane": [
     {
-     "quote": "Spamming Particle Shredder and Dread Nova keeps your mana flowing and pays gold off hero damage. Poke constantly in lane; Runic Focus rewards staying high on mana.",
-     "severity": "low",
-     "issue": "overstates small stacking regen; Particle Shredder drains mana, contradicting Runic Focus advice",
-     "rewrite": "Each cast adds a little mana regeneration, and ability damage on heroes pays extra gold. Poke with Dread Nova in lane; Runic Focus rewards keeping your mana bar high."
+     "quote": "Takedowns from map-wide Infinite Obliteration beams build Fearless power without putting Argus in danger; you get squishier, so poke from behind and avoid dying to keep stacks.",
+     "severity": "med",
+     "issue": "misleading: Synaptic Obliterator is a long channel, so takedowns from it are not risk-free",
+     "rewrite": "Infinite Obliteration beams let you join takedowns from far away to build Fearless, but you get squishier; channel Synaptic Obliterator from safety and avoid dying to keep stacks."
+    }
+   ],
+   "offlane": [
+    {
+     "quote": "Fearless stacks from takedowns boost every Synaptic Obliterator beam, but you lose health and stacks on death; poke with Particle Shredder from range instead of brawling the offlaner.",
+     "severity": "med",
+     "issue": "misdescribes Satariel: the max health cut applies while stacked, only the stacks are lost on death",
+     "rewrite": "Fearless stacks from takedowns boost every Synaptic Obliterator beam but lower your max health, and dying loses them; poke with Particle Shredder from range instead of brawling."
     }
    ]
   },
-  "the-fey": {
+  "revenant": {
+   "carry": [
+    {
+     "quote": "Farming waves with Obliterate ramps the bonus damage, and Bone Collector adds crit chance that pairs with Fate's guaranteed final-round crit and Bounty Hunter's crit scaling.",
+     "severity": "low",
+     "issue": "unsupported: extra crit chance does nothing for a round that always crits",
+     "rewrite": "Farming waves with Obliterate ramps the bonus damage; Bone Collector's crit chance makes more Fate shots crit and raises Bounty Hunter's power bonus."
+    }
+   ],
+   "offlane": [
+    {
+     "quote": "When Hellfire Rounds or Obliterate drop a hero low, Weald's missiles chase them through walls to finish; Forage adds gold and XP from lane farm.",
+     "severity": "low",
+     "issue": "overclaim: Weald missiles are small true-damage chip, they do not reliably finish a hero",
+     "rewrite": "When Hellfire Rounds or Obliterate drop a hero low, Weald's missiles chase them through walls for extra damage; Forage adds gold and XP from lane farm."
+    }
+   ]
+  },
+  "iggy-scorch": {
+   "carry": [
+    {
+     "quote": "Throwing Molotov on cooldown stacks mana regen, earns gold from hero damage and grows Hold This!; Runic Focus adds magic power while your mana stays high.",
+     "severity": "low",
+     "issue": "Hold This! only grows when the Molotov explosion hits a hero, not on every throw",
+     "rewrite": "Landing Molotov on heroes stacks mana regen, earns gold from hero damage and grows Hold This!; Runic Focus adds magic power while your mana stays high."
+    }
+   ]
+  },
+  "twinblast": {
+   "carry": [
+    {
+     "quote": "LUNARI 4.0's quick attacks on one hero reach Vermis's max-health bonus fast; Melting Point helps shred armor-stacked frontliners late.",
+     "severity": "low",
+     "issue": "Melting Point adds damage against high-armor targets; it does not shred armor",
+     "rewrite": "LUNARI 4.0's quick attacks on one hero reach Vermis's max-health bonus fast; Melting Point adds damage against heavily armored frontliners late."
+    }
+   ],
+   "midlane": [
+    {
+     "quote": "Vortex Grenade pokes enemies low, then Weald's missiles finish them through walls; Wind-Rider adds attack speed after every Rocket Dash, which Grenadier also turns into a grenade charge.",
+     "severity": "low",
+     "issue": "overclaim: Weald missiles are small true-damage chip, they do not reliably finish a hero",
+     "rewrite": "Vortex Grenade pokes enemies low, then Weald's missiles chase them through walls; Wind-Rider adds attack speed after every Rocket Dash, which Grenadier also turns into a grenade charge."
+    }
+   ],
    "support": [
     {
-     "quote": "Leaves extra burn after each ability hit, so Untamed Growth and Bramble Patch keep enemies hurting. Tithe of Death refills mana and adds ability haste on takedowns.",
-     "severity": "med",
-     "issue": "Tithe of Death restores part of your mana, not a refill",
-     "rewrite": "Leaves extra burn after each ability hit, so Untamed Growth and Bramble Patch keep enemies hurting. Tithe of Death restores some mana and adds ability haste on takedowns."
+     "quote": "Your LUNARI 4.0 shots mark the enemy laner, winning lane trades; Savage Strikes adds healing on hit and Ferocity ramps attack speed in long fights.",
+     "severity": "low",
+     "issue": "overclaim: the mark does not by itself win lane trades",
+     "rewrite": "LUNARI 4.0 shots mark the enemy laner so they hit you softer and take more from you; Savage Strikes heals on hit and Ferocity ramps attack speed in long fights."
+    },
+    {
+     "quote": "Grenadier's extra Vortex Grenade charges help poke enemies low, then Weald's missiles finish them through walls; Taproot heals you from basic attacks.",
+     "severity": "low",
+     "issue": "overclaim: Weald missiles are small true-damage chip, they do not reliably finish a hero",
+     "rewrite": "Grenadier's extra Vortex Grenade charges help poke enemies low, then Weald's missiles chase them through walls; Taproot heals you from basic attacks."
+    }
+   ],
+   "offlane": [
+    {
+     "quote": "Vortex Grenade and Vaporize poke the offlaner low, then Weald's missiles finish through walls; Wind-Rider adds attack speed after each Rocket Dash.",
+     "severity": "low",
+     "issue": "overclaim: Weald missiles are small true-damage chip, they do not reliably finish a hero; \"finish through walls\" is missing its object",
+     "rewrite": "Vortex Grenade and Vaporize poke the offlaner low, then Weald's missiles chase them through walls; Wind-Rider adds attack speed after each Rocket Dash."
     }
    ]
   },
   "grux": {
    "jungle": [
     {
-     "quote": "Once a hero drops low, missiles chase them through walls for a little extra damage to help finish runners. Dryad's Boon lets each club swing bring Double Pain back sooner.",
-     "severity": "high",
-     "issue": "'chase' and 'finish runners' overstate a few small true-damage hits on a per-hero cooldown",
-     "rewrite": "Hitting a low-health hero fires a few small true-damage missiles that fly through walls at them. Dryad's Boon lets each club swing bring Double Pain back sooner."
+     "quote": "Dryad's Boon cuts Smash 'n Grab and Stampede cooldowns as you attack, and Weald's missiles finish heroes fleeing your gank.",
+     "severity": "low",
+     "issue": "overclaim: Weald missiles are small true-damage chip, they do not reliably finish a hero",
+     "rewrite": "Dryad's Boon cuts Smash 'n Grab and Stampede cooldowns as you attack, and Weald's missiles chase heroes fleeing your gank through walls."
+    }
+   ],
+   "carry": [
+    {
+     "quote": "Weald's missiles finish heroes that Stampede and Double Pain leave low; Forage adds gold and XP from farm to help a melee carry keep up.",
+     "severity": "low",
+     "issue": "overclaim: Weald missiles are small true-damage chip, they do not reliably finish a hero",
+     "rewrite": "Weald's missiles chase heroes that Stampede and Double Pain leave low; Forage adds gold and XP from farm to help a melee carry keep up."
+    }
+   ],
+   "midlane": [
+    {
+     "quote": "Marking the mid laner with basic attacks wins extended trades; Savage Strikes heals per hit and Ferocity ramps attack speed during Warlord's Challenge.",
+     "severity": "low",
+     "issue": "overclaim: the mark does not by itself win extended trades",
+     "rewrite": "Marking the mid laner with basic attacks tilts extended trades your way; Savage Strikes heals per hit and Ferocity ramps attack speed during Warlord's Challenge."
+    },
+    {
+     "quote": "Heals from damage dealt, more as you drop low, adding to Lust For Blood; Leech cuts the mid laner's health regen to win the lane.",
+     "severity": "low",
+     "issue": "overclaim: Leech cutting base regen does not win the lane",
+     "rewrite": "Heals from damage dealt, more as you drop low, adding to Lust For Blood; Leech cuts the mid laner's base health regen so your poke sticks."
+    }
+   ]
+  },
+  "grim-exe": {
+   "carry": [
+    {
+     "quote": "When Assault Mode shots drop a hero low, Weald's missiles finish them through walls; Taproot heals you from basic attacks.",
+     "severity": "low",
+     "issue": "overclaim: Weald missiles are small true-damage chip, they do not reliably finish a hero",
+     "rewrite": "When Assault Mode shots drop a hero low, Weald's missiles chase them through walls; Taproot heals you from basic attacks."
     }
    ]
   },
   "boris": {
    "jungle": [
     {
-     "quote": "Hitting a hero under 30% health fires missiles that follow them through walls for a little extra damage. Wind-Rider's attack speed after Chrono Swipe or Ursine Burst can add missiles.",
+     "quote": "Raises the stats from your items, boosting the attack speed and on-hit effects Chrono Swipe applies; Tri-Core adds bonus damage on every hit.",
      "severity": "med",
-     "issue": "missiles don't follow; Wind-Rider alone not shown to add missiles",
-     "rewrite": "Hitting a hero under 30% health fires a few small true-damage missiles that fly through walls. More bonus attack speed adds missiles; Wind-Rider after Chrono Swipe or Ursine Burst helps."
+     "issue": "Demiurge does not raise attack speed through Chrono Swipe; the dash only applies on-hit effects",
+     "rewrite": "Raises the stats from your items and item effect damage, so on-hit items hit harder through Chrono Swipe's two swipes; Tri-Core adds bonus damage on every hit."
     }
    ]
   },
-  "drongo": {
-   "carry": [
+  "adele": {
+   "support": [
     {
-     "quote": "Hitting a hero under 30% health fires missiles that follow them through walls for a little extra damage. Taproot heals you each Lucy shot, and Forage adds gold and XP.",
+     "quote": "Fragrance boosts true damage up close, which fits Imperial Lash, Royal Flourish and Iron Rose; Early Bloom grabs an extra level later in the game.",
      "severity": "med",
-     "issue": "missiles don't follow/home",
-     "rewrite": "Hitting a hero under 30% health fires a few small true-damage missiles that fly through walls at them. Taproot heals you each Lucy shot, and Forage adds gold and XP."
+     "issue": "Royal Flourish deals physical damage, not true damage, so Fragrance's true-damage bonus does not apply to it",
+     "rewrite": "Fragrance boosts true damage on nearby heroes, which fits Imperial Lash, Acacia and Iron Rose's vine; Early Bloom grabs an extra level later in the game."
     }
-   ]
-  },
-  "zarus": {
+   ],
+   "offlane": [
+    {
+     "quote": "Fragrance adds true damage up close, boosting Acacia, Iron Rose and Royal Flourish; Early Bloom gives an extra level later on.",
+     "severity": "med",
+     "issue": "Royal Flourish deals physical damage, so Fragrance's true-damage bonus does not boost it; Fragrance increases, not adds, true damage",
+     "rewrite": "Fragrance boosts true damage on nearby heroes, fitting Acacia and Iron Rose's vine; Early Bloom gives an extra level later on."
+    }
+   ],
    "jungle": [
     {
-     "quote": "Items give more stats and their effects hit harder, on top of The Ascended's steady growth. Buy your core early; Bloatware adds damage and toughness per item.",
+     "quote": "Bonus armor helps you survive after Imperial Lash dashes in; Frost Snap adds damage while enemies are rooted or slowed by Seeds of Dominion's Thornbush.",
      "severity": "low",
-     "issue": "'buy your core early' advice unsupported by Demiurge",
-     "rewrite": "Items give more stats and their effects hit harder, on top of The Ascended's steady growth. Bloatware adds damage and toughness for each item you own."
-    },
-    {
-     "quote": "Your finisher. Once a hero drops low, missiles chase through walls, and Spear of Nyr already hits low targets harder. Evade's dash triggers Wind-Rider for extra attack speed.",
-     "severity": "high",
-     "issue": "calls Weald a finisher; missiles 'chase' is unsupported (few small hits, per-hero cooldown)",
-     "rewrite": "Once a hero drops low, a few small true-damage missiles fly through walls at them, on a per-hero cooldown. Spear of Nyr also hits low targets harder; Evade triggers Wind-Rider."
+     "issue": "the Seeds of Dominion Thornbush only slows; the root comes from Imperial Lash",
+     "rewrite": "Bonus armor helps you survive after Imperial Lash dashes in; Frost Snap adds damage while enemies are rooted by Imperial Lash or slowed by the Seeds of Dominion Thornbush."
     }
    ]
   },
   "crunch": {
+   "offlane": [
+    {
+     "quote": "Takedowns stack power and attack speed that feed Combo Crunch, but shrink your health. Lean on Re-Crunch healing and avoid deaths, which wipe the stacks.",
+     "severity": "med",
+     "issue": "Satariel's attack speed does not feed Combo Crunch; Combo Crunch stacks from Cross Crunch damage",
+     "rewrite": "Takedowns stack power and attack speed on top of Combo Crunch, but shrink your health. Lean on Re-Crunch healing and avoid deaths, which wipe the stacks."
+    }
+   ]
+  },
+  "khaimera": {
    "jungle": [
     {
-     "quote": "Every item stat you buy gets stronger, rewarding fast clears to reach item spikes. Tri-Core adds random bonus damage to each hit, pairing well with Combo Crunch's faster attacks.",
+     "quote": "Takedowns stack attack speed that powers Unleash flurries, but your health shrinks. Use Invigorate to cleanse and escape, since dying wipes the stacks.",
      "severity": "med",
-     "issue": "'fast clears to reach item spikes' advice unsupported; Demiurge just boosts item stats",
-     "rewrite": "Every item stat you buy gets stronger, so it scales as your build fills out. Tri-Core adds random bonus damage to each hit, pairing well with Combo Crunch's faster attacks."
+     "issue": "Unleash already grants maximum attack speed, so Satariel's attack speed does not power it",
+     "rewrite": "Takedowns stack power and attack speed for Rage & Spirit attacks, but your health shrinks. Use Invigorate to cleanse and escape, since dying wipes the stacks."
+    }
+   ],
+   "offlane": [
+    {
+     "quote": "Rage & Spirit attacks mark your lane opponent, so long trades favor you. Ferocity's growing attack speed suits Lane Lurker's extended brawls.",
+     "severity": "low",
+     "issue": "Lane Lurker grants Rage from minions; it does not create extended brawls",
+     "rewrite": "Rage & Spirit attacks mark your lane opponent, so long trades favor you. Ferocity's growing attack speed rewards staying in extended brawls."
+    }
+   ],
+   "midlane": [
+    {
+     "quote": "Rage & Spirit attacks mark your lane opponent, so long trades favor you. Ferocity's growing attack speed suits Lane Lurker's extended brawls.",
+     "severity": "low",
+     "issue": "Lane Lurker grants Rage from minions; it does not create extended brawls",
+     "rewrite": "Rage & Spirit attacks mark your lane opponent, so long trades favor you. Ferocity's growing attack speed rewards staying in extended brawls."
     }
    ]
   },
   "zinx": {
-   "offlane": [
-    {
-     "quote": "Hitting a hero under 30% health fires missiles that follow them through walls for a little extra damage. Taproot heals on each Refibrillator shot; Forage speeds up gold and levels.",
-     "severity": "med",
-     "issue": "missiles don't follow/home",
-     "rewrite": "Hitting a hero under 30% health fires a few small true-damage missiles that fly through walls at them. Taproot heals on each Refibrillator shot; Forage speeds up gold and levels."
-    }
-   ]
-  },
-  "skylar": {
    "carry": [
     {
-     "quote": "Hit a low-health hero and missiles chase them through walls, adding a little damage that can finish runners. Forage adds gold and XP from every farm kill.",
-     "severity": "high",
-     "issue": "'chase' and 'finish runners' overstate a few small true-damage hits on a per-hero cooldown",
-     "rewrite": "Hitting a low-health hero fires a few small true-damage missiles that fly through walls at them. Forage adds gold and XP from every farm kill."
+     "quote": "Bigger item stats boost both Refibrillator's attack and its magic burn. Bio-Mechanical Fusion turns magic power into physical power for hybrid builds.",
+     "severity": "low",
+     "issue": "Bio-Mechanical Fusion adds physical power per magical power; it does not convert it",
+     "rewrite": "Bigger item stats boost both Refibrillator's attack and its magic burn. Bio-Mechanical Fusion adds physical power from your magical power for hybrid builds."
     }
    ]
   },
-  "greystone": {
+  "gideon": {
+   "midlane": [
+    {
+     "quote": "Gideon's kit has no heal or shield, so Exarch only triggers from items or allies; when it does, Portal Blast attacks hit faster and harder.",
+     "severity": "high",
+     "issue": "wrong: Fervour (listed minor) heals you and allies on Portal Blast hits, which triggers Exarch; allies' heals do not trigger your Exarch",
+     "rewrite": "Fervour makes Portal Blast hits on heroes heal you and nearby allies, which triggers Exarch's attack speed and bonus magic damage, so attack after Cosmic Rift."
+    }
+   ]
+  },
+  "terra": {
    "jungle": [
     {
-     "quote": "A finisher: once a hero drops low, missiles chase them through walls. Assault The Gates is a leap, so it triggers Wind-Rider's attack speed on engage.",
-     "severity": "high",
-     "issue": "calls Weald a finisher; 'chase' unsupported",
-     "rewrite": "Once a hero drops low, a few small true-damage missiles fly through walls at them. Assault The Gates is a leap, so it triggers Wind-Rider's attack speed on engage."
-    }
-   ],
-   "offlane": [
-    {
-     "quote": "Hitting an enemy under 30% health fires missiles that follow them through walls for a little extra damage. Forage adds gold and XP from every minion and monster.",
+     "quote": "Skullsplitter and Ruthless Assault stack Rust fast in ganks, and Peal makes Unstoppable Force apply full Rust, so open teamfights with your ultimate and dive in.",
      "severity": "med",
-     "issue": "missiles don't follow/home",
-     "rewrite": "Hitting an enemy under 30% health fires a few small true-damage missiles that fly through walls at them. Forage adds gold and XP from every minion and monster."
-    }
-   ]
-  },
-  "wraith": {
-   "carry": [
-    {
-     "quote": "Your items give more stats and their effects hit harder, so buy core items on time. Memory Leak grows your mana from Knock, Knock! casts and eventually adds movement speed.",
-     "severity": "low",
-     "issue": "'buy core items on time' advice unsupported by Demiurge",
-     "rewrite": "Your items give more stats and their effects hit harder. Memory Leak grows your max mana as you cast abilities like Knock, Knock! and eventually adds movement speed."
-    },
-    {
-     "quote": "A long-range Knock, Knock! on a low hero sends missiles after them through walls. Forage speeds your farm between fights.",
-     "severity": "med",
-     "issue": "'sends missiles after them' implies homing/chasing",
-     "rewrite": "A long-range Knock, Knock! on a low hero fires a few small true-damage missiles that fly through walls at them. Forage speeds your farm between fights."
+     "issue": "Peal does not make Unstoppable Force apply Rust; after the ultimate is cast, your attacks and abilities apply full Rust",
+     "rewrite": "Skullsplitter and Ruthless Assault stack Rust fast in ganks; after you cast Unstoppable Force, Peal makes your hits apply full Rust, so open teamfights with your ultimate."
     }
    ]
   },
   "murdock": {
-   "carry": [
-    {
-     "quote": "Hitting a low hero fires missiles that pass through walls for bonus true damage; Long Arm of the Law can reach fleeing targets. Taproot heals you with each basic attack.",
-     "severity": "low",
-     "issue": "implies Weald pairs with unlimited-range ult; missiles vanish after a set distance",
-     "rewrite": "Hitting a low hero fires a few small true-damage missiles that pass through walls, on a per-hero cooldown. Taproot heals you with each basic attack."
-    }
-   ],
    "offlane": [
     {
-     "quote": "Once a hero drops under 30%, your next hit fires missiles that chase them through walls, so keep poking runners. Taproot heals you on each Enforcer shot.",
-     "severity": "high",
-     "issue": "missiles don't chase; overpromises on runners (small damage, per-hero cooldown)",
-     "rewrite": "Once a hero drops under 30%, your next hit fires a few small true-damage missiles that fly through walls at them. Taproot heals you on each Enforcer shot."
+     "quote": "Doom grows while you keep damaging heroes, so chain Static Trap roots into sustained The Enforcer fire; Terror helps you trade under towers.",
+     "severity": "low",
+     "issue": "\"trade under towers\" can read as safe to fight under enemy towers; Terror only cuts tower damage taken",
+     "rewrite": "Doom grows while you keep damaging heroes, so chain Static Trap roots into sustained The Enforcer fire; Terror cuts minion and tower damage, easing long lanes."
     }
    ]
   },
-  "eden": {
+  "bayle": {
+   "jungle": [
+    {
+     "quote": "Xyris grows with camp clears; open ganks on healthy targets with Skull Crusher so Eviscerate boosts your Kingslayer damage.",
+     "severity": "med",
+     "issue": "logic inverted: opening with Skull Crusher drops the target below the Eviscerate threshold before Kingslayer lands",
+     "rewrite": "Xyris grows with camp clears; Eviscerate adds damage to targets above 80% health, so open ganks with Kingslayer on a full-health target."
+    },
+    {
+     "quote": "Vigil attacks mark your target for Thraex; Alpha's Court rewards solo ganks, so dive with Skull Crusher when the enemy laner is isolated.",
+     "severity": "low",
+     "issue": "Alpha's Court needs no allied hero nearby, which most ganks have; \"solo ganks\" is misleading",
+     "rewrite": "Vigil attacks mark your target for Thraex, cutting their damage to you; Alpha's Court adds damage only with no ally nearby, so it suits solo Skull Crusher invades."
+    }
+   ]
+  },
+  "morigesh": {
+   "midlane": [
+    {
+     "quote": "Morigesh scales into a late burst threat: farm safely with Hive, use Swarm to escape trouble, and let Lotus stacks grow.",
+     "severity": "low",
+     "issue": "\"late burst threat\" is an unsupported claim; line never says what Lotus grants",
+     "rewrite": "Lotus adds a random small bonus every 2 minutes and each takedown, so poke safely with Hive, use Swarm to escape trouble, and let the bonuses add up."
+    }
+   ],
+   "carry": [
+    {
+     "quote": "Hive and Mark poke turns hero damage into gold and keeps mana flowing, so you can throw Hive at a ranged distance all lane without running dry.",
+     "severity": "med",
+     "issue": "overclaim: Aion's small stacking mana regen does not let you poke all lane \"without running dry\"",
+     "rewrite": "Hive and Mark poke on heroes earns Aion gold, and each cast adds a little mana regen, so you can keep throwing Hive longer in lane."
+    }
+   ]
+  },
+  "mourn": {
    "offlane": [
     {
-     "quote": "Hitting a hero under 30% health fires missiles that follow them through walls for a little extra damage. Taproot heals on each basic attack; Forage adds gold and XP.",
-     "severity": "med",
-     "issue": "missiles don't follow/home",
-     "rewrite": "Hitting a hero under 30% health fires a few small true-damage missiles that fly through walls at them. Taproot heals on each basic attack; Forage adds gold and XP."
+     "quote": "Nightmare Extractor means more Extract swings, and every swing or Contagion tick on a hero stacks shred, letting you out-trade bruisers while soaking their armor.",
+     "severity": "low",
+     "issue": "\"soaking their armor\" is unclear jargon for gaining part of the shredded armor",
+     "rewrite": "Nightmare Extractor means more Extract swings, and every swing or Contagion tick on a hero stacks shred, letting you out-trade bruisers while gaining part of their armor."
+    }
+   ],
+   "midlane": [
+    {
+     "quote": "Bonus armor while healthy and a shield when low suit a Beguile brawler; Frost Snap adds damage on targets slowed by Abduct or Beguile channels.",
+     "severity": "high",
+     "issue": "wrong vs SOURCE: Beguile's channel slows Mourn himself, not enemies, so it does not set up Frost Snap that way",
+     "rewrite": "Bonus armor while healthy and a shield when low suit a Beguile brawler; Frost Snap adds damage on targets Abduct pulls and slows."
     }
    ]
   },
   "yin": {
    "jungle": [
     {
-     "quote": "Once a hero drops low, missiles chase them through walls, adding a little damage that can finish runners. Forage adds gold and XP; Taproot heals you every swing.",
-     "severity": "high",
-     "issue": "'chase' and 'finish runners' overstate a few small true-damage hits on a per-hero cooldown",
-     "rewrite": "Hitting a low-health hero fires a few small true-damage missiles that fly through walls at them. Forage adds gold and XP; Taproot heals you every swing."
+     "quote": "Each takedown makes Rising Storm and Windburn hit harder, but dying loses the stacks; play it when Storm of Salvation healing keeps you alive through fights.",
+     "severity": "low",
+     "issue": "Satariel raises power and attack speed generally, not Rising Storm/Windburn specifically; omits the max-health cost",
+     "rewrite": "Each takedown raises your power and attack speed but lowers max health, and dying loses the stacks; Storm of Salvation healing helps you survive Windburn fights."
     }
-   ],
+   ]
+  },
+  "rampage": {
    "offlane": [
     {
-     "quote": "Hitting a low hero fires missiles that pass through walls, so one Lash Kick hit can add damage without chasing blindly. Taproot heals each swing; Forage speeds farming.",
+     "quote": "The Rumbling slows you while active, so extra max health helps you survive spinning Rumble in lane; Voracity heals as you clear minions.",
+     "severity": "low",
+     "issue": "misdescribes Rumble as \"spinning\"; it pounds the ground",
+     "rewrite": "The Rumbling slows you while Rumble is active, so extra max health helps you survive repeated Rumble casts in lane; Voracity heals as you clear minions."
+    },
+    {
+     "quote": "The Rumbling means many Rumble casts, each weakening nearby enemies' damage; Convection then grants armor per stack, making you very hard to kill up close.",
+     "severity": "low",
+     "issue": "overclaim: a few armor per Pilow stack does not make you \"very hard to kill\"",
+     "rewrite": "The Rumbling means many Rumble casts, each weakening nearby enemies' damage; Convection grants armor per Pilow stack, making you sturdier up close."
+    }
+   ]
+  },
+  "maco": {
+   "support": [
+    {
+     "quote": "Maco Gift! heals and Maco Fly! shields both trigger it, giving your carry bonus attack speed and magical damage; Revelation shortens cooldowns with each cast.",
      "severity": "med",
-     "issue": "implies you can stop chasing; missiles are a few small hits on a per-hero cooldown",
-     "rewrite": "When a hero drops low, your hits fire a few small true-damage missiles that pass through walls. Taproot heals each swing; Forage speeds farming."
+     "issue": "Maco Fly! shields Maco himself, so it cannot give your carry Exarch's bonus",
+     "rewrite": "Maco Gift! heals give your carry bonus attack speed and magical damage, and Maco Fly! shields do the same for you; Revelation shortens cooldowns with each cast."
     }
    ]
   },
   "wukong": {
    "jungle": [
     {
-     "quote": "Once a hero drops under 30%, missiles chase them through walls. Pole Vault's leap triggers Wind-Rider for extra attack speed and missiles, and Forage adds gold and XP per kill.",
+     "quote": "Masterful Mimicry clones fight alongside you, and this boosts item stats behind every Ruyi Jingu Bang hit; Construct adds health and ability haste each level.",
+     "severity": "low",
+     "issue": "\"this\" reads as Masterful Mimicry boosting item stats; the Eternal is never named",
+     "rewrite": "Demiurge boosts the item stats behind every Ruyi Jingu Bang hit while Masterful Mimicry clones fight beside you; Construct adds health and ability haste each level."
+    }
+   ],
+   "offlane": [
+    {
+     "quote": "Prosperous Path rewards kills, and each takedown here also stacks power behind Ruyi Jingu Bang; dying loses everything, so play it ahead.",
+     "severity": "low",
+     "issue": "\"dying loses everything\" overstates it: only Fearless stacks are lost; omits the max-health cost",
+     "rewrite": "Prosperous Path rewards kills, and each takedown stacks power behind Ruyi Jingu Bang but lowers max health; dying loses the stacks, so play it when ahead."
+    }
+   ],
+   "support": [
+    {
+     "quote": "Ruyi Jingu Bang and clone pressure from Masterful Mimicry help keep shred stacked, making the enemy duo easier for your carry to kill.",
      "severity": "med",
-     "issue": "missiles don't chase; Wind-Rider alone not shown to add missiles",
-     "rewrite": "Once a hero drops under 30%, a few small missiles fly through walls at them. Pole Vault plus Wind-Rider stacks attack speed, adding missiles; Forage adds gold and XP."
+     "issue": "unsupported: SOURCE gives no sign that clone hits apply Rust; Knell counts your own attacks and abilities",
+     "rewrite": "Ruyi Jingu Bang hits and your abilities keep shred stacked on the enemy duo, making them easier for your carry to kill while you gain armor."
     }
    ]
   },
   "kallari": {
    "jungle": [
     {
-     "quote": "Your items give more stats and their effects hit harder, so finish core items quickly. Tri-Core adds damage to every hit, and Bloatware toughens you per item.",
-     "severity": "low",
-     "issue": "'finish core items quickly' advice unsupported by Demiurge",
-     "rewrite": "Your items give more stats and their effects hit harder. Tri-Core adds damage to every hit, and Bloatware toughens you for each item you own."
-    }
-   ]
-  },
-  "howitzer": {
-   "midlane": [
+     "quote": "Shadow Walk ganks that end in takedowns roll extra bonuses; Masterpiece stacks damage and speed per kill, helping chain Guillotine resets.",
+     "severity": "high",
+     "issue": "invents a mechanic: Guillotine has no reset in the KIT",
+     "rewrite": "Shadow Walk ganks that end in takedowns roll extra Lotus bonuses; Masterpiece stacks damage and speed per kill, helping you chase the next target with Guillotine."
+    },
     {
-     "quote": "Every item you buy gives a bit more stats. Memory Leak grows your max mana as you cast, and Armed Salvo refills mana when it hits heroes.",
+     "quote": "Each takedown from Shadow Walk ganks stacks more power, but you lose it on death; only pick it if you can avoid feeding.",
      "severity": "low",
-     "issue": "Armed Salvo restores some mana, not a refill",
-     "rewrite": "Every item you buy gives a bit more stats. Memory Leak grows your max mana as you cast, and Armed Salvo restores mana when it hits heroes."
+     "issue": "\"feeding\" is jargon a new player may not know",
+     "rewrite": "Each takedown from Shadow Walk ganks adds power but lowers max health, and death removes the stacks, so pick it only if you can avoid dying."
     }
    ]
   }
