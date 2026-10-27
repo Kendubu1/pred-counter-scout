@@ -53,7 +53,7 @@ export interface SkirmishMacro {
   // `unproven`: presence is read from kills/deaths only (assists are not in the
   // feed per fight), so a support with no kill or death here was not shown
   // absent — the flag tells the coach to grade on participation instead.
-  dead: { name: string; role: string; hero: string; agoSec: number }[];   // dead at engage — couldn't contest
+  dead: { pid?: string; name: string; role: string; hero: string; agoSec: number }[];   // dead at engage — couldn't contest (pid: display names repeat, e.g. "🎮 private")
   crossMap: { type: string; side: 'us' | 'them' }[];        // majors that fell in the same window
   notes: string[];                                          // ready-to-read macro reads (THEORY)
   lanes?: MapLane[];                                        // lanes the located kills fell on (jungle/river excluded)
@@ -145,7 +145,7 @@ export function skirmishMacro(
   const theirAlive = ctx.enemyPids.length - ctx.enemyPids.filter((pid) => deadAt(pid, kills, s.startSec) != null).length;
   const manAdv = ourAlive - theirAlive;
 
-  const dead = ourDead.map((x) => ({ name: x.p.name, role: x.p.role, hero: x.p.heroSlug, agoSec: Math.round(x.ago!) }));
+  const dead = ourDead.map((x) => ({ pid: x.p.pid, name: x.p.name, role: x.p.role, hero: x.p.heroSlug, agoSec: Math.round(x.ago!) }));
   const absent = ctx.ourPlayers
     .filter((p) => !part.has(p.pid) && deadAt(p.pid, kills, s.startSec) == null)
     .map((p) => ({ name: p.name, role: p.role, hero: p.heroSlug, lane: laneStateAt(p.role, ctx.lanes, s.startMin), ...((p.role === 'support' || (p.assists ?? 0) > 0) ? { unproven: true } : {}) }));

@@ -43,6 +43,18 @@ describe('game flags', () => {
     f.skirmishes[1]!.result = 'won'; expect(gameFlags(f).some((x) => x.id === 'fought-down')).toBe(false);
   });
 
+  it('names the dead ally by pid or hero, not by a display name players share', () => {
+    const f = base();
+    // pred.gg shows hidden profiles as "🎮 private"; an enemy with that name comes first.
+    f.players = [pl('ecarry', false, 'carry', { name: '🎮 private' }), ...f.players.map((p) => p.pid === 'adc' ? { ...p, name: '🎮 private', squadName: 'Cuban Noobster' } : p)];
+    const dead = (d: any) => ({ startSec: 1500, startMin: 25, result: 'lost', ourKills: 0, theirKills: 2, macro: { ourAlive: 4, theirAlive: 5, manAdv: -1, dead: [d] } });
+    f.skirmishes = [dead({ name: '🎮 private', role: 'carry', hero: 'adc', agoSec: 31 }), dead({ pid: 'adc', name: '🎮 private', role: 'carry', hero: 'adc', agoSec: 12 })];
+    const ev = gameFlags(f).find((x) => x.id === 'fought-down')!.evidence;
+    expect(ev[0]).toMatch(/ADC died 31s earlier/);
+    expect(ev[1]).toMatch(/ADC died 12s earlier/);
+    expect(ev.join(' ')).not.toMatch(/ECARRY/);
+  });
+
   it('names a struggling player against their own norm, with the repeat killer', () => {
     const f = base();
     f.kills = [1, 2, 3].map((i) => kill(i * 100, 'them', 'ejg', 'adc'));

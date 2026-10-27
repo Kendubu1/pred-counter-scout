@@ -5439,3 +5439,9 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   as few as 10 games; Mr_Meat31 + Cuban at 14-3 moves three players off their best solo lane.
   That is kept but SAID on the page ("why this split"), and Best / Your usual / Worst are all
   scored and displayed with that same rating so the numbers always order correctly.
+
+- 2026-10-27 game-flags fought-down evidence: dead allies were resolved by display name, but
+  pred.gg shows every hidden profile as "🎮 private", so `players.find` by name picked the first
+  one (often an enemy) and named the wrong hero (86244c60 25.8m said Gideon, was Sparrow; 6b3d562f
+  19.3m said Lt. Belica, was Zinx). `macro.dead` now carries `pid`; game-flags resolves pid, then
+  hero slug on our side, then name only when unique. Never key a player on display name.

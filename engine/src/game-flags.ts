@@ -60,6 +60,15 @@ export function gameFlags(f: any): GameFlag[] {
   const out: GameFlag[] = [];
   const ourDeaths = (from: number, to: number) => kills.filter((k) => k.killedSide === 'us' && k.t >= from && k.t <= to);
   const deathLine = (k: any) => `${fmt(k.min)}: ${hero.get(k.killedPid) ?? k.killedSlug} died to ${hero.get(k.killerPid) ?? k.killerSlug} ${placeOf(k.x, k.y, ourTeam)}`;
+  // A fight's dead ally: by pid, else by hero on our side, else by name only when unique
+  // (pred.gg hides several players as "🎮 private", so a name alone can name the wrong hero).
+  const deadHero = (d: any): string => {
+    if (d.pid && hero.has(d.pid)) return hero.get(d.pid)!;
+    const bySlug = us.filter((p) => p.heroSlug === d.hero);
+    if (bySlug.length === 1) return bySlug[0]!.heroName;
+    const byName = players.filter((p) => p.squadName === d.name || p.name === d.name);
+    return byName.length === 1 ? byName[0]!.heroName : d.hero;
+  };
   const theirLosses = events.filter((e) => e.kind === 'tower' && e.side === 'them');
 
   // 1. Enemy inhibitor(s) down, game lost: what we did with the open base.
@@ -103,7 +112,7 @@ export function gameFlags(f: any): GameFlag[] {
     out.push({
       id: 'fought-down', kind: 'fought-down', tone: 'bad',
       summary: `${down.length} of the last ${lastFights.length} fights started with an ally already dead`,
-      evidence: down.map((s) => `${fmt(s.startMin)}: ${s.macro.ourAlive}v${s.macro.theirAlive}, ${s.result} ${s.ourKills}-${s.theirKills}${(s.macro.dead ?? []).length ? `; ${s.macro.dead.map((d: any) => `${hero.get(players.find((p) => p.squadName === d.name || p.name === d.name)?.pid) ?? d.hero} died ${d.agoSec}s earlier`).join(', ')}` : ''}.`),
+      evidence: down.map((s) => `${fmt(s.startMin)}: ${s.macro.ourAlive}v${s.macro.theirAlive}, ${s.result} ${s.ourKills}-${s.theirKills}${(s.macro.dead ?? []).length ? `; ${s.macro.dead.map((d: any) => `${deadHero(d)} died ${d.agoSec}s earlier`).join(', ')}` : ''}.`),
     });
   }
 
