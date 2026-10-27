@@ -5357,3 +5357,13 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   (Kwang offlane Plat+: only Vesh cleared 30 games). Same fix: qualified Eternals lead, runner-up
   slots fill with the most-played below-floor ones, tagged.
 - Check any new band or filter against the thinnest cell it can select, not the main lane.
+- 2026-10-27: Per-member reviews (`npm run review:players`, engine/src/player-review.ts) hold every
+  member to the same rules and replace the coach page's ledger, film-room and plan cards. Fairness
+  fixes came from reading the first output, not the code: (1) a "climb hero" must beat the player's
+  OWN average too, not only the field (Murdock at 47.6% beat its field but still lost for that
+  player), and it reuses the profile's leanInto list so the review and the "Lean into these" card
+  never disagree; (2) supports and junglers are not judged on low roam kills, which the rotation
+  tally structurally gives them; (3) one lobby tip per stat, or a multi-role player gets the same
+  advice twice. The most unbiased baseline in the films is the NON-squad players in the same role
+  in the same games (~240 per role over 186 films). New files in data/artifacts/ must be added to
+  the non-hero list in test/artifacts.test.ts.

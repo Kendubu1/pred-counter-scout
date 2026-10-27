@@ -81,6 +81,20 @@
   .insight:last-of-type { border-bottom:none; }
   .insight b { color:var(--text-0); display:block; margin-bottom:.15rem; }
   .insight .ir { font-size:.72rem; color:var(--text-2); margin-top:.25rem; }
+  .rv-head { font-size:.92rem; color:var(--text-1); margin-bottom:.8rem; }
+  .rv-cols { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media (max-width:720px) { .rv-cols { grid-template-columns:1fr; } }
+  .rv-col h3 { font-size:.78rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; margin-bottom:.3rem; }
+  .rv-col.keep h3 { color:var(--green); } .rv-col.fix h3 { color:var(--gold); }
+  .rv-tip { padding:.6rem 0 .6rem .7rem; border-bottom:1px solid var(--border); font-size:.86rem; color:var(--text-1); border-left:2px solid var(--border); margin-bottom:.1rem; }
+  .rv-col.keep .rv-tip { border-left-color:var(--green); } .rv-col.fix .rv-tip { border-left-color:var(--gold); }
+  .rv-tip:last-child { border-bottom:none; }
+  .rv-tip b { color:var(--text-0); display:block; margin-bottom:.15rem; }
+  .rv-tip .act { color:var(--text-0); margin-top:.3rem; }
+  .rv-tip .ir { font-size:.72rem; color:var(--text-2); margin-top:.3rem; }
+  .rv-lvl { display:inline-block; font-size:.66rem; font-weight:700; border:1px solid var(--border); border-radius:99px; padding:0 .45rem; margin-right:.35rem; color:var(--text-2); }
+  .rv-lvl.strong { color:var(--text-0); border-color:var(--text-2); }
+  .rv-method { font-size:.72rem; color:var(--text-2); margin-top:.7rem; }
 
   .rolerow { display:grid; grid-template-columns:88px 1fr 140px; gap:.7rem; align-items:center; padding:.32rem 0; font-size:.85rem; }
   .rolerow .bar { height:9px; border-radius:99px; background:var(--bg-2); overflow:hidden; }
@@ -1183,6 +1197,19 @@ async function fillEternals() {
 
   let metaInfo = null;
   try { metaInfo = await (await fetch('../../data/artifacts/meta.json')).json(); } catch {}
+  // Per-member review (engine/src/player-review.ts): same rules for everyone,
+  // a tip only when its evidence clears the bar.
+  let reviews = null;
+  try { reviews = await (await fetch('../../data/artifacts/player-reviews.json')).json(); } catch {}
+  const rv = reviews?.members?.[p.uuid] || null;
+  const LVL = { strong: 'strong evidence', solid: 'solid evidence', association: 'pattern, not proof' };
+  const rvTip = (t) => `
+        <div class="rv-tip">
+          <b>${esc(t.title)}</b>
+          <div>${esc(t.finding)}</div>
+          <div class="act">${esc(t.action)}</div>
+          <div class="ir"><span class="rv-lvl ${esc(t.level)}">${esc(LVL[t.level] || t.level)}</span>${esc(t.receipt)}</div>
+        </div>`;
 
   document.getElementById('page').innerHTML = `
     <div class="scope"><b>Data scope:</b> this player's pred.gg public profile · career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked split history, last 40 matches · field baselines: ${metaInfo ? metaInfo.matches.toLocaleString() + ' matches, patch ' + esc(metaInfo.patch) : 'current-patch matches'}, all ranks · winrates adjusted toward the player's own average (thin samples count less) · combat math is THEORY pending in-game calibration · generated ${esc(c.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
@@ -1201,14 +1228,26 @@ async function fillEternals() {
         <div class="goalbar"><div class="fill" style="width:${fillPct}%"></div><div class="peak" style="left:${peakPct}%"></div></div>
         <div class="lbl"><span>${p.current.points} VP now</span><span>gap: ${c.goal.gapVp} VP</span><span>Platinum III at ${c.goal.vp} VP</span></div>
       </div>
-      <div class="verdict">${esc((c.coachReasoning && c.coachReasoning.assessment) || c.plan[c.plan.length - 1])}</div>
+      <div class="verdict">${esc(rv ? rv.headline : ((c.coachReasoning && c.coachReasoning.assessment) || c.plan[c.plan.length - 1]))}</div>
+      ${rv?.form ? `<div style="font-size:.84rem;color:var(--text-1);margin-top:.6rem"><b style="color:var(--text-0)">Recent form:</b> ${esc(rv.form)}</div>` : ''}
       <table class="splits" style="margin-top:.9rem">
         <tr><th>split</th><th style="text-align:right">finish</th><th style="text-align:right">peak</th><th>rank</th></tr>
-        ${p.ratings.map((r) => `<tr><td>${esc(r.split)}</td><td class="n">${r.points}</td><td class="n">${r.peak}</td><td>${esc(r.rank)}</td></tr>`).join('')}
+        ${p.ratings.map((r) => `<tr><td>${esc(r.split)}</td><td class="n">${r.points}</td><td class="n">${r.peak ?? '—'}</td><td>${esc(r.rank)}</td></tr>`).join('')}
       </table>
     </div>
 
-    ${c.ledger && c.ledger.entries.length ? `
+    ${rv && (rv.keep.length || rv.fix.length) ? `
+    <div class="card" id="review">
+      <h2>Your review · what the data says to keep and to work on</h2>
+      <div class="rv-cols">
+        <div class="rv-col keep"><h3>Keep doing</h3>${rv.keep.length ? rv.keep.map(rvTip).join('') : '<div class="rv-tip">Nothing clears the bar yet.</div>'}</div>
+        <div class="rv-col fix"><h3>Work on</h3>${rv.fix.length ? rv.fix.map(rvTip).join('') : '<div class="rv-tip">Nothing clears the bar yet.</div>'}</div>
+      </div>
+      ${rv.extras ? `<div class="rv-method"><b>For the group chat:</b> ${esc(rv.extras)}</div>` : ''}
+      <div class="rv-method">${(reviews.method || []).map(esc).join(' ')} Based on ${rv.films} squad games.</div>
+    </div>` : ''}
+
+    ${!rv && c.ledger && c.ledger.entries.length ? `
     <div class="card">
       <h2>The ledger · every change priced in wins per 100 games</h2>
       ${c.ledger.entries.map((e) => `
@@ -1220,6 +1259,7 @@ async function fillEternals() {
     </div>` : ''}
 
     ${(() => {
+      if (rv) return ''; // folded into the review card
       const ins = (c.coachReasoning && c.coachReasoning.insights && c.coachReasoning.insights.length) ? c.coachReasoning.insights : c.insights;
       if (!ins || !ins.length) return '';
       return `
@@ -1292,10 +1332,10 @@ async function fillEternals() {
     </div>`;
     })() : ''}
 
-    <div class="card">
+    ${rv ? '' : `<div class="card">
       <h2>The plan</h2>
       <ol class="plan">${((c.coachReasoning && c.coachReasoning.plan && c.coachReasoning.plan.length) ? c.coachReasoning.plan : c.plan).map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
-    </div>
+    </div>`}
 
     <footer>
       <a href="about.html">About &amp; how this works</a> · Data: pred.gg public profile (${esc(c.generatedAt.slice(0, 10))}) joined with Pred Scout aggregate baselines.<br>
