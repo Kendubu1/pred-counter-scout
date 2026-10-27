@@ -387,6 +387,7 @@
   <span class="spacer"></span>
   <a class="navlink" href="./">Pick &amp; Build</a>
   <a class="navlink active" href="coach.html">Coach</a>
+  <a class="navlink" href="reports.html">Reports</a>
 </div><div class="subnav" id="subnav"></div></div>
 <div class="wrap" id="page">loading…</div>
 <script src="coach-loadouts.js?v=0574a2b8128c"></script>
@@ -1097,21 +1098,10 @@ async function fillEternals() {
       } catch {}
 
       document.getElementById('page').innerHTML = `
-        <details class="rostermenu">
-          <summary><span class="rm-t">Coach reports</span><span class="rm-s">· open a member’s report</span></summary>
-          <div class="roster">
-            ${sq.members.map((m) => `
-              <a class="rost" href="coach.html?player=${esc(m.uuid)}">
-                ${m.topHeroes?.[0] ? `<img class="pav" src="../img/heroes/${esc(m.topHeroes[0].slug)}.webp" alt="" onerror="this.remove()">` : ''}
-                <span>
-                  <b>${esc(m.name)}</b>
-                  ${m.archetype ? `<span class="rl">“${esc(m.archetype.label)}”</span>` : ''}
-                  <span class="rl">${m.current ? `${esc(m.current.rank)} · ${m.current.points} VP · ` : ''}${m.career.games.toLocaleString()} games</span>
-                </span>
-                <span style="margin-left:auto;color:var(--text-2)">→</span>
-              </a>`).join('')}
-          </div>
-        </details>
+        <a class="rostermenu rm-link" href="reports.html" style="display:flex;align-items:center;gap:.5rem;padding:.7rem .9rem;color:var(--text-0)">
+          <span class="rm-t">Player reports</span><span class="rm-s">· team synergy and everyone's personal review</span>
+          <span style="margin-left:auto;color:var(--blue)">→</span>
+        </a>
         ${pgList.length ? `
         <h1>Post-game review</h1>
         <div class="sub" id="pgsub" style="margin-bottom:.6rem"></div>
@@ -1188,6 +1178,8 @@ async function fillEternals() {
   try { c = await (await fetch(src)).json(); }
   catch { document.getElementById('page').textContent = 'no coach report generated yet'; return; }
   document.title = `${c.player.name} · coach report`;
+  // A personal report belongs to the Reports tab, not the game reviews.
+  document.querySelectorAll('.top .navlink').forEach((a) => a.classList.toggle('active', a.getAttribute('href') === 'reports.html'));
   const p = c.player;
   const fillPct = Math.min(100, (p.current.points / c.goal.vp) * 100);
   const peakPct = Math.min(100, (c.goal.peakAllTime / c.goal.vp) * 100);
@@ -1213,6 +1205,7 @@ async function fillEternals() {
 
   document.getElementById('page').innerHTML = `
     <div class="scope"><b>Data scope:</b> this player's pred.gg public profile · career and hero stats count real 5v5s only (ranked + standard; ARAM and brawls excluded), ranked split history, last 40 matches · field baselines: ${metaInfo ? metaInfo.matches.toLocaleString() + ' matches, patch ' + esc(metaInfo.patch) : 'current-patch matches'}, all ranks · winrates adjusted toward the player's own average (thin samples count less) · combat math is THEORY pending in-game calibration · generated ${esc(c.generatedAt.slice(0, 16).replace('T', ' '))} UTC</div>
+    <a href="reports.html" style="display:inline-block;font-size:.84rem;margin-bottom:.5rem">← All player reports</a>
     <h1>${c.pool?.[0] ? `<img class="pav" src="../img/heroes/${esc(c.pool[0].slug)}.webp" alt="" onerror="this.remove()">` : ''}${esc(p.name)} <a class="ext" href="https://pred.gg/players/${esc(p.uuid)}" target="_blank" rel="noopener">pred.gg ↗</a></h1>
     ${c.archetype ? `<div class="arch">“${esc(c.archetype.label)}” <span class="arch-r">${esc(c.archetype.receipt)}</span></div>` : ''}
     <div class="sub">

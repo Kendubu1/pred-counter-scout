@@ -5425,3 +5425,10 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   all-time). The dated squad films now give a 30-day recent-form check (8+ games, 60%+, 10+ points
   over all-time): such a lane gets an "on form" tip and is never the "weakest"/"avoid" lane. A true
   per-season split would need a new pred.gg per-split role pull (not done; data policy applies).
+- 2026-10-27: Player reports got their own page (ui/v6/reports.html, "Reports" tab + menu entry):
+  team synergy first (best five-stack lineup, pairs, trios, bot-lane duos, won-fight conversion,
+  all from squad.json + fight-habits.json), then a card per player into coach.html?player=.
+  The five-stack lineup is a joint optimum (one player per role) and can disagree with a
+  player's solo-queue lane tip (Mr_Meat31: support in the lineup, offlane first solo); the
+  page says so instead of hiding it. share-pages.mjs only covers static data-nav pages, so
+  reports.html carries its own og tags.

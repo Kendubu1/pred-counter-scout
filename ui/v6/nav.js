@@ -6,6 +6,7 @@
   const LINKS = [
     { href: './',                    label: 'Pick & Build',           icon: 'counter-pick',     match: ['', 'index.html'] },
     { href: 'coach.html',            label: 'Coach',                  icon: 'scout',            match: ['coach.html'] },
+    { href: 'reports.html',          label: 'Player reports',         icon: 'scout',            match: ['reports.html'] },
     { group: 'Meta' },
     { href: 'bans.html',             label: 'Most banned',            icon: 'meta-guide',       match: ['bans.html'] },
     // only the current review; older ones are listed at the bottom of What's new

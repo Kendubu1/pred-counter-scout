@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script src="sim-flag.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Player reports — Pred Scout</title>
+<meta name="description" content="A personal review for every squad member: what to keep doing, what to work on, and the road to Platinum.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pred Scout">
+<meta property="og:title" content="Player reports — Pred Scout">
+<meta property="og:description" content="How the squad plays best together, and a personal review for every player: what to keep doing, what to work on, and the road to Platinum.">
+<meta property="og:url" content="https://kendubu1.github.io/pred-counter-scout/ui/v6/reports.html">
+<style>
+  :root {
+    --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#8e8ea6;
+    --accent:#6c5ce7; --accent-ink:#9a8ef2; --accent-soft:rgba(108,92,231,.14);
+    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px; --maxw:980px;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; font-variant-numeric:tabular-nums; }
+  a { color:var(--blue); text-decoration:none; }
+  img { display:block; }
+  button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
+  .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:rgba(10,10,15,.78); border-bottom:1px solid var(--border); }
+  .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
+  .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .spacer { flex:1; }
+  .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
+  .navlink.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
+  .navlink:hover { color:var(--text-0); }
+  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .subnav::-webkit-scrollbar { display:none; }
+  .subnav:empty { display:none; }
+  .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; text-transform:capitalize; -webkit-appearance:none; appearance:none; }
+  .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
+  .card { scroll-margin-top:calc(var(--toph, 96px) + 10px); }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:1.25rem 1rem 4rem; }
+  .lede { font-size:1rem; color:var(--text-1); line-height:1.65; max-width:64ch; }
+  h1 { font-size:1.7rem; font-weight:800; }
+  .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; }
+  .card h2 { font-size:1rem; font-weight:600; letter-spacing:0; color:var(--text-0); margin-bottom:.6rem; }
+  .card h3 { font-size:.9rem; color:var(--text-0); margin:.9rem 0 .25rem; }
+  .card p { color:var(--text-1); line-height:1.65; }
+  .card ul { margin:.5rem 0 0 1.15rem; padding:0; }
+  .card li { color:var(--text-1); line-height:1.6; margin:.4rem 0; }
+  .card p + p { margin-top:.6rem; }
+  .card b { color:var(--text-0); }
+  .maxim { border-left:3px solid var(--accent); background:var(--accent-soft); border-radius:0 8px 8px 0; padding:.6rem .85rem; margin:.7rem 0 0; color:var(--text-0); font-size:.92rem; line-height:1.55; }
+  .maxim i { color:var(--text-2); font-size:.78rem; font-style:normal; display:block; margin-top:.25rem; }
+  .tag { display:inline-block; font-size:.6875rem; font-weight:800; letter-spacing:.06em; color:var(--blue); border:1px solid var(--blue); border-radius:6px; padding:.04rem .35rem; vertical-align:middle; }
+  .tag.gold { color:var(--gold); border-color:var(--gold); }
+  table.clock { width:100%; border-collapse:collapse; margin-top:.6rem; font-size:.86rem; }
+  table.clock th { text-align:left; color:var(--text-2); font-size:.6875rem; letter-spacing:0; padding:.35rem .5rem; border-bottom:1px solid var(--border); }
+  table.clock td { padding:.42rem .5rem; border-bottom:1px solid var(--border); color:var(--text-1); vertical-align:top; }
+  table.clock td:first-child { color:var(--text-0); font-weight:700; white-space:nowrap; }
+  .tblwrap { overflow-x:auto; }
+  details.disc { margin-top:.6rem; border-top:1px solid var(--border); padding-top:.2rem; }
+  details.disc > summary { cursor:pointer; color:var(--blue); font-size:.86rem; padding:.35rem 0; list-style:none; }
+  details.disc > summary::-webkit-details-marker { display:none; }
+  details.disc > summary::before { content:"▸ "; color:var(--text-2); }
+  details.disc[open] > summary { color:var(--text-2); }
+  details.disc[open] > summary::before { content:"▾ "; }
+  footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
+  @media (max-width:600px) {
+    body { font-size:14px; }
+    .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle {
+      min-height:44px; display:inline-flex; align-items:center; justify-content:center;
+    }
+    .snpill { font-size:.8rem; }
+    .navlink { border-radius:10px; }
+    .top-inner { padding:.5rem .7rem; gap:.3rem; }
+    .wordmark { font-size:.82rem; white-space:nowrap; }
+    .top-inner a { font-size:.72rem; white-space:nowrap; }
+    .wrap { padding:.9rem 1rem 3rem; }
+    h1 { font-size:1.35rem; }
+    .card { padding:.8rem .8rem; }
+  }
+  .entry-date { font-size:.74rem; color:var(--text-2); font-weight:600; margin-left:.4rem; }
+  .card h3:first-of-type { margin-top:.4rem; }
+
+  .roster { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:1rem; margin-top:1.2rem; }
+  .pcard { display:flex; flex-direction:column; background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1rem 1.1rem; color:var(--text-1); transition:border-color .15s; }
+  .pcard:hover { border-color:var(--accent); }
+  .phead { display:flex; align-items:center; gap:.7rem; }
+  .phead img { width:46px; height:46px; border-radius:10px; object-fit:cover; background:var(--bg-2); }
+  .pname { font-weight:800; color:var(--text-0); font-size:1.05rem; }
+  .parch { font-size:.78rem; color:var(--gold); }
+  .prank { margin-top:.75rem; display:flex; justify-content:space-between; font-size:.78rem; }
+  .prank b { color:var(--text-0); }
+  .pbar { position:relative; height:7px; border-radius:99px; background:var(--bg-3); margin-top:.35rem; }
+  .pbar i { position:absolute; inset:0 auto 0 0; border-radius:99px; background:var(--accent); }
+  .pbar .pk { position:absolute; top:-3px; width:2px; height:13px; background:var(--gold); }
+  .ptip { margin-top:.7rem; font-size:.84rem; line-height:1.45; padding-left:.6rem; border-left:2px solid var(--border); }
+  .ptip.keep { border-left-color:var(--green); } .ptip.fix { border-left-color:var(--gold); }
+  .ptip span { display:block; font-size:.66rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+  .ptip.keep span { color:var(--green); } .ptip.fix span { color:var(--gold); }
+  .ptip b { color:var(--text-0); font-weight:600; }
+  .pfoot { margin-top:auto; padding-top:.9rem; display:flex; justify-content:space-between; align-items:center; font-size:.76rem; color:var(--text-2); }
+  .pfoot .go { color:var(--blue); font-weight:700; font-size:.86rem; }
+  .others { margin-top:1.4rem; font-size:.86rem; color:var(--text-1); }
+  .team h2 { font-size:1.1rem; font-weight:700; }
+  .tgrid { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; margin-top:.4rem; }
+  @media (max-width:720px) { .tgrid { grid-template-columns:1fr; } }
+  .team h3 { font-size:.72rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-ink); margin:.2rem 0 .45rem; }
+  .lrow { display:grid; grid-template-columns:62px 1fr; gap:.5rem; align-items:center; padding:.42rem 0; border-bottom:1px solid var(--border); font-size:.86rem; }
+  .lrow:last-child { border-bottom:none; }
+  .lrow .rl { font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--text-2); }
+  .lrow b { color:var(--text-0); }
+  .lrow .hp { display:flex; gap:.35rem; flex-wrap:wrap; margin-top:.15rem; font-size:.76rem; color:var(--text-2); }
+  .lrow .hp img { width:18px; height:18px; border-radius:5px; display:inline-block; vertical-align:-4px; margin-right:.2rem; }
+  .mv { font-size:.66rem; color:var(--gold); border:1px solid var(--gold); border-radius:6px; padding:0 .3rem; margin-left:.3rem; }
+  .stat { padding:.4rem 0; border-bottom:1px solid var(--border); font-size:.86rem; color:var(--text-1); }
+  .stat:last-child { border-bottom:none; }
+  .stat b { color:var(--text-0); }
+  .stat .n { float:right; color:var(--text-0); font-weight:700; }
+  .stat.low .n { color:var(--red); }
+  .tnote { font-size:.74rem; color:var(--text-2); margin-top:.6rem; line-height:1.5; }
+  .callout { border-left:3px solid var(--accent); background:var(--accent-soft); border-radius:0 8px 8px 0; padding:.55rem .85rem; margin:.2rem 0 .9rem; color:var(--text-0); font-size:.92rem; }
+  .sechead { margin-top:1.8rem; font-size:1.1rem; font-weight:700; }
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <a class="wordmark" href="./"><img src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</a>
+  <span class="spacer"></span>
+  <a class="navlink" href="./">Pick &amp; Build</a>
+  <a class="navlink" href="coach.html">Coach</a>
+  <a class="navlink active" href="reports.html">Reports</a>
+</div><div class="subnav" id="subnav"></div></div>
+
+<div class="wrap">
+  <h1>Player reports</h1>
+  <p class="lede">A personal review for each of you: what to keep doing, what to work on, and how far you are from Platinum. Everyone is held to the same rules, and every tip shows the numbers behind it.</p>
+  <section class="card team" id="team" data-nav="Team">
+    <h2>How we play together</h2>
+    <div id="teambody">loading…</div>
+  </section>
+  <h2 class="sechead" id="players" data-nav="Players">Your reports</h2>
+  <p class="lede" style="font-size:.9rem">Tap your card for your full review.</p>
+  <div class="roster" id="roster">loading…</div>
+  <p class="others">Looking for a single game? <a href="coach.html">Game reviews</a> break down each of the squad's recent ranked matches.</p>
+  <footer>Game data via pred.gg · not affiliated with Omeda Studios.</footer>
+</div>
+<script>
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+(async () => {
+  const host = document.getElementById('roster');
+  let sq, rv;
+  try { sq = await (await fetch('../../data/artifacts/squad.json')).json(); } catch { host.textContent = 'No squad reports yet.'; return; }
+  try { rv = await (await fetch('../../data/artifacts/player-reviews.json')).json(); } catch {}
+  const goals = await Promise.all(sq.members.map((m) => fetch(`../../data/artifacts/players/${m.uuid}.json`).then((r) => r.json()).then((p) => p.goal).catch(() => null)));
+  const rows = sq.members.map((m, i) => ({ m, goal: goals[i], r: rv?.members?.[m.uuid] }))
+    .sort((a, b) => (b.m.current?.points ?? 0) - (a.m.current?.points ?? 0));
+  renderTeam(sq);
+  host.innerHTML = rows.map(({ m, goal, r }) => {
+    const vp = m.current?.points ?? 0, target = goal?.vp ?? 900, peak = goal?.peakAllTime ?? m.peakAllTime ?? 0;
+    const pctOf = (x) => Math.min(100, (x / target) * 100);
+    const gap = Math.max(0, target - vp);
+    const hero = m.topHeroes?.[0]?.slug;
+    return `
+    <a class="pcard" href="coach.html?player=${esc(m.uuid)}">
+      <div class="phead">
+        ${hero ? `<img src="../img/heroes/${esc(hero)}.webp" alt="" onerror="this.style.visibility='hidden'">` : ''}
+        <div><div class="pname">${esc(m.name)}</div>${m.archetype ? `<div class="parch">“${esc(m.archetype.label)}”</div>` : ''}</div>
+      </div>
+      <div class="prank"><span><b>${esc(m.current?.rank ?? 'Unranked')}</b> · ${vp} VP</span><span>${gap ? `${gap} VP to ${esc(goal?.tier ?? 'Platinum III')}` : 'Platinum reached'}</span></div>
+      <div class="pbar" title="peak ${peak} VP"><i style="width:${pctOf(vp)}%"></i>${peak ? `<span class="pk" style="left:${pctOf(peak)}%"></span>` : ''}</div>
+      ${r?.keep?.[0] ? `<div class="ptip keep"><span>Keep doing</span><b>${esc(r.keep[0].title)}</b></div>` : ''}
+      ${r?.fix?.[0] ? `<div class="ptip fix"><span>Work on</span><b>${esc(r.fix[0].title)}</b></div>` : ''}
+      <div class="pfoot"><span>${r ? `${r.keep.length} to keep · ${r.fix.length} to work on` : `${m.career.games.toLocaleString()} games`}</span><span class="go">Open report →</span></div>
+    </a>`;
+  }).join('');
+})();
+</script>
+<script>
+// Team section: everything comes from data/artifacts/squad.json (npm run squad)
+// and the squad film tally (fight-habits.json). Small samples are labelled.
+async function renderTeam(sq) {
+  const host = document.getElementById('teambody');
+  const pct = (x) => (x * 100).toFixed(0);
+  const RL = { midlane: 'Mid', jungle: 'Jungle', carry: 'Carry', support: 'Support', offlane: 'Offlane' };
+  const ORDER = ['offlane', 'jungle', 'midlane', 'carry', 'support'];
+  let fh = null;
+  try { fh = await (await fetch('../../data/aggregates/fight-habits.json')).json(); } catch {}
+  const lineup = [...(sq.assignment || [])].sort((a, b) => ORDER.indexOf(a.role) - ORDER.indexOf(b.role));
+  const stackNote = (sq.notes || []).find((n) => /^Stack synergy/i.test(n));
+  const pairs = [...(sq.pairs || [])].sort((a, b) => b.winrate - a.winrate).slice(0, 3);
+  const trios = [...(sq.trios || [])].filter((t) => t.games >= 50).sort((a, b) => b.winrate - a.winrate).slice(0, 2);
+  const duo = Object.values(sq.duoLane || {}).filter((d) => d.games >= 15).sort((a, b) => b.shrunkWr - a.shrunkWr);
+  const conv = fh?.teamConversion;
+  const short = (n) => esc(String(n).split(' ')[0]);
+  host.innerHTML = `
+    ${stackNote ? `<div class="callout">${esc(stackNote.replace(/^Stack synergy:\s*/, '').replace(/^./, (c) => c.toUpperCase()))}</div>` : ''}
+    <div class="tgrid">
+      <div>
+        <h3>Best lineup when all five queue</h3>
+        ${lineup.map((a) => `<div class="lrow"><span class="rl">${RL[a.role] || esc(a.role)}</span>
+          <span><a href="coach.html?player=${esc(a.uuid)}"><b>${esc(a.name)}</b></a>${a.isMove ? `<span class="mv">moves from ${esc(RL[a.favRole] || a.favRole)}</span>` : ''}
+            <span class="hp">${a.heroPicks.map((h) => `<span><img src="../img/heroes/${esc(h.slug)}.webp" alt="" onerror="this.remove()">${esc(h.name)} ${pct(h.shrunkWr)}%${h.games < 20 ? ` · ${h.games} games` : ''}</span>`).join('')}</span></span></div>`).join('')}
+        <div class="tnote">About +${esc(sq.lineupGainPer100)} wins per 100 games against everyone queueing their usual role. This is the best split for the five of you together, so it can differ from your own solo-queue lane tip.</div>
+      </div>
+      <div>
+        <h3>Best pairs to queue</h3>
+        ${pairs.map((p) => `<div class="stat"><b>${short(p.aName)} + ${short(p.bName)}</b><span class="n">${pct(p.winrate)}%</span><br><span style="font-size:.76rem">${p.games} ranked games together</span></div>`).join('')}
+        ${trios.length ? `<h3 style="margin-top:.9rem">Best trios</h3>${trios.map((t) => `<div class="stat"><b>${t.names.map(short).join(' + ')}</b><span class="n">${pct(t.winrate)}%</span><br><span style="font-size:.76rem">${t.games} recent games together</span></div>`).join('')}` : ''}
+      </div>
+      <div>
+        <h3>Bot lane (carry + support)</h3>
+        ${duo.map((d, i) => `<div class="stat${d.shrunkWr < 0.45 ? ' low' : ''}"><b>${short(d.aName)} + ${short(d.bName)}</b><span class="n">${Math.round(d.winrate * d.games)}-${d.games - Math.round(d.winrate * d.games)}</span><br><span style="font-size:.76rem">${d.games} games in the same lane${d.shrunkWr < 0.45 ? ' · avoid this pairing for now' : i === 0 ? ' · your best bot lane' : ''}</span></div>`).join('')}
+        <div class="tnote">Only ${duo.length ? Math.min(...duo.map((d) => d.games)) + '–' + Math.max(...duo.map((d) => d.games)) : 'a few'} games per pair, so treat these as early signs.</div>
+      </div>
+      ${conv ? `<div>
+        <h3>Team habit to fix</h3>
+        <div class="stat"><b>Turn won fights into objectives</b><span class="n">${pct(conv.cashed / conv.wonFights)}%</span><br><span style="font-size:.76rem">Of ${conv.wonFights} fights the squad won, ${conv.cashed} were turned into a tower or major objective soon after. After a won fight, group on the nearest tower or objective before anyone farms.</span></div>
+        <div class="tnote">From ${fh.films} reviewed squad games.</div>
+      </div>` : ''}
+    </div>`;
+}
+</script>
+<script src="section-nav.js"></script>
+<script>
+SectionNav.build(document.getElementById('subnav'),
+  [...document.querySelectorAll('.wrap [data-nav]')].map((c) => ({ el: c, label: c.dataset.nav })));
+</script>
+<script defer src="icons.js"></script>
+<script defer src="nav.js"></script>
+</body>
+</html>
