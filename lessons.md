@@ -5324,8 +5324,12 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   "career" (Mr_Meat31 1069 -> 539 ranked games, Goldilocks324 1018 -> 518). Every profile query is
   now RANKED only; the films, pairs and trios already were. Re-pulled the squad (npm run squad)
   and rebuilt review:players in one pass; lane advice, climb heroes and recent-form tips moved.
-- The hero-page field pulls (aggregate.ts, augments.ts) still default to RANKED+STANDARD; that is
-  field data, not player grading, and was left alone.
+- 2026-10-28 follow-up (maintainer: "just ranked for everything"): aggregate.ts sampled
+  STANDARD+RANKED by default and feeds item play rates, gold curves and hero game counts. It is
+  RANKED only now and takes --end <ISO>; seven ranked 36h windows of patch 1.17.2 were re-pulled
+  (replacing the mixed snapshots for those days) and item-pool refuses any non-ranked snapshot.
+  calibrate, squad:watch, augments and buildstats no longer pull casual games either. Already
+  ranked: perk/build/matchup stream, lanestats, bans, general stats, matchups, rank-split, films.
 
 ## 2026-10-27 · Reviews answer why (blunt-why-v10)
 - The v9 flags still read as stat lines ("Feng Mao fed ... 46137 objective damage", "Shinbi died
