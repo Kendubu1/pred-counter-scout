@@ -80,7 +80,7 @@ async function main() {
 
   members.forEach((m, i) => {
     const rows = (d[`p${i}`]?.matchesPaginated.results ?? [])
-      .filter((r) => ['RANKED', 'STANDARD'].includes(r.match.gameMode));
+      .filter((r) => r.match.gameMode === 'RANKED'); // ranked only (2026-10-28)
     const cursor = state.seenThrough[m.uuid] ?? '';
     for (const r of rows) {
       if (r.match.startTime > (newestSeen[m.uuid] ?? '')) newestSeen[m.uuid] = r.match.startTime;

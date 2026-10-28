@@ -44,7 +44,7 @@ async function main() {
   for (const i of data.items.values()) if (i.gameId != null) byGameId.set(i.gameId, i);
 
   const to = new Date();
-  const { matches, requests } = await sampleMatches({ from: new Date(to.getTime() - 36 * 3600_000), to, gameModes: ['STANDARD', 'RANKED'], perHero });
+  const { matches, requests } = await sampleMatches({ from: new Date(to.getTime() - 36 * 3600_000), to, gameModes: ['RANKED'], perHero });
   const critRatiosBonus: number[] = [];
   const critRatiosTotal: number[] = [];
   const mitBuckets = new Map<number, { share: number[]; armor: number[] }>();

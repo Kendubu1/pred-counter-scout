@@ -18,8 +18,8 @@ import { loadAggregates } from '../aggregates.js';
 import { loadData } from '../data.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-// RANKED_ONLY=1 restricts the perk/crest stats to ranked (default RANKED+STANDARD).
-const GAME_MODES = process.env.RANKED_ONLY ? "RANKED" : "RANKED, STANDARD";
+// Ranked only (2026-10-28). RANKED_ONLY=1 additionally pins the current patch.
+const GAME_MODES = "RANKED";
 // Version pin (current patch), resolved in main() when RANKED_ONLY is set.
 let VERSION_FILTER = "";
 let SCOPE_NOTE = "";
@@ -27,18 +27,12 @@ let SCOPE_NOTE = "";
 interface PerkRow { matchesPlayed: number; matchesWon: number; perk: { id: string; data: { displayName: string } | null } | null }
 interface CrestRow { matchesPlayed: number; matchesWon: number; item: { data: { displayName: string } | null } | null }
 
-// When RANKED_ONLY is set, each call ALIASES a second simpleBuild scoped to
-// RANKED+STANDARD in the same request (data policy: batch and alias queries
-// rather than pulling twice). The primary rows become the artifact; the wider
-// rows feed the one-time ranked/standard split report backlog item 12 asked
-// for before switching scope.
+// `both` once aliased a RANKED+STANDARD comparison pull (backlog item 12's
+// one-time split report); casual data is no longer pulled, so it stays null.
 type SplitRows<T> = { primary: T[]; both: T[] | null };
 
 async function crestStats(slug: string, role: string): Promise<SplitRows<CrestRow>> {
-  const alias = process.env.RANKED_ONLY
-    ? ` both: simpleBuild(filter: { roles: [${role}], gameModes: [RANKED, STANDARD]${VERSION_FILTER} }) {
-        items(slot: CREST, limit: 4) { matchesPlayed matchesWon item { data { displayName } } } }`
-    : '';
+  const alias = '';
   const d = await gql<{ hero: { simpleBuild: { items: CrestRow[] }; both?: { items: CrestRow[] } } }>(
     `{ hero(by: { slug: "${slug}" }) {
       simpleBuild(filter: { roles: [${role}], gameModes: [${GAME_MODES}]${VERSION_FILTER} }) {
@@ -49,10 +43,7 @@ async function crestStats(slug: string, role: string): Promise<SplitRows<CrestRo
 }
 
 async function slotStats(slug: string, role: string, slot: string): Promise<SplitRows<PerkRow>> {
-  const alias = process.env.RANKED_ONLY
-    ? ` both: simpleBuild(filter: { roles: [${role}], gameModes: [RANKED, STANDARD]${VERSION_FILTER} }) {
-        perks(slot: ${slot}) { matchesPlayed matchesWon perk { id data { displayName } } } }`
-    : '';
+  const alias = '';
   const d = await gql<{ hero: { simpleBuild: { perks: PerkRow[] }; both?: { perks: PerkRow[] } } }>(
     `{ hero(by: { slug: "${slug}" }) {
       simpleBuild(filter: { roles: [${role}], gameModes: [${GAME_MODES}]${VERSION_FILTER} }) {

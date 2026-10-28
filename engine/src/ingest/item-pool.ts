@@ -22,6 +22,8 @@ const dailies = new Map<string, DailyAggregate>();
 const windows = files.flatMap((f) => {
   const d = read<DailyAggregate>(`data/aggregates/${f}`);
   if (!d.meta?.window?.from || !d.meta.versions) return [];
+  // Ranked samples only (2026-10-28); older snapshots blended casual games.
+  if (JSON.stringify((d.meta as any).modes ?? []) !== '["ranked"]') return [];
   dailies.set(f, d);
   return [{ file: f, from: d.meta.window.from, to: d.meta.window.to, versions: d.meta.versions }];
 });

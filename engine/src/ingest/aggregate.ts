@@ -20,8 +20,9 @@ import { hasCredentials } from './predgg.js';
 import { sampleMatches } from './predgg-feed.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-// RANKED_ONLY=1 restricts to ranked matches (default keeps pvp+ranked).
-const GAME_MODES = process.env.RANKED_ONLY ? ['RANKED'] : ['STANDARD', 'RANKED'];
+// Ranked matches only (maintainer 2026-10-28: "just ranked for everything").
+// Casual (STANDARD) games used to be blended in by default.
+const GAME_MODES = ['RANKED'];
 const ROLES = new Set(['carry', 'support', 'midlane', 'offlane', 'jungle']);
 
 const args = process.argv.slice(2);
@@ -41,7 +42,9 @@ async function main() {
   const hours = opt('hours', 36);
   const perHero = opt('per-hero', 300);
   const meta = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/META.json'), 'utf8')) as { patch?: string; patchReleasedAt?: string };
-  const to = new Date();
+  // --end <ISO> backfills an earlier window (2026-10-28: ranked-only re-pull of the patch).
+  const endArg = process.argv.indexOf('--end');
+  const to = endArg >= 0 ? new Date(process.argv[endArg + 1]!) : new Date();
   const patchStart = meta.patchReleasedAt ? Date.parse(meta.patchReleasedAt) : 0;
   const from = new Date(Math.max(to.getTime() - hours * 3600_000, patchStart));
   console.log(`sampling ${from.toISOString()} -> ${to.toISOString()} (${GAME_MODES.join('+')}, <= ${perHero}/hero)`);
@@ -127,7 +130,7 @@ async function main() {
   };
   const dir = path.join(ROOT, 'data/aggregates');
   mkdirSync(dir, { recursive: true });
-  const file = path.join(dir, `${new Date().toISOString().slice(0, 10)}.json`);
+  const file = path.join(dir, `${to.toISOString().slice(0, 10)}.json`);
   writeFileSync(file, JSON.stringify(out, null, 1));
   console.log(`\nWrote ${file}: ${matches} matches, ${players} player rows, ${Object.keys(heroStats).length} heroes`);
   for (const role of ['carry', 'midlane', 'offlane', 'jungle', 'support']) {

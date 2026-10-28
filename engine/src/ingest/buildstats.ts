@@ -28,10 +28,10 @@ const ROLE_CONCURRENCY = 4; // parallel role-filtered queries (each ~10-23s serv
 
 const norm = (s: string) => (s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
-// RANKED_ONLY=1 pins all core-build evidence to ranked games on the CURRENT
-// patch (pred.gg default pool spans modes and versions). Set in main().
-let MODE_FILTER = "";       // e.g. `gameModes: [RANKED], versions: ["152"]`
-let SCOPE_NOTE = "pred.gg default pool (all modes, all versions)";
+// Ranked only (2026-10-28; pred.gg's default pool spans modes). RANKED_ONLY=1
+// additionally pins the CURRENT patch. Set in main().
+let MODE_FILTER = "gameModes: [RANKED]"; // e.g. `gameModes: [RANKED], versions: ["152"]`
+let SCOPE_NOTE = "RANKED only, all versions";
 
 // lowercase aggregate role -> pred.gg role enum
 const ROLE_ENUM: Record<string, string> = {
