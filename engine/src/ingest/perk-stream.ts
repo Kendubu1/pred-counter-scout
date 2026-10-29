@@ -46,6 +46,9 @@ import { countMatch, migratePlatBasis, loadState as loadBuildMatchups, saveState
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const STATE = path.join(ROOT, 'data/aggregates/perk-stream.json');
+// perf / perfBy live in their own compact file (they would double STATE's size);
+// split off on save and merged back on load, tied to STATE by patch + cursor.
+const PERF_STATE = path.join(ROOT, 'data/aggregates/perf-stream.json');
 const AUG_OUT = path.join(ROOT, 'data/aggregates/predgg-augments.json');
 const DELAY_MS = 2000;
 const CHECKPOINT_EVERY = 25;
@@ -64,7 +67,21 @@ interface EternalCell extends NW { minor1: Record<string, NW>; minor2: Record<st
 // just the core three: n/w = games with it, slots[k] = games where it was the
 // k-th completed item by purchase time (1-based). Counted from itemsFrom.
 interface ItemCell extends NW { slots: Record<string, NW> }
-interface CountCell extends NW { augments: Record<string, NW>; eternals: Record<string, EternalCell>; crests: Record<string, NW>; cores?: Record<string, NW>; items?: Record<string, ItemCell> }
+// perf: what the players PRODUCED, from each stream row's damageHealData /
+// combatData / minionData / incomeData / wardsData, split by result (w = wins,
+// l = losses) because output rises with winning. n = games, m = minutes played,
+// s[stat] = summed totals (pooled per-minute rate = s / m); r / q[stat] = summed
+// per-minute rates and their squares, one per game (spread; role-level only). perfBy = the
+// same per augment / Eternal / crest / completed item (all ranks only).
+// Counted from perfFrom; games under MIN_PERF_SECONDS (remakes) are skipped.
+interface PerfAcc { n: number; m: number; s: Record<string, number>; r?: Record<string, number>; q?: Record<string, number> }
+interface PerfCell { w: PerfAcc; l: PerfAcc }
+interface PerfBy { augments: Record<string, PerfCell>; eternals: Record<string, PerfCell>; crests: Record<string, PerfCell>; items: Record<string, PerfCell> }
+interface PerfState {
+  patchReleasedAt: string; cursor: number; perfFrom: string;
+  heroes: Record<string, Record<string, { perf?: PerfCell; perfBy?: PerfBy; gold?: PerfCell; plat?: PerfCell }>>;
+}
+interface CountCell extends NW { augments: Record<string, NW>; eternals: Record<string, EternalCell>; crests: Record<string, NW>; cores?: Record<string, NW>; items?: Record<string, ItemCell>; perf?: PerfCell; perfBy?: PerfBy }
 // gold: the same counts for rows whose player was Gold or higher IN THAT GAME
 // (rank at match time, see match-rank.ts), counted from goldFrom onward.
 // plat: the same for Platinum or higher, over the same window (a subset of gold).
@@ -90,6 +107,8 @@ interface State {
   linksFrom?: string;
   /** Full completed-item counts (CountCell.items) started here. */
   itemsFrom?: string;
+  /** Output counts (CountCell.perf / perfBy) started here. */
+  perfFrom?: string;
   /** 'match-time': the rank each player held in that game. Counts made on any
    *  other basis (the 2026-10-24 ladder proxy, a player's CURRENT rank) are
    *  dropped and goldFrom restarts when this is missing. */
@@ -100,6 +119,47 @@ interface State {
   ladder?: unknown;
   heroes: Record<string, Record<string, RoleCell>>;
 }
+
+// Stream fields per player row -> short keys kept in perf cells.
+const PERF_STATS: Record<string, (p: any) => unknown> = {
+  dmgHeroes: (p) => p.damageHealData?.totalDamageDealtToHeroes,
+  physHeroes: (p) => p.damageHealData?.physicalDamageDealtToHeroes,
+  magHeroes: (p) => p.damageHealData?.magicalDamageDealtToHeroes,
+  trueHeroes: (p) => p.damageHealData?.trueDamageDealtToHeroes,
+  dmgStructures: (p) => p.damageHealData?.totalDamageDealtToStructures,
+  dmgObjectives: (p) => p.damageHealData?.totalDamageDealtToObjectives,
+  taken: (p) => p.damageHealData?.totalDamageTaken,
+  takenHeroes: (p) => p.damageHealData?.totalDamageTakenFromHeroes,
+  mitigated: (p) => p.damageHealData?.totalDamageMitigated,
+  healing: (p) => p.damageHealData?.totalHealingDone,
+  shieldsReceived: (p) => p.damageHealData?.totalShieldingReceived,
+  kills: (p) => p.combatData?.kills,
+  deaths: (p) => p.combatData?.deaths,
+  assists: (p) => p.combatData?.assists,
+  minions: (p) => p.minionData?.minionsKilled,
+  gold: (p) => p.incomeData?.goldEarned,
+  wardsPlaced: (p) => p.wardsData?.wardsPlaced,
+  wardsDestroyed: (p) => p.wardsData?.wardsDestroyed,
+};
+const MIN_PERF_SECONDS = 300;
+const perfOf = (p: any): Record<string, number> => {
+  const o: Record<string, number> = {};
+  for (const [k, f] of Object.entries(PERF_STATS)) { const v = Number(f(p)); if (Number.isFinite(v)) o[k] = v; }
+  return o;
+};
+const newPerf = (): PerfCell => ({ w: { n: 0, m: 0, s: {} }, l: { n: 0, m: 0, s: {} } });
+const addPerf = (c: PerfCell, stats: Record<string, number>, minutes: number, won: boolean, spread = false) => {
+  const a = won ? c.w : c.l;
+  a.n++; a.m = Math.round((a.m + minutes) * 100) / 100;
+  for (const [k, v] of Object.entries(stats)) {
+    a.s[k] = (a.s[k] ?? 0) + v;
+    if (spread) {
+      const r = (a.r ??= {}), q = (a.q ??= {});
+      r[k] = Math.round(((r[k] ?? 0) + v / minutes) * 100) / 100;
+      q[k] = Math.round((q[k] ?? 0) + (v / minutes) ** 2);
+    }
+  }
+};
 
 const bump = (o: Record<string, NW>, k: string, won: boolean) => { const c = (o[k] ??= { n: 0, w: 0 }); c.n++; if (won) c.w++; };
 
@@ -157,6 +217,24 @@ async function main() {
   st.goldFrom ??= new Date(st.cursor * 1000).toISOString();
   st.linksFrom ??= new Date(st.cursor * 1000).toISOString();
   st.itemsFrom ??= new Date(st.cursor * 1000).toISOString();
+  if (!fresh && existsSync(PERF_STATE)) {
+    const ps = JSON.parse(readFileSync(PERF_STATE, 'utf8')) as PerfState;
+    if (ps.patchReleasedAt === st.patchReleasedAt && ps.cursor === st.cursor) {
+      for (const [slug, roles] of Object.entries(ps.heroes)) for (const [role, x] of Object.entries(roles)) {
+        const c = st.heroes[slug]?.[role];
+        if (!c) continue;
+        if (x.perf) c.perf = x.perf;
+        if (x.perfBy) c.perfBy = x.perfBy;
+        if (x.gold && c.gold) c.gold.perf = x.gold;
+        if (x.plat && c.plat) c.plat.perf = x.plat;
+      }
+    } else if (st.perfFrom) {
+      // Out of step with STATE (an interrupted save): restart output counts here.
+      console.log(`perf-stream.json is out of step with perk-stream.json; output counts restart at ${new Date(st.cursor * 1000).toISOString()}`);
+      delete st.perfFrom;
+    }
+  } else if (!fresh) delete st.perfFrom;
+  st.perfFrom ??= new Date(st.cursor * 1000).toISOString();
   if (fresh && prev) console.log(`patch changed (${prev.patch} -> ${meta.patch}); starting a fresh window`);
   console.log(`match stream from ${new Date(st.cursor * 1000).toISOString()} (${fresh ? 'fresh' : 'resuming'}), up to ${MAX_REQUESTS} requests`);
   // Matchup build counts ride the same pages (data/aggregates/build-matchups.json).
@@ -177,7 +255,13 @@ async function main() {
     st.window.to = new Date(st.cursor * 1000).toISOString();
     st.generatedAt = new Date().toISOString();
     st.unknown = { heroes: [...unknownHeroes].sort(), perks: [...unknownPerks].sort() };
-    writeFileSync(STATE, JSON.stringify(st, null, 1));
+    writeFileSync(STATE, JSON.stringify(st, (k, v) => (k === 'perf' || k === 'perfBy' ? undefined : v), 1));
+    const ps: PerfState = { patchReleasedAt: st.patchReleasedAt, cursor: st.cursor, perfFrom: st.perfFrom!, heroes: {} };
+    for (const [slug, roles] of Object.entries(st.heroes)) for (const [role, c] of Object.entries(roles)) {
+      if (!c.perf) continue;
+      (ps.heroes[slug] ??= {})[role] = { perf: c.perf, perfBy: c.perfBy, gold: c.gold?.perf, plat: c.plat?.perf };
+    }
+    writeFileSync(PERF_STATE, JSON.stringify(ps));
     bmSegment.to = st.window.to;
     saveBuildMatchups(bm);
   };
@@ -198,6 +282,8 @@ async function main() {
       const matchRanks = ranks.get(String(m.matchId));
       if (!matchRanks) st.goldUnresolvedMatches = (st.goldUnresolvedMatches ?? 0) + 1;
       const matchPlayers: MatchPlayer[] = [];
+      const minutes = Number(m.gameDuration) / 60;
+      const perfOk = Number.isFinite(minutes) && minutes * 60 >= MIN_PERF_SECONDS;
       for (const p of m.playerData ?? []) {
         if (p.bIsAIPlayer) continue;
         const role = String(p.roleName ?? '').replace('ESelectedRole::', '').toLowerCase();
@@ -216,8 +302,10 @@ async function main() {
           if (it && !built.includes(it.slug)) built.push(it.slug);
         }
         const core = built.slice(0, 3);
+        const stats = perfOk ? perfOf(p) : null;
         const count = (c: CountCell) => {
           c.n++; if (won) c.w++;
+          if (stats) addPerf((c.perf ??= newPerf()), stats, minutes, won, true);
           if (lo.augment) bump(c.augments, lo.augment.id, won);
           if (lo.eternal) {
             const e = (c.eternals[lo.eternal] ??= { n: 0, w: 0, minor1: {}, minor2: {}, pairs: {} });
@@ -235,6 +323,14 @@ async function main() {
           });
         };
         count(cell);
+        if (stats) {
+          const by = (cell.perfBy ??= { augments: {}, eternals: {}, crests: {}, items: {} });
+          const add = (o: Record<string, PerfCell>, k: string) => addPerf((o[k] ??= newPerf()), stats, minutes, won);
+          if (lo.augment) add(by.augments, lo.augment.id);
+          if (lo.eternal) add(by.eternals, lo.eternal);
+          if (lo.crest) add(by.crests, lo.crest);
+          for (const it of built) add(by.items, it);
+        }
         for (const item of core) {
           const l = ((cell.links ??= {})[item] ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} });
           l.n++; if (won) l.w++;
@@ -410,6 +506,60 @@ async function main() {
     itemsFrom: st.itemsFrom,
     minGames: MIN_ITEM_GAMES,
     heroes: itemOut,
+  }, null, 1));
+
+  // Output -> predgg-output.json: per hero-role (and Gold+ / Plat+), per-minute
+  // means for wins, losses and all games, the per-game spread, and the same
+  // per pick (20+ games). Rates are pooled: summed stat / summed minutes.
+  const MIN_PERF_GAMES = 20;
+  const r1 = (x: number) => Math.round(x * 10) / 10;
+  const rates = (as: PerfAcc[]) => {
+    const n = as.reduce((t, a) => t + a.n, 0), mins = as.reduce((t, a) => t + a.m, 0);
+    if (!n || !mins) return null;
+    const perMin: Record<string, number> = {};
+    for (const k of Object.keys(PERF_STATS)) { const sum = as.reduce((t, a) => t + (a.s[k] ?? 0), 0); perMin[k] = r1(sum / mins); }
+    return { n, minutes: r1(mins / n), perMin };
+  };
+  const spread = (as: PerfAcc[]) => {
+    const n = as.reduce((t, a) => t + a.n, 0);
+    if (n < 2) return null;
+    const sd: Record<string, number> = {};
+    for (const k of Object.keys(PERF_STATS)) {
+      const mean = as.reduce((t, a) => t + (a.r?.[k] ?? 0), 0) / n;
+      const sq = as.reduce((t, a) => t + (a.q?.[k] ?? 0), 0) / n;
+      sd[k] = r1(Math.sqrt(Math.max(0, (sq - mean * mean) * n / (n - 1))));
+    }
+    return sd;
+  };
+  const perfView = (c?: PerfCell) => (c && c.w.n + c.l.n >= MIN_PERF_GAMES
+    ? { all: rates([c.w, c.l]), wins: rates([c.w]), losses: rates([c.l]) } : undefined);
+  const perfOut: Record<string, Record<string, unknown>> = {};
+  for (const [slug, roles] of Object.entries(st.heroes)) {
+    for (const [role, c] of Object.entries(roles)) {
+      const view = perfView(c.perf);
+      if (c.n < MIN_ROLE_GAMES || !view) continue;
+      const by = (o: Record<string, PerfCell> = {}, name: (k: string) => string = (k) => k) => Object.entries(o)
+        .filter(([, v]) => v.w.n + v.l.n >= MIN_PERF_GAMES)
+        .sort((a, b) => (b[1].w.n + b[1].l.n) - (a[1].w.n + a[1].l.n))
+        .map(([k, v]) => ({ key: k, name: name(k), ...perfView(v) }));
+      (perfOut[slug] ??= {})[role] = {
+        ...view, sd: spread([c.perf!.w, c.perf!.l]),
+        goldPlus: perfView(c.gold?.perf), platPlus: perfView(c.plat?.perf),
+        augments: by(c.perfBy?.augments, (k) => augCatalog[k]?.name ?? k),
+        eternals: by(c.perfBy?.eternals),
+        crests: by(c.perfBy?.crests),
+        items: by(c.perfBy?.items, (k) => itemBySlug.get(k)?.display_name ?? k),
+      };
+    }
+  }
+  writeFileSync(path.join(ROOT, 'data/aggregates/predgg-output.json'), JSON.stringify({
+    generatedAt: st.generatedAt,
+    source: `pred.gg public match stream (get-matches-since), RANKED, patch ${meta.patch ?? '?'}, counted ${String(st.perfFrom).slice(0, 16)} -> ${st.window.to.slice(0, 16)}. Counted by npm run perks.`,
+    note: `Per hero -> role: what players produced, per MINUTE (pooled: summed stat / summed minutes), for all games, wins and losses. minutes = average game length. sd = spread of one game's per-minute rate (all ranks). goldPlus / platPlus = rank at match time. augments / eternals / crests / items = the same for players on that pick (items: any completed item they bought), all ranks, ${MIN_PERF_GAMES}+ games. Output rises with winning: compare wins with wins (or losses with losses), not a pick's "all" against another's. Games under ${MIN_PERF_SECONDS / 60} minutes skipped.`,
+    perfFrom: st.perfFrom,
+    stats: Object.keys(PERF_STATS),
+    minGames: MIN_PERF_GAMES,
+    heroes: perfOut,
   }, null, 1));
 
   const cells = Object.values(out).reduce((t, r) => t + Object.keys(r).length, 0);

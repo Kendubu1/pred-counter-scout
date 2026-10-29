@@ -5451,3 +5451,12 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   plus Gold+ / Plat+, from `itemsFrom`, written to data/aggregates/predgg-items.json (20+ games per
   item). No backfill (1.18 lands next week, so the next patch window has it from day one). Late
   items read high because players who reach them are usually ahead: compare within a slot.
+- 2026-10-29: every public-stream player row carries full output (damageHealData: dealt / taken by
+  type, to heroes / structures / objectives, mitigated, healing by source, shields received;
+  combatData; minionData; incomeData; wardsData). `npm run perks` now keeps it per minute, split
+  by wins and losses (output rises with winning, so compare wins with wins), per hero-role + Gold+
+  / Plat+ and per augment / Eternal / crest / completed item. The raw sums would have doubled
+  perk-stream.json (~25 -> ~50 MB), so they live in a compact perf-stream.json tied to it by patch
+  + cursor; a mismatch restarts the output window rather than mixing counts. Consumer:
+  predgg-output.json. Not in the feed: crowd-control time, healing or shields GIVEN to allies,
+  per-ability damage. Next: compare a squad member's films (same fields) with these norms.
