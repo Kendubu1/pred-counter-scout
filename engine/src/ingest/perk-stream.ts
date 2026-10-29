@@ -60,7 +60,11 @@ interface EternalCell extends NW { minor1: Record<string, NW>; minor2: Record<st
 // cores: the first three distinct completed items (Epic passives) in PURCHASE
 // order, keyed "slug|slug|slug" — the same definition pred.gg's gated coreBuild
 // used, rebuilt from each player's incomeData.transactions.
-interface CountCell extends NW { augments: Record<string, NW>; eternals: Record<string, EternalCell>; crests: Record<string, NW>; cores?: Record<string, NW> }
+// items: EVERY distinct completed item (Epic passive) the player bought, not
+// just the core three: n/w = games with it, slots[k] = games where it was the
+// k-th completed item by purchase time (1-based). Counted from itemsFrom.
+interface ItemCell extends NW { slots: Record<string, NW> }
+interface CountCell extends NW { augments: Record<string, NW>; eternals: Record<string, EternalCell>; crests: Record<string, NW>; cores?: Record<string, NW>; items?: Record<string, ItemCell> }
 // gold: the same counts for rows whose player was Gold or higher IN THAT GAME
 // (rank at match time, see match-rank.ts), counted from goldFrom onward.
 // plat: the same for Platinum or higher, over the same window (a subset of gold).
@@ -84,6 +88,8 @@ interface State {
   goldFrom?: string;
   /** The build-to-pick links (RoleCell.links) started here: their window is shorter still. */
   linksFrom?: string;
+  /** Full completed-item counts (CountCell.items) started here. */
+  itemsFrom?: string;
   /** 'match-time': the rank each player held in that game. Counts made on any
    *  other basis (the 2026-10-24 ladder proxy, a player's CURRENT rank) are
    *  dropped and goldFrom restarts when this is missing. */
@@ -150,6 +156,7 @@ async function main() {
   }
   st.goldFrom ??= new Date(st.cursor * 1000).toISOString();
   st.linksFrom ??= new Date(st.cursor * 1000).toISOString();
+  st.itemsFrom ??= new Date(st.cursor * 1000).toISOString();
   if (fresh && prev) console.log(`patch changed (${prev.patch} -> ${meta.patch}); starting a fresh window`);
   console.log(`match stream from ${new Date(st.cursor * 1000).toISOString()} (${fresh ? 'fresh' : 'resuming'}), up to ${MAX_REQUESTS} requests`);
   // Matchup build counts ride the same pages (data/aggregates/build-matchups.json).
@@ -201,13 +208,14 @@ async function main() {
         const cell = ((st.heroes[slug] ??= {})[role] ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} });
         const lo = loadoutOf(p, perkByName, crestByGameId, unknownPerks);
         // transactionType 10 = purchase (11 = starting items, others = sells/undos).
-        const core: string[] = [];
+        // built = every distinct completed item in purchase order; core = its first three.
+        const built: string[] = [];
         for (const t of p.incomeData?.transactions ?? []) {
           if (t?.transactionType !== 10) continue;
           const it = coreItemByGameId.get(t.itemId);
-          if (it && !core.includes(it.slug)) core.push(it.slug);
-          if (core.length === 3) break;
+          if (it && !built.includes(it.slug)) built.push(it.slug);
         }
+        const core = built.slice(0, 3);
         const count = (c: CountCell) => {
           c.n++; if (won) c.w++;
           if (lo.augment) bump(c.augments, lo.augment.id, won);
@@ -220,6 +228,11 @@ async function main() {
           }
           if (lo.crest) bump(c.crests, lo.crest, won);
           if (core.length === 3) bump((c.cores ??= {}), core.join('|'), won);
+          built.forEach((slug, i) => {
+            const ic = ((c.items ??= {})[slug] ??= { n: 0, w: 0, slots: {} });
+            ic.n++; if (won) ic.w++;
+            bump(ic.slots, String(i + 1), won);
+          });
         };
         count(cell);
         for (const item of core) {
@@ -373,6 +386,30 @@ async function main() {
     linksFrom: st.linksFrom,
     minGames: MIN_LINK_GAMES,
     heroes: linkOut,
+  }, null, 1));
+
+  // Every completed item -> predgg-items.json: per hero-role, each item with
+  // MIN_ITEM_GAMES+ games and its purchase-slot split, plus Gold+ / Plat+.
+  const MIN_ITEM_GAMES = 20;
+  const itemRows = (c?: CountCell) => sorted(c?.items ?? {}).filter(([, v]) => v.n >= MIN_ITEM_GAMES).map(([slug, v]) => ({
+    slug, name: itemBySlug.get(slug)?.display_name ?? slug, n: v.n, w: v.w,
+    slots: Object.fromEntries(Object.entries(v.slots).sort((a, b) => Number(a[0]) - Number(b[0]))),
+  }));
+  const itemOut: Record<string, Record<string, unknown>> = {};
+  for (const [slug, roles] of Object.entries(st.heroes)) {
+    for (const [role, c] of Object.entries(roles)) {
+      if (c.n < MIN_ROLE_GAMES || !c.items) continue;
+      const band = (x?: CountCell) => (x?.items && x.n >= MIN_GOLD_GAMES ? { items: itemRows(x) } : undefined);
+      (itemOut[slug] ??= {})[role] = { items: itemRows(c), goldPlus: band(c.gold), platPlus: band(c.plat) };
+    }
+  }
+  writeFileSync(path.join(ROOT, 'data/aggregates/predgg-items.json'), JSON.stringify({
+    generatedAt: st.generatedAt,
+    source: `pred.gg public match stream (get-matches-since), RANKED, patch ${meta.patch ?? '?'}, counted ${String(st.itemsFrom).slice(0, 16)} -> ${st.window.to.slice(0, 16)}. Counted by npm run perks.`,
+    note: 'Per hero -> role: every completed item (Epic passive) players bought, not only the core three. n/w = games with that item; slots[k] = games where it was the k-th completed item by purchase time. Late items read high (players who reach them are often already ahead): compare within a slot, not raw item win rates. goldPlus / platPlus = rank at match time. Window starts at itemsFrom; the hero-role baseline is in predgg-builds.json baselineByRole.',
+    itemsFrom: st.itemsFrom,
+    minGames: MIN_ITEM_GAMES,
+    heroes: itemOut,
   }, null, 1));
 
   const cells = Object.values(out).reduce((t, r) => t + Object.keys(r).length, 0);

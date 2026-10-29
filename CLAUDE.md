@@ -131,7 +131,9 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   keeps Gold+ and Plat+ sub-counts; since 2026-10-27 it also keeps the
   build-to-pick link (per core item: the augment / Eternal / crest that player ran,
   all ranks, from linksFrom) in data/aggregates/build-links.json, the input for
-  priorities item 19; the page shows only All ranks / Plat+ through
+  priorities item 19; since 2026-10-29 it also counts EVERY completed item each player
+  bought (not just the core three), with its purchase slot, all ranks + Gold+ /
+  Plat+, from itemsFrom, in data/aggregates/predgg-items.json; the page shows only All ranks / Plat+ through
   one page-level rank filter — never tag rank from the ladder, which is CURRENT
   rank and reads ~+3 pt high),
   `npm run buildstats` (the old coreBuild pull; gated at our tier, no longer in

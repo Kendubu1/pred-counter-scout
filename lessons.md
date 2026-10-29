@@ -5445,3 +5445,9 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   at the all-time role score; recent heroes need 5+ squad games in that role. Caveat shown on the
   page: squad games only, and the squad has been winning ~70% since the patch, so recent ratings
   run high (compare lineups, don't read them as predictions).
+- 2026-10-29: `npm run perks` threw away every completed item after the core three, though the
+  stream's purchase log carries them all. It now counts every distinct completed Epic item per
+  hero-role with its purchase slot (1st, 2nd, ... ; 7+ happens after a sell and rebuy), all ranks
+  plus Gold+ / Plat+, from `itemsFrom`, written to data/aggregates/predgg-items.json (20+ games per
+  item). No backfill (1.18 lands next week, so the next patch window has it from day one). Late
+  items read high because players who reach them are usually ahead: compare within a slot.
