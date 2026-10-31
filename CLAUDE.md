@@ -156,6 +156,10 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   `npm run review:players` (zero-API: the "Your review" card on each squad member's
   coach page, data/artifacts/player-reviews.json; same rules for everyone, rules in
   src/player-review.ts; rerun after `npm run squad` or new films),
+  `npm run review:stacks` (zero-API: the "Who queued" card on 2-4 stack game reviews,
+  data/artifacts/stack-reviews.json: members' lanes vs their best seats as a group and
+  each game vs the hero-role norm, lane suggestion after a loss; rules in
+  src/stack-review.ts; rerun after new films or `npm run squad`),
   `npm run postgame:structures` (pred.gg backfill of tower location + destroyer
   for films pulled before 2026-10-26; new pulls already carry them),
   `npm run lanestats` (per-hero-role RANKED lane stats for the CURRENT patch from

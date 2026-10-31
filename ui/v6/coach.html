@@ -552,6 +552,7 @@ function macroAvailability(mac) {
   return mac && Number.isFinite(mac.ourAlive) && Number.isFinite(mac.theirAlive)
     ? `Alive across the map: ${mac.ourAlive} us, ${mac.theirAlive} opponents. Positions are not established.` : '';
 }
+let STACKS = {};  // data/artifacts/stack-reviews.json games: who queued in a 2-4 stack + next-queue lanes
 let MAP = null;   // data/game-data/map-landmarks.json (towers/lanes/objectives), loaded once
 // Fight map: the kill stream as a density heat layer (us green / them red) on the
 // REAL map geometry · lanes, turrets, Fangtooth/Prime · with the key fights ringed.
@@ -768,6 +769,41 @@ function pgReview(f) {
     <div style="border-left:3px solid var(--gold);padding:.5rem .8rem;background:rgba(240,180,41,.07);border-radius:6px;margin-top:.6rem;font-size:.9rem"><b>What shifted it:</b> ${esc(co.whatShiftedIt)}</div>
     ${Array.isArray(co.ranking) && co.ranking.length ? `<div style="margin-top:.6rem"><div style="font-size:.7rem;font-weight:700;letter-spacing:0;color:var(--text-2);">Player verdicts</div><ol style="margin:.3rem 0 0;padding-left:1.3rem;font-size:.88rem;line-height:1.5">${co.ranking.map((r) => { const pl = f.players.find((p) => p.pid === r.pid); return `<li><b>${pl ? pgName(pl) : ''}</b>${pl ? ` <span style="color:var(--text-2);font-size:.78rem">${esc(pl.heroName)}</span>` : ''} · ${esc(r.grade || '')}</li>`; }).join('')}</ol></div>` : ''}` :
     `<div style="color:var(--text-2);margin-top:.5rem;font-size:.9rem">Facts computed; coaching narrative not yet authored for this match.</div>`}`);
+
+  // ── Who queued (2-4 stack): each member's lane, hero, line and this game vs
+  // that hero-role's norm; after a loss, the lanes to queue next time (rules in
+  // engine/src/stack-review.ts; numbers from data/artifacts/stack-reviews.json). ──
+  const stackCard = (() => {
+    const sr = STACKS[f.matchId];
+    if (!sr || !(sr.stackSize < 5)) return '';
+    const p1 = (x) => (x * 100).toFixed(1);
+    const first = (n) => esc(String(n).split(' ')[0]);
+    const gameWord = (m) => m.score == null ? '' : m.rough
+      ? `<span style="color:var(--red)">rough game for the lane${m.weakest ? ` · weakest on ${esc(m.weakest)}` : ''}</span>`
+      : m.score >= 1 ? '<span style="color:var(--green)">well above the lane norm</span>'
+      : m.score >= 0 ? '<span style="color:var(--text-1)">at or above the lane norm</span>'
+      : '<span style="color:var(--text-1)">a bit under the lane norm</span>';
+    const rows = sr.members.map((m) => `<div style="display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;padding:.4rem 0;border-top:1px solid var(--border)">
+      ${hIcon(m.heroSlug, 28)}
+      <span style="min-width:9rem"><b>${esc(m.name)}</b><br><span style="color:var(--text-2);font-size:.8rem">${esc(m.heroName)} · ${esc(m.role)}</span></span>
+      <span style="font-size:.85rem">${m.kills} / ${m.deaths} / ${m.assists}</span>
+      <span style="font-size:.8rem;color:var(--text-2)">${m.roleWr != null ? `${p1(m.roleWr)}% career in ${esc(m.role)} · ${m.roleGames} games` : ''}${m.bestSeat && m.bestSeat !== m.role && !sr.lanesWereBest ? ` · best seat here: ${esc(m.bestSeat)}` : ''}</span>
+      <span style="font-size:.8rem;margin-left:auto">${gameWord(m)}</span>
+    </div>`).join('');
+    const rec = sr.recommend;
+    const recBlock = rec ? `<div style="border-left:3px solid var(--gold);padding:.55rem .8rem;background:rgba(240,180,41,.07);border-radius:6px;margin-top:.7rem;font-size:.9rem">
+      <b>${rec.kind === 'swap' ? 'Next time you queue together, try these lanes' : 'Lanes were right: queue the same seats'}</b>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin:.45rem 0">${rec.seats.map((x) => {
+        const moved = rec.moves.some((mv) => mv.name === x.name);
+        return `<span style="border:1px solid ${moved ? 'var(--gold)' : 'var(--border)'};border-radius:8px;padding:.2rem .55rem;font-size:.84rem"><b>${first(x.name)}</b> → ${esc(x.role)} <span style="color:var(--text-2)">${p1(x.wr)}% · ${x.games} games</span></span>`;
+      }).join('')}</div>
+      ${rec.reasons.map((t) => `<div style="color:var(--text-1);font-size:.85rem;margin-top:.2rem">${esc(t)}</div>`).join('')}
+    </div>` : f.result === 'loss' && sr.lanesWereBest
+      ? '<div style="color:var(--text-2);font-size:.85rem;margin-top:.6rem">You were already in your best seats for this group, and nobody had a rough game for their lane, so no lane change to suggest.</div>'
+      : '';
+    return card(`${eyebrow(`Who queued · ${sr.stackSize}-stack`, 'the other seats were randoms')}${rows}${recBlock}
+      <div style="color:var(--text-2);font-size:.72rem;margin-top:.55rem">Lane records: each player's career win rate in that role (shrunk on thin samples), seats scored as a set like the 5-stack picker, including the carry + support duo-lane record. Lane norm: this game's output against that hero in that role across our reviewed films. A lane suggestion shows only after a loss.</div>`);
+  })();
 
   // ── The three moments: tagged fights first, then by significance · capped at 3.
   // Why = the computed macro read; cost = deaths in the fight priced at prizes +
@@ -1019,11 +1055,11 @@ function pgReview(f) {
         ${!br ? '<p class="build-help">Matchup analysis has not been written for this player.</p>' : ''}
       </div></details>`;
     }).join('')}<p class="build-help">Based on final inventory and recorded draft choices. Purchase timing, active use and passive uptime are unverified. Alternatives describe matchup tradeoffs, not proven winning swaps.</p>`);
-    return verdict + next + players + `<details class="deepdive" id="coach-evidence"><summary>Evidence & replay details · stats, builds and timestamps</summary>
+    return verdict + stackCard + next + players + `<details class="deepdive" id="coach-evidence"><summary>Evidence & replay details · stats, builds and timestamps</summary>
       ${loadouts}<details class="evidence-section"><summary>Match totals · compare player stats</summary>${card(statline)}</details><details class="evidence-section"><summary>Key moments & objective timeline</summary>${moments}${timeline}</details>${deep}
     </details>`;
   }
-  return head + moments + deepDive + coachEvidence + timeline + worked + lobby + deep;
+  return head + stackCard + moments + deepDive + coachEvidence + timeline + worked + lobby + deep;
 }
 
 // Flags format (blunt-flags-v9): the review's ranked "what lost / won it"
@@ -1095,6 +1131,7 @@ async function fillEternals() {
         pgList = (PG.matches || []).filter((m) => m.matchId);
         try { const persona = await (await fetch('../../data/coaching/personas.json')).json(); const selected = persona.presets.find((p) => p.id === persona.active); COACH_LAYOUT = selected?.layout || 'classic'; COACH_PLAYER_FORMAT = selected?.playerFormat || 'paragraph'; } catch {}
         try { MAP = await (await fetch('../../data/game-data/map-landmarks.json')).json(); } catch {}
+        try { STACKS = (await (await fetch('../../data/artifacts/stack-reviews.json')).json()).games || {}; } catch {}
       } catch {}
 
       document.getElementById('page').innerHTML = `

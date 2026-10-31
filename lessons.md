@@ -5445,3 +5445,11 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   at the all-time role score; recent heroes need 5+ squad games in that role. Caveat shown on the
   page: squad games only, and the squad has been winning ~70% since the patch, so recent ratings
   run high (compare lineups, don't read them as predictions).
+- 2026-10-31: 2-4 stack game reviews got a "Who queued" card (engine/src/stack-review.ts ->
+  data/artifacts/stack-reviews.json, `npm run review:stacks`). Lanes use the squad picker's set
+  scoring (roleScores + duo-lane bonus); "rough game" reuses the standouts score (<= -1 role SD vs
+  the hero-role norm). First cut used the squad page's 0.5-per-100 pricing bar and suggested a
+  swap after 60 of 64 losses, mostly on sub-1-point gaps between shrunk role rates; raised to 2
+  per 100 (43 swaps). The first reason line also quoted seat totals as an "average %" that
+  silently included the duo bonus (58% for a 54% pair); it now averages the seat win rates and
+  names the duo record separately.
