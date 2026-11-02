@@ -7,7 +7,8 @@
 //   PATCH_START=2026-10-13 npm run matchups:feed
 //
 // Output: data/aggregates/feed-matchups.json — directed pairs "a|b" = a's
-// record into b in the SAME role, { wr, n }, kept at n >= 20. Same shape the
+// record into b in the SAME role, { wr, n, shrunkWr, prior }, kept at n >= 20
+// (shrunkWr: src/matchup-edge.ts; counters rank by it). Same shape the
 // pred.gg matchup-evidence pass writes, so the UI merges them (that pass needs
 // the matchupStatistic scope our pred.gg app lacks, so this is the live source).
 // Includes the same sim-vs-field validation block.
@@ -24,6 +25,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hasCredentials } from './predgg.js';
 import { sampleMatches } from './predgg-feed.js';
+import { roleWrOf, shrinkPairs, SHRINK_NOTE, type RoleWr } from '../matchup-edge.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const ROLES = new Set(['carry', 'midlane', 'offlane', 'jungle', 'support']);
@@ -79,8 +81,10 @@ async function main() {
     }
   }
 
-  const pairs: Record<string, { wr: number; n: number; towerDiff: null }> = {};
-  for (const [key, c] of cells) if (c.n >= MIN_GAMES) pairs[key] = { wr: Math.round((c.w / c.n) * 1000) / 10, n: c.n, towerDiff: null };
+  // n-gated records plus their empirical-Bayes shrunk rate (src/matchup-edge.ts)
+  let roleWr: RoleWr = {};
+  try { roleWr = roleWrOf(JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/index.json'), 'utf8'))); } catch { /* no index: 0.5 priors */ }
+  const { pairs, k: shrinkK } = shrinkPairs(Object.fromEntries(cells), roleWr, MIN_GAMES);
 
   // sim-vs-field validation (same method as matchup-evidence.ts)
   let both = 0, agree = 0, simEven = 0, fieldEven = 0;
@@ -119,6 +123,7 @@ async function main() {
     validation: both
       ? { pairsCompared: both, simAgrees: agree, agreementRate: Math.round((agree / both) * 1000) / 10, simSaidEven: simEven, fieldSaidEven: fieldEven, method: 'sim net kill-window verdict vs field winrate, counted only where both commit (field >=52% or <=48%, sim net != 0)' }
       : null,
+    shrink: { k: shrinkK, note: SHRINK_NOTE },
     pairs,
     cells: Object.fromEntries([...cells.entries()].sort()),
   }, null, 1));

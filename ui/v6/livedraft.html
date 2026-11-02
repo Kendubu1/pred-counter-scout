@@ -209,7 +209,7 @@
 
   <footer id="ldfoot">
     Counters are each hero's real head-to-head lane record against the enemy (pred.gg ranked
-    games, all ranks, current patch, 20+ games per pair). Game data via pred.gg · not affiliated
+    games, all ranks, current patch, 20+ games per pair), adjusted for sample size. Game data via pred.gg · not affiliated
     with Omeda Studios.
   </footer>
 </div>
@@ -261,7 +261,16 @@ function matrixCps(our, enemy) {
 }
 const scoreOf = (cps) => cps.filter((c) => c.verdict === 'you').length - cps.filter((c) => c.verdict === 'enemy').length;
 /** Real head-to-head lane record of `our` into `enemy` ({ wr, n }), n >= 20. */
-const evOf = (our, enemy) => (MU && MU[`${our}|${enemy}`]) || null;
+const evOf = (our, enemy, lane) => {
+  const ev = (MU && MU[`${our}|${enemy}`]) || null;
+  // Records carry no lane; `lane` is where the pair most likely met. Countering a
+  // specific lane, skip records that mostly come from another one (a support
+  // Muriel's record against Argus says little about a mid Muriel).
+  return ev && lane && ev.lane && ev.lane !== lane ? null : ev;
+};
+/** The rate counters rank and show by: the empirical-Bayes shrunk record
+ *  (src/matchup-edge.ts), so a thin sample can't top the list. */
+const evWr = (ev) => (ev.shrunkWr ?? ev.wr);
 const heroRoles = (slug) => { const h = INDEX.heroes.find((x) => x.slug === slug); return h ? (h.roles && h.roles.length ? h.roles : [h.role]) : []; };
 const nameOf = (slug) => (INDEX.heroes.find((h) => h.slug === slug) || {}).name || slug;
 const picked = () => new Set(LANES.flatMap((l) => [state[l].enemy, state[l].you]).filter(Boolean));
@@ -291,19 +300,19 @@ function place(slug, lane, side) {
 }
 
 /** Best answers to an enemy in a lane: role-eligible heroes with a real
- *  head-to-head record, highest lane win rate first. Sim preview (?sim=1):
+ *  head-to-head record, highest adjusted (shrunk) lane win rate first. Sim preview (?sim=1):
  *  heroes without a record follow, ranked by the kit-math fight windows. */
 function counters(lane, enemy) {
   const taken = picked();
   const rows = INDEX.heroes
     .filter((h) => h.slug !== enemy && (h.role === lane || (h.roles || []).includes(lane)) && !taken.has(h.slug))
     .map((h) => {
-      const ev = evOf(h.slug, enemy);
+      const ev = evOf(h.slug, enemy, lane);
       const cps = SIM ? matrixCps(h.slug, enemy) : null;
       return ev || cps ? { slug: h.slug, name: h.name, ev, cps, score: cps ? scoreOf(cps) : 0 } : null;
     })
     .filter(Boolean);
-  const real = rows.filter((r) => r.ev).sort((a, b) => b.ev.wr - a.ev.wr || b.ev.n - a.ev.n);
+  const real = rows.filter((r) => r.ev).sort((a, b) => evWr(b.ev) - evWr(a.ev) || b.ev.n - a.ev.n);
   const sim = SIM ? rows.filter((r) => !r.ev && r.cps).sort((a, b) => b.score - a.score) : [];
   return [...real, ...sim].slice(0, 8);
 }
@@ -320,7 +329,7 @@ function slotHtml(lane, side) {
 
 function chipHtml(c, i, lane, st) {
   const tag = c.ev
-    ? `<div class="ld-wr" style="color:${wrColor(c.ev.wr)}">${c.ev.wr}% win</div><div class="ld-n">${c.ev.n.toLocaleString()} games</div>`
+    ? `<div class="ld-wr" style="color:${wrColor(evWr(c.ev))}" title="Adjusted for sample size. As played: ${c.ev.wr}% over ${c.ev.n} games.">${evWr(c.ev)}% win</div><div class="ld-n">${c.ev.n.toLocaleString()} games${c.ev.shrunkWr != null && Math.abs(c.ev.wr - c.ev.shrunkWr) >= 0.5 ? ` · ${c.ev.wr}% played` : ''}</div>`
     : (() => { const e = simLabel(c.score); return `<div class="ce" style="color:${e.c}">${e.t}</div>`; })();
   return `<button class="cchip${i === 0 && c.ev ? ' best' : ''}${st.you === c.slug ? ' chosen' : ''}" draggable="true" data-pick="${c.slug}" data-lane="${lane}" title="Pick ${esc(c.name)} into ${esc(LANE_LABELS[lane])}">
     <span class="crank">#${i + 1}</span>
@@ -335,7 +344,7 @@ function laneRow(lane) {
   if (st.enemy) {
     const cs = counters(lane, st.enemy);
     if (!cs.length) panel = `<div class="ld-empty">No ${esc(LANE_LABELS[lane].toLowerCase())} hero has 20+ lane games against ${esc(nameOf(st.enemy))} this patch yet.</div>`;
-    else panel = `<div class="ld-panel-h">Best record vs <b>${esc(nameOf(st.enemy))}</b> <span style="color:var(--text-2)">· tap or drag to pick, highest lane win rate first</span></div>
+    else panel = `<div class="ld-panel-h">Best record vs <b>${esc(nameOf(st.enemy))}</b> <span style="color:var(--text-2)">· tap or drag to pick, best adjusted win rate first</span></div>
       <div class="cgrid">${cs.map((c, i) => chipHtml(c, i, lane, st)).join('')}</div>
       <a class="ld-full" href="index.html?hero=${esc(st.enemy)}">Full counter breakdown for ${esc(nameOf(st.enemy))} →</a>`;
   }
@@ -414,10 +423,11 @@ function renderCounterTop() {
   let fav = 0, even = 0, behind = 0, unknown = 0, toughest = null;
   for (const { lane, slug } of enemies) {
     const you = state[lane].you; if (!you) continue;
-    const ev = evOf(you, slug);
+    const ev = evOf(you, slug, lane);
     if (!ev) { unknown++; continue; }
-    if (ev.wr >= 52) fav++; else if (ev.wr <= 48) behind++; else even++;
-    if (!toughest || ev.wr < toughest.wr) toughest = { wr: ev.wr, you, them: slug, lane };
+    const wr = evWr(ev);
+    if (wr >= 52) fav++; else if (wr <= 48) behind++; else even++;
+    if (!toughest || wr < toughest.wr) toughest = { wr, you, them: slug, lane };
   }
   const laneRead = (fav + even + behind + unknown)
     ? `Lane records: <b style="color:var(--green)">${fav} favored</b> · ${even} even · <b style="color:var(--red)">${behind} behind</b>${unknown ? ` · ${unknown} without 20+ games` : ''}${toughest && toughest.wr <= 48 ? ` — watch <b>${esc(nameOf(toughest.you))}</b> vs ${esc(nameOf(toughest.them))} (${LANE_LABELS[toughest.lane]}, ${toughest.wr}% win)` : ''}.`
@@ -443,7 +453,7 @@ function render() {
   // One on-demand key (R3/R5): shown once, near the content, only when counters are on screen.
   const anyEnemy = LANES.some((l) => state[l].enemy);
   const key = !anyEnemy ? ''
-    : `<div class="ldkey">Counters = each hero's real lane record against that enemy: <b>win %</b> over the games they met in lane (ranked, all ranks, this patch, 20+ games). <b style="color:var(--green)">52%+</b> is a good matchup, <b style="color:var(--red)">48% or less</b> is a tough one.${SIM ? ` <b>Experimental sim preview on:</b> dots = the minutes (5·10·15·20·25·30) the unvetted kit-math sim says you win the fight — <span class="dot you"></span> you · <span class="dot enemy"></span> them. Theory, not a recommendation.` : ''}</div>`;
+    : `<div class="ldkey">Counters = each hero's real lane record against that enemy (ranked, all ranks, this patch, 20+ games). The <b>win %</b> is adjusted for sample size: a small record is pulled toward what the two heroes' overall lane win rates predict, so a few lucky games can't top the list; the as-played rate shows under it when they differ. <b style="color:var(--green)">52%+</b> is a good matchup, <b style="color:var(--red)">48% or less</b> is a tough one.${SIM ? ` <b>Experimental sim preview on:</b> dots = the minutes (5·10·15·20·25·30) the unvetted kit-math sim says you win the fight — <span class="dot you"></span> you · <span class="dot enemy"></span> them. Theory, not a recommendation.` : ''}</div>`;
   $('#lanes').innerHTML = key + LANES.map(laneRow).join('');
   renderCounterTop();
   renderSummary();

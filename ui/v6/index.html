@@ -1110,14 +1110,18 @@ async function renderLaneDetail() {
       }
       // evidence first (winrate desc), sim-only after (net verdict desc)
       // (sim off: evidence by winrate, then the rest alphabetically — unranked)
-      const rank = (a, b) => (b.ev ? b.ev.wr : -1) - (a.ev ? a.ev.wr : -1) || (SIM ? b.score - a.score : a.name.localeCompare(b.name));
+      // Records rank by their shrunk rate (src/matchup-edge.ts): a thin sample
+      // leans on what the two heroes' lane win rates predict for the pair.
+      const evWr = (ev) => (ev.shrunkWr ?? ev.wr);
+      const rank = (a, b) => (b.ev ? evWr(b.ev) : -1) - (a.ev ? evWr(a.ev) : -1) || (SIM ? b.score - a.score : a.name.localeCompare(b.name));
       const evTag = (r) => {
         if (!MU) return '';
         if (!r.ev) return SIM ? `<span style="color:var(--text-2);font-size:.6875rem">sim read — no head-to-head sample yet</span>` : '';
         const simCall = r.score > 0 ? 1 : r.score < 0 ? -1 : 0;
-        const fieldCall = r.ev.wr >= 52 ? 1 : r.ev.wr <= 48 ? -1 : 0;
+        const fieldCall = evWr(r.ev) >= 52 ? 1 : evWr(r.ev) <= 48 ? -1 : 0;
         const check = SIM && simCall && fieldCall ? (simCall === fieldCall ? ' · sim agrees' : ' · sim disagrees — trust the record') : '';
-        return `<b style="color:${wrColor(r.ev.wr / 100)}">${r.ev.wr}% win</b> <span style="color:var(--text-2);font-size:.6875rem">over ${r.ev.n.toLocaleString()} lane games${esc(check)}</span>`;
+        const raw = r.ev.shrunkWr != null && Math.abs(r.ev.wr - r.ev.shrunkWr) >= 0.5 ? ` (${r.ev.wr}% as played)` : '';
+        return `<b style="color:${wrColor(evWr(r.ev) / 100)}" title="Adjusted for sample size: a small record leans on both heroes' lane win rates. As played: ${r.ev.wr}% over ${r.ev.n} games.">${evWr(r.ev)}% win</b> <span style="color:var(--text-2);font-size:.6875rem">over ${r.ev.n.toLocaleString()} lane games${raw}${esc(check)}</span>`;
       };
       const rowHtml = (r, showLane) => `
         <div class="lrow" data-slug="${r.slug}" data-role="${r.lane}">
@@ -1144,15 +1148,15 @@ async function renderLaneDetail() {
         body += thin.map((r) => rowHtml(r, false)).join('');
       }
       // Off-meta answers from other lanes underneath: real evidence or a positive sim read.
-      const cross = rows.filter((r) => r.lane !== role && ((r.ev && r.ev.wr >= 50) || (SIM && r.score > 0))).sort(rank).slice(0, 8);
+      const cross = rows.filter((r) => r.lane !== role && ((r.ev && evWr(r.ev) >= 50) || (SIM && r.score > 0))).sort(rank).slice(0, 8);
       if (cross.length) {
         body += `<div class="lp-sub" style="margin-top:.7rem">Off-meta answers from other lanes — strong into <b>${esc(nameOf(laneEnemy))}</b> if they run them off-role:</div>`;
         body += cross.map((r) => rowHtml(r, true)).join('');
       }
       body += !SIM
-        ? `<div class="lp-sub" style="margin-top:.4rem">ranked by the real head-to-head lane record (ranked games this patch, 20+ per pair). Matchups with fewer games sit at the bottom, unranked.</div>`
+        ? `<div class="lp-sub" style="margin-top:.4rem">ranked by the real head-to-head lane record (ranked games this patch, 20+ per pair), adjusted for sample size: a small record is pulled toward what the two heroes' overall lane win rates predict, so a few lucky games can't top the list. Matchups with fewer games sit at the bottom, unranked.</div>`
         : MU
-        ? `<div class="lp-sub" style="margin-top:.4rem">ranked by the REAL head-to-head lane record (ranked games this patch, 20+ per pair) where one exists. The kill-window sim ranks the rest — honestly: measured against real records it calls lane winners only ~45% of the time, so treat sim-only rows as kit theory, not a prediction.</div>`
+        ? `<div class="lp-sub" style="margin-top:.4rem">ranked by the REAL head-to-head lane record (ranked games this patch, 20+ per pair, adjusted for sample size) where one exists. The kill-window sim ranks the rest — honestly: measured against real records it calls lane winners only ~45% of the time, so treat sim-only rows as kit theory, not a prediction.</div>`
         : `<div class="lp-sub" style="margin-top:.4rem">ranked by who wins the fight at each stage (kit-math sim, THEORY until calibrated) · sims assume each kit's standard build and primary-role income · not head-to-head match data</div>`;
     } else {
       body += '<div class="lp-sub">pick the enemy hero — including an off-meta flex via the dropdown — to see who answers them best</div>';
