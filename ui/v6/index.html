@@ -425,6 +425,8 @@
      switched off (2026-10-26) a full-panel row left the name at the far left and
      the win rate ~900px away at the far right. Same cap for the players rows. */
   .lrow, .lanepanel .pilots { max-width:36rem; }
+  .h2h-scope { margin:.1rem 0 .5rem; }
+  .h2h-scope.on { color:var(--text-1); border-left:3px solid var(--gold); padding:.3rem .55rem; background:var(--bg-2); border-radius:6px; }
   .lanepanel .pilots { max-width:24rem; }
   /* desktop: the win rate column starts right after a fixed name column, so the
      eye moves ~14rem from name to % instead of across the row */
@@ -1127,6 +1129,14 @@ async function renderLaneDetail() {
       const sameAll = rows.filter((r) => r.lane === role).sort(rank);
       const same = (SIM ? sameAll : sameAll.filter((r) => r.ev)).slice(0, 8);
       const thin = SIM ? [] : sameAll.filter((r) => !r.ev);
+      // The head-to-head records are one pool: all ranks, current patch. Say so
+      // where the rank/patch buttons would suggest otherwise.
+      if (MU) {
+        const filtered = metaBand !== 'all' || !!pastPatch();
+        const bandName = metaBand === 'all' ? '' : (metaFilterState().bands || []).find((b) => b.key === metaBand)?.label || metaBand;
+        const picked = [bandName, pastPatch() ? `patch ${pastPatch().patch}` : ''].filter(Boolean).join(', ');
+        body += `<div class="lp-sub h2h-scope${filtered ? ' on' : ''}">Head-to-head records cover <b>all ranks on patch ${esc(String(META.patch))}</b>. They don't change with the rank or patch buttons yet${filtered ? ` — you have <b>${esc(picked)}</b> selected, which only changes the ranked picks and win rates outside this list` : ''}.</div>`;
+      }
       body += `<div class="lp-sub" style="margin:.2rem 0 .4rem">In their lane (<b>${esc(LANE_LABELS[role])}</b>) — your picks vs <b>${esc(nameOf(laneEnemy))}</b>, best first:</div>`;
       body += same.map((r) => rowHtml(r, false)).join('') || `<div class="lp-sub">${SIM ? `no ${esc(LANE_LABELS[role].toLowerCase())} sim vs ${esc(nameOf(laneEnemy))} yet` : `no ${esc(LANE_LABELS[role].toLowerCase())} hero has 20+ lane games against ${esc(nameOf(laneEnemy))} yet`}</div>`;
       if (thin.length) {
