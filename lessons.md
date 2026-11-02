@@ -5501,3 +5501,10 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   before cutting; 1.18's willChange ran 86 words vs ~61. The critic's round on the
   trimmed copy found the trim's typical failure: a dropped "the notes say" turns a
   reading of the notes into a flat build order. 1 medium + 4 low, all applied.
+- **No "follow the site's card" hedges in copy (maintainer, 2026-11-02).** Lines like
+  "Keep Solaris while the site's build card still ranks it" or "let the site's Eternal
+  card decide" read as filler: they send the reader elsewhere instead of saying what
+  the data shows. They came from the author brief ("every pick should defer to the
+  site's field data"). Say the thing instead (the stronger option with its numbers,
+  or what the notes say), and keep the field-data rule in how picks are chosen, not
+  in the words.
