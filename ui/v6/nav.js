@@ -24,6 +24,10 @@
     { href: 'about.html',            label: 'About & how this works', icon: 'tap-to-learn',     match: ['about.html'] },
   ];
   const bic = (name) => (window.BrandIcons ? window.BrandIcons.svg(name, 18) : '');
+  // The patch reviews and Learn Eternals live one folder up, in ui/, with their
+  // own <header>. Links above are written from ui/v6/, so re-base them there.
+  const IN_V6 = location.pathname.includes('/v6/');
+  const rebase = (href) => (IN_V6 ? href : href.startsWith('../') ? href.slice(3) : href === './' ? 'v6/' : 'v6/' + href);
 
   const here = (location.pathname.split('/').pop() || '').toLowerCase();
 
@@ -70,6 +74,10 @@
   /* On phones the burger drawer IS the nav, so the inline top-bar tabs + the
      patch pill are redundant and squeeze the wordmark down to "Pred". Hide both
      so the full "Pred Scout" lockup fits (the compact search pill stays). */
+  /* ui/ root pages (patch reviews, Learn Eternals): burger, logo, search pill, then the tabs */
+  header .header-inner { justify-content:flex-start; gap:.5rem; }
+  header .nav-burger { margin-right:0; }
+  @media (max-width:720px) { header .header-links { display:none; } }
   @media (max-width:720px) { .top .navlink { display:none; } .gs-pill .gs-txt, .gs-pill .gs-kbd { display:none; } .gs-pill { padding:.34rem .55rem; } }
   .gs-overlay { position:fixed; inset:0; background:rgba(4,4,8,.72); z-index:10000; display:none;
     align-items:flex-start; justify-content:center; padding:10vh 1rem 1rem; }
@@ -159,7 +167,8 @@
   }
 
   function build() {
-    const topInner = document.querySelector('.top .top-inner') || document.querySelector('.top-inner');
+    const topInner = document.querySelector('.top .top-inner') || document.querySelector('.top-inner')
+      || document.querySelector('header .header-inner');
     if (!topInner) return;
 
     const style = document.createElement('style');
@@ -181,7 +190,7 @@
     pill.title = 'Search a hero — build or how to beat them (press /)';
     pill.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span class="gs-txt">Search heroes</span><span class="gs-kbd">/</span>';
     pill.onclick = () => search.open();
-    const firstLink = topInner.querySelector('.navlink');
+    const firstLink = topInner.querySelector('.navlink') || topInner.querySelector('.header-links');
     topInner.insertBefore(pill, firstLink || null);
 
     const overlay = document.createElement('div');
@@ -198,12 +207,12 @@
       if (l.group) return `<li class="nav-sep" role="separator"></li><li class="nav-group">${l.group}</li>`;
       const active = l.match && l.match.includes(here) ? ' active' : '';
       const tag = l.tag ? `<span class="nav-tag">${l.tag}</span>` : '';
-      return `<li><a class="${active.trim()}" href="${l.href}"><span class="nav-ic">${bic(l.icon)}</span><span>${l.label}</span>${tag}</a></li>`;
+      return `<li><a class="${active.trim()}" href="${rebase(l.href)}"><span class="nav-ic">${bic(l.icon)}</span><span>${l.label}</span>${tag}</a></li>`;
     }).join('');
 
     const searchItem = `<li class="nav-search-item"><button type="button"><span class="nav-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span><span>Search heroes — build or counter</span></button></li><li class="nav-sep" role="separator"></li>`;
     drawer.innerHTML =
-      '<div class="nav-drawer-head"><b><img class="nav-logo" src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</b>' +
+      '<div class="nav-drawer-head"><b><img class="nav-logo" src="' + (IN_V6 ? '../' : '') + 'img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</b>' +
       '<button class="nav-close" aria-label="Close menu">×</button></div>' +
       `<ul class="nav-list">${searchItem}${items}</ul>`;
 
