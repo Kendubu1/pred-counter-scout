@@ -535,9 +535,9 @@
     .hero-head h1 { font-size:1.35rem; }
   }
 
-  /* ── mobile filter bar: pinned to the bottom while the meta board or the
-     most-banned strip is on screen. Rank on the left, patch + match count on the
-     right; the same rank filter drives both boards. Phones only. ── */
+  /* ── mobile filter bar: pinned to the bottom of the homepage on phones. Rank on
+     the left, patch + match count on the right; drives the meta board, the lane
+     room and Most banned together. ── */
   .filterbar { display:none; }
   @media (max-width:720px) {
     .filterbar { display:flex; align-items:center; gap:.6rem; position:fixed; left:0; right:0; bottom:0; z-index:40;
@@ -555,9 +555,8 @@
     .filterbar .fb-n b { color:var(--text-0); }
     /* room under the last line for the bar (its measured height, set by watchFilterbar) */
     body.has-filterbar .wrap { padding-bottom:calc(var(--fbh, 80px) + 1.5rem); }
-    /* same data as the meta board, so on phones Most banned has no button row of
-       its own: the bar is its rank filter */
-    .banboard .mb-bands { display:none; }
+    /* the bar is the homepage's rank + patch filter on phones: no in-board rows */
+    #landing .mb-bands { display:none; }
   }
   @media (max-width:720px) and (prefers-reduced-motion:reduce) { .filterbar { transition:none; } }
 
@@ -791,11 +790,11 @@ function renderFilterbar() {
     watchFilterbar.sync?.();
   };
 }
-// The bar REPLACES the in-board rank buttons, never sits beside them: it shows
-// while a board is in the top half of the screen AND no rank-button row (meta
-// board or lane room; Most banned hides its row on phones) is visible between the header and the bar.
-// Scrolling back up to a button row hides the bar again. Rects are read on
-// scroll because the rows are re-rendered on every filter change.
+// On phones the bar IS the homepage's rank + patch filter: it stays up for the
+// whole landing view (meta board, lane room, Most banned), and the in-board
+// rank/patch button rows are hidden there by CSS so the two never show together.
+// It steps aside on hero pages and while the hero search box has focus (the
+// on-screen keyboard and the suggestion list need the room).
 function watchFilterbar() {
   const bar = $('#filterbar');
   if (!bar) return;
@@ -803,26 +802,17 @@ function watchFilterbar() {
   const sync = () => {
     queued = false;
     const landing = !$('#landing').classList.contains('hidden');
-    const vh = window.innerHeight;
-    const topH = $('.top')?.getBoundingClientRect().bottom ?? 0;
-    const inBoard = landing && ['#metaboard', '#banboard'].some((sel) => {
-      const r = $(sel)?.getBoundingClientRect();
-      return r && r.height > 0 && r.top < vh * 0.55 && r.bottom > topH;
-    });
-    const floor = vh - (bar.classList.contains('on') ? bar.offsetHeight : 0);
-    const rowShowing = [...document.querySelectorAll('#landing .mb-bands')].some((el) => {
-      const r = el.getBoundingClientRect();
-      return r.height > 0 && r.bottom > topH && r.top < floor;
-    });
-    const on = inBoard && !rowShowing;
+    const typing = document.activeElement === $('#search');
+    const on = landing && !typing;
     bar.classList.toggle('on', on);
     bar.setAttribute('aria-hidden', on ? 'false' : 'true');
-    document.body.classList.toggle('has-filterbar', inBoard);
+    document.body.classList.toggle('has-filterbar', landing);
     if (bar.offsetHeight) document.body.style.setProperty('--fbh', `${bar.offsetHeight}px`);
   };
   const queue = () => { if (!queued) { queued = true; requestAnimationFrame(sync); } };
-  window.addEventListener('scroll', queue, { passive: true });
   window.addEventListener('resize', queue);
+  document.addEventListener('focusin', queue);
+  document.addEventListener('focusout', queue);
   watchFilterbar.sync = queue;
   queue();
 }
