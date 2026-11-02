@@ -175,9 +175,9 @@ const heroShowcase = `
         <button class="hxs tr-buff" data-sort="buff" aria-pressed="false">▲ buffs</button>
         <button class="hxs tr-nerf" data-sort="nerf" aria-pressed="false">▼ nerfs</button>
         <button class="hxs tr-mixed" data-sort="mixed" aria-pressed="false">◆ mixed</button>
-        <span class="hx-hint">tap a change type to bring those heroes to the top — nothing is hidden. tap a hero's name to jump to its changes, its portrait to open its page</span>
+        <span class="hx-hint">tap a change type to bring those heroes to the top — nothing is hidden. tap a hero to jump to its changes</span>
       </div>
-      <div class="hx-grid" id="heroShowcaseGrid">
+      <div class="hx-grid" id="heroShowcaseGrid" data-hero-jump>
         ${heroes.map(([slug, p]) => showcaseTile({
           href: `#hero-${slug}`,
           img: `img/heroes/${SITE_SLUG[slug] || slug}.webp`,

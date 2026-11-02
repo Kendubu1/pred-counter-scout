@@ -7,7 +7,8 @@
  * A portrait keeps its existing behaviour when it is already wired to that
  * hero: inside an <a> to ?hero=<slug>, or an element with data-slug="<slug>"
  * (index.html rows carry role context; lane-enemy chips and counter-mode cards
- * pick rather than navigate). Pickers opt out with a <button> or data-hero-pick. */
+ * pick rather than navigate). Pickers opt out with a <button> or data-hero-pick;
+ * in-page jump grids opt out with data-hero-jump. */
 (function () {
   const script = document.currentScript;
   const APP = new URL('./', script ? script.src : location.href);
@@ -20,6 +21,9 @@
     if (!m) return null;
     const slug = m[1];
     if (img.closest('button, [data-hero-pick]')) return null;
+    // In-page jump grids (the patch review's buff/nerf showcase) keep their own
+    // #anchor link: tapping a portrait there scrolls to that hero's card.
+    if (img.closest('[data-hero-jump]')) return null;
     if (img.closest(`[data-slug="${slug}"]`)) return null;
     const a = img.closest('a[href]');
     if (a && new URL(a.href, location.href).searchParams.get('hero') === slug) return null;
