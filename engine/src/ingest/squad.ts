@@ -331,7 +331,7 @@ async function main() {
   console.log(`squad report (${members.length} members, ${pairs.length} pairs) -> data/artifacts/squad.json + players/`);
   for (const a of assignment) console.log(`  ${a.role.padEnd(8)} ${a.name}${a.isMove ? ' (move)' : ''} ${(a.roleWr * 100).toFixed(1)}%/${a.roleGames}g`);
   for (const p of pairs) console.log(`  pair ${p.aName} + ${p.bName}: ${(p.winrate * 100).toFixed(0)}% / ${p.games}g`);
-  // Squad ban list (ui/v6/bans.html) reads the roster just written; zero-API.
+  // Squad ban list (ui/v6/ban-planner.html) reads the roster just written; zero-API.
   buildSquadBans();
 }
 
