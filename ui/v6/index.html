@@ -414,6 +414,13 @@
      switched off (2026-10-26) a full-panel row left the name at the far left and
      the win rate ~900px away at the far right. Same cap for the players rows. */
   .lrow, .lanepanel .pilots { max-width:36rem; }
+  .lanepanel .pilots { max-width:24rem; }
+  /* desktop: the win rate column starts right after a fixed name column, so the
+     eye moves ~14rem from name to % instead of across the row */
+  @media (min-width:601px) {
+    .lrow.lrow-wr { grid-template-columns:34px 13rem auto; justify-content:start; max-width:30rem; }
+    .lrow.lrow-wr .wrr, .lrow.lrow-wr .wrr .sub { text-align:left !important; }
+  }
   .lrow img { width:34px; height:34px; border-radius:8px; object-fit:cover; }
   .lrow .sub { font-size:.7rem; color:var(--text-2); }
   .lrow .wrr { font-weight:800; font-variant-numeric:tabular-nums; font-size:.86rem; }
@@ -951,7 +958,7 @@ async function renderLaneDetail() {
         }
       }
       return `
-      <div class="lrow" data-slug="${h.slug}">
+      <div class="lrow lrow-wr" data-slug="${h.slug}">
         <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
         <span><b>${esc(h.name)}</b>${h.badge ? ` <span style="color:var(--gold)">${h.badge === 'sleeper' ? 'off-meta' : 'popular but losing'}</span>` : ''}
           ${SIM ? `<div class="sub">${trouble ? esc(trouble) : 'no sim data for this hero'}</div>` : ''}</span>

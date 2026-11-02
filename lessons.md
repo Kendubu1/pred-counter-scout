@@ -5528,5 +5528,5 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   favourite in the lane you are showing them in.
 - **Lane room rows read too wide on desktop.** Turning the sim off (2026-10-26) removed the line
   under each lane-room hero, leaving the name at the far left and the win rate ~900px away.
-  The rows and players list are now capped at 36rem. When removing content from a row, re-check
+  The rows are now capped at 30rem with the win rate in a column right after a fixed 13rem name column (first pass, a 36rem cap alone, still left ~560px between name and %), and the players list at 24rem. When removing content from a row, re-check
   the row's layout at desktop width, not just that the text is gone.
