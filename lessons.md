@@ -5567,3 +5567,13 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   all-ranks laneWr equals the index roleWr on all 165 cells. Lesson: when a page has one
   filter, every number on it has to come from the filtered source; audit the secondary
   lists, not just the headline table.
+- **Counters by rank and patch, ready for 1.18 (maintainer ask, 2026-11-02).** Two gaps:
+  matchups:feed REPLACED its file when a new patch began (lane stats and bans were archived,
+  counters were not), and the sampled matches already carried each player's match-time rank
+  but the counter ignored it. Now matchups:feed (and lane-stats' rollover as a backstop)
+  copies the outgoing file to past-patches/<patch>/, and src/matchup-pairs.ts counts each
+  directed record in the band of the rank that player held in the game, with no extra API.
+  1.17 stays all ranks: re-pulling its ~44k games for bands was declined at season end.
+  Diamond+ is ~5% of games, so expect few Diamond+ pairs at n >= 20; the site falls back to
+  all ranks and says so. Lesson: a rollover that archives "the patch's data" has to list
+  every per-patch file; audit the aggregates folder, not just the boards' inputs.
