@@ -181,7 +181,7 @@ if (agg || laneStats) {
   // Scoring lives in src/boards.ts, shared with the past-patch boards
   // (ingest/past-boards.ts) so every patch on the picker reads the same way.
   const bands = laneStats?.rankBands ?? [];
-  const { roles, rolesByBand } = buildMetaBoards({
+  const { roles, rolesByBand, laneWr, laneWrByBand } = buildMetaBoards({
     laneCells: laneCells as Record<string, { byRole?: Record<string, LaneCell> }>,
     matches: laneMatches,
     bands,
@@ -230,6 +230,9 @@ if (agg || laneStats) {
     rankBands: bands.length ? bands.map((b) => ({ key: b.key, label: b.label })) : undefined,
     matchesByBand: bands.length ? laneStats?.matchesApproxByBand : undefined,
     rolesByBand: bands.length ? rolesByBand : undefined,
+    // Every hero's lane win rate per filter (the lane room's chips), same shrink as the boards.
+    laneWr,
+    laneWrByBand: bands.length ? laneWrByBand : undefined,
     topPlayers,
     topPlayersNote: topPlayers ? 'current ranked split leaderboard via the pred.gg API (favRole filter); hero = their most-played ranked hero in that lane; VP = victory points' : null,
   }, null, 1));

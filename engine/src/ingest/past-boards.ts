@@ -32,7 +32,7 @@ const patches = dirs.map((d) => {
   const lane = JSON.parse(readFileSync(path.join(PAST, d, 'predgg-lane-stats.json'), 'utf8')) as LaneStatsFile;
   if (lane.patch === current.patch) throw new Error(`past-patches/${d} holds the CURRENT patch ${lane.patch}; archive only patches lanestats has moved past`);
   const bands = (lane.rankBands ?? []).map((b) => ({ key: b.key, label: b.label }));
-  const { roles, rolesByBand } = buildMetaBoards({
+  const { roles, rolesByBand, laneWr, laneWrByBand } = buildMetaBoards({
     laneCells: lane.heroes,
     matches: lane.matchesApprox,
     bands,
@@ -52,6 +52,8 @@ const patches = dirs.map((d) => {
     matchesByBand: bands.length ? lane.matchesApproxByBand : undefined,
     roles,
     rolesByBand: bands.length ? rolesByBand : undefined,
+    laneWr,
+    laneWrByBand: bands.length ? laneWrByBand : undefined,
     bans,
   };
 }).sort((a, b) => verKey(b.patch).localeCompare(verKey(a.patch)));
