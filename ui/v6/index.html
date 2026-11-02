@@ -37,7 +37,7 @@
   .subnav:empty { display:none; }
   .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; text-transform:capitalize; }
   .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
-  section.card, .lanepanel, .metaboard { scroll-margin-top:calc(var(--toph, 96px) + 10px); }
+  section.card, .lanepanel, .metaboard, #lanedetail { scroll-margin-top:calc(var(--toph, 96px) + var(--fbtop, 0px) + 10px); }
   /* new-hero state: kit math present, field evidence declared absent */
   .pending-note { border:1px solid var(--gold); background:var(--bg-2); border-radius:10px;
     padding:.7rem .85rem; margin:.2rem 0 .9rem; font-size:.78rem; line-height:1.5; color:var(--text-1); }
@@ -554,13 +554,28 @@
     .hero-head h1 { font-size:1.35rem; }
   }
 
-  /* ── mobile filter bar: pinned to the bottom of the homepage on phones. Rank on
-     the left, patch + match count on the right; drives the meta board, the lane
-     room and Most banned together. ── */
-  .filterbar { display:none; }
+  /* ── homepage filter bar: the one rank + patch filter for the meta board, the
+     lane room and Most banned (their in-board rows are hidden). Desktop: sits
+     under the search and lane buttons and sticks under the header once you scroll
+     past it, as button groups. Phones: pinned to the bottom, as dropdowns. ── */
+  #landing .mb-bands { display:none; }
+  .filterbar { position:sticky; top:var(--toph, 96px); z-index:9; display:flex; align-items:center; gap:.5rem 1.1rem; flex-wrap:wrap;
+    margin:1.2rem 0 0; padding:.5rem .8rem; background:rgba(18,18,26,.88); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    border:1px solid var(--border); border-radius:var(--radius); }
+  .filterbar .fb-rank, .filterbar .fb-right { display:none; }
+  .fb-pills { display:contents; }
+  .fb-grp { display:inline-flex; align-items:center; gap:.35rem; flex-wrap:wrap; }
+  .fb-grp .fb-k { font-size:.6875rem; font-weight:700; color:var(--text-2); text-transform:uppercase; letter-spacing:.04em; margin-right:.15rem; }
+  .fb-grp .mb-toggle { margin-left:0; }
+  .filterbar .fb-count { margin-left:auto; font-size:.75rem; color:var(--text-2); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .filterbar .fb-count b { color:var(--text-0); }
   @media (max-width:720px) {
-    .filterbar { display:flex; align-items:center; gap:.6rem; position:fixed; left:0; right:0; bottom:0; z-index:40;
-      padding:.55rem 16px calc(.55rem + env(safe-area-inset-bottom, 0px)); background:var(--bg-1); border-top:1px solid var(--border);
+    .fb-pills { display:none; }
+    .filterbar .fb-rank { display:flex; }
+    .filterbar .fb-right { display:flex; }
+    .filterbar { display:flex; align-items:center; gap:.6rem; flex-wrap:nowrap; position:fixed; top:auto; left:0; right:0; bottom:0; z-index:40; margin:0;
+      padding:.55rem 16px calc(.55rem + env(safe-area-inset-bottom, 0px)); background:var(--bg-1); border:0; border-top:1px solid var(--border); border-radius:0;
+      backdrop-filter:none; -webkit-backdrop-filter:none;
       box-shadow:0 -6px 18px rgba(0,0,0,.35); transform:translateY(110%); transition:transform .18s ease; }
     .filterbar.on { transform:none; }
     .filterbar label { display:flex; flex-direction:column; gap:.1rem; min-width:0; }
@@ -574,8 +589,6 @@
     .filterbar .fb-n b { color:var(--text-0); }
     /* room under the last line for the bar (its measured height, set by watchFilterbar) */
     body.has-filterbar .wrap { padding-bottom:calc(var(--fbh, 80px) + 1.5rem); }
-    /* the bar is the homepage's rank + patch filter on phones: no in-board rows */
-    #landing .mb-bands { display:none; }
   }
   @media (max-width:720px) and (prefers-reduced-motion:reduce) { .filterbar { transition:none; } }
 
@@ -611,6 +624,7 @@
       <div class="searchbar"><input id="search" placeholder="Search heroes…" autocomplete="off"><div class="suggest" id="suggest"></div></div>
       <div class="rolebar" id="rolebar"></div>
     </div>
+    <div class="filterbar" id="filterbar" aria-label="Board filters"></div>
     <div id="lanedetail"></div>
     <div class="browse-head">Winning right now</div>
     <div class="metaboard" id="metaboard"></div>
@@ -628,8 +642,6 @@
     <span class="sim-only">THEORY = <span id="theoryDef"></span></span> Evidence deltas carry finished-inventory bias and are comparative, not absolute.
   </footer>
 </div>
-
-<div class="filterbar" id="filterbar" aria-label="Board filters" aria-hidden="true"></div>
 
 <script src="section-nav.js"></script>
 <script src="game-text.js"></script>
@@ -730,6 +742,12 @@ const pastPatch = () => (metaPatch && PAST?.patches?.find((p) => p.patch === met
 const metaSrc = () => pastPatch() || META;
 const bansSrc = () => { const p = pastPatch(); return p ? p.bans : BANS; };
 const boardPatches = () => (META ? [String(META.patch), ...(PAST?.patches || []).map((p) => String(p.patch))] : []);
+function setMetaBand(b) {
+  metaBand = b;
+  try { localStorage.setItem('metaBand', metaBand); } catch { /* private mode */ }
+  renderMetaboard(); renderBanboard(); renderFilterbar(); if (roleFilter !== 'all') renderLaneDetail();
+  watchFilterbar.sync?.();
+}
 function setMetaPatch(p) {
   metaPatch = !p || p === String(META.patch) ? null : p;
   renderMetaboard(); renderBanboard(); renderFilterbar(); if (roleFilter !== 'all') renderLaneDetail();
@@ -800,20 +818,23 @@ function renderFilterbar() {
       <label><span class="fb-k">Patch</span>
         <select id="fbPatch"${patches.length < 2 ? ` disabled title="Only patch ${esc(META.patch)} is in our data so far"` : ''}>${patches.map((p) => `<option value="${esc(p)}"${p === cur ? ' selected' : ''}>${esc(p)}${p === String(META.patch) ? '' : ' (old)'}</option>`).join('')}</select></label>
       <span class="fb-n" title="Ranked matches behind the boards at this rank"><b>${boardMatches.toLocaleString()}</b> matches</span>
+    </div>
+    <div class="fb-pills">
+      ${bands ? `<span class="fb-grp" title="Filter the boards to games played at a rank band — the meta shifts with skill level. All ranks includes players without a placed rank."><span class="fb-k">Rank</span>${ranks.map((b) => `<button class="mb-toggle${metaBand === b.key ? ' active' : ''}" data-fb-band="${esc(b.key)}">${esc(b.label)}</button>`).join('')}</span>` : ''}
+      <span class="fb-grp" title="Switch the boards to an earlier patch. Hero pages always show the current patch."><span class="fb-k">Patch</span>${patches.map((p) => `<button class="mb-toggle${p === cur ? ' active' : ''}" data-fb-patch="${esc(p)}"${patches.length < 2 ? ' disabled' : ''}>${esc(p)}</button>`).join('')}</span>
+      <span class="fb-count"><b>${boardMatches.toLocaleString()}</b> ranked matches</span>
     </div>`;
+  bar.querySelectorAll('[data-fb-patch]').forEach((b) => { b.onclick = () => setMetaPatch(b.dataset.fbPatch); });
+  bar.querySelectorAll('[data-fb-band]').forEach((b) => { b.onclick = () => setMetaBand(b.dataset.fbBand); });
   $('#fbPatch').onchange = (e) => setMetaPatch(e.target.value);
-  $('#fbRank').onchange = (e) => {
-    metaBand = e.target.value;
-    try { localStorage.setItem('metaBand', metaBand); } catch { /* private mode */ }
-    renderMetaboard(); renderBanboard(); renderFilterbar(); if (roleFilter !== 'all') renderLaneDetail();
-    watchFilterbar.sync?.();
-  };
+  $('#fbRank').onchange = (e) => setMetaBand(e.target.value);
 }
-// On phones the bar IS the homepage's rank + patch filter: it stays up for the
-// whole landing view (meta board, lane room, Most banned), and the in-board
-// rank/patch button rows are hidden there by CSS so the two never show together.
-// It steps aside on hero pages and while the hero search box has focus (the
-// on-screen keyboard and the suggestion list need the room).
+// The bar IS the homepage's rank + patch filter on every screen size: the
+// in-board rank/patch rows are hidden by CSS so the two never show together.
+// Desktop: sticky under the header (CSS only; --fbtop keeps scrolled-to sections
+// clear of it). Phones: fixed to the bottom for the whole landing view; it steps
+// aside on hero pages and while the hero search box has focus (the on-screen
+// keyboard and the suggestion list need the room).
 function watchFilterbar() {
   const bar = $('#filterbar');
   if (!bar) return;
@@ -823,10 +844,14 @@ function watchFilterbar() {
     const landing = !$('#landing').classList.contains('hidden');
     const typing = document.activeElement === $('#search');
     const on = landing && !typing;
+    const phone = window.matchMedia('(max-width:720px)').matches;
     bar.classList.toggle('on', on);
-    bar.setAttribute('aria-hidden', on ? 'false' : 'true');
+    bar.setAttribute('aria-hidden', on || !phone ? 'false' : 'true');
     document.body.classList.toggle('has-filterbar', landing);
     if (bar.offsetHeight) document.body.style.setProperty('--fbh', `${bar.offsetHeight}px`);
+    const root = document.documentElement.style;
+    root.setProperty('--fbtop', phone ? '0px' : `${bar.offsetHeight + 8}px`);
+    root.setProperty('--toph', `${$('.top')?.offsetHeight ?? 96}px`);
   };
   const queue = () => { if (!queued) { queued = true; requestAnimationFrame(sync); } };
   window.addEventListener('resize', queue);
