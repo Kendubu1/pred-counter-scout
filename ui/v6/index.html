@@ -87,6 +87,17 @@
   #allHeroes > summary.allsum .chev { flex:none; transition:transform .15s; }
   #allHeroes[open] > summary.allsum .chev { transform:rotate(180deg); }
   #allHeroes > summary.allsum:hover { color:var(--text-0); }
+  /* The generic details rule turns summary::before into a ▸ that rotates on open;
+     here ::before is the left divider line, so it must stay a flat line (opening the
+     grid on a hero/lane pick once spun it into a vertical bar). */
+  #allHeroes > summary.allsum { margin:0; padding:.8rem 1.1rem; }
+  #allHeroes > summary.allsum::before { content:""; color:inherit; transform:none; transition:none; }
+  /* compact cards: half the old size, inset from the box edge */
+  #allHeroes .grid { margin-top:0; padding:.2rem .8rem .9rem; gap:.5rem; grid-template-columns:repeat(auto-fill, minmax(66px, 1fr)); }
+  #allHeroes .hcard { border-radius:10px; }
+  @media (max-width:560px) { #allHeroes .grid { padding:.2rem .6rem .8rem; gap:.4rem; grid-template-columns:repeat(auto-fill, minmax(54px, 1fr)); } }
+  #allHeroes .hcard .nm { padding:.3rem .35rem .05rem; font-size:.72rem; }
+  #allHeroes .hcard .rl { padding:0 .35rem .35rem; font-size:.6875rem; }
   .lane-more { display:block; width:100%; margin-top:.5rem; background:none; border:none; border-top:1px dashed var(--border); padding:.45rem 0 .1rem; color:var(--accent-ink); font:inherit; font-size:.72rem; font-weight:700; text-align:left; cursor:pointer; }
   .lane-more:hover { color:var(--text-0); }
   /* ── end-of-selection cards: live draft + patch review, side by side ── */
