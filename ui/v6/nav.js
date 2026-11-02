@@ -10,7 +10,7 @@
     { group: 'Meta' },
     { href: 'bans.html',             label: 'Most banned',            icon: 'meta-guide',       match: ['bans.html'] },
     // only the current review; older ones are listed at the bottom of What's new
-    { href: '../patch-1.17.2.html',  label: 'Patch 1.17.2 review',    icon: 'patch-strategy',   match: ['patch-1.17.2.html'] },
+    { href: '../patch-1.18.html',    label: 'Patch 1.18 review',      icon: 'patch-strategy',   match: ['patch-1.18.html'] },
     { group: 'Learn' },
     { href: 'climb.html',            label: 'The Climb — ranked guide', icon: 'power-spike',    match: ['climb.html'] },
     { href: '../learn-eternals.html',label: 'Learn Eternals',         icon: 'eternal-augment',  match: ['learn-eternals.html'] },

@@ -5453,3 +5453,39 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   per 100 (43 swaps). The first reason line also quoted seat totals as an "average %" that
   silently included the duo bonus (58% for a 54% pair); it now averages the seat win rates and
   names the duo record separately.
+
+## 2026-11-02 — Patch 1.18 "Frostbite" review, captured the day BEFORE release
+- **The notes went up a day early, and the gate had no word for that.** patchcheck
+  graded 7 of 1.18's changes STALE because the catalog cannot carry numbers for a
+  patch that is not live yet; the only grace state required a snapshot re-pulled on or
+  after the release date. A pre-release state now reclassifies the newest digest's
+  stales as pending while its release date is in the future, bounded to 14 days ahead
+  so a typo'd date cannot hide a real gap. "The world has not released it" is a third
+  case next to "we did not look" and "the upstream is dead".
+- **The notes label structure with images.** Eternal sections are headed "Major
+  Blessing:" under a generic banner, and every item section is a banner image with no
+  text name. Item names come from the banner filename (Web_Banner_Items_Solaris_...);
+  Eternals were attributed by matching each minor name and its "from" value to
+  eternals.json, and all 17 "from" values matched our stored 1.17.2 text, which is
+  the proof the attribution is right. A summarizer would have had to guess both.
+- **A limited-time mode's ruleset sits in the middle of the notes.** The Overclocked
+  section changes Renna, Sevarog, crests, Lucky Feather, Nihil, Vesh, Aion gold and
+  every objective timer, all under ordinary-looking "Heroes" / "Items" / "Eternals"
+  headers. None of it is ranked. It is filed under systems only and the author was
+  told the line range to ignore; the critic confirmed nothing leaked.
+- **A new tier can silently empty a rank band.** lane-stats' Diamond+ band listed
+  tierIdx [4, 5]; with Master between Diamond and Paragon, a renumbered Paragon would
+  drop out without an error. Bands now list headroom (4-7). match-rank's Plat+ uses
+  `>=`, which was already safe. Check the 1.18 ladder ids after release (priorities 20d).
+- **Regenerating old pages from a shared generator regresses hand patches.** The
+  1.17.2 page had hero-links.js and a newer showcase hint patched in by hand; the
+  generator never learned them, so a rebuild would have removed portrait links. Ported
+  both into build-patch-page.js and left the old pages untouched. Hand edits to a
+  generated page belong in the generator the same day.
+- Copy loop: author (pred-scout-coach role) 73 entries, 0 ungrounded numbers on the
+  machine check; independent critic round 1 found 9 (0 high, 4 medium: a whole-role
+  win rate presented as a build split, a whole-offlane rate read as a vs-melee
+  matchup, a raw finished-item win rate used as evidence against a buffed item, and a
+  section lead contradicting the summary), round 2 found 2 low wording slips from its
+  own fixes. Again every medium was a number attached to the wrong claim, which a
+  token checker cannot see.

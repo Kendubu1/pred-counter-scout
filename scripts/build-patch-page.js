@@ -172,7 +172,7 @@ const heroShowcase = `
         <button class="hxs tr-buff" data-sort="buff" aria-pressed="false">▲ buffs</button>
         <button class="hxs tr-nerf" data-sort="nerf" aria-pressed="false">▼ nerfs</button>
         <button class="hxs tr-mixed" data-sort="mixed" aria-pressed="false">◆ mixed</button>
-        <span class="hx-hint">tap a change type to bring those heroes to the top — nothing is hidden. tap a hero to jump to its changes</span>
+        <span class="hx-hint">tap a change type to bring those heroes to the top — nothing is hidden. tap a hero's name to jump to its changes, its portrait to open its page</span>
       </div>
       <div class="hx-grid" id="heroShowcaseGrid">
         ${heroes.map(([slug, p]) => showcaseTile({
@@ -635,7 +635,7 @@ ${subnavBar}
   <main id="app">
     <div class="patch">
       <h1 style="margin-bottom:0.25rem;">Patch ${esc(version)}${digest.name ? ` — ${esc(digest.name)}` : ''}</h1>
-      <p class="lead">Released ${esc(digest.date)} · Scout overview, predictions${pred.measured ? ' &amp; measured results' : ''} ·
+      <p class="lead">${Date.parse(digest.date) > Date.now() ? 'Releases' : 'Released'} ${esc(digest.date)} · Scout overview, predictions${pred.measured ? ' &amp; measured results' : ''} ·
         <a href="${esc(digest.source)}" target="_blank" rel="noopener">official notes ↗</a></p>
 
       ${(() => {
@@ -667,9 +667,10 @@ ${subnavBar}
         <span class="m-miss">✗ moved against the notes</span> — it moved the other way ·
         no mark — the notes did not buff or nerf that hero, so there is no direction to check.</div>
       </div>` : `<div class="banner">
-        <strong>Heads up:</strong> these are <strong>predictions</strong>, not measured results. The engine's
-        numeric base is still the pre-${esc(version)} data, so the sim reads below are the <em>current</em>
-        meta — every forecast is grounded in the patch's stated numbers. Measured win rates replace the
+        <strong>Heads up:</strong> these are <strong>predictions</strong>, not measured results. ${heroes.some(([, p]) => p.topMetaBuild)
+          ? `The engine's numeric base is still the pre-${esc(version)} data, so the sim reads below are the <em>current</em>
+        meta — every forecast is grounded in the patch's stated numbers.`
+          : `Every forecast is grounded in the patch's stated numbers and in where each hero stood before ${esc(version)}.`} Measured win rates replace the
         forecasts once enough post-patch ranked games land in the feed.
       </div>`}
 
@@ -835,6 +836,7 @@ ${compsBlock}
   })();
   </script>
   <script defer src="v6/icons.js"></script>
+  <script defer src="v6/hero-links.js"></script>
 </body>
 </html>
 `;
