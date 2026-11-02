@@ -540,7 +540,11 @@
     .filterbar .fb-right { display:flex; align-items:flex-end; gap:.5rem; flex:none; }
     .filterbar .fb-n { font-size:.75rem; color:var(--text-2); font-variant-numeric:tabular-nums; white-space:nowrap; padding-bottom:.55rem; }
     .filterbar .fb-n b { color:var(--text-0); }
-    body.has-filterbar .wrap { padding-bottom:5rem; }
+    /* room under the last line for the bar (its measured height, set by watchFilterbar) */
+    body.has-filterbar .wrap { padding-bottom:calc(var(--fbh, 80px) + 1.5rem); }
+    /* same data as the meta board, so on phones Most banned has no button row of
+       its own: the bar is its rank filter */
+    .banboard .mb-bands { display:none; }
   }
   @media (max-width:720px) and (prefers-reduced-motion:reduce) { .filterbar { transition:none; } }
 
@@ -752,7 +756,7 @@ function renderFilterbar() {
 }
 // The bar REPLACES the in-board rank buttons, never sits beside them: it shows
 // while a board is in the top half of the screen AND no rank-button row (meta
-// board, most banned, lane room) is visible between the header and the bar.
+// board or lane room; Most banned hides its row on phones) is visible between the header and the bar.
 // Scrolling back up to a button row hides the bar again. Rects are read on
 // scroll because the rows are re-rendered on every filter change.
 function watchFilterbar() {
@@ -777,6 +781,7 @@ function watchFilterbar() {
     bar.classList.toggle('on', on);
     bar.setAttribute('aria-hidden', on ? 'false' : 'true');
     document.body.classList.toggle('has-filterbar', inBoard);
+    if (bar.offsetHeight) document.body.style.setProperty('--fbh', `${bar.offsetHeight}px`);
   };
   const queue = () => { if (!queued) { queued = true; requestAnimationFrame(sync); } };
   window.addEventListener('scroll', queue, { passive: true });
