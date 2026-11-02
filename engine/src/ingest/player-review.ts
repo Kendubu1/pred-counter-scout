@@ -12,6 +12,8 @@ import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildReview, type FilmRow, type Profile } from '../player-review.js';
+import { buildPatchImpact, type MemberGame } from '../patch-impact.js';
+import { existsSync } from 'node:fs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const read = (p: string) => JSON.parse(readFileSync(path.join(ROOT, p), 'utf8'));
@@ -21,8 +23,9 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.
 // "Since patch" view: [date, role, heroSlug, heroName, win].
 type RecentGame = [string, string, string, string, boolean];
 
-function filmRows(since: string): { rows: FilmRow[]; films: number; recent: Record<string, RecentGame[]> } {
+function filmRows(since: string): { rows: FilmRow[]; films: number; recent: Record<string, RecentGame[]>; ran: Record<string, MemberGame[]> } {
   const rows: FilmRow[] = [];
+  const ran: Record<string, MemberGame[]> = {};
   const recent: Record<string, RecentGame[]> = {};
   let films = 0;
   const dir = path.join(ROOT, 'data/postgame');
@@ -41,10 +44,16 @@ function filmRows(since: string): { rows: FilmRow[]; films: number; recent: Reco
         date: (f.startTime ?? '').slice(0, 10) || undefined, win: f.result === 'win', hero: p.heroName,
       });
       if (p.squadName && (f.startTime ?? '') >= since) (recent[p.squadName] ??= []).push([f.startTime.slice(0, 10), p.role, p.heroSlug, p.heroName, f.result === 'win']);
+      if (p.squadName && (f.startTime ?? '') >= since) (ran[p.squadName] ??= []).push({
+        heroSlug: p.heroSlug, heroName: p.heroName, role: p.role,
+        items: (p.items ?? []).map((i: { slug: string }) => i.slug),
+        eternal: p.loadout?.eternal ?? null, minor1: p.loadout?.minor1 ?? null, minor2: p.loadout?.minor2 ?? null,
+        augment: p.loadout?.augment?.name ?? null,
+      });
     }
   }
   for (const g of Object.values(recent)) g.sort((a, b) => a[0].localeCompare(b[0]));
-  return { rows, films, recent };
+  return { rows, films, recent, ran };
 }
 
 function main() {
@@ -54,12 +63,21 @@ function main() {
   // "Since patch" = the current patch's release, as recorded by npm run perks.
   const patch = read('data/aggregates/perk-stream.json');
   const since: string = (patch.patchReleasedAt ?? '').slice(0, 10);
-  const { rows, films, recent } = filmRows(since);
+  const { rows, films, recent, ran } = filmRows(since);
+  // The newest reviewed patch (a digest with a predictions file), read against
+  // each member's pool and what they ran in squad games on the current patch.
+  const cmpV = (a: string, b: string) => a.localeCompare(b, undefined, { numeric: true });
+  const newest = readdirSync(path.join(ROOT, 'data/patches')).filter((f) => f.endsWith('.json')).map((f) => f.slice(0, -5))
+    .filter((v) => existsSync(path.join(ROOT, `data/aggregates/patch-${v}-predictions.json`))).sort(cmpV).pop();
+  const digest = newest ? read(`data/patches/${newest}.json`) : null;
+  const preds = newest ? read(`data/aggregates/patch-${newest}-predictions.json`).predictions : null;
+  const eternalDefs = read('data/game-data/eternals.json').eternals;
   const members: Record<string, unknown> = {};
   for (const m of squad.members) {
     let profile: Profile;
     try { profile = read(`data/artifacts/players/${m.uuid}.json`); } catch { continue; }
     const r = buildReview(profile, squad.pairs, fights, rot, rows);
+    if (digest && preds) Object.assign(r, { patchImpact: buildPatchImpact(digest, preds, eternalDefs, profile as never, ran[m.name] ?? []) });
     members[m.uuid] = r;
     console.log(`${r.name}: ${r.keep.length} keep, ${r.fix.length} fix`);
   }

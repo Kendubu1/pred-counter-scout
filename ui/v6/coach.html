@@ -95,6 +95,12 @@
   .rv-lvl { display:inline-block; font-size:.66rem; font-weight:700; border:1px solid var(--border); border-radius:99px; padding:0 .45rem; margin-right:.35rem; color:var(--text-2); }
   .rv-lvl.strong { color:var(--text-0); border-color:var(--text-2); }
   .rv-method { font-size:.72rem; color:var(--text-2); margin-top:.7rem; }
+  .pi-line { display:grid; grid-template-columns:auto 1fr; gap:.15rem .6rem; padding:.55rem 0; border-bottom:1px solid var(--border); font-size:.86rem; color:var(--text-1); }
+  .pi-line:last-of-type { border-bottom:none; }
+  .pi-dir { grid-row:span 3; font-size:.66rem; font-weight:700; border-radius:5px; padding:.1rem .4rem; align-self:start; margin-top:.15rem; text-transform:uppercase; letter-spacing:.03em; background:var(--bg-3); color:var(--text-2); }
+  .pi-dir.buff { color:var(--green); } .pi-dir.nerf { color:var(--red); } .pi-dir.mixed, .pi-dir.rework { color:var(--gold); } .pi-dir.new { color:var(--accent); }
+  .pi-line b { color:var(--text-0); }
+  .pi-line .ir { font-size:.72rem; color:var(--text-2); }
 
   .rolerow { display:grid; grid-template-columns:88px 1fr 140px; gap:.7rem; align-items:center; padding:.32rem 0; font-size:.85rem; }
   .rolerow .bar { height:9px; border-radius:99px; background:var(--bg-2); overflow:hidden; }
@@ -1261,6 +1267,20 @@ async function fillEternals() {
         ${p.ratings.map((r) => `<tr><td>${esc(r.split)}</td><td class="n">${r.points}</td><td class="n">${r.peak ?? '—'}</td><td>${esc(r.rank)}</td></tr>`).join('')}
       </table>
     </div>
+
+    ${rv?.patchImpact?.lines?.length ? `
+    <div class="card" id="patch">
+      <h2>What patch ${esc(rv.patchImpact.patch)}${rv.patchImpact.name ? ' ' + esc(rv.patchImpact.name) : ''} means for you</h2>
+      <div class="verdict" style="margin-bottom:.4rem">${esc(rv.patchImpact.headline)}</div>
+      ${rv.patchImpact.lines.map((l) => `
+        <div class="pi-line">
+          <span class="pi-dir ${esc(l.dir)}">${esc(({ buff: 'Buff', nerf: 'Nerf', mixed: 'Mixed', rework: 'Shift', new: 'New' })[l.dir] || l.dir)}</span>
+          <b>${esc(l.title)}</b>
+          <div>${esc(l.text)}</div>
+          <div class="ir">${esc(l.receipt)}</div>
+        </div>`).join('')}
+      <div class="rv-method">Your heroes come from your pred.gg profile (20+ career games); what you run comes from your squad games this patch (in at least 3 games and a fifth of them). Forecasts are from the <a href="../patch-${esc(rv.patchImpact.patch)}.html">patch ${esc(rv.patchImpact.patch)} review</a>, not measured results.</div>
+    </div>` : ''}
 
     ${rv && (rv.keep.length || rv.fix.length) ? `
     <div class="card" id="review">

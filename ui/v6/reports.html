@@ -98,6 +98,7 @@
   .ptip.keep { border-left-color:var(--green); } .ptip.fix { border-left-color:var(--gold); }
   .ptip span { display:block; font-size:.66rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
   .ptip.keep span { color:var(--green); } .ptip.fix span { color:var(--gold); }
+  .ptip.patch { border-left-color:var(--accent); } .ptip.patch span { color:var(--accent); }
   .ptip b { color:var(--text-0); font-weight:600; }
   .pfoot { margin-top:auto; padding-top:.9rem; display:flex; justify-content:space-between; align-items:center; font-size:.76rem; color:var(--text-2); }
   .pfoot .go { color:var(--blue); font-weight:700; font-size:.86rem; }
@@ -186,6 +187,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
       </div>
       <div class="prank"><span><b>${esc(m.current?.rank ?? 'Unranked')}</b> · ${vp} VP</span><span>${gap ? `${gap} VP to ${esc(goal?.tier ?? 'Platinum III')}` : 'Platinum reached'}</span></div>
       <div class="pbar" title="peak ${peak} VP"><i style="width:${pctOf(vp)}%"></i>${peak ? `<span class="pk" style="left:${pctOf(peak)}%"></span>` : ''}</div>
+      ${r?.patchImpact?.lines?.length ? `<div class="ptip patch"><span>Patch ${esc(r.patchImpact.patch)}</span><b>${esc(r.patchImpact.headline)}</b></div>` : ''}
       ${r?.keep?.[0] ? `<div class="ptip keep"><span>Keep doing</span><b>${esc(r.keep[0].title)}</b></div>` : ''}
       ${r?.fix?.[0] ? `<div class="ptip fix"><span>Work on</span><b>${esc(r.fix[0].title)}</b></div>` : ''}
       <div class="pfoot"><span>${r ? `${r.keep.length} to keep · ${r.fix.length} to work on` : `${m.career.games.toLocaleString()} games`}</span><span class="go">Open report →</span></div>

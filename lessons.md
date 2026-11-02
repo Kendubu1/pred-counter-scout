@@ -5508,3 +5508,13 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   site's field data"). Say the thing instead (the stronger option with its numbers,
   or what the notes say), and keep the field-data rule in how picks are chosen, not
   in the words.
+- **"What 1.18 means for you" on every player report (maintainer ask).** Pure rules in
+  src/patch-impact.ts, run by `npm run review:players` against the newest digest that has a
+  predictions file, so the card moves to the next patch on its own. Changed heroes come
+  from the pred.gg pool (20+ career games, with the lane the member plays them in, since
+  forecasts like Steel's differ by lane); Eternals, minors, augments and items come from
+  what the member actually ran in their current-patch squad films (3+ games and a fifth
+  of them; items 15%). The text is the patch review's own forecast sentence, so the
+  player card and the patch page can never disagree. First cut matched the new hero
+  only on the review's single role (offlane), which no member plays in their top two;
+  predictions can now carry `altRoles` (Kaelen: jungle), which the review text already said.
