@@ -139,7 +139,13 @@ async function main() {
       const bansPath = path.join(ROOT, 'data/aggregates/predgg-bans.json');
       const bansPatch = existsSync(bansPath) ? (JSON.parse(readFileSync(bansPath, 'utf8')) as { patch?: string }).patch : null;
       if (bansPatch === prev.patch) copyFileSync(bansPath, path.join(dir, 'predgg-bans.json'));
-      console.log(`\npatch ${prev.patch} -> ${v.name}: archived the ${prev.patch} lane stats${bansPatch === prev.patch ? ' and bans' : ''} to data/aggregates/past-patches/${prev.patch}/`);
+      // Counters too (matchups:feed also archives on its own rollover; whichever runs first wins).
+      const muPath = path.join(ROOT, 'data/aggregates/feed-matchups.json');
+      const muPatch = existsSync(muPath) ? (JSON.parse(readFileSync(muPath, 'utf8')) as { window?: { patchFamily?: string } }).window?.patchFamily : null;
+      const muDest = path.join(dir, 'feed-matchups.json');
+      const muSaved = muPatch === prev.patch && !existsSync(muDest);
+      if (muSaved) copyFileSync(muPath, muDest);
+      console.log(`\npatch ${prev.patch} -> ${v.name}: archived the ${prev.patch} lane stats${bansPatch === prev.patch ? ' and bans' : ''}${muSaved ? ' and counters' : ''} to data/aggregates/past-patches/${prev.patch}/`);
     }
   }
   writeFileSync(lanePath, JSON.stringify(out, null, 1));
