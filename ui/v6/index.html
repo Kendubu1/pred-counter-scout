@@ -428,6 +428,14 @@
   .lanepanel .pilots { max-width:24rem; }
   /* desktop: the win rate column starts right after a fixed name column, so the
      eye moves ~14rem from name to % instead of across the row */
+  .lp-split { display:block; }
+  @media (min-width:860px) {
+    /* ranked list left, chips + top players right (the side column's first
+       label lines up with the list's first row) */
+    .lp-split { display:grid; grid-template-columns:minmax(0, 30rem) minmax(0, 1fr); gap:0 2rem; align-items:start; }
+    .lp-side { padding-left:1.5rem; border-left:1px solid var(--border); }
+    .lp-side > .lp-sub:first-child { margin-top:0 !important; }
+  }
   @media (min-width:601px) {
     .lrow.lrow-wr { grid-template-columns:34px 13rem auto; justify-content:start; max-width:30rem; }
     .lrow.lrow-wr .wrr, .lrow.lrow-wr .wrr .sub { text-align:left !important; }
@@ -1011,13 +1019,18 @@ async function renderLaneDetail() {
         <span class="echip" data-slug="${h.slug}" data-go="hero"${isFlex ? ` data-role="${role}"` : ''}>
           <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">${esc(h.name)}${tag ? `<span style="color:var(--text-2);font-size:.6875rem;margin-left:.25rem">${tag}</span>` : ''}</span>`;
     };
+    let side = '';
     if (rest.length) {
-      body += `<div class="lp-sub" style="margin-top:.6rem">rest of the lane:</div><div class="echips">${rest.map((h) => echip(h, false)).join('')}</div>`;
+      side += `<div class="lp-sub" style="margin-top:.6rem">rest of the lane:</div><div class="echips">${rest.map((h) => echip(h, false)).join('')}</div>`;
     }
     if (flex.length) {
-      body += `<div class="lp-sub" style="margin-top:.6rem">also flexed into ${esc(LANE_LABELS[role] || role).toLowerCase()} (their main lane is elsewhere):</div><div class="echips">${flex.map((h) => echip(h, true)).join('')}</div>`;
+      side += `<div class="lp-sub" style="margin-top:.6rem">also flexed into ${esc(LANE_LABELS[role] || role).toLowerCase()} (their main lane is elsewhere):</div><div class="echips">${flex.map((h) => echip(h, true)).join('')}</div>`;
     }
-    body += `<div class="lp-sub" style="margin-top:.6rem">Tap a hero for its full build.${SIM ? ' The lane-safety notes (“loses lane to …”) are kit-math estimates, not head-to-head records.' : ''}</div>`;
+    side += `<div class="lp-sub" style="margin-top:.6rem">Tap a hero for its full build.${SIM ? ' The lane-safety notes (“loses lane to …”) are kit-math estimates, not head-to-head records.' : ''}</div>`;
+    // Desktop: ranked list on the left, the rest of the lane + top players on
+    // the right, so the panel's width is used instead of leaving a blank half.
+    const legEnd = body.indexOf('</div>') + 6; // the win-rate legend spans both columns
+    body = `${body.slice(0, legEnd)}<div class="lp-split"><div class="lp-main">${body.slice(legEnd)}</div><div class="lp-side">${side}${playersBlock(role)}</div></div>`;
   } else {
     const mx = await getMatrix();
     const metaSlugs = new Set(laneMeta.map((h) => h.slug));
@@ -1111,7 +1124,7 @@ async function renderLaneDetail() {
         <button data-m="counter" class="${laneMode === 'counter' ? 'active' : ''}"><span data-bic="matchup" data-bic-size="15"></span> countering their pick</button>
       </div>
       ${body}
-      ${playersBlock(role)}
+      ${laneMode === 'first' ? '' : playersBlock(role)}
       ${SIM ? simPickBlock(role) : ''}
     </div>`;
   if (window.BrandIcons) window.BrandIcons.hydrate(box);
