@@ -13,7 +13,6 @@
     { href: 'coach.html',            label: 'Game review',            icon: 'scout',            match: ['coach.html'] },
     { href: 'reports.html',          label: 'Player reports',         icon: 'scout',            match: ['reports.html'] },
     // who OUR squad should ban (from our reviewed games); the league boards stay on Most banned
-    { group: 'Bans' },
     { href: 'ban-planner.html',      label: 'Ban planner',            icon: 'matchup',          match: ['ban-planner.html'] },
     { group: 'Learn' },
     { href: 'climb.html',            label: 'How to play ranked',     icon: 'power-spike',      match: ['climb.html'] },

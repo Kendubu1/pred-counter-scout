@@ -37,7 +37,7 @@
   .subnav:empty { display:none; }
   .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; text-transform:capitalize; }
   .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
-  section.card, .lanepanel, .metaboard { scroll-margin-top:calc(var(--toph, 96px) + 10px); }
+  section.card, .lanepanel, .metaboard, #lanedetail { scroll-margin-top:calc(var(--toph, 96px) + var(--fbtop, 0px) + 10px); }
   /* new-hero state: kit math present, field evidence declared absent */
   .pending-note { border:1px solid var(--gold); background:var(--bg-2); border-radius:10px;
     padding:.7rem .85rem; margin:.2rem 0 .9rem; font-size:.78rem; line-height:1.5; color:var(--text-1); }
@@ -425,9 +425,19 @@
      switched off (2026-10-26) a full-panel row left the name at the far left and
      the win rate ~900px away at the far right. Same cap for the players rows. */
   .lrow, .lanepanel .pilots { max-width:36rem; }
+  .h2h-scope { margin:.1rem 0 .5rem; }
+  .h2h-scope.on { color:var(--text-1); border-left:3px solid var(--gold); padding:.3rem .55rem; background:var(--bg-2); border-radius:6px; }
   .lanepanel .pilots { max-width:24rem; }
   /* desktop: the win rate column starts right after a fixed name column, so the
      eye moves ~14rem from name to % instead of across the row */
+  .lp-split { display:block; }
+  @media (min-width:860px) {
+    /* ranked list left, chips + top players right (the side column's first
+       label lines up with the list's first row) */
+    .lp-split { display:grid; grid-template-columns:minmax(0, 30rem) minmax(0, 1fr); gap:0 2rem; align-items:start; }
+    .lp-side { padding-left:1.5rem; border-left:1px solid var(--border); }
+    .lp-side > .lp-sub:first-child { margin-top:0 !important; }
+  }
   @media (min-width:601px) {
     .lrow.lrow-wr { grid-template-columns:34px 13rem auto; justify-content:start; max-width:30rem; }
     .lrow.lrow-wr .wrr, .lrow.lrow-wr .wrr .sub { text-align:left !important; }
@@ -546,13 +556,28 @@
     .hero-head h1 { font-size:1.35rem; }
   }
 
-  /* ── mobile filter bar: pinned to the bottom of the homepage on phones. Rank on
-     the left, patch + match count on the right; drives the meta board, the lane
-     room and Most banned together. ── */
-  .filterbar { display:none; }
+  /* ── homepage filter bar: the one rank + patch filter for the meta board, the
+     lane room and Most banned (their in-board rows are hidden). Desktop: sits
+     under the search and lane buttons and sticks under the header once you scroll
+     past it, as button groups. Phones: pinned to the bottom, as dropdowns. ── */
+  #landing .mb-bands { display:none; }
+  .filterbar { position:sticky; top:var(--toph, 96px); z-index:9; display:flex; align-items:center; gap:.5rem 1.1rem; flex-wrap:wrap;
+    margin:1.2rem 0 0; padding:.5rem .8rem; background:rgba(18,18,26,.88); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    border:1px solid var(--border); border-radius:var(--radius); }
+  .filterbar .fb-rank, .filterbar .fb-right { display:none; }
+  .fb-pills { display:contents; }
+  .fb-grp { display:inline-flex; align-items:center; gap:.35rem; flex-wrap:wrap; }
+  .fb-grp .fb-k { font-size:.6875rem; font-weight:700; color:var(--text-2); text-transform:uppercase; letter-spacing:.04em; margin-right:.15rem; }
+  .fb-grp .mb-toggle { margin-left:0; }
+  .filterbar .fb-count { margin-left:auto; font-size:.75rem; color:var(--text-2); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .filterbar .fb-count b { color:var(--text-0); }
   @media (max-width:720px) {
-    .filterbar { display:flex; align-items:center; gap:.6rem; position:fixed; left:0; right:0; bottom:0; z-index:40;
-      padding:.55rem 16px calc(.55rem + env(safe-area-inset-bottom, 0px)); background:var(--bg-1); border-top:1px solid var(--border);
+    .fb-pills { display:none; }
+    .filterbar .fb-rank { display:flex; }
+    .filterbar .fb-right { display:flex; }
+    .filterbar { display:flex; align-items:center; gap:.6rem; flex-wrap:nowrap; position:fixed; top:auto; left:0; right:0; bottom:0; z-index:40; margin:0;
+      padding:.55rem 16px calc(.55rem + env(safe-area-inset-bottom, 0px)); background:var(--bg-1); border:0; border-top:1px solid var(--border); border-radius:0;
+      backdrop-filter:none; -webkit-backdrop-filter:none;
       box-shadow:0 -6px 18px rgba(0,0,0,.35); transform:translateY(110%); transition:transform .18s ease; }
     .filterbar.on { transform:none; }
     .filterbar label { display:flex; flex-direction:column; gap:.1rem; min-width:0; }
@@ -566,8 +591,6 @@
     .filterbar .fb-n b { color:var(--text-0); }
     /* room under the last line for the bar (its measured height, set by watchFilterbar) */
     body.has-filterbar .wrap { padding-bottom:calc(var(--fbh, 80px) + 1.5rem); }
-    /* the bar is the homepage's rank + patch filter on phones: no in-board rows */
-    #landing .mb-bands { display:none; }
   }
   @media (max-width:720px) and (prefers-reduced-motion:reduce) { .filterbar { transition:none; } }
 
@@ -603,6 +626,7 @@
       <div class="searchbar"><input id="search" placeholder="Search heroes…" autocomplete="off"><div class="suggest" id="suggest"></div></div>
       <div class="rolebar" id="rolebar"></div>
     </div>
+    <div class="filterbar" id="filterbar" aria-label="Board filters"></div>
     <div id="lanedetail"></div>
     <div class="browse-head">Winning right now</div>
     <div class="metaboard" id="metaboard"></div>
@@ -620,8 +644,6 @@
     <span class="sim-only">THEORY = <span id="theoryDef"></span></span> Evidence deltas carry finished-inventory bias and are comparative, not absolute.
   </footer>
 </div>
-
-<div class="filterbar" id="filterbar" aria-label="Board filters" aria-hidden="true"></div>
 
 <script src="section-nav.js"></script>
 <script src="game-text.js"></script>
@@ -722,6 +744,12 @@ const pastPatch = () => (metaPatch && PAST?.patches?.find((p) => p.patch === met
 const metaSrc = () => pastPatch() || META;
 const bansSrc = () => { const p = pastPatch(); return p ? p.bans : BANS; };
 const boardPatches = () => (META ? [String(META.patch), ...(PAST?.patches || []).map((p) => String(p.patch))] : []);
+function setMetaBand(b) {
+  metaBand = b;
+  try { localStorage.setItem('metaBand', metaBand); } catch { /* private mode */ }
+  renderMetaboard(); renderBanboard(); renderFilterbar(); if (roleFilter !== 'all') renderLaneDetail();
+  watchFilterbar.sync?.();
+}
 function setMetaPatch(p) {
   metaPatch = !p || p === String(META.patch) ? null : p;
   renderMetaboard(); renderBanboard(); renderFilterbar(); if (roleFilter !== 'all') renderLaneDetail();
@@ -792,20 +820,23 @@ function renderFilterbar() {
       <label><span class="fb-k">Patch</span>
         <select id="fbPatch"${patches.length < 2 ? ` disabled title="Only patch ${esc(META.patch)} is in our data so far"` : ''}>${patches.map((p) => `<option value="${esc(p)}"${p === cur ? ' selected' : ''}>${esc(p)}${p === String(META.patch) ? '' : ' (old)'}</option>`).join('')}</select></label>
       <span class="fb-n" title="Ranked matches behind the boards at this rank"><b>${boardMatches.toLocaleString()}</b> matches</span>
+    </div>
+    <div class="fb-pills">
+      ${bands ? `<span class="fb-grp" title="Filter the boards to games played at a rank band — the meta shifts with skill level. All ranks includes players without a placed rank."><span class="fb-k">Rank</span>${ranks.map((b) => `<button class="mb-toggle${metaBand === b.key ? ' active' : ''}" data-fb-band="${esc(b.key)}">${esc(b.label)}</button>`).join('')}</span>` : ''}
+      <span class="fb-grp" title="Switch the boards to an earlier patch. Hero pages always show the current patch."><span class="fb-k">Patch</span>${patches.map((p) => `<button class="mb-toggle${p === cur ? ' active' : ''}" data-fb-patch="${esc(p)}"${patches.length < 2 ? ' disabled' : ''}>${esc(p)}</button>`).join('')}</span>
+      <span class="fb-count"><b>${boardMatches.toLocaleString()}</b> ranked matches</span>
     </div>`;
+  bar.querySelectorAll('[data-fb-patch]').forEach((b) => { b.onclick = () => setMetaPatch(b.dataset.fbPatch); });
+  bar.querySelectorAll('[data-fb-band]').forEach((b) => { b.onclick = () => setMetaBand(b.dataset.fbBand); });
   $('#fbPatch').onchange = (e) => setMetaPatch(e.target.value);
-  $('#fbRank').onchange = (e) => {
-    metaBand = e.target.value;
-    try { localStorage.setItem('metaBand', metaBand); } catch { /* private mode */ }
-    renderMetaboard(); renderBanboard(); renderFilterbar(); if (roleFilter !== 'all') renderLaneDetail();
-    watchFilterbar.sync?.();
-  };
+  $('#fbRank').onchange = (e) => setMetaBand(e.target.value);
 }
-// On phones the bar IS the homepage's rank + patch filter: it stays up for the
-// whole landing view (meta board, lane room, Most banned), and the in-board
-// rank/patch button rows are hidden there by CSS so the two never show together.
-// It steps aside on hero pages and while the hero search box has focus (the
-// on-screen keyboard and the suggestion list need the room).
+// The bar IS the homepage's rank + patch filter on every screen size: the
+// in-board rank/patch rows are hidden by CSS so the two never show together.
+// Desktop: sticky under the header (CSS only; --fbtop keeps scrolled-to sections
+// clear of it). Phones: fixed to the bottom for the whole landing view; it steps
+// aside on hero pages and while the hero search box has focus (the on-screen
+// keyboard and the suggestion list need the room).
 function watchFilterbar() {
   const bar = $('#filterbar');
   if (!bar) return;
@@ -815,10 +846,14 @@ function watchFilterbar() {
     const landing = !$('#landing').classList.contains('hidden');
     const typing = document.activeElement === $('#search');
     const on = landing && !typing;
+    const phone = window.matchMedia('(max-width:720px)').matches;
     bar.classList.toggle('on', on);
-    bar.setAttribute('aria-hidden', on ? 'false' : 'true');
+    bar.setAttribute('aria-hidden', on || !phone ? 'false' : 'true');
     document.body.classList.toggle('has-filterbar', landing);
     if (bar.offsetHeight) document.body.style.setProperty('--fbh', `${bar.offsetHeight}px`);
+    const root = document.documentElement.style;
+    root.setProperty('--fbtop', phone ? '0px' : `${bar.offsetHeight + 8}px`);
+    root.setProperty('--toph', `${$('.top')?.offsetHeight ?? 96}px`);
   };
   const queue = () => { if (!queued) { queued = true; requestAnimationFrame(sync); } };
   window.addEventListener('resize', queue);
@@ -923,14 +958,32 @@ async function getMatrix() {
 // sample (npm run matchups:feed — available today) with pred.gg's patch-wide
 // matchupStatistic records overlaid per-pair when that pass unlocks. Either
 // file absent is fine; both absent -> null and every consumer falls back to sim.
-let MATCHUPS;
+let MATCHUPS, MU_FEED;
 async function getMatchups() {
   if (MATCHUPS === undefined) {
-    const feed = await getJson('../../data/aggregates/feed-matchups.json').then((j) => j.pairs || null).catch(() => null);
+    MU_FEED = await getJson('../../data/aggregates/feed-matchups.json').catch(() => null);
+    const feed = MU_FEED?.pairs || null;
     const gg = await getJson('../../data/aggregates/predgg-matchups.json').then((j) => j.pairs || null).catch(() => null);
     MATCHUPS = (feed || gg) ? { ...(feed || {}), ...(gg || {}) } : null;
   }
   return MATCHUPS;
+}
+// The counter list's records for the board filter: the archived file of a past
+// patch (data/aggregates/past-patches/<patch>/feed-matchups.json, saved at each
+// patch rollover since 2026-11-02) and the rank band's pairs (pairsByBand,
+// counted from 1.18). Where the selected patch or band has no records, the
+// current all-ranks pool is used and the note above the list says so.
+const MU_PAST = {};
+async function laneMatchups() {
+  const current = await getMatchups();
+  const pp = pastPatch();
+  let file = MU_FEED, pairs = current, patch = String(META.patch);
+  if (pp) {
+    if (!(pp.patch in MU_PAST)) MU_PAST[pp.patch] = await getJson(`../../data/aggregates/past-patches/${encodeURIComponent(pp.patch)}/feed-matchups.json`).catch(() => null);
+    if (MU_PAST[pp.patch]?.pairs) { file = MU_PAST[pp.patch]; pairs = file.pairs; patch = String(pp.patch); }
+  }
+  const banded = metaBand !== 'all' && file?.pairsByBand?.[metaBand];
+  return { pairs: banded || pairs, patch, band: banded ? metaBand : null, hasBands: !!file?.pairsByBand };
 }
 /** Verdicts for our-vs-enemy from the all-pairs matrix (y/e/= coded,
  *  first-named hero's perspective; invert when we're second-named). */
@@ -997,27 +1050,43 @@ async function renderLaneDetail() {
       </div>`;
     }).join('');
     const metaSet = new Set(laneMeta.map((h) => h.slug));
-    const wrOf = (h) => (h.roleWr && h.roleWr[role] ? h.roleWr[role].wr : 0);
+    // Chip win rates follow the SAME rank band + patch as the ranked list above
+    // (meta.json / past-boards laneWr, shrunk like the board). Under 30 games at
+    // this filter: listed as "few games", sorted last. Older data without laneWr
+    // falls back to the index roleWr (all ranks, current patch).
+    const M = metaSrc();
+    const laneWrSrc = metaBand === 'all' ? M.laneWr : M.laneWrByBand?.[metaBand];
+    const cellOf = (h) => {
+      if (laneWrSrc) { const c = laneWrSrc[role]?.[h.slug]; return c ? { n: c[0], wr: c[1] } : null; }
+      return (h.roleWr && h.roleWr[role]) || null;
+    };
+    const wrOf = (h) => (cellOf(h) ? cellOf(h).wr : 0);
     const rest = INDEX.heroes.filter((h) => h.role === role && !metaSet.has(h.slug)).sort((a, b) => wrOf(b) - wrOf(a));
     // heroes whose PRIMARY lane is elsewhere but who flex into this role per the
     // data (e.g. The Fey support) — surfaced so they aren't invisible here
     const flex = INDEX.heroes.filter((h) => h.role !== role && !metaSet.has(h.slug) && (h.roles || []).includes(role))
       .sort((a, b) => wrOf(b) - wrOf(a));
     const echip = (h, isFlex) => {
-      const w = h.roleWr && h.roleWr[role];
-      const wr = w ? `<b style="color:${wrColor(w.wr)}" title="${esc(wrTip(w.wr))}">${(w.wr * 100).toFixed(1)}%</b>` : '';
+      const w = cellOf(h);
+      const wr = w ? `<b style="color:${wrColor(w.wr)}" title="${esc(wrTip(w.wr))} · ${w.n.toLocaleString()} games">${(w.wr * 100).toFixed(1)}%</b>`
+        : `<span title="Under 30 games in this lane at this rank and patch">few games</span>`;
       const tag = wr; // both rest and flex chips: just the win% (section header already says which group)
       return `
         <span class="echip" data-slug="${h.slug}" data-go="hero"${isFlex ? ` data-role="${role}"` : ''}>
           <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">${esc(h.name)}${tag ? `<span style="color:var(--text-2);font-size:.6875rem;margin-left:.25rem">${tag}</span>` : ''}</span>`;
     };
+    let side = '';
     if (rest.length) {
-      body += `<div class="lp-sub" style="margin-top:.6rem">rest of the lane:</div><div class="echips">${rest.map((h) => echip(h, false)).join('')}</div>`;
+      side += `<div class="lp-sub" style="margin-top:.6rem">rest of the lane:</div><div class="echips">${rest.map((h) => echip(h, false)).join('')}</div>`;
     }
     if (flex.length) {
-      body += `<div class="lp-sub" style="margin-top:.6rem">also flexed into ${esc(LANE_LABELS[role] || role).toLowerCase()} (their main lane is elsewhere):</div><div class="echips">${flex.map((h) => echip(h, true)).join('')}</div>`;
+      side += `<div class="lp-sub" style="margin-top:.6rem">also flexed into ${esc(LANE_LABELS[role] || role).toLowerCase()} (their main lane is elsewhere):</div><div class="echips">${flex.map((h) => echip(h, true)).join('')}</div>`;
     }
-    body += `<div class="lp-sub" style="margin-top:.6rem">Tap a hero for its full build.${SIM ? ' The lane-safety notes (“loses lane to …”) are kit-math estimates, not head-to-head records.' : ''}</div>`;
+    side += `<div class="lp-sub" style="margin-top:.6rem">Tap a hero for its full build.${SIM ? ' The lane-safety notes (“loses lane to …”) are kit-math estimates, not head-to-head records.' : ''}</div>`;
+    // Desktop: ranked list on the left, the rest of the lane + top players on
+    // the right, so the panel's width is used instead of leaving a blank half.
+    const legEnd = body.indexOf('</div>') + 6; // the win-rate legend spans both columns
+    body = `${body.slice(0, legEnd)}<div class="lp-split"><div class="lp-main">${body.slice(legEnd)}</div><div class="lp-side">${side}${playersBlock(role)}</div></div>`;
   } else {
     const mx = await getMatrix();
     const metaSlugs = new Set(laneMeta.map((h) => h.slug));
@@ -1045,7 +1114,8 @@ async function renderLaneDetail() {
       // Empirical head-to-head records (pred.gg, ranked, current patch) rank
       // the list where a real sample exists; the kill-window sim is the
       // fallback AND the second opinion shown on every evidenced row.
-      const MU = await getMatchups();
+      const MUV = await laneMatchups();
+      const MU = MUV.pairs;
       const evOf = (slug) => (MU && (MU[`${slug}|${laneEnemy}`] || null));
       const rows = [];
       for (const h of INDEX.heroes) {
@@ -1078,6 +1148,19 @@ async function renderLaneDetail() {
       const sameAll = rows.filter((r) => r.lane === role).sort(rank);
       const same = (SIM ? sameAll : sameAll.filter((r) => r.ev)).slice(0, 8);
       const thin = SIM ? [] : sameAll.filter((r) => !r.ev);
+      // Say which records the list uses, and flag it when that is not the
+      // rank/patch the buttons have selected (no band split before 1.18; no
+      // archived counters for patches before 1.17).
+      if (MU) {
+        const bandLabel = (k) => (metaFilterState().bands || []).find((b) => b.key === k)?.label || k;
+        const wantPatch = String(pastPatch()?.patch ?? META.patch);
+        const shown = `${MUV.band ? esc(bandLabel(MUV.band)) : 'all ranks'} on patch ${esc(MUV.patch)}`;
+        const missing = [
+          metaBand !== 'all' && !MUV.band ? `split by rank${MUV.hasBands ? ` with enough ${esc(bandLabel(metaBand))} games yet` : ' for this patch (that starts with 1.18)'}` : '',
+          wantPatch !== MUV.patch ? `saved for patch ${esc(wantPatch)}` : '',
+        ].filter(Boolean);
+        body += `<div class="lp-sub h2h-scope${missing.length ? ' on' : ''}">Head-to-head records: <b>${shown}</b>.${missing.length ? ` Counter records aren't ${missing.join(' or ')}, so this list uses the closest records we have.` : ''}</div>`;
+      }
       body += `<div class="lp-sub" style="margin:.2rem 0 .4rem">In their lane (<b>${esc(LANE_LABELS[role])}</b>) — your picks vs <b>${esc(nameOf(laneEnemy))}</b>, best first:</div>`;
       body += same.map((r) => rowHtml(r, false)).join('') || `<div class="lp-sub">${SIM ? `no ${esc(LANE_LABELS[role].toLowerCase())} sim vs ${esc(nameOf(laneEnemy))} yet` : `no ${esc(LANE_LABELS[role].toLowerCase())} hero has 20+ lane games against ${esc(nameOf(laneEnemy))} yet`}</div>`;
       if (thin.length) {
@@ -1111,7 +1194,7 @@ async function renderLaneDetail() {
         <button data-m="counter" class="${laneMode === 'counter' ? 'active' : ''}"><span data-bic="matchup" data-bic-size="15"></span> countering their pick</button>
       </div>
       ${body}
-      ${playersBlock(role)}
+      ${laneMode === 'first' ? '' : playersBlock(role)}
       ${SIM ? simPickBlock(role) : ''}
     </div>`;
   if (window.BrandIcons) window.BrandIcons.hydrate(box);

@@ -5552,6 +5552,32 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
 - **Artifacts test lists non-hero files explicitly.** Any new file in data/artifacts/
   must join the exclusion lists in test/artifacts.test.ts or it is read as a hero
   artifact.
+- **Narrowing rows alone left the lane room lopsided (maintainer follow-up, 2026-11-02).**
+  Capping the picking-first rows fixed the eye travel but left the right half of the desktop
+  panel empty. The fix is a two-column split from 860px (ranked list left; rest of the lane,
+  flex picks and top players right; the legend spans both). Phones keep one column. When
+  you shrink content to fix reading distance, fill the space it gives back.
+- **Lane room chips ignored the rank and patch filters (maintainer report, 2026-11-02).**
+  The ranked list read the filtered board, but the "rest of the lane" / "also flexed"
+  chips read the index roleWr (all ranks, current patch), so they never moved. The boards
+  only carry ~10 heroes per lane, so buildMetaBoards (src/boards.ts) now also emits
+  laneWr / laneWrByBand: every hero with 30+ games per lane per filter, shrunk with that
+  board's own k. Written to meta.json and past-boards.json; zero-API from the committed
+  lane stats. Verified: recomputed boards byte-identical to the committed ones, and the
+  all-ranks laneWr equals the index roleWr on all 165 cells. Lesson: when a page has one
+  filter, every number on it has to come from the filtered source; audit the secondary
+  lists, not just the headline table.
+- **Counters by rank and patch, ready for 1.18 (maintainer ask, 2026-11-02).** Two gaps:
+  matchups:feed REPLACED its file when a new patch began (lane stats and bans were archived,
+  counters were not), and the sampled matches already carried each player's match-time rank
+  but the counter ignored it. Now matchups:feed (and lane-stats' rollover as a backstop)
+  copies the outgoing file to past-patches/<patch>/, and src/matchup-pairs.ts counts each
+  directed record in the band of the rank that player held in the game, with no extra API.
+  1.17 stays all ranks: re-pulling its ~44k games for bands was declined at season end.
+  Diamond+ is ~5% of games, so expect few Diamond+ pairs at n >= 20; the site falls back to
+  all ranks and says so. Lesson: a rollover that archives "the patch's data" has to list
+  every per-patch file; audit the aggregates folder, not just the boards' inputs.
+
 
 ## 2026-11-02 — Predicted builds on Kaelen's 1.18 card (maintainer ask)
 - **A new hero's build is a guess, and the page says so.** `predictedBuilds` on a prediction
