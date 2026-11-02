@@ -747,25 +747,42 @@ function renderFilterbar() {
     metaBand = e.target.value;
     try { localStorage.setItem('metaBand', metaBand); } catch { /* private mode */ }
     renderMetaboard(); renderBanboard(); renderFilterbar(); if (roleFilter !== 'all') renderLaneDetail();
+    watchFilterbar.sync?.();
   };
 }
-// Show the bar only while either board is in view on the landing page.
+// The bar REPLACES the in-board rank buttons, never sits beside them: it shows
+// while a board is in the top half of the screen AND no rank-button row (meta
+// board, most banned, lane room) is visible between the header and the bar.
+// Scrolling back up to a button row hides the bar again. Rects are read on
+// scroll because the rows are re-rendered on every filter change.
 function watchFilterbar() {
   const bar = $('#filterbar');
-  if (!bar || !('IntersectionObserver' in window)) return;
-  const seen = new Set();
+  if (!bar) return;
+  let queued = false;
   const sync = () => {
-    const on = seen.size > 0 && !$('#landing').classList.contains('hidden');
+    queued = false;
+    const landing = !$('#landing').classList.contains('hidden');
+    const vh = window.innerHeight;
+    const topH = $('.top')?.getBoundingClientRect().bottom ?? 0;
+    const inBoard = landing && ['#metaboard', '#banboard'].some((sel) => {
+      const r = $(sel)?.getBoundingClientRect();
+      return r && r.height > 0 && r.top < vh * 0.55 && r.bottom > topH;
+    });
+    const floor = vh - (bar.classList.contains('on') ? bar.offsetHeight : 0);
+    const rowShowing = [...document.querySelectorAll('#landing .mb-bands')].some((el) => {
+      const r = el.getBoundingClientRect();
+      return r.height > 0 && r.bottom > topH && r.top < floor;
+    });
+    const on = inBoard && !rowShowing;
     bar.classList.toggle('on', on);
     bar.setAttribute('aria-hidden', on ? 'false' : 'true');
-    document.body.classList.toggle('has-filterbar', on);
+    document.body.classList.toggle('has-filterbar', inBoard);
   };
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((en) => { if (en.isIntersecting) seen.add(en.target); else seen.delete(en.target); });
-    sync();
-  }, { rootMargin: '0px 0px -45% 0px' }); // the board must reach the top half of the screen
-  ['#metaboard', '#banboard'].forEach((s) => { const el = $(s); if (el) io.observe(el); });
-  watchFilterbar.sync = sync;
+  const queue = () => { if (!queued) { queued = true; requestAnimationFrame(sync); } };
+  window.addEventListener('scroll', queue, { passive: true });
+  window.addEventListener('resize', queue);
+  watchFilterbar.sync = queue;
+  queue();
 }
 
 async function getJson(path) { return (await fetch(path)).json(); }
