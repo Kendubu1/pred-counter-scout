@@ -5567,6 +5567,30 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   all-ranks laneWr equals the index roleWr on all 165 cells. Lesson: when a page has one
   filter, every number on it has to come from the filtered source; audit the secondary
   lists, not just the headline table.
+- **Counters by rank and patch, ready for 1.18 (maintainer ask, 2026-11-02).** Two gaps:
+  matchups:feed REPLACED its file when a new patch began (lane stats and bans were archived,
+  counters were not), and the sampled matches already carried each player's match-time rank
+  but the counter ignored it. Now matchups:feed (and lane-stats' rollover as a backstop)
+  copies the outgoing file to past-patches/<patch>/, and src/matchup-pairs.ts counts each
+  directed record in the band of the rank that player held in the game, with no extra API.
+  1.17 stays all ranks: re-pulling its ~44k games for bands was declined at season end.
+  Diamond+ is ~5% of games, so expect few Diamond+ pairs at n >= 20; the site falls back to
+  all ranks and says so. Lesson: a rollover that archives "the patch's data" has to list
+  every per-patch file; audit the aggregates folder, not just the boards' inputs.
+
+
+## 2026-11-02 — Predicted builds on Kaelen's 1.18 card (maintainer ask)
+- **A new hero's build is a guess, and the page says so.** `predictedBuilds` on a prediction
+  (data/aggregates/patch-<v>-predictions.json) renders as two example builds with item, Eternal
+  and augment icons on that hero's patch-review card, tagged "Guess, no games yet". Each build
+  borrows the most-played 1.17.2 core of the closest kit (Greystone offlane for the
+  max-health frontliner, Khaimera jungle for the attack-speed Relentless Hunt line), so every
+  number it cites is a real count. The block disappears on its own once `build-measured.js`
+  gives the hero measured patch games; the recommendation policy still decides what the site
+  recommends.
+- **Regenerating a page can drop hand edits.** `v6/nav.js` had been added to the committed patch
+  pages by hand (3a4a0b2) but not to scripts/build-patch-page.js, so the first rebuild removed the
+  menu. The generator now emits it. Diff a regenerated page against HEAD before trusting it.
 
 - 2026-11-02 · Live draft counter (ui/v6/livedraft.html) still ranked counters by the
   kit-math matrix and showed its fight dots unconditionally, even though sim-flag.js hides

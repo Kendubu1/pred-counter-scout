@@ -958,14 +958,32 @@ async function getMatrix() {
 // sample (npm run matchups:feed — available today) with pred.gg's patch-wide
 // matchupStatistic records overlaid per-pair when that pass unlocks. Either
 // file absent is fine; both absent -> null and every consumer falls back to sim.
-let MATCHUPS;
+let MATCHUPS, MU_FEED;
 async function getMatchups() {
   if (MATCHUPS === undefined) {
-    const feed = await getJson('../../data/aggregates/feed-matchups.json').then((j) => j.pairs || null).catch(() => null);
+    MU_FEED = await getJson('../../data/aggregates/feed-matchups.json').catch(() => null);
+    const feed = MU_FEED?.pairs || null;
     const gg = await getJson('../../data/aggregates/predgg-matchups.json').then((j) => j.pairs || null).catch(() => null);
     MATCHUPS = (feed || gg) ? { ...(feed || {}), ...(gg || {}) } : null;
   }
   return MATCHUPS;
+}
+// The counter list's records for the board filter: the archived file of a past
+// patch (data/aggregates/past-patches/<patch>/feed-matchups.json, saved at each
+// patch rollover since 2026-11-02) and the rank band's pairs (pairsByBand,
+// counted from 1.18). Where the selected patch or band has no records, the
+// current all-ranks pool is used and the note above the list says so.
+const MU_PAST = {};
+async function laneMatchups() {
+  const current = await getMatchups();
+  const pp = pastPatch();
+  let file = MU_FEED, pairs = current, patch = String(META.patch);
+  if (pp) {
+    if (!(pp.patch in MU_PAST)) MU_PAST[pp.patch] = await getJson(`../../data/aggregates/past-patches/${encodeURIComponent(pp.patch)}/feed-matchups.json`).catch(() => null);
+    if (MU_PAST[pp.patch]?.pairs) { file = MU_PAST[pp.patch]; pairs = file.pairs; patch = String(pp.patch); }
+  }
+  const banded = metaBand !== 'all' && file?.pairsByBand?.[metaBand];
+  return { pairs: banded || pairs, patch, band: banded ? metaBand : null, hasBands: !!file?.pairsByBand };
 }
 /** Verdicts for our-vs-enemy from the all-pairs matrix (y/e/= coded,
  *  first-named hero's perspective; invert when we're second-named). */
@@ -1096,7 +1114,8 @@ async function renderLaneDetail() {
       // Empirical head-to-head records (pred.gg, ranked, current patch) rank
       // the list where a real sample exists; the kill-window sim is the
       // fallback AND the second opinion shown on every evidenced row.
-      const MU = await getMatchups();
+      const MUV = await laneMatchups();
+      const MU = MUV.pairs;
       const evOf = (slug) => (MU && (MU[`${slug}|${laneEnemy}`] || null));
       const rows = [];
       for (const h of INDEX.heroes) {
@@ -1133,13 +1152,18 @@ async function renderLaneDetail() {
       const sameAll = rows.filter((r) => r.lane === role).sort(rank);
       const same = (SIM ? sameAll : sameAll.filter((r) => r.ev)).slice(0, 8);
       const thin = SIM ? [] : sameAll.filter((r) => !r.ev);
-      // The head-to-head records are one pool: all ranks, current patch. Say so
-      // where the rank/patch buttons would suggest otherwise.
+      // Say which records the list uses, and flag it when that is not the
+      // rank/patch the buttons have selected (no band split before 1.18; no
+      // archived counters for patches before 1.17).
       if (MU) {
-        const filtered = metaBand !== 'all' || !!pastPatch();
-        const bandName = metaBand === 'all' ? '' : (metaFilterState().bands || []).find((b) => b.key === metaBand)?.label || metaBand;
-        const picked = [bandName, pastPatch() ? `patch ${pastPatch().patch}` : ''].filter(Boolean).join(', ');
-        body += `<div class="lp-sub h2h-scope${filtered ? ' on' : ''}">Head-to-head records cover <b>all ranks on patch ${esc(String(META.patch))}</b>. They don't change with the rank or patch buttons yet${filtered ? ` — you have <b>${esc(picked)}</b> selected, which only changes the ranked picks and win rates outside this list` : ''}.</div>`;
+        const bandLabel = (k) => (metaFilterState().bands || []).find((b) => b.key === k)?.label || k;
+        const wantPatch = String(pastPatch()?.patch ?? META.patch);
+        const shown = `${MUV.band ? esc(bandLabel(MUV.band)) : 'all ranks'} on patch ${esc(MUV.patch)}`;
+        const missing = [
+          metaBand !== 'all' && !MUV.band ? `split by rank${MUV.hasBands ? ` with enough ${esc(bandLabel(metaBand))} games yet` : ' for this patch (that starts with 1.18)'}` : '',
+          wantPatch !== MUV.patch ? `saved for patch ${esc(wantPatch)}` : '',
+        ].filter(Boolean);
+        body += `<div class="lp-sub h2h-scope${missing.length ? ' on' : ''}">Head-to-head records: <b>${shown}</b>.${missing.length ? ` Counter records aren't ${missing.join(' or ')}, so this list uses the closest records we have.` : ''}</div>`;
       }
       body += `<div class="lp-sub" style="margin:.2rem 0 .4rem">In their lane (<b>${esc(LANE_LABELS[role])}</b>) — your picks vs <b>${esc(nameOf(laneEnemy))}</b>, best first:</div>`;
       body += same.map((r) => rowHtml(r, false)).join('') || `<div class="lp-sub">${SIM ? `no ${esc(LANE_LABELS[role].toLowerCase())} sim vs ${esc(nameOf(laneEnemy))} yet` : `no ${esc(LANE_LABELS[role].toLowerCase())} hero has 20+ lane games against ${esc(nameOf(laneEnemy))} yet`}</div>`;

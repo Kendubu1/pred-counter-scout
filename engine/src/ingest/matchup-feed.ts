@@ -19,16 +19,22 @@
 // META.json patchFamilyReleasedAt, e.g. 1.17 + its hotfixes — the same window
 // lanestats/genstats use): a committed file from an older family is replaced,
 // not extended; a same-family rerun resumes from window.to and merges counts.
+//
+// PATCH ROLLOVER (2026-11-02): before a new family replaces the file, the
+// outgoing family's file is copied to data/aggregates/past-patches/<family>/
+// (next to that patch's lane stats), so the site's patch picker can still show
+// its counters. RANK BANDS (from 1.18): cellsByBand / pairsByBand count each
+// record in the band of the rank that player held in the game (src/matchup-pairs.ts).
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hasCredentials } from './predgg.js';
 import { sampleMatches } from './predgg-feed.js';
-import { roleWrOf, shrinkPairs, SHRINK_NOTE, type RoleWr } from '../matchup-edge.js';
+import { MATCHUP_BANDS, countMatchPairs, emptyBands, type BandKey, type Cell } from '../matchup-pairs.js';
+import { roleWrOf, shrinkPairs, shrinkBandPairs, SHRINK_NOTE, type RoleWr } from '../matchup-edge.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-const ROLES = new Set(['carry', 'midlane', 'offlane', 'jungle', 'support']);
 const MIN_GAMES = 20;
 const PER_HERO = Number(process.env.PER_HERO ?? 200);
 
@@ -49,42 +55,42 @@ async function main() {
   const to = new Date();
   if (resume) console.log(`resuming from ${existing.window.to} (window began ${windowFrom})`);
   else if (existing?.window?.from) console.log(`committed window began ${existing.window.from}; patch start is ${PATCH_START} — starting fresh`);
+  // Keep the outgoing patch's counters before the fresh window overwrites them.
+  const oldFamily: string | null = existing?.window?.patchFamily ?? null;
+  if (!resume && existing?.cells && oldFamily && oldFamily !== meta.patchFamily) {
+    const dir = path.join(ROOT, 'data/aggregates/past-patches', oldFamily);
+    mkdirSync(dir, { recursive: true });
+    const dest = path.join(dir, 'feed-matchups.json');
+    if (!existsSync(dest)) { copyFileSync(OUT, dest); console.log(`archived the ${oldFamily} counters to data/aggregates/past-patches/${oldFamily}/`); }
+  }
 
   const { matches: sample, requests } = await sampleMatches({ from, to, gameModes: ['RANKED'], perHero: PER_HERO });
-  const cells = new Map<string, { n: number; w: number }>(resume ? Object.entries(existing.cells as Record<string, { n: number; w: number }>) : []);
-  let matches = 0, pairsCounted = 0, lastStart = '';
+  const cells = new Map<string, Cell>(resume ? Object.entries(existing.cells as Record<string, Cell>) : []);
+  // Bands resume only when the committed file already has them (files from
+  // before 2026-11-02 start banded counting at the next fresh patch window).
+  const bandsOn = !resume || !!existing?.cellsByBand;
+  const byBand = emptyBands();
+  if (resume && existing?.cellsByBand) {
+    for (const { key } of MATCHUP_BANDS) byBand[key] = new Map(Object.entries((existing.cellsByBand[key] ?? {}) as Record<string, Cell>));
+  }
+  let matches = 0, pairsCounted = 0;
   for (const m of sample) {
     if (!m.winning_team) continue;
     matches++;
-    lastStart = m.start_time;
-    // index each team's players by role; count one directed pair per lane
-    const byTeamRole = new Map<string, Map<string, string>>();
-    for (const p of m.players) {
-      const role = p.role && ROLES.has(p.role) ? p.role : null;
-      if (!role) continue;
-      let tr = byTeamRole.get(p.team);
-      if (!tr) { tr = new Map(); byTeamRole.set(p.team, tr); }
-      if (!tr.has(role)) tr.set(role, p.hero_slug);   // duplicate-role rows: keep first
-    }
-    const teams = [...byTeamRole.keys()];
-    if (teams.length !== 2) continue;
-    const [t1, t2] = teams;
-    for (const role of ROLES) {
-      const a = byTeamRole.get(t1!)!.get(role), b = byTeamRole.get(t2!)!.get(role);
-      if (!a || !b || a === b) continue;
-      const aWon = t1 === m.winning_team;
-      const fwd = cells.get(`${a}|${b}`) ?? { n: 0, w: 0 };
-      fwd.n++; if (aWon) fwd.w++; cells.set(`${a}|${b}`, fwd);
-      const rev = cells.get(`${b}|${a}`) ?? { n: 0, w: 0 };
-      rev.n++; if (!aWon) rev.w++; cells.set(`${b}|${a}`, rev);
-      pairsCounted++;
-    }
+    pairsCounted += countMatchPairs(m, cells, byBand);
   }
 
-  // n-gated records plus their empirical-Bayes shrunk rate (src/matchup-edge.ts)
+  // n-gated records plus their empirical-Bayes shrunk rate (src/matchup-edge.ts);
+  // band records shrink toward the pair's all-ranks rate (BAND_K games).
   let roleWr: RoleWr = {};
   try { roleWr = roleWrOf(JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/index.json'), 'utf8'))); } catch { /* no index: 0.5 priors */ }
   const { pairs, k: shrinkK } = shrinkPairs(Object.fromEntries(cells), roleWr, MIN_GAMES);
+  const pairsByBand = bandsOn
+    ? Object.fromEntries(MATCHUP_BANDS.map(({ key }) => [key, shrinkBandPairs(Object.fromEntries(byBand[key as BandKey]), pairs, roleWr, MIN_GAMES)]))
+    : undefined;
+  const cellsByBand = bandsOn
+    ? Object.fromEntries(MATCHUP_BANDS.map(({ key }) => [key, Object.fromEntries([...byBand[key as BandKey].entries()].sort())]))
+    : undefined;
 
   // sim-vs-field validation (same method as matchup-evidence.ts)
   let both = 0, agree = 0, simEven = 0, fieldEven = 0;
@@ -118,16 +124,19 @@ async function main() {
   writeFileSync(OUT, JSON.stringify({
     generatedAt: new Date().toISOString(),
     source: `pred.gg ranked matches (sampled per hero, <= ${PER_HERO}/hero per run; src/ingest/predgg-feed.ts): same-role lane pairs, ${windowFrom} -> ${String(windowTo).slice(0, 10)}; directed "a|b" = a's record into b, n >= ${MIN_GAMES}`,
-    note: 'EMPIRICAL head-to-head lane records from a per-hero match sample of the current patch — no rank filter (all ranks). Raw `cells` persist ALL pairs so same-patch reruns resume incrementally from window.to; `pairs` is the n-gated consumable.',
+    note: 'EMPIRICAL head-to-head lane records from a per-hero match sample of the current patch. `pairs` / `cells` are all ranks; `pairsByBand` / `cellsByBand` (when present) split each directed record by the rank that player held in the game (low Bronze+Silver, mid Gold+Platinum, high Diamond and up; unplaced players only count in all ranks). Raw cells persist ALL pairs so same-patch reruns resume incrementally from window.to; pairs are the n-gated consumables.',
     window: { from: windowFrom, to: windowTo, matches: totalMatches, requests: requests + (resume ? (existing.window.requests ?? 0) : 0), patchFamily: meta.patchFamily ?? null },
     validation: both
       ? { pairsCompared: both, simAgrees: agree, agreementRate: Math.round((agree / both) * 1000) / 10, simSaidEven: simEven, fieldSaidEven: fieldEven, method: 'sim net kill-window verdict vs field winrate, counted only where both commit (field >=52% or <=48%, sim net != 0)' }
       : null,
+    rankBands: bandsOn ? MATCHUP_BANDS : undefined,
     shrink: { k: shrinkK, note: SHRINK_NOTE },
     pairs,
+    pairsByBand,
     cells: Object.fromEntries([...cells.entries()].sort()),
+    cellsByBand,
   }, null, 1));
-  console.log(`\n${matches} new ranked matches (${totalMatches} total) -> ${Object.keys(pairs).length} evidenced pairs (n>=${MIN_GAMES}) -> ${OUT}`);
+  console.log(`\n${matches} new ranked matches (${totalMatches} total), ${pairsCounted} lanes -> ${Object.keys(pairs).length} evidenced pairs (n>=${MIN_GAMES})${pairsByBand ? `; by band ${MATCHUP_BANDS.map(({ key }) => `${key} ${Object.keys(pairsByBand[key]!).length}`).join(', ')}` : ' (bands start with the next patch window)'} -> ${OUT}`);
   if (both) console.log(`validation: sim agrees with the field on ${agree}/${both} committed pairs (${Math.round((agree / both) * 1000) / 10}%)`);
 }
 

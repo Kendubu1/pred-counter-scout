@@ -71,6 +71,25 @@ export function shrinkPairs(cells: Record<string, NW>, roleWr: RoleWr, minGames 
   return { pairs, k: Math.round(k) };
 }
 
+/** Plat+-style band prior weight (games), as field-pick.ts BAND_K. */
+export const BAND_K = 100;
+
+/** A rank band's n-gated records, shrunk toward the same pair's all-ranks
+ *  shrunk rate (or, when the pair has no all-ranks record, its lane-strength
+ *  prior) with BAND_K games of prior: a thin band sample borrows the all-ranks
+ *  evidence, as Plat+ picks do (CLAUDE.md recommendation policy). */
+export function shrinkBandPairs(bandCells: Record<string, NW>, allPairs: Record<string, ShrunkPair>, roleWr: RoleWr, minGames = MATCHUP_MIN_GAMES): Record<string, ShrunkPair> {
+  const out: Record<string, ShrunkPair> = {};
+  for (const [key, c] of Object.entries(bandCells)) {
+    if (c.n < minGames) continue;
+    const [a, b] = key.split('|') as [string, string];
+    const all = allPairs[key];
+    const p = all ? all.shrunkWr / 100 : pairPrior(a, b, roleWr);
+    out[key] = { wr: pct(c.w / c.n), n: c.n, towerDiff: null, shrunkWr: pct((c.w + BAND_K * p) / (c.n + BAND_K)), prior: pct(p), lane: all ? all.lane : pairLane(a, b, roleWr) };
+  }
+  return out;
+}
+
 /** Index heroes -> RoleWr (data/artifacts/index.json roleWr). */
 export function roleWrOf(index: { heroes: { slug: string; roleWr?: Record<string, { wr: number; n: number }> }[] }): RoleWr {
   return Object.fromEntries(index.heroes.filter((h) => h.roleWr).map((h) => [h.slug, h.roleWr!]));

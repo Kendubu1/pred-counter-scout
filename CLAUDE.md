@@ -118,6 +118,11 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   `npm run aggregate` / `ranksplit` / `matchups:feed` / `calibrate` (live match
   samples from pred.gg via src/ingest/predgg-feed.ts — the omeda.city match feed
   they used went to 503 in 2026-09 and is retired),
+  `npm run matchups:feed` (head-to-head lane records for the counter list, sampled
+  from pred.gg ranked matches into data/aggregates/feed-matchups.json; resumes within
+  a patch, archives the outgoing patch's file to past-patches/<patch>/ before a new
+  patch starts fresh, and from 1.18 also counts each record in the rank band that
+  player held in the game (pairsByBand; src/matchup-pairs.ts), zero extra API),
   `npm run matrix` (all-pairs matchup matrix; rerun after catalog/artifacts),
   `npm run perks` (per-hero-role augment / Eternal / minor / minor-pair / crest
   win evidence, COUNTED from pred.gg's public match stream
@@ -164,7 +169,7 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   for films pulled before 2026-10-26; new pulls already carry them),
   `npm run lanestats` (per-hero-role RANKED lane stats for the CURRENT patch from
   pred.gg generalStatistic — the meta board's source; when the patch changes it first
-  archives the outgoing lane stats + bans to data/aggregates/past-patches/<patch>/),
+  archives the outgoing lane stats + bans (+ counters) to data/aggregates/past-patches/<patch>/),
   `npm run past-boards` (zero-API, end of `npm run artifacts`: data/artifacts/past-boards.json,
   the earlier patches on the homepage patch picker, scored by the same src/boards.ts
   rules as meta.json / bans.json; `npm run bans -- --dir <past-patches folder>` backfills

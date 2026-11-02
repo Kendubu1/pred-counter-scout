@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { fitK, pairLane, pairPrior, shrinkPairs, roleWrOf, K_MAX, K_MIN, type RoleWr } from '../src/matchup-edge.js';
+import { fitK, pairLane, pairPrior, shrinkPairs, shrinkBandPairs, roleWrOf, BAND_K, K_MAX, K_MIN, type RoleWr } from '../src/matchup-edge.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -44,6 +44,15 @@ describe('matchup edge (empirical-Bayes counter records)', () => {
     expect(k).toBeGreaterThanOrEqual(K_MIN);
     expect(k).toBeLessThan(50);
     expect(fitK(noiseOnly.slice(0, 3))).toBe(100);
+  });
+
+  it('band records borrow the pair\'s all-ranks rate with BAND_K games of prior', () => {
+    const all = shrinkPairs({ 'strong|weak': { n: 900, w: 500 } }, roleWr, 20).pairs;
+    const band = shrinkBandPairs({ 'strong|weak': { n: 25, w: 20 }, 'avg|weak': { n: 30, w: 15 }, 'weak|avg': { n: 5, w: 5 } }, all, roleWr, 20);
+    expect(Object.keys(band).sort()).toEqual(['avg|weak', 'strong|weak']);
+    const p = all['strong|weak']!.shrunkWr / 100;
+    expect(band['strong|weak']!.shrunkWr).toBeCloseTo(Math.round(((20 + BAND_K * p) / (25 + BAND_K)) * 1000) / 10, 6);
+    expect(band['avg|weak']!.prior).toBe(53);
   });
 
   it('the committed feed carries shrunk rates fitted from its own cells', () => {
