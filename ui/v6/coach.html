@@ -793,7 +793,7 @@ function pgReview(f) {
       ${hIcon(m.heroSlug, 28)}
       <span style="min-width:9rem"><b>${esc(m.name)}</b><br><span style="color:var(--text-2);font-size:.8rem">${esc(m.heroName)} · ${esc(m.role)}</span></span>
       <span style="font-size:.85rem">${m.kills} / ${m.deaths} / ${m.assists}</span>
-      <span style="font-size:.8rem;color:var(--text-2)">${m.roleWr != null ? `${p1(m.roleWr)}% career in ${esc(m.role)} · ${m.roleGames} games` : ''}${m.bestSeat && m.bestSeat !== m.role && !sr.lanesWereBest ? ` · best seat here: ${esc(m.bestSeat)}` : ''}</span>
+      <span style="font-size:.8rem;color:var(--text-2)">${m.roleWr != null ? `${p1(m.roleWr)}% career in ${esc(m.role)} · ${m.roleGames} games` : ''}</span>
       <span style="font-size:.8rem;margin-left:auto">${gameWord(m)}</span>
     </div>`).join('');
     const rec = sr.recommend;
@@ -807,8 +807,11 @@ function pgReview(f) {
     </div>` : f.result === 'loss' && sr.lanesWereBest
       ? '<div style="color:var(--text-2);font-size:.85rem;margin-top:.6rem">You were already in your best seats for this group, and nobody had a rough game for their lane, so no lane change to suggest.</div>'
       : '';
-    return card(`${eyebrow(`Who queued · ${sr.stackSize}-stack`, 'the other seats were randoms')}${rows}${recBlock}
-      <div style="color:var(--text-2);font-size:.72rem;margin-top:.55rem">Lane records: each player's career win rate in that role (shrunk on thin samples), seats scored as a set like the 5-stack picker, including the carry + support duo-lane record. Lane norm: this game's output against that hero in that role across our reviewed films. A lane suggestion shows only after a loss.</div>`);
+    // The lane suggestion sits collapsed: most stacks already know their seats.
+    const more = recBlock ? `<details class="sim-collapse" style="margin-top:.6rem"><summary>Lanes for next time</summary>${recBlock}
+      <div style="color:var(--text-2);font-size:.72rem;margin-top:.55rem">Seats scored as a set like the 5-stack picker from each player's career win rate in that role (shrunk on thin samples), including the carry + support duo-lane record. Shown only after a loss.</div></details>` : '';
+    return card(`${eyebrow(`Who queued · ${sr.stackSize}-stack`, 'the other seats were randoms')}${rows}${more}
+      <div style="color:var(--text-2);font-size:.72rem;margin-top:.55rem">Lane norm: this game's output against that hero in that role across our reviewed films.</div>`);
   })();
 
   // ── The three moments: tagged fights first, then by significance · capped at 3.
