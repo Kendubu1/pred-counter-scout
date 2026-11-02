@@ -5567,3 +5567,14 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   all-ranks laneWr equals the index roleWr on all 165 cells. Lesson: when a page has one
   filter, every number on it has to come from the filtered source; audit the secondary
   lists, not just the headline table.
+
+- 2026-11-02 · Live draft counter (ui/v6/livedraft.html) still ranked counters by the
+  kit-math matrix and showed its fight dots unconditionally, even though sim-flag.js hides
+  sim output everywhere else and index.html's lane room already ranks by the real
+  head-to-head record (data/aggregates/feed-matchups.json pairs, n >= 20). It now uses the
+  same records (merged with predgg-matchups.json like getMatchups()); the matrix and dots
+  load only under ?sim=1, labelled as the experimental sim. Same page: a hero pool with
+  HTML5 drag-and-drop plus tap-to-hold/tap-a-slot (touch browsers without DnD), drag to
+  swap placed heroes between lanes, "Add our pick", and move for our side. Lesson: when a
+  site-wide switch gates a data source, grep every page that loads that source, not just
+  the pages that read the switch.
