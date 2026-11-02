@@ -66,6 +66,9 @@ const heroes = Object.entries(pred.predictions)
 // Digest slug -> site slug (Neon's artifact/image is "neon"). Used by the
 // hero cards (out-link) and the showcase.
 const SITE_SLUG = { n3on: 'neon' };
+// A hero the catalog has not published yet (a new hero on release eve) has no
+// hero page; the card drops its "full page" link instead of landing on home.
+const HAS_PAGE = (site) => fs.existsSync(path.join(ROOT, 'data/artifacts', `${site}.json`));
 // One showcase tile: image + colored trend arrow, links to an in-page anchor.
 function showcaseTile({ href, img, name, trend, title }) {
   const a = TREND[trend] || TREND.mixed;
@@ -130,7 +133,7 @@ function heroCard([slug, p]) {
     : '';
   return `
       <div class="hero-card card" id="hero-${slug}" data-mag="${p.magnitude}" data-trend="${p.trend}">
-        <a class="card-out" href="v6/?hero=${site}" title="Open ${esc(p.name)}'s full build &amp; matchups">full page ↗</a>
+        ${HAS_PAGE(site) ? `<a class="card-out" href="v6/?hero=${site}" title="Open ${esc(p.name)}'s full build &amp; matchups">full page ↗</a>` : ''}
         <div class="hero-head">
           <span class="hero-name">${esc(p.name)}</span>
           <span class="hero-role">${esc(p.role || '')}</span>

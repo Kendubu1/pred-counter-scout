@@ -5489,3 +5489,15 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   section lead contradicting the summary), round 2 found 2 low wording slips from its
   own fixes. Again every medium was a number attached to the wrong claim, which a
   token checker cannot see.
+- **Release-eve icons come from the notes' own art, registered as placeholders.**
+  Kaelen, Vortex Stone and Forticus had no pred.gg assets, so their tiles were blank.
+  The New Items banners carry the real in-game item icon in their left badge (circle
+  crop); Kaelen's portrait is a head crop of the Frostbane key art, which is his
+  Quantum skin, not his default look. `npm run icons` is skip-if-exists, so a stand-in
+  would have blocked the real asset forever: files listed in ui/img/placeholders.json
+  are always re-fetched and drop off the list once replaced. The patch page also omits
+  "full page" for a hero with no artifact instead of linking to the home page.
+- Trim pass (maintainer: "still pretty lengthy"): measure against earlier reviews
+  before cutting; 1.18's willChange ran 86 words vs ~61. The critic's round on the
+  trimmed copy found the trim's typical failure: a dropped "the notes say" turns a
+  reading of the notes into a flat build order. 1 medium + 4 low, all applied.

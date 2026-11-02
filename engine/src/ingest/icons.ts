@@ -39,18 +39,34 @@ function slugify(name: string): string {
 // A 404 means the upstream catalog points at an asset it does not serve
 // (seen for one augment); that is a warning, not a pipeline failure. Anything
 // else (network, 5xx) fails the run so a refresh never silently ships gaps.
+// Placeholders: stand-in icons we cut ourselves (e.g. from the patch notes'
+// art) for a hero or item pred.gg has not published yet. Skip-if-exists would
+// keep them forever, so a file listed in ui/img/placeholders.json is always
+// re-fetched, and drops off the list once the real asset lands.
+const PLACEHOLDERS = path.join(ROOT, 'ui/img/placeholders.json');
+function readPlaceholders(): { note?: string; files: Record<string, string> } {
+  return existsSync(PLACEHOLDERS) ? JSON.parse(readFileSync(PLACEHOLDERS, 'utf8')) : { files: {} };
+}
+
 async function fetchMissing(jobs: Job[]): Promise<{ fetched: number; missing: string[]; failed: string[] }> {
   let fetched = 0;
   const missing: string[] = [];
   const failed: string[] = [];
+  const ph = readPlaceholders();
+  const phKey = (dest: string) => path.relative(path.join(ROOT, 'ui'), dest).split(path.sep).join('/');
   for (const job of jobs) {
-    if (existsSync(job.dest)) continue;
+    if (existsSync(job.dest) && !ph.files[phKey(job.dest)]) continue;
     mkdirSync(path.dirname(job.dest), { recursive: true });
     try {
       const res = await fetch(job.url, { headers: UA });
       if (res.status === 404) { missing.push(`${job.label}: upstream 404`); continue; }
       if (!res.ok) { failed.push(`${job.label}: HTTP ${res.status}`); continue; }
       writeFileSync(job.dest, Buffer.from(await res.arrayBuffer()));
+      if (ph.files[phKey(job.dest)]) {
+        delete ph.files[phKey(job.dest)];
+        writeFileSync(PLACEHOLDERS, JSON.stringify(ph, null, 2) + '\n');
+        console.log(`  placeholder replaced: ${phKey(job.dest)}`);
+      }
       fetched++;
       console.log(`  + ${job.label} -> ${path.relative(ROOT, job.dest)}`);
     } catch (e) {
