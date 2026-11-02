@@ -5552,3 +5552,8 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
 - **Artifacts test lists non-hero files explicitly.** Any new file in data/artifacts/
   must join the exclusion lists in test/artifacts.test.ts or it is read as a hero
   artifact.
+- **Narrowing rows alone left the lane room lopsided (maintainer follow-up, 2026-11-02).**
+  Capping the picking-first rows fixed the eye travel but left the right half of the desktop
+  panel empty. The fix is a two-column split from 860px (ranked list left; rest of the lane,
+  flex picks and top players right; the legend spans both). Phones keep one column. When
+  you shrink content to fix reading distance, fill the space it gives back.
