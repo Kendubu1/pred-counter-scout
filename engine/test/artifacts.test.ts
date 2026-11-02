@@ -56,7 +56,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
 
   it('the committed artifact set covers the full roster and parses', () => {
     const dir = path.join(ROOT, 'data/artifacts');
-    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json', 'player-reviews.json', 'stack-reviews.json'].includes(f));
+    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json', 'player-reviews.json', 'stack-reviews.json', 'past-boards.json'].includes(f));
     const roster = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8'));
     expect(files.length).toBe(Object.keys(roster).length);
     for (const f of files) {
@@ -72,7 +72,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
     const { significantlyWinningLanes } = await import('../src/playstyle.js');
     const dir = path.join(ROOT, 'data/artifacts');
     const bad: string[] = [];
-    for (const f of readdirSync(dir).filter((x) => x.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json', 'player-reviews.json', 'stack-reviews.json'].includes(x))) {
+    for (const f of readdirSync(dir).filter((x) => x.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json', 'player-reviews.json', 'stack-reviews.json', 'past-boards.json'].includes(x))) {
       const a = JSON.parse(readFileSync(path.join(dir, f), 'utf8'));
       const roles: string[] = (a.roles ?? []).map((v: { role: string }) => v.role);
       if (roles.length > 4) bad.push(`${f}: ${roles.length} role pages`);
@@ -86,7 +86,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
     // and the page defaulted to a 2%-of-games core over the lane's real build.
     const dir = path.join(ROOT, 'data/artifacts');
     const bad: string[] = [];
-    for (const f of readdirSync(dir).filter((x) => x.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json', 'player-reviews.json', 'stack-reviews.json'].includes(x))) {
+    for (const f of readdirSync(dir).filter((x) => x.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json', 'player-reviews.json', 'stack-reviews.json', 'past-boards.json'].includes(x))) {
       const a = JSON.parse(readFileSync(path.join(dir, f), 'utf8'));
       for (const v of [a, ...(a.roles ?? [])]) {
         const mb: { items: { name: string; slug: string | null }[]; n: number }[] = v.metaBuilds ?? [];
@@ -131,6 +131,30 @@ describe('hero artifacts (Concept A engine stage)', () => {
       const sum = board.heroes.reduce((s: number, h: { banRate: number }) => s + h.banRate, 0);
       expect(sum).toBeGreaterThan(3);
       expect(sum).toBeLessThan(5);
+    }
+  });
+
+  it('past-patch boards: older patches only, same shape as meta.json, bans add up', () => {
+    const p = path.join(ROOT, 'data/artifacts/past-boards.json');
+    if (!existsSync(p)) return; // ships once a patch is archived (npm run past-boards)
+    const past = JSON.parse(readFileSync(p, 'utf8'));
+    const meta = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/meta.json'), 'utf8'));
+    const ver = (v: string) => v.split('.').map(Number);
+    const older = (a: string, b: string) => { const [x, y] = [ver(a), ver(b)]; for (let i = 0; i < Math.max(x.length, y.length); i++) { if ((x[i] ?? 0) !== (y[i] ?? 0)) return (x[i] ?? 0) < (y[i] ?? 0); } return false; };
+    for (const pp of past.patches) {
+      expect(older(pp.patch, meta.patch)).toBe(true);
+      expect(pp.matches).toBeGreaterThan(0);
+      for (const role of Object.keys(meta.roles)) expect(pp.roles[role]?.length ?? 0).toBeGreaterThan(0);
+      for (const b of pp.rankBands ?? []) {
+        expect(pp.matchesByBand[b.key]).toBeGreaterThan(0);
+        expect(Object.keys(pp.rolesByBand[b.key])).toEqual(Object.keys(meta.roles));
+      }
+      if (pp.bans) {
+        expect(pp.bans.patch).toBe(pp.patch);
+        const sum = pp.bans.all.heroes.reduce((s: number, h: { banRate: number }) => s + h.banRate, 0);
+        expect(sum).toBeGreaterThan(3);
+        expect(sum).toBeLessThan(5);
+      }
     }
   });
 
@@ -275,7 +299,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
 
   it('off-meta promotion respects the evidence gate: no negative-evidence finds', () => {
     const dir = path.join(ROOT, 'data/artifacts');
-    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json', 'player-reviews.json', 'stack-reviews.json'].includes(f));
+    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json', 'player-reviews.json', 'stack-reviews.json', 'past-boards.json'].includes(f));
     for (const f of files) {
       const a = JSON.parse(readFileSync(path.join(dir, f), 'utf8')) as {
         offMeta: { candidates: { item: string }[] };

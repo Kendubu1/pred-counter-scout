@@ -28,7 +28,7 @@
 // matchesBanned is NOT read here — it partitions per role and sums 5x high
 // (lessons.md 2026-08-14); genstats owns the corrected ban counts.
 
-import { writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gql, hasCredentials, currentVersion } from './predgg.js';
@@ -126,7 +126,23 @@ async function main() {
     note: 'Lane-board evidence source. n/w are role-filtered ranked games for the pinned patch. Approximate match count = all cell games / 10 (each match contributes ten player-rows). Bans deliberately absent: matchesBanned partitions per role and reads 5x high — genstats owns the corrected counts.',
     heroes,
   };
-  writeFileSync(path.join(ROOT, 'data/aggregates/predgg-lane-stats.json'), JSON.stringify(out, null, 1));
+  // Patch rollover: keep the outgoing patch's boards for the site's patch picker.
+  // Bans still hold the old patch here (npm run bans follows this step), so both
+  // files move together into past-patches/<old>/, which npm run past-boards reads.
+  const lanePath = path.join(ROOT, 'data/aggregates/predgg-lane-stats.json');
+  if (existsSync(lanePath)) {
+    const prev = JSON.parse(readFileSync(lanePath, 'utf8')) as { patch?: string };
+    if (prev.patch && prev.patch !== v.name) {
+      const dir = path.join(ROOT, 'data/aggregates/past-patches', prev.patch);
+      mkdirSync(dir, { recursive: true });
+      copyFileSync(lanePath, path.join(dir, 'predgg-lane-stats.json'));
+      const bansPath = path.join(ROOT, 'data/aggregates/predgg-bans.json');
+      const bansPatch = existsSync(bansPath) ? (JSON.parse(readFileSync(bansPath, 'utf8')) as { patch?: string }).patch : null;
+      if (bansPatch === prev.patch) copyFileSync(bansPath, path.join(dir, 'predgg-bans.json'));
+      console.log(`\npatch ${prev.patch} -> ${v.name}: archived the ${prev.patch} lane stats${bansPatch === prev.patch ? ' and bans' : ''} to data/aggregates/past-patches/${prev.patch}/`);
+    }
+  }
+  writeFileSync(lanePath, JSON.stringify(out, null, 1));
   console.log(`\n${calls} calls -> data/aggregates/predgg-lane-stats.json (${Object.keys(heroes).length} heroes, ~${out.matchesApprox.toLocaleString()} ranked matches, patch ${v.name}; bands ${bands.map((bd) => `${bd.key}~${matchesApproxByBand[bd.key]?.toLocaleString()}`).join(', ')})`);
 }
 
