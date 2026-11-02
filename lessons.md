@@ -5557,3 +5557,13 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   panel empty. The fix is a two-column split from 860px (ranked list left; rest of the lane,
   flex picks and top players right; the legend spans both). Phones keep one column. When
   you shrink content to fix reading distance, fill the space it gives back.
+- **Lane room chips ignored the rank and patch filters (maintainer report, 2026-11-02).**
+  The ranked list read the filtered board, but the "rest of the lane" / "also flexed"
+  chips read the index roleWr (all ranks, current patch), so they never moved. The boards
+  only carry ~10 heroes per lane, so buildMetaBoards (src/boards.ts) now also emits
+  laneWr / laneWrByBand: every hero with 30+ games per lane per filter, shrunk with that
+  board's own k. Written to meta.json and past-boards.json; zero-API from the committed
+  lane stats. Verified: recomputed boards byte-identical to the committed ones, and the
+  all-ranks laneWr equals the index roleWr on all 165 cells. Lesson: when a page has one
+  filter, every number on it has to come from the filtered source; audit the secondary
+  lists, not just the headline table.

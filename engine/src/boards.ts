@@ -15,6 +15,9 @@ export interface LaneStatsFile {
 }
 export type BoardRow = { slug: string; name: string; games: number; rawWr: number; shrunkWr: number; metaScore: number; badge: string | null; augmentPending?: boolean };
 
+/** slug -> [games, shrunk win rate] for every hero with 30+ games in one lane. */
+export type LaneWr = Record<string, [number, number]>;
+
 export const BOARD_ROLES = ['carry', 'midlane', 'offlane', 'jungle', 'support'];
 
 /** One empirical-Bayes shrink strength per lane from the all-ranks cells. */
@@ -44,8 +47,12 @@ export function buildMetaBoards(opts: {
   priorK: Record<string, number>;
   nameOf: (slug: string) => string | undefined; // undefined = no kit: excluded
   augmentPending?: (slug: string, role: string) => boolean;
-}): { roles: Record<string, BoardRow[]>; rolesByBand: Record<string, Record<string, BoardRow[]>> } {
+}): {
+  roles: Record<string, BoardRow[]>; rolesByBand: Record<string, Record<string, BoardRow[]>>;
+  laneWr: Record<string, LaneWr>; laneWrByBand: Record<string, Record<string, LaneWr>>;
+} {
   const { laneCells, nameOf } = opts;
+  let wrOut: Record<string, LaneWr> = {};
   const laneBoard = (role: string, cellOf: (h: { byRole?: Record<string, LaneCell> }) => NW | undefined, matches: number, fallbackK?: number): BoardRow[] => {
     const cells = Object.entries(laneCells)
       // unmapped hero_id:* entries are excluded: no kit, no portrait, no
@@ -59,6 +66,13 @@ export function buildMetaBoards(opts: {
       .filter((x): x is { slug: string; cell: NW } =>
         nameOf(x.slug) !== undefined && !!x.cell && x.cell.n >= Math.max(30, Math.round(matches / 500)));
     const k = fallbackK ?? momPriorStrength(cells.map((c) => c.cell), 0.5);
+    // Every hero's win rate in this lane at this filter (not just the board's
+    // rows), shrunk with the SAME k so a hero reads identically on the board and
+    // in the lane room's chips. 30-game floor, the index roleWr's floor.
+    wrOut[role] = Object.fromEntries(Object.entries(laneCells)
+      .map(([slug, h]) => [slug, cellOf(h)] as const)
+      .filter(([slug, c]) => nameOf(slug) !== undefined && !!c && c.n >= 30)
+      .map(([slug, c]) => [slug, [c!.n, Math.round(((c!.w + k * 0.5) / (c!.n + k)) * 1000) / 1000]]));
     // The augment gate used to DROP any (hero, lane) the augment pull lacks a
     // cell for. With current-patch lane evidence that quietly censors exactly
     // the interesting rows — a hero newly meta in a role, or a new hero — and
@@ -103,14 +117,18 @@ export function buildMetaBoards(opts: {
   };
   const roles: Record<string, BoardRow[]> = {};
   const rolesByBand: Record<string, Record<string, BoardRow[]>> = {};
+  const laneWr: Record<string, LaneWr> = {};
+  const laneWrByBand: Record<string, Record<string, LaneWr>> = {};
   for (const role of BOARD_ROLES) {
+    wrOut = laneWr;
     roles[role] = laneBoard(role, (h) => h.byRole?.[role], opts.matches, opts.priorK[role]);
     for (const band of opts.bands) {
+      wrOut = (laneWrByBand[band.key] ??= {});
       (rolesByBand[band.key] ??= {})[role] =
         laneBoard(role, (h) => h.byRole?.[role]?.bands?.[band.key], opts.matchesByBand?.[band.key] ?? 0);
     }
   }
-  return { roles, rolesByBand };
+  return { roles, rolesByBand, laneWr, laneWrByBand };
 }
 
 export interface BanPull { patch: string; generatedAt: string; heroes: Record<string, { bans: number; bands: Record<string, number> }> }

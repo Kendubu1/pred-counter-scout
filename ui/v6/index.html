@@ -1030,15 +1030,26 @@ async function renderLaneDetail() {
       </div>`;
     }).join('');
     const metaSet = new Set(laneMeta.map((h) => h.slug));
-    const wrOf = (h) => (h.roleWr && h.roleWr[role] ? h.roleWr[role].wr : 0);
+    // Chip win rates follow the SAME rank band + patch as the ranked list above
+    // (meta.json / past-boards laneWr, shrunk like the board). Under 30 games at
+    // this filter: listed as "few games", sorted last. Older data without laneWr
+    // falls back to the index roleWr (all ranks, current patch).
+    const M = metaSrc();
+    const laneWrSrc = metaBand === 'all' ? M.laneWr : M.laneWrByBand?.[metaBand];
+    const cellOf = (h) => {
+      if (laneWrSrc) { const c = laneWrSrc[role]?.[h.slug]; return c ? { n: c[0], wr: c[1] } : null; }
+      return (h.roleWr && h.roleWr[role]) || null;
+    };
+    const wrOf = (h) => (cellOf(h) ? cellOf(h).wr : 0);
     const rest = INDEX.heroes.filter((h) => h.role === role && !metaSet.has(h.slug)).sort((a, b) => wrOf(b) - wrOf(a));
     // heroes whose PRIMARY lane is elsewhere but who flex into this role per the
     // data (e.g. The Fey support) — surfaced so they aren't invisible here
     const flex = INDEX.heroes.filter((h) => h.role !== role && !metaSet.has(h.slug) && (h.roles || []).includes(role))
       .sort((a, b) => wrOf(b) - wrOf(a));
     const echip = (h, isFlex) => {
-      const w = h.roleWr && h.roleWr[role];
-      const wr = w ? `<b style="color:${wrColor(w.wr)}" title="${esc(wrTip(w.wr))}">${(w.wr * 100).toFixed(1)}%</b>` : '';
+      const w = cellOf(h);
+      const wr = w ? `<b style="color:${wrColor(w.wr)}" title="${esc(wrTip(w.wr))} · ${w.n.toLocaleString()} games">${(w.wr * 100).toFixed(1)}%</b>`
+        : `<span title="Under 30 games in this lane at this rank and patch">few games</span>`;
       const tag = wr; // both rest and flex chips: just the win% (section header already says which group)
       return `
         <span class="echip" data-slug="${h.slug}" data-go="hero"${isFlex ? ` data-role="${role}"` : ''}>
