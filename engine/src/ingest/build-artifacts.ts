@@ -298,7 +298,7 @@ if (agg || laneStats) {
     matchesByBand: bands.length ? laneStats?.matchesApproxByBand : undefined,
     rolesByBand: bands.length ? rolesByBand : undefined,
     topPlayers,
-    topPlayersNote: topPlayers ? 'current ranked split leaderboard via the pred.gg API (favRole filter); VP = victory points' : null,
+    topPlayersNote: topPlayers ? 'current ranked split leaderboard via the pred.gg API (favRole filter); hero = their most-played ranked hero in that lane; VP = victory points' : null,
   }, null, 1));
   console.log('meta.json written');
 }

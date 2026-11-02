@@ -410,6 +410,10 @@
   .lmode button.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
   .lrow { display:grid; grid-template-columns:auto 1fr auto; gap:.7rem; align-items:center; padding:.45rem 0; border-bottom:1px solid var(--border); cursor:pointer; }
   .lrow:last-of-type { border-bottom:none; }
+  /* Rows stay reading-width on desktop: with the sim line under each hero
+     switched off (2026-10-26) a full-panel row left the name at the far left and
+     the win rate ~900px away at the far right. Same cap for the players rows. */
+  .lrow, .lanepanel .pilots { max-width:36rem; }
   .lrow img { width:34px; height:34px; border-radius:8px; object-fit:cover; }
   .lrow .sub { font-size:.7rem; color:var(--text-2); }
   .lrow .wrr { font-weight:800; font-variant-numeric:tabular-nums; font-size:.86rem; }

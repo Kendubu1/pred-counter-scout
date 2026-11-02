@@ -5518,3 +5518,15 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   player card and the patch page can never disagree. First cut matched the new hero
   only on the review's single role (offlane), which no member plays in their top two;
   predictions can now carry `altRoles` (Kaelen: jungle), which the review text already said.
+- **Top players showed the wrong hero (maintainer report, 2026-11-02).** The leaderboard's
+  `favHero` is the player's most-played hero across EVERY role, so lane lists showed off-lane
+  heroes (#11 carry Purpleswan showed Neon, 142 games mostly mid; their top ranked carry hero is
+  Twinblast; the whole offlane list showed Scarlet). topPlayersPerLane now asks for each
+  player's ranked heroStatistics filtered to that lane (one aliased query per lane) and keeps
+  favHero only as a fallback. `npm run topplayers` refreshes just meta.json's topPlayers in
+  seconds, without the 25-min artifacts rebuild. Lesson: a player's "favourite" is not their
+  favourite in the lane you are showing them in.
+- **Lane room rows read too wide on desktop.** Turning the sim off (2026-10-26) removed the line
+  under each lane-room hero, leaving the name at the far left and the win rate ~900px away.
+  The rows and players list are now capped at 36rem. When removing content from a row, re-check
+  the row's layout at desktop width, not just that the text is gone.
