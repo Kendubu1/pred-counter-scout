@@ -105,6 +105,14 @@ export async function currentRatingId(): Promise<string> {
  * Top ranked players per lane from the split leaderboard (favRole filter).
  * Requires credentials; returns null without them. Null player names
  * (private profiles) are skipped.
+ *
+ * The hero shown is the player's most-played RANKED hero IN THAT LANE
+ * (heroStatistics filtered by role), not the leaderboard's favHero: favHero
+ * is their most-played hero across every role, so a carry-ladder player who
+ * mostly plays mid showed their mid hero (2026-11-02: #11 carry Purpleswan
+ * showed Neon, 142 games mostly mid; their top carry hero is Twinblast).
+ * One aliased query per lane covers all its players. favHero is the
+ * fallback only when the player has no ranked games tracked in that role.
  */
 export async function topPlayersPerLane(limit = 5): Promise<Record<string, TopPlayer[]> | null> {
   if (!hasCredentials()) return null;
@@ -124,19 +132,38 @@ export async function topPlayersPerLane(limit = 5): Promise<Record<string, TopPl
         results { ranking points rank { name } player { name uuid favHero { name slug } } }
       } }`,
     );
-    out[lane.toLowerCase()] = d.leaderboardPaginated.results
-      .filter((r) => r.player?.name)
-      .slice(0, limit)
-      .map((r) => ({
+    const top = d.leaderboardPaginated.results.filter((r) => r.player?.name).slice(0, limit);
+    await new Promise((r) => setTimeout(r, 150));
+    const laneHero = await laneMains(top.map((r) => r.player!.uuid), lane);
+    out[lane.toLowerCase()] = top.map((r, i) => {
+      const hero = laneHero[i] ?? r.player!.favHero ?? null;
+      return {
         ranking: r.ranking,
         name: r.player!.name!,
         uuid: r.player!.uuid ?? null,
         points: Math.round(r.points),
         rank: r.rank?.name ?? '',
-        heroName: r.player!.favHero?.name ?? null,
-        heroSlug: r.player!.favHero?.slug ?? null,
-      }));
+        heroName: hero?.name ?? null,
+        heroSlug: hero?.slug ?? null,
+      };
+    });
     await new Promise((r) => setTimeout(r, 150));
   }
   return out;
+}
+
+/** Each player's most-played ranked hero in `lane` (null when they have
+ *  none tracked there or no uuid), one aliased query for the whole list. */
+async function laneMains(uuids: (string | null)[], lane: string): Promise<({ name: string; slug: string } | null)[]> {
+  const parts = uuids.map((u, i) => (u
+    ? `p${i}: player(by: { uuid: "${u}" }) { heroStatistics(filter: { roles: [${lane}], gameModes: [RANKED] }) { results { hero { name slug } matchesPlayed } } }`
+    : ''));
+  if (!parts.some(Boolean)) return uuids.map(() => null);
+  type Res = { heroStatistics: { results: { hero: { name: string; slug: string }; matchesPlayed: number }[] } } | null;
+  const d = await gql<Record<string, Res>>(`{ ${parts.filter(Boolean).join('\n')} }`);
+  return uuids.map((_, i) => {
+    const rows = d[`p${i}`]?.heroStatistics?.results ?? [];
+    const best = rows.filter((r) => r.matchesPlayed > 0).sort((a, b) => b.matchesPlayed - a.matchesPlayed)[0];
+    return best ? best.hero : null;
+  });
 }
