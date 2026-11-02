@@ -133,7 +133,6 @@ function heroCard([slug, p]) {
     : '';
   return `
       <div class="hero-card card" id="hero-${slug}" data-mag="${p.magnitude}" data-trend="${p.trend}">
-        ${HAS_PAGE(site) ? `<a class="card-out" href="v6/?hero=${site}" title="Open ${esc(p.name)}'s full build &amp; matchups">full page ↗</a>` : ''}
         <div class="hero-head">
           ${HAS_PAGE(site)
             ? `<a class="hero-pic" href="v6/?hero=${site}" title="Open ${esc(p.name)}'s full page"><img loading="lazy" src="img/heroes/${site}.webp" alt="${esc(p.name)}" onerror="this.style.visibility='hidden'"></a>`
