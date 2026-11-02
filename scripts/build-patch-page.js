@@ -110,6 +110,30 @@ function makeGloss() {
   });
 }
 
+// Predicted builds for a hero with no games yet (a new hero on release eve).
+// A kit read, never a recommendation: the site's picks are statistical edges
+// only (CLAUDE.md recommendation policy), so the block is labelled as a guess
+// and disappears once that hero has measured patch games.
+function predictedBuildsBlock(pb, g) {
+  if (!pb || !(pb.builds || []).length) return '';
+  const icon = (dir, it, extra = '') => `<span class="pb-it${extra}" title="${esc(it.name)}"><img loading="lazy" src="img/${dir}/${it.slug}.webp" alt="" onerror="this.style.visibility='hidden'"><span class="pb-it-name">${esc(it.name)}</span></span>`;
+  const builds = pb.builds.map((b) => `
+          <div class="pb-build">
+            <div class="pb-head"><span class="pb-title">${esc(b.title)}</span><span class="hero-role">${esc(b.role || '')}</span></div>
+            <div class="pb-row">${b.items.map((it, i) => (i ? '<span class="pb-arrow" aria-hidden="true">→</span>' : '') + icon('items', it)).join('')}${
+              (b.alt || []).length ? `<span class="pb-altgrp"><span class="pb-or">or</span>${b.alt.map((it) => icon('items', it, ' pb-alt')).join('')}</span>` : ''}</div>
+            <div class="pb-perks">${b.eternal ? `<span class="pb-perk"><img loading="lazy" src="img/eternals/${b.eternal.slug}.webp" alt="" onerror="this.style.display='none'">Eternal: <b>${esc(b.eternal.name)}</b>${b.altEternal ? ` or ${esc(b.altEternal.name)}` : ''}</span>` : ''}${
+              b.augment ? `<span class="pb-perk">Augment: <b>${esc(b.augment)}</b></span>` : ''}</div>
+            <div class="pb-why">${g(esc(b.why))}</div>
+          </div>`).join('');
+  return `
+        <div class="pred-builds">
+          <div class="pb-label"><span class="pred-label">Predicted builds</span><span class="pb-tag">Guess, no games yet</span></div>
+          <div class="pb-grid">${builds}</div>
+          ${pb.note ? `<div class="pb-note">${esc(pb.note)}</div>` : ''}
+        </div>`;
+}
+
 function heroCard([slug, p]) {
   const g = makeGloss();
   const t = TREND[p.trend] || TREND.mixed;
@@ -145,6 +169,7 @@ function heroCard([slug, p]) {
         <ul class="change-list">${changes}</ul>
         <div class="pred"><span class="pred-label">Why</span>${g(esc(p.why))}</div>
         <div class="pred"><span class="pred-label">What it'll change</span>${g(esc(p.willChange))}</div>
+        ${mm ? '' : predictedBuildsBlock(p.predictedBuilds, g)}
         ${simRead}
         ${measuredLine}
       </div>`;
@@ -475,6 +500,26 @@ const html = `<!DOCTYPE html>
       font-weight: 700; color: var(--accent); margin-right: 0.45rem; vertical-align: 1px; }
     .sim-read { font-size: 0.74rem; color: var(--text-2); margin-top: 0.35rem;
       border-top: 1px dashed var(--border); padding-top: 0.4rem; }
+    .pred-builds { margin-top: 0.55rem; border-top: 1px dashed var(--border); padding-top: 0.55rem; }
+    .pb-label { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.45rem; }
+    .pb-tag { font-size: 0.66rem; color: var(--gold); background: #f0b42925; border-radius: 999px; padding: 0.1rem 0.5rem; font-weight: 700; }
+    .pb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 0.55rem; }
+    .pb-build { background: var(--bg-1); border: 1px solid var(--border); border-radius: 10px; padding: 0.6rem 0.7rem; min-width: 0; }
+    .pb-head { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.45rem; }
+    .pb-title { font-weight: 700; color: var(--text-0); font-size: 0.86rem; }
+    .pb-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.3rem; margin-bottom: 0.45rem; }
+    .pb-it { display: flex; flex-direction: column; align-items: center; width: 62px; text-align: center; }
+    .pb-it img { width: 44px; height: 44px; border-radius: 8px; background: var(--bg-3); border: 1px solid var(--border); object-fit: cover; }
+    .pb-it-name { font-size: 0.64rem; color: var(--text-2); line-height: 1.2; margin-top: 0.2rem; }
+    .pb-alt img { opacity: 0.8; border-style: dashed; }
+    .pb-arrow, .pb-or { color: var(--text-2); font-size: 0.75rem; align-self: center; margin-top: -0.9rem; }
+    .pb-altgrp { display: flex; align-items: flex-start; gap: 0.3rem; }
+    .pb-or { font-style: italic; margin-left: 0.15rem; }
+    .pb-perks { display: flex; flex-wrap: wrap; gap: 0.35rem 0.8rem; font-size: 0.76rem; color: var(--text-1); margin-bottom: 0.35rem; }
+    .pb-perk { display: inline-flex; align-items: center; gap: 0.3rem; }
+    .pb-perk img { width: 20px; height: 20px; border-radius: 50%; object-fit: cover; }
+    .pb-why { font-size: 0.78rem; color: var(--text-2); line-height: 1.45; }
+    .pb-note { font-size: 0.72rem; color: var(--text-2); margin-top: 0.45rem; font-style: italic; }
     table.et { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
     table.et td { border-bottom: 1px solid var(--border); padding: 0.5rem 0.6rem; vertical-align: top; color: var(--text-1); }
     .et-name { font-weight: 700; color: var(--text-0); white-space: nowrap; }
@@ -846,6 +891,7 @@ ${compsBlock}
   })();
   </script>
   <script defer src="v6/icons.js"></script>
+  <script defer src="v6/nav.js"></script>
   <script defer src="v6/hero-links.js"></script>
 </body>
 </html>

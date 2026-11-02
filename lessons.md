@@ -5552,3 +5552,16 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
 - **Artifacts test lists non-hero files explicitly.** Any new file in data/artifacts/
   must join the exclusion lists in test/artifacts.test.ts or it is read as a hero
   artifact.
+
+## 2026-11-02 — Predicted builds on Kaelen's 1.18 card (maintainer ask)
+- **A new hero's build is a guess, and the page says so.** `predictedBuilds` on a prediction
+  (data/aggregates/patch-<v>-predictions.json) renders as two example builds with item, Eternal
+  and augment icons on that hero's patch-review card, tagged "Guess, no games yet". Each build
+  borrows the most-played 1.17.2 core of the closest kit (Greystone offlane for the
+  max-health frontliner, Khaimera jungle for the attack-speed Relentless Hunt line), so every
+  number it cites is a real count. The block disappears on its own once `build-measured.js`
+  gives the hero measured patch games; the recommendation policy still decides what the site
+  recommends.
+- **Regenerating a page can drop hand edits.** `v6/nav.js` had been added to the committed patch
+  pages by hand (3a4a0b2) but not to scripts/build-patch-page.js, so the first rebuild removed the
+  menu. The generator now emits it. Diff a regenerated page against HEAD before trusting it.
