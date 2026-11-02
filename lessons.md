@@ -5591,3 +5591,24 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
 - **Regenerating a page can drop hand edits.** `v6/nav.js` had been added to the committed patch
   pages by hand (3a4a0b2) but not to scripts/build-patch-page.js, so the first rebuild removed the
   menu. The generator now emits it. Diff a regenerated page against HEAD before trusting it.
+
+- 2026-11-02 · Live draft counter (ui/v6/livedraft.html) still ranked counters by the
+  kit-math matrix and showed its fight dots unconditionally, even though sim-flag.js hides
+  sim output everywhere else and index.html's lane room already ranks by the real
+  head-to-head record (data/aggregates/feed-matchups.json pairs, n >= 20). It now uses the
+  same records (merged with predgg-matchups.json like getMatchups()); the matrix and dots
+  load only under ?sim=1, labelled as the experimental sim. Same page: a hero pool with
+  HTML5 drag-and-drop plus tap-to-hold/tap-a-slot (touch browsers without DnD), drag to
+  swap placed heroes between lanes, "Add our pick", and move for our side. Lesson: when a
+  site-wide switch gates a data source, grep every page that loads that source, not just
+  the pages that read the switch.
+
+- 2026-11-02 · Counter records are now empirical-Bayes shrunk (src/matchup-edge.ts,
+  `npm run matchups:shrink`, in the refresh chain after artifacts; matchups:feed applies it
+  too). Prior for "a into b" = 0.5 + (a lane wr - 0.5) - (b lane wr - 0.5) from index roleWr.
+  Finding: around that prior the head-to-head spread is almost pure binomial noise (mean z^2
+  ~0.9-1.1 by sample-size bin; fitted on 100+ game pairs the true spread is ~1 pt, k ~3000),
+  so k sits at the 1000 cap. By game win rate, hero lane strength explains nearly all of a
+  matchup record; counter-picking moves it about a point. Also: pairs carry no lane, so a
+  flex hero's record (Muriel vs Argus) mostly comes from another lane; each pair now gets a
+  `lane` (where it most likely met) and the draft page drops records from other lanes.

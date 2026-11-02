@@ -7,7 +7,8 @@
 //   PATCH_START=2026-10-13 npm run matchups:feed
 //
 // Output: data/aggregates/feed-matchups.json — directed pairs "a|b" = a's
-// record into b in the SAME role, { wr, n }, kept at n >= 20. Same shape the
+// record into b in the SAME role, { wr, n, shrunkWr, prior }, kept at n >= 20
+// (shrunkWr: src/matchup-edge.ts; counters rank by it). Same shape the
 // pred.gg matchup-evidence pass writes, so the UI merges them (that pass needs
 // the matchupStatistic scope our pred.gg app lacks, so this is the live source).
 // Includes the same sim-vs-field validation block.
@@ -30,7 +31,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hasCredentials } from './predgg.js';
 import { sampleMatches } from './predgg-feed.js';
-import { MATCHUP_BANDS, countMatchPairs, emptyBands, gatePairs, type BandKey, type Cell } from '../matchup-pairs.js';
+import { MATCHUP_BANDS, countMatchPairs, emptyBands, type BandKey, type Cell } from '../matchup-pairs.js';
+import { roleWrOf, shrinkPairs, shrinkBandPairs, SHRINK_NOTE, type RoleWr } from '../matchup-edge.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const MIN_GAMES = 20;
@@ -78,9 +80,13 @@ async function main() {
     pairsCounted += countMatchPairs(m, cells, byBand);
   }
 
-  const pairs = gatePairs(cells, MIN_GAMES);
+  // n-gated records plus their empirical-Bayes shrunk rate (src/matchup-edge.ts);
+  // band records shrink toward the pair's all-ranks rate (BAND_K games).
+  let roleWr: RoleWr = {};
+  try { roleWr = roleWrOf(JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/index.json'), 'utf8'))); } catch { /* no index: 0.5 priors */ }
+  const { pairs, k: shrinkK } = shrinkPairs(Object.fromEntries(cells), roleWr, MIN_GAMES);
   const pairsByBand = bandsOn
-    ? Object.fromEntries(MATCHUP_BANDS.map(({ key }) => [key, gatePairs(byBand[key as BandKey], MIN_GAMES)]))
+    ? Object.fromEntries(MATCHUP_BANDS.map(({ key }) => [key, shrinkBandPairs(Object.fromEntries(byBand[key as BandKey]), pairs, roleWr, MIN_GAMES)]))
     : undefined;
   const cellsByBand = bandsOn
     ? Object.fromEntries(MATCHUP_BANDS.map(({ key }) => [key, Object.fromEntries([...byBand[key as BandKey].entries()].sort())]))
@@ -124,6 +130,7 @@ async function main() {
       ? { pairsCompared: both, simAgrees: agree, agreementRate: Math.round((agree / both) * 1000) / 10, simSaidEven: simEven, fieldSaidEven: fieldEven, method: 'sim net kill-window verdict vs field winrate, counted only where both commit (field >=52% or <=48%, sim net != 0)' }
       : null,
     rankBands: bandsOn ? MATCHUP_BANDS : undefined,
+    shrink: { k: shrinkK, note: SHRINK_NOTE },
     pairs,
     pairsByBand,
     cells: Object.fromEntries([...cells.entries()].sort()),
