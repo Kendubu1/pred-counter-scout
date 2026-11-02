@@ -5530,3 +5530,25 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   under each lane-room hero, leaving the name at the far left and the win rate ~900px away.
   The rows are now capped at 30rem with the win rate in a column right after a fixed 13rem name column (first pass, a 36rem cap alone, still left ~560px between name and %), and the players list at 24rem. When removing content from a row, re-check
   the row's layout at desktop width, not just that the text is gone.
+
+## 2026-11-02 — Patch picker on the homepage boards (1.16 back on the site)
+- **Check history before pulling.** The final 1.16 lane snapshot was already in git
+  (0a5f338c, 2026-09-23, 233,348 ranked matches, all three rank bands, the day before
+  1.17 started), so the meta board for 1.16 cost zero API calls. Only the bans were
+  missing (Most banned shipped Oct 25, after 1.16), pulled once: 14 calls, 3.97 bans
+  per match. Both snapshots share the same rank-id ladder (split 5), so 1.16's bands
+  mean the same thing as 1.17's.
+- **One scoring module for every patch.** Meta-board and ban-board scoring moved to
+  src/boards.ts; build-artifacts, ban-board and the new past-boards all call it.
+  Verified the refactor by rebuilding the committed 1.17 boards: meta roles and every
+  rank band identical, bans.json byte-identical. Past patches use their own lane prior
+  (lanePriorK over that patch's cells), and no augment-pending flag (that pull is
+  current-patch only).
+- **Patch rollover is automatic now.** lane-stats.ts copies the outgoing patch's lane
+  stats (and bans, which still hold the old patch at that step) into
+  data/aggregates/past-patches/<patch>/ before writing the new patch, and
+  `npm run past-boards` (end of `npm run artifacts`) rebuilds past-boards.json. Without
+  this, 1.17 would have dropped off the picker the day the refresh moved to 1.18.
+- **Artifacts test lists non-hero files explicitly.** Any new file in data/artifacts/
+  must join the exclusion lists in test/artifacts.test.ts or it is read as a hero
+  artifact.

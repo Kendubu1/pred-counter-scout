@@ -9,7 +9,7 @@ import { loadData } from '../data.js';
 import { buildHeroArtifact } from '../artifacts.js';
 import { loadCalibration } from '../sim.js';
 import { loadAggregates } from '../aggregates.js';
-import { momPriorStrength } from '../evidence.js';
+import { buildMetaBoards, lanePriorK, type LaneCell } from '../boards.js';
 import { hasCredentials, topPlayersPerLane } from './predgg.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -46,14 +46,7 @@ const laneScope = laneStats?.scopeLabel ?? 'all ranks';
 const laneMatches = laneStats?.matchesApprox ?? aggForIndex?.meta.matches ?? 0;
 // One empirical-Bayes shrink strength per lane, shared by BOTH the meta board and the
 // index roleWr below, so the same hero's win% reads identically on every surface.
-const SHRINK_ROLES = ['carry', 'midlane', 'offlane', 'jungle', 'support'];
-const priorK: Record<string, number> = {};
-for (const r of SHRINK_ROLES) {
-  const cells = Object.values(laneCells)
-    .map((h) => h.byRole?.[r])
-    .filter((c): c is { n: number; w: number } => !!c && c.n >= 30);
-  priorK[r] = momPriorStrength(cells, 0.5);
-}
+const priorK = lanePriorK(laneCells);
 const index: { slug: string; name: string; role: string; roles: string[]; roleWr: Record<string, { wr: number; n: number }> }[] = [];
 const t0 = Date.now();
 for (const slug of slugs) {
@@ -185,78 +178,18 @@ const augFile = path.join(ROOT, 'data/aggregates/predgg-augments.json');
 const augHeroes: Record<string, Record<string, unknown>> = existsSync(augFile)
   ? (JSON.parse(readFileSync(augFile, 'utf8')).heroes ?? {}) : {};
 if (agg || laneStats) {
-  type BoardRow = { slug: string; name: string; games: number; rawWr: number; shrunkWr: number; metaScore: number; badge: string | null; augmentPending?: boolean };
-  type NW = { n: number; w: number };
-  // One lane board from a cell accessor, so the all-ranks board and each
-  // rank-band board (added 2026-08-29) run the exact same scoring: same
-  // scaling games floor, same per-board shrink prior, same badges. Bands get
-  // their OWN prior strength and floor because a 3.7k-match Diamond+ window
-  // is a different evidence regime than the 106k-match all-ranks one.
-  const laneBoard = (role: string, cellOf: (h: { byRole?: Record<string, NW & { bands?: Record<string, NW> }> }) => NW | undefined, matches: number, fallbackK?: number): BoardRow[] => {
-    const cells = Object.entries(laneCells)
-      // unmapped hero_id:* entries are excluded: no kit, no portrait, no
-      // page to link to (one such id is tracked in lessons.md)
-      .map(([slug, h]) => ({ slug, cell: cellOf(h) }))
-      // The games floor SCALES with the window: 30 games meant something in an
-      // 8k-match feed window but is pure noise in a 103k-match patch sample —
-      // without scaling, an 89-game off-role blip walked straight onto the
-      // board's win-rate column. 1 in 500 matches keeps the old floor for the
-      // old window size and moves it to ~200 for a full-patch pull.
-      .filter((x): x is { slug: string; cell: NW } =>
-        data.kits.has(x.slug) && !!x.cell && x.cell.n >= Math.max(30, Math.round(matches / 500)));
-    const k = fallbackK ?? momPriorStrength(cells.map((c) => c.cell), 0.5);
-    // The augment gate used to DROP any (hero, lane) the augment pull lacks a
-    // cell for. With current-patch lane evidence that quietly censors exactly
-    // the interesting rows — a hero newly meta in a role, or a new hero — and
-    // "the board is outdated" was the complaint that exposed it. The row now
-    // stays and carries augmentPending; the hero page already renders an
-    // honest no-field-evidence state for such cells.
-    const scored = cells.map(({ slug, cell }) => ({
-      slug,
-      name: data.kits.get(slug)?.name ?? slug,
-      games: cell.n,
-      rawWr: Math.round((cell.w / cell.n) * 1000) / 1000,
-      shrunkWr: Math.round(((cell.w + k * 0.5) / (cell.n + k)) * 1000) / 1000,
-      augmentPending: !augHeroes[slug]?.[role] || undefined,
-    }));
-    // Meta = strong AND prevalent: average of each hero's percentile rank
-    // on pick volume and on shrunk winrate within the lane. A naive
-    // average of the raw numbers would re-import small-sample bias; the
-    // winrate side is shrunk and both sides are rank-normalized.
-    const pctl = (vals: number[], v: number) => vals.filter((x) => x < v).length / Math.max(vals.length - 1, 1);
-    const gamesAll = scored.map((s) => s.games);
-    const wrAll = scored.map((s) => s.shrunkWr);
-    const withScore = scored.map((s) => {
-      const pickPctl = pctl(gamesAll, s.games);
-      const wrPctl = pctl(wrAll, s.shrunkWr);
-      const badge = wrPctl >= 0.7 && pickPctl <= 0.35 ? 'sleeper'
-        : pickPctl >= 0.7 && wrPctl <= 0.35 ? 'popular but losing' : null;
-      return { ...s, metaScore: Math.round(((pickPctl + wrPctl) / 2) * 1000) / 1000, badge };
-    });
-    // The board is "what's winning in this lane" — so it's the UNION of the most
-    // established picks (top by meta score) AND the highest win rates (top by shrunk
-    // winrate), so a winning-but-rarely-picked sleeper (e.g. Wraith support, or the
-    // many off-role offlane winners) isn't dropped just for low pick volume. The
-    // sleeper/sample is disclosed by the game count + the verdict tag in the UI.
-    const byMeta = [...withScore].sort((a, b) => b.metaScore - a.metaScore).slice(0, 8);
-    const byWr = [...withScore].sort((a, b) => b.shrunkWr - a.shrunkWr).slice(0, 5);
-    const seenSlug = new Set<string>();
-    // Dedupe the union, then sort the whole board by metaScore so the lane reads
-    // high-to-low (the appended sleepers were leaving the tail out of order).
-    return [...byMeta, ...byWr]
-      .filter((s) => { if (seenSlug.has(s.slug)) return false; seenSlug.add(s.slug); return true; })
-      .sort((a, b) => b.metaScore - a.metaScore);
-  };
-  const roles: Record<string, BoardRow[]> = {};
-  const rolesByBand: Record<string, Record<string, BoardRow[]>> = {};
+  // Scoring lives in src/boards.ts, shared with the past-patch boards
+  // (ingest/past-boards.ts) so every patch on the picker reads the same way.
   const bands = laneStats?.rankBands ?? [];
-  for (const role of ['carry', 'midlane', 'offlane', 'jungle', 'support']) {
-    roles[role] = laneBoard(role, (h) => h.byRole?.[role], laneMatches, priorK[role]);
-    for (const band of bands) {
-      (rolesByBand[band.key] ??= {})[role] =
-        laneBoard(role, (h) => h.byRole?.[role]?.bands?.[band.key], laneStats?.matchesApproxByBand?.[band.key] ?? 0);
-    }
-  }
+  const { roles, rolesByBand } = buildMetaBoards({
+    laneCells: laneCells as Record<string, { byRole?: Record<string, LaneCell> }>,
+    matches: laneMatches,
+    bands,
+    matchesByBand: laneStats?.matchesApproxByBand,
+    priorK,
+    nameOf: (slug) => (data.kits.has(slug) ? data.kits.get(slug)?.name ?? slug : undefined),
+    augmentPending: (slug, role) => !augHeroes[slug]?.[role],
+  });
   // Top ranked pilots per lane from the pred.gg split leaderboard.
   // Env-gated: without PREDGG_* credentials the board ships without them.
   let topPlayers: Awaited<ReturnType<typeof topPlayersPerLane>> = null;

@@ -163,7 +163,12 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   `npm run postgame:structures` (pred.gg backfill of tower location + destroyer
   for films pulled before 2026-10-26; new pulls already carry them),
   `npm run lanestats` (per-hero-role RANKED lane stats for the CURRENT patch from
-  pred.gg generalStatistic — the meta board's source),
+  pred.gg generalStatistic — the meta board's source; when the patch changes it first
+  archives the outgoing lane stats + bans to data/aggregates/past-patches/<patch>/),
+  `npm run past-boards` (zero-API, end of `npm run artifacts`: data/artifacts/past-boards.json,
+  the earlier patches on the homepage patch picker, scored by the same src/boards.ts
+  rules as meta.json / bans.json; `npm run bans -- --dir <past-patches folder>` backfills
+  an archived patch's bans),
   `npm run skills` (per-hero recommended leveling order from pred.gg),
   `npm run copy:prepare` then (pred-scout-coach agent fills responses) then
   `npm run copy:ingest` (copy passes on session compute — NO API key; each line

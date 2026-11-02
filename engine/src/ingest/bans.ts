@@ -2,6 +2,9 @@
 // band, from pred.gg's generalStatistic — the "Most banned" board's source.
 //
 //   npm run bans             (needs PREDGG_CLIENT_ID/SECRET; runs after lanestats)
+//   npm run bans -- --dir data/aggregates/past-patches/1.16
+//                            (one-time backfill for an archived patch: reads that
+//                            folder's predgg-lane-stats.json, writes its predgg-bans.json)
 //
 // WHY A SEPARATE PULL: genstats owns the corrected all-ranks ban counts but has
 // no rank bands, and lanestats deliberately skips matchesBanned. This reads the
@@ -38,7 +41,10 @@ interface LaneStats {
 
 async function main() {
   if (!hasCredentials()) { console.error('needs PREDGG_CLIENT_ID/SECRET in env'); process.exit(1); }
-  const lane = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/predgg-lane-stats.json'), 'utf8')) as LaneStats;
+  const di = process.argv.indexOf('--dir');
+  const dirArg = di > 0 ? process.argv[di + 1] : undefined;
+  const dir = dirArg ? path.resolve(ROOT, dirArg) : path.join(ROOT, 'data/aggregates');
+  const lane = JSON.parse(readFileSync(path.join(dir, 'predgg-lane-stats.json'), 'utf8')) as LaneStats;
   const heroes = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8')) as { slug: string; name: string }[];
   const vfilter = lane.versionIds.map((i) => `"${i}"`).join(', ');
   const cellQ = (role: string, ranks: string[] | null) =>
@@ -79,7 +85,7 @@ async function main() {
     if (v != null && (v < 3 || v > 5)) console.warn(`\n  ! ${k}: ${v} bans per match, expected ~4 — pred.gg may have changed the field`);
   }
 
-  writeFileSync(path.join(ROOT, 'data/aggregates/predgg-bans.json'), JSON.stringify({
+  writeFileSync(path.join(dir, 'predgg-bans.json'), JSON.stringify({
     generatedAt: new Date().toISOString(),
     source: `pred.gg generalStatistic matchesBanned, RANKED only, patch ${lane.patch} (version ids ${lane.versionIds.join('+')})`,
     patch: lane.patch,
@@ -91,7 +97,7 @@ async function main() {
     note: 'bans = true all-ranks count (role-filtered, identical across roles). bands = mean over the five role-filtered counts per rank band (a banded count follows the rank of the player in the filtered role slot). Match counts come from the same lanestats snapshot.',
     heroes: out,
   }, null, 1) + '\n');
-  console.log(`\n${calls} calls -> data/aggregates/predgg-bans.json (${Object.keys(out).length} heroes; bans/match ${Object.entries(bansPerMatch).map(([k, v]) => `${k} ${v}`).join(', ')})`);
+  console.log(`\n${calls} calls -> ${path.relative(ROOT, path.join(dir, 'predgg-bans.json'))} (${Object.keys(out).length} heroes; bans/match ${Object.entries(bansPerMatch).map(([k, v]) => `${k} ${v}`).join(', ')})`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });
