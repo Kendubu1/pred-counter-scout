@@ -103,7 +103,11 @@
   .pfoot { margin-top:auto; padding-top:.9rem; display:flex; justify-content:space-between; align-items:center; font-size:.76rem; color:var(--text-2); }
   .pfoot .go { color:var(--blue); font-weight:700; font-size:.86rem; }
   .others { margin-top:1.4rem; font-size:.86rem; color:var(--text-1); }
-  .team { max-width:640px; }
+  .team-cols { display:grid; grid-template-columns:1fr; }
+  @media (min-width: 900px) {
+    .team-cols { grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:0 2.2rem; align-items:start; }
+    .team-cols .tcol > h3:first-child { margin-top:.9rem; }
+  }
   .team h2 { font-size:1.1rem; font-weight:700; }
   .team h3 { font-size:.72rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-ink); margin:1.3rem 0 .5rem; }
   .callout { border-left:3px solid var(--accent); background:var(--accent-soft); border-radius:0 8px 8px 0; padding:.55rem .85rem; margin:.2rem 0 .4rem; color:var(--text-0); font-size:.92rem; }
@@ -313,6 +317,7 @@ async function renderTeam(sq, profiles, rv) {
   const conv = fh?.teamConversion;
   host.innerHTML = `
     ${stackNote ? `<div class="callout">${esc(stackNote.replace(/^Stack synergy:\s*/, '').replace(/^./, (c) => c.toUpperCase()))}</div>` : ''}
+    <div class="team-cols"><div class="tcol">
     <h3>Lineup when all five queue</h3>
     ${since ? `<div class="seg period" role="tablist" aria-label="Period">
       <button role="tab" class="on" data-p="recent" aria-selected="true">Since ${esc(sinceLabel)}</button>
@@ -320,7 +325,7 @@ async function renderTeam(sq, profiles, rv) {
     <div class="seg pick" role="tablist" aria-label="Lineup"></div>
     <div id="lineup"></div>
     <div class="tnote" id="lunote"></div>
-
+    </div><div class="tcol">
     <h3>Best pairs to queue</h3>
     ${pairs.map((p) => `<div class="stat"><b>${first(p.aName)} + ${first(p.bName)}</b><span class="n">${pct(p.winrate)}%</span><span class="sub">${p.games} ranked games together</span></div>`).join('')}
     ${trios.length ? `<h3>Best trios</h3>${trios.map((t) => `<div class="stat"><b>${t.names.map(first).join(' + ')}</b><span class="n">${pct(t.winrate)}%</span><span class="sub">${t.games} recent games together</span></div>`).join('')}` : ''}
@@ -332,7 +337,8 @@ async function renderTeam(sq, profiles, rv) {
 
     ${conv ? `<h3>Team habit to fix</h3>
     <div class="stat"><b>Turn won fights into objectives</b><span class="n">${pct(conv.cashed / conv.wonFights)}%</span><span class="sub">Of ${conv.wonFights} fights the squad won, only ${conv.cashed} became a tower or major objective soon after. After a won fight, group on the nearest tower or objective before anyone farms.</span></div>
-    <div class="tnote">From ${fh.films} reviewed squad games.</div>` : ''}`;
+    <div class="tnote">From ${fh.films} reviewed squad games.</div>` : ''}
+    </div></div>`;
   let period = since ? 'recent' : 'all', pick = 'best';
   const NOTE = {
     recent: `Since ${sinceLabel} (patch ${R?.patch ?? ''}): your squad games only (not solo queue), blended into your all-time role record so a short run nudges a seat instead of replacing it. Heroes need 5+ squad games in that role. The squad has been winning a lot lately, so ratings here run high; use them to compare lineups.`,
