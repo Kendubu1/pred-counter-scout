@@ -22,7 +22,8 @@
     const slug = m[1];
     if (img.closest('button, [data-hero-pick]')) return null;
     // In-page jump grids (the patch review's buff/nerf showcase) keep their own
-    // #anchor link: tapping a portrait there scrolls to that hero's card.
+    // #anchor link: tapping a portrait there scrolls to that hero's card. Also
+    // marks a portrait of a hero with no page yet (a new hero on release eve).
     if (img.closest('[data-hero-jump]')) return null;
     if (img.closest(`[data-slug="${slug}"]`)) return null;
     const a = img.closest('a[href]');

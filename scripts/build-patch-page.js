@@ -135,6 +135,9 @@ function heroCard([slug, p]) {
       <div class="hero-card card" id="hero-${slug}" data-mag="${p.magnitude}" data-trend="${p.trend}">
         ${HAS_PAGE(site) ? `<a class="card-out" href="v6/?hero=${site}" title="Open ${esc(p.name)}'s full build &amp; matchups">full page ↗</a>` : ''}
         <div class="hero-head">
+          ${HAS_PAGE(site)
+            ? `<a class="hero-pic" href="v6/?hero=${site}" title="Open ${esc(p.name)}'s full page"><img loading="lazy" src="img/heroes/${site}.webp" alt="${esc(p.name)}" onerror="this.style.visibility='hidden'"></a>`
+            : `<span class="hero-pic" data-hero-jump><img loading="lazy" src="img/heroes/${site}.webp" alt="${esc(p.name)}" onerror="this.style.visibility='hidden'"></span>`}
           <span class="hero-name">${esc(p.name)}</span>
           <span class="hero-role">${esc(p.role || '')}</span>
           <span class="badge ${t.cls}">${t.icon} ${t.label}</span>
@@ -451,6 +454,11 @@ const html = `<!DOCTYPE html>
     .hero-card { margin-bottom: 0.85rem; padding: 0.9rem 1rem; }
     .hero-head { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.55rem; }
     .hero-name { font-weight: 700; font-size: 1rem; color: var(--text-0); }
+    .hero-pic { display: inline-flex; flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
+      overflow: hidden; background: var(--bg-3); border: 1px solid var(--border); }
+    a.hero-pic:hover, a.hero-pic:focus-visible { border-color: var(--accent); }
+    .hero-pic img { width: 100%; height: 100%; object-fit: cover; }
+    span.hero-pic img { cursor: default !important; }
     .hero-role { font-size: 0.72rem; color: var(--text-2); text-transform: capitalize;
       border: 1px solid var(--border); border-radius: 5px; padding: 0.05rem 0.4rem; }
     .badge { font-size: 0.68rem; font-weight: 600; border-radius: 5px; padding: 0.1rem 0.45rem; }
