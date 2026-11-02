@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script src="sim-flag.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ban Planner — Pred Scout</title>
+<meta name="description" content="Who our squad should ban in Predecessor: the heroes that beat us most in our own ranked games, and who stomps us.">
+<style>
+  :root {
+    --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#8e8ea6;
+    --accent:#6c5ce7; --accent-ink:#9a8ef2; --accent-soft:rgba(108,92,231,.14);
+    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px; --maxw:980px;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; font-variant-numeric:tabular-nums; }
+  a { color:var(--blue); text-decoration:none; }
+  img { display:block; }
+  button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
+  .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:rgba(10,10,15,.78); border-bottom:1px solid var(--border); }
+  .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
+  .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .spacer { flex:1; }
+  .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
+  .navlink.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
+  .navlink:hover { color:var(--text-0); }
+  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .subnav::-webkit-scrollbar { display:none; }
+  .subnav:empty { display:none; }
+  .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; text-transform:capitalize; -webkit-appearance:none; appearance:none; }
+  .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
+  a.snpill:hover { color:var(--text-0); }
+  /* jump targets land below the sticky top bar + section jumper */
+  .jump { scroll-margin-top:calc(var(--toph, 96px) + 10px); }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:1.25rem 1rem 4rem; }
+  .lede { font-size:1rem; color:var(--text-1); line-height:1.65; max-width:62ch; }
+  h1 { font-size:1.7rem; font-weight:800; }
+  .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; }
+  .card h2 { font-size:1rem; font-weight:600; letter-spacing:0; color:var(--text-0); margin-bottom:.6rem; }
+  .card p { color:var(--text-1); line-height:1.65; }
+  .card ul { margin:.5rem 0 0 1.15rem; padding:0; }
+  .card li { color:var(--text-1); line-height:1.6; margin:.4rem 0; }
+  .card p + p { margin-top:.6rem; }
+  .card b { color:var(--text-0); }
+  .tag { display:inline-block; font-size:.6875rem; font-weight:800; letter-spacing:.06em; color:var(--blue); border:1px solid var(--blue); border-radius:6px; padding:.04rem .35rem; vertical-align:middle; }
+  /* progressive disclosure: each long section opens collapsed so the page is a
+     scannable index (docs/ux-rubric.md R2). */
+  details.disc { margin-top:.6rem; border-top:1px solid var(--border); padding-top:.2rem; }
+  details.disc > summary { cursor:pointer; color:var(--blue); font-size:.86rem; padding:.35rem 0; list-style:none; }
+  details.disc > summary::-webkit-details-marker { display:none; }
+  details.disc > summary::before { content:"▸ "; color:var(--text-2); }
+  details.disc[open] > summary { color:var(--text-2); }
+  details.disc[open] > summary::before { content:"▾ "; }
+  footer { margin-top:2rem; font-size:.72rem; color:var(--text-2); line-height:1.7; }
+  @media (max-width:600px) {
+    body { font-size:14px; }
+    /* tap targets: >=44px hit area on touch (Apple HIG 44 / WCAG floor 24).
+       Shared union list across all pages (absent selectors are no-ops). */
+    .navlink, .snpill, .htab, .rolebar button, .backrow button, .echip, .seg, .pick, button.pick, .ghostbtn, .ptoggle {
+      min-height:44px; display:inline-flex; align-items:center; justify-content:center;
+    }
+    .snpill { font-size:.8rem; }
+    .navlink { border-radius:10px; }
+    .top-inner { padding:.5rem .7rem; gap:.3rem; }
+    .wordmark { font-size:.82rem; white-space:nowrap; }
+    .top-inner a { font-size:.72rem; white-space:nowrap; }
+    .wrap { padding:.9rem 1rem 3rem; }
+    h1 { font-size:1.35rem; }
+    .card { padding:.8rem .8rem; }
+  }
+  .bands { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:1rem; }
+  .band { background:var(--bg-1); border:1px solid var(--border); border-radius:99px; padding:.3rem .8rem; color:var(--text-2); font-size:.78rem; font-weight:700; }
+  .band:hover { color:var(--text-0); }
+  .band.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
+  .sub { font-size:.76rem; color:var(--text-2); margin-top:.6rem; }
+  .br:hover { background:var(--bg-2); border-radius:8px; }
+  .sec { font-size:.8rem; font-weight:600; letter-spacing:0; color:var(--text-1); margin:2rem 0 0; display:flex; align-items:center; gap:.7rem; }
+  .sec::after { content:""; flex:1; height:1px; background:var(--border); }
+  .sq { list-style:none; margin-top:.4rem; }
+  .sr { display:grid; grid-template-columns:1.6rem 40px 1fr auto; gap:.3rem .65rem; align-items:center; padding:.6rem .3rem; border-top:1px solid var(--border); }
+  .sq li:first-child .sr { border-top:none; }
+  .sr .rk { font-size:.8rem; font-weight:800; color:var(--text-2); text-align:right; }
+  .sr img { width:40px; height:40px; border-radius:9px; object-fit:cover; background:var(--bg-2); }
+  .sr .nm { font-weight:700; color:var(--text-0); font-size:.92rem; }
+  .sr .nm a { color:inherit; }
+  .sr .rec { display:block; font-size:.72rem; color:var(--text-2); font-weight:400; font-variant-numeric:tabular-nums; }
+  .sr .rec b { color:var(--red); }
+  .sr .thr { text-align:right; font-size:.6875rem; color:var(--text-2); line-height:1.25; }
+  .sr .thr b { display:block; font-size:.95rem; color:var(--red); font-variant-numeric:tabular-nums; }
+  .chips { grid-column:3 / -1; display:flex; flex-wrap:wrap; gap:.3rem; }
+  .chip { font-size:.6875rem; border:1px solid var(--border); border-radius:99px; padding:.1rem .5rem; color:var(--text-1); background:var(--bg-2); }
+  .chip.hot { border-color:var(--red); color:var(--text-0); }
+  .chip.free { border-color:var(--green); color:var(--green); }
+  .stomp { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.4rem; }
+  .st { display:flex; align-items:center; gap:.45rem; background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:.35rem .55rem; font-size:.78rem; color:var(--text-0); }
+  .st img { width:26px; height:26px; border-radius:7px; object-fit:cover; }
+  .st small { display:block; font-size:.6875rem; color:var(--text-2); }
+  @media (max-width:600px) { .sr { grid-template-columns:1.3rem 34px 1fr auto; gap:.3rem .5rem; } .sr img { width:34px; height:34px; } .chips { grid-column:1 / -1; } }
+  @media (max-width:600px) { .band { min-height:44px; } }
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <a class="wordmark" href="./"><img src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</a>
+  <span class="spacer"></span>
+  <a class="navlink" href="./">Pick &amp; Build</a>
+  <a class="navlink" href="coach.html">Coach</a>
+  <a class="navlink" href="reports.html">Reports</a>
+</div><nav class="subnav" id="subnav" aria-label="Jump to section">
+  <a class="snpill" href="#our">Our ban list</a>
+  <a class="snpill" href="#stompers">Who stomps us</a>
+</nav></div>
+
+<div class="wrap">
+  <h1>Ban planner</h1>
+  <p class="lede">Who our squad should ban, from the heroes that actually beat us in our own ranked games. For what the whole ladder bans, see <a href="bans.html">Most banned</a>.</p>
+  <div class="sec jump" id="our">Our ban list</div>
+  <div class="bands" id="sqWin"></div>
+  <section class="card" id="squadCard">
+    <h2 id="sqTitle">Squad top 10 bans</h2>
+    <p class="sub" id="sqSub" style="margin:0 0 .3rem"></p>
+    <ol class="sq" id="sqList"><li class="sub">Loading…</li></ol>
+    <h2 class="jump" id="stompers" style="margin-top:1.2rem">Who stomps us</h2>
+    <p class="sub" style="margin:0">Most kills on squad members per game faced.</p>
+    <div class="stomp" id="stomp"></div>
+    <p class="sub" id="sqMethod"></p>
+  </section>
+  <footer>
+    Built from our squad's reviewed ranked games. League ban rates on each row come from the <a href="bans.html">Most banned</a> board.<br>
+    Game data via pred.gg · not affiliated with Omeda Studios.
+  </footer>
+</div>
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pct = (x) => `${(x * 100).toFixed(1)}%`;
+// Squad ban list (data/artifacts/squad-bans.json, from our own reviewed games).
+let SQ = null;
+let sqWin = 'patch';
+try { sqWin = localStorage.getItem('sqBanWin') || 'patch'; } catch { /* private mode */ }
+const LANE1 = { carry: 'carry', midlane: 'mid', offlane: 'offlane', jungle: 'jungle', support: 'support' };
+function renderSquad() {
+  const wins = Object.entries(SQ.windows);
+  if (!SQ.windows[sqWin]) sqWin = wins[0][0];
+  $('#sqWin').innerHTML = wins.map(([k, w]) => `<button class="band${k === sqWin ? ' active' : ''}" data-w="${esc(k)}">${esc(w.label)}</button>`).join('');
+  $('#sqWin').querySelectorAll('.band').forEach((b) => { b.onclick = () => { sqWin = b.dataset.w; try { localStorage.setItem('sqBanWin', sqWin); } catch { /* private mode */ } renderSquad(); }; });
+  const w = SQ.windows[sqWin];
+  $('#sqTitle').textContent = `Squad top ${w.list.length} bans · ${w.label}`;
+  $('#sqSub').textContent = `Heroes we lose to most, from ${w.games} of our ranked games (we win ${pct(w.winRate)} overall). Ranked by wins a ban would win back.`;
+  $('#sqList').innerHTML = w.list.map((r, i) => {
+    const chips = [];
+    if (r.nemesis) {
+      const n = r.nemesis;
+      const bits = [n.lane ? `${n.lane.wins}-${n.lane.games - n.lane.wins} ${n.lane.role === '*' ? 'in lane' : `as ${LANE1[n.lane.role] || n.lane.role}`}` : null, n.killsPerGame > 0 ? `${n.killsPerGame.toFixed(1)} kills/game` : null].filter(Boolean);
+      const tip = `${n.name}: ${n.lane ? `team record ${n.lane.wins}-${n.lane.games - n.lane.wins} when ${n.name} ${n.lane.role === '*' ? 'laned' : `played ${n.lane.role}`} against ${r.name} (carry + support share the duo lane)` : `no losing lane record against it`}; ${r.name} kills ${n.name} ${n.killsPerGame.toFixed(1)} times per game faced, whole game.`;
+      chips.push(`<span class="chip hot" title="${esc(tip)}">Nemesis of ${esc(n.name)}${bits.length ? ` · ${bits.join(' · ')}` : ''}</span>`);
+    }
+    if (r.kdVsUs != null && r.killsOnUsPerGame > 0) chips.push(`<span class="chip${r.kdVsUs >= 1.5 ? ' hot' : ''}" title="kills on squad members ÷ deaths to squad members">K/D vs us ${r.kdVsUs.toFixed(2)} · ${r.killsOnUsPerGame.toFixed(1)} kills/game</span>`);
+    if (r.leagueBanRate != null) chips.push(`<span class="chip${r.leagueBanRate < 0.1 ? ' free' : ''}" title="share of all ranked matches it's banned in">${r.leagueBanRate < 0.1 ? 'Rarely banned: ' : 'League bans '}${pct(r.leagueBanRate)}</span>`);
+    return `<li><div class="sr">
+      <span class="rk">${i + 1}</span>
+      <img loading="lazy" src="../img/heroes/${esc(r.slug)}.webp" alt="" onerror="this.style.visibility='hidden'">
+      <span class="nm"><a href="./?hero=${esc(r.slug)}">${esc(r.name)}</a><span class="rec">usually ${LANE1[r.mainRole] || esc(r.mainRole)} · we're <b>${r.wins}-${r.losses}</b> vs it (${pct(r.winRate)}, ${pct(r.baseline)} otherwise)</span></span>
+      <span class="thr" title="wins per 100 games a ban would recover, adjusted for sample size"><b>+${r.threat.toFixed(1)}</b>wins/100</span>
+      <span class="chips">${chips.join('')}</span>
+    </div></li>`;
+  }).join('') || '<li class="sub">No hero beats us often enough to list yet.</li>';
+  $('#stomp').innerHTML = w.stompers.map((s) => `<a class="st" href="./?hero=${esc(s.slug)}"><img loading="lazy" src="../img/heroes/${esc(s.slug)}.webp" alt="" onerror="this.style.visibility='hidden'"><span>${esc(s.name)}<small>${s.killsOnUsPerGame.toFixed(1)} kills/game · K/D vs us ${s.kdVsUs == null ? '—' : s.kdVsUs.toFixed(2)} · ${s.games} games</small></span></a>`).join('');
+  $('#sqMethod').textContent = `Method: ${SQ.method} Updated ${String(SQ.generatedAt).slice(0, 10)}.`;
+}
+const sqLoad = fetch('../../data/artifacts/squad-bans.json').then((r) => r.json()).then((d) => { SQ = d; renderSquad(); })
+  .catch(() => {
+    $('#sqWin').style.display = 'none';
+    $('#sqList').innerHTML = '<li class="sub">The squad ban list isn\'t available right now.</li>';
+  });
+// A shared link (#stompers): the browser jumps before the list renders and pushes
+// the section down, so jump again once it has drawn.
+Promise.allSettled([sqLoad]).then(() => {
+  const t = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  if (t) t.scrollIntoView({ block: 'start' });
+});
+
+// Section jumper (static anchor pills in the sticky top bar): scrollspy keeps
+// the current section highlighted, same feel as the Coach page's jumper.
+(function jumper() {
+  const host = $('#subnav');
+  const setTop = () => document.documentElement.style.setProperty('--toph', `${$('.top')?.offsetHeight ?? 96}px`);
+  setTop(); addEventListener('resize', setTop);
+  const pills = [...host.querySelectorAll('.snpill')];
+  const byId = new Map(pills.map((p) => [p.getAttribute('href').slice(1), p]));
+  pills[0].classList.add('active');
+  // scroll the pill ROW only; letting the browser scroll ancestors pans the iOS pinch-zoom viewport
+  const centerPill = (p) => host.scrollTo({ left: p.offsetLeft - host.clientWidth / 2 + p.offsetWidth / 2, behavior: 'smooth' });
+  const io = new IntersectionObserver((es) => {
+    for (const e of es) {
+      if (!e.isIntersecting) continue;
+      pills.forEach((p) => p.classList.toggle('active', p === byId.get(e.target.id)));
+      centerPill(byId.get(e.target.id));
+      // the address follows the section being read, so a copied link opens there
+      if (ready) { try { history.replaceState(history.state, '', '#' + e.target.id); } catch { /* file:// */ } }
+    }
+  }, { rootMargin: '-15% 0px -75% 0px' });
+  byId.forEach((_, id) => io.observe(document.getElementById(id)));
+  let ready = false;
+  setTimeout(() => { ready = true; }, 700);
+})();
+</script>
+<script defer src="icons.js"></script>
+<script defer src="hero-links.js"></script>
+<script defer src="nav.js"></script>
+</body>
+</html>
