@@ -455,6 +455,27 @@ Ikra mid (The Gloom 48.2% vs Cascade 42.7%), Revenant carry (Hellfire Blast
 48.3% lane-wide but level with Quickdraw inside Crit/Sustain), Belica mid.
 Harness green, What's new card, lessons.md, committed.
 
+## 20. Patch 1.18 "Frostbite" rollover (queued 2026-11-02; the review page shipped as predictions)
+
+The 1.18 notes went up a day before release (2026-11-03). Shipped pre-release, zero-API:
+digest `data/patches/1.18.json`, predictions + ranked comps
+`data/aggregates/patch-1.18-predictions.json`, page `ui/patch-1.18.html`, patchcheck
+pre-release PENDING state. After release (needs PREDGG creds, one pass per the creds gate):
+
+- **20a.** `npm run refresh` once pred.gg serves a 1.18 version id: catalog (Kaelen,
+  Vortex Stone, Forticus join; patchcheck's 7 pending checks must flip to applied), icons
+  (Kaelen's portrait and abilities, the two item icons), perks (the stream window resets to
+  1.18, so archive the 1.17.2 counts first: item 18b), lanestats, artifacts, matrix.
+- **20b.** Kaelen copy passes (abilities, augments, items) through copy:prepare -> coach ->
+  copy:ingest, like Valmont's.
+- **20c.** `node scripts/build-measured.js 1.18` after ~1 week of games, then rebuild the page.
+- **20d.** Check pred.gg's 1.18 rank ladder (`ratings { ranks { name tierIdx } }`): Master
+  is new between Diamond and Paragon. lane-stats' Diamond+ band now spans tiers 4-7 and
+  match-rank's Plat+ is `>= 3`, so both survive a renumber above Diamond; anything below
+  that would not.
+- **20e.** The split reset means early-1.18 Plat+ counts mix placement games; note it on the
+  first Plat+ reads.
+
 ## Parked ideas (not yet scheduled)
 
 - Comfort-vs-meta flex logic (parked by maintainer 2026-06-12): when a

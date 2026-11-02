@@ -160,7 +160,12 @@ function main() {
     const released = Date.parse(newestDigest.date);
     const refetched = Date.parse(snapshotFetchedAt) >= released;
     const inWindow = Date.now() - released <= PENDING_WINDOW_DAYS * 86400000;
-    if (refetched && inWindow) {
+    // Pre-release: the notes are published a day or two before the patch goes
+    // live (1.18's went up 2026-11-02 for a 11-03 release), so no catalog can
+    // carry the values yet. Bounded the same way: a release date more than
+    // PENDING_WINDOW_DAYS ahead is a typo in the digest, not a preview.
+    const preRelease = Date.now() < released && released - Date.now() <= PENDING_WINDOW_DAYS * 86400000;
+    if ((refetched && inWindow) || preRelease) {
       pendingPatch = newestPatch;
       for (const c of newestStales) c.verdict = 'pending';
     }

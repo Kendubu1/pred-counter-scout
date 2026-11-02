@@ -16,7 +16,7 @@
 // schema introspection, so each (hero, role) cell now carries three rank-band
 // sub-cells alongside the unfiltered numbers. Bands are derived from the open
 // split's rank ladder by tierIdx — low = Bronze+Silver (tiers 0-1),
-// mid = Gold+Platinum (2-3), high = Diamond+Paragon (4-5) — so a reshuffled
+// mid = Gold+Platinum (2-3), high = Diamond and up (4+; Master joins in 1.18) — so a reshuffled
 // ladder next split changes the ids without changing this code. The bands sum
 // BELOW the unfiltered cell (~4-5% observed): games by players without a placed
 // rank only appear unfiltered. The all-ranks numbers stay canonical.
@@ -42,7 +42,10 @@ const HEROES_PER_CALL = 3;
 const BAND_DEFS: { key: string; label: string; tiers: number[] }[] = [
   { key: 'low', label: 'Bronze–Silver', tiers: [0, 1] },
   { key: 'mid', label: 'Gold–Platinum', tiers: [2, 3] },
-  { key: 'high', label: 'Diamond+', tiers: [4, 5] },
+  // Diamond and everything above it. 1.18 adds Master between Diamond I and
+  // Paragon, so pred.gg may renumber Paragon past 5; list headroom rather than
+  // silently dropping the top tier out of the band.
+  { key: 'high', label: 'Diamond+', tiers: [4, 5, 6, 7] },
 ];
 
 interface Cell { matchesPlayed: number; matchesWon: number }
@@ -119,7 +122,7 @@ async function main() {
     matchesApprox: Math.round(rows((c) => c.n) / 10),
     rankBands: bands,
     matchesApproxByBand,
-    bandNote: 'Each cell\'s bands partition by the player\'s rank at the open split (low Bronze+Silver, mid Gold+Platinum, high Diamond+Paragon). Bands sum below the unfiltered n: games by players without a placed rank only count unfiltered. The unfiltered numbers stay canonical.',
+    bandNote: 'Each cell\'s bands partition by the player\'s rank at the open split (low Bronze+Silver, mid Gold+Platinum, high Diamond and up). Bands sum below the unfiltered n: games by players without a placed rank only count unfiltered. The unfiltered numbers stay canonical.',
     note: 'Lane-board evidence source. n/w are role-filtered ranked games for the pinned patch. Approximate match count = all cell games / 10 (each match contributes ten player-rows). Bans deliberately absent: matchesBanned partitions per role and reads 5x high — genstats owns the corrected counts.',
     heroes,
   };

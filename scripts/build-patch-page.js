@@ -383,6 +383,17 @@ const rankedBlock = digest.ranked ? `
       <ul class="items-list ranked-list">${(digest.ranked.changes || []).map((c) => `<li>${makeGloss()(esc(c))}</li>`).join('')}</ul>${metaRead('ranked')}
 ` : '';
 
+// Ranked comps: how team compositions shift (pred.comps, authored with the
+// predictions). Optional; older patches have none and the chapter is omitted.
+const compsBlock = (pred.comps && (pred.comps.shifts || []).length) ? `
+      <h2 class="section" id="ch-comps"><span class="sec-ic" data-bic="counter-pick"></span>Ranked comps: what shifts</h2>
+      <p class="lead">${makeGloss()(esc(pred.comps.summary || ''))}</p>
+      <div class="tldr-grid">${pred.comps.shifts.map((c) => {
+        const g = makeGloss();
+        return `<div class="tldr-item"><div class="tldr-lead">${esc(c.lead)}</div><div class="tldr-text">${g(esc(c.text))}</div></div>`;
+      }).join('')}</div>
+` : '';
+
 let MEASURED_MATURITY = '';
 const counts = groups.map(([k]) => heroes.filter(([, p]) => p.magnitude === k).length);
 
@@ -391,6 +402,7 @@ const counts = groups.map(([k]) => heroes.filter(([, p]) => p.magnitude === k).l
 // a small scrollspy highlights the section you're in.
 const SECTIONS = [
   { id: 'ch-tldr', label: 'TL;DR' },
+  ...(compsBlock ? [{ id: 'ch-comps', label: 'Ranked comps' }] : []),
   { id: 'ch-heroes', label: 'Hero changes' },
   { id: 'ch-eternals', label: 'Eternals' },
   { id: 'ch-items', label: 'Items' },
@@ -663,6 +675,7 @@ ${subnavBar}
 
       <h2 class="section" id="ch-tldr"><span class="sec-ic" data-bic="scout"></span>TL;DR — what actually changes how the game plays</h2>
       ${tldrBlock}${metaRead('tldr')}
+${compsBlock}
 
       <h2 class="section" id="ch-heroes"><span class="sec-ic" data-bic="counter-pick"></span>Hero changes <span style="font-size:0.7rem;color:var(--text-2);font-weight:500;">
         ${counts[0]} meta-shifting · ${counts[1]} notable · ${counts[2]} minor · bugfix-only heroes excluded</span></h2>
