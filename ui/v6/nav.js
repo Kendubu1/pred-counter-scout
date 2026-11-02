@@ -1,24 +1,29 @@
 /* Shared side-drawer ("hamburger") navigation for all v6 pages.
- * Augments the existing top tabs (Pick & Build, Coach) — it does not replace them. One source of
+ * Augments the existing top tabs (Pick & Build, Coach, Reports) — it does not replace them. One source of
  * truth for every destination; include with <script defer src="nav.js"></script>.
  * All v6 pages live in ui/v6/, so these relative links are identical per page. */
 (function () {
   const LINKS = [
-    { href: './',                    label: 'Pick & Build',           icon: 'counter-pick',     match: ['', 'index.html'] },
-    { href: 'coach.html',            label: 'Coach',                  icon: 'scout',            match: ['coach.html'] },
-    { href: 'reports.html',          label: 'Player reports',         icon: 'scout',            match: ['reports.html'] },
     { group: 'Meta' },
+    { href: './',                    label: 'Pick & Build',           icon: 'counter-pick',     match: ['', 'index.html'] },
     { href: 'bans.html',             label: 'Most banned',            icon: 'meta-guide',       match: ['bans.html'] },
     // only the current review; older ones are listed at the bottom of What's new
     { href: '../patch-1.18.html',    label: 'Patch 1.18 review',      icon: 'patch-strategy',   match: ['patch-1.18.html'] },
+    { group: 'Coach' },
+    { href: 'coach.html',            label: 'Game review',            icon: 'scout',            match: ['coach.html'] },
+    { href: 'reports.html',          label: 'Player reports',         icon: 'scout',            match: ['reports.html'] },
+    // who OUR squad should ban (from our reviewed games); the league boards stay on Most banned
+    { group: 'Bans' },
+    { href: 'ban-planner.html',      label: 'Ban planner',            icon: 'matchup',          match: ['ban-planner.html'] },
     { group: 'Learn' },
-    { href: 'climb.html',            label: 'The Climb — ranked guide', icon: 'power-spike',    match: ['climb.html'] },
+    { href: 'climb.html',            label: 'How to play ranked',     icon: 'power-spike',      match: ['climb.html'] },
     { href: '../learn-eternals.html',label: 'Learn Eternals',         icon: 'eternal-augment',  match: ['learn-eternals.html'] },
     // Tools still being proven: grouped so nobody mistakes them for finished pages.
     { group: 'Experimental' },
     { href: 'squad.html',            label: '5-stack picker',         icon: 'team-comp',        match: ['squad.html'] },
-    // built on the kit-math sim: hidden while sim-flag.js has the sim switched off
-    { href: 'livedraft.html',        label: 'Live draft counter',     icon: 'weakness-counter', match: ['livedraft.html'], sim: true },
+    // built on the kit-math sim; shown under Experimental even while sim-flag.js has the
+    // sim off elsewhere (the page itself labels its counters as sim theory)
+    { href: 'livedraft.html',        label: 'Live draft counter',     icon: 'weakness-counter', match: ['livedraft.html'] },
     { sep: true },
     { href: 'changes.html',          label: "What's new",             icon: 'role-path', tag: 'new', match: ['changes.html'] },
     { href: 'about.html',            label: 'About & how this works', icon: 'tap-to-learn',     match: ['about.html'] },
@@ -202,9 +207,10 @@
     drawer.setAttribute('aria-label', 'Site menu');
     drawer.setAttribute('aria-hidden', 'true');
 
-    const items = LINKS.filter((l) => !l.sim || window.SIM_ON === true).map((l) => {
+    const items = LINKS.filter((l) => !l.sim || window.SIM_ON === true).map((l, i) => {
       if (l.sep) return '<li class="nav-sep" role="separator"></li>';
-      if (l.group) return `<li class="nav-sep" role="separator"></li><li class="nav-group">${l.group}</li>`;
+      // the search row above already ends in a separator, so the first group skips its own
+      if (l.group) return `${i ? '<li class="nav-sep" role="separator"></li>' : ''}<li class="nav-group">${l.group}</li>`;
       const active = l.match && l.match.includes(here) ? ' active' : '';
       const tag = l.tag ? `<span class="nav-tag">${l.tag}</span>` : '';
       return `<li><a class="${active.trim()}" href="${rebase(l.href)}"><span class="nav-ic">${bic(l.icon)}</span><span>${l.label}</span>${tag}</a></li>`;

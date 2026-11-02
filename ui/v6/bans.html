@@ -102,26 +102,6 @@
   .lr .pct { font-size:.78rem; font-weight:800; color:var(--red); font-variant-numeric:tabular-nums; }
   .sec { font-size:.8rem; font-weight:600; letter-spacing:0; color:var(--text-1); margin:2rem 0 0; display:flex; align-items:center; gap:.7rem; }
   .sec::after { content:""; flex:1; height:1px; background:var(--border); }
-  .sq { list-style:none; margin-top:.4rem; }
-  .sr { display:grid; grid-template-columns:1.6rem 40px 1fr auto; gap:.3rem .65rem; align-items:center; padding:.6rem .3rem; border-top:1px solid var(--border); }
-  .sq li:first-child .sr { border-top:none; }
-  .sr .rk { font-size:.8rem; font-weight:800; color:var(--text-2); text-align:right; }
-  .sr img { width:40px; height:40px; border-radius:9px; object-fit:cover; background:var(--bg-2); }
-  .sr .nm { font-weight:700; color:var(--text-0); font-size:.92rem; }
-  .sr .nm a { color:inherit; }
-  .sr .rec { display:block; font-size:.72rem; color:var(--text-2); font-weight:400; font-variant-numeric:tabular-nums; }
-  .sr .rec b { color:var(--red); }
-  .sr .thr { text-align:right; font-size:.6875rem; color:var(--text-2); line-height:1.25; }
-  .sr .thr b { display:block; font-size:.95rem; color:var(--red); font-variant-numeric:tabular-nums; }
-  .chips { grid-column:3 / -1; display:flex; flex-wrap:wrap; gap:.3rem; }
-  .chip { font-size:.6875rem; border:1px solid var(--border); border-radius:99px; padding:.1rem .5rem; color:var(--text-1); background:var(--bg-2); }
-  .chip.hot { border-color:var(--red); color:var(--text-0); }
-  .chip.free { border-color:var(--green); color:var(--green); }
-  .stomp { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.4rem; }
-  .st { display:flex; align-items:center; gap:.45rem; background:var(--bg-2); border:1px solid var(--border); border-radius:10px; padding:.35rem .55rem; font-size:.78rem; color:var(--text-0); }
-  .st img { width:26px; height:26px; border-radius:7px; object-fit:cover; }
-  .st small { display:block; font-size:.6875rem; color:var(--text-2); }
-  @media (max-width:600px) { .sr { grid-template-columns:1.3rem 34px 1fr auto; gap:.3rem .5rem; } .sr img { width:34px; height:34px; } .chips { grid-column:1 / -1; } }
   @media (max-width:600px) { .more { min-height:44px; } .band { min-height:44px; } .br { grid-template-columns:1.3rem 34px 1fr 30%; gap:.5rem; } .br img { width:34px; height:34px; } }
 </style>
 </head>
@@ -133,26 +113,13 @@
   <a class="navlink" href="coach.html">Coach</a>
   <a class="navlink" href="reports.html">Reports</a>
 </div><nav class="subnav" id="subnav" aria-label="Jump to section">
-  <a class="snpill" href="#our" data-sq>Our ban list</a>
-  <a class="snpill" href="#stompers" data-sq>Who stomps us</a>
   <a class="snpill" href="#league">League top bans</a>
   <a class="snpill" href="#bylane">Bans by lane</a>
 </nav></div>
 
 <div class="wrap">
   <h1>Most banned</h1>
-  <p class="lede">Who our squad should ban, from the heroes that actually beat us, and what the whole ranked ladder bans, overall and by lane.</p>
-  <div class="sec jump" id="our">Our ban list</div>
-  <div class="bands" id="sqWin"></div>
-  <section class="card" id="squadCard">
-    <h2 id="sqTitle">Squad top 10 bans</h2>
-    <p class="sub" id="sqSub" style="margin:0 0 .3rem"></p>
-    <ol class="sq" id="sqList"><li class="sub">Loading…</li></ol>
-    <h2 class="jump" id="stompers" style="margin-top:1.2rem">Who stomps us</h2>
-    <p class="sub" style="margin:0">Most kills on squad members per game faced.</p>
-    <div class="stomp" id="stomp"></div>
-    <p class="sub" id="sqMethod"></p>
-  </section>
+  <p class="lede">What the whole ranked ladder bans, overall and by lane. For who our squad should ban, see the <a href="ban-planner.html">Ban planner</a>.</p>
   <div class="sec jump" id="league">League bans</div>
   <div class="bands" id="bands"></div>
   <section class="card">
@@ -216,51 +183,11 @@ function render() {
   $('#boardSub').textContent = `${board.matches.toLocaleString()} ranked matches · patch ${BANS.patch} · updated ${String(BANS.generatedAt).slice(0, 10)}`;
 }
 
-// Squad ban list (data/artifacts/squad-bans.json, from our own reviewed games).
-let SQ = null;
-let sqWin = 'patch';
-try { sqWin = localStorage.getItem('sqBanWin') || 'patch'; } catch { /* private mode */ }
-const LANE1 = { carry: 'carry', midlane: 'mid', offlane: 'offlane', jungle: 'jungle', support: 'support' };
-function renderSquad() {
-  const wins = Object.entries(SQ.windows);
-  if (!SQ.windows[sqWin]) sqWin = wins[0][0];
-  $('#sqWin').innerHTML = wins.map(([k, w]) => `<button class="band${k === sqWin ? ' active' : ''}" data-w="${esc(k)}">${esc(w.label)}</button>`).join('');
-  $('#sqWin').querySelectorAll('.band').forEach((b) => { b.onclick = () => { sqWin = b.dataset.w; try { localStorage.setItem('sqBanWin', sqWin); } catch { /* private mode */ } renderSquad(); }; });
-  const w = SQ.windows[sqWin];
-  $('#sqTitle').textContent = `Squad top ${w.list.length} bans · ${w.label}`;
-  $('#sqSub').textContent = `Heroes we lose to most, from ${w.games} of our ranked games (we win ${pct(w.winRate)} overall). Ranked by wins a ban would win back.`;
-  $('#sqList').innerHTML = w.list.map((r, i) => {
-    const chips = [];
-    if (r.nemesis) {
-      const n = r.nemesis;
-      const bits = [n.lane ? `${n.lane.wins}-${n.lane.games - n.lane.wins} ${n.lane.role === '*' ? 'in lane' : `as ${LANE1[n.lane.role] || n.lane.role}`}` : null, n.killsPerGame > 0 ? `${n.killsPerGame.toFixed(1)} kills/game` : null].filter(Boolean);
-      const tip = `${n.name}: ${n.lane ? `team record ${n.lane.wins}-${n.lane.games - n.lane.wins} when ${n.name} ${n.lane.role === '*' ? 'laned' : `played ${n.lane.role}`} against ${r.name} (carry + support share the duo lane)` : `no losing lane record against it`}; ${r.name} kills ${n.name} ${n.killsPerGame.toFixed(1)} times per game faced, whole game.`;
-      chips.push(`<span class="chip hot" title="${esc(tip)}">Nemesis of ${esc(n.name)}${bits.length ? ` · ${bits.join(' · ')}` : ''}</span>`);
-    }
-    if (r.kdVsUs != null && r.killsOnUsPerGame > 0) chips.push(`<span class="chip${r.kdVsUs >= 1.5 ? ' hot' : ''}" title="kills on squad members ÷ deaths to squad members">K/D vs us ${r.kdVsUs.toFixed(2)} · ${r.killsOnUsPerGame.toFixed(1)} kills/game</span>`);
-    if (r.leagueBanRate != null) chips.push(`<span class="chip${r.leagueBanRate < 0.1 ? ' free' : ''}" title="share of all ranked matches it's banned in">${r.leagueBanRate < 0.1 ? 'Rarely banned: ' : 'League bans '}${pct(r.leagueBanRate)}</span>`);
-    return `<li><div class="sr">
-      <span class="rk">${i + 1}</span>
-      <img loading="lazy" src="../img/heroes/${esc(r.slug)}.webp" alt="" onerror="this.style.visibility='hidden'">
-      <span class="nm"><a href="./?hero=${esc(r.slug)}">${esc(r.name)}</a><span class="rec">usually ${LANE1[r.mainRole] || esc(r.mainRole)} · we're <b>${r.wins}-${r.losses}</b> vs it (${pct(r.winRate)}, ${pct(r.baseline)} otherwise)</span></span>
-      <span class="thr" title="wins per 100 games a ban would recover, adjusted for sample size"><b>+${r.threat.toFixed(1)}</b>wins/100</span>
-      <span class="chips">${chips.join('')}</span>
-    </div></li>`;
-  }).join('') || '<li class="sub">No hero beats us often enough to list yet.</li>';
-  $('#stomp').innerHTML = w.stompers.map((s) => `<a class="st" href="./?hero=${esc(s.slug)}"><img loading="lazy" src="../img/heroes/${esc(s.slug)}.webp" alt="" onerror="this.style.visibility='hidden'"><span>${esc(s.name)}<small>${s.killsOnUsPerGame.toFixed(1)} kills/game · K/D vs us ${s.kdVsUs == null ? '—' : s.kdVsUs.toFixed(2)} · ${s.games} games</small></span></a>`).join('');
-  $('#sqMethod').textContent = `Method: ${SQ.method} Updated ${String(SQ.generatedAt).slice(0, 10)}.`;
-}
-const sqLoad = fetch('../../data/artifacts/squad-bans.json').then((r) => r.json()).then((d) => { SQ = d; renderSquad(); })
-  .catch(() => {
-    $('#squadCard').style.display = 'none'; $('#sqWin').style.display = 'none';
-    $('#our').style.display = 'none'; document.querySelectorAll('#subnav [data-sq]').forEach((a) => { a.style.display = 'none'; });
-  });
-
 const bansLoad = fetch('../../data/artifacts/bans.json').then((r) => r.json()).then((d) => { BANS = d; render(); })
   .catch(() => { $('#board').innerHTML = '<li class="sub">Ban data isn\'t available right now.</li>'; });
 // A shared link (#bylane): the browser jumps before the boards render and push
-// the section down, so jump again once both have drawn.
-Promise.allSettled([sqLoad, bansLoad]).then(() => {
+// the section down, so jump again once they have drawn.
+Promise.allSettled([bansLoad]).then(() => {
   const t = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
   if (t) t.scrollIntoView({ block: 'start' });
 });

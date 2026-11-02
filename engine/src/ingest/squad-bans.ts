@@ -1,4 +1,4 @@
-// Squad ban list: data/artifacts/squad-bans.json, read by ui/v6/bans.html.
+// Squad ban list: data/artifacts/squad-bans.json, read by ui/v6/ban-planner.html.
 // Which enemy heroes beat the 5-stack, from our own reviewed games
 // (data/postgame/*.json). Zero-API. squad.ts calls buildSquadBans() after the
 // squad report, so the hourly coach job keeps it current; standalone:
