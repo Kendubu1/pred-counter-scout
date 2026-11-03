@@ -15,22 +15,22 @@ const rating = (rank: ReturnType<typeof r>, points: number, newPoints: number, i
 
 describe('rankVpOf', () => {
   it('keeps the entry rank while the new VP stays in its band', () => {
-    const v = rankVpOf(rating(LADDER[2], 622, 644))!;
+    const v = rankVpOf(rating(LADDER[2]!, 622, 644))!;
     expect(v.before).toEqual({ rank: 'Gold III', tierIdx: 2, vp: 622 });
     expect(v.after).toEqual({ rank: 'Gold III', tierIdx: 2, vp: 644 });
     expect(v.change).toBe(22);
   });
   it('moves to the division whose band holds the new VP on a rank-up', () => {
-    const v = rankVpOf(rating(LADDER[2], 687, 710, true))!;
+    const v = rankVpOf(rating(LADDER[2]!, 687, 710, true))!;
     expect(v.after.rank).toBe('Gold II');
     expect(v.rankUp).toBe(true);
   });
   it('follows the VP band down after a loss across a division line', () => {
-    expect(rankVpOf(rating(LADDER[2], 600, 575))!.after.rank).toBe('Silver I');
+    expect(rankVpOf(rating(LADDER[2]!, 600, 575))!.after.rank).toBe('Silver I');
   });
   it('reads 1400+ VP as Diamond I unless the player entered as Paragon', () => {
-    expect(rankVpOf(rating(LADDER[4], 1390, 1410, true))!.after.rank).toBe('Diamond I');
-    expect(rankVpOf(rating(LADDER[0], 1450, 1430))!.after.rank).toBe('Paragon');
+    expect(rankVpOf(rating(LADDER[4]!, 1390, 1410, true))!.after.rank).toBe('Diamond I');
+    expect(rankVpOf(rating(LADDER[0]!, 1450, 1430))!.after.rank).toBe('Paragon');
   });
   it('returns null for an unranked player', () => {
     expect(rankVpOf(null)).toBeNull();

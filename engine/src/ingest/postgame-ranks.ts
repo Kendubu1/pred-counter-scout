@@ -70,7 +70,7 @@ async function main() {
       const f = JSON.parse(readFileSync(path.join(OUT_DIR, fn), 'utf8'));
       return all || (f.players ?? []).some((p: any) => !('rankVp' in p));
     });
-  let films = 0, ranked = 0, players = 0;
+  let films = 0, ranked = 0, players = 0, pending = 0;
   for (let i = 0; i < todo.length; i += BATCH) {
     const batch = todo.slice(i, i + BATCH);
     const q = `{ ${batch.map((fn, k) => `m${k}: match(by: { id: "${fn.slice(0, -5)}" }) { ${FIELDS} }`).join(' ')} }`;
@@ -80,6 +80,10 @@ async function main() {
       const mps = (d[`m${k}`]?.matchPlayers ?? []) as { player: { uuid: string } | null; rating: Rating }[];
       if (!mps.length) return;
       const byPid = new Map(mps.filter((m) => m.player?.uuid).map((m) => [m.player!.uuid, m.rating]));
+      // No rating on any of the ten: pred.gg has not posted this game's ranks
+      // yet (seen on a fresh patch's first games). Leave the film unmarked so a
+      // later run retries it, instead of recording ten unranked players.
+      if (![...byPid.values()].some((rt) => rankVpOf(rt))) { pending++; return; }
       const p = path.join(OUT_DIR, fn);
       const f = JSON.parse(readFileSync(p, 'utf8'));
       let n = 0;
@@ -94,7 +98,7 @@ async function main() {
     });
     await new Promise((r) => setTimeout(r, 1200));
   }
-  console.log(`rank/VP written for ${players} player(s) across ${films} film(s), ${ranked} ranked (${todo.length} needed it).`);
+  console.log(`rank/VP written for ${players} player(s) across ${films} film(s), ${ranked} ranked; ${pending} film(s) with no ranks posted yet, left for the next run (${todo.length} needed it).`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();
