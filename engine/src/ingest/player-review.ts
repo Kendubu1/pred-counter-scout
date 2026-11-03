@@ -62,8 +62,11 @@ function main() {
   const rot = read('data/aggregates/rotation-habits.json').members;
   // "Since patch" = the current patch's release, as recorded by npm run perks.
   const patch = read('data/aggregates/perk-stream.json');
-  const since: string = (patch.patchReleasedAt ?? '').slice(0, 10);
-  const { rows, films, recent, ran } = filmRows(since);
+  // Cut at the release TIME, not the release date: on 1.18 (released 09:59 UTC)
+  // a date cutoff counted three 1.17.2 games played before it went live.
+  const sinceAt: string = patch.patchReleasedAt ?? '';
+  const since: string = sinceAt.slice(0, 10); // label only
+  const { rows, films, recent, ran } = filmRows(sinceAt);
   // The newest reviewed patch (a digest with a predictions file), read against
   // each member's pool and what they ran in squad games on the current patch.
   const cmpV = (a: string, b: string) => a.localeCompare(b, undefined, { numeric: true });
@@ -93,7 +96,7 @@ function main() {
     ],
     members,
     recent: {
-      since, patch: patch.patch ?? null,
+      since, sinceAt, patch: patch.patch ?? null,
       note: 'squad games only (the reviewed films), not solo queue',
       games: Object.fromEntries(squad.members.map((m: { uuid: string; name: string }) => [m.uuid, recent[m.name] ?? []])),
     },
