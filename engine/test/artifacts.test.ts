@@ -24,6 +24,12 @@ beforeAll(() => {
 // the pending RPC replies land between the long synchronous stretches.
 beforeEach(() => new Promise<void>((resolve) => setImmediate(resolve)));
 
+// Release window: the first hours of a patch carry a few hundred matches, so
+// volume floors (sample-driven rates, 100-game leaders, a filled ladder) wait
+// until the board has EARLY_PATCH_MATCHES. Structural checks always run.
+const EARLY_PATCH_MATCHES = 5000;
+const isEarlyPatch = (meta: { matches?: number }) => (meta.matches ?? 0) < EARLY_PATCH_MATCHES;
+
 describe('hero artifacts (Concept A engine stage)', () => {
   it('builds a schema-valid artifact with honesty fields intact', { timeout: 60000 }, () => {
     const a = buildHeroArtifact(data.kits.get('gideon')!, data, cal, { beamWidth: 8, matchupEnemies: 1 });
@@ -117,7 +123,11 @@ describe('hero artifacts (Concept A engine stage)', () => {
     const bans = JSON.parse(readFileSync(p, 'utf8'));
     const meta = JSON.parse(readFileSync(path.join(ROOT, 'data/artifacts/meta.json'), 'utf8'));
     expect(bans.patch).toBe(meta.patch);
-    const boards = [bans.all, ...bans.rankBands.map((b: { key: string }) => bans.byBand[b.key])];
+    const early = isEarlyPatch(meta);
+    // Early in a patch that is also a split reset, nobody is placed yet, so the
+    // rank-band boards can be empty; check the ones that have games.
+    const boards = [bans.all, ...bans.rankBands.map((b: { key: string }) => bans.byBand[b.key])]
+      .filter((board: { matches: number }, i: number) => i === 0 || !early || board.matches > 0);
     for (const board of boards) {
       expect(board.matches).toBeGreaterThan(0);
       expect(board.heroes.length).toBeGreaterThanOrEqual(10);
@@ -125,7 +135,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
       for (const h of board.heroes) {
         expect(h.banRate).toBeGreaterThanOrEqual(0);
         expect(h.banRate).toBeLessThanOrEqual(1);
-        if (h.winRate != null) expect(h.winRate).toBeGreaterThan(0.2), expect(h.winRate).toBeLessThan(0.8);
+        if (h.winRate != null && !early) expect(h.winRate).toBeGreaterThan(0.2), expect(h.winRate).toBeLessThan(0.8);
       }
       // A 4-ban draft: the league bans ~4 heroes per match, so ban rates sum near 4.
       const sum = board.heroes.reduce((s: number, h: { banRate: number }) => s + h.banRate, 0);
@@ -191,7 +201,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
     for (const role of ['carry', 'midlane', 'offlane', 'jungle', 'support']) {
       const lane = meta.roles[role];
       expect(lane.length, role).toBeGreaterThanOrEqual(5);
-      expect(lane[0].games, role).toBeGreaterThan(100);
+      if (!isEarlyPatch(meta)) expect(lane[0].games, role).toBeGreaterThan(100);
       for (const h of lane) {
         expect(h.shrunkWr, `${role}/${h.slug}`).toBeGreaterThan(0.35);
         expect(h.shrunkWr, `${role}/${h.slug}`).toBeLessThan(0.65);
@@ -387,7 +397,8 @@ describe('hero artifacts (Concept A engine stage)', () => {
     expect(meta.topPlayers, 'meta.json was generated without pred.gg credentials').not.toBeNull();
     for (const role of ['carry', 'midlane', 'offlane', 'jungle', 'support']) {
       const pilots = meta.topPlayers[role];
-      expect(pilots.length, role).toBeGreaterThanOrEqual(3);
+      // A patch day is also a split reset (1.18): the new ladder is empty for a day or two.
+      if (!isEarlyPatch(meta)) expect(pilots.length, role).toBeGreaterThanOrEqual(3);
       for (const p of pilots) {
         expect(p.name.length).toBeGreaterThan(0);
         expect(p.points).toBeGreaterThan(500);

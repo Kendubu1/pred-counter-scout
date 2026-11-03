@@ -81,6 +81,11 @@
   .patchbar b { color:var(--text-0); }
   .patchbar .pb-cta { color:var(--accent-ink); font-weight:700; margin-left:.35rem; }
   .patchbar:hover .pb-cta { text-decoration:underline; }
+  /* early-patch notice: under the patch bar while the new patch's sample is small */
+  .patchnew { text-align:center; padding:.3rem 1rem; background:var(--bg-2); border-bottom:1px solid var(--border); color:var(--text-1); font-size:.74rem; line-height:1.4; }
+  .patchnew[hidden] { display:none; }
+  .patchnew button { background:none; border:0; padding:0 0 0 .3rem; color:var(--accent-ink); font:inherit; font-weight:700; cursor:pointer; }
+  .patchnew button:hover { text-decoration:underline; }
   /* collapsed all-heroes browser */
   #allHeroes > summary.allsum { cursor:pointer; list-style:none; user-select:none; }
   #allHeroes > summary.allsum::-webkit-details-marker { display:none; }
@@ -604,6 +609,7 @@
 <body>
 <div class="top">
   <a class="patchbar" id="patchBar" href="../patch-1.18.html"><b>Patch 1.18 Frostbite</b><span class="pb-cta">Read the patch notes →</span></a>
+  <div class="patchnew" id="patchNew" hidden></div>
   <div class="top-inner">
     <a class="wordmark" href="./"><img src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</a>
     <span class="spacer"></span>
@@ -2523,7 +2529,7 @@ async function route() {
     show('landing'); setLandingMode('counter'); counterHero(enemy, params.get('lane')); buildSubnav(); return;
   }
   const slug = params.get('hero');
-  if (!slug) { show('landing'); renderGrid(); buildSubnav(); return; }
+  if (!slug) { show('landing'); renderGrid(); buildSubnav(); if (params.get('boards')) setTimeout(() => document.getElementById('metaboard')?.scrollIntoView({ block: 'start' }), 300); return; }
   try {
     const a = await getJson(`../../data/artifacts/${slug}.json`);
     await getAugs();
@@ -2540,6 +2546,23 @@ window.onpopstate = route;
   META = await getJson('../../data/artifacts/meta.json').catch(() => null);
   BANS = await getJson('../../data/artifacts/bans.json').catch(() => null);
   PAST = await getJson('../../data/artifacts/past-boards.json').catch(() => null);
+  // Early-patch notice: until the new patch's board has 25,000 matches (the
+  // patch review's "early read" line), say the data is still coming in and
+  // offer the previous patch's boards. Hero pages stay on the current patch.
+  try {
+    const prev = PAST?.patches?.[0]?.patch;
+    if (META && prev && (META.matches ?? 0) < 25000) {
+      const n = $('#patchNew');
+      n.innerHTML = `Patch ${esc(META.patch)} data is still coming in (${Number(META.matches || 0).toLocaleString()} ranked matches so far), so boards and builds are early reads.<button type="button">See the ${esc(prev)} boards →</button>`;
+      n.querySelector('button').onclick = () => {
+        const board = document.getElementById('metaboard');
+        // On a hero page the boards are not on screen: go home with that patch picked.
+        if (!board || !board.offsetParent) { location.href = `./?boards=${encodeURIComponent(prev)}`; return; }
+        setMetaPatch(String(prev)); board.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+      n.hidden = false;
+    }
+  } catch { /* the notice is optional */ }
   window.INDEX_GENERATED = INDEX.generatedAt || '';
   // One canonical THEORY definition + one shared win%/verdict legend (docs/ux-rubric.md R3).
   $('#theoryDef').textContent = THEORY_DEF + '.';
@@ -2562,6 +2585,8 @@ window.onpopstate = route;
   PATCH_STATE = _ps?.heroes ?? {};
   LATEST_PATCH = _ps?.patch ?? null;
   renderRolebar();
+  // ?boards=<patch>: open the boards on an earlier patch (the early-patch notice's link).
+  { const bp = new URLSearchParams(location.search).get('boards'); if (bp && PAST?.patches?.some((p) => String(p.patch) === bp)) metaPatch = bp; }
   renderMetaboard();
   renderBanboard();
   renderFilterbar();
