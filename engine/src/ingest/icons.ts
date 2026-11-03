@@ -143,6 +143,30 @@ async function perkJobs(): Promise<Job[]> {
   return jobs;
 }
 
+// Rank tier badges for the post-game review (one icon per tier on pred.gg's
+// ladder). The ladder hangs off any ranked match's ratings, so read it from the
+// newest committed film: one query. Saved as ui/img/ranks/<tier>.webp (the
+// committed copies were downscaled to 96px; the UI shows them at ~16px).
+async function rankJobs(): Promise<Job[]> {
+  const idx = JSON.parse(readFileSync(path.join(ROOT, 'data/postgame/index.json'), 'utf8')) as { matches?: { matchId: string }[] };
+  const jobs: Job[] = [];
+  for (const m of (idx.matches ?? []).slice(0, 5)) {
+    const d = await gql<{ m: { matchPlayers: { rating: { rating: { ranks: { name: string; icon: string | null }[] | null } | null } | null }[] } | null }>(
+      `{ m: match(by: { id: "${m.matchId}" }) { matchPlayers { rating { rating { ranks { name icon } } } } } }`);
+    const ranks = d.m?.matchPlayers.map((p) => p.rating?.rating?.ranks).find((r) => r?.length);
+    if (!ranks) continue;
+    const seen = new Set<string>();
+    for (const r of ranks) {
+      const tier = r.name.split(' ')[0]!.toLowerCase();
+      if (!r.icon || seen.has(tier)) continue;
+      seen.add(tier);
+      jobs.push({ url: ASSET(r.icon), dest: path.join(ROOT, 'ui/img/ranks', `${tier}.webp`), label: `rank ${tier}` });
+    }
+    break;
+  }
+  return jobs;
+}
+
 async function main() {
   if (!hasCredentials()) { console.error('needs PREDGG_CLIENT_ID/SECRET in env'); process.exit(1); }
   console.log('pred.gg catalog icons (heroes, items, crests):');
@@ -155,9 +179,13 @@ async function main() {
   const perks = await fetchMissing(await perkJobs());
   console.log(`  ${perks.fetched} fetched`);
 
-  const missing = [...catalog.missing, ...abilities.missing, ...perks.missing];
+  console.log('pred.gg rank tier badges:');
+  const ranks = await fetchMissing(await rankJobs());
+  console.log(`  ${ranks.fetched} fetched`);
+
+  const missing = [...catalog.missing, ...abilities.missing, ...perks.missing, ...ranks.missing];
   if (missing.length) console.warn(`upstream has no file for (${missing.length}):\n  ${missing.join('\n  ')}`);
-  const failed = [...catalog.failed, ...abilities.failed, ...perks.failed];
+  const failed = [...catalog.failed, ...abilities.failed, ...perks.failed, ...ranks.failed];
   if (failed.length) {
     console.error(`failed (${failed.length}):\n  ${failed.join('\n  ')}`);
     process.exit(1);

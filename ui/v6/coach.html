@@ -194,6 +194,11 @@
   .coach-stats th { color:var(--text-2); font-size:.6875rem; letter-spacing:0; }
   .coach-stats .role { color:var(--text-2); font-size:.6875rem; }
   .coach-stats.rank-table { min-width:0; }
+  .rank-badge { display:inline-flex; align-items:center; gap:.15rem; margin-left:.35rem; font-size:.7rem; font-weight:600; color:var(--text-1); vertical-align:-3px; }
+  .rank-badge img { width:22px !important; height:22px !important; border:none !important; border-radius:0 !important; object-fit:contain !important; }
+  .vp-tag { color:var(--text-2); font-size:.78rem; }
+  .pname { display:flex; align-items:center; flex-wrap:wrap; }
+  .plobby .who .pname b { display:inline; }
   .coach-stats.rank-table td:first-child { white-space:normal; }
   .bverdict { margin:.5rem 0 .2rem; font-size:.86rem; color:var(--text-1); border-left:3px solid var(--red); padding:.35rem .65rem; background:rgba(255,90,90,.06); border-radius:0 8px 8px 0; }
   .plobby { display:grid; grid-template-columns:150px 1fr; gap:.7rem; padding:.65rem 0; border-bottom:1px solid var(--border); }
@@ -703,7 +708,7 @@ function fightMap(f) {
 // the breakdown all point at the same fight. Degrades gracefully when the map/detail
 // isn't present (e.g. an old game with no located kills).
 function focusFight(n) {
-  const evidence = document.getElementById('coach-evidence'); if (evidence) evidence.open = true;
+  const evidence = document.getElementById('coach-moments'); if (evidence) evidence.open = true;
   const dd = document.getElementById('deepdive'); if (dd) dd.open = true;
   document.querySelectorAll('.fm-mark.on, .fm-halo.on').forEach((e) => e.classList.remove('on'));
   document.querySelectorAll('.tlmark.sel, .fchip.sel').forEach((e) => e.classList.remove('sel'));
@@ -764,27 +769,32 @@ function pgReview(f) {
   // postgame:ranks). pred.gg reports the entry rank and VP before/after; the
   // after-rank is read from the ladder's VP bands, so it is marked as derived.
   const vpDelta = (n) => `<span style="color:${n >= 0 ? 'var(--green)' : 'var(--red)'}">${n >= 0 ? '+' : ''}${n}</span>`;
-  const rankCells = (p) => p.rankVp
-    ? `<td>${esc(p.rankVp.after.rank)}${p.rankVp.rankUp ? ' <span style="color:var(--green)" title="pred.gg flagged a rank-up this game">▲</span>' : ''}</td><td>${p.rankVp.after.vp}</td><td>${vpDelta(p.rankVp.change)}</td>`
-    : `<td style="color:var(--text-2)">unranked</td><td>·</td><td>${p.vpChange != null ? vpDelta(p.vpChange) : '·'}</td>`;
-  const rankTable = (rows, label) => rows.some((p) => p.rankVp || p.vpChange != null) ? `<h3 class="flags-h">Ranks after the game</h3><div class="coach-stat-wrap"><table class="coach-stats rank-table"><thead><tr><th>${label}</th><th>Rank</th><th>VP</th><th>±VP</th></tr></thead><tbody>${rows.map((p) => `<tr><td><span style="display:inline-flex;align-items:center;gap:.4rem">${hIcon(p.heroSlug, 20)}<span><b>${pgName(p)}</b> <span class="role">· ${esc(p.heroName)} / ${esc(p.role)}</span></span></span></td>${rankCells(p)}</tr>`).join('')}</tbody></table><div style="font-size:.6875rem;color:var(--text-2);margin-top:.25rem">VP from pred.gg; the rank after is read from the VP band, so placement protection is not shown.</div></div>` : '';
+  const rankBadge = (p) => {
+    const rk = p.rankVp?.after;
+    if (!rk) return '';
+    const [tier, ...div] = String(rk.rank).split(' ');
+    return ` <span class="rank-badge" title="${esc(rk.rank)} · ${rk.vp} VP after the game"><img src="../img/ranks/${esc(tier.toLowerCase())}.webp" alt="${esc(rk.rank)}" onerror="this.style.display='none'">${div.length ? `<span>${esc(div.join(' '))}</span>` : ''}${p.rankVp.rankUp ? '<span style="color:var(--green)" title="rank-up this game">▲</span>' : ''}</span>`;
+  };
+  const vpTag = (p) => {
+    const n = p.rankVp ? p.rankVp.change : p.vpChange;
+    return n == null ? '' : ` <span class="vp-tag">| VP ${vpDelta(n)}</span>`;
+  };
   const ROLE_ORDER = ['offlane', 'jungle', 'midlane', 'carry', 'support'];
   const byRole = (rows) => [...rows].sort((a, b) => ROLE_ORDER.indexOf(a.role) - ROLE_ORDER.indexOf(b.role));
   const enemyCard = () => {
     const them = byRole(f.players.filter((p) => !p.us));
     if (!them.length) return '';
-    return card(`${eyebrow('Enemy team · ranks, builds &amp; picks', 'for matchup reference; recorded loadouts from pred.gg')}${them.map((p) => {
+    return `<p class="build-help">For matchup reference: each enemy's rank, score, lane opponent, items and the loadout recorded by pred.gg.</p>${them.map((p) => {
       const opp = ourOf(p.role);
-      const rk = p.rankVp ? `${esc(p.rankVp.after.rank)} · ${p.rankVp.after.vp} VP (${vpDelta(p.rankVp.change)})` : 'unranked';
       const built = p.items || [];
       return `<div class="plobby coach-player enemy-player">
-        <div class="who">${hIcon(p.heroSlug, 34)}<span><b>${pgName(p)}</b><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span><br><span class="h">${rk}</span></span></div>
+        <div class="who">${hIcon(p.heroSlug, 34)}<span><span class="pname"><b>${pgName(p)}</b>${rankBadge(p)}</span><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span>${vpTag(p)}</span></div>
         <div class="line">${opp ? `<div style="font-size:.78rem;color:var(--text-2)">vs ${esc(opp.heroName)} (${pgName(opp)})</div>` : ''}
           <div class="items">${built.map((i) => `<img data-ipop="${esc(i.slug)}" src="${iimg(i.slug)}" title="${esc(i.name)}" onerror="this.style.display='none'">`).join('') || '<span style="color:var(--text-2);font-size:.78rem">no finished items</span>'}</div>
           ${ranLine(p.loadout) || '<div class="lrow" style="color:var(--text-2)">loadout not recorded</div>'}
         </div>
       </div>`;
-    }).join('')}`);
+    }).join('')}`;
   };
 
   // ── Verdict: result, the coach's headline, what shifted it, both teams' heroes ──
@@ -1072,12 +1082,11 @@ function pgReview(f) {
     const verdict = card(`
       <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap"><b style="color:${resColor}">${f.result.toUpperCase()}</b><span style="color:var(--text-2)">${new Date(f.startTime).toLocaleDateString()} · ${f.durationMin} min</span></div>
       <h2 style="font-size:1.2rem;line-height:1.4;margin:.65rem 0">${esc(co.headline || 'Match review')}</h2>
-      ${co.flags?.length ? flagList(co.flags, f) : co.team ? `<p style="color:var(--text-1);line-height:1.6;margin:0">${esc(co.team)}</p>` : ''}
-      ${rankTable(byRole(us), 'Your team')}`);
+      ${co.flags?.length ? flagList(co.flags, f) : co.team ? `<p style="color:var(--text-1);line-height:1.6;margin:0">${esc(co.team)}</p>` : ''}`);
     const reflection = f.result === 'loss' && co.lossReflection ? `${eyebrow('What could have changed this game?', '')}<p style="line-height:1.6">${esc(co.lossReflection)}</p>` : '';
     const next = focus?.action || reflection ? card(`${reflection}${focus?.action ? `${eyebrow('Next game', '')}<p style="font-size:1rem;line-height:1.5;margin:0">${esc(focus.action)}</p>` : ''}`) : '';
     const players = card(`${eyebrow('Your team', '')}${us.map((p) => `<div class="plobby coach-player">
-      <div class="who">${hIcon(p.heroSlug, 34)}<span><b>${pgName(p)}</b><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span></span>${CoachLoadouts.icons(p.loadout,p)}</div>
+      <div class="who">${hIcon(p.heroSlug, 34)}<span><span class="pname"><b>${pgName(p)}</b>${rankBadge(p)}</span><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span>${vpTag(p)}</span>${CoachLoadouts.icons(p.loadout,p)}</div>
       <div class="line">${(() => {
         if (co.playerBullets?.[p.pid]?.length) return `<ul class="coach-bullets">${co.playerBullets[p.pid].map(text => `<li>${esc(text)}</li>`).join('')}</ul>`;
         const actions = co.microReads?.[p.pid];
@@ -1085,17 +1094,21 @@ function pgReview(f) {
         return co.perPlayer?.[p.pid] ? esc(co.perPlayer[p.pid]) : 'Individual feedback has not been written for this player.';
       })()}</div>
     </div>`).join('')}`);
-    const loadouts = card(`${eyebrow('Builds & matchup analysis', '')}<p class="build-help">Choose a player to see the recommendation, matchup and loadout breakdown.</p>${us.map((p) => {
+    const loadouts = `<p class="build-help">Choose a player to see the recommendation, matchup and loadout breakdown.</p>${us.map((p) => {
       const br = co.buildReads?.[p.pid];
       const sections = [['improvement','Build decision','recommendation'],['matchup','Lane & team threats',''],['build','Item interactions',''],['eternal','Eternal & minors',''],['augment','Hero augment',''],['crest','Crest','']];
       return `<details class="build-player"><summary>${hIcon(p.heroSlug,36).replace(/<\/?a\b[^>]*>/g,'')}<span class="build-identity"><b>${pgName(p)}</b><span>${esc(p.heroName)} · ${esc(p.role)}</span></span></summary><div class="build-analysis">
         ${sections.map(([key,label,style]) => buildBullets(br?.[key]).length ? `<section class="build-section ${style}"><h3>${label}</h3><ul>${buildBullets(br[key]).map(b => `<li>${esc(b)}</li>`).join('')}</ul></section>` : '').join('')}
         ${!br ? '<p class="build-help">Matchup analysis has not been written for this player.</p>' : ''}
       </div></details>`;
-    }).join('')}<p class="build-help">Based on final inventory and recorded draft choices. Purchase timing, active use and passive uptime are unverified. Alternatives describe matchup tradeoffs, not proven winning swaps.</p>`);
-    return verdict + stackCard + next + players + `<details class="deepdive" id="coach-evidence"><summary>Evidence & replay details · stats, builds and timestamps</summary>
-      ${enemyCard()}${loadouts}<details class="evidence-section"><summary>Match totals · compare player stats</summary>${card(statline)}</details><details class="evidence-section"><summary>Key moments & objective timeline</summary>${moments}${timeline}</details>${deep}
-    </details>`;
+    }).join('')}<p class="build-help">Based on final inventory and recorded draft choices. Purchase timing, active use and passive uptime are unverified. Alternatives describe matchup tradeoffs, not proven winning swaps.</p>`;
+    const drop = (id, title, inner) => inner ? `<details class="deepdive" id="${id}"><summary>${title}</summary>${inner}</details>` : '';
+    return verdict + next + players
+      + drop('coach-enemy', 'Enemy team · ranks, builds &amp; picks', enemyCard())
+      + drop('coach-builds', 'Builds &amp; matchup analysis', loadouts)
+      + drop('coach-totals', 'Match totals · compare player stats', statline)
+      + drop('coach-moments', 'Key moments &amp; objective timeline', `${moments}${timeline}`)
+      + deep;
   }
   return head + stackCard + moments + deepDive + coachEvidence + timeline + worked + lobby + deep;
 }
