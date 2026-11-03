@@ -14,9 +14,14 @@
     },
     "augment:skylar:14": {
       "name": "Skylar / Atomised Artillery",
-      "sourceText": "Atomiser fires 3 blasts in succession, each dealing 60% of the original damage.",
-      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-10-15 (catalog text, not an in-game measurement)",
+      "sourceText": "Gain +10 Ultimate Haste. Atomiser now fires 3 blasts in succession, each dealing 60% of the original damage.",
+      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-11-03 to the 1.18 catalog (catalog text, not an in-game measurement)",
       "effects": [
+        {
+          "kind": "haste",
+          "amount": 10,
+          "scope": "ultimate"
+        },
         {
           "kind": "ability_damage_amp",
           "abilityKey": "ULTIMATE",
@@ -30,8 +35,8 @@
     },
     "augment:skylar:15": {
       "name": "Skylar / Plasma Barrage",
-      "sourceText": "Plasma Grenade reduces its own Cooldown by 3.5s when attaching to an Enemy Hero. On explosion, it also deals <HealthText>(+6% Target's Missing Health)</> Damage.",
-      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-10-15 (catalog text, not an in-game measurement)",
+      "sourceText": "Plasma Grenade reduces its own Cooldown by 3.5s when attaching to an Enemy Hero. On explosion, it also deals <HealthText>(+7.5% Target's Missing Health)</> Damage.",
+      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-11-03 to the 1.18 catalog (catalog text, not an in-game measurement)",
       "effects": [
         {
           "kind": "ability_cooldown",
@@ -44,7 +49,7 @@
         },
         {
           "kind": "unmodeled",
-          "note": "Explosion adds 6% target missing health; missing-health augment damage is not represented."
+          "note": "Explosion adds 7.5% target missing health; missing-health augment damage is not represented."
         }
       ]
     },
@@ -812,13 +817,13 @@
     },
     "augment:morigesh:80": {
       "name": "Morigesh / Cursed Infestation",
-      "sourceText": "Hive deals 12% more damage and has 10% increased range.",
-      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-10-15 (catalog text, not an in-game measurement)",
+      "sourceText": "Hive deals 10% more damage and has 10% increased range.",
+      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-11-03 to the 1.18 catalog (catalog text, not an in-game measurement)",
       "effects": [
         {
           "kind": "ability_damage_amp",
           "abilityKey": "PRIMARY",
-          "pct": 12
+          "pct": 10
         },
         {
           "kind": "unmodeled",
@@ -1551,27 +1556,27 @@
     },
     "augment:maco:155": {
       "name": "Maco / Ferocious Flight",
-      "sourceText": "For each Enemy hit by Maco Fly, Maco gains 30/50/70/90/110 <AbilityPowerText>(+12%</><img id=\"APIconBlue\"></><AbilityPowerText>)</><HealthText>(+1%</><img id=\"HealthIconGreen\"></><HealthText>)</> additional Shielding and the ability's Cooldown is reduced by 1s. This effect also occurs on non-Heroes, but is reduced by 80%.",
-      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-10-15 (catalog text, not an in-game measurement)",
+      "sourceText": "For each Enemy hit by Maco Fly, Maco gains 20/40/60/80/100 <AbilityPowerText>(+15%</><img id=\"APIconBlue\"></><AbilityPowerText>)</><HealthText>(+1%</><img id=\"HealthIconGreen\"></><HealthText>)</> additional Shielding and the ability's Cooldown is reduced by 1.5s. This effect also occurs on non-Heroes, but is reduced by 80%.",
+      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-11-03 to the 1.18 catalog (catalog text, not an in-game measurement)",
       "effects": [
         {
           "kind": "ability_heal",
           "abilityKey": "SECONDARY",
           "healKind": "shield",
           "valuesPerRank": [
-            30,
-            50,
-            70,
-            90,
-            110
+            20,
+            40,
+            60,
+            80,
+            100
           ],
-          "scalingPct": 12,
+          "scalingPct": 15,
           "scaleStat": "magical_power"
         },
         {
           "kind": "ability_cooldown",
           "abilityKey": "SECONDARY",
-          "flatSeconds": 1
+          "flatSeconds": 1.5
         },
         {
           "kind": "unmodeled",
@@ -1592,8 +1597,8 @@
     },
     "augment:maco:157": {
       "name": "Maco / Shatterbloom",
-      "sourceText": "Maco Strike creates a Healing field at the explosion location that Heals 20/30/40 <AbilityPowerText>(+4%</><img id=\"APIconBlue\"></><AbilityPowerText>)</> every 0.25s for 5s.",
-      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-10-15 (catalog text, not an in-game measurement)",
+      "sourceText": "Maco Strike creates a Healing field at the explosion location that Heals 20/30/40 <AbilityPowerText>(+4.5%</><img id=\"APIconBlue\"></><AbilityPowerText>)</> every 0.25s for 5s.",
+      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-11-03 to the 1.18 catalog (catalog text, not an in-game measurement)",
       "effects": [
         {
           "kind": "ability_heal",
@@ -1604,12 +1609,12 @@
             600,
             800
           ],
-          "scalingPct": 80,
+          "scalingPct": 90,
           "scaleStat": "magical_power"
         },
         {
           "kind": "unmodeled",
-          "note": "20 ticks x 20/30/40 (+4% MP each) folded to per-cast totals; assumes full field uptime, one beneficiary"
+          "note": "20 ticks x 20/30/40 (+4.5% MP each) folded to per-cast totals; assumes full field uptime, one beneficiary"
         }
       ]
     },
@@ -2032,8 +2037,8 @@
     },
     "augment:legion:635": {
       "name": "Legion / Press the Advantage",
-      "sourceText": "Upon achieving a Takedown, a Rally Point is spawned at the dead Targets location. Rally Point no longer grants Health Regeneration but increases Legions Rate of Fire by 12/18/22/26/30% and grants Allies 10/12.5/15/17.5/20% Attack Speed.",
-      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-10-15 (catalog text, not an in-game measurement)",
+      "sourceText": "Upon achieving a Takedown, a Rally Point is spawned at the dead Targets location. Rally Point no longer grants Health Regeneration but increases Legions Rate of Fire by 14/18/22/26/30% and grants Allies 10/12.5/15/17.5/20% Attack Speed.",
+      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-11-03 to the 1.18 catalog (catalog text, not an in-game measurement)",
       "effects": [
         {
           "kind": "unmodeled",
@@ -2043,8 +2048,8 @@
     },
     "augment:legion:636": {
       "name": "Legion / Scorched Earth",
-      "sourceText": "Frag Order and Saturation Charge Mines create Napalm zones upon exploding and Orbital Sanction creates one every 0.5s. Napalm zones deal 5 (+6% Bonus Physical Power) Physical Damage per 0.5s and last 3s.",
-      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-10-15 (catalog text, not an in-game measurement)",
+      "sourceText": "Frag Order and Saturation Charge Mines create Napalm zones upon exploding and Orbital Sanction creates one every 0.5s. Napalm zones deal 7 (+7% Bonus Physical Power) Physical Damage per 0.5s and last 3s.",
+      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-11-03 to the 1.18 catalog (catalog text, not an in-game measurement)",
       "effects": [
         {
           "kind": "unmodeled",
@@ -2054,8 +2059,8 @@
     },
     "augment:legion:661": {
       "name": "Legion / Heavy Caliber",
-      "sourceText": "Basic Attack Timer is increased to 0.75s, but deal 310% damage and have 100 increased range. Magazine Size is decreased to 6.",
-      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-10-15 (catalog text, not an in-game measurement)",
+      "sourceText": "Basic Attack Timer is increased to 0.75s, but deal 300% damage and have 100 increased range. Magazine Size is decreased to 6.",
+      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-11-03 to the 1.18 catalog (catalog text, not an in-game measurement)",
       "effects": [
         {
           "kind": "unmodeled",
@@ -2395,8 +2400,8 @@
     },
     "augment:valmont:771": {
       "name": "Valmont / Sanguine Banquet",
-      "sourceText": "Gain 2% (+0.4% Bonus Mana) Omnivamp. Minions killed by Valmont increase Valmont's Maximum Mana by 2. Hero deaths increase it by 20.",
-      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-10-15 (catalog text, not an in-game measurement)",
+      "sourceText": "Gain 2% (+0.35% Bonus Mana) Omnivamp. Minions killed by Valmont increase Valmont's Maximum Mana by 2. Hero deaths increase it by 20.",
+      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; reconciled 2026-11-03 to the 1.18 catalog (catalog text, not an in-game measurement)",
       "effects": [
         {
           "kind": "unmodeled",
@@ -2423,6 +2428,39 @@
         {
           "kind": "unmodeled",
           "note": "added 2026-10-14 when the public match stream first surfaced this augment; mechanics not yet encoded in the sim"
+        }
+      ]
+    },
+    "augment:kaelen:12553": {
+      "name": "Kaelen / Neverending Chase",
+      "sourceText": "Pale Twins and Ability hits against Heroes reduce Winter's Pursuit Cooldown by 3% on-hit (3% for Camp Leaders).",
+      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; added 2026-11-03 when Kaelen shipped in 1.18 (catalog text, not an in-game measurement)",
+      "effects": [
+        {
+          "kind": "unmodeled",
+          "note": "Winter's Pursuit cooldown refund on hit; on-hit cooldown refunds are not modeled for this kit yet"
+        }
+      ]
+    },
+    "augment:kaelen:12554": {
+      "name": "Kaelen / Relentless Hunt",
+      "sourceText": "Razorstorm now strikes an additional time for every 20% Attack Speed owned, up to +10 strikes and can Critically Strike. Rimeglass no longer grants Armors.",
+      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; added 2026-11-03 when Kaelen shipped in 1.18 (catalog text, not an in-game measurement)",
+      "effects": [
+        {
+          "kind": "unmodeled",
+          "note": "Razorstorm extra strikes per 20% attack speed (up to +10) and crits; Rimeglass armor removed; not modeled"
+        }
+      ]
+    },
+    "augment:kaelen:12555": {
+      "name": "Kaelen / Last Winter",
+      "sourceText": "Frostfall grants Allies within the Targeting Zone +20% Movement Speed for 3s. Upon landing, Kaelen gains a (+10% Max Health) (+4% Max Health per Hero hit) Shield for 4s.",
+      "source": "Committed pred.gg catalog data/aggregates/predgg-augments.json; added 2026-11-03 when Kaelen shipped in 1.18 (catalog text, not an in-game measurement)",
+      "effects": [
+        {
+          "kind": "unmodeled",
+          "note": "ally movement speed and a landing shield; team-side and utility, not modeled"
         }
       ]
     }

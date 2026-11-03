@@ -48,8 +48,9 @@ describe('Kira action replay', () => {
     const r = replayKira([hit(0), hit(1), hit(9)], { ...base, disabled: ['vengeance'] });
     const ravens = r.trace.filter(t => t.source === 'Nevermore');
     expect(ravens).toHaveLength(2);
-    expect(ravens[0]!.damage).toBeCloseTo(700);
-    expect(ravens[1]!.damage).toBeCloseTo(9100 * 0.07);
+    // level 13: flat 45 + 5% current health (1.18)
+    expect(ravens[0]!.damage).toBeCloseTo(45 + 10000 * 0.05);
+    expect(ravens[1]!.damage).toBeCloseTo(45 + (10000 - 100 - 545 - 100) * 0.05);
   });
   it('Mercy adds three Vengeance stacks; Dusk uses existing stacks, which expire', () => {
     const r = replayKira([{ time: 0, kind: 'cast', ability: 'ALTERNATE', cooldown: 8 },

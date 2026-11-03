@@ -7,7 +7,7 @@ const gap = (slug: string, key: string) => data.unmodeledScalings.find(s => s.sl
 describe('scaling omission evidence', () => {
   it('reports unresolved health while preserving supported power on mixed-stat damage', () => {
     expect(gap('steel', 'PRIMARY').omittedTerms).toEqual([
-      { sourceTag: 'HealthText', percentByRank: [5], reason: 'unsupported-stat' },
+      { sourceTag: 'HealthText', percentByRank: [6], reason: 'unsupported-stat' }, // 1.18 Bull Rush 5% -> 6%
     ]);
     expect(gap('sevarog', 'PRIMARY').omittedTerms.map(t => t.percentByRank)).toEqual([[4]]);
   });
@@ -41,7 +41,7 @@ describe('scaling omission evidence', () => {
     expect(omitted.omittedTerms).toEqual([]);
     expect(omitted.sourcePayload).toContain('45/65/85/105/125 physical damage');
     expect(omitted.sourceText).toContain('per stack');
-    expect(omitted.sourceText).toContain('+12%');
+    expect(omitted.sourceText).toContain('+15%'); // 1.18 Dusk 12% -> 15%
   });
   it('preserves rank-specific source ratios without inventing a stat basis', () => {
     const parsed = parseDamageClauseScoped('Deals 10/20 <HealthText>(+2/4%)</HealthText> magical damage.');

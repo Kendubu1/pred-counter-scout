@@ -11,7 +11,7 @@ describe('catalog damage channels and ranks', () => {
   it('does not resurrect old damage on Muriel\'s current shield-only E', () => {
     const shield = data.kits.get('muriel')!.abilities.find(a => a.key === 'SECONDARY')!;
     expect(shield.damagePerRank).toEqual([]);
-    expect(shield.healing?.[0]?.valuesPerRank).toEqual([80, 120, 160, 200, 240]);
+    expect(shield.healing?.[0]?.valuesPerRank).toEqual([80, 115, 150, 185, 220]); // 1.18 Alacrity
     expect(data.staleFallbacks).toEqual([]);
   });
   it('uses both powers for magical traps, independent of damage type', () => {

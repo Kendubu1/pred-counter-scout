@@ -47,7 +47,8 @@ describe('data joins and patch currency', () => {
     // scarlett joined the roster in 1.16 and has no owned profile — the frozen
     // v2 game-data predates her, so her profile is derived from the snapshot.
     // valmont (1.17) likewise: the first hero the omeda catalog never carried.
-    expect(data.derivedProfiles).toEqual(['adele', 'legion', 'neon', 'scarlett', 'valmont']);
+    // kaelen (1.18) the same way.
+    expect(data.derivedProfiles).toEqual(['adele', 'kaelen', 'legion', 'neon', 'scarlett', 'valmont']);
   });
 
   it('PATCH GATE: Gideon Void Breach matches the 1.17 digest (90-250)', () => {

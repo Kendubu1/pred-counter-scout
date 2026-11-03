@@ -114,7 +114,10 @@ export function replayKira(actions: ReplayAction[], opts: ReplayOptions) {
     const damage = deal(action.time, action.source, (action.raw + perStack) * critical, 'physical', onHit || action.source === 'purge', ability);
     if (onHit && enabled('nevermore') && action.time >= ravenReady && hp > 0) {
       // Captured pre-hit health; sensitivity to ordering is an explicit limitation.
-      deal(action.time, 'Nevermore', before * 0.07, 'physical', false, true);
+      // 1.18: 15/30/45/60 by hero level 1/6/11/16 plus 5% of current health
+      // (was 7% current health alone).
+      const flat = opts.level >= 16 ? 60 : opts.level >= 11 ? 45 : opts.level >= 6 ? 30 : 15;
+      deal(action.time, 'Nevermore', flat + before * 0.05, 'physical', false, true);
       ravenReady = action.time + (15 - 0.5 * (opts.level - 1));
     }
     if (onHit && owns('solaris') && action.time < spellUntil && action.time >= spellReady && hp > 0) {

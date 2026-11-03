@@ -18,13 +18,27 @@ describe('installed-client catalog cross-check (2026-10-15)', () => {
     expect(() => catalogItemStat('tenacity', 101)).toThrow(/verify/);
   });
 
+  // The extraction is one patch's client. A later digest that changes a stat,
+  // or ships a new hero/item, is listed in the fixture and must actually name it.
+  const digestText = (patch: string) => readFileSync(path.join(root, `data/patches/${patch}.json`), 'utf8');
+  const superseded = new Set((evidence.supersededByPatch ?? []).map((x: any) => `${x.kind}:${x.slug}:${x.stat}`));
+  const newer = new Set((evidence.releasedAfterExtraction ?? []).map((x: any) => `${x.kind}:${x.slug}`));
+  it('every superseded or newer entry is backed by the digest of the patch that changed it', () => {
+    const nameOf = (x: any) => x.kind === 'hero' ? heroes.find((h: any) => h.slug === x.slug)?.display_name : items.find((i: any) => i.slug === x.slug)?.display_name;
+    for (const x of [...(evidence.supersededByPatch ?? []), ...(evidence.releasedAfterExtraction ?? [])]) {
+      const d = digestText(x.patch);
+      expect(d.includes(`"${x.slug}"`) || d.includes(nameOf(x) ?? '\u0000'), `${x.kind}:${x.slug} in ${x.patch}`).toBe(true);
+    }
+  });
+
   it('every catalog hero and item has a recorded named asset', () => {
-    for (const h of heroes) expect(evidence.heroAssets, h.slug).toContain(h.name);
-    for (const i of items) expect(evidence.itemAssets, i.slug).toContain(i.name);
+    for (const h of heroes) if (!newer.has(`hero:${h.slug}`)) expect(evidence.heroAssets, h.slug).toContain(h.name);
+    for (const i of items) if (!newer.has(`item:${i.slug}`)) expect(evidence.itemAssets, i.slug).toContain(i.name);
   });
 
   it('hero stats match independently extracted curve checkpoints', () => {
     for (const point of evidence.heroPoints) {
+      if (superseded.has(`hero:${point.hero}:${point.stat}`)) continue;
       const h = heroes.find((h: any) => h.slug === point.hero);
       const values = h.base_stats[point.stat];
       expect(values[Math.min(point.level - 1, values.length - 1)],
@@ -34,6 +48,7 @@ describe('installed-client catalog cross-check (2026-10-15)', () => {
 
   it('confirmed item stat mappings stay aligned with the extracted table', () => {
     for (const point of evidence.itemPoints) {
+      if (superseded.has(`item:${point.item}:${point.stat}`)) continue;
       const item = items.find((i: any) => i.slug === point.item);
       expect(item.stats[point.stat], `${point.item} ${point.stat}`).toBeCloseTo(point.value, 2);
     }

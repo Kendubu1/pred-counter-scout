@@ -54,7 +54,7 @@ for (const core of cores) {
       actions.push({ time: time + 0.01, kind: 'hit', source: 'mercy', raw: abilityHit(mercy, mr, stats) });
       if (time >= 2) {
         actions.push({ time: time + 0.02, kind: 'cast', ability: 'PRIMARY', cooldown: dusk.cooldowns[dr - 1]! / (1 + stats.ability_haste / 100) });
-        actions.push({ time: time + 0.03, kind: 'hit', source: 'dusk', raw: [45, 65, 85, 105, 125][dr - 1]!, duskPerStack: [6, 8, 10, 12, 14][dr - 1]! + stats.physical_power * 0.12 });
+        actions.push({ time: time + 0.03, kind: 'hit', source: 'dusk', raw: [45, 65, 85, 105, 125][dr - 1]!, duskPerStack: [6, 8, 10, 12, 14][dr - 1]! + stats.physical_power * 0.15 });
       }
     }
     const aps = attacksPerSecond(kit, level, stats, 3);
