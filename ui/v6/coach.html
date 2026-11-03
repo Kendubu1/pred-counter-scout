@@ -196,7 +196,7 @@
   .coach-stats.rank-table { min-width:0; }
   .rank-badge { display:inline-flex; align-items:center; gap:.15rem; margin-left:.35rem; font-size:.7rem; font-weight:600; color:var(--text-1); vertical-align:-3px; }
   .rank-badge img { width:22px !important; height:22px !important; border:none !important; border-radius:0 !important; object-fit:contain !important; }
-  .vp-tag { color:var(--text-2); font-size:.78rem; }
+  .vp-tag { color:var(--text-2); font-size:.78rem; white-space:nowrap; }
   .pname { display:flex; align-items:center; flex-wrap:wrap; }
   .plobby .who .pname b { display:inline; }
   .coach-stats.rank-table td:first-child { white-space:normal; }
@@ -777,7 +777,8 @@ function pgReview(f) {
   };
   const vpTag = (p) => {
     const n = p.rankVp ? p.rankVp.change : p.vpChange;
-    return n == null ? '' : ` <span class="vp-tag">| VP ${vpDelta(n)}</span>`;
+    if (n == null) return '';
+    return ` <span class="vp-tag">| ${p.rankVp ? `${p.rankVp.after.vp} VP` : 'VP'} ${vpDelta(n)}</span>`;
   };
   const ROLE_ORDER = ['offlane', 'jungle', 'midlane', 'carry', 'support'];
   const byRole = (rows) => [...rows].sort((a, b) => ROLE_ORDER.indexOf(a.role) - ROLE_ORDER.indexOf(b.role));
@@ -788,7 +789,7 @@ function pgReview(f) {
       const opp = ourOf(p.role);
       const built = p.items || [];
       return `<div class="plobby coach-player enemy-player">
-        <div class="who">${hIcon(p.heroSlug, 34)}<span><span class="pname"><b>${pgName(p)}</b>${rankBadge(p)}</span><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span>${vpTag(p)}</span></div>
+        <div class="who">${hIcon(p.heroSlug, 34)}<span><span class="pname"><b>${pgName(p)}</b>${rankBadge(p)}</span><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span style="white-space:nowrap"><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span>${vpTag(p)}</span></span></div>
         <div class="line">${opp ? `<div style="font-size:.78rem;color:var(--text-2)">vs ${esc(opp.heroName)} (${pgName(opp)})</div>` : ''}
           <div class="items">${built.map((i) => `<img data-ipop="${esc(i.slug)}" src="${iimg(i.slug)}" title="${esc(i.name)}" onerror="this.style.display='none'">`).join('') || '<span style="color:var(--text-2);font-size:.78rem">no finished items</span>'}</div>
           ${ranLine(p.loadout) || '<div class="lrow" style="color:var(--text-2)">loadout not recorded</div>'}
@@ -1086,7 +1087,7 @@ function pgReview(f) {
     const reflection = f.result === 'loss' && co.lossReflection ? `${eyebrow('What could have changed this game?', '')}<p style="line-height:1.6">${esc(co.lossReflection)}</p>` : '';
     const next = focus?.action || reflection ? card(`${reflection}${focus?.action ? `${eyebrow('Next game', '')}<p style="font-size:1rem;line-height:1.5;margin:0">${esc(focus.action)}</p>` : ''}`) : '';
     const players = card(`${eyebrow('Your team', '')}${us.map((p) => `<div class="plobby coach-player">
-      <div class="who">${hIcon(p.heroSlug, 34)}<span><span class="pname"><b>${pgName(p)}</b>${rankBadge(p)}</span><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span>${vpTag(p)}</span>${CoachLoadouts.icons(p.loadout,p)}</div>
+      <div class="who">${hIcon(p.heroSlug, 34)}<span><span class="pname"><b>${pgName(p)}</b>${rankBadge(p)}</span><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span style="white-space:nowrap"><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span>${vpTag(p)}</span></span>${CoachLoadouts.icons(p.loadout,p)}</div>
       <div class="line">${(() => {
         if (co.playerBullets?.[p.pid]?.length) return `<ul class="coach-bullets">${co.playerBullets[p.pid].map(text => `<li>${esc(text)}</li>`).join('')}</ul>`;
         const actions = co.microReads?.[p.pid];
