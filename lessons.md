@@ -5612,3 +5612,38 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   matchup record; counter-picking moves it about a point. Also: pairs carry no lane, so a
   flex hero's record (Muriel vs Argus) mostly comes from another lane; each pair now gets a
   `lane` (where it most likely met) and the draft page drops records from other lanes.
+
+## 2026-11-03 — Patch 1.18 rollover on release day (the first patch-FAMILY change since the gates were added)
+- **pred.gg published 1.18 about six hours after release** (version 170, released 09:59
+  UTC; still 1.17 at 13:01, live at 16:04). The scheduled check retried every three hours,
+  which was the right shape: the daily worker's 08:56 run had already held its commit on
+  a patch question, and the squad coach's postgame pull failed on the stale catalog. A
+  patch day blocks both workers until the catalog lands on main, so the rollover is the
+  critical path, not a side job.
+- **A family change empties every board at once.** 1.17 -> 1.17.2 kept the lane board
+  (same family); 1.18 started it at ~440 matches and the perk stream at 467 ranked. Tests
+  written in the middle of a patch assumed volume (100-game lane leaders, ban win rates in
+  20-80%, 3+ ladder pilots, rank-band ban boards). They now wait for 5,000 board matches
+  (isEarlyPatch in test/artifacts.test.ts) while the structural checks keep running. The
+  split reset the same day, so the rank bands and the ladder were empty for the same reason.
+- **Maintainer call: start the new patch on day one and say so.** No hold on the old
+  numbers: a note under the patch bar gives the 1.18 match count and links to the 1.17
+  boards (?boards=<patch>) until 25,000 matches, the patch review's early-read line.
+- **Pinned values that a patch changes need a reason, not a re-pin.** The installed-client
+  audit is a 1.17.2 extraction; 12 points disagreed and every one was a stat the 1.18 notes
+  changed. They are listed as supersededByPatch (and Kaelen/Vortex Stone/Forticus as
+  releasedAfterExtraction), and a new test requires each entry to be named in that patch's
+  digest. Re-pinning them to the catalog would have turned the cross-check into an echo.
+- **A hardcoded formula hides behind a pinned description.** Kira's replay used 7% current
+  health for Nevermore and the audit 12% per Dusk stack; the pin test caught the text, but
+  the model needed its own edit (15/30/45/60 + 5%, and 15%). Grep the model for the old
+  number whenever a pinned description changes.
+- **Immobilization guard did its job.** Maco Sparkle!'s text changed (shorter stun), so
+  the reviewed-ability hash stopped patchcheck cold; re-reviewed (still a stun) and re-hashed.
+- **Formatting churn hides real diffs.** Rewriting fixtures with a guessed indent turned a
+  5-entry change into a 6,382-line diff; read the original indent from line 2 of HEAD.
+- `matchups:shrink` now belongs after artifacts (the chain's order); skipping it leaves the
+  counter feed's shrink fitted to the previous index and fails matchup-edge.
+- Copy: 142 hero-coach lines and 576 build lines re-authored for the 1.18 lane views by four
+  parallel coach agents; "checkpoints" (engine vocabulary) slipped into 17 watchouts and was
+  caught by the jargon test, now "beat you in lane".

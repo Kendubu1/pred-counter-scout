@@ -455,7 +455,7 @@ Ikra mid (The Gloom 48.2% vs Cascade 42.7%), Revenant carry (Hellfire Blast
 48.3% lane-wide but level with Quickdraw inside Crit/Sustain), Belica mid.
 Harness green, What's new card, lessons.md, committed.
 
-## 20. Patch 1.18 "Frostbite" rollover (queued 2026-11-02; the review page shipped as predictions)
+## 20. Patch 1.18 "Frostbite" rollover (queued 2026-11-02; 20a/20b/20d DONE 2026-11-03)
 
 The 1.18 notes went up a day before release (2026-11-03). Shipped pre-release, zero-API:
 digest `data/patches/1.18.json`, predictions + ranked comps
@@ -469,7 +469,10 @@ pre-release PENDING state. After release (needs PREDGG creds, one pass per the c
 - **20b.** Kaelen copy passes (abilities, augments, items) through copy:prepare -> coach ->
   copy:ingest, like Valmont's.
 - **20c.** `node scripts/build-measured.js 1.18` after ~1 week of games, then rebuild the page.
-- **20d.** Check pred.gg's 1.18 rank ladder (`ratings { ranks { name tierIdx } }`): Master
+- **20f.** (new) Hero-page builds have no previous-patch fallback: in the first days of a patch
+  a thin lane shows the engine build only. Option: show the archived past-patches/<prev>
+  build labelled "before the patch" until the lane has its own (maintainer to decide).
+- **20d.** DONE 2026-11-03: Split 6 numbers Master 5, Paragon 6. Check pred.gg's 1.18 rank ladder (`ratings { ranks { name tierIdx } }`): Master
   is new between Diamond and Paragon. lane-stats' Diamond+ band now spans tiers 4-7 and
   match-rank's Plat+ is `>= 3`, so both survive a renumber above Diamond; anything below
   that would not.
