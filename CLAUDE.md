@@ -154,6 +154,10 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   `npm run postgame:loadout` (what each player RAN in every reviewed game —
   augment, Eternal, minors, crest — looked up per film in the same public match
   stream by match id; idempotent, `-- --all` re-decodes; part of the coach job),
+  `npm run postgame:ranks` (rank and VP before/after the game for all ten players
+  of each film, players[i].rankVp, via aliased pred.gg match(by: { id }) calls; the
+  after-rank is read from the VP bands; idempotent, `-- --all` re-fetches; part of
+  the coach job),
   `npm run postgame:rotations` (zero-API: lane-labels located tower events and
   writes each film's `rotations` block, a laner's kills/deaths on other lanes
   judged against whether their own lane's outer tower was down, plus

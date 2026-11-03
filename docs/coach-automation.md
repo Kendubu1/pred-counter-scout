@@ -75,8 +75,11 @@ not in the env, stop immediately and report — no partial work.
    omeda is 503 (postgame.ts handles it); the review still lands.
 3. Deterministic enrichment over the whole set: `npm run postgame:kit`,
    `npm run postgame:items`, `npm run postgame:fights`, `npm run postgame:macro`,
-   `npm run postgame:loadout`, `npm run postgame:rotations`, then `npm run postgame:interrogate` LAST (it reads the blocks above and writes `interrogation.gameFlags`, the flags the review cites) (all idempotent — they only touch films missing
-   their block). `postgame:loadout` (added 2026-10-17) looks each film up in
+   `npm run postgame:loadout`, `npm run postgame:rotations`, `npm run postgame:ranks`, then `npm run postgame:interrogate` LAST (it reads the blocks above and writes `interrogation.gameFlags`, the flags the review cites) (all idempotent — they only touch films missing
+   their block). `postgame:ranks` (added 2026-11-03, live pred.gg, batched) writes each
+   player's `rankVp` (rank and VP before and after the game, all ten players; the
+   after-rank is derived from the ladder's VP bands) for the review's rank table and
+   enemy card. `postgame:loadout` (added 2026-10-17) looks each film up in
    pred.gg's public match stream by its own match id and writes what every
    player RAN — augment, Eternal, both minors, crest — onto
    `players[i].loadout` (GraphQL cannot return perks at our tier). Coach the
