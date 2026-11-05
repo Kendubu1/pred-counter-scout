@@ -129,18 +129,26 @@ describe('hero artifacts (Concept A engine stage)', () => {
     const boards = [bans.all, ...bans.rankBands.map((b: { key: string }) => bans.byBand[b.key])]
       .filter((board: { matches: number }, i: number) => i === 0 || !early || board.matches > 0);
     for (const board of boards) {
+      // Win rates are range-checked per board: a band board is "early" on its
+      // own game count, since a split reset leaves Plat+ near-empty (1.18 day 2:
+      // 2 games, every hero 0% or 100%) after the patch as a whole has passed it.
+      const thin = board.matches < EARLY_PATCH_MATCHES;
       expect(board.matches).toBeGreaterThan(0);
       expect(board.heroes.length).toBeGreaterThanOrEqual(10);
       for (let i = 1; i < board.heroes.length; i++) expect(board.heroes[i - 1].bans).toBeGreaterThanOrEqual(board.heroes[i].bans);
       for (const h of board.heroes) {
         expect(h.banRate).toBeGreaterThanOrEqual(0);
         expect(h.banRate).toBeLessThanOrEqual(1);
-        if (h.winRate != null && !early) expect(h.winRate).toBeGreaterThan(0.2), expect(h.winRate).toBeLessThan(0.8);
+        if (h.winRate != null && !early && !thin) expect(h.winRate).toBeGreaterThan(0.2), expect(h.winRate).toBeLessThan(0.8);
       }
       // A 4-ban draft: the league bans ~4 heroes per match, so ban rates sum near 4.
+      // A board with a handful of games can't show that (1.18 day 2 Plat+: 2
+      // games, ban rates summing to 2), so it waits for the band to fill.
       const sum = board.heroes.reduce((s: number, h: { banRate: number }) => s + h.banRate, 0);
-      expect(sum).toBeGreaterThan(3);
-      expect(sum).toBeLessThan(5);
+      if (!thin || board.matches >= 100) {
+        expect(sum).toBeGreaterThan(3);
+        expect(sum).toBeLessThan(5);
+      }
     }
   });
 
