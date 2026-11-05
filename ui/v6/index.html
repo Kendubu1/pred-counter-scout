@@ -668,7 +668,7 @@ const metaColor = (score) => `hsl(${Math.round(Math.max(0, Math.min(100, score))
 // the bare meta number isn't left to interpret. wr/ms are 0-1 fractions.
 function metaVerdict(wr, ms, badge) {
   const tail = ` · meta score ${Math.round(ms * 100)}/100 (how popular AND winning it is in this lane)`;
-  if (badge === 'sleeper') return { label: 'Off-meta', color: 'var(--blue)', tip: 'Wins above average but rarely picked — strong, but a smaller / less-proven sample. Worth a try.' + tail };
+  if (badge === 'sleeper') return { label: 'Off-meta', color: 'var(--blue)', tip: 'Winning, but played outside its usual lane and rarely picked here — a smaller / less-proven sample. Worth a try.' + tail };
   if (badge === 'popular but losing') return { label: 'Overpicked', color: 'var(--gold)', tip: 'Heavily picked but below-average win rate — the popularity isn’t backed by results. Pick with care.' + tail };
   if (wr >= 0.52) return ms >= 0.6
     ? { label: 'Proven', color: 'var(--green)', tip: 'Commonly picked AND winning — a safe, proven meta pick.' + tail }
@@ -721,7 +721,7 @@ const LEGEND_HTML = `<ul class="legend-list">`
   + `<li><b>%</b> — win rate this patch. A hero with only a few games is pulled toward the lane's average, so a tiny sample can't fluke its way to the top.</li>`
   + `<li><span style="color:var(--green)">green</span> = 52%+ &nbsp;·&nbsp; <span style="color:var(--red)">red</span> = 48% or less.</li>`
   + `<li><b style="color:var(--green)">Proven / Strong</b> — take it.</li>`
-  + `<li><b style="color:var(--blue)">Off-meta</b> — winning, but rarely picked in this lane, so the win rate rests on few games. Hidden unless you turn on “Show off-meta picks”.</li>`
+  + `<li><b style="color:var(--blue)">Off-meta</b> — winning, but played outside its usual lane and rarely picked there, so the win rate rests on few games. Hidden unless you turn on “Show off-meta picks”.</li>`
   + `<li><b>Solid</b> — a fine, standard pick.</li>`
   + `<li><b style="color:var(--gold)">Overpicked</b> — popular, but the results don't back it.</li>`
   + `<li><b style="color:var(--red)">Weak</b> — below average; comfort pick only.</li>`
@@ -729,14 +729,21 @@ const LEGEND_HTML = `<ul class="legend-list">`
 let INDEX = null;
 let META = null;
 let roleFilter = 'all';
-// Meta-board "Show off-meta picks" toggle. Off-meta = the engine's 'sleeper'
-// badge: a top-30% win rate on a bottom-35% pick rate within the lane, which in
-// practice is a thin off-lane sample (Valmont carry, 796 games). Sorting by win
-// rate floated those over 40k-game lane staples, so they are hidden by default
-// and shown, tagged Off-meta, on request. Sticky per browser.
+// Meta-board "Show off-meta picks" toggle. Off-meta = a hero played OUTSIDE its
+// own lanes (the index's roles: main lane + the lanes its artifact lists) that
+// also carries the engine's 'sleeper' badge (top-30% win rate on a bottom-35%
+// pick rate in the lane), e.g. Valmont carry or Kaelen offlane. Those thin
+// off-lane samples are hidden by default and shown, tagged Off-meta, on request.
+// A sleeper in its OWN lane (Morigesh / Howitzer midlane) is a valid, just
+// less-picked lane hero: always listed, verdict from its win rate like any other
+// row (maintainer, 2026-11-04). Sticky per browser.
 let metaShowOffMeta = false;
 try { metaShowOffMeta = localStorage.getItem('metaShowOffMeta') === '1'; } catch { /* private mode */ }
-const metaVisible = (h) => metaShowOffMeta || h.badge !== 'sleeper';
+const heroLanes = (slug) => { const x = INDEX && INDEX.heroes.find((y) => y.slug === slug); return x ? (x.roles && x.roles.length ? x.roles : [x.role]) : null; };
+const isOffMeta = (h, role) => { if (h.badge !== 'sleeper') return false; const l = heroLanes(h.slug); return !l || !l.includes(role); };
+// The badge the UI shows: an in-lane sleeper carries none (its win rate speaks).
+const shownBadge = (h, role) => h.badge === 'sleeper' && !isOffMeta(h, role) ? null : h.badge;
+const metaVisible = (role) => (h) => metaShowOffMeta || !isOffMeta(h, role);
 // Rank-band selector (all | low | mid | high) — boards exist only when the
 // committed meta.json carries rolesByBand. Sticky per browser.
 let metaBand = 'all';
@@ -786,7 +793,7 @@ function metaFilterState() {
 function metaFilterControlsHtml() {
   const st = metaFilterState();
   return `
-      <button class="mb-toggle mb-offmeta${metaShowOffMeta ? ' active' : ''}" aria-pressed="${metaShowOffMeta}" title="Off-meta picks win above average but are rarely played in this lane, so their win rate rests on few games and can swing patch to patch">Show off-meta picks</button>
+      <button class="mb-toggle mb-offmeta${metaShowOffMeta ? ' active' : ''}" aria-pressed="${metaShowOffMeta}" title="Off-meta picks are heroes played outside their usual lane: they win above average but are rarely played there, so their win rate rests on few games and can swing patch to patch">Show off-meta picks</button>
       ${st.bands ? `<div class="mb-bands" title="Filter the boards to games played at a rank band — the meta shifts with skill level. All ranks includes players without a placed rank.">${[{ key: 'all', label: 'All ranks' }, ...st.bands].map((b) => `<button class="mb-toggle band${metaBand === b.key ? ' active' : ''}" data-band="${esc(b.key)}">${esc(b.label)}</button>`).join('')}${patchButtonsHtml()}</div>` : ''}`;
 }
 function bindMetaFilterControls(container) {
@@ -1022,7 +1029,7 @@ async function renderLaneDetail() {
   // The lane room follows the meta board's filters (rank band + sample floor)
   // instead of silently reverting to the unfiltered all-ranks board.
   const filterSt = metaFilterState();
-  const laneMeta = (filterSt.boardRoles[role] || []).filter(metaVisible);
+  const laneMeta = (filterSt.boardRoles[role] || []).filter(metaVisible(role));
   const laneSlugs = INDEX.heroes.filter((h) => h.role === role).map((h) => h.slug);
   box.innerHTML = '<div class="lanepanel">loading lane…</div>';
   const arts = new Map();
@@ -1050,9 +1057,9 @@ async function renderLaneDetail() {
       return `
       <div class="lrow lrow-wr" data-slug="${h.slug}">
         <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
-        <span><b>${esc(h.name)}</b>${h.badge ? ` <span style="color:var(--gold)">${h.badge === 'sleeper' ? 'off-meta' : 'popular but losing'}</span>` : ''}
+        <span><b>${esc(h.name)}</b>${shownBadge(h, role) ? ` <span style="color:var(--gold)">${shownBadge(h, role) === 'sleeper' ? 'off-meta' : 'popular but losing'}</span>` : ''}
           ${SIM ? `<div class="sub">${trouble ? esc(trouble) : 'no sim data for this hero'}</div>` : ''}</span>
-        <span class="wrr"><b style="color:${wrColor(h.shrunkWr)}" title="${esc(wrTip(h.shrunkWr))}">${(h.shrunkWr * 100).toFixed(1)}%</b><div class="sub" style="text-align:right">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b class="vtag" style="color:${v.color}" data-tip="${esc(v.tip)}" title="${esc(v.tip)}">${v.label}</b>`; })()}</div></span>
+        <span class="wrr"><b style="color:${wrColor(h.shrunkWr)}" title="${esc(wrTip(h.shrunkWr))}">${(h.shrunkWr * 100).toFixed(1)}%</b><div class="sub" style="text-align:right">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, shownBadge(h, role)); return `<b class="vtag" style="color:${v.color}" data-tip="${esc(v.tip)}" title="${esc(v.tip)}">${v.label}</b>`; })()}</div></span>
       </div>`;
     }).join('');
     const metaSet = new Set(laneMeta.map((h) => h.slug));
@@ -1293,10 +1300,10 @@ function renderMetaboard() {
       ${Object.keys(LANE_LABELS).map((role) => `
         <div class="lane">
           <h3 class="lane-go" data-lane="${role}" title="Open the ${esc(LANE_LABELS[role])} lane room">${laneIcon(role)} ${LANE_LABELS[role]} <span style="color:var(--text-2)">→</span></h3>
-          ${[...(boardRoles[role] || [])].filter(metaVisible).sort((a, b) => b.shrunkWr - a.shrunkWr).slice(0, 5).map((h, i) => `
-            <div class="mp" data-slug="${h.slug}" data-role="${role}" title="${esc(h.name)}: ${h.games} ${role} games, ${(h.shrunkWr * 100).toFixed(1)}% shrunk winrate, meta score ${(h.metaScore * 100).toFixed(0)}${h.badge ? ' — ' + esc(h.badge) : ''}">
+          ${[...(boardRoles[role] || [])].filter(metaVisible(role)).sort((a, b) => b.shrunkWr - a.shrunkWr).slice(0, 5).map((h, i) => `
+            <div class="mp" data-slug="${h.slug}" data-role="${role}" title="${esc(h.name)}: ${h.games} ${role} games, ${(h.shrunkWr * 100).toFixed(1)}% shrunk winrate, meta score ${(h.metaScore * 100).toFixed(0)}${shownBadge(h, role) ? ' — ' + esc(shownBadge(h, role) === 'sleeper' ? 'off-meta' : shownBadge(h, role)) : ''}">
               <img loading="lazy" src="${IMG.hero(h.slug)}" alt="" onerror="this.style.visibility='hidden'">
-              <span class="n">${esc(h.name)}<span class="g">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, h.badge); return `<b class="vtag" style="color:${v.color}" data-tip="${esc(v.tip)}" title="${esc(v.tip)}">${v.label}</b>`; })()}</span></span>
+              <span class="n">${esc(h.name)}<span class="g">${h.games} games · ${(() => { const v = metaVerdict(h.shrunkWr, h.metaScore, shownBadge(h, role)); return `<b class="vtag" style="color:${v.color}" data-tip="${esc(v.tip)}" title="${esc(v.tip)}">${v.label}</b>`; })()}</span></span>
               <span class="wr ${wrClass(h.shrunkWr)}">${(h.shrunkWr * 100).toFixed(1)}%</span>
             </div>`).join('')}
           <button class="lane-more" data-lane="${role}">full lane — more picks${SIM ? ', top players &amp; kit-math' : ' &amp; top players'} →</button>

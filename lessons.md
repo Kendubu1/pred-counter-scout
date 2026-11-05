@@ -5647,3 +5647,12 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
 - Copy: 142 hero-coach lines and 576 build lines re-authored for the 1.18 lane views by four
   parallel coach agents; "checkpoints" (engine vocabulary) slipped into 17 watchouts and was
   caught by the jargon test, now "beat you in lane".
+
+## 2026-11-04 — meta board: "off-meta" means off-lane, not under-picked
+
+- The homepage hid every engine 'sleeper' (top-30% win rate on a bottom-35% pick rate in the
+  lane) as "Off-meta". Early in 1.18 (~440 matches) that hid Morigesh (46 games) and Howitzer
+  (36) in their OWN lane while Argus (60) ranked #1. The maintainer: a hero played in its own lane is
+  never off-meta; off-meta is a hero outside its lane. UI rule now: hidden only when sleeper AND
+  the lane is not in the index's `roles` for that hero; an in-lane sleeper shows with the
+  ordinary win-rate verdict (Strong / Solid ...). The engine badge is unchanged.
