@@ -1,6 +1,42 @@
 {
  "role": "support",
- "fieldPick": null,
+ "fieldPick": {
+  "augment": {
+   "id": "142",
+   "name": "Terminal Treatment",
+   "wr": 49.8,
+   "n": 205,
+   "shrunkWr": 48.7,
+   "pickRate": 32.4,
+   "confidence": "toss-up",
+   "pBeat": null
+  },
+  "eternal": {
+   "name": "Weald",
+   "wr": 57.8,
+   "n": 102,
+   "shrunkWr": 49.3,
+   "pickRate": 16.1,
+   "confidence": "slight",
+   "pBeat": 0.72
+  },
+  "minors": {
+   "minor1": "Dryad's Boon",
+   "minor2": "Barkskin",
+   "wr": 58.3,
+   "n": 36,
+   "basis": "best-pair"
+  },
+  "crest": {
+   "name": "Silentium",
+   "wr": 48.3,
+   "n": 89,
+   "shrunkWr": 46.9,
+   "pickRate": 14.1,
+   "confidence": "slight",
+   "pBeat": 0.75
+  }
+ },
  "roleCaveat": null,
  "confidence": {
   "level": "THEORY",
@@ -11,7 +47,8 @@
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
    "evidence deltas carry finished-inventory survivorship bias",
-   "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)"
+   "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)",
+   "the sim build reproduces only 33% of the field's core for Zinx (it never builds Prophecy, Spectra) — some of those items ride mechanics the sim doesn't model yet"
   ]
  },
  "build": {
@@ -21,31 +58,31 @@
     "name": "Lifecore",
     "slug": "lifecore",
     "spikeMinute": 11,
-    "playRatePct": 8.7,
-    "evidenceDeltaWr": 0.4,
-    "evidenceN": 14
+    "playRatePct": 15.5,
+    "evidenceDeltaWr": 1.3,
+    "evidenceN": 82
    },
    {
     "name": "Lunaria",
     "slug": "lunaria",
     "spikeMinute": 17,
-    "playRatePct": 25.5,
-    "evidenceDeltaWr": -0.6,
-    "evidenceN": 41
+    "playRatePct": 20.6,
+    "evidenceDeltaWr": -0.3,
+    "evidenceN": 109
    },
    {
     "name": "Oblivion Crown",
     "slug": "oblivion-crown",
     "spikeMinute": 25,
-    "playRatePct": 1.2,
-    "evidenceDeltaWr": null,
-    "evidenceN": null
+    "playRatePct": 3,
+    "evidenceDeltaWr": 0,
+    "evidenceN": 16
    },
    {
     "name": "Spirit Of Amir",
     "slug": "spirit-of-amir",
     "spikeMinute": 31,
-    "playRatePct": 0.6,
+    "playRatePct": 0.2,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -53,17 +90,17 @@
     "name": "Timewarp",
     "slug": "timewarp",
     "spikeMinute": 36,
-    "playRatePct": 8.7,
-    "evidenceDeltaWr": 0,
-    "evidenceN": 14
+    "playRatePct": 6.6,
+    "evidenceDeltaWr": 0.7,
+    "evidenceN": 35
    },
    {
     "name": "Windcaller",
     "slug": "windcaller",
-    "spikeMinute": 40,
-    "playRatePct": 9.9,
-    "evidenceDeltaWr": -0.2,
-    "evidenceN": 16
+    "spikeMinute": 41,
+    "playRatePct": 13.3,
+    "evidenceDeltaWr": 0.3,
+    "evidenceN": 70
    }
   ],
   "gold": 17200,
@@ -84,7 +121,7 @@
   },
   "manaFeasible": true
  },
- "coachLine": "Experimental sim build for heal/shield output: first spike lands around minute 11 (Lifecore), third item by minute 25.",
+ "coachLine": "Experimental sim build for heal/shield output: first spike lands around minute 11 (Lifecore), third item by minute 25. The field wins most with Weald here (57.8% over 102 games).",
  "eternals": {
   "top": [
    {
@@ -268,7 +305,7 @@
     "note": "Satariel (Major): stats depend on takedown count (game state), not on the build; crediting any stack count would be an assumption about how the game went"
    }
   ],
-  "augmentAware": null,
+  "augmentAware": "Disc Of Demise",
   "loadout": {
    "major": {
     "name": "Exarch",
@@ -562,21 +599,132 @@
  "offMeta": {
   "candidates": [
    {
-    "item": "Oblivion Crown",
-    "playRatePct": 1.2,
-    "bestObjective": "heal/shield output",
-    "edgeVsPopularPct": 143.1
-   },
-   {
     "item": "Spirit Of Amir",
-    "playRatePct": 0.6,
+    "playRatePct": 0.2,
     "bestObjective": "heal/shield output",
     "edgeVsPopularPct": 143.1
    }
   ],
   "honestAbsence": null
  },
- "metaBuilds": [],
+ "metaBuildsSource": "role",
+ "metaBuildsBand": "all",
+ "metaBuildsBaseline": {
+  "n": 632,
+  "w": 295
+ },
+ "metaBuildsByBand": {
+  "all": {
+   "builds": [
+    {
+     "shareOfCores": 0.667,
+     "title": "Magical Burst",
+     "items": [
+      {
+       "name": "Prophecy",
+       "slug": "prophecy"
+      },
+      {
+       "name": "Spectra",
+       "slug": "spectra"
+      },
+      {
+       "name": "Orion",
+       "slug": "orion"
+      }
+     ],
+     "n": 48,
+     "shrunkWr": 0.542,
+     "coreGold": 8650,
+     "spikeMinute": 24,
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 477 damage in one combo in the sim.",
+     "optimizer": null
+    },
+    {
+     "shareOfCores": 0.333,
+     "title": "Magical Bruiser (Physical-Def)",
+     "items": [
+      {
+       "name": "Marshal",
+       "slug": "marshal"
+      },
+      {
+       "name": "Lunaria",
+       "slug": "lunaria"
+      },
+      {
+       "name": "Dynamo",
+       "slug": "dynamo"
+      }
+     ],
+     "n": 24,
+     "shrunkWr": 0.542,
+     "coreGold": 7250,
+     "spikeMinute": 21,
+     "bestObjective": "physical survivability",
+     "whyLine": "Strongest meta core for physical survivability, online around minute 21 — about 5,106 effective HP vs physical in the sim.",
+     "optimizer": null
+    }
+   ],
+   "baseline": {
+    "n": 632,
+    "w": 295
+   }
+  }
+ },
+ "metaBuilds": [
+  {
+   "shareOfCores": 0.667,
+   "title": "Magical Burst",
+   "items": [
+    {
+     "name": "Prophecy",
+     "slug": "prophecy"
+    },
+    {
+     "name": "Spectra",
+     "slug": "spectra"
+    },
+    {
+     "name": "Orion",
+     "slug": "orion"
+    }
+   ],
+   "n": 48,
+   "shrunkWr": 0.542,
+   "coreGold": 8650,
+   "spikeMinute": 24,
+   "bestObjective": "one-combo burst",
+   "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 477 damage in one combo in the sim.",
+   "optimizer": null
+  },
+  {
+   "shareOfCores": 0.333,
+   "title": "Magical Bruiser (Physical-Def)",
+   "items": [
+    {
+     "name": "Marshal",
+     "slug": "marshal"
+    },
+    {
+     "name": "Lunaria",
+     "slug": "lunaria"
+    },
+    {
+     "name": "Dynamo",
+     "slug": "dynamo"
+    }
+   ],
+   "n": 24,
+   "shrunkWr": 0.542,
+   "coreGold": 7250,
+   "spikeMinute": 21,
+   "bestObjective": "physical survivability",
+   "whyLine": "Strongest meta core for physical survivability, online around minute 21 — about 5,106 effective HP vs physical in the sim.",
+   "optimizer": null
+  }
+ ],
  "stages": [
   {
    "label": "early",
@@ -647,7 +795,7 @@
   {
    "label": "late",
    "itemCount": 6,
-   "minute": 40,
+   "minute": 41,
    "level": 17,
    "core": [
     {
@@ -811,13 +959,13 @@
    }
   },
   {
-   "enemy": "Muriel",
-   "enemySlug": "muriel",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Muriel deals area damage — spread out so one cast can't catch the group.",
+   "enemy": "Mourn",
+   "enemySlug": "mourn",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Mourn's main threat is Abduct; bait it before you commit, and mixed resist softens the trade.",
    "checkpoints": [
     {
      "minute": 5,
-     "verdict": "even"
+     "verdict": "enemy"
     },
     {
      "minute": 10,
@@ -850,13 +998,13 @@
    }
   },
   {
-   "enemy": "Mourn",
-   "enemySlug": "mourn",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Mourn's main threat is Abduct; bait it before you commit, and mixed resist softens the trade.",
+   "enemy": "Narbash",
+   "enemySlug": "narbash",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Narbash deals area damage — spread out so one cast can't catch the group.",
    "checkpoints": [
     {
      "minute": 5,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 10,
@@ -928,18 +1076,116 @@
    }
   }
  ],
- "laneSteer": null,
+ "laneSteer": {
+  "augment": {
+   "id": "142",
+   "name": "Terminal Treatment"
+  },
+  "playstyle": "on-hit",
+  "modeled": false,
+  "wr": 49.8,
+  "n": 205,
+  "shiftIn": [
+   "Orion",
+   "Noxia",
+   "Wraith Leggings",
+   "Tainted Scepter"
+  ],
+  "shiftOut": [
+   "Lifecore",
+   "Lunaria",
+   "Spirit Of Amir",
+   "Windcaller"
+  ],
+  "provenance": "“Terminal Treatment” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 49.8% over 205 games, magnitude not simulated."
+ },
  "slug": "zinx",
  "name": "Zinx",
  "patch": "1.15.3/1.15.4",
- "generatedAt": "2026-11-03T19:44:34.881Z",
+ "generatedAt": "2026-11-05T00:00:07.343Z",
  "damageType": "hybrid",
  "attackType": "ranged",
- "laneFlex": [],
+ "laneFlex": [
+  {
+   "lane": "support",
+   "augment": {
+    "id": "142",
+    "name": "Terminal Treatment"
+   },
+   "playstyle": "on-hit",
+   "modeled": false,
+   "wr": 49.8,
+   "n": 205,
+   "core": [
+    {
+     "name": "Orion",
+     "slug": "orion"
+    },
+    {
+     "name": "Noxia",
+     "slug": "noxia"
+    },
+    {
+     "name": "Timewarp",
+     "slug": "timewarp"
+    },
+    {
+     "name": "Wraith Leggings",
+     "slug": "wraith-leggings"
+    },
+    {
+     "name": "Oblivion Crown",
+     "slug": "oblivion-crown"
+    },
+    {
+     "name": "Tainted Scepter",
+     "slug": "tainted-scepter"
+    }
+   ],
+   "headline": "skirmish uptime",
+   "provenance": "“Terminal Treatment” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 49.8% over 205 games, magnitude not simulated."
+  }
+ ],
  "roles": [
   {
    "role": "support",
-   "fieldPick": null,
+   "fieldPick": {
+    "augment": {
+     "id": "142",
+     "name": "Terminal Treatment",
+     "wr": 49.8,
+     "n": 205,
+     "shrunkWr": 48.7,
+     "pickRate": 32.4,
+     "confidence": "toss-up",
+     "pBeat": null
+    },
+    "eternal": {
+     "name": "Weald",
+     "wr": 57.8,
+     "n": 102,
+     "shrunkWr": 49.3,
+     "pickRate": 16.1,
+     "confidence": "slight",
+     "pBeat": 0.72
+    },
+    "minors": {
+     "minor1": "Dryad's Boon",
+     "minor2": "Barkskin",
+     "wr": 58.3,
+     "n": 36,
+     "basis": "best-pair"
+    },
+    "crest": {
+     "name": "Silentium",
+     "wr": 48.3,
+     "n": 89,
+     "shrunkWr": 46.9,
+     "pickRate": 14.1,
+     "confidence": "slight",
+     "pBeat": 0.75
+    }
+   },
    "roleCaveat": null,
    "confidence": {
     "level": "THEORY",
@@ -950,7 +1196,8 @@
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
      "evidence deltas carry finished-inventory survivorship bias",
-     "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)"
+     "support model counts one beneficiary and active-ability heals/shields only (passive heals, CC, and damage-reduction utility are not scored)",
+     "the sim build reproduces only 33% of the field's core for Zinx (it never builds Prophecy, Spectra) — some of those items ride mechanics the sim doesn't model yet"
     ]
    },
    "build": {
@@ -960,31 +1207,31 @@
       "name": "Lifecore",
       "slug": "lifecore",
       "spikeMinute": 11,
-      "playRatePct": 8.7,
-      "evidenceDeltaWr": 0.4,
-      "evidenceN": 14
+      "playRatePct": 15.5,
+      "evidenceDeltaWr": 1.3,
+      "evidenceN": 82
      },
      {
       "name": "Lunaria",
       "slug": "lunaria",
       "spikeMinute": 17,
-      "playRatePct": 25.5,
-      "evidenceDeltaWr": -0.6,
-      "evidenceN": 41
+      "playRatePct": 20.6,
+      "evidenceDeltaWr": -0.3,
+      "evidenceN": 109
      },
      {
       "name": "Oblivion Crown",
       "slug": "oblivion-crown",
       "spikeMinute": 25,
-      "playRatePct": 1.2,
-      "evidenceDeltaWr": null,
-      "evidenceN": null
+      "playRatePct": 3,
+      "evidenceDeltaWr": 0,
+      "evidenceN": 16
      },
      {
       "name": "Spirit Of Amir",
       "slug": "spirit-of-amir",
       "spikeMinute": 31,
-      "playRatePct": 0.6,
+      "playRatePct": 0.2,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -992,17 +1239,17 @@
       "name": "Timewarp",
       "slug": "timewarp",
       "spikeMinute": 36,
-      "playRatePct": 8.7,
-      "evidenceDeltaWr": 0,
-      "evidenceN": 14
+      "playRatePct": 6.6,
+      "evidenceDeltaWr": 0.7,
+      "evidenceN": 35
      },
      {
       "name": "Windcaller",
       "slug": "windcaller",
-      "spikeMinute": 40,
-      "playRatePct": 9.9,
-      "evidenceDeltaWr": -0.2,
-      "evidenceN": 16
+      "spikeMinute": 41,
+      "playRatePct": 13.3,
+      "evidenceDeltaWr": 0.3,
+      "evidenceN": 70
      }
     ],
     "gold": 17200,
@@ -1023,7 +1270,7 @@
     },
     "manaFeasible": true
    },
-   "coachLine": "Experimental sim build for heal/shield output: first spike lands around minute 11 (Lifecore), third item by minute 25.",
+   "coachLine": "Experimental sim build for heal/shield output: first spike lands around minute 11 (Lifecore), third item by minute 25. The field wins most with Weald here (57.8% over 102 games).",
    "eternals": {
     "top": [
      {
@@ -1207,7 +1454,7 @@
       "note": "Satariel (Major): stats depend on takedown count (game state), not on the build; crediting any stack count would be an assumption about how the game went"
      }
     ],
-    "augmentAware": null,
+    "augmentAware": "Disc Of Demise",
     "loadout": {
      "major": {
       "name": "Exarch",
@@ -1501,21 +1748,132 @@
    "offMeta": {
     "candidates": [
      {
-      "item": "Oblivion Crown",
-      "playRatePct": 1.2,
-      "bestObjective": "heal/shield output",
-      "edgeVsPopularPct": 143.1
-     },
-     {
       "item": "Spirit Of Amir",
-      "playRatePct": 0.6,
+      "playRatePct": 0.2,
       "bestObjective": "heal/shield output",
       "edgeVsPopularPct": 143.1
      }
     ],
     "honestAbsence": null
    },
-   "metaBuilds": [],
+   "metaBuildsSource": "role",
+   "metaBuildsBand": "all",
+   "metaBuildsBaseline": {
+    "n": 632,
+    "w": 295
+   },
+   "metaBuildsByBand": {
+    "all": {
+     "builds": [
+      {
+       "shareOfCores": 0.667,
+       "title": "Magical Burst",
+       "items": [
+        {
+         "name": "Prophecy",
+         "slug": "prophecy"
+        },
+        {
+         "name": "Spectra",
+         "slug": "spectra"
+        },
+        {
+         "name": "Orion",
+         "slug": "orion"
+        }
+       ],
+       "n": 48,
+       "shrunkWr": 0.542,
+       "coreGold": 8650,
+       "spikeMinute": 24,
+       "bestObjective": "one-combo burst",
+       "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 477 damage in one combo in the sim.",
+       "optimizer": null
+      },
+      {
+       "shareOfCores": 0.333,
+       "title": "Magical Bruiser (Physical-Def)",
+       "items": [
+        {
+         "name": "Marshal",
+         "slug": "marshal"
+        },
+        {
+         "name": "Lunaria",
+         "slug": "lunaria"
+        },
+        {
+         "name": "Dynamo",
+         "slug": "dynamo"
+        }
+       ],
+       "n": 24,
+       "shrunkWr": 0.542,
+       "coreGold": 7250,
+       "spikeMinute": 21,
+       "bestObjective": "physical survivability",
+       "whyLine": "Strongest meta core for physical survivability, online around minute 21 — about 5,106 effective HP vs physical in the sim.",
+       "optimizer": null
+      }
+     ],
+     "baseline": {
+      "n": 632,
+      "w": 295
+     }
+    }
+   },
+   "metaBuilds": [
+    {
+     "shareOfCores": 0.667,
+     "title": "Magical Burst",
+     "items": [
+      {
+       "name": "Prophecy",
+       "slug": "prophecy"
+      },
+      {
+       "name": "Spectra",
+       "slug": "spectra"
+      },
+      {
+       "name": "Orion",
+       "slug": "orion"
+      }
+     ],
+     "n": 48,
+     "shrunkWr": 0.542,
+     "coreGold": 8650,
+     "spikeMinute": 24,
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 24 — about 477 damage in one combo in the sim.",
+     "optimizer": null
+    },
+    {
+     "shareOfCores": 0.333,
+     "title": "Magical Bruiser (Physical-Def)",
+     "items": [
+      {
+       "name": "Marshal",
+       "slug": "marshal"
+      },
+      {
+       "name": "Lunaria",
+       "slug": "lunaria"
+      },
+      {
+       "name": "Dynamo",
+       "slug": "dynamo"
+      }
+     ],
+     "n": 24,
+     "shrunkWr": 0.542,
+     "coreGold": 7250,
+     "spikeMinute": 21,
+     "bestObjective": "physical survivability",
+     "whyLine": "Strongest meta core for physical survivability, online around minute 21 — about 5,106 effective HP vs physical in the sim.",
+     "optimizer": null
+    }
+   ],
    "stages": [
     {
      "label": "early",
@@ -1586,7 +1944,7 @@
     {
      "label": "late",
      "itemCount": 6,
-     "minute": 40,
+     "minute": 41,
      "level": 17,
      "core": [
       {
@@ -1750,13 +2108,13 @@
      }
     },
     {
-     "enemy": "Muriel",
-     "enemySlug": "muriel",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Muriel deals area damage — spread out so one cast can't catch the group.",
+     "enemy": "Mourn",
+     "enemySlug": "mourn",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Mourn's main threat is Abduct; bait it before you commit, and mixed resist softens the trade.",
      "checkpoints": [
       {
        "minute": 5,
-       "verdict": "even"
+       "verdict": "enemy"
       },
       {
        "minute": 10,
@@ -1789,13 +2147,13 @@
      }
     },
     {
-     "enemy": "Mourn",
-     "enemySlug": "mourn",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Mourn's main threat is Abduct; bait it before you commit, and mixed resist softens the trade.",
+     "enemy": "Narbash",
+     "enemySlug": "narbash",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Narbash deals area damage — spread out so one cast can't catch the group.",
      "checkpoints": [
       {
        "minute": 5,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 10,
@@ -1864,6 +2222,1057 @@
       "survivalGainPct": 25,
       "offenseLossPct": 8,
       "line": "Losing lane? Third item Raiment of Renewal instead of Lunaria: their burst combo hits 25% less hard, and this kit gives up 8% of its damage for it."
+     }
+    }
+   ],
+   "laneSteer": {
+    "augment": {
+     "id": "142",
+     "name": "Terminal Treatment"
+    },
+    "playstyle": "on-hit",
+    "modeled": false,
+    "wr": 49.8,
+    "n": 205,
+    "shiftIn": [
+     "Orion",
+     "Noxia",
+     "Wraith Leggings",
+     "Tainted Scepter"
+    ],
+    "shiftOut": [
+     "Lifecore",
+     "Lunaria",
+     "Spirit Of Amir",
+     "Windcaller"
+    ],
+    "provenance": "“Terminal Treatment” ⇒ on-hit; the sim can’t model this augment — steered by the declared playstyle + field evidence — field support 49.8% over 205 games, magnitude not simulated."
+   }
+  },
+  {
+   "role": "offlane",
+   "fieldPick": {
+    "augment": {
+     "id": "142",
+     "name": "Terminal Treatment",
+     "wr": 50.9,
+     "n": 53,
+     "shrunkWr": 50.9,
+     "pickRate": 91.4,
+     "confidence": null,
+     "pBeat": null
+    },
+    "eternal": {
+     "name": "Weald",
+     "wr": 55.9,
+     "n": 34,
+     "shrunkWr": 55.9,
+     "pickRate": 58.6,
+     "confidence": null,
+     "pBeat": null
+    },
+    "minors": {
+     "minor1": "Forage",
+     "minor2": "Barkskin",
+     "wr": 46.2,
+     "n": 13,
+     "basis": "most-picked"
+    },
+    "crest": {
+     "name": "Typhoon",
+     "wr": 52.8,
+     "n": 53,
+     "shrunkWr": 52.8,
+     "pickRate": 91.4,
+     "confidence": null,
+     "pBeat": null
+    }
+   },
+   "roleCaveat": null,
+   "confidence": {
+    "level": "THEORY",
+    "unverifiedConstants": [
+     "attackSpeedCap"
+    ],
+    "notes": [
+     "all combat numbers are simulator output on unverified constants",
+     "checkpoint levels are provisional (no level timeline in the match feed)",
+     "evidence deltas carry finished-inventory survivorship bias",
+     "the sim opens on Combustion, which the field rarely builds (2.3% pick) — a sim-only call; compare the meta cores below"
+    ]
+   },
+   "build": {
+    "title": "Magical Skirmisher",
+    "items": [
+     {
+      "name": "Combustion",
+      "slug": "combustion",
+      "spikeMinute": 9,
+      "playRatePct": 2.3,
+      "evidenceDeltaWr": 0.3,
+      "evidenceN": 12
+     },
+     {
+      "name": "Noxia",
+      "slug": "noxia",
+      "spikeMinute": 16,
+      "playRatePct": 1.1,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
+     },
+     {
+      "name": "Oblivion Crown",
+      "slug": "oblivion-crown",
+      "spikeMinute": 22,
+      "playRatePct": 3,
+      "evidenceDeltaWr": 0,
+      "evidenceN": 16
+     },
+     {
+      "name": "Crescelia",
+      "slug": "crescelia",
+      "spikeMinute": 27,
+      "playRatePct": 4.4,
+      "evidenceDeltaWr": -0.7,
+      "evidenceN": 23
+     },
+     {
+      "name": "Timewarp",
+      "slug": "timewarp",
+      "spikeMinute": 31,
+      "playRatePct": 6.6,
+      "evidenceDeltaWr": 0.7,
+      "evidenceN": 35
+     },
+     {
+      "name": "Wraith Leggings",
+      "slug": "wraith-leggings",
+      "spikeMinute": 37,
+      "playRatePct": 3,
+      "evidenceDeltaWr": -0.6,
+      "evidenceN": 16
+     }
+    ],
+    "gold": 17850,
+    "archetypes": [
+     "skirmish uptime"
+    ],
+    "objectives": {
+     "burstVsSquishy": 1108.6284839527027,
+     "teamfightVsSquishy": 1610.6597339527027,
+     "rot10VsSquishy": 2717.28515625,
+     "rot20VsBruiser": 3612.1470588235297,
+     "autoDps10VsSquishy": 37.63775900900901,
+     "ehpPhysical": 3837.0271875,
+     "ehpMagical": 3010.1917031249995,
+     "healShield10s": 2463.75,
+     "utility": 64,
+     "sustain10s": 0
+    },
+    "manaFeasible": true
+   },
+   "coachLine": "Experimental sim build for skirmish uptime: first spike lands around minute 9 (Combustion), third item by minute 22. The field wins most with Weald here (55.9% over 34 games).",
+   "eternals": {
+    "top": [
+     {
+      "name": "Demiurge",
+      "id": "demiurge",
+      "headlinePct": 11,
+      "burstPct": 10.8,
+      "rot20Pct": 11.3,
+      "ehpPct": 0
+     },
+     {
+      "name": "Vesh",
+      "id": "vesh",
+      "headlinePct": 8.5,
+      "burstPct": 6.9,
+      "rot20Pct": 8.2,
+      "ehpPct": 0
+     },
+     {
+      "name": "Thraex",
+      "id": "thraex",
+      "headlinePct": 5.4,
+      "burstPct": 0,
+      "rot20Pct": 5.2,
+      "ehpPct": 0
+     }
+    ],
+    "unmodeled": [
+     "Marrow",
+     "Nihil",
+     "Aion",
+     "Exarch",
+     "Weald",
+     "Pilow",
+     "Knell",
+     "Satariel"
+    ],
+    "all": [
+     {
+      "name": "Demiurge",
+      "modeled": true,
+      "headlinePct": 11,
+      "burstPct": 10.8,
+      "rot20Pct": 11.3,
+      "ehpPct": 0,
+      "note": null
+     },
+     {
+      "name": "Vesh",
+      "modeled": true,
+      "headlinePct": 8.5,
+      "burstPct": 6.9,
+      "rot20Pct": 8.2,
+      "ehpPct": 0,
+      "note": null
+     },
+     {
+      "name": "Thraex",
+      "modeled": true,
+      "headlinePct": 5.4,
+      "burstPct": 0,
+      "rot20Pct": 5.2,
+      "ehpPct": 0,
+      "note": null
+     },
+     {
+      "name": "Krix",
+      "modeled": true,
+      "headlinePct": 0,
+      "burstPct": 0,
+      "rot20Pct": 0,
+      "ehpPct": 18,
+      "note": null
+     },
+     {
+      "name": "Xyris",
+      "modeled": true,
+      "headlinePct": 2,
+      "burstPct": 1.8,
+      "rot20Pct": 1.9,
+      "ehpPct": 0,
+      "note": null
+     },
+     {
+      "name": "Idrisil",
+      "modeled": true,
+      "headlinePct": 0,
+      "burstPct": 0,
+      "rot20Pct": 0,
+      "ehpPct": 6.7,
+      "note": null
+     },
+     {
+      "name": "Lotus",
+      "modeled": true,
+      "headlinePct": 1.2,
+      "burstPct": 1.1,
+      "rot20Pct": 1.2,
+      "ehpPct": 2.3,
+      "note": null
+     },
+     {
+      "name": "Vermis",
+      "modeled": true,
+      "headlinePct": 0,
+      "burstPct": 1.9,
+      "rot20Pct": 0,
+      "ehpPct": 0,
+      "note": null
+     },
+     {
+      "name": "Marrow",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Marrow (Major): missing-health-dependent omnivamp; no sustain-uptime model yet"
+     },
+     {
+      "name": "Nihil",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Nihil (Major): accrual rate depends on combat uptime (how long Doom persists per fight), which the closed-form sim cannot observe"
+     },
+     {
+      "name": "Aion",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Aion (Major): economy effect; valuable but outside combat objectives (revisit with gold curves)"
+     },
+     {
+      "name": "Exarch",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Exarch (Major): buffs the HEAL TARGET (usually an ally) — team-side value outside the single-hero sim; self-heal uptime depends on heal cadence vs the 4s window"
+     },
+     {
+      "name": "Weald",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Weald (Major): execute-window true damage; the headline objectives evaluate full-health targets, so crediting it would overstate sustained output"
+     },
+     {
+      "name": "Pilow",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Pilow (Major): reduces ENEMY damage output within a radius; the sim models damage taken by one modeled defender, not a team-wide output debuff with uptime"
+     },
+     {
+      "name": "Knell",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Knell (Major): Only an explicitly supplied active-stack snapshot is modeled; omitted state receives no shred credit. Stack acquisition, refresh/expiry over time, Peal interactions, multi-source behavior and stolen defenses are not simulated. No automatic full-stack uptime or winning-build claim."
+     },
+     {
+      "name": "Satariel",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Satariel (Major): stats depend on takedown count (game state), not on the build; crediting any stack count would be an assumption about how the game went"
+     }
+    ],
+    "augmentAware": null,
+    "loadout": {
+     "major": {
+      "name": "Vesh",
+      "modeled": true
+     },
+     "minor1": {
+      "name": "The Tenth Seal",
+      "modeled": true,
+      "deltaPct": 0,
+      "note": "+0.0% rot10 on top of the major (modeled)"
+     },
+     "minor2": {
+      "name": "Mind Rot",
+      "modeled": true,
+      "deltaPct": 4.8,
+      "note": "+4.8% rot10 on top of the major (modeled)"
+     },
+     "note": "Ability Damage Mage — fit 2.40"
+    },
+    "minorsByName": {
+     "vesh": {
+      "minor1": {
+       "name": "The Tenth Seal",
+       "modeled": true,
+       "deltaPct": 0,
+       "note": "+0.0% rot10 on top of the major (modeled)"
+      },
+      "minor2": {
+       "name": "Mind Rot",
+       "modeled": true,
+       "deltaPct": 4.8,
+       "note": "+4.8% rot10 on top of the major (modeled)"
+      }
+     },
+     "aion": {
+      "minor1": {
+       "name": "Philosopher",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Runic Focus",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "vermis": {
+      "minor1": {
+       "name": "Serration",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Melting Point",
+       "modeled": true,
+       "deltaPct": 0,
+       "note": "+0.0% rot10 on top of the major (modeled)"
+      }
+     },
+     "thraex": {
+      "minor1": {
+       "name": "Savage Strikes",
+       "modeled": true,
+       "deltaPct": 0,
+       "note": "+0.0% rot10 on top of the major (modeled)"
+      },
+      "minor2": {
+       "name": "Ferocity",
+       "modeled": true,
+       "deltaPct": 0,
+       "note": "+0.0% rot10 on top of the major (modeled)"
+      }
+     },
+     "marrow": {
+      "minor1": {
+       "name": "Blood Bank",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "The Maw",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "xyris": {
+      "minor1": {
+       "name": "Furor",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Eviscerate",
+       "modeled": true,
+       "deltaPct": 0,
+       "note": "+0.0% rot10 on top of the major (modeled)"
+      }
+     },
+     "demiurge": {
+      "minor1": {
+       "name": "Construct",
+       "modeled": true,
+       "deltaPct": 0,
+       "note": "+0.0% rot10 on top of the major (modeled)"
+      },
+      "minor2": {
+       "name": "Cursed Corrupted",
+       "modeled": true,
+       "deltaPct": 0,
+       "note": "+0.0% rot10 on top of the major (modeled)"
+      }
+     },
+     "nihil": {
+      "minor1": {
+       "name": "From the Abyss",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Adaptive Plating",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "exarch": {
+      "minor1": {
+       "name": "Revelation",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Fervour",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "krix": {
+      "minor1": {
+       "name": "Festering Wounds",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Cannibalism",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "idrisil": {
+      "minor1": {
+       "name": "Mending",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Diamond Tip",
+       "modeled": true,
+       "deltaPct": 9.9,
+       "note": "+9.9% rot10 on top of the major (modeled)"
+      }
+     },
+     "lotus": {
+      "minor1": {
+       "name": "Masterpiece",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Prima Donna",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "weald": {
+      "minor1": {
+       "name": "Dryad’s Boon",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Taproot",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "knell": {
+      "minor1": {
+       "name": "Frequency",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Fracture",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "pilow": {
+      "minor1": {
+       "name": "Harmonic Currents",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Convection",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "satariel": {
+      "minor1": {
+       "name": "Risen",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Rite",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     }
+    }
+   },
+   "augments": [
+    {
+     "id": "140",
+     "name": "Disc Of Demise",
+     "modeled": true,
+     "provisional": false,
+     "headlinePct": 0,
+     "burstPct": 0,
+     "rot20Pct": 0,
+     "ehpPct": 0,
+     "healShieldPct": 0,
+     "healShieldAbs": 0,
+     "note": "credits the minimum one hero hit per cast; extra bounce hits not counted",
+     "buildShift": {
+      "in": [
+       "Caustica"
+      ],
+      "out": [
+       "Timewarp"
+      ]
+     }
+    },
+    {
+     "id": "141",
+     "name": "Heal Matrix",
+     "modeled": false,
+     "provisional": false,
+     "headlinePct": null,
+     "burstPct": null,
+     "rot20Pct": null,
+     "ehpPct": null,
+     "healShieldPct": null,
+     "healShieldAbs": null,
+     "note": "charge semantics (2 charges, -15% heal): burst-vs-throughput trade not mappable onto cooldown math",
+     "buildShift": null
+    },
+    {
+     "id": "142",
+     "name": "Terminal Treatment",
+     "modeled": false,
+     "provisional": false,
+     "headlinePct": null,
+     "burstPct": null,
+     "rot20Pct": null,
+     "ehpPct": null,
+     "healShieldPct": null,
+     "healShieldAbs": null,
+     "note": "targets passive on-hit damage, missing-health scaled; outside the kit model",
+     "buildShift": null
+    }
+   ],
+   "offMeta": {
+    "candidates": [
+     {
+      "item": "Noxia",
+      "playRatePct": 1.1,
+      "bestObjective": "10s rotation vs squishies",
+      "edgeVsPopularPct": 190.9
+     }
+    ],
+    "honestAbsence": null
+   },
+   "metaBuildsSource": "all-roles",
+   "metaBuildsBand": "all",
+   "metaBuildsBaseline": null,
+   "metaBuilds": [
+    {
+     "otherOrderGames": 36,
+     "shareOfCores": 0.802,
+     "title": "Magical Burst",
+     "items": [
+      {
+       "name": "Prophecy",
+       "slug": "prophecy"
+      },
+      {
+       "name": "Spectra",
+       "slug": "spectra"
+      },
+      {
+       "name": "Orion",
+       "slug": "orion"
+      }
+     ],
+     "n": 97,
+     "shrunkWr": 0.536,
+     "coreGold": 8650,
+     "spikeMinute": 21,
+     "bestObjective": "one-combo burst",
+     "whyLine": "Strongest meta core for one-combo burst, online around minute 21 — about 477 damage in one combo in the sim.",
+     "optimizer": "Optimizer sees +34% more one-combo burst: try Combustion over Prophecy (sim-only — the popular pick may carry utility the sim can't see; test it)."
+    },
+    {
+     "shareOfCores": 0.198,
+     "title": "Magical Bruiser (Physical-Def)",
+     "items": [
+      {
+       "name": "Marshal",
+       "slug": "marshal"
+      },
+      {
+       "name": "Lunaria",
+       "slug": "lunaria"
+      },
+      {
+       "name": "Dynamo",
+       "slug": "dynamo"
+      }
+     ],
+     "n": 24,
+     "shrunkWr": 0.539,
+     "coreGold": 7250,
+     "spikeMinute": 18,
+     "bestObjective": "physical survivability",
+     "whyLine": "Strongest meta core for physical survivability, online around minute 18 — about 5,106 effective HP vs physical in the sim.",
+     "optimizer": null
+    }
+   ],
+   "stages": [
+    {
+     "label": "early",
+     "itemCount": 2,
+     "minute": 16,
+     "level": 11,
+     "core": [
+      {
+       "name": "Combustion",
+       "slug": "combustion"
+      },
+      {
+       "name": "Noxia",
+       "slug": "noxia"
+      }
+     ],
+     "headline": "rot10VsSquishy",
+     "headlineValue": 777,
+     "objectives": {
+      "burstVsSquishy": 495.6909391405794,
+      "teamfightVsSquishy": 706.1225938168385,
+      "rot10VsSquishy": 776.6187050359713,
+      "rot20VsBruiser": 1101.657458563536,
+      "autoDps10VsSquishy": 33.66862894144144,
+      "ehpPhysical": 3107.6955468749998,
+      "ehpMagical": 2549.26180078125,
+      "healShield10s": 887.5,
+      "utility": 20,
+      "sustain10s": 0
+     },
+     "betterEarly": null
+    },
+    {
+     "label": "mid",
+     "itemCount": 3,
+     "minute": 22,
+     "level": 13,
+     "core": [
+      {
+       "name": "Combustion",
+       "slug": "combustion"
+      },
+      {
+       "name": "Noxia",
+       "slug": "noxia"
+      },
+      {
+       "name": "Oblivion Crown",
+       "slug": "oblivion-crown"
+      }
+     ],
+     "headline": "rot10VsSquishy",
+     "headlineValue": 1025,
+     "objectives": {
+      "burstVsSquishy": 640.3321991055803,
+      "teamfightVsSquishy": 934.3969473070192,
+      "rot10VsSquishy": 1024.7302158273383,
+      "rot20VsBruiser": 1439.9171270718232,
+      "autoDps10VsSquishy": 37.63775900900901,
+      "ehpPhysical": 3837.0271875,
+      "ehpMagical": 3010.1917031249995,
+      "healShield10s": 1434.375,
+      "utility": 20,
+      "sustain10s": 0
+     },
+     "betterEarly": {
+      "inItem": "Orion",
+      "inSlug": "orion",
+      "outItem": "Combustion",
+      "edgePct": 15.8
+     }
+    },
+    {
+     "label": "late",
+     "itemCount": 6,
+     "minute": 37,
+     "level": 17,
+     "core": [
+      {
+       "name": "Combustion",
+       "slug": "combustion"
+      },
+      {
+       "name": "Noxia",
+       "slug": "noxia"
+      },
+      {
+       "name": "Oblivion Crown",
+       "slug": "oblivion-crown"
+      },
+      {
+       "name": "Crescelia",
+       "slug": "crescelia"
+      },
+      {
+       "name": "Timewarp",
+       "slug": "timewarp"
+      },
+      {
+       "name": "Wraith Leggings",
+       "slug": "wraith-leggings"
+      }
+     ],
+     "headline": "rot10VsSquishy",
+     "headlineValue": 2761,
+     "objectives": {
+      "burstVsSquishy": 1148.2386190878378,
+      "teamfightVsSquishy": 1650.2698690878378,
+      "rot10VsSquishy": 2761.03515625,
+      "rot20VsBruiser": 3661.558823529412,
+      "autoDps10VsSquishy": 46.80708468468468,
+      "ehpPhysical": 5672.421,
+      "ehpMagical": 4079.0115900000005,
+      "healShield10s": 2823.75,
+      "utility": 64,
+      "sustain10s": 0
+     },
+     "betterEarly": null
+    }
+   ],
+   "matchups": [
+    {
+     "enemy": "Steel",
+     "enemySlug": "steel",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Steel deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Crescelia",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 23,
+      "offenseLossPct": 15,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Crescelia: their burst combo hits 23% less hard, and this kit gives up 15% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Greystone",
+     "enemySlug": "greystone",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Greystone deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Crescelia",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 37,
+      "offenseLossPct": 16,
+      "line": "Losing lane? Third item Warden's Faith instead of Crescelia: their burst combo hits 37% less hard, and this kit gives up 16% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Scarlett",
+     "enemySlug": "scarlett",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Scarlett deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Crescelia",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 34,
+      "offenseLossPct": 16,
+      "line": "Losing lane? Third item Warden's Faith instead of Crescelia: their burst combo hits 34% less hard, and this kit gives up 16% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Aurora",
+     "enemySlug": "aurora",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Aurora deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Crescelia",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 23,
+      "offenseLossPct": 16,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Crescelia: their burst combo hits 23% less hard, and this kit gives up 16% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Grux",
+     "enemySlug": "grux",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Grux deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Crescelia",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 35,
+      "offenseLossPct": 16,
+      "line": "Losing lane? Third item Warden's Faith instead of Crescelia: their burst combo hits 35% less hard, and this kit gives up 16% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Bayle",
+     "enemySlug": "bayle",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Bayle deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Crescelia",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 34,
+      "offenseLossPct": 16,
+      "line": "Losing lane? Third item Warden's Faith instead of Crescelia: their burst combo hits 34% less hard, and this kit gives up 16% of its damage for it."
      }
     }
    ],

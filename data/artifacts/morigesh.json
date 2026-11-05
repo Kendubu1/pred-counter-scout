@@ -4,36 +4,36 @@
   "augment": {
    "id": "80",
    "name": "Cursed Infestation",
-   "wr": 64.3,
-   "n": 28,
-   "shrunkWr": 59.4,
-   "pickRate": 56,
-   "confidence": "toss-up",
-   "pBeat": null
+   "wr": 56.4,
+   "n": 282,
+   "shrunkWr": 55.2,
+   "pickRate": 54.3,
+   "confidence": "clear",
+   "pBeat": 0.97
   },
   "eternal": {
-   "name": "Vesh",
-   "wr": 69.2,
-   "n": 26,
-   "shrunkWr": 60.3,
-   "pickRate": 52,
+   "name": "Aion",
+   "wr": 54.5,
+   "n": 112,
+   "shrunkWr": 52.9,
+   "pickRate": 21.6,
    "confidence": "slight",
-   "pBeat": 0.78
+   "pBeat": 0.75
   },
   "minors": {
-   "minor1": "Lich",
-   "minor2": "Mind Rot",
-   "wr": 72,
-   "n": 22,
+   "minor1": "Bottomless Vial",
+   "minor2": "Arcane Resonance",
+   "wr": 54.1,
+   "n": 56,
    "basis": "most-picked"
   },
   "crest": {
    "name": "Soulbearer",
-   "wr": 58.6,
-   "n": 29,
-   "shrunkWr": 58,
-   "pickRate": 58,
-   "confidence": null,
+   "wr": 55.1,
+   "n": 243,
+   "shrunkWr": 54.7,
+   "pickRate": 46.8,
+   "confidence": "toss-up",
    "pBeat": null
   }
  },
@@ -46,7 +46,8 @@
   "notes": [
    "all combat numbers are simulator output on unverified constants",
    "checkpoint levels are provisional (no level timeline in the match feed)",
-   "evidence deltas carry finished-inventory survivorship bias"
+   "evidence deltas carry finished-inventory survivorship bias",
+   "the sim build reproduces only 33% of the field's core for Morigesh (it never builds Lifebinder, Megacosm) — some of those items ride mechanics the sim doesn't model yet"
   ]
  },
  "build": {
@@ -56,23 +57,23 @@
     "name": "Orion",
     "slug": "orion",
     "spikeMinute": 8,
-    "playRatePct": 7.9,
-    "evidenceDeltaWr": 2.8,
-    "evidenceN": 10
+    "playRatePct": 11.7,
+    "evidenceDeltaWr": 4.6,
+    "evidenceN": 56
    },
    {
     "name": "Timewarp",
     "slug": "timewarp",
     "spikeMinute": 15,
-    "playRatePct": 31.5,
-    "evidenceDeltaWr": 3.4,
-    "evidenceN": 40
+    "playRatePct": 29.4,
+    "evidenceDeltaWr": 6.2,
+    "evidenceN": 140
    },
    {
     "name": "Spirit Of Amir",
     "slug": "spirit-of-amir",
     "spikeMinute": 21,
-    "playRatePct": 1.6,
+    "playRatePct": 0.8,
     "evidenceDeltaWr": null,
     "evidenceN": null
    },
@@ -80,25 +81,25 @@
     "name": "Tainted Scepter",
     "slug": "tainted-scepter",
     "spikeMinute": 26,
-    "playRatePct": 34.6,
-    "evidenceDeltaWr": 1.1,
-    "evidenceN": 44
+    "playRatePct": 27.7,
+    "evidenceDeltaWr": 7.2,
+    "evidenceN": 132
    },
    {
     "name": "Wraith Leggings",
     "slug": "wraith-leggings",
     "spikeMinute": 31,
-    "playRatePct": 29.9,
-    "evidenceDeltaWr": 2.7,
-    "evidenceN": 38
+    "playRatePct": 25.2,
+    "evidenceDeltaWr": 3,
+    "evidenceN": 120
    },
    {
     "name": "Oblivion Crown",
     "slug": "oblivion-crown",
-    "spikeMinute": 36,
-    "playRatePct": 25.2,
-    "evidenceDeltaWr": 2.9,
-    "evidenceN": 32
+    "spikeMinute": 37,
+    "playRatePct": 21.4,
+    "evidenceDeltaWr": 13.4,
+    "evidenceN": 102
    }
   ],
   "gold": 18350,
@@ -119,7 +120,7 @@
   },
   "manaFeasible": true
  },
- "coachLine": "Experimental sim build for skirmish uptime: first spike lands around minute 8 (Orion), third item by minute 21. The field wins most with Vesh here (69.2% over 26 games).",
+ "coachLine": "Experimental sim build for skirmish uptime: first spike lands around minute 8 (Orion), third item by minute 21. The field wins most with Aion here (54.5% over 112 games).",
  "eternals": {
   "top": [
    {
@@ -612,14 +613,81 @@
   "candidates": [
    {
     "item": "Spirit Of Amir",
-    "playRatePct": 1.6,
+    "playRatePct": 0.8,
     "bestObjective": "sustained auto DPS",
     "edgeVsPopularPct": 71.7
    }
   ],
   "honestAbsence": null
  },
- "metaBuilds": [],
+ "metaBuildsSource": "role",
+ "metaBuildsBand": "all",
+ "metaBuildsBaseline": {
+  "n": 519,
+  "w": 266
+ },
+ "metaBuildsByBand": {
+  "all": {
+   "builds": [
+    {
+     "shareOfCores": 1,
+     "title": "Magical Skirmisher",
+     "items": [
+      {
+       "name": "Combustion",
+       "slug": "combustion"
+      },
+      {
+       "name": "Lifebinder",
+       "slug": "lifebinder"
+      },
+      {
+       "name": "Megacosm",
+       "slug": "megacosm"
+      }
+     ],
+     "n": 20,
+     "shrunkWr": 0.25,
+     "coreGold": 8800,
+     "spikeMinute": 21,
+     "bestObjective": "10s rotation damage",
+     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 21 — about 1,861 damage over a 10s rotation in the sim.",
+     "optimizer": "Optimizer sees +38% more 10s rotation damage: try Orion over Combustion (sim-only — the popular pick may carry utility the sim can't see; test it)."
+    }
+   ],
+   "baseline": {
+    "n": 519,
+    "w": 266
+   }
+  }
+ },
+ "metaBuilds": [
+  {
+   "shareOfCores": 1,
+   "title": "Magical Skirmisher",
+   "items": [
+    {
+     "name": "Combustion",
+     "slug": "combustion"
+    },
+    {
+     "name": "Lifebinder",
+     "slug": "lifebinder"
+    },
+    {
+     "name": "Megacosm",
+     "slug": "megacosm"
+    }
+   ],
+   "n": 20,
+   "shrunkWr": 0.25,
+   "coreGold": 8800,
+   "spikeMinute": 21,
+   "bestObjective": "10s rotation damage",
+   "whyLine": "Strongest meta core for 10s rotation damage, online around minute 21 — about 1,861 damage over a 10s rotation in the sim.",
+   "optimizer": "Optimizer sees +38% more 10s rotation damage: try Orion over Combustion (sim-only — the popular pick may carry utility the sim can't see; test it)."
+  }
+ ],
  "stages": [
   {
    "label": "early",
@@ -695,7 +763,7 @@
   {
    "label": "late",
    "itemCount": 6,
-   "minute": 36,
+   "minute": 37,
    "level": 17,
    "core": [
     {
@@ -742,45 +810,6 @@
  ],
  "matchups": [
   {
-   "enemy": "Renna",
-   "enemySlug": "renna",
-   "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Renna's main threat is Mortal Coil; bait it before you commit, and mixed resist softens the trade.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "even"
-    },
-    {
-     "minute": 10,
-     "verdict": "you"
-    },
-    {
-     "minute": 15,
-     "verdict": "you"
-    },
-    {
-     "minute": 20,
-     "verdict": "you"
-    },
-    {
-     "minute": 25,
-     "verdict": "you"
-    },
-    {
-     "minute": 30,
-     "verdict": "you"
-    }
-   ],
-   "counterSwap": {
-    "out": "Tainted Scepter",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 16,
-    "offenseLossPct": 13,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 16% less hard, and this kit gives up 13% of its damage for it."
-   }
-  },
-  {
    "enemy": "Lt. Belica",
    "enemySlug": "lt-belica",
    "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Lt. Belica executes low targets with Neural Disruptor — don't linger below half HP.",
@@ -820,33 +849,72 @@
    }
   },
   {
-   "enemy": "Gideon",
-   "enemySlug": "gideon",
-   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Gideon deals area damage — spread out so one cast can't catch the group.",
+   "enemy": "Renna",
+   "enemySlug": "renna",
+   "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Renna's main threat is Mortal Coil; bait it before you commit, and mixed resist softens the trade.",
    "checkpoints": [
     {
      "minute": 5,
-     "verdict": "enemy"
+     "verdict": "even"
     },
     {
      "minute": 10,
-     "verdict": "enemy"
+     "verdict": "you"
     },
     {
      "minute": 15,
-     "verdict": "enemy"
+     "verdict": "you"
     },
     {
      "minute": 20,
-     "verdict": "enemy"
+     "verdict": "you"
     },
     {
      "minute": 25,
-     "verdict": "enemy"
+     "verdict": "you"
     },
     {
      "minute": 30,
-     "verdict": "enemy"
+     "verdict": "you"
+    }
+   ],
+   "counterSwap": {
+    "out": "Tainted Scepter",
+    "in": "Raiment of Renewal",
+    "inSlug": "raiment-of-renewal",
+    "survivalGainPct": 16,
+    "offenseLossPct": 13,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 16% less hard, and this kit gives up 13% of its damage for it."
+   }
+  },
+  {
+   "enemy": "Argus",
+   "enemySlug": "argus",
+   "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Argus deals area damage — spread out so one cast can't catch the group.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "you"
+    },
+    {
+     "minute": 10,
+     "verdict": "you"
+    },
+    {
+     "minute": 15,
+     "verdict": "you"
+    },
+    {
+     "minute": 20,
+     "verdict": "you"
+    },
+    {
+     "minute": 25,
+     "verdict": "you"
+    },
+    {
+     "minute": 30,
+     "verdict": "you"
     }
    ],
    "counterSwap": {
@@ -854,8 +922,8 @@
     "in": "Raiment of Renewal",
     "inSlug": "raiment-of-renewal",
     "survivalGainPct": 18,
-    "offenseLossPct": 13,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 18% less hard, and this kit gives up 13% of its damage for it."
+    "offenseLossPct": 12,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 18% less hard, and this kit gives up 12% of its damage for it."
    }
   },
   {
@@ -898,6 +966,45 @@
    }
   },
   {
+   "enemy": "Gideon",
+   "enemySlug": "gideon",
+   "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Gideon deals area damage — spread out so one cast can't catch the group.",
+   "checkpoints": [
+    {
+     "minute": 5,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 10,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 15,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 20,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 25,
+     "verdict": "enemy"
+    },
+    {
+     "minute": 30,
+     "verdict": "enemy"
+    }
+   ],
+   "counterSwap": {
+    "out": "Tainted Scepter",
+    "in": "Raiment of Renewal",
+    "inSlug": "raiment-of-renewal",
+    "survivalGainPct": 18,
+    "offenseLossPct": 13,
+    "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 18% less hard, and this kit gives up 13% of its damage for it."
+   }
+  },
+  {
    "enemy": "Gadget",
    "enemySlug": "gadget",
    "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Gadget deals area damage — spread out so one cast can't catch the group.",
@@ -935,55 +1042,78 @@
     "offenseLossPct": 13,
     "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 18% less hard, and this kit gives up 13% of its damage for it."
    }
-  },
-  {
-   "enemy": "Argus",
-   "enemySlug": "argus",
-   "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Argus deals area damage — spread out so one cast can't catch the group.",
-   "checkpoints": [
-    {
-     "minute": 5,
-     "verdict": "you"
-    },
-    {
-     "minute": 10,
-     "verdict": "you"
-    },
-    {
-     "minute": 15,
-     "verdict": "you"
-    },
-    {
-     "minute": 20,
-     "verdict": "you"
-    },
-    {
-     "minute": 25,
-     "verdict": "you"
-    },
-    {
-     "minute": 30,
-     "verdict": "you"
-    }
-   ],
-   "counterSwap": {
-    "out": "Tainted Scepter",
-    "in": "Raiment of Renewal",
-    "inSlug": "raiment-of-renewal",
-    "survivalGainPct": 18,
-    "offenseLossPct": 12,
-    "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 18% less hard, and this kit gives up 12% of its damage for it."
-   }
   }
  ],
- "laneSteer": null,
+ "laneSteer": {
+  "augment": {
+   "id": "80",
+   "name": "Cursed Infestation"
+  },
+  "playstyle": "ability-burst",
+  "modeled": true,
+  "wr": 56.4,
+  "n": 282,
+  "shiftIn": [
+   "Combustion",
+   "Oathkeeper",
+   "Caustica",
+   "Amulet Of Chaos"
+  ],
+  "shiftOut": [
+   "Orion",
+   "Timewarp",
+   "Tainted Scepter",
+   "Spirit Of Amir"
+  ],
+  "provenance": "“Cursed Infestation” ⇒ ability-burst; the sim models this augment — field midlane 56.4% over 282 games."
+ },
  "slug": "morigesh",
  "name": "Morigesh",
  "patch": "1.15.3/1.15.4",
- "generatedAt": "2026-11-03T19:42:28.076Z",
+ "generatedAt": "2026-11-04T23:56:14.865Z",
  "damageType": "hybrid",
  "attackType": "ranged",
- "laneFlex": [],
+ "laneFlex": [
+  {
+   "lane": "midlane",
+   "augment": {
+    "id": "80",
+    "name": "Cursed Infestation"
+   },
+   "playstyle": "ability-burst",
+   "modeled": true,
+   "wr": 56.4,
+   "n": 282,
+   "core": [
+    {
+     "name": "Combustion",
+     "slug": "combustion"
+    },
+    {
+     "name": "Wraith Leggings",
+     "slug": "wraith-leggings"
+    },
+    {
+     "name": "Oblivion Crown",
+     "slug": "oblivion-crown"
+    },
+    {
+     "name": "Oathkeeper",
+     "slug": "oathkeeper"
+    },
+    {
+     "name": "Caustica",
+     "slug": "caustica"
+    },
+    {
+     "name": "Amulet Of Chaos",
+     "slug": "amulet-of-chaos"
+    }
+   ],
+   "headline": "burst",
+   "provenance": "“Cursed Infestation” ⇒ ability-burst; the sim models this augment — field midlane 56.4% over 282 games."
+  }
+ ],
  "roles": [
   {
    "role": "midlane",
@@ -991,36 +1121,36 @@
     "augment": {
      "id": "80",
      "name": "Cursed Infestation",
-     "wr": 64.3,
-     "n": 28,
-     "shrunkWr": 59.4,
-     "pickRate": 56,
-     "confidence": "toss-up",
-     "pBeat": null
+     "wr": 56.4,
+     "n": 282,
+     "shrunkWr": 55.2,
+     "pickRate": 54.3,
+     "confidence": "clear",
+     "pBeat": 0.97
     },
     "eternal": {
-     "name": "Vesh",
-     "wr": 69.2,
-     "n": 26,
-     "shrunkWr": 60.3,
-     "pickRate": 52,
+     "name": "Aion",
+     "wr": 54.5,
+     "n": 112,
+     "shrunkWr": 52.9,
+     "pickRate": 21.6,
      "confidence": "slight",
-     "pBeat": 0.78
+     "pBeat": 0.75
     },
     "minors": {
-     "minor1": "Lich",
-     "minor2": "Mind Rot",
-     "wr": 72,
-     "n": 22,
+     "minor1": "Bottomless Vial",
+     "minor2": "Arcane Resonance",
+     "wr": 54.1,
+     "n": 56,
      "basis": "most-picked"
     },
     "crest": {
      "name": "Soulbearer",
-     "wr": 58.6,
-     "n": 29,
-     "shrunkWr": 58,
-     "pickRate": 58,
-     "confidence": null,
+     "wr": 55.1,
+     "n": 243,
+     "shrunkWr": 54.7,
+     "pickRate": 46.8,
+     "confidence": "toss-up",
      "pBeat": null
     }
    },
@@ -1033,7 +1163,8 @@
     "notes": [
      "all combat numbers are simulator output on unverified constants",
      "checkpoint levels are provisional (no level timeline in the match feed)",
-     "evidence deltas carry finished-inventory survivorship bias"
+     "evidence deltas carry finished-inventory survivorship bias",
+     "the sim build reproduces only 33% of the field's core for Morigesh (it never builds Lifebinder, Megacosm) — some of those items ride mechanics the sim doesn't model yet"
     ]
    },
    "build": {
@@ -1043,23 +1174,23 @@
       "name": "Orion",
       "slug": "orion",
       "spikeMinute": 8,
-      "playRatePct": 7.9,
-      "evidenceDeltaWr": 2.8,
-      "evidenceN": 10
+      "playRatePct": 11.7,
+      "evidenceDeltaWr": 4.6,
+      "evidenceN": 56
      },
      {
       "name": "Timewarp",
       "slug": "timewarp",
       "spikeMinute": 15,
-      "playRatePct": 31.5,
-      "evidenceDeltaWr": 3.4,
-      "evidenceN": 40
+      "playRatePct": 29.4,
+      "evidenceDeltaWr": 6.2,
+      "evidenceN": 140
      },
      {
       "name": "Spirit Of Amir",
       "slug": "spirit-of-amir",
       "spikeMinute": 21,
-      "playRatePct": 1.6,
+      "playRatePct": 0.8,
       "evidenceDeltaWr": null,
       "evidenceN": null
      },
@@ -1067,25 +1198,25 @@
       "name": "Tainted Scepter",
       "slug": "tainted-scepter",
       "spikeMinute": 26,
-      "playRatePct": 34.6,
-      "evidenceDeltaWr": 1.1,
-      "evidenceN": 44
+      "playRatePct": 27.7,
+      "evidenceDeltaWr": 7.2,
+      "evidenceN": 132
      },
      {
       "name": "Wraith Leggings",
       "slug": "wraith-leggings",
       "spikeMinute": 31,
-      "playRatePct": 29.9,
-      "evidenceDeltaWr": 2.7,
-      "evidenceN": 38
+      "playRatePct": 25.2,
+      "evidenceDeltaWr": 3,
+      "evidenceN": 120
      },
      {
       "name": "Oblivion Crown",
       "slug": "oblivion-crown",
-      "spikeMinute": 36,
-      "playRatePct": 25.2,
-      "evidenceDeltaWr": 2.9,
-      "evidenceN": 32
+      "spikeMinute": 37,
+      "playRatePct": 21.4,
+      "evidenceDeltaWr": 13.4,
+      "evidenceN": 102
      }
     ],
     "gold": 18350,
@@ -1106,7 +1237,7 @@
     },
     "manaFeasible": true
    },
-   "coachLine": "Experimental sim build for skirmish uptime: first spike lands around minute 8 (Orion), third item by minute 21. The field wins most with Vesh here (69.2% over 26 games).",
+   "coachLine": "Experimental sim build for skirmish uptime: first spike lands around minute 8 (Orion), third item by minute 21. The field wins most with Aion here (54.5% over 112 games).",
    "eternals": {
     "top": [
      {
@@ -1599,14 +1730,81 @@
     "candidates": [
      {
       "item": "Spirit Of Amir",
-      "playRatePct": 1.6,
+      "playRatePct": 0.8,
       "bestObjective": "sustained auto DPS",
       "edgeVsPopularPct": 71.7
      }
     ],
     "honestAbsence": null
    },
-   "metaBuilds": [],
+   "metaBuildsSource": "role",
+   "metaBuildsBand": "all",
+   "metaBuildsBaseline": {
+    "n": 519,
+    "w": 266
+   },
+   "metaBuildsByBand": {
+    "all": {
+     "builds": [
+      {
+       "shareOfCores": 1,
+       "title": "Magical Skirmisher",
+       "items": [
+        {
+         "name": "Combustion",
+         "slug": "combustion"
+        },
+        {
+         "name": "Lifebinder",
+         "slug": "lifebinder"
+        },
+        {
+         "name": "Megacosm",
+         "slug": "megacosm"
+        }
+       ],
+       "n": 20,
+       "shrunkWr": 0.25,
+       "coreGold": 8800,
+       "spikeMinute": 21,
+       "bestObjective": "10s rotation damage",
+       "whyLine": "Strongest meta core for 10s rotation damage, online around minute 21 — about 1,861 damage over a 10s rotation in the sim.",
+       "optimizer": "Optimizer sees +38% more 10s rotation damage: try Orion over Combustion (sim-only — the popular pick may carry utility the sim can't see; test it)."
+      }
+     ],
+     "baseline": {
+      "n": 519,
+      "w": 266
+     }
+    }
+   },
+   "metaBuilds": [
+    {
+     "shareOfCores": 1,
+     "title": "Magical Skirmisher",
+     "items": [
+      {
+       "name": "Combustion",
+       "slug": "combustion"
+      },
+      {
+       "name": "Lifebinder",
+       "slug": "lifebinder"
+      },
+      {
+       "name": "Megacosm",
+       "slug": "megacosm"
+      }
+     ],
+     "n": 20,
+     "shrunkWr": 0.25,
+     "coreGold": 8800,
+     "spikeMinute": 21,
+     "bestObjective": "10s rotation damage",
+     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 21 — about 1,861 damage over a 10s rotation in the sim.",
+     "optimizer": "Optimizer sees +38% more 10s rotation damage: try Orion over Combustion (sim-only — the popular pick may carry utility the sim can't see; test it)."
+    }
+   ],
    "stages": [
     {
      "label": "early",
@@ -1682,7 +1880,7 @@
     {
      "label": "late",
      "itemCount": 6,
-     "minute": 36,
+     "minute": 37,
      "level": 17,
      "core": [
       {
@@ -1729,45 +1927,6 @@
    ],
    "matchups": [
     {
-     "enemy": "Renna",
-     "enemySlug": "renna",
-     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Renna's main threat is Mortal Coil; bait it before you commit, and mixed resist softens the trade.",
-     "checkpoints": [
-      {
-       "minute": 5,
-       "verdict": "even"
-      },
-      {
-       "minute": 10,
-       "verdict": "you"
-      },
-      {
-       "minute": 15,
-       "verdict": "you"
-      },
-      {
-       "minute": 20,
-       "verdict": "you"
-      },
-      {
-       "minute": 25,
-       "verdict": "you"
-      },
-      {
-       "minute": 30,
-       "verdict": "you"
-      }
-     ],
-     "counterSwap": {
-      "out": "Tainted Scepter",
-      "in": "Raiment of Renewal",
-      "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 16,
-      "offenseLossPct": 13,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 16% less hard, and this kit gives up 13% of its damage for it."
-     }
-    },
-    {
      "enemy": "Lt. Belica",
      "enemySlug": "lt-belica",
      "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Lt. Belica executes low targets with Neural Disruptor — don't linger below half HP.",
@@ -1807,33 +1966,72 @@
      }
     },
     {
-     "enemy": "Gideon",
-     "enemySlug": "gideon",
-     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Gideon deals area damage — spread out so one cast can't catch the group.",
+     "enemy": "Renna",
+     "enemySlug": "renna",
+     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Renna's main threat is Mortal Coil; bait it before you commit, and mixed resist softens the trade.",
      "checkpoints": [
       {
        "minute": 5,
-       "verdict": "enemy"
+       "verdict": "even"
       },
       {
        "minute": 10,
-       "verdict": "enemy"
+       "verdict": "you"
       },
       {
        "minute": 15,
-       "verdict": "enemy"
+       "verdict": "you"
       },
       {
        "minute": 20,
-       "verdict": "enemy"
+       "verdict": "you"
       },
       {
        "minute": 25,
-       "verdict": "enemy"
+       "verdict": "you"
       },
       {
        "minute": 30,
-       "verdict": "enemy"
+       "verdict": "you"
+      }
+     ],
+     "counterSwap": {
+      "out": "Tainted Scepter",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 16,
+      "offenseLossPct": 13,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 16% less hard, and this kit gives up 13% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Argus",
+     "enemySlug": "argus",
+     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Argus deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "you"
+      },
+      {
+       "minute": 10,
+       "verdict": "you"
+      },
+      {
+       "minute": 15,
+       "verdict": "you"
+      },
+      {
+       "minute": 20,
+       "verdict": "you"
+      },
+      {
+       "minute": 25,
+       "verdict": "you"
+      },
+      {
+       "minute": 30,
+       "verdict": "you"
       }
      ],
      "counterSwap": {
@@ -1841,8 +2039,8 @@
       "in": "Raiment of Renewal",
       "inSlug": "raiment-of-renewal",
       "survivalGainPct": 18,
-      "offenseLossPct": 13,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 18% less hard, and this kit gives up 13% of its damage for it."
+      "offenseLossPct": 12,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 18% less hard, and this kit gives up 12% of its damage for it."
      }
     },
     {
@@ -1885,6 +2083,45 @@
      }
     },
     {
+     "enemy": "Gideon",
+     "enemySlug": "gideon",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Gideon deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 15,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 20,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 25,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Tainted Scepter",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 18,
+      "offenseLossPct": 13,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 18% less hard, and this kit gives up 13% of its damage for it."
+     }
+    },
+    {
      "enemy": "Gadget",
      "enemySlug": "gadget",
      "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Gadget deals area damage — spread out so one cast can't catch the group.",
@@ -1922,15 +2159,890 @@
       "offenseLossPct": 13,
       "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 18% less hard, and this kit gives up 13% of its damage for it."
      }
+    }
+   ],
+   "laneSteer": {
+    "augment": {
+     "id": "80",
+     "name": "Cursed Infestation"
+    },
+    "playstyle": "ability-burst",
+    "modeled": true,
+    "wr": 56.4,
+    "n": 282,
+    "shiftIn": [
+     "Combustion",
+     "Oathkeeper",
+     "Caustica",
+     "Amulet Of Chaos"
+    ],
+    "shiftOut": [
+     "Orion",
+     "Timewarp",
+     "Tainted Scepter",
+     "Spirit Of Amir"
+    ],
+    "provenance": "“Cursed Infestation” ⇒ ability-burst; the sim models this augment — field midlane 56.4% over 282 games."
+   }
+  },
+  {
+   "role": "offlane",
+   "fieldPick": {
+    "augment": {
+     "id": "81",
+     "name": "Ritual Of Death",
+     "wr": 64.8,
+     "n": 54,
+     "shrunkWr": 59.9,
+     "pickRate": 32.9,
+     "confidence": "slight",
+     "pBeat": 0.72
+    },
+    "eternal": {
+     "name": "Vesh",
+     "wr": 59.8,
+     "n": 87,
+     "shrunkWr": 57.9,
+     "pickRate": 53,
+     "confidence": "slight",
+     "pBeat": 0.75
+    },
+    "minors": {
+     "minor1": "Lich",
+     "minor2": "Mind Rot",
+     "wr": 62,
+     "n": 71,
+     "basis": "best-pair"
+    },
+    "crest": {
+     "name": "Soulbearer",
+     "wr": 61.3,
+     "n": 75,
+     "shrunkWr": 60.5,
+     "pickRate": 45.7,
+     "confidence": "toss-up",
+     "pBeat": null
+    }
+   },
+   "roleCaveat": null,
+   "confidence": {
+    "level": "THEORY",
+    "unverifiedConstants": [
+     "attackSpeedCap"
+    ],
+    "notes": [
+     "all combat numbers are simulator output on unverified constants",
+     "checkpoint levels are provisional (no level timeline in the match feed)",
+     "evidence deltas carry finished-inventory survivorship bias"
+    ]
+   },
+   "build": {
+    "title": "Magical Skirmisher",
+    "items": [
+     {
+      "name": "Orion",
+      "slug": "orion",
+      "spikeMinute": 9,
+      "playRatePct": 11.7,
+      "evidenceDeltaWr": 4.6,
+      "evidenceN": 56
+     },
+     {
+      "name": "Timewarp",
+      "slug": "timewarp",
+      "spikeMinute": 16,
+      "playRatePct": 29.4,
+      "evidenceDeltaWr": 6.2,
+      "evidenceN": 140
+     },
+     {
+      "name": "Spirit Of Amir",
+      "slug": "spirit-of-amir",
+      "spikeMinute": 21,
+      "playRatePct": 0.8,
+      "evidenceDeltaWr": null,
+      "evidenceN": null
+     },
+     {
+      "name": "Tainted Scepter",
+      "slug": "tainted-scepter",
+      "spikeMinute": 27,
+      "playRatePct": 27.7,
+      "evidenceDeltaWr": 7.2,
+      "evidenceN": 132
+     },
+     {
+      "name": "Wraith Leggings",
+      "slug": "wraith-leggings",
+      "spikeMinute": 32,
+      "playRatePct": 25.2,
+      "evidenceDeltaWr": 3,
+      "evidenceN": 120
+     },
+     {
+      "name": "Oblivion Crown",
+      "slug": "oblivion-crown",
+      "spikeMinute": 37,
+      "playRatePct": 21.4,
+      "evidenceDeltaWr": 13.4,
+      "evidenceN": 102
+     }
+    ],
+    "gold": 18350,
+    "archetypes": [
+     "skirmish uptime"
+    ],
+    "objectives": {
+     "burstVsSquishy": 2614.9610810810814,
+     "teamfightVsSquishy": 2614.9610810810814,
+     "rot10VsSquishy": 6647.972307692308,
+     "rot20VsBruiser": 8621.088953488375,
+     "autoDps10VsSquishy": 84.00588533333334,
+     "ehpPhysical": 4404.5246875,
+     "ehpMagical": 3533.764828125,
+     "healShield10s": 955.5,
+     "utility": 80,
+     "sustain10s": 0
+    },
+    "manaFeasible": true
+   },
+   "coachLine": "Experimental sim build for skirmish uptime: first spike lands around minute 9 (Orion), third item by minute 21. The field wins most with Vesh here (59.8% over 87 games).",
+   "eternals": {
+    "top": [
+     {
+      "name": "Demiurge",
+      "id": "demiurge",
+      "headlinePct": 9.6,
+      "burstPct": 8.1,
+      "rot20Pct": 10.4,
+      "ehpPct": 1.6
+     },
+     {
+      "name": "Vesh",
+      "id": "vesh",
+      "headlinePct": 9,
+      "burstPct": 10.7,
+      "rot20Pct": 8.5,
+      "ehpPct": 0
+     },
+     {
+      "name": "Thraex",
+      "id": "thraex",
+      "headlinePct": 5.7,
+      "burstPct": 0,
+      "rot20Pct": 5.4,
+      "ehpPct": 0
+     }
+    ],
+    "unmodeled": [
+     "Marrow",
+     "Nihil",
+     "Aion",
+     "Exarch",
+     "Weald",
+     "Pilow",
+     "Knell",
+     "Satariel"
+    ],
+    "all": [
+     {
+      "name": "Demiurge",
+      "modeled": true,
+      "headlinePct": 9.6,
+      "burstPct": 8.1,
+      "rot20Pct": 10.4,
+      "ehpPct": 1.6,
+      "note": null
+     },
+     {
+      "name": "Vesh",
+      "modeled": true,
+      "headlinePct": 9,
+      "burstPct": 10.7,
+      "rot20Pct": 8.5,
+      "ehpPct": 0,
+      "note": null
+     },
+     {
+      "name": "Thraex",
+      "modeled": true,
+      "headlinePct": 5.7,
+      "burstPct": 0,
+      "rot20Pct": 5.4,
+      "ehpPct": 0,
+      "note": null
+     },
+     {
+      "name": "Krix",
+      "modeled": true,
+      "headlinePct": 0,
+      "burstPct": 0,
+      "rot20Pct": 0,
+      "ehpPct": 18,
+      "note": null
+     },
+     {
+      "name": "Xyris",
+      "modeled": true,
+      "headlinePct": 2.1,
+      "burstPct": 2.6,
+      "rot20Pct": 2,
+      "ehpPct": 0,
+      "note": null
+     },
+     {
+      "name": "Idrisil",
+      "modeled": true,
+      "headlinePct": 0,
+      "burstPct": 0,
+      "rot20Pct": 0,
+      "ehpPct": 6.5,
+      "note": null
+     },
+     {
+      "name": "Lotus",
+      "modeled": true,
+      "headlinePct": 1.3,
+      "burstPct": 1.6,
+      "rot20Pct": 1.2,
+      "ehpPct": 2.3,
+      "note": null
+     },
+     {
+      "name": "Vermis",
+      "modeled": true,
+      "headlinePct": 0,
+      "burstPct": 0.8,
+      "rot20Pct": 0,
+      "ehpPct": 0,
+      "note": null
+     },
+     {
+      "name": "Marrow",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Marrow (Major): missing-health-dependent omnivamp; no sustain-uptime model yet"
+     },
+     {
+      "name": "Nihil",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Nihil (Major): accrual rate depends on combat uptime (how long Doom persists per fight), which the closed-form sim cannot observe"
+     },
+     {
+      "name": "Aion",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Aion (Major): economy effect; valuable but outside combat objectives (revisit with gold curves)"
+     },
+     {
+      "name": "Exarch",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Exarch (Major): buffs the HEAL TARGET (usually an ally) — team-side value outside the single-hero sim; self-heal uptime depends on heal cadence vs the 4s window"
+     },
+     {
+      "name": "Weald",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Weald (Major): execute-window true damage; the headline objectives evaluate full-health targets, so crediting it would overstate sustained output"
+     },
+     {
+      "name": "Pilow",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Pilow (Major): reduces ENEMY damage output within a radius; the sim models damage taken by one modeled defender, not a team-wide output debuff with uptime"
+     },
+     {
+      "name": "Knell",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Knell (Major): Only an explicitly supplied active-stack snapshot is modeled; omitted state receives no shred credit. Stack acquisition, refresh/expiry over time, Peal interactions, multi-source behavior and stolen defenses are not simulated. No automatic full-stack uptime or winning-build claim."
+     },
+     {
+      "name": "Satariel",
+      "modeled": false,
+      "headlinePct": null,
+      "burstPct": null,
+      "rot20Pct": null,
+      "ehpPct": null,
+      "note": "Satariel (Major): stats depend on takedown count (game state), not on the build; crediting any stack count would be an assumption about how the game went"
+     }
+    ],
+    "augmentAware": "Cursed Infestation",
+    "loadout": {
+     "major": {
+      "name": "Vesh",
+      "modeled": true
+     },
+     "minor1": {
+      "name": "The Tenth Seal",
+      "modeled": true,
+      "deltaPct": 0.5,
+      "note": "+0.5% rot10 on top of the major (modeled)"
+     },
+     "minor2": {
+      "name": "Mind Rot",
+      "modeled": true,
+      "deltaPct": 3.2,
+      "note": "+3.2% rot10 on top of the major (modeled)"
+     },
+     "note": "Ability Damage Mage — fit 3.35"
+    },
+    "minorsByName": {
+     "vesh": {
+      "minor1": {
+       "name": "The Tenth Seal",
+       "modeled": true,
+       "deltaPct": 0.5,
+       "note": "+0.5% rot10 on top of the major (modeled)"
+      },
+      "minor2": {
+       "name": "Mind Rot",
+       "modeled": true,
+       "deltaPct": 3.2,
+       "note": "+3.2% rot10 on top of the major (modeled)"
+      }
+     },
+     "aion": {
+      "minor1": {
+       "name": "Philosopher",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Runic Focus",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "vermis": {
+      "minor1": {
+       "name": "Serration",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Melting Point",
+       "modeled": true,
+       "deltaPct": 0,
+       "note": "+0.0% rot10 on top of the major (modeled)"
+      }
+     },
+     "thraex": {
+      "minor1": {
+       "name": "Savage Strikes",
+       "modeled": true,
+       "deltaPct": 0,
+       "note": "+0.0% rot10 on top of the major (modeled)"
+      },
+      "minor2": {
+       "name": "Ferocity",
+       "modeled": true,
+       "deltaPct": 0,
+       "note": "+0.0% rot10 on top of the major (modeled)"
+      }
+     },
+     "marrow": {
+      "minor1": {
+       "name": "Blood Bank",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "The Maw",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "xyris": {
+      "minor1": {
+       "name": "Furor",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Eviscerate",
+       "modeled": true,
+       "deltaPct": 0,
+       "note": "+0.0% rot10 on top of the major (modeled)"
+      }
+     },
+     "demiurge": {
+      "minor1": {
+       "name": "Construct",
+       "modeled": true,
+       "deltaPct": 0,
+       "note": "+0.0% rot10 on top of the major (modeled)"
+      },
+      "minor2": {
+       "name": "Cursed Corrupted",
+       "modeled": true,
+       "deltaPct": 0,
+       "note": "+0.0% rot10 on top of the major (modeled)"
+      }
+     },
+     "nihil": {
+      "minor1": {
+       "name": "From the Abyss",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Adaptive Plating",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "exarch": {
+      "minor1": {
+       "name": "Revelation",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Fervour",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "krix": {
+      "minor1": {
+       "name": "Festering Wounds",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Cannibalism",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "idrisil": {
+      "minor1": {
+       "name": "Mending",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Diamond Tip",
+       "modeled": true,
+       "deltaPct": 9.7,
+       "note": "+9.7% rot10 on top of the major (modeled)"
+      }
+     },
+     "lotus": {
+      "minor1": {
+       "name": "Masterpiece",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Prima Donna",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "weald": {
+      "minor1": {
+       "name": "Dryad’s Boon",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Taproot",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "knell": {
+      "minor1": {
+       "name": "Frequency",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Fracture",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "pilow": {
+      "minor1": {
+       "name": "Harmonic Currents",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Convection",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     },
+     "satariel": {
+      "minor1": {
+       "name": "Risen",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      },
+      "minor2": {
+       "name": "Rite",
+       "modeled": false,
+       "deltaPct": null,
+       "note": "curated recommendation (mechanic not in the sim)"
+      }
+     }
+    }
+   },
+   "augments": [
+    {
+     "id": "82",
+     "name": "Spirit Shred",
+     "modeled": true,
+     "provisional": false,
+     "headlinePct": 6.9,
+     "burstPct": 2.6,
+     "rot20Pct": 6.9,
+     "ehpPct": 0,
+     "healShieldPct": 0,
+     "healShieldAbs": 0,
+     "note": "5 stacks x 3.5%; ramp assumes one stack per second of basic attacks",
+     "buildShift": {
+      "in": [
+       "Magnify"
+      ],
+      "out": [
+       "Tainted Scepter"
+      ]
+     }
     },
     {
-     "enemy": "Argus",
-     "enemySlug": "argus",
-     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Argus deals area damage — spread out so one cast can't catch the group.",
+     "id": "80",
+     "name": "Cursed Infestation",
+     "modeled": true,
+     "provisional": false,
+     "headlinePct": 1.3,
+     "burstPct": 1.7,
+     "rot20Pct": 1.5,
+     "ehpPct": 0,
+     "healShieldPct": 0,
+     "healShieldAbs": 0,
+     "note": "10% range not scored",
+     "buildShift": {
+      "in": [
+       "Magnify"
+      ],
+      "out": [
+       "Tainted Scepter"
+      ]
+     }
+    },
+    {
+     "id": "81",
+     "name": "Ritual Of Death",
+     "modeled": false,
+     "provisional": false,
+     "headlinePct": null,
+     "burstPct": null,
+     "rot20Pct": null,
+     "ehpPct": null,
+     "healShieldPct": null,
+     "healShieldAbs": null,
+     "note": "heals 70-90% of ult damage dealt (damage-coupled) and takedown cooldown refund; not yet modeled",
+     "buildShift": null
+    }
+   ],
+   "offMeta": {
+    "candidates": [
+     {
+      "item": "Spirit Of Amir",
+      "playRatePct": 0.8,
+      "bestObjective": "sustained auto DPS",
+      "edgeVsPopularPct": 71.7
+     }
+    ],
+    "honestAbsence": null
+   },
+   "metaBuildsSource": "all-roles",
+   "metaBuildsBand": "all",
+   "metaBuildsBaseline": null,
+   "metaBuilds": [
+    {
+     "shareOfCores": 1,
+     "title": "Magical Skirmisher",
+     "items": [
+      {
+       "name": "Combustion",
+       "slug": "combustion"
+      },
+      {
+       "name": "Lifebinder",
+       "slug": "lifebinder"
+      },
+      {
+       "name": "Megacosm",
+       "slug": "megacosm"
+      }
+     ],
+     "n": 21,
+     "shrunkWr": 0.286,
+     "coreGold": 8800,
+     "spikeMinute": 21,
+     "bestObjective": "10s rotation damage",
+     "whyLine": "Strongest meta core for 10s rotation damage, online around minute 21 — about 1,861 damage over a 10s rotation in the sim.",
+     "optimizer": "Optimizer sees +38% more 10s rotation damage: try Orion over Combustion (sim-only — the popular pick may carry utility the sim can't see; test it)."
+    }
+   ],
+   "stages": [
+    {
+     "label": "early",
+     "itemCount": 2,
+     "minute": 16,
+     "level": 11,
+     "core": [
+      {
+       "name": "Orion",
+       "slug": "orion"
+      },
+      {
+       "name": "Timewarp",
+       "slug": "timewarp"
+      }
+     ],
+     "headline": "rot10VsSquishy",
+     "headlineValue": 1662,
+     "objectives": {
+      "burstVsSquishy": 963.75,
+      "teamfightVsSquishy": 963.75,
+      "rot10VsSquishy": 1662.2094594594594,
+      "rot20VsBruiser": 2116.5421052631577,
+      "autoDps10VsSquishy": 66.48041043243242,
+      "ehpPhysical": 2984.699296875,
+      "ehpMagical": 2507.56461328125,
+      "healShield10s": 316,
+      "utility": 56,
+      "sustain10s": 0
+     },
+     "betterEarly": {
+      "inItem": "Noxia",
+      "inSlug": "noxia",
+      "outItem": "Timewarp",
+      "edgePct": 12.6
+     }
+    },
+    {
+     "label": "mid",
+     "itemCount": 3,
+     "minute": 21,
+     "level": 13,
+     "core": [
+      {
+       "name": "Orion",
+       "slug": "orion"
+      },
+      {
+       "name": "Timewarp",
+       "slug": "timewarp"
+      },
+      {
+       "name": "Spirit Of Amir",
+       "slug": "spirit-of-amir"
+      }
+     ],
+     "headline": "rot10VsSquishy",
+     "headlineValue": 2567,
+     "objectives": {
+      "burstVsSquishy": 1258.9321449108681,
+      "teamfightVsSquishy": 1258.9321449108681,
+      "rot10VsSquishy": 2567.2363120567375,
+      "rot20VsBruiser": 3082.3545355191263,
+      "autoDps10VsSquishy": 79.46502666666666,
+      "ehpPhysical": 4051.7746875,
+      "ehpMagical": 3250.7523281249996,
+      "healShield10s": 395.04,
+      "utility": 66,
+      "sustain10s": 0
+     },
+     "betterEarly": null
+    },
+    {
+     "label": "late",
+     "itemCount": 6,
+     "minute": 37,
+     "level": 17,
+     "core": [
+      {
+       "name": "Orion",
+       "slug": "orion"
+      },
+      {
+       "name": "Timewarp",
+       "slug": "timewarp"
+      },
+      {
+       "name": "Spirit Of Amir",
+       "slug": "spirit-of-amir"
+      },
+      {
+       "name": "Tainted Scepter",
+       "slug": "tainted-scepter"
+      },
+      {
+       "name": "Wraith Leggings",
+       "slug": "wraith-leggings"
+      },
+      {
+       "name": "Oblivion Crown",
+       "slug": "oblivion-crown"
+      }
+     ],
+     "headline": "rot10VsSquishy",
+     "headlineValue": 7012,
+     "objectives": {
+      "burstVsSquishy": 2851.2105613305616,
+      "teamfightVsSquishy": 2851.2105613305616,
+      "rot10VsSquishy": 7012.280000000001,
+      "rot20VsBruiser": 9075.042441860467,
+      "autoDps10VsSquishy": 106.06015487999998,
+      "ehpPhysical": 6303.319,
+      "ehpMagical": 4623.11509,
+      "healShield10s": 955.5,
+      "utility": 80,
+      "sustain10s": 0
+     },
+     "betterEarly": null
+    }
+   ],
+   "matchups": [
+    {
+     "enemy": "Steel",
+     "enemySlug": "steel",
+     "gameplan": "Even kill threat throughout: this lane is decided by mechanics and wave control, not scaling. Steel deals area damage — spread out so one cast can't catch the group.",
      "checkpoints": [
       {
        "minute": 5,
-       "verdict": "you"
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "even"
+      },
+      {
+       "minute": 15,
+       "verdict": "even"
+      },
+      {
+       "minute": 20,
+       "verdict": "even"
+      },
+      {
+       "minute": 25,
+       "verdict": "even"
+      },
+      {
+       "minute": 30,
+       "verdict": "even"
+      }
+     ],
+     "counterSwap": {
+      "out": "Tainted Scepter",
+      "in": "Raiment of Renewal",
+      "inSlug": "raiment-of-renewal",
+      "survivalGainPct": 16,
+      "offenseLossPct": 13,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 16% less hard, and this kit gives up 13% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Greystone",
+     "enemySlug": "greystone",
+     "gameplan": "They out-threaten you whenever the lane is not even: treat this as a farm-and-team lane, not a duel. Greystone deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "even"
+      },
+      {
+       "minute": 15,
+       "verdict": "even"
+      },
+      {
+       "minute": 20,
+       "verdict": "even"
+      },
+      {
+       "minute": 25,
+       "verdict": "even"
+      },
+      {
+       "minute": 30,
+       "verdict": "enemy"
+      }
+     ],
+     "counterSwap": {
+      "out": "Tainted Scepter",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 32,
+      "offenseLossPct": 14,
+      "line": "Losing lane? Third item Warden's Faith instead of Tainted Scepter: their burst combo hits 32% less hard, and this kit gives up 14% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Scarlett",
+     "enemySlug": "scarlett",
+     "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Scarlett deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
       },
       {
        "minute": 10,
@@ -1955,11 +3067,128 @@
      ],
      "counterSwap": {
       "out": "Tainted Scepter",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 29,
+      "offenseLossPct": 14,
+      "line": "Losing lane? Third item Warden's Faith instead of Tainted Scepter: their burst combo hits 29% less hard, and this kit gives up 14% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Aurora",
+     "enemySlug": "aurora",
+     "gameplan": "Survive the early checkpoints, concede even trades, and take over once your spike lands. Aurora deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "enemy"
+      },
+      {
+       "minute": 10,
+       "verdict": "even"
+      },
+      {
+       "minute": 15,
+       "verdict": "even"
+      },
+      {
+       "minute": 20,
+       "verdict": "even"
+      },
+      {
+       "minute": 25,
+       "verdict": "you"
+      },
+      {
+       "minute": 30,
+       "verdict": "you"
+      }
+     ],
+     "counterSwap": {
+      "out": "Tainted Scepter",
       "in": "Raiment of Renewal",
       "inSlug": "raiment-of-renewal",
-      "survivalGainPct": 18,
-      "offenseLossPct": 12,
-      "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 18% less hard, and this kit gives up 12% of its damage for it."
+      "survivalGainPct": 17,
+      "offenseLossPct": 13,
+      "line": "Losing lane? Third item Raiment of Renewal instead of Tainted Scepter: their burst combo hits 17% less hard, and this kit gives up 13% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Grux",
+     "enemySlug": "grux",
+     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Grux deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "you"
+      },
+      {
+       "minute": 15,
+       "verdict": "you"
+      },
+      {
+       "minute": 20,
+       "verdict": "you"
+      },
+      {
+       "minute": 25,
+       "verdict": "even"
+      },
+      {
+       "minute": 30,
+       "verdict": "even"
+      }
+     ],
+     "counterSwap": {
+      "out": "Tainted Scepter",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 29,
+      "offenseLossPct": 14,
+      "line": "Losing lane? Third item Warden's Faith instead of Tainted Scepter: their burst combo hits 29% less hard, and this kit gives up 14% of its damage for it."
+     }
+    },
+    {
+     "enemy": "Bayle",
+     "enemySlug": "bayle",
+     "gameplan": "Whenever this lane is not even, the winnable fight is yours: play aggressive, but respect jungle attention. Bayle deals area damage — spread out so one cast can't catch the group.",
+     "checkpoints": [
+      {
+       "minute": 5,
+       "verdict": "even"
+      },
+      {
+       "minute": 10,
+       "verdict": "you"
+      },
+      {
+       "minute": 15,
+       "verdict": "you"
+      },
+      {
+       "minute": 20,
+       "verdict": "you"
+      },
+      {
+       "minute": 25,
+       "verdict": "you"
+      },
+      {
+       "minute": 30,
+       "verdict": "you"
+      }
+     ],
+     "counterSwap": {
+      "out": "Tainted Scepter",
+      "in": "Warden's Faith",
+      "inSlug": "wardens-faith",
+      "survivalGainPct": 29,
+      "offenseLossPct": 14,
+      "line": "Losing lane? Third item Warden's Faith instead of Tainted Scepter: their burst combo hits 29% less hard, and this kit gives up 14% of its damage for it."
      }
     }
    ],
