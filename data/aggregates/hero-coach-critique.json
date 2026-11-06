@@ -1,65 +1,81 @@
 {
- "generatedAt": "2026-11-05T10:41:48.403Z",
+ "generatedAt": "2026-11-06T10:27:04.935Z",
  "scope": [
   "herocoach"
  ],
  "source": "independent (non-author) general-purpose agent reviewing data/aggregates/build-reasoning.json + hero-coach-lines.json + the coach report against their own source blocks; suggested rewrites ground-checked by copy-verify, then applied back",
- "reviewedLines": 250,
- "flaggedLines": 5,
- "agreementRate": 0.98,
- "rewritesGrounded": 5,
+ "reviewedLines": 282,
+ "flaggedLines": 7,
+ "agreementRate": 0.975,
+ "rewritesGrounded": 7,
  "rewritesDropped": 0,
- "applied": 5,
- "unmatched": 0,
+ "applied": 6,
+ "unmatched": 1,
  "heroes": {},
  "heroCoach": {
-  "argus": {
-   "offlane": [
+  "bayle": {
+   "support": [
     {
-     "quote": "Stand behind your minions and poke with Dread Nova, then drop Ether Crystal on anyone who dives you to push them away and slow them. Once Inquisition and Timewarp are done, follow a Dread Nova stun with Synaptic Obliterator beams on the lowest-health target.",
+     "quote": "When Riktor or Mourn catch you first, leaping in just feeds them; hold Skull Crusher until they have used their pull, then go.",
+     "severity": "low",
+     "issue": "self-contradictory: if they caught you first, the pull is already used",
+     "rewrite": "Against Riktor or Mourn, leaping in first just feeds their pull; hold Skull Crusher until they have used it, then go."
+    }
+   ]
+  },
+  "grux": {
+   "support": [
+    {
+     "quote": "If Riktor or Dekker stops your Stampede early, you are alone in their lane; wait for their stun to be used before charging.",
+     "severity": "low",
+     "issue": "'alone in their lane' is unclear for a support",
+     "rewrite": "If Riktor or Dekker stops your Stampede early, you are stuck alone in front of them; wait for their stun to be used before charging."
+    }
+   ]
+  },
+  "morigesh": {
+   "support": [
+    {
+     "quote": "Finish with Curse while the Mark holds; once Lifecore and Noxia are done, stay beside your carry and save Swarm to peel.",
      "severity": "med",
-     "issue": "Ether Crystal implodes after 2s and pulls enemies back to its center, so it does not keep divers pushed away",
-     "rewrite": "Stand behind your minions and poke with Dread Nova, then drop Ether Crystal on anyone who dives you to slow them and pull them into its center. Once Inquisition and Timewarp are done, follow a Dread Nova stun with Synaptic Obliterator beams on the lowest-health target."
-    }
-   ]
-  },
-  "howitzer": {
-   "offlane": [
-    {
-     "quote": "Lay H11 Cluster Grenades where they walk, then lob Land Mine to stun and knock them back and land R2000 Missile while they're slowed. Once Combustion and Orion are done, step forward and use Make It Rain when they're stuck in your mines.",
-     "severity": "low",
-     "issue": "'stuck in your mines' overstates: Cluster Grenades only slow, nothing roots",
-     "rewrite": "Lay H11 Cluster Grenades where they walk, then lob Land Mine to stun and knock them back and land R2000 Missile while they're slowed. Once Combustion and Orion are done, step forward and use Make It Rain while your grenades slow them."
-    }
-   ]
-  },
-  "lt-belica": {
-   "carry": [
-    {
-     "quote": "Murdock wins this lane at range, so stay behind minions and only commit when Seismic Assault can land the stun.",
-     "severity": "low",
-     "issue": "'at range' is an unsupported reason; the source only gives the matchup verdict",
-     "rewrite": "Murdock wins this lane on our sim, so stay behind minions and only commit when Seismic Assault can land the stun."
+     "issue": "'peel' is jargon and Swarm has no crowd control to protect anyone",
+     "rewrite": "Finish with Curse while the Mark holds; once Lifecore and Noxia are done, stay beside your carry and save Swarm to escape danger."
     }
    ]
   },
   "rampage": {
-   "offlane": [
+   "support": [
     {
-     "quote": "Carry Boulder Throw in, Pounce while holding it so the stun shatters on landing, then Rumble to slow them. Once Inquisition and Mutilator are built, use Behemoth in fights near several enemies to heal more while you keep swinging.",
+     "quote": "If Riktor or Dekker lands their stun or pull on you first, stop forcing Pounce and hold Boulder Throw to peel for your carry.",
      "severity": "low",
-     "issue": "garbled: the boulder shatters on landing, not 'the stun'",
-     "rewrite": "Carry Boulder Throw in, Pounce while holding it so the boulder shatters on landing and stuns them, then Rumble to slow them. Once Inquisition and Mutilator are built, use Behemoth in fights near several enemies to heal more while you keep swinging."
+     "issue": "'peel' is jargon a new player won't get",
+     "rewrite": "If Riktor or Dekker lands their stun or pull on you first, stop forcing Pounce and hold Boulder Throw to stun whoever jumps your carry."
     }
    ]
   },
-  "terra": {
-   "support": [
+  "revenant": {
+   "offlane": [
     {
-     "quote": "Throw Highland Hurl first to slow them and cut their armor, then Wild Rush in and spin Ruthless Assault, saving the Empowered ability for a Highland Hurl root. Once Stonewall and Forticus are built, stand in front and absorb hits for your carry.",
+     "quote": "Against Grux or Crunch, never Reckoning a healthy bruiser alone; trade from range and reload with Hellfire Rounds before going back in.",
      "severity": "low",
-     "issue": "'the Empowered ability' is unexplained jargon for a new player",
-     "rewrite": "Throw Highland Hurl first to slow them and cut their armor, then Wild Rush in and spin Ruthless Assault; at full Hersir stacks your next Highland Hurl roots. Once Stonewall and Forticus are built, stand in front and absorb hits for your carry."
+     "issue": "ability name used as a verb (broken grammar) and 'bruiser' jargon",
+     "rewrite": "Against Grux or Crunch, never use Reckoning on a healthy fighter alone; trade from range and reload with Hellfire Rounds before going back in."
+    }
+   ]
+  },
+  "valmont": {
+   "carry": [
+    {
+     "quote": "Open with Bloodbound for the attack speed, then grab the target with Arterial Grip and basic attack while Rupture lands. Once Orion and Tainted Scepter are done near minute 15, hold the grip through fights and use Exsanguinate on heroes to heal back.",
+     "severity": "low",
+     "issue": "Arterial Grip lasts only 3s, it cannot be held through whole fights",
+     "rewrite": "Open with Bloodbound for the attack speed, then grab the target with Arterial Grip and basic attack while Rupture lands. Once Orion and Tainted Scepter are done near minute 15, keep the grip unbroken and use Exsanguinate on heroes to heal back."
+    },
+    {
+     "quote": "Against Sparrow or Murdock, any stun on you breaks Arterial Grip, so wait until their escape is used before you bind them.",
+     "severity": "med",
+     "issue": "reason (a stun) does not match the advice (wait for their escape); range also breaks the bind",
+     "rewrite": "Against Sparrow or Murdock, getting hit by their control or letting them run out of range breaks Arterial Grip, so wait until their escape is used before you bind them."
     }
    ]
   }
