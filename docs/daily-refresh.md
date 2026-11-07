@@ -115,6 +115,18 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    the other aggregates. It resets with the patch window like perk-stream.json.
    `window.segments` lists the counted stretches, including a one-off
    `seed:fork-poc` (Oct 22-24). Read it with `npm run matchups:builds -- <hero>`.
+   Since 2026-11-07 perks also keeps both teams' LINEUPS of every ranked match
+   it reads (no extra requests): data/aggregates/team-comps/<patch>/<YYYY-MM-DD>.jsonl,
+   one match per line as { id, end, dur, win, teams: [[hero, role, tier]...] x2 }
+   (format team-comps/v1, src/ingest/team-comps.ts), filed by match end day so
+   past days stop changing. coverage.json says which stretches are complete
+   (`daily`) and which were spaced samples (`sample`; 1.18 Nov 3-7 was seeded
+   that way, 500 pages). A new patch starts its own folder, so history is kept
+   per patch with no archive step. Commit the folder with the other aggregates.
+   `npm run comps` (zero-API, rules in src/team-comp.ts) reads it and writes
+   data/aggregates/team-comp-report.json: win rate by frontline / tank /
+   assassin / engage / dive / enchanter counts, the same against the enemy's
+   count, comp styles head to head, and lane-pair duos.
    Then `npm run aggregate && npm run matchups:feed` — the pred.gg match samples
    (gold curves + item play rates; same-role head-to-head lanes, resumed
    incrementally inside the current patch family). Then `npm run checkpoints`
