@@ -5678,3 +5678,8 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   (+2: 45.1%); a team with no high-dive kit wins 54.8%. 3 engage kits: 53.7%. Two mages
   (47.3%) or two marksmen (46.9%) underperform one. Lane-pair duos at n 40-80 carry
   ±11-15 pt intervals: a lead, not a verdict.
+- **Correction, same day (maintainer):** Scarlett is a diver (no kit profile yet, so
+  `DIVER_OVERRIDES` in src/team-comp.ts), and Executioners (Revenant, TwinBlast, Drongo,
+  Grim.exe) are carry-lane damage, not frontline: they now bucket with marksmen. After the
+  fix the dive read is sharper: 0 divers 56.3%; two more divers than the enemy 43.3%, two
+  fewer 56.7%. The tank read is unchanged (+2 tanks 55.9%, -2 44.1%).

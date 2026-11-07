@@ -9,6 +9,7 @@ describe('team-comp hero tags', () => {
   it('picks one class bucket in priority order', () => {
     expect(heroClass(['Support', 'Warden'])).toBe('TANK');
     expect(heroClass(['Fighter', 'Assassin'])).toBe('BRUISER');
+    expect(heroClass(['Executioner'])).toBe('MARKSMAN');
     expect(heroClass(['Assassin'])).toBe('ASSASSIN');
     expect(heroClass(['Enchanter'])).toBe('SUPPORT');
   });
@@ -18,6 +19,7 @@ describe('team-comp hero tags', () => {
     expect(tagHero({ slug: 'aurora', classes: ['Tank'] }, { archetype: 'control tank/mage (CC)', dive: 'med' }).engage).toBe(true);
     expect(tagHero({ slug: 'kaelen', classes: ['Tank'] })).toMatchObject({ engage: true, diver: false });
     expect(tagHero({ slug: 'x', classes: ['Assassin'] })).toMatchObject({ engage: false, diver: true });
+    expect(tagHero({ slug: 'scarlett', classes: ['Fighter'] })).toMatchObject({ frontline: true, diver: true });
   });
 });
 
