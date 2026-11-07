@@ -19,7 +19,9 @@
 // whose endTime >= <unix seconds>, oldest first, every game mode mixed. We page
 // by the last endTime seen and dedupe by matchId (the boundary match repeats).
 // Roughly 13 matches finish per minute; ~1,000 requests cover a day. Only
-// RANKED, non-AI rows with a lane role are counted; raw matches are never kept.
+// RANKED, non-AI rows with a lane role are counted; raw matches are never kept,
+// only each team's lineup (hero, role, rank) in data/aggregates/team-comps/
+// (team-comps.ts) for team-comp analysis (npm run comps).
 //
 // The window is the CURRENT patch (data/catalog/META.json patchReleasedAt).
 // Counts accumulate in data/aggregates/perk-stream.json with the cursor, so a
@@ -42,6 +44,7 @@ import { fileURLToPath } from 'node:url';
 import { hasCredentials } from './predgg.js';
 import { isGoldPlus, isPlatPlus, matchTimeRanks } from './match-rank.js';
 import { epoch, fetchPage, loadPerkCatalog, loadoutOf, sleep, type PerkInfo } from './match-stream.js';
+import { TeamCompWriter, addCoverage, loadCoverage, patchDir, saveCoverage, toRow } from './team-comps.js';
 import { countMatch, migratePlatBasis, loadState as loadBuildMatchups, saveState as saveBuildMatchups, addSegment, type MatchPlayer } from './build-matchups.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -158,6 +161,13 @@ async function main() {
   if (migratePlatBasis(bm, runFrom)) console.log(`build-matchups Plat+ basis -> rank at match time; p counts restart at ${runFrom}`);
   addSegment(bm, runFrom, runFrom, 'daily');
   const bmSegment = bm.window.segments[bm.window.segments.length - 1]!;
+  // Team lineups ride the same pages (data/aggregates/team-comps/<patch>/).
+  const tcDir = patchDir(meta.patch ?? null);
+  const tcWriter = new TeamCompWriter(tcDir);
+  const tcCov = loadCoverage(tcDir, meta.patch ?? 'unknown', meta.patchReleasedAt);
+  addCoverage(tcCov, { from: runFrom, to: runFrom, via: 'daily', matches: 0, requests: 0 });
+  const tcSeg = tcCov.segments[tcCov.segments.length - 1]!;
+  const tcBase = { matches: tcSeg.matches, requests: tcSeg.requests ?? 0 };
 
   const unknownHeroes = new Set(st.unknown.heroes), unknownPerks = new Set(st.unknown.perks);
   let requests = 0, seenThisRun = 0, rankedThisRun = 0, stoppedEarly = false;
@@ -173,6 +183,9 @@ async function main() {
     writeFileSync(STATE, JSON.stringify(st, null, 1));
     bmSegment.to = st.window.to;
     saveBuildMatchups(bm);
+    tcWriter.flush();
+    tcSeg.to = st.window.to; tcSeg.matches = tcBase.matches + tcWriter.added; tcSeg.requests = tcBase.requests + requests;
+    saveCoverage(tcDir, tcCov);
   };
   const stopAt = Math.floor(Date.now() / 1000) - 60;
   while (requests < MAX_REQUESTS && st.cursor < stopAt) {
@@ -191,6 +204,7 @@ async function main() {
       const matchRanks = ranks.get(String(m.matchId));
       if (!matchRanks) st.goldUnresolvedMatches = (st.goldUnresolvedMatches ?? 0) + 1;
       const matchPlayers: MatchPlayer[] = [];
+      const lineup: { hero: string; role: string; team: string; tier: number | null }[] = [];
       for (const p of m.playerData ?? []) {
         if (p.bIsAIPlayer) continue;
         const role = String(p.roleName ?? '').replace('ESelectedRole::', '').toLowerCase();
@@ -233,8 +247,11 @@ async function main() {
         if (isGoldPlus(tier)) count((cell.gold ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
         if (isPlatPlus(tier)) count((cell.plat ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
         matchPlayers.push({ hero: slug, role, team: p.teamId, core, plat: isPlatPlus(tier) });
+        lineup.push({ hero: slug, role, team: String(p.teamId), tier: tier ?? null });
       }
       countMatch(bm, matchPlayers);
+      const row = toRow({ id: String(m.matchId), end: String(m.endTime), dur: Number(m.gameDuration ?? 0), winningTeam: m.winningTeam }, lineup);
+      if (row) tcWriter.add(row);
     }
     if (!page.length) break;
     const newest = Math.max(...page.map((m) => epoch(m.endTime)));
