@@ -86,9 +86,14 @@ export interface CompReport {
   styles: Record<string, Rate>;
   /** row style vs column style, from the row team's side */
   styleVsStyle: Record<string, Record<string, Rate>>;
+  /** shape = real tanks x high-dive kits, each capped at 2 ("2" = 2+): key shapeKey() */
+  shapeGrid: Record<string, Rate>;
   /** lane pairs on the same team: "jungle+midlane" -> "khaimera+renna" */
   pairs: Record<string, { key: string; rate: Rate }[]>;
 }
+
+/** "1t2d" = 1 real tank, 2+ high-dive kits (both capped at 2). */
+export const shapeKey = (t: Pick<TeamTraits, 'tanks' | 'divers'>) => `${Math.min(t.tanks, 2)}t${Math.min(t.divers, 2)}d`;
 
 const PAIR_LANES: [string, string][] = [['carry', 'support'], ['jungle', 'midlane'], ['offlane', 'jungle']];
 
@@ -108,10 +113,12 @@ export function buildReport(sides: Side[], minN = 30, minPairN = 40): CompReport
     byDiff[key] = Object.fromEntries(Object.entries(fin(d)).sort(([a], [b]) => Number(a) - Number(b)));
   }
   const st: Record<string, { n: number; w: number }> = {};
+  const grid: Record<string, { n: number; w: number }> = {};
   const svs: Record<string, Record<string, { n: number; w: number }>> = {};
   const pairAcc: Record<string, Record<string, { n: number; w: number }>> = {};
   for (const s of sides) {
     acc(st, s.traits.style, s.win);
+    acc(grid, shapeKey(s.traits), s.win);
     acc((svs[s.traits.style] ??= {}), s.enemy.style, s.win);
     for (const [a, b] of PAIR_LANES) {
       const ha = s.heroes.find((h) => h.role === a)?.hero, hb = s.heroes.find((h) => h.role === b)?.hero;
@@ -125,6 +132,7 @@ export function buildReport(sides: Side[], minN = 30, minPairN = 40): CompReport
   return {
     sides: sides.length, matches: new Set(sides.map((s) => s.matchId)).size,
     byCount, byDiff, styles: fin(st),
+    shapeGrid: Object.fromEntries(Object.entries(grid).sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => [k, rate(v.n, v.w)])),
     styleVsStyle: Object.fromEntries(Object.entries(svs).map(([k, v]) => [k, fin(v)])),
     pairs,
   };

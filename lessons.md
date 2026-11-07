@@ -5683,3 +5683,21 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   Grim.exe) are carry-lane damage, not frontline: they now bucket with marksmen. After the
   fix the dive read is sharper: 0 divers 56.3%; two more divers than the enemy 43.3%, two
   fewer 56.7%. The tank read is unchanged (+2 tanks 55.9%, -2 44.1%).
+
+## 2026-11-07 — Draft & team comp card on every game review (maintainer ask)
+
+- **The review never judged the draft.** The comp card listed damage splits and kit lists
+  deep inside "The full story", so a no-tank, double-diver draft (20562aab, 725d3fe0) read
+  the same as a sound one. Every film now carries `teamComp` (`npm run postgame:comp`, rules
+  in src/comp-read.ts): both lineups tagged tank / diver, six fundamentals (real tank, tank
+  count vs theirs, at most one diver, mixed damage, no doubled mage or marksman, a support
+  who can peel), the field's 1.18 win rate for each side's tank x diver shape
+  (team-comp-report.json `shapeGrid`), and a draft fix naming the slot and the tanks that
+  win most there. The card sits right under the verdict in both layouts.
+- **Swap candidates come from what the field plays, not catalog roles.** The catalog omits
+  offlane for Kaelen, the best offlane tank this patch (53.3%, 1,999 games); eligibility
+  is 300+ ranked games in that role.
+- **Coach copy is told to use it** (pred-scout-coach.md): name the draft shape when it fed
+  the loss, and cite only numbers that are in `teamComp`.
+- `wrColor` is declared further down `pgReview` than the new card, so the card defines its
+  own colour helper: calling a later `const` from an earlier IIFE throws (TDZ).

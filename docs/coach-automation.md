@@ -73,7 +73,10 @@ not in the env, stop immediately and report — no partial work.
    backlog that motivated this design happened precisely because nothing was
    re-scanning history. Omeda's per-player enrichment degrades gracefully when
    omeda is 503 (postgame.ts handles it); the review still lands.
-3. Deterministic enrichment over the whole set: `npm run postgame:kit`,
+3. Deterministic enrichment over the whole set: `npm run postgame:kit`, `npm run postgame:comp`
+   (the "Draft & team comp" card: tanks / divers / fundamentals / field shape win rate /
+   draft fix, from data/aggregates/team-comp-report.json; rerun with `-- --all` after
+   `npm run comps`),
    `npm run postgame:items`, `npm run postgame:fights`, `npm run postgame:macro`,
    `npm run postgame:loadout`, `npm run postgame:rotations`, `npm run postgame:ranks`, then `npm run postgame:interrogate` LAST (it reads the blocks above and writes `interrogation.gameFlags`, the flags the review cites) (all idempotent — they only touch films missing
    their block). `postgame:ranks` (added 2026-11-03, live pred.gg, batched) writes each

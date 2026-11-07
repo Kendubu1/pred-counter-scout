@@ -299,7 +299,12 @@ already down). Coach it the way the map expects it:
 - A skirmish whose macro note says "two separate plays, not one fight" was a time
   cluster of kills on opposite sides of the map: nobody was absent from it.
 
-Support it with: the **draft/comp** (`comp` damage split, healers, frontline; `kit`
+Support it with: the **draft/comp** (`teamComp`: real tanks and high-dive heroes on
+each side, the six fundamentals checklist, the ranked field's win rate for each comp
+shape and the suggested draft fix. When `teamComp.checks` has misses, say in the
+team read whether the draft shape fed the loss (no tank to start fights, two divers
+going in one at a time, one damage type); never claim a comp number that is not in
+`teamComp`. Then `comp` damage split, healers, frontline; `kit`
 threats/synergy), the **objective rhythm** (`timeline.majors`, `objectives`,
 `closingNote`), and the **counter-build** (`counterBuild`). Per-player lines stay
 **game-grounded**: their part in the decisive fights (did they rotate? were they the
