@@ -4,12 +4,14 @@
 //
 // Hero tags, from committed data only:
 //   class    one primary bucket from the catalog classes:
-//            TANK (Tank/Warden) > BRUISER (Fighter/Executioner) > ASSASSIN >
-//            MARKSMAN (Sharpshooter) > MAGE > SUPPORT (Enchanter/Support/Catcher)
+//            TANK (Tank/Warden) > BRUISER (Fighter) > ASSASSIN >
+//            MARKSMAN (Sharpshooter or Executioner: Revenant, TwinBlast, Drongo,
+//            Grim.exe are carry-lane damage, not frontline) > MAGE >
+//            SUPPORT (Enchanter/Support/Catcher)
 //   frontline TANK or BRUISER
 //   engage   kit-profiles archetype names engage/initiator/tank/catch/pull/CC;
 //            a hero with no profile counts when its class is TANK
-//   diver    kit-profiles dive "high"; no profile -> ASSASSIN class
+//   diver    kit-profiles dive "high"; else DIVER_OVERRIDES; else ASSASSIN class
 //   enchanter kit-profiles archetype "enchanter" or the Enchanter class
 //
 // Teams are labelled by STYLE: dive (3+ divers), brawl (3+ frontline),
@@ -21,14 +23,18 @@ export interface HeroTags { cls: HeroClass; frontline: boolean; engage: boolean;
 export interface HeroInfo { slug: string; classes: string[] }
 export interface KitProfile { archetype?: string; dive?: string }
 
+// Heroes with no kit profile yet whose dive the maintainer has stated.
+// Scarlett: a diver (maintainer, 2026-11-07).
+export const DIVER_OVERRIDES: Record<string, boolean> = { scarlett: true };
+
 const ENGAGE_WORDS = /engage|initiator|tank|catch|pull|\bcc\b|\(cc/i;
 
 export function heroClass(classes: string[]): HeroClass {
   const c = new Set(classes);
   if (c.has('Tank') || c.has('Warden')) return 'TANK';
-  if (c.has('Fighter') || c.has('Executioner')) return 'BRUISER';
+  if (c.has('Fighter')) return 'BRUISER';
   if (c.has('Assassin')) return 'ASSASSIN';
-  if (c.has('Sharpshooter')) return 'MARKSMAN';
+  if (c.has('Sharpshooter') || c.has('Executioner')) return 'MARKSMAN';
   if (c.has('Mage')) return 'MAGE';
   return 'SUPPORT';
 }
@@ -40,7 +46,7 @@ export function tagHero(h: HeroInfo, profile?: KitProfile): HeroTags {
     cls,
     frontline: cls === 'TANK' || cls === 'BRUISER',
     engage: arch ? ENGAGE_WORDS.test(arch) : cls === 'TANK',
-    diver: profile?.dive ? profile.dive === 'high' : cls === 'ASSASSIN',
+    diver: profile?.dive ? profile.dive === 'high' : DIVER_OVERRIDES[h.slug] ?? cls === 'ASSASSIN',
     enchanter: /enchanter/i.test(arch) || h.classes.includes('Enchanter'),
   };
 }
