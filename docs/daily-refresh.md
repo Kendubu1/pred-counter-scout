@@ -134,10 +134,11 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    assassin / engage / dive / enchanter counts, the same against the enemy's
    count, comp styles head to head, lane-pair duos, and the kit features (hard CC, long CC,
    mobility, unstoppable, healers, magic damage, cleanse) vs the enemy.
-   **Run `npm run comps` right after perks every day** (zero-API) so the report and the
+   **Run `npm run eternals:usage` and `npm run comps` right after perks every day** (both
+   zero-API; eternal-usage.json had sat at 11-03 / 467 matches because this step was missing) so the report and the
    coach page's comp-shape win rates track the growing lineup file, then
    `npm run postgame:comp -- --all` to refresh every review's draft/kit/build notes.
-   Then `npm run aggregate && npm run matchups:feed` — the pred.gg match samples
+   Then `RANKED_ONLY=1 npm run aggregate && npm run matchups:feed` (ranked only, maintainer ask 2026-10-27) — the pred.gg match samples
    (gold curves + item play rates; same-role head-to-head lanes, resumed
    incrementally inside the current patch family). Then `npm run checkpoints`
    — re-derives the checkpoint gold in engine/fixtures/calibration.json from

@@ -112,7 +112,8 @@ not in the env, stop immediately and report — no partial work.
    `npm run squad -- <lead-uuid>` (lead = `data/artifacts/squad.json` `.lead`).
    `squad` also rebuilds `data/artifacts/squad-bans.json` (the squad ban list on
    ui/v6/ban-planner.html, zero-API from data/postgame; `npm run squad-bans` alone).
-   Then `npm run review:killers` (zero-API): the "Heroes that keep killing you" card on each
+   Then `npm run standouts` (zero-API; the standout games and saved-builds library, which had
+   sat on 1.17.2) and `npm run review:killers` (zero-API): the "Heroes that keep killing you" card on each
    member's coach page (data/artifacts/repeat-killers.json; rules in src/repeat-killers.ts).
 6. `npm test` — commit only on green (autonomy rule 1).
 7. Commit to `main` and push. **Data only**: `data/postgame/*`,
