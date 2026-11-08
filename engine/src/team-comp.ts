@@ -184,12 +184,22 @@ export function buildReport(sides: Side[], minN = 30, minPairN = 40): CompReport
  *  Descriptive labels for the review's team balance line, not inputs to any win-rate rule. */
 export const ROLE_TAGS = ['tank', 'diver', 'engage', 'peel', 'control', 'burst', 'poke', 'dps', 'sustain', 'duelist'] as const;
 export type RoleTag = (typeof ROLE_TAGS)[number];
-export function roleTags(h: HeroInfo, profile: KitProfile | undefined, kit: { hardCount: number; frontline?: boolean; selfHeal: boolean } | undefined): RoleTag[] {
+/** reviewed: the hero's tags from data/game-data/role-tags.json (agent review of the kit text). When
+ *  present they replace the keyword rules, except tank and diver, which always come from tagHero so
+ *  the tags never disagree with the draft shape counts. */
+export function roleTags(h: HeroInfo, profile: KitProfile | undefined, kit: { hardCount: number; frontline?: boolean; selfHeal: boolean } | undefined, reviewed?: string[]): RoleTag[] {
   const t = tagHero(h, profile);
   const a = (profile?.archetype ?? '').toLowerCase();
   const out = new Set<RoleTag>();
   if (t.cls === 'TANK') out.add('tank');
   if (t.diver && t.cls !== 'TANK') out.add('diver');
+  if (reviewed?.length) {
+    for (const g of reviewed) if ((ROLE_TAGS as readonly string[]).includes(g) && g !== 'tank' && g !== 'diver') out.add(g as RoleTag);
+    for (const g of ROLE_TAG_OVERRIDES[h.slug] ?? []) out.add(g as RoleTag);
+    // keep the reviewer's order after tank / diver
+    const order = [...(t.cls === 'TANK' ? ['tank'] : []), ...(t.diver ? ['diver'] : []), ...reviewed.filter((g) => g !== 'tank' && g !== 'diver'), ...(ROLE_TAG_OVERRIDES[h.slug] ?? [])];
+    return [...new Set(order)].filter((g): g is RoleTag => out.has(g as RoleTag)).slice(0, 3);
+  }
   if (/engage|initiator/.test(a) || (t.cls === 'TANK' && (kit?.hardCount ?? 0) >= 2)) out.add('engage');
   if (/peel|enchanter|warden|shield|heal, revive/.test(a) || t.enchanter) out.add('peel');
   if (/control|zone|catch/.test(a) || (kit?.hardCount ?? 0) >= 3) out.add('control');
