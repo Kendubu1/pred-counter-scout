@@ -145,7 +145,10 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    **Run `npm run eternals:usage` and `npm run comps` right after perks every day** (both
    zero-API; eternal-usage.json had sat at 11-03 / 467 matches because this step was missing) so the report and the
    coach page's comp-shape win rates track the growing lineup file, then
-   `npm run postgame:comp -- --all` to refresh every review's draft/kit/build notes.
+   `npm run matchups:cores` (zero-API: the best 3-item cores into each lane opponent from the same
+   lineups, data/aggregates/matchup-cores.json; the review's "Core vs <opponent>" row) and
+   `npm run postgame:comp -- --all` to refresh every review's draft/kit/build notes and
+   `threatBuilds` (how the enemy threat's build worked, src/threat-build.ts).
    Then `RANKED_ONLY=1 npm run aggregate && npm run matchups:feed` (ranked only, maintainer ask 2026-10-27) — the pred.gg match samples
    (gold curves + item play rates; same-role head-to-head lanes, resumed
    incrementally inside the current patch family). Then `npm run checkpoints`

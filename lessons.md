@@ -5837,3 +5837,45 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   the lean spec so the author writes them right the first time.
 - The number check must accept the brief's derived numbers (kill participation, baselines),
   not only the raw facts: the author was blocked on true figures it was shown.
+## 2026-11-08 · Link previews: every page labeled, game reviews linkable
+- iMessage builds its preview after the page's scripts run, so a JS `document.title` wins over the
+  static `<title>`: coach.html's stale "Coach reports · pick a member" (from when the page was a
+  roster) is what showed. With no og:image AND no icon, iMessage falls back to a big snapshot of the
+  page; giving every page an apple-touch-icon (ui/img/brand/, rendered from logo.svg) plus a
+  `summary` card gets the compact text card.
+- `npm run ui:share` now stamps the same head block (og title/description/url, summary card, icons)
+  on every live page in its LABELED list, not just the three pages with section links; a page
+  without `<meta name="description">` fails the script. Add new live pages to LABELED.
+- Pages that relabel themselves (coach.html per game/player, index.html per hero) call
+  `setLabel()`, which updates og:title/description/url with the title.
+- Coach game reviews: `coach.html?game=<matchId>` opens that game; a click puts it in the address
+  bar. The plain page keeps the generic label even though it auto-opens the newest game, so a bare
+  link never previews as whichever game happens to be newest.
+
+## 2026-11-08 · How their build worked, core vs the lane opponent, backfill done
+
+- The 1.18 lineup backfill finished (29,154 ranked matches, patch release to 8 Nov 08:58, 6,118
+  stream pages over ~12 h with 403 waves). The resume state is gone and coverage.json holds one
+  `backfill` segment; the daily feed carries on from 08:58.
+- `npm run matchups:cores` counts cores INTO a lane opponent from the lineups. The recommendation
+  policy applies: only cores with 10% of the pair's games can lead, so most pairs show one core
+  as "most played" for now (The Fey example: a 21-game 57% core would otherwise have beaten the
+  133-game core). 502 of 6,804 lane pairs qualify; expect more as the patch fills.
+- `film.threatBuilds` (src/threat-build.ts) explains the threat's build from catalog text and the
+  game's own takedowns. The Fey (Vesh + Tithe of Death, Natural Infusion, Epoch, Megacosm): 48
+  ability haste by the end took Fly Trap from 95s to ~64s, ~53s mid-fight with Nettles stacks.
+  Uses the haste formula verified in practice mode; assist times are not in the data, so the
+  minute the takedown cap was reached is an estimate and says so.
+- Two sessions added a "nov-8e" changes card the same day; a duplicate id makes the share-page
+  check flip forever. Check `grep 'id="nov-'` after merging main before adding a card.
+- Build reads now cover anyone above their hero-role norm, either team (standouts composite >= 0.5,
+  about the top 20% of hero-games; the standouts report's 1.0 bar is the top ~8%, which missed
+  Mourn's 5/1/11 at +0.81). Random-proc Eternals count by expected value (Lotus: procs every 2 min
+  and every takedown, 1 in 4 is +4 haste: 29 procs, about +29). Categorical colours never cycle:
+  a fifth haste source is grey.
+- The build read is no longer cooldown-only (maintainer, 2026-11-08: "ability haste won't be the
+  only factor"). src/build-power.ts adds damage (item power, penetration vs each target's armor
+  with the verified K=100 mitigation, damage boosts with per-minute growth evaluated), sustain and
+  toughness. Two traps: "/\bheal/" matches "Health" in damage text, and catalog "Damage Dealt:
+  {x}" tracker lines are placeholders, not effects. Armor needs a level and levels are provisional,
+  so every armor figure says "estimate"; the order of percent vs flat penetration is assumed.
