@@ -32,9 +32,29 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.
 export const TEAM_COMPS_DIR = path.join(ROOT, 'data/aggregates/team-comps');
 export const FORMAT = 'team-comps/v2';
 
-/** v2 (2026-11-08) appends the player's whole build: every completed item (Epic passives and actives,
- *  Legendary crests) in purchase order, then the final inventory (any rarity). v1 rows have 3 elements. */
-export type Slot = [hero: string, role: string, tier: number | null, build?: string[], final?: string[]];
+/** v2 (2026-11-08) appends, per player: the whole build (every completed item, Epic passives and actives
+ *  and Legendary crests, in purchase order), the final inventory (any rarity), the player's output totals
+ *  in STAT_KEYS order, and the raw perk names they ran (augment, Eternal, minors; decode with the perk
+ *  catalog, match-stream.ts loadoutOf). v1 rows (the 1.18 seed sample) have 3 elements. */
+export type Slot = [hero: string, role: string, tier: number | null, build?: string[], final?: string[], stats?: number[], perks?: string[]];
+
+/** Output totals kept per player (whole game; divide by the row's dur / 60 for per-minute). Same set the
+ *  2026-10-29 output pull summed (predgg-output.json, never merged): damage by type, taken, mitigation,
+ *  healing, shields, K/D/A, farm, gold, wards. */
+export const STAT_KEYS = ['dmgHeroes', 'physHeroes', 'magHeroes', 'trueHeroes', 'dmgStructures', 'dmgObjectives', 'taken', 'takenHeroes', 'mitigated', 'healing', 'shieldsReceived', 'kills', 'deaths', 'assists', 'minions', 'gold', 'wardsPlaced', 'wardsDestroyed'] as const;
+const STAT_OF: Record<(typeof STAT_KEYS)[number], (p: any) => unknown> = {
+  dmgHeroes: (p) => p.damageHealData?.totalDamageDealtToHeroes, physHeroes: (p) => p.damageHealData?.physicalDamageDealtToHeroes,
+  magHeroes: (p) => p.damageHealData?.magicalDamageDealtToHeroes, trueHeroes: (p) => p.damageHealData?.trueDamageDealtToHeroes,
+  dmgStructures: (p) => p.damageHealData?.totalDamageDealtToStructures, dmgObjectives: (p) => p.damageHealData?.totalDamageDealtToObjectives,
+  taken: (p) => p.damageHealData?.totalDamageTaken, takenHeroes: (p) => p.damageHealData?.totalDamageTakenFromHeroes,
+  mitigated: (p) => p.damageHealData?.totalDamageMitigated, healing: (p) => p.damageHealData?.totalHealingDone,
+  shieldsReceived: (p) => p.damageHealData?.totalShieldingReceived,
+  kills: (p) => p.combatData?.kills, deaths: (p) => p.combatData?.deaths, assists: (p) => p.combatData?.assists,
+  minions: (p) => p.minionData?.minionsKilled, gold: (p) => p.incomeData?.goldEarned,
+  wardsPlaced: (p) => p.wardsData?.wardsPlaced, wardsDestroyed: (p) => p.wardsData?.wardsDestroyed,
+};
+/** A stream player's output totals in STAT_KEYS order (missing = -1, never guessed). */
+export const statsOf = (p: any): number[] => STAT_KEYS.map((k) => { const v = Number(STAT_OF[k](p)); return Number.isFinite(v) ? Math.round(v) : -1; });
 export interface TeamCompRow { id: string; end: string; dur: number; win: 0 | 1; teams: [Slot[], Slot[]] }
 export interface Coverage {
   format: string; patch: string; patchReleasedAt: string; note: string;
@@ -52,13 +72,13 @@ export const patchDir = (patch: string | null) => path.join(TEAM_COMPS_DIR, (pat
  */
 export function toRow(
   m: { id: string; end: string; dur: number; winningTeam: string | number },
-  players: { hero: string; role: string; team: string | number; tier: number | null; build?: string[]; final?: string[] }[],
+  players: { hero: string; role: string; team: string | number; tier: number | null; build?: string[]; final?: string[]; stats?: number[]; perks?: string[] }[],
 ): TeamCompRow | null {
   const teams: [Slot[], Slot[]] = [[], []];
   for (const p of players) {
     const t = Number(p.team);
     if (t !== 0 && t !== 1) return null;
-    teams[t].push(p.build ? [p.hero, p.role, p.tier ?? null, p.build, p.final ?? []] : [p.hero, p.role, p.tier ?? null]);
+    teams[t].push(p.build ? [p.hero, p.role, p.tier ?? null, p.build, p.final ?? [], p.stats ?? [], p.perks ?? []] : [p.hero, p.role, p.tier ?? null]);
   }
   const win = Number(m.winningTeam);
   if ((win !== 0 && win !== 1) || !teams[0].length || !teams[1].length) return null;
@@ -165,22 +185,26 @@ export function itemMaps(items: { game_id: number | null; slug: string; rarity: 
   };
 }
 
-/** One stream player's build: every completed Epic/Legendary item in purchase order (transaction 10), and the final inventory. */
-export function buildOf(p: any, maps: ReturnType<typeof itemMaps>): { build: string[]; final: string[] } {
+/** One stream player's build (every completed Epic/Legendary item in purchase order, transaction 10),
+ *  final inventory, output totals and raw perk names. */
+export function buildOf(p: any, maps: ReturnType<typeof itemMaps>): { build: string[]; final: string[]; stats: number[]; perks: string[] } {
   const build: string[] = [];
   for (const t of p.incomeData?.transactions ?? []) {
-    if (t?.transactionType !== 10) continue;
+    // 10 and 11 are both purchases: some players' whole game is logged as 11 (probed 2026-11-08:
+    // 138 of 640 transactions on one ranked page, Epic items at minute 9+), not only starting items.
+    if (t?.transactionType !== 10 && t?.transactionType !== 11) continue;
     const sl = maps.build.get(t.itemId);
     if (sl && !build.includes(sl)) build.push(sl);
   }
   const final = (p.inventoryData ?? []).map((it: any) => maps.any.get(it?.itemId)).filter((x: string | undefined): x is string => !!x);
-  return { build, final };
+  const perks = (p.heroPerkData ?? []).map((x: any) => String(x?.perkName ?? '')).filter(Boolean);
+  return { build, final, stats: statsOf(p), perks };
 }
 
 /** A whole ranked stream match as a lineup row (same decoding as the daily perks loop). */
 export function decodeLineup(m: any, slugByName: Map<string, string>, maps: ReturnType<typeof itemMaps>, ranks?: Map<string, number | null>): TeamCompRow | null {
   const roles = new Set(['carry', 'midlane', 'offlane', 'jungle', 'support']);
-  const players: { hero: string; role: string; team: string; tier: number | null; build: string[]; final: string[] }[] = [];
+  const players: Parameters<typeof toRow>[1] = [];
   for (const p of m.playerData ?? []) {
     if (p.bIsAIPlayer === true || p.bIsAIPlayer === 'True') continue;
     const role = String(p.roleName ?? '').replace('ESelectedRole::', '').toLowerCase();

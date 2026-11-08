@@ -207,7 +207,7 @@ async function main() {
       const matchRanks = ranks.get(String(m.matchId));
       if (!matchRanks) st.goldUnresolvedMatches = (st.goldUnresolvedMatches ?? 0) + 1;
       const matchPlayers: MatchPlayer[] = [];
-      const lineup: { hero: string; role: string; team: string; tier: number | null; build: string[]; final: string[] }[] = [];
+      const lineup: Parameters<typeof toRow>[1] = [];
       for (const p of m.playerData ?? []) {
         if (p.bIsAIPlayer) continue;
         const role = String(p.roleName ?? '').replace('ESelectedRole::', '').toLowerCase();
@@ -217,10 +217,12 @@ async function main() {
         const won = p.teamId === m.winningTeam;
         const cell = ((st.heroes[slug] ??= {})[role] ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} });
         const lo = loadoutOf(p, perkByName, crestByGameId, unknownPerks);
-        // transactionType 10 = purchase (11 = starting items, others = sells/undos).
+        // transactionType 10 and 11 are both purchases (11 is not only starting items: some players'
+        // whole game is logged as 11, found 2026-11-08; before that those players' cores were dropped).
+        // Others (20, 30) are sells / undos.
         const core: string[] = [];
         for (const t of p.incomeData?.transactions ?? []) {
-          if (t?.transactionType !== 10) continue;
+          if (t?.transactionType !== 10 && t?.transactionType !== 11) continue;
           const it = coreItemByGameId.get(t.itemId);
           if (it && !core.includes(it.slug)) core.push(it.slug);
           if (core.length === 3) break;

@@ -86,7 +86,7 @@ describe('team-comp rows', () => {
     expect(w3.add(v2)).toBe(true); expect(w3.add(v2)).toBe(false); w3.flush();
     expect(w3.upgraded).toBe(1);
     expect(readRows(dir)).toHaveLength(1);
-    expect(readRows(dir)[0]!.teams[0][0]).toEqual(['x', 'carry', 3, ['i1'], ['i1', 'ward']]);
+    expect(readRows(dir)[0]!.teams[0][0]).toEqual(['x', 'carry', 3, ['i1'], ['i1', 'ward'], [], []]);
   });
   it('extends a contiguous daily coverage stretch, keeps samples separate', () => {
     const c: Coverage = { format: 'v1', patch: '1', patchReleasedAt: 'x', note: '', segments: [] };

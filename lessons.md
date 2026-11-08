@@ -5763,3 +5763,21 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   an enemy hero faced 3+ times with 5+ deaths at 1.5x the member's average per enemy. First run:
   Sparrow is a top killer for three members (Xeebs 64 deaths in 41 games, Goldilocks324 2.4x,
   Mr_Meat31 2x); Eden and Skylar for four.
+
+## 2026-11-08 — Purchase type 11 is not only starting items; lineups carry output and perks
+
+- **Builds were being dropped.** perk-stream.ts counted only transactionType 10 as a purchase and
+  read 11 as "starting items". A live ranked page showed 11 on 138 of 640 transactions, with Epic
+  items bought at minute 9+: some players' whole game is logged as 11. Their cores never reached
+  predgg-builds / build-links / build-matchups. Both purchase types now count (from 2026-11-09's
+  daily run); 1.18 days before that can be recounted from the backfilled lineups, which use the
+  fixed rule. fork-poc-pull.ts (a retired one-off) still has the old rule.
+- **The 10-29 output pull never reached main** (commits e8c9c29a / 7a9d6ef8 on
+  claude/kind-noether-y5u47u: predgg-output.json per-minute output and every-item slot counts).
+  Instead of porting the rollup, lineup slots v2 now carry the raw material: output totals in
+  STAT_KEYS order (the same 18 stats) and the raw perk names, beside the full build and final
+  inventory. ~4 KB a match as JSON, ~10x smaller gzipped. Any per-minute, per-item, per-pick or
+  vs-comp rollup can be computed from the lineups later without another stream read.
+- Audit of earlier sessions (2026-11-08) also found stale: eternal-usage.json (11-03, 467 matches;
+  `eternals:usage` is in package.json refresh but not in the daily doc steps), standouts and
+  counter-reactions (1.17.2), predictions-vs-measured (20c) not yet run for 1.17.2 or 1.18.
