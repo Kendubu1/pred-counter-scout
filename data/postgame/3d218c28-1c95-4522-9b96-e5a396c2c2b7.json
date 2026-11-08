@@ -5366,5 +5366,96 @@
     }
    ]
   }
- ]
+ ],
+ "playbook": {
+  "plays": [
+   {
+    "name": "Teamfight engage",
+    "when": "at an objective, when all five are up and their key CC is down",
+    "steps": [
+     {
+      "hero": "Gideon",
+      "slug": "gideon",
+      "ability": "Black Hole",
+      "what": "opens from range: pull on the group"
+     },
+     {
+      "hero": "Crunch",
+      "slug": "crunch",
+      "ability": "Right Crunch",
+      "what": "chains knock-up + stun (0.75s) as Black Hole ends"
+     },
+     {
+      "hero": "Phase",
+      "slug": "phase",
+      "ability": "Energy Lance",
+      "what": "chains root (1.2s) as Right Crunch ends"
+     },
+     {
+      "hero": "Serath",
+      "slug": "serath",
+      "ability": "Heresy",
+      "what": "pays off inside the lockdown (hits the group)"
+     },
+     {
+      "hero": "Sparrow",
+      "slug": "sparrow",
+      "ability": "Inner Fire",
+      "what": "pays off inside the lockdown"
+     }
+    ]
+   },
+   {
+    "name": "Pick",
+    "when": "when one of them is alone or out of position in fog",
+    "steps": [
+     {
+      "hero": "Phase",
+      "slug": "phase",
+      "ability": "Energy Lance",
+      "what": "catches one target: root (1.2s)"
+     },
+     {
+      "hero": "Gideon",
+      "slug": "gideon",
+      "ability": "Black Hole",
+      "what": "follows up for the kill"
+     }
+    ]
+   },
+   {
+    "name": "Protect Sparrow",
+    "when": "when Bayle goes in",
+    "steps": [
+     {
+      "hero": "Phase",
+      "slug": "phase",
+      "ability": "Energy Lance",
+      "what": "holds root for the diver on Sparrow"
+     }
+    ]
+   }
+  ],
+  "waitOut": [
+   {
+    "hero": "Dekker",
+    "slug": "dekker",
+    "ability": "Stasis Bomb",
+    "what": "stun (1.6s), area"
+   },
+   {
+    "hero": "Dekker",
+    "slug": "dekker",
+    "ability": "Ion Strike",
+    "what": "stun (1.5s), area"
+   },
+   {
+    "hero": "Aurora",
+    "slug": "aurora",
+    "ability": "Hoarfrost",
+    "what": "root (1.2s), area"
+   }
+  ],
+  "note": "No tank or engage hero to go in first: Gideon opens from range with Black Hole, so fight near walls and chokes where it is hard to dodge."
+ }
 }

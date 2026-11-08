@@ -14,6 +14,7 @@ import { readTeamComp, type CompPlayer, type FieldReport, type HeroRoleWr } from
 import { heroClass, roleTags } from '../team-comp.js';
 import { readKit, type HeroMeta, type KitHeroLite } from '../kit-read.js';
 import { buildNotes, type ItemInfo } from '../build-notes.js';
+import { buildPlaybook, type PbHero } from '../playbook.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const OUT_DIR = path.join(ROOT, 'data/postgame');
@@ -49,12 +50,14 @@ function main() {
   for (const f of files) {
     const p = path.join(OUT_DIR, f);
     const film = JSON.parse(readFileSync(p, 'utf8'));
-    if (film.teamComp && film.kitRead && film.buildNotes && !all) continue;
+    if (film.teamComp && film.kitRead && film.buildNotes && film.playbook && !all) continue;
     const players: CompPlayer[] = film.players.map((x: CompPlayer) => ({ us: x.us, heroSlug: x.heroSlug, heroName: x.heroName, role: x.role }));
     const tc = readTeamComp(players, film.comp?.ourDamage ?? { physical: 0, magical: 0 }, tags, field, wr, heroRoles, displayNames, (s) => rt.get(s) ?? []);
     if (!tc) { skipped++; continue; }
     film.teamComp = tc;
     film.kitRead = readKit(film.players, film.kills ?? [], kitIdx, profiles as Record<string, { playAgainst?: string }>, heroMeta);
+    const pb = (us: boolean): PbHero[] => film.players.filter((x: any) => x.us === us).map((x: any) => ({ slug: x.heroSlug, name: x.heroName, role: x.role, tags: rt.get(x.heroSlug) ?? [], abilities: ((kitIdx as any)[x.heroSlug]?.abilities ?? []) }));
+    film.playbook = buildPlaybook(pb(true), pb(false));
     film.buildNotes = buildNotes(film.players, film.kitRead, kitIdx, itemInfo, heroMeta, pairs, bm, links, predBuilds.byRole, predBuilds.baselineByRole);
     writeFileSync(p, JSON.stringify(film, null, 1));
     touched++;

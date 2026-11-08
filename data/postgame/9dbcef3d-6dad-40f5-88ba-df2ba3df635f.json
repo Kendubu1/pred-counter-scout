@@ -4364,5 +4364,96 @@
     }
    ]
   }
- ]
+ ],
+ "playbook": {
+  "plays": [
+   {
+    "name": "Teamfight engage",
+    "when": "at an objective, when all five are up and their key CC is down",
+    "steps": [
+     {
+      "hero": "Steel",
+      "slug": "steel",
+      "ability": "Shield Slam",
+      "what": "opens: knock-up + stun (1.5s) on the group"
+     },
+     {
+      "hero": "Ikra",
+      "slug": "ikra",
+      "ability": "Genesis",
+      "what": "chains knock-up as Shield Slam ends"
+     },
+     {
+      "hero": "Murdock",
+      "slug": "murdock",
+      "ability": "Static Trap",
+      "what": "chains root (1.25s) as Genesis ends"
+     },
+     {
+      "hero": "Kallari",
+      "slug": "kallari",
+      "ability": "Guillotine",
+      "what": "pays off inside the lockdown (hits the group)"
+     }
+    ]
+   },
+   {
+    "name": "Pick",
+    "when": "when one of them is alone or out of position in fog",
+    "steps": [
+     {
+      "hero": "Murdock",
+      "slug": "murdock",
+      "ability": "Static Trap",
+      "what": "catches one target: root (1.25s)"
+     },
+     {
+      "hero": "Ikra",
+      "slug": "ikra",
+      "ability": "Genesis",
+      "what": "follows up for the kill"
+     }
+    ]
+   },
+   {
+    "name": "Protect Murdock",
+    "when": "when Khaimera or Crunch goes in",
+    "steps": [
+     {
+      "hero": "Steel",
+      "slug": "steel",
+      "ability": "Shield Slam",
+      "what": "holds knock-up + stun for the diver on Murdock"
+     }
+    ]
+   }
+  ],
+  "waitOut": [
+   {
+    "hero": "Khaimera",
+    "slug": "khaimera",
+    "ability": "Cull",
+    "what": "suppress (1.25s), area"
+   },
+   {
+    "hero": "Crunch",
+    "slug": "crunch",
+    "ability": "Right Crunch",
+    "what": "knock-up + stun (0.75s), area"
+   },
+   {
+    "hero": "Crunch",
+    "slug": "crunch",
+    "ability": "Forward Crunch",
+    "what": "stun (0.25s), area"
+   },
+   {
+    "hero": "Khaimera",
+    "slug": "khaimera",
+    "ability": "Invigorate",
+    "what": "unstoppable: CC will not stop it"
+   }
+  ],
+  "note": null
+ }
 }

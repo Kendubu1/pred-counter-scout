@@ -3862,5 +3862,96 @@
     }
    ]
   }
- ]
+ ],
+ "playbook": {
+  "plays": [
+   {
+    "name": "Teamfight engage",
+    "when": "at an objective, when all five are up and their key CC is down",
+    "steps": [
+     {
+      "hero": "ikra",
+      "slug": "ikra",
+      "ability": "Genesis",
+      "what": "opens from range: knock-up on the group"
+     },
+     {
+      "hero": "Crunch",
+      "slug": "crunch",
+      "ability": "Right Crunch",
+      "what": "chains knock-up + stun (0.75s) as Genesis ends"
+     },
+     {
+      "hero": "Phase",
+      "slug": "phase",
+      "ability": "Energy Lance",
+      "what": "chains root (1.2s) as Right Crunch ends"
+     },
+     {
+      "hero": "Kira",
+      "slug": "kira",
+      "ability": "Purge",
+      "what": "pays off inside the lockdown (hits the group)"
+     },
+     {
+      "hero": "Serath",
+      "slug": "serath",
+      "ability": "Heresy",
+      "what": "pays off inside the lockdown (hits the group)"
+     }
+    ]
+   },
+   {
+    "name": "Pick",
+    "when": "when one of them is alone or out of position in fog",
+    "steps": [
+     {
+      "hero": "Phase",
+      "slug": "phase",
+      "ability": "Energy Lance",
+      "what": "catches one target: root (1.2s)"
+     },
+     {
+      "hero": "ikra",
+      "slug": "ikra",
+      "ability": "Genesis",
+      "what": "follows up for the kill"
+     }
+    ]
+   },
+   {
+    "name": "Protect Kira",
+    "when": "when Countess or Rampage goes in",
+    "steps": [
+     {
+      "hero": "Phase",
+      "slug": "phase",
+      "ability": "Energy Lance",
+      "what": "holds root for the diver on Kira"
+     }
+    ]
+   }
+  ],
+  "waitOut": [
+   {
+    "hero": "Rampage",
+    "slug": "rampage",
+    "ability": "Boulder Throw",
+    "what": "stun (1.4s), area"
+   },
+   {
+    "hero": "Renna",
+    "slug": "renna",
+    "ability": "Stupor",
+    "what": "sleep (1.2s), area"
+   },
+   {
+    "hero": "Zinx",
+    "slug": "zinx",
+    "ability": "Ricochet",
+    "what": "stun (1.2s)"
+   }
+  ],
+  "note": "No tank or engage hero to go in first: ikra opens from range with Genesis, so fight near walls and chokes where it is hard to dodge."
+ }
 }

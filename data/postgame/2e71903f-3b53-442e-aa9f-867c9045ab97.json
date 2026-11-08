@@ -4805,5 +4805,96 @@
     }
    ]
   }
- ]
+ ],
+ "playbook": {
+  "plays": [
+   {
+    "name": "Teamfight engage",
+    "when": "at an objective, when all five are up and their key CC is down",
+    "steps": [
+     {
+      "hero": "Steel",
+      "slug": "steel",
+      "ability": "Shield Slam",
+      "what": "opens: knock-up + stun (1.5s) on the group"
+     },
+     {
+      "hero": "Wukong",
+      "slug": "wukong",
+      "ability": "Cyclebreaker/High Impact",
+      "what": "chains stun (0.8s) as Shield Slam ends"
+     },
+     {
+      "hero": "Murdock",
+      "slug": "murdock",
+      "ability": "Static Trap",
+      "what": "chains root (1.25s) as Cyclebreaker/High Impact ends"
+     },
+     {
+      "hero": "Countess",
+      "slug": "countess",
+      "ability": "Feast",
+      "what": "pays off inside the lockdown"
+     },
+     {
+      "hero": "Iggy & Scorch",
+      "slug": "iggy-scorch",
+      "ability": "Inferno",
+      "what": "pays off inside the lockdown (hits the group)"
+     }
+    ]
+   },
+   {
+    "name": "Pick",
+    "when": "when one of them is alone or out of position in fog",
+    "steps": [
+     {
+      "hero": "Murdock",
+      "slug": "murdock",
+      "ability": "Static Trap",
+      "what": "catches one target: root (1.25s)"
+     },
+     {
+      "hero": "Countess",
+      "slug": "countess",
+      "ability": "Feast",
+      "what": "follows up for the kill"
+     }
+    ]
+   },
+   {
+    "name": "Protect Murdock",
+    "when": "when Greystone or Rampage goes in",
+    "steps": [
+     {
+      "hero": "Steel",
+      "slug": "steel",
+      "ability": "Shield Slam",
+      "what": "holds knock-up + stun for the diver on Murdock"
+     }
+    ]
+   }
+  ],
+  "waitOut": [
+   {
+    "hero": "Rampage",
+    "slug": "rampage",
+    "ability": "Boulder Throw",
+    "what": "stun (1.4s), area"
+   },
+   {
+    "hero": "Renna",
+    "slug": "renna",
+    "ability": "Stupor",
+    "what": "sleep (1.2s), area"
+   },
+   {
+    "hero": "Phase",
+    "slug": "phase",
+    "ability": "Energy Lance",
+    "what": "root (1.2s)"
+   }
+  ],
+  "note": null
+ }
 }

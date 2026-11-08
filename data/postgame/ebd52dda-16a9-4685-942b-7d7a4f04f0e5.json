@@ -5232,5 +5232,90 @@
     }
    ]
   }
- ]
+ ],
+ "playbook": {
+  "plays": [
+   {
+    "name": "Teamfight engage",
+    "when": "at an objective, when all five are up and their key CC is down",
+    "steps": [
+     {
+      "hero": "Howitzer",
+      "slug": "howitzer",
+      "ability": "Land Mine",
+      "what": "opens from range: stun (0.5s) on the group"
+     },
+     {
+      "hero": "Legion",
+      "slug": "legion",
+      "ability": "Frag Order",
+      "what": "chains knock-up as Land Mine ends"
+     },
+     {
+      "hero": "Yurei",
+      "slug": "yurei",
+      "ability": "Soulstorm",
+      "what": "chains pull as Frag Order ends"
+     }
+    ]
+   },
+   {
+    "name": "Pick",
+    "when": "when one of them is alone or out of position in fog",
+    "steps": [
+     {
+      "hero": "Phase",
+      "slug": "phase",
+      "ability": "Energy Lance",
+      "what": "catches one target: root (1.2s)"
+     },
+     {
+      "hero": "Yurei",
+      "slug": "yurei",
+      "ability": "Soulstorm",
+      "what": "follows up for the kill"
+     }
+    ]
+   },
+   {
+    "name": "Protect Legion",
+    "when": "when Serath or Crunch goes in",
+    "steps": [
+     {
+      "hero": "Phase",
+      "slug": "phase",
+      "ability": "Energy Lance",
+      "what": "holds root for the diver on Legion"
+     }
+    ]
+   }
+  ],
+  "waitOut": [
+   {
+    "hero": "Crunch",
+    "slug": "crunch",
+    "ability": "Right Crunch",
+    "what": "knock-up + stun (0.75s), area"
+   },
+   {
+    "hero": "Crunch",
+    "slug": "crunch",
+    "ability": "Forward Crunch",
+    "what": "stun (0.25s), area"
+   },
+   {
+    "hero": "Murdock",
+    "slug": "murdock",
+    "ability": "Static Trap",
+    "what": "root (1.25s)"
+   },
+   {
+    "hero": "Serath",
+    "slug": "serath",
+    "ability": "Heaven's Fury",
+    "what": "unstoppable: CC will not stop it"
+   }
+  ],
+  "note": "No tank or engage hero to go in first: Howitzer opens from range with Land Mine, so fight near walls and chokes where it is hard to dodge."
+ }
 }

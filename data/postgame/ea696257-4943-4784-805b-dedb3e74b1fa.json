@@ -5060,5 +5060,90 @@
     }
    ]
   }
- ]
+ ],
+ "playbook": {
+  "plays": [
+   {
+    "name": "Teamfight engage",
+    "when": "at an objective, when all five are up and their key CC is down",
+    "steps": [
+     {
+      "hero": "Gideon",
+      "slug": "gideon",
+      "ability": "Black Hole",
+      "what": "opens from range: pull on the group"
+     },
+     {
+      "hero": "Khaimera",
+      "slug": "khaimera",
+      "ability": "Cull",
+      "what": "chains suppress (1.25s) as Black Hole ends"
+     },
+     {
+      "hero": "Phase",
+      "slug": "phase",
+      "ability": "Energy Lance",
+      "what": "chains root (1.2s) as Cull ends"
+     },
+     {
+      "hero": "Drongo",
+      "slug": "drongo",
+      "ability": "Shrapnel Cannon",
+      "what": "pays off inside the lockdown (hits the group)"
+     }
+    ]
+   },
+   {
+    "name": "Pick",
+    "when": "when one of them is alone or out of position in fog",
+    "steps": [
+     {
+      "hero": "Khaimera",
+      "slug": "khaimera",
+      "ability": "Cull",
+      "what": "catches one target: suppress (1.25s)"
+     },
+     {
+      "hero": "Gideon",
+      "slug": "gideon",
+      "ability": "Black Hole",
+      "what": "follows up for the kill"
+     }
+    ]
+   },
+   {
+    "name": "Protect Drongo",
+    "when": "when Grux or Kwang goes in",
+    "steps": [
+     {
+      "hero": "Phase",
+      "slug": "phase",
+      "ability": "Energy Lance",
+      "what": "holds root for the diver on Drongo"
+     }
+    ]
+   }
+  ],
+  "waitOut": [
+   {
+    "hero": "Argus",
+    "slug": "argus",
+    "ability": "Dread Nova",
+    "what": "stun (1.2s), area"
+   },
+   {
+    "hero": "Grux",
+    "slug": "grux",
+    "ability": "Smash 'n Grab",
+    "what": "pull + stun (0.75s), area"
+   },
+   {
+    "hero": "Grux",
+    "slug": "grux",
+    "ability": "Warlord's Challenge",
+    "what": "stun (0.75s), area"
+   }
+  ],
+  "note": "No tank or engage hero to go in first: Gideon opens from range with Black Hole, so fight near walls and chokes where it is hard to dodge."
+ }
 }

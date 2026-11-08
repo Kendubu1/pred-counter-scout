@@ -5350,5 +5350,90 @@
     }
    ]
   }
- ]
+ ],
+ "playbook": {
+  "plays": [
+   {
+    "name": "Teamfight engage",
+    "when": "at an objective, when all five are up and their key CC is down",
+    "steps": [
+     {
+      "hero": "Renna",
+      "slug": "renna",
+      "ability": "Stupor",
+      "what": "opens from range: sleep (1.2s) on the group"
+     },
+     {
+      "hero": "Scarlett",
+      "slug": "scarlett",
+      "ability": "Swan Song",
+      "what": "chains root (1.4s) as Stupor ends"
+     },
+     {
+      "hero": "Maco",
+      "slug": "maco",
+      "ability": "Maco Sparkle!",
+      "what": "chains stun (1.2s) as Swan Song ends"
+     },
+     {
+      "hero": "Drongo",
+      "slug": "drongo",
+      "ability": "Shrapnel Cannon",
+      "what": "pays off inside the lockdown (hits the group)"
+     }
+    ]
+   },
+   {
+    "name": "Pick",
+    "when": "when one of them is alone or out of position in fog",
+    "steps": [
+     {
+      "hero": "Renna",
+      "slug": "renna",
+      "ability": "Mortal Coil",
+      "what": "catches one target: pull"
+     },
+     {
+      "hero": "Scarlett",
+      "slug": "scarlett",
+      "ability": "Swan Song",
+      "what": "follows up for the kill"
+     }
+    ]
+   },
+   {
+    "name": "Protect Drongo",
+    "when": "when Grux goes in",
+    "steps": [
+     {
+      "hero": "Maco",
+      "slug": "maco",
+      "ability": "Maco Strike!",
+      "what": "holds stun for the diver on Drongo"
+     }
+    ]
+   }
+  ],
+  "waitOut": [
+   {
+    "hero": "Mourn",
+    "slug": "mourn",
+    "ability": "Beguile",
+    "what": "sleep (1.2s), area"
+   },
+   {
+    "hero": "Grux",
+    "slug": "grux",
+    "ability": "Smash 'n Grab",
+    "what": "pull + stun (0.75s), area"
+   },
+   {
+    "hero": "Grux",
+    "slug": "grux",
+    "ability": "Warlord's Challenge",
+    "what": "stun (0.75s), area"
+   }
+  ],
+  "note": "No tank or engage hero to go in first: Renna opens from range with Stupor, so fight near walls and chokes where it is hard to dodge."
+ }
 }

@@ -5283,5 +5283,84 @@
     }
    ]
   }
- ]
+ ],
+ "playbook": {
+  "plays": [
+   {
+    "name": "Teamfight engage",
+    "when": "at an objective, when all five are up and their key CC is down",
+    "steps": [
+     {
+      "hero": "Argus",
+      "slug": "argus",
+      "ability": "Dread Nova",
+      "what": "opens from range: stun (1.2s) on the group"
+     },
+     {
+      "hero": "Dekker",
+      "slug": "dekker",
+      "ability": "Stasis Bomb",
+      "what": "chains stun (1.6s) as Dread Nova ends"
+     },
+     {
+      "hero": "Scarlett",
+      "slug": "scarlett",
+      "ability": "Swan Song",
+      "what": "chains root (1.4s) as Stasis Bomb ends"
+     }
+    ]
+   },
+   {
+    "name": "Pick",
+    "when": "when one of them is alone or out of position in fog",
+    "steps": [
+     {
+      "hero": "Khaimera",
+      "slug": "khaimera",
+      "ability": "Cull",
+      "what": "catches one target: suppress (1.25s)"
+     },
+     {
+      "hero": "Scarlett",
+      "slug": "scarlett",
+      "ability": "Swan Song",
+      "what": "follows up for the kill"
+     }
+    ]
+   },
+   {
+    "name": "Protect Revenant",
+    "when": "when Boris goes in",
+    "steps": [
+     {
+      "hero": "Dekker",
+      "slug": "dekker",
+      "ability": "Stasis Bomb",
+      "what": "holds stun for the diver on Revenant"
+     }
+    ]
+   }
+  ],
+  "waitOut": [
+   {
+    "hero": "Renna",
+    "slug": "renna",
+    "ability": "Stupor",
+    "what": "sleep (1.2s), area"
+   },
+   {
+    "hero": "Boris",
+    "slug": "boris",
+    "ability": "Primeval Roar",
+    "what": "fear (1s), area"
+   },
+   {
+    "hero": "Howitzer",
+    "slug": "howitzer",
+    "ability": "Land Mine",
+    "what": "stun (0.5s), area"
+   }
+  ],
+  "note": "No tank or engage hero to go in first: Argus opens from range with Dread Nova, so fight near walls and chokes where it is hard to dodge."
+ }
 }

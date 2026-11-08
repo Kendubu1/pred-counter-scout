@@ -6169,5 +6169,102 @@
     }
    ]
   }
- ]
+ ],
+ "playbook": {
+  "plays": [
+   {
+    "name": "Teamfight engage",
+    "when": "at an objective, when all five are up and their key CC is down",
+    "steps": [
+     {
+      "hero": "Steel",
+      "slug": "steel",
+      "ability": "Shield Slam",
+      "what": "opens: knock-up + stun (1.5s) on the group"
+     },
+     {
+      "hero": "Sevarog",
+      "slug": "sevarog",
+      "ability": "Subjugate",
+      "what": "chains stun (1.25s) as Shield Slam ends"
+     },
+     {
+      "hero": "Gideon",
+      "slug": "gideon",
+      "ability": "Black Hole",
+      "what": "chains pull as Subjugate ends"
+     },
+     {
+      "hero": "Sparrow",
+      "slug": "sparrow",
+      "ability": "Inner Fire",
+      "what": "pays off inside the lockdown"
+     },
+     {
+      "hero": "Yin",
+      "slug": "yin",
+      "ability": "Backlash",
+      "what": "pays off inside the lockdown (hits the group)"
+     }
+    ]
+   },
+   {
+    "name": "Pick",
+    "when": "when one of them is alone or out of position in fog",
+    "steps": [
+     {
+      "hero": "Gideon",
+      "slug": "gideon",
+      "ability": "Cosmic Power",
+      "what": "catches one target: root (1s)"
+     },
+     {
+      "hero": "Sparrow",
+      "slug": "sparrow",
+      "ability": "Inner Fire",
+      "what": "follows up for the kill"
+     }
+    ]
+   },
+   {
+    "name": "Protect Sparrow",
+    "when": "when Boris or Crunch goes in",
+    "steps": [
+     {
+      "hero": "Steel",
+      "slug": "steel",
+      "ability": "Shield Slam",
+      "what": "holds knock-up + stun for the diver on Sparrow"
+     },
+     {
+      "hero": "Sevarog",
+      "slug": "sevarog",
+      "ability": "Subjugate",
+      "what": "holds stun for the diver on Sparrow"
+     }
+    ]
+   }
+  ],
+  "waitOut": [
+   {
+    "hero": "Boris",
+    "slug": "boris",
+    "ability": "Primeval Roar",
+    "what": "fear (1s), area"
+   },
+   {
+    "hero": "Crunch",
+    "slug": "crunch",
+    "ability": "Right Crunch",
+    "what": "knock-up + stun (0.75s), area"
+   },
+   {
+    "hero": "Crunch",
+    "slug": "crunch",
+    "ability": "Forward Crunch",
+    "what": "stun (0.25s), area"
+   }
+  ],
+  "note": null
+ }
 }

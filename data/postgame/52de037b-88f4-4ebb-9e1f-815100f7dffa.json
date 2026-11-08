@@ -6552,5 +6552,102 @@
     }
    ]
   }
- ]
+ ],
+ "playbook": {
+  "plays": [
+   {
+    "name": "Teamfight engage",
+    "when": "at an objective, when all five are up and their key CC is down",
+    "steps": [
+     {
+      "hero": "Riktor",
+      "slug": "riktor",
+      "ability": "Skewer",
+      "what": "opens: suppress (1.3s) on the group"
+     },
+     {
+      "hero": "Renna",
+      "slug": "renna",
+      "ability": "Stupor",
+      "what": "chains sleep (1.2s) as Skewer ends"
+     },
+     {
+      "hero": "Akeron",
+      "slug": "akeron",
+      "ability": "Consume",
+      "what": "chains pull as Stupor ends"
+     },
+     {
+      "hero": "Murdock",
+      "slug": "murdock",
+      "ability": "Long Arm of the Law",
+      "what": "pays off inside the lockdown (hits the group)"
+     },
+     {
+      "hero": "Kallari",
+      "slug": "kallari",
+      "ability": "Guillotine",
+      "what": "pays off inside the lockdown (hits the group)"
+     }
+    ]
+   },
+   {
+    "name": "Pick",
+    "when": "when one of them is alone or out of position in fog",
+    "steps": [
+     {
+      "hero": "Murdock",
+      "slug": "murdock",
+      "ability": "Static Trap",
+      "what": "catches one target: root (1.25s)"
+     },
+     {
+      "hero": "Kallari",
+      "slug": "kallari",
+      "ability": "Guillotine",
+      "what": "follows up for the kill"
+     }
+    ]
+   },
+   {
+    "name": "Protect Murdock",
+    "when": "when Rampage or Terra goes in",
+    "steps": [
+     {
+      "hero": "Riktor",
+      "slug": "riktor",
+      "ability": "Skewer",
+      "what": "holds suppress for the diver on Murdock"
+     }
+    ]
+   }
+  ],
+  "waitOut": [
+   {
+    "hero": "Rampage",
+    "slug": "rampage",
+    "ability": "Boulder Throw",
+    "what": "stun (1.4s), area"
+   },
+   {
+    "hero": "Terra",
+    "slug": "terra",
+    "ability": "Highland Hurl",
+    "what": "root (1.25s), area"
+   },
+   {
+    "hero": "Argus",
+    "slug": "argus",
+    "ability": "Dread Nova",
+    "what": "stun (1.2s), area"
+   },
+   {
+    "hero": "Terra",
+    "slug": "terra",
+    "ability": "Wild Rush",
+    "what": "unstoppable: CC will not stop it"
+   }
+  ],
+  "note": null
+ }
 }

@@ -5208,5 +5208,96 @@
     }
    ]
   }
- ]
+ ],
+ "playbook": {
+  "plays": [
+   {
+    "name": "Teamfight engage",
+    "when": "at an objective, when all five are up and their key CC is down",
+    "steps": [
+     {
+      "hero": "Argus",
+      "slug": "argus",
+      "ability": "Dread Nova",
+      "what": "opens from range: stun (1.2s) on the group"
+     },
+     {
+      "hero": "Khaimera",
+      "slug": "khaimera",
+      "ability": "Cull",
+      "what": "chains suppress (1.25s) as Dread Nova ends"
+     },
+     {
+      "hero": "Zinx",
+      "slug": "zinx",
+      "ability": "Ricochet",
+      "what": "chains stun (1.2s) as Cull ends"
+     },
+     {
+      "hero": "The Fey",
+      "slug": "the-fey",
+      "ability": "Fly Trap",
+      "what": "pays off inside the lockdown"
+     },
+     {
+      "hero": "Drongo",
+      "slug": "drongo",
+      "ability": "Shrapnel Cannon",
+      "what": "pays off inside the lockdown (hits the group)"
+     }
+    ]
+   },
+   {
+    "name": "Pick",
+    "when": "when one of them is alone or out of position in fog",
+    "steps": [
+     {
+      "hero": "Khaimera",
+      "slug": "khaimera",
+      "ability": "Cull",
+      "what": "catches one target: suppress (1.25s)"
+     },
+     {
+      "hero": "Drongo",
+      "slug": "drongo",
+      "ability": "Shrapnel Cannon",
+      "what": "follows up for the kill"
+     }
+    ]
+   },
+   {
+    "name": "Protect Drongo",
+    "when": "when Rampage or Zarus goes in",
+    "steps": [
+     {
+      "hero": "Zinx",
+      "slug": "zinx",
+      "ability": "Ricochet",
+      "what": "holds stun for the diver on Drongo"
+     }
+    ]
+   }
+  ],
+  "waitOut": [
+   {
+    "hero": "Rampage",
+    "slug": "rampage",
+    "ability": "Boulder Throw",
+    "what": "stun (1.4s), area"
+   },
+   {
+    "hero": "Aurora",
+    "slug": "aurora",
+    "ability": "Hoarfrost",
+    "what": "root (1.2s), area"
+   },
+   {
+    "hero": "Aurora",
+    "slug": "aurora",
+    "ability": "Cryoseism",
+    "what": "stun (1s), area"
+   }
+  ],
+  "note": "No tank or engage hero to go in first: Argus opens from range with Dread Nova, so fight near walls and chokes where it is hard to dodge."
+ }
 }
