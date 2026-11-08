@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { mkdtempSync, readFileSync } from 'node:fs';
+import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { buildReport, heroClass, tagHero, teamTraits, type HeroTags, type Side } from '../src/team-comp.js';
@@ -76,8 +76,17 @@ describe('team-comp rows', () => {
     expect(w1.add(row)).toBe(true); expect(w1.add(row)).toBe(false); w1.flush();
     const w2 = new TeamCompWriter(dir);
     expect(w2.add(row)).toBe(false); w2.flush();
-    expect(readFileSync(path.join(dir, '2026-11-05.jsonl'), 'utf8').trim().split('\n')).toHaveLength(1);
+    expect(readRows(dir)).toHaveLength(1);
     expect(readRows(dir)[0]!.end).toBe('2026-11-05T23:59:59Z');
+    // a v1 row (no builds) is upgraded in place by the same match with builds, once
+    const v2 = toRow({ id: 'a', end: '2026-11-05 23:59:59', dur: 1, winningTeam: 0 }, [
+      { hero: 'x', role: 'carry', team: 0, tier: 3, build: ['i1'], final: ['i1', 'ward'] }, { hero: 'y', role: 'carry', team: 1, tier: null, build: [], final: [] },
+    ])!;
+    const w3 = new TeamCompWriter(dir);
+    expect(w3.add(v2)).toBe(true); expect(w3.add(v2)).toBe(false); w3.flush();
+    expect(w3.upgraded).toBe(1);
+    expect(readRows(dir)).toHaveLength(1);
+    expect(readRows(dir)[0]!.teams[0][0]).toEqual(['x', 'carry', 3, ['i1'], ['i1', 'ward']]);
   });
   it('extends a contiguous daily coverage stretch, keeps samples separate', () => {
     const c: Coverage = { format: 'v1', patch: '1', patchReleasedAt: 'x', note: '', segments: [] };

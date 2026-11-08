@@ -44,7 +44,7 @@ import { fileURLToPath } from 'node:url';
 import { hasCredentials } from './predgg.js';
 import { isGoldPlus, isPlatPlus, matchTimeRanks } from './match-rank.js';
 import { epoch, fetchPage, loadPerkCatalog, loadoutOf, sleep, type PerkInfo } from './match-stream.js';
-import { TeamCompWriter, addCoverage, loadCoverage, patchDir, saveCoverage, toRow } from './team-comps.js';
+import { TeamCompWriter, addCoverage, buildOf, itemMaps, loadCoverage, patchDir, saveCoverage, toRow } from './team-comps.js';
 import { countMatch, migratePlatBasis, loadState as loadBuildMatchups, saveState as saveBuildMatchups, addSegment, type MatchPlayer } from './build-matchups.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -110,8 +110,7 @@ async function main() {
   const itemBySlug = new Map(items.map((i) => [i.slug, i]));
   // Lineup builds: every completed item (Epic passives and actives, Legendary crests) in
   // purchase order, and the whole final inventory (any rarity), by catalog slug.
-  const buildItemByGameId = new Map(items.filter((i) => (i.rarity === 'Epic' || i.rarity === 'Legendary') && i.game_id != null).map((i) => [i.game_id!, i.slug]));
-  const anyItemByGameId = new Map(items.filter((i) => i.game_id != null).map((i) => [i.game_id!, i.slug]));
+  const lineupItems = itemMaps(items);
   const crestByGameId = new Map(items.filter((i) => i.slot_type === 'Crest' && i.game_id != null).map((i) => [i.game_id!, { name: i.display_name, slug: i.slug }]));
 
   // Perk catalog: internal name -> id / display name / slot (one GraphQL call).
@@ -251,14 +250,7 @@ async function main() {
         if (isGoldPlus(tier)) count((cell.gold ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
         if (isPlatPlus(tier)) count((cell.plat ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
         matchPlayers.push({ hero: slug, role, team: p.teamId, core, plat: isPlatPlus(tier) });
-        const build: string[] = [];
-        for (const t of p.incomeData?.transactions ?? []) {
-          if (t?.transactionType !== 10) continue;
-          const sl = buildItemByGameId.get(t.itemId);
-          if (sl && !build.includes(sl)) build.push(sl);
-        }
-        const final = (p.inventoryData ?? []).map((it: any) => anyItemByGameId.get(it?.itemId)).filter((x: string | undefined): x is string => !!x);
-        lineup.push({ hero: slug, role, team: String(p.teamId), tier: tier ?? null, build, final });
+        lineup.push({ hero: slug, role, team: String(p.teamId), tier: tier ?? null, ...buildOf(p, lineupItems) });
       }
       countMatch(bm, matchPlayers);
       const row = toRow({ id: String(m.matchId), end: String(m.endTime), dur: Number(m.gameDuration ?? 0), winningTeam: m.winningTeam }, lineup);
