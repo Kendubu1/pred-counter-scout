@@ -159,6 +159,16 @@
   .tc-opts{display:flex;flex-wrap:wrap;gap:.25rem 1rem;margin-top:.3rem}
   .tc-opt{display:inline-flex;align-items:center;gap:.3rem;white-space:nowrap}
   .tc-opt a{display:inline-flex}
+  .tc-sec{margin-top:.75rem;padding-top:.6rem;border-top:1px solid var(--border);font-size:.84rem;line-height:1.55}
+  .tc-sec p{margin:.3rem 0 0;color:var(--text-1)}
+  .tc-h{font-weight:700;color:var(--text-0);font-size:.88rem}
+  .tc-warn{color:var(--gold)!important}
+  .tc-threat{display:flex;gap:.55rem;align-items:center;margin-top:.35rem}
+  .tc-nem{list-style:none;padding:0;margin:.35rem 0 0}
+  .tc-nem li{display:flex;gap:.45rem;align-items:flex-start;margin:.35rem 0}
+  .tc-more{margin-top:.35rem}.tc-more summary{cursor:pointer;color:var(--text-2);font-size:.78rem}
+  .tc-cols{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.35rem}.tc-cols ul{margin:.2rem 0 0;padding-left:1rem;font-size:.78rem}
+  @media (max-width:560px){.tc-cols{grid-template-columns:1fr}}
   .tc-foot{margin-top:.55rem;font-size:.72rem;color:var(--text-2)}
   @media (max-width:560px){.tc-row{grid-template-columns:1fr}.tc-shape{text-align:left}}
   /* ── v7 review: verdict → moments → numbers → strip → interrogation → lobby → deep dive ── */
@@ -851,9 +861,26 @@ function pgReview(f) {
     const checks = tc.checks.map((c) => `<li class="${c.ok ? 'ok' : 'bad'}"><span aria-hidden="true">${c.ok ? '✓' : '✗'}</span> ${esc(c.text)}</li>`).join('');
     const fails = tc.checks.filter((c) => !c.ok).length;
     const swap = tc.swap ? `<div class="tc-swap"><b>Draft fix:</b> swap ${esc(tc.swap.out)} (${esc(tc.swap.role)}) for a real tank, because ${esc(tc.swap.reason)}. Tanks that win in ${esc(tc.swap.role)} this patch: <span class="tc-opts">${tc.swap.options.map((o) => `<span class="tc-opt">${hIcon(o.slug, 20)} <b>${esc(o.name)}</b> ${o.wr}% <span class="tc-n">(${o.n.toLocaleString()} games)</span></span>`).join('')}</span></div>` : '';
-    return card(`${eyebrow('Draft &amp; team comp', `${fails ? `${fails} of ${tc.checks.length} fundamentals missed` : 'all fundamentals covered'}`)}
+    // Kit read (film.kitRead, npm run postgame:comp; rules in engine/src/kit-read.ts).
+    const kr = f.kitRead;
+    const ccBlock = kr ? (() => {
+      const gap = kr.cc.them.length - kr.cc.us.length;
+      const list = (xs) => xs.map((a) => `<li><b>${esc(a.hero)}</b> ${esc(a.ability)} <span class="tc-n">${esc(a.types.join(' + '))}${a.sec ? ` ${a.sec}s` : ''}</span></li>`).join('');
+      return `<div class="tc-sec"><div class="tc-h">Crowd control <span class="tc-n">hard-CC abilities · us ${kr.cc.us.length} · them ${kr.cc.them.length}</span></div>
+        <p class="${gap >= 3 ? 'tc-warn' : ''}">${esc(kr.cc.note)}</p>
+        <details class="tc-more"><summary>Every hard-CC ability in the game</summary><div class="tc-cols"><div><b style="color:var(--green)">Us</b><ul>${list(kr.cc.us) || '<li>none</li>'}</ul></div><div><b style="color:var(--red)">Them</b><ul>${list(kr.cc.them) || '<li>none</li>'}</ul></div></div></details></div>`;
+    })() : '';
+    const threatBlock = kr && kr.threat ? (() => { const t = kr.threat; return `<div class="tc-sec"><div class="tc-h">Their threat <span class="tc-n">the enemy who ran the game</span></div>
+      <div class="tc-threat">${hIcon(t.slug, 30)}<div><b>${esc(t.hero)}</b> ${esc(t.kda)} <span class="tc-n">· ${t.killShare}% of their kills · ${t.damage.toLocaleString()} hero damage${t.topDamage ? ', the most in the game' : ''}</span>
+      ${t.victims.length ? `<div class="tc-n">Killed ${t.victims.map((v) => `${esc(v.hero)} ${v.count}`).join(' · ')}</div>` : ''}</div></div>
+      ${t.kit.length ? `<p>${t.kit.map(esc).join(' ')}</p>` : ''}
+      ${t.playAgainst ? `<p><b>How to play it:</b> ${esc(t.playAgainst)}</p>` : ''}
+      ${t.answers.length ? `<p><b>Answers:</b> ${t.answers.map(esc).join(' ')}</p>` : ''}</div>`; })() : '';
+    const nemBlock = kr && kr.nemeses.length ? `<div class="tc-sec"><div class="tc-h">Kept dying to the same hero</div><ul class="tc-nem">${kr.nemeses.map((n) => `<li>${hIcon(n.bySlug, 22)} <span><b>${esc(n.player)}</b> <span class="tc-n">(${esc(n.hero)})</span> died ${n.byCount} of ${n.deaths} to <b>${esc(n.byHero)}</b>.
+      ${n.enemyCc.length ? `<span class="tc-n">Watch ${esc(n.enemyCc.join(', '))}.</span>` : ''} ${n.playAgainst ? esc(n.playAgainst) : ''}${n.answer ? ` <b>${esc(n.answer)}</b>` : ''}</span></li>`).join('')}</ul></div>` : '';
+    return card(`${eyebrow('Draft, comp &amp; kits', `${fails ? `${fails} of ${tc.checks.length} fundamentals missed` : 'all fundamentals covered'}`)}
       ${row(tc.us, 'Us', 'var(--green)')}${row(tc.them, 'Them', 'var(--red)')}
-      <ul class="tc-checks">${checks}</ul>${swap}
+      <ul class="tc-checks">${checks}</ul>${swap}${threatBlock}${nemBlock}${ccBlock}
       <div class="tc-foot">Win rates are each comp shape (real tanks × high-dive heroes) across ${tc.field.matches.toLocaleString()} sampled ${esc(tc.field.patch)} ranked games, every rank. They describe the draft, not who played well.</div>`);
   })();
   const stackCard = (() => {
@@ -1113,8 +1140,8 @@ function pgReview(f) {
     ${(f.kit.ourKits || []).some((k) => k.winCondition) ? `<details style="margin-top:.4rem"><summary style="cursor:pointer;font-weight:700;color:var(--green);font-size:.82rem">Our kits · win conditions &amp; combos ▾</summary>
       <div style="margin-top:.4rem">${f.kit.ourKits.filter((k) => k.archetype).map((k) => `<div style="font-size:.82rem;margin-bottom:.4rem"><b>${esc(k.hero)}</b> <span style="color:var(--text-2)">· ${esc(k.archetype)}</span>${k.winCondition ? `<div style="color:var(--text-1)">↳ Win: ${esc(k.winCondition)}</div>` : ''}</div>`).join('')}</div></details>` : ''}`) : '';
 
-  const deep = `<details class="deepdive" id="deepdive"><summary>The full story · lanes, the fight map, every fight, comp &amp; kits</summary>
-    ${lanes}${fightMap(f)}${comp}${kit}
+  const deep = `<details class="deepdive" id="deepdive"><summary>The full story · lanes, the fight map, every fight, damage &amp; objectives</summary>
+    ${lanes}${fightMap(f)}${comp}${f.kitRead ? '' : kit}
   </details>`;
 
   if (COACH_LAYOUT === 'concise' && co) {

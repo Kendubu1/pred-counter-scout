@@ -14,7 +14,7 @@ import { halfOfPoint, laneLabel, laneOfPoint } from './map-lanes.js';
 
 export interface GameFlag {
   id: string;
-  kind: 'no-close' | 'objective-for-bodies' | 'fought-down' | 'struggling-player' | 'kills-no-gold' | 'closing-collapse' | 'standout' | 'draft';
+  kind: 'no-close' | 'objective-for-bodies' | 'fought-down' | 'struggling-player' | 'kills-no-gold' | 'closing-collapse' | 'standout' | 'draft' | 'threat' | 'nemesis' | 'cc-gap';
   tone: 'bad' | 'good';
   summary: string;
   evidence: string[];
@@ -171,6 +171,33 @@ export function gameFlags(f: any): GameFlag[] {
       out.push({ id: 'draft', kind: 'draft', tone: 'bad', summary: `draft broke the fundamentals: ${shape(tc.us)} vs ${shape(tc.them)}`, evidence: ev });
     } else if (!loss && !broken(tc.us, ourDiff) && broken(tc.them, -ourDiff)) {
       out.push({ id: 'draft', kind: 'draft', tone: 'good', summary: `the sounder draft: ${shape(tc.us)} vs ${shape(tc.them)}`, evidence: [shapes] });
+    }
+  }
+
+  // 9-11. Kit read (film.kitRead, src/kit-read.ts): the enemy who ran the game, a player
+  // dying to the same enemy again and again, and a crowd-control gap. Counterplay lines
+  // come from that enemy's kit (kit-index + kit-profiles); they are advice, not proof.
+  const kr = f.kitRead;
+  if (kr && loss) {
+    const t = kr.threat;
+    if (t) {
+      const ev = [`${t.hero} ${t.kda}, ${t.killShare}% of their kills, ${t.damage} hero damage${t.topDamage ? ' (the most in the game)' : ''}.`];
+      if (t.victims?.length) ev.push(`Killed ${t.victims.map((v: any) => `${v.hero} ${v.count}`).join(', ')}.`);
+      ev.push(...(t.kit ?? []));
+      if (t.playAgainst) ev.push(`Play against: ${t.playAgainst}`);
+      if (t.answers?.length) ev.push(`Answers: ${t.answers.join(' ')}`);
+      out.push({ id: 'threat', kind: 'threat', tone: 'bad', summary: `${t.hero} ran the game (${t.kda})`, evidence: ev });
+    }
+    for (const n of kr.nemeses ?? []) {
+      const ev = [`${n.hero} died ${n.byCount} of ${n.deaths} times to ${n.byHero}.`];
+      if (n.enemyCc?.length) ev.push(`${n.byHero}'s hard CC: ${n.enemyCc.join(', ')}.`);
+      if (n.playAgainst) ev.push(`Play against ${n.byHero}: ${n.playAgainst}`);
+      if (n.answer) ev.push(`Item answer: ${n.answer}`);
+      out.push({ id: `nemesis:${n.pid}`, kind: 'nemesis', tone: 'bad', pid: n.pid, summary: `${n.hero} kept dying to ${n.byHero} (${n.byCount} of ${n.deaths})`, evidence: ev });
+    }
+    if ((kr.cc?.them?.length ?? 0) - (kr.cc?.us?.length ?? 0) >= 3) {
+      out.push({ id: 'cc-gap', kind: 'cc-gap', tone: 'bad', summary: `out-CC'd ${kr.cc.them.length} hard-CC abilities to ${kr.cc.us.length}`,
+        evidence: [kr.cc.note, `Theirs: ${kr.cc.them.map((a: any) => `${a.hero} ${a.ability}`).join(', ')}.`] });
     }
   }
   return out;

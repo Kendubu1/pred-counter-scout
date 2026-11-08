@@ -304,8 +304,12 @@ each side, the six fundamentals checklist, the ranked field's win rate for each 
 shape and the suggested draft fix. When `teamComp.checks` has misses, say in the
 team read whether the draft shape fed the loss (no tank to start fights, two divers
 going in one at a time, one damage type); never claim a comp number that is not in
-`teamComp`. Then `comp` damage split, healers, frontline; `kit`
-threats/synergy), the **objective rhythm** (`timeline.majors`, `objectives`,
+`teamComp`. Then the **kit read** (`kitRead`, and the `threat`, `nemesis:<pid>` and
+`cc-gap` game flags): the enemy who ran the game and how to play into their kit, a player
+who kept dying to the same enemy (put the counterplay in that player's bullets: the named
+ability to dodge or wait out, and the item answer when one is given), and a crowd-control
+gap. Quote counterplay and item answers only from `kitRead` / flag evidence; never invent
+an ability effect. Then `comp` damage split, healers, frontline, the **objective rhythm** (`timeline.majors`, `objectives`,
 `closingNote`), and the **counter-build** (`counterBuild`). Per-player lines stay
 **game-grounded**: their part in the decisive fights (did they rotate? were they the
 body down?), deaths into a lost fight, a missed group for Prime, a build that didn't

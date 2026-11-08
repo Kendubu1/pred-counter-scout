@@ -1,4 +1,5 @@
-// Draft & team-comp read on every reviewed game (film.teamComp), from the
+// Draft & team-comp read (film.teamComp) and kit read (film.kitRead: CC balance,
+// the enemy who ran the game, lane nemeses; src/kit-read.ts) on every reviewed game, from the
 // committed team-comp report (npm run comps), the hero tags (src/team-comp.ts)
 // and the current patch's hero-role win rates (perk-stream.json). Rules in
 // src/comp-read.ts. Zero-API; part of the coach job's deterministic enrichment.
@@ -10,6 +11,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tagHero, type HeroTags, type KitProfile } from '../team-comp.js';
 import { readTeamComp, type CompPlayer, type FieldReport, type HeroRoleWr } from '../comp-read.js';
+import { heroClass } from '../team-comp.js';
+import { readKit, type HeroMeta, type KitHeroLite } from '../kit-read.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const OUT_DIR = path.join(ROOT, 'data/postgame');
@@ -26,17 +29,23 @@ function main() {
   const heroRoles = new Map(heroes.map((h) => [h.slug, h.roles.map((r) => r.toLowerCase())]));
   const displayNames = new Map(heroes.map((h) => [h.slug, h.display_name]));
   const wr = read('data/aggregates/perk-stream.json').heroes as HeroRoleWr;
+  // Kit read inputs: the agent-scanned kit index and profiles, each hero's damage type.
+  const kitIdx = read('data/game-data/kit-index.json').heroes as Record<string, KitHeroLite>;
+  const power = new Map<string, 'physical' | 'magical'>(((read('data/aggregates/classifications.json').heroes ?? []) as { hero: string; powerType?: string }[])
+    .filter((c) => c.powerType === 'physical' || c.powerType === 'magical').map((c) => [c.hero, c.powerType as 'physical' | 'magical']));
+  const heroMeta = new Map<string, HeroMeta>(heroes.map((h) => [h.slug, { power: power.get(h.slug) ?? null, cls: heroClass(h.classes) }]));
 
   const files = readdirSync(OUT_DIR).filter((f) => UUID_RE.test(f));
   let touched = 0, skipped = 0;
   for (const f of files) {
     const p = path.join(OUT_DIR, f);
     const film = JSON.parse(readFileSync(p, 'utf8'));
-    if (film.teamComp && !all) continue;
+    if (film.teamComp && film.kitRead && !all) continue;
     const players: CompPlayer[] = film.players.map((x: CompPlayer) => ({ us: x.us, heroSlug: x.heroSlug, heroName: x.heroName, role: x.role }));
     const tc = readTeamComp(players, film.comp?.ourDamage ?? { physical: 0, magical: 0 }, tags, field, wr, heroRoles, displayNames);
     if (!tc) { skipped++; continue; }
     film.teamComp = tc;
+    film.kitRead = readKit(film.players, film.kills ?? [], kitIdx, profiles as Record<string, { playAgainst?: string }>, heroMeta);
     writeFileSync(p, JSON.stringify(film, null, 1));
     touched++;
   }

@@ -76,4 +76,19 @@ describe('game flags', () => {
     const w = gameFlags({ ...base, result: 'win', teamComp: { ...tc, us: sd(2, 1, 53.1), them: sd(0, 2, 48) } }).find((x) => x.kind === 'draft')!;
     expect(w.tone).toBe('good');
   });
+
+  it('turns the kit read into threat, nemesis and cc-gap flags on a loss only', () => {
+    const base = { players: [{ pid: 'a', us: true, heroName: 'A' }, { pid: 'b', us: false, heroName: 'B' }], kills: [], events: [], skirmishes: [], durationMin: 30 };
+    const cc = (n: number) => Array.from({ length: n }, (_, i) => ({ hero: 'H', ability: `X${i}` }));
+    const kitRead = {
+      cc: { us: cc(2), them: cc(6), note: 'They brought 6 hard-CC abilities to our 2.' },
+      threat: { hero: 'Sparrow', kda: '19/3/6', killShare: 61, damage: 58290, topDamage: false, victims: [{ hero: 'Mourn', count: 9 }], kit: ['Stealth on Heightened Senses.'], playAgainst: 'Hard-engage her.', answers: ['Physical armor.'] },
+      nemeses: [{ pid: 'a', hero: 'Mourn', byHero: 'Sparrow', byCount: 9, deaths: 11, enemyCc: [], playAgainst: 'Hard-engage her.', answer: 'Physical armor.' }],
+    };
+    const g = gameFlags({ ...base, result: 'loss', kitRead });
+    expect(g.map((x) => x.id)).toEqual(expect.arrayContaining(['threat', 'nemesis:a', 'cc-gap']));
+    expect(g.find((x) => x.id === 'threat')!.evidence).toContain('Killed Mourn 9.');
+    expect(g.find((x) => x.id === 'nemesis:a')!.summary).toBe('Mourn kept dying to Sparrow (9 of 11)');
+    expect(gameFlags({ ...base, result: 'win', kitRead }).some((x) => ['threat', 'nemesis', 'cc-gap'].includes(x.kind))).toBe(false);
+  });
 });
