@@ -3263,5 +3263,102 @@
     }
    ]
   }
- ]
+ ],
+ "playbook": {
+  "plays": [
+   {
+    "name": "Teamfight engage",
+    "when": "at an objective, when all five are up and their key CC is down",
+    "steps": [
+     {
+      "hero": "Aurora",
+      "slug": "aurora",
+      "ability": "Cryoseism",
+      "what": "opens: stun (1s) on the group"
+     },
+     {
+      "hero": "Lt. Belica",
+      "slug": "lt-belica",
+      "ability": "Seismic Assault",
+      "what": "chains stun + knock-up (1.4s) as Cryoseism ends"
+     },
+     {
+      "hero": "Crunch",
+      "slug": "crunch",
+      "ability": "Right Crunch",
+      "what": "chains knock-up + stun (0.75s) as Seismic Assault ends"
+     },
+     {
+      "hero": "Murdock",
+      "slug": "murdock",
+      "ability": "Long Arm of the Law",
+      "what": "pays off inside the lockdown (hits the group)"
+     }
+    ]
+   },
+   {
+    "name": "Pick",
+    "when": "when one of them is alone or out of position in fog",
+    "steps": [
+     {
+      "hero": "Murdock",
+      "slug": "murdock",
+      "ability": "Static Trap",
+      "what": "catches one target: root (1.25s)"
+     },
+     {
+      "hero": "Lt. Belica",
+      "slug": "lt-belica",
+      "ability": "Neural Disruptor",
+      "what": "follows up for the kill"
+     }
+    ]
+   },
+   {
+    "name": "Protect Murdock",
+    "when": "when Zarus or Greystone goes in",
+    "steps": [
+     {
+      "hero": "Phase",
+      "slug": "phase",
+      "ability": "Energy Lance",
+      "what": "holds root for the diver on Murdock"
+     },
+     {
+      "hero": "Aurora",
+      "slug": "aurora",
+      "ability": "Hoarfrost",
+      "what": "holds root for the diver on Murdock"
+     }
+    ]
+   }
+  ],
+  "waitOut": [
+   {
+    "hero": "Steel",
+    "slug": "steel",
+    "ability": "Shield Slam",
+    "what": "knock-up + stun (1.5s), area"
+   },
+   {
+    "hero": "Steel",
+    "slug": "steel",
+    "ability": "Shield Bash",
+    "what": "stun (0.5s), area"
+   },
+   {
+    "hero": "Zarus",
+    "slug": "zarus",
+    "ability": "Barricade",
+    "what": "stun (0.75s)"
+   },
+   {
+    "hero": "Steel",
+    "slug": "steel",
+    "ability": "Bull Rush",
+    "what": "unstoppable: CC will not stop it"
+   }
+  ],
+  "note": null
+ }
 }

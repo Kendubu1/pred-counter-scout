@@ -5353,5 +5353,90 @@
     }
    ]
   }
- ]
+ ],
+ "playbook": {
+  "plays": [
+   {
+    "name": "Teamfight engage",
+    "when": "at an objective, when all five are up and their key CC is down",
+    "steps": [
+     {
+      "hero": "Renna",
+      "slug": "renna",
+      "ability": "Stupor",
+      "what": "opens from range: sleep (1.2s) on the group"
+     },
+     {
+      "hero": "Khaimera",
+      "slug": "khaimera",
+      "ability": "Cull",
+      "what": "chains suppress (1.25s) as Stupor ends"
+     },
+     {
+      "hero": "Murdock",
+      "slug": "murdock",
+      "ability": "Static Trap",
+      "what": "chains root (1.25s) as Cull ends"
+     }
+    ]
+   },
+   {
+    "name": "Pick",
+    "when": "when one of them is alone or out of position in fog",
+    "steps": [
+     {
+      "hero": "Murdock",
+      "slug": "murdock",
+      "ability": "Static Trap",
+      "what": "catches one target: root (1.25s)"
+     },
+     {
+      "hero": "Renna",
+      "slug": "renna",
+      "ability": "Abyssal Rift",
+      "what": "follows up for the kill"
+     }
+    ]
+   },
+   {
+    "name": "Protect Murdock",
+    "when": "when Rampage goes in",
+    "steps": [
+     {
+      "hero": "Phase",
+      "slug": "phase",
+      "ability": "Energy Lance",
+      "what": "holds root for the diver on Murdock"
+     }
+    ]
+   }
+  ],
+  "waitOut": [
+   {
+    "hero": "Rampage",
+    "slug": "rampage",
+    "ability": "Boulder Throw",
+    "what": "stun (1.4s), area"
+   },
+   {
+    "hero": "Adele",
+    "slug": "adele",
+    "ability": "Royal Flourish",
+    "what": "sleep (1s), area"
+   },
+   {
+    "hero": "Adele",
+    "slug": "adele",
+    "ability": "Imperial Lash",
+    "what": "root (0.6s), area"
+   },
+   {
+    "hero": "Legion",
+    "slug": "legion",
+    "ability": "Rally Point",
+    "what": "unstoppable: CC will not stop it"
+   }
+  ],
+  "note": "No tank or engage hero to go in first: Renna opens from range with Stupor, so fight near walls and chokes where it is hard to dodge."
+ }
 }

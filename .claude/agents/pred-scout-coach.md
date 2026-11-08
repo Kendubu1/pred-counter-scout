@@ -309,7 +309,9 @@ going in one at a time, one damage type); never claim a comp number that is not 
 who kept dying to the same enemy (put the counterplay in that player's bullets: the named
 ability to dodge or wait out, and the item answer when one is given), and a crowd-control
 gap. Quote counterplay and item answers only from `kitRead` / flag evidence; never invent
-an ability effect. For each player's build, lead the buildReads `improvement` field
+an ability effect. For engagements, use `playbook` (src/playbook.ts; the team-playbook skill): when the
+loss came from fights, the lesson can name the opener, the CC chain and the payoff from it, or
+say plainly that the draft had no opener; name only abilities it lists. For each player's build, lead the buildReads `improvement` field
 with `buildNotes`: the lane record, items the field buys more into that opponent or
 the enemy who kept killing them (with the item's win rate when given), and each unmet
 need (tenacity / anti-heal / armor type, marked NOT built). A met need is a keep, not a

@@ -4956,5 +4956,96 @@
     }
    ]
   }
- ]
+ ],
+ "playbook": {
+  "plays": [
+   {
+    "name": "Teamfight engage",
+    "when": "at an objective, when all five are up and their key CC is down",
+    "steps": [
+     {
+      "hero": "Gideon",
+      "slug": "gideon",
+      "ability": "Black Hole",
+      "what": "opens from range: pull on the group"
+     },
+     {
+      "hero": "Khaimera",
+      "slug": "khaimera",
+      "ability": "Cull",
+      "what": "chains suppress (1.25s) as Black Hole ends"
+     },
+     {
+      "hero": "Yurei",
+      "slug": "yurei",
+      "ability": "Soulstorm",
+      "what": "chains pull as Cull ends"
+     },
+     {
+      "hero": "Murdock",
+      "slug": "murdock",
+      "ability": "Long Arm of the Law",
+      "what": "pays off inside the lockdown (hits the group)"
+     }
+    ]
+   },
+   {
+    "name": "Pick",
+    "when": "when one of them is alone or out of position in fog",
+    "steps": [
+     {
+      "hero": "Murdock",
+      "slug": "murdock",
+      "ability": "Static Trap",
+      "what": "catches one target: root (1.25s)"
+     },
+     {
+      "hero": "Yurei",
+      "slug": "yurei",
+      "ability": "Soulstorm",
+      "what": "follows up for the kill"
+     }
+    ]
+   },
+   {
+    "name": "Protect Murdock",
+    "when": "when Terra or Boris goes in",
+    "steps": [
+     {
+      "hero": "Phase",
+      "slug": "phase",
+      "ability": "Energy Lance",
+      "what": "holds root for the diver on Murdock"
+     }
+    ]
+   }
+  ],
+  "waitOut": [
+   {
+    "hero": "Terra",
+    "slug": "terra",
+    "ability": "Highland Hurl",
+    "what": "root (1.25s), area"
+   },
+   {
+    "hero": "Adele",
+    "slug": "adele",
+    "ability": "Royal Flourish",
+    "what": "sleep (1s), area"
+   },
+   {
+    "hero": "Boris",
+    "slug": "boris",
+    "ability": "Primeval Roar",
+    "what": "fear (1s), area"
+   },
+   {
+    "hero": "Terra",
+    "slug": "terra",
+    "ability": "Wild Rush",
+    "what": "unstoppable: CC will not stop it"
+   }
+  ],
+  "note": "No tank or engage hero to go in first: Gideon opens from range with Black Hole, so fight near walls and chokes where it is hard to dodge."
+ }
 }

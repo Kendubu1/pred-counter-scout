@@ -5797,3 +5797,12 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   and Zarus duel in a forced one-on-one. tank and diver stay rule-based so tags never disagree with
   the shape counts; the reviewers would drop diver for Grux (drags enemies to him) and Terra (Wild
   Rush stops on the first hero), left for the maintainer.
+- **Team shape radar and team playbook (2026-11-08, maintainer idea).** The comp card draws both
+  teams on ten axes side by side, each panel filling its own team and outlining the other dashed:
+  the site's green/red pair sits in the CVD floor band (deutan ΔE 6.9), so the panels, captions and
+  dashes carry identity, not hue alone. film.playbook (src/playbook.ts) sequences OUR kits: opener
+  (only tank / engage heroes go in first; a peel save such as Muriel's ult never opens, per the
+  maintainer), CC chain timed on stated durations, damage payoff, peel for the carry-lane hero,
+  and their longest area CC / unstoppables to bait. kit-index gained aoe and damage per ability.
+  `npm run playbook -- "<5>" vs "<5>"` does the same for any draft, and the project skill
+  `.claude/skills/team-playbook` tells Claude to coach from it, never from memory.

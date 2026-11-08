@@ -30,6 +30,10 @@ export interface AbilityKit {
   spellShield: boolean;
   /** a % cut to damage taken (Boris, Adele, Zarus, Wukong...); not a shield, which absorbs damage as extra health */
   damageReduction: boolean;
+  /** hits an area or several enemies (all enemies in / nearby / in its path / area / cone / line) */
+  aoe: boolean;
+  /** deals damage to enemies */
+  damage: boolean;
   /** longest hard-CC duration at top rank, seconds, when the text states one */
   hardSec: number | null;
 }
@@ -91,6 +95,8 @@ export function kitOfAbility(a: { key?: string; display_name: string; game_descr
     heal: /\bheal(s|ing)?\b|\bomnivamp|\blifesteal|\brestor(e|es) .{0,20}health/.test(text) && !/reduc\w* heal|healing reduction|anti-heal/.test(text),
     shield: /\bshield(?!s? enem)/.test(text.replace(/spell ?shield/g, '')), cleanse: /\bcleans/.test(text),
     spellShield: /spell ?shield/.test(text),
+    aoe: /all (nearby )?enemies|enemies (in|within|around|caught|hit)|nearby enemies|in (an|the) area|in its path|in a (cone|line|circle|radius)|around (him|her|itself)|explod|shockwave|erupt/.test(text),
+    damage: /\bdamage\b/.test(text.replace(/damage reduction/g, '')),
     damageReduction: /damage reduction|reduc\w* (the )?damage taken|reduc\w* incoming damage|takes? (\d+% )?less damage/.test(text),
     hardSec: hard.size ? hardSeconds(menu) : null,
   };

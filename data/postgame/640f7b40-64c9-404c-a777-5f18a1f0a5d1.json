@@ -4710,5 +4710,102 @@
     }
    ]
   }
- ]
+ ],
+ "playbook": {
+  "plays": [
+   {
+    "name": "Teamfight engage",
+    "when": "at an objective, when all five are up and their key CC is down",
+    "steps": [
+     {
+      "hero": "Aurora",
+      "slug": "aurora",
+      "ability": "Cryoseism",
+      "what": "opens: stun (1s) on the group"
+     },
+     {
+      "hero": "Crunch",
+      "slug": "crunch",
+      "ability": "Right Crunch",
+      "what": "chains knock-up + stun (0.75s) as Cryoseism ends"
+     },
+     {
+      "hero": "Phase",
+      "slug": "phase",
+      "ability": "Energy Lance",
+      "what": "chains root (1.2s) as Right Crunch ends"
+     },
+     {
+      "hero": "The Fey",
+      "slug": "the-fey",
+      "ability": "Fly Trap",
+      "what": "pays off inside the lockdown"
+     },
+     {
+      "hero": "Drongo",
+      "slug": "drongo",
+      "ability": "Shrapnel Cannon",
+      "what": "pays off inside the lockdown (hits the group)"
+     }
+    ]
+   },
+   {
+    "name": "Pick",
+    "when": "when one of them is alone or out of position in fog",
+    "steps": [
+     {
+      "hero": "Phase",
+      "slug": "phase",
+      "ability": "Energy Lance",
+      "what": "catches one target: root (1.2s)"
+     },
+     {
+      "hero": "Drongo",
+      "slug": "drongo",
+      "ability": "Shrapnel Cannon",
+      "what": "follows up for the kill"
+     }
+    ]
+   },
+   {
+    "name": "Protect Drongo",
+    "when": "when Bayle or Shinbi goes in",
+    "steps": [
+     {
+      "hero": "Phase",
+      "slug": "phase",
+      "ability": "Energy Lance",
+      "what": "holds root for the diver on Drongo"
+     },
+     {
+      "hero": "Aurora",
+      "slug": "aurora",
+      "ability": "Hoarfrost",
+      "what": "holds root for the diver on Drongo"
+     }
+    ]
+   }
+  ],
+  "waitOut": [
+   {
+    "hero": "Adele",
+    "slug": "adele",
+    "ability": "Royal Flourish",
+    "what": "sleep (1s), area"
+   },
+   {
+    "hero": "Bayle",
+    "slug": "bayle",
+    "ability": "Cursed Edge",
+    "what": "knock-up + stun (0.65s), area"
+   },
+   {
+    "hero": "Adele",
+    "slug": "adele",
+    "ability": "Imperial Lash",
+    "what": "root (0.6s), area"
+   }
+  ],
+  "note": null
+ }
 }

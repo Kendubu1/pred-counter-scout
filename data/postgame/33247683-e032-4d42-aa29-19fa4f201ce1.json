@@ -3400,5 +3400,90 @@
     }
    ]
   }
- ]
+ ],
+ "playbook": {
+  "plays": [
+   {
+    "name": "Teamfight engage",
+    "when": "at an objective, when all five are up and their key CC is down",
+    "steps": [
+     {
+      "hero": "Riktor",
+      "slug": "riktor",
+      "ability": "Skewer",
+      "what": "opens: suppress (1.3s) on the group"
+     },
+     {
+      "hero": "Lt. Belica",
+      "slug": "lt-belica",
+      "ability": "Seismic Assault",
+      "what": "chains stun + knock-up (1.4s) as Skewer ends"
+     },
+     {
+      "hero": "Wukong",
+      "slug": "wukong",
+      "ability": "Cyclebreaker/High Impact",
+      "what": "chains stun (0.8s) as Seismic Assault ends"
+     },
+     {
+      "hero": "Murdock",
+      "slug": "murdock",
+      "ability": "Long Arm of the Law",
+      "what": "pays off inside the lockdown (hits the group)"
+     }
+    ]
+   },
+   {
+    "name": "Pick",
+    "when": "when one of them is alone or out of position in fog",
+    "steps": [
+     {
+      "hero": "Murdock",
+      "slug": "murdock",
+      "ability": "Static Trap",
+      "what": "catches one target: root (1.25s)"
+     },
+     {
+      "hero": "Lt. Belica",
+      "slug": "lt-belica",
+      "ability": "Neural Disruptor",
+      "what": "follows up for the kill"
+     }
+    ]
+   },
+   {
+    "name": "Protect Murdock",
+    "when": "when Grux goes in",
+    "steps": [
+     {
+      "hero": "Riktor",
+      "slug": "riktor",
+      "ability": "Skewer",
+      "what": "holds suppress for the diver on Murdock"
+     }
+    ]
+   }
+  ],
+  "waitOut": [
+   {
+    "hero": "Grux",
+    "slug": "grux",
+    "ability": "Smash 'n Grab",
+    "what": "pull + stun (0.75s), area"
+   },
+   {
+    "hero": "Grux",
+    "slug": "grux",
+    "ability": "Warlord's Challenge",
+    "what": "stun (0.75s), area"
+   },
+   {
+    "hero": "Grux",
+    "slug": "grux",
+    "ability": "Stampede",
+    "what": "pull, area"
+   }
+  ],
+  "note": null
+ }
 }
