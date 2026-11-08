@@ -10,7 +10,10 @@
 //             disable: the target loses control or movement
 //   soft CC   slow, tether (leash that breaks by walking away)
 //   self      unstoppable (immune to CC), stealth, dash / blink / leap /
-//             teleport, heal, shield, cleanse: read from the plain text
+//             teleport, heal, shield, cleanse, spell shield, damage reduction:
+//             read from the plain text. Three different protections (maintainer
+//             ruling 2026-11-08): a shield absorbs damage as extra health; a spell
+//             shield blocks the next enemy ability; damage reduction cuts damage taken by a %.
 // Durations are taken from the menu text when the number is literal; a value
 // that scales by rank is kept as its top-rank number. Unknown or ambiguous
 // spans are reported, never guessed; the agent scan (kit-index-review.json)
@@ -23,6 +26,10 @@ export interface AbilityKit {
   key: string; name: string;
   hard: HardCC[]; soft: SoftCC[]; mobility: Mobility[];
   unstoppable: boolean; stealth: boolean; heal: boolean; shield: boolean; cleanse: boolean;
+  /** blocks the next enemy ability (Feng Mao's Safeguard); not a shield */
+  spellShield: boolean;
+  /** a % cut to damage taken (Boris, Adele, Zarus, Wukong...); not a shield, which absorbs damage as extra health */
+  damageReduction: boolean;
   /** longest hard-CC duration at top rank, seconds, when the text states one */
   hardSec: number | null;
 }
@@ -82,7 +89,9 @@ export function kitOfAbility(a: { key?: string; display_name: string; game_descr
     hard: [...hard], soft: [...soft], mobility: [...mobility],
     unstoppable: /unstoppable/.test(text), stealth: /\bstealth|\binvisib|\bcamouflag/.test(text),
     heal: /\bheal(s|ing)?\b|\bomnivamp|\blifesteal|\brestor(e|es) .{0,20}health/.test(text) && !/reduc\w* heal|healing reduction|anti-heal/.test(text),
-    shield: /\bshield/.test(text), cleanse: /\bcleans/.test(text),
+    shield: /\bshield(?!s? enem)/.test(text.replace(/spell ?shield/g, '')), cleanse: /\bcleans/.test(text),
+    spellShield: /spell ?shield/.test(text),
+    damageReduction: /damage reduction|reduc\w* (the )?damage taken|reduc\w* incoming damage|takes? (\d+% )?less damage/.test(text),
     hardSec: hard.size ? hardSeconds(menu) : null,
   };
 }

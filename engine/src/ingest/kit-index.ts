@@ -15,8 +15,10 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.
 const OUT = path.join(ROOT, 'data/game-data/kit-index.json');
 const REVIEW = path.join(ROOT, 'data/game-data/kit-index-review.json');
 
-type Correction = Partial<Pick<AbilityKit, 'hard' | 'soft' | 'mobility' | 'unstoppable' | 'stealth' | 'heal' | 'shield' | 'cleanse' | 'hardSec'>>;
-interface Review { heroes: Record<string, { textHash: string; reviewedAt: string; abilities?: Record<string, Correction>; note?: string }> }
+type Correction = Partial<Pick<AbilityKit, 'hard' | 'soft' | 'mobility' | 'unstoppable' | 'stealth' | 'heal' | 'shield' | 'cleanse' | 'spellShield' | 'damageReduction' | 'hardSec'>>;
+interface Review { heroes: Record<string, { textHash: string; reviewedAt: string; abilities?: Record<string, Correction>; note?: string }>;
+  /** Maintainer rulings, applied after the scan whatever the text hash (a scan never overwrites them). */
+  maintainerOverrides?: Record<string, Record<string, Correction>> }
 
 export const textHash = (h: { abilities: { game_description?: string | null; menu_description?: string | null }[] }) =>
   createHash('sha1').update(h.abilities.map((a) => `${a.game_description ?? ''}|${a.menu_description ?? ''}`).join('\n')).digest('hex').slice(0, 12);
@@ -32,7 +34,7 @@ function main() {
     const r = review.heroes[h.slug];
     let kit = heroKit(h);
     if (r && r.textHash === hash) {
-      const abilities = kit.abilities.map((a) => ({ ...a, ...(r.abilities?.[a.key] ?? {}) }));
+      const abilities = kit.abilities.map((a) => ({ ...a, ...(r.abilities?.[a.key] ?? {}), ...(review.maintainerOverrides?.[h.slug]?.[a.key] ?? {}) }));
       kit = heroKit({ display_name: h.display_name, abilities: [] });
       const hardTypes = [...new Set(abilities.flatMap((a) => a.hard))];
       kit = {

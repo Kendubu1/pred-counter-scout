@@ -17,7 +17,7 @@ const PROFILES = path.join(ROOT, 'data/game-data/kit-profiles.json');
 const HARD = new Set(['stun', 'root', 'knockup', 'knockback', 'pull', 'suppress', 'silence', 'fear', 'charm', 'sleep', 'blind', 'banish', 'ground', 'disable']);
 const SOFT = new Set(['slow', 'tether']);
 const MOB = new Set(['dash', 'blink', 'leap', 'teleport']);
-const BOOL = ['unstoppable', 'stealth', 'heal', 'shield', 'cleanse'];
+const BOOL = ['unstoppable', 'stealth', 'heal', 'shield', 'cleanse', 'spellShield', 'damageReduction'];
 const FIELDS = ['archetype', 'combo', 'winCondition', 'powerSpike', 'passive', 'playWith', 'playAgainst', 'waveClear', 'dive', 'scaling'];
 const ENUM: Record<string, string[]> = { powerSpike: ['early', 'mid', 'late'], scaling: ['early', 'mid', 'late'], waveClear: ['low', 'med', 'high'], dive: ['low', 'med', 'high'] };
 
@@ -54,6 +54,7 @@ function main() {
       profiles++;
     }
   }
+  // maintainerOverrides (and rulings) are kept as they are: a scan never replaces them.
   review.note = 'Agent kit scan: per-ability corrections to the parsed kit (engine/src/kit-index.ts), each checked against the catalog ability text whose hash is stored; npm run kit:index applies an entry only while the hash still matches.';
   writeFileSync(REVIEW, JSON.stringify(review, null, 1) + '\n');
   prof.generatedAt = today;

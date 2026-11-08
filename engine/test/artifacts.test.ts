@@ -62,7 +62,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
 
   it('the committed artifact set covers the full roster and parses', () => {
     const dir = path.join(ROOT, 'data/artifacts');
-    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json', 'player-reviews.json', 'stack-reviews.json', 'past-boards.json'].includes(f));
+    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json', 'player-reviews.json', 'stack-reviews.json', 'past-boards.json', 'repeat-killers.json'].includes(f));
     const roster = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8'));
     expect(files.length).toBe(Object.keys(roster).length);
     for (const f of files) {
@@ -78,7 +78,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
     const { significantlyWinningLanes } = await import('../src/playstyle.js');
     const dir = path.join(ROOT, 'data/artifacts');
     const bad: string[] = [];
-    for (const f of readdirSync(dir).filter((x) => x.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json', 'player-reviews.json', 'stack-reviews.json', 'past-boards.json'].includes(x))) {
+    for (const f of readdirSync(dir).filter((x) => x.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json', 'player-reviews.json', 'stack-reviews.json', 'past-boards.json', 'repeat-killers.json'].includes(x))) {
       const a = JSON.parse(readFileSync(path.join(dir, f), 'utf8'));
       const roles: string[] = (a.roles ?? []).map((v: { role: string }) => v.role);
       if (roles.length > 4) bad.push(`${f}: ${roles.length} role pages`);
@@ -92,7 +92,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
     // and the page defaulted to a 2%-of-games core over the lane's real build.
     const dir = path.join(ROOT, 'data/artifacts');
     const bad: string[] = [];
-    for (const f of readdirSync(dir).filter((x) => x.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json', 'player-reviews.json', 'stack-reviews.json', 'past-boards.json'].includes(x))) {
+    for (const f of readdirSync(dir).filter((x) => x.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json', 'player-reviews.json', 'stack-reviews.json', 'past-boards.json', 'repeat-killers.json'].includes(x))) {
       const a = JSON.parse(readFileSync(path.join(dir, f), 'utf8'));
       for (const v of [a, ...(a.roles ?? [])]) {
         const mb: { items: { name: string; slug: string | null }[]; n: number }[] = v.metaBuilds ?? [];
@@ -317,7 +317,7 @@ describe('hero artifacts (Concept A engine stage)', () => {
 
   it('off-meta promotion respects the evidence gate: no negative-evidence finds', () => {
     const dir = path.join(ROOT, 'data/artifacts');
-    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json', 'player-reviews.json', 'stack-reviews.json', 'past-boards.json'].includes(f));
+    const files = readdirSync(dir).filter((f) => f.endsWith('.json') && !['index.json', 'meta.json', 'coach.json', 'squad.json', 'matchup-matrix.json', 'bans.json', 'squad-bans.json', 'player-reviews.json', 'stack-reviews.json', 'past-boards.json', 'repeat-killers.json'].includes(f));
     for (const f of files) {
       const a = JSON.parse(readFileSync(path.join(dir, f), 'utf8')) as {
         offMeta: { candidates: { item: string }[] };

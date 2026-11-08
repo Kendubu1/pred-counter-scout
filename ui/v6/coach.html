@@ -424,6 +424,10 @@
     .loadout-back { padding:.65rem; }
     .loadout-dialog { max-height:90dvh; }
   }
+  .rk-row{display:flex;gap:.65rem;align-items:flex-start;padding:.6rem 0;border-top:1px solid var(--border);font-size:.86rem;line-height:1.5}.rk-row:first-of-type{border-top:0}
+  .rk-row img{width:38px;height:38px;border-radius:9px;object-fit:cover;border:1px solid var(--border)}
+  .rk-n{color:var(--text-2);font-size:.78rem}.rk-kit{color:var(--text-1);font-size:.8rem;margin-top:.15rem}
+  .rk-row .act{margin-top:.25rem;color:var(--text-0)}
 </style>
 </head>
 <body>
@@ -1372,6 +1376,12 @@ async function fillEternals() {
   let reviews = null;
   try { reviews = await (await fetch('../../data/artifacts/player-reviews.json')).json(); } catch {}
   const rv = reviews?.members?.[p.uuid] || null;
+  // Repeat killers (engine/src/repeat-killers.ts, npm run review:killers): enemy heroes that
+  // kill this member far more than their average enemy, with counterplay from the kit.
+  let killersArt = null;
+  try { killersArt = await (await fetch('../../data/artifacts/repeat-killers.json')).json(); } catch {}
+  const rk = killersArt?.members?.[p.uuid] || null;
+  const cap1 = (t) => t ? t.charAt(0).toUpperCase() + t.slice(1) : t;
   const LVL = { strong: 'strong evidence', solid: 'solid evidence', association: 'pattern, not proof' };
   const rvTip = (t) => `
         <div class="rv-tip">
@@ -1430,6 +1440,20 @@ async function fillEternals() {
       </div>
       ${rv.extras ? `<div class="rv-method"><b>For the group chat:</b> ${esc(rv.extras)}</div>` : ''}
       <div class="rv-method">${(reviews.method || []).map(esc).join(' ')} Based on ${rv.films} squad games.</div>
+    </div>` : ''}
+
+    ${rk && rk.killers.length ? `
+    <div class="card" id="killers">
+      <h2>Heroes that keep killing you · and how to play them</h2>
+      ${rk.killers.map((k) => `<div class="rk-row">
+        <img src="../img/heroes/${esc(k.slug)}.webp" alt="" onerror="this.style.display='none'">
+        <div><b>${esc(k.hero)}</b> <span class="rk-n">${k.deaths} deaths in ${k.games} games against it · ${k.ratio}x your average enemy</span>
+          <div class="rk-n">Died on ${k.asHeroes.slice(0, 4).map((a) => `${esc(a.hero)} ${a.deaths}`).join(' · ')}${k.asHeroes.length > 4 ? ` · ${k.asHeroes.length - 4} more` : ''}</div>
+          ${k.kit ? `<div class="rk-kit">${[k.kit.hardCc.length ? `CC: ${esc(k.kit.hardCc.join(', '))}` : '', k.kit.escapes.length ? `Escapes: ${esc(k.kit.escapes.join(', '))}` : '', k.kit.unstoppable.length ? `Unstoppable: ${esc(k.kit.unstoppable.join(', '))}` : '', k.kit.stealth ? 'Has stealth' : '', k.kit.heals ? 'Heals itself' : ''].filter(Boolean).join(' · ')}</div>` : ''}
+          ${k.playAgainst ? `<div class="act">${esc(((t) => /[.!?]$/.test(t) ? t : t + '.')(cap1(k.playAgainst.trim())))}</div>` : ''}
+          ${k.answer ? `<div><b>Build:</b> ${esc(k.answer)}</div>` : ''}
+        </div></div>`).join('')}
+      <div class="rv-method">${esc(killersArt.method)} Across ${rk.films} squad games; you die ${rk.deathsPerGame} times a game on average.</div>
     </div>` : ''}
 
     ${!rv && c.ledger && c.ledger.entries.length ? `

@@ -108,6 +108,10 @@ async function main() {
   const items = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/items.json'), 'utf8')) as { game_id: number | null; name: string; slug: string; display_name: string; slot_type: string | null; rarity: string | null }[];
   const coreItemByGameId = new Map(items.filter((i) => i.rarity === 'Epic' && i.slot_type === 'Passive' && i.game_id != null).map((i) => [i.game_id!, i]));
   const itemBySlug = new Map(items.map((i) => [i.slug, i]));
+  // Lineup builds: every completed item (Epic passives and actives, Legendary crests) in
+  // purchase order, and the whole final inventory (any rarity), by catalog slug.
+  const buildItemByGameId = new Map(items.filter((i) => (i.rarity === 'Epic' || i.rarity === 'Legendary') && i.game_id != null).map((i) => [i.game_id!, i.slug]));
+  const anyItemByGameId = new Map(items.filter((i) => i.game_id != null).map((i) => [i.game_id!, i.slug]));
   const crestByGameId = new Map(items.filter((i) => i.slot_type === 'Crest' && i.game_id != null).map((i) => [i.game_id!, { name: i.display_name, slug: i.slug }]));
 
   // Perk catalog: internal name -> id / display name / slot (one GraphQL call).
@@ -204,7 +208,7 @@ async function main() {
       const matchRanks = ranks.get(String(m.matchId));
       if (!matchRanks) st.goldUnresolvedMatches = (st.goldUnresolvedMatches ?? 0) + 1;
       const matchPlayers: MatchPlayer[] = [];
-      const lineup: { hero: string; role: string; team: string; tier: number | null; core: string[] }[] = [];
+      const lineup: { hero: string; role: string; team: string; tier: number | null; build: string[]; final: string[] }[] = [];
       for (const p of m.playerData ?? []) {
         if (p.bIsAIPlayer) continue;
         const role = String(p.roleName ?? '').replace('ESelectedRole::', '').toLowerCase();
@@ -247,7 +251,14 @@ async function main() {
         if (isGoldPlus(tier)) count((cell.gold ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
         if (isPlatPlus(tier)) count((cell.plat ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
         matchPlayers.push({ hero: slug, role, team: p.teamId, core, plat: isPlatPlus(tier) });
-        lineup.push({ hero: slug, role, team: String(p.teamId), tier: tier ?? null, core });
+        const build: string[] = [];
+        for (const t of p.incomeData?.transactions ?? []) {
+          if (t?.transactionType !== 10) continue;
+          const sl = buildItemByGameId.get(t.itemId);
+          if (sl && !build.includes(sl)) build.push(sl);
+        }
+        const final = (p.inventoryData ?? []).map((it: any) => anyItemByGameId.get(it?.itemId)).filter((x: string | undefined): x is string => !!x);
+        lineup.push({ hero: slug, role, team: String(p.teamId), tier: tier ?? null, build, final });
       }
       countMatch(bm, matchPlayers);
       const row = toRow({ id: String(m.matchId), end: String(m.endTime), dur: Number(m.gameDuration ?? 0), winningTeam: m.winningTeam }, lineup);

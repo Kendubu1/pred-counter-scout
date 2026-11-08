@@ -5744,3 +5744,22 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   checked against final items. Lane cells are thin early in a patch, so the hunter cell does most
   of the work; lineup rows are now v2 (each slot carries its first three core items), so a later
   report can measure which builds win against which comp.
+
+## 2026-11-08 — Repeat killers, protection types, full builds in lineups (maintainer asks)
+
+- **The 8 Nov daily refresh saved no lineups because it ran the old code**: it fired 08:56 UTC and
+  synced main before the lineup code landed at 09:03 (its transcript shows 421 tests, the pre-change
+  count). Its step 7 commits data/aggregates/*, so the next fire saves them. That day's 25,660
+  matches have no lineups; a backfill would need a stream re-read.
+- **Lineup v2 = the whole build**, not the first three items: every completed Epic/Legendary item in
+  purchase order plus the final inventory. A live page showed one player with an empty purchase log
+  but a full inventory, so both are kept. No v2 rows existed yet, so the format changed before any
+  data was written.
+- **Maintainer kit rulings:** a shield absorbs damage as health, a spell shield blocks the next enemy
+  ability, damage reduction cuts damage taken by a %; Boris has no spell shield; Steel's Bull Rush
+  knocks heroes back and stuns only minions. Rulings live in kit-index-review.json
+  `maintainerOverrides`, applied after the scan whatever the text hash, so a re-scan cannot undo them.
+- **Repeat killers** (src/repeat-killers.ts, `npm run review:killers`): across all reviewed films,
+  an enemy hero faced 3+ times with 5+ deaths at 1.5x the member's average per enemy. First run:
+  Sparrow is a top killer for three members (Xeebs 64 deaths in 41 games, Goldilocks324 2.4x,
+  Mr_Meat31 2x); Eden and Skylar for four.

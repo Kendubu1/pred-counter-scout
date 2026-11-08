@@ -117,8 +117,10 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    `seed:fork-poc` (Oct 22-24). Read it with `npm run matchups:builds -- <hero>`.
    Since 2026-11-07 perks also keeps both teams' LINEUPS of every ranked match
    it reads (no extra requests): data/aggregates/team-comps/<patch>/<YYYY-MM-DD>.jsonl,
-   one match per line as { id, end, dur, win, teams: [[hero, role, tier]...] x2 }
-   (format team-comps/v1, src/ingest/team-comps.ts), filed by match end day so
+   one match per line as { id, end, dur, win, teams: [[hero, role, tier, build, final]...] x2 }
+   (format team-comps/v2 since 2026-11-08: build = every completed item in purchase order,
+   final = the whole final inventory; v1 rows from the 1.18 seed have no items;
+   src/ingest/team-comps.ts), filed by match end day so
    past days stop changing. coverage.json says which stretches are complete
    (`daily`) and which were spaced samples (`sample`; 1.18 Nov 3-7 was seeded
    that way, 500 pages). A new patch starts its own folder, so history is kept
@@ -130,7 +132,11 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    `npm run comps` (zero-API, rules in src/team-comp.ts) reads it and writes
    data/aggregates/team-comp-report.json: win rate by frontline / tank /
    assassin / engage / dive / enchanter counts, the same against the enemy's
-   count, comp styles head to head, and lane-pair duos.
+   count, comp styles head to head, lane-pair duos, and the kit features (hard CC, long CC,
+   mobility, unstoppable, healers, magic damage, cleanse) vs the enemy.
+   **Run `npm run comps` right after perks every day** (zero-API) so the report and the
+   coach page's comp-shape win rates track the growing lineup file, then
+   `npm run postgame:comp -- --all` to refresh every review's draft/kit/build notes.
    Then `npm run aggregate && npm run matchups:feed` — the pred.gg match samples
    (gold curves + item play rates; same-role head-to-head lanes, resumed
    incrementally inside the current patch family). Then `npm run checkpoints`
