@@ -123,6 +123,10 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    (`daily`) and which were spaced samples (`sample`; 1.18 Nov 3-7 was seeded
    that way, 500 pages). A new patch starts its own folder, so history is kept
    per patch with no archive step. Commit the folder with the other aggregates.
+   After any catalog change run `npm run kit:index`: it rebuilds data/game-data/kit-index.json
+   (each hero's CC / mobility / protection parsed from the catalog text) and lists heroes whose
+   text changed since the agent kit scan; re-scan those (agents write
+   engine/copy-tasks/kit-scan-*.json, then `npm run kit:scan:ingest && npm run kit:index`).
    `npm run comps` (zero-API, rules in src/team-comp.ts) reads it and writes
    data/aggregates/team-comp-report.json: win rate by frontline / tank /
    assassin / engage / dive / enchanter counts, the same against the enemy's

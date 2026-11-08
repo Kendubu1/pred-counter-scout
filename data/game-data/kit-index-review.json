@@ -1,0 +1,605 @@
+{
+ "note": "Agent kit scan: per-ability corrections to the parsed kit (engine/src/kit-index.ts), each checked against the catalog ability text whose hash is stored; npm run kit:index applies an entry only while the hash still matches.",
+ "heroes": {
+  "adele": {
+   "textHash": "353ca41c4c29",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "R": {
+     "soft": [
+      "slow"
+     ],
+     "shield": false
+    }
+   },
+   "note": "Q Royal Flourish 'Mesmerize' kept as sleep (no mesmerize type in the list). E Iron Rose is a damage-reduction 'barrier', not a damage-absorbing shield; shield=true kept as parsed. R vine pull only drags flying enemies to the ground (pull kept; could arguably be 'ground')."
+  },
+  "akeron": {
+   "textHash": "703e54e4eecb",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "R": {
+     "hard": [
+      "pull"
+     ]
+    },
+    "Passive": {
+     "heal": false
+    }
+   },
+   "note": "E Web Lash Root/Stun rise to 1.25s only while Awakened; hardSec kept at the base 1. R Consume pulls for up to 3s as a channel; hardSec left null. Passive only increases healing (no restore), so heal set false."
+  },
+  "argus": {
+   "textHash": "ed1b8089b467",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "R": {
+     "hard": []
+    }
+   },
+   "note": "R Synaptic Obliterator only grants Argus immunity to pushes and pulls; it applies no push/pull to enemies."
+  },
+  "aurora": {
+   "textHash": "5a1f5bdca3ea",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "Q": {
+     "mobility": [
+      "dash"
+     ]
+    },
+    "Passive": {
+     "hard": []
+    }
+   },
+   "note": "Q leap removed: the airborne jump belongs to the passive. Passive only lowers its cooldown when Aurora immobilizes a hero; it applies no root."
+  },
+  "bayle": {
+   "textHash": "0e4b9ad2272e",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "R": {
+     "hard": [
+      "knockup"
+     ]
+    }
+   },
+   "note": "R Kingslayer throws the target into the air for 8 strikes; no CC duration stated, so hardSec left null."
+  },
+  "boris": {
+   "textHash": "fb0997825d2b",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "E": {
+     "hardSec": 1
+    }
+   },
+   "note": "R Ursine Burst 'Grab' carries the hero and slams them; kept as pull. E Primeval Roar is damage reduction, not a shield; shield left false."
+  },
+  "countess": {
+   "textHash": "54d82f5526e5",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "Q": {
+     "mobility": [
+      "dash",
+      "blink"
+     ]
+    }
+   },
+   "note": "Q re-trigger swaps places with the Shadow (instant reposition), added as blink."
+  },
+  "crunch": {
+   "textHash": "aaae31c3f357",
+   "reviewedAt": "2026-11-08",
+   "abilities": {}
+  },
+  "dekker": {
+   "textHash": "9ccdf2a67815",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "RMB": {
+     "hardSec": 1.6
+    },
+    "R": {
+     "hardSec": 1.5
+    }
+   },
+   "note": "E Containment Fence blocks enemy heroes but is not a listed CC type; left empty."
+  },
+  "drongo": {
+   "textHash": "251937175cf6",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "R": {
+     "mobility": [
+      "leap"
+     ]
+    }
+   },
+   "note": "R in-air cast launches Drongo backwards; added as leap (airborne launch, could be read as dash)."
+  },
+  "eden": {
+   "textHash": "56cc1e02bd52",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "RMB": {
+     "soft": [
+      "slow"
+     ]
+    },
+    "Q": {
+     "soft": [
+      "slow"
+     ]
+    },
+    "R": {
+     "soft": [
+      "slow"
+     ]
+    }
+   },
+   "note": "LMB, RMB, Q and R have empty game_description; read from menu_description. Melee Talon Drive 'uppercutting' may be a knockup but no CC tag or duration is stated, so no hard CC added."
+  },
+  "feng-mao": {
+   "textHash": "7053e0849555",
+   "reviewedAt": "2026-11-08",
+   "abilities": {},
+   "note": "RMB Reaping Dash: game text says Blink, menu says Dash; both kept. Q Safeguard Spellshield blocks an ability but is not a damage shield; shield kept false."
+  },
+  "gadget": {
+   "textHash": "6a4d789eea5f",
+   "reviewedAt": "2026-11-08",
+   "abilities": {}
+  },
+  "gideon": {
+   "textHash": "104d336dbe53",
+   "reviewedAt": "2026-11-08",
+   "abilities": {},
+   "note": "E Torn Space 'leaps through a portal, appearing at the target location'; kept as leap though it may be a blink. Passive Cosmic Tether is a damage link that ends in a root, not a movement tether; kept as root only."
+  },
+  "greystone": {
+   "textHash": "2caff1ccd1cf",
+   "reviewedAt": "2026-11-08",
+   "abilities": {},
+   "note": "Passive Stoicism grants Health Regen (scaling with missing health); left heal=false since it is a regen stat rather than an ability heal."
+  },
+  "grim-exe": {
+   "textHash": "ed3a720f48f4",
+   "reviewedAt": "2026-11-08",
+   "abilities": {},
+   "note": "Displacement Blast only knocks back in Assault Mode; GTFO's 60% slow is on himself, correctly not parsed as CC."
+  },
+  "grux": {
+   "textHash": "a8f0fefb4231",
+   "reviewedAt": "2026-11-08",
+   "abilities": {},
+   "note": "Stampede drags enemy heroes along its path; kept as 'pull'."
+  },
+  "howitzer": {
+   "textHash": "89746cab76fc",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "Q": {
+     "mobility": []
+    },
+    "E": {
+     "mobility": [
+      "leap"
+     ]
+    }
+   },
+   "note": "R2000 Missile only hovers in place while charging (no relocation). Land Mine knocks back Howitzer too, which is his self-launch; tagged leap. Make It Rain lets him 'move freely' in the sky; left without a mobility tag as it is not a stated dash/leap."
+  },
+  "iggy-scorch": {
+   "textHash": "ff785fef1ed8",
+   "reviewedAt": "2026-11-08",
+   "abilities": {}
+  },
+  "ikra": {
+   "textHash": "5e46938ac475",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "Q": {
+     "hardSec": 1.1
+    },
+    "E": {
+     "mobility": []
+    },
+    "R": {
+     "hardSec": null
+    }
+   },
+   "note": "Narcosis 'Suspends' (kept as knockup) for a stated duration. Hydroclasm has no mobility; only the Primarchs Eternal option of Herald makes popping it displace Ikra. Genesis knockup has no stated duration (1.25s is the slow after landing). Passive heal is Eternal-dependent (Dreadnoughts/Divines)."
+  },
+  "kaelen": {
+   "textHash": "12db77f81e81",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "Q": {
+     "soft": []
+    }
+   },
+   "note": "Razorstorm's slow applies to Kaelen himself while casting, not to enemies."
+  },
+  "kallari": {
+   "textHash": "54ee1bb784eb",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "RMB": {
+     "mobility": []
+    }
+   },
+   "note": "Crippling Dagger is a thrown projectile with no movement. Shadow Walk passive health regen out of vision left as heal=false (regen stat)."
+  },
+  "khaimera": {
+   "textHash": "762dc545bbe7",
+   "reviewedAt": "2026-11-08",
+   "abilities": {},
+   "note": "Cull's game description says 'Supresses' while the menu description says 'Stunning'; kept suppress with 1.25s."
+  },
+  "kira": {
+   "textHash": "7c267c5b8ec6",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "R": {
+     "soft": []
+    }
+   },
+   "note": "Purge's 30% slow is on Kira herself. heal on Mercy/Purge kept: they benefit from lifesteal but do not heal on their own."
+  },
+  "kwang": {
+   "textHash": "9a1864ef5aa3",
+   "reviewedAt": "2026-11-08",
+   "abilities": {}
+  },
+  "legion": {
+   "textHash": "a90cf91cb1e9",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "RMB": {
+     "hard": [
+      "knockup"
+     ],
+     "mobility": [
+      "leap"
+     ]
+    },
+    "Passive": {
+     "soft": [],
+     "heal": false
+    }
+   },
+   "note": "Frag Order 'Stunned' only describes Legion being stunned while cooking; launch applies to Legion or enemies (self-launch tagged leap). Passive only amplifies Saturation Charge slow and Rally Point heal, so its own slow/heal flags were removed."
+  },
+  "lt-belica": {
+   "textHash": "4ecc20ba81b1",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "Q": {
+     "hard": [
+      "stun",
+      "knockup"
+     ],
+     "hardSec": 1.4
+    }
+   },
+   "note": "Seismic Assault Innovation stun: menu says 1.4s, game description says 1.45s; used the menu value. Innovation applies at max rank."
+  },
+  "maco": {
+   "textHash": "9c3690ae80fc",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "RMB": {
+     "hardSec": 1.2
+    },
+    "R": {
+     "mobility": [],
+     "hardSec": 1.4
+    }
+   },
+   "note": "Maco Strike! sends the gem forward; Maco himself does not move. Maco Sparkle! stun scales with distance up to the stated max."
+  },
+  "morigesh": {
+   "textHash": "72ec6b7fbf2a",
+   "reviewedAt": "2026-11-08",
+   "abilities": {},
+   "note": "Swarm grants decaying movement speed, not a dash, so mobility stays empty."
+  },
+  "mourn": {
+   "textHash": "cd2bfd7dae8a",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "E": {
+     "soft": [],
+     "hardSec": 1.2
+    }
+   },
+   "note": "Beguile's slow only hits Mourn himself; its Mesmerize runs 0.45-1.2s by channel time, which the duration regex missed. Eclipse massively cuts enemy vision; no CC type fits, so it stays unlisted."
+  },
+  "murdock": {
+   "textHash": "7588d60f0f07",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "Q": {
+     "mobility": []
+    }
+   }
+  },
+  "muriel": {
+   "textHash": "5718b413e845",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "RMB": {
+     "mobility": []
+    },
+    "R": {
+     "mobility": [
+      "teleport"
+     ]
+    },
+    "Passive": {
+     "shield": false
+    }
+   },
+   "note": "Sentinel only amplifies healing and shielding received; it grants no shield itself. Reversal of Fortune flies her to an allied hero anywhere, counted as teleport."
+  },
+  "narbash": {
+   "textHash": "5bfce5339c60",
+   "reviewedAt": "2026-11-08",
+   "abilities": {},
+   "note": "Crash Bang Boom's Mesmerize at max slow stacks gives no duration; hardSec 0.5 comes from the final-hit stun."
+  },
+  "neon": {
+   "textHash": "efb0ed6f997a",
+   "reviewedAt": "2026-11-08",
+   "abilities": {},
+   "note": "Data Burst's Mesmerize only happens when Overclocked and its duration is not stated separately, so hardSec stays null. Final Thread's recast 'jumps upwards'; leap kept but it is mostly vertical."
+  },
+  "phase": {
+   "textHash": "10432f54041b",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "RMB": {
+     "hard": []
+    },
+    "Q": {
+     "mobility": []
+    }
+   },
+   "note": "Telekinetic Link pulls her linked ALLY, not enemies, and 'Immobilized' is a condition, not a root. Psychic Flare only reduces Phase Blink's cooldown. Passive blink kept: it is her modified Phase Blink."
+  },
+  "rampage": {
+   "textHash": "1ca5e078f025",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "RMB": {
+     "hard": [
+      "knockback"
+     ]
+    },
+    "R": {
+     "heal": true
+    }
+   },
+   "note": "Pounce 'launches damaged Heroes backwards', read as knockback rather than knockup. Behemoth restores a share of max health per second, counted as self-heal."
+  },
+  "renna": {
+   "textHash": "21627c944fa1",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "Passive": {
+     "mobility": []
+    }
+   },
+   "note": "The passive only lets her hover and fall slowly after a mid-air jump; it is not a leap. Abyssal Rift kept as blink/teleport since text uses both words and gives no range."
+  },
+  "revenant": {
+   "textHash": "781009c1c22b",
+   "reviewedAt": "2026-11-08",
+   "abilities": {}
+  },
+  "riktor": {
+   "textHash": "cc44498b1bec",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "Q": {
+     "shield": false
+    },
+    "Passive": {
+     "hard": []
+    }
+   },
+   "note": "Shock Therapy destroys ENEMY shields; the passive halts cooldowns on targets he immobilizes or silences and applies no CC itself."
+  },
+  "scarlett": {
+   "textHash": "fe3496af911a",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "RMB": {
+     "heal": false,
+     "mobility": [
+      "dash"
+     ]
+    }
+   },
+   "note": "Minueta's stabs only benefit from item lifesteal, so no innate heal. Swan Song's backflip is unclear about where she lands, so no mobility added for R."
+  },
+  "serath": {
+   "textHash": "252d4b3319bb",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "Q": {
+     "unstoppable": true
+    },
+    "E": {
+     "mobility": [
+      "leap"
+     ]
+    }
+   },
+   "note": "Heaven's Fury makes her CC immune and invulnerable, counted as unstoppable. Ascend rises and dives down onto a target area, counted as leap."
+  },
+  "sevarog": {
+   "textHash": "3d0020ebbdb1",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "E": {
+     "soft": [
+      "slow",
+      "tether"
+     ]
+    }
+   },
+   "note": "Subjugate chains enemies to its center for its duration (tether) and only stuns those who leave the zone."
+  },
+  "shinbi": {
+   "textHash": "1a6155fc3dff",
+   "reviewedAt": "2026-11-08",
+   "abilities": {}
+  },
+  "skylar": {
+   "textHash": "d2ae766c331b",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "E": {
+     "mobility": [
+      "leap"
+     ]
+    }
+   },
+   "note": "Passive Dissonance only grants extra jump height; kept the parsed leap there but it is a passive jump boost, not an active reposition."
+  },
+  "sparrow": {
+   "textHash": "a76c996ac31f",
+   "reviewedAt": "2026-11-08",
+   "abilities": {}
+  },
+  "steel": {
+   "textHash": "96989cbbe4e9",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "RMB": {
+     "shield": false
+    },
+    "Q": {
+     "hard": [
+      "knockback"
+     ],
+     "hardSec": null
+    }
+   },
+   "note": "Bull Rush's game_description says 'Stuns for 2s and Knocks Back Heroes', but menu text says heroes are Knocked Back and only Monsters and Minions are Stunned for 2s; read as knockback on heroes."
+  },
+  "terra": {
+   "textHash": "d770c9839e75",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "R": {
+     "hard": []
+    }
+   },
+   "note": "Unstoppable Force disables enemy towers, not heroes, so 'disable' removed from hard CC. Wild Rush game text says Knocks Back and Stuns but menu text only mentions the knockback; kept the parse."
+  },
+  "the-fey": {
+   "textHash": "4ee58ec11d39",
+   "reviewedAt": "2026-11-08",
+   "abilities": {}
+  },
+  "twinblast": {
+   "textHash": "49769d3fdf16",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "RMB": {
+     "mobility": []
+    },
+    "Q": {
+     "mobility": []
+    }
+   }
+  },
+  "valmont": {
+   "textHash": "585cb84531c7",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "RMB": {
+     "hardSec": 3
+    }
+   }
+  },
+  "wraith": {
+   "textHash": "6ef4b092a442",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "RMB": {
+     "heal": false
+    },
+    "Q": {
+     "soft": [
+      "slow"
+     ]
+    },
+    "R": {
+     "mobility": []
+    },
+    "Passive": {
+     "stealth": false
+    }
+   },
+   "note": "Back It Up! teleports the enemy hero back via Limbo; no CC type fits cleanly, so hard left empty. Knock, Knock! only benefits from item lifesteal, so it is not an ability heal."
+  },
+  "wukong": {
+   "textHash": "6906e8f6f525",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "RMB": {
+     "hard": [
+      "knockback"
+     ],
+     "soft": [
+      "slow"
+     ]
+    },
+    "E": {
+     "hard": [
+      "stun"
+     ],
+     "soft": [
+      "slow"
+     ],
+     "hardSec": 0.8
+    },
+    "R": {
+     "mobility": []
+    }
+   },
+   "note": "Wukong's basic abilities have empty game_description; corrections are from menu_description. RMB Body 'forcing away all enemies' read as knockback."
+  },
+  "yin": {
+   "textHash": "de54a038c0ea",
+   "reviewedAt": "2026-11-08",
+   "abilities": {}
+  },
+  "yurei": {
+   "textHash": "74a85ea64c59",
+   "reviewedAt": "2026-11-08",
+   "abilities": {}
+  },
+  "zarus": {
+   "textHash": "80218648e538",
+   "reviewedAt": "2026-11-08",
+   "abilities": {},
+   "note": "Barricade is described as 'unfold a shield' that reduces forward damage; it is damage reduction, not a health shield. Kept shield true as parsed."
+  },
+  "zinx": {
+   "textHash": "4ba09579562b",
+   "reviewedAt": "2026-11-08",
+   "abilities": {
+    "Passive": {
+     "heal": false
+    }
+   },
+   "note": "Triage Protocol only boosts Infuse healing, so it is not a heal itself. Neural Regenesis resurrects with health but left heal false as parsed, since it is a revive."
+  }
+ }
+}

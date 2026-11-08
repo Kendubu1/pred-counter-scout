@@ -874,10 +874,21 @@ function pgReview(f) {
       <div class="tc-threat">${hIcon(t.slug, 30)}<div><b>${esc(t.hero)}</b> ${esc(t.kda)} <span class="tc-n">· ${t.killShare}% of their kills · ${t.damage.toLocaleString()} hero damage${t.topDamage ? ', the most in the game' : ''}</span>
       ${t.victims.length ? `<div class="tc-n">Killed ${t.victims.map((v) => `${esc(v.hero)} ${v.count}`).join(' · ')}</div>` : ''}</div></div>
       ${t.kit.length ? `<p>${t.kit.map(esc).join(' ')}</p>` : ''}
-      ${t.playAgainst ? `<p><b>How to play it:</b> ${esc(t.playAgainst)}</p>` : ''}
+      ${t.playAgainst ? `<p><b>How to play it:</b> ${esc(((x) => /[.!?]$/.test(x) ? x : x + '.')(t.playAgainst.trim().charAt(0).toUpperCase() + t.playAgainst.trim().slice(1)))}</p>` : ''}
       ${t.answers.length ? `<p><b>Answers:</b> ${t.answers.map(esc).join(' ')}</p>` : ''}</div>`; })() : '';
-    const nemBlock = kr && kr.nemeses.length ? `<div class="tc-sec"><div class="tc-h">Kept dying to the same hero</div><ul class="tc-nem">${kr.nemeses.map((n) => `<li>${hIcon(n.bySlug, 22)} <span><b>${esc(n.player)}</b> <span class="tc-n">(${esc(n.hero)})</span> died ${n.byCount} of ${n.deaths} to <b>${esc(n.byHero)}</b>.
-      ${n.enemyCc.length ? `<span class="tc-n">Watch ${esc(n.enemyCc.join(', '))}.</span>` : ''} ${n.playAgainst ? esc(n.playAgainst) : ''}${n.answer ? ` <b>${esc(n.answer)}</b>` : ''}</span></li>`).join('')}</ul></div>` : '';
+    // Grouped by the enemy hero; that enemy's counterplay is shown once, and not at all
+    // when it is already the threat above.
+    const nemBlock = kr && kr.nemeses.length ? (() => {
+      const by = new Map();
+      for (const n of kr.nemeses) { const g = by.get(n.bySlug) || { ...n, victims: [] }; g.victims.push(n); by.set(n.bySlug, g); }
+      const dot = (t) => { if (!t) return t; t = t.trim(); t = t.charAt(0).toUpperCase() + t.slice(1); return /[.!?]$/.test(t) ? t : `${t}.`; };
+      return `<div class="tc-sec"><div class="tc-h">Kept dying to the same hero</div><ul class="tc-nem">${[...by.values()].map((g) => {
+        const isThreat = kr.threat && kr.threat.slug === g.bySlug;
+        const answers = [...new Set(g.victims.map((v) => v.answer).filter(Boolean))];
+        return `<li>${hIcon(g.bySlug, 22)} <span><b>${esc(g.byHero)}</b> killed ${g.victims.map((v) => `<b>${esc(v.player)}</b> <span class="tc-n">(${esc(v.hero)})</span> ${v.byCount} of ${v.deaths}`).join(', ')}.
+        ${isThreat ? '<span class="tc-n">Counterplay above.</span>' : `${g.enemyCc.length ? `<span class="tc-n">Watch ${esc(g.enemyCc.join(', '))}.</span> ` : ''}${g.playAgainst ? esc(dot(g.playAgainst)) : ''}`}
+        ${answers.length ? ` <b>${esc(answers.join(' '))}</b>` : ''}</span></li>`; }).join('')}</ul></div>`;
+    })() : '';
     return card(`${eyebrow('Draft, comp &amp; kits', `${fails ? `${fails} of ${tc.checks.length} fundamentals missed` : 'all fundamentals covered'}`)}
       ${row(tc.us, 'Us', 'var(--green)')}${row(tc.them, 'Them', 'var(--red)')}
       <ul class="tc-checks">${checks}</ul>${swap}${threatBlock}${nemBlock}${ccBlock}

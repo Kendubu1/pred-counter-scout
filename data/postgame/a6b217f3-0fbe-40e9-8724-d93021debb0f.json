@@ -4942,6 +4942,54 @@
      "Peak kill lead +7 at 16.2m; kills ended 18-26.",
      "Team gold 71.2k vs 84.8k."
     ]
+   },
+   {
+    "id": "draft",
+    "kind": "draft",
+    "tone": "bad",
+    "summary": "draft broke the fundamentals: 1 tank, 2 divers vs 1 tank, 1 diver",
+    "evidence": [
+     "Us 1 tank, 2 divers (48.8% in 1.18 ranked) vs them 1 tank, 1 diver (50.9%).",
+     "2 divers (Shinbi, Serath): each one past the first is a hero not holding the line.",
+     "Draft fix: Shinbi (offlane) for a real tank: Kaelen 53.7%, Riktor 50.6%, Aurora 49.9%."
+    ]
+   },
+   {
+    "id": "threat",
+    "kind": "threat",
+    "tone": "bad",
+    "summary": "Feng Mao ran the game (15/2/1)",
+    "evidence": [
+     "Feng Mao 15/2/1, 60% of their kills, 41961 hero damage (the most in the game).",
+     "Killed Shinbi 7, Wraith 5, Serath 2, Steel 1.",
+     "Mobility: Reaping Dash, Earth Shatter.",
+     "Play against: bait Safeguard's Spellshield before committing your key CC; back off when low, since Earth Shatter executes and recasts on a kill; armor counters his physical damage",
+     "Answers: Physical armor on whoever it kept killing."
+    ]
+   },
+   {
+    "id": "nemesis:8f8a1346-8011-411c-aa95-f6d7de6b4c86",
+    "kind": "nemesis",
+    "tone": "bad",
+    "pid": "8f8a1346-8011-411c-aa95-f6d7de6b4c86",
+    "summary": "Shinbi kept dying to Feng Mao (7 of 8)",
+    "evidence": [
+     "Shinbi died 7 of 8 times to Feng Mao.",
+     "Play against Feng Mao: bait Safeguard's Spellshield before committing your key CC; back off when low, since Earth Shatter executes and recasts on a kill; armor counters his physical damage",
+     "Item answer: Physical armor."
+    ]
+   },
+   {
+    "id": "nemesis:a0c393cc-1437-4bdc-8168-64676ce2166c",
+    "kind": "nemesis",
+    "tone": "bad",
+    "pid": "a0c393cc-1437-4bdc-8168-64676ce2166c",
+    "summary": "Wraith kept dying to Feng Mao (5 of 8)",
+    "evidence": [
+     "Wraith died 5 of 8 times to Feng Mao.",
+     "Play against Feng Mao: bait Safeguard's Spellshield before committing your key CC; back off when low, since Earth Shatter executes and recasts on a kill; armor counters his physical damage",
+     "Item answer: Physical armor."
+    ]
    }
   ],
   "vision": {
@@ -5010,7 +5058,7 @@
      "name": "Shinbi",
      "role": "offlane",
      "tank": false,
-     "diver": false
+     "diver": true
     },
     {
      "slug": "serath",
@@ -5042,17 +5090,17 @@
     }
    ],
    "tanks": 1,
-   "divers": 1,
+   "divers": 2,
    "engage": 1,
    "mages": 0,
    "marksmen": 1,
    "style": "mixed",
-   "shape": "1t1d",
+   "shape": "1t2d",
    "shapeWr": {
-    "n": 1271,
-    "w": 647,
-    "wr": 50.9,
-    "ci95": 2.7
+    "n": 857,
+    "w": 418,
+    "wr": 48.8,
+    "ci95": 3.3
    }
   },
   "them": {
@@ -5112,8 +5160,8 @@
    "wr": 50
   },
   "diverEdge": {
-   "diff": 0,
-   "wr": 50
+   "diff": 1,
+   "wr": 48.5
   },
   "checks": [
    {
@@ -5128,8 +5176,8 @@
    },
    {
     "id": "divers",
-    "ok": true,
-    "text": "One diver (Serath)."
+    "ok": false,
+    "text": "2 divers (Shinbi, Serath): each one past the first is a hero not holding the line."
    },
    {
     "id": "damage",
@@ -5147,7 +5195,196 @@
     "text": "Steel can stay with the carry and peel."
    }
   ],
-  "swap": null,
-  "summary": "Draft: 1 tank, 1 diver vs their 1 tank, 1 diver. In 1.18 ranked, our shape won 50.9% and theirs 50.9%."
+  "swap": {
+   "role": "offlane",
+   "out": "Shinbi",
+   "reason": "Shinbi is a second diver",
+   "options": [
+    {
+     "slug": "kaelen",
+     "name": "Kaelen",
+     "wr": 53.7,
+     "n": 2613
+    },
+    {
+     "slug": "riktor",
+     "name": "Riktor",
+     "wr": 50.6,
+     "n": 1241
+    },
+    {
+     "slug": "aurora",
+     "name": "Aurora",
+     "wr": 49.9,
+     "n": 2939
+    }
+   ]
+  },
+  "summary": "Draft: 1 tank, 2 divers vs their 1 tank, 1 diver. In 1.18 ranked, our shape won 48.8% and theirs 50.9%."
+ },
+ "kitRead": {
+  "cc": {
+   "us": [
+    {
+     "hero": "Drongo",
+     "slug": "drongo",
+     "ability": "Gag Grenade",
+     "types": [
+      "silence"
+     ],
+     "sec": 1.2
+    },
+    {
+     "hero": "Drongo",
+     "slug": "drongo",
+     "ability": "Shrapnel Cannon",
+     "types": [
+      "knockback"
+     ],
+     "sec": null
+    },
+    {
+     "hero": "Steel",
+     "slug": "steel",
+     "ability": "Shield Bash",
+     "types": [
+      "stun"
+     ],
+     "sec": 0.5
+    },
+    {
+     "hero": "Steel",
+     "slug": "steel",
+     "ability": "Bull Rush",
+     "types": [
+      "knockback"
+     ],
+     "sec": null
+    },
+    {
+     "hero": "Steel",
+     "slug": "steel",
+     "ability": "Shield Slam",
+     "types": [
+      "knockup",
+      "stun"
+     ],
+     "sec": 1.5
+    }
+   ],
+   "them": [
+    {
+     "hero": "Aurora",
+     "slug": "aurora",
+     "ability": "Hoarfrost",
+     "types": [
+      "root"
+     ],
+     "sec": 1.2
+    },
+    {
+     "hero": "Aurora",
+     "slug": "aurora",
+     "ability": "Cryoseism",
+     "types": [
+      "stun"
+     ],
+     "sec": 1
+    },
+    {
+     "hero": "Gadget",
+     "slug": "gadget",
+     "ability": "Security Gate",
+     "types": [
+      "root"
+     ],
+     "sec": 1
+    },
+    {
+     "hero": "Lt. Belica",
+     "slug": "lt-belica",
+     "ability": "Seismic Assault",
+     "types": [
+      "stun",
+      "knockup"
+     ],
+     "sec": 1.4
+    },
+    {
+     "hero": "Lt. Belica",
+     "slug": "lt-belica",
+     "ability": "Neural Disruptor",
+     "types": [
+      "silence"
+     ],
+     "sec": 0.5
+    }
+   ],
+   "note": "Crowd control was close: 5 hard-CC abilities for us, 5 for them."
+  },
+  "threat": {
+   "pid": "ed1d4033-a5ea-41da-ab28-02863b5a8725",
+   "hero": "Feng Mao",
+   "slug": "feng-mao",
+   "role": "jungle",
+   "kda": "15/2/1",
+   "kills": 15,
+   "killShare": 60,
+   "damage": 41961,
+   "topDamage": true,
+   "victims": [
+    {
+     "hero": "Shinbi",
+     "count": 7
+    },
+    {
+     "hero": "Wraith",
+     "count": 5
+    },
+    {
+     "hero": "Serath",
+     "count": 2
+    },
+    {
+     "hero": "Steel",
+     "count": 1
+    }
+   ],
+   "kit": [
+    "Mobility: Reaping Dash, Earth Shatter."
+   ],
+   "playAgainst": "bait Safeguard's Spellshield before committing your key CC; back off when low, since Earth Shatter executes and recasts on a kill; armor counters his physical damage",
+   "answers": [
+    "Physical armor on whoever it kept killing."
+   ]
+  },
+  "nemeses": [
+   {
+    "pid": "8f8a1346-8011-411c-aa95-f6d7de6b4c86",
+    "player": "🎮 private",
+    "hero": "Shinbi",
+    "role": "offlane",
+    "deaths": 8,
+    "byHero": "Feng Mao",
+    "bySlug": "feng-mao",
+    "byCount": 7,
+    "enemyCc": [],
+    "playAgainst": "bait Safeguard's Spellshield before committing your key CC; back off when low, since Earth Shatter executes and recasts on a kill; armor counters his physical damage",
+    "answer": "Physical armor."
+   },
+   {
+    "pid": "a0c393cc-1437-4bdc-8168-64676ce2166c",
+    "player": "Cuban Noobster",
+    "hero": "Wraith",
+    "role": "midlane",
+    "deaths": 8,
+    "byHero": "Feng Mao",
+    "bySlug": "feng-mao",
+    "byCount": 5,
+    "enemyCc": [],
+    "playAgainst": "bait Safeguard's Spellshield before committing your key CC; back off when low, since Earth Shatter executes and recasts on a kill; armor counters his physical damage",
+    "answer": "Physical armor."
+   }
+  ]
  }
 }

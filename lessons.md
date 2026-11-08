@@ -5710,3 +5710,25 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   so it did not belong among what lost it. Draft lines may cite the field's shape win rate,
   never claim the draft caused an event. A critic rewrite over the field's word limit is
   silently skipped by the applier; check `applied N` against the flag count.
+
+## 2026-11-08 — Kit read in every review; every hero's kit re-scanned (maintainer ask)
+
+- **The old kit section ran on pre-1.14 data.** hero-abilities.json had no entry for six
+  heroes (Kaelen, Legion, Adele, Neon, Scarlett, Valmont) and only 25 CC effects across 50
+  heroes, so "who has the CC" was mostly blank. The catalog marks every CC effect with
+  <CC_Text>; src/kit-index.ts parses it (`npm run kit:index` -> data/game-data/kit-index.json).
+- **The parse needed the scan.** Four agents checked 14 heroes each against the catalog text:
+  59 ability corrections, 56 profiles (7 new). Typical misses: a CC that hits the caster
+  (Legion's Frag Order stuns Legion; Kaelen's Razorstorm and Kira's Purge slow themselves), CC on
+  an ally (Phase's Telekinetic Link), immunities read as CC (Argus's ult), and stale profile
+  claims (Sparrow "zero escape", Riktor "self-shield"). Corrections are keyed by catalog text
+  hash in kit-index-review.json, so a patch that rewrites an ability drops its correction and
+  kit:index lists the hero for re-scan instead of applying a stale fix.
+- **Open rulings the scan raised:** whether damage reduction or a Spellshield counts as a
+  shield (Adele E yes, Boris E no, Feng Mao no); Steel's Bull Rush game text says it stuns
+  heroes, the menu text says only minions (kept knockback only); Wraith's Back It Up! fits no
+  CC type. All in each hero's `note`.
+- **The review groups nemeses by the enemy hero** and shows that enemy's counterplay once,
+  "Counterplay above" when it is the threat: the first render repeated Sparrow's line three times.
+- Flags `threat`, `nemesis:<pid>` and `cc-gap` (losses only) let the written review cite the
+  kit read; recomputing gameFlags on all 223 films broke no published flag ref.

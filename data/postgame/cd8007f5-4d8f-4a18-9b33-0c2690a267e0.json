@@ -3518,12 +3518,51 @@
     "id": "draft",
     "kind": "draft",
     "tone": "bad",
-    "summary": "draft broke the fundamentals: 1 tank, 2 divers vs 1 tank, 2 divers",
+    "summary": "draft broke the fundamentals: 1 tank, 2 divers vs 1 tank, 3 divers",
     "evidence": [
-     "Us 1 tank, 2 divers (48.8% in 1.18 ranked) vs them 1 tank, 2 divers (48.8%).",
+     "Us 1 tank, 2 divers (48.8% in 1.18 ranked) vs them 1 tank, 3 divers (48.8%).",
      "2 divers (Khaimera, Scarlett): each one past the first is a hero not holding the line.",
      "Scarlett at support is a diver: nobody stays with the carry.",
-     "Draft fix: Scarlett (support) for a real tank: Kaelen 60.9%, Aurora 52.6%, Steel 50.9%."
+     "Draft fix: Scarlett (support) for a real tank: Kaelen 60.2%, Aurora 51.7%, Steel 51.3%."
+    ]
+   },
+   {
+    "id": "threat",
+    "kind": "threat",
+    "tone": "bad",
+    "summary": "Eden ran the game (8/0/7)",
+    "evidence": [
+     "Eden 8/0/7, 33% of their kills, 21252 hero damage (the most in the game).",
+     "Killed Scarlett 4, Khaimera 2, Murdock 1, The Fey 1.",
+     "Mobility: Sidewind/Talon Drive, Limit Break.",
+     "Self-healing in the kit (Zero Shift).",
+     "Play against: disengage to let her Heat decay before she Overheats; punish melee stance after Talon Drive is spent, and buy anti-heal against her melee stance healing; armor blunts her physical damage",
+     "Answers: Physical armor on whoever it kept killing. Anti-heal: Tainted Blade, or Tainted Rounds."
+    ]
+   },
+   {
+    "id": "nemesis:2d772a76-392a-4e6b-aa2a-17643915291d",
+    "kind": "nemesis",
+    "tone": "bad",
+    "pid": "2d772a76-392a-4e6b-aa2a-17643915291d",
+    "summary": "Scarlett kept dying to Eden (4 of 9)",
+    "evidence": [
+     "Scarlett died 4 of 9 times to Eden.",
+     "Play against Eden: disengage to let her Heat decay before she Overheats; punish melee stance after Talon Drive is spent, and buy anti-heal against her melee stance healing; armor blunts her physical damage",
+     "Item answer: Anti-heal: Tainted Blade."
+    ]
+   },
+   {
+    "id": "nemesis:b2f6ff63-0e68-4905-9ff7-1bed72c9ff1f",
+    "kind": "nemesis",
+    "tone": "bad",
+    "pid": "b2f6ff63-0e68-4905-9ff7-1bed72c9ff1f",
+    "summary": "The Fey kept dying to Gideon (4 of 7)",
+    "evidence": [
+     "The Fey died 4 of 7 times to Gideon.",
+     "Gideon's hard CC: Black Hole (pull), Cosmic Power (root).",
+     "Play against Gideon: dodge Void Breach and Cosmic Rift; Torn Space is his only escape, so dive him after it is used; walk out of Black Hole early since it drags slowly; magic armor blunts his burst",
+     "Item answer: Tenacity: World Breaker."
     ]
    }
   ],
@@ -3662,15 +3701,15 @@
      "name": "Kaelen",
      "role": "support",
      "tank": true,
-     "diver": false
+     "diver": true
     }
    ],
    "tanks": 1,
-   "divers": 2,
-   "engage": 2,
+   "divers": 3,
+   "engage": 0,
    "mages": 1,
    "marksmen": 1,
-   "style": "brawl",
+   "style": "dive",
    "shape": "1t2d",
    "shapeWr": {
     "n": 857,
@@ -3684,8 +3723,8 @@
    "wr": 50
   },
   "diverEdge": {
-   "diff": 0,
-   "wr": 50
+   "diff": -1,
+   "wr": 51.5
   },
   "checks": [
    {
@@ -3727,23 +3766,228 @@
     {
      "slug": "kaelen",
      "name": "Kaelen",
-     "wr": 60.9,
-     "n": 476
+     "wr": 60.2,
+     "n": 633
     },
     {
      "slug": "aurora",
      "name": "Aurora",
-     "wr": 52.6,
-     "n": 783
+     "wr": 51.7,
+     "n": 1000
     },
     {
      "slug": "steel",
      "name": "Steel",
-     "wr": 50.9,
-     "n": 6284
+     "wr": 51.3,
+     "n": 8140
     }
    ]
   },
-  "summary": "Draft: 1 tank, 2 divers vs their 1 tank, 2 divers. In 1.18 ranked, our shape won 48.8% and theirs 48.8%."
+  "summary": "Draft: 1 tank, 2 divers vs their 1 tank, 3 divers. In 1.18 ranked, our shape won 48.8% and theirs 48.8%."
+ },
+ "kitRead": {
+  "cc": {
+   "us": [
+    {
+     "hero": "Scarlett",
+     "slug": "scarlett",
+     "ability": "Swan Song",
+     "types": [
+      "root"
+     ],
+     "sec": 1.4
+    },
+    {
+     "hero": "Murdock",
+     "slug": "murdock",
+     "ability": "Buckshot",
+     "types": [
+      "knockback"
+     ],
+     "sec": null
+    },
+    {
+     "hero": "Murdock",
+     "slug": "murdock",
+     "ability": "Static Trap",
+     "types": [
+      "root"
+     ],
+     "sec": 1.25
+    },
+    {
+     "hero": "Aurora",
+     "slug": "aurora",
+     "ability": "Hoarfrost",
+     "types": [
+      "root"
+     ],
+     "sec": 1.2
+    },
+    {
+     "hero": "Aurora",
+     "slug": "aurora",
+     "ability": "Cryoseism",
+     "types": [
+      "stun"
+     ],
+     "sec": 1
+    },
+    {
+     "hero": "The Fey",
+     "slug": "the-fey",
+     "ability": "Fly Trap",
+     "types": [
+      "pull",
+      "stun"
+     ],
+     "sec": 1
+    },
+    {
+     "hero": "Khaimera",
+     "slug": "khaimera",
+     "ability": "Cull",
+     "types": [
+      "suppress"
+     ],
+     "sec": 1.25
+    }
+   ],
+   "them": [
+    {
+     "hero": "Gideon",
+     "slug": "gideon",
+     "ability": "Black Hole",
+     "types": [
+      "pull"
+     ],
+     "sec": null
+    },
+    {
+     "hero": "Gideon",
+     "slug": "gideon",
+     "ability": "Cosmic Power",
+     "types": [
+      "root"
+     ],
+     "sec": 1
+    },
+    {
+     "hero": "Boris",
+     "slug": "boris",
+     "ability": "Primeval Roar",
+     "types": [
+      "fear"
+     ],
+     "sec": 1
+    },
+    {
+     "hero": "Boris",
+     "slug": "boris",
+     "ability": "Ursine Burst",
+     "types": [
+      "pull"
+     ],
+     "sec": null
+    },
+    {
+     "hero": "Kaelen",
+     "slug": "kaelen",
+     "ability": "Rimefang",
+     "types": [
+      "stun"
+     ],
+     "sec": 0.2
+    },
+    {
+     "hero": "Kaelen",
+     "slug": "kaelen",
+     "ability": "Winter's Pursuit",
+     "types": [
+      "root"
+     ],
+     "sec": 1.2
+    },
+    {
+     "hero": "Kaelen",
+     "slug": "kaelen",
+     "ability": "Frostfall",
+     "types": [
+      "root"
+     ],
+     "sec": 1.5
+    }
+   ],
+   "note": "Crowd control was close: 7 hard-CC abilities for us, 7 for them."
+  },
+  "threat": {
+   "pid": "333788f1-8e69-41f1-ba56-a5fb520b526c",
+   "hero": "Eden",
+   "slug": "eden",
+   "role": "carry",
+   "kda": "8/0/7",
+   "kills": 8,
+   "killShare": 33,
+   "damage": 21252,
+   "topDamage": true,
+   "victims": [
+    {
+     "hero": "Scarlett",
+     "count": 4
+    },
+    {
+     "hero": "Khaimera",
+     "count": 2
+    },
+    {
+     "hero": "Murdock",
+     "count": 1
+    },
+    {
+     "hero": "The Fey",
+     "count": 1
+    }
+   ],
+   "kit": [
+    "Mobility: Sidewind/Talon Drive, Limit Break.",
+    "Self-healing in the kit (Zero Shift)."
+   ],
+   "playAgainst": "disengage to let her Heat decay before she Overheats; punish melee stance after Talon Drive is spent, and buy anti-heal against her melee stance healing; armor blunts her physical damage",
+   "answers": [
+    "Physical armor on whoever it kept killing.",
+    "Anti-heal: Tainted Blade, or Tainted Rounds."
+   ]
+  },
+  "nemeses": [
+   {
+    "pid": "2d772a76-392a-4e6b-aa2a-17643915291d",
+    "player": "mikelldamien2",
+    "hero": "Scarlett",
+    "role": "support",
+    "deaths": 9,
+    "byHero": "Eden",
+    "bySlug": "eden",
+    "byCount": 4,
+    "enemyCc": [],
+    "playAgainst": "disengage to let her Heat decay before she Overheats; punish melee stance after Talon Drive is spent, and buy anti-heal against her melee stance healing; armor blunts her physical damage",
+    "answer": "Anti-heal: Tainted Blade."
+   },
+   {
+    "pid": "b2f6ff63-0e68-4905-9ff7-1bed72c9ff1f",
+    "player": "HurricaneClitrin...",
+    "hero": "The Fey",
+    "role": "midlane",
+    "deaths": 7,
+    "byHero": "Gideon",
+    "bySlug": "gideon",
+    "byCount": 4,
+    "enemyCc": [
+     "Black Hole (pull)",
+     "Cosmic Power (root)"
+    ],
+    "playAgainst": "dodge Void Breach and Cosmic Rift; Torn Space is his only escape, so dive him after it is used; walk out of Black Hole early since it drags slowly; magic armor blunts his burst",
+    "answer": "Tenacity: World Breaker."
+   }
+  ]
  }
 }

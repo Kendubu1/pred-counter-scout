@@ -4128,6 +4128,46 @@
     "evidence": [
      "8/3/3, 45815 hero damage, the most in the game."
     ]
+   },
+   {
+    "id": "draft",
+    "kind": "draft",
+    "tone": "bad",
+    "summary": "draft broke the fundamentals: 0 tanks, 2 divers vs 2 tanks, 1 diver",
+    "evidence": [
+     "Us 0 tanks, 2 divers (48% in 1.18 ranked) vs them 2 tanks, 1 diver (53.1%).",
+     "No real tank: nobody to start fights or take the first hits for the backline.",
+     "Out-tanked 0 v 2: teams two tanks down won 44.1% in 1.18.",
+     "2 divers (Shinbi, Khaimera): each one past the first is a hero not holding the line.",
+     "Draft fix: Shinbi (offlane) for a real tank: Kaelen 53.7%, Riktor 50.6%, Aurora 49.9%."
+    ]
+   },
+   {
+    "id": "threat",
+    "kind": "threat",
+    "tone": "bad",
+    "summary": "Aurora ran the game (7/3/2)",
+    "evidence": [
+     "Aurora 7/3/2, 47% of their kills, 31730 hero damage.",
+     "Killed Shinbi 4, Khaimera 1, Murdock 1, Morigesh 1.",
+     "Hard CC: Hoarfrost (root), Cryoseism (stun).",
+     "Mobility: Glacial Charge, Frozen Simulacrum.",
+     "Play against: do not walk into the Hoarfrost ring while it persists; Cryoseism slows before it stuns, so cleanse or tenacity help, and spread so the explosion does not chain; she is weak once Glacial Charge is down",
+     "Answers: Magical armor on whoever it kept killing. Tenacity on the players it caught."
+    ]
+   },
+   {
+    "id": "nemesis:6d36fb50-4b1b-411f-98ee-4645d49feb5d",
+    "kind": "nemesis",
+    "tone": "bad",
+    "pid": "6d36fb50-4b1b-411f-98ee-4645d49feb5d",
+    "summary": "Shinbi kept dying to Aurora (4 of 4)",
+    "evidence": [
+     "Shinbi died 4 of 4 times to Aurora.",
+     "Aurora's hard CC: Hoarfrost (root), Cryoseism (stun).",
+     "Play against Aurora: do not walk into the Hoarfrost ring while it persists; Cryoseism slows before it stuns, so cleanse or tenacity help, and spread so the explosion does not chain; she is weak once Glacial Charge is down",
+     "Item answer: Tenacity: World Breaker."
+    ]
    }
   ],
   "vision": {
@@ -4461,7 +4501,7 @@
      "name": "Shinbi",
      "role": "offlane",
      "tank": false,
-     "diver": false
+     "diver": true
     },
     {
      "slug": "khaimera",
@@ -4493,17 +4533,17 @@
     }
    ],
    "tanks": 0,
-   "divers": 1,
+   "divers": 2,
    "engage": 1,
    "mages": 1,
    "marksmen": 1,
    "style": "mixed",
-   "shape": "0t1d",
+   "shape": "0t2d",
    "shapeWr": {
-    "n": 477,
-    "w": 216,
-    "wr": 45.3,
-    "ci95": 4.5
+    "n": 1252,
+    "w": 601,
+    "wr": 48,
+    "ci95": 2.8
    }
   },
   "them": {
@@ -4563,8 +4603,8 @@
    "wr": 44.1
   },
   "diverEdge": {
-   "diff": 0,
-   "wr": 50
+   "diff": 1,
+   "wr": 48.5
   },
   "checks": [
    {
@@ -4579,8 +4619,8 @@
    },
    {
     "id": "divers",
-    "ok": true,
-    "text": "One diver (Khaimera)."
+    "ok": false,
+    "text": "2 divers (Shinbi, Khaimera): each one past the first is a hero not holding the line."
    },
    {
     "id": "damage",
@@ -4601,28 +4641,205 @@
   "swap": {
    "role": "offlane",
    "out": "Shinbi",
-   "reason": "the team has no real tank",
+   "reason": "Shinbi is a second diver",
    "options": [
     {
      "slug": "kaelen",
      "name": "Kaelen",
-     "wr": 53.3,
-     "n": 1999
+     "wr": 53.7,
+     "n": 2613
     },
     {
      "slug": "riktor",
      "name": "Riktor",
-     "wr": 52,
-     "n": 972
+     "wr": 50.6,
+     "n": 1241
     },
     {
      "slug": "aurora",
      "name": "Aurora",
-     "wr": 50.9,
-     "n": 2287
+     "wr": 49.9,
+     "n": 2939
     }
    ]
   },
-  "summary": "Draft: 0 tanks, 1 diver vs their 2 tanks, 1 diver. In 1.18 ranked, our shape won 45.3% and theirs 53.1%."
+  "summary": "Draft: 0 tanks, 2 divers vs their 2 tanks, 1 diver. In 1.18 ranked, our shape won 48% and theirs 53.1%."
+ },
+ "kitRead": {
+  "cc": {
+   "us": [
+    {
+     "hero": "Murdock",
+     "slug": "murdock",
+     "ability": "Buckshot",
+     "types": [
+      "knockback"
+     ],
+     "sec": null
+    },
+    {
+     "hero": "Murdock",
+     "slug": "murdock",
+     "ability": "Static Trap",
+     "types": [
+      "root"
+     ],
+     "sec": 1.25
+    },
+    {
+     "hero": "Narbash",
+     "slug": "narbash",
+     "ability": "Thunk",
+     "types": [
+      "knockback",
+      "stun"
+     ],
+     "sec": 1.3
+    },
+    {
+     "hero": "Narbash",
+     "slug": "narbash",
+     "ability": "Crash Bang Boom!",
+     "types": [
+      "sleep",
+      "knockup",
+      "stun"
+     ],
+     "sec": 0.5
+    },
+    {
+     "hero": "Khaimera",
+     "slug": "khaimera",
+     "ability": "Cull",
+     "types": [
+      "suppress"
+     ],
+     "sec": 1.25
+    }
+   ],
+   "them": [
+    {
+     "hero": "Aurora",
+     "slug": "aurora",
+     "ability": "Hoarfrost",
+     "types": [
+      "root"
+     ],
+     "sec": 1.2
+    },
+    {
+     "hero": "Aurora",
+     "slug": "aurora",
+     "ability": "Cryoseism",
+     "types": [
+      "stun"
+     ],
+     "sec": 1
+    },
+    {
+     "hero": "Riktor",
+     "slug": "riktor",
+     "ability": "Riplash",
+     "types": [
+      "pull"
+     ],
+     "sec": null
+    },
+    {
+     "hero": "Riktor",
+     "slug": "riktor",
+     "ability": "Shock Therapy",
+     "types": [
+      "silence"
+     ],
+     "sec": 0.8
+    },
+    {
+     "hero": "Riktor",
+     "slug": "riktor",
+     "ability": "Skewer",
+     "types": [
+      "suppress"
+     ],
+     "sec": 1.3
+    },
+    {
+     "hero": "Zarus",
+     "slug": "zarus",
+     "ability": "Barricade",
+     "types": [
+      "stun"
+     ],
+     "sec": 0.75
+    },
+    {
+     "hero": "The Fey",
+     "slug": "the-fey",
+     "ability": "Fly Trap",
+     "types": [
+      "pull",
+      "stun"
+     ],
+     "sec": 1
+    }
+   ],
+   "note": "Crowd control was close: 5 hard-CC abilities for us, 7 for them."
+  },
+  "threat": {
+   "pid": "cd0188fa-9894-4564-91f6-93588a503c8e",
+   "hero": "Aurora",
+   "slug": "aurora",
+   "role": "offlane",
+   "kda": "7/3/2",
+   "kills": 7,
+   "killShare": 47,
+   "damage": 31730,
+   "topDamage": false,
+   "victims": [
+    {
+     "hero": "Shinbi",
+     "count": 4
+    },
+    {
+     "hero": "Khaimera",
+     "count": 1
+    },
+    {
+     "hero": "Murdock",
+     "count": 1
+    },
+    {
+     "hero": "Morigesh",
+     "count": 1
+    }
+   ],
+   "kit": [
+    "Hard CC: Hoarfrost (root), Cryoseism (stun).",
+    "Mobility: Glacial Charge, Frozen Simulacrum."
+   ],
+   "playAgainst": "do not walk into the Hoarfrost ring while it persists; Cryoseism slows before it stuns, so cleanse or tenacity help, and spread so the explosion does not chain; she is weak once Glacial Charge is down",
+   "answers": [
+    "Magical armor on whoever it kept killing.",
+    "Tenacity on the players it caught."
+   ]
+  },
+  "nemeses": [
+   {
+    "pid": "6d36fb50-4b1b-411f-98ee-4645d49feb5d",
+    "player": "Redhot Beefstain",
+    "hero": "Shinbi",
+    "role": "offlane",
+    "deaths": 4,
+    "byHero": "Aurora",
+    "bySlug": "aurora",
+    "byCount": 4,
+    "enemyCc": [
+     "Hoarfrost (root)",
+     "Cryoseism (stun)"
+    ],
+    "playAgainst": "do not walk into the Hoarfrost ring while it persists; Cryoseism slows before it stuns, so cleanse or tenacity help, and spread so the explosion does not chain; she is weak once Glacial Charge is down",
+    "answer": "Tenacity: World Breaker."
+   }
+  ]
  }
 }
