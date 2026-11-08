@@ -5837,3 +5837,17 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   the lean spec so the author writes them right the first time.
 - The number check must accept the brief's derived numbers (kill participation, baselines),
   not only the raw facts: the author was blocked on true figures it was shown.
+## 2026-11-08 · Link previews: every page labeled, game reviews linkable
+- iMessage builds its preview after the page's scripts run, so a JS `document.title` wins over the
+  static `<title>`: coach.html's stale "Coach reports · pick a member" (from when the page was a
+  roster) is what showed. With no og:image AND no icon, iMessage falls back to a big snapshot of the
+  page; giving every page an apple-touch-icon (ui/img/brand/, rendered from logo.svg) plus a
+  `summary` card gets the compact text card.
+- `npm run ui:share` now stamps the same head block (og title/description/url, summary card, icons)
+  on every live page in its LABELED list, not just the three pages with section links; a page
+  without `<meta name="description">` fails the script. Add new live pages to LABELED.
+- Pages that relabel themselves (coach.html per game/player, index.html per hero) call
+  `setLabel()`, which updates og:title/description/url with the title.
+- Coach game reviews: `coach.html?game=<matchId>` opens that game; a click puts it in the address
+  bar. The plain page keeps the generic label even though it auto-opens the newest game, so a bare
+  link never previews as whichever game happens to be newest.

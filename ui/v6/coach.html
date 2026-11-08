@@ -4,7 +4,19 @@
 <script src="sim-flag.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Coach report · Pred Scout</title>
+<title>Post-game reviews · Pred Scout</title>
+<meta name="description" content="Post-game reviews of our squad's ranked Predecessor games: what went right, what to fix, and each player's build and lane.">
+<!-- share:begin (engine/scripts/share-pages.mjs) -->
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Pred Scout">
+<meta property="og:title" content="Post-game reviews · Pred Scout">
+<meta property="og:description" content="Post-game reviews of our squad's ranked Predecessor games: what went right, what to fix, and each player's build and lane.">
+<meta property="og:url" content="https://kendubu1.github.io/pred-counter-scout/ui/v6/coach.html">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/brand/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="../img/brand/logo.svg">
+<link rel="apple-touch-icon" href="../img/brand/apple-touch-icon.png">
+<!-- share:end -->
 <style>
   :root {
     --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
@@ -176,7 +188,7 @@
   .tc-tag.tc-engage{background:rgba(220,60,60,.16);color:#ff7a7a}.tc-tag.tc-peel{background:rgba(0,196,140,.14);color:#3fd3a7}
   .tc-tag.tc-control{background:rgba(168,85,247,.16);color:#c08bff}.tc-tag.tc-burst{background:rgba(255,200,60,.14);color:#e8b84a}
   .tc-tag.tc-poke,.tc-tag.tc-dps,.tc-tag.tc-sustain,.tc-tag.tc-duelist{background:rgba(150,150,170,.16);color:var(--text-1)}
-  .tc-bal{width:100%;border-collapse:collapse;margin-top:.5rem;font-size:.74rem;text-align:center}
+  .tc-bal{width:100%;max-width:100%;table-layout:fixed;border-collapse:collapse;margin-top:.5rem;font-size:.74rem;text-align:center}.tc-bal thead th:first-child{width:2.6rem}.tc-bal .sh{display:none;text-transform:none}.tc-bal .sh::first-letter{text-transform:uppercase}
   .tc-bal th,.tc-bal td{padding:.2rem .15rem;border-top:1px solid var(--border)}.tc-bal thead th{color:var(--text-2);font-weight:600;text-transform:capitalize}
   .tc-bal tbody th{text-align:left;font-weight:800}.tc-bal td{font-weight:700;color:var(--text-0)}.tc-bal td.tc-zero{color:var(--text-2);font-weight:400;opacity:.6}
   .tc-grid{display:grid;grid-template-columns:1fr;gap:0 1.2rem}
@@ -185,7 +197,7 @@
   .bn-k{display:inline-block;min-width:5.6rem;color:var(--text-2);font-size:.72rem;text-transform:uppercase;letter-spacing:.02em}
   .bn-n{color:var(--text-2);font-size:.74rem}.bn img.bn-i{display:inline-block!important;width:20px;height:20px;border-radius:4px;vertical-align:-5px;margin-right:2px;border:1px solid var(--border)}.bn-i.off{opacity:.35;filter:grayscale(.8)}
   .bn-shared{color:var(--gold);font-size:.82rem;margin:.1rem 0 .4rem}
-  @media (max-width:560px){.tc-bal{font-size:.62rem}.bn-k{min-width:4.6rem}}
+  @media (max-width:560px){.tc-bal{font-size:.62rem}.tc-bal thead th:first-child{width:2.2rem}.tc-bal .lg{display:none}.tc-bal .sh{display:inline}.bn-k{min-width:4.6rem}}
   .cv-toggle{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem;font-size:.74rem;color:var(--text-2)}
   .build-call{margin:.35rem 0 0;font-size:.86rem;color:var(--text-1);line-height:1.5}.build-call b{color:var(--text-0);margin-right:.3rem}
   .rd-box{margin-top:.7rem;text-align:center}
@@ -913,8 +925,9 @@ function pgReview(f) {
     const balance = (() => {
       if (!tc.us.balance) return '';
       const keys = ['tank', 'engage', 'peel', 'control', 'diver', 'burst', 'poke', 'dps', 'sustain', 'duelist'];
+      const SHORT = { engage: 'eng', control: 'ctrl', diver: 'dive', sustain: 'sus', duelist: 'duel', burst: 'brst', dps: 'DPS' };
       const cell = (n) => `<td class="${n ? '' : 'tc-zero'}">${n || 0}</td>`;
-      return `<table class="tc-bal"><thead><tr><th></th>${keys.map((k) => `<th title="${esc(TAG_TIP[k])}">${k}</th>`).join('')}</tr></thead><tbody>
+      return `<table class="tc-bal"><thead><tr><th></th>${keys.map((k) => `<th title="${esc(k)}: ${esc(TAG_TIP[k])}"><span class="lg">${k === 'dps' ? 'DPS' : k}</span><span class="sh">${SHORT[k] || k}</span></th>`).join('')}</tr></thead><tbody>
         <tr><th style="color:var(--green)">Us</th>${keys.map((k) => cell(tc.us.balance[k])).join('')}</tr>
         <tr><th style="color:var(--red)">Them</th>${keys.map((k) => cell(tc.them.balance[k])).join('')}</tr></tbody></table>`;
     })();
@@ -1363,6 +1376,14 @@ async function fillEternals() {
 }
 
 
+// Keep the link-preview tags in step with the title (iMessage reads them after scripts run).
+function setLabel(title, desc) {
+  document.title = title;
+  const set = (sel, v) => { const el = document.querySelector(sel); if (el && v) el.setAttribute('content', v); };
+  set('meta[property="og:title"]', title);
+  set('meta[name="description"]', desc); set('meta[property="og:description"]', desc);
+  set('meta[property="og:url"]', location.href);
+}
 (async () => {
   let c;
   const who = new URLSearchParams(location.search).get('player');
@@ -1373,7 +1394,7 @@ async function fillEternals() {
     let sq = null;
     try { sq = await (await fetch('../../data/artifacts/squad.json')).json(); } catch {}
     if (sq) {
-      document.title = 'Coach reports · pick a member';
+      setLabel('Post-game reviews · Pred Scout');
       // Post-game reviews of the squad's recent ranked games (committed, zero-API).
       // Only the small index loads up front; each match's full facts are fetched
       // lazily on click (and cached), so the list scales to any number of games.
@@ -1406,6 +1427,11 @@ async function fillEternals() {
         const stacks = [...new Set(pgList.map((m) => m.stackSize).filter(Boolean))].sort((a, b) => b - a);
         const fmtDate = (iso) => new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
         let filter = 'all', cur = 0;
+        // ?game=<matchId> opens that game; picking a game puts its link in the
+        // address bar so a copied/shared link opens the same review.
+        const wantGame = new URLSearchParams(location.search).get('game');
+        const fmtMembers = (m) => (m.members || []).join(', ');
+        const gameTitle = (m) => `${m.result === 'win' ? 'Win' : 'Loss'} · ${fmtDate(m.startTime)}${m.members?.length ? ` · ${fmtMembers(m)}` : ''} · Post-game review · Pred Scout`;
         const visible = () => filter === 'all' ? pgList : pgList.filter((m) => String(m.stackSize) === filter);
         // W-L summary reflects the active filter
         const updateSub = () => {
@@ -1420,11 +1446,16 @@ async function fillEternals() {
                 .map(([v, label]) => `<button class="pgf${filter === v ? ' on' : ''}" data-f="${v}">${label}</button>`).join('')
             : '';
         };
-        const draw = async (i) => {
+        // `chosen`: a click or a ?game= link. Only then does the page take that
+        // game's name and address; the plain page keeps "Post-game reviews".
+        const draw = async (i, chosen = true) => {
           cur = i;
           [...pick.children].forEach((b, j) => b.classList.toggle('on', j === i));
           const m = visible()[i];
           if (!m) { view.innerHTML = ''; return; }
+          try { const u = new URL(location.href); if (chosen) u.searchParams.set('game', m.matchId); else u.searchParams.delete('game'); history.replaceState(null, '', u); } catch {}
+          if (!chosen) setLabel('Post-game reviews · Pred Scout', "Post-game reviews of our squad's ranked Predecessor games: what went right, what to fix, and each player's build and lane.");
+          else setLabel(gameTitle(m), `${m.result === 'win' ? 'Win' : 'Loss'} on ${fmtDate(m.startTime)}, ${m.durationMin} min${m.stackSize ? `, ${m.stackSize}-stack` : ''}: the post-game review of this ranked game.`);
           view.innerHTML = '<div style="color:var(--text-2);padding:1rem .2rem">loading…</div>';
           try { view.innerHTML = pgReview(await loadGame(m.matchId)); fillEternals(); }
           catch { view.innerHTML = '<div style="color:var(--red);padding:1rem .2rem">could not load this match</div>'; }
@@ -1449,12 +1480,18 @@ async function fillEternals() {
           filterEl.onclick = (e) => {
             const b = e.target.closest('.pgf'); if (!b) return;
             filter = b.dataset.f; cur = 0;
-            renderFilter(); renderChips(); draw(0); updateSub();
+            renderFilter(); renderChips(); draw(0, false); updateSub();
           };
         }
+        if (wantGame && !visible().some((m) => m.matchId === wantGame)) filter = 'all';
+        const found = wantGame ? visible().findIndex((m) => m.matchId === wantGame) : -1;
+        const start = Math.max(0, found);
+        cur = start;
+        if (stacks.length > 1) renderFilter();
         updateSub();
         renderChips();
-        draw(0);
+        draw(start, found >= 0);
+        if (start) pick.children[start]?.scrollIntoView({ block: 'nearest', inline: 'center' });
       }
       return;
     }
@@ -1463,7 +1500,7 @@ async function fillEternals() {
   const src = who ? `../../data/artifacts/players/${who}.json` : '../../data/artifacts/coach.json';
   try { c = await (await fetch(src)).json(); }
   catch { document.getElementById('page').textContent = 'no coach report generated yet'; return; }
-  document.title = `${c.player.name} · coach report`;
+  setLabel(`${c.player.name} · Coach report · Pred Scout`, `${c.player.name}'s coach report: what to keep doing, what to work on, and the road to the next rank.`);
   // A personal report belongs to the Reports tab, not the game reviews.
   document.querySelectorAll('.top .navlink').forEach((a) => a.classList.toggle('active', a.getAttribute('href') === 'reports.html'));
   const p = c.player;
