@@ -5,7 +5,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pred Scout — Pick &amp; Build</title>
-<meta name="description" content="Predecessor builds, counters, and Eternals: what to build, when it spikes, and why — a kit-math simulator cross-checked against real match data.">
+<meta name="description" content="Predecessor builds, counters and Eternals for every hero and lane, from real ranked match data: what to build, what to pick, and who beats whom.">
+<!-- share:begin (engine/scripts/share-pages.mjs) -->
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Pred Scout">
+<meta property="og:title" content="Pred Scout — Pick &amp; Build">
+<meta property="og:description" content="Predecessor builds, counters and Eternals for every hero and lane, from real ranked match data: what to build, what to pick, and who beats whom.">
+<meta property="og:url" content="https://kendubu1.github.io/pred-counter-scout/ui/v6/index.html">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/brand/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="../img/brand/logo.svg">
+<link rel="apple-touch-icon" href="../img/brand/apple-touch-icon.png">
+<!-- share:end -->
 <style>
   :root {
     --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
@@ -2527,6 +2538,14 @@ async function getAugs() {
   return AUGS;
 }
 
+// Keep the link-preview tags in step with the title (iMessage reads them after scripts run).
+function setLabel(title, desc) {
+  document.title = title;
+  const set = (sel, v) => { const el = document.querySelector(sel); if (el && v) el.setAttribute('content', v); };
+  set('meta[property="og:title"]', title);
+  set('meta[name="description"]', desc); set('meta[property="og:description"]', desc);
+  set('meta[property="og:url"]', location.href);
+}
 async function route() {
   const params = new URLSearchParams(location.search);
   // ?counter=<slug> — the global-search "how do I beat X" deep link: open the
@@ -2543,7 +2562,7 @@ async function route() {
     renderHero(a, params.get('role'));
     show('hero');
     buildSubnav();
-    document.title = `${a.name} — Pred Scout Pick & Build`;
+    setLabel(`${a.name} — Pred Scout Pick & Build`, `${a.name} builds, Eternal and counters from ranked Predecessor match data.`);
   } catch { show('landing'); renderGrid(); buildSubnav(); }
 }
 window.onpopstate = route;
