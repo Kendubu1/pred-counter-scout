@@ -201,6 +201,14 @@
   .ab-row summary{list-style-position:inside}.ab-sum{display:inline-flex;align-items:center;gap:.4rem;flex-wrap:wrap;vertical-align:middle}
   .tb{margin-top:.35rem}
   .tb-leadcard{border:1px solid var(--border);border-radius:8px;padding:.6rem .7rem;background:var(--bg-2);margin-top:.35rem}
+  .tb-head{display:flex;gap:.6rem;align-items:center;margin-bottom:.45rem}.tb-head img{border-radius:10px}
+  .tb-who{font-size:.95rem}.tb-kda{font-weight:800;font-size:.9rem;color:var(--text-0);margin-top:.1rem}
+  .tb-hp{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--gold);border:1px solid var(--gold);border-radius:99px;padding:.05rem .45rem;margin-left:.35rem;vertical-align:1px}
+  .tb-kit{display:flex;flex-wrap:wrap;align-items:center;gap:.25rem}.tb-ico{width:30px;height:30px;border-radius:6px;border:1px solid var(--border);cursor:pointer}
+  .tb-sep{width:1px;height:22px;background:var(--border);margin:0 .2rem}.tb-kitnames{margin:.2rem 0 .5rem}
+  .tb-evs{display:grid;gap:.35rem;margin:.1rem 0 .3rem}.tb-ev{display:grid;grid-template-columns:1fr;gap:.15rem;font-size:.78rem;color:var(--text-1)}
+  .tb-ev i{position:relative;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--bg-3),var(--bg-3))}.tb-ev i b{position:absolute;top:-3px;width:4px;height:12px;border-radius:2px;background:var(--accent);transform:translateX(-50%)}
+  .tb-ev em{font-style:normal;color:var(--text-0);font-weight:700}
   .tb-leadt{font-weight:800;color:var(--text-0);font-size:.95rem}.tb-leadcard p{margin:.25rem 0 .45rem;font-size:.86rem;line-height:1.5}
   .tb-norms{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.3rem .7rem}
   .tb-chip{display:grid;grid-template-columns:1fr auto;gap:.1rem .4rem;font-size:.74rem;color:var(--text-1)}
@@ -1018,9 +1026,28 @@ function pgReview(f) {
       // One lead story (film.threatBuilds[].story, engine/src/build-story.ts), the rest as tabs.
       const st = c.story;
       const ord = (n) => `${n}${n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th'}`;
-      const chip = (label, pct, invert) => `<span class="tb-chip"><span>${label}</span><i><b style="width:${invert ? 100 - pct : pct}%"></b></i><em>${invert ? `fewer than ${100 - pct}%` : `${ord(pct)} pct`}</em></span>`;
-      const norms = st && st.vsNorm ? `<div class="tb-norms">${chip('Damage / min', st.vsNorm.dpm.pct)}${chip('Kill participation', st.vsNorm.kp.pct)}${chip('Deaths', st.vsNorm.dp10.pct, true)}${chip('Mitigated / min', st.vsNorm.mpm.pct)}${chip('Healing / min', st.vsNorm.hpm.pct)}</div><div class="tc-n">Against ${st.normN.toLocaleString()} ${esc(tb.hero)} games in the same role this patch (ranked).</div>` : '';
-      const leadCard = st && st.lead ? `<div class="tb-leadcard"><div class="tb-leadt">${esc(st.lead.title)}</div><p>${esc(st.lead.text)}</p>${norms}</div>` : norms ? `<div class="tb-leadcard">${norms}</div>` : '';
+      // The lead card: who, what they ran, the one story, and only the stats that story rests on.
+      const pl = f.players.find((x) => x.heroSlug === tb.slug);
+      const BIG = (src, title, attrs) => `<img src="${src}" title="${esc(title)}" alt="${esc(title)}"${attrs || ''} class="tb-ico" onerror="this.style.display='none'">`;
+      const lo = (pl && pl.loadout) || {};
+      // Final items (what they finished with), in the order they were bought when the stream saved it.
+      const buySec = (sl) => { const x = pl && pl.stream && (pl.stream.purchases || []).find((q) => q.slug === sl); return x ? x.sec : 1e9; };
+      const buyOrder = pl ? (pl.items || []).map((i) => i.slug).filter((sl) => sl !== lo.crestSlug && !/potion|ward|-crest$/i.test(sl)).sort((x, y) => buySec(x) - buySec(y)) : [];
+      const ranMinors = [lo.minor1, lo.minor2].filter(Boolean);
+      const kitRow = pl ? `<div class="tb-kit">${buyOrder.map((sl) => BIG(iimg(sl), (pl.items || []).find((i) => i.slug === sl)?.name || sl, ` data-ipop="${esc(sl)}"`)).join('')}
+        ${lo.crest ? `<span class="tb-sep"></span>${BIG(`../img/crests/${esc(lo.crestSlug || nslug(lo.crest))}.webp`, `Crest: ${lo.crest}`, lo.crestSlug ? ` data-ipop="${esc(lo.crestSlug)}"` : '')}` : ''}
+        ${lo.eternal ? `<span class="tb-sep"></span>${BIG(`../img/eternals/${nslug(lo.eternal)}.webp`, `Eternal: ${lo.eternal}`, epopAttr(lo.eternal, null, ranMinors, 'ran', 'the minors this player ran this game'))}${ranMinors.map((m) => BIG(`../img/blessings/${nslug(m)}.webp`, `Minor: ${m}`, epopAttr(lo.eternal, m, ranMinors, 'ran', 'the minors this player ran this game'))).join('')}` : ''}
+        ${lo.augment ? `<span class="tb-sep"></span>${BIG(`../img/augments/${esc(lo.augment.id)}.webp`, `Augment: ${lo.augment.name}`, ` data-apop="${esc(lo.augment.id)}" data-apop-label="ran"`)}` : ''}</div>
+        <div class="tc-n tb-kitnames">${[buyOrder.length ? `${buyOrder.length} items${pl.stream ? ' in buy order' : ''}` : '', lo.crest ? `crest ${esc(lo.crest)}` : '', lo.eternal ? `${esc(lo.eternal)}${ranMinors.length ? ` (${ranMinors.map(esc).join(' + ')})` : ''}` : '', lo.augment ? `augment ${esc(lo.augment.name)}` : ''].filter(Boolean).join(' · ')}</div>` : '';
+      const head = pl ? `<div class="tb-head">${hIcon(tb.slug, 44).replace(/<\/?a\b[^>]*>/g, '')}<div><div class="tb-who"><b>${pl.us ? pgName(pl) : esc(tb.hero)}</b> <span class="tc-n">${pl.us ? `${esc(tb.hero)} · ` : ''}${esc(pl.role)}</span></div>
+        <div class="tb-kda">${pl.kills} / ${pl.deaths} / ${pl.assists}${st && st.lead ? ' <span class="tb-hp">High performer</span>' : ''}</div></div></div>` : '';
+      // Only the evidence for the lead story, in words.
+      const EVID = { snowball: ['kp', 'dpm'], glass: ['dpm', 'mpm'], damage: ['dpm', 'share'], survival: ['mpm', 'hpm'], cooldowns: ['dpm', 'kp'], sustain: ['hpm'], tough: ['mpm'] };
+      const LAB = { dpm: 'Hero damage per minute', share: 'Share of the team\'s hero damage', kp: 'Kill participation', mpm: 'Damage mitigated per minute', hpm: 'Healing per minute' };
+      const peers = pl ? `${esc(tb.hero)} ${pl.role === 'midlane' ? 'mid' : esc(pl.role)} games` : 'games';
+      const bar = (k) => { const v = st.vsNorm[k]; const hi = v.pct >= 50; return `<div class="tb-ev"><span>${LAB[k]}</span><i><b style="left:${v.pct}%"></b></i><em>${hi ? `more than ${v.pct}%` : `less than ${100 - v.pct}%`} of ${peers}</em></div>`; };
+      const evid = st && st.lead && st.vsNorm ? `<div class="tb-evs">${(EVID[st.lead.id] || []).map(bar).join('')}</div><div class="tc-n">Compared with ${st.normN.toLocaleString()} ranked ${peers} this patch.</div>` : '';
+      const leadCard = (st && st.lead) || head ? `<div class="tb-leadcard">${head}${kitRow}${st && st.lead ? `<div class="tb-leadt">${esc(st.lead.title)}</div><p>${esc(st.lead.text)}</p>${evid}` : ''}</div>` : '';
       const leadTab = st && st.tabs ? st.tabs[0] : null;
       const leadLesson = st && st.lead ? (st.lead.lesson || (leadTab ? tabLesson[leadTab] : null)) : null;
       const inTab = (k, html) => html ? `${k === leadTab && st && st.lead && !st.lead.lesson ? '' : lessonBox(tabLesson[k])}${html}` : '';
@@ -1040,7 +1067,7 @@ function pgReview(f) {
       </div>` : '';
       const body = `<div class="tb">${leadCard}${whyBlock}${lessonBox(leadLesson)}${tabs}</div>`;
       if (bare) return `<div class="tc-n" style="margin-top:.3rem">${esc(tb.loadout)}</div>${body}`;
-      return open ? `<div class="tc-h" style="margin-top:.6rem">How ${esc(tb.hero)}'s build worked <span class="tc-n">${esc(tb.loadout)}</span></div>${body}` : `<details class="tc-more"><summary>How ${esc(tb.hero)}'s build worked</summary>${body}</details>`;
+      return open ? `<div class="tc-h" style="margin-top:.6rem">How ${esc(tb.hero)}'s build worked</div>${body}` : `<details class="tc-more"><summary>How ${esc(tb.hero)}'s build worked</summary>${body}</details>`;
     };
     // Builds of everyone else who played above their hero-role norm, either team (film.threatBuilds
     // entries with why 'standout'; the threat and nemeses are shown above).
