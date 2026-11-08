@@ -142,6 +142,25 @@
   .pgchip .s { color:var(--text-2); font-size:.7rem; }
   .pgchip .c { color:var(--gold); font-size:.7rem; }
 
+  .tc-row{display:grid;grid-template-columns:3rem 1fr auto;gap:.6rem;align-items:center;padding:.45rem 0;border-top:1px solid var(--border)}
+  .tc-side{font-weight:800;font-size:.82rem}
+  .tc-heroes{display:flex;flex-wrap:wrap;gap:.35rem .8rem}
+  .tc-hero{display:inline-flex;gap:.35rem;align-items:center;font-size:.8rem;line-height:1.2}
+  .tc-role{color:var(--text-2);font-size:.6875rem}
+  .tc-tag{font-size:.6rem;font-weight:800;border-radius:4px;padding:0 .25rem;margin-left:.25rem;vertical-align:1px}
+  .tc-t{background:rgba(80,140,255,.18);color:#6ea0ff}
+  .tc-d{background:rgba(240,130,15,.18);color:#f0820f}
+  .tc-shape{font-size:.78rem;text-align:right;line-height:1.35}
+  .tc-n{color:var(--text-2);font-size:.72rem}
+  .tc-checks{list-style:none;padding:0;margin:.6rem 0 0;font-size:.84rem;line-height:1.55}
+  .tc-checks li.ok span{color:var(--green);font-weight:800}
+  .tc-checks li.bad span{color:var(--red);font-weight:800}
+  .tc-swap{margin-top:.55rem;font-size:.84rem;line-height:1.7;border-left:3px solid var(--gold);padding-left:.6rem}
+  .tc-opts{display:flex;flex-wrap:wrap;gap:.25rem 1rem;margin-top:.3rem}
+  .tc-opt{display:inline-flex;align-items:center;gap:.3rem;white-space:nowrap}
+  .tc-opt a{display:inline-flex}
+  .tc-foot{margin-top:.55rem;font-size:.72rem;color:var(--text-2)}
+  @media (max-width:560px){.tc-row{grid-template-columns:1fr}.tc-shape{text-align:left}}
   /* ── v7 review: verdict → moments → numbers → strip → interrogation → lobby → deep dive ── */
   .heroline { display:flex; align-items:center; gap:.25rem; margin-top:.6rem; flex-wrap:wrap; }
   .heroline img { display:inline-block; width:26px; height:26px; border-radius:7px; object-fit:cover; border:1px solid var(--border); }
@@ -818,6 +837,25 @@ function pgReview(f) {
   // ── Who queued (2-4 stack): each member's lane, hero, line and this game vs
   // that hero-role's norm; after a loss, the lanes to queue next time (rules in
   // engine/src/stack-review.ts; numbers from data/artifacts/stack-reviews.json). ──
+  // Draft & team comp (film.teamComp, npm run postgame:comp; rules in engine/src/comp-read.ts):
+  // both lineups tagged tank / diver, the fundamentals checklist, the field's win rate for
+  // each comp shape, and the one slot to change when the shape is a losing one.
+  const compCard = (() => {
+    const tc = f.teamComp;
+    if (!tc) return '';
+    const tcCol = (w) => w >= 52 ? 'var(--green)' : w <= 48 ? 'var(--red)' : 'var(--text-1)';
+    const badge = (h) => h.tank ? '<span class="tc-tag tc-t" title="Real tank">TANK</span>' : h.diver ? '<span class="tc-tag tc-d" title="High-dive hero">DIVER</span>' : '';
+    const row = (sd, label, color) => `<div class="tc-row"><div class="tc-side" style="color:${color}">${label}</div>
+      <div class="tc-heroes">${sd.heroes.map((h) => `<span class="tc-hero">${hIcon(h.slug, 26)}<span><b>${esc(h.name)}</b>${badge(h)}<br><span class="tc-role">${esc(h.role)}</span></span></span>`).join('')}</div>
+      <div class="tc-shape"><b>${sd.tanks} tank${sd.tanks === 1 ? '' : 's'} · ${sd.divers} diver${sd.divers === 1 ? '' : 's'}</b><br><span style="color:${sd.shapeWr ? tcCol(sd.shapeWr.wr) : 'var(--text-2)'}">${sd.shapeWr ? `${sd.shapeWr.wr}% in ${esc(tc.field.patch)} ranked` : 'too few games'}</span>${sd.shapeWr ? ` <span class="tc-n">(${sd.shapeWr.n.toLocaleString()} teams)</span>` : ''}</div></div>`;
+    const checks = tc.checks.map((c) => `<li class="${c.ok ? 'ok' : 'bad'}"><span aria-hidden="true">${c.ok ? '✓' : '✗'}</span> ${esc(c.text)}</li>`).join('');
+    const fails = tc.checks.filter((c) => !c.ok).length;
+    const swap = tc.swap ? `<div class="tc-swap"><b>Draft fix:</b> swap ${esc(tc.swap.out)} (${esc(tc.swap.role)}) for a real tank, because ${esc(tc.swap.reason)}. Tanks that win in ${esc(tc.swap.role)} this patch: <span class="tc-opts">${tc.swap.options.map((o) => `<span class="tc-opt">${hIcon(o.slug, 20)} <b>${esc(o.name)}</b> ${o.wr}% <span class="tc-n">(${o.n.toLocaleString()} games)</span></span>`).join('')}</span></div>` : '';
+    return card(`${eyebrow('Draft &amp; team comp', `${fails ? `${fails} of ${tc.checks.length} fundamentals missed` : 'all fundamentals covered'}`)}
+      ${row(tc.us, 'Us', 'var(--green)')}${row(tc.them, 'Them', 'var(--red)')}
+      <ul class="tc-checks">${checks}</ul>${swap}
+      <div class="tc-foot">Win rates are each comp shape (real tanks × high-dive heroes) across ${tc.field.matches.toLocaleString()} sampled ${esc(tc.field.patch)} ranked games, every rank. They describe the draft, not who played well.</div>`);
+  })();
   const stackCard = (() => {
     const sr = STACKS[f.matchId];
     if (!sr || !(sr.stackSize < 5)) return '';
@@ -1104,14 +1142,14 @@ function pgReview(f) {
       </div></details>`;
     }).join('')}<p class="build-help">Based on final inventory and recorded draft choices. Purchase timing, active use and passive uptime are unverified. Alternatives describe matchup tradeoffs, not proven winning swaps.</p>`;
     const drop = (id, title, inner) => inner ? `<details class="deepdive" id="${id}"><summary>${title}</summary>${inner}</details>` : '';
-    return verdict + next + players
+    return verdict + next + compCard + players
       + drop('coach-enemy', 'Enemy team · ranks, builds &amp; picks', enemyCard())
       + drop('coach-builds', 'Builds &amp; matchup analysis', loadouts)
       + drop('coach-totals', 'Match totals · compare player stats', statline)
       + drop('coach-moments', 'Key moments &amp; objective timeline', `${moments}${timeline}`)
       + deep;
   }
-  return head + stackCard + moments + deepDive + coachEvidence + timeline + worked + lobby + deep;
+  return head + stackCard + compCard + moments + deepDive + coachEvidence + timeline + worked + lobby + deep;
 }
 
 // Flags format (blunt-flags-v9): the review's ranked "what lost / won it"

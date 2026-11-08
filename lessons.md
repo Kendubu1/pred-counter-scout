@@ -5656,3 +5656,48 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   never off-meta; off-meta is a hero outside its lane. UI rule now: hidden only when sleeper AND
   the lane is not in the index's `roles` for that hero; an in-lane sleeper shows with the
   ordinary win-rate verdict (Strong / Solid ...). The engine badge is unchanged.
+
+## 2026-11-07 — Team lineups kept per patch; first 1.18 comp read (maintainer ask)
+
+- **The perk stream threw away the one thing comp questions need.** perk-stream.json keeps
+  per-hero-role rollups only, so "do our assassin drafts lose to two-frontline teams?" had
+  no committed answer. perks now also writes each ranked match's two lineups (hero, role,
+  rank at match time) to data/aggregates/team-comps/<patch>/<day>.jsonl, a fixed
+  format (team-comps/v1) so later patches can be read back the same way. Day files by match
+  end day keep git churn to the current day. coverage.json separates complete `daily`
+  stretches from spaced `sample` ones.
+- **1.18 was seeded from a 500-page spaced sample (2,436 ranked matches, Nov 3-7, no
+  ranks: tier null).** A full backfill would have been ~4,800 requests; the sample answers
+  the comp question at ±2-3 pt and daily runs are complete from here on. Plat+ comp
+  numbers start with the first daily run.
+- **Hero names in the stream are internal codenames** (Hemlock = Adele, Trooper = ...):
+  map through catalog `name`, never `display_name`.
+- **First read (all ranks, n=4,872 sides, `npm run comps`):** TRUE tanks drive it, bruisers
+  don't. Out-tanking the enemy by 2: 55.9% (by 1: 53.0%); out-tanked by 2: 44.1%. The
+  frontline count (tanks + bruisers) is flat at 49-52%. More divers than the enemy loses
+  (+2: 45.1%); a team with no high-dive kit wins 54.8%. 3 engage kits: 53.7%. Two mages
+  (47.3%) or two marksmen (46.9%) underperform one. Lane-pair duos at n 40-80 carry
+  ±11-15 pt intervals: a lead, not a verdict.
+- **Correction, same day (maintainer):** Scarlett is a diver (no kit profile yet, so
+  `DIVER_OVERRIDES` in src/team-comp.ts), and Executioners (Revenant, TwinBlast, Drongo,
+  Grim.exe) are carry-lane damage, not frontline: they now bucket with marksmen. After the
+  fix the dive read is sharper: 0 divers 56.3%; two more divers than the enemy 43.3%, two
+  fewer 56.7%. The tank read is unchanged (+2 tanks 55.9%, -2 44.1%).
+
+## 2026-11-07 — Draft & team comp card on every game review (maintainer ask)
+
+- **The review never judged the draft.** The comp card listed damage splits and kit lists
+  deep inside "The full story", so a no-tank, double-diver draft (20562aab, 725d3fe0) read
+  the same as a sound one. Every film now carries `teamComp` (`npm run postgame:comp`, rules
+  in src/comp-read.ts): both lineups tagged tank / diver, six fundamentals (real tank, tank
+  count vs theirs, at most one diver, mixed damage, no doubled mage or marksman, a support
+  who can peel), the field's 1.18 win rate for each side's tank x diver shape
+  (team-comp-report.json `shapeGrid`), and a draft fix naming the slot and the tanks that
+  win most there. The card sits right under the verdict in both layouts.
+- **Swap candidates come from what the field plays, not catalog roles.** The catalog omits
+  offlane for Kaelen, the best offlane tank this patch (53.3%, 1,999 games); eligibility
+  is 300+ ranked games in that role.
+- **Coach copy is told to use it** (pred-scout-coach.md): name the draft shape when it fed
+  the loss, and cite only numbers that are in `teamComp`.
+- `wrColor` is declared further down `pgReview` than the new card, so the card defines its
+  own colour helper: calling a later `const` from an earlier IIFE throws (TDZ).
