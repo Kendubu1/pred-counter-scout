@@ -5873,3 +5873,9 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   Mourn's 5/1/11 at +0.81). Random-proc Eternals count by expected value (Lotus: procs every 2 min
   and every takedown, 1 in 4 is +4 haste: 29 procs, about +29). Categorical colours never cycle:
   a fifth haste source is grey.
+- The build read is no longer cooldown-only (maintainer, 2026-11-08: "ability haste won't be the
+  only factor"). src/build-power.ts adds damage (item power, penetration vs each target's armor
+  with the verified K=100 mitigation, damage boosts with per-minute growth evaluated), sustain and
+  toughness. Two traps: "/\bheal/" matches "Health" in damage text, and catalog "Damage Dealt:
+  {x}" tracker lines are placeholders, not effects. Armor needs a level and levels are provisional,
+  so every armor figure says "estimate"; the order of percent vs flat penetration is assumed.

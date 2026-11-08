@@ -200,11 +200,13 @@
   @media (max-width:560px){.tc-bal{font-size:.62rem}.tc-bal thead th:first-child{width:2.2rem}.tc-bal .lg{display:none}.tc-bal .sh{display:inline}.bn-k{min-width:4.6rem}}
   .ab-row summary{list-style-position:inside}.ab-sum{display:inline-flex;align-items:center;gap:.4rem;flex-wrap:wrap;vertical-align:middle}
   .tb{margin-top:.35rem}.tb-sec{margin-top:.7rem}.tb-k{font-weight:700;font-size:.82rem;color:var(--text-0);margin-bottom:.3rem}
-  .tb-lesson{margin:.3rem 0 0;padding:.45rem .65rem;border-left:3px solid var(--gold);background:var(--bg-2);border-radius:6px;font-size:.86rem;line-height:1.5}
+  .tb-lesson{list-style:none;margin:.3rem 0 0;padding:.45rem .65rem;border-left:3px solid var(--gold);background:var(--bg-2);border-radius:6px;font-size:.86rem;line-height:1.5}
   .tb-cdrow{display:grid;grid-template-columns:7.5rem 1fr 3.2rem;align-items:center;gap:.5rem;margin:.2rem 0;font-size:.8rem}
   .tb-cdrow .tc-n{grid-column:2/4;margin-top:-.15rem}
   .tb-cdl{color:var(--text-1)}.tb-bar{height:10px;background:var(--bg-2);border-radius:5px;overflow:hidden}
-  .tb-bar i{display:block;height:100%;border-radius:5px;background:var(--red)}.tb-bar i.base{background:var(--text-2)}
+  .tb-bar i{display:block;height:100%;border-radius:5px;background:var(--red)}
+  .tb-lesson li{margin:.1rem 0}.tb-lesson li+li{margin-top:.35rem}
+  .tb-arm{position:relative}.tb-arm i{position:absolute;top:0;left:0}.tb-arm i.base{opacity:.45}.tb-bar i.base{background:var(--text-2)}
   .tb-bar i.fight{background:repeating-linear-gradient(135deg,var(--red) 0 4px,transparent 4px 7px);border:1px solid var(--red);box-sizing:border-box}
   .tb-stack{display:flex;height:18px;border-radius:5px;overflow:hidden;gap:2px;margin:.15rem 0 .35rem}
   .tb-stack i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:.68rem;font-weight:700;color:#fff;min-width:4px}
@@ -958,7 +960,8 @@ function pgReview(f) {
     const tbBlock = (slug, open, bare) => {
       const tb = (f.threatBuilds || {})[slug];
       const c = tb && tb.card;
-      if (!c || (!c.ult && !c.haste.length && !c.extras.length)) return '';
+      if (!c || (!c.ult && !c.haste.length && !c.extras.length && !c.power)) return '';
+      const pp = c.power;
       // four fixed hues by size, never cycled: a fifth or later source is grey
       const COLS = ['var(--accent)', 'var(--blue)', 'var(--gold)', 'var(--green)'];
       const col = (i) => COLS[i] || 'var(--text-2)';
@@ -975,10 +978,23 @@ function pgReview(f) {
         <div class="tb-stack">${hs.map(seg).join('')}${c.fight ? `<i class="fight" style="width:${(100 * c.fight.amount / span).toFixed(1)}%" title="${esc(c.fight.name)} +${c.fight.amount} mid-fight">+${c.fight.amount}</i>` : ''}</div>
         <ul class="tb-list">${hs.map((h, i) => `<li><span class="tb-sw" style="background:${col(i)}"></span><b>${esc(h.name)}</b> <span class="tb-kind">${esc(h.kind)}</span> ${esc(h.how)}</li>`).join('')}
         ${c.fight ? `<li><span class="tb-sw fight"></span><b>${esc(c.fight.name)}</b> <span class="tb-kind">augment</span> ${esc(c.fight.how)}</li>` : ''}</ul></div>` : '';
-      const extraBlock = c.extras.length ? `<div class="tb-sec"><div class="tb-k">Also working for ${esc(tb.hero)} <span class="tc-n">${c.takedowns.count} takedowns: ${c.takedowns.kills} kills, ${c.takedowns.assists} assists</span></div>
-        <ul class="tb-list">${c.extras.map((x) => `<li><b>${esc(x.name)}</b> <span class="tb-kind">${esc(x.kind)}</span> ${esc(x.how)}</li>`).join('')}</ul></div>` : '';
-      const lesson = c.lesson || c.heals ? `<p class="tb-lesson">${c.lesson ? esc(c.lesson) : ''}${c.heals ? ' Anti-heal (the Tainted items) cuts the healing in this build.' : ''}</p>` : '';
-      const body = `<div class="tb">${lesson}${cdBlock}${hasteBlock}${extraBlock}</div>`;
+      // Damage: power, penetration against each target (armor before -> after; estimate), boosts.
+      const dmgBlock = pp ? (() => {
+        const maxA = Math.max(1, ...pp.vs.map((v) => v.armor));
+        const rows = pp.vs.filter((v) => v.more > 0 || v.diedTo).slice(0, 3).map((v) => `<div class="tb-cdrow"><span class="tb-cdl">${esc(v.hero)}${v.diedTo ? ` <span class="tc-n">died ${v.diedTo}x</span>` : ''}</span><span class="tb-bar tb-arm"><i class="base" style="width:${(100 * v.armor / maxA).toFixed(1)}%"></i><i class="end" style="width:${(100 * v.after / maxA).toFixed(1)}%"></i></span><b>+${v.more}%</b><span class="tc-n">${esc(pp.type)} armor about ${v.armor}, about ${v.after} after penetration: ${v.more}% more damage taken</span></div>`).join('');
+        const pen = [pp.pen.flat ? `${pp.pen.flat} flat` : '', pp.pen.pct ? `${pp.pen.pct}% ignored` : ''].filter(Boolean).join(' + ');
+        return `<div class="tb-sec"><div class="tb-k">Damage <span class="tc-n">${pp.dealt ? `${pp.dealt.damage.toLocaleString()} to heroes, ${pp.dealt.share}% of the team's · ` : ''}+${pp.power} ${esc(pp.type)} power from items</span></div>
+          ${pen ? `<div class="tc-n" style="margin-bottom:.2rem">Penetration ${pen} (${esc(pp.pen.sources.join(', '))}). Against our players (estimate: level about ${pp.level}, levels are not in the match data):</div>${rows}` : ''}
+          ${pp.amps.length ? `<details class="tc-more" style="margin-top:.45rem"><summary>${pp.amps.length} damage boost${pp.amps.length === 1 ? '' : 's'}: ${esc([...new Set(pp.amps.map((a) => a.name))].join(', '))}</summary><ul class="tb-list">${pp.amps.map((a) => `<li><b>${esc(a.name)}</b> <span class="tb-kind">${esc(a.kind)}</span> ${esc(a.how)}</li>`).join('')}</ul></details>` : ''}</div>`;
+      })() : '';
+      const keepBlock = pp && (pp.sustain || pp.tough) ? `<div class="tb-sec"><div class="tb-k">Staying alive</div><ul class="tb-list">
+        ${pp.sustain ? `<li><b>Sustain</b> ${esc([...pp.sustain.stats, ...pp.sustain.effects.filter((e) => !pp.amps.some((a) => a.name === e.name && a.how === e.how)).map((e) => `${e.name}: ${e.how}`)].join('; '))} <span class="tc-n">${pp.sustain.healing.toLocaleString()} healing in the game</span></li>` : ''}
+        ${pp.tough ? `<li><b>Toughness</b> ${esc(pp.tough.stats.join(', '))} <span class="tc-n">took ${pp.tough.taken.toLocaleString()}, mitigated ${pp.tough.mitigated.toLocaleString()}, died ${pp.tough.deaths}x</span></li>` : ''}</ul></div>` : '';
+      const extraBlock = c.extras.filter((x) => !(pp && pp.amps.some((a) => a.name === x.name))).length ? `<div class="tb-sec"><div class="tb-k">Also working for ${esc(tb.hero)} <span class="tc-n">${c.takedowns.count} takedowns: ${c.takedowns.kills} kills, ${c.takedowns.assists} assists</span></div>
+        <ul class="tb-list">${c.extras.filter((x) => !(pp && pp.amps.some((a) => a.name === x.name))).map((x) => `<li><b>${esc(x.name)}</b> <span class="tb-kind">${esc(x.kind)}</span> ${esc(x.how)}</li>`).join('')}</ul></div>` : '';
+      const lessons = [c.lesson, c.powerLesson, c.heals ? 'Anti-heal (the Tainted items) cuts the healing in this build.' : null].filter(Boolean);
+      const lesson = lessons.length ? `<ul class="tb-lesson">${lessons.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>` : '';
+      const body = `<div class="tb">${lesson}${dmgBlock}${cdBlock}${hasteBlock}${keepBlock}${extraBlock}</div>`;
       if (bare) return `<div class="tc-n" style="margin-top:.3rem">${esc(tb.loadout)}</div>${body}`;
       return open ? `<div class="tc-h" style="margin-top:.6rem">How ${esc(tb.hero)}'s build worked <span class="tc-n">${esc(tb.loadout)}</span></div>${body}` : `<details class="tc-more"><summary>How ${esc(tb.hero)}'s build worked</summary>${body}</details>`;
     };

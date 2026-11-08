@@ -16,6 +16,8 @@ import { readKit, type HeroMeta, type KitHeroLite } from '../kit-read.js';
 import { buildNotes, type ItemInfo } from '../build-notes.js';
 import { buildPlaybook, type PbHero } from '../playbook.js';
 import { threatBuild, takedownTimes } from '../threat-build.js';
+import { powerProfile, powerLines, powerLesson } from '../build-power.js';
+import { levelAtMinute } from '../matchup.js';
 import { metricsOf, scoreRows, type Row } from '../standouts.js';
 // "Above the norm" for the build read: +0.5 role SD on the standouts composite (about the top
 // 20% of hero-games in our films; the standouts report's own bar is 1.0, about the top 8%).
@@ -54,6 +56,8 @@ function main() {
   const itemCat = new Map((read('data/catalog/items.json') as any[]).map((i) => [i.slug, i]));
   const eternalsCat = read('data/game-data/eternals.json').eternals;
   const augCat = read('data/aggregates/predgg-augments.json').catalog ?? {};
+  const calibration = JSON.parse(readFileSync(path.join(ROOT, 'engine/fixtures/calibration.json'), 'utf8'));
+  const heroStats = new Map((read('data/catalog/heroes.json') as any[]).map((h) => [h.slug, h.base_stats ?? {}]));
   const heroMeta = new Map<string, HeroMeta>(heroes.map((h) => [h.slug, { power: power.get(h.slug) ?? null, cls: heroClass(h.classes) }]));
 
   const files = readdirSync(OUT_DIR).filter((f) => UUID_RE.test(f));
@@ -87,7 +91,18 @@ function main() {
     film.threatBuilds = Object.fromEntries([...why].map(([pid, ws]) => {
       const ep = film.players.find((x: any) => x.pid === pid);
       const tb = threatBuild(ep, { hero: heroCat.get(ep.heroSlug), items: itemCat, eternals: eternalsCat, augments: augCat, durationMin: film.durationMin, takedownTimes: takedownTimes(ep.heroSlug, ep.assists ?? 0, film.kills ?? [], ep.us ? 'us' : 'them') });
-      return [ep.heroSlug, { ...tb, us: !!ep.us, why: [...ws], score: standout.get(`${film.matchId}|${pid}`) ?? null }];
+      // Beyond cooldowns: damage (power, penetration vs the other team's armor, amplifiers),
+      // sustain and toughness (src/build-power.ts). Levels are provisional, so armor is an estimate.
+      const mates = film.players.filter((x: any) => x.us === ep.us), foes = film.players.filter((x: any) => x.us !== ep.us);
+      const pp = powerProfile(ep, {
+        items: itemCat, durationMin: film.durationMin ?? 30, level: levelAtMinute(film.durationMin ?? 30, calibration),
+        teamDamage: mates.reduce((a: number, x: any) => a + (x.damageToHeroes ?? 0), 0), powerType: power.get(ep.heroSlug) ?? null,
+        heroStats, eternals: eternalsCat, augments: augCat,
+        targets: foes.map((x: any) => ({ name: x.squadName || x.name, heroSlug: x.heroSlug, heroName: x.heroName, items: x.items, diedTo: (film.kills ?? []).filter((k: any) => k.killerPid === ep.pid && k.killedPid === x.pid).length })),
+      });
+      const pl = powerLesson(pp, ep.heroName);
+      const lines = [...tb.lines, ...powerLines(pp, ep.heroName), ...(pl ? [`Lesson: ${pl}`] : [])];
+      return [ep.heroSlug, { ...tb, lines, power: pp, card: { ...tb.card, power: pp, powerLesson: pl }, us: !!ep.us, why: [...ws], score: standout.get(`${film.matchId}|${pid}`) ?? null }];
     }));
     film.buildNotes = buildNotes(film.players, film.kitRead, kitIdx, itemInfo, heroMeta, pairs, bm, links, predBuilds.byRole, predBuilds.baselineByRole, matchupCores);
     writeFileSync(p, JSON.stringify(film, null, 1));

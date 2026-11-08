@@ -216,8 +216,10 @@ unchanged and still used by the standard pipeline.
 `film.threatBuilds` (src/threat-build.ts) reads the enemy threat's, each nemesis killer's and every
 player's on either team who played above their hero-role norm (`why`, `score`, `us`)
 Eternal, minors, augment, crest and items: the ability-haste sources and their ultimate's
-cooldown (base, end of game, mid-fight estimate), what their takedowns fed, and item effects on
-their ultimate. When one of these explains the game (an ultimate coming back every minute
+cooldown (base, end of game, mid-fight estimate), what their takedowns fed, item effects on
+their ultimate, and `power` (src/build-power.ts): damage dealt and share, penetration and how much
+more damage each target took (estimate: levels are provisional), damage boosts, sustain, toughness.
+Pick the factor that explains the game; cooldowns are one of several. When one of these explains the game (an ultimate coming back every minute
 because takedowns fed haste), say it in a flag or the lesson with those numbers: what fed it and
 how to deny it. Mid-fight figures are estimates; never state them as measured. The build notes'
 `coreVs` is the core into that lane opponent (labelled "most played" when only one core has
