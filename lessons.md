@@ -5900,3 +5900,7 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   and our missing answers (2 of 5 victims built magical armor), not a secret build.
 - Field name clash: threatBuilds entries already had `why` (the reasons a player was read); the new
   block is `worked`.
+- Team damage types (src/damage-mix.ts, from players[i].stream.dealtToHeroes): 1.18 lineups show
+  teams win most at 20-30% magical (53.1%) and least past half magical (60-70%: 44.5%); 5-15% true
+  wins ~56-57% vs 43.7% under 5%. Damage dealt follows the game, so the page calls it an
+  association. The review draws one bar per team, length = total hero damage, split by type.

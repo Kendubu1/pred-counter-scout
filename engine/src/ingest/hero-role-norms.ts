@@ -20,6 +20,8 @@ const I = Object.fromEntries(STAT_KEYS.map((k, i) => [k, i])) as Record<(typeof 
 export const NORM_METRICS = ['dpm', 'share', 'kp', 'dp10', 'gpm', 'hpm', 'mpm', 'tpm', 'opm'] as const;
 const rows = readRows(patchDir(meta.patch));
 const acc = new Map<string, Record<string, number[]>>();
+// Team damage mix: win rate by the team's magical and true share of its hero damage.
+const magB = Array.from({ length: 10 }, () => ({ n: 0, w: 0 })), trueB = Array.from({ length: 6 }, () => ({ n: 0, w: 0 }));
 for (const r of rows) {
   const min = r.dur / 60;
   if (min < 10) continue;
@@ -27,6 +29,11 @@ for (const r of rows) {
     const team = r.teams[t].filter((s) => Array.isArray(s[5]) && s[5]!.length === STAT_KEYS.length);
     if (team.length !== r.teams[t].length) continue;
     const tk = team.reduce((a, s) => a + s[5]![I.kills], 0), td = team.reduce((a, s) => a + s[5]![I.dmgHeroes], 0);
+    const ph = team.reduce((a, s) => a + Math.max(0, s[5]![I.physHeroes]), 0), mg = team.reduce((a, s) => a + Math.max(0, s[5]![I.magHeroes]), 0), tr = team.reduce((a, s) => a + Math.max(0, s[5]![I.trueHeroes]), 0);
+    if (ph + mg + tr > 0) {
+      const mb = magB[Math.min(9, Math.floor((10 * mg) / (ph + mg + tr)))]!, tb = trueB[Math.min(5, Math.floor((20 * tr) / (ph + mg + tr)))]!;
+      mb.n++; tb.n++; if (r.win === t) { mb.w++; tb.w++; }
+    }
     for (const s of team) {
       const st = s[5]!;
       if (st.some((v) => v < 0)) continue;
@@ -45,5 +52,6 @@ writeFileSync(path.join(ROOT, 'data/aggregates/hero-role-norms.json'), JSON.stri
   generatedAt: new Date().toISOString(), patch: meta.patch, source: `ranked lineups in data/aggregates/team-comps/${meta.patch}/ (${rows.length} matches, games of 10+ minutes)`,
   note: 'q.<metric> = the 5th, 10th, ... 95th percentile of that metric for the hero in that role. Per minute unless named: share and kp are fractions of the team; dp10 is deaths per 10 minutes.',
   metrics: NORM_METRICS, heroes,
+  teamMix: { note: 'Win rate by the team\'s share of its hero damage that was magical (10-point bands) and true (5-point bands). Damage dealt follows the game, so these are associations, not causes.', magical: magB.map((b, i) => ({ from: i * 10, to: i * 10 + 10, ...b })), true: trueB.map((b, i) => ({ from: i * 5, to: i === 5 ? 100 : i * 5 + 5, ...b })) },
 }));
 console.log(`hero-role norms ${meta.patch}: ${Object.keys(heroes).length} hero-roles with 30+ games from ${rows.length} matches`);

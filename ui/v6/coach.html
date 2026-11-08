@@ -199,6 +199,11 @@
   .bn-shared{color:var(--gold);font-size:.82rem;margin:.1rem 0 .4rem}
   @media (max-width:560px){.tc-bal{font-size:.62rem}.tc-bal thead th:first-child{width:2.2rem}.tc-bal .lg{display:none}.tc-bal .sh{display:inline}.bn-k{min-width:4.6rem}}
   .ab-row summary{list-style-position:inside}.ab-sum{display:inline-flex;align-items:center;gap:.4rem;flex-wrap:wrap;vertical-align:middle}
+  .dm-row{display:grid;grid-template-columns:3rem 1fr 2.6rem;align-items:center;gap:.5rem;margin:.3rem 0}.dm-l{font-weight:800;font-size:.84rem}
+  .dm-row>span.dm-bar{display:flex;height:20px;gap:2px;border-radius:5px;overflow:hidden;min-width:20px}
+  .dm-bar i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:.68rem;font-weight:800;color:var(--bg-0)}
+  .dm-row b{font-size:.8rem;text-align:right}.dm-key{display:flex;gap:.9rem;font-size:.72rem;color:var(--text-2);margin:.1rem 0 0 3.5rem}
+  .dm-key i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:.3rem;vertical-align:-1px}
   .tb{margin-top:.35rem}
   .tb-leadcard{border:1px solid var(--border);border-radius:8px;padding:.6rem .7rem;background:var(--bg-2);margin-top:.35rem}
   .tb-head{display:flex;gap:.6rem;align-items:center;margin-bottom:.45rem}.tb-head img{border-radius:10px}
@@ -1143,6 +1148,21 @@ function pgReview(f) {
           ${labels}</svg>
         <div class="rd-key">Filled = the team you picked · dashed = the other team · role counts out of 3, hard CC out of ${ccMax}. Exact numbers in the table below.</div></div>`;
     })();
+    // Damage types (film.damageMix, engine/src/damage-mix.ts): each team's hero damage, physical /
+    // magical / true, bar length = the team's total; where true damage came from; the patch's win
+    // rate for that magical share (an association: damage dealt follows how the game went).
+    const dm = f.damageMix;
+    const mixBlock = dm ? (() => {
+      const max = Math.max(dm.us.total, dm.them.total) || 1;
+      const K = [['physical', 'Physical', 'var(--gold)'], ['magical', 'Magical', 'var(--blue)'], ['true', 'True', 'var(--text-1)']];
+      const bar = (label, m, col) => `<div class="dm-row"><span class="dm-l" style="color:${col}">${label}</span><span class="dm-bar" style="width:${(100 * m.total / max).toFixed(1)}%">${K.map(([k, , c]) => { const pc = m.total ? Math.round(100 * m[k] / m.total) : 0; return pc ? `<i style="width:${pc}%;background:${c}" title="${k} ${m[k].toLocaleString()} (${pc}%)">${pc >= 9 ? `${pc}%` : ''}</i>` : ''; }).join('')}</span><b>${Math.round(m.total / 1000)}k</b></div>`;
+      const fld = dm.field && (dm.field.us || dm.field.them) ? `<p class="tc-n" style="margin:.35rem 0 0">This patch, teams at ${[dm.field.us ? `our ${dm.field.us.band} won ${dm.field.us.wr}%` : '', dm.field.them ? `their ${dm.field.them.band} won ${dm.field.them.wr}%` : ''].filter(Boolean).join(', ')}; the best mix was ${esc(dm.field.best)}. Mostly physical with some magic wins most; past half magical it drops. An association: damage dealt follows how the game went.</p>` : '';
+      const tf = dm.trueFrom.filter((t) => t.from.length).slice(0, 4);
+      const trueLine = tf.length ? `<p class="tc-n" style="margin:.25rem 0 0"><b style="color:var(--text-0)">True damage from:</b> ${tf.map((t) => `<span style="color:${t.us ? 'var(--green)' : 'var(--red)'}">${esc(t.hero)}</span> ${t.amount.toLocaleString()} (${t.share}% of their damage; ${t.from.map((x) => `${esc(x.name)} <i>${esc(x.kind)}</i>`).join(', ')})`).join(' · ')}</p>` : '';
+      return `<div class="tc-sec"><div class="tc-h">Damage types <span class="tc-n">hero damage dealt · bar length = total</span></div>
+        ${bar('Us', dm.us, 'var(--green)')}${bar('Them', dm.them, 'var(--red)')}
+        <div class="dm-key">${K.map(([, l, c]) => `<span><i style="background:${c}"></i>${l}</span>`).join('')}</div>${trueLine}${fld}</div>`;
+    })() : '';
     // Team playbook (film.playbook, engine/src/playbook.ts): how our kits combine.
     const pbBlock = f.playbook && (f.playbook.plays.length || f.playbook.note) ? `<div class="tc-sec"><div class="tc-h">Team playbook <span class="tc-n">how these five kits fit together · a plan, not a replay</span></div>
       ${f.playbook.note ? `<p class="tc-warn">${esc(f.playbook.note)}</p>` : ''}
@@ -1150,7 +1170,7 @@ function pgReview(f) {
         <ol>${pl.steps.map((st) => `<li>${hIcon(st.slug, 20)} <b>${esc(st.hero)}</b> ${esc(st.ability)} <span class="tc-n">${esc(st.what)}</span></li>`).join('')}</ol></div>`).join('')}
       ${f.playbook.waitOut.length ? `<div class="pb"><b>Bait or wait out first</b> <span class="tc-n">their crowd control</span><ol>${f.playbook.waitOut.map((st) => `<li>${hIcon(st.slug, 20)} <b>${esc(st.hero)}</b> ${esc(st.ability)} <span class="tc-n">${esc(st.what)}</span></li>`).join('')}</ol></div>` : ''}</div></div>` : '';
     return card(`${eyebrow('Draft, comp &amp; kits', `${fails ? `${fails} of ${tc.checks.length} fundamentals missed` : 'all fundamentals covered'}`)}
-      ${row(tc.us, 'Us', 'var(--green)')}${row(tc.them, 'Them', 'var(--red)')}${radarBlock}${balance}
+      ${row(tc.us, 'Us', 'var(--green)')}${row(tc.them, 'Them', 'var(--red)')}${radarBlock}${balance}${mixBlock}
       <ul class="tc-checks">${checks}</ul>${swap}${pbBlock}<div class="tc-grid">${threatBlock}${nemBlock}</div>${aboveBlock}${ccBlock}
       <div class="tc-foot">Win rates are each comp shape (real tanks × high-dive heroes) across ${tc.field.matches.toLocaleString()} sampled ${esc(tc.field.patch)} ranked games, every rank. They describe the draft, not who played well.</div>`);
   })();

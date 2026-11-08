@@ -19,6 +19,7 @@ import { threatBuild, takedownTimes } from '../threat-build.js';
 import { powerProfile, powerLines, powerLesson } from '../build-power.js';
 import { buildStory } from '../build-story.js';
 import { buildWhy } from '../build-why.js';
+import { damageMix } from '../damage-mix.js';
 import { levelAtMinute } from '../matchup.js';
 import { metricsOf, scoreRows, type Row } from '../standouts.js';
 // "Above the norm" for the build read: +0.5 role SD on the standouts composite (about the top
@@ -62,6 +63,9 @@ function main() {
   const augField = read('data/aggregates/predgg-augments.json').heroes ?? {};
   const corePiece = new Set((read('data/catalog/items.json') as any[]).filter((i) => i.rarity === 'Epic' && i.slot_type === 'Passive').map((i) => i.slug));
   let norms: Record<string, any> = {};
+  let teamMix: any = null;
+  try { teamMix = read('data/aggregates/hero-role-norms.json').teamMix ?? null; } catch { /* npm run norms */ }
+  const abilitiesBySlug = new Map((read('data/catalog/heroes.json') as any[]).map((h) => [h.slug, h.abilities ?? []]));
   try { norms = read('data/aggregates/hero-role-norms.json').heroes ?? {}; } catch { /* npm run norms not run yet */ }
   const heroStats = new Map((read('data/catalog/heroes.json') as any[]).map((h) => [h.slug, h.base_stats ?? {}]));
   const heroMeta = new Map<string, HeroMeta>(heroes.map((h) => [h.slug, { power: power.get(h.slug) ?? null, cls: heroClass(h.classes) }]));
@@ -78,7 +82,7 @@ function main() {
   for (const f of files) {
     const p = path.join(OUT_DIR, f);
     const film = JSON.parse(readFileSync(p, 'utf8'));
-    if (film.teamComp && film.kitRead && film.buildNotes && film.playbook && film.threatBuilds && !all) continue;
+    if (film.teamComp && film.kitRead && film.buildNotes && film.playbook && film.threatBuilds && 'damageMix' in film && !all) continue;
     const players: CompPlayer[] = film.players.map((x: CompPlayer) => ({ us: x.us, heroSlug: x.heroSlug, heroName: x.heroName, role: x.role }));
     const tc = readTeamComp(players, film.comp?.ourDamage ?? { physical: 0, magical: 0 }, tags, field, wr, heroRoles, displayNames, (s) => rt.get(s) ?? []);
     if (!tc) { skipped++; continue; }
@@ -132,6 +136,7 @@ function main() {
       lines.push(...why.stacks.map((st) => `Stack (${st.title}): ${st.text}`), ...(why.eternalPart ? [why.eternalPart] : []), `Countered? ${why.countered.map((c) => c.text).join(' ')}`, ...(why.copy ? [`Copy it? ${why.copy.text}`] : []));
       return [ep.heroSlug, { ...tb, lines, power: pp, story, worked: why, card: { ...tb.card, power: pp, powerLesson: pl, story, worked: why }, us: !!ep.us, why: [...ws], score: standout.get(`${film.matchId}|${pid}`) ?? null }];
     }));
+    film.damageMix = damageMix(film.players, { items: itemCat, eternals: eternalsCat, augments: augCat, abilities: abilitiesBySlug, teamMix });
     film.buildNotes = buildNotes(film.players, film.kitRead, kitIdx, itemInfo, heroMeta, pairs, bm, links, predBuilds.byRole, predBuilds.baselineByRole, matchupCores);
     writeFileSync(p, JSON.stringify(film, null, 1));
     touched++;
