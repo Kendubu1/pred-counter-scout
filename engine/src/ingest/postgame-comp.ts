@@ -13,6 +13,7 @@ import { tagHero, type HeroTags, type KitProfile } from '../team-comp.js';
 import { readTeamComp, type CompPlayer, type FieldReport, type HeroRoleWr } from '../comp-read.js';
 import { heroClass } from '../team-comp.js';
 import { readKit, type HeroMeta, type KitHeroLite } from '../kit-read.js';
+import { buildNotes, type ItemInfo } from '../build-notes.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const OUT_DIR = path.join(ROOT, 'data/postgame');
@@ -33,6 +34,10 @@ function main() {
   const kitIdx = read('data/game-data/kit-index.json').heroes as Record<string, KitHeroLite>;
   const power = new Map<string, 'physical' | 'magical'>(((read('data/aggregates/classifications.json').heroes ?? []) as { hero: string; powerType?: string }[])
     .filter((c) => c.powerType === 'physical' || c.powerType === 'magical').map((c) => [c.hero, c.powerType as 'physical' | 'magical']));
+  const itemInfo = new Map<string, ItemInfo>((read('data/catalog/items.json') as any[]).map((i) => [i.slug, { slug: i.slug, name: i.display_name ?? i.name, stats: i.stats ?? {} }]));
+  const pairs = read('data/aggregates/feed-matchups.json').pairs;
+  const bm = read('data/aggregates/build-matchups.json').heroes;
+  const links = read('data/aggregates/build-links.json').heroes;
   const heroMeta = new Map<string, HeroMeta>(heroes.map((h) => [h.slug, { power: power.get(h.slug) ?? null, cls: heroClass(h.classes) }]));
 
   const files = readdirSync(OUT_DIR).filter((f) => UUID_RE.test(f));
@@ -40,12 +45,13 @@ function main() {
   for (const f of files) {
     const p = path.join(OUT_DIR, f);
     const film = JSON.parse(readFileSync(p, 'utf8'));
-    if (film.teamComp && film.kitRead && !all) continue;
+    if (film.teamComp && film.kitRead && film.buildNotes && !all) continue;
     const players: CompPlayer[] = film.players.map((x: CompPlayer) => ({ us: x.us, heroSlug: x.heroSlug, heroName: x.heroName, role: x.role }));
     const tc = readTeamComp(players, film.comp?.ourDamage ?? { physical: 0, magical: 0 }, tags, field, wr, heroRoles, displayNames);
     if (!tc) { skipped++; continue; }
     film.teamComp = tc;
     film.kitRead = readKit(film.players, film.kills ?? [], kitIdx, profiles as Record<string, { playAgainst?: string }>, heroMeta);
+    film.buildNotes = buildNotes(film.players, film.kitRead, kitIdx, itemInfo, heroMeta, pairs, bm, links);
     writeFileSync(p, JSON.stringify(film, null, 1));
     touched++;
   }

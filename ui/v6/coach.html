@@ -169,6 +169,9 @@
   .tc-more{margin-top:.35rem}.tc-more summary{cursor:pointer;color:var(--text-2);font-size:.78rem}
   .tc-cols{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.35rem}.tc-cols ul{margin:.2rem 0 0;padding-left:1rem;font-size:.78rem}
   @media (max-width:560px){.tc-cols{grid-template-columns:1fr}}
+  .tc-bn{list-style:none;padding:0;margin:.35rem 0 0}.tc-bn li{display:flex;gap:.5rem;align-items:flex-start;margin:.5rem 0}
+  .tc-bits{display:flex;flex-direction:column;gap:.15rem;margin-top:.15rem}.tc-bits img{display:inline-block!important}
+  .tc-ok{color:var(--green);font-weight:700}.tc-bad{color:var(--red);font-weight:800}
   .tc-foot{margin-top:.55rem;font-size:.72rem;color:var(--text-2)}
   @media (max-width:560px){.tc-row{grid-template-columns:1fr}.tc-shape{text-align:left}}
   /* ── v7 review: verdict → moments → numbers → strip → interrogation → lobby → deep dive ── */
@@ -853,6 +856,7 @@ function pgReview(f) {
   const compCard = (() => {
     const tc = f.teamComp;
     if (!tc) return '';
+    const iimgTag = (slug) => `<img data-ipop="${esc(slug)}" src="${iimg(slug)}" style="width:18px;height:18px;border-radius:4px;vertical-align:-4px;margin-right:.25rem" onerror="this.style.display='none'">`;
     const tcCol = (w) => w >= 52 ? 'var(--green)' : w <= 48 ? 'var(--red)' : 'var(--text-1)';
     const badge = (h) => h.tank ? '<span class="tc-tag tc-t" title="Real tank">TANK</span>' : h.diver ? '<span class="tc-tag tc-d" title="High-dive hero">DIVER</span>' : '';
     const row = (sd, label, color) => `<div class="tc-row"><div class="tc-side" style="color:${color}">${label}</div>
@@ -889,9 +893,22 @@ function pgReview(f) {
         ${isThreat ? '<span class="tc-n">Counterplay above.</span>' : `${g.enemyCc.length ? `<span class="tc-n">Watch ${esc(g.enemyCc.join(', '))}.</span> ` : ''}${g.playAgainst ? esc(dot(g.playAgainst)) : ''}`}
         ${answers.length ? ` <b>${esc(answers.join(' '))}</b>` : ''}</span></li>`; }).join('')}</ul></div>`;
     })() : '';
+    // Build notes (film.buildNotes, engine/src/build-notes.ts): lane record, what the field
+    // buys more into this opponent, and what this enemy comp asked of the build.
+    const whyCount = new Map(); (f.buildNotes || []).forEach((b) => b.needs.forEach((n) => whyCount.set(n.why, (whyCount.get(n.why) || 0) + 1)));
+    const shared = [...whyCount].filter(([, c]) => c >= 2).map(([w]) => w);
+    const bnBlock = (f.buildNotes || []).some((b) => b.lane || b.adapt.length || b.needs.length) ? `<div class="tc-sec"><div class="tc-h">Build notes <span class="tc-n">lane record · what the field buys into it · what their kits asked for</span></div>${shared.map((w) => `<p class="tc-warn">${esc(w.charAt(0).toUpperCase() + w.slice(1))}.</p>`).join('')}<ul class="tc-bn">${f.buildNotes.map((b) => {
+      const pl = f.players.find((x) => x.pid === b.pid);
+      const bits = [];
+      if (b.lane) bits.push(`<span class="tc-n">vs ${esc(b.lane.opp)} in lane:</span> <span style="color:${tcCol(b.lane.wr)}">${b.lane.wr}%</span> <span class="tc-n">(${b.lane.n} games)</span>`);
+      for (const a of b.adapt) bits.push(`${iimgTag(a.slug)}<b>${esc(a.name)}</b> <span class="tc-n">bought ${a.into}% into ${esc(a.vs)} (usually ${a.usual}%)${a.wr != null ? `, wins ${a.wr}%` : ''}</span> ${a.has ? '<span class="tc-ok">✓ built</span>' : ''}`);
+      for (const n of b.needs) bits.push(`${n.has ? '<span class="tc-ok">✓</span>' : '<span class="tc-bad">✗</span>'} ${esc(n.answer)}${shared.includes(n.why) ? '' : ` <span class="tc-n">(${esc(n.why)})</span>`}`);
+      if (!bits.length) return '';
+      return `<li>${hIcon(pl ? pl.heroSlug : '', 22)}<div><b>${esc(pl ? pgName(pl) : b.hero)}</b> <span class="tc-n">${esc(b.hero)} · ${esc(b.role)}</span><div class="tc-bits">${bits.map((x) => `<span>${x}</span>`).join('')}</div></div></li>`;
+    }).join('')}</ul></div>` : '';
     return card(`${eyebrow('Draft, comp &amp; kits', `${fails ? `${fails} of ${tc.checks.length} fundamentals missed` : 'all fundamentals covered'}`)}
       ${row(tc.us, 'Us', 'var(--green)')}${row(tc.them, 'Them', 'var(--red)')}
-      <ul class="tc-checks">${checks}</ul>${swap}${threatBlock}${nemBlock}${ccBlock}
+      <ul class="tc-checks">${checks}</ul>${swap}${threatBlock}${nemBlock}${bnBlock}${ccBlock}
       <div class="tc-foot">Win rates are each comp shape (real tanks × high-dive heroes) across ${tc.field.matches.toLocaleString()} sampled ${esc(tc.field.patch)} ranked games, every rank. They describe the draft, not who played well.</div>`);
   })();
   const stackCard = (() => {

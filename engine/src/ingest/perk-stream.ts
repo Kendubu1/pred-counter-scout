@@ -204,7 +204,7 @@ async function main() {
       const matchRanks = ranks.get(String(m.matchId));
       if (!matchRanks) st.goldUnresolvedMatches = (st.goldUnresolvedMatches ?? 0) + 1;
       const matchPlayers: MatchPlayer[] = [];
-      const lineup: { hero: string; role: string; team: string; tier: number | null }[] = [];
+      const lineup: { hero: string; role: string; team: string; tier: number | null; core: string[] }[] = [];
       for (const p of m.playerData ?? []) {
         if (p.bIsAIPlayer) continue;
         const role = String(p.roleName ?? '').replace('ESelectedRole::', '').toLowerCase();
@@ -247,7 +247,7 @@ async function main() {
         if (isGoldPlus(tier)) count((cell.gold ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
         if (isPlatPlus(tier)) count((cell.plat ??= { n: 0, w: 0, augments: {}, eternals: {}, crests: {} }));
         matchPlayers.push({ hero: slug, role, team: p.teamId, core, plat: isPlatPlus(tier) });
-        lineup.push({ hero: slug, role, team: String(p.teamId), tier: tier ?? null });
+        lineup.push({ hero: slug, role, team: String(p.teamId), tier: tier ?? null, core });
       }
       countMatch(bm, matchPlayers);
       const row = toRow({ id: String(m.matchId), end: String(m.endTime), dur: Number(m.gameDuration ?? 0), winningTeam: m.winningTeam }, lineup);

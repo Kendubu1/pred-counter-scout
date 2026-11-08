@@ -73,8 +73,23 @@ export function teamTraits(heroes: string[], tags: Map<string, HeroTags>): TeamT
 export interface Rate { n: number; w: number; wr: number; ci95: number }
 export const rate = (n: number, w: number): Rate => ({ n, w, wr: n ? Math.round((1000 * w) / n) / 10 : 0, ci95: n ? Math.round(1960 * Math.sqrt(0.25 / n)) / 10 : 0 });
 
+/** Kit features of one team, from data/game-data/kit-index.json (catalog-scanned). */
+export interface KitTraits { hardCC: number; longCC: number; mobility: number; unstoppable: number; healers: number; magical: number; cleanse: number }
+export function kitTraits(heroes: string[], kit: Record<string, { abilities: { hard: string[]; hardSec: number | null; mobility: string[]; heal: boolean }[]; unstoppable: boolean; cleanse: boolean }>, power: Map<string, string>): KitTraits | null {
+  const k = heroes.map((h) => kit[h]);
+  if (k.some((x) => !x)) return null;
+  const ab = k.flatMap((x) => x!.abilities);
+  return {
+    hardCC: ab.filter((a) => a.hard.length).length, longCC: ab.filter((a) => a.hard.length && (a.hardSec ?? 0) >= 1).length,
+    mobility: ab.filter((a) => a.mobility.length).length, unstoppable: k.filter((x) => x!.unstoppable).length,
+    healers: k.filter((x) => x!.abilities.some((a) => a.heal)).length, magical: heroes.filter((h) => power.get(h) === 'magical').length,
+    cleanse: k.filter((x) => x!.cleanse).length,
+  };
+}
+
 /** One team-side of a match, already tagged. */
-export interface Side { matchId: string; win: boolean; traits: TeamTraits; enemy: TeamTraits; heroes: { hero: string; role: string }[]; plat: boolean }
+export interface Side {
+  kit?: KitTraits; enemyKit?: KitTraits; matchId: string; win: boolean; traits: TeamTraits; enemy: TeamTraits; heroes: { hero: string; role: string }[]; plat: boolean }
 
 const COUNT_KEYS = ['frontline', 'tanks', 'assassins', 'engage', 'divers', 'enchanters', 'mages', 'marksmen'] as const;
 
@@ -88,6 +103,11 @@ export interface CompReport {
   styleVsStyle: Record<string, Record<string, Rate>>;
   /** shape = real tanks x high-dive kits, each capped at 2 ("2" = 2+): key shapeKey() */
   shapeGrid: Record<string, Rate>;
+  /** win rate by each kit feature count (kitByCount) and vs the enemy's count (kitByDiff, clamped +-3) */
+  kitByCount: Record<string, Record<string, Rate>>;
+  kitByDiff: Record<string, Record<string, Rate>>;
+  /** hard-CC gap (cc- = 2+ fewer, cc+ = 2+ more) within each tank gap (-1 = fewer tanks, clamped) */
+  ccWithinTanks: Record<string, Record<string, Rate>>;
   /** lane pairs on the same team: "jungle+midlane" -> "khaimera+renna" */
   pairs: Record<string, { key: string; rate: Rate }[]>;
 }
@@ -125,6 +145,18 @@ export function buildReport(sides: Side[], minN = 30, minPairN = 40): CompReport
       if (ha && hb) acc((pairAcc[`${a}+${b}`] ??= {}), `${ha}+${hb}`, s.win);
     }
   }
+  const kbc: Record<string, Record<string, { n: number; w: number }>> = {}, kbd: Record<string, Record<string, { n: number; w: number }>> = {}, cwt: Record<string, Record<string, { n: number; w: number }>> = {};
+  for (const s of sides) {
+    if (!s.kit || !s.enemyKit) continue;
+    for (const k of Object.keys(s.kit) as (keyof KitTraits)[]) {
+      acc((kbc[k] ??= {}), String(s.kit[k]), s.win);
+      const d = Math.max(-3, Math.min(3, s.kit[k] - s.enemyKit[k]));
+      acc((kbd[k] ??= {}), (d > 0 ? '+' : '') + d, s.win);
+    }
+    const td = Math.max(-1, Math.min(1, s.traits.tanks - s.enemy.tanks)), cd = s.kit.hardCC - s.enemyKit.hardCC;
+    acc((cwt[`tanks${td > 0 ? '+' : ''}${td}`] ??= {}), cd <= -2 ? 'cc-' : cd >= 2 ? 'cc+' : 'cc=', s.win);
+  }
+  const num = (o: Record<string, Rate>) => Object.fromEntries(Object.entries(o).sort(([a], [b]) => Number(a) - Number(b)));
   const pairs: CompReport['pairs'] = {};
   for (const [lane, o] of Object.entries(pairAcc)) {
     pairs[lane] = Object.entries(o).filter(([, v]) => v.n >= minPairN).map(([key, v]) => ({ key, rate: rate(v.n, v.w) })).sort((x, y) => y.rate.wr - x.rate.wr);
@@ -134,6 +166,9 @@ export function buildReport(sides: Side[], minN = 30, minPairN = 40): CompReport
     byCount, byDiff, styles: fin(st),
     shapeGrid: Object.fromEntries(Object.entries(grid).sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => [k, rate(v.n, v.w)])),
     styleVsStyle: Object.fromEntries(Object.entries(svs).map(([k, v]) => [k, fin(v)])),
+    kitByCount: Object.fromEntries(Object.entries(kbc).map(([k, v]) => [k, num(fin(v))])),
+    kitByDiff: Object.fromEntries(Object.entries(kbd).map(([k, v]) => [k, num(fin(v))])),
+    ccWithinTanks: Object.fromEntries(Object.entries(cwt).sort().map(([k, v]) => [k, fin(v)])),
     pairs,
   };
 }

@@ -5732,3 +5732,15 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   "Counterplay above" when it is the threat: the first render repeated Sparrow's line three times.
 - Flags `threat`, `nemesis:<pid>` and `cc-gap` (losses only) let the written review cite the
   kit read; recomputing gameFlags on all 223 films broke no published flag ref.
+- **Kit trends, one by one (1.18 sample, 2,436 matches, `npm run comps` kitByDiff):** hard-CC
+  abilities vs the enemy is the strongest kit signal: +2 wins 55.5%, -2 44.5%, and it holds with
+  tanks even (2+ more CC 54.1% vs 2+ fewer 45.9%), so CC is not just tanks again. Long CC (1s+):
+  +1 or more ~53%, -1 or less ~47%. Mobility, healers, shields and stealth are flat. A single
+  magic-damage hero wins 47.1%. Cleanse +1 is 53.7% but rides on Kaelen. Unstoppable +3 is 58%
+  on 74 games only.
+- **Build notes** (film.buildNotes, src/build-notes.ts): lane record (feed-matchups), items the field
+  buys 8+ pts more into the lane opponent or the hero hunting this player (build-matchups lane/team
+  cells, 20+ games) with the item's hero-role win rate (build-links, 50+), and kit-driven needs
+  checked against final items. Lane cells are thin early in a patch, so the hunter cell does most
+  of the work; lineup rows are now v2 (each slot carries its first three core items), so a later
+  report can measure which builds win against which comp.

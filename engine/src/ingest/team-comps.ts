@@ -17,7 +17,8 @@
 // knows whether a day is complete.
 //
 // Row (TeamCompRow): { id, end, dur, win, teams: [team0, team1] }, with each
-// team a list of [heroSlug, role, tierIdx | null] (tier = rank AT MATCH TIME,
+// team a list of [heroSlug, role, tierIdx | null, coreItems?] (v2 adds the first
+// three completed Epic items by purchase time, so builds can be read against comps) (tier = rank AT MATCH TIME,
 // match-rank.ts; null when pred.gg could not resolve it). win = index of the
 // winning team in `teams` (the stream's teamId). Rows are deduped by match id
 // within a day file, so a re-read page (resume after a crash) never doubles a match.
@@ -27,9 +28,10 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 export const TEAM_COMPS_DIR = path.join(ROOT, 'data/aggregates/team-comps');
-export const FORMAT = 'team-comps/v1';
+export const FORMAT = 'team-comps/v2';
 
-export type Slot = [hero: string, role: string, tier: number | null];
+/** v2 (2026-11-08) appends the player's first three completed Epic items (purchase order); v1 rows have 3 elements. */
+export type Slot = [hero: string, role: string, tier: number | null, core?: string[]];
 export interface TeamCompRow { id: string; end: string; dur: number; win: 0 | 1; teams: [Slot[], Slot[]] }
 export interface Coverage {
   format: string; patch: string; patchReleasedAt: string; note: string;
@@ -47,13 +49,13 @@ export const patchDir = (patch: string | null) => path.join(TEAM_COMPS_DIR, (pat
  */
 export function toRow(
   m: { id: string; end: string; dur: number; winningTeam: string | number },
-  players: { hero: string; role: string; team: string | number; tier: number | null }[],
+  players: { hero: string; role: string; team: string | number; tier: number | null; core?: string[] }[],
 ): TeamCompRow | null {
   const teams: [Slot[], Slot[]] = [[], []];
   for (const p of players) {
     const t = Number(p.team);
     if (t !== 0 && t !== 1) return null;
-    teams[t].push([p.hero, p.role, p.tier ?? null]);
+    teams[t].push(p.core ? [p.hero, p.role, p.tier ?? null, p.core] : [p.hero, p.role, p.tier ?? null]);
   }
   const win = Number(m.winningTeam);
   if ((win !== 0 && win !== 1) || !teams[0].length || !teams[1].length) return null;
@@ -112,6 +114,7 @@ export function loadCoverage(dir: string, patch: string, patchReleasedAt: string
 
 export function saveCoverage(dir: string, c: Coverage) {
   mkdirSync(dir, { recursive: true });
+  c.format = FORMAT; // rows written before v2 have no core items (3-element slots)
   writeFileSync(path.join(dir, 'coverage.json'), JSON.stringify(c, null, 1) + '\n');
 }
 
