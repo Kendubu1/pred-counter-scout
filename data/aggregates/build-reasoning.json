@@ -1,8 +1,8 @@
 {
- "generatedAt": "2026-11-08T10:37:01.956Z",
+ "generatedAt": "2026-11-08T23:00:11.367Z",
  "source": "in-session Claude Code agent (pred-scout-coach) over the committed artifacts + omeda item/ability data only; every number ground-checked, failing lines dropped",
- "written": 2054,
- "rejected": 121,
+ "written": 2191,
+ "rejected": 130,
  "heroes": {
   "adele": {
    "support": {
@@ -180,25 +180,23 @@
     "metaBuilds": [
      {
       "synergy": "Hellfire's fireball spray stacks Magnify's magic armor shred fast, Megacosm then burns health on every Web Lash and Crushing Maw hit, and Truesilver Bracelet lets Akeron dive unstopped.",
-      "items": {
-       "Magnify": "First: Hellfire fireballs stack its armor shred, and omnivamp feeds Akeron's healing.",
-       "Megacosm": "Second: health burn on every ability hit punishes tanks Akeron lashes onto.",
-       "Truesilver Bracelet": "Last: shield with crowd control immunity, so Consume's pull is not interrupted."
-      },
+      "items": {},
       "holes": "No armor anywhere, so a support Akeron who dives off terrain with Web Lash dies before Awakened ever triggers."
      },
      {
       "synergy": "Magnify shreds magic armor through Hellfire's fireballs, Tainted Scepter cuts healing while Malice adds damage to each ability hit, and Megacosm finishes by burning big health pools.",
       "items": {
        "Magnify": "First: fireball volleys stack the armor shred before Web Lash lands.",
-       "Tainted Scepter": "Second: anti-heal on ability hits, and Malice adds damage to each fireball.",
        "Megacosm": "Third: health-based burn so Akeron still hurts tanks late."
       },
       "holes": "Three damage items on a support leave Akeron relying on his own heals; if Crushing Maw whiffs, he folds."
      },
      {
       "synergy": "Shred and anti-heal come online early through Hellfire and Web Lash, then Truesilver Bracelet's shield turns Akeron's leap off terrain into a dive enemies cannot stun.",
-      "items": {},
+      "items": {
+       "Magnify": "First: Hellfire stacks its magic armor shred quickly in lane trades.",
+       "Tainted Scepter": "Second: anti-heal on ability hits, plus Malice damage after takedowns."
+      },
       "holes": "The lightest damage of the three cores, so against healthy frontliners Akeron's bite execute rarely comes into reach."
      }
     ],
@@ -569,22 +567,53 @@
    "offlane": {
     "metaBuilds": [
      {
-      "synergy": null,
-      "items": {},
-      "holes": null
+      "synergy": "Chrono Swipe applies on-hit effects twice, so Sky Splitter and Rapture stack damage fast with Tesseract Device canisters, then Draconum adds armor and healing for longer brawls.",
+      "items": {
+       "Sky Splitter": "First: Chrono Swipe's double hit carves current health while lifesteal tops you up.",
+       "Rapture": "Second: attack speed fills canisters faster and every hit heals you.",
+       "Draconum": "Last: armor plus extra healing that stacks with your canister healing."
+      },
+      "holes": "No magic defense at all, so a team of mages melts Boris before his canisters stack."
      },
      {
-      "synergy": null,
-      "items": {},
-      "holes": null
+      "synergy": "Detection Protocol runs you onto a target, Sky Splitter and Basilisk shred health and armor during Chrono Swipe, and Rapture closes with attack speed for full canisters.",
+      "items": {
+       "Sky Splitter": "First: current-health damage on every Chrono Swipe hit and basic attack.",
+       "Basilisk": "Second: armor shred and health, plus ability haste for more Primeval Roar.",
+       "Rapture": "Third: attack speed for faster canisters and health to last the brawl."
+      },
+      "holes": "No armor, so if Ursine Burst drops you into their whole team you die before the Tesseract Core fires."
      },
      {
-      "synergy": null,
-      "items": {},
-      "holes": null
+      "synergy": "Tainted Blade cuts the enemy's healing while Sky Splitter chunks them, so Boris wins long trades against healers once Rapture's attack speed keeps canisters full.",
+      "items": {
+       "Sky Splitter": "First: Chrono Swipe's double hit applies current-health damage twice.",
+       "Tainted Blade": "Second: cuts enemy healing and makes them take more damage.",
+       "Rapture": "Third: attack speed and health keep canisters and Tesseract Core healing running."
+      },
+      "holes": "Light on armor, so focused physical damage still kills Boris right after Ursine Burst lands."
      }
     ],
-    "optimizer": null
+    "optimizer": {
+     "synergy": "This sim build turns Boris into a magic ability caster: Noxia's mark pops with Primeval Roar, then Wraith Leggings, Oblivion Crown and Combustion pile magic power onto that roar.",
+     "items": {
+      "Noxia": "First: mark a hero, then hit with Primeval Roar for bonus max-health damage.",
+      "Crescelia": "Second: a charged basic attack after abilities, plus mana and extra gold.",
+      "Tainted Scepter": "Third: cuts enemy healing and adds damage to each ability hit.",
+      "Wraith Leggings": "Fourth: abilities deal bonus magic damage, boosting Primeval Roar.",
+      "Oblivion Crown": "Fifth: multiplies all the magic power stacked so far.",
+      "Combustion": "Last: splash damage around your target and more magic power."
+     },
+     "swaps": [
+      {
+       "out": "Sky Splitter",
+       "in": "Noxia",
+       "gain": "Noxia's mark turns Primeval Roar into a max-health hit, a big jump in short-fight damage in the sim.",
+       "lose": "Dropping Sky Splitter loses lifesteal and the current-health chunks Chrono Swipe lands twice."
+      }
+     ],
+     "holes": "Almost no tankiness, so Boris, who has to jump in with Ursine Burst, dies before most of his abilities land."
+    }
    }
   },
   "countess": {
@@ -649,6 +678,11 @@
    },
    "jungle": {
     "metaBuilds": [
+     {
+      "synergy": null,
+      "items": {},
+      "holes": null
+     },
      {
       "synergy": null,
       "items": {},
@@ -1025,11 +1059,6 @@
       "synergy": null,
       "items": {},
       "holes": null
-     },
-     {
-      "synergy": null,
-      "items": {},
-      "holes": null
      }
     ],
     "optimizer": {
@@ -1054,6 +1083,11 @@
        "Vanquisher": "Second: penetration and an execute to finish targets during Limit Break."
       },
       "holes": "Squishy for offlane; a bruiser who reaches her in melee range wins the trades."
+     },
+     {
+      "synergy": null,
+      "items": {},
+      "holes": null
      },
      {
       "synergy": null,
@@ -1088,6 +1122,11 @@
       "synergy": "Crits on Nova Repeater build Heat toward Limit Break, Solaris empowers a basic attack after each ability, and Nuclear Rounds boosts Tachyon Lance damage.",
       "items": {},
       "holes": "Mid mages burst her from range before the crits and Heat ever build."
+     },
+     {
+      "synergy": null,
+      "items": {},
+      "holes": null
      }
     ],
     "optimizer": {
@@ -1305,16 +1344,6 @@
        "Wraith Leggings": "Then penetration and bonus damage for Black Hole and Cosmic Rift."
       },
       "holes": "Azure Core's shield is the only defense, so divers who wait out Torn Space still burst Gideon."
-     },
-     {
-      "synergy": null,
-      "items": {},
-      "holes": null
-     },
-     {
-      "synergy": null,
-      "items": {},
-      "holes": null
      }
     ],
     "optimizer": {
@@ -1600,6 +1629,57 @@
       }
      ],
      "holes": "Cursed Scroll damages GRIM.exe too, so against poke mids his health drains faster than he wins trades."
+    }
+   },
+   "offlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Assault Mode's cleaving basic attacks can critically strike, so Lightning Hawk and Plasma Blade stack crit chance first and Imperator makes every crit hit harder last.",
+      "items": {
+       "Lightning Hawk": "First: crit chance and a charged slowing shot to keep targets in range.",
+       "Plasma Blade": "Second: crit stacks and magic power for Displacement Blast and Pulsefire.",
+       "Imperator": "Last: crits from Assault Mode basic attacks deal more damage."
+      },
+      "holes": "No defense at all, so anyone who reaches you while GTFO slows you wins the fight."
+     },
+     {
+      "synergy": "Crits from Lightning Hawk and Plasma Blade feed Dust Devil's stacks, keeping Grim.exe's attack speed and movement up while he shoots from Assault Mode range.",
+      "items": {
+       "Lightning Hawk": "First: early crit and a charged slowing shot to hold targets.",
+       "Plasma Blade": "Second: crit stacks plus magic power for Pulsefire bursts.",
+       "Dust Devil": "Third: crits stack attack speed and movement to reposition between shots."
+      },
+      "holes": "Dust Devil adds speed, not damage per hit, so against tanky front liners this build runs out of punch."
+     },
+     {
+      "synergy": "Tainted Rounds adds on-hit damage that grows as the target drops, so cleaving Assault Mode shots finish fights while Imperator raises every crit.",
+      "items": {
+       "Lightning Hawk": "First: crit chance and a charged slowing shot.",
+       "Tainted Rounds": "Second: cuts enemy healing and hits harder as they lose health.",
+       "Imperator": "Last: bigger crits from every Assault Mode basic attack."
+      },
+      "holes": "No escape items, so once Energy Shield is used anyone who reaches you has a free kill."
+     }
+    ],
+    "optimizer": {
+     "synergy": "Pulsefire turns basic attacks into magic damage, so this sim build stacks magic on-hit and attack speed early, with Cursed Scroll and Rapture adding tankiness late.",
+     "items": {
+      "Orion": "First: ability haste becomes attack speed and stacking bonus damage on one target.",
+      "Prophecy": "Second: magic on-hit damage on every Pulsefire-powered basic attack.",
+      "Spectra": "Third: attack speed and true damage that grows as they lose health.",
+      "Marshal": "Fourth: mana regen to pay Assault Mode's cost, plus on-hit damage.",
+      "Cursed Scroll": "Fifth: both armors and regen so you survive standing your ground.",
+      "Rapture": "Last: health, healing and more on-hit damage for long fights."
+     },
+     "swaps": [
+      {
+       "out": "Lightning Hawk",
+       "in": "Orion",
+       "gain": "Orion adds magic power, mana and ramping bonus damage that suits Pulsefire's magic basic attacks.",
+       "lose": "Dropping Lightning Hawk loses its crit chance and the charged slowing shot."
+      }
+     ],
+     "holes": "Mostly attack speed and on-hit, so if you get caught during GTFO's self-slow only Cursed Scroll keeps you alive."
     }
    }
   },
@@ -1923,6 +2003,11 @@
        "Megacosm": "Third: Flame Turret hits keep max-health burn running on tanks."
       },
       "holes": "In the offlane a bruiser walks past the turrets; little armor here to survive that."
+     },
+     {
+      "synergy": null,
+      "items": {},
+      "holes": null
      },
      {
       "synergy": null,
@@ -2332,22 +2417,46 @@
    "midlane": {
     "metaBuilds": [
      {
-      "synergy": null,
-      "items": {},
-      "holes": null
+      "synergy": "Unleash's fast cleaving attacks spread Overlord's splash damage, Basilisk shreds armor before Cull, and Rapture adds attack speed and healing to keep Rage up.",
+      "items": {
+       "Overlord": "First: splash damage on every Unleash hit and permanent health from takedowns.",
+       "Basilisk": "Second: armor shred before Cull, plus ability haste and movement speed.",
+       "Rapture": "Third: attack speed and healing from every hit to stay in fights."
+      },
+      "holes": "No magic defense from items, so mages who stun you before Invigorate is ready win the trade."
      },
      {
-      "synergy": null,
-      "items": {},
-      "holes": null
+      "synergy": "Unleash's burst of max-speed attacks hits Sky Splitter's current-health damage repeatedly, Ashbringer shortens Ambush and Invigorate cooldowns, and Onixian Quiver adds crit and lifesteal.",
+      "items": {
+       "Sky Splitter": "First: Unleash attacks chunk current health and heal you back.",
+       "Ashbringer": "Second: each hit cuts cooldowns, so Ambush and Invigorate come back sooner.",
+       "Onixian Quiver": "Third: big crit chance and lifesteal for longer basic-attack fights."
+      },
+      "holes": "No health or armor at all, so if Ambush lands you in a stun chain you die before Unleash finishes."
      },
      {
-      "synergy": null,
-      "items": {},
-      "holes": null
+      "synergy": "Overlord turns Unleash into splash damage, Rapture keeps every hit healing you, and Draconum's armor and healing boost make Khaimera hard to kill in long fights.",
+      "items": {
+       "Overlord": "First: splash on Unleash hits and health that grows with takedowns.",
+       "Rapture": "Second: attack speed and healing from all damage you deal.",
+       "Draconum": "Third: armor and stacking extra healing against physical teams."
+      },
+      "holes": "Little damage beyond Cull, so a squishy target that walks out of your slow escapes."
      }
     ],
-    "optimizer": null
+    "optimizer": {
+     "synergy": "This sim build pushes armor penetration so Ambush, Unleash and Cull hit hard: Resolution and The Perforator ignore armor early, and Spear Of Desolation brings Cull back sooner.",
+     "items": {
+      "Resolution": "First: armor penetration and on-hit damage that grows with camp leader stacks.",
+      "The Perforator": "Second: ignores armor and slows with abilities, sticking to Ambush targets.",
+      "Viper": "Third: shreds armor and boosts on-hit and ability damage during Unleash.",
+      "Spear Of Desolation": "Fourth: bonus damage and ultimate haste for more Cull casts.",
+      "Earthshaker": "Fifth: health and stacking ability damage; melee heroes stack it faster.",
+      "Alternator": "Last: more penetration and extra damage on Ambush, your alternate ability."
+     },
+     "swaps": [],
+     "holes": "Only Earthshaker adds health, so a midlane Khaimera who misses Ambush is a free kill."
+    }
    }
   },
   "kira": {
@@ -2581,6 +2690,11 @@
   "legion": {
    "carry": {
     "metaBuilds": [
+     {
+      "synergy": null,
+      "items": {},
+      "holes": null
+     },
      {
       "synergy": null,
       "items": {},
@@ -2898,8 +3012,7 @@
       "synergy": "Combustion and Lifebinder give area damage and spell lifesteal for Swarm dives, then Tainted Scepter adds anti-heal and Malice to every Pestilence-applying spell.",
       "items": {
        "Combustion": "First: early area damage, penetration and mana.",
-       "Lifebinder": "Second: spell lifesteal that grows magic power over time.",
-       "Tainted Scepter": "Last: anti-heal and Malice stacks against healing teams."
+       "Lifebinder": "Second: spell lifesteal that grows magic power over time."
       },
       "holes": "Tainted Scepter's anti-heal only pays against healers; otherwise Megacosm in that slot hurts more."
      }
@@ -3088,7 +3201,8 @@
       "synergy": "Crit burst: Lightning Hawk's empowered shot pairs with Shots Fired, Vanquisher executes low targets, and Imperator makes every crit hit harder.",
       "items": {
        "Lightning Hawk": "First: crits plus an empowered slowing shot from its momentum stacks.",
-       "Vanquisher": "Second: penetration and an execute after Buckshot's armor shred."
+       "Vanquisher": "Second: penetration and an execute after Buckshot's armor shred.",
+       "Imperator": "Third: bigger crits on Shots Fired and Long Arm follow-ups."
       },
       "holes": "Squishy for offlane; a bruiser who walks over Static Trap wins every trade."
      },
@@ -3096,7 +3210,8 @@
       "synergy": "Crit and anti-heal: Lightning Hawk slows targets, Vanquisher executes, and Tainted Rounds cuts healing and hits harder as targets drop.",
       "items": {
        "Lightning Hawk": "First: crits plus an empowered slowing shot from its momentum stacks.",
-       "Vanquisher": "Second: penetration and an execute after Buckshot's shred."
+       "Vanquisher": "Second: penetration and an execute after Buckshot's shred.",
+       "Tainted Rounds": "Third: cuts healing and hits harder on low targets."
       },
       "holes": "Weak against tanks early; anti-heal does little when the lane has no healing."
      }
@@ -3178,51 +3293,52 @@
    "support": {
     "metaBuilds": [
      {
-      "synergy": "Marshal boosts your basic attacks, Crystal Tear shares power and haste with whoever your Alacrity and Reversal touch, and Windcaller adds speed to those same shielded allies.",
+      "synergy": "Marshal pays for Serenity and Alacrity with mana regen, then Crystal Tear and Windcaller boost your shields and give both you and the shielded ally a bonus.",
       "items": {
-       "Marshal": "First: attack speed and on-hit damage so your lane pokes land harder.",
-       "Crystal Tear": "Second: gives the ally you shield bonus power and ability haste.",
-       "Windcaller": "Third: stronger shields and a speed burst for the ally you protect."
+       "Marshal": "First: mana regen and attack speed for poke between Serenity charges.",
+       "Crystal Tear": "Second: shielding an ally gives you both magic power and ability haste.",
+       "Windcaller": "Third: stronger shields and a speed burst for both of you."
       },
-      "holes": "Very little health, so if you fly in with Reversal and get focused you die fast."
+      "holes": "No health or armor, so if a hook or stun reaches you first, your shields never get thrown."
      },
      {
-      "synergy": "Transference turns leftover Alacrity and Reversal shields into health, Hexbound Bracers refund mana as you get hit, and Xenia adds a second shield and armor.",
+      "synergy": "Windcaller and Everbloom both trigger when you help allies, so Alacrity and Reversal Of Fortune add speed, damage reduction and shorter stuns on top of your shield.",
       "items": {
-       "Transference": "First: both armors and leftover shield value turns into healing.",
-       "Hexbound Bracers": "Second: mana back when hit, so you can keep casting while frontlining.",
-       "Xenia": "Third: an extra ally shield on top of Alacrity and more armor."
+       "Marshal": "First: mana regen to keep Serenity and Consecrated Ground castable.",
+       "Windcaller": "Second: Alacrity's speed burst gets extra movement speed for both of you.",
+       "Everbloom": "Third: health plus damage reduction and shorter stuns on the ally you help."
       },
-      "holes": "Little power, so your shields, Serenity stun damage and Consecrated Ground healing all stay small late."
+      "holes": "Built for helping, not damage, so Serenity's stun is your only real threat if they jump on you."
      },
      {
-      "synergy": "Marshal adds basic attack pressure, Tainted Totem stacks anti-heal on your Sentinel healing cut and passes it to allies, and Windcaller speeds the allies you shield.",
+      "synergy": "Transference, Hexbound Bracers and Xenia make Muriel tanky enough to stand in front, so she can fully charge Serenity and drop Consecrated Ground without dying first.",
       "items": {
-       "Marshal": "First: attack speed and on-hit damage for steady lane poke.",
-       "Windcaller": "Third: stronger shields and a speed burst for shielded allies."
+       "Transference": "First: both armors, speed, and leftover shields turn into health.",
+       "Hexbound Bracers": "Second: health, and mana back when you take hits.",
+       "Xenia": "Third: armor plus an extra shield on allies you help."
       },
-      "holes": "Sentinel already cuts healing, so against a team with little healing the Totem slot is mostly wasted."
+      "holes": "Almost no magic power, so Alacrity shields and Consecrated Ground healing stay small all game."
      }
     ],
     "optimizer": {
-     "synergy": "Stack power so Alacrity, Reversal and Consecrated Ground shields and heals grow: Soulbinder and Oblivion Crown scale them, while Lunaria, Lifecore and Crystal Tear add extra healing.",
+     "synergy": "This sim build stacks magic power so Alacrity, Consecrated Ground and Reversal Of Fortune heal and shield more, with Lifecore and Lunaria turning Serenity damage into extra heals.",
      "items": {
-      "Soulbinder": "First: big power plus bonus damage on long-range Serenity shots.",
-      "Lunaria": "Second: your damage stores charges that heal the lowest-health ally.",
-      "Oblivion Crown": "Third: multiplies your power so every shield and heal scales.",
-      "Lifecore": "Fourth: hitting heroes fires a healing wisp at a hurt ally.",
-      "Crystal Tear": "Fifth: shares power and ability haste with the ally you shield.",
-      "Timewarp": "Last: cuts basic cooldowns so Alacrity and Serenity come back sooner."
+      "Lifecore": "First: damage you deal charges a healing wisp for your weakest ally.",
+      "Noxia": "Second: mark with one ability, then hit with Serenity for bonus damage.",
+      "Oblivion Crown": "Third: multiplies your magic power, boosting every heal and shield.",
+      "Lunaria": "Fourth: damage charges a heal for the lowest-health ally.",
+      "Spirit Of Amir": "Fifth: magic power and health while fighting outside the jungle.",
+      "Timewarp": "Last: shorter cooldowns on Serenity, Consecrated Ground and Alacrity."
      },
      "swaps": [
       {
        "out": "Marshal",
-       "in": "Soulbinder",
-       "gain": "Much more power, so Serenity and Reversal's landing burst hit harder in one combo.",
-       "lose": "Marshal's attack speed and on-hit damage that make your basic attacks a lane threat."
+       "in": "Lifecore",
+       "gain": "Lifecore turns your poke into healing wisps and adds more magic power and stronger heals and shields.",
+       "lose": "Dropping Marshal loses its mana regen and attack speed, so mana runs dry sooner."
       }
      ],
-     "holes": "No health or armor in six items, so Reversal's dive lands you on a fight you cannot survive."
+     "holes": "Almost no tankiness, so anyone who reaches you kills you before these heals matter."
     }
    }
   },
@@ -3376,6 +3492,57 @@
      },
      "swaps": [],
      "holes": "Warp Stream replaces her Blink with Tele-Blink, which throws away Essence Catalyst's cheaper Blink and its damage boost on use."
+    }
+   },
+   "midlane": {
+    "metaBuilds": [
+     {
+      "synergy": "Marshal and Galaxy Greaves give the mana and ability haste to keep Psychic Flare and Energy Lance cycling, while Enra's Blessing shields your linked ally when they get stunned.",
+      "items": {
+       "Marshal": "First: mana regen and attack speed, stronger during Hyperflux.",
+       "Enra's Blessing": "Second: shields a nearby ally when they get stunned or rooted.",
+       "Galaxy Greaves": "Third: both armors and movement speed to stay safely near your link."
+      },
+      "holes": "Little damage for a midlaner, so your Energy Lance root rarely kills anyone on its own."
+     },
+     {
+      "synergy": "Tainted Totem cuts enemy healing for you and your linked ally, Marshal keeps mana up, and Enra's Blessing protects that ally when stunned.",
+      "items": {
+       "Marshal": "First: mana regen so Psychic Flare and Energy Lance stay castable.",
+       "Tainted Totem": "Second: cuts enemy healing, and shares that effect with your ally.",
+       "Enra's Blessing": "Third: health and a shield for an ally who gets stunned."
+      },
+      "holes": "Into a team with no healing, Tainted Totem's main effect does nothing for your damage."
+     },
+     {
+      "synergy": "Energy Lance's root triggers Dynamo so the target takes more damage, while Marshal keeps mana up and Enra's Blessing shields your linked ally.",
+      "items": {
+       "Marshal": "First: mana regen and attack speed to fuel your ability rotation.",
+       "Dynamo": "Second: armor and health; rooted targets take more damage.",
+       "Enra's Blessing": "Third: health, mana and a shield for stunned allies."
+      },
+      "holes": "Energy Lance needs a long channel to root, so if they walk out early Dynamo never triggers."
+     }
+    ],
+    "optimizer": {
+     "synergy": "This sim build is pure magic damage: Orion ramps damage on one target during Energy Lance, then Wraith Leggings, Oblivion Crown and Caustica make Psychic Flare hit hard.",
+     "items": {
+      "Orion": "First: ability haste and stacking bonus damage on the target you lance.",
+      "Spirit Of Amir": "Second: magic power, health and penetration while laning.",
+      "Wraith Leggings": "Third: abilities deal bonus magic damage, boosting Psychic Flare and Energy Lance.",
+      "Oblivion Crown": "Fourth: multiplies all your magic power.",
+      "Caustica": "Fifth: ignores magic armor to break tankier targets.",
+      "Combustion": "Last: splash damage onto nearby enemies and more magic power."
+     },
+     "swaps": [
+      {
+       "out": "Marshal",
+       "in": "Orion",
+       "gain": "Orion adds more magic power and ramping damage on one target, a sizable combo gain in the sim.",
+       "lose": "Dropping Marshal loses its mana regen and attack speed for basic attacks."
+      }
+     ],
+     "holes": "Nothing here helps your linked ally or protects you, so Phase gives up her team role and has no defense."
     }
    }
   },
@@ -3591,9 +3758,7 @@
      {
       "synergy": "Entropy and Wraith Leggings stack ability damage, then Oblivion Crown multiplies magic power for the biggest Stupor and Mortal Coil burst.",
       "items": {
-       "Entropy": "First: extra damage per ability hit.",
-       "Wraith Leggings": "Second: bonus ability damage and penetration.",
-       "Oblivion Crown": "Last: multiplies magic power for the biggest burst."
+       "Entropy": "First: extra damage per ability hit."
       },
       "holes": "Pure burst with no sustain; if Stupor misses, Renna has no way to win the trade."
      }
@@ -3690,24 +3855,6 @@
        "Imperator": "Third: bigger crits, stacking with Hellfire Rounds' boosted final round."
       },
       "holes": "Pure crit with no health; if Reckoning pulls a tank, you cannot kill it before help arrives."
-     },
-     {
-      "synergy": "Same crit and lifesteal start, then Demolisher lets basic attacks and crits ignore armor, so Reckoning duels against armored bruisers still end in kills.",
-      "items": {
-       "Vanquisher": "First: crit chance and an execute so wounded duel targets die.",
-       "Terminus": "Second: crit lifesteal that overflows into a shield during long trades.",
-       "Demolisher": "Third: crits ignore armor, key when the offlane enemy stacks it."
-      },
-      "holes": "Less crit damage than Imperator, so against squishy lanes this hits softer than the drain build."
-     },
-     {
-      "synergy": "Scattershot's attack speed empties the Hand Cannon faster and its homing projectiles poke and push, then Terminus drains through them and Vanquisher closes kills.",
-      "items": {
-       "Scattershot": "First: attack speed and homing splash shots to push waves and poke.",
-       "Terminus": "Second: lifesteal on every shot and splash, banking a shield.",
-       "Vanquisher": "Third: crit and an execute to finish Reckoning targets."
-      },
-      "holes": "Splash shots split damage onto minions; in a tight one-on-one duel the damage spreads thin."
      }
     ],
     "optimizer": {
@@ -3769,6 +3916,11 @@
       "synergy": "Dynamo rewards every Riplash and Skewer lock, Tainted Charm's aura cuts healing and slows anyone Riktor holds, and Xenia rounds out both armors.",
       "items": {},
       "holes": "Tainted Charm is wasted against teams with little healing; buy armor there instead."
+     },
+     {
+      "synergy": "Pure frontline: Frosted Lure shields Riktor as Electrocute and Skewer hold enemies, Tainted Guard punishes physical attackers, and Void Helm adds magic armor and stronger healing.",
+      "items": {},
+      "holes": "Almost no damage, so Riktor only matters if Riplash hits; miss the hook and he is a slow wall."
      }
     ],
     "optimizer": {
@@ -3803,6 +3955,11 @@
       "synergy": "Dynamo rewards every Riplash and Skewer lock, Tainted Charm's aura cuts healing and slows anyone Riktor holds, and Xenia rounds out both armors.",
       "items": {},
       "holes": "Tainted Charm is wasted against teams with little healing; buy armor there instead."
+     },
+     {
+      "synergy": "Pure frontline: Frosted Lure shields Riktor as Electrocute and Skewer hold enemies, Tainted Guard punishes physical attackers, and Void Helm adds magic armor and stronger healing.",
+      "items": {},
+      "holes": "Almost no damage, so ganks only work if Riplash hits; miss the hook and the lane walks away."
      }
     ],
     "optimizer": {
@@ -3899,22 +4056,53 @@
    "support": {
     "metaBuilds": [
      {
-      "synergy": null,
-      "items": {},
-      "holes": null
+      "synergy": "Minueta, Ashen Vow and First Intent each trigger Mutilator's max-health damage, Infernum burns targets on top, and The Perforator ignores armor so Swan Song hits hard.",
+      "items": {
+       "Mutilator": "First: each different ability hit deals max-health damage and heals you.",
+       "Infernum": "Second: repeated hits ignite targets for extra max-health burn.",
+       "The Perforator": "Third: ignores armor and slows, so Swan Song lands fully."
+      },
+      "holes": "All damage for a support, so if First Intent misses you have no tankiness to survive the fight."
      },
      {
-      "synergy": null,
-      "items": {},
-      "holes": null
+      "synergy": "Mutilator and Terminus heal off every Minueta stab, Tainted Blade cuts their healing, and Terminus turns spare healing into a shield during long fights.",
+      "items": {
+       "Mutilator": "First: ability hits deal max-health damage and heal you.",
+       "Tainted Blade": "Second: health, cuts enemy healing and makes them take more damage.",
+       "Terminus": "Third: lifesteal on stabs, and extra healing becomes a shield."
+      },
+      "holes": "Works only while you are hitting someone; when they back off, the healing stops and you are exposed."
      },
      {
-      "synergy": null,
-      "items": {},
-      "holes": null
+      "synergy": "Alternator boosts Minueta, Scarlett's alternate ability, Earthshaker stacks fast for a melee hero, and The Perforator ignores armor, so every ability lands harder.",
+      "items": {
+       "Alternator": "First: Minueta deals more damage, and its bonus mana becomes physical power.",
+       "Earthshaker": "Second: health and fast-stacking ability damage for a melee hero.",
+       "The Perforator": "Third: ignores armor and slows targets after Swan Song."
+      },
+      "holes": "Only Earthshaker adds health, so you still fold quickly when the enemy focuses you."
      }
     ],
-    "optimizer": null
+    "optimizer": {
+     "synergy": "This sim build makes Scarlett a tank: Warp Stream's mana becomes physical power through Last Light and its ultimate haste brings Swan Song back faster, then armor and health stack.",
+     "items": {
+      "Warp Stream": "First: health, mana that Last Light turns into power, and more Swan Song.",
+      "Earthshaker": "Second: health and fast-stacking ability damage for melee hits.",
+      "Mistmeadow Buckler": "Third: blocks magic damage and adds regen against mages.",
+      "Legacy": "Fourth: cleanse and crowd-control immunity to land Swan Song safely.",
+      "Transference": "Fifth: both armors, and leftover First Intent shield becomes health.",
+      "Hexbound Bracers": "Last: health and less damage from enemy basic attacks."
+     },
+     "swaps": [
+      {
+       "out": "Alternator",
+       "in": "Warp Stream",
+       "gain": "Warp Stream adds much more health, a faster blink and ultimate haste for Swan Song.",
+       "lose": "Dropping Alternator loses armor penetration and Minueta's bonus damage."
+      }
+     ],
+     "holes": "Very little damage, so Minueta and Swan Song stop finishing kills once enemies buy armor."
+    }
    }
   },
   "serath": {
@@ -4127,7 +4315,6 @@
       "synergy": "Orb Of Growth scales early, Tainted Scepter stacks Malice on wolf hits, and Magnify strips magic armor so repeated Line Tempo and Circle Rhythm hits keep growing.",
       "items": {
        "Orb Of Growth": "First: lane XP scaling and missing-health regen.",
-       "Tainted Scepter": "Second: anti-heal plus Malice damage on every ability.",
        "Magnify": "Third: magic armor shred stacks from wolves, plus omnivamp."
       },
       "holes": "Lots of rotation damage but thin defense, so getting locked down mid-combo ends Shinbi."
@@ -4136,7 +4323,6 @@
       "synergy": "Orb Of Growth and Oathkeeper bring health and mana for longer dives, and Magnify adds omnivamp so Circle Rhythm shields plus lifesteal hold her in fights.",
       "items": {
        "Orb Of Growth": "First: XP scaling and health regen after trades.",
-       "Oathkeeper": "Second: health, mana and an empowered basic between abilities.",
        "Magnify": "Third: magic armor shred and omnivamp to stay in fights."
       },
       "holes": "No anti-heal, so healing teams survive the All-Kill! wolves."
@@ -5067,7 +5253,8 @@
       "synergy": "Wraith's abilities also scale with power, so Soulbinder rewards long Knock, Knock! snipes, Noxia adds a max-health chunk on the follow-up shot, and Wraith Leggings boosts each hit.",
       "items": {
        "Soulbinder": "First: power and haste; long-range Knock, Knock! snipes deal bonus damage.",
-       "Noxia": "Second: Peekaboo! then Knock, Knock! for a max-health chunk."
+       "Noxia": "Second: Peekaboo! then Knock, Knock! for a max-health chunk.",
+       "Wraith Leggings": "Third: abilities deal bonus magic damage, plus speed to reposition."
       },
       "holes": "No tankiness on a support: once Surprise, Surprise! is down, any dive kills Wraith."
      }
@@ -5090,6 +5277,11 @@
   "wukong": {
    "jungle": {
     "metaBuilds": [
+     {
+      "synergy": null,
+      "items": {},
+      "holes": null
+     },
      {
       "synergy": null,
       "items": {},
@@ -5140,80 +5332,105 @@
    "support": {
     "metaBuilds": [
      {
-      "synergy": null,
-      "items": {},
-      "holes": null
+      "synergy": "Mindrazor splashes basic attacks around your target, Infernum ignites enemies you hit repeatedly, and The Perforator ignores armor for Cyclebreaker and High Impact.",
+      "items": {
+       "Mindrazor": "First: splash damage around your target and bonus physical power.",
+       "Infernum": "Second: repeated hits ignite targets for max-health burn.",
+       "The Perforator": "Third: ignores armor and slows, helping you stick after Windsurge."
+      },
+      "holes": "No tankiness for a support, so if Cyclebreaker's stun misses you are the easiest kill."
      },
      {
-      "synergy": null,
-      "items": {},
-      "holes": null
+      "synergy": "Mutilator heals you off Windsurge, Cyclebreaker and High Impact hits, while Mindrazor's splash and Infernum's burn reward staying in the fight.",
+      "items": {
+       "Mindrazor": "First: splash damage around targets and extra physical power.",
+       "Mutilator": "Second: each different ability hit deals max-health damage and heals you.",
+       "Infernum": "Third: repeated hits ignite enemies for extra burn in long fights."
+      },
+      "holes": "Healing only works while you hit them, so a team that stuns you first shuts the build off."
      },
      {
-      "synergy": null,
-      "items": {},
-      "holes": null
+      "synergy": "Augmentation's charged basic attack follows each ability, Painweaver keeps you fast while chasing, and Mindrazor splashes damage; Augmentation's health is the only tankiness here.",
+      "items": {
+       "Mindrazor": "First: splash damage around targets and extra physical power.",
+       "Augmentation": "Second: health, attack speed and a charged hit after abilities.",
+       "Painweaver": "Third: armor penetration and movement speed stacks to keep chasing."
+      },
+      "holes": "Little tankiness for a support, so you trade poorly once their carry has items."
      }
     ],
-    "optimizer": null
+    "optimizer": {
+     "synergy": "This sim build makes Wukong a pure tank: Stonewall and Forticus stack armor and health early, so Cyclebreaker's damage reduction and stun let you hold the front line.",
+     "items": {
+      "Stonewall": "First: high armor and blocks part of incoming physical damage.",
+      "Forticus": "Second: armor, health, shorter stuns and a shield when fighting.",
+      "Raiment of Renewal": "Third: huge health and missing-health regen between fights.",
+      "Vainglory": "Fourth: both armors, growing stronger during long fights.",
+      "Catalytic Drive": "Fifth: magic armor, regen and a gold-paying execute basic attack.",
+      "Unbroken Will": "Last: health, magic armor and shorter stuns."
+     },
+     "swaps": [
+      {
+       "out": "Mindrazor",
+       "in": "Stonewall",
+       "gain": "Stonewall adds heavy armor and blocks part of physical damage, a big tankiness gain in the sim.",
+       "lose": "Dropping Mindrazor loses splash damage and physical power for your abilities."
+      }
+     ],
+     "holes": "Almost no damage, so your clones and abilities barely hurt anyone; take it only if your team has damage."
+    }
    }
   },
   "yin": {
    "jungle": {
     "metaBuilds": [
      {
-      "synergy": "Storm Breaker and Sky Splitter add on-hit damage that Rising Storm's attack speed fires quickly, then Tainted Rounds finishes low targets and cuts their healing.",
+      "synergy": "Rising Storm's attack speed charges Storm Breaker's chain lightning fast, Sky Splitter chunks current health, and Tainted Rounds finishes low targets after Lash Kick.",
       "items": {
-       "Storm Breaker": "First: attack speed and a chaining lightning hit that speeds camp clears.",
-       "Sky Splitter": "Second: current-health damage per hit plus lifesteal, strong into tanky targets.",
-       "Tainted Rounds": "Third: anti-heal and on-hit damage that grows as targets drop low."
+       "Storm Breaker": "First: charged shots chain lightning, clearing camps faster.",
+       "Sky Splitter": "Second: current-health damage and lifesteal on every basic attack.",
+       "Tainted Rounds": "Third: cuts healing and hits harder as targets drop."
       },
-      "holes": "Everything rides on basic attacks; if they slow or stun you off the target, this build does little."
+      "holes": "No tankiness, so if Lash Kick pulls you into a group you die before Rising Storm stacks."
      },
      {
-      "synergy": "Sky Splitter and Onixian Quiver add lifesteal and attack speed on top of Rising Storm and Windburn's healing third hit, then Tainted Rounds cuts the enemy's healing.",
+      "synergy": "Sky Splitter and Onixian Quiver both add lifesteal, so stacking Rising Storm heals Yin as she hits, then Tainted Rounds finishes fleeing targets.",
       "items": {
-       "Sky Splitter": "First: current-health damage on hit plus lifesteal for healthy jungle clears.",
-       "Onixian Quiver": "Second: attack speed, crit and lifesteal; its extra shots favor ranged heroes.",
-       "Tainted Rounds": "Third: anti-heal and damage that grows as the target drops low."
+       "Sky Splitter": "First: current-health damage and lifesteal for camps and duels.",
+       "Onixian Quiver": "Second: big attack speed, crit chance and more lifesteal.",
+       "Tainted Rounds": "Third: cuts healing and gets stronger as targets lose health."
       },
-      "holes": "No tankiness at all, so if the enemy focuses you before your lifesteal starts, you die fast."
+      "holes": "Only lifesteal keeps you alive, so a stun or slow that stops your attacks shuts the healing off."
      },
      {
-      "synergy": "Lightning Hawk's charged hit slows targets so Rising Storm keeps stacking, Onixian Quiver adds crit and lifesteal, and Tainted Rounds finishes long fights and cuts healing.",
+      "synergy": "Scattershot's homing shots spread on-hit damage around you, then Sky Splitter and Onixian Quiver add lifesteal so Windburn's cleave keeps you healthy.",
       "items": {
-       "Lightning Hawk": "First: damage, crit and a slowing charged hit to stay on targets.",
-       "Onixian Quiver": "Second: attack speed, crit and lifesteal; its extra shots favor ranged heroes.",
-       "Tainted Rounds": "Third: anti-heal and damage that grows as the target drops low."
+       "Scattershot": "First: extra homing shots that clear camps and spread on-hit effects.",
+       "Sky Splitter": "Second: current-health damage and lifesteal on every hit.",
+       "Onixian Quiver": "Third: attack speed, crit and lifesteal for long fights."
       },
-      "holes": "No defense, so a team with heavy burst kills you before the long fights this build wants."
+      "holes": "Nothing cuts enemy healing here, so healers outlast you in drawn-out fights."
      }
     ],
     "optimizer": {
-     "synergy": "Mutilator, The Perforator and Spear Of Desolation swap attack speed for ability haste and armor cut, so Lash Kick and Backlash come back faster and hit harder.",
+     "synergy": "This sim build trades attack speed for ability damage: Mutilator heals off Lash Kick and Backlash, Viper shreds armor, and Spear Of Desolation brings Quelling Gale back sooner.",
      "items": {
-      "Mutilator": "First: ability haste and healing; Lash Kick and Backlash add max-health damage.",
-      "The Perforator": "Second: ignore armor and slow the targets your abilities hit.",
-      "Spear Of Desolation": "Third: bonus damage after casting and faster Quelling Gale.",
-      "Painweaver": "Fourth: stacking armor cut and speed to chase after Lash Kick.",
-      "Basilisk": "Fifth: health, haste and armor shred for longer jungle fights.",
-      "Alternator": "Last: penetration and haste that boosts Backlash, your alternate ability."
+      "Mutilator": "First: each different ability hit deals max-health damage and heals you.",
+      "Viper": "Second: shreds armor and boosts on-hit and ability damage.",
+      "Spear Of Desolation": "Third: bonus damage and ultimate haste for Quelling Gale.",
+      "The Perforator": "Fourth: ignores armor and slows targets after Lash Kick.",
+      "Basilisk": "Fifth: health, armor shred and ability haste.",
+      "Earthshaker": "Last: health and ability damage that stacks fast for melee heroes."
      },
      "swaps": [
       {
        "out": "Storm Breaker",
        "in": "Mutilator",
-       "gain": "Max-health damage on your abilities plus haste and healing, so Lash Kick and Backlash hit harder.",
-       "lose": "Storm Breaker's chaining lightning hit and attack speed that speed up camp clears."
-      },
-      {
-       "out": "Lightning Hawk",
-       "in": "Mutilator",
-       "gain": "Ability haste and healing from all your damage, plus max-health damage on Lash Kick and Backlash.",
-       "lose": "Lightning Hawk's slowing charged hit and crit chance that keep you on the target."
+       "gain": "Mutilator adds max-health damage on ability hits plus healing from all damage.",
+       "lose": "Dropping Storm Breaker loses attack speed and the chain lightning that speeds jungle clears."
       }
      ],
-     "holes": "Yin's damage comes mostly from basic attacks and Rising Storm, so trading attack speed for ability items leaves her weak in long fights."
+     "holes": "Less attack speed means slower Rising Storm stacks and slower camps, so you fall behind on farm."
     }
    },
    "offlane": {
@@ -5225,6 +5442,11 @@
        "Tainted Rounds": "Third: cuts healing and hits harder as targets drop low."
       },
       "holes": "Needs long auto-attack trades; a ranged offlaner who kites Yin keeps her from stacking Rising Storm."
+     },
+     {
+      "synergy": null,
+      "items": {},
+      "holes": null
      },
      {
       "synergy": null,
