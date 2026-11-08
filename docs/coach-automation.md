@@ -108,6 +108,10 @@ not in the env, stop immediately and report — no partial work.
    This requires a clean critique of the exact saved match facts and copy, and
    updates the reviewed marker in the index. Any later edit requires critique
    again. Do not publish pre-critique commits or advance the watch marker alone.
+   **Then the lean review (trial):** if `data/coaching/lean.json` has `"auto": true`, run the
+   lean pipeline for the same `COACH_GAMES` per `docs/coach-automation-lean.md` (author, ingest,
+   at most 3 critic rounds). It writes only `film.coachLean`; never let it delay or change the
+   standard review above.
 5. Refresh the reports: `npm run coach -- <lead-uuid>` and
    `npm run squad -- <lead-uuid>` (lead = `data/artifacts/squad.json` `.lead`).
    `squad` also rebuilds `data/artifacts/squad-bans.json` (the squad ban list on
@@ -116,7 +120,7 @@ not in the env, stop immediately and report — no partial work.
    sat on 1.17.2) and `npm run review:killers` (zero-API): the "Heroes that keep killing you" card on each
    member's coach page (data/artifacts/repeat-killers.json; rules in src/repeat-killers.ts).
 6. `npm test` — commit only on green (autonomy rule 1).
-7. Commit to `main` and push. **Data only**: `data/postgame/*`,
+7. Commit to `main` and push. **Data only**: `data/postgame/*`, `data/aggregates/coach-lean-history.json`,
    `data/artifacts/coach.json`, `data/artifacts/squad*.json`,
    `data/aggregates/coach-critique*.json`. The automation never edits engine or
    UI code; if a step needs a code fix, stop and report instead.

@@ -37,8 +37,32 @@ const PG = path.join(ROOT, 'data/postgame');
 interface Coaching { flags?: { ref: string; text: string }[]; playerBullets?: Record<string, string[]>; playerTestimony?: unknown; lossReflection?: string; visionEvidence?: Record<string, { tool: string; source: string; note: string }>; headline?: string; team?: string; whatShiftedIt?: string; whatWorked?: string; focus?: { title?: string; evidence?: string; action?: string }; perPlayer?: Record<string, string>; verdicts?: Record<string, { mood?: string; text?: string }>; moments?: Record<string, { call?: string }>; buildReads?: Record<string, Partial<Record<'matchup' | 'build' | 'eternal' | 'augment' | 'crest' | 'improvement', string | string[]>>>; ranking?: { pid?: string; grade?: string }[];  deepDive?: { verdict?: string; causes?: { claim?: string; receipt?: string }[]; ledger?: string; theCall?: string; rule?: string };  microReads?: Record<string, { keep?: string; change?: string; check?: string; receipt?: string; lastCheck?: { text?: string; result?: string; receipt?: string } }>; }
 interface Facts { matchId: string; result: string; durationMin: number; vpSwing: number | null; players: any[]; lanes: any[]; comp: any; objectives: any; timeline?: any; skirmishes?: any[]; kills?: { killedPid: string | null; min: number }[]; coaching?: Coaching | null; }
 
-/** Compact, factual source block the critic judges the coaching against. */
-function sourceOf(f: Facts): string {
+const plain = (t: unknown) => String(t ?? '').replace(/<[^>]+>/g, '').replace(/\{[^}]*\}/g, '#').replace(/\s+/g, ' ').trim();
+/** Lean review (src/ingest/coach-lean.ts): catalog mechanics as plain text, only for items the copy names. */
+function leanCatalogLines(f: Facts, texts: string[]): string[] {
+  const us = f.players.filter((p) => p.us);
+  const low = texts.join(' ').toLowerCase();
+  const items = (JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/items.json'), 'utf8')) as any[])
+    .filter((it) => { const n = String(it.display_name || it.name).toLowerCase(); return n.length > 3 && low.includes(n); })
+    .map((it) => `${it.display_name || it.name}: ${(it.effects ?? []).filter((e: any) => e.name || e.condition).map((e: any) => `${e.name ? `${e.name} ` : ''}${e.condition ? `(${plain(e.condition)}) ` : ''}${plain(e.menu_description)}`).join(' / ')}`);
+  const eternals = (JSON.parse(readFileSync(path.join(ROOT, 'data/game-data/eternals.json'), 'utf8')).eternals as any[]).filter((e) => us.some((p) => p.loadout?.eternal === e.name));
+  const augCat = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/predgg-augments.json'), 'utf8')).catalog ?? {};
+  const augs = us.map((p) => p.loadout?.augment?.id ? augCat[p.loadout.augment.id] : null).filter(Boolean);
+  return [
+    `ITEM MECHANICS (catalog text, not observed procs): ${items.join(' | ') || 'none named'}.`,
+    `ETERNALS WE RAN (catalog text, not uptime): ${us.filter((p) => p.loadout?.eternal).map((p) => { const e = eternals.find((x) => x.name === p.loadout.eternal); if (!e) return ''; const minors = [...(e.minorSlot1 ?? []), ...(e.minorSlot2 ?? [])].filter((m: any) => [p.loadout.minor1, p.loadout.minor2].includes(m.name)); return `${p.heroName} ${e.name}: ${plain(e.major)}${minors.map((m: any) => ` Minor ${m.name}: ${plain(m.desc)}`).join('')}`; }).filter(Boolean).join(' | ') || 'none recorded'}.`,
+    `AUGMENTS WE RAN (catalog text): ${augs.map((a: any) => `${a.name}: ${plain(a.description)}`).join(' | ') || 'none recorded'}.`,
+  ];
+}
+
+/** Compact, factual source block the critic judges the coaching against.
+ *  opts.lean (the lean review): rules live once in the rubric, catalog text is plain and
+ *  limited to what the copy names, and the event list keeps structures and named majors. */
+export function sourceOf(f: Facts, opts: { lean?: boolean; texts?: string[] } = {}): string {
+  if (opts.lean) {
+    const drop = /^(EVIDENCE LIMITS|JUNGLE VISION RULE|CATALOG PASSIVES|RECORDED ETERNAL CATALOG|RECORDED AUGMENT CATALOG|FIGHT PRESENCE RULE|PREVIOUS CHECK|UPSET LOSS)/;
+    return [...sourceOf(f).split('\n').filter((l) => !drop.test(l)).map((l) => l.startsWith('EVENTS: ') ? leanEvents(f) : l), ...leanCatalogLines(f, opts.texts ?? [])].join('\n');
+  }
   const us = f.players.filter((p) => p.us);
   const sk = (f.skirmishes ?? []);
   const tagged = sk.filter((s) => s.tag);
@@ -83,6 +107,11 @@ function sourceOf(f: Facts): string {
   ].join('\n');
 }
 
+
+function leanEvents(f: Facts): string {
+  const evs = ((f as any).events ?? []).filter((e: any) => e.kind === 'tower' || /INHIBITOR|CORE|FANG|PRIME/i.test(e.type));
+  return `EVENTS: ${evs.map((e: any) => `${e.side} ${e.lane && e.lane !== 'jungle' ? `${e.lane} ` : ''}${String(e.type).replace(/_/g, ' ').toLowerCase()}@${Math.round(e.sec / 6) / 10}m`).join(', ') || 'none'}.`;
+}
 
 /** Cross-film callbacks (coach contract 2026-09-21): the coach may name a
  *  repeating pattern across a squad member's previous films, so the critic

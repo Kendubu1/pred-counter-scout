@@ -186,6 +186,8 @@
   .bn-n{color:var(--text-2);font-size:.74rem}.bn img.bn-i{display:inline-block!important;width:20px;height:20px;border-radius:4px;vertical-align:-5px;margin-right:2px;border:1px solid var(--border)}.bn-i.off{opacity:.35;filter:grayscale(.8)}
   .bn-shared{color:var(--gold);font-size:.82rem;margin:.1rem 0 .4rem}
   @media (max-width:560px){.tc-bal{font-size:.62rem}.bn-k{min-width:4.6rem}}
+  .cv-toggle{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem;font-size:.74rem;color:var(--text-2)}
+  .build-call{margin:.35rem 0 0;font-size:.86rem;color:var(--text-1);line-height:1.5}.build-call b{color:var(--text-0);margin-right:.3rem}
   .rd-box{margin-top:.7rem;text-align:center}
   .rd-top{display:flex;align-items:center;justify-content:center;gap:.6rem;flex-wrap:wrap}
   .rd-top .pgfilter{margin:0}
@@ -819,11 +821,26 @@ document.addEventListener('keydown', (e) => {
 });
 let COACH_LAYOUT = 'classic';
 let COACH_PLAYER_FORMAT = 'paragraph';
+// Lean coach review (film.coachLean, engine/src/coach-lean.ts) beside the standard one
+// (film.coaching). The toggle shows when a game has a published lean review; the default
+// comes from data/coaching/lean.json and the viewer's last choice is remembered.
+let COACH_VIEW = 'standard';
+try { const v = localStorage.getItem('coachView'); if (v === 'lean' || v === 'standard') COACH_VIEW = v; } catch {}
+function setCoachView(v) {
+  COACH_VIEW = v;
+  try { localStorage.setItem('coachView', v); } catch {}
+  const el = document.getElementById('pgview');
+  if (el && window.__pgLast) { el.innerHTML = pgReview(window.__pgLast); fillEternals(); }
+}
 function pgReview(f) {
   const us = f.players.filter((p) => p.us);
   const ourOf = (role) => f.players.find((p) => p.us && p.role === role);
   const theirOf = (role) => f.players.find((p) => !p.us && p.role === role);
-  const co = f.coaching;
+  window.__pgLast = f;
+  const lean = f.coachLean && f.coachLean.review && f.coachLean.review.status === 'published' ? f.coachLean : null;
+  const isLean = !!(lean && (COACH_VIEW === 'lean' || !f.coaching));
+  const co = isLean ? { ...lean, personaId: f.coaching?.personaId, perPlayer: {}, team: '', buildReads: null } : f.coaching;
+  const viewToggle = lean && f.coaching ? `<div class="cv-toggle" role="group" aria-label="Which coach review"><span>Coach review</span>${[['standard', 'Standard'], ['lean', 'Lean · new']].map(([k, l]) => `<button class="pgf${(isLean ? 'lean' : 'standard') === k ? ' on' : ''}" aria-pressed="${(isLean ? 'lean' : 'standard') === k}" onclick="setCoachView('${k}')">${l}</button>`).join('')}</div>` : '';
   const resColor = f.result === 'win' ? 'var(--green)' : 'var(--red)';
   const resBg = f.result === 'win' ? 'rgba(0,196,140,.16)' : 'rgba(255,90,90,.16)';
   const edgeStyle = (e) => e === 'favored' ? 'color:var(--green)' : e === 'unfavored' ? 'color:var(--red)' : 'color:var(--text-1)';
@@ -1247,7 +1264,7 @@ function pgReview(f) {
   </details>`;
 
   if (COACH_LAYOUT === 'concise' && co) {
-    const verdict = card(`
+    const verdict = card(`${viewToggle}
       <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap"><b style="color:${resColor}">${f.result.toUpperCase()}</b><span style="color:var(--text-2)">${new Date(f.startTime).toLocaleDateString()} · ${f.durationMin} min</span></div>
       <h2 style="font-size:1.2rem;line-height:1.4;margin:.65rem 0">${esc(co.headline || 'Match review')}</h2>
       ${co.flags?.length ? flagList(co.flags, f) : co.team ? `<p style="color:var(--text-1);line-height:1.6;margin:0">${esc(co.team)}</p>` : ''}`);
@@ -1272,13 +1289,13 @@ function pgReview(f) {
     const players = card(`${eyebrow('Your team', '')}${bnShared.length ? `<p class="bn-shared">${bnShared.map((w) => esc(w.charAt(0).toUpperCase() + w.slice(1)) + '.').join(' ')}</p>` : ''}${us.map((p) => `<div class="plobby coach-player">
       <div class="who">${hIcon(p.heroSlug, 34)}<span><span class="pname"><b>${pgName(p)}</b>${rankBadge(p)}</span><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span style="white-space:nowrap"><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span>${vpTag(p)}</span></span>${CoachLoadouts.icons(p.loadout,p)}</div>
       <div class="line">${(() => {
-        if (co.playerBullets?.[p.pid]?.length) return `<ul class="coach-bullets">${co.playerBullets[p.pid].map(text => `<li>${esc(text)}</li>`).join('')}</ul>`;
+        if (co.playerBullets?.[p.pid]?.length) return `<ul class="coach-bullets">${co.playerBullets[p.pid].map(text => `<li>${esc(text)}</li>`).join('')}</ul>${co.buildCall?.[p.pid] ? `<p class="build-call"><b>Build</b> ${esc(co.buildCall[p.pid])}</p>` : ''}`;
         const actions = co.microReads?.[p.pid];
         if (COACH_PLAYER_FORMAT === 'actions' && (actions?.keep || actions?.change)) return `${actions.keep ? `<p style="margin:0 0 .5rem"><b style="color:var(--green)">Keep:</b> ${esc(actions.keep)}</p>` : ''}${actions.change ? `<p style="margin:0"><b style="color:var(--gold)">Change:</b> ${esc(actions.change)}</p>` : ''}`;
         return co.perPlayer?.[p.pid] ? esc(co.perPlayer[p.pid]) : 'Individual feedback has not been written for this player.';
       })()}${buildBlock(p)}</div>
     </div>`).join('')}`);
-    const loadouts = `<p class="build-help">Choose a player to see the recommendation, matchup and loadout breakdown.</p>${us.map((p) => {
+    const loadouts = isLean ? '' : `<p class="build-help">Choose a player to see the recommendation, matchup and loadout breakdown.</p>${us.map((p) => {
       const br = co.buildReads?.[p.pid];
       const sections = [['improvement','Build decision','recommendation'],['matchup','Lane & team threats',''],['build','Item interactions',''],['eternal','Eternal & minors',''],['augment','Hero augment',''],['crest','Crest','']];
       return `<details class="build-player"><summary>${hIcon(p.heroSlug,36).replace(/<\/?a\b[^>]*>/g,'')}<span class="build-identity"><b>${pgName(p)}</b><span>${esc(p.heroName)} · ${esc(p.role)}</span></span></summary><div class="build-analysis">
@@ -1366,6 +1383,7 @@ async function fillEternals() {
         pgList = (PG.matches || []).filter((m) => m.matchId);
         try { const persona = await (await fetch('../../data/coaching/personas.json')).json(); const selected = persona.presets.find((p) => p.id === persona.active); COACH_LAYOUT = selected?.layout || 'classic'; COACH_PLAYER_FORMAT = selected?.playerFormat || 'paragraph'; } catch {}
         try { MAP = await (await fetch('../../data/game-data/map-landmarks.json')).json(); } catch {}
+        try { const lc = await (await fetch('../../data/coaching/lean.json')).json(); let saved = null; try { saved = localStorage.getItem('coachView'); } catch {} if (!saved && (lc.defaultView === 'lean' || lc.defaultView === 'standard')) COACH_VIEW = lc.defaultView; } catch {}
         try { STACKS = (await (await fetch('../../data/artifacts/stack-reviews.json')).json()).games || {}; } catch {}
       } catch {}
 
