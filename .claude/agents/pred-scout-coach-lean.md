@@ -222,7 +222,10 @@ more damage each target took (estimate: levels are provisional), damage boosts, 
 Pick the factor that explains the game; cooldowns are one of several. Each entry carries `story`
 (src/build-story.ts): the lead story chosen from the data (that game against the patch's norms for the
 hero-role: damage, kill participation, deaths, mitigation, healing percentiles). Tell that one story;
-use the rest only to support it. When one of these explains the game (an ultimate coming back every minute
+use the rest only to support it. `worked` (src/build-why.ts) says why: effects stacked on one trigger
+(ability hits, attacks, takedowns, %-health, low-health, healing) and whether the Eternal was on it,
+whether our side countered it (armor of that type on the players it killed, anti-heal, deaths), and
+whether the setup wins across the patch (proven, standard, mixed, or it beat us but not the field). When one of these explains the game (an ultimate coming back every minute
 because takedowns fed haste), say it in a flag or the lesson with those numbers: what fed it and
 how to deny it. Mid-fight figures are estimates; never state them as measured. The build notes'
 `coreVs` is the core into that lane opponent (labelled "most played" when only one core has

@@ -5892,3 +5892,11 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   joined every fight, takedowns sped up Fly Trap". Mourn (offlane, 5/1/11) = damage 88th pct, 34% of
   team damage, mitigation 6th pct: lead "built to deal damage, not to soak it". First cut scored the
   snowball story on survival and picked it for Mourn; scoring it on kill participation only fixed that.
+- "Why it worked" (src/build-why.ts): effects grouped by trigger from catalog text; a minor that says
+  "the major also ..." joins the major's trigger. The copy verdict judges the Eternal pair against
+  the hero-role's rate and the core against the hero-role's other cores (core rates run high), each
+  part on its own; blending them hid a below-par Eternal behind an above-par core. First result: The
+  Fey's Vesh pair (48.8%) and core (54.2% vs 55.8%) both trail the field, so that loss was the game
+  and our missing answers (2 of 5 victims built magical armor), not a secret build.
+- Field name clash: threatBuilds entries already had `why` (the reasons a player was read); the new
+  block is `worked`.

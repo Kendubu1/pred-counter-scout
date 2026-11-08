@@ -206,6 +206,13 @@
   .tb-chip{display:grid;grid-template-columns:1fr auto;gap:.1rem .4rem;font-size:.74rem;color:var(--text-1)}
   .tb-chip i{grid-column:1/3;height:5px;background:var(--bg-3);border-radius:3px;overflow:hidden}.tb-chip i b{display:block;height:100%;background:var(--accent)}
   .tb-chip em{font-style:normal;color:var(--text-0);font-weight:700}
+  .tb-why{margin-top:.6rem}.tb-why .tb-k{margin-top:.55rem}
+  .tb-stackrow{margin:.25rem 0 .45rem}.tb-stackrow p{margin:.2rem 0 0;font-size:.84rem;line-height:1.5;color:var(--text-1)}
+  .tb-mem{display:inline-flex;flex-wrap:wrap;gap:.25rem;vertical-align:middle;margin-left:.2rem}
+  .tb-tag{font-size:.74rem;padding:.08rem .45rem;border-radius:99px;background:var(--bg-3);color:var(--text-0)}.tb-tag i{font-style:normal;color:var(--text-2);margin-left:.3rem;font-size:.66rem;text-transform:uppercase}
+  .tb-et{margin:.3rem 0;font-size:.84rem;line-height:1.5;padding-left:.6rem;border-left:2px solid var(--accent)}
+  .tb-verd{font-size:.7rem;font-weight:700;border:1px solid;border-radius:99px;padding:.05rem .45rem;margin-left:.3rem}
+  .tb-copy{margin:.2rem 0 0;font-size:.84rem;line-height:1.5}
   .tb-tabs{display:flex;gap:.35rem;flex-wrap:wrap;margin:.6rem 0 .1rem}.tb-sec{margin-top:.7rem}.tb-k{font-weight:700;font-size:.82rem;color:var(--text-0);margin-bottom:.3rem}
   .tb-lesson{list-style:none;margin:.3rem 0 0;padding:.45rem .65rem;border-left:3px solid var(--gold);background:var(--bg-2);border-radius:6px;font-size:.86rem;line-height:1.5}
   .tb-cdrow{display:grid;grid-template-columns:7.5rem 1fr 3.2rem;align-items:center;gap:.5rem;margin:.2rem 0;font-size:.8rem}
@@ -1021,7 +1028,17 @@ function pgReview(f) {
       const names = { damage: 'Damage', cooldowns: 'Cooldowns', alive: 'Staying alive' };
       const order = ((st && st.tabs) || ['damage', 'cooldowns', 'alive']).filter((k) => panels[k]);
       const tabs = order.length ? `<div class="tb-tabs" role="tablist">${order.map((k, i) => `<button class="pgf${i ? '' : ' on'}" role="tab" aria-selected="${!i}" onclick="tbTab(this,'${k}')">${names[k]}</button>`).join('')}</div>${order.map((k, i) => `<div class="tb-panel" data-tab="${k}"${i ? ' hidden' : ''}>${panels[k]}</div>`).join('')}` : '';
-      const body = `<div class="tb">${leadCard}${lessonBox(leadLesson)}${tabs}</div>`;
+      // Why it worked (film.threatBuilds[].worked, engine/src/build-why.ts): what stacked, did we
+      // counter it, can we copy it.
+      const w = c.worked;
+      const VERD = { proven: ['Worth copying', 'var(--green)'], standard: ['Standard setup', 'var(--text-1)'], 'beat-us': ['Beat us, not the field', 'var(--gold)'], unknown: ['Not enough games', 'var(--text-2)'] };
+      const whyBlock = w ? `<div class="tb-why">
+        ${w.stacks.length ? `<div class="tb-k">What stacked</div>${w.stacks.map((x) => `<div class="tb-stackrow"><b>${esc(x.title)}</b> <span class="tb-mem">${x.members.map((m) => `<span class="tb-tag">${esc(m.name)}<i>${esc(m.kind)}</i></span>`).join('')}</span><p>${esc(x.text.replace(/^\d+ effects on one trigger: [^.]*\.\s*/, ''))}</p></div>`).join('')}` : ''}
+        ${w.eternalPart ? `<p class="tb-et">${esc(w.eternalPart)}</p>` : ''}
+        <div class="tb-k">Did ${tb.us ? 'they' : 'we'} counter it?</div><ul class="tb-list">${w.countered.map((x) => `<li>${x.ok ? '<span class="tc-ok">✓</span>' : '<span class="tc-bad">✗</span>'} ${esc(tb.us ? x.text.replace(/^We killed/, 'They killed') : x.text)}</li>`).join('')}</ul>
+        ${w.copy ? `<div class="tb-k">Can ${tb.us ? 'we' : 'we'} copy it? <span class="tb-verd" style="color:${VERD[w.copy.verdict][1]};border-color:${VERD[w.copy.verdict][1]}">${VERD[w.copy.verdict][0]}</span></div><p class="tb-copy">${esc(w.copy.text)}</p>` : ''}
+      </div>` : '';
+      const body = `<div class="tb">${leadCard}${whyBlock}${lessonBox(leadLesson)}${tabs}</div>`;
       if (bare) return `<div class="tc-n" style="margin-top:.3rem">${esc(tb.loadout)}</div>${body}`;
       return open ? `<div class="tc-h" style="margin-top:.6rem">How ${esc(tb.hero)}'s build worked <span class="tc-n">${esc(tb.loadout)}</span></div>${body}` : `<details class="tc-more"><summary>How ${esc(tb.hero)}'s build worked</summary>${body}</details>`;
     };

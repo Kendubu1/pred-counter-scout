@@ -18,6 +18,7 @@ import { buildPlaybook, type PbHero } from '../playbook.js';
 import { threatBuild, takedownTimes } from '../threat-build.js';
 import { powerProfile, powerLines, powerLesson } from '../build-power.js';
 import { buildStory } from '../build-story.js';
+import { buildWhy } from '../build-why.js';
 import { levelAtMinute } from '../matchup.js';
 import { metricsOf, scoreRows, type Row } from '../standouts.js';
 // "Above the norm" for the build read: +0.5 role SD on the standouts composite (about the top
@@ -58,6 +59,8 @@ function main() {
   const eternalsCat = read('data/game-data/eternals.json').eternals;
   const augCat = read('data/aggregates/predgg-augments.json').catalog ?? {};
   const calibration = JSON.parse(readFileSync(path.join(ROOT, 'engine/fixtures/calibration.json'), 'utf8'));
+  const augField = read('data/aggregates/predgg-augments.json').heroes ?? {};
+  const corePiece = new Set((read('data/catalog/items.json') as any[]).filter((i) => i.rarity === 'Epic' && i.slot_type === 'Passive').map((i) => i.slug));
   let norms: Record<string, any> = {};
   try { norms = read('data/aggregates/hero-role-norms.json').heroes ?? {}; } catch { /* npm run norms not run yet */ }
   const heroStats = new Map((read('data/catalog/heroes.json') as any[]).map((h) => [h.slug, h.base_stats ?? {}]));
@@ -114,7 +117,20 @@ function main() {
         sustain: !!pp.sustain, tough: !!pp.tough,
       });
       if (story.lead) lines.unshift(`Lead story: ${story.lead.title}. ${story.lead.text}`);
-      return [ep.heroSlug, { ...tb, lines, power: pp, story, card: { ...tb.card, power: pp, powerLesson: pl, story }, us: !!ep.us, why: [...ws], score: standout.get(`${film.matchId}|${pid}`) ?? null }];
+      // Why it worked: what stacked, did we counter it, can we copy it (src/build-why.ts).
+      const fh = augField[ep.heroSlug]?.[ep.role];
+      const fe = fh?.eternals?.find((e: any) => e.name === ep.loadout?.eternal);
+      const fpair = fe?.pairs?.find((x: any) => x.minor1 === ep.loadout?.minor1 && x.minor2 === ep.loadout?.minor2);
+      const order = (ep.stream?.purchases?.map((x: any) => x.slug) ?? [...(ep.itemTimeline ?? [])].sort((a: any, b: any) => a.estMin - b.estMin).map((x: any) => x.slug)).filter((sl: string) => corePiece.has(sl)).slice(0, 3);
+      const fcore = order.length === 3 ? (predBuilds.byRole?.[ep.heroSlug]?.[ep.role] ?? []).filter((r: any) => [...r.coreSlugs].sort().join() === [...order].sort().join()).reduce((a: any, r: any) => ({ n: a.n + r.n, w: a.w + r.w }), { n: 0, w: 0 }) : null;
+      const why = buildWhy(ep, {
+        items: itemCat, eternals: eternalsCat, augments: augCat, kit: (kitIdx as any)[ep.heroSlug]?.abilities ?? [], haste: tb.haste.total, damageType: pp.type,
+        foes: foes.map((x: any) => ({ hero: x.heroName, items: x.items ?? [], diedTo: (film.kills ?? []).filter((k: any) => k.killerPid === ep.pid && k.killedPid === x.pid).length })),
+        healingPct: story.vsNorm?.hpm.pct ?? null,
+        field: fh ? { games: fh.games, wins: fh.wins, eternal: fe ? { name: fe.name, n: fe.n, w: fe.w, pair: fpair ? { n: fpair.n, w: fpair.w } : undefined } : null, core: fcore && fcore.n ? fcore : null, coreBase: (predBuilds.byRole?.[ep.heroSlug]?.[ep.role] ?? []).reduce((a: any, r: any) => ({ n: a.n + r.n, w: a.w + r.w }), { n: 0, w: 0 }) } : null,
+      });
+      lines.push(...why.stacks.map((st) => `Stack (${st.title}): ${st.text}`), ...(why.eternalPart ? [why.eternalPart] : []), `Countered? ${why.countered.map((c) => c.text).join(' ')}`, ...(why.copy ? [`Copy it? ${why.copy.text}`] : []));
+      return [ep.heroSlug, { ...tb, lines, power: pp, story, worked: why, card: { ...tb.card, power: pp, powerLesson: pl, story, worked: why }, us: !!ep.us, why: [...ws], score: standout.get(`${film.matchId}|${pid}`) ?? null }];
     }));
     film.buildNotes = buildNotes(film.players, film.kitRead, kitIdx, itemInfo, heroMeta, pairs, bm, links, predBuilds.byRole, predBuilds.baselineByRole, matchupCores);
     writeFileSync(p, JSON.stringify(film, null, 1));
