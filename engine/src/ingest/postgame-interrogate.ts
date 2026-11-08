@@ -6,6 +6,7 @@
 //
 //   npm run postgame:interrogate            # add to reviews missing it
 //   npm run postgame:interrogate -- --all   # recompute on every review
+//   COACH_GAMES=<ids> npm run postgame:interrogate   # recompute just these films
 //
 // Writes `f.interrogation`:
 //   vision        — ward war: wards placed/destroyed, us vs them (team sums)
@@ -149,12 +150,14 @@ function interrogate(f: PostGameFacts): Interrogation | null {
 
 function main() {
   const all = process.argv.includes('--all');
-  const files = readdirSync(OUT_DIR).filter((f) => UUID_RE.test(f));
+  // COACH_GAMES=<id or prefix,...> recomputes just those films (a scoped re-review).
+  const only = (process.env.COACH_GAMES ?? '').split(',').map((x) => x.trim()).filter(Boolean);
+  const files = readdirSync(OUT_DIR).filter((f) => UUID_RE.test(f) && (!only.length || only.some((id) => f.startsWith(id))));
   let touched = 0, skipped = 0;
   for (const fn of files) {
     const p = path.join(OUT_DIR, fn);
     const f = JSON.parse(readFileSync(p, 'utf8')) as PostGameFacts & { interrogation?: Interrogation | null };
-    if (!all && f.interrogation) continue;
+    if (!all && !only.length && f.interrogation) continue;
     const ig = interrogate(f);
     if (!ig) { skipped++; continue; }
     f.interrogation = ig;

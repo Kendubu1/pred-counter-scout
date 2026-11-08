@@ -14,7 +14,7 @@ import { halfOfPoint, laneLabel, laneOfPoint } from './map-lanes.js';
 
 export interface GameFlag {
   id: string;
-  kind: 'no-close' | 'objective-for-bodies' | 'fought-down' | 'struggling-player' | 'kills-no-gold' | 'closing-collapse' | 'standout';
+  kind: 'no-close' | 'objective-for-bodies' | 'fought-down' | 'struggling-player' | 'kills-no-gold' | 'closing-collapse' | 'standout' | 'draft';
   tone: 'bad' | 'good';
   summary: string;
   evidence: string[];
@@ -151,6 +151,27 @@ export function gameFlags(f: any): GameFlag[] {
     const ev = [`${p.kills}/${p.deaths}/${p.assists}, ${p.damageToHeroes} hero damage${top ? ', the most in the game' : ''}.`];
     if (dm) ev.push(`Hero damage per minute ${dm.value} vs their ${p.heroName} norm ${dm.avg}.`);
     out.push({ id: `standout:${p.pid}`, kind: 'standout', tone: 'good', pid: p.pid, summary: `${p.heroName} carried the damage`, evidence: ev });
+  }
+
+  // 8. The draft (film.teamComp, npm run postgame:comp; src/comp-read.ts). On a loss:
+  // our shape broke the core fundamentals (no real tank, two-plus divers, or two
+  // tanks down). On a win: ours was sound and theirs broke them. The shape win
+  // rates are the ranked field's, not a claim that this draft decided the game.
+  const tc = f.teamComp;
+  if (tc?.us && tc?.them) {
+    const broken = (sd: any, tankDiff: number) => sd.tanks === 0 || sd.divers >= 2 || tankDiff <= -2;
+    const shape = (sd: any) => `${sd.tanks} tank${sd.tanks === 1 ? '' : 's'}, ${sd.divers} diver${sd.divers === 1 ? '' : 's'}`;
+    const wr = (sd: any) => (sd.shapeWr ? `${sd.shapeWr.wr}%` : 'too few games');
+    const shapes = `Us ${shape(tc.us)} (${wr(tc.us)} in ${tc.field.patch} ranked) vs them ${shape(tc.them)} (${wr(tc.them)}).`;
+    const ourDiff = tc.us.tanks - tc.them.tanks;
+    if (loss && broken(tc.us, ourDiff)) {
+      const misses = (tc.checks ?? []).filter((c: any) => !c.ok).map((c: any) => c.text as string);
+      const ev = [shapes, ...misses];
+      if (tc.swap) ev.push(`Draft fix: ${tc.swap.out} (${tc.swap.role}) for a real tank: ${tc.swap.options.map((o: any) => `${o.name} ${o.wr}%`).join(', ')}.`);
+      out.push({ id: 'draft', kind: 'draft', tone: 'bad', summary: `draft broke the fundamentals: ${shape(tc.us)} vs ${shape(tc.them)}`, evidence: ev });
+    } else if (!loss && !broken(tc.us, ourDiff) && broken(tc.them, -ourDiff)) {
+      out.push({ id: 'draft', kind: 'draft', tone: 'good', summary: `the sounder draft: ${shape(tc.us)} vs ${shape(tc.them)}`, evidence: [shapes] });
+    }
   }
   return out;
 }

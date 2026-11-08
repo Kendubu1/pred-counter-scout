@@ -64,4 +64,16 @@ describe('game flags', () => {
     expect(placeOf(6425, 1143, 'dawn')).toBe('at the Prime pit');
     expect(placeOf(11639, -4291, 'dawn')).toBe('on the offlane in their half');
   });
+
+  it('raises a draft flag on a loss whose draft broke the fundamentals, and a good one on a sound win', () => {
+    const sd = (tanks: number, divers: number, wr: number) => ({ tanks, divers, shapeWr: { wr, n: 100 } });
+    const base = { players: [{ pid: 'a', us: true, heroName: 'A' }, { pid: 'b', us: false, heroName: 'B' }], kills: [], events: [], skirmishes: [], durationMin: 30 };
+    const tc = { field: { patch: '1.18' }, us: sd(0, 2, 48), them: sd(2, 1, 53.1), checks: [{ ok: false, text: 'No real tank.' }, { ok: true, text: 'Mixed damage.' }], swap: { out: 'Countess', role: 'offlane', options: [{ name: 'Kaelen', wr: 53.3 }] } };
+    const g = gameFlags({ ...base, result: 'loss', teamComp: tc }).find((x) => x.kind === 'draft')!;
+    expect(g).toMatchObject({ id: 'draft', tone: 'bad' });
+    expect(g.evidence).toEqual(['Us 0 tanks, 2 divers (48% in 1.18 ranked) vs them 2 tanks, 1 diver (53.1%).', 'No real tank.', 'Draft fix: Countess (offlane) for a real tank: Kaelen 53.3%.']);
+    expect(gameFlags({ ...base, result: 'loss', teamComp: { ...tc, us: sd(1, 1, 51) } }).some((x) => x.kind === 'draft')).toBe(false);
+    const w = gameFlags({ ...base, result: 'win', teamComp: { ...tc, us: sd(2, 1, 53.1), them: sd(0, 2, 48) } }).find((x) => x.kind === 'draft')!;
+    expect(w.tone).toBe('good');
+  });
 });
