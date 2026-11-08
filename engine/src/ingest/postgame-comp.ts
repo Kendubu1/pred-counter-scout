@@ -38,7 +38,9 @@ function main() {
   const pairs = read('data/aggregates/feed-matchups.json').pairs;
   const bm = read('data/aggregates/build-matchups.json').heroes;
   const links = read('data/aggregates/build-links.json').heroes;
-  const rt = new Map(heroes.map((h) => { const k = (kitIdx as any)[h.slug]; return [h.slug, roleTags(h, profiles[h.slug], k ? { hardCount: k.hardCount, selfHeal: k.abilities.some((a: any) => a.heal) } : undefined)]; }));
+  let reviewedTags: Record<string, { tags: string[] }> = {};
+  try { reviewedTags = read('data/game-data/role-tags.json').heroes ?? {}; } catch { /* no review yet: keyword rules */ }
+  const rt = new Map(heroes.map((h) => { const k = (kitIdx as any)[h.slug]; return [h.slug, roleTags(h, profiles[h.slug], k ? { hardCount: k.hardCount, selfHeal: k.abilities.some((a: any) => a.heal) } : undefined, reviewedTags[h.slug]?.tags)]; }));
   const predBuilds = read('data/aggregates/predgg-builds.json');
   const heroMeta = new Map<string, HeroMeta>(heroes.map((h) => [h.slug, { power: power.get(h.slug) ?? null, cls: heroClass(h.classes) }]));
 
