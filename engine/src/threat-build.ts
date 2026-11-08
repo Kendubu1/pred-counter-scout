@@ -26,13 +26,28 @@ export interface TbPlayer {
 export interface ThreatBuild {
   hero: string; slug: string; takedowns: number;
   loadout: string;
-  haste: { sources: { what: string; amount: number; note?: string }[]; total: number; fightBonus: { what: string; amount: number; note: string } | null; ultOnly: number };
+  haste: { sources: { what: string; amount: number; note?: string; kind?: string; how?: string }[]; total: number; fightBonus: { what: string; amount: number; note: string } | null; ultOnly: number };
   ult: { name: string; base: number; endGame: number; inFight: number | null } | null;
   fedBy: string[]; ultPlus: string[];
   lines: string[];
+  /** the same read, structured for the page: cooldown before/after, haste by source, the other
+   *  takedown and ultimate effects in a few words each, and the lesson */
+  card?: {
+    ult: ThreatBuild['ult'];
+    haste: { name: string; kind: string; amount: number; how: string }[];
+    fight: { name: string; kind: string; amount: number; how: string } | null;
+    takedowns: { count: number; kills: number; assists: number };
+    extras: { name: string; kind: string; how: string }[];
+    heals: boolean; lesson: string | null;
+  };
 }
 
 const plain = (t: unknown) => String(t ?? '').replace(/<[^>]+>/g, '').replace(/\{[^}]*\}/g, '').replace(/\s+/g, ' ').replace(/^• /, '').replace(/ • /g, ' ').trim();
+/** A catalog effect in a few words: the first one or two sentences, with the stock lead-ins shortened. */
+const short = (t: unknown) => plain(t)
+  .replace(/^Each time .*? achieves a Takedown,? (?:she|he|it|they) /i, 'Each takedown ')
+  .replace(/^Enhance your Ultimate Ability: ?/i, 'Ultimate: ')
+  .split(/(?<=\.)\s+/).slice(0, 2).join(' ');
 const cd = (base: number, haste: number) => Math.round((base * 100 / (100 + haste)) * 10) / 10;
 
 export function threatBuild(
@@ -48,6 +63,8 @@ export function threatBuild(
   const owned = [...(p.items ?? []).map((i) => i.slug), ...(lo.crestSlug ? [lo.crestSlug] : [])].filter((s, i, a) => a.indexOf(s) === i);
   const sources: ThreatBuild['haste']['sources'] = [];
   const fedBy: string[] = [], ultPlus: string[] = [];
+  const extras: { name: string; kind: string; how: string }[] = [];
+  let fightHow = '';
   let ultOnly = 0, fightBonus: ThreatBuild['haste']['fightBonus'] = null;
   const est = (slug: string) => p.itemTimeline?.find((t) => t.slug === slug)?.estMin;
 
@@ -56,35 +73,36 @@ export function threatBuild(
     if (!it) continue;
     const name = it.display_name ?? it.name ?? slug;
     const h = it.stats?.ability_haste ?? 0;
-    if (h) sources.push({ what: name, amount: h, note: slug === lo.crestSlug ? 'crest' : est(slug) != null ? `bought around ${est(slug)} min (estimate)` : undefined });
+    if (h) sources.push({ what: name, amount: h, note: slug === lo.crestSlug ? 'crest' : est(slug) != null ? `bought around ${est(slug)} min (estimate)` : undefined, kind: slug === lo.crestSlug ? 'crest' : 'item', how: `+${h} ability haste${slug !== lo.crestSlug && est(slug) != null ? `, bought around ${est(slug)} min` : ''}` });
     for (const e of it.effects ?? []) {
       const text = `${plain(e.condition)} ${plain(e.menu_description)}`.trim();
-      if (/takedown/i.test(text)) fedBy.push(`${name}${e.name ? ` (${e.name})` : ''}: ${text}`);
-      if (/ultimate/i.test(text)) ultPlus.push(`${name}${e.name ? ` (${e.name})` : ''}: ${text}`);
+      if (/takedown/i.test(text)) { fedBy.push(`${name}${e.name ? ` (${e.name})` : ''}: ${text}`); extras.push({ name, kind: slug === lo.crestSlug ? 'crest' : 'item', how: short(text) }); }
+      if (/ultimate/i.test(text)) { ultPlus.push(`${name}${e.name ? ` (${e.name})` : ''}: ${text}`); extras.push({ name, kind: 'item', how: short(text) }); }
     }
   }
   const et = ctx.eternals.find((e) => e.name === lo.eternal);
   const minors = et ? [...et.minorSlot1, ...et.minorSlot2].filter((m) => m.name === lo.minor1 || m.name === lo.minor2) : [];
-  if (et && /takedown/i.test(et.major)) fedBy.push(`${et.name} (Eternal): ${plain(et.major)}`);
+  if (et && /takedown/i.test(et.major)) { fedBy.push(`${et.name} (Eternal): ${plain(et.major)}`); extras.push({ name: et.name, kind: 'Eternal', how: short(et.major) }); }
   for (const m of minors) {
     const tk = /takedowns?[^.]*?grant (\d+(?:\.\d+)?) ability haste, up to (\d+)/i.exec(m.desc);
     if (tk) {
       const per = Number(tk[1]), cap = Number(tk[2]), got = Math.min(cap, per * td), need = Math.ceil(cap / per);
-      sources.push({ what: `${m.name} (minor)`, amount: got, note: `${per} per takedown, ${td} takedowns${got >= cap ? `, capped at ${cap} from the ${need}th${capMinute(ctx.takedownTimes, need)}` : ''}` });
+      const when = capMinute(ctx.takedownTimes, need).match(/around (\d+) min/)?.[1];
+      sources.push({ what: `${m.name} (minor)`, amount: got, note: `${per} per takedown, ${td} takedowns${got >= cap ? `, capped at ${cap} from the ${need}th${capMinute(ctx.takedownTimes, need)}` : ''}`, kind: 'Eternal minor', how: `+${per} per takedown, up to ${cap}: ${got >= cap ? `maxed at takedown ${need}${when ? ` (around ${when} min)` : ''}` : `${td} takedowns`}` });
     }
     const ult = /(\d+) ultimate (?:ability )?haste/i.exec(m.desc);
     if (ult) ultOnly += Number(ult[1]);
-    if (/takedown/i.test(m.desc)) fedBy.push(`${m.name} (minor): ${plain(m.desc)}`);
+    if (/takedown/i.test(m.desc)) { fedBy.push(`${m.name} (minor): ${plain(m.desc)}`); if (!tk) extras.push({ name: m.name, kind: 'Eternal minor', how: short(m.desc) }); }
   }
   const aug = lo.augment ? ctx.augments[lo.augment.id] : undefined;
   const abilities = ctx.hero?.abilities ?? [];
   if (aug) {
     const ult = /(\d+) ultimate (?:ability )?haste/i.exec(aug.description);
     if (ult) ultOnly += Number(ult[1]);
-    if (/takedown/i.test(aug.description)) fedBy.push(`${aug.name} (augment): ${plain(aug.description)}`);
+    if (/takedown/i.test(aug.description)) { fedBy.push(`${aug.name} (augment): ${plain(aug.description)}`); extras.push({ name: aug.name, kind: 'augment', how: short(aug.description) }); }
   }
   const passive = abilities.find((a) => /passive/i.test(a.key ?? ''));
-  if (passive && /takedown/i.test(plain(passive.menu_description ?? passive.game_description))) fedBy.push(`${passive.display_name} (passive): ${plain(passive.menu_description ?? passive.game_description)}`);
+  if (passive && /takedown/i.test(plain(passive.menu_description ?? passive.game_description))) { fedBy.push(`${passive.display_name} (passive): ${plain(passive.menu_description ?? passive.game_description)}`); extras.push({ name: passive.display_name, kind: 'passive', how: short(passive.menu_description ?? passive.game_description) }); }
   const total = sources.reduce((a, s) => a + s.amount, 0);
   if (aug) {
     const st = /(\d+) ability haste for (\d+(?:\.\d+)?)s, stacking/i.exec(aug.description);
@@ -94,6 +112,7 @@ export function threatBuild(
       const per = Number(st[1]), dur = Number(st[2]);
       const exact = (byCd * 100) / (100 + total), each = cd(byCd, total);
       const stacks = Math.floor(dur / exact + 1e-9) + 1;
+      fightHow = `+${per} for ${dur}s each time ${by.display_name} hits a hero, up to ${stacks} at once`;
       fightBonus = { what: `${aug.name} (augment)`, amount: per * stacks, note: `${per} per ${by.display_name} hit for ${dur}s; ${by.display_name} comes back every ${each}s at ${total} haste, so up to ${stacks} stacks if every cast hits` };
     }
   }
@@ -115,7 +134,15 @@ export function threatBuild(
   const fed = sources.find((x) => x.note && /takedown/.test(x.note));
   if (ult && fed) lines.unshift(`Lesson: takedowns were the fuel. Each one ${p.heroName} touched shortened ${ult.name}, so feeding early made it come back faster (about ${ult.endGame}s late${ult.inFight != null ? `, about ${ult.inFight}s mid-fight` : ''}); fight right after ${ult.name} is spent.`);
   if (ultPlus.some((u) => /heal/i.test(u)) || owned.some((sl) => (ctx.items.get(sl)?.stats?.magical_lifesteal ?? 0) + (ctx.items.get(sl)?.stats?.physical_lifesteal ?? 0) + (ctx.items.get(sl)?.stats?.omnivamp ?? 0) > 0)) lines.push('Their build heals off damage: anti-heal (the Tainted items) cuts it.');
-  return { hero: p.heroName, slug: p.heroSlug, takedowns: td, loadout, haste: { sources, total, fightBonus, ultOnly }, ult, fedBy, ultPlus, lines };
+  const heals = lines.some((l) => /anti-heal/.test(l));
+  const lesson = ult && fed ? `${p.heroName}'s takedowns fed ${ult.name}: every kill or assist made it come back sooner. Deny early takedowns and fight right after ${ult.name} is used.` : null;
+  const card = {
+    ult, takedowns: { count: td, kills: p.kills, assists: p.assists }, heals, lesson,
+    haste: sources.map((x) => ({ name: x.what.replace(/ \(minor\)$/, ''), kind: x.kind ?? '', amount: x.amount, how: x.how ?? '' })),
+    fight: fightBonus ? { name: fightBonus.what.replace(/ \(augment\)$/, ''), kind: 'augment', amount: fightBonus.amount, how: fightHow } : null,
+    extras: extras.filter((x, i, a) => a.findIndex((y) => y.name === x.name && y.how === x.how) === i),
+  };
+  return { hero: p.heroName, slug: p.heroSlug, takedowns: td, loadout, haste: { sources, total, fightBonus, ultOnly }, ult, fedBy, ultPlus, lines, card };
 }
 
 /** The minute the Nth takedown landed: kill times are known; assist times are spread evenly
