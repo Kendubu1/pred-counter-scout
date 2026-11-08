@@ -52,7 +52,9 @@ function readResponses(pass: string): Record<string, unknown> {
   return JSON.parse(readFileSync(r, 'utf8'));
 }
 const parse = (v: unknown) => (typeof v === 'string' ? JSON.parse(v.trim().replace(/^```json?\s*|```$/g, '')) : v);
-const allowedFor = (f: Film) => { const { coaching: _c, coachLean: _l, ...facts } = f; return buildAllowed([], [JSON.stringify(facts)]); };
+// Facts plus the source block shown to the author and critic (it adds derived numbers such as
+// kill participation and hero baselines, computed from the same facts).
+const allowedFor = (f: Film) => { const { coaching: _c, coachLean: _l, ...facts } = f; return buildAllowed([], [JSON.stringify(facts), sourceOf(f, { lean: true })]); };
 const pendingHash = (r: LeanReview) => { const ok = new Set(r.review.approved); return createHash('sha256').update(JSON.stringify(leanLines(r).filter((l) => !ok.has(hashLine(l.text))))).digest('hex').slice(0, 16); };
 const roster = (f: Film) => f.players.filter((p: any) => p.us).map((p: any) => `${p.pid} = ${p.squadName || p.name} on ${p.heroName} (${p.role})`).join('; ');
 
@@ -124,7 +126,7 @@ LINES TO JUDGE (round ${r.review.round + 1} of ${cfg.maxRounds}${r.review.round 
 ${judge.map((l) => `[${l.key}] ${l.text}`).join('\n')}` };
   });
   writeTasks('coach-lean-critique', tasks);
-  const n = tasks.reduce((a, t) => a + (t.prompt.split('LINES TO JUDGE')[1]!.match(/^\[/gm)?.length ?? 0), 0);
+  const n = tasks.reduce((a, t) => a + (t.prompt.split('LINES TO JUDGE (').pop()!.match(/^\[/gm)?.length ?? 0), 0);
   console.log(`${tasks.length} critique task(s), ${n} line(s) to judge -> engine/copy-tasks/coach-lean-critique.tasks.json`);
 }
 
