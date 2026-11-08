@@ -7,7 +7,7 @@
 // since damage dealt follows how the game went).
 
 export interface Mix { physical: number; magical: number; true: number; total: number }
-export interface ArmorRead { faced: 'physical' | 'magical' | 'mixed'; physical: string[]; magical: string[]; of: number }
+export interface ArmorRead { faced: 'physical' | 'magical' | 'mixed'; physical: string[]; magical: string[]; of: number; /** armor points bought (sum of final items' stats) */ points: { physical: number; magical: number } }
 export interface TrueSource { hero: string; us: boolean; amount: number; share: number; from: { name: string; kind: string }[] }
 export interface DamageMix {
   us: Mix; them: Mix; trueFrom: TrueSource[];
@@ -68,7 +68,8 @@ export function damageMix(
     const side = players.filter((p) => p.us === us);
     const has = (p: (typeof players)[number], k: string) => (p.items ?? []).some((i) => (ctx.items.get(i.slug)?.stats?.[k] ?? 0) > 0);
     const mag = faced.total ? faced.magical / faced.total : 0, phy = faced.total ? faced.physical / faced.total : 0;
-    return { faced: mag >= 0.55 ? 'magical' : phy >= 0.55 ? 'physical' : 'mixed', physical: side.filter((p) => has(p, 'physical_armor')).map((p) => p.heroName), magical: side.filter((p) => has(p, 'magical_armor')).map((p) => p.heroName), of: side.length };
+    const pts = (k: string) => side.reduce((a, p) => a + (p.items ?? []).reduce((b, i) => b + (ctx.items.get(i.slug)?.stats?.[k] ?? 0), 0), 0);
+    return { faced: mag >= 0.55 ? 'magical' : phy >= 0.55 ? 'physical' : 'mixed', physical: side.filter((p) => has(p, 'physical_armor')).map((p) => p.heroName), magical: side.filter((p) => has(p, 'magical_armor')).map((p) => p.heroName), of: side.length, points: { physical: pts('physical_armor'), magical: pts('magical_armor') } };
   };
   return { us, them, trueFrom, armor: { us: armorOf(true, them), them: armorOf(false, us) }, field };
 }

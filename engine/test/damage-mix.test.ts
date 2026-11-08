@@ -14,7 +14,7 @@ describe('damage mix', () => {
     expect(m.trueFrom[0]).toMatchObject({ hero: 'Serath', share: 17, from: [{ name: 'Spectra', kind: 'item' }] });
     expect(m.field?.them?.band).toBe('60-70% magical');
     expect(m.field?.best).toMatch(/^20-30% magical/);
-    expect(m.armor.us).toEqual({ faced: 'magical', physical: [], magical: ['Belica'], of: 2 });
+    expect(m.armor.us).toEqual({ faced: 'magical', physical: [], magical: ['Belica'], of: 2, points: { physical: 0, magical: 30 } });
     expect(m.armor.them.faced).toBe('physical');
   });
   it('needs stream detail for every player', () => {

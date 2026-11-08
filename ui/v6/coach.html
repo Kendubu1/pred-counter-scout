@@ -204,7 +204,12 @@
   .dm-bar i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:.68rem;font-weight:800;color:var(--bg-0)}
   .dm-row b{font-size:.8rem;text-align:right}.dm-key{display:flex;gap:.9rem;font-size:.72rem;color:var(--text-2);margin:.1rem 0 0 3.5rem}
   .dm-key i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:.3rem;vertical-align:-1px}
-  .dm-arms{margin:.4rem 0 0;font-size:.8rem;line-height:1.5}.dm-arm.thin{color:var(--text-0)}.dm-arm .tc-bad{font-size:.72rem;margin-left:.2rem}
+  .ar-team{display:grid;grid-template-columns:3rem 1fr;gap:.5rem;margin:.35rem 0}.ar-l{font-weight:800;font-size:.84rem;padding-top:.15rem}
+  .ar-row{display:grid;grid-template-columns:3.2rem 1fr;align-items:center;gap:.4rem;margin:.15rem 0;font-size:.72rem;color:var(--text-2)}
+  .ar-bar{display:flex;height:14px;gap:2px;border-radius:4px;overflow:hidden;background:var(--bg-2)}
+  .ar-bar i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:.64rem;font-weight:800;color:var(--bg-0)}
+  .ar-bar em{font-style:normal;font-size:.68rem;color:var(--text-2);padding-left:.4rem;line-height:14px}
+  .ar-who{margin:.1rem 0 0 3.6rem;font-size:.74rem}.ar-who .tc-bad{margin-left:.2rem}
   .tb{margin-top:.35rem}
   .tb-leadcard{border:1px solid var(--border);border-radius:8px;padding:.6rem .7rem;background:var(--bg-2);margin-top:.35rem}
   .tb-head{display:flex;gap:.6rem;align-items:center;margin-bottom:.45rem}.tb-head img{border-radius:10px}
@@ -1158,16 +1163,23 @@ function pgReview(f) {
       const K = [['physical', 'Physical', 'var(--gold)'], ['magical', 'Magical', 'var(--blue)'], ['true', 'True', 'var(--text-1)']];
       const bar = (label, m, col) => `<div class="dm-row"><span class="dm-l" style="color:${col}">${label}</span><span class="dm-bar" style="width:${(100 * m.total / max).toFixed(1)}%">${K.map(([k, , c]) => { const pc = m.total ? Math.round(100 * m[k] / m.total) : 0; return pc ? `<i style="width:${pc}%;background:${c}" title="${k} ${m[k].toLocaleString()} (${pc}%)">${pc >= 9 ? `${pc}%` : ''}</i>` : ''; }).join('')}</span><b>${Math.round(m.total / 1000)}k</b></div>`;
       const fld = dm.field && (dm.field.us || dm.field.them) ? `<p class="tc-n" style="margin:.35rem 0 0">This patch, teams at ${[dm.field.us ? `our ${dm.field.us.band} won ${dm.field.us.wr}%` : '', dm.field.them ? `their ${dm.field.them.band} won ${dm.field.them.wr}%` : ''].filter(Boolean).join(', ')}; the best mix was ${esc(dm.field.best)}. Mostly physical with some magic wins most; past half magical it drops. An association: damage dealt follows how the game went.</p>` : '';
-      // Armor against what each team faced: one line, flagged when the bigger incoming type had
-      // armor on one player or fewer.
+      // Armor against what each team faced: per team, the damage it faced (the other team's split)
+      // over the armor it bought (item armor points, physical / magical), both as shares, aligned.
+      const seg = (pc, c, label, txt) => pc ? `<i style="width:${pc}%;background:${c}" title="${label}">${pc >= 12 ? txt : ''}</i>` : '';
       const armorRow = (label, col, a, faced) => {
         if (!a || !faced.total) return '';
-        const pm = Math.round(100 * faced.magical / faced.total), pp = Math.round(100 * faced.physical / faced.total);
-        const main = pm >= pp ? 'magical' : 'physical', thin = a[main].length <= 1;
-        const list = (k) => `${k} armor on ${a[k].length} of ${a.of}${a[k].length ? ` (${a[k].map(esc).join(', ')})` : ''}`;
-        return `<div class="dm-arm${thin ? ' thin' : ''}"><b style="color:${col}">${label}</b> faced ${pm}% magical, ${pp}% physical: ${list(main)}; ${list(main === 'magical' ? 'physical' : 'magical')}${thin ? ` <span class="tc-bad">little ${main} armor</span>` : ''}</div>`;
+        const fp = Math.round(100 * faced.physical / faced.total), fm = Math.round(100 * faced.magical / faced.total), ft = Math.max(0, 100 - fp - fm);
+        const tot = a.points.physical + a.points.magical;
+        const ap = tot ? Math.round(100 * a.points.physical / tot) : 0, am = tot ? 100 - ap : 0;
+        const main = fm >= fp ? 'magical' : 'physical';
+        const thinTypes = [['physical', fp], ['magical', fm]].filter(([k, pc]) => pc >= 35 && a[k].length <= 1).map(([k]) => k);
+        const names = (k) => `${k} on ${a[k].length} of ${a.of}${a[k].length ? ` (${a[k].map(esc).join(', ')})` : ''}`;
+        return `<div class="ar-team"><b class="ar-l" style="color:${col}">${label}</b>
+          <div class="ar-rows"><div class="ar-row"><span>Faced</span><span class="ar-bar">${seg(fp, 'var(--gold)', `physical ${fp}%`, `${fp}%`)}${seg(fm, 'var(--blue)', `magical ${fm}%`, `${fm}%`)}${seg(ft, 'var(--text-1)', `true ${ft}%`, `${ft}%`)}</span></div>
+          <div class="ar-row"><span>Armor</span><span class="ar-bar">${tot ? `${seg(ap, 'var(--gold)', `physical armor ${a.points.physical}`, `${a.points.physical}`)}${seg(am, 'var(--blue)', `magical armor ${a.points.magical}`, `${a.points.magical}`)}` : '<em>no armor bought</em>'}</span></div>
+          <div class="tc-n ar-who">${names(main)}; ${names(main === 'magical' ? 'physical' : 'magical')}${thinTypes.map((k) => ` <span class="tc-bad">little ${k} armor</span>`).join('')}</div></div></div>`;
       };
-      const armorLine = dm.armor ? `<div class="dm-arms">${armorRow('Us', 'var(--green)', dm.armor.us, dm.them)}${armorRow('Them', 'var(--red)', dm.armor.them, dm.us)}</div>` : '';
+      const armorLine = dm.armor ? `<div class="tc-h" style="margin-top:.7rem">Armor vs damage faced <span class="tc-n">share of each · armor = points bought from items · true damage ignores armor</span></div>${armorRow('Us', 'var(--green)', dm.armor.us, dm.them)}${armorRow('Them', 'var(--red)', dm.armor.them, dm.us)}` : '';
       const tf = dm.trueFrom.filter((t) => t.from.length).slice(0, 4);
       const trueLine = tf.length ? `<p class="tc-n" style="margin:.25rem 0 0"><b style="color:var(--text-0)">True damage from:</b> ${tf.map((t) => `<span style="color:${t.us ? 'var(--green)' : 'var(--red)'}">${esc(t.hero)}</span> ${t.amount.toLocaleString()} (${t.share}% of their damage; ${t.from.map((x) => `${esc(x.name)} <i>${esc(x.kind)}</i>`).join(', ')})`).join(' · ')}</p>` : '';
       return `<div class="tc-sec"><div class="tc-h">Damage types <span class="tc-n">hero damage dealt · bar length = total</span></div>
