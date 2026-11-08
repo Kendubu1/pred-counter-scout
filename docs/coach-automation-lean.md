@@ -52,6 +52,11 @@ independent critic (never the author) must pass every line before the review pub
 
 When `data/coaching/lean.json` has `"auto": true`, the coach job runs steps 1-3 for the same
 `COACH_GAMES` right after the standard review publishes (docs/coach-automation.md step 4).
+Use the `pred-scout-coach-lean` agent as the author and a separate general-purpose agent as the
+critic. If any lean step fails, report it and still commit the standard review: the lean
+review must never block the standard one. Report per game: rounds, lines judged per round,
+lines dropped, and the minutes from lean prepare to published.
+On since 2026-11-08 for every new game (trial).
 
 ## Revert
 
