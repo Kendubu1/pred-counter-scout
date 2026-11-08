@@ -479,6 +479,42 @@ pre-release PENDING state. After release (needs PREDGG creds, one pass per the c
 - **20e.** The split reset means early-1.18 Plat+ counts mix placement games; note it on the
   first Plat+ reads.
 
+## 21. 1.18 statistics audit — open items (backlogged 2026-11-08, maintainer: keep in the audit for later)
+
+From the 2026-11-08 audit of earlier sessions against the repo. Done the same day: lineup
+backfill with full builds / output totals / perks / match-time rank (running), purchase type 11
+counted, eternal-usage and standouts refreshed and put in the runbooks, aggregate ranked only.
+
+**21a. Recount 1.18 core / build-link / build-matchup counts from the lineups.** perk-stream.ts
+dropped every player whose purchases log as transaction type 11 until 2026-11-09. Once the
+backfill completes, rebuild the 1.18 cores and links from team-comps/1.18 (full builds) so the
+whole patch is on one basis.
+
+**21b. Output-per-minute and every-item rollups from the lineups.** The 2026-10-29 pull
+(predgg-output.json, item slots; branch claude/kind-noether-y5u47u, never merged) is superseded
+by lineup slots v2 carrying the raw stats and builds. Build the rollups (per hero-role, wins vs
+losses, Plat+, per pick, per item) and the promised "your output vs the Plat+ norm" card.
+
+**21c. Predictions vs measured (20c) for 1.18 around 2026-11-10**, and the never-run 1.17.2
+measurement. `node scripts/build-measured.js 1.18` is zero-API from predgg-general-stats-1.18.json.
+
+**21d. Item 19 (build-dependent pick tags)** reads build-links; nothing on the site uses it yet.
+
+**21e. Rank bands agree.** Matchups use Bronze-Silver / Gold-Plat / Diamond+ (Diamond+ empty in
+1.18) while builds and comps use Plat+. Pick one split, and add the 20e note that early Plat+
+includes placement games.
+
+**21f. Match-time rank and VP for every film player.** Only 2 of 16 1.18 films have all 10; rerun
+`npm run postgame:ranks -- --all` on 1.18 films and confirm the gaps are placement players.
+
+**21g. Counter-reactions and the Climb counters (16a / 16f)** are still 1.17.2; they need purchase
+timing and item slots, which the v2 lineups now carry (build order; no minute yet).
+
+**21h. Daily task instructions.** The "Daily data refresh" scheduled task lists its own steps, so
+runbook additions are skipped (eternals:usage was). Its instructions can only be edited from its
+own conversation: add `npm run eternals:usage && npm run comps && npm run postgame:comp -- --all`
+after perks, `RANKED_ONLY=1` on aggregate, and the team-comps coverage check.
+
 ## Parked ideas (not yet scheduled)
 
 - Comfort-vs-meta flex logic (parked by maintainer 2026-06-12): when a

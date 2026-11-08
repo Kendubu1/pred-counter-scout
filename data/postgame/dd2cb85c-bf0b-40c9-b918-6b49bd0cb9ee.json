@@ -3358,7 +3358,7 @@
  "teamComp": {
   "field": {
    "patch": "1.18",
-   "matches": 2436
+   "matches": 3096
   },
   "us": {
    "heroes": [
@@ -3367,37 +3367,62 @@
      "name": "Steel",
      "role": "offlane",
      "tank": true,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "tank",
+      "engage",
+      "peel"
+     ]
     },
     {
      "slug": "wukong",
      "name": "Wukong",
      "role": "jungle",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver"
+     ]
     },
     {
      "slug": "lt-belica",
      "name": "Lt. Belica",
      "role": "midlane",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "control"
+     ]
     },
     {
      "slug": "sparrow",
      "name": "Sparrow",
      "role": "carry",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "dps"
+     ]
     },
     {
      "slug": "zinx",
      "name": "Zinx",
      "role": "support",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "peel"
+     ]
     }
    ],
+   "balance": {
+    "tank": 1,
+    "engage": 1,
+    "peel": 2,
+    "diver": 1,
+    "control": 1,
+    "dps": 1
+   },
    "tanks": 1,
    "divers": 1,
    "engage": 1,
@@ -3406,10 +3431,10 @@
    "style": "mixed",
    "shape": "1t1d",
    "shapeWr": {
-    "n": 823,
-    "w": 426,
-    "wr": 51.8,
-    "ci95": 3.4
+    "n": 1578,
+    "w": 800,
+    "wr": 50.7,
+    "ci95": 2.5
    }
   },
   "them": {
@@ -3419,49 +3444,79 @@
      "name": "Greystone",
      "role": "offlane",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "sustain"
+     ]
     },
     {
      "slug": "serath",
      "name": "Serath",
      "role": "jungle",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "burst"
+     ]
     },
     {
      "slug": "renna",
      "name": "Renna",
      "role": "midlane",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "dps"
+     ]
     },
     {
      "slug": "legion",
      "name": "Legion",
      "role": "carry",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "control",
+      "dps"
+     ]
     },
     {
      "slug": "adele",
      "name": "Adele",
      "role": "support",
      "tank": true,
-     "diver": true
+     "diver": false,
+     "tags": [
+      "tank",
+      "engage",
+      "peel"
+     ]
     }
    ],
+   "balance": {
+    "diver": 2,
+    "sustain": 1,
+    "burst": 1,
+    "dps": 2,
+    "control": 1,
+    "tank": 1,
+    "engage": 1,
+    "peel": 1
+   },
    "tanks": 1,
-   "divers": 3,
+   "divers": 2,
    "engage": 1,
    "mages": 1,
    "marksmen": 1,
-   "style": "dive",
+   "style": "mixed",
    "shape": "1t2d",
    "shapeWr": {
-    "n": 1423,
-    "w": 705,
-    "wr": 49.5,
-    "ci95": 2.6
+    "n": 1199,
+    "w": 585,
+    "wr": 48.8,
+    "ci95": 2.8
    }
   },
   "tankEdge": {
@@ -3469,7 +3524,7 @@
    "wr": 50
   },
   "diverEdge": {
-   "diff": -2,
+   "diff": -1,
    "wr": 51.6
   },
   "checks": [
@@ -3505,7 +3560,7 @@
    }
   ],
   "swap": null,
-  "summary": "Draft: 1 tank, 1 diver vs their 1 tank, 3 divers. In 1.18 ranked, our shape won 51.8% and theirs 49.5%."
+  "summary": "Draft: 1 tank, 1 diver vs their 1 tank, 2 divers. In 1.18 ranked, our shape won 50.7% and theirs 48.8%."
  },
  "kitRead": {
   "cc": {
@@ -3696,6 +3751,37 @@
      "answer": "anti-heal (Tainted Guard or Tainted Bastion)",
      "has": false
     }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "fire-blossom",
+      "name": "Fire Blossom",
+      "has": false
+     },
+     {
+      "slug": "tainted-guard",
+      "name": "Tainted Guard",
+      "has": false
+     },
+     {
+      "slug": "flux-matrix",
+      "name": "Flux Matrix",
+      "has": false
+     }
+    ],
+    "wr": 60.2,
+    "n": 133
+   },
+   "built": [
+    {
+     "slug": "draconum",
+     "name": "Draconum"
+    },
+    {
+     "slug": "sky-splitter",
+     "name": "Sky Splitter"
+    }
    ]
   },
   {
@@ -3735,6 +3821,42 @@
      "why": "3 enemy kits heal themselves (Legion, Renna, Greystone)",
      "answer": "anti-heal (Tainted Blade)",
      "has": false
+    },
+    {
+     "why": "Serath wins this lane 52.2% of the time",
+     "answer": "physical armor",
+     "has": false
+    }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "mindrazor",
+      "name": "Mindrazor",
+      "has": false
+     },
+     {
+      "slug": "infernum",
+      "name": "Infernum",
+      "has": true
+     },
+     {
+      "slug": "the-perforator",
+      "name": "The Perforator",
+      "has": false
+     }
+    ],
+    "wr": 56.1,
+    "n": 41
+   },
+   "built": [
+    {
+     "slug": "manta-scythe",
+     "name": "Manta Scythe"
+    },
+    {
+     "slug": "infernum",
+     "name": "Infernum"
     }
    ]
   },
@@ -3754,6 +3876,46 @@
      "why": "3 enemy kits heal themselves (Legion, Renna, Greystone)",
      "answer": "anti-heal (Tainted Rounds)",
      "has": true
+    },
+    {
+     "why": "Legion wins this lane 54.5% of the time",
+     "answer": "physical armor",
+     "has": false
+    }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "lightning-hawk",
+      "name": "Lightning Hawk",
+      "has": true
+     },
+     {
+      "slug": "sky-splitter",
+      "name": "Sky Splitter",
+      "has": false
+     },
+     {
+      "slug": "tainted-rounds",
+      "name": "Tainted Rounds",
+      "has": true
+     }
+    ],
+    "wr": 59.7,
+    "n": 186
+   },
+   "built": [
+    {
+     "slug": "vanquisher",
+     "name": "Vanquisher"
+    },
+    {
+     "slug": "lightning-hawk",
+     "name": "Lightning Hawk"
+    },
+    {
+     "slug": "tainted-rounds",
+     "name": "Tainted Rounds"
     }
    ]
   },
@@ -3774,6 +3936,33 @@
      "answer": "anti-heal (Tainted Scepter)",
      "has": false
     }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "combustion",
+      "name": "Combustion",
+      "has": true
+     },
+     {
+      "slug": "wraith-leggings",
+      "name": "Wraith Leggings",
+      "has": false
+     },
+     {
+      "slug": "oblivion-crown",
+      "name": "Oblivion Crown",
+      "has": false
+     }
+    ],
+    "wr": 61.5,
+    "n": 91
+   },
+   "built": [
+    {
+     "slug": "combustion",
+     "name": "Combustion"
+    }
    ]
   },
   {
@@ -3792,6 +3981,37 @@
      "why": "3 enemy kits heal themselves (Legion, Renna, Greystone)",
      "answer": "anti-heal (Tainted Charm or Tainted Totem)",
      "has": false
+    }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "marshal",
+      "name": "Marshal",
+      "has": false
+     },
+     {
+      "slug": "prophecy",
+      "name": "Prophecy",
+      "has": false
+     },
+     {
+      "slug": "orion",
+      "name": "Orion",
+      "has": false
+     }
+    ],
+    "wr": 60.4,
+    "n": 48
+   },
+   "built": [
+    {
+     "slug": "windcaller",
+     "name": "Windcaller"
+    },
+    {
+     "slug": "galaxy-greaves",
+     "name": "Galaxy Greaves"
     }
    ]
   }

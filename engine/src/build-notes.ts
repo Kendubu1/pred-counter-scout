@@ -16,7 +16,7 @@
 // that matchup. Wired by `npm run postgame:comp` as film.buildNotes.
 import { itemAnswer, type HeroMeta, type KitRead } from './kit-read.js';
 
-export interface ItemInfo { slug: string; name: string; stats: Record<string, number> }
+export interface ItemInfo { slug: string; name: string; stats: Record<string, number>; rarity?: string | null }
 export interface BuildCell { n: number; i: Record<string, number> }
 export type AdaptVs = { slug: string; name: string; into: number; usual: number; wr: number | null; n: number | null; has: boolean; vs: string };
 export interface LinkCell { n: number; w: number }
@@ -26,6 +26,12 @@ export interface BuildNote {
   lane: { opp: string; oppSlug: string; wr: number; n: number } | null;
   adapt: AdaptVs[];
   needs: { why: string; answer: string; has: boolean }[];
+  /** the best of this hero-role's common 3-item cores this patch (40+ games, shrunk toward the
+   *  hero-role rate; core rates run high since finishing three items means a longer or winning
+   *  game, so read it against the other cores, not the hero's win rate) */
+  core: { items: { slug: string; name: string; has: boolean }[]; wr: number; n: number } | null;
+  /** completed items the player finished with (final inventory, Epic and Legendary) */
+  built: { slug: string; name: string }[];
 }
 
 const pct = (a: number, b: number) => (b ? Math.round((100 * a) / b) : 0);
@@ -38,6 +44,8 @@ export function buildNotes(
   pairs: Record<string, { n: number; shrunkWr: number; lane?: string }>,
   bm: Record<string, { all: BuildCell; lane: Record<string, BuildCell>; team?: Record<string, BuildCell> }>,
   links: Record<string, Record<string, Record<string, LinkCell>>>,
+  cores: Record<string, Record<string, { coreSlugs: string[]; n: number; w: number }[]>> = {},
+  baselines: Record<string, Record<string, { all: { n: number; w: number } }>> = {},
 ): BuildNote[] {
   const us = players.filter((p) => p.us), them = players.filter((p) => !p.us);
   const healers = them.filter((p) => kit[p.heroSlug]?.abilities.some((a) => a.heal));
@@ -87,7 +95,18 @@ export function buildNotes(
       const name = them.find((e) => e.heroSlug === killer)?.heroName ?? killer;
       needs.push({ why: `${name} kept killing ${p.heroName}`, answer: `${kp} armor`, has: stat(kp === 'physical' ? 'physical_armor' : 'magical_armor') });
     }
-    out.push({ pid: p.pid, hero: p.heroName, role: p.role, lane, adapt, needs });
+    // An unfavoured lane asks for armor of the lane opponent's damage type.
+    const op = opp ? meta.get(opp.heroSlug)?.power : null;
+    if (lane && lane.wr < 48 && op && !needs.some((n) => n.answer === `${op} armor`)) {
+      needs.push({ why: `${lane.opp} wins this lane ${Math.round(1000 - lane.wr * 10) / 10}% of the time`, answer: `${op} armor`, has: stat(op === 'physical' ? 'physical_armor' : 'magical_armor') });
+    }
+    const base = baselines[p.heroSlug]?.[p.role]?.all;
+    const prior = base && base.n ? base.w / base.n : 0.5;
+    const rows = (cores[p.heroSlug]?.[p.role] ?? []).filter((c) => c.n >= 40);
+    const best = rows.sort((a, b) => (b.w + 50 * prior) / (b.n + 50) - (a.w + 50 * prior) / (a.n + 50))[0];
+    const core = best ? { items: best.coreSlugs.map((slug) => ({ slug, name: items.get(slug)?.name ?? slug, has: mine.has(slug) })), wr: Math.round((1000 * best.w) / best.n) / 10, n: best.n } : null;
+    const built = [...mine].filter((s) => { const it = items.get(s) as any; return it && (it.rarity === 'Epic' || it.rarity === 'Legendary'); }).map((slug) => ({ slug, name: items.get(slug)!.name }));
+    out.push({ pid: p.pid, hero: p.heroName, role: p.role, lane, adapt, needs, core, built });
   }
   return out;
 }

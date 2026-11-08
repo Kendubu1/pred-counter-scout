@@ -172,6 +172,20 @@
   .tc-bn{list-style:none;padding:0;margin:.35rem 0 0}.tc-bn li{display:flex;gap:.5rem;align-items:flex-start;margin:.5rem 0}
   .tc-bits{display:flex;flex-direction:column;gap:.15rem;margin-top:.15rem}.tc-bits img{display:inline-block!important}
   .tc-ok{color:var(--green);font-weight:700}.tc-bad{color:var(--red);font-weight:800}
+  .tc-tag.tc-tank{background:rgba(80,140,255,.18);color:#6ea0ff}.tc-tag.tc-diver{background:rgba(240,130,15,.18);color:#f0820f}
+  .tc-tag.tc-engage{background:rgba(220,60,60,.16);color:#ff7a7a}.tc-tag.tc-peel{background:rgba(0,196,140,.14);color:#3fd3a7}
+  .tc-tag.tc-control{background:rgba(168,85,247,.16);color:#c08bff}.tc-tag.tc-burst{background:rgba(255,200,60,.14);color:#e8b84a}
+  .tc-tag.tc-poke,.tc-tag.tc-dps,.tc-tag.tc-sustain,.tc-tag.tc-duelist{background:rgba(150,150,170,.16);color:var(--text-1)}
+  .tc-bal{width:100%;border-collapse:collapse;margin-top:.5rem;font-size:.74rem;text-align:center}
+  .tc-bal th,.tc-bal td{padding:.2rem .15rem;border-top:1px solid var(--border)}.tc-bal thead th{color:var(--text-2);font-weight:600;text-transform:capitalize}
+  .tc-bal tbody th{text-align:left;font-weight:800}.tc-bal td{font-weight:700;color:var(--text-0)}.tc-bal td.tc-zero{color:var(--text-2);font-weight:400;opacity:.6}
+  .tc-grid{display:grid;grid-template-columns:1fr;gap:0 1.2rem}
+  @media (min-width:900px){.tc-grid{grid-template-columns:1fr 1fr}.tc-grid>.tc-sec:only-child{grid-column:1/-1}}
+  .bn{margin-top:.55rem;padding-top:.45rem;border-top:1px dashed var(--border);font-size:.8rem;line-height:1.75;color:var(--text-1)}
+  .bn-k{display:inline-block;min-width:5.6rem;color:var(--text-2);font-size:.72rem;text-transform:uppercase;letter-spacing:.02em}
+  .bn-n{color:var(--text-2);font-size:.74rem}.bn img.bn-i{display:inline-block!important;width:20px;height:20px;border-radius:4px;vertical-align:-5px;margin-right:2px;border:1px solid var(--border)}.bn-i.off{opacity:.35;filter:grayscale(.8)}
+  .bn-shared{color:var(--gold);font-size:.82rem;margin:.1rem 0 .4rem}
+  @media (max-width:560px){.tc-bal{font-size:.62rem}.bn-k{min-width:4.6rem}}
   .tc-foot{margin-top:.55rem;font-size:.72rem;color:var(--text-2)}
   @media (max-width:560px){.tc-row{grid-template-columns:1fr}.tc-shape{text-align:left}}
   /* ── v7 review: verdict → moments → numbers → strip → interrogation → lobby → deep dive ── */
@@ -862,7 +876,16 @@ function pgReview(f) {
     if (!tc) return '';
     const iimgTag = (slug) => `<img data-ipop="${esc(slug)}" src="${iimg(slug)}" style="width:18px;height:18px;border-radius:4px;vertical-align:-4px;margin-right:.25rem" onerror="this.style.display='none'">`;
     const tcCol = (w) => w >= 52 ? 'var(--green)' : w <= 48 ? 'var(--red)' : 'var(--text-1)';
-    const badge = (h) => h.tank ? '<span class="tc-tag tc-t" title="Real tank">TANK</span>' : h.diver ? '<span class="tc-tag tc-d" title="High-dive hero">DIVER</span>' : '';
+    const TAG_TIP = { tank: 'Real tank: starts fights and soaks', diver: 'High-dive: jumps the backline', engage: 'Starts fights with hard CC', peel: 'Protects allies (shields, heals, CC on divers)', control: 'Zone or heavy crowd control', burst: 'Deletes one target fast', poke: 'Chips from range', dps: 'Sustained damage over a fight', sustain: 'Heals through fights', duelist: 'Wins one-on-ones' };
+    const badge = (h) => (h.tags && h.tags.length ? h.tags : (h.tank ? ['tank'] : h.diver ? ['diver'] : [])).map((g) => `<span class="tc-tag tc-${g}" title="${esc(TAG_TIP[g] || g)}">${esc(g.toUpperCase())}</span>`).join('');
+    const balance = (() => {
+      if (!tc.us.balance) return '';
+      const keys = ['tank', 'engage', 'peel', 'control', 'diver', 'burst', 'poke', 'dps', 'sustain', 'duelist'];
+      const cell = (n) => `<td class="${n ? '' : 'tc-zero'}">${n || 0}</td>`;
+      return `<table class="tc-bal"><thead><tr><th></th>${keys.map((k) => `<th title="${esc(TAG_TIP[k])}">${k}</th>`).join('')}</tr></thead><tbody>
+        <tr><th style="color:var(--green)">Us</th>${keys.map((k) => cell(tc.us.balance[k])).join('')}</tr>
+        <tr><th style="color:var(--red)">Them</th>${keys.map((k) => cell(tc.them.balance[k])).join('')}</tr></tbody></table>`;
+    })();
     const row = (sd, label, color) => `<div class="tc-row"><div class="tc-side" style="color:${color}">${label}</div>
       <div class="tc-heroes">${sd.heroes.map((h) => `<span class="tc-hero">${hIcon(h.slug, 26)}<span><b>${esc(h.name)}</b>${badge(h)}<br><span class="tc-role">${esc(h.role)}</span></span></span>`).join('')}</div>
       <div class="tc-shape"><b>${sd.tanks} tank${sd.tanks === 1 ? '' : 's'} · ${sd.divers} diver${sd.divers === 1 ? '' : 's'}</b><br><span style="color:${sd.shapeWr ? tcCol(sd.shapeWr.wr) : 'var(--text-2)'}">${sd.shapeWr ? `${sd.shapeWr.wr}% in ${esc(tc.field.patch)} ranked` : 'too few games'}</span>${sd.shapeWr ? ` <span class="tc-n">(${sd.shapeWr.n.toLocaleString()} teams)</span>` : ''}</div></div>`;
@@ -911,8 +934,8 @@ function pgReview(f) {
       return `<li>${hIcon(pl ? pl.heroSlug : '', 22)}<div><b>${esc(pl ? pgName(pl) : b.hero)}</b> <span class="tc-n">${esc(b.hero)} · ${esc(b.role)}</span><div class="tc-bits">${bits.map((x) => `<span>${x}</span>`).join('')}</div></div></li>`;
     }).join('')}</ul></div>` : '';
     return card(`${eyebrow('Draft, comp &amp; kits', `${fails ? `${fails} of ${tc.checks.length} fundamentals missed` : 'all fundamentals covered'}`)}
-      ${row(tc.us, 'Us', 'var(--green)')}${row(tc.them, 'Them', 'var(--red)')}
-      <ul class="tc-checks">${checks}</ul>${swap}${threatBlock}${nemBlock}${bnBlock}${ccBlock}
+      ${row(tc.us, 'Us', 'var(--green)')}${row(tc.them, 'Them', 'var(--red)')}${balance}
+      <ul class="tc-checks">${checks}</ul>${swap}<div class="tc-grid">${threatBlock}${nemBlock}</div>${ccBlock}
       <div class="tc-foot">Win rates are each comp shape (real tanks × high-dive heroes) across ${tc.field.matches.toLocaleString()} sampled ${esc(tc.field.patch)} ranked games, every rank. They describe the draft, not who played well.</div>`);
   })();
   const stackCard = (() => {
@@ -1183,14 +1206,30 @@ function pgReview(f) {
       ${co.flags?.length ? flagList(co.flags, f) : co.team ? `<p style="color:var(--text-1);line-height:1.6;margin:0">${esc(co.team)}</p>` : ''}`);
     const reflection = f.result === 'loss' && co.lossReflection ? `${eyebrow('What could have changed this game?', '')}<p style="line-height:1.6">${esc(co.lossReflection)}</p>` : '';
     const next = focus?.action || reflection ? card(`${reflection}${focus?.action ? `${eyebrow('Next game', '')}<p style="font-size:1rem;line-height:1.5;margin:0">${esc(focus.action)}</p>` : ''}`) : '';
-    const players = card(`${eyebrow('Your team', '')}${us.map((p) => `<div class="plobby coach-player">
+    // Build notes per player (film.buildNotes, engine/src/build-notes.ts), folded under each row.
+    const bnOf = (pid) => (f.buildNotes || []).find((b) => b.pid === pid);
+    const bnWhy = new Map(); (f.buildNotes || []).forEach((b) => b.needs.forEach((n) => bnWhy.set(n.why, (bnWhy.get(n.why) || 0) + 1)));
+    const bnShared = [...bnWhy].filter(([, c]) => c >= 2).map(([w]) => w);
+    const itag = (slug, on) => `<img data-ipop="${esc(slug)}" src="${iimg(slug)}" class="bn-i${on === false ? ' off' : ''}" onerror="this.style.display='none'">`;
+    const pctCol = (w) => w >= 52 ? 'var(--green)' : w <= 48 ? 'var(--red)' : 'var(--text-1)';
+    const buildBlock = (p) => {
+      const b = bnOf(p.pid); if (!b) return '';
+      const rows = [];
+      if (b.lane) rows.push(`<span class="bn-k">Lane</span> vs ${esc(b.lane.opp)} <b style="color:${pctCol(b.lane.wr)}">${b.lane.wr}%</b> <span class="bn-n">${b.lane.n} games</span>`);
+      if (b.built && b.built.length) rows.push(`<span class="bn-k">Built</span> ${b.built.map((i) => itag(i.slug)).join('')}`);
+      if (b.core) rows.push(`<span class="bn-k">Best core</span> ${b.core.items.map((i) => itag(i.slug, i.has)).join('')} <span class="bn-n">${b.core.items.map((i) => esc(i.name)).join(' > ')} · ${b.core.wr}% in ${b.core.n} games${b.core.items.some((i) => i.has) ? ` · ${b.core.items.filter((i) => i.has).length} of 3 built` : ''}</span>`);
+      for (const a of b.adapt) rows.push(`<span class="bn-k">Into ${esc(a.vs)}</span> ${itag(a.slug, a.has)} <b>${esc(a.name)}</b> <span class="bn-n">${a.into}% buy it (usually ${a.usual}%)${a.wr != null ? `, wins ${a.wr}%` : ''}${a.has ? ' · built' : ''}</span>`);
+      for (const n of b.needs) rows.push(`<span class="bn-k">Needs</span> ${n.has ? '<span class="tc-ok">✓</span>' : '<span class="tc-bad">✗</span>'} ${esc(n.answer)}${bnShared.includes(n.why) ? '' : ` <span class="bn-n">${esc(n.why)}</span>`}`);
+      return rows.length ? `<div class="bn">${rows.map((r) => `<div>${r}</div>`).join('')}</div>` : '';
+    };
+    const players = card(`${eyebrow('Your team', '')}${bnShared.length ? `<p class="bn-shared">${bnShared.map((w) => esc(w.charAt(0).toUpperCase() + w.slice(1)) + '.').join(' ')}</p>` : ''}${us.map((p) => `<div class="plobby coach-player">
       <div class="who">${hIcon(p.heroSlug, 34)}<span><span class="pname"><b>${pgName(p)}</b>${rankBadge(p)}</span><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span style="white-space:nowrap"><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span>${vpTag(p)}</span></span>${CoachLoadouts.icons(p.loadout,p)}</div>
       <div class="line">${(() => {
         if (co.playerBullets?.[p.pid]?.length) return `<ul class="coach-bullets">${co.playerBullets[p.pid].map(text => `<li>${esc(text)}</li>`).join('')}</ul>`;
         const actions = co.microReads?.[p.pid];
         if (COACH_PLAYER_FORMAT === 'actions' && (actions?.keep || actions?.change)) return `${actions.keep ? `<p style="margin:0 0 .5rem"><b style="color:var(--green)">Keep:</b> ${esc(actions.keep)}</p>` : ''}${actions.change ? `<p style="margin:0"><b style="color:var(--gold)">Change:</b> ${esc(actions.change)}</p>` : ''}`;
         return co.perPlayer?.[p.pid] ? esc(co.perPlayer[p.pid]) : 'Individual feedback has not been written for this player.';
-      })()}</div>
+      })()}${buildBlock(p)}</div>
     </div>`).join('')}`);
     const loadouts = `<p class="build-help">Choose a player to see the recommendation, matchup and loadout breakdown.</p>${us.map((p) => {
       const br = co.buildReads?.[p.pid];

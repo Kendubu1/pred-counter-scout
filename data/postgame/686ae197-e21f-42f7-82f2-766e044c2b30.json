@@ -4318,7 +4318,7 @@
  "teamComp": {
   "field": {
    "patch": "1.18",
-   "matches": 2436
+   "matches": 3096
   },
   "us": {
    "heroes": [
@@ -4327,37 +4327,66 @@
      "name": "Bayle",
      "role": "offlane",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "sustain"
+     ]
     },
     {
      "slug": "zarus",
      "name": "Zarus",
      "role": "jungle",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "burst",
+      "sustain"
+     ]
     },
     {
      "slug": "gideon",
      "name": "Gideon",
      "role": "midlane",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "control",
+      "burst"
+     ]
     },
     {
      "slug": "murdock",
      "name": "Murdock",
      "role": "carry",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "poke",
+      "dps"
+     ]
     },
     {
      "slug": "zinx",
      "name": "Zinx",
      "role": "support",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "peel"
+     ]
     }
    ],
+   "balance": {
+    "diver": 2,
+    "sustain": 2,
+    "burst": 2,
+    "control": 1,
+    "poke": 1,
+    "dps": 1,
+    "peel": 1
+   },
    "tanks": 0,
    "divers": 2,
    "engage": 0,
@@ -4366,10 +4395,10 @@
    "style": "mixed",
    "shape": "0t2d",
    "shapeWr": {
-    "n": 1396,
-    "w": 674,
-    "wr": 48.3,
-    "ci95": 2.6
+    "n": 1754,
+    "w": 846,
+    "wr": 48.2,
+    "ci95": 2.3
    }
   },
   "them": {
@@ -4379,58 +4408,91 @@
      "name": "Adele",
      "role": "offlane",
      "tank": true,
-     "diver": true
+     "diver": false,
+     "tags": [
+      "tank",
+      "engage",
+      "peel"
+     ]
     },
     {
      "slug": "grux",
      "name": "Grux",
      "role": "jungle",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "engage",
+      "control"
+     ]
     },
     {
      "slug": "wraith",
      "name": "Wraith",
      "role": "midlane",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "burst",
+      "poke"
+     ]
     },
     {
      "slug": "legion",
      "name": "Legion",
      "role": "carry",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "control",
+      "dps"
+     ]
     },
     {
      "slug": "mourn",
      "name": "Mourn",
      "role": "support",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "engage",
+      "sustain"
+     ]
     }
    ],
+   "balance": {
+    "tank": 1,
+    "engage": 3,
+    "peel": 1,
+    "diver": 1,
+    "control": 2,
+    "burst": 1,
+    "poke": 1,
+    "dps": 1,
+    "sustain": 1
+   },
    "tanks": 1,
-   "divers": 2,
+   "divers": 1,
    "engage": 3,
    "mages": 0,
    "marksmen": 1,
    "style": "mixed",
-   "shape": "1t2d",
+   "shape": "1t1d",
    "shapeWr": {
-    "n": 1423,
-    "w": 705,
-    "wr": 49.5,
-    "ci95": 2.6
+    "n": 1578,
+    "w": 800,
+    "wr": 50.7,
+    "ci95": 2.5
    }
   },
   "tankEdge": {
    "diff": -1,
-   "wr": 47
+   "wr": 47.2
   },
   "diverEdge": {
-   "diff": 0,
-   "wr": 50
+   "diff": 1,
+   "wr": 48.4
   },
   "checks": [
    {
@@ -4441,7 +4503,7 @@
    {
     "id": "tank-count",
     "ok": false,
-    "text": "Out-tanked 0 v 1: teams one tank down won 47% in 1.18."
+    "text": "Out-tanked 0 v 1: teams one tank down won 47.2% in 1.18."
    },
    {
     "id": "divers",
@@ -4489,7 +4551,7 @@
     }
    ]
   },
-  "summary": "Draft: 0 tanks, 2 divers vs their 1 tank, 2 divers. In 1.18 ranked, our shape won 48.3% and theirs 49.5%."
+  "summary": "Draft: 0 tanks, 2 divers vs their 1 tank, 1 diver. In 1.18 ranked, our shape won 48.2% and theirs 50.7%."
  },
  "kitRead": {
   "cc": {
@@ -4685,6 +4747,50 @@
      "why": "3 enemy kits heal themselves (Mourn, Legion, Grux)",
      "answer": "anti-heal (Tainted Rounds)",
      "has": true
+    },
+    {
+     "why": "Legion wins this lane 55.7% of the time",
+     "answer": "physical armor",
+     "has": false
+    }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "lightning-hawk",
+      "name": "Lightning Hawk",
+      "has": true
+     },
+     {
+      "slug": "tainted-rounds",
+      "name": "Tainted Rounds",
+      "has": true
+     },
+     {
+      "slug": "imperator",
+      "name": "Imperator",
+      "has": true
+     }
+    ],
+    "wr": 62.4,
+    "n": 157
+   },
+   "built": [
+    {
+     "slug": "lightning-hawk",
+     "name": "Lightning Hawk"
+    },
+    {
+     "slug": "tainted-rounds",
+     "name": "Tainted Rounds"
+    },
+    {
+     "slug": "vanquisher",
+     "name": "Vanquisher"
+    },
+    {
+     "slug": "imperator",
+     "name": "Imperator"
     }
    ]
   },
@@ -4705,6 +4811,45 @@
      "answer": "anti-heal (Tainted Scepter)",
      "has": true
     }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "azure-core",
+      "name": "Azure Core",
+      "has": true
+     },
+     {
+      "slug": "combustion",
+      "name": "Combustion",
+      "has": false
+     },
+     {
+      "slug": "oblivion-crown",
+      "name": "Oblivion Crown",
+      "has": false
+     }
+    ],
+    "wr": 66.7,
+    "n": 63
+   },
+   "built": [
+    {
+     "slug": "azure-core",
+     "name": "Azure Core"
+    },
+    {
+     "slug": "tainted-scepter",
+     "name": "Tainted Scepter"
+    },
+    {
+     "slug": "soulbinder",
+     "name": "Soulbinder"
+    },
+    {
+     "slug": "timewarp",
+     "name": "Timewarp"
+    }
    ]
   },
   {
@@ -4723,6 +4868,46 @@
      "why": "3 enemy kits heal themselves (Mourn, Legion, Grux)",
      "answer": "anti-heal (Tainted Charm or Tainted Totem)",
      "has": false
+    },
+    {
+     "why": "Mourn wins this lane 53.5% of the time",
+     "answer": "magical armor",
+     "has": false
+    }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "marshal",
+      "name": "Marshal",
+      "has": false
+     },
+     {
+      "slug": "prophecy",
+      "name": "Prophecy",
+      "has": true
+     },
+     {
+      "slug": "orion",
+      "name": "Orion",
+      "has": true
+     }
+    ],
+    "wr": 60.4,
+    "n": 48
+   },
+   "built": [
+    {
+     "slug": "prophecy",
+     "name": "Prophecy"
+    },
+    {
+     "slug": "orion",
+     "name": "Orion"
+    },
+    {
+     "slug": "spectra",
+     "name": "Spectra"
     }
    ]
   },
@@ -4758,6 +4943,45 @@
      "why": "3 enemy kits heal themselves (Mourn, Legion, Grux)",
      "answer": "anti-heal (Tainted Blade)",
      "has": true
+    }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "berserkers-axe",
+      "name": "Berserker's Axe",
+      "has": true
+     },
+     {
+      "slug": "augmentation",
+      "name": "Augmentation",
+      "has": true
+     },
+     {
+      "slug": "salvation",
+      "name": "Salvation",
+      "has": false
+     }
+    ],
+    "wr": 61.3,
+    "n": 75
+   },
+   "built": [
+    {
+     "slug": "berserkers-axe",
+     "name": "Berserker's Axe"
+    },
+    {
+     "slug": "tainted-blade",
+     "name": "Tainted Blade"
+    },
+    {
+     "slug": "augmentation",
+     "name": "Augmentation"
+    },
+    {
+     "slug": "tainted-bastion",
+     "name": "Tainted Bastion"
     }
    ]
   },
@@ -4813,6 +5037,41 @@
      "why": "3 enemy kits heal themselves (Mourn, Legion, Grux)",
      "answer": "anti-heal (Tainted Blade)",
      "has": true
+    }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "earthshaker",
+      "name": "Earthshaker",
+      "has": true
+     },
+     {
+      "slug": "basilisk",
+      "name": "Basilisk",
+      "has": true
+     },
+     {
+      "slug": "salvation",
+      "name": "Salvation",
+      "has": false
+     }
+    ],
+    "wr": 61,
+    "n": 41
+   },
+   "built": [
+    {
+     "slug": "tainted-blade",
+     "name": "Tainted Blade"
+    },
+    {
+     "slug": "earthshaker",
+     "name": "Earthshaker"
+    },
+    {
+     "slug": "basilisk",
+     "name": "Basilisk"
     }
    ]
   }

@@ -2455,7 +2455,7 @@
  "teamComp": {
   "field": {
    "patch": "1.18",
-   "matches": 2436
+   "matches": 3096
   },
   "us": {
    "heroes": [
@@ -2464,37 +2464,66 @@
      "name": "Aurora",
      "role": "offlane",
      "tank": true,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "tank",
+      "engage",
+      "control"
+     ]
     },
     {
      "slug": "boris",
      "name": "Boris",
      "role": "jungle",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "burst",
+      "sustain"
+     ]
     },
     {
      "slug": "howitzer",
      "name": "Howitzer",
      "role": "midlane",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "control"
+     ]
     },
     {
      "slug": "sparrow",
      "name": "Sparrow",
      "role": "carry",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "dps"
+     ]
     },
     {
      "slug": "phase",
      "name": "Phase",
      "role": "support",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "peel"
+     ]
     }
    ],
+   "balance": {
+    "tank": 1,
+    "engage": 1,
+    "control": 2,
+    "diver": 1,
+    "burst": 1,
+    "sustain": 1,
+    "dps": 1,
+    "peel": 1
+   },
    "tanks": 1,
    "divers": 1,
    "engage": 1,
@@ -2503,10 +2532,10 @@
    "style": "mixed",
    "shape": "1t1d",
    "shapeWr": {
-    "n": 823,
-    "w": 426,
-    "wr": 51.8,
-    "ci95": 3.4
+    "n": 1578,
+    "w": 800,
+    "wr": 50.7,
+    "ci95": 2.5
    }
   },
   "them": {
@@ -2516,49 +2545,81 @@
      "name": "Shinbi",
      "role": "offlane",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "burst"
+     ]
     },
     {
      "slug": "yin",
      "name": "Yin",
      "role": "jungle",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "dps",
+      "duelist"
+     ]
     },
     {
      "slug": "argus",
      "name": "Argus",
      "role": "midlane",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "control",
+      "poke"
+     ]
     },
     {
      "slug": "skylar",
      "name": "Skylar",
      "role": "carry",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "dps"
+     ]
     },
     {
      "slug": "adele",
      "name": "Adele",
      "role": "support",
      "tank": true,
-     "diver": true
+     "diver": false,
+     "tags": [
+      "tank",
+      "engage",
+      "peel"
+     ]
     }
    ],
+   "balance": {
+    "diver": 2,
+    "burst": 1,
+    "dps": 2,
+    "duelist": 1,
+    "control": 1,
+    "poke": 1,
+    "tank": 1,
+    "engage": 1,
+    "peel": 1
+   },
    "tanks": 1,
-   "divers": 3,
+   "divers": 2,
    "engage": 1,
    "mages": 1,
    "marksmen": 2,
-   "style": "dive",
+   "style": "mixed",
    "shape": "1t2d",
    "shapeWr": {
-    "n": 1423,
-    "w": 705,
-    "wr": 49.5,
-    "ci95": 2.6
+    "n": 1199,
+    "w": 585,
+    "wr": 48.8,
+    "ci95": 2.8
    }
   },
   "tankEdge": {
@@ -2566,7 +2627,7 @@
    "wr": 50
   },
   "diverEdge": {
-   "diff": -2,
+   "diff": -1,
    "wr": 51.6
   },
   "checks": [
@@ -2602,7 +2663,7 @@
    }
   ],
   "swap": null,
-  "summary": "Draft: 1 tank, 1 diver vs their 1 tank, 3 divers. In 1.18 ranked, our shape won 51.8% and theirs 49.5%."
+  "summary": "Draft: 1 tank, 1 diver vs their 1 tank, 2 divers. In 1.18 ranked, our shape won 50.7% and theirs 48.8%."
  },
  "kitRead": {
   "cc": {
@@ -2748,7 +2809,34 @@
     "n": 84
    },
    "adapt": [],
-   "needs": []
+   "needs": [],
+   "core": {
+    "items": [
+     {
+      "slug": "marshal",
+      "name": "Marshal",
+      "has": false
+     },
+     {
+      "slug": "enras-blessing",
+      "name": "Enra's Blessing",
+      "has": false
+     },
+     {
+      "slug": "galaxy-greaves",
+      "name": "Galaxy Greaves",
+      "has": false
+     }
+    ],
+    "wr": 51.7,
+    "n": 232
+   },
+   "built": [
+    {
+     "slug": "crescelia",
+     "name": "Crescelia"
+    }
+   ]
   },
   {
    "pid": "10dc5fce-f37d-43fa-b8b5-82a514d09eaf",
@@ -2761,7 +2849,40 @@
     "n": 55
    },
    "adapt": [],
-   "needs": []
+   "needs": [
+    {
+     "why": "Yin wins this lane 53.2% of the time",
+     "answer": "physical armor",
+     "has": false
+    }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "sky-splitter",
+      "name": "Sky Splitter",
+      "has": true
+     },
+     {
+      "slug": "tainted-blade",
+      "name": "Tainted Blade",
+      "has": false
+     },
+     {
+      "slug": "rapture",
+      "name": "Rapture",
+      "has": false
+     }
+    ],
+    "wr": 55.4,
+    "n": 92
+   },
+   "built": [
+    {
+     "slug": "sky-splitter",
+     "name": "Sky Splitter"
+    }
+   ]
   },
   {
    "pid": "a0c393cc-1437-4bdc-8168-64676ce2166c",
@@ -2774,7 +2895,34 @@
     "n": 311
    },
    "adapt": [],
-   "needs": []
+   "needs": [],
+   "core": {
+    "items": [
+     {
+      "slug": "lightning-hawk",
+      "name": "Lightning Hawk",
+      "has": true
+     },
+     {
+      "slug": "sky-splitter",
+      "name": "Sky Splitter",
+      "has": false
+     },
+     {
+      "slug": "tainted-rounds",
+      "name": "Tainted Rounds",
+      "has": false
+     }
+    ],
+    "wr": 59.7,
+    "n": 186
+   },
+   "built": [
+    {
+     "slug": "lightning-hawk",
+     "name": "Lightning Hawk"
+    }
+   ]
   },
   {
    "pid": "2d4ced78-0f5a-4f6f-b588-c4f60c35cf38",
@@ -2787,7 +2935,40 @@
     "n": 85
    },
    "adapt": [],
-   "needs": []
+   "needs": [
+    {
+     "why": "Argus wins this lane 52.8% of the time",
+     "answer": "magical armor",
+     "has": false
+    }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "combustion",
+      "name": "Combustion",
+      "has": false
+     },
+     {
+      "slug": "wraith-leggings",
+      "name": "Wraith Leggings",
+      "has": false
+     },
+     {
+      "slug": "tainted-scepter",
+      "name": "Tainted Scepter",
+      "has": false
+     }
+    ],
+    "wr": 58.9,
+    "n": 56
+   },
+   "built": [
+    {
+     "slug": "prophecy",
+     "name": "Prophecy"
+    }
+   ]
   },
   {
    "pid": "6de1d177-20cd-4d83-a311-115fc7e073ce",
@@ -2811,7 +2992,34 @@
      "vs": "Shinbi"
     }
    ],
-   "needs": []
+   "needs": [],
+   "core": {
+    "items": [
+     {
+      "slug": "magnify",
+      "name": "Magnify",
+      "has": true
+     },
+     {
+      "slug": "prophecy",
+      "name": "Prophecy",
+      "has": false
+     },
+     {
+      "slug": "tainted-scepter",
+      "name": "Tainted Scepter",
+      "has": false
+     }
+    ],
+    "wr": 62,
+    "n": 71
+   },
+   "built": [
+    {
+     "slug": "magnify",
+     "name": "Magnify"
+    }
+   ]
   }
  ]
 }

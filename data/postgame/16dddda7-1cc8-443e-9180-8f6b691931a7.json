@@ -5269,7 +5269,7 @@
  "teamComp": {
   "field": {
    "patch": "1.18",
-   "matches": 2436
+   "matches": 3096
   },
   "us": {
    "heroes": [
@@ -5278,49 +5278,78 @@
      "name": "Adele",
      "role": "offlane",
      "tank": true,
-     "diver": true
+     "diver": false,
+     "tags": [
+      "tank",
+      "engage",
+      "peel"
+     ]
     },
     {
      "slug": "serath",
      "name": "Serath",
      "role": "jungle",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "burst"
+     ]
     },
     {
      "slug": "the-fey",
      "name": "The Fey",
      "role": "midlane",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "control"
+     ]
     },
     {
      "slug": "eden",
      "name": "Eden",
      "role": "carry",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "dps"
+     ]
     },
     {
      "slug": "steel",
      "name": "Steel",
      "role": "support",
      "tank": true,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "tank",
+      "engage",
+      "peel"
+     ]
     }
    ],
+   "balance": {
+    "tank": 2,
+    "engage": 2,
+    "peel": 2,
+    "diver": 1,
+    "burst": 1,
+    "control": 1,
+    "dps": 1
+   },
    "tanks": 2,
-   "divers": 2,
+   "divers": 1,
    "engage": 2,
    "mages": 1,
    "marksmen": 1,
    "style": "mixed",
-   "shape": "2t2d",
+   "shape": "2t1d",
    "shapeWr": {
-    "n": 374,
-    "w": 206,
-    "wr": 55.1,
-    "ci95": 5.1
+    "n": 673,
+    "w": 362,
+    "wr": 53.8,
+    "ci95": 3.8
    }
   },
   "them": {
@@ -5330,37 +5359,65 @@
      "name": "Greystone",
      "role": "offlane",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "sustain"
+     ]
     },
     {
      "slug": "rampage",
      "name": "Rampage",
      "role": "jungle",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "engage",
+      "sustain"
+     ]
     },
     {
      "slug": "gideon",
      "name": "Gideon",
      "role": "midlane",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "control",
+      "burst"
+     ]
     },
     {
      "slug": "sparrow",
      "name": "Sparrow",
      "role": "carry",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "dps"
+     ]
     },
     {
      "slug": "maco",
      "name": "Maco",
      "role": "support",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "peel"
+     ]
     }
    ],
+   "balance": {
+    "diver": 2,
+    "sustain": 2,
+    "engage": 1,
+    "control": 1,
+    "burst": 1,
+    "dps": 1,
+    "peel": 1
+   },
    "tanks": 0,
    "divers": 2,
    "engage": 1,
@@ -5369,19 +5426,19 @@
    "style": "mixed",
    "shape": "0t2d",
    "shapeWr": {
-    "n": 1396,
-    "w": 674,
-    "wr": 48.3,
-    "ci95": 2.6
+    "n": 1754,
+    "w": 846,
+    "wr": 48.2,
+    "ci95": 2.3
    }
   },
   "tankEdge": {
    "diff": 2,
-   "wr": 55.9
+   "wr": 55.2
   },
   "diverEdge": {
-   "diff": 0,
-   "wr": 50
+   "diff": -1,
+   "wr": 51.6
   },
   "checks": [
    {
@@ -5396,8 +5453,8 @@
    },
    {
     "id": "divers",
-    "ok": false,
-    "text": "2 divers (Adele, Serath): each one past the first is a hero not holding the line."
+    "ok": true,
+    "text": "One diver (Serath)."
    },
    {
     "id": "damage",
@@ -5415,32 +5472,8 @@
     "text": "Steel can stay with the carry and peel."
    }
   ],
-  "swap": {
-   "role": "offlane",
-   "out": "Adele",
-   "reason": "Adele is a second diver",
-   "options": [
-    {
-     "slug": "kaelen",
-     "name": "Kaelen",
-     "wr": 53.7,
-     "n": 2613
-    },
-    {
-     "slug": "riktor",
-     "name": "Riktor",
-     "wr": 50.6,
-     "n": 1241
-    },
-    {
-     "slug": "aurora",
-     "name": "Aurora",
-     "wr": 49.9,
-     "n": 2939
-    }
-   ]
-  },
-  "summary": "Draft: 2 tanks, 2 divers vs their 0 tanks, 2 divers. In 1.18 ranked, our shape won 55.1% and theirs 48.3%."
+  "swap": null,
+  "summary": "Draft: 2 tanks, 1 diver vs their 0 tanks, 2 divers. In 1.18 ranked, our shape won 53.8% and theirs 48.2%."
  },
  "kitRead": {
   "cc": {
@@ -5659,6 +5692,53 @@
      "answer": "anti-heal (Tainted Scepter)",
      "has": true
     }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "combustion",
+      "name": "Combustion",
+      "has": true
+     },
+     {
+      "slug": "wraith-leggings",
+      "name": "Wraith Leggings",
+      "has": true
+     },
+     {
+      "slug": "oblivion-crown",
+      "name": "Oblivion Crown",
+      "has": true
+     }
+    ],
+    "wr": 69.2,
+    "n": 133
+   },
+   "built": [
+    {
+     "slug": "combustion",
+     "name": "Combustion"
+    },
+    {
+     "slug": "wraith-leggings",
+     "name": "Wraith Leggings"
+    },
+    {
+     "slug": "tainted-scepter",
+     "name": "Tainted Scepter"
+    },
+    {
+     "slug": "megacosm",
+     "name": "Megacosm"
+    },
+    {
+     "slug": "oblivion-crown",
+     "name": "Oblivion Crown"
+    },
+    {
+     "slug": "caustica",
+     "name": "Caustica"
+    }
    ]
   },
   {
@@ -5688,6 +5768,58 @@
      "why": "3 enemy kits heal themselves (Rampage, Greystone, Maco)",
      "answer": "anti-heal (Tainted Guard or Tainted Bastion)",
      "has": false
+    },
+    {
+     "why": "Greystone wins this lane 52.2% of the time",
+     "answer": "physical armor",
+     "has": true
+    }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "fist-of-razuul",
+      "name": "Fist Of Razuul",
+      "has": true
+     },
+     {
+      "slug": "elafrost",
+      "name": "Elafrost",
+      "has": false
+     },
+     {
+      "slug": "earthshaker",
+      "name": "Earthshaker",
+      "has": false
+     }
+    ],
+    "wr": 45.8,
+    "n": 48
+   },
+   "built": [
+    {
+     "slug": "overlord",
+     "name": "Overlord"
+    },
+    {
+     "slug": "rapture",
+     "name": "Rapture"
+    },
+    {
+     "slug": "aegis-of-agawar",
+     "name": "Aegis Of Agawar"
+    },
+    {
+     "slug": "fire-blossom",
+     "name": "Fire Blossom"
+    },
+    {
+     "slug": "raiment-of-renewal",
+     "name": "Raiment of Renewal"
+    },
+    {
+     "slug": "fist-of-razuul",
+     "name": "Fist Of Razuul"
     }
    ]
   },
@@ -5734,6 +5866,53 @@
      "answer": "physical armor",
      "has": true
     }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "sky-splitter",
+      "name": "Sky Splitter",
+      "has": true
+     },
+     {
+      "slug": "spectra",
+      "name": "Spectra",
+      "has": true
+     },
+     {
+      "slug": "draconum",
+      "name": "Draconum",
+      "has": true
+     }
+    ],
+    "wr": 61.3,
+    "n": 124
+   },
+   "built": [
+    {
+     "slug": "sky-splitter",
+     "name": "Sky Splitter"
+    },
+    {
+     "slug": "storm-breaker",
+     "name": "Storm Breaker"
+    },
+    {
+     "slug": "spectra",
+     "name": "Spectra"
+    },
+    {
+     "slug": "tainted-rounds",
+     "name": "Tainted Rounds"
+    },
+    {
+     "slug": "draconum",
+     "name": "Draconum"
+    },
+    {
+     "slug": "salvation",
+     "name": "Salvation"
+    }
    ]
   },
   {
@@ -5758,6 +5937,49 @@
      "answer": "physical armor",
      "has": true
     }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "dynamo",
+      "name": "Dynamo",
+      "has": false
+     },
+     {
+      "slug": "tainted-charm",
+      "name": "Tainted Charm",
+      "has": false
+     },
+     {
+      "slug": "xenia",
+      "name": "Xenia",
+      "has": false
+     }
+    ],
+    "wr": 64.3,
+    "n": 84
+   },
+   "built": [
+    {
+     "slug": "fire-blossom",
+     "name": "Fire Blossom"
+    },
+    {
+     "slug": "raiment-of-renewal",
+     "name": "Raiment of Renewal"
+    },
+    {
+     "slug": "tainted-guard",
+     "name": "Tainted Guard"
+    },
+    {
+     "slug": "stonewall",
+     "name": "Stonewall"
+    },
+    {
+     "slug": "cursed-scroll",
+     "name": "Cursed Scroll"
+    }
    ]
   },
   {
@@ -5776,6 +5998,53 @@
      "why": "3 enemy kits heal themselves (Rampage, Greystone, Maco)",
      "answer": "anti-heal (Tainted Rounds)",
      "has": false
+    }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "terminus",
+      "name": "Terminus",
+      "has": true
+     },
+     {
+      "slug": "vanquisher",
+      "name": "Vanquisher",
+      "has": true
+     },
+     {
+      "slug": "plasma-blade",
+      "name": "Plasma Blade",
+      "has": false
+     }
+    ],
+    "wr": 64.9,
+    "n": 77
+   },
+   "built": [
+    {
+     "slug": "vanquisher",
+     "name": "Vanquisher"
+    },
+    {
+     "slug": "dust-devil",
+     "name": "Dust Devil"
+    },
+    {
+     "slug": "terminus",
+     "name": "Terminus"
+    },
+    {
+     "slug": "ashbringer",
+     "name": "Ashbringer"
+    },
+    {
+     "slug": "imperator",
+     "name": "Imperator"
+    },
+    {
+     "slug": "viper",
+     "name": "Viper"
     }
    ]
   }

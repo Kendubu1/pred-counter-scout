@@ -6373,7 +6373,7 @@
  "teamComp": {
   "field": {
    "patch": "1.18",
-   "matches": 2436
+   "matches": 3096
   },
   "us": {
    "heroes": [
@@ -6382,49 +6382,79 @@
      "name": "Gadget",
      "role": "offlane",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "control"
+     ]
     },
     {
      "slug": "countess",
      "name": "Countess",
      "role": "jungle",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "burst"
+     ]
     },
     {
      "slug": "wraith",
      "name": "Wraith",
      "role": "midlane",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "burst",
+      "poke"
+     ]
     },
     {
      "slug": "murdock",
      "name": "Murdock",
      "role": "carry",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "poke",
+      "dps"
+     ]
     },
     {
      "slug": "adele",
      "name": "Adele",
      "role": "support",
      "tank": true,
-     "diver": true
+     "diver": false,
+     "tags": [
+      "tank",
+      "engage",
+      "peel"
+     ]
     }
    ],
+   "balance": {
+    "control": 1,
+    "diver": 1,
+    "burst": 2,
+    "poke": 2,
+    "dps": 1,
+    "tank": 1,
+    "engage": 1,
+    "peel": 1
+   },
    "tanks": 1,
-   "divers": 2,
+   "divers": 1,
    "engage": 1,
    "mages": 1,
    "marksmen": 1,
    "style": "mixed",
-   "shape": "1t2d",
+   "shape": "1t1d",
    "shapeWr": {
-    "n": 1423,
-    "w": 705,
-    "wr": 49.5,
-    "ci95": 2.6
+    "n": 1578,
+    "w": 800,
+    "wr": 50.7,
+    "ci95": 2.5
    }
   },
   "them": {
@@ -6434,37 +6464,63 @@
      "name": "Eden",
      "role": "offlane",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "dps"
+     ]
     },
     {
      "slug": "kallari",
      "name": "Kallari",
      "role": "jungle",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "burst"
+     ]
     },
     {
      "slug": "gideon",
      "name": "Gideon",
      "role": "midlane",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "control",
+      "burst"
+     ]
     },
     {
      "slug": "drongo",
      "name": "Drongo",
      "role": "carry",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "poke",
+      "dps"
+     ]
     },
     {
      "slug": "phase",
      "name": "Phase",
      "role": "support",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "peel"
+     ]
     }
    ],
+   "balance": {
+    "dps": 2,
+    "diver": 1,
+    "burst": 2,
+    "control": 1,
+    "poke": 1,
+    "peel": 1
+   },
    "tanks": 0,
    "divers": 1,
    "engage": 0,
@@ -6473,19 +6529,19 @@
    "style": "mixed",
    "shape": "0t1d",
    "shapeWr": {
-    "n": 349,
-    "w": 151,
-    "wr": 43.3,
-    "ci95": 5.2
+    "n": 443,
+    "w": 200,
+    "wr": 45.1,
+    "ci95": 4.7
    }
   },
   "tankEdge": {
    "diff": 1,
-   "wr": 53
+   "wr": 52.8
   },
   "diverEdge": {
-   "diff": 1,
-   "wr": 50.4
+   "diff": 0,
+   "wr": 50
   },
   "checks": [
    {
@@ -6500,8 +6556,8 @@
    },
    {
     "id": "divers",
-    "ok": false,
-    "text": "2 divers (Countess, Adele): each one past the first is a hero not holding the line."
+    "ok": true,
+    "text": "One diver (Countess)."
    },
    {
     "id": "damage",
@@ -6519,32 +6575,8 @@
     "text": "Adele can stay with the carry and peel."
    }
   ],
-  "swap": {
-   "role": "support",
-   "out": "Adele",
-   "reason": "Adele is a second diver",
-   "options": [
-    {
-     "slug": "kaelen",
-     "name": "Kaelen",
-     "wr": 60.2,
-     "n": 633
-    },
-    {
-     "slug": "aurora",
-     "name": "Aurora",
-     "wr": 51.7,
-     "n": 1000
-    },
-    {
-     "slug": "steel",
-     "name": "Steel",
-     "wr": 51.3,
-     "n": 8140
-    }
-   ]
-  },
-  "summary": "Draft: 1 tank, 2 divers vs their 0 tanks, 1 diver. In 1.18 ranked, our shape won 49.5% and theirs 43.3%."
+  "swap": null,
+  "summary": "Draft: 1 tank, 1 diver vs their 0 tanks, 1 diver. In 1.18 ranked, our shape won 50.7% and theirs 45.1%."
  },
  "kitRead": {
   "cc": {
@@ -6810,6 +6842,53 @@
      "answer": "physical armor",
      "has": false
     }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "lightning-hawk",
+      "name": "Lightning Hawk",
+      "has": true
+     },
+     {
+      "slug": "tainted-rounds",
+      "name": "Tainted Rounds",
+      "has": true
+     },
+     {
+      "slug": "imperator",
+      "name": "Imperator",
+      "has": true
+     }
+    ],
+    "wr": 62.4,
+    "n": 157
+   },
+   "built": [
+    {
+     "slug": "lightning-hawk",
+     "name": "Lightning Hawk"
+    },
+    {
+     "slug": "imperator",
+     "name": "Imperator"
+    },
+    {
+     "slug": "vanquisher",
+     "name": "Vanquisher"
+    },
+    {
+     "slug": "tainted-rounds",
+     "name": "Tainted Rounds"
+    },
+    {
+     "slug": "nuclear-rounds",
+     "name": "Nuclear Rounds"
+    },
+    {
+     "slug": "onixian-quiver",
+     "name": "Onixian Quiver"
+    }
    ]
   },
   {
@@ -6823,6 +6902,29 @@
      "why": "Eden kept killing Gadget",
      "answer": "physical armor",
      "has": false
+    }
+   ],
+   "core": null,
+   "built": [
+    {
+     "slug": "azure-core",
+     "name": "Azure Core"
+    },
+    {
+     "slug": "entropy",
+     "name": "Entropy"
+    },
+    {
+     "slug": "overseer",
+     "name": "Overseer"
+    },
+    {
+     "slug": "tainted-scepter",
+     "name": "Tainted Scepter"
+    },
+    {
+     "slug": "oblivion-crown",
+     "name": "Oblivion Crown"
     }
    ]
   },
@@ -6843,6 +6945,53 @@
      "answer": "magical armor",
      "has": false
     }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "resolution",
+      "name": "Resolution",
+      "has": false
+     },
+     {
+      "slug": "deathstalker",
+      "name": "Deathstalker",
+      "has": false
+     },
+     {
+      "slug": "vanquisher",
+      "name": "Vanquisher",
+      "has": true
+     }
+    ],
+    "wr": 67.5,
+    "n": 40
+   },
+   "built": [
+    {
+     "slug": "malady",
+     "name": "Malady"
+    },
+    {
+     "slug": "noxia",
+     "name": "Noxia"
+    },
+    {
+     "slug": "alternata",
+     "name": "Alternata"
+    },
+    {
+     "slug": "vanquisher",
+     "name": "Vanquisher"
+    },
+    {
+     "slug": "wraith-leggings",
+     "name": "Wraith Leggings"
+    },
+    {
+     "slug": "mutilator",
+     "name": "Mutilator"
+    }
    ]
   },
   {
@@ -6862,6 +7011,49 @@
      "answer": "physical armor",
      "has": true
     }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "dawnstar",
+      "name": "Dawnstar",
+      "has": true
+     },
+     {
+      "slug": "xenia",
+      "name": "Xenia",
+      "has": false
+     },
+     {
+      "slug": "raiment-of-renewal",
+      "name": "Raiment of Renewal",
+      "has": true
+     }
+    ],
+    "wr": 62.5,
+    "n": 64
+   },
+   "built": [
+    {
+     "slug": "dawnstar",
+     "name": "Dawnstar"
+    },
+    {
+     "slug": "tainted-charm",
+     "name": "Tainted Charm"
+    },
+    {
+     "slug": "gaussian-greaves",
+     "name": "Gaussian Greaves"
+    },
+    {
+     "slug": "raiment-of-renewal",
+     "name": "Raiment of Renewal"
+    },
+    {
+     "slug": "dynamo",
+     "name": "Dynamo"
+    }
    ]
   },
   {
@@ -6875,6 +7067,45 @@
      "why": "Drongo kept killing Countess",
      "answer": "physical armor",
      "has": false
+    }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "spirit-of-amir",
+      "name": "Spirit Of Amir",
+      "has": true
+     },
+     {
+      "slug": "wraith-leggings",
+      "name": "Wraith Leggings",
+      "has": false
+     },
+     {
+      "slug": "noxia",
+      "name": "Noxia",
+      "has": true
+     }
+    ],
+    "wr": 55.6,
+    "n": 142
+   },
+   "built": [
+    {
+     "slug": "combustion",
+     "name": "Combustion"
+    },
+    {
+     "slug": "spirit-of-amir",
+     "name": "Spirit Of Amir"
+    },
+    {
+     "slug": "overseer",
+     "name": "Overseer"
+    },
+    {
+     "slug": "noxia",
+     "name": "Noxia"
     }
    ]
   }

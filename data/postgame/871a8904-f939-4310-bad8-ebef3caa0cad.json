@@ -4556,7 +4556,7 @@
  "teamComp": {
   "field": {
    "patch": "1.18",
-   "matches": 2436
+   "matches": 3096
   },
   "us": {
    "heroes": [
@@ -4565,49 +4565,78 @@
      "name": "Steel",
      "role": "offlane",
      "tank": true,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "tank",
+      "engage",
+      "peel"
+     ]
     },
     {
      "slug": "bayle",
      "name": "Bayle",
      "role": "jungle",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "sustain"
+     ]
     },
     {
      "slug": "lt-belica",
      "name": "Lt. Belica",
      "role": "midlane",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "control"
+     ]
     },
     {
      "slug": "sparrow",
      "name": "Sparrow",
      "role": "carry",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "dps"
+     ]
     },
     {
      "slug": "adele",
      "name": "Adele",
      "role": "support",
      "tank": true,
-     "diver": true
+     "diver": false,
+     "tags": [
+      "tank",
+      "engage",
+      "peel"
+     ]
     }
    ],
+   "balance": {
+    "tank": 2,
+    "engage": 2,
+    "peel": 2,
+    "diver": 1,
+    "sustain": 1,
+    "control": 1,
+    "dps": 1
+   },
    "tanks": 2,
-   "divers": 2,
+   "divers": 1,
    "engage": 2,
    "mages": 1,
    "marksmen": 1,
    "style": "brawl",
-   "shape": "2t2d",
+   "shape": "2t1d",
    "shapeWr": {
-    "n": 374,
-    "w": 206,
-    "wr": 55.1,
-    "ci95": 5.1
+    "n": 673,
+    "w": 362,
+    "wr": 53.8,
+    "ci95": 3.8
    }
   },
   "them": {
@@ -4617,37 +4646,68 @@
      "name": "Greystone",
      "role": "offlane",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "sustain"
+     ]
     },
     {
      "slug": "grux",
      "name": "Grux",
      "role": "jungle",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "engage",
+      "control"
+     ]
     },
     {
      "slug": "gideon",
      "name": "Gideon",
      "role": "midlane",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "control",
+      "burst"
+     ]
     },
     {
      "slug": "murdock",
      "name": "Murdock",
      "role": "carry",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "poke",
+      "dps"
+     ]
     },
     {
      "slug": "dekker",
      "name": "Dekker",
      "role": "support",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "peel",
+      "control"
+     ]
     }
    ],
+   "balance": {
+    "diver": 2,
+    "sustain": 1,
+    "engage": 1,
+    "control": 3,
+    "burst": 1,
+    "poke": 1,
+    "dps": 1,
+    "peel": 1
+   },
    "tanks": 0,
    "divers": 2,
    "engage": 2,
@@ -4656,19 +4716,19 @@
    "style": "mixed",
    "shape": "0t2d",
    "shapeWr": {
-    "n": 1396,
-    "w": 674,
-    "wr": 48.3,
-    "ci95": 2.6
+    "n": 1754,
+    "w": 846,
+    "wr": 48.2,
+    "ci95": 2.3
    }
   },
   "tankEdge": {
    "diff": 2,
-   "wr": 55.9
+   "wr": 55.2
   },
   "diverEdge": {
-   "diff": 0,
-   "wr": 50
+   "diff": -1,
+   "wr": 51.6
   },
   "checks": [
    {
@@ -4683,8 +4743,8 @@
    },
    {
     "id": "divers",
-    "ok": false,
-    "text": "2 divers (Bayle, Adele): each one past the first is a hero not holding the line."
+    "ok": true,
+    "text": "One diver (Bayle)."
    },
    {
     "id": "damage",
@@ -4702,32 +4762,8 @@
     "text": "Adele can stay with the carry and peel."
    }
   ],
-  "swap": {
-   "role": "support",
-   "out": "Adele",
-   "reason": "Adele is a second diver",
-   "options": [
-    {
-     "slug": "kaelen",
-     "name": "Kaelen",
-     "wr": 60.2,
-     "n": 633
-    },
-    {
-     "slug": "aurora",
-     "name": "Aurora",
-     "wr": 51.7,
-     "n": 1000
-    },
-    {
-     "slug": "steel",
-     "name": "Steel",
-     "wr": 51.3,
-     "n": 8140
-    }
-   ]
-  },
-  "summary": "Draft: 2 tanks, 2 divers vs their 0 tanks, 2 divers. In 1.18 ranked, our shape won 55.1% and theirs 48.3%."
+  "swap": null,
+  "summary": "Draft: 2 tanks, 1 diver vs their 0 tanks, 2 divers. In 1.18 ranked, our shape won 53.8% and theirs 48.2%."
  },
  "kitRead": {
   "cc": {
@@ -4986,7 +5022,46 @@
     "n": 139
    },
    "adapt": [],
-   "needs": []
+   "needs": [],
+   "core": {
+    "items": [
+     {
+      "slug": "dawnstar",
+      "name": "Dawnstar",
+      "has": true
+     },
+     {
+      "slug": "xenia",
+      "name": "Xenia",
+      "has": false
+     },
+     {
+      "slug": "raiment-of-renewal",
+      "name": "Raiment of Renewal",
+      "has": false
+     }
+    ],
+    "wr": 62.5,
+    "n": 64
+   },
+   "built": [
+    {
+     "slug": "dawnstar",
+     "name": "Dawnstar"
+    },
+    {
+     "slug": "tainted-charm",
+     "name": "Tainted Charm"
+    },
+    {
+     "slug": "gaussian-greaves",
+     "name": "Gaussian Greaves"
+    },
+    {
+     "slug": "hexbound-bracers",
+     "name": "Hexbound Bracers"
+    }
+   ]
   },
   {
    "pid": "00196e12-6345-4794-a4cf-38569b3aad4f",
@@ -5010,7 +5085,46 @@
      "vs": "Grux"
     }
    ],
-   "needs": []
+   "needs": [],
+   "core": {
+    "items": [
+     {
+      "slug": "earthshaker",
+      "name": "Earthshaker",
+      "has": false
+     },
+     {
+      "slug": "basilisk",
+      "name": "Basilisk",
+      "has": false
+     },
+     {
+      "slug": "salvation",
+      "name": "Salvation",
+      "has": false
+     }
+    ],
+    "wr": 43.2,
+    "n": 44
+   },
+   "built": [
+    {
+     "slug": "malady",
+     "name": "Malady"
+    },
+    {
+     "slug": "tainted-trident",
+     "name": "Tainted Trident"
+    },
+    {
+     "slug": "alternator",
+     "name": "Alternator"
+    },
+    {
+     "slug": "solstice",
+     "name": "Solstice"
+    }
+   ]
   },
   {
    "pid": "a0c393cc-1437-4bdc-8168-64676ce2166c",
@@ -5029,6 +5143,45 @@
      "answer": "physical armor",
      "has": false
     }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "lightning-hawk",
+      "name": "Lightning Hawk",
+      "has": true
+     },
+     {
+      "slug": "sky-splitter",
+      "name": "Sky Splitter",
+      "has": false
+     },
+     {
+      "slug": "tainted-rounds",
+      "name": "Tainted Rounds",
+      "has": true
+     }
+    ],
+    "wr": 59.7,
+    "n": 186
+   },
+   "built": [
+    {
+     "slug": "lightning-hawk",
+     "name": "Lightning Hawk"
+    },
+    {
+     "slug": "tainted-rounds",
+     "name": "Tainted Rounds"
+    },
+    {
+     "slug": "vanquisher",
+     "name": "Vanquisher"
+    },
+    {
+     "slug": "terminus",
+     "name": "Terminus"
+    }
    ]
   },
   {
@@ -5042,7 +5195,50 @@
     "n": 253
    },
    "adapt": [],
-   "needs": []
+   "needs": [],
+   "core": {
+    "items": [
+     {
+      "slug": "combustion",
+      "name": "Combustion",
+      "has": true
+     },
+     {
+      "slug": "wraith-leggings",
+      "name": "Wraith Leggings",
+      "has": true
+     },
+     {
+      "slug": "oblivion-crown",
+      "name": "Oblivion Crown",
+      "has": true
+     }
+    ],
+    "wr": 61.5,
+    "n": 91
+   },
+   "built": [
+    {
+     "slug": "combustion",
+     "name": "Combustion"
+    },
+    {
+     "slug": "noxia",
+     "name": "Noxia"
+    },
+    {
+     "slug": "caustica",
+     "name": "Caustica"
+    },
+    {
+     "slug": "wraith-leggings",
+     "name": "Wraith Leggings"
+    },
+    {
+     "slug": "oblivion-crown",
+     "name": "Oblivion Crown"
+    }
+   ]
   },
   {
    "pid": "b0da1dff-7b73-4b93-8c71-7b29a4619ed1",
@@ -5076,7 +5272,50 @@
      "vs": "Greystone"
     }
    ],
-   "needs": []
+   "needs": [],
+   "core": {
+    "items": [
+     {
+      "slug": "fire-blossom",
+      "name": "Fire Blossom",
+      "has": true
+     },
+     {
+      "slug": "tainted-guard",
+      "name": "Tainted Guard",
+      "has": true
+     },
+     {
+      "slug": "flux-matrix",
+      "name": "Flux Matrix",
+      "has": false
+     }
+    ],
+    "wr": 60.2,
+    "n": 133
+   },
+   "built": [
+    {
+     "slug": "fire-blossom",
+     "name": "Fire Blossom"
+    },
+    {
+     "slug": "fist-of-razuul",
+     "name": "Fist Of Razuul"
+    },
+    {
+     "slug": "tainted-guard",
+     "name": "Tainted Guard"
+    },
+    {
+     "slug": "aegis-of-agawar",
+     "name": "Aegis Of Agawar"
+    },
+    {
+     "slug": "raiment-of-renewal",
+     "name": "Raiment of Renewal"
+    }
+   ]
   }
  ]
 }

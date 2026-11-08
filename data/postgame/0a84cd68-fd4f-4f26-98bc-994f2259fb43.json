@@ -3762,7 +3762,7 @@
  "teamComp": {
   "field": {
    "patch": "1.18",
-   "matches": 2436
+   "matches": 3096
   },
   "us": {
    "heroes": [
@@ -3771,37 +3771,64 @@
      "name": "Shinbi",
      "role": "offlane",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "burst"
+     ]
     },
     {
      "slug": "crunch",
      "name": "Crunch",
      "role": "jungle",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "sustain"
+     ]
     },
     {
      "slug": "zinx",
      "name": "Zinx",
      "role": "midlane",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "peel"
+     ]
     },
     {
      "slug": "wraith",
      "name": "Wraith",
      "role": "carry",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "burst",
+      "poke"
+     ]
     },
     {
      "slug": "mourn",
      "name": "Mourn",
      "role": "support",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "engage",
+      "sustain"
+     ]
     }
    ],
+   "balance": {
+    "diver": 2,
+    "burst": 2,
+    "sustain": 2,
+    "peel": 1,
+    "poke": 1,
+    "engage": 1
+   },
    "tanks": 0,
    "divers": 2,
    "engage": 1,
@@ -3810,10 +3837,10 @@
    "style": "mixed",
    "shape": "0t2d",
    "shapeWr": {
-    "n": 1396,
-    "w": 674,
-    "wr": 48.3,
-    "ci95": 2.6
+    "n": 1754,
+    "w": 846,
+    "wr": 48.2,
+    "ci95": 2.3
    }
   },
   "them": {
@@ -3823,58 +3850,89 @@
      "name": "Adele",
      "role": "offlane",
      "tank": true,
-     "diver": true
+     "diver": false,
+     "tags": [
+      "tank",
+      "engage",
+      "peel"
+     ]
     },
     {
      "slug": "boris",
      "name": "Boris",
      "role": "jungle",
      "tank": false,
-     "diver": true
+     "diver": true,
+     "tags": [
+      "diver",
+      "burst",
+      "sustain"
+     ]
     },
     {
      "slug": "sparrow",
      "name": "Sparrow",
      "role": "midlane",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "dps"
+     ]
     },
     {
      "slug": "legion",
      "name": "Legion",
      "role": "carry",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "control",
+      "dps"
+     ]
     },
     {
      "slug": "narbash",
      "name": "Narbash",
      "role": "support",
      "tank": false,
-     "diver": false
+     "diver": false,
+     "tags": [
+      "engage",
+      "peel"
+     ]
     }
    ],
+   "balance": {
+    "tank": 1,
+    "engage": 2,
+    "peel": 2,
+    "diver": 1,
+    "burst": 1,
+    "sustain": 1,
+    "dps": 2,
+    "control": 1
+   },
    "tanks": 1,
-   "divers": 2,
+   "divers": 1,
    "engage": 2,
    "mages": 0,
    "marksmen": 2,
    "style": "engage-peel",
-   "shape": "1t2d",
+   "shape": "1t1d",
    "shapeWr": {
-    "n": 1423,
-    "w": 705,
-    "wr": 49.5,
-    "ci95": 2.6
+    "n": 1578,
+    "w": 800,
+    "wr": 50.7,
+    "ci95": 2.5
    }
   },
   "tankEdge": {
    "diff": -1,
-   "wr": 47
+   "wr": 47.2
   },
   "diverEdge": {
-   "diff": 0,
-   "wr": 50
+   "diff": 1,
+   "wr": 48.4
   },
   "checks": [
    {
@@ -3885,7 +3943,7 @@
    {
     "id": "tank-count",
     "ok": false,
-    "text": "Out-tanked 0 v 1: teams one tank down won 47% in 1.18."
+    "text": "Out-tanked 0 v 1: teams one tank down won 47.2% in 1.18."
    },
    {
     "id": "divers",
@@ -3933,7 +3991,7 @@
     }
    ]
   },
-  "summary": "Draft: 0 tanks, 2 divers vs their 1 tank, 2 divers. In 1.18 ranked, our shape won 48.3% and theirs 49.5%."
+  "summary": "Draft: 0 tanks, 2 divers vs their 1 tank, 1 diver. In 1.18 ranked, our shape won 48.2% and theirs 50.7%."
  },
  "kitRead": {
   "cc": {
@@ -4193,6 +4251,41 @@
      "answer": "physical armor",
      "has": true
     }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "megacosm",
+      "name": "Megacosm",
+      "has": false
+     },
+     {
+      "slug": "astral-catalyst",
+      "name": "Astral Catalyst",
+      "has": false
+     },
+     {
+      "slug": "tainted-scepter",
+      "name": "Tainted Scepter",
+      "has": false
+     }
+    ],
+    "wr": 64.4,
+    "n": 90
+   },
+   "built": [
+    {
+     "slug": "hexbound-bracers",
+     "name": "Hexbound Bracers"
+    },
+    {
+     "slug": "dynamo",
+     "name": "Dynamo"
+    },
+    {
+     "slug": "enras-blessing",
+     "name": "Enra's Blessing"
+    }
    ]
   },
   {
@@ -4232,6 +4325,41 @@
      "why": "Sparrow kept killing Crunch",
      "answer": "physical armor",
      "has": false
+    }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "berserkers-axe",
+      "name": "Berserker's Axe",
+      "has": false
+     },
+     {
+      "slug": "augmentation",
+      "name": "Augmentation",
+      "has": false
+     },
+     {
+      "slug": "draconum",
+      "name": "Draconum",
+      "has": false
+     }
+    ],
+    "wr": 68,
+    "n": 50
+   },
+   "built": [
+    {
+     "slug": "syonic-echo",
+     "name": "Syonic Echo"
+    },
+    {
+     "slug": "tainted-blade",
+     "name": "Tainted Blade"
+    },
+    {
+     "slug": "absolution",
+     "name": "Absolution"
     }
    ]
   },
@@ -4273,6 +4401,37 @@
      "answer": "anti-heal (Tainted Scepter)",
      "has": true
     }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "orb-of-growth",
+      "name": "Orb Of Growth",
+      "has": true
+     },
+     {
+      "slug": "tainted-scepter",
+      "name": "Tainted Scepter",
+      "has": true
+     },
+     {
+      "slug": "oathkeeper",
+      "name": "Oathkeeper",
+      "has": false
+     }
+    ],
+    "wr": 61.5,
+    "n": 195
+   },
+   "built": [
+    {
+     "slug": "orb-of-growth",
+     "name": "Orb Of Growth"
+    },
+    {
+     "slug": "tainted-scepter",
+     "name": "Tainted Scepter"
+    }
    ]
   },
   {
@@ -4302,6 +4461,41 @@
      "answer": "physical armor",
      "has": false
     }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "alternator",
+      "name": "Alternator",
+      "has": false
+     },
+     {
+      "slug": "vanquisher",
+      "name": "Vanquisher",
+      "has": true
+     },
+     {
+      "slug": "syonic-echo",
+      "name": "Syonic Echo",
+      "has": false
+     }
+    ],
+    "wr": 48.3,
+    "n": 60
+   },
+   "built": [
+    {
+     "slug": "soulbinder",
+     "name": "Soulbinder"
+    },
+    {
+     "slug": "orion",
+     "name": "Orion"
+    },
+    {
+     "slug": "vanquisher",
+     "name": "Vanquisher"
+    }
    ]
   },
   {
@@ -4315,6 +4509,37 @@
      "why": "3 enemy kits heal themselves (Legion, Narbash, Boris)",
      "answer": "anti-heal (Tainted Charm or Tainted Totem)",
      "has": false
+    }
+   ],
+   "core": {
+    "items": [
+     {
+      "slug": "prophecy",
+      "name": "Prophecy",
+      "has": true
+     },
+     {
+      "slug": "orion",
+      "name": "Orion",
+      "has": true
+     },
+     {
+      "slug": "spectra",
+      "name": "Spectra",
+      "has": false
+     }
+    ],
+    "wr": 34.9,
+    "n": 43
+   },
+   "built": [
+    {
+     "slug": "prophecy",
+     "name": "Prophecy"
+    },
+    {
+     "slug": "orion",
+     "name": "Orion"
     }
    ]
   }

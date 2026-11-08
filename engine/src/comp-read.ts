@@ -22,7 +22,9 @@ export interface FieldReport { patch: string; matches: number; byDiff: Record<st
 export type HeroRoleWr = Record<string, Record<string, { n: number; w: number }>>;
 
 export interface SideRead {
-  heroes: { slug: string; name: string; role: string; tank: boolean; diver: boolean }[];
+  heroes: { slug: string; name: string; role: string; tank: boolean; diver: boolean; tags: string[] }[];
+  /** how many heroes carry each role tag (src/team-comp.ts roleTags) */
+  balance: Record<string, number>;
   tanks: number; divers: number; engage: number; mages: number; marksmen: number;
   style: TeamTraits['style']; shape: string; shapeWr: Rate | null;
 }
@@ -43,15 +45,17 @@ const shapeLabel = (t: { tanks: number; divers: number }) => `${t.tanks} tank${t
 const names = (xs: { name: string }[]) => xs.map((x) => x.name).join(', ');
 const diffKey = (d: number) => { const c = Math.max(-2, Math.min(2, d)); return (c > 0 ? '+' : '') + c; };
 
-function side(ps: CompPlayer[], tags: Map<string, HeroTags>, field: FieldReport): SideRead | null {
+function side(ps: CompPlayer[], tags: Map<string, HeroTags>, field: FieldReport, roleTagsOf: (slug: string) => string[]): SideRead | null {
   const tr = teamTraits(ps.map((p) => p.heroSlug), tags);
   if (!tr) return null;
   const heroes = [...ps].sort((a, b) => ROLE_ORDER.indexOf(a.role) - ROLE_ORDER.indexOf(b.role)).map((p) => {
     const t = tags.get(p.heroSlug)!;
-    return { slug: p.heroSlug, name: p.heroName, role: p.role, tank: t.cls === 'TANK', diver: t.diver };
+    return { slug: p.heroSlug, name: p.heroName, role: p.role, tank: t.cls === 'TANK', diver: t.diver, tags: roleTagsOf(p.heroSlug) };
   });
   const shape = shapeKey(tr);
-  return { heroes, tanks: tr.tanks, divers: tr.divers, engage: tr.engage, mages: tr.mages, marksmen: tr.marksmen, style: tr.style, shape, shapeWr: field.shapeGrid[shape] ?? null };
+  const balance: Record<string, number> = {};
+  for (const h of heroes) for (const g of h.tags) balance[g] = (balance[g] ?? 0) + 1;
+  return { heroes, balance, tanks: tr.tanks, divers: tr.divers, engage: tr.engage, mages: tr.mages, marksmen: tr.marksmen, style: tr.style, shape, shapeWr: field.shapeGrid[shape] ?? null };
 }
 
 export function readTeamComp(
@@ -62,10 +66,11 @@ export function readTeamComp(
   heroRoleWr: HeroRoleWr,
   heroRoles: Map<string, string[]>,
   names_: Map<string, string>,
+  roleTagsOf: (slug: string) => string[] = () => [],
 ): TeamCompRead | null {
   const usP = players.filter((p) => p.us), themP = players.filter((p) => !p.us);
   if (usP.length !== 5 || themP.length !== 5) return null;
-  const us = side(usP, tags, field), them = side(themP, tags, field);
+  const us = side(usP, tags, field, roleTagsOf), them = side(themP, tags, field, roleTagsOf);
   if (!us || !them) return null;
   const pct = (r: Rate | null | undefined) => (r ? `${r.wr}%` : 'n/a');
   const tankDiff = us.tanks - them.tanks, diveDiff = us.divers - them.divers;

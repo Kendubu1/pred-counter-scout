@@ -46,7 +46,9 @@ export function tagHero(h: HeroInfo, profile?: KitProfile): HeroTags {
     cls,
     frontline: cls === 'TANK' || cls === 'BRUISER',
     engage: arch ? ENGAGE_WORDS.test(arch) : cls === 'TANK',
-    diver: profile?.dive ? profile.dive === 'high' : DIVER_OVERRIDES[h.slug] ?? cls === 'ASSASSIN',
+    // A real tank is never counted as a diver, even with a high-dive kit (Kaelen, 2026-11-08): the
+    // diver read is about heroes that leave the front line empty, which a tank does not.
+    diver: cls !== 'TANK' && (profile?.dive ? profile.dive === 'high' : DIVER_OVERRIDES[h.slug] ?? cls === 'ASSASSIN'),
     enchanter: /enchanter/i.test(arch) || h.classes.includes('Enchanter'),
   };
 }
@@ -171,4 +173,26 @@ export function buildReport(sides: Side[], minN = 30, minPairN = 40): CompReport
     ccWithinTanks: Object.fromEntries(Object.entries(cwt).sort().map(([k, v]) => [k, fin(v)])),
     pairs,
   };
+}
+
+/** Role tags: what each hero is known for, read from its kit profile archetype, class and the
+ *  scanned kit (hard-CC ability count, self-heal). Up to three per hero, in this priority order.
+ *  Descriptive labels for the review's team balance line, not inputs to any win-rate rule. */
+export const ROLE_TAGS = ['tank', 'diver', 'engage', 'peel', 'control', 'burst', 'poke', 'dps', 'sustain', 'duelist'] as const;
+export type RoleTag = (typeof ROLE_TAGS)[number];
+export function roleTags(h: HeroInfo, profile: KitProfile | undefined, kit: { hardCount: number; frontline?: boolean; selfHeal: boolean } | undefined): RoleTag[] {
+  const t = tagHero(h, profile);
+  const a = (profile?.archetype ?? '').toLowerCase();
+  const out = new Set<RoleTag>();
+  if (t.cls === 'TANK') out.add('tank');
+  if (t.diver && t.cls !== 'TANK') out.add('diver');
+  if (/engage|initiator/.test(a) || (t.cls === 'TANK' && (kit?.hardCount ?? 0) >= 2)) out.add('engage');
+  if (/peel|enchanter|warden|shield|heal, revive/.test(a) || t.enchanter) out.add('peel');
+  if (/control|zone|catch/.test(a) || (kit?.hardCount ?? 0) >= 3) out.add('control');
+  if (/burst|assassin|execute|pick/.test(a)) out.add('burst');
+  if (/poke|long-range/.test(a)) out.add('poke');
+  if (t.cls === 'MARKSMAN' || /sustained dps|marksman carry|battle mage/.test(a)) out.add('dps');
+  if (/\bsustain\b(?!ed)|drain/.test(a) || (t.frontline && kit?.selfHeal)) out.add('sustain');
+  if (/duel|skirmish/.test(a)) out.add('duelist');
+  return ROLE_TAGS.filter((x) => out.has(x)).slice(0, 3);
 }

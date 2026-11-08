@@ -5781,3 +5781,11 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
 - Audit of earlier sessions (2026-11-08) also found stale: eternal-usage.json (11-03, 467 matches;
   `eternals:usage` is in package.json refresh but not in the daily doc steps), standouts and
   counter-reactions (1.17.2), predictions-vs-measured (20c) not yet run for 1.17.2 or 1.18.
+- **Role tags and build notes in the player rows (2026-11-08, maintainer).** Each hero now carries
+  up to three role tags (tank, diver, engage, peel, control, burst, poke, dps, sustain, duelist;
+  team-comp.ts roleTags, from archetype + class + scanned kit) and the comp card shows a team
+  balance table. Build notes moved under each player in "Your team" and always say something:
+  lane record, the items built, the best common core for that hero-role (dimmed = not built), and
+  needs including armor when the lane is unfavoured. Countess into Serath had only a lane record
+  before, so it read as empty. A tank is no longer counted as a diver (Kaelen turned high-dive in
+  the kit scan): the diver read is about heroes that leave the front line empty.
