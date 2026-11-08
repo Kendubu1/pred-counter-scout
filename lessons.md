@@ -5701,3 +5701,12 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   the loss, and cite only numbers that are in `teamComp`.
 - `wrColor` is declared further down `pgReview` than the new card, so the card defines its
   own colour helper: calling a later `const` from an earlier IIFE throws (TDZ).
+- **Follow-up, 2026-11-08: the written review now names the draft.** game-flags.ts raises a
+  `draft` flag (tone bad on a loss whose draft broke the fundamentals: no real tank, 2+
+  divers, or two tanks down; good on a win against such a draft) so the coach ranks it like
+  any other flag, and the critic's SOURCE carries a DRAFT line. Four 1.18 losses were
+  re-reviewed (92363050, 20562aab, 725d3fe0, cd8007f5); four critique rounds (26 -> 15 -> 3
+  -> 0 flags). The critic kept the draft out of 725d3fe0's flags: both shapes won ~48% there,
+  so it did not belong among what lost it. Draft lines may cite the field's shape win rate,
+  never claim the draft caused an event. A critic rewrite over the field's word limit is
+  silently skipped by the applier; check `applied N` against the flag count.
