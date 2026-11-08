@@ -198,6 +198,7 @@
   .bn-n{color:var(--text-2);font-size:.74rem}.bn img.bn-i{display:inline-block!important;width:20px;height:20px;border-radius:4px;vertical-align:-5px;margin-right:2px;border:1px solid var(--border)}.bn-i.off{opacity:.35;filter:grayscale(.8)}
   .bn-shared{color:var(--gold);font-size:.82rem;margin:.1rem 0 .4rem}
   @media (max-width:560px){.tc-bal{font-size:.62rem}.tc-bal thead th:first-child{width:2.2rem}.tc-bal .lg{display:none}.tc-bal .sh{display:inline}.bn-k{min-width:4.6rem}}
+  .ab-row summary{list-style-position:inside}.ab-sum{display:inline-flex;align-items:center;gap:.4rem;flex-wrap:wrap;vertical-align:middle}
   .tb{margin-top:.35rem}.tb-sec{margin-top:.7rem}.tb-k{font-weight:700;font-size:.82rem;color:var(--text-0);margin-bottom:.3rem}
   .tb-lesson{margin:.3rem 0 0;padding:.45rem .65rem;border-left:3px solid var(--gold);background:var(--bg-2);border-radius:6px;font-size:.86rem;line-height:1.5}
   .tb-cdrow{display:grid;grid-template-columns:7.5rem 1fr 3.2rem;align-items:center;gap:.5rem;margin:.2rem 0;font-size:.8rem}
@@ -209,7 +210,7 @@
   .tb-stack i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:.68rem;font-weight:700;color:#fff;min-width:4px}
   .tb-stack i.fight{background:repeating-linear-gradient(135deg,var(--text-2) 0 4px,transparent 4px 7px);color:var(--text-0);text-shadow:0 0 3px var(--bg-0),0 0 3px var(--bg-0);border:1px dashed var(--text-2);box-sizing:border-box}
   .tb-list{list-style:none;margin:0;padding:0}.tb-list li{margin:.2rem 0;font-size:.82rem;line-height:1.45}
-  .tb-sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:.35rem;vertical-align:0}.tb-sw.fight{background:repeating-linear-gradient(135deg,var(--text-2) 0 2px,transparent 2px 4px);border:1px dashed var(--text-2)}
+  .tb-sw{display:inline-block;width:10px;min-width:10px;height:10px;border-radius:2px;margin-right:.35rem;vertical-align:0}.tb-sw.fight{background:repeating-linear-gradient(135deg,var(--text-2) 0 2px,transparent 2px 4px);border:1px dashed var(--text-2)}
   .tb-kind{font-size:.68rem;text-transform:uppercase;letter-spacing:.03em;color:var(--text-2);margin:0 .25rem}
   .cv-toggle{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem;font-size:.74rem;color:var(--text-2)}
   .build-call{margin:.35rem 0 0;font-size:.86rem;color:var(--text-1);line-height:1.5}.build-call b{color:var(--text-0);margin-right:.3rem}
@@ -954,11 +955,13 @@ function pgReview(f) {
     const kr = f.kitRead;
     // How the threat's / a nemesis killer's build worked (film.threatBuilds, engine/src/threat-build.ts):
     // ability-haste maths on their ultimate, what their takedowns fed, ultimate enhancers.
-    const tbBlock = (slug, open) => {
+    const tbBlock = (slug, open, bare) => {
       const tb = (f.threatBuilds || {})[slug];
       const c = tb && tb.card;
       if (!c || (!c.ult && !c.haste.length && !c.extras.length)) return '';
+      // four fixed hues by size, never cycled: a fifth or later source is grey
       const COLS = ['var(--accent)', 'var(--blue)', 'var(--gold)', 'var(--green)'];
+      const col = (i) => COLS[i] || 'var(--text-2)';
       const hs = [...c.haste].sort((x, y) => y.amount - x.amount);
       const total = hs.reduce((n, h) => n + h.amount, 0), span = total + (c.fight ? c.fight.amount : 0);
       const u = c.ult;
@@ -967,17 +970,27 @@ function pgReview(f) {
         ${cdRow('Base', u.base, 'top rank, no haste', 'base')}
         ${cdRow('End of game', u.endGame, `${Math.round((1 - u.endGame / u.base) * 100)}% shorter with ${total} ability haste`, 'end')}
         ${u.inFight != null ? cdRow('Mid-fight', u.inFight, `with ${esc(c.fight.name)} stacks (estimate)`, 'fight') : ''}</div>` : '';
-      const seg = (h, i) => `<i style="width:${(100 * h.amount / span).toFixed(1)}%;background:${COLS[i % COLS.length]}" title="${esc(h.name)} +${h.amount}">${h.amount >= span * 0.12 ? `+${h.amount}` : ''}</i>`;
+      const seg = (h, i) => `<i style="width:${(100 * h.amount / span).toFixed(1)}%;background:${col(i)}" title="${esc(h.name)} +${h.amount}">${h.amount >= span * 0.12 ? `+${h.amount}` : ''}</i>`;
       const hasteBlock = hs.length ? `<div class="tb-sec"><div class="tb-k">Where the ${total} ability haste came from${c.fight ? ` <span class="tc-n">(+${c.fight.amount} more mid-fight)</span>` : ''}</div>
         <div class="tb-stack">${hs.map(seg).join('')}${c.fight ? `<i class="fight" style="width:${(100 * c.fight.amount / span).toFixed(1)}%" title="${esc(c.fight.name)} +${c.fight.amount} mid-fight">+${c.fight.amount}</i>` : ''}</div>
-        <ul class="tb-list">${hs.map((h, i) => `<li><span class="tb-sw" style="background:${COLS[i % COLS.length]}"></span><b>${esc(h.name)}</b> <span class="tb-kind">${esc(h.kind)}</span> ${esc(h.how)}</li>`).join('')}
+        <ul class="tb-list">${hs.map((h, i) => `<li><span class="tb-sw" style="background:${col(i)}"></span><b>${esc(h.name)}</b> <span class="tb-kind">${esc(h.kind)}</span> ${esc(h.how)}</li>`).join('')}
         ${c.fight ? `<li><span class="tb-sw fight"></span><b>${esc(c.fight.name)}</b> <span class="tb-kind">augment</span> ${esc(c.fight.how)}</li>` : ''}</ul></div>` : '';
       const extraBlock = c.extras.length ? `<div class="tb-sec"><div class="tb-k">Also working for ${esc(tb.hero)} <span class="tc-n">${c.takedowns.count} takedowns: ${c.takedowns.kills} kills, ${c.takedowns.assists} assists</span></div>
         <ul class="tb-list">${c.extras.map((x) => `<li><b>${esc(x.name)}</b> <span class="tb-kind">${esc(x.kind)}</span> ${esc(x.how)}</li>`).join('')}</ul></div>` : '';
       const lesson = c.lesson || c.heals ? `<p class="tb-lesson">${c.lesson ? esc(c.lesson) : ''}${c.heals ? ' Anti-heal (the Tainted items) cuts the healing in this build.' : ''}</p>` : '';
       const body = `<div class="tb">${lesson}${cdBlock}${hasteBlock}${extraBlock}</div>`;
+      if (bare) return `<div class="tc-n" style="margin-top:.3rem">${esc(tb.loadout)}</div>${body}`;
       return open ? `<div class="tc-h" style="margin-top:.6rem">How ${esc(tb.hero)}'s build worked <span class="tc-n">${esc(tb.loadout)}</span></div>${body}` : `<details class="tc-more"><summary>How ${esc(tb.hero)}'s build worked</summary>${body}</details>`;
     };
+    // Builds of everyone else who played above their hero-role norm, either team (film.threatBuilds
+    // entries with why 'standout'; the threat and nemeses are shown above).
+    const shownAbove = new Set([kr && kr.threat ? kr.threat.slug : null, ...((kr && kr.nemeses) || []).map((n) => n.bySlug)]);
+    const above = Object.values(f.threatBuilds || {}).filter((t) => (t.why || []).includes('standout') && !shownAbove.has(t.slug) && t.card && (t.card.ult || t.card.haste.length || t.card.extras.length));
+    const aboveBlock = above.length ? `<div class="tc-sec"><div class="tc-h">Played above the norm <span class="tc-n">how their builds worked · score = how far above this hero's usual game in this role in our films</span></div>
+      ${above.sort((a, b) => Number(b.us) - Number(a.us) || b.score - a.score).map((t) => {
+        const pl = f.players.find((x) => x.heroSlug === t.slug);
+        return `<details class="tc-more ab-row"><summary><span class="ab-sum">${hIcon(t.slug, 22).replace(/<\/?a\b[^>]*>/g, '')}<b style="color:${t.us ? 'var(--green)' : 'var(--red)'}">${t.us ? 'Us' : 'Them'}</b> ${esc(t.hero)} <span class="tc-n">${pl ? `${esc(pl.role)} · ${pl.kills}/${pl.deaths}/${pl.assists} · ` : ''}+${t.score.toFixed(1)} above the norm</span></span></summary>${tbBlock(t.slug, false, true)}</details>`;
+      }).join('')}</div>` : '';
     const ccBlock = kr ? (() => {
       const gap = kr.cc.them.length - kr.cc.us.length;
       const list = (xs) => xs.map((a) => `<li><b>${esc(a.hero)}</b> ${esc(a.ability)} <span class="tc-n">${esc(a.types.join(' + '))}${a.sec ? ` ${a.sec}s` : ''}</span></li>`).join('');
@@ -1051,7 +1064,7 @@ function pgReview(f) {
       ${f.playbook.waitOut.length ? `<div class="pb"><b>Bait or wait out first</b> <span class="tc-n">their crowd control</span><ol>${f.playbook.waitOut.map((st) => `<li>${hIcon(st.slug, 20)} <b>${esc(st.hero)}</b> ${esc(st.ability)} <span class="tc-n">${esc(st.what)}</span></li>`).join('')}</ol></div>` : ''}</div></div>` : '';
     return card(`${eyebrow('Draft, comp &amp; kits', `${fails ? `${fails} of ${tc.checks.length} fundamentals missed` : 'all fundamentals covered'}`)}
       ${row(tc.us, 'Us', 'var(--green)')}${row(tc.them, 'Them', 'var(--red)')}${radarBlock}${balance}
-      <ul class="tc-checks">${checks}</ul>${swap}${pbBlock}<div class="tc-grid">${threatBlock}${nemBlock}</div>${ccBlock}
+      <ul class="tc-checks">${checks}</ul>${swap}${pbBlock}<div class="tc-grid">${threatBlock}${nemBlock}</div>${aboveBlock}${ccBlock}
       <div class="tc-foot">Win rates are each comp shape (real tanks × high-dive heroes) across ${tc.field.matches.toLocaleString()} sampled ${esc(tc.field.patch)} ranked games, every rank. They describe the draft, not who played well.</div>`);
   })();
   const stackCard = (() => {

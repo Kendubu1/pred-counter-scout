@@ -213,7 +213,8 @@ unchanged and still used by the standard pipeline.
 
 ## How their builds worked (threatBuilds)
 
-`film.threatBuilds` (src/threat-build.ts) reads the enemy threat's and each nemesis killer's
+`film.threatBuilds` (src/threat-build.ts) reads the enemy threat's, each nemesis killer's and every
+player's on either team who played above their hero-role norm (`why`, `score`, `us`)
 Eternal, minors, augment, crest and items: the ability-haste sources and their ultimate's
 cooldown (base, end of game, mid-fight estimate), what their takedowns fed, and item effects on
 their ultimate. When one of these explains the game (an ultimate coming back every minute

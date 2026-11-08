@@ -16,6 +16,10 @@ import { readKit, type HeroMeta, type KitHeroLite } from '../kit-read.js';
 import { buildNotes, type ItemInfo } from '../build-notes.js';
 import { buildPlaybook, type PbHero } from '../playbook.js';
 import { threatBuild, takedownTimes } from '../threat-build.js';
+import { metricsOf, scoreRows, type Row } from '../standouts.js';
+// "Above the norm" for the build read: +0.5 role SD on the standouts composite (about the top
+// 20% of hero-games in our films; the standouts report's own bar is 1.0, about the top 8%).
+const BUILD_READ_Z = 0.5;
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const OUT_DIR = path.join(ROOT, 'data/postgame');
@@ -53,6 +57,13 @@ function main() {
   const heroMeta = new Map<string, HeroMeta>(heroes.map((h) => [h.slug, { power: power.get(h.slug) ?? null, cls: heroClass(h.classes) }]));
 
   const files = readdirSync(OUT_DIR).filter((f) => UUID_RE.test(f));
+  // Who played well above their hero-role norm, on either team (the standouts scoring:
+  // role-weighted z of per-minute output vs the shrunk hero-role mean across our films).
+  const allFilms = files.map((f) => JSON.parse(readFileSync(path.join(OUT_DIR, f), 'utf8'))).filter((f) => Array.isArray(f.players) && f.players.length === 10);
+  const sRows: Row[] = allFilms.flatMap((film) => film.players.map((p: any) => ({ film, p, m: metricsOf(p, film) })));
+  const sScores = scoreRows(sRows);
+  const standout = new Map<string, number>();
+  sRows.forEach((r, i) => { if (sScores[i]!.score >= BUILD_READ_Z) standout.set(`${r.film.matchId}|${r.p.pid}`, sScores[i]!.score); });
   let touched = 0, skipped = 0;
   for (const f of files) {
     const p = path.join(OUT_DIR, f);
@@ -66,12 +77,18 @@ function main() {
     const pb = (us: boolean): PbHero[] => film.players.filter((x: any) => x.us === us).map((x: any) => ({ slug: x.heroSlug, name: x.heroName, role: x.role, tags: rt.get(x.heroSlug) ?? [], abilities: ((kitIdx as any)[x.heroSlug]?.abilities ?? []) }));
     film.playbook = buildPlaybook(pb(true), pb(false));
     // How the enemy threat's and each nemesis killer's build worked (src/threat-build.ts).
-    const tbSlugs = [...new Set([film.kitRead?.threat?.slug, ...(film.kitRead?.nemeses ?? []).map((n: any) => n.bySlug)].filter(Boolean))];
-    film.threatBuilds = Object.fromEntries(tbSlugs.map((slug) => {
-      const ep = film.players.find((x: any) => !x.us && x.heroSlug === slug);
-      if (!ep) return [slug, null];
-      return [slug, threatBuild(ep, { hero: heroCat.get(slug), items: itemCat, eternals: eternalsCat, augments: augCat, takedownTimes: takedownTimes(slug, ep.assists ?? 0, film.kills ?? [], 'them') })];
-    }).filter(([, v]) => v));
+    // ... plus anyone, on either team, who played above their hero-role norm (BUILD_READ_Z).
+    const why = new Map<string, Set<string>>();
+    const add = (pid: string, w: string) => (why.get(pid) ?? why.set(pid, new Set()).get(pid)!).add(w);
+    const enemyPid = (slug: string) => film.players.find((x: any) => !x.us && x.heroSlug === slug)?.pid;
+    if (film.kitRead?.threat?.slug && enemyPid(film.kitRead.threat.slug)) add(enemyPid(film.kitRead.threat.slug)!, 'threat');
+    for (const n of film.kitRead?.nemeses ?? []) if (enemyPid(n.bySlug)) add(enemyPid(n.bySlug)!, 'nemesis');
+    for (const x of film.players) if (standout.has(`${film.matchId}|${x.pid}`)) add(x.pid, 'standout');
+    film.threatBuilds = Object.fromEntries([...why].map(([pid, ws]) => {
+      const ep = film.players.find((x: any) => x.pid === pid);
+      const tb = threatBuild(ep, { hero: heroCat.get(ep.heroSlug), items: itemCat, eternals: eternalsCat, augments: augCat, durationMin: film.durationMin, takedownTimes: takedownTimes(ep.heroSlug, ep.assists ?? 0, film.kills ?? [], ep.us ? 'us' : 'them') });
+      return [ep.heroSlug, { ...tb, us: !!ep.us, why: [...ws], score: standout.get(`${film.matchId}|${pid}`) ?? null }];
+    }));
     film.buildNotes = buildNotes(film.players, film.kitRead, kitIdx, itemInfo, heroMeta, pairs, bm, links, predBuilds.byRole, predBuilds.baselineByRole, matchupCores);
     writeFileSync(p, JSON.stringify(film, null, 1));
     touched++;

@@ -5868,3 +5868,8 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   minute the takedown cap was reached is an estimate and says so.
 - Two sessions added a "nov-8e" changes card the same day; a duplicate id makes the share-page
   check flip forever. Check `grep 'id="nov-'` after merging main before adding a card.
+- Build reads now cover anyone above their hero-role norm, either team (standouts composite >= 0.5,
+  about the top 20% of hero-games; the standouts report's 1.0 bar is the top ~8%, which missed
+  Mourn's 5/1/11 at +0.81). Random-proc Eternals count by expected value (Lotus: procs every 2 min
+  and every takedown, 1 in 4 is +4 haste: 29 procs, about +29). Categorical colours never cycle:
+  a fifth haste source is grey.

@@ -56,6 +56,7 @@ export function threatBuild(
     eternals: { name: string; major: string; minorSlot1: { name: string; desc: string }[]; minorSlot2: { name: string; desc: string }[] }[];
     augments: Record<string, { name: string; description: string }>;
     takedownTimes?: number[];
+    durationMin?: number;
   },
 ): ThreatBuild {
   const td = p.kills + p.assists;
@@ -82,6 +83,18 @@ export function threatBuild(
   }
   const et = ctx.eternals.find((e) => e.name === lo.eternal);
   const minors = et ? [...et.minorSlot1, ...et.minorSlot2].filter((m) => m.name === lo.minor1 || m.name === lo.minor2) : [];
+  // Random procs (Lotus: every 2 minutes and every takedown, one of four bonuses, one of them
+  // +4 ability haste): expected haste = procs x amount / options. An estimate, labelled.
+  for (const [name, kind, text] of [...(et ? [[et.name, 'Eternal', et.major]] : []), ...minors.map((m) => [m.name, 'Eternal minor', m.desc])] as [string, string, string][]) {
+    const rnd = /every (\d+) minutes?(?: and every takedown)? randomly grants (.+)/i.exec(text);
+    const h = rnd ? /\+(\d+(?:\.\d+)?) ability haste/i.exec(rnd[2]!) : null;
+    if (rnd && h) {
+      const options = rnd[2]!.split(/,\s*(?:or\s+)?|\s+or\s+/).filter((x) => x.trim()).length;
+      const procs = Math.floor((ctx.durationMin ?? 0) / Number(rnd[1])) + (/takedown/i.test(rnd[0]!) ? td : 0);
+      const exp = Math.round((procs * Number(h[1])) / Math.max(options, 1));
+      if (exp > 0) sources.push({ what: name, amount: exp, note: `random: ${procs} procs, 1 in ${options} is +${h[1]} haste (expected value)`, kind, how: `${procs} random bonuses (every ${rnd[1]} min${/takedown/i.test(rnd[0]!) ? ' and every takedown' : ''}), 1 in ${options} is +${h[1]} haste: about +${exp} expected` });
+    }
+  }
   if (et && /takedown/i.test(et.major)) { fedBy.push(`${et.name} (Eternal): ${plain(et.major)}`); extras.push({ name: et.name, kind: 'Eternal', how: short(et.major) }); }
   for (const m of minors) {
     const tk = /takedowns?[^.]*?grant (\d+(?:\.\d+)?) ability haste, up to (\d+)/i.exec(m.desc);
@@ -131,16 +144,17 @@ export function threatBuild(
   if (fedBy.length) lines.push(`${td} takedowns (${p.kills} kills, ${p.assists} assists) fed: ${fedBy.map((x) => x.split(':')[0]).join(', ')}.`);
   for (const u of ultPlus) lines.push(`${u}.`.replace(/\.\.$/, '.'));
   // The lesson, from the same numbers: takedown-fed cooldowns, and healing an anti-heal item cuts.
-  const fed = sources.find((x) => x.note && /takedown/.test(x.note));
+  const fed = sources.find((x) => /takedown/.test(`${x.note ?? ''} ${x.how ?? ''}`));
   if (ult && fed) lines.unshift(`Lesson: takedowns were the fuel. Each one ${p.heroName} touched shortened ${ult.name}, so feeding early made it come back faster (about ${ult.endGame}s late${ult.inFight != null ? `, about ${ult.inFight}s mid-fight` : ''}); fight right after ${ult.name} is spent.`);
   if (ultPlus.some((u) => /heal/i.test(u)) || owned.some((sl) => (ctx.items.get(sl)?.stats?.magical_lifesteal ?? 0) + (ctx.items.get(sl)?.stats?.physical_lifesteal ?? 0) + (ctx.items.get(sl)?.stats?.omnivamp ?? 0) > 0)) lines.push('Their build heals off damage: anti-heal (the Tainted items) cuts it.');
   const heals = lines.some((l) => /anti-heal/.test(l));
-  const lesson = ult && fed ? `${p.heroName}'s takedowns fed ${ult.name}: every kill or assist made it come back sooner. Deny early takedowns and fight right after ${ult.name} is used.` : null;
+  const pctU = ult ? Math.round((1 - ult.endGame / ult.base) * 100) : 0;
+  const lesson = ult && fed ? `${p.heroName}'s takedowns fed ${ult.name}: every kill or assist made it come back sooner. Deny early takedowns and fight right after ${ult.name} is used.` : ult && pctU >= 25 ? `${ult.name} came back about every ${Math.round(ult.endGame)}s instead of ${ult.base}s by the end (${pctU}% shorter). Count it, and take fights while it is down.` : null;
   const card = {
     ult, takedowns: { count: td, kills: p.kills, assists: p.assists }, heals, lesson,
     haste: sources.map((x) => ({ name: x.what.replace(/ \(minor\)$/, ''), kind: x.kind ?? '', amount: x.amount, how: x.how ?? '' })),
     fight: fightBonus ? { name: fightBonus.what.replace(/ \(augment\)$/, ''), kind: 'augment', amount: fightBonus.amount, how: fightHow } : null,
-    extras: extras.filter((x, i, a) => a.findIndex((y) => y.name === x.name && y.how === x.how) === i),
+    extras: extras.filter((x, i, a) => a.findIndex((y) => y.name === x.name && y.how === x.how) === i && !sources.some((h) => h.what.replace(/ \(minor\)$/, '') === x.name)),
   };
   return { hero: p.heroName, slug: p.heroSlug, takedowns: td, loadout, haste: { sources, total, fightBonus, ultOnly }, ult, fedBy, ultPlus, lines, card };
 }

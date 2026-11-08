@@ -32,7 +32,7 @@ When wards are confirmed equipped but barely used, give direct actionable advice
 
 
 ### How their builds worked (2026-11-08)
-`film.threatBuilds` (src/threat-build.ts) carries the enemy threat's and nemesis killers' haste
+`film.threatBuilds` (src/threat-build.ts) carries the enemy threat's, nemesis killers' and every above-the-norm player's (either team) haste
 sources, ultimate cooldown (base, end of game, mid-fight estimate), takedown-fed effects and
 ultimate enhancers. Use it to explain what made a threat work (what fed it, how to deny it);
 mid-fight figures are estimates. `buildNotes[].coreVs` is the core into the lane opponent.
