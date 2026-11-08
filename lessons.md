@@ -5789,3 +5789,11 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   needs including armor when the lane is unfavoured. Countess into Serath had only a lane record
   before, so it read as empty. A tank is no longer counted as a diver (Kaelen turned high-dive in
   the kit scan): the diver read is about heroes that leave the front line empty.
+- **Role tags reviewed for all 56 heroes (2026-11-08, maintainer: "check the others for what was
+  missed").** Two independent agents read every kit against the current text; 32 heroes changed
+  (data/game-data/role-tags.json, each with the abilities behind it). Keyword rules on archetype
+  wording missed what the kit does: Adele locks down rather than peels, Legion's Rally Point heals
+  allies (peel), Gadget/Howitzer/Grim.exe/Sparrow/The Fey poke, Akeron/Kwang/Muriel engage, Revenant
+  and Zarus duel in a forced one-on-one. tank and diver stay rule-based so tags never disagree with
+  the shape counts; the reviewers would drop diver for Grux (drags enemies to him) and Terra (Wild
+  Rush stops on the first hero), left for the maintainer.
