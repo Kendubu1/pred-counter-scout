@@ -210,6 +210,14 @@
   .ar-bar i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:.64rem;font-weight:800;color:var(--bg-0)}
   .ar-bar em{font-style:normal;font-size:.68rem;color:var(--text-2);padding-left:.4rem;line-height:14px}
   .ar-who{margin:.1rem 0 0 3.6rem;font-size:.74rem}.ar-who .tc-bad{margin-left:.2rem}
+  .pf-row{border:1px solid var(--border);border-radius:10px;margin:.45rem 0;background:var(--bg-1)}
+  .pf-row>summary{list-style:none;cursor:pointer;padding:.55rem .7rem}.pf-row>summary::-webkit-details-marker{display:none}
+  .pf-row>summary::after{content:'▸';float:right;color:var(--text-2);margin-top:-2.2rem}.pf-row[open]>summary::after{content:'▾'}
+  .pf-row>.tb{padding:0 .7rem .7rem}
+  .pf-sum{display:flex;gap:.6rem;align-items:center}.pf-sum img{border-radius:8px}
+  .pf-t{display:block;font-size:.98rem}.pf-dash{color:var(--text-2)}.pf-l{font-weight:800;color:var(--text-1)}.pf-l.hp{color:var(--gold)}
+  .pf-team{font-size:.7rem;font-weight:800;text-transform:uppercase;margin-left:.3rem}
+  .pf-s{display:block}.pf-lead{display:block;font-size:.84rem;color:var(--text-0);margin-top:.1rem}
   .tb{margin-top:.35rem}
   .tb-leadcard{border:1px solid var(--border);border-radius:8px;padding:.6rem .7rem;background:var(--bg-2);margin-top:.35rem}
   .tb-head{display:flex;gap:.6rem;align-items:center;margin-bottom:.45rem}.tb-head img{border-radius:10px}
@@ -996,7 +1004,7 @@ function pgReview(f) {
     const kr = f.kitRead;
     // How the threat's / a nemesis killer's build worked (film.threatBuilds, engine/src/threat-build.ts):
     // ability-haste maths on their ultimate, what their takedowns fed, ultimate enhancers.
-    const tbBlock = (slug, open, bare) => {
+    const tbBlock = (slug, open, bare, noHead) => {
       const tb = (f.threatBuilds || {})[slug];
       const c = tb && tb.card;
       if (!c || (!c.ult && !c.haste.length && !c.extras.length && !c.power)) return '';
@@ -1058,13 +1066,25 @@ function pgReview(f) {
       const peers = pl ? `${esc(tb.hero)} ${pl.role === 'midlane' ? 'mid' : esc(pl.role)} games` : 'games';
       const bar = (k) => { const v = st.vsNorm[k]; const hi = v.pct >= 50; return `<div class="tb-ev"><span>${LAB[k]}</span><i><b style="left:${v.pct}%"></b></i><em>${hi ? `more than ${v.pct}%` : `less than ${100 - v.pct}%`} of ${peers}</em></div>`; };
       const evid = st && st.lead && st.vsNorm ? `<div class="tb-evs">${(EVID[st.lead.id] || []).map(bar).join('')}</div><div class="tc-n">Compared with ${st.normN.toLocaleString()} ranked ${peers} this patch.</div>` : '';
-      const leadCard = (st && st.lead) || head ? `<div class="tb-leadcard">${head}${kitRow}${st && st.lead ? `<div class="tb-leadt">${esc(st.lead.title)}</div><p>${esc(st.lead.text)}</p>${evid}` : ''}</div>` : '';
+      const leadCard = (st && st.lead) || head ? `<div class="tb-leadcard">${noHead ? '' : head}${kitRow}${st && st.lead ? `${noHead ? '' : `<div class="tb-leadt">${esc(st.lead.title)}</div>`}<p>${esc(st.lead.text)}</p>${evid}` : ''}</div>` : '';
       const leadTab = st && st.tabs ? st.tabs[0] : null;
       const leadLesson = st && st.lead ? (st.lead.lesson || (leadTab ? tabLesson[leadTab] : null)) : null;
       const inTab = (k, html) => html ? `${k === leadTab && st && st.lead && !st.lead.lesson ? '' : lessonBox(tabLesson[k])}${html}` : '';
-      const panels = { damage: inTab('damage', dmgBlock), cooldowns: inTab('cooldowns', `${cdBlock}${hasteBlock}${extraBlock}`), alive: inTab('alive', keepBlock) };
-      const names = { damage: 'Damage', cooldowns: 'Cooldowns', alive: 'Staying alive' };
-      const order = ((st && st.tabs) || ['damage', 'cooldowns', 'alive']).filter((k) => panels[k]);
+      // Play against (enemies only): their hard CC, how to play it, answers (kitRead threat / nemeses).
+      const cap = (x) => { x = String(x || '').trim(); if (!x) return ''; x = x.charAt(0).toUpperCase() + x.slice(1); return /[.!?]$/.test(x) ? x : `${x}.`; };
+      const play = (() => {
+        if (tb.us || !kr) return '';
+        const th = kr.threat && kr.threat.slug === tb.slug ? kr.threat : null;
+        const nems = (kr.nemeses || []).filter((n) => n.bySlug === tb.slug);
+        const cc = (kr.cc.them || []).filter((a) => a.hero === tb.hero).map((a) => `${a.ability} (${a.types.join(' + ')}${a.sec ? ` ${a.sec}s` : ''})`);
+        const how = (th && th.playAgainst) || (nems[0] && nems[0].playAgainst) || '';
+        const answers = [...new Set([...(th ? th.answers : []), ...nems.map((n) => n.answer).filter(Boolean)])];
+        if (!cc.length && !how && !answers.length) return '';
+        return `<ul class="tb-list">${cc.length ? `<li><b>Hard CC</b> ${esc(cc.join(', '))}</li>` : ''}${how ? `<li><b>How to play it</b> ${esc(cap(how))}</li>` : ''}${answers.length ? `<li><b>Answers</b> ${esc(answers.join(' '))}</li>` : ''}</ul>`;
+      })();
+      const panels = { damage: inTab('damage', dmgBlock), cooldowns: inTab('cooldowns', `${cdBlock}${hasteBlock}${extraBlock}`), alive: inTab('alive', keepBlock), play };
+      const names = { damage: 'Damage', cooldowns: 'Cooldowns', alive: 'Staying alive', play: 'Play against' };
+      const order = [...((st && st.tabs) || ['damage', 'cooldowns', 'alive']), 'play'].filter((k) => panels[k]);
       const tabs = order.length ? `<div class="tb-tabs" role="tablist">${order.map((k, i) => `<button class="pgf${i ? '' : ' on'}" role="tab" aria-selected="${!i}" onclick="tbTab(this,'${k}')">${names[k]}</button>`).join('')}</div>${order.map((k, i) => `<div class="tb-panel" data-tab="${k}"${i ? ' hidden' : ''}>${panels[k]}</div>`).join('')}` : '';
       // Why it worked (film.threatBuilds[].worked, engine/src/build-why.ts): what stacked, did we
       // counter it, can we copy it.
@@ -1077,17 +1097,26 @@ function pgReview(f) {
         ${w.copy ? `<div class="tb-k">Can ${tb.us ? 'we' : 'we'} copy it? <span class="tb-verd" style="color:${VERD[w.copy.verdict][1]};border-color:${VERD[w.copy.verdict][1]}">${VERD[w.copy.verdict][0]}</span></div><p class="tb-copy">${esc(w.copy.text)}</p>` : ''}
       </div>` : '';
       const body = `<div class="tb">${leadCard}${whyBlock}${lessonBox(leadLesson)}${tabs}</div>`;
-      if (bare) return `<div class="tc-n" style="margin-top:.3rem">${esc(tb.loadout)}</div>${body}`;
+      if (bare) return body;
       return open ? `<div class="tc-h" style="margin-top:.6rem">How ${esc(tb.hero)}'s build worked</div>${body}` : `<details class="tc-more"><summary>How ${esc(tb.hero)}'s build worked</summary>${body}</details>`;
     };
-    // Builds of everyone else who played above their hero-role norm, either team (film.threatBuilds
-    // entries with why 'standout'; the threat and nemeses are shown above).
-    const shownAbove = new Set([kr && kr.threat ? kr.threat.slug : null, ...((kr && kr.nemeses) || []).map((n) => n.bySlug)]);
-    const above = Object.values(f.threatBuilds || {}).filter((t) => (t.why || []).includes('standout') && !shownAbove.has(t.slug) && t.card && (t.card.ult || t.card.haste.length || t.card.extras.length));
-    const aboveBlock = above.length ? `<div class="tc-sec"><div class="tc-h">Played above the norm <span class="tc-n">how their builds worked · score = how far above this hero's usual game in this role in our films</span></div>
-      ${above.sort((a, b) => Number(b.us) - Number(a.us) || b.score - a.score).map((t) => {
+    // High performers (film.threatBuilds): their threat, lane nemeses and anyone above the hero-role
+    // norm on either team, one collapsible row each, titled by name and verdict; the first opens.
+    const perf = Object.values(f.threatBuilds || {}).filter((t) => t.card);
+    const rank = (t) => (kr && kr.threat && kr.threat.slug === t.slug ? 0 : !t.us ? 1 : 2);
+    perf.sort((a, b) => rank(a) - rank(b) || (b.score || 0) - (a.score || 0));
+    const perfBlock = perf.length ? `<div class="tc-sec"><div class="tc-h">High performers <span class="tc-n">who played well above their hero's usual game this patch, and why it worked</span></div>
+      ${perf.map((t, i) => {
         const pl = f.players.find((x) => x.heroSlug === t.slug);
-        return `<details class="tc-more ab-row"><summary><span class="ab-sum">${hIcon(t.slug, 22).replace(/<\/?a\b[^>]*>/g, '')}<b style="color:${t.us ? 'var(--green)' : 'var(--red)'}">${t.us ? 'Us' : 'Them'}</b> ${esc(t.hero)} <span class="tc-n">${pl ? `${esc(pl.role)} · ${pl.kills}/${pl.deaths}/${pl.assists} · ` : ''}+${t.score.toFixed(1)} above the norm</span></span></summary>${tbBlock(t.slug, false, true)}</details>`;
+        const st = t.card.story;
+        const isThreat = kr && kr.threat && kr.threat.slug === t.slug;
+        const hp = st && st.lead && ((t.why || []).includes('standout') || isThreat);
+        const label = hp ? 'High performer' : isThreat ? 'Their threat' : (t.why || []).includes('nemesis') ? 'Lane nemesis' : 'Above the norm';
+        const victims = pl && !pl.us ? (() => { const c = {}; for (const k of f.kills || []) if (k.killerPid === pl.pid) { const v = f.players.find((x) => x.pid === k.killedPid); if (v) c[v.heroName] = (c[v.heroName] || 0) + 1; } return Object.entries(c).sort((x, y) => y[1] - x[1]); })() : [];
+        const teamKills = pl ? f.players.filter((x) => x.us === pl.us).reduce((n, x) => n + x.kills, 0) : 0;
+        const sub = pl ? [`${pl.kills} / ${pl.deaths} / ${pl.assists}`, pl.us ? pgName(pl) : '', esc(pl.role), teamKills ? `${Math.round(100 * pl.kills / teamKills)}% of ${pl.us ? 'our' : 'their'} kills` : '', victims.length ? `killed ${victims.map(([h, n]) => `${esc(h)} ${n}`).join(' · ')}` : ''].filter(Boolean).join(' · ') : '';
+        return `<details class="pf-row"${i === 0 ? ' open' : ''}><summary><span class="pf-sum">${hIcon(t.slug, 36).replace(/<\/?a\b[^>]*>/g, '')}<span><span class="pf-t"><b>${esc(t.hero)}</b> <span class="pf-dash">&mdash;</span> <span class="pf-l${hp ? ' hp' : ''}">${label}</span> <span class="pf-team" style="color:${t.us ? 'var(--green)' : 'var(--red)'}">${t.us ? 'Us' : 'Them'}</span></span>
+          <span class="tc-n pf-s">${sub}</span>${st && st.lead ? `<span class="pf-lead">${esc(st.lead.title)}</span>` : ''}</span></span></summary>${tbBlock(t.slug, false, true, true)}</details>`;
       }).join('')}</div>` : '';
     const ccBlock = kr ? (() => {
       const gap = kr.cc.them.length - kr.cc.us.length;
@@ -1096,12 +1125,6 @@ function pgReview(f) {
         <p class="${gap >= 3 ? 'tc-warn' : ''}">${esc(kr.cc.note)}</p>
         <details class="tc-more"><summary>Every hard-CC ability in the game</summary><div class="tc-cols"><div><b style="color:var(--green)">Us</b><ul>${list(kr.cc.us) || '<li>none</li>'}</ul></div><div><b style="color:var(--red)">Them</b><ul>${list(kr.cc.them) || '<li>none</li>'}</ul></div></div></details></div>`;
     })() : '';
-    const threatBlock = kr && kr.threat ? (() => { const t = kr.threat; return `<div class="tc-sec"><div class="tc-h">Their threat <span class="tc-n">the enemy who ran the game</span></div>
-      <div class="tc-threat">${hIcon(t.slug, 30)}<div><b>${esc(t.hero)}</b> ${esc(t.kda)} <span class="tc-n">· ${t.killShare}% of their kills · ${t.damage.toLocaleString()} hero damage${t.topDamage ? ', the most in the game' : ''}</span>
-      ${t.victims.length ? `<div class="tc-n">Killed ${t.victims.map((v) => `${esc(v.hero)} ${v.count}`).join(' · ')}</div>` : ''}</div></div>
-      ${t.kit.length ? `<p>${t.kit.map(esc).join(' ')}</p>` : ''}
-      ${t.playAgainst ? `<p><b>How to play it:</b> ${esc(((x) => /[.!?]$/.test(x) ? x : x + '.')(t.playAgainst.trim().charAt(0).toUpperCase() + t.playAgainst.trim().slice(1)))}</p>` : ''}
-      ${t.answers.length ? `<p><b>Answers:</b> ${t.answers.map(esc).join(' ')}</p>` : ''}${tbBlock(t.slug, true)}</div>`; })() : '';
     // Grouped by the enemy hero; that enemy's counterplay is shown once, and not at all
     // when it is already the threat above.
     const nemBlock = kr && kr.nemeses.length ? (() => {
@@ -1112,8 +1135,7 @@ function pgReview(f) {
         const isThreat = kr.threat && kr.threat.slug === g.bySlug;
         const answers = [...new Set(g.victims.map((v) => v.answer).filter(Boolean))];
         return `<li>${hIcon(g.bySlug, 22)} <span><b>${esc(g.byHero)}</b> killed ${g.victims.map((v) => `<b>${esc(v.player)}</b> <span class="tc-n">(${esc(v.hero)})</span> ${v.byCount} of ${v.deaths}`).join(', ')}.
-        ${isThreat ? '<span class="tc-n">Counterplay above.</span>' : `${g.enemyCc.length ? `<span class="tc-n">Watch ${esc(g.enemyCc.join(', '))}.</span> ` : ''}${g.playAgainst ? esc(dot(g.playAgainst)) : ''}`}
-        ${answers.length ? ` <b>${esc(answers.join(' '))}</b>` : ''}${isThreat ? '' : tbBlock(g.bySlug, false)}</span></li>`; }).join('')}</ul></div>`;
+        ${perf.some((t) => t.slug === g.bySlug) ? `<span class="tc-n">How to play ${esc(g.byHero)} and why it worked: under High performers.</span>` : `${g.enemyCc.length ? `<span class="tc-n">Watch ${esc(g.enemyCc.join(', '))}.</span> ` : ''}${g.playAgainst ? esc(dot(g.playAgainst)) : ''}${answers.length ? ` <b>${esc(answers.join(' '))}</b>` : ''}`}</span></li>`; }).join('')}</ul></div>`;
     })() : '';
     // Build notes (film.buildNotes, engine/src/build-notes.ts): lane record, what the field
     // buys more into this opponent, and what this enemy comp asked of the build.
@@ -1194,7 +1216,7 @@ function pgReview(f) {
       ${f.playbook.waitOut.length ? `<div class="pb"><b>Bait or wait out first</b> <span class="tc-n">their crowd control</span><ol>${f.playbook.waitOut.map((st) => `<li>${hIcon(st.slug, 20)} <b>${esc(st.hero)}</b> ${esc(st.ability)} <span class="tc-n">${esc(st.what)}</span></li>`).join('')}</ol></div>` : ''}</div></div>` : '';
     return card(`${eyebrow('Draft, comp &amp; kits', `${fails ? `${fails} of ${tc.checks.length} fundamentals missed` : 'all fundamentals covered'}`)}
       ${row(tc.us, 'Us', 'var(--green)')}${row(tc.them, 'Them', 'var(--red)')}${radarBlock}${balance}${mixBlock}
-      <ul class="tc-checks">${checks}</ul>${swap}${pbBlock}<div class="tc-grid">${threatBlock}${nemBlock}</div>${aboveBlock}${ccBlock}
+      <ul class="tc-checks">${checks}</ul>${swap}${pbBlock}${perfBlock}<div class="tc-grid">${nemBlock}</div>${ccBlock}
       <div class="tc-foot">Win rates are each comp shape (real tanks × high-dive heroes) across ${tc.field.matches.toLocaleString()} sampled ${esc(tc.field.patch)} ranked games, every rank. They describe the draft, not who played well.</div>`);
   })();
   const stackCard = (() => {
