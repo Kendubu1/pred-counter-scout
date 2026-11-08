@@ -118,7 +118,9 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    Since 2026-11-07 perks also keeps both teams' LINEUPS of every ranked match
    it reads (no extra requests): data/aggregates/team-comps/<patch>/<YYYY-MM-DD>.jsonl,
    one match per line as { id, end, dur, win, teams: [[hero, role, tier, build, final]...] x2 }
-   (format team-comps/v2 since 2026-11-08: build = every completed item in purchase order,
+   (format team-comps/v3 since 2026-11-08 evening: v2 plus final level, the second each build item
+   was bought, and EXTRA_KEYS: hero damage taken by type, healing by source, lane / jungle /
+   enemy-jungle minions, best spree and multikill; v2 since 2026-11-08: build = every completed item in purchase order,
    final = the whole final inventory; v1 rows from the 1.18 seed have no items;
    src/ingest/team-comps.ts), filed by match end day so
    past days stop changing. coverage.json says which stretches are complete

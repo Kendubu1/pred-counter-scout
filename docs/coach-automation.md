@@ -87,7 +87,10 @@ not in the env, stop immediately and report — no partial work.
    enemy card. `postgame:loadout` (added 2026-10-17) looks each film up in
    pred.gg's public match stream by its own match id and writes what every
    player RAN — augment, Eternal, both minors, crest — onto
-   `players[i].loadout` (GraphQL cannot return perks at our tier). Coach the
+   `players[i].loadout` (GraphQL cannot return perks at our tier). Since 2026-11-08 the same lookup saves
+   `players[i].stream` and `film.streamMatch` (src/ingest/stream-detail.ts): exact levels and level-ups,
+   item purchase times, hero damage dealt and taken by type, healing by source, minions (incl. enemy
+   jungle), sprees, ward positions, and every camp / objective kill; the build read and coach sources use them. Coach the
    Eternal the player actually ran, not the engine's pick: the review page
    shows both ("ran" and "engine pick"), and the critic's SOURCE carries the
    loadouts for all ten players.

@@ -102,6 +102,7 @@ export function sourceOf(f: Facts, opts: { lean?: boolean; texts?: string[] } = 
     `FIGHT PRESENCE RULE: the macro "absent" signal is based on kill/death credits only; assists are not timestamped per fight, so it is not a complete participant list. Check match-wide assists, objective damage and credited skirmishes before any broad "never rotates" claim; those totals are context, not proof of where or when a rotation happened. Never turn one absent window into a repeat-pattern verdict. A support's lane read is a 1v1 sim that never happens; grade supports on participation, wards, healing/mitigation and deaths, not that lane row (coach audit 2026-09-21).`,
     `ROTATION / LANE TRADE CHECK: same-game credits by our player [${us.map((p) => { const n = sk.filter((s) => (s.ourHeroes ?? []).includes(p.heroSlug)).length; return `${p.squadName || p.name} ${p.heroName}: kill/death credited in ${n}/${sk.length} skirmishes, ${p.assists ?? 0} match assists, ${(p as any).damageToObjectives ?? 0} match objective damage`; }).join('; ')}]. Assists and objective damage are match-wide, not per-fight. Structure events (side = who took it; lane from pred.gg location when present): [${((f as any).events ?? []).filter((e: any) => e.kind === 'tower' || /INHIBITOR|CORE/.test(e.type)).map((e: any) => `${(e.sec / 60).toFixed(1)}m ${e.type}${e.lane ? ` ${e.lane}` : ''} side ${e.side}`).join('; ') || 'none'}]. Compare the lane read and opponent output; never assign a tower without a lane label to a lane, and never infer wave state or positions between kills.`,
     `ROTATIONS (rotations block, src/rotations.ts; kill locations on lanes, THEORY at lane edges): ${(f as any).rotations ? `${((f as any).rotations.credits ?? []).filter((c: any) => (f.players.find((p) => p.pid === c.pid) as any)?.us).map(describeCredit).join('; ') || 'no allied kill or death credited off a home lane'}. Lane opened (enemy outer tower down) per allied laner: ${((f as any).rotations.players ?? []).map((p: any) => `${p.name} ${p.home} ${p.laneOpenedMin ?? 'never'}${p.windowsAfterOpen.length ? `, fights elsewhere after it with no credit at ${p.windowsAfterOpen.map((w: any) => `${w.startMin}m ${w.at} ${w.result}`).join('/')}` : ''}`).join('; ')}` : 'not computed'}. RULE: a laner leaving an unopened lane is a proactive play to credit (with any homeCost); staying in it is expected and never an "absent" fault. Once their lane is open, a fight elsewhere without them is a rotation window, unproven when they have assists. A macro note saying "two separate plays, not one fight" means no one was absent from it.`,
+    ...streamDetailLines(f),
     ...interrogationLines(f),
     ...fightEconLines(f),
     ...previousFilmLines(f),
@@ -112,6 +113,25 @@ export function sourceOf(f: Facts, opts: { lean?: boolean; texts?: string[] } = 
 function leanEvents(f: Facts): string {
   const evs = ((f as any).events ?? []).filter((e: any) => e.kind === 'tower' || /INHIBITOR|CORE|FANG|PRIME/i.test(e.type));
   return `EVENTS: ${evs.map((e: any) => `${e.side} ${e.lane && e.lane !== 'jungle' ? `${e.lane} ` : ''}${String(e.type).replace(/_/g, ' ').toLowerCase()}@${Math.round(e.sec / 6) / 10}m`).join(', ') || 'none'}.`;
+}
+
+/** Match detail saved from the public stream (players[i].stream, film.streamMatch;
+ *  src/ingest/stream-detail.ts): levels, exact item times, hero damage by type, healing by
+ *  source, minions, sprees, and each team's jungle / objective takes. */
+function streamDetailLines(f: Facts): string[] {
+  const has = f.players.filter((p: any) => p.stream);
+  if (!has.length) return [];
+  const mmss = (sec: number) => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+  const row = (p: any) => { const st = p.stream; return `${p.squadName || p.name || ''} ${p.heroName}: level ${st.level ?? '?'}, items at ${st.purchases.map((x: any) => `${x.slug} ${mmss(x.sec)}`).join(', ') || 'none'}; hero damage dealt physical ${st.dealtToHeroes.physical} / magical ${st.dealtToHeroes.magical} / true ${st.dealtToHeroes.true}; taken from heroes ${st.takenFromHeroes.total} (physical ${st.takenFromHeroes.physical}, magical ${st.takenFromHeroes.magical}, true ${st.takenFromHeroes.true}); healing ${st.healing.total} (items ${st.healing.item}, crest ${st.healing.crest}, abilities ${st.healing.utility}), shields received ${st.shieldsReceived}; minions ${st.minions.lane} lane, ${st.minions.jungle} jungle (${st.minions.enemyJungle} in their jungle); best spree ${st.spree}, best multikill ${st.multikill}`; };
+  const out = [`STREAM DETAIL (pred.gg match stream; exact levels and item times, hero damage by type): OURS ${has.filter((p) => p.us).map(row).join(' | ')} || THEIRS ${has.filter((p) => !p.us).map(row).join(' | ')}.`];
+  const sm = (f as any).streamMatch;
+  if (sm) {
+    const side = (pid: string | null) => { const p = pid ? f.players.find((x) => x.pid === pid) : null; return p ? (p.us ? 'us' : 'them') : 'none'; };
+    const tally: Record<string, Record<string, number>> = {};
+    for (const o of sm.objectives) { const k = o.type.replace(/^CampMinion\./, '').replace(/\.Jungle\./, ' ').replace(/\./g, ' '); (tally[k] ??= {})[side(o.byPid)] = ((tally[k] ??= {})[side(o.byPid)] ?? 0) + 1; }
+    out.push(`CAMPS AND OBJECTIVES TAKEN (stream): ${Object.entries(tally).map(([k, v]) => `${k} us ${v.us ?? 0} them ${v.them ?? 0}`).join('; ')}. Match ended by ${sm.endReason ?? 'unknown'}.`);
+  }
+  return out;
 }
 
 /** Cross-film callbacks (coach contract 2026-09-21): the coach may name a

@@ -21,13 +21,15 @@ export interface TbItem { slug: string; display_name?: string; name?: string; st
 export interface TbPlayer {
   heroSlug: string; heroName: string; kills: number; deaths: number; assists: number;
   items?: { slug: string; name?: string }[]; itemTimeline?: { slug: string; estMin: number }[];
+  /** exact purchase times and level-ups from the match stream (players[i].stream), when saved */
+  stream?: { purchases?: { slug: string; sec: number }[]; levelUps?: { sec: number; ab: string }[]; level?: number | null } | null;
   loadout?: { eternal?: string; minor1?: string; minor2?: string; augment?: { id: string; name: string } | null; crest?: string; crestSlug?: string } | null;
 }
 export interface ThreatBuild {
   hero: string; slug: string; takedowns: number;
   loadout: string;
   haste: { sources: { what: string; amount: number; note?: string; kind?: string; how?: string }[]; total: number; fightBonus: { what: string; amount: number; note: string } | null; ultOnly: number };
-  ult: { name: string; base: number; endGame: number; inFight: number | null } | null;
+  ult: { name: string; base: number; endGame: number; inFight: number | null; rank?: number; rankKnown?: boolean } | null;
   fedBy: string[]; ultPlus: string[];
   lines: string[];
   /** the same read, structured for the page: cooldown before/after, haste by source, the other
@@ -67,14 +69,16 @@ export function threatBuild(
   const extras: { name: string; kind: string; how: string }[] = [];
   let fightHow = '';
   let ultOnly = 0, fightBonus: ThreatBuild['haste']['fightBonus'] = null;
-  const est = (slug: string) => p.itemTimeline?.find((t) => t.slug === slug)?.estMin;
+  const exact = (slug: string) => p.stream?.purchases?.find((t) => t.slug === slug)?.sec;
+  const est = (slug: string) => exact(slug) != null ? Math.round(exact(slug)! / 60) : p.itemTimeline?.find((t) => t.slug === slug)?.estMin;
+  const bought = (slug: string) => exact(slug) != null ? `bought at ${Math.floor(exact(slug)! / 60)}:${String(exact(slug)! % 60).padStart(2, '0')}` : est(slug) != null ? `bought around ${est(slug)} min (estimate)` : '';
 
   for (const slug of owned) {
     const it = ctx.items.get(slug);
     if (!it) continue;
     const name = it.display_name ?? it.name ?? slug;
     const h = it.stats?.ability_haste ?? 0;
-    if (h) sources.push({ what: name, amount: h, note: slug === lo.crestSlug ? 'crest' : est(slug) != null ? `bought around ${est(slug)} min (estimate)` : undefined, kind: slug === lo.crestSlug ? 'crest' : 'item', how: `+${h} ability haste${slug !== lo.crestSlug && est(slug) != null ? `, bought around ${est(slug)} min` : ''}` });
+    if (h) sources.push({ what: name, amount: h, note: slug === lo.crestSlug ? 'crest' : bought(slug) || undefined, kind: slug === lo.crestSlug ? 'crest' : 'item', how: `+${h} ability haste${slug !== lo.crestSlug && bought(slug) ? `, ${bought(slug).replace(' (estimate)', '')}` : ''}` });
     for (const e of it.effects ?? []) {
       const text = `${plain(e.condition)} ${plain(e.menu_description)}`.trim();
       if (/takedown/i.test(text)) { fedBy.push(`${name}${e.name ? ` (${e.name})` : ''}: ${text}`); extras.push({ name, kind: slug === lo.crestSlug ? 'crest' : 'item', how: short(text) }); }
@@ -130,14 +134,17 @@ export function threatBuild(
     }
   }
   const r = abilities.find((a) => a.key === 'R');
-  const base = r?.cooldown?.length ? r.cooldown[r.cooldown.length - 1]! : null;
-  const ult = r && base ? { name: r.display_name, base, endGame: cd(base, total + ultOnly), inFight: fightBonus ? cd(base, total + ultOnly + fightBonus.amount) : null } : null;
+  // The ultimate's rank at the end: from the level-ups when the stream saved them, else top rank.
+  const uRanks = p.stream?.levelUps ? p.stream.levelUps.filter((l) => l.ab === 'U').length : null;
+  const rank = r?.cooldown?.length ? Math.min(r.cooldown.length, Math.max(1, uRanks ?? r.cooldown.length)) : 0;
+  const base = r?.cooldown?.length ? r.cooldown[rank - 1]! : null;
+  const ult = r && base ? { name: r.display_name, base, rank, rankKnown: uRanks != null, endGame: cd(base, total + ultOnly), inFight: fightBonus ? cd(base, total + ultOnly + fightBonus.amount) : null } : null;
 
   const lines: string[] = [];
   const loadout = [lo.eternal ? `${lo.eternal}${minors.length ? ` (${minors.map((m) => m.name).join(' + ')})` : ''}` : '', lo.augment?.name ? `augment ${lo.augment.name}` : '', lo.crest ? `crest ${lo.crest}` : ''].filter(Boolean).join(', ');
   if (ult && (total || ultOnly)) {
     const pct = Math.round((1 - ult.endGame / ult.base) * 100);
-    lines.push(`${ult.name} at top rank: ${ult.base}s base, about ${ult.endGame}s by the end (${pct}% shorter) from ${total + ultOnly} ability haste: ${[...sources.map((s) => `${s.what} ${s.amount}`), ...(ultOnly ? [`ultimate haste ${ultOnly}`] : [])].join(', ')}.`);
+    lines.push(`${ult.name} at ${ult.rankKnown ? `rank ${ult.rank}` : 'top rank'}: ${ult.base}s base, about ${ult.endGame}s by the end (${pct}% shorter) from ${total + ultOnly} ability haste: ${[...sources.map((s) => `${s.what} ${s.amount}`), ...(ultOnly ? [`ultimate haste ${ultOnly}`] : [])].join(', ')}.`);
     if (fightBonus && ult.inFight != null) lines.push(`Mid-fight, ${fightBonus.what} adds up to ${fightBonus.amount} more (${fightBonus.note}): ${ult.name} about ${ult.inFight}s (estimate).`);
   }
   for (const s of sources) if (s.note && /takedown/.test(s.note)) lines.push(`${s.what}: ${s.note}.`);

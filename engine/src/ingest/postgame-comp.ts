@@ -98,7 +98,7 @@ function main() {
         items: itemCat, durationMin: film.durationMin ?? 30, level: levelAtMinute(film.durationMin ?? 30, calibration),
         teamDamage: mates.reduce((a: number, x: any) => a + (x.damageToHeroes ?? 0), 0), powerType: power.get(ep.heroSlug) ?? null,
         heroStats, eternals: eternalsCat, augments: augCat,
-        targets: foes.map((x: any) => ({ name: x.squadName || x.name, heroSlug: x.heroSlug, heroName: x.heroName, items: x.items, diedTo: (film.kills ?? []).filter((k: any) => k.killerPid === ep.pid && k.killedPid === x.pid).length })),
+        targets: foes.map((x: any) => ({ name: x.squadName || x.name, heroSlug: x.heroSlug, heroName: x.heroName, items: x.items, diedTo: (film.kills ?? []).filter((k: any) => k.killerPid === ep.pid && k.killedPid === x.pid).length, level: x.stream?.level ?? null, takenFromHeroes: x.stream?.takenFromHeroes ?? null })),
       });
       const pl = powerLesson(pp, ep.heroName);
       const lines = [...tb.lines, ...powerLines(pp, ep.heroName), ...(pl ? [`Lesson: ${pl}`] : [])];

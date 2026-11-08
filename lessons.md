@@ -5879,3 +5879,9 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   toughness. Two traps: "/\bheal/" matches "Health" in damage text, and catalog "Damage Dealt:
   {x}" tracker lines are placeholders, not effects. Armor needs a level and levels are provisional,
   so every armor figure says "estimate"; the order of percent vs flat penetration is assumed.
+- One stream page (probe, 2026-11-08) showed what the films never kept: final hero level and every
+  level-up with its ability (so ultimate rank and armor at the real level), exact purchase seconds
+  (the films' itemTimeline was a gold-curve estimate), hero damage taken by type, healing by source,
+  minions incl. enemy-jungle camps, sprees, ward positions, and every camp/objective kill. Saved in
+  the existing loadout lookup (no extra calls going forward); lineups v3 append level, buy seconds and
+  extra totals. Hero kills carry no assisters, so assist timing is still unknown.

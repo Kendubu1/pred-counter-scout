@@ -14,12 +14,12 @@
 // catalog text.
 
 export interface BpItem { slug: string; display_name?: string; name?: string; stats?: Record<string, number>; effects?: { name?: string; condition?: string | null; menu_description?: string | null }[] }
-export interface BpTarget { name: string; heroSlug: string; heroName: string; items?: { slug: string }[]; diedTo?: number }
+export interface BpTarget { name: string; heroSlug: string; heroName: string; items?: { slug: string }[]; diedTo?: number; level?: number | null; takenFromHeroes?: { total: number; physical: number; magical: number; true: number } | null }
 export interface PowerProfile {
   type: 'magical' | 'physical';
   power: number;
   pen: { flat: number; pct: number; sources: string[] };
-  vs: { name: string; hero: string; armor: number; after: number; more: number; diedTo: number }[];
+  vs: { name: string; hero: string; armor: number; after: number; more: number; diedTo: number; level: number; levelKnown: boolean; taken: { type: number; total: number } | null }[];
   level: number;
   amps: { name: string; kind: string; how: string }[];
   dealt: { damage: number; share: number } | null;
@@ -60,10 +60,12 @@ export function powerProfile(
   }
   const pct = Math.round((1 - keep) * 100);
   const vs = ctx.targets.map((t) => {
-    const base = ctx.heroStats.get(t.heroSlug)?.[`${type}_armor`]?.[ctx.level - 1] ?? 0;
+    const lvl = t.level ?? ctx.level;
+    const base = ctx.heroStats.get(t.heroSlug)?.[`${type}_armor`]?.[lvl - 1] ?? 0;
     const armor = base + (t.items ?? []).reduce((a, i) => a + (ctx.items.get(i.slug)?.stats?.[`${type}_armor`] ?? 0), 0);
     const after = Math.max(0, armor * keep - flat);
-    return { name: t.name, hero: t.heroName, armor: Math.round(armor), after: Math.round(after), more: Math.round(((100 + armor) / (100 + after) - 1) * 100), diedTo: t.diedTo ?? 0 };
+    return { name: t.name, hero: t.heroName, armor: Math.round(armor), after: Math.round(after), more: Math.round(((100 + armor) / (100 + after) - 1) * 100), diedTo: t.diedTo ?? 0, level: lvl, levelKnown: t.level != null,
+      taken: t.takenFromHeroes ? { type: t.takenFromHeroes[type], total: t.takenFromHeroes.total } : null };
   }).sort((a, b) => b.diedTo - a.diedTo || b.more - a.more);
 
   // Damage amplifiers: item effects, Eternal, minors, augment that add damage
@@ -110,7 +112,7 @@ export function powerLines(pp: PowerProfile, hero: string): string[] {
   if (pp.dealt) out.push(`${hero} dealt ${pp.dealt.damage.toLocaleString('en-US')} hero damage, ${pp.dealt.share}% of their team's, with +${pp.power} ${pp.type} power from items.`);
   if (pp.pen.flat || pp.pen.pct) {
     const top = pp.vs.filter((v) => v.more > 0).slice(0, 2);
-    out.push(`Penetration: ${pp.pen.sources.join(', ')}${top.length ? `; against ${top.map((v) => `${v.hero} (about ${v.armor} ${pp.type} armor, ${v.after} after penetration)`).join(' and ')} that is about ${top.map((v) => `${v.more}%`).join(' and ')} more damage (estimate: level about ${pp.level}, percent penetration taken before flat)` : ''}.`);
+    out.push(`Penetration: ${pp.pen.sources.join(', ')}${top.length ? `; against ${top.map((v) => `${v.hero} (level ${v.level}${v.levelKnown ? '' : ' estimated'}: about ${v.armor} ${pp.type} armor, ${v.after} after penetration${v.taken ? `; took ${v.taken.type.toLocaleString('en-US')} ${pp.type} damage from heroes, ${Math.round((100 * v.taken.type) / Math.max(1, v.taken.total))}% of all hero damage they took` : ''})`).join(' and ')} that is about ${top.map((v) => `${v.more}%`).join(' and ')} more damage (estimate: percent penetration taken before flat)` : ''}.`);
   }
   for (const a of pp.amps) out.push(`${a.name} (${a.kind}): ${a.how}`);
   if (pp.sustain) out.push(`Sustain: ${[...pp.sustain.stats, ...pp.sustain.effects.map((e) => `${e.name}: ${e.how}`)].join('; ')}; ${pp.sustain.healing.toLocaleString('en-US')} healing recorded.`);
@@ -122,5 +124,5 @@ export function powerLines(pp: PowerProfile, hero: string): string[] {
 export function powerLesson(pp: PowerProfile, hero: string): string | null {
   const hit = pp.vs.filter((v) => v.diedTo > 0).sort((a, b) => b.diedTo - a.diedTo)[0] ?? pp.vs[0];
   if (!hit || hit.more < 15) return null;
-  return `${hero}'s penetration cut through: ${hit.hero} took about ${hit.more}% more ${pp.type} damage than their armor alone allows (estimate: their armor about ${hit.armor}, about ${hit.after} after ${[pp.pen.flat ? `${pp.pen.flat} flat` : '', pp.pen.pct ? `${pp.pen.pct}%` : ''].filter(Boolean).join(' + ')} penetration).`;
+  return `${hero}'s penetration cut through: ${hit.hero} took about ${hit.more}% more ${pp.type} damage than their armor alone allows (estimate: at level ${hit.level}${hit.levelKnown ? '' : ' (estimated)'} their armor was about ${hit.armor}, about ${hit.after} after ${[pp.pen.flat ? `${pp.pen.flat} flat` : '', pp.pen.pct ? `${pp.pen.pct}%` : ''].filter(Boolean).join(' + ')} penetration).`;
 }

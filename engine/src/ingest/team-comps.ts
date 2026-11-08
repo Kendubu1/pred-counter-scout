@@ -17,7 +17,8 @@
 // knows whether a day is complete.
 //
 // Row (TeamCompRow): { id, end, dur, win, teams: [team0, team1] }, with each
-// team a list of [heroSlug, role, tierIdx | null, build?, final?] (v2 adds the whole
+// team a list of [heroSlug, role, tierIdx | null, build?, final?, stats?, perks?, level?, buildSecs?, extra?]
+// (v3 appends level, purchase seconds and EXTRA_KEYS; v2 adds the whole
 // build: completed items in purchase order and the final inventory, so builds can be
 // read against comps and matchups) (tier = rank AT MATCH TIME,
 // match-rank.ts; null when pred.gg could not resolve it). win = index of the
@@ -30,13 +31,26 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 export const TEAM_COMPS_DIR = path.join(ROOT, 'data/aggregates/team-comps');
-export const FORMAT = 'team-comps/v2';
+export const FORMAT = 'team-comps/v3';
 
 /** v2 (2026-11-08) appends, per player: the whole build (every completed item, Epic passives and actives
  *  and Legendary crests, in purchase order), the final inventory (any rarity), the player's output totals
  *  in STAT_KEYS order, and the raw perk names they ran (augment, Eternal, minors; decode with the perk
  *  catalog, match-stream.ts loadoutOf). v1 rows (the 1.18 seed sample) have 3 elements. */
-export type Slot = [hero: string, role: string, tier: number | null, build?: string[], final?: string[], stats?: number[], perks?: string[]];
+export type Slot = [hero: string, role: string, tier: number | null, build?: string[], final?: string[], stats?: number[], perks?: string[], level?: number | null, buildSecs?: number[], extra?: number[]];
+/** v3 (2026-11-08, appended; v2 rows simply lack them): the final hero level, the game second each
+ *  build item was bought (aligned with build), and EXTRA_KEYS totals: hero damage taken by type,
+ *  healing by source, lane / jungle / enemy-jungle minions, best killing spree and multikill. */
+export const EXTRA_KEYS = ['takenPhysHeroes', 'takenMagHeroes', 'takenTrueHeroes', 'healItem', 'healCrest', 'healUtility', 'laneMinions', 'jungleMinions', 'enemyJungleMinions', 'spree', 'multikill'] as const;
+const EXTRA_OF: Record<(typeof EXTRA_KEYS)[number], (p: any) => unknown> = {
+  takenPhysHeroes: (p) => p.damageHealData?.physicalDamageTakenFromHeroes, takenMagHeroes: (p) => p.damageHealData?.magicalDamageTakenFromHeroes,
+  takenTrueHeroes: (p) => p.damageHealData?.trueDamageTakenFromHeroes, healItem: (p) => p.damageHealData?.itemHealingDone,
+  healCrest: (p) => p.damageHealData?.crestHealingDone, healUtility: (p) => p.damageHealData?.utilityHealingDone,
+  laneMinions: (p) => p.minionData?.laneMinionsKilled, jungleMinions: (p) => p.minionData?.neutralMinionsKilled,
+  enemyJungleMinions: (p) => p.minionData?.neutralMinionsEnemyJungle, spree: (p) => p.combatData?.largestKillingSpree,
+  multikill: (p) => p.combatData?.largestMultiKill,
+};
+export const extraOf = (p: any): number[] => EXTRA_KEYS.map((k) => { const v = Number(EXTRA_OF[k](p)); return Number.isFinite(v) ? Math.round(v) : -1; });
 
 /** Output totals kept per player (whole game; divide by the row's dur / 60 for per-minute). Same set the
  *  2026-10-29 output pull summed (predgg-output.json, never merged): damage by type, taken, mitigation,
@@ -72,13 +86,13 @@ export const patchDir = (patch: string | null) => path.join(TEAM_COMPS_DIR, (pat
  */
 export function toRow(
   m: { id: string; end: string; dur: number; winningTeam: string | number },
-  players: { hero: string; role: string; team: string | number; tier: number | null; build?: string[]; final?: string[]; stats?: number[]; perks?: string[] }[],
+  players: { hero: string; role: string; team: string | number; tier: number | null; build?: string[]; final?: string[]; stats?: number[]; perks?: string[]; level?: number | null; buildSecs?: number[]; extra?: number[] }[],
 ): TeamCompRow | null {
   const teams: [Slot[], Slot[]] = [[], []];
   for (const p of players) {
     const t = Number(p.team);
     if (t !== 0 && t !== 1) return null;
-    teams[t].push(p.build ? [p.hero, p.role, p.tier ?? null, p.build, p.final ?? [], p.stats ?? [], p.perks ?? []] : [p.hero, p.role, p.tier ?? null]);
+    teams[t].push(p.build ? (p.buildSecs ? [p.hero, p.role, p.tier ?? null, p.build, p.final ?? [], p.stats ?? [], p.perks ?? [], p.level ?? null, p.buildSecs, p.extra ?? []] : [p.hero, p.role, p.tier ?? null, p.build, p.final ?? [], p.stats ?? [], p.perks ?? []]) : [p.hero, p.role, p.tier ?? null]);
   }
   const win = Number(m.winningTeam);
   if ((win !== 0 && win !== 1) || !teams[0].length || !teams[1].length) return null;
@@ -190,18 +204,19 @@ export function itemMaps(items: { game_id: number | null; slug: string; rarity: 
 
 /** One stream player's build (every completed Epic/Legendary item in purchase order, transaction 10),
  *  final inventory, output totals and raw perk names. */
-export function buildOf(p: any, maps: ReturnType<typeof itemMaps>): { build: string[]; final: string[]; stats: number[]; perks: string[] } {
-  const build: string[] = [];
+export function buildOf(p: any, maps: ReturnType<typeof itemMaps>): { build: string[]; final: string[]; stats: number[]; perks: string[]; level: number | null; buildSecs: number[]; extra: number[] } {
+  const build: string[] = [], buildSecs: number[] = [];
   for (const t of p.incomeData?.transactions ?? []) {
     // 10 and 11 are both purchases: some players' whole game is logged as 11 (probed 2026-11-08:
     // 138 of 640 transactions on one ranked page, Epic items at minute 9+), not only starting items.
     if (t?.transactionType !== 10 && t?.transactionType !== 11) continue;
     const sl = maps.build.get(t.itemId);
-    if (sl && !build.includes(sl)) build.push(sl);
+    if (sl && !build.includes(sl)) { build.push(sl); buildSecs.push(Math.round(Number(t.gameTime) || 0)); }
   }
   const final = (p.inventoryData ?? []).map((it: any) => maps.any.get(it?.itemId)).filter((x: string | undefined): x is string => !!x);
   const perks = (p.heroPerkData ?? []).map((x: any) => String(x?.perkName ?? '')).filter(Boolean);
-  return { build, final, stats: statsOf(p), perks };
+  const level = Number(p.heroLevel);
+  return { build, final, stats: statsOf(p), perks, level: Number.isFinite(level) && level > 0 ? level : null, buildSecs, extra: extraOf(p) };
 }
 
 /** A whole ranked stream match as a lineup row (same decoding as the daily perks loop). */

@@ -11,6 +11,12 @@
 //   npm run postgame:loadout            # fill films missing a loadout block
 //   npm run postgame:loadout -- --all   # re-decode every film
 //
+// Since 2026-11-08 the same lookup also saves the stream's match detail the films never kept
+// (players[i].stream, film.streamMatch; src/ingest/stream-detail.ts): levels and level-up times,
+// exact purchase times, damage from heroes by type, healing by source, minions, wards with
+// positions, every jungle / objective kill. Films that have a loadout but no detail are looked
+// up once more.
+//
 // Needs PREDGG creds for ONE call (the perk catalog that turns internal perk
 // names into display names); the stream itself is public. Sequential, 2s
 // between calls. A film the stream does not have is marked so it is not
@@ -21,6 +27,7 @@ import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { findStreamMatch, loadPerkCatalog, loadoutOf, sleep, StreamThrottled, type Loadout } from './match-stream.js';
+import { streamMatchOf, streamPlayerOf, type StreamMatch, type StreamPlayer } from './stream-detail.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const DIR = path.join(ROOT, 'data/postgame');
@@ -28,12 +35,15 @@ const ALL = process.argv.includes('--all');
 
 type Film = {
   matchId: string; startTime: string; durationMin: number;
-  players: { pid: string; name: string; heroSlug: string; loadout?: Loadout | null }[];
+  players: { pid: string; name: string; heroSlug: string; loadout?: Loadout | null; stream?: StreamPlayer | null }[];
+  streamMatch?: StreamMatch;
   loadoutSource?: { source: string; fetchedAt: string; found: boolean; note?: string };
 };
 
 async function main() {
   const items = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/items.json'), 'utf8')) as { game_id: number | null; display_name: string; slug: string; slot_type: string | null }[];
+  const slugByName = new Map((JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/heroes.json'), 'utf8')) as { name: string; slug: string }[]).map((h) => [h.name.toLowerCase(), h.slug]));
+  const buildSlug = new Map((items as any[]).filter((i) => (i.rarity === 'Epic' || i.rarity === 'Legendary' || i.slot_type === 'Crest') && i.game_id != null).map((i) => [i.game_id as number, i.slug as string]));
   const crestByGameId = new Map(items.filter((i) => i.slot_type === 'Crest' && i.game_id != null).map((i) => [i.game_id!, { name: i.display_name, slug: i.slug }]));
   // Newest first: the latest games are the ones being read, and a throttled
   // run should leave the backlog at the old end.
@@ -43,9 +53,10 @@ async function main() {
   const todo = files.filter((f) => {
     if (ALL) return true;
     const film = JSON.parse(readFileSync(path.join(DIR, f), 'utf8')) as Film;
-    return !film.loadoutSource;
+    return !film.loadoutSource || (film.loadoutSource.found && !film.streamMatch);
   });
-  if (!todo.length) { console.log('every film already has its loadout block'); return; }
+  if (process.env.LIMIT) todo.splice(Number(process.env.LIMIT));
+  if (!todo.length) { console.log('every film already has its loadout and stream detail'); return; }
 
   const perkByName = await loadPerkCatalog();
   const unknownPerks = new Set<string>();
@@ -71,8 +82,11 @@ async function main() {
       for (const p of film.players) {
         const row = rowByPid.get(p.pid);
         p.loadout = row ? loadoutOf(row, perkByName, crestByGameId, unknownPerks) : null;
+        p.stream = row ? streamPlayerOf(row, buildSlug) : null;
         if (row) matched++;
       }
+      film.streamMatch = streamMatchOf(hit);
+      for (const b of film.streamMatch.bans) b.hero = slugByName.get(b.hero.toLowerCase()) ?? b.hero;
       film.loadoutSource = { source: 'pred.gg public match stream (get-matches-since)', fetchedAt, found: true, ...(matched < film.players.length ? { note: `${film.players.length - matched} player(s) absent from the stream row` } : {}) };
       filled++;
       process.stdout.write('.');

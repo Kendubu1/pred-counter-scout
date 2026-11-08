@@ -970,7 +970,7 @@ function pgReview(f) {
       const u = c.ult;
       const cdRow = (label, sec, note, cls) => `<div class="tb-cdrow"><span class="tb-cdl">${label}</span><span class="tb-bar"><i class="${cls}" style="width:${(100 * sec / u.base).toFixed(1)}%"></i></span><b>${cls === 'fight' ? '~' : ''}${Math.round(sec)}s</b><span class="tc-n">${note}</span></div>`;
       const cdBlock = u && total ? `<div class="tb-sec"><div class="tb-k">${esc(u.name)} (ultimate) cooldown</div>
-        ${cdRow('Base', u.base, 'top rank, no haste', 'base')}
+        ${cdRow('Base', u.base, `${u.rankKnown ? `rank ${u.rank}` : 'top rank'}, no haste`, 'base')}
         ${cdRow('End of game', u.endGame, `${Math.round((1 - u.endGame / u.base) * 100)}% shorter with ${total} ability haste`, 'end')}
         ${u.inFight != null ? cdRow('Mid-fight', u.inFight, `with ${esc(c.fight.name)} stacks (estimate)`, 'fight') : ''}</div>` : '';
       const seg = (h, i) => `<i style="width:${(100 * h.amount / span).toFixed(1)}%;background:${col(i)}" title="${esc(h.name)} +${h.amount}">${h.amount >= span * 0.12 ? `+${h.amount}` : ''}</i>`;
@@ -981,10 +981,10 @@ function pgReview(f) {
       // Damage: power, penetration against each target (armor before -> after; estimate), boosts.
       const dmgBlock = pp ? (() => {
         const maxA = Math.max(1, ...pp.vs.map((v) => v.armor));
-        const rows = pp.vs.filter((v) => v.more > 0 || v.diedTo).slice(0, 3).map((v) => `<div class="tb-cdrow"><span class="tb-cdl">${esc(v.hero)}${v.diedTo ? ` <span class="tc-n">died ${v.diedTo}x</span>` : ''}</span><span class="tb-bar tb-arm"><i class="base" style="width:${(100 * v.armor / maxA).toFixed(1)}%"></i><i class="end" style="width:${(100 * v.after / maxA).toFixed(1)}%"></i></span><b>+${v.more}%</b><span class="tc-n">${esc(pp.type)} armor about ${v.armor}, about ${v.after} after penetration: ${v.more}% more damage taken</span></div>`).join('');
+        const rows = pp.vs.filter((v) => v.more > 0 || v.diedTo).slice(0, 3).map((v) => `<div class="tb-cdrow"><span class="tb-cdl">${esc(v.hero)}${v.diedTo ? ` <span class="tc-n">died ${v.diedTo}x</span>` : ''}</span><span class="tb-bar tb-arm"><i class="base" style="width:${(100 * v.armor / maxA).toFixed(1)}%"></i><i class="end" style="width:${(100 * v.after / maxA).toFixed(1)}%"></i></span><b>+${v.more}%</b><span class="tc-n">level ${v.level}${v.levelKnown ? '' : ' (est.)'} · ${esc(pp.type)} armor about ${v.armor}, about ${v.after} after penetration: ${v.more}% more damage taken${v.taken ? ` · took ${v.taken.type.toLocaleString()} ${esc(pp.type)} damage from heroes (${Math.round(100 * v.taken.type / Math.max(1, v.taken.total))}% of their hero damage taken)` : ''}</span></div>`).join('');
         const pen = [pp.pen.flat ? `${pp.pen.flat} flat` : '', pp.pen.pct ? `${pp.pen.pct}% ignored` : ''].filter(Boolean).join(' + ');
         return `<div class="tb-sec"><div class="tb-k">Damage <span class="tc-n">${pp.dealt ? `${pp.dealt.damage.toLocaleString()} to heroes, ${pp.dealt.share}% of the team's · ` : ''}+${pp.power} ${esc(pp.type)} power from items</span></div>
-          ${pen ? `<div class="tc-n" style="margin-bottom:.2rem">Penetration ${pen} (${esc(pp.pen.sources.join(', '))}). Against our players (estimate: level about ${pp.level}, levels are not in the match data):</div>${rows}` : ''}
+          ${pen ? `<div class="tc-n" style="margin-bottom:.2rem">Penetration ${pen} (${esc(pp.pen.sources.join(', '))}). Against ${tb.us ? 'their' : 'our'} players${pp.vs.some((v) => !v.levelKnown) ? ` (levels marked est. are estimated)` : ''}:</div>${rows}` : ''}
           ${pp.amps.length ? `<details class="tc-more" style="margin-top:.45rem"><summary>${pp.amps.length} damage boost${pp.amps.length === 1 ? '' : 's'}: ${esc([...new Set(pp.amps.map((a) => a.name))].join(', '))}</summary><ul class="tb-list">${pp.amps.map((a) => `<li><b>${esc(a.name)}</b> <span class="tb-kind">${esc(a.kind)}</span> ${esc(a.how)}</li>`).join('')}</ul></details>` : ''}</div>`;
       })() : '';
       const keepBlock = pp && (pp.sustain || pp.tough) ? `<div class="tb-sec"><div class="tb-k">Staying alive</div><ul class="tb-list">

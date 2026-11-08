@@ -7,7 +7,7 @@ const fey = { abilities: [
   { key: 'R', display_name: 'Fly Trap', cooldown: [125, 110, 95] },
   { key: 'Passive', display_name: "Nature's Vengeance", menu_description: 'Each time The Fey achieves a Takedown she spawns an Untamed Growth.' },
 ] };
-const items = new Map([
+const items = new Map<string, any>([
   ['megacosm', { slug: 'megacosm', display_name: 'Megacosm', stats: { ability_haste: 10 } }],
   ['epoch', { slug: 'epoch', display_name: 'Epoch', stats: { ability_haste: 8 } }],
   ['overseer', { slug: 'overseer', display_name: 'Overseer', stats: { magical_lifesteal: 7 }, effects: [{ name: 'Exalted', condition: '<Condition>Enhance your Ultimate Ability:</Condition>', menu_description: '• Heals you for 25% of the damage dealt to Heroes.' }] }],
