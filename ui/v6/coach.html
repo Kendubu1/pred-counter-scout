@@ -4,7 +4,19 @@
 <script src="sim-flag.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Coach report · Pred Scout</title>
+<title>Post-game reviews · Pred Scout</title>
+<meta name="description" content="Post-game reviews of our squad's ranked Predecessor games: what went right, what to fix, and each player's build and lane.">
+<!-- share:begin (engine/scripts/share-pages.mjs) -->
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Pred Scout">
+<meta property="og:title" content="Post-game reviews · Pred Scout">
+<meta property="og:description" content="Post-game reviews of our squad's ranked Predecessor games: what went right, what to fix, and each player's build and lane.">
+<meta property="og:url" content="https://kendubu1.github.io/pred-counter-scout/ui/v6/coach.html">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/brand/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="../img/brand/logo.svg">
+<link rel="apple-touch-icon" href="../img/brand/apple-touch-icon.png">
+<!-- share:end -->
 <style>
   :root {
     --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
@@ -1363,6 +1375,14 @@ async function fillEternals() {
 }
 
 
+// Keep the link-preview tags in step with the title (iMessage reads them after scripts run).
+function setLabel(title, desc) {
+  document.title = title;
+  const set = (sel, v) => { const el = document.querySelector(sel); if (el && v) el.setAttribute('content', v); };
+  set('meta[property="og:title"]', title);
+  set('meta[name="description"]', desc); set('meta[property="og:description"]', desc);
+  set('meta[property="og:url"]', location.href);
+}
 (async () => {
   let c;
   const who = new URLSearchParams(location.search).get('player');
@@ -1373,7 +1393,7 @@ async function fillEternals() {
     let sq = null;
     try { sq = await (await fetch('../../data/artifacts/squad.json')).json(); } catch {}
     if (sq) {
-      document.title = 'Coach reports · pick a member';
+      setLabel('Post-game reviews · Pred Scout');
       // Post-game reviews of the squad's recent ranked games (committed, zero-API).
       // Only the small index loads up front; each match's full facts are fetched
       // lazily on click (and cached), so the list scales to any number of games.
@@ -1406,6 +1426,11 @@ async function fillEternals() {
         const stacks = [...new Set(pgList.map((m) => m.stackSize).filter(Boolean))].sort((a, b) => b - a);
         const fmtDate = (iso) => new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
         let filter = 'all', cur = 0;
+        // ?game=<matchId> opens that game; picking a game puts its link in the
+        // address bar so a copied/shared link opens the same review.
+        const wantGame = new URLSearchParams(location.search).get('game');
+        const fmtMembers = (m) => (m.members || []).join(', ');
+        const gameTitle = (m) => `${m.result === 'win' ? 'Win' : 'Loss'} · ${fmtDate(m.startTime)}${m.members?.length ? ` · ${fmtMembers(m)}` : ''} · Post-game review · Pred Scout`;
         const visible = () => filter === 'all' ? pgList : pgList.filter((m) => String(m.stackSize) === filter);
         // W-L summary reflects the active filter
         const updateSub = () => {
@@ -1420,11 +1445,16 @@ async function fillEternals() {
                 .map(([v, label]) => `<button class="pgf${filter === v ? ' on' : ''}" data-f="${v}">${label}</button>`).join('')
             : '';
         };
-        const draw = async (i) => {
+        // `chosen`: a click or a ?game= link. Only then does the page take that
+        // game's name and address; the plain page keeps "Post-game reviews".
+        const draw = async (i, chosen = true) => {
           cur = i;
           [...pick.children].forEach((b, j) => b.classList.toggle('on', j === i));
           const m = visible()[i];
           if (!m) { view.innerHTML = ''; return; }
+          try { const u = new URL(location.href); if (chosen) u.searchParams.set('game', m.matchId); else u.searchParams.delete('game'); history.replaceState(null, '', u); } catch {}
+          if (!chosen) setLabel('Post-game reviews · Pred Scout', "Post-game reviews of our squad's ranked Predecessor games: what went right, what to fix, and each player's build and lane.");
+          else setLabel(gameTitle(m), `${m.result === 'win' ? 'Win' : 'Loss'} on ${fmtDate(m.startTime)}, ${m.durationMin} min${m.stackSize ? `, ${m.stackSize}-stack` : ''}: the post-game review of this ranked game.`);
           view.innerHTML = '<div style="color:var(--text-2);padding:1rem .2rem">loading…</div>';
           try { view.innerHTML = pgReview(await loadGame(m.matchId)); fillEternals(); }
           catch { view.innerHTML = '<div style="color:var(--red);padding:1rem .2rem">could not load this match</div>'; }
@@ -1449,12 +1479,18 @@ async function fillEternals() {
           filterEl.onclick = (e) => {
             const b = e.target.closest('.pgf'); if (!b) return;
             filter = b.dataset.f; cur = 0;
-            renderFilter(); renderChips(); draw(0); updateSub();
+            renderFilter(); renderChips(); draw(0, false); updateSub();
           };
         }
+        if (wantGame && !visible().some((m) => m.matchId === wantGame)) filter = 'all';
+        const found = wantGame ? visible().findIndex((m) => m.matchId === wantGame) : -1;
+        const start = Math.max(0, found);
+        cur = start;
+        if (stacks.length > 1) renderFilter();
         updateSub();
         renderChips();
-        draw(0);
+        draw(start, found >= 0);
+        if (start) pick.children[start]?.scrollIntoView({ block: 'nearest', inline: 'center' });
       }
       return;
     }
@@ -1463,7 +1499,7 @@ async function fillEternals() {
   const src = who ? `../../data/artifacts/players/${who}.json` : '../../data/artifacts/coach.json';
   try { c = await (await fetch(src)).json(); }
   catch { document.getElementById('page').textContent = 'no coach report generated yet'; return; }
-  document.title = `${c.player.name} · coach report`;
+  setLabel(`${c.player.name} · Coach report · Pred Scout`, `${c.player.name}'s coach report: what to keep doing, what to work on, and the road to the next rank.`);
   // A personal report belongs to the Reports tab, not the game reviews.
   document.querySelectorAll('.top .navlink').forEach((a) => a.classList.toggle('active', a.getAttribute('href') === 'reports.html'));
   const p = c.player;

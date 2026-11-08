@@ -14,6 +14,15 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const dir = path.join(root, 'ui/v6');
 const SITE = 'https://kendubu1.github.io/pred-counter-scout/ui/v6/';
 const PAGES = ['climb.html', 'about.html', 'changes.html'];
+// Every live page (paths relative to ui/v6) gets the same labeled head block:
+// og title/description, a text-only "summary" card and the small logo icon, so
+// iMessage shows a compact card with the page's own name instead of a big page
+// snapshot. Each needs a <title> and a <meta name="description">.
+const LABELED = [...PAGES, 'index.html', 'coach.html', 'reports.html', 'squad.html', 'bans.html',
+  'ban-planner.html', 'livedraft.html', '../learn-eternals.html', '../patch-1.18.html'];
+const ICONS = (img) => `<link rel="icon" type="image/png" sizes="32x32" href="${img}favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="${img}logo.svg">
+<link rel="apple-touch-icon" href="${img}apple-touch-icon.png">`;
 const check = process.argv.includes('--check');
 
 // same rule as section-nav.js
@@ -31,6 +40,7 @@ const write = (file, body) => {
   else writeFileSync(file, body);
 };
 
+const sectionIds = {};
 for (const page of PAGES) {
   const base = page.replace(/\.html$/, '');
   let src = readFileSync(path.join(dir, page), 'utf8');
@@ -71,6 +81,7 @@ for (const page of PAGES) {
 <meta property="og:description" content="${attr(desc)}">
 <meta property="og:url" content="${SITE}${stub}">
 <meta name="twitter:card" content="summary">
+${ICONS('../img/brand/')}
 <meta name="robots" content="noindex">
 <link rel="canonical" href="${SITE}${target}">
 <meta http-equiv="refresh" content="0;url=${target}">
@@ -87,17 +98,29 @@ for (const page of PAGES) {
       if (check) drift.push(`ui/v6/${f} (stale)`); else unlinkSync(path.join(dir, f));
     }
   }
+  sectionIds[page] = ids;
+}
+
+for (const page of LABELED) {
+  const file = path.join(dir, page);
+  let src = readFileSync(file, 'utf8');
+  const pageTitle = text(src.match(/<title>([\s\S]*?)<\/title>/)[1]);
+  const pageDesc = src.match(/<meta name="description" content="([^"]*)"/)?.[1];
+  if (!pageDesc) throw new Error(`${page}: needs <meta name="description">`);
+  const url = new URL(page, SITE).href;
+  const img = page.startsWith('../') ? 'img/brand/' : '../img/brand/';
   const block = `<!-- share:begin (engine/scripts/share-pages.mjs) -->
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Pred Scout">
 <meta property="og:title" content="${attr(pageTitle)}">
 <meta property="og:description" content="${pageDesc}">
-<meta property="og:url" content="${SITE}${page}">
-<meta name="section-share" content="${ids.join(' ')}">
+<meta property="og:url" content="${url}">
+<meta name="twitter:card" content="summary">
+${ICONS(img)}${sectionIds[page] ? `\n<meta name="section-share" content="${sectionIds[page].join(' ')}">` : ''}
 <!-- share:end -->`;
   const re = /<!-- share:begin[\s\S]*?<!-- share:end -->/;
-  src = re.test(src) ? src.replace(re, block) : src.replace(/(<meta name="description"[^>]*>\n)/, `$1${block}\n`);
-  write(path.join(dir, page), src);
+  src = re.test(src) ? src.replace(re, block) : src.replace(/^([ \t]*<meta name="description"[^>]*>\n)/m, `$1${block}\n`);
+  write(file, src);
 }
 
 if (check && drift.length) {
