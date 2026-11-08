@@ -2,13 +2,17 @@
 // true (players[i].stream.dealtToHeroes, saved from the pred.gg match stream), where the true
 // damage came from (each player with 5%+ of their own hero damage as true: the items, crest,
 // Eternal, minors, augment and abilities whose catalog text deals true damage), and the patch's
-// win rate for a team with that magical share (hero-role-norms.json teamMix; an association,
+// win rate for a team with that magical share; and per team, who built armor of each type
+// against the damage that team faced (final items with physical_armor / magical_armor) (hero-role-norms.json teamMix; an association,
 // since damage dealt follows how the game went).
 
 export interface Mix { physical: number; magical: number; true: number; total: number }
+export interface ArmorRead { faced: 'physical' | 'magical' | 'mixed'; physical: string[]; magical: string[]; of: number }
 export interface TrueSource { hero: string; us: boolean; amount: number; share: number; from: { name: string; kind: string }[] }
 export interface DamageMix {
   us: Mix; them: Mix; trueFrom: TrueSource[];
+  /** per team: who built armor of each type, read against the damage that team faced */
+  armor: { us: ArmorRead; them: ArmorRead };
   field: { us: { wr: number; n: number; band: string } | null; them: { wr: number; n: number; band: string } | null; best: string } | null;
 }
 
@@ -18,7 +22,7 @@ const TRUE = /true damage/i;
 export function damageMix(
   players: { us: boolean; heroName: string; heroSlug: string; items?: { slug: string }[]; loadout?: { eternal?: string; minor1?: string; minor2?: string; augment?: { id: string; name: string } | null; crestSlug?: string } | null; stream?: { dealtToHeroes: { physical: number; magical: number; true: number } } | null }[],
   ctx: {
-    items: Map<string, { display_name?: string; name?: string; slug: string; effects?: { condition?: string | null; menu_description?: string | null }[] }>;
+    items: Map<string, { display_name?: string; name?: string; slug: string; stats?: Record<string, number>; effects?: { condition?: string | null; menu_description?: string | null }[] }>;
     eternals: { name: string; major: string; minorSlot1: { name: string; desc: string }[]; minorSlot2: { name: string; desc: string }[] }[];
     augments: Record<string, { name: string; description: string }>;
     abilities: Map<string, { display_name: string; menu_description?: string | null; game_description?: string | null }[]>;
@@ -59,5 +63,12 @@ export function damageMix(
     const best = [...bands].filter((b) => b.n >= 1000).sort((a, b) => b.w / b.n - a.w / a.n)[0];
     field = { us: at(us), them: at(them), best: best ? `${best.from}-${best.to}% magical (${Math.round((1000 * best.w) / best.n) / 10}% win)` : '' };
   }
-  return { us, them, trueFrom, field };
+  // Armor against the damage each team faced (the other team's mix): who built which type.
+  const armorOf = (us: boolean, faced: Mix): ArmorRead => {
+    const side = players.filter((p) => p.us === us);
+    const has = (p: (typeof players)[number], k: string) => (p.items ?? []).some((i) => (ctx.items.get(i.slug)?.stats?.[k] ?? 0) > 0);
+    const mag = faced.total ? faced.magical / faced.total : 0, phy = faced.total ? faced.physical / faced.total : 0;
+    return { faced: mag >= 0.55 ? 'magical' : phy >= 0.55 ? 'physical' : 'mixed', physical: side.filter((p) => has(p, 'physical_armor')).map((p) => p.heroName), magical: side.filter((p) => has(p, 'magical_armor')).map((p) => p.heroName), of: side.length };
+  };
+  return { us, them, trueFrom, armor: { us: armorOf(true, them), them: armorOf(false, us) }, field };
 }

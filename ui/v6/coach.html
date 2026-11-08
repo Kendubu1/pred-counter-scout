@@ -204,6 +204,7 @@
   .dm-bar i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:.68rem;font-weight:800;color:var(--bg-0)}
   .dm-row b{font-size:.8rem;text-align:right}.dm-key{display:flex;gap:.9rem;font-size:.72rem;color:var(--text-2);margin:.1rem 0 0 3.5rem}
   .dm-key i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:.3rem;vertical-align:-1px}
+  .dm-arms{margin:.4rem 0 0;font-size:.8rem;line-height:1.5}.dm-arm.thin{color:var(--text-0)}.dm-arm .tc-bad{font-size:.72rem;margin-left:.2rem}
   .tb{margin-top:.35rem}
   .tb-leadcard{border:1px solid var(--border);border-radius:8px;padding:.6rem .7rem;background:var(--bg-2);margin-top:.35rem}
   .tb-head{display:flex;gap:.6rem;align-items:center;margin-bottom:.45rem}.tb-head img{border-radius:10px}
@@ -1157,11 +1158,21 @@ function pgReview(f) {
       const K = [['physical', 'Physical', 'var(--gold)'], ['magical', 'Magical', 'var(--blue)'], ['true', 'True', 'var(--text-1)']];
       const bar = (label, m, col) => `<div class="dm-row"><span class="dm-l" style="color:${col}">${label}</span><span class="dm-bar" style="width:${(100 * m.total / max).toFixed(1)}%">${K.map(([k, , c]) => { const pc = m.total ? Math.round(100 * m[k] / m.total) : 0; return pc ? `<i style="width:${pc}%;background:${c}" title="${k} ${m[k].toLocaleString()} (${pc}%)">${pc >= 9 ? `${pc}%` : ''}</i>` : ''; }).join('')}</span><b>${Math.round(m.total / 1000)}k</b></div>`;
       const fld = dm.field && (dm.field.us || dm.field.them) ? `<p class="tc-n" style="margin:.35rem 0 0">This patch, teams at ${[dm.field.us ? `our ${dm.field.us.band} won ${dm.field.us.wr}%` : '', dm.field.them ? `their ${dm.field.them.band} won ${dm.field.them.wr}%` : ''].filter(Boolean).join(', ')}; the best mix was ${esc(dm.field.best)}. Mostly physical with some magic wins most; past half magical it drops. An association: damage dealt follows how the game went.</p>` : '';
+      // Armor against what each team faced: one line, flagged when the bigger incoming type had
+      // armor on one player or fewer.
+      const armorRow = (label, col, a, faced) => {
+        if (!a || !faced.total) return '';
+        const pm = Math.round(100 * faced.magical / faced.total), pp = Math.round(100 * faced.physical / faced.total);
+        const main = pm >= pp ? 'magical' : 'physical', thin = a[main].length <= 1;
+        const list = (k) => `${k} armor on ${a[k].length} of ${a.of}${a[k].length ? ` (${a[k].map(esc).join(', ')})` : ''}`;
+        return `<div class="dm-arm${thin ? ' thin' : ''}"><b style="color:${col}">${label}</b> faced ${pm}% magical, ${pp}% physical: ${list(main)}; ${list(main === 'magical' ? 'physical' : 'magical')}${thin ? ` <span class="tc-bad">little ${main} armor</span>` : ''}</div>`;
+      };
+      const armorLine = dm.armor ? `<div class="dm-arms">${armorRow('Us', 'var(--green)', dm.armor.us, dm.them)}${armorRow('Them', 'var(--red)', dm.armor.them, dm.us)}</div>` : '';
       const tf = dm.trueFrom.filter((t) => t.from.length).slice(0, 4);
       const trueLine = tf.length ? `<p class="tc-n" style="margin:.25rem 0 0"><b style="color:var(--text-0)">True damage from:</b> ${tf.map((t) => `<span style="color:${t.us ? 'var(--green)' : 'var(--red)'}">${esc(t.hero)}</span> ${t.amount.toLocaleString()} (${t.share}% of their damage; ${t.from.map((x) => `${esc(x.name)} <i>${esc(x.kind)}</i>`).join(', ')})`).join(' · ')}</p>` : '';
       return `<div class="tc-sec"><div class="tc-h">Damage types <span class="tc-n">hero damage dealt · bar length = total</span></div>
         ${bar('Us', dm.us, 'var(--green)')}${bar('Them', dm.them, 'var(--red)')}
-        <div class="dm-key">${K.map(([, l, c]) => `<span><i style="background:${c}"></i>${l}</span>`).join('')}</div>${trueLine}${fld}</div>`;
+        <div class="dm-key">${K.map(([, l, c]) => `<span><i style="background:${c}"></i>${l}</span>`).join('')}</div>${armorLine}${trueLine}${fld}</div>`;
     })() : '';
     // Team playbook (film.playbook, engine/src/playbook.ts): how our kits combine.
     const pbBlock = f.playbook && (f.playbook.plays.length || f.playbook.note) ? `<div class="tc-sec"><div class="tc-h">Team playbook <span class="tc-n">how these five kits fit together · a plan, not a replay</span></div>
