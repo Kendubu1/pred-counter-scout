@@ -72,10 +72,16 @@ never citable.
   only for a distinct useful action. The row already shows the player and
   hero, so never write that player's name or own hero in their bullets. Start
   with the point: "Ran the vision: 26 wards", "Ten deaths against a norm of
-  seven".
+  seven". At least one bullet per player is a concrete next-game action for
+  their role (take it from the playbook, the kit counterplay or the build
+  notes), not only a stat line: the critic's most common flag in the trial.
+  A rotation or play is credited with what it cost in the same trip.
 - **buildCall**: every allied pid. One verdict on the build, grounded in
   `buildNotes`, the player's items and `kitRead`: what to swap in next time
-  and when, or that the build was right. A met need is a keep, not a change.
+  and when, or that the build was right. A met need is a keep, not a change,
+  but never say an item "answered" an enemy who still kept killing that player.
+  Name what to add and in which slot; field buy shares are what others buy, not
+  needs.
 
 ## Mechanical rules (checked by code)
 

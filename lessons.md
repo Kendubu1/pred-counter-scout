@@ -5820,3 +5820,20 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   `npm run comps` never reads a half-written gzip while a backfill runs.
 - Plat+ comp splits at this volume (~1.5k Plat+ team sides) are ±8 points: too thin to read.
   All ranks (46k sides) already shows the tank gap clearly (+2 tanks 53.3%, -2 46.7%).
+
+## 2026-11-08 · Lean coach review trial (second review beside the standard one)
+
+- Review of the standard pipeline: critic rounds rose to a median of 5 per game (Nov 2-8),
+  ~16 min of critique per game, every round re-judging ~96 lines; buildReads grew to ~1,150 words
+  a review; the critic brief was ~77k characters; the agent file had grown to ~7,900 words of
+  layered dated sections. The fix ships as a parallel pipeline (film.coachLean) so the standard
+  one stays as the revert path.
+- Trial on the 5 newest games: 112 lines judged in round 1 (24 flagged), 23 in round 2 (4),
+  4 in round 3 (0); all 5 published within the cap, 1 line dropped. Author ~4 min and critic
+  ~5.5 min for all five games (about 2 min a game vs ~16). Copy ~390 words a game vs ~420 main
+  plus ~1,160 buildReads in the standard review.
+- The critic's top catch (11 of 24) was a player with no next-game action; second, a build line
+  saying an item "answered" an enemy who still kept killing that player. Both are now explicit in
+  the lean spec so the author writes them right the first time.
+- The number check must accept the brief's derived numbers (kill participation, baselines),
+  not only the raw facts: the author was blocked on true figures it was shown.
