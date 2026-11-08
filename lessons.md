@@ -5851,3 +5851,20 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
 - Coach game reviews: `coach.html?game=<matchId>` opens that game; a click puts it in the address
   bar. The plain page keeps the generic label even though it auto-opens the newest game, so a bare
   link never previews as whichever game happens to be newest.
+
+## 2026-11-08 · How their build worked, core vs the lane opponent, backfill done
+
+- The 1.18 lineup backfill finished (29,154 ranked matches, patch release to 8 Nov 08:58, 6,118
+  stream pages over ~12 h with 403 waves). The resume state is gone and coverage.json holds one
+  `backfill` segment; the daily feed carries on from 08:58.
+- `npm run matchups:cores` counts cores INTO a lane opponent from the lineups. The recommendation
+  policy applies: only cores with 10% of the pair's games can lead, so most pairs show one core
+  as "most played" for now (The Fey example: a 21-game 57% core would otherwise have beaten the
+  133-game core). 502 of 6,804 lane pairs qualify; expect more as the patch fills.
+- `film.threatBuilds` (src/threat-build.ts) explains the threat's build from catalog text and the
+  game's own takedowns. The Fey (Vesh + Tithe of Death, Natural Infusion, Epoch, Megacosm): 48
+  ability haste by the end took Fly Trap from 95s to ~64s, ~53s mid-fight with Nettles stacks.
+  Uses the haste formula verified in practice mode; assist times are not in the data, so the
+  minute the takedown cap was reached is an estimate and says so.
+- Two sessions added a "nov-8e" changes card the same day; a duplicate id makes the share-page
+  check flip forever. Check `grep 'id="nov-'` after merging main before adding a card.

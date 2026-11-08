@@ -31,6 +31,12 @@ When wards are confirmed equipped but barely used, give direct actionable advice
 
 
 
+### How their builds worked (2026-11-08)
+`film.threatBuilds` (src/threat-build.ts) carries the enemy threat's and nemesis killers' haste
+sources, ultimate cooldown (base, end of game, mid-fight estimate), takedown-fed effects and
+ultimate enhancers. Use it to explain what made a threat work (what fed it, how to deny it);
+mid-fight figures are estimates. `buildNotes[].coreVs` is the core into the lane opponent.
+
 ### Copy rule: no deferral hedges (maintainer, 2026-11-02)
 Never write lines that send the reader to another part of the site instead of saying something, such as "while the site's build card still ranks it", "let the site's Eternal card decide" or "until the build cards fill in". State the finding (the stronger option and its numbers, or what the notes say) or leave the line out.
 

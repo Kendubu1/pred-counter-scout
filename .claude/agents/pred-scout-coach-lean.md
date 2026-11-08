@@ -211,6 +211,17 @@ The dated rule history (paragraph presets, Keep/Change/Check cards, deep
 dives, buildReads and copy passes) lives in `.claude/agents/pred-scout-coach.md`,
 unchanged and still used by the standard pipeline.
 
+## How their builds worked (threatBuilds)
+
+`film.threatBuilds` (src/threat-build.ts) reads the enemy threat's and each nemesis killer's
+Eternal, minors, augment, crest and items: the ability-haste sources and their ultimate's
+cooldown (base, end of game, mid-fight estimate), what their takedowns fed, and item effects on
+their ultimate. When one of these explains the game (an ultimate coming back every minute
+because takedowns fed haste), say it in a flag or the lesson with those numbers: what fed it and
+how to deny it. Mid-fight figures are estimates; never state them as measured. The build notes'
+`coreVs` is the core into that lane opponent (labelled "most played" when only one core has
+enough games); prefer it over the all-matchups core in a buildCall.
+
 ## Pipeline (lean review only)
 
 From `engine/`: `npm run coach:lean:prepare` writes one task per game to

@@ -77,7 +77,8 @@ not in the env, stop immediately and report — no partial work.
    (the "Draft & team comp" card: tanks / divers / fundamentals / field shape win rate /
    draft fix, from data/aggregates/team-comp-report.json; rerun with `-- --all` after
    `npm run comps`; it also writes `kitRead`: the CC balance, the enemy who ran the game and
-   lane nemeses with counterplay, from data/game-data/kit-index.json + kit-profiles.json),
+   lane nemeses with counterplay, from data/game-data/kit-index.json + kit-profiles.json; and `threatBuilds`, how the
+   threat's and nemesis killers' builds worked: haste on their ultimate, what takedowns fed),
    `npm run postgame:items`, `npm run postgame:fights`, `npm run postgame:macro`,
    `npm run postgame:loadout`, `npm run postgame:rotations`, `npm run postgame:ranks`, then `npm run postgame:interrogate` LAST (it reads the blocks above and writes `interrogation.gameFlags`, the flags the review cites) (all idempotent — they only touch films missing
    their block). `postgame:ranks` (added 2026-11-03, live pred.gg, batched) writes each

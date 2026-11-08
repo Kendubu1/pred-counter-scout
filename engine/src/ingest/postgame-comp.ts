@@ -15,6 +15,7 @@ import { heroClass, roleTags } from '../team-comp.js';
 import { readKit, type HeroMeta, type KitHeroLite } from '../kit-read.js';
 import { buildNotes, type ItemInfo } from '../build-notes.js';
 import { buildPlaybook, type PbHero } from '../playbook.js';
+import { threatBuild, takedownTimes } from '../threat-build.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const OUT_DIR = path.join(ROOT, 'data/postgame');
@@ -43,6 +44,12 @@ function main() {
   try { reviewedTags = read('data/game-data/role-tags.json').heroes ?? {}; } catch { /* no review yet: keyword rules */ }
   const rt = new Map(heroes.map((h) => { const k = (kitIdx as any)[h.slug]; return [h.slug, roleTags(h, profiles[h.slug], k ? { hardCount: k.hardCount, selfHeal: k.abilities.some((a: any) => a.heal) } : undefined, reviewedTags[h.slug]?.tags)]; }));
   const predBuilds = read('data/aggregates/predgg-builds.json');
+  let matchupCores: Record<string, any> = {};
+  try { matchupCores = read('data/aggregates/matchup-cores.json').pairs ?? {}; } catch { /* npm run matchups:cores not run yet */ }
+  const heroCat = new Map((read('data/catalog/heroes.json') as any[]).map((h) => [h.slug, h]));
+  const itemCat = new Map((read('data/catalog/items.json') as any[]).map((i) => [i.slug, i]));
+  const eternalsCat = read('data/game-data/eternals.json').eternals;
+  const augCat = read('data/aggregates/predgg-augments.json').catalog ?? {};
   const heroMeta = new Map<string, HeroMeta>(heroes.map((h) => [h.slug, { power: power.get(h.slug) ?? null, cls: heroClass(h.classes) }]));
 
   const files = readdirSync(OUT_DIR).filter((f) => UUID_RE.test(f));
@@ -50,7 +57,7 @@ function main() {
   for (const f of files) {
     const p = path.join(OUT_DIR, f);
     const film = JSON.parse(readFileSync(p, 'utf8'));
-    if (film.teamComp && film.kitRead && film.buildNotes && film.playbook && !all) continue;
+    if (film.teamComp && film.kitRead && film.buildNotes && film.playbook && film.threatBuilds && !all) continue;
     const players: CompPlayer[] = film.players.map((x: CompPlayer) => ({ us: x.us, heroSlug: x.heroSlug, heroName: x.heroName, role: x.role }));
     const tc = readTeamComp(players, film.comp?.ourDamage ?? { physical: 0, magical: 0 }, tags, field, wr, heroRoles, displayNames, (s) => rt.get(s) ?? []);
     if (!tc) { skipped++; continue; }
@@ -58,7 +65,14 @@ function main() {
     film.kitRead = readKit(film.players, film.kills ?? [], kitIdx, profiles as Record<string, { playAgainst?: string }>, heroMeta);
     const pb = (us: boolean): PbHero[] => film.players.filter((x: any) => x.us === us).map((x: any) => ({ slug: x.heroSlug, name: x.heroName, role: x.role, tags: rt.get(x.heroSlug) ?? [], abilities: ((kitIdx as any)[x.heroSlug]?.abilities ?? []) }));
     film.playbook = buildPlaybook(pb(true), pb(false));
-    film.buildNotes = buildNotes(film.players, film.kitRead, kitIdx, itemInfo, heroMeta, pairs, bm, links, predBuilds.byRole, predBuilds.baselineByRole);
+    // How the enemy threat's and each nemesis killer's build worked (src/threat-build.ts).
+    const tbSlugs = [...new Set([film.kitRead?.threat?.slug, ...(film.kitRead?.nemeses ?? []).map((n: any) => n.bySlug)].filter(Boolean))];
+    film.threatBuilds = Object.fromEntries(tbSlugs.map((slug) => {
+      const ep = film.players.find((x: any) => !x.us && x.heroSlug === slug);
+      if (!ep) return [slug, null];
+      return [slug, threatBuild(ep, { hero: heroCat.get(slug), items: itemCat, eternals: eternalsCat, augments: augCat, takedownTimes: takedownTimes(slug, ep.assists ?? 0, film.kills ?? [], 'them') })];
+    }).filter(([, v]) => v));
+    film.buildNotes = buildNotes(film.players, film.kitRead, kitIdx, itemInfo, heroMeta, pairs, bm, links, predBuilds.byRole, predBuilds.baselineByRole, matchupCores);
     writeFileSync(p, JSON.stringify(film, null, 1));
     touched++;
   }

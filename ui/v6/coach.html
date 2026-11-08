@@ -198,6 +198,7 @@
   .bn-n{color:var(--text-2);font-size:.74rem}.bn img.bn-i{display:inline-block!important;width:20px;height:20px;border-radius:4px;vertical-align:-5px;margin-right:2px;border:1px solid var(--border)}.bn-i.off{opacity:.35;filter:grayscale(.8)}
   .bn-shared{color:var(--gold);font-size:.82rem;margin:.1rem 0 .4rem}
   @media (max-width:560px){.tc-bal{font-size:.62rem}.tc-bal thead th:first-child{width:2.2rem}.tc-bal .lg{display:none}.tc-bal .sh{display:inline}.bn-k{min-width:4.6rem}}
+  .tb ul{margin:.25rem 0 0;padding-left:1.1rem}.tb li{margin:.15rem 0;line-height:1.45}
   .cv-toggle{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem;font-size:.74rem;color:var(--text-2)}
   .build-call{margin:.35rem 0 0;font-size:.86rem;color:var(--text-1);line-height:1.5}.build-call b{color:var(--text-0);margin-right:.3rem}
   .rd-box{margin-top:.7rem;text-align:center}
@@ -939,6 +940,14 @@ function pgReview(f) {
     const swap = tc.swap ? `<div class="tc-swap"><b>Draft fix:</b> swap ${esc(tc.swap.out)} (${esc(tc.swap.role)}) for a real tank, because ${esc(tc.swap.reason)}. Tanks that win in ${esc(tc.swap.role)} this patch: <span class="tc-opts">${tc.swap.options.map((o) => `<span class="tc-opt">${hIcon(o.slug, 20)} <b>${esc(o.name)}</b> ${o.wr}% <span class="tc-n">(${o.n.toLocaleString()} games)</span></span>`).join('')}</span></div>` : '';
     // Kit read (film.kitRead, npm run postgame:comp; rules in engine/src/kit-read.ts).
     const kr = f.kitRead;
+    // How the threat's / a nemesis killer's build worked (film.threatBuilds, engine/src/threat-build.ts):
+    // ability-haste maths on their ultimate, what their takedowns fed, ultimate enhancers.
+    const tbBlock = (slug, open) => {
+      const tb = (f.threatBuilds || {})[slug];
+      if (!tb || !tb.lines.length) return '';
+      const body = `<div class="tb"><div class="tc-n">${esc(tb.loadout)}</div><ul>${tb.lines.map((l) => `<li>${esc(l)}</li>`).join('')}</ul></div>`;
+      return open ? `<div class="tc-h" style="margin-top:.5rem">How the build worked</div>${body}` : `<details class="tc-more"><summary>How ${esc(tb.hero)}'s build worked</summary>${body}</details>`;
+    };
     const ccBlock = kr ? (() => {
       const gap = kr.cc.them.length - kr.cc.us.length;
       const list = (xs) => xs.map((a) => `<li><b>${esc(a.hero)}</b> ${esc(a.ability)} <span class="tc-n">${esc(a.types.join(' + '))}${a.sec ? ` ${a.sec}s` : ''}</span></li>`).join('');
@@ -951,7 +960,7 @@ function pgReview(f) {
       ${t.victims.length ? `<div class="tc-n">Killed ${t.victims.map((v) => `${esc(v.hero)} ${v.count}`).join(' · ')}</div>` : ''}</div></div>
       ${t.kit.length ? `<p>${t.kit.map(esc).join(' ')}</p>` : ''}
       ${t.playAgainst ? `<p><b>How to play it:</b> ${esc(((x) => /[.!?]$/.test(x) ? x : x + '.')(t.playAgainst.trim().charAt(0).toUpperCase() + t.playAgainst.trim().slice(1)))}</p>` : ''}
-      ${t.answers.length ? `<p><b>Answers:</b> ${t.answers.map(esc).join(' ')}</p>` : ''}</div>`; })() : '';
+      ${t.answers.length ? `<p><b>Answers:</b> ${t.answers.map(esc).join(' ')}</p>` : ''}${tbBlock(t.slug, true)}</div>`; })() : '';
     // Grouped by the enemy hero; that enemy's counterplay is shown once, and not at all
     // when it is already the threat above.
     const nemBlock = kr && kr.nemeses.length ? (() => {
@@ -963,7 +972,7 @@ function pgReview(f) {
         const answers = [...new Set(g.victims.map((v) => v.answer).filter(Boolean))];
         return `<li>${hIcon(g.bySlug, 22)} <span><b>${esc(g.byHero)}</b> killed ${g.victims.map((v) => `<b>${esc(v.player)}</b> <span class="tc-n">(${esc(v.hero)})</span> ${v.byCount} of ${v.deaths}`).join(', ')}.
         ${isThreat ? '<span class="tc-n">Counterplay above.</span>' : `${g.enemyCc.length ? `<span class="tc-n">Watch ${esc(g.enemyCc.join(', '))}.</span> ` : ''}${g.playAgainst ? esc(dot(g.playAgainst)) : ''}`}
-        ${answers.length ? ` <b>${esc(answers.join(' '))}</b>` : ''}</span></li>`; }).join('')}</ul></div>`;
+        ${answers.length ? ` <b>${esc(answers.join(' '))}</b>` : ''}${isThreat ? '' : tbBlock(g.bySlug, false)}</span></li>`; }).join('')}</ul></div>`;
     })() : '';
     // Build notes (film.buildNotes, engine/src/build-notes.ts): lane record, what the field
     // buys more into this opponent, and what this enemy comp asked of the build.
@@ -1294,7 +1303,8 @@ function pgReview(f) {
       const rows = [];
       if (b.lane) rows.push(`<span class="bn-k">Lane</span> vs ${esc(b.lane.opp)} <b style="color:${pctCol(b.lane.wr)}">${b.lane.wr}%</b> <span class="bn-n">${b.lane.n} games</span>`);
       if (b.built && b.built.length) rows.push(`<span class="bn-k">Built</span> ${b.built.map((i) => itag(i.slug)).join('')}`);
-      if (b.core) rows.push(`<span class="bn-k">Best core</span> ${b.core.items.map((i) => itag(i.slug, i.has)).join('')} <span class="bn-n">${b.core.items.map((i) => esc(i.name)).join(' > ')} · ${b.core.wr}% in ${b.core.n} games${b.core.items.some((i) => i.has) ? ` · ${b.core.items.filter((i) => i.has).length} of 3 built` : ''}</span>`);
+      if (b.coreVs) rows.push(`<span class="bn-k">Core vs ${esc(b.coreVs.vs)}</span> ${b.coreVs.items.map((i) => itag(i.slug, i.has)).join('')} <span class="bn-n">${b.coreVs.items.map((i) => esc(i.name)).join(' > ')} · ${b.coreVs.wr}% in ${b.coreVs.n} games into ${esc(b.coreVs.vs)}${b.coreVs.basis === 'most played' ? ', the most played' : ''}${b.coreVs.items.some((i) => i.has) ? ` · ${b.coreVs.items.filter((i) => i.has).length} of 3 built` : ''}</span>`);
+      if (b.core && !(b.coreVs && b.coreVs.items.map((i) => i.slug).sort().join() === b.core.items.map((i) => i.slug).sort().join())) rows.push(`<span class="bn-k">${b.coreVs ? 'Overall core' : 'Best core'}</span> ${b.core.items.map((i) => itag(i.slug, i.has)).join('')} <span class="bn-n">${b.core.items.map((i) => esc(i.name)).join(' > ')} · ${b.core.wr}% in ${b.core.n} games, all matchups${b.coreVs || !b.lane ? '' : ` (too few games into ${esc(b.lane.opp)} yet)`}${b.core.items.some((i) => i.has) ? ` · ${b.core.items.filter((i) => i.has).length} of 3 built` : ''}</span>`);
       for (const a of b.adapt) rows.push(`<span class="bn-k">Into ${esc(a.vs)}</span> ${itag(a.slug, a.has)} <b>${esc(a.name)}</b> <span class="bn-n">${a.into}% buy it (usually ${a.usual}%)${a.wr != null ? `, wins ${a.wr}%` : ''}${a.has ? ' · built' : ''}</span>`);
       for (const n of b.needs) rows.push(`<span class="bn-k">Needs</span> ${n.has ? '<span class="tc-ok">✓</span>' : '<span class="tc-bad">✗</span>'} ${esc(n.answer)}${bnShared.includes(n.why) ? '' : ` <span class="bn-n">${esc(n.why)}</span>`}`);
       return rows.length ? `<div class="bn">${rows.map((r) => `<div>${r}</div>`).join('')}</div>` : '';
