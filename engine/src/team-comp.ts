@@ -26,6 +26,10 @@ export interface KitProfile { archetype?: string; dive?: string }
 // Heroes with no kit profile yet whose dive the maintainer has stated.
 // Scarlett: a diver (maintainer, 2026-11-07).
 export const DIVER_OVERRIDES: Record<string, boolean> = { scarlett: true };
+/** Role tags the maintainer has ruled on, added whatever the archetype text says (a kit re-scan
+ *  rewrites archetypes, never these). Lt. Belica: burst (2026-11-08), Seismic Assault stun into
+ *  Void Bomb into Neural Disruptor's missing-mana / missing-health damage, with a reset on kills. */
+export const ROLE_TAG_OVERRIDES: Record<string, string[]> = { 'lt-belica': ['burst'] };
 
 const ENGAGE_WORDS = /engage|initiator|tank|catch|pull|\bcc\b|\(cc/i;
 
@@ -194,5 +198,6 @@ export function roleTags(h: HeroInfo, profile: KitProfile | undefined, kit: { ha
   if (t.cls === 'MARKSMAN' || /sustained dps|marksman carry|battle mage/.test(a)) out.add('dps');
   if (/\bsustain\b(?!ed)|drain/.test(a) || (t.frontline && kit?.selfHeal)) out.add('sustain');
   if (/duel|skirmish/.test(a)) out.add('duelist');
+  for (const g of ROLE_TAG_OVERRIDES[h.slug] ?? []) out.add(g as RoleTag);
   return ROLE_TAGS.filter((x) => out.has(x)).slice(0, 3);
 }
