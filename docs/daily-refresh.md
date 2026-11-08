@@ -134,6 +134,14 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    assassin / engage / dive / enchanter counts, the same against the enemy's
    count, comp styles head to head, lane-pair duos, and the kit features (hard CC, long CC,
    mobility, unstoppable, healers, magic damage, cleanse) vs the enemy.
+   **Then finish any open lineup backfill:** `MAX_REQUESTS=400 npm run comps:backfill -- --resume-only`
+   (prints "no open lineup backfill" and exits when there is none). While
+   data/aggregates/team-comps/<patch>/backfill-state.json is committed, a re-read of an earlier
+   stretch is still open (1.18: patch release to the first daily lineup run, 8 Nov 08:58); each
+   run takes another slice (~400 pages, about 8-10 hours of games, ~15-25 min with the 2s delay)
+   and commits the state, the day files and coverage.json. If the stream throttles past the
+   back-off ladder it saves and stops; the next day resumes. It never touches perk-stream or
+   build counts.
    **Run `npm run eternals:usage` and `npm run comps` right after perks every day** (both
    zero-API; eternal-usage.json had sat at 11-03 / 467 matches because this step was missing) so the report and the
    coach page's comp-shape win rates track the growing lineup file, then

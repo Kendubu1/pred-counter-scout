@@ -5806,3 +5806,17 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   and their longest area CC / unstoppables to bait. kit-index gained aoe and damage per ability.
   `npm run playbook -- "<5>" vs "<5>"` does the same for any draft, and the project skill
   `.claude/skills/team-playbook` tells Claude to coach from it, never from memory.
+
+## 2026-11-08 · Lineup backfill hands off to the daily job
+
+- The 1.18 lineup backfill (patch release → 8 Nov 08:58) ran ~4,850 stream pages from this
+  session and reached 7 Nov 12:07 before we paused it. pred.gg throttled in waves: a 60s back-off
+  every ~100 pages, and twice the ladder climbed to 5 and 10 minutes. A one-session marathon is
+  fragile; slices are not.
+- So the resume state is now COMMITTED (it was gitignored) and the daily job runs
+  `MAX_REQUESTS=400 npm run comps:backfill -- --resume-only` after perks: a no-op once no backfill
+  is open. coverage.json carries the stretch done so far as a `backfill` segment (to = cursor),
+  so any reader knows where complete data ends. Day files are written tmp + rename, so
+  `npm run comps` never reads a half-written gzip while a backfill runs.
+- Plat+ comp splits at this volume (~1.5k Plat+ team sides) are ±8 points: too thin to read.
+  All ranks (46k sides) already shows the tank gap clearly (+2 tanks 53.3%, -2 46.7%).

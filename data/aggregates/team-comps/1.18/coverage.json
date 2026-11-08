@@ -2,8 +2,16 @@
  "format": "team-comps/v1",
  "patch": "1.18",
  "patchReleasedAt": "2026-11-03T09:59:41Z",
- "note": "Stretches of the pred.gg public match stream whose ranked matches are in this folder. via \"daily\" = every ranked match in [from, to] (npm run perks); via \"sample\" = spaced pages across [from, to], NOT every match. Day files are <YYYY-MM-DD>.jsonl by match end time (UTC); see engine/src/ingest/team-comps.ts for the row format.",
+ "note": "Stretches of the pred.gg public match stream whose ranked matches are in this folder. via \"daily\" = every ranked match in [from, to] (npm run perks); via \"sample\" = spaced pages across [from, to], NOT every match; via \"backfill\" = every ranked match in [from, to], re-read after the fact (while backfill-state.json exists it is still running and to is its cursor). Day files are <YYYY-MM-DD>.jsonl.gz by match end time (UTC); see engine/src/ingest/team-comps.ts for the row format.",
  "segments": [
+  {
+   "from": "2026-11-03T09:59:41Z",
+   "to": "2026-11-07T12:07:33.000Z",
+   "via": "backfill",
+   "matches": 22964,
+   "requests": 4850,
+   "upgraded": 2272
+  },
   {
    "from": "2026-11-03T10:00:00Z",
    "to": "2026-11-07T18:20:00Z",

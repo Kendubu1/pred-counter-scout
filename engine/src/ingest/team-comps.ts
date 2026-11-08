@@ -23,7 +23,7 @@
 // match-rank.ts; null when pred.gg could not resolve it). win = index of the
 // winning team in `teams` (the stream's teamId). Rows are deduped by match id
 // within a day file, so a re-read page (resume after a crash) never doubles a match.
-import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, unlinkSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, unlinkSync, renameSync } from 'node:fs';
 import { gunzipSync, gzipSync } from 'node:zlib';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -138,7 +138,10 @@ export class TeamCompWriter {
     mkdirSync(this.dir, { recursive: true });
     for (const day of this.dirty) {
       const rows = [...this.days.get(day)!.values()].sort((a, b) => a.end.localeCompare(b.end) || a.id.localeCompare(b.id));
-      writeFileSync(gzPath(this.dir, day), gzipSync(rows.map((r) => JSON.stringify(r)).join('\n') + '\n', { level: 9 }));
+      // tmp + rename, so a reader (npm run comps) never sees a half-written day file
+      const out = gzPath(this.dir, day);
+      writeFileSync(`${out}.tmp`, gzipSync(rows.map((r) => JSON.stringify(r)).join('\n') + '\n', { level: 9 }));
+      renameSync(`${out}.tmp`, out);
       if (existsSync(txtPath(this.dir, day))) unlinkSync(txtPath(this.dir, day));
     }
     this.dirty.clear();
