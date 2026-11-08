@@ -176,7 +176,7 @@
   .tc-tag.tc-engage{background:rgba(220,60,60,.16);color:#ff7a7a}.tc-tag.tc-peel{background:rgba(0,196,140,.14);color:#3fd3a7}
   .tc-tag.tc-control{background:rgba(168,85,247,.16);color:#c08bff}.tc-tag.tc-burst{background:rgba(255,200,60,.14);color:#e8b84a}
   .tc-tag.tc-poke,.tc-tag.tc-dps,.tc-tag.tc-sustain,.tc-tag.tc-duelist{background:rgba(150,150,170,.16);color:var(--text-1)}
-  .tc-bal{width:100%;border-collapse:collapse;margin-top:.5rem;font-size:.74rem;text-align:center}
+  .tc-bal{width:100%;max-width:100%;table-layout:fixed;border-collapse:collapse;margin-top:.5rem;font-size:.74rem;text-align:center}.tc-bal thead th:first-child{width:2.6rem}.tc-bal .sh{display:none;text-transform:none}.tc-bal .sh::first-letter{text-transform:uppercase}
   .tc-bal th,.tc-bal td{padding:.2rem .15rem;border-top:1px solid var(--border)}.tc-bal thead th{color:var(--text-2);font-weight:600;text-transform:capitalize}
   .tc-bal tbody th{text-align:left;font-weight:800}.tc-bal td{font-weight:700;color:var(--text-0)}.tc-bal td.tc-zero{color:var(--text-2);font-weight:400;opacity:.6}
   .tc-grid{display:grid;grid-template-columns:1fr;gap:0 1.2rem}
@@ -185,7 +185,7 @@
   .bn-k{display:inline-block;min-width:5.6rem;color:var(--text-2);font-size:.72rem;text-transform:uppercase;letter-spacing:.02em}
   .bn-n{color:var(--text-2);font-size:.74rem}.bn img.bn-i{display:inline-block!important;width:20px;height:20px;border-radius:4px;vertical-align:-5px;margin-right:2px;border:1px solid var(--border)}.bn-i.off{opacity:.35;filter:grayscale(.8)}
   .bn-shared{color:var(--gold);font-size:.82rem;margin:.1rem 0 .4rem}
-  @media (max-width:560px){.tc-bal{font-size:.62rem}.bn-k{min-width:4.6rem}}
+  @media (max-width:560px){.tc-bal{font-size:.62rem}.tc-bal thead th:first-child{width:2.2rem}.tc-bal .lg{display:none}.tc-bal .sh{display:inline}.bn-k{min-width:4.6rem}}
   .cv-toggle{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem;font-size:.74rem;color:var(--text-2)}
   .build-call{margin:.35rem 0 0;font-size:.86rem;color:var(--text-1);line-height:1.5}.build-call b{color:var(--text-0);margin-right:.3rem}
   .rd-box{margin-top:.7rem;text-align:center}
@@ -913,8 +913,9 @@ function pgReview(f) {
     const balance = (() => {
       if (!tc.us.balance) return '';
       const keys = ['tank', 'engage', 'peel', 'control', 'diver', 'burst', 'poke', 'dps', 'sustain', 'duelist'];
+      const SHORT = { engage: 'eng', control: 'ctrl', diver: 'dive', sustain: 'sus', duelist: 'duel', burst: 'brst', dps: 'DPS' };
       const cell = (n) => `<td class="${n ? '' : 'tc-zero'}">${n || 0}</td>`;
-      return `<table class="tc-bal"><thead><tr><th></th>${keys.map((k) => `<th title="${esc(TAG_TIP[k])}">${k}</th>`).join('')}</tr></thead><tbody>
+      return `<table class="tc-bal"><thead><tr><th></th>${keys.map((k) => `<th title="${esc(k)}: ${esc(TAG_TIP[k])}"><span class="lg">${k === 'dps' ? 'DPS' : k}</span><span class="sh">${SHORT[k] || k}</span></th>`).join('')}</tr></thead><tbody>
         <tr><th style="color:var(--green)">Us</th>${keys.map((k) => cell(tc.us.balance[k])).join('')}</tr>
         <tr><th style="color:var(--red)">Them</th>${keys.map((k) => cell(tc.them.balance[k])).join('')}</tr></tbody></table>`;
     })();
