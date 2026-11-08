@@ -5885,3 +5885,10 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   minions incl. enemy-jungle camps, sprees, ward positions, and every camp/objective kill. Saved in
   the existing loadout lookup (no extra calls going forward); lineups v3 append level, buy seconds and
   extra totals. Hero kills carry no assisters, so assist timing is still unknown.
+- One lead story per build read (maintainer, 2026-11-08: "stick to one narrative, other tabs support").
+  `npm run norms` places a game on the patch's hero-role percentiles from the lineups; build-story.ts
+  scores the candidate stories and the highest wins. Checked against the maintainer's reads: The Fey
+  (mid, 11/2/11) = damage 73rd pct, kill participation 80th, fewer deaths than ~80%: lead "stayed alive,
+  joined every fight, takedowns sped up Fly Trap". Mourn (offlane, 5/1/11) = damage 88th pct, 34% of
+  team damage, mitigation 6th pct: lead "built to deal damage, not to soak it". First cut scored the
+  snowball story on survival and picked it for Mourn; scoring it on kill participation only fixed that.

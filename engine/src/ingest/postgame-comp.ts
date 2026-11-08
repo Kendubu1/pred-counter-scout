@@ -17,6 +17,7 @@ import { buildNotes, type ItemInfo } from '../build-notes.js';
 import { buildPlaybook, type PbHero } from '../playbook.js';
 import { threatBuild, takedownTimes } from '../threat-build.js';
 import { powerProfile, powerLines, powerLesson } from '../build-power.js';
+import { buildStory } from '../build-story.js';
 import { levelAtMinute } from '../matchup.js';
 import { metricsOf, scoreRows, type Row } from '../standouts.js';
 // "Above the norm" for the build read: +0.5 role SD on the standouts composite (about the top
@@ -57,6 +58,8 @@ function main() {
   const eternalsCat = read('data/game-data/eternals.json').eternals;
   const augCat = read('data/aggregates/predgg-augments.json').catalog ?? {};
   const calibration = JSON.parse(readFileSync(path.join(ROOT, 'engine/fixtures/calibration.json'), 'utf8'));
+  let norms: Record<string, any> = {};
+  try { norms = read('data/aggregates/hero-role-norms.json').heroes ?? {}; } catch { /* npm run norms not run yet */ }
   const heroStats = new Map((read('data/catalog/heroes.json') as any[]).map((h) => [h.slug, h.base_stats ?? {}]));
   const heroMeta = new Map<string, HeroMeta>(heroes.map((h) => [h.slug, { power: power.get(h.slug) ?? null, cls: heroClass(h.classes) }]));
 
@@ -102,7 +105,16 @@ function main() {
       });
       const pl = powerLesson(pp, ep.heroName);
       const lines = [...tb.lines, ...powerLines(pp, ep.heroName), ...(pl ? [`Lesson: ${pl}`] : [])];
-      return [ep.heroSlug, { ...tb, lines, power: pp, card: { ...tb.card, power: pp, powerLesson: pl }, us: !!ep.us, why: [...ws], score: standout.get(`${film.matchId}|${pid}`) ?? null }];
+      // One lead story from the data (src/build-story.ts): this game on the patch's norms for the hero-role.
+      const fedSrc = tb.haste.sources.find((x: any) => /takedown/.test(`${x.note ?? ''} ${x.how ?? ''}`));
+      const topPen = pp.vs.filter((v: any) => v.diedTo > 0).sort((a: any, b: any) => b.diedTo - a.diedTo)[0] ?? pp.vs[0];
+      const story = buildStory(ep, { kills: mates.reduce((a: number, x: any) => a + x.kills, 0), damage: mates.reduce((a: number, x: any) => a + (x.damageToHeroes ?? 0), 0) }, film.durationMin ?? 30, norms[`${ep.heroSlug}|${ep.role}`], {
+        ult: tb.ult, fed: fedSrc ? { name: fedSrc.what.replace(/ \(minor\)$/, ''), takedowns: tb.takedowns } : null,
+        pen: topPen ? { hero: topPen.hero, more: topPen.more, type: pp.type } : null, amps: [...new Set(pp.amps.map((a: any) => a.name))] as string[],
+        sustain: !!pp.sustain, tough: !!pp.tough,
+      });
+      if (story.lead) lines.unshift(`Lead story: ${story.lead.title}. ${story.lead.text}`);
+      return [ep.heroSlug, { ...tb, lines, power: pp, story, card: { ...tb.card, power: pp, powerLesson: pl, story }, us: !!ep.us, why: [...ws], score: standout.get(`${film.matchId}|${pid}`) ?? null }];
     }));
     film.buildNotes = buildNotes(film.players, film.kitRead, kitIdx, itemInfo, heroMeta, pairs, bm, links, predBuilds.byRole, predBuilds.baselineByRole, matchupCores);
     writeFileSync(p, JSON.stringify(film, null, 1));

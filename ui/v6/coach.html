@@ -199,7 +199,14 @@
   .bn-shared{color:var(--gold);font-size:.82rem;margin:.1rem 0 .4rem}
   @media (max-width:560px){.tc-bal{font-size:.62rem}.tc-bal thead th:first-child{width:2.2rem}.tc-bal .lg{display:none}.tc-bal .sh{display:inline}.bn-k{min-width:4.6rem}}
   .ab-row summary{list-style-position:inside}.ab-sum{display:inline-flex;align-items:center;gap:.4rem;flex-wrap:wrap;vertical-align:middle}
-  .tb{margin-top:.35rem}.tb-sec{margin-top:.7rem}.tb-k{font-weight:700;font-size:.82rem;color:var(--text-0);margin-bottom:.3rem}
+  .tb{margin-top:.35rem}
+  .tb-leadcard{border:1px solid var(--border);border-radius:8px;padding:.6rem .7rem;background:var(--bg-2);margin-top:.35rem}
+  .tb-leadt{font-weight:800;color:var(--text-0);font-size:.95rem}.tb-leadcard p{margin:.25rem 0 .45rem;font-size:.86rem;line-height:1.5}
+  .tb-norms{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.3rem .7rem}
+  .tb-chip{display:grid;grid-template-columns:1fr auto;gap:.1rem .4rem;font-size:.74rem;color:var(--text-1)}
+  .tb-chip i{grid-column:1/3;height:5px;background:var(--bg-3);border-radius:3px;overflow:hidden}.tb-chip i b{display:block;height:100%;background:var(--accent)}
+  .tb-chip em{font-style:normal;color:var(--text-0);font-weight:700}
+  .tb-tabs{display:flex;gap:.35rem;flex-wrap:wrap;margin:.6rem 0 .1rem}.tb-sec{margin-top:.7rem}.tb-k{font-weight:700;font-size:.82rem;color:var(--text-0);margin-bottom:.3rem}
   .tb-lesson{list-style:none;margin:.3rem 0 0;padding:.45rem .65rem;border-left:3px solid var(--gold);background:var(--bg-2);border-radius:6px;font-size:.86rem;line-height:1.5}
   .tb-cdrow{display:grid;grid-template-columns:7.5rem 1fr 3.2rem;align-items:center;gap:.5rem;margin:.2rem 0;font-size:.8rem}
   .tb-cdrow .tc-n{grid-column:2/4;margin-top:-.15rem}
@@ -827,6 +834,12 @@ function tlSelect(kind, n) {
   const src = document.querySelector(`#tldetails [data-${kind === 'o' ? 'o' : kind === 't' ? 't' : 'i'}="${n}"]`);
   if (src) { panel.innerHTML = src.innerHTML; panel.hidden = false; }
 }
+// Build read tabs (How X's build worked): show one panel.
+function tbTab(btn, k) {
+  const box = btn.closest('.tb'); if (!box) return;
+  box.querySelectorAll('.tb-tabs .pgf').forEach((b) => { const on = b === btn; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); });
+  box.querySelectorAll('.tb-panel').forEach((p) => { p.hidden = p.dataset.tab !== k; });
+}
 // Team shape radar: fill the picked team, outline the other dashed.
 function rdShow(btn, side) {
   const box = btn.closest('.rd-box'); if (!box) return;
@@ -992,9 +1005,23 @@ function pgReview(f) {
         ${pp.tough ? `<li><b>Toughness</b> ${esc(pp.tough.stats.join(', '))} <span class="tc-n">took ${pp.tough.taken.toLocaleString()}, mitigated ${pp.tough.mitigated.toLocaleString()}, died ${pp.tough.deaths}x</span></li>` : ''}</ul></div>` : '';
       const extraBlock = c.extras.filter((x) => !(pp && pp.amps.some((a) => a.name === x.name))).length ? `<div class="tb-sec"><div class="tb-k">Also working for ${esc(tb.hero)} <span class="tc-n">${c.takedowns.count} takedowns: ${c.takedowns.kills} kills, ${c.takedowns.assists} assists</span></div>
         <ul class="tb-list">${c.extras.filter((x) => !(pp && pp.amps.some((a) => a.name === x.name))).map((x) => `<li><b>${esc(x.name)}</b> <span class="tb-kind">${esc(x.kind)}</span> ${esc(x.how)}</li>`).join('')}</ul></div>` : '';
-      const lessons = [c.lesson, c.powerLesson, c.heals ? 'Anti-heal (the Tainted items) cuts the healing in this build.' : null].filter(Boolean);
-      const lesson = lessons.length ? `<ul class="tb-lesson">${lessons.map((l) => `<li>${esc(l)}</li>`).join('')}</ul>` : '';
-      const body = `<div class="tb">${lesson}${dmgBlock}${cdBlock}${hasteBlock}${keepBlock}${extraBlock}</div>`;
+      // Each lesson lives with its tab; only the lead story's lesson shows under the lead card.
+      const tabLesson = { cooldowns: c.lesson, damage: c.powerLesson, alive: c.heals ? 'Anti-heal (the Tainted items) cuts the healing in this build.' : null };
+      const lessonBox = (t) => t ? `<ul class="tb-lesson"><li>${esc(t)}</li></ul>` : '';
+      // One lead story (film.threatBuilds[].story, engine/src/build-story.ts), the rest as tabs.
+      const st = c.story;
+      const ord = (n) => `${n}${n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th'}`;
+      const chip = (label, pct, invert) => `<span class="tb-chip"><span>${label}</span><i><b style="width:${invert ? 100 - pct : pct}%"></b></i><em>${invert ? `fewer than ${100 - pct}%` : `${ord(pct)} pct`}</em></span>`;
+      const norms = st && st.vsNorm ? `<div class="tb-norms">${chip('Damage / min', st.vsNorm.dpm.pct)}${chip('Kill participation', st.vsNorm.kp.pct)}${chip('Deaths', st.vsNorm.dp10.pct, true)}${chip('Mitigated / min', st.vsNorm.mpm.pct)}${chip('Healing / min', st.vsNorm.hpm.pct)}</div><div class="tc-n">Against ${st.normN.toLocaleString()} ${esc(tb.hero)} games in the same role this patch (ranked).</div>` : '';
+      const leadCard = st && st.lead ? `<div class="tb-leadcard"><div class="tb-leadt">${esc(st.lead.title)}</div><p>${esc(st.lead.text)}</p>${norms}</div>` : norms ? `<div class="tb-leadcard">${norms}</div>` : '';
+      const leadTab = st && st.tabs ? st.tabs[0] : null;
+      const leadLesson = st && st.lead ? (st.lead.lesson || (leadTab ? tabLesson[leadTab] : null)) : null;
+      const inTab = (k, html) => html ? `${k === leadTab && st && st.lead && !st.lead.lesson ? '' : lessonBox(tabLesson[k])}${html}` : '';
+      const panels = { damage: inTab('damage', dmgBlock), cooldowns: inTab('cooldowns', `${cdBlock}${hasteBlock}${extraBlock}`), alive: inTab('alive', keepBlock) };
+      const names = { damage: 'Damage', cooldowns: 'Cooldowns', alive: 'Staying alive' };
+      const order = ((st && st.tabs) || ['damage', 'cooldowns', 'alive']).filter((k) => panels[k]);
+      const tabs = order.length ? `<div class="tb-tabs" role="tablist">${order.map((k, i) => `<button class="pgf${i ? '' : ' on'}" role="tab" aria-selected="${!i}" onclick="tbTab(this,'${k}')">${names[k]}</button>`).join('')}</div>${order.map((k, i) => `<div class="tb-panel" data-tab="${k}"${i ? ' hidden' : ''}>${panels[k]}</div>`).join('')}` : '';
+      const body = `<div class="tb">${leadCard}${lessonBox(leadLesson)}${tabs}</div>`;
       if (bare) return `<div class="tc-n" style="margin-top:.3rem">${esc(tb.loadout)}</div>${body}`;
       return open ? `<div class="tc-h" style="margin-top:.6rem">How ${esc(tb.hero)}'s build worked <span class="tc-n">${esc(tb.loadout)}</span></div>${body}` : `<details class="tc-more"><summary>How ${esc(tb.hero)}'s build worked</summary>${body}</details>`;
     };
