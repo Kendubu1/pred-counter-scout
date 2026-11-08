@@ -186,10 +186,12 @@
   .bn-n{color:var(--text-2);font-size:.74rem}.bn img.bn-i{display:inline-block!important;width:20px;height:20px;border-radius:4px;vertical-align:-5px;margin-right:2px;border:1px solid var(--border)}.bn-i.off{opacity:.35;filter:grayscale(.8)}
   .bn-shared{color:var(--gold);font-size:.82rem;margin:.1rem 0 .4rem}
   @media (max-width:560px){.tc-bal{font-size:.62rem}.bn-k{min-width:4.6rem}}
-  .rd-wrap{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.6rem}
-  .rd{margin:0;text-align:center}.rd figcaption{font-weight:800;font-size:.84rem}.rd svg{width:100%;max-width:330px;height:auto}
+  .rd-box{margin-top:.7rem;text-align:center}
+  .rd-top{display:flex;align-items:center;justify-content:center;gap:.6rem;flex-wrap:wrap}
+  .rd-top .pgfilter{margin:0}
+  .rd-box svg{width:100%;max-width:400px;height:auto;display:block;margin:.2rem auto 0}
   .rd-l{fill:var(--text-2);font-size:9.5px}.rd-key{font-size:.72rem;color:var(--text-2);text-align:center;margin-top:.1rem}
-  @media (max-width:520px){.rd-wrap{grid-template-columns:1fr}}
+  .rd-box[data-show=us] .rd-them-fill,.rd-box[data-show=us] .rd-us-dash,.rd-box[data-show=them] .rd-us-fill,.rd-box[data-show=them] .rd-them-dash{display:none}
   .pb-grid{display:grid;grid-template-columns:1fr;gap:.4rem 1.2rem;margin-top:.35rem}
   @media (min-width:900px){.pb-grid{grid-template-columns:1fr 1fr}}
   .pb{font-size:.84rem;line-height:1.5}.pb ol{margin:.25rem 0 .2rem;padding-left:1.3rem}.pb li{margin:.25rem 0}.pb li>a,.pb li img{display:inline-block!important;vertical-align:-5px;margin-right:.2rem}.pb li img{width:20px;height:20px}
@@ -795,6 +797,12 @@ function tlSelect(kind, n) {
   const src = document.querySelector(`#tldetails [data-${kind === 'o' ? 'o' : kind === 't' ? 't' : 'i'}="${n}"]`);
   if (src) { panel.innerHTML = src.innerHTML; panel.hidden = false; }
 }
+// Team shape radar: fill the picked team, outline the other dashed.
+function rdShow(btn, side) {
+  const box = btn.closest('.rd-box'); if (!box) return;
+  box.dataset.show = side;
+  box.querySelectorAll('.pgf').forEach((b) => { const on = b === btn; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); });
+}
 // Population filter pills over the strip: toggle a whole mark family. If the
 // currently selected mark just got hidden, close its panel too.
 function tlFilter(kind, btn) {
@@ -956,14 +964,15 @@ function pgReview(f) {
       const grid = [1, 2, 3].map((g) => `<polygon points="${AX.map((_, i) => pt(i, (R * g) / 3).map((x) => x.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="var(--border)" stroke-width="1"/>`).join('')
         + AX.map((_, i) => { const [x, y] = pt(i, R); return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="var(--border)" stroke-width="1"/>`; }).join('');
       const labels = AX.map(([, l], i) => { const [x, y] = pt(i, R + 15); return `<text x="${x.toFixed(1)}" y="${(y + 3).toFixed(1)}" text-anchor="${Math.abs(x - cx) < 6 ? 'middle' : x > cx ? 'start' : 'end'}" class="rd-l">${l}</text>`; }).join('');
-      const panel = (title, mine, other, col, ocol, sd, cc) => `<figure class="rd"><figcaption style="color:${col}">${title}</figcaption>
-        <svg viewBox="0 0 260 228" role="img" aria-label="${title} team shape">${grid}
-          <polygon points="${poly(other)}" fill="none" stroke="${ocol}" stroke-width="1.5" stroke-dasharray="4 3" opacity=".75"/>
-          <polygon points="${poly(mine)}" fill="${col}" fill-opacity=".22" stroke="${col}" stroke-width="2" stroke-linejoin="round"/>
-          ${mine.map((v, i) => { const [x, y] = pt(i, Math.max(0.04, v) * R); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="${col}" stroke="var(--bg-1)" stroke-width="2"><title>${title} · ${AX[i][1]}: ${raw(sd, cc, AX[i][0])}</title></circle>`; }).join('')}
-          ${labels}</svg></figure>`;
-      return `<div class="rd-wrap">${panel('Us', usV, thV, 'var(--green)', 'var(--red)', tc.us, kr.cc.us.length)}${panel('Them', thV, usV, 'var(--red)', 'var(--green)', tc.them, kr.cc.them.length)}</div>
-        <div class="rd-key">Filled = that team · dashed = the other team · role counts out of 3, hard CC out of ${ccMax}. Exact numbers in the table below.</div>`;
+      const layer = (side, vals, col, sd, cc, title) => `<g class="rd-${side}-dash"><polygon points="${poly(vals)}" fill="none" stroke="${col}" stroke-width="1.5" stroke-dasharray="4 3" opacity=".75"/></g>
+        <g class="rd-${side}-fill"><polygon points="${poly(vals)}" fill="${col}" fill-opacity=".22" stroke="${col}" stroke-width="2" stroke-linejoin="round"/>
+          ${vals.map((v, i) => { const [x, y] = pt(i, Math.max(0.04, v) * R); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="${col}" stroke="var(--bg-1)" stroke-width="2"><title>${title} · ${AX[i][1]}: ${raw(sd, cc, AX[i][0])}</title></circle>`; }).join('')}</g>`;
+      const btn = (k, l, on) => `<button class="pgf${on ? ' on' : ''}" aria-pressed="${on}" onclick="rdShow(this,'${k}')">${l}</button>`;
+      return `<div class="rd-box" data-show="us"><div class="rd-top"><span class="tc-h">Team shape</span><span class="pgfilter" role="group" aria-label="Highlight a team">${btn('us', 'Us', true)}${btn('them', 'Them', false)}</span></div>
+        <svg viewBox="0 0 260 228" role="img" aria-label="Team shape, us and them on the same axes">${grid}
+          ${layer('them', thV, 'var(--red)', tc.them, kr.cc.them.length, 'Them')}${layer('us', usV, 'var(--green)', tc.us, kr.cc.us.length, 'Us')}
+          ${labels}</svg>
+        <div class="rd-key">Filled = the team you picked · dashed = the other team · role counts out of 3, hard CC out of ${ccMax}. Exact numbers in the table below.</div></div>`;
     })();
     // Team playbook (film.playbook, engine/src/playbook.ts): how our kits combine.
     const pbBlock = f.playbook && (f.playbook.plays.length || f.playbook.note) ? `<div class="tc-sec"><div class="tc-h">Team playbook <span class="tc-n">how these five kits fit together · a plan, not a replay</span></div>
