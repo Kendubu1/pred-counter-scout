@@ -20,6 +20,7 @@ import { powerProfile, powerLines, powerLesson } from '../build-power.js';
 import { buildStory } from '../build-story.js';
 import { buildWhy } from '../build-why.js';
 import { damageMix } from '../damage-mix.js';
+import { loadoutRead } from '../loadout-read.js';
 import { levelAtMinute } from '../matchup.js';
 import { metricsOf, scoreRows, type Row } from '../standouts.js';
 // "Above the norm" for the build read: +0.5 role SD on the standouts composite (about the top
@@ -133,8 +134,15 @@ function main() {
         healingPct: story.vsNorm?.hpm.pct ?? null,
         field: fh ? { games: fh.games, wins: fh.wins, eternal: fe ? { name: fe.name, n: fe.n, w: fe.w, pair: fpair ? { n: fpair.n, w: fpair.w } : undefined } : null, core: fcore && fcore.n ? fcore : null, coreBase: (predBuilds.byRole?.[ep.heroSlug]?.[ep.role] ?? []).reduce((a: any, r: any) => ({ n: a.n + r.n, w: a.w + r.w }), { n: 0, w: 0 }) } : null,
       });
+      // Every loadout piece explained to the same depth (src/loadout-read.ts).
+      const loadout = loadoutRead(ep, {
+        abilities: heroCat.get(ep.heroSlug)?.abilities ?? [], eternals: eternalsCat, augments: augCat, items: itemCat,
+        haste: tb.haste.total, ultHaste: tb.haste.ultOnly, level: ep.stream?.level ?? levelAtMinute(film.durationMin ?? 30, calibration), durationMin: film.durationMin ?? 30, ultRank: tb.ult?.rankKnown ? tb.ult.rank : null, takedowns: tb.takedowns,
+        field: fh ?? null,
+      });
+      lines.push(...loadout.map((x) => `Loadout ${x.kind} ${x.name}: ${x.text}${x.ability ? ` (changes ${x.ability.name}${x.ability.cdHaste ? `, ${x.ability.cdHaste}s cooldown with their haste` : ''})` : ''}${x.numbers.length ? ` [${x.numbers.join('; ')}]` : ''}${x.field ? ` Field: ${x.field.wr}% in ${x.field.n} games${x.field.share != null ? `, ${x.field.share}% of picks` : ''}, ${x.field.verdict} the hero-role's ${x.field.base}%.` : ''}`));
       lines.push(...why.stacks.map((st) => `Stack (${st.title}): ${st.text}`), ...(why.eternalPart ? [why.eternalPart] : []), `Countered? ${why.countered.map((c) => c.text).join(' ')}`, ...(why.copy ? [`Copy it? ${why.copy.text}`] : []));
-      return [ep.heroSlug, { ...tb, lines, power: pp, story, worked: why, card: { ...tb.card, power: pp, powerLesson: pl, story, worked: why }, us: !!ep.us, why: [...ws], score: standout.get(`${film.matchId}|${pid}`) ?? null }];
+      return [ep.heroSlug, { ...tb, lines, power: pp, story, worked: why, loadout, card: { ...tb.card, power: pp, powerLesson: pl, story, worked: why, loadout }, us: !!ep.us, why: [...ws], score: standout.get(`${film.matchId}|${pid}`) ?? null }];
     }));
     film.damageMix = damageMix(film.players, { items: itemCat, eternals: eternalsCat, augments: augCat, abilities: abilitiesBySlug, teamMix });
     film.buildNotes = buildNotes(film.players, film.kitRead, kitIdx, itemInfo, heroMeta, pairs, bm, links, predBuilds.byRole, predBuilds.baselineByRole, matchupCores);

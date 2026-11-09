@@ -225,7 +225,10 @@ hero-role: damage, kill participation, deaths, mitigation, healing percentiles).
 use the rest only to support it. `worked` (src/build-why.ts) says why: effects stacked on one trigger
 (ability hits, attacks, takedowns, %-health, low-health, healing) and whether the Eternal was on it,
 whether our side countered it (armor of that type on the players it killed, anti-heal, deaths), and
-whether the setup wins across the patch (proven, standard, mixed, or it beat us but not the field). When one of these explains the game (an ultimate coming back every minute
+whether the setup wins across the patch (proven, standard, mixed, or it beat us but not the field).
+`loadout` (src/loadout-read.ts) explains every piece the same way for every player: augment, Eternal,
+minors, crest, the ability each changes, numbers worked out for this game, and its win rate on the
+hero-role. Weigh the augment and minors as much as items; do not lean on one familiar pattern. When one of these explains the game (an ultimate coming back every minute
 because takedowns fed haste), say it in a flag or the lesson with those numbers: what fed it and
 how to deny it. Mid-fight figures are estimates; never state them as measured. The build notes'
 `coreVs` is the core into that lane opponent (labelled "most played" when only one core has

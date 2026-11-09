@@ -5929,3 +5929,11 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   Eternal, minor and augment damage effects. Ordered by what each item added: pred.gg reports no
   damage per item. The penetration-vs-target rows and lesson are gone from the page; the lead
   story's damage reason now names the items.
+- Uneven depth across high performers (maintainer, 2026-11-09): an audit of 610 build reads found
+  only 51% of augments and 54% of minors explained, because the read only recognised the patterns
+  first built for The Fey (takedown haste, stacking haste, ability-hit triggers). src/loadout-read.ts
+  now explains every piece for every player: catalog text, the ability it changes (135 of 192
+  augments name one) with its cooldown at the player's haste, numbers evaluated for that game
+  (per-minute, per-level, level ranges, random procs, cooldown cuts) and the hero-role's patch win
+  rate and pick share. After: augments, Eternals and crests 100%, minors 98% (18 minors missing
+  from eternals.json, the known client-audit gap), field rates on 94% of pieces.
