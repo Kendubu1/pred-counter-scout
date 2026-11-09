@@ -32,7 +32,7 @@ const FAM: [Family, RegExp][] = [
   ['lowHealth', /below \d+% health/i],
   ['heal', /\bheal(?:s|ing|ed)?\b|lifesteal|omnivamp/i],
 ];
-const TITLE: Record<Family, string> = { ability: 'Every ability hit set off', attack: 'Every basic attack set off', takedown: 'Every takedown fed', pctHealth: 'Damage that scales with our health', lowHealth: 'Finishing damage on low-health targets', heal: 'Healing off the damage' };
+const TITLE: Record<Family, string> = { ability: 'Every ability hit set off', attack: 'Every basic attack set off', takedown: 'Every takedown fed', pctHealth: "Damage that scales with the target's health", lowHealth: 'Finishing damage on low-health targets', heal: 'Healing off the damage' };
 const pct = (w: number, n: number) => Math.round((1000 * w) / n) / 10;
 
 export function buildWhy(
@@ -84,7 +84,7 @@ export function buildWhy(
     const names = uniq.map((m) => m.name).join(', ');
     let text = `${uniq.length} effects on one trigger: ${names}.`;
     if (f === 'ability') text += ` ${p.heroName} has ${dmgAb.length} damaging abilities${aoeAb.length ? ` (${aoeAb.map((a) => a.name).join(', ')} hit an area, so one cast sets them off on several heroes)` : ''}${fewer ? `, and ${ctx.haste} ability haste brought them back ${fewer}% sooner: more casts, more triggers` : ''}.`;
-    if (f === 'pctHealth') text += ' The more health a target stacks, the more these deal, so health items on our side fed them.';
+    if (f === 'pctHealth') text += ' The more health a target stacks, the more these deal, so health items on the other side fed them.';
     if (f === 'takedown') text += ' Each kill or assist made the next fight easier.';
     if (f === 'lowHealth') text += ' Once a fight started going their way, these finished it.';
     stacks.push({ family: f, title: TITLE[f], members: uniq, text });
