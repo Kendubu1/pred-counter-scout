@@ -36,7 +36,7 @@ function responses(pass: string): Record<string, any> {
 const parse = (v: unknown) => (typeof v === 'string' ? JSON.parse(v.trim().replace(/^```json?\s*|```$/g, '')) : v);
 const loadExplain = () => (existsSync(OUT) ? JSON.parse(readFileSync(OUT, 'utf8')) : { heroes: {} as Record<string, Record<string, string>> });
 
-const RULES = `Write for a regular player, as their coach: plain words, no game-text copying, no jargon (say "ability cooldowns" not "AH", "the target's health" not "HP pool"). Explain what the piece DOES in a fight for this hero: which of the hero's abilities it works with, when it kicks in, and what it changes about how the hero plays. If it does nothing special with the kit (a generic stat or gold boost), say so plainly in one line. Use only numbers that appear in the data below; never invent one. No em dashes. One or two sentences, at most 40 words.`;
+const RULES = `Never add an effect the game text does not state (for example "homing" or "untargetable" when the text says neither). Write for a regular player, as their coach: plain words, no game-text copying, no jargon (say "ability cooldowns" not "AH", "the target's health" not "HP pool"). Explain what the piece DOES in a fight for this hero: which of the hero's abilities it works with, when it kicks in, and what it changes about how the hero plays. If it does nothing special with the kit (a generic stat or gold boost), say so plainly in one line. Use only numbers that appear in the data below; never invent one. No em dashes. One or two sentences, at most 40 words.`;
 
 function piecesOf(): Map<string, Map<string, string>> {
   const by = new Map<string, Map<string, string>>();
