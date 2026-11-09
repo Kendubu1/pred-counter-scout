@@ -225,10 +225,10 @@
     .dm-bar i.sm,.ar-bar i.sm{font-size:0}
     .ar-team{grid-template-columns:1fr;gap:.1rem}.ar-row{grid-template-columns:2.8rem 1fr}.ar-who{margin-left:3.2rem}
     .tb-cdrow{grid-template-columns:1fr 3rem;gap:.15rem .5rem}.tb-cdrow .tb-cdl{grid-column:1/-1}.tb-cdrow .tc-n{grid-column:1/-1;margin-top:0}
-    .tb-tabs .pgf{padding:.15rem .55rem;font-size:.72rem}
+    .tb-tabs .pgf{padding:.08rem .5rem;font-size:.7rem}
     .pf-row>summary{padding:.5rem .55rem}.pf-row>.tb{padding:0 .5rem .55rem}.tb-leadcard{padding:.5rem .55rem}
     .tb-fold>summary::after{order:2}.tb-fold>summary>.tc-n{order:3;flex-basis:100%;padding-left:1.15rem}
-    .pf-sum img{display:none}.pf-row>summary{gap:.4rem}.pf-team{margin-left:0;margin-right:.3rem}.pf-t{font-size:.92rem}.pf-s{font-size:.72rem}.pf-lead{font-size:.8rem}
+    .pf-sum img{width:30px!important;height:30px!important}.dm-sub{margin-left:2.75rem}.pf-row>summary{gap:.4rem}.pf-team{margin-left:0;margin-right:.3rem}.pf-t{font-size:.92rem}.pf-s{font-size:.72rem}.pf-lead{font-size:.8rem}
     .tb-ico{width:26px;height:26px}
   }
   .sec-fold>summary{list-style:none;cursor:pointer}.sec-fold>summary::-webkit-details-marker{display:none}
@@ -241,7 +241,8 @@
   .pf-sum{display:flex;gap:.6rem;align-items:center}.pf-sum img{border-radius:8px}
   .pf-t{display:block;font-size:.98rem}.pf-dash{color:var(--text-2)}.pf-l{font-weight:800;color:var(--text-1)}.pf-l.hp{color:var(--gold)}
   .pf-team{font-size:.7rem;font-weight:800;text-transform:uppercase;margin-left:.3rem}
-  .pf-s{display:block}.pf-nem{color:var(--text-0);font-weight:700}.pf-lead{display:block;font-size:var(--fs-2);color:var(--text-0);margin-top:.1rem}
+  .pf-s{display:block}.pf-kda{color:var(--text-0)}.pf-nem{color:var(--text-0);font-weight:700}.pf-lead{display:block;font-size:var(--fs-2);color:var(--text-0);margin-top:.1rem}
+  .dm-sub{margin:.05rem 0 .5rem 3.5rem;font-size:var(--fs-3);color:var(--text-1);line-height:1.5}.dm-sub b{color:var(--text-0)}.dm-sub .tc-ok,.dm-sub .tc-bad{margin-left:.3rem;font-weight:700}
   .tb{margin-top:.35rem}
   .tb-leadcard{border:1px solid var(--border);border-radius:8px;padding:.6rem .7rem;background:var(--bg-2);margin-top:.35rem}
   .tb-head{display:flex;gap:.6rem;align-items:center;margin-bottom:.45rem}.tb-head img{border-radius:10px}
@@ -264,6 +265,9 @@
   .tb-et{margin:.3rem 0;font-size:var(--fs-2);line-height:1.5;padding-left:.6rem;border-left:2px solid var(--accent)}
   .tb-verd{font-size:.7rem;font-weight:700;border:1px solid;border-radius:99px;padding:.05rem .45rem;margin-left:.3rem}
   .tb-copy{margin:.2rem 0 0;font-size:var(--fs-2);line-height:1.5}
+  .tb-list.tb-bul{list-style:disc;padding-left:1.1rem;margin:.3rem 0 0}.tb-bul li{margin:.2rem 0;line-height:1.5;font-size:var(--fs-2)}.tb-bul li::marker{color:var(--text-2)}
+  .tb-les{margin:.55rem 0 0;padding-top:.45rem;border-top:1px dashed var(--border);font-size:var(--fs-2);line-height:1.5;color:var(--text-0)}.tb-les b{color:var(--accent-ink)}
+  .tb-tabs .pgf{padding:.08rem .5rem;font-size:.7rem;min-height:0}
   .tb-tabs{display:flex;gap:.35rem;flex-wrap:wrap;margin:.6rem 0 .1rem}.tb-sec{margin-top:.7rem}.tb-k{font-weight:700;font-size:.82rem;color:var(--text-0);margin-bottom:.3rem}
   .tb-lesson{list-style:none;margin:.3rem 0 0;padding:.45rem .65rem;border-left:3px solid var(--gold);background:var(--bg-2);border-radius:6px;font-size:var(--fs-2);line-height:1.5}
   .tb-cdrow{display:grid;grid-template-columns:7.5rem 1fr 3.2rem;align-items:center;gap:.5rem;margin:.2rem 0;font-size:.8rem}
@@ -1102,7 +1106,10 @@ function pgReview(f) {
         <ul class="tb-list">${c.extras.filter((x) => !(pp && pp.amps.some((a) => a.name === x.name))).map((x) => `<li><b>${esc(x.name)}</b> <span class="tb-kind">${esc(x.kind)}</span> ${esc(x.how)}</li>`).join('')}</ul></div>` : '';
       // Each lesson lives with its tab; only the lead story's lesson shows under the lead card.
       const tabLesson = { cooldowns: c.lesson, damage: c.powerLesson, alive: c.heals ? 'Anti-heal (the Tainted items) cuts the healing in this build.' : null };
-      const lessonBox = (t) => t ? `<ul class="tb-lesson"><li>${esc(t)}</li></ul>` : '';
+      const lessonBox = (t) => t ? `<ul class="tb-list tb-bul"><li><b>Lesson:</b> ${escN(t)}</li></ul>` : '';
+      // Sentences as bullets ("Lt. Belica" stays whole).
+      const sentences = (t) => { const out = []; for (const raw of String(t || '').split(/(?<=[.!?])\s+(?=[A-Z0-9"])/)) { if (out.length && /\b(Lt|St|Mr|Dr|vs)\.$/.test(out[out.length - 1])) out[out.length - 1] += ' ' + raw; else if (raw.trim()) out.push(raw.trim()); } return out; };
+      const bullets = (t, extra) => `<ul class="tb-list tb-bul">${sentences(t).map((x) => `<li>${escN(x)}</li>`).join('')}${extra || ''}</ul>`;
       // One lead story (film.threatBuilds[].story, engine/src/build-story.ts), the rest as tabs.
       const st = c.story;
       const ord = (n) => `${n}${n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th'}`;
@@ -1127,7 +1134,10 @@ function pgReview(f) {
       const peers = pl ? `${esc(tb.hero)} ${esc(roleName(pl.role).toLowerCase())} games` : 'games';
       const bar = (k) => { const v = st.vsNorm[k]; const hi = v.pct >= 50; return `<div class="tb-ev"><span>${LAB[k]}</span><i><b style="left:${v.pct}%"></b></i><em>${hi ? `more than ${v.pct}%` : `less than ${100 - v.pct}%`} of ${peers}</em></div>`; };
       const evid = st && st.lead && st.vsNorm ? `<div class="tb-evs">${(EVID[st.lead.id] || []).map(bar).join('')}</div><div class="tc-n">Compared with ${st.normN.toLocaleString()} ranked ${peers} this patch.</div>` : '';
-      const leadCard = (st && st.lead) || head ? `<div class="tb-leadcard">${noHead ? '' : head}${kitRow}${st && st.lead ? `${noHead ? '' : `<div class="tb-leadt">${esc(st.lead.title)}</div>`}<p>${esc(st.lead.text)}</p>${evid}` : ''}</div>` : '';
+      const leadTab0 = st && st.tabs ? st.tabs[0] : null;
+      const leadLesson0 = st && st.lead ? (st.lead.lesson || (leadTab0 ? tabLesson[leadTab0] : null)) : null;
+      const leadLessonP = leadLesson0 ? `<p class="tb-les"><b>Lesson:</b> ${escN(leadLesson0)}</p>` : '';
+      const leadCard = (st && st.lead) || head ? `<div class="tb-leadcard">${noHead ? '' : head}${kitRow}${st && st.lead ? `${noHead ? '' : `<div class="tb-leadt">${esc(st.lead.title)}</div>`}${bullets(st.lead.text)}${evid}${leadLessonP}` : ''}</div>` : '';
       const leadTab = st && st.tabs ? st.tabs[0] : null;
       const leadLesson = st && st.lead ? (st.lead.lesson || (leadTab ? tabLesson[leadTab] : null)) : null;
       const inTab = (k, html) => html ? `${k === leadTab && st && st.lead && !st.lead.lesson ? '' : lessonBox(tabLesson[k])}${html}` : '';
@@ -1154,11 +1164,11 @@ function pgReview(f) {
       const fold = (title, preview, body, open) => `<details class="tb-fold"${open ? ' open' : ''}><summary><b>${title}</b> <span class="tc-n">${preview}</span></summary><div class="tb-foldbody">${body}</div></details>`;
       const missed = w ? w.countered.filter((x) => !x.ok).length : 0;
       const whyBlock = w ? `<div class="tb-why">
-        ${w.stacks.length ? fold('What stacked', esc(w.stacks.map((x) => `${x.title.toLowerCase()} (${x.members.length})`).join(' · ')), `${w.stacks.map((x) => `<div class="tb-stackrow"><b>${esc(x.title)}</b> <span class="tb-mem">${x.members.map((m) => `<span class="tb-tag">${esc(m.name)}<i>${esc(m.kind)}</i></span>`).join('')}</span><p>${esc(x.text.replace(/^\d+ effects on one trigger: [^.]*\.\s*/, ''))}</p></div>`).join('')}${w.eternalPart ? `<p class="tb-et">${esc(w.eternalPart)}</p>` : ''}`) : ''}
+        ${w.stacks.length ? fold('What stacked', esc(w.stacks.map((x) => `${x.title.toLowerCase()} (${x.members.length})`).join(' · ')), `${w.stacks.map((x) => `<div class="tb-stackrow"><b>${esc(x.title)}</b> <span class="tb-mem">${x.members.map((m) => `<span class="tb-tag">${esc(m.name)}<i>${esc(m.kind)}</i></span>`).join('')}</span>${bullets(x.text.replace(/^\d+ effects on one trigger: [^.]*\.\s*/, ''))}</div>`).join('')}${w.eternalPart ? `<div class="tb-stackrow"><b>The Eternal</b>${bullets(w.eternalPart.replace(/^The Eternal was part of it: /, ''))}</div>` : ''}`) : ''}
         ${fold(`Did ${tb.us ? 'they' : 'we'} counter it?`, missed ? `<span class="tc-bad">✗</span> ${missed} of ${w.countered.length} missed` : '<span class="tc-ok">✓</span> answered', `<ul class="tb-list">${w.countered.map((x) => `<li>${x.ok ? '<span class="tc-ok">✓</span>' : '<span class="tc-bad">✗</span>'} ${esc(tb.us ? x.text.replace(/^We killed/, 'They killed') : x.text)}</li>`).join('')}</ul>`)}
-        ${w.copy ? fold('Can we copy it?', `<span class="tb-verd" style="color:${VERD[w.copy.verdict][1]};border-color:${VERD[w.copy.verdict][1]}">${VERD[w.copy.verdict][0]}</span>`, `<p class="tb-copy">${esc(w.copy.text)}</p>`) : ''}
+        ${w.copy ? fold('Can we copy it?', `<span class="tb-verd" style="color:${VERD[w.copy.verdict][1]};border-color:${VERD[w.copy.verdict][1]}">${VERD[w.copy.verdict][0]}</span>`, `<ul class="tb-list tb-bul">${w.copy.text.split(/;\s+|(?<=[.!?])\s+(?=[A-Z])/).map((x) => `<li>${escN(x.charAt(0).toUpperCase() + x.slice(1))}</li>`).join('')}</ul>`) : ''}
       </div>` : '';
-      const body = `<div class="tb">${leadCard}${lessonBox(leadLesson)}${whyBlock}${tabs ? fold('The numbers', 'damage · cooldowns · staying alive' + (play ? ' · play against' : ''), tabs) : ''}</div>`;
+      const body = `<div class="tb">${leadCard}${st && st.lead ? '' : lessonBox(leadLesson)}${whyBlock}${tabs ? fold('The numbers', 'damage · cooldowns · staying alive' + (play ? ' · play against' : ''), tabs) : ''}</div>`;
       if (bare) return body;
       return open ? `<div class="tc-h" style="margin-top:.6rem">How ${esc(tb.hero)}'s build worked</div>${body}` : `<details class="tc-more"><summary>How ${esc(tb.hero)}'s build worked</summary>${body}</details>`;
     };
@@ -1176,7 +1186,8 @@ function pgReview(f) {
         const label = hp ? 'High performer' : isThreat ? 'Their threat' : (t.why || []).includes('nemesis') ? 'Lane nemesis' : 'Above the norm';
         const victims = pl && !pl.us ? (() => { const c = {}; for (const k of f.kills || []) if (k.killerPid === pl.pid) { const v = f.players.find((x) => x.pid === k.killedPid); if (v) c[v.heroName] = (c[v.heroName] || 0) + 1; } return Object.entries(c).sort((x, y) => y[1] - x[1]); })() : [];
         const teamKills = pl ? f.players.filter((x) => x.us === pl.us).reduce((n, x) => n + x.kills, 0) : 0;
-        const sub = pl ? [`${pl.kills} / ${pl.deaths} / ${pl.assists}`, pl.us ? pgName(pl) : '', esc(roleName(pl.role)), teamKills ? `${Math.round(100 * pl.kills / teamKills)}% of ${pl.us ? 'our' : 'their'} kills` : '', victims.length ? `killed ${victims.map(([h, n]) => { const v = f.players.find((x) => x.heroName === h); const nm = kr && (kr.nemeses || []).find((q) => q.bySlug === t.slug && v && q.pid === v.pid); return nm ? `<b class="pf-nem">${esc(h)} ${n} of ${nm.deaths} deaths</b>` : `${esc(h)} ${n}`; }).join(' · ')}` : ''].filter(Boolean).join(' · ') : '';
+        const top = victims.slice(0, 2).map(([h, n]) => { const v = f.players.find((x) => x.heroName === h); const nm = kr && (kr.nemeses || []).find((q) => q.bySlug === t.slug && v && q.pid === v.pid); return nm ? `<b class="pf-nem">${esc(h)} ${n}×</b> <span class="tc-n">(of ${nm.deaths})</span>` : `${esc(h)} ${n}×`; });
+        const sub = pl ? [`<b class="pf-kda">${pl.kills}/${pl.deaths}/${pl.assists}</b>`, pl.us ? pgName(pl) : '', esc(roleName(pl.role)), top.length ? `killed ${top.join(', ')}` : ''].filter(Boolean).join(' · ') : '';
         return `<details class="pf-row"${i === 0 ? ' open' : ''}><summary><span class="pf-sum">${hIcon(t.slug, 36).replace(/<\/?a\b[^>]*>/g, '')}<span><span class="pf-t"><b>${esc(t.hero)}</b> <span class="pf-dash">&mdash;</span> <span class="pf-l${hp ? ' hp' : ''}">${label}</span> <span class="pf-team" style="color:${t.us ? 'var(--green)' : 'var(--red)'}">${t.us ? 'Us' : 'Them'}</span></span>
           <span class="tc-n pf-s">${sub}</span>${st && st.lead ? `<span class="pf-lead">${esc(st.lead.title)}</span>` : ''}</span></span></summary>${tbBlock(t.slug, false, true, true)}</details>`;
       }).join('')}</details>` : '';
@@ -1246,29 +1257,21 @@ function pgReview(f) {
       const max = Math.max(dm.us.total, dm.them.total) || 1;
       const K = [['physical', 'Physical', 'var(--gold)'], ['magical', 'Magical', 'var(--blue)'], ['true', 'True', 'var(--text-1)']];
       const bar = (label, m, col) => `<div class="dm-row"><span class="dm-l" style="color:${col}">${label}</span><span class="dm-bar" style="width:${(100 * m.total / max).toFixed(1)}%">${K.map(([k, , c]) => { const pc = m.total ? Math.round(100 * m[k] / m.total) : 0; return pc ? `<i class="${pc < 16 ? 'sm' : ''}" style="width:${pc}%;background:${c}" title="${k} ${m[k].toLocaleString()} (${pc}%)">${pc >= 9 ? `${pc}%` : ''}</i>` : ''; }).join('')}</span><b>${Math.round(m.total / 1000)}k</b></div>`;
-      const fld = dm.field && (dm.field.us || dm.field.them) ? `<p class="tc-note"><b>This patch:</b> ${[dm.field.us ? `our mix (${esc(dm.field.us.band)}) won ${dm.field.us.wr}%` : '', dm.field.them ? `theirs (${esc(dm.field.them.band)}) won ${dm.field.them.wr}%` : ''].filter(Boolean).join(', ')}. Best: ${esc(dm.field.best)}.</p><p class="tc-cap">Mostly physical with some magic wins most. An association, not a cause: damage follows how the game went.</p>` : '';
-      // Armor against what each team faced: per team, the damage it faced (the other team's split)
-      // over the armor it bought (item armor points, physical / magical), both as shares, aligned.
-      const seg = (pc, c, label, txt) => pc ? `<i class="${pc < 18 ? 'sm' : ''}" style="width:${pc}%;background:${c}" title="${label}">${pc >= 12 ? txt : ''}</i>` : '';
-      const armorRow = (label, col, a, faced) => {
-        if (!a || !faced.total) return '';
-        const fp = Math.round(100 * faced.physical / faced.total), fm = Math.round(100 * faced.magical / faced.total), ft = Math.max(0, 100 - fp - fm);
-        const tot = a.points.physical + a.points.magical;
-        const ap = tot ? Math.round(100 * a.points.physical / tot) : 0, am = tot ? 100 - ap : 0;
-        const main = fm >= fp ? 'magical' : 'physical';
-        const thinTypes = [['physical', fp], ['magical', fm]].filter(([k, pc]) => pc >= 35 && a[k].length <= 1).map(([k]) => k);
-        const names = (k) => `${k} on ${a[k].length} of ${a.of}${a[k].length ? ` (${a[k].map(esc).join(', ')})` : ''}`;
-        return `<div class="ar-team"><b class="ar-l" style="color:${col}">${label}</b>
-          <div class="ar-rows"><div class="ar-row"><span>Faced</span><span class="ar-bar">${seg(fp, 'var(--gold)', `physical ${fp}%`, `${fp}%`)}${seg(fm, 'var(--blue)', `magical ${fm}%`, `${fm}%`)}${seg(ft, 'var(--text-1)', `true ${ft}%`, `${ft}%`)}</span></div>
-          <div class="ar-row"><span>Armor</span><span class="ar-bar">${tot ? `${seg(ap, 'var(--gold)', `physical armor ${a.points.physical}`, `${a.points.physical}`)}${seg(am, 'var(--blue)', `magical armor ${a.points.magical}`, `${a.points.magical}`)}` : '<em>no armor bought</em>'}</span></div>
-          <div class="tc-n ar-who">${names(main)}; ${names(main === 'magical' ? 'physical' : 'magical')}${thinTypes.map((k) => ` <span class="tc-bad">little ${k} armor</span>`).join('')}</div></div></div>`;
+      // Under each team's bar: the armor the OTHER team bought against that damage (item armor
+      // points), flagged when a type is 35%+ of the damage and one player or none built armor for it;
+      // and where that team's true damage came from.
+      const against = (m, a, mine) => {
+        if (!a || !m.total) return '';
+        const pp = Math.round(100 * m.physical / m.total), pm = Math.round(100 * m.magical / m.total);
+        const gaps = [['physical', pp], ['magical', pm]].filter(([k, pc]) => pc >= 35 && a[k].length <= 1).map(([k]) => k);
+        const verdict = gaps.length ? `<span class="tc-bad">✗ ${gaps.map((k) => `little ${k} armor`).join(', ')}</span>` : '<span class="tc-ok">✓ armor matched</span>';
+        return `${mine ? 'Their' : 'Our'} armor against it: <b>${a.points.physical}</b> physical · <b>${a.points.magical}</b> magical ${verdict}`;
       };
-      const armorLine = dm.armor ? `<div class="tc-h" style="margin-top:.8rem">Armor vs damage faced</div>${armorRow('Us', 'var(--green)', dm.armor.us, dm.them)}${armorRow('Them', 'var(--red)', dm.armor.them, dm.us)}<p class="tc-cap">Armor = points bought from items. True damage ignores armor.</p>` : '';
-      const tf = dm.trueFrom.filter((t) => t.from.length).slice(0, 4);
-      const trueLine = tf.length ? `<div class="tc-note"><b>True damage</b><ul class="tc-list">${tf.map((t) => `<li><span style="color:${t.us ? 'var(--green)' : 'var(--red)'}">${esc(t.hero)}</span> ${t.amount.toLocaleString()} <span class="tc-n">(${t.share}% of their damage)</span> from ${t.from.map((x) => `${esc(x.name)} <span class="tc-n">${esc(x.kind)}</span>`).join(', ')}</li>`).join('')}</ul></div>` : '';
-      return `<div class="tc-sec"><div class="tc-h">Damage types <span class="tc-n">hero damage dealt</span></div>
-        ${bar('Us', dm.us, 'var(--green)')}${bar('Them', dm.them, 'var(--red)')}
-        <div class="dm-key">${K.map(([, l, c]) => `<span><i style="background:${c}"></i>${l}</span>`).join('')}</div>${armorLine}${trueLine}${fld}</div>`;
+      const trueOf = (us) => { const t = dm.trueFrom.filter((x) => x.us === us && x.from.length); return t.length ? `True from ${t.map((x) => `${esc(x.hero)} <span class="tc-n">(${x.from.map((y) => esc(y.name)).join(', ')})</span>`).join(', ')}` : ''; };
+      const team = (label, m, col, a, us) => `${bar(label, m, col)}<div class="dm-sub">${[dm.armor ? against(m, a, us) : '', trueOf(us)].filter(Boolean).map((x) => `<div>${x}</div>`).join('')}</div>`;
+      return `<div class="tc-sec"><div class="tc-h">Damage types <span class="tc-n">hero damage dealt, and the armor it ran into</span></div>
+        ${team('Us', dm.us, 'var(--green)', dm.armor && dm.armor.them, true)}${team('Them', dm.them, 'var(--red)', dm.armor && dm.armor.us, false)}
+        <div class="dm-key">${K.map(([, l, c]) => `<span><i style="background:${c}"></i>${l}</span>`).join('')}<span>length = total</span></div></div>`;
     })() : '';
     // Team playbook (film.playbook, engine/src/playbook.ts): how our kits combine.
     const pbBlock = f.playbook && (f.playbook.plays.length || f.playbook.note) ? `<details class="tc-sec sec-fold" open><summary class="tc-h">Team playbook <span class="tc-n">a plan from the kits</span></summary>
