@@ -64,6 +64,8 @@ function main() {
   const augField = read('data/aggregates/predgg-augments.json').heroes ?? {};
   const corePiece = new Set((read('data/catalog/items.json') as any[]).filter((i) => i.rarity === 'Epic' && i.slot_type === 'Passive').map((i) => i.slug));
   let norms: Record<string, any> = {};
+  let loadoutExplain: Record<string, Record<string, string>> = {};
+  try { loadoutExplain = read('data/aggregates/loadout-explain.json').heroes ?? {}; } catch { /* npm run loadout:copy not run yet */ }
   let teamMix: any = null;
   try { teamMix = read('data/aggregates/hero-role-norms.json').teamMix ?? null; } catch { /* npm run norms */ }
   const abilitiesBySlug = new Map((read('data/catalog/heroes.json') as any[]).map((h) => [h.slug, h.abilities ?? []]));
@@ -140,7 +142,9 @@ function main() {
         haste: tb.haste.total, ultHaste: tb.haste.ultOnly, level: ep.stream?.level ?? levelAtMinute(film.durationMin ?? 30, calibration), durationMin: film.durationMin ?? 30, ultRank: tb.ult?.rankKnown ? tb.ult.rank : null, takedowns: tb.takedowns,
         field: fh ?? null,
       });
-      lines.push(...loadout.map((x) => `Loadout ${x.kind} ${x.name}: ${x.text}${x.ability ? ` (changes ${x.ability.name}${x.ability.cdHaste ? `, ${x.ability.cdHaste}s cooldown with their haste` : ''})` : ''}${x.numbers.length ? ` [${x.numbers.join('; ')}]` : ''}${x.field ? ` Field: ${x.field.wr}% in ${x.field.n} games${x.field.share != null ? `, ${x.field.share}% of picks` : ''}, ${x.field.verdict} the hero-role's ${x.field.base}%.` : ''}`));
+      // The coach's plain explanation of each piece for this hero (npm run loadout:copy).
+      for (const x of loadout as any[]) { const e = loadoutExplain[ep.heroSlug]?.[`${x.kind}|${x.name}`]; if (e) x.plain = e; }
+      lines.push(...loadout.map((x: any) => `Loadout ${x.kind} ${x.name}: ${x.plain ? `${x.plain} (game text: ${x.text})` : x.text}${x.ability ? ` (changes ${x.ability.name}${x.ability.cdHaste ? `, ${x.ability.cdHaste}s cooldown with their haste` : ''})` : ''}${x.numbers.length ? ` [${x.numbers.join('; ')}]` : ''}${x.field ? ` Field: ${x.field.wr}% in ${x.field.n} games${x.field.share != null ? `, ${x.field.share}% of picks` : ''}, ${x.field.verdict} the hero-role's ${x.field.base}%.` : ''}`));
       lines.push(...why.stacks.map((st) => `Stack (${st.title}): ${st.text}`), ...(why.eternalPart ? [why.eternalPart] : []), `Countered? ${why.countered.map((c) => c.text).join(' ')}`, ...(why.copy ? [`Copy it? ${why.copy.text}`] : []));
       return [ep.heroSlug, { ...tb, lines, power: pp, story, worked: why, loadout, card: { ...tb.card, power: pp, powerLesson: pl, story, worked: why, loadout }, us: !!ep.us, why: [...ws], score: standout.get(`${film.matchId}|${pid}`) ?? null }];
     }));

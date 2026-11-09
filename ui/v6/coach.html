@@ -243,6 +243,7 @@
   .pf-team{font-size:.7rem;font-weight:800;text-transform:uppercase;margin-left:.3rem}
   .pf-s{display:block}.pf-kda{color:var(--text-0)}.pf-nem{color:var(--text-0);font-weight:700}.pf-lead{display:block;font-size:var(--fs-2);color:var(--text-0);margin-top:.1rem}
   .dm-sub{list-style:disc;padding-left:1rem;margin:.05rem 0 .5rem 3.5rem;font-size:var(--fs-3);color:var(--text-1);line-height:1.5}.dm-sub b{color:var(--text-0)}.dm-sub li{margin:.1rem 0}.dm-sub li::marker{color:var(--text-2)}.dm-sub .tc-ok,.dm-sub .tc-bad{margin-left:.3rem;font-weight:700}
+  .lo-plain{font-size:var(--fs-2);color:var(--text-0);line-height:1.5;margin-top:.15rem}.lo-game{margin-top:.15rem}.lo-game>summary{font-size:.7rem!important}.lc-h{margin-top:.5rem;font-size:.8rem}
   .lo-chip{font-size:.66rem;font-weight:700;border:1px solid;border-radius:99px;padding:0 .4rem;margin-left:.35rem;white-space:nowrap}.lo-bul{margin-top:.15rem!important}.lo-bul li{font-size:var(--fs-3)!important;color:var(--text-1)}
   .tb-dmg{list-style:none;padding:0;margin:.3rem 0 0}.tb-dmg>li{padding:.35rem 0;border-top:1px solid var(--border);font-size:var(--fs-2);line-height:1.45}.tb-dmg>li:first-child{border-top:0}
   .tb-dico{display:inline-block!important;width:22px;height:22px;border-radius:5px;vertical-align:-6px;margin-right:.4rem;border:1px solid var(--border)}
@@ -1146,10 +1147,12 @@ function pgReview(f) {
       const peers = pl ? `${esc(tb.hero)} ${esc(roleName(pl.role).toLowerCase())} games` : 'games';
       const bar = (k) => { const v = st.vsNorm[k]; const hi = v.pct >= 50; return `<div class="tb-ev"><span>${LAB[k]}</span><i><b style="left:${v.pct}%"></b></i><em>${hi ? `more than ${v.pct}%` : `less than ${100 - v.pct}%`} of ${peers}</em></div>`; };
       const evid = st && st.lead && st.vsNorm ? `<div class="tb-evs">${(EVID[st.lead.id] || []).map(bar).join('')}</div><div class="tc-n">Compared with ${st.normN.toLocaleString()} ranked ${peers} this patch.</div>` : '';
+      // The coach's read of how this loadout worked together in this game (film.loadoutCoach).
+      const lc = (f.loadoutCoach || {})[tb.slug] || null;
       const leadTab0 = st && st.tabs ? st.tabs[0] : null;
       const leadLesson0 = st && st.lead ? (st.lead.lesson || (leadTab0 ? tabLesson[leadTab0] : null)) : null;
       const leadLessonP = leadLesson0 ? `<p class="tb-les"><b>Lesson:</b> ${escN(leadLesson0)}</p>` : '';
-      const leadCard = (st && st.lead) || head ? `<div class="tb-leadcard">${noHead ? '' : head}${kitRow}${st && st.lead ? `${noHead ? '' : `<div class="tb-leadt">${esc(st.lead.title)}</div>`}${bullets(st.lead.text)}${evid}${leadLessonP}` : ''}</div>` : '';
+      const leadCard = (st && st.lead) || head ? `<div class="tb-leadcard">${noHead ? '' : head}${kitRow}${st && st.lead ? `${noHead ? '' : `<div class="tb-leadt">${esc(st.lead.title)}</div>`}${bullets(st.lead.text)}${lc ? `<div class="tb-k lc-h">How the build worked together</div><ul class="tb-list tb-bul">${lc.bullets.map((b) => `<li>${escN(b)}</li>`).join('')}</ul>` : ''}${evid}${leadLessonP}` : ''}</div>` : '';
       const leadTab = st && st.tabs ? st.tabs[0] : null;
       const leadLesson = st && st.lead ? (st.lead.lesson || (leadTab ? tabLesson[leadTab] : null)) : null;
       const inTab = (k, html) => html ? `${k === leadTab && st && st.lead && !st.lead.lesson ? '' : lessonBox(tabLesson[k])}${html}` : '';
@@ -1181,7 +1184,7 @@ function pgReview(f) {
       const VCOL = { above: 'var(--green)', level: 'var(--text-1)', below: 'var(--gold)' };
       const loChip = (fd) => fd ? `<span class="lo-chip" style="color:${VCOL[fd.verdict]};border-color:${VCOL[fd.verdict]}">${fd.wr}%${fd.share != null ? ` · ${fd.share}% pick` : ''}</span>` : '';
       const loBlock = LO.length ? `<ul class="tb-dmg">${LO.map((x) => `<li>${loIcon(x)}<b>${esc(x.name)}</b> <span class="tb-kind">${esc(x.kind)}</span>${loChip(x.field)}
-        <div class="tb-eff">${escN(x.text)}</div>
+        ${x.plain ? `<div class="lo-plain">${escN(x.plain)}</div><details class="tc-more lo-game"><summary>Game text</summary><div class="tb-eff">${escN(x.text)}</div></details>` : `<div class="tb-eff">${escN(x.text)}</div>`}
         ${x.ability || x.numbers.length || x.field ? `<ul class="tb-list tb-bul lo-bul">${x.ability ? `<li>Changes <b>${esc(x.ability.name)}</b>${x.ability.cdHaste ? ` (${x.ability.cdHaste}s cooldown with this player's haste)` : ''}: ${escN(x.ability.what)}</li>` : ''}${x.numbers.map((n) => `<li>${escN(n)}</li>`).join('')}${x.field ? `<li>On ${esc(tb.hero)} this patch: ${x.field.wr}% in ${x.field.n.toLocaleString()} games${x.field.share != null ? ` (${x.field.share}% of picks)` : ''}, ${x.field.verdict === 'level' ? 'level with' : x.field.verdict} the hero's ${x.field.base}%</li>` : ''}</ul>` : ''}</li>`).join('')}</ul><p class="tc-cap">Win rates: ranked games this patch on this hero in this role; catalog text, not measured uptime.</p>` : '';
       const loAbove = LO.filter((x) => x.field && x.field.verdict === 'above').length, loRated = LO.filter((x) => x.field).length;
       const whyBlock = w || LO.length ? `<div class="tb-why">
