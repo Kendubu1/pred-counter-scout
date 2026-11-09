@@ -5909,3 +5909,9 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   browser triangles). Now one CSS rule set: a left chevron that rotates open, and a Show / Hide pill
   on the larger rows (sections, performer cards, card folds, the bottom deep dives); a hover
   background and focus ring on every summary. On phones the performer portrait leaves the title row.
+- Formatting pass on the game review (maintainer, 2026-11-09), done at render so all reviews change
+  at once: player bullets split into the fact and a "Next:" action (instruction-word starts, a
+  condition then an instruction, a numberless verb-first last sentence, or an action after ":", ";"
+  or ", so"; a guard keeps "Once that outer fell, kills followed" as a fact): 353 of 452 bullets
+  split, the rest are observations with no action. Thousands separators on 4+ digit numbers in
+  coach copy. Build rows lead with the verdict ("2 of 3 built"), "all matchups" is a tag.

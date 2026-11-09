@@ -195,7 +195,10 @@
   @media (min-width:900px){.tc-grid{grid-template-columns:1fr 1fr}.tc-grid>.tc-sec:only-child{grid-column:1/-1}}
   .bn{margin-top:.55rem;padding-top:.45rem;border-top:1px dashed var(--border);font-size:.8rem;line-height:1.75;color:var(--text-1)}
   .bn-k{display:inline-block;min-width:5.6rem;color:var(--text-2);font-size:.72rem;text-transform:uppercase;letter-spacing:.02em}
-  .bn-n{color:var(--text-2);font-size:.74rem}.bn img.bn-i{display:inline-block!important;width:20px;height:20px;border-radius:4px;vertical-align:-5px;margin-right:2px;border:1px solid var(--border)}.bn-i.off{opacity:.35;filter:grayscale(.8)}
+  .bn-n{color:var(--text-2);font-size:.74rem}.bn-core{font-size:.8rem;color:var(--text-1)}
+  .bn-v{font-size:.74rem;margin-right:.2rem}.bn-v.ok{color:var(--green)}.bn-v.part{color:var(--gold)}.bn-v.no{color:var(--red)}
+  .bn-tag{font-size:.66rem;border:1px solid var(--border);border-radius:99px;padding:0 .4rem;color:var(--text-2);white-space:nowrap}
+  .cb-fact{display:block}.cb-act{display:block;margin-top:.2rem;color:var(--text-0)}.cb-act b{color:var(--accent-ink);font-weight:700;margin-right:.15rem}.bn img.bn-i{display:inline-block!important;width:20px;height:20px;border-radius:4px;vertical-align:-5px;margin-right:2px;border:1px solid var(--border)}.bn-i.off{opacity:.35;filter:grayscale(.8)}
   .bn-shared{color:var(--gold);font-size:.82rem;margin:.1rem 0 .4rem}
   @media (max-width:560px){.tc-bal{font-size:.62rem}.tc-bal thead th:first-child{width:2.2rem}.tc-bal .lg{display:none}.tc-bal .sh{display:inline}.bn-k{min-width:4.6rem}}
   .ab-row summary{list-style-position:inside}.ab-sum{display:inline-flex;align-items:center;gap:.4rem;flex-wrap:wrap;vertical-align:middle}
@@ -552,6 +555,41 @@
 <script src="section-nav.js"></script>
 <script>
 const esc = (s) => String(s ?? '').replace(/\s*\u2014\s*/g, ', ').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// Coach copy formatting (2026-11-09), applied at render so every review gets it:
+//   escN   escape, then thousands separators on whole numbers of 1,000+ (10971 -> 10,971); times
+//          (12:30), decimals and ids are left alone
+//   factAct split a bullet into what happened and what to do next: the first sentence that starts
+//          with an instruction word (When, If, Before, After, Once, While, ...) begins the action
+const escN = (s) => esc(s).replace(/(^|[^\d.,:#\w-])(\d{4,})(?![\d.,:%]?\d)/g, (m, pre, n) => `${pre}${Number(n).toLocaleString('en-US')}`);
+const ACTION_WORDS = 'When|If|Before|After|Once|While|Until|Next game|Next time|Keep|Stop|Hold|Save|Play|Build|Buy|Ward|Re-ward|Stand|Back|Farm|Push|Group|Regroup|Invade|Dodge|Spend|Track|Focus|Fight|Stay|Walk|Use|Take|Swap|Add|Skip|Draft|Trade|Look|Watch|Rotate|Disengage|Peel|Chase|Do not|Don\'t|Never|Always|Call|Ping|Wait|Bait|Leave|Clear|Sweep|Shove|Contest|Aim|Start|Open|Commit|Go|Deploy|Repeat|Hit|Cast|Pair|Escort|Follow|Respect|Punish|Force|Flank|Join|Show|Sit|Pick|Next|Cross|Siege|Let|Enter|Land|Re-ward|Hug|Burn|Drop|Clean|Finish';
+const ACTION_START = new RegExp(`^(${ACTION_WORDS})\\b`);
+const ACTION_MID = new RegExp(`(?:[:;]|, so)\\s+(?=(${ACTION_WORDS})\\b)`, 'i');
+function factAct(text) {
+  const t = String(text ?? '').trim();
+  // Sentences: split after . ! ? before a capital or digit; "Lt. Belica" and friends stay whole.
+  const sents = [];
+  for (const raw of t.split(/(?<=[.!?])\s+(?=[A-Z0-9"])/)) { if (sents.length && /\b(Lt|St|Mr|Dr|vs)\.$/.test(sents[sents.length - 1])) sents[sents.length - 1] += ' ' + raw; else sents.push(raw); }
+  // An action sentence: starts with an instruction word, a condition then an instruction ("With X
+  // unseen, hold mid"), or it is the last sentence, has no numbers and opens with a verb rather than
+  // a stat ("Cross mid only beside Kira", "Let Riktor commit first").
+  const FACT_OPEN = /^(The|A|An|This|That|These|Those|One|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten|Zero|No|Only|Most|Died|Killed|Ran|Led|Hell|Gold|His|Her|Their|Our|We|They|It|Both|Every|All|Each|Kill|Deaths?|Kills?|Damage|Lane|Farm(?:ed)?\s)\b/;
+  // "Once that outer fell, kills on Countess followed" is a fact: after the condition's comma the
+  // main clause must read as an instruction, not open with a subject or a stat.
+  const mainIsFact = (x) => /^(When|If|Before|After|Once|While|Until|With|Without|Against|Into|On|In|Next)\b[^,]{2,70},\s+(kills?|deaths?|the|a|an|one|two|three|four|five|six|seven|eight|nine|ten|he|she|they|it|we|our|their|his|her|\d)/i.test(x);
+  const isAct = (x, k, n) => !mainIsFact(x) && (ACTION_START.test(x) || /^(With|Without|Against|Into|On|In|Next|Once) [^,]{3,60}, [a-z]/.test(x)
+    || (k === n - 1 && !/\d/.test(x) && /^[A-Z][a-z]+\b/.test(x) && !FACT_OPEN.test(x) && !/^[A-Z][a-z]+ (?:was|were|had|went|came|took|led|is|did)\b/.test(x)));
+  let fact = t, act = '';
+  const i = sents.findIndex((x, k) => k > 0 && isAct(x, k, sents.length));
+  if (i >= 1) { fact = sents.slice(0, i).join(' '); act = sents.slice(i).join(' '); }
+  else {
+    // The action introduced inside a sentence: "...the fewest of all ten players: ward the river ..."
+    const m = ACTION_MID.exec(t);
+    if (m && m.index > 12) { fact = t.slice(0, m.index) + '.'; act = t.slice(m.index + m[0].length); act = act.charAt(0).toUpperCase() + act.slice(1); }
+  }
+  if (!act) return `<span class="cb-fact">${escN(fact)}</span>`;
+  return `<span class="cb-fact">${escN(fact)}</span><span class="cb-act"><b>Next:</b> ${escN(act)}</span>`;
+}
+
 const pct = (x, d = 1) => (x * 100).toFixed(d);
 
 // ── Post-game review rendering (match facts + the coaching pass) ──
@@ -1499,10 +1537,10 @@ function pgReview(f) {
   if (COACH_LAYOUT === 'concise' && co) {
     const verdict = card(`${viewToggle}
       <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap"><b style="color:${resColor}">${f.result.toUpperCase()}</b><span style="color:var(--text-2)">${new Date(f.startTime).toLocaleDateString()} · ${f.durationMin} min</span></div>
-      <h2 style="font-size:1.2rem;line-height:1.4;margin:.65rem 0">${esc(co.headline || 'Match review')}</h2>
+      <h2 style="font-size:1.2rem;line-height:1.4;margin:.65rem 0">${escN(co.headline || 'Match review')}</h2>
       ${co.flags?.length ? flagList(co.flags, f) : co.team ? `<p style="color:var(--text-1);line-height:1.6;margin:0">${esc(co.team)}</p>` : ''}`);
     const reflection = f.result === 'loss' && co.lossReflection ? `${eyebrow('What could have changed this game?', '')}<p style="line-height:1.6">${esc(co.lossReflection)}</p>` : '';
-    const next = focus?.action || reflection ? card(`${reflection}${focus?.action ? `${eyebrow('Next game', '')}<p style="font-size:1rem;line-height:1.5;margin:0">${esc(focus.action)}</p>` : ''}`) : '';
+    const next = focus?.action || reflection ? card(`${reflection}${focus?.action ? `${eyebrow('Next game', '')}<p style="font-size:1rem;line-height:1.5;margin:0">${escN(focus.action)}</p>` : ''}`) : '';
     // Build notes per player (film.buildNotes, engine/src/build-notes.ts), folded under each row.
     const bnOf = (pid) => (f.buildNotes || []).find((b) => b.pid === pid);
     const bnWhy = new Map(); (f.buildNotes || []).forEach((b) => b.needs.forEach((n) => bnWhy.set(n.why, (bnWhy.get(n.why) || 0) + 1)));
@@ -1514,16 +1552,19 @@ function pgReview(f) {
       const rows = [];
       if (b.lane) rows.push(`<span class="bn-k">Lane</span> vs ${esc(b.lane.opp)} <b style="color:${pctCol(b.lane.wr)}">${b.lane.wr}%</b> <span class="bn-n">${b.lane.n} games</span>`);
       if (b.built && b.built.length) rows.push(`<span class="bn-k">Built</span> ${b.built.map((i) => itag(i.slug)).join('')}`);
-      if (b.coreVs) rows.push(`<span class="bn-k">Core vs ${esc(b.coreVs.vs)}</span> ${b.coreVs.items.map((i) => itag(i.slug, i.has)).join('')} <span class="bn-n">${b.coreVs.items.map((i) => esc(i.name)).join(' > ')} · ${b.coreVs.wr}% in ${b.coreVs.n} games into ${esc(b.coreVs.vs)}${b.coreVs.basis === 'most played' ? ', the most played' : ''}${b.coreVs.items.some((i) => i.has) ? ` · ${b.coreVs.items.filter((i) => i.has).length} of 3 built` : ''}</span>`);
-      if (b.core && !(b.coreVs && b.coreVs.items.map((i) => i.slug).sort().join() === b.core.items.map((i) => i.slug).sort().join())) rows.push(`<span class="bn-k">${b.coreVs ? 'Overall core' : 'Best core'}</span> ${b.core.items.map((i) => itag(i.slug, i.has)).join('')} <span class="bn-n">${b.core.items.map((i) => esc(i.name)).join(' > ')} · ${b.core.wr}% in ${b.core.n} games, all matchups${b.coreVs || !b.lane ? '' : ` (too few games into ${esc(b.lane.opp)} yet)`}${b.core.items.some((i) => i.has) ? ` · ${b.core.items.filter((i) => i.has).length} of 3 built` : ''}</span>`);
-      for (const a of b.adapt) rows.push(`<span class="bn-k">Into ${esc(a.vs)}</span> ${itag(a.slug, a.has)} <b>${esc(a.name)}</b> <span class="bn-n">${a.into}% buy it (usually ${a.usual}%)${a.wr != null ? `, wins ${a.wr}%` : ''}${a.has ? ' · built' : ''}</span>`);
+      // Core rows lead with the verdict (how much of it was built), then the core, then the numbers.
+      const builtTag = (items) => { const h = items.filter((i) => i.has).length; return `<b class="bn-v ${h === 3 ? 'ok' : h ? 'part' : 'no'}">${h === 3 ? '✓ built' : `${h} of 3 built`}</b>`; };
+      const coreRow = (label, c, note) => `<span class="bn-k">${label}</span> ${builtTag(c.items)} ${c.items.map((i) => itag(i.slug, i.has)).join('')} <span class="bn-core">${c.items.map((i) => esc(i.name)).join(' > ')}</span> <span class="bn-n">${c.wr}% in ${c.n.toLocaleString()} games${note ? ` · ${note}` : ''}</span>`;
+      if (b.coreVs) rows.push(coreRow(`Core vs ${esc(b.coreVs.vs)}`, b.coreVs, b.coreVs.basis === 'most played' ? 'most played' : 'best'));
+      if (b.core && !(b.coreVs && b.coreVs.items.map((i) => i.slug).sort().join() === b.core.items.map((i) => i.slug).sort().join())) rows.push(coreRow(b.coreVs ? 'Overall core' : 'Best core', b.core, `<span class="bn-tag">all matchups</span>`));
+      for (const a of b.adapt) rows.push(`<span class="bn-k">Into ${esc(a.vs)}</span> ${a.has ? '<b class="bn-v ok">✓ built</b> ' : ''}${itag(a.slug, a.has)} <b>${esc(a.name)}</b> <span class="bn-n">${a.into}% buy it (usually ${a.usual}%)${a.wr != null ? `, wins ${a.wr}%` : ''}</span>`);
       for (const n of b.needs) rows.push(`<span class="bn-k">Needs</span> ${n.has ? '<span class="tc-ok">✓</span>' : '<span class="tc-bad">✗</span>'} ${esc(n.answer)}${bnShared.includes(n.why) ? '' : ` <span class="bn-n">${esc(n.why)}</span>`}`);
       return rows.length ? `<div class="bn">${rows.map((r) => `<div>${r}</div>`).join('')}</div>` : '';
     };
     const players = card(`${eyebrow('Your team', '')}${bnShared.length ? `<p class="bn-shared">${bnShared.map((w) => esc(w.charAt(0).toUpperCase() + w.slice(1)) + '.').join(' ')}</p>` : ''}${us.map((p) => `<div class="plobby coach-player">
       <div class="who">${hIcon(p.heroSlug, 34)}<span><span class="pname"><b>${pgName(p)}</b>${rankBadge(p)}</span><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span style="white-space:nowrap"><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span>${vpTag(p)}</span></span>${CoachLoadouts.icons(p.loadout,p)}</div>
       <div class="line">${(() => {
-        if (co.playerBullets?.[p.pid]?.length) return `<ul class="coach-bullets">${co.playerBullets[p.pid].map(text => `<li>${esc(text)}</li>`).join('')}</ul>${co.buildCall?.[p.pid] ? `<p class="build-call"><b>Build</b> ${esc(co.buildCall[p.pid])}</p>` : ''}`;
+        if (co.playerBullets?.[p.pid]?.length) return `<ul class="coach-bullets">${co.playerBullets[p.pid].map(text => `<li>${factAct(text)}</li>`).join('')}</ul>${co.buildCall?.[p.pid] ? `<p class="build-call"><b>Build</b> ${escN(co.buildCall[p.pid])}</p>` : ''}`;
         const actions = co.microReads?.[p.pid];
         if (COACH_PLAYER_FORMAT === 'actions' && (actions?.keep || actions?.change)) return `${actions.keep ? `<p style="margin:0 0 .5rem"><b style="color:var(--green)">Keep:</b> ${esc(actions.keep)}</p>` : ''}${actions.change ? `<p style="margin:0"><b style="color:var(--gold)">Change:</b> ${esc(actions.change)}</p>` : ''}`;
         return co.perPlayer?.[p.pid] ? esc(co.perPlayer[p.pid]) : 'Individual feedback has not been written for this player.';
@@ -1553,7 +1594,7 @@ function pgReview(f) {
 function flagList(flags, f) {
   const byId = new Map(((f.interrogation && f.interrogation.gameFlags) || []).map((g) => [g.id, g]));
   const heading = f.result === 'loss' ? 'What lost it' : 'What won it';
-  const items = flags.map((fl) => { const g = byId.get(fl.ref); const good = g ? g.tone === 'good' : f.result !== 'loss'; return `<li class="flag ${good ? 'good' : 'bad'}">${esc(fl.text)}</li>`; }).join('');
+  const items = flags.map((fl) => { const g = byId.get(fl.ref); const good = g ? g.tone === 'good' : f.result !== 'loss'; return `<li class="flag ${good ? 'good' : 'bad'}">${escN(fl.text)}</li>`; }).join('');
   const ev = flags.map((fl) => byId.get(fl.ref)).filter(Boolean);
   return `<h3 class="flags-h">${heading}</h3><ul class="game-flags">${items}</ul>${ev.length ? `<details class="flag-evidence"><summary>Evidence · times, who died where</summary>${ev.map((g) => `<p><b>${esc(g.summary.charAt(0).toUpperCase() + g.summary.slice(1))}</b></p><ul>${g.evidence.map((e) => `<li>${esc(e)}</li>`).join('')}</ul>`).join('')}</details>` : ''}`;
 }
