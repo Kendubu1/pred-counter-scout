@@ -242,7 +242,7 @@
   .pf-t{display:block;font-size:.98rem}.pf-dash{color:var(--text-2)}.pf-l{font-weight:800;color:var(--text-1)}.pf-l.hp{color:var(--gold)}
   .pf-team{font-size:.7rem;font-weight:800;text-transform:uppercase;margin-left:.3rem}
   .pf-s{display:block}.pf-kda{color:var(--text-0)}.pf-nem{color:var(--text-0);font-weight:700}.pf-lead{display:block;font-size:var(--fs-2);color:var(--text-0);margin-top:.1rem}
-  .dm-sub{margin:.05rem 0 .5rem 3.5rem;font-size:var(--fs-3);color:var(--text-1);line-height:1.5}.dm-sub b{color:var(--text-0)}.dm-sub .tc-ok,.dm-sub .tc-bad{margin-left:.3rem;font-weight:700}
+  .dm-sub{list-style:disc;padding-left:1rem;margin:.05rem 0 .5rem 3.5rem;font-size:var(--fs-3);color:var(--text-1);line-height:1.5}.dm-sub b{color:var(--text-0)}.dm-sub li{margin:.1rem 0}.dm-sub li::marker{color:var(--text-2)}.dm-sub .tc-ok,.dm-sub .tc-bad{margin-left:.3rem;font-weight:700}
   .tb{margin-top:.35rem}
   .tb-leadcard{border:1px solid var(--border);border-radius:8px;padding:.6rem .7rem;background:var(--bg-2);margin-top:.35rem}
   .tb-head{display:flex;gap:.6rem;align-items:center;margin-bottom:.45rem}.tb-head img{border-radius:10px}
@@ -1268,7 +1268,7 @@ function pgReview(f) {
         return `${mine ? 'Their' : 'Our'} armor against it: <b>${a.points.physical}</b> physical · <b>${a.points.magical}</b> magical ${verdict}`;
       };
       const trueOf = (us) => { const t = dm.trueFrom.filter((x) => x.us === us && x.from.length); return t.length ? `True from ${t.map((x) => `${esc(x.hero)} <span class="tc-n">(${x.from.map((y) => esc(y.name)).join(', ')})</span>`).join(', ')}` : ''; };
-      const team = (label, m, col, a, us) => `${bar(label, m, col)}<div class="dm-sub">${[dm.armor ? against(m, a, us) : '', trueOf(us)].filter(Boolean).map((x) => `<div>${x}</div>`).join('')}</div>`;
+      const team = (label, m, col, a, us) => `${bar(label, m, col)}<ul class="dm-sub">${[dm.armor ? against(m, a, us) : '', trueOf(us)].filter(Boolean).map((x) => `<li>${x}</li>`).join('')}</ul>`;
       return `<div class="tc-sec"><div class="tc-h">Damage types <span class="tc-n">hero damage dealt, and the armor it ran into</span></div>
         ${team('Us', dm.us, 'var(--green)', dm.armor && dm.armor.them, true)}${team('Them', dm.them, 'var(--red)', dm.armor && dm.armor.us, false)}
         <div class="dm-key">${K.map(([, l, c]) => `<span><i style="background:${c}"></i>${l}</span>`).join('')}<span>length = total</span></div></div>`;
