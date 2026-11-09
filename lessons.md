@@ -5915,3 +5915,11 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   or ", so"; a guard keeps "Once that outer fell, kills followed" as a fact): 353 of 452 bullets
   split, the rest are observations with no action. Thousands separators on 4+ digit numbers in
   coach copy. Build rows lead with the verdict ("2 of 3 built"), "all matchups" is a tag.
+- Phones zoomed the whole review out ~15% (layout viewport 457px on a 390px iPhone) because one
+  fold title ("Damage, cooldowns, staying alive, play against" + preview) could not wrap. Check
+  layout width on a device profile, not only document scrollWidth: a mobile browser widens the
+  viewport to the widest element instead of scrolling. Fold summaries now wrap; on phones the
+  preview drops under the title.
+- Type pass (#4-#7): three sizes on #pgview (--fs-1/2/3), paragraphs never at caption size; section
+  subtitles cut to 2-4 words with the method as a caption under the chart; draft checks under the
+  team rows; role names through roleName() (Mid, Offlane, Jungle, Carry, Support); sentence-case labels.

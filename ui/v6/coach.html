@@ -163,8 +163,13 @@
   .tc-t{background:rgba(80,140,255,.18);color:#6ea0ff}
   .tc-d{background:rgba(240,130,15,.18);color:#f0820f}
   .tc-shape{font-size:.78rem;text-align:right;line-height:1.35}
-  .tc-n{color:var(--text-2);font-size:.72rem}
-  .tc-checks{list-style:none;padding:0;margin:.6rem 0 0;font-size:.84rem;line-height:1.55}
+  /* Type scale for the review (2026-11-09): body, secondary, caption; a paragraph never uses caption size. */
+  #pgview{--fs-1:.95rem;--fs-2:.86rem;--fs-3:.75rem}
+  .tc-n{color:var(--text-2);font-size:var(--fs-3)}
+  .tc-note{font-size:var(--fs-2);color:var(--text-1);line-height:1.55;margin:.5rem 0 0}.tc-note b{color:var(--text-0)}
+  .tc-cap{font-size:var(--fs-3);color:var(--text-2);line-height:1.45;margin:.25rem 0 0}
+  .tc-list{margin:.2rem 0 0;padding-left:1.1rem}.tc-list li{margin:.15rem 0}
+  .tc-checks{list-style:none;padding:0;margin:.6rem 0 0;font-size:var(--fs-2);line-height:1.55}
   .tc-checks li.ok span{color:var(--green);font-weight:800}
   .tc-checks li.bad span{color:var(--red);font-weight:800}
   .tc-swap{margin-top:.55rem;font-size:.84rem;line-height:1.7;border-left:3px solid var(--gold);padding-left:.6rem}
@@ -194,8 +199,8 @@
   .tc-grid{display:grid;grid-template-columns:1fr;gap:0 1.2rem}
   @media (min-width:900px){.tc-grid{grid-template-columns:1fr 1fr}.tc-grid>.tc-sec:only-child{grid-column:1/-1}}
   .bn{margin-top:.55rem;padding-top:.45rem;border-top:1px dashed var(--border);font-size:.8rem;line-height:1.75;color:var(--text-1)}
-  .bn-k{display:inline-block;min-width:5.6rem;color:var(--text-2);font-size:.72rem;text-transform:uppercase;letter-spacing:.02em}
-  .bn-n{color:var(--text-2);font-size:.74rem}.bn-core{font-size:.8rem;color:var(--text-1)}
+  .bn-k{display:inline-block;min-width:6.2rem;color:var(--text-2);font-size:var(--fs-3)}
+  .bn-n{color:var(--text-2);font-size:.74rem}.bn-core{font-size:var(--fs-2);color:var(--text-1)}
   .bn-v{font-size:.74rem;margin-right:.2rem}.bn-v.ok{color:var(--green)}.bn-v.part{color:var(--gold)}.bn-v.no{color:var(--red)}
   .bn-tag{font-size:.66rem;border:1px solid var(--border);border-radius:99px;padding:0 .4rem;color:var(--text-2);white-space:nowrap}
   .cb-fact{display:block}.cb-act{display:block;margin-top:.2rem;color:var(--text-0)}.cb-act b{color:var(--accent-ink);font-weight:700;margin-right:.15rem}.bn img.bn-i{display:inline-block!important;width:20px;height:20px;border-radius:4px;vertical-align:-5px;margin-right:2px;border:1px solid var(--border)}.bn-i.off{opacity:.35;filter:grayscale(.8)}
@@ -222,6 +227,7 @@
     .tb-cdrow{grid-template-columns:1fr 3rem;gap:.15rem .5rem}.tb-cdrow .tb-cdl{grid-column:1/-1}.tb-cdrow .tc-n{grid-column:1/-1;margin-top:0}
     .tb-tabs .pgf{padding:.15rem .55rem;font-size:.72rem}
     .pf-row>summary{padding:.5rem .55rem}.pf-row>.tb{padding:0 .5rem .55rem}.tb-leadcard{padding:.5rem .55rem}
+    .tb-fold>summary::after{order:2}.tb-fold>summary>.tc-n{order:3;flex-basis:100%;padding-left:1.15rem}
     .pf-sum img{display:none}.pf-row>summary{gap:.4rem}.pf-team{margin-left:0;margin-right:.3rem}.pf-t{font-size:.92rem}.pf-s{font-size:.72rem}.pf-lead{font-size:.8rem}
     .tb-ico{width:26px;height:26px}
   }
@@ -235,7 +241,7 @@
   .pf-sum{display:flex;gap:.6rem;align-items:center}.pf-sum img{border-radius:8px}
   .pf-t{display:block;font-size:.98rem}.pf-dash{color:var(--text-2)}.pf-l{font-weight:800;color:var(--text-1)}.pf-l.hp{color:var(--gold)}
   .pf-team{font-size:.7rem;font-weight:800;text-transform:uppercase;margin-left:.3rem}
-  .pf-s{display:block}.pf-nem{color:var(--text-0);font-weight:700}.pf-lead{display:block;font-size:.84rem;color:var(--text-0);margin-top:.1rem}
+  .pf-s{display:block}.pf-nem{color:var(--text-0);font-weight:700}.pf-lead{display:block;font-size:var(--fs-2);color:var(--text-0);margin-top:.1rem}
   .tb{margin-top:.35rem}
   .tb-leadcard{border:1px solid var(--border);border-radius:8px;padding:.6rem .7rem;background:var(--bg-2);margin-top:.35rem}
   .tb-head{display:flex;gap:.6rem;align-items:center;margin-bottom:.45rem}.tb-head img{border-radius:10px}
@@ -246,20 +252,20 @@
   .tb-evs{display:grid;gap:.35rem;margin:.1rem 0 .3rem}.tb-ev{display:grid;grid-template-columns:1fr;gap:.15rem;font-size:.78rem;color:var(--text-1)}
   .tb-ev i{position:relative;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--bg-3),var(--bg-3))}.tb-ev i b{position:absolute;top:-3px;width:4px;height:12px;border-radius:2px;background:var(--accent);transform:translateX(-50%)}
   .tb-ev em{font-style:normal;color:var(--text-0);font-weight:700}
-  .tb-leadt{font-weight:800;color:var(--text-0);font-size:.95rem}.tb-leadcard p{margin:.25rem 0 .45rem;font-size:.86rem;line-height:1.5}
+  .tb-leadt{font-weight:800;color:var(--text-0);font-size:.95rem}.tb-leadcard p{margin:.25rem 0 .45rem;font-size:var(--fs-2);line-height:1.5}
   .tb-norms{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.3rem .7rem}
   .tb-chip{display:grid;grid-template-columns:1fr auto;gap:.1rem .4rem;font-size:.74rem;color:var(--text-1)}
   .tb-chip i{grid-column:1/3;height:5px;background:var(--bg-3);border-radius:3px;overflow:hidden}.tb-chip i b{display:block;height:100%;background:var(--accent)}
   .tb-chip em{font-style:normal;color:var(--text-0);font-weight:700}
   .tb-why{margin-top:.5rem}
-  .tb-stackrow{margin:.25rem 0 .45rem}.tb-stackrow p{margin:.2rem 0 0;font-size:.84rem;line-height:1.5;color:var(--text-1)}
+  .tb-stackrow{margin:.25rem 0 .45rem}.tb-stackrow p{margin:.2rem 0 0;font-size:var(--fs-2);line-height:1.5;color:var(--text-1)}
   .tb-mem{display:inline-flex;flex-wrap:wrap;gap:.25rem;vertical-align:middle;margin-left:.2rem}
   .tb-tag{font-size:.74rem;padding:.08rem .45rem;border-radius:99px;background:var(--bg-3);color:var(--text-0)}.tb-tag i{font-style:normal;color:var(--text-2);margin-left:.3rem;font-size:.66rem;text-transform:uppercase}
-  .tb-et{margin:.3rem 0;font-size:.84rem;line-height:1.5;padding-left:.6rem;border-left:2px solid var(--accent)}
+  .tb-et{margin:.3rem 0;font-size:var(--fs-2);line-height:1.5;padding-left:.6rem;border-left:2px solid var(--accent)}
   .tb-verd{font-size:.7rem;font-weight:700;border:1px solid;border-radius:99px;padding:.05rem .45rem;margin-left:.3rem}
-  .tb-copy{margin:.2rem 0 0;font-size:.84rem;line-height:1.5}
+  .tb-copy{margin:.2rem 0 0;font-size:var(--fs-2);line-height:1.5}
   .tb-tabs{display:flex;gap:.35rem;flex-wrap:wrap;margin:.6rem 0 .1rem}.tb-sec{margin-top:.7rem}.tb-k{font-weight:700;font-size:.82rem;color:var(--text-0);margin-bottom:.3rem}
-  .tb-lesson{list-style:none;margin:.3rem 0 0;padding:.45rem .65rem;border-left:3px solid var(--gold);background:var(--bg-2);border-radius:6px;font-size:.86rem;line-height:1.5}
+  .tb-lesson{list-style:none;margin:.3rem 0 0;padding:.45rem .65rem;border-left:3px solid var(--gold);background:var(--bg-2);border-radius:6px;font-size:var(--fs-2);line-height:1.5}
   .tb-cdrow{display:grid;grid-template-columns:7.5rem 1fr 3.2rem;align-items:center;gap:.5rem;margin:.2rem 0;font-size:.8rem}
   .tb-cdrow .tc-n{grid-column:2/4;margin-top:-.15rem}
   .tb-cdl{color:var(--text-1)}.tb-bar{height:10px;background:var(--bg-2);border-radius:5px;overflow:hidden}
@@ -270,21 +276,21 @@
   .tb-stack{display:flex;height:18px;border-radius:5px;overflow:hidden;gap:2px;margin:.15rem 0 .35rem}
   .tb-stack i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:.68rem;font-weight:700;color:#fff;min-width:4px}
   .tb-stack i.fight{background:repeating-linear-gradient(135deg,var(--text-2) 0 4px,transparent 4px 7px);color:var(--text-0);text-shadow:0 0 3px var(--bg-0),0 0 3px var(--bg-0);border:1px dashed var(--text-2);box-sizing:border-box}
-  .tb-list{list-style:none;margin:0;padding:0}.tb-list li{margin:.2rem 0;font-size:.82rem;line-height:1.45}
+  .tb-list{list-style:none;margin:0;padding:0}.tb-list li{margin:.2rem 0;font-size:var(--fs-2);line-height:1.45}
   .tb-sw{display:inline-block;width:10px;min-width:10px;height:10px;border-radius:2px;margin-right:.35rem;vertical-align:0}.tb-sw.fight{background:repeating-linear-gradient(135deg,var(--text-2) 0 2px,transparent 2px 4px);border:1px dashed var(--text-2)}
   .tb-kind{font-size:.68rem;text-transform:uppercase;letter-spacing:.03em;color:var(--text-2);margin:0 .25rem}
   .cv-toggle{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem;font-size:.74rem;color:var(--text-2)}
-  .build-call{margin:.35rem 0 0;font-size:.86rem;color:var(--text-1);line-height:1.5}.build-call b{color:var(--text-0);margin-right:.3rem}
+  .build-call{margin:.35rem 0 0;font-size:var(--fs-2);color:var(--text-1);line-height:1.5}.build-call b{color:var(--text-0);margin-right:.3rem}
   .rd-box{margin-top:.7rem;text-align:center}
   .rd-top{display:flex;align-items:center;justify-content:center;gap:.6rem;flex-wrap:wrap}
   .rd-top .pgfilter{margin:0}
   .rd-box svg{width:100%;max-width:400px;height:auto;display:block;margin:.2rem auto 0}
-  .rd-l{fill:var(--text-2);font-size:9.5px}.rd-key{font-size:.72rem;color:var(--text-2);text-align:center;margin-top:.1rem}
+  .rd-l{fill:var(--text-2);font-size:9.5px}.rd-key{font-size:var(--fs-3);color:var(--text-2);text-align:center;margin-top:.1rem}
   .rd-box[data-show=us] .rd-them-fill,.rd-box[data-show=us] .rd-us-dash,.rd-box[data-show=them] .rd-us-fill,.rd-box[data-show=them] .rd-them-dash{display:none}
   .pb-grid{display:grid;grid-template-columns:1fr;gap:.4rem 1.2rem;margin-top:.35rem}
   @media (min-width:900px){.pb-grid{grid-template-columns:1fr 1fr}}
   .pb{font-size:.84rem;line-height:1.5}.pb ol{margin:.25rem 0 .2rem;padding-left:1.3rem}.pb li{margin:.25rem 0}.pb li>a,.pb li img{display:inline-block!important;vertical-align:-5px;margin-right:.2rem}.pb li img{width:20px;height:20px}
-  .tc-foot{margin-top:.55rem;font-size:.72rem;color:var(--text-2)}
+  .tc-foot{margin-top:.7rem;font-size:var(--fs-3);color:var(--text-2);line-height:1.45}
   @media (max-width:560px){.tc-row{grid-template-columns:1fr}.tc-shape{text-align:left}}
   /* ── v7 review: verdict → moments → numbers → strip → interrogation → lobby → deep dive ── */
   .heroline { display:flex; align-items:center; gap:.25rem; margin-top:.6rem; flex-wrap:wrap; }
@@ -538,7 +544,7 @@
   .rk-row .act{margin-top:.25rem;color:var(--text-0)}
 
   /* Fold markers: the shared pattern in nav.js (fold-style). Layout tweaks only here. */
-  .tb-fold>summary,.sec-fold>summary{min-height:36px;padding:.2rem .3rem}.tb-fold>summary>b{flex:none}.tb-fold>summary>.tc-n{min-width:0}
+  .tb-fold>summary,.sec-fold>summary{min-height:36px;padding:.2rem .3rem}.tb-fold>summary{flex-wrap:wrap;row-gap:.1rem}.tb-fold>summary>b{flex:0 1 auto;min-width:0}.tb-fold>summary>.tc-n{flex:1 1 9rem;min-width:0}
   .pf-row>summary .pf-sum{flex:1;min-width:0}
 </style>
 </head>
@@ -554,6 +560,8 @@
 <script src="coach-loadouts.js?v=0574a2b8128c"></script>
 <script src="section-nav.js"></script>
 <script>
+const ROLE_NAME = { midlane: 'Mid', offlane: 'Offlane', jungle: 'Jungle', carry: 'Carry', support: 'Support' };
+const roleName = (r) => ROLE_NAME[String(r || '').toLowerCase()] || String(r || '');
 const esc = (s) => String(s ?? '').replace(/\s*\u2014\s*/g, ', ').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // Coach copy formatting (2026-11-09), applied at render so every review gets it:
 //   escN   escape, then thousands separators on whole numbers of 1,000+ (10971 -> 10,971); times
@@ -999,7 +1007,7 @@ function pgReview(f) {
       const opp = ourOf(p.role);
       const built = p.items || [];
       return `<div class="plobby coach-player enemy-player">
-        <div class="who">${hIcon(p.heroSlug, 34)}<span><span class="pname"><b>${pgName(p)}</b>${rankBadge(p)}</span><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span style="white-space:nowrap"><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span>${vpTag(p)}</span></span></div>
+        <div class="who">${hIcon(p.heroSlug, 34)}<span><span class="pname"><b>${pgName(p)}</b>${rankBadge(p)}</span><span class="h">${esc(p.heroName)} · ${esc(roleName(p.role))}</span><br><span style="white-space:nowrap"><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span>${vpTag(p)}</span></span></div>
         <div class="line">${opp ? `<div style="font-size:.78rem;color:var(--text-2)">vs ${esc(opp.heroName)} (${pgName(opp)})</div>` : ''}
           <div class="items">${built.map((i) => `<img data-ipop="${esc(i.slug)}" src="${iimg(i.slug)}" title="${esc(i.name)}" onerror="this.style.display='none'">`).join('') || '<span style="color:var(--text-2);font-size:.78rem">no finished items</span>'}</div>
           ${ranLine(p.loadout) || '<div class="lrow" style="color:var(--text-2)">loadout not recorded</div>'}
@@ -1048,11 +1056,11 @@ function pgReview(f) {
         <tr><th style="color:var(--red)">Them</th>${keys.map((k) => cell(tc.them.balance[k])).join('')}</tr></tbody></table>`;
     })();
     const row = (sd, label, color) => `<div class="tc-row"><div class="tc-side" style="color:${color}">${label}</div>
-      <div class="tc-heroes">${sd.heroes.map((h) => `<span class="tc-hero">${hIcon(h.slug, 26)}<span><b>${esc(h.name)}</b>${badge(h)}<br><span class="tc-role">${esc(h.role)}</span></span></span>`).join('')}</div>
+      <div class="tc-heroes">${sd.heroes.map((h) => `<span class="tc-hero">${hIcon(h.slug, 26)}<span><b>${esc(h.name)}</b>${badge(h)}<br><span class="tc-role">${esc(roleName(h.role))}</span></span></span>`).join('')}</div>
       <div class="tc-shape"><b>${sd.tanks} tank${sd.tanks === 1 ? '' : 's'} · ${sd.divers} diver${sd.divers === 1 ? '' : 's'}</b><br><span style="color:${sd.shapeWr ? tcCol(sd.shapeWr.wr) : 'var(--text-2)'}">${sd.shapeWr ? `${sd.shapeWr.wr}% in ${esc(tc.field.patch)} ranked` : 'too few games'}</span>${sd.shapeWr ? ` <span class="tc-n">(${sd.shapeWr.n.toLocaleString()} teams)</span>` : ''}</div></div>`;
     const checks = tc.checks.map((c) => `<li class="${c.ok ? 'ok' : 'bad'}"><span aria-hidden="true">${c.ok ? '✓' : '✗'}</span> ${esc(c.text)}</li>`).join('');
     const fails = tc.checks.filter((c) => !c.ok).length;
-    const swap = tc.swap ? `<div class="tc-swap"><b>Draft fix:</b> swap ${esc(tc.swap.out)} (${esc(tc.swap.role)}) for a real tank, because ${esc(tc.swap.reason)}. Tanks that win in ${esc(tc.swap.role)} this patch: <span class="tc-opts">${tc.swap.options.map((o) => `<span class="tc-opt">${hIcon(o.slug, 20)} <b>${esc(o.name)}</b> ${o.wr}% <span class="tc-n">(${o.n.toLocaleString()} games)</span></span>`).join('')}</span></div>` : '';
+    const swap = tc.swap ? `<div class="tc-swap"><b>Draft fix:</b> swap ${esc(tc.swap.out)} (${esc(roleName(tc.swap.role))}) for a real tank, because ${esc(tc.swap.reason)}. Tanks that win in ${esc(roleName(tc.swap.role).toLowerCase())} this patch: <span class="tc-opts">${tc.swap.options.map((o) => `<span class="tc-opt">${hIcon(o.slug, 20)} <b>${esc(o.name)}</b> ${o.wr}% <span class="tc-n">(${o.n.toLocaleString()} games)</span></span>`).join('')}</span></div>` : '';
     // Kit read (film.kitRead, npm run postgame:comp; rules in engine/src/kit-read.ts).
     const kr = f.kitRead;
     // How the threat's / a nemesis killer's build worked (film.threatBuilds, engine/src/threat-build.ts):
@@ -1111,12 +1119,12 @@ function pgReview(f) {
         ${lo.eternal ? `<span class="tb-sep"></span>${BIG(`../img/eternals/${nslug(lo.eternal)}.webp`, `Eternal: ${lo.eternal}`, epopAttr(lo.eternal, null, ranMinors, 'ran', 'the minors this player ran this game'))}${ranMinors.map((m) => BIG(`../img/blessings/${nslug(m)}.webp`, `Minor: ${m}`, epopAttr(lo.eternal, m, ranMinors, 'ran', 'the minors this player ran this game'))).join('')}` : ''}
         ${lo.augment ? `<span class="tb-sep"></span>${BIG(`../img/augments/${esc(lo.augment.id)}.webp`, `Augment: ${lo.augment.name}`, ` data-apop="${esc(lo.augment.id)}" data-apop-label="ran"`)}` : ''}</div>
         <div class="tc-n tb-kitnames">${[buyOrder.length ? `${buyOrder.length} items${pl.stream ? ' in buy order' : ''}` : '', lo.crest ? `crest ${esc(lo.crest)}` : '', lo.eternal ? `${esc(lo.eternal)}${ranMinors.length ? ` (${ranMinors.map(esc).join(' + ')})` : ''}` : '', lo.augment ? `augment ${esc(lo.augment.name)}` : ''].filter(Boolean).join(' · ')}</div>` : '';
-      const head = pl ? `<div class="tb-head">${hIcon(tb.slug, 44).replace(/<\/?a\b[^>]*>/g, '')}<div><div class="tb-who"><b>${pl.us ? pgName(pl) : esc(tb.hero)}</b> <span class="tc-n">${pl.us ? `${esc(tb.hero)} · ` : ''}${esc(pl.role)}</span></div>
+      const head = pl ? `<div class="tb-head">${hIcon(tb.slug, 44).replace(/<\/?a\b[^>]*>/g, '')}<div><div class="tb-who"><b>${pl.us ? pgName(pl) : esc(tb.hero)}</b> <span class="tc-n">${pl.us ? `${esc(tb.hero)} · ` : ''}${esc(roleName(pl.role))}</span></div>
         <div class="tb-kda">${pl.kills} / ${pl.deaths} / ${pl.assists}${st && st.lead ? ' <span class="tb-hp">High performer</span>' : ''}</div></div></div>` : '';
       // Only the evidence for the lead story, in words.
       const EVID = { snowball: ['kp', 'dpm'], glass: ['dpm', 'mpm'], damage: ['dpm', 'share'], survival: ['mpm', 'hpm'], cooldowns: ['dpm', 'kp'], sustain: ['hpm'], tough: ['mpm'] };
       const LAB = { dpm: 'Hero damage per minute', share: 'Share of the team\'s hero damage', kp: 'Kill participation', mpm: 'Damage mitigated per minute', hpm: 'Healing per minute' };
-      const peers = pl ? `${esc(tb.hero)} ${pl.role === 'midlane' ? 'mid' : esc(pl.role)} games` : 'games';
+      const peers = pl ? `${esc(tb.hero)} ${esc(roleName(pl.role).toLowerCase())} games` : 'games';
       const bar = (k) => { const v = st.vsNorm[k]; const hi = v.pct >= 50; return `<div class="tb-ev"><span>${LAB[k]}</span><i><b style="left:${v.pct}%"></b></i><em>${hi ? `more than ${v.pct}%` : `less than ${100 - v.pct}%`} of ${peers}</em></div>`; };
       const evid = st && st.lead && st.vsNorm ? `<div class="tb-evs">${(EVID[st.lead.id] || []).map(bar).join('')}</div><div class="tc-n">Compared with ${st.normN.toLocaleString()} ranked ${peers} this patch.</div>` : '';
       const leadCard = (st && st.lead) || head ? `<div class="tb-leadcard">${noHead ? '' : head}${kitRow}${st && st.lead ? `${noHead ? '' : `<div class="tb-leadt">${esc(st.lead.title)}</div>`}<p>${esc(st.lead.text)}</p>${evid}` : ''}</div>` : '';
@@ -1150,7 +1158,7 @@ function pgReview(f) {
         ${fold(`Did ${tb.us ? 'they' : 'we'} counter it?`, missed ? `<span class="tc-bad">✗</span> ${missed} of ${w.countered.length} missed` : '<span class="tc-ok">✓</span> answered', `<ul class="tb-list">${w.countered.map((x) => `<li>${x.ok ? '<span class="tc-ok">✓</span>' : '<span class="tc-bad">✗</span>'} ${esc(tb.us ? x.text.replace(/^We killed/, 'They killed') : x.text)}</li>`).join('')}</ul>`)}
         ${w.copy ? fold('Can we copy it?', `<span class="tb-verd" style="color:${VERD[w.copy.verdict][1]};border-color:${VERD[w.copy.verdict][1]}">${VERD[w.copy.verdict][0]}</span>`, `<p class="tb-copy">${esc(w.copy.text)}</p>`) : ''}
       </div>` : '';
-      const body = `<div class="tb">${leadCard}${lessonBox(leadLesson)}${whyBlock}${tabs ? fold('Damage, cooldowns, staying alive' + (play ? ', play against' : ''), 'the numbers behind it', tabs) : ''}</div>`;
+      const body = `<div class="tb">${leadCard}${lessonBox(leadLesson)}${whyBlock}${tabs ? fold('The numbers', 'damage · cooldowns · staying alive' + (play ? ' · play against' : ''), tabs) : ''}</div>`;
       if (bare) return body;
       return open ? `<div class="tc-h" style="margin-top:.6rem">How ${esc(tb.hero)}'s build worked</div>${body}` : `<details class="tc-more"><summary>How ${esc(tb.hero)}'s build worked</summary>${body}</details>`;
     };
@@ -1159,7 +1167,7 @@ function pgReview(f) {
     const perf = Object.values(f.threatBuilds || {}).filter((t) => t.card);
     const rank = (t) => (kr && kr.threat && kr.threat.slug === t.slug ? 0 : !t.us ? 1 : 2);
     perf.sort((a, b) => rank(a) - rank(b) || (b.score || 0) - (a.score || 0));
-    const perfBlock = perf.length ? `<details class="tc-sec sec-fold" open><summary class="tc-h">High performers <span class="tc-n">${perf.length} · who played well above their hero's usual game, who kept killing whom, and why it worked</span></summary>
+    const perfBlock = perf.length ? `<details class="tc-sec sec-fold" open><summary class="tc-h">High performers <span class="tc-n">${perf.length} players</span></summary>
       ${perf.map((t, i) => {
         const pl = f.players.find((x) => x.heroSlug === t.slug);
         const st = t.card.story;
@@ -1168,7 +1176,7 @@ function pgReview(f) {
         const label = hp ? 'High performer' : isThreat ? 'Their threat' : (t.why || []).includes('nemesis') ? 'Lane nemesis' : 'Above the norm';
         const victims = pl && !pl.us ? (() => { const c = {}; for (const k of f.kills || []) if (k.killerPid === pl.pid) { const v = f.players.find((x) => x.pid === k.killedPid); if (v) c[v.heroName] = (c[v.heroName] || 0) + 1; } return Object.entries(c).sort((x, y) => y[1] - x[1]); })() : [];
         const teamKills = pl ? f.players.filter((x) => x.us === pl.us).reduce((n, x) => n + x.kills, 0) : 0;
-        const sub = pl ? [`${pl.kills} / ${pl.deaths} / ${pl.assists}`, pl.us ? pgName(pl) : '', esc(pl.role), teamKills ? `${Math.round(100 * pl.kills / teamKills)}% of ${pl.us ? 'our' : 'their'} kills` : '', victims.length ? `killed ${victims.map(([h, n]) => { const v = f.players.find((x) => x.heroName === h); const nm = kr && (kr.nemeses || []).find((q) => q.bySlug === t.slug && v && q.pid === v.pid); return nm ? `<b class="pf-nem">${esc(h)} ${n} of ${nm.deaths} deaths</b>` : `${esc(h)} ${n}`; }).join(' · ')}` : ''].filter(Boolean).join(' · ') : '';
+        const sub = pl ? [`${pl.kills} / ${pl.deaths} / ${pl.assists}`, pl.us ? pgName(pl) : '', esc(roleName(pl.role)), teamKills ? `${Math.round(100 * pl.kills / teamKills)}% of ${pl.us ? 'our' : 'their'} kills` : '', victims.length ? `killed ${victims.map(([h, n]) => { const v = f.players.find((x) => x.heroName === h); const nm = kr && (kr.nemeses || []).find((q) => q.bySlug === t.slug && v && q.pid === v.pid); return nm ? `<b class="pf-nem">${esc(h)} ${n} of ${nm.deaths} deaths</b>` : `${esc(h)} ${n}`; }).join(' · ')}` : ''].filter(Boolean).join(' · ') : '';
         return `<details class="pf-row"${i === 0 ? ' open' : ''}><summary><span class="pf-sum">${hIcon(t.slug, 36).replace(/<\/?a\b[^>]*>/g, '')}<span><span class="pf-t"><b>${esc(t.hero)}</b> <span class="pf-dash">&mdash;</span> <span class="pf-l${hp ? ' hp' : ''}">${label}</span> <span class="pf-team" style="color:${t.us ? 'var(--green)' : 'var(--red)'}">${t.us ? 'Us' : 'Them'}</span></span>
           <span class="tc-n pf-s">${sub}</span>${st && st.lead ? `<span class="pf-lead">${esc(st.lead.title)}</span>` : ''}</span></span></summary>${tbBlock(t.slug, false, true, true)}</details>`;
       }).join('')}</details>` : '';
@@ -1202,7 +1210,7 @@ function pgReview(f) {
       for (const a of b.adapt) bits.push(`${iimgTag(a.slug)}<b>${esc(a.name)}</b> <span class="tc-n">bought ${a.into}% into ${esc(a.vs)} (usually ${a.usual}%)${a.wr != null ? `, wins ${a.wr}%` : ''}</span> ${a.has ? '<span class="tc-ok">✓ built</span>' : ''}`);
       for (const n of b.needs) bits.push(`${n.has ? '<span class="tc-ok">✓</span>' : '<span class="tc-bad">✗</span>'} ${esc(n.answer)}${shared.includes(n.why) ? '' : ` <span class="tc-n">(${esc(n.why)})</span>`}`);
       if (!bits.length) return '';
-      return `<li>${hIcon(pl ? pl.heroSlug : '', 22)}<div><b>${esc(pl ? pgName(pl) : b.hero)}</b> <span class="tc-n">${esc(b.hero)} · ${esc(b.role)}</span><div class="tc-bits">${bits.map((x) => `<span>${x}</span>`).join('')}</div></div></li>`;
+      return `<li>${hIcon(pl ? pl.heroSlug : '', 22)}<div><b>${esc(pl ? pgName(pl) : b.hero)}</b> <span class="tc-n">${esc(b.hero)} · ${esc(roleName(b.role))}</span><div class="tc-bits">${bits.map((x) => `<span>${x}</span>`).join('')}</div></div></li>`;
     }).join('')}</ul></div>` : '';
     // Team shape radar: both teams on the same axes, side by side. Each panel fills its own team
     // and outlines the other dashed, so the comparison never rests on red vs green alone (that pair
@@ -1228,7 +1236,7 @@ function pgReview(f) {
         <svg viewBox="0 0 260 228" role="img" aria-label="Team shape, us and them on the same axes">${grid}
           ${layer('them', thV, 'var(--red)', tc.them, kr.cc.them.length, 'Them')}${layer('us', usV, 'var(--green)', tc.us, kr.cc.us.length, 'Us')}
           ${labels}</svg>
-        <div class="rd-key">Filled = the team you picked · dashed = the other team · role counts out of 3, hard CC out of ${ccMax}. Exact numbers in the table below.</div></div>`;
+        <div class="rd-key">Filled = picked team · dashed = the other · counts out of 3, hard CC out of ${ccMax}</div></div>`;
     })();
     // Damage types (film.damageMix, engine/src/damage-mix.ts): each team's hero damage, physical /
     // magical / true, bar length = the team's total; where true damage came from; the patch's win
@@ -1238,7 +1246,7 @@ function pgReview(f) {
       const max = Math.max(dm.us.total, dm.them.total) || 1;
       const K = [['physical', 'Physical', 'var(--gold)'], ['magical', 'Magical', 'var(--blue)'], ['true', 'True', 'var(--text-1)']];
       const bar = (label, m, col) => `<div class="dm-row"><span class="dm-l" style="color:${col}">${label}</span><span class="dm-bar" style="width:${(100 * m.total / max).toFixed(1)}%">${K.map(([k, , c]) => { const pc = m.total ? Math.round(100 * m[k] / m.total) : 0; return pc ? `<i class="${pc < 16 ? 'sm' : ''}" style="width:${pc}%;background:${c}" title="${k} ${m[k].toLocaleString()} (${pc}%)">${pc >= 9 ? `${pc}%` : ''}</i>` : ''; }).join('')}</span><b>${Math.round(m.total / 1000)}k</b></div>`;
-      const fld = dm.field && (dm.field.us || dm.field.them) ? `<p class="tc-n" style="margin:.35rem 0 0">This patch, teams at ${[dm.field.us ? `our ${dm.field.us.band} won ${dm.field.us.wr}%` : '', dm.field.them ? `their ${dm.field.them.band} won ${dm.field.them.wr}%` : ''].filter(Boolean).join(', ')}; the best mix was ${esc(dm.field.best)}. Mostly physical with some magic wins most; past half magical it drops. An association: damage dealt follows how the game went.</p>` : '';
+      const fld = dm.field && (dm.field.us || dm.field.them) ? `<p class="tc-note"><b>This patch:</b> ${[dm.field.us ? `our mix (${esc(dm.field.us.band)}) won ${dm.field.us.wr}%` : '', dm.field.them ? `theirs (${esc(dm.field.them.band)}) won ${dm.field.them.wr}%` : ''].filter(Boolean).join(', ')}. Best: ${esc(dm.field.best)}.</p><p class="tc-cap">Mostly physical with some magic wins most. An association, not a cause: damage follows how the game went.</p>` : '';
       // Armor against what each team faced: per team, the damage it faced (the other team's split)
       // over the armor it bought (item armor points, physical / magical), both as shares, aligned.
       const seg = (pc, c, label, txt) => pc ? `<i class="${pc < 18 ? 'sm' : ''}" style="width:${pc}%;background:${c}" title="${label}">${pc >= 12 ? txt : ''}</i>` : '';
@@ -1255,22 +1263,22 @@ function pgReview(f) {
           <div class="ar-row"><span>Armor</span><span class="ar-bar">${tot ? `${seg(ap, 'var(--gold)', `physical armor ${a.points.physical}`, `${a.points.physical}`)}${seg(am, 'var(--blue)', `magical armor ${a.points.magical}`, `${a.points.magical}`)}` : '<em>no armor bought</em>'}</span></div>
           <div class="tc-n ar-who">${names(main)}; ${names(main === 'magical' ? 'physical' : 'magical')}${thinTypes.map((k) => ` <span class="tc-bad">little ${k} armor</span>`).join('')}</div></div></div>`;
       };
-      const armorLine = dm.armor ? `<div class="tc-h" style="margin-top:.7rem">Armor vs damage faced <span class="tc-n">share of each · armor = points bought from items · true damage ignores armor</span></div>${armorRow('Us', 'var(--green)', dm.armor.us, dm.them)}${armorRow('Them', 'var(--red)', dm.armor.them, dm.us)}` : '';
+      const armorLine = dm.armor ? `<div class="tc-h" style="margin-top:.8rem">Armor vs damage faced</div>${armorRow('Us', 'var(--green)', dm.armor.us, dm.them)}${armorRow('Them', 'var(--red)', dm.armor.them, dm.us)}<p class="tc-cap">Armor = points bought from items. True damage ignores armor.</p>` : '';
       const tf = dm.trueFrom.filter((t) => t.from.length).slice(0, 4);
-      const trueLine = tf.length ? `<p class="tc-n" style="margin:.25rem 0 0"><b style="color:var(--text-0)">True damage from:</b> ${tf.map((t) => `<span style="color:${t.us ? 'var(--green)' : 'var(--red)'}">${esc(t.hero)}</span> ${t.amount.toLocaleString()} (${t.share}% of their damage; ${t.from.map((x) => `${esc(x.name)} <i>${esc(x.kind)}</i>`).join(', ')})`).join(' · ')}</p>` : '';
-      return `<div class="tc-sec"><div class="tc-h">Damage types <span class="tc-n">hero damage dealt · bar length = total</span></div>
+      const trueLine = tf.length ? `<div class="tc-note"><b>True damage</b><ul class="tc-list">${tf.map((t) => `<li><span style="color:${t.us ? 'var(--green)' : 'var(--red)'}">${esc(t.hero)}</span> ${t.amount.toLocaleString()} <span class="tc-n">(${t.share}% of their damage)</span> from ${t.from.map((x) => `${esc(x.name)} <span class="tc-n">${esc(x.kind)}</span>`).join(', ')}</li>`).join('')}</ul></div>` : '';
+      return `<div class="tc-sec"><div class="tc-h">Damage types <span class="tc-n">hero damage dealt</span></div>
         ${bar('Us', dm.us, 'var(--green)')}${bar('Them', dm.them, 'var(--red)')}
         <div class="dm-key">${K.map(([, l, c]) => `<span><i style="background:${c}"></i>${l}</span>`).join('')}</div>${armorLine}${trueLine}${fld}</div>`;
     })() : '';
     // Team playbook (film.playbook, engine/src/playbook.ts): how our kits combine.
-    const pbBlock = f.playbook && (f.playbook.plays.length || f.playbook.note) ? `<details class="tc-sec sec-fold" open><summary class="tc-h">Team playbook <span class="tc-n">how these five kits fit together · a plan, not a replay</span></summary>
+    const pbBlock = f.playbook && (f.playbook.plays.length || f.playbook.note) ? `<details class="tc-sec sec-fold" open><summary class="tc-h">Team playbook <span class="tc-n">a plan from the kits</span></summary>
       ${f.playbook.note ? `<p class="tc-warn">${esc(f.playbook.note)}</p>` : ''}
       <div class="pb-grid">${f.playbook.plays.map((pl) => `<div class="pb"><b>${esc(pl.name)}</b> <span class="tc-n">${esc(pl.when)}</span>
         <ol>${pl.steps.map((st) => `<li>${hIcon(st.slug, 20)} <b>${esc(st.hero)}</b> ${esc(st.ability)} <span class="tc-n">${esc(st.what)}</span></li>`).join('')}</ol></div>`).join('')}
       ${f.playbook.waitOut.length ? `<div class="pb"><b>Bait or wait out first</b> <span class="tc-n">their crowd control</span><ol>${f.playbook.waitOut.map((st) => `<li>${hIcon(st.slug, 20)} <b>${esc(st.hero)}</b> ${esc(st.ability)} <span class="tc-n">${esc(st.what)}</span></li>`).join('')}</ol></div>` : ''}</div></details>` : '';
     return card(`${eyebrow('Draft, comp &amp; kits', `${fails ? `${fails} of ${tc.checks.length} fundamentals missed` : 'all fundamentals covered'}`)}
-      ${row(tc.us, 'Us', 'var(--green)')}${row(tc.them, 'Them', 'var(--red)')}${radarBlock}${balance}${mixBlock}
-      <ul class="tc-checks">${checks}</ul>${swap}${perfBlock}${pbBlock}${ccBlock}
+      ${row(tc.us, 'Us', 'var(--green)')}${row(tc.them, 'Them', 'var(--red)')}<ul class="tc-checks">${checks}</ul>${swap}${radarBlock}${balance}${mixBlock}
+      ${perfBlock}${pbBlock}${ccBlock}
       <div class="tc-foot">Win rates are each comp shape (real tanks × high-dive heroes) across ${tc.field.matches.toLocaleString()} sampled ${esc(tc.field.patch)} ranked games, every rank. They describe the draft, not who played well.</div>`);
   })();
   const stackCard = (() => {
@@ -1285,9 +1293,9 @@ function pgReview(f) {
       : '<span style="color:var(--text-1)">a bit under the lane norm</span>';
     const rows = sr.members.map((m) => `<div style="display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;padding:.4rem 0;border-top:1px solid var(--border)">
       ${hIcon(m.heroSlug, 28)}
-      <span style="min-width:9rem"><b>${esc(m.name)}</b><br><span style="color:var(--text-2);font-size:.8rem">${esc(m.heroName)} · ${esc(m.role)}</span></span>
+      <span style="min-width:9rem"><b>${esc(m.name)}</b><br><span style="color:var(--text-2);font-size:.8rem">${esc(m.heroName)} · ${esc(roleName(m.role))}</span></span>
       <span style="font-size:.85rem">${m.kills} / ${m.deaths} / ${m.assists}</span>
-      <span style="font-size:.8rem;color:var(--text-2)">${m.roleWr != null ? `${p1(m.roleWr)}% career in ${esc(m.role)} · ${m.roleGames} games` : ''}</span>
+      <span style="font-size:.8rem;color:var(--text-2)">${m.roleWr != null ? `${p1(m.roleWr)}% career in ${esc(roleName(m.role))} · ${m.roleGames} games` : ''}</span>
       <span style="font-size:.8rem;margin-left:auto">${gameWord(m)}</span>
     </div>`).join('');
     const rec = sr.recommend;
@@ -1295,7 +1303,7 @@ function pgReview(f) {
       <b>${rec.kind === 'swap' ? 'Next time you queue together, try these lanes' : 'Lanes were right: queue the same seats'}</b>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin:.45rem 0">${rec.seats.map((x) => {
         const moved = rec.moves.some((mv) => mv.name === x.name);
-        return `<span style="border:1px solid ${moved ? 'var(--gold)' : 'var(--border)'};border-radius:8px;padding:.2rem .55rem;font-size:.84rem"><b>${first(x.name)}</b> → ${esc(x.role)} <span style="color:var(--text-2)">${p1(x.wr)}% · ${x.games} games</span></span>`;
+        return `<span style="border:1px solid ${moved ? 'var(--gold)' : 'var(--border)'};border-radius:8px;padding:.2rem .55rem;font-size:.84rem"><b>${first(x.name)}</b> → ${esc(roleName(x.role))} <span style="color:var(--text-2)">${p1(x.wr)}% · ${x.games} games</span></span>`;
       }).join('')}</div>
       ${rec.reasons.map((t) => `<div style="color:var(--text-1);font-size:.85rem;margin-top:.2rem">${esc(t)}</div>`).join('')}
     </div>` : f.result === 'loss' && sr.lanesWereBest
@@ -1343,7 +1351,7 @@ function pgReview(f) {
   const moments = keyMoments.length ? card(`${eyebrow('The moments that decided it', 'capped at three · everything else is in “the full story” below')}${keyMoments.map(momentRow).join('')}`) : '';
 
   // ── Scoreboard facts: useful context, not coach calls ──
-  const statline = `<div class="coach-stat-wrap"><table class="coach-stats"><thead><tr><th>Squad · role</th><th>K / D / A</th><th>Hero dmg</th><th>Objective dmg</th><th>Mitigated</th><th>Wards</th></tr></thead><tbody>${us.map((p) => `<tr><td><b>${esc(pgName(p))}</b> <span class="role">· ${esc(p.heroName)} / ${esc(p.role)}</span></td><td>${p.kills} / ${p.deaths} / ${p.assists}</td><td>${Number(p.damageToHeroes || 0).toLocaleString()}</td><td>${Number(p.damageToObjectives || 0).toLocaleString()}</td><td>${Number(p.mitigated || 0).toLocaleString()}</td><td>${p.wardsPlaced || 0}</td></tr>`).join('')}</tbody></table><div style="font-size:.6875rem;color:var(--text-2);margin-top:.25rem">Match totals only; they do not place a player in a specific fight.</div></div>`;
+  const statline = `<div class="coach-stat-wrap"><table class="coach-stats"><thead><tr><th>Squad · role</th><th>K / D / A</th><th>Hero dmg</th><th>Objective dmg</th><th>Mitigated</th><th>Wards</th></tr></thead><tbody>${us.map((p) => `<tr><td><b>${esc(pgName(p))}</b> <span class="role">· ${esc(p.heroName)} / ${esc(roleName(p.role))}</span></td><td>${p.kills} / ${p.deaths} / ${p.assists}</td><td>${Number(p.damageToHeroes || 0).toLocaleString()}</td><td>${Number(p.damageToObjectives || 0).toLocaleString()}</td><td>${Number(p.mitigated || 0).toLocaleString()}</td><td>${p.wardsPlaced || 0}</td></tr>`).join('')}</tbody></table><div style="font-size:.6875rem;color:var(--text-2);margin-top:.25rem">Match totals only; they do not place a player in a specific fight.</div></div>`;
 
   // ── The game in one strip: fights on the line, objectives above, a labeled
   // minute axis, a real key, and a tap-to-open breakdown panel IN PLACE (the
@@ -1449,7 +1457,7 @@ function pgReview(f) {
       <div class="who">
         ${hIcon(p.heroSlug, 34)}
         <span><b>${pgName(p)}</b>
-        <span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br>
+        <span class="h">${esc(p.heroName)} · ${esc(roleName(p.role))}</span><br>
         <span class="kda">${p.kills} / ${p.deaths} / ${p.assists}</span></span>
       </div>
       <div>
@@ -1458,7 +1466,7 @@ function pgReview(f) {
         <div class="lrow"><span class="ltag">build</span>${bits.join(' · ')}</div>
         ${br?.build ? `<details class="whyd"><summary>why · what this build gained vs gave up</summary><div>${esc(buildBullets(br.build).join(' '))}</div></details>` : ''}
         ${ranLine(p.loadout)}
-        <div class="lrow" data-et-slug="${esc(p.heroSlug)}" data-et-role="${esc(p.role)}" data-et-opp="${lane ? esc(lane.theirSlug) : ''}" data-et-ran="${esc(p.loadout?.eternal || '')}"><span class="ltag">field pick</span><span style="opacity:.6">loading the field's pick…</span></div>
+        <div class="lrow" data-et-slug="${esc(p.heroSlug)}" data-et-role="${esc(roleName(p.role))}" data-et-opp="${lane ? esc(lane.theirSlug) : ''}" data-et-ran="${esc(p.loadout?.eternal || '')}"><span class="ltag">field pick</span><span style="opacity:.6">loading the field's pick…</span></div>
         ${br?.eternal ? `<details class="whyd"><summary>why · why this loadout fits the matchup</summary><div>${esc(buildBullets(br.eternal).join(' '))}</div></details>` : ''}
         ${(() => { const m = co && co.microReads ? co.microReads[p.pid] : null; if (!m || !(m.keep || m.change || m.check)) return ''; return `<div class="kcc">
           ${m.lastCheck && m.lastCheck.text ? `<div class="lrow"><span class="ltag" style="color:${m.lastCheck.result === 'held' ? 'var(--green)' : m.lastCheck.result === 'missed' ? 'var(--red)' : 'var(--text-2)'}">last check · ${esc(m.lastCheck.result || '')}</span>${esc(m.lastCheck.text)}${m.lastCheck.receipt ? ` <span style="color:var(--text-2)">(${esc(m.lastCheck.receipt)})</span>` : ''}</div>` : ''}
@@ -1491,7 +1499,7 @@ function pgReview(f) {
         const mu = l.predggMatchup;
         return `<div style="border:1px solid var(--border);border-radius:8px;padding:.5rem .6rem;background:var(--bg-2)">
           <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
-            <span style="font-size:.6875rem;color:var(--text-2);min-width:3.6rem">${esc(l.role)}</span>
+            <span style="font-size:.6875rem;color:var(--text-2);min-width:3.6rem">${esc(roleName(l.role))}</span>
             ${hlink(l.ourSlug, `<img src="${himg(l.ourSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'">`)} <b>${o ? pgName(o) : ''}</b>
             <span style="color:var(--text-2)">vs</span>
             ${hlink(l.theirSlug, `<img src="${himg(l.theirSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'">`)} ${esc(l.theirHero)}
@@ -1562,7 +1570,7 @@ function pgReview(f) {
       return rows.length ? `<div class="bn">${rows.map((r) => `<div>${r}</div>`).join('')}</div>` : '';
     };
     const players = card(`${eyebrow('Your team', '')}${bnShared.length ? `<p class="bn-shared">${bnShared.map((w) => esc(w.charAt(0).toUpperCase() + w.slice(1)) + '.').join(' ')}</p>` : ''}${us.map((p) => `<div class="plobby coach-player">
-      <div class="who">${hIcon(p.heroSlug, 34)}<span><span class="pname"><b>${pgName(p)}</b>${rankBadge(p)}</span><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span style="white-space:nowrap"><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span>${vpTag(p)}</span></span>${CoachLoadouts.icons(p.loadout,p)}</div>
+      <div class="who">${hIcon(p.heroSlug, 34)}<span><span class="pname"><b>${pgName(p)}</b>${rankBadge(p)}</span><span class="h">${esc(p.heroName)} · ${esc(roleName(p.role))}</span><br><span style="white-space:nowrap"><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span>${vpTag(p)}</span></span>${CoachLoadouts.icons(p.loadout,p)}</div>
       <div class="line">${(() => {
         if (co.playerBullets?.[p.pid]?.length) return `<ul class="coach-bullets">${co.playerBullets[p.pid].map(text => `<li>${factAct(text)}</li>`).join('')}</ul>${co.buildCall?.[p.pid] ? `<p class="build-call"><b>Build</b> ${escN(co.buildCall[p.pid])}</p>` : ''}`;
         const actions = co.microReads?.[p.pid];
@@ -1573,7 +1581,7 @@ function pgReview(f) {
     const loadouts = isLean ? '' : `<p class="build-help">Choose a player to see the recommendation, matchup and loadout breakdown.</p>${us.map((p) => {
       const br = co.buildReads?.[p.pid];
       const sections = [['improvement','Build decision','recommendation'],['matchup','Lane & team threats',''],['build','Item interactions',''],['eternal','Eternal & minors',''],['augment','Hero augment',''],['crest','Crest','']];
-      return `<details class="build-player"><summary>${hIcon(p.heroSlug,36).replace(/<\/?a\b[^>]*>/g,'')}<span class="build-identity"><b>${pgName(p)}</b><span>${esc(p.heroName)} · ${esc(p.role)}</span></span></summary><div class="build-analysis">
+      return `<details class="build-player"><summary>${hIcon(p.heroSlug,36).replace(/<\/?a\b[^>]*>/g,'')}<span class="build-identity"><b>${pgName(p)}</b><span>${esc(p.heroName)} · ${esc(roleName(p.role))}</span></span></summary><div class="build-analysis">
         ${sections.map(([key,label,style]) => buildBullets(br?.[key]).length ? `<section class="build-section ${style}"><h3>${label}</h3><ul>${buildBullets(br[key]).map(b => `<li>${esc(b)}</li>`).join('')}</ul></section>` : '').join('')}
         ${!br ? '<p class="build-help">Matchup analysis has not been written for this player.</p>' : ''}
       </div></details>`;
@@ -1890,7 +1898,7 @@ function setLabel(title, desc) {
       <h2>Role focus · winrate per role, thin samples adjusted</h2>
       ${c.roles.map((r) => `
         <div class="rolerow ${best && r.role === best.role ? 'best' : ''} ${worst && r.role === worst.role ? 'worst' : ''}">
-          <span style="text-transform:capitalize">${esc(r.role)}</span>
+          <span style="text-transform:capitalize">${esc(roleName(r.role))}</span>
           <span class="bar"><i style="width:${(r.shrunkWr / maxRoleWr) * 100}%"></i></span>
           <span class="nums">${pct(r.shrunkWr)}% · ${r.games} games</span>
         </div>`).join('')}
@@ -1909,7 +1917,7 @@ function setLabel(title, desc) {
             </div>
             <div class="stats">
               ${esc(p.name)}: <b>${pct(h.shrunkWr)}%</b> over ${h.games} games · field: ${pct(h.fieldWr)}%<br>
-              KDA ${h.kda.toFixed(1)} · ${h.deathsPerGame.toFixed(1)} deaths/game${h.myRoles && h.myRoles.length ? `<br>where they play it: ${h.myRoles.map((r) => `${esc(r.role)} ${pct(r.rawWr, 0)}% · ${r.games} games`).join(' / ')}` : ''}
+              KDA ${h.kda.toFixed(1)} · ${h.deathsPerGame.toFixed(1)} deaths/game${h.myRoles && h.myRoles.length ? `<br>where they play it: ${h.myRoles.map((r) => `${esc(roleName(r.role))} ${pct(r.rawWr, 0)}% · ${r.games} games`).join(' / ')}` : ''}
             </div>
             <div class="eng">${h.engineCoachLine ? `${esc(h.engineCoachLine)}<br>` : (h.engineEternal ? `engine: take <b>${esc(h.engineEternal)}</b> · ` : '')}<a class="build" href="./?hero=${esc(h.slug)}">eternal + build page →</a> <span style="color:var(--text-2)">(augment combos pending data)</span></div>
           </div>`).join('')}
@@ -1927,7 +1935,7 @@ function setLabel(title, desc) {
       <div style="font-size:.78rem;color:var(--text-1);margin-bottom:.7rem">Comfort picks earn their spot, but the meta moves · these are the strongest current-patch heroes in the roles ${esc(p.name)} actually queues. “New pick” means under 30 of their own games; the field winrate still makes them worth a look when the comfort pick gets countered or the team needs a different shape.</div>
       ${myRoles.map((r) => `
         <div style="margin-top:.6rem">
-          <div style="font-size:.72rem;font-weight:800;text-transform:capitalize;color:var(--accent-ink);letter-spacing:.06em">${esc(r.role)} · own record ${pct(r.shrunkWr)}% over ${r.games} games</div>
+          <div style="font-size:.72rem;font-weight:800;text-transform:capitalize;color:var(--accent-ink);letter-spacing:.06em">${esc(roleName(r.role))} · own record ${pct(r.shrunkWr)}% over ${r.games} games</div>
           ${(metaInfo.roles[r.role] || []).slice(0, 4).map((h) => {
             const mine = poolBySlug.get(h.slug);
             const note = mine && mine.games >= 30
