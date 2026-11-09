@@ -69,7 +69,9 @@ export function buildWhy(
   if (aug) sources.push({ name: aug.name, kind: 'augment', text: plain(aug.description) });
   // A minor that changes the major ("The major also deals ...") belongs to the major's trigger.
   const majorFam = et ? FAM.filter(([, re]) => re.test(et.major)).map(([f]) => f) : [];
-  const famOf = (m: Member) => { const fs = FAM.filter(([, re]) => re.test(m.text)).map(([f]) => f); return /^the major\b/i.test(m.text) ? [...new Set([...fs, ...majorFam])] : fs; };
+  // "Reduce their Healing by 45%" is anti-heal on enemies, not healing (Tainted items).
+  const antiHeal = (t: string) => /reduc\w*[^.]{0,40}heal/i.test(t) && !/lifesteal|omnivamp|heals? you|restore/i.test(t);
+  const famOf = (m: Member) => { const fs = FAM.filter(([f, re]) => re.test(m.text) && !(f === 'heal' && antiHeal(m.text))).map(([f]) => f); return /^the major\b/i.test(m.text) ? [...new Set([...fs, ...majorFam])] : fs; };
 
   const dmgAb = ctx.kit.filter((a) => a.damage && a.key !== 'LMB' && a.key !== 'Passive');
   const aoeAb = dmgAb.filter((a) => a.aoe);

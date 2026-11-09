@@ -99,7 +99,7 @@ export function powerProfile(
   const sEff: PowerProfile['amps'] = [];
   for (const it of owned) for (const e of it.effects ?? []) {
     const text = `${plain(e.condition)} ${plain(e.menu_description)}`.trim();
-    if (!placeholder(text) && /\bheal(?:s|ing|ed)?\b|restores? [^.]*health|\bshields?\b/i.test(text)) sEff.push({ name: nm(it), kind: 'item', how: short(text) });
+    if (!placeholder(text) && /\bheal(?:s|ing|ed)?\b|restores? [^.]*health|\bshields?\b/i.test(text) && !(/reduc\w*[^.]{0,40}heal/i.test(text) && !/heals? you|restore|shield/i.test(text))) sEff.push({ name: nm(it), kind: 'item', how: short(text) });
   }
   for (const m of et ? [...et.minorSlot1, ...et.minorSlot2].filter((x) => x.name === lo.minor1 || x.name === lo.minor2) : []) if (/lifesteal|\bheal(?:s|ing|ed)?\b|omnivamp/i.test(m.desc)) sEff.push({ name: m.name, kind: 'Eternal minor', how: short(plain(m.desc)) });
   const healing = p.healingDone ?? 0;
