@@ -210,6 +210,11 @@
   .ar-bar i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:.64rem;font-weight:800;color:var(--bg-0)}
   .ar-bar em{font-style:normal;font-size:.68rem;color:var(--text-2);padding-left:.4rem;line-height:14px}
   .ar-who{margin:.1rem 0 0 3.6rem;font-size:.74rem}.ar-who .tc-bad{margin-left:.2rem}
+  .sec-fold>summary{list-style:none;cursor:pointer}.sec-fold>summary::-webkit-details-marker{display:none}
+  .sec-fold>summary::before{content:'▾ ';color:var(--text-2)}.sec-fold:not([open])>summary::before{content:'▸ '}
+  .tb-fold{border-top:1px solid var(--border);padding:.35rem 0}.tb-fold>summary{cursor:pointer;list-style:none;font-size:.86rem}
+  .tb-fold>summary::-webkit-details-marker{display:none}.tb-fold>summary::before{content:'▸ ';color:var(--text-2)}.tb-fold[open]>summary::before{content:'▾ '}
+  .tb-foldbody{padding:.25rem 0 .2rem}
   .pf-row{border:1px solid var(--border);border-radius:10px;margin:.45rem 0;background:var(--bg-1)}
   .pf-row>summary{list-style:none;cursor:pointer;padding:.55rem .7rem}.pf-row>summary::-webkit-details-marker{display:none}
   .pf-row>summary::after{content:'▸';float:right;color:var(--text-2);margin-top:-2.2rem}.pf-row[open]>summary::after{content:'▾'}
@@ -233,7 +238,7 @@
   .tb-chip{display:grid;grid-template-columns:1fr auto;gap:.1rem .4rem;font-size:.74rem;color:var(--text-1)}
   .tb-chip i{grid-column:1/3;height:5px;background:var(--bg-3);border-radius:3px;overflow:hidden}.tb-chip i b{display:block;height:100%;background:var(--accent)}
   .tb-chip em{font-style:normal;color:var(--text-0);font-weight:700}
-  .tb-why{margin-top:.6rem}.tb-why .tb-k{margin-top:.55rem}
+  .tb-why{margin-top:.5rem}
   .tb-stackrow{margin:.25rem 0 .45rem}.tb-stackrow p{margin:.2rem 0 0;font-size:.84rem;line-height:1.5;color:var(--text-1)}
   .tb-mem{display:inline-flex;flex-wrap:wrap;gap:.25rem;vertical-align:middle;margin-left:.2rem}
   .tb-tag{font-size:.74rem;padding:.08rem .45rem;border-radius:99px;background:var(--bg-3);color:var(--text-0)}.tb-tag i{font-style:normal;color:var(--text-2);margin-left:.3rem;font-size:.66rem;text-transform:uppercase}
@@ -1090,13 +1095,14 @@ function pgReview(f) {
       // counter it, can we copy it.
       const w = c.worked;
       const VERD = { proven: ['Worth copying', 'var(--green)'], standard: ['Standard setup', 'var(--text-1)'], 'beat-us': ['Beat us, not the field', 'var(--gold)'], unknown: ['Not enough games', 'var(--text-2)'] };
+      const fold = (title, preview, body, open) => `<details class="tb-fold"${open ? ' open' : ''}><summary><b>${title}</b> <span class="tc-n">${preview}</span></summary><div class="tb-foldbody">${body}</div></details>`;
+      const missed = w ? w.countered.filter((x) => !x.ok).length : 0;
       const whyBlock = w ? `<div class="tb-why">
-        ${w.stacks.length ? `<div class="tb-k">What stacked</div>${w.stacks.map((x) => `<div class="tb-stackrow"><b>${esc(x.title)}</b> <span class="tb-mem">${x.members.map((m) => `<span class="tb-tag">${esc(m.name)}<i>${esc(m.kind)}</i></span>`).join('')}</span><p>${esc(x.text.replace(/^\d+ effects on one trigger: [^.]*\.\s*/, ''))}</p></div>`).join('')}` : ''}
-        ${w.eternalPart ? `<p class="tb-et">${esc(w.eternalPart)}</p>` : ''}
-        <div class="tb-k">Did ${tb.us ? 'they' : 'we'} counter it?</div><ul class="tb-list">${w.countered.map((x) => `<li>${x.ok ? '<span class="tc-ok">✓</span>' : '<span class="tc-bad">✗</span>'} ${esc(tb.us ? x.text.replace(/^We killed/, 'They killed') : x.text)}</li>`).join('')}</ul>
-        ${w.copy ? `<div class="tb-k">Can ${tb.us ? 'we' : 'we'} copy it? <span class="tb-verd" style="color:${VERD[w.copy.verdict][1]};border-color:${VERD[w.copy.verdict][1]}">${VERD[w.copy.verdict][0]}</span></div><p class="tb-copy">${esc(w.copy.text)}</p>` : ''}
+        ${w.stacks.length ? fold('What stacked', esc(w.stacks.map((x) => `${x.title.toLowerCase()} (${x.members.length})`).join(' · ')), `${w.stacks.map((x) => `<div class="tb-stackrow"><b>${esc(x.title)}</b> <span class="tb-mem">${x.members.map((m) => `<span class="tb-tag">${esc(m.name)}<i>${esc(m.kind)}</i></span>`).join('')}</span><p>${esc(x.text.replace(/^\d+ effects on one trigger: [^.]*\.\s*/, ''))}</p></div>`).join('')}${w.eternalPart ? `<p class="tb-et">${esc(w.eternalPart)}</p>` : ''}`) : ''}
+        ${fold(`Did ${tb.us ? 'they' : 'we'} counter it?`, missed ? `<span class="tc-bad">✗</span> ${missed} of ${w.countered.length} missed` : '<span class="tc-ok">✓</span> answered', `<ul class="tb-list">${w.countered.map((x) => `<li>${x.ok ? '<span class="tc-ok">✓</span>' : '<span class="tc-bad">✗</span>'} ${esc(tb.us ? x.text.replace(/^We killed/, 'They killed') : x.text)}</li>`).join('')}</ul>`)}
+        ${w.copy ? fold('Can we copy it?', `<span class="tb-verd" style="color:${VERD[w.copy.verdict][1]};border-color:${VERD[w.copy.verdict][1]}">${VERD[w.copy.verdict][0]}</span>`, `<p class="tb-copy">${esc(w.copy.text)}</p>`) : ''}
       </div>` : '';
-      const body = `<div class="tb">${leadCard}${whyBlock}${lessonBox(leadLesson)}${tabs}</div>`;
+      const body = `<div class="tb">${leadCard}${lessonBox(leadLesson)}${whyBlock}${tabs ? fold('Damage, cooldowns, staying alive' + (play ? ', play against' : ''), 'the numbers behind it', tabs) : ''}</div>`;
       if (bare) return body;
       return open ? `<div class="tc-h" style="margin-top:.6rem">How ${esc(tb.hero)}'s build worked</div>${body}` : `<details class="tc-more"><summary>How ${esc(tb.hero)}'s build worked</summary>${body}</details>`;
     };
@@ -1105,7 +1111,7 @@ function pgReview(f) {
     const perf = Object.values(f.threatBuilds || {}).filter((t) => t.card);
     const rank = (t) => (kr && kr.threat && kr.threat.slug === t.slug ? 0 : !t.us ? 1 : 2);
     perf.sort((a, b) => rank(a) - rank(b) || (b.score || 0) - (a.score || 0));
-    const perfBlock = perf.length ? `<div class="tc-sec"><div class="tc-h">High performers <span class="tc-n">who played well above their hero's usual game this patch, and why it worked</span></div>
+    const perfBlock = perf.length ? `<details class="tc-sec sec-fold" open><summary class="tc-h">High performers <span class="tc-n">${perf.length} · who played well above their hero's usual game this patch, and why it worked</span></summary>
       ${perf.map((t, i) => {
         const pl = f.players.find((x) => x.heroSlug === t.slug);
         const st = t.card.story;
@@ -1117,7 +1123,7 @@ function pgReview(f) {
         const sub = pl ? [`${pl.kills} / ${pl.deaths} / ${pl.assists}`, pl.us ? pgName(pl) : '', esc(pl.role), teamKills ? `${Math.round(100 * pl.kills / teamKills)}% of ${pl.us ? 'our' : 'their'} kills` : '', victims.length ? `killed ${victims.map(([h, n]) => `${esc(h)} ${n}`).join(' · ')}` : ''].filter(Boolean).join(' · ') : '';
         return `<details class="pf-row"${i === 0 ? ' open' : ''}><summary><span class="pf-sum">${hIcon(t.slug, 36).replace(/<\/?a\b[^>]*>/g, '')}<span><span class="pf-t"><b>${esc(t.hero)}</b> <span class="pf-dash">&mdash;</span> <span class="pf-l${hp ? ' hp' : ''}">${label}</span> <span class="pf-team" style="color:${t.us ? 'var(--green)' : 'var(--red)'}">${t.us ? 'Us' : 'Them'}</span></span>
           <span class="tc-n pf-s">${sub}</span>${st && st.lead ? `<span class="pf-lead">${esc(st.lead.title)}</span>` : ''}</span></span></summary>${tbBlock(t.slug, false, true, true)}</details>`;
-      }).join('')}</div>` : '';
+      }).join('')}</details>` : '';
     const ccBlock = kr ? (() => {
       const gap = kr.cc.them.length - kr.cc.us.length;
       const list = (xs) => xs.map((a) => `<li><b>${esc(a.hero)}</b> ${esc(a.ability)} <span class="tc-n">${esc(a.types.join(' + '))}${a.sec ? ` ${a.sec}s` : ''}</span></li>`).join('');
@@ -1209,14 +1215,14 @@ function pgReview(f) {
         <div class="dm-key">${K.map(([, l, c]) => `<span><i style="background:${c}"></i>${l}</span>`).join('')}</div>${armorLine}${trueLine}${fld}</div>`;
     })() : '';
     // Team playbook (film.playbook, engine/src/playbook.ts): how our kits combine.
-    const pbBlock = f.playbook && (f.playbook.plays.length || f.playbook.note) ? `<div class="tc-sec"><div class="tc-h">Team playbook <span class="tc-n">how these five kits fit together · a plan, not a replay</span></div>
+    const pbBlock = f.playbook && (f.playbook.plays.length || f.playbook.note) ? `<details class="tc-sec sec-fold" open><summary class="tc-h">Team playbook <span class="tc-n">how these five kits fit together · a plan, not a replay</span></summary>
       ${f.playbook.note ? `<p class="tc-warn">${esc(f.playbook.note)}</p>` : ''}
       <div class="pb-grid">${f.playbook.plays.map((pl) => `<div class="pb"><b>${esc(pl.name)}</b> <span class="tc-n">${esc(pl.when)}</span>
         <ol>${pl.steps.map((st) => `<li>${hIcon(st.slug, 20)} <b>${esc(st.hero)}</b> ${esc(st.ability)} <span class="tc-n">${esc(st.what)}</span></li>`).join('')}</ol></div>`).join('')}
-      ${f.playbook.waitOut.length ? `<div class="pb"><b>Bait or wait out first</b> <span class="tc-n">their crowd control</span><ol>${f.playbook.waitOut.map((st) => `<li>${hIcon(st.slug, 20)} <b>${esc(st.hero)}</b> ${esc(st.ability)} <span class="tc-n">${esc(st.what)}</span></li>`).join('')}</ol></div>` : ''}</div></div>` : '';
+      ${f.playbook.waitOut.length ? `<div class="pb"><b>Bait or wait out first</b> <span class="tc-n">their crowd control</span><ol>${f.playbook.waitOut.map((st) => `<li>${hIcon(st.slug, 20)} <b>${esc(st.hero)}</b> ${esc(st.ability)} <span class="tc-n">${esc(st.what)}</span></li>`).join('')}</ol></div>` : ''}</div></details>` : '';
     return card(`${eyebrow('Draft, comp &amp; kits', `${fails ? `${fails} of ${tc.checks.length} fundamentals missed` : 'all fundamentals covered'}`)}
       ${row(tc.us, 'Us', 'var(--green)')}${row(tc.them, 'Them', 'var(--red)')}${radarBlock}${balance}${mixBlock}
-      <ul class="tc-checks">${checks}</ul>${swap}${pbBlock}${perfBlock}<div class="tc-grid">${nemBlock}</div>${ccBlock}
+      <ul class="tc-checks">${checks}</ul>${swap}${perfBlock}${pbBlock}<div class="tc-grid">${nemBlock}</div>${ccBlock}
       <div class="tc-foot">Win rates are each comp shape (real tanks × high-dive heroes) across ${tc.field.matches.toLocaleString()} sampled ${esc(tc.field.patch)} ranked games, every rank. They describe the draft, not who played well.</div>`);
   })();
   const stackCard = (() => {
