@@ -219,17 +219,15 @@
     .tb-cdrow{grid-template-columns:1fr 3rem;gap:.15rem .5rem}.tb-cdrow .tb-cdl{grid-column:1/-1}.tb-cdrow .tc-n{grid-column:1/-1;margin-top:0}
     .tb-tabs .pgf{padding:.15rem .55rem;font-size:.72rem}
     .pf-row>summary{padding:.5rem .55rem}.pf-row>.tb{padding:0 .5rem .55rem}.tb-leadcard{padding:.5rem .55rem}
-    .pf-sum img{width:32px!important;height:32px!important}.pf-t{font-size:.92rem}.pf-s{font-size:.72rem}.pf-lead{font-size:.8rem}
+    .pf-sum img{display:none}.pf-row>summary{gap:.4rem}.pf-team{margin-left:0;margin-right:.3rem}.pf-t{font-size:.92rem}.pf-s{font-size:.72rem}.pf-lead{font-size:.8rem}
     .tb-ico{width:26px;height:26px}
   }
   .sec-fold>summary{list-style:none;cursor:pointer}.sec-fold>summary::-webkit-details-marker{display:none}
-  .sec-fold>summary::before{content:'▾ ';color:var(--text-2)}.sec-fold:not([open])>summary::before{content:'▸ '}
   .tb-fold{border-top:1px solid var(--border);padding:.35rem 0}.tb-fold>summary{cursor:pointer;list-style:none;font-size:.86rem}
-  .tb-fold>summary::-webkit-details-marker{display:none}.tb-fold>summary::before{content:'▸ ';color:var(--text-2)}.tb-fold[open]>summary::before{content:'▾ '}
+  .tb-fold>summary::-webkit-details-marker{display:none}
   .tb-foldbody{padding:.25rem 0 .2rem}
   .pf-row{border:1px solid var(--border);border-radius:10px;margin:.45rem 0;background:var(--bg-1)}
   .pf-row>summary{list-style:none;cursor:pointer;padding:.55rem .7rem}.pf-row>summary::-webkit-details-marker{display:none}
-  .pf-row>summary::after{content:'▸';float:right;color:var(--text-2);margin-top:-2.2rem}.pf-row[open]>summary::after{content:'▾'}
   .pf-row>.tb{padding:0 .7rem .7rem}
   .pf-sum{display:flex;gap:.6rem;align-items:center}.pf-sum img{border-radius:8px}
   .pf-t{display:block;font-size:.98rem}.pf-dash{color:var(--text-2)}.pf-l{font-weight:800;color:var(--text-1)}.pf-l.hp{color:var(--gold)}
@@ -316,8 +314,6 @@
   .kcc { margin:.35rem 0 .2rem; padding:.4rem .6rem; border:1px solid var(--border); border-radius:8px; background:var(--bg-1); }
   .kcc .lrow { margin:.12rem 0; }
   .whyd>summary { cursor:pointer; list-style:none; font-size:.7rem; color:var(--accent-ink); }
-  .whyd>summary::before { content:"▸ "; }
-  .whyd[open]>summary::before { content:"▾ "; }
   .whyd>div { font-size:.8rem; color:var(--text-1); padding:.35rem .55rem; border-left:2px solid var(--border); margin-top:.2rem; line-height:1.55; }
   .qa { padding:.55rem 0; border-bottom:1px solid var(--border); }
   .qa:last-of-type { border-bottom:none; }
@@ -354,8 +350,6 @@
   .build-player { margin:.75rem 0; border:1px solid var(--border); border-radius:12px; background:var(--bg-1); overflow:hidden; }
   .build-player > summary { display:flex; align-items:center; gap:.75rem; padding:1rem; cursor:pointer; list-style:none; min-height:44px; }
   .build-player > summary::-webkit-details-marker { display:none; }
-  .build-player > summary::after { content:'+'; margin-left:auto; color:var(--accent-ink); font-size:1.3rem; }
-  .build-player[open] > summary::after { content:'−'; }
   .build-player > summary:focus-visible { outline:2px solid var(--accent); outline-offset:-3px; }
   .build-player > summary img { width:36px; height:36px; border-radius:8px; }
   .build-player .build-identity { display:grid; gap:.2rem; min-width:0; }
@@ -539,6 +533,19 @@
   .rk-row img{width:38px;height:38px;border-radius:9px;object-fit:cover;border:1px solid var(--border)}
   .rk-n{color:var(--text-2);font-size:.78rem}.rk-kit{color:var(--text-1);font-size:.8rem;margin-top:.15rem}
   .rk-row .act{margin-top:.25rem;color:var(--text-0)}
+
+  /* One disclosure pattern for every fold in the review (2026-11-09): a chevron on the left that
+     turns down when open, and on the bigger rows a Show / Hide label on the right. */
+  :is(.sec-fold,.pf-row,.tb-fold,.tc-more,.deepdive,.sim-collapse,.flag-evidence,.evidence-section,.whyd,.build-player)>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:.5rem;border-radius:8px;-webkit-tap-highlight-color:transparent}
+  :is(.sec-fold,.pf-row,.tb-fold,.tc-more,.deepdive,.sim-collapse,.flag-evidence,.evidence-section,.whyd,.build-player)>summary::-webkit-details-marker{display:none}
+  :is(.sec-fold,.pf-row,.tb-fold,.tc-more,.deepdive,.sim-collapse,.flag-evidence,.evidence-section,.whyd,.build-player)>summary::before{content:'';flex:none;width:.42rem;height:.42rem;margin:0 .2rem 0 .1rem;border-right:2px solid var(--text-1);border-bottom:2px solid var(--text-1);transform:rotate(-45deg);transition:transform .15s}
+  :is(.sec-fold,.pf-row,.tb-fold,.tc-more,.deepdive,.sim-collapse,.flag-evidence,.evidence-section,.whyd,.build-player)[open]>summary::before{transform:rotate(45deg);margin-top:-.2rem}
+  :is(.sec-fold,.pf-row,.tb-fold,.deepdive,.sim-collapse,.evidence-section,.build-player)>summary::after{content:'Show';margin-left:auto;flex:none;font-size:.68rem;font-weight:700;letter-spacing:.02em;color:var(--text-1);border:1px solid var(--border);border-radius:99px;padding:.1rem .55rem;background:var(--bg-2)}
+  :is(.sec-fold,.pf-row,.tb-fold,.deepdive,.sim-collapse,.evidence-section,.build-player)[open]>summary::after{content:'Hide';color:var(--text-2)}
+  :is(.sec-fold,.pf-row,.tb-fold,.tc-more,.deepdive,.sim-collapse,.flag-evidence,.evidence-section,.whyd,.build-player)>summary:hover{background:var(--bg-2)}
+  :is(.sec-fold,.pf-row,.tb-fold,.tc-more,.deepdive,.sim-collapse,.flag-evidence,.evidence-section,.whyd,.build-player)>summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .tb-fold>summary,.sec-fold>summary{min-height:36px;padding:.2rem .3rem}.tb-fold>summary>b{flex:none}.tb-fold>summary>.tc-n{min-width:0}
+  .pf-row>summary .pf-sum{flex:1;min-width:0}
 </style>
 </head>
 <body>

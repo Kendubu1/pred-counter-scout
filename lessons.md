@@ -5904,3 +5904,8 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   teams win most at 20-30% magical (53.1%) and least past half magical (60-70%: 44.5%); 5-15% true
   wins ~56-57% vs 43.7% under 5%. Damage dealt follows the game, so the page calls it an
   association. The review draws one bar per team, length = total hero damage, split by type.
+- One disclosure pattern for the whole review (maintainer, 2026-11-09: people could not tell what
+  opens). Ten kinds of <details> had grown five marker styles (left text arrows, a right float, +/-,
+  browser triangles). Now one CSS rule set: a left chevron that rotates open, and a Show / Hide pill
+  on the larger rows (sections, performer cards, card folds, the bottom deep dives); a hover
+  background and focus ring on every summary. On phones the performer portrait leaves the title row.
