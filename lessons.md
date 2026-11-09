@@ -5937,3 +5937,10 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   (per-minute, per-level, level ranges, random procs, cooldown cuts) and the hero-role's patch win
   rate and pick share. After: augments, Eternals and crests 100%, minors 98% (18 minors missing
   from eternals.json, the known client-audit gap), field rates on 94% of pieces.
+- Coach copy for loadouts (maintainer, 2026-11-09: "explain it the way a common player would understand,
+  not the game text"). loadout:copy: 1,087 hero-and-piece explanations (6 author agents, 0 dropped by the
+  number check), 4 independent critics flagged 66 (wrong mechanic, unsupported effect such as "homing"
+  Weald shots, missing game text claimed as fact, overstated), a sweep fixed 11 more; 182 per-game "how it
+  worked together" bullets for 61 1.18 performers, 2 critics: 17 rewritten, 1 dropped. Critics also found
+  an engine bug: anti-heal items ("reduce their healing") were tagged as healing; fixed in build-why and
+  build-power. The %-health stack is titled by the target's health.

@@ -116,6 +116,13 @@ not in the env, stop immediately and report — no partial work.
    lean pipeline for the same `COACH_GAMES` per `docs/coach-automation-lean.md` (author, ingest,
    at most 3 critic rounds). It writes only `film.coachLean`; never let it delay or change the
    standard review above.
+   **Loadout coach copy (after postgame:comp):** `npm run loadout:copy -- prepare-pieces` (only hero /
+   loadout pieces not yet explained), pred-scout-coach answers `engine/copy-tasks/loadout-pieces.responses.json`,
+   `npm run loadout:copy -- ingest-pieces`, then an independent critic (`critique-prepare` -> responses
+   -> `critique`). Then `npm run loadout:copy -- prepare-games <today's date>` for the new games' high
+   performers, author, `ingest-games`, and an independent critic pass over those bullets. Rerun
+   `npm run postgame:comp` so the explanations attach. Never state an effect the game text does not
+   (no "homing" / "untargetable"); anti-heal is not healing.
 5. Refresh the reports: `npm run coach -- <lead-uuid>` and
    `npm run squad -- <lead-uuid>` (lead = `data/artifacts/squad.json` `.lead`).
    `squad` also rebuilds `data/artifacts/squad-bans.json` (the squad ban list on
