@@ -243,6 +243,10 @@
   .pf-team{font-size:.7rem;font-weight:800;text-transform:uppercase;margin-left:.3rem}
   .pf-s{display:block}.pf-kda{color:var(--text-0)}.pf-nem{color:var(--text-0);font-weight:700}.pf-lead{display:block;font-size:var(--fs-2);color:var(--text-0);margin-top:.1rem}
   .dm-sub{list-style:disc;padding-left:1rem;margin:.05rem 0 .5rem 3.5rem;font-size:var(--fs-3);color:var(--text-1);line-height:1.5}.dm-sub b{color:var(--text-0)}.dm-sub li{margin:.1rem 0}.dm-sub li::marker{color:var(--text-2)}.dm-sub .tc-ok,.dm-sub .tc-bad{margin-left:.3rem;font-weight:700}
+  .tb-dmg{list-style:none;padding:0;margin:.3rem 0 0}.tb-dmg>li{padding:.35rem 0;border-top:1px solid var(--border);font-size:var(--fs-2);line-height:1.45}.tb-dmg>li:first-child{border-top:0}
+  .tb-dico{display:inline-block!important;width:22px;height:22px;border-radius:5px;vertical-align:-6px;margin-right:.4rem;border:1px solid var(--border)}
+  .tb-trig{font-size:.66rem;font-weight:700;color:var(--accent-ink);border:1px solid var(--accent-ink);border-radius:99px;padding:0 .4rem;margin-left:.25rem;white-space:nowrap}
+  .tb-eff{color:var(--text-1);margin-top:.15rem;font-size:var(--fs-3);line-height:1.45}
   .tb{margin-top:.35rem}
   .tb-leadcard{border:1px solid var(--border);border-radius:8px;padding:.6rem .7rem;background:var(--bg-2);margin-top:.35rem}
   .tb-head{display:flex;gap:.6rem;align-items:center;margin-bottom:.45rem}.tb-head img{border-radius:10px}
@@ -1091,13 +1095,20 @@ function pgReview(f) {
         <ul class="tb-list">${hs.map((h, i) => `<li><span class="tb-sw" style="background:${col(i)}"></span><b>${esc(h.name)}</b> <span class="tb-kind">${esc(h.kind)}</span> ${esc(h.how)}</li>`).join('')}
         ${c.fight ? `<li><span class="tb-sw fight"></span><b>${esc(c.fight.name)}</b> <span class="tb-kind">augment</span> ${esc(c.fight.how)}</li>` : ''}</ul></div>` : '';
       // Damage: power, penetration against each target (armor before -> after; estimate), boosts.
+      // Damage: the build behind it, item by item (power, penetration, effect), tagged with the trigger
+      // it shares with the abilities or Eternal (film.threatBuilds[].worked.stacks). pred.gg does not
+      // report damage per item, so items are ordered by what they added, not by damage dealt.
       const dmgBlock = pp ? (() => {
-        const maxA = Math.max(1, ...pp.vs.map((v) => v.armor));
-        const rows = pp.vs.filter((v) => v.more > 0 || v.diedTo).slice(0, 3).map((v) => `<div class="tb-cdrow"><span class="tb-cdl">${esc(v.hero)}${v.diedTo ? ` <span class="tc-n">died ${v.diedTo}x</span>` : ''}</span><span class="tb-bar tb-arm"><i class="base" style="width:${(100 * v.armor / maxA).toFixed(1)}%"></i><i class="end" style="width:${(100 * v.after / maxA).toFixed(1)}%"></i></span><b>+${v.more}%</b><span class="tc-n">level ${v.level}${v.levelKnown ? '' : ' (est.)'} · ${esc(pp.type)} armor about ${v.armor}, about ${v.after} after penetration: ${v.more}% more damage taken${v.taken ? ` · took ${v.taken.type.toLocaleString()} ${esc(pp.type)} damage from heroes (${Math.round(100 * v.taken.type / Math.max(1, v.taken.total))}% of their hero damage taken)` : ''}</span></div>`).join('');
-        const pen = [pp.pen.flat ? `${pp.pen.flat} flat` : '', pp.pen.pct ? `${pp.pen.pct}% ignored` : ''].filter(Boolean).join(' + ');
-        return `<div class="tb-sec"><div class="tb-k">Damage <span class="tc-n">${pp.dealt ? `${pp.dealt.damage.toLocaleString()} to heroes, ${pp.dealt.share}% of the team's · ` : ''}+${pp.power} ${esc(pp.type)} power from items</span></div>
-          ${pen ? `<div class="tc-n" style="margin-bottom:.2rem">Penetration ${pen} (${esc(pp.pen.sources.join(', '))}). Against ${tb.us ? 'their' : 'our'} players${pp.vs.some((v) => !v.levelKnown) ? ` (levels marked est. are estimated)` : ''}:</div>${rows}` : ''}
-          ${pp.amps.length ? `<details class="tc-more" style="margin-top:.45rem"><summary>${pp.amps.length} damage boost${pp.amps.length === 1 ? '' : 's'}: ${esc([...new Set(pp.amps.map((a) => a.name))].join(', '))}</summary><ul class="tb-list">${pp.amps.map((a) => `<li><b>${esc(a.name)}</b> <span class="tb-kind">${esc(a.kind)}</span> ${esc(a.how)}</li>`).join('')}</ul></details>` : ''}</div>`;
+        const stacks = (c.worked && c.worked.stacks) || [];
+        const trig = (name) => { const s0 = stacks.find((x) => x.members.some((m) => m.name === name)); return s0 ? s0.title.replace(/^Every /, 'every ').replace(/ set off$| fed$/, '') : ''; };
+        const items = [...(pp.items || [])].sort((x, y) => (y.power - x.power) || ((y.pen + y.penPct) - (x.pen + x.penPct)));
+        const add = (it) => [it.power ? `+${it.power} power` : '', it.pen ? `${it.pen} penetration` : '', it.penPct ? `ignores ${it.penPct}% armor` : ''].filter(Boolean).join(' · ');
+        const others = pp.amps.filter((x) => x.kind !== 'item' && x.kind !== 'crest');
+        const li = (icon, name, kind, added, tag, effect) => `<li>${icon}<b>${esc(name)}</b>${kind ? ` <span class="tb-kind">${esc(kind)}</span>` : ''}${added ? ` <span class="tc-n">${added}</span>` : ''}${tag ? ` <span class="tb-trig">${esc(tag)}</span>` : ''}${effect ? `<div class="tb-eff">${escN(effect)}</div>` : ''}</li>`;
+        return `<div class="tb-sec"><div class="tb-k">Damage build <span class="tc-n">${pp.dealt ? `${pp.dealt.damage.toLocaleString()} hero damage, ${pp.dealt.share}% of the team's · ` : ''}+${pp.power} ${esc(pp.type)} power</span></div>
+          <ul class="tb-dmg">${items.map((it) => li(`<img src="${iimg(it.slug)}" alt="" class="tb-dico" data-ipop="${esc(it.slug)}" onerror="this.style.display='none'">`, it.name, it.kind === 'crest' ? 'crest' : '', add(it), trig(it.name), it.effects.join(' '))).join('')}
+          ${others.map((x) => li('', x.name, x.kind, '', trig(x.name), x.how)).join('')}</ul>
+          <p class="tc-cap">Ordered by what each item added; the game does not report damage per item.</p></div>`;
       })() : '';
       const keepBlock = pp && (pp.sustain || pp.tough) ? `<div class="tb-sec"><div class="tb-k">Staying alive</div><ul class="tb-list">
         ${pp.sustain ? `<li><b>Sustain</b> ${esc([...pp.sustain.stats, ...pp.sustain.effects.filter((e) => !pp.amps.some((a) => a.name === e.name && a.how === e.how)).map((e) => `${e.name}: ${e.how}`)].join('; '))} <span class="tc-n">${pp.sustain.healing.toLocaleString()} healing in the game</span></li>` : ''}
@@ -1105,7 +1116,7 @@ function pgReview(f) {
       const extraBlock = c.extras.filter((x) => !(pp && pp.amps.some((a) => a.name === x.name))).length ? `<div class="tb-sec"><div class="tb-k">Also working for ${esc(tb.hero)} <span class="tc-n">${c.takedowns.count} takedowns: ${c.takedowns.kills} kills, ${c.takedowns.assists} assists</span></div>
         <ul class="tb-list">${c.extras.filter((x) => !(pp && pp.amps.some((a) => a.name === x.name))).map((x) => `<li><b>${esc(x.name)}</b> <span class="tb-kind">${esc(x.kind)}</span> ${esc(x.how)}</li>`).join('')}</ul></div>` : '';
       // Each lesson lives with its tab; only the lead story's lesson shows under the lead card.
-      const tabLesson = { cooldowns: c.lesson, damage: c.powerLesson, alive: c.heals ? 'Anti-heal (the Tainted items) cuts the healing in this build.' : null };
+      const tabLesson = { cooldowns: c.lesson, damage: null, alive: c.heals ? 'Anti-heal (the Tainted items) cuts the healing in this build.' : null };
       const lessonBox = (t) => t ? `<ul class="tb-list tb-bul"><li><b>Lesson:</b> ${escN(t)}</li></ul>` : '';
       // Sentences as bullets ("Lt. Belica" stays whole).
       const sentences = (t) => { const out = []; for (const raw of String(t || '').split(/(?<=[.!?])\s+(?=[A-Z0-9"])/)) { if (out.length && /\b(Lt|St|Mr|Dr|vs)\.$/.test(out[out.length - 1])) out[out.length - 1] += ' ' + raw; else if (raw.trim()) out.push(raw.trim()); } return out; };

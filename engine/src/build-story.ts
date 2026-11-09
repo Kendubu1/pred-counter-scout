@@ -52,7 +52,8 @@ export function buildStory(
   const alive = 100 - v.dp10.pct; // higher = died less than more of that hero-role
   const who = `${p.heroName} ${p.role === 'midlane' ? 'mid' : p.role} players this patch`;
   const cut = build.ult ? Math.round((1 - build.ult.endGame / build.ult.base) * 100) : 0;
-  const dmgWhy = build.pen && build.pen.more >= 25 ? `Penetration did the work: ${build.pen.hero} took about ${build.pen.more}% more ${build.pen.type} damage than their armor allowed (estimate).` : build.amps.length ? `The damage came from ${build.amps.slice(0, 3).join(', ')}.` : '';
+  // The build behind the damage (maintainer, 2026-11-09: the items and their synergy, not who took it).
+  const dmgWhy = build.amps.length ? `The damage came from ${build.amps.slice(0, 3).join(', ')}.` : '';
   const cands: { id: StoryId; score: number; title: string; text: string; tab: Story['tabs'][number] }[] = [];
   if (build.fed && build.ult && v.kp.pct >= 75) cands.push({ id: 'snowball', tab: 'cooldowns', score: v.kp.pct + 10, title: 'Stayed alive, joined every fight, and each takedown sped up the ultimate',
     text: `In ${Math.round(v.kp.value * 100)}% of the team's kills (more than ${v.kp.pct}% of ${who}) and died ${p.deaths} time${p.deaths === 1 ? '' : 's'} (fewer than about ${alive}% of them). ${build.fed.name} turned ${build.fed.takedowns} takedowns into ability haste, so ${build.ult.name} came back every ~${Math.round(build.ult.endGame)}s instead of ${build.ult.base}s.` });

@@ -5923,3 +5923,9 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
 - Type pass (#4-#7): three sizes on #pgview (--fs-1/2/3), paragraphs never at caption size; section
   subtitles cut to 2-4 words with the method as a caption under the chart; draft checks under the
   team rows; role names through roleName() (Mid, Offlane, Jungle, Carry, Support); sentence-case labels.
+- Damage tab = the build, not the victims (maintainer, 2026-11-09). build-power.ts keeps the damage
+  build item by item (power, penetration, % armor ignored, damage effects); the page lists them
+  with a tag for the trigger they share with the abilities / Eternal (worked.stacks), then the
+  Eternal, minor and augment damage effects. Ordered by what each item added: pred.gg reports no
+  damage per item. The penetration-vs-target rows and lesson are gone from the page; the lead
+  story's damage reason now names the items.

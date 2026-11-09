@@ -22,6 +22,10 @@ export interface PowerProfile {
   vs: { name: string; hero: string; armor: number; after: number; more: number; diedTo: number; level: number; levelKnown: boolean; taken: { type: number; total: number } | null }[];
   level: number;
   amps: { name: string; kind: string; how: string }[];
+  /** the damage build, item by item (power of the hero's type, penetration, damage effects), in
+   *  buy order when known; pred.gg does not report damage per item, so this is what each item
+   *  added, not what it dealt */
+  items: { slug: string; name: string; kind: string; power: number; pen: number; penPct: number; effects: string[] }[];
   dealt: { damage: number; share: number } | null;
   sustain: { stats: string[]; effects: { name: string; kind: string; how: string }[]; healing: number } | null;
   tough: { stats: string[]; taken: number; mitigated: number; deaths: number } | null;
@@ -82,6 +86,13 @@ export function powerProfile(
   const aug = lo.augment ? ctx.augments[lo.augment.id] : undefined;
   if (aug && isAmp(aug.description)) amps.push({ name: aug.name, kind: 'augment', how: short(plain(aug.description)) });
 
+  // The damage build, item by item.
+  const items: PowerProfile['items'] = owned.map((it) => {
+    const effects = (it.effects ?? []).map((e) => `${plain(e.condition)} ${plain(e.menu_description)}`.trim()).filter((t) => t && !placeholder(t) && isAmp(t)).map(short);
+    const pctM = (it.effects ?? []).map((e) => new RegExp(`ignore (\\d+(?:\\.\\d+)?)% of ${T} armor`, 'i').exec(plain(e.menu_description))).find(Boolean);
+    return { slug: it.slug, name: nm(it), kind: lo.crestSlug === it.slug ? 'crest' : 'item', power: it.stats?.[`${type}_power`] ?? 0, pen: it.stats?.[`${type}_penetration`] ?? 0, penPct: pctM ? Number(pctM[1]) : 0, effects };
+  }).filter((x) => x.power || x.pen || x.penPct || x.effects.length);
+
   // Sustain
   const sStats = [['lifesteal', 'lifesteal'], ['magical_lifesteal', 'magical lifesteal'], ['omnivamp', 'omnivamp'], ['heal_shield_increase', 'heal and shield power']]
     .map(([k, l]) => [sum(k!), l] as [number, string]).filter(([v]) => v > 0).map(([v, l]) => `${v}% ${l}`);
@@ -100,7 +111,7 @@ export function powerProfile(
   const tough = tStats.length ? { stats: tStats, taken: p.damageTaken ?? 0, mitigated: p.mitigated ?? 0, deaths: p.deaths } : null;
 
   return {
-    type, power: sum(`${type}_power`), pen: { flat, pct, sources: penSources }, vs, level: ctx.level, amps,
+    type, power: sum(`${type}_power`), pen: { flat, pct, sources: penSources }, vs, level: ctx.level, amps, items,
     dealt: p.damageToHeroes != null ? { damage: p.damageToHeroes, share: ctx.teamDamage ? Math.round((100 * p.damageToHeroes) / ctx.teamDamage) : 0 } : null,
     sustain, tough,
   };
