@@ -67,6 +67,11 @@ describe('picks by build', () => {
         for (const k of ['eternals', 'crests', 'builds']) expect(['Best', 'Leans', 'Toss-up', 'Most played', 'By games']).toContain(g[k].label);
         for (const r of g.builds.rows) expect(r.name.split('>')).toHaveLength(3);
       }
+      if (rd.plat) {
+        expect(rd.plat.games).toBeGreaterThanOrEqual(i.minPlatLane);
+        expect(rd.plat.games).toBeLessThanOrEqual(rd.games);
+        for (const g of rd.plat.augments) { expect(g.n).toBeGreaterThanOrEqual(i.minPlatAugment); expect(g.eternals.changes).toBe(false); }
+      }
     }
   });
 });

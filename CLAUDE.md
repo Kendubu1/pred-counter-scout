@@ -155,8 +155,9 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   is locked first and is hero- and lane-specific, so it is the first choice, and per augment with 60+
   players the Eternal, crest and ordered opening core are ranked INSIDE that augment by the edge rule
   (the augment treated like a rank band), with what its players run and their first item beside it;
-  matchup and item sections below apply to any loadout; rules in src/build-picks.ts readList; rerun
-  daily after perks),
+  matchup and item sections below apply to any loadout; it follows the page rank filter: the Plat+ view
+  (lane 60+ and augment 20+ Plat+ games, rank in that game) ranks each list with the all-ranks numbers
+  one level down as its prior; rules in src/build-picks.ts readList; rerun daily after perks),
   `npm run buildpicks` (zero-API: "Picks on this build" under each hero-page build,
   data/artifacts/build-picks/<hero>.json, from the patch's ranked lineups: the augment / Eternal /
   crest run by players who opened with that three-item set (60+ players), ranked by the edge rule

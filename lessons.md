@@ -6038,4 +6038,10 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   list reads Toss-up 139, Leans 81, Best 56, Most played 31; it leads with a different Eternal than the
   lane on a clear edge for 9 augments. Hero- and lane-specific choices go first; matchup and item
   advice applies to any loadout and sits below.
+- A card that ignores the page's rank filter reads as a contradiction (maintainer: "these win rates are
+  very different"). Two causes were mine: the Loadout card was all ranks while Opening Picks followed
+  Plat+, and its tabs showed pick share ("21% run it") with no win rate, which was read as one. Tabs now
+  lead with the win rate, and the card follows the filter: 82 lanes have a Plat+ view (60+ Plat+ lane
+  games, 20+ per augment), each list ranked with the all-ranks numbers one level down as its prior, and
+  a list too thin to rank shows the all-ranks pick, marked. Every number on a card names what it is.
 
