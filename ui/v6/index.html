@@ -1893,7 +1893,7 @@ async function mountLoadout(a) {
     const sel = rd.augments.find((x) => x.id === LO_STATE[stateKey]) || rd.augments[0];
     const tabs = rd.augments.map((x, i) => `<button type="button" class="lo-tab${x === sel ? ' active' : ''}" data-loaug="${esc(x.id)}" aria-pressed="${x === sel}">
         <img src="../img/augments/${esc(x.id)}.webp" alt="" onerror="this.style.visibility='hidden'">
-        <span><span class="nm">${esc(x.name)}</span><br><span class="sub">${x.sharePct}% run it${i === 0 && rd.augments.length > 1 && rd.augmentLabel !== 'By games' ? ` · ${rd.augmentLabel === 'Most played' ? 'most played' : rd.augmentLabel === 'Toss-up' ? 'best odds' : rd.augmentLabel.toLowerCase()}` : ''}</span></span>
+        <span><span class="nm">${esc(x.name)}</span><br><span class="sub"><b style="color:${wrColor(x.shrunk / 100)}">${x.shrunk.toFixed(1)}% win</b> · picked ${x.sharePct}%${i === 0 && rd.augments.length > 1 && (rd.augmentLabel === 'Best' || rd.augmentLabel === 'Leans') ? ` · ${rd.augmentLabel.toLowerCase()}` : ''}</span></span>
       </button>`).join('');
     const pickRow = (key, p, img) => {
       const lead = p.rows[0];
