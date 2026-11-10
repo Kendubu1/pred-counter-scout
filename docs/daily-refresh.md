@@ -118,7 +118,9 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    Since 2026-11-07 perks also keeps both teams' LINEUPS of every ranked match
    it reads (no extra requests): data/aggregates/team-comps/<patch>/<YYYY-MM-DD>.jsonl,
    one match per line as { id, end, dur, win, teams: [[hero, role, tier, build, final]...] x2 }
-   (format team-comps/v2 since 2026-11-08: build = every completed item in purchase order,
+   (format team-comps/v3 since 2026-11-08 evening: v2 plus final level, the second each build item
+   was bought, and EXTRA_KEYS: hero damage taken by type, healing by source, lane / jungle /
+   enemy-jungle minions, best spree and multikill; v2 since 2026-11-08: build = every completed item in purchase order,
    final = the whole final inventory; v1 rows from the 1.18 seed have no items;
    src/ingest/team-comps.ts), filed by match end day so
    past days stop changing. coverage.json says which stretches are complete
@@ -145,7 +147,12 @@ since 2026-10-14 every step, the catalog included, is a pred.gg pull.
    **Run `npm run eternals:usage` and `npm run comps` right after perks every day** (both
    zero-API; eternal-usage.json had sat at 11-03 / 467 matches because this step was missing) so the report and the
    coach page's comp-shape win rates track the growing lineup file, then
-   `npm run postgame:comp -- --all` to refresh every review's draft/kit/build notes.
+   `npm run norms` (zero-API: each hero-role's normal game this patch, percentiles of damage, kill
+   participation, deaths, gold, healing and mitigation per minute, data/aggregates/hero-role-norms.json;
+   the build read's lead story places a game on these), `npm run matchups:cores` (zero-API: the best 3-item cores into each lane opponent from the same
+   lineups, data/aggregates/matchup-cores.json; the review's "Core vs <opponent>" row) and
+   `npm run postgame:comp -- --all` to refresh every review's draft/kit/build notes and
+   `threatBuilds` (how the enemy threat's build worked, src/threat-build.ts).
    Then `RANKED_ONLY=1 npm run aggregate && npm run matchups:feed` (ranked only, maintainer ask 2026-10-27) — the pred.gg match samples
    (gold curves + item play rates; same-role head-to-head lanes, resumed
    incrementally inside the current patch family). Then `npm run checkpoints`

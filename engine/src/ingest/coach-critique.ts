@@ -37,8 +37,32 @@ const PG = path.join(ROOT, 'data/postgame');
 interface Coaching { flags?: { ref: string; text: string }[]; playerBullets?: Record<string, string[]>; playerTestimony?: unknown; lossReflection?: string; visionEvidence?: Record<string, { tool: string; source: string; note: string }>; headline?: string; team?: string; whatShiftedIt?: string; whatWorked?: string; focus?: { title?: string; evidence?: string; action?: string }; perPlayer?: Record<string, string>; verdicts?: Record<string, { mood?: string; text?: string }>; moments?: Record<string, { call?: string }>; buildReads?: Record<string, Partial<Record<'matchup' | 'build' | 'eternal' | 'augment' | 'crest' | 'improvement', string | string[]>>>; ranking?: { pid?: string; grade?: string }[];  deepDive?: { verdict?: string; causes?: { claim?: string; receipt?: string }[]; ledger?: string; theCall?: string; rule?: string };  microReads?: Record<string, { keep?: string; change?: string; check?: string; receipt?: string; lastCheck?: { text?: string; result?: string; receipt?: string } }>; }
 interface Facts { matchId: string; result: string; durationMin: number; vpSwing: number | null; players: any[]; lanes: any[]; comp: any; objectives: any; timeline?: any; skirmishes?: any[]; kills?: { killedPid: string | null; min: number }[]; coaching?: Coaching | null; }
 
-/** Compact, factual source block the critic judges the coaching against. */
-function sourceOf(f: Facts): string {
+const plain = (t: unknown) => String(t ?? '').replace(/<[^>]+>/g, '').replace(/\{[^}]*\}/g, '#').replace(/\s+/g, ' ').trim();
+/** Lean review (src/ingest/coach-lean.ts): catalog mechanics as plain text, only for items the copy names. */
+function leanCatalogLines(f: Facts, texts: string[]): string[] {
+  const us = f.players.filter((p) => p.us);
+  const low = texts.join(' ').toLowerCase();
+  const items = (JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/items.json'), 'utf8')) as any[])
+    .filter((it) => { const n = String(it.display_name || it.name).toLowerCase(); return n.length > 3 && low.includes(n); })
+    .map((it) => `${it.display_name || it.name}: ${(it.effects ?? []).filter((e: any) => e.name || e.condition).map((e: any) => `${e.name ? `${e.name} ` : ''}${e.condition ? `(${plain(e.condition)}) ` : ''}${plain(e.menu_description)}`).join(' / ')}`);
+  const eternals = (JSON.parse(readFileSync(path.join(ROOT, 'data/game-data/eternals.json'), 'utf8')).eternals as any[]).filter((e) => us.some((p) => p.loadout?.eternal === e.name));
+  const augCat = JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/predgg-augments.json'), 'utf8')).catalog ?? {};
+  const augs = us.map((p) => p.loadout?.augment?.id ? augCat[p.loadout.augment.id] : null).filter(Boolean);
+  return [
+    `ITEM MECHANICS (catalog text, not observed procs): ${items.join(' | ') || 'none named'}.`,
+    `ETERNALS WE RAN (catalog text, not uptime): ${us.filter((p) => p.loadout?.eternal).map((p) => { const e = eternals.find((x) => x.name === p.loadout.eternal); if (!e) return ''; const minors = [...(e.minorSlot1 ?? []), ...(e.minorSlot2 ?? [])].filter((m: any) => [p.loadout.minor1, p.loadout.minor2].includes(m.name)); return `${p.heroName} ${e.name}: ${plain(e.major)}${minors.map((m: any) => ` Minor ${m.name}: ${plain(m.desc)}`).join('')}`; }).filter(Boolean).join(' | ') || 'none recorded'}.`,
+    `AUGMENTS WE RAN (catalog text): ${augs.map((a: any) => `${a.name}: ${plain(a.description)}`).join(' | ') || 'none recorded'}.`,
+  ];
+}
+
+/** Compact, factual source block the critic judges the coaching against.
+ *  opts.lean (the lean review): rules live once in the rubric, catalog text is plain and
+ *  limited to what the copy names, and the event list keeps structures and named majors. */
+export function sourceOf(f: Facts, opts: { lean?: boolean; texts?: string[] } = {}): string {
+  if (opts.lean) {
+    const drop = /^(EVIDENCE LIMITS|JUNGLE VISION RULE|CATALOG PASSIVES|RECORDED ETERNAL CATALOG|RECORDED AUGMENT CATALOG|FIGHT PRESENCE RULE|PREVIOUS CHECK|UPSET LOSS)/;
+    return [...sourceOf(f).split('\n').filter((l) => !drop.test(l)).map((l) => l.startsWith('EVENTS: ') ? leanEvents(f) : l), ...leanCatalogLines(f, opts.texts ?? [])].join('\n');
+  }
   const us = f.players.filter((p) => p.us);
   const sk = (f.skirmishes ?? []);
   const tagged = sk.filter((s) => s.tag);
@@ -64,7 +88,8 @@ function sourceOf(f: Facts): string {
     `COMP: you ${f.comp?.ourDamage?.physical}P/${f.comp?.ourDamage?.magical}M, them ${f.comp?.theirDamage?.physical}P/${f.comp?.theirDamage?.magical}M; their healers ${f.comp?.theirHealers?.join(', ') || 'none'}.`,
     ...((f as any).playbook ? [`PLAYBOOK (playbook, src/playbook.ts; a plan from the kits, not a replay): ${(f as any).playbook.note ?? ''} ${(f as any).playbook.plays.map((p: any) => `${p.name}: ${p.steps.map((st: any) => `${st.hero} ${st.ability} (${st.what})`).join(' > ')}`).join(' | ')}. Wait out: ${(f as any).playbook.waitOut.map((st: any) => `${st.hero} ${st.ability}`).join(', ')}. Flag copy that names an ability or combo not here, or presents the plan as what happened.`] : []),
     ...((f as any).kitRead ? [`KIT (kitRead, src/kit-read.ts; from the catalog-scanned kit index and kit-profiles; counterplay is advice, not proof it would have worked): ${(f as any).kitRead.cc.note} Their hard CC: ${(f as any).kitRead.cc.them.map((a: any) => `${a.hero} ${a.ability} (${a.types.join('+')})`).join(', ') || 'none'}. Ours: ${(f as any).kitRead.cc.us.map((a: any) => `${a.hero} ${a.ability} (${a.types.join('+')})`).join(', ') || 'none'}.${(f as any).kitRead.threat ? ` Threat: ${(f as any).kitRead.threat.hero} ${(f as any).kitRead.threat.kda}; ${(f as any).kitRead.threat.kit.join(' ')} Play against: ${(f as any).kitRead.threat.playAgainst ?? 'n/a'}` : ''}${((f as any).kitRead.nemeses ?? []).map((n: any) => ` Nemesis: ${n.hero} died ${n.byCount}/${n.deaths} to ${n.byHero}; play against: ${n.playAgainst ?? 'n/a'}; answer: ${n.answer ?? 'none'}.`).join('')} Flag any ability effect, item answer or CC claim in the copy that is not here.`] : []),
-    ...(((f as any).buildNotes ?? []).length ? [`BUILD NOTES (buildNotes, src/build-notes.ts; field shares are what other players buy, not proof an item wins the matchup): ${(f as any).buildNotes.map((b: any) => `${b.hero}: ${b.lane ? `vs ${b.lane.opp} lane ${b.lane.wr}% (${b.lane.n})` : 'no lane record'}${b.adapt.map((a: any) => `; field buys ${a.name} ${a.into}% into ${a.vs} (usual ${a.usual}%${a.wr != null ? `, wins ${a.wr}%` : ''})${a.has ? ' built' : ''}`).join('')}${b.needs.map((n: any) => `; needs ${n.answer} because ${n.why}: ${n.has ? 'built' : 'NOT built'}`).join('')}`).join(' | ')}. Flag build advice that contradicts these or cites a number not here.`] : []),
+    ...(Object.keys((f as any).threatBuilds ?? {}).length ? [`HOW BUILDS WORKED (threatBuilds: their threat, nemesis killers and anyone above the hero-role norm on either team, src/threat-build.ts; catalog text and this game's takedowns; cooldowns use the verified haste formula, in-fight figures are estimates): ${Object.values((f as any).threatBuilds).map((t: any) => `${t.us ? 'OUR' : 'THEIR'} ${t.hero} (${(t.why ?? ['threat']).join(', ')}${t.score != null ? `, +${t.score} above the hero-role norm` : ''}) [${t.loadout}]: ${t.lines.join(' ')}`).join(' | ')}. Flag cooldown or haste numbers not here, and in-fight estimates stated as measured.`] : []),
+    ...(((f as any).buildNotes ?? []).length ? [`BUILD NOTES (buildNotes, src/build-notes.ts; field shares are what other players buy, not proof an item wins the matchup): ${(f as any).buildNotes.map((b: any) => `${b.hero}: ${b.lane ? `vs ${b.lane.opp} lane ${b.lane.wr}% (${b.lane.n})` : 'no lane record'}${b.adapt.map((a: any) => `; field buys ${a.name} ${a.into}% into ${a.vs} (usual ${a.usual}%${a.wr != null ? `, wins ${a.wr}%` : ''})${a.has ? ' built' : ''}`).join('')}${b.needs.map((n: any) => `; needs ${n.answer} because ${n.why}: ${n.has ? 'built' : 'NOT built'}`).join('')}${b.coreVs ? `; ${b.coreVs.basis === 'best' ? 'best' : 'most played'} core into ${b.coreVs.vs}: ${b.coreVs.items.map((i: any) => i.name).join(' > ')} ${b.coreVs.wr}% in ${b.coreVs.n} games (lane pair ${b.coreVs.pairWr}% in ${b.coreVs.pairN})` : b.core ? `; best core all matchups: ${b.core.items.map((i: any) => i.name).join(' > ')} ${b.core.wr}% in ${b.core.n}` : ''}`).join(' | ')}. Flag build advice that contradicts these or cites a number not here.`] : []),
     ...((f as any).teamComp ? [`DRAFT (teamComp, src/comp-read.ts; shape win rates are the ranked field's, not proof this draft decided the game): ${(f as any).teamComp.summary} Checks: ${(f as any).teamComp.checks.map((c: any) => `${c.ok ? 'ok' : 'MISS'} ${c.text}`).join(' ')}${(f as any).teamComp.swap ? ` Fix: ${(f as any).teamComp.swap.out} (${(f as any).teamComp.swap.role}) for ${(f as any).teamComp.swap.options.map((o: any) => `${o.name} ${o.wr}%`).join(', ')}.` : ''}`] : []),
     `RECORDED ETERNAL CATALOG (includes alternative minor choices, mechanics not measured uptime): ${JSON.stringify(JSON.parse(readFileSync(path.join(ROOT, 'data/game-data/eternals.json'), 'utf8')).eternals.filter((e: any) => us.some(p => p.loadout?.eternal === e.name)))}.`,
     `RECORDED AUGMENT CATALOG: ${JSON.stringify(us.map(p => ({pid:p.pid,augment:JSON.parse(readFileSync(path.join(ROOT, 'data/aggregates/predgg-augments.json'), 'utf8')).catalog[p.loadout?.augment?.id]})))}.`,
@@ -77,12 +102,37 @@ function sourceOf(f: Facts): string {
     `FIGHT PRESENCE RULE: the macro "absent" signal is based on kill/death credits only; assists are not timestamped per fight, so it is not a complete participant list. Check match-wide assists, objective damage and credited skirmishes before any broad "never rotates" claim; those totals are context, not proof of where or when a rotation happened. Never turn one absent window into a repeat-pattern verdict. A support's lane read is a 1v1 sim that never happens; grade supports on participation, wards, healing/mitigation and deaths, not that lane row (coach audit 2026-09-21).`,
     `ROTATION / LANE TRADE CHECK: same-game credits by our player [${us.map((p) => { const n = sk.filter((s) => (s.ourHeroes ?? []).includes(p.heroSlug)).length; return `${p.squadName || p.name} ${p.heroName}: kill/death credited in ${n}/${sk.length} skirmishes, ${p.assists ?? 0} match assists, ${(p as any).damageToObjectives ?? 0} match objective damage`; }).join('; ')}]. Assists and objective damage are match-wide, not per-fight. Structure events (side = who took it; lane from pred.gg location when present): [${((f as any).events ?? []).filter((e: any) => e.kind === 'tower' || /INHIBITOR|CORE/.test(e.type)).map((e: any) => `${(e.sec / 60).toFixed(1)}m ${e.type}${e.lane ? ` ${e.lane}` : ''} side ${e.side}`).join('; ') || 'none'}]. Compare the lane read and opponent output; never assign a tower without a lane label to a lane, and never infer wave state or positions between kills.`,
     `ROTATIONS (rotations block, src/rotations.ts; kill locations on lanes, THEORY at lane edges): ${(f as any).rotations ? `${((f as any).rotations.credits ?? []).filter((c: any) => (f.players.find((p) => p.pid === c.pid) as any)?.us).map(describeCredit).join('; ') || 'no allied kill or death credited off a home lane'}. Lane opened (enemy outer tower down) per allied laner: ${((f as any).rotations.players ?? []).map((p: any) => `${p.name} ${p.home} ${p.laneOpenedMin ?? 'never'}${p.windowsAfterOpen.length ? `, fights elsewhere after it with no credit at ${p.windowsAfterOpen.map((w: any) => `${w.startMin}m ${w.at} ${w.result}`).join('/')}` : ''}`).join('; ')}` : 'not computed'}. RULE: a laner leaving an unopened lane is a proactive play to credit (with any homeCost); staying in it is expected and never an "absent" fault. Once their lane is open, a fight elsewhere without them is a rotation window, unproven when they have assists. A macro note saying "two separate plays, not one fight" means no one was absent from it.`,
+    ...streamDetailLines(f),
     ...interrogationLines(f),
     ...fightEconLines(f),
     ...previousFilmLines(f),
   ].join('\n');
 }
 
+
+function leanEvents(f: Facts): string {
+  const evs = ((f as any).events ?? []).filter((e: any) => e.kind === 'tower' || /INHIBITOR|CORE|FANG|PRIME/i.test(e.type));
+  return `EVENTS: ${evs.map((e: any) => `${e.side} ${e.lane && e.lane !== 'jungle' ? `${e.lane} ` : ''}${String(e.type).replace(/_/g, ' ').toLowerCase()}@${Math.round(e.sec / 6) / 10}m`).join(', ') || 'none'}.`;
+}
+
+/** Match detail saved from the public stream (players[i].stream, film.streamMatch;
+ *  src/ingest/stream-detail.ts): levels, exact item times, hero damage by type, healing by
+ *  source, minions, sprees, and each team's jungle / objective takes. */
+function streamDetailLines(f: Facts): string[] {
+  const has = f.players.filter((p: any) => p.stream);
+  if (!has.length) return [];
+  const mmss = (sec: number) => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+  const row = (p: any) => { const st = p.stream; return `${p.squadName || p.name || ''} ${p.heroName}: level ${st.level ?? '?'}, items at ${st.purchases.map((x: any) => `${x.slug} ${mmss(x.sec)}`).join(', ') || 'none'}; hero damage dealt physical ${st.dealtToHeroes.physical} / magical ${st.dealtToHeroes.magical} / true ${st.dealtToHeroes.true}; taken from heroes ${st.takenFromHeroes.total} (physical ${st.takenFromHeroes.physical}, magical ${st.takenFromHeroes.magical}, true ${st.takenFromHeroes.true}); healing ${st.healing.total} (items ${st.healing.item}, crest ${st.healing.crest}, abilities ${st.healing.utility}), shields received ${st.shieldsReceived}; minions ${st.minions.lane} lane, ${st.minions.jungle} jungle (${st.minions.enemyJungle} in their jungle); best spree ${st.spree}, best multikill ${st.multikill}`; };
+  const out = [`STREAM DETAIL (pred.gg match stream; exact levels and item times, hero damage by type): OURS ${has.filter((p) => p.us).map(row).join(' | ')} || THEIRS ${has.filter((p) => !p.us).map(row).join(' | ')}.`];
+  const sm = (f as any).streamMatch;
+  if (sm) {
+    const side = (pid: string | null) => { const p = pid ? f.players.find((x) => x.pid === pid) : null; return p ? (p.us ? 'us' : 'them') : 'none'; };
+    const tally: Record<string, Record<string, number>> = {};
+    for (const o of sm.objectives) { const k = o.type.replace(/^CampMinion\./, '').replace(/\.Jungle\./, ' ').replace(/\./g, ' '); (tally[k] ??= {})[side(o.byPid)] = ((tally[k] ??= {})[side(o.byPid)] ?? 0) + 1; }
+    out.push(`CAMPS AND OBJECTIVES TAKEN (stream): ${Object.entries(tally).map(([k, v]) => `${k} us ${v.us ?? 0} them ${v.them ?? 0}`).join('; ')}. Match ended by ${sm.endReason ?? 'unknown'}.`);
+  }
+  return out;
+}
 
 /** Cross-film callbacks (coach contract 2026-09-21): the coach may name a
  *  repeating pattern across a squad member's previous films, so the critic

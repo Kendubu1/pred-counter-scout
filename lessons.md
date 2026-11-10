@@ -5820,3 +5820,127 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   `npm run comps` never reads a half-written gzip while a backfill runs.
 - Plat+ comp splits at this volume (~1.5k Plat+ team sides) are ±8 points: too thin to read.
   All ranks (46k sides) already shows the tank gap clearly (+2 tanks 53.3%, -2 46.7%).
+
+## 2026-11-08 · Lean coach review trial (second review beside the standard one)
+
+- Review of the standard pipeline: critic rounds rose to a median of 5 per game (Nov 2-8),
+  ~16 min of critique per game, every round re-judging ~96 lines; buildReads grew to ~1,150 words
+  a review; the critic brief was ~77k characters; the agent file had grown to ~7,900 words of
+  layered dated sections. The fix ships as a parallel pipeline (film.coachLean) so the standard
+  one stays as the revert path.
+- Trial on the 5 newest games: 112 lines judged in round 1 (24 flagged), 23 in round 2 (4),
+  4 in round 3 (0); all 5 published within the cap, 1 line dropped. Author ~4 min and critic
+  ~5.5 min for all five games (about 2 min a game vs ~16). Copy ~390 words a game vs ~420 main
+  plus ~1,160 buildReads in the standard review.
+- The critic's top catch (11 of 24) was a player with no next-game action; second, a build line
+  saying an item "answered" an enemy who still kept killing that player. Both are now explicit in
+  the lean spec so the author writes them right the first time.
+- The number check must accept the brief's derived numbers (kill participation, baselines),
+  not only the raw facts: the author was blocked on true figures it was shown.
+## 2026-11-08 · Link previews: every page labeled, game reviews linkable
+- iMessage builds its preview after the page's scripts run, so a JS `document.title` wins over the
+  static `<title>`: coach.html's stale "Coach reports · pick a member" (from when the page was a
+  roster) is what showed. With no og:image AND no icon, iMessage falls back to a big snapshot of the
+  page; giving every page an apple-touch-icon (ui/img/brand/, rendered from logo.svg) plus a
+  `summary` card gets the compact text card.
+- `npm run ui:share` now stamps the same head block (og title/description/url, summary card, icons)
+  on every live page in its LABELED list, not just the three pages with section links; a page
+  without `<meta name="description">` fails the script. Add new live pages to LABELED.
+- Pages that relabel themselves (coach.html per game/player, index.html per hero) call
+  `setLabel()`, which updates og:title/description/url with the title.
+- Coach game reviews: `coach.html?game=<matchId>` opens that game; a click puts it in the address
+  bar. The plain page keeps the generic label even though it auto-opens the newest game, so a bare
+  link never previews as whichever game happens to be newest.
+
+## 2026-11-08 · How their build worked, core vs the lane opponent, backfill done
+
+- The 1.18 lineup backfill finished (29,154 ranked matches, patch release to 8 Nov 08:58, 6,118
+  stream pages over ~12 h with 403 waves). The resume state is gone and coverage.json holds one
+  `backfill` segment; the daily feed carries on from 08:58.
+- `npm run matchups:cores` counts cores INTO a lane opponent from the lineups. The recommendation
+  policy applies: only cores with 10% of the pair's games can lead, so most pairs show one core
+  as "most played" for now (The Fey example: a 21-game 57% core would otherwise have beaten the
+  133-game core). 502 of 6,804 lane pairs qualify; expect more as the patch fills.
+- `film.threatBuilds` (src/threat-build.ts) explains the threat's build from catalog text and the
+  game's own takedowns. The Fey (Vesh + Tithe of Death, Natural Infusion, Epoch, Megacosm): 48
+  ability haste by the end took Fly Trap from 95s to ~64s, ~53s mid-fight with Nettles stacks.
+  Uses the haste formula verified in practice mode; assist times are not in the data, so the
+  minute the takedown cap was reached is an estimate and says so.
+- Two sessions added a "nov-8e" changes card the same day; a duplicate id makes the share-page
+  check flip forever. Check `grep 'id="nov-'` after merging main before adding a card.
+- Build reads now cover anyone above their hero-role norm, either team (standouts composite >= 0.5,
+  about the top 20% of hero-games; the standouts report's 1.0 bar is the top ~8%, which missed
+  Mourn's 5/1/11 at +0.81). Random-proc Eternals count by expected value (Lotus: procs every 2 min
+  and every takedown, 1 in 4 is +4 haste: 29 procs, about +29). Categorical colours never cycle:
+  a fifth haste source is grey.
+- The build read is no longer cooldown-only (maintainer, 2026-11-08: "ability haste won't be the
+  only factor"). src/build-power.ts adds damage (item power, penetration vs each target's armor
+  with the verified K=100 mitigation, damage boosts with per-minute growth evaluated), sustain and
+  toughness. Two traps: "/\bheal/" matches "Health" in damage text, and catalog "Damage Dealt:
+  {x}" tracker lines are placeholders, not effects. Armor needs a level and levels are provisional,
+  so every armor figure says "estimate"; the order of percent vs flat penetration is assumed.
+- One stream page (probe, 2026-11-08) showed what the films never kept: final hero level and every
+  level-up with its ability (so ultimate rank and armor at the real level), exact purchase seconds
+  (the films' itemTimeline was a gold-curve estimate), hero damage taken by type, healing by source,
+  minions incl. enemy-jungle camps, sprees, ward positions, and every camp/objective kill. Saved in
+  the existing loadout lookup (no extra calls going forward); lineups v3 append level, buy seconds and
+  extra totals. Hero kills carry no assisters, so assist timing is still unknown.
+- One lead story per build read (maintainer, 2026-11-08: "stick to one narrative, other tabs support").
+  `npm run norms` places a game on the patch's hero-role percentiles from the lineups; build-story.ts
+  scores the candidate stories and the highest wins. Checked against the maintainer's reads: The Fey
+  (mid, 11/2/11) = damage 73rd pct, kill participation 80th, fewer deaths than ~80%: lead "stayed alive,
+  joined every fight, takedowns sped up Fly Trap". Mourn (offlane, 5/1/11) = damage 88th pct, 34% of
+  team damage, mitigation 6th pct: lead "built to deal damage, not to soak it". First cut scored the
+  snowball story on survival and picked it for Mourn; scoring it on kill participation only fixed that.
+- "Why it worked" (src/build-why.ts): effects grouped by trigger from catalog text; a minor that says
+  "the major also ..." joins the major's trigger. The copy verdict judges the Eternal pair against
+  the hero-role's rate and the core against the hero-role's other cores (core rates run high), each
+  part on its own; blending them hid a below-par Eternal behind an above-par core. First result: The
+  Fey's Vesh pair (48.8%) and core (54.2% vs 55.8%) both trail the field, so that loss was the game
+  and our missing answers (2 of 5 victims built magical armor), not a secret build.
+- Field name clash: threatBuilds entries already had `why` (the reasons a player was read); the new
+  block is `worked`.
+- Team damage types (src/damage-mix.ts, from players[i].stream.dealtToHeroes): 1.18 lineups show
+  teams win most at 20-30% magical (53.1%) and least past half magical (60-70%: 44.5%); 5-15% true
+  wins ~56-57% vs 43.7% under 5%. Damage dealt follows the game, so the page calls it an
+  association. The review draws one bar per team, length = total hero damage, split by type.
+- One disclosure pattern for the whole review (maintainer, 2026-11-09: people could not tell what
+  opens). Ten kinds of <details> had grown five marker styles (left text arrows, a right float, +/-,
+  browser triangles). Now one CSS rule set: a left chevron that rotates open, and a Show / Hide pill
+  on the larger rows (sections, performer cards, card folds, the bottom deep dives); a hover
+  background and focus ring on every summary. On phones the performer portrait leaves the title row.
+- Formatting pass on the game review (maintainer, 2026-11-09), done at render so all reviews change
+  at once: player bullets split into the fact and a "Next:" action (instruction-word starts, a
+  condition then an instruction, a numberless verb-first last sentence, or an action after ":", ";"
+  or ", so"; a guard keeps "Once that outer fell, kills followed" as a fact): 353 of 452 bullets
+  split, the rest are observations with no action. Thousands separators on 4+ digit numbers in
+  coach copy. Build rows lead with the verdict ("2 of 3 built"), "all matchups" is a tag.
+- Phones zoomed the whole review out ~15% (layout viewport 457px on a 390px iPhone) because one
+  fold title ("Damage, cooldowns, staying alive, play against" + preview) could not wrap. Check
+  layout width on a device profile, not only document scrollWidth: a mobile browser widens the
+  viewport to the widest element instead of scrolling. Fold summaries now wrap; on phones the
+  preview drops under the title.
+- Type pass (#4-#7): three sizes on #pgview (--fs-1/2/3), paragraphs never at caption size; section
+  subtitles cut to 2-4 words with the method as a caption under the chart; draft checks under the
+  team rows; role names through roleName() (Mid, Offlane, Jungle, Carry, Support); sentence-case labels.
+- Damage tab = the build, not the victims (maintainer, 2026-11-09). build-power.ts keeps the damage
+  build item by item (power, penetration, % armor ignored, damage effects); the page lists them
+  with a tag for the trigger they share with the abilities / Eternal (worked.stacks), then the
+  Eternal, minor and augment damage effects. Ordered by what each item added: pred.gg reports no
+  damage per item. The penetration-vs-target rows and lesson are gone from the page; the lead
+  story's damage reason now names the items.
+- Uneven depth across high performers (maintainer, 2026-11-09): an audit of 610 build reads found
+  only 51% of augments and 54% of minors explained, because the read only recognised the patterns
+  first built for The Fey (takedown haste, stacking haste, ability-hit triggers). src/loadout-read.ts
+  now explains every piece for every player: catalog text, the ability it changes (135 of 192
+  augments name one) with its cooldown at the player's haste, numbers evaluated for that game
+  (per-minute, per-level, level ranges, random procs, cooldown cuts) and the hero-role's patch win
+  rate and pick share. After: augments, Eternals and crests 100%, minors 98% (18 minors missing
+  from eternals.json, the known client-audit gap), field rates on 94% of pieces.
+- Coach copy for loadouts (maintainer, 2026-11-09: "explain it the way a common player would understand,
+  not the game text"). loadout:copy: 1,087 hero-and-piece explanations (6 author agents, 0 dropped by the
+  number check), 4 independent critics flagged 66 (wrong mechanic, unsupported effect such as "homing"
+  Weald shots, missing game text claimed as fact, overstated), a sweep fixed 11 more; 182 per-game "how it
+  worked together" bullets for 61 1.18 performers, 2 critics: 17 rewritten, 1 dropped. Critics also found
+  an engine bug: anti-heal items ("reduce their healing") were tagged as healing; fixed in build-why and
+  build-power. The %-health stack is titled by the target's health.

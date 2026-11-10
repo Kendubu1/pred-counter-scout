@@ -4,7 +4,19 @@
 <script src="sim-flag.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Coach report · Pred Scout</title>
+<title>Post-game reviews · Pred Scout</title>
+<meta name="description" content="Post-game reviews of our squad's ranked Predecessor games: what went right, what to fix, and each player's build and lane.">
+<!-- share:begin (engine/scripts/share-pages.mjs) -->
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Pred Scout">
+<meta property="og:title" content="Post-game reviews · Pred Scout">
+<meta property="og:description" content="Post-game reviews of our squad's ranked Predecessor games: what went right, what to fix, and each player's build and lane.">
+<meta property="og:url" content="https://kendubu1.github.io/pred-counter-scout/ui/v6/coach.html">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/brand/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="../img/brand/logo.svg">
+<link rel="apple-touch-icon" href="../img/brand/apple-touch-icon.png">
+<!-- share:end -->
 <style>
   :root {
     --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
@@ -144,15 +156,20 @@
 
   .tc-row{display:grid;grid-template-columns:3rem 1fr auto;gap:.6rem;align-items:center;padding:.45rem 0;border-top:1px solid var(--border)}
   .tc-side{font-weight:800;font-size:.82rem}
-  .tc-heroes{display:flex;flex-wrap:wrap;gap:.35rem .8rem}
+  .tc-heroes{display:flex;flex-direction:column;align-items:flex-start;gap:.4rem}
   .tc-hero{display:inline-flex;gap:.35rem;align-items:center;font-size:.8rem;line-height:1.2}
   .tc-role{color:var(--text-2);font-size:.6875rem}
   .tc-tag{font-size:.6rem;font-weight:800;border-radius:4px;padding:0 .25rem;margin-left:.25rem;vertical-align:1px}
   .tc-t{background:rgba(80,140,255,.18);color:#6ea0ff}
   .tc-d{background:rgba(240,130,15,.18);color:#f0820f}
   .tc-shape{font-size:.78rem;text-align:right;line-height:1.35}
-  .tc-n{color:var(--text-2);font-size:.72rem}
-  .tc-checks{list-style:none;padding:0;margin:.6rem 0 0;font-size:.84rem;line-height:1.55}
+  /* Type scale for the review (2026-11-09): body, secondary, caption; a paragraph never uses caption size. */
+  #pgview{--fs-1:.95rem;--fs-2:.86rem;--fs-3:.75rem}
+  .tc-n{color:var(--text-2);font-size:var(--fs-3)}
+  .tc-note{font-size:var(--fs-2);color:var(--text-1);line-height:1.55;margin:.5rem 0 0}.tc-note b{color:var(--text-0)}
+  .tc-cap{font-size:var(--fs-3);color:var(--text-2);line-height:1.45;margin:.25rem 0 0}
+  .tc-list{margin:.2rem 0 0;padding-left:1.1rem}.tc-list li{margin:.15rem 0}
+  .tc-checks{list-style:none;padding:0;margin:.6rem 0 0;font-size:var(--fs-2);line-height:1.55}
   .tc-checks li.ok span{color:var(--green);font-weight:800}
   .tc-checks li.bad span{color:var(--red);font-weight:800}
   .tc-swap{margin-top:.55rem;font-size:.84rem;line-height:1.7;border-left:3px solid var(--gold);padding-left:.6rem}
@@ -176,26 +193,114 @@
   .tc-tag.tc-engage{background:rgba(220,60,60,.16);color:#ff7a7a}.tc-tag.tc-peel{background:rgba(0,196,140,.14);color:#3fd3a7}
   .tc-tag.tc-control{background:rgba(168,85,247,.16);color:#c08bff}.tc-tag.tc-burst{background:rgba(255,200,60,.14);color:#e8b84a}
   .tc-tag.tc-poke,.tc-tag.tc-dps,.tc-tag.tc-sustain,.tc-tag.tc-duelist{background:rgba(150,150,170,.16);color:var(--text-1)}
-  .tc-bal{width:100%;border-collapse:collapse;margin-top:.5rem;font-size:.74rem;text-align:center}
+  .tc-bal{width:100%;max-width:100%;table-layout:fixed;border-collapse:collapse;margin-top:.5rem;font-size:.74rem;text-align:center}.tc-bal thead th:first-child{width:2.6rem}.tc-bal .sh{display:none;text-transform:none}.tc-bal .sh::first-letter{text-transform:uppercase}
   .tc-bal th,.tc-bal td{padding:.2rem .15rem;border-top:1px solid var(--border)}.tc-bal thead th{color:var(--text-2);font-weight:600;text-transform:capitalize}
   .tc-bal tbody th{text-align:left;font-weight:800}.tc-bal td{font-weight:700;color:var(--text-0)}.tc-bal td.tc-zero{color:var(--text-2);font-weight:400;opacity:.6}
   .tc-grid{display:grid;grid-template-columns:1fr;gap:0 1.2rem}
   @media (min-width:900px){.tc-grid{grid-template-columns:1fr 1fr}.tc-grid>.tc-sec:only-child{grid-column:1/-1}}
   .bn{margin-top:.55rem;padding-top:.45rem;border-top:1px dashed var(--border);font-size:.8rem;line-height:1.75;color:var(--text-1)}
-  .bn-k{display:inline-block;min-width:5.6rem;color:var(--text-2);font-size:.72rem;text-transform:uppercase;letter-spacing:.02em}
-  .bn-n{color:var(--text-2);font-size:.74rem}.bn img.bn-i{display:inline-block!important;width:20px;height:20px;border-radius:4px;vertical-align:-5px;margin-right:2px;border:1px solid var(--border)}.bn-i.off{opacity:.35;filter:grayscale(.8)}
+  .bn-k{display:inline-block;min-width:6.2rem;color:var(--text-2);font-size:var(--fs-3)}
+  .bn-n{color:var(--text-2);font-size:.74rem}.bn-core{font-size:var(--fs-2);color:var(--text-1)}
+  .bn-v{font-size:.74rem;margin-right:.2rem}.bn-v.ok{color:var(--green)}.bn-v.part{color:var(--gold)}.bn-v.no{color:var(--red)}
+  .bn-tag{font-size:.66rem;border:1px solid var(--border);border-radius:99px;padding:0 .4rem;color:var(--text-2);white-space:nowrap}
+  .cb-fact{display:block}.cb-act{display:block;margin-top:.2rem;color:var(--text-0)}.cb-act b{color:var(--accent-ink);font-weight:700;margin-right:.15rem}.bn img.bn-i{display:inline-block!important;width:20px;height:20px;border-radius:4px;vertical-align:-5px;margin-right:2px;border:1px solid var(--border)}.bn-i.off{opacity:.35;filter:grayscale(.8)}
   .bn-shared{color:var(--gold);font-size:.82rem;margin:.1rem 0 .4rem}
-  @media (max-width:560px){.tc-bal{font-size:.62rem}.bn-k{min-width:4.6rem}}
+  @media (max-width:560px){.tc-bal{font-size:.62rem}.tc-bal thead th:first-child{width:2.2rem}.tc-bal .lg{display:none}.tc-bal .sh{display:inline}.bn-k{min-width:4.6rem}}
+  .ab-row summary{list-style-position:inside}.ab-sum{display:inline-flex;align-items:center;gap:.4rem;flex-wrap:wrap;vertical-align:middle}
+  .dm-row{display:grid;grid-template-columns:3rem 1fr 2.6rem;align-items:center;gap:.5rem;margin:.3rem 0}.dm-l{font-weight:800;font-size:.84rem}
+  .dm-row>span.dm-bar{display:flex;height:20px;gap:2px;border-radius:5px;overflow:hidden;min-width:20px}
+  .dm-bar i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:.68rem;font-weight:800;color:var(--bg-0)}
+  .dm-row b{font-size:.8rem;text-align:right}.dm-key{display:flex;gap:.9rem;font-size:.72rem;color:var(--text-2);margin:.1rem 0 0 3.5rem}
+  .dm-key i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:.3rem;vertical-align:-1px}
+  .ar-team{display:grid;grid-template-columns:3rem 1fr;gap:.5rem;margin:.35rem 0}.ar-l{font-weight:800;font-size:.84rem;padding-top:.15rem}
+  .ar-row{display:grid;grid-template-columns:3.2rem 1fr;align-items:center;gap:.4rem;margin:.15rem 0;font-size:.72rem;color:var(--text-2)}
+  .ar-bar{display:flex;height:14px;gap:2px;border-radius:4px;overflow:hidden;background:var(--bg-2)}
+  .ar-bar i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:.64rem;font-weight:800;color:var(--bg-0)}
+  .ar-bar em{font-style:normal;font-size:.68rem;color:var(--text-2);padding-left:.4rem;line-height:14px}
+  .ar-who{margin:.1rem 0 0 3.6rem;font-size:.74rem}.ar-who .tc-bad{margin-left:.2rem}
+  .dm-bar i,.ar-bar i{overflow:hidden;white-space:nowrap}
+  @media (max-width:520px){
+    .sec-fold>summary .tc-n{display:none}
+    .dm-row{grid-template-columns:2.4rem 1fr 2.4rem;gap:.35rem}.dm-key{margin-left:2.75rem;gap:.6rem}
+    .dm-bar i.sm,.ar-bar i.sm{font-size:0}
+    .ar-team{grid-template-columns:1fr;gap:.1rem}.ar-row{grid-template-columns:2.8rem 1fr}.ar-who{margin-left:3.2rem}
+    .tb-cdrow{grid-template-columns:1fr 3rem;gap:.15rem .5rem}.tb-cdrow .tb-cdl{grid-column:1/-1}.tb-cdrow .tc-n{grid-column:1/-1;margin-top:0}
+    .tb-tabs .pgf{padding:.08rem .5rem;font-size:.7rem}
+    .pf-row>summary{padding:.5rem .55rem}.pf-row>.tb{padding:0 .5rem .55rem}.tb-leadcard{padding:.5rem .55rem}
+    .tb-fold>summary::after{order:2}.tb-fold>summary>.tc-n{order:3;flex:1 1 100%!important;padding-left:1.15rem}
+    .pf-sum img{width:30px!important;height:30px!important}.dm-sub{margin-left:2.75rem}.pf-row>summary{gap:.4rem}.pf-team{margin-left:0;margin-right:.3rem}.pf-t{font-size:.92rem}.pf-s{font-size:.72rem}.pf-lead{font-size:.8rem}
+    .tb-ico{width:26px;height:26px}
+  }
+  .sec-fold>summary{list-style:none;cursor:pointer}.sec-fold>summary::-webkit-details-marker{display:none}
+  .tb-fold{border-top:1px solid var(--border);padding:.35rem 0}.tb-fold>summary{cursor:pointer;list-style:none;font-size:.86rem}
+  .tb-fold>summary::-webkit-details-marker{display:none}
+  .tb-foldbody{padding:.25rem 0 .2rem}
+  .pf-row{border:1px solid var(--border);border-radius:10px;margin:.45rem 0;background:var(--bg-1)}
+  .pf-row>summary{list-style:none;cursor:pointer;padding:.55rem .7rem}.pf-row>summary::-webkit-details-marker{display:none}
+  .pf-row>.tb{padding:0 .7rem .7rem}
+  .pf-sum{display:flex;gap:.6rem;align-items:center}.pf-sum img{border-radius:8px}
+  .pf-t{display:block;font-size:.98rem}.pf-dash{color:var(--text-2)}.pf-l{font-weight:800;color:var(--text-1)}.pf-l.hp{color:var(--gold)}
+  .pf-team{font-size:.7rem;font-weight:800;text-transform:uppercase;margin-left:.3rem}
+  .pf-s{display:block}.pf-kda{color:var(--text-0)}.pf-nem{color:var(--text-0);font-weight:700}.pf-lead{display:block;font-size:var(--fs-2);color:var(--text-0);margin-top:.1rem}
+  .dm-sub{list-style:disc;padding-left:1rem;margin:.05rem 0 .5rem 3.5rem;font-size:var(--fs-3);color:var(--text-1);line-height:1.5}.dm-sub b{color:var(--text-0)}.dm-sub li{margin:.1rem 0}.dm-sub li::marker{color:var(--text-2)}.dm-sub .tc-ok,.dm-sub .tc-bad{margin-left:.3rem;font-weight:700}
+  .lo-plain{font-size:var(--fs-2);color:var(--text-0);line-height:1.5;margin-top:.15rem}.lo-game{margin-top:.15rem}.lo-game>summary{font-size:.7rem!important}.lc-h{margin-top:.5rem;font-size:.8rem}
+  .lo-chip{font-size:.66rem;font-weight:700;border:1px solid;border-radius:99px;padding:0 .4rem;margin-left:.35rem;white-space:nowrap}.lo-bul{margin-top:.15rem!important}.lo-bul li{font-size:var(--fs-3)!important;color:var(--text-1)}
+  .tb-dmg{list-style:none;padding:0;margin:.3rem 0 0}.tb-dmg>li{padding:.35rem 0;border-top:1px solid var(--border);font-size:var(--fs-2);line-height:1.45}.tb-dmg>li:first-child{border-top:0}
+  .tb-dico{display:inline-block!important;width:22px;height:22px;border-radius:5px;vertical-align:-6px;margin-right:.4rem;border:1px solid var(--border)}
+  .tb-trig{font-size:.66rem;font-weight:700;color:var(--accent-ink);border:1px solid var(--accent-ink);border-radius:99px;padding:0 .4rem;margin-left:.25rem;white-space:nowrap}
+  .tb-eff{color:var(--text-1);margin-top:.15rem;font-size:var(--fs-3);line-height:1.45}
+  .tb{margin-top:.35rem}
+  .tb-leadcard{border:1px solid var(--border);border-radius:8px;padding:.6rem .7rem;background:var(--bg-2);margin-top:.35rem}
+  .tb-head{display:flex;gap:.6rem;align-items:center;margin-bottom:.45rem}.tb-head img{border-radius:10px}
+  .tb-who{font-size:.95rem}.tb-kda{font-weight:800;font-size:.9rem;color:var(--text-0);margin-top:.1rem}
+  .tb-hp{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--gold);border:1px solid var(--gold);border-radius:99px;padding:.05rem .45rem;margin-left:.35rem;vertical-align:1px}
+  .tb-kit{display:flex;flex-wrap:wrap;align-items:center;gap:.25rem}.tb-ico{width:30px;height:30px;border-radius:6px;border:1px solid var(--border);cursor:pointer}
+  .tb-sep{width:1px;height:22px;background:var(--border);margin:0 .2rem}.tb-kitnames{margin:.2rem 0 .5rem}
+  .tb-evs{display:grid;gap:.35rem;margin:.1rem 0 .3rem}.tb-ev{display:grid;grid-template-columns:1fr;gap:.15rem;font-size:.78rem;color:var(--text-1)}
+  .tb-ev i{position:relative;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--bg-3),var(--bg-3))}.tb-ev i b{position:absolute;top:-3px;width:4px;height:12px;border-radius:2px;background:var(--accent);transform:translateX(-50%)}
+  .tb-ev em{font-style:normal;color:var(--text-0);font-weight:700}
+  .tb-leadt{font-weight:800;color:var(--text-0);font-size:.95rem}.tb-leadcard p{margin:.25rem 0 .45rem;font-size:var(--fs-2);line-height:1.5}
+  .tb-norms{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.3rem .7rem}
+  .tb-chip{display:grid;grid-template-columns:1fr auto;gap:.1rem .4rem;font-size:.74rem;color:var(--text-1)}
+  .tb-chip i{grid-column:1/3;height:5px;background:var(--bg-3);border-radius:3px;overflow:hidden}.tb-chip i b{display:block;height:100%;background:var(--accent)}
+  .tb-chip em{font-style:normal;color:var(--text-0);font-weight:700}
+  .tb-why{margin-top:.5rem}
+  .tb-stackrow{margin:.25rem 0 .45rem}.tb-stackrow p{margin:.2rem 0 0;font-size:var(--fs-2);line-height:1.5;color:var(--text-1)}
+  .tb-mem{display:inline-flex;flex-wrap:wrap;gap:.25rem;vertical-align:middle;margin-left:.2rem}
+  .tb-tag{font-size:.74rem;padding:.08rem .45rem;border-radius:99px;background:var(--bg-3);color:var(--text-0)}.tb-tag i{font-style:normal;color:var(--text-2);margin-left:.3rem;font-size:.66rem;text-transform:uppercase}
+  .tb-et{margin:.3rem 0;font-size:var(--fs-2);line-height:1.5;padding-left:.6rem;border-left:2px solid var(--accent)}
+  .tb-verd{font-size:.7rem;font-weight:700;border:1px solid;border-radius:99px;padding:.05rem .45rem;margin-left:.3rem}
+  .tb-copy{margin:.2rem 0 0;font-size:var(--fs-2);line-height:1.5}
+  .tb-list.tb-bul{list-style:disc;padding-left:1.1rem;margin:.3rem 0 0}.tb-bul li{margin:.2rem 0;line-height:1.5;font-size:var(--fs-2)}.tb-bul li::marker{color:var(--text-2)}
+  .tb-les{margin:.55rem 0 0;padding-top:.45rem;border-top:1px dashed var(--border);font-size:var(--fs-2);line-height:1.5;color:var(--text-0)}.tb-les b{color:var(--accent-ink)}
+  .tb-tabs .pgf{padding:.08rem .5rem;font-size:.7rem;min-height:0}
+  .tb-tabs{display:flex;gap:.35rem;flex-wrap:wrap;margin:.6rem 0 .1rem}.tb-sec{margin-top:.7rem}.tb-k{font-weight:700;font-size:.82rem;color:var(--text-0);margin-bottom:.3rem}
+  .tb-lesson{list-style:none;margin:.3rem 0 0;padding:.45rem .65rem;border-left:3px solid var(--gold);background:var(--bg-2);border-radius:6px;font-size:var(--fs-2);line-height:1.5}
+  .tb-cdrow{display:grid;grid-template-columns:7.5rem 1fr 3.2rem;align-items:center;gap:.5rem;margin:.2rem 0;font-size:.8rem}
+  .tb-cdrow .tc-n{grid-column:2/4;margin-top:-.15rem}
+  .tb-cdl{color:var(--text-1)}.tb-bar{height:10px;background:var(--bg-2);border-radius:5px;overflow:hidden}
+  .tb-bar i{display:block;height:100%;border-radius:5px;background:var(--red)}
+  .tb-lesson li{margin:.1rem 0}.tb-lesson li+li{margin-top:.35rem}
+  .tb-arm{position:relative}.tb-arm i{position:absolute;top:0;left:0}.tb-arm i.base{opacity:.45}.tb-bar i.base{background:var(--text-2)}
+  .tb-bar i.fight{background:repeating-linear-gradient(135deg,var(--red) 0 4px,transparent 4px 7px);border:1px solid var(--red);box-sizing:border-box}
+  .tb-stack{display:flex;height:18px;border-radius:5px;overflow:hidden;gap:2px;margin:.15rem 0 .35rem}
+  .tb-stack i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:.68rem;font-weight:700;color:#fff;min-width:4px}
+  .tb-stack i.fight{background:repeating-linear-gradient(135deg,var(--text-2) 0 4px,transparent 4px 7px);color:var(--text-0);text-shadow:0 0 3px var(--bg-0),0 0 3px var(--bg-0);border:1px dashed var(--text-2);box-sizing:border-box}
+  .tb-list{list-style:none;margin:0;padding:0}.tb-list li{margin:.2rem 0;font-size:var(--fs-2);line-height:1.45}
+  .tb-sw{display:inline-block;width:10px;min-width:10px;height:10px;border-radius:2px;margin-right:.35rem;vertical-align:0}.tb-sw.fight{background:repeating-linear-gradient(135deg,var(--text-2) 0 2px,transparent 2px 4px);border:1px dashed var(--text-2)}
+  .tb-kind{font-size:.68rem;text-transform:uppercase;letter-spacing:.03em;color:var(--text-2);margin:0 .25rem}
+  .cv-toggle{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem;font-size:.74rem;color:var(--text-2)}
+  .build-call{margin:.35rem 0 0;font-size:var(--fs-2);color:var(--text-1);line-height:1.5}.build-call b{color:var(--text-0);margin-right:.3rem}
   .rd-box{margin-top:.7rem;text-align:center}
   .rd-top{display:flex;align-items:center;justify-content:center;gap:.6rem;flex-wrap:wrap}
   .rd-top .pgfilter{margin:0}
   .rd-box svg{width:100%;max-width:400px;height:auto;display:block;margin:.2rem auto 0}
-  .rd-l{fill:var(--text-2);font-size:9.5px}.rd-key{font-size:.72rem;color:var(--text-2);text-align:center;margin-top:.1rem}
+  .rd-l{fill:var(--text-2);font-size:9.5px}.rd-key{font-size:var(--fs-3);color:var(--text-2);text-align:center;margin-top:.1rem}
   .rd-box[data-show=us] .rd-them-fill,.rd-box[data-show=us] .rd-us-dash,.rd-box[data-show=them] .rd-us-fill,.rd-box[data-show=them] .rd-them-dash{display:none}
   .pb-grid{display:grid;grid-template-columns:1fr;gap:.4rem 1.2rem;margin-top:.35rem}
   @media (min-width:900px){.pb-grid{grid-template-columns:1fr 1fr}}
   .pb{font-size:.84rem;line-height:1.5}.pb ol{margin:.25rem 0 .2rem;padding-left:1.3rem}.pb li{margin:.25rem 0}.pb li>a,.pb li img{display:inline-block!important;vertical-align:-5px;margin-right:.2rem}.pb li img{width:20px;height:20px}
-  .tc-foot{margin-top:.55rem;font-size:.72rem;color:var(--text-2)}
+  .tc-foot{margin-top:.7rem;font-size:var(--fs-3);color:var(--text-2);line-height:1.45}
   @media (max-width:560px){.tc-row{grid-template-columns:1fr}.tc-shape{text-align:left}}
   /* ── v7 review: verdict → moments → numbers → strip → interrogation → lobby → deep dive ── */
   .heroline { display:flex; align-items:center; gap:.25rem; margin-top:.6rem; flex-wrap:wrap; }
@@ -228,8 +333,6 @@
   .kcc { margin:.35rem 0 .2rem; padding:.4rem .6rem; border:1px solid var(--border); border-radius:8px; background:var(--bg-1); }
   .kcc .lrow { margin:.12rem 0; }
   .whyd>summary { cursor:pointer; list-style:none; font-size:.7rem; color:var(--accent-ink); }
-  .whyd>summary::before { content:"▸ "; }
-  .whyd[open]>summary::before { content:"▾ "; }
   .whyd>div { font-size:.8rem; color:var(--text-1); padding:.35rem .55rem; border-left:2px solid var(--border); margin-top:.2rem; line-height:1.55; }
   .qa { padding:.55rem 0; border-bottom:1px solid var(--border); }
   .qa:last-of-type { border-bottom:none; }
@@ -266,8 +369,6 @@
   .build-player { margin:.75rem 0; border:1px solid var(--border); border-radius:12px; background:var(--bg-1); overflow:hidden; }
   .build-player > summary { display:flex; align-items:center; gap:.75rem; padding:1rem; cursor:pointer; list-style:none; min-height:44px; }
   .build-player > summary::-webkit-details-marker { display:none; }
-  .build-player > summary::after { content:'+'; margin-left:auto; color:var(--accent-ink); font-size:1.3rem; }
-  .build-player[open] > summary::after { content:'−'; }
   .build-player > summary:focus-visible { outline:2px solid var(--accent); outline-offset:-3px; }
   .build-player > summary img { width:36px; height:36px; border-radius:8px; }
   .build-player .build-identity { display:grid; gap:.2rem; min-width:0; }
@@ -451,6 +552,10 @@
   .rk-row img{width:38px;height:38px;border-radius:9px;object-fit:cover;border:1px solid var(--border)}
   .rk-n{color:var(--text-2);font-size:.78rem}.rk-kit{color:var(--text-1);font-size:.8rem;margin-top:.15rem}
   .rk-row .act{margin-top:.25rem;color:var(--text-0)}
+
+  /* Fold markers: the shared pattern in nav.js (fold-style). Layout tweaks only here. */
+  .tb-fold>summary,.sec-fold>summary{min-height:36px;padding:.2rem .3rem}.tb-fold>summary{flex-wrap:wrap;row-gap:.1rem}.tb-fold>summary>b{flex:0 1 auto;min-width:0}.tb-fold>summary>.tc-n{flex:1 1 9rem;min-width:0}
+  .pf-row>summary .pf-sum{flex:1;min-width:0}
 </style>
 </head>
 <body>
@@ -465,7 +570,44 @@
 <script src="coach-loadouts.js?v=0574a2b8128c"></script>
 <script src="section-nav.js"></script>
 <script>
+const ROLE_NAME = { midlane: 'Mid', offlane: 'Offlane', jungle: 'Jungle', carry: 'Carry', support: 'Support' };
+const roleName = (r) => ROLE_NAME[String(r || '').toLowerCase()] || String(r || '');
 const esc = (s) => String(s ?? '').replace(/\s*\u2014\s*/g, ', ').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// Coach copy formatting (2026-11-09), applied at render so every review gets it:
+//   escN   escape, then thousands separators on whole numbers of 1,000+ (10971 -> 10,971); times
+//          (12:30), decimals and ids are left alone
+//   factAct split a bullet into what happened and what to do next: the first sentence that starts
+//          with an instruction word (When, If, Before, After, Once, While, ...) begins the action
+const escN = (s) => esc(s).replace(/(^|[^\d.,:#\w-])(\d{4,})(?![\d.,:%]?\d)/g, (m, pre, n) => `${pre}${Number(n).toLocaleString('en-US')}`);
+const ACTION_WORDS = 'When|If|Before|After|Once|While|Until|Next game|Next time|Keep|Stop|Hold|Save|Play|Build|Buy|Ward|Re-ward|Stand|Back|Farm|Push|Group|Regroup|Invade|Dodge|Spend|Track|Focus|Fight|Stay|Walk|Use|Take|Swap|Add|Skip|Draft|Trade|Look|Watch|Rotate|Disengage|Peel|Chase|Do not|Don\'t|Never|Always|Call|Ping|Wait|Bait|Leave|Clear|Sweep|Shove|Contest|Aim|Start|Open|Commit|Go|Deploy|Repeat|Hit|Cast|Pair|Escort|Follow|Respect|Punish|Force|Flank|Join|Show|Sit|Pick|Next|Cross|Siege|Let|Enter|Land|Re-ward|Hug|Burn|Drop|Clean|Finish';
+const ACTION_START = new RegExp(`^(${ACTION_WORDS})\\b`);
+const ACTION_MID = new RegExp(`(?:[:;]|, so)\\s+(?=(${ACTION_WORDS})\\b)`, 'i');
+function factAct(text) {
+  const t = String(text ?? '').trim();
+  // Sentences: split after . ! ? before a capital or digit; "Lt. Belica" and friends stay whole.
+  const sents = [];
+  for (const raw of t.split(/(?<=[.!?])\s+(?=[A-Z0-9"])/)) { if (sents.length && /\b(Lt|St|Mr|Dr|vs)\.$/.test(sents[sents.length - 1])) sents[sents.length - 1] += ' ' + raw; else sents.push(raw); }
+  // An action sentence: starts with an instruction word, a condition then an instruction ("With X
+  // unseen, hold mid"), or it is the last sentence, has no numbers and opens with a verb rather than
+  // a stat ("Cross mid only beside Kira", "Let Riktor commit first").
+  const FACT_OPEN = /^(The|A|An|This|That|These|Those|One|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten|Zero|No|Only|Most|Died|Killed|Ran|Led|Hell|Gold|His|Her|Their|Our|We|They|It|Both|Every|All|Each|Kill|Deaths?|Kills?|Damage|Lane|Farm(?:ed)?\s)\b/;
+  // "Once that outer fell, kills on Countess followed" is a fact: after the condition's comma the
+  // main clause must read as an instruction, not open with a subject or a stat.
+  const mainIsFact = (x) => /^(When|If|Before|After|Once|While|Until|With|Without|Against|Into|On|In|Next)\b[^,]{2,70},\s+(kills?|deaths?|the|a|an|one|two|three|four|five|six|seven|eight|nine|ten|he|she|they|it|we|our|their|his|her|\d)/i.test(x);
+  const isAct = (x, k, n) => !mainIsFact(x) && (ACTION_START.test(x) || /^(With|Without|Against|Into|On|In|Next|Once) [^,]{3,60}, [a-z]/.test(x)
+    || (k === n - 1 && !/\d/.test(x) && /^[A-Z][a-z]+\b/.test(x) && !FACT_OPEN.test(x) && !/^[A-Z][a-z]+ (?:was|were|had|went|came|took|led|is|did)\b/.test(x)));
+  let fact = t, act = '';
+  const i = sents.findIndex((x, k) => k > 0 && isAct(x, k, sents.length));
+  if (i >= 1) { fact = sents.slice(0, i).join(' '); act = sents.slice(i).join(' '); }
+  else {
+    // The action introduced inside a sentence: "...the fewest of all ten players: ward the river ..."
+    const m = ACTION_MID.exec(t);
+    if (m && m.index > 12) { fact = t.slice(0, m.index) + '.'; act = t.slice(m.index + m[0].length); act = act.charAt(0).toUpperCase() + act.slice(1); }
+  }
+  if (!act) return `<span class="cb-fact">${escN(fact)}</span>`;
+  return `<span class="cb-fact">${escN(fact)}</span><span class="cb-act"><b>Next:</b> ${escN(act)}</span>`;
+}
+
 const pct = (x, d = 1) => (x * 100).toFixed(d);
 
 // ── Post-game review rendering (match facts + the coaching pass) ──
@@ -797,6 +939,12 @@ function tlSelect(kind, n) {
   const src = document.querySelector(`#tldetails [data-${kind === 'o' ? 'o' : kind === 't' ? 't' : 'i'}="${n}"]`);
   if (src) { panel.innerHTML = src.innerHTML; panel.hidden = false; }
 }
+// Build read tabs (How X's build worked): show one panel.
+function tbTab(btn, k) {
+  const box = btn.closest('.tb'); if (!box) return;
+  box.querySelectorAll('.tb-tabs .pgf').forEach((b) => { const on = b === btn; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); });
+  box.querySelectorAll('.tb-panel').forEach((p) => { p.hidden = p.dataset.tab !== k; });
+}
 // Team shape radar: fill the picked team, outline the other dashed.
 function rdShow(btn, side) {
   const box = btn.closest('.rd-box'); if (!box) return;
@@ -819,11 +967,26 @@ document.addEventListener('keydown', (e) => {
 });
 let COACH_LAYOUT = 'classic';
 let COACH_PLAYER_FORMAT = 'paragraph';
+// Lean coach review (film.coachLean, engine/src/coach-lean.ts) beside the standard one
+// (film.coaching). The toggle shows when a game has a published lean review; the default
+// comes from data/coaching/lean.json and the viewer's last choice is remembered.
+let COACH_VIEW = 'standard';
+try { const v = localStorage.getItem('coachView'); if (v === 'lean' || v === 'standard') COACH_VIEW = v; } catch {}
+function setCoachView(v) {
+  COACH_VIEW = v;
+  try { localStorage.setItem('coachView', v); } catch {}
+  const el = document.getElementById('pgview');
+  if (el && window.__pgLast) { el.innerHTML = pgReview(window.__pgLast); fillEternals(); }
+}
 function pgReview(f) {
   const us = f.players.filter((p) => p.us);
   const ourOf = (role) => f.players.find((p) => p.us && p.role === role);
   const theirOf = (role) => f.players.find((p) => !p.us && p.role === role);
-  const co = f.coaching;
+  window.__pgLast = f;
+  const lean = f.coachLean && f.coachLean.review && f.coachLean.review.status === 'published' ? f.coachLean : null;
+  const isLean = !!(lean && (COACH_VIEW === 'lean' || !f.coaching));
+  const co = isLean ? { ...lean, personaId: f.coaching?.personaId, perPlayer: {}, team: '', buildReads: null } : f.coaching;
+  const viewToggle = lean && f.coaching ? `<div class="cv-toggle" role="group" aria-label="Which coach review"><span>Coach review</span>${[['standard', 'Standard'], ['lean', 'Lean · new']].map(([k, l]) => `<button class="pgf${(isLean ? 'lean' : 'standard') === k ? ' on' : ''}" aria-pressed="${(isLean ? 'lean' : 'standard') === k}" onclick="setCoachView('${k}')">${l}</button>`).join('')}</div>` : '';
   const resColor = f.result === 'win' ? 'var(--green)' : 'var(--red)';
   const resBg = f.result === 'win' ? 'rgba(0,196,140,.16)' : 'rgba(255,90,90,.16)';
   const edgeStyle = (e) => e === 'favored' ? 'color:var(--green)' : e === 'unfavored' ? 'color:var(--red)' : 'color:var(--text-1)';
@@ -854,7 +1017,7 @@ function pgReview(f) {
       const opp = ourOf(p.role);
       const built = p.items || [];
       return `<div class="plobby coach-player enemy-player">
-        <div class="who">${hIcon(p.heroSlug, 34)}<span><span class="pname"><b>${pgName(p)}</b>${rankBadge(p)}</span><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span style="white-space:nowrap"><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span>${vpTag(p)}</span></span></div>
+        <div class="who">${hIcon(p.heroSlug, 34)}<span><span class="pname"><b>${pgName(p)}</b>${rankBadge(p)}</span><span class="h">${esc(p.heroName)} · ${esc(roleName(p.role))}</span><br><span style="white-space:nowrap"><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span>${vpTag(p)}</span></span></div>
         <div class="line">${opp ? `<div style="font-size:.78rem;color:var(--text-2)">vs ${esc(opp.heroName)} (${pgName(opp)})</div>` : ''}
           <div class="items">${built.map((i) => `<img data-ipop="${esc(i.slug)}" src="${iimg(i.slug)}" title="${esc(i.name)}" onerror="this.style.display='none'">`).join('') || '<span style="color:var(--text-2);font-size:.78rem">no finished items</span>'}</div>
           ${ranLine(p.loadout) || '<div class="lrow" style="color:var(--text-2)">loadout not recorded</div>'}
@@ -896,19 +1059,163 @@ function pgReview(f) {
     const balance = (() => {
       if (!tc.us.balance) return '';
       const keys = ['tank', 'engage', 'peel', 'control', 'diver', 'burst', 'poke', 'dps', 'sustain', 'duelist'];
+      const SHORT = { engage: 'eng', control: 'ctrl', diver: 'dive', sustain: 'sus', duelist: 'duel', burst: 'brst', dps: 'DPS' };
       const cell = (n) => `<td class="${n ? '' : 'tc-zero'}">${n || 0}</td>`;
-      return `<table class="tc-bal"><thead><tr><th></th>${keys.map((k) => `<th title="${esc(TAG_TIP[k])}">${k}</th>`).join('')}</tr></thead><tbody>
+      return `<table class="tc-bal"><thead><tr><th></th>${keys.map((k) => `<th title="${esc(k)}: ${esc(TAG_TIP[k])}"><span class="lg">${k === 'dps' ? 'DPS' : k}</span><span class="sh">${SHORT[k] || k}</span></th>`).join('')}</tr></thead><tbody>
         <tr><th style="color:var(--green)">Us</th>${keys.map((k) => cell(tc.us.balance[k])).join('')}</tr>
         <tr><th style="color:var(--red)">Them</th>${keys.map((k) => cell(tc.them.balance[k])).join('')}</tr></tbody></table>`;
     })();
     const row = (sd, label, color) => `<div class="tc-row"><div class="tc-side" style="color:${color}">${label}</div>
-      <div class="tc-heroes">${sd.heroes.map((h) => `<span class="tc-hero">${hIcon(h.slug, 26)}<span><b>${esc(h.name)}</b>${badge(h)}<br><span class="tc-role">${esc(h.role)}</span></span></span>`).join('')}</div>
+      <div class="tc-heroes">${sd.heroes.map((h) => `<span class="tc-hero">${hIcon(h.slug, 26)}<span><b>${esc(h.name)}</b>${badge(h)}<br><span class="tc-role">${esc(roleName(h.role))}</span></span></span>`).join('')}</div>
       <div class="tc-shape"><b>${sd.tanks} tank${sd.tanks === 1 ? '' : 's'} · ${sd.divers} diver${sd.divers === 1 ? '' : 's'}</b><br><span style="color:${sd.shapeWr ? tcCol(sd.shapeWr.wr) : 'var(--text-2)'}">${sd.shapeWr ? `${sd.shapeWr.wr}% in ${esc(tc.field.patch)} ranked` : 'too few games'}</span>${sd.shapeWr ? ` <span class="tc-n">(${sd.shapeWr.n.toLocaleString()} teams)</span>` : ''}</div></div>`;
     const checks = tc.checks.map((c) => `<li class="${c.ok ? 'ok' : 'bad'}"><span aria-hidden="true">${c.ok ? '✓' : '✗'}</span> ${esc(c.text)}</li>`).join('');
     const fails = tc.checks.filter((c) => !c.ok).length;
-    const swap = tc.swap ? `<div class="tc-swap"><b>Draft fix:</b> swap ${esc(tc.swap.out)} (${esc(tc.swap.role)}) for a real tank, because ${esc(tc.swap.reason)}. Tanks that win in ${esc(tc.swap.role)} this patch: <span class="tc-opts">${tc.swap.options.map((o) => `<span class="tc-opt">${hIcon(o.slug, 20)} <b>${esc(o.name)}</b> ${o.wr}% <span class="tc-n">(${o.n.toLocaleString()} games)</span></span>`).join('')}</span></div>` : '';
+    const swap = tc.swap ? `<div class="tc-swap"><b>Draft fix:</b> swap ${esc(tc.swap.out)} (${esc(roleName(tc.swap.role))}) for a real tank, because ${esc(tc.swap.reason)}. Tanks that win in ${esc(roleName(tc.swap.role).toLowerCase())} this patch: <span class="tc-opts">${tc.swap.options.map((o) => `<span class="tc-opt">${hIcon(o.slug, 20)} <b>${esc(o.name)}</b> ${o.wr}% <span class="tc-n">(${o.n.toLocaleString()} games)</span></span>`).join('')}</span></div>` : '';
     // Kit read (film.kitRead, npm run postgame:comp; rules in engine/src/kit-read.ts).
     const kr = f.kitRead;
+    // How the threat's / a nemesis killer's build worked (film.threatBuilds, engine/src/threat-build.ts):
+    // ability-haste maths on their ultimate, what their takedowns fed, ultimate enhancers.
+    const tbBlock = (slug, open, bare, noHead) => {
+      const tb = (f.threatBuilds || {})[slug];
+      const c = tb && tb.card;
+      if (!c || (!c.ult && !c.haste.length && !c.extras.length && !c.power)) return '';
+      const pp = c.power;
+      // four fixed hues by size, never cycled: a fifth or later source is grey
+      const COLS = ['var(--accent)', 'var(--blue)', 'var(--gold)', 'var(--green)'];
+      const col = (i) => COLS[i] || 'var(--text-2)';
+      const hs = [...c.haste].sort((x, y) => y.amount - x.amount);
+      const total = hs.reduce((n, h) => n + h.amount, 0), span = total + (c.fight ? c.fight.amount : 0);
+      const u = c.ult;
+      const cdRow = (label, sec, note, cls) => `<div class="tb-cdrow"><span class="tb-cdl">${label}</span><span class="tb-bar"><i class="${cls}" style="width:${(100 * sec / u.base).toFixed(1)}%"></i></span><b>${cls === 'fight' ? '~' : ''}${Math.round(sec)}s</b><span class="tc-n">${note}</span></div>`;
+      const cdBlock = u && total ? `<div class="tb-sec"><div class="tb-k">${esc(u.name)} (ultimate) cooldown</div>
+        ${cdRow('Base', u.base, `${u.rankKnown ? `rank ${u.rank}` : 'top rank'}, no haste`, 'base')}
+        ${cdRow('End of game', u.endGame, `${Math.round((1 - u.endGame / u.base) * 100)}% shorter with ${total} ability haste`, 'end')}
+        ${u.inFight != null ? cdRow('Mid-fight', u.inFight, `with ${esc(c.fight.name)} stacks (estimate)`, 'fight') : ''}</div>` : '';
+      const seg = (h, i) => `<i style="width:${(100 * h.amount / span).toFixed(1)}%;background:${col(i)}" title="${esc(h.name)} +${h.amount}">${h.amount >= span * 0.12 ? `+${h.amount}` : ''}</i>`;
+      const hasteBlock = hs.length ? `<div class="tb-sec"><div class="tb-k">Where the ${total} ability haste came from${c.fight ? ` <span class="tc-n">(+${c.fight.amount} more mid-fight)</span>` : ''}</div>
+        <div class="tb-stack">${hs.map(seg).join('')}${c.fight ? `<i class="fight" style="width:${(100 * c.fight.amount / span).toFixed(1)}%" title="${esc(c.fight.name)} +${c.fight.amount} mid-fight">+${c.fight.amount}</i>` : ''}</div>
+        <ul class="tb-list">${hs.map((h, i) => `<li><span class="tb-sw" style="background:${col(i)}"></span><b>${esc(h.name)}</b> <span class="tb-kind">${esc(h.kind)}</span> ${esc(h.how)}</li>`).join('')}
+        ${c.fight ? `<li><span class="tb-sw fight"></span><b>${esc(c.fight.name)}</b> <span class="tb-kind">augment</span> ${esc(c.fight.how)}</li>` : ''}</ul></div>` : '';
+      // Damage: power, penetration against each target (armor before -> after; estimate), boosts.
+      // Damage: the build behind it, item by item (power, penetration, effect), tagged with the trigger
+      // it shares with the abilities or Eternal (film.threatBuilds[].worked.stacks). pred.gg does not
+      // report damage per item, so items are ordered by what they added, not by damage dealt.
+      const dmgBlock = pp ? (() => {
+        const stacks = (c.worked && c.worked.stacks) || [];
+        const trig = (name) => { const s0 = stacks.find((x) => x.members.some((m) => m.name === name)); return s0 ? s0.title.replace(/^Every /, 'every ').replace(/ set off$| fed$/, '') : ''; };
+        const items = [...(pp.items || [])].sort((x, y) => (y.power - x.power) || ((y.pen + y.penPct) - (x.pen + x.penPct)));
+        const add = (it) => [it.power ? `+${it.power} power` : '', it.pen ? `${it.pen} penetration` : '', it.penPct ? `ignores ${it.penPct}% armor` : ''].filter(Boolean).join(' · ');
+        const others = pp.amps.filter((x) => x.kind !== 'item' && x.kind !== 'crest');
+        const li = (icon, name, kind, added, tag, effect) => `<li>${icon}<b>${esc(name)}</b>${kind ? ` <span class="tb-kind">${esc(kind)}</span>` : ''}${added ? ` <span class="tc-n">${added}</span>` : ''}${tag ? ` <span class="tb-trig">${esc(tag)}</span>` : ''}${effect ? `<div class="tb-eff">${escN(effect)}</div>` : ''}</li>`;
+        return `<div class="tb-sec"><div class="tb-k">Damage build <span class="tc-n">${pp.dealt ? `${pp.dealt.damage.toLocaleString()} hero damage, ${pp.dealt.share}% of the team's · ` : ''}+${pp.power} ${esc(pp.type)} power</span></div>
+          <ul class="tb-dmg">${items.map((it) => li(`<img src="${iimg(it.slug)}" alt="" class="tb-dico" data-ipop="${esc(it.slug)}" onerror="this.style.display='none'">`, it.name, it.kind === 'crest' ? 'crest' : '', add(it), trig(it.name), it.effects.join(' '))).join('')}
+          ${others.map((x) => li('', x.name, x.kind, '', trig(x.name), x.how)).join('')}</ul>
+          <p class="tc-cap">Ordered by what each item added; the game does not report damage per item.</p></div>`;
+      })() : '';
+      const keepBlock = pp && (pp.sustain || pp.tough) ? `<div class="tb-sec"><div class="tb-k">Staying alive</div><ul class="tb-list">
+        ${pp.sustain ? `<li><b>Sustain</b> ${esc([...pp.sustain.stats, ...pp.sustain.effects.filter((e) => !pp.amps.some((a) => a.name === e.name && a.how === e.how)).map((e) => `${e.name}: ${e.how}`)].join('; '))} <span class="tc-n">${pp.sustain.healing.toLocaleString()} healing in the game</span></li>` : ''}
+        ${pp.tough ? `<li><b>Toughness</b> ${esc(pp.tough.stats.join(', '))} <span class="tc-n">took ${pp.tough.taken.toLocaleString()}, mitigated ${pp.tough.mitigated.toLocaleString()}, died ${pp.tough.deaths}x</span></li>` : ''}</ul></div>` : '';
+      const extraBlock = c.extras.filter((x) => !(pp && pp.amps.some((a) => a.name === x.name))).length ? `<div class="tb-sec"><div class="tb-k">Also working for ${esc(tb.hero)} <span class="tc-n">${c.takedowns.count} takedowns: ${c.takedowns.kills} kills, ${c.takedowns.assists} assists</span></div>
+        <ul class="tb-list">${c.extras.filter((x) => !(pp && pp.amps.some((a) => a.name === x.name))).map((x) => `<li><b>${esc(x.name)}</b> <span class="tb-kind">${esc(x.kind)}</span> ${esc(x.how)}</li>`).join('')}</ul></div>` : '';
+      // Each lesson lives with its tab; only the lead story's lesson shows under the lead card.
+      const tabLesson = { cooldowns: c.lesson, damage: null, alive: c.heals ? 'Anti-heal (the Tainted items) cuts the healing in this build.' : null };
+      const lessonBox = (t) => t ? `<ul class="tb-list tb-bul"><li><b>Lesson:</b> ${escN(t)}</li></ul>` : '';
+      // Sentences as bullets ("Lt. Belica" stays whole).
+      const sentences = (t) => { const out = []; for (const raw of String(t || '').split(/(?<=[.!?])\s+(?=[A-Z0-9"])/)) { if (out.length && /\b(Lt|St|Mr|Dr|vs)\.$/.test(out[out.length - 1])) out[out.length - 1] += ' ' + raw; else if (raw.trim()) out.push(raw.trim()); } return out; };
+      const bullets = (t, extra) => `<ul class="tb-list tb-bul">${sentences(t).map((x) => `<li>${escN(x)}</li>`).join('')}${extra || ''}</ul>`;
+      // One lead story (film.threatBuilds[].story, engine/src/build-story.ts), the rest as tabs.
+      const st = c.story;
+      const ord = (n) => `${n}${n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th'}`;
+      // The lead card: who, what they ran, the one story, and only the stats that story rests on.
+      const pl = f.players.find((x) => x.heroSlug === tb.slug);
+      const BIG = (src, title, attrs) => `<img src="${src}" title="${esc(title)}" alt="${esc(title)}"${attrs || ''} class="tb-ico" onerror="this.style.display='none'">`;
+      const lo = (pl && pl.loadout) || {};
+      // Final items (what they finished with), in the order they were bought when the stream saved it.
+      const buySec = (sl) => { const x = pl && pl.stream && (pl.stream.purchases || []).find((q) => q.slug === sl); return x ? x.sec : 1e9; };
+      const buyOrder = pl ? (pl.items || []).map((i) => i.slug).filter((sl) => sl !== lo.crestSlug && !/potion|ward|-crest$/i.test(sl)).sort((x, y) => buySec(x) - buySec(y)) : [];
+      const ranMinors = [lo.minor1, lo.minor2].filter(Boolean);
+      const kitRow = pl ? `<div class="tb-kit">${buyOrder.map((sl) => BIG(iimg(sl), (pl.items || []).find((i) => i.slug === sl)?.name || sl, ` data-ipop="${esc(sl)}"`)).join('')}
+        ${lo.crest ? `<span class="tb-sep"></span>${BIG(`../img/crests/${esc(lo.crestSlug || nslug(lo.crest))}.webp`, `Crest: ${lo.crest}`, lo.crestSlug ? ` data-ipop="${esc(lo.crestSlug)}"` : '')}` : ''}
+        ${lo.eternal ? `<span class="tb-sep"></span>${BIG(`../img/eternals/${nslug(lo.eternal)}.webp`, `Eternal: ${lo.eternal}`, epopAttr(lo.eternal, null, ranMinors, 'ran', 'the minors this player ran this game'))}${ranMinors.map((m) => BIG(`../img/blessings/${nslug(m)}.webp`, `Minor: ${m}`, epopAttr(lo.eternal, m, ranMinors, 'ran', 'the minors this player ran this game'))).join('')}` : ''}
+        ${lo.augment ? `<span class="tb-sep"></span>${BIG(`../img/augments/${esc(lo.augment.id)}.webp`, `Augment: ${lo.augment.name}`, ` data-apop="${esc(lo.augment.id)}" data-apop-label="ran"`)}` : ''}</div>
+        <div class="tc-n tb-kitnames">${[buyOrder.length ? `${buyOrder.length} items${pl.stream ? ' in buy order' : ''}` : '', lo.crest ? `crest ${esc(lo.crest)}` : '', lo.eternal ? `${esc(lo.eternal)}${ranMinors.length ? ` (${ranMinors.map(esc).join(' + ')})` : ''}` : '', lo.augment ? `augment ${esc(lo.augment.name)}` : ''].filter(Boolean).join(' · ')}</div>` : '';
+      const head = pl ? `<div class="tb-head">${hIcon(tb.slug, 44).replace(/<\/?a\b[^>]*>/g, '')}<div><div class="tb-who"><b>${pl.us ? pgName(pl) : esc(tb.hero)}</b> <span class="tc-n">${pl.us ? `${esc(tb.hero)} · ` : ''}${esc(roleName(pl.role))}</span></div>
+        <div class="tb-kda">${pl.kills} / ${pl.deaths} / ${pl.assists}${st && st.lead ? ' <span class="tb-hp">High performer</span>' : ''}</div></div></div>` : '';
+      // Only the evidence for the lead story, in words.
+      const EVID = { snowball: ['kp', 'dpm'], glass: ['dpm', 'mpm'], damage: ['dpm', 'share'], survival: ['mpm', 'hpm'], cooldowns: ['dpm', 'kp'], sustain: ['hpm'], tough: ['mpm'] };
+      const LAB = { dpm: 'Hero damage per minute', share: 'Share of the team\'s hero damage', kp: 'Kill participation', mpm: 'Damage mitigated per minute', hpm: 'Healing per minute' };
+      const peers = pl ? `${esc(tb.hero)} ${esc(roleName(pl.role).toLowerCase())} games` : 'games';
+      const bar = (k) => { const v = st.vsNorm[k]; const hi = v.pct >= 50; return `<div class="tb-ev"><span>${LAB[k]}</span><i><b style="left:${v.pct}%"></b></i><em>${hi ? `more than ${v.pct}%` : `less than ${100 - v.pct}%`} of ${peers}</em></div>`; };
+      const evid = st && st.lead && st.vsNorm ? `<div class="tb-evs">${(EVID[st.lead.id] || []).map(bar).join('')}</div><div class="tc-n">Compared with ${st.normN.toLocaleString()} ranked ${peers} this patch.</div>` : '';
+      // The coach's read of how this loadout worked together in this game (film.loadoutCoach).
+      const lc = (f.loadoutCoach || {})[tb.slug] || null;
+      const leadTab0 = st && st.tabs ? st.tabs[0] : null;
+      const leadLesson0 = st && st.lead ? (st.lead.lesson || (leadTab0 ? tabLesson[leadTab0] : null)) : null;
+      const leadLessonP = leadLesson0 ? `<p class="tb-les"><b>Lesson:</b> ${escN(leadLesson0)}</p>` : '';
+      const leadCard = (st && st.lead) || head ? `<div class="tb-leadcard">${noHead ? '' : head}${kitRow}${st && st.lead ? `${noHead ? '' : `<div class="tb-leadt">${esc(st.lead.title)}</div>`}${bullets(st.lead.text)}${lc ? `<div class="tb-k lc-h">How the build worked together</div><ul class="tb-list tb-bul">${lc.bullets.map((b) => `<li>${escN(b)}</li>`).join('')}</ul>` : ''}${evid}${leadLessonP}` : ''}</div>` : '';
+      const leadTab = st && st.tabs ? st.tabs[0] : null;
+      const leadLesson = st && st.lead ? (st.lead.lesson || (leadTab ? tabLesson[leadTab] : null)) : null;
+      const inTab = (k, html) => html ? `${k === leadTab && st && st.lead && !st.lead.lesson ? '' : lessonBox(tabLesson[k])}${html}` : '';
+      // Play against (enemies only): their hard CC, how to play it, answers (kitRead threat / nemeses).
+      const cap = (x) => { x = String(x || '').trim(); if (!x) return ''; x = x.charAt(0).toUpperCase() + x.slice(1); return /[.!?]$/.test(x) ? x : `${x}.`; };
+      const play = (() => {
+        if (tb.us || !kr) return '';
+        const th = kr.threat && kr.threat.slug === tb.slug ? kr.threat : null;
+        const nems = (kr.nemeses || []).filter((n) => n.bySlug === tb.slug);
+        const cc = (kr.cc.them || []).filter((a) => a.hero === tb.hero).map((a) => `${a.ability} (${a.types.join(' + ')}${a.sec ? ` ${a.sec}s` : ''})`);
+        const how = (th && th.playAgainst) || (nems[0] && nems[0].playAgainst) || '';
+        const answers = [...new Set([...(th ? th.answers : []), ...nems.map((n) => n.answer).filter(Boolean)])];
+        if (!cc.length && !how && !answers.length) return '';
+        return `<ul class="tb-list">${cc.length ? `<li><b>Hard CC</b> ${esc(cc.join(', '))}</li>` : ''}${how ? `<li><b>How to play it</b> ${esc(cap(how))}</li>` : ''}${answers.length ? `<li><b>Answers</b> ${esc(answers.join(' '))}</li>` : ''}</ul>`;
+      })();
+      const panels = { damage: inTab('damage', dmgBlock), cooldowns: inTab('cooldowns', `${cdBlock}${hasteBlock}${extraBlock}`), alive: inTab('alive', keepBlock), play };
+      const names = { damage: 'Damage', cooldowns: 'Cooldowns', alive: 'Staying alive', play: 'Play against' };
+      const order = [...((st && st.tabs) || ['damage', 'cooldowns', 'alive']), 'play'].filter((k) => panels[k]);
+      const tabs = order.length ? `<div class="tb-tabs" role="tablist">${order.map((k, i) => `<button class="pgf${i ? '' : ' on'}" role="tab" aria-selected="${!i}" onclick="tbTab(this,'${k}')">${names[k]}</button>`).join('')}</div>${order.map((k, i) => `<div class="tb-panel" data-tab="${k}"${i ? ' hidden' : ''}>${panels[k]}</div>`).join('')}` : '';
+      // Why it worked (film.threatBuilds[].worked, engine/src/build-why.ts): what stacked, did we
+      // counter it, can we copy it.
+      const w = c.worked;
+      const VERD = { proven: ['Worth copying', 'var(--green)'], standard: ['Standard setup', 'var(--text-1)'], 'beat-us': ['Beat us, not the field', 'var(--gold)'], unknown: ['Not enough games', 'var(--text-2)'] };
+      const fold = (title, preview, body, open) => `<details class="tb-fold"${open ? ' open' : ''}><summary><b>${title}</b> <span class="tc-n">${preview}</span></summary><div class="tb-foldbody">${body}</div></details>`;
+      const missed = w ? w.countered.filter((x) => !x.ok).length : 0;
+      // Loadout (film.threatBuilds[].loadout, engine/src/loadout-read.ts): every piece to the same depth.
+      const LO = c.loadout || [];
+      const loIcon = (x) => { const lo2 = (pl && pl.loadout) || {}; const src = x.kind === 'augment' && lo2.augment ? `../img/augments/${esc(lo2.augment.id)}.webp` : x.kind === 'Eternal' ? `../img/eternals/${nslug(x.name)}.webp` : x.kind === 'minor' ? `../img/blessings/${nslug(x.name)}.webp` : `../img/crests/${esc(lo2.crestSlug || nslug(x.name))}.webp`; return `<img src="${src}" alt="" class="tb-dico" onerror="this.style.display='none'">`; };
+      const VCOL = { above: 'var(--green)', level: 'var(--text-1)', below: 'var(--gold)' };
+      const loChip = (fd) => fd ? `<span class="lo-chip" style="color:${VCOL[fd.verdict]};border-color:${VCOL[fd.verdict]}">${fd.wr}%${fd.share != null ? ` · ${fd.share}% pick` : ''}</span>` : '';
+      const loBlock = LO.length ? `<ul class="tb-dmg">${LO.map((x) => `<li>${loIcon(x)}<b>${esc(x.name)}</b> <span class="tb-kind">${esc(x.kind)}</span>${loChip(x.field)}
+        ${x.plain ? `<div class="lo-plain">${escN(x.plain)}</div><details class="tc-more lo-game"><summary>Game text</summary><div class="tb-eff">${escN(x.text)}</div></details>` : `<div class="tb-eff">${escN(x.text)}</div>`}
+        ${x.ability || x.numbers.length || x.field ? `<ul class="tb-list tb-bul lo-bul">${x.ability ? `<li>Changes <b>${esc(x.ability.name)}</b>${x.ability.cdHaste ? ` (${x.ability.cdHaste}s cooldown with this player's haste)` : ''}: ${escN(x.ability.what)}</li>` : ''}${x.numbers.map((n) => `<li>${escN(n)}</li>`).join('')}${x.field ? `<li>On ${esc(tb.hero)} this patch: ${x.field.wr}% in ${x.field.n.toLocaleString()} games${x.field.share != null ? ` (${x.field.share}% of picks)` : ''}, ${x.field.verdict === 'level' ? 'level with' : x.field.verdict} the hero's ${x.field.base}%</li>` : ''}</ul>` : ''}</li>`).join('')}</ul><p class="tc-cap">Win rates: ranked games this patch on this hero in this role; catalog text, not measured uptime.</p>` : '';
+      const loAbove = LO.filter((x) => x.field && x.field.verdict === 'above').length, loRated = LO.filter((x) => x.field).length;
+      const whyBlock = w || LO.length ? `<div class="tb-why">
+        ${LO.length ? fold('Loadout', `${esc(LO.map((x) => x.name).join(' · '))}${loRated ? ` · ${loAbove} of ${loRated} win above the hero's rate` : ''}`, loBlock) : ''}
+        ${w && w.stacks.length ? fold('What stacked', esc(w.stacks.map((x) => `${x.title.toLowerCase()} (${x.members.length})`).join(' · ')), `${w.stacks.map((x) => `<div class="tb-stackrow"><b>${esc(x.title)}</b> <span class="tb-mem">${x.members.map((m) => `<span class="tb-tag">${esc(m.name)}<i>${esc(m.kind)}</i></span>`).join('')}</span>${bullets(x.text.replace(/^\d+ effects on one trigger: [^.]*\.\s*/, ''))}</div>`).join('')}${w.eternalPart ? `<div class="tb-stackrow"><b>The Eternal</b>${bullets(w.eternalPart.replace(/^The Eternal was part of it: /, ''))}</div>` : ''}`) : ''}
+        ${w ? fold(`Did ${tb.us ? 'they' : 'we'} counter it?`, missed ? `<span class="tc-bad">✗</span> ${missed} of ${w.countered.length} missed` : '<span class="tc-ok">✓</span> answered', `<ul class="tb-list">${w.countered.map((x) => `<li>${x.ok ? '<span class="tc-ok">✓</span>' : '<span class="tc-bad">✗</span>'} ${esc(tb.us ? x.text.replace(/^We killed/, 'They killed') : x.text)}</li>`).join('')}</ul>`) : ''}
+        ${w && w.copy ? fold('Can we copy it?', `<span class="tb-verd" style="color:${VERD[w.copy.verdict][1]};border-color:${VERD[w.copy.verdict][1]}">${VERD[w.copy.verdict][0]}</span>`, `<ul class="tb-list tb-bul">${w.copy.text.split(/;\s+|(?<=[.!?])\s+(?=[A-Z])/).map((x) => `<li>${escN(x.charAt(0).toUpperCase() + x.slice(1))}</li>`).join('')}</ul>`) : ''}
+      </div>` : '';
+      const body = `<div class="tb">${leadCard}${st && st.lead ? '' : lessonBox(leadLesson)}${whyBlock}${tabs ? fold('The numbers', 'damage · cooldowns · staying alive' + (play ? ' · play against' : ''), tabs) : ''}</div>`;
+      if (bare) return body;
+      return open ? `<div class="tc-h" style="margin-top:.6rem">How ${esc(tb.hero)}'s build worked</div>${body}` : `<details class="tc-more"><summary>How ${esc(tb.hero)}'s build worked</summary>${body}</details>`;
+    };
+    // High performers (film.threatBuilds): their threat, lane nemeses and anyone above the hero-role
+    // norm on either team, one collapsible row each, titled by name and verdict; the first opens.
+    const perf = Object.values(f.threatBuilds || {}).filter((t) => t.card);
+    const rank = (t) => (kr && kr.threat && kr.threat.slug === t.slug ? 0 : !t.us ? 1 : 2);
+    perf.sort((a, b) => rank(a) - rank(b) || (b.score || 0) - (a.score || 0));
+    const perfBlock = perf.length ? `<details class="tc-sec sec-fold" open><summary class="tc-h">High performers <span class="tc-n">${perf.length} players</span></summary>
+      ${perf.map((t, i) => {
+        const pl = f.players.find((x) => x.heroSlug === t.slug);
+        const st = t.card.story;
+        const isThreat = kr && kr.threat && kr.threat.slug === t.slug;
+        const hp = st && st.lead && ((t.why || []).includes('standout') || isThreat);
+        const label = hp ? 'High performer' : isThreat ? 'Their threat' : (t.why || []).includes('nemesis') ? 'Lane nemesis' : 'Above the norm';
+        const victims = pl && !pl.us ? (() => { const c = {}; for (const k of f.kills || []) if (k.killerPid === pl.pid) { const v = f.players.find((x) => x.pid === k.killedPid); if (v) c[v.heroName] = (c[v.heroName] || 0) + 1; } return Object.entries(c).sort((x, y) => y[1] - x[1]); })() : [];
+        const teamKills = pl ? f.players.filter((x) => x.us === pl.us).reduce((n, x) => n + x.kills, 0) : 0;
+        const top = victims.slice(0, 2).map(([h, n]) => { const v = f.players.find((x) => x.heroName === h); const nm = kr && (kr.nemeses || []).find((q) => q.bySlug === t.slug && v && q.pid === v.pid); return nm ? `<b class="pf-nem">${esc(h)} ${n}×</b> <span class="tc-n">(of ${nm.deaths})</span>` : `${esc(h)} ${n}×`; });
+        const sub = pl ? [`<b class="pf-kda">${pl.kills}/${pl.deaths}/${pl.assists}</b>`, pl.us ? pgName(pl) : '', esc(roleName(pl.role)), top.length ? `killed ${top.join(', ')}` : ''].filter(Boolean).join(' · ') : '';
+        return `<details class="pf-row"${i === 0 ? ' open' : ''}><summary><span class="pf-sum">${hIcon(t.slug, 36).replace(/<\/?a\b[^>]*>/g, '')}<span><span class="pf-t"><b>${esc(t.hero)}</b> <span class="pf-dash">&mdash;</span> <span class="pf-l${hp ? ' hp' : ''}">${label}</span> <span class="pf-team" style="color:${t.us ? 'var(--green)' : 'var(--red)'}">${t.us ? 'Us' : 'Them'}</span></span>
+          <span class="tc-n pf-s">${sub}</span>${st && st.lead ? `<span class="pf-lead">${esc(st.lead.title)}</span>` : ''}</span></span></summary>${tbBlock(t.slug, false, true, true)}</details>`;
+      }).join('')}</details>` : '';
     const ccBlock = kr ? (() => {
       const gap = kr.cc.them.length - kr.cc.us.length;
       const list = (xs) => xs.map((a) => `<li><b>${esc(a.hero)}</b> ${esc(a.ability)} <span class="tc-n">${esc(a.types.join(' + '))}${a.sec ? ` ${a.sec}s` : ''}</span></li>`).join('');
@@ -916,12 +1223,6 @@ function pgReview(f) {
         <p class="${gap >= 3 ? 'tc-warn' : ''}">${esc(kr.cc.note)}</p>
         <details class="tc-more"><summary>Every hard-CC ability in the game</summary><div class="tc-cols"><div><b style="color:var(--green)">Us</b><ul>${list(kr.cc.us) || '<li>none</li>'}</ul></div><div><b style="color:var(--red)">Them</b><ul>${list(kr.cc.them) || '<li>none</li>'}</ul></div></div></details></div>`;
     })() : '';
-    const threatBlock = kr && kr.threat ? (() => { const t = kr.threat; return `<div class="tc-sec"><div class="tc-h">Their threat <span class="tc-n">the enemy who ran the game</span></div>
-      <div class="tc-threat">${hIcon(t.slug, 30)}<div><b>${esc(t.hero)}</b> ${esc(t.kda)} <span class="tc-n">· ${t.killShare}% of their kills · ${t.damage.toLocaleString()} hero damage${t.topDamage ? ', the most in the game' : ''}</span>
-      ${t.victims.length ? `<div class="tc-n">Killed ${t.victims.map((v) => `${esc(v.hero)} ${v.count}`).join(' · ')}</div>` : ''}</div></div>
-      ${t.kit.length ? `<p>${t.kit.map(esc).join(' ')}</p>` : ''}
-      ${t.playAgainst ? `<p><b>How to play it:</b> ${esc(((x) => /[.!?]$/.test(x) ? x : x + '.')(t.playAgainst.trim().charAt(0).toUpperCase() + t.playAgainst.trim().slice(1)))}</p>` : ''}
-      ${t.answers.length ? `<p><b>Answers:</b> ${t.answers.map(esc).join(' ')}</p>` : ''}</div>`; })() : '';
     // Grouped by the enemy hero; that enemy's counterplay is shown once, and not at all
     // when it is already the threat above.
     const nemBlock = kr && kr.nemeses.length ? (() => {
@@ -932,8 +1233,7 @@ function pgReview(f) {
         const isThreat = kr.threat && kr.threat.slug === g.bySlug;
         const answers = [...new Set(g.victims.map((v) => v.answer).filter(Boolean))];
         return `<li>${hIcon(g.bySlug, 22)} <span><b>${esc(g.byHero)}</b> killed ${g.victims.map((v) => `<b>${esc(v.player)}</b> <span class="tc-n">(${esc(v.hero)})</span> ${v.byCount} of ${v.deaths}`).join(', ')}.
-        ${isThreat ? '<span class="tc-n">Counterplay above.</span>' : `${g.enemyCc.length ? `<span class="tc-n">Watch ${esc(g.enemyCc.join(', '))}.</span> ` : ''}${g.playAgainst ? esc(dot(g.playAgainst)) : ''}`}
-        ${answers.length ? ` <b>${esc(answers.join(' '))}</b>` : ''}</span></li>`; }).join('')}</ul></div>`;
+        ${perf.some((t) => t.slug === g.bySlug) ? `<span class="tc-n">How to play ${esc(g.byHero)} and why it worked: under High performers.</span>` : `${g.enemyCc.length ? `<span class="tc-n">Watch ${esc(g.enemyCc.join(', '))}.</span> ` : ''}${g.playAgainst ? esc(dot(g.playAgainst)) : ''}${answers.length ? ` <b>${esc(answers.join(' '))}</b>` : ''}`}</span></li>`; }).join('')}</ul></div>`;
     })() : '';
     // Build notes (film.buildNotes, engine/src/build-notes.ts): lane record, what the field
     // buys more into this opponent, and what this enemy comp asked of the build.
@@ -946,7 +1246,7 @@ function pgReview(f) {
       for (const a of b.adapt) bits.push(`${iimgTag(a.slug)}<b>${esc(a.name)}</b> <span class="tc-n">bought ${a.into}% into ${esc(a.vs)} (usually ${a.usual}%)${a.wr != null ? `, wins ${a.wr}%` : ''}</span> ${a.has ? '<span class="tc-ok">✓ built</span>' : ''}`);
       for (const n of b.needs) bits.push(`${n.has ? '<span class="tc-ok">✓</span>' : '<span class="tc-bad">✗</span>'} ${esc(n.answer)}${shared.includes(n.why) ? '' : ` <span class="tc-n">(${esc(n.why)})</span>`}`);
       if (!bits.length) return '';
-      return `<li>${hIcon(pl ? pl.heroSlug : '', 22)}<div><b>${esc(pl ? pgName(pl) : b.hero)}</b> <span class="tc-n">${esc(b.hero)} · ${esc(b.role)}</span><div class="tc-bits">${bits.map((x) => `<span>${x}</span>`).join('')}</div></div></li>`;
+      return `<li>${hIcon(pl ? pl.heroSlug : '', 22)}<div><b>${esc(pl ? pgName(pl) : b.hero)}</b> <span class="tc-n">${esc(b.hero)} · ${esc(roleName(b.role))}</span><div class="tc-bits">${bits.map((x) => `<span>${x}</span>`).join('')}</div></div></li>`;
     }).join('')}</ul></div>` : '';
     // Team shape radar: both teams on the same axes, side by side. Each panel fills its own team
     // and outlines the other dashed, so the comparison never rests on red vs green alone (that pair
@@ -972,17 +1272,41 @@ function pgReview(f) {
         <svg viewBox="0 0 260 228" role="img" aria-label="Team shape, us and them on the same axes">${grid}
           ${layer('them', thV, 'var(--red)', tc.them, kr.cc.them.length, 'Them')}${layer('us', usV, 'var(--green)', tc.us, kr.cc.us.length, 'Us')}
           ${labels}</svg>
-        <div class="rd-key">Filled = the team you picked · dashed = the other team · role counts out of 3, hard CC out of ${ccMax}. Exact numbers in the table below.</div></div>`;
+        <div class="rd-key">Filled = picked team · dashed = the other · counts out of 3, hard CC out of ${ccMax}</div></div>`;
     })();
+    // Damage types (film.damageMix, engine/src/damage-mix.ts): each team's hero damage, physical /
+    // magical / true, bar length = the team's total; where true damage came from; the patch's win
+    // rate for that magical share (an association: damage dealt follows how the game went).
+    const dm = f.damageMix;
+    const mixBlock = dm ? (() => {
+      const max = Math.max(dm.us.total, dm.them.total) || 1;
+      const K = [['physical', 'Physical', 'var(--gold)'], ['magical', 'Magical', 'var(--blue)'], ['true', 'True', 'var(--text-1)']];
+      const bar = (label, m, col) => `<div class="dm-row"><span class="dm-l" style="color:${col}">${label}</span><span class="dm-bar" style="width:${(100 * m.total / max).toFixed(1)}%">${K.map(([k, , c]) => { const pc = m.total ? Math.round(100 * m[k] / m.total) : 0; return pc ? `<i class="${pc < 16 ? 'sm' : ''}" style="width:${pc}%;background:${c}" title="${k} ${m[k].toLocaleString()} (${pc}%)">${pc >= 9 ? `${pc}%` : ''}</i>` : ''; }).join('')}</span><b>${Math.round(m.total / 1000)}k</b></div>`;
+      // Under each team's bar: the armor the OTHER team bought against that damage (item armor
+      // points), flagged when a type is 35%+ of the damage and one player or none built armor for it;
+      // and where that team's true damage came from.
+      const against = (m, a, mine) => {
+        if (!a || !m.total) return '';
+        const pp = Math.round(100 * m.physical / m.total), pm = Math.round(100 * m.magical / m.total);
+        const gaps = [['physical', pp], ['magical', pm]].filter(([k, pc]) => pc >= 35 && a[k].length <= 1).map(([k]) => k);
+        const verdict = gaps.length ? `<span class="tc-bad">✗ ${gaps.map((k) => `little ${k} armor`).join(', ')}</span>` : '<span class="tc-ok">✓ armor matched</span>';
+        return `${mine ? 'Their' : 'Our'} armor against it: <b>${a.points.physical}</b> physical · <b>${a.points.magical}</b> magical ${verdict}`;
+      };
+      const trueOf = (us) => { const t = dm.trueFrom.filter((x) => x.us === us && x.from.length); return t.length ? `True from ${t.map((x) => `${esc(x.hero)} <span class="tc-n">(${x.from.map((y) => esc(y.name)).join(', ')})</span>`).join(', ')}` : ''; };
+      const team = (label, m, col, a, us) => `${bar(label, m, col)}<ul class="dm-sub">${[dm.armor ? against(m, a, us) : '', trueOf(us)].filter(Boolean).map((x) => `<li>${x}</li>`).join('')}</ul>`;
+      return `<div class="tc-sec"><div class="tc-h">Damage types <span class="tc-n">hero damage dealt, and the armor it ran into</span></div>
+        ${team('Us', dm.us, 'var(--green)', dm.armor && dm.armor.them, true)}${team('Them', dm.them, 'var(--red)', dm.armor && dm.armor.us, false)}
+        <div class="dm-key">${K.map(([, l, c]) => `<span><i style="background:${c}"></i>${l}</span>`).join('')}<span>length = total</span></div></div>`;
+    })() : '';
     // Team playbook (film.playbook, engine/src/playbook.ts): how our kits combine.
-    const pbBlock = f.playbook && (f.playbook.plays.length || f.playbook.note) ? `<div class="tc-sec"><div class="tc-h">Team playbook <span class="tc-n">how these five kits fit together · a plan, not a replay</span></div>
+    const pbBlock = f.playbook && (f.playbook.plays.length || f.playbook.note) ? `<details class="tc-sec sec-fold" open><summary class="tc-h">Team playbook <span class="tc-n">a plan from the kits</span></summary>
       ${f.playbook.note ? `<p class="tc-warn">${esc(f.playbook.note)}</p>` : ''}
       <div class="pb-grid">${f.playbook.plays.map((pl) => `<div class="pb"><b>${esc(pl.name)}</b> <span class="tc-n">${esc(pl.when)}</span>
         <ol>${pl.steps.map((st) => `<li>${hIcon(st.slug, 20)} <b>${esc(st.hero)}</b> ${esc(st.ability)} <span class="tc-n">${esc(st.what)}</span></li>`).join('')}</ol></div>`).join('')}
-      ${f.playbook.waitOut.length ? `<div class="pb"><b>Bait or wait out first</b> <span class="tc-n">their crowd control</span><ol>${f.playbook.waitOut.map((st) => `<li>${hIcon(st.slug, 20)} <b>${esc(st.hero)}</b> ${esc(st.ability)} <span class="tc-n">${esc(st.what)}</span></li>`).join('')}</ol></div>` : ''}</div></div>` : '';
+      ${f.playbook.waitOut.length ? `<div class="pb"><b>Bait or wait out first</b> <span class="tc-n">their crowd control</span><ol>${f.playbook.waitOut.map((st) => `<li>${hIcon(st.slug, 20)} <b>${esc(st.hero)}</b> ${esc(st.ability)} <span class="tc-n">${esc(st.what)}</span></li>`).join('')}</ol></div>` : ''}</div></details>` : '';
     return card(`${eyebrow('Draft, comp &amp; kits', `${fails ? `${fails} of ${tc.checks.length} fundamentals missed` : 'all fundamentals covered'}`)}
-      ${row(tc.us, 'Us', 'var(--green)')}${row(tc.them, 'Them', 'var(--red)')}${radarBlock}${balance}
-      <ul class="tc-checks">${checks}</ul>${swap}${pbBlock}<div class="tc-grid">${threatBlock}${nemBlock}</div>${ccBlock}
+      ${row(tc.us, 'Us', 'var(--green)')}${row(tc.them, 'Them', 'var(--red)')}<ul class="tc-checks">${checks}</ul>${swap}${radarBlock}${balance}${mixBlock}
+      ${perfBlock}${pbBlock}${ccBlock}
       <div class="tc-foot">Win rates are each comp shape (real tanks × high-dive heroes) across ${tc.field.matches.toLocaleString()} sampled ${esc(tc.field.patch)} ranked games, every rank. They describe the draft, not who played well.</div>`);
   })();
   const stackCard = (() => {
@@ -997,9 +1321,9 @@ function pgReview(f) {
       : '<span style="color:var(--text-1)">a bit under the lane norm</span>';
     const rows = sr.members.map((m) => `<div style="display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;padding:.4rem 0;border-top:1px solid var(--border)">
       ${hIcon(m.heroSlug, 28)}
-      <span style="min-width:9rem"><b>${esc(m.name)}</b><br><span style="color:var(--text-2);font-size:.8rem">${esc(m.heroName)} · ${esc(m.role)}</span></span>
+      <span style="min-width:9rem"><b>${esc(m.name)}</b><br><span style="color:var(--text-2);font-size:.8rem">${esc(m.heroName)} · ${esc(roleName(m.role))}</span></span>
       <span style="font-size:.85rem">${m.kills} / ${m.deaths} / ${m.assists}</span>
-      <span style="font-size:.8rem;color:var(--text-2)">${m.roleWr != null ? `${p1(m.roleWr)}% career in ${esc(m.role)} · ${m.roleGames} games` : ''}</span>
+      <span style="font-size:.8rem;color:var(--text-2)">${m.roleWr != null ? `${p1(m.roleWr)}% career in ${esc(roleName(m.role))} · ${m.roleGames} games` : ''}</span>
       <span style="font-size:.8rem;margin-left:auto">${gameWord(m)}</span>
     </div>`).join('');
     const rec = sr.recommend;
@@ -1007,7 +1331,7 @@ function pgReview(f) {
       <b>${rec.kind === 'swap' ? 'Next time you queue together, try these lanes' : 'Lanes were right: queue the same seats'}</b>
       <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin:.45rem 0">${rec.seats.map((x) => {
         const moved = rec.moves.some((mv) => mv.name === x.name);
-        return `<span style="border:1px solid ${moved ? 'var(--gold)' : 'var(--border)'};border-radius:8px;padding:.2rem .55rem;font-size:.84rem"><b>${first(x.name)}</b> → ${esc(x.role)} <span style="color:var(--text-2)">${p1(x.wr)}% · ${x.games} games</span></span>`;
+        return `<span style="border:1px solid ${moved ? 'var(--gold)' : 'var(--border)'};border-radius:8px;padding:.2rem .55rem;font-size:.84rem"><b>${first(x.name)}</b> → ${esc(roleName(x.role))} <span style="color:var(--text-2)">${p1(x.wr)}% · ${x.games} games</span></span>`;
       }).join('')}</div>
       ${rec.reasons.map((t) => `<div style="color:var(--text-1);font-size:.85rem;margin-top:.2rem">${esc(t)}</div>`).join('')}
     </div>` : f.result === 'loss' && sr.lanesWereBest
@@ -1055,7 +1379,7 @@ function pgReview(f) {
   const moments = keyMoments.length ? card(`${eyebrow('The moments that decided it', 'capped at three · everything else is in “the full story” below')}${keyMoments.map(momentRow).join('')}`) : '';
 
   // ── Scoreboard facts: useful context, not coach calls ──
-  const statline = `<div class="coach-stat-wrap"><table class="coach-stats"><thead><tr><th>Squad · role</th><th>K / D / A</th><th>Hero dmg</th><th>Objective dmg</th><th>Mitigated</th><th>Wards</th></tr></thead><tbody>${us.map((p) => `<tr><td><b>${esc(pgName(p))}</b> <span class="role">· ${esc(p.heroName)} / ${esc(p.role)}</span></td><td>${p.kills} / ${p.deaths} / ${p.assists}</td><td>${Number(p.damageToHeroes || 0).toLocaleString()}</td><td>${Number(p.damageToObjectives || 0).toLocaleString()}</td><td>${Number(p.mitigated || 0).toLocaleString()}</td><td>${p.wardsPlaced || 0}</td></tr>`).join('')}</tbody></table><div style="font-size:.6875rem;color:var(--text-2);margin-top:.25rem">Match totals only; they do not place a player in a specific fight.</div></div>`;
+  const statline = `<div class="coach-stat-wrap"><table class="coach-stats"><thead><tr><th>Squad · role</th><th>K / D / A</th><th>Hero dmg</th><th>Objective dmg</th><th>Mitigated</th><th>Wards</th></tr></thead><tbody>${us.map((p) => `<tr><td><b>${esc(pgName(p))}</b> <span class="role">· ${esc(p.heroName)} / ${esc(roleName(p.role))}</span></td><td>${p.kills} / ${p.deaths} / ${p.assists}</td><td>${Number(p.damageToHeroes || 0).toLocaleString()}</td><td>${Number(p.damageToObjectives || 0).toLocaleString()}</td><td>${Number(p.mitigated || 0).toLocaleString()}</td><td>${p.wardsPlaced || 0}</td></tr>`).join('')}</tbody></table><div style="font-size:.6875rem;color:var(--text-2);margin-top:.25rem">Match totals only; they do not place a player in a specific fight.</div></div>`;
 
   // ── The game in one strip: fights on the line, objectives above, a labeled
   // minute axis, a real key, and a tap-to-open breakdown panel IN PLACE (the
@@ -1161,7 +1485,7 @@ function pgReview(f) {
       <div class="who">
         ${hIcon(p.heroSlug, 34)}
         <span><b>${pgName(p)}</b>
-        <span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br>
+        <span class="h">${esc(p.heroName)} · ${esc(roleName(p.role))}</span><br>
         <span class="kda">${p.kills} / ${p.deaths} / ${p.assists}</span></span>
       </div>
       <div>
@@ -1170,7 +1494,7 @@ function pgReview(f) {
         <div class="lrow"><span class="ltag">build</span>${bits.join(' · ')}</div>
         ${br?.build ? `<details class="whyd"><summary>why · what this build gained vs gave up</summary><div>${esc(buildBullets(br.build).join(' '))}</div></details>` : ''}
         ${ranLine(p.loadout)}
-        <div class="lrow" data-et-slug="${esc(p.heroSlug)}" data-et-role="${esc(p.role)}" data-et-opp="${lane ? esc(lane.theirSlug) : ''}" data-et-ran="${esc(p.loadout?.eternal || '')}"><span class="ltag">field pick</span><span style="opacity:.6">loading the field's pick…</span></div>
+        <div class="lrow" data-et-slug="${esc(p.heroSlug)}" data-et-role="${esc(roleName(p.role))}" data-et-opp="${lane ? esc(lane.theirSlug) : ''}" data-et-ran="${esc(p.loadout?.eternal || '')}"><span class="ltag">field pick</span><span style="opacity:.6">loading the field's pick…</span></div>
         ${br?.eternal ? `<details class="whyd"><summary>why · why this loadout fits the matchup</summary><div>${esc(buildBullets(br.eternal).join(' '))}</div></details>` : ''}
         ${(() => { const m = co && co.microReads ? co.microReads[p.pid] : null; if (!m || !(m.keep || m.change || m.check)) return ''; return `<div class="kcc">
           ${m.lastCheck && m.lastCheck.text ? `<div class="lrow"><span class="ltag" style="color:${m.lastCheck.result === 'held' ? 'var(--green)' : m.lastCheck.result === 'missed' ? 'var(--red)' : 'var(--text-2)'}">last check · ${esc(m.lastCheck.result || '')}</span>${esc(m.lastCheck.text)}${m.lastCheck.receipt ? ` <span style="color:var(--text-2)">(${esc(m.lastCheck.receipt)})</span>` : ''}</div>` : ''}
@@ -1203,7 +1527,7 @@ function pgReview(f) {
         const mu = l.predggMatchup;
         return `<div style="border:1px solid var(--border);border-radius:8px;padding:.5rem .6rem;background:var(--bg-2)">
           <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap">
-            <span style="font-size:.6875rem;color:var(--text-2);min-width:3.6rem">${esc(l.role)}</span>
+            <span style="font-size:.6875rem;color:var(--text-2);min-width:3.6rem">${esc(roleName(l.role))}</span>
             ${hlink(l.ourSlug, `<img src="${himg(l.ourSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'">`)} <b>${o ? pgName(o) : ''}</b>
             <span style="color:var(--text-2)">vs</span>
             ${hlink(l.theirSlug, `<img src="${himg(l.theirSlug)}" style="width:24px;height:24px;border-radius:6px;vertical-align:middle" onerror="this.style.display='none'">`)} ${esc(l.theirHero)}
@@ -1247,12 +1571,12 @@ function pgReview(f) {
   </details>`;
 
   if (COACH_LAYOUT === 'concise' && co) {
-    const verdict = card(`
+    const verdict = card(`${viewToggle}
       <div style="display:flex;align-items:center;gap:.7rem;flex-wrap:wrap"><b style="color:${resColor}">${f.result.toUpperCase()}</b><span style="color:var(--text-2)">${new Date(f.startTime).toLocaleDateString()} · ${f.durationMin} min</span></div>
-      <h2 style="font-size:1.2rem;line-height:1.4;margin:.65rem 0">${esc(co.headline || 'Match review')}</h2>
+      <h2 style="font-size:1.2rem;line-height:1.4;margin:.65rem 0">${escN(co.headline || 'Match review')}</h2>
       ${co.flags?.length ? flagList(co.flags, f) : co.team ? `<p style="color:var(--text-1);line-height:1.6;margin:0">${esc(co.team)}</p>` : ''}`);
     const reflection = f.result === 'loss' && co.lossReflection ? `${eyebrow('What could have changed this game?', '')}<p style="line-height:1.6">${esc(co.lossReflection)}</p>` : '';
-    const next = focus?.action || reflection ? card(`${reflection}${focus?.action ? `${eyebrow('Next game', '')}<p style="font-size:1rem;line-height:1.5;margin:0">${esc(focus.action)}</p>` : ''}`) : '';
+    const next = focus?.action || reflection ? card(`${reflection}${focus?.action ? `${eyebrow('Next game', '')}<p style="font-size:1rem;line-height:1.5;margin:0">${escN(focus.action)}</p>` : ''}`) : '';
     // Build notes per player (film.buildNotes, engine/src/build-notes.ts), folded under each row.
     const bnOf = (pid) => (f.buildNotes || []).find((b) => b.pid === pid);
     const bnWhy = new Map(); (f.buildNotes || []).forEach((b) => b.needs.forEach((n) => bnWhy.set(n.why, (bnWhy.get(n.why) || 0) + 1)));
@@ -1264,24 +1588,28 @@ function pgReview(f) {
       const rows = [];
       if (b.lane) rows.push(`<span class="bn-k">Lane</span> vs ${esc(b.lane.opp)} <b style="color:${pctCol(b.lane.wr)}">${b.lane.wr}%</b> <span class="bn-n">${b.lane.n} games</span>`);
       if (b.built && b.built.length) rows.push(`<span class="bn-k">Built</span> ${b.built.map((i) => itag(i.slug)).join('')}`);
-      if (b.core) rows.push(`<span class="bn-k">Best core</span> ${b.core.items.map((i) => itag(i.slug, i.has)).join('')} <span class="bn-n">${b.core.items.map((i) => esc(i.name)).join(' > ')} · ${b.core.wr}% in ${b.core.n} games${b.core.items.some((i) => i.has) ? ` · ${b.core.items.filter((i) => i.has).length} of 3 built` : ''}</span>`);
-      for (const a of b.adapt) rows.push(`<span class="bn-k">Into ${esc(a.vs)}</span> ${itag(a.slug, a.has)} <b>${esc(a.name)}</b> <span class="bn-n">${a.into}% buy it (usually ${a.usual}%)${a.wr != null ? `, wins ${a.wr}%` : ''}${a.has ? ' · built' : ''}</span>`);
+      // Core rows lead with the verdict (how much of it was built), then the core, then the numbers.
+      const builtTag = (items) => { const h = items.filter((i) => i.has).length; return `<b class="bn-v ${h === 3 ? 'ok' : h ? 'part' : 'no'}">${h === 3 ? '✓ built' : `${h} of 3 built`}</b>`; };
+      const coreRow = (label, c, note) => `<span class="bn-k">${label}</span> ${builtTag(c.items)} ${c.items.map((i) => itag(i.slug, i.has)).join('')} <span class="bn-core">${c.items.map((i) => esc(i.name)).join(' > ')}</span> <span class="bn-n">${c.wr}% in ${c.n.toLocaleString()} games${note ? ` · ${note}` : ''}</span>`;
+      if (b.coreVs) rows.push(coreRow(`Core vs ${esc(b.coreVs.vs)}`, b.coreVs, b.coreVs.basis === 'most played' ? 'most played' : 'best'));
+      if (b.core && !(b.coreVs && b.coreVs.items.map((i) => i.slug).sort().join() === b.core.items.map((i) => i.slug).sort().join())) rows.push(coreRow(b.coreVs ? 'Overall core' : 'Best core', b.core, `<span class="bn-tag">all matchups</span>`));
+      for (const a of b.adapt) rows.push(`<span class="bn-k">Into ${esc(a.vs)}</span> ${a.has ? '<b class="bn-v ok">✓ built</b> ' : ''}${itag(a.slug, a.has)} <b>${esc(a.name)}</b> <span class="bn-n">${a.into}% buy it (usually ${a.usual}%)${a.wr != null ? `, wins ${a.wr}%` : ''}</span>`);
       for (const n of b.needs) rows.push(`<span class="bn-k">Needs</span> ${n.has ? '<span class="tc-ok">✓</span>' : '<span class="tc-bad">✗</span>'} ${esc(n.answer)}${bnShared.includes(n.why) ? '' : ` <span class="bn-n">${esc(n.why)}</span>`}`);
       return rows.length ? `<div class="bn">${rows.map((r) => `<div>${r}</div>`).join('')}</div>` : '';
     };
     const players = card(`${eyebrow('Your team', '')}${bnShared.length ? `<p class="bn-shared">${bnShared.map((w) => esc(w.charAt(0).toUpperCase() + w.slice(1)) + '.').join(' ')}</p>` : ''}${us.map((p) => `<div class="plobby coach-player">
-      <div class="who">${hIcon(p.heroSlug, 34)}<span><span class="pname"><b>${pgName(p)}</b>${rankBadge(p)}</span><span class="h">${esc(p.heroName)} · ${esc(p.role)}</span><br><span style="white-space:nowrap"><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span>${vpTag(p)}</span></span>${CoachLoadouts.icons(p.loadout,p)}</div>
+      <div class="who">${hIcon(p.heroSlug, 34)}<span><span class="pname"><b>${pgName(p)}</b>${rankBadge(p)}</span><span class="h">${esc(p.heroName)} · ${esc(roleName(p.role))}</span><br><span style="white-space:nowrap"><span class="kda" aria-label="Kills, deaths and assists">${p.kills} / ${p.deaths} / ${p.assists}</span>${vpTag(p)}</span></span>${CoachLoadouts.icons(p.loadout,p)}</div>
       <div class="line">${(() => {
-        if (co.playerBullets?.[p.pid]?.length) return `<ul class="coach-bullets">${co.playerBullets[p.pid].map(text => `<li>${esc(text)}</li>`).join('')}</ul>`;
+        if (co.playerBullets?.[p.pid]?.length) return `<ul class="coach-bullets">${co.playerBullets[p.pid].map(text => `<li>${factAct(text)}</li>`).join('')}</ul>${co.buildCall?.[p.pid] ? `<p class="build-call"><b>Build</b> ${escN(co.buildCall[p.pid])}</p>` : ''}`;
         const actions = co.microReads?.[p.pid];
         if (COACH_PLAYER_FORMAT === 'actions' && (actions?.keep || actions?.change)) return `${actions.keep ? `<p style="margin:0 0 .5rem"><b style="color:var(--green)">Keep:</b> ${esc(actions.keep)}</p>` : ''}${actions.change ? `<p style="margin:0"><b style="color:var(--gold)">Change:</b> ${esc(actions.change)}</p>` : ''}`;
         return co.perPlayer?.[p.pid] ? esc(co.perPlayer[p.pid]) : 'Individual feedback has not been written for this player.';
       })()}${buildBlock(p)}</div>
     </div>`).join('')}`);
-    const loadouts = `<p class="build-help">Choose a player to see the recommendation, matchup and loadout breakdown.</p>${us.map((p) => {
+    const loadouts = isLean ? '' : `<p class="build-help">Choose a player to see the recommendation, matchup and loadout breakdown.</p>${us.map((p) => {
       const br = co.buildReads?.[p.pid];
       const sections = [['improvement','Build decision','recommendation'],['matchup','Lane & team threats',''],['build','Item interactions',''],['eternal','Eternal & minors',''],['augment','Hero augment',''],['crest','Crest','']];
-      return `<details class="build-player"><summary>${hIcon(p.heroSlug,36).replace(/<\/?a\b[^>]*>/g,'')}<span class="build-identity"><b>${pgName(p)}</b><span>${esc(p.heroName)} · ${esc(p.role)}</span></span></summary><div class="build-analysis">
+      return `<details class="build-player"><summary>${hIcon(p.heroSlug,36).replace(/<\/?a\b[^>]*>/g,'')}<span class="build-identity"><b>${pgName(p)}</b><span>${esc(p.heroName)} · ${esc(roleName(p.role))}</span></span></summary><div class="build-analysis">
         ${sections.map(([key,label,style]) => buildBullets(br?.[key]).length ? `<section class="build-section ${style}"><h3>${label}</h3><ul>${buildBullets(br[key]).map(b => `<li>${esc(b)}</li>`).join('')}</ul></section>` : '').join('')}
         ${!br ? '<p class="build-help">Matchup analysis has not been written for this player.</p>' : ''}
       </div></details>`;
@@ -1302,7 +1630,7 @@ function pgReview(f) {
 function flagList(flags, f) {
   const byId = new Map(((f.interrogation && f.interrogation.gameFlags) || []).map((g) => [g.id, g]));
   const heading = f.result === 'loss' ? 'What lost it' : 'What won it';
-  const items = flags.map((fl) => { const g = byId.get(fl.ref); const good = g ? g.tone === 'good' : f.result !== 'loss'; return `<li class="flag ${good ? 'good' : 'bad'}">${esc(fl.text)}</li>`; }).join('');
+  const items = flags.map((fl) => { const g = byId.get(fl.ref); const good = g ? g.tone === 'good' : f.result !== 'loss'; return `<li class="flag ${good ? 'good' : 'bad'}">${escN(fl.text)}</li>`; }).join('');
   const ev = flags.map((fl) => byId.get(fl.ref)).filter(Boolean);
   return `<h3 class="flags-h">${heading}</h3><ul class="game-flags">${items}</ul>${ev.length ? `<details class="flag-evidence"><summary>Evidence · times, who died where</summary>${ev.map((g) => `<p><b>${esc(g.summary.charAt(0).toUpperCase() + g.summary.slice(1))}</b></p><ul>${g.evidence.map((e) => `<li>${esc(e)}</li>`).join('')}</ul>`).join('')}</details>` : ''}`;
 }
@@ -1346,6 +1674,14 @@ async function fillEternals() {
 }
 
 
+// Keep the link-preview tags in step with the title (iMessage reads them after scripts run).
+function setLabel(title, desc) {
+  document.title = title;
+  const set = (sel, v) => { const el = document.querySelector(sel); if (el && v) el.setAttribute('content', v); };
+  set('meta[property="og:title"]', title);
+  set('meta[name="description"]', desc); set('meta[property="og:description"]', desc);
+  set('meta[property="og:url"]', location.href);
+}
 (async () => {
   let c;
   const who = new URLSearchParams(location.search).get('player');
@@ -1356,7 +1692,7 @@ async function fillEternals() {
     let sq = null;
     try { sq = await (await fetch('../../data/artifacts/squad.json')).json(); } catch {}
     if (sq) {
-      document.title = 'Coach reports · pick a member';
+      setLabel('Post-game reviews · Pred Scout');
       // Post-game reviews of the squad's recent ranked games (committed, zero-API).
       // Only the small index loads up front; each match's full facts are fetched
       // lazily on click (and cached), so the list scales to any number of games.
@@ -1366,6 +1702,7 @@ async function fillEternals() {
         pgList = (PG.matches || []).filter((m) => m.matchId);
         try { const persona = await (await fetch('../../data/coaching/personas.json')).json(); const selected = persona.presets.find((p) => p.id === persona.active); COACH_LAYOUT = selected?.layout || 'classic'; COACH_PLAYER_FORMAT = selected?.playerFormat || 'paragraph'; } catch {}
         try { MAP = await (await fetch('../../data/game-data/map-landmarks.json')).json(); } catch {}
+        try { const lc = await (await fetch('../../data/coaching/lean.json')).json(); let saved = null; try { saved = localStorage.getItem('coachView'); } catch {} if (!saved && (lc.defaultView === 'lean' || lc.defaultView === 'standard')) COACH_VIEW = lc.defaultView; } catch {}
         try { STACKS = (await (await fetch('../../data/artifacts/stack-reviews.json')).json()).games || {}; } catch {}
       } catch {}
 
@@ -1388,6 +1725,11 @@ async function fillEternals() {
         const stacks = [...new Set(pgList.map((m) => m.stackSize).filter(Boolean))].sort((a, b) => b - a);
         const fmtDate = (iso) => new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
         let filter = 'all', cur = 0;
+        // ?game=<matchId> opens that game; picking a game puts its link in the
+        // address bar so a copied/shared link opens the same review.
+        const wantGame = new URLSearchParams(location.search).get('game');
+        const fmtMembers = (m) => (m.members || []).join(', ');
+        const gameTitle = (m) => `${m.result === 'win' ? 'Win' : 'Loss'} · ${fmtDate(m.startTime)}${m.members?.length ? ` · ${fmtMembers(m)}` : ''} · Post-game review · Pred Scout`;
         const visible = () => filter === 'all' ? pgList : pgList.filter((m) => String(m.stackSize) === filter);
         // W-L summary reflects the active filter
         const updateSub = () => {
@@ -1402,11 +1744,16 @@ async function fillEternals() {
                 .map(([v, label]) => `<button class="pgf${filter === v ? ' on' : ''}" data-f="${v}">${label}</button>`).join('')
             : '';
         };
-        const draw = async (i) => {
+        // `chosen`: a click or a ?game= link. Only then does the page take that
+        // game's name and address; the plain page keeps "Post-game reviews".
+        const draw = async (i, chosen = true) => {
           cur = i;
           [...pick.children].forEach((b, j) => b.classList.toggle('on', j === i));
           const m = visible()[i];
           if (!m) { view.innerHTML = ''; return; }
+          try { const u = new URL(location.href); if (chosen) u.searchParams.set('game', m.matchId); else u.searchParams.delete('game'); history.replaceState(null, '', u); } catch {}
+          if (!chosen) setLabel('Post-game reviews · Pred Scout', "Post-game reviews of our squad's ranked Predecessor games: what went right, what to fix, and each player's build and lane.");
+          else setLabel(gameTitle(m), `${m.result === 'win' ? 'Win' : 'Loss'} on ${fmtDate(m.startTime)}, ${m.durationMin} min${m.stackSize ? `, ${m.stackSize}-stack` : ''}: the post-game review of this ranked game.`);
           view.innerHTML = '<div style="color:var(--text-2);padding:1rem .2rem">loading…</div>';
           try { view.innerHTML = pgReview(await loadGame(m.matchId)); fillEternals(); }
           catch { view.innerHTML = '<div style="color:var(--red);padding:1rem .2rem">could not load this match</div>'; }
@@ -1431,12 +1778,18 @@ async function fillEternals() {
           filterEl.onclick = (e) => {
             const b = e.target.closest('.pgf'); if (!b) return;
             filter = b.dataset.f; cur = 0;
-            renderFilter(); renderChips(); draw(0); updateSub();
+            renderFilter(); renderChips(); draw(0, false); updateSub();
           };
         }
+        if (wantGame && !visible().some((m) => m.matchId === wantGame)) filter = 'all';
+        const found = wantGame ? visible().findIndex((m) => m.matchId === wantGame) : -1;
+        const start = Math.max(0, found);
+        cur = start;
+        if (stacks.length > 1) renderFilter();
         updateSub();
         renderChips();
-        draw(0);
+        draw(start, found >= 0);
+        if (start) pick.children[start]?.scrollIntoView({ block: 'nearest', inline: 'center' });
       }
       return;
     }
@@ -1445,7 +1798,7 @@ async function fillEternals() {
   const src = who ? `../../data/artifacts/players/${who}.json` : '../../data/artifacts/coach.json';
   try { c = await (await fetch(src)).json(); }
   catch { document.getElementById('page').textContent = 'no coach report generated yet'; return; }
-  document.title = `${c.player.name} · coach report`;
+  setLabel(`${c.player.name} · Coach report · Pred Scout`, `${c.player.name}'s coach report: what to keep doing, what to work on, and the road to the next rank.`);
   // A personal report belongs to the Reports tab, not the game reviews.
   document.querySelectorAll('.top .navlink').forEach((a) => a.classList.toggle('active', a.getAttribute('href') === 'reports.html'));
   const p = c.player;
@@ -1573,7 +1926,7 @@ async function fillEternals() {
       <h2>Role focus · winrate per role, thin samples adjusted</h2>
       ${c.roles.map((r) => `
         <div class="rolerow ${best && r.role === best.role ? 'best' : ''} ${worst && r.role === worst.role ? 'worst' : ''}">
-          <span style="text-transform:capitalize">${esc(r.role)}</span>
+          <span style="text-transform:capitalize">${esc(roleName(r.role))}</span>
           <span class="bar"><i style="width:${(r.shrunkWr / maxRoleWr) * 100}%"></i></span>
           <span class="nums">${pct(r.shrunkWr)}% · ${r.games} games</span>
         </div>`).join('')}
@@ -1592,7 +1945,7 @@ async function fillEternals() {
             </div>
             <div class="stats">
               ${esc(p.name)}: <b>${pct(h.shrunkWr)}%</b> over ${h.games} games · field: ${pct(h.fieldWr)}%<br>
-              KDA ${h.kda.toFixed(1)} · ${h.deathsPerGame.toFixed(1)} deaths/game${h.myRoles && h.myRoles.length ? `<br>where they play it: ${h.myRoles.map((r) => `${esc(r.role)} ${pct(r.rawWr, 0)}% · ${r.games} games`).join(' / ')}` : ''}
+              KDA ${h.kda.toFixed(1)} · ${h.deathsPerGame.toFixed(1)} deaths/game${h.myRoles && h.myRoles.length ? `<br>where they play it: ${h.myRoles.map((r) => `${esc(roleName(r.role))} ${pct(r.rawWr, 0)}% · ${r.games} games`).join(' / ')}` : ''}
             </div>
             <div class="eng">${h.engineCoachLine ? `${esc(h.engineCoachLine)}<br>` : (h.engineEternal ? `engine: take <b>${esc(h.engineEternal)}</b> · ` : '')}<a class="build" href="./?hero=${esc(h.slug)}">eternal + build page →</a> <span style="color:var(--text-2)">(augment combos pending data)</span></div>
           </div>`).join('')}
@@ -1610,7 +1963,7 @@ async function fillEternals() {
       <div style="font-size:.78rem;color:var(--text-1);margin-bottom:.7rem">Comfort picks earn their spot, but the meta moves · these are the strongest current-patch heroes in the roles ${esc(p.name)} actually queues. “New pick” means under 30 of their own games; the field winrate still makes them worth a look when the comfort pick gets countered or the team needs a different shape.</div>
       ${myRoles.map((r) => `
         <div style="margin-top:.6rem">
-          <div style="font-size:.72rem;font-weight:800;text-transform:capitalize;color:var(--accent-ink);letter-spacing:.06em">${esc(r.role)} · own record ${pct(r.shrunkWr)}% over ${r.games} games</div>
+          <div style="font-size:.72rem;font-weight:800;text-transform:capitalize;color:var(--accent-ink);letter-spacing:.06em">${esc(roleName(r.role))} · own record ${pct(r.shrunkWr)}% over ${r.games} games</div>
           ${(metaInfo.roles[r.role] || []).slice(0, 4).map((h) => {
             const mine = poolBySlug.get(h.slug);
             const note = mine && mine.games >= 30

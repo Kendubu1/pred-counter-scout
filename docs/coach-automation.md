@@ -77,7 +77,8 @@ not in the env, stop immediately and report — no partial work.
    (the "Draft & team comp" card: tanks / divers / fundamentals / field shape win rate /
    draft fix, from data/aggregates/team-comp-report.json; rerun with `-- --all` after
    `npm run comps`; it also writes `kitRead`: the CC balance, the enemy who ran the game and
-   lane nemeses with counterplay, from data/game-data/kit-index.json + kit-profiles.json),
+   lane nemeses with counterplay, from data/game-data/kit-index.json + kit-profiles.json; and `threatBuilds`, how the
+   threat's and nemesis killers' builds worked: haste on their ultimate, what takedowns fed),
    `npm run postgame:items`, `npm run postgame:fights`, `npm run postgame:macro`,
    `npm run postgame:loadout`, `npm run postgame:rotations`, `npm run postgame:ranks`, then `npm run postgame:interrogate` LAST (it reads the blocks above and writes `interrogation.gameFlags`, the flags the review cites) (all idempotent — they only touch films missing
    their block). `postgame:ranks` (added 2026-11-03, live pred.gg, batched) writes each
@@ -86,7 +87,10 @@ not in the env, stop immediately and report — no partial work.
    enemy card. `postgame:loadout` (added 2026-10-17) looks each film up in
    pred.gg's public match stream by its own match id and writes what every
    player RAN — augment, Eternal, both minors, crest — onto
-   `players[i].loadout` (GraphQL cannot return perks at our tier). Coach the
+   `players[i].loadout` (GraphQL cannot return perks at our tier). Since 2026-11-08 the same lookup saves
+   `players[i].stream` and `film.streamMatch` (src/ingest/stream-detail.ts): exact levels and level-ups,
+   item purchase times, hero damage dealt and taken by type, healing by source, minions (incl. enemy
+   jungle), sprees, ward positions, and every camp / objective kill; the build read and coach sources use them. Coach the
    Eternal the player actually ran, not the engine's pick: the review page
    shows both ("ran" and "engine pick"), and the critic's SOURCE carries the
    loadouts for all ten players.
@@ -108,6 +112,17 @@ not in the env, stop immediately and report — no partial work.
    This requires a clean critique of the exact saved match facts and copy, and
    updates the reviewed marker in the index. Any later edit requires critique
    again. Do not publish pre-critique commits or advance the watch marker alone.
+   **Then the lean review (trial):** if `data/coaching/lean.json` has `"auto": true`, run the
+   lean pipeline for the same `COACH_GAMES` per `docs/coach-automation-lean.md` (author, ingest,
+   at most 3 critic rounds). It writes only `film.coachLean`; never let it delay or change the
+   standard review above.
+   **Loadout coach copy (after postgame:comp):** `npm run loadout:copy -- prepare-pieces` (only hero /
+   loadout pieces not yet explained), pred-scout-coach answers `engine/copy-tasks/loadout-pieces.responses.json`,
+   `npm run loadout:copy -- ingest-pieces`, then an independent critic (`critique-prepare` -> responses
+   -> `critique`). Then `npm run loadout:copy -- prepare-games <today's date>` for the new games' high
+   performers, author, `ingest-games`, and an independent critic pass over those bullets. Rerun
+   `npm run postgame:comp` so the explanations attach. Never state an effect the game text does not
+   (no "homing" / "untargetable"); anti-heal is not healing.
 5. Refresh the reports: `npm run coach -- <lead-uuid>` and
    `npm run squad -- <lead-uuid>` (lead = `data/artifacts/squad.json` `.lead`).
    `squad` also rebuilds `data/artifacts/squad-bans.json` (the squad ban list on
@@ -116,7 +131,7 @@ not in the env, stop immediately and report — no partial work.
    sat on 1.17.2) and `npm run review:killers` (zero-API): the "Heroes that keep killing you" card on each
    member's coach page (data/artifacts/repeat-killers.json; rules in src/repeat-killers.ts).
 6. `npm test` — commit only on green (autonomy rule 1).
-7. Commit to `main` and push. **Data only**: `data/postgame/*`,
+7. Commit to `main` and push. **Data only**: `data/postgame/*`, `data/aggregates/coach-lean-history.json`,
    `data/artifacts/coach.json`, `data/artifacts/squad*.json`,
    `data/aggregates/coach-critique*.json`. The automation never edits engine or
    UI code; if a step needs a code fix, stop and report instead.

@@ -251,6 +251,34 @@
     });
   }
 
+  // One disclosure pattern for every fold on every page (2026-11-09: people could not tell what
+  // opens). A chevron on the left that turns down when open; the larger rows (block folds) also get
+  // a Show / Hide label on the right; hover background and focus ring. Injected here, at script
+  // start, because every page loads nav.js. The :not(#allHeroes) also lifts these rules above each
+  // page's older ▸/▾ rules. Opt out with data-fold="own" (Pick & Build's "Browse all heroes" header
+  // draws its own chevron and uses ::before as a divider).
+  (function folds() {
+    if (document.getElementById('fold-style')) return;
+    const D = 'details:not(#allHeroes):not([data-fold="own"])';
+    const BIG = ':is(.sec-fold,.pf-row,.tb-fold,.deepdive,.sim-collapse,.evidence-section,.build-player,.more,.scope,.hero-augment-catalog,.sim-only)';
+    const css = `
+${D}>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:.5rem;border-radius:8px;-webkit-tap-highlight-color:transparent}
+${D}>summary::-webkit-details-marker{display:none}
+${D}>summary::marker{content:""}
+${D}>summary::before{content:"";flex:none;width:.42rem;height:.42rem;margin:0 .2rem 0 .1rem;border-right:2px solid var(--text-1);border-bottom:2px solid var(--text-1);transform:rotate(-45deg);transition:transform .15s;color:inherit}
+${D}[open]>summary::before{transform:rotate(45deg);margin-top:-.2rem}
+${D}${BIG}>summary::after{content:"Show";margin-left:auto;flex:none;font-size:.68rem;font-weight:700;letter-spacing:.02em;color:var(--text-1);border:1px solid var(--border);border-radius:99px;padding:.1rem .55rem;background:var(--bg-2)}
+${D}${BIG}[open]>summary::after{content:"Hide";color:var(--text-2)}
+${D}>summary:hover{background:var(--bg-2)}
+${D}>summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+${D}>summary .chev{display:none}
+`;
+    const st = document.createElement('style');
+    st.id = 'fold-style';
+    st.textContent = css;
+    (document.head || document.documentElement).appendChild(st);
+  })();
+
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
   else build();
 })();
