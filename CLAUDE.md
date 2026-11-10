@@ -150,6 +150,14 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   engine/copy-tasks/itempicks.responses.json, an INDEPENDENT critic writes itempicks.critique.json,
   then the plain run number-checks every line against the item's own text; rerun after a catalog
   change; the page falls back to the rule-based lane line for an item with no line),
+  `npm run buildpicks` (zero-API: "Picks on this build" under each hero-page build,
+  data/artifacts/build-picks/<hero>.json, from the patch's ranked lineups: the augment / Eternal /
+  crest run by players who opened with that three-item set (60+ players), ranked by the edge rule
+  with the build treated like a rank band (each option shrunk toward its own lane-wide rate plus the
+  build gap), "changes with this build" only when the lead differs from the lane's on a clear edge,
+  and the fourth / fifth / sixth items as counts; rules in src/build-picks.ts; loadout names decoded
+  with data/aggregates/perk-catalog.json (`npm run perkcatalog`, one pred.gg call, rerun when a patch
+  adds a hero or perk); rerun daily after perks),
   `npm run adjustments` (zero-API: "Adjust for your matchup" on the hero page,
   data/artifacts/adjustments/<hero>.json, counted from the patch's ranked lineups: what a
   hero-role builds more or less into a lane opponent, an enemy hero or an enemy team shape,

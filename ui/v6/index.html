@@ -390,6 +390,11 @@
   .adj-num b { color:var(--text-0); }
   .adj-num .up { color:var(--green); font-weight:700; } .adj-num .down { color:var(--red); font-weight:700; }
   .adj-none { font-size:.76rem; color:var(--text-2); padding:.3rem 0; }
+  .bp { margin-top:.6rem; padding-top:.45rem; border-top:1px dashed var(--border); }
+  .bp-row { display:grid; grid-template-columns:4.2rem 1fr; gap:.5rem; font-size:.8rem; padding:.14rem 0; align-items:baseline; }
+  .bp-k { font-size:.6875rem; font-weight:700; color:var(--text-2); }
+  .bp-v { min-width:0; color:var(--text-0); }
+  .bp-l { font-size:.6875rem; font-weight:700; color:var(--gold); margin:0 .15rem; white-space:nowrap; }
   .adj-rec { font-size:.8rem; color:var(--text-0); margin:.5rem 0 .1rem; }
   .adj-rec .up { color:var(--green); font-weight:700; } .adj-rec .down { color:var(--red); font-weight:700; }
   .adj-tip { font-size:.78rem; color:var(--text-1); line-height:1.45; padding:.2rem 0; }
@@ -1831,6 +1836,58 @@ async function mountAdjust(a) {
   draw();
 }
 
+// The 1-2-3 of a build, one short line per item: its written "when to pick it" line, else the
+// rule-based lane line. Same source as every other item row on the site.
+function buildItemRows(items, role) {
+  if (!ITEMTAGS || !ITEMTAGS.items) return '';
+  const rows = items.map((it, n) => {
+    const t = ITEMTAGS.items[it.slug];
+    const pick = ((ITEMPICKS && ITEMPICKS.items && ITEMPICKS.items[it.slug]) || '').replace(/^Pick it (when|if) /, 'when ');
+    const lang = t && (t.answers[0] ? ITEMTAGS.roleLanguage[t.answers[0]] : (ITEMTAGS.purposeLanguage || {})[t.purpose]);
+    const line = pick || (lang && lang[role] ? lang[role].charAt(0).toLowerCase() + lang[role].slice(1) : '');
+    return `<div><span class="ord">${n + 1}</span><b>${esc((t && t.name) || it.name)}</b>${line ? ` — ${esc(line)}` : ''}</div>`;
+  }).join('');
+  return `<div class="mb-items-why">${rows}</div>`;
+}
+
+// ── PICKS ON THIS BUILD ── data/artifacts/build-picks/<hero>.json (npm run buildpicks): the augment,
+// Eternal and crest run by players who opened with this tab's three items, ranked by the same edge
+// rule as the lane picks (each option shrunk toward its own lane-wide rate), and what they bought
+// fourth, fifth and sixth. A pick is marked as changing only when it differs from the lane's lead on
+// a clear edge. Phone first: one line per pick, the lists behind More.
+const BPICKS = {};
+async function mountBuildPicks(a) {
+  const hosts = [...document.querySelectorAll('.bpicks[data-core]')];
+  if (!hosts.length || !BPIDX || !(BPIDX.heroes[a.slug] || []).includes(a.role)) return;
+  if (!BPICKS[a.slug]) BPICKS[a.slug] = await getJson(`../../data/artifacts/build-picks/${a.slug}.json`).catch(() => null);
+  const rd = BPICKS[a.slug] && BPICKS[a.slug].roles && BPICKS[a.slug].roles[a.role];
+  if (!rd) return;
+  const itemName = (slug) => ((ITEMTAGS && ITEMTAGS.items[slug]) || {}).name || slug;
+  const ORD = { 4: '4th', 5: '5th', 6: '6th' };
+  const KINDS = [['augments', 'Augment'], ['eternals', 'Eternal'], ['crests', 'Crest']];
+  const LTIP = { Best: 'clearly wins more on this build', Leans: 'wins a little more on this build', 'Toss-up': 'no real difference on this build: the first has the best odds so far', 'Most played': 'the only one with enough games here, so no edge is claimed', 'By games': 'too few games on this build to rank' };
+  for (const host of hosts) {
+    if (!host.isConnected) continue;
+    const b = rd.builds.find((x) => x.core.join('|') === host.dataset.core);
+    if (!b) { host.innerHTML = ''; continue; }
+    const line = ([kind, label]) => {
+      const p = b[kind], lead = p.rows[0];
+      if (!lead) return '';
+      const nameHtml = kind === 'augments' && lead.id ? `<b data-apop="${esc(lead.id)}" data-apop-role="${esc(a.role)}" style="cursor:pointer">${esc(lead.name)}</b>` : `<b>${esc(lead.name)}</b>`;
+      return `<div class="bp-row"><span class="bp-k">${label}</span><span class="bp-v">${nameHtml} <span class="bp-l" title="${LTIP[p.label] || ''}">${p.label === 'By games' ? 'few games' : p.label}</span> <span class="adj-num">${lead.n.toLocaleString()} of ${b.n.toLocaleString()}</span>${p.changes ? ` <span class="itag ans" title="The lane as a whole leads with ${esc(p.laneLead)}">changes with this build</span>` : ''}</span></div>`;
+    };
+    const then = b.next.filter((n) => n.top.length).map((n) => `${ORD[n.slot]} <b>${esc(itemName(n.top[0].item))}</b> ${n.top[0].pct}%`).join(' · ');
+    const full = KINDS.map(([kind, label]) => { const p = b[kind]; if (!p.rows.length) return '';
+      return `<div class="adj-num" style="margin-top:.3rem"><b>${label}</b> · ${p.label === 'By games' ? 'few games' : p.label}${p.laneLead ? ` · the lane leads with ${esc(p.laneLead)}` : ''}</div>${p.rows.map((x) => `<div class="adj-num">${esc(x.name)} · ${x.n.toLocaleString()} games · ${x.shrunk}%${x.few ? ' · few games' : ''}</div>`).join('')}`; }).join('');
+    const nextFull = b.next.map((n) => `<div class="adj-num">${ORD[n.slot]} item (${n.n.toLocaleString()} players): ${n.top.map((x) => `${esc(itemName(x.item))} ${x.pct}%`).join(', ')}</div>`).join('');
+    host.innerHTML = `<div class="bp"><div class="bc-h">Picks on this build <span>— ${b.n.toLocaleString()} players opened with these three, all ranks</span></div>
+      ${KINDS.map(line).join('')}
+      ${then ? `<div class="bp-row"><span class="bp-k">Then</span><span class="bp-v adj-num">${then}</span></div>` : ''}
+      <details class="imore"><summary>More</summary>${full}<div style="margin-top:.3rem">${nextFull}</div>
+        <div class="bc-note">Players who opened with these three items in any order, all ranks, ${esc(BPICKS[a.slug].patch)}. Win rates are pulled toward each pick's own rate across the whole lane, so a pick with a handful of games cannot lead. "Changes with this build" shows only when the lead differs from the lane's on a clear edge. Later items count players who bought an item in that slot.</div></details></div>`;
+  }
+}
+
 function buildsCard(a, pageBand) {
   // Only this lane's own bands: a lane with no builds must not show the hero-level ones.
   const byBand = a.metaBuilds && a.metaBuilds.length && a.metaBuildsByBand ? a.metaBuildsByBand : null;
@@ -1883,7 +1940,11 @@ function buildsCard(a, pageBand) {
       : `<span class="chip">${esc(it.name)}</span>`).join(m.anyOrder ? '<span class="arrow">+</span>' : '<span class="arrow">→</span>');
     // Build explanation (synergy + the 1/2/3 item reasons) is visible by default;
     // only the sim-specific line collapses behind "The sim math".
-    const explain = `${rsn && rsn.synergy ? `<div class="mb-why" style="color:var(--text-0)">${esc(rsn.synergy)}</div>` : ''}${rsn ? itemWhyRows(m.items, rsn.items) : ''}`;
+    // Every build explains itself the same way: one line per item from the item sheet (so no build is
+    // left bare when the data refresh changes which three lead). The written summary, where a reviewed
+    // one exists for this exact set, is theory behind a fold.
+    const explain = `${buildItemRows(m.items, a.role)}${rsn && rsn.synergy ? `<details class="imore"><summary>Why these three</summary><div class="mb-why" style="color:var(--text-0)">${esc(rsn.synergy)}</div></details>` : ''}
+        <div class="bpicks" data-core="${esc(m.items.map((it) => it.slug).filter(Boolean).sort().join('|'))}"></div>`;
     const simLine = `<div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div>`;
     return `
       <div class="bbody${i === 0 ? '' : ' hidden'}" data-bbody="${i}">
@@ -2451,6 +2512,7 @@ function renderHero(a, roleParam) {
   fillLevelChart(a);
   wireBuilds();
   mountAdjust(a);
+  mountBuildPicks(a);
   // Page rank filter: remember the pick and redraw this lane, keeping the scroll.
   document.querySelectorAll('.pageband button[data-pageband]').forEach((b) => {
     b.onclick = async () => {
@@ -2705,11 +2767,11 @@ async function nav(slug, replace = false, role = null) {
   await route();
   window.scrollTo({ top: 0 });
 }
-let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null, PENDING = null, HEROCOACH = null, ETREV = null, ITEMPOOL = null, ITEMREV = null, ITEMTAGS = null, ADJIDX = null, ITEMPICKS = null;
+let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null, PENDING = null, HEROCOACH = null, ETREV = null, ITEMPOOL = null, ITEMREV = null, ITEMTAGS = null, ADJIDX = null, ITEMPICKS = null, BPIDX = null;
 async function getAugs() {
   if (!AUGS) {
     let eternals, pending;
-    [AUGS, REVIEWS, REASONING, eternals, pending, HEROCOACH, ETREV, ITEMPOOL, ITEMREV, ITEMTAGS, ADJIDX, ITEMPICKS] = await Promise.all([
+    [AUGS, REVIEWS, REASONING, eternals, pending, HEROCOACH, ETREV, ITEMPOOL, ITEMREV, ITEMTAGS, ADJIDX, ITEMPICKS, BPIDX] = await Promise.all([
       getJson('../../data/aggregates/predgg-augments.json').catch(() => null),
       getJson('../../data/aggregates/augment-reviews.json').catch(() => null),
       getJson('../../data/aggregates/build-reasoning.json').catch(() => null),
@@ -2722,6 +2784,7 @@ async function getAugs() {
       getJson('../../data/aggregates/item-tags.json').catch(() => null),
       getJson('../../data/artifacts/adjustments/index.json').catch(() => null),
       getJson('../../data/aggregates/item-picks.json').catch(() => null),
+      getJson('../../data/artifacts/build-picks/index.json').catch(() => null),
     ]);
     PENDING = (pending && pending.heroes) || {};
     // name -> { major, minorSlot1, minorSlot2 } so an Eternal can be explained in

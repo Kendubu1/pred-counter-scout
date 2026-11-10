@@ -526,9 +526,10 @@ items from the lineups (21a) for this card. Open:
 - **22a. Does the change win (16c).** The card shows behaviour only. With the lineups, compare win
   rates with and without the item inside a matchup, among players with the same number of finished
   items, and gate on the known-answer checks from the fork doc before any "wins more" tag.
-- **22b. Build-linked picks on the card (19 / 21d).** build-links.json has the augment, Eternal and
-  crest per core item; the lineups have them per player. Show the pick that goes with an adjusted
-  core only once item 19's lift test tags it.
+- **22b. [DONE 2026-11-10] Picks by build** (`npm run buildpicks`, hero page "Picks on this build"; covers
+  19 and 21d with a win-rate test instead of 19's signature-item lift). Open: a Plat+ view of it, minors
+  per build, and the same picks inside a matchup-adjusted core.
+- **22i. Tighten the item pick lines to about ten words** and re-run the critic (phone glance).
 - **22g. Answer timing per hero-role.** The slot-by-slot answer timing on the card is pooled over all
   heroes (index.answerTiming). Split it by role or class once the patch has the games.
 - **22h. Lane result for the field.** The lineups carry end-of-game totals only, so "who won the lane"

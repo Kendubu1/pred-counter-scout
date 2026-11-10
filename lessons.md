@@ -5998,4 +5998,18 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
 - Phone first (maintainer: ten seconds in a ranked game). An item row is one line and at most three
   chips; stats, remaining tags and the game text sit behind "More", and the card's method notes behind
   "How this is counted". Explanations are folds, never the default view.
+- Build explanations were per-build copy, so they went missing whenever a refresh changed which three
+  items led: 189 of 403 shown builds had a summary, 65 of 152 hero-lanes had none. The 1-2-3 rows are
+  now assembled from the per-item lines (every build, every hero, survives a refresh); the written
+  summary stays as a fold where a reviewed one matches the exact item set.
+- Picks by build (pred.gg's per-build Augments / Eternals / Crests panel, maintainer 2026-11-10;
+  priorities 19 / 21d / 22b). The lineups carry build and loadout per player, so it is a straight
+  count once perk names decode (perk-catalog.json: 330 names, 0 of 326,330 loadouts undecoded). A
+  build is ranked like a rank band: each option shrunk toward its own lane-wide rate plus the build
+  gap. Over 401 builds (60+ players) and 1,203 lists: Toss-up 585, Leans 297, Most played 256, Best
+  65. A build leads with a different pick than its lane on a clear edge in 16 lists; at a "slight"
+  bar it was 119, mostly the size luck makes across that many lists, so the flag needs clear.
+  pred.gg's panel shows raw rates over a handful of matches (71% of 7, 100% of 4) and its later-item
+  columns shrink fast; ours count every player who finished the core and each later slot among
+  players who bought an item there.
 
