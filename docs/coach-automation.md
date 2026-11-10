@@ -66,7 +66,11 @@ not in the env, stop immediately and report — no partial work.
    - exit 2 → creds missing: stop and say so loudly.
    - exit 3 → new matches exist; continue:
 2. `npm run postgame -- --squad` — SELF-HEALING film pull: discovers every
-   stacked ranked game in the members' recent history (pred.gg source when
+   stacked ranked game in the members' recent history, and since 2026-11-10 every SOLO ranked
+   game (one squad member, no other) that started at or after `from` in `data/coaching/solo.json`
+   while its `auto` is true. A solo game is reviewed like any other: one allied squad player, so one
+   player card, and no "Who queued" card. Do not mark a solo game "handled, no review" any more
+   (that was the rule until 2026-11-10); set `auto` to false in solo.json to go back to it (pred.gg source when
    creds are present), skips already-reviewed games, and writes the film index.
    This is deliberately not a per-uuid loop: if an earlier fire died mid-run or
    a game was missed for any reason, the next fire picks it up — the Aug 11-28

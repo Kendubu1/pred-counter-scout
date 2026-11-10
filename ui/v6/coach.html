@@ -1724,6 +1724,8 @@ function setLabel(title, desc) {
         const loadGame = (id) => (cache[id] ||= fetch(`../../data/postgame/${id}.json`).then((r) => r.json()));
         const stacks = [...new Set(pgList.map((m) => m.stackSize).filter(Boolean))].sort((a, b) => b - a);
         const fmtDate = (iso) => new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+        // One squad member queued alone: a solo game (reviewed since 2026-11-10).
+        const stackLabel = (n) => (Number(n) === 1 ? 'solo' : `${n}-stack`);
         let filter = 'all', cur = 0;
         // ?game=<matchId> opens that game; picking a game puts its link in the
         // address bar so a copied/shared link opens the same review.
@@ -1735,12 +1737,12 @@ function setLabel(title, desc) {
         const updateSub = () => {
           const vis = visible();
           const w = vis.filter((m) => m.result === 'win').length;
-          const label = filter === 'all' ? `${vis.length} ranked games on record` : `${vis.length} ${filter}-stack game${vis.length === 1 ? '' : 's'}`;
+          const label = filter === 'all' ? `${vis.length} ranked games on record` : `${vis.length} ${stackLabel(filter)} game${vis.length === 1 ? '' : 's'}`;
           sub.innerHTML = `${label} · <b style="color:var(--green)">${w}W</b> <b style="color:var(--red)">${vis.length - w}L</b> · newest first`;
         };
         const renderFilter = () => {
           filterEl.innerHTML = stacks.length > 1
-            ? [['all', `All ${pgList.length}`], ...stacks.map((s) => [String(s), `${s}-stack`])]
+            ? [['all', `All ${pgList.length}`], ...stacks.map((s) => [String(s), stackLabel(s)])]
                 .map(([v, label]) => `<button class="pgf${filter === v ? ' on' : ''}" data-f="${v}">${label}</button>`).join('')
             : '';
         };
@@ -1753,7 +1755,7 @@ function setLabel(title, desc) {
           if (!m) { view.innerHTML = ''; return; }
           try { const u = new URL(location.href); if (chosen) u.searchParams.set('game', m.matchId); else u.searchParams.delete('game'); history.replaceState(null, '', u); } catch {}
           if (!chosen) setLabel('Post-game reviews · Pred Scout', "Post-game reviews of our squad's ranked Predecessor games: what went right, what to fix, and each player's build and lane.");
-          else setLabel(gameTitle(m), `${m.result === 'win' ? 'Win' : 'Loss'} on ${fmtDate(m.startTime)}, ${m.durationMin} min${m.stackSize ? `, ${m.stackSize}-stack` : ''}: the post-game review of this ranked game.`);
+          else setLabel(gameTitle(m), `${m.result === 'win' ? 'Win' : 'Loss'} on ${fmtDate(m.startTime)}, ${m.durationMin} min${m.stackSize ? `, ${stackLabel(m.stackSize)}` : ''}: the post-game review of this ranked game.`);
           view.innerHTML = '<div style="color:var(--text-2);padding:1rem .2rem">loading…</div>';
           try { view.innerHTML = pgReview(await loadGame(m.matchId)); fillEternals(); }
           catch { view.innerHTML = '<div style="color:var(--red);padding:1rem .2rem">could not load this match</div>'; }
@@ -1764,7 +1766,7 @@ function setLabel(title, desc) {
             return `<button class="pgchip${i === cur ? ' on' : ''}" data-i="${i}">
               <b style="color:${c}">${m.result === 'win' ? 'W' : 'L'}</b>
               <span class="d">${fmtDate(m.startTime)}</span>
-              <span class="s">${m.durationMin}m${m.stackSize ? ` · ${m.stackSize}-stack` : ''}</span>
+              <span class="s">${m.durationMin}m${m.stackSize ? ` · ${stackLabel(m.stackSize)}` : ''}</span>
               ${m.hasCoaching ? '<span class="c" title="coached">coached</span>' : ''}
             </button>`;
           }).join('');

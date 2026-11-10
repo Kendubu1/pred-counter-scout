@@ -139,6 +139,23 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   priorities item 19; the page shows only All ranks / Plat+ through
   one page-level rank filter — never tag rank from the ladder, which is CURRENT
   rank and reads ~+3 pt high),
+  `npm run itemtags` (zero-API: the item tag sheet, data/aggregates/item-tags.json, one
+  consistent read of every completed item from data/catalog/items.json alone: stat chips,
+  how-it-works tags from a fixed vocabulary, the enemy problem it answers, its own effect
+  condensed from the game text, and one line per answer per lane; rules in src/item-tags.ts,
+  never authored copy; rerun after a catalog change),
+  `npm run review:itempicks` (copy pass, session compute: one written "Pick it when ..." line per
+  build item, data/aggregates/item-picks.json, authored with the item's look-alikes side by side so
+  each line says what sets it apart; `COPY_MODE=prepare` emits the tasks, pred-scout-coach answers
+  engine/copy-tasks/itempicks.responses.json, an INDEPENDENT critic writes itempicks.critique.json,
+  then the plain run number-checks every line against the item's own text; rerun after a catalog
+  change; the page falls back to the rule-based lane line for an item with no line),
+  `npm run adjustments` (zero-API: "Adjust for your matchup" on the hero page,
+  data/artifacts/adjustments/<hero>.json, counted from the patch's ranked lineups: what a
+  hero-role builds more or less into a lane opponent, an enemy hero or an enemy team shape,
+  items 1-3 and items 4-6 separately, against its own usual builds, shown only past a
+  shuffled-matchup luck check (`-- --tune` prints real vs shuffled over a grid of bars);
+  rules in src/adjustments.ts; behaviour, never a win claim; rerun daily after perks),
   `npm run buildstats` (the old coreBuild pull; gated at our tier, no longer in
   the refresh chain),
   `npm run augments` (the old simpleBuild pull; gated at our pred.gg tier, kept
