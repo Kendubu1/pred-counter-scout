@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { DOES, ROLE_LANGUAGE, roleLine, tagItem, tagItems, type CatalogItem } from '../src/item-tags.js';
+import { DOES, PURPOSE_LANGUAGE, ROLE_LANGUAGE, roleLine, tagItem, tagItems, type CatalogItem } from '../src/item-tags.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const catalog = JSON.parse(readFileSync(path.join(ROOT, 'data/catalog/items.json'), 'utf8')) as CatalogItem[];
@@ -49,8 +49,19 @@ describe('item tag sheet', () => {
     expect(a('rebirth')).toContain('burst');
     expect(tags['nightfall']!.does).not.toContain('Anti-heal');
   });
+  it('gives every item a line in every lane, and reads known purposes right', () => {
+    for (const [slug, r] of Object.entries(tags)) for (const role of ['carry', 'midlane', 'offlane', 'jungle', 'support'] as const) expect(roleLine(r, role), `${slug} ${role}`).toBeTruthy();
+    const p = (s: string) => tags[s]!.purpose;
+    expect(p('imperator')).toBe('crit');
+    expect(p('oblivion-crown')).toBe('power');
+    expect(p('crystal-tear')).toBe('support');
+    expect(p('lifebinder')).toBe('sustain');
+    expect(p('noxia')).toBe('burst');
+    expect(roleLine(tags['oblivion-crown']!, 'midlane')).toBe(PURPOSE_LANGUAGE.power.midlane);
+    expect(roleLine(tags['sky-splitter']!, 'carry')).toBe(ROLE_LANGUAGE.tanks.carry); // an answer still leads
+  });
   it('has a line for every answer in every lane', () => {
-    for (const lines of Object.values(ROLE_LANGUAGE)) {
+    for (const lines of [...Object.values(ROLE_LANGUAGE), ...Object.values(PURPOSE_LANGUAGE)]) {
       expect(Object.keys(lines).sort()).toEqual(['carry', 'jungle', 'midlane', 'offlane', 'support']);
       for (const l of Object.values(lines)) expect(l.length).toBeLessThanOrEqual(60);
     }

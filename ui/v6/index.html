@@ -1679,7 +1679,8 @@ function itemTagBlock(slug, role, opts) {
   const o = opts || {};
   // In a matchup, lead with the answer that enemy actually asks for.
   const lead = (o.prefer || []).find((x) => t.answers.includes(x)) || t.answers[0];
-  const lang = lead && ITEMTAGS.roleLanguage[lead];
+  // Every item gets a line: the answer it gives, else what it is for (purpose), in this lane's words.
+  const lang = lead ? ITEMTAGS.roleLanguage[lead] : (ITEMTAGS.purposeLanguage || {})[t.purpose];
   const line = !o.noLine && lang && lang[role] ? `<div class="bc-why"><b>${esc(lang[role])}.</b></div>` : '';
   const ans = t.answers.map((x) => `<span class="itag ans">${esc(ITEMTAGS.answerLabel[x] || x)}</span>`).join('');
   const does = t.does.filter((d) => d !== 'Active').slice(0, 3).map((d) => `<span class="itag">${esc(d)}</span>`).join('');

@@ -6,6 +6,8 @@
 //   does     how its passive / active works, from one fixed vocabulary (DOES)
 //   answers  which enemy problem it answers (ANSWERS), the key the matchup
 //            adjustments and the role language hang off
+//   purpose  what the item is for when it answers no particular enemy (PURPOSE_LANGUAGE);
+//            every item has one, so every item gets a line in the lane's words
 //   unique   one or two statements of the item's own passive / active, condensed
 //            from the game's text (never reworded into a claim the text does not make)
 //
@@ -21,10 +23,12 @@ export interface CatalogItem {
 }
 export type Answer = 'tanks' | 'healing' | 'shields' | 'magic' | 'physical' | 'cc' | 'burst' | 'crit';
 export type Role = 'carry' | 'midlane' | 'offlane' | 'jungle' | 'support';
+/** What the item is FOR when it answers no particular enemy: every item has exactly one. */
+export type Purpose = 'support' | 'crit' | 'onhit' | 'burst' | 'sustain' | 'mobility' | 'control' | 'area' | 'cooldowns' | 'scaling' | 'durable' | 'mana' | 'power';
 export interface Give { k: string; label: string; v: number; pct: boolean }
 export interface ItemTagRow {
   name: string; kind: 'item' | 'crest' | 'consumable';
-  gives: Give[]; does: string[]; answers: Answer[]; unique: string[];
+  gives: Give[]; does: string[]; answers: Answer[]; purpose: Purpose; unique: string[];
 }
 
 // Stat chips, most build-defining first. pct = the game shows the number as a percent.
@@ -104,6 +108,26 @@ function answersOf(it: CatalogItem, does: Set<string>, t: string): Answer[] {
   return a;
 }
 
+/** The item's one purpose, most distinctive first: what it is bought for, from its stats and tags. */
+function purposeOf(it: CatalogItem, does: Set<string>): Purpose {
+  const s = it.stats ?? {}, has = (k: string) => (s[k] ?? 0) > 0;
+  if (has('heal_shield_increase') || does.has('Ally buff') || agg(it, 'HealingAndShielding')) return 'support';
+  if (has('critical_chance')) return 'crit';
+  if (has('attack_speed') || does.has('On-hit') || does.has('Attack speed burst')) return 'onhit';
+  if (agg(it, 'Burst', 'UltimateDamage', 'EnhancedAbility') || does.has('Execute')) return 'burst';
+  if (agg(it, 'Scaling', 'ScalingMana')) return 'scaling'; // an item that evolves or stacks is bought for that, whatever else it does
+  if (has('lifesteal') || has('omnivamp') || has('magical_lifesteal') || agg(it, 'Sustain', 'Regen', 'Healing') || does.has('Heal')) return 'sustain';
+  if (agg(it, 'Mobility') || has('movement_speed') || does.has('Move speed burst')) return 'mobility';
+  if (does.has('Slow') || does.has('Crowd control') || agg(it, 'Disruption', 'SlowingSpells')) return 'control';
+  if (does.has('Area damage')) return 'area';
+  if (does.has('Cooldown cut') || (s.ability_haste ?? 0) >= 20) return 'cooldowns';
+  if (does.has('Stacks up')) return 'scaling';
+  if (has('physical_armor') || has('magical_armor') || (s.max_health ?? 0) >= 300 || does.has('Damage reduction') || does.has('Armor up') || does.has('Shield')
+    || agg(it, 'Defense', 'DefensiveAura', 'TeamfightDurability', 'SustainedDurability', 'Shielding')) return 'durable';
+  if (!has('magical_power') && !has('physical_power') && ((s.max_mana ?? 0) >= 300 || has('mana_regeneration'))) return 'mana';
+  return 'power';
+}
+
 const MAX_UNIQUE = 2, MAX_LEN = 130;
 /** One or two statements of the item's own effects: "<Effect>: <when>: <what>", cut at bullet ends. */
 function uniqueOf(it: CatalogItem): string[] {
@@ -142,7 +166,7 @@ export function tagItem(it: CatalogItem): ItemTagRow {
   const does = RULES.filter(([, test]) => test(t, it)).map(([tag]) => tag);
   const gives = STATS.filter(([k]) => (s[k] ?? 0) > 0).map(([k, label, pct]) => ({ k, label, v: s[k]!, pct }));
   const kind: ItemTagRow['kind'] = it.slot_type === 'Crest' ? 'crest' : it.slot_type === 'Active' ? 'consumable' : 'item';
-  return { name: it.display_name ?? it.name ?? it.slug, kind, gives, does, answers: answersOf(it, new Set(does), t), unique: uniqueOf(it) };
+  return { name: it.display_name ?? it.name ?? it.slug, kind, gives, does, answers: answersOf(it, new Set(does), t), purpose: purposeOf(it, new Set(does)), unique: uniqueOf(it) };
 }
 
 /** Every completed item (Epic and Legendary) by slug. */
@@ -218,5 +242,99 @@ export const ANSWER_LABEL: Record<Answer, string> = {
   tanks: 'vs tanks', healing: 'vs healing', shields: 'vs shields', magic: 'vs magic damage',
   physical: 'vs physical damage', cc: 'vs crowd control', burst: 'vs burst', crit: 'vs crit',
 };
-/** The item's lead answer phrased for a role; null when the item answers nothing in particular. */
-export const roleLine = (row: ItemTagRow, role: Role): string | null => (row.answers[0] ? ROLE_LANGUAGE[row.answers[0]][role] : null);
+// The same for an item that answers no particular enemy: what it is for, in that lane's words.
+export const PURPOSE_LANGUAGE: Record<Purpose, Record<Role, string>> = {
+  support: {
+    carry: 'Stronger heals and shields for the team around you',
+    midlane: 'Stronger heals and shields from your abilities',
+    offlane: 'Stronger heals and shields in the fight you start',
+    jungle: 'Stronger heals and shields on the allies you gank for',
+    support: 'Stronger heals and shields on the carry you protect',
+  },
+  crit: {
+    carry: 'Bigger crits for the late-game team fights',
+    midlane: 'Crit damage for a mid who wins with basic attacks',
+    offlane: 'Crit damage to win the long duel',
+    jungle: 'Crit damage to clear camps and duel faster',
+    support: 'Crit damage if you are playing for kills',
+  },
+  onhit: {
+    carry: 'More attacks, and each one hits harder',
+    midlane: 'Basic attacks that add to your combo',
+    offlane: 'Faster attacks for long trades in lane',
+    jungle: 'Faster attacks for camps and sticking to a target',
+    support: 'Faster attacks to add damage from the front',
+  },
+  burst: {
+    carry: 'Finishes low targets before they get away',
+    midlane: 'More damage in the one combo that gets the kill',
+    offlane: 'Turns a won trade into a kill',
+    jungle: 'More damage up front on a gank',
+    support: 'Adds kill damage to the pick you start',
+  },
+  sustain: {
+    carry: 'Heals you back while you keep attacking',
+    midlane: 'Heals you back as your abilities land',
+    offlane: 'Lets you stay in lane through trades',
+    jungle: 'Keeps you healthy between camps and fights',
+    support: 'Keeps you alive while you stand in front',
+  },
+  mobility: {
+    carry: 'Speed to kite and keep your spacing',
+    midlane: 'Speed to roam and dodge abilities',
+    offlane: 'Speed to stick to a target or get out',
+    jungle: 'Speed to reach ganks and objectives first',
+    support: 'Speed to reach the fight and your carry',
+  },
+  control: {
+    carry: 'Slows what you hit so it cannot reach you',
+    midlane: 'Holds targets so the rest of your combo lands',
+    offlane: 'Holds targets so they cannot leave the trade',
+    jungle: 'Holds targets so the gank sticks',
+    support: 'Holds targets so your team can catch them',
+  },
+  area: {
+    carry: 'Hits everything near your target and clears waves',
+    midlane: 'Clears waves fast so you can roam',
+    offlane: 'Clears waves fast and hits grouped enemies',
+    jungle: 'Clears camps faster and hits grouped enemies',
+    support: 'Adds area damage around the fight you start',
+  },
+  cooldowns: {
+    carry: 'Abilities back sooner between attacks',
+    midlane: 'Abilities back sooner for a second combo',
+    offlane: 'Abilities back sooner in long fights',
+    jungle: 'Abilities back sooner for the next gank',
+    support: 'Abilities back sooner to peel and engage again',
+  },
+  scaling: {
+    carry: 'Grows as you farm: strongest late',
+    midlane: 'Grows as you farm and get takedowns',
+    offlane: 'Grows through the lane: strongest late',
+    jungle: 'Grows as you clear camps and get takedowns',
+    support: 'Grows over the game, so buy it early',
+  },
+  durable: {
+    carry: 'Extra toughness so one mistake does not kill you',
+    midlane: 'Extra toughness to survive being jumped',
+    offlane: 'Makes you harder to kill in long fights',
+    jungle: 'Makes you harder to kill when you go in first',
+    support: 'Makes you harder to kill at the front',
+  },
+  mana: {
+    carry: 'Mana to keep using abilities in lane',
+    midlane: 'Mana to keep casting through the lane',
+    offlane: 'Mana to keep trading with abilities',
+    jungle: 'Mana to keep clearing with abilities',
+    support: 'Mana to keep healing and poking in lane',
+  },
+  power: {
+    carry: 'Raw damage on every attack and ability',
+    midlane: 'Raw power: every ability hits harder',
+    offlane: 'Raw damage for every trade',
+    jungle: 'Raw damage for ganks and camps',
+    support: 'Raw damage if your team needs more from you',
+  },
+};
+/** One line for every item in a lane's words: its lead answer, else what it is for. */
+export const roleLine = (row: ItemTagRow, role: Role): string => (row.answers[0] ? ROLE_LANGUAGE[row.answers[0]][role] : PURPOSE_LANGUAGE[row.purpose][role]);
