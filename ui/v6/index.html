@@ -375,6 +375,9 @@
   .itag.ans { color:var(--accent-ink); border-color:var(--accent); font-weight:700; }
   .itag.stat { color:var(--text-2); border-style:dashed; }
   .bc-why.uniq { color:var(--text-2); }
+  details.imore { margin-top:.2rem; }
+  details.imore > summary { font-size:.6875rem; color:var(--text-2); cursor:pointer; list-style:none; display:inline-block; padding:.15rem 0; min-height:24px; }
+  details.imore > summary::-webkit-details-marker { display:none; }
   /* Adjust for your matchup (data/artifacts/adjustments/<hero>.json). */
   details.adj { margin-top:.8rem; }
   .adj-lead { font-size:.78rem; color:var(--text-1); line-height:1.45; }
@@ -1681,11 +1684,24 @@ function itemTagBlock(slug, role, opts) {
   const lead = (o.prefer || []).find((x) => t.answers.includes(x)) || t.answers[0];
   // Every item gets a line: the answer it gives, else what it is for (purpose), in this lane's words.
   const lang = lead ? ITEMTAGS.roleLanguage[lead] : (ITEMTAGS.purposeLanguage || {})[t.purpose];
-  const line = !o.noLine && lang && lang[role] ? `<div class="bc-why"><b>${esc(lang[role])}.</b></div>` : '';
-  const ans = t.answers.map((x) => `<span class="itag ans">${esc(ITEMTAGS.answerLabel[x] || x)}</span>`).join('');
-  const does = t.does.filter((d) => d !== 'Active').slice(0, 3).map((d) => `<span class="itag">${esc(d)}</span>`).join('');
-  const gives = t.gives.slice(0, 4).map((g) => `<span class="itag stat">${g.v}${g.pct ? '%' : ''} ${esc(g.label)}</span>`).join('');
-  return `${line}<div class="tagrow">${ans}${does}${gives}</div>${t.unique[0] ? `<div class="bc-why uniq">${esc(t.unique[0])}</div>` : ''}`;
+  // The written "Pick it when ..." line (npm run review:itempicks) says what sets this item apart from
+  // its look-alikes, so it leads. Inside a matchup, an item that answers what that enemy asks for
+  // keeps the lane line for that answer; the pick line then follows the chips.
+  const rawPick = (ITEMPICKS && ITEMPICKS.items && ITEMPICKS.items[slug]) || '';
+  const pick = rawPick.replace(/^Pick it (when|if) /, 'When ');
+  const matched = (o.prefer || []).some((x) => t.answers.includes(x));
+  const laneLine = lang && lang[role] ? lang[role] : '';
+  const lead2 = o.noLine ? pick : matched ? laneLine : (pick || laneLine);
+  const line = lead2 ? `<div class="bc-why"><b>${esc(lead2)}.</b></div>` : '';
+  // At a glance (phone first, ten seconds in a ranked game): one line and at most three chips.
+  // Stats, the rest of the tags, the other line and the game text sit behind "More".
+  const ans = t.answers.map((x) => `<span class="itag ans">${esc(ITEMTAGS.answerLabel[x] || x)}</span>`);
+  const does = t.does.filter((d) => d !== 'Active').map((d) => `<span class="itag">${esc(d)}</span>`);
+  const chips = [...ans, ...does], top = chips.slice(0, 3), rest = chips.slice(3);
+  const gives = t.gives.map((g) => `<span class="itag stat">${g.v}${g.pct ? '%' : ''} ${esc(g.label)}</span>`).join('');
+  const other = lead2 === pick ? '' : pick;
+  const more = `${other ? `<div class="bc-why">${esc(other)}.</div>` : ''}<div class="tagrow">${rest.join('')}${gives}</div>${t.unique.map((u) => `<div class="bc-why uniq">${esc(u)}</div>`).join('')}`;
+  return `${line}<div class="tagrow">${top.join('')}</div><details class="imore"><summary>More</summary>${more}</details>`;
 }
 
 // ── ADJUST FOR YOUR MATCHUP ── data/artifacts/adjustments/<hero>.json (npm run
@@ -1745,12 +1761,11 @@ async function mountAdjust(a) {
       // When players buy this kind of item, by purchase slot, all heroes pooled (index.answerTiming).
       const tm = ADJIDX.answerTiming && (mode === 'comp' ? ADJIDX.answerTiming.comp[k] : mode === 'lane' ? ADJIDX.answerTiming.lane[nd.answer] : null);
       const late = (tm || []).filter((r) => r.slot >= 4);
-      const timing = late.length ? `<div class="adj-num" style="margin:.15rem 0 .1rem">All heroes, players with no such item yet: bought as ${late.map((r) => `item ${r.slot} by <b>${Math.round(r.needy100)}</b> of 100 here (${Math.round(r.other100)} otherwise)`).join(', ')}.</div>` : '';
+      const timing = late.length ? `<details class="imore"><summary>How often players buy one</summary><div class="adj-num">All heroes, players with no such item yet: ${late.map((r) => `item ${r.slot} by <b>${Math.round(r.needy100)}</b> of 100 here (${Math.round(r.other100)} otherwise)`).join(', ')}.</div></details>` : '';
       return `<div class="bc-h" style="margin-top:.55rem">${esc(ITEMTAGS.answerLabel[nd.answer])} <span>— ${esc(nd.why)}. ${esc(lang && lang[a.role] ? lang[a.role] : '')}.</span></div>${timing}${cand.map((x) =>
-        itemRow(x.item, `${x.late100 ? `<b>${x.late100} of 100</b> ${esc(a.name)} ${esc(a.role)} players finish it after the core` : `<b>${x.core100} of 100</b> open with it`}${x.late100 && x.core100 ? `, ${x.core100} of 100 in the first three` : ''}${taken.has(x.item) ? ' · <b>already rising in this matchup</b>' : ''}`, { noLine: true })).join('')}`;
+        itemRow(x.item, `<b>${x.late100} of 100</b> finish it late · ${x.core100} of 100 open with it${taken.has(x.item) ? ' · <b>rising here</b>' : ''}`, { noLine: true })).join('')}`;
     }).join('');
     return `<div class="bc-group"><div class="bc-h">Items 4 to 6: build them on purpose <span>— what ${mode === 'comp' ? 'that team shape' : esc(nameOfKey(mode, k))} asks for, answered from ${esc(a.name)}'s own usual items</span></div>
-      <div class="adj-none" style="color:var(--text-1)">Players do keep adjusting after the first three items, but by only a few players in 100, too few to show for one hero and one item. So these are picked by fit: the item's text against the enemy kit. They are not a measured win rate.</div>
       ${groups || `<div class="adj-none">Nothing ${esc(a.name)} ${esc(a.role)} usually builds answers this directly.</div>`}</div>`;
   };
   // The matchup's own record against the hero-role's other games (raw wins, every game counted).
@@ -1782,7 +1797,7 @@ async function mountAdjust(a) {
     const rows = usual.map((u) => { const h = here.find((x) => x.slot === u.slot);
       return `<div class="sl">Item ${u.slot}</div>${here.length ? cell(h) : ''}<div class="${here.length ? 'usual' : ''}">${cell(u)}</div>`; }).join('');
     const head = here.length ? `<div class="hd"></div><div class="hd">${esc(nameOfKey(mode, k))}</div><div class="hd usual">Usually</div>` : '';
-    return `<details class="sim-collapse" style="margin-top:.5rem"${quietOpen ? ' open' : ''}><summary>Common buys, item by item${here.length ? '' : ' (all matchups)'}</summary><div class="body">
+    return `<details class="sim-collapse" style="margin-top:.5rem"><summary>Common buys, item by item${here.length ? '' : ' (all matchups)'}</summary><div class="body">
       <div class="adj-slots" style="${here.length ? '' : 'grid-template-columns:auto 1fr'}">${head}${rows}</div>
       <div class="bc-note">What ${esc(a.name)} ${esc(a.role)} players buy first, second, third and so on. Each row counts only players who bought an item in that slot, so a game that ended early is not read as skipping it.</div>
     </div></details>`;
@@ -1804,10 +1819,10 @@ async function mountAdjust(a) {
         + fits(mode, k, taken);
     }
     host.innerHTML = `<details class="sim-collapse adj" open><summary>Adjust for your matchup</summary><div class="body">
-      <div class="adj-lead">Pick who you are into. The first list is counted from <b>${file.matches.toLocaleString()}</b> ranked games this patch (${esc(file.patch)}, all ranks): how ${esc(a.name)} ${esc(a.role)} players change the build, against their own usual builds.</div>
+      <div class="adj-lead">Pick who you are into.</div>
       <div class="adj-pick"><div class="adj-modes" role="group" aria-label="Matchup type">${modes}</div><select id="adjKey" aria-label="Matchup">${opts}</select></div>
       ${out}
-      <div class="bc-note">What players do, not proof that the change wins. A measured row shows only when it clears a luck check: across every hero, the same rules on shuffled matchups show ${ADJIDX.shownUnderShuffle.core} first-three rows against ${ADJIDX.shown.core} real ones. Tags come from each item's stats and game text. Tap an icon for the item.</div>
+      <details class="imore"><summary>How this is counted</summary><div class="bc-note">Counted from ${file.matches.toLocaleString()} ranked games this patch (${esc(file.patch)}, all ranks), against ${esc(a.name)} ${esc(a.role)} players' own usual builds. What players do, not proof that the change wins. A measured row shows only when it clears a luck check: across every hero, the same rules on shuffled matchups show ${ADJIDX.shownUnderShuffle.core} first-three rows against ${ADJIDX.shown.core} real ones. Players keep adjusting after the first three items, but only a few in 100, too few to show for one hero and one item, so the items 4 to 6 list is picked by fit: the item's text against the enemy kit. Tags come from each item's stats and game text.</div></details>
     </div></details>`;
     host.querySelectorAll('[data-adjmode]').forEach((b) => b.addEventListener('click', () => { ADJ_STATE.mode = b.dataset.adjmode; ADJ_STATE.key = keysOf(ADJ_STATE.mode)[0] || null; draw(); }));
     const sel = host.querySelector('#adjKey');
@@ -2690,11 +2705,11 @@ async function nav(slug, replace = false, role = null) {
   await route();
   window.scrollTo({ top: 0 });
 }
-let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null, PENDING = null, HEROCOACH = null, ETREV = null, ITEMPOOL = null, ITEMREV = null, ITEMTAGS = null, ADJIDX = null;
+let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null, PENDING = null, HEROCOACH = null, ETREV = null, ITEMPOOL = null, ITEMREV = null, ITEMTAGS = null, ADJIDX = null, ITEMPICKS = null;
 async function getAugs() {
   if (!AUGS) {
     let eternals, pending;
-    [AUGS, REVIEWS, REASONING, eternals, pending, HEROCOACH, ETREV, ITEMPOOL, ITEMREV, ITEMTAGS, ADJIDX] = await Promise.all([
+    [AUGS, REVIEWS, REASONING, eternals, pending, HEROCOACH, ETREV, ITEMPOOL, ITEMREV, ITEMTAGS, ADJIDX, ITEMPICKS] = await Promise.all([
       getJson('../../data/aggregates/predgg-augments.json').catch(() => null),
       getJson('../../data/aggregates/augment-reviews.json').catch(() => null),
       getJson('../../data/aggregates/build-reasoning.json').catch(() => null),
@@ -2706,6 +2721,7 @@ async function getAugs() {
       getJson('../../data/aggregates/item-reviews.json').catch(() => null),
       getJson('../../data/aggregates/item-tags.json').catch(() => null),
       getJson('../../data/artifacts/adjustments/index.json').catch(() => null),
+      getJson('../../data/aggregates/item-picks.json').catch(() => null),
     ]);
     PENDING = (pending && pending.heroes) || {};
     // name -> { major, minorSlot1, minorSlot2 } so an Eternal can be explained in

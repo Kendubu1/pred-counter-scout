@@ -144,6 +144,12 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   how-it-works tags from a fixed vocabulary, the enemy problem it answers, its own effect
   condensed from the game text, and one line per answer per lane; rules in src/item-tags.ts,
   never authored copy; rerun after a catalog change),
+  `npm run review:itempicks` (copy pass, session compute: one written "Pick it when ..." line per
+  build item, data/aggregates/item-picks.json, authored with the item's look-alikes side by side so
+  each line says what sets it apart; `COPY_MODE=prepare` emits the tasks, pred-scout-coach answers
+  engine/copy-tasks/itempicks.responses.json, an INDEPENDENT critic writes itempicks.critique.json,
+  then the plain run number-checks every line against the item's own text; rerun after a catalog
+  change; the page falls back to the rule-based lane line for an item with no line),
   `npm run adjustments` (zero-API: "Adjust for your matchup" on the hero page,
   data/artifacts/adjustments/<hero>.json, counted from the patch's ranked lineups: what a
   hero-role builds more or less into a lane opponent, an enemy hero or an enemy team shape,

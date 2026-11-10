@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DOES, PURPOSE_LANGUAGE, ROLE_LANGUAGE, roleLine, tagItem, tagItems, type CatalogItem } from '../src/item-tags.js';
@@ -64,6 +64,21 @@ describe('item tag sheet', () => {
     for (const lines of [...Object.values(ROLE_LANGUAGE), ...Object.values(PURPOSE_LANGUAGE)]) {
       expect(Object.keys(lines).sort()).toEqual(['carry', 'jungle', 'midlane', 'offlane', 'support']);
       for (const l of Object.values(lines)) expect(l.length).toBeLessThanOrEqual(60);
+    }
+  });
+  const picksPath = path.join(ROOT, 'data/aggregates/item-picks.json');
+  it.skipIf(!existsSync(picksPath))('written pick lines: one per build item, reviewed, and no two look-alikes say the same thing', () => {
+    const picks = JSON.parse(readFileSync(picksPath, 'utf8'));
+    expect(picks.critic, 'an independent critic reviewed the lines').toBeTruthy();
+    const build = Object.entries(tags).filter(([, r]) => r.kind === 'item').map(([slug]) => slug);
+    expect(Object.keys(picks.items).length).toBeGreaterThanOrEqual(Math.floor(build.length * 0.9));
+    const seen = new Map<string, string>();
+    for (const [slug, line] of Object.entries<string>(picks.items)) {
+      expect(tags[slug]?.kind, slug).toBe('item');
+      expect(line, slug).toMatch(/^Pick it (when|if) /);
+      expect(line.split(/\s+/).length, slug).toBeLessThanOrEqual(18);
+      expect(seen.get(line), `${slug} repeats ${seen.get(line)}`).toBeUndefined();
+      seen.set(line, slug);
     }
   });
 });

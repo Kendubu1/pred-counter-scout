@@ -5989,4 +5989,13 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   lane" itself cannot be read from the field: game result and final gold against the lane opponent are
   the stand-ins. When the build says nothing, the card now falls back to the matchup's record, the
   kit profile's play-against line and crowd control to dodge, and the common buys per purchase slot.
+- Rules can label an item but cannot tell look-alikes apart (maintainer: "add to your combo sounds
+  general"). Prophecy, Orion and Oathkeeper all matched "on-hit", yet one adds damage to every attack,
+  one ramps on a single target and one empowers the attack after each cast. `npm run review:itempicks`
+  authors one "Pick it when" line per build item with its look-alikes in the same prompt (18 groups,
+  137 items), number-checked, then an independent critic: 125 ok, 12 fixed (unstated effects such as
+  "roam" and "whole team", a trigger left out, two siblings saying the same thing), 0 dropped.
+- Phone first (maintainer: ten seconds in a ranked game). An item row is one line and at most three
+  chips; stats, remaining tags and the game text sit behind "More", and the card's method notes behind
+  "How this is counted". Explanations are folds, never the default view.
 
