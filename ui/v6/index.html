@@ -1868,23 +1868,24 @@ async function mountBuildPicks(a) {
   const LTIP = { Best: 'clearly wins more on this build', Leans: 'wins a little more on this build', 'Toss-up': 'no real difference on this build: the first has the best odds so far', 'Most played': 'the only one with enough games here, so no edge is claimed', 'By games': 'too few games on this build to rank' };
   for (const host of hosts) {
     if (!host.isConnected) continue;
-    const b = rd.builds.find((x) => x.core.join('|') === host.dataset.core);
+    // This tab's exact purchase order when enough players bought it that way, else the same three in any order.
+    const b = rd.builds.find((x) => x.ordered && x.core.join('>') === host.dataset.order) || rd.builds.find((x) => !x.ordered && x.core.join('|') === host.dataset.core);
     if (!b) { host.innerHTML = ''; continue; }
     const line = ([kind, label]) => {
       const p = b[kind], lead = p.rows[0];
       if (!lead) return '';
       const nameHtml = kind === 'augments' && lead.id ? `<b data-apop="${esc(lead.id)}" data-apop-role="${esc(a.role)}" style="cursor:pointer">${esc(lead.name)}</b>` : `<b>${esc(lead.name)}</b>`;
-      return `<div class="bp-row"><span class="bp-k">${label}</span><span class="bp-v">${nameHtml} <span class="bp-l" title="${LTIP[p.label] || ''}">${p.label === 'By games' ? 'few games' : p.label}</span> <span class="adj-num">${lead.n.toLocaleString()} of ${b.n.toLocaleString()}</span>${p.changes ? ` <span class="itag ans" title="The lane as a whole leads with ${esc(p.laneLead)}">changes with this build</span>` : ''}</span></div>`;
+      return `<div class="bp-row"><span class="bp-k">${label}</span><span class="bp-v">${nameHtml} <span class="bp-l" title="${LTIP[p.label] || ''}">${p.label === 'By games' ? 'few games' : p.label}</span> <span class="adj-num">${lead.n.toLocaleString()} of ${b.n.toLocaleString()}</span>${p.changes ? ` <span class="itag ans" title="The lane as a whole leads with ${esc(p.laneLead)}">wins more on this build</span>` : ''}${p.mostRun && p.mostRun.name !== lead.name ? `<div class="adj-num">${p.mostRun.pct} of 100 on this build run <b>${esc(p.mostRun.name)}</b></div>` : ''}${p.pairs ? `<div><span class="itag ans" title="Across the lane most players run ${esc(p.laneMostRun)}">${esc(p.mostRun.name)} goes with this build</span></div>` : ''}</span></div>`;
     };
     const then = b.next.filter((n) => n.top.length).map((n) => `${ORD[n.slot]} <b>${esc(itemName(n.top[0].item))}</b> ${n.top[0].pct}%`).join(' · ');
     const full = KINDS.map(([kind, label]) => { const p = b[kind]; if (!p.rows.length) return '';
       return `<div class="adj-num" style="margin-top:.3rem"><b>${label}</b> · ${p.label === 'By games' ? 'few games' : p.label}${p.laneLead ? ` · the lane leads with ${esc(p.laneLead)}` : ''}</div>${p.rows.map((x) => `<div class="adj-num">${esc(x.name)} · ${x.n.toLocaleString()} games · ${x.shrunk}%${x.few ? ' · few games' : ''}</div>`).join('')}`; }).join('');
     const nextFull = b.next.map((n) => `<div class="adj-num">${ORD[n.slot]} item (${n.n.toLocaleString()} players): ${n.top.map((x) => `${esc(itemName(x.item))} ${x.pct}%`).join(', ')}</div>`).join('');
-    host.innerHTML = `<div class="bp"><div class="bc-h">Picks on this build <span>— ${b.n.toLocaleString()} players opened with these three, all ranks</span></div>
+    host.innerHTML = `<div class="bp"><div class="bc-h">Picks on this build <span>— ${b.n.toLocaleString()} players ${b.ordered ? 'bought these three in this order' : 'opened with these three, any order'}, all ranks</span></div>
       ${KINDS.map(line).join('')}
       ${then ? `<div class="bp-row"><span class="bp-k">Then</span><span class="bp-v adj-num">${then}</span></div>` : ''}
       <details class="imore"><summary>More</summary>${full}<div style="margin-top:.3rem">${nextFull}</div>
-        <div class="bc-note">Players who opened with these three items in any order, all ranks, ${esc(BPICKS[a.slug].patch)}. Win rates are pulled toward each pick's own rate across the whole lane, so a pick with a handful of games cannot lead. "Changes with this build" shows only when the lead differs from the lane's on a clear edge. Later items count players who bought an item in that slot.</div></details></div>`;
+        <div class="bc-note">${b.ordered ? 'Players who bought these three items in this order' : 'Too few players bought these three in this exact order, so this counts them in any order'}, all ranks, ${esc(BPICKS[a.slug].patch)}. "Goes with this build" is about what players run: most of them pick it here though the lane mostly runs something else. It is not a win claim. Win rates are pulled toward each pick's own rate across the whole lane, so a pick with a handful of games cannot lead. "Wins more on this build" shows only when the lead differs from the lane's on a clear edge. Later items count players who bought an item in that slot.</div></details></div>`;
   }
 }
 
@@ -1944,7 +1945,7 @@ function buildsCard(a, pageBand) {
     // left bare when the data refresh changes which three lead). The written summary, where a reviewed
     // one exists for this exact set, is theory behind a fold.
     const explain = `${buildItemRows(m.items, a.role)}${rsn && rsn.synergy ? `<details class="imore"><summary>Why these three</summary><div class="mb-why" style="color:var(--text-0)">${esc(rsn.synergy)}</div></details>` : ''}
-        <div class="bpicks" data-core="${esc(m.items.map((it) => it.slug).filter(Boolean).sort().join('|'))}"></div>`;
+        <div class="bpicks" data-order="${esc(m.items.map((it) => it.slug).filter(Boolean).join('>'))}" data-core="${esc(m.items.map((it) => it.slug).filter(Boolean).sort().join('|'))}"></div>`;
     const simLine = `<div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div>`;
     return `
       <div class="bbody${i === 0 ? '' : ' hidden'}" data-bbody="${i}">

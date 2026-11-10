@@ -23,7 +23,14 @@ export interface PickRead {
   rows: PickRow[];
   /** the lane-wide lead for the same kind, and whether this build's lead is a different pick with a clear edge */
   laneLead: string | null; changes: boolean;
+  /** What players on this build actually RUN (a choice, not a win claim): the most-run option and its
+   *  share, the lane's most-run, and whether the build pairs with a different one (see PAIR_*). */
+  mostRun: { name: string; pct: number } | null; laneMostRun: string | null; pairs: boolean;
 }
+/** A build "pairs with" a pick when most of its players run one the lane as a whole does not lead with:
+ *  a different most-run option, held by PAIR_SHARE of the build, PAIR_PTS above its lane-wide share, and
+ *  past |z| >= 3 against the lane share (it is a count of what players do, so no win test applies). */
+export const PAIR_SHARE = 0.5, PAIR_PTS = 15;
 const LABEL: Record<Confidence, PickRead['label']> = { clear: 'Best', slight: 'Leans', 'toss-up': 'Toss-up' };
 const key = (x: { id?: string; name: string }) => String(x.id ?? x.name);
 
@@ -33,7 +40,14 @@ export function readPick(lane: PickCell, build: PickCell, kind: Kind): PickRead 
   const r = rankByEdge(build[kind], build.games, { prior: bandPrior(lane[kind], lane, build) });
   const label: PickRead['label'] = r.thin ? 'By games' : r.confidence ? LABEL[r.confidence] : 'Most played';
   const lead = r.ranked[0];
+  const top = (c: PickCell) => [...c[kind]].sort((a, b) => b.n - a.n)[0] ?? null;
+  const bt = top(build), lt = top(lane);
+  const share = bt && build.games ? bt.n / build.games : 0;
+  const laneShare = bt && lane.games ? (lane[kind].find((x) => key(x) === key(bt))?.n ?? 0) / lane.games : 0;
+  const z = bt && laneShare > 0 && laneShare < 1 ? (share - laneShare) / Math.sqrt((laneShare * (1 - laneShare)) / build.games) : 0;
   return {
+    mostRun: bt ? { name: bt.name, pct: Math.round(share * 100) } : null, laneMostRun: lt?.name ?? null,
+    pairs: !!bt && !!lt && key(bt) !== key(lt) && share >= PAIR_SHARE && (share - laneShare) * 100 >= PAIR_PTS && z >= 3,
     label,
     rows: shownOptions(r, 3).map((x) => ({ id: x.id, name: x.name, n: x.n, w: x.w, shrunk: Math.round(x.shrunk * 1000) / 10, few: x.few })),
     laneLead: laneLead?.name ?? null,
@@ -43,19 +57,19 @@ export function readPick(lane: PickCell, build: PickCell, kind: Kind): PickRead 
 
 export interface NextSlot { slot: number; n: number; top: { item: string; pct: number }[] }
 export interface BuildRead {
-  /** the three opening items as a set (sorted slugs), any purchase order */
-  core: string[]; n: number; w: number;
+  /** the three opening items: in purchase order when `ordered`, else the set (sorted slugs, any order) */
+  core: string[]; ordered: boolean; n: number; w: number;
   augments: PickRead; eternals: PickRead; crests: PickRead;
   next: NextSlot[];
 }
 export interface BuildCells { cell: PickCell; slots: Record<string, number>[]; reach: number[] }
 export const MIN_BUILD = 60, NEXT_MIN = 30, NEXT_TOP = 3;
 
-export function readBuild(core: string[], lane: PickCell, b: BuildCells): BuildRead {
+export function readBuild(core: string[], lane: PickCell, b: BuildCells, ordered = false): BuildRead {
   const next: NextSlot[] = [];
   b.reach.forEach((n, k) => {
     if (n < NEXT_MIN) return;
     next.push({ slot: k + 4, n, top: Object.entries(b.slots[k]!).sort((x, y) => y[1] - x[1]).slice(0, NEXT_TOP).map(([item, v]) => ({ item, pct: Math.round((100 * v) / n) })).filter((x) => x.pct >= 5) });
   });
-  return { core, n: b.cell.games, w: b.cell.wins, augments: readPick(lane, b.cell, 'augments'), eternals: readPick(lane, b.cell, 'eternals'), crests: readPick(lane, b.cell, 'crests'), next };
+  return { core, ordered, n: b.cell.games, w: b.cell.wins, augments: readPick(lane, b.cell, 'augments'), eternals: readPick(lane, b.cell, 'eternals'), crests: readPick(lane, b.cell, 'crests'), next };
 }

@@ -6012,4 +6012,18 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   pred.gg's panel shows raw rates over a handful of matches (71% of 7, 100% of 4) and its later-item
   columns shrink fast; ours count every player who finished the core and each later slot among
   players who bought an item there.
+- Build ORDER and the augment (maintainer: "a Zinx build will pick a different winning augment"). Two
+  different claims, tested apart on the 63 item sets where two or more purchase orders each have 60+
+  players, against the same data with the order scrambled inside each three items. What players RUN
+  follows the order: 14 of 63 sets shift the lane's main augment by 10+ points between orders, 0
+  scrambled. Which augment WINS does not show yet: 2 sets where both orders lean to different augments,
+  13 under the scramble. So the page states the pairing as a choice ("goes with this build": most of a
+  build's players run a pick the lane does not lead with; 321 of 2,172 lists) and keeps "wins more on
+  this build" for a clear edge (31). Zinx support: Prophecy > Spectra > Orion runs Terminal Treatment
+  80%, Marshal > Lunaria > Dynamo runs Disc Of Demise 75%, win rates level. Belica: the Prophecy > Orion
+  builds run Pulsefire Rounds 76-90% while the lane runs Combat Veteran / Devastating Bombs.
+- The first picks-by-build block pooled the three items in any order and led with the edge pick alone,
+  so Zinx's on-hit build read "Disc Of Demise, toss-up, 68 of 352" while 277 of 352 ran Terminal
+  Treatment. A toss-up lead with a fifth of the players needs the most-run pick beside it. Builds are
+  now matched in the tab's exact order (any order only as a labelled fallback under 60 players).
 

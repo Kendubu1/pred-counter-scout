@@ -29,6 +29,15 @@ describe('picks by build', () => {
     const same: PickCell = { games: 1200, wins: 640, augments: [{ id: '1', name: 'Alpha', n: 700, w: 425 }, { id: '2', name: 'Beta', n: 500, w: 215 }], eternals: [], crests: [] };
     expect(readPick(lane, same, 'augments').changes).toBe(false);
   });
+  it('says which pick a build pairs with from what its players run, separately from who wins', () => {
+    // The lane mostly runs Alpha (65%). Four in five players on this build run Beta, and neither wins more here.
+    const build: PickCell = { games: 300, wins: 150, augments: [{ id: '1', name: 'Alpha', n: 60, w: 30 }, { id: '2', name: 'Beta', n: 240, w: 120 }], eternals: [], crests: [] };
+    const r = readPick(lane, build, 'augments');
+    expect(r).toMatchObject({ mostRun: { name: 'Beta', pct: 80 }, laneMostRun: 'Alpha', pairs: true, changes: false });
+    // same most-run as the lane: nothing to say
+    const usual: PickCell = { games: 300, wins: 150, augments: [{ id: '1', name: 'Alpha', n: 240, w: 120 }, { id: '2', name: 'Beta', n: 60, w: 30 }], eternals: [], crests: [] };
+    expect(readPick(lane, usual, 'augments').pairs).toBe(false);
+  });
   it('says most played when one option has the games, and lists later items by slot', () => {
     const build: PickCell = { games: 100, wins: 50, augments: [], eternals: [{ name: 'Vesh', n: 100, w: 50 }], crests: [] };
     const b = readBuild(['a', 'b', 'c'], lane, { cell: build, slots: [{ d: 60, e: 20 }, { e: 25, f: 5 }, { g: 3 }], reach: [80, 30, 3] });
@@ -43,6 +52,6 @@ describe('picks by build', () => {
     expect(i.picksChanging / (i.builds * 3)).toBeLessThan(0.1);
     const hero = Object.keys(i.heroes)[0]!;
     const a = JSON.parse(readFileSync(path.join(ROOT, `data/artifacts/build-picks/${hero}.json`), 'utf8'));
-    for (const rd of Object.values<any>(a.roles)) for (const b of rd.builds) { expect(b.n).toBeGreaterThanOrEqual(i.minBuild); expect(b.core).toHaveLength(3); }
+    for (const rd of Object.values<any>(a.roles)) for (const b of rd.builds) { expect(b.n).toBeGreaterThanOrEqual(i.minBuild); expect(b.core).toHaveLength(3); expect(typeof b.ordered).toBe('boolean'); }
   });
 });
