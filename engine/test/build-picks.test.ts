@@ -54,4 +54,19 @@ describe('picks by build', () => {
     const a = JSON.parse(readFileSync(path.join(ROOT, `data/artifacts/build-picks/${hero}.json`), 'utf8'));
     for (const rd of Object.values<any>(a.roles)) for (const b of rd.builds) { expect(b.n).toBeGreaterThanOrEqual(i.minBuild); expect(b.core).toHaveLength(3); expect(typeof b.ordered).toBe('boolean'); }
   });
+  const lo = path.join(ROOT, 'data/artifacts/loadouts/index.json');
+  it.skipIf(!existsSync(lo))('committed loadouts: augments in the lane order, each with its own Eternal, crest and ordered build', () => {
+    const i = JSON.parse(readFileSync(lo, 'utf8'));
+    expect(i.augments).toBeGreaterThan(100);
+    const hero = Object.keys(i.heroes)[0]!;
+    const a = JSON.parse(readFileSync(path.join(ROOT, `data/artifacts/loadouts/${hero}.json`), 'utf8'));
+    for (const rd of Object.values<any>(a.roles)) {
+      expect(rd.augments.length).toBeGreaterThan(0);
+      for (const g of rd.augments) {
+        expect(g.n).toBeGreaterThanOrEqual(i.minAugment);
+        for (const k of ['eternals', 'crests', 'builds']) expect(['Best', 'Leans', 'Toss-up', 'Most played', 'By games']).toContain(g[k].label);
+        for (const r of g.builds.rows) expect(r.name.split('>')).toHaveLength(3);
+      }
+    }
+  });
 });

@@ -6026,4 +6026,16 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   so Zinx's on-hit build read "Disc Of Demise, toss-up, 68 of 352" while 277 of 352 ran Terminal
   Treatment. A toss-up lead with a fifth of the players needs the most-run pick beside it. Builds are
   now matched in the tab's exact order (any order only as a labelled fallback under 60 players).
+- The page follows the draft, not the shop (maintainer, 2026-11-10: "in the draft you choose your
+  augment and then Eternal first; pick one that doesn't pair and the game could be a wash"). So the
+  hero page leads with the augment and the Eternal, crest and build shown are for THAT augment
+  (`npm run loadouts`, 307 augments with 60+ players). What a mismatch costs, groups where 60%+ make
+  one choice against the players who chose differently: given the augment, a different FIRST ITEM is
+  -1.8 points (+- 0.8, 51 augments); given the augment, a different Eternal is level (-0.3 +- 0.7);
+  given the build, a different augment or Eternal is level. The Eternal is level on average because
+  the most-run one is often not the best: Zinx support with Terminal Treatment wins 53.2% on Weald and
+  47.3% on Exarch (487 players each, shrunk), and Exarch is the more run. Inside an augment the Eternal
+  list reads Toss-up 139, Leans 81, Best 56, Most played 31; it leads with a different Eternal than the
+  lane on a clear edge for 9 augments. Hero- and lane-specific choices go first; matchup and item
+  advice applies to any loadout and sits below.
 

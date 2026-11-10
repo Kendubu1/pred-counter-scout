@@ -390,6 +390,22 @@
   .adj-num b { color:var(--text-0); }
   .adj-num .up { color:var(--green); font-weight:700; } .adj-num .down { color:var(--red); font-weight:700; }
   .adj-none { font-size:.76rem; color:var(--text-2); padding:.3rem 0; }
+  /* Loadout by augment (data/artifacts/loadouts/<hero>.json): the draft-order card. */
+  .lo-tabs { display:flex; gap:.35rem; overflow-x:auto; scrollbar-width:none; margin:.2rem 0 .6rem; }
+  .lo-tabs::-webkit-scrollbar { display:none; }
+  .lo-tab { flex:1 0 auto; min-width:6.5rem; display:flex; align-items:center; gap:.45rem; background:var(--bg-0); border:1px solid var(--border); border-radius:12px; padding:.4rem .6rem; color:var(--text-1); font:inherit; cursor:pointer; text-align:left; min-height:48px; }
+  .lo-tab.active { border-color:var(--accent); background:var(--bg-2); color:var(--text-0); }
+  .lo-tab img { width:30px; height:30px; border-radius:50%; object-fit:contain; background:var(--bg-3); flex:none; }
+  .lo-tab .nm { font-size:.8rem; font-weight:700; line-height:1.15; }
+  .lo-tab .sub { font-size:.6875rem; color:var(--text-2); }
+  .lo-row { display:grid; grid-template-columns:3.9rem 1fr; gap:.5rem; padding:.42rem 0; border-top:1px dashed var(--border); align-items:center; }
+  .lo-k { font-size:.6875rem; font-weight:700; color:var(--text-2); }
+  .lo-v { display:flex; align-items:center; gap:.45rem; flex-wrap:wrap; min-width:0; font-size:.84rem; color:var(--text-0); }
+  .lo-v img.rnd { width:32px; height:32px; border-radius:50%; object-fit:cover; background:var(--bg-3); border:1px solid var(--border); flex:none; cursor:pointer; }
+  .lo-v img.sq { width:32px; height:32px; border-radius:8px; object-fit:cover; background:var(--bg-3); border:1px solid var(--border); flex:none; cursor:pointer; }
+  .lo-v .arrow { color:var(--text-2); font-size:.7rem; }
+  .lo-sub { flex-basis:100%; font-size:.74rem; color:var(--text-1); }
+  .lo-why { font-size:.78rem; color:var(--text-1); line-height:1.4; margin:0 0 .35rem; }
   .bp { margin-top:.6rem; padding-top:.45rem; border-top:1px dashed var(--border); }
   .bp-row { display:grid; grid-template-columns:4.2rem 1fr; gap:.5rem; font-size:.8rem; padding:.14rem 0; align-items:baseline; }
   .bp-k { font-size:.6875rem; font-weight:700; color:var(--text-2); }
@@ -1850,6 +1866,64 @@ function buildItemRows(items, role) {
   return `<div class="mb-items-why">${rows}</div>`;
 }
 
+// ── LOADOUT BY AUGMENT ── data/artifacts/loadouts/<hero>.json (npm run loadouts). The page follows
+// the draft: the augment is locked first, so it is the first choice here and the Eternal, crest and
+// opening build shown are the ones for THAT augment (ranked inside it by the edge rule, each option
+// pulled toward its own lane-wide rate). Hero- and lane-specific; the matchup and item sections
+// below apply to any loadout. Phone first: one icon row per pick, lists behind More.
+const LOADOUTS = {};
+const LO_STATE = {};
+async function mountLoadout(a) {
+  const host = document.getElementById('loadoutCard');
+  if (!host) return;
+  if (!LOIDX || !(LOIDX.heroes[a.slug] || []).includes(a.role)) { host.hidden = true; return; }
+  if (!LOADOUTS[a.slug]) LOADOUTS[a.slug] = await getJson(`../../data/artifacts/loadouts/${a.slug}.json`).catch(() => null);
+  const file = LOADOUTS[a.slug], rd = file && file.roles && file.roles[a.role];
+  if (!rd || !rd.augments.length || document.getElementById('loadoutCard') !== host) { host.hidden = true; return; }
+  const stateKey = `${a.slug}|${a.role}`;
+  const itemName = (slug) => ((ITEMTAGS && ITEMTAGS.items[slug]) || {}).name || slug;
+  const crestSlug = (name) => { const e = ITEMTAGS && Object.entries(ITEMTAGS.items).find(([, t]) => t.kind === 'crest' && t.name === name); return e ? e[0] : null; };
+  const lbl = (l) => (l === 'By games' ? 'few games' : l);
+  const LTIP = { Best: 'clearly wins more with this augment', Leans: 'wins a little more with this augment', 'Toss-up': 'no real difference with this augment: the first has the best odds so far', 'Most played': 'the only one with enough games here, so no edge is claimed', 'By games': 'too few games with this augment to rank' };
+  const reviews = (REVIEWS && REVIEWS.heroes && REVIEWS.heroes[a.slug] && REVIEWS.heroes[a.slug][a.role]) || {};
+  const etImg = (name) => `<img class="rnd" data-epop="${esc(name)}" src="${IMG.eternal(name.toLowerCase())}" alt="" title="${esc(name)} · tap for the Eternal" onerror="this.style.visibility='hidden'">`;
+  const crestImg = (name) => { const sl = crestSlug(name); return sl ? `<img class="sq" data-ipop="${esc(sl)}" src="../img/crests/${esc(sl)}.webp" alt="" title="${esc(name)} · tap for details" onerror="this.style.visibility='hidden'">` : ''; };
+  const coreImgs = (key) => key.split('>').map((sl) => `<img class="sq" data-ipop="${esc(sl)}" src="../img/items/${esc(sl)}.webp" alt="" title="${esc(itemName(sl))} · tap for details" onerror="this.style.visibility='hidden'">`).join('<span class="arrow">→</span>');
+  const draw = () => {
+    const sel = rd.augments.find((x) => x.id === LO_STATE[stateKey]) || rd.augments[0];
+    const tabs = rd.augments.map((x, i) => `<button type="button" class="lo-tab${x === sel ? ' active' : ''}" data-loaug="${esc(x.id)}" aria-pressed="${x === sel}">
+        <img src="../img/augments/${esc(x.id)}.webp" alt="" onerror="this.style.visibility='hidden'">
+        <span><span class="nm">${esc(x.name)}</span><br><span class="sub">${x.sharePct}% run it${i === 0 && rd.augments.length > 1 && rd.augmentLabel !== 'By games' ? ` · ${rd.augmentLabel === 'Most played' ? 'most played' : rd.augmentLabel === 'Toss-up' ? 'best odds' : rd.augmentLabel.toLowerCase()}` : ''}</span></span>
+      </button>`).join('');
+    const pickRow = (key, p, img) => {
+      const lead = p.rows[0];
+      if (!lead) return '';
+      const sub = `${p.mostRun && p.mostRun.name !== lead.name ? `${p.mostRun.pct} of 100 with this augment run <b>${esc(p.mostRun.name)}</b>` : ''}`;
+      return `<div class="lo-row"><span class="lo-k">${key}</span><span class="lo-v">${img(lead.name)}<b>${esc(lead.name)}</b><span class="bp-l" title="${LTIP[p.label] || ''}">${lbl(p.label)}</span><span class="adj-num">${lead.n.toLocaleString()} of ${sel.n.toLocaleString()}</span>${p.changes ? `<span class="itag ans" title="Across the lane ${esc(p.laneLead)} leads">wins more with this augment</span>` : ''}${sub ? `<span class="lo-sub">${sub}</span>` : ''}</span></div>`;
+    };
+    const b = sel.builds, b0 = b.rows[0];
+    const buildRow = b0 ? `<div class="lo-row"><span class="lo-k">Build</span><span class="lo-v">${coreImgs(b0.name)}<span class="bp-l" title="${LTIP[b.label] || ''}">${lbl(b.label)}</span><span class="adj-num">${b0.n.toLocaleString()} of ${sel.coreGames.toLocaleString()}</span>${sel.openers[0] ? `<span class="lo-sub">${sel.openers[0].pct} of 100 with this augment open on <b>${esc(itemName(sel.openers[0].item))}</b></span>` : ''}</span></div>` : '';
+    const list = (title, p, name) => (p.rows.length ? `<div class="adj-num" style="margin-top:.35rem"><b>${title}</b> · ${lbl(p.label)}${p.laneLead ? ` · across the lane: ${name(p.laneLead)}` : ''}</div>${p.rows.map((x) => `<div class="adj-num">${name(x.name)} · ${x.n.toLocaleString()} games · ${x.shrunk}%${x.few ? ' · few games' : ''}</div>`).join('')}` : '');
+    const coreName = (key) => key.split('>').map((sl) => esc(itemName(sl))).join(' → ');
+    const why = reviews[sel.id];
+    host.innerHTML = `<h2>Loadout <span class="hint">start with your augment · it is locked in the draft</span></h2>
+      <div class="lo-tabs" role="group" aria-label="Augment">${tabs}</div>
+      ${why ? `<div class="lo-why">${esc(why)}</div>` : ''}
+      ${pickRow('Eternal', sel.eternals, etImg)}
+      ${pickRow('Crest', sel.crests, crestImg)}
+      ${buildRow}
+      <details class="imore"><summary>More</summary>
+        ${list('Eternal', sel.eternals, esc)}${list('Crest', sel.crests, esc)}${list('Opening three items', sel.builds, coreName)}
+        ${sel.openers.length ? `<div class="adj-num" style="margin-top:.35rem"><b>First item</b> · ${sel.openers.map((o) => `${esc(itemName(o.item))} ${o.pct}%`).join(', ')}</div>` : ''}
+        <div class="bc-note">${sel.n.toLocaleString()} ${esc(a.name)} ${esc(a.role)} players ran ${esc(sel.name)} in ranked games this patch (${esc(file.patch)}, all ranks). Each list is ranked inside this augment, with win rates pulled toward how the pick does across the whole lane so a handful of games cannot lead. Builds count players who finished three items, in the order bought. Across all heroes, players who open on a different first item than most players on their augment win about 2 fewer games in 100.</div>
+      </details>`;
+    host.hidden = false;
+    host.querySelectorAll('[data-loaug]').forEach((btn) => btn.addEventListener('click', () => { LO_STATE[stateKey] = btn.dataset.loaug; draw(); }));
+  };
+  draw();
+  buildSubnav();
+}
+
 // ── PICKS ON THIS BUILD ── data/artifacts/build-picks/<hero>.json (npm run buildpicks): the augment,
 // Eternal and crest run by players who opened with this tab's three items, ranked by the same edge
 // rule as the lane picks (each option shrunk toward its own lane-wide rate), and what they bought
@@ -2128,6 +2202,8 @@ function renderHero(a, roleParam) {
     </div>
 
     <div id="tabPlay">
+    <section class="card" id="loadoutCard" hidden></section>
+
     <section class="card">
       <h2>Your opening picks</h2>
       ${(() => {
@@ -2514,6 +2590,7 @@ function renderHero(a, roleParam) {
   wireBuilds();
   mountAdjust(a);
   mountBuildPicks(a);
+  mountLoadout(a);
   // Page rank filter: remember the pick and redraw this lane, keeping the scroll.
   document.querySelectorAll('.pageband button[data-pageband]').forEach((b) => {
     b.onclick = async () => {
@@ -2768,11 +2845,11 @@ async function nav(slug, replace = false, role = null) {
   await route();
   window.scrollTo({ top: 0 });
 }
-let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null, PENDING = null, HEROCOACH = null, ETREV = null, ITEMPOOL = null, ITEMREV = null, ITEMTAGS = null, ADJIDX = null, ITEMPICKS = null, BPIDX = null;
+let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null, PENDING = null, HEROCOACH = null, ETREV = null, ITEMPOOL = null, ITEMREV = null, ITEMTAGS = null, ADJIDX = null, ITEMPICKS = null, BPIDX = null, LOIDX = null;
 async function getAugs() {
   if (!AUGS) {
     let eternals, pending;
-    [AUGS, REVIEWS, REASONING, eternals, pending, HEROCOACH, ETREV, ITEMPOOL, ITEMREV, ITEMTAGS, ADJIDX, ITEMPICKS, BPIDX] = await Promise.all([
+    [AUGS, REVIEWS, REASONING, eternals, pending, HEROCOACH, ETREV, ITEMPOOL, ITEMREV, ITEMTAGS, ADJIDX, ITEMPICKS, BPIDX, LOIDX] = await Promise.all([
       getJson('../../data/aggregates/predgg-augments.json').catch(() => null),
       getJson('../../data/aggregates/augment-reviews.json').catch(() => null),
       getJson('../../data/aggregates/build-reasoning.json').catch(() => null),
@@ -2786,6 +2863,7 @@ async function getAugs() {
       getJson('../../data/artifacts/adjustments/index.json').catch(() => null),
       getJson('../../data/aggregates/item-picks.json').catch(() => null),
       getJson('../../data/artifacts/build-picks/index.json').catch(() => null),
+      getJson('../../data/artifacts/loadouts/index.json').catch(() => null),
     ]);
     PENDING = (pending && pending.heroes) || {};
     // name -> { major, minorSlot1, minorSlot2 } so an Eternal can be explained in

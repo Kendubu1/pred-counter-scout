@@ -150,6 +150,13 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   engine/copy-tasks/itempicks.responses.json, an INDEPENDENT critic writes itempicks.critique.json,
   then the plain run number-checks every line against the item's own text; rerun after a catalog
   change; the page falls back to the rule-based lane line for an item with no line),
+  `npm run loadouts` (zero-API: the "Loadout" card that leads every hero-lane page,
+  data/artifacts/loadouts/<hero>.json. The page follows the DRAFT (maintainer, 2026-11-10): the augment
+  is locked first and is hero- and lane-specific, so it is the first choice, and per augment with 60+
+  players the Eternal, crest and ordered opening core are ranked INSIDE that augment by the edge rule
+  (the augment treated like a rank band), with what its players run and their first item beside it;
+  matchup and item sections below apply to any loadout; rules in src/build-picks.ts readList; rerun
+  daily after perks),
   `npm run buildpicks` (zero-API: "Picks on this build" under each hero-page build,
   data/artifacts/build-picks/<hero>.json, from the patch's ranked lineups: the augment / Eternal /
   crest run by players who opened with that three-item set (60+ players), ranked by the edge rule

@@ -34,17 +34,18 @@ export const PAIR_SHARE = 0.5, PAIR_PTS = 15;
 const LABEL: Record<Confidence, PickRead['label']> = { clear: 'Best', slight: 'Leans', 'toss-up': 'Toss-up' };
 const key = (x: { id?: string; name: string }) => String(x.id ?? x.name);
 
-export function readPick(lane: PickCell, build: PickCell, kind: Kind): PickRead {
-  const laneRank = rankByEdge(lane[kind], lane.games);
+/** Rank one list inside a slice of the lane (a build, an augment) against the same list lane-wide. */
+export function readList(laneXs: Opt[], lane: { games: number; wins: number }, xs: Opt[], sub: { games: number; wins: number }): PickRead {
+  const laneRank = rankByEdge(laneXs, lane.games);
   const laneLead = laneRank.thin ? null : laneRank.ranked[0] ?? null;
-  const r = rankByEdge(build[kind], build.games, { prior: bandPrior(lane[kind], lane, build) });
+  const r = rankByEdge(xs, sub.games, { prior: bandPrior(laneXs, lane, sub) });
   const label: PickRead['label'] = r.thin ? 'By games' : r.confidence ? LABEL[r.confidence] : 'Most played';
   const lead = r.ranked[0];
-  const top = (c: PickCell) => [...c[kind]].sort((a, b) => b.n - a.n)[0] ?? null;
-  const bt = top(build), lt = top(lane);
-  const share = bt && build.games ? bt.n / build.games : 0;
-  const laneShare = bt && lane.games ? (lane[kind].find((x) => key(x) === key(bt))?.n ?? 0) / lane.games : 0;
-  const z = bt && laneShare > 0 && laneShare < 1 ? (share - laneShare) / Math.sqrt((laneShare * (1 - laneShare)) / build.games) : 0;
+  const top = (ys: Opt[]) => [...ys].sort((x, y) => y.n - x.n)[0] ?? null;
+  const bt = top(xs), lt = top(laneXs);
+  const share = bt && sub.games ? bt.n / sub.games : 0;
+  const laneShare = bt && lane.games ? (laneXs.find((x) => key(x) === key(bt))?.n ?? 0) / lane.games : 0;
+  const z = bt && laneShare > 0 && laneShare < 1 ? (share - laneShare) / Math.sqrt((laneShare * (1 - laneShare)) / sub.games) : 0;
   return {
     mostRun: bt ? { name: bt.name, pct: Math.round(share * 100) } : null, laneMostRun: lt?.name ?? null,
     pairs: !!bt && !!lt && key(bt) !== key(lt) && share >= PAIR_SHARE && (share - laneShare) * 100 >= PAIR_PTS && z >= 3,
@@ -54,6 +55,7 @@ export function readPick(lane: PickCell, build: PickCell, kind: Kind): PickRead 
     changes: !!lead && !!laneLead && key(lead) !== key(laneLead) && r.confidence === 'clear',
   };
 }
+export const readPick = (lane: PickCell, build: PickCell, kind: Kind): PickRead => readList(lane[kind], lane, build[kind], build);
 
 export interface NextSlot { slot: number; n: number; top: { item: string; pct: number }[] }
 export interface BuildRead {
