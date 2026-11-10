@@ -24,12 +24,14 @@ export const POOL_MIN_PCT = 2, POOL_MIN_GAMES = 15;
 /** n players; i = players holding the item in this layer; ps = sum of its 1-based purchase position */
 export interface Layer { n: number; i: Record<string, number>; ps: Record<string, number> }
 export interface Cell { core: Layer; late: Record<string, Layer> }
-export interface BandCell extends Cell { plat: Cell }
+/** g / w = every game and win in the matchup (any build length), the head-to-head record.
+ *  slots[k] = what was bought k+1-th, reach[k] = players who bought a k+1-th item. */
+export interface BandCell extends Cell { plat: Cell; g: number; w: number; slots: Record<string, number>[]; reach: number[] }
 export interface HeroRoleCells { all: BandCell; lane: Record<string, BandCell>; team: Record<string, BandCell>; comp: Record<string, BandCell> }
 
 const layer = (): Layer => ({ n: 0, i: {}, ps: {} });
 const cell = (): Cell => ({ core: layer(), late: {} });
-export const bandCell = (): BandCell => ({ ...cell(), plat: cell() });
+export const bandCell = (): BandCell => ({ ...cell(), plat: cell(), g: 0, w: 0, slots: Array.from({ length: LATE_MAX }, () => ({})), reach: Array.from({ length: LATE_MAX }, () => 0) });
 export const emptyHeroRole = (): HeroRoleCells => ({ all: bandCell(), lane: {}, team: {}, comp: {} });
 
 function add(c: Cell, items: string[]) {
@@ -43,7 +45,23 @@ function add(c: Cell, items: string[]) {
   for (let k = CORE_DEPTH; k < d; k++) { const s = items[k]!; l.i[s] = (l.i[s] ?? 0) + 1; l.ps[s] = (l.ps[s] ?? 0) + k + 1; }
 }
 /** Count one player (their distinct completed items in purchase order) into a cell. */
-export function countPlayer(c: BandCell, items: string[], plat: boolean) { add(c, items); if (plat) add(c.plat, items); }
+export function countPlayer(c: BandCell, items: string[], plat: boolean, won = false) {
+  add(c, items); if (plat) add(c.plat, items);
+  c.g++; if (won) c.w++;
+  for (let k = 0; k < Math.min(LATE_MAX, items.length); k++) { c.reach[k]!++; c.slots[k]![items[k]!] = (c.slots[k]![items[k]!] ?? 0) + 1; }
+}
+/** The common buys at each purchase slot: top items among players who bought a k-th item (40+ of them). */
+export interface SlotRead { slot: number; n: number; top: { item: string; pct: number }[] }
+export const SLOT_MIN = 40, SLOT_TOP = 3;
+export function readSlots(c: BandCell): SlotRead[] {
+  const out: SlotRead[] = [];
+  for (let k = 0; k < LATE_MAX; k++) {
+    const n = c.reach[k]!;
+    if (n < SLOT_MIN) break;
+    out.push({ slot: k + 1, n, top: Object.entries(c.slots[k]!).sort((a, b) => b[1] - a[1]).slice(0, SLOT_TOP).map(([item, v]) => ({ item, pct: Math.round((100 * v) / n) })).filter((x) => x.pct >= 5) });
+  }
+  return out;
+}
 
 export interface Shift { item: string; n: number; has: number; per100: number; usual100: number; z: number; pos: number | null }
 /** Strata of (everyone, matchup) layers -> per item observed vs the rest of the hero-role. */
@@ -72,7 +90,14 @@ export const lateN = (c: Cell) => Object.values(c.late).reduce((t, l) => t + l.n
 
 export interface Row { item: string; per100: number; usual100: number; pos: number | null; has: number; platAgrees: boolean | null }
 export interface LayerRead { n: number; rises: Row[]; drops: Row[] }
-export interface MatchupRead { core: LayerRead; late: LayerRead }
+export interface MatchupRead {
+  core: LayerRead; late: LayerRead;
+  /** every game in the matchup and the hero-role's games outside it (raw wins, not shrunk) */
+  record: { n: number; w: number; restN: number; restW: number };
+  /** common buys by purchase slot in this matchup (only for matchups with SLOT_MATCHUP_MIN+ games) */
+  slots?: SlotRead[];
+}
+export const SLOT_MATCHUP_MIN = 100;
 export interface Bars { minN: number; minItem: number; zMin: number; minPts: number; minHas: number; platMinN: number; lateZMin: number; lateMinPts: number }
 // Set against the shuffled-matchup null (npm run adjustments -- --tune, 29k matches, 2026-11-10): at
 // these bars the core list is 5% (lane), 13% (team) and 9% (enemy shape) the size luck makes. The late
@@ -83,7 +108,7 @@ export interface Bars { minN: number; minItem: number; zMin: number; minPts: num
 export const BARS: Bars = { minN: 30, minItem: 10, zMin: 3.5, minPts: 4, minHas: 12, platMinN: 20, lateZMin: 4, lateMinPts: 5 };
 
 /** One matchup cell against the hero-role: shown rises and drops per layer, and how many rates were tested. */
-export function readMatchup(all: BandCell, c: BandCell, b: Bars = BARS): { read: MatchupRead; tested: number } {
+export function readMatchup(all: BandCell, c: BandCell, b: Bars = BARS, withSlots = true): { read: MatchupRead; tested: number } {
   let tested = 0;
   const one = (strataOf: (a: Cell, x: Cell) => [Layer | undefined, Layer | undefined][], n: number, zMin: number, minPts: number): LayerRead => {
     const rows = shifts(strataOf(all, c), b.minN, b.minItem);
@@ -103,12 +128,16 @@ export function readMatchup(all: BandCell, c: BandCell, b: Bars = BARS): { read:
       drops: ok.filter((r) => r.z < 0).sort((x, y) => x.per100 - x.usual100 - (y.per100 - y.usual100)).map(row),
     };
   };
-  return { read: { core: one(coreStrata, c.core.n, b.zMin, b.minPts), late: one(lateStrata, lateN(c), b.lateZMin, b.lateMinPts) }, tested };
+  const read: MatchupRead = { core: one(coreStrata, c.core.n, b.zMin, b.minPts), late: one(lateStrata, lateN(c), b.lateZMin, b.lateMinPts), record: { n: c.g, w: c.w, restN: all.g - c.g, restW: all.w - c.w } };
+  if (withSlots && c.g >= SLOT_MATCHUP_MIN) read.slots = readSlots(c);
+  return { read, tested };
 }
 
 export interface ScopeRead { [key: string]: MatchupRead }
 export interface HeroRoleRead {
   players: { core: number; late: number };
+  /** every game and win of the hero-role, and its common buys at each purchase slot */
+  record: { n: number; w: number }; slots: SlotRead[];
   /** what this hero-role usually finishes after the core: share of 4+ item players, typical slot */
   usualLate: { item: string; per100: number; pos: number }[];
   /** every item this hero-role builds often enough to suggest: share in the core, share after it, typical slot */
@@ -120,17 +149,18 @@ export interface HeroRoleRead {
 export function readHeroRole(hr: HeroRoleCells, b: Bars = BARS): HeroRoleRead {
   let tested = 0;
   const shown = { core: 0, late: 0 };
-  const scope = (cells: Record<string, BandCell>): ScopeRead => {
+  // Slot tables for lane opponents and team shapes only: the team scope has five cells per player and would triple the files.
+  const scope = (cells: Record<string, BandCell>, withSlots: boolean): ScopeRead => {
     const out: ScopeRead = {};
     for (const [k, c] of Object.entries(cells)) {
       if (c.core.n < b.minN) continue;
-      const r = readMatchup(hr.all, c, b);
+      const r = readMatchup(hr.all, c, b, withSlots);
       tested += r.tested; shown.core += r.read.core.rises.length + r.read.core.drops.length; shown.late += r.read.late.rises.length + r.read.late.drops.length;
       out[k] = r.read;
     }
     return out;
   };
-  const lane = scope(hr.lane), team = scope(hr.team), comp = scope(hr.comp);
+  const lane = scope(hr.lane, true), team = scope(hr.team, false), comp = scope(hr.comp, true);
   const ln = lateN(hr.all), agg = new Map<string, { has: number; ps: number }>();
   for (const l of Object.values(hr.all.late)) for (const [s, v] of Object.entries(l.i)) { const a = agg.get(s) ?? { has: 0, ps: 0 }; a.has += v; a.ps += l.ps[s] ?? 0; agg.set(s, a); }
   const usualLate = ln ? [...agg].map(([item, a]) => ({ item, per100: Math.round((a.has / ln) * 100), pos: Math.round((a.ps / a.has) * 10) / 10 })).filter((x) => x.per100 >= 5).sort((x, y) => y.per100 - x.per100).slice(0, 10) : [];
@@ -138,7 +168,7 @@ export function readHeroRole(hr: HeroRoleCells, b: Bars = BARS): HeroRoleRead {
     const c = hr.all.core.i[item] ?? 0, l = agg.get(item)?.has ?? 0;
     return { item, core100: Math.round((c / Math.max(1, hr.all.core.n)) * 100), late100: ln ? Math.round((l / ln) * 100) : 0, pos: Math.round((((hr.all.core.ps[item] ?? 0) + (agg.get(item)?.ps ?? 0)) / Math.max(1, c + l)) * 10) / 10, k: c + l };
   }).filter((x) => x.k >= POOL_MIN_GAMES && (x.core100 >= POOL_MIN_PCT || x.late100 >= POOL_MIN_PCT)).sort((x, y) => y.k - x.k).map(({ k: _k, ...x }) => x);
-  return { players: { core: hr.all.core.n, late: ln }, usualLate, pool, tested, shown, lane, team, comp };
+  return { players: { core: hr.all.core.n, late: ln }, record: { n: hr.all.g, w: hr.all.w }, slots: readSlots(hr.all), usualLate, pool, tested, shown, lane, team, comp };
 }
 
 // Enemy-team shapes a player can see on the loading screen. Each is a count over

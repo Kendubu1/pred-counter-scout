@@ -387,6 +387,18 @@
   .adj-num b { color:var(--text-0); }
   .adj-num .up { color:var(--green); font-weight:700; } .adj-num .down { color:var(--red); font-weight:700; }
   .adj-none { font-size:.76rem; color:var(--text-2); padding:.3rem 0; }
+  .adj-rec { font-size:.8rem; color:var(--text-0); margin:.5rem 0 .1rem; }
+  .adj-rec .up { color:var(--green); font-weight:700; } .adj-rec .down { color:var(--red); font-weight:700; }
+  .adj-tip { font-size:.78rem; color:var(--text-1); line-height:1.45; padding:.2rem 0; }
+  .adj-tip b { color:var(--text-0); }
+  .adj-slots { display:grid; grid-template-columns:auto 1fr 1fr; gap:.3rem .7rem; font-size:.74rem; color:var(--text-1); margin-top:.3rem; align-items:start; }
+  .adj-slots .hd { font-size:.6875rem; font-weight:700; color:var(--text-2); }
+  .adj-slots .sl { font-weight:700; color:var(--text-0); white-space:nowrap; }
+  .adj-slots .buy { display:flex; flex-wrap:wrap; gap:.15rem .6rem; }
+  .adj-slots .buy span { white-space:nowrap; }
+  .adj-slots .buy img { width:18px; height:18px; border-radius:4px; display:inline-block; vertical-align:-4px; margin-right:.25rem; background:var(--bg-3); }
+  .adj-slots .buy b { color:var(--text-0); font-variant-numeric:tabular-nums; }
+  @media (max-width:560px) { .adj-slots { grid-template-columns:auto 1fr; } .adj-slots .hd.usual, .adj-slots .usual { grid-column:2; } .adj-slots .hd { display:none; } .adj-slots .usual::before { content:"usually: "; color:var(--text-2); } }
   .mb-opt { color:var(--blue); }
   /* Per-item "why this item, in this order" list (build reasoning). */
   .mb-items-why { margin-top:.35rem; display:flex; flex-direction:column; gap:.2rem; }
@@ -1740,17 +1752,54 @@ async function mountAdjust(a) {
       <div class="adj-none" style="color:var(--text-1)">Players do keep adjusting after the first three items, but by only a few players in 100, too few to show for one hero and one item. So these are picked by fit: the item's text against the enemy kit. They are not a measured win rate.</div>
       ${groups || `<div class="adj-none">Nothing ${esc(a.name)} ${esc(a.role)} usually builds answers this directly.</div>`}</div>`;
   };
+  // The matchup's own record against the hero-role's other games (raw wins, every game counted).
+  const record = (mode, k, m) => {
+    const r = m.record;
+    if (!r || r.n < 50 || !r.restN) return '';
+    const a1 = (100 * r.w) / r.n, a0 = (100 * r.restW) / r.restN, d = a1 - a0;
+    const cls = d <= -3 ? 'down' : d >= 3 ? 'up' : '';
+    return `<div class="adj-rec">${esc(a.name)} ${esc(a.role)} wins <span class="${cls}">${a1.toFixed(0)}%</span> of ${r.n.toLocaleString()} games ${into(mode, k)}, against ${a0.toFixed(0)}% in the other ${esc(a.role)} games.${d <= -3 ? ' A harder game than usual.' : d >= 3 ? ' An easier game than usual.' : ''}</div>`;
+  };
+  // How to play into the pick, from its kit: shown for every enemy hero, and it carries the card
+  // when the builds have nothing to say.
+  const CC_WORD = { stun: 'stun', root: 'root', sleep: 'sleep', pull: 'pull', knockup: 'knock-up', knockback: 'knock-back', silence: 'silence', suppress: 'suppress', taunt: 'taunt', fear: 'fear' };
+  const tips = (mode, k, quiet) => {
+    const t = mode !== 'comp' && ADJIDX.heroTips && ADJIDX.heroTips[k];
+    if (!t || !(t.playAgainst || t.cc.length)) return '';
+    const cc = t.cc.map((c) => `<b>${esc(c.ability)}</b> (${c.types.map((x) => CC_WORD[x] || x).join(' and ')}${c.sec ? `, ${c.sec}s` : ''})`).join(', ');
+    const curve = [t.powerSpike ? `strongest in the ${esc(t.powerSpike)} game` : '', t.scaling ? `scales ${esc(t.scaling)}` : ''].filter(Boolean).join(', ');
+    return `<div class="bc-group"><div class="bc-h">Playing into ${esc(heroName(k))} <span>— ${quiet ? 'players do not change the build here, so play the matchup' : 'from the kit'}</span></div>
+      ${t.playAgainst ? `<div class="adj-tip">${esc(t.playAgainst)}</div>` : ''}
+      ${cc ? `<div class="adj-tip">Crowd control to dodge: ${cc}.</div>` : ''}
+      ${curve ? `<div class="adj-tip">${esc(heroName(k))} is ${curve}.</div>` : ''}</div>`;
+  };
+  // The common buys at each purchase slot, this matchup beside the usual, among players who bought a k-th item.
+  const slotTable = (mode, k, m) => {
+    const here = m.slots || [], usual = rd.slots || [];
+    if (!usual.length) return '';
+    const cell = (sr) => (sr ? `<div class="buy">${sr.top.map((x) => `<span><img loading="lazy" data-ipop="${esc(x.item)}" src="../img/items/${esc(x.item)}.webp" alt="" onerror="this.style.visibility='hidden'">${esc(itemName(x.item))} <b>${x.pct}%</b></span>`).join('')}</div>` : '<div class="buy" style="color:var(--text-2)">too few games</div>');
+    const rows = usual.map((u) => { const h = here.find((x) => x.slot === u.slot);
+      return `<div class="sl">Item ${u.slot}</div>${here.length ? cell(h) : ''}<div class="${here.length ? 'usual' : ''}">${cell(u)}</div>`; }).join('');
+    const head = here.length ? `<div class="hd"></div><div class="hd">${esc(nameOfKey(mode, k))}</div><div class="hd usual">Usually</div>` : '';
+    return `<details class="sim-collapse" style="margin-top:.5rem"${quietOpen ? ' open' : ''}><summary>Common buys, item by item${here.length ? '' : ' (all matchups)'}</summary><div class="body">
+      <div class="adj-slots" style="${here.length ? '' : 'grid-template-columns:auto 1fr'}">${head}${rows}</div>
+      <div class="bc-note">What ${esc(a.name)} ${esc(a.role)} players buy first, second, third and so on. Each row counts only players who bought an item in that slot, so a game that ended early is not read as skipping it.</div>
+    </div></details>`;
+  };
+  let quietOpen = false;
   const draw = () => {
     const mode = ADJ_STATE.mode, keys = keysOf(mode), k = ADJ_STATE.key, m = scopes[mode][k];
     const modes = [['lane', 'Lane opponent'], ['team', 'Enemy on their team'], ['comp', 'Their team shape']].filter(([md]) => keysOf(md).length)
       .map(([md, label]) => `<button type="button" data-adjmode="${md}" class="${md === mode ? 'active' : ''}" aria-pressed="${md === mode}">${label}</button>`).join('');
-    const opts = keys.map((x) => { const c = changes(scopes[mode][x]); return `<option value="${esc(x)}"${x === k ? ' selected' : ''}>${esc(nameOfKey(mode, x))} · ${scopes[mode][x].core.n.toLocaleString()} games${c ? ` · ${c} ${c === 1 ? 'change' : 'changes'}` : ''}</option>`; }).join('');
+    const opts = keys.map((x) => { const c = changes(scopes[mode][x]); return `<option value="${esc(x)}"${x === k ? ' selected' : ''}>${esc(nameOfKey(mode, x))} · ${(scopes[mode][x].record ? scopes[mode][x].record.n : scopes[mode][x].core.n).toLocaleString()} games${c ? ` · ${c} ${c === 1 ? 'change' : 'changes'}` : ''}</option>`; }).join('');
     let out = '<div class="adj-none">No matchup with enough games yet.</div>';
     if (m) {
       const where = into(mode, k), taken = new Set([...m.core.rises, ...m.late.rises].map((r) => r.item));
       const prefer = needsOf(mode, k).map((n) => n.answer);
-      out = measured('First three items', `— what ${esc(a.name)} ${esc(a.role)} players change ${where}`, m.core, where, prefer)
+      quietOpen = !changes(m);
+      out = record(mode, k, m) + measured('First three items', `— what ${esc(a.name)} ${esc(a.role)} players change ${where}`, m.core, where, prefer)
         + (m.late.rises.length || m.late.drops.length ? measured('Items 4 to 6', '— the late changes large enough to show for this hero', m.late, where, prefer) : '')
+        + tips(mode, k, quietOpen) + slotTable(mode, k, m)
         + fits(mode, k, taken);
     }
     host.innerHTML = `<details class="sim-collapse adj" open><summary>Adjust for your matchup</summary><div class="body">

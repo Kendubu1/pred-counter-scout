@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BARS, COMP_LABELS, bandCell, countPlayer, emptyHeroRole, needsVs, readHeroRole, readMatchup, shifts, coreStrata, lateStrata, countTiming, readTiming, type TimingCells } from '../src/adjustments.js';
+import { BARS, COMP_LABELS, bandCell, countPlayer, emptyHeroRole, needsVs, readHeroRole, readMatchup, shifts, coreStrata, lateStrata, countTiming, readTiming, readSlots, type TimingCells } from '../src/adjustments.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -59,6 +59,22 @@ describe('adjustments shifts', () => {
     hr.lane.thin = bandCell();
     for (let k = 0; k < BARS.minN - 1; k++) { countPlayer(hr.all, ['a', 'b', 'z'], false); countPlayer(hr.lane.thin, ['a', 'b', 'z'], false); }
     expect(readHeroRole(hr).lane.thin).toBeUndefined();
+  });
+});
+
+describe('matchup record and common buys by slot', () => {
+  it('keeps every game for the record and reads each slot among players who got that far', () => {
+    const hr = emptyHeroRole();
+    const play = (items: string[], opp: string, won: boolean) => { countPlayer(hr.all, items, false, won); countPlayer((hr.lane[opp] ??= bandCell()), items, false, won); };
+    for (let k = 0; k < 60; k++) play(['a', 'b'], 'x', false);            // short losses: in the record, in slots 1-2 only
+    for (let k = 0; k < 40; k++) play(['a', 'c', 'd', 'e'], 'x', true);
+    for (let k = 0; k < 300; k++) play(['a', 'b', 'd'], 'y', k % 2 === 0);
+    const m = readMatchup(hr.all, hr.lane.x!).read;
+    expect(m.record).toEqual({ n: 100, w: 40, restN: 300, restW: 150 });
+    expect(m.slots!.map((s) => s.n)).toEqual([100, 100, 40, 40]);
+    expect(m.slots![1]!.top).toEqual([{ item: 'b', pct: 60 }, { item: 'c', pct: 40 }]);
+    expect(m.slots![2]!.top).toEqual([{ item: 'd', pct: 100 }]);
+    expect(readSlots(hr.all)[0]!.top).toEqual([{ item: 'a', pct: 100 }]);
   });
 });
 

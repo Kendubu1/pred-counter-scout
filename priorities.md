@@ -531,6 +531,9 @@ items from the lineups (21a) for this card. Open:
   core only once item 19's lift test tags it.
 - **22g. Answer timing per hero-role.** The slot-by-slot answer timing on the card is pooled over all
   heroes (index.answerTiming). Split it by role or class once the patch has the games.
+- **22h. Lane result for the field.** The lineups carry end-of-game totals only, so "who won the lane"
+  is not readable; gold at 10 minutes per player (or first-tower side) would need a new field in the
+  stream rows. Check whether the public stream exposes it before promising winners-of-lane builds.
 - **22c. Purchase timing.** Committed 1.18 rows are v2 (no purchase seconds); rows written from
   2026-11-10 on are v3. Once a few days of v3 exist, add "bought around minute N" to adjusted items.
 - **22d. Daily job.** Add `npm run itemtags && npm run adjustments` after perks in the scheduled

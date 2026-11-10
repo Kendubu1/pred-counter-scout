@@ -76,8 +76,8 @@ function count(shuffle: boolean): Map<string, HeroRoleCells> {
         const key = `${s[0]}|${s[1]}`;
         const hr = cells.get(key) ?? emptyHeroRole();
         cells.set(key, hr);
-        const plat = s[2] != null && s[2] >= PLAT_TIER;
-        countPlayer(hr.all, items, plat);
+        const plat = s[2] != null && s[2] >= PLAT_TIER, won = r.win === t;
+        countPlayer(hr.all, items, plat, won);
         if (!shuffle) {
           const opp = enemy.find((e) => e[1] === s[1]);
           if (opp) for (const a of ANSWERS) countTiming(timingLane.get(a)!, key, items, answersIt[a], asks(opp[0], a));
@@ -85,10 +85,10 @@ function count(shuffle: boolean): Map<string, HeroRoleCells> {
         }
         for (const e of enemy) {
           if (e[0] === s[0]) continue; // only under the shuffle: a hero never faces itself
-          if (e[1] === s[1]) countPlayer((hr.lane[e[0]] ??= bandCell()), items, plat);
-          countPlayer((hr.team[e[0]] ??= bandCell()), items, plat);
+          if (e[1] === s[1]) countPlayer((hr.lane[e[0]] ??= bandCell()), items, plat, won);
+          countPlayer((hr.team[e[0]] ??= bandCell()), items, plat, won);
         }
-        for (const k of labels) countPlayer((hr.comp[k] ??= bandCell()), items, plat);
+        for (const k of labels) countPlayer((hr.comp[k] ??= bandCell()), items, plat, won);
       }
     }
   }
@@ -129,7 +129,7 @@ for (const [key, hr] of cells) {
   (index[hero] ??= {})[role] = { players: rd.players.core, latePlayers: rd.players.late, shown: rd.shown.core + rd.shown.late };
   tested += rd.tested; shown.core += rd.shown.core; shown.late += rd.shown.late;
 }
-const note = 'Per hero-role: where the build changes by matchup. core = items 1-3 (players who finished 3+), late = items 4-6 (players who finished 4+, compared within the same number of finished items). lane[opp] = into that lane opponent, team[enemy] = with that hero anywhere on the other team, comp[key] = against that enemy team shape. per100 / usual100 = players per 100 holding the item in the matchup / the same hero-role outside it; pos = typical purchase slot; platAgrees = Plat+ players lean the same way (null = too few). pool = every item the hero-role builds often enough to suggest. shownUnderShuffle = rows the same rules show when matchups are scrambled (the size of the list luck makes). What players do, not proof the change wins.';
+const note = 'Per hero-role: where the build changes by matchup. core = items 1-3 (players who finished 3+), late = items 4-6 (players who finished 4+, compared within the same number of finished items). lane[opp] = into that lane opponent, team[enemy] = with that hero anywhere on the other team, comp[key] = against that enemy team shape. record = every game and win in the matchup and outside it (raw); slots = the common buys at each purchase slot, among players who bought a k-th item. per100 / usual100 = players per 100 holding the item in the matchup / the same hero-role outside it; pos = typical purchase slot; platAgrees = Plat+ players lean the same way (null = too few). pool = every item the hero-role builds often enough to suggest. shownUnderShuffle = rows the same rules show when matchups are scrambled (the size of the list luck makes). What players do, not proof the change wins.';
 for (const [hero, roles] of byHero) writeFileSync(path.join(OUT, `${hero}.json`), JSON.stringify({ hero, ...window, generatedAt: new Date().toISOString(), roles }));
 writeFileSync(path.join(OUT, 'index.json'), JSON.stringify({
   generatedAt: new Date().toISOString(), ...window,
@@ -137,6 +137,14 @@ writeFileSync(path.join(OUT, 'index.json'), JSON.stringify({
   note, bars: BARS, tested, shown, shownUnderShuffle,
   compLabels: COMP_LABELS.map((l) => ({ key: l.key, label: l.label, needs: l.needs, sharePct: Math.round((1000 * (compGames[l.key] ?? 0)) / sides) / 10 })),
   heroNeeds,
+  // How to play into each hero when the build has nothing to say: the kit profile's counterplay line and
+  // power curve (data/game-data/kit-profiles.json) and the hard crowd control to dodge (kit-index.json).
+  heroTips: Object.fromEntries(heroes.map((h) => {
+    const pf = profiles[h.slug] as (KitProfile & { playAgainst?: string; powerSpike?: string; scaling?: string }) | undefined;
+    const cc = ((kit[h.slug]?.abilities ?? []) as { name: string; hard?: string[]; hardSec?: number | null }[]).filter((a) => a.hard?.length)
+      .map((a) => ({ ability: a.name, types: a.hard!, sec: a.hardSec ?? null }));
+    return [h.slug, { playAgainst: pf?.playAgainst ?? null, powerSpike: pf?.powerSpike ?? null, scaling: pf?.scaling ?? null, cc }];
+  })),
   // Per slot 1-6: of 100 players buying a k-th item with no such answer yet, how many buy one there when the
   // enemy asks for it (needy100) and when it does not (other100), same hero-role, all heroes pooled.
   answerTiming: {

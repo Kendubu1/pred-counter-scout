@@ -5981,4 +5981,12 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
 - Solo games: the watcher already saw them; the film pull dropped them at `--min-stack 2` and the job
   marked them handled. data/coaching/solo.json turns them on from a start time, so old solo games do
   not back-fill. Stack-only cards (Who queued) already skip a stack of one.
+- Winners build like losers (maintainer asked "what about those who won the lane"). Belica mid into
+  Renna: 45.3% of 601 games against 52.5% elsewhere, and the slot-by-slot buys match between game
+  winners (272) and losers (329), and between players who out-earned Renna (250) and those who did not
+  (351); the largest gaps (Combustion first 57% vs 50%, Oblivion Crown anywhere 57% vs 47%) are inside
+  the noise or just "ahead players afford more". The lineups hold end-of-game totals only, so "won the
+  lane" itself cannot be read from the field: game result and final gold against the lane opponent are
+  the stand-ins. When the build says nothing, the card now falls back to the matchup's record, the
+  kit profile's play-against line and crowd control to dodge, and the common buys per purchase slot.
 
