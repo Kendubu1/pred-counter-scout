@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BARS, COMP_LABELS, bandCell, countPlayer, emptyHeroRole, needsVs, readHeroRole, readMatchup, shifts, coreStrata, lateStrata } from '../src/adjustments.js';
+import { BARS, COMP_LABELS, bandCell, countPlayer, emptyHeroRole, needsVs, readHeroRole, readMatchup, shifts, coreStrata, lateStrata, countTiming, readTiming, type TimingCells } from '../src/adjustments.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -59,6 +59,25 @@ describe('adjustments shifts', () => {
     hr.lane.thin = bandCell();
     for (let k = 0; k < BARS.minN - 1; k++) { countPlayer(hr.all, ['a', 'b', 'z'], false); countPlayer(hr.lane.thin, ['a', 'b', 'z'], false); }
     expect(readHeroRole(hr).lane.thin).toBeUndefined();
+  });
+});
+
+describe('answer timing', () => {
+  it('reads each slot among players who bought a k-th item and had no answer yet', () => {
+    const t: TimingCells = new Map();
+    const ans = (s: string) => s === 'heal';
+    // needy: 600 short games (2 items, no answer), 600 that buy the answer 4th
+    for (let k = 0; k < 600; k++) countTiming(t, 'h|r', ['a', 'b'], ans, true);
+    for (let k = 0; k < 600; k++) countTiming(t, 'h|r', ['a', 'b', 'c', 'heal', 'e'], ans, true);
+    // not needy: 900 never buy it, 100 buy it 4th
+    for (let k = 0; k < 900; k++) countTiming(t, 'h|r', ['a', 'b', 'c', 'd', 'e'], ans, false);
+    for (let k = 0; k < 100; k++) countTiming(t, 'h|r', ['a', 'b', 'c', 'heal', 'e'], ans, false);
+    const r = readTiming(t);
+    // the 600 games that ended after two items are not in slot 4 at all: 600 of 600 bought it there
+    expect(r.find((x) => x.slot === 4)).toMatchObject({ needy100: 100, other100: 10 });
+    expect(r.find((x) => x.slot === 2)).toMatchObject({ needy100: 0, other100: 0, n: 1200 });
+    // after buying it, a player leaves the pool: slot 5 holds nobody needy, so it is not reported
+    expect(r.find((x) => x.slot === 5)).toBeUndefined();
   });
 });
 

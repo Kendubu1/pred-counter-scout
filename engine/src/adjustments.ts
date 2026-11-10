@@ -76,7 +76,10 @@ export interface MatchupRead { core: LayerRead; late: LayerRead }
 export interface Bars { minN: number; minItem: number; zMin: number; minPts: number; minHas: number; platMinN: number; lateZMin: number; lateMinPts: number }
 // Set against the shuffled-matchup null (npm run adjustments -- --tune, 29k matches, 2026-11-10): at
 // these bars the core list is 5% (lane), 13% (team) and 9% (enemy shape) the size luck makes. The late
-// layer needs a higher bar and still finds almost nothing: after the core, builds barely follow the matchup.
+// layer needs a higher bar and shows few rows. That is LOW POWER, not "players stop adapting": fewer
+// players reach items 4-6 and they spread over more items, so one hero's one item into one opponent
+// rarely clears a luck check. Pooled by what the item answers (answer timing below) the late
+// adaptation is plainly there.
 export const BARS: Bars = { minN: 30, minItem: 10, zMin: 3.5, minPts: 4, minHas: 12, platMinN: 20, lateZMin: 4, lateMinPts: 5 };
 
 /** One matchup cell against the hero-role: shown rises and drops per layer, and how many rates were tested. */
@@ -165,5 +168,38 @@ export function needsVs(h: HeroKit): Need[] {
   if (h.shields) out.push({ answer: 'shields', why: `${h.name} shields from the kit` });
   if (h.power) out.push({ answer: h.power === 'magical' ? 'magic' : 'physical', why: `${h.name} deals ${h.power} damage` });
   if (h.cls === 'ASSASSIN' || h.diver) out.push({ answer: 'burst', why: `${h.name} dives and bursts` });
+  return out;
+}
+
+// Answer timing: does a player's k-th purchase answer what the enemy asks for? Pooled over every item
+// with that answer (item-tags.ts) so items 4-6 have the players to show it. Read at each slot among
+// players who BOUGHT a k-th item (a game that ended earlier is simply not in that slot, never counted
+// as "did not adapt") and did not already own such an item (so the slot shows the first answer, and an
+// early buyer is not counted as skipping it later). Purchase order is the timing. Needy vs not is
+// compared inside each hero-role, then weighted by the needy players.
+export const TIMING_SLOTS = 6;
+/** per hero-role: [not needy, needy] -> per slot [players buying a k-th item without the answer yet, of them buying it there] */
+export type TimingCells = Map<string, [number, number][][]>;
+export function countTiming(t: TimingCells, heroRole: string, items: string[], answers: (slug: string) => boolean, needy: boolean) {
+  let c = t.get(heroRole);
+  if (!c) t.set(heroRole, (c = [0, 1].map(() => Array.from({ length: TIMING_SLOTS }, () => [0, 0] as [number, number]))));
+  const g = c[needy ? 1 : 0]!;
+  for (let k = 0; k < Math.min(TIMING_SLOTS, items.length); k++) {
+    g[k]![0]++;
+    if (answers(items[k]!)) { g[k]![1]++; break; }
+  }
+}
+export interface TimingRow { slot: number; needy100: number; other100: number; n: number }
+export function readTiming(t: TimingCells, minN = 40): TimingRow[] {
+  const out: TimingRow[] = [];
+  for (let k = 0; k < TIMING_SLOTS; k++) {
+    let w = 0, y = 0, o = 0;
+    for (const c of t.values()) {
+      const [n0, h0] = c[0]![k]!, [n1, h1] = c[1]![k]!;
+      if (n0 < minN || n1 < minN) continue;
+      w += n1; y += h1; o += (n1 * h0) / n0;
+    }
+    if (w >= 500) out.push({ slot: k + 1, needy100: Math.round((1000 * y) / w) / 10, other100: Math.round((1000 * o) / w) / 10, n: w });
+  }
   return out;
 }

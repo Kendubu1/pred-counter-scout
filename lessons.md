@@ -5953,11 +5953,20 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   wrote 17 ranked matches with all of v3 (seconds aligned with the build on 170 of 170 rows), so the
   pull works; the committed data simply stops at 2026-11-08 08:58 UTC. The daily job has not landed
   since. Match-time rank is on 61% of rows (16% on Nov 3, 79% by Nov 8).
-- Builds follow the matchup in the first three items and then stop. Same rules, same bars, real
-  matchups against shuffled ones (each team paired with a random other match's enemy): items 1-3 show
-  905 rows against 79 shuffled; items 4-6 show 47 against 22. At |z| >= 3 the late layer is about the
-  size luck makes at every floor tried. So a "what players build late into X" list would be noise; the
-  page says so and offers tag-matched answers from the hero's own item pool for slots 4-6 instead.
+- CORRECTED the same day (maintainer: "the game could have ended; the items are in order, that is the
+  timing"). First read was "builds follow the matchup in the first three items and then stop", from
+  per-hero, per-opponent, per-item rows: items 1-3 show 905 rows against 79 shuffled, items 4-6 show 47
+  against 22. That was low power read as absence: 58% of players reach item 4, 32% item 5, 14% item 6,
+  and they spread over more items, so one hero's one item into one opponent rarely clears a luck check.
+  Pooled by what the item answers (answer timing: the k-th purchase, among players who bought a k-th
+  item and had no such item yet, needy vs not inside each hero-role), late adaptation is there:
+  anti-heal into 3+ healing kits is 17.0 vs 14.1 per 100 at item 4, 15.3 vs 13.0 at item 5, 15.6 vs
+  13.1 at item 6; anti-tank into 2+ tanks GROWS with the slot (24.5 vs 21.0, 29.1 vs 24.9, 25.8 vs
+  21.0). Lane-opponent adaptation is front-loaded (anti-tank into a tank laner +3.8 at item 2, +0.1 at
+  item 6); team-shape adaptation holds or grows late. Tenacity shows no reaction to crowd control at
+  any slot. What stands: the adaptation is small, 2-5 players in 100. Never read "no row cleared the
+  bar" as "nothing happens" without checking how many players that layer has, and never count a
+  missing later item as a choice: condition on the player having bought a k-th item.
 - A z bar alone is not a luck bar. |z| >= 3 with the 4-point floor still left the all-scope list 34%
   shuffle-sized (team scope worst: five enemies per player, so five times the tests). Tune bars against
   the shuffle (`npm run adjustments -- --tune`), per layer and scope, and commit the shuffle count with

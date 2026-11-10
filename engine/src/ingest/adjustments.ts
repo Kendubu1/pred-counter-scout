@@ -13,7 +13,8 @@ import { fileURLToPath } from 'node:url';
 import { patchDir, readRows } from './team-comps.js';
 import { PLAT_TIER } from './build-matchups.js';
 import { tagHero, type KitProfile } from '../team-comp.js';
-import { BARS, CC_HEAVY, COMP_LABELS, bandCell, countPlayer, emptyHeroRole, needsVs, readHeroRole, type EnemyTraits, type HeroKit, type HeroRoleCells, type HeroRoleRead } from '../adjustments.js';
+import { BARS, COMP_LABELS, bandCell, countPlayer, countTiming, emptyHeroRole, needsVs, readHeroRole, readTiming, type EnemyTraits, type HeroKit, type HeroRoleCells, type HeroRoleRead, type TimingCells } from '../adjustments.js';
+import { tagItems, type Answer, type CatalogItem } from '../item-tags.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const OUT = path.join(ROOT, 'data/artifacts/adjustments');
@@ -40,6 +41,20 @@ function traits(team: string[]): EnemyTraits {
   return t;
 }
 
+// What each hero's kit asks of an enemy build (kit facts: healing, shields, hard crowd control, class, damage type).
+const heroNeeds = Object.fromEntries(heroes.map((h) => {
+  const g = tags.get(h.slug)!, k = kit[h.slug], pw = power.get(h.slug);
+  const hk: HeroKit = { name: h.display_name, power: pw === 'magical' || pw === 'physical' ? pw : null, cls: g.cls, heals: !!k?.abilities.some((a) => a.heal), shields: !!k?.abilities.some((a) => a.shield), hardCc: k?.hardCount ?? 0, diver: g.diver };
+  return [h.slug, needsVs(hk)];
+}));
+const itemTags = tagItems(catalog as unknown as CatalogItem[]);
+const ANSWERS: Answer[] = ['healing', 'tanks', 'shields', 'magic', 'physical', 'cc', 'burst'];
+const answersIt = Object.fromEntries(ANSWERS.map((a) => [a, (slug: string) => !!itemTags[slug]?.answers.includes(a)])) as Record<Answer, (s: string) => boolean>;
+const asks = (hero: string, a: Answer) => (heroNeeds[hero] ?? []).some((n) => n.answer === a);
+// Answer timing (src/adjustments.ts), pooled over all heroes: by lane opponent's kit, and by enemy team shape.
+const timingLane = new Map<Answer, TimingCells>(ANSWERS.map((a) => [a, new Map()]));
+const timingComp = new Map<string, TimingCells>(COMP_LABELS.map((l) => [l.key, new Map()]));
+
 const rows = readRows(patchDir(meta.patch));
 let sides = 0, firstEnd = '', lastEnd = '';
 const compGames: Record<string, number> = {};
@@ -63,6 +78,11 @@ function count(shuffle: boolean): Map<string, HeroRoleCells> {
         cells.set(key, hr);
         const plat = s[2] != null && s[2] >= PLAT_TIER;
         countPlayer(hr.all, items, plat);
+        if (!shuffle) {
+          const opp = enemy.find((e) => e[1] === s[1]);
+          if (opp) for (const a of ANSWERS) countTiming(timingLane.get(a)!, key, items, answersIt[a], asks(opp[0], a));
+          for (const l of COMP_LABELS) countTiming(timingComp.get(l.key)!, key, items, answersIt[l.needs], labels.includes(l.key));
+        }
         for (const e of enemy) {
           if (e[0] === s[0]) continue; // only under the shuffle: a hero never faces itself
           if (e[1] === s[1]) countPlayer((hr.lane[e[0]] ??= bandCell()), items, plat);
@@ -116,16 +136,18 @@ writeFileSync(path.join(OUT, 'index.json'), JSON.stringify({
   source: `ranked lineups in data/aggregates/team-comps/${meta.patch}/ (pred.gg public match stream, counted by npm run perks)`,
   note, bars: BARS, tested, shown, shownUnderShuffle,
   compLabels: COMP_LABELS.map((l) => ({ key: l.key, label: l.label, needs: l.needs, sharePct: Math.round((1000 * (compGames[l.key] ?? 0)) / sides) / 10 })),
-  // What each hero's kit asks of an enemy build (kit facts: healing, shields, hard crowd control, class, damage type).
-  heroNeeds: Object.fromEntries(heroes.map((h) => {
-    const g = tags.get(h.slug)!, k = kit[h.slug], pw = power.get(h.slug);
-    const hk: HeroKit = { name: h.display_name, power: pw === 'magical' || pw === 'physical' ? pw : null, cls: g.cls, heals: !!k?.abilities.some((a) => a.heal), shields: !!k?.abilities.some((a) => a.shield), hardCc: k?.hardCount ?? 0, diver: g.diver };
-    return [h.slug, needsVs(hk)];
-  })),
+  heroNeeds,
+  // Per slot 1-6: of 100 players buying a k-th item with no such answer yet, how many buy one there when the
+  // enemy asks for it (needy100) and when it does not (other100), same hero-role, all heroes pooled.
+  answerTiming: {
+    lane: Object.fromEntries(ANSWERS.map((x) => [x, readTiming(timingLane.get(x)!)])),
+    comp: Object.fromEntries(COMP_LABELS.map((l) => [l.key, readTiming(timingComp.get(l.key)!)])),
+  },
   heroes: index,
 }));
 console.log(`adjustments: ${rows.length} ranked matches (${firstEnd.slice(0, 10)} to ${lastEnd.slice(0, 10)}), ${byHero.size} heroes, ${Object.values(index).reduce((t, r) => t + Object.keys(r).length, 0)} hero-roles`);
 console.log(`  ${tested} item rates tested. Core (items 1-3): ${shown.core} shown, ${shownUnderShuffle.core} under shuffled matchups. Late (items 4-6): ${shown.late} shown, ${shownUnderShuffle.late} under the shuffle.`);
+for (const l of COMP_LABELS) console.log(`  answer timing vs ${l.key}: ${readTiming(timingComp.get(l.key)!).map((r) => `item ${r.slot} ${r.needy100} vs ${r.other100}`).join(' | ')}`);
 console.log(`  enemy shapes (share of team-sides): ${COMP_LABELS.map((l) => `${l.key} ${Math.round((1000 * (compGames[l.key] ?? 0)) / sides) / 10}%`).join(', ')}`);
 
 const want = process.argv.slice(2).find((a) => !a.startsWith('--'));

@@ -1729,11 +1729,15 @@ async function mountAdjust(a) {
       if (!cand.length) return '';
       cand.forEach((x) => seen.add(x.item));
       const lang = ITEMTAGS.roleLanguage[nd.answer];
-      return `<div class="bc-h" style="margin-top:.55rem">${esc(ITEMTAGS.answerLabel[nd.answer])} <span>— ${esc(nd.why)}. ${esc(lang && lang[a.role] ? lang[a.role] : '')}.</span></div>${cand.map((x) =>
+      // When players buy this kind of item, by purchase slot, all heroes pooled (index.answerTiming).
+      const tm = ADJIDX.answerTiming && (mode === 'comp' ? ADJIDX.answerTiming.comp[k] : mode === 'lane' ? ADJIDX.answerTiming.lane[nd.answer] : null);
+      const late = (tm || []).filter((r) => r.slot >= 4);
+      const timing = late.length ? `<div class="adj-num" style="margin:.15rem 0 .1rem">All heroes, players with no such item yet: bought as ${late.map((r) => `item ${r.slot} by <b>${Math.round(r.needy100)}</b> of 100 here (${Math.round(r.other100)} otherwise)`).join(', ')}.</div>` : '';
+      return `<div class="bc-h" style="margin-top:.55rem">${esc(ITEMTAGS.answerLabel[nd.answer])} <span>— ${esc(nd.why)}. ${esc(lang && lang[a.role] ? lang[a.role] : '')}.</span></div>${timing}${cand.map((x) =>
         itemRow(x.item, `${x.late100 ? `<b>${x.late100} of 100</b> ${esc(a.name)} ${esc(a.role)} players finish it after the core` : `<b>${x.core100} of 100</b> open with it`}${x.late100 && x.core100 ? `, ${x.core100} of 100 in the first three` : ''}${taken.has(x.item) ? ' · <b>already rising in this matchup</b>' : ''}`, { noLine: true })).join('')}`;
     }).join('');
     return `<div class="bc-group"><div class="bc-h">Items 4 to 6: build them on purpose <span>— what ${mode === 'comp' ? 'that team shape' : esc(nameOfKey(mode, k))} asks for, answered from ${esc(a.name)}'s own usual items</span></div>
-      <div class="adj-none" style="color:var(--text-1)">Across the patch, players change their first three items for the matchup and then mostly stop: items 4 to 6 look the same whoever they face. These fit this matchup by the item's text and the enemy kit. They are not a measured win rate.</div>
+      <div class="adj-none" style="color:var(--text-1)">Players do keep adjusting after the first three items, but by only a few players in 100, too few to show for one hero and one item. So these are picked by fit: the item's text against the enemy kit. They are not a measured win rate.</div>
       ${groups || `<div class="adj-none">Nothing ${esc(a.name)} ${esc(a.role)} usually builds answers this directly.</div>`}</div>`;
   };
   const draw = () => {
@@ -1746,7 +1750,7 @@ async function mountAdjust(a) {
       const where = into(mode, k), taken = new Set([...m.core.rises, ...m.late.rises].map((r) => r.item));
       const prefer = needsOf(mode, k).map((n) => n.answer);
       out = measured('First three items', `— what ${esc(a.name)} ${esc(a.role)} players change ${where}`, m.core, where, prefer)
-        + (m.late.rises.length || m.late.drops.length ? measured('Items 4 to 6', '— the few late changes that clear the luck check', m.late, where, prefer) : '')
+        + (m.late.rises.length || m.late.drops.length ? measured('Items 4 to 6', '— the late changes large enough to show for this hero', m.late, where, prefer) : '')
         + fits(mode, k, taken);
     }
     host.innerHTML = `<details class="sim-collapse adj" open><summary>Adjust for your matchup</summary><div class="body">
