@@ -1,7 +1,8 @@
 // Past-patch hero builds for the hero page's patch filter:
 // data/artifacts/past-hero-builds.json. Zero-API. Reads every archived patch in
 // data/aggregates/past-patches/<patch>/ that holds a predgg-builds.json (the
-// perks archive, kept from 1.17.2 on) and scores its 3-item cores with the same
+// perks archive, kept from 1.17.2 on; shown as its patch line, 1.17, like the
+// homepage boards) and scores its 3-item cores with the same
 // rules as the current-patch hero artifacts (shrunkCores, bandEvidence in
 // src/artifacts.ts), per lane and per rank band (All ranks / Plat+).
 //
@@ -53,7 +54,10 @@ const patches = dirs.map((d) => {
   const win = /counted (\d{4}-\d{2}-\d{2})T[\d:]+ -> (\d{4}-\d{2}-\d{2})T/.exec(pg.source ?? '');
   const picks = `data/aggregates/past-patches/${d}/predgg-augments.json`;
   return {
-    patch: d,
+    // Named like the homepage boards: the patch line (1.17), which holds its
+    // point releases (1.17.2). dataPatch is the archive folder the counts came from.
+    patch: d.split('.').slice(0, 2).join('.'),
+    dataPatch: d,
     countedFrom: win?.[1] ?? null,
     countedTo: win?.[2] ?? null,
     // Opening picks (augment / Eternal / crest counts) for the same patch, same
@@ -61,10 +65,16 @@ const patches = dirs.map((d) => {
     picksFile: existsSync(path.join(ROOT, picks)) ? picks : null,
     heroes,
   };
-}).sort((a, b) => verKey(b.patch).localeCompare(verKey(a.patch)));
+}).sort((a, b) => verKey(b.dataPatch).localeCompare(verKey(a.dataPatch)));
+const seen = new Set<string>();
+for (const p of patches) {
+  if (seen.has(p.patch)) throw new Error(`two archived perks folders map to patch ${p.patch}; pool them before the hero page can offer one ${p.patch} option`);
+  if (p.patch === currentPatch) throw new Error(`past-patches/${p.dataPatch} belongs to the CURRENT patch ${currentPatch}`);
+  seen.add(p.patch);
+}
 
 writeFileSync(path.join(ROOT, 'data/artifacts/past-hero-builds.json'), JSON.stringify({
   note: 'Field 3-item cores per hero-role for earlier patches, scored like the current-patch metaBuilds (shrunkCores / bandEvidence in src/artifacts.ts): bands all and plat+ (rank at match time). Evidence only, no simulator text. Newest first.',
   patches,
 }) + '\n');
-console.log(`past-hero-builds.json written: ${patches.map((p) => `${p.patch} (${Object.keys(p.heroes).length} heroes)`).join(', ') || 'no archived perks patches'}`);
+console.log(`past-hero-builds.json written: ${patches.map((p) => `${p.patch} from ${p.dataPatch} (${Object.keys(p.heroes).length} heroes)`).join(', ') || 'no archived perks patches'}`);
