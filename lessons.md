@@ -5944,3 +5944,98 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   worked together" bullets for 61 1.18 performers, 2 critics: 17 rewritten, 1 dropped. Critics also found
   an engine bug: anti-heal items ("reduce their healing") were tagged as healing; fixed in build-why and
   build-power. The %-health stack is titled by the target's health.
+
+## 2026-11-10 — Matchup build adjustments and the item tag sheet
+
+- Data check before building: the 1.18 lineups (team-comps/1.18, 29,154 ranked matches, Nov 3-8) carry
+  the full ordered build, final inventory, output totals and the raw loadout on 100% of 291,540 player
+  rows. Committed rows are v2: none has purchase seconds or level. A live `MAX_REQUESTS=4 npm run perks`
+  wrote 17 ranked matches with all of v3 (seconds aligned with the build on 170 of 170 rows), so the
+  pull works; the committed data simply stops at 2026-11-08 08:58 UTC. The daily job has not landed
+  since. Match-time rank is on 61% of rows (16% on Nov 3, 79% by Nov 8).
+- CORRECTED the same day (maintainer: "the game could have ended; the items are in order, that is the
+  timing"). First read was "builds follow the matchup in the first three items and then stop", from
+  per-hero, per-opponent, per-item rows: items 1-3 show 905 rows against 79 shuffled, items 4-6 show 47
+  against 22. That was low power read as absence: 58% of players reach item 4, 32% item 5, 14% item 6,
+  and they spread over more items, so one hero's one item into one opponent rarely clears a luck check.
+  Pooled by what the item answers (answer timing: the k-th purchase, among players who bought a k-th
+  item and had no such item yet, needy vs not inside each hero-role), late adaptation is there:
+  anti-heal into 3+ healing kits is 17.0 vs 14.1 per 100 at item 4, 15.3 vs 13.0 at item 5, 15.6 vs
+  13.1 at item 6; anti-tank into 2+ tanks GROWS with the slot (24.5 vs 21.0, 29.1 vs 24.9, 25.8 vs
+  21.0). Lane-opponent adaptation is front-loaded (anti-tank into a tank laner +3.8 at item 2, +0.1 at
+  item 6); team-shape adaptation holds or grows late. Tenacity shows no reaction to crowd control at
+  any slot. What stands: the adaptation is small, 2-5 players in 100. Never read "no row cleared the
+  bar" as "nothing happens" without checking how many players that layer has, and never count a
+  missing later item as a choice: condition on the player having bought a k-th item.
+- A z bar alone is not a luck bar. |z| >= 3 with the 4-point floor still left the all-scope list 34%
+  shuffle-sized (team scope worst: five enemies per player, so five times the tests). Tune bars against
+  the shuffle (`npm run adjustments -- --tune`), per layer and scope, and commit the shuffle count with
+  the artifact so the page can state it. The harness holds the core list to a fifth of real.
+- Late items must be compared within the same number of finished items. A longer game finishes more
+  items, so an unstratified "has item X" share reads game length as matchup (test: 'compares late
+  items within the same build length').
+- Item tags are rules over the catalog, not authored copy: stats in a fixed order, a fixed vocabulary
+  matched on the game's effect text and aggression type, and the item's own effect condensed from that
+  text. The test checks every number in a statement appears in the item's game text. Role language is
+  one curated line per answer per lane (8 answers x 5 lanes), so an item reads the same everywhere.
+- Solo games: the watcher already saw them; the film pull dropped them at `--min-stack 2` and the job
+  marked them handled. data/coaching/solo.json turns them on from a start time, so old solo games do
+  not back-fill. Stack-only cards (Who queued) already skip a stack of one.
+- Winners build like losers (maintainer asked "what about those who won the lane"). Belica mid into
+  Renna: 45.3% of 601 games against 52.5% elsewhere, and the slot-by-slot buys match between game
+  winners (272) and losers (329), and between players who out-earned Renna (250) and those who did not
+  (351); the largest gaps (Combustion first 57% vs 50%, Oblivion Crown anywhere 57% vs 47%) are inside
+  the noise or just "ahead players afford more". The lineups hold end-of-game totals only, so "won the
+  lane" itself cannot be read from the field: game result and final gold against the lane opponent are
+  the stand-ins. When the build says nothing, the card now falls back to the matchup's record, the
+  kit profile's play-against line and crowd control to dodge, and the common buys per purchase slot.
+- Rules can label an item but cannot tell look-alikes apart (maintainer: "add to your combo sounds
+  general"). Prophecy, Orion and Oathkeeper all matched "on-hit", yet one adds damage to every attack,
+  one ramps on a single target and one empowers the attack after each cast. `npm run review:itempicks`
+  authors one "Pick it when" line per build item with its look-alikes in the same prompt (18 groups,
+  137 items), number-checked, then an independent critic: 125 ok, 12 fixed (unstated effects such as
+  "roam" and "whole team", a trigger left out, two siblings saying the same thing), 0 dropped.
+- Phone first (maintainer: ten seconds in a ranked game). An item row is one line and at most three
+  chips; stats, remaining tags and the game text sit behind "More", and the card's method notes behind
+  "How this is counted". Explanations are folds, never the default view.
+- Build explanations were per-build copy, so they went missing whenever a refresh changed which three
+  items led: 189 of 403 shown builds had a summary, 65 of 152 hero-lanes had none. The 1-2-3 rows are
+  now assembled from the per-item lines (every build, every hero, survives a refresh); the written
+  summary stays as a fold where a reviewed one matches the exact item set.
+- Picks by build (pred.gg's per-build Augments / Eternals / Crests panel, maintainer 2026-11-10;
+  priorities 19 / 21d / 22b). The lineups carry build and loadout per player, so it is a straight
+  count once perk names decode (perk-catalog.json: 330 names, 0 of 326,330 loadouts undecoded). A
+  build is ranked like a rank band: each option shrunk toward its own lane-wide rate plus the build
+  gap. Over 401 builds (60+ players) and 1,203 lists: Toss-up 585, Leans 297, Most played 256, Best
+  65. A build leads with a different pick than its lane on a clear edge in 16 lists; at a "slight"
+  bar it was 119, mostly the size luck makes across that many lists, so the flag needs clear.
+  pred.gg's panel shows raw rates over a handful of matches (71% of 7, 100% of 4) and its later-item
+  columns shrink fast; ours count every player who finished the core and each later slot among
+  players who bought an item there.
+- Build ORDER and the augment (maintainer: "a Zinx build will pick a different winning augment"). Two
+  different claims, tested apart on the 63 item sets where two or more purchase orders each have 60+
+  players, against the same data with the order scrambled inside each three items. What players RUN
+  follows the order: 14 of 63 sets shift the lane's main augment by 10+ points between orders, 0
+  scrambled. Which augment WINS does not show yet: 2 sets where both orders lean to different augments,
+  13 under the scramble. So the page states the pairing as a choice ("goes with this build": most of a
+  build's players run a pick the lane does not lead with; 321 of 2,172 lists) and keeps "wins more on
+  this build" for a clear edge (31). Zinx support: Prophecy > Spectra > Orion runs Terminal Treatment
+  80%, Marshal > Lunaria > Dynamo runs Disc Of Demise 75%, win rates level. Belica: the Prophecy > Orion
+  builds run Pulsefire Rounds 76-90% while the lane runs Combat Veteran / Devastating Bombs.
+- The first picks-by-build block pooled the three items in any order and led with the edge pick alone,
+  so Zinx's on-hit build read "Disc Of Demise, toss-up, 68 of 352" while 277 of 352 ran Terminal
+  Treatment. A toss-up lead with a fifth of the players needs the most-run pick beside it. Builds are
+  now matched in the tab's exact order (any order only as a labelled fallback under 60 players).
+- The page follows the draft, not the shop (maintainer, 2026-11-10: "in the draft you choose your
+  augment and then Eternal first; pick one that doesn't pair and the game could be a wash"). So the
+  hero page leads with the augment and the Eternal, crest and build shown are for THAT augment
+  (`npm run loadouts`, 307 augments with 60+ players). What a mismatch costs, groups where 60%+ make
+  one choice against the players who chose differently: given the augment, a different FIRST ITEM is
+  -1.8 points (+- 0.8, 51 augments); given the augment, a different Eternal is level (-0.3 +- 0.7);
+  given the build, a different augment or Eternal is level. The Eternal is level on average because
+  the most-run one is often not the best: Zinx support with Terminal Treatment wins 53.2% on Weald and
+  47.3% on Exarch (487 players each, shrunk), and Exarch is the more run. Inside an augment the Eternal
+  list reads Toss-up 139, Leans 81, Best 56, Most played 31; it leads with a different Eternal than the
+  lane on a clear edge for 9 augments. Hero- and lane-specific choices go first; matchup and item
+  advice applies to any loadout and sits below.
+

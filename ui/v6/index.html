@@ -404,6 +404,60 @@
   .bc-sim { font-size:.6875rem; color:var(--accent-ink); border:1px solid var(--accent); border-radius:6px; padding:0 .3rem; }
   .bc-why { font-size:.74rem; color:var(--text-1); line-height:1.42; margin-top:.15rem; }
   .bc-note { font-size:.6875rem; color:var(--text-2); margin-top:.45rem; }
+  /* Item tag sheet chips (data/aggregates/item-tags.json): answer, how it works, stats. */
+  .tagrow { display:flex; flex-wrap:wrap; gap:.25rem; margin-top:.25rem; }
+  .itag { font-size:.6875rem; line-height:1.3; padding:.06rem .42rem; border-radius:999px; border:1px solid var(--border); color:var(--text-1); white-space:nowrap; }
+  .itag.ans { color:var(--accent-ink); border-color:var(--accent); font-weight:700; }
+  .itag.stat { color:var(--text-2); border-style:dashed; }
+  .bc-why.uniq { color:var(--text-2); }
+  details.imore { margin-top:.2rem; }
+  details.imore > summary { font-size:.6875rem; color:var(--text-2); cursor:pointer; list-style:none; display:inline-block; padding:.15rem 0; min-height:24px; }
+  details.imore > summary::-webkit-details-marker { display:none; }
+  /* Adjust for your matchup (data/artifacts/adjustments/<hero>.json). */
+  details.adj { margin-top:.8rem; }
+  .adj-lead { font-size:.78rem; color:var(--text-1); line-height:1.45; }
+  .adj-pick { display:flex; flex-wrap:wrap; gap:.45rem; align-items:center; margin:.55rem 0 .2rem; }
+  .adj-modes { display:inline-flex; gap:2px; padding:2px; background:var(--bg-0); border:1px solid var(--border); border-radius:10px; }
+  .adj-modes button { background:transparent; border:0; color:var(--text-1); border-radius:8px; padding:.32rem .65rem; font:inherit; font-size:.76rem; cursor:pointer; min-height:32px; }
+  .adj-modes button.active { background:var(--bg-2); color:var(--text-0); font-weight:700; }
+  .adj-pick select { background:var(--bg-2); color:var(--text-0); border:1px solid var(--border); border-radius:8px; padding:.35rem .5rem; font:inherit; font-size:.8rem; min-height:34px; max-width:100%; }
+  .adj-num { font-size:.74rem; color:var(--text-1); font-variant-numeric:tabular-nums; }
+  .adj-num b { color:var(--text-0); }
+  .adj-num .up { color:var(--green); font-weight:700; } .adj-num .down { color:var(--red); font-weight:700; }
+  .adj-none { font-size:.76rem; color:var(--text-2); padding:.3rem 0; }
+  /* Loadout by augment (data/artifacts/loadouts/<hero>.json): the draft-order card. */
+  .lo-tabs { display:flex; gap:.35rem; overflow-x:auto; scrollbar-width:none; margin:.2rem 0 .6rem; }
+  .lo-tabs::-webkit-scrollbar { display:none; }
+  .lo-tab { flex:1 0 auto; min-width:6.5rem; display:flex; align-items:center; gap:.45rem; background:var(--bg-0); border:1px solid var(--border); border-radius:12px; padding:.4rem .6rem; color:var(--text-1); font:inherit; cursor:pointer; text-align:left; min-height:48px; }
+  .lo-tab.active { border-color:var(--accent); background:var(--bg-2); color:var(--text-0); }
+  .lo-tab img { width:30px; height:30px; border-radius:50%; object-fit:contain; background:var(--bg-3); flex:none; }
+  .lo-tab .nm { font-size:.8rem; font-weight:700; line-height:1.15; }
+  .lo-tab .sub { font-size:.6875rem; color:var(--text-2); }
+  .lo-row { display:grid; grid-template-columns:3.9rem 1fr; gap:.5rem; padding:.42rem 0; border-top:1px dashed var(--border); align-items:center; }
+  .lo-k { font-size:.6875rem; font-weight:700; color:var(--text-2); }
+  .lo-v { display:flex; align-items:center; gap:.45rem; flex-wrap:wrap; min-width:0; font-size:.84rem; color:var(--text-0); }
+  .lo-v img.rnd { width:32px; height:32px; border-radius:50%; object-fit:cover; background:var(--bg-3); border:1px solid var(--border); flex:none; cursor:pointer; }
+  .lo-v img.sq { width:32px; height:32px; border-radius:8px; object-fit:cover; background:var(--bg-3); border:1px solid var(--border); flex:none; cursor:pointer; }
+  .lo-v .arrow { color:var(--text-2); font-size:.7rem; }
+  .lo-sub { flex-basis:100%; font-size:.74rem; color:var(--text-1); }
+  .lo-why { font-size:.78rem; color:var(--text-1); line-height:1.4; margin:0 0 .35rem; }
+  .bp { margin-top:.6rem; padding-top:.45rem; border-top:1px dashed var(--border); }
+  .bp-row { display:grid; grid-template-columns:4.2rem 1fr; gap:.5rem; font-size:.8rem; padding:.14rem 0; align-items:baseline; }
+  .bp-k { font-size:.6875rem; font-weight:700; color:var(--text-2); }
+  .bp-v { min-width:0; color:var(--text-0); }
+  .bp-l { font-size:.6875rem; font-weight:700; color:var(--gold); margin:0 .15rem; white-space:nowrap; }
+  .adj-rec { font-size:.8rem; color:var(--text-0); margin:.5rem 0 .1rem; }
+  .adj-rec .up { color:var(--green); font-weight:700; } .adj-rec .down { color:var(--red); font-weight:700; }
+  .adj-tip { font-size:.78rem; color:var(--text-1); line-height:1.45; padding:.2rem 0; }
+  .adj-tip b { color:var(--text-0); }
+  .adj-slots { display:grid; grid-template-columns:auto 1fr 1fr; gap:.3rem .7rem; font-size:.74rem; color:var(--text-1); margin-top:.3rem; align-items:start; }
+  .adj-slots .hd { font-size:.6875rem; font-weight:700; color:var(--text-2); }
+  .adj-slots .sl { font-weight:700; color:var(--text-0); white-space:nowrap; }
+  .adj-slots .buy { display:flex; flex-wrap:wrap; gap:.15rem .6rem; }
+  .adj-slots .buy span { white-space:nowrap; }
+  .adj-slots .buy img { width:18px; height:18px; border-radius:4px; display:inline-block; vertical-align:-4px; margin-right:.25rem; background:var(--bg-3); }
+  .adj-slots .buy b { color:var(--text-0); font-variant-numeric:tabular-nums; }
+  @media (max-width:560px) { .adj-slots { grid-template-columns:auto 1fr; } .adj-slots .hd.usual, .adj-slots .usual { grid-column:2; } .adj-slots .hd { display:none; } .adj-slots .usual::before { content:"usually: "; color:var(--text-2); } }
   .mb-opt { color:var(--blue); }
   /* Per-item "why this item, in this order" list (build reasoning). */
   .mb-items-why { margin-top:.35rem; display:flex; flex-direction:column; gap:.2rem; }
@@ -1737,18 +1791,16 @@ function beyondCore(a, shown, band, simItems) {
     else if (coreOf(x) >= 0.1) swaps.push(x);
     else finishers.push(x);
   }
-  const reviewOf = (slug) => (ITEMREV && ITEMREV.items && ITEMREV.items[slug]) || '';
+  // Every row reads the same way, from the item tag sheet: what it answers in this
+  // lane's words, how it works, what stats it gives, then its own effect.
   const row = (x, kind) => {
     const wr = wrOf(x);
     const d = wr != null ? (wr - finWr) * 100 : null;
-    const why = [];
-    if (x.tag) why.push(`<b>Buy it ${esc(x.tag)}.</b>`);
-    const rev = reviewOf(x.slug);
     return `<div class="bc-row">
       <img loading="lazy" data-ipop="${esc(x.slug)}" src="../img/items/${esc(x.slug)}.webp" alt="" title="${esc(x.name)} · tap for details" onerror="this.style.visibility='hidden'">
       <div style="min-width:0">
         <div class="bc-top"><b>${esc(x.name)}</b>${d != null && Math.round(d) >= 1 ? `<span class="bc-wr up" title="Out of 100 ${esc(a.name)} games with ${esc(x.name)}, about ${Math.round(d)} more end in a win than with a typical ${esc(a.name)} item">+${Math.round(d)} ${Math.round(d) === 1 ? 'win' : 'wins'} per 100 games</span>` : ''}${SIM && simSet.has(x.slug) ? '<span class="bc-sim" title="the experimental kit-math sim also builds it">sim builds it too</span>' : ''}</div>
-        ${why.length || rev ? `<div class="bc-why">${why.join(' ')}${rev ? `${why.length ? ' ' : ''}${esc(rev)}` : ''}</div>` : ''}
+        ${itemTagBlock(x.slug, role)}
       </div>
     </div>`;
   };
@@ -1759,8 +1811,277 @@ function beyondCore(a, shown, band, simItems) {
   if (!body) return '';
   return `<details class="sim-collapse beyond" open><summary>Beyond the core — more items ${esc(a.name)} players build</summary><div class="body">
     ${body}
-    <div class="bc-note">From ${usePlat ? 'Plat+' : 'all-rank'} ${lane} builds and ${esc(a.name)} games this patch. <b>+3 wins per 100 games</b> means: out of 100 ${esc(a.name)} games, about 3 more wins with that item than with a typical ${esc(a.name)} item. Items in this tab's build are left out. Tap an icon for the item.</div>
+    <div class="bc-note">From ${usePlat ? 'Plat+' : 'all-rank'} ${lane} builds and ${esc(a.name)} games this patch. <b>+3 wins per 100 games</b> means: out of 100 ${esc(a.name)} games, about 3 more wins with that item than with a typical ${esc(a.name)} item. Items in this tab's build are left out. Tags come from each item's stats and game text, the same on every page. Tap an icon for the item.</div>
   </div></details>`;
+}
+
+// One consistent read of an item, from the tag sheet (npm run itemtags): the lead
+// answer in this lane's words, answer chips, how-it-works chips, stat chips, then
+// the item's own effect condensed from the game text.
+function itemTagBlock(slug, role, opts) {
+  const t = ITEMTAGS && ITEMTAGS.items && ITEMTAGS.items[slug];
+  if (!t) return '';
+  const o = opts || {};
+  // In a matchup, lead with the answer that enemy actually asks for.
+  const lead = (o.prefer || []).find((x) => t.answers.includes(x)) || t.answers[0];
+  // Every item gets a line: the answer it gives, else what it is for (purpose), in this lane's words.
+  const lang = lead ? ITEMTAGS.roleLanguage[lead] : (ITEMTAGS.purposeLanguage || {})[t.purpose];
+  // The written "Pick it when ..." line (npm run review:itempicks) says what sets this item apart from
+  // its look-alikes, so it leads. Inside a matchup, an item that answers what that enemy asks for
+  // keeps the lane line for that answer; the pick line then follows the chips.
+  const rawPick = (ITEMPICKS && ITEMPICKS.items && ITEMPICKS.items[slug]) || '';
+  const pick = rawPick.replace(/^Pick it (when|if) /, 'When ');
+  const matched = (o.prefer || []).some((x) => t.answers.includes(x));
+  const laneLine = lang && lang[role] ? lang[role] : '';
+  const lead2 = o.noLine ? pick : matched ? laneLine : (pick || laneLine);
+  const line = lead2 ? `<div class="bc-why"><b>${esc(lead2)}.</b></div>` : '';
+  // At a glance (phone first, ten seconds in a ranked game): one line and at most three chips.
+  // Stats, the rest of the tags, the other line and the game text sit behind "More".
+  const ans = t.answers.map((x) => `<span class="itag ans">${esc(ITEMTAGS.answerLabel[x] || x)}</span>`);
+  const does = t.does.filter((d) => d !== 'Active').map((d) => `<span class="itag">${esc(d)}</span>`);
+  const chips = [...ans, ...does], top = chips.slice(0, 3), rest = chips.slice(3);
+  const gives = t.gives.map((g) => `<span class="itag stat">${g.v}${g.pct ? '%' : ''} ${esc(g.label)}</span>`).join('');
+  const other = lead2 === pick ? '' : pick;
+  const more = `${other ? `<div class="bc-why">${esc(other)}.</div>` : ''}<div class="tagrow">${rest.join('')}${gives}</div>${t.unique.map((u) => `<div class="bc-why uniq">${esc(u)}</div>`).join('')}`;
+  return `${line}<div class="tagrow">${top.join('')}</div><details class="imore"><summary>More</summary>${more}</details>`;
+}
+
+// ── ADJUST FOR YOUR MATCHUP ── data/artifacts/adjustments/<hero>.json (npm run
+// adjustments, counted from the patch's ranked lineups). Two reads per matchup:
+//   measured  what this hero-role's players build more or less into the pick,
+//             against the same players' usual builds; shown only past a luck check
+//   fits      which of the hero-role's own usual items answer what the enemy kit
+//             (or team shape) asks for, matched through the item tag sheet
+// Behaviour and kit facts, never a win claim (recommendation policy: only the
+// ranked field's edge rule names a "best", and this is not that).
+const ADJ = {};
+const ADJ_STATE = { mode: 'lane', key: null };
+async function mountAdjust(a) {
+  const host = document.getElementById('adjustCard');
+  if (!host || !ADJIDX || !ITEMTAGS) return;
+  if (!(ADJIDX.heroes[a.slug] && ADJIDX.heroes[a.slug][a.role])) {
+    host.innerHTML = `<details class="sim-collapse adj"><summary>Adjust for your matchup</summary><div class="body"><div class="adj-none">Not enough ${esc(a.role)} games for ${esc(a.name)} this patch to read matchup changes yet.</div></div></details>`;
+    return;
+  }
+  if (!ADJ[a.slug]) ADJ[a.slug] = await getJson(`../../data/artifacts/adjustments/${a.slug}.json`).catch(() => null);
+  const file = ADJ[a.slug], rd = file && file.roles && file.roles[a.role];
+  if (!rd || document.getElementById('adjustCard') !== host) return;
+  const heroName = (slug) => (INDEX.heroes.find((h) => h.slug === slug) || {}).name || slug;
+  const itemName = (slug) => (ITEMTAGS.items[slug] || {}).name || slug;
+  const compLabel = (k) => (ADJIDX.compLabels.find((c) => c.key === k) || {}).label || k;
+  const scopes = { lane: rd.lane, team: rd.team, comp: rd.comp };
+  const nameOfKey = (mode, k) => (mode === 'comp' ? compLabel(k) : heroName(k));
+  const changes = (m) => m.core.rises.length + m.core.drops.length + m.late.rises.length + m.late.drops.length;
+  const keysOf = (mode) => Object.keys(scopes[mode]).sort((x, y) => (mode === 'comp'
+    ? ADJIDX.compLabels.findIndex((c) => c.key === x) - ADJIDX.compLabels.findIndex((c) => c.key === y)
+    : scopes[mode][y].core.n - scopes[mode][x].core.n));
+  if (!keysOf(ADJ_STATE.mode).length) ADJ_STATE.mode = ['lane', 'team', 'comp'].find((m) => keysOf(m).length) || 'lane';
+  if (!scopes[ADJ_STATE.mode][ADJ_STATE.key]) ADJ_STATE.key = keysOf(ADJ_STATE.mode)[0] || null;
+  const slot = (pos) => (pos == null ? '' : ` · usually item ${Math.round(pos)}`);
+  const into = (mode, k) => (mode === 'comp' ? `against ${compLabel(k).toLowerCase()}` : mode === 'team' ? `with ${esc(heroName(k))} on their team` : `into ${esc(heroName(k))}`);
+  const itemRow = (slug, numHtml, tagOpts) => `<div class="bc-row">
+      <img loading="lazy" data-ipop="${esc(slug)}" src="../img/items/${esc(slug)}.webp" alt="" title="${esc(itemName(slug))} · tap for details" onerror="this.style.visibility='hidden'">
+      <div style="min-width:0"><div class="bc-top"><b>${esc(itemName(slug))}</b></div><div class="adj-num">${numHtml}</div>${itemTagBlock(slug, a.role, tagOpts)}</div>
+    </div>`;
+  const needsOf = (mode, k) => (mode === 'comp'
+    ? ADJIDX.compLabels.filter((c) => c.key === k).map((c) => ({ answer: c.needs, why: `their team has ${c.label.toLowerCase()}` }))
+    : (ADJIDX.heroNeeds[k] || []));
+  const measured = (title, sub, ly, where, prefer) => {
+    const up = ly.rises.map((r) => itemRow(r.item, `<span class="up">${r.per100} of 100</span> build it ${where} (usually ${r.usual100})${slot(r.pos)}${r.platAgrees ? ' · <b>Plat+ agree</b>' : ''}`, { prefer })).join('');
+    const down = ly.drops.length ? `<div class="adj-num" style="margin-top:.35rem">Bought less ${where}: ${ly.drops.map((r) => `<b>${esc(itemName(r.item))}</b> <span class="down">${r.per100} of 100</span> (usually ${r.usual100})`).join(' · ')}</div>` : '';
+    return `<div class="bc-group"><div class="bc-h">${title} <span>${sub}</span></div>${up}${down}${up || down ? '' : `<div class="adj-none">No clear change ${where}: ${esc(a.name)} players build these the same as usual (${ly.n.toLocaleString()} players).</div>`}</div>`;
+  };
+  const fits = (mode, k, taken) => {
+    const needs = needsOf(mode, k);
+    const seen = new Set();
+    const groups = needs.slice(0, 3).map((nd) => {
+      const cand = rd.pool.filter((x) => { const t = ITEMTAGS.items[x.item]; return t && t.answers.includes(nd.answer) && !seen.has(x.item); })
+        .sort((x, y) => (y.late100 + y.core100) - (x.late100 + x.core100)).slice(0, 3);
+      if (!cand.length) return '';
+      cand.forEach((x) => seen.add(x.item));
+      const lang = ITEMTAGS.roleLanguage[nd.answer];
+      // When players buy this kind of item, by purchase slot, all heroes pooled (index.answerTiming).
+      const tm = ADJIDX.answerTiming && (mode === 'comp' ? ADJIDX.answerTiming.comp[k] : mode === 'lane' ? ADJIDX.answerTiming.lane[nd.answer] : null);
+      const late = (tm || []).filter((r) => r.slot >= 4);
+      const timing = late.length ? `<details class="imore"><summary>How often players buy one</summary><div class="adj-num">All heroes, players with no such item yet: ${late.map((r) => `item ${r.slot} by <b>${Math.round(r.needy100)}</b> of 100 here (${Math.round(r.other100)} otherwise)`).join(', ')}.</div></details>` : '';
+      return `<div class="bc-h" style="margin-top:.55rem">${esc(ITEMTAGS.answerLabel[nd.answer])} <span>— ${esc(nd.why)}. ${esc(lang && lang[a.role] ? lang[a.role] : '')}.</span></div>${timing}${cand.map((x) =>
+        itemRow(x.item, `<b>${x.late100} of 100</b> finish it late · ${x.core100} of 100 open with it${taken.has(x.item) ? ' · <b>rising here</b>' : ''}`, { noLine: true })).join('')}`;
+    }).join('');
+    return `<div class="bc-group"><div class="bc-h">Items 4 to 6: build them on purpose <span>— what ${mode === 'comp' ? 'that team shape' : esc(nameOfKey(mode, k))} asks for, answered from ${esc(a.name)}'s own usual items</span></div>
+      ${groups || `<div class="adj-none">Nothing ${esc(a.name)} ${esc(a.role)} usually builds answers this directly.</div>`}</div>`;
+  };
+  // The matchup's own record against the hero-role's other games (raw wins, every game counted).
+  const record = (mode, k, m) => {
+    const r = m.record;
+    if (!r || r.n < 50 || !r.restN) return '';
+    const a1 = (100 * r.w) / r.n, a0 = (100 * r.restW) / r.restN, d = a1 - a0;
+    const cls = d <= -3 ? 'down' : d >= 3 ? 'up' : '';
+    return `<div class="adj-rec">${esc(a.name)} ${esc(a.role)} wins <span class="${cls}">${a1.toFixed(0)}%</span> of ${r.n.toLocaleString()} games ${into(mode, k)}, against ${a0.toFixed(0)}% in the other ${esc(a.role)} games.${d <= -3 ? ' A harder game than usual.' : d >= 3 ? ' An easier game than usual.' : ''}</div>`;
+  };
+  // How to play into the pick, from its kit: shown for every enemy hero, and it carries the card
+  // when the builds have nothing to say.
+  const CC_WORD = { stun: 'stun', root: 'root', sleep: 'sleep', pull: 'pull', knockup: 'knock-up', knockback: 'knock-back', silence: 'silence', suppress: 'suppress', taunt: 'taunt', fear: 'fear' };
+  const tips = (mode, k, quiet) => {
+    const t = mode !== 'comp' && ADJIDX.heroTips && ADJIDX.heroTips[k];
+    if (!t || !(t.playAgainst || t.cc.length)) return '';
+    const cc = t.cc.map((c) => `<b>${esc(c.ability)}</b> (${c.types.map((x) => CC_WORD[x] || x).join(' and ')}${c.sec ? `, ${c.sec}s` : ''})`).join(', ');
+    const curve = [t.powerSpike ? `strongest in the ${esc(t.powerSpike)} game` : '', t.scaling ? `scales ${esc(t.scaling)}` : ''].filter(Boolean).join(', ');
+    return `<div class="bc-group"><div class="bc-h">Playing into ${esc(heroName(k))} <span>— ${quiet ? 'players do not change the build here, so play the matchup' : 'from the kit'}</span></div>
+      ${t.playAgainst ? `<div class="adj-tip">${esc(t.playAgainst)}</div>` : ''}
+      ${cc ? `<div class="adj-tip">Crowd control to dodge: ${cc}.</div>` : ''}
+      ${curve ? `<div class="adj-tip">${esc(heroName(k))} is ${curve}.</div>` : ''}</div>`;
+  };
+  // The common buys at each purchase slot, this matchup beside the usual, among players who bought a k-th item.
+  const slotTable = (mode, k, m) => {
+    const here = m.slots || [], usual = rd.slots || [];
+    if (!usual.length) return '';
+    const cell = (sr) => (sr ? `<div class="buy">${sr.top.map((x) => `<span><img loading="lazy" data-ipop="${esc(x.item)}" src="../img/items/${esc(x.item)}.webp" alt="" onerror="this.style.visibility='hidden'">${esc(itemName(x.item))} <b>${x.pct}%</b></span>`).join('')}</div>` : '<div class="buy" style="color:var(--text-2)">too few games</div>');
+    const rows = usual.map((u) => { const h = here.find((x) => x.slot === u.slot);
+      return `<div class="sl">Item ${u.slot}</div>${here.length ? cell(h) : ''}<div class="${here.length ? 'usual' : ''}">${cell(u)}</div>`; }).join('');
+    const head = here.length ? `<div class="hd"></div><div class="hd">${esc(nameOfKey(mode, k))}</div><div class="hd usual">Usually</div>` : '';
+    return `<details class="sim-collapse" style="margin-top:.5rem"><summary>Common buys, item by item${here.length ? '' : ' (all matchups)'}</summary><div class="body">
+      <div class="adj-slots" style="${here.length ? '' : 'grid-template-columns:auto 1fr'}">${head}${rows}</div>
+      <div class="bc-note">What ${esc(a.name)} ${esc(a.role)} players buy first, second, third and so on. Each row counts only players who bought an item in that slot, so a game that ended early is not read as skipping it.</div>
+    </div></details>`;
+  };
+  let quietOpen = false;
+  const draw = () => {
+    const mode = ADJ_STATE.mode, keys = keysOf(mode), k = ADJ_STATE.key, m = scopes[mode][k];
+    const modes = [['lane', 'Lane opponent'], ['team', 'Enemy on their team'], ['comp', 'Their team shape']].filter(([md]) => keysOf(md).length)
+      .map(([md, label]) => `<button type="button" data-adjmode="${md}" class="${md === mode ? 'active' : ''}" aria-pressed="${md === mode}">${label}</button>`).join('');
+    const opts = keys.map((x) => { const c = changes(scopes[mode][x]); return `<option value="${esc(x)}"${x === k ? ' selected' : ''}>${esc(nameOfKey(mode, x))} · ${(scopes[mode][x].record ? scopes[mode][x].record.n : scopes[mode][x].core.n).toLocaleString()} games${c ? ` · ${c} ${c === 1 ? 'change' : 'changes'}` : ''}</option>`; }).join('');
+    let out = '<div class="adj-none">No matchup with enough games yet.</div>';
+    if (m) {
+      const where = into(mode, k), taken = new Set([...m.core.rises, ...m.late.rises].map((r) => r.item));
+      const prefer = needsOf(mode, k).map((n) => n.answer);
+      quietOpen = !changes(m);
+      out = record(mode, k, m) + measured('First three items', `— what ${esc(a.name)} ${esc(a.role)} players change ${where}`, m.core, where, prefer)
+        + (m.late.rises.length || m.late.drops.length ? measured('Items 4 to 6', '— the late changes large enough to show for this hero', m.late, where, prefer) : '')
+        + tips(mode, k, quietOpen) + slotTable(mode, k, m)
+        + fits(mode, k, taken);
+    }
+    host.innerHTML = `<details class="sim-collapse adj" open><summary>Adjust for your matchup</summary><div class="body">
+      <div class="adj-lead">Pick who you are into.</div>
+      <div class="adj-pick"><div class="adj-modes" role="group" aria-label="Matchup type">${modes}</div><select id="adjKey" aria-label="Matchup">${opts}</select></div>
+      ${out}
+      <details class="imore"><summary>How this is counted</summary><div class="bc-note">Counted from ${file.matches.toLocaleString()} ranked games this patch (${esc(file.patch)}, all ranks), against ${esc(a.name)} ${esc(a.role)} players' own usual builds. What players do, not proof that the change wins. A measured row shows only when it clears a luck check: across every hero, the same rules on shuffled matchups show ${ADJIDX.shownUnderShuffle.core} first-three rows against ${ADJIDX.shown.core} real ones. Players keep adjusting after the first three items, but only a few in 100, too few to show for one hero and one item, so the items 4 to 6 list is picked by fit: the item's text against the enemy kit. Tags come from each item's stats and game text.</div></details>
+    </div></details>`;
+    host.querySelectorAll('[data-adjmode]').forEach((b) => b.addEventListener('click', () => { ADJ_STATE.mode = b.dataset.adjmode; ADJ_STATE.key = keysOf(ADJ_STATE.mode)[0] || null; draw(); }));
+    const sel = host.querySelector('#adjKey');
+    if (sel) sel.addEventListener('change', () => { ADJ_STATE.key = sel.value; draw(); });
+  };
+  draw();
+}
+
+// The 1-2-3 of a build, one short line per item: its written "when to pick it" line, else the
+// rule-based lane line. Same source as every other item row on the site.
+function buildItemRows(items, role) {
+  if (!ITEMTAGS || !ITEMTAGS.items) return '';
+  const rows = items.map((it, n) => {
+    const t = ITEMTAGS.items[it.slug];
+    const pick = ((ITEMPICKS && ITEMPICKS.items && ITEMPICKS.items[it.slug]) || '').replace(/^Pick it (when|if) /, 'when ');
+    const lang = t && (t.answers[0] ? ITEMTAGS.roleLanguage[t.answers[0]] : (ITEMTAGS.purposeLanguage || {})[t.purpose]);
+    const line = pick || (lang && lang[role] ? lang[role].charAt(0).toLowerCase() + lang[role].slice(1) : '');
+    return `<div><span class="ord">${n + 1}</span><b>${esc((t && t.name) || it.name)}</b>${line ? ` — ${esc(line)}` : ''}</div>`;
+  }).join('');
+  return `<div class="mb-items-why">${rows}</div>`;
+}
+
+// ── LOADOUT BY AUGMENT ── data/artifacts/loadouts/<hero>.json (npm run loadouts). The page follows
+// the draft: the augment is locked first, so it is the first choice here and the Eternal, crest and
+// opening build shown are the ones for THAT augment (ranked inside it by the edge rule, each option
+// pulled toward its own lane-wide rate). Hero- and lane-specific; the matchup and item sections
+// below apply to any loadout. Phone first: one icon row per pick, lists behind More.
+const LOADOUTS = {};
+const LO_STATE = {};
+async function mountLoadout(a) {
+  const host = document.getElementById('loadoutCard');
+  if (!host) return;
+  if (!LOIDX || !(LOIDX.heroes[a.slug] || []).includes(a.role)) { host.hidden = true; return; }
+  if (!LOADOUTS[a.slug]) LOADOUTS[a.slug] = await getJson(`../../data/artifacts/loadouts/${a.slug}.json`).catch(() => null);
+  const file = LOADOUTS[a.slug], rd = file && file.roles && file.roles[a.role];
+  if (!rd || !rd.augments.length || document.getElementById('loadoutCard') !== host) { host.hidden = true; return; }
+  const stateKey = `${a.slug}|${a.role}`;
+  const itemName = (slug) => ((ITEMTAGS && ITEMTAGS.items[slug]) || {}).name || slug;
+  const crestSlug = (name) => { const e = ITEMTAGS && Object.entries(ITEMTAGS.items).find(([, t]) => t.kind === 'crest' && t.name === name); return e ? e[0] : null; };
+  const lbl = (l) => (l === 'By games' ? 'few games' : l);
+  const LTIP = { Best: 'clearly wins more with this augment', Leans: 'wins a little more with this augment', 'Toss-up': 'no real difference with this augment: the first has the best odds so far', 'Most played': 'the only one with enough games here, so no edge is claimed', 'By games': 'too few games with this augment to rank' };
+  const reviews = (REVIEWS && REVIEWS.heroes && REVIEWS.heroes[a.slug] && REVIEWS.heroes[a.slug][a.role]) || {};
+  const etImg = (name) => `<img class="rnd" data-epop="${esc(name)}" src="${IMG.eternal(name.toLowerCase())}" alt="" title="${esc(name)} · tap for the Eternal" onerror="this.style.visibility='hidden'">`;
+  const crestImg = (name) => { const sl = crestSlug(name); return sl ? `<img class="sq" data-ipop="${esc(sl)}" src="../img/crests/${esc(sl)}.webp" alt="" title="${esc(name)} · tap for details" onerror="this.style.visibility='hidden'">` : ''; };
+  const coreImgs = (key) => key.split('>').map((sl) => `<img class="sq" data-ipop="${esc(sl)}" src="../img/items/${esc(sl)}.webp" alt="" title="${esc(itemName(sl))} · tap for details" onerror="this.style.visibility='hidden'">`).join('<span class="arrow">→</span>');
+  const draw = () => {
+    const sel = rd.augments.find((x) => x.id === LO_STATE[stateKey]) || rd.augments[0];
+    const tabs = rd.augments.map((x, i) => `<button type="button" class="lo-tab${x === sel ? ' active' : ''}" data-loaug="${esc(x.id)}" aria-pressed="${x === sel}">
+        <img src="../img/augments/${esc(x.id)}.webp" alt="" onerror="this.style.visibility='hidden'">
+        <span><span class="nm">${esc(x.name)}</span><br><span class="sub">${x.sharePct}% run it${i === 0 && rd.augments.length > 1 && rd.augmentLabel !== 'By games' ? ` · ${rd.augmentLabel === 'Most played' ? 'most played' : rd.augmentLabel === 'Toss-up' ? 'best odds' : rd.augmentLabel.toLowerCase()}` : ''}</span></span>
+      </button>`).join('');
+    const pickRow = (key, p, img) => {
+      const lead = p.rows[0];
+      if (!lead) return '';
+      const sub = `${p.mostRun && p.mostRun.name !== lead.name ? `${p.mostRun.pct} of 100 with this augment run <b>${esc(p.mostRun.name)}</b>` : ''}`;
+      return `<div class="lo-row"><span class="lo-k">${key}</span><span class="lo-v">${img(lead.name)}<b>${esc(lead.name)}</b><span class="bp-l" title="${LTIP[p.label] || ''}">${lbl(p.label)}</span><span class="adj-num">${lead.n.toLocaleString()} of ${sel.n.toLocaleString()}</span>${p.changes ? `<span class="itag ans" title="Across the lane ${esc(p.laneLead)} leads">wins more with this augment</span>` : ''}${sub ? `<span class="lo-sub">${sub}</span>` : ''}</span></div>`;
+    };
+    const b = sel.builds, b0 = b.rows[0];
+    const buildRow = b0 ? `<div class="lo-row"><span class="lo-k">Build</span><span class="lo-v">${coreImgs(b0.name)}<span class="bp-l" title="${LTIP[b.label] || ''}">${lbl(b.label)}</span><span class="adj-num">${b0.n.toLocaleString()} of ${sel.coreGames.toLocaleString()}</span>${sel.openers[0] ? `<span class="lo-sub">${sel.openers[0].pct} of 100 with this augment open on <b>${esc(itemName(sel.openers[0].item))}</b></span>` : ''}</span></div>` : '';
+    const list = (title, p, name) => (p.rows.length ? `<div class="adj-num" style="margin-top:.35rem"><b>${title}</b> · ${lbl(p.label)}${p.laneLead ? ` · across the lane: ${name(p.laneLead)}` : ''}</div>${p.rows.map((x) => `<div class="adj-num">${name(x.name)} · ${x.n.toLocaleString()} games · ${x.shrunk}%${x.few ? ' · few games' : ''}</div>`).join('')}` : '');
+    const coreName = (key) => key.split('>').map((sl) => esc(itemName(sl))).join(' → ');
+    const why = reviews[sel.id];
+    host.innerHTML = `<h2>Loadout <span class="hint">start with your augment · it is locked in the draft</span></h2>
+      <div class="lo-tabs" role="group" aria-label="Augment">${tabs}</div>
+      ${why ? `<div class="lo-why">${esc(why)}</div>` : ''}
+      ${pickRow('Eternal', sel.eternals, etImg)}
+      ${pickRow('Crest', sel.crests, crestImg)}
+      ${buildRow}
+      <details class="imore"><summary>More</summary>
+        ${list('Eternal', sel.eternals, esc)}${list('Crest', sel.crests, esc)}${list('Opening three items', sel.builds, coreName)}
+        ${sel.openers.length ? `<div class="adj-num" style="margin-top:.35rem"><b>First item</b> · ${sel.openers.map((o) => `${esc(itemName(o.item))} ${o.pct}%`).join(', ')}</div>` : ''}
+        <div class="bc-note">${sel.n.toLocaleString()} ${esc(a.name)} ${esc(a.role)} players ran ${esc(sel.name)} in ranked games this patch (${esc(file.patch)}, all ranks). Each list is ranked inside this augment, with win rates pulled toward how the pick does across the whole lane so a handful of games cannot lead. Builds count players who finished three items, in the order bought. Across all heroes, players who open on a different first item than most players on their augment win about 2 fewer games in 100.</div>
+      </details>`;
+    host.hidden = false;
+    host.querySelectorAll('[data-loaug]').forEach((btn) => btn.addEventListener('click', () => { LO_STATE[stateKey] = btn.dataset.loaug; draw(); }));
+  };
+  draw();
+  buildSubnav();
+}
+
+// ── PICKS ON THIS BUILD ── data/artifacts/build-picks/<hero>.json (npm run buildpicks): the augment,
+// Eternal and crest run by players who opened with this tab's three items, ranked by the same edge
+// rule as the lane picks (each option shrunk toward its own lane-wide rate), and what they bought
+// fourth, fifth and sixth. A pick is marked as changing only when it differs from the lane's lead on
+// a clear edge. Phone first: one line per pick, the lists behind More.
+const BPICKS = {};
+async function mountBuildPicks(a) {
+  const hosts = [...document.querySelectorAll('.bpicks[data-core]')];
+  if (!hosts.length || !BPIDX || !(BPIDX.heroes[a.slug] || []).includes(a.role)) return;
+  if (!BPICKS[a.slug]) BPICKS[a.slug] = await getJson(`../../data/artifacts/build-picks/${a.slug}.json`).catch(() => null);
+  const rd = BPICKS[a.slug] && BPICKS[a.slug].roles && BPICKS[a.slug].roles[a.role];
+  if (!rd) return;
+  const itemName = (slug) => ((ITEMTAGS && ITEMTAGS.items[slug]) || {}).name || slug;
+  const ORD = { 4: '4th', 5: '5th', 6: '6th' };
+  const KINDS = [['augments', 'Augment'], ['eternals', 'Eternal'], ['crests', 'Crest']];
+  const LTIP = { Best: 'clearly wins more on this build', Leans: 'wins a little more on this build', 'Toss-up': 'no real difference on this build: the first has the best odds so far', 'Most played': 'the only one with enough games here, so no edge is claimed', 'By games': 'too few games on this build to rank' };
+  for (const host of hosts) {
+    if (!host.isConnected) continue;
+    // This tab's exact purchase order when enough players bought it that way, else the same three in any order.
+    const b = rd.builds.find((x) => x.ordered && x.core.join('>') === host.dataset.order) || rd.builds.find((x) => !x.ordered && x.core.join('|') === host.dataset.core);
+    if (!b) { host.innerHTML = ''; continue; }
+    const line = ([kind, label]) => {
+      const p = b[kind], lead = p.rows[0];
+      if (!lead) return '';
+      const nameHtml = kind === 'augments' && lead.id ? `<b data-apop="${esc(lead.id)}" data-apop-role="${esc(a.role)}" style="cursor:pointer">${esc(lead.name)}</b>` : `<b>${esc(lead.name)}</b>`;
+      return `<div class="bp-row"><span class="bp-k">${label}</span><span class="bp-v">${nameHtml} <span class="bp-l" title="${LTIP[p.label] || ''}">${p.label === 'By games' ? 'few games' : p.label}</span> <span class="adj-num">${lead.n.toLocaleString()} of ${b.n.toLocaleString()}</span>${p.changes ? ` <span class="itag ans" title="The lane as a whole leads with ${esc(p.laneLead)}">wins more on this build</span>` : ''}${p.mostRun && p.mostRun.name !== lead.name ? `<div class="adj-num">${p.mostRun.pct} of 100 on this build run <b>${esc(p.mostRun.name)}</b></div>` : ''}${p.pairs ? `<div><span class="itag ans" title="Across the lane most players run ${esc(p.laneMostRun)}">${esc(p.mostRun.name)} goes with this build</span></div>` : ''}</span></div>`;
+    };
+    const then = b.next.filter((n) => n.top.length).map((n) => `${ORD[n.slot]} <b>${esc(itemName(n.top[0].item))}</b> ${n.top[0].pct}%`).join(' · ');
+    const full = KINDS.map(([kind, label]) => { const p = b[kind]; if (!p.rows.length) return '';
+      return `<div class="adj-num" style="margin-top:.3rem"><b>${label}</b> · ${p.label === 'By games' ? 'few games' : p.label}${p.laneLead ? ` · the lane leads with ${esc(p.laneLead)}` : ''}</div>${p.rows.map((x) => `<div class="adj-num">${esc(x.name)} · ${x.n.toLocaleString()} games · ${x.shrunk}%${x.few ? ' · few games' : ''}</div>`).join('')}`; }).join('');
+    const nextFull = b.next.map((n) => `<div class="adj-num">${ORD[n.slot]} item (${n.n.toLocaleString()} players): ${n.top.map((x) => `${esc(itemName(x.item))} ${x.pct}%`).join(', ')}</div>`).join('');
+    host.innerHTML = `<div class="bp"><div class="bc-h">Picks on this build <span>— ${b.n.toLocaleString()} players ${b.ordered ? 'bought these three in this order' : 'opened with these three, any order'}, all ranks</span></div>
+      ${KINDS.map(line).join('')}
+      ${then ? `<div class="bp-row"><span class="bp-k">Then</span><span class="bp-v adj-num">${then}</span></div>` : ''}
+      <details class="imore"><summary>More</summary>${full}<div style="margin-top:.3rem">${nextFull}</div>
+        <div class="bc-note">${b.ordered ? 'Players who bought these three items in this order' : 'Too few players bought these three in this exact order, so this counts them in any order'}, all ranks, ${esc(BPICKS[a.slug].patch)}. "Goes with this build" is about what players run: most of them pick it here though the lane mostly runs something else. It is not a win claim. Win rates are pulled toward each pick's own rate across the whole lane, so a pick with a handful of games cannot lead. "Wins more on this build" shows only when the lead differs from the lane's on a clear edge. Later items count players who bought an item in that slot.</div></details></div>`;
+  }
 }
 
 function buildsCard(a, pageBand) {
@@ -1815,7 +2136,11 @@ function buildsCard(a, pageBand) {
       : `<span class="chip">${esc(it.name)}</span>`).join(m.anyOrder ? '<span class="arrow">+</span>' : '<span class="arrow">→</span>');
     // Build explanation (synergy + the 1/2/3 item reasons) is visible by default;
     // only the sim-specific line collapses behind "The sim math".
-    const explain = `${rsn && rsn.synergy ? `<div class="mb-why" style="color:var(--text-0)">${esc(rsn.synergy)}</div>` : ''}${rsn ? itemWhyRows(m.items, rsn.items) : ''}`;
+    // Every build explains itself the same way: one line per item from the item sheet (so no build is
+    // left bare when the data refresh changes which three lead). The written summary, where a reviewed
+    // one exists for this exact set, is theory behind a fold.
+    const explain = `${buildItemRows(m.items, a.role)}${rsn && rsn.synergy ? `<details class="imore"><summary>Why these three</summary><div class="mb-why" style="color:var(--text-0)">${esc(rsn.synergy)}</div></details>` : ''}
+        <div class="bpicks" data-order="${esc(m.items.map((it) => it.slug).filter(Boolean).join('>'))}" data-core="${esc(m.items.map((it) => it.slug).filter(Boolean).sort().join('|'))}"></div>`;
     const simLine = `<div class="mb-why">${esc(m.whyLine)}${m.optimizer ? ` <span class="mb-opt">${esc(m.optimizer)}</span>` : ''}</div>`;
     return `
       <div class="bbody${i === 0 ? '' : ' hidden'}" data-bbody="${i}">
@@ -1887,6 +2212,7 @@ function buildsCard(a, pageBand) {
       <div class="btabs">${tabs}</div>
       ${metas.map(metaBody).join('')}
       ${SIM ? simBody : metas.length ? '' : `<div class="muted">No ${esc(a.role)} field builds for ${esc(a.name)} yet.</div>`}
+      <div id="adjustCard"></div>
     </section>`;
 }
 
@@ -2020,6 +2346,8 @@ function renderHero(a, roleParam) {
     </div>
 
     <div id="tabPlay">
+    <section class="card" id="loadoutCard" hidden></section>
+
     <section class="card">
       <h2>Your opening picks</h2>
       ${(() => {
@@ -2404,6 +2732,9 @@ function renderHero(a, roleParam) {
   });
   fillLevelChart(a);
   wireBuilds();
+  mountAdjust(a);
+  mountBuildPicks(a);
+  if (!past) mountLoadout(a); // the loadout card is current-patch: off while an earlier patch is shown
   // Page rank filter: remember the pick and redraw this lane, keeping the scroll.
   // The same two filters again in a bar that shows once the header's own
   // buttons have scrolled off (desktop: under the top bar; phones: bottom bar
@@ -2685,11 +3016,11 @@ async function nav(slug, replace = false, role = null) {
   await route();
   window.scrollTo({ top: 0 });
 }
-let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null, PENDING = null, HEROCOACH = null, ETREV = null, ITEMPOOL = null, ITEMREV = null;
+let AUGS = null, REVIEWS = null, REASONING = null, ETMAP = null, PENDING = null, HEROCOACH = null, ETREV = null, ITEMPOOL = null, ITEMREV = null, ITEMTAGS = null, ADJIDX = null, ITEMPICKS = null, BPIDX = null, LOIDX = null;
 async function getAugs() {
   if (!AUGS) {
     let eternals, pending;
-    [AUGS, REVIEWS, REASONING, eternals, pending, HEROCOACH, ETREV, ITEMPOOL, ITEMREV] = await Promise.all([
+    [AUGS, REVIEWS, REASONING, eternals, pending, HEROCOACH, ETREV, ITEMPOOL, ITEMREV, ITEMTAGS, ADJIDX, ITEMPICKS, BPIDX, LOIDX] = await Promise.all([
       getJson('../../data/aggregates/predgg-augments.json').catch(() => null),
       getJson('../../data/aggregates/augment-reviews.json').catch(() => null),
       getJson('../../data/aggregates/build-reasoning.json').catch(() => null),
@@ -2699,6 +3030,11 @@ async function getAugs() {
       getJson('../../data/aggregates/eternal-cards.json').catch(() => null),
       getJson('../../data/aggregates/item-pool.json').catch(() => null),
       getJson('../../data/aggregates/item-reviews.json').catch(() => null),
+      getJson('../../data/aggregates/item-tags.json').catch(() => null),
+      getJson('../../data/artifacts/adjustments/index.json').catch(() => null),
+      getJson('../../data/aggregates/item-picks.json').catch(() => null),
+      getJson('../../data/artifacts/build-picks/index.json').catch(() => null),
+      getJson('../../data/artifacts/loadouts/index.json').catch(() => null),
     ]);
     PENDING = (pending && pending.heroes) || {};
     // name -> { major, minorSlot1, minorSlot2 } so an Eternal can be explained in

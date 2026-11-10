@@ -515,6 +515,38 @@ runbook additions are skipped (eternals:usage was). Its instructions can only be
 own conversation: add `npm run eternals:usage && npm run comps && npm run postgame:comp -- --all`
 after perks, `RANKED_ONLY=1` on aggregate, and the team-comps coverage check.
 
+## 22. Matchup build adjustments + item tag sheet (SHIPPED 2026-11-10; follow-ups open)
+
+Shipped: `npm run itemtags` (data/aggregates/item-tags.json, rules in src/item-tags.ts), `npm run
+adjustments` (data/artifacts/adjustments/, rules in src/adjustments.ts), the hero page's "Adjust for
+your matchup" card and tag chips under "more items", solo ranked games in the coach job
+(data/coaching/solo.json). This covers 16b's "your counter swap" half and recounts the first three
+items from the lineups (21a) for this card. Open:
+
+- **22a. Does the change win (16c).** The card shows behaviour only. With the lineups, compare win
+  rates with and without the item inside a matchup, among players with the same number of finished
+  items, and gate on the known-answer checks from the fork doc before any "wins more" tag.
+- **22b. [DONE 2026-11-10] Picks by build** (`npm run buildpicks`, hero page "Picks on this build"; covers
+  19 and 21d with a win-rate test instead of 19's signature-item lift). Open: a Plat+ view of it, minors
+  per build, and the same picks inside a matchup-adjusted core.
+- **22j. [DONE 2026-11-10] Augment-led Loadout card** (`npm run loadouts`): the page follows the draft.
+  Open: fold "Your opening picks" into it (it still shows the lane-wide lists below), minors per
+  augment and Eternal, a Plat+ view, and the leveling order per augment.
+- **22i. Tighten the item pick lines to about ten words** and re-run the critic (phone glance).
+- **22g. Answer timing per hero-role.** The slot-by-slot answer timing on the card is pooled over all
+  heroes (index.answerTiming). Split it by role or class once the patch has the games.
+- **22h. Lane result for the field.** The lineups carry end-of-game totals only, so "who won the lane"
+  is not readable; gold at 10 minutes per player (or first-tower side) would need a new field in the
+  stream rows. Check whether the public stream exposes it before promising winners-of-lane builds.
+- **22c. Purchase timing.** Committed 1.18 rows are v2 (no purchase seconds); rows written from
+  2026-11-10 on are v3. Once a few days of v3 exist, add "bought around minute N" to adjusted items.
+- **22d. Daily job.** Add `npm run itemtags && npm run adjustments` after perks in the scheduled
+  task's own step list (21h: it can only be edited from its own conversation).
+- **22e. Copy pass for item statements.** The statements are the game's text, condensed. A coach
+  copy pass (copy:prepare -> pred-scout-coach -> copy:ingest, independent judge) could plain-word
+  them; keep the tags and answers rule-based.
+- **22f. "What enemies build against you" (other half of 16b)** from the same cells, per enemy role.
+
 ## Parked ideas (not yet scheduled)
 
 - Comfort-vs-meta flex logic (parked by maintainer 2026-06-12): when a
