@@ -1906,7 +1906,11 @@ async function mountLoadout(a) {
     const list = (title, p, name) => (p.rows.length ? `<div class="adj-num" style="margin-top:.35rem"><b>${title}</b> · ${lbl(p.label)}${p.laneLead ? ` · across the lane: ${name(p.laneLead)}` : ''}</div>${p.rows.map((x) => `<div class="adj-num">${name(x.name)} · ${x.n.toLocaleString()} games · ${x.shrunk}%${x.few ? ' · few games' : ''}</div>`).join('')}` : '');
     const coreName = (key) => key.split('>').map((sl) => esc(itemName(sl))).join(' → ');
     const why = reviews[sel.id];
-    host.innerHTML = `<h2>Loadout <span class="hint">start with your augment · it is locked in the draft</span></h2>
+    // This card counts all ranks only. Say so next to the title, and say it louder when the page's rank
+    // filter is on Plat+, because Opening Picks and Builds below DO follow that filter and will differ.
+    const onPlat = (() => { try { return localStorage.getItem(BAND_KEY) === 'plat+' || !!document.querySelector('.pageband [data-pageband="plat+"].active'); } catch { return false; } })();
+    host.innerHTML = `<h2>Loadout <span class="bandchip${onPlat ? ' fallback' : ''}" title="This card counts all ranks">All ranks</span> <span class="hint">start with your augment · it is locked in the draft</span></h2>
+      ${onPlat ? '<div class="mb-why" style="color:var(--gold);margin:0 0 .5rem">This card is all ranks. The Plat+ filter applies to the opening picks and builds below, so their numbers differ from these.</div>' : ''}
       <div class="lo-tabs" role="group" aria-label="Augment">${tabs}</div>
       ${why ? `<div class="lo-why">${esc(why)}</div>` : ''}
       ${pickRow('Eternal', sel.eternals, etImg)}
