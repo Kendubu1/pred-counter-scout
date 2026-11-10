@@ -5944,3 +5944,32 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   worked together" bullets for 61 1.18 performers, 2 critics: 17 rewritten, 1 dropped. Critics also found
   an engine bug: anti-heal items ("reduce their healing") were tagged as healing; fixed in build-why and
   build-power. The %-health stack is titled by the target's health.
+
+## 2026-11-10 — Matchup build adjustments and the item tag sheet
+
+- Data check before building: the 1.18 lineups (team-comps/1.18, 29,154 ranked matches, Nov 3-8) carry
+  the full ordered build, final inventory, output totals and the raw loadout on 100% of 291,540 player
+  rows. Committed rows are v2: none has purchase seconds or level. A live `MAX_REQUESTS=4 npm run perks`
+  wrote 17 ranked matches with all of v3 (seconds aligned with the build on 170 of 170 rows), so the
+  pull works; the committed data simply stops at 2026-11-08 08:58 UTC. The daily job has not landed
+  since. Match-time rank is on 61% of rows (16% on Nov 3, 79% by Nov 8).
+- Builds follow the matchup in the first three items and then stop. Same rules, same bars, real
+  matchups against shuffled ones (each team paired with a random other match's enemy): items 1-3 show
+  905 rows against 79 shuffled; items 4-6 show 47 against 22. At |z| >= 3 the late layer is about the
+  size luck makes at every floor tried. So a "what players build late into X" list would be noise; the
+  page says so and offers tag-matched answers from the hero's own item pool for slots 4-6 instead.
+- A z bar alone is not a luck bar. |z| >= 3 with the 4-point floor still left the all-scope list 34%
+  shuffle-sized (team scope worst: five enemies per player, so five times the tests). Tune bars against
+  the shuffle (`npm run adjustments -- --tune`), per layer and scope, and commit the shuffle count with
+  the artifact so the page can state it. The harness holds the core list to a fifth of real.
+- Late items must be compared within the same number of finished items. A longer game finishes more
+  items, so an unstratified "has item X" share reads game length as matchup (test: 'compares late
+  items within the same build length').
+- Item tags are rules over the catalog, not authored copy: stats in a fixed order, a fixed vocabulary
+  matched on the game's effect text and aggression type, and the item's own effect condensed from that
+  text. The test checks every number in a statement appears in the item's game text. Role language is
+  one curated line per answer per lane (8 answers x 5 lanes), so an item reads the same everywhere.
+- Solo games: the watcher already saw them; the film pull dropped them at `--min-stack 2` and the job
+  marked them handled. data/coaching/solo.json turns them on from a start time, so old solo games do
+  not back-fill. Stack-only cards (Who queued) already skip a stack of one.
+

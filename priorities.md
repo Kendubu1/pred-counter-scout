@@ -515,6 +515,29 @@ runbook additions are skipped (eternals:usage was). Its instructions can only be
 own conversation: add `npm run eternals:usage && npm run comps && npm run postgame:comp -- --all`
 after perks, `RANKED_ONLY=1` on aggregate, and the team-comps coverage check.
 
+## 22. Matchup build adjustments + item tag sheet (SHIPPED 2026-11-10; follow-ups open)
+
+Shipped: `npm run itemtags` (data/aggregates/item-tags.json, rules in src/item-tags.ts), `npm run
+adjustments` (data/artifacts/adjustments/, rules in src/adjustments.ts), the hero page's "Adjust for
+your matchup" card and tag chips under "more items", solo ranked games in the coach job
+(data/coaching/solo.json). This covers 16b's "your counter swap" half and recounts the first three
+items from the lineups (21a) for this card. Open:
+
+- **22a. Does the change win (16c).** The card shows behaviour only. With the lineups, compare win
+  rates with and without the item inside a matchup, among players with the same number of finished
+  items, and gate on the known-answer checks from the fork doc before any "wins more" tag.
+- **22b. Build-linked picks on the card (19 / 21d).** build-links.json has the augment, Eternal and
+  crest per core item; the lineups have them per player. Show the pick that goes with an adjusted
+  core only once item 19's lift test tags it.
+- **22c. Purchase timing.** Committed 1.18 rows are v2 (no purchase seconds); rows written from
+  2026-11-10 on are v3. Once a few days of v3 exist, add "bought around minute N" to adjusted items.
+- **22d. Daily job.** Add `npm run itemtags && npm run adjustments` after perks in the scheduled
+  task's own step list (21h: it can only be edited from its own conversation).
+- **22e. Copy pass for item statements.** The statements are the game's text, condensed. A coach
+  copy pass (copy:prepare -> pred-scout-coach -> copy:ingest, independent judge) could plain-word
+  them; keep the tags and answers rule-based.
+- **22f. "What enemies build against you" (other half of 16b)** from the same cells, per enemy role.
+
 ## Parked ideas (not yet scheduled)
 
 - Comfort-vs-meta flex logic (parked by maintainer 2026-06-12): when a

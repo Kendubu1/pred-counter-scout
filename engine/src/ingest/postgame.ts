@@ -22,6 +22,7 @@ import { fileURLToPath } from 'node:url';
 import { loadData } from '../data.js';
 import { computeMatchFacts, type OmedaMatch, type HeroStatCell, type PostGameInputs, type MatchEvent, type KillEvent } from '../postgame.js';
 import { hasCredentials } from './predgg.js';
+import { wantsFilm } from '../coach-pending.js';
 import { predggSquadMatches, fetchLaneMatchups, predggMatch, predggFindPlayer, predggLatestRankedMatchId, predggHeroStats } from './predgg-match.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -76,6 +77,14 @@ function loadSquad(): SquadInfo | null {
   return { lead: s.lead, uuids: new Set([...nameByUuid.keys()]), nameByUuid, rolesByUuid };
 }
 
+/** data/coaching/solo.json: whether the squad pull also films solo ranked games, and from when. */
+function soloConfig(): { auto: boolean; from: string } {
+  const p = path.join(ROOT, 'data/coaching/solo.json');
+  if (!existsSync(p)) return { auto: false, from: '' };
+  const c = JSON.parse(readFileSync(p, 'utf8'));
+  return { auto: c.auto === true, from: typeof c.from === 'string' ? c.from : '' };
+}
+
 async function main() {
   if (!hasCredentials()) { console.error('needs PREDGG_CLIENT_ID/SECRET in env (pred.gg is the match source)'); process.exit(1); }
   const data = loadData();
@@ -86,10 +95,15 @@ async function main() {
   if (process.argv.includes('--squad')) {
     const squad = loadSquad();
     if (!squad) { console.error('no data/artifacts/squad.json — run `npm run squad -- <lead-uuid>` first'); process.exit(1); }
-    const minStack = Number(arg('min-stack') ?? 2);   // duos included per the maintainer (2026-08-07) — any game where squad members queued together gets film
-    console.log(`squad mode (pred.gg): lead ${squad.nameByUuid.get(squad.lead)}, ranked games with >= ${minStack} of ${squad.uuids.size} members…`);
-    const games = await predggSquadMatches(squad.lead, squad.uuids, squad.nameByUuid, omedaHeroes, minStack);
-    if (!games.length) { console.log('no qualifying stacked ranked games on pred.gg.'); process.exit(0); }
+    // Duos included per the maintainer (2026-08-07): any game where squad members queued together gets film.
+    // Solo games too since 2026-11-10 (data/coaching/solo.json): one member alone, from the config's start time on.
+    const solo = soloConfig();
+    const minStack = Number(arg('min-stack') ?? (solo.auto ? 1 : 2));
+    const soloFrom = arg('min-stack') ? '' : solo.from;
+    console.log(`squad mode (pred.gg): lead ${squad.nameByUuid.get(squad.lead)}, ranked games with >= ${minStack} of ${squad.uuids.size} members${minStack === 1 && soloFrom ? ` (solo games from ${soloFrom})` : ''}…`);
+    const games = (await predggSquadMatches(squad.lead, squad.uuids, squad.nameByUuid, omedaHeroes, minStack))
+      .filter((g) => wantsFilm(g.members.length, g.match.start_time, soloFrom));
+    if (!games.length) { console.log('no qualifying squad ranked games on pred.gg.'); process.exit(0); }
     const force = process.argv.includes('--force');
     let added = 0;
     for (const g of games) {
