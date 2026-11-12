@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script src="sim-flag.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tankiest Winning Builds — Pred Scout</title>
+<meta name="description" content="The hardest heroes to kill in Predecessor that still win: the tankiest hero and Eternal for offlane, jungle and support, by damage soaked per death in ranked games.">
+<!-- share:begin (engine/scripts/share-pages.mjs) -->
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Pred Scout">
+<meta property="og:title" content="Tankiest Winning Builds — Pred Scout">
+<meta property="og:description" content="The hardest heroes to kill in Predecessor that still win: the tankiest hero and Eternal for offlane, jungle and support, by damage soaked per death in ranked games.">
+<meta property="og:url" content="https://kendubu1.github.io/pred-counter-scout/ui/v6/tanks.html">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" sizes="32x32" href="../img/brand/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="../img/brand/logo.svg">
+<link rel="apple-touch-icon" href="../img/brand/apple-touch-icon.png">
+<!-- share:end -->
+<style>
+  :root {
+    --bg-0:#0a0a0f; --bg-1:#12121a; --bg-2:#1a1a26; --bg-3:#22222f; --border:#2a2a3a;
+    --text-0:#e8e8f0; --text-1:#a0a0b8; --text-2:#8e8ea6;
+    --accent:#6c5ce7; --accent-ink:#9a8ef2; --accent-soft:rgba(108,92,231,.14);
+    --green:#00c48c; --red:#ff5a5a; --gold:#f0b429; --blue:#4dabf7; --radius:12px; --maxw:980px;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--bg-0); color:var(--text-0); font:15px/1.55 Inter,-apple-system,"Segoe UI",Roboto,sans-serif; font-variant-numeric:tabular-nums; }
+  a { color:var(--blue); text-decoration:none; }
+  img { display:block; }
+  button { font:inherit; cursor:pointer; -webkit-appearance:none; appearance:none; }
+  .top { position:sticky; top:0; z-index:10; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:rgba(10,10,15,.78); border-bottom:1px solid var(--border); }
+  .top-inner { max-width:var(--maxw); margin:0 auto; padding:.6rem 1rem .35rem; display:flex; align-items:center; gap:.45rem; }
+  .wordmark { font-weight:800; color:var(--text-0); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .spacer { flex:1; }
+  .navlink { padding:.2rem .7rem; border-radius:99px; color:var(--text-1); border:1px solid transparent; white-space:nowrap; }
+  .navlink.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
+  .navlink:hover { color:var(--text-0); }
+  .subnav { display:flex; gap:.3rem; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:.15rem 1rem .5rem; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .subnav::-webkit-scrollbar { display:none; }
+  .subnav:empty { display:none; }
+  .snpill { flex:none; font:inherit; font-size:.7rem; padding:.18rem .65rem; border-radius:99px; color:var(--text-2); background:transparent; border:1px solid transparent; cursor:pointer; white-space:nowrap; text-transform:capitalize; -webkit-appearance:none; appearance:none; }
+  .snpill.active { background:var(--bg-2); color:var(--text-0); border-color:var(--border); }
+  a.snpill:hover { color:var(--text-0); }
+  /* jump targets land below the sticky top bar + section jumper */
+  .jump { scroll-margin-top:calc(var(--toph, 96px) + 10px); }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:1.25rem 1rem 4rem; }
+  .lede { font-size:1rem; color:var(--text-1); line-height:1.65; max-width:62ch; }
+  h1 { font-size:1.7rem; font-weight:800; }
+  .card { background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem 1.2rem; margin-top:1rem; }
+  .card h2 { font-size:1rem; font-weight:600; letter-spacing:0; color:var(--text-0); margin-bottom:.6rem; }
+  .card p { color:var(--text-1); line-height:1.65; }
+  .card ul { margin:.5rem 0 0 1.15rem; padding:0; }
+  .card li { color:var(--text-1); line-height:1.6; margin:.4rem 0; }
+  .card p + p { margin-top:.6rem; }
+  .card b { color:var(--text-0); }
+  .sec { font-size:.8rem; font-weight:600; color:var(--text-1); margin:2rem 0 0; display:flex; align-items:center; gap:.7rem; }
+  .sec::after { content:""; flex:1; height:1px; background:var(--border); }
+  .sub { font-size:.74rem; color:var(--text-2); line-height:1.5; }
+  .tk { display:grid; grid-template-columns:1.4rem 52px 1fr; gap:.7rem; align-items:start; }
+  .tk .rk { font-weight:800; color:var(--text-2); font-size:.9rem; padding-top:.9rem; }
+  .tk .por { position:relative; width:52px; height:52px; }
+  .tk .por > img.h { width:52px; height:52px; border-radius:12px; object-fit:cover; background:var(--bg-3); }
+  .tk .por > img.e { position:absolute; right:-6px; bottom:-6px; width:26px; height:26px; border-radius:50%; object-fit:cover; background:var(--bg-3); border:2px solid var(--bg-1); cursor:pointer; }
+  .tk h3 { font-size:1rem; font-weight:800; color:var(--text-0); line-height:1.2; }
+  .tk h3 a { color:inherit; } .tk h3 span { color:var(--accent-ink); font-weight:700; }
+  .stats { display:flex; flex-wrap:wrap; gap:.3rem .9rem; margin:.3rem 0 .45rem; font-size:.8rem; color:var(--text-1); }
+  .stats b { color:var(--text-0); font-variant-numeric:tabular-nums; }
+  .up { color:var(--green) !important; }
+  .kit { display:flex; flex-wrap:wrap; align-items:center; gap:.3rem; }
+  .kit img { width:30px; height:30px; object-fit:cover; background:var(--bg-3); border:1px solid var(--border); cursor:pointer; }
+  .kit img.rnd { border-radius:50%; } .kit img.sq { border-radius:7px; }
+  .kit .arrow { color:var(--text-2); font-size:.7rem; } .kit .gap { width:.5rem; } .kit .lab { font-size:.6875rem; color:var(--text-2); font-weight:700; margin-right:.1rem; }
+  details.more { margin-top:.4rem; }
+  details.more > summary { font-size:.6875rem; color:var(--text-2); cursor:pointer; list-style:none; min-height:24px; display:inline-block; padding:.15rem 0; }
+  details.more > summary::-webkit-details-marker { display:none; }
+  details.more > summary::after { content:" ▾"; } details.more[open] > summary::after { content:" ▴"; }
+  details.more .sub b { color:var(--text-1); }
+  @media (max-width:560px) { .tk { grid-template-columns:1.1rem 46px 1fr; gap:.55rem; } .tk .por, .tk .por > img.h { width:46px; height:46px; } }
+</style>
+</head>
+<body>
+<div class="top"><div class="top-inner">
+  <a class="wordmark" href="./"><img src="../img/brand/logo.svg" alt="" width="22" height="22"> Pred Scout</a>
+  <span class="spacer"></span>
+  <a class="navlink" href="./">Pick &amp; Build</a>
+  <a class="navlink" href="coach.html">Coach</a>
+  <a class="navlink" href="reports.html">Reports</a>
+</div><nav class="subnav" id="subnav" aria-label="Jump to section">
+  <a class="snpill" href="#offlane">Offlane</a>
+  <a class="snpill" href="#jungle">Jungle</a>
+  <a class="snpill" href="#support">Support</a>
+</nav></div>
+
+<div class="wrap">
+  <h1>Tankiest winning builds</h1>
+  <p class="lede">The hardest heroes to kill that still win. Ranked by damage soaked per death: how much the enemy has to spend to kill you once.</p>
+  <p class="sub" id="basis" style="margin-top:.4rem"></p>
+  <div id="boards"><section class="card"><p class="sub">Loading…</p></section></div>
+  <section class="card">
+    <h2>How this is counted</h2>
+    <ul>
+      <li><b>Soaked per death</b> is damage mitigated plus damage taken from heroes, divided by deaths, over all of that group's games.</li>
+      <li><b>Winning</b> means the win rate is 50% or better after pulling it 100 games toward 50%, so a small lucky sample cannot qualify. A build that soaks the most and loses is left off.</li>
+      <li>Each row is one hero in one lane on one Eternal, with 150 or more ranked games of ten minutes or longer.</li>
+      <li>The augment, crest and items shown are what those players run most. They describe the build; they are not ranked picks.</li>
+      <li>Teams that are ahead die less, so part of each win rate is "winning made them hard to kill", not only the other way round.</li>
+    </ul>
+  </section>
+  <footer class="sub" style="margin-top:2rem">Game data via pred.gg · not affiliated with Omeda Studios.</footer>
+</div>
+<script src="game-text.js"></script>
+<script defer src="item-popup.js"></script>
+<script defer src="eternal-popup.js"></script>
+<script defer src="augment-popup.js"></script>
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const LANE = { offlane: 'Offlane', jungle: 'Jungle', support: 'Support' };
+const num = (n) => Math.round(n).toLocaleString();
+Promise.all([fetch('../../data/artifacts/tank-builds.json').then((r) => r.json()), fetch('../../data/aggregates/item-tags.json').then((r) => r.json()).catch(() => null)]).then(([d, tags]) => {
+  const itemName = (s) => (tags && tags.items[s] ? tags.items[s].name : s);
+  $('#basis').textContent = `Patch ${d.patch} · ${d.matches.toLocaleString()} ranked matches · all ranks`;
+  const hide = "this.style.visibility='hidden'";
+  const row = (b, i, lane, avg) => {
+    const o = b.otherEternals;
+    const kit = `${b.augment ? `<span class="lab">Augment</span><img class="rnd" data-apop="${esc(b.augment.id)}" data-apop-role="${lane}" src="../img/augments/${esc(b.augment.id)}.webp" alt="${esc(b.augment.name)}" title="${esc(b.augment.name)} · ${b.augment.pct}% run it" onerror="${hide}"><span class="gap"></span>` : ''}${b.crest ? `<span class="lab">Crest</span><img class="sq" data-ipop="${esc(b.crest.slug)}" src="../img/crests/${esc(b.crest.slug)}.webp" alt="${esc(b.crest.name)}" title="${esc(b.crest.name)} · ${b.crest.pct}% run it" onerror="${hide}"><span class="gap"></span>` : ''}${b.core ? `<span class="lab">Open</span>${b.core.items.map((s) => `<img class="sq" data-ipop="${esc(s)}" src="../img/items/${esc(s)}.webp" alt="${esc(itemName(s))}" title="${esc(itemName(s))}" onerror="${hide}">`).join('<span class="arrow">→</span>')}` : ''}`;
+    const later = b.later.length ? `<div class="kit" style="margin-top:.3rem"><span class="lab">Then</span>${b.later.map((x) => `<img class="sq" data-ipop="${esc(x.item)}" src="../img/items/${esc(x.item)}.webp" alt="${esc(itemName(x.item))}" title="${esc(itemName(x.item))} · ${x.pct}% buy it 4th to 6th" onerror="${hide}">`).join('')}</div>` : '';
+    return `<div class="tk"${i ? ' style="margin-top:1rem;padding-top:1rem;border-top:1px dashed var(--border)"' : ''}>
+      <span class="rk">${i + 1}</span>
+      <span class="por"><img class="h" src="../img/heroes/${esc(b.hero)}.webp" alt="" onerror="${hide}"><img class="e" data-epop="${esc(b.eternal)}" src="../img/eternals/${esc(b.eternal.toLowerCase())}.webp" alt="" title="${esc(b.eternal)} · tap for the Eternal" onerror="${hide}"></span>
+      <div style="min-width:0">
+        <h3><a href="./?hero=${esc(b.hero)}&role=${lane}">${esc(b.heroName)}</a> <span>+ ${esc(b.eternal)}</span></h3>
+        <div class="stats"><span><b>${num(b.soakPerDeath)}</b> soaked per death</span><span><b>${b.deathsPer10.toFixed(2)}</b> deaths per 10 min</span><span><b class="${b.winPct >= 52 ? 'up' : ''}">${b.winPct.toFixed(1)}%</b> win</span></div>
+        <div class="kit">${kit}</div>${later}
+        <details class="more"><summary>More</summary><div class="sub">
+          <div><b>${num(b.mitigatedPerMin)}</b> mitigated per minute · <b>${num(b.takenPerMin)}</b> hero damage taken per minute · ${b.games.toLocaleString()} games</div>
+          <div>${(b.soakPerDeath / avg.soakPerDeath).toFixed(1)} times the ${LANE[lane].toLowerCase()} average of ${num(avg.soakPerDeath)} soaked per death.</div>
+          ${o ? `<div>${esc(b.heroName)} ${LANE[lane].toLowerCase()} on every other Eternal: ${num(o.soakPerDeath)} soaked per death, ${o.deathsPer10.toFixed(2)} deaths per 10 min, ${o.winPct.toFixed(1)}% win (${o.games.toLocaleString()} games).</div>` : ''}
+          ${b.augment ? `<div>Augment: <b>${esc(b.augment.name)}</b>, run by ${b.augment.pct}%.${b.crest ? ` Crest: <b>${esc(b.crest.name)}</b>, ${b.crest.pct}%.` : ''}</div>` : ''}
+          ${b.core ? `<div>Opening three: <b>${b.core.items.map((s) => esc(itemName(s))).join(' → ')}</b> (${b.core.n} of ${b.core.of} who finished three items).</div>` : '<div>No single opening order is common enough to show.</div>'}
+          ${b.later.length ? `<div>Bought 4th to 6th: ${b.later.map((x) => `${esc(itemName(x.item))} ${x.pct}%`).join(', ')}.</div>` : ''}
+        </div></details>
+      </div></div>`;
+  };
+  $('#boards').innerHTML = Object.keys(LANE).map((lane) => { const l = d.lanes[lane];
+    return `<div class="sec jump" id="${lane}">${LANE[lane]}</div><section class="card">${l.board.length ? l.board.map((b, i) => row(b, i, lane, l.laneAverage)).join('') : '<p class="sub">No build qualifies in this lane yet.</p>'}</section>`; }).join('');
+  const t = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  if (t) t.scrollIntoView({ block: 'start' });
+}).catch(() => { $('#boards').innerHTML = '<section class="card"><p class="sub">Could not load the board.</p></section>'; });
+(function jumper() {
+  const host = $('#subnav');
+  const setTop = () => document.documentElement.style.setProperty('--toph', `${$('.top')?.offsetHeight ?? 96}px`);
+  setTop(); addEventListener('resize', setTop);
+})();
+</script>
+<script defer src="icons.js"></script>
+<script defer src="hero-links.js"></script>
+<script defer src="nav.js"></script>
+</body>
+</html>

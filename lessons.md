@@ -6045,3 +6045,18 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   games, 20+ per augment), each list ranked with the all-ranks numbers one level down as its prior, and
   a list too thin to rank shows the all-ranks pick, marked. Every number on a card names what it is.
 
+## 2026-11-12 — Tankiest winning builds
+
+- "Most unkillable" needs a stat that counts both sides of it: soak per death = (damage mitigated + hero
+  damage taken) / deaths. Mitigated per minute alone rewards standing in jungle camps; deaths alone
+  rewards hiding. Over 47,198 ranked matches (games of 10+ minutes) the lane averages are offlane 16,300,
+  jungle 13,400, support 11,600.
+- Nihil is the tank Eternal in a solo lane: same hero and lane, Nihil against every other Eternal, soak
+  per death rises on all ten offlaners checked (Sevarog 43,200 vs 31,000; Steel 36,900 vs 26,000; Akeron
+  34,400 vs 17,800) with fewer deaths and a higher win rate. Supports show no real change (Steel 18,200
+  vs 18,400). Observed games, so Nihil players may differ; the pattern across ten heroes is the evidence.
+- The tankiest is not the winningest: Sevarog offlane on Nihil soaks the most (43,200 per death, 0.96
+  deaths per 10 min) and wins 49.4%, so a board of builds "that win" needs a win gate (rate pulled 100
+  games toward 50%, 50% or better) or it recommends a loser. Item-level soak numbers are inflated by
+  survivorship (late items are finished in long games), so the page lists what the group buys, unranked.
+
