@@ -178,7 +178,42 @@
   .bband button:hover:not(:disabled) { color:var(--text-0); }
   .bband button.active { background:var(--bg-3); color:var(--text-0); font-weight:600; }
   .bband button:disabled { opacity:.4; cursor:default; }
-  .pageband { grid-area:band; justify-self:start; align-self:start; margin:0; }
+  .hh-filters { grid-area:band; justify-self:start; align-self:start; display:flex; flex-wrap:wrap; align-items:center; gap:.4rem .7rem; }
+  .hh-filters .bband { margin:0; }
+  .hh-filters .hf-k { font-size:.6875rem; font-weight:700; color:var(--text-2); text-transform:uppercase; letter-spacing:.04em; margin-right:-.3rem; }
+  /* win rate by patch, right of the portrait block (desktop only) */
+  .hh-trend { display:none; }
+  @media (min-width:900px) {
+    .hero-head.has-trend { grid-template-columns:auto 1fr auto; grid-template-areas:"img id trend" "img seg trend" "img band trend"; }
+    .hh-trend { grid-area:trend; display:block; align-self:center; width:320px; padding:.55rem .7rem .5rem; background:var(--bg-1); border:1px solid var(--border); border-radius:var(--radius); }
+  }
+  .hh-trend .tr-h { display:flex; justify-content:space-between; align-items:baseline; gap:.5rem; font-size:.6875rem; font-weight:700; color:var(--text-2); text-transform:uppercase; letter-spacing:.04em; }
+  .hh-trend .tr-h span { font-weight:600; text-transform:none; letter-spacing:0; }
+  .hh-trend svg { display:block; width:100%; height:auto; margin-top:.2rem; overflow:visible; }
+  .hh-trend .tr-line { fill:none; stroke:var(--text-2); stroke-width:1.5; }
+  .hh-trend .tr-mid { stroke:var(--border); stroke-width:1; stroke-dasharray:3 3; }
+  .hh-trend text { font-size:10px; fill:var(--text-2); font-variant-numeric:tabular-nums; }
+  .hh-trend text.tr-v { font-size:11.5px; font-weight:800; }
+  .hh-trend text.tr-p { font-weight:700; fill:var(--text-1); }
+  .hh-trend .wr-up { fill:var(--green); } .hh-trend .wr-down { fill:var(--red); } .hh-trend .wr-mid { fill:var(--text-0); }
+  .hh-trend .tr-sel { fill:none; stroke:var(--gold); stroke-width:1.5; }
+  .hh-trend .tr-note { font-size:.6875rem; line-height:1.4; color:var(--text-2); margin-top:.15rem; }
+  /* hero page filter bar: the same bar as the homepage's, shown once the header's
+     own rank / patch buttons have scrolled away */
+  .herobar:empty { display:none; }
+  .herobar .hb-who { font-size:.8rem; font-weight:700; color:var(--text-0); text-transform:capitalize; white-space:nowrap; }
+  @media (min-width:721px) {
+    .filterbar.herobar { position:fixed; top:calc(var(--toph, 96px) + 6px); left:50%; width:min(var(--maxw), 100vw) ; max-width:calc(100vw - 2rem); margin:0; box-sizing:border-box;
+      transform:translate(-50%, -8px); opacity:0; pointer-events:none; transition:opacity .15s ease, transform .15s ease; }
+    .filterbar.herobar.on { transform:translate(-50%, 0); opacity:1; pointer-events:auto; }
+  }
+  @media (prefers-reduced-motion:reduce) { .filterbar.herobar { transition:none; } }
+  .pastnote { margin:.2rem 0 .7rem; padding:.5rem .7rem; border:1px solid var(--gold); border-radius:10px; font-size:.8rem; line-height:1.45; color:var(--text-1); background:rgba(240,180,41,.08); }
+  .pastnote b { color:var(--gold); }
+  .pastnote button { margin-left:.5rem; background:var(--bg-1); border:1px solid var(--border); color:var(--text-0); border-radius:8px; padding:.15rem .55rem; font:inherit; font-size:.76rem; font-weight:600; cursor:pointer; }
+  .pbuild { padding:.6rem 0; border-bottom:1px dashed var(--border); }
+  .pbuild:last-of-type { border-bottom:0; }
+  .pbuild .pb-names { font-size:.8rem; font-weight:600; color:var(--text-0); margin:.35rem 0 .3rem; }
   .chips { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.45rem; }
   .chip {
     white-space:nowrap; background:var(--bg-2); border:1px solid var(--border); border-radius:99px;
@@ -709,6 +744,7 @@
   </div>
 
   <div id="hero" class="hidden fade"></div>
+  <div class="filterbar herobar" id="herobar" aria-label="Hero page filters"></div>
 
   <footer>
     <a href="about.html">About &amp; how this works</a> · Game data via pred.gg · not affiliated with Omeda Studios.<br>
@@ -815,7 +851,8 @@ let metaBand = 'all';
 try { metaBand = localStorage.getItem('metaBand') || 'all'; } catch { /* private mode */ }
 // Patch picker: null = the current patch (meta.json / bans.json); otherwise a
 // patch from past-boards.json, scored by the same engine rules. Not sticky: every
-// visit opens on the current patch. Hero pages always use the current patch.
+// visit opens on the current patch. Hero pages have their own patch filter
+// (heroPatch below): opening picks and builds only, from the archived perks count.
 let PAST = null;
 let metaPatch = null;
 const pastPatch = () => (metaPatch && PAST?.patches?.find((p) => p.patch === metaPatch)) || null;
@@ -838,7 +875,7 @@ function patchButtonsHtml() {
   const ps = boardPatches();
   if (ps.length < 2) return '';
   const cur = String(metaSrc().patch);
-  return `<span class="mb-pgroup" title="Switch the boards to an earlier patch. Hero pages always show the current patch."><span class="mb-plabel">Patch</span>${ps.map((p) => `<button class="mb-toggle${cur === p ? ' active' : ''}" data-patch="${esc(p)}">${esc(p)}</button>`).join('')}</span>`;
+  return `<span class="mb-pgroup" title="Switch the boards to an earlier patch. Hero pages have their own patch filter."><span class="mb-plabel">Patch</span>${ps.map((p) => `<button class="mb-toggle${cur === p ? ' active' : ''}" data-patch="${esc(p)}">${esc(p)}</button>`).join('')}</span>`;
 }
 // The one source of truth for the board filters, shared by the meta board AND
 // the lane room so expanding a lane keeps the selected band + off-meta choice.
@@ -901,7 +938,7 @@ function renderFilterbar() {
     </div>
     <div class="fb-pills">
       ${bands ? `<span class="fb-grp" title="Filter the boards to games played at a rank band — the meta shifts with skill level. All ranks includes players without a placed rank."><span class="fb-k">Rank</span>${ranks.map((b) => `<button class="mb-toggle${metaBand === b.key ? ' active' : ''}" data-fb-band="${esc(b.key)}">${esc(b.label)}</button>`).join('')}</span>` : ''}
-      <span class="fb-grp" title="Switch the boards to an earlier patch. Hero pages always show the current patch."><span class="fb-k">Patch</span>${patches.map((p) => `<button class="mb-toggle${p === cur ? ' active' : ''}" data-fb-patch="${esc(p)}"${patches.length < 2 ? ' disabled' : ''}>${esc(p)}</button>`).join('')}</span>
+      <span class="fb-grp" title="Switch the boards to an earlier patch. Hero pages have their own patch filter."><span class="fb-k">Patch</span>${patches.map((p) => `<button class="mb-toggle${p === cur ? ' active' : ''}" data-fb-patch="${esc(p)}"${patches.length < 2 ? ' disabled' : ''}>${esc(p)}</button>`).join('')}</span>
       <span class="fb-count"><b>${boardMatches.toLocaleString()}</b> ranked matches</span>
     </div>`;
   bar.querySelectorAll('[data-fb-patch]').forEach((b) => { b.onclick = () => setMetaPatch(b.dataset.fbPatch); });
@@ -927,7 +964,7 @@ function watchFilterbar() {
     const phone = window.matchMedia('(max-width:720px)').matches;
     bar.classList.toggle('on', on);
     bar.setAttribute('aria-hidden', on || !phone ? 'false' : 'true');
-    document.body.classList.toggle('has-filterbar', landing);
+    document.body.classList.toggle('has-filterbar', landing || !!$('#herobar')?.childElementCount);
     if (bar.offsetHeight) document.body.style.setProperty('--fbh', `${bar.offsetHeight}px`);
     const root = document.documentElement.style;
     root.setProperty('--fbtop', phone ? '0px' : `${bar.offsetHeight + 8}px`);
@@ -943,9 +980,93 @@ function watchFilterbar() {
 
 async function getJson(path) { return (await fetch(path)).json(); }
 
+// ── HERO PAGE PATCH FILTER ── null = the current patch; otherwise a patch in
+// data/artifacts/past-hero-builds.json (builds scored by the engine with the
+// current rules) whose opening-pick counts are fetched on demand from that
+// patch's archived predgg-augments.json. Only opening picks and builds switch:
+// kit, matchups and the sim are current-patch. Kept while you change lane or
+// rank on one hero; any other hero, or the homepage, opens on the current patch.
+let PASTH = null, heroPatch = null, heroPatchFor = null;
+const PASTAUGS = {};
+const pastHero = () => (heroPatch && PASTH?.patches?.find((p) => p.patch === heroPatch)) || null;
+async function getPastAugs(p) {
+  if (!p || !p.picksFile) return null;
+  if (!(p.patch in PASTAUGS)) PASTAUGS[p.patch] = await getJson(`../../${p.picksFile}`).catch(() => null);
+  return PASTAUGS[p.patch];
+}
+const shortDay = (iso) => { const d = iso ? new Date(`${iso}T12:00:00Z`) : null; return d && !isNaN(d) ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }) : ''; };
+
+// Win rate by patch for one hero-lane: the lane boards' own figure (ranked lane
+// stats, all ranks, small samples pulled toward the lane average) for every
+// patch we hold, oldest first. Drawn right of the portrait on desktop. Lane
+// stats are banded Bronze-Silver / Gold-Plat / Diamond+, not Plat+, so the
+// chart does not follow the page's rank filter and says "all ranks".
+function patchTrendHtml(slug, role, selPatch) {
+  const src = [...(PAST?.patches || [])].reverse().concat(META ? [META] : []);
+  const pts = src.map((P) => { const c = P.laneWr?.[role]?.[slug]; return c && c[0] ? { patch: String(P.patch), games: c[0], wr: c[1] } : null; }).filter(Boolean);
+  if (pts.length < 2) return '';
+  const W = 300, H = 104, padX = 48, top = 20, bot = 30;
+  const pct = pts.map((d) => d.wr * 100);
+  const lo = Math.min(48, Math.floor(Math.min(...pct) - 0.5)), hi = Math.max(52, Math.ceil(Math.max(...pct) + 0.5));
+  const x = (i) => padX + (i * (W - 2 * padX)) / (pts.length - 1);
+  const y = (v) => top + ((hi - v) * (H - top - bot)) / (hi - lo);
+  const sel = selPatch ? pts.findIndex((d) => selPatch === d.patch || selPatch.startsWith(`${d.patch}.`)) : pts.length - 1;
+  const last = pts[pts.length - 1], prev = pts[pts.length - 2];
+  const diff = (last.wr - prev.wr) * 100;
+  const early = last.games < 1000;
+  const note = `${Math.abs(diff) < 0.5 ? `About level with ${esc(prev.patch)}` : `${diff > 0 ? 'Up' : 'Down'} ${Math.abs(diff).toFixed(1)} points from ${esc(prev.patch)}`}${early ? ` · early read, ${last.games.toLocaleString()} games so far` : ''}`;
+  return `
+      <div class="hh-trend" role="img" aria-label="${esc(role)} win rate by patch, all ranks: ${pts.map((d) => `${esc(d.patch)} ${(d.wr * 100).toFixed(1)}% over ${d.games.toLocaleString()} games`).join(', ')}">
+        <div class="tr-h">Win rate by patch <span>${esc(role)} · all ranks</span></div>
+        <svg viewBox="0 0 ${W} ${H}" aria-hidden="true">
+          <line class="tr-mid" x1="0" x2="${W}" y1="${y(50).toFixed(1)}" y2="${y(50).toFixed(1)}"/>
+          <text x="0" y="${(y(50) + 11).toFixed(1)}">50%</text>
+          <polyline class="tr-line" points="${pts.map((d, i) => `${x(i).toFixed(1)},${y(d.wr * 100).toFixed(1)}`).join(' ')}"/>
+          ${pts.map((d, i) => `
+          <g><title>Patch ${esc(d.patch)}: ${(d.wr * 100).toFixed(1)}% over ${d.games.toLocaleString()} ranked ${esc(role)} games</title>
+            ${i === sel ? `<circle class="tr-sel" cx="${x(i).toFixed(1)}" cy="${y(d.wr * 100).toFixed(1)}" r="7"/>` : ''}
+            <circle class="${wrBand(d.wr)}" cx="${x(i).toFixed(1)}" cy="${y(d.wr * 100).toFixed(1)}" r="4"/>
+            <text class="tr-v ${wrBand(d.wr)}" text-anchor="middle" x="${x(i).toFixed(1)}" y="${(y(d.wr * 100) - 9).toFixed(1)}">${(d.wr * 100).toFixed(1)}%</text>
+            <text class="tr-p" text-anchor="middle" x="${x(i).toFixed(1)}" y="${H - 14}">${esc(d.patch)}</text>
+            <text text-anchor="middle" x="${x(i).toFixed(1)}" y="${H - 2}">${d.games.toLocaleString()} games</text>
+          </g>`).join('')}
+        </svg>
+        <div class="tr-note" title="From the same ranked lane stats as the homepage boards. A hero with few games in a patch is pulled toward the lane average.">${note}</div>
+      </div>`;
+}
+
+// Builds on an earlier patch: the same field cores, scored by the engine with
+// the current rules (past-hero-builds.json). Evidence only: the "why" text and
+// the build comparison are written against the current patch, so they stay off.
+function pastBuildsCard(a, pageBand, past, laneBuilds) {
+  const band = laneBuilds && laneBuilds[pageBand] ? pageBand : 'all';
+  const sel = laneBuilds && laneBuilds[band];
+  const missing = pageBand !== 'all' && band !== pageBand;
+  const base = sel && sel.baseline && sel.baseline.n ? sel.baseline.w / sel.baseline.n : null;
+  const builds = ((sel && sel.builds) || []).slice().sort((x, y) => ((y.n >= 100) - (x.n >= 100)) || (y.shrunkWr - x.shrunkWr) || (y.n - x.n));
+  const row = (m) => `
+      <div class="pbuild">
+        <div class="mb-items" style="flex-wrap:wrap">${m.items.map((it, i) => `${i ? `<span class="arrow">${m.anyOrder ? '+' : '→'}</span>` : ''}<img loading="lazy" src="${it.slug ? IMG.item(it.slug) : ''}" alt="" title="${esc(it.name)}" onerror="this.style.visibility='hidden'">`).join('')}</div>
+        <div class="pb-names">${m.items.map((it) => esc(it.name)).join(m.anyOrder ? ' + ' : ' → ')}</div>
+        <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap">
+          <span class="bwr ${wrBand(m.shrunkWr)}">${(m.shrunkWr * 100).toFixed(1)}%</span>
+          ${base != null ? `<span class="mb-n" style="${m.shrunkWr >= base ? 'color:var(--green)' : 'color:var(--text-2)'}">${m.shrunkWr >= base ? '+' : ''}${((m.shrunkWr - base) * 100).toFixed(1)} vs hero</span>` : ''}
+          <span class="mb-n">${m.n.toLocaleString()} games${m.shareOfCores ? ` · ${Math.round(m.shareOfCores * 100)}% of tracked builds` : ''}${m.anyOrder ? ' · item set, purchase orders pooled' : m.otherOrderGames ? ` · ${m.otherOrderGames.toLocaleString()} bought these in another order` : ''}${m.n < 100 ? ' · few games' : ''}</span>
+        </div>
+      </div>`;
+  return `
+    <section class="card answer" id="builds-card">
+      <div class="bhead"><h2>Builds <span class="bandchip">Patch ${esc(past.patch)}</span><span class="bandchip${missing ? ' fallback' : ''}">${BAND_LABELS[band]}${missing ? ' · Plat+ not ready' : ''}</span></h2></div>
+      ${base != null ? `<div class="mb-why" style="color:var(--text-2);margin:0 0 .3rem">${BAND_LABELS[band]} · ${esc(a.name)} won ${(base * 100).toFixed(1)}% as ${esc(a.role)} on ${esc(past.patch)} (${sel.baseline.n.toLocaleString()} games)</div>` : ''}
+      ${builds.length ? builds.map(row).join('') : `<div class="muted">No ${esc(a.role)} builds counted for ${esc(a.name)} on patch ${esc(past.patch)}.</div>`}
+      <div class="mb-why" style="color:var(--text-2);margin:.5rem 0 0">First three finished items, most-played sets, highest win rate first. Items are shown as they are today; some were changed since ${esc(past.patch)}.</div>
+    </section>`;
+}
+
 function show(view) {
   $('#landing').classList.toggle('hidden', view !== 'landing');
   $('#hero').classList.toggle('hidden', view !== 'hero');
+  if (view !== 'hero') { const hb = $('#herobar'); if (hb) { hb.innerHTML = ''; hb.classList.remove('on'); } }
   watchFilterbar.sync?.();
 }
 
@@ -2160,18 +2281,39 @@ function renderHero(a, roleParam) {
   // viewer's pick is remembered; otherwise the lane opens on the engine's band
   // (Plat+ once its top Plat+ build has 100 games). A section with no Plat+
   // data for this lane falls back to all ranks and says so.
-  const augCell = AUGS && AUGS.heroes && AUGS.heroes[a.slug] && AUGS.heroes[a.slug][activeRole];
-  const platPicks = AUGS && AUGS.goldBasis === 'match-time' && augCell && augCell.platPlus && augCell.platPlus.games ? augCell.platPlus : null;
-  const platBuilds = !!(a.metaBuilds && a.metaBuilds.length && a.metaBuildsByBand && a.metaBuildsByBand['plat+']);
+  // Patch filter: an earlier patch swaps the pick counts (PA) and the builds
+  // card; a lane that patch never counted falls back to the current patch.
+  const curPatch = String((META && META.patch) || INDEX.patch || '');
+  const laneOn = (p) => !!(p.heroes && p.heroes[a.slug] && p.heroes[a.slug][activeRole]);
+  const pastOpts = ((PASTH && PASTH.patches) || []).filter(laneOn);
+  let past = pastHero();
+  if (past && !laneOn(past)) { past = null; heroPatch = null; }
+  const pastBuilds = past ? past.heroes[a.slug][activeRole] : null;
+  const PA = past ? (PASTAUGS[past.patch] || null) : AUGS;
+  const SIMP = SIM && !past; // the sim reads the current catalog: no sim tags on an old patch
+  const apopAttr = past ? 'data-apop-off' : 'data-apop'; // the augment popup shows current-patch numbers
+  const augCell = PA && PA.heroes && PA.heroes[a.slug] && PA.heroes[a.slug][activeRole];
+  const platPicks = PA && PA.goldBasis === 'match-time' && augCell && augCell.platPlus && augCell.platPlus.games ? augCell.platPlus : null;
+  const platBuilds = past ? !!(pastBuilds && pastBuilds['plat+']) : !!(a.metaBuilds && a.metaBuilds.length && a.metaBuildsByBand && a.metaBuildsByBand['plat+']);
   const hasPlat = !!platPicks || platBuilds;
   const saved = savedBand();
-  const pageBand = hasPlat ? (saved && BAND_LABELS[saved] ? saved : (a.metaBuildsBand === 'plat+' ? 'plat+' : 'all')) : 'all';
+  const pageBand = hasPlat ? (saved && BAND_LABELS[saved] ? saved : (!past && a.metaBuildsBand === 'plat+' ? 'plat+' : 'all')) : 'all';
   const bandSwitch = hasPlat ? `
       <div class="bband pageband" role="group" aria-label="Rank filter — opening picks and builds counted at these ranks (rank in that game)">
         ${Object.keys(BAND_LABELS).map((b) => `<button data-pageband="${b}" class="${b === pageBand ? 'active' : ''}" aria-pressed="${b === pageBand}">${BAND_LABELS[b]}</button>`).join('')}
       </div>` : '';
+  const shownPatch = past ? past.patch : curPatch;
+  const patchList = pastOpts.length && curPatch ? [curPatch, ...pastOpts.map((p) => p.patch)] : [];
+  const patchTitle = 'Opening picks and builds from an earlier patch. Abilities, matchups and the rest of the page always show the current patch.';
+  const patchSwitch = patchList.length ? `
+      <span class="hf-k">Patch</span>
+      <div class="bband pagepatch" role="group" aria-label="Patch filter — opening picks and builds" title="${patchTitle}">
+        ${patchList.map((p) => `<button data-heropatch="${esc(p)}" class="${p === shownPatch ? 'active' : ''}" aria-pressed="${p === shownPatch}">${esc(p)}</button>`).join('')}
+      </div>` : '';
+  const pastWindow = past && past.countedFrom && past.countedTo ? ` (${shortDay(past.countedFrom)} to ${shortDay(past.countedTo)})` : '';
+  const trend = patchTrendHtml(a.slug, activeRole, past ? past.patch : null);
   const o = a.build.objectives;
-  const top = SIM ? a.eternals.top[0] : null; // the sim's Eternal pick
+  const top = SIMP ? a.eternals.top[0] : null; // the sim's Eternal pick
   const dots = (cps) => `<div class="dots">${cps.map((c) =>
     `<div class="dotwrap"><div class="dot ${c.verdict}" title="minute ${c.minute}: ${c.verdict === 'you' ? 'you can win the fight' : c.verdict === 'enemy' ? 'they can win the fight' : 'even'}"></div><div class="m">${c.minute}</div></div>`).join('')}</div>`;
 
@@ -2194,7 +2336,7 @@ function renderHero(a, roleParam) {
     <div class="backrow"><button id="back">← all heroes</button></div>
     ${pendingBanner}
 
-    <header class="hero-head">
+    <header class="hero-head${trend ? ' has-trend' : ''}">
       <img src="${IMG.hero(a.slug)}" alt="" onerror="this.style.visibility='hidden'">
       <div class="hh-id">
         <h1>${esc(a.name)}</h1>
@@ -2213,9 +2355,11 @@ function renderHero(a, roleParam) {
       <div class="seg-roles flexroles" role="group" aria-label="Lane — build, spikes, Eternals and matchups change per lane">
         ${roleViews.map((v) => `<button data-flexrole="${esc(v.role)}" class="${v.role === activeRole ? 'active' : ''}" aria-pressed="${v.role === activeRole}">${laneIcon(esc(v.role))}${esc(v.role)}</button>`).join('')}
       </div>` : ''}
-      ${bandSwitch}
+      ${bandSwitch || patchSwitch ? `<div class="hh-filters">${bandSwitch}${patchSwitch}</div>` : ''}
+      ${trend}
       ${fallbackNote}
     </header>
+    ${past ? `<div class="pastnote"><b>Patch ${esc(past.patch)}</b>${pastWindow}: the opening picks and builds below are from that patch's ranked games. Abilities, leveling, matchups and item text are patch ${esc(curPatch)}.<button type="button" data-heropatch="${esc(curPatch)}">Back to ${esc(curPatch)}</button></div>` : ''}
     ${pageBand === 'plat+' ? `<div class="mb-why" style="color:var(--text-2);margin:.2rem 0 .6rem"><b style="color:var(--gold)">Plat+</b> — opening picks and builds below are from games where the player was Platinum or higher at the time. Matchups use all ranks.</div>` : ''}
 
     <div class="htabs" role="tablist">
@@ -2231,10 +2375,10 @@ function renderHero(a, roleParam) {
 
     <div id="tabPlay">
     <section class="card" id="loadoutWrap">
-      <div id="loadoutCard" data-band="${esc(pageBand)}"><h2>Loadout</h2></div>
-      <details class="sim-collapse" id="lanePicks" style="margin-top:.7rem"><summary>All augments together: the lane-wide picks</summary><div class="body">
+      <div id="loadoutCard" data-band="${esc(pageBand)}"><h2>${past ? 'Your opening picks' : 'Loadout'}</h2></div>
+      <details class="sim-collapse" id="lanePicks" style="margin-top:.7rem"${past ? ' open' : ''}><summary>${past ? `The lane-wide picks on patch ${esc(past.patch)}` : 'All augments together: the lane-wide picks'}</summary><div class="body">
       ${(() => {
-        const hr = AUGS && AUGS.heroes[a.slug];
+        const hr = PA && PA.heroes && PA.heroes[a.slug];
         // "thin sample" is wrong for a hero released this patch: the sample is
         // zero, not thin, and the banner above already says so. Match it, and
         // drop the kit-math Eternal line when its headline gain is 0% — an
@@ -2253,7 +2397,7 @@ function renderHero(a, roleParam) {
         const role = hr[activeRole] ? activeRole : (hr[a.role] ? a.role : roles[0]);
         const mismatch = role !== activeRole;
         // Rank filter: Plat+ counts have the same shape as the all-ranks cell.
-        const platCell = pageBand === 'plat+' && AUGS.goldBasis === 'match-time' && hr[role].platPlus && hr[role].platPlus.games ? hr[role].platPlus : null;
+        const platCell = pageBand === 'plat+' && PA.goldBasis === 'match-time' && hr[role].platPlus && hr[role].platPlus.games ? hr[role].platPlus : null;
         const cell = platCell || hr[role];
         const picksBandNote = pageBand !== 'plat+' ? ''
           : platCell ? `<div style="font-size:.72rem;color:var(--text-2);margin-bottom:.45rem"><b style="color:var(--gold)">Plat+</b> · ${platCell.games.toLocaleString()} ${esc(role)} games · ${esc(a.name)} wins ${(platCell.wins / platCell.games * 100).toFixed(1)}% here (${(hr[role].wins / hr[role].games * 100).toFixed(1)}% all ranks)${platCell.games < 300 ? ' · thin sample: picks firm up as games come in' : ''}</div>`
@@ -2270,7 +2414,7 @@ function renderHero(a, roleParam) {
         // Plat+ leads with a different augment they would contradict the card
         // ("take it over X"), so that view falls back to the plain description.
         const allLead = platCell ? rankByEdge(hr[role].augments || [], hr[role].games).ranked[0] : null;
-        const augReviews = !platCell || (allLead && ranked[0] && allLead.id === ranked[0].id) ? (REVIEWS && REVIEWS.heroes && REVIEWS.heroes[a.slug] && REVIEWS.heroes[a.slug][role]) || null : null;
+        const augReviews = past ? null : !platCell || (allLead && ranked[0] && allLead.id === ranked[0].id) ? (REVIEWS && REVIEWS.heroes && REVIEWS.heroes[a.slug] && REVIEWS.heroes[a.slug][role]) || null : null;
         const simBy = new Map((a.eternals.all ?? a.eternals.top.map((e) => ({ ...e, modeled: true, note: null }))).map((e) => [e.name.toLowerCase(), e]));
         // Eternal pick shares are wildly asymmetric, so raw-winrate ordering let
         // lucky minority picks top every list (the flaw-4 mistake, via Lotus);
@@ -2280,7 +2424,7 @@ function renderHero(a, roleParam) {
         return `
         ${picksBandNote}
         ${mismatch ? `<div style="font-size:.72rem;color:var(--gold);margin-bottom:.45rem">the field sample for ${esc(a.name)} ${esc(activeRole)} is too thin — these picks are ${esc(role)} evidence</div>` : ''}
-        ${(() => { window.__simPick = SIM ? (a.augments || []).find((x) => x.modeled) ?? null : null; window.__augTheory = ''; window.__etTheory = ''; return ''; })()}
+        ${(() => { window.__simPick = SIMP ? (a.augments || []).find((x) => x.modeled) ?? null : null; window.__augTheory = ''; window.__etTheory = ''; return ''; })()}
         <div style="font-size:.74rem;color:var(--text-2);margin:0 0 .45rem"><b>Augment</b> · recommended as <b style="text-transform:capitalize">${esc(role)}</b> by field winrate</div>
         ${(() => {
           // ── BEST AUGMENT = the hero element ── one big block for ranked[0]: icon
@@ -2291,9 +2435,9 @@ function renderHero(a, roleParam) {
           if (!best) return '';
           const wr = best.w / best.n;
           const ai = augReviews && augReviews[best.id];
-          const whyLine = ai ? esc(ai) : esc(GameText.plain(AUGS.catalog[best.id]?.description));
+          const whyLine = ai ? esc(ai) : esc(GameText.plain(PA.catalog[best.id]?.description));
           return `
-          <div data-apop="${esc(best.id)}" data-apop-role="${esc(role)}" data-apop-band="${platCell ? 'plat+' : 'all'}" title="${esc(best.name)} — tap for the full augment" style="display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .65rem;background:var(--bg-2);border:1px solid var(--green);border-radius:10px;box-shadow:0 0 0 2px rgba(0,196,140,.12)">
+          <div ${apopAttr}="${esc(best.id)}" data-apop-role="${esc(role)}" data-apop-band="${platCell ? 'plat+' : 'all'}" title="${esc(best.name)}${past ? '' : ' — tap for the full augment'}" style="display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .65rem;background:var(--bg-2);border:1px solid var(--green);border-radius:10px;box-shadow:0 0 0 2px rgba(0,196,140,.12)">
             <img src="../img/augments/${esc(best.id)}.webp" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:contain;background:var(--bg-3);flex:none;padding:2px;box-shadow:0 0 0 2px var(--green)" onerror="this.style.visibility='hidden'">
             <div style="min-width:0;flex:1">
               <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
@@ -2318,9 +2462,9 @@ function renderHero(a, roleParam) {
             // Prefer the same authored review the BEST block uses (without the
             // the coach line), else fall back to the augment catalog description.
             const gAi = augReviews && augReviews[g.id];
-            const gWhy = gAi || GameText.plain(AUGS.catalog[g.id]?.description);
+            const gWhy = gAi || GameText.plain(PA.catalog[g.id]?.description);
             return `
-            <div data-apop="${esc(g.id)}" data-apop-role="${esc(role)}" data-apop-band="${platCell ? 'plat+' : 'all'}" title="${esc(g.name)} — tap for the full augment" style="display:flex;gap:.55rem;align-items:center;padding:.28rem 0">
+            <div ${apopAttr}="${esc(g.id)}" data-apop-role="${esc(role)}" data-apop-band="${platCell ? 'plat+' : 'all'}" title="${esc(g.name)}${past ? '' : ' — tap for the full augment'}" style="display:flex;gap:.55rem;align-items:center;padding:.28rem 0">
               <img src="../img/augments/${esc(g.id)}.webp" alt="" style="width:26px;height:26px;border-radius:50%;object-fit:contain;background:var(--bg-2);flex:none;padding:1px;border:1px solid var(--border)" onerror="this.style.visibility='hidden'">
               <span style="font-size:.82rem;font-weight:600">${esc(g.name)}</span>
               ${isTied(augR, g) ? TIED_TAG : fewTag(g)}
@@ -2375,7 +2519,7 @@ function renderHero(a, roleParam) {
           // math, the sim-pick block, and the agreement lines all collapse below.
           if (!ets.length) return '<div class="muted">no Eternal sample for this role yet</div>';
           const renderWhy = (e) => {
-            if (!SIM) return '';
+            if (!SIMP) return '';
             const sim = simBy.get(e.name.toLowerCase());
             return sim && sim.modeled !== false
               ? (() => {
@@ -2411,13 +2555,13 @@ function renderHero(a, roleParam) {
           // data-epop opens the whole Eternal (eternal-popup.js), with this
           // hero/role's minor picks marked and the clicked minor highlighted.
           const epop = (name, minor) => {
-            const m = fieldMinors(name) || (SIM && a.eternals.minorsByName && a.eternals.minorsByName[name.toLowerCase()]);
+            const m = fieldMinors(name) || (SIMP && a.eternals.minorsByName && a.eternals.minorsByName[name.toLowerCase()]);
             const picks = m ? [m.minor1, m.minor2].filter((x) => x && x.name) : [];
             const field = picks.some((x) => x.field);
             return ` data-epop="${esc(name)}"${minor ? ` data-epop-minor="${esc(minor)}"` : ''}${picks.length ? ` data-epop-picks="${esc(picks.map((x) => x.name).join('|'))}" data-epop-label="${field ? 'top pick' : 'sim pick'}" data-epop-note="${esc(field ? `the most-picked minors with ${name} for ${a.name} ${role} in ranked games this patch` : `the simulator's minor picks for ${a.name} ${role}`)}"` : ''}`;
           };
           const minorsLine = (name, indent) => {
-            const m = fieldMinors(name) || (SIM && a.eternals.minorsByName && a.eternals.minorsByName[name.toLowerCase()]);
+            const m = fieldMinors(name) || (SIMP && a.eternals.minorsByName && a.eternals.minorsByName[name.toLowerCase()]);
             const mins = m ? [m.minor1, m.minor2].filter((x) => x && x.name) : [];
             if (!mins.length) return '';
             // Icon + name per pick so the minors read at a glance in draft.
@@ -2427,7 +2571,7 @@ function renderHero(a, roleParam) {
           // What this Eternal does for THIS hero/role and how to play it
           // (eternal-cards.json, judged copy). It replaces the raw stat text on
           // the card; the full description is one tap away in the Eternal popup.
-          const etLine = (name) => (ETREV && ETREV.heroes && ETREV.heroes[a.slug] && ETREV.heroes[a.slug][role] && ETREV.heroes[a.slug][role][name]) || null;
+          const etLine = (name) => past ? null : (ETREV && ETREV.heroes && ETREV.heroes[a.slug] && ETREV.heroes[a.slug][role] && ETREV.heroes[a.slug][role][name]) || null;
           const e0 = ets[0], wr0 = e0.w / e0.n, et0 = ETMAP && ETMAP[e0.name.toLowerCase()];
           const ai0 = etLine(e0.name);
           const lead = `
@@ -2549,7 +2693,7 @@ function renderHero(a, roleParam) {
           // The augment THEORY + Eternal THEORY (per-Eternal sim-math/minors, the
           // sim-pick block, the agreement lines) are RELOCATED here, never deleted.
           const augT = window.__augTheory || '', etT = window.__etTheory || '';
-          if (!SIM || (!augT.trim() && !etT.trim())) return '';
+          if (!SIMP || (!augT.trim() && !etT.trim())) return '';
           return `<details class="sim-collapse" style="margin-top:.7rem"><summary>Experimental kit-math sim (THEORY · not a recommendation)</summary><div class="body">
             ${augT.trim() ? `<div style="font-size:.6875rem;font-weight:800;letter-spacing:0;color:var(--text-2);margin:.2rem 0 .1rem">Augments</div>${augT}` : ''}
             ${etT.trim() ? `<div style="font-size:.6875rem;font-weight:800;letter-spacing:0;color:var(--text-2);margin:.5rem 0 .1rem">Eternals</div>${etT}` : ''}
@@ -2559,7 +2703,7 @@ function renderHero(a, roleParam) {
       </div></details>
     </section>
 
-    ${buildsCard(a, pageBand)}
+    ${past ? pastBuildsCard(a, pageBand, past, pastBuilds) : buildsCard(a, pageBand)}
 
     <section class="card lvlcard" id="lvlCard" data-slug="${esc(a.slug)}" hidden></section>
     <details class="sim-collapse howto" id="howtoCard" data-slug="${esc(a.slug)}" hidden></details>
@@ -2618,17 +2762,44 @@ function renderHero(a, roleParam) {
   wireBuilds();
   mountAdjust(a);
   mountBuildPicks(a);
-  mountLoadout(a);
+  if (!past) mountLoadout(a); // per-augment loadouts are current-patch: an earlier patch shows its lane-wide picks, open
   // Page rank filter: remember the pick and redraw this lane, keeping the scroll.
-  document.querySelectorAll('.pageband button[data-pageband]').forEach((b) => {
-    b.onclick = async () => {
-      if (b.classList.contains('active')) return;
-      const y = window.scrollY;
-      saveBand(b.dataset.pageband);
-      await nav(a.slug, true, activeRole);
-      window.scrollTo({ top: y });
-    };
-  });
+  // The same two filters again in a bar that shows once the header's own
+  // buttons have scrolled off (desktop: under the top bar; phones: bottom bar
+  // with dropdowns, like the homepage). Rank here is All ranks / Plat+ only.
+  const bar = $('#herobar');
+  const laneGames = (() => { const c = pageBand === 'plat+' && platPicks ? platPicks : augCell; return c && c.games ? c.games : null; })();
+  bar.innerHTML = !(hasPlat || patchList.length) ? '' : `
+    ${hasPlat ? `<label class="fb-rank"><span class="fb-k">Rank</span>
+      <select id="hbRank">${Object.keys(BAND_LABELS).map((b) => `<option value="${b}"${b === pageBand ? ' selected' : ''}>${BAND_LABELS[b]}</option>`).join('')}</select></label>` : ''}
+    <div class="fb-right">
+      ${patchList.length ? `<label><span class="fb-k">Patch</span>
+        <select id="hbPatch">${patchList.map((p) => `<option value="${esc(p)}"${p === shownPatch ? ' selected' : ''}>${esc(p)}${p === curPatch ? '' : ' (old)'}</option>`).join('')}</select></label>` : ''}
+    </div>
+    <div class="fb-pills">
+      <span class="hb-who">${esc(a.name)} · ${esc(activeRole)}</span>
+      ${hasPlat ? `<span class="fb-grp" title="Opening picks and builds counted at these ranks (rank in that game)"><span class="fb-k">Rank</span>${Object.keys(BAND_LABELS).map((b) => `<button class="mb-toggle${b === pageBand ? ' active' : ''}" data-pageband="${b}">${BAND_LABELS[b]}</button>`).join('')}</span>` : ''}
+      ${patchList.length ? `<span class="fb-grp" title="${patchTitle}"><span class="fb-k">Patch</span>${patchList.map((p) => `<button class="mb-toggle${p === shownPatch ? ' active' : ''}" data-heropatch="${esc(p)}">${esc(p)}</button>`).join('')}</span>` : ''}
+      ${laneGames ? `<span class="fb-count"><b>${laneGames.toLocaleString()}</b> ${esc(activeRole)} games</span>` : ''}
+    </div>`;
+  const keepScroll = async (change) => { const y = window.scrollY; change(); await nav(a.slug, true, activeRole); window.scrollTo({ top: y }); };
+  const setBand = (b) => { if (b !== pageBand) keepScroll(() => saveBand(b)); };
+  const setHeroPatch = (p) => { if (p !== shownPatch) keepScroll(() => { heroPatch = p === curPatch ? null : p; heroPatchFor = a.slug; }); };
+  document.querySelectorAll('#hero [data-pageband], #herobar [data-pageband]').forEach((b) => { b.onclick = () => setBand(b.dataset.pageband); });
+  document.querySelectorAll('#hero [data-heropatch], #herobar [data-heropatch]').forEach((b) => { b.onclick = () => setHeroPatch(b.dataset.heropatch); });
+  if ($('#hbRank')) $('#hbRank').onchange = (e) => setBand(e.target.value);
+  if ($('#hbPatch')) $('#hbPatch').onchange = (e) => setHeroPatch(e.target.value);
+  // Show the bar only while the header's filter row is off screen.
+  renderHero.barWatch?.disconnect();
+  const anchor = document.querySelector('#hero .hh-filters');
+  if (anchor && bar.childElementCount && 'IntersectionObserver' in window) {
+    renderHero.barWatch = new IntersectionObserver(([en]) => {
+      const on = !en.isIntersecting && en.boundingClientRect.top < 120;
+      bar.classList.toggle('on', on);
+      bar.setAttribute('aria-hidden', on ? 'false' : 'true');
+    }, { rootMargin: `-${($('.top')?.offsetHeight ?? 96)}px 0px 0px 0px` });
+    renderHero.barWatch.observe(anchor);
+  } else bar.classList.remove('on');
   // Matchup rows are clickable — open the enemy hero's page (reuses global nav).
   document.querySelectorAll('.murow[data-slug]').forEach((el) => {
     el.onclick = () => nav(el.dataset.slug, false);
@@ -2919,10 +3090,12 @@ async function route() {
     show('landing'); setLandingMode('counter'); counterHero(enemy, params.get('lane')); buildSubnav(); return;
   }
   const slug = params.get('hero');
+  if (!slug || heroPatchFor !== slug) heroPatch = null;
   if (!slug) { show('landing'); renderGrid(); buildSubnav(); if (params.get('boards')) setTimeout(() => document.getElementById('metaboard')?.scrollIntoView({ block: 'start' }), 300); return; }
   try {
     const a = await getJson(`../../data/artifacts/${slug}.json`);
     await getAugs();
+    if (heroPatch) await getPastAugs(pastHero());
     renderHero(a, params.get('role'));
     show('hero');
     buildSubnav();
@@ -2936,6 +3109,7 @@ window.onpopstate = route;
   META = await getJson('../../data/artifacts/meta.json').catch(() => null);
   BANS = await getJson('../../data/artifacts/bans.json').catch(() => null);
   PAST = await getJson('../../data/artifacts/past-boards.json').catch(() => null);
+  PASTH = await getJson('../../data/artifacts/past-hero-builds.json').catch(() => null);
   // Early-patch notice: until the new patch's board has 25,000 matches (the
   // patch review's "early read" line), say the data is still coming in and
   // offer the previous patch's boards. Hero pages stay on the current patch.

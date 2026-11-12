@@ -219,6 +219,11 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   the earlier patches on the homepage patch picker, scored by the same src/boards.ts
   rules as meta.json / bans.json; `npm run bans -- --dir <past-patches folder>` backfills
   an archived patch's bans),
+  `npm run past-hero-builds` (zero-API, end of `npm run artifacts`: data/artifacts/past-hero-builds.json,
+  the hero page's patch filter: each archived perks patch's 3-item cores (named by patch line like the boards: the 1.17.2 archive shows as 1.17) per lane and band, scored by the
+  same shrunkCores / bandEvidence rules as the current metaBuilds; opening picks for that patch are read
+  by the page from past-patches/<patch>/predgg-augments.json; the hero-header win-rate-by-patch chart
+  reads laneWr from meta.json + past-boards.json),
   `npm run skills` (per-hero recommended leveling order from pred.gg),
   `npm run copy:prepare` then (pred-scout-coach agent fills responses) then
   `npm run copy:ingest` (copy passes on session compute — NO API key; each line

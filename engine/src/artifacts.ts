@@ -21,9 +21,9 @@ import { fieldPickOf, type FieldCell } from './field-pick.js';
 
 const ARTIFACTS_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
-type CoreRow = { core: string[]; coreSlugs: (string | null)[]; n: number; w: number; anyOrder?: boolean };
+export type CoreRow = { core: string[]; coreSlugs: (string | null)[]; n: number; w: number; anyOrder?: boolean };
 type NW = { n: number; w: number };
-interface PredggBuilds {
+export interface PredggBuilds {
   heroes: Record<string, CoreRow[]>;
   byRole?: Record<string, Record<string, CoreRow[]>>;
   /** 'match-time' = Gold+ by the rank each player held in that game. Gold+
@@ -77,6 +77,22 @@ export function poolBySet(rows: CoreRow[]): (CoreRow & { otherOrderGames: number
     bySet.set(key, { ...head, n: prev.n + c.n, w: prev.w + c.w, otherOrderGames: prev.otherOrderGames + (keepPrev ? c.n : prev.n - prev.otherOrderGames) });
   }
   return [...bySet.values()].sort((a, b) => b.n - a.n);
+}
+
+/** The field cores a lane shows: one row per item set, the five most played,
+ *  and the prior (their pooled win rate, method-of-moments strength) every
+ *  core's win rate is shrunk toward. Shared by the hero artifacts and the
+ *  past-patch builds (src/ingest/past-hero-builds.ts) so an old patch is
+ *  scored exactly like the current one. */
+export function shrunkCores(rawEvidence: CoreRow[]) {
+  const evidence = poolBySet(rawEvidence);
+  const coreGamesTotal = evidence.reduce((s, c) => s + c.n, 0);
+  const cores = evidence.slice(0, 5);
+  const coreCells = cores.map((c) => ({ n: c.n, w: c.w }));
+  const coreMean = coreCells.reduce((s, c) => s + c.w, 0) / Math.max(coreCells.reduce((s, c) => s + c.n, 0), 1);
+  const kCore = momPriorStrength(coreCells, coreMean || 0.5);
+  const shrunkWr = (c: NW) => (c.w + kCore * (coreMean || 0.5)) / (c.n + kCore);
+  return { coreGamesTotal, cores, coreMean, kCore, shrunkWr };
 }
 
 /** The band a lane opens on (Plat+ once it has the games, else all ranks), with its rows and baseline. */
@@ -732,12 +748,7 @@ function buildRoleView(
   const headlineKey = headlineObjective(kit, role);
   const ourCoreEval = evaluateBuild(kit, ordered.ordered.slice(0, 3), 13, cal);
   const metaBuildsFrom = (rawEvidence: CoreRow[]) => {
-    const evidence = poolBySet(rawEvidence);
-    const coreGamesTotal = evidence.reduce((s, c) => s + c.n, 0);
-    const cores = evidence.slice(0, 5);
-    const coreCells = cores.map((c) => ({ n: c.n, w: c.w }));
-    const coreMean = coreCells.reduce((s, c) => s + c.w, 0) / Math.max(coreCells.reduce((s, c) => s + c.n, 0), 1);
-    const kCore = momPriorStrength(coreCells, coreMean || 0.5);
+    const { coreGamesTotal, cores, coreMean, kCore } = shrunkCores(rawEvidence);
     const evaluated = cores.map((c) => {
       const coreItems = c.coreSlugs.every(Boolean) ? c.coreSlugs.map((s) => data.itemsBySlug.get(s!)).filter((x): x is Item => !!x) : null;
       const ev = coreItems && coreItems.length === 3 ? evaluateBuild(kit, coreItems, 13, cal) : null;
