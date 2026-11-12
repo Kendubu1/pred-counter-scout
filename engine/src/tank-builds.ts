@@ -26,13 +26,14 @@ export function tankStats(a: TankAgg): TankStats {
 }
 export const qualifies = (a: TankAgg, minGames = MIN_GAMES) => a.n >= minGames && (a.w + WIN_K * 0.5) / (a.n + WIN_K) >= WIN_MIN;
 /** Rank bands of the board (rank the player held IN THAT GAME; unplaced players count under All ranks
- *  only). A band's floors shrink with its share of the games: Plat+ is about 6% of placed tank-lane
+ *  only). Bands are "this rank and above" (Silver+, Gold+, Plat+), the way the rest of the site cuts rank,
+ *  so a player looks at the band they play in and everything above it. A band's floors shrink with its share of the games: Plat+ is about 6% of placed tank-lane
  *  rows, so its rows are thin by nature and the page prints each row's games. */
 export interface BandRule { key: string; label: string; tiers: [number, number] | null; minGames: number; tankMin: number; etMin: number; othersMin: number; etShow: number }
 export const BANDS: BandRule[] = [
   { key: 'all', label: 'All ranks', tiers: null, minGames: MIN_GAMES, tankMin: 300, etMin: 80, othersMin: 100, etShow: 400 },
-  { key: 'low', label: 'Bronze and Silver', tiers: [0, 1], minGames: 100, tankMin: 200, etMin: 60, othersMin: 80, etShow: 300 },
-  { key: 'gold', label: 'Gold', tiers: [2, 2], minGames: 60, tankMin: 120, etMin: 40, othersMin: 50, etShow: 150 },
+  { key: 'silver', label: 'Silver+', tiers: [1, 99], minGames: 100, tankMin: 200, etMin: 60, othersMin: 80, etShow: 300 },
+  { key: 'gold', label: 'Gold+', tiers: [2, 99], minGames: 60, tankMin: 120, etMin: 40, othersMin: 50, etShow: 150 },
   { key: 'plat', label: 'Plat+', tiers: [3, 99], minGames: 30, tankMin: 60, etMin: 20, othersMin: 30, etShow: 60 },
 ];
 export const inBand = (b: BandRule, tier: number | null | undefined) => !b.tiers || (tier != null && tier >= b.tiers[0] && tier <= b.tiers[1]);

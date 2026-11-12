@@ -6069,4 +6069,8 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   the Plat+ board is thin. What holds across bands: Nihil leads offlane and Kaelen + Idrisil is a top
   jungle row everywhere; Idrisil for jungle tanks is the one Eternal call that clears its margin at
   Plat+ (+10.8). Plat+ soak per death runs about a third higher than the overall boards.
+- Rank bands on a board are "this rank and above" (maintainer asked for Silver+, 2026-11-12). The first cut
+  used disjoint bands (Bronze-Silver, Gold, Plat+); the site already speaks Gold+ and Plat+, and a player
+  wants their rank and everything above it. Silver+ also has the games (145k tank-lane player-games)
+  that a Gold-only or Plat+-only board lacks.
 

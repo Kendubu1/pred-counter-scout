@@ -52,11 +52,12 @@ it.skipIf(!existsSync(f))('committed board: four rank bands, three lanes, every 
       }
     }
     expect(d.bands.plat.playerRows).toBeLessThan(d.bands.gold.playerRows);
+    expect(d.bands.gold.playerRows).toBeLessThan(d.bands.silver.playerRows);
   });
   it('puts a player in a rank band by the rank held in that game, unplaced players only under all ranks', () => {
     const by = (k: string) => BANDS.find((b) => b.key === k)!;
     expect(inBand(by('all'), null)).toBe(true);
-    expect(inBand(by('low'), null)).toBe(false);
-    expect([0, 1, 2, 3, 4].map((t) => BANDS.filter((b) => b.key !== 'all' && inBand(b, t)).map((b) => b.key).join())).toEqual(['low', 'low', 'gold', 'plat', 'plat']);
+    expect(inBand(by('silver'), null)).toBe(false);
+    expect([0, 1, 2, 3, 4].map((t) => BANDS.filter((b) => b.key !== 'all' && inBand(b, t)).map((b) => b.key).join())).toEqual(['', 'silver', 'silver,gold', 'silver,gold,plat', 'silver,gold,plat']);
   });
 });
