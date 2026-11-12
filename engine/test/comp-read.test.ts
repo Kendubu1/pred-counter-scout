@@ -29,6 +29,29 @@ describe('team-comp read', () => {
     expect(r.checks.find((c) => c.id === 'tank-count')!.text).toContain('47%');
     expect(r.swap).toMatchObject({ role: 'offlane', out: 'DIV', options: [{ slug: 'tank', wr: 55 }, { slug: 'tank2', wr: 50 }] });
   });
+  it('counts a non-tank hero who soaked 1.5x the lane average as playing tank, without changing the draft shape', () => {
+    const r = readTeamComp([...team(true, ['tank', 'div', 'mage', 'adc', 'sup']), ...team(false, ['jdiv', 'div', 'mage', 'adc', 'sup'])],
+      { physical: 3, magical: 2 }, tags, field, wr, new Map(), new Map(), () => [],
+      new Map([['tank', { mpm: 1200, avg: 1300 }], ['sup', { mpm: 900, avg: 950 }]]),
+      new Map([['jdiv', { mpm: 3014, avg: 1297 }], ['sup', { mpm: 721, avg: 950 }]]))!;
+    expect(r.them.tanks).toBe(0);
+    expect(r.them.gameTanks).toBe(1);
+    expect(r.them.heroes.find((h) => h.slug === 'jdiv')!.playedTank).toEqual({ mpm: 3014, x: 2.3 });
+    expect(r.them.heroes.find((h) => h.slug === 'sup')!.playedTank).toBeUndefined();
+    expect(r.us.heroes.find((h) => h.slug === 'tank')!.playedTank).toBeUndefined();
+    const tc = r.checks.find((c) => c.id === 'tank-count')!;
+    expect(tc.ok).toBe(true);
+    expect(tc.text).toContain('1 v 1');
+    expect(r.summary).toContain('JDIV played as a tank without being a tank hero');
+  });
+  it('flags a draft that matched tank heroes but was out-tanked in the game', () => {
+    const r = readTeamComp([...team(true, ['div', 'jdiv', 'mage', 'adc', 'sup']), ...team(false, ['jdiv', 'div', 'mage', 'adc', 'sup'])],
+      { physical: 3, magical: 2 }, tags, field, wr, new Map(), new Map(), () => [],
+      new Map([['jdiv', { mpm: 900, avg: 1300 }]]), new Map([['jdiv', { mpm: 2600, avg: 1297 }]]))!;
+    const tc = r.checks.find((c) => c.id === 'tank-count')!;
+    expect(tc.ok).toBe(false);
+    expect(tc.text).toContain('out-tanked in the game');
+  });
   it('passes a two-tank one-diver draft with mixed damage and no swap', () => {
     const r = readTeamComp([...team(true, ['tank', 'jdiv', 'mage', 'adc', 'tank2']), ...team(false, ['div', 'jdiv', 'mage', 'adc', 'sup'])],
       { physical: 3, magical: 2 }, tags, field, wr, new Map(), new Map())!;

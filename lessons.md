@@ -6081,3 +6081,15 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   regeneration, max health; anti-heal and armor shred excluded), the lead story names the pieces
   behind it Eternal-first, the Eternal line's payoff wording follows the stack type, and per-game
   reads must have one Eternal bullet (ingest rejects reads without it; --missing-eternal re-queues).
+
+## 2026-11-12 · Draft tank counts missed heroes who played tank
+
+The team-comp read counts tanks from the hero's catalog class, so Greystone (Fighter) on Nihil with Fire
+Blossom / Tainted Guard / Forticus, soaking 3,014 mitigated a minute (2.3x an average offlaner), read as
+"their 0 tanks" and "matched or beat their tanks (1 v 0)". Fix in src/comp-read.ts: with the game's
+numbers, a non-tank hero at 1.5x or more its lane's average mitigated a minute (tank-builds.json
+laneAverage) is tagged playedTank; the tank checks give the draft count and the in-game count, and a
+draft that matched on heroes but lost the in-game count is flagged. Calibration over our 234 films:
+1.5x passes 23% of real-tank games and 5% of the rest. Mourn passed in 3 of 34 games; in game a13f0181
+Mourn mitigated 721 a minute (0.76x a support's average), so not there. The field shape win rates stay
+on the draft class, since that is what the ranked lineups count.

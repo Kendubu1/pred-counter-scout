@@ -73,6 +73,9 @@ function main() {
   const heroStats = new Map((read('data/catalog/heroes.json') as any[]).map((h) => [h.slug, h.base_stats ?? {}]));
   const heroMeta = new Map<string, HeroMeta>(heroes.map((h) => [h.slug, { power: power.get(h.slug) ?? null, cls: heroClass(h.classes) }]));
 
+  // Lane averages of damage mitigated a minute (offlane / jungle / support), from `npm run tanks`.
+  const laneSoak: Record<string, number> = {};
+  try { for (const [lane, v] of Object.entries<any>(read('data/aggregates/tank-builds.json').bands?.all?.lanes ?? {})) if (v?.laneAverage?.mitigatedPerMin) laneSoak[lane] = v.laneAverage.mitigatedPerMin; } catch { /* npm run tanks not run yet */ }
   const files = readdirSync(OUT_DIR).filter((f) => UUID_RE.test(f));
   // Who played well above their hero-role norm, on either team (the standouts scoring:
   // role-weighted z of per-minute output vs the shrunk hero-role mean across our films).
@@ -87,7 +90,10 @@ function main() {
     const film = JSON.parse(readFileSync(p, 'utf8'));
     if (film.teamComp && film.kitRead && film.buildNotes && film.playbook && film.threatBuilds && 'damageMix' in film && !all) continue;
     const players: CompPlayer[] = film.players.map((x: CompPlayer) => ({ us: x.us, heroSlug: x.heroSlug, heroName: x.heroName, role: x.role }));
-    const tc = readTeamComp(players, film.comp?.ourDamage ?? { physical: 0, magical: 0 }, tags, field, wr, heroRoles, displayNames, (s) => rt.get(s) ?? []);
+    // Played as a tank: damage mitigated a minute vs the lane's average (src/comp-read.ts PLAYED_TANK_X).
+    const soakOf = (us: boolean) => new Map<string, { mpm: number; avg: number }>(film.players.filter((x: any) => x.us === us && laneSoak[x.role] && film.durationMin)
+      .map((x: any) => [x.heroSlug, { mpm: (x.mitigated ?? 0) / film.durationMin, avg: laneSoak[x.role]! }]));
+    const tc = readTeamComp(players, film.comp?.ourDamage ?? { physical: 0, magical: 0 }, tags, field, wr, heroRoles, displayNames, (s) => rt.get(s) ?? [], soakOf(true), soakOf(false));
     if (!tc) { skipped++; continue; }
     film.teamComp = tc;
     film.kitRead = readKit(film.players, film.kills ?? [], kitIdx, profiles as Record<string, { playAgainst?: string }>, heroMeta);
