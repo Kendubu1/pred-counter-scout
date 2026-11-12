@@ -154,7 +154,9 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   data/aggregates/tank-builds.json: per lane (offlane, jungle, support) the hero + Eternal groups with
   150+ ranked games of ten minutes or more, ranked by damage soaked per death (mitigated + hero damage
   taken, per death), kept only when the win rate pulled 100 games toward 50% is 50% or better; the
-  augment / crest / opening three / later items shown are what the group's players run most; rules in
+  augment / crest / opening three / later items shown are what the group's players run most; each lane
+  also compares every Eternal against the same tank hero on other Eternals; four rank bands (All,
+  Silver+, Gold+, Plat+ by match-time rank, with smaller game floors per band); rules in
   src/tank-builds.ts; rerun daily after perks),
   `npm run loadouts` (zero-API: the "Loadout" card that leads every hero-lane page,
   data/artifacts/loadouts/<hero>.json. The page follows the DRAFT (maintainer, 2026-11-10): the augment

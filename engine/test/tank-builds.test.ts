@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MIN_GAMES, addGame, eternalEffects, qualifies, rankTanks, tankAgg, tankStats, type TankAgg } from '../src/tank-builds.js';
+import { BANDS, MIN_GAMES, addGame, eternalEffects, inBand, qualifies, rankTanks, tankAgg, tankStats, type TankAgg } from '../src/tank-builds.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const group = (n: number, wins: number, mit: number, taken: number, deaths: number) => { const a = tankAgg(); for (let k = 0; k < n; k++) addGame(a, mit, taken, deaths, 1800, k < wins); return { agg: a }; };
@@ -34,19 +34,30 @@ describe('tankiest winning builds', () => {
     expect(r[0]!.eternal).toBe('Good');
   });
   const f = path.join(ROOT, 'data/aggregates/tank-builds.json');
-  it.skipIf(!existsSync(f))('committed board: three lanes, every row winning and with the games', () => {
+it.skipIf(!existsSync(f))('committed board: four rank bands, three lanes, every row winning and with its band\'s games', () => {
     const d = JSON.parse(readFileSync(f, 'utf8'));
-    expect(Object.keys(d.lanes)).toEqual(['offlane', 'jungle', 'support']);
-    for (const l of Object.values<any>(d.lanes)) {
-      expect(l.board.length).toBeGreaterThan(0);
-      expect(l.eternals.length).toBeGreaterThan(0);
-      for (const e of l.eternals) if (e.verdict === 'wins more') expect(e.winDelta - e.margin).toBeGreaterThan(0);
-      for (let k = 0; k < l.board.length; k++) {
-        const b = l.board[k];
-        expect(b.games).toBeGreaterThanOrEqual(d.minGames);
-        expect(b.shrunkWinPct).toBeGreaterThanOrEqual(50);
-        if (k) expect(b.soakPerDeath).toBeLessThanOrEqual(l.board[k - 1].soakPerDeath);
+    expect(d.bandOrder).toEqual(BANDS.map((b) => b.key));
+    for (const band of BANDS) {
+      const bd = d.bands[band.key];
+      expect(Object.keys(bd.lanes)).toEqual(['offlane', 'jungle', 'support']);
+      for (const l of Object.values<any>(bd.lanes)) {
+        if (band.key === 'all') { expect(l.board.length).toBeGreaterThan(0); expect(l.eternals.length).toBeGreaterThan(0); }
+        for (const e of l.eternals) if (e.verdict === 'wins more') expect(e.winDelta - e.margin).toBeGreaterThan(0);
+        for (let k = 0; k < l.board.length; k++) {
+          const b = l.board[k];
+          expect(b.games).toBeGreaterThanOrEqual(band.minGames);
+          expect(b.shrunkWinPct).toBeGreaterThanOrEqual(50);
+          if (k) expect(b.soakPerDeath).toBeLessThanOrEqual(l.board[k - 1].soakPerDeath);
+        }
       }
     }
+    expect(d.bands.plat.playerRows).toBeLessThan(d.bands.gold.playerRows);
+    expect(d.bands.gold.playerRows).toBeLessThan(d.bands.silver.playerRows);
+  });
+  it('puts a player in a rank band by the rank held in that game, unplaced players only under all ranks', () => {
+    const by = (k: string) => BANDS.find((b) => b.key === k)!;
+    expect(inBand(by('all'), null)).toBe(true);
+    expect(inBand(by('silver'), null)).toBe(false);
+    expect([0, 1, 2, 3, 4].map((t) => BANDS.filter((b) => b.key !== 'all' && inBand(b, t)).map((b) => b.key).join())).toEqual(['', 'silver', 'silver,gold', 'silver,gold,plat', 'silver,gold,plat']);
   });
 });

@@ -6064,6 +6064,15 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   went out red because the test filter was chained with `&&` after a grep that "succeeds" on failure
   lines. New non-hero outputs go in data/aggregates/ or their own folder, and a commit gates on the
   test command's own exit code, never on a grep of its output.
+- Tank boards by rank (maintainer, 2026-11-12). Placed tank-lane player-games: Bronze-Silver 138k, Gold
+  45k, Plat+ 16k, so each band needs its own floors (100 / 60 / 30 games per row against 150 overall) and
+  the Plat+ board is thin. What holds across bands: Nihil leads offlane and Kaelen + Idrisil is a top
+  jungle row everywhere; Idrisil for jungle tanks is the one Eternal call that clears its margin at
+  Plat+ (+10.8). Plat+ soak per death runs about a third higher than the overall boards.
+- Rank bands on a board are "this rank and above" (maintainer asked for Silver+, 2026-11-12). The first cut
+  used disjoint bands (Bronze-Silver, Gold, Plat+); the site already speaks Gold+ and Plat+, and a player
+  wants their rank and everything above it. Silver+ also has the games (145k tank-lane player-games)
+  that a Gold-only or Plat+-only board lacks.
 
 - The Eternal went missing from the story (maintainer, 2026-11-12, Greystone with Nihil + From the
   Abyss + Adaptive Plating, a 55.8% setup): 34 of 91 per-game reads never named the Eternal or a

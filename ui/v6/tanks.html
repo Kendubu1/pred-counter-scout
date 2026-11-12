@@ -79,6 +79,10 @@
   .ets .nm small { display:block; font-size:.6875rem; font-weight:400; color:var(--text-2); }
   .ets .v { font-size:.74rem; font-weight:700; white-space:nowrap; border:1px solid var(--border); border-radius:99px; padding:.08rem .5rem; color:var(--text-2); }
   .ets .v.good { color:var(--green); border-color:var(--green); } .ets .v.bad { color:var(--red); border-color:var(--red); }
+  .bands { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.9rem; }
+  .band { background:var(--bg-1); border:1px solid var(--border); border-radius:99px; padding:.3rem .8rem; color:var(--text-2); font-size:.78rem; font-weight:700; min-height:36px; }
+  .band:hover { color:var(--text-0); }
+  .band.active { background:var(--bg-3); border-color:var(--text-2); color:var(--text-0); }
   details.more { margin-top:.4rem; }
   details.more > summary { font-size:.6875rem; color:var(--text-2); cursor:pointer; list-style:none; min-height:24px; display:inline-block; padding:.15rem 0; }
   details.more > summary::-webkit-details-marker { display:none; }
@@ -103,6 +107,7 @@
 <div class="wrap">
   <h1>Tankiest winning builds</h1>
   <p class="lede">The hardest heroes to kill that still win. Ranked by damage soaked per death: how much the enemy has to spend to kill you once.</p>
+  <div class="bands" id="bands" role="group" aria-label="Rank"></div>
   <p class="sub" id="basis" style="margin-top:.4rem"></p>
   <div id="boards"><section class="card"><p class="sub">Loading…</p></section></div>
   <section class="card">
@@ -111,6 +116,7 @@
       <li><b>Soaked per death</b> is damage mitigated plus damage taken from heroes, divided by deaths, over all of that group's games.</li>
       <li><b>Winning</b> means the win rate is 50% or better after pulling it 100 games toward 50%, so a small lucky sample cannot qualify. A build that soaks the most and loses is left off.</li>
       <li>Each row is one hero in one lane on one Eternal, with 150 or more ranked games of ten minutes or longer.</li>
+      <li><b>Rank</b> is the rank the player held in that game. Silver+ means Silver and every rank above it, and the same for Gold+ and Plat+. Silver+ needs 100 games per row, Gold+ 60 and Plat+ 30, because those groups are smaller. Plat+ rows are thin, so check the games under "More". Unplaced players count under All ranks only.</li>
       <li>The augment, crest and items shown are what those players run most. They describe the build; they are not ranked picks.</li>
       <li><b>Which Eternal</b> compares an Eternal with the same hero in the same lane on every other Eternal, over the lane's tank heroes (300+ games, soaking at least 1.2 times the lane average). It says "wins more" or "wins less" only when the whole margin is on one side of zero.</li>
       <li>Teams that are ahead die less, so part of each win rate is "winning made them hard to kill", not only the other way round.</li>
@@ -129,7 +135,16 @@ const LANE = { offlane: 'Offlane', jungle: 'Jungle', support: 'Support' };
 const num = (n) => Math.round(n).toLocaleString();
 Promise.all([fetch('../../data/aggregates/tank-builds.json').then((r) => r.json()), fetch('../../data/aggregates/item-tags.json').then((r) => r.json()).catch(() => null)]).then(([d, tags]) => {
   const itemName = (s) => (tags && tags.items[s] ? tags.items[s].name : s);
-  $('#basis').textContent = `Patch ${d.patch} · ${d.matches.toLocaleString()} ranked matches · all ranks`;
+  let band = new URLSearchParams(location.search).get('rank') || 'all';
+  if (!d.bands[band]) band = 'all';
+  const drawBands = () => {
+    $('#bands').innerHTML = d.bandOrder.map((k) => `<button class="band${k === band ? ' active' : ''}" data-band="${esc(k)}" aria-pressed="${k === band}">${esc(d.bands[k].label)}</button>`).join('');
+    $('#bands').querySelectorAll('.band').forEach((b) => { b.onclick = () => { band = b.dataset.band; try { history.replaceState(null, '', (band === 'all' ? 'tanks.html' : `tanks.html?rank=${band}`) + location.hash); } catch { /* file:// */ } draw(); }; });
+  };
+  const draw = () => {
+  drawBands();
+  const bd = d.bands[band];
+  $('#basis').textContent = `Patch ${d.patch} · ${d.matches.toLocaleString()} ranked matches · ${bd.label}${band === 'all' ? '' : ` (rank in that game) · ${bd.playerRows.toLocaleString()} player-games · a row needs ${bd.minGames}+ games`}`;
   const hide = "this.style.visibility='hidden'";
   const row = (b, i, lane, avg) => {
     const o = b.otherEternals;
@@ -152,12 +167,15 @@ Promise.all([fetch('../../data/aggregates/tank-builds.json').then((r) => r.json(
         </div></details>
       </div></div>`;
   };
-  $('#boards').innerHTML = Object.keys(LANE).map((lane) => { const l = d.lanes[lane];
+  $('#boards').innerHTML = Object.keys(LANE).map((lane) => { const l = bd.lanes[lane];
     const sign = (n) => (n > 0 ? '+' : '') + n;
     const etRow = (e) => `<img data-epop="${esc(e.eternal)}" src="../img/eternals/${esc(e.eternal.toLowerCase())}.webp" alt="" onerror="${hide}"><span class="nm">${esc(e.eternal)}<small>${sign(e.soakPct)}% soaked per death · ${sign(e.deathsPct)}% deaths · ${e.games.toLocaleString()} games on ${e.heroes} ${e.heroes === 1 ? 'hero' : 'heroes'}</small></span><span class="v ${e.verdict === 'wins more' ? 'good' : e.verdict === 'wins less' ? 'bad' : ''}" title="Win rate against the same hero on other Eternals: ${sign(e.winDelta)} points, give or take ${e.margin}">${e.verdict === 'no clear change' ? `${sign(e.winDelta)} · unclear` : `${sign(e.winDelta)} pts · ${e.verdict}`}</span>`;
     const ets = l.eternals || [], topE = ets.slice(0, 3), restE = ets.slice(3);
-    const etCard = ets.length ? `<section class="card"><h2>Which Eternal for ${lane === "offlane" ? "an" : "a"} ${LANE[lane].toLowerCase()} tank</h2><div class="ets">${topE.map(etRow).join('')}</div>${restE.length ? `<details class="more"><summary>All ${ets.length} Eternals</summary><div class="ets" style="margin-top:.4rem">${restE.map(etRow).join('')}</div></details>` : ''}<p class="sub" style="margin-top:.5rem">Each Eternal against the same hero on every other Eternal, across this lane's tank heroes. Points are win rate; "unclear" means the gap is inside its margin.</p></section>` : '';
-    return `<div class="sec jump" id="${lane}">${LANE[lane]}</div>${etCard}<section class="card"><h2>Hardest to kill, and winning</h2>${l.board.length ? l.board.map((b, i) => row(b, i, lane, l.laneAverage)).join('') : '<p class="sub">No build qualifies in this lane yet.</p>'}</section>`; }).join('');
+    const noEt = `<section class="card"><h2>Which Eternal for ${lane === "offlane" ? "an" : "a"} ${LANE[lane].toLowerCase()} tank</h2><p class="sub">Too few ${esc(bd.label)} games to compare Eternals in this lane yet.</p></section>`;
+    const etCard = !ets.length ? noEt : `<section class="card"><h2>Which Eternal for ${lane === "offlane" ? "an" : "a"} ${LANE[lane].toLowerCase()} tank</h2><div class="ets">${topE.map(etRow).join('')}</div>${restE.length ? `<details class="more"><summary>All ${ets.length} Eternals</summary><div class="ets" style="margin-top:.4rem">${restE.map(etRow).join('')}</div></details>` : ''}<p class="sub" style="margin-top:.5rem">Each Eternal against the same hero on every other Eternal, across this lane's tank heroes. Points are win rate; "unclear" means the gap is inside its margin.</p></section>`;
+    return `<div class="sec jump" id="${lane}">${LANE[lane]}</div>${etCard}<section class="card"><h2>Hardest to kill, and winning</h2>${l.board.length ? l.board.map((b, i) => row(b, i, lane, l.laneAverage)).join('') : `<p class="sub">No build has enough ${esc(bd.label)} games in this lane yet.</p>`}</section>`; }).join('');
+  };
+  draw();
   const t = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
   if (t) t.scrollIntoView({ block: 'start' });
 }).catch(() => { $('#boards').innerHTML = '<section class="card"><p class="sub">Could not load the board.</p></section>'; });
