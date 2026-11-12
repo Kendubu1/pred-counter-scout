@@ -150,13 +150,22 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   engine/copy-tasks/itempicks.responses.json, an INDEPENDENT critic writes itempicks.critique.json,
   then the plain run number-checks every line against the item's own text; rerun after a catalog
   change; the page falls back to the rule-based lane line for an item with no line),
+  `npm run tanks` (zero-API: the "Tankiest winning builds" page, ui/v6/tanks.html,
+  data/aggregates/tank-builds.json: per lane (offlane, jungle, support) the hero + Eternal groups with
+  150+ ranked games of ten minutes or more, ranked by damage soaked per death (mitigated + hero damage
+  taken, per death), kept only when the win rate pulled 100 games toward 50% is 50% or better; the
+  augment / crest / opening three / later items shown are what the group's players run most; each lane
+  also compares every Eternal against the same tank hero on other Eternals; four rank bands (All,
+  Silver+, Gold+, Plat+ by match-time rank, with smaller game floors per band); rules in
+  src/tank-builds.ts; rerun daily after perks),
   `npm run loadouts` (zero-API: the "Loadout" card that leads every hero-lane page,
   data/artifacts/loadouts/<hero>.json. The page follows the DRAFT (maintainer, 2026-11-10): the augment
   is locked first and is hero- and lane-specific, so it is the first choice, and per augment with 60+
   players the Eternal, crest and ordered opening core are ranked INSIDE that augment by the edge rule
   (the augment treated like a rank band), with what its players run and their first item beside it;
-  matchup and item sections below apply to any loadout; rules in src/build-picks.ts readList; rerun
-  daily after perks),
+  matchup and item sections below apply to any loadout; it follows the page rank filter: the Plat+ view
+  (lane 60+ and augment 20+ Plat+ games, rank in that game) ranks each list with the all-ranks numbers
+  one level down as its prior; rules in src/build-picks.ts readList; rerun daily after perks),
   `npm run buildpicks` (zero-API: "Picks on this build" under each hero-page build,
   data/artifacts/build-picks/<hero>.json, from the patch's ranked lineups: the augment / Eternal /
   crest run by players who opened with that three-item set (60+ players), ranked by the edge rule

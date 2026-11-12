@@ -1997,10 +1997,20 @@ const LO_STATE = {};
 async function mountLoadout(a) {
   const host = document.getElementById('loadoutCard');
   if (!host) return;
-  if (!LOIDX || !(LOIDX.heroes[a.slug] || []).includes(a.role)) { host.hidden = true; return; }
+  // No per-augment data for this lane (too few games): the card is the lane-wide picks, open.
+  const lanePicks = document.getElementById('lanePicks');
+  const fallback = () => { host.innerHTML = '<h2>Your opening picks</h2>'; if (lanePicks) { lanePicks.open = true; lanePicks.querySelector('summary').textContent = 'The lane-wide picks'; } buildSubnav(); };
+  if (!LOIDX || !(LOIDX.heroes[a.slug] || []).includes(a.role)) { fallback(); return; }
   if (!LOADOUTS[a.slug]) LOADOUTS[a.slug] = await getJson(`../../data/artifacts/loadouts/${a.slug}.json`).catch(() => null);
-  const file = LOADOUTS[a.slug], rd = file && file.roles && file.roles[a.role];
-  if (!rd || !rd.augments.length || document.getElementById('loadoutCard') !== host) { host.hidden = true; return; }
+  const file = LOADOUTS[a.slug];
+  const lane = file && file.roles && file.roles[a.role];
+  if (document.getElementById('loadoutCard') !== host) return;
+  if (!lane || !lane.augments.length) { fallback(); return; }
+  // Follows the page's rank filter like Opening Picks and Builds. A lane without enough Plat+ games
+  // shows all ranks and says so.
+  const wantPlat = host.dataset.band === 'plat+';
+  const isPlat = wantPlat && !!lane.plat;
+  const rd = isPlat ? lane.plat : lane;
   const stateKey = `${a.slug}|${a.role}`;
   const itemName = (slug) => ((ITEMTAGS && ITEMTAGS.items[slug]) || {}).name || slug;
   const crestSlug = (name) => { const e = ITEMTAGS && Object.entries(ITEMTAGS.items).find(([, t]) => t.kind === 'crest' && t.name === name); return e ? e[0] : null; };
@@ -2014,31 +2024,49 @@ async function mountLoadout(a) {
     const sel = rd.augments.find((x) => x.id === LO_STATE[stateKey]) || rd.augments[0];
     const tabs = rd.augments.map((x, i) => `<button type="button" class="lo-tab${x === sel ? ' active' : ''}" data-loaug="${esc(x.id)}" aria-pressed="${x === sel}">
         <img src="../img/augments/${esc(x.id)}.webp" alt="" onerror="this.style.visibility='hidden'">
-        <span><span class="nm">${esc(x.name)}</span><br><span class="sub">${x.sharePct}% run it${i === 0 && rd.augments.length > 1 && rd.augmentLabel !== 'By games' ? ` · ${rd.augmentLabel === 'Most played' ? 'most played' : rd.augmentLabel === 'Toss-up' ? 'best odds' : rd.augmentLabel.toLowerCase()}` : ''}</span></span>
+        <span><span class="nm">${esc(x.name)}</span><br><span class="sub"><b style="color:${wrColor(x.shrunk / 100)}">${x.shrunk.toFixed(1)}% win</b> · picked ${x.sharePct}%${i === 0 && rd.augments.length > 1 && (rd.augmentLabel === 'Best' || rd.augmentLabel === 'Leans') ? ` · ${rd.augmentLabel.toLowerCase()}` : ''}</span></span>
       </button>`).join('');
-    const pickRow = (key, p, img) => {
-      const lead = p.rows[0];
+    // Under Plat+ a list with too few games to rank shows the all-ranks list for this augment, marked.
+    const base = isPlat ? lane.augments.find((x) => x.id === sel.id) : null;
+    const use = (kind) => (base && sel[kind].label === 'By games' ? { p: base[kind], n: base.n, core: base.coreGames, borrowed: true } : { p: sel[kind], n: sel.n, core: sel.coreGames, borrowed: false });
+    const allTag = '<span class="itag stat" title="Too few Plat+ games to rank this, so it is the all-ranks pick for this augment">all ranks</span>';
+    // The minor pair for the lead Eternal: the same rule as the lane-wide list (field-pick.ts bestMinors:
+    // pairs with 10% of the Eternal's games, 30+, pulled 50 games toward the Eternal's own rate), from
+    // the lane's games on this rank filter. Minors are locked in the draft too, so they sit on the row.
+    const minorsFor = (etName) => {
+      const hrAll = AUGS && AUGS.heroes && AUGS.heroes[a.slug] && AUGS.heroes[a.slug][a.role];
+      const cellM = hrAll ? (isPlat && hrAll.platPlus && hrAll.platPlus.eternals ? hrAll.platPlus : hrAll) : null;
+      const find = (c) => c && (c.eternals || []).find((e) => e.name.toLowerCase() === etName.toLowerCase());
+      const pairOf = (fe) => { if (!fe) return null; const fl = Math.max(30, Math.round(fe.n * 0.1)), b0 = fe.n ? fe.w / fe.n : 0.5;
+        return (fe.pairs || []).filter((x) => x.n >= fl).sort((x, y) => (y.w + 50 * b0) / (y.n + 50) - (x.w + 50 * b0) / (x.n + 50))[0] || null; };
+      const bp = pairOf(find(cellM)) || pairOf(find(hrAll));
+      if (!bp) return '';
+      const chip = (nm) => `<span data-epop="${esc(etName)}" data-epop-minor="${esc(nm)}" style="cursor:pointer;white-space:nowrap"><img src="${IMG.blessing(nm)}" alt="" style="width:18px;height:18px;border-radius:50%;display:inline-block;vertical-align:-4px;margin-right:.25rem;background:var(--bg-3)" onerror="this.style.display='none'"><b>${esc(nm)}</b></span>`;
+      return `<span class="lo-sub" title="The minor pair that wins most under ${esc(etName)} in this lane, ${bp.n.toLocaleString()} games">Minors: ${chip(bp.minor1)} + ${chip(bp.minor2)}</span>`;
+    };
+    const pickRow = (key, kind, img) => {
+      const u = use(kind), p = u.p, lead = p.rows[0];
       if (!lead) return '';
       const sub = `${p.mostRun && p.mostRun.name !== lead.name ? `${p.mostRun.pct} of 100 with this augment run <b>${esc(p.mostRun.name)}</b>` : ''}`;
-      return `<div class="lo-row"><span class="lo-k">${key}</span><span class="lo-v">${img(lead.name)}<b>${esc(lead.name)}</b><span class="bp-l" title="${LTIP[p.label] || ''}">${lbl(p.label)}</span><span class="adj-num">${lead.n.toLocaleString()} of ${sel.n.toLocaleString()}</span>${p.changes ? `<span class="itag ans" title="Across the lane ${esc(p.laneLead)} leads">wins more with this augment</span>` : ''}${sub ? `<span class="lo-sub">${sub}</span>` : ''}</span></div>`;
+      return `<div class="lo-row"><span class="lo-k">${key}</span><span class="lo-v">${img(lead.name)}<b>${esc(lead.name)}</b><span class="bp-l" title="${LTIP[p.label] || ''}">${lbl(p.label)}</span><span class="adj-num">${lead.n.toLocaleString()} of ${u.n.toLocaleString()}</span>${u.borrowed ? allTag : ''}${p.changes ? `<span class="itag ans" title="Across the lane ${esc(p.laneLead)} leads">wins more with this augment</span>` : ''}${kind === 'eternals' ? minorsFor(lead.name) : ''}${sub ? `<span class="lo-sub">${sub}</span>` : ''}</span></div>`;
     };
-    const b = sel.builds, b0 = b.rows[0];
-    const buildRow = b0 ? `<div class="lo-row"><span class="lo-k">Build</span><span class="lo-v">${coreImgs(b0.name)}<span class="bp-l" title="${LTIP[b.label] || ''}">${lbl(b.label)}</span><span class="adj-num">${b0.n.toLocaleString()} of ${sel.coreGames.toLocaleString()}</span>${sel.openers[0] ? `<span class="lo-sub">${sel.openers[0].pct} of 100 with this augment open on <b>${esc(itemName(sel.openers[0].item))}</b></span>` : ''}</span></div>` : '';
+    const ub = use('builds'), b = ub.p, b0 = b.rows[0];
+    const buildRow = b0 ? `<div class="lo-row"><span class="lo-k">Build</span><span class="lo-v">${coreImgs(b0.name)}<span class="bp-l" title="${LTIP[b.label] || ''}">${lbl(b.label)}</span><span class="adj-num">${b0.n.toLocaleString()} of ${ub.core.toLocaleString()}</span>${ub.borrowed ? allTag : ''}${sel.openers[0] ? `<span class="lo-sub">${sel.openers[0].pct} of 100 with this augment open on <b>${esc(itemName(sel.openers[0].item))}</b></span>` : ''}</span></div>` : '';
     const list = (title, p, name) => (p.rows.length ? `<div class="adj-num" style="margin-top:.35rem"><b>${title}</b> · ${lbl(p.label)}${p.laneLead ? ` · across the lane: ${name(p.laneLead)}` : ''}</div>${p.rows.map((x) => `<div class="adj-num">${name(x.name)} · ${x.n.toLocaleString()} games · ${x.shrunk}%${x.few ? ' · few games' : ''}</div>`).join('')}` : '');
     const coreName = (key) => key.split('>').map((sl) => esc(itemName(sl))).join(' → ');
     const why = reviews[sel.id];
-    host.innerHTML = `<h2>Loadout <span class="hint">start with your augment · it is locked in the draft</span></h2>
+    host.innerHTML = `<h2>Loadout <span class="bandchip${wantPlat && !isPlat ? ' fallback' : ''}" title="${wantPlat && !isPlat ? 'Too few Plat+ games in this lane yet' : 'Rank filter applied'}">${isPlat ? 'Plat+' : 'All ranks'}${wantPlat && !isPlat ? ' · Plat+ not ready' : ''}</span> <span class="hint">start with your augment · it is locked in the draft</span></h2>
+      ${wantPlat && !isPlat ? `<div class="mb-why" style="color:var(--gold);margin:0 0 .5rem">Too few Plat+ ${esc(a.role)} games for ${esc(a.name)} yet, so this card shows all ranks.</div>` : ''}
       <div class="lo-tabs" role="group" aria-label="Augment">${tabs}</div>
       ${why ? `<div class="lo-why">${esc(why)}</div>` : ''}
-      ${pickRow('Eternal', sel.eternals, etImg)}
-      ${pickRow('Crest', sel.crests, crestImg)}
+      ${pickRow('Eternal', 'eternals', etImg)}
+      ${pickRow('Crest', 'crests', crestImg)}
       ${buildRow}
       <details class="imore"><summary>More</summary>
         ${list('Eternal', sel.eternals, esc)}${list('Crest', sel.crests, esc)}${list('Opening three items', sel.builds, coreName)}
         ${sel.openers.length ? `<div class="adj-num" style="margin-top:.35rem"><b>First item</b> · ${sel.openers.map((o) => `${esc(itemName(o.item))} ${o.pct}%`).join(', ')}</div>` : ''}
-        <div class="bc-note">${sel.n.toLocaleString()} ${esc(a.name)} ${esc(a.role)} players ran ${esc(sel.name)} in ranked games this patch (${esc(file.patch)}, all ranks). Each list is ranked inside this augment, with win rates pulled toward how the pick does across the whole lane so a handful of games cannot lead. Builds count players who finished three items, in the order bought. Across all heroes, players who open on a different first item than most players on their augment win about 2 fewer games in 100.</div>
+        <div class="bc-note">${sel.n.toLocaleString()} ${isPlat ? 'Plat+ ' : ''}${esc(a.name)} ${esc(a.role)} players ran ${esc(sel.name)} in ranked games this patch (${esc(file.patch)}, ${isPlat ? 'Plat+ in that game' : 'all ranks'}).${isPlat ? ' Plat+ samples are small, so every pick here starts from its all-ranks number and moves only as far as its Plat+ games carry it.' : ''} Each list is ranked inside this augment, with win rates pulled toward how the pick does across the whole lane so a handful of games cannot lead. Builds count players who finished three items, in the order bought. Across all heroes, players who open on a different first item than most players on their augment win about 2 fewer games in 100.</div>
       </details>`;
-    host.hidden = false;
     host.querySelectorAll('[data-loaug]').forEach((btn) => btn.addEventListener('click', () => { LO_STATE[stateKey] = btn.dataset.loaug; draw(); }));
   };
   draw();
@@ -2346,10 +2374,9 @@ function renderHero(a, roleParam) {
     </div>
 
     <div id="tabPlay">
-    <section class="card" id="loadoutCard" hidden></section>
-
-    <section class="card">
-      <h2>Your opening picks</h2>
+    <section class="card" id="loadoutWrap">
+      <div id="loadoutCard" data-band="${esc(pageBand)}"><h2>${past ? 'Your opening picks' : 'Loadout'}</h2></div>
+      <details class="sim-collapse" id="lanePicks" style="margin-top:.7rem"${past ? ' open' : ''}><summary>${past ? `The lane-wide picks on patch ${esc(past.patch)}` : 'All augments together: the lane-wide picks'}</summary><div class="body">
       ${(() => {
         const hr = PA && PA.heroes && PA.heroes[a.slug];
         // "thin sample" is wrong for a hero released this patch: the sample is
@@ -2673,6 +2700,7 @@ function renderHero(a, roleParam) {
           </div></details>`;
         })()}`;
       })()}
+      </div></details>
     </section>
 
     ${past ? pastBuildsCard(a, pageBand, past, pastBuilds) : buildsCard(a, pageBand)}
@@ -2734,7 +2762,7 @@ function renderHero(a, roleParam) {
   wireBuilds();
   mountAdjust(a);
   mountBuildPicks(a);
-  if (!past) mountLoadout(a); // the loadout card is current-patch: off while an earlier patch is shown
+  if (!past) mountLoadout(a); // per-augment loadouts are current-patch: an earlier patch shows its lane-wide picks, open
   // Page rank filter: remember the pick and redraw this lane, keeping the scroll.
   // The same two filters again in a bar that shows once the header's own
   // buttons have scrolled off (desktop: under the top bar; phones: bottom bar

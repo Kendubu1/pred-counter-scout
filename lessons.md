@@ -6038,4 +6038,58 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   list reads Toss-up 139, Leans 81, Best 56, Most played 31; it leads with a different Eternal than the
   lane on a clear edge for 9 augments. Hero- and lane-specific choices go first; matchup and item
   advice applies to any loadout and sits below.
+- A card that ignores the page's rank filter reads as a contradiction (maintainer: "these win rates are
+  very different"). Two causes were mine: the Loadout card was all ranks while Opening Picks followed
+  Plat+, and its tabs showed pick share ("21% run it") with no win rate, which was read as one. Tabs now
+  lead with the win rate, and the card follows the filter: 82 lanes have a Plat+ view (60+ Plat+ lane
+  games, 20+ per augment), each list ranked with the all-ranks numbers one level down as its prior, and
+  a list too thin to rank shows the all-ranks pick, marked. Every number on a card names what it is.
 
+## 2026-11-12 — Tankiest winning builds
+
+- "Most unkillable" needs a stat that counts both sides of it: soak per death = (damage mitigated + hero
+  damage taken) / deaths. Mitigated per minute alone rewards standing in jungle camps; deaths alone
+  rewards hiding. Over 47,198 ranked matches (games of 10+ minutes) the lane averages are offlane 16,300,
+  jungle 13,400, support 11,600.
+- Nihil is the tank Eternal in a solo lane: same hero and lane, Nihil against every other Eternal, soak
+  per death rises on all ten offlaners checked (Sevarog 43,200 vs 31,000; Steel 36,900 vs 26,000; Akeron
+  34,400 vs 17,800) with fewer deaths and a higher win rate. Supports show no real change (Steel 18,200
+  vs 18,400). Observed games, so Nihil players may differ; the pattern across ten heroes is the evidence.
+- The tankiest is not the winningest: Sevarog offlane on Nihil soaks the most (43,200 per death, 0.96
+  deaths per 10 min) and wins 49.4%, so a board of builds "that win" needs a win gate (rate pulled 100
+  games toward 50%, 50% or better) or it recommends a loser. Item-level soak numbers are inflated by
+  survivorship (late items are finished in long games), so the page lists what the group buys, unranked.
+- data/artifacts/ root is for hero files only: test/artifacts.test.ts reads every other .json there as a
+  hero. A second board file landed there (after item-tags.json did the same on 2026-11-10) and the commit
+  went out red because the test filter was chained with `&&` after a grep that "succeeds" on failure
+  lines. New non-hero outputs go in data/aggregates/ or their own folder, and a commit gates on the
+  test command's own exit code, never on a grep of its output.
+- Tank boards by rank (maintainer, 2026-11-12). Placed tank-lane player-games: Bronze-Silver 138k, Gold
+  45k, Plat+ 16k, so each band needs its own floors (100 / 60 / 30 games per row against 150 overall) and
+  the Plat+ board is thin. What holds across bands: Nihil leads offlane and Kaelen + Idrisil is a top
+  jungle row everywhere; Idrisil for jungle tanks is the one Eternal call that clears its margin at
+  Plat+ (+10.8). Plat+ soak per death runs about a third higher than the overall boards.
+- Rank bands on a board are "this rank and above" (maintainer asked for Silver+, 2026-11-12). The first cut
+  used disjoint bands (Bronze-Silver, Gold, Plat+); the site already speaks Gold+ and Plat+, and a player
+  wants their rank and everything above it. Silver+ also has the games (145k tank-lane player-games)
+  that a Gold-only or Plat+-only board lacks.
+
+- The Eternal went missing from the story (maintainer, 2026-11-12, Greystone with Nihil + From the
+  Abyss + Adaptive Plating, a 55.8% setup): 34 of 91 per-game reads never named the Eternal or a
+  minor, "What stacked" had no family for defensive effects, and the toughness / survival / sustain
+  lead stories gave a number with no reason. Fixes: a "Kept alive in fights" stack (armor, shields,
+  regeneration, max health; anti-heal and armor shred excluded), the lead story names the pieces
+  behind it Eternal-first, the Eternal line's payoff wording follows the stack type, and per-game
+  reads must have one Eternal bullet (ingest rejects reads without it; --missing-eternal re-queues).
+
+## 2026-11-12 · Draft tank counts missed heroes who played tank
+
+The team-comp read counts tanks from the hero's catalog class, so Greystone (Fighter) on Nihil with Fire
+Blossom / Tainted Guard / Forticus, soaking 3,014 mitigated a minute (2.3x an average offlaner), read as
+"their 0 tanks" and "matched or beat their tanks (1 v 0)". Fix in src/comp-read.ts: with the game's
+numbers, a non-tank hero at 1.5x or more its lane's average mitigated a minute (tank-builds.json
+laneAverage) is tagged playedTank; the tank checks give the draft count and the in-game count, and a
+draft that matched on heroes but lost the in-game count is flagged. Calibration over our 234 films:
+1.5x passes 23% of real-tank games and 5% of the rest. Mourn passed in 3 of 34 games; in game a13f0181
+Mourn mitigated 721 a minute (0.76x a support's average), so not there. The field shape win rates stay
+on the draft class, since that is what the ranked lineups count.

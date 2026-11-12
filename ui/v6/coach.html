@@ -189,7 +189,7 @@
   .tc-bn{list-style:none;padding:0;margin:.35rem 0 0}.tc-bn li{display:flex;gap:.5rem;align-items:flex-start;margin:.5rem 0}
   .tc-bits{display:flex;flex-direction:column;gap:.15rem;margin-top:.15rem}.tc-bits img{display:inline-block!important}
   .tc-ok{color:var(--green);font-weight:700}.tc-bad{color:var(--red);font-weight:800}
-  .tc-tag.tc-tank{background:rgba(80,140,255,.18);color:#6ea0ff}.tc-tag.tc-diver{background:rgba(240,130,15,.18);color:#f0820f}
+  .tc-tag.tc-tank{background:rgba(80,140,255,.18);color:#6ea0ff}.tc-tag.tc-played{background:transparent;border:1px dashed #6ea0ff;white-space:nowrap}.tc-tag.tc-diver{background:rgba(240,130,15,.18);color:#f0820f}
   .tc-tag.tc-engage{background:rgba(220,60,60,.16);color:#ff7a7a}.tc-tag.tc-peel{background:rgba(0,196,140,.14);color:#3fd3a7}
   .tc-tag.tc-control{background:rgba(168,85,247,.16);color:#c08bff}.tc-tag.tc-burst{background:rgba(255,200,60,.14);color:#e8b84a}
   .tc-tag.tc-poke,.tc-tag.tc-dps,.tc-tag.tc-sustain,.tc-tag.tc-duelist{background:rgba(150,150,170,.16);color:var(--text-1)}
@@ -1055,7 +1055,8 @@ function pgReview(f) {
     const iimgTag = (slug) => `<img data-ipop="${esc(slug)}" src="${iimg(slug)}" style="width:18px;height:18px;border-radius:4px;vertical-align:-4px;margin-right:.25rem" onerror="this.style.display='none'">`;
     const tcCol = (w) => w >= 52 ? 'var(--green)' : w <= 48 ? 'var(--red)' : 'var(--text-1)';
     const TAG_TIP = { tank: 'Real tank: starts fights and soaks', diver: 'High-dive: jumps the backline', engage: 'Starts fights with hard CC', peel: 'Protects allies (shields, heals, CC on divers)', control: 'Zone or heavy crowd control', burst: 'Deletes one target fast', poke: 'Chips from range', dps: 'Sustained damage over a fight', sustain: 'Heals through fights', duelist: 'Wins one-on-ones' };
-    const badge = (h) => (h.tags && h.tags.length ? h.tags : (h.tank ? ['tank'] : h.diver ? ['diver'] : [])).map((g) => `<span class="tc-tag tc-${g}" title="${esc(TAG_TIP[g] || g)}">${esc(g.toUpperCase())}</span>`).join('');
+    const playedTag = (h) => h.playedTank ? `<span class="tc-tag tc-tank tc-played" title="Not a tank hero, but played as one this game: ${escN(h.playedTank.mpm)} damage mitigated a minute, ${h.playedTank.x}x an average ${esc(roleName(h.role).toLowerCase())} player">PLAYED TANK</span>` : '';
+    const badge = (h) => (h.tags && h.tags.length ? h.tags : (h.tank ? ['tank'] : h.diver ? ['diver'] : [])).map((g) => `<span class="tc-tag tc-${g}" title="${esc(TAG_TIP[g] || g)}">${esc(g.toUpperCase())}</span>`).join('') + playedTag(h);
     const balance = (() => {
       if (!tc.us.balance) return '';
       const keys = ['tank', 'engage', 'peel', 'control', 'diver', 'burst', 'poke', 'dps', 'sustain', 'duelist'];
@@ -1067,7 +1068,7 @@ function pgReview(f) {
     })();
     const row = (sd, label, color) => `<div class="tc-row"><div class="tc-side" style="color:${color}">${label}</div>
       <div class="tc-heroes">${sd.heroes.map((h) => `<span class="tc-hero">${hIcon(h.slug, 26)}<span><b>${esc(h.name)}</b>${badge(h)}<br><span class="tc-role">${esc(roleName(h.role))}</span></span></span>`).join('')}</div>
-      <div class="tc-shape"><b>${sd.tanks} tank${sd.tanks === 1 ? '' : 's'} · ${sd.divers} diver${sd.divers === 1 ? '' : 's'}</b><br><span style="color:${sd.shapeWr ? tcCol(sd.shapeWr.wr) : 'var(--text-2)'}">${sd.shapeWr ? `${sd.shapeWr.wr}% in ${esc(tc.field.patch)} ranked` : 'too few games'}</span>${sd.shapeWr ? ` <span class="tc-n">(${sd.shapeWr.n.toLocaleString()} teams)</span>` : ''}</div></div>`;
+      <div class="tc-shape"><b>${sd.tanks} tank${sd.tanks === 1 ? '' : 's'} · ${sd.divers} diver${sd.divers === 1 ? '' : 's'}</b>${sd.heroes.some((h) => h.playedTank) ? `<br><span class="tc-n">+ ${esc(sd.heroes.filter((h) => h.playedTank).map((h) => h.name).join(', '))} played tank</span>` : ''}<br><span style="color:${sd.shapeWr ? tcCol(sd.shapeWr.wr) : 'var(--text-2)'}">${sd.shapeWr ? `${sd.shapeWr.wr}% in ${esc(tc.field.patch)} ranked` : 'too few games'}</span>${sd.shapeWr ? ` <span class="tc-n">(${sd.shapeWr.n.toLocaleString()} teams)</span>` : ''}</div></div>`;
     const checks = tc.checks.map((c) => `<li class="${c.ok ? 'ok' : 'bad'}"><span aria-hidden="true">${c.ok ? '✓' : '✗'}</span> ${esc(c.text)}</li>`).join('');
     const fails = tc.checks.filter((c) => !c.ok).length;
     const swap = tc.swap ? `<div class="tc-swap"><b>Draft fix:</b> swap ${esc(tc.swap.out)} (${esc(roleName(tc.swap.role))}) for a real tank, because ${esc(tc.swap.reason)}. Tanks that win in ${esc(roleName(tc.swap.role).toLowerCase())} this patch: <span class="tc-opts">${tc.swap.options.map((o) => `<span class="tc-opt">${hIcon(o.slug, 20)} <b>${esc(o.name)}</b> ${o.wr}% <span class="tc-n">(${o.n.toLocaleString()} games)</span></span>`).join('')}</span></div>` : '';

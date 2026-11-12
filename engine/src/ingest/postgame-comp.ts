@@ -73,6 +73,9 @@ function main() {
   const heroStats = new Map((read('data/catalog/heroes.json') as any[]).map((h) => [h.slug, h.base_stats ?? {}]));
   const heroMeta = new Map<string, HeroMeta>(heroes.map((h) => [h.slug, { power: power.get(h.slug) ?? null, cls: heroClass(h.classes) }]));
 
+  // Lane averages of damage mitigated a minute (offlane / jungle / support), from `npm run tanks`.
+  const laneSoak: Record<string, number> = {};
+  try { for (const [lane, v] of Object.entries<any>(read('data/aggregates/tank-builds.json').bands?.all?.lanes ?? {})) if (v?.laneAverage?.mitigatedPerMin) laneSoak[lane] = v.laneAverage.mitigatedPerMin; } catch { /* npm run tanks not run yet */ }
   const files = readdirSync(OUT_DIR).filter((f) => UUID_RE.test(f));
   // Who played well above their hero-role norm, on either team (the standouts scoring:
   // role-weighted z of per-minute output vs the shrunk hero-role mean across our films).
@@ -87,7 +90,10 @@ function main() {
     const film = JSON.parse(readFileSync(p, 'utf8'));
     if (film.teamComp && film.kitRead && film.buildNotes && film.playbook && film.threatBuilds && 'damageMix' in film && !all) continue;
     const players: CompPlayer[] = film.players.map((x: CompPlayer) => ({ us: x.us, heroSlug: x.heroSlug, heroName: x.heroName, role: x.role }));
-    const tc = readTeamComp(players, film.comp?.ourDamage ?? { physical: 0, magical: 0 }, tags, field, wr, heroRoles, displayNames, (s) => rt.get(s) ?? []);
+    // Played as a tank: damage mitigated a minute vs the lane's average (src/comp-read.ts PLAYED_TANK_X).
+    const soakOf = (us: boolean) => new Map<string, { mpm: number; avg: number }>(film.players.filter((x: any) => x.us === us && laneSoak[x.role] && film.durationMin)
+      .map((x: any) => [x.heroSlug, { mpm: (x.mitigated ?? 0) / film.durationMin, avg: laneSoak[x.role]! }]));
+    const tc = readTeamComp(players, film.comp?.ourDamage ?? { physical: 0, magical: 0 }, tags, field, wr, heroRoles, displayNames, (s) => rt.get(s) ?? [], soakOf(true), soakOf(false));
     if (!tc) { skipped++; continue; }
     film.teamComp = tc;
     film.kitRead = readKit(film.players, film.kills ?? [], kitIdx, profiles as Record<string, { playAgainst?: string }>, heroMeta);
@@ -136,6 +142,20 @@ function main() {
         healingPct: story.vsNorm?.hpm.pct ?? null,
         field: fh ? { games: fh.games, wins: fh.wins, eternal: fe ? { name: fe.name, n: fe.n, w: fe.w, pair: fpair ? { n: fpair.n, w: fpair.w } : undefined } : null, core: fcore && fcore.n ? fcore : null, coreBase: (predBuilds.byRole?.[ep.heroSlug]?.[ep.role] ?? []).reduce((a: any, r: any) => ({ n: a.n + r.n, w: a.w + r.w }), { n: 0, w: 0 }) } : null,
       });
+      // The lead story names what drove it (2026-11-12: "Soaked the fights" gave a number but no
+      // reason). Toughness / survival / sustain stories take the pieces of the matching stacks,
+      // Eternal and minors first; damage stories already name their items.
+      if (story.lead && ['tough', 'survival', 'sustain'].includes(story.lead.id)) {
+        const fam = story.lead.id === 'sustain' ? ['heal', 'tough'] : ['tough', 'heal'];
+        const ms = why.stacks.filter((x: any) => fam.includes(x.family)).flatMap((x: any) => x.members);
+        const order = (k: string) => ({ Eternal: 0, 'Eternal minor': 1, augment: 2, crest: 3, item: 4 } as Record<string, number>)[k] ?? 5;
+        const names = [...new Map(ms.sort((a: any, b: any) => order(a.kind) - order(b.kind)).map((m: any) => [m.name, m])).values()] as any[];
+        if (names.length) {
+          const et = names.filter((m) => m.kind === 'Eternal' || m.kind === 'Eternal minor').map((m) => m.name);
+          const rest = names.filter((m) => m.kind !== 'Eternal' && m.kind !== 'Eternal minor').map((m) => m.name).slice(0, 3);
+          story.lead.text += ` It came from ${[et.length ? `the Eternal setup (${et.join(', ')})` : '', rest.length ? rest.join(', ') : ''].filter(Boolean).join(' plus ')}.`;
+        }
+      }
       // Every loadout piece explained to the same depth (src/loadout-read.ts).
       const loadout = loadoutRead(ep, {
         abilities: heroCat.get(ep.heroSlug)?.abilities ?? [], eternals: eternalsCat, augments: augCat, items: itemCat,

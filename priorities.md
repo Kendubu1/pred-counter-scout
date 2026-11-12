@@ -530,8 +530,10 @@ items from the lineups (21a) for this card. Open:
   19 and 21d with a win-rate test instead of 19's signature-item lift). Open: a Plat+ view of it, minors
   per build, and the same picks inside a matchup-adjusted core.
 - **22j. [DONE 2026-11-10] Augment-led Loadout card** (`npm run loadouts`): the page follows the draft.
-  Open: fold "Your opening picks" into it (it still shows the lane-wide lists below), minors per
-  augment and Eternal, a Plat+ view, and the leveling order per augment.
+  Opening Picks folded in and Plat+ view done the same day. Open: minors counted per augment (the
+  row shows the lane's best pair for that Eternal), and the leveling order per augment.
+- **22k. [DONE 2026-11-12] Tankiest winning builds page** (`npm run tanks`, ui/v6/tanks.html). Open: a
+  Plat+ view, and the same board for damage dealt (carry, mid) if wanted.
 - **22i. Tighten the item pick lines to about ten words** and re-run the critic (phone glance).
 - **22g. Answer timing per hero-role.** The slot-by-slot answer timing on the card is pooled over all
   heroes (index.answerTiming). Split it by role or class once the patch has the games.

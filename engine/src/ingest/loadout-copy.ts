@@ -8,7 +8,8 @@
 //   npm run loadout:copy -- ingest-pieces       -> data/aggregates/loadout-explain.json
 //   npm run loadout:copy -- critique-prepare    -> copy-tasks/loadout-critique.tasks.json
 //   npm run loadout:copy -- critique            -> applies grounded rewrites / drops flagged lines
-//   npm run loadout:copy -- prepare-games [YYYY-MM-DD] -> copy-tasks/loadout-games.tasks.json (performers since that date)
+//   npm run loadout:copy -- prepare-games [YYYY-MM-DD] [--missing-eternal] -> copy-tasks/loadout-games.tasks.json
+//                                               (performers since that date; --missing-eternal: only reads that never name the Eternal or a minor)
 //   npm run loadout:copy -- ingest-games        -> film.loadoutCoach[heroSlug] = { bullets, at }
 // postgame:comp attaches explain[hero][kind|name] to every loadout piece (pieces[i].plain).
 import { existsSync, readFileSync, readdirSync, writeFileSync, mkdirSync, statSync } from 'node:fs';
@@ -112,7 +113,8 @@ if (cmd === 'prepare-pieces') {
         `WHAT STACKED: ${(t.worked?.stacks ?? []).map((s: any) => `${s.title}: ${s.members.map((m: any) => m.name).join(', ')}`).join(' | ') || 'none'}`,
         `COOLDOWNS: ${(t.lines ?? []).filter((l: string) => /ability haste|cooldown|came back/i.test(l)).join(' ')}`,
       ].join('\n');
-      tasks.push({ id: `${f.matchId}|${t.slug}`, prompt: `${src}\n\nAs this player's coach, explain in 2 or 3 bullets how this loadout and build worked TOGETHER in this game: the interactions between the augment, Eternal, minors, crest, items and the hero's abilities that made the performance, in plain words a regular player follows. Lead with the most important interaction. Each bullet at most 28 words. Only numbers from the data above. No em dashes. Do not repeat the lead story; explain the mechanics behind it.\nReturn strict JSON: { "bullets": ["...", "..."] }` });
+      if (process.argv.includes('--missing-eternal')) { const lo = p.loadout ?? {}; const names = [lo.eternal, lo.minor1, lo.minor2].filter(Boolean); const had = f.loadoutCoach?.[t.slug]?.bullets?.join(' ') ?? ''; if (!names.length || names.some((x: string) => had.includes(x))) continue; }
+      tasks.push({ id: `${f.matchId}|${t.slug}`, prompt: `${src}\n\nAs this player's coach, explain in 2 or 3 bullets how this loadout and build worked TOGETHER in this game. One bullet MUST be about the Eternal and its two minors: what they did for this hero this game and how they worked with the items and abilities (name them). the interactions between the augment, Eternal, minors, crest, items and the hero's abilities that made the performance, in plain words a regular player follows. Lead with the most important interaction. Each bullet at most 28 words. Only numbers from the data above. No em dashes. Do not repeat the lead story; explain the mechanics behind it.\nReturn strict JSON: { "bullets": ["...", "..."] }` });
     }
   }
   writeTasks('loadout-games', tasks);
@@ -127,6 +129,10 @@ if (cmd === 'prepare-pieces') {
     const allowed = buildAllowed([], [t.prompt]);
     const bullets = ((parse(res[t.id]) as any).bullets ?? []).map((b: string) => String(b).trim()).filter((b: string) => { const good = b && verifyLine(b, allowed) && !/—/.test(b) && b.split(/\s+/).length <= 34; if (!good) dropped++; else ok++; return good; });
     const [mid, slug] = t.id.split('|');
+    // The Eternal or a minor must be named (2026-11-12: 34 of 91 reads skipped it).
+    const lo0 = (JSON.parse(readFileSync(path.join(PG, `${mid}.json`), 'utf8')).players.find((x: any) => x.heroSlug === slug) ?? {}).loadout ?? {};
+    const etNames = [lo0.eternal, lo0.minor1, lo0.minor2].filter(Boolean) as string[];
+    if (etNames.length && !etNames.some((x) => bullets.join(' ').includes(x))) { console.error(`${t.id}: no bullet names the Eternal or a minor; not saved`); continue; }
     if (bullets.length) (byFilm.get(mid!) ?? byFilm.set(mid!, []).get(mid!)!).push({ slug: slug!, bullets });
   }
   for (const [mid, list] of byFilm) {

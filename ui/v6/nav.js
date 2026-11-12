@@ -7,6 +7,8 @@
     { group: 'Meta' },
     { href: './',                    label: 'Pick & Build',           icon: 'counter-pick',     match: ['', 'index.html'] },
     { href: 'bans.html',             label: 'Most banned',            icon: 'meta-guide',       match: ['bans.html'] },
+    // hardest to kill AND winning, per lane (npm run tanks)
+    { href: 'tanks.html',            label: 'Tankiest builds',        icon: 'meta-guide', tag: 'new', match: ['tanks.html'] },
     // only the current review; older ones are listed at the bottom of What's new
     { href: '../patch-1.18.html',    label: 'Patch 1.18 review',      icon: 'patch-strategy',   match: ['patch-1.18.html'] },
     { group: 'Coach' },

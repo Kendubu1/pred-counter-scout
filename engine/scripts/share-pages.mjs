@@ -18,7 +18,7 @@ const PAGES = ['climb.html', 'about.html', 'changes.html'];
 // og title/description, a text-only "summary" card and the small logo icon, so
 // iMessage shows a compact card with the page's own name instead of a big page
 // snapshot. Each needs a <title> and a <meta name="description">.
-const LABELED = [...PAGES, 'index.html', 'coach.html', 'reports.html', 'squad.html', 'bans.html',
+const LABELED = [...PAGES, 'index.html', 'coach.html', 'reports.html', 'squad.html', 'bans.html', 'tanks.html',
   'ban-planner.html', 'livedraft.html', '../learn-eternals.html', '../patch-1.18.html'];
 const ICONS = (img) => `<link rel="icon" type="image/png" sizes="32x32" href="${img}favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="${img}logo.svg">
