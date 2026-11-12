@@ -6065,3 +6065,10 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   lines. New non-hero outputs go in data/aggregates/ or their own folder, and a commit gates on the
   test command's own exit code, never on a grep of its output.
 
+- The Eternal went missing from the story (maintainer, 2026-11-12, Greystone with Nihil + From the
+  Abyss + Adaptive Plating, a 55.8% setup): 34 of 91 per-game reads never named the Eternal or a
+  minor, "What stacked" had no family for defensive effects, and the toughness / survival / sustain
+  lead stories gave a number with no reason. Fixes: a "Kept alive in fights" stack (armor, shields,
+  regeneration, max health; anti-heal and armor shred excluded), the lead story names the pieces
+  behind it Eternal-first, the Eternal line's payoff wording follows the stack type, and per-game
+  reads must have one Eternal bullet (ingest rejects reads without it; --missing-eternal re-queues).

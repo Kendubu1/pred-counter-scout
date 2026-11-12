@@ -124,7 +124,9 @@ not in the env, stop immediately and report — no partial work.
    loadout pieces not yet explained), pred-scout-coach answers `engine/copy-tasks/loadout-pieces.responses.json`,
    `npm run loadout:copy -- ingest-pieces`, then an independent critic (`critique-prepare` -> responses
    -> `critique`). Then `npm run loadout:copy -- prepare-games <today's date>` for the new games' high
-   performers, author, `ingest-games`, and an independent critic pass over those bullets. Rerun
+   performers, author, `ingest-games`, and an independent critic pass over those bullets. One bullet
+   must cover the Eternal and its minors (ingest rejects a read that names neither); `prepare-games
+   <date> --missing-eternal` re-queues any read that skipped them. Rerun
    `npm run postgame:comp` so the explanations attach. Never state an effect the game text does not
    (no "homing" / "untargetable"); anti-heal is not healing.
 5. Refresh the reports: `npm run coach -- <lead-uuid>` and

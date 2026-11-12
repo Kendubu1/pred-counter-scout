@@ -14,7 +14,7 @@
 //             its own above / level / below, then proven, mixed, standard or beat-us
 // Effects are catalog text, not measured procs.
 
-export type Family = 'ability' | 'attack' | 'takedown' | 'pctHealth' | 'lowHealth' | 'heal';
+export type Family = 'ability' | 'attack' | 'takedown' | 'pctHealth' | 'lowHealth' | 'heal' | 'tough';
 export interface Member { name: string; kind: string; text: string }
 export interface Why {
   stacks: { family: Family; title: string; members: Member[]; text: string }[];
@@ -31,8 +31,11 @@ const FAM: [Family, RegExp][] = [
   ['pctHealth', /% of (?:the )?(?:target'?s?|their) (?:max(?:imum)?|current|bonus|missing) health/i],
   ['lowHealth', /below \d+% health/i],
   ['heal', /\bheal(?:s|ing|ed)?\b|lifesteal|omnivamp/i],
+  // Staying alive in fights (2026-11-12: Greystone's Nihil + From the Abyss + Adaptive Plating never
+  // showed): armor, shields, damage reduction, regeneration or max health from the loadout.
+  ['tough', /\barmor\b|\bshield|damage reduction|reduc\w* (?:the )?damage taken|regenerat|max(?:imum)? health|% (?:missing|max) health|\bheals? (?:you|for)|tenacity/i],
 ];
-const TITLE: Record<Family, string> = { ability: 'Every ability hit set off', attack: 'Every basic attack set off', takedown: 'Every takedown fed', pctHealth: "Damage that scales with the target's health", lowHealth: 'Finishing damage on low-health targets', heal: 'Healing off the damage' };
+const TITLE: Record<Family, string> = { ability: 'Every ability hit set off', attack: 'Every basic attack set off', takedown: 'Every takedown fed', pctHealth: "Damage that scales with the target's health", lowHealth: 'Finishing damage on low-health targets', heal: 'Healing off the damage', tough: 'Kept alive in fights' };
 const pct = (w: number, n: number) => Math.round((1000 * w) / n) / 10;
 
 export function buildWhy(
@@ -71,7 +74,7 @@ export function buildWhy(
   const majorFam = et ? FAM.filter(([, re]) => re.test(et.major)).map(([f]) => f) : [];
   // "Reduce their Healing by 45%" is anti-heal on enemies, not healing (Tainted items).
   const antiHeal = (t: string) => /reduc\w*[^.]{0,40}heal/i.test(t) && !/lifesteal|omnivamp|heals? you|restore/i.test(t);
-  const famOf = (m: Member) => { const fs = FAM.filter(([f, re]) => re.test(m.text) && !(f === 'heal' && antiHeal(m.text))).map(([f]) => f); return /^the major\b/i.test(m.text) ? [...new Set([...fs, ...majorFam])] : fs; };
+  const famOf = (m: Member) => { const fs = FAM.filter(([f, re]) => re.test(m.text) && !((f === 'heal' || f === 'tough') && antiHeal(m.text)) && !(f === 'tough' && /reduce (?:the )?target'?s? .{0,20}armor|ignore .{0,10}armor|penetration/i.test(m.text))).map(([f]) => f); return /^the major\b/i.test(m.text) ? [...new Set([...fs, ...majorFam])] : fs; };
 
   const dmgAb = ctx.kit.filter((a) => a.damage && a.key !== 'LMB' && a.key !== 'Passive');
   const aoeAb = dmgAb.filter((a) => a.aoe);
@@ -87,11 +90,14 @@ export function buildWhy(
     if (f === 'pctHealth') text += ' The more health a target stacks, the more these deal, so health items on the other side fed them.';
     if (f === 'takedown') text += ' Each kill or assist made the next fight easier.';
     if (f === 'lowHealth') text += ' Once a fight started going their way, these finished it.';
+    if (f === 'tough') text += ' Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went.';
     stacks.push({ family: f, title: TITLE[f], members: uniq, text });
   }
   stacks.sort((a, b) => b.members.length - a.members.length);
   const etInStack = stacks.filter((s) => s.members.some((m) => m.kind === 'Eternal' || m.kind === 'Eternal minor'));
-  const eternalPart = et && etInStack.length ? `The Eternal was part of it: ${et.name}${minors.length ? ` (${minors.map((m) => m.name).join(' + ')})` : ''} sits on the same trigger${etInStack.length > 1 ? 's' : ''} as the items (${etInStack.map((s) => s.title.toLowerCase()).join('; ')}), so the same hits paid out twice.` : null;
+  const etFamilies = etInStack.map((x) => x.family);
+  const payoff = etFamilies.every((f) => f === 'tough' || f === 'heal') ? 'so every extra second in a fight made them harder to kill' : etFamilies.some((f) => f === 'tough' || f === 'heal') ? 'so the same fights paid out in both damage and staying power' : 'so the same hits paid out twice';
+  const eternalPart = et && etInStack.length ? `The Eternal was part of it: ${et.name}${minors.length ? ` (${minors.map((m) => m.name).join(' + ')})` : ''} sits on the same trigger${etInStack.length > 1 ? 's' : ''} as the items (${etInStack.map((s) => s.title.toLowerCase()).join('; ')}), ${payoff}.` : null;
 
   // Did we counter it?
   const countered: Why['countered'] = [];
