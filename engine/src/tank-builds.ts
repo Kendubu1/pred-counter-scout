@@ -24,10 +24,21 @@ export function tankStats(a: TankAgg): TankStats {
     mitigatedPerMin: Math.round(a.mit / a.min), takenPerMin: Math.round(a.takenH / a.min),
   };
 }
-export const qualifies = (a: TankAgg) => a.n >= MIN_GAMES && (a.w + WIN_K * 0.5) / (a.n + WIN_K) >= WIN_MIN;
+export const qualifies = (a: TankAgg, minGames = MIN_GAMES) => a.n >= minGames && (a.w + WIN_K * 0.5) / (a.n + WIN_K) >= WIN_MIN;
+/** Rank bands of the board (rank the player held IN THAT GAME; unplaced players count under All ranks
+ *  only). A band's floors shrink with its share of the games: Plat+ is about 6% of placed tank-lane
+ *  rows, so its rows are thin by nature and the page prints each row's games. */
+export interface BandRule { key: string; label: string; tiers: [number, number] | null; minGames: number; tankMin: number; etMin: number; othersMin: number; etShow: number }
+export const BANDS: BandRule[] = [
+  { key: 'all', label: 'All ranks', tiers: null, minGames: MIN_GAMES, tankMin: 300, etMin: 80, othersMin: 100, etShow: 400 },
+  { key: 'low', label: 'Bronze and Silver', tiers: [0, 1], minGames: 100, tankMin: 200, etMin: 60, othersMin: 80, etShow: 300 },
+  { key: 'gold', label: 'Gold', tiers: [2, 2], minGames: 60, tankMin: 120, etMin: 40, othersMin: 50, etShow: 150 },
+  { key: 'plat', label: 'Plat+', tiers: [3, 99], minGames: 30, tankMin: 60, etMin: 20, othersMin: 30, etShow: 60 },
+];
+export const inBand = (b: BandRule, tier: number | null | undefined) => !b.tiers || (tier != null && tier >= b.tiers[0] && tier <= b.tiers[1]);
 /** The board for one lane: qualifying groups, most soak per death first. */
-export function rankTanks<T extends { agg: TankAgg }>(groups: T[], max = BOARD): T[] {
-  return groups.filter((g) => qualifies(g.agg)).sort((x, y) => (y.agg.mit + y.agg.takenH) / Math.max(1, y.agg.deaths) - (x.agg.mit + x.agg.takenH) / Math.max(1, x.agg.deaths)).slice(0, max);
+export function rankTanks<T extends { agg: TankAgg }>(groups: T[], max = BOARD, minGames = MIN_GAMES): T[] {
+  return groups.filter((g) => qualifies(g.agg, minGames)).sort((x, y) => (y.agg.mit + y.agg.takenH) / Math.max(1, y.agg.deaths) - (x.agg.mit + x.agg.takenH) / Math.max(1, x.agg.deaths)).slice(0, max);
 }
 
 // Which Eternal for a tank: each Eternal against the SAME hero in the same lane on every other
@@ -39,20 +50,21 @@ export function rankTanks<T extends { agg: TankAgg }>(groups: T[], max = BOARD):
 export const TANK_MIN_GAMES = 300, TANK_SOAK_X = 1.2, ET_MIN = 80, OTHERS_MIN = 100, ET_SHOW = 400;
 const soakOf = (a: TankAgg) => (a.mit + a.takenH) / Math.max(1, a.deaths);
 export interface EternalEffect { eternal: string; games: number; heroes: number; winDelta: number; margin: number; soakPct: number; deathsPct: number; verdict: 'wins more' | 'wins less' | 'no clear change' }
-export function eternalEffects(heroLanes: Map<string, TankAgg>, byEternal: Map<string, Map<string, TankAgg>>, laneAvgSoak: number): EternalEffect[] {
+export function eternalEffects(heroLanes: Map<string, TankAgg>, byEternal: Map<string, Map<string, TankAgg>>, laneAvgSoak: number,
+  f: { tankMin: number; etMin: number; othersMin: number; etShow: number } = { tankMin: TANK_MIN_GAMES, etMin: ET_MIN, othersMin: OTHERS_MIN, etShow: ET_SHOW }): EternalEffect[] {
   const acc = new Map<string, { n: number; heroes: number; d: number; w: number; soak: number; deaths: number }>();
   for (const [hero, all] of heroLanes) {
-    if (all.n < TANK_MIN_GAMES || soakOf(all) < TANK_SOAK_X * laneAvgSoak) continue;
+    if (all.n < f.tankMin || soakOf(all) < TANK_SOAK_X * laneAvgSoak) continue;
     for (const [et, a] of byEternal.get(hero) ?? []) {
       const o: TankAgg = { n: all.n - a.n, w: all.w - a.w, min: all.min - a.min, mit: all.mit - a.mit, takenH: all.takenH - a.takenH, deaths: all.deaths - a.deaths };
-      if (a.n < ET_MIN || o.n < OTHERS_MIN) continue;
+      if (a.n < f.etMin || o.n < f.othersMin) continue;
       const v = 0.25 / a.n + 0.25 / o.n, e = acc.get(et) ?? { n: 0, heroes: 0, d: 0, w: 0, soak: 0, deaths: 0 };
       e.n += a.n; e.heroes++; e.d += (a.w / a.n - o.w / o.n) / v; e.w += 1 / v;
       e.soak += a.n * (soakOf(a) / soakOf(o) - 1); e.deaths += a.n * (a.deaths / a.min / (o.deaths / o.min) - 1);
       acc.set(et, e);
     }
   }
-  return [...acc].filter(([, e]) => e.n >= ET_SHOW).map(([eternal, e]) => {
+  return [...acc].filter(([, e]) => e.n >= f.etShow).map(([eternal, e]) => {
     const winDelta = Math.round((1000 * e.d) / e.w) / 10, margin = Math.round(1960 * Math.sqrt(1 / e.w)) / 10;
     return { eternal, games: e.n, heroes: e.heroes, winDelta, margin, soakPct: Math.round((100 * e.soak) / e.n), deathsPct: Math.round((100 * e.deaths) / e.n),
       verdict: (winDelta - margin > 0 ? 'wins more' : winDelta + margin < 0 ? 'wins less' : 'no clear change') as EternalEffect['verdict'] };
