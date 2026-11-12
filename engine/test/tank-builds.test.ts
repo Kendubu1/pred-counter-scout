@@ -19,7 +19,7 @@ describe('tankiest winning builds', () => {
     expect(qualifies(thin.agg)).toBe(false);
     expect(rankTanks([loser, thin, weaker, winner])).toEqual([winner, weaker]);
   });
-  const f = path.join(ROOT, 'data/artifacts/tank-builds.json');
+  const f = path.join(ROOT, 'data/aggregates/tank-builds.json');
   it.skipIf(!existsSync(f))('committed board: three lanes, every row winning and with the games', () => {
     const d = JSON.parse(readFileSync(f, 'utf8'));
     expect(Object.keys(d.lanes)).toEqual(['offlane', 'jungle', 'support']);

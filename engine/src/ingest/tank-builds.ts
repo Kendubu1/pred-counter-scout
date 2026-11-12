@@ -1,4 +1,4 @@
-// npm run tanks (zero-API): data/artifacts/tank-builds.json, the "Tankiest winning builds" page
+// npm run tanks (zero-API): data/aggregates/tank-builds.json, the "Tankiest winning builds" page
 // (ui/v6/tanks.html): per lane (offlane, jungle, support) the hero + Eternal groups that soak the most
 // damage per death and still win. Rules in src/tank-builds.ts. Counted from the patch's ranked
 // lineups (output totals, build and loadout per player). Rerun daily after `npm run perks`.
@@ -68,7 +68,7 @@ for (const lane of LANES) {
     }),
   };
 }
-writeFileSync(path.join(ROOT, 'data/artifacts/tank-builds.json'), JSON.stringify({
+writeFileSync(path.join(ROOT, 'data/aggregates/tank-builds.json'), JSON.stringify({
   generatedAt: new Date().toISOString(), patch: meta.patch, matches: rows.length,
   source: `ranked lineups in data/aggregates/team-comps/${meta.patch}/ (games of ten minutes or more)`,
   note: `Per lane: hero + Eternal groups with ${MIN_GAMES}+ games whose win rate, pulled ${WIN_K} games toward 50%, is ${WIN_MIN * 100}% or better, ranked by soakPerDeath = (damage mitigated + hero damage taken) / deaths. deathsPer10 = deaths per ten minutes. otherEternals = the same hero and lane on every other Eternal. augment / crest / core / later = what the group's players run most (core = opening three in purchase order; later = items bought fourth to sixth, share of players who bought a fourth). laneAverage = every player in that lane.`,

@@ -151,7 +151,7 @@ and how to wire a new loop live in `docs/agent-loops.md`.
   then the plain run number-checks every line against the item's own text; rerun after a catalog
   change; the page falls back to the rule-based lane line for an item with no line),
   `npm run tanks` (zero-API: the "Tankiest winning builds" page, ui/v6/tanks.html,
-  data/artifacts/tank-builds.json: per lane (offlane, jungle, support) the hero + Eternal groups with
+  data/aggregates/tank-builds.json: per lane (offlane, jungle, support) the hero + Eternal groups with
   150+ ranked games of ten minutes or more, ranked by damage soaked per death (mitigated + hero damage
   taken, per death), kept only when the win rate pulled 100 games toward 50% is 50% or better; the
   augment / crest / opening three / later items shown are what the group's players run most; rules in

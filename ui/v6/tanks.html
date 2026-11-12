@@ -120,7 +120,7 @@ const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const LANE = { offlane: 'Offlane', jungle: 'Jungle', support: 'Support' };
 const num = (n) => Math.round(n).toLocaleString();
-Promise.all([fetch('../../data/artifacts/tank-builds.json').then((r) => r.json()), fetch('../../data/aggregates/item-tags.json').then((r) => r.json()).catch(() => null)]).then(([d, tags]) => {
+Promise.all([fetch('../../data/aggregates/tank-builds.json').then((r) => r.json()), fetch('../../data/aggregates/item-tags.json').then((r) => r.json()).catch(() => null)]).then(([d, tags]) => {
   const itemName = (s) => (tags && tags.items[s] ? tags.items[s].name : s);
   $('#basis').textContent = `Patch ${d.patch} · ${d.matches.toLocaleString()} ranked matches · all ranks`;
   const hide = "this.style.visibility='hidden'";

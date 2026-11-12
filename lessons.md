@@ -6059,4 +6059,9 @@ among builds with 100+ games (ui/v6/index.html, MIN_LEAD_GAMES). That is what is
   deaths per 10 min) and wins 49.4%, so a board of builds "that win" needs a win gate (rate pulled 100
   games toward 50%, 50% or better) or it recommends a loser. Item-level soak numbers are inflated by
   survivorship (late items are finished in long games), so the page lists what the group buys, unranked.
+- data/artifacts/ root is for hero files only: test/artifacts.test.ts reads every other .json there as a
+  hero. A second board file landed there (after item-tags.json did the same on 2026-11-10) and the commit
+  went out red because the test filter was chained with `&&` after a grep that "succeeds" on failure
+  lines. New non-hero outputs go in data/aggregates/ or their own folder, and a commit gates on the
+  test command's own exit code, never on a grep of its output.
 
