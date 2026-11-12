@@ -6,7 +6,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { patchDir, readRows, STAT_KEYS } from './team-comps.js';
-import { BOARD, MIN_DURATION, MIN_GAMES, WIN_K, WIN_MIN, addGame, rankTanks, tankAgg, tankStats, type TankAgg } from '../tank-builds.js';
+import { BOARD, MIN_DURATION, MIN_GAMES, WIN_K, WIN_MIN, addGame, eternalEffects, rankTanks, tankAgg, tankStats, type TankAgg } from '../tank-builds.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const read = (p: string) => JSON.parse(readFileSync(path.join(ROOT, p), 'utf8'));
@@ -50,8 +50,14 @@ const top = <K>(m: Map<K, number>) => [...m].sort((a, b) => b[1] - a[1])[0] ?? n
 const lanes: Record<string, unknown> = {};
 for (const lane of LANES) {
   const board = rankTanks([...groups.values()].filter((g) => g.lane === lane), BOARD);
+  // Per hero in this lane: everyone, and by Eternal, for the "which Eternal" comparison.
+  const heroes = new Map<string, TankAgg>(), byEt = new Map<string, Map<string, TankAgg>>();
+  for (const [k, a] of heroLane) if (k.endsWith(`|${lane}`)) heroes.set(k.split('|')[0]!, a);
+  for (const g of groups.values()) if (g.lane === lane) (byEt.get(g.hero) ?? byEt.set(g.hero, new Map()).get(g.hero)!).set(g.eternal, g.agg);
+  const avg = tankStats(laneAll.get(lane)!);
   lanes[lane] = {
-    laneAverage: tankStats(laneAll.get(lane)!),
+    laneAverage: avg,
+    eternals: eternalEffects(heroes, byEt, avg.soakPerDeath),
     board: board.map((g) => {
       const aug = [...g.augs].sort((a, b) => b[1].n - a[1].n)[0], crest = top(g.crests), core = top(g.cores);
       const hl = heroLane.get(`${g.hero}|${g.lane}`)!;
@@ -71,7 +77,7 @@ for (const lane of LANES) {
 writeFileSync(path.join(ROOT, 'data/aggregates/tank-builds.json'), JSON.stringify({
   generatedAt: new Date().toISOString(), patch: meta.patch, matches: rows.length,
   source: `ranked lineups in data/aggregates/team-comps/${meta.patch}/ (games of ten minutes or more)`,
-  note: `Per lane: hero + Eternal groups with ${MIN_GAMES}+ games whose win rate, pulled ${WIN_K} games toward 50%, is ${WIN_MIN * 100}% or better, ranked by soakPerDeath = (damage mitigated + hero damage taken) / deaths. deathsPer10 = deaths per ten minutes. otherEternals = the same hero and lane on every other Eternal. augment / crest / core / later = what the group's players run most (core = opening three in purchase order; later = items bought fourth to sixth, share of players who bought a fourth). laneAverage = every player in that lane.`,
+  note: `Per lane: hero + Eternal groups with ${MIN_GAMES}+ games whose win rate, pulled ${WIN_K} games toward 50%, is ${WIN_MIN * 100}% or better, ranked by soakPerDeath = (damage mitigated + hero damage taken) / deaths. deathsPer10 = deaths per ten minutes. otherEternals = the same hero and lane on every other Eternal. augment / crest / core / later = what the group's players run most (core = opening three in purchase order; later = items bought fourth to sixth, share of players who bought a fourth). laneAverage = every player in that lane. eternals = each Eternal against the same tank hero on every other Eternal, pooled over the lane's tank heroes: winDelta in points with its 95% margin, soakPct and deathsPct changes, verdict only when the whole margin is on one side of zero.`,
   minGames: MIN_GAMES, lanes,
 }));
-for (const lane of LANES) { const l = lanes[lane] as any; console.log(`${lane} (lane average soak per death ${l.laneAverage.soakPerDeath}): ${l.board.map((b: any) => `${b.heroName}+${b.eternal} ${b.soakPerDeath} (${b.winPct}%, ${b.games}g)`).join(' | ')}`); }
+for (const lane of LANES) { const l = lanes[lane] as any; console.log(`  ${lane} Eternals: ${l.eternals.map((e: any) => `${e.eternal} ${e.winDelta >= 0 ? '+' : ''}${e.winDelta}±${e.margin} [${e.verdict}]`).join(', ')}`); console.log(`${lane} (lane average soak per death ${l.laneAverage.soakPerDeath}): ${l.board.map((b: any) => `${b.heroName}+${b.eternal} ${b.soakPerDeath} (${b.winPct}%, ${b.games}g)`).join(' | ')}`); }

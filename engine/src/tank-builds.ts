@@ -29,3 +29,32 @@ export const qualifies = (a: TankAgg) => a.n >= MIN_GAMES && (a.w + WIN_K * 0.5)
 export function rankTanks<T extends { agg: TankAgg }>(groups: T[], max = BOARD): T[] {
   return groups.filter((g) => qualifies(g.agg)).sort((x, y) => (y.agg.mit + y.agg.takenH) / Math.max(1, y.agg.deaths) - (x.agg.mit + x.agg.takenH) / Math.max(1, x.agg.deaths)).slice(0, max);
 }
+
+// Which Eternal for a tank: each Eternal against the SAME hero in the same lane on every other
+// Eternal, pooled over the lane's tank hero-lanes (TANK_MIN_GAMES+ games and soak per death at least
+// TANK_SOAK_X times the lane average). A hero counts for an Eternal with ET_MIN+ games on it and
+// OTHERS_MIN+ off it. winDelta is the inverse-variance weighted win-rate gap in points with its 95%
+// margin; soakPct / deathsPct are the game-weighted changes in soak per death and death rate.
+// verdict: "wins more" / "wins less" only when the whole margin is on one side of zero.
+export const TANK_MIN_GAMES = 300, TANK_SOAK_X = 1.2, ET_MIN = 80, OTHERS_MIN = 100, ET_SHOW = 400;
+const soakOf = (a: TankAgg) => (a.mit + a.takenH) / Math.max(1, a.deaths);
+export interface EternalEffect { eternal: string; games: number; heroes: number; winDelta: number; margin: number; soakPct: number; deathsPct: number; verdict: 'wins more' | 'wins less' | 'no clear change' }
+export function eternalEffects(heroLanes: Map<string, TankAgg>, byEternal: Map<string, Map<string, TankAgg>>, laneAvgSoak: number): EternalEffect[] {
+  const acc = new Map<string, { n: number; heroes: number; d: number; w: number; soak: number; deaths: number }>();
+  for (const [hero, all] of heroLanes) {
+    if (all.n < TANK_MIN_GAMES || soakOf(all) < TANK_SOAK_X * laneAvgSoak) continue;
+    for (const [et, a] of byEternal.get(hero) ?? []) {
+      const o: TankAgg = { n: all.n - a.n, w: all.w - a.w, min: all.min - a.min, mit: all.mit - a.mit, takenH: all.takenH - a.takenH, deaths: all.deaths - a.deaths };
+      if (a.n < ET_MIN || o.n < OTHERS_MIN) continue;
+      const v = 0.25 / a.n + 0.25 / o.n, e = acc.get(et) ?? { n: 0, heroes: 0, d: 0, w: 0, soak: 0, deaths: 0 };
+      e.n += a.n; e.heroes++; e.d += (a.w / a.n - o.w / o.n) / v; e.w += 1 / v;
+      e.soak += a.n * (soakOf(a) / soakOf(o) - 1); e.deaths += a.n * (a.deaths / a.min / (o.deaths / o.min) - 1);
+      acc.set(et, e);
+    }
+  }
+  return [...acc].filter(([, e]) => e.n >= ET_SHOW).map(([eternal, e]) => {
+    const winDelta = Math.round((1000 * e.d) / e.w) / 10, margin = Math.round(1960 * Math.sqrt(1 / e.w)) / 10;
+    return { eternal, games: e.n, heroes: e.heroes, winDelta, margin, soakPct: Math.round((100 * e.soak) / e.n), deathsPct: Math.round((100 * e.deaths) / e.n),
+      verdict: (winDelta - margin > 0 ? 'wins more' : winDelta + margin < 0 ? 'wins less' : 'no clear change') as EternalEffect['verdict'] };
+  }).sort((x, y) => y.winDelta - x.winDelta);
+}
