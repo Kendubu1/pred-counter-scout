@@ -5590,7 +5590,7 @@
  "teamComp": {
   "field": {
    "patch": "1.18",
-   "matches": 53066
+   "matches": 58551
   },
   "us": {
    "heroes": [
@@ -5670,8 +5670,8 @@
    "style": "engage-peel",
    "shape": "1t1d",
    "shapeWr": {
-    "n": 26648,
-    "w": 13489,
+    "n": 29461,
+    "w": 14908,
     "wr": 50.6,
     "ci95": 0.6
    }
@@ -5758,8 +5758,8 @@
    "style": "brawl",
    "shape": "1t2d",
    "shapeWr": {
-    "n": 20203,
-    "w": 10099,
+    "n": 22283,
+    "w": 11145,
     "wr": 50,
     "ci95": 0.7
    }
@@ -6122,20 +6122,101 @@
    "hero": "Kaelen",
    "slug": "kaelen",
    "takedowns": 15,
-   "loadout": [],
+   "loadout": [
+    {
+     "kind": "augment",
+     "name": "Last Winter",
+     "text": "Frostfall grants Allies within the Targeting Zone +20% Movement Speed for 3s. Upon landing, Kaelen gains a (+10% Max Health) (+4% Max Health per Hero hit) Shield for 4s.",
+     "ability": {
+      "name": "Frostfall",
+      "key": "R",
+      "what": "Channel Kaelen's strength over 1.5s, then cleanse and leap into the sky for up to 4s.",
+      "cd": 110,
+      "cdHaste": 81.5
+     },
+     "numbers": [],
+     "field": {
+      "wr": 61,
+      "n": 1216,
+      "share": 86,
+      "base": 59.9,
+      "verdict": "above"
+     },
+     "plain": "Allies in the Frostfall targeting zone get 20% more movement speed for 3s to follow the leap. On landing, Kaelen gains a shield of 10% max health plus 4% per hero hit, lasting 4s."
+    },
+    {
+     "kind": "Eternal",
+     "name": "Krix",
+     "text": "Gain 5% (+1% per Level) increased Maximum Health, and bonus size equal to 0.5% of your Maximum Health.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 60.2,
+      "n": 854,
+      "share": 60,
+      "base": 59.9,
+      "verdict": "level"
+     },
+     "plain": "More max health and a bigger body. Plain tankiness that helps you survive diving in with Winter's Pursuit and landing in the middle of the enemy with Frostfall."
+    },
+    {
+     "kind": "minor",
+     "name": "Festering Wounds",
+     "text": "Your DoT abilities and Immobilizing Effects reduce Enemy Heroes' healing by 45% for 3s.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 57,
+      "n": 107,
+      "share": 13,
+      "base": 59.9,
+      "verdict": "below"
+     }
+    },
+    {
+     "kind": "minor",
+     "name": "Cannibalism",
+     "text": "Takedowns permanently increase your Maximum Health by 25.",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 60.6,
+      "n": 753,
+      "share": 88,
+      "base": 59.9,
+      "verdict": "level"
+     }
+    },
+    {
+     "kind": "crest",
+     "name": "Rift Walkers",
+     "text": "Rift Snatcher:  Dash forward a short distance. Pull nearby Heroes towards you. Visionary:  Gain Solstone. Increase Ward Cap from 2 to 3. Pacifist:  Receive diminishing Gold from Minion kills. Heroes Snatched:",
+     "ability": null,
+     "numbers": [],
+     "field": {
+      "wr": 58.7,
+      "n": 104,
+      "share": 7,
+      "base": 59.9,
+      "verdict": "below"
+     }
+    }
+   ],
    "haste": {
     "sources": [
      {
       "what": "Basilisk",
       "amount": 20,
+      "note": "bought at 12:05",
       "kind": "item",
-      "how": "+20 ability haste"
+      "how": "+20 ability haste, bought at 12:05"
      },
      {
       "what": "Vyzar Carapace",
       "amount": 15,
+      "note": "bought at 22:25",
       "kind": "item",
-      "how": "+15 ability haste"
+      "how": "+15 ability haste, bought at 22:25"
      }
     ],
     "total": 35,
@@ -6144,31 +6225,40 @@
    },
    "ult": {
     "name": "Frostfall",
-    "base": 90,
-    "rank": 3,
-    "rankKnown": false,
-    "endGame": 66.7,
+    "base": 110,
+    "rank": 2,
+    "rankKnown": true,
+    "endGame": 81.5,
     "inFight": null
    },
-   "fedBy": [],
+   "fedBy": [
+    "Cannibalism (minor): Takedowns permanently increase your Maximum Health by 25."
+   ],
    "ultPlus": [],
    "lines": [
     "Lead story: Hard to kill. Died 1 time in 26 minutes, fewer deaths than about 84% of Kaelen support players this patch. The build added health and armor and healing off damage.",
-    "Frostfall at top rank: 90s base, about 66.7s by the end (26% shorter) from 35 ability haste: Basilisk 20, Vyzar Carapace 15.",
+    "Frostfall at rank 2: 110s base, about 81.5s by the end (26% shorter) from 35 ability haste: Basilisk 20, Vyzar Carapace 15.",
+    "15 takedowns (10 kills, 5 assists) fed: Cannibalism (minor).",
     "Kaelen dealt 19,450 hero damage, 22% of their team's, with +105 physical power from items.",
-    "Sustain: Vyzar Carapace: Deals 60-170 Damage, based on Level. Gain a 50 (+12%) Shield for 3s.; 3,063 healing recorded.",
-    "Toughness: +950 health; took 29,862 damage, mitigated 24,388, died 1 times.",
-    "Stack (Kept alive in fights): 3 effects on one trigger: Basilisk, Aegis Of Agawar, Vyzar Carapace. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went.",
+    "Sustain: Vyzar Carapace: Deals 60-170 Damage, based on Level. Gain a 50 (+12%) Shield for 3s.; Festering Wounds: Your DoT abilities and Immobilizing Effects reduce Enemy Heroes' healing by 45% for 3s.; 3,063 healing recorded.",
+    "Toughness: +1070 health; took 29,862 damage, mitigated 24,388, died 1 times.",
+    "Loadout augment Last Winter: Allies in the Frostfall targeting zone get 20% more movement speed for 3s to follow the leap. On landing, Kaelen gains a shield of 10% max health plus 4% per hero hit, lasting 4s. (game text: Frostfall grants Allies within the Targeting Zone +20% Movement Speed for 3s. Upon landing, Kaelen gains a (+10% Max Health) (+4% Max Health per Hero hit) Shield for 4s.) (changes Frostfall, 81.5s cooldown with their haste) Field: 61% in 1216 games, 86% of picks, above the hero-role's 59.9%.",
+    "Loadout Eternal Krix: More max health and a bigger body. Plain tankiness that helps you survive diving in with Winter's Pursuit and landing in the middle of the enemy with Frostfall. (game text: Gain 5% (+1% per Level) increased Maximum Health, and bonus size equal to 0.5% of your Maximum Health.) Field: 60.2% in 854 games, 60% of picks, level the hero-role's 59.9%.",
+    "Loadout minor Festering Wounds: Your DoT abilities and Immobilizing Effects reduce Enemy Heroes' healing by 45% for 3s. Field: 57% in 107 games, 13% of picks, below the hero-role's 59.9%.",
+    "Loadout minor Cannibalism: Takedowns permanently increase your Maximum Health by 25. Field: 60.6% in 753 games, 88% of picks, level the hero-role's 59.9%.",
+    "Loadout crest Rift Walkers: Rift Snatcher:  Dash forward a short distance. Pull nearby Heroes towards you. Visionary:  Gain Solstone. Increase Ward Cap from 2 to 3. Pacifist:  Receive diminishing Gold from Minion kills. Heroes Snatched: Field: 58.7% in 104 games, 7% of picks, below the hero-role's 59.9%.",
+    "Stack (Kept alive in fights): 6 effects on one trigger: Basilisk, Aegis Of Agawar, Vyzar Carapace, Krix, Cannibalism, Last Winter. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went.",
+    "The Eternal was part of it: Krix (Festering Wounds + Cannibalism) sits on the same trigger as the items (kept alive in fights), so every extra second in a fight made them harder to kill.",
     "Countered? 1 of the 3 players Kaelen killed built physical armor (Aurora). We killed Kaelen 1 time.",
-    "Copy it? Too few Kaelen support games with this Eternal or core this patch to say whether it wins elsewhere."
+    "Copy it? Krix: 60.2% in 854 Kaelen support games, level with the hero's 59.9%. A standard setup: what made it work was this game, not a secret build."
    ],
    "card": {
     "ult": {
      "name": "Frostfall",
-     "base": 90,
-     "rank": 3,
-     "rankKnown": false,
-     "endGame": 66.7,
+     "base": 110,
+     "rank": 2,
+     "rankKnown": true,
+     "endGame": 81.5,
      "inFight": null
     },
     "takedowns": {
@@ -6177,23 +6267,29 @@
      "assists": 5
     },
     "heals": false,
-    "lesson": "Frostfall came back about every 67s instead of 90s by the end (26% shorter). Count it, and take fights while it is down.",
+    "lesson": "Frostfall came back about every 82s instead of 110s by the end (26% shorter). Count it, and take fights while it is down.",
     "haste": [
      {
       "name": "Basilisk",
       "kind": "item",
       "amount": 20,
-      "how": "+20 ability haste"
+      "how": "+20 ability haste, bought at 12:05"
      },
      {
       "name": "Vyzar Carapace",
       "kind": "item",
       "amount": 15,
-      "how": "+15 ability haste"
+      "how": "+15 ability haste, bought at 22:25"
      }
     ],
     "fight": null,
-    "extras": [],
+    "extras": [
+     {
+      "name": "Cannibalism",
+      "kind": "Eternal minor",
+      "how": "Takedowns permanently increase your Maximum Health by 25."
+     }
+    ],
     "power": {
      "type": "physical",
      "power": 105,
@@ -6206,24 +6302,30 @@
       {
        "name": "Willy Guggenheim",
        "hero": "Skylar",
-       "armor": 91,
-       "after": 91,
+       "armor": 80,
+       "after": 80,
        "more": 0,
        "diedTo": 4,
-       "level": 15,
-       "levelKnown": false,
-       "taken": null
+       "level": 13,
+       "levelKnown": true,
+       "taken": {
+        "type": 10050,
+        "total": 14290
+       }
       },
       {
        "name": "🎮 private",
        "hero": "Aurora",
-       "armor": 157,
-       "after": 157,
+       "armor": 151,
+       "after": 151,
        "more": 0,
        "diedTo": 3,
-       "level": 15,
-       "levelKnown": false,
-       "taken": null
+       "level": 14,
+       "levelKnown": true,
+       "taken": {
+        "type": 14611,
+        "total": 18856
+       }
       },
       {
        "name": "Xeebs",
@@ -6233,30 +6335,39 @@
        "more": 0,
        "diedTo": 3,
        "level": 15,
-       "levelKnown": false,
-       "taken": null
+       "levelKnown": true,
+       "taken": {
+        "type": 5609,
+        "total": 18181
+       }
       },
       {
        "name": "🎮 private",
        "hero": "Shinbi",
-       "armor": 145,
-       "after": 145,
+       "armor": 133,
+       "after": 133,
        "more": 0,
        "diedTo": 0,
-       "level": 15,
-       "levelKnown": false,
-       "taken": null
+       "level": 13,
+       "levelKnown": true,
+       "taken": {
+        "type": 17163,
+        "total": 21633
+       }
       },
       {
        "name": "Mr_Meat31",
        "hero": "Narbash",
-       "armor": 125,
-       "after": 125,
+       "armor": 120,
+       "after": 120,
        "more": 0,
        "diedTo": 0,
-       "level": 15,
-       "levelKnown": false,
-       "taken": null
+       "level": 14,
+       "levelKnown": true,
+       "taken": {
+        "type": 10132,
+        "total": 15076
+       }
       }
      ],
      "level": 15,
@@ -6301,13 +6412,18 @@
         "name": "Vyzar Carapace",
         "kind": "item",
         "how": "Deals 60-170 Damage, based on Level. Gain a 50 (+12%) Shield for 3s."
+       },
+       {
+        "name": "Festering Wounds",
+        "kind": "Eternal minor",
+        "how": "Your DoT abilities and Immobilizing Effects reduce Enemy Heroes' healing by 45% for 3s."
        }
       ],
       "healing": 3063
      },
      "tough": {
       "stats": [
-       "+950 health"
+       "+1070 health"
       ],
       "taken": 29862,
       "mitigated": 24388,
@@ -6319,7 +6435,7 @@
      "lead": {
       "id": "survival",
       "title": "Hard to kill",
-      "text": "Died 1 time in 26 minutes, fewer deaths than about 84% of Kaelen support players this patch. The build added health and armor and healing off damage. It came from Basilisk, Aegis Of Agawar, Vyzar Carapace."
+      "text": "Died 1 time in 26 minutes, fewer deaths than about 84% of Kaelen support players this patch. The build added health and armor and healing off damage. It came from the Eternal setup (Krix, Cannibalism) plus Last Winter, Basilisk, Aegis Of Agawar."
      },
      "tabs": [
       "alive",
@@ -6378,12 +6494,27 @@
          "name": "Vyzar Carapace",
          "kind": "item",
          "text": "Deals 60-170 Damage, based on Level. Gain a 50 (+12%) Shield for 3s."
+        },
+        {
+         "name": "Krix",
+         "kind": "Eternal",
+         "text": "Gain 5% (+1% per Level) increased Maximum Health, and bonus size equal to 0.5% of your Maximum Health."
+        },
+        {
+         "name": "Cannibalism",
+         "kind": "Eternal minor",
+         "text": "Takedowns permanently increase your Maximum Health by 25."
+        },
+        {
+         "name": "Last Winter",
+         "kind": "augment",
+         "text": "Frostfall grants Allies within the Targeting Zone +20% Movement Speed for 3s. Upon landing, Kaelen gains a (+10% Max Health) (+4% Max Health per Hero hit) Shield for 4s."
         }
        ],
-       "text": "3 effects on one trigger: Basilisk, Aegis Of Agawar, Vyzar Carapace. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
+       "text": "6 effects on one trigger: Basilisk, Aegis Of Agawar, Vyzar Carapace, Krix, Cannibalism, Last Winter. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
       }
      ],
-     "eternalPart": null,
+     "eternalPart": "The Eternal was part of it: Krix (Festering Wounds + Cannibalism) sits on the same trigger as the items (kept alive in fights), so every extra second in a fight made them harder to kill.",
      "countered": [
       {
        "ok": false,
@@ -6395,11 +6526,90 @@
       }
      ],
      "copy": {
-      "verdict": "unknown",
-      "text": "Too few Kaelen support games with this Eternal or core this patch to say whether it wins elsewhere."
+      "verdict": "standard",
+      "text": "Krix: 60.2% in 854 Kaelen support games, level with the hero's 59.9%. A standard setup: what made it work was this game, not a secret build."
      }
     },
-    "loadout": []
+    "loadout": [
+     {
+      "kind": "augment",
+      "name": "Last Winter",
+      "text": "Frostfall grants Allies within the Targeting Zone +20% Movement Speed for 3s. Upon landing, Kaelen gains a (+10% Max Health) (+4% Max Health per Hero hit) Shield for 4s.",
+      "ability": {
+       "name": "Frostfall",
+       "key": "R",
+       "what": "Channel Kaelen's strength over 1.5s, then cleanse and leap into the sky for up to 4s.",
+       "cd": 110,
+       "cdHaste": 81.5
+      },
+      "numbers": [],
+      "field": {
+       "wr": 61,
+       "n": 1216,
+       "share": 86,
+       "base": 59.9,
+       "verdict": "above"
+      },
+      "plain": "Allies in the Frostfall targeting zone get 20% more movement speed for 3s to follow the leap. On landing, Kaelen gains a shield of 10% max health plus 4% per hero hit, lasting 4s."
+     },
+     {
+      "kind": "Eternal",
+      "name": "Krix",
+      "text": "Gain 5% (+1% per Level) increased Maximum Health, and bonus size equal to 0.5% of your Maximum Health.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 60.2,
+       "n": 854,
+       "share": 60,
+       "base": 59.9,
+       "verdict": "level"
+      },
+      "plain": "More max health and a bigger body. Plain tankiness that helps you survive diving in with Winter's Pursuit and landing in the middle of the enemy with Frostfall."
+     },
+     {
+      "kind": "minor",
+      "name": "Festering Wounds",
+      "text": "Your DoT abilities and Immobilizing Effects reduce Enemy Heroes' healing by 45% for 3s.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 57,
+       "n": 107,
+       "share": 13,
+       "base": 59.9,
+       "verdict": "below"
+      }
+     },
+     {
+      "kind": "minor",
+      "name": "Cannibalism",
+      "text": "Takedowns permanently increase your Maximum Health by 25.",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 60.6,
+       "n": 753,
+       "share": 88,
+       "base": 59.9,
+       "verdict": "level"
+      }
+     },
+     {
+      "kind": "crest",
+      "name": "Rift Walkers",
+      "text": "Rift Snatcher:  Dash forward a short distance. Pull nearby Heroes towards you. Visionary:  Gain Solstone. Increase Ward Cap from 2 to 3. Pacifist:  Receive diminishing Gold from Minion kills. Heroes Snatched:",
+      "ability": null,
+      "numbers": [],
+      "field": {
+       "wr": 58.7,
+       "n": 104,
+       "share": 7,
+       "base": 59.9,
+       "verdict": "below"
+      }
+     }
+    ]
    },
    "power": {
     "type": "physical",
@@ -6413,24 +6623,30 @@
      {
       "name": "Willy Guggenheim",
       "hero": "Skylar",
-      "armor": 91,
-      "after": 91,
+      "armor": 80,
+      "after": 80,
       "more": 0,
       "diedTo": 4,
-      "level": 15,
-      "levelKnown": false,
-      "taken": null
+      "level": 13,
+      "levelKnown": true,
+      "taken": {
+       "type": 10050,
+       "total": 14290
+      }
      },
      {
       "name": "🎮 private",
       "hero": "Aurora",
-      "armor": 157,
-      "after": 157,
+      "armor": 151,
+      "after": 151,
       "more": 0,
       "diedTo": 3,
-      "level": 15,
-      "levelKnown": false,
-      "taken": null
+      "level": 14,
+      "levelKnown": true,
+      "taken": {
+       "type": 14611,
+       "total": 18856
+      }
      },
      {
       "name": "Xeebs",
@@ -6440,30 +6656,39 @@
       "more": 0,
       "diedTo": 3,
       "level": 15,
-      "levelKnown": false,
-      "taken": null
+      "levelKnown": true,
+      "taken": {
+       "type": 5609,
+       "total": 18181
+      }
      },
      {
       "name": "🎮 private",
       "hero": "Shinbi",
-      "armor": 145,
-      "after": 145,
+      "armor": 133,
+      "after": 133,
       "more": 0,
       "diedTo": 0,
-      "level": 15,
-      "levelKnown": false,
-      "taken": null
+      "level": 13,
+      "levelKnown": true,
+      "taken": {
+       "type": 17163,
+       "total": 21633
+      }
      },
      {
       "name": "Mr_Meat31",
       "hero": "Narbash",
-      "armor": 125,
-      "after": 125,
+      "armor": 120,
+      "after": 120,
       "more": 0,
       "diedTo": 0,
-      "level": 15,
-      "levelKnown": false,
-      "taken": null
+      "level": 14,
+      "levelKnown": true,
+      "taken": {
+       "type": 10132,
+       "total": 15076
+      }
      }
     ],
     "level": 15,
@@ -6508,13 +6733,18 @@
        "name": "Vyzar Carapace",
        "kind": "item",
        "how": "Deals 60-170 Damage, based on Level. Gain a 50 (+12%) Shield for 3s."
+      },
+      {
+       "name": "Festering Wounds",
+       "kind": "Eternal minor",
+       "how": "Your DoT abilities and Immobilizing Effects reduce Enemy Heroes' healing by 45% for 3s."
       }
      ],
      "healing": 3063
     },
     "tough": {
      "stats": [
-      "+950 health"
+      "+1070 health"
      ],
      "taken": 29862,
      "mitigated": 24388,
@@ -6525,7 +6755,7 @@
     "lead": {
      "id": "survival",
      "title": "Hard to kill",
-     "text": "Died 1 time in 26 minutes, fewer deaths than about 84% of Kaelen support players this patch. The build added health and armor and healing off damage. It came from Basilisk, Aegis Of Agawar, Vyzar Carapace."
+     "text": "Died 1 time in 26 minutes, fewer deaths than about 84% of Kaelen support players this patch. The build added health and armor and healing off damage. It came from the Eternal setup (Krix, Cannibalism) plus Last Winter, Basilisk, Aegis Of Agawar."
     },
     "tabs": [
      "alive",
@@ -6584,12 +6814,27 @@
         "name": "Vyzar Carapace",
         "kind": "item",
         "text": "Deals 60-170 Damage, based on Level. Gain a 50 (+12%) Shield for 3s."
+       },
+       {
+        "name": "Krix",
+        "kind": "Eternal",
+        "text": "Gain 5% (+1% per Level) increased Maximum Health, and bonus size equal to 0.5% of your Maximum Health."
+       },
+       {
+        "name": "Cannibalism",
+        "kind": "Eternal minor",
+        "text": "Takedowns permanently increase your Maximum Health by 25."
+       },
+       {
+        "name": "Last Winter",
+        "kind": "augment",
+        "text": "Frostfall grants Allies within the Targeting Zone +20% Movement Speed for 3s. Upon landing, Kaelen gains a (+10% Max Health) (+4% Max Health per Hero hit) Shield for 4s."
        }
       ],
-      "text": "3 effects on one trigger: Basilisk, Aegis Of Agawar, Vyzar Carapace. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
+      "text": "6 effects on one trigger: Basilisk, Aegis Of Agawar, Vyzar Carapace, Krix, Cannibalism, Last Winter. Together they made staying in a long fight cheaper: more armor, shields or healing the longer it went."
      }
     ],
-    "eternalPart": null,
+    "eternalPart": "The Eternal was part of it: Krix (Festering Wounds + Cannibalism) sits on the same trigger as the items (kept alive in fights), so every extra second in a fight made them harder to kill.",
     "countered": [
      {
       "ok": false,
@@ -6601,8 +6846,8 @@
      }
     ],
     "copy": {
-     "verdict": "unknown",
-     "text": "Too few Kaelen support games with this Eternal or core this patch to say whether it wins elsewhere."
+     "verdict": "standard",
+     "text": "Krix: 60.2% in 854 Kaelen support games, level with the hero's 59.9%. A standard setup: what made it work was this game, not a secret build."
     }
    },
    "us": false,
@@ -6613,7 +6858,89 @@
    "score": null
   }
  },
- "damageMix": null,
+ "damageMix": {
+  "us": {
+   "physical": 16344,
+   "magical": 45110,
+   "true": 330,
+   "total": 61784
+  },
+  "them": {
+   "physical": 57338,
+   "magical": 19690,
+   "true": 10694,
+   "total": 87722
+  },
+  "trueFrom": [
+   {
+    "hero": "Kaelen",
+    "us": false,
+    "amount": 6451,
+    "share": 33,
+    "from": [
+     {
+      "name": "Heart of Ice",
+      "kind": "ability"
+     }
+    ]
+   },
+   {
+    "hero": "Renna",
+    "us": false,
+    "amount": 2229,
+    "share": 10,
+    "from": []
+   },
+   {
+    "hero": "Greystone",
+    "us": false,
+    "amount": 942,
+    "share": 5,
+    "from": []
+   }
+  ],
+  "armor": {
+   "us": {
+    "faced": "physical",
+    "physical": [
+     "Aurora",
+     "Shinbi",
+     "Narbash"
+    ],
+    "magical": [],
+    "of": 5,
+    "points": {
+     "physical": 125,
+     "magical": 0
+    }
+   },
+   "them": {
+    "faced": "magical",
+    "physical": [],
+    "magical": [
+     "Greystone"
+    ],
+    "of": 5,
+    "points": {
+     "physical": 0,
+     "magical": 85
+    }
+   }
+  },
+  "field": {
+   "us": {
+    "wr": 39.6,
+    "n": 1019,
+    "band": "70-80% magical"
+   },
+   "them": {
+    "wr": 52.9,
+    "n": 10363,
+    "band": "20-30% magical"
+   },
+   "best": "20-30% magical (52.9% win)"
+  }
+ },
  "buildNotes": [
   {
    "pid": "8e623bdc-66df-468c-b715-db2be16140b4",
@@ -6645,8 +6972,8 @@
       "has": false
      }
     ],
-    "wr": 58.7,
-    "n": 167
+    "wr": 58.6,
+    "n": 181
    },
    "coreVs": null,
    "built": [
@@ -6695,7 +7022,7 @@
      }
     ],
     "wr": 65.6,
-    "n": 154
+    "n": 163
    },
    "coreVs": null,
    "built": [
@@ -6723,10 +7050,10 @@
     {
      "slug": "forticus",
      "name": "Forticus",
-     "into": 21,
+     "into": 20,
      "usual": 10,
-     "wr": 56,
-     "n": 520,
+     "wr": 55.8,
+     "n": 615,
      "has": false,
      "vs": "Kaelen"
     }
@@ -6750,8 +7077,8 @@
       "has": false
      }
     ],
-    "wr": 65,
-    "n": 206
+    "wr": 62.5,
+    "n": 224
    },
    "coreVs": null,
    "built": [
@@ -6784,23 +7111,23 @@
    "core": {
     "items": [
      {
-      "slug": "lightning-hawk",
-      "name": "Lightning Hawk",
-      "has": false
+      "slug": "plasma-blade",
+      "name": "Plasma Blade",
+      "has": true
      },
      {
-      "slug": "scattershot",
-      "name": "Scattershot",
-      "has": false
+      "slug": "vanquisher",
+      "name": "Vanquisher",
+      "has": true
      },
      {
-      "slug": "equinox",
-      "name": "Equinox",
+      "slug": "tainted-rounds",
+      "name": "Tainted Rounds",
       "has": false
      }
     ],
-    "wr": 55.3,
-    "n": 257
+    "wr": 53.3,
+    "n": 364
    },
    "coreVs": {
     "vs": "Sparrow",
@@ -6872,8 +7199,8 @@
       "has": true
      }
     ],
-    "wr": 61.5,
-    "n": 91
+    "wr": 63.4,
+    "n": 101
    },
    "coreVs": {
     "vs": "Renna",
